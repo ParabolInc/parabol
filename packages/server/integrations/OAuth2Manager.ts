@@ -24,12 +24,10 @@ export type OAuth2AuthorizeResponse = {
   refreshToken: string | undefined
   scopes: string
   expiresIn?: number
-}
-
-export type OAuth2AfterAuthorizePatch = {
+  /** The user's id on the provider, when the service exposes one */
   providerUserId?: string | null
+  /** Service-specific bolt-ons stored on the auth row, e.g. jira: {cloudIds} */
   meta?: JsonObject
-  scopes?: string
 }
 
 export default abstract class OAuth2Manager {
@@ -41,13 +39,11 @@ export default abstract class OAuth2Manager {
     this.clientSecret = clientSecret
     this.serverBaseUrl = serverBaseUrl
   }
-  abstract authorize(code: string, redirectUri: string): Promise<Error | OAuth2AuthorizeResponse>
-
-  /** Service-specific data fetched with the fresh token (account id, site list…). Stored generically on the auth row. */
-  async afterAuthorize(_auth: OAuth2AuthorizeResponse): Promise<OAuth2AfterAuthorizePatch | Error> {
-    return {}
-  }
-
+  /** redirectUri is null when the client relies on the app callback registered with the provider (GitHub) */
+  abstract authorize(
+    code: string,
+    redirectUri: string | null
+  ): Promise<Error | OAuth2AuthorizeResponse>
   abstract refresh(refreshToken: string): Promise<Error | {accessToken: string}>
   protected abstract fetchToken(
     partialAuthParams: OAuth2RefreshAuthorizationParams | OAuth2AuthorizationParams

@@ -7,6 +7,7 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import useMutationProps, {type MenuMutationProps} from '../../../../hooks/useMutationProps'
+import {getConnectProvider} from '../../../../integrations/platform/findIntegrationService'
 import {Providers} from '../../../../types/constEnums'
 import AtlassianClientManager from '../../../../utils/AtlassianClientManager'
 import {hasConfluenceScopes} from '../../../../utils/atlassianScopes'
@@ -34,6 +35,9 @@ const ConfluenceProviderRow = (props: Props) => {
               scope
             }
           }
+          services {
+            ...findIntegrationService_cloudProvider @relay(mask: false)
+          }
         }
       }
     `,
@@ -45,14 +49,17 @@ const ConfluenceProviderRow = (props: Props) => {
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   const {teamMember} = viewer
   const atlassian = teamMember?.integrations.atlassian
+  const provider = teamMember ? getConnectProvider(teamMember.services, 'jira') : null
   const accessToken = atlassian?.accessToken ?? undefined
   const connected = !!accessToken && hasConfluenceScopes(atlassian?.scope)
   const flagOn = teamMember?.team?.organization?.hasConfluenceExport ?? false
 
   const connectConfluence = () => {
+    if (!provider) return
     AtlassianClientManager.openOAuth(
       atmosphere,
       teamId,
+      provider,
       mutationProps,
       [...AtlassianClientManager.CONFLUENCE_SCOPE, 'offline_access' as const],
       atlassian?.scope
@@ -60,7 +67,7 @@ const ConfluenceProviderRow = (props: Props) => {
   }
 
   if (!flagOn) return null
-  if (!AtlassianClientManager.isAvailable) return null
+  if (!AtlassianClientManager.isAvailable || !provider) return null
 
   return (
     <>
@@ -85,6 +92,7 @@ const ConfluenceProviderRow = (props: Props) => {
           mutationProps={mutationProps}
           menuProps={menuProps}
           teamId={teamId}
+          provider={provider}
           heldScopes={atlassian?.scope}
         />
       )}

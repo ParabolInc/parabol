@@ -14,6 +14,7 @@ import type {GitHubScopingSearchResultsQuery} from '../__generated__/GitHubScopi
 import useAtmosphere from '../hooks/useAtmosphere'
 import useGetUsedServiceTaskIds from '../hooks/useGetUsedServiceTaskIds'
 import useLoadNextOnScrollBottom from '../hooks/useLoadNextOnScrollBottom'
+import findIntegrationService from '../integrations/platform/findIntegrationService'
 import PersistIntegrationSearchQueryMutation from '../mutations/PersistIntegrationSearchQueryMutation'
 import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
 import {SprintPokerDefaults} from '../types/constEnums'
@@ -41,6 +42,9 @@ const GitHubScopingSearchResults = (props: Props) => {
         viewer {
           ...NewGitHubIssueInput_viewer
           teamMember(teamId: $teamId) {
+            services {
+              ...findIntegrationService_auth @relay(mask: false)
+            }
             repoIntegrations(first: 20, networkOnly: false) {
               items {
                 ... on _xGitHubRepository {
@@ -172,15 +176,19 @@ const GitHubScopingSearchResults = (props: Props) => {
     const normalizedQueryString = queryString.toLowerCase().trim()
     // don't persist default
     if (normalizedQueryString === SprintPokerDefaults.GITHUB_DEFAULT_QUERY) return
-    const githubSearchQueries =
-      query.viewer.teamMember?.integrations.github?.githubSearchQueries ?? []
+    const queryTeamMember = query.viewer.teamMember
+    if (!queryTeamMember) return
+    const providerId = findIntegrationService(queryTeamMember.services, 'github')?.auth?.providerId
+    if (!providerId) return
+    const githubSearchQueries = queryTeamMember.integrations.github?.githubSearchQueries ?? []
     const searchHashes = githubSearchQueries.map(({queryString}) => queryString)
     const isQueryNew = !searchHashes.includes(normalizedQueryString)
     if (isQueryNew) {
       PersistIntegrationSearchQueryMutation(atmosphere, {
         teamId,
-        service: 'github',
-        githubSearchQuery: {queryString: normalizedQueryString}
+        providerId,
+        queryString: normalizedQueryString,
+        includeGitHub: true
       })
     }
   }

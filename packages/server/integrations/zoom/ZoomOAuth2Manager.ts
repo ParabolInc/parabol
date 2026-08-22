@@ -1,14 +1,13 @@
 import {fetch} from '@whatwg-node/fetch'
 import OAuth2Manager, {
-  type OAuth2AfterAuthorizePatch,
   type OAuth2AuthorizationParams,
-  type OAuth2AuthorizeResponse,
   type OAuth2RefreshAuthorizationParams
 } from '../OAuth2Manager'
 
 export default class ZoomOAuth2Manager extends OAuth2Manager {
-  async authorize(code: string, redirectUri: string) {
-    return this.fetchToken<{
+  async authorize(code: string, redirectUri: string | null) {
+    if (!redirectUri) return new Error('Missing redirect URI')
+    const auth = await this.fetchToken<{
       accessToken: string
       refreshToken: string
       scopes: string
@@ -18,6 +17,12 @@ export default class ZoomOAuth2Manager extends OAuth2Manager {
       code,
       redirect_uri: redirectUri
     })
+    if (auth instanceof Error) return auth
+    const res = await fetch('https://api.zoom.us/v2/users/me', {
+      headers: {Authorization: `Bearer ${auth.accessToken}`}
+    })
+    const providerUserId = res.ok ? (((await res.json()) as {id?: string}).id ?? null) : null
+    return {...auth, providerUserId}
   }
 
   async refresh(refreshToken: string) {
@@ -66,14 +71,5 @@ export default class ZoomOAuth2Manager extends OAuth2Manager {
       scopes: scope,
       expiresIn: expires_in
     } as TSuccess
-  }
-
-  async afterAuthorize(auth: OAuth2AuthorizeResponse): Promise<OAuth2AfterAuthorizePatch | Error> {
-    const res = await fetch('https://api.zoom.us/v2/users/me', {
-      headers: {Authorization: `Bearer ${auth.accessToken}`}
-    })
-    if (!res.ok) return {providerUserId: null}
-    const data = (await res.json()) as {id?: string}
-    return {providerUserId: data.id ?? null}
   }
 }

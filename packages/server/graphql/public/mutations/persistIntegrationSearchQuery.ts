@@ -2,57 +2,63 @@ import {sql} from 'kysely'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
+import type {JsonObject} from '../../../postgres/types/pg'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
 
+const parseMeta = (meta: string | null | undefined): JsonObject | Error => {
+  if (!meta) return {}
+  try {
+    const parsed: unknown = JSON.parse(meta)
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+      ? (parsed as JsonObject)
+      : new Error('meta must be a JSON object')
+  } catch {
+    return new Error('meta must be valid JSON')
+  }
+}
+
 const persistIntegrationSearchQuery: MutationResolvers['persistIntegrationSearchQuery'] = async (
   _source,
-  {teamId, service, providerId, jiraServerSearchQuery, jiraSearchQuery, githubSearchQuery},
+  {teamId, providerId, queryString, meta},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
-  const query =
-    service === 'jiraServer'
-      ? jiraServerSearchQuery
-      : service === 'jira'
-        ? jiraSearchQuery && {
-            queryString: jiraSearchQuery.queryString,
-            isJQL: jiraSearchQuery.isJQL,
-            projectKeyFilters: [...(jiraSearchQuery.projectKeyFilters ?? [])].sort()
-          }
-        : service === 'github'
-          ? githubSearchQuery && {queryString: githubSearchQuery.queryString.toLowerCase().trim()}
-          : null
-  if (!query) return {error: {message: `Missing search query for ${service}`}}
+  const parsedMeta = parseMeta(meta)
+  if (parsedMeta instanceof Error) return {error: {message: parsedMeta.message}}
 
-  const team = await dataLoader.get('teams').loadNonNull(teamId)
+  const dbProviderId = IntegrationProviderId.split(providerId)
+  const [provider, team] = await Promise.all([
+    dataLoader.get('integrationProviders').load(dbProviderId),
+    dataLoader.get('teams').loadNonNull(teamId)
+  ])
+  if (!provider) return {error: {message: 'Provider does not exist'}}
+  const {service} = provider
   const providers = await dataLoader
     .get('sharedIntegrationProviders')
     .load({service, orgIds: [team.orgId], teamIds: [teamId]})
-  const dbProviderId = providerId
-    ? IntegrationProviderId.split(providerId)
-    : (providers.find((provider) => provider.scope === 'global')?.id ?? null)
-  if (dbProviderId && !providers.some((provider) => provider.id === dbProviderId)) {
-    return {error: {message: 'Provider does not exist'}}
+  if (!providers.some(({id}) => id === dbProviderId)) {
+    return {error: {message: 'Provider is not available to this team'}}
   }
 
   await getKysely()
     .insertInto('IntegrationSearchQuery')
-    .values({userId: viewerId, teamId, service, query, providerId: dbProviderId})
+    .values({
+      userId: viewerId,
+      teamId,
+      service,
+      providerId: dbProviderId,
+      query: {...parsedMeta, queryString}
+    })
     .onConflict((oc) =>
-      dbProviderId === null
-        ? oc
-            .columns(['userId', 'teamId', 'service', 'query'])
-            .where('providerId', 'is', null)
-            .doUpdateSet({lastUsedAt: sql`CURRENT_TIMESTAMP`})
-        : oc
-            .columns(['userId', 'teamId', 'service', 'query', 'providerId'])
-            .where('providerId', 'is not', null)
-            .doUpdateSet({lastUsedAt: sql`CURRENT_TIMESTAMP`})
+      oc
+        .columns(['userId', 'teamId', 'service', 'query', 'providerId'])
+        .where('providerId', 'is not', null)
+        .doUpdateSet({lastUsedAt: sql`CURRENT_TIMESTAMP`})
     )
     .execute()
 

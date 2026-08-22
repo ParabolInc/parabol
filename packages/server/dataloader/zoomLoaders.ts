@@ -1,6 +1,6 @@
 import DataLoader from 'dataloader'
 import ZoomOAuth2Manager from '../integrations/zoom/ZoomOAuth2Manager'
-import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
+import syncTeamMemberIntegrationAuthTokens from '../postgres/queries/syncTeamMemberIntegrationAuthTokens'
 import type {TeamMemberIntegrationAuth} from '../postgres/types'
 import logError from '../utils/logError'
 import type RootDataLoader from './RootDataLoader'
@@ -37,13 +37,20 @@ export const freshZoomAuth = (parent: RootDataLoader) => {
             const expiresAtTimestamp =
               new Date().getTime() + (expiresIn - bufferBeforeExpires) * millisecondsInSeconds
             const newExpiresAt = new Date(expiresAtTimestamp)
-            const newZoomAuth = {
-              ...zoomAuth,
+            const tokens = {
               accessToken,
+              refreshToken: zoomAuth.refreshToken,
+              scopes: zoomAuth.scopes,
               expiresAt: newExpiresAt
             }
-            await upsertTeamMemberIntegrationAuth(newZoomAuth)
-            return newZoomAuth
+            await syncTeamMemberIntegrationAuthTokens({
+              userId,
+              teamId,
+              providerId,
+              providerUserId: zoomAuth.providerUserId,
+              ...tokens
+            })
+            return {...zoomAuth, ...tokens}
           }
           return zoomAuth
         })

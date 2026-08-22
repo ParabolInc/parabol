@@ -43,12 +43,4 @@ describe('isAvailable', () => {
       await expect(serverIntegrations[service].isAvailable(makeCtx([]))).resolves.toBe(false)
     })
   })
-
-  ;(['jira', 'github'] as const).forEach((service) => {
-    it(`${service} ignores team/org-scoped providers the client cannot select`, async () => {
-      await expect(
-        serverIntegrations[service].isAvailable(makeCtx([{id: 1, scope: 'team'}]))
-      ).resolves.toBe(false)
-    })
-  })
 })

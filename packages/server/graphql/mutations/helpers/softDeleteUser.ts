@@ -6,31 +6,13 @@ import removeSlackAuths from './removeSlackAuths'
 
 const removeIntegrationAuths = async (userId: string, teamIds: string[]) => {
   if (teamIds.length === 0) return
-  const pg = getKysely()
-  await Promise.all([
-    pg
-      .updateTable('TeamMemberIntegrationAuth')
-      .set({isActive: false})
-      .where('userId', '=', userId)
-      .where('teamId', 'in', teamIds)
-      .where('service', 'in', ['jira', 'github'])
-      .where('isActive', '=', true)
-      .execute(),
-    pg
-      .updateTable('AtlassianAuth')
-      .set({isActive: false})
-      .where('userId', '=', userId)
-      .where('teamId', 'in', teamIds)
-      .where('isActive', '=', true)
-      .execute(),
-    pg
-      .updateTable('GitHubAuth')
-      .set({isActive: false})
-      .where('userId', '=', userId)
-      .where('teamId', 'in', teamIds)
-      .where('isActive', '=', true)
-      .execute()
-  ])
+  await getKysely()
+    .updateTable('TeamMemberIntegrationAuth')
+    .set({isActive: false})
+    .where('userId', '=', userId)
+    .where('teamId', 'in', teamIds)
+    .where('isActive', '=', true)
+    .execute()
 }
 
 const removePageAcces = async (userId: string) => {

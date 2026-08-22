@@ -9,6 +9,7 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import useMutationProps, {type MenuMutationProps} from '../../../../hooks/useMutationProps'
+import {getConnectProvider} from '../../../../integrations/platform/findIntegrationService'
 import type {AuthToken} from '../../../../types/AuthToken'
 import {ExternalLinks, Providers} from '../../../../types/constEnums'
 import AtlassianClientManager, {ERROR_POPUP_CLOSED} from '../../../../utils/AtlassianClientManager'
@@ -42,6 +43,9 @@ const AtlassianProviderRow = (props: Props) => {
     graphql`
       fragment AtlassianProviderRow_viewer on User {
         teamMember(teamId: $teamId) {
+          services {
+            ...findIntegrationService_cloudProvider @relay(mask: false)
+          }
           integrations {
             atlassian {
               ...AtlassianProviderRowAtlassianIntegration @relay(mask: false)
@@ -61,16 +65,18 @@ const AtlassianProviderRow = (props: Props) => {
     onCompleted
   } as MenuMutationProps
   const {teamMember} = viewer
-  const {integrations} = teamMember!
+  const {integrations, services} = teamMember!
   const {atlassian} = integrations
+  const provider = getConnectProvider(services, 'jira')
   const accessToken = atlassian?.accessToken ?? undefined
   const jiraConnected = !!accessToken && hasJiraScopes(atlassian?.scope)
   useFreshToken(accessToken, retry)
-
   const openOAuth = () => {
+    if (!provider) return
     AtlassianClientManager.openOAuth(
       atmosphere,
       teamId,
+      provider,
       mutationProps,
       AtlassianClientManager.JIRA_SCOPE,
       atlassian?.scope
@@ -99,7 +105,7 @@ const AtlassianProviderRow = (props: Props) => {
     return message
   }, [error])
 
-  if (!AtlassianClientManager.isAvailable) return null
+  if (!AtlassianClientManager.isAvailable || !provider) return null
 
   return (
     <>
@@ -119,6 +125,7 @@ const AtlassianProviderRow = (props: Props) => {
           mutationProps={mutationProps}
           menuProps={menuProps}
           teamId={teamId}
+          provider={provider}
           heldScopes={atlassian?.scope}
         />
       )}

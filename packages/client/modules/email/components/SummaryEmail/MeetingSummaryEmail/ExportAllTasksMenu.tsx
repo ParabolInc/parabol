@@ -26,9 +26,9 @@ const query = graphql`
     viewer {
       id
       viewerTeamMember: teamMember(userId: null, teamId: $teamId) {
+        ...TaskFooterIntegrateMenuSignup_teamMember
         integrations {
           ...useIsIntegrated_integrations
-          ...TaskFooterIntegrateMenuSignup_TeamMemberIntegrations
         }
       }
     }
@@ -77,7 +77,6 @@ const ExportAllTasksMenu = (props: Props) => {
   const isViewerIntegrated = useIsIntegrated(viewerTeamMember?.integrations)
 
   if (!viewerTeamMember) return null
-  const {integrations: viewerIntegrations} = viewerTeamMember
 
   const filteredTasks = tasks?.filter((task) => !task.integration)
 
@@ -107,7 +106,7 @@ const ExportAllTasksMenu = (props: Props) => {
       mutationProps={mutationProps}
       teamId={teamId}
       label={label}
-      integrationsRef={viewerIntegrations}
+      teamMemberRef={viewerTeamMember}
     />
   )
 }

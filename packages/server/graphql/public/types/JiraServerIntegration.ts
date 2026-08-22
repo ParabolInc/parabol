@@ -183,20 +183,20 @@ const JiraServerIntegration: JiraServerIntegrationResolvers = {
     const {providerId} = auth
     const searchQueries = await dataLoader
       .get('recentIntegrationSearchQueries')
-      .load({teamId, userId, service: 'jiraServer', providerId})
+      .load({teamId, userId, providerId})
 
     return searchQueries.map((searchQuery) => {
-      const query = searchQuery.query as {
-        queryString: string | null
-        isJQL: boolean
-        projectKeyFilters: string[] | null
+      const {queryString, isJQL, projectKeyFilters} = searchQuery.query as {
+        queryString?: unknown
+        isJQL?: unknown
+        projectKeyFilters?: unknown
       }
 
       return {
         id: String(searchQuery.id),
-        queryString: query.queryString || '',
-        isJQL: query.isJQL,
-        projectKeyFilters: query.projectKeyFilters || [],
+        queryString: typeof queryString === 'string' ? queryString : '',
+        isJQL: isJQL === true,
+        projectKeyFilters: Array.isArray(projectKeyFilters) ? projectKeyFilters.map(String) : [],
         lastUsedAt: searchQuery.lastUsedAt.toJSON()
       }
     })

@@ -54,7 +54,7 @@ const GitHubScopingSearchHistoryToggle = (props: Props) => {
       }
 
       const deleteQuery = () => {
-        RemoveIntegrationSearchQueryMutation(atmosphere, {id, teamId})
+        RemoveIntegrationSearchQueryMutation(atmosphere, {id, teamId, includeGitHub: true})
       }
 
       return {

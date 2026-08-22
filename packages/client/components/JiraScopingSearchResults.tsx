@@ -5,6 +5,7 @@ import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
 import type {JiraScopingSearchResults_meeting$key} from '../__generated__/JiraScopingSearchResults_meeting.graphql'
 import type {JiraScopingSearchResultsQuery} from '../__generated__/JiraScopingSearchResultsQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
+import findIntegrationService from '../integrations/platform/findIntegrationService'
 import PersistIntegrationSearchQueryMutation from '../mutations/PersistIntegrationSearchQueryMutation'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import JiraScopingSelectAllIssues from './JiraScopingSelectAllIssues'
@@ -28,6 +29,9 @@ const query = graphql`
     viewer {
       ...NewJiraIssueInput_viewer
       teamMember(teamId: $teamId) {
+        services {
+          ...findIntegrationService_auth @relay(mask: false)
+        }
         integrations {
           atlassian {
             jiraSearchQueries {
@@ -111,8 +115,9 @@ const JiraScopingSearchResults = (props: Props) => {
     const {queryString, isJQL} = jiraSearchQuery
     // don't persist an empty string (the default)
     if (!queryString) return
-    const projectKeyFilters = jiraSearchQuery.projectKeyFilters as string[]
-    projectKeyFilters.sort()
+    const providerId = findIntegrationService(viewer.teamMember!.services, 'jira')?.auth?.providerId
+    if (!providerId) return
+    const projectKeyFilters = [...jiraSearchQuery.projectKeyFilters].sort()
     const lookupKey = JSON.stringify({queryString, projectKeyFilters})
     const {jiraSearchQueries} = atlassian!
     const searchHashes = jiraSearchQueries.map(({queryString, projectKeyFilters}) => {
@@ -122,12 +127,10 @@ const JiraScopingSearchResults = (props: Props) => {
     if (isQueryNew) {
       PersistIntegrationSearchQueryMutation(atmosphere, {
         teamId,
-        service: 'jira',
-        jiraSearchQuery: {
-          queryString,
-          isJQL,
-          projectKeyFilters: projectKeyFilters as string[]
-        }
+        providerId,
+        queryString,
+        meta: JSON.stringify({isJQL, projectKeyFilters}),
+        includeAtlassian: true
       })
     }
   }

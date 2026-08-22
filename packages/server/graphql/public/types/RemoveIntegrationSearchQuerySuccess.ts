@@ -1,3 +1,4 @@
+import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import type {RemoveIntegrationSearchQuerySuccessResolvers} from '../resolverTypes'
 
 export type RemoveIntegrationSearchQuerySuccessSource = {
@@ -6,11 +7,8 @@ export type RemoveIntegrationSearchQuerySuccessSource = {
 }
 
 const RemoveIntegrationSearchQuerySuccess: RemoveIntegrationSearchQuerySuccessResolvers = {
-  jiraServerIntegration: (source) => source,
-  atlassianIntegration: ({teamId, userId}, _args, {dataLoader}) =>
-    dataLoader.get('freshAtlassianAuth').load({teamId, userId}),
-  githubIntegration: async ({teamId, userId}, _args, {dataLoader}) =>
-    (await dataLoader.get('githubAuth').load({teamId, userId})) ?? null
+  teamMember: ({teamId, userId}, _args, {dataLoader}) =>
+    dataLoader.get('teamMembers').loadNonNull(toTeamMemberId(teamId, userId))
 }
 
 export default RemoveIntegrationSearchQuerySuccess

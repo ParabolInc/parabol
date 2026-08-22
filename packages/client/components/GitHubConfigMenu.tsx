@@ -1,6 +1,7 @@
 import useAtmosphere from '../hooks/useAtmosphere'
 import type {MenuProps} from '../hooks/useMenu'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
+import type {ConnectProvider} from '../integrations/platform/ClientIntegrationDefinition'
 import RemoveTeamMemberIntegrationAuthMutation from '../mutations/RemoveTeamMemberIntegrationAuthMutation'
 import {Duration} from '../types/constEnums'
 import GitHubClientManager from '../utils/GitHubClientManager'
@@ -11,14 +12,15 @@ interface Props {
   menuProps: MenuProps
   mutationProps: MenuMutationProps
   teamId: string
+  provider: ConnectProvider
 }
 
 const GitHubConfigMenu = (props: Props) => {
-  const {menuProps, mutationProps, teamId} = props
+  const {menuProps, mutationProps, teamId, provider} = props
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
   const atmosphere = useAtmosphere()
   const openOAuth = () => {
-    GitHubClientManager.openOAuth(atmosphere, teamId, mutationProps)
+    GitHubClientManager.openOAuth(atmosphere, teamId, provider, mutationProps)
   }
 
   const removeGitHub = () => {

@@ -1,5 +1,6 @@
 import type Atmosphere from '../Atmosphere'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
+import type {ConnectProvider} from '../integrations/platform/ClientIntegrationDefinition'
 import AddTeamMemberIntegrationAuthMutation from '../mutations/AddTeamMemberIntegrationAuthMutation'
 import {Providers} from '../types/constEnums'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
@@ -9,7 +10,12 @@ class GitHubClientManager {
 
   fetch = window.fetch.bind(window)
   static isAvailable = typeof window !== 'undefined' && !!window.__ACTION__.github
-  static openOAuth(atmosphere: Atmosphere, teamId: string, mutationProps: MenuMutationProps) {
+  static openOAuth(
+    atmosphere: Atmosphere,
+    teamId: string,
+    provider: Pick<ConnectProvider, 'id' | 'clientId'>,
+    mutationProps: MenuMutationProps
+  ) {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
     const hash = Math.random().toString(36).substring(5)
     const providerState = btoa(
@@ -19,7 +25,8 @@ class GitHubClientManager {
         service: 'github'
       })
     )
-    const uri = `https://github.com/login/oauth/authorize?client_id=${window.__ACTION__.github}&scope=${GitHubClientManager.SCOPE}&state=${providerState}`
+    // GitHub sends the code to the callback URL registered on the OAuth app
+    const uri = `https://github.com/login/oauth/authorize?client_id=${provider.clientId}&scope=${GitHubClientManager.SCOPE}&state=${providerState}`
 
     const popup = window.open(
       uri,
@@ -35,13 +42,7 @@ class GitHubClientManager {
       submitMutation()
       AddTeamMemberIntegrationAuthMutation(
         atmosphere,
-        {
-          service: 'github',
-          oauthCodeOrPat: code,
-          teamId,
-          redirectUri: window.__ACTION__.oauth2Redirect,
-          includeGitHub: true
-        },
+        {providerId: provider.id, oauthCodeOrPat: code, teamId, includeGitHub: true},
         {onError, onCompleted}
       )
       popup && popup.close()

@@ -5,7 +5,8 @@ import OAuth2Manager, {
 } from '../OAuth2Manager'
 
 export default class GcalOAuth2Manager extends OAuth2Manager {
-  async authorize(code: string, redirectUri: string) {
+  async authorize(code: string, redirectUri: string | null) {
+    if (!redirectUri) return new Error('Missing redirect URI')
     return this.fetchToken<{
       accessToken: string
       refreshToken: string

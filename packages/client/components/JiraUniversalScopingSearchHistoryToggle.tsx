@@ -49,7 +49,13 @@ const JiraUniversalScopingSearchHistoryToggle = (props: Props) => {
         labelFirstLine: queryStringLabel,
         labelSecondLine: projectFilters && `in ${projectFilters}`,
         onClick: selectQuery,
-        onDelete: () => RemoveIntegrationSearchQueryMutation(atmosphere, {id, teamId})
+        onDelete: () =>
+          RemoveIntegrationSearchQueryMutation(atmosphere, {
+            id,
+            teamId,
+            includeAtlassian: service === 'jira',
+            includeJiraServer: service === 'jiraServer'
+          })
       }
     }) ?? []
 

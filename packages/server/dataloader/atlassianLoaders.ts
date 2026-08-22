@@ -4,8 +4,7 @@ import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
 import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import type {JiraIssueMissingEstimationFieldHintEnum} from '../graphql/private/resolverTypes'
-import JiraOAuth2Manager from '../integrations/jira/JiraOAuth2Manager'
-import syncJiraSiblingAuths from '../integrations/jira/syncJiraSiblingAuths'
+import refreshAtlassianAuth from '../integrations/jira/refreshAtlassianAuth'
 import getKysely from '../postgres/getKysely'
 import {selectAtlassianAuth, selectJiraDimensionFieldMap} from '../postgres/select'
 import type {AtlassianAuth, JiraDimensionFieldMap} from '../postgres/types'
@@ -40,47 +39,6 @@ export interface JiraIssueKey {
   issueKey: string
   viewerId: string
   taskId?: string
-}
-
-const refreshAtlassianAuth = async (
-  parent: RootDataLoader,
-  auth: AtlassianAuth
-): Promise<AtlassianAuth | null> => {
-  const pg = getKysely()
-  const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
-  const {clientId, clientSecret, serverBaseUrl} = provider
-  if (!clientId || !clientSecret || !serverBaseUrl) {
-    logError(new Error(`Jira provider ${auth.providerId} is missing OAuth2 credentials`), {
-      userId: auth.userId,
-      tags: {teamId: auth.teamId}
-    })
-    return null
-  }
-  const manager = new JiraOAuth2Manager(clientId, clientSecret, serverBaseUrl)
-  const oauthRes = await manager.refresh(auth.refreshToken)
-  if (oauthRes instanceof Error) {
-    if (oauthRes.message === 'refresh_token is invalid') {
-      await pg
-        .updateTable('TeamMemberIntegrationAuth')
-        .set({isActive: false})
-        .where('id', '=', auth.id)
-        .execute()
-      parent.get('teamMemberIntegrationAuthsByServiceTeamAndUserId').clearAll()
-    }
-    logError(oauthRes)
-    return null
-  }
-  const {accessToken, refreshToken, scopes, expiresIn} = oauthRes
-  const expiresAt = expiresIn ? new Date(Date.now() + (expiresIn - 30) * 1000) : null
-  const patch = {
-    accessToken,
-    refreshToken: refreshToken ?? auth.refreshToken,
-    scopes: scopes ?? auth.scope,
-    expiresAt
-  }
-  await syncJiraSiblingAuths(pg, {userId: auth.userId, providerUserId: auth.accountId, ...patch})
-  parent.get('teamMemberIntegrationAuthsByServiceTeamAndUserId').clearAll()
-  return {...auth, ...patch, scope: patch.scopes}
 }
 
 const isAccessTokenFresh = (accessToken: string, inAMinute: number) => {

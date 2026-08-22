@@ -1,6 +1,6 @@
 import DataLoader from 'dataloader'
 import GitLabOAuth2Manager from '../integrations/gitlab/GitLabOAuth2Manager'
-import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
+import syncTeamMemberIntegrationAuthTokens from '../postgres/queries/syncTeamMemberIntegrationAuthTokens'
 import type {TeamMemberIntegrationAuth} from '../postgres/types'
 import logError from '../utils/logError'
 import type RootDataLoader from './RootDataLoader'
@@ -34,14 +34,20 @@ export const freshGitlabAuth = (parent: RootDataLoader) => {
             const {accessToken, refreshToken: newRefreshToken, expiresIn} = oauthRes
             const expiresAtTimestamp = new Date().getTime() + (expiresIn - 30) * 1000
             const expiresAt = new Date(expiresAtTimestamp)
-            const newGitlabAuth = {
-              ...gitlabAuth,
+            const tokens = {
               accessToken,
               refreshToken: newRefreshToken,
+              scopes: gitlabAuth.scopes,
               expiresAt
             }
-            await upsertTeamMemberIntegrationAuth(newGitlabAuth)
-            return newGitlabAuth
+            await syncTeamMemberIntegrationAuthTokens({
+              userId,
+              teamId,
+              providerId,
+              providerUserId: gitlabAuth.providerUserId,
+              ...tokens
+            })
+            return {...gitlabAuth, ...tokens}
           }
           return gitlabAuth
         })

@@ -4,6 +4,7 @@ import {useFragment} from 'react-relay'
 import type {ScopePhaseAreaAddJira_meeting$key} from '../__generated__/ScopePhaseAreaAddJira_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
+import {getConnectProvider} from '../integrations/platform/findIntegrationService'
 import {ExternalLinks} from '../types/constEnums'
 import {Button} from '../ui/Button/Button'
 import AtlassianClientManager, {ERROR_POPUP_CLOSED} from '../utils/AtlassianClientManager'
@@ -26,6 +27,9 @@ const ScopePhaseAreaAddJira = (props: Props) => {
         teamId
         viewerMeetingMember {
           teamMember {
+            services {
+              ...findIntegrationService_cloudProvider @relay(mask: false)
+            }
             integrations {
               atlassian {
                 scope
@@ -39,7 +43,9 @@ const ScopePhaseAreaAddJira = (props: Props) => {
   )
   const {teamId, viewerMeetingMember} = meeting
   const heldScopes = viewerMeetingMember?.teamMember.integrations.atlassian?.scope
-
+  const provider = viewerMeetingMember
+    ? getConnectProvider(viewerMeetingMember.teamMember.services, 'jira')
+    : null
   const errorMessage = useMemo(() => {
     if (!error) return undefined
     const {message} = error
@@ -61,9 +67,11 @@ const ScopePhaseAreaAddJira = (props: Props) => {
   }, [error])
 
   const authJira = () => {
+    if (!provider) return
     AtlassianClientManager.openOAuth(
       atmosphere,
       teamId,
+      provider,
       mutationProps,
       AtlassianClientManager.JIRA_SCOPE,
       heldScopes

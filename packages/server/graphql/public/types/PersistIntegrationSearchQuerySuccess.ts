@@ -1,3 +1,4 @@
+import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import type {PersistIntegrationSearchQuerySuccessResolvers} from '../resolverTypes'
 
 export type PersistIntegrationSearchQuerySuccessSource = {
@@ -6,11 +7,8 @@ export type PersistIntegrationSearchQuerySuccessSource = {
 }
 
 const PersistIntegrationSearchQuerySuccess: PersistIntegrationSearchQuerySuccessResolvers = {
-  jiraServerIntegration: (source) => source,
-  atlassianIntegration: ({teamId, userId}, _args, {dataLoader}) =>
-    dataLoader.get('freshAtlassianAuth').load({teamId, userId}),
-  githubIntegration: async ({teamId, userId}, _args, {dataLoader}) =>
-    (await dataLoader.get('githubAuth').load({teamId, userId})) ?? null
+  teamMember: ({teamId, userId}, _args, {dataLoader}) =>
+    dataLoader.get('teamMembers').loadNonNull(toTeamMemberId(teamId, userId))
 }
 
 export default PersistIntegrationSearchQuerySuccess

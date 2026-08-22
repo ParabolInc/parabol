@@ -1,5 +1,6 @@
 import type Atmosphere from '../Atmosphere'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
+import type {ConnectProvider} from '../integrations/platform/ClientIntegrationDefinition'
 import AddTeamMemberIntegrationAuthMutation from '../mutations/AddTeamMemberIntegrationAuthMutation'
 import AtlassianManager, {
   type AtlassianPermissionScope,
@@ -16,6 +17,7 @@ class AtlassianClientManager extends AtlassianManager {
   static openOAuth(
     atmosphere: Atmosphere,
     teamId: string,
+    provider: Pick<ConnectProvider, 'id' | 'clientId'>,
     mutationProps: MenuMutationProps,
     requestedScopes: AtlassianPermissionScope[] = AtlassianManager.JIRA_SCOPE,
     heldScopes?: readonly string[] | null
@@ -32,7 +34,7 @@ class AtlassianClientManager extends AtlassianManager {
     )
     const redirect = window.__ACTION__.oauth2Redirect
     const uri = `https://auth.atlassian.com/authorize?audience=api.atlassian.com&client_id=${
-      window.__ACTION__.atlassian
+      provider.clientId
     }&scope=${encodeURI(
       scopes.join(' ')
     )}&redirect_uri=${redirect}&state=${providerState}&response_type=code&prompt=consent`
@@ -66,7 +68,7 @@ class AtlassianClientManager extends AtlassianManager {
       AddTeamMemberIntegrationAuthMutation(
         atmosphere,
         {
-          service: 'jira',
+          providerId: provider.id,
           oauthCodeOrPat: code,
           teamId,
           redirectUri: redirect,

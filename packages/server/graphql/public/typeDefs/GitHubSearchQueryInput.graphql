@@ -1,9 +1,0 @@
-"""
-Input for saving a GitHub search query
-"""
-input GitHubSearchQueryInput {
-  """
-  The query string in GitHub format, including repository filters. e.g. is:issue is:open
-  """
-  queryString: String!
-}

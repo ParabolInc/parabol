@@ -11,27 +11,33 @@ const mockedFetch = fetch as jest.MockedFunction<typeof fetch>
 describe('GitHubOAuth2Manager', () => {
   const manager = new GitHubOAuth2Manager('cid', 'secret', 'https://api.github.com')
 
-  it('authorize exchanges the code without a redirect_uri (GitHub uses the app callback)', async () => {
+  beforeEach(() => {
     mockedAuthorize.mockResolvedValue({
       accessToken: 'gho_x',
       refreshToken: undefined,
       scopes: 'repo'
     })
-    await manager.authorize('code', 'https://ignored')
+    mockedFetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({login: 'octocat'})
+    } as unknown as Response)
+  })
+
+  it('exchanges the code without a redirect_uri (GitHub uses the app callback)', async () => {
+    await manager.authorize('code', null)
     expect(mockedAuthorize).toHaveBeenCalledWith({
       authUrl: 'https://github.com/login/oauth/access_token',
       body: {client_id: 'cid', client_secret: 'secret', code: 'code'}
     })
   })
 
-  it('afterAuthorize returns the login as providerUserId', async () => {
-    mockedFetch.mockResolvedValue({
-      ok: true,
-      json: async () => ({login: 'octocat'})
-    } as unknown as Response)
-    await expect(
-      manager.afterAuthorize({accessToken: 'gho_x', refreshToken: undefined, scopes: 'repo'})
-    ).resolves.toEqual({providerUserId: 'octocat'})
+  it('returns the tokens with the login as providerUserId', async () => {
+    await expect(manager.authorize('code', null)).resolves.toEqual({
+      accessToken: 'gho_x',
+      refreshToken: undefined,
+      scopes: 'repo',
+      providerUserId: 'octocat'
+    })
     expect(mockedFetch).toHaveBeenCalledWith('https://api.github.com/user', {
       headers: {
         Authorization: 'Bearer gho_x',

@@ -1,6 +1,6 @@
 import DataLoader from 'dataloader'
 import GmeetOAuth2Manager from '../integrations/gmeet/GmeetOAuth2Manager'
-import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
+import syncTeamMemberIntegrationAuthTokens from '../postgres/queries/syncTeamMemberIntegrationAuthTokens'
 import type {TeamMemberIntegrationAuth} from '../postgres/types'
 import logError from '../utils/logError'
 import type RootDataLoader from './RootDataLoader'
@@ -37,14 +37,20 @@ export const freshGmeetAuth = (parent: RootDataLoader) => {
             const expiresAtTimestamp =
               new Date().getTime() + (expiresIn - bufferBeforeExpires) * millisecondsInSeconds
             const newExpiresAt = new Date(expiresAtTimestamp)
-            const newGmeetAuth = {
-              ...gmeetAuth,
+            const tokens = {
               accessToken,
               refreshToken,
+              scopes: gmeetAuth.scopes,
               expiresAt: newExpiresAt
             }
-            await upsertTeamMemberIntegrationAuth(newGmeetAuth)
-            return newGmeetAuth
+            await syncTeamMemberIntegrationAuthTokens({
+              userId,
+              teamId,
+              providerId,
+              providerUserId: gmeetAuth.providerUserId,
+              ...tokens
+            })
+            return {...gmeetAuth, ...tokens}
           }
           return gmeetAuth
         })

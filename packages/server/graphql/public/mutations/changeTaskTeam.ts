@@ -1,11 +1,22 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
-import upsertTeamMemberIntegrationAuth from '../../../postgres/queries/upsertTeamMemberIntegrationAuth'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import isValid from '../../isValid'
 import type {MutationResolvers} from '../resolverTypes'
+
+const AUTH_COPY_COLUMNS = [
+  'userId',
+  'providerId',
+  'service',
+  'accessToken',
+  'refreshToken',
+  'scopes',
+  'expiresAt',
+  'providerUserId',
+  'meta'
+] as const
 
 const changeTaskTeam: MutationResolvers['changeTaskTeam'] = async (
   _source,
@@ -60,18 +71,28 @@ const changeTaskTeam: MutationResolvers['changeTaskTeam'] = async (
     // Transfer integration to target team
     if (task.integration) {
       if (sourceTeamAuth && !targetTeamAuth) {
-        await upsertTeamMemberIntegrationAuth({
-          service: sourceTeamAuth.service,
-          providerId: sourceTeamAuth.providerId,
-          teamId,
-          userId: sourceTeamAuth.userId,
-          accessToken: sourceTeamAuth.accessToken,
-          refreshToken: sourceTeamAuth.refreshToken ?? undefined,
-          scopes: sourceTeamAuth.scopes ?? '',
-          expiresAt: sourceTeamAuth.expiresAt,
-          providerUserId: sourceTeamAuth.providerUserId,
-          meta: sourceTeamAuth.meta
-        })
+        await pg
+          .insertInto('TeamMemberIntegrationAuth')
+          .columns([...AUTH_COPY_COLUMNS, 'teamId'])
+          .expression((eb) =>
+            eb
+              .selectFrom('TeamMemberIntegrationAuth')
+              .select([...AUTH_COPY_COLUMNS, eb.val(teamId).as('teamId')])
+              .where('id', '=', sourceTeamAuth.id)
+          )
+          .onConflict((oc) =>
+            oc.columns(['userId', 'teamId', 'service']).doUpdateSet((eb) => ({
+              providerId: eb.ref('excluded.providerId'),
+              accessToken: eb.ref('excluded.accessToken'),
+              refreshToken: eb.ref('excluded.refreshToken'),
+              scopes: eb.ref('excluded.scopes'),
+              expiresAt: eb.ref('excluded.expiresAt'),
+              providerUserId: eb.ref('excluded.providerUserId'),
+              meta: eb.ref('excluded.meta'),
+              isActive: true
+            }))
+          )
+          .execute()
         if (task.integration.service === 'jira') {
           dataLoader.get('freshAtlassianAuth').clear(targetTeamAuthKey)
         } else {

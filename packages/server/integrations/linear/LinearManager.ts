@@ -17,7 +17,11 @@ export default class LinearManager extends OAuth2Manager {
     this.apiServerBaseUrl = `${url.protocol}//${apiHostname}`
   }
 
-  async authorize(code: string, redirectUri: string): Promise<Error | OAuth2AuthorizeResponse> {
+  async authorize(
+    code: string,
+    redirectUri: string | null
+  ): Promise<Error | OAuth2AuthorizeResponse> {
+    if (!redirectUri) return new Error('Missing redirect URI')
     return this.fetchToken<OAuth2AuthorizeResponse>({
       grant_type: 'authorization_code',
       code,

@@ -181,18 +181,18 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
   jiraSearchQueries: async ({teamId, userId, providerId}, _args, {dataLoader}) => {
     const queries = await dataLoader
       .get('recentIntegrationSearchQueries')
-      .load({teamId, userId, service: 'jira', providerId})
+      .load({teamId, userId, providerId})
     return queries.map(({id, query, lastUsedAt}) => {
       const {queryString, isJQL, projectKeyFilters} = query as {
-        queryString: string | null
-        isJQL: boolean
-        projectKeyFilters: string[] | null
+        queryString?: unknown
+        isJQL?: unknown
+        projectKeyFilters?: unknown
       }
       return {
         id: String(id),
-        queryString: queryString ?? '',
-        isJQL,
-        projectKeyFilters: projectKeyFilters ?? [],
+        queryString: typeof queryString === 'string' ? queryString : '',
+        isJQL: isJQL === true,
+        projectKeyFilters: Array.isArray(projectKeyFilters) ? projectKeyFilters.map(String) : [],
         lastUsedAt: lastUsedAt.toJSON()
       }
     })

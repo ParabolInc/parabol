@@ -1660,13 +1660,9 @@ type Mutation {
   """
   addTeamMemberIntegrationAuth(
     """
-    The provider to connect. May be omitted for services whose only provider is the global one (jira, github): the server resolves it from `service`.
+    The provider to connect. Services with a single global provider (jira, github) expose it as IntegrationService.cloudProvider
     """
-    providerId: ID
-    """
-    Required when providerId is omitted
-    """
-    service: IntegrationProviderServiceEnum
+    providerId: ID!
     teamId: ID!
 
     """
@@ -1680,7 +1676,7 @@ type Mutation {
     oauthVerifier: ID
 
     """
-    The URL the OAuth2 token will be sent to. Null for webhook auth
+    The URL the OAuth2 code was sent to. Null for webhook auth and for providers that use the callback registered with the app (github)
     """
     redirectUri: URL
   ): AddTeamMemberIntegrationAuthPayload! @scope(name: TEAMS_WRITE)
@@ -1835,15 +1831,22 @@ type Mutation {
     modifyType: ModifyType!
   ): ModifyCheckInQuestionPayload! @scope(name: MEETINGS_WRITE)
   """
-  Save a search query for a team's integration provider (e.g. Jira Server) for reuse in sprint poker
+  Save a search query for a team's integration provider for reuse in sprint poker
   """
   persistIntegrationSearchQuery(
     teamId: ID!
-    service: IntegrationProviderServiceEnum!
-    providerId: ID
-    jiraServerSearchQuery: JiraServerSearchQueryInput
-    jiraSearchQuery: JiraSearchQueryInput
-    githubSearchQuery: GitHubSearchQueryInput
+    """
+    The provider the query was run against
+    """
+    providerId: ID!
+    """
+    The search text in the service's own syntax, normalized by the client
+    """
+    queryString: String!
+    """
+    Service-specific search options as a JSON object, e.g. {"isJQL": true, "projectKeyFilters": []} for Jira. Stored alongside queryString
+    """
+    meta: String
   ): PersistIntegrationSearchQueryPayload! @scope(name: TEAMS_WRITE)
 
   """

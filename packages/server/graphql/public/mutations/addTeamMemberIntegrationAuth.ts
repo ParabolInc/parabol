@@ -1,19 +1,19 @@
 import {sql} from 'kysely'
+import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
 import GcalOAuth2Manager from '../../../integrations/gcal/GcalOAuth2Manager'
 import GitHubOAuth2Manager from '../../../integrations/github/GitHubOAuth2Manager'
 import GitLabOAuth2Manager from '../../../integrations/gitlab/GitLabOAuth2Manager'
 import GmeetOAuth2Manager from '../../../integrations/gmeet/GmeetOAuth2Manager'
 import JiraOAuth2Manager from '../../../integrations/jira/JiraOAuth2Manager'
-import syncJiraSiblingAuths from '../../../integrations/jira/syncJiraSiblingAuths'
 import JiraServerOAuth1Manager, {
   type OAuth1Auth
 } from '../../../integrations/jiraServer/JiraServerOAuth1Manager'
 import LinearManager from '../../../integrations/linear/LinearManager'
 import type OAuth2Manager from '../../../integrations/OAuth2Manager'
 import type {OAuth2AuthorizeResponse} from '../../../integrations/OAuth2Manager'
-import resolveIntegrationProviderForTeam from '../../../integrations/platform/resolveIntegrationProviderForTeam'
 import ZoomOAuth2Manager from '../../../integrations/zoom/ZoomOAuth2Manager'
 import getKysely from '../../../postgres/getKysely'
+import syncTeamMemberIntegrationAuthTokens from '../../../postgres/queries/syncTeamMemberIntegrationAuthTokens'
 import type {IntegrationProviderAzureDevOps} from '../../../postgres/types/IntegrationProvider'
 import type {JsonObject} from '../../../postgres/types/pg'
 import AzureDevOpsServerManager from '../../../utils/AzureDevOpsServerManager'
@@ -30,7 +30,9 @@ interface OAuth2Auth {
   expiresAt?: Date | null
 }
 
-const convertExpiresIn = (authResponse: OAuth2AuthorizeResponse | Error): OAuth2Auth | Error => {
+type OAuth2Tokens = Omit<OAuth2AuthorizeResponse, 'providerUserId' | 'meta'>
+
+const convertExpiresIn = (authResponse: OAuth2Tokens | Error): OAuth2Auth | Error => {
   if ('expiresIn' in authResponse && authResponse.expiresIn) {
     const {expiresIn, ...metadata} = authResponse
     const buffer = 30
@@ -46,27 +48,24 @@ const convertExpiresIn = (authResponse: OAuth2AuthorizeResponse | Error): OAuth2
 
 const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationAuth'] = async (
   _source,
-  {providerId, service, oauthCodeOrPat, oauthVerifier, teamId, redirectUri},
+  {providerId, oauthCodeOrPat, oauthVerifier, teamId, redirectUri},
   context
 ) => {
   const {authToken, dataLoader} = context
   const viewerId = getUserId(authToken)
   const pg = getKysely()
 
-  if (!providerId && !service) {
-    return {error: {message: 'Provide either providerId or service'}}
-  }
+  const providerDbId = IntegrationProviderId.split(providerId)
   const [integrationProvider, viewer] = await Promise.all([
-    resolveIntegrationProviderForTeam(dataLoader, {providerId, service, teamId}),
+    dataLoader.get('integrationProviders').load(providerDbId),
     dataLoader.get('users').loadNonNull(viewerId)
   ])
   if (!integrationProvider) {
     return standardError(
-      new Error(`Unable to find appropriate integration provider for ${providerId ?? service}`),
+      new Error(`Unable to find appropriate integration provider for ${providerId}`),
       {userId: viewerId}
     )
   }
-  const providerDbId = integrationProvider.id
 
   // VALIDATION
   const {authStrategy, service: providerService, scope} = integrationProvider
@@ -85,8 +84,7 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
   let providerUserId: string | null = null
   let meta: JsonObject | null = null
   if (authStrategy === 'oauth2') {
-    if (!oauthCodeOrPat || !redirectUri)
-      return {error: {message: 'Missing OAuth2 code or redirect URI'}}
+    if (!oauthCodeOrPat) return {error: {message: 'Missing OAuth2 code'}}
     if (providerService === 'azureDevOps') {
       if (!oauthVerifier) {
         return {
@@ -130,13 +128,12 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
     }
 
     if (manager) {
-      const authRes = await manager.authorize(oauthCodeOrPat, redirectUri)
+      const authRes = await manager.authorize(oauthCodeOrPat, redirectUri ?? null)
       if (authRes instanceof Error) return standardError(authRes, {userId: viewerId})
-      const patch = await manager.afterAuthorize(authRes)
-      if (patch instanceof Error) return standardError(patch, {userId: viewerId})
-      tokenMetadata = convertExpiresIn({...authRes, scopes: patch.scopes ?? authRes.scopes})
-      providerUserId = patch.providerUserId ?? null
-      meta = patch.meta ?? null
+      const {providerUserId: authProviderUserId, meta: authMeta, ...tokens} = authRes
+      tokenMetadata = convertExpiresIn(tokens)
+      providerUserId = authProviderUserId ?? null
+      meta = authMeta ?? null
     }
   }
   if (authStrategy === 'oauth1') {
@@ -185,21 +182,17 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
     })
   }
 
-  if (
-    providerService === 'jira' &&
-    providerUserId &&
-    tokenMetadata &&
-    'refreshToken' in tokenMetadata
-  ) {
+  if (tokenMetadata && 'refreshToken' in tokenMetadata) {
     const {accessToken, refreshToken, scopes, expiresAt} = tokenMetadata
-    await syncJiraSiblingAuths(pg, {
+    await syncTeamMemberIntegrationAuthTokens({
       userId: viewerId,
+      teamId,
+      providerId: providerDbId,
       providerUserId,
       accessToken,
       refreshToken: refreshToken ?? null,
       scopes,
-      expiresAt: expiresAt ?? null,
-      excludeTeamId: teamId
+      expiresAt: expiresAt ?? null
     })
   }
 

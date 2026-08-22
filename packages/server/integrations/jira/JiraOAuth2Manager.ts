@@ -3,7 +3,6 @@ import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {hasJiraScopes} from '../../utils/hasJiraScopes'
 import {authorizeOAuth2} from '../helpers/authorizeOAuth2'
 import OAuth2Manager, {
-  type OAuth2AfterAuthorizePatch,
   type OAuth2AuthorizationParams,
   type OAuth2AuthorizeResponse,
   type OAuth2RefreshAuthorizationParams
@@ -22,25 +21,14 @@ const accountIdFromJwt = (accessToken: string): string | Error => {
 }
 
 export default class JiraOAuth2Manager extends OAuth2Manager {
-  async authorize(code: string, redirectUri: string) {
-    return this.fetchToken({grant_type: 'authorization_code', code, redirect_uri: redirectUri})
-  }
-
-  async refresh(refreshToken: string) {
-    return this.fetchToken({grant_type: 'refresh_token', refresh_token: refreshToken})
-  }
-
-  protected async fetchToken(
-    partialAuthParams: OAuth2AuthorizationParams | OAuth2RefreshAuthorizationParams
-  ) {
-    const body = {...partialAuthParams, client_id: this.clientId, client_secret: this.clientSecret}
-    return authorizeOAuth2<OAuth2AuthorizeResponse>({
-      authUrl: 'https://auth.atlassian.com/oauth/token',
-      body
+  async authorize(code: string, redirectUri: string | null) {
+    if (!redirectUri) return new Error('Missing redirect URI')
+    const auth = await this.fetchToken({
+      grant_type: 'authorization_code',
+      code,
+      redirect_uri: redirectUri
     })
-  }
-
-  async afterAuthorize(auth: OAuth2AuthorizeResponse): Promise<OAuth2AfterAuthorizePatch | Error> {
+    if (auth instanceof Error) return auth
     const {accessToken, refreshToken, scopes} = auth
     // Atlassian only returns a refresh token when offline_access is granted; without one the
     // access token dies in an hour and the row would read as Connected while every call fails
@@ -66,6 +54,20 @@ export default class JiraOAuth2Manager extends OAuth2Manager {
       : accountIdFromJwt(accessToken)
     if (accountId instanceof Error) return accountId
     const meta: JiraAuthMeta = {cloudIds}
-    return {providerUserId: accountId, meta, scopes: scopesToStore}
+    return {...auth, scopes: scopesToStore, providerUserId: accountId, meta}
+  }
+
+  async refresh(refreshToken: string) {
+    return this.fetchToken({grant_type: 'refresh_token', refresh_token: refreshToken})
+  }
+
+  protected async fetchToken(
+    partialAuthParams: OAuth2AuthorizationParams | OAuth2RefreshAuthorizationParams
+  ) {
+    const body = {...partialAuthParams, client_id: this.clientId, client_secret: this.clientSecret}
+    return authorizeOAuth2<OAuth2AuthorizeResponse>({
+      authUrl: 'https://auth.atlassian.com/oauth/token',
+      body
+    })
   }
 }
