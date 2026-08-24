@@ -9,7 +9,7 @@ export const scheduleMeetTranscriptJob = async (meetingId: string, teamId: strin
   const isConnected = await pg
     .selectFrom('TeamMemberIntegrationAuth')
     .select('userId')
-    .where('service', '=', 'gdrive')
+    .where('service', '=', 'gmeet')
     .where('teamId', '=', teamId)
     .where('isActive', '=', true)
     .limit(1)

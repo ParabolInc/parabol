@@ -13,7 +13,7 @@ const getConnectedUserIds = async (teamId: string, facilitatorUserId: string | n
   const auths = await getKysely()
     .selectFrom('TeamMemberIntegrationAuth')
     .select('userId')
-    .where('service', '=', 'gdrive')
+    .where('service', '=', 'gmeet')
     .where('teamId', '=', teamId)
     .where('isActive', '=', true)
     .execute()
@@ -37,17 +37,21 @@ export const processMeetTranscriptJob = async (meetingId: string, dataLoader: Da
   let shouldRetry = false
 
   for (const userId of userIds) {
-    const gdriveAuth = await dataLoader.get('freshGdriveAuth').load({teamId, userId})
-    if (!gdriveAuth) continue
-    const result = await fetchMeetTranscript(gdriveAuth, createdAt, endedAt).catch((e) => {
+    const gmeetAuth = await dataLoader.get('freshGmeetAuth').load({teamId, userId})
+    if (!gmeetAuth) continue
+    const result = await fetchMeetTranscript(gmeetAuth, createdAt, endedAt, title).catch((e) => {
       Logger.log(`meet transcript fetch failed for ${meetingId} as ${userId}: ${e}`)
       return null
     })
-    if (!result) continue
-    if (result.status === 'not-visible') {
+    // Google failed to respond, try again soon
+    if (!result) {
       shouldRetry = true
       continue
     }
+    // the conference record exists from the moment the call starts, so a member who was on the
+    // call can already see it. Not seeing one is a "never", not a "not yet"
+    if (result.status === 'not-visible') continue
+    // the Google Meet conference is still in progress
     if (result.status === 'pending') {
       // this member can see the conference, so no other member has a better view of it
       shouldRetry = true
@@ -55,7 +59,7 @@ export const processMeetTranscriptJob = async (meetingId: string, dataLoader: Da
     }
     if (result.status === 'unavailable') continue
 
-    const externalId = `google:${result.transcriptName}`
+    const externalId = `google:${result.conferenceName}`
     // another team member's pass may have already attached this same transcript
     const insertResult = await pg
       .insertInto('ExternalMeetingFile')

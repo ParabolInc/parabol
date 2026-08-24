@@ -1,7 +1,7 @@
 import type {GraphQLResolveInfo} from 'graphql'
 import {getNewDataLoader} from '../../../../dataloader/getNewDataLoader'
 import {redisHocusPocus} from '../../../../hocusPocus'
-import {scheduleMeetTranscriptJob} from '../../../../integrations/gdrive/scheduleMeetTranscriptJob'
+import {scheduleMeetTranscriptJob} from '../../../../integrations/gmeet/scheduleMeetTranscriptJob'
 import getKysely from '../../../../postgres/getKysely'
 import {getUserId} from '../../../../utils/authorization'
 import {CipherId} from '../../../../utils/CipherId'

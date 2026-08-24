@@ -59,14 +59,15 @@ const entriesToHtml = (
 export const processMeetTranscript = (
   entries: meet_v2.Schema$TranscriptEntry[],
   speakerByParticipant: Map<string, string>,
-  transcriptStart: string | null | undefined
+  transcriptStart: string | null | undefined,
+  title: string
 ) => {
   const base = transcriptStart ?? entries.find(({startTime}) => startTime)?.startTime
   const baseMs = base ? new Date(base).getTime() : Number.NaN
   const html = entriesToHtml(entries, speakerByParticipant, baseMs)
   if (!html) return null
   return generateJSON(
-    `<h1>Google Meet Transcript</h1>${html}`,
+    `<h1>${escapeHtml(title)}</h1>${html}`,
     serverTipTapExtensions
   ) as TipTapSerializedPageContent
 }

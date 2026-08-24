@@ -4,7 +4,7 @@ import processTeamsLimitsJob from '../../../database/types/processTeamsLimitsJob
 import type ScheduledJobMeetingStageTimeLimit from '../../../database/types/ScheduledJobMetingStageTimeLimit'
 import type ScheduledTeamLimitsJob from '../../../database/types/ScheduledTeamLimitsJob'
 import generateUID from '../../../generateUID'
-import {processMeetTranscriptJob} from '../../../integrations/gdrive/processMeetTranscriptJob'
+import {processMeetTranscriptJob} from '../../../integrations/gmeet/processMeetTranscriptJob'
 import getKysely from '../../../postgres/getKysely'
 import type {DB} from '../../../postgres/types/pg'
 import {Logger} from '../../../utils/Logger'

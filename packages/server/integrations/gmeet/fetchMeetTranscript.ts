@@ -19,7 +19,7 @@ const FILE_GENERATION_WAIT = ms('30m')
 const ENTRIES_PAGE_SIZE = 100
 
 export type MeetTranscriptResult =
-  | {status: 'ready'; transcriptName: string; content: TipTapSerializedPageContent}
+  | {status: 'ready'; conferenceName: string; content: TipTapSerializedPageContent}
   // conferenceRecords.list only returns conferences this user attended, so a member who skipped
   // the call sees nothing. Says nothing about the conference — ask the next member
   | {status: 'not-visible'}
@@ -46,6 +46,29 @@ const findOverlappingConference = (
     if (!best || overlap > best.overlap) best = {record, overlap}
   }
   return best?.record ?? null
+}
+
+// Transcription can be stopped and restarted within a call, leaving several sessions to stitch
+const listAllTranscripts = async (meet: meet_v2.Meet, conferenceName: string) => {
+  const transcripts: meet_v2.Schema$Transcript[] = []
+  let pageToken: string | undefined
+  do {
+    const res = await meet.conferenceRecords.transcripts.list({
+      parent: conferenceName,
+      pageToken
+    })
+    transcripts.push(...(res.data.transcripts ?? []))
+    pageToken = res.data.nextPageToken ?? undefined
+  } while (pageToken)
+  return transcripts
+}
+
+// A session is done producing entries once its file generates, or once we give up waiting for it
+const isTranscriptSettled = (transcript: meet_v2.Schema$Transcript) => {
+  if (transcript.state === 'FILE_GENERATED') return true
+  if (transcript.state !== 'ENDED') return false
+  if (!transcript.endTime) return true
+  return Date.now() - new Date(transcript.endTime).getTime() >= FILE_GENERATION_WAIT
 }
 
 const listAllEntries = async (meet: meet_v2.Meet, transcriptName: string) => {
@@ -77,11 +100,12 @@ const getSpeakerNames = async (meet: meet_v2.Meet, conferenceName: string) => {
 }
 
 export const fetchMeetTranscript = async (
-  gdriveAuth: TeamMemberIntegrationAuth,
+  gmeetAuth: TeamMemberIntegrationAuth,
   startedAt: Date,
-  endedAt: Date
+  endedAt: Date,
+  title: string
 ): Promise<MeetTranscriptResult> => {
-  const meet = getMeetClient(gdriveAuth)
+  const meet = getMeetClient(gmeetAuth)
 
   const windowStart = new Date(startedAt.getTime() - CONFERENCE_LOOKBACK).toISOString()
   const windowEnd = endedAt.toISOString()
@@ -100,25 +124,31 @@ export const fetchMeetTranscript = async (
   // the call is still going. Nothing is final until it ends
   if (!conference.endTime) return {status: 'pending'}
 
-  const transcriptsRes = await meet.conferenceRecords.transcripts.list({parent: conference.name})
-  const transcript = transcriptsRes.data.transcripts?.[0]
-  if (!transcript?.name) {
+  const transcripts = await listAllTranscripts(meet, conference.name)
+  const sessions = transcripts
+    .filter((transcript): transcript is meet_v2.Schema$Transcript & {name: string} =>
+      Boolean(transcript.name)
+    )
+    .sort((a, b) => (a.startTime ?? '').localeCompare(b.startTime ?? ''))
+  if (sessions.length === 0) {
     const endedMsAgo = Date.now() - new Date(conference.endTime).getTime()
     return endedMsAgo > NO_TRANSCRIPT_GRACE ? {status: 'unavailable'} : {status: 'pending'}
   }
-  if (transcript.state !== 'ENDED' && transcript.state !== 'FILE_GENERATED') {
-    return {status: 'pending'}
-  }
-  if (transcript.state === 'ENDED' && transcript.endTime) {
-    const endedMsAgo = Date.now() - new Date(transcript.endTime).getTime()
-    if (endedMsAgo < FILE_GENERATION_WAIT) return {status: 'pending'}
-  }
+  // the page is written once, so every session has to be final before any of them is worth reading
+  if (!sessions.every(isTranscriptSettled)) return {status: 'pending'}
 
-  const [entries, speakerByParticipant] = await Promise.all([
-    listAllEntries(meet, transcript.name),
+  const [entriesBySession, speakerByParticipant] = await Promise.all([
+    Promise.all(sessions.map(({name}) => listAllEntries(meet, name))),
     getSpeakerNames(meet, conference.name)
   ])
-  const content = processMeetTranscript(entries, speakerByParticipant, transcript.startTime)
+  // offsets stay relative to the first session so a later one keeps counting up instead of
+  // restarting the clock at 0:00
+  const content = processMeetTranscript(
+    entriesBySession.flat(),
+    speakerByParticipant,
+    sessions[0]?.startTime,
+    title
+  )
   if (!content) return {status: 'unavailable'}
-  return {status: 'ready', transcriptName: transcript.name, content}
+  return {status: 'ready', conferenceName: conference.name, content}
 }
