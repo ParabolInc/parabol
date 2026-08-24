@@ -1,4 +1,5 @@
 import getKysely from '../../packages/server/postgres/getKysely'
+import deactivateGlobalIntegrationProvider from '../../packages/server/postgres/queries/deactivateGlobalIntegrationProvider'
 import upsertIntegrationProvider from '../../packages/server/postgres/queries/upsertIntegrationProvider'
 import {Logger} from '../../packages/server/utils/Logger'
 
@@ -96,11 +97,14 @@ const upsertGlobalIntegrationProvidersFromEnv = async () => {
       .execute()
   }
 
-  await Promise.all(
-    validProviders.map((provider) => {
-      return upsertIntegrationProvider(provider)
-    })
-  )
+  const missingProviders = providers.filter((provider) => !validProviders.includes(provider))
+
+  await Promise.all([
+    ...validProviders.map((provider) => upsertIntegrationProvider(provider)),
+    ...missingProviders.map(({service, authStrategy}) =>
+      deactivateGlobalIntegrationProvider({service, authStrategy})
+    )
+  ])
 }
 
 const primeIntegrations = async () => {

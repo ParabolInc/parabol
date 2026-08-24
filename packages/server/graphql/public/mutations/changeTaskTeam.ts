@@ -1,5 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
+import deleteConflictingIntegratedTask from '../../../postgres/queries/deleteConflictingIntegratedTask'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -45,6 +46,7 @@ const changeTaskTeam: MutationResolvers['changeTaskTeam'] = async (
   // RESOLUTION
 
   const {integration} = task
+  let sourceAuthIdToCopy: number | null = null
   if (integration) {
     // The task might have been pushed by someone else for viewer (`userId !== accessUserId`).
     // In that case we still try to use the viewer's target team authentication, but fall back to the
@@ -71,37 +73,7 @@ const changeTaskTeam: MutationResolvers['changeTaskTeam'] = async (
     // Transfer integration to target team
     if (task.integration) {
       if (sourceTeamAuth && !targetTeamAuth) {
-        await pg
-          .insertInto('TeamMemberIntegrationAuth')
-          .columns([...AUTH_COPY_COLUMNS, 'teamId'])
-          .expression((eb) =>
-            eb
-              .selectFrom('TeamMemberIntegrationAuth')
-              .select([...AUTH_COPY_COLUMNS, eb.val(teamId).as('teamId')])
-              .where('id', '=', sourceTeamAuth.id)
-          )
-          .onConflict((oc) =>
-            oc.columns(['userId', 'teamId', 'service']).doUpdateSet((eb) => ({
-              providerId: eb.ref('excluded.providerId'),
-              accessToken: eb.ref('excluded.accessToken'),
-              refreshToken: eb.ref('excluded.refreshToken'),
-              scopes: eb.ref('excluded.scopes'),
-              expiresAt: eb.ref('excluded.expiresAt'),
-              providerUserId: eb.ref('excluded.providerUserId'),
-              meta: eb.ref('excluded.meta'),
-              isActive: true
-            }))
-          )
-          .execute()
-        if (task.integration.service === 'jira') {
-          dataLoader.get('freshAtlassianAuth').clear(targetTeamAuthKey)
-        } else {
-          dataLoader.get('githubAuth').clear(targetTeamAuthKey)
-        }
-        dataLoader.get('teamMemberIntegrationAuthsByServiceTeamAndUserId').clear({
-          service: task.integration.service,
-          ...targetTeamAuthKey
-        })
+        sourceAuthIdToCopy = sourceTeamAuth.id
         integration.accessUserId = viewerId
       } else if (targetTeamAuth) {
         // in case the task was pushed by someone else before
@@ -120,32 +92,66 @@ const changeTaskTeam: MutationResolvers['changeTaskTeam'] = async (
   // If there is a task with the same integration hash in the new team, then delete it first.
   // This is done so there are no duplicates and also solves the issue of the conflicting task being
   // private or archived.
-  if (task.integrationHash) {
-    const deletedTask = await pg
-      .deleteFrom('Task')
-      .where('integrationHash', '=', task.integrationHash)
-      .where('teamId', '=', teamId)
-      .limit(1)
-      .returning('id')
-      .executeTakeFirst()
-    if (deletedTask) {
-      const isPrivate = task.tags.includes('private')
-      const data = {task}
-      newTeamMembers.forEach(({userId}) => {
-        if (!isPrivate || userId === task.userId) {
-          publish(SubscriptionChannel.TASK, userId, 'DeleteTaskPayload', data, subOptions)
-        }
-      })
+  const deletedTask = await pg.transaction().execute(async (trx) => {
+    if (sourceAuthIdToCopy !== null) {
+      await trx
+        .insertInto('TeamMemberIntegrationAuth')
+        .columns([...AUTH_COPY_COLUMNS, 'teamId'])
+        .expression((eb) =>
+          eb
+            .selectFrom('TeamMemberIntegrationAuth')
+            .select([...AUTH_COPY_COLUMNS, eb.val(teamId).as('teamId')])
+            .where('id', '=', sourceAuthIdToCopy)
+        )
+        .onConflict((oc) =>
+          oc.columns(['userId', 'teamId', 'service']).doUpdateSet((eb) => ({
+            providerId: eb.ref('excluded.providerId'),
+            accessToken: eb.ref('excluded.accessToken'),
+            refreshToken: eb.ref('excluded.refreshToken'),
+            scopes: eb.ref('excluded.scopes'),
+            expiresAt: eb.ref('excluded.expiresAt'),
+            providerUserId: eb.ref('excluded.providerUserId'),
+            meta: eb.ref('excluded.meta'),
+            isActive: true
+          }))
+        )
+        .execute()
     }
-  }
-  await pg
-    .updateTable('Task')
-    .set({
-      teamId,
-      integration: JSON.stringify(integration)
+    const deleted = task.integrationHash
+      ? await deleteConflictingIntegratedTask({teamId, integrationHash: task.integrationHash}, trx)
+      : undefined
+    await trx
+      .updateTable('Task')
+      .set({
+        teamId,
+        integration: JSON.stringify(integration)
+      })
+      .where('id', '=', taskId)
+      .executeTakeFirst()
+    return deleted
+  })
+
+  if (sourceAuthIdToCopy !== null && integration) {
+    const targetTeamAuthKey = {teamId, userId: viewerId}
+    if (integration.service === 'jira') {
+      dataLoader.get('freshAtlassianAuth').clear(targetTeamAuthKey)
+    } else {
+      dataLoader.get('githubAuth').clear(targetTeamAuthKey)
+    }
+    dataLoader.get('teamMemberIntegrationAuthsByServiceTeamAndUserId').clear({
+      service: integration.service,
+      ...targetTeamAuthKey
     })
-    .where('id', '=', taskId)
-    .executeTakeFirst()
+  }
+  if (deletedTask) {
+    const isPrivate = task.tags.includes('private')
+    const data = {task}
+    newTeamMembers.forEach(({userId}) => {
+      if (!isPrivate || userId === task.userId) {
+        publish(SubscriptionChannel.TASK, userId, 'DeleteTaskPayload', data, subOptions)
+      }
+    })
+  }
   dataLoader.clearAll('tasks')
   const isPrivate = tags.includes('private')
   const data = {taskId}
