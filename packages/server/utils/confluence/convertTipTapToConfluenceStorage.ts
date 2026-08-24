@@ -1,5 +1,6 @@
 import type {JSONContent} from '@tiptap/core'
-import {escapeCdata, escapeXml} from './escapeXhtml'
+import {escapeHtml} from '../escapeHtml'
+import {escapeCdata} from './escapeXhtml'
 import type {ExportAsset, StorageConversionCtx, StorageConversionResult} from './types'
 
 type Census = Map<string, {count: number; treatment: string}>
@@ -44,7 +45,7 @@ const getNodeText = (node: JSONContent): string => {
 }
 
 export const statusMacro = (colour: string, title: string) =>
-  `<ac:structured-macro ac:name="status"><ac:parameter ac:name="colour">${escapeXml(colour)}</ac:parameter><ac:parameter ac:name="title">${escapeXml(title)}</ac:parameter></ac:structured-macro>`
+  `<ac:structured-macro ac:name="status"><ac:parameter ac:name="colour">${escapeHtml(colour)}</ac:parameter><ac:parameter ac:name="title">${escapeHtml(title)}</ac:parameter></ac:structured-macro>`
 
 const lastPathSegment = (url: string) => {
   const withoutQuery = url.split(/[?#]/)[0]!
@@ -75,13 +76,13 @@ const MARK_TAGS: Record<string, [string, string]> = {
 }
 
 const emitText = (node: JSONContent, state: EmitState): string => {
-  let out = escapeXml(node.text ?? '')
+  let out = escapeHtml(node.text ?? '')
   const marks = node.marks ?? []
   for (let i = marks.length - 1; i >= 0; i--) {
     const mark = marks[i]!
     const {type, attrs} = mark
     if (type === 'link') {
-      const href = escapeXml(String(attrs?.href ?? ''))
+      const href = escapeHtml(String(attrs?.href ?? ''))
       out = `<a href="${href}">${out}</a>`
     } else if (MARK_TAGS[type]) {
       const [open, close] = MARK_TAGS[type]!
@@ -106,12 +107,12 @@ const emitInline = (node: JSONContent, state: EmitState): string => {
     case 'mention':
     case 'pageUserMention':
       addCensus(state, 'mention', TREATMENTS.mention)
-      return escapeXml(`@${attrs?.label ?? attrs?.id ?? ''}`)
+      return escapeHtml(`@${attrs?.label ?? attrs?.id ?? ''}`)
     case 'taskTag':
-      return escapeXml(`#${attrs?.id ?? ''}`)
+      return escapeHtml(`#${attrs?.id ?? ''}`)
     case 'popoverMention':
       addCensus(state, 'popoverMention', TREATMENTS.popoverMention)
-      return escapeXml(String(attrs?.label ?? ''))
+      return escapeHtml(String(attrs?.label ?? ''))
     default: {
       if (node.text) return emitText(node, state)
       if (node.content) return emitInlineContent(node.content, state)
@@ -148,7 +149,7 @@ const emitTaskItem = (node: JSONContent, state: EmitState): string => {
     } else if (child.type === 'taskList') {
       nestedLists.push(emitBlock(child, state))
     } else {
-      inlineParts.push(escapeXml(getNodeText(child)))
+      inlineParts.push(escapeHtml(getNodeText(child)))
     }
   })
   return `<ac:task><ac:task-status>${status}</ac:task-status><ac:task-body>${inlineParts.join(' ')}${nestedLists.join('')}</ac:task-body></ac:task>`
@@ -166,14 +167,14 @@ const emitImage = (node: JSONContent, state: EmitState): string => {
   const {attrs} = node
   const src = String(attrs?.src ?? '')
   if (!src) return ''
-  const align = attrs?.align ? ` ac:align="${escapeXml(String(attrs.align))}"` : ''
-  const width = attrs?.width ? ` ac:width="${escapeXml(String(attrs.width))}"` : ''
-  const alt = attrs?.alt ? ` ac:alt="${escapeXml(String(attrs.alt))}"` : ''
+  const align = attrs?.align ? ` ac:align="${escapeHtml(String(attrs.align))}"` : ''
+  const width = attrs?.width ? ` ac:width="${escapeHtml(String(attrs.width))}"` : ''
+  const alt = attrs?.alt ? ` ac:alt="${escapeHtml(String(attrs.alt))}"` : ''
   if (isAppAsset(state, src)) {
     const filename = claimAssetFilename(state, src)
-    return `<ac:image${align}${width}${alt}><ri:attachment ri:filename="${escapeXml(filename)}" /></ac:image>`
+    return `<ac:image${align}${width}${alt}><ri:attachment ri:filename="${escapeHtml(filename)}" /></ac:image>`
   }
-  return `<ac:image${align}${width}${alt}><ri:url ri:value="${escapeXml(src)}" /></ac:image>`
+  return `<ac:image${align}${width}${alt}><ri:url ri:value="${escapeHtml(src)}" /></ac:image>`
 }
 
 const emitFile = (node: JSONContent, state: EmitState): string => {
@@ -182,10 +183,10 @@ const emitFile = (node: JSONContent, state: EmitState): string => {
   if (!src) return ''
   if (isAppAsset(state, src)) {
     const filename = claimAssetFilename(state, src, attrs?.name ? String(attrs.name) : null)
-    return `<ac:structured-macro ac:name="view-file"><ac:parameter ac:name="name"><ri:attachment ri:filename="${escapeXml(filename)}" /></ac:parameter></ac:structured-macro>`
+    return `<ac:structured-macro ac:name="view-file"><ac:parameter ac:name="name"><ri:attachment ri:filename="${escapeHtml(filename)}" /></ac:parameter></ac:structured-macro>`
   }
-  const name = escapeXml(String(attrs?.name ?? src))
-  return `<p><a href="${escapeXml(src)}">${name}</a></p>`
+  const name = escapeHtml(String(attrs?.name ?? src))
+  return `<p><a href="${escapeHtml(src)}">${name}</a></p>`
 }
 
 const emitPageLink = (node: JSONContent, state: EmitState): string => {
@@ -194,12 +195,12 @@ const emitPageLink = (node: JSONContent, state: EmitState): string => {
   const title = String(attrs?.title ?? 'Untitled page')
   const resolved = Number.isFinite(pageCode) ? state.ctx.resolvePageLink?.(pageCode) : null
   if (resolved?.confluenceTitle) {
-    return `<p><ac:link><ri:page ri:content-title="${escapeXml(resolved.confluenceTitle)}" /><ac:plain-text-link-body><![CDATA[${escapeCdata(title)}]]></ac:plain-text-link-body></ac:link></p>`
+    return `<p><ac:link><ri:page ri:content-title="${escapeHtml(resolved.confluenceTitle)}" /><ac:plain-text-link-body><![CDATA[${escapeCdata(title)}]]></ac:plain-text-link-body></ac:link></p>`
   }
   addCensus(state, 'pageLinkBlock', TREATMENTS.pageLinkBlock)
   const href =
     resolved?.href ?? `${state.ctx.appOrigin}/pages/${Number.isFinite(pageCode) ? pageCode : ''}`
-  return `<p><a href="${escapeXml(href)}">${escapeXml(title)}</a></p>`
+  return `<p><a href="${escapeHtml(href)}">${escapeHtml(title)}</a></p>`
 }
 
 const emitTaskBlock = (node: JSONContent, state: EmitState): string => {
@@ -208,7 +209,7 @@ const emitTaskBlock = (node: JSONContent, state: EmitState): string => {
   const status = String(attrs?.status ?? '')
   const lozenge = TASK_STATUS_LOZENGE[status] ?? {colour: 'Grey', title: status || 'Task'}
   const owner = attrs?.preferredName
-    ? ` <strong>${escapeXml(String(attrs.preferredName))}</strong>`
+    ? ` <strong>${escapeHtml(String(attrs.preferredName))}</strong>`
     : ''
   const nested = parseNestedDoc(attrs?.content)
   const body = nested ? emitBlocks(nested.content, state) : ''
@@ -238,7 +239,7 @@ const emitBlock = (node: JSONContent, state: EmitState): string => {
       return `<blockquote>${emitBlocks(node.content, state)}</blockquote>`
     case 'codeBlock': {
       const language = attrs?.language
-        ? `<ac:parameter ac:name="language">${escapeXml(String(attrs.language))}</ac:parameter>`
+        ? `<ac:parameter ac:name="language">${escapeHtml(String(attrs.language))}</ac:parameter>`
         : ''
       return `<ac:structured-macro ac:name="code">${language}<ac:plain-text-body><![CDATA[${escapeCdata(getNodeText(node))}]]></ac:plain-text-body></ac:structured-macro>`
     }
@@ -252,7 +253,7 @@ const emitBlock = (node: JSONContent, state: EmitState): string => {
       const summary = node.content?.find((child) => child.type === 'detailsSummary')
       const body = node.content?.find((child) => child.type === 'detailsContent')
       const title = summary
-        ? `<ac:parameter ac:name="title">${escapeXml(getNodeText(summary))}</ac:parameter>`
+        ? `<ac:parameter ac:name="title">${escapeHtml(getNodeText(summary))}</ac:parameter>`
         : ''
       return `<ac:structured-macro ac:name="expand">${title}<ac:rich-text-body>${emitBlocks(body?.content, state)}</ac:rich-text-body></ac:structured-macro>`
     }
@@ -261,14 +262,14 @@ const emitBlock = (node: JSONContent, state: EmitState): string => {
     case 'fileBlock':
       return emitFile(node, state)
     case 'loom': {
-      const src = escapeXml(String(attrs?.src ?? ''))
+      const src = escapeHtml(String(attrs?.src ?? ''))
       return src ? `<p><a href="${src}" data-card-appearance="embed">${src}</a></p>` : ''
     }
     case 'pageLinkBlock':
       return emitPageLink(node, state)
     case 'insightsBlock': {
       const title = attrs?.title
-        ? `<ac:parameter ac:name="title">${escapeXml(String(attrs.title))}</ac:parameter>`
+        ? `<ac:parameter ac:name="title">${escapeHtml(String(attrs.title))}</ac:parameter>`
         : ''
       return `<ac:structured-macro ac:name="info">${title}<ac:rich-text-body>${emitBlocks(node.content, state)}</ac:rich-text-body></ac:structured-macro>`
     }
@@ -276,7 +277,7 @@ const emitBlock = (node: JSONContent, state: EmitState): string => {
       return emitTaskBlock(node, state)
     case 'responseBlock': {
       const author = attrs?.preferredName
-        ? `<h3>${escapeXml(String(attrs.preferredName))}</h3>`
+        ? `<h3>${escapeHtml(String(attrs.preferredName))}</h3>`
         : ''
       const nested = parseNestedDoc(attrs?.content)
       return `${author}${nested ? emitBlocks(nested.content, state) : ''}`
@@ -293,7 +294,7 @@ const emitBlock = (node: JSONContent, state: EmitState): string => {
       }
       const text = getNodeText(node)
       addCensus(state, `unknown:${type}`, TREATMENTS.unknown)
-      return text ? `<p>${escapeXml(text)}</p>` : ''
+      return text ? `<p>${escapeHtml(text)}</p>` : ''
     }
   }
 }
@@ -310,7 +311,7 @@ export const convertTipTapToConfluenceStorage = (
     .slice(1)
     .map((node) => emitBlock(node, state))
     .join('')
-  const footer = `<p><em>Exported from Parabol · <a href="${escapeXml(ctx.parabolPageUrl)}">Open the live page</a></em></p>`
+  const footer = `<p><em>Exported from Parabol · <a href="${escapeHtml(ctx.parabolPageUrl)}">Open the live page</a></em></p>`
   const degraded = [...state.census.entries()]
     .map(([blockType, {count, treatment}]) => ({blockType, count, treatment}))
     .sort((a, b) => a.blockType.localeCompare(b.blockType))

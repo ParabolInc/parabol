@@ -1,10 +1,8 @@
 import type {meet_v2} from 'googleapis'
 import {serverTipTapExtensions} from 'parabol-client/shared/tiptap/serverTipTapExtensions'
 import type {TipTapSerializedPageContent} from 'parabol-client/shared/tiptap/TipTapSerializedContent'
+import {escapeHtml} from '../../utils/escapeHtml'
 import {generateJSON} from '../../utils/tiptap/generateJSON'
-
-const escapeHtml = (str: string) =>
-  str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
 // Offsets from the start of transcription read better than wall-clock times, which would need a
 // timezone to mean anything to the reader
