@@ -1,13 +1,7 @@
+import type {ComponentType} from 'react'
 import type Atmosphere from '../../Atmosphere'
 import type {MenuMutationProps} from '../../hooks/useMutationProps'
-import type {TaskServiceEnum} from '../../shared/types/TaskIntegration'
-
-export type IssueParts = Record<string, string | number>
-
-export interface IntegrationIdCodec {
-  joinIssue(parts: IssueParts): string
-  splitIssue(id: string): IssueParts
-}
+import type {IntegrationIdCodec, IntegrationMeta} from '../../shared/integrations/IntegrationMeta'
 
 export interface ConnectProvider {
   id: string
@@ -22,12 +16,12 @@ export interface ConnectParams {
   provider?: ConnectProvider
 }
 
-export interface ClientIntegrationDefinition {
-  service: Exclude<TaskServiceEnum, 'PARABOL'>
-  label: string
-  description: string
-  ids: IntegrationIdCodec
-  connect: {
-    open(atmosphere: Atmosphere, params: ConnectParams): void
-  }
+export abstract class ClientIntegrationDefinition {
+  abstract readonly service: IntegrationMeta['service']
+  abstract readonly title: string
+  abstract readonly description: string
+  abstract readonly ids: IntegrationIdCodec
+  abstract readonly Icon: ComponentType<{className?: string}>
+  readonly iconClassName?: string
+  abstract connect(atmosphere: Atmosphere, params: ConnectParams): void
 }

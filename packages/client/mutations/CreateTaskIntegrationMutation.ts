@@ -18,6 +18,7 @@ graphql`
       integration {
         __typename
         ... on JiraIssue {
+          service
           cloudId
           cloudName
           url
@@ -30,6 +31,7 @@ graphql`
           }
         }
         ... on _xGitHubIssue {
+          service
           bodyHTML
           title
           number
@@ -38,10 +40,12 @@ graphql`
           }
         }
         ... on JiraServerIssue {
+          service
           descriptionHTML
           summary
         }
         ... on _xGitLabIssue {
+          service
           descriptionHtml
           title
           iid
@@ -50,6 +54,7 @@ graphql`
         }
         ... on AzureDevOpsWorkItem {
           __typename
+          service
           id
           teamProject
           title
@@ -57,6 +62,7 @@ graphql`
         }
         ... on _xLinearIssue {
           __typename
+          service
           id
           description
           identifier
@@ -118,6 +124,7 @@ const jiraTaskIntegrationOptimisticUpdater = (
   const {title: summary, bodyContent} = splitTipTapContent(JSON.parse(contentStr))
   const descriptionHTML = generateHTML(bodyContent, serverTipTapExtensions)
   const optimisticIntegration = {
+    service: 'jira',
     summary,
     descriptionHTML,
     projectKey,
@@ -146,6 +153,7 @@ const githubTaskIntegrationOptimisticUpdater = (
   const {title, bodyContent} = splitTipTapContent(JSON.parse(contentStr))
   const bodyHTML = generateHTML(bodyContent, serverTipTapExtensions)
   const optimisticIntegration = {
+    service: 'github',
     title,
     bodyHTML,
     number: 0,
@@ -173,6 +181,7 @@ const gitlabTaskIntegrationOptimisticUpdater = (
   const descriptionHtml = generateHTML(bodyContent, serverTipTapExtensions)
   const webPath = `${fullPath}/-/issues/0`
   const optimisticIntegration = {
+    service: 'gitlab',
     title,
     descriptionHtml,
     iid: 0,
@@ -198,6 +207,7 @@ const jiraServerTaskIntegrationOptimisticUpdater = (
   const {title: summary, bodyContent} = splitTipTapContent(JSON.parse(contentStr))
   const descriptionHTML = generateHTML(bodyContent, serverTipTapExtensions)
   const optimisticIntegration = {
+    service: 'jiraServer',
     summary,
     descriptionHTML,
     issueKey: '?',
@@ -220,6 +230,7 @@ const azureTaskIntegrationOptimisticUpdater = (
   const {title, bodyContent} = splitTipTapContent(JSON.parse(contentStr))
   const descriptionHTML = generateHTML(bodyContent, serverTipTapExtensions)
   const optimisticIntegration = {
+    service: 'azureDevOps',
     id: '?',
     title,
     descriptionHTML,
@@ -251,6 +262,7 @@ const linearTaskIntegrationOptimisticUpdater = (
   const {title, bodyContent} = splitTipTapContent(JSON.parse(contentStr))
   const description = generateHTML(bodyContent, serverTipTapExtensions)
   const optimisticIntegration = {
+    service: 'linear',
     id: '?',
     description,
     identifier: '?',

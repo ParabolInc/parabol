@@ -502,7 +502,8 @@ const permissionMap: PermissionMap<Resolvers> = {
     organization: isViewerOnOrg<'Team.organization'>('source.orgId')
   },
   TeamMember: {
-    integrations: isUserViewer<'TeamMember.integrations'>('source.userId')
+    integrations: isUserViewer<'TeamMember.integrations'>('source.userId'),
+    services: isUserViewer<'TeamMember.services'>('source.userId')
   },
   User: {
     archivedTasks: isTeamMember<'User.archivedTasks'>('args.teamId'),

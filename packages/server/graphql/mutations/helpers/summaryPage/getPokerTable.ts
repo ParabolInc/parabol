@@ -78,19 +78,7 @@ export const getPokerRowData = async (
       const getTitle = Task.title as (task: {plaintextContent: string}) => string
       let title = getTitle(task)
       if (service) {
-        let fieldName = '...info'
-        switch (service) {
-          case 'azureDevOps':
-          case 'github':
-          case 'gitlab':
-          case 'linear':
-            fieldName = 'title'
-            break
-          case 'jira':
-          case 'jiraServer':
-            fieldName = 'summary'
-        }
-        const integrationRes = await resolveTaskIntegration(task, context, info, fieldName)
+        const integrationRes = await resolveTaskIntegration(task, context, info, 'title')
 
         title = extractTitleOrSummary(integrationRes) ?? 'Unknown Story'
       }

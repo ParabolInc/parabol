@@ -13,3 +13,7 @@ extend type _xLinearProject {
 extend type _xLinearTeam {
   service: IntegrationProviderServiceEnum!
 }
+
+extend type _xLinearIssue {
+  service: IntegrationProviderServiceEnum!
+}

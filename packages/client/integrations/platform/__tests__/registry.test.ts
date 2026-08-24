@@ -23,7 +23,7 @@ jest.mock('../../../utils/LinearClientManager', () => ({
   default: {openOAuth: jest.fn()}
 }))
 
-import type {IssueParts} from '../ClientIntegrationDefinition'
+import type {IssueParts} from '../../../shared/integrations/IntegrationMeta'
 import {clientIntegrations, getClientIntegration} from '../registry'
 
 const SAMPLE_ISSUE_PARTS: Record<string, IssueParts> = {
@@ -51,8 +51,8 @@ describe('clientIntegrations registry', () => {
     expect(def.service).toBe(key)
   })
 
-  it.each(Object.entries(clientIntegrations))('%s: has label and description', (_key, def) => {
-    expect(def.label.length).toBeGreaterThan(0)
+  it.each(Object.entries(clientIntegrations))('%s: has title and description', (_key, def) => {
+    expect(def.title.length).toBeGreaterThan(0)
     expect(def.description.length).toBeGreaterThan(0)
   })
 
