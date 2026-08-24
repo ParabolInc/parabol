@@ -1,12 +1,11 @@
 import type Atmosphere from '../Atmosphere'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
 import AddTeamMemberIntegrationAuthMutation from '../mutations/AddTeamMemberIntegrationAuthMutation'
-import SetupGoogleDriveWatchMutation from '../mutations/SetupGoogleDriveWatchMutation'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 import makeHref from './makeHref'
 
-class GDriveClientManager {
-  static SCOPES = 'https://www.googleapis.com/auth/drive.meet.readonly'
+class GmeetClientManager {
+  static SCOPES = 'https://www.googleapis.com/auth/meetings.space.readonly'
 
   static openOAuth(
     atmosphere: Atmosphere,
@@ -17,8 +16,8 @@ class GDriveClientManager {
   ) {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
     const providerState = Math.random().toString(36).substring(5)
-    const redirectUri = makeHref('/auth/gdrive')
-    const uri = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&scope=${GDriveClientManager.SCOPES}&state=${providerState}&redirect_uri=${redirectUri}&response_type=code&access_type=offline&prompt=consent`
+    const redirectUri = makeHref('/auth/gmeet')
+    const uri = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&scope=${GmeetClientManager.SCOPES}&state=${providerState}&redirect_uri=${redirectUri}&response_type=code&access_type=offline&prompt=consent`
 
     const popup = window.open(
       uri,
@@ -39,10 +38,10 @@ class GDriveClientManager {
           onError,
           onCompleted: (res, errors) => {
             if (errors || (res as any)?.addTeamMemberIntegrationAuth?.error) {
-              onError(errors?.[0] ?? new Error('Failed to connect Google Drive'))
+              onError(errors?.[0] ?? new Error('Failed to connect Google Meet'))
               return
             }
-            SetupGoogleDriveWatchMutation(atmosphere, {teamId}, {onError, onCompleted})
+            onCompleted()
           }
         }
       )
@@ -53,4 +52,4 @@ class GDriveClientManager {
   }
 }
 
-export default GDriveClientManager
+export default GmeetClientManager

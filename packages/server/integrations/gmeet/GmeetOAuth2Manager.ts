@@ -4,7 +4,7 @@ import OAuth2Manager, {
   type OAuth2RefreshAuthorizationParams
 } from '../OAuth2Manager'
 
-export default class GDriveOAuth2Manager extends OAuth2Manager {
+export default class GmeetOAuth2Manager extends OAuth2Manager {
   async authorize(code: string, redirectUri: string) {
     return this.fetchToken<{
       accessToken: string

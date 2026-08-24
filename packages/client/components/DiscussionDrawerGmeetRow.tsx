@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {MoreVert} from '~/ui/icons'
-import type {DiscussionDrawerGdriveRow_gdrive$key} from '../__generated__/DiscussionDrawerGdriveRow_gdrive.graphql'
+import type {DiscussionDrawerGmeetRow_gmeet$key} from '../__generated__/DiscussionDrawerGmeetRow_gmeet.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import RemoveTeamMemberIntegrationAuthMutation from '../mutations/RemoveTeamMemberIntegrationAuthMutation'
@@ -9,46 +9,40 @@ import {Button} from '../ui/Button/Button'
 import {Menu} from '../ui/Menu/Menu'
 import {MenuContent} from '../ui/Menu/MenuContent'
 import {MenuItem} from '../ui/Menu/MenuItem'
-import GDriveClientManager from '../utils/GDriveClientManager'
+import GmeetClientManager from '../utils/GmeetClientManager'
 import GoogleMeetProviderLogo from './GoogleMeetProviderLogo'
 
 interface Props {
-  gdriveRef: DiscussionDrawerGdriveRow_gdrive$key
+  gmeetRef: DiscussionDrawerGmeetRow_gmeet$key
   teamId: string
 }
 
-const TWO_HOURS_MS = 2 * 60 * 60 * 1000
-
-const DiscussionDrawerGdriveRow = ({gdriveRef, teamId}: Props) => {
-  const gdrive = useFragment(
+const DiscussionDrawerGmeetRow = ({gmeetRef, teamId}: Props) => {
+  const gmeet = useFragment(
     graphql`
-      fragment DiscussionDrawerGdriveRow_gdrive on GdriveIntegration {
+      fragment DiscussionDrawerGmeetRow_gmeet on GmeetIntegration {
         isActive
-        watchExpiresAt
         cloudProvider {
           id
           clientId
         }
       }
     `,
-    gdriveRef
+    gmeetRef
   )
 
   const atmosphere = useAtmosphere()
   const mutationProps = useMutationProps()
   const {submitting, onError, onCompleted, error} = mutationProps
 
-  const cloudProvider = gdrive.cloudProvider
+  const cloudProvider = gmeet.cloudProvider
   if (!cloudProvider) return null
 
-  const isConnected =
-    gdrive.isActive &&
-    !!gdrive.watchExpiresAt &&
-    new Date(gdrive.watchExpiresAt).getTime() > Date.now() + TWO_HOURS_MS
+  const isConnected = gmeet.isActive
 
   const handleConnect = () => {
     if (submitting) return
-    GDriveClientManager.openOAuth(
+    GmeetClientManager.openOAuth(
       atmosphere,
       cloudProvider.id,
       cloudProvider.clientId,
@@ -61,7 +55,7 @@ const DiscussionDrawerGdriveRow = ({gdriveRef, teamId}: Props) => {
     if (submitting) return
     RemoveTeamMemberIntegrationAuthMutation(
       atmosphere,
-      {service: 'gdrive', teamId},
+      {service: 'gmeet', teamId},
       {onError, onCompleted}
     )
   }
@@ -104,4 +98,4 @@ const DiscussionDrawerGdriveRow = ({gdriveRef, teamId}: Props) => {
   )
 }
 
-export default DiscussionDrawerGdriveRow
+export default DiscussionDrawerGmeetRow
