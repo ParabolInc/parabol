@@ -67,7 +67,7 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
   return (
     <div
       className={cn(
-        'relative my-0.5 flex min-h-10 shrink-0 cursor-pointer select-none items-center rounded-md border-l-[3px] border-l-transparent px-1 py-1 font-semibold text-fg-primary text-sm leading-8 no-underline before:absolute before:inset-y-1 before:left-px before:w-[3px] before:rounded-full before:bg-transparent hover:bg-surface-nav-hover focus:bg-surface-nav-hover',
+        'relative my-0.5 flex min-h-10 shrink-0 cursor-pointer select-none items-center rounded-md px-2 py-1 font-semibold text-fg-primary text-sm leading-8 no-underline before:absolute before:inset-y-1 before:left-1 before:w-[3px] before:rounded-full before:bg-transparent hover:bg-surface-nav-hover focus:bg-surface-nav-hover',
         isDisabled && 'cursor-not-allowed hover:bg-transparent focus:bg-transparent',
         isActive &&
           'cursor-default bg-surface-nav-active before:bg-(--color-accent-active) hover:bg-surface-nav-active focus:bg-surface-nav-active',
@@ -118,7 +118,7 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
       <span className='inline-block pl-2 align-middle text-sm'>{label}</span>
       {showPhaseCount && (
         <div className='ml-auto flex items-center'>
-          <Badge className='mr-2 h-6 min-w-6 rounded-xl bg-slate-600 text-xs leading-6 shadow-none'>
+          <Badge className='h-6 min-w-6 rounded-xl bg-slate-600 text-xs leading-6 shadow-none'>
             {phaseCount}
           </Badge>
         </div>

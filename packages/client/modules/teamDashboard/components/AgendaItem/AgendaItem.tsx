@@ -172,7 +172,7 @@ const AgendaItem = (props: Props) => {
               onMouseOver={openTooltip}
               onMouseOut={closeTooltip}
               ref={originRef}
-              className='mr-1 flex w-8 cursor-pointer justify-center active:opacity-70'
+              className='flex w-6 cursor-pointer justify-center active:opacity-70'
             >
               {/* Idle shows the avatar (or a pin badge when already pinned); hovering the
                   row swaps in the pin/unpin action icon — all via group-hover, no JS state */}
@@ -192,6 +192,7 @@ const AgendaItem = (props: Props) => {
               />
             </div>
           }
+          labelClassName='pl-7'
           isDisabled={isDisabled}
           onClick={onClick}
           isActive={isActive}
