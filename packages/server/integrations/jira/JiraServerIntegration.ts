@@ -7,7 +7,7 @@ import {
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
 import TaskIntegrationManagerFactory from '../TaskIntegrationManagerFactory'
-import parseJiraSearchQuery from './parseJiraSearchQuery'
+import buildJiraSearchQuery from './buildJiraSearchQuery'
 
 export class JiraServerIntegration extends ServerIntegrationDefinition {
   readonly service = jiraIntegrationMeta.service
@@ -42,6 +42,6 @@ export class JiraServerIntegration extends ServerIntegrationDefinition {
           ctx.info
         )
     },
-    issueSearch: {parseQuery: parseJiraSearchQuery}
+    issueSearch: {buildQuery: buildJiraSearchQuery}
   }
 }

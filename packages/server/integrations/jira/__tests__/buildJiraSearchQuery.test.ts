@@ -1,9 +1,9 @@
-import parseJiraSearchQuery from '../parseJiraSearchQuery'
+import buildJiraSearchQuery from '../buildJiraSearchQuery'
 
-describe('parseJiraSearchQuery', () => {
+describe('buildJiraSearchQuery', () => {
   it('returns the stored shape with a trimmed queryString and sorted project keys', () => {
     expect(
-      parseJiraSearchQuery(' project = ABC ', {isJQL: true, projectKeyFilters: ['DEF', 'ABC']})
+      buildJiraSearchQuery(' project = ABC ', {isJQL: true, projectKeyFilters: ['DEF', 'ABC']})
     ).toEqual({queryString: 'project = ABC', isJQL: true, projectKeyFilters: ['ABC', 'DEF']})
   })
 
@@ -18,12 +18,12 @@ describe('parseJiraSearchQuery', () => {
     ['too many project keys', {isJQL: false, projectKeyFilters: Array(101).fill('ABC')}],
     ['unknown keys', {isJQL: false, projectKeyFilters: [], junk: 'x'.repeat(1000)}]
   ])('rejects %s', (_label, meta) => {
-    expect(parseJiraSearchQuery('bug', meta)).toBeInstanceOf(Error)
+    expect(buildJiraSearchQuery('bug', meta)).toBeInstanceOf(Error)
   })
 
   it('rejects an oversized queryString', () => {
     expect(
-      parseJiraSearchQuery('x'.repeat(2001), {isJQL: false, projectKeyFilters: []})
+      buildJiraSearchQuery('x'.repeat(2001), {isJQL: false, projectKeyFilters: []})
     ).toBeInstanceOf(Error)
   })
 })

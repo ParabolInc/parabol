@@ -5,7 +5,7 @@ const MAX_QUERY_STRING_LENGTH = 2000
 const MAX_PROJECT_KEY_FILTERS = 100
 const MAX_PROJECT_KEY_LENGTH = 64
 
-const parseJiraSearchQuery = (
+const buildJiraSearchQuery = (
   queryString: string,
   meta: JsonObject
 ): JiraSearchQueryJson | Error => {
@@ -30,4 +30,4 @@ const parseJiraSearchQuery = (
   return {queryString: queryString.trim(), isJQL, projectKeyFilters: [...projectKeyFilters].sort()}
 }
 
-export default parseJiraSearchQuery
+export default buildJiraSearchQuery

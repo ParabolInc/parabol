@@ -26,7 +26,7 @@ export interface IssueReadCapability {
 
 export interface IssueSearchCapability<TQuery extends JsonObject = JsonObject> {
   /** Validates a client-supplied search before it is stored as IntegrationSearchQuery.query */
-  parseQuery(queryString: string, meta: JsonObject): TQuery | Error
+  buildQuery(queryString: string, meta: JsonObject): TQuery | Error
 }
 
 export interface RepoListCapability {

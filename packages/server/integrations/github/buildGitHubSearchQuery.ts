@@ -1,10 +1,9 @@
 import type {GitHubSearchQueryJson} from '../../postgres/types'
 import type {JsonObject} from '../../postgres/types/pg'
 
-// GitHub rejects search queries longer than 256 characters
-const MAX_QUERY_STRING_LENGTH = 256
+const MAX_QUERY_STRING_LENGTH = 2000
 
-const parseGitHubSearchQuery = (
+const buildGitHubSearchQuery = (
   queryString: string,
   meta: JsonObject
 ): GitHubSearchQueryJson | Error => {
@@ -16,4 +15,4 @@ const parseGitHubSearchQuery = (
   return {queryString: queryString.toLowerCase().trim()}
 }
 
-export default parseGitHubSearchQuery
+export default buildGitHubSearchQuery

@@ -1,6 +1,6 @@
 import {jiraServerIntegrationMeta} from 'parabol-client/shared/integrations/jiraServerIntegrationMeta'
 import type {JiraSearchQueryJson, TeamMemberIntegrationAuth} from '../../postgres/types'
-import parseJiraSearchQuery from '../jira/parseJiraSearchQuery'
+import buildJiraSearchQuery from '../jira/buildJiraSearchQuery'
 import {
   type IntegrationCtx,
   type IssueCreateCapability,
@@ -44,6 +44,6 @@ export class JiraServerServerIntegration extends ServerIntegrationDefinition {
           ctx.info
         )
     },
-    issueSearch: {parseQuery: parseJiraSearchQuery}
+    issueSearch: {buildQuery: buildJiraSearchQuery}
   }
 }

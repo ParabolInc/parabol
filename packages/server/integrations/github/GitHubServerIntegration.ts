@@ -7,7 +7,7 @@ import {
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
 import TaskIntegrationManagerFactory from '../TaskIntegrationManagerFactory'
-import parseGitHubSearchQuery from './parseGitHubSearchQuery'
+import buildGitHubSearchQuery from './buildGitHubSearchQuery'
 
 export class GitHubServerIntegration extends ServerIntegrationDefinition {
   readonly service = githubIntegrationMeta.service
@@ -42,6 +42,6 @@ export class GitHubServerIntegration extends ServerIntegrationDefinition {
           ctx.info
         )
     },
-    issueSearch: {parseQuery: parseGitHubSearchQuery}
+    issueSearch: {buildQuery: buildGitHubSearchQuery}
   }
 }

@@ -60,7 +60,7 @@ const persistIntegrationSearchQuery: MutationResolvers['persistIntegrationSearch
   if (!(await definition.isConnected({dataLoader, teamId, userId: viewerId}))) {
     return {error: {message: `Not connected to ${definition.title}`}}
   }
-  const query = issueSearch.parseQuery(queryString, parsedMeta)
+  const query = issueSearch.buildQuery(queryString, parsedMeta)
   if (query instanceof Error) return {error: {message: query.message}}
 
   await getKysely()
