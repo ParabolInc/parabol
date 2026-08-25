@@ -31,10 +31,10 @@ const upsertGlobalIntegrationProvidersFromEnv = async () => {
       clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET
     },
     {
-      service: 'gdrive',
+      service: 'gmeet',
       authStrategy: 'oauth2',
       scope: 'global',
-      serverBaseUrl: 'https://www.googleapis.com/drive/v3',
+      serverBaseUrl: 'https://meet.googleapis.com/v2',
       clientId: process.env.GOOGLE_OAUTH_CLIENT_ID,
       clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET
     },
