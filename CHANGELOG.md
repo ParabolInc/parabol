@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.38.2](https://github.com/ParabolInc/parabol/compare/v13.38.1...v13.38.2) (2026-08-25)
+
+
+### Fixed
+
+* page kebab menu jumps when cursor leaves the nav row ([#13417](https://github.com/ParabolInc/parabol/issues/13417)) ([b054cc5](https://github.com/ParabolInc/parabol/commit/b054cc5855349387fc8471d5481eadd2961fb966))
+
 ## [13.38.1](https://github.com/ParabolInc/parabol/compare/v13.38.0...v13.38.1) (2026-08-25)
 
 
