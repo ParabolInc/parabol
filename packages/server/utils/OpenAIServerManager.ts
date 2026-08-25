@@ -1,6 +1,7 @@
 import OpenAI from 'openai'
 import type {ModifyType} from '../graphql/public/resolverTypes'
 import type {RetroReflection} from '../postgres/types'
+import {AI_MODEL} from './aiModel'
 import groupReflections from './groupReflections/groupReflectionsStructured'
 import type {GroupReflectionsInput, GroupReflectionsOptions} from './groupReflections/types'
 import logError from './logError'
@@ -24,7 +25,7 @@ class OpenAIServerManager {
       {
         label: 'openai',
         client: this.openAIApi,
-        model: 'gpt-5.6-luna',
+        model: AI_MODEL,
         // Hidden reasoning dominated grouping latency, and holding the effort down is only safe
         // because repairGroups patches a forgotten card instead of discarding the whole batch
         params: {reasoning_effort: 'low'}
@@ -53,18 +54,15 @@ class OpenAIServerManager {
 
     try {
       const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-4o',
+        model: AI_MODEL,
         messages: [
           {
             role: 'user',
             content: prompt
           }
         ],
-        temperature: 0.7,
-        max_tokens: 500,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0
+        reasoning_effort: 'low',
+        max_completion_tokens: 4000
       })
       return (response.choices[0]?.message?.content?.trim() as string) ?? null
     } catch (e) {
@@ -103,15 +101,15 @@ class OpenAIServerManager {
       .join('\n')}`
     try {
       const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-4o-mini',
+        model: AI_MODEL,
         messages: [
           {
             role: 'user',
             content: prompt
           }
         ],
-        temperature: 0.3,
-        max_tokens: 80
+        reasoning_effort: 'low',
+        max_completion_tokens: 2000
       })
       const question =
         (response.choices[0]?.message?.content?.trim() as string).replace(
@@ -161,13 +159,14 @@ Compare the scope and complexity of the issue to estimate against the reference 
 Respond in GitHub-flavored markdown. The first line MUST be exactly "**Estimate: <value>**" where <value> is the chosen allowed value. After a blank line, justify the estimate in 2-3 sentences. When you cite a reference issue, refer to it by its bare issue key only (e.g. ${references[0]?.issueKey ?? 'PROJ-123'}) — do not include its title or a link.`
     try {
       const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-5.4-mini',
+        model: AI_MODEL,
         messages: [
           {
             role: 'user',
             content: prompt
           }
-        ]
+        ],
+        reasoning_effort: 'low'
       })
       const estimate = response.choices[0]?.message?.content?.trim()
       return estimate || null
@@ -198,18 +197,15 @@ Respond in GitHub-flavored markdown. The first line MUST be exactly "**Estimate:
 
     try {
       const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-4',
+        model: AI_MODEL,
         messages: [
           {
             role: 'user',
             content: prompt[modifyType]
           }
         ],
-        temperature: 0.8,
-        max_tokens: 256,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0
+        reasoning_effort: 'low',
+        max_completion_tokens: 2000
       })
 
       return (response.choices[0]?.message?.content?.trim() as string).replaceAll(`"`, '') ?? null
@@ -266,7 +262,7 @@ Return JSON of the form: { "items": [{ "title": "<short heading, or null>", "con
 
     try {
       const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-4o',
+        model: AI_MODEL,
         messages: [
           {
             role: 'user',
@@ -274,10 +270,7 @@ Return JSON of the form: { "items": [{ "title": "<short heading, or null>", "con
           }
         ],
         response_format: {type: 'json_object'},
-        temperature: 0.7,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0
+        reasoning_effort: 'low'
       })
 
       const content = response.choices[0]?.message?.content
@@ -356,7 +349,7 @@ Return JSON of the form: { "items": [{ "title": "<short heading, or null>", "con
 
     try {
       const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-4o',
+        model: AI_MODEL,
         messages: [
           {
             role: 'user',
@@ -364,10 +357,7 @@ Return JSON of the form: { "items": [{ "title": "<short heading, or null>", "con
           }
         ],
         response_format: {type: 'json_object'},
-        temperature: 0.7,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0
+        reasoning_effort: 'low'
       })
 
       const content = response.choices[0]?.message?.content
@@ -422,18 +412,14 @@ Return JSON of the form: { "items": [{ "title": "<short heading, or null>", "con
 
     try {
       const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-4o',
+        model: AI_MODEL,
         messages: [
           {
             role: 'user',
             content: `${prompt}\n\n${yamlData}`
           }
         ],
-
-        temperature: 0.7,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0
+        reasoning_effort: 'low'
       })
 
       const content = response.choices[0]?.message.content as string
@@ -455,18 +441,15 @@ Important: Respond with ONLY the title itself. Do not include any prefixes like 
 
     try {
       const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-4o-mini',
+        model: AI_MODEL,
         messages: [
           {
             role: 'user',
             content: prompt
           }
         ],
-        temperature: 0.3,
-        max_tokens: 20,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0
+        reasoning_effort: 'low',
+        max_completion_tokens: 1000
       })
       const title =
         (response.choices[0]?.message?.content?.trim() as string)
