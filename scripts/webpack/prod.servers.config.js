@@ -15,7 +15,6 @@ const EMBEDDER_ROOT = path.join(PROJECT_ROOT, 'packages', 'embedder')
 const DOTENV = path.join(PROJECT_ROOT, 'scripts/webpack/utils/dotenv.js')
 const distPath = path.join(PROJECT_ROOT, 'dist')
 const INIT_PUBLIC_PATH = path.join(SERVER_ROOT, 'initPublicPath.ts')
-const PRELOAD_TRACED_BUILTINS = path.join(SERVER_ROOT, 'preloadTracedBuiltins.ts')
 const INIT_LOGGING = path.join(SERVER_ROOT, 'initLogging.ts')
 const MONKEYPATCHES = path.join(SERVER_ROOT, 'monkeyPatches.ts')
 const DUMP_ON_USR2 = path.join(SERVER_ROOT, 'dumpOnUSR2.ts')
@@ -37,8 +36,6 @@ module.exports = (config) => {
     },
     entry: {
       web: [
-        // must stay first, see the file for why
-        PRELOAD_TRACED_BUILTINS,
         DOTENV,
         INIT_PUBLIC_PATH,
         INIT_LOGGING,
@@ -48,33 +45,15 @@ module.exports = (config) => {
         path.join(PROJECT_ROOT, 'scripts/toolboxSrc/applyEnvVarsToClientAssets.ts'),
         path.join(SERVER_ROOT, 'server.ts')
       ],
-      embedder: [
-        PRELOAD_TRACED_BUILTINS,
-        DOTENV,
-        DUMP_ON_USR2,
-        path.join(EMBEDDER_ROOT, 'embedder.ts')
-      ],
+      embedder: [DOTENV, DUMP_ON_USR2, path.join(EMBEDDER_ROOT, 'embedder.ts')],
       preDeploy: [
-        PRELOAD_TRACED_BUILTINS,
         DOTENV,
         INIT_PUBLIC_PATH,
         path.join(PROJECT_ROOT, 'scripts/toolboxSrc/preDeploy.ts')
       ],
-      pushToCDN: [
-        PRELOAD_TRACED_BUILTINS,
-        DOTENV,
-        path.join(PROJECT_ROOT, 'scripts/toolboxSrc/pushToCDN.ts')
-      ],
-      migrate: [
-        PRELOAD_TRACED_BUILTINS,
-        DOTENV,
-        path.join(PROJECT_ROOT, 'scripts/toolboxSrc/standaloneMigrations.ts')
-      ],
-      assignSURole: [
-        PRELOAD_TRACED_BUILTINS,
-        DOTENV,
-        path.join(PROJECT_ROOT, 'scripts/toolboxSrc/assignSURole.ts')
-      ],
+      pushToCDN: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/pushToCDN.ts')],
+      migrate: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/standaloneMigrations.ts')],
+      assignSURole: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/assignSURole.ts')],
       pg: {
         // bundle pg with all its dependencies into a single file
         // so dd-trace-js can monkeypatch require('pg')
