@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.38.0](https://github.com/ParabolInc/parabol/compare/v13.37.0...v13.38.0) (2026-08-25)
+
+
+### Added
+
+* decrease necessary scope for google meet transcripts ([#13394](https://github.com/ParabolInc/parabol/issues/13394)) ([50f61ae](https://github.com/ParabolInc/parabol/commit/50f61ae899f07bb03b9db27564526e6ab99ac53f))
+* update AI model to luna ([#13403](https://github.com/ParabolInc/parabol/issues/13403)) ([97799d2](https://github.com/ParabolInc/parabol/commit/97799d2067846535ed6b4ffa6e5542549476d673))
+
 ## [13.37.0](https://github.com/ParabolInc/parabol/compare/v13.36.4...v13.37.0) (2026-08-21)
 
 
