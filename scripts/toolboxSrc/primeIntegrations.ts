@@ -1,4 +1,3 @@
-import getKysely from '../../packages/server/postgres/getKysely'
 import deactivateGlobalIntegrationProvider from '../../packages/server/postgres/queries/deactivateGlobalIntegrationProvider'
 import upsertIntegrationProvider from '../../packages/server/postgres/queries/upsertIntegrationProvider'
 import {Logger} from '../../packages/server/utils/Logger'
@@ -86,24 +85,14 @@ const upsertGlobalIntegrationProvidersFromEnv = async () => {
       (authStrategy === 'sharedSecret' && sharedSecret && serverBaseUrl)
   )
 
-  // it's a security risk to have a misconfigured mattermost provider
-  if (!process.env.MATTERMOST_URL || !process.env.MATTERMOST_SECRET) {
-    const pg = getKysely()
-    await pg
-      .deleteFrom('IntegrationProvider')
-      .where('service', '=', 'mattermost')
-      .where('authStrategy', '=', 'sharedSecret')
-      .where('scope', '=', 'global')
-      .execute()
-  }
-
   const missingProviders = providers.filter((provider) => !validProviders.includes(provider))
 
   await Promise.all([
     ...validProviders.map((provider) => upsertIntegrationProvider(provider)),
-    ...missingProviders.map(({service, authStrategy}) =>
-      deactivateGlobalIntegrationProvider({service, authStrategy})
-    )
+    ...missingProviders.map(({service, authStrategy}) => {
+      Logger.log(`⛓️ ${service} env vars missing, deactivating its global provider`)
+      return deactivateGlobalIntegrationProvider({service, authStrategy})
+    })
   ])
 }
 
