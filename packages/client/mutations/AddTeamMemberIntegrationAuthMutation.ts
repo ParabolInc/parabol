@@ -9,7 +9,6 @@ const mutation = graphql`
     $oauthCodeOrPat: ID
     $oauthVerifier: ID
     $teamId: ID!
-    $redirectUri: URL
     $includeAtlassian: Boolean = false
     $includeGitHub: Boolean = false
   ) {
@@ -18,7 +17,6 @@ const mutation = graphql`
       oauthCodeOrPat: $oauthCodeOrPat
       oauthVerifier: $oauthVerifier
       teamId: $teamId
-      redirectUri: $redirectUri
     ) {
       ... on ErrorPayload {
         error {

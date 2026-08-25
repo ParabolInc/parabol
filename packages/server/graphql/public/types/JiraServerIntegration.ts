@@ -185,21 +185,13 @@ const JiraServerIntegration: JiraServerIntegrationResolvers = {
       .get('recentIntegrationSearchQueries')
       .load({teamId, userId, providerId})
 
-    return searchQueries.map((searchQuery) => {
-      const {queryString, isJQL, projectKeyFilters} = searchQuery.query as {
-        queryString?: unknown
-        isJQL?: unknown
-        projectKeyFilters?: unknown
-      }
-
-      return {
-        id: String(searchQuery.id),
-        queryString: typeof queryString === 'string' ? queryString : '',
-        isJQL: isJQL === true,
-        projectKeyFilters: Array.isArray(projectKeyFilters) ? projectKeyFilters.map(String) : [],
-        lastUsedAt: searchQuery.lastUsedAt.toJSON()
-      }
-    })
+    return searchQueries
+      .filter((row) => row.service === 'jiraServer')
+      .map(({id, query, lastUsedAt}) => ({
+        id: String(id),
+        ...query,
+        lastUsedAt: lastUsedAt.toJSON()
+      }))
   }
 }
 

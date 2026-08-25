@@ -1,12 +1,15 @@
 import {fetch} from '@whatwg-node/fetch'
+import makeAppURL from 'parabol-client/utils/makeAppURL'
+import appOrigin from '../../appOrigin'
 import OAuth2Manager, {
   type OAuth2AuthorizationParams,
   type OAuth2RefreshAuthorizationParams
 } from '../OAuth2Manager'
 
 export default class ZoomOAuth2Manager extends OAuth2Manager {
-  async authorize(code: string, redirectUri: string | null) {
-    if (!redirectUri) return new Error('Missing redirect URI')
+  static readonly REDIRECT_URI = makeAppURL(appOrigin, 'auth/zoom')
+
+  async authorize(code: string) {
     const auth = await this.fetchToken<{
       accessToken: string
       refreshToken: string
@@ -15,7 +18,7 @@ export default class ZoomOAuth2Manager extends OAuth2Manager {
     }>({
       grant_type: 'authorization_code',
       code,
-      redirect_uri: redirectUri
+      redirect_uri: ZoomOAuth2Manager.REDIRECT_URI
     })
     if (auth instanceof Error) return auth
     const res = await fetch('https://api.zoom.us/v2/users/me', {

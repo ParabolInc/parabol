@@ -39,11 +39,7 @@ export default abstract class OAuth2Manager {
     this.clientSecret = clientSecret
     this.serverBaseUrl = serverBaseUrl
   }
-  /** redirectUri is null when the client relies on the app callback registered with the provider (GitHub) */
-  abstract authorize(
-    code: string,
-    redirectUri: string | null
-  ): Promise<Error | OAuth2AuthorizeResponse>
+  abstract authorize(code: string): Promise<Error | OAuth2AuthorizeResponse>
   abstract refresh(refreshToken: string): Promise<Error | {accessToken: string}>
   protected abstract fetchToken(
     partialAuthParams: OAuth2RefreshAuthorizationParams | OAuth2AuthorizationParams

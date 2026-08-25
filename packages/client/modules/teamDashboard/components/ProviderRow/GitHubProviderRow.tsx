@@ -55,7 +55,7 @@ const GitHubProviderRow = (props: Props) => {
   }
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
 
-  if (!GitHubClientManager.isAvailable || !provider) return null
+  if (!provider) return null
 
   return (
     <>

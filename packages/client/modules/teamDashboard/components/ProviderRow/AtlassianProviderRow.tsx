@@ -105,7 +105,7 @@ const AtlassianProviderRow = (props: Props) => {
     return message
   }, [error])
 
-  if (!AtlassianClientManager.isAvailable || !provider) return null
+  if (!provider) return null
 
   return (
     <>

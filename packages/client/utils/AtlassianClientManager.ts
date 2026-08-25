@@ -12,7 +12,6 @@ export const ERROR_POPUP_CLOSED = 'Popup closed before authorization was complet
 
 class AtlassianClientManager extends AtlassianManager {
   fetch = window.fetch.bind(window)
-  static isAvailable = typeof window !== 'undefined' && !!window.__ACTION__.atlassian
 
   static openOAuth(
     atmosphere: Atmosphere,
@@ -71,7 +70,6 @@ class AtlassianClientManager extends AtlassianManager {
           providerId: provider.id,
           oauthCodeOrPat: code,
           teamId,
-          redirectUri: redirect,
           includeAtlassian: true
         },
         {onError, onCompleted}

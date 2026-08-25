@@ -1,3 +1,5 @@
+import makeAppURL from 'parabol-client/utils/makeAppURL'
+import appOrigin from '../../appOrigin'
 import {authorizeOAuth2} from '../helpers/authorizeOAuth2'
 import OAuth2Manager, {
   type OAuth2AuthorizationParams,
@@ -5,8 +7,9 @@ import OAuth2Manager, {
 } from '../OAuth2Manager'
 
 export default class GcalOAuth2Manager extends OAuth2Manager {
-  async authorize(code: string, redirectUri: string | null) {
-    if (!redirectUri) return new Error('Missing redirect URI')
+  static readonly REDIRECT_URI = makeAppURL(appOrigin, 'auth/gcal')
+
+  async authorize(code: string) {
     return this.fetchToken<{
       accessToken: string
       refreshToken: string
@@ -15,7 +18,7 @@ export default class GcalOAuth2Manager extends OAuth2Manager {
     }>({
       grant_type: 'authorization_code',
       code,
-      redirect_uri: redirectUri
+      redirect_uri: GcalOAuth2Manager.REDIRECT_URI
     })
   }
 

@@ -185,6 +185,16 @@ export type JiraSearchQuery = {
   lastUsedAt: string
 }
 
+export type JiraSearchQueryJson = {
+  queryString: string
+  isJQL: boolean
+  projectKeyFilters: string[]
+}
+
+export type GitHubSearchQueryJson = {
+  queryString: string
+}
+
 export type IntegrationSearchQuery = ExtractTypeFromQueryBuilderSelect<
   typeof selectIntegrationSearchQuery
 >

@@ -1,6 +1,7 @@
 import type {JiraAuthMeta} from '../../postgres/types'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {hasJiraScopes} from '../../utils/hasJiraScopes'
+import {makeOAuth2Redirect} from '../../utils/makeOAuth2Redirect'
 import {authorizeOAuth2} from '../helpers/authorizeOAuth2'
 import OAuth2Manager, {
   type OAuth2AuthorizationParams,
@@ -21,12 +22,14 @@ const accountIdFromJwt = (accessToken: string): string | Error => {
 }
 
 export default class JiraOAuth2Manager extends OAuth2Manager {
-  async authorize(code: string, redirectUri: string | null) {
-    if (!redirectUri) return new Error('Missing redirect URI')
+  // unlike its siblings this honors OAUTH2_REDIRECT (PPMI worker); the client reads the same value as __ACTION__.oauth2Redirect
+  static readonly REDIRECT_URI = makeOAuth2Redirect()
+
+  async authorize(code: string) {
     const auth = await this.fetchToken({
       grant_type: 'authorization_code',
       code,
-      redirect_uri: redirectUri
+      redirect_uri: JiraOAuth2Manager.REDIRECT_URI
     })
     if (auth instanceof Error) return auth
     const {accessToken, refreshToken, scopes} = auth

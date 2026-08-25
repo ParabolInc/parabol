@@ -1,19 +1,26 @@
 import {sql} from 'kysely'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {getServerIntegration} from '../../../integrations/platform/registry'
 import getKysely from '../../../postgres/getKysely'
 import type {JsonObject} from '../../../postgres/types/pg'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
 
+const MAX_META_LENGTH = 4096
+
+const isJsonObject = (value: unknown): value is JsonObject =>
+  typeof value === 'object' && value !== null && !Array.isArray(value)
+
 const parseMeta = (meta: string | null | undefined): JsonObject | Error => {
   if (!meta) return {}
+  if (meta.length > MAX_META_LENGTH) {
+    return new Error(`meta must be at most ${MAX_META_LENGTH} characters`)
+  }
   try {
     const parsed: unknown = JSON.parse(meta)
-    return parsed && typeof parsed === 'object' && !Array.isArray(parsed)
-      ? (parsed as JsonObject)
-      : new Error('meta must be a JSON object')
+    return isJsonObject(parsed) ? parsed : new Error('meta must be a JSON object')
   } catch {
     return new Error('meta must be valid JSON')
   }
@@ -45,15 +52,20 @@ const persistIntegrationSearchQuery: MutationResolvers['persistIntegrationSearch
     return {error: {message: 'Provider is not available to this team'}}
   }
 
+  const definition = getServerIntegration(service)
+  const issueSearch = definition?.capabilities.issueSearch
+  if (!definition || !issueSearch) {
+    return {error: {message: `${service} does not save search queries`}}
+  }
+  if (!(await definition.isConnected({dataLoader, teamId, userId: viewerId}))) {
+    return {error: {message: `Not connected to ${definition.title}`}}
+  }
+  const query = issueSearch.parseQuery(queryString, parsedMeta)
+  if (query instanceof Error) return {error: {message: query.message}}
+
   await getKysely()
     .insertInto('IntegrationSearchQuery')
-    .values({
-      userId: viewerId,
-      teamId,
-      service,
-      providerId: dbProviderId,
-      query: {...parsedMeta, queryString}
-    })
+    .values({userId: viewerId, teamId, service, providerId: dbProviderId, query})
     .onConflict((oc) =>
       oc
         .columns(['userId', 'teamId', 'service', 'query', 'providerId'])

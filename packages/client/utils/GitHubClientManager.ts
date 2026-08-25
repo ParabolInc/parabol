@@ -9,7 +9,6 @@ class GitHubClientManager {
   static SCOPE = Providers.GITHUB_SCOPE
 
   fetch = window.fetch.bind(window)
-  static isAvailable = typeof window !== 'undefined' && !!window.__ACTION__.github
   static openOAuth(
     atmosphere: Atmosphere,
     teamId: string,

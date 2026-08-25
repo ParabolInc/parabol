@@ -1,11 +1,13 @@
 import {githubIntegrationMeta} from 'parabol-client/shared/integrations/githubIntegrationMeta'
-import type {TeamMemberIntegrationAuth} from '../../postgres/types'
+import type {GitHubSearchQueryJson, TeamMemberIntegrationAuth} from '../../postgres/types'
 import {
   type IntegrationCtx,
   type IssueCreateCapability,
+  type IssueSearchCapability,
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
 import TaskIntegrationManagerFactory from '../TaskIntegrationManagerFactory'
+import parseGitHubSearchQuery from './parseGitHubSearchQuery'
 
 export class GitHubServerIntegration extends ServerIntegrationDefinition {
   readonly service = githubIntegrationMeta.service
@@ -26,7 +28,10 @@ export class GitHubServerIntegration extends ServerIntegrationDefinition {
     return this.hasActiveAuthRow(ctx, 'github')
   }
 
-  readonly capabilities: {issueCreate: IssueCreateCapability} = {
+  readonly capabilities: {
+    issueCreate: IssueCreateCapability
+    issueSearch: IssueSearchCapability<GitHubSearchQueryJson>
+  } = {
     issueCreate: {
       initManager: (ctx) =>
         TaskIntegrationManagerFactory.initManager(
@@ -36,6 +41,7 @@ export class GitHubServerIntegration extends ServerIntegrationDefinition {
           ctx.context,
           ctx.info
         )
-    }
+    },
+    issueSearch: {parseQuery: parseGitHubSearchQuery}
   }
 }

@@ -67,7 +67,7 @@ const ConfluenceProviderRow = (props: Props) => {
   }
 
   if (!flagOn) return null
-  if (!AtlassianClientManager.isAvailable || !provider) return null
+  if (!provider) return null
 
   return (
     <>

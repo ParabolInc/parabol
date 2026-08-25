@@ -29,7 +29,7 @@ const AddToJiraMenuItem = forwardRef((props: Props, ref) => {
       heldScopes
     )
   }
-  if (!AtlassianClientManager.isAvailable || !provider) return null
+  if (!provider) return null
   return (
     <MenuItem
       ref={ref}

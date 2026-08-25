@@ -73,17 +73,32 @@ export async function up(db: Kysely<any>): Promise<void> {
     ON CONFLICT ("userId", "teamId", service) DO NOTHING
   `.execute(db)
 
-  // Recent search queries move to the shared table. `id`/`lastUsedAt` leave the JSON
-  // because the table has its own columns for them; the remaining keys match what
-  // JiraServerIntegration.searchQueries already reads ({queryString, isJQL, projectKeyFilters}).
+  // Recent search queries move to the shared table, where `query` has one fixed shape per
+  // service: jira/jiraServer {queryString, isJQL, projectKeyFilters}, github {queryString}.
+  // `id`/`lastUsedAt` leave the JSON because the table has its own columns for them.
   await sql`
     INSERT INTO "IntegrationSearchQuery" ("userId", "teamId", service, "providerId", query, "lastUsedAt")
     SELECT a."userId", a."teamId", 'jira', ${providerIds.jira},
-           q.value - 'id' - 'lastUsedAt', (q.value->>'lastUsedAt')::timestamptz
+           jsonb_build_object(
+             'queryString', coalesce(q.value->>'queryString', ''),
+             'isJQL', coalesce((q.value->>'isJQL')::boolean, false),
+             'projectKeyFilters', coalesce(q.value->'projectKeyFilters', '[]'::jsonb)
+           ),
+           (q.value->>'lastUsedAt')::timestamptz
     FROM "AtlassianAuth" a, LATERAL unnest(a."jiraSearchQueries") AS q(value)
     WHERE a."isActive" = true
       AND (q.value->>'lastUsedAt')::timestamptz > now() - interval '60 days'
     ON CONFLICT DO NOTHING
+  `.execute(db)
+
+  await sql`
+    DELETE FROM "IntegrationSearchQuery"
+    WHERE service = 'jiraServer'
+      AND NOT (
+        jsonb_typeof(query->'queryString') = 'string'
+        AND jsonb_typeof(query->'isJQL') = 'boolean'
+        AND jsonb_typeof(query->'projectKeyFilters') = 'array'
+      )
   `.execute(db)
 
   await sql`

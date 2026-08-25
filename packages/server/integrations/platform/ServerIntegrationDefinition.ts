@@ -2,7 +2,7 @@ import type {GraphQLResolveInfo} from 'graphql'
 import type {IntegrationMeta} from 'parabol-client/shared/integrations/IntegrationMeta'
 import type {DataLoaderWorker, GQLContext} from '../../graphql/graphql'
 import type {TeamMemberIntegrationAuth} from '../../postgres/types'
-import type {Integrationproviderserviceenum} from '../../postgres/types/pg'
+import type {Integrationproviderserviceenum, JsonObject} from '../../postgres/types/pg'
 import type {TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
 
 export interface IntegrationCtx {
@@ -24,8 +24,9 @@ export interface IssueReadCapability {
   getIssue(ctx: GqlIntegrationCtx, issueId: string): Promise<unknown>
 }
 
-export interface IssueSearchCapability {
-  persistQueries: boolean
+export interface IssueSearchCapability<TQuery extends JsonObject = JsonObject> {
+  /** Validates a client-supplied search before it is stored as IntegrationSearchQuery.query */
+  parseQuery(queryString: string, meta: JsonObject): TQuery | Error
 }
 
 export interface RepoListCapability {

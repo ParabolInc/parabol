@@ -17,11 +17,13 @@ const GitHubIntegration: GitHubIntegrationResolvers = {
     const queries = await dataLoader
       .get('recentIntegrationSearchQueries')
       .load({teamId, userId, providerId})
-    return queries.map(({id, query, lastUsedAt}) => ({
-      id: IntegrationSearchQueryId.join('GitHubSearchQuery', id),
-      queryString: String((query as {queryString?: unknown}).queryString ?? ''),
-      lastUsedAt: lastUsedAt.toJSON()
-    }))
+    return queries
+      .filter((row) => row.service === 'github')
+      .map(({id, query, lastUsedAt}) => ({
+        id: IntegrationSearchQueryId.join('GitHubSearchQuery', id),
+        ...query,
+        lastUsedAt: lastUsedAt.toJSON()
+      }))
   }
 }
 

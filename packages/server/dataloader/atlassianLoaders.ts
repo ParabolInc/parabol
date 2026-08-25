@@ -64,7 +64,18 @@ export const freshAtlassianAuth = (
           const isFresh = auth.expiresAt
             ? auth.expiresAt.getTime() > inAMinute
             : isAccessTokenFresh(auth.accessToken, inAMinute)
-          return isFresh ? auth : refreshAtlassianAuth(parent, auth)
+          if (isFresh) return auth
+          const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
+          if (provider.service !== 'jira') {
+            logError(new Error(`Auth ${auth.id} points at a ${provider.service} provider`), {
+              userId,
+              tags: {teamId}
+            })
+            return null
+          }
+          const refreshed = await refreshAtlassianAuth(auth, provider)
+          parent.get('teamMemberIntegrationAuthsByServiceTeamAndUserId').clearAll()
+          return refreshed
         })
       )
       return results.map((result) => (result.status === 'fulfilled' ? result.value : null))

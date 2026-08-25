@@ -7,7 +7,7 @@ import OAuth2Manager, {
 } from '../OAuth2Manager'
 
 export default class GitHubOAuth2Manager extends OAuth2Manager {
-  async authorize(code: string, _redirectUri: string | null) {
+  async authorize(code: string) {
     const auth = await this.fetchToken({grant_type: 'authorization_code', code, redirect_uri: ''})
     if (auth instanceof Error) return auth
     const res = await fetch(`${this.serverBaseUrl}/user`, {

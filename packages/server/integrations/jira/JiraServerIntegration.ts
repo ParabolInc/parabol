@@ -1,11 +1,13 @@
 import {jiraIntegrationMeta} from 'parabol-client/shared/integrations/jiraIntegrationMeta'
-import type {TeamMemberIntegrationAuth} from '../../postgres/types'
+import type {JiraSearchQueryJson, TeamMemberIntegrationAuth} from '../../postgres/types'
 import {
   type IntegrationCtx,
   type IssueCreateCapability,
+  type IssueSearchCapability,
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
 import TaskIntegrationManagerFactory from '../TaskIntegrationManagerFactory'
+import parseJiraSearchQuery from './parseJiraSearchQuery'
 
 export class JiraServerIntegration extends ServerIntegrationDefinition {
   readonly service = jiraIntegrationMeta.service
@@ -26,7 +28,10 @@ export class JiraServerIntegration extends ServerIntegrationDefinition {
     return this.hasActiveAuthRow(ctx, 'jira')
   }
 
-  readonly capabilities: {issueCreate: IssueCreateCapability} = {
+  readonly capabilities: {
+    issueCreate: IssueCreateCapability
+    issueSearch: IssueSearchCapability<JiraSearchQueryJson>
+  } = {
     issueCreate: {
       initManager: (ctx) =>
         TaskIntegrationManagerFactory.initManager(
@@ -36,6 +41,7 @@ export class JiraServerIntegration extends ServerIntegrationDefinition {
           ctx.context,
           ctx.info
         )
-    }
+    },
+    issueSearch: {parseQuery: parseJiraSearchQuery}
   }
 }

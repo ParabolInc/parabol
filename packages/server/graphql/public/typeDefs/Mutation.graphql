@@ -1674,11 +1674,6 @@ type Mutation {
     OAuth1 token verifier
     """
     oauthVerifier: ID
-
-    """
-    The URL the OAuth2 code was sent to. Null for webhook auth and for providers that use the callback registered with the app (github)
-    """
-    redirectUri: URL
   ): AddTeamMemberIntegrationAuthPayload! @scope(name: TEAMS_WRITE)
 
   """

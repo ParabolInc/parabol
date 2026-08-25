@@ -2,6 +2,7 @@ jest.mock('../../helpers/authorizeOAuth2', () => ({authorizeOAuth2: jest.fn()}))
 jest.mock('../../../utils/AtlassianServerManager')
 
 import AtlassianServerManager from '../../../utils/AtlassianServerManager'
+import {makeOAuth2Redirect} from '../../../utils/makeOAuth2Redirect'
 import {authorizeOAuth2} from '../../helpers/authorizeOAuth2'
 import JiraOAuth2Manager from '../JiraOAuth2Manager'
 
@@ -32,29 +33,24 @@ describe('JiraOAuth2Manager', () => {
     MockedManager.prototype.getMyself = jest.fn().mockResolvedValue({accountId: 'acct-1'})
   })
 
-  it('posts client creds + code as a form body to auth.atlassian.com', async () => {
+  it('posts client creds + code + the server-owned redirect URI to auth.atlassian.com', async () => {
     grant({})
-    await manager.authorize('code', 'https://redirect')
+    await manager.authorize('code')
     expect(mockedAuthorize).toHaveBeenCalledWith({
       authUrl: 'https://auth.atlassian.com/oauth/token',
       body: {
         grant_type: 'authorization_code',
         code: 'code',
-        redirect_uri: 'https://redirect',
+        redirect_uri: makeOAuth2Redirect(),
         client_id: 'cid',
         client_secret: 'secret'
       }
     })
   })
 
-  it('requires a redirect URI', async () => {
-    await expect(manager.authorize('code', null)).resolves.toBeInstanceOf(Error)
-    expect(mockedAuthorize).not.toHaveBeenCalled()
-  })
-
   it('returns the tokens with accountId as providerUserId and cloudIds in meta', async () => {
     grant({})
-    await expect(manager.authorize('code', 'https://redirect')).resolves.toEqual({
+    await expect(manager.authorize('code')).resolves.toEqual({
       accessToken: 'tok',
       refreshToken: 'r',
       scopes: 'read:jira-work read:jira-user write:jira-work offline_access',
@@ -66,7 +62,7 @@ describe('JiraOAuth2Manager', () => {
 
   it('rejects a grant without a refresh token', async () => {
     grant({refreshToken: undefined})
-    await expect(manager.authorize('code', 'https://redirect')).resolves.toBeInstanceOf(Error)
+    await expect(manager.authorize('code')).resolves.toBeInstanceOf(Error)
     expect(MockedManager.prototype.getAccessibleResources).not.toHaveBeenCalled()
   })
 
@@ -78,7 +74,7 @@ describe('JiraOAuth2Manager', () => {
       accessToken: jwtWithSub('acct-conf'),
       scopes: 'read:confluence-content.all offline_access'
     })
-    await expect(manager.authorize('code', 'https://redirect')).resolves.toMatchObject({
+    await expect(manager.authorize('code')).resolves.toMatchObject({
       providerUserId: 'acct-conf'
     })
     expect(MockedManager.prototype.getMyself).not.toHaveBeenCalled()
@@ -89,7 +85,7 @@ describe('JiraOAuth2Manager', () => {
       .fn()
       .mockResolvedValue([{id: 'cloud-1', scopes: ['read:confluence-content.all']}])
     grant({accessToken: jwtWithSub('acct'), scopes: undefined})
-    await expect(manager.authorize('code', 'https://redirect')).resolves.toMatchObject({
+    await expect(manager.authorize('code')).resolves.toMatchObject({
       scopes: 'read:confluence-content.all offline_access'
     })
   })
@@ -97,6 +93,6 @@ describe('JiraOAuth2Manager', () => {
   it('returns an Error when no site is accessible', async () => {
     MockedManager.prototype.getAccessibleResources = jest.fn().mockResolvedValue([])
     grant({})
-    await expect(manager.authorize('code', 'https://redirect')).resolves.toBeInstanceOf(Error)
+    await expect(manager.authorize('code')).resolves.toBeInstanceOf(Error)
   })
 })

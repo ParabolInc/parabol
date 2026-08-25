@@ -48,7 +48,7 @@ const convertExpiresIn = (authResponse: OAuth2Tokens | Error): OAuth2Auth | Erro
 
 const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationAuth'] = async (
   _source,
-  {providerId, oauthCodeOrPat, oauthVerifier, teamId, redirectUri},
+  {providerId, oauthCodeOrPat, oauthVerifier, teamId},
   context
 ) => {
   const {authToken, dataLoader} = context
@@ -128,7 +128,7 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
     }
 
     if (manager) {
-      const authRes = await manager.authorize(oauthCodeOrPat, redirectUri ?? null)
+      const authRes = await manager.authorize(oauthCodeOrPat)
       if (authRes instanceof Error) return standardError(authRes, {userId: viewerId})
       const {providerUserId: authProviderUserId, meta: authMeta, ...tokens} = authRes
       tokenMetadata = convertExpiresIn(tokens)
@@ -182,7 +182,7 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
     })
   }
 
-  if (tokenMetadata && 'refreshToken' in tokenMetadata) {
+  if (providerUserId !== null && tokenMetadata && 'refreshToken' in tokenMetadata) {
     const {accessToken, refreshToken, scopes, expiresAt} = tokenMetadata
     await syncTeamMemberIntegrationAuthTokens({
       userId: viewerId,

@@ -24,7 +24,7 @@ describe('GitHubOAuth2Manager', () => {
   })
 
   it('exchanges the code without a redirect_uri (GitHub uses the app callback)', async () => {
-    await manager.authorize('code', null)
+    await manager.authorize('code')
     expect(mockedAuthorize).toHaveBeenCalledWith({
       authUrl: 'https://github.com/login/oauth/access_token',
       body: {client_id: 'cid', client_secret: 'secret', code: 'code'}
@@ -32,7 +32,7 @@ describe('GitHubOAuth2Manager', () => {
   })
 
   it('returns the tokens with the login as providerUserId', async () => {
-    await expect(manager.authorize('code', null)).resolves.toEqual({
+    await expect(manager.authorize('code')).resolves.toEqual({
       accessToken: 'gho_x',
       refreshToken: undefined,
       scopes: 'repo',

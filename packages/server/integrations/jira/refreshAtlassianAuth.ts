@@ -1,23 +1,15 @@
-import type RootDataLoader from '../../dataloader/RootDataLoader'
 import getKysely from '../../postgres/getKysely'
 import syncTeamMemberIntegrationAuthTokens from '../../postgres/queries/syncTeamMemberIntegrationAuthTokens'
 import type {AtlassianAuth} from '../../postgres/types'
+import type {IntegrationProviderJiraOAuth2} from '../../postgres/types/IntegrationProvider'
 import logError from '../../utils/logError'
 import JiraOAuth2Manager from './JiraOAuth2Manager'
 
 const refreshAtlassianAuth = async (
-  dataLoader: RootDataLoader,
-  auth: AtlassianAuth
+  auth: AtlassianAuth,
+  provider: IntegrationProviderJiraOAuth2
 ): Promise<AtlassianAuth | null> => {
-  const provider = await dataLoader.get('integrationProviders').loadNonNull(auth.providerId)
   const {clientId, clientSecret, serverBaseUrl} = provider
-  if (!clientId || !clientSecret || !serverBaseUrl) {
-    logError(new Error(`Jira provider ${auth.providerId} is missing OAuth2 credentials`), {
-      userId: auth.userId,
-      tags: {teamId: auth.teamId}
-    })
-    return null
-  }
   const manager = new JiraOAuth2Manager(clientId, clientSecret, serverBaseUrl)
   const oauthRes = await manager.refresh(auth.refreshToken)
   if (oauthRes instanceof Error) {
@@ -27,7 +19,6 @@ const refreshAtlassianAuth = async (
         .set({isActive: false})
         .where('id', '=', auth.id)
         .execute()
-      dataLoader.get('teamMemberIntegrationAuthsByServiceTeamAndUserId').clearAll()
     }
     logError(oauthRes)
     return null
@@ -47,7 +38,6 @@ const refreshAtlassianAuth = async (
     providerUserId: auth.accountId,
     ...tokens
   })
-  dataLoader.get('teamMemberIntegrationAuthsByServiceTeamAndUserId').clearAll()
   return {...auth, ...tokens, scope: tokens.scopes}
 }
 

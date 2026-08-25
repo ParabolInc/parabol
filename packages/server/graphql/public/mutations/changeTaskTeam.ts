@@ -1,23 +1,36 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import deleteConflictingIntegratedTask from '../../../postgres/queries/deleteConflictingIntegratedTask'
+import type {TeamMemberIntegrationAuth} from '../../../postgres/types/pg'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import isValid from '../../isValid'
 import type {MutationResolvers} from '../resolverTypes'
 
-const AUTH_COPY_COLUMNS = [
+type CopiedAuthColumn = Exclude<
+  keyof TeamMemberIntegrationAuth,
+  'id' | 'teamId' | 'createdAt' | 'updatedAt' | 'isActive'
+>
+
+// fails to compile when a column is added to TeamMemberIntegrationAuth but not listed here
+const everyCopiedAuthColumn = <const T extends readonly CopiedAuthColumn[]>(
+  columns: T & ([Exclude<CopiedAuthColumn, T[number]>] extends [never] ? unknown : never)
+) => columns
+
+const AUTH_COPY_COLUMNS = everyCopiedAuthColumn([
   'userId',
   'providerId',
   'service',
   'accessToken',
+  'accessTokenSecret',
   'refreshToken',
   'scopes',
   'expiresAt',
   'providerUserId',
-  'meta'
-] as const
+  'meta',
+  'watchExpiresAt'
+])
 
 const changeTaskTeam: MutationResolvers['changeTaskTeam'] = async (
   _source,
@@ -105,13 +118,9 @@ const changeTaskTeam: MutationResolvers['changeTaskTeam'] = async (
         )
         .onConflict((oc) =>
           oc.columns(['userId', 'teamId', 'service']).doUpdateSet((eb) => ({
-            providerId: eb.ref('excluded.providerId'),
-            accessToken: eb.ref('excluded.accessToken'),
-            refreshToken: eb.ref('excluded.refreshToken'),
-            scopes: eb.ref('excluded.scopes'),
-            expiresAt: eb.ref('excluded.expiresAt'),
-            providerUserId: eb.ref('excluded.providerUserId'),
-            meta: eb.ref('excluded.meta'),
+            ...Object.fromEntries(
+              AUTH_COPY_COLUMNS.map((column) => [column, eb.ref(`excluded.${column}`)])
+            ),
             isActive: true
           }))
         )
