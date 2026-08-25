@@ -17,16 +17,6 @@ export async function up(db: Kysely<any>): Promise<void> {
   await sql`ALTER TABLE "TeamMemberIntegrationAuth" ADD COLUMN IF NOT EXISTS "meta" jsonb`.execute(
     db
   )
-  // Atlassian rotates refresh tokens, so every row for the same account must be refreshed
-  // together; this index serves that lookup
-  await db.schema
-    .createIndex('idx_TeamMemberIntegrationAuth_service_providerUserId')
-    .ifNotExists()
-    .on('TeamMemberIntegrationAuth')
-    .columns(['service', 'providerUserId'])
-    .where(sql.ref('providerUserId'), 'is not', null)
-    .execute()
-
   // Credentials are deliberately not read from env here: the global providers are
   // created inactive & without secrets so the backfill has stable ids to point at, and
   // primeIntegrations (predeploy in prod, every Socket Server boot in dev) upserts the
@@ -125,10 +115,6 @@ export async function down(db: Kysely<any>): Promise<void> {
     .deleteFrom('IntegrationProvider')
     .where('service', 'in', ['jira', 'github'])
     .where('scope', '=', 'global')
-    .execute()
-  await db.schema
-    .dropIndex('idx_TeamMemberIntegrationAuth_service_providerUserId')
-    .ifExists()
     .execute()
   await sql`ALTER TABLE "TeamMemberIntegrationAuth" DROP COLUMN IF EXISTS "meta"`.execute(db)
   // accessToken/refreshToken/scopes stay widened: other services' rows may already rely

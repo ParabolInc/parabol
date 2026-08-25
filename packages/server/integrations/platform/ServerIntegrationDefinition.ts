@@ -2,6 +2,7 @@ import type {GraphQLResolveInfo} from 'graphql'
 import type {IntegrationMeta} from 'parabol-client/shared/integrations/IntegrationMeta'
 import type {DataLoaderWorker, GQLContext} from '../../graphql/graphql'
 import type {TeamMemberIntegrationAuth} from '../../postgres/types'
+import type {TIntegrationProvider} from '../../postgres/types/IntegrationProvider'
 import type {Integrationproviderserviceenum, JsonObject} from '../../postgres/types/pg'
 import type {TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
 
@@ -78,6 +79,14 @@ export abstract class ServerIntegrationDefinition {
       .get('sharedIntegrationProviders')
       .load({service, orgIds: [team.orgId], teamIds: [teamId]})
     return providers.length > 0
+  }
+
+  /** The instance-wide (cloud) provider row, the only one some connect flows can use */
+  async getGlobalProvider(ctx: IntegrationCtx): Promise<TIntegrationProvider | null> {
+    const [globalProvider] = await ctx.dataLoader
+      .get('sharedIntegrationProviders')
+      .load({service: this.service, orgIds: [], teamIds: []})
+    return globalProvider ?? null
   }
 
   getCapabilityKeys() {

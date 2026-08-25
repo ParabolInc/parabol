@@ -21,7 +21,7 @@ export class GitHubServerIntegration extends ServerIntegrationDefinition {
   }
 
   async isAvailable(ctx: IntegrationCtx) {
-    return this.hasSharedProvider(ctx, 'github')
+    return !!(await this.getGlobalProvider(ctx))
   }
 
   async isConnected(ctx: IntegrationCtx) {

@@ -19,6 +19,7 @@ import logError from '../utils/logError'
 import publish from '../utils/publish'
 import {redisStoreAndNetwork} from '../utils/redisStoreAndNetwork'
 import type RootDataLoader from './RootDataLoader'
+import settleOrLogRejection from './settleOrLogRejection'
 
 type TeamUserKey = {
   teamId: string
@@ -78,7 +79,7 @@ export const freshAtlassianAuth = (
           return refreshed
         })
       )
-      return results.map((result) => (result.status === 'fulfilled' ? result.value : null))
+      return settleOrLogRejection(results, keys)
     },
     {...parent.dataLoaderOptions, cacheKeyFn: (key) => `${key.userId}:${key.teamId}`}
   )

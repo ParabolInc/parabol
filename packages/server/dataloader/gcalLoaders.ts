@@ -4,6 +4,7 @@ import syncTeamMemberIntegrationAuthTokens from '../postgres/queries/syncTeamMem
 import type {TeamMemberIntegrationAuth} from '../postgres/types'
 import logError from '../utils/logError'
 import type RootDataLoader from './RootDataLoader'
+import settleOrLogRejection from './settleOrLogRejection'
 
 export const freshGcalAuth = (parent: RootDataLoader) => {
   return new DataLoader<{teamId: string; userId: string}, TeamMemberIntegrationAuth | null, string>(
@@ -50,8 +51,7 @@ export const freshGcalAuth = (parent: RootDataLoader) => {
           return gcalAuth
         })
       )
-      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
-      return vals
+      return settleOrLogRejection(results, keys)
     },
     {
       ...parent.dataLoaderOptions,

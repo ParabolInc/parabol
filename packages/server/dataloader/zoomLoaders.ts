@@ -4,6 +4,7 @@ import syncTeamMemberIntegrationAuthTokens from '../postgres/queries/syncTeamMem
 import type {TeamMemberIntegrationAuth} from '../postgres/types'
 import logError from '../utils/logError'
 import type RootDataLoader from './RootDataLoader'
+import settleOrLogRejection from './settleOrLogRejection'
 
 export const freshZoomAuth = (parent: RootDataLoader) => {
   return new DataLoader<{teamId: string; userId: string}, TeamMemberIntegrationAuth | null, string>(
@@ -31,7 +32,7 @@ export const freshZoomAuth = (parent: RootDataLoader) => {
             const manager = new ZoomOAuth2Manager(clientId!, clientSecret!, serverBaseUrl!)
             const oauthRes = await manager.refresh(refreshToken)
             if (oauthRes instanceof Error) return null
-            const {accessToken, expiresIn} = oauthRes
+            const {accessToken, refreshToken: newRefreshToken, expiresIn} = oauthRes
             const bufferBeforeExpires = 30
             const millisecondsInSeconds = 1000
             const expiresAtTimestamp =
@@ -39,7 +40,7 @@ export const freshZoomAuth = (parent: RootDataLoader) => {
             const newExpiresAt = new Date(expiresAtTimestamp)
             const tokens = {
               accessToken,
-              refreshToken: zoomAuth.refreshToken,
+              refreshToken: newRefreshToken || refreshToken,
               scopes: zoomAuth.scopes,
               expiresAt: newExpiresAt
             }
@@ -55,7 +56,7 @@ export const freshZoomAuth = (parent: RootDataLoader) => {
           return zoomAuth
         })
       )
-      return results.map((result) => (result.status === 'fulfilled' ? result.value : null))
+      return settleOrLogRejection(results, keys)
     },
     {
       ...parent.dataLoaderOptions,

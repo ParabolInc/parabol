@@ -21,7 +21,7 @@ export class JiraServerIntegration extends ServerIntegrationDefinition {
   }
 
   async isAvailable(ctx: IntegrationCtx) {
-    return this.hasSharedProvider(ctx, 'jira')
+    return !!(await this.getGlobalProvider(ctx))
   }
 
   async isConnected(ctx: IntegrationCtx) {

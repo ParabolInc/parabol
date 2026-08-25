@@ -3,7 +3,6 @@ import {
   type RegisteredServerIntegration
 } from '../../../integrations/platform/registry'
 import type {IntegrationCapabilityKey} from '../../../integrations/platform/ServerIntegrationDefinition'
-import {getUserId} from '../../../utils/authorization'
 import type {IntegrationServiceResolvers} from '../resolverTypes'
 
 export type IntegrationServiceSource = {
@@ -29,18 +28,12 @@ const IntegrationService: IntegrationServiceResolvers = {
     getServerIntegration(service).isAvailable({dataLoader, teamId, userId}),
   isConnected: ({service, teamId, userId}, _args, {dataLoader}) =>
     getServerIntegration(service).isConnected({dataLoader, teamId, userId}),
-  auth: ({service, teamId, userId}, _args, {authToken, dataLoader}) => {
-    if (getUserId(authToken) !== userId) return null
-    return dataLoader
+  auth: ({service, teamId, userId}, _args, {dataLoader}) =>
+    dataLoader
       .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
-      .load({service, teamId, userId})
-  },
-  cloudProvider: async ({service}, _args, {dataLoader}) => {
-    const [globalProvider] = await dataLoader
-      .get('sharedIntegrationProviders')
-      .load({service, orgIds: [], teamIds: []})
-    return globalProvider ?? null
-  }
+      .load({service, teamId, userId}),
+  cloudProvider: ({service, teamId, userId}, _args, {dataLoader}) =>
+    getServerIntegration(service).getGlobalProvider({dataLoader, teamId, userId})
 }
 
 export default IntegrationService

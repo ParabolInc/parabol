@@ -12,6 +12,13 @@ const removeIntegrationAuths = async (userId: string, teamIds: string[]) => {
     .where('userId', '=', userId)
     .where('teamId', 'in', teamIds)
     .where('isActive', '=', true)
+    // team-level webhook/sharedSecret rows (Mattermost, MS Teams) outlive the member who connected them
+    .where('providerId', 'not in', (eb) =>
+      eb
+        .selectFrom('IntegrationProvider')
+        .select('id')
+        .where('authStrategy', 'in', ['webhook', 'sharedSecret'])
+    )
     .execute()
 }
 
