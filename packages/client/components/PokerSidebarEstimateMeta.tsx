@@ -17,13 +17,13 @@ const PokerSidebarEstimateMeta = (props: Props) => {
   if (finalScores.length === 1) {
     const [firstScore] = finalScores
     const label = firstScore || '–'
-    return <div className='pr-2 font-semibold'>{label}</div>
+    return <div className='font-semibold'>{label}</div>
   }
 
   const tooltipBody = finalScores.map((score) => (score === null ? '?' : score)).join(' / ')
   return (
     <div
-      className='relative mr-2 w-6'
+      className='relative w-6'
       ref={originRef}
       onMouseEnter={openTooltip}
       onMouseLeave={closeTooltip}
