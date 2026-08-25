@@ -4,6 +4,7 @@ import {sql} from 'kysely'
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {USER_AI_TOKENS_MONTHLY_LIMIT} from '../../../postgres/constants'
 import getKysely from '../../../postgres/getKysely'
+import {AI_MODEL} from '../../../utils/aiModel'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isSuperUser} from '../../../utils/authorization'
 import {makeMeetingInsightInput} from '../../../utils/makeMeetingInsightInput'
@@ -97,7 +98,8 @@ export const pageInsights: NonNullable<UserResolvers['pageInsights']> = async (
   } else {
     // make a title for the prompt
     const promptValidation = await openAI.openAIApi!.chat.completions.create({
-      model: 'o3-mini',
+      model: AI_MODEL,
+      reasoning_effort: 'low',
       messages: [
         {
           role: 'system',
@@ -127,7 +129,7 @@ If not, respond with "Invalid prompt"`
   }
   try {
     const rawInsightResponseStream = await openAI.openAIApi!.chat.completions.create({
-      model: 'o3-mini',
+      model: AI_MODEL,
       stream: true,
       stream_options: {
         include_usage: true

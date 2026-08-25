@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {DiscussionDrawerTranscripts_meeting$key} from '../__generated__/DiscussionDrawerTranscripts_meeting.graphql'
-import DiscussionDrawerGdriveRow from './DiscussionDrawerGdriveRow'
+import DiscussionDrawerGmeetRow from './DiscussionDrawerGmeetRow'
 import DiscussionDrawerZoomRow from './DiscussionDrawerZoomRow'
 
 interface Props {
@@ -16,8 +16,8 @@ const DiscussionDrawerTranscripts = ({meetingRef}: Props) => {
         team {
           viewerTeamMember {
             integrations {
-              gdrive {
-                ...DiscussionDrawerGdriveRow_gdrive
+              gmeet {
+                ...DiscussionDrawerGmeetRow_gmeet
               }
               zoom {
                 ...DiscussionDrawerZoomRow_zoom
@@ -39,8 +39,8 @@ const DiscussionDrawerTranscripts = ({meetingRef}: Props) => {
         Connect a video call provider to automatically import transcripts after your meeting ends.
       </p>
       <div className='flex flex-col gap-2'>
-        {integrations?.gdrive && (
-          <DiscussionDrawerGdriveRow gdriveRef={integrations.gdrive} teamId={teamId} />
+        {integrations?.gmeet && (
+          <DiscussionDrawerGmeetRow gmeetRef={integrations.gmeet} teamId={teamId} />
         )}
         {integrations?.zoom && (
           <DiscussionDrawerZoomRow zoomRef={integrations.zoom} teamId={teamId} />

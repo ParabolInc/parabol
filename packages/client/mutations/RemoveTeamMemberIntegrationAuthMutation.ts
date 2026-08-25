@@ -14,7 +14,7 @@ graphql`
         ...MattermostProviderRowTeamMemberIntegrations
         ...MSTeamsProviderRowTeamMemberIntegrations
         ...LinearProviderRowTeamMemberIntegrations
-        gdrive {
+        gmeet {
           isActive
         }
         zoom {

@@ -6,9 +6,9 @@ import * as customLoaderMakers from './customLoaderMakers'
 import DataLoaderCache from './DataLoaderCache'
 import * as foreignKeyLoaderMakers from './foreignKeyLoaderMakers'
 import * as gcalLoaders from './gcalLoaders'
-import * as gdriveLoaders from './gdriveLoaders'
 import * as githubLoaders from './githubLoaders'
 import * as gitlabLoaders from './gitlabLoaders'
+import * as gmeetLoaders from './gmeetLoaders'
 import * as integrationAuthLoaders from './integrationAuthLoaders'
 import * as jiraServerLoaders from './jiraServerLoaders'
 import * as linearLoaders from './linearLoaders'
@@ -35,7 +35,7 @@ const loaderMakers = {
   ...githubLoaders,
   ...gitlabLoaders,
   ...gcalLoaders,
-  ...gdriveLoaders,
+  ...gmeetLoaders,
   ...integrationAuthLoaders,
   ...pollLoaders,
   ...azureDevOpsLoaders,

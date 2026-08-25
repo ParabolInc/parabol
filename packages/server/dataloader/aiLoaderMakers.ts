@@ -1,5 +1,6 @@
 import DataLoader from 'dataloader'
 import yaml from 'js-yaml'
+import {AI_MODEL} from '../utils/aiModel'
 import logError from '../utils/logError'
 import {makeMeetingInsightInput} from '../utils/makeMeetingInsightInput'
 import OpenAIServerManager from '../utils/OpenAIServerManager'
@@ -66,7 +67,7 @@ export const meetingInsightsContent = (parent: RootDataLoader) => {
           try {
             const openAI = new OpenAIServerManager()
             const response = await openAI.openAIApi!.chat.completions.create({
-              model: 'o3-mini',
+              model: AI_MODEL,
               messages: [
                 {
                   role: 'system',

@@ -46,7 +46,7 @@ const mutation = graphql`
                 isActive
               }
             }
-            gdrive {
+            gmeet {
               isActive
             }
             zoom {
