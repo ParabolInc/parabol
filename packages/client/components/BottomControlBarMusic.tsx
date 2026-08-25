@@ -55,7 +55,7 @@ const BottomControlBarMusic = ({meetingId}: Props) => {
                 isPlaying ? 'animate-pulse text-fg-primary' : 'text-fg-primary'
               )}
             />
-            <span className='mt-0.5 font-medium text-fg-primary text-xs'>Music</span>
+            <span className='mt-0.5 font-medium text-fg-secondary text-xs'>Music</span>
           </span>
         </BottomNavControl>
       </RadixPopover.Trigger>

@@ -68,7 +68,7 @@ const MeetingSubnavItem = (props: Props) => {
           <div
             ref={labelRef}
             className={cn(
-              'wrap-break-word flex-1 overflow-hidden text-ellipsis whitespace-pre pl-7 text-inherit',
+              'wrap-break-word flex-1 overflow-hidden text-ellipsis whitespace-pre pl-4 text-inherit',
               isComplete && 'line-through',
               labelClassName
             )}
@@ -78,7 +78,7 @@ const MeetingSubnavItem = (props: Props) => {
         </TooltipTrigger>
         {isOverflowing && <TooltipContent>{children}</TooltipContent>}
       </Tooltip>
-      <div className='flex h-[22px] content-center items-center pl-1'>{metaContent}</div>
+      <div className='flex h-[22px] content-center items-center pr-2 pl-1'>{metaContent}</div>
     </div>
   )
 }

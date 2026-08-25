@@ -11,6 +11,7 @@ export const LeftNavItemButtons = (props: Props) => {
       className='flex w-0 items-center justify-end pr-1 opacity-0 group-hover:w-auto group-hover:opacity-100'
       onClick={(e) => {
         // Any clicks here should not propagate up to the parent anchor tag
+        e.preventDefault()
         e.stopPropagation()
       }}
     >

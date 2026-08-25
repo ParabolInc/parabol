@@ -1,4 +1,4 @@
-import {type RefObject, useEffect} from 'react'
+import {type RefObject, useLayoutEffect} from 'react'
 import useForceUpdate from './useForceUpdate'
 
 const useResizeFontForElement = <T extends HTMLElement = HTMLInputElement>(
@@ -9,7 +9,7 @@ const useResizeFontForElement = <T extends HTMLElement = HTMLInputElement>(
   reduceBy = 0
 ) => {
   const forceUpdate = useForceUpdate()
-  useEffect(() => {
+  useLayoutEffect(() => {
     const el = ref.current
     if (!el) {
       forceUpdate()
