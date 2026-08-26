@@ -1,0 +1,31 @@
+"""
+A team's aggregate score for one team health category in one meeting, computed across every
+respondent so no answer can be traced back to an individual
+"""
+type TeamHealthCategoryScore {
+  """
+  The category being scored
+  """
+  category: TeamHealthCategory!
+
+  """
+  The mean of every 1-5 Likert answer given in this category
+  """
+  meanScore: Float!
+
+  """
+  meanScore mapped onto a 0-100 scale. The number every Team Health surface reports
+  """
+  normalizedScore: Int!
+
+  """
+  The number of distinct members who answered at least one question in this category. A bare
+  count only, never the member ids
+  """
+  respondentCount: Int!
+
+  """
+  The number of scored answers behind meanScore. Skipped questions are not counted
+  """
+  responseCount: Int!
+}

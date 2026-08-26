@@ -1,12 +1,14 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {TeamHealthResultPhase_meeting$key} from '~/__generated__/TeamHealthResultPhase_meeting.graphql'
+import {normalizeLikertMean} from '../../shared/teamHealth/normalizeLikertMean'
 import {cn} from '../../ui/cn'
 import {isNotNull} from '../../utils/predicates'
 import {
   getOrderedTeamHealthCategories,
   getTeamHealthCategoryColor
 } from '../ActivityLibrary/TeamHealth/getTeamHealthCategoryColor'
+import TeamHealthCategoryRollup from './TeamHealthCategoryRollup'
 import TeamHealthDistributionChart from './TeamHealthDistributionChart'
 
 interface Props {
@@ -25,9 +27,6 @@ interface QuestionResult {
   variance: number
   comments: string[]
 }
-
-// mean of a 1-5 Likert answer mapped onto a 0-100 scale, matching the design's headline numbers
-const normalize = (mean: number) => Math.round(((mean - 1) / 4) * 100)
 
 const computeResults = (
   responses: readonly {
@@ -64,7 +63,7 @@ const computeResults = (
     const {scores} = entry
     if (scores.length === 0) continue
     const mean = scores.reduce((sum, s) => sum + s, 0) / scores.length
-    entry.score = normalize(mean)
+    entry.score = normalizeLikertMean(mean)
     entry.variance = scores.reduce((sum, s) => sum + (s - mean) ** 2, 0) / scores.length
   }
   return [...byQuestion.values()]
@@ -105,6 +104,7 @@ const TeamHealthResultPhase = (props: Props) => {
             }
           }
         }
+        ...TeamHealthCategoryRollup_meeting
         responses {
           score
           commentParaphrased
@@ -144,7 +144,13 @@ const TeamHealthResultPhase = (props: Props) => {
           conversation is.
         </p>
       </div>
-      <div className='mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'>
+      <TeamHealthCategoryRollup
+        className='mt-8'
+        meeting={meeting}
+        orderedCategoryIds={orderedCategoryIds}
+      />
+      <h2 className='mt-8 font-bold text-fg-primary text-xl'>Question by question</h2>
+      <div className='mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'>
         {results.map((result) => {
           const badge = badgeForScore(result.score)
           const isDivergent = divergent?.questionId === result.questionId
