@@ -1,6 +1,7 @@
 import {jiraIntegrationMeta} from 'parabol-client/shared/integrations/jiraIntegrationMeta'
 import pushEstimateToJira from '../../graphql/mutations/helpers/pushEstimateToJira'
 import type {JiraSearchQueryJson, TeamMemberIntegrationAuth} from '../../postgres/types'
+import {hasJiraScopes} from '../../utils/hasJiraScopes'
 import {
   type EstimatePushCapability,
   type IntegrationCtx,
@@ -28,6 +29,15 @@ export class JiraServerIntegration extends ServerIntegrationDefinition {
 
   async isAvailable(ctx: IntegrationCtx) {
     return !!(await this.getGlobalProvider(ctx))
+  }
+
+  /** An Atlassian grant may be Confluence-only; it counts as a Jira connection only with Jira scopes */
+  async isConnected(ctx: IntegrationCtx) {
+    const {dataLoader, teamId, userId} = ctx
+    const auth = await dataLoader
+      .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
+      .load({service: this.service, teamId, userId})
+    return !!auth?.accessToken && hasJiraScopes(auth.scopes)
   }
 
   readonly capabilities: {

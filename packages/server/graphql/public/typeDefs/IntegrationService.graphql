@@ -11,7 +11,7 @@ interface IntegrationService {
   isAvailable: Boolean!
 
   """
-  true if the viewer has an active auth row for this service on this team. Does not validate or refresh the token
+  true if this team member has an active, usable auth row for this service on this team (for Jira, one that carries the Jira scopes). Readable by teammates. Does not validate or refresh the token
   """
   isConnected: Boolean!
   capabilities: [IntegrationCapabilityEnum!]!

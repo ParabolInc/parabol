@@ -6,6 +6,7 @@ import JiraServerOAuth1Manager, {
 } from '../../../integrations/jiraServer/JiraServerOAuth1Manager'
 import type {OAuth2AuthorizeResponse} from '../../../integrations/OAuth2Manager'
 import createOAuth2Manager from '../../../integrations/platform/createOAuth2Manager'
+import {getServerIntegration} from '../../../integrations/platform/registry'
 import toExpiresAt from '../../../integrations/platform/toExpiresAt'
 import getKysely from '../../../postgres/getKysely'
 import syncTeamMemberIntegrationAuthTokens from '../../../postgres/queries/syncTeamMemberIntegrationAuthTokens'
@@ -185,6 +186,15 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
     data,
     subOptions
   )
+  if (getServerIntegration(providerService)) {
+    publish(
+      SubscriptionChannel.TEAM,
+      teamId,
+      'AddTeamMemberIntegrationAuthSuccess',
+      data,
+      subOptions
+    )
+  }
   return data
 }
 

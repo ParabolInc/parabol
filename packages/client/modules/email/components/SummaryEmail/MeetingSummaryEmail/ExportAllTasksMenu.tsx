@@ -27,9 +27,7 @@ const query = graphql`
       id
       viewerTeamMember: teamMember(userId: null, teamId: $teamId) {
         ...TaskFooterIntegrateMenuSignup_teamMember
-        integrations {
-          ...useIsIntegrated_integrations
-        }
+        ...useIsIntegrated_teamMember
       }
     }
   }
@@ -74,7 +72,7 @@ const ExportAllTasksMenu = (props: Props) => {
 
   const {viewerTeamMember} = viewer
   const {teamId, tasks} = meeting
-  const isViewerIntegrated = useIsIntegrated(viewerTeamMember?.integrations)
+  const isViewerIntegrated = useIsIntegrated(viewerTeamMember)
 
   if (!viewerTeamMember) return null
 

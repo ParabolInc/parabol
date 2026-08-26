@@ -31,15 +31,11 @@ const query = graphql`
             id
           }
         }
-        integrations {
-          ...useIsIntegrated_integrations
-        }
+        ...useIsIntegrated_teamMember
       }
       viewerTeamMember: teamMember(userId: null, teamId: $teamId) {
         ...TaskFooterIntegrateMenuSignup_teamMember
-        integrations {
-          ...useIsIntegrated_integrations
-        }
+        ...useIsIntegrated_teamMember
       }
     }
   }
@@ -62,8 +58,8 @@ const TaskFooterIntegrateMenu = (props: Props) => {
   const atmosphere = useAtmosphere()
 
   const {id: viewerId, viewerTeamMember, assigneeTeamMember} = viewer
-  const isViewerIntegrated = useIsIntegrated(viewerTeamMember?.integrations)
-  const isAssigneeIntegrated = useIsIntegrated(assigneeTeamMember?.integrations)
+  const isViewerIntegrated = useIsIntegrated(viewerTeamMember)
+  const isAssigneeIntegrated = useIsIntegrated(assigneeTeamMember)
   if (!assigneeTeamMember || !viewerTeamMember) return null
   const {user: assigneeUser, prevUsedRepoIntegrations} = assigneeTeamMember
   const {preferredName: assigneeName} = assigneeUser

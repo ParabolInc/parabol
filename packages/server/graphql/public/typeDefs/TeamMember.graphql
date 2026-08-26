@@ -43,7 +43,8 @@ type TeamMember {
   integrations: TeamMemberIntegrations!
 
   """
-  All registered task-integration services and what the viewer can do with each on this team
+  All registered task-integration services and whether this member has connected each on this team.
+  Readable by every team member; only the member themselves can read a service's auth
   """
   services: [IntegrationService!]!
 

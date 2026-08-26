@@ -43,6 +43,9 @@ const subscription = graphql`
       UpdateRecurrenceSettingsSuccess {
         ...UpdateRecurrenceSettingsMutation_team @relay(mask: false)
       }
+      AddTeamMemberIntegrationAuthSuccess {
+        ...AddTeamMemberIntegrationAuthMutation_team @relay(mask: false)
+      }
       UpdateDimensionFieldSuccess {
         ...UpdateJiraDimensionFieldMutation_team @relay(mask: false)
       }

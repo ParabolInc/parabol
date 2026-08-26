@@ -4,8 +4,17 @@ import type {AddTeamMemberIntegrationAuthMutation as TAddTeamMemberIntegrationAu
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
+  fragment AddTeamMemberIntegrationAuthMutation_team on AddTeamMemberIntegrationAuthSuccess {
+    teamMember {
+      ...useIsIntegrated_teamMember
+    }
+  }
+`
+
+graphql`
   fragment AddTeamMemberIntegrationAuthMutation_notification on AddTeamMemberIntegrationAuthSuccess {
     teamMember {
+      ...useIsIntegrated_teamMember
       ...GitLabProviderRowTeamMember
       ...ScopePhaseAreaGitLab_teamMember
       ...JiraServerProviderRowTeamMember
@@ -14,7 +23,6 @@ graphql`
       ...LinearProviderRowTeamMember
       ...ScopePhaseAreaGitHub_teamMember
       integrations {
-        ...useIsIntegrated_integrations
         ...MattermostProviderRowTeamMemberIntegrations
         ...MSTeamsProviderRowTeamMemberIntegrations
         gitlab {
@@ -35,17 +43,11 @@ graphql`
         }
         atlassian {
           ...AtlassianProviderRowAtlassianIntegration
-          ...useIsIntegratedAtlassianIntegration
         }
         github {
-          ...useIsIntegratedGitHubIntegration
           ...GitHubProviderRowGitHubIntegration
           ...GitHubScopingSearchBarGitHubIntegration
         }
-      }
-      services {
-        service
-        isConnected
       }
     }
   }

@@ -1,8 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
-
 import {useFragment} from 'react-relay'
-import type {useIsIntegrated_integrations$key} from '../__generated__/useIsIntegrated_integrations.graphql'
-import {hasJiraScopes} from '../utils/atlassianScopes'
+import type {
+  IntegrationProviderServiceEnum,
+  useIsIntegrated_teamMember$key
+} from '../__generated__/useIsIntegrated_teamMember.graphql'
 
 type IntegrationLookup = {
   hasGitHub: boolean
@@ -12,46 +13,6 @@ type IntegrationLookup = {
   hasAzureDevOps: boolean
   hasLinear: boolean
 }
-
-graphql`
-  fragment useIsIntegratedJiraServerIntegration on JiraServerIntegration {
-    auth {
-      isActive
-    }
-  }
-`
-graphql`
-  fragment useIsIntegratedAtlassianIntegration on AtlassianIntegration {
-    isActive
-    scope
-  }
-`
-graphql`
-  fragment useIsIntegratedGitHubIntegration on GitHubIntegration {
-    isActive
-  }
-`
-graphql`
-  fragment useIsIntegratedGitLabIntegration on GitLabIntegration {
-    auth {
-      isActive
-    }
-  }
-`
-graphql`
-  fragment useIsIntegratedAzureDevOpsIntegration on AzureDevOpsIntegration {
-    auth {
-      isActive
-    }
-  }
-`
-graphql`
-  fragment useIsIntegratedLinearIntegration on LinearIntegration {
-    auth {
-      isActive
-    }
-  }
-`
 
 export const makePlaceholder = (integrationLookup: IntegrationLookup) => {
   const {hasGitHub, hasAtlassian, hasGitLab, hasAzureDevOps, hasLinear} = integrationLookup
@@ -64,51 +25,30 @@ export const makePlaceholder = (integrationLookup: IntegrationLookup) => {
   return `Search ${names.join(' & ')}`
 }
 
-export const useIsIntegrated = (integrationsRef?: useIsIntegrated_integrations$key) => {
-  const integrations = useFragment(
+export const useIsIntegrated = (teamMemberRef?: useIsIntegrated_teamMember$key | null) => {
+  const teamMember = useFragment(
     graphql`
-      fragment useIsIntegrated_integrations on TeamMemberIntegrations {
-        jiraServer {
-          ...useIsIntegratedJiraServerIntegration @relay(mask: false)
-        }
-        atlassian {
-          ...useIsIntegratedAtlassianIntegration @relay(mask: false)
-        }
-        github {
-          ...useIsIntegratedGitHubIntegration @relay(mask: false)
-        }
-        gitlab {
-          ...useIsIntegratedGitLabIntegration @relay(mask: false)
-        }
-        azureDevOps {
-          ...useIsIntegratedAzureDevOpsIntegration @relay(mask: false)
-        }
-        linear {
-          ...useIsIntegratedLinearIntegration @relay(mask: false)
+      fragment useIsIntegrated_teamMember on TeamMember {
+        services {
+          service
+          isConnected
         }
       }
     `,
-    integrationsRef ?? null
+    teamMemberRef ?? null
   )
-  if (!integrations) {
+  if (!teamMember) {
     return null
   }
-  const {atlassian, github, jiraServer, gitlab, azureDevOps, linear} = integrations
-  // an active grant may be Confluence-only — Jira task integration needs Jira scopes
-  const hasAtlassian = (atlassian?.isActive && hasJiraScopes(atlassian?.scope)) ?? false
-  const hasGitHub = github?.isActive ?? false
-  const hasGitLab = gitlab?.auth?.isActive ?? false
-  const hasJiraServer = jiraServer?.auth?.isActive ?? false
-  const hasAzureDevOps = azureDevOps?.auth?.isActive ?? false
-  const hasLinear = linear?.auth?.isActive ?? false
-  return hasAtlassian || hasGitHub || hasJiraServer || hasGitLab || hasAzureDevOps || hasLinear
-    ? {
-        hasAtlassian,
-        hasGitHub,
-        hasJiraServer,
-        hasGitLab,
-        hasAzureDevOps,
-        hasLinear
-      }
-    : null
+  const isConnected = (service: IntegrationProviderServiceEnum) =>
+    teamMember.services.some((entry) => entry.service === service && entry.isConnected)
+  const lookup: IntegrationLookup = {
+    hasAtlassian: isConnected('jira'),
+    hasGitHub: isConnected('github'),
+    hasJiraServer: isConnected('jiraServer'),
+    hasGitLab: isConnected('gitlab'),
+    hasAzureDevOps: isConnected('azureDevOps'),
+    hasLinear: isConnected('linear')
+  }
+  return Object.values(lookup).some(Boolean) ? lookup : null
 }
