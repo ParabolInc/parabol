@@ -7,10 +7,8 @@ import {
   getOrderedTeamHealthCategories,
   getTeamHealthCategoryColor
 } from '../ActivityLibrary/TeamHealth/getTeamHealthCategoryColor'
-import TeamHealthResultCard, {
-  OBSCURE_SPREAD_BELOW,
-  OBSCURED_SPREAD_EXPLANATION
-} from './TeamHealthResultCard'
+import TeamHealthResultCard from './TeamHealthResultCard'
+import {HIDDEN_SPREAD_FOOTNOTE, MIN_SAFE_TEAM_HEALTH_RESPONSES} from './teamHealthAnonymity'
 
 interface Props {
   meeting: TeamHealthResultPhase_meeting$key
@@ -135,7 +133,7 @@ const TeamHealthResultPhase = (props: Props) => {
   const commented = results.filter((result) => result.comments.length > 0)
   const hasObscuredSpread = results.some((result) => {
     const responseCount = scoreByCategoryId.get(result.categoryId)?.responseCount ?? 0
-    return responseCount > 0 && responseCount < OBSCURE_SPREAD_BELOW
+    return responseCount > 0 && responseCount < MIN_SAFE_TEAM_HEALTH_RESPONSES
   })
 
   return (
@@ -169,9 +167,7 @@ const TeamHealthResultPhase = (props: Props) => {
           )
         })}
       </div>
-      {hasObscuredSpread && (
-        <p className='mt-4 text-fg-muted text-sm'>{OBSCURED_SPREAD_EXPLANATION}</p>
-      )}
+      {hasObscuredSpread && <p className='mt-4 text-fg-muted text-sm'>*{HIDDEN_SPREAD_FOOTNOTE}</p>}
       {commented.length > 0 && (
         <div className='mt-8 rounded-2xl bg-surface-card p-6 shadow-card'>
           <h2 className='font-bold text-fg-primary text-lg'>What people wrote</h2>

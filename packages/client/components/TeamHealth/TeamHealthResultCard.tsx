@@ -1,13 +1,12 @@
-import {Lock} from '~/ui/icons'
 import {cn} from '../../ui/cn'
+import {Tooltip} from '../../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
 import plural from '../../utils/plural'
 import {getTeamHealthCategoryColor} from '../ActivityLibrary/TeamHealth/getTeamHealthCategoryColor'
 import {formatTeamHealthScore} from './formatTeamHealthScore'
 import TeamHealthDistributionChart from './TeamHealthDistributionChart'
-
-export const OBSCURE_SPREAD_BELOW = 4
-export const OBSCURED_SPREAD_EXPLANATION =
-  'With this few answers the shape of the spread is close enough to a list of who said what, so it stays hidden. The average still counts every answer.'
+import {HIDDEN_SPREAD_TOOLTIP, MIN_SAFE_TEAM_HEALTH_RESPONSES} from './teamHealthAnonymity'
 
 interface Props {
   categoryId: string
@@ -34,7 +33,7 @@ const TeamHealthResultCard = (props: Props) => {
     responseCount,
     orderedCategoryIds
   } = props
-  const isObscured = responseCount > 0 && responseCount < OBSCURE_SPREAD_BELOW
+  const isObscured = responseCount > 0 && responseCount < MIN_SAFE_TEAM_HEALTH_RESPONSES
 
   return (
     <div className='flex h-full flex-col rounded-2xl bg-surface-card p-5 shadow-card'>
@@ -51,14 +50,18 @@ const TeamHealthResultCard = (props: Props) => {
       <div className='relative mt-4'>
         <TeamHealthDistributionChart distribution={distribution} isObscured={isObscured} />
         {isObscured && (
-          <div
-            className='absolute inset-0 flex items-center justify-center'
-            title={OBSCURED_SPREAD_EXPLANATION}
-          >
-            <span className='flex items-center gap-1 rounded-full bg-surface-raised px-2.5 py-1 font-semibold text-fg-secondary text-xs shadow-card'>
-              <Lock className='size-3.5' />
-              Spread hidden
-            </span>
+          <div className='absolute inset-0 flex items-center justify-center'>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                {/* the marker ties this card to the footnote that spells the reason out in full */}
+                <span className='cursor-default rounded-full bg-surface-raised px-2.5 py-1 font-semibold text-fg-secondary text-xs shadow-card'>
+                  *Spread hidden
+                </span>
+              </TooltipTrigger>
+              <TooltipContent side='top' align='center' sideOffset={2}>
+                {HIDDEN_SPREAD_TOOLTIP}
+              </TooltipContent>
+            </Tooltip>
           </div>
         )}
       </div>
