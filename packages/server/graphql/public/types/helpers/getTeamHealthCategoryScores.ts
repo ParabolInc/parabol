@@ -7,6 +7,9 @@ export interface TeamHealthCategoryScoreSource {
   meanScore: number
   respondentCount: number
   responseCount: number
+  // change vs the last cycle that scored this category. Only a team's cycle history can supply it,
+  // so a bare per-meeting rollup leaves it null (see getTeamHealthCycles)
+  meanScoreDelta: number | null
 }
 
 // Question rotation means the questions asked change from cycle to cycle, so a question is not a
@@ -61,7 +64,8 @@ export const getTeamHealthCategoryScores = async (
           categoryId,
           meanScore,
           respondentCount: userIds.size,
-          responseCount: scores.length
+          responseCount: scores.length,
+          meanScoreDelta: null
         }
       })
       .sort((a, b) => (categoryRank.get(a.categoryId) ?? 0) - (categoryRank.get(b.categoryId) ?? 0))

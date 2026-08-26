@@ -1,0 +1,36 @@
+"""
+One completed Team Health cycle in a team's history, rolled up so a lead can compare the team
+against its own past
+"""
+type TeamHealthTrendPoint {
+  """
+  *Foreign key. The meeting this cycle ran in
+  """
+  meetingId: ID!
+
+  """
+  The meeting this cycle ran in
+  """
+  meeting: TeamHealthMeeting!
+
+  """
+  The name of the meeting, e.g. "Team Health #4"
+  """
+  name: String!
+
+  """
+  When the cycle closed and its results were revealed
+  """
+  endedAt: DateTime!
+
+  """
+  The number of distinct members who submitted at least one scored response. A bare count only,
+  never the member ids
+  """
+  respondentCount: Int!
+
+  """
+  This cycle's score for every category it asked about, ordered the same way the client colors them
+  """
+  categoryScores: [TeamHealthCategoryScore!]!
+}

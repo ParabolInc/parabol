@@ -25,4 +25,11 @@ type TeamHealthCategoryScore {
   The number of scored answers behind meanScore. Skipped questions are not counted
   """
   responseCount: Int!
+
+  """
+  The change in meanScore since the last cycle that scored this category, on the same 1-5 scale.
+  Null when the team has no earlier cycle to compare against, or when this score didn't come from
+  a cycle history
+  """
+  meanScoreDelta: Float
 }

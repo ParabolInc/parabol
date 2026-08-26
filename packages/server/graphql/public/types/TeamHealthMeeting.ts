@@ -1,6 +1,6 @@
 import {selectNewMeetings} from '../../../postgres/select'
 import type {TeamHealthMeetingResolvers} from '../resolverTypes'
-import {getTeamHealthCategoryScores} from './helpers/getTeamHealthCategoryScores'
+import {getTeamHealthCycles} from './helpers/getTeamHealthCycles'
 
 // how far back to walk the series looking for the streak. teams meeting even weekly won't
 // realistically run this many cycles in a row, so this is just a sane upper bound on the query
@@ -18,12 +18,14 @@ const TeamHealthMeeting: TeamHealthMeetingResolvers = {
     if (!endedAt) return []
     return dataLoader.get('teamHealthResponsesByMeetingId').load(meetingId)
   },
-  categoryScores: async ({id: meetingId, endedAt}, _args, {dataLoader}) => {
+  categoryScores: async ({id: meetingId, endedAt, teamId}, _args, {dataLoader}) => {
     // gated on endedAt for the same reason `responses` is: a category rollup over one respondent is
     // that respondent's answers
     if (!endedAt) return []
-    const [categoryScores] = await getTeamHealthCategoryScores([meetingId], dataLoader)
-    return categoryScores ?? []
+    // read the rollup out of the team's cycle history rather than computing it standalone, so every
+    // score arrives carrying its delta against the previous cycle
+    const cycles = await getTeamHealthCycles(teamId, dataLoader)
+    return cycles.find((cycle) => cycle.meetingId === meetingId)?.categoryScores ?? []
   },
   respondentCount: async ({id: meetingId}, _args, {dataLoader}) => {
     const responses = await dataLoader.get('teamHealthResponsesByMeetingId').load(meetingId)

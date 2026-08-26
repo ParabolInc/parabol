@@ -17,6 +17,7 @@ import isValid from '../../isValid'
 import connectionFromTasks from '../../queries/helpers/connectionFromTasks'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import type {TeamResolvers} from '../resolverTypes'
+import {getTeamHealthCycles} from './helpers/getTeamHealthCycles'
 
 const Team: TeamResolvers = {
   activeMeetings: async ({id: teamId}, _args, {authToken, dataLoader}) => {
@@ -123,6 +124,11 @@ const Team: TeamResolvers = {
   organization: async ({orgId}, _args, {dataLoader}) => {
     const organization = await dataLoader.get('organizations').loadNonNull(orgId)
     return organization
+  },
+  teamHealthTrend: async ({id: teamId}, {limit}, {dataLoader}) => {
+    const cycles = await getTeamHealthCycles(teamId, dataLoader)
+    // the most recent `limit` cycles, still oldest first so the client can plot them left to right
+    return limit === null || limit === undefined ? cycles : cycles.slice(-limit)
   },
   retroMeetingsCount: async ({id: teamId}, _args, {dataLoader}) => {
     const meetings = await dataLoader.get('completedMeetingsByTeamId').load(teamId)

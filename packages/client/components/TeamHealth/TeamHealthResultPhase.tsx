@@ -7,6 +7,7 @@ import {
   getOrderedTeamHealthCategories,
   getTeamHealthCategoryColor
 } from '../ActivityLibrary/TeamHealth/getTeamHealthCategoryColor'
+import TeamHealthCategoryTrend, {type CategoryTrendRow} from './TeamHealthCategoryTrend'
 import TeamHealthResultCard from './TeamHealthResultCard'
 import {HIDDEN_SPREAD_FOOTNOTE, MIN_SAFE_TEAM_HEALTH_RESPONSES} from './teamHealthAnonymity'
 
@@ -75,10 +76,24 @@ const TeamHealthResultPhase = (props: Props) => {
         }
         categoryScores {
           meanScore
+          meanScoreDelta
           respondentCount
           responseCount
           category {
             id
+          }
+        }
+        team {
+          # enough cycles to read a direction, few enough to stay legible in one row of bars
+          teamHealthTrend(limit: 5) {
+            meetingId
+            name
+            categoryScores {
+              meanScore
+              category {
+                id
+              }
+            }
           }
         }
         phases {
@@ -130,6 +145,31 @@ const TeamHealthResultPhase = (props: Props) => {
     (a, b) =>
       (askOrderByQuestionId.get(a.questionId) ?? 0) - (askOrderByQuestionId.get(b.questionId) ?? 0)
   )
+  const trendByCategoryId = new Map<string, {meetingId: string; name: string; score: number}[]>()
+  meeting.team.teamHealthTrend.forEach((cycle) => {
+    cycle.categoryScores.forEach(({category, meanScore}) => {
+      const points = trendByCategoryId.get(category.id) ?? []
+      points.push({meetingId: cycle.meetingId, name: cycle.name, score: meanScore})
+      trendByCategoryId.set(category.id, points)
+    })
+  })
+  // a single cycle is a reading, not a trend: with nothing behind it the whole section is noise
+  const hasHistory = meeting.team.teamHealthTrend.length > 1
+  const trendRows: CategoryTrendRow[] = !hasHistory
+    ? []
+    : results.flatMap((result) => {
+        const categoryScore = scoreByCategoryId.get(result.categoryId)
+        if (!categoryScore) return []
+        return [
+          {
+            categoryId: result.categoryId,
+            categoryName: result.category,
+            meanScore: categoryScore.meanScore,
+            meanScoreDelta: categoryScore.meanScoreDelta,
+            points: trendByCategoryId.get(result.categoryId) ?? []
+          }
+        ]
+      })
   const commented = results.filter((result) => result.comments.length > 0)
   const hasObscuredSpread = results.some((result) => {
     const responseCount = scoreByCategoryId.get(result.categoryId)?.responseCount ?? 0
@@ -144,10 +184,11 @@ const TeamHealthResultPhase = (props: Props) => {
         </h1>
         <p className='mt-2 text-fg-muted'>
           Everyone's cards flipped together. Read the spread on each question, not just the average
-          — a 3.0 made of fives and ones is a very different team from one that all answered three.
+          — a 3 made of fives and ones is a very different team from one that all answered three.
         </p>
       </div>
-      <div className='mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'>
+      <h2 className='mt-8 font-bold text-fg-primary text-xl'>What we asked this cycle</h2>
+      <div className='mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'>
         {results.map((result) => {
           const categoryScore = scoreByCategoryId.get(result.categoryId)
           return (
@@ -168,6 +209,13 @@ const TeamHealthResultPhase = (props: Props) => {
         })}
       </div>
       {hasObscuredSpread && <p className='mt-4 text-fg-muted text-sm'>*{HIDDEN_SPREAD_FOOTNOTE}</p>}
+      {trendRows.length > 0 && (
+        <TeamHealthCategoryTrend
+          className='mt-8'
+          rows={trendRows}
+          orderedCategoryIds={orderedCategoryIds}
+        />
+      )}
       {commented.length > 0 && (
         <div className='mt-8 rounded-2xl bg-surface-card p-6 shadow-card'>
           <h2 className='font-bold text-fg-primary text-lg'>What people wrote</h2>
