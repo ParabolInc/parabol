@@ -202,6 +202,7 @@
           "NewMeetingStage": "./types/NewMeetingStage#NewMeetingStageSource",
           "Notification": "../../postgres/types/Notification.d#AnyNotification as AnyNotificationDB",
           "NotificationMeetingStageTimeLimitEnd": "../../postgres/types/Notification.d#MeetingStageTimeLimitEndNotification as MeetingStageTimeLimitEndNotificationDB",
+          "NotificationTeamHealthResponseRequested": "../../postgres/types/Notification.d#TeamHealthResponseRequestedNotification as TeamHealthResponseRequestedNotificationDB",
           "NotificationTeamInvitation": "../../postgres/types/Notification.d#TeamInvitationNotification as TeamInvitationNotificationDB",
           "NotifyDiscussionMentioned": "../../postgres/types/Notification.d#DiscussionMentionedNotification as DiscussionMentionedNotificationDB",
           "NotifyKickedOut": "../../postgres/types/Notification.d#KickedOutNotification as KickedOutNotificationDB",

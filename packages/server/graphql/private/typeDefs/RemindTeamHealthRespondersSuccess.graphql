@@ -1,0 +1,9 @@
+"""
+Return value for remindTeamHealthResponders
+"""
+type RemindTeamHealthRespondersSuccess {
+  """
+  The number of team members nudged across every cycle that was about to close
+  """
+  remindersSent: Int!
+}

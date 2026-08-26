@@ -26,6 +26,12 @@ export interface MeetingStageTimeLimitEndNotification extends BaseNotification {
   meetingId: string
 }
 
+export interface TeamHealthResponseRequestedNotification extends BaseNotification {
+  type: 'TEAM_HEALTH_RESPONSE_REQUESTED'
+  meetingId: string
+  teamId: string
+}
+
 export interface MentionedNotification extends BaseNotification {
   type: 'MENTIONED'
   senderName: string | null
@@ -138,6 +144,7 @@ export type AnyNotification =
   | ResponseRepliedNotification
   | TaskInvolvesNotification
   | TeamArchivedNotification
+  | TeamHealthResponseRequestedNotification
   | TeamInvitationNotification
   | TeamsLimitExceededNotification
   | TeamsLimitReminderNotification
