@@ -23,7 +23,6 @@ const TeamHealthSubmittedPhase = (props: Props) => {
         id
         facilitatorUserId
         respondentCount
-        endedAt
         meetingMembers {
           id
           ... on TeamHealthMeetingMember {
@@ -40,23 +39,13 @@ const TeamHealthSubmittedPhase = (props: Props) => {
     `,
     meetingRef
   )
-  const {
-    id: meetingId,
-    facilitatorUserId,
-    respondentCount,
-    endedAt,
-    meetingMembers,
-    phases
-  } = meeting
+  const {id: meetingId, facilitatorUserId, respondentCount, meetingMembers, phases} = meeting
   const [endTeamHealth, revealing] = useEndTeamHealthMutation()
   const isOwner = viewerId === facilitatorUserId
   // spectators (the owner, by default) are excluded from the total until they opt in
   const total = meetingMembers.filter((member) => !member.isSpectating).length
   const firstResponseStageId = phases
     .find((phase) => phase.phaseType === 'TEAM_HEALTH_RESPONSE')
-    ?.stages.filter(isNotNull)[0]?.id
-  const resultStageId = phases
-    .find((phase) => phase.phaseType === 'TEAM_HEALTH_RESULT')
     ?.stages.filter(isNotNull)[0]?.id
 
   // revealing the results is the act of ending the meeting, which sends everyone to the summary
@@ -76,27 +65,16 @@ const TeamHealthSubmittedPhase = (props: Props) => {
         </p>
         <TeamHealthProgress className='mt-8' respondentCount={respondentCount} total={total} />
         <div className='mt-8 flex flex-col items-center gap-3'>
-          {endedAt && resultStageId ? (
+          {isOwner && (
             <Button
               variant='primary'
               shape='default'
               size='lg'
-              onClick={() => gotoStageId(resultStageId)}
+              onClick={onReveal}
+              disabled={revealing}
             >
-              See results
+              Reveal results
             </Button>
-          ) : (
-            isOwner && (
-              <Button
-                variant='primary'
-                shape='default'
-                size='lg'
-                onClick={onReveal}
-                disabled={revealing}
-              >
-                Reveal results
-              </Button>
-            )
           )}
           {firstResponseStageId && (
             <Button
