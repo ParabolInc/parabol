@@ -2,8 +2,9 @@ import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {TeamHealthResponseCard_stage$key} from '~/__generated__/TeamHealthResponseCard_stage.graphql'
-import {MonitorHeart} from '~/ui/icons'
+import {ArrowForward, MonitorHeart} from '~/ui/icons'
 import useSetTeamHealthResponseMutation from '../../mutations/useSetTeamHealthResponseMutation'
+import {Button} from '../../ui/Button/Button'
 import {cn} from '../../ui/cn'
 import {getTeamHealthCategoryColor} from '../ActivityLibrary/TeamHealth/getTeamHealthCategoryColor'
 
@@ -16,6 +17,8 @@ interface Props {
   stageCount: number
   // globally-ordered category ids that drive each category's color (see getTeamHealthCategoryColor)
   orderedCategoryIds: ReadonlyArray<string>
+  onPrev: () => void
+  onNext: () => void
 }
 
 const SCORES = [1, 2, 3, 4, 5]
@@ -31,7 +34,15 @@ const SCORE_COLORS = [
 ] as const
 
 const TeamHealthResponseCard = (props: Props) => {
-  const {meetingId, stage: stageRef, stageIndex, stageCount, orderedCategoryIds} = props
+  const {
+    meetingId,
+    stage: stageRef,
+    stageIndex,
+    stageCount,
+    orderedCategoryIds,
+    onPrev,
+    onNext
+  } = props
   const stage = useFragment(
     graphql`
       fragment TeamHealthResponseCard_stage on TeamHealthResponseStage {
@@ -137,6 +148,19 @@ const TeamHealthResponseCard = (props: Props) => {
         onChange={(e) => setComment(e.target.value)}
         onBlur={() => save(score, comment)}
       />
+      <div className='mt-6 flex items-center justify-between'>
+        {stageIndex === 0 ? (
+          <div />
+        ) : (
+          <Button variant='ghost' shape='default' size='md' onClick={onPrev}>
+            Back
+          </Button>
+        )}
+        <Button variant='primary' shape='default' size='md' className='gap-1' onClick={onNext}>
+          {stageIndex === stageCount - 1 ? 'Submit' : 'Next'}
+          <ArrowForward className='size-5' />
+        </Button>
+      </div>
     </div>
   )
 }
