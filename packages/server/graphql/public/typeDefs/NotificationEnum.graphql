@@ -86,4 +86,9 @@ enum NotificationEnum {
   A page owner received a request to access their page
   """
   PAGE_ACCESS_REQUESTED
+
+  """
+  An open Team Health cycle is about to close and the viewer hasn't answered it
+  """
+  TEAM_HEALTH_RESPONSE_REQUESTED
 }

@@ -42,7 +42,8 @@ const chronos = (leaderRunner: LeaderRunner) => {
     CHRONOS_BATCH_EMAILS,
     CHRONOS_SCHEDULE_JOBS,
     CHRONOS_UPDATE_TOKENS,
-    CHRONOS_PROCESS_RECURRENCE
+    CHRONOS_PROCESS_RECURRENCE,
+    CHRONOS_REMIND_TEAM_HEALTH
   } = process.env
   const jobs: Record<string, PossibleJob> = {
     autoPause: {
@@ -126,6 +127,19 @@ const chronos = (leaderRunner: LeaderRunner) => {
         return callGQL(query, {})
       },
       cronTime: CHRONOS_PROCESS_RECURRENCE
+    },
+    remindTeamHealthResponders: {
+      onTick: () => {
+        const query = `
+          mutation RemindTeamHealthResponders {
+            remindTeamHealthResponders {
+              remindersSent
+            }
+          }
+        `
+        return callGQL(query, {})
+      },
+      cronTime: CHRONOS_REMIND_TEAM_HEALTH
     }
   }
   Object.entries(jobs).forEach(([name, {onTick, cronTime}]) => {

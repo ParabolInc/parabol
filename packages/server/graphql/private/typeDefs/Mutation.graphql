@@ -386,6 +386,11 @@ type Mutation {
   processRecurrence: ProcessRecurrencePayload!
 
   """
+  Nudge everyone who hasn't yet answered a Team Health cycle that is about to close
+  """
+  remindTeamHealthResponders: RemindTeamHealthRespondersSuccess!
+
+  """
   Remove the auth identity for users with a specific domain. Example use case: signed up with Gmail but they're deleting their Google account
   """
   removeAuthIdentity(

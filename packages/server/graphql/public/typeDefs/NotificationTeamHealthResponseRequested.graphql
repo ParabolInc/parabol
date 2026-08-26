@@ -1,0 +1,45 @@
+"""
+A nudge sent to a team member who hasn't answered an open Team Health cycle that is about to close
+"""
+type NotificationTeamHealthResponseRequested implements Notification & TeamNotification {
+  """
+  A shortid for the notification
+  """
+  id: ID!
+
+  """
+  UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
+  """
+  status: NotificationStatusEnum!
+
+  """
+  The datetime to activate the notification & send it to the client
+  """
+  createdAt: DateTime!
+  type: NotificationEnum!
+
+  """
+  The ID of the user who should see this notification
+  """
+  userId: ID!
+
+  """
+  *Foreign key. The cycle still waiting on an answer
+  """
+  meetingId: ID!
+
+  """
+  The cycle still waiting on an answer
+  """
+  meeting: TeamHealthMeeting!
+
+  """
+  *Foreign key. The team running the cycle
+  """
+  teamId: ID!
+
+  """
+  The team running the cycle
+  """
+  team: Team!
+}

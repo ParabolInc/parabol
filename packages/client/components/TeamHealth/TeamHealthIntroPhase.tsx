@@ -1,12 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import dayjs from 'dayjs'
 import {useFragment} from 'react-relay'
-import {Link} from 'react-router'
 import type {TeamHealthIntroPhase_meeting$key} from '~/__generated__/TeamHealthIntroPhase_meeting.graphql'
 import {ArrowForward, MonitorHeart, Schedule} from '~/ui/icons'
 import NewMeetingAvatarGroup from '../../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import useSetTeamHealthSpectateMutation from '../../mutations/useSetTeamHealthSpectateMutation'
-import logoMarkPurple from '../../styles/theme/images/brand/mark-color.svg'
 import {Button} from '../../ui/Button/Button'
 import {isNotNull} from '../../utils/predicates'
 import CurrentTeamHealthStreak from './CurrentTeamHealthStreak'
@@ -25,6 +23,7 @@ const TeamHealthIntroPhase = (props: Props) => {
         id
         name
         respondentCount
+        eligibleCount
         currentStreak
         meetingSeriesId
         scheduledEndTime
@@ -32,12 +31,6 @@ const TeamHealthIntroPhase = (props: Props) => {
           name
         }
         viewerMeetingMember {
-          ... on TeamHealthMeetingMember {
-            isSpectating
-          }
-        }
-        meetingMembers {
-          id
           ... on TeamHealthMeetingMember {
             isSpectating
           }
@@ -56,21 +49,18 @@ const TeamHealthIntroPhase = (props: Props) => {
   const {
     id: meetingId,
     respondentCount,
+    eligibleCount,
     currentStreak,
     meetingSeriesId,
     scheduledEndTime,
     team,
     viewerMeetingMember,
-    meetingMembers,
     phases
   } = meeting
   const [setSpectate] = useSetTeamHealthSpectateMutation()
   const responsePhase = phases.find((phase) => phase.phaseType === 'TEAM_HEALTH_RESPONSE')
   const responseStages = responsePhase?.stages.filter(isNotNull) ?? []
   const firstResponseStageId = responseStages[0]?.id
-  // spectators (the owner, by default) are excluded from the total until they opt in
-  const total = meetingMembers.filter((member) => !member.isSpectating).length
-
   const onStart = () => {
     if (!firstResponseStageId) return
     if (viewerMeetingMember?.isSpectating) {
@@ -81,9 +71,6 @@ const TeamHealthIntroPhase = (props: Props) => {
 
   return (
     <div className='relative flex h-full w-full items-center justify-center overflow-y-auto px-6 py-12'>
-      <Link className='absolute top-6 left-6' title='My Dashboard' to='/meetings'>
-        <img className='w-8' crossOrigin='' alt='Parabol' src={logoMarkPurple} />
-      </Link>
       <div className='absolute top-6 right-6'>
         <NewMeetingAvatarGroup meetingRef={meeting} />
       </div>
@@ -102,7 +89,11 @@ const TeamHealthIntroPhase = (props: Props) => {
           </div>
         )}
         <CurrentTeamHealthStreak className='mt-6' streak={currentStreak} />
-        <TeamHealthProgress className='mt-8' respondentCount={respondentCount} total={total} />
+        <TeamHealthProgress
+          className='mt-8'
+          respondentCount={respondentCount}
+          total={eligibleCount}
+        />
         <Button
           variant='primary'
           shape='default'
