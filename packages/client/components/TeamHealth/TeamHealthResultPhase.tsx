@@ -8,8 +8,7 @@ import {
   getOrderedTeamHealthCategories,
   getTeamHealthCategoryColor
 } from '../ActivityLibrary/TeamHealth/getTeamHealthCategoryColor'
-import TeamHealthCategoryRollup from './TeamHealthCategoryRollup'
-import TeamHealthDistributionChart from './TeamHealthDistributionChart'
+import TeamHealthResultCard from './TeamHealthResultCard'
 
 interface Props {
   meeting: TeamHealthResultPhase_meeting$key
@@ -69,25 +68,6 @@ const computeResults = (
   return [...byQuestion.values()]
 }
 
-// same light-100/dark-900 inversion the category tags use, so every pill on this page reads alike
-const badgeForScore = (score: number | null) => {
-  if (score === null) return {label: 'No responses', className: 'bg-surface-well text-fg-secondary'}
-  if (score >= 70)
-    return {
-      label: 'Strong agreement',
-      className: 'bg-jade-100 text-jade-700 dark:bg-jade-900 dark:text-jade-200'
-    }
-  if (score >= 55)
-    return {
-      label: 'Aligned',
-      className: 'bg-sky-100 text-sky-700 dark:bg-sky-900 dark:text-sky-200'
-    }
-  return {
-    label: 'Some concern',
-    className: 'bg-gold-100 text-gold-700 dark:bg-gold-900 dark:text-gold-200'
-  }
-}
-
 const TeamHealthResultPhase = (props: Props) => {
   const {meeting: meetingRef} = props
   const meeting = useFragment(
@@ -104,7 +84,14 @@ const TeamHealthResultPhase = (props: Props) => {
             }
           }
         }
-        ...TeamHealthCategoryRollup_meeting
+        categoryScores {
+          normalizedScore
+          respondentCount
+          responseCount
+          category {
+            id
+          }
+        }
         responses {
           score
           commentParaphrased
@@ -122,10 +109,17 @@ const TeamHealthResultPhase = (props: Props) => {
     meetingRef
   )
   const responses = meeting.responses.filter(isNotNull)
-  const results = computeResults(responses)
   const orderedCategoryIds = getOrderedTeamHealthCategories(
     meeting.template?.availableQuestionPacks ?? []
   ).map((category) => category.id)
+  const scoreByCategoryId = new Map(
+    meeting.categoryScores.map((categoryScore) => [categoryScore.category.id, categoryScore])
+  )
+  // a cycle asks exactly one question per category, so ordering the cards by category is what makes
+  // the grid stable from cycle to cycle even as rotation swaps the questions underneath it
+  const results = computeResults(responses).sort(
+    (a, b) => orderedCategoryIds.indexOf(a.categoryId) - orderedCategoryIds.indexOf(b.categoryId)
+  )
   // the question with the widest spread is where the conversation is
   const divergent = results.reduce<QuestionResult | null>((widest, entry) => {
     if (entry.scores.length === 0) return widest
@@ -144,44 +138,24 @@ const TeamHealthResultPhase = (props: Props) => {
           conversation is.
         </p>
       </div>
-      <TeamHealthCategoryRollup
-        className='mt-8'
-        meeting={meeting}
-        orderedCategoryIds={orderedCategoryIds}
-      />
-      <h2 className='mt-8 font-bold text-fg-primary text-xl'>Question by question</h2>
-      <div className='mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'>
+      <div className='mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'>
         {results.map((result) => {
-          const badge = badgeForScore(result.score)
-          const isDivergent = divergent?.questionId === result.questionId
+          const categoryScore = scoreByCategoryId.get(result.categoryId)
           return (
-            <div
+            <TeamHealthResultCard
               key={result.questionId}
-              className={cn(
-                'rounded-2xl bg-surface-card p-5 shadow-card',
-                isDivergent && 'ring-2 ring-grape-500'
-              )}
-            >
-              <span
-                className={cn(
-                  'inline-flex whitespace-nowrap rounded-full px-2.5 py-1 font-semibold text-sm',
-                  getTeamHealthCategoryColor(result.categoryId, orderedCategoryIds)
-                )}
-              >
-                {result.category}
-              </span>
-              <div className='mt-4'>
-                <TeamHealthDistributionChart distribution={result.distribution} />
-              </div>
-              <div className='mt-4 flex items-center justify-between'>
-                <span
-                  className={cn('rounded-full px-2 py-0.5 font-semibold text-xs', badge.className)}
-                >
-                  {isDivergent ? 'Biggest divergence' : badge.label}
-                </span>
-                <span className='font-bold text-2xl text-fg-primary'>{result.score ?? '—'}</span>
-              </div>
-            </div>
+              categoryId={result.categoryId}
+              categoryName={result.category}
+              question={result.question}
+              // the server's rollup is what the summary page and the trend report, so the card
+              // shows that rather than recomputing a number that only looks the same
+              score={categoryScore?.normalizedScore ?? result.score}
+              distribution={result.distribution}
+              respondentCount={categoryScore?.respondentCount ?? 0}
+              responseCount={categoryScore?.responseCount ?? result.scores.length}
+              isDivergent={divergent?.questionId === result.questionId}
+              orderedCategoryIds={orderedCategoryIds}
+            />
           )
         })}
       </div>
