@@ -5,6 +5,7 @@ import {CheckCircle} from '~/ui/icons'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useEndTeamHealthMutation from '../../mutations/useEndTeamHealthMutation'
 import {Button} from '../../ui/Button/Button'
+import plural from '../../utils/plural'
 import {isNotNull} from '../../utils/predicates'
 import TeamHealthProgress from './TeamHealthProgress'
 
@@ -23,6 +24,7 @@ const TeamHealthSubmittedPhase = (props: Props) => {
         id
         facilitatorUserId
         respondentCount
+        minRespondentCount
         meetingMembers {
           id
           ... on TeamHealthMeetingMember {
@@ -39,11 +41,20 @@ const TeamHealthSubmittedPhase = (props: Props) => {
     `,
     meetingRef
   )
-  const {id: meetingId, facilitatorUserId, respondentCount, meetingMembers, phases} = meeting
+  const {
+    id: meetingId,
+    facilitatorUserId,
+    respondentCount,
+    minRespondentCount,
+    meetingMembers,
+    phases
+  } = meeting
   const [endTeamHealth, revealing] = useEndTeamHealthMutation()
   const isOwner = viewerId === facilitatorUserId
   // spectators (the owner, by default) are excluded from the total until they opt in
   const total = meetingMembers.filter((member) => !member.isSpectating).length
+  // revealing below the floor would publish a mean that one or two people can solve back
+  const canReveal = respondentCount >= minRespondentCount
   const firstResponseStageId = phases
     .find((phase) => phase.phaseType === 'TEAM_HEALTH_RESPONSE')
     ?.stages.filter(isNotNull)[0]?.id
@@ -66,15 +77,24 @@ const TeamHealthSubmittedPhase = (props: Props) => {
         <TeamHealthProgress className='mt-8' respondentCount={respondentCount} total={total} />
         <div className='mt-8 flex flex-col items-center gap-3'>
           {isOwner && (
-            <Button
-              variant='primary'
-              shape='default'
-              size='lg'
-              onClick={onReveal}
-              disabled={revealing}
-            >
-              Reveal results
-            </Button>
+            <>
+              <Button
+                variant='primary'
+                shape='default'
+                size='lg'
+                onClick={onReveal}
+                disabled={revealing || !canReveal}
+              >
+                Reveal results
+              </Button>
+              {!canReveal && (
+                <div className='text-fg-muted text-sm'>
+                  {minRespondentCount - respondentCount} more{' '}
+                  {plural(minRespondentCount - respondentCount, 'answer')} needed before results can
+                  be revealed anonymously
+                </div>
+              )}
+            </>
           )}
           {firstResponseStageId && (
             <Button

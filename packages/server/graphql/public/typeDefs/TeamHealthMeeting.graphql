@@ -31,6 +31,18 @@ type TeamHealthMeeting implements NewMeeting {
   respondentCount: Int!
 
   """
+  true once the meeting has ended AND enough distinct members have answered that an aggregate
+  can't be solved back to an individual. Results stay withheld while this is false, even after the
+  meeting ends
+  """
+  isRevealed: Boolean!
+
+  """
+  The number of distinct respondents required before results can be revealed
+  """
+  minRespondentCount: Int!
+
+  """
   The number of consecutive completed meetings in this meeting's series that had at least
   one response, counting backwards from the most recently completed meeting. 0 if this
   meeting isn't part of a series, or the meeting right before it had no responses

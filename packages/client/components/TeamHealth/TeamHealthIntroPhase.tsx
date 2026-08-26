@@ -23,6 +23,7 @@ const TeamHealthIntroPhase = (props: Props) => {
         id
         name
         respondentCount
+        minRespondentCount
         currentStreak
         meetingSeriesId
         scheduledEndTime
@@ -54,6 +55,7 @@ const TeamHealthIntroPhase = (props: Props) => {
   const {
     id: meetingId,
     respondentCount,
+    minRespondentCount,
     currentStreak,
     meetingSeriesId,
     scheduledEndTime,
@@ -110,6 +112,9 @@ const TeamHealthIntroPhase = (props: Props) => {
         </Button>
         <div className='mt-8 text-fg-muted text-sm'>
           Anonymous · your individual answers are never shown to anyone
+        </div>
+        <div className='mt-1 text-fg-muted text-sm'>
+          Results unlock once {minRespondentCount} teammates have answered
         </div>
       </div>
     </div>
