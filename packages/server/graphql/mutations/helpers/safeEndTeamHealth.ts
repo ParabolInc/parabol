@@ -12,6 +12,7 @@ import logError from '../../../utils/logError'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {InternalContext} from '../../graphql'
+import {getTeamHealthEligibleCount} from '../../public/types/helpers/getTeamHealthEligibleCount'
 import gatherInsights from './gatherInsights'
 import {IntegrationNotifier} from './notifications/IntegrationNotifier'
 import {publishSummaryPage} from './summaryPage/publishSummaryPage'
@@ -47,7 +48,12 @@ const safeEndTeamHealth = async ({
     })
 
   // RESOLUTION
-  const insights = await gatherInsights(meeting, dataLoader)
+  const [insights, eligibleCount] = await Promise.all([
+    gatherInsights(meeting, dataLoader),
+    // freeze the roster as it stands right now: recomputing this later would report participation
+    // against whoever happens to be on the team then, not who was asked
+    getTeamHealthEligibleCount(meetingId, teamId, dataLoader)
+  ])
   // ending a team health meeting is what reveals its results, whether the owner clicked "Reveal
   // results" or the recurrence cron hit scheduledEndTime. The result stage renders the reveal off
   // endedAt, so there's no stage state to flip
@@ -56,7 +62,8 @@ const safeEndTeamHealth = async ({
     .set({
       endedAt: sql`CURRENT_TIMESTAMP`,
       usedReactjis: JSON.stringify(insights.usedReactjis),
-      engagement: insights.engagement
+      engagement: insights.engagement,
+      eligibleCount
     })
     .where('id', '=', meetingId)
     .execute()

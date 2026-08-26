@@ -23,12 +23,7 @@ const TeamHealthSubmittedPhase = (props: Props) => {
         id
         facilitatorUserId
         respondentCount
-        meetingMembers {
-          id
-          ... on TeamHealthMeetingMember {
-            isSpectating
-          }
-        }
+        eligibleCount
         phases {
           phaseType
           stages {
@@ -39,11 +34,9 @@ const TeamHealthSubmittedPhase = (props: Props) => {
     `,
     meetingRef
   )
-  const {id: meetingId, facilitatorUserId, respondentCount, meetingMembers, phases} = meeting
+  const {id: meetingId, facilitatorUserId, respondentCount, eligibleCount, phases} = meeting
   const [endTeamHealth, revealing] = useEndTeamHealthMutation()
   const isOwner = viewerId === facilitatorUserId
-  // spectators (the owner, by default) are excluded from the total until they opt in
-  const total = meetingMembers.filter((member) => !member.isSpectating).length
   const firstResponseStageId = phases
     .find((phase) => phase.phaseType === 'TEAM_HEALTH_RESPONSE')
     ?.stages.filter(isNotNull)[0]?.id
@@ -63,7 +56,11 @@ const TeamHealthSubmittedPhase = (props: Props) => {
         <p className='mt-2 text-fg-secondary'>
           Your answers are in. Now we wait for the rest of the team before the results reveal.
         </p>
-        <TeamHealthProgress className='mt-8' respondentCount={respondentCount} total={total} />
+        <TeamHealthProgress
+          className='mt-8'
+          respondentCount={respondentCount}
+          total={eligibleCount}
+        />
         <div className='mt-8 flex flex-col items-center gap-3'>
           {isOwner && (
             <Button

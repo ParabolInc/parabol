@@ -23,6 +23,7 @@ const TeamHealthIntroPhase = (props: Props) => {
         id
         name
         respondentCount
+        eligibleCount
         currentStreak
         meetingSeriesId
         scheduledEndTime
@@ -30,12 +31,6 @@ const TeamHealthIntroPhase = (props: Props) => {
           name
         }
         viewerMeetingMember {
-          ... on TeamHealthMeetingMember {
-            isSpectating
-          }
-        }
-        meetingMembers {
-          id
           ... on TeamHealthMeetingMember {
             isSpectating
           }
@@ -54,21 +49,18 @@ const TeamHealthIntroPhase = (props: Props) => {
   const {
     id: meetingId,
     respondentCount,
+    eligibleCount,
     currentStreak,
     meetingSeriesId,
     scheduledEndTime,
     team,
     viewerMeetingMember,
-    meetingMembers,
     phases
   } = meeting
   const [setSpectate] = useSetTeamHealthSpectateMutation()
   const responsePhase = phases.find((phase) => phase.phaseType === 'TEAM_HEALTH_RESPONSE')
   const responseStages = responsePhase?.stages.filter(isNotNull) ?? []
   const firstResponseStageId = responseStages[0]?.id
-  // spectators (the owner, by default) are excluded from the total until they opt in
-  const total = meetingMembers.filter((member) => !member.isSpectating).length
-
   const onStart = () => {
     if (!firstResponseStageId) return
     if (viewerMeetingMember?.isSpectating) {
@@ -97,7 +89,11 @@ const TeamHealthIntroPhase = (props: Props) => {
           </div>
         )}
         <CurrentTeamHealthStreak className='mt-6' streak={currentStreak} />
-        <TeamHealthProgress className='mt-8' respondentCount={respondentCount} total={total} />
+        <TeamHealthProgress
+          className='mt-8'
+          respondentCount={respondentCount}
+          total={eligibleCount}
+        />
         <Button
           variant='primary'
           shape='default'
