@@ -1,9 +1,10 @@
 import DataLoader from 'dataloader'
 import GcalOAuth2Manager from '../integrations/gcal/GcalOAuth2Manager'
-import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
+import syncTeamMemberIntegrationAuthTokens from '../postgres/queries/syncTeamMemberIntegrationAuthTokens'
 import type {TeamMemberIntegrationAuth} from '../postgres/types'
 import logError from '../utils/logError'
 import type RootDataLoader from './RootDataLoader'
+import settleOrLogRejection from './settleOrLogRejection'
 
 export const freshGcalAuth = (parent: RootDataLoader) => {
   return new DataLoader<{teamId: string; userId: string}, TeamMemberIntegrationAuth | null, string>(
@@ -37,20 +38,20 @@ export const freshGcalAuth = (parent: RootDataLoader) => {
             const expiresAtTimestamp =
               new Date().getTime() + (expiresIn - bufferBeforeExpires) * millisecondsInSeconds
             const expiresAt = new Date(expiresAtTimestamp)
-            const newGcalAuth = {
-              ...gcalAuth,
-              accessToken,
-              refreshToken: refreshToken,
-              expiresAt
-            }
-            await upsertTeamMemberIntegrationAuth(newGcalAuth)
-            return newGcalAuth
+            const tokens = {accessToken, refreshToken, scopes: gcalAuth.scopes, expiresAt}
+            await syncTeamMemberIntegrationAuthTokens({
+              userId,
+              teamId,
+              providerId,
+              providerUserId: gcalAuth.providerUserId,
+              ...tokens
+            })
+            return {...gcalAuth, ...tokens}
           }
           return gcalAuth
         })
       )
-      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
-      return vals
+      return settleOrLogRejection(results, keys)
     },
     {
       ...parent.dataLoaderOptions,

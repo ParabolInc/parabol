@@ -4,11 +4,10 @@ import {useFragment} from 'react-relay'
 import type {RetroWorkDrawer_meeting$key} from '../../../__generated__/RetroWorkDrawer_meeting.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useSessionStorageState from '../../../hooks/useSessionStorageState'
+import {getConnectProvider} from '../../../integrations/platform/findIntegrationService'
 import gcalLogo from '../../../styles/theme/images/graphics/google-calendar.svg'
 import {cn} from '../../../ui/cn'
-import AtlassianClientManager from '../../../utils/AtlassianClientManager'
 import dndNoise from '../../../utils/dndNoise'
-import GitHubClientManager from '../../../utils/GitHubClientManager'
 import getNextSortOrder from '../../../utils/getNextSortOrder'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import GitHubSVG from '../../GitHubSVG'
@@ -64,6 +63,9 @@ const RetroWorkDrawer = (props: Props) => {
         viewerMeetingMember {
           teamMember {
             teamId
+            services {
+              ...findIntegrationService_cloudProvider @relay(mask: false)
+            }
             integrations {
               jiraServer {
                 sharedProviders {
@@ -100,6 +102,9 @@ const RetroWorkDrawer = (props: Props) => {
   const hasGCal = !!meeting.viewerMeetingMember?.teamMember?.integrations.gcal?.cloudProvider?.id
   const hasGitLab =
     !!meeting.viewerMeetingMember?.teamMember?.integrations.gitlab?.cloudProvider?.id
+  const services = meeting.viewerMeetingMember?.teamMember?.services ?? []
+  const hasGitHub = !!getConnectProvider(services, 'github')
+  const hasJira = !!getConnectProvider(services, 'jira')
 
   useEffect(() => {
     SendClientSideEvent(atmosphere, 'Inspiration Drawer Impression', {
@@ -148,7 +153,7 @@ const RetroWorkDrawer = (props: Props) => {
           }
         ]
       : []),
-    ...(GitHubClientManager.isAvailable
+    ...(hasGitHub
       ? [
           {
             icon: <GitHubSVG className='dark:[&_path]:fill-white' />,
@@ -168,7 +173,7 @@ const RetroWorkDrawer = (props: Props) => {
           }
         ]
       : []),
-    ...(AtlassianClientManager.isAvailable
+    ...(hasJira
       ? [
           {
             icon: <JiraSVG />,

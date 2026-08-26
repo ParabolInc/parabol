@@ -40,3 +40,4 @@ webpack-assets.json
 **/data
 backups/
 tsconfig.tsbuildinfo
+.playwright-mcp/
