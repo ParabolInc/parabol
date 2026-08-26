@@ -92,10 +92,7 @@ const subscription = graphql`
       }
 
       RemoveIntegrationSearchQuerySuccess {
-        ...RemoveJiraServerSearchQueryMutation_notification @relay(mask: false)
-      }
-      PersistGitHubSearchQuerySuccess {
-        ...PersistGitHubSearchQueryMutation_notification @relay(mask: false)
+        ...RemoveIntegrationSearchQueryMutation_notification @relay(mask: false)
       }
       AddOrgPayload {
         ...AddOrgMutation_notification @relay(mask: false)
@@ -130,11 +127,8 @@ const subscription = graphql`
       InvalidateSessionsPayload {
         ...InvalidateSessionsMutation_notification @relay(mask: false)
       }
-      PersistJiraSearchQuerySuccess {
-        ...PersistJiraSearchQueryMutation_notification @relay(mask: false)
-      }
       PersistIntegrationSearchQuerySuccess {
-        ...PersistJiraServerSearchQueryMutation_notification @relay(mask: false)
+        ...PersistIntegrationSearchQueryMutation_notification @relay(mask: false)
       }
 
       AuthTokenPayload {

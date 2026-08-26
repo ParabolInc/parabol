@@ -91,21 +91,40 @@ beforeAll(async () => {
     .execute()
   await pg.insertInto('Organization').values({id: orgId, name: 'Job Test Org'}).execute()
   await pg.insertInto('Team').values({id: teamId, name: 'Job Test Team', orgId}).execute()
+  const {id: providerId} = await pg
+    .insertInto('IntegrationProvider')
+    .values({
+      service: 'jira',
+      authStrategy: 'oauth2',
+      scope: 'global',
+      serverBaseUrl: 'https://api.atlassian.com',
+      clientId: 'cid',
+      clientSecret: 'secret'
+    })
+    .onConflict((oc) =>
+      oc.columns(['orgId', 'teamId', 'service', 'authStrategy']).doUpdateSet({isActive: true})
+    )
+    .returning('id')
+    .executeTakeFirstOrThrow()
   await pg
-    .insertInto('AtlassianAuth')
+    .insertInto('TeamMemberIntegrationAuth')
     .values({
       userId,
       teamId,
-      accountId: 'acct1',
+      providerId,
+      service: 'jira',
+      providerUserId: 'acct1',
       accessToken: fakeJwt(),
       refreshToken: 'refresh',
-      cloudIds: ['cloud-test'],
-      scope: CONF_SCOPE
+      scopes: CONF_SCOPE,
+      expiresAt: new Date(Date.now() + 60 * 60 * 1000),
+      meta: JSON.stringify({cloudIds: ['cloud-test']})
     })
     .execute()
 })
 
 afterAll(async () => {
+  await pg.deleteFrom('TeamMemberIntegrationAuth').where('userId', '=', userId).execute()
   await pg.deleteFrom('Page').where('userId', '=', userId).execute()
   await pg.deleteFrom('User').where('id', '=', userId).execute()
   await pg.deleteFrom('Team').where('id', '=', teamId).execute()

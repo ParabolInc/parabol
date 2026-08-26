@@ -17,9 +17,6 @@ const addIntegrationProvider: MutationResolvers['addIntegrationProvider'] = asyn
   const subOptions = {mutatorId, operationId}
 
   // INPUT VALIDATION
-  if (service === 'jira' || service === 'github') {
-    return {error: {message: 'Service is not supported'}}
-  }
   if (scope === 'global' && (teamId || orgId)) {
     return {
       error: {

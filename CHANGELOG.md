@@ -5,6 +5,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.38.2](https://github.com/ParabolInc/parabol/compare/v13.38.1...v13.38.2) (2026-08-25)
+
+
+### Fixed
+
+* page kebab menu jumps when cursor leaves the nav row ([#13417](https://github.com/ParabolInc/parabol/issues/13417)) ([b054cc5](https://github.com/ParabolInc/parabol/commit/b054cc5855349387fc8471d5481eadd2961fb966))
+
+## [13.38.1](https://github.com/ParabolInc/parabol/compare/v13.38.0...v13.38.1) (2026-08-25)
+
+
+### Fixed
+
+* limit codeQL to pushes to master ([#13406](https://github.com/ParabolInc/parabol/issues/13406)) ([691d347](https://github.com/ParabolInc/parabol/commit/691d347e83555c45ebe6549e37d06a3d4d552b0d))
+* meeting left nav right padding issues ([#13412](https://github.com/ParabolInc/parabol/issues/13412)) ([516f233](https://github.com/ParabolInc/parabol/commit/516f23357d460d4e9bc037e337a0b3f93a964e9b))
+* page kebab menu triggers full page reload ([#13414](https://github.com/ParabolInc/parabol/issues/13414)) ([ad7effa](https://github.com/ParabolInc/parabol/commit/ad7effa6211f47b301d7c3dcaa6fb4d71189ebeb))
+* persistedquerynotfound error ([#13401](https://github.com/ParabolInc/parabol/issues/13401)) ([97968a7](https://github.com/ParabolInc/parabol/commit/97968a719d7aac1fc980bc08a2f253f8862f43bd))
+* various style fixes ([#13415](https://github.com/ParabolInc/parabol/issues/13415)) ([4feb3bd](https://github.com/ParabolInc/parabol/commit/4feb3bdeec47fc5a3da70aa5b7482861c848d426))
+
 ## [13.38.0](https://github.com/ParabolInc/parabol/compare/v13.37.0...v13.38.0) (2026-08-25)
 
 

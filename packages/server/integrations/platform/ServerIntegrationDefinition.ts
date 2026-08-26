@@ -1,7 +1,9 @@
 import type {GraphQLResolveInfo} from 'graphql'
 import type {IntegrationMeta} from 'parabol-client/shared/integrations/IntegrationMeta'
 import type {DataLoaderWorker, GQLContext} from '../../graphql/graphql'
-import type {Integrationproviderserviceenum} from '../../postgres/types/pg'
+import type {TeamMemberIntegrationAuth} from '../../postgres/types'
+import type {TIntegrationProvider} from '../../postgres/types/IntegrationProvider'
+import type {Integrationproviderserviceenum, JsonObject} from '../../postgres/types/pg'
 import type {TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
 
 export interface IntegrationCtx {
@@ -15,13 +17,6 @@ export interface GqlIntegrationCtx extends IntegrationCtx {
   info: GraphQLResolveInfo
 }
 
-export interface IntegrationAuth {
-  accessToken: string
-  accessUserId: string
-  providerId: number | null
-  raw: unknown
-}
-
 export interface IssueCreateCapability {
   initManager(ctx: GqlIntegrationCtx): Promise<TaskIntegrationManager | null>
 }
@@ -30,8 +25,9 @@ export interface IssueReadCapability {
   getIssue(ctx: GqlIntegrationCtx, issueId: string): Promise<unknown>
 }
 
-export interface IssueSearchCapability {
-  persistQueries: boolean
+export interface IssueSearchCapability<TQuery extends JsonObject = JsonObject> {
+  /** Validates a client-supplied search before it is stored as IntegrationSearchQuery.query */
+  buildQuery(queryString: string, meta: JsonObject): TQuery | Error
 }
 
 export interface RepoListCapability {
@@ -62,7 +58,8 @@ export abstract class ServerIntegrationDefinition {
   abstract readonly title: string
   abstract readonly authStrategy: 'oauth1' | 'oauth2' | 'pat' | 'webhook'
   abstract readonly capabilities: ServerIntegrationCapabilities
-  abstract resolveAuth(ctx: IntegrationCtx): Promise<IntegrationAuth | null>
+  /** The viewer's usable auth row for this team, refreshed first when the service supports it */
+  abstract resolveAuth(ctx: IntegrationCtx): Promise<TeamMemberIntegrationAuth | null>
   abstract isAvailable(ctx: IntegrationCtx): Promise<boolean>
   /** A cheap DB-row check. Never refreshes tokens — resolveAuth does that at time of use. */
   abstract isConnected(ctx: IntegrationCtx): Promise<boolean>
@@ -82,6 +79,14 @@ export abstract class ServerIntegrationDefinition {
       .get('sharedIntegrationProviders')
       .load({service, orgIds: [team.orgId], teamIds: [teamId]})
     return providers.length > 0
+  }
+
+  /** The instance-wide (cloud) provider row, the only one some connect flows can use */
+  async getGlobalProvider(ctx: IntegrationCtx): Promise<TIntegrationProvider | null> {
+    const [globalProvider] = await ctx.dataLoader
+      .get('sharedIntegrationProviders')
+      .load({service: this.service, orgIds: [], teamIds: []})
+    return globalProvider ?? null
   }
 
   getCapabilityKeys() {

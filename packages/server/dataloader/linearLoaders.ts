@@ -3,10 +3,11 @@ import LinearManager from '../integrations/linear/LinearManager'
 import getLinearDimensionFieldMaps, {
   type LinearDimensionFieldMap
 } from '../postgres/queries/getLinearDimensionFieldMaps'
-import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
+import syncTeamMemberIntegrationAuthTokens from '../postgres/queries/syncTeamMemberIntegrationAuthTokens'
 import type {TeamMemberIntegrationAuth} from '../postgres/types'
 import logError from '../utils/logError'
 import type RootDataLoader from './RootDataLoader'
+import settleOrLogRejection from './settleOrLogRejection'
 
 export const freshLinearAuth = (parent: RootDataLoader) => {
   return new DataLoader<{teamId: string; userId: string}, TeamMemberIntegrationAuth | null, string>(
@@ -52,15 +53,20 @@ export const freshLinearAuth = (parent: RootDataLoader) => {
               ((expiresIn ?? 86400) - bufferBeforeExpires) * millisecondsInSeconds
             const newExpiresAt = new Date(expiresAtTimestamp)
 
-            const newLinearAuth = {
-              ...linearAuth,
+            const tokens = {
               accessToken,
               refreshToken: newRefreshToken || refreshToken,
+              scopes: linearAuth.scopes,
               expiresAt: newExpiresAt
             }
-
-            await upsertTeamMemberIntegrationAuth(newLinearAuth)
-            return newLinearAuth
+            await syncTeamMemberIntegrationAuthTokens({
+              userId,
+              teamId,
+              providerId,
+              providerUserId: linearAuth.providerUserId,
+              ...tokens
+            })
+            return {...linearAuth, ...tokens}
           }
 
           // Token is still valid
@@ -68,9 +74,7 @@ export const freshLinearAuth = (parent: RootDataLoader) => {
         })
       )
 
-      // Map results, handling rejections as null
-      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
-      return vals
+      return settleOrLogRejection(results, keys)
     },
     {
       ...parent.dataLoaderOptions,

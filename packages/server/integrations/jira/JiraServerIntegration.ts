@@ -1,35 +1,37 @@
 import {jiraIntegrationMeta} from 'parabol-client/shared/integrations/jiraIntegrationMeta'
+import type {JiraSearchQueryJson, TeamMemberIntegrationAuth} from '../../postgres/types'
 import {
-  type IntegrationAuth,
   type IntegrationCtx,
   type IssueCreateCapability,
+  type IssueSearchCapability,
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
 import TaskIntegrationManagerFactory from '../TaskIntegrationManagerFactory'
+import buildJiraSearchQuery from './buildJiraSearchQuery'
 
 export class JiraServerIntegration extends ServerIntegrationDefinition {
   readonly service = jiraIntegrationMeta.service
   readonly title = jiraIntegrationMeta.title
   readonly authStrategy = 'oauth2' as const
 
-  async resolveAuth(ctx: IntegrationCtx): Promise<IntegrationAuth | null> {
+  async resolveAuth(ctx: IntegrationCtx): Promise<TeamMemberIntegrationAuth | null> {
     const {dataLoader, teamId, userId} = ctx
     const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId})
-    if (!auth?.accessToken) return null
-    return {accessToken: auth.accessToken, accessUserId: auth.userId, providerId: null, raw: auth}
+    return auth?.accessToken ? auth : null
   }
 
-  async isAvailable(_ctx: IntegrationCtx) {
-    return !!process.env.ATLASSIAN_CLIENT_ID
+  async isAvailable(ctx: IntegrationCtx) {
+    return !!(await this.getGlobalProvider(ctx))
   }
 
   async isConnected(ctx: IntegrationCtx) {
-    const {dataLoader, teamId, userId} = ctx
-    const auth = await dataLoader.get('atlassianAuth').load({teamId, userId})
-    return !!auth?.accessToken
+    return this.hasActiveAuthRow(ctx, 'jira')
   }
 
-  readonly capabilities: {issueCreate: IssueCreateCapability} = {
+  readonly capabilities: {
+    issueCreate: IssueCreateCapability
+    issueSearch: IssueSearchCapability<JiraSearchQueryJson>
+  } = {
     issueCreate: {
       initManager: (ctx) =>
         TaskIntegrationManagerFactory.initManager(
@@ -39,6 +41,7 @@ export class JiraServerIntegration extends ServerIntegrationDefinition {
           ctx.context,
           ctx.info
         )
-    }
+    },
+    issueSearch: {buildQuery: buildJiraSearchQuery}
   }
 }

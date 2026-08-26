@@ -33,7 +33,7 @@ class GmeetClientManager {
       submitMutation()
       AddTeamMemberIntegrationAuthMutation(
         atmosphere,
-        {providerId, oauthCodeOrPat: code, teamId, redirectUri},
+        {providerId, oauthCodeOrPat: code, teamId},
         {
           onError,
           onCompleted: (res, errors) => {

@@ -11,7 +11,7 @@ type RemoveIntegrationSearchQuerySuccess {
   """
   teamId: ID
   """
-  The updated Jira Server integration after removing the query
+  The team member whose saved queries changed. Select the integration that owns the removed query
   """
-  jiraServerIntegration: JiraServerIntegration
+  teamMember: TeamMember!
 }

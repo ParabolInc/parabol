@@ -1,7 +1,8 @@
 import useAtmosphere from '../hooks/useAtmosphere'
 import type {MenuProps} from '../hooks/useMenu'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
-import RemoveAtlassianAuthMutation from '../mutations/RemoveAtlassianAuthMutation'
+import type {ConnectProvider} from '../integrations/platform/ClientIntegrationDefinition'
+import RemoveTeamMemberIntegrationAuthMutation from '../mutations/RemoveTeamMemberIntegrationAuthMutation'
 import AtlassianClientManager from '../utils/AtlassianClientManager'
 import {hasConfluenceScopes, hasJiraScopes} from '../utils/atlassianScopes'
 import Menu from './Menu'
@@ -11,11 +12,12 @@ interface Props {
   menuProps: MenuProps
   mutationProps: MenuMutationProps
   teamId: string
+  provider: ConnectProvider
   heldScopes?: readonly string[] | null
 }
 
 const AtlassianConfigMenu = (props: Props) => {
-  const {menuProps, mutationProps, teamId, heldScopes} = props
+  const {menuProps, mutationProps, teamId, provider, heldScopes} = props
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
   const atmosphere = useAtmosphere()
   const holdsJira = hasJiraScopes(heldScopes)
@@ -30,6 +32,7 @@ const AtlassianConfigMenu = (props: Props) => {
     AtlassianClientManager.openOAuth(
       atmosphere,
       teamId,
+      provider,
       mutationProps,
       ['offline_access'],
       heldScopes
@@ -39,7 +42,11 @@ const AtlassianConfigMenu = (props: Props) => {
   const removeAtlassian = () => {
     if (submitting) return
     submitMutation()
-    RemoveAtlassianAuthMutation(atmosphere, {teamId}, {onError, onCompleted})
+    RemoveTeamMemberIntegrationAuthMutation(
+      atmosphere,
+      {service: 'jira', teamId},
+      {onError, onCompleted}
+    )
   }
   return (
     <Menu ariaLabel={'Configure your Atlassian integration'} {...menuProps}>

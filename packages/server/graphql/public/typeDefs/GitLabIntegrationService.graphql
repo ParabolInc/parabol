@@ -4,4 +4,12 @@ type GitLabIntegrationService implements IntegrationService {
   isAvailable: Boolean!
   isConnected: Boolean!
   capabilities: [IntegrationCapabilityEnum!]!
+  """
+  The viewer's auth for this service on this team. Null when not connected or when the team member is not the viewer
+  """
+  auth: TeamMemberIntegrationAuth
+  """
+  The global provider for this service. Null when this instance has no credentials for it
+  """
+  cloudProvider: IntegrationProvider
 }

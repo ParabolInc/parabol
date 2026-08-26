@@ -1,8 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import type {TaskFooterIntegrateMenuSignup_TeamMemberIntegrations$key} from '~/__generated__/TaskFooterIntegrateMenuSignup_TeamMemberIntegrations.graphql'
+import type {TaskFooterIntegrateMenuSignup_teamMember$key} from '~/__generated__/TaskFooterIntegrateMenuSignup_teamMember.graphql'
 import type {MenuProps} from '../hooks/useMenu'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
+import {getConnectProvider} from '../integrations/platform/findIntegrationService'
 import AddToAzureMenuItem from './AddToAzureMenuItem'
 import AddToGitHubMenuItem from './AddToGitHubMenuItem'
 import AddToGitLabMenuItem from './AddToGitLabMenuItem'
@@ -16,29 +17,35 @@ interface Props {
   mutationProps: MenuMutationProps
   teamId: string
   label?: string
-  integrationsRef: TaskFooterIntegrateMenuSignup_TeamMemberIntegrations$key
+  teamMemberRef: TaskFooterIntegrateMenuSignup_teamMember$key
 }
 
 const TaskFooterIntegrateMenuSignup = (props: Props) => {
-  const {menuProps, mutationProps, teamId, label, integrationsRef} = props
+  const {menuProps, mutationProps, teamId, label, teamMemberRef} = props
   const {submitting} = mutationProps
-  const integrations = useFragment(
+  const teamMember = useFragment(
     graphql`
-      fragment TaskFooterIntegrateMenuSignup_TeamMemberIntegrations on TeamMemberIntegrations {
-        atlassian {
-          isActive
-          scope
+      fragment TaskFooterIntegrateMenuSignup_teamMember on TeamMember {
+        services {
+          ...findIntegrationService_cloudProvider @relay(mask: false)
         }
-        gitlab {
-          ...AddToGitLabMenuItem_GitLabIntegration
-        }
-        azureDevOps {
-          ...AddToAzureMenuItem_AzureIntegration
+        integrations {
+          atlassian {
+            isActive
+            scope
+          }
+          gitlab {
+            ...AddToGitLabMenuItem_GitLabIntegration
+          }
+          azureDevOps {
+            ...AddToAzureMenuItem_AzureIntegration
+          }
         }
       }
     `,
-    integrationsRef
+    teamMemberRef
   )
+  const {integrations, services} = teamMember
 
   if (submitting) return <LoadingComponent spinnerSize={24} height={24} showAfter={0} width={200} />
   return (
@@ -49,10 +56,15 @@ const TaskFooterIntegrateMenuSignup = (props: Props) => {
           <MenuItemHR />
         </>
       )}
-      <AddToGitHubMenuItem mutationProps={mutationProps} teamId={teamId} />
+      <AddToGitHubMenuItem
+        mutationProps={mutationProps}
+        teamId={teamId}
+        provider={getConnectProvider(services, 'github')}
+      />
       <AddToJiraMenuItem
         mutationProps={mutationProps}
         teamId={teamId}
+        provider={getConnectProvider(services, 'jira')}
         heldScopes={integrations.atlassian?.scope}
       />
       <AddToAzureMenuItem

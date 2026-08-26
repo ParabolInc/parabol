@@ -14,7 +14,7 @@ import type {JiraServerScopingSearchResultsPaginationQuery} from '../__generated
 import type {JiraServerScopingSearchResultsQuery} from '../__generated__/JiraServerScopingSearchResultsQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useLoadNextOnScrollBottom from '../hooks/useLoadNextOnScrollBottom'
-import PersistJiraServerSearchQueryMutation from '../mutations/PersistJiraServerSearchQueryMutation'
+import PersistIntegrationSearchQueryMutation from '../mutations/PersistIntegrationSearchQueryMutation'
 import Ellipsis from './Ellipsis/Ellipsis'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
@@ -150,10 +150,10 @@ const JiraServerScopingSearchResults = (props: Props) => {
   const persistQuery = () => {
     const {queryString, isJQL} = jiraServerSearchQuery
     const jiraServer = query?.viewer.teamMember?.integrations.jiraServer
-    const providerId = jiraServer?.providerId ?? null
+    const providerId = jiraServer?.providerId
     const searchQueries = jiraServer?.searchQueries ?? []
     // don't persist an empty string (the default)
-    if (!queryString.trim()) return
+    if (!queryString.trim() || !providerId) return
     const projectKeyFilters = [...(jiraServerSearchQuery.projectKeyFilters as string[])].sort()
     const lookupKey = JSON.stringify({queryString, projectKeyFilters})
     const isQueryNew = !searchQueries.find(({queryString, projectKeyFilters}) => {
@@ -161,14 +161,12 @@ const JiraServerScopingSearchResults = (props: Props) => {
     })
 
     if (isQueryNew) {
-      PersistJiraServerSearchQueryMutation(atmosphere, {
+      PersistIntegrationSearchQueryMutation(atmosphere, {
         teamId,
         providerId,
-        jiraServerSearchQuery: {
-          queryString,
-          isJQL,
-          projectKeyFilters: projectKeyFilters as string[]
-        }
+        queryString,
+        meta: JSON.stringify({isJQL, projectKeyFilters}),
+        includeJiraServer: true
       })
     }
   }

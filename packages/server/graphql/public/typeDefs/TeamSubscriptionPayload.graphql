@@ -5,8 +5,6 @@ type TeamSubscriptionPayload {
   fieldName: String!
   AcceptTeamInvitationPayload: AcceptTeamInvitationPayload
   AddAgendaItemPayload: AddAgendaItemPayload
-  AddAtlassianAuthPayload: AddAtlassianAuthPayload
-  AddGitHubAuthPayload: AddGitHubAuthPayload
   AddSlackAuthPayload: AddSlackAuthPayload
   ArchiveTeamPayload: ArchiveTeamPayload
   BatchArchiveTasksSuccess: BatchArchiveTasksSuccess
@@ -48,8 +46,6 @@ type TeamSubscriptionPayload {
   ReflectTemplatePromptUpdateDescriptionPayload: ReflectTemplatePromptUpdateDescriptionPayload
   PokerTemplateDimensionUpdateDescriptionPayload: PokerTemplateDimensionUpdateDescriptionPayload
   ReflectTemplatePromptUpdateGroupColorPayload: ReflectTemplatePromptUpdateGroupColorPayload
-  RemoveAtlassianAuthPayload: RemoveAtlassianAuthPayload
-  RemoveGitHubAuthPayload: RemoveGitHubAuthPayload
   RemoveSlackAuthPayload: RemoveSlackAuthPayload
   RemoveReflectTemplatePayload: RemoveReflectTemplatePayload
   RemovePokerTemplatePayload: RemovePokerTemplatePayload
@@ -66,7 +62,6 @@ type TeamSubscriptionPayload {
   UpdatePokerTemplateDimensionScalePayload: UpdatePokerTemplateDimensionScalePayload
   UpdatePokerTemplateScaleValuePayload: UpdatePokerTemplateScaleValuePayload
   UpdateUserProfilePayload: UpdateUserProfilePayload
-  PersistJiraSearchQuerySuccess: PersistJiraSearchQuerySuccess
   MovePokerTemplateScaleValueSuccess: MovePokerTemplateScaleValueSuccess
   UpdateAzureDevOpsDimensionFieldSuccess: UpdateAzureDevOpsDimensionFieldSuccess
   SetDefaultSlackChannelSuccess: SetDefaultSlackChannelSuccess
