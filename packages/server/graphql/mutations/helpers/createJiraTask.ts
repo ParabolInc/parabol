@@ -17,26 +17,22 @@ const createJiraTask = async (
   const {accessToken, providerUserId} = atlassianAuth
   const manager = new AtlassianServerManager(accessToken)
 
-  const issueMetaRes = await manager.getCreateMeta(cloudId, [projectKey])
+  const issueMetaRes = await manager.getCreateMeta(cloudId, [projectKey], true)
   if (issueMetaRes instanceof Error || issueMetaRes instanceof RateLimitError)
     return {error: issueMetaRes}
   const {projects} = issueMetaRes
-  // should always be the first and only item in the project arr
   const project = projects.find((project) => project.key === projectKey)
   if (!project) return {error: new Error('Project does not exist')}
   const {issuetypes} = project
   const bestType = issuetypes.find((type) => type.name === 'Task') || issuetypes[0]
+  const {fields} = bestType
+  const isOnCreateScreen = (fieldId: string) => !fields || fieldId in fields
   const payload = {
     summary,
-    description,
-    // ERROR: Field 'reporter' cannot be set. It is not on the appropriate screen, or unknown.
-    assignee: {
-      id: providerUserId
-    },
-    issuetype: {
-      id: bestType.id
-    },
-    labels: ['parabol']
+    issuetype: {id: bestType.id},
+    ...(isOnCreateScreen('description') && {description}),
+    ...(isOnCreateScreen('assignee') && {assignee: {id: providerUserId}}),
+    ...(isOnCreateScreen('labels') && {labels: ['parabol']})
   }
   const res = await manager.createIssue(cloudId, projectKey, payload)
   if (res instanceof Error) return {error: res}
