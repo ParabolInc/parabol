@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import type {GitHubScopingSearchHistoryToggle_meeting$key} from '../__generated__/GitHubScopingSearchHistoryToggle_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import PersistGitHubSearchQueryMutation from '../mutations/PersistGitHubSearchQueryMutation'
+import RemoveIntegrationSearchQueryMutation from '../mutations/RemoveIntegrationSearchQueryMutation'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
 import ScopingSearchHistoryToggle from './ScopingSearchHistoryToggle'
 
@@ -54,12 +54,7 @@ const GitHubScopingSearchHistoryToggle = (props: Props) => {
       }
 
       const deleteQuery = () => {
-        const normalizedQueryString = queryString.toLowerCase().trim()
-        PersistGitHubSearchQueryMutation(atmosphere, {
-          teamId,
-          queryString: normalizedQueryString,
-          isRemove: true
-        })
+        RemoveIntegrationSearchQueryMutation(atmosphere, {id, teamId, includeGitHub: true})
       }
 
       return {

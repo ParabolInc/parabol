@@ -1,13 +1,36 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
-import upsertAtlassianAuths from '../../../postgres/queries/upsertAtlassianAuths'
-import upsertGitHubAuth from '../../../postgres/queries/upsertGitHubAuth'
-import type {AtlassianAuth, GitHubAuth} from '../../../postgres/types'
+import deleteConflictingIntegratedTask from '../../../postgres/queries/deleteConflictingIntegratedTask'
+import type {TeamMemberIntegrationAuth} from '../../../postgres/types/pg'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import isValid from '../../isValid'
 import type {MutationResolvers} from '../resolverTypes'
+
+type CopiedAuthColumn = Exclude<
+  keyof TeamMemberIntegrationAuth,
+  'id' | 'teamId' | 'createdAt' | 'updatedAt' | 'isActive'
+>
+
+// fails to compile when a column is added to TeamMemberIntegrationAuth but not listed here
+const everyCopiedAuthColumn = <const T extends readonly CopiedAuthColumn[]>(
+  columns: T & ([Exclude<CopiedAuthColumn, T[number]>] extends [never] ? unknown : never)
+) => columns
+
+const AUTH_COPY_COLUMNS = everyCopiedAuthColumn([
+  'userId',
+  'providerId',
+  'service',
+  'accessToken',
+  'accessTokenSecret',
+  'refreshToken',
+  'scopes',
+  'expiresAt',
+  'providerUserId',
+  'meta',
+  'watchExpiresAt'
+])
 
 const changeTaskTeam: MutationResolvers['changeTaskTeam'] = async (
   _source,
@@ -36,6 +59,7 @@ const changeTaskTeam: MutationResolvers['changeTaskTeam'] = async (
   // RESOLUTION
 
   const {integration} = task
+  let sourceAuthIdToCopy: number | null = null
   if (integration) {
     // The task might have been pushed by someone else for viewer (`userId !== accessUserId`).
     // In that case we still try to use the viewer's target team authentication, but fall back to the
@@ -62,28 +86,7 @@ const changeTaskTeam: MutationResolvers['changeTaskTeam'] = async (
     // Transfer integration to target team
     if (task.integration) {
       if (sourceTeamAuth && !targetTeamAuth) {
-        if (task.integration.service === 'jira') {
-          await upsertAtlassianAuths([
-            {
-              ...(sourceTeamAuth as AtlassianAuth),
-              teamId
-            }
-          ])
-          // dataLoader does not allow to refresh the value, so clear the updated one
-          dataLoader.get('freshAtlassianAuth').clear(targetTeamAuthKey)
-          const data = {teamId, userId: viewerId}
-          publish(SubscriptionChannel.TEAM, teamId, 'AddAtlassianAuthPayload', data, subOptions)
-        }
-        if (task.integration.service === 'github') {
-          await upsertGitHubAuth({
-            ...(sourceTeamAuth as GitHubAuth),
-            teamId
-          })
-          // dataLoader does not allow to refresh the value, so clear the updated one
-          dataLoader.get('githubAuth').clear(targetTeamAuthKey)
-          const data = {teamId, userId: viewerId}
-          publish(SubscriptionChannel.TEAM, teamId, 'AddGitHubAuthPayload', data, subOptions)
-        }
+        sourceAuthIdToCopy = sourceTeamAuth.id
         integration.accessUserId = viewerId
       } else if (targetTeamAuth) {
         // in case the task was pushed by someone else before
@@ -102,32 +105,62 @@ const changeTaskTeam: MutationResolvers['changeTaskTeam'] = async (
   // If there is a task with the same integration hash in the new team, then delete it first.
   // This is done so there are no duplicates and also solves the issue of the conflicting task being
   // private or archived.
-  if (task.integrationHash) {
-    const deletedTask = await pg
-      .deleteFrom('Task')
-      .where('integrationHash', '=', task.integrationHash)
-      .where('teamId', '=', teamId)
-      .limit(1)
-      .returning('id')
-      .executeTakeFirst()
-    if (deletedTask) {
-      const isPrivate = task.tags.includes('private')
-      const data = {task}
-      newTeamMembers.forEach(({userId}) => {
-        if (!isPrivate || userId === task.userId) {
-          publish(SubscriptionChannel.TASK, userId, 'DeleteTaskPayload', data, subOptions)
-        }
-      })
+  const deletedTask = await pg.transaction().execute(async (trx) => {
+    if (sourceAuthIdToCopy !== null) {
+      await trx
+        .insertInto('TeamMemberIntegrationAuth')
+        .columns([...AUTH_COPY_COLUMNS, 'teamId'])
+        .expression((eb) =>
+          eb
+            .selectFrom('TeamMemberIntegrationAuth')
+            .select([...AUTH_COPY_COLUMNS, eb.val(teamId).as('teamId')])
+            .where('id', '=', sourceAuthIdToCopy)
+        )
+        .onConflict((oc) =>
+          oc.columns(['userId', 'teamId', 'service']).doUpdateSet((eb) => ({
+            ...Object.fromEntries(
+              AUTH_COPY_COLUMNS.map((column) => [column, eb.ref(`excluded.${column}`)])
+            ),
+            isActive: true
+          }))
+        )
+        .execute()
     }
-  }
-  await pg
-    .updateTable('Task')
-    .set({
-      teamId,
-      integration: JSON.stringify(integration)
+    const deleted = task.integrationHash
+      ? await deleteConflictingIntegratedTask({teamId, integrationHash: task.integrationHash}, trx)
+      : undefined
+    await trx
+      .updateTable('Task')
+      .set({
+        teamId,
+        integration: JSON.stringify(integration)
+      })
+      .where('id', '=', taskId)
+      .executeTakeFirst()
+    return deleted
+  })
+
+  if (sourceAuthIdToCopy !== null && integration) {
+    const targetTeamAuthKey = {teamId, userId: viewerId}
+    if (integration.service === 'jira') {
+      dataLoader.get('freshAtlassianAuth').clear(targetTeamAuthKey)
+    } else {
+      dataLoader.get('githubAuth').clear(targetTeamAuthKey)
+    }
+    dataLoader.get('teamMemberIntegrationAuthsByServiceTeamAndUserId').clear({
+      service: integration.service,
+      ...targetTeamAuthKey
     })
-    .where('id', '=', taskId)
-    .executeTakeFirst()
+  }
+  if (deletedTask) {
+    const isPrivate = task.tags.includes('private')
+    const data = {task}
+    newTeamMembers.forEach(({userId}) => {
+      if (!isPrivate || userId === task.userId) {
+        publish(SubscriptionChannel.TASK, userId, 'DeleteTaskPayload', data, subOptions)
+      }
+    })
+  }
   dataLoader.clearAll('tasks')
   const isPrivate = tags.includes('private')
   const data = {taskId}

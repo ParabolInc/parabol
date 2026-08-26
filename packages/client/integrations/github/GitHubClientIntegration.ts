@@ -14,7 +14,8 @@ export class GitHubClientIntegration extends ClientIntegrationDefinition {
   readonly ids = githubIntegrationMeta.ids
   readonly Icon = GitHubSVG
   readonly iconClassName = 'dark:[&_path]:fill-white'
-  connect(atmosphere: Atmosphere, {teamId, mutationProps}: ConnectParams) {
-    GitHubClientManager.openOAuth(atmosphere, teamId, mutationProps)
+  connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
+    if (!provider) return
+    GitHubClientManager.openOAuth(atmosphere, teamId, provider, mutationProps)
   }
 }

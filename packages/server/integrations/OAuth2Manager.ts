@@ -1,3 +1,4 @@
+import type {JsonObject} from '../postgres/types/pg'
 export interface OAuth2AuthorizationParams {
   grant_type: 'authorization_code'
   code: string
@@ -23,6 +24,10 @@ export type OAuth2AuthorizeResponse = {
   refreshToken: string | undefined
   scopes: string
   expiresIn?: number
+  /** The user's id on the provider, when the service exposes one */
+  providerUserId?: string | null
+  /** Service-specific bolt-ons stored on the auth row, e.g. jira: {cloudIds} */
+  meta?: JsonObject
 }
 
 export default abstract class OAuth2Manager {
@@ -34,8 +39,7 @@ export default abstract class OAuth2Manager {
     this.clientSecret = clientSecret
     this.serverBaseUrl = serverBaseUrl
   }
-  abstract authorize(code: string, redirectUri: string): Promise<Error | OAuth2AuthorizeResponse>
-
+  abstract authorize(code: string): Promise<Error | OAuth2AuthorizeResponse>
   abstract refresh(refreshToken: string): Promise<Error | {accessToken: string}>
   protected abstract fetchToken(
     partialAuthParams: OAuth2RefreshAuthorizationParams | OAuth2AuthorizationParams

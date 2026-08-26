@@ -1,8 +1,10 @@
 import {jiraServerIntegrationMeta} from 'parabol-client/shared/integrations/jiraServerIntegrationMeta'
+import type {JiraSearchQueryJson, TeamMemberIntegrationAuth} from '../../postgres/types'
+import buildJiraSearchQuery from '../jira/buildJiraSearchQuery'
 import {
-  type IntegrationAuth,
   type IntegrationCtx,
   type IssueCreateCapability,
+  type IssueSearchCapability,
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
 import TaskIntegrationManagerFactory from '../TaskIntegrationManagerFactory'
@@ -12,18 +14,12 @@ export class JiraServerServerIntegration extends ServerIntegrationDefinition {
   readonly title = jiraServerIntegrationMeta.title
   readonly authStrategy = 'oauth1' as const
 
-  async resolveAuth(ctx: IntegrationCtx): Promise<IntegrationAuth | null> {
+  async resolveAuth(ctx: IntegrationCtx): Promise<TeamMemberIntegrationAuth | null> {
     const {dataLoader, teamId, userId} = ctx
     const auth = await dataLoader
       .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
       .load({service: 'jiraServer', teamId, userId})
-    if (!auth?.accessToken) return null
-    return {
-      accessToken: auth.accessToken,
-      accessUserId: auth.userId,
-      providerId: auth.providerId,
-      raw: auth
-    }
+    return auth?.accessToken ? auth : null
   }
 
   async isAvailable(ctx: IntegrationCtx) {
@@ -34,7 +30,10 @@ export class JiraServerServerIntegration extends ServerIntegrationDefinition {
     return this.hasActiveAuthRow(ctx, 'jiraServer')
   }
 
-  readonly capabilities: {issueCreate: IssueCreateCapability} = {
+  readonly capabilities: {
+    issueCreate: IssueCreateCapability
+    issueSearch: IssueSearchCapability<JiraSearchQueryJson>
+  } = {
     issueCreate: {
       initManager: (ctx) =>
         TaskIntegrationManagerFactory.initManager(
@@ -44,6 +43,7 @@ export class JiraServerServerIntegration extends ServerIntegrationDefinition {
           ctx.context,
           ctx.info
         )
-    }
+    },
+    issueSearch: {buildQuery: buildJiraSearchQuery}
   }
 }

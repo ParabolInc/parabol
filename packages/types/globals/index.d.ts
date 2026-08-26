@@ -43,11 +43,9 @@ declare const __APP_VERSION__: string
 
 interface Window {
   __ACTION__: {
-    atlassian: string
     datadogClientToken: string | undefined
     datadogApplicationId: string | undefined
     datadogService: string | undefined
-    github: string
     google: string
     googleAnalytics: string
     mattermostWebhookIntegrationDisabled: boolean | undefined

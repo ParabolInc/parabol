@@ -82,6 +82,14 @@ export interface IntegrationProviderZoomOAuth2 extends IntegrationProviderOAuth2
   service: 'zoom'
 }
 
+export interface IntegrationProviderJiraOAuth2 extends IntegrationProviderOAuth2 {
+  service: 'jira'
+}
+
+export interface IntegrationProviderGitHubOAuth2 extends IntegrationProviderOAuth2 {
+  service: 'github'
+}
+
 export type TIntegrationProvider =
   | IntegrationProviderMattermost
   | IntegrationProviderGitLabOAuth2
@@ -93,3 +101,5 @@ export type TIntegrationProvider =
   | IntegrationProviderGmeetOAuth2
   | IntegrationProviderLinear
   | IntegrationProviderZoomOAuth2
+  | IntegrationProviderJiraOAuth2
+  | IntegrationProviderGitHubOAuth2

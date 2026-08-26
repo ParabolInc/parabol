@@ -33,13 +33,12 @@ const query = graphql`
         }
         integrations {
           ...useIsIntegrated_integrations
-          ...TaskFooterIntegrateMenuSignup_TeamMemberIntegrations
         }
       }
       viewerTeamMember: teamMember(userId: null, teamId: $teamId) {
+        ...TaskFooterIntegrateMenuSignup_teamMember
         integrations {
           ...useIsIntegrated_integrations
-          ...TaskFooterIntegrateMenuSignup_TeamMemberIntegrations
         }
       }
     }
@@ -66,7 +65,6 @@ const TaskFooterIntegrateMenu = (props: Props) => {
   const isViewerIntegrated = useIsIntegrated(viewerTeamMember?.integrations)
   const isAssigneeIntegrated = useIsIntegrated(assigneeTeamMember?.integrations)
   if (!assigneeTeamMember || !viewerTeamMember) return null
-  const {integrations: viewerIntegrations} = viewerTeamMember
   const {user: assigneeUser, prevUsedRepoIntegrations} = assigneeTeamMember
   const {preferredName: assigneeName} = assigneeUser
   const {teamId, userId, id: taskId} = task
@@ -129,7 +127,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
       mutationProps={mutationProps}
       teamId={teamId}
       label={label}
-      integrationsRef={viewerIntegrations}
+      teamMemberRef={viewerTeamMember}
     />
   )
 }

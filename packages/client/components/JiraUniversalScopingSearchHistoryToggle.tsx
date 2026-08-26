@@ -1,7 +1,6 @@
 import {commitLocalUpdate} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
-import PersistJiraSearchQueryMutation from '../mutations/PersistJiraSearchQueryMutation'
-import RemoveJiraServerSearchQueryMutation from '../mutations/RemoveJiraServerSearchQueryMutation'
+import RemoveIntegrationSearchQueryMutation from '../mutations/RemoveIntegrationSearchQueryMutation'
 import IntegrationRepoId from '../shared/gqlIds/IntegrationRepoId'
 import JiraProjectId from '../shared/gqlIds/JiraProjectId'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
@@ -45,29 +44,18 @@ const JiraUniversalScopingSearchHistoryToggle = (props: Props) => {
         })
         .join(', ')
 
-      // TODO: migrate Jira to use the new table and use single mutation for both
-      const deleteJiraQuery = () => {
-        PersistJiraSearchQueryMutation(atmosphere, {
-          teamId,
-          input: {
-            queryString,
-            isJQL,
-            projectKeyFilters: projectKeyFilters as string[],
-            isRemove: true
-          }
-        })
-      }
-
-      const deleteJiraServerQuery = () => {
-        RemoveJiraServerSearchQueryMutation(atmosphere, {id, teamId})
-      }
-
       return {
         id,
         labelFirstLine: queryStringLabel,
         labelSecondLine: projectFilters && `in ${projectFilters}`,
         onClick: selectQuery,
-        onDelete: service === 'jira' ? deleteJiraQuery : deleteJiraServerQuery
+        onDelete: () =>
+          RemoveIntegrationSearchQueryMutation(atmosphere, {
+            id,
+            teamId,
+            includeAtlassian: service === 'jira',
+            includeJiraServer: service === 'jiraServer'
+          })
       }
     }) ?? []
 

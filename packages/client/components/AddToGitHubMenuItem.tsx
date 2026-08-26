@@ -1,6 +1,7 @@
 import {forwardRef} from 'react'
 import useAtmosphere from '../hooks/useAtmosphere'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
+import type {ConnectProvider} from '../integrations/platform/ClientIntegrationDefinition'
 import GitHubClientManager from '../utils/GitHubClientManager'
 import GitHubSVG from './GitHubSVG'
 import MenuItem from './MenuItem'
@@ -10,15 +11,17 @@ import MenuItemLabel from './MenuItemLabel'
 interface Props {
   teamId: string
   mutationProps: MenuMutationProps
+  provider: ConnectProvider | null
 }
 
 const AddToGitHubMenuItem = forwardRef((props: Props, ref) => {
-  const {mutationProps, teamId} = props
+  const {mutationProps, teamId, provider} = props
   const atmosphere = useAtmosphere()
   const openOAuth = () => {
-    GitHubClientManager.openOAuth(atmosphere, teamId, mutationProps)
+    if (!provider) return
+    GitHubClientManager.openOAuth(atmosphere, teamId, provider, mutationProps)
   }
-  if (!GitHubClientManager.isAvailable) return null
+  if (!provider) return null
   return (
     <MenuItem
       ref={ref}

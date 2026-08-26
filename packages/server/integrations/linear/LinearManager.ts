@@ -1,4 +1,6 @@
+import makeAppURL from 'parabol-client/utils/makeAppURL'
 import {URL} from 'url'
+import appOrigin from '../../appOrigin'
 import {authorizeOAuth2} from '../helpers/authorizeOAuth2'
 import OAuth2Manager, {
   type OAuth2AuthorizationParams,
@@ -7,6 +9,7 @@ import OAuth2Manager, {
 } from '../OAuth2Manager'
 
 export default class LinearManager extends OAuth2Manager {
+  static readonly REDIRECT_URI = makeAppURL(appOrigin, 'auth/linear')
   private apiServerBaseUrl: string
 
   constructor(clientId: string, clientSecret: string, serverBaseUrl: string) {
@@ -17,11 +20,11 @@ export default class LinearManager extends OAuth2Manager {
     this.apiServerBaseUrl = `${url.protocol}//${apiHostname}`
   }
 
-  async authorize(code: string, redirectUri: string): Promise<Error | OAuth2AuthorizeResponse> {
+  async authorize(code: string): Promise<Error | OAuth2AuthorizeResponse> {
     return this.fetchToken<OAuth2AuthorizeResponse>({
       grant_type: 'authorization_code',
       code,
-      redirect_uri: redirectUri
+      redirect_uri: LinearManager.REDIRECT_URI
     })
   }
 
