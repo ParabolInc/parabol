@@ -1,5 +1,6 @@
 import {selectNewMeetings} from '../../../postgres/select'
 import type {TeamHealthMeetingResolvers} from '../resolverTypes'
+import {getTeamHealthEligibleCount} from './helpers/getTeamHealthEligibleCount'
 
 // how far back to walk the series looking for the streak. teams meeting even weekly won't
 // realistically run this many cycles in a row, so this is just a sane upper bound on the query
@@ -20,6 +21,17 @@ const TeamHealthMeeting: TeamHealthMeetingResolvers = {
   respondentCount: async ({id: meetingId}, _args, {dataLoader}) => {
     const responses = await dataLoader.get('teamHealthResponsesByMeetingId').load(meetingId)
     return new Set(responses.map((response) => response.userId)).size
+  },
+  eligibleCount: async ({id: meetingId, teamId, eligibleCount}, _args, {dataLoader}) => {
+    // the stored count is the roster as it stood when the cycle closed; recompute only while the
+    // meeting is still open and there is nothing frozen yet
+    return eligibleCount ?? getTeamHealthEligibleCount(meetingId, teamId, dataLoader)
+  },
+  participationRate: async ({id: meetingId, teamId, eligibleCount}, _args, {dataLoader}) => {
+    const total = eligibleCount ?? (await getTeamHealthEligibleCount(meetingId, teamId, dataLoader))
+    if (total === 0) return null
+    const responses = await dataLoader.get('teamHealthResponsesByMeetingId').load(meetingId)
+    return new Set(responses.map((response) => response.userId)).size / total
   },
   currentStreak: async ({id: meetingId, meetingSeriesId}, _args, {dataLoader}) => {
     if (!meetingSeriesId) return 0

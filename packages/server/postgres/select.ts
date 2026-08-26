@@ -265,6 +265,7 @@ export const selectNewMeetings = () => {
       'sentimentScore',
       'slackTs',
       'engagement',
+      'eligibleCount',
       'totalVotes',
       'maxVotesPerGroup',
       'disableAnonymity',

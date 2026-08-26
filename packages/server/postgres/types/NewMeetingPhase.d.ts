@@ -183,15 +183,6 @@ export interface TeamHealthIntroPhase extends GenericMeetingPhase {
   stages: [TeamHealthIntroStage]
 }
 
-export interface TeamHealthSubmittedStage extends GenericMeetingStage {
-  phaseType: 'TEAM_HEALTH_SUBMITTED'
-}
-
-export interface TeamHealthSubmittedPhase extends GenericMeetingPhase {
-  phaseType: 'TEAM_HEALTH_SUBMITTED'
-  stages: [TeamHealthSubmittedStage]
-}
-
 export interface TeamHealthResultStage extends GenericMeetingStage {
   phaseType: 'TEAM_HEALTH_RESULT'
 }
@@ -231,7 +222,6 @@ export type TeamPromptPhase = TeamPromptResponsesPhase
 export type TeamHealthMeetingPhase =
   | TeamHealthIntroPhase
   | TeamHealthResponsePhase
-  | TeamHealthSubmittedPhase
   | TeamHealthResultPhase
 
 export type NewMeetingPhase =

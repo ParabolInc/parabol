@@ -31,6 +31,18 @@ type TeamHealthMeeting implements NewMeeting {
   respondentCount: Int!
 
   """
+  The number of people expected to answer this cycle: everyone on the team, less anyone sitting it
+  out as a spectator. Frozen when the meeting ends, since team membership drifts. This is the
+  denominator for participation, and deliberately not a count of who opened the meeting
+  """
+  eligibleCount: Int!
+
+  """
+  respondentCount over eligibleCount, 0-1. Null when nobody was eligible to answer
+  """
+  participationRate: Float
+
+  """
   The number of consecutive completed meetings in this meeting's series that had at least
   one response, counting backwards from the most recently completed meeting. 0 if this
   meeting isn't part of a series, or the meeting right before it had no responses

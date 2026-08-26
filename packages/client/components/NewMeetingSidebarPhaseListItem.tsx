@@ -5,8 +5,10 @@ import {
   Edit,
   Group,
   GroupWork,
+  Insights,
   MonitorHeart,
   PlaylistAdd,
+  PollOutlined,
   Receipt,
   ThumbsUpDown,
   Update
@@ -97,6 +99,8 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
               group_work: <GroupWork />,
               monitor_heart: <MonitorHeart />,
               playlist_add: <PlaylistAdd />,
+              poll: <PollOutlined />,
+              insights: <Insights />,
               update: <Update />,
               receipt: <Receipt />
             }[icon]

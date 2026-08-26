@@ -8,9 +8,13 @@ import {
   KeyboardArrowDown as KeyboardArrowDownIcon,
   KeyboardArrowUp as KeyboardArrowUpIcon
 } from '~/ui/icons'
-import type {CreateGcalEventInput} from '../../__generated__/useStartTeamHealthMutation.graphql'
+import type {
+  CreateGcalEventInput,
+  useStartTeamHealthMutation$data
+} from '../../__generated__/useStartTeamHealthMutation.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
+import useStartMeetingSeriesNowMutation from '../../mutations/useStartMeetingSeriesNowMutation'
 import useStartTeamHealthMutation from '../../mutations/useStartTeamHealthMutation'
 import {Button} from '../../ui/Button/Button'
 import {cn} from '../../ui/cn'
@@ -20,7 +24,10 @@ import {DialogTrigger} from '../../ui/Dialog/DialogTrigger'
 import sortByTier from '../../utils/sortByTier'
 import NewMeetingTeamPickerMultiple from '../NewMeetingTeamPickerMultiple'
 import {ScheduleDialog} from '../ScheduleDialog'
+import type {SnackAction} from '../Snackbar'
 import StyledLink from '../StyledLink'
+
+type StartTeamHealthResult = useStartTeamHealthMutation$data['startTeamHealth']
 
 interface Props {
   templateId: string
@@ -48,6 +55,7 @@ const TeamHealthDetailsSidebar = (props: Props) => {
   const [isMinimized, setIsMinimized] = useState(false)
   const [isScheduleOpen, setIsScheduleOpen] = useState(false)
   const [execute, submitting] = useStartTeamHealthMutation()
+  const [startMeetingSeriesNow] = useStartMeetingSeriesNowMutation()
   // ScheduleDialog drives the Google Calendar OAuth flow through the legacy mutationProps shape
   const mutationProps = useMutationProps()
 
@@ -75,6 +83,34 @@ const TeamHealthDetailsSidebar = (props: Props) => {
   // the Google Calendar UI in the dialog is scoped to a single team member's integration
   const gcalTeam = teams.find((team) => team.id === selectedTeamIds[0]) ?? teams[0]!
 
+  const getSnackAction = ({
+    meetings,
+    teams: startedTeams
+  }: StartTeamHealthResult): SnackAction | undefined => {
+    const startedTeam = startedTeams.length === 1 ? startedTeams[0] : undefined
+    if (!startedTeam) return undefined
+    const meeting = meetings[0]
+    if (meeting) {
+      return {label: 'Join now', callback: () => navigate(`/meet/${meeting.id}`)}
+    }
+    // no meeting yet: the series we just scheduled is the newest one awaiting its first meeting
+    const [scheduledSeries] = startedTeam.activeMeetingSeries
+      .filter((series) => !series.cancelledAt && !series.mostRecentMeeting)
+      .sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1))
+    if (!scheduledSeries) return undefined
+    return {
+      label: 'Start now',
+      callback: () => {
+        startMeetingSeriesNow({
+          variables: {meetingSeriesId: scheduledSeries.id},
+          onCompleted: (res) => {
+            navigate(`/meet/${res.startMeetingSeriesNow.meeting.id}`)
+          }
+        })
+      }
+    }
+  }
+
   const handleStartActivity = (name?: string, rrule?: RRule, gcalInput?: CreateGcalEventInput) => {
     if (submitting || selectedTeamIds.length === 0) return
     execute({
@@ -87,18 +123,16 @@ const TeamHealthDetailsSidebar = (props: Props) => {
       },
       onCompleted: (res) => {
         setIsScheduleOpen(false)
+        navigate('/meetings')
         const {meetings, teams: startedTeams} = res.startTeamHealth
-        // an immediate (non-recurring) meeting was created for a single team → jump right in
-        if (selectedTeamIds.length === 1 && meetings[0]) {
-          navigate(`/meet/${meetings[0].id}`)
-          return
-        }
         const teamCount = startedTeams.length
         const verb = meetings.length > 0 ? 'Started' : 'Scheduled'
         atmosphere.eventEmitter.emit('addSnackbar', {
           key: 'startTeamHealth',
-          autoDismiss: 5,
-          message: `${verb} Team Health for ${teamCount} team${teamCount === 1 ? '' : 's'}`
+          autoDismiss: 10,
+          showDismissButton: true,
+          message: `${verb} Team Health for ${teamCount} team${teamCount === 1 ? '' : 's'}`,
+          action: getSnackAction(res.startTeamHealth)
         })
       }
     })
