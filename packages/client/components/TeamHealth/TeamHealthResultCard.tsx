@@ -9,31 +9,12 @@ interface Props {
   // the statement the team actually answered this cycle. Rotation picks a different one from the
   // same category next time, which is why the card names both
   question: string
-  score: number | null
+  // mean of the 1-5 Likert answers, on the scale the team answered on. Null if nobody scored it
+  meanScore: number | null
   distribution: number[]
   respondentCount: number
   responseCount: number
-  isDivergent: boolean
   orderedCategoryIds: ReadonlyArray<string>
-}
-
-// the same light-100/dark-900 inversion the category tags use, so every pill on this page reads alike
-const badgeForScore = (score: number | null) => {
-  if (score === null) return {label: 'No responses', className: 'bg-surface-well text-fg-secondary'}
-  if (score >= 70)
-    return {
-      label: 'Strong agreement',
-      className: 'bg-jade-100 text-jade-700 dark:bg-jade-900 dark:text-jade-200'
-    }
-  if (score >= 55)
-    return {
-      label: 'Aligned',
-      className: 'bg-sky-100 text-sky-700 dark:bg-sky-900 dark:text-sky-200'
-    }
-  return {
-    label: 'Some concern',
-    className: 'bg-gold-100 text-gold-700 dark:bg-gold-900 dark:text-gold-200'
-  }
 }
 
 const TeamHealthResultCard = (props: Props) => {
@@ -41,43 +22,37 @@ const TeamHealthResultCard = (props: Props) => {
     categoryId,
     categoryName,
     question,
-    score,
+    meanScore,
     distribution,
     respondentCount,
     responseCount,
-    isDivergent,
     orderedCategoryIds
   } = props
-  const badge = badgeForScore(score)
 
   return (
-    <div
-      className={cn(
-        'flex flex-col rounded-2xl bg-surface-card p-5 shadow-card',
-        isDivergent && 'ring-2 ring-grape-500'
-      )}
-    >
+    <div className='flex flex-col rounded-2xl bg-surface-card p-5 shadow-card'>
       <span
         className={cn(
-          'inline-flex self-start whitespace-nowrap rounded-full px-2.5 py-1 font-semibold text-sm',
+          'inline-flex h-7 items-center self-start whitespace-nowrap rounded-full px-2.5 font-semibold text-sm',
           getTeamHealthCategoryColor(categoryId, orderedCategoryIds)
         )}
       >
         {categoryName}
       </span>
-      <p className='mt-3 font-semibold text-fg-primary text-sm'>{question}</p>
+      {/* the chart sits at a fixed offset on every card so the distributions line up across the
+          row and can be read as one sweep. Anything whose height varies with content goes below it */}
       <div className='mt-4'>
         <TeamHealthDistributionChart distribution={distribution} />
       </div>
-      <div className='mt-4 flex items-center justify-between'>
-        <span className={cn('rounded-full px-2 py-0.5 font-semibold text-xs', badge.className)}>
-          {isDivergent ? 'Biggest divergence' : badge.label}
+      <div className='mt-3 flex items-baseline gap-1'>
+        <span className='font-bold text-2xl text-fg-primary'>
+          {meanScore === null ? '—' : meanScore.toFixed(1)}
         </span>
-        <div className='flex items-baseline gap-1'>
-          <span className='font-bold text-2xl text-fg-primary'>{score ?? '—'}</span>
-          {score !== null && <span className='text-fg-muted text-xs'>/ 100</span>}
-        </div>
+        {meanScore !== null && <span className='text-fg-muted text-sm'>/ 5</span>}
       </div>
+      <p className='mt-2 line-clamp-3 text-fg-secondary text-sm' title={question}>
+        {question}
+      </p>
       <div className='mt-2 text-fg-muted text-xs'>
         {respondentCount} {plural(respondentCount, 'respondent')} · {responseCount}{' '}
         {plural(responseCount, 'answer')}

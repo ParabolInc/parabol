@@ -1,4 +1,3 @@
-import {normalizeLikertMean} from '../../../../../client/shared/teamHealth/normalizeLikertMean'
 import type {DataLoaderInstance} from '../../../../dataloader/RootDataLoader'
 import isValid from '../../../isValid'
 
@@ -6,7 +5,6 @@ export interface TeamHealthCategoryScoreSource {
   meetingId: string
   categoryId: number
   meanScore: number
-  normalizedScore: number
   respondentCount: number
   responseCount: number
 }
@@ -62,7 +60,6 @@ export const getTeamHealthCategoryScores = async (
           meetingId,
           categoryId,
           meanScore,
-          normalizedScore: normalizeLikertMean(meanScore),
           respondentCount: userIds.size,
           responseCount: scores.length
         }

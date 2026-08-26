@@ -9,14 +9,11 @@ type TeamHealthCategoryScore {
   category: TeamHealthCategory!
 
   """
-  The mean of every 1-5 Likert answer given in this category
+  The mean of every Likert answer given in this category, on the same 1-5 scale the team answered
+  on. Reported as-is: rescaling it to 0-100 invents precision the question never had and makes the
+  number unrecognizable to the person who picked a 4
   """
   meanScore: Float!
-
-  """
-  meanScore mapped onto a 0-100 scale. The number every Team Health surface reports
-  """
-  normalizedScore: Int!
 
   """
   The number of distinct members who answered at least one question in this category. A bare
