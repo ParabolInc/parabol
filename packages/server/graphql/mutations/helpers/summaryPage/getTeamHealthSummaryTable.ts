@@ -1,5 +1,6 @@
 import type {DataLoaderInstance} from '../../../../dataloader/RootDataLoader'
 import isValid from '../../../isValid'
+import {canRevealTeamHealth} from '../../../public/types/helpers/canRevealTeamHealth'
 import {getSummaryTable} from './getSummaryTable'
 
 const headers = ['Question', 'Average', 'Responses', 'Comments'] as const
@@ -25,9 +26,10 @@ const getRowData = async (meetingId: string, dataLoader: DataLoaderInstance) => 
       grouped.set(questionId, entry)
     }
     if (response.score !== null && response.score !== undefined) entry.scores.push(response.score)
-    // prefer the anonymity-preserving paraphrase; fall back to the raw comment only if absent
-    const comment = response.commentParaphrased ?? response.comment
-    if (comment) entry.comments.push(comment)
+    // only the anonymity-preserving paraphrase is publishable here. A raw comment is the author's
+    // own words on a page the whole team reads, which is exactly how a writing style identifies
+    // someone — if the paraphrase is missing the comment simply doesn't go out
+    if (response.commentParaphrased) entry.comments.push(response.commentParaphrased)
   }
 
   return [...grouped.values()].map((entry) => {
@@ -47,6 +49,7 @@ export const getTeamHealthSummaryTable = async (
   meetingId: string,
   dataLoader: DataLoaderInstance
 ) => {
+  if (!(await canRevealTeamHealth(meetingId, dataLoader))) return null
   const rowData = await getRowData(meetingId, dataLoader)
   return getSummaryTable(headers, rowData)
 }

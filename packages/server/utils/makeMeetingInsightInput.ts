@@ -1,6 +1,7 @@
 import type {DataLoaderInstance} from '../dataloader/RootDataLoader'
 import isValid from '../graphql/isValid'
 import {getComments} from '../graphql/public/mutations/helpers/getComments'
+import {canRevealTeamHealth} from '../graphql/public/types/helpers/canRevealTeamHealth'
 import {resolveStoryFinalScore} from '../graphql/resolvers/resolveStoryFinalScore'
 import type {RetroReflection} from '../postgres/types'
 import type {
@@ -125,12 +126,9 @@ const makeTeamHealthMeetingInsightInput = async (
   meeting: TeamHealthMeeting,
   dataLoader: DataLoaderInstance
 ) => {
-  // require enough distinct respondents that no answer can be traced back to an individual
-  const MIN_RESPONSES = 3
   const {id: meetingId, meetingType} = meeting
+  if (!(await canRevealTeamHealth(meetingId, dataLoader))) return null
   const responses = await dataLoader.get('teamHealthResponsesByMeetingId').load(meetingId)
-  const responderCount = new Set(responses.map(({userId}) => userId)).size
-  if (responderCount < MIN_RESPONSES) return null
 
   const questionIds = [...new Set(responses.map(({questionId}) => questionId))]
   const questions = (await dataLoader.get('teamHealthQuestions').loadMany(questionIds)).filter(
@@ -150,9 +148,8 @@ const makeTeamHealthMeetingInsightInput = async (
       grouped.set(questionId, entry)
     }
     if (response.score !== null && response.score !== undefined) entry.scores.push(response.score)
-    // prefer the anonymity-preserving paraphrase; fall back to the raw comment only if absent
-    const comment = response.commentParaphrased ?? response.comment
-    if (comment) entry.comments.push(comment)
+    // only the paraphrase is safe to hand onward; a raw comment carries its author's writing style
+    if (response.commentParaphrased) entry.comments.push(response.commentParaphrased)
   }
   return {meetingType, questions: [...grouped.values()]}
 }

@@ -40,7 +40,9 @@ export const phaseIconLookup = {
   agendaitems: 'comment',
   lastcall: 'comment',
   SUMMARY: 'receipt',
-  SCOPE: 'playlist_add'
+  SCOPE: 'playlist_add',
+  TEAM_HEALTH_RESPONSE: 'poll',
+  TEAM_HEALTH_RESULT: 'insights'
 } as Record<NewMeetingPhaseTypeEnum, string>
 
 export const phaseImageLookup = {

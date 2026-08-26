@@ -7,7 +7,6 @@ import getKysely from '../../../postgres/getKysely'
 import type {TeamHealthMeeting} from '../../../postgres/types/Meeting'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
-import getPhase from '../../../utils/getPhase'
 import {Logger} from '../../../utils/Logger'
 import logError from '../../../utils/logError'
 import publish from '../../../utils/publish'
@@ -15,6 +14,7 @@ import standardError from '../../../utils/standardError'
 import type {InternalContext} from '../../graphql'
 import gatherInsights from './gatherInsights'
 import {IntegrationNotifier} from './notifications/IntegrationNotifier'
+import paraphraseTeamHealthComments from './paraphraseTeamHealthComments'
 import {publishSummaryPage} from './summaryPage/publishSummaryPage'
 import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
 
@@ -40,7 +40,7 @@ const safeEndTeamHealth = async ({
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
-  const {endedAt, id: meetingId, teamId, phases} = meeting
+  const {endedAt, id: meetingId, teamId} = meeting
 
   if (endedAt)
     return standardError(new Error('Meeting already ended'), {
@@ -50,24 +50,14 @@ const safeEndTeamHealth = async ({
   // RESOLUTION
   const insights = await gatherInsights(meeting, dataLoader)
   // ending a team health meeting is what reveals its results, whether the owner clicked "Reveal
-  // results" or the recurrence cron hit scheduledEndTime. All that's left to persist is the result
-  // stage's navigability, which lives in the phases JSONB like every other meeting type's
-  const resultPhase = getPhase(phases, 'TEAM_HEALTH_RESULT')
-  const resultPhaseIdx = resultPhase ? phases.indexOf(resultPhase) : -1
+  // results" or the recurrence cron hit scheduledEndTime. The result stage renders the reveal off
+  // endedAt, so there's no stage state to flip
   await pg
     .updateTable('NewMeeting')
     .set({
       endedAt: sql`CURRENT_TIMESTAMP`,
       usedReactjis: JSON.stringify(insights.usedReactjis),
-      engagement: insights.engagement,
-      ...(!!resultPhase && {
-        phases: sql`jsonb_set(
-          jsonb_set(phases, ${sql.lit(`{${resultPhaseIdx},stages,0,isNavigable}`)}, 'true'::jsonb, false),
-          ${sql.lit(`{${resultPhaseIdx},stages,0,isNavigableByFacilitator}`)},
-          'true'::jsonb,
-          false
-        )`
-      })
+      engagement: insights.engagement
     })
     .where('id', '=', meetingId)
     .execute()
@@ -91,6 +81,13 @@ const safeEndTeamHealth = async ({
   )
   await pg.insertInto('TimelineEvent').values(events).execute()
   analytics.teamHealthEnd(completedTeamHealth, meetingMembers, dataLoader)
+  // the summary page, the summary email, and the AI insights all read comments, and all of them
+  // read only the paraphrase — so this has to land before any of them are generated
+  await paraphraseTeamHealthComments(meetingId, dataLoader).catch((e) => {
+    logError(e instanceof Error ? e : new Error(`paraphraseTeamHealthComments failed: ${e}`), {
+      tags: {meetingId, op: 'paraphraseTeamHealthComments'}
+    })
+  })
   const page = await publishSummaryPage(meetingId, context, info).catch((e) => {
     logError(e instanceof Error ? e : new Error(`publishSummaryPage failed: ${e}`), {
       tags: {meetingId, op: 'publishSummaryPage'}
