@@ -13,6 +13,7 @@ import isValid from '../../isValid'
  * **check-in**: ignore as every member will have a solo update phase
  * **sprint poker**: meeting members facilitated, voted discussed or reacted / total meeting members
  * **standup**: replied, commented or reacted / all members
+ * **team health**: answered at least one question / total meeting members
  */
 const calculateEngagement = async (meeting: AnyMeeting, dataLoader: DataLoaderWorker) => {
   const {id: meetingId, phases, meetingType, facilitatorUserId} = meeting
@@ -31,13 +32,23 @@ const calculateEngagement = async (meeting: AnyMeeting, dataLoader: DataLoaderWo
   // Facilitator only meetings don't count
   if (passiveMembers.size === 0) return undefined
 
-  // Team Health
+  // Team Health votes, cast in the stage embedded in a retro
   const teamHealthPhase = getPhase(phases, 'TEAM_HEALTH')
   if (teamHealthPhase) {
     teamHealthPhase.stages.forEach(({votes}) => {
       votes.forEach(({userId}) => {
         passiveMembers.delete(userId)
       })
+    })
+    if (passiveMembers.size === 0) return 1
+  }
+
+  // Answers to a standalone Team Health meeting, which is a different phase entirely. Without this
+  // every respondent counted as passive, so a fully answered cycle scored ~0 engagement
+  if (meetingType === 'teamHealth') {
+    const responses = await dataLoader.get('teamHealthResponsesByMeetingId').load(meetingId)
+    responses.forEach(({userId}) => {
+      passiveMembers.delete(userId)
     })
     if (passiveMembers.size === 0) return 1
   }
