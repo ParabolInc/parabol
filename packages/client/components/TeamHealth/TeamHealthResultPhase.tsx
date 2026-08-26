@@ -8,6 +8,7 @@ import {
   getTeamHealthCategoryColor
 } from '../ActivityLibrary/TeamHealth/getTeamHealthCategoryColor'
 import TeamHealthDistributionChart from './TeamHealthDistributionChart'
+import TeamHealthWithheldResults from './TeamHealthWithheldResults'
 
 interface Props {
   meeting: TeamHealthResultPhase_meeting$key
@@ -94,6 +95,9 @@ const TeamHealthResultPhase = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment TeamHealthResultPhase_meeting on TeamHealthMeeting {
+        isRevealed
+        respondentCount
+        minRespondentCount
         template {
           availableQuestionPacks {
             questions {
@@ -121,6 +125,15 @@ const TeamHealthResultPhase = (props: Props) => {
     `,
     meetingRef
   )
+  const {isRevealed, respondentCount, minRespondentCount} = meeting
+  if (!isRevealed) {
+    return (
+      <TeamHealthWithheldResults
+        respondentCount={respondentCount}
+        minRespondentCount={minRespondentCount}
+      />
+    )
+  }
   const responses = meeting.responses.filter(isNotNull)
   const results = computeResults(responses)
   const orderedCategoryIds = getOrderedTeamHealthCategories(

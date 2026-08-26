@@ -5,6 +5,7 @@ import {CheckCircle} from '~/ui/icons'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useEndTeamHealthMutation from '../../mutations/useEndTeamHealthMutation'
 import {Button} from '../../ui/Button/Button'
+import plural from '../../utils/plural'
 import {isNotNull} from '../../utils/predicates'
 import TeamHealthProgress from './TeamHealthProgress'
 
@@ -23,7 +24,7 @@ const TeamHealthSubmittedPhase = (props: Props) => {
         id
         facilitatorUserId
         respondentCount
-        endedAt
+        minRespondentCount
         meetingMembers {
           id
           ... on TeamHealthMeetingMember {
@@ -44,7 +45,7 @@ const TeamHealthSubmittedPhase = (props: Props) => {
     id: meetingId,
     facilitatorUserId,
     respondentCount,
-    endedAt,
+    minRespondentCount,
     meetingMembers,
     phases
   } = meeting
@@ -52,11 +53,10 @@ const TeamHealthSubmittedPhase = (props: Props) => {
   const isOwner = viewerId === facilitatorUserId
   // spectators (the owner, by default) are excluded from the total until they opt in
   const total = meetingMembers.filter((member) => !member.isSpectating).length
+  // revealing below the floor would publish a mean that one or two people can solve back
+  const canReveal = respondentCount >= minRespondentCount
   const firstResponseStageId = phases
     .find((phase) => phase.phaseType === 'TEAM_HEALTH_RESPONSE')
-    ?.stages.filter(isNotNull)[0]?.id
-  const resultStageId = phases
-    .find((phase) => phase.phaseType === 'TEAM_HEALTH_RESULT')
     ?.stages.filter(isNotNull)[0]?.id
 
   // revealing the results is the act of ending the meeting, which sends everyone to the summary
@@ -76,27 +76,25 @@ const TeamHealthSubmittedPhase = (props: Props) => {
         </p>
         <TeamHealthProgress className='mt-8' respondentCount={respondentCount} total={total} />
         <div className='mt-8 flex flex-col items-center gap-3'>
-          {endedAt && resultStageId ? (
-            <Button
-              variant='primary'
-              shape='default'
-              size='lg'
-              onClick={() => gotoStageId(resultStageId)}
-            >
-              See results
-            </Button>
-          ) : (
-            isOwner && (
+          {isOwner && (
+            <>
               <Button
                 variant='primary'
                 shape='default'
                 size='lg'
                 onClick={onReveal}
-                disabled={revealing}
+                disabled={revealing || !canReveal}
               >
                 Reveal results
               </Button>
-            )
+              {!canReveal && (
+                <div className='text-fg-muted text-sm'>
+                  {minRespondentCount - respondentCount} more{' '}
+                  {plural(minRespondentCount - respondentCount, 'answer')} needed before results can
+                  be revealed anonymously
+                </div>
+              )}
+            </>
           )}
           {firstResponseStageId && (
             <Button
