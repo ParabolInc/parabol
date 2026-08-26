@@ -6,8 +6,42 @@ import type {StandardMutation} from '../types/relayMutations'
 graphql`
   fragment AddTeamMemberIntegrationAuthMutation_notification on AddTeamMemberIntegrationAuthSuccess {
     teamMember {
+      ...GitLabProviderRowTeamMember
+      ...ScopePhaseAreaGitLab_teamMember
+      ...JiraServerProviderRowTeamMember
+      ...AzureDevOpsProviderRowTeamMember
+      ...GcalProviderRowTeamMember
+      ...LinearProviderRowTeamMember
+      ...ScopePhaseAreaGitHub_teamMember
       integrations {
         ...useIsIntegrated_integrations
+        ...MattermostProviderRowTeamMemberIntegrations
+        ...MSTeamsProviderRowTeamMemberIntegrations
+        gitlab {
+          auth {
+            isActive
+          }
+        }
+        linear {
+          auth {
+            isActive
+          }
+        }
+        gmeet {
+          isActive
+        }
+        zoom {
+          isActive
+        }
+        atlassian {
+          ...AtlassianProviderRowAtlassianIntegration
+          ...useIsIntegratedAtlassianIntegration
+        }
+        github {
+          ...useIsIntegratedGitHubIntegration
+          ...GitHubProviderRowGitHubIntegration
+          ...GitHubScopingSearchBarGitHubIntegration
+        }
       }
       services {
         service
@@ -23,8 +57,6 @@ const mutation = graphql`
     $oauthCodeOrPat: ID
     $oauthVerifier: ID
     $teamId: ID!
-    $includeAtlassian: Boolean = false
-    $includeGitHub: Boolean = false
   ) {
     addTeamMemberIntegrationAuth(
       providerId: $providerId
@@ -38,44 +70,7 @@ const mutation = graphql`
         }
       }
       ... on AddTeamMemberIntegrationAuthSuccess {
-        teamMember {
-          ...GitLabProviderRowTeamMember
-          ...ScopePhaseAreaGitLab_teamMember
-          ...JiraServerProviderRowTeamMember
-          ...AzureDevOpsProviderRowTeamMember
-          ...GcalProviderRowTeamMember
-          ...LinearProviderRowTeamMember
-          ...ScopePhaseAreaGitHub_teamMember
-          integrations {
-            ...MattermostProviderRowTeamMemberIntegrations
-            ...MSTeamsProviderRowTeamMemberIntegrations
-            gitlab {
-              auth {
-                isActive
-              }
-            }
-            linear {
-              auth {
-                isActive
-              }
-            }
-            gmeet {
-              isActive
-            }
-            zoom {
-              isActive
-            }
-            atlassian @include(if: $includeAtlassian) {
-              ...AtlassianProviderRowAtlassianIntegration
-              ...useIsIntegratedAtlassianIntegration
-            }
-            github @include(if: $includeGitHub) {
-              ...useIsIntegratedGitHubIntegration
-              ...GitHubProviderRowGitHubIntegration
-              ...GitHubScopingSearchBarGitHubIntegration
-            }
-          }
-        }
+        ...AddTeamMemberIntegrationAuthMutation_notification @relay(mask: false)
       }
     }
   }

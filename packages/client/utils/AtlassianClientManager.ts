@@ -66,12 +66,7 @@ class AtlassianClientManager extends AtlassianManager {
       submitMutation()
       AddTeamMemberIntegrationAuthMutation(
         atmosphere,
-        {
-          providerId: provider.id,
-          oauthCodeOrPat: code,
-          teamId,
-          includeAtlassian: true
-        },
+        {providerId: provider.id, oauthCodeOrPat: code, teamId},
         {onError, onCompleted}
       )
       popup && popup.close()
