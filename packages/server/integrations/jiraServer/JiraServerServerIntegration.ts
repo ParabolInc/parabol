@@ -1,49 +1,52 @@
 import {jiraServerIntegrationMeta} from 'parabol-client/shared/integrations/jiraServerIntegrationMeta'
-import type {JiraSearchQueryJson, TeamMemberIntegrationAuth} from '../../postgres/types'
+import pushEstimateToJiraServer from '../../graphql/mutations/helpers/pushEstimateToJiraServer'
+import type {JiraSearchQueryJson} from '../../postgres/types'
 import buildJiraSearchQuery from '../jira/buildJiraSearchQuery'
 import {
-  type IntegrationCtx,
+  type EstimatePushCapability,
   type IssueCreateCapability,
+  type IssueReadCapability,
   type IssueSearchCapability,
+  type RepoListCapability,
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
-import TaskIntegrationManagerFactory from '../TaskIntegrationManagerFactory'
+import JiraServerRestManager from './JiraServerRestManager'
+import resolveJiraServerServiceField from './resolveJiraServerServiceField'
+import resolveJiraServerTaskIntegration from './resolveJiraServerTaskIntegration'
 
 export class JiraServerServerIntegration extends ServerIntegrationDefinition {
   readonly service = jiraServerIntegrationMeta.service
   readonly title = jiraServerIntegrationMeta.title
   readonly authStrategy = 'oauth1' as const
 
-  async resolveAuth(ctx: IntegrationCtx): Promise<TeamMemberIntegrationAuth | null> {
-    const {dataLoader, teamId, userId} = ctx
-    const auth = await dataLoader
-      .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
-      .load({service: 'jiraServer', teamId, userId})
-    return auth?.accessToken ? auth : null
-  }
-
-  async isAvailable(ctx: IntegrationCtx) {
-    return this.hasSharedProvider(ctx, 'jiraServer')
-  }
-
-  async isConnected(ctx: IntegrationCtx) {
-    return this.hasActiveAuthRow(ctx, 'jiraServer')
-  }
-
   readonly capabilities: {
     issueCreate: IssueCreateCapability
+    issueRead: IssueReadCapability
     issueSearch: IssueSearchCapability<JiraSearchQueryJson>
+    repoList: RepoListCapability
+    estimatePush: EstimatePushCapability
   } = {
     issueCreate: {
-      initManager: (ctx) =>
-        TaskIntegrationManagerFactory.initManager(
-          ctx.dataLoader,
-          'jiraServer',
-          {teamId: ctx.teamId, userId: ctx.userId},
-          ctx.context,
-          ctx.info
-        )
+      initManager: async (ctx) => {
+        const auth = await this.resolveAuth(ctx)
+        if (!auth) return null
+        const provider = await ctx.dataLoader
+          .get('integrationProviders')
+          .loadNonNull(auth.providerId)
+        if (provider.service !== 'jiraServer') return null
+        return new JiraServerRestManager(auth, provider)
+      }
     },
-    issueSearch: {buildQuery: buildJiraSearchQuery}
+    issueRead: {getIssue: resolveJiraServerTaskIntegration},
+    issueSearch: {buildQuery: buildJiraSearchQuery},
+    repoList: {
+      fetchRepos: ({dataLoader, teamId, userId}) =>
+        dataLoader.get('allJiraServerProjects').load({teamId, userId})
+    },
+    estimatePush: {
+      targets: ['comment', 'field'],
+      pushEstimate: pushEstimateToJiraServer,
+      resolveServiceField: resolveJiraServerServiceField
+    }
   }
 }

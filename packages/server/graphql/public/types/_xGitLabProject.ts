@@ -11,7 +11,8 @@ export type _xGitLabProjectSource = {
 
 const _xGitLabProject: _XGitLabProjectResolvers = {
   __isTypeOf: ({id}) => id.startsWith('gid://'),
-  service: () => 'gitlab'
+  service: () => 'gitlab',
+  name: ({fullPath}) => fullPath
 }
 
 export default _xGitLabProject

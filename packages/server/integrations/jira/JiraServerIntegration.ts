@@ -1,13 +1,19 @@
 import {jiraIntegrationMeta} from 'parabol-client/shared/integrations/jiraIntegrationMeta'
+import pushEstimateToJira from '../../graphql/mutations/helpers/pushEstimateToJira'
 import type {JiraSearchQueryJson, TeamMemberIntegrationAuth} from '../../postgres/types'
 import {
+  type EstimatePushCapability,
   type IntegrationCtx,
   type IssueCreateCapability,
+  type IssueReadCapability,
   type IssueSearchCapability,
+  type RepoListCapability,
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
-import TaskIntegrationManagerFactory from '../TaskIntegrationManagerFactory'
 import buildJiraSearchQuery from './buildJiraSearchQuery'
+import JiraIntegrationManager from './JiraIntegrationManager'
+import resolveJiraServiceField from './resolveJiraServiceField'
+import resolveJiraTaskIntegration from './resolveJiraTaskIntegration'
 
 export class JiraServerIntegration extends ServerIntegrationDefinition {
   readonly service = jiraIntegrationMeta.service
@@ -24,24 +30,29 @@ export class JiraServerIntegration extends ServerIntegrationDefinition {
     return !!(await this.getGlobalProvider(ctx))
   }
 
-  async isConnected(ctx: IntegrationCtx) {
-    return this.hasActiveAuthRow(ctx, 'jira')
-  }
-
   readonly capabilities: {
     issueCreate: IssueCreateCapability
+    issueRead: IssueReadCapability
     issueSearch: IssueSearchCapability<JiraSearchQueryJson>
+    repoList: RepoListCapability
+    estimatePush: EstimatePushCapability
   } = {
     issueCreate: {
-      initManager: (ctx) =>
-        TaskIntegrationManagerFactory.initManager(
-          ctx.dataLoader,
-          'jira',
-          {teamId: ctx.teamId, userId: ctx.userId},
-          ctx.context,
-          ctx.info
-        )
+      initManager: async ({dataLoader, teamId, userId}) => {
+        const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId})
+        return auth && new JiraIntegrationManager(auth)
+      }
     },
-    issueSearch: {buildQuery: buildJiraSearchQuery}
+    issueRead: {getIssue: resolveJiraTaskIntegration},
+    issueSearch: {buildQuery: buildJiraSearchQuery},
+    repoList: {
+      fetchRepos: ({dataLoader, teamId, userId}) =>
+        dataLoader.get('allJiraProjects').load({teamId, userId})
+    },
+    estimatePush: {
+      targets: ['comment', 'field'],
+      pushEstimate: pushEstimateToJira,
+      resolveServiceField: resolveJiraServiceField
+    }
   }
 }

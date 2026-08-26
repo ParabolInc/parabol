@@ -11,7 +11,7 @@ const fetchGitLabProjects = async (
   info: GraphQLResolveInfo
 ) => {
   const {dataLoader} = context
-  const auth = await dataLoader.get('freshGitlabAuth').load({teamId, userId})
+  const auth = await dataLoader.get('freshAuth').load({service: 'gitlab', teamId, userId})
   if (!auth?.accessToken) return []
   const {providerId} = auth
   const provider = await dataLoader.get('integrationProviders').load(providerId)

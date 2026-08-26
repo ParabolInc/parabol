@@ -5,7 +5,7 @@ import createJiraTask from '../../graphql/mutations/helpers/createJiraTask'
 import type {AtlassianAuth} from '../../postgres/types'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import makeCreateJiraTaskComment from '../../utils/makeCreateJiraTaskComment'
-import type {CreateTaskResponse, TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
+import type {CreateTaskResponse, TaskIntegrationManager} from '../platform/TaskIntegrationManager'
 
 export default class JiraIntegrationManager
   extends AtlassianServerManager

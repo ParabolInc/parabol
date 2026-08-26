@@ -1,9 +1,9 @@
 import ms from 'ms'
-import type {IntegrationProviderServiceEnumType} from '../../../integrations/TaskIntegrationManagerFactory'
+import getConnectedTaskServices from '../../../integrations/platform/getConnectedTaskServices'
+import type {Integrationproviderserviceenum} from '../../../postgres/types/pg'
 import getAllRepoIntegrationsRedisKey from '../../../utils/getAllRepoIntegrationsRedisKey'
 import getPrevUsedRepoIntegrationsRedisKey from '../../../utils/getPrevUsedRepoIntegrationsRedisKey'
 import getRedis from '../../../utils/getRedis'
-import getTaskServicesWithPerms from '../../../utils/getTaskServicesWithPerms'
 import type {DataLoaderWorker} from '../../graphql'
 import getAllCachedRepoIntegrations from './getAllCachedRepoIntegrations'
 import getPrevUsedRepoIntegrations from './getPrevUsedRepoIntegrations'
@@ -26,9 +26,9 @@ const updateRepoIntegrationsCacheByPerms = async (
     await Promise.all([
       getAllCachedRepoIntegrations(teamId, viewerId),
       getPrevUsedRepoIntegrations(teamId),
-      getTaskServicesWithPerms(dataLoader, teamId, viewerId)
+      getConnectedTaskServices({dataLoader, teamId, userId: viewerId})
     ])
-  const allRepoIntServices = new Set<IntegrationProviderServiceEnumType>()
+  const allRepoIntServices = new Set<Integrationproviderserviceenum>()
   allCachedRepoIntegrations?.forEach(({service}) => {
     allRepoIntServices.add(service)
   })
@@ -51,9 +51,9 @@ const updateRepoIntegrationsCacheByPerms = async (
       cachedRepoIntWithoutPerms.includes(service)
     )
     await Promise.all(
-      prevUsedRepoIntsWithoutPerms.map((repoInt) => {
+      prevUsedRepoIntsWithoutPerms.map((repoInt) =>
         redis.zrem(prevUsedIntegrationsKey, JSON.stringify(repoInt))
-      })
+      )
     )
   }
 }

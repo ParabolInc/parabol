@@ -1,25 +1,16 @@
 import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
-import {SprintPokerDefaults, SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
+import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import {MAX_FREE_JIRA_EXPORTS} from 'parabol-client/utils/constants'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
-import JiraProjectKeyId from '../../../../client/shared/gqlIds/JiraProjectKeyId'
 import appOrigin from '../../../appOrigin'
-import JiraServerRestManager from '../../../integrations/jiraServer/JiraServerRestManager'
+import {getServerIntegration} from '../../../integrations/platform/registry'
+import type {EstimatePushResult} from '../../../integrations/platform/ServerIntegrationDefinition'
 import getKysely from '../../../postgres/getKysely'
-import upsertJiraDimensionFieldMap from '../../../postgres/queries/upsertJiraDimensionFieldMap'
-import type {IntegrationProviderJiraServer} from '../../../postgres/types/IntegrationProvider'
-import AtlassianServerManager from '../../../utils/AtlassianServerManager'
-import AzureDevOpsServerManager from '../../../utils/AzureDevOpsServerManager'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
-import {fieldTypeToId} from '../../../utils/azureDevOps/azureDevOpsFieldTypeToId'
 import getPhase from '../../../utils/getPhase'
-import makeScoreJiraComment from '../../../utils/makeScoreJiraComment'
 import publish from '../../../utils/publish'
-import pushEstimateToGitHub from '../../mutations/helpers/pushEstimateToGitHub'
-import pushEstimateToGitLab from '../../mutations/helpers/pushEstimateToGitLab'
-import pushEstimateToLinear from '../../mutations/helpers/pushEstimateToLinear'
 import type {MutationResolvers} from '../resolverTypes'
 
 const setTaskEstimate: MutationResolvers['setTaskEstimate'] = async (
@@ -79,351 +70,76 @@ const setTaskEstimate: MutationResolvers['setTaskEstimate'] = async (
   const stageId = stage.id
 
   // RESOLUTION
-  let jiraFieldId: string | undefined
-  let githubLabelName: string | undefined
-  let gitlabLabelId: string | undefined
   const {integration} = task
   const service = integration?.service
   const stageIdx = stages.findIndex((stage) => stage.id === stageId)
   const discussionURL = makeAppURL(appOrigin, `meet/${meetingId}/estimate/${stageIdx + 1}`)
 
-  let success = false
-  let errorMessage: string | undefined
   let exportCount = 0
-  switch (service) {
-    case 'jira': {
-      const {accessUserId, cloudId, issueKey} = integration!
+  if (integration?.service === 'jira') {
+    const {cloudId} = integration
 
-      // Check Jira export limits for starter-tier orgs
-      const team = await dataLoader.get('teams').loadNonNull(teamId)
-      const org = await dataLoader.get('organizations').loadNonNull(team.orgId)
-      if (org.tier === 'starter') {
-        const pg = getKysely()
-        const result = await pg
-          .insertInto('JiraExport')
-          .values({cloudId, exportCount: 1})
-          .onConflict((oc) =>
-            oc
-              .column('cloudId')
-              .doUpdateSet((eb) => ({
-                exportCount: eb('JiraExport.exportCount', '+', 1)
-              }))
-              .where((eb) =>
-                eb.or([
-                  eb('JiraExport.limitReachedAt', 'is', null),
-                  eb('JiraExport.limitReachedAt', '>', sql<Date>`now() - interval '1 day'`)
-                ])
-              )
-          )
-          .returning(['exportCount', 'limitReachedAt'])
-          .executeTakeFirst()
-        if (!result) {
-          // No row returned means limitReachedAt is older than 1 day (conflict WHERE failed)
-          throw new GraphQLError(
-            'Your free Jira export limit has been reached. Please upgrade to continue.',
-            {
-              extensions: {code: 'UPGRADE_REQUIRED'}
-            }
-          )
-        }
-
-        exportCount = result.exportCount
-        if (result.exportCount >= MAX_FREE_JIRA_EXPORTS && !result.limitReachedAt) {
-          await pg
-            .updateTable('JiraExport')
-            .set({limitReachedAt: sql`now()`})
-            .where('cloudId', '=', cloudId)
-            .execute()
-        }
-      }
-      const projectKey = JiraProjectKeyId.join(issueKey)
-      const [auth, jiraIssue] = await Promise.all([
-        dataLoader.get('freshAtlassianAuth').load({teamId, userId: accessUserId}),
-        dataLoader.get('jiraIssue').load({
-          teamId,
-          cloudId,
-          viewerId,
-          userId: accessUserId,
-          issueKey
-        })
-      ])
-      if (!auth) {
-        errorMessage = 'User no longer has access to Atlassian'
-        break
-      }
-      const {accessToken} = auth
-      const manager = new AtlassianServerManager(accessToken)
-
-      if (!jiraIssue) {
-        errorMessage = 'Issue not found'
-        break
-      }
-      const {issueType} = jiraIssue
-
-      const dimensionFields = await dataLoader
-        .get('jiraDimensionFieldMap')
-        .load({teamId, cloudId, projectKey, issueType, dimensionName})
-
-      // Find the best match
-      const {possibleEstimationFields} = jiraIssue
-      const validFieldIds = [
-        SprintPokerDefaults.SERVICE_FIELD_COMMENT,
-        SprintPokerDefaults.SERVICE_FIELD_NULL,
-        ...possibleEstimationFields.map(({fieldId}) => fieldId)
-      ]
-      const dimensionField = dimensionFields.find(({fieldId}) => validFieldIds.includes(fieldId))
-
-      // If we're using a field stored for a different issueType, update the DB to store the new match
-      if (dimensionField && dimensionField.issueType !== issueType) {
-        // Legacy unknown field type, replace it with an actual issueType
-        if (dimensionField.issueType === '') {
-          dimensionField.issueType = issueType
-          await getKysely()
-            .updateTable('JiraDimensionFieldMap')
-            .set(dimensionField)
-            .where('id', '=', dimensionField.id)
-            .execute()
-        }
-        // Add the type in addition
-        else {
-          const {fieldId, fieldName, fieldType} = dimensionField
-          const newField = {
-            teamId,
-            cloudId,
-            projectKey,
-            issueType,
-            dimensionName,
-            fieldId,
-            fieldName,
-            fieldType
+    // Check Jira export limits for starter-tier orgs
+    const team = await dataLoader.get('teams').loadNonNull(teamId)
+    const org = await dataLoader.get('organizations').loadNonNull(team.orgId)
+    if (org.tier === 'starter') {
+      const pg = getKysely()
+      const result = await pg
+        .insertInto('JiraExport')
+        .values({cloudId, exportCount: 1})
+        .onConflict((oc) =>
+          oc
+            .column('cloudId')
+            .doUpdateSet((eb) => ({
+              exportCount: eb('JiraExport.exportCount', '+', 1)
+            }))
+            .where((eb) =>
+              eb.or([
+                eb('JiraExport.limitReachedAt', 'is', null),
+                eb('JiraExport.limitReachedAt', '>', sql<Date>`now() - interval '1 day'`)
+              ])
+            )
+        )
+        .returning(['exportCount', 'limitReachedAt'])
+        .executeTakeFirst()
+      if (!result) {
+        // No row returned means limitReachedAt is older than 1 day (conflict WHERE failed)
+        throw new GraphQLError(
+          'Your free Jira export limit has been reached. Please upgrade to continue.',
+          {
+            extensions: {code: 'UPGRADE_REQUIRED'}
           }
-          await upsertJiraDimensionFieldMap(newField)
-        }
-        dataLoader
-          .get('jiraDimensionFieldMap')
-          .clear({teamId, cloudId, projectKey, issueType, dimensionName})
-      }
-      // Store the default if we don't have a field yet
-      if (!dimensionField) {
-        const newField = {
-          teamId,
-          cloudId,
-          projectKey,
-          issueType,
-          dimensionName,
-          fieldId: SprintPokerDefaults.SERVICE_FIELD_COMMENT,
-          fieldName: SprintPokerDefaults.SERVICE_FIELD_COMMENT,
-          fieldType: 'string'
-        }
-        await upsertJiraDimensionFieldMap(newField)
-        dataLoader
-          .get('jiraDimensionFieldMap')
-          .clear({teamId, cloudId, projectKey, issueType, dimensionName})
-      }
-
-      const fieldName = dimensionField?.fieldName ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
-      if (fieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
-        const res = await manager.addComment(
-          cloudId,
-          issueKey,
-          makeScoreJiraComment(dimensionName, value || '<None>', meetingName, discussionURL)
         )
-        if ('message' in res) {
-          errorMessage = res.message
-          break
-        }
-      } else if (fieldName !== SprintPokerDefaults.SERVICE_FIELD_NULL) {
-        const {fieldId, fieldType} = dimensionField!
-        jiraFieldId = fieldId
-        try {
-          const updatedStoryPoints = fieldType === 'string' ? value : Number(value)
-
-          await manager.updateStoryPoints(cloudId, issueKey, updatedStoryPoints, fieldId)
-        } catch (e) {
-          const message = e instanceof Error ? e.message : 'Unable to updateStoryPoints'
-          errorMessage = message
-          break
-        }
-      }
-      success = true
-      break
-    }
-    case 'jiraServer': {
-      const {accessUserId, issueId} = integration!
-
-      const [auth /*, team*/] = await Promise.all([
-        dataLoader
-          .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
-          .load({service: 'jiraServer', teamId, userId: accessUserId}),
-        dataLoader.get('teams').load(teamId)
-      ])
-
-      if (!auth) {
-        errorMessage = 'User no longer has access to Jira Data Center'
-        break
       }
 
-      const provider = await dataLoader.get('integrationProviders').loadNonNull(auth.providerId)
-
-      if (!provider) {
-        errorMessage = 'No integration provider found for jiraServer'
-        break
+      exportCount = result.exportCount
+      if (result.exportCount >= MAX_FREE_JIRA_EXPORTS && !result.limitReachedAt) {
+        await pg
+          .updateTable('JiraExport')
+          .set({limitReachedAt: sql`now()`})
+          .where('cloudId', '=', cloudId)
+          .execute()
       }
-
-      const manager = new JiraServerRestManager(auth, provider as IntegrationProviderJiraServer)
-
-      const {providerId, repositoryId: projectId} = integration!
-      const jiraServerIssue = await dataLoader
-        .get('jiraServerIssue')
-        .load({providerId, teamId, userId: accessUserId, issueId})
-      if (!jiraServerIssue) {
-        errorMessage = 'Issue not found'
-        break
-      }
-      const {issueType} = jiraServerIssue
-      const existingDimensionField = await dataLoader
-        .get('jiraServerDimensionFieldMap')
-        .load({providerId, projectId, teamId, dimensionName, issueType})
-
-      const fieldId = existingDimensionField?.fieldId ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
-
-      if (fieldId === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
-        const res = await manager.addScoreComment(
-          dimensionName,
-          value || '<None>',
-          meetingName,
-          discussionURL,
-          issueId
-        )
-
-        if (res instanceof Error) {
-          errorMessage = res.message
-          break
-        }
-      } else if (fieldId !== SprintPokerDefaults.SERVICE_FIELD_NULL) {
-        const updatedStoryPoints =
-          existingDimensionField?.fieldType === 'number' ? Number(value) : value
-        const res = await manager.setField(issueId, fieldId, updatedStoryPoints)
-        if (res instanceof Error) {
-          errorMessage = res.message
-          break
-        }
-      }
-      success = true
-      break
-    }
-    case 'github': {
-      const githubPushRes = await pushEstimateToGitHub(taskEstimate, context, info, stageId)
-      if (githubPushRes instanceof Error) {
-        const {message} = githubPushRes
-        errorMessage = message
-        break
-      }
-      githubLabelName = githubPushRes
-      success = true
-      break
-    }
-    case 'azureDevOps': {
-      const {accessUserId, instanceId, issueKey, projectKey} = integration!
-
-      const [auth, azureDevOpsWorkItem] = await Promise.all([
-        dataLoader.get('freshAzureDevOpsAuth').load({teamId, userId: accessUserId}),
-        dataLoader.get('azureDevOpsWorkItem').load({
-          teamId,
-          userId: accessUserId,
-          instanceId,
-          projectId: projectKey,
-          viewerId: accessUserId,
-          workItemId: issueKey
-        })
-      ])
-
-      if (!auth) {
-        errorMessage = 'User no longer has access to Azure DevOps'
-        break
-      }
-
-      const workItemType = azureDevOpsWorkItem?.type ? azureDevOpsWorkItem?.type : ''
-
-      const azureDevOpsDimensionFieldMapEntry = await dataLoader
-        .get('azureDevOpsDimensionFieldMap')
-        .load({
-          teamId,
-          dimensionName,
-          instanceId,
-          projectKey,
-          workItemType
-        })
-
-      const fieldName = azureDevOpsDimensionFieldMapEntry
-        ? azureDevOpsDimensionFieldMapEntry.fieldName
-        : SprintPokerDefaults.SERVICE_FIELD_COMMENT.toString()
-
-      const fieldType = azureDevOpsDimensionFieldMapEntry
-        ? azureDevOpsDimensionFieldMapEntry.fieldType
-        : 'string'
-
-      if (!azureDevOpsWorkItem) {
-        errorMessage = 'Cannot find the correct work item to push changes to.'
-        break
-      }
-
-      const manager = new AzureDevOpsServerManager(auth, null)
-
-      if (fieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
-        const res = await manager.addScoreComment(
-          instanceId,
-          dimensionName,
-          value,
-          meetingName,
-          discussionURL,
-          issueKey,
-          projectKey
-        )
-        if ('message' in res) {
-          errorMessage = res.message
-          break
-        }
-      } else if (fieldName !== SprintPokerDefaults.SERVICE_FIELD_NULL) {
-        const fieldId = fieldTypeToId[azureDevOpsWorkItem.type as keyof typeof fieldTypeToId]
-        try {
-          const updatedStoryPoints = fieldType === 'string' ? value : Number(value)
-          await manager.addScoreField(instanceId, fieldId, updatedStoryPoints, issueKey, projectKey)
-        } catch (e) {
-          const message = e instanceof Error ? e.message : 'Unable to updateStoryPoints'
-          errorMessage = message
-          break
-        }
-      }
-      success = true
-      break
-    }
-    case 'gitlab': {
-      const gitlabPushRes = await pushEstimateToGitLab(taskEstimate, context, info, stageId)
-      if (gitlabPushRes instanceof Error) {
-        const {message} = gitlabPushRes
-        errorMessage = message
-        break
-      }
-      gitlabLabelId = gitlabPushRes
-      success = true
-      break
-    }
-    case 'linear': {
-      const linearPushRes = await pushEstimateToLinear(taskEstimate, context, info, stageId)
-      if (linearPushRes instanceof Error) {
-        const {message} = linearPushRes
-        errorMessage = message
-        break
-      }
-      success = true
-      break
-    }
-    case undefined: {
-      success = true
-      break
     }
   }
+
+  const pushResult: EstimatePushResult | Error = !integration
+    ? {}
+    : await getServerIntegration(integration.service).capabilities.estimatePush.pushEstimate({
+        dataLoader,
+        teamId,
+        userId: integration.accessUserId,
+        context,
+        info,
+        task,
+        taskEstimate,
+        stageId,
+        viewerId,
+        meetingName,
+        discussionURL
+      })
+  const success = !(pushResult instanceof Error)
+  const errorMessage = pushResult instanceof Error ? pushResult.message : undefined
 
   analytics.taskEstimateSet(viewer, {
     taskId,
@@ -435,6 +151,7 @@ const setTaskEstimate: MutationResolvers['setTaskEstimate'] = async (
   })
 
   if (success) {
+    const {jiraFieldId, githubLabelName, gitlabLabelId} = pushResult
     await getKysely()
       .insertInto('TaskEstimate')
       .values({

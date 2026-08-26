@@ -1,19 +1,20 @@
-import type {GraphQLResolveInfo} from 'graphql'
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../../appOrigin'
 import LinearServerManager from '../../../integrations/linear/LinearServerManager'
 import makeScoreLinearComment from '../../../integrations/linear/makeScoreLinearComment'
+import type {
+  EstimatePushCtx,
+  EstimatePushResult
+} from '../../../integrations/platform/ServerIntegrationDefinition'
 import getPhase from '../../../utils/getPhase'
-import type {GQLContext} from '../../graphql'
-import type {TaskEstimateInput} from '../../public/resolverTypes'
 
-const pushEstimateToLinear = async (
-  taskEstimate: TaskEstimateInput,
-  context: GQLContext,
-  info: GraphQLResolveInfo,
-  stageId: string
-) => {
+const pushEstimateToLinear = async ({
+  taskEstimate,
+  context,
+  info,
+  stageId
+}: EstimatePushCtx): Promise<EstimatePushResult | Error> => {
   const {dimensionName, taskId, value, meetingId} = taskEstimate
   const {dataLoader} = context
   const [task, meeting] = await Promise.all([
@@ -28,7 +29,9 @@ const pushEstimateToLinear = async (
   const {teamId} = task
   const {accessUserId, issueId, repoId} = linearIntegration
 
-  const auth = await dataLoader.get('freshLinearAuth').load({teamId, userId: accessUserId})
+  const auth = await dataLoader
+    .get('freshAuth')
+    .load({service: 'linear', teamId, userId: accessUserId})
   if (!auth?.accessToken) return new Error('User no longer has access to Linear')
 
   const fieldMap = await dataLoader
@@ -39,7 +42,7 @@ const pushEstimateToLinear = async (
   const manager = new LinearServerManager(auth, context, info)
 
   if (fieldMapSelection === SprintPokerDefaults.SERVICE_FIELD_NULL) {
-    return undefined
+    return {}
   } else if (fieldMapSelection === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
     const {name: meetingName, phases} = meeting
     const estimatePhase = getPhase(phases, 'ESTIMATE')
@@ -69,7 +72,7 @@ const pushEstimateToLinear = async (
     if (updateError) return updateError
   }
 
-  return undefined
+  return {}
 }
 
 export default pushEstimateToLinear

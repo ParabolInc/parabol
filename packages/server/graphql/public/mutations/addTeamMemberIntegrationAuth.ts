@@ -1,17 +1,12 @@
 import {sql} from 'kysely'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
-import GcalOAuth2Manager from '../../../integrations/gcal/GcalOAuth2Manager'
-import GitHubOAuth2Manager from '../../../integrations/github/GitHubOAuth2Manager'
-import GitLabOAuth2Manager from '../../../integrations/gitlab/GitLabOAuth2Manager'
-import GmeetOAuth2Manager from '../../../integrations/gmeet/GmeetOAuth2Manager'
-import JiraOAuth2Manager from '../../../integrations/jira/JiraOAuth2Manager'
 import JiraServerOAuth1Manager, {
   type OAuth1Auth
 } from '../../../integrations/jiraServer/JiraServerOAuth1Manager'
-import LinearManager from '../../../integrations/linear/LinearManager'
-import type OAuth2Manager from '../../../integrations/OAuth2Manager'
 import type {OAuth2AuthorizeResponse} from '../../../integrations/OAuth2Manager'
-import ZoomOAuth2Manager from '../../../integrations/zoom/ZoomOAuth2Manager'
+import createOAuth2Manager from '../../../integrations/platform/createOAuth2Manager'
+import toExpiresAt from '../../../integrations/platform/toExpiresAt'
 import getKysely from '../../../postgres/getKysely'
 import syncTeamMemberIntegrationAuthTokens from '../../../postgres/queries/syncTeamMemberIntegrationAuthTokens'
 import type {IntegrationProviderAzureDevOps} from '../../../postgres/types/IntegrationProvider'
@@ -19,6 +14,7 @@ import type {JsonObject} from '../../../postgres/types/pg'
 import AzureDevOpsServerManager from '../../../utils/AzureDevOpsServerManager'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
+import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import updateRepoIntegrationsCacheByPerms from '../../queries/helpers/updateRepoIntegrationsCacheByPerms'
 import type {MutationResolvers} from '../resolverTypes'
@@ -32,18 +28,10 @@ interface OAuth2Auth {
 
 type OAuth2Tokens = Omit<OAuth2AuthorizeResponse, 'providerUserId' | 'meta'>
 
-const convertExpiresIn = (authResponse: OAuth2Tokens | Error): OAuth2Auth | Error => {
-  if ('expiresIn' in authResponse && authResponse.expiresIn) {
-    const {expiresIn, ...metadata} = authResponse
-    const buffer = 30
-    const expiresAtTimestamp = new Date().getTime() + (expiresIn - buffer) * 1000
-    const expiresAt = new Date(expiresAtTimestamp)
-    return {
-      expiresAt,
-      ...metadata
-    }
-  }
-  return authResponse
+const toOAuth2Auth = (authResponse: OAuth2Tokens | Error): OAuth2Auth | Error => {
+  if (authResponse instanceof Error) return authResponse
+  const {expiresIn, ...tokens} = authResponse
+  return {...tokens, expiresAt: toExpiresAt(expiresIn)}
 }
 
 const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationAuth'] = async (
@@ -51,9 +39,11 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
   {providerId, oauthCodeOrPat, oauthVerifier, teamId},
   context
 ) => {
-  const {authToken, dataLoader} = context
+  const {authToken, dataLoader, socketId: mutatorId} = context
   const viewerId = getUserId(authToken)
   const pg = getKysely()
+  const operationId = dataLoader.share()
+  const subOptions = {mutatorId, operationId}
 
   const providerDbId = IntegrationProviderId.split(providerId)
   const [integrationProvider, viewer] = await Promise.all([
@@ -98,40 +88,14 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
         integrationProvider as IntegrationProviderAzureDevOps
       )
       const authRes = await manager.authorize(oauthCodeOrPat, oauthVerifier)
-      tokenMetadata = convertExpiresIn(authRes)
+      tokenMetadata = toOAuth2Auth(authRes)
     }
-    let manager: OAuth2Manager | null = null
-    const {clientId, clientSecret, serverBaseUrl} = integrationProvider
-
-    switch (providerService) {
-      case 'gcal':
-        manager = new GcalOAuth2Manager(clientId, clientSecret, serverBaseUrl)
-        break
-      case 'gmeet':
-        manager = new GmeetOAuth2Manager(clientId, clientSecret, serverBaseUrl)
-        break
-      case 'linear':
-        manager = new LinearManager(clientId, clientSecret, serverBaseUrl)
-        break
-      case 'gitlab':
-        manager = new GitLabOAuth2Manager(clientId, clientSecret, serverBaseUrl)
-        break
-      case 'zoom':
-        manager = new ZoomOAuth2Manager(clientId, clientSecret, serverBaseUrl)
-        break
-      case 'jira':
-        manager = new JiraOAuth2Manager(clientId, clientSecret, serverBaseUrl)
-        break
-      case 'github':
-        manager = new GitHubOAuth2Manager(clientId, clientSecret, serverBaseUrl)
-        break
-    }
-
+    const manager = createOAuth2Manager(integrationProvider)
     if (manager) {
       const authRes = await manager.authorize(oauthCodeOrPat)
       if (authRes instanceof Error) return standardError(authRes, {userId: viewerId})
       const {providerUserId: authProviderUserId, meta: authMeta, ...tokens} = authRes
-      tokenMetadata = convertExpiresIn(tokens)
+      tokenMetadata = toOAuth2Auth(tokens)
       providerUserId = authProviderUserId ?? null
       meta = authMeta ?? null
     }
@@ -214,6 +178,13 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
   analytics.integrationAdded(viewer, teamId, providerService)
 
   const data = {userId: viewerId, teamId, service: providerService}
+  publish(
+    SubscriptionChannel.NOTIFICATION,
+    viewerId,
+    'AddTeamMemberIntegrationAuthSuccess',
+    data,
+    subOptions
+  )
   return data
 }
 

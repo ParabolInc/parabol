@@ -1,21 +1,22 @@
-import type {GraphQLResolveInfo} from 'graphql'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import interpolateVotingLabelTemplate from '../../../../client/shared/interpolateVotingLabelTemplate'
 import appOrigin from '../../../appOrigin'
 import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
+import type {
+  EstimatePushCtx,
+  EstimatePushResult
+} from '../../../integrations/platform/ServerIntegrationDefinition'
 import getPhase from '../../../utils/getPhase'
 import makeScoreGitLabComment from '../../../utils/makeScoreGitLabComment'
-import type {GQLContext} from '../../graphql'
-import type {TaskEstimateInput} from '../../public/resolverTypes'
 
-const pushEstimateToGitLab = async (
-  taskEstimate: TaskEstimateInput,
-  context: GQLContext,
-  info: GraphQLResolveInfo,
-  stageId: string
-) => {
+const pushEstimateToGitLab = async ({
+  taskEstimate,
+  context,
+  info,
+  stageId
+}: EstimatePushCtx): Promise<EstimatePushResult | Error> => {
   const {dimensionName, taskId, value, meetingId} = taskEstimate
   const {dataLoader} = context
   const [task, meeting] = await Promise.all([
@@ -29,7 +30,9 @@ const pushEstimateToGitLab = async (
   >
   const {teamId} = task
   const {accessUserId, gid} = gitlabIntegration
-  const auth = await dataLoader.get('freshGitlabAuth').load({teamId, userId: accessUserId})
+  const auth = await dataLoader
+    .get('freshAuth')
+    .load({service: 'gitlab', teamId, userId: accessUserId})
   if (!auth) return new Error('User no longer has access to GitLab')
   const {providerId} = auth
   const provider = await dataLoader.get('integrationProviders').loadNonNull(providerId)
@@ -46,7 +49,7 @@ const pushEstimateToGitLab = async (
   const labelTemplate = fieldMap?.labelTemplate ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
 
   if (labelTemplate === SprintPokerDefaults.SERVICE_FIELD_NULL) {
-    return undefined
+    return {}
   } else if (labelTemplate === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
     const {name: meetingName, phases} = meeting
     const estimatePhase = getPhase(phases, 'ESTIMATE')
@@ -159,10 +162,10 @@ const pushEstimateToGitLab = async (
       removeLabelIds
     })
     if (updateError) return updateError
-    return labelId
+    return {gitlabLabelId: labelId}
   }
 
-  return undefined
+  return {}
 }
 
 export default pushEstimateToGitLab

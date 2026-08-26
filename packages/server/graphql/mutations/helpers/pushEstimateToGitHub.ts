@@ -1,4 +1,3 @@
-import type {GraphQLResolveInfo} from 'graphql'
 import GitHubRepoId from 'parabol-client/shared/gqlIds/GitHubRepoId'
 import interpolateVotingLabelTemplate from 'parabol-client/shared/interpolateVotingLabelTemplate'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
@@ -6,6 +5,10 @@ import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import appOrigin from '../../../appOrigin'
+import type {
+  EstimatePushCtx,
+  EstimatePushResult
+} from '../../../integrations/platform/ServerIntegrationDefinition'
 import type {
   AddCommentMutation,
   AddCommentMutationVariables,
@@ -29,15 +32,13 @@ import getIssueId from '../../../utils/githubQueries/getIssueId.graphql'
 import getRepoLabels from '../../../utils/githubQueries/getRepoLabels.graphql'
 import removeLabels from '../../../utils/githubQueries/removeLabels.graphql'
 import makeScoreGitHubComment from '../../../utils/makeScoreGitHubComment'
-import type {GQLContext} from '../../graphql'
-import type {TaskEstimateInput} from '../../public/resolverTypes'
 
-const pushEstimateToGitHub = async (
-  taskEstimate: TaskEstimateInput,
-  context: GQLContext,
-  info: GraphQLResolveInfo,
-  stageId: string
-) => {
+const pushEstimateToGitHub = async ({
+  taskEstimate,
+  context,
+  info,
+  stageId
+}: EstimatePushCtx): Promise<EstimatePushResult | Error> => {
   const {dimensionName, taskId, value, meetingId} = taskEstimate
   const {dataLoader} = context
   const [task, meeting] = await Promise.all([
@@ -64,7 +65,7 @@ const pushEstimateToGitHub = async (
   ])
   if (!auth) return new Error('User no longer has access to GitHub')
   const labelTemplate = fieldMap?.labelTemplate ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
-  if (labelTemplate === SprintPokerDefaults.SERVICE_FIELD_NULL) return undefined
+  if (labelTemplate === SprintPokerDefaults.SERVICE_FIELD_NULL) return {}
   const {repoName, repoOwner} = GitHubRepoId.split(nameWithOwner)
 
   // Set up githubRequest
@@ -115,7 +116,7 @@ const pushEstimateToGitHub = async (
       }
     )
     if (commentError) return commentError
-    return undefined
+    return {}
   }
 
   const [repoLabelsRes, repoLabelsError] = await githubRequest<
@@ -226,7 +227,7 @@ const pushEstimateToGitHub = async (
     }
   )
   if (addLabelError) return addLabelError
-  return githubLabelName
+  return {githubLabelName}
 }
 
 export default pushEstimateToGitHub

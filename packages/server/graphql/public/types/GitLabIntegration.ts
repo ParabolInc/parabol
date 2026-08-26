@@ -23,7 +23,7 @@ type CursorDetails = {
 }
 const GitLabIntegration: GitLabIntegrationResolvers = {
   auth: async ({teamId, userId}, _args, {dataLoader}) => {
-    return dataLoader.get('freshGitlabAuth').load({teamId, userId})
+    return dataLoader.get('freshAuth').load({service: 'gitlab', teamId, userId})
   },
 
   cloudProvider: async (_source, _args, {dataLoader}) => {

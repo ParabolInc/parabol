@@ -1,7 +1,7 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../../appOrigin'
-import TaskIntegrationManagerFactory from '../../../integrations/TaskIntegrationManagerFactory'
+import {getServerIntegration} from '../../../integrations/platform/registry'
 import updatePrevUsedRepoIntegrationsCache from '../../../integrations/updatePrevUsedRepoIntegrationsCache'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
@@ -30,34 +30,21 @@ const createTaskIntegration: MutationResolvers['createTaskIntegration'] = async 
   // VALIDATION
   if (task.integration) {
     return {
-      error: {message: `That task is already linked to ${(task.integration as any).service}`}
+      error: {message: `That task is already linked to ${task.integration.service}`}
     }
   }
 
+  const issueCreate = getServerIntegration(integrationProviderService)?.capabilities.issueCreate
+  if (!issueCreate) {
+    return {error: {message: 'Unknown integration'}}
+  }
+  const initManager = (accessUserId: string) =>
+    issueCreate.initManager({dataLoader, teamId, userId: accessUserId, context, info})
+
   const [viewerTaskManager, assigneeTaskManager, team, teamMembers, viewer, assigneeUser] =
     await Promise.all([
-      TaskIntegrationManagerFactory.initManager(
-        dataLoader,
-        integrationProviderService,
-        {
-          teamId: teamId,
-          userId: viewerId
-        },
-        context,
-        info
-      ),
-      userId
-        ? TaskIntegrationManagerFactory.initManager(
-            dataLoader,
-            integrationProviderService,
-            {
-              teamId: teamId,
-              userId
-            },
-            context,
-            info
-          )
-        : null,
+      initManager(viewerId),
+      userId ? initManager(userId) : null,
       dataLoader.get('teams').loadNonNull(teamId),
       dataLoader.get('teamMembersByTeamId').load(teamId),
       dataLoader.get('users').loadNonNull(viewerId),

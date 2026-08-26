@@ -62,8 +62,7 @@ export const selectAtlassianAuth = () => {
   return getKysely()
     .selectFrom('TeamMemberIntegrationAuth')
     .selectAll()
-    .select(({ref}) => [
-      ref('providerUserId').as('accountId'),
+    .select([
       sql<string>`coalesce("scopes", '')`.as('scope'),
       sql<string[]>`coalesce("meta" -> 'cloudIds', '[]'::jsonb)`.as('cloudIds')
     ])
@@ -76,7 +75,7 @@ export const selectAtlassianAuth = () => {
       meta: JiraAuthMeta
       accessToken: NotNull
       refreshToken: NotNull
-      accountId: NotNull
+      providerUserId: NotNull
     }>()
 }
 

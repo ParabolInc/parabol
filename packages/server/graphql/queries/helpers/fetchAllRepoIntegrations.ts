@@ -1,44 +1,9 @@
 import type {GraphQLResolveInfo} from 'graphql'
-import type {LinearRepoIntegration} from '../../../../client/shared/gqlIds/IntegrationRepoId'
-import {isNotNull} from '../../../../client/utils/predicates'
-import type {JiraGQLProject} from '../../../dataloader/atlassianLoaders'
-import type {AzureAccountProject} from '../../../dataloader/azureDevOpsLoaders'
-import type {JiraServerProject} from '../../../dataloader/jiraServerLoaders'
+import interleave from '../../../integrations/platform/interleave'
+import type {RemoteRepoIntegration} from '../../../integrations/platform/RemoteRepoIntegration'
+import {serverIntegrations} from '../../../integrations/platform/registry'
+import logError from '../../../utils/logError'
 import type {GQLContext} from '../../graphql'
-import fetchGitHubRepos from './fetchGitHubRepos'
-import fetchGitLabProjects from './fetchGitLabProjects'
-import {fetchLinearProjects, fetchLinearTeams} from './fetchLinearTeamsAndProjects'
-
-type GitHubRepo = {
-  id: string
-  nameWithOwner: string
-  service: 'github'
-}
-
-type GitLabProject = {
-  id: string
-  service: 'gitlab'
-  __typename: 'Project'
-  fullPath: string
-}
-
-type LinearProjectRepo = LinearRepoIntegration & {
-  displayName: string
-}
-
-type LinearTeamRepo = LinearRepoIntegration & {
-  name: string
-}
-
-type LinearRepo = LinearProjectRepo | LinearTeamRepo
-
-export type RemoteRepoIntegration =
-  | JiraGQLProject
-  | GitHubRepo
-  | GitLabProject
-  | JiraServerProject
-  | AzureAccountProject
-  | LinearRepo
 
 const fetchAllRepoIntegrations = async (
   teamId: string,
@@ -46,37 +11,18 @@ const fetchAllRepoIntegrations = async (
   context: GQLContext,
   info: GraphQLResolveInfo
 ) => {
-  const {dataLoader} = context
-  const [
-    jiraProjects,
-    githubRepos,
-    gitlabProjects,
-    jiraServerProjects,
-    azureProjects,
-    linearProjects,
-    linearTeams
-  ] = await Promise.all([
-    dataLoader.get('allJiraProjects').load({teamId, userId}),
-    fetchGitHubRepos(teamId, userId, dataLoader, context, info),
-    fetchGitLabProjects(teamId, userId, context, info),
-    dataLoader.get('allJiraServerProjects').load({teamId, userId}),
-    dataLoader.get('allAzureDevOpsProjects').load({teamId, userId}),
-    fetchLinearProjects(teamId, userId, context, info),
-    fetchLinearTeams(teamId, userId, context, info)
-  ])
-  const repos: RemoteRepoIntegration[][] = [
-    jiraProjects,
-    githubRepos,
-    gitlabProjects,
-    jiraServerProjects,
-    azureProjects,
-    linearProjects,
-    linearTeams
-  ]
-  const maxRepos = Math.max(...repos.map((repo) => repo.length))
-  return new Array(maxRepos)
-    .fill(0)
-    .flatMap((_, idx) => repos.map((repoArr) => repoArr[idx]).filter(isNotNull))
+  const ctx = {dataLoader: context.dataLoader, teamId, userId, context, info}
+  const definitions = Object.values(serverIntegrations)
+  const results = await Promise.allSettled(
+    definitions.map((definition) => definition.capabilities.repoList.fetchRepos(ctx))
+  )
+  const repoLists = results.map((result, idx): RemoteRepoIntegration[] => {
+    if (result.status === 'fulfilled') return result.value
+    const error = result.reason instanceof Error ? result.reason : new Error(String(result.reason))
+    logError(error, {userId, tags: {teamId, service: definitions[idx]!.service}})
+    return []
+  })
+  return interleave(repoLists)
 }
 
 export default fetchAllRepoIntegrations

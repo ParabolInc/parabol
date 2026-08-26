@@ -30,7 +30,7 @@ import type {
 } from '../../types/gitlabTypes'
 import {convertTipTapToMarkdown} from '../../utils/convertTipTapToMarkdown'
 import makeCreateGitLabTaskComment from '../../utils/makeCreateGitLabTaskComment'
-import type {CreateTaskResponse, TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
+import type {CreateTaskResponse, TaskIntegrationManager} from '../platform/TaskIntegrationManager'
 
 class GitLabServerManager implements TaskIntegrationManager {
   public title = 'GitLab'

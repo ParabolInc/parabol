@@ -1,11 +1,17 @@
 import {azureDevOpsIntegrationMeta} from 'parabol-client/shared/integrations/azureDevOpsIntegrationMeta'
+import pushEstimateToAzureDevOps from '../../graphql/mutations/helpers/pushEstimateToAzureDevOps'
 import type {TeamMemberIntegrationAuth} from '../../postgres/types'
+import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
 import {
+  type EstimatePushCapability,
   type IntegrationCtx,
   type IssueCreateCapability,
+  type IssueReadCapability,
+  type RepoListCapability,
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
-import TaskIntegrationManagerFactory from '../TaskIntegrationManagerFactory'
+import resolveAzureDevOpsServiceField from './resolveAzureDevOpsServiceField'
+import resolveAzureDevOpsTaskIntegration from './resolveAzureDevOpsTaskIntegration'
 
 export class AzureDevOpsServerIntegration extends ServerIntegrationDefinition {
   readonly service = azureDevOpsIntegrationMeta.service
@@ -14,30 +20,36 @@ export class AzureDevOpsServerIntegration extends ServerIntegrationDefinition {
 
   async resolveAuth(ctx: IntegrationCtx): Promise<TeamMemberIntegrationAuth | null> {
     const {dataLoader, teamId, userId} = ctx
-    const auth = await dataLoader
-      .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
-      .load({service: 'azureDevOps', teamId, userId})
+    const auth = await dataLoader.get('freshAzureDevOpsAuth').load({teamId, userId})
     return auth?.accessToken ? auth : null
   }
 
-  async isAvailable(ctx: IntegrationCtx) {
-    return this.hasSharedProvider(ctx, 'azureDevOps')
-  }
-
-  async isConnected(ctx: IntegrationCtx) {
-    return this.hasActiveAuthRow(ctx, 'azureDevOps')
-  }
-
-  readonly capabilities: {issueCreate: IssueCreateCapability} = {
+  readonly capabilities: {
+    issueCreate: IssueCreateCapability
+    issueRead: IssueReadCapability
+    repoList: RepoListCapability
+    estimatePush: EstimatePushCapability
+  } = {
     issueCreate: {
-      initManager: (ctx) =>
-        TaskIntegrationManagerFactory.initManager(
-          ctx.dataLoader,
-          'azureDevOps',
-          {teamId: ctx.teamId, userId: ctx.userId},
-          ctx.context,
-          ctx.info
-        )
+      initManager: async (ctx) => {
+        const auth = await this.resolveAuth(ctx)
+        if (!auth) return null
+        const provider = await ctx.dataLoader
+          .get('integrationProviders')
+          .loadNonNull(auth.providerId)
+        if (provider.service !== 'azureDevOps') return null
+        return new AzureDevOpsServerManager(auth, provider)
+      }
+    },
+    issueRead: {getIssue: resolveAzureDevOpsTaskIntegration},
+    repoList: {
+      fetchRepos: ({dataLoader, teamId, userId}) =>
+        dataLoader.get('allAzureDevOpsProjects').load({teamId, userId})
+    },
+    estimatePush: {
+      targets: ['comment', 'field'],
+      pushEstimate: pushEstimateToAzureDevOps,
+      resolveServiceField: resolveAzureDevOpsServiceField
     }
   }
 }

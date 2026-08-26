@@ -3,6 +3,20 @@ import {commitMutation} from 'react-relay'
 import type {AddTeamMemberIntegrationAuthMutation as TAddTeamMemberIntegrationAuthMutation} from '../__generated__/AddTeamMemberIntegrationAuthMutation.graphql'
 import type {StandardMutation} from '../types/relayMutations'
 
+graphql`
+  fragment AddTeamMemberIntegrationAuthMutation_notification on AddTeamMemberIntegrationAuthSuccess {
+    teamMember {
+      integrations {
+        ...useIsIntegrated_integrations
+      }
+      services {
+        service
+        isConnected
+      }
+    }
+  }
+`
+
 const mutation = graphql`
   mutation AddTeamMemberIntegrationAuthMutation(
     $providerId: ID!

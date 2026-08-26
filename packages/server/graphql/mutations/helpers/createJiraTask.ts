@@ -14,7 +14,7 @@ const createJiraTask = async (
   const {title: summary, bodyContent} = splitTipTapContent(rawContent)
   const description = convertTiptapToADF(bodyContent)
 
-  const {accessToken, accountId} = atlassianAuth
+  const {accessToken, providerUserId} = atlassianAuth
   const manager = new AtlassianServerManager(accessToken)
 
   const issueMetaRes = await manager.getCreateMeta(cloudId, [projectKey])
@@ -31,7 +31,7 @@ const createJiraTask = async (
     description,
     // ERROR: Field 'reporter' cannot be set. It is not on the appropriate screen, or unknown.
     assignee: {
-      id: accountId
+      id: providerUserId
     },
     issuetype: {
       id: bestType.id

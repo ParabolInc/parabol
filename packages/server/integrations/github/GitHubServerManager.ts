@@ -9,7 +9,7 @@ import type {AddCommentMutation, AddCommentMutationVariables} from '../../types/
 import getGitHubRequest from '../../utils/getGitHubRequest'
 import addComment from '../../utils/githubQueries/addComment.graphql'
 import makeCreateGitHubTaskComment from '../../utils/makeCreateGitHubTaskComment'
-import type {CreateTaskResponse, TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
+import type {CreateTaskResponse, TaskIntegrationManager} from '../platform/TaskIntegrationManager'
 
 export default class GitHubServerManager implements TaskIntegrationManager {
   public title = 'GitHub'

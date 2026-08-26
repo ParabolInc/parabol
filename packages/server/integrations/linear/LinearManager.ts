@@ -5,7 +5,8 @@ import {authorizeOAuth2} from '../helpers/authorizeOAuth2'
 import OAuth2Manager, {
   type OAuth2AuthorizationParams,
   type OAuth2AuthorizeResponse,
-  type OAuth2RefreshAuthorizationParams
+  type OAuth2RefreshAuthorizationParams,
+  type OAuth2RefreshResponse
 } from '../OAuth2Manager'
 
 export default class LinearManager extends OAuth2Manager {
@@ -28,11 +29,13 @@ export default class LinearManager extends OAuth2Manager {
     })
   }
 
-  async refresh(refreshToken: string): Promise<Error | OAuth2AuthorizeResponse> {
-    return this.fetchToken<OAuth2AuthorizeResponse>({
+  async refresh(refreshToken: string): Promise<Error | OAuth2RefreshResponse> {
+    const res = await this.fetchToken<OAuth2AuthorizeResponse>({
       grant_type: 'refresh_token',
       refresh_token: refreshToken
     })
+    if (res instanceof Error) return res
+    return {...res, expiresIn: res.expiresIn ?? 86400}
   }
 
   protected async fetchToken<TSuccess>(

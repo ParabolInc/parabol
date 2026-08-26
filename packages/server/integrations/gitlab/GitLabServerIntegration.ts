@@ -1,41 +1,46 @@
 import {gitlabIntegrationMeta} from 'parabol-client/shared/integrations/gitlabIntegrationMeta'
-import type {TeamMemberIntegrationAuth} from '../../postgres/types'
+import pushEstimateToGitLab from '../../graphql/mutations/helpers/pushEstimateToGitLab'
+import fetchGitLabProjects from '../../graphql/queries/helpers/fetchGitLabProjects'
 import {
-  type IntegrationCtx,
+  type EstimatePushCapability,
   type IssueCreateCapability,
+  type IssueReadCapability,
+  type RepoListCapability,
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
-import TaskIntegrationManagerFactory from '../TaskIntegrationManagerFactory'
+import GitLabServerManager from './GitLabServerManager'
+import resolveGitLabServiceField from './resolveGitLabServiceField'
+import resolveGitLabTaskIntegration from './resolveGitLabTaskIntegration'
 
 export class GitLabServerIntegration extends ServerIntegrationDefinition {
   readonly service = gitlabIntegrationMeta.service
   readonly title = gitlabIntegrationMeta.title
   readonly authStrategy = 'oauth2' as const
 
-  async resolveAuth(ctx: IntegrationCtx): Promise<TeamMemberIntegrationAuth | null> {
-    const {dataLoader, teamId, userId} = ctx
-    const auth = await dataLoader.get('freshGitlabAuth').load({teamId, userId})
-    return auth?.accessToken ? auth : null
-  }
-
-  async isAvailable(ctx: IntegrationCtx) {
-    return this.hasSharedProvider(ctx, 'gitlab')
-  }
-
-  async isConnected(ctx: IntegrationCtx) {
-    return this.hasActiveAuthRow(ctx, 'gitlab')
-  }
-
-  readonly capabilities: {issueCreate: IssueCreateCapability} = {
+  readonly capabilities: {
+    issueCreate: IssueCreateCapability
+    issueRead: IssueReadCapability
+    repoList: RepoListCapability
+    estimatePush: EstimatePushCapability
+  } = {
     issueCreate: {
-      initManager: (ctx) =>
-        TaskIntegrationManagerFactory.initManager(
-          ctx.dataLoader,
-          'gitlab',
-          {teamId: ctx.teamId, userId: ctx.userId},
-          ctx.context,
-          ctx.info
-        )
+      initManager: async (ctx) => {
+        const auth = await this.resolveAuth(ctx)
+        if (!auth) return null
+        const provider = await ctx.dataLoader.get('integrationProviders').load(auth.providerId)
+        if (!provider?.serverBaseUrl) return null
+        return new GitLabServerManager(auth, ctx.context, ctx.info, provider.serverBaseUrl)
+      }
+    },
+    issueRead: {getIssue: resolveGitLabTaskIntegration},
+    repoList: {
+      fetchRepos: ({teamId, userId, context, info}) =>
+        fetchGitLabProjects(teamId, userId, context, info)
+    },
+    estimatePush: {
+      targets: ['comment', 'label'],
+      pushEstimate: pushEstimateToGitLab,
+      resolveServiceField: resolveGitLabServiceField
     }
   }
 }

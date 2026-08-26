@@ -119,6 +119,8 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
   },
   id: ({teamId, userId}) => AtlassianIntegrationId.join(teamId, userId),
 
+  accountId: ({providerUserId}) => providerUserId,
+
   isActive: ({accessToken}) => !!accessToken,
 
   scope: ({scope, userId}, _args, {authToken}) => {
