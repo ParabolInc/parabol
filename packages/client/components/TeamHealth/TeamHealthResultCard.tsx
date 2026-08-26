@@ -55,7 +55,7 @@ const TeamHealthResultCard = (props: Props) => {
               <TooltipTrigger asChild>
                 {/* the marker ties this card to the footnote that spells the reason out in full */}
                 <span className='cursor-default rounded-full bg-surface-raised px-2.5 py-1 font-semibold text-fg-secondary text-xs shadow-card'>
-                  *Spread hidden
+                  Spread hidden*
                 </span>
               </TooltipTrigger>
               <TooltipContent side='top' align='center' sideOffset={2}>
@@ -73,9 +73,18 @@ const TeamHealthResultCard = (props: Props) => {
       </div>
       {/* three lines' worth of room whether or not the question fills it, so the counts below sit
           on the same line across the row */}
-      <p className='mt-2 line-clamp-3 min-h-15 text-fg-secondary text-sm' title={question}>
-        {question}
-      </p>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <p className='mt-2 line-clamp-3 min-h-15 cursor-default text-fg-secondary text-sm'>
+            {question}
+          </p>
+        </TooltipTrigger>
+        {/* the default tip is a single nowrap line, which a whole question would run off the
+            screen — this one wraps inside a readable column instead */}
+        <TooltipContent side='top' className='max-w-xs whitespace-normal'>
+          {question}
+        </TooltipContent>
+      </Tooltip>
       <div className='mt-auto pt-2 text-fg-muted text-xs'>
         {respondentCount} {plural(respondentCount, 'respondent')} · {responseCount}{' '}
         {plural(responseCount, 'answer')}
