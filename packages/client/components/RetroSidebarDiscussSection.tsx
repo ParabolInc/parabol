@@ -127,7 +127,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
                     // NavSidebar.SUB_FONT_SIZE === 14px, SUB_LINE_HEIGHT === 22px
                     <div
                       className={cn(
-                        'mr-2 flex h-[22px] items-center font-semibold text-sm leading-[22px]',
+                        'flex h-[22px] items-center font-semibold text-sm leading-[22px]',
                         isUnsyncedFacilitatorStage ? 'text-rose-500' : 'text-fg-nav-muted'
                       )}
                     >

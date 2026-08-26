@@ -151,11 +151,7 @@ const BottomControlBarReady = (props: Props) => {
         {isNext && <BottomControlBarProgress isNext={isNext} progress={progress} />}
         <BottomNavIconLabel className='px-2' label={label} ref={originRef}>
           <div
-            className={cn(
-              'h-6 w-6 origin-top-left',
-              iconColor,
-              '[&_svg]:fill-current [&_svg]:stroke-current'
-            )}
+            className={cn('h-6 w-6 origin-top-left', iconColor)}
             style={{
               transform: isNext
                 ? progress > 0
@@ -166,7 +162,7 @@ const BottomControlBarReady = (props: Props) => {
             }}
           >
             {isNext ? (
-              <ArrowForward style={{strokeWidth: 1}} />
+              <ArrowForward className='stroke-1 stroke-current' />
             ) : isViewerReady ? (
               <CheckCircle />
             ) : (

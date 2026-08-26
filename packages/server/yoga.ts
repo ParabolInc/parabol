@@ -61,9 +61,16 @@ export const extractPersistedOperationId = (
 const queryMap = {} as Record<string, string | undefined>
 const primeQueryMap = () => {
   if (__PRODUCTION__) return
-  const primed = require('../../queryMap.json')
+  let primed: Record<string, string>
+  try {
+    // resolved off disk at boot, see the externals in dev.servers.config.js
+    primed = require('../../queryMap.json')
+  } catch {
+    Logger.warn('queryMap.json not found. Run `pnpm relay:build`')
+    return
+  }
   Object.keys(primed).forEach((key) => {
-    queryMap[key] = primed[key].replace('@stream_HACK', '@stream')
+    queryMap[key] = primed[key]!.replace('@stream_HACK', '@stream')
   })
 }
 primeQueryMap()
