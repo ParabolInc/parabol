@@ -7,7 +7,10 @@ import {
   getOrderedTeamHealthCategories,
   getTeamHealthCategoryColor
 } from '../ActivityLibrary/TeamHealth/getTeamHealthCategoryColor'
-import TeamHealthResultCard from './TeamHealthResultCard'
+import TeamHealthResultCard, {
+  OBSCURE_SPREAD_BELOW,
+  OBSCURED_SPREAD_EXPLANATION
+} from './TeamHealthResultCard'
 
 interface Props {
   meeting: TeamHealthResultPhase_meeting$key
@@ -130,6 +133,10 @@ const TeamHealthResultPhase = (props: Props) => {
       (askOrderByQuestionId.get(a.questionId) ?? 0) - (askOrderByQuestionId.get(b.questionId) ?? 0)
   )
   const commented = results.filter((result) => result.comments.length > 0)
+  const hasObscuredSpread = results.some((result) => {
+    const responseCount = scoreByCategoryId.get(result.categoryId)?.responseCount ?? 0
+    return responseCount > 0 && responseCount < OBSCURE_SPREAD_BELOW
+  })
 
   return (
     <div className='mx-auto max-w-6xl px-6 py-10'>
@@ -162,6 +169,9 @@ const TeamHealthResultPhase = (props: Props) => {
           )
         })}
       </div>
+      {hasObscuredSpread && (
+        <p className='mt-4 text-fg-muted text-sm'>{OBSCURED_SPREAD_EXPLANATION}</p>
+      )}
       {commented.length > 0 && (
         <div className='mt-8 rounded-2xl bg-surface-card p-6 shadow-card'>
           <h2 className='font-bold text-fg-primary text-lg'>What people wrote</h2>
