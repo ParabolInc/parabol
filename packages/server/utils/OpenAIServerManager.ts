@@ -431,6 +431,57 @@ Return JSON of the form: { "items": [{ "title": "<short heading, or null>", "con
     }
   }
 
+  /**
+   * Rewrites Team Health comments so their author can't be picked out by writing style. A team of
+   * eight recognizes each other's phrasing, typos, and pet words instantly, so publishing raw
+   * comments back to the team quietly breaks the anonymity the survey promises.
+   *
+   * Returns one entry per input comment, in order. An entry is null when the model declined to
+   * paraphrase it — callers must treat that as "don't publish this comment" rather than falling
+   * back to the raw text.
+   */
+  async paraphraseTeamHealthComments(comments: string[]) {
+    if (!this.openAIApi) return null
+    const prompt = `You are rewriting anonymous team health survey comments so that their author cannot be identified from writing style.
+
+Rewrite each comment to:
+- preserve its meaning, sentiment, and specificity exactly
+- use plain, neutral phrasing and a consistent voice
+- drop names, job titles, distinctive idioms, typos, emoji, and personal punctuation habits
+- stay within two sentences
+
+Never invent detail. Never soften criticism or make a comment more positive than it was. Never add interpretation or advice.
+
+If a comment is so short, so specific, or so situational that no rewrite could hide who wrote it, return an empty string for it instead of a paraphrase.
+
+Comments, as a JSON array:
+${JSON.stringify(comments)}
+
+Respond with ONLY a JSON object of the form {"paraphrases": ["...", "..."]} containing exactly ${comments.length} strings, in the same order as the input.`
+
+    try {
+      const response = await this.openAIApi.chat.completions.create({
+        model: AI_MODEL,
+        messages: [{role: 'user', content: prompt}],
+        reasoning_effort: 'low',
+        response_format: {type: 'json_object'},
+        max_completion_tokens: 8000
+      })
+      const content = response.choices[0]?.message?.content
+      if (!content) return null
+      const {paraphrases} = JSON.parse(content) as {paraphrases?: unknown}
+      if (!Array.isArray(paraphrases) || paraphrases.length !== comments.length) return null
+      return paraphrases.map((paraphrase) =>
+        typeof paraphrase === 'string' && paraphrase.trim() ? paraphrase.trim() : null
+      )
+    } catch (e) {
+      const error =
+        e instanceof Error ? e : new Error('OpenAI failed to paraphrase team health comments')
+      logError(error)
+      return null
+    }
+  }
+
   async generateGroupTitle(reflections: {plaintextContent: string}[]) {
     if (!this.openAIApi) return null
     const prompt = `Generate a short (2-4 words) theme or title that captures the essence of these related retrospective comments. The title should be clear and actionable.

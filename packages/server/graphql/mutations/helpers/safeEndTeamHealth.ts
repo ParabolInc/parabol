@@ -14,6 +14,7 @@ import standardError from '../../../utils/standardError'
 import type {InternalContext} from '../../graphql'
 import gatherInsights from './gatherInsights'
 import {IntegrationNotifier} from './notifications/IntegrationNotifier'
+import paraphraseTeamHealthComments from './paraphraseTeamHealthComments'
 import {publishSummaryPage} from './summaryPage/publishSummaryPage'
 import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
 
@@ -80,6 +81,13 @@ const safeEndTeamHealth = async ({
   )
   await pg.insertInto('TimelineEvent').values(events).execute()
   analytics.teamHealthEnd(completedTeamHealth, meetingMembers, dataLoader)
+  // the summary page, the summary email, and the AI insights all read comments, and all of them
+  // read only the paraphrase — so this has to land before any of them are generated
+  await paraphraseTeamHealthComments(meetingId, dataLoader).catch((e) => {
+    logError(e instanceof Error ? e : new Error(`paraphraseTeamHealthComments failed: ${e}`), {
+      tags: {meetingId, op: 'paraphraseTeamHealthComments'}
+    })
+  })
   const page = await publishSummaryPage(meetingId, context, info).catch((e) => {
     logError(e instanceof Error ? e : new Error(`publishSummaryPage failed: ${e}`), {
       tags: {meetingId, op: 'publishSummaryPage'}
