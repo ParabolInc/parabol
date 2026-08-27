@@ -42,6 +42,7 @@ graphql`
           isActive
         }
         atlassian {
+          isActive
           ...AtlassianProviderRowAtlassianIntegration
         }
         github {
