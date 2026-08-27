@@ -39,7 +39,7 @@ const pushEstimateToLinear = async ({
   const manager = new LinearServerManager(auth, context, info)
 
   if (fieldMapSelection === SprintPokerDefaults.SERVICE_FIELD_NULL) {
-    return {}
+    return null
   } else if (fieldMapSelection === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
     const {name: meetingName, phases} = meeting
     const estimatePhase = getPhase(phases, 'ESTIMATE')
@@ -69,7 +69,7 @@ const pushEstimateToLinear = async ({
     if (updateError) return updateError
   }
 
-  return {}
+  return null
 }
 
 export default pushEstimateToLinear

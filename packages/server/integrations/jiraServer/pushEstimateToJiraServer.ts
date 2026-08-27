@@ -64,7 +64,7 @@ const pushEstimateToJiraServer = async ({
       return new Error(res.message)
     }
   }
-  return {}
+  return null
 }
 
 export default pushEstimateToJiraServer

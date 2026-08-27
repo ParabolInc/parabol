@@ -46,7 +46,7 @@ const pushEstimateToGitLab = async ({
   const labelTemplate = fieldMap?.labelTemplate ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
 
   if (labelTemplate === SprintPokerDefaults.SERVICE_FIELD_NULL) {
-    return {}
+    return null
   } else if (labelTemplate === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
     const {name: meetingName, phases} = meeting
     const estimatePhase = getPhase(phases, 'ESTIMATE')
@@ -159,10 +159,10 @@ const pushEstimateToGitLab = async ({
       removeLabelIds
     })
     if (updateError) return updateError
-    return {gitlabLabelId: labelId}
+    return {column: 'gitlabLabelId', value: labelId}
   }
 
-  return {}
+  return null
 }
 
 export default pushEstimateToGitLab

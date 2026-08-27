@@ -6,7 +6,6 @@ type TeamSubscriptionPayload {
   AcceptTeamInvitationPayload: AcceptTeamInvitationPayload
   AddAgendaItemPayload: AddAgendaItemPayload
   AddSlackAuthPayload: AddSlackAuthPayload
-  AddTeamMemberIntegrationAuthSuccess: AddTeamMemberIntegrationAuthSuccess
   ArchiveTeamPayload: ArchiveTeamPayload
   BatchArchiveTasksSuccess: BatchArchiveTasksSuccess
   DenyPushInvitationPayload: DenyPushInvitationPayload

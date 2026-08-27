@@ -31,8 +31,6 @@ const INTEGRATIONS_QUERY = `
   }
 `
 
-type ServiceEntry = {service: string; isConnected: boolean; auth: unknown}
-
 const joinTeam = async (
   host: {cookie: string; teamId: string},
   guest: {cookie: string; email: string}
@@ -78,48 +76,18 @@ const joinTeam = async (
   return token!
 }
 
-const connectGitHub = async (userId: string, teamId: string) => {
-  const pg = getKysely()
-  const provider = await pg
-    .selectFrom('IntegrationProvider')
-    .select('id')
-    .where('service', '=', 'github')
-    .where('scope', '=', 'global')
-    .executeTakeFirstOrThrow()
-  const {id} = await pg
-    .insertInto('TeamMemberIntegrationAuth')
-    .values({
-      providerId: provider.id,
-      service: 'github',
-      teamId,
-      userId,
-      accessToken: 'test-token',
-      providerUserId: `test-${userId}`
-    })
-    .returning('id')
-    .executeTakeFirstOrThrow()
-  return () => pg.deleteFrom('TeamMemberIntegrationAuth').where('id', '=', id).execute()
-}
-
-test('a teammate can read services but not the auth or integrations of another member', async () => {
+test('a teammate cannot read services or integrations of another member', async () => {
   const [owner, teammate] = await Promise.all([signUp(), signUp()])
   const teammateToken = await joinTeam(owner, teammate)
   const variables = {userId: owner.userId, teamId: owner.teamId}
 
-  const services = await sendPublic({query: SERVICES_QUERY, variables, bearerToken: teammateToken})
-  const authPaths = services.errors.map(({path}: {path: unknown[]}) => path.at(-1))
-  expect(authPaths).toEqual(Array(6).fill('auth'))
-  const entries: ServiceEntry[] = services.data.viewer.teamMember.services
-  expect(entries.map(({service}) => service).sort()).toEqual([
-    'azureDevOps',
-    'github',
-    'gitlab',
-    'jira',
-    'jiraServer',
-    'linear'
-  ])
-  expect(entries.every(({isConnected}) => isConnected === false)).toBe(true)
-  expect(entries.every(({auth}) => auth === null)).toBe(true)
+  const services = await sendPublic({
+    query: SERVICES_QUERY,
+    variables,
+    bearerToken: teammateToken
+  })
+  expect(services.data?.viewer?.teamMember ?? null).toBeNull()
+  expect(services.errors?.length).toBeGreaterThan(0)
 
   const integrations = await sendPublic({
     query: INTEGRATIONS_QUERY,
@@ -128,24 +96,6 @@ test('a teammate can read services but not the auth or integrations of another m
   })
   expect(integrations.data.viewer.teamMember).toBeNull()
   expect(integrations.errors?.length).toBeGreaterThan(0)
-})
-
-test("a teammate sees another member's connection state", async () => {
-  const [owner, teammate] = await Promise.all([signUp(), signUp()])
-  const teammateToken = await joinTeam(owner, teammate)
-  const disconnect = await connectGitHub(owner.userId, owner.teamId)
-  try {
-    const services = await sendPublic({
-      query: SERVICES_QUERY,
-      variables: {userId: owner.userId, teamId: owner.teamId},
-      bearerToken: teammateToken
-    })
-    const entries: ServiceEntry[] = services.data.viewer.teamMember.services
-    const github = entries.find(({service}) => service === 'github')
-    expect(github).toMatchObject({isConnected: true, auth: null})
-  } finally {
-    await disconnect()
-  }
 })
 
 test('a non-member cannot read services', async () => {

@@ -1,17 +1,11 @@
 import type {GraphQLResolveInfo} from 'graphql'
+import type {GitHubRepo} from '../../../integrations/platform/RemoteRepoIntegration'
 import type {GetRepositoriesQuery} from '../../../types/githubTypes'
 import getGitHubRequest from '../../../utils/getGitHubRequest'
 import getRepositories from '../../../utils/githubQueries/getRepositories.graphql'
 import {Logger} from '../../../utils/Logger'
 import type {GQLContext} from './../../graphql'
 import type {DataLoaderWorker} from '../../graphql'
-
-export interface GitHubRepo {
-  id: string
-  nameWithOwner: string
-  hasIssuesEnabled?: boolean
-  service: 'github'
-}
 
 const fetchGitHubRepos = async (
   teamId: string,
@@ -36,11 +30,7 @@ const fetchGitHubRepos = async (
   const viewerRepos = repositories.nodes || []
   const allRepos = [...viewerRepos, ...orgRepos]
   const repoSet = new Set<string>()
-  const repos = [] as {
-    id: string
-    service: 'github'
-    nameWithOwner: string
-  }[]
+  const repos: GitHubRepo[] = []
   allRepos.forEach((repo) => {
     if (!repo) return
     const {nameWithOwner, hasIssuesEnabled} = repo

@@ -123,7 +123,7 @@ const pushEstimateToJira = async ({
       return new Error(e instanceof Error ? e.message : 'Unable to updateStoryPoints')
     }
   }
-  return {jiraFieldId}
+  return jiraFieldId ? {column: 'jiraFieldId', value: jiraFieldId} : null
 }
 
 export default pushEstimateToJira

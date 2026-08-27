@@ -79,7 +79,7 @@ const pushEstimateToAzureDevOps = async ({
       return new Error(e instanceof Error ? e.message : 'Unable to updateStoryPoints')
     }
   }
-  return {}
+  return null
 }
 
 export default pushEstimateToAzureDevOps

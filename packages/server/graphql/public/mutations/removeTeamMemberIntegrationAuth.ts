@@ -23,7 +23,7 @@ const removeTeamMemberIntegrationAuth: MutationResolvers['removeTeamMemberIntegr
         .where('isActive', '=', true)
         .execute()
     ])
-    updateRepoIntegrationsCacheByPerms(dataLoader, viewerId, teamId, false)
+    await updateRepoIntegrationsCacheByPerms(dataLoader, viewerId, teamId, false)
     analytics.integrationRemoved(viewer, teamId, service)
 
     const data = {userId: viewerId, teamId, service}

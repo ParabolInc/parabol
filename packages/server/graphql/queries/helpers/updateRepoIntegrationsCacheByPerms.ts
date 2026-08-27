@@ -4,11 +4,12 @@ import type {Integrationproviderserviceenum} from '../../../postgres/types/pg'
 import getAllRepoIntegrationsRedisKey from '../../../utils/getAllRepoIntegrationsRedisKey'
 import getPrevUsedRepoIntegrationsRedisKey from '../../../utils/getPrevUsedRepoIntegrationsRedisKey'
 import getRedis from '../../../utils/getRedis'
+import logError from '../../../utils/logError'
 import type {DataLoaderWorker} from '../../graphql'
 import getAllCachedRepoIntegrations from './getAllCachedRepoIntegrations'
 import getPrevUsedRepoIntegrations from './getPrevUsedRepoIntegrations'
 
-const updateRepoIntegrationsCacheByPerms = async (
+const pruneRepoIntegrationsCache = async (
   dataLoader: DataLoaderWorker,
   viewerId: string,
   teamId: string,
@@ -17,7 +18,6 @@ const updateRepoIntegrationsCacheByPerms = async (
   const redis = getRedis()
   const allRepoIntegrationsKey = getAllRepoIntegrationsRedisKey(teamId, viewerId)
   if (hasAddedIntegration) {
-    // clear allRepos cache so we can fetch from network
     await redis.del(allRepoIntegrationsKey)
     return
   }
@@ -46,15 +46,26 @@ const updateRepoIntegrationsCacheByPerms = async (
       ms('90d')
     )
   }
-  if (prevUsedRepoIntegrations) {
-    const prevUsedRepoIntsWithoutPerms = prevUsedRepoIntegrations.filter(({service}) =>
-      cachedRepoIntWithoutPerms.includes(service)
-    )
-    await Promise.all(
-      prevUsedRepoIntsWithoutPerms.map((repoInt) =>
-        redis.zrem(prevUsedIntegrationsKey, JSON.stringify(repoInt))
-      )
-    )
+  const staleMembers =
+    prevUsedRepoIntegrations
+      ?.filter(({service}) => cachedRepoIntWithoutPerms.includes(service))
+      .map((repoInt) => JSON.stringify(repoInt)) ?? []
+  if (staleMembers.length) {
+    await redis.zrem(prevUsedIntegrationsKey, staleMembers)
+  }
+}
+
+const updateRepoIntegrationsCacheByPerms = async (
+  dataLoader: DataLoaderWorker,
+  viewerId: string,
+  teamId: string,
+  hasAddedIntegration: boolean
+) => {
+  try {
+    await pruneRepoIntegrationsCache(dataLoader, viewerId, teamId, hasAddedIntegration)
+  } catch (e) {
+    const error = e instanceof Error ? e : new Error(String(e))
+    logError(error, {userId: viewerId, tags: {teamId}})
   }
 }
 

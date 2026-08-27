@@ -62,7 +62,7 @@ const pushEstimateToGitHub = async ({
   ])
   if (!auth) return new Error('User no longer has access to GitHub')
   const labelTemplate = fieldMap?.labelTemplate ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
-  if (labelTemplate === SprintPokerDefaults.SERVICE_FIELD_NULL) return {}
+  if (labelTemplate === SprintPokerDefaults.SERVICE_FIELD_NULL) return null
   const {repoName, repoOwner} = GitHubRepoId.split(nameWithOwner)
 
   // Set up githubRequest
@@ -113,7 +113,7 @@ const pushEstimateToGitHub = async ({
       }
     )
     if (commentError) return commentError
-    return {}
+    return null
   }
 
   const [repoLabelsRes, repoLabelsError] = await githubRequest<
@@ -224,7 +224,7 @@ const pushEstimateToGitHub = async ({
     }
   )
   if (addLabelError) return addLabelError
-  return {githubLabelName}
+  return {column: 'githubLabelName', value: githubLabelName}
 }
 
 export default pushEstimateToGitHub

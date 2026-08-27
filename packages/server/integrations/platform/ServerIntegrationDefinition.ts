@@ -2,7 +2,7 @@ import type {GraphQLResolveInfo} from 'graphql'
 import type {IntegrationMeta} from 'parabol-client/shared/integrations/IntegrationMeta'
 import type {DataLoaderWorker, GQLContext, InternalContext} from '../../graphql/graphql'
 import type {TaskEstimateInput} from '../../graphql/public/resolverTypes'
-import type {Task, TeamMemberIntegrationAuth} from '../../postgres/types'
+import type {Task, TaskEstimate, TeamMemberIntegrationAuth} from '../../postgres/types'
 import type {TIntegrationProvider} from '../../postgres/types/IntegrationProvider'
 import type {JsonObject} from '../../postgres/types/pg'
 import type {RemoteRepoIntegration} from './RemoteRepoIntegration'
@@ -56,12 +56,13 @@ export interface EstimatePushCtx extends GqlIntegrationCtx {
   discussionURL: string
 }
 
-/** Provenance columns written to TaskEstimate; a service sets at most one */
-export interface EstimatePushResult {
-  jiraFieldId?: string
-  githubLabelName?: string
-  gitlabLabelId?: string
-}
+export type EstimateProvenanceColumn = keyof Pick<
+  TaskEstimate,
+  'jiraFieldId' | 'githubLabelName' | 'gitlabLabelId'
+>
+
+/** The TaskEstimate column a push wrote its target id into; null when the push left no provenance (comment-only, or no target) */
+export type EstimatePushResult = {column: EstimateProvenanceColumn; value: string} | null
 
 export interface ServiceFieldCtx extends GqlIntegrationCtx {
   task: Task
