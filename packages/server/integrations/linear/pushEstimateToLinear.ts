@@ -1,13 +1,10 @@
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
-import appOrigin from '../../../appOrigin'
-import LinearServerManager from '../../../integrations/linear/LinearServerManager'
-import makeScoreLinearComment from '../../../integrations/linear/makeScoreLinearComment'
-import type {
-  EstimatePushCtx,
-  EstimatePushResult
-} from '../../../integrations/platform/ServerIntegrationDefinition'
-import getPhase from '../../../utils/getPhase'
+import appOrigin from '../../appOrigin'
+import getPhase from '../../utils/getPhase'
+import type {EstimatePushCtx, EstimatePushResult} from '../platform/ServerIntegrationDefinition'
+import LinearServerManager from './LinearServerManager'
+import makeScoreLinearComment from './makeScoreLinearComment'
 
 const pushEstimateToLinear = async ({
   taskEstimate,

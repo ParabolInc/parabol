@@ -7,7 +7,7 @@ import getKysely from './getKysely'
 import type {
   AutogroupReflectionGroupType,
   GitHubSearchQueryJson,
-  JiraAuthMeta,
+  IntegrationAuthMetaByService,
   JiraSearchQuery,
   JiraSearchQueryJson,
   ReactjiDB,
@@ -48,14 +48,18 @@ export const selectDiscussion = () => {
   return getKysely().selectFrom('Discussion').selectAll()
 }
 
+type TeamMemberIntegrationAuthByService = {
+  [S in Integrationproviderserviceenum]: {
+    service: S
+    meta: S extends keyof IntegrationAuthMetaByService ? IntegrationAuthMetaByService[S] : null
+  }
+}[Integrationproviderserviceenum]
+
 export const selectTeamMemberIntegrationAuth = () => {
   return getKysely()
     .selectFrom('TeamMemberIntegrationAuth')
     .selectAll()
-    .$narrowType<
-      | {service: 'jira'; meta: JiraAuthMeta}
-      | {service: Exclude<Integrationproviderserviceenum, 'jira'>; meta: null}
-    >()
+    .$narrowType<TeamMemberIntegrationAuthByService>()
 }
 
 export const selectAtlassianAuth = () => {
@@ -72,7 +76,7 @@ export const selectAtlassianAuth = () => {
     .where('providerUserId', 'is not', null)
     .$narrowType<{
       service: 'jira'
-      meta: JiraAuthMeta
+      meta: IntegrationAuthMetaByService['jira']
       accessToken: NotNull
       refreshToken: NotNull
       providerUserId: NotNull

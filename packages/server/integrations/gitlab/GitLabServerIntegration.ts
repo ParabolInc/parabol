@@ -1,5 +1,4 @@
 import {gitlabIntegrationMeta} from 'parabol-client/shared/integrations/gitlabIntegrationMeta'
-import pushEstimateToGitLab from '../../graphql/mutations/helpers/pushEstimateToGitLab'
 import fetchGitLabProjects from '../../graphql/queries/helpers/fetchGitLabProjects'
 import {
   type EstimatePushCapability,
@@ -9,6 +8,7 @@ import {
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
 import GitLabServerManager from './GitLabServerManager'
+import pushEstimateToGitLab from './pushEstimateToGitLab'
 import resolveGitLabServiceField from './resolveGitLabServiceField'
 import resolveGitLabTaskIntegration from './resolveGitLabTaskIntegration'
 

@@ -1,9 +1,6 @@
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
-import JiraServerRestManager from '../../../integrations/jiraServer/JiraServerRestManager'
-import type {
-  EstimatePushCtx,
-  EstimatePushResult
-} from '../../../integrations/platform/ServerIntegrationDefinition'
+import type {EstimatePushCtx, EstimatePushResult} from '../platform/ServerIntegrationDefinition'
+import JiraServerRestManager from './JiraServerRestManager'
 
 const pushEstimateToJiraServer = async ({
   task,

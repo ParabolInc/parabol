@@ -1,11 +1,11 @@
 import type {JSONContent} from '@tiptap/core'
 import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
 import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
-import createJiraTask from '../../graphql/mutations/helpers/createJiraTask'
 import type {AtlassianAuth} from '../../postgres/types'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import makeCreateJiraTaskComment from '../../utils/makeCreateJiraTaskComment'
 import type {CreateTaskResponse, TaskIntegrationManager} from '../platform/TaskIntegrationManager'
+import createJiraTask from './createJiraTask'
 
 export default class JiraIntegrationManager
   extends AtlassianServerManager

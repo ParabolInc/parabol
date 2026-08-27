@@ -1,5 +1,4 @@
 import {jiraServerIntegrationMeta} from 'parabol-client/shared/integrations/jiraServerIntegrationMeta'
-import pushEstimateToJiraServer from '../../graphql/mutations/helpers/pushEstimateToJiraServer'
 import type {JiraSearchQueryJson} from '../../postgres/types'
 import buildJiraSearchQuery from '../jira/buildJiraSearchQuery'
 import {
@@ -11,6 +10,7 @@ import {
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
 import JiraServerRestManager from './JiraServerRestManager'
+import pushEstimateToJiraServer from './pushEstimateToJiraServer'
 import resolveJiraServerServiceField from './resolveJiraServerServiceField'
 import resolveJiraServerTaskIntegration from './resolveJiraServerTaskIntegration'
 

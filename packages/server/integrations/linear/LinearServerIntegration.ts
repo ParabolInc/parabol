@@ -1,5 +1,4 @@
 import {linearIntegrationMeta} from 'parabol-client/shared/integrations/linearIntegrationMeta'
-import pushEstimateToLinear from '../../graphql/mutations/helpers/pushEstimateToLinear'
 import {
   fetchLinearProjects,
   fetchLinearTeams
@@ -13,6 +12,7 @@ import {
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
 import LinearServerManager from './LinearServerManager'
+import pushEstimateToLinear from './pushEstimateToLinear'
 import resolveLinearServiceField from './resolveLinearServiceField'
 import resolveLinearTaskIntegration from './resolveLinearTaskIntegration'
 

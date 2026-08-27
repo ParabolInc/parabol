@@ -1,8 +1,8 @@
-import type {AtlassianAuth} from '../../../../postgres/types'
-import AtlassianServerManager from '../../../../utils/AtlassianServerManager'
+import type {AtlassianAuth} from '../../../postgres/types'
+import AtlassianServerManager from '../../../utils/AtlassianServerManager'
 import createJiraTask from '../createJiraTask'
 
-jest.mock('../../../../utils/AtlassianServerManager')
+jest.mock('../../../utils/AtlassianServerManager')
 
 const getCreateMeta = jest.fn()
 const createIssue = jest.fn()

@@ -1,5 +1,4 @@
 import {githubIntegrationMeta} from 'parabol-client/shared/integrations/githubIntegrationMeta'
-import pushEstimateToGitHub from '../../graphql/mutations/helpers/pushEstimateToGitHub'
 import fetchGitHubRepos from '../../graphql/queries/helpers/fetchGitHubRepos'
 import type {GitHubSearchQueryJson, TeamMemberIntegrationAuth} from '../../postgres/types'
 import {
@@ -13,6 +12,7 @@ import {
 } from '../platform/ServerIntegrationDefinition'
 import buildGitHubSearchQuery from './buildGitHubSearchQuery'
 import GitHubServerManager from './GitHubServerManager'
+import pushEstimateToGitHub from './pushEstimateToGitHub'
 import resolveGitHubServiceField from './resolveGitHubServiceField'
 import resolveGitHubTaskIntegration from './resolveGitHubTaskIntegration'
 

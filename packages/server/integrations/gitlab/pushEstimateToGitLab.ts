@@ -1,15 +1,12 @@
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
-import interpolateVotingLabelTemplate from '../../../../client/shared/interpolateVotingLabelTemplate'
-import appOrigin from '../../../appOrigin'
-import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
-import type {
-  EstimatePushCtx,
-  EstimatePushResult
-} from '../../../integrations/platform/ServerIntegrationDefinition'
-import getPhase from '../../../utils/getPhase'
-import makeScoreGitLabComment from '../../../utils/makeScoreGitLabComment'
+import interpolateVotingLabelTemplate from '../../../client/shared/interpolateVotingLabelTemplate'
+import appOrigin from '../../appOrigin'
+import getPhase from '../../utils/getPhase'
+import makeScoreGitLabComment from '../../utils/makeScoreGitLabComment'
+import type {EstimatePushCtx, EstimatePushResult} from '../platform/ServerIntegrationDefinition'
+import GitLabServerManager from './GitLabServerManager'
 
 const pushEstimateToGitLab = async ({
   taskEstimate,

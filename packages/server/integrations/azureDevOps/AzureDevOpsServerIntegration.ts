@@ -1,5 +1,4 @@
 import {azureDevOpsIntegrationMeta} from 'parabol-client/shared/integrations/azureDevOpsIntegrationMeta'
-import pushEstimateToAzureDevOps from '../../graphql/mutations/helpers/pushEstimateToAzureDevOps'
 import type {TeamMemberIntegrationAuth} from '../../postgres/types'
 import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
 import {
@@ -10,6 +9,7 @@ import {
   type RepoListCapability,
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
+import pushEstimateToAzureDevOps from './pushEstimateToAzureDevOps'
 import resolveAzureDevOpsServiceField from './resolveAzureDevOpsServiceField'
 import resolveAzureDevOpsTaskIntegration from './resolveAzureDevOpsTaskIntegration'
 

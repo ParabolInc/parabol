@@ -1,10 +1,7 @@
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
-import type {
-  EstimatePushCtx,
-  EstimatePushResult
-} from '../../../integrations/platform/ServerIntegrationDefinition'
-import AzureDevOpsServerManager from '../../../utils/AzureDevOpsServerManager'
-import {fieldTypeToId} from '../../../utils/azureDevOps/azureDevOpsFieldTypeToId'
+import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
+import {fieldTypeToId} from '../../utils/azureDevOps/azureDevOpsFieldTypeToId'
+import type {EstimatePushCtx, EstimatePushResult} from '../platform/ServerIntegrationDefinition'
 
 const pushEstimateToAzureDevOps = async ({
   task,

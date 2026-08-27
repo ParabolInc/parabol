@@ -4,11 +4,7 @@ import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import {isNotNull} from 'parabol-client/utils/predicates'
-import appOrigin from '../../../appOrigin'
-import type {
-  EstimatePushCtx,
-  EstimatePushResult
-} from '../../../integrations/platform/ServerIntegrationDefinition'
+import appOrigin from '../../appOrigin'
 import type {
   AddCommentMutation,
   AddCommentMutationVariables,
@@ -22,16 +18,17 @@ import type {
   GetRepoLabelsQueryVariables,
   RemoveLabelsMutation,
   RemoveLabelsMutationVariables
-} from '../../../types/githubTypes'
-import getGitHubRequest from '../../../utils/getGitHubRequest'
-import getPhase from '../../../utils/getPhase'
-import addComment from '../../../utils/githubQueries/addComment.graphql'
-import addLabel from '../../../utils/githubQueries/addLabel.graphql'
-import createLabel from '../../../utils/githubQueries/createLabel.graphql'
-import getIssueId from '../../../utils/githubQueries/getIssueId.graphql'
-import getRepoLabels from '../../../utils/githubQueries/getRepoLabels.graphql'
-import removeLabels from '../../../utils/githubQueries/removeLabels.graphql'
-import makeScoreGitHubComment from '../../../utils/makeScoreGitHubComment'
+} from '../../types/githubTypes'
+import getGitHubRequest from '../../utils/getGitHubRequest'
+import getPhase from '../../utils/getPhase'
+import addComment from '../../utils/githubQueries/addComment.graphql'
+import addLabel from '../../utils/githubQueries/addLabel.graphql'
+import createLabel from '../../utils/githubQueries/createLabel.graphql'
+import getIssueId from '../../utils/githubQueries/getIssueId.graphql'
+import getRepoLabels from '../../utils/githubQueries/getRepoLabels.graphql'
+import removeLabels from '../../utils/githubQueries/removeLabels.graphql'
+import makeScoreGitHubComment from '../../utils/makeScoreGitHubComment'
+import type {EstimatePushCtx, EstimatePushResult} from '../platform/ServerIntegrationDefinition'
 
 const pushEstimateToGitHub = async ({
   taskEstimate,

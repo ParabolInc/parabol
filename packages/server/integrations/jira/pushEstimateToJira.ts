@@ -1,13 +1,10 @@
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
-import JiraProjectKeyId from '../../../../client/shared/gqlIds/JiraProjectKeyId'
-import type {
-  EstimatePushCtx,
-  EstimatePushResult
-} from '../../../integrations/platform/ServerIntegrationDefinition'
-import getKysely from '../../../postgres/getKysely'
-import upsertJiraDimensionFieldMap from '../../../postgres/queries/upsertJiraDimensionFieldMap'
-import AtlassianServerManager from '../../../utils/AtlassianServerManager'
-import makeScoreJiraComment from '../../../utils/makeScoreJiraComment'
+import JiraProjectKeyId from '../../../client/shared/gqlIds/JiraProjectKeyId'
+import getKysely from '../../postgres/getKysely'
+import upsertJiraDimensionFieldMap from '../../postgres/queries/upsertJiraDimensionFieldMap'
+import AtlassianServerManager from '../../utils/AtlassianServerManager'
+import makeScoreJiraComment from '../../utils/makeScoreJiraComment'
+import type {EstimatePushCtx, EstimatePushResult} from '../platform/ServerIntegrationDefinition'
 
 const pushEstimateToJira = async ({
   task,
