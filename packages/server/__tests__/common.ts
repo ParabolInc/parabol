@@ -191,6 +191,7 @@ export const signUpWithEmail = async (emailInput: string) => {
   })
 
   const pg = getKysely()
+  await pg.deleteFrom('FailedAuthRequest').where('email', '=', email).execute()
   const verification = await pg
     .selectFrom('EmailVerification')
     .selectAll()
