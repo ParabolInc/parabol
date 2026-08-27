@@ -1,6 +1,5 @@
 import type {JSONContent} from '@tiptap/core'
 import type {GraphQLResolveInfo} from 'graphql'
-import {removeNodeByType} from '../../../../client/shared/tiptap/removeNodeByType'
 import {getServerIntegration} from '../../../integrations/platform/registry'
 import type {GQLContext} from '../../graphql'
 import type {CreateTaskIntegrationInput} from '../../public/resolverTypes'
@@ -33,7 +32,7 @@ const createIntegrationIssue = async (
     return {error: new Error(`Cannot create ${title} task without a valid ${title} token`)}
   }
   const res = await manager.createTask({
-    rawContentJSON: removeNodeByType(rawContent, 'taskTag'),
+    rawContentJSON: rawContent,
     integrationRepoId: serviceProjectHash
   })
   if (res instanceof Error) return {error: res}

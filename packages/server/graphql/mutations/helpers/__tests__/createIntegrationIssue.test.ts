@@ -61,7 +61,7 @@ describe('createIntegrationIssue', () => {
     expect(res.error?.message).toBe('Cannot create GitHub task without a valid GitHub token')
   })
 
-  it('creates the issue with tag chips stripped and records the caller repo hash', async () => {
+  it('creates the issue and records the caller repo hash', async () => {
     const createTask = jest.fn().mockResolvedValue({
       integrationHash: 'org/repo:7',
       issueId: 'I_7',
@@ -90,7 +90,7 @@ describe('createIntegrationIssue', () => {
     })
     const {rawContentJSON, integrationRepoId} = createTask.mock.calls[0]![0]
     expect(integrationRepoId).toBe('org/repo')
-    expect(JSON.stringify(rawContentJSON)).not.toContain('taskTag')
+    expect(rawContentJSON).toBe(content)
     expect(res).toEqual({
       integrationHash: 'org/repo:7',
       integration: {

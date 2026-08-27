@@ -31,6 +31,30 @@ describe('createJiraTask', () => {
     createIssue.mockResolvedValue({id: '1', key: `${projectKey}-7`})
   })
 
+  it('sends a summary without the #tag chip', async () => {
+    getCreateMeta.mockResolvedValue(meta(undefined))
+    await createJiraTask(
+      {
+        type: 'doc',
+        content: [
+          {
+            type: 'paragraph',
+            content: [
+              {type: 'text', text: 'Fix the widget '},
+              {type: 'taskTag', attrs: {id: 'private', label: null, mentionSuggestionChar: '#'}}
+            ]
+          }
+        ]
+      },
+      cloudId,
+      projectKey,
+      auth
+    )
+    const payload = createIssue.mock.calls[0]![2]
+    expect(payload.summary).toBe('Fix the widget')
+    expect(JSON.stringify(payload.description)).not.toContain('private')
+  })
+
   it('asks Jira which fields are on the create screen', async () => {
     getCreateMeta.mockResolvedValue(meta({summary: screenField}))
     await createJiraTask(content, cloudId, projectKey, auth)
