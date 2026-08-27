@@ -33,6 +33,9 @@ import {AuthToken} from './types/AuthToken'
 import type {NavigateFn} from './types/relayMutations'
 import {getAuthCookie, onAuthCookieChange} from './utils/authCookie'
 import {createWSClient} from './utils/createWSClient'
+import flattenIncrementalResponse, {
+  type IncrementalFrame
+} from './utils/relay/flattenIncrementalResponse'
 import handlerProvider from './utils/relay/handlerProvider'
 import sleep from './utils/sleep'
 
@@ -230,13 +233,10 @@ export default class Atmosphere extends Environment {
                     const body = part.slice(sepIdx + 4).trim()
                     if (!body) continue
                     try {
-                      const parsed = JSON.parse(body)
-                      if (Array.isArray(parsed.incremental)) {
-                        for (const item of parsed.incremental) {
-                          sink.next({...item, hasNext: parsed.hasNext})
-                        }
-                      } else {
-                        sink.next(parsed)
+                      const parsed: IncrementalFrame = JSON.parse(body)
+                      const responses = flattenIncrementalResponse(parsed)
+                      if (responses.length > 0) {
+                        sink.next(responses.length === 1 ? responses[0]! : responses)
                       }
                       if (!parsed.hasNext) {
                         sink.complete()
@@ -292,7 +292,7 @@ export default class Atmosphere extends Environment {
           _error(error)
         }
       }
-      sink.next = (value: any) => {
+      const toRelayResponse = (value: any) => {
         const {data, errors} = value
         if (!data) {
           if (errors) {
@@ -301,25 +301,27 @@ export default class Atmosphere extends Environment {
           // if a mutation throws a GraphQLError, this will result in
           // `Warning: RelayResponseNormalizer: Payload did not contain a value for field`
           // but without it, it's a hard error
-          _next({...value, data: {}})
-          return
+          return {...value, data: {}}
         }
         const subscriptionName = data ? Object.keys(data)[0] : undefined
         const nullObj = this.subscriptionInterfaces[subscriptionName!]
-        const nextObj =
-          nullObj && subscriptionName
-            ? {
-                ...value,
-                data: {
-                  ...data,
-                  [subscriptionName]: {
-                    ...nullObj,
-                    ...data[subscriptionName]
-                  }
+        return nullObj && subscriptionName
+          ? {
+              ...value,
+              data: {
+                ...data,
+                [subscriptionName]: {
+                  ...nullObj,
+                  ...data[subscriptionName]
                 }
               }
-            : value
-        _next(nextObj)
+            }
+          : value
+      }
+      sink.next = (value: any) => {
+        const responses = flattenIncrementalResponse(value).map(toRelayResponse)
+        if (responses.length === 0) return
+        _next(responses.length === 1 ? responses[0] : responses)
       }
       ;(async () => {
         // waiting a tick prevents `client.subscribe` from creating 2 websocket instances
