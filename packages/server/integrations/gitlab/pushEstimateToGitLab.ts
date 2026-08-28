@@ -161,7 +161,7 @@ const pushEstimateToGitLab = async ({
       removeLabelIds
     })
     if (updateError) return updateError
-    return {targetKind: 'label', labelId}
+    return {targetKind: 'label', service: 'gitlab', labelId}
   }
 
   return null

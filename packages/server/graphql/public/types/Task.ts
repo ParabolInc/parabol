@@ -101,6 +101,7 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
           const similarEstimate = await selectTaskEstimate()
             .where('taskId', 'in', taskIds)
             .where('name', '=', dimensionName)
+            .where(sql`"pushResult"->>'service'`, '=', 'github')
             .where(sql`"pushResult"->>'labelName'`, 'in', ghIssueLabels)
             .limit(1)
             .executeTakeFirst()
@@ -119,7 +120,7 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
               taskId,
               userId: accessUserId,
               pushResult: similarEstimate.pushResult,
-              ...legacyPushProvenance('github', similarEstimate.pushResult)
+              ...legacyPushProvenance(similarEstimate.pushResult)
             })
             .execute()
         })

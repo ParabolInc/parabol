@@ -232,7 +232,7 @@ const pushEstimateToGitHub = async ({
     }
   )
   if (addLabelError) return addLabelError
-  return {targetKind: 'label', labelName: githubLabelName}
+  return {targetKind: 'label', service: 'github', labelName: githubLabelName}
 }
 
 export default pushEstimateToGitHub

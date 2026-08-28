@@ -2,17 +2,23 @@ import {previousPushLabelId, previousPushLabelName} from '../previousPushLabel'
 
 describe('previousPushLabel', () => {
   it('reads the GitHub label name', () => {
-    expect(previousPushLabelName({targetKind: 'label', labelName: 'Effort: 3'})).toBe('Effort: 3')
-    expect(previousPushLabelId({targetKind: 'label', labelName: 'Effort: 3'})).toBeNull()
+    const pushResult = {targetKind: 'label', service: 'github', labelName: 'Effort: 3'} as const
+    expect(previousPushLabelName(pushResult)).toBe('Effort: 3')
+    expect(previousPushLabelId(pushResult)).toBeNull()
   })
   it('reads the GitLab label id', () => {
-    expect(previousPushLabelId({targetKind: 'label', labelId: 'gid://gitlab/Label/1'})).toBe(
-      'gid://gitlab/Label/1'
-    )
-    expect(previousPushLabelName({targetKind: 'label', labelId: 'gid://gitlab/Label/1'})).toBeNull()
+    const pushResult = {
+      targetKind: 'label',
+      service: 'gitlab',
+      labelId: 'gid://gitlab/Label/1'
+    } as const
+    expect(previousPushLabelId(pushResult)).toBe('gid://gitlab/Label/1')
+    expect(previousPushLabelName(pushResult)).toBeNull()
   })
   it('ignores field pushes and null', () => {
-    expect(previousPushLabelName({targetKind: 'field', fieldId: 'customfield_1'})).toBeNull()
+    expect(
+      previousPushLabelName({targetKind: 'field', service: 'jira', fieldId: 'customfield_1'})
+    ).toBeNull()
     expect(previousPushLabelId(null)).toBeNull()
   })
 })

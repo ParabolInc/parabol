@@ -450,7 +450,7 @@ export const azureDevOpsWorkItem = (parent: RootDataLoader) => {
           await Promise.all(
             estimates.map((estimate) => {
               const {label, discussionId, name, taskId, userId, pushResult} = estimate
-              if (pushResult?.targetKind !== 'field') {
+              if (pushResult?.service !== 'azureDevOps') {
                 return undefined
               }
               let freshEstimate = ''

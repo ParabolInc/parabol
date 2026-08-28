@@ -14,12 +14,19 @@ const resolveJiraFieldId = (pushResult: TaskEstimateDB['pushResult']) => {
 
 describe('TaskEstimate.jiraFieldId', () => {
   it('returns the field id a Jira push wrote', () => {
-    expect(resolveJiraFieldId({targetKind: 'field', fieldId: 'customfield_1'})).toBe(
-      'customfield_1'
-    )
+    expect(
+      resolveJiraFieldId({targetKind: 'field', service: 'jira', fieldId: 'customfield_1'})
+    ).toBe('customfield_1')
+  })
+  it('returns null for a field another service wrote', () => {
+    expect(
+      resolveJiraFieldId({targetKind: 'field', service: 'azureDevOps', fieldId: 'StoryPoints'})
+    ).toBeNull()
   })
   it('returns null for a label push', () => {
-    expect(resolveJiraFieldId({targetKind: 'label', labelName: 'Effort: 3'})).toBeNull()
+    expect(
+      resolveJiraFieldId({targetKind: 'label', service: 'github', labelName: 'Effort: 3'})
+    ).toBeNull()
   })
   it('returns null when the push left no provenance', () => {
     expect(resolveJiraFieldId(null)).toBeNull()

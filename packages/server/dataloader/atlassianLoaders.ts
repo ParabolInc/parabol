@@ -216,7 +216,7 @@ export const jiraIssue = (
               estimates.map((estimate) => {
                 const {label, discussionId, name, taskId, userId, pushResult} = estimate
                 const jiraFieldId =
-                  pushResult?.targetKind === 'field'
+                  pushResult?.service === 'jira'
                     ? (pushResult.fieldId as keyof typeof fields)
                     : null
                 if (!jiraFieldId) {
@@ -233,7 +233,7 @@ export const jiraIssue = (
                     // keep the link to the discussion alive, if possible
                     discussionId,
                     pushResult,
-                    ...legacyPushProvenance('jira', pushResult),
+                    ...legacyPushProvenance(pushResult),
                     label: freshEstimate,
                     name,
                     meetingId: null,

@@ -158,7 +158,7 @@ const setTaskEstimate: MutationResolvers['setTaskEstimate'] = async (
         changeSource: meeting ? 'meeting' : 'task',
         discussionId,
         pushResult,
-        ...(service ? legacyPushProvenance(service, pushResult) : {}),
+        ...legacyPushProvenance(pushResult),
         label: value,
         name: dimensionName,
         meetingId,

@@ -43,6 +43,7 @@ const pushEstimateToLinear = async ({
 
   const manager = new LinearServerManager(auth, context, info)
 
+  let pushedFieldId: 'estimate' | 'priority' | undefined
   if (fieldMapSelection === SprintPokerDefaults.SERVICE_FIELD_NULL) {
     return null
   } else if (fieldMapSelection === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
@@ -72,9 +73,10 @@ const pushEstimateToLinear = async ({
     const variables = {id: issueId, [paramName]: valueMaybeInt}
     const [, updateError] = await manager.updateIssue(variables)
     if (updateError) return updateError
+    pushedFieldId = paramName
   }
 
-  return null
+  return pushedFieldId ? {targetKind: 'field', service: 'linear', fieldId: pushedFieldId} : null
 }
 
 export default pushEstimateToLinear

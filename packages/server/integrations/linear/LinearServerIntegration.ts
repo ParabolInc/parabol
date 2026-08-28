@@ -47,7 +47,7 @@ export class LinearServerIntegration extends ServerIntegrationDefinition {
       }
     },
     estimatePush: {
-      targets: ['comment', 'label'],
+      targets: ['comment', 'field'],
       pushEstimate: pushEstimateToLinear,
       resolveDimensionFieldKey: resolveLinearDimensionFieldKey,
       describeDimensionField: describeLinearDimensionField

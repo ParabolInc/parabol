@@ -50,6 +50,7 @@ const pushEstimateToJiraServer = async ({
   const dimensionField = loaded?.field
   const fieldId = dimensionField?.fieldId ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
 
+  let pushedFieldId: string | undefined
   if (fieldId === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
     const res = await manager.addScoreComment(
       dimensionName,
@@ -68,8 +69,9 @@ const pushEstimateToJiraServer = async ({
     if (res instanceof Error) {
       return new Error(res.message)
     }
+    pushedFieldId = fieldId
   }
-  return null
+  return pushedFieldId ? {targetKind: 'field', service: 'jiraServer', fieldId: pushedFieldId} : null
 }
 
 export default pushEstimateToJiraServer
