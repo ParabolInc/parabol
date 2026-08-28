@@ -5,6 +5,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.39.0](https://github.com/ParabolInc/parabol/compare/v13.38.2...v13.39.0) (2026-08-28)
+
+
+### Added
+
+* Facilitator rotation ([#13439](https://github.com/ParabolInc/parabol/issues/13439)) ([74e08d6](https://github.com/ParabolInc/parabol/commit/74e08d6c419c447dc3620b7774c7bf317d59e570))
+
+
+### Fixed
+
+* handle incremental payloads for websockets ([#13436](https://github.com/ParabolInc/parabol/issues/13436)) ([f4b516c](https://github.com/ParabolInc/parabol/commit/f4b516c3b4339eda3258011740646839274610e6))
+* truncate long Page titles with ellipsis ([#13432](https://github.com/ParabolInc/parabol/issues/13432)) ([d6fcf18](https://github.com/ParabolInc/parabol/commit/d6fcf18e5efd1223cbb348e631bdd159b3e5ce2c))
+
+
+### Changed
+
+* move Jira + GitHub auth onto IntegrationProvider/TeamMemberInt… ([#13399](https://github.com/ParabolInc/parabol/issues/13399)) ([aaa903c](https://github.com/ParabolInc/parabol/commit/aaa903c776132a8810bf4350bd0c9c77d93970ec))
+
 ## [13.38.2](https://github.com/ParabolInc/parabol/compare/v13.38.1...v13.38.2) (2026-08-25)
 
 
