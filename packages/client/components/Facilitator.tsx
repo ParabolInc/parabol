@@ -52,7 +52,9 @@ const Facilitator = (props: Props) => {
   const {togglePortal, menuProps, menuPortal, originRef, portalStatus} = useMenu<HTMLDivElement>(
     MenuPosition.UPPER_RIGHT,
     {
-      isDropdown: true
+      isDropdown: true,
+      // the rotation list is the only scroll container dnd may see, so neither menu wrapper scrolls
+      menuContentStyles: {overflowY: 'visible'}
     }
   )
   const atmosphere = useAtmosphere()
@@ -99,11 +101,11 @@ const Facilitator = (props: Props) => {
         {!isReadOnly && (
           <span
             className={cn(
-              'ml-auto flex h-8 w-8 shrink-0 items-center justify-center rounded-md group-hover/facilitator:bg-surface-phase-active group-hover/facilitator:text-fg-primary',
+              'ml-auto flex size-7 shrink-0 items-center justify-center rounded-md group-hover/facilitator:bg-surface-phase-active group-hover/facilitator:text-fg-primary',
               isActive ? 'bg-surface-phase-active text-fg-primary' : 'text-fg-secondary'
             )}
           >
-            <MoreVert />
+            <MoreVert className='text-lg' />
           </span>
         )}
       </div>

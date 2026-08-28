@@ -371,7 +371,8 @@ const permissionMap: PermissionMap<Resolvers> = {
     updateCommentContent: isMeetingMember<'Mutation.updateCommentContent'>('args.meetingId'),
     updateCreditCard: isViewerBillingLeader<'Mutation.updateCreditCard'>('args.orgId'),
     updateDragLocation: isTeamMember<'Mutation.updateDragLocation'>('args.input.teamId'),
-    updateFacilitatorRotation: isTeamMember<'Mutation.updateFacilitatorRotation'>('args.teamId'),
+    updateFacilitatorRotation:
+      isTeamMemberOfMeeting<'Mutation.updateFacilitatorRotation'>('args.meetingId'),
     updateGitHubDimensionField: isTeamMember<'Mutation.updateGitHubDimensionField'>(
       'args.meetingId',
       'newMeetings'

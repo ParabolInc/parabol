@@ -7,8 +7,10 @@ import {
 } from '@hello-pangea/dnd'
 import graphql from 'babel-plugin-relay/macro'
 import {forwardRef, useCallback, useMemo, useRef, useState} from 'react'
+import {flushSync} from 'react-dom'
 import {useFragment} from 'react-relay'
 import type {FacilitatorRotationPanel_meeting$key} from '~/__generated__/FacilitatorRotationPanel_meeting.graphql'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import {Autorenew, CheckCircle, Close, DragIndicator, PlayArrow} from '~/ui/icons'
 import useUpdateFacilitatorRotationMutation from '../mutations/useUpdateFacilitatorRotationMutation'
 import {Avatar} from '../ui/Avatar/Avatar'
@@ -37,6 +39,10 @@ const FacilitatorRotationPanel = forwardRef<HTMLDivElement, Props>((props, ref) 
         endedAt
         meetingType
         facilitatorUserId
+        meetingMembers {
+          userId
+          isConnectedAt
+        }
         team {
           id
           autoAssignFacilitator
@@ -54,8 +60,9 @@ const FacilitatorRotationPanel = forwardRef<HTMLDivElement, Props>((props, ref) 
     `,
     meetingRef
   )
-  const {id: meetingId, endedAt, meetingType, facilitatorUserId, team} = meeting
-  const {id: teamId, autoAssignFacilitator, facilitatorRotation} = team
+  const {id: meetingId, endedAt, meetingType, facilitatorUserId, meetingMembers, team} = meeting
+  const {autoAssignFacilitator, facilitatorRotation} = team
+  const {viewerId} = useAtmosphere()
   const [updateFacilitatorRotation] = useUpdateFacilitatorRotationMutation()
   const [isDragging, setIsDragging] = useState(false)
   const sensorApiRef = useRef<SensorAPI | null>(null)
@@ -69,9 +76,18 @@ const FacilitatorRotationPanel = forwardRef<HTMLDivElement, Props>((props, ref) 
   // the order only means anything once the server acts on it
   const canReorder = !isReadOnly && autoAssignFacilitator
   const nextUpUserId = facilitatorRotation.find((tm) => tm.userId !== facilitatorUserId)?.userId
+  // handing the role to someone who is not in the room stalls the meeting. isConnectedAt is
+  // client-only presence fed by awareness, which can lag or miss the viewer's own entry, so
+  // trust the local fact that whoever is reading this panel is here
+  const connectedUserIds = new Set(
+    meetingMembers.filter((mm) => mm.isConnectedAt).map((mm) => mm.userId)
+  ).add(viewerId)
+  const randomCandidates = facilitatorRotation.filter(
+    (tm) => tm.userId !== facilitatorUserId && connectedUserIds.has(tm.userId)
+  )
 
   const reorder = (userIds: string[]) => {
-    updateFacilitatorRotation({variables: {teamId, meetingId, userIds}})
+    updateFacilitatorRotation({variables: {meetingId, userIds}})
   }
 
   /**
@@ -111,26 +127,35 @@ const FacilitatorRotationPanel = forwardRef<HTMLDivElement, Props>((props, ref) 
   }
 
   const promoteRandom = () => {
-    const candidates = facilitatorRotation.filter((tm) => tm.userId !== facilitatorUserId)
-    const pick = candidates[Math.floor(Math.random() * candidates.length)]
+    const pick = randomCandidates[Math.floor(Math.random() * randomCandidates.length)]
     if (!pick) return
     promote(pick.userId)
   }
 
   const onDragEnd = (result: DropResult) => {
-    setIsDragging(false)
     const {source, destination} = result
-    if (!destination || destination.droppableId !== FACILITATOR_ROTATION) return
-    if (destination.index === source.index) return
+    if (
+      !destination ||
+      destination.droppableId !== FACILITATOR_ROTATION ||
+      destination.index === source.index
+    ) {
+      setIsDragging(false)
+      return
+    }
     const userIds = facilitatorRotation.map((tm) => tm.userId)
     const [movedUserId] = userIds.splice(source.index, 1)
     userIds.splice(destination.index, 0, movedUserId!)
-    reorder(userIds)
+    // dnd releases the row into whatever slot is rendered when onDragEnd returns, so the new
+    // order has to be on screen by then or the row snaps back to where it started for a frame
+    flushSync(() => {
+      setIsDragging(false)
+      reorder(userIds)
+    })
   }
 
   const toggleAutoAssign = () => {
     updateFacilitatorRotation({
-      variables: {teamId, meetingId, autoAssignFacilitator: !autoAssignFacilitator}
+      variables: {meetingId, autoAssignFacilitator: !autoAssignFacilitator}
     })
   }
 
@@ -164,6 +189,7 @@ const FacilitatorRotationPanel = forwardRef<HTMLDivElement, Props>((props, ref) 
                 const {id: teamMemberId, userId, user} = teamMember
                 const {preferredName, picture} = user
                 const isFacilitator = userId === facilitatorUserId
+                const isConnected = connectedUserIds.has(userId)
                 const isNextUp =
                   advancesRotation && autoAssignFacilitator && userId === nextUpUserId
                 const meta = isFacilitator ? 'Facilitating now' : isNextUp ? 'Next up' : null
@@ -196,12 +222,13 @@ const FacilitatorRotationPanel = forwardRef<HTMLDivElement, Props>((props, ref) 
                         <Avatar
                           className={cn(
                             'mr-1.5 size-6 shrink-0',
-                            isFacilitator && 'ring-2 ring-jade-400'
+                            isFacilitator && 'ring-2 ring-jade-400',
+                            !isConnected && 'opacity-40'
                           )}
                         >
                           <AvatarImage src={picture} alt='' />
                         </Avatar>
-                        <div className='min-w-0 flex-1'>
+                        <div className={cn('min-w-0 flex-1', !isConnected && 'opacity-40')}>
                           <div className='truncate font-semibold text-[13px] text-fg-primary leading-4'>
                             {preferredName}
                           </div>
@@ -224,11 +251,12 @@ const FacilitatorRotationPanel = forwardRef<HTMLDivElement, Props>((props, ref) 
                             <TooltipTrigger asChild>
                               <button
                                 className={cn(
-                                  'ml-1.5 flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-md [&_svg]:size-4',
+                                  'ml-1.5 flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-md disabled:cursor-default disabled:opacity-40 [&_svg]:size-4',
                                   isFacilitator
                                     ? 'text-fg-secondary hover:bg-surface-hover hover:text-fg-primary'
                                     : 'bg-lilac-100 text-grape-600 hover:bg-grape-600 hover:text-white'
                                 )}
+                                disabled={isFacilitator && randomCandidates.length === 0}
                                 onClick={isFacilitator ? promoteRandom : () => promote(userId)}
                               >
                                 {isFacilitator ? <Autorenew /> : <PlayArrow />}

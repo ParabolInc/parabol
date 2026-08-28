@@ -7,11 +7,13 @@ import setFacilitatorRotation from './helpers/setFacilitatorRotation'
 
 const updateFacilitatorRotation: MutationResolvers['updateFacilitatorRotation'] = async (
   _source,
-  {teamId, meetingId, userIds, autoAssignFacilitator},
+  {meetingId, userIds, autoAssignFacilitator},
   {dataLoader, socketId: mutatorId}
 ) => {
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
+  const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
+  const {teamId, endedAt, facilitatorUserId} = meeting
 
   // VALIDATION
   const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
@@ -23,9 +25,6 @@ const updateFacilitatorRotation: MutationResolvers['updateFacilitatorRotation'] 
     const requested = [...new Set(userIds)].filter((userId) => activeUserIds.includes(userId))
     nextRotation = [...requested, ...activeUserIds.filter((userId) => !requested.includes(userId))]
   }
-  const meeting = meetingId ? await dataLoader.get('newMeetings').load(meetingId) : null
-  // never trust a client-supplied meetingId to belong to the team it named
-  const isPromotable = !!meeting && meeting.teamId === teamId && !meeting.endedAt
 
   // RESOLUTION
   if (autoAssignFacilitator !== null && autoAssignFacilitator !== undefined) {
@@ -41,13 +40,12 @@ const updateFacilitatorRotation: MutationResolvers['updateFacilitatorRotation'] 
   }
 
   const newFacilitatorUserId = nextRotation?.[0]
-  const isHandoff =
-    isPromotable && !!newFacilitatorUserId && newFacilitatorUserId !== meeting!.facilitatorUserId
+  const isHandoff = !endedAt && !!newFacilitatorUserId && newFacilitatorUserId !== facilitatorUserId
   if (isHandoff) {
     await getKysely()
       .updateTable('NewMeeting')
       .set({facilitatorUserId: newFacilitatorUserId})
-      .where('id', '=', meetingId!)
+      .where('id', '=', meetingId)
       .execute()
     dataLoader.clearAll('newMeetings')
   }
@@ -57,7 +55,7 @@ const updateFacilitatorRotation: MutationResolvers['updateFacilitatorRotation'] 
   if (isHandoff) {
     publish(
       SubscriptionChannel.MEETING,
-      meetingId!,
+      meetingId,
       'UpdateFacilitatorRotationSuccess',
       data,
       subOptions

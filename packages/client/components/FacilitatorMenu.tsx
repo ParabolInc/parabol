@@ -23,7 +23,7 @@ const FacilitatorMenu = (props: Props) => {
   return (
     <Menu
       ariaLabel={'Edit the facilitator rotation'}
-      className={'max-h-none overflow-y-visible'}
+      className={'max-h-[none] overflow-y-visible'}
       {...menuProps}
     >
       <FacilitatorRotationPanel meeting={meeting} onDone={menuProps.closePortal} />

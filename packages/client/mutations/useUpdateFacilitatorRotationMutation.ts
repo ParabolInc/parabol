@@ -44,13 +44,11 @@ graphql`
 
 const mutation = graphql`
   mutation useUpdateFacilitatorRotationMutation(
-    $teamId: ID!
-    $meetingId: ID
+    $meetingId: ID!
     $userIds: [ID!]
     $autoAssignFacilitator: Boolean
   ) {
     updateFacilitatorRotation(
-      teamId: $teamId
       meetingId: $meetingId
       userIds: $userIds
       autoAssignFacilitator: $autoAssignFacilitator
@@ -85,11 +83,12 @@ const useUpdateFacilitatorRotationMutation = () => {
   const [commit, submitting] = useMutation<TUpdateFacilitatorRotationMutation>(mutation)
   const atmosphere = useAtmosphere()
   const execute = (config: UseMutationConfig<TUpdateFacilitatorRotationMutation>) => {
-    const {teamId, meetingId, userIds, autoAssignFacilitator} = config.variables
+    const {meetingId, userIds, autoAssignFacilitator} = config.variables
     return commit({
       // drag feedback must be instant; the server response reconciles any drift
       optimisticUpdater: (store) => {
-        const team = store.get(teamId)
+        const meeting = store.get(meetingId)
+        const team = meeting?.getLinkedRecord('team')
         if (!team) return
         if (autoAssignFacilitator !== null && autoAssignFacilitator !== undefined) {
           team.setValue(autoAssignFacilitator, 'autoAssignFacilitator')
@@ -101,8 +100,7 @@ const useUpdateFacilitatorRotationMutation = () => {
           .filter((teamMember): teamMember is RecordProxy => !!teamMember)
         team.setLinkedRecords(nextRotation, 'facilitatorRotation')
         // whoever heads the queue facilitates, so a new head is a handoff
-        const meeting = meetingId ? store.get(meetingId) : null
-        if (meeting && userIds[0]) meeting.setValue(userIds[0], 'facilitatorUserId')
+        if (userIds[0]) meeting!.setValue(userIds[0], 'facilitatorUserId')
       },
       ...config,
       onCompleted: (res, errors) => {
