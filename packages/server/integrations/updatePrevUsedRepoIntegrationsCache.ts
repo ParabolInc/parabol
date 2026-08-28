@@ -1,36 +1,36 @@
 import ms from 'ms'
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
-import getAllCachedRepoIntegrations from '../graphql/queries/helpers/getAllCachedRepoIntegrations'
 import getPrevUsedRepoIntegrations from '../graphql/queries/helpers/getPrevUsedRepoIntegrations'
+import type {Integrationproviderserviceenum} from '../postgres/types/pg'
 import getPrevUsedRepoIntegrationsRedisKey from '../utils/getPrevUsedRepoIntegrationsRedisKey'
 import getRedis from '../utils/getRedis'
+import getRepoIntegrationsRedisKey from '../utils/getRepoIntegrationsRedisKey'
+import type {RemoteRepoIntegration} from './platform/RemoteRepoIntegration'
 
 const updatePrevUsedRepoIntegrationsCache = async (
   teamId: string,
   repoIntegrationId: string,
-  viewerId: string
+  viewerId: string,
+  service: Integrationproviderserviceenum
 ) => {
   const redis = getRedis()
   const prevUsedRepoIntegrationsKey = getPrevUsedRepoIntegrationsRedisKey(teamId)
-  const [prevUsedRepoIntegrations, allCachedRepoIntegrations] = await Promise.all([
+  const [prevUsedRepoIntegrations, cachedRes] = await Promise.all([
     getPrevUsedRepoIntegrations(teamId),
-    getAllCachedRepoIntegrations(teamId, viewerId)
+    redis.get(getRepoIntegrationsRedisKey(service, teamId, viewerId))
   ])
-  const remoteRepoIntegration = allCachedRepoIntegrations?.find((remoteRepoIntegration) => {
-    const remoteRepoIntegrationId = IntegrationRepoId.join(remoteRepoIntegration)
-    return remoteRepoIntegrationId === repoIntegrationId
-  })
+  const cachedRepoIntegrations = cachedRes ? (JSON.parse(cachedRes) as RemoteRepoIntegration[]) : []
+  const remoteRepoIntegration = cachedRepoIntegrations.find(
+    (repo) => IntegrationRepoId.join(repo) === repoIntegrationId
+  )
   if (!remoteRepoIntegration) return
-  const now = Date.now()
-  const oldPrevUsedRepoIntegration = prevUsedRepoIntegrations?.find((prevUsedRepoIntegration) => {
-    const prevUsedRepoIntegrationId = IntegrationRepoId.join(prevUsedRepoIntegration)
-    return prevUsedRepoIntegrationId === repoIntegrationId
-  })
+  const oldPrevUsedRepoIntegration = prevUsedRepoIntegrations?.find(
+    (repo) => repo.service === service && IntegrationRepoId.join(repo) === repoIntegrationId
+  )
   if (oldPrevUsedRepoIntegration) {
-    // if it already exists in the cache, remove it so we can add the new timestamp
     await redis.zrem(prevUsedRepoIntegrationsKey, JSON.stringify(oldPrevUsedRepoIntegration))
   }
-  await redis.zadd(prevUsedRepoIntegrationsKey, now, JSON.stringify(remoteRepoIntegration))
+  await redis.zadd(prevUsedRepoIntegrationsKey, Date.now(), JSON.stringify(remoteRepoIntegration))
   await redis.pexpire(prevUsedRepoIntegrationsKey, ms('180d'))
 }
 

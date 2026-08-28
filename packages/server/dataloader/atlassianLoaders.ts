@@ -1,9 +1,9 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
 import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
-import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import type {JiraIssueMissingEstimationFieldHintEnum} from '../graphql/private/resolverTypes'
+import {fetchJiraProjectsResult} from '../integrations/jira/fetchJiraProjects'
 import refreshAtlassianAuth from '../integrations/jira/refreshAtlassianAuth'
 import getKysely from '../postgres/getKysely'
 import {selectAtlassianAuth, selectJiraDimensionFieldMap} from '../postgres/select'
@@ -98,22 +98,13 @@ export const allJiraProjects = (
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
-          const auth = await parent.get('freshAtlassianAuth').load({teamId, userId})
-          if (!auth) return []
-          const cloudNameLookup = await parent
-            .get('atlassianCloudNameLookup')
-            .load({teamId, userId})
-          const cloudIds = Object.keys(cloudNameLookup)
-          const {accessToken} = auth
-          const manager = new AtlassianServerManager(accessToken)
-          const projects = await manager.getAllProjects(cloudIds)
-          return projects.map((project) => ({
-            ...project,
-            id: JiraProjectId.join(project.cloudId, project.key),
-            userId,
+          const {projects, error} = await fetchJiraProjectsResult({
+            dataLoader: parent,
             teamId,
-            service: 'jira' as const
-          }))
+            userId
+          })
+          if (error) logError(error, {userId, tags: {teamId, service: 'jira'}})
+          return projects
         })
       )
       return results.map((result) => (result.status === 'fulfilled' ? result.value : []))

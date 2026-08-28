@@ -1,8 +1,8 @@
+import invalidateRepoIntegrationsCache from '../../../integrations/invalidateRepoIntegrationsCache'
 import getKysely from '../../../postgres/getKysely'
 import type {Integrationproviderserviceenum} from '../../../postgres/types/pg'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
-import updateRepoIntegrationsCacheByPerms from '../../queries/helpers/updateRepoIntegrationsCacheByPerms'
 import type {MutationResolvers} from '../resolverTypes'
 
 const removeTeamMemberIntegrationAuth: MutationResolvers['removeTeamMemberIntegrationAuth'] =
@@ -23,7 +23,7 @@ const removeTeamMemberIntegrationAuth: MutationResolvers['removeTeamMemberIntegr
         .where('isActive', '=', true)
         .execute()
     ])
-    await updateRepoIntegrationsCacheByPerms(dataLoader, viewerId, teamId, false)
+    await invalidateRepoIntegrationsCache(teamId, viewerId, service, 'removed')
     analytics.integrationRemoved(viewer, teamId, service)
 
     const data = {userId: viewerId, teamId, service}

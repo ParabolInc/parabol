@@ -23,4 +23,9 @@ interface IntegrationService {
   The global provider for this service. Null when this instance has no credentials for it
   """
   cloudProvider: IntegrationProvider
+  """
+  The repos/projects the viewer can create issues in on this service, in the service's own order.
+  [] when not connected; null when the live fetch failed. Cached per service for 90 days unless networkOnly
+  """
+  repos(networkOnly: Boolean = false): [RepoIntegration!]
 }

@@ -42,9 +42,14 @@ export interface IssueSearchCapability<TQuery extends JsonObject = JsonObject> {
   buildQuery(queryString: string, meta: JsonObject): TQuery | Error
 }
 
+/** The dataloaders reach the repo fetchers with a bare RootDataLoader, the capabilities with the request's worker */
+export type RepoFetchCtx = Omit<IntegrationCtx, 'dataLoader'> & {
+  dataLoader: Pick<DataLoaderWorker, 'get'>
+}
+
 export interface RepoListCapability {
-  /** Every repo/project the viewer can create issues in, in the exact object shape the client and the prev-used Redis cache already store */
-  fetchRepos(ctx: GqlIntegrationCtx): Promise<RemoteRepoIntegration[]>
+  /** Every repo/project the viewer can create issues in, in the exact object shape the client and the prev-used Redis cache already store. An Error is the remote failure and must never be cached */
+  fetchRepos(ctx: GqlIntegrationCtx): Promise<RemoteRepoIntegration[] | Error>
 }
 
 export interface EstimatePushCtx extends GqlIntegrationCtx {

@@ -3,7 +3,6 @@ import type {GitHubRepo} from '../../../integrations/platform/RemoteRepoIntegrat
 import type {GetRepositoriesQuery} from '../../../types/githubTypes'
 import getGitHubRequest from '../../../utils/getGitHubRequest'
 import getRepositories from '../../../utils/githubQueries/getRepositories.graphql'
-import {Logger} from '../../../utils/Logger'
 import type {GQLContext} from './../../graphql'
 import type {DataLoaderWorker} from '../../graphql'
 
@@ -19,10 +18,7 @@ const fetchGitHubRepos = async (
   const {accessToken} = auth
   const githubRequest = getGitHubRequest(info, context, {accessToken})
   const [data, error] = await githubRequest<GetRepositoriesQuery>(getRepositories)
-  if (error) {
-    Logger.error(error.message)
-    return []
-  }
+  if (error) return error
   const {viewer} = data
   const {organizations, repositories} = viewer
   const orgs = organizations.nodes

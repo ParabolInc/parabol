@@ -9,6 +9,7 @@ import {
   type RepoListCapability,
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
+import fetchJiraServerProjects from './fetchJiraServerProjects'
 import JiraServerRestManager from './JiraServerRestManager'
 import pushEstimateToJiraServer from './pushEstimateToJiraServer'
 import resolveJiraServerServiceField from './resolveJiraServerServiceField'
@@ -39,10 +40,7 @@ export class JiraServerServerIntegration extends ServerIntegrationDefinition {
     },
     issueRead: {getIssue: resolveJiraServerTaskIntegration},
     issueSearch: {buildQuery: buildJiraSearchQuery},
-    repoList: {
-      fetchRepos: ({dataLoader, teamId, userId}) =>
-        dataLoader.get('allJiraServerProjects').load({teamId, userId})
-    },
+    repoList: {fetchRepos: fetchJiraServerProjects},
     estimatePush: {
       targets: ['comment', 'field'],
       pushEstimate: pushEstimateToJiraServer,

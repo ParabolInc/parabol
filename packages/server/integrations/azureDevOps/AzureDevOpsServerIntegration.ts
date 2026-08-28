@@ -9,6 +9,7 @@ import {
   type RepoListCapability,
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
+import fetchAzureDevOpsProjects from './fetchAzureDevOpsProjects'
 import pushEstimateToAzureDevOps from './pushEstimateToAzureDevOps'
 import resolveAzureDevOpsServiceField from './resolveAzureDevOpsServiceField'
 import resolveAzureDevOpsTaskIntegration from './resolveAzureDevOpsTaskIntegration'
@@ -42,10 +43,7 @@ export class AzureDevOpsServerIntegration extends ServerIntegrationDefinition {
       }
     },
     issueRead: {getIssue: resolveAzureDevOpsTaskIntegration},
-    repoList: {
-      fetchRepos: ({dataLoader, teamId, userId}) =>
-        dataLoader.get('allAzureDevOpsProjects').load({teamId, userId})
-    },
+    repoList: {fetchRepos: fetchAzureDevOpsProjects},
     estimatePush: {
       targets: ['comment', 'field'],
       pushEstimate: pushEstimateToAzureDevOps,

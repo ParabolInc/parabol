@@ -11,6 +11,7 @@ import {
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
 import buildJiraSearchQuery from './buildJiraSearchQuery'
+import fetchJiraProjects from './fetchJiraProjects'
 import JiraIntegrationManager from './JiraIntegrationManager'
 import pushEstimateToJira from './pushEstimateToJira'
 import resolveJiraServiceField from './resolveJiraServiceField'
@@ -55,10 +56,7 @@ export class JiraServerIntegration extends ServerIntegrationDefinition {
     },
     issueRead: {getIssue: resolveJiraTaskIntegration},
     issueSearch: {buildQuery: buildJiraSearchQuery},
-    repoList: {
-      fetchRepos: ({dataLoader, teamId, userId}) =>
-        dataLoader.get('allJiraProjects').load({teamId, userId})
-    },
+    repoList: {fetchRepos: fetchJiraProjects},
     estimatePush: {
       targets: ['comment', 'field'],
       pushEstimate: pushEstimateToJira,

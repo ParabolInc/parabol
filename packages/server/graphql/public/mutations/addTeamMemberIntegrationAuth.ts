@@ -1,6 +1,7 @@
 import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
+import invalidateRepoIntegrationsCache from '../../../integrations/invalidateRepoIntegrationsCache'
 import JiraServerOAuth1Manager, {
   type OAuth1Auth
 } from '../../../integrations/jiraServer/JiraServerOAuth1Manager'
@@ -16,7 +17,6 @@ import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import updateRepoIntegrationsCacheByPerms from '../../queries/helpers/updateRepoIntegrationsCacheByPerms'
 import type {MutationResolvers} from '../resolverTypes'
 
 interface OAuth2Auth {
@@ -173,7 +173,7 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
       .execute()
   }
 
-  await updateRepoIntegrationsCacheByPerms(dataLoader, viewerId, teamId, true)
+  await invalidateRepoIntegrationsCache(teamId, viewerId, providerService, 'added')
 
   analytics.integrationAdded(viewer, teamId, providerService)
 

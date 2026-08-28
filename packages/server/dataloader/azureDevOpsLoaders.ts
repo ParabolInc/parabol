@@ -1,5 +1,6 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
+import fetchAzureDevOpsProjects from '../integrations/azureDevOps/fetchAzureDevOpsProjects'
 import getKysely from '../postgres/getKysely'
 import syncTeamMemberIntegrationAuthTokens from '../postgres/queries/syncTeamMemberIntegrationAuthTokens'
 import type {TeamMemberIntegrationAuth} from '../postgres/types'
@@ -336,36 +337,8 @@ export const allAzureDevOpsProjects = (parent: RootDataLoader) => {
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
-          const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
-          if (!auth) {
-            return []
-          }
-          const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
-          if (!provider) {
-            return []
-          }
-          const manager = new AzureDevOpsServerManager(
-            auth,
-            provider as IntegrationProviderAzureDevOps
-          )
-          const {error, projects} = await manager.getAllUserProjects()
-          if (error !== undefined) {
-            Logger.log(error)
-            return []
-          }
-          const resultReferences = [] as TeamProjectReference[]
-          if (projects !== null) resultReferences.push(...projects)
-          return resultReferences.map((project) => {
-            const instanceId = getInstanceId(project.url)
-            return {
-              ...project,
-              instanceId,
-              userId,
-              projectId: project.id,
-              teamId,
-              service: 'azureDevOps' as const
-            }
-          })
+          const projects = await fetchAzureDevOpsProjects({dataLoader: parent, teamId, userId})
+          return projects instanceof Error ? [] : projects
         })
       )
       return results.map((result) => (result.status === 'fulfilled' ? result.value : []))

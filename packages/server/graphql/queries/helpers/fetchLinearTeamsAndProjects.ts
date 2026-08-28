@@ -1,7 +1,6 @@
 import type {GraphQLResolveInfo} from 'graphql'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import LinearServerManager from '../../../integrations/linear/LinearServerManager'
-import {Logger} from '../../../utils/Logger'
 import type {GQLContext} from '../../graphql'
 
 export const fetchLinearProjects = async (
@@ -22,12 +21,7 @@ export const fetchLinearProjects = async (
 
     const [data, error] = await manager.getProjects({})
 
-    if (error) {
-      Logger.error(
-        `Error fetching Linear projects for user ${userId} in team ${teamId}: ${error.message}`
-      )
-      return []
-    }
+    if (error) return error
 
     return (
       data.projects?.edges
@@ -36,16 +30,13 @@ export const fetchLinearProjects = async (
             edge?.node && {
               ...edge.node,
               service: 'linear' as const,
-              teamId: edge.node.teams.nodes.id
+              teamId: edge.node.teams?.nodes?.[0]?.id
             }
         )
         .filter(isNotNull) ?? []
     )
-  } catch (error: any) {
-    Logger.error(
-      `Unexpected error in fetchLinearProjects for user ${userId} in team ${teamId}: ${error.message}`
-    )
-    return []
+  } catch (error) {
+    return error instanceof Error ? error : new Error(String(error))
   }
 }
 
@@ -67,12 +58,7 @@ export const fetchLinearTeams = async (
 
     const [data, error] = await manager.getTeamsAndProjects({})
 
-    if (error) {
-      Logger.error(
-        `Error fetching Linear teams for user ${userId} in team ${teamId}: ${error.message}`
-      )
-      return []
-    }
+    if (error) return error
 
     return (
       data.teams?.edges
@@ -86,10 +72,7 @@ export const fetchLinearTeams = async (
         )
         .filter(isNotNull) ?? []
     )
-  } catch (error: any) {
-    Logger.error(
-      `Unexpected error in fetchLinearTeamsAndProjects for user ${userId} in team ${teamId}: ${error.message}`
-    )
-    return []
+  } catch (error) {
+    return error instanceof Error ? error : new Error(String(error))
   }
 }

@@ -1,9 +1,9 @@
 import {linearIntegrationMeta} from 'parabol-client/shared/integrations/linearIntegrationMeta'
+import interleave from 'parabol-client/utils/interleave'
 import {
   fetchLinearProjects,
   fetchLinearTeams
 } from '../../graphql/queries/helpers/fetchLinearTeamsAndProjects'
-import interleave from '../platform/interleave'
 import {
   type EstimatePushCapability,
   type IssueCreateCapability,
@@ -40,6 +40,8 @@ export class LinearServerIntegration extends ServerIntegrationDefinition {
           fetchLinearProjects(teamId, userId, context, info),
           fetchLinearTeams(teamId, userId, context, info)
         ])
+        if (projects instanceof Error) return projects
+        if (teams instanceof Error) return teams
         return interleave([projects, teams])
       }
     },

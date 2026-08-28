@@ -13,7 +13,12 @@ const createIntegrationIssue = async (
   info: GraphQLResolveInfo
 ) => {
   if (!integrationInput) {
-    return {integrationHash: undefined, integration: undefined, integrationRepoId: undefined}
+    return {
+      integrationHash: undefined,
+      integration: undefined,
+      integrationRepoId: undefined,
+      service: undefined
+    }
   }
   const {service, serviceProjectHash} = integrationInput
   const definition = getServerIntegration(service)
@@ -37,7 +42,12 @@ const createIntegrationIssue = async (
   })
   if (res instanceof Error) return {error: res}
   const {integrationHash, integration} = res
-  return {integrationHash, integration, integrationRepoId: serviceProjectHash}
+  return {
+    integrationHash,
+    integration,
+    integrationRepoId: serviceProjectHash,
+    service: definition.service
+  }
 }
 
 export default createIntegrationIssue

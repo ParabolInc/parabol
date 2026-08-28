@@ -480,11 +480,7 @@ class AtlassianServerManager extends AtlassianManager {
     }
 
     await Promise.all(cloudIds.map((cloudId) => getProjects(cloudId)))
-
-    if (error) {
-      Logger.log('getAllProjects ERROR:', error)
-    }
-    return projects
+    return {projects, error}
   }
 
   async getProject(cloudId: string, projectKey: string) {

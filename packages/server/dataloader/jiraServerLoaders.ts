@@ -1,4 +1,5 @@
 import DataLoader from 'dataloader'
+import fetchJiraServerProjects from '../integrations/jiraServer/fetchJiraServerProjects'
 import JiraServerRestManager, {
   type JiraServerFieldType,
   type JiraServerRestProject
@@ -107,26 +108,8 @@ export const allJiraServerProjects = (parent: RootDataLoader) => {
   return new DataLoader<TeamUserKey, JiraServerProject[], string>(async (keys) => {
     return Promise.all(
       keys.map(async ({userId, teamId}) => {
-        const auth = await parent
-          .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
-          .load({service: 'jiraServer', teamId, userId})
-        if (!auth) return []
-        const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
-
-        const manager = new JiraServerRestManager(auth, provider as IntegrationProviderJiraServer)
-        const projects = await manager.getProjects()
-        if (projects instanceof Error) {
-          return []
-        }
-        return projects
-          .filter((project) => !project.archived)
-          .map((project) => ({
-            ...project,
-            service: 'jiraServer' as const,
-            providerId: provider.id,
-            userId,
-            teamId
-          }))
+        const projects = await fetchJiraServerProjects({dataLoader: parent, teamId, userId})
+        return projects instanceof Error ? [] : projects
       })
     )
   })

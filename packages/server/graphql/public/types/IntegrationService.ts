@@ -1,3 +1,4 @@
+import loadServiceRepoIntegrations from '../../../integrations/loadServiceRepoIntegrations'
 import {
   getServerIntegration,
   type RegisteredServerIntegration
@@ -31,7 +32,13 @@ const IntegrationService: IntegrationServiceResolvers = {
   auth: ({service, teamId, userId}, _args, {dataLoader}) =>
     getServerIntegration(service).resolveAuth({dataLoader, teamId, userId}),
   cloudProvider: ({service, teamId, userId}, _args, {dataLoader}) =>
-    getServerIntegration(service).getGlobalProvider({dataLoader, teamId, userId})
+    getServerIntegration(service).getGlobalProvider({dataLoader, teamId, userId}),
+  repos: ({service, teamId, userId}, {networkOnly}, context, info) =>
+    loadServiceRepoIntegrations(
+      service,
+      {dataLoader: context.dataLoader, teamId, userId, context, info},
+      !!networkOnly
+    )
 }
 
 export default IntegrationService
