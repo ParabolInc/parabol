@@ -1,5 +1,6 @@
 import IntegrationSearchQueryId from 'parabol-client/shared/gqlIds/IntegrationSearchQueryId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {isRegisteredServerIntegration} from '../../../integrations/platform/registry'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -15,15 +16,18 @@ const removeIntegrationSearchQuery: MutationResolvers['removeIntegrationSearchQu
   const subOptions = {mutatorId, operationId}
 
   const dbId = IntegrationSearchQueryId.split(id)
-  await getKysely()
+  const removedQuery = await getKysely()
     .deleteFrom('IntegrationSearchQuery')
     .where('id', '=', dbId)
     .where('userId', '=', viewerId)
     .where('teamId', '=', teamId)
-    .execute()
+    .returning('service')
+    .executeTakeFirst()
+  if (!removedQuery || !isRegisteredServerIntegration(removedQuery.service)) {
+    return {error: {message: 'Search query not found'}}
+  }
 
-  // RESOLUTION
-  const data = {teamId, userId: viewerId}
+  const data = {teamId, userId: viewerId, service: removedQuery.service}
   publish(
     SubscriptionChannel.NOTIFICATION,
     viewerId,

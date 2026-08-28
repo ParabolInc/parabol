@@ -5,7 +5,7 @@ import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 import makeHref from './makeHref'
 
 class GmeetClientManager {
-  static SCOPES = 'https://www.googleapis.com/auth/meetings.space.readonly'
+  static SCOPES = 'https://www.googleapis.com/auth/meetings.space.readonly openid'
 
   static openOAuth(
     atmosphere: Atmosphere,
@@ -17,7 +17,7 @@ class GmeetClientManager {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
     const providerState = Math.random().toString(36).substring(5)
     const redirectUri = makeHref('/auth/gmeet')
-    const uri = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&scope=${GmeetClientManager.SCOPES}&state=${providerState}&redirect_uri=${redirectUri}&response_type=code&access_type=offline&prompt=consent`
+    const uri = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&scope=${encodeURIComponent(GmeetClientManager.SCOPES)}&state=${providerState}&redirect_uri=${redirectUri}&response_type=code&access_type=offline&prompt=consent`
 
     const popup = window.open(
       uri,

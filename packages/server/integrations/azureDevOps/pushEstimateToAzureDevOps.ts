@@ -1,12 +1,17 @@
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
 import {fieldTypeToId} from '../../utils/azureDevOps/azureDevOpsFieldTypeToId'
+import loadDimensionField from '../platform/loadDimensionField'
 import type {EstimatePushCtx, EstimatePushResult} from '../platform/ServerIntegrationDefinition'
+import resolveAzureDevOpsDimensionFieldKey from './resolveAzureDevOpsDimensionFieldKey'
 
 const pushEstimateToAzureDevOps = async ({
   task,
   taskEstimate,
   dataLoader,
+  context,
+  info,
+  viewerId,
   meetingName,
   discussionURL
 }: EstimatePushCtx): Promise<EstimatePushResult | Error> => {
@@ -31,25 +36,18 @@ const pushEstimateToAzureDevOps = async ({
     return new Error('User no longer has access to Azure DevOps')
   }
 
-  const workItemType = azureDevOpsWorkItem?.type ? azureDevOpsWorkItem?.type : ''
+  const loaded = await loadDimensionField(
+    resolveAzureDevOpsDimensionFieldKey,
+    {dataLoader, teamId, userId: accessUserId, context, info, task, viewerId},
+    dimensionName
+  )
+  const dimensionField = loaded?.field
 
-  const azureDevOpsDimensionFieldMapEntry = await dataLoader
-    .get('azureDevOpsDimensionFieldMap')
-    .load({
-      teamId,
-      dimensionName,
-      instanceId,
-      projectKey,
-      workItemType
-    })
-
-  const fieldName = azureDevOpsDimensionFieldMapEntry
-    ? azureDevOpsDimensionFieldMapEntry.fieldName
+  const fieldName = dimensionField
+    ? dimensionField.fieldName
     : SprintPokerDefaults.SERVICE_FIELD_COMMENT.toString()
 
-  const fieldType = azureDevOpsDimensionFieldMapEntry
-    ? azureDevOpsDimensionFieldMapEntry.fieldType
-    : 'string'
+  const fieldType = dimensionField ? dimensionField.fieldType : 'string'
 
   if (!azureDevOpsWorkItem) {
     return new Error('Cannot find the correct work item to push changes to.')

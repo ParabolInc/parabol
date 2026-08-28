@@ -1,0 +1,4 @@
+"""
+Return value for updateIntegrationDimensionField mutation
+"""
+union UpdateIntegrationDimensionFieldPayload = UpdateIntegrationDimensionFieldSuccess | ErrorPayload

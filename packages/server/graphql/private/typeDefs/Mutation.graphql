@@ -320,7 +320,7 @@ type Mutation {
   """
   updateOAuthRefreshTokens(
     """
-    Threshold date for `updatedAt` from AtlassianAuth
+    Threshold date for `updatedAt` from TeamMemberIntegrationAuth
     """
     updatedBefore: DateTime!
   ): Int

@@ -15,10 +15,11 @@ import {
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
 import buildJiraSearchQuery from './buildJiraSearchQuery'
+import describeJiraDimensionField from './describeJiraDimensionField'
 import fetchJiraProjects from './fetchJiraProjects'
 import JiraIntegrationManager from './JiraIntegrationManager'
 import pushEstimateToJira from './pushEstimateToJira'
-import resolveJiraServiceField from './resolveJiraServiceField'
+import resolveJiraDimensionFieldKey from './resolveJiraDimensionFieldKey'
 import resolveJiraTaskIntegration from './resolveJiraTaskIntegration'
 
 export class JiraServerIntegration extends ServerIntegrationDefinition {
@@ -56,12 +57,13 @@ export class JiraServerIntegration extends ServerIntegrationDefinition {
       }
     },
     issueRead: {getIssue: resolveJiraTaskIntegration},
-    issueSearch: {buildQuery: buildJiraSearchQuery},
+    issueSearch: {buildQuery: buildJiraSearchQuery, persistQueries: true},
     repoList: {fetchRepos: fetchJiraProjects},
     estimatePush: {
       targets: ['comment', 'field'],
       pushEstimate: pushEstimateToJira,
-      resolveServiceField: resolveJiraServiceField
+      resolveDimensionFieldKey: resolveJiraDimensionFieldKey,
+      describeDimensionField: describeJiraDimensionField
     }
   }
 }

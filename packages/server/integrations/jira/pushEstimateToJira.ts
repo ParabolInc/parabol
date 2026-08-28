@@ -1,15 +1,17 @@
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
-import JiraProjectKeyId from '../../../client/shared/gqlIds/JiraProjectKeyId'
-import getKysely from '../../postgres/getKysely'
-import upsertJiraDimensionFieldMap from '../../postgres/queries/upsertJiraDimensionFieldMap'
+import upsertIntegrationDimensionFieldMap from '../../postgres/queries/upsertIntegrationDimensionFieldMap'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import makeScoreJiraComment from '../../utils/makeScoreJiraComment'
+import loadDimensionField from '../platform/loadDimensionField'
 import type {EstimatePushCtx, EstimatePushResult} from '../platform/ServerIntegrationDefinition'
+import resolveJiraDimensionFieldKey from './resolveJiraDimensionFieldKey'
 
 const pushEstimateToJira = async ({
   task,
   taskEstimate,
   dataLoader,
+  context,
+  info,
   viewerId,
   meetingName,
   discussionURL
@@ -19,7 +21,6 @@ const pushEstimateToJira = async ({
   const {dimensionName, value} = taskEstimate
   const {accessUserId, cloudId, issueKey} = integration
   let jiraFieldId: string | undefined
-  const projectKey = JiraProjectKeyId.join(issueKey)
   const [auth, jiraIssue] = await Promise.all([
     dataLoader.get('freshAtlassianAuth').load({teamId, userId: accessUserId}),
     dataLoader.get('jiraIssue').load({
@@ -41,65 +42,46 @@ const pushEstimateToJira = async ({
   }
   const {issueType} = jiraIssue
 
-  const dimensionFields = await dataLoader
-    .get('jiraDimensionFieldMap')
-    .load({teamId, cloudId, projectKey, issueType, dimensionName})
+  const loaded = await loadDimensionField(
+    resolveJiraDimensionFieldKey,
+    {dataLoader, teamId, userId: accessUserId, context, info, task, viewerId},
+    dimensionName
+  )
+  if (!loaded) return new Error('Issue not found')
+  const {key, field: dimensionField} = loaded
+  const {repoId} = key
 
-  // Find the best match
-  const {possibleEstimationFields} = jiraIssue
-  const validFieldIds = [
-    SprintPokerDefaults.SERVICE_FIELD_COMMENT,
-    SprintPokerDefaults.SERVICE_FIELD_NULL,
-    ...possibleEstimationFields.map(({fieldId}) => fieldId)
-  ]
-  const dimensionField = dimensionFields.find(({fieldId}) => validFieldIds.includes(fieldId))
-
-  // If we're using a field stored for a different issueType, update the DB to store the new match
-  if (dimensionField && dimensionField.issueType !== issueType) {
-    // Legacy unknown field type, replace it with an actual issueType
-    if (dimensionField.issueType === '') {
-      dimensionField.issueType = issueType
-      await getKysely()
-        .updateTable('JiraDimensionFieldMap')
-        .set(dimensionField)
-        .where('id', '=', dimensionField.id)
-        .execute()
-    }
-    // Add the type in addition
-    else {
-      const {fieldId, fieldName, fieldType} = dimensionField
-      const newField = {
-        teamId,
-        cloudId,
-        projectKey,
-        issueType,
-        dimensionName,
-        fieldId,
-        fieldName,
-        fieldType
-      }
-      await upsertJiraDimensionFieldMap(newField)
-    }
-    dataLoader
-      .get('jiraDimensionFieldMap')
-      .clear({teamId, cloudId, projectKey, issueType, dimensionName})
-  }
-  // Store the default if we don't have a field yet
-  if (!dimensionField) {
-    const newField = {
+  if (dimensionField && dimensionField.workItemType !== issueType) {
+    const {fieldId, fieldName, fieldType} = dimensionField
+    await upsertIntegrationDimensionFieldMap({
       teamId,
-      cloudId,
-      projectKey,
-      issueType,
+      service: 'jira',
+      repoId,
+      workItemType: issueType,
       dimensionName,
-      fieldId: SprintPokerDefaults.SERVICE_FIELD_COMMENT,
-      fieldName: SprintPokerDefaults.SERVICE_FIELD_COMMENT,
-      fieldType: 'string'
-    }
-    await upsertJiraDimensionFieldMap(newField)
+      fieldId,
+      fieldName,
+      fieldType
+    })
     dataLoader
-      .get('jiraDimensionFieldMap')
-      .clear({teamId, cloudId, projectKey, issueType, dimensionName})
+      .get('integrationDimensionFieldMaps')
+      .clear({teamId, service: 'jira', repoId, dimensionName})
+  }
+  if (!dimensionField) {
+    const comment = SprintPokerDefaults.SERVICE_FIELD_COMMENT
+    await upsertIntegrationDimensionFieldMap({
+      teamId,
+      service: 'jira',
+      repoId,
+      workItemType: issueType,
+      dimensionName,
+      fieldId: comment,
+      fieldName: comment,
+      fieldType: 'string'
+    })
+    dataLoader
+      .get('integrationDimensionFieldMaps')
+      .clear({teamId, service: 'jira', repoId, dimensionName})
   }
 
   const fieldName = dimensionField?.fieldName ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
@@ -123,7 +105,7 @@ const pushEstimateToJira = async ({
       return new Error(e instanceof Error ? e.message : 'Unable to updateStoryPoints')
     }
   }
-  return jiraFieldId ? {column: 'jiraFieldId', value: jiraFieldId} : null
+  return jiraFieldId ? {targetKind: 'field', fieldId: jiraFieldId} : null
 }
 
 export default pushEstimateToJira

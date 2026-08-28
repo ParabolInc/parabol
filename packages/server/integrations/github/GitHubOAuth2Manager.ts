@@ -2,8 +2,8 @@ import {fetch} from '@whatwg-node/fetch'
 import {authorizeOAuth2} from '../helpers/authorizeOAuth2'
 import OAuth2Manager, {
   type OAuth2AuthorizationParams,
-  type OAuth2AuthorizeResponse,
-  type OAuth2RefreshAuthorizationParams
+  type OAuth2RefreshAuthorizationParams,
+  type OAuth2TokenResponse
 } from '../OAuth2Manager'
 
 export default class GitHubOAuth2Manager extends OAuth2Manager {
@@ -33,7 +33,7 @@ export default class GitHubOAuth2Manager extends OAuth2Manager {
     if (partialAuthParams.grant_type !== 'authorization_code') {
       return new Error('GitHub OAuth tokens do not expire')
     }
-    return authorizeOAuth2<OAuth2AuthorizeResponse>({
+    return authorizeOAuth2<OAuth2TokenResponse>({
       authUrl: 'https://github.com/login/oauth/access_token',
       body: {
         client_id: this.clientId,

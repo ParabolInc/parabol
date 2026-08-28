@@ -1,7 +1,11 @@
 import {sql} from 'kysely'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {getServerIntegration} from '../../../integrations/platform/registry'
+import {
+  getServerIntegration,
+  isRegisteredServerIntegration
+} from '../../../integrations/platform/registry'
+import type {ServerIntegrationDefinition} from '../../../integrations/platform/ServerIntegrationDefinition'
 import getKysely from '../../../postgres/getKysely'
 import type {JsonObject} from '../../../postgres/types/pg'
 import {getUserId} from '../../../utils/authorization'
@@ -52,9 +56,12 @@ const persistIntegrationSearchQuery: MutationResolvers['persistIntegrationSearch
     return {error: {message: 'Provider is not available to this team'}}
   }
 
-  const definition = getServerIntegration(service)
-  const issueSearch = definition?.capabilities.issueSearch
-  if (!definition || !issueSearch) {
+  if (!isRegisteredServerIntegration(service)) {
+    return {error: {message: `${service} does not save search queries`}}
+  }
+  const definition: ServerIntegrationDefinition = getServerIntegration(service)
+  const issueSearch = definition.capabilities.issueSearch
+  if (!issueSearch?.persistQueries) {
     return {error: {message: `${service} does not save search queries`}}
   }
   if (!(await definition.isConnected({dataLoader, teamId, userId: viewerId}))) {
@@ -74,7 +81,7 @@ const persistIntegrationSearchQuery: MutationResolvers['persistIntegrationSearch
     )
     .execute()
 
-  const data = {teamId, userId: viewerId}
+  const data = {teamId, userId: viewerId, service}
   publish(
     SubscriptionChannel.NOTIFICATION,
     viewerId,

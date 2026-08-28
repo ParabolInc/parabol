@@ -381,6 +381,10 @@ const permissionMap: PermissionMap<Resolvers> = {
       'args.meetingId',
       'newMeetings'
     ),
+    updateIntegrationDimensionField: isTeamMember<'Mutation.updateIntegrationDimensionField'>(
+      'args.meetingId',
+      'newMeetings'
+    ),
     updateJiraDimensionField: isTeamMember<'Mutation.updateJiraDimensionField'>(
       'args.meetingId',
       'newMeetings'
@@ -504,7 +508,14 @@ const permissionMap: PermissionMap<Resolvers> = {
   },
   IntegrationService: {
     auth: isUserViewer<'IntegrationService.auth'>('source.userId'),
-    repos: isUserViewer<'IntegrationService.repos'>('source.userId')
+    repos: isUserViewer<'IntegrationService.repos'>('source.userId'),
+    searchQueries: isUserViewer<'IntegrationService.searchQueries'>('source.userId')
+  },
+  PersistIntegrationSearchQuerySuccess: {
+    service: isUserViewer<'PersistIntegrationSearchQuerySuccess.service'>('source.userId')
+  },
+  RemoveIntegrationSearchQuerySuccess: {
+    service: isUserViewer<'RemoveIntegrationSearchQuerySuccess.service'>('source.userId')
   },
   AddTeamMemberIntegrationAuthSuccess: {
     integrationAuth:

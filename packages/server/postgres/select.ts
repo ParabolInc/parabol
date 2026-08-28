@@ -14,6 +14,7 @@ import type {
   TaskTag,
   UserAuthIdentity
 } from './types'
+import type {EstimatePushResult} from './types/EstimatePushResult'
 import type {TIntegrationProvider} from './types/IntegrationProvider'
 import type {AnyMeeting, AnyMeetingMember} from './types/Meeting'
 import type {AnyNotification} from './types/Notification'
@@ -438,20 +439,8 @@ export const selectDescendantPages = (
       )
   )
 
-export const selectGitHubDimensionFieldMap = () => {
-  return getKysely().selectFrom('GitHubDimensionFieldMap').selectAll()
-}
-
-export const selectGitLabDimensionFieldMap = () => {
-  return getKysely().selectFrom('GitLabDimensionFieldMap').selectAll()
-}
-
-export const selectJiraDimensionFieldMap = () => {
-  return getKysely().selectFrom('JiraDimensionFieldMap').selectAll()
-}
-
-export const selectJiraServerDimensionFieldMap = () => {
-  return getKysely().selectFrom('JiraServerDimensionFieldMap').selectAll()
+export const selectIntegrationDimensionFieldMap = () => {
+  return getKysely().selectFrom('IntegrationDimensionFieldMap').selectAll()
 }
 
 export const selectIntegrationProvider = () => {
@@ -481,7 +470,10 @@ export const selectMeetingTemplates = () => {
 }
 
 export const selectTaskEstimate = () => {
-  return getKysely().selectFrom('TaskEstimate').selectAll()
+  return getKysely()
+    .selectFrom('TaskEstimate')
+    .selectAll()
+    .$narrowType<{pushResult: EstimatePushResult}>()
 }
 
 export const selectUser = () => {

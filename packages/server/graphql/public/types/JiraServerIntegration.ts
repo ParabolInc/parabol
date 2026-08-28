@@ -181,17 +181,9 @@ const JiraServerIntegration: JiraServerIntegrationResolvers = {
     }
 
     const {providerId} = auth
-    const searchQueries = await dataLoader
+    return dataLoader
       .get('recentIntegrationSearchQueries')
-      .load({teamId, userId, providerId})
-
-    return searchQueries
-      .filter((row) => row.service === 'jiraServer')
-      .map(({id, query, lastUsedAt}) => ({
-        id: String(id),
-        ...query,
-        lastUsedAt: lastUsedAt.toJSON()
-      }))
+      .load({teamId, userId, service: 'jiraServer', providerId})
   }
 }
 

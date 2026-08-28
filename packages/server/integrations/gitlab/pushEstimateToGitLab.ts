@@ -5,6 +5,8 @@ import interpolateVotingLabelTemplate from '../../../client/shared/interpolateVo
 import appOrigin from '../../appOrigin'
 import getPhase from '../../utils/getPhase'
 import makeScoreGitLabComment from '../../utils/makeScoreGitLabComment'
+import pickDimensionField from '../platform/pickDimensionField'
+import {previousPushLabelId} from '../platform/previousPushLabel'
 import type {EstimatePushCtx, EstimatePushResult} from '../platform/ServerIntegrationDefinition'
 import GitLabServerManager from './GitLabServerManager'
 
@@ -40,10 +42,12 @@ const pushEstimateToGitLab = async ({
   if (!issue) return new Error(`Unable to get GitLab issue with id: ${gid}`)
   const {iid, projectId} = issue
   if (!projectId) return new Error(`Unable to get GitLab projectId for issue with id: ${gid}`)
-  const fieldMap = await dataLoader
-    .get('gitlabDimensionFieldMaps')
-    .load({teamId, dimensionName, projectId, providerId})
-  const labelTemplate = fieldMap?.labelTemplate ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
+  const repoId = `${providerId}:${projectId}`
+  const rows = await dataLoader
+    .get('integrationDimensionFieldMaps')
+    .load({teamId, service: 'gitlab', repoId, dimensionName})
+  const dimensionField = pickDimensionField(rows, {repoId, workItemType: ''})
+  const labelTemplate = dimensionField?.fieldName ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
 
   if (labelTemplate === SprintPokerDefaults.SERVICE_FIELD_NULL) {
     return null
@@ -145,11 +149,9 @@ const pushEstimateToGitLab = async ({
     const dimensionTaskEstimate = latestTaskEstimates.find(
       (estimate) => estimate.name === dimensionName
     )
-    if (dimensionTaskEstimate) {
-      const oldLabelId = dimensionTaskEstimate.gitlabLabelId
-      if (oldLabelId) {
-        removeLabelIds.push(oldLabelId)
-      }
+    const oldLabelId = previousPushLabelId(dimensionTaskEstimate?.pushResult ?? null)
+    if (oldLabelId) {
+      removeLabelIds.push(oldLabelId)
     }
 
     const [, updateError] = await manager.updateIssue({
@@ -159,7 +161,7 @@ const pushEstimateToGitLab = async ({
       removeLabelIds
     })
     if (updateError) return updateError
-    return {column: 'gitlabLabelId', value: labelId}
+    return {targetKind: 'label', labelId}
   }
 
   return null

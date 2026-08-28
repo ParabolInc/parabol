@@ -77,25 +77,6 @@ export interface AzureDevOpsWorkItemsKey {
   projectId: string
 }
 
-export interface AzureDevOpsDimensionFieldMapKey {
-  teamId: string
-  dimensionName: string
-  instanceId: string
-  projectKey: string
-  workItemType: string
-}
-
-export interface AzureDevOpsDimensionFieldMapEntry {
-  teamId: string
-  dimensionName: string
-  fieldName: string
-  fieldId: string
-  instanceId: string
-  fieldType: string
-  projectKey: string
-  workItemType: string
-}
-
 export interface AzureDevOpsWorkItem {
   id: string
   title: string
@@ -377,42 +358,6 @@ export const azureDevOpsProject = (parent: RootDataLoader) => {
   )
 }
 
-export const azureDevOpsDimensionFieldMap = (parent: RootDataLoader) => {
-  return new DataLoader<
-    AzureDevOpsDimensionFieldMapKey,
-    AzureDevOpsDimensionFieldMapEntry | null,
-    string
-  >(
-    async (keys) => {
-      const results = await Promise.allSettled(
-        keys.map(async ({teamId, dimensionName, instanceId, projectKey, workItemType}) => {
-          const azureDevOpsDimensionFieldMap = await getKysely()
-            .selectFrom('AzureDevOpsDimensionFieldMap')
-            .selectAll()
-            .where('teamId', '=', teamId)
-            .where('dimensionName', '=', dimensionName)
-            .where('instanceId', '=', instanceId)
-            .where('projectKey', '=', projectKey)
-            .where('workItemType', '=', workItemType)
-            .executeTakeFirst()
-          if (!azureDevOpsDimensionFieldMap) {
-            return null
-          }
-          return {
-            ...azureDevOpsDimensionFieldMap
-          } as AzureDevOpsDimensionFieldMapEntry
-        })
-      )
-      return results.map((result) => (result.status === 'fulfilled' ? result.value : null))
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) =>
-        `${key.teamId}:${key.dimensionName}:${key.instanceId}:${key.projectKey}:${key.workItemType}`
-    }
-  )
-}
-
 const getProjectId = (url: URL) => {
   const firstIndex = url.pathname.indexOf('/', 1)
   const seconedIndex = url.pathname.indexOf('/', firstIndex + 1)
@@ -504,8 +449,8 @@ export const azureDevOpsWorkItem = (parent: RootDataLoader) => {
           // update our records
           await Promise.all(
             estimates.map((estimate) => {
-              const {azureDevOpsFieldName, label, discussionId, name, taskId, userId} = estimate
-              if (!azureDevOpsFieldName) {
+              const {label, discussionId, name, taskId, userId, pushResult} = estimate
+              if (pushResult?.targetKind !== 'field') {
                 return undefined
               }
               let freshEstimate = ''
@@ -523,7 +468,7 @@ export const azureDevOpsWorkItem = (parent: RootDataLoader) => {
                 .values({
                   changeSource: 'external',
                   discussionId,
-                  azureDevOpsFieldName,
+                  pushResult,
                   label: freshEstimate,
                   name,
                   meetingId: null,

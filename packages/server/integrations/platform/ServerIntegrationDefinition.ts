@@ -2,7 +2,8 @@ import type {GraphQLResolveInfo} from 'graphql'
 import type {IntegrationMeta} from 'parabol-client/shared/integrations/IntegrationMeta'
 import type {DataLoaderWorker, GQLContext, InternalContext} from '../../graphql/graphql'
 import type {TaskEstimateInput} from '../../graphql/public/resolverTypes'
-import type {Task, TaskEstimate, TeamMemberIntegrationAuth} from '../../postgres/types'
+import type {Task, TeamMemberIntegrationAuth} from '../../postgres/types'
+import type {EstimatePushResult} from '../../postgres/types/EstimatePushResult'
 import type {TIntegrationProvider} from '../../postgres/types/IntegrationProvider'
 import type {JsonObject} from '../../postgres/types/pg'
 import type {RemoteRepoIntegration} from './RemoteRepoIntegration'
@@ -40,6 +41,8 @@ export interface IssueReadCapability {
 export interface IssueSearchCapability<TQuery extends JsonObject = JsonObject> {
   /** Validates a client-supplied search before it is stored as IntegrationSearchQuery.query */
   buildQuery(queryString: string, meta: JsonObject): TQuery | Error
+  /** true when executed searches are stored and offered back to the viewer as recent searches */
+  persistQueries?: boolean
 }
 
 /** The dataloaders reach the repo fetchers with a bare RootDataLoader, the capabilities with the request's worker */
@@ -61,18 +64,25 @@ export interface EstimatePushCtx extends GqlIntegrationCtx {
   discussionURL: string
 }
 
-export type EstimateProvenanceColumn = keyof Pick<
-  TaskEstimate,
-  'jiraFieldId' | 'githubLabelName' | 'gitlabLabelId'
->
+export type {EstimatePushResult}
 
-/** The TaskEstimate column a push wrote its target id into; null when the push left no provenance (comment-only, or no target) */
-export type EstimatePushResult = {column: EstimateProvenanceColumn; value: string} | null
-
-export interface ServiceFieldCtx extends GqlIntegrationCtx {
+export interface DimensionFieldCtx extends GqlIntegrationCtx {
   task: Task
-  dimensionName: string
   viewerId: string
+}
+
+/** Which stored mapping applies to a task: the repo/project it lives in and, for services whose fields vary by issue type, that type */
+export interface DimensionFieldKey {
+  repoId: string
+  workItemType: string
+  /** Field ids the current issue can accept. When set, stored rows for other fields are ignored and a row saved for another work item type may be reused; when absent only an exact work item type match counts */
+  usableFieldIds?: string[]
+}
+
+export interface DimensionFieldTarget {
+  fieldId: string
+  fieldName: string
+  fieldType: string
 }
 
 export interface ServiceField {
@@ -84,8 +94,14 @@ export interface EstimatePushCapability {
   targets: Array<'comment' | 'field' | 'label'>
   /** An Error is the user-visible failure message; analytics and the TaskEstimate insert read the result */
   pushEstimate(ctx: EstimatePushCtx): Promise<EstimatePushResult | Error>
-  /** The field an estimate lands in for this task's dimension; null when the issue or auth cannot be resolved */
-  resolveServiceField(ctx: ServiceFieldCtx): Promise<ServiceField | null>
+  /** The mapping key for this task; null when the issue or auth cannot be resolved */
+  resolveDimensionFieldKey(ctx: DimensionFieldCtx): Promise<DimensionFieldKey | null>
+  /** Turns the client's chosen field id into the row to store. Sentinels never reach this. Field services validate against the issue's fields; label services accept the template verbatim */
+  describeDimensionField(
+    ctx: DimensionFieldCtx,
+    key: DimensionFieldKey,
+    fieldId: string
+  ): Promise<DimensionFieldTarget | Error>
 }
 
 export interface IssueListCapability {

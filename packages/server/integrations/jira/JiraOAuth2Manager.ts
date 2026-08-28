@@ -5,8 +5,8 @@ import {makeOAuth2Redirect} from '../../utils/makeOAuth2Redirect'
 import {authorizeOAuth2} from '../helpers/authorizeOAuth2'
 import OAuth2Manager, {
   type OAuth2AuthorizationParams,
-  type OAuth2AuthorizeResponse,
-  type OAuth2RefreshAuthorizationParams
+  type OAuth2RefreshAuthorizationParams,
+  type OAuth2TokenResponse
 } from '../OAuth2Manager'
 
 const accountIdFromJwt = (accessToken: string): string | Error => {
@@ -68,7 +68,7 @@ export default class JiraOAuth2Manager extends OAuth2Manager {
     partialAuthParams: OAuth2AuthorizationParams | OAuth2RefreshAuthorizationParams
   ) {
     const body = {...partialAuthParams, client_id: this.clientId, client_secret: this.clientSecret}
-    return authorizeOAuth2<OAuth2AuthorizeResponse>({
+    return authorizeOAuth2<OAuth2TokenResponse>({
       authUrl: 'https://auth.atlassian.com/oauth/token',
       body
     })

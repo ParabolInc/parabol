@@ -1,17 +1,13 @@
 import {GraphQLError} from 'graphql'
-import type {Insertable} from 'kysely'
 import {sql} from 'kysely'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import {MAX_FREE_JIRA_EXPORTS} from 'parabol-client/utils/constants'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../../appOrigin'
+import {legacyPushProvenance} from '../../../integrations/platform/legacyPushProvenance'
 import {getServerIntegration} from '../../../integrations/platform/registry'
-import type {
-  EstimateProvenanceColumn,
-  EstimatePushResult
-} from '../../../integrations/platform/ServerIntegrationDefinition'
+import type {EstimatePushResult} from '../../../integrations/platform/ServerIntegrationDefinition'
 import getKysely from '../../../postgres/getKysely'
-import type {TaskEstimate} from '../../../postgres/types/pg'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
@@ -156,15 +152,13 @@ const setTaskEstimate: MutationResolvers['setTaskEstimate'] = async (
   })
 
   if (success) {
-    const provenance: Partial<Pick<Insertable<TaskEstimate>, EstimateProvenanceColumn>> = pushResult
-      ? {[pushResult.column]: pushResult.value}
-      : {}
     await getKysely()
       .insertInto('TaskEstimate')
       .values({
         changeSource: meeting ? 'meeting' : 'task',
         discussionId,
-        ...provenance,
+        pushResult,
+        ...(service ? legacyPushProvenance(service, pushResult) : {}),
         label: value,
         name: dimensionName,
         meetingId,

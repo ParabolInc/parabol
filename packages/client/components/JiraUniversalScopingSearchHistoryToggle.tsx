@@ -1,6 +1,5 @@
 import {commitLocalUpdate} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
-import RemoveIntegrationSearchQueryMutation from '../mutations/RemoveIntegrationSearchQueryMutation'
 import IntegrationRepoId from '../shared/gqlIds/IntegrationRepoId'
 import JiraProjectId from '../shared/gqlIds/JiraProjectId'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
@@ -8,22 +7,22 @@ import ScopingSearchHistoryToggle from './ScopingSearchHistoryToggle'
 
 interface Props {
   service: 'jira' | 'jiraServer'
-  jiraSearchQueries?: readonly {
+  savedQueries?: readonly {
     readonly id: string
     readonly queryString: string
     readonly isJQL: boolean
     readonly projectKeyFilters: readonly string[]
   }[]
   meetingId: string
-  teamId: string
+  onDeleteQuery: (id: string) => void
 }
 
 const JiraUniversalScopingSearchHistoryToggle = (props: Props) => {
-  const {jiraSearchQueries, meetingId, teamId, service} = props
+  const {savedQueries, meetingId, onDeleteQuery, service} = props
   const atmosphere = useAtmosphere()
 
   const searchQueries =
-    jiraSearchQueries?.map((jiraSearchQuery) => {
+    savedQueries?.map((jiraSearchQuery) => {
       const {id, queryString, isJQL, projectKeyFilters} = jiraSearchQuery
 
       const selectQuery = () => {
@@ -49,13 +48,7 @@ const JiraUniversalScopingSearchHistoryToggle = (props: Props) => {
         labelFirstLine: queryStringLabel,
         labelSecondLine: projectFilters && `in ${projectFilters}`,
         onClick: selectQuery,
-        onDelete: () =>
-          RemoveIntegrationSearchQueryMutation(atmosphere, {
-            id,
-            teamId,
-            includeAtlassian: service === 'jira',
-            includeJiraServer: service === 'jiraServer'
-          })
+        onDelete: () => onDeleteQuery(id)
       }
     }) ?? []
 

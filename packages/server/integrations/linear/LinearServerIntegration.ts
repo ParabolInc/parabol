@@ -11,9 +11,10 @@ import {
   type RepoListCapability,
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
+import describeLinearDimensionField from './describeLinearDimensionField'
 import LinearServerManager from './LinearServerManager'
 import pushEstimateToLinear from './pushEstimateToLinear'
-import resolveLinearServiceField from './resolveLinearServiceField'
+import resolveLinearDimensionFieldKey from './resolveLinearDimensionFieldKey'
 import resolveLinearTaskIntegration from './resolveLinearTaskIntegration'
 
 export class LinearServerIntegration extends ServerIntegrationDefinition {
@@ -48,7 +49,8 @@ export class LinearServerIntegration extends ServerIntegrationDefinition {
     estimatePush: {
       targets: ['comment', 'label'],
       pushEstimate: pushEstimateToLinear,
-      resolveServiceField: resolveLinearServiceField
+      resolveDimensionFieldKey: resolveLinearDimensionFieldKey,
+      describeDimensionField: describeLinearDimensionField
     }
   }
 }

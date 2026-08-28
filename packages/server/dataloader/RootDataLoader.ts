@@ -8,9 +8,9 @@ import * as foreignKeyLoaderMakers from './foreignKeyLoaderMakers'
 import * as freshAuthLoaders from './freshAuthLoaders'
 import * as githubLoaders from './githubLoaders'
 import * as integrationAuthLoaders from './integrationAuthLoaders'
+import * as integrationDimensionFieldMapLoaders from './integrationDimensionFieldMapLoaders'
 import * as integrationSearchQueryLoaders from './integrationSearchQueryLoaders'
 import * as jiraServerLoaders from './jiraServerLoaders'
-import * as linearLoaders from './linearLoaders'
 import * as pageLoaderMakers from './pageLoaderMakers'
 import * as pollLoaders from './pollsLoaders'
 import * as primaryKeyLoaderMakers from './primaryKeyLoaderMakers'
@@ -34,10 +34,10 @@ const loaderMakers = {
   ...githubLoaders,
   ...freshAuthLoaders,
   ...integrationAuthLoaders,
+  ...integrationDimensionFieldMapLoaders,
   ...integrationSearchQueryLoaders,
   ...pollLoaders,
   ...azureDevOpsLoaders,
-  ...linearLoaders,
   ...repoIntegrationLoaders
 } as const
 

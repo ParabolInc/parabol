@@ -43,11 +43,8 @@ const subscription = graphql`
       UpdateRecurrenceSettingsSuccess {
         ...UpdateRecurrenceSettingsMutation_team @relay(mask: false)
       }
-      UpdateDimensionFieldSuccess {
-        ...UpdateJiraDimensionFieldMutation_team @relay(mask: false)
-      }
-      UpdateGitHubDimensionFieldSuccess {
-        ...UpdateGitHubDimensionFieldMutation_team @relay(mask: false)
+      UpdateIntegrationDimensionFieldSuccess {
+        ...useUpdateIntegrationDimensionFieldMutation_team @relay(mask: false)
       }
       MovePokerTemplateScaleValueSuccess {
         ...MovePokerTemplateScaleValueMutation_team @relay(mask: false)

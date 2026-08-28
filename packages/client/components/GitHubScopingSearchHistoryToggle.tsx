@@ -2,7 +2,8 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import type {GitHubScopingSearchHistoryToggle_meeting$key} from '../__generated__/GitHubScopingSearchHistoryToggle_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import RemoveIntegrationSearchQueryMutation from '../mutations/RemoveIntegrationSearchQueryMutation'
+import findIntegrationService from '../integrations/platform/findIntegrationService'
+import useRemoveIntegrationSearchQueryMutation from '../mutations/useRemoveIntegrationSearchQueryMutation'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
 import ScopingSearchHistoryToggle from './ScopingSearchHistoryToggle'
 
@@ -13,6 +14,7 @@ interface Props {
 const GitHubScopingSearchHistoryToggle = (props: Props) => {
   const {meetingRef} = props
   const atmosphere = useAtmosphere()
+  const [removeIntegrationSearchQuery, submitting] = useRemoveIntegrationSearchQueryMutation()
   const meeting = useFragment(
     graphql`
       fragment GitHubScopingSearchHistoryToggle_meeting on PokerMeeting {
@@ -21,13 +23,9 @@ const GitHubScopingSearchHistoryToggle = (props: Props) => {
         viewerMeetingMember {
           teamMember {
             teamId
-            integrations {
-              github {
-                githubSearchQueries {
-                  id
-                  queryString
-                }
-              }
+            services {
+              ...findIntegrationService_auth @relay(mask: false)
+              ...usePersistIntegrationSearchQueryMutation_service @relay(mask: false)
             }
           }
         }
@@ -38,12 +36,12 @@ const GitHubScopingSearchHistoryToggle = (props: Props) => {
   const {id: meetingId, viewerMeetingMember} = meeting!
   if (!viewerMeetingMember) return null
   const {teamMember} = viewerMeetingMember
-  const {teamId, integrations} = teamMember
-  const githubSearchQueries = integrations.github?.githubSearchQueries
+  const {teamId, services} = teamMember
+  const savedQueries = findIntegrationService(services, 'github')?.searchQueries
 
   const searchQueries =
-    githubSearchQueries?.map((githubSearchQuery) => {
-      const {id, queryString} = githubSearchQuery
+    savedQueries?.map((savedQuery) => {
+      const {id, queryString} = savedQuery
 
       const selectQuery = () => {
         commitLocalUpdate(atmosphere, (store) => {
@@ -54,7 +52,8 @@ const GitHubScopingSearchHistoryToggle = (props: Props) => {
       }
 
       const deleteQuery = () => {
-        RemoveIntegrationSearchQueryMutation(atmosphere, {id, teamId, includeGitHub: true})
+        if (submitting) return
+        removeIntegrationSearchQuery({variables: {id, teamId}})
       }
 
       return {

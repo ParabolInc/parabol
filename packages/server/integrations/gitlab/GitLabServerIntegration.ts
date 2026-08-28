@@ -7,9 +7,10 @@ import {
   type RepoListCapability,
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
+import describeGitLabDimensionField from './describeGitLabDimensionField'
 import GitLabServerManager from './GitLabServerManager'
 import pushEstimateToGitLab from './pushEstimateToGitLab'
-import resolveGitLabServiceField from './resolveGitLabServiceField'
+import resolveGitLabDimensionFieldKey from './resolveGitLabDimensionFieldKey'
 import resolveGitLabTaskIntegration from './resolveGitLabTaskIntegration'
 
 export class GitLabServerIntegration extends ServerIntegrationDefinition {
@@ -40,7 +41,8 @@ export class GitLabServerIntegration extends ServerIntegrationDefinition {
     estimatePush: {
       targets: ['comment', 'label'],
       pushEstimate: pushEstimateToGitLab,
-      resolveServiceField: resolveGitLabServiceField
+      resolveDimensionFieldKey: resolveGitLabDimensionFieldKey,
+      describeDimensionField: describeGitLabDimensionField
     }
   }
 }

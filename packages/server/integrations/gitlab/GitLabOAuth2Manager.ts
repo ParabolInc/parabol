@@ -1,3 +1,4 @@
+import {fetch} from '@whatwg-node/fetch'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../appOrigin'
 import {authorizeOAuth2} from '../helpers/authorizeOAuth2'
@@ -10,7 +11,7 @@ export default class GitLabOAuth2Manager extends OAuth2Manager {
   static readonly REDIRECT_URI = makeAppURL(appOrigin, 'auth/gitlab')
 
   async authorize(code: string) {
-    return this.fetchToken<{
+    const auth = await this.fetchToken<{
       accessToken: string
       refreshToken: string
       scopes: string
@@ -20,6 +21,14 @@ export default class GitLabOAuth2Manager extends OAuth2Manager {
       code,
       redirect_uri: GitLabOAuth2Manager.REDIRECT_URI
     })
+    if (auth instanceof Error) return auth
+    const res = await fetch(`${this.serverBaseUrl}/api/v4/user`, {
+      headers: {Authorization: `Bearer ${auth.accessToken}`}
+    })
+    if (!res.ok) return new Error(`GitLab: could not read the authorized user (${res.status})`)
+    const {id} = (await res.json()) as {id?: number}
+    if (!id) return new Error('GitLab: user has no id')
+    return {...auth, providerUserId: String(id)}
   }
 
   async refresh(refreshToken: string) {

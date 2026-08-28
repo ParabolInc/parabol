@@ -1,51 +1,38 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getKysely from '../../../postgres/getKysely'
-import {Logger} from '../../../utils/Logger'
+import upsertIntegrationDimensionFieldMap from '../../../postgres/queries/upsertIntegrationDimensionFieldMap'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
+import validateDimensionFieldMutation from './helpers/validateDimensionFieldMutation'
 
 const updateLinearDimensionField: MutationResolvers['updateLinearDimensionField'] = async (
   _source,
   {dimensionName, labelTemplate, meetingId, repoId},
   {dataLoader, socketId: mutatorId}
 ) => {
-  const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
   // VALIDATION
-  const meeting = await dataLoader.get('newMeetings').load(meetingId)
-  if (!meeting) {
-    return {error: {message: 'Invalid meetingId'}}
+  const meeting = await validateDimensionFieldMutation(dataLoader, meetingId, dimensionName)
+  if (meeting instanceof Error) {
+    return {error: {message: meeting.message}}
   }
-  if (meeting.meetingType !== 'poker') {
-    return {error: {message: 'Not a poker meeting'}}
-  }
-  const {teamId, templateRefId} = meeting
-  const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
-  const {dimensions} = templateRef
-  const matchingDimension = dimensions.find((dimension) => dimension.name === dimensionName)
-  if (!matchingDimension) {
-    return {error: {message: 'Invalid dimension name'}}
-  }
+  const {teamId} = meeting
 
   // RESOLUTION
-  try {
-    await pg
-      .insertInto('LinearDimensionFieldMap')
-      .values({
-        teamId,
-        dimensionName,
-        repoId,
-        labelTemplate
-      })
-      .onConflict((oc) =>
-        oc.columns(['teamId', 'dimensionName', 'repoId']).doUpdateSet({labelTemplate})
-      )
-      .execute()
-  } catch (e) {
-    Logger.log(e)
-  }
+  await upsertIntegrationDimensionFieldMap({
+    teamId,
+    service: 'linear',
+    repoId,
+    workItemType: '',
+    dimensionName,
+    fieldId: labelTemplate,
+    fieldName: labelTemplate,
+    fieldType: 'string'
+  })
+  dataLoader
+    .get('integrationDimensionFieldMaps')
+    .clear({teamId, service: 'linear', repoId, dimensionName})
 
   const data = {meetingId, teamId}
   publish(SubscriptionChannel.TEAM, teamId, 'UpdateLinearDimensionFieldSuccess', data, subOptions)

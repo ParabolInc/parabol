@@ -1,10 +1,13 @@
+import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import JiraProjectKeyId from '../../../../client/shared/gqlIds/JiraProjectKeyId'
 import type {JiraIssue} from '../../../dataloader/atlassianLoaders'
-import upsertJiraDimensionFieldMap from '../../../postgres/queries/upsertJiraDimensionFieldMap'
+import pickDimensionField from '../../../integrations/platform/pickDimensionField'
+import upsertIntegrationDimensionFieldMap from '../../../postgres/queries/upsertIntegrationDimensionFieldMap'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
+import validateDimensionFieldMutation from './helpers/validateDimensionFieldMutation'
 
 const getJiraField = async (jiraIssue: JiraIssue, fieldId: string) => {
   // we have 2 special treatment fields, SERVICE_FIELD_COMMENT and SERVICE_FIELD_NULL which are handled
@@ -30,23 +33,12 @@ const updateJiraDimensionField: MutationResolvers['updateJiraDimensionField'] = 
   const subOptions = {mutatorId, operationId}
 
   // VALIDATION
-  const [task, meeting] = await Promise.all([
-    dataLoader.get('tasks').load(taskId),
-    dataLoader.get('newMeetings').load(meetingId)
-  ])
-  if (!meeting) {
-    return {error: {message: 'Invalid meetingId'}}
+  const meeting = await validateDimensionFieldMutation(dataLoader, meetingId, dimensionName)
+  if (meeting instanceof Error) {
+    return {error: {message: meeting.message}}
   }
-  if (meeting.meetingType !== 'poker') {
-    return {error: {message: 'Not a poker meeting'}}
-  }
-  const {teamId, templateRefId} = meeting
-  const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
-  const {dimensions} = templateRef
-  const matchingDimension = dimensions.find((dimension) => dimension.name === dimensionName)
-  if (!matchingDimension) {
-    return {error: {message: 'Invalid dimension name'}}
-  }
+  const {teamId} = meeting
+  const task = await dataLoader.get('tasks').load(taskId)
   if (!task) {
     return {error: {message: 'Task not found'}}
   }
@@ -73,16 +65,17 @@ const updateJiraDimensionField: MutationResolvers['updateJiraDimensionField'] = 
     return {error: {message: 'Issue not found'}}
   }
   const {issueType} = jiraIssue
+  const repoId = JiraProjectId.join(cloudId, projectKey)
 
   const dimensionFields = await dataLoader
-    .get('jiraDimensionFieldMap')
-    .load({teamId, cloudId, projectKey, issueType, dimensionName})
+    .get('integrationDimensionFieldMaps')
+    .load({teamId, service: 'jira', repoId, dimensionName})
 
-  const existingDimensionField = dimensionFields[0]
-  if (
-    existingDimensionField?.fieldId === fieldId &&
-    existingDimensionField.issueType === issueType
-  ) {
+  const existingDimensionField = pickDimensionField(dimensionFields, {
+    repoId,
+    workItemType: issueType
+  })
+  if (existingDimensionField?.fieldId === fieldId) {
     return data
   }
 
@@ -90,22 +83,19 @@ const updateJiraDimensionField: MutationResolvers['updateJiraDimensionField'] = 
   if (!selectedField) return {error: {message: 'Invalid field name'}}
   const {fieldName, fieldType} = selectedField
 
-  const newField = {
+  await upsertIntegrationDimensionFieldMap({
     teamId,
-    cloudId,
-    projectKey,
-    issueType,
+    service: 'jira',
+    repoId,
+    workItemType: issueType,
     dimensionName,
     fieldId,
     fieldName,
     fieldType
-  }
-
-  await upsertJiraDimensionFieldMap(newField)
-  // we might replace the existing item or add a new one, let's just clear to avoid errors
+  })
   dataLoader
-    .get('jiraDimensionFieldMap')
-    .clear({teamId, cloudId, projectKey, issueType, dimensionName})
+    .get('integrationDimensionFieldMaps')
+    .clear({teamId, service: 'jira', repoId, dimensionName})
 
   publish(SubscriptionChannel.TEAM, teamId, 'UpdateDimensionFieldSuccess', data, subOptions)
   return data

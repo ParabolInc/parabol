@@ -2,15 +2,18 @@ import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../appOrigin'
 import getPhase from '../../utils/getPhase'
+import loadDimensionField from '../platform/loadDimensionField'
 import type {EstimatePushCtx, EstimatePushResult} from '../platform/ServerIntegrationDefinition'
 import LinearServerManager from './LinearServerManager'
 import makeScoreLinearComment from './makeScoreLinearComment'
+import resolveLinearDimensionFieldKey from './resolveLinearDimensionFieldKey'
 
 const pushEstimateToLinear = async ({
   taskEstimate,
   context,
   info,
-  stageId
+  stageId,
+  viewerId
 }: EstimatePushCtx): Promise<EstimatePushResult | Error> => {
   const {dimensionName, taskId, value, meetingId} = taskEstimate
   const {dataLoader} = context
@@ -24,17 +27,19 @@ const pushEstimateToLinear = async ({
     {service: 'linear'}
   >
   const {teamId} = task
-  const {accessUserId, issueId, repoId} = linearIntegration
+  const {accessUserId, issueId} = linearIntegration
 
   const auth = await dataLoader
     .get('freshAuth')
     .load({service: 'linear', teamId, userId: accessUserId})
   if (!auth?.accessToken) return new Error('User no longer has access to Linear')
 
-  const fieldMap = await dataLoader
-    .get('linearDimensionFieldMaps')
-    .load({teamId, dimensionName, repoId})
-  const fieldMapSelection = fieldMap?.labelTemplate ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
+  const loaded = await loadDimensionField(
+    resolveLinearDimensionFieldKey,
+    {dataLoader, teamId, userId: accessUserId, context, info, task, viewerId},
+    dimensionName
+  )
+  const fieldMapSelection = loaded?.field?.fieldName ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
 
   const manager = new LinearServerManager(auth, context, info)
 

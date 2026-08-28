@@ -5,9 +5,10 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import type {JiraIssueMissingEstimationFieldHintEnum} from '../graphql/private/resolverTypes'
 import {fetchJiraProjectsResult} from '../integrations/jira/fetchJiraProjects'
 import refreshAtlassianAuth from '../integrations/jira/refreshAtlassianAuth'
+import {legacyPushProvenance} from '../integrations/platform/legacyPushProvenance'
 import getKysely from '../postgres/getKysely'
-import {selectAtlassianAuth, selectJiraDimensionFieldMap} from '../postgres/select'
-import type {AtlassianAuth, JiraDimensionFieldMap} from '../postgres/types'
+import {selectAtlassianAuth} from '../postgres/select'
+import type {AtlassianAuth} from '../postgres/types'
 import AtlassianServerManager, {
   type JiraIssueRaw,
   type JiraProject
@@ -213,8 +214,11 @@ export const jiraIssue = (
             // update our records
             await Promise.all(
               estimates.map((estimate) => {
-                const {label, discussionId, name, taskId, userId} = estimate
-                const jiraFieldId = estimate.jiraFieldId as keyof typeof fields | null
+                const {label, discussionId, name, taskId, userId, pushResult} = estimate
+                const jiraFieldId =
+                  pushResult?.targetKind === 'field'
+                    ? (pushResult.fieldId as keyof typeof fields)
+                    : null
                 if (!jiraFieldId) {
                   return undefined
                 }
@@ -228,7 +232,8 @@ export const jiraIssue = (
                     changeSource: 'external',
                     // keep the link to the discussion alive, if possible
                     discussionId,
-                    jiraFieldId,
+                    pushResult,
+                    ...legacyPushProvenance('jira', pushResult),
                     label: freshEstimate,
                     name,
                     meetingId: null,
@@ -378,31 +383,3 @@ export const atlassianCloudName = (
     }
   )
 }
-
-export const jiraDimensionFieldMap = (parent: RootDataLoader) =>
-  new DataLoader<
-    {teamId: string; cloudId: string; projectKey: string; dimensionName: string; issueType: string},
-    JiraDimensionFieldMap[],
-    string
-  >(
-    async (keys) => {
-      return Promise.all(
-        keys.map(async (params) => {
-          const {cloudId, dimensionName, issueType, projectKey, teamId} = params
-          return selectJiraDimensionFieldMap()
-            .where('teamId', '=', teamId)
-            .where('cloudId', '=', cloudId)
-            .where('projectKey', '=', projectKey)
-            .where('dimensionName', '=', dimensionName)
-            .orderBy(({eb}) => eb.case().when('issueType', '=', issueType).then(0).else(1).end())
-            .orderBy('updatedAt', 'desc')
-            .execute()
-        })
-      )
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: ({teamId, cloudId, projectKey, issueType, dimensionName}) =>
-        `${teamId}:${cloudId}:${projectKey}:${issueType}:${dimensionName}`
-    }
-  )

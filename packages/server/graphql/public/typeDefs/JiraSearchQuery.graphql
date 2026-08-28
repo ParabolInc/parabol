@@ -1,7 +1,7 @@
 """
 A jira search query including all filters selected when the query was executed
 """
-type JiraSearchQuery {
+type JiraSearchQuery implements IntegrationSearchQuery {
   """
   The unique ID of the search query
   """

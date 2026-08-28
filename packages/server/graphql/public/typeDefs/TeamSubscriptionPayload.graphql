@@ -69,6 +69,7 @@ type TeamSubscriptionPayload {
   UpdateGitHubDimensionFieldSuccess: UpdateGitHubDimensionFieldSuccess
   UpdateRecurrenceSettingsSuccess: UpdateRecurrenceSettingsSuccess
   UpdateDimensionFieldSuccess: UpdateDimensionFieldSuccess
+  UpdateIntegrationDimensionFieldSuccess: UpdateIntegrationDimensionFieldSuccess
   UpdateTemplateCategorySuccess: UpdateTemplateCategorySuccess
   JoinTeamSuccess: JoinTeamSuccess
   SetJiraDisplayFieldIdsPayload: SetJiraDisplayFieldIdsPayload

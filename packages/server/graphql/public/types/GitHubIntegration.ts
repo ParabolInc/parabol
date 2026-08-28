@@ -1,5 +1,4 @@
 import GitHubIntegrationId from '../../../../client/shared/gqlIds/GitHubIntegrationId'
-import IntegrationSearchQueryId from '../../../../client/shared/gqlIds/IntegrationSearchQueryId'
 import {getUserId} from '../../../utils/authorization'
 import type {GitHubIntegrationResolvers} from '../resolverTypes'
 
@@ -13,18 +12,10 @@ const GitHubIntegration: GitHubIntegrationResolvers = {
 
   isActive: ({accessToken}) => !!accessToken,
 
-  githubSearchQueries: async ({teamId, userId, providerId}, _args, {dataLoader}) => {
-    const queries = await dataLoader
+  githubSearchQueries: ({teamId, userId, providerId}, _args, {dataLoader}) =>
+    dataLoader
       .get('recentIntegrationSearchQueries')
-      .load({teamId, userId, providerId})
-    return queries
-      .filter((row) => row.service === 'github')
-      .map(({id, query, lastUsedAt}) => ({
-        id: IntegrationSearchQueryId.join('GitHubSearchQuery', id),
-        ...query,
-        lastUsedAt: lastUsedAt.toJSON()
-      }))
-  }
+      .load({teamId, userId, service: 'github', providerId})
 }
 
 export default GitHubIntegration

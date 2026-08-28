@@ -18,13 +18,14 @@ export const serverIntegrations = {
 export type ServerIntegrations = typeof serverIntegrations
 export type RegisteredServerIntegration = keyof ServerIntegrations
 
-const isRegistered = (service: string): service is RegisteredServerIntegration =>
-  Object.hasOwn(serverIntegrations, service)
+export const isRegisteredServerIntegration = (
+  service: string
+): service is RegisteredServerIntegration => Object.hasOwn(serverIntegrations, service)
 
 export function getServerIntegration<N extends RegisteredServerIntegration>(
   service: N
 ): ServerIntegrations[N]
 export function getServerIntegration(service: string): ServerIntegrationDefinition | null
 export function getServerIntegration(service: string) {
-  return isRegistered(service) ? serverIntegrations[service] : null
+  return isRegisteredServerIntegration(service) ? serverIntegrations[service] : null
 }

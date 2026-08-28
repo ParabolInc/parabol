@@ -1339,7 +1339,9 @@ type Mutation {
     The meeting the update happend in. Returns a meeting object with updated serviceField
     """
     meetingId: ID!
-  ): UpdateGitHubDimensionFieldPayload! @scope(name: MEETINGS_WRITE)
+  ): UpdateGitHubDimensionFieldPayload!
+    @scope(name: MEETINGS_WRITE)
+    @deprecated(reason: "Use updateIntegrationDimensionField")
   createPoll(
     """
     The new poll including title and poll options
@@ -1427,7 +1429,9 @@ type Mutation {
     The work item type in Azure DevOps
     """
     workItemType: ID!
-  ): UpdateAzureDevOpsDimensionFieldPayload! @scope(name: MEETINGS_WRITE)
+  ): UpdateAzureDevOpsDimensionFieldPayload!
+    @scope(name: MEETINGS_WRITE)
+    @deprecated(reason: "Use updateIntegrationDimensionField")
 
   """
   Adds a new poker template with a default dimension created.
@@ -2217,7 +2221,9 @@ type Mutation {
     The id of the project the issue belongs to
     """
     projectId: Int!
-  ): UpdateGitLabDimensionFieldPayload! @scope(name: MEETINGS_WRITE)
+  ): UpdateGitLabDimensionFieldPayload!
+    @scope(name: MEETINGS_WRITE)
+    @deprecated(reason: "Use updateIntegrationDimensionField")
 
   """
   Update how a parabol dimension maps to a Linear label
@@ -2242,7 +2248,9 @@ type Mutation {
     The id of the project the issue belongs to
     """
     repoId: String!
-  ): UpdateLinearDimensionFieldPayload! @scope(name: MEETINGS_WRITE)
+  ): UpdateLinearDimensionFieldPayload!
+    @scope(name: MEETINGS_WRITE)
+    @deprecated(reason: "Use updateIntegrationDimensionField")
 
   """
   Set the jira field that the poker dimension should map to
@@ -2267,7 +2275,9 @@ type Mutation {
     The meeting the update happend in. Returns a meeting object with updated serviceField
     """
     meetingId: ID!
-  ): UpdateDimensionFieldPayload! @scope(name: MEETINGS_WRITE)
+  ): UpdateDimensionFieldPayload!
+    @scope(name: MEETINGS_WRITE)
+    @deprecated(reason: "Use updateIntegrationDimensionField")
 
   """
   Set the JiraServer field that the poker dimension should map to`,
@@ -2294,7 +2304,21 @@ type Mutation {
     The meeting the update happend in. Returns a meeting object with updated serviceField
     """
     meetingId: ID!
-  ): UpdateDimensionFieldPayload! @scope(name: MEETINGS_WRITE)
+  ): UpdateDimensionFieldPayload!
+    @scope(name: MEETINGS_WRITE)
+    @deprecated(reason: "Use updateIntegrationDimensionField")
+
+  """
+  Choose where a poker dimension's estimate lands for the integration this task belongs to.
+  The repo/project (and issue type) are derived from the task server-side; fieldId is
+  __comment, the empty string (skip), a field id/name the service exposes, or a label template
+  """
+  updateIntegrationDimensionField(
+    meetingId: ID!
+    taskId: ID!
+    dimensionName: String!
+    fieldId: String!
+  ): UpdateIntegrationDimensionFieldPayload! @scope(name: MEETINGS_WRITE)
 
   """
   Describe the mutation here
