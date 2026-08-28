@@ -120,17 +120,18 @@ export abstract class ServerIntegrationDefinition {
     return this.hasSharedProvider(ctx)
   }
 
-  /** A cheap DB-row check. Never refreshes tokens — resolveAuth does that at time of use. */
-  async isConnected(ctx: IntegrationCtx) {
-    return this.hasActiveAuthRow(ctx)
-  }
-
-  protected async hasActiveAuthRow(ctx: IntegrationCtx) {
+  /** The viewer's active auth row for this team as stored — never refreshed, so it is safe to read on any surface. Services whose grant may not cover them override this */
+  async getAuthRow(ctx: IntegrationCtx): Promise<TeamMemberIntegrationAuth | null> {
     const {dataLoader, teamId, userId} = ctx
     const auth = await dataLoader
       .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
       .load({service: this.service, teamId, userId})
-    return !!auth?.accessToken
+    return auth?.accessToken ? auth : null
+  }
+
+  /** A cheap DB-row check. Never refreshes tokens — resolveAuth does that at time of use. */
+  async isConnected(ctx: IntegrationCtx) {
+    return !!(await this.getAuthRow(ctx))
   }
 
   protected async hasSharedProvider(ctx: IntegrationCtx) {

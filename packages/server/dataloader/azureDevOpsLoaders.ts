@@ -14,6 +14,7 @@ import AzureDevOpsServerManager, {
 import {getInstanceId} from '../utils/azureDevOps/azureDevOpsFieldTypeToId'
 import {Logger} from '../utils/Logger'
 import logError from '../utils/logError'
+import handleAuthRefreshFailure from './handleAuthRefreshFailure'
 import type RootDataLoader from './RootDataLoader'
 import settleOrLogRejection from './settleOrLogRejection'
 
@@ -166,18 +167,7 @@ export const freshAzureDevOpsAuth = (parent: RootDataLoader) => {
             )
             const oauthRes = await manager.refresh(refreshToken)
             if (oauthRes instanceof Error) {
-              // Azure refresh token only lasts 24 hrs for SPAs. User must manually re-auth after that: https://github.com/AzureAD/microsoft-authentication-library-for-js/issues/4104
-              if (oauthRes.message === 'invalid_grant') {
-                await getKysely()
-                  .updateTable('TeamMemberIntegrationAuth')
-                  .set({isActive: false})
-                  .where('userId', '=', userId)
-                  .where('teamId', '=', teamId)
-                  .where('service', '=', 'azureDevOps')
-                  .where('isActive', '=', true)
-                  .execute()
-              }
-              return null
+              return handleAuthRefreshFailure(oauthRes, azureDevOpsAuthToRefresh)
             }
             const {accessToken, refreshToken: newRefreshToken} = oauthRes
             const updatedRefreshToken = newRefreshToken || refreshToken

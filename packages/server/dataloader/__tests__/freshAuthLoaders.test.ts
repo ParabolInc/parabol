@@ -99,12 +99,14 @@ describe('freshAuth', () => {
     expect(result?.refreshToken).toBe('refresh-new')
   })
 
-  it('hands a failed refresh to handleAuthRefreshFailure and returns null', async () => {
+  it('hands a failed refresh to handleAuthRefreshFailure and returns whatever it settles on', async () => {
     const error = new Error('invalid_grant')
     ;(createOAuth2Manager as jest.Mock).mockReturnValue({
       refresh: jest.fn().mockResolvedValue(error)
     })
-    await expect(freshAuth(makeParent(expiredAuth)).load(key)).resolves.toBeNull()
+    const winner = {...expiredAuth, accessToken: 'rotated-elsewhere'}
+    ;(handleAuthRefreshFailure as jest.Mock).mockResolvedValue(winner)
+    await expect(freshAuth(makeParent(expiredAuth)).load(key)).resolves.toBe(winner)
     expect(handleAuthRefreshFailure).toHaveBeenCalledWith(error, expiredAuth)
     expect(syncTeamMemberIntegrationAuthTokens).not.toHaveBeenCalled()
   })

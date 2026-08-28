@@ -114,6 +114,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             }
             services {
               service
+              isConnected
               ...TaskFooterIntegrateMenuServiceRepos_service @defer
             }
           }
@@ -124,14 +125,15 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
   )
   const services = viewer?.teamMember?.services ?? []
   const prevUsedItems = viewer?.teamMember?.prevUsedRepoIntegrations.items ?? []
-  const items = useMemo(
-    () =>
-      mergeItems(
-        prevUsedItems,
-        services.map(({service}) => reposByService[service] ?? [])
-      ),
-    [prevUsedItems, services, reposByService]
-  )
+  const items = useMemo(() => {
+    const connectedServices = new Set(
+      services.filter(({isConnected}) => isConnected).map(({service}) => service)
+    )
+    return mergeItems(
+      prevUsedItems.filter(({service}) => connectedServices.has(service)),
+      services.map(({service}) => reposByService[service] ?? [])
+    )
+  }, [prevUsedItems, services, reposByService])
   const isEveryServiceResolved = services.every(({service}) => service in reposByService)
   const onRepos = useCallback((service: RepoIntegrationService, repos: readonly Item[] | null) => {
     setReposByService((prev) => ({...prev, [service]: repos}))

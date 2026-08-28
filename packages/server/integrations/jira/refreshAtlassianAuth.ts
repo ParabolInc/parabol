@@ -12,8 +12,10 @@ const refreshAtlassianAuth = async (
   const manager = new JiraOAuth2Manager(clientId, clientSecret, serverBaseUrl)
   const oauthRes = await manager.refresh(auth.refreshToken)
   if (oauthRes instanceof Error) {
-    await handleAuthRefreshFailure(oauthRes, auth)
-    return null
+    const current = await handleAuthRefreshFailure(oauthRes, auth)
+    if (!current?.accessToken || !current.refreshToken) return null
+    const {accessToken, refreshToken, scopes, expiresAt} = current
+    return {...auth, accessToken, refreshToken, scopes, expiresAt, scope: scopes ?? ''}
   }
   const {accessToken, refreshToken, scopes, expiresIn} = oauthRes
   const expiresAt = expiresIn ? new Date(Date.now() + (expiresIn - 30) * 1000) : null

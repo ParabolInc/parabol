@@ -6,12 +6,23 @@ import {getUserId} from '../../../utils/authorization'
 import {ConfluenceApiError, ConfluenceServerManager} from '../../../utils/ConfluenceServerManager'
 import {Logger} from '../../../utils/Logger'
 import standardError from '../../../utils/standardError'
+import type {DataLoaderWorker} from '../../graphql'
 import type {AtlassianIntegrationResolvers} from '../resolverTypes'
 
+const loadFreshAccessToken = async (
+  dataLoader: DataLoaderWorker,
+  teamId: string,
+  userId: string
+) => {
+  const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId})
+  return auth?.accessToken ?? null
+}
+
 const AtlassianIntegration: AtlassianIntegrationResolvers = {
-  issues: async ({teamId, userId, accessToken, cloudIds}, args, {authToken}) => {
+  issues: async ({teamId, userId, cloudIds}, args, {authToken, dataLoader}) => {
     const {first, queryString, isJQL, projectKeyFilters, after} = args
     const viewerId = getUserId(authToken)
+    const accessToken = await loadFreshAccessToken(dataLoader, teamId, userId)
     if (viewerId !== userId || !accessToken) {
       const err = new Error('Cannot access another team members issues')
       standardError(err, {tags: {teamId, userId}, userId: viewerId})
@@ -129,9 +140,11 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
     return scope.split(' ')
   },
 
-  confluenceSites: async ({accessToken, userId}, _args, {authToken}) => {
+  confluenceSites: async ({teamId, userId}, _args, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
-    if (viewerId !== userId || !accessToken) return []
+    if (viewerId !== userId) return []
+    const accessToken = await loadFreshAccessToken(dataLoader, teamId, userId)
+    if (!accessToken) return []
     const manager = new AtlassianServerManager(accessToken)
     const res = await manager.getAccessibleResources()
     if (!Array.isArray(res)) return []
@@ -140,9 +153,11 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
       .map(({id, name, url}) => ({cloudId: id, name, url}))
   },
 
-  confluenceSpaces: async ({accessToken, userId}, {cloudId, query}, {authToken}) => {
+  confluenceSpaces: async ({teamId, userId}, {cloudId, query}, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
-    if (viewerId !== userId || !accessToken) return []
+    if (viewerId !== userId) return []
+    const accessToken = await loadFreshAccessToken(dataLoader, teamId, userId)
+    if (!accessToken) return []
     const manager = new ConfluenceServerManager(accessToken, cloudId)
     try {
       const spaces = await manager.getSpaces()
@@ -158,9 +173,15 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
     }
   },
 
-  confluencePageSearch: async ({accessToken, userId}, {cloudId, spaceId, query}, {authToken}) => {
+  confluencePageSearch: async (
+    {teamId, userId},
+    {cloudId, spaceId, query},
+    {authToken, dataLoader}
+  ) => {
     const viewerId = getUserId(authToken)
-    if (viewerId !== userId || !accessToken) return []
+    if (viewerId !== userId) return []
+    const accessToken = await loadFreshAccessToken(dataLoader, teamId, userId)
+    if (!accessToken) return []
     const manager = new ConfluenceServerManager(accessToken, cloudId)
     try {
       return await manager.searchPagesInSpace(spaceId, query)
@@ -169,9 +190,9 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
     }
   },
 
-  accessToken: async ({accessToken, userId}, _args, {authToken}) => {
+  accessToken: async ({teamId, userId}, _args, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
-    return viewerId === userId ? accessToken : null
+    return viewerId === userId ? loadFreshAccessToken(dataLoader, teamId, userId) : null
   },
 
   projects: async ({teamId, userId}, _args, {authToken, dataLoader}) => {

@@ -30,7 +30,7 @@ const IntegrationService: IntegrationServiceResolvers = {
   isConnected: ({service, teamId, userId}, _args, {dataLoader}) =>
     getServerIntegration(service).isConnected({dataLoader, teamId, userId}),
   auth: ({service, teamId, userId}, _args, {dataLoader}) =>
-    getServerIntegration(service).resolveAuth({dataLoader, teamId, userId}),
+    getServerIntegration(service).getAuthRow({dataLoader, teamId, userId}),
   cloudProvider: ({service, teamId, userId}, _args, {dataLoader}) =>
     getServerIntegration(service).getGlobalProvider({dataLoader, teamId, userId}),
   repos: ({service, teamId, userId}, {networkOnly}, context, info) =>

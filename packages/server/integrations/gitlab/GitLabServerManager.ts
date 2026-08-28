@@ -1,6 +1,7 @@
 import type {JSONContent} from '@tiptap/core'
 import type {GraphQLResolveInfo} from 'graphql'
 import GitLabIssueId from 'parabol-client/shared/gqlIds/GitLabIssueId'
+import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import {splitTipTapContent} from 'parabol-client/shared/tiptap/splitTipTapContent'
 import type {InternalContext} from '../../graphql/graphql'
 import createIssueMutation from '../../graphql/nestedSchema/GitLab/mutations/createIssue.graphql'
@@ -111,14 +112,15 @@ class GitLabServerManager implements TaskIntegrationManager {
     const issue = createIssueData.createIssue?.issue
     if (!issue) return new Error('Failed to create issue')
     const {id: gid} = issue
+    const providerId = IntegrationProviderId.join(this.auth.providerId)
     return {
-      integrationHash: GitLabIssueId.join(`${this.auth.providerId}`, gid),
+      integrationHash: GitLabIssueId.join(providerId, gid),
       issueId: gid,
       integration: {
         accessUserId: this.auth.userId,
         service: 'gitlab',
         gid,
-        providerId: `${this.auth.providerId}`
+        providerId
       }
     }
   }

@@ -97,6 +97,12 @@ const cases: NameCase[] = [
   ['AzureDevOpsRemoteProject', AzureDevOpsRemoteProject, azureDevOpsRemoteProject, 'Parabol']
 ]
 
+const apiObjectCases: NameCase[] = [
+  ['_xGitHubRepository', _xGitHubRepository, {id: 'R_1', name: 'hello-world'}, 'hello-world'],
+  ['_xGitLabProject', _xGitLabProject, {id: 'gid://gitlab/Project/1', name: 'gitlab'}, 'gitlab'],
+  ['_xLinearTeam', _xLinearTeam, {id: 'team-uuid', name: 'Engineering'}, 'Engineering']
+]
+
 describe('RepoIntegration.name', () => {
   it.each(cases)(
     '%s resolves the non-null name a picker renders',
@@ -104,6 +110,13 @@ describe('RepoIntegration.name', () => {
       const name = resolveName(resolvers, source)
       expect(typeof name).toBe('string')
       expect(name).toBe(expected)
+    }
+  )
+
+  it.each(apiObjectCases)(
+    '%s keeps the vendor name when a nested selection fetched only `name`',
+    (_typeName, resolvers, source, expected) => {
+      expect(resolveName(resolvers, source)).toBe(expected)
     }
   )
 })

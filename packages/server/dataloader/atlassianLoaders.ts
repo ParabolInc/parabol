@@ -48,7 +48,8 @@ const isAccessTokenFresh = (accessToken: string, inAMinute: number) => {
   return typeof exp === 'number' && exp * 1000 > inAMinute
 }
 
-export const freshAtlassianAuth = (
+/** The stored Atlassian row, never refreshed — safe for any surface that only reports on the connection */
+export const atlassianAuth = (
   parent: RootDataLoader
 ): DataLoader<TeamUserKey, AtlassianAuth | null, string> => {
   return new DataLoader<TeamUserKey, AtlassianAuth | null, string>(
@@ -60,6 +61,23 @@ export const freshAtlassianAuth = (
             .where('teamId', '=', teamId)
             .where('isActive', '=', true)
             .executeTakeFirst()
+          return auth ?? null
+        })
+      )
+      return settleOrLogRejection(results, keys)
+    },
+    {...parent.dataLoaderOptions, cacheKeyFn: (key) => `${key.userId}:${key.teamId}`}
+  )
+}
+
+export const freshAtlassianAuth = (
+  parent: RootDataLoader
+): DataLoader<TeamUserKey, AtlassianAuth | null, string> => {
+  return new DataLoader<TeamUserKey, AtlassianAuth | null, string>(
+    async (keys) => {
+      const results = await Promise.allSettled(
+        keys.map(async ({userId, teamId}) => {
+          const auth = await parent.get('atlassianAuth').load({userId, teamId})
           if (!auth) return null
           const inAMinute = Date.now() + 60_000
           const isFresh = auth.expiresAt
@@ -76,6 +94,7 @@ export const freshAtlassianAuth = (
           }
           const refreshed = await refreshAtlassianAuth(auth, provider)
           parent.get('teamMemberIntegrationAuthsByServiceTeamAndUserId').clearAll()
+          parent.get('atlassianAuth').clearAll()
           return refreshed
         })
       )

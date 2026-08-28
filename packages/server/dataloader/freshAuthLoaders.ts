@@ -46,10 +46,7 @@ export const freshAuth = (parent: RootDataLoader) => {
             return auth
           }
           const oauthRes = await manager.refresh(refreshToken)
-          if (oauthRes instanceof Error) {
-            await handleAuthRefreshFailure(oauthRes, auth)
-            return null
-          }
+          if (oauthRes instanceof Error) return handleAuthRefreshFailure(oauthRes, auth)
           const tokens = {
             accessToken: oauthRes.accessToken,
             refreshToken: oauthRes.refreshToken || refreshToken,
