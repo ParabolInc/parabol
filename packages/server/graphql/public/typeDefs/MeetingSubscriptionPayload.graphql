@@ -27,7 +27,7 @@ type MeetingSubscriptionPayload {
       reason: "Superseded by SuggestedGroupsSuccess. Nothing publishes this any more: it announced the reflect-phase pre-warm, which was removed so AI grouping is only computed when a user asks for it. Safe to delete along with the GenerateGroupsSuccess type once clients loaded before the SuggestedGroups release have drained."
     )
   NewMeetingCheckInPayload: NewMeetingCheckInPayload
-  PromoteNewMeetingFacilitatorPayload: PromoteNewMeetingFacilitatorPayload
+  UpdateFacilitatorRotationSuccess: UpdateFacilitatorRotationSuccess
   RemoveReflectionPayload: RemoveReflectionPayload
   ResetReflectionGroupsSuccess: ResetReflectionGroupsSuccess
   ResetRetroMeetingToGroupStagePayload: ResetRetroMeetingToGroupStagePayload

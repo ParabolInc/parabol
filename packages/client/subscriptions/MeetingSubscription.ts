@@ -17,13 +17,13 @@ import {
   endDraggingReflectionMeetingUpdater
 } from '../mutations/EndDraggingReflectionMutation'
 import {pokerAnnounceDeckHoverMeetingUpdater} from '../mutations/PokerAnnounceDeckHoverMutation'
-import {promoteNewMeetingFacilitatorMeetingOnNext} from '../mutations/PromoteNewMeetingFacilitatorMutation'
 import {removeReflectionMeetingUpdater} from '../mutations/RemoveReflectionMutation'
 import {resetRetroMeetingToGroupStageUpdater} from '../mutations/ResetRetroMeetingToGroupStageMutation'
 import {setMeetingMusicMeetingUpdater} from '../mutations/SetMeetingMusicMutation'
 import {setStageTimerMeetingUpdater} from '../mutations/SetStageTimerMutation'
 import {startDraggingReflectionMeetingUpdater} from '../mutations/StartDraggingReflectionMutation'
 import {suggestedGroupsMeetingUpdater} from '../mutations/useGenerateSuggestedGroupsMutation'
+import {updateFacilitatorRotationMeetingOnNext} from '../mutations/useUpdateFacilitatorRotationMutation'
 import {createSubscription} from './createSubscription'
 
 const subscription = graphql`
@@ -108,8 +108,8 @@ const subscription = graphql`
       FlagReadyToAdvanceSuccess {
         ...FlagReadyToAdvanceMutation_meeting @relay(mask: false)
       }
-      PromoteNewMeetingFacilitatorPayload {
-        ...PromoteNewMeetingFacilitatorMutation_meeting @relay(mask: false)
+      UpdateFacilitatorRotationSuccess {
+        ...useUpdateFacilitatorRotationMutation_meeting @relay(mask: false)
       }
       RemoveReflectionPayload {
         ...RemoveReflectionMutation_meeting @relay(mask: false)
@@ -180,7 +180,7 @@ const subscription = graphql`
 
 const onNextHandlers = {
   EndDraggingReflectionPayload: endDraggingReflectionMeetingOnNext,
-  PromoteNewMeetingFacilitatorPayload: promoteNewMeetingFacilitatorMeetingOnNext
+  UpdateFacilitatorRotationSuccess: updateFacilitatorRotationMeetingOnNext
 } as const
 
 const updateHandlers = {
