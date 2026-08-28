@@ -99,7 +99,7 @@ const Facilitator = (props: Props) => {
         {!isReadOnly && (
           <span
             className={cn(
-              'ml-auto flex h-8 w-8 shrink-0 items-center justify-center rounded-[32px] group-hover/facilitator:bg-surface-phase-active group-hover/facilitator:text-fg-primary',
+              'ml-auto flex h-8 w-8 shrink-0 items-center justify-center rounded-md group-hover/facilitator:bg-surface-phase-active group-hover/facilitator:text-fg-primary',
               isActive ? 'bg-surface-phase-active text-fg-primary' : 'text-fg-secondary'
             )}
           >

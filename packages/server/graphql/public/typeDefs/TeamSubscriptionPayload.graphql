@@ -33,6 +33,7 @@ type TeamSubscriptionPayload {
   StartTeamPromptSuccess: StartTeamPromptSuccess
   UpdateAgendaItemPayload: UpdateAgendaItemPayload
   UpdateCreditCardPayload: UpdateCreditCardPayload
+  UpdateFacilitatorRotationSuccess: UpdateFacilitatorRotationSuccess
   UpdateTeamNamePayload: UpdateTeamNamePayload
   UpgradeToTeamTierSuccess: UpgradeToTeamTierSuccess
   AddReflectTemplateSuccess: AddReflectTemplateSuccess

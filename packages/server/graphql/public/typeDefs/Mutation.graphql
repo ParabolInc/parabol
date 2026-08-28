@@ -632,17 +632,6 @@ type Mutation {
   ): PushInvitationPayload @scope(name: TEAMS_WRITE)
 
   """
-  Change a facilitator while the meeting is in progress
-  """
-  promoteNewMeetingFacilitator(
-    """
-    userId of the new facilitator for this meeting
-    """
-    facilitatorUserId: ID!
-    meetingId: ID!
-  ): PromoteNewMeetingFacilitatorPayload @scope(name: MEETINGS_WRITE)
-
-  """
   Promote another team member to be the leader
   """
   promoteToTeamLead(
@@ -2627,4 +2616,27 @@ type Mutation {
     """
     action: ArchivePageActionEnum!
   ): ArchivePagePayload @scope(name: PAGES_WRITE)
+
+  """
+  Reorder the facilitator rotation and/or toggle auto-assignment. Any team member may edit.
+  """
+  updateFacilitatorRotation(
+    teamId: ID!
+
+    """
+    The meeting to hand the facilitator role to whoever heads the new order.
+    Omit outside a meeting to reorder without promoting anyone.
+    """
+    meetingId: ID
+
+    """
+    The full rotation, soonest first. Omit to leave the order untouched.
+    """
+    userIds: [ID!]
+
+    """
+    Whether the next meeting auto-assigns the next person in the rotation. Omit to leave as-is.
+    """
+    autoAssignFacilitator: Boolean
+  ): UpdateFacilitatorRotationSuccess! @scope(name: TEAMS_WRITE)
 }

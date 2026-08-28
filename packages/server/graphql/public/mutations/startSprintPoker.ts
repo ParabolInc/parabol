@@ -18,6 +18,8 @@ import createNewMeetingPhases from '../../mutations/helpers/createNewMeetingPhas
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import type {MutationResolvers} from '../resolverTypes'
+import getNextFacilitatorUserId from './helpers/getNextFacilitatorUserId'
+import setFacilitatorRotation from './helpers/setFacilitatorRotation'
 import {createMeetingMember} from './joinMeeting'
 
 const freezeTemplateAsRef = async (templateId: string, dataLoader: DataLoaderWorker) => {
@@ -110,13 +112,14 @@ const startSprintPoker: MutationResolvers['startSprintPoker'] = async (
   }
   const templateRefId = await freezeTemplateAsRef(selectedTemplateId, dataLoader)
 
+  const {facilitatorUserId, rotation} = await getNextFacilitatorUserId(teamId, viewerId, dataLoader)
   const meeting = new MeetingPoker({
     id: meetingId,
     teamId,
     name: name ?? `Sprint Poker #${meetingCount + 1}`,
     meetingCount,
     phases,
-    facilitatorUserId: viewerId,
+    facilitatorUserId,
     templateId: selectedTemplateId,
     templateRefId
   }) as PokerMeeting
@@ -136,6 +139,7 @@ const startSprintPoker: MutationResolvers['startSprintPoker'] = async (
     return {error: {message: 'Meeting already started'}}
   }
   dataLoader.clearAll('newMeetings')
+  if (rotation) await setFacilitatorRotation(teamId, rotation, dataLoader)
 
   const teamMemberId = toTeamMemberId(teamId, viewerId)
   const teamMember = await dataLoader.get('teamMembers').loadNonNull(teamMemberId)

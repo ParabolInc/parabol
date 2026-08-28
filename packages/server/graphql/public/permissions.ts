@@ -204,8 +204,6 @@ const permissionMap: PermissionMap<Resolvers> = {
         'args.dimensionId',
         'templateDimensions'
       ),
-    promoteNewMeetingFacilitator:
-      isTeamMemberOfMeeting<'Mutation.promoteNewMeetingFacilitator'>('args.meetingId'),
     promoteToTeamLead: or(
       isSuperUser,
       isViewerTeamLead<'Mutation.promoteToTeamLead'>('args.teamId'),
@@ -373,6 +371,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     updateCommentContent: isMeetingMember<'Mutation.updateCommentContent'>('args.meetingId'),
     updateCreditCard: isViewerBillingLeader<'Mutation.updateCreditCard'>('args.orgId'),
     updateDragLocation: isTeamMember<'Mutation.updateDragLocation'>('args.input.teamId'),
+    updateFacilitatorRotation: isTeamMember<'Mutation.updateFacilitatorRotation'>('args.teamId'),
     updateGitHubDimensionField: isTeamMember<'Mutation.updateGitHubDimensionField'>(
       'args.meetingId',
       'newMeetings'
