@@ -23,33 +23,24 @@ const makeCtx = (providers: unknown[]): IntegrationCtx => ({
 })
 
 describe('isAvailable', () => {
-  const providerBacked = ['gitlab', 'linear', 'azureDevOps', 'jiraServer'] as const
+  const providerBacked = [
+    'gitlab',
+    'linear',
+    'azureDevOps',
+    'jiraServer',
+    'jira',
+    'github'
+  ] as const
 
   providerBacked.forEach((service) => {
     it(`${service} is available when a provider row exists`, async () => {
-      await expect(serverIntegrations[service].isAvailable(makeCtx([{id: 1}]))).resolves.toBe(true)
+      await expect(
+        serverIntegrations[service].isAvailable(makeCtx([{id: 1, scope: 'global'}]))
+      ).resolves.toBe(true)
     })
 
     it(`${service} is unavailable when no provider row exists`, async () => {
       await expect(serverIntegrations[service].isAvailable(makeCtx([]))).resolves.toBe(false)
     })
-  })
-
-  it('jira availability reflects ATLASSIAN_CLIENT_ID', async () => {
-    const prev = process.env.ATLASSIAN_CLIENT_ID
-    process.env.ATLASSIAN_CLIENT_ID = 'abc'
-    await expect(serverIntegrations.jira.isAvailable(makeCtx([]))).resolves.toBe(true)
-    delete process.env.ATLASSIAN_CLIENT_ID
-    await expect(serverIntegrations.jira.isAvailable(makeCtx([]))).resolves.toBe(false)
-    if (prev !== undefined) process.env.ATLASSIAN_CLIENT_ID = prev
-  })
-
-  it('github availability reflects GITHUB_CLIENT_ID', async () => {
-    const prev = process.env.GITHUB_CLIENT_ID
-    process.env.GITHUB_CLIENT_ID = 'abc'
-    await expect(serverIntegrations.github.isAvailable(makeCtx([]))).resolves.toBe(true)
-    delete process.env.GITHUB_CLIENT_ID
-    await expect(serverIntegrations.github.isAvailable(makeCtx([]))).resolves.toBe(false)
-    if (prev !== undefined) process.env.GITHUB_CLIENT_ID = prev
   })
 })

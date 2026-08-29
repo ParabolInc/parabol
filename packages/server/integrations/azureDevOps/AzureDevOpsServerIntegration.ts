@@ -1,6 +1,6 @@
 import {azureDevOpsIntegrationMeta} from 'parabol-client/shared/integrations/azureDevOpsIntegrationMeta'
+import type {TeamMemberIntegrationAuth} from '../../postgres/types'
 import {
-  type IntegrationAuth,
   type IntegrationCtx,
   type IssueCreateCapability,
   ServerIntegrationDefinition
@@ -12,18 +12,12 @@ export class AzureDevOpsServerIntegration extends ServerIntegrationDefinition {
   readonly title = azureDevOpsIntegrationMeta.title
   readonly authStrategy = 'oauth2' as const
 
-  async resolveAuth(ctx: IntegrationCtx): Promise<IntegrationAuth | null> {
+  async resolveAuth(ctx: IntegrationCtx): Promise<TeamMemberIntegrationAuth | null> {
     const {dataLoader, teamId, userId} = ctx
     const auth = await dataLoader
       .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
       .load({service: 'azureDevOps', teamId, userId})
-    if (!auth?.accessToken) return null
-    return {
-      accessToken: auth.accessToken,
-      accessUserId: auth.userId,
-      providerId: auth.providerId,
-      raw: auth
-    }
+    return auth?.accessToken ? auth : null
   }
 
   async isAvailable(ctx: IntegrationCtx) {

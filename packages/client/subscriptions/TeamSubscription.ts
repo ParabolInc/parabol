@@ -58,9 +58,6 @@ const subscription = graphql`
       AddAgendaItemPayload {
         ...AddAgendaItemMutation_team @relay(mask: false)
       }
-      AddAtlassianAuthPayload {
-        ...AddAtlassianAuthMutation_team @relay(mask: false)
-      }
       AddReflectTemplateSuccess {
         ...useAddReflectTemplateMutation_team @relay(mask: false)
       }
@@ -174,6 +171,9 @@ const subscription = graphql`
       }
       UpdateCreditCardPayload {
         ...UpdateCreditCardMutation_organization @relay(mask: false)
+      }
+      UpdateFacilitatorRotationSuccess {
+        ...useUpdateFacilitatorRotationMutation_team @relay(mask: false)
       }
       UpdateTeamNamePayload {
         ...UpdateTeamNameMutation_team @relay(mask: false)

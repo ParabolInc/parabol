@@ -1,16 +1,21 @@
 import {sql} from 'kysely'
 import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
 import GcalOAuth2Manager from '../../../integrations/gcal/GcalOAuth2Manager'
+import GitHubOAuth2Manager from '../../../integrations/github/GitHubOAuth2Manager'
 import GitLabOAuth2Manager from '../../../integrations/gitlab/GitLabOAuth2Manager'
 import GmeetOAuth2Manager from '../../../integrations/gmeet/GmeetOAuth2Manager'
+import JiraOAuth2Manager from '../../../integrations/jira/JiraOAuth2Manager'
 import JiraServerOAuth1Manager, {
   type OAuth1Auth
 } from '../../../integrations/jiraServer/JiraServerOAuth1Manager'
 import LinearManager from '../../../integrations/linear/LinearManager'
+import type OAuth2Manager from '../../../integrations/OAuth2Manager'
 import type {OAuth2AuthorizeResponse} from '../../../integrations/OAuth2Manager'
 import ZoomOAuth2Manager from '../../../integrations/zoom/ZoomOAuth2Manager'
 import getKysely from '../../../postgres/getKysely'
+import syncTeamMemberIntegrationAuthTokens from '../../../postgres/queries/syncTeamMemberIntegrationAuthTokens'
 import type {IntegrationProviderAzureDevOps} from '../../../postgres/types/IntegrationProvider'
+import type {JsonObject} from '../../../postgres/types/pg'
 import AzureDevOpsServerManager from '../../../utils/AzureDevOpsServerManager'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
@@ -25,7 +30,9 @@ interface OAuth2Auth {
   expiresAt?: Date | null
 }
 
-const convertExpiresIn = (authResponse: OAuth2AuthorizeResponse | Error): OAuth2Auth | Error => {
+type OAuth2Tokens = Omit<OAuth2AuthorizeResponse, 'providerUserId' | 'meta'>
+
+const convertExpiresIn = (authResponse: OAuth2Tokens | Error): OAuth2Auth | Error => {
   if ('expiresIn' in authResponse && authResponse.expiresIn) {
     const {expiresIn, ...metadata} = authResponse
     const buffer = 30
@@ -41,7 +48,7 @@ const convertExpiresIn = (authResponse: OAuth2AuthorizeResponse | Error): OAuth2
 
 const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationAuth'] = async (
   _source,
-  {providerId, oauthCodeOrPat, oauthVerifier, teamId, redirectUri},
+  {providerId, oauthCodeOrPat, oauthVerifier, teamId},
   context
 ) => {
   const {authToken, dataLoader} = context
@@ -55,15 +62,13 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
   ])
   if (!integrationProvider) {
     return standardError(
-      new Error(`Unable to find appropriate integration provider for providerId ${providerId}`),
-      {
-        userId: viewerId
-      }
+      new Error(`Unable to find appropriate integration provider for ${providerId}`),
+      {userId: viewerId}
     )
   }
 
   // VALIDATION
-  const {authStrategy, service, scope} = integrationProvider
+  const {authStrategy, service: providerService, scope} = integrationProvider
   if (scope === 'team') {
     if (teamId !== integrationProvider.teamId) {
       return {error: {message: 'teamId mismatch'}}
@@ -77,10 +82,10 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
 
   let tokenMetadata: OAuth2Auth | OAuth1Auth | Error | undefined
   let providerUserId: string | null = null
+  let meta: JsonObject | null = null
   if (authStrategy === 'oauth2') {
-    if (!oauthCodeOrPat || !redirectUri)
-      return {error: {message: 'Missing OAuth2 code or redirect URI'}}
-    if (service === 'azureDevOps') {
+    if (!oauthCodeOrPat) return {error: {message: 'Missing OAuth2 code'}}
+    if (providerService === 'azureDevOps') {
       if (!oauthVerifier) {
         return {
           error: {
@@ -95,16 +100,10 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
       const authRes = await manager.authorize(oauthCodeOrPat, oauthVerifier)
       tokenMetadata = convertExpiresIn(authRes)
     }
-    let manager:
-      | GcalOAuth2Manager
-      | GmeetOAuth2Manager
-      | LinearManager
-      | GitLabOAuth2Manager
-      | ZoomOAuth2Manager
-      | null = null
+    let manager: OAuth2Manager | null = null
     const {clientId, clientSecret, serverBaseUrl} = integrationProvider
 
-    switch (service) {
+    switch (providerService) {
       case 'gcal':
         manager = new GcalOAuth2Manager(clientId, clientSecret, serverBaseUrl)
         break
@@ -120,27 +119,27 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
       case 'zoom':
         manager = new ZoomOAuth2Manager(clientId, clientSecret, serverBaseUrl)
         break
+      case 'jira':
+        manager = new JiraOAuth2Manager(clientId, clientSecret, serverBaseUrl)
+        break
+      case 'github':
+        manager = new GitHubOAuth2Manager(clientId, clientSecret, serverBaseUrl)
+        break
     }
 
     if (manager) {
-      const authRes = await manager.authorize(oauthCodeOrPat, redirectUri)
-      tokenMetadata = convertExpiresIn(authRes)
-    }
-
-    if (
-      service === 'zoom' &&
-      manager instanceof ZoomOAuth2Manager &&
-      tokenMetadata &&
-      !(tokenMetadata instanceof Error)
-    ) {
-      const {accessToken} = tokenMetadata as {accessToken: string}
-      providerUserId = await manager.getProviderUserId(accessToken)
+      const authRes = await manager.authorize(oauthCodeOrPat)
+      if (authRes instanceof Error) return standardError(authRes, {userId: viewerId})
+      const {providerUserId: authProviderUserId, meta: authMeta, ...tokens} = authRes
+      tokenMetadata = convertExpiresIn(tokens)
+      providerUserId = authProviderUserId ?? null
+      meta = authMeta ?? null
     }
   }
   if (authStrategy === 'oauth1') {
     if (!oauthCodeOrPat || !oauthVerifier)
       return {error: {message: 'Missing OAuth1 token or verifier'}}
-    if (service === 'jiraServer') {
+    if (providerService === 'jiraServer') {
       const {serverBaseUrl, consumerKey, consumerSecret} = integrationProvider
       const manager = new JiraServerOAuth1Manager(serverBaseUrl, consumerKey, consumerSecret)
       tokenMetadata = await manager.accessToken(oauthCodeOrPat, oauthVerifier)
@@ -159,17 +158,19 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
     .values({
       ...tokenMetadata,
       providerId: providerDbId,
-      service,
+      service: providerService,
       teamId,
       userId: viewerId,
-      ...(providerUserId !== null && {providerUserId})
+      ...(providerUserId !== null && {providerUserId}),
+      ...(meta !== null && {meta})
     })
     .onConflict((oc) =>
       oc.columns(['userId', 'teamId', 'service']).doUpdateSet({
         ...tokenMetadata,
         providerId: providerDbId,
         isActive: true,
-        ...(providerUserId !== null && {providerUserId})
+        ...(providerUserId !== null && {providerUserId}),
+        ...(meta !== null && {meta})
       })
     )
     .returning('id')
@@ -181,7 +182,21 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
     })
   }
 
-  if (service === 'msTeams' || service === 'mattermost') {
+  if (providerUserId !== null && tokenMetadata && 'refreshToken' in tokenMetadata) {
+    const {accessToken, refreshToken, scopes, expiresAt} = tokenMetadata
+    await syncTeamMemberIntegrationAuthTokens({
+      userId: viewerId,
+      teamId,
+      providerId: providerDbId,
+      providerUserId,
+      accessToken,
+      refreshToken: refreshToken ?? null,
+      scopes,
+      expiresAt: expiresAt ?? null
+    })
+  }
+
+  if (providerService === 'msTeams' || providerService === 'mattermost') {
     await pg
       .insertInto('TeamNotificationSettings')
       .columns(['providerId', 'teamId', 'events'])
@@ -196,9 +211,9 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
 
   updateRepoIntegrationsCacheByPerms(dataLoader, viewerId, teamId, true)
 
-  analytics.integrationAdded(viewer, teamId, service)
+  analytics.integrationAdded(viewer, teamId, providerService)
 
-  const data = {userId: viewerId, teamId, service}
+  const data = {userId: viewerId, teamId, service: providerService}
   return data
 }
 

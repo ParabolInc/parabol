@@ -216,6 +216,7 @@ const initDemoTeamMember = (
     isSelf: idx === 0,
     picture: picture,
     preferredName,
+    services: [],
     integrations: {
       id: 'demoTeamIntegrations',
       atlassian: {

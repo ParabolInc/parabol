@@ -27,7 +27,13 @@ const IntegrationService: IntegrationServiceResolvers = {
   isAvailable: ({service, teamId, userId}, _args, {dataLoader}) =>
     getServerIntegration(service).isAvailable({dataLoader, teamId, userId}),
   isConnected: ({service, teamId, userId}, _args, {dataLoader}) =>
-    getServerIntegration(service).isConnected({dataLoader, teamId, userId})
+    getServerIntegration(service).isConnected({dataLoader, teamId, userId}),
+  auth: ({service, teamId, userId}, _args, {dataLoader}) =>
+    dataLoader
+      .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
+      .load({service, teamId, userId}),
+  cloudProvider: ({service, teamId, userId}, _args, {dataLoader}) =>
+    getServerIntegration(service).getGlobalProvider({dataLoader, teamId, userId})
 }
 
 export default IntegrationService

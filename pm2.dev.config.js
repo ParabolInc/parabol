@@ -1,8 +1,3 @@
-const killOrphanedDevProcesses = require('./scripts/killOrphanedDevProcesses')
-
-// leftovers from a previous stack still hold their ports, see the note in the required module
-killOrphanedDevProcesses()
-
 const {DEV_RUN_ONLY} = process.env
 // const DEV_RUN_ONLY = 'Webpack Servers,Socket Server,Dev Server'
 const runOnly = DEV_RUN_ONLY ? DEV_RUN_ONLY.split(',') : []

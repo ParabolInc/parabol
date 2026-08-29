@@ -1,18 +1,14 @@
-export type RemoveIntegrationSearchQuerySuccessSource =
-  | {
-      userId: string
-      teamId: string
-    }
-  | {error: {message: string}}
+import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
+import type {RemoveIntegrationSearchQuerySuccessResolvers} from '../resolverTypes'
 
-const RemoveIntegrationSearchQuerySuccess: {
-  jiraServerIntegration: (
-    source: RemoveIntegrationSearchQuerySuccessSource
-  ) => RemoveIntegrationSearchQuerySuccessSource
-} = {
-  jiraServerIntegration: (source) => {
-    return source
-  }
+export type RemoveIntegrationSearchQuerySuccessSource = {
+  teamId: string
+  userId: string
+}
+
+const RemoveIntegrationSearchQuerySuccess: RemoveIntegrationSearchQuerySuccessResolvers = {
+  teamMember: ({teamId, userId}, _args, {dataLoader}) =>
+    dataLoader.get('teamMembers').loadNonNull(toTeamMemberId(teamId, userId))
 }
 
 export default RemoveIntegrationSearchQuerySuccess

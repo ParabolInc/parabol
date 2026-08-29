@@ -1,7 +1,5 @@
 import {GraphQLError} from 'graphql'
-import ms from 'ms'
 import AtlassianIntegrationId from '../../../../client/shared/gqlIds/AtlassianIntegrationId'
-import getKysely from '../../../postgres/getKysely'
 import AtlassianServerManager from '../../../utils/AtlassianServerManager'
 import {processJiraImages} from '../../../utils/atlassian/jiraImages'
 import {getUserId} from '../../../utils/authorization'
@@ -180,20 +178,17 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
     return dataLoader.get('allJiraProjects').load({teamId, userId})
   },
 
-  jiraSearchQueries: async ({teamId, userId, jiraSearchQueries}) => {
-    const expirationThresh = ms('60d')
-    const thresh = new Date(Date.now() - expirationThresh).toISOString()
-    const searchQueries = jiraSearchQueries || []
-    const unexpiredQueries = searchQueries.filter((query) => query.lastUsedAt > thresh)
-    if (unexpiredQueries.length < searchQueries.length) {
-      await getKysely()
-        .updateTable('AtlassianAuth')
-        .set({jiraSearchQueries: searchQueries.map((jsq) => JSON.stringify(jsq))})
-        .where('teamId', '=', teamId)
-        .where('userId', '=', userId)
-        .execute()
-    }
-    return unexpiredQueries
+  jiraSearchQueries: async ({teamId, userId, providerId}, _args, {dataLoader}) => {
+    const queries = await dataLoader
+      .get('recentIntegrationSearchQueries')
+      .load({teamId, userId, providerId})
+    return queries
+      .filter((row) => row.service === 'jira')
+      .map(({id, query, lastUsedAt}) => ({
+        id: String(id),
+        ...query,
+        lastUsedAt: lastUsedAt.toJSON()
+      }))
   }
 }
 

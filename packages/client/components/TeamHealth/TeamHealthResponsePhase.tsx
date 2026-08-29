@@ -1,7 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {TeamHealthResponsePhase_meeting$key} from '~/__generated__/TeamHealthResponsePhase_meeting.graphql'
-import {ArrowForward} from '~/ui/icons'
 import useSetTeamHealthSpectateMutation from '../../mutations/useSetTeamHealthSpectateMutation'
 import {Button} from '../../ui/Button/Button'
 import {isNotNull} from '../../utils/predicates'
@@ -56,8 +55,8 @@ const TeamHealthResponsePhase = (props: Props) => {
   const [setSpectate] = useSetTeamHealthSpectateMutation()
   const responsePhase = phases.find((phase) => phase.phaseType === 'TEAM_HEALTH_RESPONSE')
   const responseStages = responsePhase?.stages.filter(isNotNull) ?? []
-  const submittedStageId = phases
-    .find((phase) => phase.phaseType === 'TEAM_HEALTH_SUBMITTED')
+  const resultStageId = phases
+    .find((phase) => phase.phaseType === 'TEAM_HEALTH_RESULT')
     ?.stages.filter(isNotNull)[0]?.id
   const firstResponseStageId = responseStages[0]?.id
 
@@ -92,7 +91,7 @@ const TeamHealthResponsePhase = (props: Props) => {
 
   const onNext = () => {
     if (isLast) {
-      if (submittedStageId) gotoStageId(submittedStageId)
+      if (resultStageId) gotoStageId(resultStageId)
       return
     }
     const nextStage = responseStages[currentIdx + 1]
@@ -112,20 +111,9 @@ const TeamHealthResponsePhase = (props: Props) => {
         stageIndex={currentIdx}
         stageCount={responseStages.length}
         orderedCategoryIds={orderedCategoryIds}
+        onPrev={onPrev}
+        onNext={onNext}
       />
-      <div className='mt-6 flex w-full max-w-2xl justify-between'>
-        {currentIdx === 0 ? (
-          <div />
-        ) : (
-          <Button variant='ghost' shape='default' size='md' onClick={onPrev}>
-            Back
-          </Button>
-        )}
-        <Button variant='primary' shape='default' size='md' className='gap-1' onClick={onNext}>
-          {isLast ? 'Submit' : 'Next'}
-          <ArrowForward className='size-5' />
-        </Button>
-      </div>
     </div>
   )
 }

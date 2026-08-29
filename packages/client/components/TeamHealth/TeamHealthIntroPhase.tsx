@@ -1,12 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import dayjs from 'dayjs'
 import {useFragment} from 'react-relay'
-import {Link} from 'react-router'
 import type {TeamHealthIntroPhase_meeting$key} from '~/__generated__/TeamHealthIntroPhase_meeting.graphql'
 import {ArrowForward, MonitorHeart, Schedule} from '~/ui/icons'
 import NewMeetingAvatarGroup from '../../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import useSetTeamHealthSpectateMutation from '../../mutations/useSetTeamHealthSpectateMutation'
-import logoMarkPurple from '../../styles/theme/images/brand/mark-color.svg'
 import {Button} from '../../ui/Button/Button'
 import {isNotNull} from '../../utils/predicates'
 import CurrentTeamHealthStreak from './CurrentTeamHealthStreak'
@@ -81,9 +79,6 @@ const TeamHealthIntroPhase = (props: Props) => {
 
   return (
     <div className='relative flex h-full w-full items-center justify-center overflow-y-auto px-6 py-12'>
-      <Link className='absolute top-6 left-6' title='My Dashboard' to='/meetings'>
-        <img className='w-8' crossOrigin='' alt='Parabol' src={logoMarkPurple} />
-      </Link>
       <div className='absolute top-6 right-6'>
         <NewMeetingAvatarGroup meetingRef={meeting} />
       </div>

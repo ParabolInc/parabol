@@ -36,10 +36,11 @@ export const resolveConfluenceAuth = async (
       } as const
     }
     await getKysely()
-      .updateTable('AtlassianAuth')
-      .set({cloudIds: sites.map(({id}) => id)})
+      .updateTable('TeamMemberIntegrationAuth')
+      .set({meta: JSON.stringify({cloudIds: sites.map(({id}) => id)})})
       .where('userId', '=', userId)
-      .where('accountId', '=', auth.accountId)
+      .where('providerId', '=', auth.providerId)
+      .where('providerUserId', '=', auth.accountId)
       .where('isActive', '=', true)
       .execute()
   }
