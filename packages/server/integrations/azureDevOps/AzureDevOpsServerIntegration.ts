@@ -11,6 +11,7 @@ import {
 } from '../platform/ServerIntegrationDefinition'
 import describeAzureDevOpsDimensionField from './describeAzureDevOpsDimensionField'
 import fetchAzureDevOpsProjects from './fetchAzureDevOpsProjects'
+import listAzureDevOpsDimensionFields from './listAzureDevOpsDimensionFields'
 import pushEstimateToAzureDevOps from './pushEstimateToAzureDevOps'
 import resolveAzureDevOpsDimensionFieldKey from './resolveAzureDevOpsDimensionFieldKey'
 import resolveAzureDevOpsTaskIntegration from './resolveAzureDevOpsTaskIntegration'
@@ -49,7 +50,8 @@ export class AzureDevOpsServerIntegration extends ServerIntegrationDefinition {
       targets: ['comment', 'field'],
       pushEstimate: pushEstimateToAzureDevOps,
       resolveDimensionFieldKey: resolveAzureDevOpsDimensionFieldKey,
-      describeDimensionField: describeAzureDevOpsDimensionField
+      describeDimensionField: describeAzureDevOpsDimensionField,
+      listDimensionFields: listAzureDevOpsDimensionFields
     }
   }
 }

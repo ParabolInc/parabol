@@ -15,7 +15,7 @@ export class LinearClientIntegration extends ClientIntegrationDefinition {
   readonly Icon = LinearSVG
   readonly iconClassName = 'dark:[&_path]:fill-white'
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
-    if (!provider) return
+    if (!provider?.clientId || !provider.serverBaseUrl) return
     void LinearClientManager.openOAuth(
       atmosphere,
       teamId,

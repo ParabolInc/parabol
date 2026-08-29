@@ -4,7 +4,7 @@ import {useFragment} from 'react-relay'
 import type {ScopePhaseArea_meeting$key} from '~/__generated__/ScopePhaseArea_meeting.graphql'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
-import {getConnectProvider} from '../integrations/platform/findIntegrationService'
+import {isServiceAvailable} from '../integrations/platform/findIntegrationService'
 import AzureDevOpsSVG from './AzureDevOpsSVG'
 import GitHubSVG from './GitHubSVG'
 import GitLabSVG from './GitLabSVG'
@@ -55,30 +55,7 @@ const ScopePhaseArea = (props: Props) => {
         viewerMeetingMember {
           teamMember {
             services {
-              ...findIntegrationService_cloudProvider @relay(mask: false)
-            }
-            integrations {
-              gitlab {
-                cloudProvider {
-                  clientId
-                }
-                sharedProviders {
-                  clientId
-                }
-              }
-              azureDevOps {
-                cloudProvider {
-                  id
-                }
-                sharedProviders {
-                  id
-                }
-              }
-              linear {
-                cloudProvider {
-                  clientId
-                }
-              }
+              ...findIntegrationService_isAvailable @relay(mask: false)
             }
           }
         }
@@ -89,18 +66,12 @@ const ScopePhaseArea = (props: Props) => {
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {viewerMeetingMember} = meeting
   const services = viewerMeetingMember?.teamMember.services ?? []
-  const isGitHubAvailable = !!getConnectProvider(services, 'github')
-  const isJiraAvailable = !!getConnectProvider(services, 'jira')
-  const gitlabIntegration = viewerMeetingMember?.teamMember.integrations.gitlab
-  const azureDevOpsIntegration = viewerMeetingMember?.teamMember.integrations.azureDevOps
-  const linearIntegration = viewerMeetingMember?.teamMember.integrations.linear
-  const allowAzureDevOps =
-    !!azureDevOpsIntegration?.sharedProviders.length || !!azureDevOpsIntegration?.cloudProvider
-  const isGitLabProviderAvailable = !!(
-    gitlabIntegration?.cloudProvider?.clientId || gitlabIntegration?.sharedProviders.length
-  )
+  const isGitHubAvailable = isServiceAvailable(services, 'github')
+  const isJiraAvailable = isServiceAvailable(services, 'jira')
+  const isGitLabAvailable = isServiceAvailable(services, 'gitlab')
+  const isAzureDevOpsAvailable = isServiceAvailable(services, 'azureDevOps')
+  const isLinearAvailable = isServiceAvailable(services, 'linear')
   const allowJiraServer = true // always show this for advertising
-  const isLinearProviderAvailable = !!linearIntegration?.cloudProvider?.clientId
 
   const baseTabs = [
     {
@@ -130,19 +101,19 @@ const ScopePhaseArea = (props: Props) => {
     {
       icon: <GitLabSVG />,
       label: 'GitLab',
-      allow: isGitLabProviderAvailable,
+      allow: isGitLabAvailable,
       Component: ScopePhaseAreaGitLab
     },
     {
       icon: <AzureDevOpsSVG />,
       label: 'Azure DevOps',
-      allow: allowAzureDevOps,
+      allow: isAzureDevOpsAvailable,
       Component: ScopePhaseAreaAzureDevOps
     },
     {
       icon: <LinearSVG />,
       label: 'Linear',
-      allow: isLinearProviderAvailable,
+      allow: isLinearAvailable,
       Component: ScopePhaseAreaLinear
     }
   ] as const

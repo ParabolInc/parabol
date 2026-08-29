@@ -14,7 +14,7 @@ export class GitLabClientIntegration extends ClientIntegrationDefinition {
   readonly ids = gitlabIntegrationMeta.ids
   readonly Icon = GitLabSVG
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
-    if (!provider) return
+    if (!provider?.clientId || !provider.serverBaseUrl) return
     GitLabClientManager.openOAuth(
       atmosphere,
       provider.id,

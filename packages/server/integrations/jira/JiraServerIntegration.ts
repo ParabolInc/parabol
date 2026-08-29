@@ -18,6 +18,7 @@ import buildJiraSearchQuery from './buildJiraSearchQuery'
 import describeJiraDimensionField from './describeJiraDimensionField'
 import fetchJiraProjects from './fetchJiraProjects'
 import JiraIntegrationManager from './JiraIntegrationManager'
+import listJiraDimensionFields from './listJiraDimensionFields'
 import pushEstimateToJira from './pushEstimateToJira'
 import resolveJiraDimensionFieldKey from './resolveJiraDimensionFieldKey'
 import resolveJiraTaskIntegration from './resolveJiraTaskIntegration'
@@ -63,7 +64,8 @@ export class JiraServerIntegration extends ServerIntegrationDefinition {
       targets: ['comment', 'field'],
       pushEstimate: pushEstimateToJira,
       resolveDimensionFieldKey: resolveJiraDimensionFieldKey,
-      describeDimensionField: describeJiraDimensionField
+      describeDimensionField: describeJiraDimensionField,
+      listDimensionFields: listJiraDimensionFields
     }
   }
 }

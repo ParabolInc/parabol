@@ -8,10 +8,18 @@ type _xLinearProject implements RepoIntegration
 
 extend type _xLinearProject {
   service: IntegrationProviderServiceEnum!
+  """
+  The id createTaskIntegration expects for this repo. Differs from id where id is the vendor's node id
+  """
+  integrationRepoId: ID!
 }
 
 extend type _xLinearTeam {
   service: IntegrationProviderServiceEnum!
+  """
+  The id createTaskIntegration expects for this repo. Differs from id where id is the vendor's node id
+  """
+  integrationRepoId: ID!
 }
 
 extend type _xLinearIssue {

@@ -128,6 +128,11 @@ type EstimateStage implements NewMeetingStage & DiscussionThreadStage {
   serviceField: ServiceField!
 
   """
+  The estimate targets and candidate fields for this dimension on the task's service
+  """
+  dimensionFieldListing: DimensionFieldListing!
+
+  """
   The zero-based index of the TemplateDimensionRef used for this stage. Immutable after stage creation.
   """
   dimensionRefIdx: Int!

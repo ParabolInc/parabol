@@ -1,3 +1,4 @@
+import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
 import type {_XGitLabProjectResolvers} from '../resolverTypes'
 
 // There's a bug in GraphQL Codegen that allow mappers to start with `_`
@@ -17,6 +18,10 @@ const _xGitLabProject: _XGitLabProjectResolvers = {
     const label = fullPath ?? name
     if (!label) throw new Error('GitLab project has neither a fullPath nor a name')
     return label
+  },
+  integrationRepoId: ({fullPath}) => {
+    if (!fullPath) throw new Error('GitLab project has no fullPath')
+    return IntegrationRepoId.join({service: 'gitlab', fullPath})
   }
 }
 

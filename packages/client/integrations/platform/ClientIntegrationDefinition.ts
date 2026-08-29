@@ -10,10 +10,20 @@ export interface ConnectProvider {
   tenantId: string | null
 }
 
+/** A provider as the IntegrationService interface returns it; OAuth1 rows carry no clientId */
+export interface ConnectProviderRef {
+  id: string
+  clientId: string | null
+  serverBaseUrl: string | null
+  tenantId: string | null
+}
+
 export interface ConnectParams {
   teamId: string
   mutationProps: MenuMutationProps
-  provider?: ConnectProvider
+  provider?: ConnectProviderRef
+  /** Scopes the viewer already holds on this provider; services with incremental consent (Jira today) request the union */
+  heldScopes?: readonly string[] | null
 }
 
 export abstract class ClientIntegrationDefinition {

@@ -6,6 +6,10 @@ type _xGitLabProject implements RepoIntegration
 
 extend type _xGitLabProject {
   service: IntegrationProviderServiceEnum!
+  """
+  The id createTaskIntegration expects for this repo. Differs from id where id is the vendor's node id
+  """
+  integrationRepoId: ID!
 }
 
 extend type _xGitLabIssue {

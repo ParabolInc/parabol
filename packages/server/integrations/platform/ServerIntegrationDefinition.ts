@@ -87,18 +87,32 @@ export interface ServiceField {
   type: string
 }
 
+export type EstimatePushTarget = 'comment' | 'field' | 'label'
+
+export interface DimensionFieldOption {
+  fieldId: string
+  label: string
+}
+
+export interface DimensionFieldListing {
+  options: DimensionFieldOption[]
+  helpUrl?: string
+}
+
 export interface EstimatePushCapability {
-  targets: Array<'comment' | 'field' | 'label'>
+  targets: EstimatePushTarget[]
   /** An Error is the user-visible failure message; analytics and the TaskEstimate insert read the result */
   pushEstimate(ctx: EstimatePushCtx): Promise<EstimatePushResult | Error>
   /** The mapping key for this task; null when the issue or auth cannot be resolved */
   resolveDimensionFieldKey(ctx: DimensionFieldCtx): Promise<DimensionFieldKey | null>
-  /** Turns the client's chosen field id into the row to store. Sentinels never reach this. Field services validate against the issue's fields; label services accept the template verbatim */
+  /** Turns a chosen field id into the row to store. Sentinels never reach this, and updateIntegrationDimensionField has already checked the id against listDimensionFields for field services */
   describeDimensionField(
     ctx: DimensionFieldCtx,
     key: DimensionFieldKey,
     fieldId: string
   ): Promise<DimensionFieldTarget | Error>
+  /** The fields a facilitator can map this dimension to on this task. Label services return no options — the client offers the editable template instead. helpUrl explains an empty list when the service knows why */
+  listDimensionFields(ctx: DimensionFieldCtx): Promise<DimensionFieldListing>
 }
 
 export interface IssueListCapability {

@@ -5,4 +5,8 @@ interface RepoIntegration {
   id: ID!
   service: IntegrationProviderServiceEnum!
   name: String!
+  """
+  The id createTaskIntegration expects for this repo. Differs from id where id is the vendor's node id
+  """
+  integrationRepoId: ID!
 }

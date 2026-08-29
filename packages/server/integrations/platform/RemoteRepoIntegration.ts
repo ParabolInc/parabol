@@ -11,7 +11,14 @@ export type GitHubRepo = GitHubRepoIntegration & {id: string}
 
 export type GitLabProject = GitLabRepoIntegration & {id: string; __typename: 'Project'}
 
-export type LinearRepo = LinearRepoIntegration & ({displayName: string} | {name: string})
+export type LinearTeam = LinearRepoIntegration & {displayName: string}
+
+export type LinearProject = LinearRepoIntegration & {
+  name: string
+  teams?: {nodes?: {id: string; displayName?: string}[] | null} | null
+}
+
+export type LinearRepo = LinearTeam | LinearProject
 
 export type RemoteRepoIntegration =
   | JiraGQLProject

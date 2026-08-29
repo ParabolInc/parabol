@@ -13,6 +13,7 @@ import {
 import buildGitHubSearchQuery from './buildGitHubSearchQuery'
 import describeGitHubDimensionField from './describeGitHubDimensionField'
 import GitHubServerManager from './GitHubServerManager'
+import listGitHubDimensionFields from './listGitHubDimensionFields'
 import pushEstimateToGitHub from './pushEstimateToGitHub'
 import resolveGitHubDimensionFieldKey from './resolveGitHubDimensionFieldKey'
 import resolveGitHubTaskIntegration from './resolveGitHubTaskIntegration'
@@ -55,7 +56,8 @@ export class GitHubServerIntegration extends ServerIntegrationDefinition {
       targets: ['comment', 'label'],
       pushEstimate: pushEstimateToGitHub,
       resolveDimensionFieldKey: resolveGitHubDimensionFieldKey,
-      describeDimensionField: describeGitHubDimensionField
+      describeDimensionField: describeGitHubDimensionField,
+      listDimensionFields: listGitHubDimensionFields
     }
   }
 }

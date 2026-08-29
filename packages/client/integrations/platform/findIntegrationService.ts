@@ -1,28 +1,4 @@
-import graphql from 'babel-plugin-relay/macro'
 import type {ConnectProvider} from './ClientIntegrationDefinition'
-
-graphql`
-  fragment findIntegrationService_cloudProvider on IntegrationService {
-    service
-    cloudProvider {
-      id
-      ... on IntegrationProviderOAuth2 {
-        clientId
-        serverBaseUrl
-        tenantId
-      }
-    }
-  }
-`
-
-graphql`
-  fragment findIntegrationService_auth on IntegrationService {
-    service
-    auth {
-      providerId
-    }
-  }
-`
 
 interface CloudProviderService {
   service: string
@@ -51,5 +27,10 @@ export const getConnectProvider = (
   const {id, clientId, serverBaseUrl, tenantId} = cloudProvider
   return {id, clientId, serverBaseUrl, tenantId: tenantId ?? null}
 }
+
+export const isServiceAvailable = (
+  services: readonly {service: string; isAvailable: boolean}[],
+  service: string
+) => findIntegrationService(services, service)?.isAvailable ?? false
 
 export default findIntegrationService

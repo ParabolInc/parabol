@@ -1,4 +1,5 @@
 import type {GraphQLResolveInfo} from 'graphql'
+import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import upsertIntegrationDimensionFieldMap from '../../../../postgres/queries/upsertIntegrationDimensionFieldMap'
 import publish from '../../../../utils/publish'
 import type {GQLContext} from '../../../graphql'
@@ -6,10 +7,14 @@ import updateIntegrationDimensionField from '../updateIntegrationDimensionField'
 
 const resolveDimensionFieldKey = jest.fn()
 const describeDimensionField = jest.fn()
+const listDimensionFields = jest.fn()
+const targets: string[] = []
 
 jest.mock('../../../../integrations/platform/registry', () => ({
   getServerIntegration: () => ({
-    capabilities: {estimatePush: {resolveDimensionFieldKey, describeDimensionField}}
+    capabilities: {
+      estimatePush: {resolveDimensionFieldKey, describeDimensionField, listDimensionFields, targets}
+    }
   })
 }))
 jest.mock('../../../../postgres/queries/upsertIntegrationDimensionFieldMap', () => ({
@@ -56,12 +61,14 @@ const run = (fieldId: string, taskTeamId = 'team1') =>
 
 describe('updateIntegrationDimensionField', () => {
   beforeEach(() => {
+    targets.splice(0, targets.length, 'comment', 'field')
     resolveDimensionFieldKey.mockResolvedValue({repoId: 'r', issueType: 'Story'})
     describeDimensionField.mockResolvedValue({
       fieldId: 'f1',
       fieldName: 'Field',
       fieldType: 'number'
     })
+    listDimensionFields.mockResolvedValue({options: [{fieldId: 'anything', label: 'Anything'}]})
   })
 
   it('stores the __comment sentinel without asking the service to describe it', async () => {
@@ -140,5 +147,26 @@ describe('updateIntegrationDimensionField', () => {
     await expect(run('anything')).rejects.toThrow('Unknown field')
     expect(upsert).not.toHaveBeenCalled()
     expect(publish).not.toHaveBeenCalled()
+  })
+
+  it('rejects a field id the service does not list', async () => {
+    listDimensionFields.mockResolvedValue({options: [{fieldId: 'f1', label: 'Story Points'}]})
+    await expect(run('f2')).rejects.toThrow('That field is not available on this issue')
+    expect(upsert).not.toHaveBeenCalled()
+  })
+
+  it('accepts a listed field id and a sentinel without consulting the listing', async () => {
+    listDimensionFields.mockResolvedValue({options: [{fieldId: 'f1', label: 'Story Points'}]})
+    await run('f1')
+    expect(upsert).toHaveBeenCalledTimes(1)
+    await run(SprintPokerDefaults.SERVICE_FIELD_COMMENT)
+    expect(listDimensionFields).toHaveBeenCalledTimes(1)
+  })
+
+  it('accepts any template for a label service', async () => {
+    targets.splice(0, targets.length, 'comment', 'label')
+    await run('{{#}} points')
+    expect(listDimensionFields).not.toHaveBeenCalled()
+    expect(upsert).toHaveBeenCalledTimes(1)
   })
 })

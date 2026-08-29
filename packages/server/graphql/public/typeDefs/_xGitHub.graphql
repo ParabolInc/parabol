@@ -6,6 +6,10 @@ type _xGitHubRepository implements RepoIntegration
 
 extend type _xGitHubRepository {
   service: IntegrationProviderServiceEnum!
+  """
+  The id createTaskIntegration expects for this repo. Differs from id where id is the vendor's node id
+  """
+  integrationRepoId: ID!
 }
 
 extend type _xGitHubIssue {
