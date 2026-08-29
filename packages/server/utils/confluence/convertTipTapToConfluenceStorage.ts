@@ -287,6 +287,8 @@ const emitBlock = (node: JSONContent, state: EmitState): string => {
     case 'fileUpload':
       addCensus(state, 'fileUpload', TREATMENTS.fileUpload)
       return ''
+    case 'tableOfContents':
+      return '<ac:structured-macro ac:name="toc"><ac:parameter ac:name="minLevel">1</ac:parameter><ac:parameter ac:name="maxLevel">3</ac:parameter></ac:structured-macro>'
     default: {
       if (node.content) {
         addCensus(state, `unknown:${type}`, TREATMENTS.unknown)

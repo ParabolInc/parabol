@@ -7,6 +7,7 @@ import {InsightsBlock} from './extensions/insightsBlock/InsightsBlock'
 import {ResponseBlock} from './extensions/insightsBlock/ResponseBlock'
 import {TaskBlock} from './extensions/insightsBlock/TaskBlock'
 import {PageLinkBlock} from './extensions/pageLinkBlock/PageLinkBlock'
+import {TableOfContents} from './extensions/tableOfContents/TableOfContents'
 
 const customNodes = [
   TiptapLinkExtension.name,
@@ -16,7 +17,8 @@ const customNodes = [
   ResponseBlock.name,
   InsightsBlock.name,
   ImageBlock.name,
-  TaskBlock.name
+  TaskBlock.name,
+  TableOfContents.name
 ]
 
 // if the view is not mounted yet, view.domAtPos will throw a fatal.

@@ -116,4 +116,22 @@ describe('convertTipTapToConfluenceStorage', () => {
     expect(xhtml).toContain('mystery text')
     expect(degraded).toContainEqual(expect.objectContaining({blockType: 'unknown:mysteryBlock'}))
   })
+
+  it('exports a table of contents block as the native toc macro', () => {
+    const {xhtml, degraded} = convertTipTapToConfluenceStorage(
+      {
+        type: 'doc',
+        content: [
+          {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'Title'}]},
+          {type: 'tableOfContents'},
+          {type: 'heading', attrs: {level: 2}, content: [{type: 'text', text: 'Section'}]}
+        ]
+      },
+      ctx
+    )
+    expect(xhtml).toContain(
+      '<ac:structured-macro ac:name="toc"><ac:parameter ac:name="minLevel">1</ac:parameter><ac:parameter ac:name="maxLevel">3</ac:parameter></ac:structured-macro>'
+    )
+    expect(degraded).toEqual([])
+  })
 })
