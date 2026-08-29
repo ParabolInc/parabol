@@ -3,6 +3,7 @@ import {useFragment} from 'react-relay'
 import type {ScopePhaseAreaAddGitHub_meeting$key} from '../__generated__/ScopePhaseAreaAddGitHub_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
+import {getConnectProvider} from '../integrations/platform/findIntegrationService'
 import {Button} from '../ui/Button/Button'
 import GitHubClientManager from '../utils/GitHubClientManager'
 import GitHubSVG from './GitHubSVG'
@@ -21,14 +22,24 @@ const ScopePhaseAreaAddGitHub = (props: Props) => {
     graphql`
       fragment ScopePhaseAreaAddGitHub_meeting on PokerMeeting {
         teamId
+        viewerMeetingMember {
+          teamMember {
+            services {
+              ...findIntegrationService_cloudProvider @relay(mask: false)
+            }
+          }
+        }
       }
     `,
     meetingRef
   )
-  const {teamId} = meeting
-
+  const {teamId, viewerMeetingMember} = meeting
+  const provider = viewerMeetingMember
+    ? getConnectProvider(viewerMeetingMember.teamMember.services, 'github')
+    : null
   const authGitHub = () => {
-    GitHubClientManager.openOAuth(atmosphere, teamId, mutationProps)
+    if (!provider) return
+    GitHubClientManager.openOAuth(atmosphere, teamId, provider, mutationProps)
   }
   return (
     <div className='flex h-full flex-col items-center justify-center'>

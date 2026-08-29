@@ -1,6 +1,7 @@
 import type Atmosphere from '../Atmosphere'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
-import AddAtlassianAuthMutation from '../mutations/AddAtlassianAuthMutation'
+import type {ConnectProvider} from '../integrations/platform/ClientIntegrationDefinition'
+import AddTeamMemberIntegrationAuthMutation from '../mutations/AddTeamMemberIntegrationAuthMutation'
 import AtlassianManager, {
   type AtlassianPermissionScope,
   unionAtlassianScopes
@@ -11,11 +12,11 @@ export const ERROR_POPUP_CLOSED = 'Popup closed before authorization was complet
 
 class AtlassianClientManager extends AtlassianManager {
   fetch = window.fetch.bind(window)
-  static isAvailable = typeof window !== 'undefined' && !!window.__ACTION__.atlassian
 
   static openOAuth(
     atmosphere: Atmosphere,
     teamId: string,
+    provider: Pick<ConnectProvider, 'id' | 'clientId'>,
     mutationProps: MenuMutationProps,
     requestedScopes: AtlassianPermissionScope[] = AtlassianManager.JIRA_SCOPE,
     heldScopes?: readonly string[] | null
@@ -32,7 +33,7 @@ class AtlassianClientManager extends AtlassianManager {
     )
     const redirect = window.__ACTION__.oauth2Redirect
     const uri = `https://auth.atlassian.com/authorize?audience=api.atlassian.com&client_id=${
-      window.__ACTION__.atlassian
+      provider.clientId
     }&scope=${encodeURI(
       scopes.join(' ')
     )}&redirect_uri=${redirect}&state=${providerState}&response_type=code&prompt=consent`
@@ -63,7 +64,16 @@ class AtlassianClientManager extends AtlassianManager {
       if (state !== providerState || typeof code !== 'string') return
       window.clearInterval(closeCheckerId)
       submitMutation()
-      AddAtlassianAuthMutation(atmosphere, {code, teamId}, {onError, onCompleted})
+      AddTeamMemberIntegrationAuthMutation(
+        atmosphere,
+        {
+          providerId: provider.id,
+          oauthCodeOrPat: code,
+          teamId,
+          includeAtlassian: true
+        },
+        {onError, onCompleted}
+      )
       popup && popup.close()
       window.removeEventListener('message', handler)
     }

@@ -2,6 +2,7 @@ import {useEffect} from 'react'
 import AtlassianProviderLogo from '../../AtlassianProviderLogo'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps, {type MenuMutationProps} from '../../hooks/useMutationProps'
+import type {ConnectProvider} from '../../integrations/platform/ClientIntegrationDefinition'
 import {Button} from '../../ui/Button/Button'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
 import AtlassianClientManager, {ERROR_POPUP_CLOSED} from '../../utils/AtlassianClientManager'
@@ -9,12 +10,13 @@ import SendClientSideEvent from '../../utils/SendClientSideEvent'
 
 interface Props {
   teamId: string | null
+  provider: ConnectProvider | null
   heldScopes?: readonly string[] | null
   onAuthed: () => void
 }
 
 export const ConfluenceEnableState = (props: Props) => {
-  const {teamId, heldScopes, onAuthed} = props
+  const {teamId, provider, heldScopes, onAuthed} = props
   const atmosphere = useAtmosphere()
   useEffect(() => {
     SendClientSideEvent(atmosphere, 'Confluence Export Enable Shown')
@@ -31,10 +33,11 @@ export const ConfluenceEnableState = (props: Props) => {
   } as MenuMutationProps
 
   const enable = () => {
-    if (submitting || !teamId) return
+    if (submitting || !teamId || !provider) return
     AtlassianClientManager.openOAuth(
       atmosphere,
       teamId,
+      provider,
       mutationProps,
       [...AtlassianClientManager.CONFLUENCE_SCOPE, 'offline_access' as const],
       heldScopes
@@ -50,7 +53,12 @@ export const ConfluenceEnableState = (props: Props) => {
           "Grant Confluence permissions to export pages. Jira keeps working as-is — this adds, it doesn't replace. We'll open a secure Atlassian sign-in window."
         }
       </p>
-      <Button variant='dialogPrimary' size='md' onClick={enable} disabled={submitting || !teamId}>
+      <Button
+        variant='dialogPrimary'
+        size='md'
+        onClick={enable}
+        disabled={submitting || !teamId || !provider}
+      >
         Enable Confluence
       </Button>
       {error && (

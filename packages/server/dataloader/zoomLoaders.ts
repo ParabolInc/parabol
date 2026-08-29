@@ -1,9 +1,10 @@
 import DataLoader from 'dataloader'
 import ZoomOAuth2Manager from '../integrations/zoom/ZoomOAuth2Manager'
-import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
+import syncTeamMemberIntegrationAuthTokens from '../postgres/queries/syncTeamMemberIntegrationAuthTokens'
 import type {TeamMemberIntegrationAuth} from '../postgres/types'
 import logError from '../utils/logError'
 import type RootDataLoader from './RootDataLoader'
+import settleOrLogRejection from './settleOrLogRejection'
 
 export const freshZoomAuth = (parent: RootDataLoader) => {
   return new DataLoader<{teamId: string; userId: string}, TeamMemberIntegrationAuth | null, string>(
@@ -31,24 +32,31 @@ export const freshZoomAuth = (parent: RootDataLoader) => {
             const manager = new ZoomOAuth2Manager(clientId!, clientSecret!, serverBaseUrl!)
             const oauthRes = await manager.refresh(refreshToken)
             if (oauthRes instanceof Error) return null
-            const {accessToken, expiresIn} = oauthRes
+            const {accessToken, refreshToken: newRefreshToken, expiresIn} = oauthRes
             const bufferBeforeExpires = 30
             const millisecondsInSeconds = 1000
             const expiresAtTimestamp =
               new Date().getTime() + (expiresIn - bufferBeforeExpires) * millisecondsInSeconds
             const newExpiresAt = new Date(expiresAtTimestamp)
-            const newZoomAuth = {
-              ...zoomAuth,
+            const tokens = {
               accessToken,
+              refreshToken: newRefreshToken || refreshToken,
+              scopes: zoomAuth.scopes,
               expiresAt: newExpiresAt
             }
-            await upsertTeamMemberIntegrationAuth(newZoomAuth)
-            return newZoomAuth
+            await syncTeamMemberIntegrationAuthTokens({
+              userId,
+              teamId,
+              providerId,
+              providerUserId: zoomAuth.providerUserId,
+              ...tokens
+            })
+            return {...zoomAuth, ...tokens}
           }
           return zoomAuth
         })
       )
-      return results.map((result) => (result.status === 'fulfilled' ? result.value : null))
+      return settleOrLogRejection(results, keys)
     },
     {
       ...parent.dataLoaderOptions,

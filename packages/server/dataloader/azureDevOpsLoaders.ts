@@ -1,7 +1,7 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
 import getKysely from '../postgres/getKysely'
-import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
+import syncTeamMemberIntegrationAuthTokens from '../postgres/queries/syncTeamMemberIntegrationAuthTokens'
 import type {TeamMemberIntegrationAuth} from '../postgres/types'
 import type {IntegrationProviderAzureDevOps} from '../postgres/types/IntegrationProvider'
 import AzureDevOpsServerManager, {
@@ -14,6 +14,7 @@ import {getInstanceId} from '../utils/azureDevOps/azureDevOpsFieldTypeToId'
 import {Logger} from '../utils/Logger'
 import logError from '../utils/logError'
 import type RootDataLoader from './RootDataLoader'
+import settleOrLogRejection from './settleOrLogRejection'
 
 type TeamUserKey = {
   teamId: string
@@ -179,18 +180,25 @@ export const freshAzureDevOpsAuth = (parent: RootDataLoader) => {
             }
             const {accessToken, refreshToken: newRefreshToken} = oauthRes
             const updatedRefreshToken = newRefreshToken || refreshToken
-            const newAzureDevOpsAuth = {
-              ...azureDevOpsAuthToRefresh,
+            const tokens = {
               accessToken,
-              refreshToken: updatedRefreshToken
+              refreshToken: updatedRefreshToken,
+              scopes: azureDevOpsAuthToRefresh.scopes,
+              expiresAt: azureDevOpsAuthToRefresh.expiresAt
             }
-            await upsertTeamMemberIntegrationAuth(newAzureDevOpsAuth)
-            return newAzureDevOpsAuth
+            await syncTeamMemberIntegrationAuthTokens({
+              userId,
+              teamId,
+              providerId,
+              providerUserId: azureDevOpsAuthToRefresh.providerUserId,
+              ...tokens
+            })
+            return {...azureDevOpsAuthToRefresh, ...tokens}
           }
           return azureDevOpsAuthToRefresh
         })
       )
-      return results.map((result) => (result.status === 'fulfilled' ? result.value : null))
+      return settleOrLogRejection(results, keys)
     },
     {
       ...parent.dataLoaderOptions,

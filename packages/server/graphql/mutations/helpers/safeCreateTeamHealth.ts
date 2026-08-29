@@ -2,7 +2,6 @@ import MeetingTeamHealth from '../../../database/types/MeetingTeamHealth'
 import TeamHealthIntroPhase from '../../../database/types/TeamHealthIntroPhase'
 import TeamHealthResponsePhase from '../../../database/types/TeamHealthResponsePhase'
 import TeamHealthResultPhase from '../../../database/types/TeamHealthResultPhase'
-import TeamHealthSubmittedPhase from '../../../database/types/TeamHealthSubmittedPhase'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import type {TeamHealthMeeting} from '../../../postgres/types/Meeting'
@@ -41,18 +40,13 @@ const safeCreateTeamHealth = async (
 
   // stages reference the immutable question by its raw id, one least-asked question per category
   const questionIds = await rotateTeamHealthQuestionIds(questions, meetingSeriesId)
-  // intro -> response (one stage per question) -> submitted -> result (locked until reveal)
+  // intro -> response (one stage per question) -> result, which is the waiting room until the
+  // meeting ends and the answers are revealed in place
   const phases = [
     new TeamHealthIntroPhase(),
     new TeamHealthResponsePhase({questionIds}),
-    new TeamHealthSubmittedPhase(),
     new TeamHealthResultPhase()
-  ] as [
-    TeamHealthIntroPhase,
-    TeamHealthResponsePhase,
-    TeamHealthSubmittedPhase,
-    TeamHealthResultPhase
-  ]
+  ] as [TeamHealthIntroPhase, TeamHealthResponsePhase, TeamHealthResultPhase]
   primePhases(phases)
 
   const meetingId = generateUID()

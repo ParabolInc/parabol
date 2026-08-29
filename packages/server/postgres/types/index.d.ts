@@ -9,6 +9,7 @@ import {
   type selectGitHubDimensionFieldMap,
   type selectGitLabDimensionFieldMap,
   type selectInspirationItems,
+  type selectIntegrationSearchQuery,
   type selectJiraDimensionFieldMap,
   type selectJiraServerDimensionFieldMap,
   type selectMassInvitations,
@@ -111,8 +112,9 @@ export type SuggestedAction = ExtractTypeFromQueryBuilderSelect<typeof selectSug
 export interface Team extends ExtractTypeFromQueryBuilderSelect<typeof selectTeams> {}
 
 export type TeamMember = Selectable<TeamMemberPG>
-export interface TeamMemberIntegrationAuth
-  extends ExtractTypeFromQueryBuilderSelect<typeof selectTeamMemberIntegrationAuth> {}
+export type TeamMemberIntegrationAuth = ExtractTypeFromQueryBuilderSelect<
+  typeof selectTeamMemberIntegrationAuth
+>
 export type TeamPromptResponse = ExtractTypeFromQueryBuilderSelect<typeof selectTeamPromptResponses>
 export type InspirationItem = ExtractTypeFromQueryBuilderSelect<typeof selectInspirationItems>
 export type TeamHealthCategory = ExtractTypeFromQueryBuilderSelect<
@@ -182,6 +184,22 @@ export type JiraSearchQuery = {
   projectKeyFilters?: string[]
   lastUsedAt: string
 }
+
+export type JiraSearchQueryJson = {
+  queryString: string
+  isJQL: boolean
+  projectKeyFilters: string[]
+}
+
+export type GitHubSearchQueryJson = {
+  queryString: string
+}
+
+export type IntegrationSearchQuery = ExtractTypeFromQueryBuilderSelect<
+  typeof selectIntegrationSearchQuery
+>
+
+export type JiraAuthMeta = {cloudIds: string[]}
 
 export type AtlassianAuth = ExtractTypeFromQueryBuilderSelect<typeof selectAtlassianAuth>
 

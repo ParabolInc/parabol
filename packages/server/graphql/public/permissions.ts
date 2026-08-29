@@ -40,7 +40,6 @@ const permissionMap: PermissionMap<Resolvers> = {
     // don't check isAuthenticated for acceptTeamInvitation here because there are special cases handled in the resolver
     acceptTeamInvitation: rateLimit({perMinute: 50, perHour: 100}),
     addAgendaItem: isTeamMember<'Mutation.addAgendaItem'>('args.newAgendaItem.teamId'),
-    addAtlassianAuth: isTeamMember<'Mutation.addAtlassianAuth'>('args.teamId'),
     addApprovedOrganizationDomains: or(
       isSuperUser,
       and(
@@ -49,7 +48,6 @@ const permissionMap: PermissionMap<Resolvers> = {
       )
     ),
     addComment: isMeetingMember<'Mutation.addComment'>('args.comment.discussionId', 'discussions'),
-    addGitHubAuth: isTeamMember<'Mutation.addGitHubAuth'>('args.teamId'),
     addOrg: and(
       not(and(isEnvVarTrue('IS_SINGLE_ORG'), isEnvVarTrue('IS_ENTERPRISE'))),
       rateLimit({perMinute: 2, perHour: 5})
@@ -195,10 +193,8 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     moveTeamToOrg: or(isSuperUser, isViewerBillingLeader<'Mutation.moveTeamToOrg'>('args.orgId')),
     navigateMeeting: isMeetingFacilitator<'Mutation.navigateMeeting'>('args.meetingId'),
-    persistGitHubSearchQuery: isTeamMember<'Mutation.persistGitHubSearchQuery'>('args.teamId'),
     persistIntegrationSearchQuery:
       isTeamMember<'Mutation.persistIntegrationSearchQuery'>('args.teamId'),
-    persistJiraSearchQuery: isTeamMember<'Mutation.persistJiraSearchQuery'>('args.teamId'),
     pokerAnnounceDeckHover:
       isTeamMemberOfMeeting<'Mutation.pokerAnnounceDeckHover'>('args.meetingId'),
     pokerResetDimension: isMeetingFacilitator<'Mutation.pokerResetDimension'>('args.meetingId'),
@@ -208,8 +204,6 @@ const permissionMap: PermissionMap<Resolvers> = {
         'args.dimensionId',
         'templateDimensions'
       ),
-    promoteNewMeetingFacilitator:
-      isTeamMemberOfMeeting<'Mutation.promoteNewMeetingFacilitator'>('args.meetingId'),
     promoteToTeamLead: or(
       isSuperUser,
       isViewerTeamLead<'Mutation.promoteToTeamLead'>('args.teamId'),
@@ -233,8 +227,8 @@ const permissionMap: PermissionMap<Resolvers> = {
       isSuperUser,
       isViewerBillingLeader<'Mutation.removeApprovedOrganizationDomains'>('args.orgId')
     ),
-    removeAtlassianAuth: isTeamMember<'Mutation.removeAtlassianAuth'>('args.teamId'),
-    removeGitHubAuth: isTeamMember<'Mutation.removeGitHubAuth'>('args.teamId'),
+    removeIntegrationSearchQuery:
+      isTeamMember<'Mutation.removeIntegrationSearchQuery'>('args.teamId'),
     removePokerTemplate: or(
       isViewerBillingLeader<'Mutation.removePokerTemplate'>('args.templateId', 'meetingTemplates'),
       isTeamMember<'Mutation.removePokerTemplate'>('args.templateId', 'meetingTemplates')
@@ -377,6 +371,8 @@ const permissionMap: PermissionMap<Resolvers> = {
     updateCommentContent: isMeetingMember<'Mutation.updateCommentContent'>('args.meetingId'),
     updateCreditCard: isViewerBillingLeader<'Mutation.updateCreditCard'>('args.orgId'),
     updateDragLocation: isTeamMember<'Mutation.updateDragLocation'>('args.input.teamId'),
+    updateFacilitatorRotation:
+      isTeamMemberOfMeeting<'Mutation.updateFacilitatorRotation'>('args.meetingId'),
     updateGitHubDimensionField: isTeamMember<'Mutation.updateGitHubDimensionField'>(
       'args.meetingId',
       'newMeetings'
@@ -504,6 +500,9 @@ const permissionMap: PermissionMap<Resolvers> = {
   TeamMember: {
     integrations: isUserViewer<'TeamMember.integrations'>('source.userId'),
     services: isUserViewer<'TeamMember.services'>('source.userId')
+  },
+  IntegrationService: {
+    auth: isUserViewer<'IntegrationService.auth'>('source.userId')
   },
   User: {
     archivedTasks: isTeamMember<'User.archivedTasks'>('args.teamId'),

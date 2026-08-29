@@ -4,8 +4,7 @@ import {useFragment} from 'react-relay'
 import type {ScopePhaseArea_meeting$key} from '~/__generated__/ScopePhaseArea_meeting.graphql'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
-import AtlassianClientManager from '../utils/AtlassianClientManager'
-import GitHubClientManager from '../utils/GitHubClientManager'
+import {getConnectProvider} from '../integrations/platform/findIntegrationService'
 import AzureDevOpsSVG from './AzureDevOpsSVG'
 import GitHubSVG from './GitHubSVG'
 import GitLabSVG from './GitLabSVG'
@@ -55,6 +54,9 @@ const ScopePhaseArea = (props: Props) => {
         showSidebar
         viewerMeetingMember {
           teamMember {
+            services {
+              ...findIntegrationService_cloudProvider @relay(mask: false)
+            }
             integrations {
               gitlab {
                 cloudProvider {
@@ -86,6 +88,9 @@ const ScopePhaseArea = (props: Props) => {
   )
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {viewerMeetingMember} = meeting
+  const services = viewerMeetingMember?.teamMember.services ?? []
+  const isGitHubAvailable = !!getConnectProvider(services, 'github')
+  const isJiraAvailable = !!getConnectProvider(services, 'jira')
   const gitlabIntegration = viewerMeetingMember?.teamMember.integrations.gitlab
   const azureDevOpsIntegration = viewerMeetingMember?.teamMember.integrations.azureDevOps
   const linearIntegration = viewerMeetingMember?.teamMember.integrations.linear
@@ -101,13 +106,13 @@ const ScopePhaseArea = (props: Props) => {
     {
       icon: <GitHubSVG className='dark:[&_path]:fill-white' />,
       label: 'GitHub',
-      allow: GitHubClientManager.isAvailable,
+      allow: isGitHubAvailable,
       Component: ScopePhaseAreaGitHub
     },
     {
       icon: <JiraSVG />,
       label: 'Jira',
-      allow: AtlassianClientManager.isAvailable,
+      allow: isJiraAvailable,
       Component: ScopePhaseAreaJira
     },
     {

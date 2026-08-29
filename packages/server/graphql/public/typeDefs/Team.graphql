@@ -211,4 +211,16 @@ type Team implements Node & TeamPartial {
   The list of Jira fields to be displayed alongside the task content
   """
   jiraDisplayFieldIds: [String!]
+
+  """
+  The team members in facilitator rotation order, soonest first. A teammate who joined since
+  the last meeting sits at the top, so they enter the rotation without an explicit edit.
+  """
+  facilitatorRotation: [TeamMember!]!
+
+  """
+  If true, starting a meeting promotes the next person in the rotation.
+  If false (default) whoever starts the meeting facilitates, as today.
+  """
+  autoAssignFacilitator: Boolean!
 }
