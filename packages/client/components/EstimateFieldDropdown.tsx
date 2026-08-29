@@ -2,52 +2,51 @@ import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {ExpandMore} from '~/ui/icons'
-import type {GitLabFieldDimensionDropdown_stage$key} from '../__generated__/GitLabFieldDimensionDropdown_stage.graphql'
-import interpolateVotingLabelTemplate from '../shared/interpolateVotingLabelTemplate'
-import {SprintPokerDefaults} from '../types/constEnums'
+import type {EstimateFieldDropdown_stage$key} from '../__generated__/EstimateFieldDropdown_stage.graphql'
 import {cn} from '../ui/cn'
 import {Menu} from '../ui/Menu/Menu'
 import EditVotingLabelTemplateModal from './EditVotingLabelTemplateModal'
-import type {EditModalConfig} from './GitLabFieldMenu'
-import GitLabFieldMenu from './GitLabFieldMenu'
+import type {EditModalConfig} from './EstimateFieldMenu'
+import EstimateFieldMenu from './EstimateFieldMenu'
+import {resolveEstimateFieldLabel} from './estimateFieldOptions'
 import PlainButton from './PlainButton/PlainButton'
 
 interface Props {
   clearError: () => void
   isFacilitator: boolean
-  stageRef: GitLabFieldDimensionDropdown_stage$key
+  stageRef: EstimateFieldDropdown_stage$key
   submitScore(): void
 }
 
-const labelLookup = {
-  [SprintPokerDefaults.GITLAB_FIELD_TIME_ESTIMATE]:
-    SprintPokerDefaults.GITLAB_FIELD_TIME_ESTIMATE_LABEL,
-  [SprintPokerDefaults.GITLAB_FIELD_WEIGHT]: SprintPokerDefaults.GITLAB_FIELD_WEIGHT_LABEL,
-  [SprintPokerDefaults.SERVICE_FIELD_COMMENT]: SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL,
-  [SprintPokerDefaults.SERVICE_FIELD_NULL]: SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL
-}
-
-const GitLabFieldDimensionDropdown = (props: Props) => {
+const EstimateFieldDropdown = (props: Props) => {
   const {clearError, stageRef, isFacilitator, submitScore} = props
   const stage = useFragment(
     graphql`
-      fragment GitLabFieldDimensionDropdown_stage on EstimateStage {
-        ...GitLabFieldMenu_stage
+      fragment EstimateFieldDropdown_stage on EstimateStage {
+        ...EstimateFieldMenu_stage
         finalScore
         serviceField {
           name
+        }
+        dimensionFieldListing {
+          targets
+          options {
+            fieldId
+            label
+          }
         }
       }
     `,
     stageRef
   )
-  const {finalScore, serviceField} = stage
-  const {name: serviceFieldName} = serviceField
+  const {finalScore, serviceField, dimensionFieldListing} = stage
   const [editModalConfig, setEditModalConfig] = useState<EditModalConfig | null>(null)
-
-  const label =
-    labelLookup[serviceFieldName as keyof typeof labelLookup] ||
-    interpolateVotingLabelTemplate(serviceFieldName, finalScore)
+  const label = resolveEstimateFieldLabel({
+    name: serviceField.name,
+    options: dimensionFieldListing.options,
+    targets: dimensionFieldListing.targets,
+    finalScore
+  })
 
   const trigger = (
     <PlainButton
@@ -68,7 +67,7 @@ const GitLabFieldDimensionDropdown = (props: Props) => {
   return (
     <>
       <Menu trigger={trigger} onOpenChange={(open) => open && clearError()}>
-        <GitLabFieldMenu
+        <EstimateFieldMenu
           stageRef={stage}
           submitScore={submitScore}
           onOpenEditModal={setEditModalConfig}
@@ -87,4 +86,4 @@ const GitLabFieldDimensionDropdown = (props: Props) => {
   )
 }
 
-export default GitLabFieldDimensionDropdown
+export default EstimateFieldDropdown

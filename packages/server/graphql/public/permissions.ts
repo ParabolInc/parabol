@@ -508,6 +508,7 @@ const permissionMap: PermissionMap<Resolvers> = {
   },
   IntegrationService: {
     auth: isUserViewer<'IntegrationService.auth'>('source.userId'),
+    grantedScopes: isUserViewer<'IntegrationService.grantedScopes'>('source.userId'),
     repos: isUserViewer<'IntegrationService.repos'>('source.userId'),
     searchQueries: isUserViewer<'IntegrationService.searchQueries'>('source.userId')
   },

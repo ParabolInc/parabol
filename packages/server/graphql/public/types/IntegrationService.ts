@@ -53,6 +53,12 @@ const IntegrationService: IntegrationServiceResolvers = {
     getServerIntegration(service).getAuthRow({dataLoader, teamId, userId}),
   cloudProvider: ({service, teamId, userId}, _args, {dataLoader}) =>
     getServerIntegration(service).getGlobalProvider({dataLoader, teamId, userId}),
+  grantedScopes: async ({service, teamId, userId}, _args, {dataLoader}) => {
+    const auth = await dataLoader
+      .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
+      .load({service, teamId, userId})
+    return auth?.scopes?.split(/[\s,]+/).filter(Boolean) ?? []
+  },
   repos: ({service, teamId, userId}, {networkOnly}, context, info) =>
     loadServiceRepoIntegrations(
       service,

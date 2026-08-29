@@ -12,6 +12,7 @@ import {
 import describeJiraServerDimensionField from './describeJiraServerDimensionField'
 import fetchJiraServerProjects from './fetchJiraServerProjects'
 import JiraServerRestManager from './JiraServerRestManager'
+import listJiraServerDimensionFields from './listJiraServerDimensionFields'
 import pushEstimateToJiraServer from './pushEstimateToJiraServer'
 import resolveJiraServerDimensionFieldKey from './resolveJiraServerDimensionFieldKey'
 import resolveJiraServerTaskIntegration from './resolveJiraServerTaskIntegration'
@@ -46,7 +47,8 @@ export class JiraServerServerIntegration extends ServerIntegrationDefinition {
       targets: ['comment', 'field'],
       pushEstimate: pushEstimateToJiraServer,
       resolveDimensionFieldKey: resolveJiraServerDimensionFieldKey,
-      describeDimensionField: describeJiraServerDimensionField
+      describeDimensionField: describeJiraServerDimensionField,
+      listDimensionFields: listJiraServerDimensionFields
     }
   }
 }

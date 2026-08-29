@@ -24,7 +24,7 @@ graphql`
       ...PokerEstimateHeaderCard_stage
       ...PokerCardDeckStage
       ...EstimatePhaseAreaStage
-      ...JiraFieldDimensionDropdown_stage
+      ...EstimateFieldDropdown_stage
       ...EstimateDimensionColumn_stage
       ... on EstimateStage {
         discussionId

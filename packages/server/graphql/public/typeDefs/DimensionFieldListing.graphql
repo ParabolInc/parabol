@@ -1,0 +1,19 @@
+"""
+What the task's service can do with this dimension's estimate, and which fields it may go to
+"""
+type DimensionFieldListing {
+  """
+  How the service can receive an estimate. Empty when the task has no integration
+  """
+  targets: [EstimatePushTargetEnum!]!
+
+  """
+  The fields this dimension can push to. Empty for label services and when the task has no integration
+  """
+  options: [DimensionFieldOption!]!
+
+  """
+  A support doc explaining why no usable field was found. Null when a field exists or the service has none to look for
+  """
+  helpUrl: URL
+}
