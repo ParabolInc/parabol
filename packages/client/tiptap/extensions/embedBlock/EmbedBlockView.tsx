@@ -1,13 +1,18 @@
 import {type NodeViewProps, NodeViewWrapper} from '@tiptap/react'
-import {useCallback, useEffect, useRef} from 'react'
+import {useCallback, useEffect, useRef, useState} from 'react'
+import {useBlockResizer} from '../../../hooks/useBlockResizer'
 import {isAllowedEmbedHost, resolveCuratedEmbed} from '../../../shared/embed/curatedEmbedProviders'
 import type {EmbedBlockAttrs} from '../../../shared/embed/embedTypes'
 import {normalizeEmbedUrl} from '../../../shared/embed/normalizeEmbedUrl'
 import {cn} from '../../../ui/cn'
+import {BlockResizer} from '../imageBlock/BlockResizer'
+import {EmbedBlockBubbleMenu} from './EmbedBlockBubbleMenu'
 import {EmbedBlockCard} from './EmbedBlockCard'
 import {EmbedBlockFrame} from './EmbedBlockFrame'
 import {EmbedBlockUrlInput} from './EmbedBlockUrlInput'
 import {useResolveEmbedUrl} from './useResolveEmbedUrl'
+
+const EDITOR_WIDTH = 720
 
 export const EmbedBlockView = (props: NodeViewProps) => {
   const {editor, getPos, node, updateAttributes, selected} = props
@@ -26,6 +31,8 @@ export const EmbedBlockView = (props: NodeViewProps) => {
   } = attrs
 
   const [resolve, isResolving] = useResolveEmbedUrl()
+  const [isReplacing, setIsReplacing] = useState(false)
+  const aspectRatioRef = useRef(16 / 9)
   const resolvedUrlRef = useRef<string | null>(null)
 
   const onClick = useCallback(() => {
@@ -85,9 +92,6 @@ export const EmbedBlockView = (props: NodeViewProps) => {
     [updateAttributes, resolve, applyResolvedMetadata]
   )
 
-  // A URL can arrive already on the node, from a paste or a collaborator, without
-  // ever passing through applyUrl. An unstamped fetchedAt is the signal it was
-  // never resolved.
   useEffect(() => {
     if (!url || fetchedAt) return
     if (!editor.isEditable) return
@@ -115,14 +119,38 @@ export const EmbedBlockView = (props: NodeViewProps) => {
     }
   }, [url, fetchedAt, editor.isEditable, resolve, applyResolvedMetadata, updateAttributes])
 
+  const onSubmitUrl = useCallback(
+    async (raw: string) => {
+      setIsReplacing(false)
+      await applyUrl(raw)
+    },
+    [applyUrl]
+  )
+
+  // Reload only ever rewrites provider-derived attributes, never formatting choices
+  const onReload = useCallback(async () => {
+    if (!url) return
+    const resolved = await resolve(url, true)
+    if (!resolved) return
+    const {aspectRatio: _aspect, url: _url, ...metadata} = resolved
+    updateAttributes(metadata)
+  }, [url, resolve, updateAttributes])
+
+  const {onPointerDown} = useBlockResizer(
+    width ?? EDITOR_WIDTH,
+    (next) => updateAttributes({...next, isFullWidth: false}),
+    aspectRatioRef,
+    editor.view.dom.getBoundingClientRect().width || EDITOR_WIDTH
+  )
+
   const alignClass =
     align === 'left' ? 'justify-start' : align === 'right' ? 'justify-end' : 'justify-center'
 
-  if (!url) {
+  if (!url || isReplacing) {
     return (
       <NodeViewWrapper>
         <div contentEditable={false}>
-          <EmbedBlockUrlInput isResolving={isResolving} onSubmit={applyUrl} />
+          <EmbedBlockUrlInput isResolving={isResolving} onSubmit={onSubmitUrl} />
         </div>
       </NodeViewWrapper>
     )
@@ -155,6 +183,26 @@ export const EmbedBlockView = (props: NodeViewProps) => {
             />
           ) : (
             <EmbedBlockCard attrs={attrs} />
+          )}
+          {editor.isEditable && (
+            <>
+              {!isFullWidth && (
+                <>
+                  <BlockResizer className='left-0 z-20' onPointerDown={onPointerDown('left')} />
+                  <BlockResizer className='right-0 z-20' onPointerDown={onPointerDown('right')} />
+                </>
+              )}
+              <EmbedBlockBubbleMenu
+                editor={editor}
+                attrs={attrs}
+                canFrame={canFrame}
+                isOpen={selected}
+                isResolving={isResolving}
+                updateAttributes={updateAttributes}
+                onReload={onReload}
+                onReplace={() => setIsReplacing(true)}
+              />
+            </>
           )}
         </div>
       </div>

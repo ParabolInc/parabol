@@ -15,27 +15,12 @@ export const useBlockResizer = (
   maxWidth: number
 ) => {
   const dragRef = useRef(makeDrag())
-  const onMouseUp = useEventCallback((e: MouseEvent | TouchEvent) => {
-    if (e.type === 'touchend') {
-      document.removeEventListener('touchmove', onMouseMove)
-    } else {
-      document.removeEventListener('mousemove', onMouseMove)
-    }
-    const aspectRatio = aspectRatioRef.current!
-    updateAttributes({width, height: Math.round(width / aspectRatio)})
-    dragRef.current = makeDrag()
-  })
 
-  const onMouseMove = useEventCallback((e: MouseEvent | TouchEvent) => {
-    // required to prevent address bar scrolling & other strange browser things on mobile view
-    e.preventDefault()
-    const isTouchMove = e.type === 'touchmove'
-    const {clientX} = isTouchMove ? (e as TouchEvent).touches[0]! : (e as MouseEvent)
+  const onPointerMove = useEventCallback((e: PointerEvent) => {
+    const {clientX} = e
     const {current: drag} = dragRef
-    const wasDrag = drag.isDrag
-    if (!wasDrag) {
-      const isDrag = getIsDrag(clientX, 0, drag.startX, 0)
-      drag.isDrag = isDrag
+    if (!drag.isDrag) {
+      drag.isDrag = getIsDrag(clientX, 0, drag.startX, 0)
       if (!drag.isDrag) return
     }
     const sideCoefficient = drag.side === 'left' ? 1 : -1
@@ -48,25 +33,32 @@ export const useBlockResizer = (
     })
   })
 
-  const onMouseDown = useEventCallback(
-    (side: 'left' | 'right') =>
-      (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
-        const isTouchStart = e.type === 'touchstart'
-        if (isTouchStart) {
-          document.addEventListener('touchmove', onMouseMove)
-          document.addEventListener('touchend', onMouseUp, {once: true})
-        } else {
-          document.addEventListener('mousemove', onMouseMove)
-          document.addEventListener('mouseup', onMouseUp, {once: true})
-        }
-        const {clientX} = isTouchStart
-          ? (e as React.TouchEvent<HTMLDivElement>).touches[0]!
-          : (e as React.MouseEvent<HTMLDivElement>)
-        dragRef.current.side = side
-        dragRef.current.startX = clientX
-        dragRef.current.lastX = clientX
-        dragRef.current.isDrag = false
-      }
+  const endDrag = useEventCallback(() => {
+    if (dragRef.current.isDrag) {
+      const aspectRatio = aspectRatioRef.current!
+      updateAttributes({width, height: Math.round(width / aspectRatio)})
+    }
+    dragRef.current = makeDrag()
+  })
+
+  const onPointerDown = useEventCallback(
+    (side: 'left' | 'right') => (e: React.PointerEvent<HTMLDivElement>) => {
+      const handle = e.currentTarget
+      // Capture keeps move & release events in this document even when the pointer
+      // crosses a live cross-origin iframe, which otherwise swallows them and leaves
+      // the block resizing after the button is released
+      handle.setPointerCapture(e.pointerId)
+      handle.addEventListener('pointermove', onPointerMove)
+      handle.addEventListener(
+        'lostpointercapture',
+        () => {
+          handle.removeEventListener('pointermove', onPointerMove)
+          endDrag()
+        },
+        {once: true}
+      )
+      dragRef.current = {isDrag: false, startX: e.clientX, lastX: e.clientX, side}
+    }
   )
-  return {onMouseDown, onMouseMove, onMouseUp, width}
+  return {onPointerDown}
 }
