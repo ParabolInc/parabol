@@ -16,6 +16,19 @@ type Query {
     token: ID!
   ): MassInvitationPayload! @scope(name: TEAMS_READ)
   """
+  Resolve an external URL into embeddable metadata
+  """
+  resolveEmbedUrl(
+    """
+    The URL to resolve
+    """
+    url: String!
+    """
+    Bypass the cache and force a fresh fetch
+    """
+    refresh: Boolean
+  ): EmbedMetadata @scope(name: USERS_READ)
+  """
   Search for GIFs using Giphy
   """
   searchGifs(
