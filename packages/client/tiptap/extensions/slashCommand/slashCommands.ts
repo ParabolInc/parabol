@@ -16,7 +16,8 @@ import {
   GridOn as TableIcon,
   TextFields as TextFieldsIcon,
   Title as TitleIcon,
-  Toc as TocIcon
+  Toc as TocIcon,
+  WebAsset as WebAssetIcon
 } from '~/ui/icons'
 
 declare module '@tiptap/core' {
@@ -233,6 +234,40 @@ export const slashCommands = [
   {
     group: 'Media',
     commands: [
+      {
+        title: 'Embed',
+        description: 'Embed a video, doc, or link',
+        searchTerms: [
+          'embed',
+          'video',
+          'youtube',
+          'loom',
+          'vimeo',
+          'google docs',
+          'figma',
+          'miro',
+          'bookmark',
+          'link',
+          'url'
+        ],
+        icon: WebAssetIcon,
+        action: (editor: Editor) => {
+          const {to} = editor.state.selection
+          const size = editor.state.doc.content.size
+          // setTextSelection is load-bearing: embedBlock is an atom, so inserting it
+          // leaves a NodeSelection on the node, and a chained insertContent would
+          // replace it rather than append after it
+          let command = editor
+            .chain()
+            .focus()
+            .setEmbedBlock()
+            .setTextSelection(to + 1)
+          if (size - to <= 1) {
+            command = command.insertContent('<p></p>').setTextSelection(to + 1)
+          }
+          return command.scrollIntoView().run()
+        }
+      },
       {
         title: 'Image',
         description: 'Upload any image from your device',

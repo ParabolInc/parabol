@@ -1,4 +1,5 @@
 import type {JSONContent} from '@tiptap/core'
+import {toSafeHref} from 'parabol-client/shared/embed/normalizeEmbedUrl'
 import {escapeHtml} from '../escapeHtml'
 import {escapeCdata} from './escapeXhtml'
 import type {ExportAsset, StorageConversionCtx, StorageConversionResult} from './types'
@@ -264,6 +265,14 @@ const emitBlock = (node: JSONContent, state: EmitState): string => {
     case 'loom': {
       const src = escapeHtml(String(attrs?.src ?? ''))
       return src ? `<p><a href="${src}" data-card-appearance="embed">${src}</a></p>` : ''
+    }
+    case 'embedBlock': {
+      const href = toSafeHref(attrs?.url as string | undefined)
+      if (!href) return ''
+      const src = escapeHtml(href)
+      const appearance = attrs?.displayMode === 'card' ? 'block' : 'embed'
+      const label = escapeHtml(String(attrs?.title ?? href))
+      return `<p><a href="${src}" data-card-appearance="${appearance}">${label}</a></p>`
     }
     case 'pageLinkBlock':
       return emitPageLink(node, state)
