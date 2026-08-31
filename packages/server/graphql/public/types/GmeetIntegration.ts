@@ -7,7 +7,7 @@ export type GmeetIntegrationSource = {
 
 const GmeetIntegration: GmeetIntegrationResolvers = {
   auth: ({teamId, userId}, _args, {dataLoader}) => {
-    return dataLoader.get('freshGmeetAuth').load({teamId, userId})
+    return dataLoader.get('freshAuth').load({service: 'gmeet', teamId, userId})
   },
 
   cloudProvider: async (_source, _args, {dataLoader}) => {
@@ -18,7 +18,7 @@ const GmeetIntegration: GmeetIntegrationResolvers = {
   },
 
   isActive: async ({teamId, userId}, _args, {dataLoader}) => {
-    const auth = await dataLoader.get('freshGmeetAuth').load({teamId, userId})
+    const auth = await dataLoader.get('freshAuth').load({service: 'gmeet', teamId, userId})
     return !!auth?.isActive
   }
 }

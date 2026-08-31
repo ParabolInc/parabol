@@ -17,7 +17,7 @@ import type {
 import type {
   CreateTaskResponse,
   TaskIntegrationManager
-} from '../integrations/TaskIntegrationManagerFactory'
+} from '../integrations/platform/TaskIntegrationManager'
 import type {TeamMemberIntegrationAuth} from '../postgres/types'
 import type {IntegrationProviderAzureDevOps} from '../postgres/types/IntegrationProvider'
 import logError from './logError'

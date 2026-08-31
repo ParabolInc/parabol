@@ -1,6 +1,6 @@
+import type {RemoteRepoIntegration} from '../../../integrations/platform/RemoteRepoIntegration'
 import getPrevUsedRepoIntegrationsRedisKey from '../../../utils/getPrevUsedRepoIntegrationsRedisKey'
 import getRedis from '../../../utils/getRedis'
-import type {RemoteRepoIntegration} from './fetchAllRepoIntegrations'
 
 const getPrevUsedRepoIntegrations = async (teamId: string) => {
   const redis = getRedis()
