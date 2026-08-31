@@ -8,10 +8,12 @@ import {
   Close as CloseIcon,
   Link,
   PersonAdd as PersonAddIcon,
+  PlayArrow as PlayArrowIcon,
   Replay as ReplayIcon
 } from '~/ui/icons'
 import type {MeetingCardOptionsMenuQuery} from '../__generated__/MeetingCardOptionsMenuQuery.graphql'
 import type {MenuProps} from '../hooks/useMenu'
+import useStartMeetingSeriesNowMutation from '../mutations/useStartMeetingSeriesNowMutation'
 import getMassInvitationUrl from '../utils/getMassInvitationUrl'
 import makeAppURL from '../utils/makeAppURL'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
@@ -48,7 +50,9 @@ const query = graphql`
         facilitatorUserId
         endedAt
         meetingSeries {
+          id
           cancelledAt
+          ownerUserId
         }
       }
     }
@@ -75,8 +79,11 @@ const MeetingCardOptionsMenu = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
   const navigate = useNavigate()
+  const [startSeriesNow, isStartingSeries] = useStartMeetingSeriesNowMutation()
 
   const hasRecurrenceEnabled = meetingSeries && !meetingSeries.cancelledAt
+  const canStartSeriesNow =
+    hasRecurrenceEnabled && !!endedAt && meetingSeries.ownerUserId === viewerId
 
   const {closePortal} = menuProps
   return (
@@ -125,6 +132,40 @@ const MeetingCardOptionsMenu = (props: Props) => {
           })
         }}
       />
+      {canStartSeriesNow && (
+        <MenuItem
+          key='start-now'
+          label={
+            <MenuItemLabel className='min-w-[200px]'>
+              <StyledIcon>
+                <PlayArrowIcon />
+              </StyledIcon>
+              <span>{'Start meeting now'}</span>
+            </MenuItemLabel>
+          }
+          onClick={() => {
+            closePortal()
+            if (isStartingSeries) return
+            startSeriesNow({
+              variables: {meetingSeriesId: meetingSeries.id},
+              onCompleted: (res) => {
+                // an owner can schedule for teams they are not on, & cannot join those meetings
+                const {meeting} = res.startMeetingSeriesNow
+                if (meeting) {
+                  navigate(`/meet/${meeting.id}`)
+                  return
+                }
+                atmosphere.eventEmitter.emit('addSnackbar', {
+                  key: 'startMeetingSeriesNow',
+                  autoDismiss: 5,
+                  showDismissButton: true,
+                  message: 'Started the meeting for each team on this schedule'
+                })
+              }
+            })
+          }}
+        />
+      )}
       {canManageMeeting && hasRecurrenceEnabled && (
         <MenuItem
           key='edit-recurrence'

@@ -20,9 +20,8 @@ const Signout = lazy(
 )
 const DashboardRoot = lazy(() => import(/* webpackChunkName: 'DashboardRoot' */ './DashboardRoot'))
 const MeetingRoot = lazy(() => import(/* webpackChunkName: 'MeetingRoot' */ './MeetingRoot'))
-const MeetingSeriesAttendRedirect = lazy(
-  () =>
-    import(/* webpackChunkName: 'MeetingSeriesAttendRedirect' */ './MeetingSeriesAttendRedirect')
+const MeetingSeriesAttend = lazy(
+  () => import(/* webpackChunkName: 'MeetingSeriesAttend' */ './MeetingSeriesAttend')
 )
 const MeetingSeriesManagementRoot = lazy(
   () =>
@@ -70,7 +69,8 @@ const PrivateRoutes = () => {
           path='/meeting-series/manage/:meetingSeriesId'
           element={<MeetingSeriesManagementRoot />}
         />
-        <Route path='/meeting-series/:slug' element={<MeetingSeriesAttendRedirect />} />
+        <Route path='/meeting-series/:slug' element={<MeetingSeriesAttend />} />
+        <Route path='/meeting-series/:slug/:teamId' element={<MeetingSeriesAttend />} />
         <Route path='/admin/graphql' element={<Graphql />} />
         <Route path='/graphql' element={<Graphql />} />
         <Route path='/admin/impersonate' element={<Impersonate />} />

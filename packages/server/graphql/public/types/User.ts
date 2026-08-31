@@ -39,6 +39,7 @@ import standardError from '../../../utils/standardError'
 import errorFilter from '../../errorFilter'
 import type {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
+import canReadMeetingSeries from '../../mutations/helpers/canReadMeetingSeries'
 import {getUserQueryJobData, publishToEmbedder} from '../../mutations/helpers/publishToEmbedder'
 import connectionFromTasks from '../../queries/helpers/connectionFromTasks'
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
@@ -125,8 +126,7 @@ const User: ReqResolvers<'User'> = {
     if (!Number.isFinite(numericId)) return null
     const meetingSeries = await dataLoader.get('meetingSeries').load(numericId)
     if (!meetingSeries) return null
-    if (!isTeamMember(authToken, meetingSeries.teamId)) return null
-    return meetingSeries
+    return canReadMeetingSeries(meetingSeries, authToken) ? meetingSeries : null
   },
   meetings: async (
     _source,

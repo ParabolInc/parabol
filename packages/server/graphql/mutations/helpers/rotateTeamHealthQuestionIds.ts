@@ -7,20 +7,23 @@ import getKysely from '../../../postgres/getKysely'
  * For each category it tallies how many prior meetings in the series asked each
  * question (via the TeamHealthResponse table), finds the category minimum, and
  * picks one of the questions tied at that minimum.
+ *
+ * Takes several series ids so a group spanning teams rotates against the whole
+ * group's history rather than one team's.
  */
 const rotateTeamHealthQuestionIds = async (
   questions: readonly {id: number; categoryId: number}[],
-  meetingSeriesId: number | undefined
+  meetingSeriesIds: readonly number[]
 ) => {
   const pg = getKysely()
 
   // tally how many prior meetings in this series have asked each question
   const askCountByQuestionId = new Map<number, number>()
-  if (meetingSeriesId !== undefined) {
+  if (meetingSeriesIds.length > 0) {
     const askCounts = await pg
       .selectFrom('TeamHealthResponse')
       .innerJoin('NewMeeting', 'NewMeeting.id', 'TeamHealthResponse.meetingId')
-      .where('NewMeeting.meetingSeriesId', '=', meetingSeriesId)
+      .where('NewMeeting.meetingSeriesId', 'in', meetingSeriesIds)
       .select('TeamHealthResponse.questionId')
       .select(({fn}) => fn.count('TeamHealthResponse.meetingId').distinct().as('askCount'))
       .groupBy('TeamHealthResponse.questionId')

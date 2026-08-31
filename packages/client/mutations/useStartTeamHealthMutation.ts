@@ -8,6 +8,10 @@ graphql`
     meetings {
       id
       teamId
+      team {
+        id
+        isViewerOnTeam
+      }
     }
     teams {
       ...MeetingsDashActiveMeetings @relay(mask: false)
