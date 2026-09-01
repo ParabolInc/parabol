@@ -23,7 +23,7 @@ type CursorDetails = {
 }
 const GitLabIntegration: GitLabIntegrationResolvers = {
   auth: async ({teamId, userId}, _args, {dataLoader}) => {
-    return dataLoader.get('freshGitlabAuth').load({teamId, userId})
+    return dataLoader.get('freshAuth').load({service: 'gitlab', teamId, userId})
   },
 
   cloudProvider: async (_source, _args, {dataLoader}) => {
@@ -45,7 +45,12 @@ const GitLabIntegration: GitLabIntegrationResolvers = {
   gitlabSearchQueries: async () => [],
 
   projects: async ({teamId, userId}, _args, context, info) => {
-    return fetchGitLabProjects(teamId, userId, context, info)
+    const projects = await fetchGitLabProjects(teamId, userId, context, info)
+    if (projects instanceof Error) {
+      logError(projects, {userId, tags: {teamId, service: 'gitlab'}})
+      return []
+    }
+    return projects
   },
 
   projectsIssues: async ({teamId, userId}, args, context, info) => {

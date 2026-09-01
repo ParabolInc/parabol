@@ -293,6 +293,12 @@ export default class Atmosphere extends Environment {
         }
       }
       sink.next = (value: any) => {
+        if (Array.isArray(value.incremental)) {
+          for (const item of value.incremental) {
+            _next({...item, hasNext: value.hasNext})
+          }
+          return
+        }
         const {data, errors} = value
         if (!data) {
           if (errors) {

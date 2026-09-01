@@ -13,6 +13,8 @@ import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import safeCreateRetrospective from '../../mutations/helpers/safeCreateRetrospective'
 import type {MutationResolvers} from '../resolverTypes'
+import getNextFacilitatorUserId from './helpers/getNextFacilitatorUserId'
+import setFacilitatorRotation from './helpers/setFacilitatorRotation'
 import {createMeetingMember} from './joinMeeting'
 import {createMeetingSeries, startNewMeetingSeries} from './updateRecurrenceSettings'
 
@@ -92,10 +94,11 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     return data
   }
 
+  const {facilitatorUserId, rotation} = await getNextFacilitatorUserId(teamId, viewerId, dataLoader)
   const meeting = await safeCreateRetrospective(
     {
       teamId,
-      facilitatorUserId: viewerId,
+      facilitatorUserId,
       totalVotes,
       maxVotesPerGroup,
       disableAnonymity,
@@ -109,6 +112,7 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     return {error: {message: 'Meeting already started'}}
   }
   const meetingId = meeting.id
+  if (rotation) await setFacilitatorRotation(teamId, rotation, dataLoader)
   const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
   await updateMeetingTemplateLastUsedAt(selectedTemplateId, teamId)
 

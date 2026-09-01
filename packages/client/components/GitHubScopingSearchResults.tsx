@@ -155,21 +155,15 @@ const GitHubScopingSearchResults = (props: Props) => {
   const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
   const handleAddIssueClick = () => setIsEditing(true)
 
-  // even though it's a little herky jerky, we need to give the user feedback that a search is pending
-  // TODO fix flicker after viewer is present but edges isn't set
-  if (!issues) return <MockScopingList />
-  if (issues.length === 0 && !isEditing) {
-    const invalidQuery = gitHubQueryValidation(queryString)
-    return (
-      <>
-        <IntegrationScopingNoResults
-          error={invalidQuery || errors?.[0]?.message}
-          msg={'No issues match that query'}
-        />
-        <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
-      </>
-    )
-  }
+  const errorMessage = gitHubQueryValidation(queryString) ?? errors?.[0]?.message ?? undefined
+  const noResults = (
+    <>
+      <IntegrationScopingNoResults error={errorMessage} msg={'No issues match that query'} />
+      <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
+    </>
+  )
+  if (!issues) return errorMessage ? noResults : <MockScopingList />
+  if (issues.length === 0 && !isEditing) return noResults
   const persistQuery = () => {
     // don't persist empty
     if (!queryString) return

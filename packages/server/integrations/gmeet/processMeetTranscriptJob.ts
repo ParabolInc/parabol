@@ -37,7 +37,7 @@ export const processMeetTranscriptJob = async (meetingId: string, dataLoader: Da
   let shouldRetry = false
 
   for (const userId of userIds) {
-    const gmeetAuth = await dataLoader.get('freshGmeetAuth').load({teamId, userId})
+    const gmeetAuth = await dataLoader.get('freshAuth').load({service: 'gmeet', teamId, userId})
     if (!gmeetAuth) continue
     const result = await fetchMeetTranscript(gmeetAuth, createdAt, endedAt, title).catch((e) => {
       Logger.log(`meet transcript fetch failed for ${meetingId} as ${userId}: ${e}`)

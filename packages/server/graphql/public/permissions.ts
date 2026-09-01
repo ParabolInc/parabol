@@ -204,8 +204,6 @@ const permissionMap: PermissionMap<Resolvers> = {
         'args.dimensionId',
         'templateDimensions'
       ),
-    promoteNewMeetingFacilitator:
-      isTeamMemberOfMeeting<'Mutation.promoteNewMeetingFacilitator'>('args.meetingId'),
     promoteToTeamLead: or(
       isSuperUser,
       isViewerTeamLead<'Mutation.promoteToTeamLead'>('args.teamId'),
@@ -373,6 +371,8 @@ const permissionMap: PermissionMap<Resolvers> = {
     updateCommentContent: isMeetingMember<'Mutation.updateCommentContent'>('args.meetingId'),
     updateCreditCard: isViewerBillingLeader<'Mutation.updateCreditCard'>('args.orgId'),
     updateDragLocation: isTeamMember<'Mutation.updateDragLocation'>('args.input.teamId'),
+    updateFacilitatorRotation:
+      isTeamMemberOfMeeting<'Mutation.updateFacilitatorRotation'>('args.meetingId'),
     updateGitHubDimensionField: isTeamMember<'Mutation.updateGitHubDimensionField'>(
       'args.meetingId',
       'newMeetings'
@@ -499,10 +499,16 @@ const permissionMap: PermissionMap<Resolvers> = {
   },
   TeamMember: {
     integrations: isUserViewer<'TeamMember.integrations'>('source.userId'),
+    repoIntegrations: isUserViewer<'TeamMember.repoIntegrations'>('source.userId'),
     services: isUserViewer<'TeamMember.services'>('source.userId')
   },
   IntegrationService: {
-    auth: isUserViewer<'IntegrationService.auth'>('source.userId')
+    auth: isUserViewer<'IntegrationService.auth'>('source.userId'),
+    repos: isUserViewer<'IntegrationService.repos'>('source.userId')
+  },
+  AddTeamMemberIntegrationAuthSuccess: {
+    integrationAuth:
+      isUserViewer<'AddTeamMemberIntegrationAuthSuccess.integrationAuth'>('source.userId')
   },
   User: {
     archivedTasks: isTeamMember<'User.archivedTasks'>('args.teamId'),

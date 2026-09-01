@@ -12,7 +12,6 @@ import {ExpandMore} from '~/ui/icons'
 import type {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/CreateTaskMutation.graphql'
 import useForm from '../hooks/useForm'
 import {PortalStatus} from '../hooks/usePortal'
-import useTimedState from '../hooks/useTimedState'
 import CreateTaskMutation from '../mutations/CreateTaskMutation'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
@@ -67,7 +66,7 @@ const NewGitHubIssueInput = (props: Props) => {
   const {id: teamId} = team!
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
-  const [createTaskError, setCreateTaskError] = useTimedState()
+  const [createTaskError, setCreateTaskError] = useState<string>()
   useEffect(() => {
     if (isEditing) {
       setCreateTaskError(undefined)
@@ -123,7 +122,7 @@ const NewGitHubIssueInput = (props: Props) => {
     const handleCompleted: CompletedHandler<TCreateTaskMutation['response']> = (res) => {
       const {error, task} = res.createTask
       if (error) {
-        setCreateTaskError(error.message)
+        setCreateTaskError(`${selectedNameWithOwner}: ${error.message}`)
       }
       if (error || !task) return
       const {integration} = task

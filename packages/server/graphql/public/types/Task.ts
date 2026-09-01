@@ -8,6 +8,7 @@ import getIssueLabels from '../../../utils/githubQueries/getIssueLabels.graphql'
 import logError from '../../../utils/logError'
 import isValid from '../../isValid'
 import {resolveTaskIntegration} from '../../resolvers/resolveTaskIntegration'
+import type {ResolversInterfaceTypes, ResolversTypes} from '../resolverTypes'
 import type {ReqResolvers} from './ReqResolvers'
 
 const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
@@ -126,9 +127,10 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
 
   editors: () => [],
 
-  integration: async (source, _args, context, info) => {
-    return resolveTaskIntegration(source, context, info)
-  },
+  integration: async (source, _args, context, info) =>
+    (await resolveTaskIntegration(source, context, info)) as
+      | ResolversInterfaceTypes<ResolversTypes>['TaskIntegration']
+      | null,
 
   team: ({teamId}, _args, {dataLoader}) => {
     return dataLoader.get('teams').loadNonNull(teamId)

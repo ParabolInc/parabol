@@ -108,11 +108,6 @@ type TeamMember {
   userId: ID!
 
   """
-  All the integrations that the user could possibly use
-  """
-  allAvailableRepoIntegrations: [RepoIntegration!]!
-
-  """
   Is user an admin of the team's org?
   """
   isOrgAdmin: Boolean!
