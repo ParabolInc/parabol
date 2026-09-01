@@ -1,6 +1,12 @@
-import faker from 'faker'
 import getKysely from '../postgres/getKysely'
-import {sendIntranet, sendPublic, signUp, signUpWithEmail} from './common'
+import {
+  getTestDomain,
+  getTestEmail,
+  sendIntranet,
+  sendPublic,
+  signUp,
+  signUpWithEmail
+} from './common'
 
 test('Get user by id', async () => {
   const {email, userId} = await signUp()
@@ -73,9 +79,9 @@ test('Get user by email', async () => {
 })
 
 test('First user is patientZero', async () => {
-  const domain = faker.internet.domainName()
-  const email1 = `${faker.internet.userName()}@${domain}`
-  const email2 = `${faker.internet.userName()}@${domain}`
+  const domain = getTestDomain()
+  const email1 = getTestEmail(domain)
+  const email2 = getTestEmail(domain)
 
   const {userId: user1Id} = await signUpWithEmail(email1)
   const {userId: user2Id} = await signUpWithEmail(email2)

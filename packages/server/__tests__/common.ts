@@ -163,6 +163,19 @@ export const SIGNUP_WITH_PASSWORD_MUTATION = `
   }
 `
 
+// Test DBs are never truncated between runs, so every generated email/domain must be unique
+// across all runs & parallel workers, or signUp fails with "User already exists"
+const uniqueToken = () => crypto.randomBytes(8).toString('hex')
+
+export const getTestDomain = (suffix = faker.internet.domainSuffix()) =>
+  `${faker.internet.domainWord()}-${uniqueToken()}.${suffix}`.toLowerCase()
+
+export const getTestEmail = (domain?: string) => {
+  const base = domain ? `${faker.internet.userName()}@${domain}` : faker.internet.email()
+  const [localPart, emailDomain] = base.toLowerCase().split('@')
+  return `${localPart}-${uniqueToken()}@${emailDomain}`
+}
+
 export const signUpWithEmail = async (emailInput: string) => {
   //FIXME #1402 email addresses are case sensitive
   const email = emailInput.toLowerCase()
@@ -259,8 +272,7 @@ export const signUpWithEmail = async (emailInput: string) => {
 }
 
 export const signUp = async () => {
-  const email = faker.internet.email()
-  return signUpWithEmail(email)
+  return signUpWithEmail(getTestEmail())
 }
 
 export const getUserTeams = async (userId: string) => {
