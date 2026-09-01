@@ -5,7 +5,7 @@ const resolveLinearDimensionFieldKey = async ({
 }: DimensionFieldCtx): Promise<DimensionFieldKey | null> => {
   const {integration} = task
   if (integration?.service !== 'linear') return null
-  return {repoId: integration.repoId, workItemType: ''}
+  return {repoId: integration.repoId, issueType: null}
 }
 
 export default resolveLinearDimensionFieldKey

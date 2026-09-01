@@ -1,3 +1,4 @@
+import GitLabProjectId from 'parabol-client/shared/gqlIds/GitLabProjectId'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
@@ -42,12 +43,12 @@ const pushEstimateToGitLab = async ({
   if (!issue) return new Error(`Unable to get GitLab issue with id: ${gid}`)
   const {iid, projectId} = issue
   if (!projectId) return new Error(`Unable to get GitLab projectId for issue with id: ${gid}`)
-  const repoId = `${providerId}:${projectId}`
+  const repoId = GitLabProjectId.join(providerId, projectId)
   const rows = await dataLoader
     .get('integrationDimensionFieldMaps')
     .load({teamId, service: 'gitlab', repoId, dimensionName})
-  const dimensionField = pickDimensionField(rows, {repoId, workItemType: ''})
-  const labelTemplate = dimensionField?.fieldName ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
+  const dimensionField = pickDimensionField(rows, {repoId, issueType: null})
+  const labelTemplate = dimensionField?.fieldId ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
 
   if (labelTemplate === SprintPokerDefaults.SERVICE_FIELD_NULL) {
     return null
@@ -149,7 +150,7 @@ const pushEstimateToGitLab = async ({
     const dimensionTaskEstimate = latestTaskEstimates.find(
       (estimate) => estimate.name === dimensionName
     )
-    const oldLabelId = previousPushLabelId(dimensionTaskEstimate?.pushResult ?? null)
+    const oldLabelId = dimensionTaskEstimate ? previousPushLabelId(dimensionTaskEstimate) : null
     if (oldLabelId) {
       removeLabelIds.push(oldLabelId)
     }
@@ -161,7 +162,7 @@ const pushEstimateToGitLab = async ({
       removeLabelIds
     })
     if (updateError) return updateError
-    return {targetKind: 'label', service: 'gitlab', labelId}
+    return {service: 'gitlab', target: 'label', targetId: labelId}
   }
 
   return null

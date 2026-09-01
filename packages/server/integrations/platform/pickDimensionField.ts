@@ -7,10 +7,10 @@ const isSentinel = (fieldId: string) =>
   fieldId === SprintPokerDefaults.SERVICE_FIELD_NULL
 
 const pickDimensionField = (rows: IntegrationDimensionFieldMap[], key: DimensionFieldKey) => {
-  const {workItemType, usableFieldIds} = key
+  const {issueType, usableFieldIds} = key
   const isUsable = (row: IntegrationDimensionFieldMap) =>
     !usableFieldIds || isSentinel(row.fieldId) || usableFieldIds.includes(row.fieldId)
-  const exact = rows.find((row) => row.workItemType === workItemType && isUsable(row))
+  const exact = rows.find((row) => row.issueType === issueType && isUsable(row))
   if (exact) return exact
   if (!usableFieldIds) return null
   return rows.find(isUsable) ?? null

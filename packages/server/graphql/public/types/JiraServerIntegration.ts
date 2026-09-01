@@ -1,7 +1,7 @@
 import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
 import JiraServerRestManager from '../../../integrations/jiraServer/JiraServerRestManager'
-import type {TeamMember} from '../../../postgres/types'
+import type {JiraIntegrationSearchQuery, TeamMember} from '../../../postgres/types'
 import type {IntegrationProviderJiraServer} from '../../../postgres/types/IntegrationProvider'
 import {getUserId} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
@@ -183,7 +183,7 @@ const JiraServerIntegration: JiraServerIntegrationResolvers = {
     const {providerId} = auth
     return dataLoader
       .get('recentIntegrationSearchQueries')
-      .load({teamId, userId, service: 'jiraServer', providerId})
+      .load({teamId, userId, providerId}) as Promise<JiraIntegrationSearchQuery[]>
   }
 }
 

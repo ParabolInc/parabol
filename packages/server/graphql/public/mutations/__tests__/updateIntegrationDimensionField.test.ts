@@ -56,7 +56,7 @@ const run = (fieldId: string, taskTeamId = 'team1') =>
 
 describe('updateIntegrationDimensionField', () => {
   beforeEach(() => {
-    resolveDimensionFieldKey.mockResolvedValue({repoId: 'r', workItemType: 'Story'})
+    resolveDimensionFieldKey.mockResolvedValue({repoId: 'r', issueType: 'Story'})
     describeDimensionField.mockResolvedValue({
       fieldId: 'f1',
       fieldName: 'Field',
@@ -71,10 +71,10 @@ describe('updateIntegrationDimensionField', () => {
       teamId: 'team1',
       service: 'jira',
       repoId: 'r',
-      workItemType: 'Story',
+      issueType: 'Story',
       dimensionName: 'Story Points',
       fieldId: '__comment',
-      fieldName: '__comment',
+      fieldName: null,
       fieldType: 'string'
     })
     expect(clear).toHaveBeenCalledWith({
@@ -94,10 +94,10 @@ describe('updateIntegrationDimensionField', () => {
       teamId: 'team1',
       service: 'jira',
       repoId: 'r',
-      workItemType: 'Story',
+      issueType: 'Story',
       dimensionName: 'Story Points',
       fieldId: '',
-      fieldName: '',
+      fieldName: null,
       fieldType: 'string'
     })
     expect(clear).toHaveBeenCalledWith({
@@ -114,14 +114,14 @@ describe('updateIntegrationDimensionField', () => {
     const res = await run('anything')
     expect(describeDimensionField).toHaveBeenCalledWith(
       expect.objectContaining({teamId: 'team1', userId: 'accessUser', viewerId: 'viewer1'}),
-      {repoId: 'r', workItemType: 'Story'},
+      {repoId: 'r', issueType: 'Story'},
       'anything'
     )
     expect(upsert).toHaveBeenCalledWith({
       teamId: 'team1',
       service: 'jira',
       repoId: 'r',
-      workItemType: 'Story',
+      issueType: 'Story',
       dimensionName: 'Story Points',
       fieldId: 'f1',
       fieldName: 'Field',
@@ -131,15 +131,13 @@ describe('updateIntegrationDimensionField', () => {
   })
 
   it('rejects a task that belongs to another team', async () => {
-    const res = await run('anything', 'team2')
-    expect(res).toEqual({error: {message: 'Task not found'}})
+    await expect(run('anything', 'team2')).rejects.toThrow('Task not found')
     expect(upsert).not.toHaveBeenCalled()
   })
 
-  it('returns the describe error and stores nothing', async () => {
+  it('throws the describe error and stores nothing', async () => {
     describeDimensionField.mockResolvedValue(new Error('Unknown field'))
-    const res = await run('anything')
-    expect(res).toEqual({error: {message: 'Unknown field'}})
+    await expect(run('anything')).rejects.toThrow('Unknown field')
     expect(upsert).not.toHaveBeenCalled()
     expect(publish).not.toHaveBeenCalled()
   })

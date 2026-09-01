@@ -36,16 +36,14 @@ const pushEstimateToAzureDevOps = async ({
     return new Error('User no longer has access to Azure DevOps')
   }
 
-  const loaded = await loadDimensionField(
+  const dimensionFieldLookup = await loadDimensionField(
     resolveAzureDevOpsDimensionFieldKey,
     {dataLoader, teamId, userId: accessUserId, context, info, task, viewerId},
     dimensionName
   )
-  const dimensionField = loaded?.field
+  const dimensionField = dimensionFieldLookup?.field
 
-  const fieldName = dimensionField
-    ? dimensionField.fieldName
-    : SprintPokerDefaults.SERVICE_FIELD_COMMENT.toString()
+  const fieldId = dimensionField?.fieldId ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
 
   const fieldType = dimensionField ? dimensionField.fieldType : 'string'
 
@@ -55,7 +53,7 @@ const pushEstimateToAzureDevOps = async ({
 
   const manager = new AzureDevOpsServerManager(auth, null)
 
-  if (fieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
+  if (fieldId === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
     const res = await manager.addScoreComment(
       instanceId,
       dimensionName,
@@ -68,11 +66,17 @@ const pushEstimateToAzureDevOps = async ({
     if ('message' in res) {
       return new Error(res.message)
     }
-  } else if (fieldName !== SprintPokerDefaults.SERVICE_FIELD_NULL) {
-    const fieldId = fieldTypeToId[azureDevOpsWorkItem.type as keyof typeof fieldTypeToId]
+  } else if (fieldId !== SprintPokerDefaults.SERVICE_FIELD_NULL) {
+    const azureFieldId = fieldTypeToId[azureDevOpsWorkItem.type as keyof typeof fieldTypeToId]
     try {
       const updatedStoryPoints = fieldType === 'string' ? value : Number(value)
-      await manager.addScoreField(instanceId, fieldId, updatedStoryPoints, issueKey, projectKey)
+      await manager.addScoreField(
+        instanceId,
+        azureFieldId,
+        updatedStoryPoints,
+        issueKey,
+        projectKey
+      )
     } catch (e) {
       return new Error(e instanceof Error ? e.message : 'Unable to updateStoryPoints')
     }

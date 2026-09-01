@@ -196,6 +196,12 @@ export type IntegrationSearchQuery = ExtractTypeFromQueryBuilderSelect<
   typeof selectIntegrationSearchQuery
 >
 
+export type JiraIntegrationSearchQuery = Extract<
+  IntegrationSearchQuery,
+  {service: 'jira' | 'jiraServer'}
+>
+export type GitHubIntegrationSearchQuery = Extract<IntegrationSearchQuery, {service: 'github'}>
+
 export type JiraAuthMeta = {cloudIds: string[]}
 
 /** Services that persist something in TeamMemberIntegrationAuth.meta and its shape; services absent here have meta: null.

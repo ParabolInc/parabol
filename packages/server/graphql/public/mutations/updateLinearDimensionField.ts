@@ -24,10 +24,10 @@ const updateLinearDimensionField: MutationResolvers['updateLinearDimensionField'
     teamId,
     service: 'linear',
     repoId,
-    workItemType: '',
+    issueType: null,
     dimensionName,
     fieldId: labelTemplate,
-    fieldName: labelTemplate,
+    fieldName: null,
     fieldType: 'string'
   })
   dataLoader

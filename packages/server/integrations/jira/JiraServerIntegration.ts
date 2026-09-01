@@ -57,7 +57,7 @@ export class JiraServerIntegration extends ServerIntegrationDefinition {
       }
     },
     issueRead: {getIssue: resolveJiraTaskIntegration},
-    issueSearch: {buildQuery: buildJiraSearchQuery, persistQueries: true},
+    issueSearch: {buildQuery: buildJiraSearchQuery},
     repoList: {fetchRepos: fetchJiraProjects},
     estimatePush: {
       targets: ['comment', 'field'],

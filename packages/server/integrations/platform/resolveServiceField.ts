@@ -9,14 +9,14 @@ const resolveServiceField = async (
   const {integration} = ctx.task
   if (!integration) return null
   const {estimatePush} = getServerIntegration(integration.service).capabilities
-  const loaded = await loadDimensionField(
+  const dimensionFieldLookup = await loadDimensionField(
     estimatePush.resolveDimensionFieldKey,
     ctx,
     ctx.dimensionName
   )
-  if (!loaded) return null
-  const {field} = loaded
-  if (field) return {name: field.fieldName, type: field.fieldType}
+  if (!dimensionFieldLookup) return null
+  const {field} = dimensionFieldLookup
+  if (field) return {name: field.fieldName ?? field.fieldId, type: field.fieldType}
   return {name: SprintPokerDefaults.SERVICE_FIELD_COMMENT, type: 'string'}
 }
 

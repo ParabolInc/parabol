@@ -5,10 +5,10 @@ export interface DimensionFieldMapInput {
   teamId: string
   service: Integrationproviderserviceenum
   repoId: string
-  workItemType: string
+  issueType: string | null
   dimensionName: string
   fieldId: string
-  fieldName: string
+  fieldName: string | null
   fieldType: string
 }
 
@@ -18,7 +18,7 @@ const upsertIntegrationDimensionFieldMap = async (row: DimensionFieldMapInput) =
     .values(row)
     .onConflict((oc) =>
       oc
-        .columns(['teamId', 'service', 'repoId', 'workItemType', 'dimensionName'])
+        .columns(['teamId', 'service', 'repoId', 'issueType', 'dimensionName'])
         .doUpdateSet((eb) => ({
           fieldId: eb.ref('excluded.fieldId'),
           fieldName: eb.ref('excluded.fieldName'),

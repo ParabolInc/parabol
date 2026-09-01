@@ -1,3 +1,4 @@
+import GitLabProjectId from 'parabol-client/shared/gqlIds/GitLabProjectId'
 import logError from '../../utils/logError'
 import type {DimensionFieldCtx, DimensionFieldKey} from '../platform/ServerIntegrationDefinition'
 import GitLabServerManager from './GitLabServerManager'
@@ -29,7 +30,7 @@ const resolveGitLabDimensionFieldKey = async ({
   if (!issue) return null
   const {projectId} = issue
   if (!projectId) return null
-  return {repoId: `${providerId}:${projectId}`, workItemType: ''}
+  return {repoId: GitLabProjectId.join(providerId, projectId), issueType: null}
 }
 
 export default resolveGitLabDimensionFieldKey

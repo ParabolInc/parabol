@@ -11,14 +11,14 @@ const repoId = 'cloud-1:PROJ'
 const now = Date.now()
 
 const makeRow = (
-  workItemType: string,
+  issueType: string | null,
   updatedAt: Date,
   overrides: {service?: 'jira' | 'github'; dimensionName?: string} = {}
 ) => ({
   teamId,
   service: overrides.service ?? ('jira' as const),
   repoId,
-  workItemType,
+  issueType,
   dimensionName: overrides.dimensionName ?? 'Effort',
   fieldId: 'customfield_10016',
   fieldName: 'Story Points',
@@ -42,10 +42,10 @@ beforeAll(async () => {
     .insertInto('IntegrationDimensionFieldMap')
     .values([
       makeRow('Story', new Date(now - 2 * 60 * 60 * 1000)),
-      makeRow('', new Date(now - 60 * 60 * 1000)),
+      makeRow(null, new Date(now - 60 * 60 * 1000)),
       makeRow('Bug', new Date(now)),
-      makeRow('', new Date(now), {dimensionName: 'Risk'}),
-      makeRow('', new Date(now), {service: 'github'})
+      makeRow(null, new Date(now), {dimensionName: 'Risk'}),
+      makeRow(null, new Date(now), {service: 'github'})
     ])
     .execute()
 })
@@ -60,9 +60,9 @@ afterAll(async () => {
 const loader = integrationDimensionFieldMaps({dataLoaderOptions: {}} as unknown as RootDataLoader)
 
 describe('integrationDimensionFieldMaps', () => {
-  it('returns every work item type for the repo/dimension, newest first', async () => {
+  it('returns every issue type for the repo/dimension, newest first', async () => {
     const rows = await loader.load({teamId, service: 'jira', repoId, dimensionName: 'Effort'})
-    expect(rows.map((row) => row.workItemType)).toEqual(['Bug', '', 'Story'])
+    expect(rows.map((row) => row.issueType)).toEqual(['Bug', null, 'Story'])
   })
 
   it('does not mix dimensions or services', async () => {

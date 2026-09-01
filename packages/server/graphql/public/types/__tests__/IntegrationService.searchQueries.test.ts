@@ -2,7 +2,7 @@ import type {GraphQLResolveInfo} from 'graphql'
 import type {GQLContext} from '../../../graphql'
 import IntegrationService, {type IntegrationServiceSource} from '../IntegrationService'
 
-const capabilities: {issueSearch?: {persistQueries?: boolean}} = {}
+const capabilities: {issueSearch?: {}} = {}
 const getAuthRow = jest.fn()
 
 jest.mock('../../../../integrations/platform/registry', () => ({
@@ -39,22 +39,22 @@ describe('IntegrationService.searchQueries', () => {
     delete capabilities.issueSearch
   })
 
-  it('returns [] without loading when the service does not persist queries', async () => {
-    capabilities.issueSearch = {}
+  it('returns [] without loading when the service has no issueSearch', async () => {
+    delete capabilities.issueSearch
     await expect(run()).resolves.toEqual([])
     expect(getAuthRow).not.toHaveBeenCalled()
     expect(load).not.toHaveBeenCalled()
   })
 
   it('returns [] when the viewer has no auth row', async () => {
-    capabilities.issueSearch = {persistQueries: true}
+    capabilities.issueSearch = {}
     getAuthRow.mockResolvedValue(null)
     await expect(run()).resolves.toEqual([])
     expect(load).not.toHaveBeenCalled()
   })
 
   it('loads the recent queries for the service and returns the rows as-is', async () => {
-    capabilities.issueSearch = {persistQueries: true}
+    capabilities.issueSearch = {}
     getAuthRow.mockResolvedValue({providerId: 7})
     const rows = [{id: 1, service: 'jira', query: {queryString: 'flow'}}]
     load.mockResolvedValue(rows)
@@ -62,7 +62,6 @@ describe('IntegrationService.searchQueries', () => {
     expect(load).toHaveBeenCalledWith({
       teamId: 'team1',
       userId: 'user1',
-      service: 'jira',
       providerId: 7
     })
   })

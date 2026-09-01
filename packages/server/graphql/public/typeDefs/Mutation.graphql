@@ -2318,7 +2318,7 @@ type Mutation {
     taskId: ID!
     dimensionName: String!
     fieldId: String!
-  ): UpdateIntegrationDimensionFieldPayload! @scope(name: MEETINGS_WRITE)
+  ): UpdateIntegrationDimensionFieldSuccess! @scope(name: MEETINGS_WRITE)
 
   """
   Describe the mutation here

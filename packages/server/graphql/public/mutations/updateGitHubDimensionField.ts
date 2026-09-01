@@ -22,10 +22,10 @@ const updateGitHubDimensionField: MutationResolvers['updateGitHubDimensionField'
     teamId,
     service: 'github',
     repoId: nameWithOwner,
-    workItemType: '',
+    issueType: null,
     dimensionName,
     fieldId: labelTemplate,
-    fieldName: labelTemplate,
+    fieldName: null,
     fieldType: 'string'
   })
   dataLoader

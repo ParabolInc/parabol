@@ -11,7 +11,7 @@ export interface DimensionFieldMapKey {
   dimensionName: string
 }
 
-/** Every stored row for the repo/dimension across work item types, newest first; the caller picks the type-specific or fallback row */
+/** Every stored row for the repo/dimension across issue types, newest first; the caller picks the type-specific or fallback row */
 export const integrationDimensionFieldMaps = (parent: RootDataLoader) =>
   new DataLoader<DimensionFieldMapKey, IntegrationDimensionFieldMap[], string>(
     async (keys) =>

@@ -2,7 +2,7 @@ import type {TaskEstimateResolvers} from '../resolverTypes'
 
 const TaskEstimate: TaskEstimateResolvers = {
   label: ({label}) => label || '',
-  jiraFieldId: ({pushResult}) => (pushResult?.service === 'jira' ? pushResult.fieldId : null)
+  jiraFieldId: ({pushService, pushTargetId}) => (pushService === 'jira' ? pushTargetId : null)
 }
 
 export default TaskEstimate

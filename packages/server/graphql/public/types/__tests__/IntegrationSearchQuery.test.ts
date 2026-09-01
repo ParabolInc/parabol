@@ -1,5 +1,9 @@
 import type {GraphQLResolveInfo} from 'graphql'
-import type {IntegrationSearchQuery as IntegrationSearchQueryDB} from '../../../../postgres/types'
+import type {
+  GitHubIntegrationSearchQuery,
+  IntegrationSearchQuery as IntegrationSearchQueryDB,
+  JiraIntegrationSearchQuery
+} from '../../../../postgres/types'
 import type {GQLContext} from '../../../graphql'
 import GitHubSearchQuery from '../GitHubSearchQuery'
 import IntegrationSearchQuery from '../IntegrationSearchQuery'
@@ -15,14 +19,14 @@ const baseRow = {
   userId: 'user1'
 }
 
-const jiraRow: IntegrationSearchQueryDB = {
+const jiraRow: JiraIntegrationSearchQuery = {
   ...baseRow,
   id: 7,
   service: 'jira',
   query: {queryString: 'q', isJQL: true, projectKeyFilters: ['c:P']}
 }
 
-const githubRow: IntegrationSearchQueryDB = {
+const githubRow: GitHubIntegrationSearchQuery = {
   ...baseRow,
   id: 8,
   service: 'github',

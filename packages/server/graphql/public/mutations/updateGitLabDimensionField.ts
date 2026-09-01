@@ -1,3 +1,4 @@
+import GitLabProjectId from 'parabol-client/shared/gqlIds/GitLabProjectId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import upsertIntegrationDimensionFieldMap from '../../../postgres/queries/upsertIntegrationDimensionFieldMap'
 import {getUserId} from '../../../utils/authorization'
@@ -29,15 +30,15 @@ const updateGitLabDimensionField: MutationResolvers['updateGitLabDimensionField'
 
   // RESOLUTION
   const {providerId} = gitlabAuth
-  const repoId = `${providerId}:${projectId}`
+  const repoId = GitLabProjectId.join(providerId, projectId)
   await upsertIntegrationDimensionFieldMap({
     teamId,
     service: 'gitlab',
     repoId,
-    workItemType: '',
+    issueType: null,
     dimensionName,
     fieldId: labelTemplate,
-    fieldName: labelTemplate,
+    fieldName: null,
     fieldType: 'string'
   })
   dataLoader

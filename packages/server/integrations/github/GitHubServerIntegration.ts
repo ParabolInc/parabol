@@ -46,7 +46,7 @@ export class GitHubServerIntegration extends ServerIntegrationDefinition {
       }
     },
     issueRead: {getIssue: resolveGitHubTaskIntegration},
-    issueSearch: {buildQuery: buildGitHubSearchQuery, persistQueries: true},
+    issueSearch: {buildQuery: buildGitHubSearchQuery},
     repoList: {
       fetchRepos: ({dataLoader, teamId, userId, context, info}) =>
         fetchGitHubRepos(teamId, userId, dataLoader, context, info)

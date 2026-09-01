@@ -34,12 +34,13 @@ const pushEstimateToLinear = async ({
     .load({service: 'linear', teamId, userId: accessUserId})
   if (!auth?.accessToken) return new Error('User no longer has access to Linear')
 
-  const loaded = await loadDimensionField(
+  const dimensionFieldLookup = await loadDimensionField(
     resolveLinearDimensionFieldKey,
     {dataLoader, teamId, userId: accessUserId, context, info, task, viewerId},
     dimensionName
   )
-  const fieldMapSelection = loaded?.field?.fieldName ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
+  const fieldMapSelection =
+    dimensionFieldLookup?.field?.fieldId ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
 
   const manager = new LinearServerManager(auth, context, info)
 
@@ -76,7 +77,7 @@ const pushEstimateToLinear = async ({
     pushedFieldId = paramName
   }
 
-  return pushedFieldId ? {targetKind: 'field', service: 'linear', fieldId: pushedFieldId} : null
+  return pushedFieldId ? {service: 'linear', target: 'field', targetId: pushedFieldId} : null
 }
 
 export default pushEstimateToLinear

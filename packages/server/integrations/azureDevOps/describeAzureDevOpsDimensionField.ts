@@ -7,12 +7,12 @@ import type {
 const describeAzureDevOpsDimensionField = async (
   _ctx: DimensionFieldCtx,
   _key: DimensionFieldKey,
-  fieldName: string
+  fieldId: string
 ): Promise<DimensionFieldTarget | Error> => {
-  if (fieldName.trim().length === 0 || fieldName.length > 120) {
+  if (fieldId.trim().length === 0 || fieldId.length > 120) {
     return new Error('Field name must be 1–120 characters')
   }
-  return {fieldId: fieldName, fieldName, fieldType: 'string'}
+  return {fieldId, fieldName: null, fieldType: 'string'}
 }
 
 export default describeAzureDevOpsDimensionField

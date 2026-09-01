@@ -51,5 +51,5 @@ type TaskEstimate {
   """
   If the task comes from jira, this is the jira field that the estimate refers to
   """
-  jiraFieldId: ID @deprecated(reason: "Read pushResult provenance server-side; no client uses this")
+  jiraFieldId: ID @deprecated(reason: "Read push provenance server-side; no client uses this")
 }

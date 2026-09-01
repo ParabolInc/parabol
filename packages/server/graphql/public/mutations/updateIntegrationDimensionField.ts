@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getServerIntegration} from '../../../integrations/platform/registry'
 import type {DimensionFieldTarget} from '../../../integrations/platform/ServerIntegrationDefinition'
@@ -20,28 +21,28 @@ const updateIntegrationDimensionField: MutationResolvers['updateIntegrationDimen
     const subOptions = {mutatorId, operationId}
 
     const meeting = await validateDimensionFieldMutation(dataLoader, meetingId, dimensionName)
-    if (meeting instanceof Error) return {error: {message: meeting.message}}
+    if (meeting instanceof Error) throw new GraphQLError(meeting.message)
     const {teamId} = meeting
     const task = await dataLoader.get('tasks').load(taskId)
-    if (!task || task.teamId !== teamId) return {error: {message: 'Task not found'}}
+    if (!task || task.teamId !== teamId) throw new GraphQLError('Task not found')
     const {integration} = task
-    if (!integration) return {error: {message: 'Task is not integrated'}}
+    if (!integration) throw new GraphQLError('Task is not integrated')
     const {service, accessUserId} = integration
     const {estimatePush} = getServerIntegration(service).capabilities
 
     const ctx = {dataLoader, teamId, userId: accessUserId, context, info, task, viewerId}
     const key = await estimatePush.resolveDimensionFieldKey(ctx)
-    if (!key) return {error: {message: 'Issue not found'}}
+    if (!key) throw new GraphQLError('Issue not found')
     const target: DimensionFieldTarget | Error = SENTINELS.includes(fieldId)
-      ? {fieldId, fieldName: fieldId, fieldType: 'string'}
+      ? {fieldId, fieldName: null, fieldType: 'string'}
       : await estimatePush.describeDimensionField(ctx, key, fieldId)
-    if (target instanceof Error) return {error: {message: target.message}}
+    if (target instanceof Error) throw new GraphQLError(target.message)
 
     await upsertIntegrationDimensionFieldMap({
       teamId,
       service,
       repoId: key.repoId,
-      workItemType: key.workItemType,
+      issueType: key.issueType,
       dimensionName,
       ...target
     })

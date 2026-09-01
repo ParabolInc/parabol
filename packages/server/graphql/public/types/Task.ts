@@ -1,6 +1,5 @@
-import {sql} from 'kysely'
 import GitHubRepoId from '../../../../client/shared/gqlIds/GitHubRepoId'
-import {legacyPushProvenance} from '../../../integrations/platform/legacyPushProvenance'
+import {estimatePushColumns} from '../../../integrations/platform/estimatePushColumns'
 import {previousPushLabelName} from '../../../integrations/platform/previousPushLabel'
 import getKysely from '../../../postgres/getKysely'
 import {selectTaskEstimate} from '../../../postgres/select'
@@ -91,8 +90,8 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
       const ghIssueLabels = labelNodes.map((node) => node?.name).filter(isValid)
       await Promise.all(
         estimates.map(async (estimate) => {
-          const {pushResult, name: dimensionName} = estimate
-          const previousLabelName = previousPushLabelName(pushResult)
+          const {name: dimensionName} = estimate
+          const previousLabelName = previousPushLabelName(estimate)
           if (previousLabelName && ghIssueLabels.includes(previousLabelName)) return
           // VERY EXPENSIVE. We do this only if we're darn sure we need to
           const taskIds = await dataLoader
@@ -101,8 +100,8 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
           const similarEstimate = await selectTaskEstimate()
             .where('taskId', 'in', taskIds)
             .where('name', '=', dimensionName)
-            .where(sql`"pushResult"->>'service'`, '=', 'github')
-            .where(sql`"pushResult"->>'labelName'`, 'in', ghIssueLabels)
+            .where('pushService', '=', 'github')
+            .where('pushTargetId', 'in', ghIssueLabels)
             .limit(1)
             .executeTakeFirst()
           if (!similarEstimate) return
@@ -119,8 +118,11 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
               stageId: null,
               taskId,
               userId: accessUserId,
-              pushResult: similarEstimate.pushResult,
-              ...legacyPushProvenance(similarEstimate.pushResult)
+              ...estimatePushColumns(
+                similarEstimate.pushTargetId
+                  ? {service: 'github', target: 'label', targetId: similarEstimate.pushTargetId}
+                  : null
+              )
             })
             .execute()
         })

@@ -1,6 +1,7 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
 import fetchAzureDevOpsProjects from '../integrations/azureDevOps/fetchAzureDevOpsProjects'
+import {estimatePushColumns} from '../integrations/platform/estimatePushColumns'
 import getKysely from '../postgres/getKysely'
 import syncTeamMemberIntegrationAuthTokens from '../postgres/queries/syncTeamMemberIntegrationAuthTokens'
 import type {TeamMemberIntegrationAuth} from '../postgres/types'
@@ -449,8 +450,9 @@ export const azureDevOpsWorkItem = (parent: RootDataLoader) => {
           // update our records
           await Promise.all(
             estimates.map((estimate) => {
-              const {label, discussionId, name, taskId, userId, pushResult} = estimate
-              if (pushResult?.service !== 'azureDevOps') {
+              const {label, discussionId, name, taskId, userId, pushService, pushTargetId} =
+                estimate
+              if (pushService !== 'azureDevOps' || !pushTargetId) {
                 return undefined
               }
               let freshEstimate = ''
@@ -468,7 +470,11 @@ export const azureDevOpsWorkItem = (parent: RootDataLoader) => {
                 .values({
                   changeSource: 'external',
                   discussionId,
-                  pushResult,
+                  ...estimatePushColumns({
+                    service: 'azureDevOps',
+                    target: 'field',
+                    targetId: pushTargetId
+                  }),
                   label: freshEstimate,
                   name,
                   meetingId: null,

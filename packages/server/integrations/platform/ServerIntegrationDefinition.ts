@@ -39,10 +39,8 @@ export interface IssueReadCapability {
 }
 
 export interface IssueSearchCapability<TQuery extends JsonObject = JsonObject> {
-  /** Validates a client-supplied search before it is stored as IntegrationSearchQuery.query */
+  /** Validates a client-supplied search before it is stored as IntegrationSearchQuery.query; services with issueSearch offer stored searches back as recents */
   buildQuery(queryString: string, meta: JsonObject): TQuery | Error
-  /** true when executed searches are stored and offered back to the viewer as recent searches */
-  persistQueries?: boolean
 }
 
 /** The dataloaders reach the repo fetchers with a bare RootDataLoader, the capabilities with the request's worker */
@@ -74,14 +72,15 @@ export interface DimensionFieldCtx extends GqlIntegrationCtx {
 /** Which stored mapping applies to a task: the repo/project it lives in and, for services whose fields vary by issue type, that type */
 export interface DimensionFieldKey {
   repoId: string
-  workItemType: string
-  /** Field ids the current issue can accept. When set, stored rows for other fields are ignored and a row saved for another work item type may be reused; when absent only an exact work item type match counts */
+  issueType: string | null
+  /** Field ids the current issue can accept. When set, stored rows for other fields are ignored and a row saved for another issue type may be reused; when absent only an exact issue type match counts */
   usableFieldIds?: string[]
 }
 
 export interface DimensionFieldTarget {
   fieldId: string
-  fieldName: string
+  /** The service's human-readable name for fieldId; null when fieldId is already the label (templates, sentinels, Azure DevOps ids) */
+  fieldName: string | null
   fieldType: string
 }
 

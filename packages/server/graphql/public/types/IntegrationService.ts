@@ -61,12 +61,12 @@ const IntegrationService: IntegrationServiceResolvers = {
     ),
   searchQueries: async ({service, teamId, userId}, _args, {dataLoader}) => {
     const definition: ServerIntegrationDefinition = getServerIntegration(service)
-    if (!definition.capabilities.issueSearch?.persistQueries) return []
+    if (!definition.capabilities.issueSearch) return []
     const auth = await definition.getAuthRow({dataLoader, teamId, userId})
     if (!auth) return []
     return dataLoader
       .get('recentIntegrationSearchQueries')
-      .load({teamId, userId, service, providerId: auth.providerId})
+      .load({teamId, userId, providerId: auth.providerId})
   }
 }
 

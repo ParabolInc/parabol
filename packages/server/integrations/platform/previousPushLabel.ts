@@ -1,7 +1,9 @@
-import type {EstimatePushResult} from '../../postgres/types/EstimatePushResult'
+import type {TaskEstimate} from '../../postgres/types'
 
-export const previousPushLabelName = (pushResult: EstimatePushResult): string | null =>
-  pushResult?.service === 'github' ? pushResult.labelName : null
+type PushColumns = Pick<TaskEstimate, 'pushService' | 'pushTargetId'>
 
-export const previousPushLabelId = (pushResult: EstimatePushResult): string | null =>
-  pushResult?.service === 'gitlab' ? pushResult.labelId : null
+export const previousPushLabelName = ({pushService, pushTargetId}: PushColumns) =>
+  pushService === 'github' ? pushTargetId : null
+
+export const previousPushLabelId = ({pushService, pushTargetId}: PushColumns) =>
+  pushService === 'gitlab' ? pushTargetId : null

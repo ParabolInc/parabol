@@ -42,22 +42,22 @@ const pushEstimateToJira = async ({
   }
   const {issueType} = jiraIssue
 
-  const loaded = await loadDimensionField(
+  const dimensionFieldLookup = await loadDimensionField(
     resolveJiraDimensionFieldKey,
     {dataLoader, teamId, userId: accessUserId, context, info, task, viewerId},
     dimensionName
   )
-  if (!loaded) return new Error('Issue not found')
-  const {key, field: dimensionField} = loaded
+  if (!dimensionFieldLookup) return new Error('Issue not found')
+  const {key, field: dimensionField} = dimensionFieldLookup
   const {repoId} = key
 
-  if (dimensionField && dimensionField.workItemType !== issueType) {
+  if (dimensionField && dimensionField.issueType !== issueType) {
     const {fieldId, fieldName, fieldType} = dimensionField
     await upsertIntegrationDimensionFieldMap({
       teamId,
       service: 'jira',
       repoId,
-      workItemType: issueType,
+      issueType,
       dimensionName,
       fieldId,
       fieldName,
@@ -73,10 +73,10 @@ const pushEstimateToJira = async ({
       teamId,
       service: 'jira',
       repoId,
-      workItemType: issueType,
+      issueType,
       dimensionName,
       fieldId: comment,
-      fieldName: comment,
+      fieldName: null,
       fieldType: 'string'
     })
     dataLoader
@@ -84,8 +84,8 @@ const pushEstimateToJira = async ({
       .clear({teamId, service: 'jira', repoId, dimensionName})
   }
 
-  const fieldName = dimensionField?.fieldName ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
-  if (fieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
+  const fieldId = dimensionField?.fieldId ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
+  if (fieldId === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
     const res = await manager.addComment(
       cloudId,
       issueKey,
@@ -94,8 +94,8 @@ const pushEstimateToJira = async ({
     if ('message' in res) {
       return new Error(res.message)
     }
-  } else if (fieldName !== SprintPokerDefaults.SERVICE_FIELD_NULL) {
-    const {fieldId, fieldType} = dimensionField!
+  } else if (fieldId !== SprintPokerDefaults.SERVICE_FIELD_NULL) {
+    const {fieldType} = dimensionField!
     jiraFieldId = fieldId
     try {
       const updatedStoryPoints = fieldType === 'string' ? value : Number(value)
@@ -105,7 +105,7 @@ const pushEstimateToJira = async ({
       return new Error(e instanceof Error ? e.message : 'Unable to updateStoryPoints')
     }
   }
-  return jiraFieldId ? {targetKind: 'field', service: 'jira', fieldId: jiraFieldId} : null
+  return jiraFieldId ? {service: 'jira', target: 'field', targetId: jiraFieldId} : null
 }
 
 export default pushEstimateToJira

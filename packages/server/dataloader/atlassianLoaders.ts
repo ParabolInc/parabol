@@ -5,7 +5,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import type {JiraIssueMissingEstimationFieldHintEnum} from '../graphql/private/resolverTypes'
 import {fetchJiraProjectsResult} from '../integrations/jira/fetchJiraProjects'
 import refreshAtlassianAuth from '../integrations/jira/refreshAtlassianAuth'
-import {legacyPushProvenance} from '../integrations/platform/legacyPushProvenance'
+import {estimatePushColumns} from '../integrations/platform/estimatePushColumns'
 import getKysely from '../postgres/getKysely'
 import {selectAtlassianAuth} from '../postgres/select'
 import type {AtlassianAuth} from '../postgres/types'
@@ -214,11 +214,10 @@ export const jiraIssue = (
             // update our records
             await Promise.all(
               estimates.map((estimate) => {
-                const {label, discussionId, name, taskId, userId, pushResult} = estimate
+                const {label, discussionId, name, taskId, userId, pushService, pushTargetId} =
+                  estimate
                 const jiraFieldId =
-                  pushResult?.service === 'jira'
-                    ? (pushResult.fieldId as keyof typeof fields)
-                    : null
+                  pushService === 'jira' ? (pushTargetId as keyof typeof fields) : null
                 if (!jiraFieldId) {
                   return undefined
                 }
@@ -232,8 +231,11 @@ export const jiraIssue = (
                     changeSource: 'external',
                     // keep the link to the discussion alive, if possible
                     discussionId,
-                    pushResult,
-                    ...legacyPushProvenance(pushResult),
+                    ...estimatePushColumns({
+                      service: 'jira',
+                      target: 'field',
+                      targetId: jiraFieldId
+                    }),
                     label: freshEstimate,
                     name,
                     meetingId: null,

@@ -1,3 +1,4 @@
+import JiraServerProjectId from 'parabol-client/shared/gqlIds/JiraServerProjectId'
 import type {DimensionFieldCtx, DimensionFieldKey} from '../platform/ServerIntegrationDefinition'
 
 const resolveJiraServerDimensionFieldKey = async ({
@@ -13,7 +14,7 @@ const resolveJiraServerDimensionFieldKey = async ({
     .load({providerId, teamId, userId: accessUserId, issueId})
   if (!jiraServerIssue) return null
   const {issueType} = jiraServerIssue
-  return {repoId: `${providerId}:${repositoryId}`, workItemType: issueType}
+  return {repoId: JiraServerProjectId.join(providerId, repositoryId), issueType}
 }
 
 export default resolveJiraServerDimensionFieldKey

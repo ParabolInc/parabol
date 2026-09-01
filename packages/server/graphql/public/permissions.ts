@@ -511,16 +511,6 @@ const permissionMap: PermissionMap<Resolvers> = {
     repos: isUserViewer<'IntegrationService.repos'>('source.userId'),
     searchQueries: isUserViewer<'IntegrationService.searchQueries'>('source.userId')
   },
-  PersistIntegrationSearchQuerySuccess: {
-    service: isUserViewer<'PersistIntegrationSearchQuerySuccess.service'>('source.userId')
-  },
-  RemoveIntegrationSearchQuerySuccess: {
-    service: isUserViewer<'RemoveIntegrationSearchQuerySuccess.service'>('source.userId')
-  },
-  AddTeamMemberIntegrationAuthSuccess: {
-    integrationAuth:
-      isUserViewer<'AddTeamMemberIntegrationAuthSuccess.integrationAuth'>('source.userId')
-  },
   User: {
     archivedTasks: isTeamMember<'User.archivedTasks'>('args.teamId'),
     invoices: isViewerBillingLeader<'User.invoices'>('args.orgId'),

@@ -61,7 +61,7 @@ const persistIntegrationSearchQuery: MutationResolvers['persistIntegrationSearch
   }
   const definition: ServerIntegrationDefinition = getServerIntegration(service)
   const issueSearch = definition.capabilities.issueSearch
-  if (!issueSearch?.persistQueries) {
+  if (!issueSearch) {
     return {error: {message: `${service} does not save search queries`}}
   }
   if (!(await definition.isConnected({dataLoader, teamId, userId: viewerId}))) {

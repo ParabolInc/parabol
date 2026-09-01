@@ -14,7 +14,6 @@ import type {
   TaskTag,
   UserAuthIdentity
 } from './types'
-import type {EstimatePushResult} from './types/EstimatePushResult'
 import type {TIntegrationProvider} from './types/IntegrationProvider'
 import type {AnyMeeting, AnyMeetingMember} from './types/Meeting'
 import type {AnyNotification} from './types/Notification'
@@ -470,10 +469,7 @@ export const selectMeetingTemplates = () => {
 }
 
 export const selectTaskEstimate = () => {
-  return getKysely()
-    .selectFrom('TaskEstimate')
-    .selectAll()
-    .$narrowType<{pushResult: EstimatePushResult}>()
+  return getKysely().selectFrom('TaskEstimate').selectAll()
 }
 
 export const selectUser = () => {

@@ -4,7 +4,7 @@ import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import {MAX_FREE_JIRA_EXPORTS} from 'parabol-client/utils/constants'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../../appOrigin'
-import {legacyPushProvenance} from '../../../integrations/platform/legacyPushProvenance'
+import {estimatePushColumns} from '../../../integrations/platform/estimatePushColumns'
 import {getServerIntegration} from '../../../integrations/platform/registry'
 import type {EstimatePushResult} from '../../../integrations/platform/ServerIntegrationDefinition'
 import getKysely from '../../../postgres/getKysely'
@@ -157,8 +157,7 @@ const setTaskEstimate: MutationResolvers['setTaskEstimate'] = async (
       .values({
         changeSource: meeting ? 'meeting' : 'task',
         discussionId,
-        pushResult,
-        ...legacyPushProvenance(pushResult),
+        ...estimatePushColumns(pushResult),
         label: value,
         name: dimensionName,
         meetingId,

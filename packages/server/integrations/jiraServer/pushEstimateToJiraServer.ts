@@ -42,12 +42,12 @@ const pushEstimateToJiraServer = async ({
   if (!jiraServerIssue) {
     return new Error('Issue not found')
   }
-  const loaded = await loadDimensionField(
+  const dimensionFieldLookup = await loadDimensionField(
     resolveJiraServerDimensionFieldKey,
     {dataLoader, teamId, userId: accessUserId, context, info, task, viewerId},
     dimensionName
   )
-  const dimensionField = loaded?.field
+  const dimensionField = dimensionFieldLookup?.field
   const fieldId = dimensionField?.fieldId ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
 
   let pushedFieldId: string | undefined
@@ -71,7 +71,7 @@ const pushEstimateToJiraServer = async ({
     }
     pushedFieldId = fieldId
   }
-  return pushedFieldId ? {targetKind: 'field', service: 'jiraServer', fieldId: pushedFieldId} : null
+  return pushedFieldId ? {service: 'jiraServer', target: 'field', targetId: pushedFieldId} : null
 }
 
 export default pushEstimateToJiraServer

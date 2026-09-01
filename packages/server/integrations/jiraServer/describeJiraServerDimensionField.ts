@@ -1,3 +1,4 @@
+import JiraServerProjectId from 'parabol-client/shared/gqlIds/JiraServerProjectId'
 import type {
   DimensionFieldCtx,
   DimensionFieldKey,
@@ -17,8 +18,8 @@ const describeJiraServerDimensionField = async (
   const provider = await dataLoader.get('integrationProviders').loadNonNull(auth.providerId)
   if (provider.service !== 'jiraServer') return new Error('Not authenticated with JiraServer')
   const manager = new JiraServerRestManager(auth, provider)
-  const projectId = key.repoId.slice(key.repoId.indexOf(':') + 1)
-  const fieldTypes = await manager.getFieldTypes(projectId, key.workItemType)
+  const {projectId} = JiraServerProjectId.split(key.repoId)
+  const fieldTypes = await manager.getFieldTypes(projectId, key.issueType ?? '')
   if (fieldTypes instanceof Error) return fieldTypes
   const match = fieldTypes.find((candidate) => candidate.name === fieldId)
   if (!match) return new Error('Unknown field')

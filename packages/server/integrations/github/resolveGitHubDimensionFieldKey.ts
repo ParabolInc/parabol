@@ -5,7 +5,7 @@ const resolveGitHubDimensionFieldKey = async ({
 }: DimensionFieldCtx): Promise<DimensionFieldKey | null> => {
   const {integration} = task
   if (integration?.service !== 'github') return null
-  return {repoId: integration.nameWithOwner, workItemType: ''}
+  return {repoId: integration.nameWithOwner, issueType: null}
 }
 
 export default resolveGitHubDimensionFieldKey

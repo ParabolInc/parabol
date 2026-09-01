@@ -12,7 +12,7 @@ const describeLinearDimensionField = async (
   if (fieldId.trim().length === 0 || fieldId.length > 100) {
     return new Error('Label template must be 1–100 characters')
   }
-  return {fieldId, fieldName: fieldId, fieldType: 'string'}
+  return {fieldId, fieldName: null, fieldType: 'string'}
 }
 
 export default describeLinearDimensionField

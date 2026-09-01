@@ -17,7 +17,7 @@ const getJiraField = async (jiraIssue: JiraIssue, fieldId: string) => {
     SprintPokerDefaults.SERVICE_FIELD_NULL
   ]
   if (customFields.includes(fieldId as any)) {
-    return {fieldId, fieldName: fieldId, fieldType: 'string' as const}
+    return {fieldId, fieldName: null, fieldType: 'string' as const}
   }
   // a regular Jira field
   return jiraIssue.possibleEstimationFields.find((field) => field.fieldId === fieldId)
@@ -73,7 +73,7 @@ const updateJiraDimensionField: MutationResolvers['updateJiraDimensionField'] = 
 
   const existingDimensionField = pickDimensionField(dimensionFields, {
     repoId,
-    workItemType: issueType
+    issueType
   })
   if (existingDimensionField?.fieldId === fieldId) {
     return data
@@ -87,7 +87,7 @@ const updateJiraDimensionField: MutationResolvers['updateJiraDimensionField'] = 
     teamId,
     service: 'jira',
     repoId,
-    workItemType: issueType,
+    issueType,
     dimensionName,
     fieldId,
     fieldName,

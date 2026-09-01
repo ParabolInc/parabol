@@ -25,10 +25,10 @@ const updateAzureDevOpsDimensionField: MutationResolvers['updateAzureDevOpsDimen
       teamId,
       service: 'azureDevOps',
       repoId,
-      workItemType,
+      issueType: workItemType,
       dimensionName,
       fieldId: fieldName,
-      fieldName,
+      fieldName: null,
       fieldType: 'string'
     })
     dataLoader

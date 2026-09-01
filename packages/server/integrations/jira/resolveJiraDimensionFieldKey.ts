@@ -23,7 +23,7 @@ const resolveJiraDimensionFieldKey = async ({
   const {issueType, possibleEstimationFields} = jiraIssue
   return {
     repoId: JiraProjectId.join(cloudId, JiraProjectKeyId.join(issueKey)),
-    workItemType: issueType,
+    issueType,
     usableFieldIds: possibleEstimationFields.map(({fieldId}) => fieldId)
   }
 }

@@ -21,7 +21,7 @@ const resolveAzureDevOpsDimensionFieldKey = async ({
   })
   return {
     repoId: AzureDevOpsProjectId.join(instanceId, projectKey),
-    workItemType: azureDevOpsWorkItem?.type ?? ''
+    issueType: azureDevOpsWorkItem?.type ?? null
   }
 }
 

@@ -11,7 +11,7 @@ const baseRow = {
   teamId,
   service: 'jira' as const,
   repoId: 'cloud-1:PROJ',
-  workItemType: 'Story',
+  issueType: 'Story',
   dimensionName: 'Effort',
   fieldId: 'customfield_10016',
   fieldName: 'Story Points',
@@ -44,11 +44,11 @@ const load = () =>
     .selectFrom('IntegrationDimensionFieldMap')
     .selectAll()
     .where('teamId', '=', teamId)
-    .orderBy('workItemType')
+    .orderBy('issueType')
     .execute()
 
 describe('upsertIntegrationDimensionFieldMap', () => {
-  it('inserts a row keyed by team, service, repo, work item type and dimension', async () => {
+  it('inserts a row keyed by team, service, repo, issue type and dimension', async () => {
     await upsertIntegrationDimensionFieldMap(baseRow)
     const rows = await load()
     expect(rows).toHaveLength(1)
@@ -59,14 +59,14 @@ describe('upsertIntegrationDimensionFieldMap', () => {
     await upsertIntegrationDimensionFieldMap({
       ...baseRow,
       fieldId: '__comment',
-      fieldName: '__comment',
+      fieldName: null,
       fieldType: 'string'
     })
     const rows = await load()
     expect(rows).toHaveLength(1)
     expect(rows[0]).toMatchObject({
       fieldId: '__comment',
-      fieldName: '__comment',
+      fieldName: null,
       fieldType: 'string'
     })
   })
@@ -75,16 +75,38 @@ describe('upsertIntegrationDimensionFieldMap', () => {
     await upsertIntegrationDimensionFieldMap({
       ...baseRow,
       fieldId: '',
-      fieldName: '',
+      fieldName: null,
       fieldType: 'string'
     })
     const rows = await load()
     expect(rows[0]!.fieldId).toBe('')
   })
 
-  it('keeps one row per work item type', async () => {
-    await upsertIntegrationDimensionFieldMap({...baseRow, workItemType: 'Bug'})
+  it('keeps one row per issue type', async () => {
+    await upsertIntegrationDimensionFieldMap({...baseRow, issueType: 'Bug'})
     const rows = await load()
-    expect(rows.map((row) => row.workItemType)).toEqual(['Bug', 'Story'])
+    expect(rows.map((row) => row.issueType)).toEqual(['Bug', 'Story'])
+  })
+
+  it('treats a null issueType as one key, not one row per write', async () => {
+    const labelRow = {
+      ...baseRow,
+      service: 'github' as const,
+      repoId: 'org/repo',
+      issueType: null,
+      fieldId: 'Effort: {value}',
+      fieldName: null,
+      fieldType: 'string'
+    }
+    await upsertIntegrationDimensionFieldMap(labelRow)
+    await upsertIntegrationDimensionFieldMap({...labelRow, fieldId: 'Points: {value}'})
+    const rows = await pg
+      .selectFrom('IntegrationDimensionFieldMap')
+      .selectAll()
+      .where('teamId', '=', teamId)
+      .where('service', '=', 'github')
+      .execute()
+    expect(rows).toHaveLength(1)
+    expect(rows[0]).toMatchObject({fieldId: 'Points: {value}', fieldName: null})
   })
 })

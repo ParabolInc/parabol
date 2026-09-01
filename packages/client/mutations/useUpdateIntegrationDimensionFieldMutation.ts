@@ -34,11 +34,6 @@ const mutation = graphql`
       dimensionName: $dimensionName
       fieldId: $fieldId
     ) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...useUpdateIntegrationDimensionFieldMutation_team @relay(mask: false)
     }
   }
@@ -74,8 +69,8 @@ const useUpdateIntegrationDimensionFieldMutation = () => {
           stage.setLinkedRecord(nextServiceField, 'serviceField')
         })
       },
-      onCompleted: (res) => {
-        const error = res.updateIntegrationDimensionField.error
+      onCompleted: (_res, errors) => {
+        const error = errors?.[0]
         if (!error) {
           handlers?.onSuccess?.()
         } else {

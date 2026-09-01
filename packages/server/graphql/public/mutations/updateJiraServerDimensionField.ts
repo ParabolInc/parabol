@@ -1,3 +1,4 @@
+import JiraServerProjectId from 'parabol-client/shared/gqlIds/JiraServerProjectId'
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import JiraServerRestManager from '../../../integrations/jiraServer/JiraServerRestManager'
 import pickDimensionField from '../../../integrations/platform/pickDimensionField'
@@ -33,13 +34,13 @@ const updateJiraServerDimensionField: MutationResolvers['updateJiraServerDimensi
     return {error: {message: 'Not authenticated with JiraServer'}}
   }
 
-  const repoId = `${auth.providerId}:${projectId}`
+  const repoId = JiraServerProjectId.join(auth.providerId, projectId)
   const dimensionFields = await dataLoader
     .get('integrationDimensionFieldMaps')
     .load({teamId, service: 'jiraServer', repoId, dimensionName})
   const existingDimensionField = pickDimensionField(dimensionFields, {
     repoId,
-    workItemType: issueType
+    issueType
   })
   if (existingDimensionField?.fieldName === fieldName) return data
 
@@ -73,7 +74,7 @@ const updateJiraServerDimensionField: MutationResolvers['updateJiraServerDimensi
     teamId,
     service: 'jiraServer',
     repoId,
-    workItemType: issueType,
+    issueType,
     dimensionName,
     fieldId,
     fieldName,

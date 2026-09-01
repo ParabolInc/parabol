@@ -60,7 +60,7 @@ const pushEstimateToGitHub = async ({
   >
   const {teamId} = task
   const {accessUserId, issueNumber, nameWithOwner} = githubIntegration
-  const [auth, loaded] = await Promise.all([
+  const [auth, dimensionFieldLookup] = await Promise.all([
     dataLoader.get('githubAuth').load({teamId, userId: accessUserId}),
     loadDimensionField(
       resolveGitHubDimensionFieldKey,
@@ -69,7 +69,8 @@ const pushEstimateToGitHub = async ({
     )
   ])
   if (!auth) return new Error('User no longer has access to GitHub')
-  const labelTemplate = loaded?.field?.fieldName ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
+  const labelTemplate =
+    dimensionFieldLookup?.field?.fieldId ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
   if (labelTemplate === SprintPokerDefaults.SERVICE_FIELD_NULL) return null
   const {repoName, repoOwner} = GitHubRepoId.split(nameWithOwner)
 
@@ -202,7 +203,9 @@ const pushEstimateToGitHub = async ({
   const dimensionTaskEstimate = latestTaskEstimates.find(
     (estimate) => estimate.name === dimensionName
   )
-  const previousLabelName = previousPushLabelName(dimensionTaskEstimate?.pushResult ?? null)
+  const previousLabelName = dimensionTaskEstimate
+    ? previousPushLabelName(dimensionTaskEstimate)
+    : null
   if (previousLabelName) {
     const labelIdsToRemove = issueLabelNodes
       .filter((node) => node.name === previousLabelName)
@@ -232,7 +235,7 @@ const pushEstimateToGitHub = async ({
     }
   )
   if (addLabelError) return addLabelError
-  return {targetKind: 'label', service: 'github', labelName: githubLabelName}
+  return {service: 'github', target: 'label', targetId: githubLabelName}
 }
 
 export default pushEstimateToGitHub

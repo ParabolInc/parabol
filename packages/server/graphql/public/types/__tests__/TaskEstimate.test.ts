@@ -6,29 +6,25 @@ import TaskEstimate from '../TaskEstimate'
 const context = {} as GQLContext
 const info = {} as GraphQLResolveInfo
 
-const resolveJiraFieldId = (pushResult: TaskEstimateDB['pushResult']) => {
+const resolveJiraFieldId = (row: Pick<TaskEstimateDB, 'pushService' | 'pushTargetId'>) => {
   const field = TaskEstimate.jiraFieldId
   if (typeof field !== 'function') throw new Error('jiraFieldId is not a resolver function')
-  return field({pushResult} as TaskEstimateDB, {}, context, info)
+  return field(row as TaskEstimateDB, {}, context, info)
 }
 
 describe('TaskEstimate.jiraFieldId', () => {
   it('returns the field id a Jira push wrote', () => {
-    expect(
-      resolveJiraFieldId({targetKind: 'field', service: 'jira', fieldId: 'customfield_1'})
-    ).toBe('customfield_1')
+    expect(resolveJiraFieldId({pushService: 'jira', pushTargetId: 'customfield_1'})).toBe(
+      'customfield_1'
+    )
   })
   it('returns null for a field another service wrote', () => {
-    expect(
-      resolveJiraFieldId({targetKind: 'field', service: 'azureDevOps', fieldId: 'StoryPoints'})
-    ).toBeNull()
+    expect(resolveJiraFieldId({pushService: 'azureDevOps', pushTargetId: 'StoryPoints'})).toBeNull()
   })
   it('returns null for a label push', () => {
-    expect(
-      resolveJiraFieldId({targetKind: 'label', service: 'github', labelName: 'Effort: 3'})
-    ).toBeNull()
+    expect(resolveJiraFieldId({pushService: 'github', pushTargetId: 'Effort: 3'})).toBeNull()
   })
   it('returns null when the push left no provenance', () => {
-    expect(resolveJiraFieldId(null)).toBeNull()
+    expect(resolveJiraFieldId({pushService: null, pushTargetId: null})).toBeNull()
   })
 })
