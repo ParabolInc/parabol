@@ -318,21 +318,6 @@ export const activeMeetingSeriesByTeamId = foreignKeyLoaderMaker(
   }
 )
 
-// The sibling series of a group that covers several teams. groupId is a bare correlation key,
-// so a group is exactly the rows that share one, including the ones that have been cancelled
-export const meetingSeriesByGroupId = foreignKeyLoaderMaker(
-  'meetingSeries',
-  'groupId',
-  async (groupIds) => {
-    return getKysely()
-      .selectFrom('MeetingSeries')
-      .selectAll()
-      .where('groupId', 'in', groupIds)
-      .orderBy('createdAt', 'asc')
-      .execute()
-  }
-)
-
 export const meetingMembersByMeetingId = foreignKeyLoaderMaker(
   'meetingMembers',
   'meetingId',

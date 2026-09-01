@@ -5,26 +5,16 @@ import {isTeamMember} from '../../../utils/authorization'
 import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
 import logError from '../../../utils/logError'
 import {buildMeetingSeriesSlug} from '../../../utils/meetingSeriesSlug'
-import isValid from '../../isValid'
 import type {MeetingSeriesResolvers} from '../resolverTypes'
 
 const MeetingSeries: MeetingSeriesResolvers = {
   id: ({id}, _args, _context) => {
     return MeetingSeriesId.join(id)
   },
-  activeMeetings: async ({id, groupId}, _args, {authToken, dataLoader}) => {
-    // A group covering several teams runs one meeting per team, each on its own sibling series.
-    // An invitee-facing link names only one of them, so gather the group & scope to the viewer.
-    const seriesIds = groupId
-      ? (await dataLoader.get('meetingSeriesByGroupId').load(groupId)).map((series) => series.id)
-      : [id]
-    const meetingsBySeries = await dataLoader
-      .get('activeMeetingsByMeetingSeriesId')
-      .loadMany(seriesIds)
-    return meetingsBySeries
-      .filter(isValid)
-      .flat()
-      .filter((meeting) => isTeamMember(authToken, meeting.teamId))
+  activeMeetings: async ({id}, _args, {authToken, dataLoader}) => {
+    const meetings = await dataLoader.get('activeMeetingsByMeetingSeriesId').load(id)
+    // an owner can schedule for a team they are not on, & they cannot join that team's meetings
+    return meetings.filter((meeting) => isTeamMember(authToken, meeting.teamId))
   },
   mostRecentMeeting: async ({id: meetingSeriesId}, _args, _context) => {
     const meeting = await selectNewMeetings()

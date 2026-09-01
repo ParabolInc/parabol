@@ -55,8 +55,7 @@ type MeetingSeries {
   cancelledAt: DateTime
 
   """
-  The meetings that belong to the meeting series. A group of series covering several teams runs one
-  meeting per team, so this spans the whole group, limited to the teams the viewer is on.
+  The meetings that belong to the meeting series, limited to the teams the viewer is on
   """
   activeMeetings: [NewMeeting!]!
 
