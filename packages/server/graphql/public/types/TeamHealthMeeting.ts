@@ -1,5 +1,6 @@
 import {selectNewMeetings} from '../../../postgres/select'
 import type {TeamHealthMeetingResolvers} from '../resolverTypes'
+import {getTeamHealthCategoryScores} from './helpers/getTeamHealthCategoryScores'
 
 // how far back to walk the series looking for the streak. teams meeting even weekly won't
 // realistically run this many cycles in a row, so this is just a sane upper bound on the query
@@ -16,6 +17,13 @@ const TeamHealthMeeting: TeamHealthMeetingResolvers = {
     // polled and de-anonymized
     if (!endedAt) return []
     return dataLoader.get('teamHealthResponsesByMeetingId').load(meetingId)
+  },
+  categoryScores: async ({id: meetingId, endedAt}, _args, {dataLoader}) => {
+    // gated on endedAt for the same reason `responses` is: a category rollup over one respondent is
+    // that respondent's answers
+    if (!endedAt) return []
+    const [categoryScores] = await getTeamHealthCategoryScores([meetingId], dataLoader)
+    return categoryScores ?? []
   },
   respondentCount: async ({id: meetingId}, _args, {dataLoader}) => {
     const responses = await dataLoader.get('teamHealthResponsesByMeetingId').load(meetingId)

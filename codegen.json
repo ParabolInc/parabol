@@ -312,6 +312,7 @@
           "TaskEstimate": "../../postgres/types/index#TaskEstimate as TaskEstimateDB",
           "Team": "../../postgres/types/index#Team as TeamDB",
           "TeamHealthCategory": "../../postgres/types/index#TeamHealthCategory as TeamHealthCategoryDB",
+          "TeamHealthCategoryScore": "./types/helpers/getTeamHealthCategoryScores#TeamHealthCategoryScoreSource",
           "TeamHealthMeeting": "../../postgres/types/Meeting#TeamHealthMeeting as TeamHealthMeetingDB",
           "TeamHealthPhase": "./types/TeamHealthPhase#TeamHealthPhaseSource",
           "TeamHealthResponsePhase": "./types/TeamHealthResponsePhase#TeamHealthResponsePhaseSource",
