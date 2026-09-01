@@ -1,4 +1,4 @@
-import {datadogRum} from '@datadog/browser-rum'
+import {datadogLogs} from '@datadog/browser-logs'
 import {Component, type ErrorInfo, type ReactNode} from 'react'
 import type Atmosphere from '~/Atmosphere'
 import useAtmosphere from '~/hooks/useAtmosphere'
@@ -51,7 +51,7 @@ class ErrorBoundary extends Component<Props & {atmosphere: Atmosphere}, State> {
     })
 
     const {componentStack} = errorInfo
-    datadogRum.addError(error, {viewerId, email, componentStack, eventId})
+    datadogLogs.logger.error(error.message, {viewerId, email, componentStack, eventId}, error)
   }
 
   render() {
