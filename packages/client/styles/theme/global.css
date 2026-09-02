@@ -180,6 +180,10 @@
      selected control reads identically everywhere — never hand-roll a tinted
      accent for selection, use bg-surface-selected/text-fg-selected. */
   --color-surface-selected: var(--color-grape-600);
+  /* The confirm button in a dialog. Dark lifts a step to grape-600: grape-700 is
+     within 1.1:1 of surface-card in dark, so the button dissolved into the sheet. */
+  --color-surface-cta: var(--color-grape-700);
+  --color-surface-cta-hover: var(--color-grape-600);
   --color-fg-selected: var(--color-white);
   --color-fg-primary: #444258;
   --color-fg-secondary: #82809a;
@@ -190,6 +194,9 @@
   --color-hairline: #e0ddec;
   --color-hairline-strong: #c3c0d8;
   --color-hairline-field: #c3c0d8;
+  /* Border of an unfilled control (checkbox, radio). Needs 3:1 against whatever
+     surface it lands on, so dark carries more alpha than hairline-strong. */
+  --color-hairline-control: #c3c0d8;
   --color-accent: #329ae5;
   --color-accent-active: #493272;
   /* Error/destructive TEXT. Light = tomato-500 (unchanged from production);
@@ -377,6 +384,10 @@
   --color-surface-nav-button-hover: rgba(183, 180, 233, 0.32);
   --color-surface-phase-active: var(--color-grape-750);
   --color-surface-selected: var(--color-grape-600);
+  --color-surface-cta: var(--color-grape-600);
+  /* between grape-600 and grape-500: grape-500 is a fine lift but drops white
+     label text to 3.8:1, under AA */
+  --color-surface-cta-hover: #8e5ac9;
   --color-fg-selected: var(--color-white);
   --color-fg-primary: #eeedf7;
   --color-fg-secondary: #cac7f2;
@@ -389,6 +400,7 @@
   --color-hairline: rgba(183, 180, 233, 0.16);
   --color-hairline-strong: rgba(183, 180, 233, 0.32);
   --color-hairline-field: rgba(183, 180, 233, 0.32);
+  --color-hairline-control: rgba(183, 180, 233, 0.7);
   --color-accent: #61b1eb;
   --color-accent-active: #a86bd6;
   --color-fg-error: #fd7f77;
@@ -437,6 +449,8 @@
   --color-surface-nav-button-hover: var(--color-slate-400);
   --color-surface-phase-active: var(--color-slate-200);
   --color-surface-selected: var(--color-grape-600);
+  --color-surface-cta: var(--color-grape-700);
+  --color-surface-cta-hover: var(--color-grape-600);
   --color-fg-selected: var(--color-white);
   --color-fg-primary: #444258;
   --color-fg-secondary: #82809a;
@@ -447,6 +461,7 @@
   --color-hairline: #e0ddec;
   --color-hairline-strong: #c3c0d8;
   --color-hairline-field: #c3c0d8;
+  --color-hairline-control: #c3c0d8;
   --color-accent: #329ae5;
   --color-accent-active: #493272;
   --color-fg-error: #fd6157;

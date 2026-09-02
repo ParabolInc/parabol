@@ -25,7 +25,7 @@ const VARIANT_STYLES: Record<Variant, string> = {
   outline:
     'text-fg-primary border border-hairline-strong hover:bg-surface-hover px-2.5 py-1 bg-transparent font-semibold',
   dialogPrimary:
-    'text-white bg-grape-700 hover:bg-grape-600 focus-visible:ring-grape-500 font-semibold',
+    'text-white bg-surface-cta hover:bg-surface-cta-hover focus-visible:ring-grape-500 font-semibold',
   secondary: 'bg-sky-500 text-white hover:bg-sky-500/80 font-semibold',
   ghost: 'hover:opacity-80 bg-transparent font-semibold',
   link: 'text-primary underline-offset-4 hover:underline',

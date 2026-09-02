@@ -2,6 +2,8 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import * as React from 'react'
 import {cn} from '../cn'
 
+export const MENU_ITEM_ICON = 'mr-2 text-[20px] text-fg-secondary'
+
 interface MenuItemProps {
   onSelect?: (event: Event) => void
   onClick?: React.MouseEventHandler

@@ -4,26 +4,22 @@ import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {Link, useNavigate} from 'react-router'
-import {MoreVert} from '~/ui/icons'
+import {MoreVert, PlayArrow as PlayArrowIcon, Replay as ReplayIcon} from '~/ui/icons'
 import action from '../../../static/images/illustrations/action.png'
 import retrospective from '../../../static/images/illustrations/retrospective.png'
 import poker from '../../../static/images/illustrations/sprintPoker.png'
 import teamPrompt from '../../../static/images/illustrations/teamPrompt.png'
 import type {ScheduledSeriesCard_series$key} from '../__generated__/ScheduledSeriesCard_series.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import useMutationProps from '../hooks/useMutationProps'
-import UpdateMeetingSeriesMutation from '../mutations/UpdateMeetingSeriesMutation'
 import useStartMeetingSeriesNowMutation from '../mutations/useStartMeetingSeriesNowMutation'
 import {cn} from '../ui/cn'
-import {useDialogState} from '../ui/Dialog/useDialogState'
 import {Menu} from '../ui/Menu/Menu'
 import {MenuContent} from '../ui/Menu/MenuContent'
-import {MenuItem} from '../ui/Menu/MenuItem'
+import {MENU_ITEM_ICON, MenuItem} from '../ui/Menu/MenuItem'
 import {Tooltip} from '../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../ui/Tooltip/TooltipTrigger'
 import {MeetingTypeToReadable} from '../utils/meetings/lookups'
-import {CancelSeriesConfirmationModal} from './CancelSeriesConfirmationModal'
 import {EditMeetingSeriesModal} from './EditMeetingSeriesModal'
 
 const STACK_CLASSES = {
@@ -87,7 +83,7 @@ const ScheduledSeriesCard = (props: Props) => {
         meetingType
         nextMeetingDate
         ownerUserId
-        ...MeetingSeriesEditForm_series
+        ...EditMeetingSeriesModal_series
       }
     `,
     seriesRef
@@ -96,10 +92,8 @@ const ScheduledSeriesCard = (props: Props) => {
   const {id, title, meetingType, nextMeetingDate, ownerUserId} = series
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
-  const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
   const [startNow, isStarting] = useStartMeetingSeriesNowMutation()
   const [isEditOpen, setIsEditOpen] = useState(false)
-  const cancelDialog = useDialogState()
 
   const onStartNow = () => {
     if (isStarting) return
@@ -120,28 +114,6 @@ const ScheduledSeriesCard = (props: Props) => {
         })
       }
     })
-  }
-
-  const onCancelConfirmed = () => {
-    if (submitting) return
-    submitMutation()
-    UpdateMeetingSeriesMutation(
-      atmosphere,
-      {meetingSeriesId: id, rrule: null},
-      {
-        onError,
-        onCompleted: (res, errors) => {
-          onCompleted(res, errors)
-          atmosphere.eventEmitter.emit('addSnackbar', {
-            key: 'meetingSeriesCancelled',
-            message: 'Recurrence cancelled.',
-            autoDismiss: 8,
-            showDismissButton: true
-          })
-        }
-      }
-    )
-    cancelDialog.close()
   }
 
   const isViewerOwner = ownerUserId === atmosphere.viewerId
@@ -217,9 +189,16 @@ const ScheduledSeriesCard = (props: Props) => {
                 }
               >
                 <MenuContent align='end' sideOffset={4}>
-                  {isViewerOwner && <MenuItem onSelect={onStartNow}>Start meeting now</MenuItem>}
-                  <MenuItem onSelect={() => setIsEditOpen(true)}>Edit schedule</MenuItem>
-                  <MenuItem onSelect={cancelDialog.open}>Cancel series</MenuItem>
+                  {isViewerOwner && (
+                    <MenuItem onSelect={onStartNow}>
+                      <PlayArrowIcon className={MENU_ITEM_ICON} />
+                      Start meeting now
+                    </MenuItem>
+                  )}
+                  <MenuItem onSelect={() => setIsEditOpen(true)}>
+                    <ReplayIcon className={MENU_ITEM_ICON} />
+                    Edit recurrence settings
+                  </MenuItem>
                 </MenuContent>
               </Menu>
             </div>
@@ -229,12 +208,6 @@ const ScheduledSeriesCard = (props: Props) => {
               </span>
             </Link>
           </div>
-          <CancelSeriesConfirmationModal
-            isOpen={cancelDialog.isOpen}
-            onClose={cancelDialog.close}
-            seriesTitle={title}
-            onConfirm={onCancelConfirmed}
-          />
           <EditMeetingSeriesModal
             isOpen={isEditOpen}
             onClose={() => setIsEditOpen(false)}

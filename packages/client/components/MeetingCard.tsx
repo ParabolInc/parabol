@@ -14,18 +14,19 @@ import useBreakpoint from '../hooks/useBreakpoint'
 import {MenuPosition} from '../hooks/useCoords'
 import useMeetingMemberAvatars from '../hooks/useMeetingMemberAvatars'
 import {useMeetingSeriesDate} from '../hooks/useMeetingSeriesDate'
-import useMenu from '../hooks/useMenu'
 import useTooltip from '../hooks/useTooltip'
 import {Breakpoint, ElementWidth} from '../types/constEnums'
 import {cn} from '../ui/cn'
+import {Menu} from '../ui/Menu/Menu'
+import {MenuContent} from '../ui/Menu/MenuContent'
 import getMeetingPhase from '../utils/getMeetingPhase'
 import {MeetingTypeToReadable, phaseLabelLookup} from '../utils/meetings/lookups'
 import AvatarList from './AvatarList'
 import CardButton from './CardButton'
+import {EditMeetingSeriesModal} from './EditMeetingSeriesModal'
 import IconLabel from './IconLabel'
 import MeetingCardOptionsMenuRoot from './MeetingCardOptionsMenuRoot'
 import {EndRecurringMeetingModal} from './Recurrence/EndRecurringMeetingModal'
-import {UpdateRecurrenceSettingsModal} from './Recurrence/UpdateRecurrenceSettingsModal'
 import Tooltip from './Tooltip'
 
 const BACKGROUND_CLASSES = {
@@ -62,7 +63,6 @@ const MeetingCard = (props: Props) => {
       fragment MeetingCard_meeting on NewMeeting {
         ...useMeetingMemberAvatars_meeting
         ...EndRecurringMeetingModal_meeting
-        ...UpdateRecurrenceSettingsModal_meeting
         ...useMeetingSeriesDate_meeting
         id
         name
@@ -92,6 +92,7 @@ const MeetingCard = (props: Props) => {
           title
           cancelledAt
           nextMeetingDate
+          ...EditMeetingSeriesModal_series
         }
       }
     `,
@@ -111,7 +112,6 @@ const MeetingCard = (props: Props) => {
   const connectedUsers = useMeetingMemberAvatars(meeting)
   const {label: dateLabel, tooltip: readableNextMeetingDate} = useMeetingSeriesDate(meeting)
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   const popTooltip = () => {
     openTooltip()
     setTimeout(() => {
@@ -259,13 +259,26 @@ const MeetingCard = (props: Props) => {
                   </span>
                 )}
               </Link>
-              <CardButton
-                className='absolute top-0 right-0 h-8 w-8 text-fg-primary opacity-100 hover:bg-surface-hover'
-                ref={originRef}
-                onClick={togglePortal}
+              <Menu
+                trigger={
+                  <CardButton
+                    className='absolute top-0 right-0 h-8 w-8 text-fg-primary opacity-100 hover:bg-surface-hover'
+                    aria-label='Edit the meeting'
+                  >
+                    <IconLabel ref={tooltipRef} icon='more_vert' />
+                  </CardButton>
+                }
               >
-                <IconLabel ref={tooltipRef} icon='more_vert' />
-              </CardButton>
+                <MenuContent align='end' sideOffset={4}>
+                  <MeetingCardOptionsMenuRoot
+                    meetingId={meetingId}
+                    teamId={teamId}
+                    popTooltip={popTooltip}
+                    openEndRecurringMeetingModal={() => setIsEndRecurringMeetingOpen(true)}
+                    openRecurrenceSettingsModal={() => setIsRecurrenceSettingsOpen(true)}
+                  />
+                </MenuContent>
+              </Menu>
             </div>
             <Link to={meetingLink}>
               <span className='wrap-break-word block pt-1 pb-2 text-fg-secondary text-sm'>
@@ -274,16 +287,6 @@ const MeetingCard = (props: Props) => {
             </Link>
             <AvatarList users={connectedUsers} size={28} borderColor='var(--color-surface-card)' />
           </div>
-          {menuPortal(
-            <MeetingCardOptionsMenuRoot
-              meetingId={meetingId}
-              teamId={teamId}
-              menuProps={menuProps}
-              popTooltip={popTooltip}
-              openEndRecurringMeetingModal={() => setIsEndRecurringMeetingOpen(true)}
-              openRecurrenceSettingsModal={() => setIsRecurrenceSettingsOpen(true)}
-            />
-          )}
           {tooltipPortal('Copied!')}
           {meeting && (
             <EndRecurringMeetingModal
@@ -293,11 +296,11 @@ const MeetingCard = (props: Props) => {
               closeModal={() => setIsEndRecurringMeetingOpen(false)}
             />
           )}
-          {meeting && (
-            <UpdateRecurrenceSettingsModal
-              meeting={meeting}
+          {isRecurring && (
+            <EditMeetingSeriesModal
+              seriesRef={meetingSeries}
               isOpen={isRecurrenceSettingsOpen}
-              closeModal={() => setIsRecurrenceSettingsOpen(false)}
+              onClose={() => setIsRecurrenceSettingsOpen(false)}
             />
           )}
         </div>

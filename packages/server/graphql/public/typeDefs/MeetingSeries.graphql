@@ -25,6 +25,18 @@ type MeetingSeries {
   ownerUserId: ID
 
   """
+  Correlates the sibling series scheduled together across several teams: they share this id and
+  one lifecycle. Null when the series covers a single team, which is a group of one.
+  """
+  groupId: ID
+
+  """
+  The template every meeting in the series is built from. Set for meeting types that pick a
+  template up front, such as teamHealth; null for the rest.
+  """
+  templateId: ID
+
+  """
   The name of the meeting series used to generate the names of the recurring meetings
   """
   title: String!
