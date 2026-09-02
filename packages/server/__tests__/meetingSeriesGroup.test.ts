@@ -335,6 +335,53 @@ const departFromOrg = async (orgId: string, userId: string) => {
     .execute()
 }
 
+const REMOVE_ORG_USERS = `
+  mutation RemoveOrgUsers($userIds: [ID!]!, $orgId: ID!) {
+    removeOrgUsers(userIds: $userIds, orgId: $orgId) {
+      ... on ErrorPayload {
+        error { message }
+      }
+      ... on RemoveOrgUsersSuccess {
+        removedUserIds
+      }
+    }
+  }
+`
+
+// The owner is a person, and people leave. Handing the series to the org on the way out keeps the
+// owner rung filled, so a later hard delete cannot null it & make the series look unowned.
+test('leaving the org hands an owned series to a billing leader', async () => {
+  const pg = getKysely()
+  const owner = await signUp()
+  const successor = await signUp()
+  await addOrgUser(owner.orgId, successor.userId, 'BILLING_LEADER')
+  const secondTeamId = await addTeam(owner.orgId, owner.userId, true)
+  const {rows} = await createGroupedSeries([owner.teamId, secondTeamId], owner.userId, owner.userId)
+
+  const res = await sendPublic({
+    query: REMOVE_ORG_USERS,
+    variables: {userIds: [owner.userId], orgId: owner.orgId},
+    bearerToken: await authTokenFor(owner.userId)
+  })
+  expect(res.data.removeOrgUsers.error).toBeUndefined()
+
+  const after = await pg
+    .selectFrom('MeetingSeries')
+    .select(['id', 'ownerUserId'])
+    .where(
+      'id',
+      'in',
+      rows.map(({id}) => id)
+    )
+    .execute()
+
+  // every sibling moves together, so no team of the group is left with a stale owner
+  expect(after).toHaveLength(2)
+  for (const series of after) {
+    expect(series.ownerUserId).toBe(successor.userId)
+  }
+})
+
 // Authority must never be pinned to one person: an owner who leaves the company would otherwise
 // take the whole group with them, since the writes fan out over every sibling series.
 test('a departed owner does not strand the group, a billing leader can still manage it', async () => {
@@ -435,9 +482,9 @@ test('an ownerless group is not administered by a member of one of its teams', a
   expect(res.data.updateMeetingSeries.error).toBeTruthy()
 })
 
-// A group that loses every team but one is an ordinary single-team series. Treating "has a
-// groupId" as "is multi-team" would lock that team out of administering its own meeting.
-test('a group that has degenerated to one live series is administered by its team', async () => {
+// A series scheduled as a group stays a group for life. Handing the last survivor back to its
+// team would mean a hard-deleted owner quietly widens who may administer it.
+test('the last live series of a group is administered by the org, not its team', async () => {
   const pg = getKysely()
   const owner = await signUp()
   const teamMember = await signUp()
@@ -455,7 +502,7 @@ test('a group that has degenerated to one live series is administered by its tea
   const ownTeamSeries = rows.find(({teamId}) => teamId === owner.teamId)!
   const siblingSeries = rows.find(({teamId}) => teamId === secondTeamId)!
 
-  // the owner is gone & the sibling team was archived, so only this team is left running it
+  // the owner deleted their account & the sibling team was archived, so only this team is left
   await pg
     .updateTable('MeetingSeries')
     .set({ownerUserId: null})
@@ -471,23 +518,31 @@ test('a group that has degenerated to one live series is administered by its tea
     .where('id', '=', siblingSeries.id)
     .execute()
 
-  const res = await sendPublic({
+  const memberRes = await sendPublic({
+    query: UPDATE_MEETING_SERIES,
+    variables: {meetingSeriesId: MeetingSeriesId.join(ownTeamSeries.id), name: 'Ours Now'},
+    bearerToken: await authTokenFor(teamMember.userId)
+  })
+  expect(memberRes.data.updateMeetingSeries.error).toBeTruthy()
+
+  // the org's billing leader still administers it, so it is never stranded
+  const leaderRes = await sendPublic({
     query: UPDATE_MEETING_SERIES,
     variables: {
       meetingSeriesId: MeetingSeriesId.join(ownTeamSeries.id),
-      name: 'Ours Now',
+      name: 'Org Ran It',
       rrule: NEW_RRULE
     },
-    bearerToken: await authTokenFor(teamMember.userId)
+    bearerToken: await authTokenFor(owner.userId)
   })
-  expect(res.data.updateMeetingSeries.error).toBeUndefined()
+  expect(leaderRes.data.updateMeetingSeries.error).toBeUndefined()
 
   const after = await pg
     .selectFrom('MeetingSeries')
     .select('title')
     .where('id', '=', ownTeamSeries.id)
     .executeTakeFirstOrThrow()
-  expect(after.title).toBe('Ours Now')
+  expect(after.title).toBe('Org Ran It')
 })
 
 const UPDATE_RECURRENCE_SETTINGS = `

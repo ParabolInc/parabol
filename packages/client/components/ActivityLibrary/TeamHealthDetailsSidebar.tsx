@@ -115,7 +115,7 @@ const TeamHealthDetailsSidebar = (props: Props) => {
               key: 'startMeetingSeriesNow',
               autoDismiss: 5,
               showDismissButton: true,
-              message: 'Started the meeting for each team on this schedule'
+              message: 'Started the next meeting for each team'
             })
           }
         })
