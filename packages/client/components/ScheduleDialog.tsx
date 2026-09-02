@@ -19,6 +19,7 @@ import gcalLogo from '../styles/theme/images/graphics/google-calendar.svg'
 import {Button} from '../ui/Button/Button'
 import {cn} from '../ui/cn'
 import {DialogActions} from '../ui/Dialog/DialogActions'
+import {DialogTitle} from '../ui/Dialog/DialogTitle'
 import GcalClientManager from '../utils/GcalClientManager'
 import {toHumanReadable} from '../utils/humanReadableRecurrenceRule'
 import plural from '../utils/plural'
@@ -138,7 +139,7 @@ export const ScheduleDialog = (props: Props) => {
   const subTitle = `Create a ${withRecurrence ? 'recurring meeting series' : 'meeting'}${gcal?.cloudProvider ? ' or add the meeting to your calendar.' : '.'}`
   return (
     <div className='space-y-4 overflow-auto p-4'>
-      <div className='font-semibold text-lg leading-none'>Schedule Your Meeting</div>
+      <DialogTitle className='text-lg leading-none'>Schedule Your Meeting</DialogTitle>
       <div className='text-fg-primary text-sm'>{subTitle}</div>
       <div className='flex flex-col'>
         <input
