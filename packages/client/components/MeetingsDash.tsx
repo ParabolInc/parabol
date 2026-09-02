@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {AnimatePresence} from 'motion/react'
 import {type RefObject, useMemo} from 'react'
 import {useFragment} from 'react-relay'
+import {RRule} from 'rrule'
 import type {MeetingsDash_viewer$key} from '~/__generated__/MeetingsDash_viewer.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
@@ -9,10 +10,13 @@ import useCardsPerRow from '../hooks/useCardsPerRow'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import {Breakpoint, EmptyMeetingViewMessage} from '../types/constEnums'
 import {cn} from '../ui/cn'
+import getMeetingSeriesGroups from '../utils/getMeetingSeriesGroups'
 import getSafeRegex from '../utils/getSafeRegex'
+import {toHumanReadable} from '../utils/humanReadableRecurrenceRule'
 import {useQueryParameterParser} from '../utils/useQueryParameterParser'
 import DemoMeetingCard from './DemoMeetingCard'
 import MeetingCard from './MeetingCard'
+import MeetingSeriesGroupCard from './MeetingSeriesGroupCard'
 import MeetingsDashEmpty from './MeetingsDashEmpty'
 import MeetingsDashHeader from './MeetingsDashHeader'
 import ScheduledSeriesCard from './ScheduledSeriesCard'
@@ -47,9 +51,19 @@ const MeetingsDash = (props: Props) => {
     () => teams.flatMap((team) => team.activeMeetingSeries).filter((s) => !s.cancelledAt),
     [teams]
   )
+  // a group of one is a series the viewer can only partly see, so it stays a normal card
+  const seriesGroups = useMemo(
+    () => getMeetingSeriesGroups(allSeries).filter((group) => group.series.length > 1),
+    [allSeries]
+  )
+  const groupedSeriesIds = useMemo(
+    () => new Set(seriesGroups.flatMap((group) => group.series.map((series) => series.id))),
+    [seriesGroups]
+  )
   const activeMeetings = useMemo(() => {
     const meetingSeriesMeetings = allSeries
       .filter((meetingSeries) => !!meetingSeries.mostRecentMeeting)
+      .filter((meetingSeries) => !groupedSeriesIds.has(meetingSeries.id))
       .sort((a, b) => {
         return a.createdAt > b.createdAt ? -1 : 1
       })
@@ -62,13 +76,14 @@ const MeetingsDash = (props: Props) => {
         return a.createdAt > b.createdAt ? -1 : 1
       })
     return [...meetingSeriesMeetings, ...otherActiveMeetings]
-  }, [teams, allSeries])
+  }, [teams, allSeries, groupedSeriesIds])
   const scheduledSeries = useMemo(
     () =>
       allSeries
         .filter((s) => !s.mostRecentMeeting)
+        .filter((s) => !groupedSeriesIds.has(s.id))
         .sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1)),
-    [allSeries]
+    [allSeries, groupedSeriesIds]
   )
   const filteredMeetings = useMemo(() => {
     const searchedMeetings = dashSearch
@@ -88,9 +103,25 @@ const MeetingsDash = (props: Props) => {
       : searched
     return teamFiltered
   }, [scheduledSeries, dashSearch, teamFilterIds])
+  const filteredSeriesGroups = useMemo(() => {
+    const searched = dashSearch
+      ? seriesGroups.filter(({title}) => title && title.match(getSafeRegex(dashSearch, 'i')))
+      : seriesGroups
+    // a team filter keeps the group, narrowed to that team's series
+    if (!teamFilterIds) return searched
+    return searched
+      .map((group) => ({
+        ...group,
+        series: group.series.filter((series) => teamFilterIds.includes(series.teamId))
+      }))
+      .filter((group) => group.series.length > 0)
+  }, [seriesGroups, dashSearch, teamFilterIds])
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const cardsPerRow = useCardsPerRow(meetingsDashRef)
-  const hasFilteredMeetings = filteredMeetings.length > 0 || filteredScheduledSeries.length > 0
+  const hasFilteredMeetings =
+    filteredMeetings.length > 0 ||
+    filteredScheduledSeries.length > 0 ||
+    filteredSeriesGroups.length > 0
   useDocumentTitle('Meetings | Parabol', 'Meetings')
   if (!viewer || !cardsPerRow) return null
 
@@ -100,6 +131,29 @@ const MeetingsDash = (props: Props) => {
       {hasFilteredMeetings ? (
         <div className={cn('relative flex flex-wrap', maybeTabletPlus ? 'px-5' : 'p-4')}>
           <AnimatePresence initial={false}>
+            {filteredSeriesGroups.map((group) => {
+              // a single series narrowed by the team filter is just a normal card
+              if (group.series.length === 1) {
+                const series = group.series[0]!
+                return series.mostRecentMeeting ? (
+                  <MeetingCard
+                    key={series.mostRecentMeeting.id}
+                    meeting={series.mostRecentMeeting}
+                  />
+                ) : (
+                  <ScheduledSeriesCard key={`series-${series.id}`} series={series} />
+                )
+              }
+              return (
+                <MeetingSeriesGroupCard
+                  key={`group-${group.groupId}`}
+                  seriesRefs={group.series}
+                  recurrenceLabel={toHumanReadable(RRule.fromString(group.recurrenceRule), {
+                    isPartOfSentence: true
+                  })}
+                />
+              )
+            })}
             {filteredScheduledSeries.map((series) => (
               <ScheduledSeriesCard key={`series-${series.id}`} series={series} />
             ))}
@@ -160,10 +214,13 @@ graphql`
       teamId
       createdAt
       cancelledAt
+      groupId
+      recurrenceRule
       mostRecentMeeting {
         ...MeetingsDash_meeting @relay(mask: false)
       }
       ...ScheduledSeriesCard_series
+      ...MeetingSeriesGroupCard_series
     }
   }
 `
