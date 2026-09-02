@@ -18,7 +18,7 @@
     "url": "https://github.com/ParabolInc/parabol/issues"
   },
   "devDependencies": {
-    "@types/node": "^22.14.0",
+    "@types/node": "^26.4.0",
     "openapi-fetch": "^0.10.0"
   },
   "dependencies": {
