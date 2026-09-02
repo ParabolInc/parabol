@@ -14,7 +14,7 @@ const ZoomIntegration: ZoomIntegrationResolvers = {
   },
 
   isActive: async ({teamId, userId}, _args, {dataLoader}) => {
-    const auth = await dataLoader.get('freshZoomAuth').load({teamId, userId})
+    const auth = await dataLoader.get('freshAuth').load({service: 'zoom', teamId, userId})
     return !!auth?.isActive
   }
 }

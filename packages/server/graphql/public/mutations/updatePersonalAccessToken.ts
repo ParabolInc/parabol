@@ -55,20 +55,18 @@ export const updatePersonalAccessToken: MutationResolvers['updatePersonalAccessT
   if (expiresAt && expiresAt > maxExpiry) {
     throw new GraphQLError('Expiration date cannot be more than 1 year in the future')
   }
+  const updates = {
+    ...(tokenName !== undefined && tokenName !== null ? {name: tokenName} : {}),
+    ...(scopes !== undefined && scopes !== null ? {scopes} : {}),
+    ...(grantedOrgIds !== undefined ? {grantedOrgIds} : {}),
+    ...(grantedTeamIds !== undefined ? {grantedTeamIds} : {}),
+    ...(grantedPageIds !== undefined ? {grantedPageIds} : {}),
+    ...(expiresAt !== undefined && expiresAt !== null ? {expiresAt} : {}),
+    ...(revoke ? {revokedAt: new Date()} : {})
+  }
+  if (Object.keys(updates).length === 0) throw new GraphQLError('No fields to update')
   const pg = getKysely()
-  await pg
-    .updateTable('PersonalAccessToken')
-    .set({
-      ...(tokenName !== undefined && tokenName !== null ? {name: tokenName} : {}),
-      ...(scopes !== undefined && scopes !== null ? {scopes} : {}),
-      ...(grantedOrgIds !== undefined ? {grantedOrgIds} : {}),
-      ...(grantedTeamIds !== undefined ? {grantedTeamIds} : {}),
-      ...(grantedPageIds !== undefined ? {grantedPageIds} : {}),
-      ...(expiresAt !== undefined && expiresAt !== null ? {expiresAt} : {}),
-      ...(revoke ? {revokedAt: new Date()} : {})
-    })
-    .where('id', '=', token.id)
-    .execute()
+  await pg.updateTable('PersonalAccessToken').set(updates).where('id', '=', token.id).execute()
 
   return {patId: token.id}
 }

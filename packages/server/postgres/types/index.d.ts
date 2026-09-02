@@ -201,6 +201,12 @@ export type IntegrationSearchQuery = ExtractTypeFromQueryBuilderSelect<
 
 export type JiraAuthMeta = {cloudIds: string[]}
 
+/** Services that persist something in TeamMemberIntegrationAuth.meta and its shape; services absent here have meta: null.
+ * This map is the only place to extend when a new integration stores auth meta. */
+export type IntegrationAuthMetaByService = {
+  jira: JiraAuthMeta
+}
+
 export type AtlassianAuth = ExtractTypeFromQueryBuilderSelect<typeof selectAtlassianAuth>
 
 export interface GitHubSearchQuery {

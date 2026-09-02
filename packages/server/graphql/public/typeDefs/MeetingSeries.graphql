@@ -18,6 +18,13 @@ type MeetingSeries {
   meetingType: MeetingTypeEnum!
 
   """
+  The user who scheduled the series, set when it was scheduled across several teams or for a
+  team they are not on. Only they may rename, reschedule, cancel, or start it ahead of schedule.
+  Null when anyone on the team may do those things.
+  """
+  ownerUserId: ID
+
+  """
   The name of the meeting series used to generate the names of the recurring meetings
   """
   title: String!
@@ -48,7 +55,7 @@ type MeetingSeries {
   cancelledAt: DateTime
 
   """
-  The meetings that belong to the meeting series
+  The meetings that belong to the meeting series, limited to the teams the viewer is on
   """
   activeMeetings: [NewMeeting!]!
 

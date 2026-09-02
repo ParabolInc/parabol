@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "13.39.0",
+  "version": "13.41.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "@amplitude/analytics-browser": "2.2.3",
-    "@datadog/browser-rum": "^6.17.0",
+    "@datadog/browser-logs": "6.33.0",
     "@emoji-mart/data": "^1.2.1",
     "@emoji-mart/react": "^1.1.1",
     "@floating-ui/dom": "^1.6.13",

@@ -1,114 +1,25 @@
 import graphql from 'babel-plugin-relay/macro'
-
 import {useFragment} from 'react-relay'
-import type {useIsIntegrated_integrations$key} from '../__generated__/useIsIntegrated_integrations.graphql'
-import {hasJiraScopes} from '../utils/atlassianScopes'
+import type {useIsIntegrated_teamMember$key} from '../__generated__/useIsIntegrated_teamMember.graphql'
 
-type IntegrationLookup = {
-  hasGitHub: boolean
-  hasAtlassian: boolean
-  hasGitLab: boolean
-  hasJiraServer: boolean
-  hasAzureDevOps: boolean
-  hasLinear: boolean
-}
+export const makePlaceholder = (connectedServices: readonly {title: string}[]) =>
+  `Search ${connectedServices.map(({title}) => title).join(' & ')}`
 
-graphql`
-  fragment useIsIntegratedJiraServerIntegration on JiraServerIntegration {
-    auth {
-      isActive
-    }
-  }
-`
-graphql`
-  fragment useIsIntegratedAtlassianIntegration on AtlassianIntegration {
-    isActive
-    scope
-  }
-`
-graphql`
-  fragment useIsIntegratedGitHubIntegration on GitHubIntegration {
-    isActive
-  }
-`
-graphql`
-  fragment useIsIntegratedGitLabIntegration on GitLabIntegration {
-    auth {
-      isActive
-    }
-  }
-`
-graphql`
-  fragment useIsIntegratedAzureDevOpsIntegration on AzureDevOpsIntegration {
-    auth {
-      isActive
-    }
-  }
-`
-graphql`
-  fragment useIsIntegratedLinearIntegration on LinearIntegration {
-    auth {
-      isActive
-    }
-  }
-`
-
-export const makePlaceholder = (integrationLookup: IntegrationLookup) => {
-  const {hasGitHub, hasAtlassian, hasGitLab, hasAzureDevOps, hasLinear} = integrationLookup
-  const names = [] as string[]
-  if (hasGitHub) names.push('GitHub')
-  if (hasAtlassian) names.push('Jira')
-  if (hasGitLab) names.push('GitLab')
-  if (hasAzureDevOps) names.push('Azure DevOps')
-  if (hasLinear) names.push('Linear')
-  return `Search ${names.join(' & ')}`
-}
-
-export const useIsIntegrated = (integrationsRef?: useIsIntegrated_integrations$key) => {
-  const integrations = useFragment(
+export const useIsIntegrated = (teamMemberRef?: useIsIntegrated_teamMember$key | null) => {
+  const teamMember = useFragment(
     graphql`
-      fragment useIsIntegrated_integrations on TeamMemberIntegrations {
-        jiraServer {
-          ...useIsIntegratedJiraServerIntegration @relay(mask: false)
-        }
-        atlassian {
-          ...useIsIntegratedAtlassianIntegration @relay(mask: false)
-        }
-        github {
-          ...useIsIntegratedGitHubIntegration @relay(mask: false)
-        }
-        gitlab {
-          ...useIsIntegratedGitLabIntegration @relay(mask: false)
-        }
-        azureDevOps {
-          ...useIsIntegratedAzureDevOpsIntegration @relay(mask: false)
-        }
-        linear {
-          ...useIsIntegratedLinearIntegration @relay(mask: false)
+      fragment useIsIntegrated_teamMember on TeamMember {
+        services {
+          title
+          isConnected
         }
       }
     `,
-    integrationsRef ?? null
+    teamMemberRef ?? null
   )
-  if (!integrations) {
+  if (!teamMember) {
     return null
   }
-  const {atlassian, github, jiraServer, gitlab, azureDevOps, linear} = integrations
-  // an active grant may be Confluence-only — Jira task integration needs Jira scopes
-  const hasAtlassian = (atlassian?.isActive && hasJiraScopes(atlassian?.scope)) ?? false
-  const hasGitHub = github?.isActive ?? false
-  const hasGitLab = gitlab?.auth?.isActive ?? false
-  const hasJiraServer = jiraServer?.auth?.isActive ?? false
-  const hasAzureDevOps = azureDevOps?.auth?.isActive ?? false
-  const hasLinear = linear?.auth?.isActive ?? false
-  return hasAtlassian || hasGitHub || hasJiraServer || hasGitLab || hasAzureDevOps || hasLinear
-    ? {
-        hasAtlassian,
-        hasGitHub,
-        hasJiraServer,
-        hasGitLab,
-        hasAzureDevOps,
-        hasLinear
-      }
-    : null
+  const connectedServices = teamMember.services.filter(({isConnected}) => isConnected)
+  return connectedServices.length > 0 ? connectedServices : null
 }

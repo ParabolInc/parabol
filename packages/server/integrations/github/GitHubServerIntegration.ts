@@ -1,13 +1,20 @@
 import {githubIntegrationMeta} from 'parabol-client/shared/integrations/githubIntegrationMeta'
+import fetchGitHubRepos from '../../graphql/queries/helpers/fetchGitHubRepos'
 import type {GitHubSearchQueryJson, TeamMemberIntegrationAuth} from '../../postgres/types'
 import {
+  type EstimatePushCapability,
   type IntegrationCtx,
   type IssueCreateCapability,
+  type IssueReadCapability,
   type IssueSearchCapability,
+  type RepoListCapability,
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
-import TaskIntegrationManagerFactory from '../TaskIntegrationManagerFactory'
 import buildGitHubSearchQuery from './buildGitHubSearchQuery'
+import GitHubServerManager from './GitHubServerManager'
+import pushEstimateToGitHub from './pushEstimateToGitHub'
+import resolveGitHubServiceField from './resolveGitHubServiceField'
+import resolveGitHubTaskIntegration from './resolveGitHubTaskIntegration'
 
 export class GitHubServerIntegration extends ServerIntegrationDefinition {
   readonly service = githubIntegrationMeta.service
@@ -24,24 +31,29 @@ export class GitHubServerIntegration extends ServerIntegrationDefinition {
     return !!(await this.getGlobalProvider(ctx))
   }
 
-  async isConnected(ctx: IntegrationCtx) {
-    return this.hasActiveAuthRow(ctx, 'github')
-  }
-
   readonly capabilities: {
     issueCreate: IssueCreateCapability
+    issueRead: IssueReadCapability
     issueSearch: IssueSearchCapability<GitHubSearchQueryJson>
+    repoList: RepoListCapability
+    estimatePush: EstimatePushCapability
   } = {
     issueCreate: {
-      initManager: (ctx) =>
-        TaskIntegrationManagerFactory.initManager(
-          ctx.dataLoader,
-          'github',
-          {teamId: ctx.teamId, userId: ctx.userId},
-          ctx.context,
-          ctx.info
-        )
+      initManager: async ({dataLoader, teamId, userId, context, info}) => {
+        const auth = await dataLoader.get('githubAuth').load({teamId, userId})
+        return auth ? new GitHubServerManager(auth, context, info) : null
+      }
     },
-    issueSearch: {buildQuery: buildGitHubSearchQuery}
+    issueRead: {getIssue: resolveGitHubTaskIntegration},
+    issueSearch: {buildQuery: buildGitHubSearchQuery},
+    repoList: {
+      fetchRepos: ({dataLoader, teamId, userId, context, info}) =>
+        fetchGitHubRepos(teamId, userId, dataLoader, context, info)
+    },
+    estimatePush: {
+      targets: ['comment', 'label'],
+      pushEstimate: pushEstimateToGitHub,
+      resolveServiceField: resolveGitHubServiceField
+    }
   }
 }

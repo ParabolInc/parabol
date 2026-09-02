@@ -1,4 +1,4 @@
-import {datadogRum} from '@datadog/browser-rum'
+import {datadogLogs} from '@datadog/browser-logs'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
@@ -39,8 +39,7 @@ const SelectMeetingDropdownItem = (props: Props) => {
   const {name, team, id: meetingId, meetingType, phases, facilitatorStageId} = meeting
   if (!team) {
     // 95% sure there's a bug in relay causing this
-    const errObj = {id: meetingId} as any
-    datadogRum.addError(new Error(`Missing Team on Meeting ${JSON.stringify(errObj)}`))
+    datadogLogs.logger.error('Missing Team on Meeting', {meetingId})
     return null
   }
   const {name: teamName} = team

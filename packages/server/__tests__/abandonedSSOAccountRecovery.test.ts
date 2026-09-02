@@ -1,6 +1,5 @@
-import faker from 'faker'
 import getKysely from '../postgres/getKysely'
-import {sendIntranet, sendPublic, signUpWithEmail} from './common'
+import {getTestDomain, getTestEmail, sendIntranet, sendPublic, signUpWithEmail} from './common'
 
 const REMOVE_AUTH_IDENTITY_MUTATION = `
   mutation RemoveAuthIdentity(
@@ -34,7 +33,7 @@ const REMOVE_AUTH_IDENTITY_MUTATION = `
 `
 
 test('emailPasswordReset succeeds for abandoned SSO user with no local identity', async () => {
-  const domain = `abandoned-sso-${Date.now()}.example`
+  const domain = getTestDomain()
   const email = `user@${domain}`
   const {userId} = await signUpWithEmail(email)
 
@@ -91,7 +90,7 @@ test('emailPasswordReset succeeds for abandoned SSO user with no local identity'
 })
 
 test('removeAuthIdentity accepts emails parameter', async () => {
-  const email = faker.internet.email().toLowerCase()
+  const email = getTestEmail()
   const {userId} = await signUpWithEmail(email)
 
   const result = await sendIntranet({
@@ -114,7 +113,7 @@ test('removeAuthIdentity accepts emails parameter', async () => {
 })
 
 test('removeAuthIdentity accepts userIds parameter', async () => {
-  const email = faker.internet.email().toLowerCase()
+  const email = getTestEmail()
   const {userId} = await signUpWithEmail(email)
 
   const result = await sendIntranet({

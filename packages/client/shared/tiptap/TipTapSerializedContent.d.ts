@@ -170,6 +170,10 @@ interface TipTapThinkingBlockNode {
   type: 'thinkingBlock'
 }
 
+interface TipTapTableOfContentsNode {
+  type: 'tableOfContents'
+}
+
 export type TipTapContentNode =
   | TiptapHeadingNode
   | TiptapInsightsBlock
@@ -189,5 +193,6 @@ export type TipTapContentNode =
   | TipTapFileUploadNode
   | TipTapResponseBlockNode
   | TipTapThinkingBlockNode
+  | TipTapTableOfContentsNode
 
 type TipTapNode = TiptapDoc | TipTapContentNode

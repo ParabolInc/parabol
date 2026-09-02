@@ -44,7 +44,6 @@ declare const __APP_VERSION__: string
 interface Window {
   __ACTION__: {
     datadogClientToken: string | undefined
-    datadogApplicationId: string | undefined
     datadogService: string | undefined
     google: string
     googleAnalytics: string

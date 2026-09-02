@@ -75,15 +75,16 @@ export interface JiraIssueType {
   iconUrl: string
   name: string
   subtask: boolean
-  fields?: {
-    issuetype: {
+  fields?: Record<
+    string,
+    {
       required: boolean
       name: string
       key: string
-      hasDefaultValue: false
+      hasDefaultValue: boolean
       operations: string[]
     }
-  }
+  >
 }
 
 interface GetProjectsResult {
@@ -100,7 +101,7 @@ interface Assignee {
 }
 
 interface CreateIssueFields {
-  assignee: Assignee
+  assignee?: Assignee
   summary: string
   description?: Record<any, any>
   reporter?: Reporter // probably can't use, it throws a lot of errors
@@ -479,11 +480,7 @@ class AtlassianServerManager extends AtlassianManager {
     }
 
     await Promise.all(cloudIds.map((cloudId) => getProjects(cloudId)))
-
-    if (error) {
-      Logger.log('getAllProjects ERROR:', error)
-    }
-    return projects
+    return {projects, error}
   }
 
   async getProject(cloudId: string, projectKey: string) {
@@ -494,16 +491,13 @@ class AtlassianServerManager extends AtlassianManager {
     return project
   }
 
-  async getCreateMeta(cloudId: string, projectKeys?: string[]) {
-    let args = ''
-    if (projectKeys) {
-      args += `projectKeys=${projectKeys.join(',')}`
-    }
-    if (args.length) {
-      args = '?' + args
-    }
+  async getCreateMeta(cloudId: string, projectKeys?: string[], expandFields = false) {
+    const params = new URLSearchParams()
+    if (projectKeys) params.set('projectKeys', projectKeys.join(','))
+    if (expandFields) params.set('expand', 'projects.issuetypes.fields')
+    const query = params.size ? `?${params}` : ''
     return this.get<IssueCreateMetadata>(
-      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/createmeta${args}`
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/createmeta${query}`
     )
   }
 

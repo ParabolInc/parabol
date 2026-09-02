@@ -1,4 +1,4 @@
-import {datadogRum} from '@datadog/browser-rum'
+import {datadogLogs} from '@datadog/browser-logs'
 import graphql from 'babel-plugin-relay/macro'
 import {motion} from 'motion/react'
 import {useState} from 'react'
@@ -130,8 +130,7 @@ const MeetingCard = (props: Props) => {
 
   if (!team) {
     // 95% sure there's a bug in relay causing this
-    const errObj = {id: meetingId} as any
-    datadogRum.addError(new Error(`Missing Team on Meeting ${JSON.stringify(errObj)}`))
+    datadogLogs.logger.error('Missing Team on Meeting', {meetingId})
     return null
   }
   const {id: teamId, name: teamName, orgId} = team

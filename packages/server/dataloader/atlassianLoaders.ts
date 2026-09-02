@@ -1,9 +1,9 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
 import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
-import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import type {JiraIssueMissingEstimationFieldHintEnum} from '../graphql/private/resolverTypes'
+import {fetchJiraProjectsResult} from '../integrations/jira/fetchJiraProjects'
 import refreshAtlassianAuth from '../integrations/jira/refreshAtlassianAuth'
 import getKysely from '../postgres/getKysely'
 import {selectAtlassianAuth, selectJiraDimensionFieldMap} from '../postgres/select'
@@ -48,7 +48,8 @@ const isAccessTokenFresh = (accessToken: string, inAMinute: number) => {
   return typeof exp === 'number' && exp * 1000 > inAMinute
 }
 
-export const freshAtlassianAuth = (
+/** The stored Atlassian row, never refreshed — safe for any surface that only reports on the connection */
+export const atlassianAuth = (
   parent: RootDataLoader
 ): DataLoader<TeamUserKey, AtlassianAuth | null, string> => {
   return new DataLoader<TeamUserKey, AtlassianAuth | null, string>(
@@ -60,6 +61,23 @@ export const freshAtlassianAuth = (
             .where('teamId', '=', teamId)
             .where('isActive', '=', true)
             .executeTakeFirst()
+          return auth ?? null
+        })
+      )
+      return settleOrLogRejection(results, keys)
+    },
+    {...parent.dataLoaderOptions, cacheKeyFn: (key) => `${key.userId}:${key.teamId}`}
+  )
+}
+
+export const freshAtlassianAuth = (
+  parent: RootDataLoader
+): DataLoader<TeamUserKey, AtlassianAuth | null, string> => {
+  return new DataLoader<TeamUserKey, AtlassianAuth | null, string>(
+    async (keys) => {
+      const results = await Promise.allSettled(
+        keys.map(async ({userId, teamId}) => {
+          const auth = await parent.get('atlassianAuth').load({userId, teamId})
           if (!auth) return null
           const inAMinute = Date.now() + 60_000
           const isFresh = auth.expiresAt
@@ -76,6 +94,7 @@ export const freshAtlassianAuth = (
           }
           const refreshed = await refreshAtlassianAuth(auth, provider)
           parent.get('teamMemberIntegrationAuthsByServiceTeamAndUserId').clearAll()
+          parent.get('atlassianAuth').clearAll()
           return refreshed
         })
       )
@@ -98,22 +117,13 @@ export const allJiraProjects = (
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
-          const auth = await parent.get('freshAtlassianAuth').load({teamId, userId})
-          if (!auth) return []
-          const cloudNameLookup = await parent
-            .get('atlassianCloudNameLookup')
-            .load({teamId, userId})
-          const cloudIds = Object.keys(cloudNameLookup)
-          const {accessToken} = auth
-          const manager = new AtlassianServerManager(accessToken)
-          const projects = await manager.getAllProjects(cloudIds)
-          return projects.map((project) => ({
-            ...project,
-            id: JiraProjectId.join(project.cloudId, project.key),
-            userId,
+          const {projects, error} = await fetchJiraProjectsResult({
+            dataLoader: parent,
             teamId,
-            service: 'jira' as const
-          }))
+            userId
+          })
+          if (error) logError(error, {userId, tags: {teamId, service: 'jira'}})
+          return projects
         })
       )
       return results.map((result) => (result.status === 'fulfilled' ? result.value : []))

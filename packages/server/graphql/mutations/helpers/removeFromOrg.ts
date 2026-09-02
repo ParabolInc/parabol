@@ -5,6 +5,7 @@ import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
 import {Logger} from '../../../utils/Logger'
 import type {DataLoaderWorker} from '../../graphql'
+import reassignMeetingSeriesOwner from './reassignMeetingSeriesOwner'
 import removeTeamMember from './removeTeamMember'
 import resolveDowngradeToStarter from './resolveDowngradeToStarter'
 
@@ -102,11 +103,13 @@ const removeFromOrg = async (
           .set({role: 'BILLING_LEADER'})
           .where('id', '=', nextInLine.id)
           .execute()
+        dataLoader.clearAll('organizationUsers')
       } else if (organization.tier !== 'starter') {
         await resolveDowngradeToStarter(orgId, organization.stripeSubscriptionId!, user, dataLoader)
       }
     }
   }
+  await reassignMeetingSeriesOwner(userId, orgId, orgTeamIds, dataLoader)
   try {
     await adjustUserCount(userId, orgId, InvoiceItemType.REMOVE_USER, dataLoader)
   } catch (e) {

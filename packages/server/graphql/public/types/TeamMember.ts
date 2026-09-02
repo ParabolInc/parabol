@@ -1,16 +1,15 @@
-import ms from 'ms'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import MeetingMemberId from '../../../../client/shared/gqlIds/MeetingMemberId'
-import {serverIntegrations} from '../../../integrations/platform/registry'
+import loadServiceRepoIntegrations from '../../../integrations/loadServiceRepoIntegrations'
+import mergeRepoIntegrations from '../../../integrations/platform/mergeRepoIntegrations'
+import {
+  type RegisteredServerIntegration,
+  serverIntegrations
+} from '../../../integrations/platform/registry'
 import {getUserId} from '../../../utils/authorization'
-import getAllRepoIntegrationsRedisKey from '../../../utils/getAllRepoIntegrationsRedisKey'
-import getRedis from '../../../utils/getRedis'
 import standardError from '../../../utils/standardError'
 import connectionFromTasks from '../../queries/helpers/connectionFromTasks'
-import fetchAllRepoIntegrations from '../../queries/helpers/fetchAllRepoIntegrations'
-import getAllCachedRepoIntegrations from '../../queries/helpers/getAllCachedRepoIntegrations'
 import getPrevUsedRepoIntegrations from '../../queries/helpers/getPrevUsedRepoIntegrations'
-import {default as sortRepoIntegrations} from '../../queries/helpers/sortRepoIntegrations'
 import type {TeamMemberResolvers} from '../resolverTypes'
 
 const TeamMember: TeamMemberResolvers = {
@@ -68,40 +67,21 @@ const TeamMember: TeamMemberResolvers = {
   },
 
   repoIntegrations: async ({teamId, userId}, {first, networkOnly}, context, info) => {
-    const {authToken, dataLoader} = context
-    const viewerId = getUserId(authToken)
-    if (userId !== viewerId) {
-      const tms = await dataLoader.get('teamIdsByUserId').load(userId)
-      const onTeam = authToken.tms.find((teamId) => tms.includes(teamId))
-      if (!onTeam) {
-        return standardError(new Error('Not on same team as user'), {
-          userId: viewerId
-        })
-      }
-    }
-    const [allCachedRepoIntegrations, prevUsedRepoIntegrations] = await Promise.all([
-      getAllCachedRepoIntegrations(teamId, viewerId),
-      getPrevUsedRepoIntegrations(teamId)
+    const ctx = {dataLoader: context.dataLoader, teamId, userId, context, info}
+    const services = Object.keys(serverIntegrations) as RegisteredServerIntegration[]
+    const [prevUsedRepoIntegrations, repoLists, connected] = await Promise.all([
+      getPrevUsedRepoIntegrations(teamId),
+      Promise.all(
+        services.map((service) => loadServiceRepoIntegrations(service, ctx, !!networkOnly))
+      ),
+      Promise.all(services.map((service) => serverIntegrations[service].isConnected(ctx)))
     ])
-    const ignoreCache = networkOnly || !allCachedRepoIntegrations?.length
-    const allRepoIntegrations = ignoreCache
-      ? await fetchAllRepoIntegrations(teamId, userId, context, info)
-      : allCachedRepoIntegrations
-    if (ignoreCache) {
-      // create a new cache with newly fetched allRepoIntegrations
-      const redis = getRedis()
-      const allRepoIntegrationsKey = getAllRepoIntegrationsRedisKey(teamId, viewerId)
-      redis.set(allRepoIntegrationsKey, JSON.stringify(allRepoIntegrations), 'PX', ms('90d'))
-    }
-    const sortedRepoIntegrations = await sortRepoIntegrations(
-      allRepoIntegrations,
-      prevUsedRepoIntegrations
+    const connectedServices = new Set(services.filter((_, idx) => connected[idx]))
+    const items = mergeRepoIntegrations(
+      (prevUsedRepoIntegrations ?? []).filter(({service}) => connectedServices.has(service)),
+      repoLists.map((repos) => repos ?? [])
     )
-    if (sortedRepoIntegrations.length > first) {
-      return {hasMore: true, items: sortedRepoIntegrations.slice(0, first)}
-    } else {
-      return {hasMore: false, items: sortedRepoIntegrations}
-    }
+    return {hasMore: items.length > first, items: items.slice(0, first)}
   },
 
   tasks: async ({teamId, userId}, _args, {dataLoader}) => {

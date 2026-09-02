@@ -48,7 +48,6 @@ const writeManifest = () => {
 const rewriteIndexHTML = () => {
   const clientKeys = {
     datadogClientToken: process.env.DD_CLIENTTOKEN,
-    datadogApplicationId: process.env.DD_APPLICATIONID,
     datadogService: process.env.DD_SERVICE,
     google: process.env.GOOGLE_OAUTH_CLIENT_ID,
     googleAnalytics: process.env.GA_TRACKING_ID,

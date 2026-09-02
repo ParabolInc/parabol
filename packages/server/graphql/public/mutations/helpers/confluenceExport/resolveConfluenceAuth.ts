@@ -40,7 +40,7 @@ export const resolveConfluenceAuth = async (
       .set({meta: JSON.stringify({cloudIds: sites.map(({id}) => id)})})
       .where('userId', '=', userId)
       .where('providerId', '=', auth.providerId)
-      .where('providerUserId', '=', auth.accountId)
+      .where('providerUserId', '=', auth.providerUserId)
       .where('isActive', '=', true)
       .execute()
   }

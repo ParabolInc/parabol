@@ -5,10 +5,8 @@ import * as azureDevOpsLoaders from './azureDevOpsLoaders'
 import * as customLoaderMakers from './customLoaderMakers'
 import DataLoaderCache from './DataLoaderCache'
 import * as foreignKeyLoaderMakers from './foreignKeyLoaderMakers'
-import * as gcalLoaders from './gcalLoaders'
+import * as freshAuthLoaders from './freshAuthLoaders'
 import * as githubLoaders from './githubLoaders'
-import * as gitlabLoaders from './gitlabLoaders'
-import * as gmeetLoaders from './gmeetLoaders'
 import * as integrationAuthLoaders from './integrationAuthLoaders'
 import * as integrationSearchQueryLoaders from './integrationSearchQueryLoaders'
 import * as jiraServerLoaders from './jiraServerLoaders'
@@ -16,8 +14,8 @@ import * as linearLoaders from './linearLoaders'
 import * as pageLoaderMakers from './pageLoaderMakers'
 import * as pollLoaders from './pollsLoaders'
 import * as primaryKeyLoaderMakers from './primaryKeyLoaderMakers'
+import * as repoIntegrationLoaders from './repoIntegrationLoaders'
 import * as teamLoaderMakers from './teamLoaderMakers'
-import * as zoomLoaders from './zoomLoaders'
 
 interface LoaderDict {
   [loaderName: string]: DataLoader<any, any>
@@ -34,15 +32,13 @@ const loaderMakers = {
   ...atlassianLoaders,
   ...jiraServerLoaders,
   ...githubLoaders,
-  ...gitlabLoaders,
-  ...gcalLoaders,
-  ...gmeetLoaders,
+  ...freshAuthLoaders,
   ...integrationAuthLoaders,
   ...integrationSearchQueryLoaders,
   ...pollLoaders,
   ...azureDevOpsLoaders,
   ...linearLoaders,
-  ...zoomLoaders
+  ...repoIntegrationLoaders
 } as const
 
 export type LoaderTypes = typeof loaderMakers

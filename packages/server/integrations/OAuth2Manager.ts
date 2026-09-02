@@ -30,6 +30,13 @@ export type OAuth2AuthorizeResponse = {
   meta?: JsonObject
 }
 
+export type OAuth2RefreshResponse = {
+  accessToken: string
+  refreshToken?: string | null
+  scopes?: string
+  expiresIn?: number
+}
+
 export default abstract class OAuth2Manager {
   protected clientId: string
   protected clientSecret: string
@@ -40,7 +47,7 @@ export default abstract class OAuth2Manager {
     this.serverBaseUrl = serverBaseUrl
   }
   abstract authorize(code: string): Promise<Error | OAuth2AuthorizeResponse>
-  abstract refresh(refreshToken: string): Promise<Error | {accessToken: string}>
+  abstract refresh(refreshToken: string): Promise<Error | OAuth2RefreshResponse>
   protected abstract fetchToken(
     partialAuthParams: OAuth2RefreshAuthorizationParams | OAuth2AuthorizationParams
   ): Promise<
