@@ -18,7 +18,9 @@ const hostnameOf = (url: string) => {
 
 /** metascraper returns every key, nulled when it found nothing; those must not clobber oEmbed */
 const definedOnly = <T extends object>(value: T | null): Partial<T> =>
-  value ? (Object.fromEntries(Object.entries(value).filter(([, v]) => v != null)) as Partial<T>) : {}
+  value
+    ? (Object.fromEntries(Object.entries(value).filter(([, v]) => v != null)) as Partial<T>)
+    : {}
 
 /** True when a scrape produced no embedSrc and none of the real, provider-authored fields */
 const hasRealMetadata = (metadata: Partial<EmbedMetadata>): boolean =>
