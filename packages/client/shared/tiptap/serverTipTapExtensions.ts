@@ -13,6 +13,7 @@ import {UniqueID} from '../../tiptap/extensions/docWithID/UniqueID'
 import {ImageBlockBase} from '../../tiptap/extensions/imageBlock/ImageBlockBase'
 import {PageUserMention} from '../../tiptap/extensions/pageUserMention/PageUserMention'
 import {MentionTaskTag} from '../../utils/MentionTaskTag'
+import {EmbedBlockBase} from './extensions/EmbedBlockBase'
 import {FileBlockBase} from './extensions/FileBlockBase'
 import {FileUploadBase} from './extensions/FileUploadBase'
 import {InsightsBlockBase} from './extensions/InsightsBlockBase'
@@ -65,6 +66,7 @@ export const serverTipTapExtensions: Extensions = [
   TaskItem.configure({
     nested: true
   }),
+  EmbedBlockBase,
   FileBlockBase,
   FileUploadBase,
   ImageBlockBase,
