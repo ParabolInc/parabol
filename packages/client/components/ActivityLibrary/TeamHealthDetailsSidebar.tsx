@@ -89,9 +89,11 @@ const TeamHealthDetailsSidebar = (props: Props) => {
   }: StartTeamHealthResult): SnackAction | undefined => {
     const startedTeam = startedTeams.length === 1 ? startedTeams[0] : undefined
     if (!startedTeam) return undefined
-    const meeting = meetings[0]
-    if (meeting) {
-      return {label: 'Join now', callback: () => navigate(`/meet/${meeting.id}`)}
+    if (meetings.length > 0) {
+      // an org leader can start a meeting for a team they are not on, & they cannot join that one
+      const joinableMeeting = meetings.find(({team}) => team.isViewerOnTeam)
+      if (!joinableMeeting) return undefined
+      return {label: 'Join now', callback: () => navigate(`/meet/${joinableMeeting.id}`)}
     }
     // no meeting yet: the series we just scheduled is the newest one awaiting its first meeting
     const [scheduledSeries] = startedTeam.activeMeetingSeries
@@ -104,7 +106,17 @@ const TeamHealthDetailsSidebar = (props: Props) => {
         startMeetingSeriesNow({
           variables: {meetingSeriesId: scheduledSeries.id},
           onCompleted: (res) => {
-            navigate(`/meet/${res.startMeetingSeriesNow.meeting.id}`)
+            const {meeting} = res.startMeetingSeriesNow
+            if (meeting) {
+              navigate(`/meet/${meeting.id}`)
+              return
+            }
+            atmosphere.eventEmitter.emit('addSnackbar', {
+              key: 'startMeetingSeriesNow',
+              autoDismiss: 5,
+              showDismissButton: true,
+              message: 'Started the next meeting for each team'
+            })
           }
         })
       }

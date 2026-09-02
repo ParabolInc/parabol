@@ -9,11 +9,16 @@ import AuthToken from '../../../database/types/AuthToken'
 import getKysely from '../../../postgres/getKysely'
 import {selectNewMeetings} from '../../../postgres/select'
 import standardError from '../../../utils/standardError'
+import getDefaultTeamFacilitator from '../../mutations/helpers/getDefaultTeamFacilitator'
+import rotateSeriesTeamHealthQuestionIds from '../../mutations/helpers/rotateSeriesTeamHealthQuestionIds'
 import safeEndRetrospective from '../../mutations/helpers/safeEndRetrospective'
 import safeEndTeamHealth from '../../mutations/helpers/safeEndTeamHealth'
 import safeEndTeamPrompt from '../../mutations/helpers/safeEndTeamPrompt'
 import startRecurringMeeting from '../../mutations/helpers/startRecurringMeeting'
-import {stopMeetingSeries} from '../../public/mutations/updateRecurrenceSettings'
+import {
+  selectGroupSeriesIds,
+  stopMeetingSeries
+} from '../../public/mutations/updateRecurrenceSettings'
 import type {MutationResolvers} from '../resolverTypes'
 import {checkSequential} from './helpers/checkSequential'
 
@@ -77,6 +82,22 @@ const processRecurrence: MutationResolvers['processRecurrence'] = checkSequentia
       .selectAll()
       .where('cancelledAt', 'is', null)
       .execute()
+
+    // Every team in a group must answer the same questions in a given occurrence. Their series
+    // are siblings processed concurrently, so memoize the rotation on the shared promise: letting
+    // each one rotate for itself would tally the first team's responses & diverge immediately.
+    const questionIdsByGroupId = new Map<string, Promise<number[] | undefined>>()
+    const getSharedQuestionIds = (meetingSeries: (typeof activeMeetingSeries)[number]) => {
+      const {groupId, templateId, meetingType} = meetingSeries
+      if (meetingType !== 'teamHealth' || !templateId || !groupId) return undefined
+      const cached = questionIdsByGroupId.get(groupId)
+      if (cached) return cached
+      const pending = selectGroupSeriesIds(meetingSeries).then((seriesIds) =>
+        rotateSeriesTeamHealthQuestionIds(templateId, seriesIds, dataLoader)
+      )
+      questionIdsByGroupId.set(groupId, pending)
+      return pending
+    }
     await tracer.trace('processRecurrence.startActiveMeetingSeries', async () =>
       Promise.allSettled(
         activeMeetingSeries.map(async (meetingSeries) => {
@@ -84,10 +105,33 @@ const processRecurrence: MutationResolvers['processRecurrence'] = checkSequentia
           const teamMemberId = TeamMemberId.join(teamId, facilitatorId)
           const [seriesTeam, facilitatorTeamMember] = await Promise.all([
             dataLoader.get('teams').loadNonNull(teamId),
-            dataLoader.get('teamMembers').loadNonNull(teamMemberId)
+            // load, not loadNonNull: a hard-deleted account cascades its TeamMember row away, and
+            // throwing here would kill this series' iteration on every run, forever
+            dataLoader
+              .get('teamMembers')
+              .load(teamMemberId)
           ])
-          if (seriesTeam.isArchived || !facilitatorTeamMember.isNotRemoved) {
+          if (seriesTeam.isArchived) {
+            // only this team drops out; a group covering others keeps recurring for them
             return await stopMeetingSeries(meetingSeries)
+          }
+
+          // The facilitator left the team or deleted their account. Hand the series to whoever is
+          // still on the team rather than ending a meeting the rest of them still want.
+          let runFacilitatorId = facilitatorId
+          if (!facilitatorTeamMember?.isNotRemoved) {
+            const successorId = await getDefaultTeamFacilitator(teamId, dataLoader)
+            if (!successorId) {
+              // nobody left to run it, so there is no successor to hand it to
+              return await stopMeetingSeries(meetingSeries)
+            }
+            runFacilitatorId = successorId
+            await getKysely()
+              .updateTable('MeetingSeries')
+              .set({facilitatorId: successorId})
+              .where('id', '=', meetingSeriesId)
+              .execute()
+            dataLoader.get('meetingSeries').clear(meetingSeriesId)
           }
 
           const [seriesOrg, lastMeeting] = await Promise.all([
@@ -130,9 +174,14 @@ const processRecurrence: MutationResolvers['processRecurrence'] = checkSequentia
             return startsAt >= scheduledEndTime.getTime() - SAME_OCCURRENCE_TOLERANCE
           })
           if (hasUnusedOccurrence) {
+            const questionIds = await getSharedQuestionIds(meetingSeries)
             const res = await tracer.trace('startRecurringMeeting', async (span) => {
               span?.addTags({meetingSeriesId})
-              return startRecurringMeeting(meetingSeries, dataLoader, subOptions)
+              return startRecurringMeeting(meetingSeries, dataLoader, subOptions, {
+                // the series row was just rotated, so meetingSeries still holds the departed one
+                facilitatorId: runFacilitatorId,
+                questionIds
+              })
             })
             if (!('error' in res)) meetingsStarted++
           }
