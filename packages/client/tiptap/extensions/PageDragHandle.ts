@@ -27,6 +27,9 @@ const queryNode = graphql`
   }
 `
 
+// Approximates a text line so the handle sits at the top of a media block
+const DRAG_HANDLE_ANCHOR_HEIGHT = 24
+
 function isEmptyParagraph(node: Node) {
   return node.type.name === 'paragraph' && node.textContent.length === 0
 }
@@ -244,6 +247,27 @@ export const PageDragHandle = Extension.create<Options>({
             horizontalRef = horizontalRef.parentElement
           }
           const horizontalRect = horizontalRef.getBoundingClientRect()
+          // Media blocks carry no text to anchor to. Without this the walker below finds
+          // nothing and the handle never renders for an iframe embed, and anchors to the
+          // title line rather than the block top for a card.
+          const handleNode = editorRef.state.doc.nodeAt(dragHandleNodePos)
+          if (handleNode?.type.name === 'embedBlock') {
+            const blockRect = dom.getBoundingClientRect()
+            const anchorHeight = Math.min(blockRect.height, DRAG_HANDLE_ANCHOR_HEIGHT)
+            return {
+              getBoundingClientRect: () => ({
+                x: horizontalRect.x,
+                y: blockRect.y,
+                width: horizontalRect.width,
+                height: anchorHeight,
+                top: blockRect.top,
+                right: horizontalRect.right,
+                bottom: blockRect.top + anchorHeight,
+                left: horizontalRect.left
+              }),
+              contextElement: horizontalRef
+            }
+          }
           const walker = document.createTreeWalker(dom, NodeFilter.SHOW_TEXT, {
             acceptNode: (node) =>
               node.textContent?.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT
