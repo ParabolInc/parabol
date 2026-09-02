@@ -24,6 +24,7 @@ import {LoomExtension} from '../components/TipTapEditor/LoomExtension'
 import {TiptapLinkExtension} from '../components/TipTapEditor/TiptapLinkExtension'
 import {useUploadUserAsset} from '../mutations/useUploadUserAsset'
 import {themeBackgroundColors} from '../shared/themeBackgroundColors'
+import {EmbedBlock} from '../tiptap/extensions/embedBlock/EmbedBlock'
 import FileBlock from '../tiptap/extensions/fileBlock/FileBlock'
 import {FileUpload} from '../tiptap/extensions/fileUpload/FileUpload'
 import {IndentHandler} from '../tiptap/extensions/IndentHandler'
@@ -127,6 +128,7 @@ export const useTipTapPageEditor = (
           commit,
           highestTier: user?.highestTier
         }),
+        EmbedBlock,
         ImageBlock.configure({
           editorWidth: 720,
           editorHeight: 400
