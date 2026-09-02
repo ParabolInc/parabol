@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.41.0](https://github.com/ParabolInc/parabol/compare/v13.40.0...v13.41.0) (2026-09-02)
+
+
+### Added
+
+* meeting series: support admin for teams the owner is not on ([#13443](https://github.com/ParabolInc/parabol/issues/13443)) ([4f7eed5](https://github.com/ParabolInc/parabol/commit/4f7eed515462bbd7cb1a2fbc80854ff3f69a841a))
+
+
+### Changed
+
+* disable RUM completely ([#13448](https://github.com/ParabolInc/parabol/issues/13448)) ([cb4114c](https://github.com/ParabolInc/parabol/commit/cb4114c327b8c05fb78a31af12b8bda296b4723f))
+
 ## [13.40.0](https://github.com/ParabolInc/parabol/compare/v13.39.0...v13.40.0) (2026-09-01)
 
 
