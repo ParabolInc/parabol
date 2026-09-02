@@ -1,4 +1,4 @@
-import {datadogRum} from '@datadog/browser-rum'
+import {datadogLogs} from '@datadog/browser-logs'
 import graphql from 'babel-plugin-relay/macro'
 import {readInlineData} from 'relay-runtime'
 import type {getTemplateList_template$key} from '../__generated__/getTemplateList_template.graphql'
@@ -22,7 +22,7 @@ const getTemplateList = (
   )
   const {id: templateId, team} = template
   if (!team) {
-    datadogRum.addError(new Error(`NO TEAM ON TEMPLATE WTF. ${viewerTeamId}, ${templateId}`))
+    datadogLogs.logger.error('NO TEAM ON TEMPLATE WTF', {viewerTeamId, templateId})
     return 'TEAM'
   }
   const {id: teamId, orgId} = team

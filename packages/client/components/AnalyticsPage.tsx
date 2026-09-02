@@ -1,5 +1,5 @@
 import * as amplitude from '@amplitude/analytics-browser'
-import {datadogRum} from '@datadog/browser-rum'
+import {datadogLogs} from '@datadog/browser-logs'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import ReactGA from 'react-ga4'
@@ -31,43 +31,23 @@ declare global {
   }
 }
 
-const {
-  datadogClientToken,
-  datadogApplicationId,
-  datadogService,
-  googleAnalytics: gaMeasurementId
-} = window.__ACTION__
+const {datadogClientToken, datadogService, googleAnalytics: gaMeasurementId} = window.__ACTION__
 const ignoreErrors = [
   'Failed to update a ServiceWorker for scope',
   'ResizeObserver loop limit exceeded'
 ]
 
-const datadogEnabled =
-  __PRODUCTION__ && datadogClientToken && datadogApplicationId && datadogService
+const datadogEnabled = __PRODUCTION__ && datadogClientToken && datadogService
 if (datadogEnabled) {
-  datadogRum.init({
-    applicationId: `${datadogApplicationId}`,
-    beforeSend: (event) => {
-      // See https://docs.datadoghq.com/real_user_monitoring/browser/modifying_data_and_context/?tab=npm
-      if (event.type === 'error') {
-        const msg = event.error.message
-        const isIgnorable = ignoreErrors.some((error) => msg.includes(error))
-        if (isIgnorable) {
-          return false
-        }
-      }
-      return true
-    },
+  datadogLogs.init({
+    beforeSend: (log) => !ignoreErrors.some((error) => log.message.includes(error)),
     clientToken: datadogClientToken,
     site: 'datadoghq.com',
     service: datadogService,
     version: __APP_VERSION__,
-    sessionSampleRate: 100,
-    sessionReplaySampleRate: 0,
-    trackUserInteractions: false,
-    defaultPrivacyLevel: 'allow'
+    forwardErrorsToLogs: true,
+    sessionSampleRate: 100
   })
-  datadogRum.startSessionReplayRecording()
 }
 
 if (window.__ACTION__.AMPLITUDE_WRITE_KEY) {
@@ -194,11 +174,11 @@ const AnalyticsPage = () => {
 
     const {viewerId} = atmosphere
     if (viewerId) {
-      datadogRum.setUser({
+      datadogLogs.setUser({
         id: atmosphere.viewerId
       })
     } else {
-      datadogRum.clearUser()
+      datadogLogs.clearUser()
     }
   }, [atmosphere, atmosphere.viewerId])
 

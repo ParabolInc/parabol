@@ -457,8 +457,8 @@ importers:
       '@amplitude/analytics-browser':
         specifier: 2.2.3
         version: 2.2.3
-      '@datadog/browser-rum':
-        specifier: ^6.17.0
+      '@datadog/browser-logs':
+        specifier: 6.33.0
         version: 6.33.0
       '@emoji-mart/data':
         specifier: ^1.2.1
@@ -2117,15 +2117,12 @@ packages:
   '@datadog/browser-core@6.33.0':
     resolution: {integrity: sha512-h/xuBuY4Xi32CbBHkChMMWlOQ4al/mFF08x3o0hqrderfJvX7VO5tD3OVNwF+pfMXOGlDtBCIhwazr9sn24h3g==}
 
-  '@datadog/browser-rum-core@6.33.0':
-    resolution: {integrity: sha512-Ais4x7zQBrBI6JyILYwFAmjUsqy0iQp2C7JcEEfzU4YYYcVO3DGpyVuYYrqHT27jY1QToHY8EnQUr3Yaj6saDA==}
-
-  '@datadog/browser-rum@6.33.0':
-    resolution: {integrity: sha512-zdxs1PyKt1RQ/fdxsmaCJUeBhB+leCIaPJBcum7uDi/DL8nuu9A9NUc5qGVPlY9zc12v7t2NI8bLpOrMjv+jTg==}
+  '@datadog/browser-logs@6.33.0':
+    resolution: {integrity: sha512-WZ1XEIIYK2sijR0hUG3hTPu2kQs8hE/PpoJcMDE7p0/NPXX3TR3dGVrwag+gvIVyBaszRkITiBsHQfnRvxV1DA==}
     peerDependencies:
-      '@datadog/browser-logs': 6.33.0
+      '@datadog/browser-rum': 6.33.0
     peerDependenciesMeta:
-      '@datadog/browser-logs':
+      '@datadog/browser-rum':
         optional: true
 
   '@datadog/datadog-ci@5.16.0':
@@ -12649,14 +12646,9 @@ snapshots:
 
   '@datadog/browser-core@6.33.0': {}
 
-  '@datadog/browser-rum-core@6.33.0':
+  '@datadog/browser-logs@6.33.0':
     dependencies:
       '@datadog/browser-core': 6.33.0
-
-  '@datadog/browser-rum@6.33.0':
-    dependencies:
-      '@datadog/browser-core': 6.33.0
-      '@datadog/browser-rum-core': 6.33.0
 
   '@datadog/datadog-ci@5.16.0': {}
 
