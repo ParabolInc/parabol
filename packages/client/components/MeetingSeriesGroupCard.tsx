@@ -18,11 +18,6 @@ import {
   Replay as ReplayIcon,
   Widgets as WidgetsIcon
 } from '~/ui/icons'
-import action from '../../../static/images/illustrations/action.png'
-import retrospective from '../../../static/images/illustrations/retrospective.png'
-import poker from '../../../static/images/illustrations/sprintPoker.png'
-import teamHealthIllustration from '../../../static/images/illustrations/teamHealth.png'
-import teamPrompt from '../../../static/images/illustrations/teamPrompt.png'
 import type {MeetingSeriesGroupCard_series$key} from '../__generated__/MeetingSeriesGroupCard_series.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useStartMeetingSeriesNowMutation from '../mutations/useStartMeetingSeriesNowMutation'
@@ -31,33 +26,14 @@ import {cn} from '../ui/cn'
 import {Menu} from '../ui/Menu/Menu'
 import {MenuContent} from '../ui/Menu/MenuContent'
 import {MENU_ITEM_ICON, MenuItem} from '../ui/Menu/MenuItem'
-import {MeetingTypeToReadable} from '../utils/meetings/lookups'
+import {
+  MeetingTypeToReadable,
+  meetingTypeToBgClass,
+  meetingTypeToIllustration,
+  meetingTypeToLabelClass
+} from '../utils/meetings/lookups'
 import {EditMeetingSeriesModal} from './EditMeetingSeriesModal'
 import ManageMeetingSeriesGroupModalRoot from './ManageMeetingSeriesGroupModalRoot'
-
-const MEETING_TYPE_BG = {
-  retrospective: 'bg-grape-500',
-  action: 'bg-aqua-400',
-  poker: 'bg-tomato-400',
-  teamPrompt: 'bg-jade-400',
-  teamHealth: 'bg-rose-500'
-} as const
-
-const RECURRING_LABEL_COLORS = {
-  retrospective: 'text-grape-600',
-  action: 'text-aqua-600',
-  poker: 'text-tomato-600',
-  teamPrompt: 'text-jade-600',
-  teamHealth: 'text-rose-600'
-} as const
-
-const ILLUSTRATIONS = {
-  retrospective,
-  action,
-  poker,
-  teamPrompt,
-  teamHealth: teamHealthIllustration
-} as const
 
 // one more layer than a single recurring card, so a group reads as a deeper deck
 const STACK_CLASSES = {
@@ -134,8 +110,8 @@ const MeetingSeriesGroupCard = (props: Props) => {
     })
   }
 
-  const bgClass = MEETING_TYPE_BG[meetingType]
-  const illustration = ILLUSTRATIONS[meetingType]
+  const bgClass = meetingTypeToBgClass[meetingType]
+  const illustration = meetingTypeToIllustration[meetingType]
   const label = nextMeetingDate
     ? `Next ${scheduleFormatter.format(new Date(nextMeetingDate))}`
     : 'Scheduled'
@@ -170,7 +146,7 @@ const MeetingSeriesGroupCard = (props: Props) => {
             <span
               className={cn(
                 'absolute top-2 right-2 rounded-[64px] bg-[#fffc] px-2 py-1 font-medium text-[11px] leading-3',
-                RECURRING_LABEL_COLORS[meetingType]
+                meetingTypeToLabelClass[meetingType]
               )}
             >
               Recurring
@@ -179,7 +155,7 @@ const MeetingSeriesGroupCard = (props: Props) => {
             <div
               className={cn(
                 'absolute bottom-3.5 left-2 flex items-center gap-1.5 rounded-[64px] bg-[#fffc] px-2.5 py-1 font-semibold text-[11px] leading-3',
-                RECURRING_LABEL_COLORS[meetingType]
+                meetingTypeToLabelClass[meetingType]
               )}
             >
               <GroupsIcon className='text-[14px]' />

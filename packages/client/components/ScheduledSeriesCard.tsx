@@ -5,10 +5,6 @@ import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {Link, useNavigate} from 'react-router'
 import {MoreVert, PlayArrow as PlayArrowIcon, Replay as ReplayIcon} from '~/ui/icons'
-import action from '../../../static/images/illustrations/action.png'
-import retrospective from '../../../static/images/illustrations/retrospective.png'
-import poker from '../../../static/images/illustrations/sprintPoker.png'
-import teamPrompt from '../../../static/images/illustrations/teamPrompt.png'
 import type {ScheduledSeriesCard_series$key} from '../__generated__/ScheduledSeriesCard_series.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useStartMeetingSeriesNowMutation from '../mutations/useStartMeetingSeriesNowMutation'
@@ -19,32 +15,18 @@ import {MENU_ITEM_ICON, MenuItem} from '../ui/Menu/MenuItem'
 import {Tooltip} from '../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../ui/Tooltip/TooltipTrigger'
-import {MeetingTypeToReadable} from '../utils/meetings/lookups'
+import {
+  MeetingTypeToReadable,
+  meetingTypeToBgClass,
+  meetingTypeToIllustration,
+  meetingTypeToLabelClass
+} from '../utils/meetings/lookups'
 import {EditMeetingSeriesModal} from './EditMeetingSeriesModal'
 
 const STACK_CLASSES = {
   0: 'rotate-1 top-[3px] left-1',
   1: '-rotate-2 top-0.5 left-0.5'
 }
-
-const MEETING_TYPE_BG = {
-  retrospective: 'bg-grape-500',
-  action: 'bg-aqua-400',
-  poker: 'bg-tomato-400',
-  teamPrompt: 'bg-jade-400',
-  teamHealth: 'bg-rose-500'
-}
-
-const RECURRING_LABEL_COLORS = {
-  retrospective: 'text-grape-600',
-  action: 'text-aqua-600',
-  poker: 'text-tomato-600',
-  teamPrompt: 'text-jade-600',
-  teamHealth: 'text-rose-600'
-}
-
-// TODO: add a dedicated teamHealth illustration
-const ILLUSTRATIONS = {retrospective, action, poker, teamPrompt, teamHealth: retrospective}
 
 const STACKED_CARD_BASE =
   'absolute block h-full w-full rounded-card bg-surface-card shadow-[var(--shadow-card)]'
@@ -126,8 +108,8 @@ const ScheduledSeriesCard = (props: Props) => {
     setIsEditOpen(true)
   }
   const seriesLink = `/meeting-series/manage/${MeetingSeriesId.split(id)}`
-  const bgClass = MEETING_TYPE_BG[meetingType]
-  const illustration = ILLUSTRATIONS[meetingType]
+  const bgClass = meetingTypeToBgClass[meetingType]
+  const illustration = meetingTypeToIllustration[meetingType]
 
   return (
     <motion.div
@@ -159,7 +141,7 @@ const ScheduledSeriesCard = (props: Props) => {
             <span
               className={cn(
                 'absolute top-2 right-2 rounded-[64px] bg-[#fffc] px-2 py-1 font-medium text-[11px] leading-3',
-                RECURRING_LABEL_COLORS[meetingType]
+                meetingTypeToLabelClass[meetingType]
               )}
             >
               Scheduled
