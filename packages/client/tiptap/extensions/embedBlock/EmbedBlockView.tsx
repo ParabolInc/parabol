@@ -1,5 +1,5 @@
 import {type NodeViewProps, NodeViewWrapper} from '@tiptap/react'
-import {useCallback} from 'react'
+import {useCallback, useEffect, useRef} from 'react'
 import {isAllowedEmbedHost, resolveCuratedEmbed} from '../../../shared/embed/curatedEmbedProviders'
 import type {EmbedBlockAttrs} from '../../../shared/embed/embedTypes'
 import {normalizeEmbedUrl} from '../../../shared/embed/normalizeEmbedUrl'
@@ -7,12 +7,26 @@ import {cn} from '../../../ui/cn'
 import {EmbedBlockCard} from './EmbedBlockCard'
 import {EmbedBlockFrame} from './EmbedBlockFrame'
 import {EmbedBlockUrlInput} from './EmbedBlockUrlInput'
+import {useResolveEmbedUrl} from './useResolveEmbedUrl'
 
 export const EmbedBlockView = (props: NodeViewProps) => {
   const {editor, getPos, node, updateAttributes, selected} = props
   const attrs = node.attrs as EmbedBlockAttrs
-  const {url, displayMode, align, width, isFullWidth, aspectRatio, embedSrc, title, thumbnailUrl} =
-    attrs
+  const {
+    url,
+    displayMode,
+    align,
+    width,
+    isFullWidth,
+    aspectRatio,
+    embedSrc,
+    title,
+    thumbnailUrl,
+    fetchedAt
+  } = attrs
+
+  const [resolve, isResolving] = useResolveEmbedUrl()
+  const resolvedUrlRef = useRef<string | null>(null)
 
   const onClick = useCallback(() => {
     const pos = getPos()
@@ -20,8 +34,24 @@ export const EmbedBlockView = (props: NodeViewProps) => {
     editor.commands.setNodeSelection(pos)
   }, [getPos, editor])
 
-  const onSubmitUrl = useCallback(
-    (raw: string) => {
+  const applyResolvedMetadata = useCallback(
+    (resolved: Awaited<ReturnType<typeof resolve>>) => {
+      if (!resolved) {
+        updateAttributes({displayMode: 'card', fetchedAt: new Date().toISOString()})
+        return
+      }
+      const {aspectRatio: resolvedAspect, url: _url, ...metadata} = resolved
+      updateAttributes({
+        ...metadata,
+        ...(resolvedAspect && {aspectRatio: resolvedAspect}),
+        ...(!resolved.embedSrc && {displayMode: 'card'})
+      })
+    },
+    [updateAttributes]
+  )
+
+  const applyUrl = useCallback(
+    async (raw: string) => {
       const normalized = normalizeEmbedUrl(raw)
       if (!normalized) return
       // Curated providers resolve with no round-trip, so the embed paints immediately
@@ -37,12 +67,53 @@ export const EmbedBlockView = (props: NodeViewProps) => {
         })
         return
       }
-      // Nothing more can be learned about this URL yet, so the card renders from the
-      // URL alone and fetchedAt stays unset for a later resolver to pick up
-      updateAttributes({url: normalized, displayMode: 'card'})
+      // Clear the previous provider's metadata up front, so a failed resolve cannot
+      // leave the old title and thumbnail sitting next to the new URL
+      updateAttributes({
+        url: normalized,
+        embedSrc: undefined,
+        title: undefined,
+        description: undefined,
+        thumbnailUrl: undefined,
+        faviconUrl: undefined,
+        providerName: undefined,
+        authorName: undefined
+      })
+      const resolved = await resolve(normalized)
+      applyResolvedMetadata(resolved)
     },
-    [updateAttributes]
+    [updateAttributes, resolve, applyResolvedMetadata]
   )
+
+  // A URL can arrive already on the node, from a paste or a collaborator, without
+  // ever passing through applyUrl. An unstamped fetchedAt is the signal it was
+  // never resolved.
+  useEffect(() => {
+    if (!url || fetchedAt) return
+    if (!editor.isEditable) return
+    if (resolvedUrlRef.current === url) return
+    resolvedUrlRef.current = url
+
+    const curated = resolveCuratedEmbed(url)
+    if (curated) {
+      updateAttributes({
+        embedSrc: curated.embedSrc,
+        providerName: curated.providerName,
+        aspectRatio: curated.aspectRatio,
+        displayMode: 'embed',
+        fetchedAt: new Date().toISOString()
+      })
+      return
+    }
+
+    let cancelled = false
+    resolve(url).then((resolved) => {
+      if (!cancelled) applyResolvedMetadata(resolved)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [url, fetchedAt, editor.isEditable, resolve, applyResolvedMetadata, updateAttributes])
 
   const alignClass =
     align === 'left' ? 'justify-start' : align === 'right' ? 'justify-end' : 'justify-center'
@@ -51,7 +122,7 @@ export const EmbedBlockView = (props: NodeViewProps) => {
     return (
       <NodeViewWrapper>
         <div contentEditable={false}>
-          <EmbedBlockUrlInput isResolving={false} onSubmit={onSubmitUrl} />
+          <EmbedBlockUrlInput isResolving={isResolving} onSubmit={applyUrl} />
         </div>
       </NodeViewWrapper>
     )

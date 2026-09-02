@@ -469,6 +469,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     getDemoGroupTitle: rateLimit({perMinute: 15, perHour: 150}),
     massInvitation: rateLimit({perMinute: 60, perHour: 1800}),
     public: rateLimit({perMinute: 20, perHour: 100}),
+    resolveEmbedUrl: and(isAuthenticated, rateLimit({perMinute: 30, perHour: 300})),
     SAMLIdP: rateLimit({perMinute: 120, perHour: 3600}),
     verifiedInvitation: rateLimit({perMinute: 60, perHour: 1800})
   },
