@@ -5,6 +5,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.40.0](https://github.com/ParabolInc/parabol/compare/v13.39.0...v13.40.0) (2026-09-01)
+
+
+### Added
+
+* table of contents block for Pages ([#13433](https://github.com/ParabolInc/parabol/issues/13433)) ([21310c9](https://github.com/ParabolInc/parabol/commit/21310c943c4c7161bce2961488c96878632da5f2))
+
+
+### Fixed
+
+* add entropy to server test dummy data ([#13444](https://github.com/ParabolInc/parabol/issues/13444)) ([159c9ae](https://github.com/ParabolInc/parabol/commit/159c9aeee60eb75f28c9032e9d8d02090ed5f63b))
+* exclude test files from PR sizes ([#13445](https://github.com/ParabolInc/parabol/issues/13445)) ([ef4aca8](https://github.com/ParabolInc/parabol/commit/ef4aca8791de5b91f3ab69524ed84828fb1fbf62))
+* reject updatePersonalAccessToken with no fields ([#13447](https://github.com/ParabolInc/parabol/issues/13447)) ([d307210](https://github.com/ParabolInc/parabol/commit/d3072103307c7441ec68181cbb224d84b1b176e5))
+* support multiple insights blocks on a Page ([#12465](https://github.com/ParabolInc/parabol/issues/12465)) ([#13446](https://github.com/ParabolInc/parabol/issues/13446)) ([72e10fd](https://github.com/ParabolInc/parabol/commit/72e10fdc64bd56341157f847eecfa4302c2c7563))
+
+
+### Changed
+
+* collapse server task-integration dispatch onto the registry ([#13429](https://github.com/ParabolInc/parabol/issues/13429)) ([46a40af](https://github.com/ParabolInc/parabol/commit/46a40af690057ecb5aacd06011bec6708a10da41))
+
 ## [13.39.0](https://github.com/ParabolInc/parabol/compare/v13.38.2...v13.39.0) (2026-08-28)
 
 
