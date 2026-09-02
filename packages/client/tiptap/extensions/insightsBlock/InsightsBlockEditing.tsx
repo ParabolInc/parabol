@@ -51,9 +51,9 @@ const queryNode = graphql`
 `
 
 export const InsightsBlockEditing = (props: NodeViewProps) => {
-  const {editor, node, updateAttributes} = props
+  const {editor, getPos, node, updateAttributes} = props
   const attrs = node.attrs as InsightsBlockAttrs
-  const {id: blockId, after, before, meetingTypes, teamIds, meetingIds, hash, title, prompt} = attrs
+  const {after, before, meetingTypes, teamIds, meetingIds, hash, title, prompt} = attrs
   const atmosphere = useAtmosphere()
   const canQueryMeetings = teamIds.length > 0 && meetingTypes.length > 0 && after && before
   const {submitting, submitMutation, onCompleted} = useMutationProps()
@@ -92,18 +92,18 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
             }
             return
           }
-          const freshInsightsNode = editor.$node('insightsBlock', {
-            id: blockId
-          })
-          if (!freshInsightsNode) return
+          buffer += chunk
+          const pos = getPos()
+          if (pos === undefined) return
+          const freshNode = editor.state.doc.nodeAt(pos)
+          if (freshNode?.type.name !== 'insightsBlock') return
           if (first) {
             first = false
             updateAttributes({editing: false, hash: resultsHash})
           }
-          buffer += chunk
           const bufferFragment = marked.parse(buffer)
           editor.commands.insertContentAt(
-            {from: freshInsightsNode.from, to: freshInsightsNode.to - 1},
+            {from: pos + 1, to: pos + freshNode.nodeSize - 1},
             bufferFragment
           )
         } catch (e) {

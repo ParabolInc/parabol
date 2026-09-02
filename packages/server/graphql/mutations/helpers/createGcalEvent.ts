@@ -55,7 +55,9 @@ const createGcalEvent = async (
 
   const {startTimestamp, endTimestamp, timeZone, invitees, videoType} = gcalInput
 
-  const gcalAuth = await dataLoader.get('freshGcalAuth').load({teamId, userId: viewerId})
+  const gcalAuth = await dataLoader
+    .get('freshAuth')
+    .load({service: 'gcal', teamId, userId: viewerId})
   if (!gcalAuth) {
     return standardError(new Error('Could not retrieve Google Calendar auth'), {
       userId: viewerId
@@ -144,7 +146,7 @@ export type UpdateGcalSeriesInput = {
 export const updateGcalSeries = async (input: UpdateGcalSeriesInput) => {
   const {gcalSeriesId, name, meetingSeriesId, rrule, userId, teamId, dataLoader} = input
 
-  const gcalAuth = await dataLoader.get('freshGcalAuth').load({teamId, userId})
+  const gcalAuth = await dataLoader.get('freshAuth').load({service: 'gcal', teamId, userId})
   if (!gcalAuth) {
     return standardError(new Error('Could not retrieve Google Calendar auth'), {
       userId

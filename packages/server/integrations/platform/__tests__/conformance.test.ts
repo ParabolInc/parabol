@@ -1,6 +1,9 @@
-jest.mock('../../TaskIntegrationManagerFactory', () => ({
+jest.mock('../../../graphql/public/rootSchema', () => ({
   __esModule: true,
-  default: {initManager: jest.fn()}
+  githubRequest: jest.fn(),
+  gitlabRequest: jest.fn(),
+  linearRequest: jest.fn(),
+  default: {}
 }))
 
 import {serverIntegrations} from '../registry'

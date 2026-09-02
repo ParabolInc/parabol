@@ -86,13 +86,14 @@ const ScheduledSeriesCard = (props: Props) => {
         title
         meetingType
         nextMeetingDate
+        ownerUserId
         ...MeetingSeriesEditForm_series
       }
     `,
     seriesRef
   )
 
-  const {id, title, meetingType, nextMeetingDate} = series
+  const {id, title, meetingType, nextMeetingDate, ownerUserId} = series
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
   const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
@@ -105,7 +106,18 @@ const ScheduledSeriesCard = (props: Props) => {
     startNow({
       variables: {meetingSeriesId: id},
       onCompleted: (res) => {
-        navigate(`/meet/${res.startMeetingSeriesNow.meeting.id}`)
+        // an owner can schedule for teams they are not on, & they cannot join those meetings
+        const {meeting} = res.startMeetingSeriesNow
+        if (meeting) {
+          navigate(`/meet/${meeting.id}`)
+          return
+        }
+        atmosphere.eventEmitter.emit('addSnackbar', {
+          key: 'startMeetingSeriesNow',
+          autoDismiss: 5,
+          showDismissButton: true,
+          message: 'Started the next meeting for each team'
+        })
       }
     })
   }
@@ -132,6 +144,7 @@ const ScheduledSeriesCard = (props: Props) => {
     cancelDialog.close()
   }
 
+  const isViewerOwner = ownerUserId === atmosphere.viewerId
   const nextDate = nextMeetingDate ? new Date(nextMeetingDate) : null
   const label = nextDate ? `Starts ${shortDateFormatter.format(nextDate)}` : 'Scheduled'
   const tooltip = nextDate ? `Starts ${timeFormatter.format(nextDate)}` : ''
@@ -204,9 +217,7 @@ const ScheduledSeriesCard = (props: Props) => {
                 }
               >
                 <MenuContent align='end' sideOffset={4}>
-                  {/* unconditional: the dash only renders this card while the series is
-                      awaiting its first meeting */}
-                  <MenuItem onSelect={onStartNow}>Start meeting now</MenuItem>
+                  {isViewerOwner && <MenuItem onSelect={onStartNow}>Start meeting now</MenuItem>}
                   <MenuItem onSelect={() => setIsEditOpen(true)}>Edit schedule</MenuItem>
                   <MenuItem onSelect={cancelDialog.open}>Cancel series</MenuItem>
                 </MenuContent>

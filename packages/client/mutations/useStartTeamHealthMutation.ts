@@ -8,6 +8,10 @@ graphql`
     meetings {
       id
       teamId
+      team {
+        id
+        isViewerOnTeam
+      }
     }
     teams {
       ...MeetingsDashActiveMeetings @relay(mask: false)
@@ -39,14 +43,27 @@ const useStartTeamHealthMutation = () => {
   const [commit, submitting] = useMutation<TStartTeamHealthMutation>(mutation)
   const atmosphere = useAtmosphere()
   const execute = (config: UseMutationConfig<TStartTeamHealthMutation>) => {
+    const showError = (message: string) => {
+      atmosphere.eventEmitter.emit('addSnackbar', {
+        message,
+        autoDismiss: 5,
+        key: 'startTeamHealthError'
+      })
+    }
     return commit({
       ...config,
+      // The server throws for every failure mode (cross-org series, locked team, nothing to
+      // start), and Atmosphere delivers a thrown GraphQLError here rather than to onError
+      onCompleted: (res, errors) => {
+        const error = errors?.[0]
+        if (error) {
+          showError(error.message)
+          return
+        }
+        config.onCompleted?.(res, errors)
+      },
       onError: (error) => {
-        atmosphere.eventEmitter.emit('addSnackbar', {
-          message: error.message,
-          autoDismiss: 5,
-          key: 'startTeamHealthError'
-        })
+        showError(error.message)
         config.onError?.(error)
       }
     })

@@ -1,5 +1,6 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
+import fetchAzureDevOpsProjects from '../integrations/azureDevOps/fetchAzureDevOpsProjects'
 import getKysely from '../postgres/getKysely'
 import syncTeamMemberIntegrationAuthTokens from '../postgres/queries/syncTeamMemberIntegrationAuthTokens'
 import type {TeamMemberIntegrationAuth} from '../postgres/types'
@@ -13,6 +14,7 @@ import AzureDevOpsServerManager, {
 import {getInstanceId} from '../utils/azureDevOps/azureDevOpsFieldTypeToId'
 import {Logger} from '../utils/Logger'
 import logError from '../utils/logError'
+import handleAuthRefreshFailure from './handleAuthRefreshFailure'
 import type RootDataLoader from './RootDataLoader'
 import settleOrLogRejection from './settleOrLogRejection'
 
@@ -165,18 +167,7 @@ export const freshAzureDevOpsAuth = (parent: RootDataLoader) => {
             )
             const oauthRes = await manager.refresh(refreshToken)
             if (oauthRes instanceof Error) {
-              // Azure refresh token only lasts 24 hrs for SPAs. User must manually re-auth after that: https://github.com/AzureAD/microsoft-authentication-library-for-js/issues/4104
-              if (oauthRes.message === 'invalid_grant') {
-                await getKysely()
-                  .updateTable('TeamMemberIntegrationAuth')
-                  .set({isActive: false})
-                  .where('userId', '=', userId)
-                  .where('teamId', '=', teamId)
-                  .where('service', '=', 'azureDevOps')
-                  .where('isActive', '=', true)
-                  .execute()
-              }
-              return null
+              return handleAuthRefreshFailure(oauthRes, azureDevOpsAuthToRefresh)
             }
             const {accessToken, refreshToken: newRefreshToken} = oauthRes
             const updatedRefreshToken = newRefreshToken || refreshToken
@@ -336,36 +327,8 @@ export const allAzureDevOpsProjects = (parent: RootDataLoader) => {
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
-          const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
-          if (!auth) {
-            return []
-          }
-          const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
-          if (!provider) {
-            return []
-          }
-          const manager = new AzureDevOpsServerManager(
-            auth,
-            provider as IntegrationProviderAzureDevOps
-          )
-          const {error, projects} = await manager.getAllUserProjects()
-          if (error !== undefined) {
-            Logger.log(error)
-            return []
-          }
-          const resultReferences = [] as TeamProjectReference[]
-          if (projects !== null) resultReferences.push(...projects)
-          return resultReferences.map((project) => {
-            const instanceId = getInstanceId(project.url)
-            return {
-              ...project,
-              instanceId,
-              userId,
-              projectId: project.id,
-              teamId,
-              service: 'azureDevOps' as const
-            }
-          })
+          const projects = await fetchAzureDevOpsProjects({dataLoader: parent, teamId, userId})
+          return projects instanceof Error ? [] : projects
         })
       )
       return results.map((result) => (result.status === 'fulfilled' ? result.value : []))

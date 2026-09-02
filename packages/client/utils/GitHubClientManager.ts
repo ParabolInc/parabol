@@ -41,7 +41,7 @@ class GitHubClientManager {
       submitMutation()
       AddTeamMemberIntegrationAuthMutation(
         atmosphere,
-        {providerId: provider.id, oauthCodeOrPat: code, teamId, includeGitHub: true},
+        {providerId: provider.id, oauthCodeOrPat: code, teamId},
         {onError, onCompleted}
       )
       popup && popup.close()

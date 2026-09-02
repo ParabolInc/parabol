@@ -1,6 +1,7 @@
 import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
 import {RRuleSet} from 'rrule-rust'
 import {selectNewMeetings} from '../../../postgres/select'
+import {isTeamMember} from '../../../utils/authorization'
 import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
 import logError from '../../../utils/logError'
 import {buildMeetingSeriesSlug} from '../../../utils/meetingSeriesSlug'
@@ -10,9 +11,10 @@ const MeetingSeries: MeetingSeriesResolvers = {
   id: ({id}, _args, _context) => {
     return MeetingSeriesId.join(id)
   },
-  activeMeetings: async (meetingSeries, _args, {dataLoader}) => {
-    const res = await dataLoader.get('activeMeetingsByMeetingSeriesId').load(meetingSeries.id)
-    return res || []
+  activeMeetings: async ({id}, _args, {authToken, dataLoader}) => {
+    const meetings = await dataLoader.get('activeMeetingsByMeetingSeriesId').load(id)
+    // an owner can schedule for a team they are not on, & they cannot join that team's meetings
+    return meetings.filter((meeting) => isTeamMember(authToken, meeting.teamId))
   },
   mostRecentMeeting: async ({id: meetingSeriesId}, _args, _context) => {
     const meeting = await selectNewMeetings()

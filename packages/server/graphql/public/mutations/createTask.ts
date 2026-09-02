@@ -17,7 +17,7 @@ import {getUserId} from '../../../utils/authorization'
 import {convertToTipTap} from '../../../utils/convertToTipTap'
 import publish from '../../../utils/publish'
 import type {DataLoaderWorker} from '../../graphql'
-import createTaskInService from '../../mutations/helpers/createTaskInService'
+import createIntegrationIssue from '../../mutations/helpers/createIntegrationIssue'
 import getUsersToIgnore from '../../mutations/helpers/getUsersToIgnore'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -166,7 +166,7 @@ const createTask: MutationResolvers['createTask'] = async (
   const plaintextContent = generateText(content, serverTipTapExtensions)
 
   // see if the task already exists
-  const integrationRes = await createTaskInService(
+  const integrationRes = await createIntegrationIssue(
     newTask.integration,
     content,
     viewerId,
@@ -179,9 +179,9 @@ const createTask: MutationResolvers['createTask'] = async (
   }
 
   // RESOLUTION
-  const {integrationHash, integration, integrationRepoId} = integrationRes
-  if (integrationRepoId) {
-    updatePrevUsedRepoIntegrationsCache(teamId, integrationRepoId, viewerId)
+  const {integrationHash, integration, integrationRepoId, service} = integrationRes
+  if (integrationRepoId && service) {
+    updatePrevUsedRepoIntegrationsCache(teamId, integrationRepoId, viewerId, service)
   }
   const task = {
     id: generateUID(),

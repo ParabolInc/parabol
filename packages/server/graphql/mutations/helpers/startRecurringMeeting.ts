@@ -24,6 +24,9 @@ type Options = {
   facilitatorId?: string
   // Defaults to the next occurrence, which is when the recurrence closes the meeting it opened
   scheduledEndTime?: Date | null
+  // Set only when a multi-team group opens this occurrence for several teams at once, who must
+  // all ask the same questions. Left undefined otherwise, so the meeting rotates its own.
+  questionIds?: number[]
 }
 
 /*
@@ -135,7 +138,8 @@ const startRecurringMeeting = async (
           templateId,
           name: meetingName,
           meetingSeriesId: meetingSeries.id,
-          scheduledEndTime
+          scheduledEndTime,
+          questionIds: options.questionIds
         },
         dataLoader
       )
