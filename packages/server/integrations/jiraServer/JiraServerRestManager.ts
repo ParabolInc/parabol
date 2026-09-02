@@ -10,7 +10,7 @@ import {ExternalLinks} from 'parabol-client/types/constEnums'
 import composeJQL from 'parabol-client/utils/composeJQL'
 import type {TeamMemberIntegrationAuth} from '../../postgres/types'
 import type {IntegrationProviderJiraServer} from '../../postgres/types/IntegrationProvider'
-import type {CreateTaskResponse, TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
+import type {CreateTaskResponse, TaskIntegrationManager} from '../platform/TaskIntegrationManager'
 
 const MAX_PAGINATION_RESULTS = 5000
 const MAX_RESULTS_PER_PAGE = 50

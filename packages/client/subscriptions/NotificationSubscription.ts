@@ -100,6 +100,9 @@ const subscription = graphql`
       AddTeamPayload {
         ...AddTeamMutation_notification @relay(mask: false)
       }
+      AddTeamMemberIntegrationAuthSuccess {
+        ...AddTeamMemberIntegrationAuthMutation_notification @relay(mask: false)
+      }
       ArchiveTimelineEventSuccess {
         ...ArchiveTimelineEventMutation_notification @relay(mask: false)
       }

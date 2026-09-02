@@ -10,7 +10,6 @@ import type {NewJiraIssueInput_meeting$key} from '../__generated__/NewJiraIssueI
 import type {NewJiraIssueInput_viewer$key} from '../__generated__/NewJiraIssueInput_viewer.graphql'
 import useForm from '../hooks/useForm'
 import {PortalStatus} from '../hooks/usePortal'
-import useTimedState from '../hooks/useTimedState'
 import CreateTaskMutation from '../mutations/CreateTaskMutation'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import JiraIssueId from '../shared/gqlIds/JiraIssueId'
@@ -75,7 +74,7 @@ const NewJiraIssueInput = (props: Props) => {
   const {integrations} = teamMember!
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
-  const [createTaskError, setCreateTaskError] = useTimedState()
+  const [createTaskError, setCreateTaskError] = useState<string>()
   useEffect(() => {
     if (isEditing) {
       setCreateTaskError(undefined)
@@ -96,7 +95,7 @@ const NewJiraIssueInput = (props: Props) => {
       validate: validateIssue
     }
   })
-  const {dirty, error} = fields.newIssue
+  const {value, dirty, error} = fields.newIssue
   const ref = useRef<HTMLInputElement>(null)
   useEffect(() => {
     if (portalStatus === PortalStatus.Exited) {
@@ -135,7 +134,7 @@ const NewJiraIssueInput = (props: Props) => {
     const handleCompleted: CompletedHandler = (res) => {
       const {error, task} = res.createTask
       if (error) {
-        setCreateTaskError(error.message)
+        setCreateTaskError(`${selectedProjectKey}: ${error.message}`)
       }
       if (error || !task) return
       const {integration} = task
@@ -186,7 +185,7 @@ const NewJiraIssueInput = (props: Props) => {
           <form className='flex w-full flex-col' onSubmit={handleCreateNewIssue}>
             <input
               autoFocus
-              {...fields.newIssue}
+              value={value}
               className='m-0 w-full appearance-none border-none bg-transparent p-0 pr-2 text-[16px] text-fg-primary outline-none'
               onBlur={handleCreateNewIssue}
               onChange={onChange}

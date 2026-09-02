@@ -9,13 +9,14 @@ import {resolveStoryFinalScore} from '../../../resolvers/resolveStoryFinalScore'
 import {resolveTaskIntegration} from '../../../resolvers/resolveTaskIntegration'
 
 // this is really brittle, we need a better way of getting the title!
-function extractTitleOrSummary(obj: Record<string, any>): string | undefined {
+function extractTitleOrSummary(obj: unknown): string | undefined {
   if (!obj || typeof obj !== 'object') return undefined
+  const record = obj as Record<string, unknown>
 
   // Look for 'title' or 'summary' at the current level
   for (const key of ['title', 'summary']) {
-    if (key in obj && typeof obj[key] === 'string') {
-      const story = obj[key]
+    const story = record[key]
+    if (typeof story === 'string') {
       return story
         .slice(0, 256)
         .replace(/\n|\r/g, '')
@@ -24,12 +25,10 @@ function extractTitleOrSummary(obj: Record<string, any>): string | undefined {
   }
 
   // Otherwise, recurse into nested objects
-  for (const value of Object.values(obj)) {
-    if (value && typeof value === 'object') {
-      const found = extractTitleOrSummary(value)
-      if (found !== undefined) {
-        return found
-      }
+  for (const value of Object.values(record)) {
+    const found = extractTitleOrSummary(value)
+    if (found !== undefined) {
+      return found
     }
   }
   // Nothing found

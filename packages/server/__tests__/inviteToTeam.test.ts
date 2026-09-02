@@ -1,6 +1,6 @@
 import faker from 'faker'
 import getKysely from '../postgres/getKysely'
-import {SIGNUP_WITH_PASSWORD_MUTATION, sendPublic, signUp} from './common'
+import {getTestEmail, SIGNUP_WITH_PASSWORD_MUTATION, sendPublic, signUp} from './common'
 
 test('Invite to team, works for ordinary email domain', async () => {
   const [user1, user2] = await Promise.all([signUp(), signUp()])
@@ -73,7 +73,7 @@ test('Team invite to an email acts as email verification', async () => {
   const user1 = await signUp()
   const {cookie, teamId} = user1
 
-  const email = faker.internet.email().toLowerCase()
+  const email = getTestEmail()
 
   const inviteToTeam = await sendPublic({
     query: `
@@ -142,7 +142,7 @@ test('Existing user cannot accept a team invitation sent to a different email', 
   const {cookie: user1Cookie, teamId} = user1
   const {cookie: user2Cookie} = user2
 
-  const invitedEmail = faker.internet.email().toLowerCase()
+  const invitedEmail = getTestEmail()
 
   await sendPublic({
     query: `
@@ -201,7 +201,7 @@ test('Team invite to an email acts as email verification only if the email match
   const user1 = await signUp()
   const {cookie, teamId} = user1
 
-  const email = faker.internet.email().toLowerCase()
+  const email = getTestEmail()
 
   const inviteToTeam = await sendPublic({
     query: `

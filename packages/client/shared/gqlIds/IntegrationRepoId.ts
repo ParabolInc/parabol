@@ -2,7 +2,7 @@ import AzureDevOpsProjectId from 'parabol-client/shared/gqlIds/AzureDevOpsProjec
 import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
 import LinearProjectId from 'parabol-client/shared/gqlIds/LinearProjectId'
 
-type GitHubRepoIntegration = {
+export type GitHubRepoIntegration = {
   nameWithOwner: string
   service: 'github'
 }
@@ -14,7 +14,7 @@ export type JiraRepoIntegration = {
   service: 'jira'
 }
 
-type GitLabRepoIntegration = {
+export type GitLabRepoIntegration = {
   service: 'gitlab'
   fullPath: string
 }

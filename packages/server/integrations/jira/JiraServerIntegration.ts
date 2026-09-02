@@ -1,47 +1,67 @@
 import {jiraIntegrationMeta} from 'parabol-client/shared/integrations/jiraIntegrationMeta'
-import type {JiraSearchQueryJson, TeamMemberIntegrationAuth} from '../../postgres/types'
+import type {
+  AtlassianAuth,
+  JiraSearchQueryJson,
+  TeamMemberIntegrationAuth
+} from '../../postgres/types'
+import {hasJiraScopes} from '../../utils/hasJiraScopes'
 import {
+  type EstimatePushCapability,
   type IntegrationCtx,
   type IssueCreateCapability,
+  type IssueReadCapability,
   type IssueSearchCapability,
+  type RepoListCapability,
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
-import TaskIntegrationManagerFactory from '../TaskIntegrationManagerFactory'
 import buildJiraSearchQuery from './buildJiraSearchQuery'
+import fetchJiraProjects from './fetchJiraProjects'
+import JiraIntegrationManager from './JiraIntegrationManager'
+import pushEstimateToJira from './pushEstimateToJira'
+import resolveJiraServiceField from './resolveJiraServiceField'
+import resolveJiraTaskIntegration from './resolveJiraTaskIntegration'
 
 export class JiraServerIntegration extends ServerIntegrationDefinition {
   readonly service = jiraIntegrationMeta.service
   readonly title = jiraIntegrationMeta.title
   readonly authStrategy = 'oauth2' as const
 
-  async resolveAuth(ctx: IntegrationCtx): Promise<TeamMemberIntegrationAuth | null> {
+  /** An Atlassian grant may be Confluence-only; it is usable for Jira only with the Jira scopes */
+  async resolveAuth(ctx: IntegrationCtx): Promise<AtlassianAuth | null> {
     const {dataLoader, teamId, userId} = ctx
     const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId})
-    return auth?.accessToken ? auth : null
+    return auth?.accessToken && hasJiraScopes(auth.scope) ? auth : null
   }
 
   async isAvailable(ctx: IntegrationCtx) {
     return !!(await this.getGlobalProvider(ctx))
   }
 
-  async isConnected(ctx: IntegrationCtx) {
-    return this.hasActiveAuthRow(ctx, 'jira')
+  async getAuthRow(ctx: IntegrationCtx): Promise<TeamMemberIntegrationAuth | null> {
+    const auth = await super.getAuthRow(ctx)
+    return auth && hasJiraScopes(auth.scopes) ? auth : null
   }
 
   readonly capabilities: {
     issueCreate: IssueCreateCapability
+    issueRead: IssueReadCapability
     issueSearch: IssueSearchCapability<JiraSearchQueryJson>
+    repoList: RepoListCapability
+    estimatePush: EstimatePushCapability
   } = {
     issueCreate: {
-      initManager: (ctx) =>
-        TaskIntegrationManagerFactory.initManager(
-          ctx.dataLoader,
-          'jira',
-          {teamId: ctx.teamId, userId: ctx.userId},
-          ctx.context,
-          ctx.info
-        )
+      initManager: async (ctx) => {
+        const auth = await this.resolveAuth(ctx)
+        return auth && new JiraIntegrationManager(auth)
+      }
     },
-    issueSearch: {buildQuery: buildJiraSearchQuery}
+    issueRead: {getIssue: resolveJiraTaskIntegration},
+    issueSearch: {buildQuery: buildJiraSearchQuery},
+    repoList: {fetchRepos: fetchJiraProjects},
+    estimatePush: {
+      targets: ['comment', 'field'],
+      pushEstimate: pushEstimateToJira,
+      resolveServiceField: resolveJiraServiceField
+    }
   }
 }

@@ -41,6 +41,7 @@ import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
 import {Table} from '../tiptap/extensions/table/Table'
 import {TableCell} from '../tiptap/extensions/table/TableCell'
 import {TableHeader} from '../tiptap/extensions/table/TableHeader'
+import {TableOfContents} from '../tiptap/extensions/tableOfContents/TableOfContents'
 import {MAX_FILE_SIZE_FREE} from '../utils/constants'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import useAtmosphere from './useAtmosphere'
@@ -253,6 +254,7 @@ export const useTipTapPageEditor = (
           atmosphere
         }),
         PageLinkBlock.configure({yDoc: provider.document}),
+        TableOfContents,
         TaskBlock,
         ThinkingBlock,
         ResponseBlock,

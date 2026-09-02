@@ -499,10 +499,16 @@ const permissionMap: PermissionMap<Resolvers> = {
   },
   TeamMember: {
     integrations: isUserViewer<'TeamMember.integrations'>('source.userId'),
+    repoIntegrations: isUserViewer<'TeamMember.repoIntegrations'>('source.userId'),
     services: isUserViewer<'TeamMember.services'>('source.userId')
   },
   IntegrationService: {
-    auth: isUserViewer<'IntegrationService.auth'>('source.userId')
+    auth: isUserViewer<'IntegrationService.auth'>('source.userId'),
+    repos: isUserViewer<'IntegrationService.repos'>('source.userId')
+  },
+  AddTeamMemberIntegrationAuthSuccess: {
+    integrationAuth:
+      isUserViewer<'AddTeamMemberIntegrationAuthSuccess.integrationAuth'>('source.userId')
   },
   User: {
     archivedTasks: isTeamMember<'User.archivedTasks'>('args.teamId'),

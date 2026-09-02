@@ -6,12 +6,18 @@ export type _xGitLabProjectSource = {
   __typename: 'Project'
   service: 'gitlab'
   id: string
-  fullPath: string
+  fullPath?: string
+  name?: string
 }
 
 const _xGitLabProject: _XGitLabProjectResolvers = {
   __isTypeOf: ({id}) => id.startsWith('gid://'),
-  service: () => 'gitlab'
+  service: () => 'gitlab',
+  name: ({fullPath, name}) => {
+    const label = fullPath ?? name
+    if (!label) throw new Error('GitLab project has neither a fullPath nor a name')
+    return label
+  }
 }
 
 export default _xGitLabProject

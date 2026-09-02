@@ -1,6 +1,9 @@
-jest.mock('../../TaskIntegrationManagerFactory', () => ({
+jest.mock('../../../graphql/public/rootSchema', () => ({
   __esModule: true,
-  default: {initManager: jest.fn()}
+  githubRequest: jest.fn(),
+  gitlabRequest: jest.fn(),
+  linearRequest: jest.fn(),
+  default: {}
 }))
 
 import {getServerIntegration, serverIntegrations} from '../registry'
@@ -45,6 +48,20 @@ describe('serverIntegrations registry', () => {
 
   it.each(entries)('%s: declares issueCreate', (_key, def) => {
     expect(def.capabilities.issueCreate).toBeDefined()
+  })
+
+  it.each(entries)('%s: declares repoList', (_key, def) => {
+    expect(def.capabilities.repoList).toBeDefined()
+  })
+
+  it.each(entries)('%s: declares issueRead with a getIssue function', (_key, def) => {
+    expect(typeof def.capabilities.issueRead.getIssue).toBe('function')
+  })
+
+  it.each(entries)('%s: declares estimatePush with a pushEstimate function', (_key, def) => {
+    expect(typeof def.capabilities.estimatePush.pushEstimate).toBe('function')
+    expect(def.capabilities.estimatePush.targets).toContain('comment')
+    expect(typeof def.capabilities.estimatePush.resolveServiceField).toBe('function')
   })
 
   it('getServerIntegration returns null for an unknown service', () => {
