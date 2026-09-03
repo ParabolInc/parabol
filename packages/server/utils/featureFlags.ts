@@ -53,6 +53,15 @@ export const FEATURE_FLAGS = {
     createdAt: new Date('2026-07-27T00:00:00+00:00'),
     updatedAt: new Date('2026-07-27T00:00:00+00:00'),
     isPublic: false
+  },
+  standupTemplates: {
+    featureName: 'standupTemplates',
+    scope: 'Organization',
+    description: 'Templated stand-ups with per-prompt structured responses',
+    expiresAt: new Date('2027-03-31T23:59:59.999+00:00'),
+    createdAt: new Date('2026-09-04T00:00:00+00:00'),
+    updatedAt: new Date('2026-09-04T00:00:00+00:00'),
+    isPublic: false
   }
 } as const satisfies Record<string, FeatureFlag>
 
