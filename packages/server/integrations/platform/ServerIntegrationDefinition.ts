@@ -170,6 +170,16 @@ export abstract class ServerIntegrationDefinition {
     return providers.length > 0
   }
 
+  /** The team- and org-scoped provider rows for this team, which connect flows prefer over the global row */
+  async getSharedProviders(ctx: IntegrationCtx): Promise<TIntegrationProvider[]> {
+    const {dataLoader, teamId} = ctx
+    const team = await dataLoader.get('teams').loadNonNull(teamId)
+    const providers = await dataLoader
+      .get('sharedIntegrationProviders')
+      .load({service: this.service, orgIds: [team.orgId], teamIds: [teamId]})
+    return providers.filter(({scope}) => scope !== 'global')
+  }
+
   /** The instance-wide (cloud) provider row, the only one some connect flows can use */
   async getGlobalProvider(ctx: IntegrationCtx): Promise<TIntegrationProvider | null> {
     const [globalProvider] = await ctx.dataLoader

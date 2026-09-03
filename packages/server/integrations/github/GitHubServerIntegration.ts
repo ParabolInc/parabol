@@ -1,4 +1,5 @@
 import {githubIntegrationMeta} from 'parabol-client/shared/integrations/githubIntegrationMeta'
+import {Providers} from 'parabol-client/types/constEnums'
 import fetchGitHubRepos from '../../graphql/queries/helpers/fetchGitHubRepos'
 import type {GitHubSearchQueryJson, TeamMemberIntegrationAuth} from '../../postgres/types'
 import {
@@ -31,6 +32,11 @@ export class GitHubServerIntegration extends ServerIntegrationDefinition {
 
   async isAvailable(ctx: IntegrationCtx) {
     return !!(await this.getGlobalProvider(ctx))
+  }
+
+  async getAuthRow(ctx: IntegrationCtx): Promise<TeamMemberIntegrationAuth | null> {
+    const auth = await super.getAuthRow(ctx)
+    return auth?.scopes === Providers.GITHUB_SCOPE ? auth : null
   }
 
   readonly capabilities: {

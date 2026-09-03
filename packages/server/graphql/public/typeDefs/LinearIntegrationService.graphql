@@ -14,6 +14,10 @@ type LinearIntegrationService implements IntegrationService {
   """
   cloudProvider: IntegrationProvider
   """
+  The team- and org-scoped providers for this service on this team. Connect flows prefer these over cloudProvider
+  """
+  sharedProviders: [IntegrationProvider!]!
+  """
   The scopes on the viewer's active grant for this service, whether or not they are enough to count as connected (a Jira grant may hold only Confluence scopes). Empty without a grant
   """
   grantedScopes: [String!]!

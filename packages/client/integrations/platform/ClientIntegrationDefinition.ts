@@ -33,5 +33,9 @@ export abstract class ClientIntegrationDefinition {
   abstract readonly ids: IntegrationIdCodec
   abstract readonly Icon: ComponentType<{className?: string}>
   readonly iconClassName?: string
+  /** Show the poker scope tab even when no provider is configured, as a pitch for the integration */
+  readonly isScopeTabAdvertised?: boolean
+  /** Where to send the viewer when the OAuth popup closes without completing */
+  readonly authorizationHelpUrl?: string
   abstract connect(atmosphere: Atmosphere, params: ConnectParams): void
 }
