@@ -4,8 +4,6 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import type {AzureDevOpsProviderRow_viewer$key} from '../../../../__generated__/AzureDevOpsProviderRow_viewer.graphql'
 import AzureDevOpsConfigMenu from '../../../../components/AzureDevOpsConfigMenu'
 import AzureDevOpsProviderLogo from '../../../../components/AzureDevOpsProviderLogo'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useMenu from '../../../../hooks/useMenu'
 import useMutationProps, {type MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {Providers} from '../../../../types/constEnums'
 import AzureDevOpsClientManager from '../../../../utils/AzureDevOpsClientManager'
@@ -64,7 +62,6 @@ const AzureDevOpsProviderRow = (props: Props) => {
   const {azureDevOps} = integrations
   const provider = azureDevOps?.sharedProviders[0] ?? azureDevOps?.cloudProvider
   const accessToken = azureDevOps?.auth?.accessToken ?? undefined
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
 
   if (!provider) return null
 
@@ -73,27 +70,18 @@ const AzureDevOpsProviderRow = (props: Props) => {
   }
 
   return (
-    <>
-      <ProviderRow
-        connected={!!accessToken}
-        onConnectClick={openOAuth}
-        submitting={submitting}
-        togglePortal={togglePortal}
-        menuRef={originRef}
-        providerName={Providers.AZUREDEVOPS_NAME}
-        providerDescription={Providers.AZUREDEVOPS_DESC}
-        providerLogo={<AzureDevOpsProviderLogo />}
-        error={error?.message}
-      />
-      {menuPortal(
-        <AzureDevOpsConfigMenu
-          menuProps={menuProps}
-          mutationProps={mutationProps}
-          teamId={teamId}
-          provider={provider}
-        />
-      )}
-    </>
+    <ProviderRow
+      connected={!!accessToken}
+      onConnectClick={openOAuth}
+      submitting={submitting}
+      configMenu={
+        <AzureDevOpsConfigMenu mutationProps={mutationProps} teamId={teamId} provider={provider} />
+      }
+      providerName={Providers.AZUREDEVOPS_NAME}
+      providerDescription={Providers.AZUREDEVOPS_DESC}
+      providerLogo={<AzureDevOpsProviderLogo />}
+      error={error?.message}
+    />
   )
 }
 

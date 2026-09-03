@@ -4,8 +4,6 @@ import type {ConfluenceProviderRow_viewer$key} from '../../../../__generated__/C
 import AtlassianProviderLogo from '../../../../AtlassianProviderLogo'
 import AtlassianConfigMenu from '../../../../components/AtlassianConfigMenu'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useMenu from '../../../../hooks/useMenu'
 import useMutationProps, {type MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {getConnectProvider} from '../../../../integrations/platform/findIntegrationService'
 import {Providers} from '../../../../types/constEnums'
@@ -46,7 +44,6 @@ const ConfluenceProviderRow = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {submitting, submitMutation, onError, error, onCompleted} = useMutationProps()
   const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   const {teamMember} = viewer
   const atlassian = teamMember?.integrations.atlassian
   const provider = teamMember ? getConnectProvider(teamMember.services, 'jira') : null
@@ -70,33 +67,28 @@ const ConfluenceProviderRow = (props: Props) => {
   if (!provider) return null
 
   return (
-    <>
-      <ProviderRow
-        connected={connected}
-        onConnectClick={connectConfluence}
-        submitting={submitting}
-        togglePortal={togglePortal}
-        menuRef={originRef}
-        providerName={Providers.CONFLUENCE_NAME}
-        providerDescription={
-          <>
-            {Providers.CONFLUENCE_DESC}
-            <div className='text-fg-muted text-xs'>{'Shares your Atlassian sign-in'}</div>
-          </>
-        }
-        providerLogo={<AtlassianProviderLogo />}
-        error={error?.message}
-      />
-      {menuPortal(
+    <ProviderRow
+      connected={connected}
+      onConnectClick={connectConfluence}
+      submitting={submitting}
+      configMenu={
         <AtlassianConfigMenu
           mutationProps={mutationProps}
-          menuProps={menuProps}
           teamId={teamId}
           provider={provider}
           heldScopes={atlassian?.scope}
         />
-      )}
-    </>
+      }
+      providerName={Providers.CONFLUENCE_NAME}
+      providerDescription={
+        <>
+          {Providers.CONFLUENCE_DESC}
+          <div className='text-fg-muted text-xs'>{'Shares your Atlassian sign-in'}</div>
+        </>
+      }
+      providerLogo={<AtlassianProviderLogo />}
+      error={error?.message}
+    />
   )
 }
 

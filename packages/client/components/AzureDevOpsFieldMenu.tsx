@@ -1,24 +1,34 @@
 import graphql from 'babel-plugin-relay/macro'
+import type {ReactNode} from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import type {AzureDevOpsFieldMenu_stage$key} from '../__generated__/AzureDevOpsFieldMenu_stage.graphql'
-import type {MenuProps} from '../hooks/useMenu'
 import UpdateAzureDevOpsDimensionFieldMutation from '../mutations/UpdateAzureDevOpsDimensionFieldMutation'
 import {SprintPokerDefaults} from '../types/constEnums'
+import {Select} from '../ui/Select/Select'
+import {SelectContent} from '../ui/Select/SelectContent'
+import {SelectItem} from '../ui/Select/SelectItem'
+import {SelectSeparator} from '../ui/Select/SelectSeparator'
+import {SelectTrigger} from '../ui/Select/SelectTrigger'
 import AzureDevOpsClientManager from '../utils/AzureDevOpsClientManager'
+
 import {
   azureDevOpsEffortWorkItems,
   azureDevOpsOriginalEstimateWorkItems,
   azureDevOpsRemainingWorkWorkItems,
   azureDevOpsStoryPointWorkItems
 } from '../utils/AzureDevOpsWorkItemFields'
-import Menu from './Menu'
-import MenuItem from './MenuItem'
-import MenuItemHR from './MenuItemHR'
+
+import {
+  fromSelectValue,
+  SERVICE_FIELD_NULL_VALUE,
+  toSelectValue
+} from '../utils/serviceFieldSelectValue'
 
 interface Props {
-  menuProps: MenuProps
   stageRef: AzureDevOpsFieldMenu_stage$key
+  trigger: ReactNode
+  onOpenChange: (isOpen: boolean) => void
   submitScore(): void
 }
 
@@ -28,7 +38,7 @@ interface MenuOption {
 }
 
 const AzureDevOpsFieldMenu = (props: Props) => {
-  const {menuProps, stageRef, submitScore} = props
+  const {stageRef, trigger, onOpenChange, submitScore} = props
   const atmosphere = useAtmosphere()
   const stage = useFragment(
     graphql`
@@ -56,7 +66,6 @@ const AzureDevOpsFieldMenu = (props: Props) => {
     `,
     stageRef
   )
-  const {portalStatus, isDropdown, closePortal} = menuProps
   const {serviceField, task, meetingId, dimensionRef} = stage
   const {name: serviceFieldName} = serviceField
   const {name: dimensionName} = dimensionRef
@@ -64,7 +73,8 @@ const AzureDevOpsFieldMenu = (props: Props) => {
   const {integration} = task
   const {teamProject, url, type: workItemType} = integration
 
-  const handleClick = (fieldName: string) => () => {
+  const handleValueChange = (value: string) => {
+    const fieldName = fromSelectValue(value)
     if (fieldName !== serviceFieldName) {
       UpdateAzureDevOpsDimensionFieldMutation(
         atmosphere,
@@ -86,7 +96,6 @@ const AzureDevOpsFieldMenu = (props: Props) => {
     } else {
       submitScore()
     }
-    closePortal()
   }
 
   const getDefaultMenuValues = (workItemType: string): MenuOption[] => {
@@ -146,42 +155,29 @@ const AzureDevOpsFieldMenu = (props: Props) => {
 
   const menuValues = getDefaultMenuValues(workItemType)
 
-  const getDefaultIdx = () => {
-    let returnedIndex = 0
-    menuValues.forEach((menuOption, index) => {
-      const {label, fieldValue} = menuOption
-      if (serviceFieldName === label || serviceFieldName === fieldValue) {
-        returnedIndex = index
-      }
-    })
-    if (
-      serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL ||
-      serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_NULL
-    ) {
-      returnedIndex = menuValues.length + 1
-    }
-    return returnedIndex
-  }
-  const defaultActiveIdx = getDefaultIdx()
+  // the stage may store either the field's value or its label
+  const selectedByLabel = menuValues.find(({label}) => label === serviceFieldName)
+  const selectedValue = selectedByLabel
+    ? selectedByLabel.fieldValue
+    : toSelectValue(serviceFieldName)
 
   return (
-    <>
-      <Menu
-        ariaLabel={'Select where to publish the estimate'}
-        portalStatus={portalStatus}
-        isDropdown={isDropdown}
-        defaultActiveIdx={defaultActiveIdx}
-      >
+    <Select value={selectedValue} onValueChange={handleValueChange} onOpenChange={onOpenChange}>
+      <SelectTrigger asChild>{trigger}</SelectTrigger>
+      <SelectContent align='end' className='max-h-56 overflow-y-auto'>
         {menuValues.map(({label, fieldValue}) => {
-          return <MenuItem key={fieldValue} label={label} onClick={handleClick(fieldValue)} />
+          return (
+            <SelectItem key={fieldValue} value={fieldValue}>
+              {label}
+            </SelectItem>
+          )
         })}
-        <MenuItemHR />
-        <MenuItem
-          label={SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL}
-          onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_NULL)}
-        />
-      </Menu>
-    </>
+        <SelectSeparator />
+        <SelectItem value={SERVICE_FIELD_NULL_VALUE}>
+          {SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL}
+        </SelectItem>
+      </SelectContent>
+    </Select>
   )
 }
 

@@ -96,7 +96,7 @@ export const DateRangeFilter = ({dateField, setDateField, dateRange, setDateRang
               <SelectTrigger className='h-fit w-fit justify-start border-none p-0 px-1 text-xs hover:bg-surface-hover'>
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent align='end' className='p-1'>
+              <SelectContent align='end' className='px-1'>
                 <SelectItem
                   value='createdAt'
                   className='h-5 rounded py-0 text-xs hover:bg-surface-hover'

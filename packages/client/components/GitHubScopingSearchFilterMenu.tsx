@@ -2,13 +2,11 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {GitHubScopingSearchFilterMenuQuery} from '../__generated__/GitHubScopingSearchFilterMenuQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import type {MenuProps} from '../hooks/useMenu'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
 import getReposFromQueryStr from '../utils/getReposFromQueryStr'
 import GitHubRepoSearchFilterMenu from './GitHubRepoSearchFilterMenu'
 
 interface Props {
-  menuProps: MenuProps
   queryRef: PreloadedQuery<GitHubScopingSearchFilterMenuQuery>
 }
 
@@ -19,7 +17,7 @@ type GitHubSearchQuery = NonNullable<
 >
 
 const GitHubScopingSearchFilterMenu = (props: Props) => {
-  const {menuProps, queryRef} = props
+  const {queryRef} = props
   const query = usePreloadedQuery<GitHubScopingSearchFilterMenuQuery>(
     graphql`
       query GitHubScopingSearchFilterMenuQuery($teamId: ID!, $meetingId: ID!) {
@@ -69,7 +67,6 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
         })
       }}
       teamMemberRef={query.viewer.teamMember!}
-      menuProps={menuProps}
     />
   )
 }

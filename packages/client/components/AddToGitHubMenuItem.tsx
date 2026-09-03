@@ -2,11 +2,10 @@ import {forwardRef} from 'react'
 import useAtmosphere from '../hooks/useAtmosphere'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
 import type {ConnectProvider} from '../integrations/platform/ClientIntegrationDefinition'
+import {MenuItem} from '../ui/Menu/MenuItem'
 import GitHubClientManager from '../utils/GitHubClientManager'
 import GitHubSVG from './GitHubSVG'
-import MenuItem from './MenuItem'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
-import MenuItemLabel from './MenuItemLabel'
 
 interface Props {
   teamId: string
@@ -14,7 +13,7 @@ interface Props {
   provider: ConnectProvider | null
 }
 
-const AddToGitHubMenuItem = forwardRef((props: Props, ref) => {
+const AddToGitHubMenuItem = forwardRef<HTMLDivElement, Props>((props, ref) => {
   const {mutationProps, teamId, provider} = props
   const atmosphere = useAtmosphere()
   const openOAuth = () => {
@@ -23,18 +22,12 @@ const AddToGitHubMenuItem = forwardRef((props: Props, ref) => {
   }
   if (!provider) return null
   return (
-    <MenuItem
-      ref={ref}
-      label={
-        <MenuItemLabel>
-          <MenuItemComponentAvatar className='[&_svg]:block [&_svg]:h-[18px] [&_svg]:w-[18px]'>
-            <GitHubSVG />
-          </MenuItemComponentAvatar>
-          {'Add GitHub integration'}
-        </MenuItemLabel>
-      }
-      onClick={openOAuth}
-    />
+    <MenuItem ref={ref} onClick={openOAuth}>
+      <MenuItemComponentAvatar className='[&_svg]:block [&_svg]:h-[18px] [&_svg]:w-[18px]'>
+        <GitHubSVG />
+      </MenuItemComponentAvatar>
+      {'Add GitHub integration'}
+    </MenuItem>
   )
 })
 

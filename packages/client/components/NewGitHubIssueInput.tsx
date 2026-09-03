@@ -4,19 +4,17 @@ import {useFragment} from 'react-relay'
 import type {NewGitHubIssueInput_meeting$key} from '~/__generated__/NewGitHubIssueInput_meeting.graphql'
 import type {NewGitHubIssueInput_viewer$key} from '~/__generated__/NewGitHubIssueInput_viewer.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import {MenuPosition} from '~/hooks/useCoords'
 import useGetRepoContributions from '~/hooks/useGetRepoContributions'
-import useMenu from '~/hooks/useMenu'
 import useMutationProps from '~/hooks/useMutationProps'
 import {ExpandMore} from '~/ui/icons'
 import type {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/CreateTaskMutation.graphql'
 import useForm from '../hooks/useForm'
-import {PortalStatus} from '../hooks/usePortal'
 import CreateTaskMutation from '../mutations/CreateTaskMutation'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
 import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
 import type {CompletedHandler} from '../types/relayMutations'
+import {Menu} from '../ui/Menu/Menu'
 import Legitity from '../validation/Legitity'
 import Checkbox from './Checkbox'
 import NewGitHubIssueMenu from './NewGitHubIssueMenu'
@@ -80,21 +78,12 @@ const NewGitHubIssueInput = (props: Props) => {
       validate: validateIssue
     }
   })
-  const {originRef, menuPortal, menuProps, togglePortal, portalStatus} = useMenu(
-    MenuPosition.UPPER_LEFT,
-    {isDropdown: true}
-  )
+  const isMenuOpenRef = useRef(false)
   const ref = useRef<HTMLInputElement>(null)
   const {dirty, error} = fields.newIssue
-  useEffect(() => {
-    if (portalStatus === PortalStatus.Exited) {
-      ref.current && ref.current.focus()
-    }
-  }, [portalStatus])
-
   const handleCreateNewIssue = (e: FormEvent) => {
     e.preventDefault()
-    if (portalStatus !== PortalStatus.Exited || !selectedNameWithOwner) return
+    if (isMenuOpenRef.current || !selectedNameWithOwner) return
     const {newIssue: newIssueRes} = validateField()
     const {value: newIssueTitle, error} = newIssueRes
     if (error) {
@@ -164,48 +153,49 @@ const NewGitHubIssueInput = (props: Props) => {
   }
   if (!isEditing) return null
   return (
-    <>
-      <div className='flex cursor-pointer bg-surface-raised py-2 pl-4'>
-        <Checkbox active />
-        <div className='flex w-full flex-col pl-4'>
-          <form className='flex w-full flex-col' onSubmit={handleCreateNewIssue}>
-            <input
-              className='m-0 w-full appearance-none border-none bg-transparent p-0 pr-2 text-[16px] text-fg-primary outline-none'
-              autoFocus
-              onBlur={handleCreateNewIssue}
-              onChange={onChange}
-              maxLength={255}
-              name='newIssue'
-              placeholder='New issue title'
-              ref={ref}
-              type='text'
-            />
-            {dirty && error && (
-              <StyledError className='w-full text-left text-[13px]'>{error}</StyledError>
-            )}
-          </form>
-          <PlainButton
-            className='m-0 flex h-5 w-fit items-center justify-start bg-transparent opacity-100 hover:bg-transparent focus:bg-transparent'
-            ref={originRef}
-            onMouseDown={togglePortal}
-          >
-            <a className='block text-accent text-xs leading-5 no-underline hover:underline focus:underline'>
-              {selectedNameWithOwner}
-            </a>
-            <ExpandMore className='h-5 w-5 p-0 text-accent' />
-          </PlainButton>
-        </div>
+    <div className='flex cursor-pointer bg-surface-raised py-2 pl-4'>
+      <Checkbox active />
+      <div className='flex w-full flex-col pl-4'>
+        <form className='flex w-full flex-col' onSubmit={handleCreateNewIssue}>
+          <input
+            className='m-0 w-full appearance-none border-none bg-transparent p-0 pr-2 text-[16px] text-fg-primary outline-none'
+            autoFocus
+            onBlur={handleCreateNewIssue}
+            onChange={onChange}
+            maxLength={255}
+            name='newIssue'
+            placeholder='New issue title'
+            ref={ref}
+            type='text'
+          />
+          {dirty && error && (
+            <StyledError className='w-full text-left text-[13px]'>{error}</StyledError>
+          )}
+        </form>
+        <Menu
+          trigger={
+            <PlainButton className='m-0 flex h-5 w-fit items-center justify-start bg-transparent opacity-100 hover:bg-transparent focus:bg-transparent'>
+              <a className='block text-accent text-xs leading-5 no-underline hover:underline focus:underline'>
+                {selectedNameWithOwner}
+              </a>
+              <ExpandMore className='h-5 w-5 p-0 text-accent' />
+            </PlainButton>
+          }
+          onOpenChange={(open) => {
+            isMenuOpenRef.current = open
+            // radix returns focus to the trigger on close; the title input should keep it
+            if (!open) requestAnimationFrame(() => ref.current?.focus())
+          }}
+        >
+          <NewGitHubIssueMenu
+            handleSelectNameWithOwner={setSelectedNameWithOwner}
+            repos={repos}
+            teamId={teamId}
+            userId={userId}
+          />
+        </Menu>
       </div>
-      {menuPortal(
-        <NewGitHubIssueMenu
-          handleSelectNameWithOwner={setSelectedNameWithOwner}
-          menuProps={menuProps}
-          repos={repos}
-          teamId={teamId}
-          userId={userId}
-        />
-      )}
-    </>
+    </div>
   )
 }
 

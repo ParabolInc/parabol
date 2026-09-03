@@ -18,7 +18,7 @@ export const SelectContent = React.forwardRef<
     >
       <RadixSelect.Viewport
         className={cn(
-          'p-0',
+          'py-1',
           position === 'popper' &&
             'min-h-(--radix-select-trigger-height) w-full min-w-(--radix-select-trigger-width)'
         )}

@@ -2,10 +2,9 @@ import graphql from 'babel-plugin-relay/macro'
 import {forwardRef, type Ref, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {TeamPromptOptions_meeting$key} from '~/__generated__/TeamPromptOptions_meeting.graphql'
-import {MenuPosition} from '~/hooks/useCoords'
-import useMenu from '~/hooks/useMenu'
 import {Button, type ButtonProps} from '../../ui/Button/Button'
 import {cn} from '../../ui/cn'
+import {Menu} from '../../ui/Menu/Menu'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
@@ -38,7 +37,6 @@ interface Props {
 }
 
 const TeamPromptOptions = (props: Props) => {
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   const [isCopied, setIsCopied] = useState(false)
   const {meetingRef, openRecurrenceSettingsModal, openEndRecurringMeetingModal} = props
 
@@ -59,28 +57,28 @@ const TeamPromptOptions = (props: Props) => {
   }
 
   return (
-    <>
-      <Tooltip open={isCopied}>
-        <TooltipTrigger asChild>
-          <OptionsButton ref={originRef} onClick={togglePortal}>
-            <IconLabel icon='tune' iconLarge />
-            <div className='text-fg-primary'>Options</div>
-          </OptionsButton>
-        </TooltipTrigger>
-        <TooltipContent side='bottom' align='end'>
-          Copied!
-        </TooltipContent>
-      </Tooltip>
-      {menuPortal(
+    <Tooltip open={isCopied}>
+      <Menu
+        trigger={
+          <TooltipTrigger asChild>
+            <OptionsButton>
+              <IconLabel icon='tune' iconLarge />
+              <div className='text-fg-primary'>Options</div>
+            </OptionsButton>
+          </TooltipTrigger>
+        }
+      >
         <TeamPromptOptionsMenu
           meetingRef={meeting}
-          menuProps={menuProps}
           openRecurrenceSettingsModal={openRecurrenceSettingsModal}
           openEndRecurringMeetingModal={openEndRecurringMeetingModal}
           popTooltip={popTooltip}
         />
-      )}
-    </>
+      </Menu>
+      <TooltipContent side='bottom' align='end'>
+        Copied!
+      </TooltipContent>
+    </Tooltip>
   )
 }
 

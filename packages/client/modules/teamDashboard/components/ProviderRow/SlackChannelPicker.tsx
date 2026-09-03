@@ -1,13 +1,13 @@
-import type * as React from 'react'
+import {Suspense} from 'react'
 import DropdownMenuToggle from '../../../../components/DropdownMenuToggle'
 import type {
   SlackChannelDropdownChannels,
   SlackChannelDropdownOnClick
 } from '../../../../components/SlackChannelDropdown'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useMenu from '../../../../hooks/useMenu'
 import useMutationProps from '../../../../hooks/useMutationProps'
+import {Select} from '../../../../ui/Select/Select'
+import {SelectTrigger} from '../../../../ui/Select/SelectTrigger'
 import lazyPreload from '../../../../utils/lazyPreload'
 import SlackClientManager from '../../../../utils/SlackClientManager'
 
@@ -50,40 +50,36 @@ const SlackChannelPicker = (props: Props) => {
     : channelState === ChannelState.loading
       ? ''
       : 'Token Expired! Click to renew'
-  const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLDivElement>(
-    MenuPosition.UPPER_RIGHT,
-    {
-      isDropdown: true
-    }
-  )
   const atmosphere = useAtmosphere()
   const mutationProps = useMutationProps()
-  const handleClick =
-    channelState !== ChannelState.error
-      ? (e?: React.MouseEvent | React.TouchEvent) => {
-          onOpen()
-          togglePortal(e)
-        }
-      : () => {
-          SlackClientManager.openOAuth(atmosphere, teamId, mutationProps)
-        }
-  return (
-    <>
+
+  const toggle = (
+    <DropdownMenuToggle onMouseEnter={SlackChannelDropdown.preload} defaultText={activeText} />
+  )
+
+  if (channelState === ChannelState.error) {
+    return (
       <DropdownMenuToggle
         onMouseEnter={SlackChannelDropdown.preload}
-        onClick={handleClick}
-        ref={originRef}
+        onClick={() => {
+          SlackClientManager.openOAuth(atmosphere, teamId, mutationProps)
+        }}
         defaultText={activeText}
       />
-      {menuPortal(
-        <SlackChannelDropdown
-          channels={channels}
-          defaultActiveIdx={activeIdx}
-          menuProps={menuProps}
-          onClick={onClick}
-        />
-      )}
-    </>
+    )
+  }
+
+  return (
+    <Select
+      value={activeChannel?.id}
+      onValueChange={onClick}
+      onOpenChange={(isOpen) => isOpen && onOpen()}
+    >
+      <SelectTrigger asChild>{toggle}</SelectTrigger>
+      <Suspense fallback={null}>
+        <SlackChannelDropdown channels={channels} />
+      </Suspense>
+    </Select>
   )
 }
 

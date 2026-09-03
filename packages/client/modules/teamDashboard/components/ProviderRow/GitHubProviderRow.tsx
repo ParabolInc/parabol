@@ -4,8 +4,6 @@ import type {GitHubProviderRow_viewer$key} from '../../../../__generated__/GitHu
 import GitHubConfigMenu from '../../../../components/GitHubConfigMenu'
 import GitHubProviderLogo from '../../../../components/GitHubProviderLogo'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useMenu from '../../../../hooks/useMenu'
 import useMutationProps, {type MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {getConnectProvider} from '../../../../integrations/platform/findIntegrationService'
 import {Providers} from '../../../../types/constEnums'
@@ -53,32 +51,22 @@ const GitHubProviderRow = (props: Props) => {
     if (!provider) return
     GitHubClientManager.openOAuth(atmosphere, teamId, provider, mutationProps)
   }
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
 
   if (!provider) return null
 
   return (
-    <>
-      <ProviderRow
-        connected={!!accessToken}
-        onConnectClick={openOAuth}
-        submitting={submitting}
-        togglePortal={togglePortal}
-        menuRef={originRef}
-        providerName={Providers.GITHUB_NAME}
-        providerDescription={Providers.GITHUB_DESC}
-        providerLogo={<GitHubProviderLogo />}
-        error={error?.message}
-      />
-      {menuPortal(
-        <GitHubConfigMenu
-          menuProps={menuProps}
-          mutationProps={mutationProps}
-          teamId={teamId}
-          provider={provider}
-        />
-      )}
-    </>
+    <ProviderRow
+      connected={!!accessToken}
+      onConnectClick={openOAuth}
+      submitting={submitting}
+      configMenu={
+        <GitHubConfigMenu mutationProps={mutationProps} teamId={teamId} provider={provider} />
+      }
+      providerName={Providers.GITHUB_NAME}
+      providerDescription={Providers.GITHUB_DESC}
+      providerLogo={<GitHubProviderLogo />}
+      error={error?.message}
+    />
   )
 }
 
