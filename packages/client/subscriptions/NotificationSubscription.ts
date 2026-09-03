@@ -92,7 +92,7 @@ const subscription = graphql`
       }
 
       RemoveIntegrationSearchQuerySuccess {
-        ...RemoveIntegrationSearchQueryMutation_notification @relay(mask: false)
+        ...useRemoveIntegrationSearchQueryMutation_success @relay(mask: false)
       }
       AddOrgPayload {
         ...AddOrgMutation_notification @relay(mask: false)
@@ -131,7 +131,7 @@ const subscription = graphql`
         ...InvalidateSessionsMutation_notification @relay(mask: false)
       }
       PersistIntegrationSearchQuerySuccess {
-        ...PersistIntegrationSearchQueryMutation_notification @relay(mask: false)
+        ...usePersistIntegrationSearchQueryMutation_success @relay(mask: false)
       }
 
       AuthTokenPayload {

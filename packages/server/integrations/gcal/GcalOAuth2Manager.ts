@@ -1,6 +1,7 @@
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../appOrigin'
 import {authorizeOAuth2} from '../helpers/authorizeOAuth2'
+import fetchGoogleUserId from '../helpers/fetchGoogleUserId'
 import OAuth2Manager, {
   type OAuth2AuthorizationParams,
   type OAuth2RefreshAuthorizationParams
@@ -10,7 +11,7 @@ export default class GcalOAuth2Manager extends OAuth2Manager {
   static readonly REDIRECT_URI = makeAppURL(appOrigin, 'auth/gcal')
 
   async authorize(code: string) {
-    return this.fetchToken<{
+    const auth = await this.fetchToken<{
       accessToken: string
       refreshToken: string
       scopes: string
@@ -20,6 +21,9 @@ export default class GcalOAuth2Manager extends OAuth2Manager {
       code,
       redirect_uri: GcalOAuth2Manager.REDIRECT_URI
     })
+    if (auth instanceof Error) return auth
+    const providerUserId = await fetchGoogleUserId(auth.accessToken)
+    return {...auth, providerUserId: providerUserId instanceof Error ? null : providerUserId}
   }
 
   async refresh(refreshToken: string) {

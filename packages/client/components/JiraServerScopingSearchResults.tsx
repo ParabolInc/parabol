@@ -12,9 +12,9 @@ import type {JiraServerScopingSearchResults_meeting$key} from '../__generated__/
 import type {JiraServerScopingSearchResults_query$key} from '../__generated__/JiraServerScopingSearchResults_query.graphql'
 import type {JiraServerScopingSearchResultsPaginationQuery} from '../__generated__/JiraServerScopingSearchResultsPaginationQuery.graphql'
 import type {JiraServerScopingSearchResultsQuery} from '../__generated__/JiraServerScopingSearchResultsQuery.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
 import useLoadNextOnScrollBottom from '../hooks/useLoadNextOnScrollBottom'
-import PersistIntegrationSearchQueryMutation from '../mutations/PersistIntegrationSearchQueryMutation'
+import findIntegrationService from '../integrations/platform/findIntegrationService'
+import usePersistIntegrationSearchQueryMutation from '../mutations/usePersistIntegrationSearchQueryMutation'
 import Ellipsis from './Ellipsis/Ellipsis'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
@@ -28,7 +28,7 @@ interface Props {
 const JiraServerScopingSearchResults = (props: Props) => {
   const {meetingRef} = props
   const {queryRef} = props
-  const atmosphere = useAtmosphere()
+  const [persistIntegrationSearchQuery] = usePersistIntegrationSearchQueryMutation()
 
   const query = usePreloadedQuery<JiraServerScopingSearchResultsQuery>(
     graphql`
@@ -41,15 +41,9 @@ const JiraServerScopingSearchResults = (props: Props) => {
         ...JiraServerScopingSearchResults_query
         viewer {
           teamMember(teamId: $teamId) {
-            integrations {
-              jiraServer {
-                providerId
-                searchQueries {
-                  queryString
-                  isJQL
-                  projectKeyFilters
-                }
-              }
+            services {
+              ...findIntegrationService_auth @relay(mask: false)
+              ...usePersistIntegrationSearchQueryMutation_service @relay(mask: false)
             }
           }
         }
@@ -149,24 +143,30 @@ const JiraServerScopingSearchResults = (props: Props) => {
 
   const persistQuery = () => {
     const {queryString, isJQL} = jiraServerSearchQuery
-    const jiraServer = query?.viewer.teamMember?.integrations.jiraServer
-    const providerId = jiraServer?.providerId
-    const searchQueries = jiraServer?.searchQueries ?? []
+    const services = query.viewer.teamMember?.services ?? []
+    const jiraServerService = findIntegrationService(services, 'jiraServer')
+    const providerId = jiraServerService?.auth?.providerId
     // don't persist an empty string (the default)
     if (!queryString.trim() || !providerId) return
-    const projectKeyFilters = [...(jiraServerSearchQuery.projectKeyFilters as string[])].sort()
+    const projectKeyFilters = [...jiraServerSearchQuery.projectKeyFilters].sort()
     const lookupKey = JSON.stringify({queryString, projectKeyFilters})
-    const isQueryNew = !searchQueries.find(({queryString, projectKeyFilters}) => {
-      return JSON.stringify({queryString, projectKeyFilters}) === lookupKey
+    const isQueryNew = !jiraServerService.searchQueries.find((searchQuery) => {
+      return (
+        JSON.stringify({
+          queryString: searchQuery.queryString,
+          projectKeyFilters: searchQuery.projectKeyFilters ?? []
+        }) === lookupKey
+      )
     })
 
     if (isQueryNew) {
-      PersistIntegrationSearchQueryMutation(atmosphere, {
-        teamId,
-        providerId,
-        queryString,
-        meta: JSON.stringify({isJQL, projectKeyFilters}),
-        includeJiraServer: true
+      persistIntegrationSearchQuery({
+        variables: {
+          teamId,
+          providerId,
+          queryString,
+          meta: JSON.stringify({isJQL, projectKeyFilters})
+        }
       })
     }
   }

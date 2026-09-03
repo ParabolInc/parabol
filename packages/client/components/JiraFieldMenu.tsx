@@ -4,7 +4,7 @@ import {useFragment} from 'react-relay'
 import {OpenInNew} from '~/ui/icons'
 import type {JiraFieldMenu_stage$key} from '../__generated__/JiraFieldMenu_stage.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import UpdateJiraDimensionFieldMutation from '../mutations/UpdateJiraDimensionFieldMutation'
+import useUpdateIntegrationDimensionFieldMutation from '../mutations/useUpdateIntegrationDimensionFieldMutation'
 import {ExternalLinks, SprintPokerDefaults} from '../types/constEnums'
 import {Select} from '../ui/Select/Select'
 import {SelectContent} from '../ui/Select/SelectContent'
@@ -55,6 +55,7 @@ const JiraFieldMenu = (props: Props) => {
     stageRef
   )
   const atmosphere = useAtmosphere()
+  const [updateIntegrationDimensionField] = useUpdateIntegrationDimensionFieldMutation()
   const {meetingId, dimensionRef, serviceField, task} = stage
   if (task?.integration?.__typename !== 'JiraIssue') return null
   const {id: taskId, teamId, integration} = task
@@ -104,20 +105,14 @@ const JiraFieldMenu = (props: Props) => {
       openMissingFieldDocs()
       return
     }
-    UpdateJiraDimensionFieldMutation(
-      atmosphere,
+    const fieldId = fromSelectValue(value)
+    updateIntegrationDimensionField(
       {
-        taskId,
-        dimensionName,
-        fieldId: fromSelectValue(value),
-        meetingId
+        variables: {meetingId, taskId, dimensionName, fieldId},
+        optimisticFieldName: possibleEstimationFields.find((field) => field.fieldId === fieldId)
+          ?.fieldName
       },
-      {
-        onCompleted: submitScore,
-        onError: () => {
-          /* noop */
-        }
-      }
+      {onSuccess: submitScore}
     )
   }
   return (

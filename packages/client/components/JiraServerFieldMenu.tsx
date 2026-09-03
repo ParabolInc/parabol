@@ -2,8 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import type {ReactNode} from 'react'
 import {useFragment} from 'react-relay'
 import type {JiraServerFieldMenu_stage$key} from '../__generated__/JiraServerFieldMenu_stage.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
-import UpdateJiraServerDimensionFieldMutation from '../mutations/UpdateJiraServerDimensionFieldMutation'
+import useUpdateIntegrationDimensionFieldMutation from '../mutations/useUpdateIntegrationDimensionFieldMutation'
 import {SprintPokerDefaults} from '../types/constEnums'
 import {Select} from '../ui/Select/Select'
 import {SelectContent} from '../ui/Select/SelectContent'
@@ -25,7 +24,7 @@ interface Props {
 
 const JiraServerFieldMenu = (props: Props) => {
   const {stage: stageRef, trigger, onOpenChange, submitScore} = props
-  const atmosphere = useAtmosphere()
+  const [updateIntegrationDimensionField] = useUpdateIntegrationDimensionFieldMutation()
 
   const stage = useFragment(
     graphql`
@@ -38,12 +37,11 @@ const JiraServerFieldMenu = (props: Props) => {
           name
         }
         task {
+          id
           integration {
             ... on JiraServerIssue {
               __typename
               id
-              jiraProjectId: projectId
-              issueType
               possibleEstimationFieldNames
             }
           }
@@ -56,8 +54,8 @@ const JiraServerFieldMenu = (props: Props) => {
 
   if (task?.integration?.__typename !== 'JiraServerIssue') return null
 
-  const {integration} = task
-  const {jiraProjectId, issueType, possibleEstimationFieldNames} = integration
+  const {id: taskId, integration} = task
+  const {possibleEstimationFieldNames} = integration
 
   const {name: dimensionName} = dimensionRef
   const {name: serviceFieldName} = serviceField
@@ -70,21 +68,9 @@ const JiraServerFieldMenu = (props: Props) => {
     : SprintPokerDefaults.SERVICE_FIELD_COMMENT
 
   const handleValueChange = (value: string) => {
-    UpdateJiraServerDimensionFieldMutation(
-      atmosphere,
-      {
-        dimensionName,
-        fieldName: fromSelectValue(value),
-        issueType,
-        projectId: jiraProjectId,
-        meetingId
-      },
-      {
-        onCompleted: submitScore,
-        onError: () => {
-          /* noop */
-        }
-      }
+    updateIntegrationDimensionField(
+      {variables: {meetingId, taskId, dimensionName, fieldId: fromSelectValue(value)}},
+      {onSuccess: submitScore}
     )
   }
   return (

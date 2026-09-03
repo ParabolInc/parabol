@@ -3,10 +3,9 @@ import type {JiraSearchQueryResolvers} from '../resolverTypes'
 
 const JiraSearchQuery: JiraSearchQueryResolvers = {
   id: ({id}) => IntegrationSearchQueryId.join('JiraSearchQuery', id),
-  projectKeyFilters: ({projectKeyFilters}) => projectKeyFilters || [],
-  lastUsedAt: async ({lastUsedAt}) => {
-    return new Date(lastUsedAt)
-  }
+  queryString: ({query}) => query.queryString,
+  isJQL: ({query}) => query.isJQL,
+  projectKeyFilters: ({query}) => query.projectKeyFilters ?? []
 }
 
 export default JiraSearchQuery

@@ -3,8 +3,7 @@ import {type MouseEvent} from 'react'
 import {useFragment} from 'react-relay'
 import {Edit} from '~/ui/icons'
 import type {GitHubFieldMenu_stage$key} from '../__generated__/GitHubFieldMenu_stage.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
-import UpdateGitHubDimensionFieldMutation from '../mutations/UpdateGitHubDimensionFieldMutation'
+import useUpdateIntegrationDimensionFieldMutation from '../mutations/useUpdateIntegrationDimensionFieldMutation'
 import {SprintPokerDefaults} from '../types/constEnums'
 import {MenuContent} from '../ui/Menu/MenuContent'
 import {MenuItem} from '../ui/Menu/MenuItem'
@@ -23,7 +22,7 @@ interface Props {
 
 const GitHubFieldMenu = (props: Props) => {
   const {onOpenEditModal, stageRef, submitScore} = props
-  const atmosphere = useAtmosphere()
+  const [updateIntegrationDimensionField] = useUpdateIntegrationDimensionFieldMutation()
   const stage = useFragment(
     graphql`
       fragment GitHubFieldMenu_stage on EstimateStage {
@@ -34,12 +33,10 @@ const GitHubFieldMenu = (props: Props) => {
           name
         }
         task {
+          id
           integration {
             ... on _xGitHubIssue {
               __typename
-              repository {
-                nameWithOwner
-              }
             }
           }
         }
@@ -57,9 +54,7 @@ const GitHubFieldMenu = (props: Props) => {
   ] as string[]
 
   if (task?.integration?.__typename !== '_xGitHubIssue') return null
-  const {integration} = task
-  const {repository} = integration
-  const {nameWithOwner} = repository
+  const {id: taskId} = task
 
   const defaultLabelTemplate = `${dimensionName}: {{#}}`
   const serviceFieldTemplate = defaults.includes(serviceFieldName)
@@ -68,13 +63,9 @@ const GitHubFieldMenu = (props: Props) => {
 
   const handleClick = (labelTemplate: string) => () => {
     if (labelTemplate !== serviceFieldName) {
-      UpdateGitHubDimensionFieldMutation(
-        atmosphere,
-        {dimensionName, labelTemplate, nameWithOwner, meetingId},
-        {
-          onCompleted: submitScore,
-          onError: () => {}
-        }
+      updateIntegrationDimensionField(
+        {variables: {meetingId, taskId, dimensionName, fieldId: labelTemplate}},
+        {onSuccess: submitScore}
       )
     } else {
       submitScore()

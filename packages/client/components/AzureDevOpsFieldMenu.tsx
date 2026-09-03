@@ -1,17 +1,14 @@
 import graphql from 'babel-plugin-relay/macro'
 import type {ReactNode} from 'react'
 import {useFragment} from 'react-relay'
-import useAtmosphere from '~/hooks/useAtmosphere'
 import type {AzureDevOpsFieldMenu_stage$key} from '../__generated__/AzureDevOpsFieldMenu_stage.graphql'
-import UpdateAzureDevOpsDimensionFieldMutation from '../mutations/UpdateAzureDevOpsDimensionFieldMutation'
+import useUpdateIntegrationDimensionFieldMutation from '../mutations/useUpdateIntegrationDimensionFieldMutation'
 import {SprintPokerDefaults} from '../types/constEnums'
 import {Select} from '../ui/Select/Select'
 import {SelectContent} from '../ui/Select/SelectContent'
 import {SelectItem} from '../ui/Select/SelectItem'
 import {SelectSeparator} from '../ui/Select/SelectSeparator'
 import {SelectTrigger} from '../ui/Select/SelectTrigger'
-import AzureDevOpsClientManager from '../utils/AzureDevOpsClientManager'
-
 import {
   azureDevOpsEffortWorkItems,
   azureDevOpsOriginalEstimateWorkItems,
@@ -39,7 +36,7 @@ interface MenuOption {
 
 const AzureDevOpsFieldMenu = (props: Props) => {
   const {stageRef, trigger, onOpenChange, submitScore} = props
-  const atmosphere = useAtmosphere()
+  const [updateIntegrationDimensionField] = useUpdateIntegrationDimensionFieldMutation()
   const stage = useFragment(
     graphql`
       fragment AzureDevOpsFieldMenu_stage on EstimateStage {
@@ -50,13 +47,11 @@ const AzureDevOpsFieldMenu = (props: Props) => {
           name
         }
         task {
+          id
           integration {
             ... on AzureDevOpsWorkItem {
               __typename
-
               id
-              teamProject
-              url
               type
             }
           }
@@ -70,28 +65,15 @@ const AzureDevOpsFieldMenu = (props: Props) => {
   const {name: serviceFieldName} = serviceField
   const {name: dimensionName} = dimensionRef
   if (task?.integration?.__typename !== 'AzureDevOpsWorkItem') return null
-  const {integration} = task
-  const {teamProject, url, type: workItemType} = integration
+  const {id: taskId, integration} = task
+  const {type: workItemType} = integration
 
   const handleValueChange = (value: string) => {
     const fieldName = fromSelectValue(value)
     if (fieldName !== serviceFieldName) {
-      UpdateAzureDevOpsDimensionFieldMutation(
-        atmosphere,
-        {
-          meetingId,
-          instanceId: AzureDevOpsClientManager.getInstanceId(new URL(url)),
-          dimensionName,
-          fieldName,
-          projectKey: teamProject,
-          workItemType
-        },
-        {
-          onCompleted: submitScore,
-          onError: () => {
-            /* noop */
-          }
-        }
+      updateIntegrationDimensionField(
+        {variables: {meetingId, taskId, dimensionName, fieldId: fieldName}},
+        {onSuccess: submitScore}
       )
     } else {
       submitScore()

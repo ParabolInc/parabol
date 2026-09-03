@@ -5,7 +5,7 @@ import invalidateRepoIntegrationsCache from '../../../integrations/invalidateRep
 import JiraServerOAuth1Manager, {
   type OAuth1Auth
 } from '../../../integrations/jiraServer/JiraServerOAuth1Manager'
-import type {OAuth2AuthorizeResponse} from '../../../integrations/OAuth2Manager'
+import type {OAuth2TokenResponse} from '../../../integrations/OAuth2Manager'
 import createOAuth2Manager from '../../../integrations/platform/createOAuth2Manager'
 import toExpiresAt from '../../../integrations/platform/toExpiresAt'
 import getKysely from '../../../postgres/getKysely'
@@ -26,9 +26,7 @@ interface OAuth2Auth {
   expiresAt?: Date | null
 }
 
-type OAuth2Tokens = Omit<OAuth2AuthorizeResponse, 'providerUserId' | 'meta'>
-
-const toOAuth2Auth = (authResponse: OAuth2Tokens | Error): OAuth2Auth | Error => {
+const toOAuth2Auth = (authResponse: OAuth2TokenResponse | Error): OAuth2Auth | Error => {
   if (authResponse instanceof Error) return authResponse
   const {expiresIn, ...tokens} = authResponse
   return {...tokens, expiresAt: toExpiresAt(expiresIn)}
@@ -88,7 +86,11 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
         integrationProvider as IntegrationProviderAzureDevOps
       )
       const authRes = await manager.authorize(oauthCodeOrPat, oauthVerifier)
-      tokenMetadata = toOAuth2Auth(authRes)
+      if (authRes instanceof Error) return standardError(authRes, {userId: viewerId})
+      const {providerUserId: authProviderUserId, meta: authMeta, ...tokens} = authRes
+      tokenMetadata = toOAuth2Auth(tokens)
+      providerUserId = authProviderUserId
+      meta = authMeta ?? null
     }
     const manager = createOAuth2Manager(integrationProvider)
     if (manager) {
@@ -96,7 +98,7 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
       if (authRes instanceof Error) return standardError(authRes, {userId: viewerId})
       const {providerUserId: authProviderUserId, meta: authMeta, ...tokens} = authRes
       tokenMetadata = toOAuth2Auth(tokens)
-      providerUserId = authProviderUserId ?? null
+      providerUserId = authProviderUserId
       meta = authMeta ?? null
     }
   }
