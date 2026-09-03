@@ -1,0 +1,15 @@
+"""
+Returned when removeTeamPromptTemplate succeeds. The template is deactivated and its prompts are
+soft-removed; if it was the team's selected stand-up template the settings fall back to another one.
+"""
+type RemoveTeamPromptTemplateSuccess {
+  """
+  The removed (now inactive) stand-up template
+  """
+  teamPromptTemplate: TeamPromptTemplate!
+
+  """
+  The team's stand-up settings after any selected-template fallback
+  """
+  meetingSettings: TeamPromptMeetingSettings!
+}
