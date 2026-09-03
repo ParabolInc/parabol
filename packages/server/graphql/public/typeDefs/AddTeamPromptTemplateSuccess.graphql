@@ -1,8 +1,8 @@
 """
 Returned when addTeamPromptTemplate succeeds. Either a blank stand-up template with one default
 prompt was created for the team, or an existing stand-up template was cloned (name "<original> Copy")
-with all of its active prompts. On the starter tier the viewer's freeCustomStandupTemplatesRemaining
-is decremented.
+with all of its active prompts. The viewer's freeCustomStandupTemplatesRemaining is decremented on
+every tier, but only the starter tier is blocked once it reaches zero.
 """
 type AddTeamPromptTemplateSuccess {
   """
