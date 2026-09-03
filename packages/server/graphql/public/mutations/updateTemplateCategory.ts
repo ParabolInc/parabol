@@ -22,7 +22,11 @@ const updateTemplateCategory: MutationResolvers['updateTemplateCategory'] = asyn
   if (!MAIN_CATEGORIES.includes(mainCategory)) {
     return {error: {message: 'Custom categories not available'}}
   }
-  // Auth permissions guarantee viewer can edit templateId
+
+  const template = await dataLoader.get('meetingTemplates').loadNonNull(templateId)
+  if (template.type === 'teamPrompt' && mainCategory !== 'standup') {
+    return {error: {message: 'Standup templates stay in the standup category'}}
+  }
 
   // RESOLUTION
   await pg
@@ -31,8 +35,7 @@ const updateTemplateCategory: MutationResolvers['updateTemplateCategory'] = asyn
     .where('id', '=', templateId)
     .executeTakeFirst()
   dataLoader.get('meetingTemplates').clear(templateId)
-  const updatedTemplate = await dataLoader.get('meetingTemplates').loadNonNull(templateId)
-  const {teamId} = updatedTemplate
+  const {teamId} = template
   const data = {templateId}
   publish(SubscriptionChannel.TEAM, teamId, 'UpdateTemplateCategorySuccess', data, subOptions)
   return data
