@@ -78,10 +78,4 @@ type TeamPromptTemplate implements MeetingTemplate {
   The lowest scope of the permissions available to the viewer
   """
   viewerLowestScope: SharingScopeEnum!
-
-  """
-  Experimental: sub-categories that this template is in (e.g. "popular", "recentlyUsed", "unused",
-  etc.)
-  """
-  subCategories: [String!]!
 }
