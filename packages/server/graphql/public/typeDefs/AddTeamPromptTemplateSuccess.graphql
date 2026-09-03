@@ -1,0 +1,17 @@
+"""
+Returned when addTeamPromptTemplate succeeds. Either a blank stand-up template with one default
+prompt was created for the team, or an existing stand-up template was cloned (name "<original> Copy")
+with all of its active prompts. On the starter tier the viewer's freeCustomStandupTemplatesRemaining
+is decremented.
+"""
+type AddTeamPromptTemplateSuccess {
+  """
+  The newly created or cloned stand-up template
+  """
+  teamPromptTemplate: TeamPromptTemplate!
+
+  """
+  The viewer, so the client can refresh freeCustomStandupTemplatesRemaining
+  """
+  user: User!
+}
