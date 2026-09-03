@@ -39,6 +39,7 @@ import {
   type selectTeamHealthResponses,
   type selectTeamHealthTemplateQuestions,
   type selectTeamPromptResponses,
+  type selectTeamPromptResponseAnswers,
   type selectTeams,
   type selectTemplateDimension,
   type selectTemplateScale,
@@ -113,6 +114,9 @@ export type TeamMemberIntegrationAuth = ExtractTypeFromQueryBuilderSelect<
   typeof selectTeamMemberIntegrationAuth
 >
 export type TeamPromptResponse = ExtractTypeFromQueryBuilderSelect<typeof selectTeamPromptResponses>
+export type TeamPromptResponseAnswer = ExtractTypeFromQueryBuilderSelect<
+  typeof selectTeamPromptResponseAnswers
+>
 export type InspirationItem = ExtractTypeFromQueryBuilderSelect<typeof selectInspirationItems>
 export type TeamHealthCategory = ExtractTypeFromQueryBuilderSelect<
   typeof selectTeamHealthCategories

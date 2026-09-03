@@ -19,6 +19,7 @@ import {
   selectTeamHealthResponses,
   selectTeamHealthTemplateQuestions,
   selectTeamInvitations,
+  selectTeamPromptResponseAnswers,
   selectTeams,
   selectTemplateDimension,
   selectTemplateScale,
@@ -228,6 +229,17 @@ export const teamPromptResponsesByMeetingId = foreignKeyLoaderMaker(
   'teamPromptResponses',
   'meetingId',
   getTeamPromptResponsesByMeetingIds
+)
+
+export const teamPromptResponseAnswersByResponseId = foreignKeyLoaderMaker(
+  'teamPromptResponseAnswers',
+  'responseId',
+  async (responseIds) => {
+    return selectTeamPromptResponseAnswers()
+      .where('responseId', 'in', responseIds)
+      .orderBy('id')
+      .execute()
+  }
 )
 
 export const agendaItemsByTeamId = foreignKeyLoaderMaker(

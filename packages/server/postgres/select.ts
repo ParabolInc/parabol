@@ -248,9 +248,15 @@ export const selectTeamPromptResponses = () => {
       'userId',
       'sortOrder',
       'content',
-      'plaintextContent'
+      'plaintextContent',
+      'isShared',
+      'sharedAt'
     ])
     .select(({fn}) => [fn<ReactjiDB[]>('to_json', ['reactjis']).as('reactjis')])
+  return query as AssertedQuery<typeof query, {content: JSONContent}>
+}
+export const selectTeamPromptResponseAnswers = () => {
+  const query = getKysely().selectFrom('TeamPromptResponseAnswer').selectAll()
   return query as AssertedQuery<typeof query, {content: JSONContent}>
 }
 export const selectMeetingSettings = () => {
