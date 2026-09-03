@@ -118,7 +118,7 @@ const JiraFieldMenu = (props: Props) => {
   return (
     <Select value={selectedValue} onValueChange={handleValueChange} onOpenChange={onOpenChange}>
       <SelectTrigger asChild>{trigger}</SelectTrigger>
-      <SelectContent align='end' className='max-h-56 overflow-y-auto'>
+      <SelectContent>
         {possibleEstimationFields.map(({fieldId, fieldName}) => {
           return (
             <SelectItem key={fieldId} value={fieldId}>

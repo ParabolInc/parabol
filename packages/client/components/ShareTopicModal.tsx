@@ -235,7 +235,7 @@ const ShareTopicModal = (props: Props) => {
             <SelectTrigger isLoading={channelsLoading}>
               <SelectValue />
             </SelectTrigger>
-            <SelectContent position='item-aligned'>
+            <SelectContent>
               <SelectGroup>
                 {selectedIntegration === 'slack' &&
                   slackChannels.map((channel) => (

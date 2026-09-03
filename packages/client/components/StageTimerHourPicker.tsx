@@ -25,7 +25,7 @@ const StageTimerHourPicker = (props: Props) => {
       onValueChange={(value) => onClick(new Date(startOfToday + Number(value)))}
     >
       <SelectTrigger asChild>{trigger}</SelectTrigger>
-      <SelectContent position='item-aligned'>
+      <SelectContent>
         <RadixSelect.ScrollUpButton className='flex cursor-default items-center justify-center py-1' />
         {options.map((n) => {
           const proposedTime = new Date(startOfToday + n)

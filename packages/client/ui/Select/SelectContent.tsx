@@ -5,7 +5,7 @@ import {cn} from '../cn'
 export const SelectContent = React.forwardRef<
   HTMLDivElement,
   React.ComponentPropsWithoutRef<typeof RadixSelect.Content>
->(({className, children, position = 'popper', ...props}, ref) => (
+>(({className, children, position = 'item-aligned', ...props}, ref) => (
   <RadixSelect.Portal>
     <RadixSelect.Content
       ref={ref}

@@ -24,7 +24,7 @@ const NewTeamOrgDropdown = (props: Props) => {
     organizationsRef
   )
   return (
-    <SelectContent align='start' className='max-h-56 overflow-y-auto'>
+    <SelectContent>
       <DropdownMenuLabel>Select Organization:</DropdownMenuLabel>
       {organizations.map((anOrg) => {
         const {id, tier, billingTier, name} = anOrg

@@ -21,7 +21,7 @@ const eventTypes = [
 const TimelineEventTypeMenu = (props: Props) => {
   const {allEventTypesValue} = props
   return (
-    <SelectContent align='start' className='max-h-56 overflow-y-auto'>
+    <SelectContent>
       <DropdownMenuLabel>{'Filter by event type:'}</DropdownMenuLabel>
       <SelectItem value={allEventTypesValue} textValue={FilterLabels.ALL_EVENTS}>
         <span className='flex items-center'>

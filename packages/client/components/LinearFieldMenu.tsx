@@ -70,7 +70,7 @@ const LinearFieldMenu = (props: Props) => {
       onOpenChange={onOpenChange}
     >
       <SelectTrigger asChild>{trigger}</SelectTrigger>
-      <SelectContent align='end' className='max-h-56 overflow-y-auto'>
+      <SelectContent>
         <SelectItem value={SprintPokerDefaults.LINEAR_FIELD_ESTIMATE}>
           {SprintPokerDefaults.LINEAR_FIELD_ESTIMATE_LABEL}
         </SelectItem>

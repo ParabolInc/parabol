@@ -76,7 +76,7 @@ const JiraServerFieldMenu = (props: Props) => {
   return (
     <Select value={selectedValue} onValueChange={handleValueChange} onOpenChange={onOpenChange}>
       <SelectTrigger asChild>{trigger}</SelectTrigger>
-      <SelectContent align='end' className='max-h-56 overflow-y-auto'>
+      <SelectContent>
         {possibleEstimationFieldNames.length === 0 && (
           <div className='px-4 pt-2 pb-0 text-fg-secondary text-sm'>No fields found</div>
         )}

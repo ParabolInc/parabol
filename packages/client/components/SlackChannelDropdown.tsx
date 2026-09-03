@@ -13,7 +13,7 @@ interface Props {
 const SlackChannelDropdown = (props: Props) => {
   const {channels} = props
   return (
-    <SelectContent align='end' className='max-h-56 overflow-y-auto'>
+    <SelectContent>
       {channels.map((channel) => {
         return (
           <SelectItem key={channel.id} value={channel.id}>

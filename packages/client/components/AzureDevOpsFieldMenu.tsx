@@ -146,7 +146,7 @@ const AzureDevOpsFieldMenu = (props: Props) => {
   return (
     <Select value={selectedValue} onValueChange={handleValueChange} onOpenChange={onOpenChange}>
       <SelectTrigger asChild>{trigger}</SelectTrigger>
-      <SelectContent align='end' className='max-h-56 overflow-y-auto'>
+      <SelectContent>
         {menuValues.map(({label, fieldValue}) => {
           return (
             <SelectItem key={fieldValue} value={fieldValue}>
