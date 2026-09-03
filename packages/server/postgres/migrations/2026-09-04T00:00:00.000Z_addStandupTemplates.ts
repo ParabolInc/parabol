@@ -55,6 +55,10 @@ const MID_OFFSET = BigInt(SEQ_BIT_LEN)
 const BIG_ZERO = BigInt(0)
 const MAX_SEQ = 2 ** SEQ_BIT_LEN - 1
 
+if (MID < 0 || MID > 2 ** MACHINE_ID_BIT_LEN - 1) {
+  throw new Error('SERVER_ID must be between 0 and 1023')
+}
+
 let seq = 0
 let lastTime = Date.now()
 const generateUID = () => {
@@ -159,6 +163,7 @@ export async function up(db: Kysely<any>): Promise<void> {
           selectedTemplateId: CANONICAL_TEMPLATE_ID
         }))
       )
+      .onConflict((oc) => oc.doNothing())
       .execute()
   }
 }
