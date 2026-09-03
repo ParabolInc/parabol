@@ -50,6 +50,7 @@ type TeamSubscriptionPayload {
   ReflectTemplatePromptUpdateGroupColorPayload: ReflectTemplatePromptUpdateGroupColorPayload
   RemoveSlackAuthPayload: RemoveSlackAuthPayload
   RemoveReflectTemplatePayload: RemoveReflectTemplatePayload
+  RemoveTeamPromptTemplateSuccess: RemoveTeamPromptTemplateSuccess
   RemovePokerTemplatePayload: RemovePokerTemplatePayload
   RemoveReflectTemplatePromptPayload: RemoveReflectTemplatePromptPayload
   RemovePokerTemplateDimensionPayload: RemovePokerTemplateDimensionPayload

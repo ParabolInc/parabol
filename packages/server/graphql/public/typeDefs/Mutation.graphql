@@ -705,6 +705,12 @@ type Mutation {
   removeReflectTemplate(templateId: ID!): RemoveReflectTemplatePayload @scope(name: TEMPLATES_WRITE)
 
   """
+  Remove a stand-up template. Fails if a recurring stand-up still uses it.
+  """
+  removeTeamPromptTemplate(templateId: ID!): RemoveTeamPromptTemplateSuccess!
+    @scope(name: TEMPLATES_WRITE)
+
+  """
   Remove a prompt from a template
   """
   removeReflectTemplatePrompt(promptId: ID!): RemoveReflectTemplatePromptPayload
