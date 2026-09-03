@@ -105,6 +105,7 @@
           "UpsertTeamHealthQuestionCategorySuccess": "./types/UpsertTeamHealthQuestionCategorySuccess#UpsertTeamHealthQuestionCategorySuccessSource",
           "AddTeamMemberIntegrationAuthSuccess": "./types/AddTeamMemberIntegrationAuthSuccess#AddTeamMemberIntegrationAuthSuccessSource",
           "AddTeamPayload": "./types/AddTeamPayload#AddTeamPayloadSource",
+          "AddTeamPromptTemplateSuccess": "./types/AddTeamPromptTemplateSuccess#AddTeamPromptTemplateSuccessSource",
           "AddTranscriptionBotSuccess": "./types/AddTranscriptionBotSuccess#AddTranscriptionBotSuccessSource",
           "AgendaItem": "../../postgres/types/index#AgendaItem as AgendaItemDB",
           "AIPrompt": "../../postgres/types/index#AIPrompt as AIPromptDB",
