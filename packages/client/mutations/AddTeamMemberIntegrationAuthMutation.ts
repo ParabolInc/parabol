@@ -14,6 +14,9 @@ graphql`
       ...GcalProviderRowTeamMember
       ...LinearProviderRowTeamMember
       ...ScopePhaseAreaGitHub_teamMember
+      services {
+        ...usePersistIntegrationSearchQueryMutation_service @relay(mask: false)
+      }
       integrations {
         ...MattermostProviderRowTeamMemberIntegrations
         ...MSTeamsProviderRowTeamMemberIntegrations
@@ -39,7 +42,6 @@ graphql`
         }
         github {
           ...GitHubProviderRowGitHubIntegration
-          ...GitHubScopingSearchBarGitHubIntegration
         }
       }
     }

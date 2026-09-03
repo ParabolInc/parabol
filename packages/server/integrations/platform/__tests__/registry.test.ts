@@ -61,7 +61,8 @@ describe('serverIntegrations registry', () => {
   it.each(entries)('%s: declares estimatePush with a pushEstimate function', (_key, def) => {
     expect(typeof def.capabilities.estimatePush.pushEstimate).toBe('function')
     expect(def.capabilities.estimatePush.targets).toContain('comment')
-    expect(typeof def.capabilities.estimatePush.resolveServiceField).toBe('function')
+    expect(typeof def.capabilities.estimatePush.resolveDimensionFieldKey).toBe('function')
+    expect(typeof def.capabilities.estimatePush.describeDimensionField).toBe('function')
   })
 
   it('getServerIntegration returns null for an unknown service', () => {

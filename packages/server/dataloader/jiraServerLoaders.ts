@@ -4,8 +4,6 @@ import JiraServerRestManager, {
   type JiraServerFieldType,
   type JiraServerRestProject
 } from '../integrations/jiraServer/JiraServerRestManager'
-import {selectJiraServerDimensionFieldMap} from '../postgres/select'
-import type {JiraServerDimensionFieldMap} from '../postgres/types'
 import type {IntegrationProviderJiraServer} from '../postgres/types/IntegrationProvider'
 import logError from '../utils/logError'
 import type RootDataLoader from './RootDataLoader'
@@ -23,13 +21,6 @@ export interface JiraServerIssueTypeKey {
   providerId: number
   issueType: string
   projectId: string
-}
-
-export interface JiraServerDimensionFieldKey {
-  providerId: number
-  teamId: string
-  projectId: string
-  dimensionName: string
 }
 
 export interface JiraServerIssue {
@@ -139,39 +130,5 @@ export const jiraServerFieldTypes = (parent: RootDataLoader) =>
       ...parent.dataLoaderOptions,
       cacheKeyFn: ({teamId, userId, projectId, issueType}) =>
         `${teamId}:${userId}:${projectId}:${issueType}`
-    }
-  )
-
-export const jiraServerDimensionFieldMap = (parent: RootDataLoader) =>
-  new DataLoader<
-    {
-      teamId: string
-      projectId: string
-      dimensionName: string
-      issueType: string
-      providerId: number
-    },
-    JiraServerDimensionFieldMap | null,
-    string
-  >(
-    async (keys) => {
-      return Promise.all(
-        keys.map(async (params) => {
-          const {teamId, projectId, dimensionName, issueType, providerId} = params
-          const res = await selectJiraServerDimensionFieldMap()
-            .where('teamId', '=', teamId)
-            .where('providerId', '=', providerId)
-            .where('projectId', '=', projectId)
-            .where('issueType', '=', issueType)
-            .where('dimensionName', '=', dimensionName)
-            .executeTakeFirst()
-          return res || null
-        })
-      )
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: ({providerId, teamId, projectId, issueType, dimensionName}) =>
-        `${providerId}:${teamId}:${projectId}:${issueType}:${dimensionName}`
     }
   )

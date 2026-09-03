@@ -12,7 +12,8 @@ import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
 import type {
   OAuth2AuthorizeResponse,
   OAuth2PkceAuthorizationParams,
-  OAuth2PkceRefreshAuthorizationParams
+  OAuth2PkceRefreshAuthorizationParams,
+  OAuth2TokenResponse
 } from '../integrations/OAuth2Manager'
 import type {
   CreateTaskResponse,
@@ -262,16 +263,25 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
   }
   private readonly auth: TeamMemberIntegrationAuth | null
 
-  async authorize(code: string, codeVerifier: string | null) {
+  async authorize(
+    code: string,
+    codeVerifier: string | null
+  ): Promise<OAuth2AuthorizeResponse | Error> {
     if (!codeVerifier) {
       return new Error('Missing OAuth2 Verifier required for Azure DevOps authentication')
     }
-    return this.fetchToken({
+    const auth = await this.fetchToken({
       grant_type: 'authorization_code',
       code: code,
       code_verifier: codeVerifier,
       redirect_uri: makeAppURL(appOrigin, 'auth/ado2')
-    }) as Promise<OAuth2AuthorizeResponse | Error>
+    })
+    if (auth instanceof Error) return auth
+    const {azureDevOpsUser, error} = await this.getMe()
+    if (error || !azureDevOpsUser) {
+      return error ?? new Error('Azure DevOps: could not read the authorized user')
+    }
+    return {...auth, providerUserId: azureDevOpsUser.id}
   }
 
   private readonly provider: IntegrationProviderAzureDevOps | undefined
@@ -737,9 +747,9 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
     const tenantId = this.provider.tenantId
     const authUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`
     const contentType = 'application/x-www-form-urlencoded'
-    const oAuthRes = await authorizeOAuth2({authUrl, body, contentType})
+    const oAuthRes = await authorizeOAuth2<OAuth2TokenResponse>({authUrl, body, contentType})
     if (!(oAuthRes instanceof Error)) {
-      this.accessToken = oAuthRes.accessToken
+      this.setToken(oAuthRes.accessToken)
     }
     return oAuthRes
   }

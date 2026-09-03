@@ -1,14 +1,15 @@
-import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
+import type {RegisteredServerIntegration} from '../../../integrations/platform/registry'
 import type {PersistIntegrationSearchQuerySuccessResolvers} from '../resolverTypes'
+import {makeIntegrationServiceSource} from './IntegrationService'
 
 export type PersistIntegrationSearchQuerySuccessSource = {
   teamId: string
   userId: string
+  service: RegisteredServerIntegration
 }
 
 const PersistIntegrationSearchQuerySuccess: PersistIntegrationSearchQuerySuccessResolvers = {
-  teamMember: ({teamId, userId}, _args, {dataLoader}) =>
-    dataLoader.get('teamMembers').loadNonNull(toTeamMemberId(teamId, userId))
+  service: ({service, teamId, userId}) => makeIntegrationServiceSource(service, teamId, userId)
 }
 
 export default PersistIntegrationSearchQuerySuccess

@@ -13,10 +13,11 @@ interface Props {
   meetingId: string
   issues: JiraScopingSelectAllIssues_issues$key
   usedServiceTaskIds: Set<string>
+  persistQuery?: () => void
 }
 
 const JiraScopingSelectAllIssues = (props: Props) => {
-  const {meetingId, usedServiceTaskIds, issues: issuesRef} = props
+  const {meetingId, usedServiceTaskIds, issues: issuesRef, persistQuery} = props
   const issues = useFragment(
     graphql`
       fragment JiraScopingSelectAllIssues_issues on JiraIssueEdge @relay(plural: true) {
@@ -61,6 +62,9 @@ const JiraScopingSelectAllIssues = (props: Props) => {
       contents,
       selectedAll: true
     })
+    if (action === 'ADD') {
+      persistQuery?.()
+    }
   }
   if (issues.length < 2) return null
   const title = getSelectAllTitle(issues.length, usedServiceTaskIds.size, 'issue')

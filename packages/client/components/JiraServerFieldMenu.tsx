@@ -2,9 +2,8 @@ import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import type {JiraServerFieldMenu_stage$key} from '../__generated__/JiraServerFieldMenu_stage.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
 import type {MenuProps} from '../hooks/useMenu'
-import UpdateJiraServerDimensionFieldMutation from '../mutations/UpdateJiraServerDimensionFieldMutation'
+import useUpdateIntegrationDimensionFieldMutation from '../mutations/useUpdateIntegrationDimensionFieldMutation'
 import {SprintPokerDefaults} from '../types/constEnums'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
@@ -18,7 +17,7 @@ interface Props {
 
 const JiraServerFieldMenu = (props: Props) => {
   const {menuProps, stage: stageRef, submitScore} = props
-  const atmosphere = useAtmosphere()
+  const [updateIntegrationDimensionField] = useUpdateIntegrationDimensionFieldMutation()
   const {portalStatus, isDropdown, closePortal} = menuProps
 
   const stage = useFragment(
@@ -32,12 +31,11 @@ const JiraServerFieldMenu = (props: Props) => {
           name
         }
         task {
+          id
           integration {
             ... on JiraServerIssue {
               __typename
               id
-              jiraProjectId: projectId
-              issueType
               possibleEstimationFieldNames
             }
           }
@@ -50,8 +48,8 @@ const JiraServerFieldMenu = (props: Props) => {
 
   if (task?.integration?.__typename !== 'JiraServerIssue') return null
 
-  const {integration} = task
-  const {jiraProjectId, issueType, possibleEstimationFieldNames} = integration
+  const {id: taskId, integration} = task
+  const {possibleEstimationFieldNames} = integration
 
   const {name: dimensionName} = dimensionRef
   const {name: serviceFieldName} = serviceField
@@ -67,21 +65,9 @@ const JiraServerFieldMenu = (props: Props) => {
   }, [serviceFieldName, possibleEstimationFieldNames])
 
   const handleClick = (fieldName: string) => () => {
-    UpdateJiraServerDimensionFieldMutation(
-      atmosphere,
-      {
-        dimensionName,
-        fieldName,
-        issueType,
-        projectId: jiraProjectId,
-        meetingId
-      },
-      {
-        onCompleted: submitScore,
-        onError: () => {
-          /* noop */
-        }
-      }
+    updateIntegrationDimensionField(
+      {variables: {meetingId, taskId, dimensionName, fieldId: fieldName}},
+      {onSuccess: submitScore}
     )
     closePortal()
   }

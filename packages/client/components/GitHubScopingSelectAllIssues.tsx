@@ -14,10 +14,11 @@ interface Props {
   meetingId: string
   issuesRef: GitHubScopingSelectAllIssues_issues$key
   usedServiceTaskIds: Set<string>
+  persistQuery?: () => void
 }
 
 const GitHubScopingSelectAllIssues = (props: Props) => {
-  const {meetingId, usedServiceTaskIds, issuesRef} = props
+  const {meetingId, usedServiceTaskIds, issuesRef, persistQuery} = props
   const issues = useFragment(
     graphql`
       fragment GitHubScopingSelectAllIssues_issues on _xGitHubIssue @relay(plural: true) {
@@ -70,6 +71,9 @@ const GitHubScopingSelectAllIssues = (props: Props) => {
       contents,
       selectedAll: true
     })
+    if (action === 'ADD') {
+      persistQuery?.()
+    }
   }
   if (issues.length < 2) return null
   const title = getSelectAllTitle(issues.length, usedServiceTaskIds.size, 'issue')

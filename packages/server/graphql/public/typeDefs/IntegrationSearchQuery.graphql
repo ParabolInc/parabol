@@ -1,0 +1,12 @@
+"""
+A search the viewer saved against a task-integration service so it can be re-run
+"""
+interface IntegrationSearchQuery {
+  id: ID!
+  queryString: String!
+
+  """
+  the time the search query was last used. Used for sorting
+  """
+  lastUsedAt: DateTime!
+}

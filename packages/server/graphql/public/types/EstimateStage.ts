@@ -1,6 +1,6 @@
 import {GraphQLError} from 'graphql'
 import {SprintPokerDefaults} from '../../../../client/types/constEnums'
-import {getServerIntegration} from '../../../integrations/platform/registry'
+import resolveServiceField from '../../../integrations/platform/resolveServiceField'
 import type {EstimateStage as EstimateStageDB} from '../../../postgres/types/NewMeetingPhase'
 import {getUserId} from '../../../utils/authorization'
 import getRedis from '../../../utils/getRedis'
@@ -30,8 +30,7 @@ const EstimateStage: EstimateStageResolvers = {
     if (meeting.meetingType !== 'poker') throw new Error('Meeting is not a poker meeting')
     const templateRef = await dataLoader.get('templateRefs').loadNonNull(meeting.templateRefId)
     const {name: dimensionName} = templateRef.dimensions[dimensionRefIdx]!
-    const {estimatePush} = getServerIntegration(integration.service).capabilities
-    const field = await estimatePush.resolveServiceField({
+    const field = await resolveServiceField({
       dataLoader,
       teamId,
       userId: integration.accessUserId,

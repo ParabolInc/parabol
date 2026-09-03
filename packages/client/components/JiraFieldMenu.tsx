@@ -5,7 +5,7 @@ import {OpenInNew} from '~/ui/icons'
 import type {JiraFieldMenu_stage$key} from '../__generated__/JiraFieldMenu_stage.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import type {MenuProps} from '../hooks/useMenu'
-import UpdateJiraDimensionFieldMutation from '../mutations/UpdateJiraDimensionFieldMutation'
+import useUpdateIntegrationDimensionFieldMutation from '../mutations/useUpdateIntegrationDimensionFieldMutation'
 import {ExternalLinks, SprintPokerDefaults} from '../types/constEnums'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 import Menu from './Menu'
@@ -50,6 +50,7 @@ const JiraFieldMenu = (props: Props) => {
     stageRef
   )
   const atmosphere = useAtmosphere()
+  const [updateIntegrationDimensionField] = useUpdateIntegrationDimensionFieldMutation()
   const {portalStatus, isDropdown, closePortal} = menuProps
   const {meetingId, dimensionRef, serviceField, task} = stage
   if (task?.integration?.__typename !== 'JiraIssue') return null
@@ -97,20 +98,13 @@ const JiraFieldMenu = (props: Props) => {
   }
 
   const handleClick = (fieldId: string) => () => {
-    UpdateJiraDimensionFieldMutation(
-      atmosphere,
+    updateIntegrationDimensionField(
       {
-        taskId,
-        dimensionName,
-        fieldId,
-        meetingId
+        variables: {meetingId, taskId, dimensionName, fieldId},
+        optimisticFieldName: possibleEstimationFields.find((field) => field.fieldId === fieldId)
+          ?.fieldName
       },
-      {
-        onCompleted: submitScore,
-        onError: () => {
-          /* noop */
-        }
-      }
+      {onSuccess: submitScore}
     )
     closePortal()
   }

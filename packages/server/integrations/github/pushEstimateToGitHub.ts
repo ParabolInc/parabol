@@ -5,6 +5,7 @@ import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import appOrigin from '../../appOrigin'
+import type {EstimatePushResult} from '../../postgres/types/EstimatePushResult'
 import type {
   AddCommentMutation,
   AddCommentMutationVariables,
@@ -28,13 +29,17 @@ import getIssueId from '../../utils/githubQueries/getIssueId.graphql'
 import getRepoLabels from '../../utils/githubQueries/getRepoLabels.graphql'
 import removeLabels from '../../utils/githubQueries/removeLabels.graphql'
 import makeScoreGitHubComment from '../../utils/makeScoreGitHubComment'
-import type {EstimatePushCtx, EstimatePushResult} from '../platform/ServerIntegrationDefinition'
+import loadDimensionField from '../platform/loadDimensionField'
+import {previousPushLabelName} from '../platform/previousPushLabel'
+import type {EstimatePushCtx} from '../platform/ServerIntegrationDefinition'
+import resolveGitHubDimensionFieldKey from './resolveGitHubDimensionFieldKey'
 
 const pushEstimateToGitHub = async ({
   taskEstimate,
   context,
   info,
-  stageId
+  stageId,
+  viewerId
 }: EstimatePushCtx): Promise<EstimatePushResult | Error> => {
   const {dimensionName, taskId, value, meetingId} = taskEstimate
   const {dataLoader} = context
@@ -56,12 +61,17 @@ const pushEstimateToGitHub = async ({
   >
   const {teamId} = task
   const {accessUserId, issueNumber, nameWithOwner} = githubIntegration
-  const [auth, fieldMap] = await Promise.all([
+  const [auth, dimensionFieldLookup] = await Promise.all([
     dataLoader.get('githubAuth').load({teamId, userId: accessUserId}),
-    dataLoader.get('githubDimensionFieldMaps').load({dimensionName, nameWithOwner, teamId})
+    loadDimensionField(
+      resolveGitHubDimensionFieldKey,
+      {dataLoader, teamId, userId: accessUserId, context, info, task, viewerId},
+      dimensionName
+    )
   ])
   if (!auth) return new Error('User no longer has access to GitHub')
-  const labelTemplate = fieldMap?.labelTemplate ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
+  const labelTemplate =
+    dimensionFieldLookup?.field?.fieldId ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
   if (labelTemplate === SprintPokerDefaults.SERVICE_FIELD_NULL) return null
   const {repoName, repoOwner} = GitHubRepoId.split(nameWithOwner)
 
@@ -194,10 +204,12 @@ const pushEstimateToGitHub = async ({
   const dimensionTaskEstimate = latestTaskEstimates.find(
     (estimate) => estimate.name === dimensionName
   )
-  if (dimensionTaskEstimate) {
-    const {githubLabelName} = dimensionTaskEstimate
+  const previousLabelName = dimensionTaskEstimate
+    ? previousPushLabelName(dimensionTaskEstimate)
+    : null
+  if (previousLabelName) {
     const labelIdsToRemove = issueLabelNodes
-      .filter((node) => node.name === githubLabelName)
+      .filter((node) => node.name === previousLabelName)
       .map((node) => node.id)
     if (labelIdsToRemove.length > 0) {
       const [, removeLabelsError] = await githubRequest<
@@ -224,7 +236,7 @@ const pushEstimateToGitHub = async ({
     }
   )
   if (addLabelError) return addLabelError
-  return {column: 'githubLabelName', value: githubLabelName}
+  return {service: 'github', target: 'label', targetId: githubLabelName}
 }
 
 export default pushEstimateToGitHub

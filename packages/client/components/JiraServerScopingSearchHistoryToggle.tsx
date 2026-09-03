@@ -1,6 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {JiraServerScopingSearchHistoryToggle_meeting$key} from '../__generated__/JiraServerScopingSearchHistoryToggle_meeting.graphql'
+import findIntegrationService from '../integrations/platform/findIntegrationService'
+import useRemoveIntegrationSearchQueryMutation from '../mutations/useRemoveIntegrationSearchQueryMutation'
 import JiraUniversalScopingSearchHistoryToggle from './JiraUniversalScopingSearchHistoryToggle'
 
 interface Props {
@@ -9,6 +11,7 @@ interface Props {
 
 const JiraServerScopingSearchHistoryToggle = (props: Props) => {
   const {meetingRef} = props
+  const [removeIntegrationSearchQuery, submitting] = useRemoveIntegrationSearchQueryMutation()
   const meeting = useFragment(
     graphql`
       fragment JiraServerScopingSearchHistoryToggle_meeting on PokerMeeting {
@@ -16,15 +19,9 @@ const JiraServerScopingSearchHistoryToggle = (props: Props) => {
         teamId
         viewerMeetingMember {
           teamMember {
-            integrations {
-              jiraServer {
-                searchQueries {
-                  id
-                  queryString
-                  isJQL
-                  projectKeyFilters
-                }
-              }
+            services {
+              ...findIntegrationService_auth @relay(mask: false)
+              ...usePersistIntegrationSearchQueryMutation_service @relay(mask: false)
             }
           }
         }
@@ -34,14 +31,26 @@ const JiraServerScopingSearchHistoryToggle = (props: Props) => {
   )
 
   const {id: meetingId, teamId} = meeting
-  const {searchQueries} = meeting.viewerMeetingMember?.teamMember.integrations?.jiraServer ?? {}
+  const services = meeting.viewerMeetingMember?.teamMember.services ?? []
+  const savedQueries = findIntegrationService(services, 'jiraServer')?.searchQueries.map(
+    ({id, queryString, isJQL, projectKeyFilters}) => ({
+      id,
+      queryString,
+      isJQL: isJQL ?? false,
+      projectKeyFilters: projectKeyFilters ?? []
+    })
+  )
+  const onDeleteQuery = (id: string) => {
+    if (submitting) return
+    removeIntegrationSearchQuery({variables: {id, teamId}})
+  }
 
   return (
     <JiraUniversalScopingSearchHistoryToggle
       service={'jiraServer'}
-      jiraSearchQueries={searchQueries}
+      savedQueries={savedQueries}
       meetingId={meetingId}
-      teamId={teamId}
+      onDeleteQuery={onDeleteQuery}
     />
   )
 }
