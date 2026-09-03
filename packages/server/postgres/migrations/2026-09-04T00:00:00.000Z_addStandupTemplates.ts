@@ -101,7 +101,7 @@ export async function up(db: Kysely<any>): Promise<void> {
       isActive: true,
       isStarter: false,
       isFree: false,
-      illustrationUrl: '/self-hosted/Organization/aGhostOrg/template/teamPrompt.png',
+      illustrationUrl: '/assets/Organization/aGhostOrg/template/teamPrompt.png',
       createdAt: SEED_DATE,
       updatedAt: SEED_DATE
     })
