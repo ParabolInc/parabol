@@ -107,6 +107,7 @@ const addTeamPromptTemplate: MutationResolvers['addTeamPromptTemplate'] = async 
       .execute(),
     decrementFreeTemplatesRemaining(viewerId, 'teamPrompt')
   ])
+  dataLoader.clearAll('meetingTemplates')
   viewer.freeCustomStandupTemplatesRemaining = viewer.freeCustomStandupTemplatesRemaining - 1
   analytics.templateMetrics(viewer, newTemplate, isClone ? 'Template Cloned' : 'Template Created')
 
