@@ -1,3 +1,4 @@
+import {randomUUIDv7} from 'crypto'
 import getKysely from '../postgres/getKysely'
 import {sendPublic, signUp} from './common'
 
@@ -105,6 +106,55 @@ const SELECT_TEMPLATE = `
       }
       error {
         message
+      }
+    }
+  }
+`
+
+const UPDATE_TEMPLATE_SCOPE = `
+  mutation UpdateTemplateScope($templateId: ID!, $scope: SharingScopeEnum!) {
+    updateTemplateScope(templateId: $templateId, scope: $scope) {
+      ... on ErrorPayload {
+        error {
+          message
+        }
+      }
+      ... on UpdateTemplateScopeSuccess {
+        template {
+          id
+          isActive
+          scope
+        }
+        clonedTemplate {
+          __typename
+          id
+          isActive
+          scope
+          ... on TeamPromptTemplate {
+            prompts {
+              question
+              groupColor
+            }
+          }
+        }
+      }
+    }
+  }
+`
+
+const UPDATE_TEMPLATE_CATEGORY = `
+  mutation UpdateTemplateCategory($templateId: ID!, $mainCategory: String!) {
+    updateTemplateCategory(templateId: $templateId, mainCategory: $mainCategory) {
+      ... on ErrorPayload {
+        error {
+          message
+        }
+      }
+      ... on UpdateTemplateCategorySuccess {
+        template {
+          id
+          category
+        }
       }
     }
   }
@@ -427,4 +477,175 @@ test('removeTeamPromptTemplate rejects a template the viewer does not own', asyn
     cookie: attacker.cookie
   })
   expect(res.errors).toEqual([expect.objectContaining({message: 'Viewer is not on Organization'})])
+})
+
+test('removeTeamPromptTemplate refuses the seeded standup templates', async () => {
+  const {cookie} = await signUp()
+  for (const templateId of [CANONICAL_TEMPLATE_ID, ENTERPRISE_TEMPLATE_ID]) {
+    const res = await sendPublic({
+      query: REMOVE_TEAM_PROMPT_TEMPLATE,
+      variables: {templateId},
+      cookie
+    })
+    expect(res.errors).toEqual([
+      expect.objectContaining({message: 'Viewer is not on Organization'})
+    ])
+  }
+  const rows = await getKysely()
+    .selectFrom('MeetingTemplate')
+    .select(['id', 'isActive'])
+    .where('id', 'in', [CANONICAL_TEMPLATE_ID, ENTERPRISE_TEMPLATE_ID])
+    .execute()
+  expect(rows.every((row) => row.isActive)).toBe(true)
+})
+
+test('addTeamPromptTemplate honors the parent template scope', async () => {
+  const [owner, attacker] = await Promise.all([signUp(), signUp()])
+  const created = await sendPublic({
+    query: ADD_TEAM_PROMPT_TEMPLATE,
+    variables: {teamId: owner.teamId},
+    cookie: owner.cookie
+  })
+  const {id: templateId, scope} = created.data.addTeamPromptTemplate.teamPromptTemplate
+  expect(scope).toBe('ORGANIZATION')
+
+  const outsideOrg = await sendPublic({
+    query: ADD_TEAM_PROMPT_TEMPLATE,
+    variables: {teamId: attacker.teamId, parentTemplateId: templateId},
+    cookie: attacker.cookie
+  })
+  expect(outsideOrg.errors).toEqual([
+    expect.objectContaining({message: 'Template is scoped to organization'})
+  ])
+
+  const downscoped = await sendPublic({
+    query: UPDATE_TEMPLATE_SCOPE,
+    variables: {templateId, scope: 'TEAM'},
+    cookie: owner.cookie
+  })
+  expect(downscoped.data.updateTemplateScope.template).toMatchObject({
+    id: templateId,
+    scope: 'TEAM'
+  })
+
+  const outsideTeam = await sendPublic({
+    query: ADD_TEAM_PROMPT_TEMPLATE,
+    variables: {teamId: attacker.teamId, parentTemplateId: templateId},
+    cookie: attacker.cookie
+  })
+  expect(outsideTeam.errors).toEqual([
+    expect.objectContaining({message: 'Template is scoped to team'})
+  ])
+})
+
+test('updateTemplateCategory keeps standup templates in the standup category', async () => {
+  const {teamId, cookie} = await signUp()
+  const created = await sendPublic({query: ADD_TEAM_PROMPT_TEMPLATE, variables: {teamId}, cookie})
+  const {id: templateId} = created.data.addTeamPromptTemplate.teamPromptTemplate
+
+  const rejected = await sendPublic({
+    query: UPDATE_TEMPLATE_CATEGORY,
+    variables: {templateId, mainCategory: 'retrospective'},
+    cookie
+  })
+  expect(rejected.data.updateTemplateCategory.error.message).toBe(
+    'Standup templates stay in the standup category'
+  )
+
+  const allowed = await sendPublic({
+    query: UPDATE_TEMPLATE_CATEGORY,
+    variables: {templateId, mainCategory: 'standup'},
+    cookie
+  })
+  expect(allowed.data.updateTemplateCategory.template).toEqual({
+    id: templateId,
+    category: 'standup'
+  })
+})
+
+test('updateTemplateScope clones a standup template used by another team', async () => {
+  const pg = getKysely()
+  const {userId, teamId, orgId, cookie} = await signUp()
+  const created = await sendPublic({query: ADD_TEAM_PROMPT_TEMPLATE, variables: {teamId}, cookie})
+  const {id: templateId, prompts} = created.data.addTeamPromptTemplate.teamPromptTemplate
+
+  const borrowerTeamId = randomUUIDv7()
+  await pg
+    .insertInto('Team')
+    .values({id: borrowerTeamId, name: `Team ${borrowerTeamId}`, orgId})
+    .execute()
+  await pg
+    .insertInto('NewMeeting')
+    .values({
+      id: randomUUIDv7(),
+      teamId: borrowerTeamId,
+      templateId,
+      meetingType: 'teamPrompt',
+      name: 'Standup #1',
+      meetingCount: 0,
+      meetingNumber: 1,
+      facilitatorUserId: userId,
+      facilitatorStageId: 'stage1',
+      phases: JSON.stringify([{id: 'phase1', phaseType: 'RESPONSES', stages: [{id: 'stage1'}]}])
+    })
+    .execute()
+
+  const res = await sendPublic({
+    query: UPDATE_TEMPLATE_SCOPE,
+    variables: {templateId, scope: 'TEAM'},
+    cookie
+  })
+  const {clonedTemplate} = res.data.updateTemplateScope
+  expect(clonedTemplate).toMatchObject({
+    __typename: 'TeamPromptTemplate',
+    isActive: true,
+    scope: 'TEAM',
+    prompts: prompts.map(({question, groupColor}: any) => ({question, groupColor}))
+  })
+  expect(clonedTemplate.id).not.toBe(templateId)
+
+  const rows = await pg
+    .selectFrom('MeetingTemplate')
+    .select(['id', 'isActive', 'parentTemplateId'])
+    .where('id', 'in', [templateId, clonedTemplate.id])
+    .execute()
+  expect(rows.find((row) => row.id === templateId)!.isActive).toBe(false)
+  expect(rows.find((row) => row.id === clonedTemplate.id)).toMatchObject({
+    isActive: true,
+    parentTemplateId: templateId
+  })
+})
+
+test('a soft-deleted selected template falls back to the canonical standup template', async () => {
+  const pg = getKysely()
+  const {teamId, cookie} = await signUp()
+  const created = await sendPublic({query: ADD_TEAM_PROMPT_TEMPLATE, variables: {teamId}, cookie})
+  const {id: templateId} = created.data.addTeamPromptTemplate.teamPromptTemplate
+  await sendPublic({
+    query: SELECT_TEMPLATE,
+    variables: {selectedTemplateId: templateId, teamId},
+    cookie
+  })
+
+  await pg
+    .updateTable('MeetingTemplate')
+    .set({isActive: false})
+    .where('id', '=', templateId)
+    .execute()
+
+  const viewer = await getStandupSettings(teamId, cookie)
+  expect(viewer.team.meetingSettings.selectedTemplate).toMatchObject({
+    id: CANONICAL_TEMPLATE_ID,
+    name: 'Standup'
+  })
+  const settings = await pg
+    .selectFrom('MeetingSettings')
+    .select('selectedTemplateId')
+    .where('teamId', '=', teamId)
+    .where('meetingType', '=', 'teamPrompt')
+    .executeTakeFirstOrThrow()
+  expect(settings.selectedTemplateId).toBe(CANONICAL_TEMPLATE_ID)
+
+  const reread = await getStandupSettings(teamId, cookie)
+  expect(reread.team.meetingSettings.selectedTemplateId).toBe(CANONICAL_TEMPLATE_ID)
 })
