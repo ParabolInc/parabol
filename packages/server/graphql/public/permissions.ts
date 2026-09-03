@@ -274,6 +274,13 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     removeTeamMemberIntegrationAuth:
       isTeamMember<'Mutation.removeTeamMemberIntegrationAuth'>('args.teamId'),
+    removeTeamPromptTemplate: or(
+      isViewerBillingLeader<'Mutation.removeTeamPromptTemplate'>(
+        'args.templateId',
+        'meetingTemplates'
+      ),
+      isTeamMember<'Mutation.removeTeamPromptTemplate'>('args.templateId', 'meetingTemplates')
+    ),
     renameMeeting: isMeetingFacilitator<'Mutation.renameMeeting'>('args.meetingId'),
     renameMeetingTemplate: or(
       isViewerBillingLeader<'Mutation.renameMeetingTemplate'>(

@@ -269,6 +269,7 @@
           "RemoveSlackAuthPayload": "./types/RemoveSlackAuthPayload#RemoveSlackAuthPayloadSource",
           "RemoveTeamMemberIntegrationAuthSuccess": "./types/RemoveTeamMemberIntegrationAuthSuccess#RemoveTeamMemberIntegrationAuthSuccessSource",
           "RemoveTeamMemberPayload": "./types/RemoveTeamMemberPayload#RemoveTeamMemberPayloadSource",
+          "RemoveTeamPromptTemplateSuccess": "./types/RemoveTeamPromptTemplateSuccess#RemoveTeamPromptTemplateSuccessSource",
           "RenameMeetingSuccess": "./types/RenameMeetingSuccess#RenameMeetingSuccessSource",
           "RenameMeetingTemplatePayload": "./types/RenameMeetingTemplatePayload#RenameMeetingTemplatePayloadSource",
           "RenamePokerTemplateDimensionPayload": "./types/RenamePokerTemplateDimensionPayload#RenamePokerTemplateDimensionPayloadSource",
