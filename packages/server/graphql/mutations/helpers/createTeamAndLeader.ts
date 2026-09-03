@@ -122,6 +122,13 @@ export default async function createTeamAndLeader(
             meetingType: 'teamHealth',
             phaseTypes: ['TEAM_HEALTH_RESPONSE'],
             selectedTemplateId: 'everythingBagelTemplate'
+          },
+          {
+            id: generateUID(),
+            teamId,
+            meetingType: 'teamPrompt',
+            phaseTypes: ['RESPONSES'],
+            selectedTemplateId: 'teamPrompt'
           }
         ])
       )
