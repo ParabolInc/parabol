@@ -77,6 +77,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     addTeamMemberIntegrationAuth:
       isTeamMember<'Mutation.addTeamMemberIntegrationAuth'>('args.teamId'),
+    addTeamPromptTemplate: isTeamMember<'Mutation.addTeamPromptTemplate'>('args.teamId'),
     addTranscriptionBot: isTeamMemberOfMeeting<'Mutation.addTranscriptionBot'>('args.meetingId'),
     archiveOrganization: or(
       isSuperUser,
