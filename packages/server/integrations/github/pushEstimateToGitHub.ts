@@ -5,6 +5,7 @@ import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import appOrigin from '../../appOrigin'
+import type {EstimatePushResult} from '../../postgres/types/EstimatePushResult'
 import type {
   AddCommentMutation,
   AddCommentMutationVariables,
@@ -30,7 +31,7 @@ import removeLabels from '../../utils/githubQueries/removeLabels.graphql'
 import makeScoreGitHubComment from '../../utils/makeScoreGitHubComment'
 import loadDimensionField from '../platform/loadDimensionField'
 import {previousPushLabelName} from '../platform/previousPushLabel'
-import type {EstimatePushCtx, EstimatePushResult} from '../platform/ServerIntegrationDefinition'
+import type {EstimatePushCtx} from '../platform/ServerIntegrationDefinition'
 import resolveGitHubDimensionFieldKey from './resolveGitHubDimensionFieldKey'
 
 const pushEstimateToGitHub = async ({

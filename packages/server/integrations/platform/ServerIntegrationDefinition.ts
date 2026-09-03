@@ -62,8 +62,6 @@ export interface EstimatePushCtx extends GqlIntegrationCtx {
   discussionURL: string
 }
 
-export type {EstimatePushResult}
-
 export interface DimensionFieldCtx extends GqlIntegrationCtx {
   task: Task
   viewerId: string

@@ -1,6 +1,7 @@
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
+import type {EstimatePushResult} from '../../postgres/types/EstimatePushResult'
 import loadDimensionField from '../platform/loadDimensionField'
-import type {EstimatePushCtx, EstimatePushResult} from '../platform/ServerIntegrationDefinition'
+import type {EstimatePushCtx} from '../platform/ServerIntegrationDefinition'
 import JiraServerRestManager from './JiraServerRestManager'
 import resolveJiraServerDimensionFieldKey from './resolveJiraServerDimensionFieldKey'
 

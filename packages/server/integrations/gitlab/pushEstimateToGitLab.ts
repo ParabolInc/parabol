@@ -4,11 +4,12 @@ import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import interpolateVotingLabelTemplate from '../../../client/shared/interpolateVotingLabelTemplate'
 import appOrigin from '../../appOrigin'
+import type {EstimatePushResult} from '../../postgres/types/EstimatePushResult'
 import getPhase from '../../utils/getPhase'
 import makeScoreGitLabComment from '../../utils/makeScoreGitLabComment'
 import pickDimensionField from '../platform/pickDimensionField'
 import {previousPushLabelId} from '../platform/previousPushLabel'
-import type {EstimatePushCtx, EstimatePushResult} from '../platform/ServerIntegrationDefinition'
+import type {EstimatePushCtx} from '../platform/ServerIntegrationDefinition'
 import GitLabServerManager from './GitLabServerManager'
 
 const pushEstimateToGitLab = async ({

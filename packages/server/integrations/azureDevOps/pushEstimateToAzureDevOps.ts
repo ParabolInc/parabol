@@ -1,8 +1,9 @@
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
+import type {EstimatePushResult} from '../../postgres/types/EstimatePushResult'
 import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
 import {fieldTypeToId} from '../../utils/azureDevOps/azureDevOpsFieldTypeToId'
 import loadDimensionField from '../platform/loadDimensionField'
-import type {EstimatePushCtx, EstimatePushResult} from '../platform/ServerIntegrationDefinition'
+import type {EstimatePushCtx} from '../platform/ServerIntegrationDefinition'
 import resolveAzureDevOpsDimensionFieldKey from './resolveAzureDevOpsDimensionFieldKey'
 
 const pushEstimateToAzureDevOps = async ({
