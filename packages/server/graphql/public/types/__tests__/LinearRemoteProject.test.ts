@@ -1,12 +1,13 @@
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
-import LinearRemoteProject, {type LinearRemoteProjectSource} from '../LinearRemoteProject'
+import type {LinearProject} from '../../../../integrations/platform/RemoteRepoIntegration'
+import LinearRemoteProject from '../LinearRemoteProject'
 
-const resolve = (resolver: unknown, source: LinearRemoteProjectSource) => {
+const resolve = (resolver: unknown, source: LinearProject) => {
   if (typeof resolver !== 'function') throw new Error('resolver must be a function')
   return resolver(source)
 }
 
-const project: LinearRemoteProjectSource = {
+const project: LinearProject = {
   service: 'linear',
   id: 'proj1',
   teamId: 'team1',
