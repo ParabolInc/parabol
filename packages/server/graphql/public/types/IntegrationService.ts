@@ -53,6 +53,8 @@ const IntegrationService: IntegrationServiceResolvers = {
     getServerIntegration(service).getAuthRow({dataLoader, teamId, userId}),
   cloudProvider: ({service, teamId, userId}, _args, {dataLoader}) =>
     getServerIntegration(service).getGlobalProvider({dataLoader, teamId, userId}),
+  sharedProviders: ({service, teamId, userId}, _args, {dataLoader}) =>
+    getServerIntegration(service).getSharedProviders({dataLoader, teamId, userId}),
   grantedScopes: async ({service, teamId, userId}, _args, {dataLoader}) => {
     const auth = await dataLoader
       .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')

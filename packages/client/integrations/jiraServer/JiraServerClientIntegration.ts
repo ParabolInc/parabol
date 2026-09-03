@@ -13,6 +13,7 @@ export class JiraServerClientIntegration extends ClientIntegrationDefinition {
   readonly description = jiraServerIntegrationMeta.description
   readonly ids = jiraServerIntegrationMeta.ids
   readonly Icon = JiraServerSVG
+  readonly isScopeTabAdvertised = true
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
     if (!provider) return
     JiraServerClientManager.openOAuth(atmosphere, provider.id, teamId, mutationProps)
