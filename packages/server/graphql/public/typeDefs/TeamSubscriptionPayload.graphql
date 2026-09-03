@@ -38,6 +38,7 @@ type TeamSubscriptionPayload {
   UpgradeToTeamTierSuccess: UpgradeToTeamTierSuccess
   AddReflectTemplateSuccess: AddReflectTemplateSuccess
   AddPokerTemplateSuccess: AddPokerTemplateSuccess
+  AddTeamPromptTemplateSuccess: AddTeamPromptTemplateSuccess
   AddReflectTemplatePromptPayload: AddReflectTemplatePromptPayload
   AddPokerTemplateDimensionPayload: AddPokerTemplateDimensionPayload
   AddPokerTemplateScalePayload: AddPokerTemplateScalePayload
