@@ -7,14 +7,15 @@ import {Link} from 'react-router'
 import {Lock} from '~/ui/icons'
 import type {MeetingCard_meeting$key} from '../__generated__/MeetingCard_meeting.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
-import {MenuPosition} from '../hooks/useCoords'
 import useMeetingMemberAvatars from '../hooks/useMeetingMemberAvatars'
 import {useMeetingSeriesDate} from '../hooks/useMeetingSeriesDate'
-import useTooltip from '../hooks/useTooltip'
 import {Breakpoint, ElementWidth} from '../types/constEnums'
 import {cn} from '../ui/cn'
 import {Menu} from '../ui/Menu/Menu'
 import {MenuContent} from '../ui/Menu/MenuContent'
+import {Tooltip} from '../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../ui/Tooltip/TooltipTrigger'
 import getMeetingPhase from '../utils/getMeetingPhase'
 import {
   MeetingTypeToReadable,
@@ -29,7 +30,6 @@ import {EditMeetingSeriesModal} from './EditMeetingSeriesModal'
 import IconLabel from './IconLabel'
 import MeetingCardOptionsMenuRoot from './MeetingCardOptionsMenuRoot'
 import {EndRecurringMeetingModal} from './Recurrence/EndRecurringMeetingModal'
-import Tooltip from './Tooltip'
 
 const STACK_DEGREES = {0: 1, 1: -2} as const
 const STACK_OFFSET_LEFT = {0: 4, 1: 2} as const
@@ -95,18 +95,13 @@ const MeetingCard = (props: Props) => {
   const connectedUsers = useMeetingMemberAvatars(meeting)
   const {label: dateLabel, tooltip: readableNextMeetingDate} = useMeetingSeriesDate(meeting)
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
+  const [isCopied, setIsCopied] = useState(false)
   const popTooltip = () => {
-    openTooltip()
+    setIsCopied(true)
     setTimeout(() => {
-      closeTooltip()
+      setIsCopied(false)
     }, 2000)
   }
-  const {
-    tooltipPortal,
-    openTooltip,
-    closeTooltip,
-    originRef: tooltipRef
-  } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_RIGHT)
 
   const [isRecurrenceSettingsOpen, setIsRecurrenceSettingsOpen] = useState(false)
   const [isEndRecurringMeetingOpen, setIsEndRecurringMeetingOpen] = useState(false)
@@ -232,8 +227,11 @@ const MeetingCard = (props: Props) => {
                     <span className='wrap-break-word block pt-1 pr-8 text-fg-primary text-xl leading-6'>
                       {meetingSeries.title}
                     </span>
-                    <Tooltip text={readableNextMeetingDate}>
-                      <div className='text-sm'>{dateLabel}</div>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className='cursor-pointer text-sm'>{dateLabel}</div>
+                      </TooltipTrigger>
+                      <TooltipContent side='bottom'>{readableNextMeetingDate}</TooltipContent>
                     </Tooltip>
                   </>
                 ) : (
@@ -242,26 +240,33 @@ const MeetingCard = (props: Props) => {
                   </span>
                 )}
               </Link>
-              <Menu
-                trigger={
-                  <CardButton
-                    className='absolute top-0 right-0 h-8 w-8 text-fg-primary opacity-100 hover:bg-surface-hover'
-                    aria-label='Edit the meeting'
-                  >
-                    <IconLabel ref={tooltipRef} icon='more_vert' />
-                  </CardButton>
-                }
-              >
-                <MenuContent align='end' sideOffset={4}>
-                  <MeetingCardOptionsMenuRoot
-                    meetingId={meetingId}
-                    teamId={teamId}
-                    popTooltip={popTooltip}
-                    openEndRecurringMeetingModal={() => setIsEndRecurringMeetingOpen(true)}
-                    openRecurrenceSettingsModal={() => setIsRecurrenceSettingsOpen(true)}
-                  />
-                </MenuContent>
-              </Menu>
+              <Tooltip open={isCopied}>
+                <Menu
+                  trigger={
+                    <CardButton
+                      className='absolute top-0 right-0 h-8 w-8 text-fg-primary opacity-100 hover:bg-surface-hover'
+                      aria-label='Edit the meeting'
+                    >
+                      <TooltipTrigger asChild>
+                        <IconLabel icon='more_vert' />
+                      </TooltipTrigger>
+                    </CardButton>
+                  }
+                >
+                  <MenuContent align='end' sideOffset={4}>
+                    <MeetingCardOptionsMenuRoot
+                      meetingId={meetingId}
+                      teamId={teamId}
+                      popTooltip={popTooltip}
+                      openEndRecurringMeetingModal={() => setIsEndRecurringMeetingOpen(true)}
+                      openRecurrenceSettingsModal={() => setIsRecurrenceSettingsOpen(true)}
+                    />
+                  </MenuContent>
+                </Menu>
+                <TooltipContent side='bottom' align='end'>
+                  Copied!
+                </TooltipContent>
+              </Tooltip>
             </div>
             <Link to={meetingLink}>
               <span className='wrap-break-word block pt-1 pb-2 text-fg-secondary text-sm'>
@@ -270,7 +275,6 @@ const MeetingCard = (props: Props) => {
             </Link>
             <AvatarList users={connectedUsers} size={28} borderColor='var(--color-surface-card)' />
           </div>
-          {tooltipPortal('Copied!')}
           {meeting && (
             <EndRecurringMeetingModal
               meetingRef={meeting}

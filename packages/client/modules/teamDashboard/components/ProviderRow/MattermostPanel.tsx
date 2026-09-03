@@ -2,11 +2,12 @@ import graphql from 'babel-plugin-relay/macro'
 import {type FormEvent, useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import type {MattermostPanel_viewer$key} from '~/__generated__/MattermostPanel_viewer.graphql'
-import {MenuPosition} from '~/hooks/useCoords'
 import useForm from '~/hooks/useForm'
-import useTooltip from '~/hooks/useTooltip'
 import {Button} from '~/ui/Button/Button'
 import {Info as InfoIcon} from '~/ui/icons'
+import {Tooltip} from '~/ui/Tooltip/Tooltip'
+import {TooltipContent} from '~/ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '~/ui/Tooltip/TooltipTrigger'
 import linkify from '~/utils/linkify'
 import type {AddIntegrationProviderMutation as TAddIntegrationProviderMutation} from '../../../../__generated__/AddIntegrationProviderMutation.graphql'
 import BasicInput from '../../../../components/InputField/BasicInput'
@@ -141,10 +142,6 @@ const MattermostPanel = (props: Props) => {
     }
   }
 
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.LOWER_CENTER
-  )
-
   return (
     <div className='border-hairline border-t p-4'>
       <div className='flex items-center pb-4'>
@@ -154,16 +151,17 @@ const MattermostPanel = (props: Props) => {
         <div className='flex items-center py-2'>
           <span className='relative mr-4 flex w-full items-center text-[14px]'>
             Mattermost Webhook
-            <div
-              className='ml-1 h-6 w-6 text-fg-secondary hover:cursor-pointer'
-              onMouseOver={openTooltip}
-              onMouseOut={closeTooltip}
-              ref={originRef}
-            >
-              <InfoIcon />
-            </div>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className='ml-1 h-6 w-6 text-fg-secondary hover:cursor-pointer'>
+                  <InfoIcon />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                Configure in Mattermost: Main Menu &gt; Integrations &gt; Incoming Webhook
+              </TooltipContent>
+            </Tooltip>
           </span>
-          {tooltipPortal('Configure in Mattermost: Main Menu > Integrations > Incoming Webhook')}
           <BasicInput
             value={fields.webhookUrl.value}
             error=''
