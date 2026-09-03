@@ -1,11 +1,17 @@
 import getKysely from '../getKysely'
 
-const decrementFreeTemplatesRemaining = async (userId: string, templateType: 'retro' | 'poker') => {
+const FREE_TEMPLATE_COLUMNS = {
+  retro: 'freeCustomRetroTemplatesRemaining',
+  poker: 'freeCustomPokerTemplatesRemaining',
+  teamPrompt: 'freeCustomStandupTemplatesRemaining'
+} as const
+
+const decrementFreeTemplatesRemaining = async (
+  userId: string,
+  templateType: keyof typeof FREE_TEMPLATE_COLUMNS
+) => {
   const pg = getKysely()
-  const customTemplateType =
-    templateType === 'retro'
-      ? 'freeCustomRetroTemplatesRemaining'
-      : 'freeCustomPokerTemplatesRemaining'
+  const customTemplateType = FREE_TEMPLATE_COLUMNS[templateType]
 
   await pg
     .updateTable('User')
