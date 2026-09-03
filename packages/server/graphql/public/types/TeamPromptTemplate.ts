@@ -10,8 +10,7 @@ const TeamPromptTemplate: TeamPromptTemplateResolvers = {
   },
   team: async ({teamId}, _args, {dataLoader}) => {
     return dataLoader.get('teams').loadNonNull(teamId)
-  },
-  subCategories: () => []
+  }
 }
 
 export default TeamPromptTemplate
