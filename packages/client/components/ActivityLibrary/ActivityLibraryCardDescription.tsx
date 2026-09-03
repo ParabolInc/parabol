@@ -8,11 +8,11 @@ import type {
 import {Comment, LinearScale, Update} from '~/ui/icons'
 import {cn} from '../../ui/cn'
 
-interface RetroDescriptionProps {
+interface PromptDescriptionProps {
   prompts: ActivityLibraryCardDescription_template$data['prompts']
 }
 
-export const RetroDescription = (props: RetroDescriptionProps) => {
+export const PromptDescription = (props: PromptDescriptionProps) => {
   const {prompts} = props
   return (
     <>
@@ -128,10 +128,10 @@ export const ActivityLibraryCardDescription = (props: Props) => {
     <ScrollArea.Root className={cn('flex-1 overflow-auto', className)}>
       <ScrollArea.Viewport>
         <div className='flex flex-1 flex-col gap-y-1 px-2 py-1'>
-          {template.type === 'retrospective' && <RetroDescription prompts={template.prompts} />}
+          {template.type === 'retrospective' && <PromptDescription prompts={template.prompts} />}
           {template.type === 'poker' && <PokerDescription dimensions={template.dimensions} />}
           {template.type === 'action' && <ActionDescription />}
-          {template.type === 'teamPrompt' && <RetroDescription prompts={template.prompts} />}
+          {template.type === 'teamPrompt' && <PromptDescription prompts={template.prompts} />}
         </div>
       </ScrollArea.Viewport>
       <ScrollArea.Scrollbar orientation='vertical' className='hidden' />
