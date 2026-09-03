@@ -2,6 +2,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import type {SharingScopeEnum as ESharingScope} from '../../../database/types/MeetingTemplate'
 import PokerTemplate from '../../../database/types/PokerTemplate'
 import ReflectTemplate from '../../../database/types/ReflectTemplate'
+import TeamPromptTemplate from '../../../database/types/TeamPromptTemplate'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import type {MeetingTypeEnum} from '../../../postgres/types/Meeting'
@@ -10,6 +11,7 @@ import {getUserId, isTeamMember, isUserOrgAdmin} from '../../../utils/authorizat
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
+import {isPromptTemplateType} from './helpers/isPromptTemplateType'
 
 const updateTemplateScope: MutationResolvers['updateTemplateScope'] = async (
   _source,
@@ -74,7 +76,8 @@ const updateTemplateScope: MutationResolvers['updateTemplateScope'] = async (
 
   const cloneReflectTemplate = async () => {
     const pg = getKysely()
-    const clonedTemplate = new ReflectTemplate({
+    const TemplateClass = template.type === 'teamPrompt' ? TeamPromptTemplate : ReflectTemplate
+    const clonedTemplate = new TemplateClass({
       name,
       teamId,
       orgId,
@@ -155,10 +158,10 @@ const updateTemplateScope: MutationResolvers['updateTemplateScope'] = async (
   }
 
   if (shouldClone) {
-    if (template.type === 'retrospective') {
-      cloneReflectTemplate()
+    if (isPromptTemplateType(template.type)) {
+      await cloneReflectTemplate()
     } else if (template.type === 'poker') {
-      clonePokerTemplate()
+      await clonePokerTemplate()
     }
   } else {
     await getKysely()
