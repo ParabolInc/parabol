@@ -5,7 +5,9 @@ import type {MeetingTemplateResolvers} from '../resolverTypes'
 const RECOMMENDED_TEMPLATES = [
   'startStopContinueTemplate',
   'estimatedEffortTemplate',
-  'everythingBagelTemplate'
+  'everythingBagelTemplate',
+  'teamPrompt',
+  'enterpriseDailyStandupTemplate'
 ]
 
 const MeetingTemplate: MeetingTemplateResolvers = {

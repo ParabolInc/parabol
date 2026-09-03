@@ -144,6 +144,7 @@ export const TemplateDetails = (props: Props) => {
     viewerLowestScope
   } = activity
   const {id: teamId, editingScaleId} = team
+  const isParabolFixedActivity = __typename === 'FixedActivity' || type === 'teamPrompt'
 
   const {description: activityDescription, integrationsTip} = ACTIVITY_TYPE_DATA_LOOKUP[type]
 
@@ -238,7 +239,7 @@ export const TemplateDetails = (props: Props) => {
       <ActivityDetailsBadges isEditing={isEditing} templateRef={activity} />
       <div className='max-w-[480px]'>
         <div className='mb-6'>
-          {__typename === 'FixedActivity' && (
+          {isParabolFixedActivity && (
             <div className='font-semibold text-base text-fg-secondary'>Created by Parabol</div>
           )}
           {isOwner && (
@@ -286,7 +287,7 @@ export const TemplateDetails = (props: Props) => {
               </div>
             </div>
           )}
-          {!isOwner && __typename !== 'FixedActivity' && (
+          {!isOwner && !isParabolFixedActivity && (
             <div className='flex items-center justify-between'>
               <div className='py-2 font-semibold text-fg-secondary text-sm'>{description}</div>
               <div className='flex items-center gap-2'>

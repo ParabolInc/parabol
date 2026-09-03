@@ -59,6 +59,12 @@ graphql`
       }
       subCategories
     }
+    ... on TeamPromptTemplate {
+      prompts {
+        question
+        description
+      }
+    }
   }
 `
 

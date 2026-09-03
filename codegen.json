@@ -334,6 +334,7 @@
           "TeamHealthMeetingMember": "../../postgres/types/Meeting.d#TeamHealthMeetingMember as TeamHealthMeetingMemberDB",
           "TeamPromptMeetingSettings": "../../postgres/types/index#MeetingSettings as TeamMeetingSettingsDB",
           "TeamPromptResponse": "../../postgres/types/index#TeamPromptResponse as TeamPromptResponseDB",
+          "TeamPromptTemplate": "../../postgres/types/index#MeetingTemplate as MeetingTemplateDB",
           "TemplateDimension": "../../postgres/types/index#TemplateDimension as TemplateDimensionDB",
           "TemplateDimensionRef": "./types/TemplateDimensionRef#TemplateDimensionRefSource",
           "TemplateScale": "../../postgres/types/index#TemplateScale as TemplateScaleDB",
