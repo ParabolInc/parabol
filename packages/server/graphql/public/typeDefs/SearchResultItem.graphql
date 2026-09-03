@@ -1,4 +1,10 @@
 """
 A single search result — may be a page, discussion topic, meeting template, or fixed activity
 """
-union SearchResultItem = Page | Discussion | ReflectTemplate | PokerTemplate | FixedActivity
+union SearchResultItem =
+  | Page
+  | Discussion
+  | ReflectTemplate
+  | PokerTemplate
+  | TeamPromptTemplate
+  | FixedActivity
