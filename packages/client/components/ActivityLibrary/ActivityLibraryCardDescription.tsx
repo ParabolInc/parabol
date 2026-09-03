@@ -81,28 +81,6 @@ const ActionDescription = () => {
   )
 }
 
-const TeamPromptDescription = () => {
-  const items = [
-    {
-      icon: <Comment className='h-5 w-5' />,
-      description: 'What are you working on today? Stuck on anything?'
-    }
-  ]
-
-  return (
-    <>
-      {items.map((item, index) => (
-        <div key={index} className='mb-1 flex items-start py-1 sm:flex-row'>
-          <div className='mr-4 flex shrink-0 items-center self-start'>{item.icon}</div>
-          <div className='flex min-w-0 grow flex-col'>
-            <div className='font-normal text-sm'>{item.description}</div>
-          </div>
-        </div>
-      ))}
-    </>
-  )
-}
-
 interface Props {
   className?: string
   templateRef: ActivityLibraryCardDescription_template$key
@@ -133,6 +111,14 @@ export const ActivityLibraryCardDescription = (props: Props) => {
             description
           }
         }
+        ... on TeamPromptTemplate {
+          prompts {
+            id
+            question
+            groupColor
+            description
+          }
+        }
       }
     `,
     templateRef
@@ -145,7 +131,7 @@ export const ActivityLibraryCardDescription = (props: Props) => {
           {template.type === 'retrospective' && <RetroDescription prompts={template.prompts} />}
           {template.type === 'poker' && <PokerDescription dimensions={template.dimensions} />}
           {template.type === 'action' && <ActionDescription />}
-          {template.type === 'teamPrompt' && <TeamPromptDescription />}
+          {template.type === 'teamPrompt' && <RetroDescription prompts={template.prompts} />}
         </div>
       </ScrollArea.Viewport>
       <ScrollArea.Scrollbar orientation='vertical' className='hidden' />
