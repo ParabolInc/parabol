@@ -5,6 +5,7 @@ import type {LinearFieldDimensionDropdown_stage$key} from '../__generated__/Line
 import interpolateVotingLabelTemplate from '../shared/interpolateVotingLabelTemplate'
 import {SprintPokerDefaults} from '../types/constEnums'
 import {cn} from '../ui/cn'
+import {SelectValue} from '../ui/Select/SelectValue'
 import LinearFieldMenu from './LinearFieldMenu'
 import PlainButton from './PlainButton/PlainButton'
 
@@ -42,16 +43,17 @@ const LinearFieldDimensionDropdown = (props: Props) => {
     labelLookup[serviceFieldName as keyof typeof labelLookup] ||
     interpolateVotingLabelTemplate(serviceFieldName, finalScore)
 
+  const labelEl = <div className='text-sm'>{label}</div>
   const trigger = (
     <PlainButton
       className={cn(
         'flex select-none text-fg-primary',
         isFacilitator
-          ? 'hover:opacity-50 focus:opacity-50 active:opacity-50'
+          ? 'hover:opacity-50 active:opacity-50 data-[state=open]:opacity-50'
           : 'cursor-default pr-2'
       )}
     >
-      <div className='text-sm'>{label}</div>
+      {isFacilitator ? <SelectValue>{labelEl}</SelectValue> : labelEl}
       <ExpandMore className={cn('h-[18px] w-[18px]', !isFacilitator && 'hidden')} />
     </PlainButton>
   )

@@ -1,12 +1,12 @@
-import {type ComponentPropsWithoutRef, forwardRef, type Ref} from 'react'
+import {type ComponentPropsWithoutRef, forwardRef, type ReactNode, type Ref} from 'react'
 import {FilterList, Group, Person} from '~/ui/icons'
 import {Button} from '../../ui/Button/Button'
 import {cn} from '../../ui/cn'
 
-interface Props extends ComponentPropsWithoutRef<'button'> {
+interface Props extends Omit<ComponentPropsWithoutRef<'button'>, 'value'> {
   className?: string
   label: string
-  value: string
+  value: ReactNode
   //FIXME 6062: change to React.ComponentType
   iconText?: string
   dataCy?: string

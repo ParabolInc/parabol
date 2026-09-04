@@ -54,7 +54,7 @@ const GitLabFieldDimensionDropdown = (props: Props) => {
       className={cn(
         'flex select-none text-fg-primary',
         isFacilitator
-          ? 'hover:opacity-50 focus:opacity-50 active:opacity-50'
+          ? 'hover:opacity-50 active:opacity-50 data-[state=open]:opacity-50'
           : 'cursor-default pr-2'
       )}
     >

@@ -6,6 +6,7 @@ import DropdownMenuToggle from '../../../../components/DropdownMenuToggle'
 import StageTimerHourPicker from '../../../../components/StageTimerHourPicker'
 import {Menu} from '../../../../ui/Menu/Menu'
 import {MenuContent} from '../../../../ui/Menu/MenuContent'
+import {SelectValue} from '../../../../ui/Select/SelectValue'
 import formatTime from '../../../../utils/date/formatTime'
 
 interface Props {
@@ -55,7 +56,7 @@ const GcalDateTimeRow = (props: Props) => {
           trigger={
             <DropdownMenuToggle
               className='min-w-[120px] py-1 pr-0 pl-2 text-[14px]'
-              defaultText={formatTime(date)}
+              defaultText={<SelectValue>{formatTime(date)}</SelectValue>}
               flat
               size='small'
             />

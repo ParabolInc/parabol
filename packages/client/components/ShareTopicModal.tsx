@@ -199,7 +199,8 @@ const ShareTopicModal = (props: Props) => {
                 <span className='text-fg-muted'>Select Integration</span>
               )}
             </SelectTrigger>
-            <SelectContent>
+            {/* popper: there is no selection to anchor item-aligned positioning to */}
+            <SelectContent position='popper'>
               <SelectGroup>
                 <SelectItem value='slack' endAdornment={!isSlackConnected ? connectButton : null}>
                   Slack

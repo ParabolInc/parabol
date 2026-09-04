@@ -56,7 +56,11 @@ const SlackChannelPicker = (props: Props) => {
       onValueChange={onClick}
       onOpenChange={(isOpen) => isOpen && onOpen()}
     >
-      <SelectTrigger isLoading={isLoading} onMouseEnter={SlackChannelDropdown.preload}>
+      <SelectTrigger
+        isLoading={isLoading}
+        disabled={isLoading}
+        onMouseEnter={SlackChannelDropdown.preload}
+      >
         <SelectValue />
       </SelectTrigger>
       <Suspense fallback={null}>

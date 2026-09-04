@@ -4,6 +4,7 @@ import {ExpandMore} from '~/ui/icons'
 import type {JiraServerFieldDimensionDropdown_stage$key} from '../__generated__/JiraServerFieldDimensionDropdown_stage.graphql'
 import {SprintPokerDefaults} from '../types/constEnums'
 import {cn} from '../ui/cn'
+import {SelectValue} from '../ui/Select/SelectValue'
 import JiraServerFieldMenu from './JiraServerFieldMenu'
 import PlainButton from './PlainButton/PlainButton'
 
@@ -55,16 +56,17 @@ const JiraServerFieldDimensionDropdown = (props: Props) => {
 
   const label =
     labelLookup[lookupServiceFieldName as keyof typeof labelLookup] ?? lookupServiceFieldName
+  const labelEl = <div className='text-sm'>{label}</div>
   const trigger = (
     <PlainButton
       className={cn(
         'flex select-none text-fg-primary',
         isFacilitator
-          ? 'hover:opacity-50 focus:opacity-50 active:opacity-50'
+          ? 'hover:opacity-50 active:opacity-50 data-[state=open]:opacity-50'
           : 'cursor-default pr-2'
       )}
     >
-      <div className='text-sm'>{label}</div>
+      {isFacilitator ? <SelectValue>{labelEl}</SelectValue> : labelEl}
       <ExpandMore className={cn('h-[18px] w-[18px]', !isFacilitator && 'hidden')} />
     </PlainButton>
   )

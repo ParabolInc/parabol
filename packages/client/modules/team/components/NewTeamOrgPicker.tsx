@@ -6,6 +6,7 @@ import DropdownMenuToggle from '../../../components/DropdownMenuToggle'
 import TierTag from '../../../components/Tag/TierTag'
 import {Select} from '../../../ui/Select/Select'
 import {SelectTrigger} from '../../../ui/Select/SelectTrigger'
+import {SelectValue} from '../../../ui/Select/SelectValue'
 import lazyPreload from '../../../utils/lazyPreload'
 import sortByTier from '../../../utils/sortByTier'
 
@@ -52,19 +53,22 @@ const NewTeamOrgPicker = (props: Props) => {
   const org = sortedOrgs[orgIdx]
   const defaultText = org ? org.name : NO_ORGS
   const isDisabled = disabled || defaultText === NO_ORGS
+  const orgLabel = (
+    <div className='flex min-w-0 flex-wrap items-center'>
+      <div className='flex-1 overflow-hidden text-ellipsis whitespace-nowrap'>{defaultText}</div>
+      {org && org.tier !== 'starter' && <TierTag tier={org.tier} billingTier={org.billingTier} />}
+    </div>
+  )
   const toggle = (
     <DropdownMenuToggle
       onMouseEnter={NewTeamOrgDropdown.preload}
       disabled={isDisabled}
       defaultText={
-        <div className='flex min-w-0 flex-wrap items-center'>
-          <div className='flex-1 overflow-hidden text-ellipsis whitespace-nowrap'>
-            {defaultText}
-          </div>
-          {org && org.tier !== 'starter' && (
-            <TierTag tier={org.tier} billingTier={org.billingTier} />
-          )}
-        </div>
+        isDisabled ? (
+          orgLabel
+        ) : (
+          <SelectValue className='flex min-w-0 flex-1'>{orgLabel}</SelectValue>
+        )
       }
     />
   )

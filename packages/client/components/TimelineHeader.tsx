@@ -10,6 +10,7 @@ import {Button} from '../ui/Button/Button'
 import {Menu} from '../ui/Menu/Menu'
 import {Select} from '../ui/Select/Select'
 import {SelectTrigger} from '../ui/Select/SelectTrigger'
+import {SelectValue} from '../ui/Select/SelectValue'
 import {timelineEventTypeMenuLabels} from '../utils/constants'
 import constructFilterQueryParamURL from '../utils/constructFilterQueryParamURL'
 import lazyPreload from '../utils/lazyPreload'
@@ -109,7 +110,7 @@ const TimelineHeader = (props: Props) => {
               className='mt-4 sidebar-left:mt-0 mr-16 sidebar-left:mr-6 mb-4 sidebar-left:mb-0 ml-0 sidebar-left:ml-0'
               label='Event Type'
               onMouseEnter={TimelineEventTypeMenu.preload}
-              value={eventTypeFilterName}
+              value={<SelectValue>{eventTypeFilterName}</SelectValue>}
             />
           </SelectTrigger>
           <Suspense fallback={null}>
