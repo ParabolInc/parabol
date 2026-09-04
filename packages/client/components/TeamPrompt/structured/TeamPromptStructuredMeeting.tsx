@@ -94,7 +94,8 @@ const TeamPromptStructuredMeeting = (props: Props) => {
       promptCount: progress.promptCount,
       publishProgress,
       requestBlur,
-      focusNextUnanswered
+      focusNextUnanswered,
+      controlsRef: composerControlsRef
     }),
     [focusedPromptId, progress, publishProgress, requestBlur, focusNextUnanswered]
   )

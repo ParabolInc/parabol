@@ -1,12 +1,15 @@
 import type {Editor} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
-import {useCallback, useEffect, useRef, useState} from 'react'
+import {useCallback, useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import type {TeamPromptComposer_meeting$key} from '~/__generated__/TeamPromptComposer_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import usePhoneViewport from '~/hooks/usePhoneViewport'
 import {cn} from '../../../ui/cn'
-import usePhoneComposerState from './mobile/usePhoneComposerState'
-import TeamPromptAnswerEditor from './TeamPromptAnswerEditor'
+import TeamPromptPhoneComposerFooter from './mobile/TeamPromptPhoneComposerFooter'
+import useComposerFocusMode from './mobile/useComposerFocusMode'
+import usePhoneComposerBridge from './mobile/usePhoneComposerBridge'
+import TeamPromptAnswerList from './TeamPromptAnswerList'
 import TeamPromptComposerFooter from './TeamPromptComposerFooter'
 import TeamPromptComposerHeader from './TeamPromptComposerHeader'
 import {getMemberSharedAt} from './teamPromptStages'
@@ -28,6 +31,9 @@ const TeamPromptComposer = (props: Props) => {
         teamId
         endedAt
         rightDrawerOpen
+        template {
+          name
+        }
         prompts {
           id
           question
@@ -61,7 +67,8 @@ const TeamPromptComposer = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {id: meetingId, teamId, endedAt, prompts, rightDrawerOpen} = meeting
+  const {id: meetingId, teamId, endedAt, prompts, rightDrawerOpen, template} = meeting
+  const isPhone = usePhoneViewport()
   const stage = meeting.phases[0]?.stages?.find((stage) => stage.teamMember.userId === viewerId)
   const isShared = !!getMemberSharedAt(stage?.responses ?? [])
   const [isExpanded, setIsExpanded] = useState(!isShared)
@@ -77,6 +84,7 @@ const TeamPromptComposer = (props: Props) => {
     answeredPromptIds,
     setAnsweredPromptIds,
     preview,
+    savedTextByPrompt,
     sharedAt,
     lastAnswerAt
   } = useTeamPromptComposerState({prompts, stage, isEnded: !!endedAt, isExpanded, seedDirty})
@@ -95,17 +103,29 @@ const TeamPromptComposer = (props: Props) => {
   )
 
   const expand = useCallback(() => setIsExpanded(true), [])
-  useTeamPromptComposerApiRegistration({editorRefs, onChange, expand})
+  const [hasInsertedFromInspiration, setHasInsertedFromInspiration] = useState(false)
+  const onInserted = useCallback(() => setHasInsertedFromInspiration(true), [])
+  useTeamPromptComposerApiRegistration({editorRefs, onChange, expand, onInserted})
 
-  const publishProgress = usePhoneComposerState()?.publishProgress
-  useEffect(() => {
-    publishProgress?.(answeredPromptIds.size, prompts.length)
-  }, [publishProgress, answeredPromptIds.size, prompts.length])
+  const focusMode = useComposerFocusMode({
+    prompts,
+    editorRefs: editorRefs.current,
+    answeredPromptIds,
+    isPhone
+  })
+  usePhoneComposerBridge({
+    focusedPromptId: focusMode.focusedPromptId,
+    blur: focusMode.blur,
+    focusNextUnanswered: focusMode.focusNextUnanswered,
+    answeredCount: answeredPromptIds.size,
+    promptCount: prompts.length
+  })
 
   const onShare = useCallback(() => {
     if (answeredPromptIds.size === 0) return
     if (isShared && dirtyPromptIds.size === 0) return
     share()
+    setHasInsertedFromInspiration(false)
     setIsExpanded(false)
   }, [share, answeredPromptIds.size, isShared, dirtyPromptIds.size])
 
@@ -132,46 +152,41 @@ const TeamPromptComposer = (props: Props) => {
           preview={preview}
           answeredCount={answeredPromptIds.size}
           promptCount={prompts.length}
+          isPhone={isPhone}
+          templateName={template?.name}
         />
         <div className={cn(!isExpanded && 'hidden')}>
-          <div className='flex flex-col gap-4 rounded-card bg-surface-card p-4 shadow-[var(--shadow-card)]'>
-            {prompts.map((prompt, index) => {
-              if (!editorRefs.current.has(prompt.id))
-                editorRefs.current.set(prompt.id, {current: null})
-              const nextPromptId = prompts[index + 1]?.id
-              return (
-                <TeamPromptAnswerEditor
-                  key={prompt.id}
-                  teamId={teamId}
-                  prompt={prompt}
-                  initialContent={initialContentByPrompt.get(prompt.id) ?? null}
-                  readOnly={!!endedAt}
-                  isAnswered={answeredPromptIds.has(prompt.id)}
-                  compact={prompts.length === 1}
-                  onChange={onChange}
-                  onModEnter={onShare}
-                  onTab={
-                    nextPromptId
-                      ? () => editorRefs.current.get(nextPromptId)?.current?.commands.focus('end')
-                      : undefined
-                  }
-                  editorRef={editorRefs.current.get(prompt.id)!}
-                />
-              )
-            })}
-          </div>
-          {!endedAt && (
-            <TeamPromptComposerFooter
-              isShared={isShared}
-              isDirty={dirtyPromptIds.size > 0}
-              answeredCount={answeredPromptIds.size}
-              promptCount={prompts.length}
-              submitting={submitting}
-              isInspirationOpen={rightDrawerOpen === 'inspiration'}
-              onOpenInspiration={onOpenInspiration}
-              onShare={onShare}
-            />
-          )}
+          <TeamPromptAnswerList
+            teamId={teamId}
+            prompts={prompts}
+            initialContentByPrompt={initialContentByPrompt}
+            savedTextByPrompt={savedTextByPrompt}
+            answeredPromptIds={answeredPromptIds}
+            editorRefs={editorRefs}
+            readOnly={!!endedAt}
+            isPhone={isPhone}
+            focusMode={focusMode}
+            onChange={onChange}
+            onModEnter={onShare}
+          />
+          {!endedAt &&
+            (isPhone ? (
+              <TeamPromptPhoneComposerFooter
+                isShared={isShared}
+                hasInsertedFromInspiration={hasInsertedFromInspiration}
+              />
+            ) : (
+              <TeamPromptComposerFooter
+                isShared={isShared}
+                isDirty={dirtyPromptIds.size > 0}
+                answeredCount={answeredPromptIds.size}
+                promptCount={prompts.length}
+                submitting={submitting}
+                isInspirationOpen={rightDrawerOpen === 'inspiration'}
+                onOpenInspiration={onOpenInspiration}
+                onShare={onShare}
+              />
+            ))}
         </div>
       </div>
     </div>

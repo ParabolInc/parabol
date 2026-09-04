@@ -1,10 +1,12 @@
 import type {Editor} from '@tiptap/core'
 import type {JSONContent} from '@tiptap/react'
 import {useState} from 'react'
-import {Check} from '~/ui/icons'
 import {cn} from '../../../ui/cn'
 import {isOSX} from '../../../utils/platform'
 import PromptResponseEditor from '../PromptResponseEditor'
+import answerEditorClassName from './answerEditorClassName'
+import TeamPromptCollapsedAnswerRow from './mobile/TeamPromptCollapsedAnswerRow'
+import TeamPromptAnswerLabel from './TeamPromptAnswerLabel'
 
 interface Props {
   teamId: string
@@ -13,9 +15,15 @@ interface Props {
   readOnly: boolean
   isAnswered: boolean
   compact: boolean
+  isPhone?: boolean
+  isCollapsed?: boolean
+  isFocusedBlock?: boolean
+  preview?: string
   onChange: (promptId: string, editor: Editor) => void
   onModEnter: () => void
   onTab?: () => void
+  onFocusPrompt?: () => void
+  onFocusChange?: (isFocused: boolean) => void
   editorRef: React.MutableRefObject<Editor | null>
 }
 
@@ -27,61 +35,81 @@ const TeamPromptAnswerEditor = (props: Props) => {
     readOnly,
     isAnswered,
     compact,
+    isPhone,
+    isCollapsed,
+    isFocusedBlock,
+    preview,
     onChange,
     onModEnter,
     onTab,
+    onFocusPrompt,
+    onFocusChange,
     editorRef
   } = props
   const [isFocused, setIsFocused] = useState(false)
   const linkShortcut = isOSX ? '⌘K' : 'Ctrl+K'
+  const editorClassName = answerEditorClassName({
+    isPhone: !!isPhone,
+    isFocusedBlock: !!isFocusedBlock,
+    isFocused,
+    compact
+  })
   return (
-    <div className='flex flex-col gap-1.5'>
-      <div className='flex items-center gap-2 font-semibold text-[13px] text-fg-secondary'>
-        <span
-          className='h-2.5 w-2.5 shrink-0 rounded-full'
-          style={{background: prompt.groupColor}}
+    <>
+      {isCollapsed && (
+        <TeamPromptCollapsedAnswerRow
+          prompt={prompt}
+          isAnswered={isAnswered}
+          preview={preview ?? ''}
+          onClick={() => onFocusPrompt?.()}
         />
-        <span className='flex-1'>{prompt.question}</span>
-        {isAnswered && <Check className='h-4 w-4 text-jade-600' aria-label='Answered' />}
-      </div>
+      )}
       <div
         className={cn(
-          'relative rounded-md border border-solid bg-surface-input transition-colors',
-          isFocused ? 'border-accent' : 'border-hairline-field'
+          'flex flex-col gap-1.5',
+          isCollapsed && 'hidden',
+          isFocusedBlock && 'min-h-0 flex-1'
         )}
       >
-        <PromptResponseEditor
-          autoFocus={false}
-          teamId={teamId}
-          content={initialContent}
-          readOnly={readOnly}
-          placeholder={prompt.description || 'Write your answer'}
-          showActions={false}
-          enableSlashCommands
-          showListControls
-          onChange={(editor) => onChange(prompt.id, editor)}
-          onModEnter={onModEnter}
-          onTab={onTab}
-          onFocusChange={setIsFocused}
-          editorRef={editorRef}
-          className={cn(
-            'max-h-[280px] overflow-auto p-[10px_12px_6px] text-sm leading-6',
-            compact
-              ? isFocused
-                ? 'min-h-[160px]'
-                : 'min-h-[120px]'
-              : isFocused
-                ? 'min-h-[112px]'
-                : 'min-h-[88px]'
-          )}
+        <TeamPromptAnswerLabel
+          question={prompt.question}
+          groupColor={prompt.groupColor}
+          isAnswered={isAnswered}
         />
-        {isFocused && !readOnly && (
-          <div className='pointer-events-none px-3 pb-1.5 text-right text-[11px] text-fg-muted'>
-            Select text to format · - starts a list · {linkShortcut} for a link
-          </div>
-        )}
+        <div
+          className={cn(
+            'relative rounded-md border border-solid bg-surface-input transition-colors',
+            isFocused ? 'border-accent' : 'border-hairline-field',
+            isFocusedBlock && 'flex min-h-0 flex-1 flex-col'
+          )}
+        >
+          <PromptResponseEditor
+            autoFocus={false}
+            teamId={teamId}
+            content={initialContent}
+            readOnly={readOnly}
+            placeholder={prompt.description || 'Write your answer'}
+            showActions={false}
+            enableSlashCommands
+            showListControls
+            onChange={(editor) => onChange(prompt.id, editor)}
+            onModEnter={onModEnter}
+            onTab={onTab}
+            onFocusChange={(nextIsFocused) => {
+              setIsFocused(nextIsFocused)
+              onFocusChange?.(nextIsFocused)
+            }}
+            editorRef={editorRef}
+            className={editorClassName}
+          />
+          {!isPhone && isFocused && !readOnly && (
+            <div className='pointer-events-none px-3 pb-1.5 text-right text-[11px] text-fg-muted'>
+              Select text to format · - starts a list · {linkShortcut} for a link
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 

@@ -14,6 +14,8 @@ interface Props {
   preview: string
   answeredCount: number
   promptCount: number
+  isPhone?: boolean
+  templateName?: string | null
 }
 
 const TeamPromptComposerHeader = (props: Props) => {
@@ -26,7 +28,9 @@ const TeamPromptComposerHeader = (props: Props) => {
     updatedAt,
     preview,
     answeredCount,
-    promptCount
+    promptCount,
+    isPhone,
+    templateName
   } = props
   return (
     <div
@@ -41,11 +45,19 @@ const TeamPromptComposerHeader = (props: Props) => {
       }}
       className='flex min-h-12 cursor-pointer items-center gap-2 rounded-md px-2 hover:bg-surface-hover'
     >
-      <ChevronRight
-        className={cn('h-6 w-6 text-fg-secondary transition-transform', isExpanded && 'rotate-90')}
-      />
+      {!isPhone && (
+        <ChevronRight
+          className={cn(
+            'h-6 w-6 text-fg-secondary transition-transform',
+            isExpanded && 'rotate-90'
+          )}
+        />
+      )}
       <Avatar picture={picture} className='h-10 w-10' />
       <div className='flex min-w-0 flex-1 flex-col'>
+        {isPhone && templateName && (
+          <div className='truncate text-fg-muted text-xs'>{templateName}</div>
+        )}
         <div className='flex items-center gap-2'>
           <h3 className='m-0 font-semibold text-base'>Your update</h3>
           {isShared && sharedAt && (

@@ -1,4 +1,4 @@
-import {createContext, useContext} from 'react'
+import {createContext, type MutableRefObject, useContext} from 'react'
 
 export interface PhoneComposerControls {
   blur: () => void
@@ -13,6 +13,7 @@ export interface PhoneComposerState {
   publishProgress: (answeredCount: number, promptCount: number) => void
   requestBlur: () => void
   focusNextUnanswered: () => boolean
+  controlsRef: MutableRefObject<PhoneComposerControls | null>
 }
 
 export const PhoneComposerStateContext = createContext<PhoneComposerState | null>(null)
