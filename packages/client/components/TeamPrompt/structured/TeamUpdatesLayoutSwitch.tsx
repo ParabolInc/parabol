@@ -29,7 +29,7 @@ const TeamUpdatesLayoutSwitch = ({layout, onChange}: Props) => (
         className={cn(
           'flex h-7 items-center gap-1 rounded px-2.5 font-semibold text-xs',
           layout === value
-            ? 'bg-accent-active text-white'
+            ? 'bg-surface-selected text-fg-selected'
             : 'bg-transparent text-fg-secondary hover:bg-surface-hover'
         )}
       >
