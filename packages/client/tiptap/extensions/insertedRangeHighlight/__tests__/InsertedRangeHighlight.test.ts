@@ -105,7 +105,7 @@ describe('InsertedRangeHighlight', () => {
     expect(getDecorations(plugin, edited)).toHaveLength(0)
   })
 
-  it('restores a range that a whole-doc replace stretched over the document', () => {
+  it('restores a range that a whole-doc replace dropped', () => {
     const {state, plugin} = createFixture()
     const marked = markRange(state)
     const snapshot = new Map(insertedRangeKey.getState(marked) ?? [])
@@ -119,11 +119,7 @@ describe('InsertedRangeHighlight', () => {
       )
     )
 
-    expect(insertedRangeKey.getState(replaced)?.get('r1')).toEqual({
-      from: 0,
-      to: replaced.doc.content.size,
-      settled: false
-    })
+    expect(insertedRangeKey.getState(replaced)?.has('r1')).toBe(false)
 
     const previous = snapshot.get('r1')!
     const restored = replaced.apply(
@@ -183,5 +179,114 @@ describe('InsertedRangeHighlight', () => {
 
     expect(insertedRangeKey.getState(forgotten)?.has('r1')).toBe(false)
     expect(getDecorations(plugin, forgotten)).toHaveLength(0)
+  })
+
+  it('leaves a block inserted at the trailing boundary outside the range', () => {
+    const {state} = createFixture()
+    const marked = markRange(state)
+    const own = state.schema.node('paragraph', null, state.schema.text('mine'))
+
+    const edited = marked.apply(marked.tr.insert(17, own))
+
+    expect(insertedRangeKey.getState(edited)?.get('r1')).toEqual({from: 5, to: 17, settled: false})
+  })
+
+  it('leaves a paragraph split off the end of the range, and its text, outside the range', () => {
+    const {state} = createFixture()
+    const marked = markRange(state)
+
+    const split = marked.apply(marked.tr.split(16))
+    const typed = split.apply(split.tr.insertText('mine', 18))
+
+    expect(insertedRangeKey.getState(typed)?.get('r1')).toEqual({from: 5, to: 17, settled: false})
+    expect(typed.doc.child(3).textContent).toBe('mine')
+  })
+
+  it('leaves a block inserted at the leading boundary outside the range', () => {
+    const {state} = createFixture()
+    const marked = markRange(state)
+    const own = state.schema.node('paragraph', null, state.schema.text('mine'))
+
+    const edited = marked.apply(marked.tr.insert(5, own))
+
+    expect(insertedRangeKey.getState(edited)?.get('r1')).toEqual({from: 11, to: 23, settled: false})
+  })
+
+  it('grows the range when text is typed inside its last block', () => {
+    const {state} = createFixture()
+    const marked = markRange(state)
+
+    const edited = marked.apply(marked.tr.insertText('X', 16))
+
+    expect(insertedRangeKey.getState(edited)?.get('r1')).toEqual({from: 5, to: 18, settled: false})
+  })
+
+  it('clamps a mark that reaches past the end of the document', () => {
+    const {state, plugin} = createFixture()
+
+    const marked = state.apply(
+      state.tr.setMeta(insertedRangeKey, {
+        mark: {id: 'r1', from: 5, to: state.doc.content.size + 10}
+      })
+    )
+
+    expect(insertedRangeKey.getState(marked)?.get('r1')).toEqual({from: 5, to: 17, settled: false})
+    expect(() => getDecorations(plugin, marked)).not.toThrow()
+    expect(getDecorations(plugin, marked)).toHaveLength(2)
+  })
+
+  it('drops a mark that lies entirely past the end of the document', () => {
+    const {state, plugin} = createFixture()
+    const size = state.doc.content.size
+
+    const marked = state.apply(
+      state.tr.setMeta(insertedRangeKey, {mark: {id: 'r1', from: size + 5, to: size + 10}})
+    )
+
+    expect(insertedRangeKey.getState(marked)?.has('r1')).toBe(false)
+    expect(() => getDecorations(plugin, marked)).not.toThrow()
+  })
+
+  it('restores every snapshotted range in one transaction', () => {
+    const {state, plugin} = createFixture()
+
+    const restored = state.apply(
+      state.tr.setMeta(insertedRangeKey, {
+        restore: [
+          {id: 'r1', from: 0, to: 5, settled: true},
+          {id: 'r2', from: 5, to: 17, settled: false}
+        ]
+      })
+    )
+
+    expect(insertedRangeKey.getState(restored)?.get('r1')).toEqual({from: 0, to: 5, settled: true})
+    expect(insertedRangeKey.getState(restored)?.get('r2')).toEqual({
+      from: 5,
+      to: 17,
+      settled: false
+    })
+    const decorations = getDecorations(plugin, restored)
+    expect(decorations).toHaveLength(3)
+    expect(getDecorationAttrs(decorations[0]!)).toEqual({
+      class: INSERTED_SETTLED_CLASS,
+      'data-sr-added': 'settled'
+    })
+    expect(getDecorationAttrs(decorations[1]!)).toEqual({
+      class: INSERTED_HIGHLIGHT_CLASS,
+      'data-sr-added': 'r2'
+    })
+  })
+
+  it('drops a restored range that no longer fits the document', () => {
+    const {state} = createFixture()
+    const size = state.doc.content.size
+
+    const restored = state.apply(
+      state.tr.setMeta(insertedRangeKey, {
+        restore: [{id: 'r1', from: size + 5, to: size + 10, settled: false}]
+      })
+    )
+
+    expect(insertedRangeKey.getState(restored)?.size).toBe(0)
   })
 })
