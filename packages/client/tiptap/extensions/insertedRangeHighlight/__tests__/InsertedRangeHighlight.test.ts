@@ -1,7 +1,8 @@
 import {Editor} from '@tiptap/core'
-import {Fragment} from '@tiptap/pm/model'
+import {Fragment, type Node as ProseMirrorNode, type Schema} from '@tiptap/pm/model'
+import {liftListItem, splitListItem, wrapInList} from '@tiptap/pm/schema-list'
 import type {Plugin} from '@tiptap/pm/state'
-import {EditorState} from '@tiptap/pm/state'
+import {EditorState, TextSelection, type Transaction} from '@tiptap/pm/state'
 import {Decoration, DecorationSet} from '@tiptap/pm/view'
 import StarterKit from '@tiptap/starter-kit'
 import {
@@ -18,7 +19,7 @@ interface NodeDecorationInternals {
 const getDecorationAttrs = (decoration: Decoration) =>
   (decoration as unknown as NodeDecorationInternals).type.attrs
 
-const createFixture = () => {
+const createFixture = (buildBlocks?: (schema: Schema) => ProseMirrorNode[]) => {
   const editor = new Editor({
     extensions: [StarterKit, InsertedRangeHighlight],
     content: {type: 'doc', content: [{type: 'paragraph'}]}
@@ -27,13 +28,41 @@ const createFixture = () => {
   const plugin = editor.extensionManager.plugins.find(
     (candidate) => candidate.spec.key === insertedRangeKey
   ) as Plugin
-  const doc = schema.node('doc', null, [
-    schema.node('paragraph', null, schema.text('one')),
-    schema.node('paragraph', null, schema.text('two')),
-    schema.node('paragraph', null, schema.text('three'))
-  ])
+  const blocks = buildBlocks
+    ? buildBlocks(schema)
+    : [
+        schema.node('paragraph', null, schema.text('one')),
+        schema.node('paragraph', null, schema.text('two')),
+        schema.node('paragraph', null, schema.text('three'))
+      ]
+  const doc = schema.node('doc', null, blocks)
   const state = EditorState.create({doc, schema, plugins: [plugin]})
-  return {state, plugin}
+  return {state, plugin, schema}
+}
+
+const listItem = (schema: Schema, text: string) =>
+  schema.node('listItem', null, schema.node('paragraph', null, schema.text(text)))
+
+const createListFixture = () =>
+  createFixture((schema) => [
+    schema.node('paragraph', null, schema.text('base')),
+    schema.node('bulletList', null, [listItem(schema, 'alpha'), listItem(schema, 'beta')])
+  ])
+
+const markAt = (state: EditorState, from: number, to: number) =>
+  state.apply(state.tr.setMeta(insertedRangeKey, {mark: {id: 'r1', from, to}}))
+
+const tracked = (state: EditorState) => insertedRangeKey.getState(state)?.get('r1')
+
+const pressEnter = (state: EditorState, at: number) => {
+  const selected = state.apply(state.tr.setSelection(TextSelection.create(state.doc, at)))
+  let next = selected
+  const dispatch = (tr: Transaction) => {
+    next = selected.apply(tr)
+  }
+  const itemType = selected.schema.nodes.listItem!
+  if (!splitListItem(itemType)(selected, dispatch)) liftListItem(itemType)(selected, dispatch)
+  return next
 }
 
 const getDecorations = (plugin: Plugin, state: EditorState) => {
@@ -288,5 +317,90 @@ describe('InsertedRangeHighlight', () => {
     )
 
     expect(insertedRangeKey.getState(restored)?.size).toBe(0)
+  })
+
+  it('leaves a paragraph split off the start of the range, and its text, outside the range', () => {
+    const {state} = createFixture()
+    const marked = markRange(state)
+
+    const split = marked.apply(marked.tr.split(6))
+    const typed = split.apply(split.tr.insertText('MINE', 6))
+
+    expect(tracked(typed)).toEqual({from: 11, to: 23, settled: false})
+    expect(typed.doc.child(1).textContent).toBe('MINE')
+  })
+
+  it('leaves a list item split off the end of a trailing list outside the range', () => {
+    const {state} = createListFixture()
+    const marked = markAt(state, 6, 25)
+
+    const split = pressEnter(marked, 22)
+    const typed = split.apply(split.tr.insertText('MINE', 26))
+
+    expect(tracked(typed)).toEqual({from: 6, to: 24, settled: false})
+    expect(typed.doc.child(1).lastChild!.textContent).toBe('MINE')
+  })
+
+  it('leaves a paragraph lifted out of a trailing list outside the range', () => {
+    const {state} = createListFixture()
+    const marked = markAt(state, 6, 25)
+
+    const split = pressEnter(marked, 22)
+    const lifted = pressEnter(split, split.doc.content.size - 3)
+    const typed = lifted.apply(lifted.tr.insertText('MINE', lifted.doc.content.size - 1))
+
+    expect(typed.doc.lastChild!.type.name).toBe('paragraph')
+    expect(typed.doc.lastChild!.textContent).toBe('MINE')
+    expect(tracked(typed)).toEqual({from: 6, to: 25, settled: false})
+  })
+
+  it('keeps tracking the last inserted paragraph when it is wrapped in a list', () => {
+    const {state, plugin, schema} = createFixture()
+    const marked = markRange(state)
+
+    const selected = marked.apply(marked.tr.setSelection(TextSelection.create(marked.doc, 16)))
+    let wrapped = selected
+    wrapInList(schema.nodes.bulletList!)(selected, (tr) => {
+      wrapped = selected.apply(tr)
+    })
+
+    expect(wrapped.doc.lastChild!.type.name).toBe('bulletList')
+    expect(tracked(wrapped)).toEqual({from: 5, to: wrapped.doc.content.size, settled: false})
+    expect(getDecorations(plugin, wrapped)).toHaveLength(2)
+  })
+
+  it('leaves a paragraph split off the end of a trailing blockquote outside the range', () => {
+    const {state} = createFixture((schema) => [
+      schema.node('paragraph', null, schema.text('base')),
+      schema.node('blockquote', null, schema.node('paragraph', null, schema.text('quoted')))
+    ])
+    const marked = markAt(state, 6, 16)
+
+    const split = marked.apply(marked.tr.split(14))
+    const typed = split.apply(split.tr.insertText('MINE', 16))
+
+    expect(tracked(typed)).toEqual({from: 6, to: 15, settled: false})
+    expect(typed.doc.child(1).lastChild!.textContent).toBe('MINE')
+  })
+
+  it('tracks a leaf node range without drifting off its boundaries', () => {
+    const {state, schema} = createFixture((schema) => [
+      schema.node('paragraph', null, schema.text('base')),
+      schema.node('horizontalRule')
+    ])
+    const marked = markAt(state, 6, 7)
+
+    const shifted = marked.apply(marked.tr.insertText('X', 1))
+    expect(tracked(shifted)).toEqual({from: 7, to: 8, settled: false})
+
+    const appended = marked.apply(
+      marked.tr.insert(7, schema.node('paragraph', null, schema.text('mine')))
+    )
+    expect(tracked(appended)).toEqual({from: 6, to: 7, settled: false})
+
+    const prepended = marked.apply(
+      marked.tr.insert(6, schema.node('paragraph', null, schema.text('mine')))
+    )
+    expect(tracked(prepended)).toEqual({from: 12, to: 13, settled: false})
   })
 })

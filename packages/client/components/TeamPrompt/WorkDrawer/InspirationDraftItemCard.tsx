@@ -56,7 +56,15 @@ const InspirationDraftItemCard = (props: Props) => {
             Added
           </div>
         ) : (
-          <Button variant='secondary' size='sm' disabled={disabled || isEmpty} onClick={onAdd}>
+          <Button
+            variant='secondary'
+            size='sm'
+            disabled={disabled || isEmpty}
+            onClick={() => {
+              if (editor.isEmpty) return
+              onAdd()
+            }}
+          >
             Add to response
           </Button>
         )}
