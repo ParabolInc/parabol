@@ -13,6 +13,7 @@ interface Props {
 }
 
 const TeamUpdatesAvatarStack = ({members}: Props) => {
+  if (members.length === 0) return null
   const visible = members.slice(0, MAX_SHARED_AVATARS)
   const hidden = members.slice(MAX_SHARED_AVATARS)
   return (
