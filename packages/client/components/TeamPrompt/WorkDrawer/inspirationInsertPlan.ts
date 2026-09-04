@@ -30,9 +30,10 @@ export const MIN_MATCHABLE_ITEM_TEXT_LENGTH = 16
 const isEmptyParagraph = (block: JSONContent) =>
   block.type === 'paragraph' && !block.content?.length
 
-export const trimTrailingEmptyParagraph = (blocks: JSONContent[]) => {
-  const last = blocks[blocks.length - 1]
-  return last && isEmptyParagraph(last) ? blocks.slice(0, -1) : blocks
+export const trimTrailingEmptyParagraphs = (blocks: JSONContent[]) => {
+  let end = blocks.length
+  while (end > 0 && isEmptyParagraph(blocks[end - 1]!)) end--
+  return end === blocks.length ? blocks : blocks.slice(0, end)
 }
 
 export const normalizeAnswerText = (text: string) => text.replace(/\s+/g, ' ').trim()
