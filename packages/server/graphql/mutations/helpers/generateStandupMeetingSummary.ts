@@ -22,9 +22,9 @@ const generateStandupMeetingSummary = async (
   const userIds = responses.map((response) => response.userId)
   const users = (await dataLoader.get('users').loadMany(userIds)).filter(isValid)
 
-  const contentWithUsers = responses.map((response, idx) => ({
+  const contentWithUsers = responses.map((response) => ({
     content: response.plaintextContent,
-    user: users[idx]?.preferredName ?? 'Anonymous'
+    user: users.find((user) => user.id === response.userId)?.preferredName ?? 'Anonymous'
   }))
 
   if (contentWithUsers.length === 0) return null
