@@ -25,13 +25,13 @@ export interface RunInspirationInsertParams {
 }
 
 const ADDED_TOAST_SECONDS = 7
-const NOTHING_TO_UNDO_SECONDS = 4
+export const MIN_MATCHABLE_ITEM_TEXT_LENGTH = 16
 
 export const normalizeAnswerText = (text: string) => text.replace(/\s+/g, ' ').trim()
 
 export const isItemTextInAnswer = (answerText: string, itemText: string): boolean => {
   const normalizedItem = normalizeAnswerText(itemText)
-  if (!normalizedItem) return false
+  if (normalizedItem.length < MIN_MATCHABLE_ITEM_TEXT_LENGTH) return false
   return normalizeAnswerText(answerText).includes(normalizedItem)
 }
 
@@ -69,7 +69,7 @@ export const runInspirationInsert = async (params: RunInspirationInsertParams): 
     sendEvent('Inspiration Item Added', {promptId: item.promptId, meetingId, teamId})
   }
 
-  if (items.length > 1) {
+  if (insertedIds.length > 0 && items.length > 1) {
     sendEvent('Inspiration Add Remaining', {count: insertedIds.length, meetingId, teamId})
   }
 
@@ -97,13 +97,6 @@ export const runInspirationInsert = async (params: RunInspirationInsertParams): 
           return removed
         }, [])
         if (removedIds.length > 0) onRemoved(removedIds)
-        if (removedIds.length === 0) {
-          emitSnackbar({
-            key: `inspirationNothingToUndo:${firstHandle.id}`,
-            message: 'Nothing to undo',
-            autoDismiss: NOTHING_TO_UNDO_SECONDS
-          })
-        }
       }
     },
     onDismiss: () => {
