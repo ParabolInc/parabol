@@ -23,13 +23,13 @@ export const formatSince = (startAt?: string) => {
 }
 
 export const metaLine = (workItemCount: number | undefined, since: string, promptCount: number) => {
-  const source = workItemCount === undefined ? 'your work' : `${workItemCount} work items`
+  const source = workItemCount ? `${workItemCount} work items` : 'your work'
   const routed = promptCount === 1 ? 'your question' : `your ${promptCount} questions`
   return `Drafted from ${source} since ${since} · routed to ${routed}`
 }
 
 export const browseLabel = (workItemCount: number | undefined) =>
-  workItemCount === undefined ? 'Browse work items' : `Browse all ${workItemCount} work items`
+  workItemCount ? `Browse all ${workItemCount} work items` : 'Browse work items'
 
 export const browseSubline = (dateRange?: WorkDrawerDateRange) => {
   if (!dateRange) return 'Tasks, PRs and issues · filter by status or source'
