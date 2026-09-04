@@ -54,7 +54,10 @@ const ParabolTasksPanel = (props: Props) => {
   )
 
   const atmosphere = useAtmosphere()
-  const {dateRange, setDateRange, getResultCount} = useInspirationDrawer('PARABOL', meeting)
+  const {dateRange, setDateRange, onResultCount, getResultCount} = useInspirationDrawer(
+    'PARABOL',
+    meeting
+  )
   const [subTab, setSubTab] = useSessionStorageState<SubTab>(
     `Inspiration:parabol:subTab:${meeting.id}`,
     'tasks'
@@ -130,6 +133,7 @@ const ParabolTasksPanel = (props: Props) => {
       <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
         <InspirationItemsPanel
           meetingId={meeting.id}
+          teamId={meeting.teamId}
           service='PARABOL'
           searchQuery={searchQuery}
           initialItems={meeting.parabolInspirationItems}
@@ -137,9 +141,19 @@ const ParabolTasksPanel = (props: Props) => {
           workItemCount={getResultCount(searchQuery)}
         >
           {subTab === 'tasks' ? (
-            <ParabolTasksResultsRoot selectedStatuses={selectedStatuses} dateRange={dateRange} />
+            <ParabolTasksResultsRoot
+              selectedStatuses={selectedStatuses}
+              dateRange={dateRange}
+              searchQuery={searchQuery}
+              onResultCount={onResultCount}
+            />
           ) : (
-            <ParabolStandupsResultsRoot teamId={meeting.teamId} dateRange={dateRange} />
+            <ParabolStandupsResultsRoot
+              teamId={meeting.teamId}
+              dateRange={dateRange}
+              searchQuery={searchQuery}
+              onResultCount={onResultCount}
+            />
           )}
         </InspirationItemsPanel>
       </div>

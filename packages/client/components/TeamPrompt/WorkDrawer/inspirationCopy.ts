@@ -1,3 +1,4 @@
+import type {JSONContent} from '@tiptap/core'
 import dayjs from 'dayjs'
 import type {WorkDrawerDateRange} from './WorkDrawerDateFilter'
 
@@ -39,3 +40,6 @@ export const browseSubline = (dateRange?: WorkDrawerDateRange) => {
 
 export const addAllLabel = (remaining: number, total: number) =>
   remaining === total ? `Add all ${remaining} to my response` : `Add remaining ${remaining}`
+
+export const collectText = (node: JSONContent): string[] =>
+  node.text ? [node.text] : (node.content ?? []).flatMap(collectText)
