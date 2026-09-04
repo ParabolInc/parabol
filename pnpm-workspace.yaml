@@ -31,4 +31,4 @@ onlyBuiltDependencies:
 
 patchedDependencies:
   '@sereneinserenade/tiptap-search-and-replace@0.1.1': patches/@sereneinserenade__tiptap-search-and-replace@0.1.1.patch
-  '@tiptap/core@3.23.6': patches/@tiptap__core@3.23.6.patch
+  '@tiptap/core@3.31.2': patches/@tiptap__core@3.31.2.patch
