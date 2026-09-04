@@ -13,7 +13,10 @@ graphql`
           id
           ... on ReflectPhase {
             reflectPrompts {
+              ...PhaseItemColumn_prompt @relay(mask: false)
+              ...GroupingKanbanColumn_prompt @relay(mask: false)
               id
+              sortOrder
             }
           }
         }
