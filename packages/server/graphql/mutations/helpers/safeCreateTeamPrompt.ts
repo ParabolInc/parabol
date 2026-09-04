@@ -61,6 +61,7 @@ const safeCreateTeamPrompt = async (
       .values({...meeting, phases: JSON.stringify(meeting.phases)})
       .execute()
   } catch {
+    // insert failed: a meeting for this team was just created concurrently
     return null
   }
   await pg

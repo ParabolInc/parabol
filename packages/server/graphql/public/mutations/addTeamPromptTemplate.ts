@@ -9,10 +9,9 @@ import decrementFreeTemplatesRemaining from '../../../postgres/queries/decrement
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember, isUserInOrg} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
+import {CANONICAL_STANDUP_TEMPLATE_ID} from '../../mutations/helpers/resolveStandupTemplateId'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import type {MutationResolvers} from '../resolverTypes'
-
-const CANONICAL_STANDUP_TEMPLATE_ID = 'teamPrompt'
 
 const addTeamPromptTemplate: MutationResolvers['addTeamPromptTemplate'] = async (
   _source,

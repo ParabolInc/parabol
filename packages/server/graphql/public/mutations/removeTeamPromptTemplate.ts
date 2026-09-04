@@ -3,9 +3,8 @@ import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import publish from '../../../utils/publish'
+import {CANONICAL_STANDUP_TEMPLATE_ID} from '../../mutations/helpers/resolveStandupTemplateId'
 import type {MutationResolvers} from '../resolverTypes'
-
-const CANONICAL_STANDUP_TEMPLATE_ID = 'teamPrompt'
 
 const removeTeamPromptTemplate: MutationResolvers['removeTeamPromptTemplate'] = async (
   _source,
