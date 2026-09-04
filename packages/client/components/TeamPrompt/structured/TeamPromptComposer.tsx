@@ -130,48 +130,46 @@ const TeamPromptComposer = (props: Props) => {
           answeredCount={answeredPromptIds.size}
           promptCount={prompts.length}
         />
-        {isExpanded && (
-          <>
-            <div className='flex flex-col gap-4 rounded-card bg-surface-card p-4 shadow-[var(--shadow-card)]'>
-              {prompts.map((prompt, index) => {
-                if (!editorRefs.current.has(prompt.id))
-                  editorRefs.current.set(prompt.id, {current: null})
-                const nextPromptId = prompts[index + 1]?.id
-                return (
-                  <TeamPromptAnswerEditor
-                    key={prompt.id}
-                    teamId={teamId}
-                    prompt={prompt}
-                    initialContent={initialContentByPrompt.get(prompt.id) ?? null}
-                    readOnly={!!endedAt}
-                    isAnswered={answeredPromptIds.has(prompt.id)}
-                    compact={prompts.length === 1}
-                    onChange={onChange}
-                    onModEnter={onShare}
-                    onTab={
-                      nextPromptId
-                        ? () => editorRefs.current.get(nextPromptId)?.current?.commands.focus('end')
-                        : undefined
-                    }
-                    editorRef={editorRefs.current.get(prompt.id)!}
-                  />
-                )
-              })}
-            </div>
-            {!endedAt && (
-              <TeamPromptComposerFooter
-                isShared={isShared}
-                isDirty={dirtyPromptIds.size > 0}
-                answeredCount={answeredPromptIds.size}
-                promptCount={prompts.length}
-                submitting={submitting}
-                isInspirationOpen={rightDrawerOpen === 'inspiration'}
-                onOpenInspiration={onOpenInspiration}
-                onShare={onShare}
-              />
-            )}
-          </>
-        )}
+        <div className={cn(!isExpanded && 'hidden')}>
+          <div className='flex flex-col gap-4 rounded-card bg-surface-card p-4 shadow-[var(--shadow-card)]'>
+            {prompts.map((prompt, index) => {
+              if (!editorRefs.current.has(prompt.id))
+                editorRefs.current.set(prompt.id, {current: null})
+              const nextPromptId = prompts[index + 1]?.id
+              return (
+                <TeamPromptAnswerEditor
+                  key={prompt.id}
+                  teamId={teamId}
+                  prompt={prompt}
+                  initialContent={initialContentByPrompt.get(prompt.id) ?? null}
+                  readOnly={!!endedAt}
+                  isAnswered={answeredPromptIds.has(prompt.id)}
+                  compact={prompts.length === 1}
+                  onChange={onChange}
+                  onModEnter={onShare}
+                  onTab={
+                    nextPromptId
+                      ? () => editorRefs.current.get(nextPromptId)?.current?.commands.focus('end')
+                      : undefined
+                  }
+                  editorRef={editorRefs.current.get(prompt.id)!}
+                />
+              )
+            })}
+          </div>
+          {!endedAt && (
+            <TeamPromptComposerFooter
+              isShared={isShared}
+              isDirty={dirtyPromptIds.size > 0}
+              answeredCount={answeredPromptIds.size}
+              promptCount={prompts.length}
+              submitting={submitting}
+              isInspirationOpen={rightDrawerOpen === 'inspiration'}
+              onOpenInspiration={onOpenInspiration}
+              onShare={onShare}
+            />
+          )}
+        </div>
       </div>
     </div>
   )
