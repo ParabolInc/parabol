@@ -10,7 +10,7 @@ const useOpenResponseDiscussion = (
   const atmosphere = useAtmosphere()
   return useCallback(
     (stageId: string) => {
-      const isOpenForStage = rightDrawerOpen != null && localStageId === stageId
+      const isOpenForStage = rightDrawerOpen === 'discussion' && localStageId === stageId
       commitLocalUpdate(atmosphere, (store) => {
         const proxy = store.get(meetingId)
         if (!proxy) return

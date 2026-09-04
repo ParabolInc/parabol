@@ -30,9 +30,13 @@ const TeamPromptResponsePermalink = ({meetingId, teamId, responseId}: Props) => 
     <Tooltip open={isCopied || isHovered} onOpenChange={setIsHovered}>
       <CopyToClipboard text={permalink} onCopy={handleCopy}>
         <TooltipTrigger asChild>
-          <div className='ml-auto h-7 rounded-md bg-transparent p-0 text-fg-muted hover:bg-surface-hover hover:text-fg-secondary'>
+          <button
+            type='button'
+            aria-label='Copy permalink'
+            className='ml-auto h-7 rounded-md bg-transparent p-0 text-fg-muted hover:bg-surface-hover hover:text-fg-secondary'
+          >
             <Link className='h-7 w-7 cursor-pointer p-0.5' />
-          </div>
+          </button>
         </TooltipTrigger>
       </CopyToClipboard>
       <TooltipContent side={isCopied ? 'top' : 'bottom'}>

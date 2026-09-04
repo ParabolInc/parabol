@@ -5,6 +5,7 @@ import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import type {TeamPromptComposer_meeting$key} from '~/__generated__/TeamPromptComposer_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import lastAnswerUpdatedAt from './lastAnswerUpdatedAt'
 import TeamPromptAnswerEditor from './TeamPromptAnswerEditor'
 import TeamPromptComposerFooter from './TeamPromptComposerFooter'
 import TeamPromptComposerHeader from './TeamPromptComposerHeader'
@@ -143,6 +144,8 @@ const TeamPromptComposer = (props: Props) => {
     .find((answer) => !!answer?.plaintextContent.trim())?.plaintextContent
   const preview = (savedText ?? '').replace(/\s+/g, ' ').trim().slice(0, PREVIEW_LENGTH)
   const isDirty = dirtyPromptIds.size > 0
+  const sharedAt = response?.sharedAt ?? null
+  const lastAnswerAt = response && sharedAt ? lastAnswerUpdatedAt(response.answers, sharedAt) : null
 
   return (
     <div className='mx-auto w-full max-w-[640px] px-[5%] pt-6 pb-2'>
@@ -151,8 +154,8 @@ const TeamPromptComposer = (props: Props) => {
         isExpanded={isExpanded}
         onToggle={() => setIsExpanded((wasExpanded) => !wasExpanded)}
         isShared={isShared}
-        sharedAt={response?.sharedAt ?? null}
-        updatedAt={response?.updatedAt ?? null}
+        sharedAt={sharedAt}
+        updatedAt={lastAnswerAt}
         preview={preview}
         answeredCount={answeredPromptIds.size}
         promptCount={prompts.length}

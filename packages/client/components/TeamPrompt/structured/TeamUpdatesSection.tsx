@@ -65,9 +65,14 @@ const TeamUpdatesSection = (props: Props) => {
   const headerRef = useRef<HTMLDivElement>(null)
   const gridRef = useRef<HTMLDivElement>(null)
   const viewerStage = stages.find((stage) => stage.teamMember.userId === viewerId)
-  const isPinned = useTeamHeaderPin(headerRef, scrollContainerRef, !viewerStage?.response?.isShared)
-  const onReply = useOpenResponseDiscussion(meetingId, rightDrawerOpen, localStageId)
   const {shared, drafting, notStarted} = sortTeamStages(stages, viewerId)
+  const isPinned = useTeamHeaderPin(
+    headerRef,
+    scrollContainerRef,
+    !viewerStage?.response?.isShared && shared.length > 0
+  )
+  const onReply = useOpenResponseDiscussion(meetingId, rightDrawerOpen, localStageId)
+  const selectedStageId = rightDrawerOpen === 'discussion' ? localStageId : null
   const sharedMembers = shared.map((stage) => stage.teamMember.user)
   const onSeeTeam = () => {
     scrollContainerRef.current?.scrollTo({top: gridRef.current?.offsetTop ?? 0, behavior: 'smooth'})
@@ -91,7 +96,7 @@ const TeamUpdatesSection = (props: Props) => {
             draftingStages={[...drafting, ...notStarted]}
             teamId={teamId}
             meetingId={meetingId}
-            selectedStageId={localStageId}
+            selectedStageId={selectedStageId}
             onReply={onReply}
           />
         ) : (
@@ -102,7 +107,7 @@ const TeamUpdatesSection = (props: Props) => {
             draftingStages={drafting}
             notStartedStages={notStarted}
             isEnded={!!endedAt}
-            selectedStageId={localStageId}
+            selectedStageId={selectedStageId}
             onReply={onReply}
           />
         )}

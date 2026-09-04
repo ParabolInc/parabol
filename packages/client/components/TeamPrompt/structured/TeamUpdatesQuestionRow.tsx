@@ -4,6 +4,7 @@ import type {TeamUpdatesQuestionRow_stage$key} from '~/__generated__/TeamUpdates
 import {cn} from '../../../ui/cn'
 import Avatar from '../../Avatar/Avatar'
 import TeamPromptLastUpdatedTime from '../TeamPromptLastUpdatedTime'
+import lastAnswerUpdatedAt from './lastAnswerUpdatedAt'
 import TeamPromptAnswerBlock from './TeamPromptAnswerBlock'
 import TeamPromptResponseFooter from './TeamPromptResponseFooter'
 
@@ -40,12 +41,12 @@ const TeamUpdatesQuestionRow = (props: Props) => {
         response {
           id
           sharedAt
-          updatedAt
           answeredPromptIds
           answers {
             id
             promptId
             content
+            updatedAt
           }
           ...TeamPromptResponseFooter_response
         }
@@ -79,7 +80,7 @@ const TeamUpdatesQuestionRow = (props: Props) => {
                 · shared{' '}
                 <TeamPromptLastUpdatedTime
                   createdAt={response.sharedAt}
-                  updatedAt={response.updatedAt}
+                  updatedAt={lastAnswerUpdatedAt(response.answers, response.sharedAt)}
                 />
               </span>
             )
