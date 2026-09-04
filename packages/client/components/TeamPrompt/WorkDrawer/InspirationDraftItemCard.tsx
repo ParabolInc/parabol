@@ -1,11 +1,12 @@
 import type {Editor, JSONContent} from '@tiptap/core'
 import {useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import {useEffect, useState} from 'react'
+import {useEffect} from 'react'
 import {Check as CheckIcon} from '~/ui/icons'
 import {Button} from '../../../ui/Button/Button'
 import {TipTapEditor} from '../../TipTapEditor/TipTapEditor'
 import {TiptapLinkExtension} from '../../TipTapEditor/TiptapLinkExtension'
+import hasContentToAdd from './hasContentToAdd'
 import InspirationDestinationChip from './InspirationDestinationChip'
 import type {WorkDrawerPrompt} from './WorkDrawerConsumeContext'
 
@@ -16,22 +17,16 @@ interface Props {
   prompt: WorkDrawerPrompt
   source: string
   isAdded: boolean
+  isEmpty: boolean
   disabled: boolean
   onEditorChange: (itemId: string, editor: Editor | null) => void
+  onEmptyChange: (itemId: string, isEmpty: boolean) => void
   onAdd: () => void
 }
 
-const hasBlocksToAdd = (editor: Editor) => {
-  const {doc} = editor.state
-  const last = doc.lastChild
-  if (!last) return false
-  const isTrailingNode = last.type.name === 'paragraph' && last.content.size === 0
-  return doc.childCount > (isTrailingNode ? 1 : 0)
-}
-
 const InspirationDraftItemCard = (props: Props) => {
-  const {itemId, title, content, prompt, source, isAdded, disabled, onEditorChange, onAdd} = props
-  const [isEmpty, setIsEmpty] = useState(false)
+  const {itemId, title, content, prompt, source, isAdded, isEmpty, disabled} = props
+  const {onEditorChange, onEmptyChange, onAdd} = props
   const editor = useEditor({
     content,
     extensions: [
@@ -39,14 +34,14 @@ const InspirationDraftItemCard = (props: Props) => {
       TiptapLinkExtension.configure({openOnClick: false})
     ],
     editorProps: {attributes: {'aria-label': title ?? 'Drafted answer'}},
-    onUpdate: ({editor}) => setIsEmpty(!hasBlocksToAdd(editor))
+    onUpdate: ({editor}) => onEmptyChange(itemId, !hasContentToAdd(editor))
   })
   useEffect(() => {
     if (!editor) return
-    setIsEmpty(!hasBlocksToAdd(editor))
+    onEmptyChange(itemId, !hasContentToAdd(editor))
     onEditorChange(itemId, editor)
     return () => onEditorChange(itemId, null)
-  }, [editor, itemId, onEditorChange])
+  }, [editor, itemId, onEditorChange, onEmptyChange])
   if (!editor) return null
   return (
     <div className='flex flex-col gap-2 rounded-card bg-surface-card p-3 shadow-[var(--shadow-card)]'>
@@ -69,7 +64,7 @@ const InspirationDraftItemCard = (props: Props) => {
             size='sm'
             disabled={disabled || isEmpty}
             onClick={() => {
-              if (!hasBlocksToAdd(editor)) return
+              if (!hasContentToAdd(editor)) return
               onAdd()
             }}
           >
