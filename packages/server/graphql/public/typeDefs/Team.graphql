@@ -199,6 +199,13 @@ type Team implements Node & TeamPartial {
   retroMeetingsCount: Int!
 
   """
+  The team's completed Team Health cycles, oldest first, so scores can be read as a trend. Limited
+  to the most recent `limit` cycles. Categories are the unit of comparison because question
+  rotation changes which questions get asked each cycle
+  """
+  teamHealthTrend(limit: Int = 12): [TeamHealthTrendPoint!]!
+
+  """
   Whether the team is visible to everyone in the org and anyone can join it without an invitation
   """
   isPublic: Boolean!

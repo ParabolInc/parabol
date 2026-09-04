@@ -499,7 +499,10 @@ const permissionMap: PermissionMap<Resolvers> = {
       isTeamMember<'Team.massInvitation'>('source.id'),
       hasOrgRole<'Team.massInvitation'>('source.orgId', 'ORG_ADMIN')
     ),
-    organization: isViewerOnOrg<'Team.organization'>('source.orgId')
+    organization: isViewerOnOrg<'Team.organization'>('source.orgId'),
+    // a team's health scores are for that team. Comparing teams against each other is the paid
+    // Reporting feature and gets its own, deliberately separate, authorization
+    teamHealthTrend: isTeamMember<'Team.teamHealthTrend'>('source.id')
   },
   TeamMember: {
     integrations: isUserViewer<'TeamMember.integrations'>('source.userId'),

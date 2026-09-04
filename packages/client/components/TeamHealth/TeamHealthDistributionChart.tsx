@@ -8,6 +8,7 @@ import {
 } from 'chart.js'
 import {Bar} from 'react-chartjs-2'
 import useResolvedTheme from '../../hooks/useResolvedTheme'
+import {cn} from '../../ui/cn'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip)
 
@@ -37,10 +38,13 @@ const SCORE_LABELS = [
 interface Props {
   // count of responses at each Likert score, index 0 = score 1 ... index 4 = score 5
   distribution: number[]
+  // too few answers to show the shape: blur the bars and take the per-bar tooltip away, so the
+  // chart still reads as "there is data here" without anyone counting who sits where
+  isObscured?: boolean
 }
 
 const TeamHealthDistributionChart = (props: Props) => {
-  const {distribution} = props
+  const {distribution, isObscured} = props
   const theme = useResolvedTheme()
   const tooltipColors = TOOLTIP_COLORS[theme]
   const data = {
@@ -58,7 +62,10 @@ const TeamHealthDistributionChart = (props: Props) => {
     ]
   }
   return (
-    <div className='h-20'>
+    <div
+      className={cn('h-20', isObscured && 'pointer-events-none blur-[6px]')}
+      aria-hidden={isObscured}
+    >
       <Bar
         data={data}
         options={{
@@ -67,6 +74,7 @@ const TeamHealthDistributionChart = (props: Props) => {
           plugins: {
             legend: {display: false},
             tooltip: {
+              enabled: !isObscured,
               displayColors: false,
               backgroundColor: tooltipColors.background,
               titleColor: tooltipColors.text,
