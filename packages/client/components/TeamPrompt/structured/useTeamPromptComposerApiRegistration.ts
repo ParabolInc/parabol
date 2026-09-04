@@ -4,7 +4,10 @@ import {
   getInsertedRange,
   getInsertedRanges
 } from '../../../tiptap/extensions/insertedRangeHighlight/InsertedRangeHighlight'
-import {streamContentIntoEditor} from '../../TipTapEditor/streamContentIntoEditor'
+import {
+  type StreamHandle,
+  streamContentIntoEditor
+} from '../../TipTapEditor/streamContentIntoEditor'
 import TeamPromptComposerApiContext, {type InsertHandle} from './TeamPromptComposerApiContext'
 
 const HIGHLIGHT_MS = 1800
@@ -55,11 +58,14 @@ const useTeamPromptComposerApiRegistration = (options: Options) => {
   const insertCountRef = useRef(0)
   const insertQueuesRef = useRef(new Map<string, Promise<unknown>>())
   const streamingPromptIdsRef = useRef(new Set<string>())
+  const streamHandlesRef = useRef(new Map<string, StreamHandle>())
   const settledWhileStreamingRef = useRef(new Set<string>())
   const timersRef = useRef<Timers>(new Map())
 
   useEffect(
     () => () => {
+      streamHandlesRef.current.forEach((handle) => handle.cancel())
+      streamHandlesRef.current.clear()
       timersRef.current.forEach((cancel, timer) => {
         clearTimeout(timer)
         cancel()
@@ -73,6 +79,7 @@ const useTeamPromptComposerApiRegistration = (options: Options) => {
     if (!apiRef) return
     const timers = timersRef.current
     const streamingPromptIds = streamingPromptIdsRef.current
+    const streamHandles = streamHandlesRef.current
     const settledWhileStreaming = settledWhileStreamingRef.current
     const insert = async (promptId: string, blocks: JSONContent[]) => {
       const mounted = editorRefs.current.get(promptId)?.current
@@ -95,21 +102,28 @@ const useTeamPromptComposerApiRegistration = (options: Options) => {
       streamingPromptIds.add(promptId)
       try {
         await new Promise<void>((resolve) => {
-          streamContentIntoEditor(editor, baseDoc, fullDoc, {
-            wordDelayMs: STREAM_WORD_DELAY_MS,
-            onDone: resolve
-          })
+          streamHandles.set(
+            promptId,
+            streamContentIntoEditor(editor, baseDoc, fullDoc, {
+              wordDelayMs: STREAM_WORD_DELAY_MS,
+              onDone: resolve
+            })
+          )
         })
       } finally {
         streamingPromptIds.delete(promptId)
+        streamHandles.delete(promptId)
       }
       if (editor.isDestroyed) return null
-      if (!wasEmpty) {
-        trackedRanges.forEach((range, trackedId) => {
-          editor.commands.markInsertedRange(trackedId, range.from, range.to)
-          if (range.settled || settledWhileStreaming.has(trackedId))
-            editor.commands.settleInsertedRange(trackedId)
-        })
+      if (!wasEmpty && trackedRanges.size > 0) {
+        editor.commands.restoreInsertedRanges(
+          Array.from(trackedRanges, ([trackedId, range]) => ({
+            id: trackedId,
+            from: range.from,
+            to: range.to,
+            settled: range.settled || settledWhileStreaming.has(trackedId)
+          }))
+        )
       }
       trackedRanges.forEach((_range, trackedId) => settledWhileStreaming.delete(trackedId))
       editor.commands.markInsertedRange(
@@ -148,7 +162,6 @@ const useTeamPromptComposerApiRegistration = (options: Options) => {
         const range = getInsertedRange(editor, id)
         if (!range) return false
         editor.chain().deleteRange(range).forgetInsertedRange(id).run()
-        onChange(promptId, editor)
         return true
       },
       forgetInsert: ({id, promptId}) => {

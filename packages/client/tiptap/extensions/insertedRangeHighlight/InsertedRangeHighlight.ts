@@ -1,5 +1,6 @@
 import type {Editor} from '@tiptap/core'
 import {Extension} from '@tiptap/core'
+import type {Transaction} from '@tiptap/pm/state'
 import {Plugin, PluginKey} from '@tiptap/pm/state'
 import {Decoration, DecorationSet} from '@tiptap/pm/view'
 
@@ -12,15 +13,36 @@ interface TrackedRange {
   settled: boolean
 }
 
+export interface RestoredRange extends TrackedRange {
+  id: string
+}
+
 type RangeMap = Map<string, TrackedRange>
 
 interface RangeMeta {
   mark?: {id: string; from: number; to: number}
+  restore?: RestoredRange[]
   settle?: string
   forget?: string
 }
 
 export const insertedRangeKey = new PluginKey<RangeMap>('insertedRangeHighlight')
+
+const clampToDoc = (position: number, size: number) => Math.max(0, Math.min(position, size))
+
+const mapRangeEnd = (tr: Transaction, to: number) => {
+  const size = tr.doc.content.size
+  const insideEnd = clampToDoc(tr.mapping.map(Math.max(to - 1, 0), -1), size)
+  const $insideEnd = tr.doc.resolve(insideEnd)
+  return $insideEnd.depth === 0 ? insideEnd : $insideEnd.after(1)
+}
+
+const setClampedRange = (ranges: RangeMap, size: number, range: RestoredRange) => {
+  const from = clampToDoc(range.from, size)
+  const to = clampToDoc(range.to, size)
+  if (to > from) ranges.set(range.id, {from, to, settled: range.settled})
+  else ranges.delete(range.id)
+}
 
 const buildDecorations = (doc: Parameters<typeof DecorationSet.create>[0], ranges: RangeMap) => {
   const decorations: Decoration[] = []
@@ -43,6 +65,7 @@ declare module '@tiptap/core' {
   interface Commands<ReturnType> {
     insertedRangeHighlight: {
       markInsertedRange: (id: string, from: number, to: number) => ReturnType
+      restoreInsertedRanges: (ranges: RestoredRange[]) => ReturnType
       settleInsertedRange: (id: string) => ReturnType
       forgetInsertedRange: (id: string) => ReturnType
     }
@@ -68,6 +91,12 @@ export const InsertedRangeHighlight = Extension.create({
           if (dispatch) tr.setMeta(insertedRangeKey, {mark: {id, from, to}} satisfies RangeMeta)
           return true
         },
+      restoreInsertedRanges:
+        (ranges) =>
+        ({tr, dispatch}) => {
+          if (dispatch) tr.setMeta(insertedRangeKey, {restore: ranges} satisfies RangeMeta)
+          return true
+        },
       settleInsertedRange:
         (id) =>
         ({tr, dispatch}) => {
@@ -90,15 +119,16 @@ export const InsertedRangeHighlight = Extension.create({
         state: {
           init: () => new Map(),
           apply: (tr, ranges) => {
+            const size = tr.doc.content.size
             const next: RangeMap = new Map()
             ranges.forEach((range, id) => {
-              const from = tr.mapping.map(range.from, -1)
-              const to = tr.mapping.map(range.to, 1)
+              const from = clampToDoc(tr.mapping.map(range.from, 1), size)
+              const to = clampToDoc(mapRangeEnd(tr, range.to), size)
               if (to > from) next.set(id, {from, to, settled: range.settled})
             })
             const meta = tr.getMeta(insertedRangeKey) as RangeMeta | undefined
-            if (meta?.mark)
-              next.set(meta.mark.id, {from: meta.mark.from, to: meta.mark.to, settled: false})
+            if (meta?.mark) setClampedRange(next, size, {...meta.mark, settled: false})
+            meta?.restore?.forEach((range) => setClampedRange(next, size, range))
             if (meta?.settle) {
               const range = next.get(meta.settle)
               if (range) next.set(meta.settle, {...range, settled: true})
