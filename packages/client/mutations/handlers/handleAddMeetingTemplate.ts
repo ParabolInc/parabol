@@ -14,8 +14,9 @@ const handleAddMeetingTemplate = (
   const meetingSettings = team.getLinkedRecord('meetingSettings', {
     meetingType
   })
-  if (!meetingSettings) return
-  addNodeToArray(newNode, meetingSettings, 'teamTemplates', 'name')
+  if (meetingSettings) {
+    addNodeToArray(newNode, meetingSettings, 'teamTemplates', 'name')
+  }
 
   const viewer = store.getRoot().getLinkedRecord('viewer')
   const allTemplatesDetailsConn =
