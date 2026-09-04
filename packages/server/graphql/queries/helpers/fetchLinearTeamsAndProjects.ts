@@ -33,7 +33,8 @@ export const fetchLinearProjects = async (
               teamId: edge.node.teams?.nodes?.[0]?.id
             }
         )
-        .filter(isNotNull) ?? []
+        .filter(isNotNull)
+        .filter((project: {teamId?: string}) => !!project.teamId) ?? []
     )
   } catch (error) {
     return error instanceof Error ? error : new Error(String(error))

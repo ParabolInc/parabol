@@ -3,11 +3,9 @@ import {useFragment} from 'react-relay'
 import type {TaskFooterIntegrateMenuSignup_teamMember$key} from '~/__generated__/TaskFooterIntegrateMenuSignup_teamMember.graphql'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
 import {getConnectProvider} from '../integrations/platform/findIntegrationService'
+import {isRegisteredClientIntegration} from '../integrations/platform/registry'
 import {MenuSeparator} from '../ui/Menu/MenuSeparator'
-import AddToAzureMenuItem from './AddToAzureMenuItem'
-import AddToGitHubMenuItem from './AddToGitHubMenuItem'
-import AddToGitLabMenuItem from './AddToGitLabMenuItem'
-import AddToJiraMenuItem from './AddToJiraMenuItem'
+import ConnectIntegrationMenuItem from './ConnectIntegrationMenuItem'
 import LoadingComponent from './LoadingComponent/LoadingComponent'
 
 interface Props {
@@ -24,25 +22,16 @@ const TaskFooterIntegrateMenuSignup = (props: Props) => {
     graphql`
       fragment TaskFooterIntegrateMenuSignup_teamMember on TeamMember {
         services {
+          title
+          isConnected
+          grantedScopes
           ...findIntegrationService_cloudProvider @relay(mask: false)
-        }
-        integrations {
-          atlassian {
-            isActive
-            scope
-          }
-          gitlab {
-            ...AddToGitLabMenuItem_GitLabIntegration
-          }
-          azureDevOps {
-            ...AddToAzureMenuItem_AzureIntegration
-          }
         }
       }
     `,
     teamMemberRef
   )
-  const {integrations, services} = teamMember
+  const {services} = teamMember
 
   if (submitting) return <LoadingComponent spinnerSize={24} height={24} showAfter={0} width={200} />
   return (
@@ -53,27 +42,22 @@ const TaskFooterIntegrateMenuSignup = (props: Props) => {
           <MenuSeparator />
         </>
       )}
-      <AddToGitHubMenuItem
-        mutationProps={mutationProps}
-        teamId={teamId}
-        provider={getConnectProvider(services, 'github')}
-      />
-      <AddToJiraMenuItem
-        mutationProps={mutationProps}
-        teamId={teamId}
-        provider={getConnectProvider(services, 'jira')}
-        heldScopes={integrations.atlassian?.scope}
-      />
-      <AddToAzureMenuItem
-        mutationProps={mutationProps}
-        teamId={teamId}
-        azureRef={integrations.azureDevOps}
-      />
-      <AddToGitLabMenuItem
-        mutationProps={mutationProps}
-        teamId={teamId}
-        gitlabRef={integrations.gitlab}
-      />
+      {services.map(({service, title, isConnected, grantedScopes}) => {
+        if (isConnected || !isRegisteredClientIntegration(service)) return null
+        const provider = getConnectProvider(services, service)
+        if (!provider) return null
+        return (
+          <ConnectIntegrationMenuItem
+            key={service}
+            teamId={teamId}
+            mutationProps={mutationProps}
+            service={service}
+            title={title}
+            provider={provider}
+            heldScopes={grantedScopes}
+          />
+        )
+      })}
     </>
   )
 }

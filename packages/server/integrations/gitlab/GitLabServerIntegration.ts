@@ -9,6 +9,7 @@ import {
 } from '../platform/ServerIntegrationDefinition'
 import describeGitLabDimensionField from './describeGitLabDimensionField'
 import GitLabServerManager from './GitLabServerManager'
+import listGitLabDimensionFields from './listGitLabDimensionFields'
 import pushEstimateToGitLab from './pushEstimateToGitLab'
 import resolveGitLabDimensionFieldKey from './resolveGitLabDimensionFieldKey'
 import resolveGitLabTaskIntegration from './resolveGitLabTaskIntegration'
@@ -42,7 +43,8 @@ export class GitLabServerIntegration extends ServerIntegrationDefinition {
       targets: ['comment', 'label'],
       pushEstimate: pushEstimateToGitLab,
       resolveDimensionFieldKey: resolveGitLabDimensionFieldKey,
-      describeDimensionField: describeGitLabDimensionField
+      describeDimensionField: describeGitLabDimensionField,
+      listDimensionFields: listGitLabDimensionFields
     }
   }
 }

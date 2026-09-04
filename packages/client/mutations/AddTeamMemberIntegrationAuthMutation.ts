@@ -8,12 +8,10 @@ graphql`
     teamMember {
       ...useIsIntegrated_teamMember
       ...GitLabProviderRowTeamMember
-      ...ScopePhaseAreaGitLab_teamMember
       ...JiraServerProviderRowTeamMember
       ...AzureDevOpsProviderRowTeamMember
       ...GcalProviderRowTeamMember
       ...LinearProviderRowTeamMember
-      ...ScopePhaseAreaGitHub_teamMember
       services {
         ...usePersistIntegrationSearchQueryMutation_service @relay(mask: false)
       }

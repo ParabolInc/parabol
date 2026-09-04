@@ -1,0 +1,24 @@
+"""
+A Linear project the viewer can push tasks to, as Parabol caches it. Kept apart from the stitched _xLinearProject so its team-qualified name and composite id never collide with the vendor record in the client store
+"""
+type LinearRemoteProject implements RepoIntegration {
+  """
+  Composite key: teamId:projectId
+  """
+  id: ID!
+
+  """
+  Always linear for this type
+  """
+  service: IntegrationProviderServiceEnum!
+
+  """
+  Team/Project, falling back to the bare project name when the cached project carries no team
+  """
+  name: String!
+
+  """
+  The id createTaskIntegration expects for this repo
+  """
+  integrationRepoId: ID!
+}

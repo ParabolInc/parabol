@@ -61,7 +61,9 @@ const IntegrationRepoId = {
       case 'gitlab':
         return integration.fullPath
       case 'linear':
-        return LinearProjectId.join(integration.teamId, integration.id)
+        return integration.id === integration.teamId
+          ? LinearProjectId.join(integration.teamId)
+          : LinearProjectId.join(integration.teamId, integration.id)
     }
   },
   split: (id: string) => {

@@ -14,7 +14,7 @@ export class AzureDevOpsClientIntegration extends ClientIntegrationDefinition {
   readonly ids = azureDevOpsIntegrationMeta.ids
   readonly Icon = AzureDevOpsSVG
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
-    if (!provider) return
+    if (!provider?.clientId) return
     void AzureDevOpsClientManager.openOAuth(
       atmosphere,
       teamId,

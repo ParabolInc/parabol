@@ -13,6 +13,7 @@ import {
 } from '../platform/ServerIntegrationDefinition'
 import describeLinearDimensionField from './describeLinearDimensionField'
 import LinearServerManager from './LinearServerManager'
+import listLinearDimensionFields from './listLinearDimensionFields'
 import pushEstimateToLinear from './pushEstimateToLinear'
 import resolveLinearDimensionFieldKey from './resolveLinearDimensionFieldKey'
 import resolveLinearTaskIntegration from './resolveLinearTaskIntegration'
@@ -50,7 +51,8 @@ export class LinearServerIntegration extends ServerIntegrationDefinition {
       targets: ['comment', 'field'],
       pushEstimate: pushEstimateToLinear,
       resolveDimensionFieldKey: resolveLinearDimensionFieldKey,
-      describeDimensionField: describeLinearDimensionField
+      describeDimensionField: describeLinearDimensionField,
+      listDimensionFields: listLinearDimensionFields
     }
   }
 }

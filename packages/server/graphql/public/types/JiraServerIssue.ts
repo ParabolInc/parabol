@@ -1,5 +1,9 @@
 import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
 import type {JiraServerIssue as JiraServerRestIssue} from '../../../dataloader/jiraServerLoaders'
+import {
+  VOTE_FIELD_ALLOWED_TYPES,
+  VOTE_FIELD_ID_BLACKLIST
+} from '../../../integrations/jiraServer/jiraServerVoteFields'
 import type {JiraServerIssueResolvers} from '../resolverTypes'
 
 export type JiraServerIssueSource = JiraServerRestIssue & {
@@ -7,9 +11,6 @@ export type JiraServerIssueSource = JiraServerRestIssue & {
   teamId: string
   providerId: number
 }
-
-const VOTE_FIELD_ID_BLACKLIST = ['description', 'summary']
-const VOTE_FIELD_ALLOWED_TYPES = ['string', 'number']
 
 const JiraServerIssue: JiraServerIssueResolvers = {
   __isTypeOf: ({service}) => service === 'jiraServer',

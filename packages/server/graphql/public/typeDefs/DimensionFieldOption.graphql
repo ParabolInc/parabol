@@ -1,0 +1,10 @@
+"""
+A field on the task's service that a dimension's estimate can be pushed to
+"""
+type DimensionFieldOption {
+  """
+  The value to pass to updateIntegrationDimensionField
+  """
+  fieldId: ID!
+  label: String!
+}

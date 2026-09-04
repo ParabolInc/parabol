@@ -9,7 +9,7 @@ import type {
 import GitHubSVG from '../../../../../components/GitHubSVG'
 import GitLabSVG from '../../../../../components/GitLabSVG'
 import JiraSVG from '../../../../../components/JiraSVG'
-import {integrationSvgLookup} from '../../../../../components/TaskIntegrationMenuItem'
+import TaskServiceIcon from '../../../../../components/TaskServiceIcon'
 import useAtmosphere from '../../../../../hooks/useAtmosphere'
 import useMutationProps, {getOnCompletedError} from '../../../../../hooks/useMutationProps'
 import CreateTaskIntegrationMutation from '../../../../../mutations/CreateTaskIntegrationMutation'
@@ -95,9 +95,10 @@ const ExportAllTasks = (props: Props) => {
   const taskServices = Array.from(
     tasks.reduce(
       (serviceSet, task) => (task.taskService ? serviceSet.add(task.taskService) : serviceSet),
-      new Set<string>()
+      new Set<TaskServiceEnum>()
     )
   )
+  const firstTaskService = taskServices[0]
 
   const handlePushToIntegration = async (
     integrationRepoId: string,
@@ -154,11 +155,10 @@ const ExportAllTasks = (props: Props) => {
     </button>
   ) : filteredTasks.length === 0 ? (
     <button className={cn(BUTTON_CLASSES, 'bg-slate-200')}>
-      {taskServices.length === 1 ? (
+      {firstTaskService && taskServices.length === 1 ? (
         <>
-          {integrationSvgLookup[taskServices[0] as TaskServiceEnum]}
-          Tasks synced to{' '}
-          {pushedIntegrationLabel ?? integrationToServiceName[taskServices[0] as TaskServiceEnum]}
+          <TaskServiceIcon service={firstTaskService} />
+          Tasks synced to {pushedIntegrationLabel ?? integrationToServiceName[firstTaskService]}
         </>
       ) : (
         'Tasks synced'

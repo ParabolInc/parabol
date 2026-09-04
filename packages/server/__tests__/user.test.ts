@@ -271,10 +271,11 @@ test('Creating and archiving teams updates User.tms', async () => {
     data: {
       viewer: {
         id: user.userId,
-        tms: [team1Id, team2Id]
+        tms: expect.arrayContaining([team1Id, team2Id])
       }
     }
   })
+  expect(user2.data.viewer.tms).toHaveLength(2)
 
   const archivedTeam = await sendPublic({
     query: `

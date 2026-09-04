@@ -78,6 +78,7 @@
         },
         "mappers": {
           "_xGitLabProject": "./types/_xGitLabProject#_xGitLabProjectSource as _xGitLabProject",
+          "_xLinearProject": "./types/_xLinearProject#_xLinearProjectSource as _xLinearProject",
           "AcceptRequestToJoinDomainSuccess": "./types/AcceptRequestToJoinDomainSuccess#AcceptRequestToJoinDomainSuccessSource",
           "AcceptTeamInvitationPayload": "./types/AcceptTeamInvitationPayload#AcceptTeamInvitationPayloadSource",
           "ActionMeeting": "../../postgres/types/Meeting#CheckInMeeting",
@@ -187,6 +188,7 @@
           "JoinMeetingSuccess": "./types/JoinMeetingSuccess#JoinMeetingSuccessSource",
           "JoinTeamSuccess": "./types/JoinTeamSuccess#JoinTeamSuccessSource",
           "LinearIntegration": "./types/LinearIntegration#LinearIntegrationSource",
+          "LinearRemoteProject": "../../integrations/platform/RemoteRepoIntegration#LinearProject",
           "MattermostIntegration": "./types/MattermostIntegration#MattermostIntegrationSource",
           "MeetingSeries": "../../postgres/types/index#MeetingSeries as MeetingSeriesDB",
           "MeetingTemplate": "../../postgres/types/index#MeetingTemplate as MeetingTemplateDB",

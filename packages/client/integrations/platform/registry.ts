@@ -7,24 +7,35 @@ import {LinearClientIntegration} from '../linear/LinearClientIntegration'
 import type {ClientIntegrationDefinition} from './ClientIntegrationDefinition'
 
 export const clientIntegrations = {
-  azureDevOps: new AzureDevOpsClientIntegration(),
-  github: new GitHubClientIntegration(),
-  gitlab: new GitLabClientIntegration(),
   jira: new JiraClientIntegration(),
   jiraServer: new JiraServerClientIntegration(),
-  linear: new LinearClientIntegration()
+  github: new GitHubClientIntegration(),
+  linear: new LinearClientIntegration(),
+  gitlab: new GitLabClientIntegration(),
+  azureDevOps: new AzureDevOpsClientIntegration()
 } satisfies Record<string, ClientIntegrationDefinition>
 
 export type ClientIntegrations = typeof clientIntegrations
 export type RegisteredClientIntegration = keyof ClientIntegrations
 
-const isRegistered = (service: string): service is RegisteredClientIntegration =>
-  Object.hasOwn(clientIntegrations, service)
+/** Registry order is popularity order; hosts that list services sort by it */
+export const clientIntegrationsByPopularity = Object.keys(
+  clientIntegrations
+) as RegisteredClientIntegration[]
+
+export const compareClientIntegrationPopularity = (
+  a: RegisteredClientIntegration,
+  b: RegisteredClientIntegration
+) => clientIntegrationsByPopularity.indexOf(a) - clientIntegrationsByPopularity.indexOf(b)
+
+export const isRegisteredClientIntegration = (
+  service: string
+): service is RegisteredClientIntegration => Object.hasOwn(clientIntegrations, service)
 
 export function getClientIntegration<N extends RegisteredClientIntegration>(
   service: N
 ): ClientIntegrations[N]
 export function getClientIntegration(service: string): ClientIntegrationDefinition | null
 export function getClientIntegration(service: string) {
-  return isRegistered(service) ? clientIntegrations[service] : null
+  return isRegisteredClientIntegration(service) ? clientIntegrations[service] : null
 }

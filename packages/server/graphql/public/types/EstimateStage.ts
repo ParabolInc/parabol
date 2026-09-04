@@ -1,9 +1,12 @@
+import type {GraphQLResolveInfo} from 'graphql'
 import {GraphQLError} from 'graphql'
 import {SprintPokerDefaults} from '../../../../client/types/constEnums'
+import listDimensionFields from '../../../integrations/platform/listDimensionFields'
 import resolveServiceField from '../../../integrations/platform/resolveServiceField'
 import type {EstimateStage as EstimateStageDB} from '../../../postgres/types/NewMeetingPhase'
 import {getUserId} from '../../../utils/authorization'
 import getRedis from '../../../utils/getRedis'
+import type {GQLContext} from '../../graphql'
 import isValid from '../../isValid'
 import {resolveStoryFinalScore} from '../../resolvers/resolveStoryFinalScore'
 import type {EstimateStageResolvers} from '../resolverTypes'
@@ -13,34 +16,50 @@ export interface EstimateStageSource extends EstimateStageDB {
   teamId: string
 }
 
+const loadDimensionFieldCtx = async (
+  {dimensionRefIdx, meetingId, teamId, taskId}: EstimateStageSource,
+  context: GQLContext,
+  info: GraphQLResolveInfo
+) => {
+  const {dataLoader, authToken} = context
+  const viewerId = getUserId(authToken)
+  const task = await dataLoader.get('tasks').load(taskId)
+  const integration = task?.integration
+  if (!task || !integration) return null
+  const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
+  if (meeting.meetingType !== 'poker') throw new Error('Meeting is not a poker meeting')
+  const templateRef = await dataLoader.get('templateRefs').loadNonNull(meeting.templateRefId)
+  const {name: dimensionName} = templateRef.dimensions[dimensionRefIdx]!
+  return {
+    dataLoader,
+    teamId,
+    userId: integration.accessUserId,
+    context,
+    info,
+    task,
+    dimensionName,
+    viewerId
+  }
+}
+
 const EstimateStage: EstimateStageResolvers = {
   __isTypeOf: ({phaseType}) => phaseType === 'ESTIMATE',
-  serviceField: async ({dimensionRefIdx, meetingId, teamId, taskId}, _args, context, info) => {
-    const {dataLoader, authToken} = context
-    const viewerId = getUserId(authToken)
+  serviceField: async (source, _args, context, info) => {
     const NULL_FIELD = {
       __typename: 'ServiceField' as const,
       name: SprintPokerDefaults.SERVICE_FIELD_NULL,
       type: 'string'
     }
-    const task = await dataLoader.get('tasks').load(taskId)
-    const integration = task?.integration
-    if (!task || !integration) return NULL_FIELD
-    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
-    if (meeting.meetingType !== 'poker') throw new Error('Meeting is not a poker meeting')
-    const templateRef = await dataLoader.get('templateRefs').loadNonNull(meeting.templateRefId)
-    const {name: dimensionName} = templateRef.dimensions[dimensionRefIdx]!
-    const field = await resolveServiceField({
-      dataLoader,
-      teamId,
-      userId: integration.accessUserId,
-      context,
-      info,
-      task,
-      dimensionName,
-      viewerId
-    })
+    const ctx = await loadDimensionFieldCtx(source, context, info)
+    if (!ctx) return NULL_FIELD
+    const field = await resolveServiceField(ctx)
     return field ? {__typename: 'ServiceField' as const, ...field} : NULL_FIELD
+  },
+
+  dimensionFieldListing: async (source, _args, context, info) => {
+    const ctx = await loadDimensionFieldCtx(source, context, info)
+    if (!ctx) return {targets: [], options: [], helpUrl: null}
+    return listDimensionFields(ctx)
   },
 
   dimensionRef: async ({meetingId, dimensionRefIdx}, _args, {dataLoader}) => {
