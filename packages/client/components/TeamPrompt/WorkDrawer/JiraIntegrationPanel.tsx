@@ -106,6 +106,7 @@ const JiraIntegrationPanel = (props: Props) => {
               initialItems={meeting.jiraInspirationItems}
               dateRange={dateRange}
               workItemCount={getResultCount(searchQuery)}
+              hideDraftPanel={!getResultCount(searchQuery)}
             >
               <JiraIntegrationResultsRoot
                 teamId={teamMember.teamId}

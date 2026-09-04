@@ -105,6 +105,7 @@ const GCalPanel = (props: Props) => {
               initialItems={meeting.gcalInspirationItems}
               dateRange={dateRange}
               workItemCount={getResultCount(searchQuery)}
+              hideDraftPanel={!getResultCount(searchQuery)}
             >
               <GCalIntegrationResultsRoot
                 teamId={teamMember.teamId}

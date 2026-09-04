@@ -120,6 +120,7 @@ const LinearIntegrationPanel = (props: Props) => {
               initialItems={meeting.linearInspirationItems}
               dateRange={dateRange}
               workItemCount={getResultCount(searchQuery)}
+              hideDraftPanel={!getResultCount(searchQuery)}
             >
               <LinearIntegrationResultsRoot
                 filter={filter}
