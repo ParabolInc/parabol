@@ -118,15 +118,6 @@ const TeamPromptComposer = (props: Props) => {
     answeredPromptIds,
     isPhone
   })
-  usePhoneComposerBridge({
-    focusedPromptId: focusMode.focusedPromptId,
-    blur: focusMode.blur,
-    focusNextUnanswered: focusMode.focusNextUnanswered,
-    answeredCount: answeredPromptIds.size,
-    promptCount: prompts.length,
-    isLastPrompt: focusMode.isLastPrompt
-  })
-
   const onShare = useCallback(() => {
     if (answeredPromptIds.size === 0) return
     if (isShared && dirtyPromptIds.size === 0) return
@@ -135,14 +126,28 @@ const TeamPromptComposer = (props: Props) => {
     setIsExpanded(false)
   }, [share, answeredPromptIds.size, isShared, dirtyPromptIds.size])
 
-  const onOpenInspiration = () => {
+  const onOpenInspiration = useCallback(() => {
     commitLocalUpdate(atmosphere, (store) => {
       const proxy = store.get(meetingId)
       if (!proxy) return
       proxy.setValue(null, 'localStageId')
       proxy.setValue(rightDrawerOpen === 'inspiration' ? null : 'inspiration', 'rightDrawerOpen')
     })
-  }
+  }, [atmosphere, meetingId, rightDrawerOpen])
+
+  usePhoneComposerBridge({
+    focusedPromptId: focusMode.focusedPromptId,
+    blur: focusMode.blur,
+    focusNextUnanswered: focusMode.focusNextUnanswered,
+    answeredCount: answeredPromptIds.size,
+    promptCount: prompts.length,
+    isLastPrompt: focusMode.isLastPrompt,
+    share: onShare,
+    openInspiration: onOpenInspiration,
+    isShared,
+    isDirty: dirtyPromptIds.size > 0,
+    submitting
+  })
 
   if (!stage) return null
   const isPhoneFocused = isPhone && !!focusMode.focusedPromptId
