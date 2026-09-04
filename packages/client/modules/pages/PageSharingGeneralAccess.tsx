@@ -89,7 +89,6 @@ export const PageSharingGeneralAccess = (props: Props) => {
                 {gaRoles.map(({value, label, description}) => {
                   return (
                     <MenuItem
-                      className='py-1'
                       key={value}
                       onSelect={() => {
                         updateGAValue(value)

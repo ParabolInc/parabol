@@ -102,11 +102,12 @@ const EstimatePhaseArea = (props: Props) => {
         {dimensionStages.map((stage, idx) => (
           <div
             key={idx}
-            className='flex-1 rounded-t-lg'
+            className='h-full rounded-t-lg'
             style={{
               background: 'var(--color-surface-well)',
-              paddingBottom: isDesktop ? 8 * 19 : 8 * 12,
-              padding: isDesktop ? '0 8px' : '0 4px'
+              paddingLeft: isDesktop ? 8 : 4,
+              paddingRight: isDesktop ? 8 : 4,
+              paddingBottom: isDesktop ? 8 * 19 : 8 * 12
             }}
           >
             <EstimateDimensionColumn meeting={meeting} stage={stage} />

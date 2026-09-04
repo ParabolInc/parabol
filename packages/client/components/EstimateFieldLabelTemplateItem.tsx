@@ -28,11 +28,9 @@ const EstimateFieldLabelTemplateItem = (props: Props) => {
   return (
     <MenuItem onClick={onSelect(serviceFieldTemplate)}>
       <div className='flex min-w-[300px] items-center justify-between'>
-        <div className='block max-w-[200px] grow py-3'>
+        <div className='block max-w-[200px] grow'>
           <div className='flex font-sans text-fg-primary leading-6'>As a label</div>
-          <div className='truncate font-sans text-[11px] text-fg-secondary leading-4'>
-            {serviceFieldTemplate}
-          </div>
+          <div className='truncate font-sans text-fg-secondary text-xs'>{serviceFieldTemplate}</div>
         </div>
         <button
           className='mr-2 flex h-8 w-8 items-center justify-center rounded text-fg-secondary hover:bg-surface-hover'

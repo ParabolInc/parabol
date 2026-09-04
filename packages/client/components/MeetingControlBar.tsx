@@ -80,6 +80,7 @@ const MeetingControlBar = (props: Props) => {
           phaseType
           stages {
             id
+            isNavigable
           }
         }
       }
@@ -107,13 +108,16 @@ const MeetingControlBar = (props: Props) => {
   const {id: localStageId, isComplete} = localStage
   const isCheckIn = phaseType === 'checkin'
   const isPoker = meetingType === 'poker'
+  const nextStage = findStageAfterId(phases, localStageId)?.stage
+  // poker participants advance themselves, but only through stages the facilitator has unlocked
+  const canGotoNext = !!nextStage && (isFacilitating || (isPoker && nextStage.isNavigable))
   const getPossibleButtons = () => {
     const buttons = ['music']
     if (isFacilitating && !isComplete && showTimerInPhase(phaseType)) buttons.push('timer')
     if (isDesktop) buttons.push('tips')
     if (!isFacilitating && !isCheckIn && !isComplete && !isPoker) buttons.push('ready')
     if (!isFacilitating && localStageId !== facilitatorStageId) buttons.push('rejoin')
-    if ((isFacilitating || isPoker) && findStageAfterId(phases, localStageId)) buttons.push('next')
+    if (canGotoNext) buttons.push('next')
     if (isFacilitating) buttons.push('end')
     return buttons.map((key) => ({key}))
   }

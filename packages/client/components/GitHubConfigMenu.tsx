@@ -1,22 +1,20 @@
 import useAtmosphere from '../hooks/useAtmosphere'
-import type {MenuProps} from '../hooks/useMenu'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
 import type {ConnectProvider} from '../integrations/platform/ClientIntegrationDefinition'
 import RemoveTeamMemberIntegrationAuthMutation from '../mutations/RemoveTeamMemberIntegrationAuthMutation'
 import {Duration} from '../types/constEnums'
+import {MenuContent} from '../ui/Menu/MenuContent'
+import {MenuItem} from '../ui/Menu/MenuItem'
 import GitHubClientManager from '../utils/GitHubClientManager'
-import Menu from './Menu'
-import MenuItem from './MenuItem'
 
 interface Props {
-  menuProps: MenuProps
   mutationProps: MenuMutationProps
   teamId: string
   provider: ConnectProvider
 }
 
 const GitHubConfigMenu = (props: Props) => {
-  const {menuProps, mutationProps, teamId, provider} = props
+  const {mutationProps, teamId, provider} = props
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
   const atmosphere = useAtmosphere()
   const openOAuth = () => {
@@ -36,10 +34,10 @@ const GitHubConfigMenu = (props: Props) => {
     }, Duration.PORTAL_CLOSE)
   }
   return (
-    <Menu ariaLabel={'Configure your GitHub integration'} {...menuProps}>
-      <MenuItem label='Refresh token' onClick={openOAuth} />
-      <MenuItem label='Remove GitHub' onClick={removeGitHub} />
-    </Menu>
+    <MenuContent>
+      <MenuItem onClick={openOAuth}>Refresh token</MenuItem>
+      <MenuItem onClick={removeGitHub}>Remove GitHub</MenuItem>
+    </MenuContent>
   )
 }
 

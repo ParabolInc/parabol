@@ -60,9 +60,5 @@ type MeetingSubscriptionPayload {
   SetTaskEstimateSuccess: SetTaskEstimateSuccess
   UpsertTeamPromptResponseSuccess: UpsertTeamPromptResponseSuccess
   UpdateMeetingTemplateSuccess: UpdateMeetingTemplateSuccess
-  ReflectionEmbeddingSuccess: ReflectionEmbeddingSuccess
-    @deprecated(
-      reason: "Announces that RetroReflection.embeddingVector is ready, which no current client reads. Superseded by SuggestedGroupsSuccess, published once the new vector has been folded into the suggestions. Delete along with embeddingVector."
-    )
   SuggestedGroupsSuccess: SuggestedGroupsSuccess
 }

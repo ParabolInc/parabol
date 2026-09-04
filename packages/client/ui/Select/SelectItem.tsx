@@ -13,17 +13,15 @@ export const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
     <RadixSelect.Item
       ref={ref}
       className={cn(
-        'mx-1 flex h-10 cursor-pointer select-none items-center justify-between rounded-md text-sm outline-hidden hover:bg-surface-hover focus:bg-surface-hover data-disabled:pointer-events-none data-disabled:opacity-50',
+        'mx-1 flex cursor-pointer select-none items-center justify-between gap-2 rounded-md px-3 py-2 text-sm outline-hidden hover:bg-surface-hover focus:bg-surface-hover data-disabled:pointer-events-none data-disabled:opacity-50',
         className
       )}
       {...props}
     >
-      <span className='pl-2'>
-        <RadixSelect.ItemText>{children}</RadixSelect.ItemText>
-      </span>
+      <RadixSelect.ItemText>{children}</RadixSelect.ItemText>
 
-      <div className='flex items-center space-x-2 pr-2'>
-        <RadixSelect.ItemIndicator className='pt-1'>
+      <div className='flex items-center space-x-2'>
+        <RadixSelect.ItemIndicator className='flex items-center'>
           <Check className={cn('h-5 w-5', checkClassName)} />
         </RadixSelect.ItemIndicator>
         {endAdornment && endAdornment}

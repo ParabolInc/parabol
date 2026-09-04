@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "13.41.0",
+  "version": "13.42.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -26,6 +26,7 @@
     "db:start": "mkdir -p dev && docker compose -f docker/stacks/development/docker-compose.yml up -d",
     "db:stop": "docker compose -f docker/stacks/development/docker-compose.yml down",
     "predeploy": "node dist/preDeploy.js",
+    "predev": "pkill -P 1 -f '(parabol/scripts/|/node scripts/|parabol/node_modules/.*relay)' || true",
     "dev": "bash -c 'set -a; source .env; set +a; PM2_SILENT=true pm2 start pm2.dev.config.js --no-daemon'",
     "biome": "pnpm exec biome check",
     "newMutation": "pnpm sucrase-node scripts/codeshift/newMutation.ts",

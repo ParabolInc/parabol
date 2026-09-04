@@ -6,7 +6,6 @@ import type {LinearScopingSearchFilterMenuRoot_query$key} from '../__generated__
 import type {LinearScopingSearchFilterMenuRootQuery} from '../__generated__/LinearScopingSearchFilterMenuRootQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useLinearProjectsAndTeams from '../hooks/useLinearProjectsAndTeams'
-import type {MenuProps} from '../hooks/useMenu'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import LinearSelectorMenu from './LinearSelectorMenu'
 import MockFieldList from './MockFieldList'
@@ -37,13 +36,12 @@ const LinearScopingSearchFilterMenuRootQueryNode = graphql`
   }
 `
 interface Props {
-  menuProps: MenuProps
   teamId: string
   meetingId: string
 }
 
 const LinearScopingSearchFilterMenuRoot = (props: Props) => {
-  const {menuProps, teamId, meetingId} = props
+  const {teamId, meetingId} = props
 
   const queryRef = useQueryLoaderNow<LinearScopingSearchFilterMenuRootQuery>(
     LinearScopingSearchFilterMenuRootQueryNode,
@@ -53,11 +51,7 @@ const LinearScopingSearchFilterMenuRoot = (props: Props) => {
   return (
     <Suspense fallback={<MockFieldList />}>
       {queryRef && (
-        <LinearScopingSearchFilterMenuContent
-          queryRef={queryRef}
-          menuProps={menuProps}
-          meetingId={meetingId}
-        />
+        <LinearScopingSearchFilterMenuContent queryRef={queryRef} meetingId={meetingId} />
       )}
     </Suspense>
   )
@@ -65,11 +59,10 @@ const LinearScopingSearchFilterMenuRoot = (props: Props) => {
 
 interface ContentProps {
   queryRef: PreloadedQuery<LinearScopingSearchFilterMenuRootQuery>
-  menuProps: MenuProps
   meetingId: string
 }
 
-const LinearScopingSearchFilterMenuContent = ({queryRef, menuProps, meetingId}: ContentProps) => {
+const LinearScopingSearchFilterMenuContent = ({queryRef, meetingId}: ContentProps) => {
   const queryData = usePreloadedQuery<LinearScopingSearchFilterMenuRootQuery>(
     LinearScopingSearchFilterMenuRootQueryNode,
     queryRef
@@ -123,7 +116,6 @@ const LinearScopingSearchFilterMenuContent = ({queryRef, menuProps, meetingId}: 
       onSelectItem={handleSelectItem}
       searchQuery={searchQuery}
       onSearchQueryChange={setSearchQuery}
-      menuProps={menuProps}
       placeholder='Search Linear projects or teams'
       emptyStateMessage='No projects or teams found!'
     />

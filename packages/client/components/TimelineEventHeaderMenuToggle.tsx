@@ -1,7 +1,6 @@
 import CardButton from '~/components/CardButton'
 import IconLabel from '~/components/IconLabel'
-import {MenuPosition} from '~/hooks/useCoords'
-import useMenu from '~/hooks/useMenu'
+import {Menu} from '~/ui/Menu/Menu'
 import TimelineEventHeaderMenu from './TimelineEventHeaderMenu'
 
 interface Props {
@@ -10,15 +9,17 @@ interface Props {
 
 const TimelineEventHeaderMenuToggle = (props: Props) => {
   const {timelineEventId} = props
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   return (
     <div className='flex justify-end'>
-      <CardButton ref={originRef} onClick={togglePortal}>
-        <IconLabel icon='more_vert' />
-      </CardButton>
-      {menuPortal(
-        <TimelineEventHeaderMenu menuProps={menuProps} timelineEventId={timelineEventId} />
-      )}
+      <Menu
+        trigger={
+          <CardButton>
+            <IconLabel icon='more_vert' />
+          </CardButton>
+        }
+      >
+        <TimelineEventHeaderMenu timelineEventId={timelineEventId} />
+      </Menu>
     </div>
   )
 }

@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {MenuPosition} from '~/hooks/useCoords'
-import useMenu from '~/hooks/useMenu'
 import type {ParabolScopingSearchFilterToggle_meeting$key} from '../__generated__/ParabolScopingSearchFilterToggle_meeting.graphql'
+import {Menu} from '../ui/Menu/Menu'
+import {MenuContent} from '../ui/Menu/MenuContent'
 import FilterButton from './FilterButton'
 import ParabolScopingSearchFilterMenu from './ParabolScopingSearchFilterMenu'
 
@@ -21,15 +21,12 @@ const ParabolScopingSearchFilterToggle = (props: Props) => {
     `,
     meetingRef
   )
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT, {
-    loadingWidth: 200,
-    noClose: true
-  })
   return (
-    <>
-      <FilterButton onClick={togglePortal} ref={originRef} />
-      {menuPortal(<ParabolScopingSearchFilterMenu meeting={meeting} menuProps={menuProps} />)}
-    </>
+    <Menu trigger={<FilterButton />}>
+      <MenuContent align='end'>
+        <ParabolScopingSearchFilterMenu meeting={meeting} />
+      </MenuContent>
+    </Menu>
   )
 }
 

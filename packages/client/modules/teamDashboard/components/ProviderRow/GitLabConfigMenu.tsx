@@ -1,19 +1,17 @@
-import Menu from '../../../../components/Menu'
-import MenuItem from '../../../../components/MenuItem'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import type {MenuProps} from '../../../../hooks/useMenu'
 import type {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import RemoveTeamMemberIntegrationAuthMutation from '../../../../mutations/RemoveTeamMemberIntegrationAuthMutation'
 import {Duration} from '../../../../types/constEnums'
+import {MenuContent} from '../../../../ui/Menu/MenuContent'
+import {MenuItem} from '../../../../ui/Menu/MenuItem'
 
 interface Props {
-  menuProps: MenuProps
   mutationProps: MenuMutationProps
   teamId: string
 }
 
 const GitLabConfigMenu = (props: Props) => {
-  const {menuProps, mutationProps, teamId} = props
+  const {mutationProps, teamId} = props
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
   const atmosphere = useAtmosphere()
 
@@ -30,9 +28,9 @@ const GitLabConfigMenu = (props: Props) => {
     }, Duration.PORTAL_CLOSE)
   }
   return (
-    <Menu ariaLabel={'Configure your GitLab integration'} {...menuProps}>
-      <MenuItem label='Remove GitLab' onClick={removeGitLabAuth} />
-    </Menu>
+    <MenuContent>
+      <MenuItem onClick={removeGitLabAuth}>Remove GitLab</MenuItem>
+    </MenuContent>
   )
 }
 

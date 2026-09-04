@@ -4,7 +4,7 @@ import {useFragment} from 'react-relay'
 import {ExpandMore} from '~/ui/icons'
 import type {EstimateFieldDropdown_stage$key} from '../__generated__/EstimateFieldDropdown_stage.graphql'
 import {cn} from '../ui/cn'
-import {Menu} from '../ui/Menu/Menu'
+import {SelectValue} from '../ui/Select/SelectValue'
 import EditVotingLabelTemplateModal from './EditVotingLabelTemplateModal'
 import type {EditModalConfig} from './EstimateFieldMenu'
 import EstimateFieldMenu from './EstimateFieldMenu'
@@ -47,17 +47,20 @@ const EstimateFieldDropdown = (props: Props) => {
     targets: dimensionFieldListing.targets,
     finalScore
   })
+  // a label service renders a Menu, every other service a Select, which anchors on its own value
+  const isSelect = isFacilitator && !dimensionFieldListing.targets.includes('label')
+  const labelEl = <div className='text-sm'>{label}</div>
 
   const trigger = (
     <PlainButton
       className={cn(
         'flex select-none text-fg-primary',
         isFacilitator
-          ? 'hover:opacity-50 focus:opacity-50 active:opacity-50'
+          ? 'hover:opacity-50 active:opacity-50 data-[state=open]:opacity-50'
           : 'cursor-default pr-2'
       )}
     >
-      <div className='text-sm'>{label}</div>
+      {isSelect ? <SelectValue>{labelEl}</SelectValue> : labelEl}
       <ExpandMore className={cn('h-[18px] w-[18px]', !isFacilitator && 'hidden')} />
     </PlainButton>
   )
@@ -66,13 +69,13 @@ const EstimateFieldDropdown = (props: Props) => {
 
   return (
     <>
-      <Menu trigger={trigger} onOpenChange={(open) => open && clearError()}>
-        <EstimateFieldMenu
-          stageRef={stage}
-          submitScore={submitScore}
-          onOpenEditModal={setEditModalConfig}
-        />
-      </Menu>
+      <EstimateFieldMenu
+        stageRef={stage}
+        trigger={trigger}
+        onOpenChange={(isOpen) => isOpen && clearError()}
+        submitScore={submitScore}
+        onOpenEditModal={setEditModalConfig}
+      />
       {editModalConfig && (
         <EditVotingLabelTemplateModal
           isOpen

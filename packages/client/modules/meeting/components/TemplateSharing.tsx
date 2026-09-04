@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
+import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import {ExpandMore as ExpandMoreIcon, Share as ShareIcon} from '~/ui/icons'
 import type {TemplateSharing_template$key} from '../../../__generated__/TemplateSharing_template.graphql'
-import {MenuPosition} from '../../../hooks/useCoords'
-import useMenu from '../../../hooks/useMenu'
 import {cn} from '../../../ui/cn'
+import {Menu} from '../../../ui/Menu/Menu'
 import lazyPreload from '../../../utils/lazyPreload'
 
 const SelectSharingScopeDropdown = lazyPreload(
@@ -57,16 +57,6 @@ export const UnstyledTemplateSharing = (props: Props) => {
   const {scope, team} = template
   const {name: teamName, organization} = team
   const {name: orgName} = organization
-  const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLDivElement>(
-    MenuPosition.UPPER_LEFT,
-    {
-      isDropdown: true,
-      id: 'sharingScopeDropdown',
-      menuContentStyles: {
-        minWidth: 320
-      }
-    }
-  )
   if (!isOwner) return null
   const label =
     scope === 'TEAM'
@@ -75,25 +65,28 @@ export const UnstyledTemplateSharing = (props: Props) => {
         ? `Sharing with ${orgName}`
         : 'Sharing publicly'
   return (
-    <>
-      <div
-        className={cn(
-          'flex select-none items-center text-base text-fg-primary',
-          !readOnly && 'cursor-pointer'
-        )}
-        onMouseEnter={SelectSharingScopeDropdown.preload}
-        onClick={togglePortal}
-        ref={originRef}
-      >
-        <div className='mr-4 flex h-6 w-6 cursor-pointer items-center justify-center text-fg-secondary [&_svg]:text-[18px]'>
-          <ShareIcon />
-        </div>
-        <div>{label}</div>
+    <Menu
+      trigger={
+        <div
+          className={cn(
+            'flex select-none items-center text-base text-fg-primary',
+            !readOnly && 'cursor-pointer'
+          )}
+          onMouseEnter={SelectSharingScopeDropdown.preload}
+        >
+          <div className='mr-4 flex h-6 w-6 cursor-pointer items-center justify-center text-fg-secondary [&_svg]:text-[18px]'>
+            <ShareIcon />
+          </div>
+          <div>{label}</div>
 
-        <div className='m-2 h-6 w-6'>{!readOnly && <ExpandMoreIcon />}</div>
-      </div>
-      {menuPortal(<SelectSharingScopeDropdown menuProps={menuProps} template={template} />)}
-    </>
+          <div className='m-2 h-6 w-6'>{!readOnly && <ExpandMoreIcon />}</div>
+        </div>
+      }
+    >
+      <Suspense fallback={null}>
+        <SelectSharingScopeDropdown template={template} />
+      </Suspense>
+    </Menu>
   )
 }
 

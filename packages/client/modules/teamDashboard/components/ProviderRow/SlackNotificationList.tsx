@@ -65,38 +65,36 @@ const SlackNotificationList = (props: Props) => {
   const localPrivateChannelId = localPrivateChannel && localPrivateChannel.id
   const {isActive, defaultTeamChannelId} = slack!
 
-  const changeTeamChannel: SlackChannelDropdownOnClick = useEventCallback(
-    (slackChannelId) => () => {
-      // only change the active events
-      const slackNotificationEvents = notifications
-        .filter((notification) => notification.channelId && notification.eventType === 'team')
-        .map(({event}) => event)
-      if (
-        submitting ||
-        defaultTeamChannelId === slackChannelId ||
-        slackNotificationEvents.length === 0
-      ) {
-        return
-      }
-      submitMutation()
-      SetDefaultSlackChannelMutation(
-        atmosphere,
-        {slackChannelId: slackChannelId!, teamId},
-        {
-          onError,
-          onCompleted
-        }
-      )
-      SetSlackNotificationMutation(
-        atmosphere,
-        {slackChannelId, slackNotificationEvents, teamId},
-        {
-          onError,
-          onCompleted
-        }
-      )
+  const changeTeamChannel: SlackChannelDropdownOnClick = useEventCallback((slackChannelId) => {
+    // only change the active events
+    const slackNotificationEvents = notifications
+      .filter((notification) => notification.channelId && notification.eventType === 'team')
+      .map(({event}) => event)
+    if (
+      submitting ||
+      defaultTeamChannelId === slackChannelId ||
+      slackNotificationEvents.length === 0
+    ) {
+      return
     }
-  )
+    submitMutation()
+    SetDefaultSlackChannelMutation(
+      atmosphere,
+      {slackChannelId, teamId},
+      {
+        onError,
+        onCompleted
+      }
+    )
+    SetSlackNotificationMutation(
+      atmosphere,
+      {slackChannelId, slackNotificationEvents, teamId},
+      {
+        onError,
+        onCompleted
+      }
+    )
+  })
 
   return (
     <div className='border-hairline border-t p-4'>

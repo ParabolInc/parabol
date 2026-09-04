@@ -6,8 +6,6 @@ import type {AtlassianProviderRow_viewer$key} from '../../../../__generated__/At
 import AtlassianProviderLogo from '../../../../AtlassianProviderLogo'
 import AtlassianConfigMenu from '../../../../components/AtlassianConfigMenu'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useMenu from '../../../../hooks/useMenu'
 import useMutationProps, {type MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {getConnectProvider} from '../../../../integrations/platform/findIntegrationService'
 import type {AuthToken} from '../../../../types/AuthToken'
@@ -83,8 +81,6 @@ const AtlassianProviderRow = (props: Props) => {
     )
   }
 
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
-
   const errorMessage = useMemo(() => {
     if (!error) return undefined
     const {message} = error
@@ -108,28 +104,23 @@ const AtlassianProviderRow = (props: Props) => {
   if (!provider) return null
 
   return (
-    <>
-      <ProviderRow
-        connected={jiraConnected}
-        onConnectClick={openOAuth}
-        submitting={submitting}
-        togglePortal={togglePortal}
-        menuRef={originRef}
-        providerName={Providers.JIRA_CLOUD_NAME}
-        providerDescription={Providers.JIRA_CLOUD_DESC}
-        providerLogo={<AtlassianProviderLogo />}
-        error={errorMessage}
-      />
-      {menuPortal(
+    <ProviderRow
+      connected={jiraConnected}
+      onConnectClick={openOAuth}
+      submitting={submitting}
+      configMenu={
         <AtlassianConfigMenu
           mutationProps={mutationProps}
-          menuProps={menuProps}
           teamId={teamId}
           provider={provider}
           heldScopes={atlassian?.scope}
         />
-      )}
-    </>
+      }
+      providerName={Providers.JIRA_CLOUD_NAME}
+      providerDescription={Providers.JIRA_CLOUD_DESC}
+      providerLogo={<AtlassianProviderLogo />}
+      error={errorMessage}
+    />
   )
 }
 

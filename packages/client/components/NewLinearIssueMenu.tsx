@@ -1,13 +1,11 @@
-import type {MenuProps} from '~/hooks/useMenu'
 import useSearchFilter from '~/hooks/useSearchFilter'
+import {MenuContent} from '../ui/Menu/MenuContent'
+import {MenuSearch} from '../ui/Menu/MenuSearch'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
-import Menu from './Menu'
-import {SearchMenuItem} from './SearchMenuItem'
 import TaskIntegrationMenuItem from './TaskIntegrationMenuItem'
 
 interface Props {
   handleSelectProject: (item: {id: string; name: string}) => void
-  menuProps: MenuProps
   linearProjects: {id: string; name: string}[]
 }
 
@@ -16,7 +14,7 @@ const getValue = (item: {name?: string}) => {
 }
 
 const NewLinearIssueMenu = (props: Props) => {
-  const {handleSelectProject, menuProps, linearProjects} = props
+  const {handleSelectProject, linearProjects} = props
 
   const {
     query,
@@ -25,8 +23,8 @@ const NewLinearIssueMenu = (props: Props) => {
   } = useSearchFilter(linearProjects, getValue)
 
   return (
-    <Menu ariaLabel='Select Linear project' keepParentFocus {...menuProps}>
-      <SearchMenuItem placeholder='Search Linear' onChange={onQueryChange} value={query} />
+    <MenuContent align='start' className='min-w-[300px]'>
+      <MenuSearch placeholder='Search Linear' onChange={onQueryChange} value={query} />
       {filteredProjects.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>No projects found!</EmptyDropdownMenuItemLabel>
       )}
@@ -45,7 +43,7 @@ const NewLinearIssueMenu = (props: Props) => {
           />
         )
       })}
-    </Menu>
+    </MenuContent>
   )
 }
 

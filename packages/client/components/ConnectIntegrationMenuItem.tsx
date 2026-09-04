@@ -6,9 +6,8 @@ import {
   getClientIntegration,
   type RegisteredClientIntegration
 } from '../integrations/platform/registry'
-import MenuItem from './MenuItem'
+import {MenuItem} from '../ui/Menu/MenuItem'
 import MenuItemAvatar from './MenuItemAvatar'
-import MenuItemLabel from './MenuItemLabel'
 
 interface Props {
   teamId: string
@@ -19,7 +18,7 @@ interface Props {
   heldScopes: readonly string[]
 }
 
-const ConnectIntegrationMenuItem = forwardRef((props: Props, ref) => {
+const ConnectIntegrationMenuItem = forwardRef<HTMLDivElement, Props>((props, ref) => {
   const {teamId, mutationProps, service, title, provider, heldScopes} = props
   const atmosphere = useAtmosphere()
   const definition = getClientIntegration(service)
@@ -27,18 +26,12 @@ const ConnectIntegrationMenuItem = forwardRef((props: Props, ref) => {
     definition.connect(atmosphere, {teamId, mutationProps, provider, heldScopes})
   }
   return (
-    <MenuItem
-      ref={ref}
-      label={
-        <MenuItemLabel>
-          <MenuItemAvatar>
-            <definition.Icon className={definition.iconClassName} />
-          </MenuItemAvatar>
-          {`Add ${title} integration`}
-        </MenuItemLabel>
-      }
-      onClick={onClick}
-    />
+    <MenuItem ref={ref} onClick={onClick}>
+      <MenuItemAvatar>
+        <definition.Icon className={definition.iconClassName} />
+      </MenuItemAvatar>
+      {`Add ${title} integration`}
+    </MenuItem>
   )
 })
 
