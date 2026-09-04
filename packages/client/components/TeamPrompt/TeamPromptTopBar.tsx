@@ -18,6 +18,7 @@ import LogoBlock from '../LogoBlock/LogoBlock'
 import {IconGroupBlock, MeetingTopBarStyles} from '../MeetingTopBar'
 import {EndRecurringMeetingModal} from '../Recurrence/EndRecurringMeetingModal'
 import MeetingDateLabel from '../Recurrence/MeetingDateLabel'
+import countUnsharedDrafts from './structured/countUnsharedDrafts'
 import {TeamPromptMeetingStatus} from './TeamPromptMeetingStatus'
 import TeamPromptOptions from './TeamPromptOptions'
 
@@ -68,6 +69,10 @@ const TeamPromptTopBar = (props: Props) => {
           recurrenceRule
           ...EditMeetingSeriesModal_series
         }
+        responses {
+          isShared
+          answeredPromptIds
+        }
         ...MeetingDateLabel_meeting
         ...TeamPromptOptions_meeting
         ...NewMeetingAvatarGroup_meeting
@@ -89,11 +94,13 @@ const TeamPromptTopBar = (props: Props) => {
     facilitatorUserId,
     meetingSeries,
     prevMeeting,
-    nextMeeting
+    nextMeeting,
+    responses
   } = meeting
   const isFacilitator = viewerId === facilitatorUserId
   const {handleSubmit, validate, error} = useRenameMeeting(meetingId)
   const isRecurrenceEnabled = meetingSeries && !meetingSeries.cancelledAt
+  const unsharedDraftsCount = countUnsharedDrafts(templateId, responses)
 
   const onOpenWorkSidebar = () => {
     if (meeting.rightDrawerOpen === 'inspiration') {
@@ -210,7 +217,9 @@ const TeamPromptTopBar = (props: Props) => {
         <EndRecurringMeetingModal
           meetingRef={meeting}
           isOpen={isEndRecurringMeetingOpen}
+          hasSeries={!!isRecurrenceEnabled}
           nextMeetingDate={isRecurrenceEnabled ? meetingSeries.nextMeetingDate : undefined}
+          unsharedDraftsCount={unsharedDraftsCount}
           closeModal={() => setIsEndRecurringMeetingOpen(false)}
         />
       </MeetingTopBarStyles>

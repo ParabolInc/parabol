@@ -12,6 +12,7 @@ import {MenuItem} from '../../ui/Menu/MenuItem'
 import makeAppURL from '../../utils/makeAppURL'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import SlackSVG from '../SlackSVG'
+import countUnsharedDrafts from './structured/countUnsharedDrafts'
 
 const OptionMenuItem = ({children}: {children: ReactNode}) => (
   <div className='flex w-60 flex-1 items-center overflow-hidden text-ellipsis whitespace-nowrap'>
@@ -72,9 +73,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
   // it is somewhat arbitrary and might change in the future
   const canEndRecurrence = !isEnded || !hasActiveMeetings
   const canToggleRecurrence = hasRecurrenceEnabled ? canEndRecurrence : canStartRecurrence
-  const hasUnsharedDrafts = templateId
-    ? responses.some((response) => !response.isShared && response.answeredPromptIds.length > 0)
-    : false
+  const hasUnsharedDrafts = countUnsharedDrafts(templateId, responses) > 0
 
   return (
     <MenuContent align='end'>
