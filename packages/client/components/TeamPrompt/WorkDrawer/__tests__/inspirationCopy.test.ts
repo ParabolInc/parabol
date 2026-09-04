@@ -1,5 +1,12 @@
 import dayjs from 'dayjs'
-import {browseLabel, browseSubline, formatSince, metaLine, serviceLabel} from '../inspirationCopy'
+import {
+  browseLabel,
+  browseSubline,
+  formatSince,
+  itemSource,
+  metaLine,
+  serviceLabel
+} from '../inspirationCopy'
 
 describe('formatSince', () => {
   it('returns recently when no start time is given', () => {
@@ -74,5 +81,15 @@ describe('serviceLabel', () => {
 
   it('falls back to the raw service string for unknown services', () => {
     expect(serviceLabel('slack')).toBe('slack')
+  })
+})
+
+describe('itemSource', () => {
+  it('credits the work item source and the drafter', () => {
+    expect(itemSource('github')).toBe('GitHub · Parabol')
+  })
+
+  it('names Parabol once when the work items are already ours', () => {
+    expect(itemSource('PARABOL')).toBe('Parabol')
   })
 })

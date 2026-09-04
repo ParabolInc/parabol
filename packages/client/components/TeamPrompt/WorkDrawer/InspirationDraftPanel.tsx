@@ -7,7 +7,7 @@ import InspirationAddAllButton from './InspirationAddAllButton'
 import InspirationBrowseRow from './InspirationBrowseRow'
 import InspirationDraftHeader from './InspirationDraftHeader'
 import InspirationDraftItemCard from './InspirationDraftItemCard'
-import {collectText, formatSince, serviceLabel} from './inspirationCopy'
+import {collectText, formatSince, itemSource} from './inspirationCopy'
 import useInspirationInsert, {type InspirationDraftItem} from './useInspirationInsert'
 import type {WorkDrawerPrompt} from './WorkDrawerConsumeContext'
 import type {WorkDrawerDateRange} from './WorkDrawerDateFilter'
@@ -55,7 +55,7 @@ const InspirationDraftPanel = (props: Props) => {
     return {item, prompt, draft: toDraftItem(item, prompt.id)}
   })
   const remaining = cards.filter(({draft}) => !isAdded(draft)).map(({draft}) => draft)
-  const source = `${serviceLabel(service)} · Parabol`
+  const source = itemSource(service)
 
   return (
     <div className='flex min-h-0 flex-1 flex-col'>
