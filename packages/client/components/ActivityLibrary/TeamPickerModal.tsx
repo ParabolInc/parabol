@@ -72,6 +72,12 @@ const TeamPickerModal = (props: Props) => {
   const navigate = useNavigate()
   const isNavigatingAwayRef = useRef(false)
 
+  useEffect(() => {
+    if (isOpen) {
+      isNavigatingAwayRef.current = false
+    }
+  }, [isOpen])
+
   // user has no teams
   if (!selectedTeam) return null
 
