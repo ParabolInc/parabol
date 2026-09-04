@@ -1,8 +1,9 @@
 import type {Editor, JSONContent} from '@tiptap/core'
-import {useCallback, useRef, useState} from 'react'
+import {useCallback, useEffect, useRef, useState} from 'react'
 import type {TeamPromptComposerApi} from '../structured/TeamPromptComposerApiContext'
 import InspirationAddAllButton from './InspirationAddAllButton'
 import InspirationDraftItemCard from './InspirationDraftItemCard'
+import type {InspirationVariant} from './InspirationPresentationContext'
 import {collectText, itemSource} from './inspirationCopy'
 import {trimTrailingEmptyParagraphs} from './inspirationInsertPlan'
 import useInspirationInsert, {type InspirationDraftItem} from './useInspirationInsert'
@@ -15,6 +16,12 @@ export interface InspirationItemData {
   promptId: string | null
 }
 
+export interface InspirationAddAllState {
+  remaining: number
+  adding: boolean
+  addRemaining: () => void
+}
+
 interface Props {
   items: InspirationItemData[]
   prompts: readonly WorkDrawerPrompt[]
@@ -22,6 +29,9 @@ interface Props {
   meetingId: string
   teamId: string
   composer: TeamPromptComposerApi
+  variant: InspirationVariant
+  onAdded?: () => void
+  onAddAllChange?: (state: InspirationAddAllState) => void
 }
 
 const destinationPrompt = (prompts: readonly WorkDrawerPrompt[], promptId: string | null) =>
@@ -34,6 +44,7 @@ const toDraftItem = (item: InspirationItemData, promptId: string): InspirationDr
 
 const InspirationDraftList = (props: Props) => {
   const {items, prompts, service, meetingId, teamId, composer} = props
+  const {variant, onAdded, onAddAllChange} = props
   const {addItems, isAdded, adding} = useInspirationInsert({meetingId, teamId, composer, prompts})
   const editorsRef = useRef(new Map<string, Editor>())
   const [emptyIds, setEmptyIds] = useState<ReadonlySet<string>>(() => new Set())
@@ -56,10 +67,11 @@ const InspirationDraftList = (props: Props) => {
   })
   const drafted = cards.filter(({item}) => !emptyIds.has(item.id))
   const remaining = drafted.filter(({draft}) => !isAdded(draft)).map(({draft}) => draft)
-  const addEdited = (drafts: InspirationDraftItem[]) => {
+  const addEdited = async (drafts: InspirationDraftItem[]) => {
     const withContent = drafts.filter(({blocks}) => blocks.length > 0)
     if (withContent.length === 0) return
-    addItems(withContent)
+    await addItems(withContent)
+    onAdded?.()
   }
   const asEditedByTheReader = (draft: InspirationDraftItem) => {
     const editor = editorsRef.current.get(draft.id)
@@ -70,6 +82,19 @@ const InspirationDraftList = (props: Props) => {
       text: editor.getText().trim()
     }
   }
+  const addRemainingRef = useRef(() => {})
+  addRemainingRef.current = () => {
+    addEdited(remaining.map(asEditedByTheReader))
+  }
+  const remainingCount = remaining.length
+  useEffect(() => {
+    onAddAllChange?.({
+      remaining: remainingCount,
+      adding,
+      addRemaining: () => addRemainingRef.current()
+    })
+  }, [remainingCount, adding, onAddAllChange])
+
   return (
     <>
       {cards.map(({item, prompt, draft}) => (
@@ -83,17 +108,20 @@ const InspirationDraftList = (props: Props) => {
           isAdded={isAdded(draft)}
           isEmpty={emptyIds.has(item.id)}
           disabled={adding}
+          variant={variant}
           onEditorChange={trackEditor}
           onEmptyChange={trackEmpty}
           onAdd={() => addEdited([asEditedByTheReader(draft)])}
         />
       ))}
-      <InspirationAddAllButton
-        remaining={remaining.length}
-        total={drafted.length}
-        disabled={adding}
-        onClick={() => addEdited(remaining.map(asEditedByTheReader))}
-      />
+      {variant === 'drawer' && (
+        <InspirationAddAllButton
+          remaining={remainingCount}
+          total={drafted.length}
+          disabled={adding}
+          onClick={() => addRemainingRef.current()}
+        />
+      )}
     </>
   )
 }

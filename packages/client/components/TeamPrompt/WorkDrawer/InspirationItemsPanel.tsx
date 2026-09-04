@@ -13,6 +13,8 @@ import {TooltipTrigger} from '../../../ui/Tooltip/TooltipTrigger'
 import Ellipsis from '../../Ellipsis/Ellipsis'
 import type {InspirationItemData} from './InspirationDraftList'
 import InspirationDraftPanel from './InspirationDraftPanel'
+import InspirationItemCard from './InspirationItemCard'
+import {useInspirationPresentation} from './InspirationPresentationContext'
 import {NO_WORK_LINE} from './inspirationCopy'
 import RetroInspirationItemCard from './RetroInspirationItemCard'
 import useInspirationAutoGenerate from './useInspirationAutoGenerate'
@@ -50,6 +52,7 @@ const InspirationItemsPanel = (props: Props) => {
   const {meetingId, teamId, service, searchQuery, initialItems, hideDraftPanel, children} = props
   const {dateRange, workItemCount, filters} = props
   const consume = useWorkDrawerConsume()
+  const {variant, onAdded} = useInspirationPresentation()
   const isRetro = consume.mode === 'retro'
   const [items, setItems] = useState<InspirationItemData[]>(() =>
     initialItems.map(({id, title, content, promptId}) => ({
@@ -159,6 +162,8 @@ const InspirationItemsPanel = (props: Props) => {
           onTune={() => setPromptOpen(true)}
           tuneDirty={!!userPrompt.trim()}
           filters={filters}
+          variant={variant}
+          onAdded={onAdded}
         >
           {children}
         </InspirationDraftPanel>

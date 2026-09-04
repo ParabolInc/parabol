@@ -4,10 +4,12 @@ import StarterKit from '@tiptap/starter-kit'
 import {useEffect} from 'react'
 import {Check as CheckIcon} from '~/ui/icons'
 import {Button} from '../../../ui/Button/Button'
+import {cn} from '../../../ui/cn'
 import {TipTapEditor} from '../../TipTapEditor/TipTapEditor'
 import {TiptapLinkExtension} from '../../TipTapEditor/TiptapLinkExtension'
 import hasContentToAdd from './hasContentToAdd'
 import InspirationDestinationChip from './InspirationDestinationChip'
+import type {InspirationVariant} from './InspirationPresentationContext'
 import type {WorkDrawerPrompt} from './WorkDrawerConsumeContext'
 
 interface Props {
@@ -19,14 +21,16 @@ interface Props {
   isAdded: boolean
   isEmpty: boolean
   disabled: boolean
+  variant: InspirationVariant
   onEditorChange: (itemId: string, editor: Editor | null) => void
   onEmptyChange: (itemId: string, isEmpty: boolean) => void
   onAdd: () => void
 }
 
 const InspirationDraftItemCard = (props: Props) => {
-  const {itemId, title, content, prompt, source, isAdded, isEmpty, disabled} = props
+  const {itemId, title, content, prompt, source, isAdded, isEmpty, disabled, variant} = props
   const {onEditorChange, onEmptyChange, onAdd} = props
+  const isSheet = variant === 'sheet'
   const editor = useEditor({
     content,
     extensions: [
@@ -44,12 +48,20 @@ const InspirationDraftItemCard = (props: Props) => {
   }, [editor, itemId, onEditorChange, onEmptyChange])
   if (!editor) return null
   return (
-    <div className='flex flex-col gap-2 rounded-card bg-surface-card p-3 shadow-[var(--shadow-card)]'>
+    <div
+      className={cn(
+        'flex flex-col rounded-card bg-surface-card p-3 shadow-[var(--shadow-card)]',
+        isSheet ? 'gap-2.5' : 'gap-2'
+      )}
+    >
       <InspirationDestinationChip question={prompt.question} groupColor={prompt.groupColor} />
       {title && <div className='font-semibold text-fg-primary text-sm'>{title}</div>}
       <TipTapEditor
         editor={editor}
-        className='max-h-48 overflow-auto rounded-md border border-hairline-field p-2 text-[13px] text-fg-primary leading-5 focus-within:border-accent'
+        className={cn(
+          'max-h-48 overflow-auto rounded-md border border-hairline-field p-2 text-fg-primary focus-within:border-accent',
+          isSheet ? 'text-[15px] leading-[22px]' : 'text-[13px] leading-5'
+        )}
       />
       <div className='flex items-center justify-between'>
         <span className='text-[11px] text-fg-muted'>{source}</span>
@@ -61,7 +73,8 @@ const InspirationDraftItemCard = (props: Props) => {
         ) : (
           <Button
             variant='secondary'
-            size='sm'
+            size={isSheet ? 'md' : 'sm'}
+            className={isSheet ? 'h-10' : undefined}
             disabled={disabled || isEmpty}
             onClick={() => {
               if (!hasContentToAdd(editor)) return
