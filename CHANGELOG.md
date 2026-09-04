@@ -5,6 +5,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.42.0](https://github.com/ParabolInc/parabol/compare/v13.41.0...v13.42.0) (2026-09-03)
+
+
+### Added
+
+* multi team Meeting Series card ([#13456](https://github.com/ParabolInc/parabol/issues/13456)) ([52119f5](https://github.com/ParabolInc/parabol/commit/52119f57a80f692640cd524c43b417f488c3835d))
+
+
+### Fixed
+
+* hide Next button for participants if next stage isn't navigable ([#13462](https://github.com/ParabolInc/parabol/issues/13462)) ([5067b9a](https://github.com/ParabolInc/parabol/commit/5067b9a915395508a2c596dac8efa33e2b92388c))
+* replace useTooltip with radix-ui ([#13458](https://github.com/ParabolInc/parabol/issues/13458)) ([4d990c7](https://github.com/ParabolInc/parabol/commit/4d990c79df6b2f83fa009d55eb4fee5240738691))
+
+
+### Changed
+
+* continue consolidating integration schema ([#13438](https://github.com/ParabolInc/parabol/issues/13438)) ([e542bdc](https://github.com/ParabolInc/parabol/commit/e542bdc32944d318bdbaf1a47a0d06c59c589507))
+
 ## [13.41.0](https://github.com/ParabolInc/parabol/compare/v13.40.0...v13.41.0) (2026-09-02)
 
 
