@@ -76,7 +76,9 @@ const makeTeamPromptFallbackInsights = async (
   meetingId: string,
   dataLoader: DataLoaderInstance
 ) => {
-  const responses = await dataLoader.get('teamPromptResponsesByMeetingId').load(meetingId)
+  const responses = (await dataLoader.get('teamPromptResponsesByMeetingId').load(meetingId)).filter(
+    (response) => response.isShared
+  )
   const responseBlock = await Promise.all(
     responses.map(async (response) => {
       const {userId, content} = response
@@ -324,7 +326,9 @@ export const makeSummaryEmailV2 = async (
       </Html>
     )
   } else if (meetingType === 'teamPrompt') {
-    const responses = await dataLoader.get('teamPromptResponsesByMeetingId').load(meetingId)
+    const responses = (
+      await dataLoader.get('teamPromptResponsesByMeetingId').load(meetingId)
+    ).filter((response) => response.isShared)
     const responseCount = responses.length
     const responseLabel = `${responseCount} ${plural(responseCount || 0, 'response')}`
     const subHeadingMeta = `${responseLabel}`

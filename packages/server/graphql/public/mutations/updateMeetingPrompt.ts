@@ -25,6 +25,9 @@ const updateMeetingPrompt: MutationResolvers['updateMeetingPrompt'] = async (
       userId: viewerId
     })
   }
+  if (meeting.templateId) {
+    return standardError(new Error('Meeting uses a template'), {userId: viewerId})
+  }
   if (newPrompt.length < 2 || newPrompt.length > 500) {
     return standardError(new Error('Invalid meeting prompt'), {
       userId: viewerId

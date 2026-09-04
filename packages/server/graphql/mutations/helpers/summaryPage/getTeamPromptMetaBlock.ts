@@ -7,7 +7,9 @@ export const getTeamPromptMetaBlock = async (
   dataLoader: DataLoaderInstance
 ) => {
   const {id: meetingId} = meeting
-  const responses = await dataLoader.get('teamPromptResponsesByMeetingId').load(meetingId)
+  const responses = (await dataLoader.get('teamPromptResponsesByMeetingId').load(meetingId)).filter(
+    (response) => response.isShared
+  )
   const responseCount = responses.length
   const responseLabel = `${responseCount} ${plural(responseCount || 0, 'Response')}`
   return {

@@ -39,7 +39,7 @@ type TeamPromptMeeting implements NewMeeting {
   viewerMeetingMember: TeamPromptMeetingMember
 
   """
-  The number of responses generated in the meeting
+  The number of shared responses with content in the meeting
   """
   responseCount: Int!
 

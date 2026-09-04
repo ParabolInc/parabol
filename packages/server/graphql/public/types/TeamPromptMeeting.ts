@@ -1,3 +1,4 @@
+import type {JSONContent} from '@tiptap/core'
 import getKysely from '../../../postgres/getKysely'
 import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import {selectNewMeetings} from '../../../postgres/select'
@@ -67,9 +68,11 @@ const TeamPromptMeeting: TeamPromptMeetingResolvers = {
   },
 
   responseCount: async ({id: meetingId}) => {
-    return (await getTeamPromptResponsesByMeetingId(meetingId)).filter(
-      (response) => response.isShared && !!response.plaintextContent
-    ).length
+    return (await getTeamPromptResponsesByMeetingId(meetingId)).filter((response) => {
+      if (!response.isShared) return false
+      const content = response.content as JSONContent
+      return (content.content?.length ?? 0) > 0
+    }).length
   },
 
   taskCount: async ({id: meetingId}, _args, {dataLoader}) => {
