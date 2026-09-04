@@ -35,6 +35,7 @@ interface Props {
   dateRange?: WorkDrawerDateRange
   workItemCount?: number
   hideDraftPanel?: boolean
+  filters?: ReactNode
   children?: ReactNode
 }
 
@@ -49,7 +50,7 @@ const parseContent = (raw: string): JSONContent => {
 
 const InspirationItemsPanel = (props: Props) => {
   const {meetingId, teamId, service, searchQuery, initialItems, hideDraftPanel, children} = props
-  const {dateRange, workItemCount} = props
+  const {dateRange, workItemCount, filters} = props
   const consume = useWorkDrawerConsume()
   const isRetro = consume.mode === 'retro'
   const viewerResponse = consume.mode === 'teamPrompt' ? consume.viewerResponse : null
@@ -194,6 +195,7 @@ const InspirationItemsPanel = (props: Props) => {
           error={error}
           onTune={() => setPromptOpen(true)}
           tuneDirty={!!userPrompt.trim()}
+          filters={filters}
         >
           {children}
         </InspirationDraftPanel>
@@ -204,6 +206,7 @@ const InspirationItemsPanel = (props: Props) => {
 
   return (
     <>
+      {filters}
       {!hideDraftPanel && (
         <div className='flex flex-col gap-2 px-4 pb-4'>
           <div className='flex gap-2'>

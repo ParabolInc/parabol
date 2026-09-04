@@ -86,8 +86,8 @@ const ParabolTasksPanel = (props: Props) => {
     })
   }
 
-  return (
-    <div className='flex min-h-0 flex-1 flex-col'>
+  const filters = (
+    <>
       {/* Row 1: content type */}
       <div className='flex gap-2 px-4 pt-3 pb-1'>
         {SUB_TABS.map((tab) => (
@@ -129,9 +129,14 @@ const ParabolTasksPanel = (props: Props) => {
       <div className='flex px-2 py-1'>
         <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
       </div>
-      {/* Row 4: draft button + suggestions, then results (scrollable) */}
+    </>
+  )
+
+  return (
+    <div className='flex min-h-0 flex-1 flex-col'>
       <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
         <InspirationItemsPanel
+          filters={filters}
           meetingId={meeting.id}
           teamId={meeting.teamId}
           service='PARABOL'
