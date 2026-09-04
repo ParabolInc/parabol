@@ -1,12 +1,13 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect} from 'react'
+import {useEffect, useMemo} from 'react'
 import {useFragment} from 'react-relay'
+import {AutoAwesome} from '~/ui/icons'
 import type {TeamPromptWorkDrawer_meeting$key} from '../../__generated__/TeamPromptWorkDrawer_meeting.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useSessionStorageState from '../../hooks/useSessionStorageState'
 import {getConnectProvider} from '../../integrations/platform/findIntegrationService'
 import gcalLogo from '../../styles/theme/images/graphics/google-calendar.svg'
-import {cn} from '../../ui/cn'
+import {BottomSheetHeader} from '../../ui/BottomSheet/BottomSheetHeader'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import GitHubSVG from '../GitHubSVG'
 import GitLabSVG from '../GitLabSVG'
@@ -18,18 +19,25 @@ import {useTeamPromptComposerApi} from './structured/TeamPromptComposerApiContex
 import GCalIntegrationPanel from './WorkDrawer/GCalIntegrationPanel'
 import GitHubIntegrationPanel from './WorkDrawer/GitHubIntegrationPanel'
 import GitLabIntegrationPanel from './WorkDrawer/GitLabIntegrationPanel'
+import InspirationPresentationContext, {
+  type InspirationVariant
+} from './WorkDrawer/InspirationPresentationContext'
 import JiraIntegrationPanel from './WorkDrawer/JiraIntegrationPanel'
 import JiraServerIntegrationPanel from './WorkDrawer/JiraServerIntegrationPanel'
 import LinearIntegrationPanel from './WorkDrawer/LinearIntegrationPanel'
 import ParabolTasksPanel from './WorkDrawer/ParabolTasksPanel'
 import WorkDrawerConsumeContext from './WorkDrawer/WorkDrawerConsumeContext'
+import WorkDrawerServiceTabs from './WorkDrawer/WorkDrawerServiceTabs'
 
 interface Props {
   meetingRef: TeamPromptWorkDrawer_meeting$key
+  variant?: InspirationVariant
+  onClose?: () => void
+  onAdded?: () => void
 }
 
 const TeamPromptWorkDrawer = (props: Props) => {
-  const {meetingRef} = props
+  const {meetingRef, variant = 'drawer', onClose, onAdded} = props
   const meeting = useFragment(
     graphql`
       fragment TeamPromptWorkDrawer_meeting on TeamPromptMeeting {
@@ -188,42 +196,48 @@ const TeamPromptWorkDrawer = (props: Props) => {
   )
 
   const {Component} = baseTabs[activeIdx]!
+  const presentation = useMemo(() => ({variant, onAdded}), [variant, onAdded])
+
+  const onSelectTab = (idx: number) => {
+    const tab = baseTabs[idx]
+    if (!tab) return
+    SendClientSideEvent(atmosphere, 'Your Work Integration Clicked', {
+      teamId: meeting.teamId,
+      meetingId: meeting.id,
+      service: tab.service
+    })
+    setActiveService(tab.service)
+  }
+  const serviceTabs = (
+    <WorkDrawerServiceTabs
+      tabs={baseTabs}
+      activeIdx={activeIdx}
+      variant={variant}
+      onSelect={onSelectTab}
+    />
+  )
 
   return (
-    <WorkDrawerConsumeContext.Provider
-      value={{mode: 'teamPrompt', viewerResponse, composer, prompts: meeting.prompts}}
-    >
-      <div className='flex min-h-0 flex-1 flex-col'>
-        <div className='flex justify-center pt-3 pb-2'>
-          <div className='flex gap-1'>
-            {baseTabs.map((tab, idx) => (
-              <button
-                key={tab.label}
-                title={tab.label}
-                onClick={() => {
-                  SendClientSideEvent(atmosphere, 'Your Work Integration Clicked', {
-                    teamId: meeting.teamId,
-                    meetingId: meeting.id,
-                    service: baseTabs[idx]?.service
-                  })
-                  setActiveService(tab.service)
-                }}
-                className={cn(
-                  'flex h-10 w-10 appearance-none items-center justify-center rounded-md transition-colors',
-                  idx === activeIdx
-                    ? // the logos are dark brand colors, so they go monochrome on the selected fill
-                      'bg-surface-selected text-fg-selected [&_path]:fill-current'
-                    : 'cursor-pointer text-fg-muted hover:bg-surface-hover'
-                )}
-              >
-                {tab.icon}
-              </button>
-            ))}
-          </div>
+    <InspirationPresentationContext.Provider value={presentation}>
+      <WorkDrawerConsumeContext.Provider
+        value={{mode: 'teamPrompt', viewerResponse, composer, prompts: meeting.prompts}}
+      >
+        <div className='flex min-h-0 flex-1 flex-col'>
+          {variant === 'sheet' ? (
+            <BottomSheetHeader
+              icon={<AutoAwesome className='h-[22px] w-[22px]' />}
+              title='Inspiration'
+              onClose={() => onClose?.()}
+            >
+              <div className='min-w-0 flex-1 overflow-x-auto'>{serviceTabs}</div>
+            </BottomSheetHeader>
+          ) : (
+            <div className='flex justify-center pt-3 pb-2'>{serviceTabs}</div>
+          )}
+          <Component meetingRef={meeting} />
         </div>
-        <Component meetingRef={meeting} />
-      </div>
-    </WorkDrawerConsumeContext.Provider>
+      </WorkDrawerConsumeContext.Provider>
+    </InspirationPresentationContext.Provider>
   )
 }
 

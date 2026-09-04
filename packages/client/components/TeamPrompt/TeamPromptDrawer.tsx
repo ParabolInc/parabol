@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import type {TeamPromptDrawer_meeting$key} from '~/__generated__/TeamPromptDrawer_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import usePhoneViewport from '~/hooks/usePhoneViewport'
 import useMutationProps from '../../hooks/useMutationProps'
 import AddReactjiToReactableMutation from '../../mutations/AddReactjiToReactableMutation'
 import ReactjiId from '../../shared/gqlIds/ReactjiId'
@@ -10,6 +11,7 @@ import {DiscussionThreadEnum} from '../../types/constEnums'
 import findStageById from '../../utils/meetings/findStageById'
 import DiscussionDrawer from '../DiscussionDrawer'
 import ResponsiveDashSidebar from '../ResponsiveDashSidebar'
+import InspirationBottomSheet from './structured/mobile/InspirationBottomSheet'
 import TeamPromptDiscussionThreadHeader from './TeamPromptDiscussionThreadHeader'
 import TeamPromptWorkDrawer from './TeamPromptWorkDrawer'
 
@@ -25,6 +27,7 @@ const TeamPromptDrawer = ({meetingRef}: Props) => {
         ...DiscussionDrawerTranscripts_meeting
         id
         teamId
+        templateId
         rightDrawerOpen
         localStageId
         phases {
@@ -59,8 +62,10 @@ const TeamPromptDrawer = ({meetingRef}: Props) => {
   )
 
   const atmosphere = useAtmosphere()
+  const isPhone = usePhoneViewport()
   const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
-  const {id: meetingId, rightDrawerOpen, localStageId} = meeting
+  const {id: meetingId, templateId, rightDrawerOpen, localStageId} = meeting
+  const showSheet = isPhone && !!templateId && rightDrawerOpen === 'inspiration'
 
   const onToggleDrawer = () => {
     commitLocalUpdate(atmosphere, (store) => {
@@ -111,32 +116,37 @@ const TeamPromptDrawer = ({meetingRef}: Props) => {
   }
 
   return (
-    <ResponsiveDashSidebar
-      isOpen={rightDrawerOpen !== null}
-      isRightDrawer
-      onToggle={onToggleDrawer}
-      sidebarWidth={DiscussionThreadEnum.WIDTH}
-    >
-      <DiscussionDrawer
-        discussionId={discussionId}
+    <>
+      <ResponsiveDashSidebar
+        isOpen={rightDrawerOpen !== null && !showSheet}
+        isRightDrawer
         onToggle={onToggleDrawer}
-        allowedThreadables={['comment', 'task']}
-        meetingRef={meeting}
-        meetingId={meetingId}
-        threadHeader={
-          <TeamPromptDiscussionThreadHeader
-            teamMember={teamMember}
-            response={response}
-            contentJSON={contentJSON}
-            stageId={activeStage?.id}
-            onToggleReactji={onToggleReactji}
-          />
-        }
-        workContent={<TeamPromptWorkDrawer meetingRef={meeting} />}
-        activeTab={rightDrawerOpen}
-        onChangeTab={onChangeTab}
-      />
-    </ResponsiveDashSidebar>
+        sidebarWidth={DiscussionThreadEnum.WIDTH}
+      >
+        <DiscussionDrawer
+          discussionId={discussionId}
+          onToggle={onToggleDrawer}
+          allowedThreadables={['comment', 'task']}
+          meetingRef={meeting}
+          meetingId={meetingId}
+          threadHeader={
+            <TeamPromptDiscussionThreadHeader
+              teamMember={teamMember}
+              response={response}
+              contentJSON={contentJSON}
+              stageId={activeStage?.id}
+              onToggleReactji={onToggleReactji}
+            />
+          }
+          workContent={showSheet ? null : <TeamPromptWorkDrawer meetingRef={meeting} />}
+          activeTab={rightDrawerOpen}
+          onChangeTab={onChangeTab}
+        />
+      </ResponsiveDashSidebar>
+      {isPhone && (
+        <InspirationBottomSheet meetingRef={meeting} isOpen={showSheet} onClose={onToggleDrawer} />
+      )}
+    </>
   )
 }
 
