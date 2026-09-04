@@ -73,11 +73,18 @@ export const EndRecurringMeetingModal = (props: Props) => {
       fragment EndRecurringMeetingModal_meeting on NewMeeting {
         id
         meetingType
+        ... on TeamPromptMeeting {
+          templateId
+          responses {
+            isShared
+            answeredPromptIds
+          }
+        }
       }
     `,
     meetingRef
   )
-  const {meetingType, id: meetingId} = meeting
+  const {meetingType, id: meetingId, templateId, responses} = meeting
 
   const {onCompleted, onError} = useMutationProps()
   const navigate = useNavigate()
@@ -115,24 +122,40 @@ export const EndRecurringMeetingModal = (props: Props) => {
     return humanReadableCountdown(new Date(nextMeetingDate))
   }, [nextMeetingDate])
 
+  const hasSeries = !!nextMeetingDate
+  const unsharedDraftsCount = templateId
+    ? (responses?.filter((response) => !response.isShared && response.answeredPromptIds.length > 0)
+        .length ?? 0)
+    : 0
+
   return (
     <Dialog isOpen={isOpen} onClose={closeModal}>
       <DialogContent>
-        <div className='mb-4 font-semibold text-xl'>End Meeting</div>
-        <div className='mb-4 flex flex-col gap-2'>
-          <RadioToggle
-            checked={isMeetingOnly}
-            value={true}
-            setChecked={setIsMeetingOnly}
-            label={`End this meeting (will restart ${fromNow ? `in ${fromNow}` : 'soon'})`}
-          />
-          <RadioToggle
-            checked={!isMeetingOnly}
-            value={false}
-            setChecked={setIsMeetingOnly}
-            label={"End this meeting and don't restart"}
-          />
+        <div className='mb-4 font-semibold text-xl'>
+          {hasSeries ? 'End Meeting' : 'End this meeting'}
         </div>
+        {hasSeries && (
+          <div className='mb-4 flex flex-col gap-2'>
+            <RadioToggle
+              checked={isMeetingOnly}
+              value={true}
+              setChecked={setIsMeetingOnly}
+              label={`End this meeting (will restart ${fromNow ? `in ${fromNow}` : 'soon'})`}
+            />
+            <RadioToggle
+              checked={!isMeetingOnly}
+              value={false}
+              setChecked={setIsMeetingOnly}
+              label={"End this meeting and don't restart"}
+            />
+          </div>
+        )}
+        {unsharedDraftsCount > 0 && (
+          <p className='mb-4 text-fg-muted text-sm'>
+            {unsharedDraftsCount} {unsharedDraftsCount === 1 ? 'member has' : 'members have'}{' '}
+            unshared drafts. Drafts are not included in the summary.
+          </p>
+        )}
         <div className='flex justify-end gap-2.5'>
           <button
             className={cn(

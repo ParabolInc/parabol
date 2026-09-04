@@ -49,13 +49,17 @@ const TeamPromptOptionsMenu = (props: Props) => {
             id
           }
         }
+        responses {
+          isShared
+          answeredPromptIds
+        }
         endedAt
       }
     `,
     meetingRef
   )
 
-  const {id: meetingId, meetingSeries, endedAt, team, template} = meeting
+  const {id: meetingId, meetingSeries, endedAt, team, template, templateId, responses} = meeting
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
   const navigate = useNavigate()
@@ -68,6 +72,9 @@ const TeamPromptOptionsMenu = (props: Props) => {
   // it is somewhat arbitrary and might change in the future
   const canEndRecurrence = !isEnded || !hasActiveMeetings
   const canToggleRecurrence = hasRecurrenceEnabled ? canEndRecurrence : canStartRecurrence
+  const hasUnsharedDrafts = templateId
+    ? responses.some((response) => !response.isShared && response.answeredPromptIds.length > 0)
+    : false
 
   return (
     <MenuContent align='end'>
@@ -139,10 +146,10 @@ const TeamPromptOptionsMenu = (props: Props) => {
           isEnded
             ? undefined
             : () => {
-                if (!hasRecurrenceEnabled) {
-                  EndTeamPromptMutation(atmosphere, {meetingId}, {onCompleted, onError, navigate})
-                } else {
+                if (hasRecurrenceEnabled || hasUnsharedDrafts) {
                   openEndRecurringMeetingModal()
+                } else {
+                  EndTeamPromptMutation(atmosphere, {meetingId}, {onCompleted, onError, navigate})
                 }
               }
         }
