@@ -7,7 +7,7 @@ import filterTasksByMeeting from '../../../utils/filterTasksByMeeting'
 import getPhase from '../../../utils/getPhase'
 import isValid from '../../isValid'
 import getTeamPromptMeetingPrompts from '../../mutations/helpers/getTeamPromptMeetingPrompts'
-import {isEmptyAnswerDoc} from '../mutations/helpers/buildTeamPromptResponseContent'
+import {hasSharedContent} from '../mutations/helpers/buildTeamPromptResponseContent'
 import type {TeamPromptMeetingResolvers} from '../resolverTypes'
 
 const TeamPromptMeeting: TeamPromptMeetingResolvers = {
@@ -68,9 +68,7 @@ const TeamPromptMeeting: TeamPromptMeetingResolvers = {
   },
 
   responseCount: async ({id: meetingId}) => {
-    return (await getTeamPromptResponsesByMeetingId(meetingId)).filter(
-      (response) => response.isShared && !isEmptyAnswerDoc(response.content)
-    ).length
+    return (await getTeamPromptResponsesByMeetingId(meetingId)).filter(hasSharedContent).length
   },
 
   taskCount: async ({id: meetingId}, _args, {dataLoader}) => {

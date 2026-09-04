@@ -86,7 +86,12 @@ const safeEndTeamPrompt = async ({
       })
   )
   await pg.insertInto('TimelineEvent').values(events).execute()
-  analytics.teamPromptEnd(completedTeamPrompt, meetingMembers, responses, dataLoader)
+  analytics.teamPromptEnd(
+    completedTeamPrompt,
+    meetingMembers,
+    responses.filter((response) => response.isShared),
+    dataLoader
+  )
   const [page, summary] = await Promise.all([
     publishSummaryPage(meetingId, context, info).catch((e) => {
       logError(e instanceof Error ? e : new Error(`publishSummaryPage failed: ${e}`), {
