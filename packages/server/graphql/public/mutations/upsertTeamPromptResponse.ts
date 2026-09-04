@@ -53,6 +53,12 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
       userId: viewerId
     })
   }
+  if (meeting.meetingType !== 'teamPrompt') {
+    return standardError(new Error('Meeting is not a team prompt meeting'), {userId: viewerId})
+  }
+  if (meeting.templateId) {
+    return standardError(new Error('Meeting uses a template'), {userId: viewerId})
+  }
   const {endedAt, teamId} = meeting
   if (endedAt)
     return standardError(new Error('Meeting already ended'), {

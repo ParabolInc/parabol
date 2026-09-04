@@ -5,7 +5,9 @@ import {getSummaryTable} from './getSummaryTable'
 const headers = ['Author', 'Created at', 'Content'] as const
 
 const getRowData = async (meetingId: string, dataLoader: DataLoaderInstance) => {
-  const responses = await dataLoader.get('teamPromptResponsesByMeetingId').load(meetingId)
+  const responses = (await dataLoader.get('teamPromptResponsesByMeetingId').load(meetingId)).filter(
+    (response) => response.isShared
+  )
 
   const responseRows = await Promise.all(
     responses.map(async (response) => {

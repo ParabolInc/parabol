@@ -46,7 +46,7 @@ const getSummaryText = async (meeting: AnyMeeting) => {
     )}.`
   } else if (meeting.meetingType === 'teamPrompt') {
     const responseCount = (await getTeamPromptResponsesByMeetingId(meeting.id)).filter(
-      (response) => !!response.plaintextContent
+      (response) => response.isShared && !!response.plaintextContent
     ).length
     // :TODO: (jmtaber129): Add additional stats here.
     return `Your team shared ${responseCount} ${plural(responseCount, 'response', 'responses')}.`
