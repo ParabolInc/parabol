@@ -27,6 +27,14 @@ export interface RunInspirationInsertParams {
 const ADDED_TOAST_SECONDS = 7
 export const MIN_MATCHABLE_ITEM_TEXT_LENGTH = 16
 
+const isEmptyParagraph = (block: JSONContent) =>
+  block.type === 'paragraph' && !block.content?.length
+
+export const trimTrailingEmptyParagraph = (blocks: JSONContent[]) => {
+  const last = blocks[blocks.length - 1]
+  return last && isEmptyParagraph(last) ? blocks.slice(0, -1) : blocks
+}
+
 export const normalizeAnswerText = (text: string) => text.replace(/\s+/g, ' ').trim()
 
 export const isItemTextInAnswer = (answerText: string, itemText: string): boolean => {
