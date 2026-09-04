@@ -1,4 +1,6 @@
-import useTooltip from '~/hooks/useTooltip'
+import {Tooltip} from '~/ui/Tooltip/Tooltip'
+import {TooltipContent} from '~/ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '~/ui/Tooltip/TooltipTrigger'
 import CardButton from '../../../../components/CardButton'
 import IconLabel from '../../../../components/IconLabel'
 import {MenuPosition} from '../../../../hooks/useCoords'
@@ -28,28 +30,20 @@ const TaskFooterIntegrateToggle = (props: Props) => {
       loadingWidth: 200
     }
   )
-  const {
-    tooltipPortal,
-    openTooltip,
-    closeTooltip,
-    originRef: tipRef
-  } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER)
   return (
     <>
-      <CardButton
-        onClick={togglePortal}
-        ref={originRef}
-        onMouseEnter={TaskFooterIntegrateMenuRoot.preload}
-      >
-        <IconLabel
-          icon='widgets'
-          onMouseEnter={openTooltip}
-          onMouseLeave={closeTooltip}
-          onClick={closeTooltip}
-          ref={tipRef}
-        />
-      </CardButton>
-      {tooltipPortal(<div>{'Push to Integration'}</div>)}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <CardButton
+            onClick={togglePortal}
+            ref={originRef}
+            onMouseEnter={TaskFooterIntegrateMenuRoot.preload}
+          >
+            <IconLabel icon='widgets' />
+          </CardButton>
+        </TooltipTrigger>
+        <TooltipContent side='bottom'>Push to Integration</TooltipContent>
+      </Tooltip>
       {menuPortal(
         <TaskFooterIntegrateMenuRoot
           menuProps={menuProps}

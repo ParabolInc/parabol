@@ -9,7 +9,6 @@ import type {ReactableEnum} from '../graphql/public/resolverTypes'
 import type {SAMLSource} from '../graphql/public/types/SAML'
 import getKysely from '../postgres/getKysely'
 import {
-  selectGitLabDimensionFieldMap,
   selectInspirationItems,
   selectMassInvitations,
   selectMeetingSettings,
@@ -20,7 +19,6 @@ import {
   selectTeams
 } from '../postgres/select'
 import type {
-  GitLabDimensionFieldMap,
   InspirationItem,
   MassInvitation,
   MeetingSettings,
@@ -245,39 +243,6 @@ export const userTasks = (parent: RootDataLoader, dependsOn: RegisterDependsOn) 
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: serializeUserTasksKey
-    }
-  )
-}
-
-export const gitlabDimensionFieldMaps = (parent: RootDataLoader) => {
-  return new DataLoader<
-    {
-      teamId: string
-      dimensionName: string
-      projectId: number
-      providerId: number
-    },
-    GitLabDimensionFieldMap | null,
-    string
-  >(
-    async (keys) => {
-      const results = await Promise.allSettled(
-        keys.map(async ({teamId, dimensionName, projectId, providerId}) =>
-          selectGitLabDimensionFieldMap()
-            .where('teamId', '=', teamId)
-            .where('dimensionName', '=', dimensionName)
-            .where('projectId', '=', projectId)
-            .where('providerId', '=', providerId)
-            .executeTakeFirstOrThrow()
-        )
-      )
-      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
-      return vals
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: ({teamId, dimensionName, projectId, providerId}) =>
-        `${teamId}:${dimensionName}:${projectId}:${providerId}`
     }
   )
 }

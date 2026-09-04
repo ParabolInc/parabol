@@ -4,11 +4,12 @@ import {useFragment} from 'react-relay'
 import type {PhaseItemColumn_prompt$key} from '~/__generated__/PhaseItemColumn_prompt.graphql'
 import type {PhaseItemColumn_meeting$key} from '../../__generated__/PhaseItemColumn_meeting.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
-import {MenuPosition} from '../../hooks/useCoords'
 import useForceUpdate from '../../hooks/useForceUpdate'
-import useTooltip from '../../hooks/useTooltip'
 import SetPhaseFocusMutation from '../../mutations/SetPhaseFocusMutation'
 import {cn} from '../../ui/cn'
+import {Tooltip} from '../../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
 import getNextSortOrder from '../../utils/getNextSortOrder'
 import RetroPrompt from '../RetroPrompt'
 import PhaseItemChits from './PhaseItemChits'
@@ -145,13 +146,7 @@ const PhaseItemColumn = (props: Props) => {
     return columnStack.filter(({isViewerCreator}) => isViewerCreator)
   }, [columnStack])
 
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.UPPER_CENTER,
-    {
-      delay: 200,
-      disabled: hasFocusedRef.current || isFocused || !isFacilitator || isComplete
-    }
-  )
+  const isTooltipDisabled = hasFocusedRef.current || isFocused || !isFacilitator || isComplete
 
   return (
     <div
@@ -190,11 +185,19 @@ const PhaseItemColumn = (props: Props) => {
               )}
               onClick={setColumnFocus}
             >
-              <RetroPrompt onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={originRef}>
-                <div className='relative mr-2 h-2 w-2' />
-                {question}
-              </RetroPrompt>
-              {tooltipPortal(<div>Tap to highlight prompt for everybody</div>)}
+              <Tooltip delayDuration={200}>
+                <TooltipTrigger asChild>
+                  <RetroPrompt>
+                    <div className='relative mr-2 h-2 w-2' />
+                    {question}
+                  </RetroPrompt>
+                </TooltipTrigger>
+                {!isTooltipDisabled && (
+                  <TooltipContent side='bottom'>
+                    Tap to highlight prompt for everybody
+                  </TooltipContent>
+                )}
+              </Tooltip>
               <div className='pl-4 font-normal text-fg-primary text-xs italic leading-4'>
                 {description}
               </div>

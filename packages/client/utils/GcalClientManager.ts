@@ -5,7 +5,7 @@ import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 import makeHref from './makeHref'
 
 class GcalClientManager {
-  static SCOPES = 'https://www.googleapis.com/auth/calendar.events'
+  static SCOPES = 'https://www.googleapis.com/auth/calendar.events openid'
   static openOAuth(
     atmosphere: Atmosphere,
     providerId: string,
@@ -16,7 +16,7 @@ class GcalClientManager {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
     const providerState = Math.random().toString(36).substring(5)
     const redirectUri = makeHref('/auth/gcal')
-    const uri = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&scope=${GcalClientManager.SCOPES}&state=${providerState}&redirect_uri=${redirectUri}&response_type=code&access_type=offline&prompt=consent`
+    const uri = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&scope=${encodeURIComponent(GcalClientManager.SCOPES)}&state=${providerState}&redirect_uri=${redirectUri}&response_type=code&access_type=offline&prompt=consent`
 
     const popup = window.open(
       uri,

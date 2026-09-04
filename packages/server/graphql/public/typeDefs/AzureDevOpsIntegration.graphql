@@ -118,11 +118,4 @@ type AzureDevOpsIntegration {
   user all available ADO providers they can authorize against.
   """
   sharedProviders: [IntegrationProviderOAuth2!]!
-
-  """
-  The team member's saved Azure DevOps search queries, sorted by most recently used. Only queries
-  used within the last 60 days are included. Use this to populate a "recent searches" UI so the
-  user can quickly re-run a previous work item search without retyping their query or filters.
-  """
-  azureDevOpsSearchQueries: [AzureDevOpsSearchQuery!]!
 }

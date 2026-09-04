@@ -42,8 +42,6 @@ const GitLabIntegration: GitLabIntegrationResolvers = {
     return sharedProviders.filter(({scope}) => scope !== 'global')
   },
 
-  gitlabSearchQueries: async () => [],
-
   projects: async ({teamId, userId}, _args, context, info) => {
     const projects = await fetchGitLabProjects(teamId, userId, context, info)
     if (projects instanceof Error) {

@@ -1,4 +1,5 @@
 type JiraServerIntegrationService implements IntegrationService {
+  id: ID!
   service: IntegrationProviderServiceEnum!
   title: String!
   isAvailable: Boolean!
@@ -17,4 +18,10 @@ type JiraServerIntegrationService implements IntegrationService {
   [] when not connected; null when the live fetch failed. Cached per service for 90 days unless networkOnly
   """
   repos(networkOnly: Boolean = false): [RepoIntegration!]
+
+  """
+  The viewer's saved searches on this service, most recently used first.
+  [] when the service does not save searches or the viewer is not connected
+  """
+  searchQueries: [IntegrationSearchQuery!]!
 }

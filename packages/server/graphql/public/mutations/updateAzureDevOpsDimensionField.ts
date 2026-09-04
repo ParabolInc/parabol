@@ -1,8 +1,9 @@
+import AzureDevOpsProjectId from 'parabol-client/shared/gqlIds/AzureDevOpsProjectId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getKysely from '../../../postgres/getKysely'
-import {Logger} from '../../../utils/Logger'
+import upsertIntegrationDimensionFieldMap from '../../../postgres/queries/upsertIntegrationDimensionFieldMap'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
+import validateDimensionFieldMutation from './helpers/validateDimensionFieldMutation'
 
 const updateAzureDevOpsDimensionField: MutationResolvers['updateAzureDevOpsDimensionField'] =
   async (
@@ -14,42 +15,25 @@ const updateAzureDevOpsDimensionField: MutationResolvers['updateAzureDevOpsDimen
     const subOptions = {mutatorId, operationId}
 
     // VALIDATION
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
-    if (!meeting) return {error: {message: 'Invalid meetingId'}}
-    if (meeting.meetingType !== 'poker') return {error: {message: 'Not a poker meeting'}}
-    const {teamId, templateRefId} = meeting
-    const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
-    const {dimensions} = templateRef
-    const matchingDimension = dimensions.find((dimension) => dimension.name === dimensionName)
-    if (!matchingDimension) return {error: {message: 'Invalid dimension name'}}
+    const meeting = await validateDimensionFieldMutation(dataLoader, meetingId, dimensionName)
+    if (meeting instanceof Error) return {error: {message: meeting.message}}
+    const {teamId} = meeting
 
     // RESOLUTION
-    try {
-      await getKysely()
-        .insertInto('AzureDevOpsDimensionFieldMap')
-        .values({
-          teamId,
-          dimensionName,
-          fieldName,
-          fieldId: fieldName,
-          instanceId,
-          fieldType: 'string',
-          projectKey,
-          workItemType
-        })
-        .onConflict((oc) =>
-          oc
-            .columns(['teamId', 'dimensionName', 'instanceId', 'projectKey', 'workItemType'])
-            .doUpdateSet((eb) => ({
-              fieldName: eb.ref('excluded.fieldName'),
-              fieldId: eb.ref('excluded.fieldId'),
-              fieldType: eb.ref('excluded.fieldType')
-            }))
-        )
-        .execute()
-    } catch (e) {
-      Logger.log(e)
-    }
+    const repoId = AzureDevOpsProjectId.join(instanceId, projectKey)
+    await upsertIntegrationDimensionFieldMap({
+      teamId,
+      service: 'azureDevOps',
+      repoId,
+      issueType: workItemType,
+      dimensionName,
+      fieldId: fieldName,
+      fieldName: null,
+      fieldType: 'string'
+    })
+    dataLoader
+      .get('integrationDimensionFieldMaps')
+      .clear({teamId, service: 'azureDevOps', repoId, dimensionName})
 
     const data = {teamId, meetingId}
     publish(

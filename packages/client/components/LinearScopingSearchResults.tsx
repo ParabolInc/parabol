@@ -56,14 +56,6 @@ const LinearScopingSearchResults = (props: Props) => {
                 }
               }
             }
-            integrations {
-              linear {
-                linearSearchQueries {
-                  queryString
-                  selectedProjectsIds
-                }
-              }
-            }
           }
         }
       }

@@ -1,5 +1,6 @@
-import {MenuPosition} from '../hooks/useCoords'
-import useTooltip from '../hooks/useTooltip'
+import {Tooltip} from '../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../ui/Tooltip/TooltipTrigger'
 
 interface Props {
   finalScores: (string | null)[]
@@ -8,12 +9,6 @@ interface Props {
 const PokerSidebarEstimateMeta = (props: Props) => {
   const {finalScores} = props
   const completedScoreCount = finalScores.filter(Boolean).length
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.LOWER_CENTER,
-    {
-      disabled: completedScoreCount === 0
-    }
-  )
   if (finalScores.length === 1) {
     const [firstScore] = finalScores
     const label = firstScore || '–'
@@ -22,19 +17,18 @@ const PokerSidebarEstimateMeta = (props: Props) => {
 
   const tooltipBody = finalScores.map((score) => (score === null ? '?' : score)).join(' / ')
   return (
-    <div
-      className='relative w-6'
-      ref={originRef}
-      onMouseEnter={openTooltip}
-      onMouseLeave={closeTooltip}
-    >
-      <div className='h-1 rounded-[10px] bg-slate-400' />
-      <div
-        className='absolute top-0 h-1 rounded-[10px] bg-jade-400 transition-[width] duration-300 ease-[cubic-bezier(0,0,.2,1)]'
-        style={{width: 24 * (completedScoreCount / finalScores.length)}}
-      />
-      {tooltipPortal(<div>{tooltipBody}</div>)}
-    </div>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <div className='relative w-6'>
+          <div className='h-1 rounded-[10px] bg-slate-400' />
+          <div
+            className='absolute top-0 h-1 rounded-[10px] bg-jade-400 transition-[width] duration-300 ease-[cubic-bezier(0,0,.2,1)]'
+            style={{width: 24 * (completedScoreCount / finalScores.length)}}
+          />
+        </div>
+      </TooltipTrigger>
+      {completedScoreCount > 0 && <TooltipContent>{tooltipBody}</TooltipContent>}
+    </Tooltip>
   )
 }
 

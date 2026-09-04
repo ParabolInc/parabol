@@ -10,12 +10,12 @@ import {KeyboardArrowLeft, KeyboardArrowRight} from '~/ui/icons'
 import {cn} from '../../ui/cn'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import EditableText from '../EditableText'
+import {EditMeetingSeriesModal} from '../EditMeetingSeriesModal'
 import IconLabel from '../IconLabel'
 import LogoBlock from '../LogoBlock/LogoBlock'
 import {IconGroupBlock, MeetingTopBarStyles} from '../MeetingTopBar'
 import {EndRecurringMeetingModal} from '../Recurrence/EndRecurringMeetingModal'
 import MeetingDateLabel from '../Recurrence/MeetingDateLabel'
-import {UpdateRecurrenceSettingsModal} from '../Recurrence/UpdateRecurrenceSettingsModal'
 import {TeamPromptMeetingStatus} from './TeamPromptMeetingStatus'
 import TeamPromptOptions from './TeamPromptOptions'
 
@@ -62,12 +62,12 @@ const TeamPromptTopBar = (props: Props) => {
           id
           cancelledAt
           nextMeetingDate
+          ...EditMeetingSeriesModal_series
         }
         ...MeetingDateLabel_meeting
         ...TeamPromptOptions_meeting
         ...NewMeetingAvatarGroup_meeting
         ...TeamPromptMeetingStatus_meeting
-        ...UpdateRecurrenceSettingsModal_meeting
         ...EndRecurringMeetingModal_meeting
       }
     `,
@@ -183,10 +183,12 @@ const TeamPromptTopBar = (props: Props) => {
             <div className='hidden md:block'>{buttons}</div>
           </RightSectionContainer>
         </RightSection>
-        <UpdateRecurrenceSettingsModal
-          meeting={meeting}
+        <EditMeetingSeriesModal
+          seriesRef={meetingSeries}
+          meetingId={meetingId}
+          defaultTitle={meetingName}
           isOpen={isRecurrenceSettingsOpen}
-          closeModal={() => setIsRecurrenceSettingsOpen(false)}
+          onClose={() => setIsRecurrenceSettingsOpen(false)}
         />
         <EndRecurringMeetingModal
           meetingRef={meeting}

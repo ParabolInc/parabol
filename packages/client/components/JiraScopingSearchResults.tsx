@@ -4,9 +4,8 @@ import {type PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
 import type {JiraScopingSearchResults_meeting$key} from '../__generated__/JiraScopingSearchResults_meeting.graphql'
 import type {JiraScopingSearchResultsQuery} from '../__generated__/JiraScopingSearchResultsQuery.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
 import findIntegrationService from '../integrations/platform/findIntegrationService'
-import PersistIntegrationSearchQueryMutation from '../mutations/PersistIntegrationSearchQueryMutation'
+import usePersistIntegrationSearchQueryMutation from '../mutations/usePersistIntegrationSearchQueryMutation'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import JiraScopingSelectAllIssues from './JiraScopingSelectAllIssues'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
@@ -31,14 +30,10 @@ const query = graphql`
       teamMember(teamId: $teamId) {
         services {
           ...findIntegrationService_auth @relay(mask: false)
+          ...usePersistIntegrationSearchQueryMutation_service @relay(mask: false)
         }
         integrations {
           atlassian {
-            jiraSearchQueries {
-              isJQL
-              queryString
-              projectKeyFilters
-            }
             issues(
               first: $first
               queryString: $queryString
@@ -93,7 +88,7 @@ const JiraScopingSearchResults = (props: Props) => {
   const edges = issues?.edges ?? null
   const error = issues?.error ?? null
   const [isEditing, setIsEditing] = useState(false)
-  const atmosphere = useAtmosphere()
+  const [persistIntegrationSearchQuery] = usePersistIntegrationSearchQueryMutation()
   const {id: meetingId, teamId, phases, jiraSearchQuery} = meeting
   const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
   const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
@@ -115,22 +110,26 @@ const JiraScopingSearchResults = (props: Props) => {
     const {queryString, isJQL} = jiraSearchQuery
     // don't persist an empty string (the default)
     if (!queryString) return
-    const providerId = findIntegrationService(viewer.teamMember!.services, 'jira')?.auth?.providerId
+    const jiraService = findIntegrationService(viewer.teamMember!.services, 'jira')
+    const providerId = jiraService?.auth?.providerId
     if (!providerId) return
     const projectKeyFilters = [...jiraSearchQuery.projectKeyFilters].sort()
     const lookupKey = JSON.stringify({queryString, projectKeyFilters})
-    const {jiraSearchQueries} = atlassian!
-    const searchHashes = jiraSearchQueries.map(({queryString, projectKeyFilters}) => {
-      return JSON.stringify({queryString, projectKeyFilters})
+    const searchHashes = jiraService.searchQueries.map((searchQuery) => {
+      return JSON.stringify({
+        queryString: searchQuery.queryString,
+        projectKeyFilters: searchQuery.projectKeyFilters ?? []
+      })
     })
     const isQueryNew = !searchHashes.includes(lookupKey)
     if (isQueryNew) {
-      PersistIntegrationSearchQueryMutation(atmosphere, {
-        teamId,
-        providerId,
-        queryString,
-        meta: JSON.stringify({isJQL, projectKeyFilters}),
-        includeAtlassian: true
+      persistIntegrationSearchQuery({
+        variables: {
+          teamId,
+          providerId,
+          queryString,
+          meta: JSON.stringify({isJQL, projectKeyFilters})
+        }
       })
     }
   }
@@ -140,6 +139,7 @@ const JiraScopingSearchResults = (props: Props) => {
         usedServiceTaskIds={usedServiceTaskIds}
         issues={edges}
         meetingId={meetingId}
+        persistQuery={persistQuery}
       />
       <div className='overflow-auto'>
         {viewer && (

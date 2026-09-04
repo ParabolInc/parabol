@@ -1,10 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {LinearFieldMenu_stage$key} from '../__generated__/LinearFieldMenu_stage.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
 import type {MenuProps} from '../hooks/useMenu'
-import UpdateLinearDimensionFieldMutation from '../mutations/UpdateLinearDimensionFieldMutation'
-import LinearProjectId from '../shared/gqlIds/LinearProjectId'
+import useUpdateIntegrationDimensionFieldMutation from '../mutations/useUpdateIntegrationDimensionFieldMutation'
 import {SprintPokerDefaults} from '../types/constEnums'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
@@ -17,7 +15,7 @@ interface Props {
 
 const LinearFieldMenu = (props: Props) => {
   const {menuProps, stageRef, submitScore} = props
-  const atmosphere = useAtmosphere()
+  const [updateIntegrationDimensionField] = useUpdateIntegrationDimensionFieldMutation()
   const stage = useFragment(
     graphql`
       fragment LinearFieldMenu_stage on EstimateStage {
@@ -28,16 +26,11 @@ const LinearFieldMenu = (props: Props) => {
           name
         }
         task {
+          id
           integration {
             ... on _xLinearIssue {
               __typename
               id
-              project {
-                id
-              }
-              team {
-                id
-              }
             }
           }
         }
@@ -59,30 +52,12 @@ const LinearFieldMenu = (props: Props) => {
   const defaultActiveIdx = defaults.indexOf(serviceFieldName)
 
   if (task?.integration?.__typename !== '_xLinearIssue') return null
-  const {integration} = task
-  const {
-    project,
-    team: {id: teamId}
-  } = integration
-  if (!teamId) return null
-  const {id: projectId} = project ?? {id: undefined}
-  const repoId = LinearProjectId.join(teamId, projectId)
+  const {id: taskId} = task
   const handleClick = (labelTemplate: string) => () => {
     if (labelTemplate !== serviceFieldName) {
-      UpdateLinearDimensionFieldMutation(
-        atmosphere,
-        {
-          dimensionName,
-          labelTemplate,
-          repoId,
-          meetingId
-        },
-        {
-          onCompleted: submitScore,
-          onError: () => {
-            /* noop */
-          }
-        }
+      updateIntegrationDimensionField(
+        {variables: {meetingId, taskId, dimensionName, fieldId: labelTemplate}},
+        {onSuccess: submitScore}
       )
     } else {
       submitScore()

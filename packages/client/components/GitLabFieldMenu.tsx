@@ -3,8 +3,7 @@ import {type MouseEvent} from 'react'
 import {useFragment} from 'react-relay'
 import {Edit} from '~/ui/icons'
 import type {GitLabFieldMenu_stage$key} from '../__generated__/GitLabFieldMenu_stage.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
-import UpdateGitLabDimensionFieldMutation from '../mutations/UpdateGitLabDimensionFieldMutation'
+import useUpdateIntegrationDimensionFieldMutation from '../mutations/useUpdateIntegrationDimensionFieldMutation'
 import {SprintPokerDefaults} from '../types/constEnums'
 import {MenuContent} from '../ui/Menu/MenuContent'
 import {MenuItem} from '../ui/Menu/MenuItem'
@@ -23,7 +22,7 @@ interface Props {
 
 const GitLabFieldMenu = (props: Props) => {
   const {onOpenEditModal, stageRef, submitScore} = props
-  const atmosphere = useAtmosphere()
+  const [updateIntegrationDimensionField] = useUpdateIntegrationDimensionFieldMutation()
   const stage = useFragment(
     graphql`
       fragment GitLabFieldMenu_stage on EstimateStage {
@@ -34,11 +33,11 @@ const GitLabFieldMenu = (props: Props) => {
           name
         }
         task {
+          id
           integration {
             ... on _xGitLabIssue {
               __typename
               id
-              projectId
             }
           }
         }
@@ -58,9 +57,7 @@ const GitLabFieldMenu = (props: Props) => {
   ] as string[]
 
   if (task?.integration?.__typename !== '_xGitLabIssue') return null
-  const {integration} = task
-  const {projectId} = integration
-  if (!projectId) return null
+  const {id: taskId} = task
 
   const defaultLabelTemplate = `${dimensionName}: {{#}}`
   const serviceFieldTemplate = defaults.includes(serviceFieldName)
@@ -69,20 +66,9 @@ const GitLabFieldMenu = (props: Props) => {
 
   const handleClick = (labelTemplate: string) => () => {
     if (labelTemplate !== serviceFieldName) {
-      UpdateGitLabDimensionFieldMutation(
-        atmosphere,
-        {
-          dimensionName,
-          labelTemplate,
-          projectId,
-          meetingId
-        },
-        {
-          onCompleted: submitScore,
-          onError: () => {
-            /* noop */
-          }
-        }
+      updateIntegrationDimensionField(
+        {variables: {meetingId, taskId, dimensionName, fieldId: labelTemplate}},
+        {onSuccess: submitScore}
       )
     } else {
       submitScore()

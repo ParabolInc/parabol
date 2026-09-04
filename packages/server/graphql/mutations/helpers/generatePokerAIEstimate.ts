@@ -1,4 +1,5 @@
 import {generateText, type JSONContent} from '@tiptap/core'
+import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
 import JiraProjectKeyId from 'parabol-client/shared/gqlIds/JiraProjectKeyId'
 import convertADFToTipTap, {type AdfNode} from 'parabol-client/shared/tiptap/convertADFToTipTap'
 import {markdownToTipTap} from 'parabol-client/shared/tiptap/markdownToTipTap'
@@ -131,12 +132,15 @@ export const generatePokerAIEstimate = async (options: Options) => {
       viewerId: accessUserId
     })
     if (!jiraIssue) return
-    const {issueType, summary, description} = jiraIssue
+    const {summary, description} = jiraIssue
 
     // figure out which Jira field holds the story points for this dimension
-    const dimensionFields = await dataLoader
-      .get('jiraDimensionFieldMap')
-      .load({teamId, cloudId, projectKey, issueType, dimensionName})
+    const dimensionFields = await dataLoader.get('integrationDimensionFieldMaps').load({
+      teamId,
+      service: 'jira',
+      repoId: JiraProjectId.join(cloudId, projectKey),
+      dimensionName
+    })
     const fieldId = dimensionFields.find(
       ({fieldId}) =>
         fieldId !== SprintPokerDefaults.SERVICE_FIELD_COMMENT &&

@@ -5,12 +5,13 @@ import type {BottomControlBarReady_meeting$key} from '~/__generated__/BottomCont
 import useAtmosphere from '~/hooks/useAtmosphere'
 import type useGotoNext from '~/hooks/useGotoNext'
 import FlagReadyToAdvanceMutation from '~/mutations/FlagReadyToAdvanceMutation'
-import {BezierCurve, Times} from '~/types/constEnums'
+import {BezierCurve} from '~/types/constEnums'
 import {ArrowForward, CheckCircle, CheckCircleOutline} from '~/ui/icons'
+import {Tooltip} from '~/ui/Tooltip/Tooltip'
+import {TooltipContent} from '~/ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '~/ui/Tooltip/TooltipTrigger'
 import handleRightArrow from '~/utils/handleRightArrow'
 import type {NewMeetingPhaseTypeEnum} from '../__generated__/BottomControlBarReady_meeting.graphql'
-import {MenuPosition} from '../hooks/useCoords'
-import useTooltip from '../hooks/useTooltip'
 import {cn} from '../ui/cn'
 import BottomControlBarProgress from './BottomControlBarProgress'
 import BottomNavControl from './BottomNavControl'
@@ -94,12 +95,6 @@ const BottomControlBarReady = (props: Props) => {
     ).length
   }, [readyUserIds, connectedMeetingMembers, isFacilitating, viewerId])
 
-  const {openTooltip, tooltipPortal, originRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.UPPER_CENTER,
-    {
-      delay: Times.MEETING_CONFIRM_TOOLTIP_DELAY
-    }
-  )
   const isOnlyViewer = activeCount === 1
   const progress = isOnlyViewer || isPoker ? 1.0 : readyCount / (activeCount - 1)
   const isLastStageInPhase = stages[stages.length - 1]?.id === localStage?.id
@@ -121,8 +116,6 @@ const BottomControlBarReady = (props: Props) => {
       gotoNext()
     } else {
       setConfirmingButton('next')
-      // let the above flush so isConfirming is set before opening
-      setTimeout(openTooltip)
     }
   }
   const onKeyDown = isNext
@@ -140,7 +133,7 @@ const BottomControlBarReady = (props: Props) => {
   const iconColor = isNext ? 'text-rose-500' : isViewerReady ? 'text-jade-400' : 'text-fg-secondary'
 
   return (
-    <>
+    <Tooltip open={isConfirming}>
       <BottomNavControl
         dataCy={`next-phase`}
         confirming={!!cancelConfirm}
@@ -149,30 +142,32 @@ const BottomControlBarReady = (props: Props) => {
         ref={ref}
       >
         {isNext && <BottomControlBarProgress isNext={isNext} progress={progress} />}
-        <BottomNavIconLabel className='px-2' label={label} ref={originRef}>
-          <div
-            className={cn('h-6 w-6 origin-top-left', iconColor)}
-            style={{
-              transform: isNext
-                ? progress > 0
-                  ? 'scale(0.75)translate(4px, 4px)'
-                  : undefined
-                : 'none',
-              transition: `transform 100ms ${BezierCurve.DECELERATE}`
-            }}
-          >
-            {isNext ? (
-              <ArrowForward className='stroke-1 stroke-current' />
-            ) : isViewerReady ? (
-              <CheckCircle />
-            ) : (
-              <CheckCircleOutline />
-            )}
-          </div>
-        </BottomNavIconLabel>
+        <TooltipTrigger asChild>
+          <BottomNavIconLabel className='px-2' label={label}>
+            <div
+              className={cn('h-6 w-6 origin-top-left', iconColor)}
+              style={{
+                transform: isNext
+                  ? progress > 0
+                    ? 'scale(0.75)translate(4px, 4px)'
+                    : undefined
+                  : 'none',
+                transition: `transform 100ms ${BezierCurve.DECELERATE}`
+              }}
+            >
+              {isNext ? (
+                <ArrowForward className='stroke-1 stroke-current' />
+              ) : isViewerReady ? (
+                <CheckCircle />
+              ) : (
+                <CheckCircleOutline />
+              )}
+            </div>
+          </BottomNavIconLabel>
+        </TooltipTrigger>
       </BottomNavControl>
-      {tooltipPortal(`Tap 'Next' again if everyone is ready`)}
-    </>
+      <TooltipContent>{`Tap 'Next' again if everyone is ready`}</TooltipContent>
+    </Tooltip>
   )
 }
 

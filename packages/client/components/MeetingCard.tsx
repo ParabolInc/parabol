@@ -5,44 +5,31 @@ import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router'
 import {Lock} from '~/ui/icons'
-import action from '../../../static/images/illustrations/action.png'
-import retrospective from '../../../static/images/illustrations/retrospective.png'
-import poker from '../../../static/images/illustrations/sprintPoker.png'
-import teamPrompt from '../../../static/images/illustrations/teamPrompt.png'
 import type {MeetingCard_meeting$key} from '../__generated__/MeetingCard_meeting.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
-import {MenuPosition} from '../hooks/useCoords'
 import useMeetingMemberAvatars from '../hooks/useMeetingMemberAvatars'
 import {useMeetingSeriesDate} from '../hooks/useMeetingSeriesDate'
-import useMenu from '../hooks/useMenu'
-import useTooltip from '../hooks/useTooltip'
 import {Breakpoint, ElementWidth} from '../types/constEnums'
 import {cn} from '../ui/cn'
+import {Menu} from '../ui/Menu/Menu'
+import {MenuContent} from '../ui/Menu/MenuContent'
+import {Tooltip} from '../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../ui/Tooltip/TooltipTrigger'
 import getMeetingPhase from '../utils/getMeetingPhase'
-import {MeetingTypeToReadable, phaseLabelLookup} from '../utils/meetings/lookups'
+import {
+  MeetingTypeToReadable,
+  meetingTypeToBgClass,
+  meetingTypeToIllustration,
+  meetingTypeToLabelClass,
+  phaseLabelLookup
+} from '../utils/meetings/lookups'
 import AvatarList from './AvatarList'
 import CardButton from './CardButton'
+import {EditMeetingSeriesModal} from './EditMeetingSeriesModal'
 import IconLabel from './IconLabel'
 import MeetingCardOptionsMenuRoot from './MeetingCardOptionsMenuRoot'
 import {EndRecurringMeetingModal} from './Recurrence/EndRecurringMeetingModal'
-import {UpdateRecurrenceSettingsModal} from './Recurrence/UpdateRecurrenceSettingsModal'
-import Tooltip from './Tooltip'
-
-const BACKGROUND_CLASSES = {
-  retrospective: 'bg-grape-500',
-  action: 'bg-aqua-400',
-  poker: 'bg-tomato-400',
-  teamPrompt: 'bg-jade-400',
-  teamHealth: 'bg-rose-500'
-} as const
-
-const RECURRING_LABEL_COLORS = {
-  retrospective: 'text-grape-600',
-  action: 'text-aqua-600',
-  poker: 'text-tomato-600',
-  teamPrompt: 'text-jade-600',
-  teamHealth: 'text-rose-600'
-}
 
 const STACK_DEGREES = {0: 1, 1: -2} as const
 const STACK_OFFSET_LEFT = {0: 4, 1: 2} as const
@@ -52,9 +39,6 @@ interface Props {
   meeting: MeetingCard_meeting$key
 }
 
-// TODO: add a dedicated teamHealth illustration
-const ILLUSTRATIONS = {retrospective, action, poker, teamPrompt, teamHealth: retrospective}
-
 const MeetingCard = (props: Props) => {
   const {meeting: meetingRef} = props
   const meeting = useFragment(
@@ -62,7 +46,6 @@ const MeetingCard = (props: Props) => {
       fragment MeetingCard_meeting on NewMeeting {
         ...useMeetingMemberAvatars_meeting
         ...EndRecurringMeetingModal_meeting
-        ...UpdateRecurrenceSettingsModal_meeting
         ...useMeetingSeriesDate_meeting
         id
         name
@@ -92,6 +75,7 @@ const MeetingCard = (props: Props) => {
           title
           cancelledAt
           nextMeetingDate
+          ...EditMeetingSeriesModal_series
         }
       }
     `,
@@ -111,19 +95,13 @@ const MeetingCard = (props: Props) => {
   const connectedUsers = useMeetingMemberAvatars(meeting)
   const {label: dateLabel, tooltip: readableNextMeetingDate} = useMeetingSeriesDate(meeting)
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
+  const [isCopied, setIsCopied] = useState(false)
   const popTooltip = () => {
-    openTooltip()
+    setIsCopied(true)
     setTimeout(() => {
-      closeTooltip()
+      setIsCopied(false)
     }, 2000)
   }
-  const {
-    tooltipPortal,
-    openTooltip,
-    closeTooltip,
-    originRef: tooltipRef
-  } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_RIGHT)
 
   const [isRecurrenceSettingsOpen, setIsRecurrenceSettingsOpen] = useState(false)
   const [isEndRecurringMeetingOpen, setIsEndRecurringMeetingOpen] = useState(false)
@@ -149,7 +127,7 @@ const MeetingCard = (props: Props) => {
       <div
         className={cn(
           'absolute top-0 bottom-1.5 block w-full rounded-t-card',
-          BACKGROUND_CLASSES[meetingType]
+          meetingTypeToBgClass[meetingType]
         )}
       />
       <span className='absolute top-2 left-2 font-semibold text-white text-xs'>
@@ -159,14 +137,14 @@ const MeetingCard = (props: Props) => {
         <span
           className={cn(
             'absolute top-2 right-2 rounded-[64px] bg-[#fffc] px-2 py-1 font-medium text-[11px] leading-3',
-            RECURRING_LABEL_COLORS[meetingType]
+            meetingTypeToLabelClass[meetingType]
           )}
         >
           Recurring
         </span>
       )}
       <img
-        src={ILLUSTRATIONS[meetingType]}
+        src={meetingTypeToIllustration[meetingType]}
         alt=''
         className='relative mx-auto block h-45 overflow-hidden rounded-t-card pt-6 dark:brightness-[.94]'
       />
@@ -212,7 +190,7 @@ const MeetingCard = (props: Props) => {
             <div
               className={cn(
                 'absolute top-0 bottom-1.5 block w-full rounded-t-card',
-                BACKGROUND_CLASSES[meetingType]
+                meetingTypeToBgClass[meetingType]
               )}
             />
             <span className='absolute top-2 left-2 font-semibold text-white text-xs'>
@@ -222,7 +200,7 @@ const MeetingCard = (props: Props) => {
               <span
                 className={cn(
                   'absolute top-2 right-2 rounded-[64px] bg-[#fffc] px-2 py-1 font-medium text-[11px] leading-3',
-                  RECURRING_LABEL_COLORS[meetingType]
+                  meetingTypeToLabelClass[meetingType]
                 )}
               >
                 Recurring
@@ -230,7 +208,7 @@ const MeetingCard = (props: Props) => {
             )}
             <Link to={meetingLink}>
               <img
-                src={ILLUSTRATIONS[meetingType]}
+                src={meetingTypeToIllustration[meetingType]}
                 alt=''
                 className='relative mx-auto block h-45 overflow-hidden rounded-t-card pt-6 dark:brightness-[.94]'
               />
@@ -249,8 +227,11 @@ const MeetingCard = (props: Props) => {
                     <span className='wrap-break-word block pt-1 pr-8 text-fg-primary text-xl leading-6'>
                       {meetingSeries.title}
                     </span>
-                    <Tooltip text={readableNextMeetingDate}>
-                      <div className='text-sm'>{dateLabel}</div>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className='cursor-pointer text-sm'>{dateLabel}</div>
+                      </TooltipTrigger>
+                      <TooltipContent side='bottom'>{readableNextMeetingDate}</TooltipContent>
                     </Tooltip>
                   </>
                 ) : (
@@ -259,13 +240,33 @@ const MeetingCard = (props: Props) => {
                   </span>
                 )}
               </Link>
-              <CardButton
-                className='absolute top-0 right-0 h-8 w-8 text-fg-primary opacity-100 hover:bg-surface-hover'
-                ref={originRef}
-                onClick={togglePortal}
-              >
-                <IconLabel ref={tooltipRef} icon='more_vert' />
-              </CardButton>
+              <Tooltip open={isCopied}>
+                <Menu
+                  trigger={
+                    <CardButton
+                      className='absolute top-0 right-0 h-8 w-8 text-fg-primary opacity-100 hover:bg-surface-hover'
+                      aria-label='Edit the meeting'
+                    >
+                      <TooltipTrigger asChild>
+                        <IconLabel icon='more_vert' />
+                      </TooltipTrigger>
+                    </CardButton>
+                  }
+                >
+                  <MenuContent align='end' sideOffset={4}>
+                    <MeetingCardOptionsMenuRoot
+                      meetingId={meetingId}
+                      teamId={teamId}
+                      popTooltip={popTooltip}
+                      openEndRecurringMeetingModal={() => setIsEndRecurringMeetingOpen(true)}
+                      openRecurrenceSettingsModal={() => setIsRecurrenceSettingsOpen(true)}
+                    />
+                  </MenuContent>
+                </Menu>
+                <TooltipContent side='bottom' align='end'>
+                  Copied!
+                </TooltipContent>
+              </Tooltip>
             </div>
             <Link to={meetingLink}>
               <span className='wrap-break-word block pt-1 pb-2 text-fg-secondary text-sm'>
@@ -274,17 +275,6 @@ const MeetingCard = (props: Props) => {
             </Link>
             <AvatarList users={connectedUsers} size={28} borderColor='var(--color-surface-card)' />
           </div>
-          {menuPortal(
-            <MeetingCardOptionsMenuRoot
-              meetingId={meetingId}
-              teamId={teamId}
-              menuProps={menuProps}
-              popTooltip={popTooltip}
-              openEndRecurringMeetingModal={() => setIsEndRecurringMeetingOpen(true)}
-              openRecurrenceSettingsModal={() => setIsRecurrenceSettingsOpen(true)}
-            />
-          )}
-          {tooltipPortal('Copied!')}
           {meeting && (
             <EndRecurringMeetingModal
               meetingRef={meeting}
@@ -293,11 +283,11 @@ const MeetingCard = (props: Props) => {
               closeModal={() => setIsEndRecurringMeetingOpen(false)}
             />
           )}
-          {meeting && (
-            <UpdateRecurrenceSettingsModal
-              meeting={meeting}
+          {isRecurring && (
+            <EditMeetingSeriesModal
+              seriesRef={meetingSeries}
               isOpen={isRecurrenceSettingsOpen}
-              closeModal={() => setIsRecurrenceSettingsOpen(false)}
+              onClose={() => setIsRecurrenceSettingsOpen(false)}
             />
           )}
         </div>

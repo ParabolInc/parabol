@@ -11,7 +11,7 @@ type RemoveIntegrationSearchQuerySuccess {
   """
   teamId: ID
   """
-  The team member whose saved queries changed. Select the integration that owns the removed query
+  The service whose saved queries changed. Select searchQueries to pick up the removed query
   """
-  teamMember: TeamMember!
+  service: IntegrationService!
 }

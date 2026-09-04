@@ -2,10 +2,11 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import type {DashboardAvatar_teamMember$key} from '../../__generated__/DashboardAvatar_teamMember.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
-import {MenuPosition} from '../../hooks/useCoords'
 import useMutationProps from '../../hooks/useMutationProps'
-import useTooltip from '../../hooks/useTooltip'
 import ToggleTeamDrawerMutation from '../../mutations/ToggleTeamDrawerMutation'
+import {Tooltip} from '../../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
 import Avatar from '../Avatar/Avatar'
 
 interface Props {
@@ -40,12 +41,8 @@ const DashboardAvatar = (props: Props) => {
   const {isConnected, preferredName, picture} = user
   const atmosphere = useAtmosphere()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.UPPER_CENTER
-  )
 
   const handleClick = () => {
-    closeTooltip()
     if (submitting) return
     submitMutation()
     ToggleTeamDrawerMutation(
@@ -62,15 +59,18 @@ const DashboardAvatar = (props: Props) => {
   }
 
   return (
-    <div className='w-5' onMouseEnter={openTooltip} onMouseLeave={closeTooltip}>
-      <Avatar
-        onClick={handleClick}
-        picture={picture}
-        ref={originRef}
-        className={`h-7 w-7 border-2 border-surface-well border-solid after:absolute after:h-full after:w-full after:content-[""] hover:after:bg-white/30 ${!isConnected && 'after:bg-white/60'}`}
-      />
-      {tooltipPortal(preferredName)}
-    </div>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <div className='w-5'>
+          <Avatar
+            onClick={handleClick}
+            picture={picture}
+            className={`h-7 w-7 border-2 border-surface-well border-solid after:absolute after:h-full after:w-full after:content-[""] hover:after:bg-white/30 ${!isConnected && 'after:bg-white/60'}`}
+          />
+        </div>
+      </TooltipTrigger>
+      <TooltipContent side='bottom'>{preferredName}</TooltipContent>
+    </Tooltip>
   )
 }
 

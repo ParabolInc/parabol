@@ -2,9 +2,10 @@ import graphql from 'babel-plugin-relay/macro'
 import {type FormEvent, useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import type {MSTeamsPanel_viewer$key} from '~/__generated__/MSTeamsPanel_viewer.graphql'
-import {MenuPosition} from '~/hooks/useCoords'
 import useForm from '~/hooks/useForm'
-import useTooltip from '~/hooks/useTooltip'
+import {Tooltip} from '~/ui/Tooltip/Tooltip'
+import {TooltipContent} from '~/ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '~/ui/Tooltip/TooltipTrigger'
 import linkify from '~/utils/linkify'
 import type {AddIntegrationProviderMutation as TAddIntegrationProviderMutation} from '../../../../__generated__/AddIntegrationProviderMutation.graphql'
 import BasicInput from '../../../../components/InputField/BasicInput'
@@ -140,10 +141,6 @@ const MSTeamsPanel = (props: Props) => {
     }
   }
 
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.LOWER_LEFT
-  )
-
   return (
     <div className='border-hairline border-t p-4'>
       <div className='flex items-center pb-4'>
@@ -151,17 +148,15 @@ const MSTeamsPanel = (props: Props) => {
       </div>
       <form onSubmit={onSubmit}>
         <div className='flex items-center py-2'>
-          <span
-            className='mr-4 w-full text-[14px]'
-            onMouseOver={openTooltip}
-            onMouseOut={closeTooltip}
-            ref={originRef}
-          >
-            Microsoft Teams Webhook
-          </span>
-          {tooltipPortal(
-            'Configure in Microsoft Teams: Click ... on the team > Connectors > Incoming Webhook'
-          )}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className='mr-4 w-full text-[14px]'>Microsoft Teams Webhook</span>
+            </TooltipTrigger>
+            <TooltipContent align='start'>
+              Configure in Microsoft Teams: Click ... on the team &gt; Connectors &gt; Incoming
+              Webhook
+            </TooltipContent>
+          </Tooltip>
           <BasicInput
             value={fields.webhookUrl.value}
             error=''

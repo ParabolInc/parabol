@@ -1,7 +1,8 @@
 import {Link} from 'react-router'
-import {MenuPosition} from '~/hooks/useCoords'
-import useTooltip from '~/hooks/useTooltip'
 import {Link as LinkIcon} from '~/ui/icons'
+import {Tooltip} from '~/ui/Tooltip/Tooltip'
+import {TooltipContent} from '~/ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '~/ui/Tooltip/TooltipTrigger'
 
 interface Props {
   meetingId: string
@@ -16,40 +17,27 @@ const CreatedInLink = ({meetingId, meetingName, topicTitle, stageIdx, openInNewT
   const label = `${topicTitle} — ${meetingName}`
   const anchorClassName =
     'ml-1 inline-flex align-middle text-fg-secondary hover:text-fg-secondary focus:text-fg-secondary'
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLAnchorElement>(
-    MenuPosition.UPPER_CENTER
-  )
   const icon = <LinkIcon className='size-3 cursor-pointer' />
   const link = openInNewTab ? (
     <a
       href={url}
-      ref={originRef}
       aria-label={label}
       className={anchorClassName}
       target='_blank'
       rel='noopener noreferrer'
-      onMouseEnter={openTooltip}
-      onMouseLeave={closeTooltip}
     >
       {icon}
     </a>
   ) : (
-    <Link
-      to={url}
-      ref={originRef}
-      aria-label={label}
-      className={anchorClassName}
-      onMouseEnter={openTooltip}
-      onMouseLeave={closeTooltip}
-    >
+    <Link to={url} aria-label={label} className={anchorClassName}>
       {icon}
     </Link>
   )
   return (
-    <>
-      {link}
-      {tooltipPortal(<div>{label}</div>)}
-    </>
+    <Tooltip>
+      <TooltipTrigger asChild>{link}</TooltipTrigger>
+      <TooltipContent side='bottom'>{label}</TooltipContent>
+    </Tooltip>
   )
 }
 
