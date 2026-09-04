@@ -29,6 +29,7 @@ graphql`
     }
     clonedTemplate {
       ...TemplateSharing_template
+      ...ActivityLibrary_template @relay(mask: false)
       orgId
     }
   }
@@ -88,6 +89,24 @@ const addTemplateToScope = (
   }
 }
 
+const swapTemplateInViewerConnections = (
+  templateId: string,
+  clonedTemplate: RecordProxy,
+  store: RecordSourceSelectorProxy
+) => {
+  const viewer = store.getRoot().getLinkedRecord('viewer')
+  if (!viewer) return
+  const connections = [
+    ConnectionHandler.getConnection(viewer, 'ActivityLibrary_availableTemplates'),
+    ConnectionHandler.getConnection(viewer, 'ActivityDetails_availableTemplates')
+  ]
+  connections.forEach((connection) => {
+    if (!connection) return
+    safeRemoveNodeFromConn(templateId, connection)
+    putTemplateInConnection(clonedTemplate, connection, store)
+  })
+}
+
 const SCOPES = ['TEAM', 'ORGANIZATION', 'PUBLIC']
 const handleUpdateTemplateScope = (
   template: RecordProxy,
@@ -95,7 +114,14 @@ const handleUpdateTemplateScope = (
   store: RecordSourceSelectorProxy,
   clonedTemplate?: RecordProxy
 ) => {
-  if (template.getValue('type') !== 'retrospective') return
+  const templateType = template.getValue('type')
+  if (templateType === 'teamPrompt') {
+    if (clonedTemplate) {
+      swapTemplateInViewerConnections(template.getValue('id') as string, clonedTemplate, store)
+    }
+    return
+  }
+  if (templateType !== 'retrospective') return
   const templateId = template.getValue('id') as string
   const nextTemplate = clonedTemplate || template
   const templateTeamId = nextTemplate.getValue('teamId')
