@@ -33,22 +33,24 @@ const clampToDoc = (position: number, size: number) => Math.max(0, Math.min(posi
 
 const insideStart = (doc: ProseMirrorNode, from: number) => {
   let position = clampToDoc(from + 1, doc.content.size)
-  if (doc.resolve(position).depth === 0) return null
-  while (true) {
-    const node = doc.resolve(position).nodeAfter
-    if (!node || node.isLeaf) return position
+  let $position = doc.resolve(position)
+  if ($position.depth === 0) return null
+  while ($position.nodeAfter && !$position.nodeAfter.isLeaf) {
     position += 1
+    $position = doc.resolve(position)
   }
+  return position
 }
 
 const insideEnd = (doc: ProseMirrorNode, to: number) => {
   let position = clampToDoc(to - 1, doc.content.size)
-  if (doc.resolve(position).depth === 0) return null
-  while (true) {
-    const node = doc.resolve(position).nodeBefore
-    if (!node || node.isLeaf) return position
+  let $position = doc.resolve(position)
+  if ($position.depth === 0) return null
+  while ($position.nodeBefore && !$position.nodeBefore.isLeaf) {
     position -= 1
+    $position = doc.resolve(position)
   }
+  return position
 }
 
 const startOfBoundedBlock = ($anchor: ResolvedPos) => {
@@ -65,11 +67,12 @@ const endOfBoundedBlock = ($anchor: ResolvedPos) => {
 
 const mapRangeStart = (tr: Transaction, from: number) => {
   const size = tr.doc.content.size
+  const boundary = clampToDoc(tr.mapping.map(from, 1), size)
   const anchor = insideStart(tr.before, from)
-  const mapped = clampToDoc(tr.mapping.map(anchor ?? from, 1), size)
-  if (anchor === null) return mapped
+  if (anchor === null) return boundary
+  const mapped = clampToDoc(tr.mapping.map(anchor, 1), size)
   const $mapped = tr.doc.resolve(mapped)
-  return $mapped.depth === 0 ? mapped : startOfBoundedBlock($mapped)
+  return $mapped.depth === 0 ? mapped : Math.max(startOfBoundedBlock($mapped), boundary)
 }
 
 const mapRangeEnd = (tr: Transaction, to: number) => {

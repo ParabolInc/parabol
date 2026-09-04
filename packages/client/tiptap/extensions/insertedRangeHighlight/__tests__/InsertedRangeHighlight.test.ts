@@ -403,4 +403,130 @@ describe('InsertedRangeHighlight', () => {
     )
     expect(tracked(prepended)).toEqual({from: 12, to: 13, settled: false})
   })
+
+  it('leaves the block a Backspace at the leading seam merges into outside the range', () => {
+    const {state} = createFixture((schema) => [
+      schema.node('paragraph', null, schema.text('mine')),
+      schema.node('paragraph', null, schema.text('two')),
+      schema.node('paragraph', null, schema.text('three'))
+    ])
+    const marked = markAt(state, 6, 18)
+
+    const merged = marked.apply(marked.tr.delete(5, 7))
+    const range = tracked(merged)!
+
+    expect(range).toEqual({from: 5, to: 16, settled: false})
+    expect(merged.doc.textBetween(0, range.from)).toBe('mine')
+    expect(merged.apply(merged.tr.delete(range.from, range.to)).doc.textContent).toBe('mine')
+  })
+
+  it('keeps the viewer out of the range when the first inserted block is wrapped in a list', () => {
+    const {state, schema} = createFixture()
+    const marked = markRange(state)
+
+    const selected = marked.apply(marked.tr.setSelection(TextSelection.create(marked.doc, 6)))
+    let wrapped = selected
+    wrapInList(schema.nodes.bulletList!)(selected, (tr) => {
+      wrapped = selected.apply(tr)
+    })
+    const range = tracked(wrapped)!
+
+    expect(wrapped.doc.child(1).type.name).toBe('bulletList')
+    expect(range.from).toBeGreaterThanOrEqual(5)
+    expect(range.to).toBe(wrapped.doc.content.size)
+    expect(wrapped.apply(wrapped.tr.delete(range.from, range.to)).doc.child(0).textContent).toBe(
+      'one'
+    )
+  })
+
+  it('leaves a list item split off the start of a leading list outside the range', () => {
+    const {state} = createListFixture()
+    const marked = markAt(state, 6, 25)
+
+    const split = pressEnter(marked, 9)
+    const range = tracked(split)!
+
+    expect(split.doc.child(1).firstChild!.textContent).toBe('')
+    expect(range.from).toBe(11)
+    expect(split.doc.resolve(range.from).nodeAfter!.textContent).toBe('alpha')
+  })
+
+  it('tracks a single-block range through splits at both ends', () => {
+    const {state} = createFixture((schema) => [
+      schema.node('paragraph', null, schema.text('one')),
+      schema.node('paragraph', null, schema.text('two'))
+    ])
+    const marked = markAt(state, 5, 10)
+
+    const splitStart = marked.apply(marked.tr.split(6))
+    expect(tracked(splitStart)).toEqual({from: 7, to: 12, settled: false})
+
+    const splitEnd = splitStart.apply(splitStart.tr.split(11))
+    expect(tracked(splitEnd)).toEqual({from: 7, to: 12, settled: false})
+
+    const typed = splitEnd.apply(splitEnd.tr.insertText('X', 9))
+    expect(tracked(typed)).toEqual({from: 7, to: 13, settled: false})
+  })
+
+  it('tracks an empty inserted paragraph', () => {
+    const {state, schema} = createFixture((schema) => [
+      schema.node('paragraph', null, schema.text('one')),
+      schema.node('paragraph')
+    ])
+    const marked = markAt(state, 5, 7)
+
+    const typed = marked.apply(marked.tr.insertText('drafted', 6))
+    expect(tracked(typed)).toEqual({from: 5, to: 14, settled: false})
+
+    const appended = marked.apply(
+      marked.tr.insert(7, schema.node('paragraph', null, schema.text('mine')))
+    )
+    expect(tracked(appended)).toEqual({from: 5, to: 7, settled: false})
+  })
+
+  it('leaves a sibling split off a nested list item outside the range', () => {
+    const {state} = createFixture((schema) => [
+      schema.node('paragraph', null, schema.text('base')),
+      schema.node('bulletList', null, [
+        schema.node('listItem', null, [
+          schema.node('paragraph', null, schema.text('alpha')),
+          schema.node('bulletList', null, [listItem(schema, 'deep')])
+        ])
+      ])
+    ])
+    const marked = markAt(state, 6, state.doc.content.size)
+    const deepEnd = state.doc.content.size - 5
+
+    const split = pressEnter(marked, deepEnd)
+    const typed = split.apply(split.tr.insertText('MINE', deepEnd + 4))
+    const range = tracked(typed)!
+
+    expect(typed.doc.textContent).toContain('MINE')
+    expect(range.to).toBeLessThan(typed.doc.content.size)
+    expect(typed.apply(typed.tr.delete(range.from, range.to)).doc.textContent).toBe('baseMINE')
+  })
+
+  it('leaves every block-aligned range byte-identical across a meta-only transaction', () => {
+    const shapes: [string, EditorState, number, number][] = [
+      ['paragraphs', createFixture().state, 5, 17],
+      ['list', createListFixture().state, 6, 25],
+      [
+        'leaf',
+        createFixture((schema) => [
+          schema.node('paragraph', null, schema.text('base')),
+          schema.node('horizontalRule')
+        ]).state,
+        6,
+        7
+      ]
+    ]
+    shapes.forEach(([name, state, from, to]) => {
+      const marked = markAt(state, from, to)
+      const settled = marked.apply(marked.tr.setMeta(insertedRangeKey, {settle: 'r1'}))
+      const idle = settled.apply(settled.tr.setMeta('addToHistory', false))
+
+      expect([name, tracked(settled)]).toEqual([name, {from, to, settled: true}])
+      expect([name, tracked(idle)]).toEqual([name, {from, to, settled: true}])
+    })
+  })
 })

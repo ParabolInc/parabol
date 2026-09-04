@@ -45,6 +45,11 @@ const InspirationDraftList = (props: Props) => {
     return {item, prompt, draft: toDraftItem(item, prompt.id)}
   })
   const remaining = cards.filter(({draft}) => !isAdded(draft)).map(({draft}) => draft)
+  const addEdited = (drafts: InspirationDraftItem[]) => {
+    const drafted = drafts.filter(({blocks}) => blocks.length > 0)
+    if (drafted.length === 0) return
+    addItems(drafted)
+  }
   const asEditedByTheReader = (draft: InspirationDraftItem) => {
     const editor = editorsRef.current.get(draft.id)
     if (!editor || editor.isDestroyed) return draft
@@ -68,14 +73,14 @@ const InspirationDraftList = (props: Props) => {
           isAdded={isAdded(draft)}
           disabled={adding}
           onEditorChange={trackEditor}
-          onAdd={() => addItems([asEditedByTheReader(draft)])}
+          onAdd={() => addEdited([asEditedByTheReader(draft)])}
         />
       ))}
       <InspirationAddAllButton
         remaining={remaining.length}
         total={cards.length}
         disabled={adding}
-        onClick={() => addItems(remaining.map(asEditedByTheReader))}
+        onClick={() => addEdited(remaining.map(asEditedByTheReader))}
       />
     </>
   )
