@@ -1,5 +1,5 @@
 import type {Editor, JSONContent} from '@tiptap/core'
-import {useState} from 'react'
+import {type ReactNode, useState} from 'react'
 import {Tune as TuneIcon} from '~/ui/icons'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import UpsertTeamPromptResponseMutation from '../../../mutations/UpsertTeamPromptResponseMutation'
@@ -16,6 +16,7 @@ import Ellipsis from '../../Ellipsis/Ellipsis'
 import InspirationItemCard from './InspirationItemCard'
 import RetroInspirationItemCard from './RetroInspirationItemCard'
 import {useWorkDrawerConsume} from './WorkDrawerConsumeContext'
+import type {WorkDrawerDateRange} from './WorkDrawerDateFilter'
 
 interface InspirationItemData {
   id: string
@@ -34,6 +35,9 @@ interface Props {
     content: string
     promptId?: string | null
   }[]
+  dateRange?: WorkDrawerDateRange
+  workItemCount?: number
+  children?: ReactNode
 }
 
 // content arrives as a stringified tiptap doc
@@ -46,7 +50,7 @@ const parseContent = (raw: string): JSONContent => {
 }
 
 const InspirationItemsPanel = (props: Props) => {
-  const {meetingId, service, searchQuery, initialItems} = props
+  const {meetingId, service, searchQuery, initialItems, children} = props
   const consume = useWorkDrawerConsume()
   const isRetro = consume.mode === 'retro'
   const viewerResponse = consume.mode === 'teamPrompt' ? consume.viewerResponse : null
@@ -131,78 +135,81 @@ const InspirationItemsPanel = (props: Props) => {
     : 'Tell the AI how to draft your response…'
 
   return (
-    <div className='flex flex-col gap-2 px-4 pb-4'>
-      <div className='flex gap-2'>
-        <Button
-          variant='secondary'
-          size='md'
-          className='flex-1'
-          disabled={submitting}
-          onClick={onGenerate}
-        >
-          {submitting ? <Ellipsis /> : generateLabel}
-        </Button>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant='secondary'
-              shape='icon'
-              aria-label='Customize instructions'
-              data-dirty={userPrompt.trim() ? '' : undefined}
-              className='h-9 w-9 shrink-0 p-0 data-dirty:ring-2 data-dirty:ring-sky-300'
-              disabled={submitting}
-              onClick={() => setPromptOpen(true)}
-            >
-              <TuneIcon />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>{customInstructionsHint}</TooltipContent>
-        </Tooltip>
-      </div>
-      <Dialog isOpen={promptOpen} onClose={() => setPromptOpen(false)}>
-        <DialogContent className='z-10'>
-          <DialogTitle className='mb-4'>Custom instructions</DialogTitle>
-          <textarea
-            autoFocus
-            className='min-h-32 w-full resize-y rounded-md border border-hairline-field p-2 text-fg-primary text-sm focus:border-accent focus:outline-none'
-            value={userPrompt}
-            onChange={(e) => setUserPrompt(e.target.value)}
-            placeholder={customInstructionsPlaceholder}
-          />
-          <DialogActions>
-            {userPrompt.trim() && (
-              <Button variant='ghost' size='md' onClick={() => setUserPrompt('')}>
-                Clear
+    <>
+      <div className='flex flex-col gap-2 px-4 pb-4'>
+        <div className='flex gap-2'>
+          <Button
+            variant='secondary'
+            size='md'
+            className='flex-1'
+            disabled={submitting}
+            onClick={onGenerate}
+          >
+            {submitting ? <Ellipsis /> : generateLabel}
+          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant='secondary'
+                shape='icon'
+                aria-label='Customize instructions'
+                data-dirty={userPrompt.trim() ? '' : undefined}
+                className='h-9 w-9 shrink-0 p-0 data-dirty:ring-2 data-dirty:ring-sky-300'
+                disabled={submitting}
+                onClick={() => setPromptOpen(true)}
+              >
+                <TuneIcon />
               </Button>
-            )}
-            <Button variant='secondary' size='md' onClick={() => setPromptOpen(false)}>
-              Done
-            </Button>
-          </DialogActions>
-        </DialogContent>
-      </Dialog>
-      {error && <div className='text-fg-error text-sm'>{error}</div>}
-      {items.map((item) =>
-        isRetro ? (
-          <RetroInspirationItemCard
-            key={item.id}
-            meetingId={meetingId}
-            promptId={item.promptId}
-            title={item.title}
-            content={item.content}
-          />
-        ) : (
-          <InspirationItemCard
-            key={item.id}
-            title={item.title}
-            content={item.content}
-            onAddToResponse={onAddToResponse}
-            responsePlaintext={viewerResponse?.plaintextContent ?? ''}
-            disabled={addingToResponse}
-          />
-        )
-      )}
-    </div>
+            </TooltipTrigger>
+            <TooltipContent>{customInstructionsHint}</TooltipContent>
+          </Tooltip>
+        </div>
+        <Dialog isOpen={promptOpen} onClose={() => setPromptOpen(false)}>
+          <DialogContent className='z-10'>
+            <DialogTitle className='mb-4'>Custom instructions</DialogTitle>
+            <textarea
+              autoFocus
+              className='min-h-32 w-full resize-y rounded-md border border-hairline-field p-2 text-fg-primary text-sm focus:border-accent focus:outline-none'
+              value={userPrompt}
+              onChange={(e) => setUserPrompt(e.target.value)}
+              placeholder={customInstructionsPlaceholder}
+            />
+            <DialogActions>
+              {userPrompt.trim() && (
+                <Button variant='ghost' size='md' onClick={() => setUserPrompt('')}>
+                  Clear
+                </Button>
+              )}
+              <Button variant='secondary' size='md' onClick={() => setPromptOpen(false)}>
+                Done
+              </Button>
+            </DialogActions>
+          </DialogContent>
+        </Dialog>
+        {error && <div className='text-fg-error text-sm'>{error}</div>}
+        {items.map((item) =>
+          isRetro ? (
+            <RetroInspirationItemCard
+              key={item.id}
+              meetingId={meetingId}
+              promptId={item.promptId}
+              title={item.title}
+              content={item.content}
+            />
+          ) : (
+            <InspirationItemCard
+              key={item.id}
+              title={item.title}
+              content={item.content}
+              onAddToResponse={onAddToResponse}
+              responsePlaintext={viewerResponse?.plaintextContent ?? ''}
+              disabled={addingToResponse}
+            />
+          )
+        )}
+      </div>
+      {children}
+    </>
   )
 }
 

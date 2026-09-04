@@ -61,7 +61,7 @@ const LinearIntegrationPanel = (props: Props) => {
   const isActive = !!linear?.auth?.isActive
   const provider = linear?.cloudProvider
 
-  const {dateRange, setDateRange, onResultCount, getHasResults} = useInspirationDrawer(
+  const {dateRange, setDateRange, onResultCount, getResultCount} = useInspirationDrawer(
     'linear',
     meeting
   )
@@ -73,7 +73,6 @@ const LinearIntegrationPanel = (props: Props) => {
 
   const filter = makeLinearWorkFilter(selectedLinearIds, dateRange)
   const searchQuery = JSON.stringify(filter)
-  const hasResults = getHasResults(searchQuery)
 
   const mutationProps = useMutationProps()
   const {error, onError} = mutationProps
@@ -114,20 +113,21 @@ const LinearIntegrationPanel = (props: Props) => {
             <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
           </div>
           <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
-            {hasResults && (
-              <InspirationItemsPanel
-                meetingId={meeting.id}
-                service='linear'
-                searchQuery={searchQuery}
-                initialItems={meeting.linearInspirationItems}
-              />
-            )}
-            <LinearIntegrationResultsRoot
-              filter={filter}
+            <InspirationItemsPanel
+              meetingId={meeting.id}
+              service='linear'
               searchQuery={searchQuery}
-              teamId={teamMember.teamId}
-              onResultCount={onResultCount}
-            />
+              initialItems={meeting.linearInspirationItems}
+              dateRange={dateRange}
+              workItemCount={getResultCount(searchQuery)}
+            >
+              <LinearIntegrationResultsRoot
+                filter={filter}
+                searchQuery={searchQuery}
+                teamId={teamMember.teamId}
+                onResultCount={onResultCount}
+              />
+            </InspirationItemsPanel>
           </div>
         </>
       ) : (

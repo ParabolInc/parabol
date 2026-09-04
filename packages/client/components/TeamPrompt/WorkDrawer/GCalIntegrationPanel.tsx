@@ -55,7 +55,7 @@ const GCalPanel = (props: Props) => {
 
   const teamMember = meeting.viewerMeetingMember?.teamMember
 
-  const {dateRange, setDateRange, onResultCount, getHasResults} = useInspirationDrawer(
+  const {dateRange, setDateRange, onResultCount, getResultCount} = useInspirationDrawer(
     'gcal',
     meeting
   )
@@ -66,8 +66,6 @@ const GCalPanel = (props: Props) => {
   // Show past-only ranges most-recent-first; show chronologically once the window reaches into the future.
   const order = new Date(endDate).getTime() <= Date.now() ? 'DESC' : 'ASC'
   const searchQuery = JSON.stringify({startDate, endDate})
-
-  const hasResults = getHasResults(searchQuery)
 
   const atmosphere = useAtmosphere()
   const mutationProps = useMutationProps()
@@ -100,22 +98,23 @@ const GCalPanel = (props: Props) => {
             <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
           </div>
           <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
-            {hasResults && (
-              <InspirationItemsPanel
-                meetingId={meeting.id}
-                service='gcal'
-                searchQuery={searchQuery}
-                initialItems={meeting.gcalInspirationItems}
-              />
-            )}
-            <GCalIntegrationResultsRoot
-              teamId={teamMember.teamId}
-              startDate={startDate}
-              endDate={endDate}
-              order={order}
+            <InspirationItemsPanel
+              meetingId={meeting.id}
+              service='gcal'
               searchQuery={searchQuery}
-              onResultCount={onResultCount}
-            />
+              initialItems={meeting.gcalInspirationItems}
+              dateRange={dateRange}
+              workItemCount={getResultCount(searchQuery)}
+            >
+              <GCalIntegrationResultsRoot
+                teamId={teamMember.teamId}
+                startDate={startDate}
+                endDate={endDate}
+                order={order}
+                searchQuery={searchQuery}
+                onResultCount={onResultCount}
+              />
+            </InspirationItemsPanel>
           </div>
         </>
       ) : (
