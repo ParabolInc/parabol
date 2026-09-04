@@ -8,6 +8,7 @@ import {addCommentMeetingUpdater} from '~/mutations/AddCommentMutation'
 import {createPollMeetingUpdater} from '~/mutations/CreatePollMutation'
 import {deleteCommentMeetingUpdater} from '~/mutations/DeleteCommentMutation'
 import {upsertTeamPromptResponseUpdater} from '~/mutations/UpsertTeamPromptResponseMutation'
+import {upsertTeamPromptAnswersMeetingUpdater} from '~/mutations/useUpsertTeamPromptAnswersMutation'
 import Atmosphere from '../Atmosphere'
 import {createReflectionMeetingUpdater} from '../mutations/CreateReflectionMutation'
 import {dragDiscussionTopicMeetingUpdater} from '../mutations/DragDiscussionTopicMutation'
@@ -176,6 +177,8 @@ const subscription = graphql`
       }
       ShareTeamPromptResponsesSuccess {
         ...useShareTeamPromptResponsesMutation_meeting @relay(mask: false)
+      UpsertTeamPromptAnswersSuccess {
+        ...useUpsertTeamPromptAnswersMutation_meeting @relay(mask: false)
       }
     }
   }
@@ -200,6 +203,7 @@ const updateHandlers = {
   StartDraggingReflectionPayload: startDraggingReflectionMeetingUpdater,
   PokerAnnounceDeckHoverSuccess: pokerAnnounceDeckHoverMeetingUpdater,
   UpsertTeamPromptResponseSuccess: upsertTeamPromptResponseUpdater,
+  UpsertTeamPromptAnswersSuccess: upsertTeamPromptAnswersMeetingUpdater,
   SetMeetingMusicSuccess: setMeetingMusicMeetingUpdater,
   SuggestedGroupsSuccess: suggestedGroupsMeetingUpdater
 } as const
