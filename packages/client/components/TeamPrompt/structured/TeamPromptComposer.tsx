@@ -96,7 +96,7 @@ const TeamPromptComposer = (props: Props) => {
 
   const hasSeededRef = useRef(false)
   useEffect(() => {
-    if (!stage || !isShared || hasSeededRef.current) return
+    if (!stage || hasSeededRef.current) return
     hasSeededRef.current = true
     const entries = prompts.reduce<DirtyAnswer[]>((acc, prompt) => {
       const draft = readDraftAnswer(stage.id, prompt.id)
@@ -106,7 +106,7 @@ const TeamPromptComposer = (props: Props) => {
       return acc
     }, [])
     seedDirty(entries)
-  }, [stage?.id, isShared])
+  }, [stage?.id])
 
   const onChange = useCallback(
     (promptId: string, editor: Editor) => {
@@ -141,12 +141,7 @@ const TeamPromptComposer = (props: Props) => {
   const savedText = prompts
     .map((prompt) => response?.answers.find((answer) => answer.promptId === prompt.id))
     .find((answer) => !!answer?.plaintextContent.trim())?.plaintextContent
-  const liveText = isExpanded
-    ? prompts
-        .map((prompt) => editorRefs.current.get(prompt.id)?.current?.getText())
-        .find((text) => !!text?.trim())
-    : undefined
-  const preview = (savedText ?? liveText ?? '').replace(/\s+/g, ' ').trim().slice(0, PREVIEW_LENGTH)
+  const preview = (savedText ?? '').replace(/\s+/g, ' ').trim().slice(0, PREVIEW_LENGTH)
   const isDirty = dirtyPromptIds.size > 0
 
   return (

@@ -33,6 +33,7 @@ const TeamPromptComposerFooter = (props: Props) => {
         {isShared ? 'Edits are private until you share again' : 'Auto-saved · only you can see it'}
       </div>
       <Button
+        type='button'
         onMouseDown={(e) => e.preventDefault()}
         onClick={onOpenInspiration}
         className={cn(
