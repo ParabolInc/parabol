@@ -67,11 +67,36 @@ const TeamPromptDrawer = ({meetingRef}: Props) => {
 
   const allStages = meeting.phases.flatMap((p) => p.stages)
   const selectedStage = localStageId ? findStageById(meeting.phases, localStageId)?.stage : null
-  const activeStage = selectedStage?.discussionId
-    ? selectedStage
-    : allStages.find(
-        (stage) => stage.discussionId && getSharedResponses(stage.responses ?? []).length > 0
-      )
+  const activeStage =
+    rightDrawerOpen !== 'discussion'
+      ? undefined
+      : selectedStage?.discussionId && selectedStage?.teamMember
+        ? selectedStage
+        : allStages.find((s) => s.discussionId && s.teamMember && s.response?.content)
+
+  const {discussionId, teamMember, response} = activeStage ?? {}
+
+  const reactjis = response?.reactjis ?? []
+  const contentJSON: JSONContent | null = response ? JSON.parse(response.content) : null
+
+  const onToggleReactji = (emojiId: string) => {
+    if (submitting || !reactjis || !response) return
+    const isRemove = !!reactjis.find(
+      (reactji) => reactji.isViewerReactji && ReactjiId.split(reactji.id).name === emojiId
+    )
+    submitMutation()
+    AddReactjiToReactableMutation(
+      atmosphere,
+      {
+        reactableId: response.id,
+        reactableType: 'RESPONSE',
+        isRemove,
+        reactji: emojiId,
+        meetingId
+      },
+      {onCompleted, onError}
+    )
+  }
 
   return (
     <ResponsiveDashSidebar
