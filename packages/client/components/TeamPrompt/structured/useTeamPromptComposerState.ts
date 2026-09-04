@@ -68,6 +68,17 @@ const useTeamPromptComposerState = (options: Options) => {
     clearStageDrafts(stage.id)
   }, [stage?.id, isEnded])
 
+  const savedTextByPrompt = useMemo(
+    () =>
+      new Map(
+        prompts.map((prompt) => [
+          prompt.id,
+          response?.answers.find((answer) => answer.promptId === prompt.id)?.plaintextContent ?? ''
+        ])
+      ),
+    [response?.answers]
+  )
+
   const savedText = prompts
     .map((prompt) => response?.answers.find((answer) => answer.promptId === prompt.id))
     .find((answer) => !!answer?.plaintextContent.trim())?.plaintextContent
@@ -80,6 +91,7 @@ const useTeamPromptComposerState = (options: Options) => {
     answeredPromptIds,
     setAnsweredPromptIds,
     preview,
+    savedTextByPrompt,
     sharedAt,
     lastAnswerAt
   }
