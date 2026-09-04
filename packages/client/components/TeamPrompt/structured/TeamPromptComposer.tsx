@@ -10,6 +10,7 @@ import TeamPromptComposerFooter from './TeamPromptComposerFooter'
 import TeamPromptComposerHeader from './TeamPromptComposerHeader'
 import {TEAM_UPDATES_BAND, TEAM_UPDATES_COLUMN} from './teamUpdatesLayout'
 import useTeamPromptAnswersAutosave from './useTeamPromptAnswersAutosave'
+import useTeamPromptComposerApiRegistration from './useTeamPromptComposerApiRegistration'
 import useTeamPromptComposerState from './useTeamPromptComposerState'
 
 interface Props {
@@ -94,6 +95,9 @@ const TeamPromptComposer = (props: Props) => {
     },
     [queueAnswer]
   )
+
+  const expand = useCallback(() => setIsExpanded(true), [])
+  useTeamPromptComposerApiRegistration({editorRefs, onChange, expand})
 
   const onShare = useCallback(() => {
     if (answeredPromptIds.size === 0) return
