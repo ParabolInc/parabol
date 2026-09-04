@@ -25,6 +25,7 @@ graphql`
       orgId
       scope
       teamId
+      type
     }
     clonedTemplate {
       ...TemplateSharing_template
@@ -94,6 +95,7 @@ const handleUpdateTemplateScope = (
   store: RecordSourceSelectorProxy,
   clonedTemplate?: RecordProxy
 ) => {
+  if (template.getValue('type') !== 'retrospective') return
   const templateId = template.getValue('id') as string
   const nextTemplate = clonedTemplate || template
   const templateTeamId = nextTemplate.getValue('teamId')
