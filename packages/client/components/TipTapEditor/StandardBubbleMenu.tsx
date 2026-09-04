@@ -92,7 +92,7 @@ export const StandardBubbleMenu = (props: Props) => {
               onClick={() => editor.chain().focus().toggleBulletList().run()}
               isActive={isBulletList}
               className={cn(buttonClassName)}
-              title='Bulleted list (- )'
+              title='Bulleted list (-)'
               aria-label='Bulleted list'
             >
               <FormatListBulleted className='h-[18px] w-[18px]' />
@@ -101,7 +101,7 @@ export const StandardBubbleMenu = (props: Props) => {
               onClick={() => editor.chain().focus().toggleOrderedList().run()}
               isActive={isOrderedList}
               className={cn(buttonClassName)}
-              title='Numbered list (1. )'
+              title='Numbered list (1.)'
               aria-label='Numbered list'
             >
               <FormatListNumbered className='h-[18px] w-[18px]' />

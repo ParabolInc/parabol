@@ -9,12 +9,13 @@ interface Props {
   prompts: readonly {id: string; question: string; groupColor: string}[]
   sharedStages: readonly TeamUpdateStage[]
   draftingStages: readonly TeamUpdateStage[]
+  isEnded: boolean
   selectedStageId: string | null
   onReply: (stageId: string) => void
 }
 
 const TeamUpdatesByQuestion = (props: Props) => {
-  const {prompts, sharedStages, draftingStages, selectedStageId, onReply} = props
+  const {prompts, sharedStages, draftingStages, isEnded, selectedStageId, onReply} = props
   const [activeId, setActiveId] = useState(prompts[0]?.id ?? '')
   const activePrompt = prompts.find((prompt) => prompt.id === activeId) ?? prompts[0]
   if (!activePrompt) return null
@@ -51,6 +52,7 @@ const TeamUpdatesByQuestion = (props: Props) => {
             stageRef={stage}
             prompt={activePrompt}
             isDrafting={false}
+            isEnded={isEnded}
             isSelected={selectedStageId === stage.id}
             promptCount={prompts.length}
             onReply={onReply}
@@ -62,6 +64,7 @@ const TeamUpdatesByQuestion = (props: Props) => {
             stageRef={stage}
             prompt={activePrompt}
             isDrafting
+            isEnded={isEnded}
             isSelected={false}
             promptCount={prompts.length}
             onReply={onReply}

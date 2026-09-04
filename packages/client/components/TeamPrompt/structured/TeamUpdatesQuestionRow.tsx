@@ -12,13 +12,14 @@ interface Props {
   stageRef: TeamUpdatesQuestionRow_stage$key
   prompt: {id: string; question: string; groupColor: string}
   isDrafting: boolean
+  isEnded: boolean
   isSelected: boolean
   promptCount: number
   onReply: (stageId: string) => void
 }
 
 const TeamUpdatesQuestionRow = (props: Props) => {
-  const {stageRef, prompt, isDrafting, isSelected, promptCount, onReply} = props
+  const {stageRef, prompt, isDrafting, isEnded, isSelected, promptCount, onReply} = props
   const stage = useFragment(
     graphql`
       fragment TeamUpdatesQuestionRow_stage on TeamPromptResponseStage {
@@ -72,7 +73,9 @@ const TeamUpdatesQuestionRow = (props: Props) => {
           <h3 className='m-0 min-w-0 truncate font-semibold text-[15px]'>{preferredName}</h3>
           {isDrafting ? (
             <span className='shrink-0 whitespace-nowrap text-fg-primary text-xs'>
-              Hasn't shared yet · {answeredCount} of {promptCount} answered
+              {isEnded
+                ? 'No response'
+                : `Hasn't shared yet · ${answeredCount} of ${promptCount} answered`}
             </span>
           ) : (
             response?.sharedAt && (
