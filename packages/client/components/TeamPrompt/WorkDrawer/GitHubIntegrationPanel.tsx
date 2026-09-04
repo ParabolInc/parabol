@@ -167,6 +167,7 @@ const GitHubIntegrationPanel = (props: Props) => {
               initialItems={meeting.githubInspirationItems}
               dateRange={dateRange}
               workItemCount={getResultCount(searchQuery)}
+              hideDraftPanel={!getResultCount(searchQuery)}
             >
               <GitHubIntegrationResultsRoot
                 teamId={teamMember.teamId}
