@@ -2,6 +2,13 @@ import type {JSONContent} from '@tiptap/core'
 
 export const EMPTY_TIPTAP_DOC: Readonly<JSONContent> = Object.freeze({type: 'doc', content: []})
 
+export const isEmptyAnswerDoc = (doc: JSONContent) =>
+  (doc.content ?? []).every(
+    (node) =>
+      node.type === 'paragraph' &&
+      (node.content ?? []).every((child) => child.type === 'text' && !child.text?.trim())
+  )
+
 type Prompt = {id: string; question: string}
 type Answer = {promptId: string; content: JSONContent; plaintextContent: string}
 

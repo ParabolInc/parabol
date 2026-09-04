@@ -11,7 +11,8 @@ import getTeamPromptMeetingPrompts from '../../mutations/helpers/getTeamPromptMe
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import type {MutationResolvers} from '../resolverTypes'
 import buildTeamPromptResponseContent, {
-  EMPTY_TIPTAP_DOC
+  EMPTY_TIPTAP_DOC,
+  isEmptyAnswerDoc
 } from './helpers/buildTeamPromptResponseContent'
 import publishNotification from './helpers/publishNotification'
 import createTeamPromptMentionNotifications from './helpers/publishTeamPromptMentions'
@@ -63,14 +64,17 @@ const upsertTeamPromptAnswers: MutationResolvers['upsertTeamPromptAnswers'] = as
     } catch {
       throw new GraphQLError('Invalid editor format')
     }
-    return {promptId, content: doc, plaintextContent}
+    return {promptId, content: doc, plaintextContent, isEmpty: isEmptyAnswerDoc(doc)}
   })
-  const answered = parsedAnswers.filter(({plaintextContent}) => plaintextContent !== '')
-  const cleared = parsedAnswers.filter(({plaintextContent}) => plaintextContent === '')
+  const answered = parsedAnswers.filter(({isEmpty}) => !isEmpty)
+  const cleared = parsedAnswers.filter(({isEmpty}) => isEmpty)
 
   const existingResponses = await dataLoader.get('teamPromptResponsesByMeetingId').load(meetingId)
   const oldResponse = existingResponses.find((response) => response.userId === viewerId)
   const wasShared = oldResponse?.isShared ?? false
+  if (!oldResponse && !share && answered.length === 0) {
+    throw new GraphQLError('Nothing to save')
+  }
 
   const responseId = await pg.transaction().execute(async (trx) => {
     const {id: responseId} = await trx
