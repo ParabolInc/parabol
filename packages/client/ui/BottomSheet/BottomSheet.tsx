@@ -1,4 +1,5 @@
 import * as RadixDialog from '@radix-ui/react-dialog'
+import {VisuallyHidden} from '@radix-ui/react-visually-hidden'
 import {AnimatePresence, motion, useDragControls, useReducedMotion} from 'motion/react'
 import {type PointerEvent, type ReactNode, useRef} from 'react'
 import {cn} from '../cn'
@@ -26,9 +27,14 @@ export const BottomSheet = ({isOpen, onClose, ariaLabel, children, className}: P
 
   const startHandleDrag = (e: PointerEvent<HTMLDivElement>) => dragControls.start(e)
 
+  const restoreFocus = () => {
+    const target = previouslyFocusedRef.current
+    if (target && document.contains(target)) target.focus()
+  }
+
   return (
     <RadixDialog.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <AnimatePresence onExitComplete={() => previouslyFocusedRef.current?.focus()}>
+      <AnimatePresence onExitComplete={restoreFocus}>
         {isOpen && (
           <RadixDialog.Portal forceMount>
             <RadixDialog.Overlay asChild forceMount>
@@ -71,6 +77,9 @@ export const BottomSheet = ({isOpen, onClose, ariaLabel, children, className}: P
                   if (resolveSheetDismiss(info.offset.y, info.velocity.y)) onClose()
                 }}
               >
+                <RadixDialog.Title asChild>
+                  <VisuallyHidden>{ariaLabel}</VisuallyHidden>
+                </RadixDialog.Title>
                 <div
                   className='flex h-4 shrink-0 cursor-grab touch-none items-center justify-center active:cursor-grabbing'
                   onPointerDown={startHandleDrag}
