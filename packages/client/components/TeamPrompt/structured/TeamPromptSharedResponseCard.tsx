@@ -9,6 +9,7 @@ import lastAnswerUpdatedAt from './lastAnswerUpdatedAt'
 import TeamPromptAnswerBlock from './TeamPromptAnswerBlock'
 import TeamPromptResponseFooter from './TeamPromptResponseFooter'
 import TeamPromptResponsePermalink from './TeamPromptResponsePermalink'
+import {TEAM_UPDATES_COLUMN} from './teamUpdatesLayout'
 
 interface Props {
   stageRef: TeamPromptSharedResponseCard_stage$key
@@ -60,7 +61,7 @@ const TeamPromptSharedResponseCard = (props: Props) => {
   return (
     <motion.div
       layout='position'
-      className='mx-auto flex w-full max-w-[640px] flex-col'
+      className={cn(TEAM_UPDATES_COLUMN, 'flex flex-col')}
       initial={{opacity: 0}}
       animate={{opacity: 1}}
     >

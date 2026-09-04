@@ -14,10 +14,11 @@ import useTeamLayoutPreference from './useTeamLayoutPreference'
 interface Props {
   meetingRef: TeamUpdatesSection_meeting$key
   scrollContainerRef: RefObject<HTMLDivElement | null>
+  composerRef: RefObject<HTMLDivElement | null>
 }
 
 const TeamUpdatesSection = (props: Props) => {
-  const {meetingRef, scrollContainerRef} = props
+  const {meetingRef, scrollContainerRef, composerRef} = props
   const meeting = useFragment(
     graphql`
       fragment TeamUpdatesSection_meeting on TeamPromptMeeting {
@@ -64,13 +65,11 @@ const TeamUpdatesSection = (props: Props) => {
   const [layout, setLayout] = useTeamLayoutPreference(meetingId, teamId)
   const headerRef = useRef<HTMLDivElement>(null)
   const gridRef = useRef<HTMLDivElement>(null)
+  const sectionRef = useRef<HTMLDivElement>(null)
   const viewerStage = stages.find((stage) => stage.teamMember.userId === viewerId)
   const {shared, drafting, notStarted} = sortTeamStages(stages, viewerId)
-  const isPinned = useTeamHeaderPin(
-    headerRef,
-    scrollContainerRef,
-    !viewerStage?.response?.isShared && shared.length > 0
-  )
+  const canPin = !viewerStage?.response?.isShared && shared.length > 0
+  const isPinned = useTeamHeaderPin(headerRef, scrollContainerRef, composerRef, sectionRef, canPin)
   const onReply = useOpenResponseDiscussion(meetingId, rightDrawerOpen, localStageId)
   const selectedStageId = rightDrawerOpen === 'discussion' ? localStageId : null
   const sharedMembers = shared.map((stage) => stage.teamMember.user)
@@ -78,13 +77,14 @@ const TeamUpdatesSection = (props: Props) => {
     scrollContainerRef.current?.scrollTo({top: gridRef.current?.offsetTop ?? 0, behavior: 'smooth'})
   }
   return (
-    <div className='@container'>
+    <div ref={sectionRef} className='@container'>
       <TeamUpdatesHeader
         ref={headerRef}
         sharedMembers={sharedMembers}
         draftingCount={drafting.length}
         layout={layout}
         onLayoutChange={setLayout}
+        canPin={canPin}
         isPinned={isPinned}
         onSeeTeam={onSeeTeam}
       />

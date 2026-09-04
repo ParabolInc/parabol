@@ -56,6 +56,7 @@ const TeamPromptStructuredMeeting = (props: Props) => {
   const {id: meetingId, localStageId, endedAt, phases} = meeting
   const responseId = new URLSearchParams(location.search).get('responseId')
   const scrollRef = useRef<HTMLDivElement>(null)
+  const composerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!responseId) return
@@ -87,8 +88,14 @@ const TeamPromptStructuredMeeting = (props: Props) => {
               <TeamPromptTemplateHeader meetingRef={meeting} />
               <ErrorBoundary>
                 <div ref={scrollRef} className='h-full overflow-auto'>
-                  <TeamPromptComposer meetingRef={meeting} />
-                  <TeamUpdatesSection meetingRef={meeting} scrollContainerRef={scrollRef} />
+                  <div ref={composerRef}>
+                    <TeamPromptComposer meetingRef={meeting} />
+                  </div>
+                  <TeamUpdatesSection
+                    meetingRef={meeting}
+                    scrollContainerRef={scrollRef}
+                    composerRef={composerRef}
+                  />
                 </div>
               </ErrorBoundary>
             </MeetingHeaderAndPhase>

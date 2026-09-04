@@ -1,7 +1,9 @@
 import {useState} from 'react'
+import {cn} from '../../../ui/cn'
 import type {TeamUpdateStage} from './TeamUpdatesByPerson'
 import TeamUpdatesQuestionRow from './TeamUpdatesQuestionRow'
 import TeamUpdatesQuestionTabs from './TeamUpdatesQuestionTabs'
+import {TEAM_UPDATES_QUESTION_BAND} from './teamUpdatesLayout'
 
 interface Props {
   prompts: readonly {id: string; question: string; groupColor: string}[]
@@ -26,7 +28,7 @@ const TeamUpdatesByQuestion = (props: Props) => {
     if (prompt.id === activePrompt.id) answeringStages = matchingStages
   }
   return (
-    <div className='mx-auto flex w-full max-w-[760px] flex-col gap-3 px-[5%] py-4'>
+    <div className={cn(TEAM_UPDATES_QUESTION_BAND, 'flex flex-col gap-3 py-4')}>
       <TeamUpdatesQuestionTabs
         prompts={prompts}
         counts={counts}

@@ -5,11 +5,13 @@ import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import type {TeamPromptComposer_meeting$key} from '~/__generated__/TeamPromptComposer_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import {cn} from '../../../ui/cn'
 import lastAnswerUpdatedAt from './lastAnswerUpdatedAt'
 import TeamPromptAnswerEditor from './TeamPromptAnswerEditor'
 import TeamPromptComposerFooter from './TeamPromptComposerFooter'
 import TeamPromptComposerHeader from './TeamPromptComposerHeader'
 import {isDocEmpty, readDraftAnswer} from './teamPromptDraftStorage'
+import {TEAM_UPDATES_BAND, TEAM_UPDATES_COLUMN} from './teamUpdatesLayout'
 import useTeamPromptAnswersAutosave, {type DirtyAnswer} from './useTeamPromptAnswersAutosave'
 
 const PREVIEW_LENGTH = 90
@@ -148,8 +150,8 @@ const TeamPromptComposer = (props: Props) => {
   const lastAnswerAt = response && sharedAt ? lastAnswerUpdatedAt(response.answers, sharedAt) : null
 
   return (
-    <div className='mx-auto w-full max-w-[1240px] px-[5%] pt-6 pb-2'>
-      <div className='mx-auto w-full max-w-[640px]'>
+    <div className={cn(TEAM_UPDATES_BAND, 'pt-6 pb-2')}>
+      <div className={TEAM_UPDATES_COLUMN}>
         <TeamPromptComposerHeader
           picture={stage.teamMember.user.picture}
           isExpanded={isExpanded}

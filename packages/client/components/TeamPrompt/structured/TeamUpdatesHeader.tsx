@@ -3,6 +3,12 @@ import {ExpandMore} from '~/ui/icons'
 import {cn} from '../../../ui/cn'
 import TeamUpdatesAvatarStack from './TeamUpdatesAvatarStack'
 import TeamUpdatesLayoutSwitch from './TeamUpdatesLayoutSwitch'
+import {
+  TEAM_UPDATES_BAND,
+  TEAM_UPDATES_COLUMN,
+  TEAM_UPDATES_GRID_HEADER_WIDTH,
+  TEAM_UPDATES_QUESTION_BAND
+} from './teamUpdatesLayout'
 import type {TeamLayout} from './useTeamLayoutPreference'
 
 interface Props {
@@ -10,19 +16,21 @@ interface Props {
   draftingCount: number
   layout: TeamLayout
   onLayoutChange: (layout: TeamLayout) => void
+  canPin: boolean
   isPinned: boolean
   onSeeTeam: () => void
 }
 
 const TeamUpdatesHeader = forwardRef<HTMLDivElement, Props>((props, ref) => {
-  const {sharedMembers, draftingCount, layout, onLayoutChange, isPinned, onSeeTeam} = props
+  const {sharedMembers, draftingCount, layout, onLayoutChange, canPin, isPinned, onSeeTeam} = props
   const sharedCount = sharedMembers.length
   return (
     <div
       ref={ref}
       className={cn(
-        'sticky bottom-3 z-5 mx-auto w-full px-[5%] py-2',
-        layout === 'byQuestion' ? 'max-w-[760px]' : 'max-w-[1240px]',
+        'z-5 py-2',
+        layout === 'byQuestion' ? TEAM_UPDATES_QUESTION_BAND : TEAM_UPDATES_BAND,
+        canPin && 'sticky bottom-3',
         isPinned &&
           'max-w-[760px] rounded-lg border border-hairline border-solid bg-surface-card px-3 shadow-[var(--shadow-card)]'
       )}
@@ -30,8 +38,8 @@ const TeamUpdatesHeader = forwardRef<HTMLDivElement, Props>((props, ref) => {
       <div
         className={cn(
           'mx-auto flex w-full items-center gap-3',
-          !isPinned && layout === 'feed' && 'max-w-[640px]',
-          !isPinned && layout === 'grid' && '@min-[900px]:max-w-none max-w-[640px]'
+          !isPinned && layout !== 'byQuestion' && TEAM_UPDATES_COLUMN,
+          !isPinned && layout === 'grid' && TEAM_UPDATES_GRID_HEADER_WIDTH
         )}
       >
         <TeamUpdatesAvatarStack members={sharedMembers} />
