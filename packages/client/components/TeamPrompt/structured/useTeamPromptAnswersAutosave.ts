@@ -6,6 +6,7 @@ import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import {clearDraftAnswers, writeDraftAnswer} from './teamPromptDraftStorage'
 
 const AUTOSAVE_DEBOUNCE_MS = 800
+const IN_FLIGHT_CEILING_MS = 10000
 const NOTHING_TO_SAVE_ERROR = 'Nothing to save'
 const ALREADY_SHARED_ERROR = 'Response is already shared'
 
@@ -28,9 +29,10 @@ const useTeamPromptAnswersAutosave = (options: Options) => {
   const pendingRef = useRef(new Map<string, JSONContent>())
   const timerRef = useRef<number | null>(null)
   const inFlightRef = useRef(false)
-  const hasRequestedShareRef = useRef(false)
+  const inFlightSinceRef = useRef<number | null>(null)
+  const sendCounterRef = useRef(0)
+  const shareSendIdRef = useRef(0)
   const [dirtyPromptIds, setDirtyPromptIds] = useState<Set<string>>(new Set())
-  const [error, setError] = useState<string | null>(null)
 
   const send = useCallback(
     (share: boolean) => {
@@ -40,8 +42,10 @@ const useTeamPromptAnswersAutosave = (options: Options) => {
         content: JSON.stringify(doc)
       }))
       if (!share && answers.length === 0) return
-      if (share) hasRequestedShareRef.current = true
+      const sendId = ++sendCounterRef.current
+      if (share) shareSendIdRef.current = sendId
       inFlightRef.current = true
+      inFlightSinceRef.current = Date.now()
       const evictSentAnswers = () => {
         const evictedPromptIds = [...sentDocs.entries()]
           .filter(([promptId, doc]) => pendingRef.current.get(promptId) === doc)
@@ -58,21 +62,20 @@ const useTeamPromptAnswersAutosave = (options: Options) => {
         variables: {meetingId, answers, share},
         onError: () => {
           inFlightRef.current = false
+          inFlightSinceRef.current = null
         },
         onCompleted: (_res, errors) => {
           inFlightRef.current = false
+          inFlightSinceRef.current = null
           const message = errors?.[0]?.message
           if (message === NOTHING_TO_SAVE_ERROR) {
-            setError(null)
             evictSentAnswers()
             return
           }
-          if (message === ALREADY_SHARED_ERROR && !share && hasRequestedShareRef.current) {
-            setError(null)
+          if (message === ALREADY_SHARED_ERROR && !share && sendId < shareSendIdRef.current) {
             return
           }
           if (message) {
-            setError(message)
             atmosphere.eventEmitter.emit('addSnackbar', {
               key: `standupAnswers:${message}`,
               message,
@@ -80,7 +83,6 @@ const useTeamPromptAnswersAutosave = (options: Options) => {
             })
             return
           }
-          setError(null)
           evictSentAnswers()
           if (share) {
             SendClientSideEvent(atmosphere, 'Standup Response Shared', {
@@ -99,6 +101,13 @@ const useTeamPromptAnswersAutosave = (options: Options) => {
     if (timerRef.current) window.clearTimeout(timerRef.current)
     timerRef.current = window.setTimeout(function autosave() {
       if (inFlightRef.current) {
+        const inFlightSince = inFlightSinceRef.current
+        if (inFlightSince !== null && Date.now() - inFlightSince >= IN_FLIGHT_CEILING_MS) {
+          inFlightRef.current = false
+          inFlightSinceRef.current = null
+          send(false)
+          return
+        }
         timerRef.current = window.setTimeout(autosave, AUTOSAVE_DEBOUNCE_MS)
         return
       }
@@ -139,7 +148,7 @@ const useTeamPromptAnswersAutosave = (options: Options) => {
     []
   )
 
-  return {queueAnswer, seedDirty, share, submitting, dirtyPromptIds, error}
+  return {queueAnswer, seedDirty, share, submitting, dirtyPromptIds}
 }
 
 export default useTeamPromptAnswersAutosave
