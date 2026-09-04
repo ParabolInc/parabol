@@ -1,3 +1,4 @@
+import {useId} from 'react'
 import {AutoAwesome, Refresh, Tune as TuneIcon} from '~/ui/icons'
 import {Button} from '../../../ui/Button/Button'
 import {Tooltip} from '../../../ui/Tooltip/Tooltip'
@@ -20,16 +21,20 @@ interface Props {
 const InspirationDraftHeader = (props: Props) => {
   const {workItemCount, since, promptCount, hasItems} = props
   const {onRegenerate, regenerating, onTune, tuneDirty} = props
+  const headingId = useId()
   const subLine =
     !regenerating && !hasItems ? EMPTY_DRAFT_LINE : metaLine(workItemCount, since, promptCount)
   return (
     <div className='flex flex-col gap-1 px-4 pt-3 pb-2' aria-busy={regenerating}>
       <div className='flex items-center justify-between'>
-        <div className='flex items-center gap-1.5 font-semibold text-fg-primary text-sm'>
+        <h3
+          id={headingId}
+          className='m-0 flex items-center gap-1.5 font-semibold text-fg-primary text-sm'
+        >
           <AutoAwesome className='h-[18px] w-[18px] text-accent' />
           Your draft
           {regenerating && <Ellipsis />}
-        </div>
+        </h3>
         <div className='flex items-center gap-1'>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -64,7 +69,7 @@ const InspirationDraftHeader = (props: Props) => {
           </Tooltip>
         </div>
       </div>
-      <div className='text-fg-muted text-xs' aria-live='polite'>
+      <div className='text-fg-muted text-xs' aria-live='polite' aria-labelledby={headingId}>
         {subLine}
       </div>
     </div>

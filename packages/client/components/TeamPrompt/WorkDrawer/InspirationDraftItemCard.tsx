@@ -1,7 +1,7 @@
 import type {Editor, JSONContent} from '@tiptap/core'
 import {useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import {useEffect} from 'react'
+import {useEffect, useState} from 'react'
 import {Check as CheckIcon} from '~/ui/icons'
 import {Button} from '../../../ui/Button/Button'
 import {TipTapEditor} from '../../TipTapEditor/TipTapEditor'
@@ -23,15 +23,19 @@ interface Props {
 
 const InspirationDraftItemCard = (props: Props) => {
   const {itemId, title, content, prompt, source, isAdded, disabled, onEditorChange, onAdd} = props
+  const [isEmpty, setIsEmpty] = useState(false)
   const editor = useEditor({
     content,
     extensions: [
       StarterKit.configure({link: false}),
       TiptapLinkExtension.configure({openOnClick: false})
-    ]
+    ],
+    editorProps: {attributes: {'aria-label': title ?? 'Drafted answer'}},
+    onUpdate: ({editor}) => setIsEmpty(editor.isEmpty)
   })
   useEffect(() => {
     if (!editor) return
+    setIsEmpty(editor.isEmpty)
     onEditorChange(itemId, editor)
     return () => onEditorChange(itemId, null)
   }, [editor, itemId, onEditorChange])
@@ -52,12 +56,7 @@ const InspirationDraftItemCard = (props: Props) => {
             Added
           </div>
         ) : (
-          <Button
-            variant='secondary'
-            size='sm'
-            disabled={disabled || editor.isEmpty}
-            onClick={onAdd}
-          >
+          <Button variant='secondary' size='sm' disabled={disabled || isEmpty} onClick={onAdd}>
             Add to response
           </Button>
         )}
