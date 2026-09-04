@@ -1,4 +1,4 @@
-import {useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import CopyToClipboard from 'react-copy-to-clipboard'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {Link} from '~/ui/icons'
@@ -7,6 +7,8 @@ import {TooltipContent} from '../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../ui/Tooltip/TooltipTrigger'
 import makeAppURL from '../../../utils/makeAppURL'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
+
+const COPIED_DURATION_MS = 2000
 
 interface Props {
   meetingId: string
@@ -21,11 +23,19 @@ const TeamPromptResponsePermalink = ({meetingId, teamId, responseId}: Props) => 
   const permalink = makeAppURL(window.location.origin, `/meet/${meetingId}/responses`, {
     searchParams: {utm_source: 'sharing', responseId}
   })
+  const copyTimerRef = useRef<number | null>(null)
   const handleCopy = () => {
     setIsCopied(true)
     SendClientSideEvent(atmosphere, 'Copied Standup Response Link', {teamId, meetingId})
-    setTimeout(() => setIsCopied(false), 2000)
+    if (copyTimerRef.current) window.clearTimeout(copyTimerRef.current)
+    copyTimerRef.current = window.setTimeout(() => setIsCopied(false), COPIED_DURATION_MS)
   }
+  useEffect(
+    () => () => {
+      if (copyTimerRef.current) window.clearTimeout(copyTimerRef.current)
+    },
+    []
+  )
   return (
     <Tooltip open={isCopied || isHovered} onOpenChange={setIsHovered}>
       <CopyToClipboard text={permalink} onCopy={handleCopy}>
