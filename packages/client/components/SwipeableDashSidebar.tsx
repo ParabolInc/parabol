@@ -1,7 +1,7 @@
 import type * as React from 'react'
 import {type ReactNode, useCallback, useEffect, useState} from 'react'
+import {createPortal} from 'react-dom'
 import useEventCallback from '~/hooks/useEventCallback'
-import usePortal from '../hooks/usePortal'
 import {NavSidebar} from '../types/constEnums'
 import {cn} from '../ui/cn'
 import hideBodyScroll from '../utils/hideBodyScroll'
@@ -70,16 +70,11 @@ interface Props {
 
 const SwipeableDashSidebar = (props: Props) => {
   const {children, isOpen, isRightDrawer = false, onToggle, sidebarWidth} = props
-  const {portal, openPortal} = usePortal({
-    allowScroll: true,
-    noClose: true
-  })
   const [x, setX] = useState(0)
   const SIDEBAR_WIDTH: number = sidebarWidth || NavSidebar.WIDTH
   const HYSTERESIS_THRESH = HYSTERESIS * SIDEBAR_WIDTH
 
   useEffect(() => {
-    openPortal()
     return () => {
       window.clearTimeout(swipe.peekTimeout)
       hideSidebar()
@@ -186,7 +181,7 @@ const SwipeableDashSidebar = (props: Props) => {
     }
   })
 
-  return portal(
+  return createPortal(
     <div
       className={cn('absolute top-0 print:hidden', isRightDrawer ? 'right-5' : '')}
       style={{left: isRightDrawer ? undefined : -SIDEBAR_WIDTH}}
@@ -220,7 +215,8 @@ const SwipeableDashSidebar = (props: Props) => {
         </div>
         <PlainButton className='w-5' />
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }
 

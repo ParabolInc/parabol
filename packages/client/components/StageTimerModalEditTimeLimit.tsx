@@ -36,7 +36,10 @@ const StageTimerModalEditTimeLimit = (props: Props) => {
   }
   return (
     <div className='flex flex-col items-center'>
-      <PlainButton className='flex w-full items-center px-4 py-2' onClick={endTimer}>
+      <PlainButton
+        className='mx-1 flex items-center self-stretch rounded-md px-3 py-2 hover:bg-surface-hover'
+        onClick={endTimer}
+      >
         <TimerOff className='text-fg-secondary' />
         <div className='pl-4 text-[14px] leading-none'>End {MeetingLabels.TIMER}</div>
       </PlainButton>

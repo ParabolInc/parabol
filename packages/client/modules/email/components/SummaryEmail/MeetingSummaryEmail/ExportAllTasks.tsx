@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useState} from 'react'
+import {Suspense, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {Loop} from '~/ui/icons'
 import type {
@@ -11,12 +11,12 @@ import GitLabSVG from '../../../../../components/GitLabSVG'
 import JiraSVG from '../../../../../components/JiraSVG'
 import {integrationSvgLookup} from '../../../../../components/TaskIntegrationMenuItem'
 import useAtmosphere from '../../../../../hooks/useAtmosphere'
-import {MenuPosition} from '../../../../../hooks/useCoords'
-import useMenu from '../../../../../hooks/useMenu'
 import useMutationProps, {getOnCompletedError} from '../../../../../hooks/useMutationProps'
 import CreateTaskIntegrationMutation from '../../../../../mutations/CreateTaskIntegrationMutation'
 import {Providers} from '../../../../../types/constEnums'
 import {cn} from '../../../../../ui/cn'
+import {Menu} from '../../../../../ui/Menu/Menu'
+import {MenuContent} from '../../../../../ui/Menu/MenuContent'
 import lazyPreload from '../../../../../utils/lazyPreload'
 import SendClientSideEvent from '../../../../../utils/SendClientSideEvent'
 
@@ -56,12 +56,6 @@ const ExportAllTasks = (props: Props) => {
   const mutationProps = useMutationProps()
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = mutationProps
-  const {togglePortal, originRef, menuPortal, menuProps, loadingWidth, loadingDelay} = useMenu(
-    MenuPosition.UPPER_RIGHT,
-    {
-      loadingWidth: 200
-    }
-  )
   const meeting = useFragment(
     graphql`
       fragment ExportAllTasks_meeting on NewMeeting {
@@ -154,47 +148,44 @@ const ExportAllTasks = (props: Props) => {
     }
   }
 
-  return (
-    <>
-      {submitting ? (
-        <button className={cn(BUTTON_CLASSES, 'cursor-wait bg-slate-300')}>
-          <Loop style={{width: '14px', height: '14px'}} /> Syncing in Progress...
-        </button>
-      ) : filteredTasks.length === 0 ? (
-        <button className={cn(BUTTON_CLASSES, 'bg-slate-200')}>
-          {taskServices.length === 1 ? (
-            <>
-              {integrationSvgLookup[taskServices[0] as TaskServiceEnum]}
-              Tasks synced to{' '}
-              {pushedIntegrationLabel ??
-                integrationToServiceName[taskServices[0] as TaskServiceEnum]}
-            </>
-          ) : (
-            'Tasks synced'
-          )}
-        </button>
+  return submitting ? (
+    <button className={cn(BUTTON_CLASSES, 'cursor-wait bg-slate-300')}>
+      <Loop style={{width: '14px', height: '14px'}} /> Syncing in Progress...
+    </button>
+  ) : filteredTasks.length === 0 ? (
+    <button className={cn(BUTTON_CLASSES, 'bg-slate-200')}>
+      {taskServices.length === 1 ? (
+        <>
+          {integrationSvgLookup[taskServices[0] as TaskServiceEnum]}
+          Tasks synced to{' '}
+          {pushedIntegrationLabel ?? integrationToServiceName[taskServices[0] as TaskServiceEnum]}
+        </>
       ) : (
+        'Tasks synced'
+      )}
+    </button>
+  ) : (
+    <Menu
+      trigger={
         <button
           className={cn(BUTTON_CLASSES, 'cursor-pointer bg-white hover:bg-slate-100')}
-          onClick={togglePortal}
-          ref={originRef}
           onMouseEnter={ExportAllTasksMenuRoot.preload}
         >
           <div>Send Tasks to</div>
           <JiraSVG /> <GitHubSVG /> <GitLabSVG />
         </button>
-      )}
-      {menuPortal(
-        <ExportAllTasksMenuRoot
-          menuProps={menuProps}
-          loadingDelay={loadingDelay}
-          loadingWidth={loadingWidth}
-          mutationProps={mutationProps}
-          meetingRef={meeting}
-          handlePushToIntegration={handlePushToIntegration}
-        />
-      )}
-    </>
+      }
+    >
+      <MenuContent align='end' className='w-[250px]'>
+        <Suspense fallback={null}>
+          <ExportAllTasksMenuRoot
+            mutationProps={mutationProps}
+            meetingRef={meeting}
+            handlePushToIntegration={handlePushToIntegration}
+          />
+        </Suspense>
+      </MenuContent>
+    </Menu>
   )
 }
 

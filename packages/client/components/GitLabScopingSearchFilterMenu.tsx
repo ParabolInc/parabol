@@ -6,18 +6,14 @@ import getNonNullEdges from '~/utils/getNonNullEdges'
 import SendClientSideEvent from '~/utils/SendClientSideEvent'
 import type {GitLabScopingSearchFilterMenuQuery} from '../__generated__/GitLabScopingSearchFilterMenuQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import type {MenuProps} from '../hooks/useMenu'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
+import {MenuItem} from '../ui/Menu/MenuItem'
+import {MenuSearch} from '../ui/Menu/MenuSearch'
 import Checkbox from './Checkbox'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
-import Menu from './Menu'
-import MenuItem from './MenuItem'
-import MenuItemLabel from './MenuItemLabel'
-import {SearchMenuItem} from './SearchMenuItem'
 import TypeAheadLabel from './TypeAheadLabel'
 
 interface Props {
-  menuProps: MenuProps
   queryRef: PreloadedQuery<GitLabScopingSearchFilterMenuQuery>
 }
 
@@ -34,7 +30,7 @@ const getValue = (item: {fullPath?: string}) => {
 }
 
 const GitLabScopingSearchFilterMenu = (props: Props) => {
-  const {menuProps, queryRef} = props
+  const {queryRef} = props
   const query = usePreloadedQuery<GitLabScopingSearchFilterMenuQuery>(
     graphql`
       query GitLabScopingSearchFilterMenuQuery($teamId: ID!, $meetingId: ID!) {
@@ -98,16 +94,9 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
   } = useSearchFilter(projects, getValue)
   const visibleProjects = filteredProjects.slice(0, MAX_PROJECTS)
 
-  const {portalStatus, isDropdown} = menuProps
   return (
-    <Menu
-      className='max-w-full'
-      keepParentFocus
-      ariaLabel='Define the GitLab search query'
-      portalStatus={portalStatus}
-      isDropdown={isDropdown}
-    >
-      <SearchMenuItem
+    <>
+      <MenuSearch
         placeholder='Search GitLab projects'
         onChange={onQueryChange}
         value={searchQuery}
@@ -138,19 +127,13 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
           })
         }
         return (
-          <MenuItem
-            key={projectId}
-            label={
-              <MenuItemLabel>
-                <Checkbox className='-ml-2 mr-2' active={isSelected} />
-                <TypeAheadLabel query={searchQuery} label={fullPath} />
-              </MenuItemLabel>
-            }
-            onClick={handleClick}
-          />
+          <MenuItem key={projectId} onSelect={(e) => e.preventDefault()} onClick={handleClick}>
+            <Checkbox className='-ml-2 mr-2' active={isSelected} />
+            <TypeAheadLabel query={searchQuery} label={fullPath} />
+          </MenuItem>
         )
       })}
-    </Menu>
+    </>
   )
 }
 

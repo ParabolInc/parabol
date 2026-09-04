@@ -4,8 +4,6 @@ import type {GcalProviderRow_viewer$key} from '../../../../__generated__/GcalPro
 import GcalConfigMenu from '../../../../components/GcalConfigMenu'
 import GcalProviderLogo from '../../../../components/GcalProviderLogo'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useMenu from '../../../../hooks/useMenu'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import {Providers} from '../../../../types/constEnums'
 import GcalClientManager from '../../../../utils/GcalClientManager'
@@ -37,7 +35,6 @@ const GcalProviderRow = (props: Props) => {
   const atmosphere = useAtmosphere()
   const mutationProps = useMutationProps()
   const {submitting, error} = mutationProps
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
 
   const viewer = useFragment(
     graphql`
@@ -64,22 +61,16 @@ const GcalProviderRow = (props: Props) => {
   }
 
   return (
-    <>
-      <ProviderRow
-        connected={hasAuth}
-        onConnectClick={openOAuth}
-        submitting={submitting}
-        togglePortal={togglePortal}
-        menuRef={originRef}
-        providerName={Providers.GCAL_NAME}
-        providerDescription={Providers.GCAL_DESC}
-        providerLogo={<GcalProviderLogo />}
-        error={error?.message}
-      />
-      {menuPortal(
-        <GcalConfigMenu menuProps={menuProps} mutationProps={mutationProps} teamId={teamId} />
-      )}
-    </>
+    <ProviderRow
+      connected={hasAuth}
+      onConnectClick={openOAuth}
+      submitting={submitting}
+      configMenu={<GcalConfigMenu mutationProps={mutationProps} teamId={teamId} />}
+      providerName={Providers.GCAL_NAME}
+      providerDescription={Providers.GCAL_DESC}
+      providerLogo={<GcalProviderLogo />}
+      error={error?.message}
+    />
   )
 }
 

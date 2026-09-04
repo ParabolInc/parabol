@@ -1,20 +1,28 @@
 import graphql from 'babel-plugin-relay/macro'
+import type {ReactNode} from 'react'
 import {useFragment} from 'react-relay'
 import type {LinearFieldMenu_stage$key} from '../__generated__/LinearFieldMenu_stage.graphql'
-import type {MenuProps} from '../hooks/useMenu'
 import useUpdateIntegrationDimensionFieldMutation from '../mutations/useUpdateIntegrationDimensionFieldMutation'
 import {SprintPokerDefaults} from '../types/constEnums'
-import Menu from './Menu'
-import MenuItem from './MenuItem'
+import {Select} from '../ui/Select/Select'
+import {SelectContent} from '../ui/Select/SelectContent'
+import {SelectItem} from '../ui/Select/SelectItem'
+import {SelectTrigger} from '../ui/Select/SelectTrigger'
+import {
+  fromSelectValue,
+  SERVICE_FIELD_NULL_VALUE,
+  toSelectValue
+} from '../utils/serviceFieldSelectValue'
 
 interface Props {
-  menuProps: MenuProps
   stageRef: LinearFieldMenu_stage$key
+  trigger: ReactNode
+  onOpenChange: (isOpen: boolean) => void
   submitScore(): void
 }
 
 const LinearFieldMenu = (props: Props) => {
-  const {menuProps, stageRef, submitScore} = props
+  const {stageRef, trigger, onOpenChange, submitScore} = props
   const [updateIntegrationDimensionField] = useUpdateIntegrationDimensionFieldMutation()
   const stage = useFragment(
     graphql`
@@ -39,21 +47,13 @@ const LinearFieldMenu = (props: Props) => {
     `,
     stageRef
   )
-  const {portalStatus, isDropdown, closePortal} = menuProps
   const {serviceField, task, dimensionRef, meetingId} = stage
   const {name: dimensionName} = dimensionRef
   const {name: serviceFieldName} = serviceField
-  const defaults = [
-    SprintPokerDefaults.LINEAR_FIELD_ESTIMATE,
-    SprintPokerDefaults.LINEAR_FIELD_PRIORITY,
-    SprintPokerDefaults.SERVICE_FIELD_COMMENT,
-    SprintPokerDefaults.SERVICE_FIELD_NULL
-  ] as string[]
-  const defaultActiveIdx = defaults.indexOf(serviceFieldName)
-
   if (task?.integration?.__typename !== '_xLinearIssue') return null
   const {id: taskId} = task
-  const handleClick = (labelTemplate: string) => () => {
+  const handleValueChange = (value: string) => {
+    const labelTemplate = fromSelectValue(value)
     if (labelTemplate !== serviceFieldName) {
       updateIntegrationDimensionField(
         {variables: {meetingId, taskId, dimensionName, fieldId: labelTemplate}},
@@ -62,34 +62,29 @@ const LinearFieldMenu = (props: Props) => {
     } else {
       submitScore()
     }
-    closePortal()
   }
   return (
-    <>
-      <Menu
-        ariaLabel={'Select how to publish estimate to Linear'}
-        portalStatus={portalStatus}
-        isDropdown={isDropdown}
-        defaultActiveIdx={defaultActiveIdx}
-      >
-        <MenuItem
-          label={SprintPokerDefaults.LINEAR_FIELD_ESTIMATE_LABEL}
-          onClick={handleClick(SprintPokerDefaults.LINEAR_FIELD_ESTIMATE)}
-        />
-        <MenuItem
-          label={SprintPokerDefaults.LINEAR_FIELD_PRIORITY_LABEL}
-          onClick={handleClick(SprintPokerDefaults.LINEAR_FIELD_PRIORITY)}
-        />
-        <MenuItem
-          label={SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL}
-          onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_COMMENT)}
-        />
-        <MenuItem
-          label={SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL}
-          onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_NULL)}
-        />
-      </Menu>
-    </>
+    <Select
+      value={toSelectValue(serviceFieldName)}
+      onValueChange={handleValueChange}
+      onOpenChange={onOpenChange}
+    >
+      <SelectTrigger asChild>{trigger}</SelectTrigger>
+      <SelectContent>
+        <SelectItem value={SprintPokerDefaults.LINEAR_FIELD_ESTIMATE}>
+          {SprintPokerDefaults.LINEAR_FIELD_ESTIMATE_LABEL}
+        </SelectItem>
+        <SelectItem value={SprintPokerDefaults.LINEAR_FIELD_PRIORITY}>
+          {SprintPokerDefaults.LINEAR_FIELD_PRIORITY_LABEL}
+        </SelectItem>
+        <SelectItem value={SprintPokerDefaults.SERVICE_FIELD_COMMENT}>
+          {SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL}
+        </SelectItem>
+        <SelectItem value={SERVICE_FIELD_NULL_VALUE}>
+          {SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL}
+        </SelectItem>
+      </SelectContent>
+    </Select>
   )
 }
 

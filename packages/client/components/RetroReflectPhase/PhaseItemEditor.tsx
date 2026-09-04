@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {type MutableRefObject, type RefObject, useEffect, useMemo, useState} from 'react'
+import {createPortal} from 'react-dom'
 import {useFragment} from 'react-relay'
 import useEventCallback from '~/hooks/useEventCallback'
 import type {PhaseItemEditor_meeting$key} from '../../__generated__/PhaseItemEditor_meeting.graphql'
@@ -8,7 +9,6 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import useIsEditing from '../../hooks/useIsEditing'
 import useIsFocused from '../../hooks/useIsFocused'
 import useMutationProps from '../../hooks/useMutationProps'
-import usePortal from '../../hooks/usePortal'
 import {useTipTapReflectionEditor} from '../../hooks/useTipTapReflectionEditor'
 import CreateReflectionMutation from '../../mutations/CreateReflectionMutation'
 import EditReflectionMutation from '../../mutations/EditReflectionMutation'
@@ -118,7 +118,6 @@ const PhaseItemEditor = (props: Props) => {
       key: content,
       isStart: true
     }
-    openPortal()
     cardsInFlightRef.current = [...cardsInFlightRef.current, cardInFlight]
     editor.commands.clearOnSubmit()
     forceUpdateColumn()
@@ -212,10 +211,6 @@ const PhaseItemEditor = (props: Props) => {
     }
   }, [editor])
 
-  const {terminatePortal, openPortal, portal} = usePortal({
-    noClose: true,
-    id: 'phaseItemEditor'
-  })
   const showButtons = isFocused || isEditing || (editor && !editor?.isEmpty)
   const showFooter = showButtons || disableAnonymity
 
@@ -226,7 +221,6 @@ const PhaseItemEditor = (props: Props) => {
       ...cardsInFlightRef.current.slice(0, idx),
       ...cardsInFlightRef.current.slice(idx + 1)
     ]
-    if (nextCardsInFlight.length === 0) terminatePortal()
     cardsInFlightRef.current = nextCardsInFlight
     forceUpdateColumn()
   }
@@ -258,9 +252,9 @@ const PhaseItemEditor = (props: Props) => {
           )}
         </div>
       </ReflectionCardRoot>
-      {portal(
-        <>
-          {cardsInFlightRef.current.map((card) => {
+      {cardsInFlightRef.current.length > 0 &&
+        createPortal(
+          cardsInFlightRef.current.map((card) => {
             return (
               <ReflectionCardRoot
                 key={card.key}
@@ -281,9 +275,9 @@ const PhaseItemEditor = (props: Props) => {
                 )}
               </ReflectionCardRoot>
             )
-          })}
-        </>
-      )}
+          }),
+          document.body
+        )}
     </>
   )
 }

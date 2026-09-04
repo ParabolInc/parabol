@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.42.1](https://github.com/ParabolInc/parabol/compare/v13.42.0...v13.42.1) (2026-09-04)
+
+
+### Fixed
+
+* remove usePortal everywhere except useMenu, also ReflectionEmbeddingSuccess ([#13459](https://github.com/ParabolInc/parabol/issues/13459)) ([66624ac](https://github.com/ParabolInc/parabol/commit/66624ac46455a782ac44497161b4be78e8e40981))
+
 ## [13.42.0](https://github.com/ParabolInc/parabol/compare/v13.41.0...v13.42.0) (2026-09-03)
 
 

@@ -16,8 +16,6 @@ export enum PortalStatus {
 
 export type PortalId =
   | 'spotlight'
-  | 'expandedReflectionGroup'
-  | 'phaseItemEditor'
   | 'snackbar'
   | 'githubFieldMenu'
   | 'gitlabFieldMenu'
@@ -55,8 +53,6 @@ export interface UsePortalOptions {
   id?: PortalId
   // if you nest portals, this should be the id of the parent portal
   parentId?: PortalId
-  // allow body to scroll while modal is open
-  allowScroll?: boolean
   // ignore click, tap, and ESC handlers
   noClose?: boolean
 }
@@ -153,9 +149,7 @@ const usePortal = (options: UsePortalOptions = {}) => {
     const {current: portalStatus} = portalStatusRef
     if (portalStatus <= PortalStatus.Entered) return
 
-    if (!options.allowScroll) {
-      showBodyScroll.current = hideBodyScroll()
-    }
+    showBodyScroll.current = hideBodyScroll()
     if (!options.noClose) {
       document.addEventListener('keydown', handleKeydown)
       document.addEventListener('mousedown', handleDocumentClick)

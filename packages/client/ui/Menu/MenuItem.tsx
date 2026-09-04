@@ -4,23 +4,21 @@ import {cn} from '../cn'
 
 export const MENU_ITEM_ICON = 'mr-2 text-[20px] text-fg-secondary'
 
-interface MenuItemProps {
-  onSelect?: (event: Event) => void
-  onClick?: React.MouseEventHandler
+interface MenuItemProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof DropdownMenu.Item>, 'disabled'> {
   isDisabled?: boolean
-  className?: string
   // renders the child as the menu item itself, e.g. a <Link>, so selecting it both navigates & closes the menu
   asChild?: boolean
   children: React.ReactNode
 }
 
 export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
-  ({onSelect, onClick, isDisabled, className, asChild, children}, ref) => {
+  ({onSelect, onClick, isDisabled, className, asChild, children, ...rest}, ref) => {
     return (
       <DropdownMenu.Item
         asChild={asChild}
         className={cn(
-          'mx-1 flex items-center rounded-md px-4 py-1 text-fg-primary text-sm outline-hidden hover:bg-surface-hover focus:bg-surface-hover',
+          'mx-1 flex items-center rounded-md px-3 py-2 text-fg-primary text-sm outline-hidden hover:bg-surface-hover focus:bg-surface-hover',
           isDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
           className
         )}
@@ -29,6 +27,7 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
         onSelect={onSelect}
         onClick={onClick}
         ref={ref}
+        {...rest}
       >
         {children}
       </DropdownMenu.Item>

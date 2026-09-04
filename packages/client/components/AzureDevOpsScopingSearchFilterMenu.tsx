@@ -5,15 +5,11 @@ import type {
   AzureDevOpsScopingSearchFilterMenu_meeting$data,
   AzureDevOpsScopingSearchFilterMenu_meeting$key
 } from '../__generated__/AzureDevOpsScopingSearchFilterMenu_meeting.graphql'
-import type {MenuProps} from '../hooks/useMenu'
+import {MenuItem} from '../ui/Menu/MenuItem'
 import Checkbox from './Checkbox'
 import DropdownMenuLabel from './DropdownMenuLabel'
-import Menu from './Menu'
-import MenuItem from './MenuItem'
-import MenuItemLabel from './MenuItemLabel'
 
 interface Props {
-  menuProps: MenuProps
   meeting: AzureDevOpsScopingSearchFilterMenu_meeting$key
 }
 
@@ -22,7 +18,7 @@ type AzureDevOpsSearchQuery = NonNullable<
 >
 
 const AzureDevOpsScopingSearchFilterMenu = (props: Props) => {
-  const {meeting: meetingRef, menuProps} = props
+  const {meeting: meetingRef} = props
   const meeting = useFragment(
     graphql`
       fragment AzureDevOpsScopingSearchFilterMenu_meeting on PokerMeeting {
@@ -47,7 +43,6 @@ const AzureDevOpsScopingSearchFilterMenu = (props: Props) => {
     `,
     meetingRef
   )
-  const {portalStatus, isDropdown} = menuProps
   const {viewerMeetingMember, azureDevOpsSearchQuery, id: meetingId} = meeting
   const {isWIQL, projectKeyFilters} = azureDevOpsSearchQuery
   const projects = viewerMeetingMember?.teamMember.integrations.azureDevOps.projects ?? []
@@ -64,22 +59,11 @@ const AzureDevOpsScopingSearchFilterMenu = (props: Props) => {
     })
   }
   return (
-    <Menu
-      keepParentFocus
-      ariaLabel={'Define the Azure DevOps search query'}
-      portalStatus={portalStatus}
-      isDropdown={isDropdown}
-    >
-      <MenuItem
-        key={'isWIQL'}
-        label={
-          <MenuItemLabel>
-            <Checkbox className='-ml-2 mr-2' active={isWIQL} />
-            <span className='font-semibold'>{'Use WIQL'}</span>
-          </MenuItemLabel>
-        }
-        onClick={toggleWIQL}
-      />
+    <>
+      <MenuItem onSelect={(e) => e.preventDefault()} onClick={toggleWIQL}>
+        <Checkbox className='-ml-2 mr-2' active={isWIQL} />
+        <span className='font-semibold'>{'Use WIQL'}</span>
+      </MenuItem>
 
       {projects.length > 0 && (
         <DropdownMenuLabel className='border-b-0'>Filter by project:</DropdownMenuLabel>
@@ -104,22 +88,21 @@ const AzureDevOpsScopingSearchFilterMenu = (props: Props) => {
         return (
           <MenuItem
             key={globalProjectKey}
-            label={
-              <MenuItemLabel className={isWIQL ? 'opacity-50' : undefined}>
-                <Checkbox
-                  className='-ml-2 mr-2'
-                  active={projectKeyFilters?.includes(name) ?? null}
-                  disabled={isWIQL}
-                />
-                {name}
-              </MenuItemLabel>
-            }
-            onClick={toggleProjectKeyFilter}
+            className={isWIQL ? 'opacity-50' : undefined}
+            onSelect={(e) => e.preventDefault()}
+            onClick={isWIQL ? undefined : toggleProjectKeyFilter}
             isDisabled={isWIQL}
-          />
+          >
+            <Checkbox
+              className='-ml-2 mr-2'
+              active={projectKeyFilters?.includes(name) ?? null}
+              disabled={isWIQL}
+            />
+            {name}
+          </MenuItem>
         )
       })}
-    </Menu>
+    </>
   )
 }
 

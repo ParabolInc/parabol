@@ -5,13 +5,11 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import UpdateRetroMaxVotesMutation from '~/mutations/UpdateRetroMaxVotesMutation'
 import {MeetingSettingsThreshold} from '~/types/constEnums'
-import type {MenuProps} from '../hooks/useMenu'
-import Menu from './Menu'
+import {MenuContent} from '../ui/Menu/MenuContent'
 import StyledError from './StyledError'
 import VoteStepper from './VoteSettingsStepper'
 
 interface Props {
-  menuProps: MenuProps
   meeting: VoteSettingsMenu_meeting$key
 }
 
@@ -19,7 +17,7 @@ const voteOptionClass =
   'flex items-center justify-between px-4 py-2 font-semibold text-[14px] text-fg-secondary'
 
 const VoteSettingsMenu = (props: Props) => {
-  const {menuProps, meeting: meetingRef} = props
+  const {meeting: meetingRef} = props
   const meeting = useFragment(
     graphql`
       fragment VoteSettingsMenu_meeting on RetrospectiveMeeting {
@@ -65,7 +63,7 @@ const VoteSettingsMenu = (props: Props) => {
   }
 
   return (
-    <Menu ariaLabel='Adjust the vote count' {...menuProps}>
+    <MenuContent align='end'>
       <div className={voteOptionClass}>
         <div>Votes per participant</div>
         <VoteStepper
@@ -85,7 +83,7 @@ const VoteSettingsMenu = (props: Props) => {
           decrease={decreaseMaxVotesPerGroup}
         />
       </div>
-    </Menu>
+    </MenuContent>
   )
 }
 

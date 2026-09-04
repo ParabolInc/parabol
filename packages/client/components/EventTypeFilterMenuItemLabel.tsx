@@ -6,7 +6,6 @@ import {
   timelineEventTypeMenuLabels
 } from '../utils/constants'
 import CardsSVG from './CardsSVG'
-import MenuItemLabel from './MenuItemLabel'
 import TimelineEventTypeIcon from './TimelineEventTypeIcon'
 
 interface Props {
@@ -21,7 +20,7 @@ const EventTypeFilterMenuItemLabel = (props: Props) => {
   const eventTypeIconName = eventType ? timelineEventTypeMenuIcons[eventType] : 'timeline'
   return (
     <>
-      <span className='py-1 pl-4'>
+      <span className='flex items-center'>
         {/* Update here if there are more customized SVGs than CardsSVG to display */}
         {eventTypeIconName === CUSTOMIZED_SVG ? (
           <CardsSVG />
@@ -29,7 +28,7 @@ const EventTypeFilterMenuItemLabel = (props: Props) => {
           <TimelineEventTypeIcon iconName={eventTypeIconName} />
         )}
       </span>
-      <MenuItemLabel>{eventTypeLabel}</MenuItemLabel>
+      <span className='pl-2'>{eventTypeLabel}</span>
     </>
   )
 }
