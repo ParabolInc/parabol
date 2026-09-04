@@ -11,8 +11,6 @@ import TeamPromptResponseFooter from './TeamPromptResponseFooter'
 interface Props {
   stageRef: TeamUpdatesQuestionRow_stage$key
   prompt: {id: string; question: string; groupColor: string}
-  teamId: string
-  meetingId: string
   isDrafting: boolean
   isSelected: boolean
   promptCount: number
@@ -20,11 +18,13 @@ interface Props {
 }
 
 const TeamUpdatesQuestionRow = (props: Props) => {
-  const {stageRef, prompt, teamId, meetingId, isDrafting, isSelected, promptCount, onReply} = props
+  const {stageRef, prompt, isDrafting, isSelected, promptCount, onReply} = props
   const stage = useFragment(
     graphql`
       fragment TeamUpdatesQuestionRow_stage on TeamPromptResponseStage {
         id
+        meetingId
+        teamId
         teamMember {
           user {
             preferredName
@@ -54,7 +54,7 @@ const TeamUpdatesQuestionRow = (props: Props) => {
     `,
     stageRef
   )
-  const {id: stageId, teamMember, discussion, response} = stage
+  const {id: stageId, meetingId, teamId, teamMember, discussion, response} = stage
   const {preferredName, picture} = teamMember.user
   const answer = response?.answers.find((entry) => entry.promptId === prompt.id)
   const answeredCount = response?.answeredPromptIds.length ?? 0

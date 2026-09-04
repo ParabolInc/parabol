@@ -94,8 +94,6 @@ const TeamUpdatesSection = (props: Props) => {
             prompts={prompts}
             sharedStages={shared}
             draftingStages={[...drafting, ...notStarted]}
-            teamId={teamId}
-            meetingId={meetingId}
             selectedStageId={selectedStageId}
             onReply={onReply}
           />
