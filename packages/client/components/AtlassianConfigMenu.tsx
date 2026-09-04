@@ -1,15 +1,13 @@
 import useAtmosphere from '../hooks/useAtmosphere'
-import type {MenuProps} from '../hooks/useMenu'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
 import type {ConnectProvider} from '../integrations/platform/ClientIntegrationDefinition'
 import RemoveTeamMemberIntegrationAuthMutation from '../mutations/RemoveTeamMemberIntegrationAuthMutation'
+import {MenuContent} from '../ui/Menu/MenuContent'
+import {MenuItem} from '../ui/Menu/MenuItem'
 import AtlassianClientManager from '../utils/AtlassianClientManager'
 import {hasConfluenceScopes, hasJiraScopes} from '../utils/atlassianScopes'
-import Menu from './Menu'
-import MenuItem from './MenuItem'
 
 interface Props {
-  menuProps: MenuProps
   mutationProps: MenuMutationProps
   teamId: string
   provider: ConnectProvider
@@ -17,7 +15,7 @@ interface Props {
 }
 
 const AtlassianConfigMenu = (props: Props) => {
-  const {menuProps, mutationProps, teamId, provider, heldScopes} = props
+  const {mutationProps, teamId, provider, heldScopes} = props
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
   const atmosphere = useAtmosphere()
   const holdsJira = hasJiraScopes(heldScopes)
@@ -49,18 +47,15 @@ const AtlassianConfigMenu = (props: Props) => {
     )
   }
   return (
-    <Menu ariaLabel={'Configure your Atlassian integration'} {...menuProps}>
-      <MenuItem label='Refresh token' onClick={refreshToken} />
-      <MenuItem
-        label={
-          <div className='px-4 py-1'>
-            <div>{'Remove Atlassian connection'}</div>
-            <div className='text-fg-muted text-xs'>{removeSubline}</div>
-          </div>
-        }
-        onClick={removeAtlassian}
-      />
-    </Menu>
+    <MenuContent>
+      <MenuItem onClick={refreshToken}>Refresh token</MenuItem>
+      <MenuItem onClick={removeAtlassian}>
+        <div className='py-1'>
+          <div>{'Remove Atlassian connection'}</div>
+          <div className='text-fg-muted text-xs'>{removeSubline}</div>
+        </div>
+      </MenuItem>
+    </MenuContent>
   )
 }
 

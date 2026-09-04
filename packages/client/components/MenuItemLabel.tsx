@@ -8,8 +8,8 @@ export const MenuItemLabelStyle = {
   display: 'flex',
   flex: 1,
   fontSize: 14,
-  lineHeight: '24px',
-  padding: `4px 16px 4px 16px`
+  lineHeight: '20px',
+  padding: `8px 16px 8px 16px`
 }
 
 const MenuItemLabel = forwardRef<HTMLDivElement, ComponentPropsWithoutRef<'div'>>((props, ref) => {
@@ -18,7 +18,7 @@ const MenuItemLabel = forwardRef<HTMLDivElement, ComponentPropsWithoutRef<'div'>
     <div
       ref={ref}
       className={cn(
-        'flex flex-1 items-center overflow-hidden text-ellipsis whitespace-nowrap px-4 py-1 text-sm leading-6',
+        'flex flex-1 items-center overflow-hidden text-ellipsis whitespace-nowrap px-4 py-2 text-sm',
         className
       )}
       {...rest}

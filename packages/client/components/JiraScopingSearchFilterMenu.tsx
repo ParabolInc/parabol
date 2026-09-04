@@ -2,18 +2,15 @@ import {useMemo} from 'react'
 import {commitLocalUpdate} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import useAtmosphere from '../hooks/useAtmosphere'
-import type {MenuProps} from '../hooks/useMenu'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
 import {cn} from '../ui/cn'
+import {MenuItem} from '../ui/Menu/MenuItem'
+import {MenuSearch} from '../ui/Menu/MenuSearch'
+import {MenuSeparator} from '../ui/Menu/MenuSeparator'
 import Checkbox from './Checkbox'
 import DropdownMenuLabel from './DropdownMenuLabel'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
-import Menu from './Menu'
-import MenuItem from './MenuItem'
-import MenuItemHR from './MenuItemHR'
-import MenuItemLabel from './MenuItemLabel'
 import MockFieldList from './MockFieldList'
-import {SearchMenuItem} from './SearchMenuItem'
 import TypeAheadLabel from './TypeAheadLabel'
 
 type JiraSearchQuery = {
@@ -28,7 +25,6 @@ type Project = {
 }
 
 interface Props {
-  menuProps: MenuProps
   meetingId: string
   projects: readonly Project[]
   jiraSearchQuery: JiraSearchQuery | null
@@ -41,7 +37,7 @@ const MAX_PROJECTS = 10
 
 // Reusable for both Jira and Jira Server/Data Center.
 const JiraScopingSearchFilterMenu = (props: Props) => {
-  const {menuProps, projects, meetingId, jiraSearchQuery, service} = props
+  const {projects, meetingId, jiraSearchQuery, service} = props
   const isLoading = meetingId === null
   const projectKeyFilters = jiraSearchQuery?.projectKeyFilters ?? []
   const isJQL = jiraSearchQuery?.isJQL ?? false
@@ -64,7 +60,6 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
   }, [queryFilteredProjects])
 
   const atmosphere = useAtmosphere()
-  const {portalStatus, isDropdown} = menuProps
   const toggleJQL = () => {
     commitLocalUpdate(atmosphere, (store) => {
       const searchQueryId = SearchQueryId.join(service, meetingId)
@@ -76,31 +71,18 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
     })
   }
   return (
-    <Menu
-      className='w-[250px]'
-      keepParentFocus
-      ariaLabel={'Define the Jira search query'}
-      portalStatus={portalStatus}
-      isDropdown={isDropdown}
-      resetActiveOnChanges={[selectedAndFilteredProjects]}
-    >
-      <MenuItem
-        key={'isJQL'}
-        label={
-          <MenuItemLabel>
-            <Checkbox className='-ml-2 mr-2' active={isJQL} />
-            <span className='font-semibold'>{'Use JQL'}</span>
-          </MenuItemLabel>
-        }
-        onClick={toggleJQL}
-      />
-      <MenuItemHR />
+    <>
+      <MenuItem onSelect={(e) => e.preventDefault()} onClick={toggleJQL}>
+        <Checkbox className='-ml-2 mr-2' active={isJQL} />
+        <span className='font-semibold'>{'Use JQL'}</span>
+      </MenuItem>
+      <MenuSeparator />
       {isLoading && <MockFieldList />}
       {selectedAndFilteredProjects.length > 0 && (
         <DropdownMenuLabel className='border-b-0'>Filter by project:</DropdownMenuLabel>
       )}
       {showSearch && (
-        <SearchMenuItem placeholder='Search Jira' onChange={onQueryChange} value={query} />
+        <MenuSearch placeholder='Search Jira' onChange={onQueryChange} value={query} />
       )}
       {(query && selectedAndFilteredProjects.length === 0 && !isLoading && (
         <EmptyDropdownMenuItemLabel key='no-results'>
@@ -127,23 +109,22 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
         return (
           <MenuItem
             key={globalProjectKey}
-            label={
-              <MenuItemLabel className={cn(isJQL && 'opacity-50')}>
-                <Checkbox
-                  className='-ml-2 mr-2'
-                  active={projectKeyFilters.includes(globalProjectKey)}
-                  disabled={isJQL}
-                />
-                <img className='mr-2 h-6 w-6' src={avatar || undefined} />
-                <TypeAheadLabel query={query} label={name} />
-              </MenuItemLabel>
-            }
-            onClick={toggleProjectKeyFilter}
+            className={cn(isJQL && 'opacity-50')}
+            onSelect={(e) => e.preventDefault()}
+            onClick={isJQL ? undefined : toggleProjectKeyFilter}
             isDisabled={isJQL}
-          />
+          >
+            <Checkbox
+              className='-ml-2 mr-2'
+              active={projectKeyFilters.includes(globalProjectKey)}
+              disabled={isJQL}
+            />
+            <img className='mr-2 h-6 w-6' src={avatar || undefined} />
+            <TypeAheadLabel query={query} label={name} />
+          </MenuItem>
         )
       })}
-    </Menu>
+    </>
   )
 }
 

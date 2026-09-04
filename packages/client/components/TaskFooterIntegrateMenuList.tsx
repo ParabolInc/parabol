@@ -7,12 +7,10 @@ import {getLinearRepoName} from '~/utils/getLinearRepoName'
 import interleave from '~/utils/interleave'
 import type {TaskServiceEnum} from '../__generated__/CreateTaskMutation.graphql'
 import type {TaskFooterIntegrateMenuListLocalQuery} from '../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
-import type {MenuProps} from '../hooks/useMenu'
 import LinearProjectId from '../shared/gqlIds/LinearProjectId'
+import {MenuSearch} from '../ui/Menu/MenuSearch'
+import {MenuSeparator} from '../ui/Menu/MenuSeparator'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
-import Menu from './Menu'
-import MenuItemHR from './MenuItemHR'
-import {SearchMenuItem} from './SearchMenuItem'
 import TaskFooterIntegrateMenuServiceRepos, {
   type RepoIntegrationItem as Item,
   type RepoIntegrationService
@@ -20,7 +18,6 @@ import TaskFooterIntegrateMenuServiceRepos, {
 import TaskIntegrationMenuItem from './TaskIntegrationMenuItem'
 
 interface Props {
-  menuProps: MenuProps
   placeholder: string
   teamId: string
   label?: string
@@ -58,7 +55,7 @@ const mergeItems = (prevUsed: readonly Item[], lists: (readonly Item[])[]) => {
 }
 
 const TaskFooterIntegrateMenuList = (props: Props) => {
-  const {menuProps, onPushToIntegration, placeholder, teamId, label} = props
+  const {onPushToIntegration, placeholder, teamId, label} = props
 
   graphql`
     fragment TaskFooterIntegrateMenuListItem on RepoIntegration {
@@ -100,7 +97,6 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
   `
 
   const [networkOnly, setNetworkOnly] = useState(false)
-  const [keepParentFocus, setKeepParentFocus] = useState(true)
   const [reposByService, setReposByService] = useState<ReposByService>({})
   const {viewer} = useLazyLoadQuery<TaskFooterIntegrateMenuListLocalQuery>(
     graphql`
@@ -149,7 +145,6 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
     // a search miss against the cache may be stale, so refetch every service from the network once
     if (!networkOnly && isEveryServiceResolved && filteredIntegrations.length === 0) {
       setNetworkOnly(true)
-      setKeepParentFocus(false)
       setReposByService({})
     }
   }, [isEveryServiceResolved, filteredIntegrations.length])
@@ -161,135 +156,128 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
           <TaskFooterIntegrateMenuServiceRepos serviceRef={service} onRepos={onRepos} />
         </Suspense>
       ))}
-      <Menu
-        keepParentFocus={keepParentFocus}
-        ariaLabel={'Export the task'}
-        {...menuProps}
-        resetActiveOnChanges={[filteredIntegrations]}
-      >
-        {label && (
-          <>
-            <div className='p-2 pt-2 pb-0 text-fg-secondary text-sm'>{label}</div>
-            <MenuItemHR />
-          </>
-        )}
-        <SearchMenuItem placeholder={placeholder} onChange={onQueryChange} value={query} />
-        {(query && filteredIntegrations.length === 0 && (
-          <EmptyDropdownMenuItemLabel key='no-results'>
-            No integrations found!
-          </EmptyDropdownMenuItemLabel>
-        )) ||
-          null}
-        {filteredIntegrations.slice(0, 10).map((repoIntegration) => {
-          const {id: integrationRepoId, service} = repoIntegration
-          if (service === 'jira' && repoIntegration.name) {
-            return (
-              <TaskIntegrationMenuItem
-                key={integrationRepoId}
-                query={query}
-                label={repoIntegration.name}
-                onClick={() => onPushToIntegration(integrationRepoId, 'jira', repoIntegration.name)}
-                service='jira'
-              />
-            )
-          }
-          if (service === 'jiraServer' && repoIntegration.name) {
-            return (
-              <TaskIntegrationMenuItem
-                key={integrationRepoId}
-                query={query}
-                label={repoIntegration.name}
-                onClick={() =>
-                  onPushToIntegration(integrationRepoId, 'jiraServer', repoIntegration.name)
-                }
-                service='jiraServer'
-              />
-            )
-          }
-          if (service === 'github' && repoIntegration.nameWithOwner) {
-            const {nameWithOwner} = repoIntegration
-            return (
-              <TaskIntegrationMenuItem
-                key={integrationRepoId}
-                query={query}
-                label={repoIntegration.nameWithOwner}
-                onClick={() =>
-                  onPushToIntegration(nameWithOwner, 'github', repoIntegration.nameWithOwner)
-                }
-                service='github'
-              />
-            )
-          }
-          if (service === 'gitlab' && repoIntegration.fullPath) {
-            const {fullPath} = repoIntegration
-            return (
-              <TaskIntegrationMenuItem
-                key={integrationRepoId}
-                query={query}
-                label={fullPath}
-                onClick={() => onPushToIntegration(fullPath, 'gitlab', fullPath)}
-                service='gitlab'
-              />
-            )
-          }
-          if (service === 'azureDevOps' && repoIntegration.name) {
-            const {name, id: projectId, instanceId} = repoIntegration
-            const integrationRepoId = IntegrationRepoId.join({
-              instanceId: instanceId!,
-              projectId,
-              service: 'azureDevOps'
-            })
-            return (
-              <TaskIntegrationMenuItem
-                key={integrationRepoId}
-                query={query}
-                label={name}
-                onClick={() => onPushToIntegration(integrationRepoId, 'azureDevOps', name)}
-                service='azureDevOps'
-              />
-            )
-          }
-          if (
-            service === 'linear' &&
-            repoIntegration.__typename === '_xLinearTeam' &&
-            repoIntegration.displayName
-          ) {
-            const {id: teamId, displayName: teamName} = repoIntegration
-            if (!teamId) return null
-            const integrationRepoId = LinearProjectId.join(teamId)
-            return (
-              <TaskIntegrationMenuItem
-                key={integrationRepoId}
-                query={query}
-                label={`${teamName}`}
-                onClick={() => onPushToIntegration(integrationRepoId, 'linear')}
-                service='linear'
-              />
-            )
-          }
-          if (
-            service === 'linear' &&
-            repoIntegration.__typename === '_xLinearProject' &&
-            repoIntegration.name
-          ) {
-            const {id: projectId, teams} = repoIntegration
-            const {id: teamId} = teams?.nodes?.[0] ?? {}
-            if (!teamId) return null
-            const nameWithTeam = getLinearRepoName(repoIntegration)
-            const integrationRepoId = LinearProjectId.join(teamId, projectId)
-            return (
-              <TaskIntegrationMenuItem
-                key={integrationRepoId}
-                query={query}
-                label={nameWithTeam}
-                onClick={() => onPushToIntegration(integrationRepoId, 'linear')}
-                service='linear'
-              />
-            )
-          }
-          return null
-        })}
-      </Menu>
+      {label && (
+        <>
+          <div className='p-2 pt-2 pb-0 text-fg-secondary text-sm'>{label}</div>
+          <MenuSeparator />
+        </>
+      )}
+      <MenuSearch placeholder={placeholder} onChange={onQueryChange} value={query} />
+      {(query && filteredIntegrations.length === 0 && (
+        <EmptyDropdownMenuItemLabel key='no-results'>
+          No integrations found!
+        </EmptyDropdownMenuItemLabel>
+      )) ||
+        null}
+      {filteredIntegrations.slice(0, 10).map((repoIntegration) => {
+        const {id: integrationRepoId, service} = repoIntegration
+        if (service === 'jira' && repoIntegration.name) {
+          return (
+            <TaskIntegrationMenuItem
+              key={integrationRepoId}
+              query={query}
+              label={repoIntegration.name}
+              onClick={() => onPushToIntegration(integrationRepoId, 'jira', repoIntegration.name)}
+              service='jira'
+            />
+          )
+        }
+        if (service === 'jiraServer' && repoIntegration.name) {
+          return (
+            <TaskIntegrationMenuItem
+              key={integrationRepoId}
+              query={query}
+              label={repoIntegration.name}
+              onClick={() =>
+                onPushToIntegration(integrationRepoId, 'jiraServer', repoIntegration.name)
+              }
+              service='jiraServer'
+            />
+          )
+        }
+        if (service === 'github' && repoIntegration.nameWithOwner) {
+          const {nameWithOwner} = repoIntegration
+          return (
+            <TaskIntegrationMenuItem
+              key={integrationRepoId}
+              query={query}
+              label={repoIntegration.nameWithOwner}
+              onClick={() =>
+                onPushToIntegration(nameWithOwner, 'github', repoIntegration.nameWithOwner)
+              }
+              service='github'
+            />
+          )
+        }
+        if (service === 'gitlab' && repoIntegration.fullPath) {
+          const {fullPath} = repoIntegration
+          return (
+            <TaskIntegrationMenuItem
+              key={integrationRepoId}
+              query={query}
+              label={fullPath}
+              onClick={() => onPushToIntegration(fullPath, 'gitlab', fullPath)}
+              service='gitlab'
+            />
+          )
+        }
+        if (service === 'azureDevOps' && repoIntegration.name) {
+          const {name, id: projectId, instanceId} = repoIntegration
+          const integrationRepoId = IntegrationRepoId.join({
+            instanceId: instanceId!,
+            projectId,
+            service: 'azureDevOps'
+          })
+          return (
+            <TaskIntegrationMenuItem
+              key={integrationRepoId}
+              query={query}
+              label={name}
+              onClick={() => onPushToIntegration(integrationRepoId, 'azureDevOps', name)}
+              service='azureDevOps'
+            />
+          )
+        }
+        if (
+          service === 'linear' &&
+          repoIntegration.__typename === '_xLinearTeam' &&
+          repoIntegration.displayName
+        ) {
+          const {id: teamId, displayName: teamName} = repoIntegration
+          if (!teamId) return null
+          const integrationRepoId = LinearProjectId.join(teamId)
+          return (
+            <TaskIntegrationMenuItem
+              key={integrationRepoId}
+              query={query}
+              label={`${teamName}`}
+              onClick={() => onPushToIntegration(integrationRepoId, 'linear')}
+              service='linear'
+            />
+          )
+        }
+        if (
+          service === 'linear' &&
+          repoIntegration.__typename === '_xLinearProject' &&
+          repoIntegration.name
+        ) {
+          const {id: projectId, teams} = repoIntegration
+          const {id: teamId} = teams?.nodes?.[0] ?? {}
+          if (!teamId) return null
+          const nameWithTeam = getLinearRepoName(repoIntegration)
+          const integrationRepoId = LinearProjectId.join(teamId, projectId)
+          return (
+            <TaskIntegrationMenuItem
+              key={integrationRepoId}
+              query={query}
+              label={nameWithTeam}
+              onClick={() => onPushToIntegration(integrationRepoId, 'linear')}
+              service='linear'
+            />
+          )
+        }
+        return null
+      })}
     </>
   )
 }

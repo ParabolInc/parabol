@@ -70,6 +70,7 @@ const NewMeetingTeamPicker = (props: Props) => {
           <div className='font-semibold text-xl leading-5'>{name}</div>
         </div>
       </SelectTrigger>
+      {/* popper: the share-to-org branch renders a panel with no items to anchor to */}
       <SelectContent position='popper'>
         {onShareToOrg ? (
           <div className='w-88 p-4'>

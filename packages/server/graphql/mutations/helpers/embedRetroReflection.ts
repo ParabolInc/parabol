@@ -1,8 +1,6 @@
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {activeEmbeddingModelId} from '../../../../embedder/activeEmbeddingModel'
 import getKysely from '../../../postgres/getKysely'
 import {embeddingResponder} from '../../../utils/embeddingResponder'
-import publish from '../../../utils/publish'
 import {publishToEmbedder} from './publishToEmbedder'
 import refreshSuggestedGroups from './refreshSuggestedGroups'
 
@@ -41,8 +39,6 @@ export const embedRetroReflection = async (
     embeddingsMetadataId: metadata.id,
     data: {requestId, channelName: embeddingResponder.channelName}
   })
-
-  publish(SubscriptionChannel.MEETING, meetingId, 'ReflectionEmbeddingSuccess', {reflectionId})
 
   // This vector is an input to similarity grouping, so the board's suggestions are now out of date.
   // Hooked here rather than in the reflection mutations because those return before the vector

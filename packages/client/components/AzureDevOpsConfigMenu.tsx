@@ -1,21 +1,19 @@
 import useAtmosphere from '../hooks/useAtmosphere'
-import type {MenuProps} from '../hooks/useMenu'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
 import RemoveTeamMemberIntegrationAuthMutation from '../mutations/RemoveTeamMemberIntegrationAuthMutation'
 import {Duration} from '../types/constEnums'
+import {MenuContent} from '../ui/Menu/MenuContent'
+import {MenuItem} from '../ui/Menu/MenuItem'
 import AzureDevOpsClientManager from '../utils/AzureDevOpsClientManager'
-import Menu from './Menu'
-import MenuItem from './MenuItem'
 
 interface Props {
-  menuProps: MenuProps
   mutationProps: MenuMutationProps
   teamId: string
   provider: any
 }
 
 const AzureDevOpsConfigMenu = (props: Props) => {
-  const {menuProps, mutationProps, teamId, provider} = props
+  const {mutationProps, teamId, provider} = props
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
   const atmosphere = useAtmosphere()
   const openOAuth = () => {
@@ -35,10 +33,10 @@ const AzureDevOpsConfigMenu = (props: Props) => {
     }, Duration.PORTAL_CLOSE)
   }
   return (
-    <Menu ariaLabel={'Configure your Azure DevOps integration'} {...menuProps}>
-      <MenuItem label='Refresh token' onClick={openOAuth} />
-      <MenuItem label='Remove Azure DevOps' onClick={removeAzureDevOps} />
-    </Menu>
+    <MenuContent>
+      <MenuItem onClick={openOAuth}>Refresh token</MenuItem>
+      <MenuItem onClick={removeAzureDevOps}>Remove Azure DevOps</MenuItem>
+    </MenuContent>
   )
 }
 

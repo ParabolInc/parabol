@@ -2,9 +2,9 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {ExpandMore} from '~/ui/icons'
 import type {AzureDevOpsFieldDimensionDropdown_stage$key} from '../__generated__/AzureDevOpsFieldDimensionDropdown_stage.graphql'
-import {MenuPosition} from '../hooks/useCoords'
-import useMenu from '../hooks/useMenu'
 import {SprintPokerDefaults} from '../types/constEnums'
+import {cn} from '../ui/cn'
+import {SelectValue} from '../ui/Select/SelectValue'
 import {
   azureDevOpsEffortWorkItems,
   azureDevOpsOriginalEstimateWorkItems,
@@ -47,19 +47,6 @@ const AzureDevOpsFieldDimensionDropdown = (props: Props) => {
   const {name: serviceFieldName} = serviceField
   const workItemType = task?.integration?.type
 
-  const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLButtonElement>(
-    MenuPosition.UPPER_RIGHT,
-    {
-      isDropdown: true
-    }
-  )
-
-  const onClick = () => {
-    if (!isFacilitator) return
-    togglePortal()
-    clearError()
-  }
-
   const getLabelValue = (workItemType: string | undefined) => {
     if (serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_NULL) {
       return SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL
@@ -90,18 +77,30 @@ const AzureDevOpsFieldDimensionDropdown = (props: Props) => {
 
   const label = getLabelValue(workItemType)
 
-  return (
+  const labelEl = <div className='text-sm'>{label}</div>
+  const trigger = (
     <PlainButton
-      className={`flex select-none text-fg-primary ${isFacilitator ? 'hover:opacity-50 focus:opacity-50 active:opacity-50' : 'cursor-default pr-2'}`}
-      onClick={onClick}
-      ref={originRef}
-    >
-      <div className='text-sm'>{label}</div>
-      <ExpandMore className={`h-[18px] w-[18px] ${!isFacilitator ? 'hidden' : ''}`} />
-      {menuPortal(
-        <AzureDevOpsFieldMenu menuProps={menuProps} stageRef={stage} submitScore={submitScore} />
+      className={cn(
+        'flex select-none text-fg-primary',
+        isFacilitator
+          ? 'hover:opacity-50 active:opacity-50 data-[state=open]:opacity-50'
+          : 'cursor-default pr-2'
       )}
+    >
+      {isFacilitator ? <SelectValue>{labelEl}</SelectValue> : labelEl}
+      <ExpandMore className={cn('h-[18px] w-[18px]', !isFacilitator && 'hidden')} />
     </PlainButton>
+  )
+
+  if (!isFacilitator) return trigger
+
+  return (
+    <AzureDevOpsFieldMenu
+      stageRef={stage}
+      trigger={trigger}
+      onOpenChange={(isOpen) => isOpen && clearError()}
+      submitScore={submitScore}
+    />
   )
 }
 

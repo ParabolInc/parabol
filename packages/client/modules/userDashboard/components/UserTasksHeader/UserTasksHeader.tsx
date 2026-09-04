@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useMemo, useRef} from 'react'
+import {Suspense, useMemo, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {
@@ -15,8 +15,7 @@ import DashSectionControls from '../../../../components/Dashboard/DashSectionCon
 import DashSectionHeader from '../../../../components/Dashboard/DashSectionHeader'
 import DashFilterToggle from '../../../../components/DashFilterToggle/DashFilterToggle'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useMenu from '../../../../hooks/useMenu'
+import {Menu} from '../../../../ui/Menu/Menu'
 import lazyPreload from '../../../../utils/lazyPreload'
 
 const TeamFilterMenu = lazyPreload(
@@ -65,22 +64,6 @@ const UserTasksHeader = (props: Props) => {
     `,
     viewerRef
   )
-  const {
-    menuPortal: teamFilterMenuPortal,
-    togglePortal: teamFilterTogglePortal,
-    originRef: teamFilterOriginRef,
-    menuProps: teamFilterMenuProps
-  } = useMenu(MenuPosition.UPPER_RIGHT, {
-    isDropdown: true
-  })
-  const {
-    menuPortal: teamMemberFilterMenuPortal,
-    togglePortal: teamMemberFilterTogglePortal,
-    originRef: teamMemberFilterOriginRef,
-    menuProps: teamMemberFilterMenuProps
-  } = useMenu(MenuPosition.UPPER_RIGHT, {
-    isDropdown: true
-  })
   const oldTeamsRef = useRef<UserTasksHeader_viewer$data['teams']>([])
   const nextTeams = viewer?.teams ?? oldTeamsRef.current
   if (nextTeams) {
@@ -125,32 +108,40 @@ const UserTasksHeader = (props: Props) => {
   return (
     <DashSectionHeader>
       <DashSectionControls className='w-full flex-wrap justify-start overflow-visible'>
-        <DashFilterToggle
-          className='my-1 sidebar-left:my-0 mr-4 sidebar-left:mr-6 ml-0 sidebar-left:ml-0'
-          label='Team'
-          onClick={teamFilterTogglePortal}
-          onMouseEnter={TeamFilterMenu.preload}
-          ref={teamFilterOriginRef}
-          value={teamFilterName}
-          iconText='group'
-          dataCy='team-filter'
-        />
-        {teamFilterMenuPortal(<TeamFilterMenu menuProps={teamFilterMenuProps} viewer={viewer} />)}
+        <Menu
+          trigger={
+            <DashFilterToggle
+              className='my-1 sidebar-left:my-0 mr-4 sidebar-left:mr-6 ml-0 sidebar-left:ml-0'
+              label='Team'
+              onMouseEnter={TeamFilterMenu.preload}
+              value={teamFilterName}
+              iconText='group'
+              dataCy='team-filter'
+            />
+          }
+        >
+          <Suspense fallback={null}>
+            <TeamFilterMenu viewer={viewer} />
+          </Suspense>
+        </Menu>
 
         {/* Filter by Owner */}
-        <DashFilterToggle
-          className='my-1 sidebar-left:my-0 mr-4 sidebar-left:mr-6 ml-0 sidebar-left:ml-0'
-          label='Team Member'
-          onClick={teamMemberFilterTogglePortal}
-          onMouseEnter={UserDashTeamMemberMenu.preload}
-          ref={teamMemberFilterOriginRef}
-          value={teamMemberFilterName}
-          iconText='person'
-          dataCy='team-member-filter'
-        />
-        {teamMemberFilterMenuPortal(
-          <UserDashTeamMemberMenu menuProps={teamMemberFilterMenuProps} viewer={viewer} />
-        )}
+        <Menu
+          trigger={
+            <DashFilterToggle
+              className='my-1 sidebar-left:my-0 mr-4 sidebar-left:mr-6 ml-0 sidebar-left:ml-0'
+              label='Team Member'
+              onMouseEnter={UserDashTeamMemberMenu.preload}
+              value={teamMemberFilterName}
+              iconText='person'
+              dataCy='team-member-filter'
+            />
+          }
+        >
+          <Suspense fallback={null}>
+            <UserDashTeamMemberMenu viewer={viewer} />
+          </Suspense>
+        </Menu>
 
         <Button
           size='default'
