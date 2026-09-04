@@ -11,6 +11,7 @@ import {hasJiraScopes} from '../../../utils/atlassianScopes'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import InspirationItemsPanel from './InspirationItemsPanel'
 import JiraIntegrationResultsRoot from './JiraIntegrationResultsRoot'
+import useIsStructuredInspiration from './useIsStructuredInspiration'
 import {WorkDrawerDateFilter} from './WorkDrawerDateFilter'
 
 interface Props {
@@ -66,6 +67,7 @@ const JiraIntegrationPanel = (props: Props) => {
   const conditions = ['assignee = currentUser()', dateQueryString].filter(Boolean).join(' AND ')
   const searchQuery = `${conditions} order by updated DESC`
 
+  const isStructured = useIsStructuredInspiration()
   const mutationProps = useMutationProps()
   const {error, onError} = mutationProps
 
@@ -90,18 +92,21 @@ const JiraIntegrationPanel = (props: Props) => {
     })
   }
 
+  const filterBar = (
+    <div className='mb-2 flex w-full px-2'>
+      <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
+    </div>
+  )
+
   return (
     <>
       {teamMember?.integrations.atlassian?.isActive &&
       hasJiraScopes(teamMember?.integrations.atlassian?.scope) ? (
         <>
+          {!isStructured && filterBar}
           <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
             <InspirationItemsPanel
-              filters={
-                <div className='mb-2 flex w-full px-2'>
-                  <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
-                </div>
-              }
+              filters={isStructured ? filterBar : undefined}
               meetingId={meeting.id}
               teamId={meeting.teamId}
               service='jira'
