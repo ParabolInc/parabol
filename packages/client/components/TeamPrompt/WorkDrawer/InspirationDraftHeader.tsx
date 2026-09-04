@@ -23,7 +23,7 @@ const InspirationDraftHeader = (props: Props) => {
   const subLine =
     !regenerating && !hasItems ? EMPTY_DRAFT_LINE : metaLine(workItemCount, since, promptCount)
   return (
-    <div className='flex flex-col gap-1 px-4 pt-3 pb-2'>
+    <div className='flex flex-col gap-1 px-4 pt-3 pb-2' aria-busy={regenerating}>
       <div className='flex items-center justify-between'>
         <div className='flex items-center gap-1.5 font-semibold text-fg-primary text-sm'>
           <AutoAwesome className='h-[18px] w-[18px] text-accent' />
@@ -36,7 +36,7 @@ const InspirationDraftHeader = (props: Props) => {
               <Button
                 variant='flat'
                 shape='icon'
-                aria-label='Draft my response from this work'
+                aria-label='Refresh draft'
                 className='h-8 w-8 p-0 text-fg-secondary'
                 disabled={regenerating}
                 onClick={onRegenerate}
@@ -44,14 +44,14 @@ const InspirationDraftHeader = (props: Props) => {
                 <Refresh className='h-[18px] w-[18px]' />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Draft my response from this work</TooltipContent>
+            <TooltipContent>Refresh draft</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 variant='flat'
                 shape='icon'
-                aria-label='Customize instructions'
+                aria-label='Customize how the AI drafts your response'
                 data-dirty={tuneDirty ? '' : undefined}
                 className='h-8 w-8 p-0 text-fg-secondary data-dirty:ring-2 data-dirty:ring-sky-300'
                 disabled={regenerating}
@@ -64,7 +64,9 @@ const InspirationDraftHeader = (props: Props) => {
           </Tooltip>
         </div>
       </div>
-      <div className='text-fg-muted text-xs'>{subLine}</div>
+      <div className='text-fg-muted text-xs' aria-live='polite'>
+        {subLine}
+      </div>
     </div>
   )
 }
