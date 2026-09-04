@@ -1,20 +1,16 @@
 import type {Editor} from '@tiptap/core'
-import type {JSONContent} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useCallback, useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import type {TeamPromptComposer_meeting$key} from '~/__generated__/TeamPromptComposer_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {cn} from '../../../ui/cn'
-import lastAnswerUpdatedAt from './lastAnswerUpdatedAt'
 import TeamPromptAnswerEditor from './TeamPromptAnswerEditor'
 import TeamPromptComposerFooter from './TeamPromptComposerFooter'
 import TeamPromptComposerHeader from './TeamPromptComposerHeader'
-import {clearStageDrafts, isDocEmpty, readDraftAnswer} from './teamPromptDraftStorage'
 import {TEAM_UPDATES_BAND, TEAM_UPDATES_COLUMN} from './teamUpdatesLayout'
-import useTeamPromptAnswersAutosave, {type DirtyAnswer} from './useTeamPromptAnswersAutosave'
-
-const PREVIEW_LENGTH = 90
+import useTeamPromptAnswersAutosave from './useTeamPromptAnswersAutosave'
+import useTeamPromptComposerState from './useTeamPromptComposerState'
 
 interface Props {
   meetingRef: TeamPromptComposer_meeting$key
@@ -46,7 +42,16 @@ const TeamPromptComposer = (props: Props) => {
                 }
               }
               response {
-                ...TeamPromptStructuredResponse_response @relay(mask: false)
+                id
+                isShared
+                sharedAt
+                answers {
+                  id
+                  promptId
+                  content
+                  plaintextContent
+                  updatedAt
+                }
               }
             }
           }
@@ -59,8 +64,7 @@ const TeamPromptComposer = (props: Props) => {
   const {viewerId} = atmosphere
   const {id: meetingId, teamId, endedAt, prompts, rightDrawerOpen} = meeting
   const stage = meeting.phases[0]?.stages?.find((stage) => stage.teamMember.userId === viewerId)
-  const response = stage?.response ?? null
-  const isShared = !!response?.isShared
+  const isShared = !!stage?.response?.isShared
   const [isExpanded, setIsExpanded] = useState(!isShared)
   const editorRefs = useRef(new Map<string, React.MutableRefObject<Editor | null>>())
   const {queueAnswer, seedDirty, share, submitting, dirtyPromptIds} = useTeamPromptAnswersAutosave({
@@ -69,52 +73,14 @@ const TeamPromptComposer = (props: Props) => {
     stageId: stage?.id ?? '',
     isShared
   })
-
-  const savedDocs = useMemo(() => {
-    const map = new Map<string, JSONContent | null>()
-    prompts.forEach((prompt) => {
-      const saved = response?.answers.find((answer) => answer.promptId === prompt.id)
-      map.set(prompt.id, saved ? JSON.parse(saved.content) : null)
-    })
-    return map
-  }, [stage?.id])
-
-  const initialContentByPrompt = useMemo(() => {
-    const map = new Map<string, JSONContent | null>()
-    prompts.forEach((prompt) => {
-      const draft = stage ? readDraftAnswer(stage.id, prompt.id) : null
-      map.set(prompt.id, draft ?? savedDocs.get(prompt.id) ?? null)
-    })
-    return map
-  }, [savedDocs])
-
-  const [answeredPromptIds, setAnsweredPromptIds] = useState<Set<string>>(
-    () =>
-      new Set(
-        prompts
-          .filter((prompt) => !isDocEmpty(initialContentByPrompt.get(prompt.id) ?? null))
-          .map((prompt) => prompt.id)
-      )
-  )
-
-  const hasSeededRef = useRef(false)
-  useEffect(() => {
-    if (!stage || hasSeededRef.current) return
-    hasSeededRef.current = true
-    const entries = prompts.reduce<DirtyAnswer[]>((acc, prompt) => {
-      const draft = readDraftAnswer(stage.id, prompt.id)
-      if (!draft) return acc
-      if (JSON.stringify(draft) === JSON.stringify(savedDocs.get(prompt.id) ?? null)) return acc
-      acc.push({promptId: prompt.id, doc: draft})
-      return acc
-    }, [])
-    seedDirty(entries)
-  }, [stage?.id])
-
-  useEffect(() => {
-    if (!stage || !endedAt) return
-    clearStageDrafts(stage.id)
-  }, [stage?.id, endedAt])
+  const {
+    initialContentByPrompt,
+    answeredPromptIds,
+    setAnsweredPromptIds,
+    preview,
+    sharedAt,
+    lastAnswerAt
+  } = useTeamPromptComposerState({prompts, stage, isEnded: !!endedAt, seedDirty})
 
   const onChange = useCallback(
     (promptId: string, editor: Editor) => {
@@ -146,14 +112,6 @@ const TeamPromptComposer = (props: Props) => {
   }
 
   if (!stage) return null
-  const savedText = prompts
-    .map((prompt) => response?.answers.find((answer) => answer.promptId === prompt.id))
-    .find((answer) => !!answer?.plaintextContent.trim())?.plaintextContent
-  const preview = (savedText ?? '').replace(/\s+/g, ' ').trim().slice(0, PREVIEW_LENGTH)
-  const isDirty = dirtyPromptIds.size > 0
-  const sharedAt = response?.sharedAt ?? null
-  const lastAnswerAt = response && sharedAt ? lastAnswerUpdatedAt(response.answers, sharedAt) : null
-
   return (
     <div className={cn(TEAM_UPDATES_BAND, 'pt-6 pb-2')}>
       <div className={TEAM_UPDATES_COLUMN}>
@@ -199,7 +157,7 @@ const TeamPromptComposer = (props: Props) => {
             {!endedAt && (
               <TeamPromptComposerFooter
                 isShared={isShared}
-                isDirty={isDirty}
+                isDirty={dirtyPromptIds.size > 0}
                 answeredCount={answeredPromptIds.size}
                 promptCount={prompts.length}
                 submitting={submitting}
