@@ -5,6 +5,8 @@ const PIN_TOLERANCE_PX = 13
 const useTeamHeaderPin = (
   headerRef: RefObject<HTMLElement | null>,
   scrollContainerRef: RefObject<HTMLElement | null>,
+  composerRef: RefObject<HTMLElement | null>,
+  sectionRef: RefObject<HTMLElement | null>,
   enabled: boolean
 ) => {
   const [isPinned, setIsPinned] = useState(false)
@@ -29,14 +31,16 @@ const useTeamHeaderPin = (
     container.addEventListener('scroll', onScroll, {passive: true})
     window.addEventListener('resize', onScroll)
     const observer = new ResizeObserver(onScroll)
-    Array.from(container.children).forEach((child) => observer.observe(child))
+    ;[composerRef.current, sectionRef.current].forEach((element) => {
+      if (element) observer.observe(element)
+    })
     return () => {
       container.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onScroll)
       observer.disconnect()
       if (frame) window.cancelAnimationFrame(frame)
     }
-  }, [enabled, headerRef, scrollContainerRef])
+  }, [enabled, headerRef, scrollContainerRef, composerRef, sectionRef])
   return isPinned
 }
 

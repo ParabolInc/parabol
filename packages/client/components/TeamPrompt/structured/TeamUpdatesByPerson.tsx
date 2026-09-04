@@ -2,6 +2,7 @@ import type {TeamUpdatesSection_meeting$data} from '~/__generated__/TeamUpdatesS
 import {cn} from '../../../ui/cn'
 import TeamPromptDraftingCard from './TeamPromptDraftingCard'
 import TeamPromptSharedResponseCard from './TeamPromptSharedResponseCard'
+import {TEAM_UPDATES_BAND, TEAM_UPDATES_GRID_COLUMNS} from './teamUpdatesLayout'
 
 export type TeamUpdateStage = NonNullable<
   TeamUpdatesSection_meeting$data['phases'][number]['stages']
@@ -32,8 +33,9 @@ const TeamUpdatesByPerson = (props: Props) => {
   return (
     <div
       className={cn(
-        'mx-auto grid max-w-[1240px] gap-[28px_32px] px-[5%] py-4',
-        layout === 'grid' ? '@min-[900px]:grid-cols-2' : 'grid-cols-1'
+        TEAM_UPDATES_BAND,
+        'grid gap-[28px_32px] py-4',
+        layout === 'grid' ? TEAM_UPDATES_GRID_COLUMNS : 'grid-cols-1'
       )}
     >
       {sharedStages.map((stage) => (

@@ -1,5 +1,7 @@
 import {Create} from '~/ui/icons'
+import {cn} from '../../../ui/cn'
 import Avatar from '../../Avatar/Avatar'
+import {TEAM_UPDATES_COLUMN} from './teamUpdatesLayout'
 
 interface Props {
   preferredName: string
@@ -18,7 +20,7 @@ const TeamPromptDraftingCard = (props: Props) => {
       ? `Drafting · ${answeredCount} of ${promptCount} answered`
       : "Hasn't started yet"
   return (
-    <div className='mx-auto flex w-full max-w-[640px] flex-col'>
+    <div className={cn(TEAM_UPDATES_COLUMN, 'flex flex-col')}>
       <div className='mb-3 flex items-center gap-2 px-2'>
         <Avatar picture={picture} className='h-12 w-12 shrink-0 opacity-55' />
         <h3 className='m-0 min-w-0 truncate font-semibold text-base'>{preferredName}</h3>
