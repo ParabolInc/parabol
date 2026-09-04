@@ -97,23 +97,27 @@ const LinearIntegrationPanel = (props: Props) => {
     <>
       {isActive && teamMember ? (
         <>
-          <LinearProjectFilterBar
-            teamMemberRef={teamMember}
-            selectedLinearIds={selectedLinearIds}
-            setSelectedLinearIds={(ids) => {
-              SendClientSideEvent(atmosphere, 'Your Work Filter Changed', {
-                teamId: meeting.teamId,
-                meetingId: meeting.id,
-                service: 'linear'
-              })
-              setSelectedLinearIds(ids)
-            }}
-          />
-          <div className='mb-2 flex w-full px-2'>
-            <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
-          </div>
           <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
             <InspirationItemsPanel
+              filters={
+                <>
+                  <LinearProjectFilterBar
+                    teamMemberRef={teamMember}
+                    selectedLinearIds={selectedLinearIds}
+                    setSelectedLinearIds={(ids) => {
+                      SendClientSideEvent(atmosphere, 'Your Work Filter Changed', {
+                        teamId: meeting.teamId,
+                        meetingId: meeting.id,
+                        service: 'linear'
+                      })
+                      setSelectedLinearIds(ids)
+                    }}
+                  />
+                  <div className='mb-2 flex w-full px-2'>
+                    <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
+                  </div>
+                </>
+              }
               meetingId={meeting.id}
               teamId={meeting.teamId}
               service='linear'

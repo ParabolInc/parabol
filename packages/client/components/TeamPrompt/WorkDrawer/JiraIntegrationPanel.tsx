@@ -95,11 +95,13 @@ const JiraIntegrationPanel = (props: Props) => {
       {teamMember?.integrations.atlassian?.isActive &&
       hasJiraScopes(teamMember?.integrations.atlassian?.scope) ? (
         <>
-          <div className='mb-2 flex w-full px-2'>
-            <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
-          </div>
           <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
             <InspirationItemsPanel
+              filters={
+                <div className='mb-2 flex w-full px-2'>
+                  <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
+                </div>
+              }
               meetingId={meeting.id}
               teamId={meeting.teamId}
               service='jira'

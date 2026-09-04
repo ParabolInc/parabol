@@ -23,6 +23,7 @@ interface Props {
   error: string | null
   onTune: () => void
   tuneDirty: boolean
+  filters?: ReactNode
   children?: ReactNode
 }
 
@@ -30,7 +31,7 @@ const KEEP_MOUNTED_TO_REPORT_THE_WORK_ITEM_COUNT = 'hidden'
 
 const InspirationDraftPanel = (props: Props) => {
   const {meetingId, teamId, service, items, prompts, composer, workItemCount, dateRange} = props
-  const {onRegenerate, regenerating, error, onTune, tuneDirty, children} = props
+  const {onRegenerate, regenerating, error, onTune, tuneDirty, filters, children} = props
   const [browsing, setBrowsing] = useSessionStorageState<boolean>(
     `Inspiration:browse:${meetingId}:${service}`,
     false
@@ -48,15 +49,18 @@ const InspirationDraftPanel = (props: Props) => {
   return (
     <div className='flex min-h-0 flex-1 flex-col'>
       {browsing ? (
-        <button
-          ref={backRef}
-          type='button'
-          onClick={() => setBrowsing(false)}
-          className='flex h-10 shrink-0 cursor-pointer items-center gap-1 px-3 font-semibold text-[13px] text-fg-secondary hover:bg-surface-hover'
-        >
-          <KeyboardArrowLeft className='h-5 w-5' />
-          Your draft
-        </button>
+        <>
+          <button
+            ref={backRef}
+            type='button'
+            onClick={() => setBrowsing(false)}
+            className='flex h-10 shrink-0 cursor-pointer items-center gap-1 px-3 font-semibold text-[13px] text-fg-secondary hover:bg-surface-hover'
+          >
+            <KeyboardArrowLeft className='h-5 w-5' />
+            Your draft
+          </button>
+          {filters}
+        </>
       ) : (
         <>
           <InspirationDraftHeader
