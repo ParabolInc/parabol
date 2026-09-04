@@ -1,4 +1,5 @@
 import {Editor} from '@tiptap/core'
+import {Fragment} from '@tiptap/pm/model'
 import type {Plugin} from '@tiptap/pm/state'
 import {EditorState} from '@tiptap/pm/state'
 import {Decoration, DecorationSet} from '@tiptap/pm/view'
@@ -102,6 +103,44 @@ describe('InsertedRangeHighlight', () => {
 
     expect(insertedRangeKey.getState(edited)?.has('r1')).toBe(false)
     expect(getDecorations(plugin, edited)).toHaveLength(0)
+  })
+
+  it('restores a range that a whole-doc replace stretched over the document', () => {
+    const {state, plugin} = createFixture()
+    const marked = markRange(state)
+    const snapshot = new Map(insertedRangeKey.getState(marked) ?? [])
+
+    const appended = state.schema.node('paragraph', null, state.schema.text('four'))
+    const replaced = marked.apply(
+      marked.tr.replaceWith(
+        0,
+        marked.doc.content.size,
+        marked.doc.content.append(Fragment.from(appended))
+      )
+    )
+
+    expect(insertedRangeKey.getState(replaced)?.get('r1')).toEqual({
+      from: 0,
+      to: replaced.doc.content.size,
+      settled: false
+    })
+
+    const previous = snapshot.get('r1')!
+    const restored = replaced.apply(
+      replaced.tr.setMeta(insertedRangeKey, {
+        mark: {id: 'r1', from: previous.from, to: previous.to}
+      })
+    )
+
+    expect(insertedRangeKey.getState(restored)?.get('r1')).toEqual({
+      from: 5,
+      to: 17,
+      settled: false
+    })
+    const decorations = getDecorations(plugin, restored)
+    expect(decorations).toHaveLength(2)
+    expect(decorations[0]!.from).toBe(5)
+    expect(decorations[1]!.to).toBe(17)
   })
 
   it('forgets a range on explicit forgetInsertedRange', () => {

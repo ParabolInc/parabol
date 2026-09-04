@@ -6,7 +6,7 @@ import {Decoration, DecorationSet} from '@tiptap/pm/view'
 export const INSERTED_HIGHLIGHT_CLASS = 'rounded bg-sky-500/18 transition-colors duration-[1200ms]'
 export const INSERTED_SETTLED_CLASS = 'rounded bg-transparent transition-colors duration-[1200ms]'
 
-interface TrackedRange {
+export interface TrackedRange {
   from: number
   to: number
   settled: boolean
@@ -48,6 +48,9 @@ declare module '@tiptap/core' {
     }
   }
 }
+
+export const getInsertedRanges = (editor: Editor): RangeMap =>
+  new Map(insertedRangeKey.getState(editor.state) ?? [])
 
 export const getInsertedRange = (editor: Editor, id: string) => {
   const range = insertedRangeKey.getState(editor.state)?.get(id)
