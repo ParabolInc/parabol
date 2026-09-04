@@ -41,7 +41,6 @@ const TeamUpdatesByPerson = (props: Props) => {
           key={stage.id}
           stageRef={stage}
           prompts={prompts}
-          variant={layout}
           isSelected={selectedStageId === stage.id}
           onReply={onReply}
         />

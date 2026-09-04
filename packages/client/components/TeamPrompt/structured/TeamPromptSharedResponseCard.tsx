@@ -5,6 +5,7 @@ import type {TeamPromptSharedResponseCard_stage$key} from '~/__generated__/TeamP
 import {cn} from '../../../ui/cn'
 import Avatar from '../../Avatar/Avatar'
 import TeamPromptLastUpdatedTime from '../TeamPromptLastUpdatedTime'
+import lastAnswerUpdatedAt from './lastAnswerUpdatedAt'
 import TeamPromptAnswerBlock from './TeamPromptAnswerBlock'
 import TeamPromptResponseFooter from './TeamPromptResponseFooter'
 import TeamPromptResponsePermalink from './TeamPromptResponsePermalink'
@@ -13,12 +14,11 @@ interface Props {
   stageRef: TeamPromptSharedResponseCard_stage$key
   prompts: readonly {id: string; question: string; groupColor: string}[]
   isSelected: boolean
-  variant: 'grid' | 'feed'
   onReply: (stageId: string) => void
 }
 
 const TeamPromptSharedResponseCard = (props: Props) => {
-  const {stageRef, prompts, isSelected, variant, onReply} = props
+  const {stageRef, prompts, isSelected, onReply} = props
   const stage = useFragment(
     graphql`
       fragment TeamPromptSharedResponseCard_stage on TeamPromptResponseStage {
@@ -41,11 +41,11 @@ const TeamPromptSharedResponseCard = (props: Props) => {
         response {
           id
           sharedAt
-          updatedAt
           answers {
             id
             promptId
             content
+            updatedAt
           }
           ...TeamPromptResponseFooter_response
         }
@@ -60,10 +60,7 @@ const TeamPromptSharedResponseCard = (props: Props) => {
   return (
     <motion.div
       layout='position'
-      className={cn(
-        'mx-auto flex w-full flex-col',
-        variant === 'grid' ? 'max-w-[600px]' : 'max-w-[640px]'
-      )}
+      className='mx-auto flex w-full max-w-[640px] flex-col'
       initial={{opacity: 0}}
       animate={{opacity: 1}}
     >
@@ -75,7 +72,7 @@ const TeamPromptSharedResponseCard = (props: Props) => {
             · shared{' '}
             <TeamPromptLastUpdatedTime
               createdAt={response.sharedAt}
-              updatedAt={response.updatedAt}
+              updatedAt={lastAnswerUpdatedAt(response.answers, response.sharedAt)}
             />
           </span>
         )}
