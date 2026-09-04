@@ -70,6 +70,7 @@ export const runInspirationInsert = async (params: RunInspirationInsertParams): 
   const handles: InsertHandle[] = []
   const insertedIds: string[] = []
   for (const item of items) {
+    if (item.blocks.length === 0) continue
     const handle = await insertAnswerBlocks(item.promptId, item.blocks)
     if (!handle) continue
     handles.push(handle)

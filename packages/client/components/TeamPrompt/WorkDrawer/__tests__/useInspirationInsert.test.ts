@@ -244,6 +244,45 @@ describe('runInspirationInsert', () => {
     expect(deps.emitSnackbar).not.toHaveBeenCalled()
     expect(deps.sendEvent).not.toHaveBeenCalledWith('Inspiration Add Remaining', expect.anything())
   })
+  it('skips an item the reader emptied, with no handle, analytics or toast entry', async () => {
+    const deps = createDeps()
+    deps.insertAnswerBlocks.mockResolvedValueOnce({id: 'promptA:1', promptId: 'promptA'})
+    const items = [
+      {...draftItem('i1', 'promptA', ''), blocks: [], text: ''},
+      draftItem('i2', 'promptA', 'Shipped the migration')
+    ]
+
+    await runInspirationInsert({
+      items,
+      prompts: PROMPTS,
+      meetingId: 'meeting1',
+      teamId: 'team1',
+      ...deps
+    })
+
+    expect(deps.insertAnswerBlocks).toHaveBeenCalledTimes(1)
+    expect(deps.insertAnswerBlocks).toHaveBeenCalledWith('promptA', items[1]!.blocks)
+    expect(deps.onAdded).toHaveBeenCalledWith(['i2'])
+    expect(deps.emitSnackbar).toHaveBeenCalledTimes(1)
+    expect(deps.emitSnackbar.mock.calls[0]![0].message).toBe('Added to “What did you do?”')
+  })
+
+  it('emits nothing when every item is empty', async () => {
+    const deps = createDeps()
+
+    await runInspirationInsert({
+      items: [{...draftItem('i1', 'promptA', ''), blocks: [], text: ''}],
+      prompts: PROMPTS,
+      meetingId: 'meeting1',
+      teamId: 'team1',
+      ...deps
+    })
+
+    expect(deps.insertAnswerBlocks).not.toHaveBeenCalled()
+    expect(deps.sendEvent).not.toHaveBeenCalled()
+    expect(deps.emitSnackbar).not.toHaveBeenCalled()
+    expect(deps.onAdded).not.toHaveBeenCalled()
+  })
 })
 
 describe('buildAddedToastMessage', () => {

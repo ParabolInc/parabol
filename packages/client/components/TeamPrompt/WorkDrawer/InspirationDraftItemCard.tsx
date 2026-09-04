@@ -7,7 +7,6 @@ import {Button} from '../../../ui/Button/Button'
 import {TipTapEditor} from '../../TipTapEditor/TipTapEditor'
 import {TiptapLinkExtension} from '../../TipTapEditor/TiptapLinkExtension'
 import InspirationDestinationChip from './InspirationDestinationChip'
-import {trimTrailingEmptyParagraph} from './inspirationInsertPlan'
 import type {WorkDrawerPrompt} from './WorkDrawerConsumeContext'
 
 interface Props {
@@ -22,8 +21,13 @@ interface Props {
   onAdd: () => void
 }
 
-const hasBlocksToAdd = (editor: Editor) =>
-  trimTrailingEmptyParagraph(editor.getJSON().content ?? []).length > 0
+const hasBlocksToAdd = (editor: Editor) => {
+  const {doc} = editor.state
+  const last = doc.lastChild
+  if (!last) return false
+  const isTrailingNode = last.type.name === 'paragraph' && last.content.size === 0
+  return doc.childCount > (isTrailingNode ? 1 : 0)
+}
 
 const InspirationDraftItemCard = (props: Props) => {
   const {itemId, title, content, prompt, source, isAdded, disabled, onEditorChange, onAdd} = props
