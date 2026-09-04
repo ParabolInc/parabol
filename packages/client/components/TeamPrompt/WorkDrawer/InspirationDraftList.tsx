@@ -23,6 +23,9 @@ interface Props {
   composer: TeamPromptComposerApi
 }
 
+const destinationPrompt = (prompts: readonly WorkDrawerPrompt[], promptId: string | null) =>
+  prompts.find(({id}) => id === promptId) ?? prompts[0]!
+
 const toDraftItem = (item: InspirationItemData, promptId: string): InspirationDraftItem => {
   const blocks = item.content.content ?? []
   return {id: item.id, promptId, blocks, text: blocks.flatMap(collectText).join(' ').trim()}
@@ -32,17 +35,16 @@ const InspirationDraftList = (props: Props) => {
   const {items, prompts, service, meetingId, teamId, composer} = props
   const {addItems, isAdded, adding} = useInspirationInsert({meetingId, teamId, composer, prompts})
   const editorsRef = useRef(new Map<string, Editor>())
-  const registerEditor = useCallback((itemId: string, editor: Editor) => {
-    editorsRef.current.set(itemId, editor)
+  const trackEditor = useCallback((itemId: string, editor: Editor | null) => {
+    if (editor) editorsRef.current.set(itemId, editor)
+    else editorsRef.current.delete(itemId)
   }, [])
-  // An item the AI left untagged, or tagged with a since-removed prompt, goes to the first question
   const cards = items.map((item) => {
-    const prompt = prompts.find(({id}) => id === item.promptId) ?? prompts[0]!
+    const prompt = destinationPrompt(prompts, item.promptId)
     return {item, prompt, draft: toDraftItem(item, prompt.id)}
   })
   const remaining = cards.filter(({draft}) => !isAdded(draft)).map(({draft}) => draft)
-  // the cards are editable, so what gets inserted is whatever the reader has left in them
-  const edited = (draft: InspirationDraftItem) => {
+  const asEditedByTheReader = (draft: InspirationDraftItem) => {
     const editor = editorsRef.current.get(draft.id)
     if (!editor || editor.isDestroyed) return draft
     return {...draft, blocks: editor.getJSON().content ?? [], text: editor.getText().trim()}
@@ -60,15 +62,15 @@ const InspirationDraftList = (props: Props) => {
           source={itemSource(service)}
           isAdded={isAdded(draft)}
           disabled={adding}
-          onEditorReady={registerEditor}
-          onAdd={() => addItems([edited(draft)])}
+          onEditorChange={trackEditor}
+          onAdd={() => addItems([asEditedByTheReader(draft)])}
         />
       ))}
       <InspirationAddAllButton
         remaining={remaining.length}
         total={cards.length}
         disabled={adding}
-        onClick={() => addItems(remaining.map(edited))}
+        onClick={() => addItems(remaining.map(asEditedByTheReader))}
       />
     </>
   )

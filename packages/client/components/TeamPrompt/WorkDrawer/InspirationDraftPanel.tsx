@@ -1,4 +1,4 @@
-import type {ReactNode} from 'react'
+import {type ReactNode, useEffect, useRef} from 'react'
 import {KeyboardArrowLeft} from '~/ui/icons'
 import useSessionStorageState from '../../../hooks/useSessionStorageState'
 import type {TeamPromptComposerApi} from '../structured/TeamPromptComposerApiContext'
@@ -26,6 +26,8 @@ interface Props {
   children?: ReactNode
 }
 
+const KEEP_MOUNTED_TO_REPORT_THE_WORK_ITEM_COUNT = 'hidden'
+
 const InspirationDraftPanel = (props: Props) => {
   const {meetingId, teamId, service, items, prompts, composer, workItemCount, dateRange} = props
   const {onRegenerate, regenerating, error, onTune, tuneDirty, children} = props
@@ -33,11 +35,21 @@ const InspirationDraftPanel = (props: Props) => {
     `Inspiration:browse:${meetingId}:${service}`,
     false
   )
+  const backRef = useRef<HTMLButtonElement>(null)
+  const browseRef = useRef<HTMLButtonElement>(null)
+  const shownLevelRef = useRef(browsing)
+  useEffect(() => {
+    if (shownLevelRef.current === browsing) return
+    shownLevelRef.current = browsing
+    const landing = browsing ? backRef.current : browseRef.current
+    landing?.focus()
+  }, [browsing])
 
   return (
     <div className='flex min-h-0 flex-1 flex-col'>
       {browsing ? (
         <button
+          ref={backRef}
           type='button'
           onClick={() => setBrowsing(false)}
           className='flex h-10 shrink-0 cursor-pointer items-center gap-1 px-3 font-semibold text-[13px] text-fg-secondary hover:bg-surface-hover'
@@ -51,6 +63,7 @@ const InspirationDraftPanel = (props: Props) => {
             workItemCount={workItemCount}
             since={formatSince(dateRange?.startAt)}
             promptCount={prompts.length}
+            hasItems={items.length > 0}
             onRegenerate={onRegenerate}
             regenerating={regenerating}
             onTune={onTune}
@@ -69,13 +82,19 @@ const InspirationDraftPanel = (props: Props) => {
             <InspirationBrowseRow
               workItemCount={workItemCount}
               dateRange={dateRange}
+              buttonRef={browseRef}
               onClick={() => setBrowsing(true)}
             />
           </div>
         </>
       )}
-      {/* kept mounted so the results subtree keeps reporting its work item count */}
-      <div className={browsing ? 'flex min-h-0 flex-1 flex-col' : 'hidden'}>{children}</div>
+      <div
+        className={
+          browsing ? 'flex min-h-0 flex-1 flex-col' : KEEP_MOUNTED_TO_REPORT_THE_WORK_ITEM_COUNT
+        }
+      >
+        {children}
+      </div>
     </div>
   )
 }

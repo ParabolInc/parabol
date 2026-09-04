@@ -3,12 +3,14 @@ import {Button} from '../../../ui/Button/Button'
 import {Tooltip} from '../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../ui/Tooltip/TooltipTrigger'
-import {metaLine} from './inspirationCopy'
+import Ellipsis from '../../Ellipsis/Ellipsis'
+import {EMPTY_DRAFT_LINE, metaLine} from './inspirationCopy'
 
 interface Props {
   workItemCount?: number
   since: string
   promptCount: number
+  hasItems: boolean
   onRegenerate: () => void
   regenerating: boolean
   onTune: () => void
@@ -16,13 +18,17 @@ interface Props {
 }
 
 const InspirationDraftHeader = (props: Props) => {
-  const {workItemCount, since, promptCount, onRegenerate, regenerating, onTune, tuneDirty} = props
+  const {workItemCount, since, promptCount, hasItems} = props
+  const {onRegenerate, regenerating, onTune, tuneDirty} = props
+  const subLine =
+    !regenerating && !hasItems ? EMPTY_DRAFT_LINE : metaLine(workItemCount, since, promptCount)
   return (
     <div className='flex flex-col gap-1 px-4 pt-3 pb-2'>
       <div className='flex items-center justify-between'>
         <div className='flex items-center gap-1.5 font-semibold text-fg-primary text-sm'>
           <AutoAwesome className='h-[18px] w-[18px] text-accent' />
           Your draft
+          {regenerating && <Ellipsis />}
         </div>
         <div className='flex items-center gap-1'>
           <Tooltip>
@@ -58,7 +64,7 @@ const InspirationDraftHeader = (props: Props) => {
           </Tooltip>
         </div>
       </div>
-      <div className='text-fg-muted text-xs'>{metaLine(workItemCount, since, promptCount)}</div>
+      <div className='text-fg-muted text-xs'>{subLine}</div>
     </div>
   )
 }

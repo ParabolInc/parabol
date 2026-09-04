@@ -13,19 +13,13 @@ import {Tooltip} from '../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../ui/Tooltip/TooltipTrigger'
 import Ellipsis from '../../Ellipsis/Ellipsis'
+import type {InspirationItemData} from './InspirationDraftList'
 import InspirationDraftPanel from './InspirationDraftPanel'
 import InspirationItemCard from './InspirationItemCard'
 import RetroInspirationItemCard from './RetroInspirationItemCard'
 import useInspirationAutoGenerate from './useInspirationAutoGenerate'
 import {useWorkDrawerConsume} from './WorkDrawerConsumeContext'
 import type {WorkDrawerDateRange} from './WorkDrawerDateFilter'
-
-interface InspirationItemData {
-  id: string
-  title: string | null
-  content: JSONContent
-  promptId: string | null
-}
 
 interface Props {
   meetingId: string
@@ -103,10 +97,16 @@ const InspirationItemsPanel = (props: Props) => {
       ? {composer: consume.composer, prompts: consume.prompts}
       : null
 
+  // the Parabol count follows the visible sub-tab's filters, while the server drafts from every task
+  // status plus standup responses, so a filtered-out list must not be read as "no work to draft from"
+  const hasWorkItems = service === 'PARABOL' ? workItemCount !== 0 : !!workItemCount
+
   useInspirationAutoGenerate({
     enabled: !!structured,
+    meetingId,
+    service,
     hasItems: items.length > 0,
-    hasWorkItems: workItemCount !== undefined && workItemCount > 0,
+    hasWorkItems,
     submitting,
     generate: onGenerate
   })
