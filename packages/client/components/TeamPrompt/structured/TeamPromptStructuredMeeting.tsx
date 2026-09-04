@@ -1,10 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
-import {Suspense, useEffect, useRef} from 'react'
+import {Suspense, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {useLocation} from 'react-router'
 import type {TeamPromptStructuredMeeting_meeting$key} from '~/__generated__/TeamPromptStructuredMeeting_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMeeting from '~/hooks/useMeeting'
+import usePhoneViewport, {isPhoneViewport} from '~/hooks/usePhoneViewport'
+import {cn} from '../../../ui/cn'
 import ErrorBoundary from '../../ErrorBoundary'
 import MeetingArea from '../../MeetingArea'
 import MeetingContent from '../../MeetingContent'
@@ -13,6 +15,9 @@ import MeetingLockedOverlay from '../../MeetingLockedOverlay'
 import MeetingStyles from '../../MeetingStyles'
 import TeamPromptDrawer from '../TeamPromptDrawer'
 import TeamPromptTopBar from '../TeamPromptTopBar'
+import TeamPromptPhoneAppBar from './mobile/TeamPromptPhoneAppBar'
+import TeamPromptPhoneFocusedBar from './mobile/TeamPromptPhoneFocusedBar'
+import {type PhoneComposerControls, PhoneComposerStateContext} from './mobile/usePhoneComposerState'
 import TeamPromptComposer from './TeamPromptComposer'
 import TeamPromptComposerApiContext, {
   type TeamPromptComposerApi
@@ -35,6 +40,7 @@ const TeamPromptStructuredMeeting = (props: Props) => {
         ...MeetingLockedOverlay_meeting
         ...TeamPromptTemplateHeader_meeting
         ...TeamPromptComposer_meeting
+        ...TeamPromptPhoneAppBar_meeting
         ...TeamUpdatesSection_meeting
         id
         endedAt
@@ -61,6 +67,37 @@ const TeamPromptStructuredMeeting = (props: Props) => {
   const scrollRef = useRef<HTMLDivElement>(null)
   const composerRef = useRef<HTMLDivElement>(null)
   const composerApiRef = useRef<TeamPromptComposerApi | null>(null)
+  const composerControlsRef = useRef<PhoneComposerControls | null>(null)
+  const isPhone = usePhoneViewport()
+  const [focusedPromptId, setFocusedPromptId] = useState<string | null>(null)
+  const [progress, setProgress] = useState({answeredCount: 0, promptCount: 0})
+  const publishProgress = useCallback((answeredCount: number, promptCount: number) => {
+    setProgress((prev) =>
+      prev.answeredCount === answeredCount && prev.promptCount === promptCount
+        ? prev
+        : {answeredCount, promptCount}
+    )
+  }, [])
+  const requestBlur = useCallback(() => {
+    composerControlsRef.current?.blur()
+    setFocusedPromptId(null)
+  }, [])
+  const focusNextUnanswered = useCallback(
+    () => composerControlsRef.current?.focusNextUnanswered() ?? false,
+    []
+  )
+  const phoneComposerState = useMemo(
+    () => ({
+      focusedPromptId,
+      setFocusedPromptId,
+      answeredCount: progress.answeredCount,
+      promptCount: progress.promptCount,
+      publishProgress,
+      requestBlur,
+      focusNextUnanswered
+    }),
+    [focusedPromptId, progress, publishProgress, requestBlur, focusNextUnanswered]
+  )
 
   useEffect(() => {
     if (!responseId) return
@@ -75,9 +112,11 @@ const TeamPromptStructuredMeeting = (props: Props) => {
   }, [responseId])
 
   useEffect(() => {
-    if (localStageId || endedAt) return
+    const onPhone = isPhoneViewport()
+    if (onPhone && responseId) return
+    if (!onPhone && (localStageId || endedAt)) return
     commitLocalUpdate(atmosphere, (store) => {
-      store.get(meetingId)?.setValue('inspiration', 'rightDrawerOpen')
+      store.get(meetingId)?.setValue(onPhone ? null : 'inspiration', 'rightDrawerOpen')
     })
   }, [])
 
@@ -87,25 +126,47 @@ const TeamPromptStructuredMeeting = (props: Props) => {
       <MeetingArea>
         <Suspense fallback={''}>
           <TeamPromptComposerApiContext.Provider value={composerApiRef}>
-            <MeetingContent>
-              <MeetingHeaderAndPhase hideBottomBar={true}>
-                <TeamPromptTopBar meetingRef={meeting} />
-                <TeamPromptTemplateHeader meetingRef={meeting} />
-                <ErrorBoundary>
-                  <div ref={scrollRef} className='h-full overflow-auto'>
-                    <div ref={composerRef}>
-                      <TeamPromptComposer meetingRef={meeting} />
+            <PhoneComposerStateContext.Provider value={isPhone ? phoneComposerState : null}>
+              <MeetingContent>
+                <MeetingHeaderAndPhase hideBottomBar={true}>
+                  {isPhone ? (
+                    focusedPromptId ? (
+                      <TeamPromptPhoneFocusedBar
+                        answeredCount={progress.answeredCount}
+                        promptCount={progress.promptCount}
+                        onDone={requestBlur}
+                      />
+                    ) : (
+                      <TeamPromptPhoneAppBar meetingRef={meeting} />
+                    )
+                  ) : (
+                    <>
+                      <TeamPromptTopBar meetingRef={meeting} />
+                      <TeamPromptTemplateHeader meetingRef={meeting} />
+                    </>
+                  )}
+                  <ErrorBoundary>
+                    <div
+                      ref={scrollRef}
+                      className={cn(
+                        'h-full overflow-auto',
+                        isPhone && 'pb-[var(--tp-bottom-bar,0px)]'
+                      )}
+                    >
+                      <div ref={composerRef}>
+                        <TeamPromptComposer meetingRef={meeting} />
+                      </div>
+                      <TeamUpdatesSection
+                        meetingRef={meeting}
+                        scrollContainerRef={scrollRef}
+                        composerRef={composerRef}
+                      />
                     </div>
-                    <TeamUpdatesSection
-                      meetingRef={meeting}
-                      scrollContainerRef={scrollRef}
-                      composerRef={composerRef}
-                    />
-                  </div>
-                </ErrorBoundary>
-              </MeetingHeaderAndPhase>
-              <TeamPromptDrawer meetingRef={meeting} />
-            </MeetingContent>
+                  </ErrorBoundary>
+                </MeetingHeaderAndPhase>
+                <TeamPromptDrawer meetingRef={meeting} />
+              </MeetingContent>
+            </PhoneComposerStateContext.Provider>
           </TeamPromptComposerApiContext.Provider>
         </Suspense>
       </MeetingArea>

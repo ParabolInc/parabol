@@ -3,6 +3,7 @@ import {type RefObject, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import type {TeamUpdatesSection_meeting$key} from '~/__generated__/TeamUpdatesSection_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import usePhoneViewport from '~/hooks/usePhoneViewport'
 import TeamUpdatesByPerson from './TeamUpdatesByPerson'
 import TeamUpdatesByQuestion from './TeamUpdatesByQuestion'
 import TeamUpdatesHeader from './TeamUpdatesHeader'
@@ -63,12 +64,13 @@ const TeamUpdatesSection = (props: Props) => {
   const rightDrawerOpen = meeting.rightDrawerOpen ?? null
   const stages = meeting.phases[0]?.stages ?? []
   const [layout, setLayout] = useTeamLayoutPreference(meetingId, teamId)
+  const isPhone = usePhoneViewport()
   const headerRef = useRef<HTMLDivElement>(null)
   const gridRef = useRef<HTMLDivElement>(null)
   const sectionRef = useRef<HTMLDivElement>(null)
   const viewerStage = stages.find((stage) => stage.teamMember.userId === viewerId)
   const {shared, drafting, notStarted} = sortTeamStages(stages, viewerId)
-  const canPin = !endedAt && !viewerStage?.response?.isShared && shared.length > 0
+  const canPin = !isPhone && !endedAt && !viewerStage?.response?.isShared && shared.length > 0
   const isPinned = useTeamHeaderPin(headerRef, scrollContainerRef, composerRef, sectionRef, canPin)
   const onReply = useOpenResponseDiscussion(meetingId, rightDrawerOpen, localStageId)
   const selectedStageId = rightDrawerOpen === 'discussion' ? localStageId : null
