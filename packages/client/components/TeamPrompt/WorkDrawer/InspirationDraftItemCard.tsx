@@ -17,12 +17,12 @@ interface Props {
   source: string
   isAdded: boolean
   disabled: boolean
-  onEditorReady: (itemId: string, editor: Editor) => void
+  onEditorChange: (itemId: string, editor: Editor | null) => void
   onAdd: () => void
 }
 
 const InspirationDraftItemCard = (props: Props) => {
-  const {itemId, title, content, prompt, source, isAdded, disabled, onEditorReady, onAdd} = props
+  const {itemId, title, content, prompt, source, isAdded, disabled, onEditorChange, onAdd} = props
   const editor = useEditor({
     content,
     extensions: [
@@ -31,8 +31,10 @@ const InspirationDraftItemCard = (props: Props) => {
     ]
   })
   useEffect(() => {
-    if (editor) onEditorReady(itemId, editor)
-  }, [editor, itemId, onEditorReady])
+    if (!editor) return
+    onEditorChange(itemId, editor)
+    return () => onEditorChange(itemId, null)
+  }, [editor, itemId, onEditorChange])
   if (!editor) return null
   return (
     <div className='flex flex-col gap-2 rounded-card bg-surface-card p-3 shadow-[var(--shadow-card)]'>
