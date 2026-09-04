@@ -29,7 +29,7 @@ const TeamPromptDraftingCard = (props: Props) => {
           {title}
         </div>
         {!isEnded && (
-          <div className='text-fg-secondary text-xs'>
+          <div className='text-fg-primary text-xs'>
             You'll see {preferredName}'s update when they share it
           </div>
         )}

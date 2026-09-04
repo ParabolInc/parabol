@@ -151,7 +151,7 @@ export const EndRecurringMeetingModal = (props: Props) => {
           </div>
         )}
         {unsharedDraftsCount > 0 && (
-          <p className='mb-4 text-fg-secondary text-sm'>
+          <p className='mb-4 text-fg-primary text-sm'>
             {unsharedDraftsCount} {unsharedDraftsCount === 1 ? 'member has' : 'members have'}{' '}
             unshared drafts. Drafts are not included in the summary.
           </p>
