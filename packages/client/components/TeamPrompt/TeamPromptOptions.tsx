@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {forwardRef, type Ref, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {TeamPromptOptions_meeting$key} from '~/__generated__/TeamPromptOptions_meeting.graphql'
+import {MoreVert} from '~/ui/icons'
 import {Button, type ButtonProps} from '../../ui/Button/Button'
 import {cn} from '../../ui/cn'
 import {Menu} from '../../ui/Menu/Menu'
@@ -32,13 +33,14 @@ export const OptionsButton = forwardRef((props: ButtonProps, ref: Ref<HTMLButton
 
 interface Props {
   meetingRef: TeamPromptOptions_meeting$key
+  compact?: boolean
   openRecurrenceSettingsModal: () => void
   openEndRecurringMeetingModal: () => void
 }
 
 const TeamPromptOptions = (props: Props) => {
   const [isCopied, setIsCopied] = useState(false)
-  const {meetingRef, openRecurrenceSettingsModal, openEndRecurringMeetingModal} = props
+  const {meetingRef, compact, openRecurrenceSettingsModal, openEndRecurringMeetingModal} = props
 
   const meeting = useFragment(
     graphql`
@@ -61,9 +63,18 @@ const TeamPromptOptions = (props: Props) => {
       <Menu
         trigger={
           <TooltipTrigger asChild>
-            <OptionsButton>
-              <IconLabel icon='tune' iconLarge />
-              <div className='text-fg-primary'>Options</div>
+            <OptionsButton
+              aria-label={compact ? 'Meeting options' : undefined}
+              className={compact ? 'h-11 w-11 px-0' : undefined}
+            >
+              {compact ? (
+                <MoreVert className='h-6 w-6 text-fg-primary' />
+              ) : (
+                <>
+                  <IconLabel icon='tune' iconLarge />
+                  <div className='text-fg-primary'>Options</div>
+                </>
+              )}
             </OptionsButton>
           </TooltipTrigger>
         }

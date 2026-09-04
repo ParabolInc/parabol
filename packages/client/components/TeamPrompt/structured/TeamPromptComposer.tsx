@@ -1,10 +1,11 @@
 import type {Editor} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
-import {useCallback, useRef, useState} from 'react'
+import {useCallback, useEffect, useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import type {TeamPromptComposer_meeting$key} from '~/__generated__/TeamPromptComposer_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {cn} from '../../../ui/cn'
+import usePhoneComposerState from './mobile/usePhoneComposerState'
 import TeamPromptAnswerEditor from './TeamPromptAnswerEditor'
 import TeamPromptComposerFooter from './TeamPromptComposerFooter'
 import TeamPromptComposerHeader from './TeamPromptComposerHeader'
@@ -95,6 +96,11 @@ const TeamPromptComposer = (props: Props) => {
 
   const expand = useCallback(() => setIsExpanded(true), [])
   useTeamPromptComposerApiRegistration({editorRefs, onChange, expand})
+
+  const publishProgress = usePhoneComposerState()?.publishProgress
+  useEffect(() => {
+    publishProgress?.(answeredPromptIds.size, prompts.length)
+  }, [publishProgress, answeredPromptIds.size, prompts.length])
 
   const onShare = useCallback(() => {
     if (answeredPromptIds.size === 0) return
