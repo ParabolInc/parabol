@@ -4,6 +4,7 @@ import {
   buildAddedToastMessage,
   type InspirationDraftItem,
   isItemTextInAnswer,
+  MIN_MATCHABLE_ITEM_TEXT_LENGTH,
   runInspirationInsert
 } from '../inspirationInsertPlan'
 import type {WorkDrawerPrompt} from '../WorkDrawerConsumeContext'
@@ -127,7 +128,7 @@ describe('runInspirationInsert', () => {
     expect(deps.emitSnackbar).toHaveBeenCalledTimes(1)
   })
 
-  it('shows Nothing to undo only when every undo fails', async () => {
+  it('stays silent when every undo fails, total or partial', async () => {
     const deps = createDeps()
     deps.insertAnswerBlocks.mockResolvedValueOnce({id: 'promptA:1', promptId: 'promptA'})
     deps.undoInsert.mockReturnValue(false)
@@ -144,8 +145,7 @@ describe('runInspirationInsert', () => {
     snack.action?.callback()
 
     expect(deps.onRemoved).not.toHaveBeenCalled()
-    expect(deps.emitSnackbar).toHaveBeenCalledTimes(2)
-    expect(deps.emitSnackbar.mock.calls[1]![0].message).toBe('Nothing to undo')
+    expect(deps.emitSnackbar).toHaveBeenCalledTimes(1)
   })
 
   it('forgets every insert when the toast is dismissed without Undo', async () => {
@@ -241,6 +241,7 @@ describe('runInspirationInsert', () => {
 
     expect(deps.onAdded).not.toHaveBeenCalled()
     expect(deps.emitSnackbar).not.toHaveBeenCalled()
+    expect(deps.sendEvent).not.toHaveBeenCalledWith('Inspiration Add Remaining', expect.anything())
   })
 })
 
@@ -273,5 +274,15 @@ describe('isItemTextInAnswer', () => {
 
   it('is false for empty item text', () => {
     expect(isItemTextInAnswer('Anything at all', '')).toBe(false)
+  })
+
+  it('is false when the normalized item text is below the minimum length', () => {
+    const itemText = 'A'.repeat(MIN_MATCHABLE_ITEM_TEXT_LENGTH - 1)
+    expect(isItemTextInAnswer(`prefix ${itemText} suffix`, itemText)).toBe(false)
+  })
+
+  it('matches once the normalized item text reaches the minimum length', () => {
+    const itemText = 'A'.repeat(MIN_MATCHABLE_ITEM_TEXT_LENGTH)
+    expect(isItemTextInAnswer(`prefix ${itemText} suffix`, itemText)).toBe(true)
   })
 })
