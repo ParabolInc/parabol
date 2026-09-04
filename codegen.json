@@ -382,6 +382,7 @@
           "ResetPasswordPayload": "./types/ResetPasswordPayload#ResetPasswordPayloadSource",
           "ResetRetroMeetingToGroupStagePayload": "./types/ResetRetroMeetingToGroupStagePayload#ResetRetroMeetingToGroupStagePayloadSource",
           "SetPhaseFocusPayload": "./types/SetPhaseFocusPayload#SetPhaseFocusPayloadSource",
+          "SuggestedService": "./types/SuggestedService#SuggestedServiceSource",
           "SetPokerSpectateSuccess": "./types/SetPokerSpectateSuccess#SetPokerSpectateSuccessSource",
           "SetStageTimerPayload": "./types/SetStageTimerPayload#SetStageTimerPayloadSource",
           "SetTaskEstimateSuccess": "./types/SetTaskEstimateSuccess#SetTaskEstimateSuccessSource",

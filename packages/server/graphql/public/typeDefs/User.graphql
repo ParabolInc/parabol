@@ -133,6 +133,18 @@ type User implements UserPartial {
   suggestedActions: [SuggestedAction!]!
 
   """
+  Third-party services the viewer appears to already use, detected from their email address.
+  Worth suggesting they connect. Only readable by the viewer themselves
+  """
+  suggestedServices: [SuggestedService!]!
+
+  """
+  When detection last ran for the viewer. Null means it has never run, which is what
+  distinguishes "we found nothing" from "we have not looked yet"
+  """
+  suggestedServicesUpdatedAt: DateTime
+
+  """
   The timeline of important events for the viewer
   """
   timeline(

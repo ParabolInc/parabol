@@ -522,6 +522,9 @@ const permissionMap: PermissionMap<Resolvers> = {
     organization: or(isSuperUser, isViewerOnOrg<'User.organization'>('args.orgId')),
     organizationUser: or(isSuperUser, isViewerOnOrg<'User.organizationUser'>('args.orgId')),
     personalAccessTokens: isUserViewer<'User.id'>('source.id'),
+    // lookup results are personal data about a named individual, readable only by that person
+    suggestedServices: isUserViewer<'User.id'>('source.id'),
+    suggestedServicesUpdatedAt: isUserViewer<'User.id'>('source.id'),
     meetingMember: isTeamMemberOfMeeting<'User.meetingMember'>('args.meetingId'),
     team: or(
       isSuperUser,
