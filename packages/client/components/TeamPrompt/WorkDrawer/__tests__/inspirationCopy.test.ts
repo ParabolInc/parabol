@@ -42,6 +42,12 @@ describe('metaLine', () => {
       'Drafted from your work since yesterday · routed to your 2 questions'
     )
   })
+
+  it('falls back to your work rather than counting zero work items', () => {
+    expect(metaLine(0, 'yesterday', 2)).toBe(
+      'Drafted from your work since yesterday · routed to your 2 questions'
+    )
+  })
 })
 
 describe('browseLabel', () => {
@@ -51,6 +57,10 @@ describe('browseLabel', () => {
 
   it('falls back to a generic label when unknown', () => {
     expect(browseLabel(undefined)).toBe('Browse work items')
+  })
+
+  it('falls back to a generic label rather than offering all zero work items', () => {
+    expect(browseLabel(0)).toBe('Browse work items')
   })
 })
 
