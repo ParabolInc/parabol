@@ -1,6 +1,6 @@
 import type {JSONContent} from '@tiptap/core'
 
-export const EMPTY_TIPTAP_DOC: JSONContent = {type: 'doc', content: []}
+export const EMPTY_TIPTAP_DOC: Readonly<JSONContent> = Object.freeze({type: 'doc', content: []})
 
 type Prompt = {id: string; question: string}
 type Answer = {promptId: string; content: JSONContent; plaintextContent: string}
