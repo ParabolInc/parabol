@@ -14,6 +14,9 @@ import MeetingStyles from '../../MeetingStyles'
 import TeamPromptDrawer from '../TeamPromptDrawer'
 import TeamPromptTopBar from '../TeamPromptTopBar'
 import TeamPromptComposer from './TeamPromptComposer'
+import TeamPromptComposerApiContext, {
+  type TeamPromptComposerApi
+} from './TeamPromptComposerApiContext'
 import TeamPromptTemplateHeader from './TeamPromptTemplateHeader'
 import TeamUpdatesSection from './TeamUpdatesSection'
 
@@ -57,6 +60,7 @@ const TeamPromptStructuredMeeting = (props: Props) => {
   const responseId = new URLSearchParams(location.search).get('responseId')
   const scrollRef = useRef<HTMLDivElement>(null)
   const composerRef = useRef<HTMLDivElement>(null)
+  const composerApiRef = useRef<TeamPromptComposerApi | null>(null)
 
   useEffect(() => {
     if (!responseId) return
@@ -84,25 +88,27 @@ const TeamPromptStructuredMeeting = (props: Props) => {
     <MeetingStyles>
       <MeetingArea>
         <Suspense fallback={''}>
-          <MeetingContent>
-            <MeetingHeaderAndPhase hideBottomBar={true}>
-              <TeamPromptTopBar meetingRef={meeting} />
-              <TeamPromptTemplateHeader meetingRef={meeting} />
-              <ErrorBoundary>
-                <div ref={scrollRef} className='h-full overflow-auto'>
-                  <div ref={composerRef}>
-                    <TeamPromptComposer meetingRef={meeting} />
+          <TeamPromptComposerApiContext.Provider value={composerApiRef}>
+            <MeetingContent>
+              <MeetingHeaderAndPhase hideBottomBar={true}>
+                <TeamPromptTopBar meetingRef={meeting} />
+                <TeamPromptTemplateHeader meetingRef={meeting} />
+                <ErrorBoundary>
+                  <div ref={scrollRef} className='h-full overflow-auto'>
+                    <div ref={composerRef}>
+                      <TeamPromptComposer meetingRef={meeting} />
+                    </div>
+                    <TeamUpdatesSection
+                      meetingRef={meeting}
+                      scrollContainerRef={scrollRef}
+                      composerRef={composerRef}
+                    />
                   </div>
-                  <TeamUpdatesSection
-                    meetingRef={meeting}
-                    scrollContainerRef={scrollRef}
-                    composerRef={composerRef}
-                  />
-                </div>
-              </ErrorBoundary>
-            </MeetingHeaderAndPhase>
-            <TeamPromptDrawer meetingRef={meeting} />
-          </MeetingContent>
+                </ErrorBoundary>
+              </MeetingHeaderAndPhase>
+              <TeamPromptDrawer meetingRef={meeting} />
+            </MeetingContent>
+          </TeamPromptComposerApiContext.Provider>
         </Suspense>
       </MeetingArea>
       <MeetingLockedOverlay meetingRef={meeting} />
