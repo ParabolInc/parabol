@@ -32,6 +32,7 @@ const useTeamPromptAnswersAutosave = (options: Options) => {
   const inFlightSinceRef = useRef<number | null>(null)
   const sendCounterRef = useRef(0)
   const shareSendIdRef = useRef(0)
+  const latestSendIdRef = useRef(0)
   const [dirtyPromptIds, setDirtyPromptIds] = useState<Set<string>>(new Set())
 
   const send = useCallback(
@@ -44,6 +45,7 @@ const useTeamPromptAnswersAutosave = (options: Options) => {
       if (!share && answers.length === 0) return
       const sendId = ++sendCounterRef.current
       if (share) shareSendIdRef.current = sendId
+      latestSendIdRef.current = sendId
       inFlightRef.current = true
       inFlightSinceRef.current = Date.now()
       const evictSentAnswers = () => {
@@ -61,12 +63,16 @@ const useTeamPromptAnswersAutosave = (options: Options) => {
       execute({
         variables: {meetingId, answers, share},
         onError: () => {
-          inFlightRef.current = false
-          inFlightSinceRef.current = null
+          if (sendId === latestSendIdRef.current) {
+            inFlightRef.current = false
+            inFlightSinceRef.current = null
+          }
         },
         onCompleted: (_res, errors) => {
-          inFlightRef.current = false
-          inFlightSinceRef.current = null
+          if (sendId === latestSendIdRef.current) {
+            inFlightRef.current = false
+            inFlightSinceRef.current = null
+          }
           const message = errors?.[0]?.message
           if (message === NOTHING_TO_SAVE_ERROR) {
             evictSentAnswers()
