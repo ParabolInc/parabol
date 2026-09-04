@@ -7,16 +7,12 @@ import exportAllTasksMenuQuery, {
 } from '../../../../../__generated__/ExportAllTasksMenuQuery.graphql'
 import type {ExportAllTasksMenuRoot_meeting$key} from '../../../../../__generated__/ExportAllTasksMenuRoot_meeting.graphql'
 import LoadingComponent from '../../../../../components/LoadingComponent/LoadingComponent'
-import type {MenuProps} from '../../../../../hooks/useMenu'
 import type {MenuMutationProps} from '../../../../../hooks/useMutationProps'
 import useQueryLoaderNow from '../../../../../hooks/useQueryLoaderNow'
 import {LoaderSize} from '../../../../../types/constEnums'
 import ExportAllTasksMenu from './ExportAllTasksMenu'
 
 interface Props {
-  menuProps: MenuProps
-  loadingDelay: number
-  loadingWidth: number
   mutationProps: MenuMutationProps
   meetingRef: ExportAllTasksMenuRoot_meeting$key
   handlePushToIntegration: (
@@ -27,14 +23,7 @@ interface Props {
 }
 
 const ExportAllTasksMenuRoot = (props: Props) => {
-  const {
-    menuProps,
-    loadingDelay,
-    loadingWidth,
-    mutationProps,
-    meetingRef,
-    handlePushToIntegration
-  } = props
+  const {mutationProps, meetingRef, handlePushToIntegration} = props
   const meeting = useFragment(
     graphql`
       fragment ExportAllTasksMenuRoot_meeting on NewMeeting {
@@ -52,18 +41,16 @@ const ExportAllTasksMenuRoot = (props: Props) => {
     <Suspense
       fallback={
         <LoadingComponent
-          delay={loadingDelay}
           spinnerSize={LoaderSize.MENU}
-          height={loadingWidth ? LoaderSize.MENU : undefined}
-          width={loadingWidth}
-          showAfter={loadingWidth ? 0 : undefined}
+          height={LoaderSize.MENU}
+          width={200}
+          showAfter={0}
         />
       }
     >
       {queryRef && (
         <ExportAllTasksMenu
           queryRef={queryRef}
-          menuProps={menuProps}
           mutationProps={mutationProps}
           meetingRef={meeting}
           handlePushToIntegration={handlePushToIntegration}

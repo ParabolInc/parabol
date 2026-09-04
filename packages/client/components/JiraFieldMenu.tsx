@@ -1,26 +1,31 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useMemo} from 'react'
+import type {ReactNode} from 'react'
 import {useFragment} from 'react-relay'
 import {OpenInNew} from '~/ui/icons'
 import type {JiraFieldMenu_stage$key} from '../__generated__/JiraFieldMenu_stage.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import type {MenuProps} from '../hooks/useMenu'
 import useUpdateIntegrationDimensionFieldMutation from '../mutations/useUpdateIntegrationDimensionFieldMutation'
 import {ExternalLinks, SprintPokerDefaults} from '../types/constEnums'
+import {Select} from '../ui/Select/Select'
+import {SelectContent} from '../ui/Select/SelectContent'
+import {SelectItem} from '../ui/Select/SelectItem'
+import {SelectSeparator} from '../ui/Select/SelectSeparator'
+import {SelectTrigger} from '../ui/Select/SelectTrigger'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
-import Menu from './Menu'
-import MenuItem from './MenuItem'
-import MenuItemHR from './MenuItemHR'
-import MenuItemLabel from './MenuItemLabel'
+import {fromSelectValue, SERVICE_FIELD_NULL_VALUE} from '../utils/serviceFieldSelectValue'
+
+// picking this doesn't change the field, it opens the Jira docs
+const MISSING_FIELD = '__missingField'
 
 interface Props {
-  menuProps: MenuProps
   stage: JiraFieldMenu_stage$key
+  trigger: ReactNode
+  onOpenChange: (isOpen: boolean) => void
   submitScore(): void
 }
 
 const JiraFieldMenu = (props: Props) => {
-  const {menuProps, stage: stageRef, submitScore} = props
+  const {stage: stageRef, trigger, onOpenChange, submitScore} = props
   const stage = useFragment(
     graphql`
       fragment JiraFieldMenu_stage on EstimateStage {
@@ -51,7 +56,6 @@ const JiraFieldMenu = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const [updateIntegrationDimensionField] = useUpdateIntegrationDimensionFieldMutation()
-  const {portalStatus, isDropdown, closePortal} = menuProps
   const {meetingId, dimensionRef, serviceField, task} = stage
   if (task?.integration?.__typename !== 'JiraIssue') return null
   const {id: taskId, teamId, integration} = task
@@ -59,18 +63,17 @@ const JiraFieldMenu = (props: Props) => {
 
   const {name: dimensionName} = dimensionRef
   const {name: serviceFieldName} = serviceField
-  // biome-ignore lint/correctness/useHookAtTopLevel: legacy
-  const defaultActiveidx = useMemo(() => {
-    if (possibleEstimationFields.length === 0) return undefined
-    if (serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT)
-      return possibleEstimationFields.length + 1
-    if (serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_NULL)
-      return possibleEstimationFields.length + 2
-    const idx = possibleEstimationFields.findIndex(({fieldName}) => fieldName === serviceFieldName)
-    return idx === -1 ? undefined : idx
-  }, [serviceFieldName, possibleEstimationFields])
+  // the items carry fieldIds, but the stage stores the field's name
+  const selectedField = possibleEstimationFields.find(
+    ({fieldName}) => fieldName === serviceFieldName
+  )
+  const selectedValue = selectedField
+    ? selectedField.fieldId
+    : serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_NULL
+      ? SERVICE_FIELD_NULL_VALUE
+      : SprintPokerDefaults.SERVICE_FIELD_COMMENT
 
-  const handleClickMissingField = () => {
+  const openMissingFieldDocs = () => {
     if (!missingEstimationFieldHint) {
       return
     }
@@ -97,7 +100,12 @@ const JiraFieldMenu = (props: Props) => {
     })
   }
 
-  const handleClick = (fieldId: string) => () => {
+  const handleValueChange = (value: string) => {
+    if (value === MISSING_FIELD) {
+      openMissingFieldDocs()
+      return
+    }
+    const fieldId = fromSelectValue(value)
     updateIntegrationDimensionField(
       {
         variables: {meetingId, taskId, dimensionName, fieldId},
@@ -106,42 +114,36 @@ const JiraFieldMenu = (props: Props) => {
       },
       {onSuccess: submitScore}
     )
-    closePortal()
   }
   return (
-    <Menu
-      ariaLabel={'Select the Jira Field to push to'}
-      portalStatus={portalStatus}
-      isDropdown={isDropdown}
-      defaultActiveIdx={defaultActiveidx}
-    >
-      {possibleEstimationFields.map(({fieldId, fieldName}) => {
-        return <MenuItem key={fieldId} label={fieldName} onClick={handleClick(fieldId)} />
-      })}
-      {possibleEstimationFields.length > 0 && <MenuItemHR />}
-      <MenuItem
-        key={'__comment'}
-        label={SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL}
-        onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_COMMENT)}
-      />
-      <MenuItem
-        key={'__null'}
-        label={SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL}
-        onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_NULL)}
-      />
-      {missingEstimationFieldHint && (
-        <MenuItem
-          label={
-            <MenuItemLabel className='italic'>
-              Where's my field?
-              <OpenInNew className='ml-auto h-[18px] w-[30px] pl-3 text-fg-muted' />
-            </MenuItemLabel>
-          }
-          onClick={handleClickMissingField}
-          noCloseOnClick
-        />
-      )}
-    </Menu>
+    <Select value={selectedValue} onValueChange={handleValueChange} onOpenChange={onOpenChange}>
+      <SelectTrigger asChild>{trigger}</SelectTrigger>
+      <SelectContent>
+        {possibleEstimationFields.map(({fieldId, fieldName}) => {
+          return (
+            <SelectItem key={fieldId} value={fieldId}>
+              {fieldName}
+            </SelectItem>
+          )
+        })}
+        {possibleEstimationFields.length > 0 && <SelectSeparator />}
+        <SelectItem value={SprintPokerDefaults.SERVICE_FIELD_COMMENT}>
+          {SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL}
+        </SelectItem>
+        <SelectItem value={SERVICE_FIELD_NULL_VALUE}>
+          {SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL}
+        </SelectItem>
+        {missingEstimationFieldHint && (
+          <SelectItem
+            value={MISSING_FIELD}
+            className='italic'
+            endAdornment={<OpenInNew className='h-[18px] w-[18px] text-fg-muted' />}
+          >
+            Where's my field?
+          </SelectItem>
+        )}
+      </SelectContent>
+    </Select>
   )
 }
 

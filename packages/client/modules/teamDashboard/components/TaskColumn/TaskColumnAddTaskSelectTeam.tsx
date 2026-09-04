@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
+import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import type {TaskColumnAddTaskSelectTeam_teams$key} from '~/__generated__/TaskColumnAddTaskSelectTeam_teams.graphql'
 import type {TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import AddTaskButton from '../../../../components/AddTaskButton/AddTaskButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useMenu from '../../../../hooks/useMenu'
 import CreateTaskMutation from '../../../../mutations/CreateTaskMutation'
+import {Menu} from '../../../../ui/Menu/Menu'
 import lazyPreload from '../../../../utils/lazyPreload'
 import {taskStatusLabels} from '../../../../utils/taskStatus'
 
@@ -37,7 +37,6 @@ const TaskColumnAddTaskSelectTeam = (props: Props) => {
   )
   const label = taskStatusLabels[status]
   const atmosphere = useAtmosphere()
-  const {menuProps, originRef, menuPortal, togglePortal} = useMenu(MenuPosition.UPPER_LEFT)
   const teamHandleClick = (teamId: string) => {
     CreateTaskMutation(
       atmosphere,
@@ -53,17 +52,11 @@ const TaskColumnAddTaskSelectTeam = (props: Props) => {
     )
   }
   return (
-    <>
-      <AddTaskButton
-        ref={originRef}
-        onClick={togglePortal}
-        onMouseEnter={SelectTeamDropdown.preload}
-        label={label}
-      />
-      {menuPortal(
-        <SelectTeamDropdown menuProps={menuProps} teamHandleClick={teamHandleClick} teams={teams} />
-      )}
-    </>
+    <Menu trigger={<AddTaskButton onMouseEnter={SelectTeamDropdown.preload} label={label} />}>
+      <Suspense fallback={null}>
+        <SelectTeamDropdown teamHandleClick={teamHandleClick} teams={teams} />
+      </Suspense>
+    </Menu>
   )
 }
 

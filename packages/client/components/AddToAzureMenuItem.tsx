@@ -4,11 +4,10 @@ import {useFragment} from 'react-relay'
 import type {AddToAzureMenuItem_AzureIntegration$key} from '../__generated__/AddToAzureMenuItem_AzureIntegration.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
+import {MenuItem} from '../ui/Menu/MenuItem'
 import AzureDevOpsClientManager from '../utils/AzureDevOpsClientManager'
 import AzureDevOpsSVG from './AzureDevOpsSVG'
-import MenuItem from './MenuItem'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
-import MenuItemLabel from './MenuItemLabel'
 
 interface Props {
   teamId: string
@@ -16,7 +15,7 @@ interface Props {
   azureRef: AddToAzureMenuItem_AzureIntegration$key
 }
 
-const AddToAzureMenuItem = forwardRef((props: Props, ref) => {
+const AddToAzureMenuItem = forwardRef<HTMLDivElement, Props>((props, ref) => {
   const {mutationProps, teamId, azureRef} = props
   const atmosphere = useAtmosphere()
   const azure = useFragment(
@@ -40,18 +39,12 @@ const AddToAzureMenuItem = forwardRef((props: Props, ref) => {
   }
 
   return (
-    <MenuItem
-      ref={ref}
-      label={
-        <MenuItemLabel>
-          <MenuItemComponentAvatar className='[&_svg]:block [&_svg]:h-[18px] [&_svg]:w-[18px]'>
-            <AzureDevOpsSVG />
-          </MenuItemComponentAvatar>
-          {'Add Azure integration'}
-        </MenuItemLabel>
-      }
-      onClick={onClick}
-    />
+    <MenuItem ref={ref} onClick={onClick}>
+      <MenuItemComponentAvatar className='[&_svg]:block [&_svg]:h-[18px] [&_svg]:w-[18px]'>
+        <AzureDevOpsSVG />
+      </MenuItemComponentAvatar>
+      {'Add Azure integration'}
+    </MenuItem>
   )
 })
 

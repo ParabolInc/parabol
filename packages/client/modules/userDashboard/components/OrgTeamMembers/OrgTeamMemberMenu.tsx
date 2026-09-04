@@ -2,14 +2,11 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import type {OrgTeamMemberMenu_teamMember$key} from '../../../../__generated__/OrgTeamMemberMenu_teamMember.graphql'
-import Menu from '../../../../components/Menu'
-import MenuItem from '../../../../components/MenuItem'
-import MenuItemLabel from '../../../../components/MenuItemLabel'
-import type {MenuProps} from '../../../../hooks/useMenu'
+import {MenuContent} from '../../../../ui/Menu/MenuContent'
+import {MenuItem} from '../../../../ui/Menu/MenuItem'
 
 interface OrgTeamMemberMenuProps {
   isLead: boolean
-  menuProps: MenuProps
   isViewerLead: boolean
   isViewerOrgAdmin: boolean
   manageTeamMemberId?: string | null
@@ -24,7 +21,6 @@ export const OrgTeamMemberMenu = (props: OrgTeamMemberMenuProps) => {
     isViewerLead,
     isViewerOrgAdmin,
     teamMember: teamMemberRef,
-    menuProps,
     togglePromote,
     toggleRemove
   } = props
@@ -45,20 +41,11 @@ export const OrgTeamMemberMenu = (props: OrgTeamMemberMenuProps) => {
   const isViewerTeamAdmin = isViewerLead || isViewerOrgAdmin
 
   return (
-    <Menu ariaLabel={'Select your action'} {...menuProps}>
+    <MenuContent align='end'>
       {isViewerTeamAdmin && (!isSelf || !isViewerLead) && (
-        <MenuItem
-          label={<MenuItemLabel className='px-4 py-1'>Promote to Team Lead</MenuItemLabel>}
-          key='promote'
-          onClick={togglePromote}
-        />
+        <MenuItem onClick={togglePromote}>Promote to Team Lead</MenuItem>
       )}
-      {isViewerTeamAdmin && !isSelf && (
-        <MenuItem
-          label={<MenuItemLabel className='px-4 py-1'>Remove from Team</MenuItemLabel>}
-          onClick={toggleRemove}
-        />
-      )}
-    </Menu>
+      {isViewerTeamAdmin && !isSelf && <MenuItem onClick={toggleRemove}>Remove from Team</MenuItem>}
+    </MenuContent>
   )
 }

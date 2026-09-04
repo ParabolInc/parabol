@@ -1,17 +1,16 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {FacilitatorMenu_meeting$key} from '../__generated__/FacilitatorMenu_meeting.graphql'
-import Menu from '../components/Menu'
-import type {MenuProps} from '../hooks/useMenu'
+import {MenuContent} from '../ui/Menu/MenuContent'
 import FacilitatorRotationPanel from './FacilitatorRotationPanel'
 
 interface Props {
-  menuProps: MenuProps
   meeting: FacilitatorMenu_meeting$key
+  onClose: () => void
 }
 
 const FacilitatorMenu = (props: Props) => {
-  const {menuProps, meeting: meetingRef} = props
+  const {meeting: meetingRef, onClose} = props
   const meeting = useFragment(
     graphql`
       fragment FacilitatorMenu_meeting on NewMeeting {
@@ -21,13 +20,9 @@ const FacilitatorMenu = (props: Props) => {
     meetingRef
   )
   return (
-    <Menu
-      ariaLabel={'Edit the facilitator rotation'}
-      className={'max-h-[none] overflow-y-visible'}
-      {...menuProps}
-    >
-      <FacilitatorRotationPanel meeting={meeting} onDone={menuProps.closePortal} />
-    </Menu>
+    <MenuContent align='end' className='max-h-[none] overflow-y-visible'>
+      <FacilitatorRotationPanel meeting={meeting} onDone={onClose} />
+    </MenuContent>
   )
 }
 

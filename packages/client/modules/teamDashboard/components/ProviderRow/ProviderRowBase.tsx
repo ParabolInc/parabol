@@ -6,11 +6,11 @@ import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {Breakpoint} from '../../../../types/constEnums'
 import {Button} from '../../../../ui/Button/Button'
+import {Menu} from '../../../../ui/Menu/Menu'
 
 export interface ProviderRowBaseProps {
   connected: boolean
-  togglePortal: () => void
-  menuRef: React.MutableRefObject<HTMLButtonElement | null> // TODO: make generic menu component
+  configMenu: React.ReactNode
   providerName: string
   providerDescription: React.ReactElement | string
   providerLogo: React.ReactElement
@@ -24,8 +24,7 @@ const ProviderRowBase = (props: ProviderRowBaseProps) => {
     connectButton,
     connected,
     error,
-    togglePortal,
-    menuRef,
+    configMenu,
     providerName,
     providerDescription,
     providerLogo,
@@ -51,33 +50,33 @@ const ProviderRowBase = (props: ProviderRowBaseProps) => {
           {!connected && connectButton}
           {connected && (
             <>
-              {isDesktop ? (
-                <>
-                  <div className='flex items-center pr-[25px]'>
-                    <DoneIcon className='h-[18px] w-[18px] text-lg text-success-light' />
-                    <div className='pl-[6px] font-semibold text-fg-primary text-sm'>Connected</div>
-                  </div>
+              {isDesktop && (
+                <div className='flex items-center pr-[25px]'>
+                  <DoneIcon className='h-[18px] w-[18px] text-lg text-success-light' />
+                  <div className='pl-[6px] font-semibold text-fg-primary text-sm'>Connected</div>
+                </div>
+              )}
+              <Menu
+                trigger={
                   <Button
                     variant='flat'
                     size='sm'
-                    className='min-w-[30px] border-hairline-strong pr-0 pl-0 font-semibold text-fg-primary text-sm'
-                    onClick={togglePortal}
-                    ref={menuRef}
+                    className={
+                      isDesktop
+                        ? 'min-w-[30px] border-hairline-strong pr-0 pl-0 font-semibold text-fg-primary text-sm'
+                        : 'min-w-[36px] border-hairline-strong pr-0 pl-0 font-semibold text-fg-primary text-sm'
+                    }
                   >
-                    <MoreVertIcon className='h-[18px] w-[18px] text-lg' />
+                    {isDesktop ? (
+                      <MoreVertIcon className='h-[18px] w-[18px] text-lg' />
+                    ) : (
+                      <MoreVertIcon />
+                    )}
                   </Button>
-                </>
-              ) : (
-                <Button
-                  variant='flat'
-                  size='sm'
-                  className='min-w-[36px] border-hairline-strong pr-0 pl-0 font-semibold text-fg-primary text-sm'
-                  onClick={togglePortal}
-                  ref={menuRef}
-                >
-                  <MoreVertIcon />
-                </Button>
-              )}
+                }
+              >
+                {configMenu}
+              </Menu>
             </>
           )}
         </ProviderActions>

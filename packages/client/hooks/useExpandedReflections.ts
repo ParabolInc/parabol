@@ -1,8 +1,11 @@
-import {type MutableRefObject, type RefObject, useEffect} from 'react'
+import {type MutableRefObject, type ReactNode, type RefObject, useEffect} from 'react'
+import {createPortal} from 'react-dom'
+import requestDoubleAnimationFrame from '../components/RetroReflectPhase/requestDoubleAnimationFrame'
 import {ElementWidth, Times} from '../types/constEnums'
 import useFlip from './useFlip'
 import useFlipDeal from './useFlipDeal'
-import usePortal, {PortalStatus} from './usePortal'
+import {PortalStatus} from './usePortal'
+import useRefState from './useRefState'
 
 const shrinkGroupOnExpand = (groupEl: HTMLDivElement) => {
   const {style, scrollHeight} = groupEl
@@ -39,10 +42,10 @@ const useExpandedReflections = (
     isGroup
   })
   const [setItemsRef, itemsReverse] = useFlipDeal(count)
-  const {terminatePortal, openPortal, portal, portalStatus, setPortalStatus} = usePortal({
-    id: 'expandedReflectionGroup',
-    noClose: true
-  })
+  const [portalStatusRef, setPortalStatus] = useRefState(PortalStatus.Exited)
+  const portalStatus = portalStatusRef.current
+  const portal = (reactEl: ReactNode) =>
+    portalStatus === PortalStatus.Exited ? null : createPortal(reactEl, document.body)
   const collapse = () => {
     setPortalStatus(PortalStatus.Exiting)
     const {scrollHeight, style} = groupRef.current
@@ -55,7 +58,7 @@ const useExpandedReflections = (
       scrollReverse()
       headerReverse()
       setTimeout(() => {
-        terminatePortal()
+        setPortalStatus(PortalStatus.Exited)
         style.height = ''
         style.transition = ''
         style.paddingBottom = ''
@@ -64,7 +67,15 @@ const useExpandedReflections = (
   }
   const expand = () => {
     if (count <= 1) return
-    openPortal()
+    if (portalStatusRef.current === PortalStatus.Exiting) {
+      setPortalStatus(PortalStatus.Entered)
+    } else if (portalStatusRef.current === PortalStatus.Exited) {
+      setPortalStatus(PortalStatus.Mounted)
+      // without rDAF the FLIP coords haven't had time to flush
+      requestDoubleAnimationFrame(() => {
+        setPortalStatus(PortalStatus.Entering)
+      })
+    }
     shrinkGroupOnExpand(groupRef.current)
   }
   useEffect(() => {

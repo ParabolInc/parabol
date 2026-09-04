@@ -1,24 +1,30 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useMemo} from 'react'
+import type {ReactNode} from 'react'
 import {useFragment} from 'react-relay'
 import type {JiraServerFieldMenu_stage$key} from '../__generated__/JiraServerFieldMenu_stage.graphql'
-import type {MenuProps} from '../hooks/useMenu'
 import useUpdateIntegrationDimensionFieldMutation from '../mutations/useUpdateIntegrationDimensionFieldMutation'
 import {SprintPokerDefaults} from '../types/constEnums'
-import Menu from './Menu'
-import MenuItem from './MenuItem'
-import MenuItemHR from './MenuItemHR'
+import {Select} from '../ui/Select/Select'
+import {SelectContent} from '../ui/Select/SelectContent'
+import {SelectItem} from '../ui/Select/SelectItem'
+import {SelectSeparator} from '../ui/Select/SelectSeparator'
+import {SelectTrigger} from '../ui/Select/SelectTrigger'
+import {
+  fromSelectValue,
+  SERVICE_FIELD_NULL_VALUE,
+  toSelectValue
+} from '../utils/serviceFieldSelectValue'
 
 interface Props {
-  menuProps: MenuProps
   stage: JiraServerFieldMenu_stage$key
+  trigger: ReactNode
+  onOpenChange: (isOpen: boolean) => void
   submitScore(): void
 }
 
 const JiraServerFieldMenu = (props: Props) => {
-  const {menuProps, stage: stageRef, submitScore} = props
+  const {stage: stageRef, trigger, onOpenChange, submitScore} = props
   const [updateIntegrationDimensionField] = useUpdateIntegrationDimensionFieldMutation()
-  const {portalStatus, isDropdown, closePortal} = menuProps
 
   const stage = useFragment(
     graphql`
@@ -53,49 +59,43 @@ const JiraServerFieldMenu = (props: Props) => {
 
   const {name: dimensionName} = dimensionRef
   const {name: serviceFieldName} = serviceField
-  // biome-ignore lint/correctness/useHookAtTopLevel: legacy
-  const defaultActiveidx = useMemo(() => {
-    if (possibleEstimationFieldNames.length === 0) return undefined
-    if (serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT)
-      return possibleEstimationFieldNames.length + 1
-    if (serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_NULL)
-      return possibleEstimationFieldNames.length + 2
-    const idx = possibleEstimationFieldNames.indexOf(serviceFieldName)
-    return idx === -1 ? undefined : idx
-  }, [serviceFieldName, possibleEstimationFieldNames])
+  const selectedValue = [
+    ...possibleEstimationFieldNames,
+    SprintPokerDefaults.SERVICE_FIELD_COMMENT,
+    SprintPokerDefaults.SERVICE_FIELD_NULL
+  ].includes(serviceFieldName)
+    ? toSelectValue(serviceFieldName)
+    : SprintPokerDefaults.SERVICE_FIELD_COMMENT
 
-  const handleClick = (fieldName: string) => () => {
+  const handleValueChange = (value: string) => {
     updateIntegrationDimensionField(
-      {variables: {meetingId, taskId, dimensionName, fieldId: fieldName}},
+      {variables: {meetingId, taskId, dimensionName, fieldId: fromSelectValue(value)}},
       {onSuccess: submitScore}
     )
-    closePortal()
   }
   return (
-    <Menu
-      ariaLabel={'Select the JiraServer Field to push to'}
-      portalStatus={portalStatus}
-      isDropdown={isDropdown}
-      defaultActiveIdx={defaultActiveidx}
-    >
-      {possibleEstimationFieldNames.length === 0 && (
-        <div className='px-4 pt-2 pb-0 text-fg-secondary text-sm'>No fields found</div>
-      )}
-      {possibleEstimationFieldNames.map((fieldName) => {
-        return <MenuItem key={fieldName} label={fieldName} onClick={handleClick(fieldName)} />
-      })}
-      <MenuItemHR />
-      <MenuItem
-        key={'__comment'}
-        label={SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL}
-        onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_COMMENT)}
-      />
-      <MenuItem
-        key={'__null'}
-        label={SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL}
-        onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_NULL)}
-      />
-    </Menu>
+    <Select value={selectedValue} onValueChange={handleValueChange} onOpenChange={onOpenChange}>
+      <SelectTrigger asChild>{trigger}</SelectTrigger>
+      <SelectContent>
+        {possibleEstimationFieldNames.length === 0 && (
+          <div className='px-4 pt-2 pb-0 text-fg-secondary text-sm'>No fields found</div>
+        )}
+        {possibleEstimationFieldNames.map((fieldName) => {
+          return (
+            <SelectItem key={fieldName} value={fieldName}>
+              {fieldName}
+            </SelectItem>
+          )
+        })}
+        <SelectSeparator />
+        <SelectItem value={SprintPokerDefaults.SERVICE_FIELD_COMMENT}>
+          {SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL}
+        </SelectItem>
+        <SelectItem value={SERVICE_FIELD_NULL_VALUE}>
+          {SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL}
+        </SelectItem>
+      </SelectContent>
+    </Select>
   )
 }
 

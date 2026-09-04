@@ -3,19 +3,20 @@ import taskFooterTeamAssigneeMenuQuery, {
   type TaskFooterTeamAssigneeMenuQuery
 } from '~/__generated__/TaskFooterTeamAssigneeMenuQuery.graphql'
 import MockFieldList from '../../../components/MockFieldList'
-import type {MenuProps} from '../../../hooks/useMenu'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import type {UseTaskChild} from '../../../hooks/useTaskChildFocus'
-import TaskFooterTeamAssigneeMenu from './OutcomeCardAssignMenu/TaskFooterTeamAssigneeMenu'
+import TaskFooterTeamAssigneeMenu, {
+  type PendingTeamAssignment
+} from './OutcomeCardAssignMenu/TaskFooterTeamAssigneeMenu'
 
 interface Props {
-  menuProps: MenuProps
   task: any
   useTaskChild: UseTaskChild
+  onRequestIntegration: (pending: PendingTeamAssignment) => void
 }
 
 const TaskFooterTeamAssigneeMenuRoot = (props: Props) => {
-  const {menuProps, task, useTaskChild} = props
+  const {task, useTaskChild, onRequestIntegration} = props
   useTaskChild('teamAssignee')
   const queryRef = useQueryLoaderNow<TaskFooterTeamAssigneeMenuQuery>(
     taskFooterTeamAssigneeMenuQuery,
@@ -24,7 +25,11 @@ const TaskFooterTeamAssigneeMenuRoot = (props: Props) => {
   return (
     <Suspense fallback={<MockFieldList />}>
       {queryRef && (
-        <TaskFooterTeamAssigneeMenu queryRef={queryRef} menuProps={menuProps} task={task} />
+        <TaskFooterTeamAssigneeMenu
+          queryRef={queryRef}
+          task={task}
+          onRequestIntegration={onRequestIntegration}
+        />
       )}
     </Suspense>
   )

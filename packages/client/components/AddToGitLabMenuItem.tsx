@@ -5,10 +5,9 @@ import GitLabClientManager from '~/utils/GitLabClientManager'
 import type {AddToGitLabMenuItem_GitLabIntegration$key} from '../__generated__/AddToGitLabMenuItem_GitLabIntegration.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps, {type MenuMutationProps} from '../hooks/useMutationProps'
+import {MenuItem} from '../ui/Menu/MenuItem'
 import GitLabSVG from './GitLabSVG'
-import MenuItem from './MenuItem'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
-import MenuItemLabel from './MenuItemLabel'
 
 interface Props {
   teamId: string
@@ -16,7 +15,7 @@ interface Props {
   gitlabRef: AddToGitLabMenuItem_GitLabIntegration$key
 }
 
-const AddToGitLabMenuItem = forwardRef((props: Props, ref) => {
+const AddToGitLabMenuItem = forwardRef<HTMLDivElement, Props>((props, ref) => {
   const {teamId, gitlabRef} = props
   const mutationProps = useMutationProps()
   const gitlab = useFragment(
@@ -46,18 +45,12 @@ const AddToGitLabMenuItem = forwardRef((props: Props, ref) => {
     )
   }
   return (
-    <MenuItem
-      ref={ref}
-      label={
-        <MenuItemLabel>
-          <MenuItemComponentAvatar className='[&_svg]:block [&_svg]:h-[18px] [&_svg]:w-[18px]'>
-            <GitLabSVG />
-          </MenuItemComponentAvatar>
-          {'Add GitLab integration'}
-        </MenuItemLabel>
-      }
-      onClick={openOAuth}
-    />
+    <MenuItem ref={ref} onClick={openOAuth}>
+      <MenuItemComponentAvatar className='[&_svg]:block [&_svg]:h-[18px] [&_svg]:w-[18px]'>
+        <GitLabSVG />
+      </MenuItemComponentAvatar>
+      {'Add GitLab integration'}
+    </MenuItem>
   )
 })
 

@@ -4,38 +4,30 @@ import {useFragment} from 'react-relay'
 import {Link, useNavigate} from 'react-router'
 import type {TeamPromptOptionsMenu_meeting$key} from '~/__generated__/TeamPromptOptionsMenu_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import type {MenuProps} from '~/hooks/useMenu'
 import useMutationProps from '~/hooks/useMutationProps'
 import EndTeamPromptMutation from '~/mutations/EndTeamPromptMutation'
 import {Flag, Link as MuiLink, OpenInNew, Replay} from '~/ui/icons'
+import {MenuContent} from '../../ui/Menu/MenuContent'
+import {MenuItem} from '../../ui/Menu/MenuItem'
 import makeAppURL from '../../utils/makeAppURL'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
-import Menu from '../Menu'
-import MenuItem from '../MenuItem'
 import SlackSVG from '../SlackSVG'
 
 const OptionMenuItem = ({children}: {children: ReactNode}) => (
-  <div className='flex w-60 flex-1 items-center overflow-hidden text-ellipsis whitespace-nowrap px-4 py-1 text-sm leading-6'>
+  <div className='flex w-60 flex-1 items-center overflow-hidden text-ellipsis whitespace-nowrap'>
     {children}
   </div>
 )
 
 interface Props {
   meetingRef: TeamPromptOptionsMenu_meeting$key
-  menuProps: MenuProps
   openRecurrenceSettingsModal: () => void
   openEndRecurringMeetingModal: () => void
   popTooltip: () => void
 }
 
 const TeamPromptOptionsMenu = (props: Props) => {
-  const {
-    meetingRef,
-    menuProps,
-    openRecurrenceSettingsModal,
-    openEndRecurringMeetingModal,
-    popTooltip
-  } = props
+  const {meetingRef, openRecurrenceSettingsModal, openEndRecurringMeetingModal, popTooltip} = props
 
   const meeting = useFragment(
     graphql`
@@ -73,19 +65,11 @@ const TeamPromptOptionsMenu = (props: Props) => {
   const canToggleRecurrence = hasRecurrenceEnabled ? canEndRecurrence : canStartRecurrence
 
   return (
-    <Menu ariaLabel={'Edit the meeting'} {...menuProps}>
+    <MenuContent align='end'>
       {hasRecurrenceEnabled && (
         <MenuItem
-          key='link'
-          label={
-            <OptionMenuItem>
-              <MuiLink className='mr-2 text-fg-secondary' />
-              Copy meeting permalink
-            </OptionMenuItem>
-          }
           onClick={async () => {
             popTooltip()
-            menuProps.closePortal()
             const copyUrl = makeAppURL(window.location.origin, `meeting-series/${meetingId}`)
             await navigator.clipboard.writeText(copyUrl)
 
@@ -94,63 +78,65 @@ const TeamPromptOptionsMenu = (props: Props) => {
               meetingId: meetingId
             })
           }}
-        />
+        >
+          <OptionMenuItem>
+            <MuiLink className='mr-2 text-fg-secondary' />
+            Copy meeting permalink
+          </OptionMenuItem>
+        </MenuItem>
       )}
       <MenuItem
-        key='copy'
         isDisabled={!canToggleRecurrence}
-        label={
-          <OptionMenuItem>
-            <Replay className='mr-2 text-fg-secondary' />
-            {hasRecurrenceEnabled ? (
-              <span>{'Edit recurrence settings'}</span>
-            ) : (
-              <span>{'Start recurrence'}</span>
-            )}
-          </OptionMenuItem>
-        }
-        onClick={() => {
-          menuProps.closePortal()
-          openRecurrenceSettingsModal()
-        }}
-      />
+        onSelect={canToggleRecurrence ? undefined : (e) => e.preventDefault()}
+        onClick={canToggleRecurrence ? openRecurrenceSettingsModal : undefined}
+      >
+        <OptionMenuItem>
+          <Replay className='mr-2 text-fg-secondary' />
+          {hasRecurrenceEnabled ? (
+            <span>{'Edit recurrence settings'}</span>
+          ) : (
+            <span>{'Start recurrence'}</span>
+          )}
+        </OptionMenuItem>
+      </MenuItem>
       <MenuItem
-        key='slack'
-        label={
-          <Link to={`/team/${team.id}/integrations`} target='_blank' rel='noopener noreferrer'>
-            <OptionMenuItem>
-              <SlackSVG />
-              <span className='ml-2'>Configure Slack</span>
-              <OpenInNew className='ml-auto text-base text-fg-secondary' />
-            </OptionMenuItem>
-          </Link>
-        }
+        asChild
         onClick={() => {
           SendClientSideEvent(atmosphere, 'Configure Slack Standup Clicked', {
             teamId: team?.id,
             meetingId: meetingId
           })
         }}
-      />
-      <MenuItem
-        key='end'
-        isDisabled={isEnded}
-        label={
+      >
+        <Link to={`/team/${team.id}/integrations`} target='_blank' rel='noopener noreferrer'>
           <OptionMenuItem>
-            <Flag className='mr-2 text-fg-secondary' />
-            <span>{'End this meeting'}</span>
+            <SlackSVG />
+            <span className='ml-2'>Configure Slack</span>
+            <OpenInNew className='ml-auto text-base text-fg-secondary' />
           </OptionMenuItem>
+        </Link>
+      </MenuItem>
+      <MenuItem
+        isDisabled={isEnded}
+        onSelect={isEnded ? (e) => e.preventDefault() : undefined}
+        onClick={
+          isEnded
+            ? undefined
+            : () => {
+                if (!hasRecurrenceEnabled) {
+                  EndTeamPromptMutation(atmosphere, {meetingId}, {onCompleted, onError, navigate})
+                } else {
+                  openEndRecurringMeetingModal()
+                }
+              }
         }
-        onClick={() => {
-          menuProps.closePortal()
-          if (!hasRecurrenceEnabled) {
-            EndTeamPromptMutation(atmosphere, {meetingId}, {onCompleted, onError, navigate})
-          } else {
-            openEndRecurringMeetingModal()
-          }
-        }}
-      />
-    </Menu>
+      >
+        <OptionMenuItem>
+          <Flag className='mr-2 text-fg-secondary' />
+          <span>{'End this meeting'}</span>
+        </OptionMenuItem>
+      </MenuItem>
+    </MenuContent>
   )
 }
 

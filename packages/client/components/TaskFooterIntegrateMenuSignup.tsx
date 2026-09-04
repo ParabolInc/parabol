@@ -1,19 +1,16 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {TaskFooterIntegrateMenuSignup_teamMember$key} from '~/__generated__/TaskFooterIntegrateMenuSignup_teamMember.graphql'
-import type {MenuProps} from '../hooks/useMenu'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
 import {getConnectProvider} from '../integrations/platform/findIntegrationService'
+import {MenuSeparator} from '../ui/Menu/MenuSeparator'
 import AddToAzureMenuItem from './AddToAzureMenuItem'
 import AddToGitHubMenuItem from './AddToGitHubMenuItem'
 import AddToGitLabMenuItem from './AddToGitLabMenuItem'
 import AddToJiraMenuItem from './AddToJiraMenuItem'
 import LoadingComponent from './LoadingComponent/LoadingComponent'
-import Menu from './Menu'
-import MenuItemHR from './MenuItemHR'
 
 interface Props {
-  menuProps: MenuProps
   mutationProps: MenuMutationProps
   teamId: string
   label?: string
@@ -21,7 +18,7 @@ interface Props {
 }
 
 const TaskFooterIntegrateMenuSignup = (props: Props) => {
-  const {menuProps, mutationProps, teamId, label, teamMemberRef} = props
+  const {mutationProps, teamId, label, teamMemberRef} = props
   const {submitting} = mutationProps
   const teamMember = useFragment(
     graphql`
@@ -49,11 +46,11 @@ const TaskFooterIntegrateMenuSignup = (props: Props) => {
 
   if (submitting) return <LoadingComponent spinnerSize={24} height={24} showAfter={0} width={200} />
   return (
-    <Menu className='w-[250px]' ariaLabel={'Integrate with a Service'} {...menuProps}>
+    <>
       {label && (
         <>
           <div className='px-4 pt-2 pb-0 text-[14px] text-fg-secondary'>{label}</div>
-          <MenuItemHR />
+          <MenuSeparator />
         </>
       )}
       <AddToGitHubMenuItem
@@ -77,7 +74,7 @@ const TaskFooterIntegrateMenuSignup = (props: Props) => {
         teamId={teamId}
         gitlabRef={integrations.gitlab}
       />
-    </Menu>
+    </>
   )
 }
 

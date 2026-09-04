@@ -5,9 +5,8 @@ import {MoreVert} from '~/ui/icons'
 import type {OrgTeamMembersRow_teamMember$key} from '../../../../__generated__/OrgTeamMembersRow_teamMember.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useMenu from '../../../../hooks/useMenu'
 import {Button} from '../../../../ui/Button/Button'
+import {Menu} from '../../../../ui/Menu/Menu'
 import PromoteTeamMemberModal from '../../../teamDashboard/components/PromoteTeamMemberModal/PromoteTeamMemberModal'
 import RemoveTeamMemberModal from '../../../teamDashboard/components/RemoveTeamMemberModal/RemoveTeamMemberModal'
 import {OrgTeamMemberMenu} from './OrgTeamMemberMenu'
@@ -50,7 +49,6 @@ export const OrgTeamMembersRow = (props: Props) => {
 
   const showMenuButton = (isViewerOrgAdmin && !isLead) || (isViewerLead && !isSelf && !isOrgAdmin)
 
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   const [isPromoteOpen, setIsPromoteOpen] = useState(false)
   const [isRemoveOpen, setIsRemoveOpen] = useState(false)
 
@@ -79,26 +77,22 @@ export const OrgTeamMembersRow = (props: Props) => {
       </div>
       <div>
         {showMenuButton && (
-          <Button
-            disabled={!showMenuButton}
-            shape='icon'
-            variant='ghost'
-            onClick={togglePortal}
-            ref={originRef}
+          <Menu
+            trigger={
+              <Button shape='icon' variant='ghost'>
+                <MoreVert />
+              </Button>
+            }
           >
-            <MoreVert />
-          </Button>
-        )}
-        {menuPortal(
-          <OrgTeamMemberMenu
-            menuProps={menuProps}
-            isLead={teamMember.isLead}
-            teamMember={teamMember}
-            isViewerLead={isViewerLead}
-            isViewerOrgAdmin={isViewerOrgAdmin}
-            togglePromote={() => setIsPromoteOpen(true)}
-            toggleRemove={() => setIsRemoveOpen(true)}
-          />
+            <OrgTeamMemberMenu
+              isLead={teamMember.isLead}
+              teamMember={teamMember}
+              isViewerLead={isViewerLead}
+              isViewerOrgAdmin={isViewerOrgAdmin}
+              togglePromote={() => setIsPromoteOpen(true)}
+              toggleRemove={() => setIsRemoveOpen(true)}
+            />
+          </Menu>
         )}
       </div>
       <PromoteTeamMemberModal
