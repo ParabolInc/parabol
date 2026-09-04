@@ -148,60 +148,62 @@ const TeamPromptComposer = (props: Props) => {
   const lastAnswerAt = response && sharedAt ? lastAnswerUpdatedAt(response.answers, sharedAt) : null
 
   return (
-    <div className='mx-auto w-full max-w-[640px] px-[5%] pt-6 pb-2'>
-      <TeamPromptComposerHeader
-        picture={stage.teamMember.user.picture}
-        isExpanded={isExpanded}
-        onToggle={() => setIsExpanded((wasExpanded) => !wasExpanded)}
-        isShared={isShared}
-        sharedAt={sharedAt}
-        updatedAt={lastAnswerAt}
-        preview={preview}
-        answeredCount={answeredPromptIds.size}
-        promptCount={prompts.length}
-      />
-      {isExpanded && (
-        <>
-          <div className='flex flex-col gap-4 rounded-card bg-surface-card p-4 shadow-[var(--shadow-card)]'>
-            {prompts.map((prompt, index) => {
-              if (!editorRefs.current.has(prompt.id))
-                editorRefs.current.set(prompt.id, {current: null})
-              const nextPromptId = prompts[index + 1]?.id
-              return (
-                <TeamPromptAnswerEditor
-                  key={prompt.id}
-                  teamId={teamId}
-                  prompt={prompt}
-                  initialContent={initialContentByPrompt.get(prompt.id) ?? null}
-                  readOnly={!!endedAt}
-                  isAnswered={answeredPromptIds.has(prompt.id)}
-                  compact={prompts.length === 1}
-                  onChange={onChange}
-                  onModEnter={onShare}
-                  onTab={
-                    nextPromptId
-                      ? () => editorRefs.current.get(nextPromptId)?.current?.commands.focus('end')
-                      : undefined
-                  }
-                  editorRef={editorRefs.current.get(prompt.id)!}
-                />
-              )
-            })}
-          </div>
-          {!endedAt && (
-            <TeamPromptComposerFooter
-              isShared={isShared}
-              isDirty={isDirty}
-              answeredCount={answeredPromptIds.size}
-              promptCount={prompts.length}
-              submitting={submitting}
-              isInspirationOpen={rightDrawerOpen === 'inspiration'}
-              onOpenInspiration={onOpenInspiration}
-              onShare={onShare}
-            />
-          )}
-        </>
-      )}
+    <div className='mx-auto w-full max-w-[1240px] px-[5%] pt-6 pb-2'>
+      <div className='mx-auto w-full max-w-[640px]'>
+        <TeamPromptComposerHeader
+          picture={stage.teamMember.user.picture}
+          isExpanded={isExpanded}
+          onToggle={() => setIsExpanded((wasExpanded) => !wasExpanded)}
+          isShared={isShared}
+          sharedAt={sharedAt}
+          updatedAt={lastAnswerAt}
+          preview={preview}
+          answeredCount={answeredPromptIds.size}
+          promptCount={prompts.length}
+        />
+        {isExpanded && (
+          <>
+            <div className='flex flex-col gap-4 rounded-card bg-surface-card p-4 shadow-[var(--shadow-card)]'>
+              {prompts.map((prompt, index) => {
+                if (!editorRefs.current.has(prompt.id))
+                  editorRefs.current.set(prompt.id, {current: null})
+                const nextPromptId = prompts[index + 1]?.id
+                return (
+                  <TeamPromptAnswerEditor
+                    key={prompt.id}
+                    teamId={teamId}
+                    prompt={prompt}
+                    initialContent={initialContentByPrompt.get(prompt.id) ?? null}
+                    readOnly={!!endedAt}
+                    isAnswered={answeredPromptIds.has(prompt.id)}
+                    compact={prompts.length === 1}
+                    onChange={onChange}
+                    onModEnter={onShare}
+                    onTab={
+                      nextPromptId
+                        ? () => editorRefs.current.get(nextPromptId)?.current?.commands.focus('end')
+                        : undefined
+                    }
+                    editorRef={editorRefs.current.get(prompt.id)!}
+                  />
+                )
+              })}
+            </div>
+            {!endedAt && (
+              <TeamPromptComposerFooter
+                isShared={isShared}
+                isDirty={isDirty}
+                answeredCount={answeredPromptIds.size}
+                promptCount={prompts.length}
+                submitting={submitting}
+                isInspirationOpen={rightDrawerOpen === 'inspiration'}
+                onOpenInspiration={onOpenInspiration}
+                onShare={onShare}
+              />
+            )}
+          </>
+        )}
+      </div>
     </div>
   )
 }
