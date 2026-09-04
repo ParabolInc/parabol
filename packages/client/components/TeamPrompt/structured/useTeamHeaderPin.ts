@@ -28,9 +28,12 @@ const useTeamHeaderPin = (
     measure()
     container.addEventListener('scroll', onScroll, {passive: true})
     window.addEventListener('resize', onScroll)
+    const observer = new ResizeObserver(onScroll)
+    Array.from(container.children).forEach((child) => observer.observe(child))
     return () => {
       container.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onScroll)
+      observer.disconnect()
       if (frame) window.cancelAnimationFrame(frame)
     }
   }, [enabled, headerRef, scrollContainerRef])
