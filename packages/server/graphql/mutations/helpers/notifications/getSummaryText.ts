@@ -6,6 +6,7 @@ import type {AnyMeeting} from '../../../../postgres/types/Meeting'
 import averageTeamHealthScore from '../../../../utils/averageTeamHealthScore'
 import getTeamHealthDisplayComment from '../../../../utils/getTeamHealthDisplayComment'
 import logError from '../../../../utils/logError'
+import {hasSharedContent} from '../../../public/mutations/helpers/buildTeamPromptResponseContent'
 
 const getSummaryText = async (meeting: AnyMeeting) => {
   if (meeting.meetingType === 'retrospective') {
@@ -46,7 +47,7 @@ const getSummaryText = async (meeting: AnyMeeting) => {
     )}.`
   } else if (meeting.meetingType === 'teamPrompt') {
     const responseCount = (await getTeamPromptResponsesByMeetingId(meeting.id)).filter(
-      (response) => response.isShared && !!response.plaintextContent
+      hasSharedContent
     ).length
     // :TODO: (jmtaber129): Add additional stats here.
     return `Your team shared ${responseCount} ${plural(responseCount, 'response', 'responses')}.`

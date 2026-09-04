@@ -22,6 +22,7 @@ import {
   getDimensionNames,
   getPokerRowData
 } from '../graphql/mutations/helpers/summaryPage/getPokerTable'
+import {hasSharedContent} from '../graphql/public/mutations/helpers/buildTeamPromptResponseContent'
 import {CipherId} from '../utils/CipherId'
 import {convertTipTapToMarkdown} from '../utils/convertTipTapToMarkdown'
 
@@ -326,10 +327,9 @@ export const makeSummaryEmailV2 = async (
       </Html>
     )
   } else if (meetingType === 'teamPrompt') {
-    const responses = (
+    const responseCount = (
       await dataLoader.get('teamPromptResponsesByMeetingId').load(meetingId)
-    ).filter((response) => response.isShared)
-    const responseCount = responses.length
+    ).filter(hasSharedContent).length
     const responseLabel = `${responseCount} ${plural(responseCount || 0, 'response')}`
     const subHeadingMeta = `${responseLabel}`
     const {content: insightsMarkdown} = await dataLoader
