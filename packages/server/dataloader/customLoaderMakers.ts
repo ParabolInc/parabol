@@ -30,6 +30,7 @@ import type {
 } from '../postgres/types'
 import type {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
 import type {Tierenum as TierEnum} from '../postgres/types/pg'
+import averageTeamHealthScore from '../utils/averageTeamHealthScore'
 import {
   type FeatureFlagName,
   type FeatureFlagRecord,
@@ -1024,6 +1025,68 @@ export const retroSuggestedGroupingByMeetingId = (parent: RootDataLoader) => {
         .execute()
       const rowByMeetingId = new Map(rows.map((row) => [row.meetingId, row]))
       return meetingIds.map((meetingId) => rowByMeetingId.get(meetingId) ?? null)
+    },
+    {...parent.dataLoaderOptions}
+  )
+}
+
+// how many cycles back to look for the previous team health scores. A cycle nobody answered is not
+// a data point, so it is skipped rather than treated as a reset, but the search still has to stop
+const MAX_TEAM_HEALTH_CYCLE_LOOKBACK = 10
+
+// The previous cycle's average Likert score for each category, keyed by categoryId. Empty if this
+// is the team's first cycle. Categories are the unit of comparison because the question asked
+// within a category rotates from one cycle to the next
+export const previousTeamHealthScoresByMeetingId = (
+  parent: RootDataLoader,
+  dependsOn: RegisterDependsOn
+) => {
+  dependsOn(['newMeetings', 'teamHealthResponses'])
+  return new DataLoader<string, Map<number, number>, string>(
+    async (meetingIds) => {
+      return Promise.all(
+        meetingIds.map(async (meetingId) => {
+          const meeting = await parent.get('newMeetings').load(meetingId)
+          const empty = new Map<number, number>()
+          if (meeting?.meetingType !== 'teamHealth' || !meeting.meetingSeriesId) return empty
+          const priorMeetings = await selectNewMeetings()
+            .where('meetingSeriesId', '=', meeting.meetingSeriesId)
+            .where('meetingType', '=', 'teamHealth')
+            .where('createdAt', '<', meeting.createdAt)
+            .where('endedAt', 'is not', null)
+            .orderBy('createdAt', 'desc')
+            .limit(MAX_TEAM_HEALTH_CYCLE_LOOKBACK)
+            .execute()
+          const priorResponses = await Promise.all(
+            priorMeetings.map((priorMeeting) =>
+              parent.get('teamHealthResponsesByMeetingId').load(priorMeeting.id)
+            )
+          )
+          const previousResponses = priorResponses.find((responses) => responses.length > 0)
+          if (!previousResponses) return empty
+          const questionIds = [...new Set(previousResponses.map(({questionId}) => questionId))]
+          const questions = (await parent.get('teamHealthQuestions').loadMany(questionIds)).filter(
+            isValid
+          )
+          const categoryIdByQuestionId = new Map(
+            questions.map((question) => [question.id, question.categoryId])
+          )
+          const scoresByCategoryId = new Map<number, number[]>()
+          for (const {questionId, score} of previousResponses) {
+            const categoryId = categoryIdByQuestionId.get(questionId)
+            if (score === null || categoryId === undefined) continue
+            const scores = scoresByCategoryId.get(categoryId) ?? []
+            scores.push(score)
+            scoresByCategoryId.set(categoryId, scores)
+          }
+          return new Map(
+            [...scoresByCategoryId].flatMap(([categoryId, scores]) => {
+              const score = averageTeamHealthScore(scores)
+              return score === null ? [] : [[categoryId, score] as [number, number]]
+            })
+          )
+        })
+      )
     },
     {...parent.dataLoaderOptions}
   )

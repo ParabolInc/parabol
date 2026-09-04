@@ -1,0 +1,126 @@
+"""
+A stage in a standalone Team Health meeting where the team discusses one category's results
+"""
+type TeamHealthResultStage implements NewMeetingStage {
+  "Unique identifier"
+  id: ID!
+
+  """
+  The datetime the stage was completed
+  """
+  endAt: DateTime
+
+  "The ID of the meeting this stage belongs to"
+  meetingId: ID!
+
+  """
+  The meeting this stage belongs to
+  """
+  meeting: NewMeeting!
+
+  """
+  true if the facilitator has completed this stage, else false. Should be boolean(endAt)
+  """
+  isComplete: Boolean!
+
+  """
+  true if any meeting participant can navigate to this stage
+  """
+  isNavigable: Boolean!
+
+  """
+  true if the facilitator can navigate to this stage
+  """
+  isNavigableByFacilitator: Boolean!
+
+  """
+  The phase this stage belongs to
+  """
+  phase: NewMeetingPhase
+
+  """
+  The type of the phase
+  """
+  phaseType: NewMeetingPhaseTypeEnum
+
+  """
+  The datetime the stage was started
+  """
+  startAt: DateTime
+
+  """
+  Number of times the facilitator has visited this stage
+  """
+  viewCount: Int
+
+  """
+  true if a time limit is set, false if end time is set, null if neither is set
+  """
+  isAsync: Boolean
+
+  """
+  true if the viewer is ready to advance, else false
+  """
+  isViewerReady: Boolean!
+
+  """
+  User ids of those who are ready to advance to the next stage
+  """
+  readyUserIds: [ID!]!
+
+  """
+  The datetime the phase is scheduled to be finished, null if no time limit or end time is set
+  """
+  scheduledEndTime: DateTime
+
+  """
+  The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
+  """
+  suggestedEndTime: DateTime
+
+  """
+  The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
+  """
+  suggestedTimeLimit: Float
+  teamId: ID!
+
+  """
+  The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
+  """
+  timeRemaining: Float
+
+  """
+  The 0-based position of this stage within its phase, ordered by sortOrder.
+  """
+  stageIdx: Int!
+
+  """
+  Where this stage sits among its siblings. Set by urgency when the results are revealed, then by
+  anyone who drags the stage to a new spot
+  """
+  sortOrder: Float!
+
+  """
+  The question this stage's category was measured by this cycle. The question rotates between
+  cycles, so the category is what the team actually tracks over time
+  """
+  question: TeamHealthQuestion!
+
+  """
+  The average 1-5 Likert score this category earned this cycle. Null until the results are
+  revealed, or if nobody answered
+  """
+  score: Float
+
+  """
+  The average 1-5 Likert score this category earned in the previous cycle, so its trend can be read
+  against score. Null until the results are revealed, or if the team has never scored this category
+  """
+  previousScore: Float
+
+  """
+  Every answer given to this stage's question. Empty until the meeting ends and the results are
+  revealed, so raw answers can never be de-anonymized while it is in progress
+  """
+  responses: [TeamHealthResponse!]!
+}

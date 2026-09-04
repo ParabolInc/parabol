@@ -46,12 +46,12 @@ const safeCreateTeamHealth = async (
   const questionIds =
     input.questionIds ??
     (await rotateTeamHealthQuestionIds(questions, meetingSeriesId ? [meetingSeriesId] : []))
-  // intro -> response (one stage per question) -> result, which is the waiting room until the
-  // meeting ends and the answers are revealed in place
+  // intro -> response (one stage per question) -> result (one stage per category), which is the
+  // waiting room until the meeting ends and the answers are revealed in place
   const phases = [
     new TeamHealthIntroPhase(),
     new TeamHealthResponsePhase({questionIds}),
-    new TeamHealthResultPhase()
+    new TeamHealthResultPhase({questionIds})
   ] as [TeamHealthIntroPhase, TeamHealthResponsePhase, TeamHealthResultPhase]
   primePhases(phases)
 
