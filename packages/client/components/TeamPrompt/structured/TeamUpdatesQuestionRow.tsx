@@ -71,7 +71,7 @@ const TeamUpdatesQuestionRow = (props: Props) => {
         <div className='flex items-center gap-2'>
           <h3 className='m-0 min-w-0 truncate font-semibold text-[15px]'>{preferredName}</h3>
           {isDrafting ? (
-            <span className='shrink-0 whitespace-nowrap text-fg-muted text-xs'>
+            <span className='shrink-0 whitespace-nowrap text-fg-secondary text-xs'>
               Hasn't shared yet · {answeredCount} of {promptCount} answered
             </span>
           ) : (

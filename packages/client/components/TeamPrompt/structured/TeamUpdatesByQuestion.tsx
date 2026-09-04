@@ -41,7 +41,7 @@ const TeamUpdatesByQuestion = (props: Props) => {
         className='flex flex-col gap-3'
       >
         {answeringStages.length === 0 && (
-          <div className='text-fg-muted text-sm'>No one has answered this yet.</div>
+          <div className='text-fg-secondary text-sm'>No one has answered this yet.</div>
         )}
         {answeringStages.map((stage) => (
           <TeamUpdatesQuestionRow
