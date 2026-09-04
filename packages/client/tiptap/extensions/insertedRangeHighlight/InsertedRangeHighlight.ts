@@ -6,7 +6,7 @@ import {Decoration, DecorationSet} from '@tiptap/pm/view'
 export const INSERTED_HIGHLIGHT_CLASS = 'rounded bg-sky-500/18 transition-colors duration-[1200ms]'
 export const INSERTED_SETTLED_CLASS = 'rounded bg-transparent transition-colors duration-[1200ms]'
 
-export interface TrackedRange {
+interface TrackedRange {
   from: number
   to: number
   settled: boolean

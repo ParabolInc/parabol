@@ -13,7 +13,7 @@ const EDITOR_MOUNT_POLL_MS = 16
 const EDITOR_MOUNT_TIMEOUT_MS = 4000
 
 type EditorRefs = MutableRefObject<Map<string, MutableRefObject<Editor | null>>>
-type Timers = Set<ReturnType<typeof setTimeout>>
+type Timers = Map<ReturnType<typeof setTimeout>, () => void>
 
 interface Options {
   editorRefs: EditorRefs
@@ -22,12 +22,12 @@ interface Options {
 }
 
 const delay = (timers: Timers, ms: number) =>
-  new Promise<void>((resolve) => {
+  new Promise<boolean>((resolve) => {
     const timer = setTimeout(() => {
       timers.delete(timer)
-      resolve()
+      resolve(true)
     }, ms)
-    timers.add(timer)
+    timers.set(timer, () => resolve(false))
   })
 
 const waitForEditor = async (editorRefs: EditorRefs, promptId: string, timers: Timers) => {
@@ -36,7 +36,8 @@ const waitForEditor = async (editorRefs: EditorRefs, promptId: string, timers: T
     const editor = editorRefs.current.get(promptId)?.current
     if (editor && !editor.isDestroyed) return editor
     if (Date.now() >= deadline) return null
-    await delay(timers, EDITOR_MOUNT_POLL_MS)
+    const waited = await delay(timers, EDITOR_MOUNT_POLL_MS)
+    if (!waited) return null
   }
 }
 
@@ -53,11 +54,16 @@ const useTeamPromptComposerApiRegistration = (options: Options) => {
   const apiRef = useContext(TeamPromptComposerApiContext)
   const insertCountRef = useRef(0)
   const insertQueuesRef = useRef(new Map<string, Promise<unknown>>())
-  const timersRef = useRef<Timers>(new Set())
+  const streamingPromptIdsRef = useRef(new Set<string>())
+  const settledWhileStreamingRef = useRef(new Set<string>())
+  const timersRef = useRef<Timers>(new Map())
 
   useEffect(
     () => () => {
-      timersRef.current.forEach((timer) => clearTimeout(timer))
+      timersRef.current.forEach((cancel, timer) => {
+        clearTimeout(timer)
+        cancel()
+      })
       timersRef.current.clear()
     },
     []
@@ -66,29 +72,46 @@ const useTeamPromptComposerApiRegistration = (options: Options) => {
   useEffect(() => {
     if (!apiRef) return
     const timers = timersRef.current
+    const streamingPromptIds = streamingPromptIdsRef.current
+    const settledWhileStreaming = settledWhileStreamingRef.current
     const insert = async (promptId: string, blocks: JSONContent[]) => {
+      const mounted = editorRefs.current.get(promptId)?.current
+      if (mounted && !mounted.isDestroyed && !mounted.isEditable) return null
       expand()
       const editor = await waitForEditor(editorRefs, promptId, timers)
       if (!editor || !editor.isEditable) return null
       const base = editor.getJSON()
-      const baseBlocks = editor.isEmpty ? [] : (base.content ?? [])
+      const wasEmpty = editor.isEmpty
+      const baseBlocks = wasEmpty ? [] : (base.content ?? [])
       const baseDoc: JSONContent = {...base, content: baseBlocks}
       const fullDoc: JSONContent = {...base, content: [...baseBlocks, ...blocks]}
-      const from = editor.isEmpty ? 0 : editor.state.doc.content.size
+      const from = wasEmpty ? 0 : editor.state.doc.content.size
       const trackedRanges = getInsertedRanges(editor)
+      trackedRanges.forEach((_range, trackedId) => {
+        editor.commands.forgetInsertedRange(trackedId)
+      })
       insertCountRef.current += 1
       const id = `${promptId}:${insertCountRef.current}`
-      await new Promise<void>((resolve) => {
-        streamContentIntoEditor(editor, baseDoc, fullDoc, {
-          wordDelayMs: STREAM_WORD_DELAY_MS,
-          onDone: resolve
+      streamingPromptIds.add(promptId)
+      try {
+        await new Promise<void>((resolve) => {
+          streamContentIntoEditor(editor, baseDoc, fullDoc, {
+            wordDelayMs: STREAM_WORD_DELAY_MS,
+            onDone: resolve
+          })
         })
-      })
+      } finally {
+        streamingPromptIds.delete(promptId)
+      }
       if (editor.isDestroyed) return null
-      trackedRanges.forEach((range, trackedId) => {
-        editor.commands.markInsertedRange(trackedId, range.from, range.to)
-        if (range.settled) editor.commands.settleInsertedRange(trackedId)
-      })
+      if (!wasEmpty) {
+        trackedRanges.forEach((range, trackedId) => {
+          editor.commands.markInsertedRange(trackedId, range.from, range.to)
+          if (range.settled || settledWhileStreaming.has(trackedId))
+            editor.commands.settleInsertedRange(trackedId)
+        })
+      }
+      trackedRanges.forEach((_range, trackedId) => settledWhileStreaming.delete(trackedId))
       editor.commands.markInsertedRange(
         id,
         from,
@@ -96,9 +119,14 @@ const useTeamPromptComposerApiRegistration = (options: Options) => {
       )
       const timer = setTimeout(() => {
         timers.delete(timer)
-        if (!editor.isDestroyed) editor.commands.settleInsertedRange(id)
+        if (editor.isDestroyed) return
+        if (streamingPromptIds.has(promptId)) {
+          settledWhileStreaming.add(id)
+          return
+        }
+        editor.commands.settleInsertedRange(id)
       }, HIGHLIGHT_MS)
-      timers.add(timer)
+      timers.set(timer, () => {})
       onChange(promptId, editor)
       return {id, promptId} satisfies InsertHandle
     }
@@ -111,9 +139,10 @@ const useTeamPromptComposerApiRegistration = (options: Options) => {
           promptId,
           queued.catch(() => undefined)
         )
-        return queued
+        return queued.catch(() => null)
       },
       undoInsert: ({id, promptId}) => {
+        if (streamingPromptIds.has(promptId)) return false
         const editor = editorRefs.current.get(promptId)?.current
         if (!editor || editor.isDestroyed) return false
         const range = getInsertedRange(editor, id)
@@ -123,6 +152,7 @@ const useTeamPromptComposerApiRegistration = (options: Options) => {
         return true
       },
       forgetInsert: ({id, promptId}) => {
+        if (streamingPromptIds.has(promptId)) return
         const editor = editorRefs.current.get(promptId)?.current
         if (!editor || editor.isDestroyed) return
         editor.commands.forgetInsertedRange(id)

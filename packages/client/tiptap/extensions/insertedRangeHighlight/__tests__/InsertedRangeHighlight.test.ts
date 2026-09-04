@@ -143,6 +143,38 @@ describe('InsertedRangeHighlight', () => {
     expect(decorations[1]!.to).toBe(17)
   })
 
+  it('re-marks a forgotten range at its snapshotted coordinates', () => {
+    const {state, plugin} = createFixture()
+    const marked = markRange(state)
+    const snapshot = insertedRangeKey.getState(marked)?.get('r1')!
+
+    const forgotten = marked.apply(marked.tr.setMeta(insertedRangeKey, {forget: 'r1'}))
+    const appended = state.schema.node('paragraph', null, state.schema.text('four'))
+    const replaced = forgotten.apply(
+      forgotten.tr.replaceWith(
+        0,
+        forgotten.doc.content.size,
+        forgotten.doc.content.append(Fragment.from(appended))
+      )
+    )
+
+    expect(insertedRangeKey.getState(replaced)?.size).toBe(0)
+    expect(getDecorations(plugin, replaced)).toHaveLength(0)
+
+    const remarked = replaced.apply(
+      replaced.tr.setMeta(insertedRangeKey, {
+        mark: {id: 'r1', from: snapshot.from, to: snapshot.to}
+      })
+    )
+    const settled = remarked.apply(remarked.tr.setMeta(insertedRangeKey, {settle: 'r1'}))
+
+    expect(insertedRangeKey.getState(settled)?.get('r1')).toEqual({from: 5, to: 17, settled: true})
+    const decorations = getDecorations(plugin, settled)
+    expect(decorations).toHaveLength(2)
+    expect(decorations[0]!.from).toBe(5)
+    expect(decorations[1]!.to).toBe(17)
+  })
+
   it('forgets a range on explicit forgetInsertedRange', () => {
     const {state, plugin} = createFixture()
     const marked = markRange(state)
