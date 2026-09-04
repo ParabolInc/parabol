@@ -185,19 +185,7 @@ const ActivityDetailsSidebar = (props: Props) => {
     submitMutation()
     const upgradeAwareOnCompleted = makeUpgradeAwareOnCompleted(onCompleted)
     const upgradeAwareOnError = makeUpgradeAwareOnError(onError)
-    if (type === 'teamPrompt') {
-      StartTeamPromptMutation(
-        atmosphere,
-        {
-          teamId: selectedTeam.id,
-          name,
-          rrule: rrule?.toString(),
-          gcalInput,
-          ignoreSuggestedUpgrade
-        },
-        {navigate, onError: upgradeAwareOnError, onCompleted: upgradeAwareOnCompleted}
-      )
-    } else if (type === 'action') {
+    if (type === 'action') {
       StartCheckInMutation(
         atmosphere,
         {teamId: selectedTeam.id, gcalInput, ignoreSuggestedUpgrade},
@@ -226,6 +214,19 @@ const ActivityDetailsSidebar = (props: Props) => {
                 atmosphere,
                 {teamId: selectedTeam.id, gcalInput, ignoreSuggestedUpgrade},
                 {navigate, onError, onCompleted: upgradeAwareOnCompleted}
+              )
+            } else if (type === 'teamPrompt') {
+              StartTeamPromptMutation(
+                atmosphere,
+                {
+                  teamId: selectedTeam.id,
+                  templateId: selectedTemplate.id,
+                  name,
+                  rrule: rrule?.toString(),
+                  gcalInput,
+                  ignoreSuggestedUpgrade
+                },
+                {navigate, onError: upgradeAwareOnError, onCompleted: upgradeAwareOnCompleted}
               )
             }
           },
