@@ -41,5 +41,10 @@ export const browseSubline = (dateRange?: WorkDrawerDateRange) => {
 export const addAllLabel = (remaining: number, total: number) =>
   remaining === total ? `Add all ${remaining} to my response` : `Add remaining ${remaining}`
 
+export const itemSource = (service: string) => {
+  const label = serviceLabel(service)
+  return label === 'Parabol' ? label : `${label} · Parabol`
+}
+
 export const collectText = (node: JSONContent): string[] =>
   node.text ? [node.text] : (node.content ?? []).flatMap(collectText)
