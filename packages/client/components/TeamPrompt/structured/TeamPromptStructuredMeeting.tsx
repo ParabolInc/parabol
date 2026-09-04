@@ -1,11 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
-import {Suspense, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {useLocation} from 'react-router'
 import type {TeamPromptStructuredMeeting_meeting$key} from '~/__generated__/TeamPromptStructuredMeeting_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMeeting from '~/hooks/useMeeting'
 import usePhoneViewport, {isPhoneViewport} from '~/hooks/usePhoneViewport'
+import useVisualViewportBottom from '~/hooks/useVisualViewportBottom'
 import {cn} from '../../../ui/cn'
 import ErrorBoundary from '../../ErrorBoundary'
 import MeetingArea from '../../MeetingArea'
@@ -15,6 +16,7 @@ import MeetingLockedOverlay from '../../MeetingLockedOverlay'
 import MeetingStyles from '../../MeetingStyles'
 import TeamPromptDrawer from '../TeamPromptDrawer'
 import TeamPromptTopBar from '../TeamPromptTopBar'
+import TeamPromptKeyboardBar from './mobile/TeamPromptKeyboardBar'
 import TeamPromptPhoneAppBar from './mobile/TeamPromptPhoneAppBar'
 import TeamPromptPhoneFocusedBar from './mobile/TeamPromptPhoneFocusedBar'
 import {type PhoneComposerControls, PhoneComposerStateContext} from './mobile/usePhoneComposerState'
@@ -69,14 +71,19 @@ const TeamPromptStructuredMeeting = (props: Props) => {
   const composerApiRef = useRef<TeamPromptComposerApi | null>(null)
   const composerControlsRef = useRef<PhoneComposerControls | null>(null)
   const isPhone = usePhoneViewport()
+  const keyboardBottom = useVisualViewportBottom()
   const [focusedPromptId, setFocusedPromptId] = useState<string | null>(null)
   const [progress, setProgress] = useState({answeredCount: 0, promptCount: 0})
+  const [isLastPrompt, setIsLastPrompt] = useState(false)
   const publishProgress = useCallback((answeredCount: number, promptCount: number) => {
     setProgress((prev) =>
       prev.answeredCount === answeredCount && prev.promptCount === promptCount
         ? prev
         : {answeredCount, promptCount}
     )
+  }, [])
+  const publishIsLastPrompt = useCallback((nextIsLastPrompt: boolean) => {
+    setIsLastPrompt((prev) => (prev === nextIsLastPrompt ? prev : nextIsLastPrompt))
   }, [])
   const requestBlur = useCallback(() => {
     composerControlsRef.current?.blur()
@@ -95,9 +102,19 @@ const TeamPromptStructuredMeeting = (props: Props) => {
       publishProgress,
       requestBlur,
       focusNextUnanswered,
-      controlsRef: composerControlsRef
+      controlsRef: composerControlsRef,
+      isLastPrompt,
+      publishIsLastPrompt
     }),
-    [focusedPromptId, progress, publishProgress, requestBlur, focusNextUnanswered]
+    [
+      focusedPromptId,
+      progress,
+      publishProgress,
+      requestBlur,
+      focusNextUnanswered,
+      isLastPrompt,
+      publishIsLastPrompt
+    ]
   )
 
   useEffect(() => {
@@ -112,7 +129,7 @@ const TeamPromptStructuredMeeting = (props: Props) => {
     })
   }, [responseId])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const onPhone = isPhoneViewport()
     if (onPhone && responseId) return
     if (!onPhone && (localStageId || endedAt)) return
@@ -120,6 +137,15 @@ const TeamPromptStructuredMeeting = (props: Props) => {
       store.get(meetingId)?.setValue(onPhone ? null : 'inspiration', 'rightDrawerOpen')
     })
   }, [])
+
+  useEffect(() => {
+    if (!isPhone) return
+    const root = document.documentElement
+    root.style.setProperty('--tp-keyboard', `${focusedPromptId ? keyboardBottom : 0}px`)
+    return () => {
+      root.style.removeProperty('--tp-keyboard')
+    }
+  }, [isPhone, focusedPromptId, keyboardBottom])
 
   if (!safeRoute) return null
   return (
@@ -150,7 +176,7 @@ const TeamPromptStructuredMeeting = (props: Props) => {
                     <div
                       ref={scrollRef}
                       className={cn(
-                        'h-full overflow-auto',
+                        isPhone ? 'min-h-0 flex-1 overflow-auto' : 'h-full overflow-auto',
                         isPhone && 'pb-[var(--tp-bottom-bar,0px)]'
                       )}
                     >
@@ -166,6 +192,7 @@ const TeamPromptStructuredMeeting = (props: Props) => {
                   </ErrorBoundary>
                 </MeetingHeaderAndPhase>
                 <TeamPromptDrawer meetingRef={meeting} />
+                {isPhone && <TeamPromptKeyboardBar />}
               </MeetingContent>
             </PhoneComposerStateContext.Provider>
           </TeamPromptComposerApiContext.Provider>

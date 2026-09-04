@@ -95,9 +95,11 @@ const TeamPromptComposer = (props: Props) => {
   const onChange = useCallback(
     (promptId: string, editor: Editor) => {
       setAnsweredPromptIds((prev) => {
+        const isAnswered = !editor.isEmpty
+        if (prev.has(promptId) === isAnswered) return prev
         const next = new Set(prev)
-        if (editor.isEmpty) next.delete(promptId)
-        else next.add(promptId)
+        if (isAnswered) next.add(promptId)
+        else next.delete(promptId)
         return next
       })
       queueAnswer(promptId, editor.getJSON())
@@ -121,7 +123,8 @@ const TeamPromptComposer = (props: Props) => {
     blur: focusMode.blur,
     focusNextUnanswered: focusMode.focusNextUnanswered,
     answeredCount: answeredPromptIds.size,
-    promptCount: prompts.length
+    promptCount: prompts.length,
+    isLastPrompt: focusMode.isLastPrompt
   })
 
   const onShare = useCallback(() => {
@@ -142,22 +145,25 @@ const TeamPromptComposer = (props: Props) => {
   }
 
   if (!stage) return null
+  const isPhoneFocused = isPhone && !!focusMode.focusedPromptId
   return (
     <div className={cn(TEAM_UPDATES_BAND, 'pt-6 pb-2')}>
       <div className={TEAM_UPDATES_COLUMN}>
-        <TeamPromptComposerHeader
-          picture={stage.teamMember.user.picture}
-          isExpanded={isExpanded}
-          onToggle={() => setIsExpanded((wasExpanded) => !wasExpanded)}
-          isShared={isShared}
-          sharedAt={sharedAt}
-          updatedAt={lastAnswerAt}
-          preview={preview}
-          answeredCount={answeredPromptIds.size}
-          promptCount={prompts.length}
-          isPhone={isPhone}
-          templateName={template?.name}
-        />
+        {!isPhoneFocused && (
+          <TeamPromptComposerHeader
+            picture={stage.teamMember.user.picture}
+            isExpanded={isExpanded}
+            onToggle={() => setIsExpanded((wasExpanded) => !wasExpanded)}
+            isShared={isShared}
+            sharedAt={sharedAt}
+            updatedAt={lastAnswerAt}
+            preview={preview}
+            answeredCount={answeredPromptIds.size}
+            promptCount={prompts.length}
+            isPhone={isPhone}
+            templateName={template?.name}
+          />
+        )}
         <div className={cn(!isExpanded && 'hidden')}>
           <TeamPromptAnswerList
             teamId={teamId}

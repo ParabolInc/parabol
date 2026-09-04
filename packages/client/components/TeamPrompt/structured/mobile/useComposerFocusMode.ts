@@ -1,5 +1,5 @@
 import type {Editor} from '@tiptap/core'
-import {useCallback, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import nextUnansweredPromptId from './nextUnansweredPromptId'
 
 interface Options {
@@ -44,7 +44,19 @@ const useComposerFocusMode = (options: Options) => {
     return true
   }, [prompts, answeredPromptIds, focusedPromptId, focusPrompt])
 
-  return {focusedPromptId, onEditorFocusChange, focusPrompt, focusNextUnanswered, blur}
+  const isLastPrompt = useMemo(
+    () => nextUnansweredPromptId(prompts, answeredPromptIds, focusedPromptId) === null,
+    [prompts, answeredPromptIds, focusedPromptId]
+  )
+
+  return {
+    focusedPromptId,
+    onEditorFocusChange,
+    focusPrompt,
+    focusNextUnanswered,
+    blur,
+    isLastPrompt
+  }
 }
 
 export default useComposerFocusMode
