@@ -51,6 +51,7 @@ const InspirationDraftPanel = (props: Props) => {
           <button
             ref={backRef}
             type='button'
+            aria-label='Back to your draft'
             onClick={() => setBrowsing(false)}
             className='flex h-10 shrink-0 cursor-pointer items-center gap-1 px-3 font-semibold text-[13px] text-fg-secondary hover:bg-surface-hover'
           >
