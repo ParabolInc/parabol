@@ -17,7 +17,6 @@ const useInspirationAutoGenerate = (options: Options) => {
     `Inspiration:autoDrafted:${meetingId}:${service}`,
     false
   )
-  // the stored value survives remounts; the ref guards the double effect a remount runs
   const attemptedRef = useRef(attempted)
   useEffect(() => {
     if (!enabled || attemptedRef.current || hasItems || !hasWorkItems || submitting) return

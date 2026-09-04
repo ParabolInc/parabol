@@ -27,8 +27,6 @@ interface Props {
   children?: ReactNode
 }
 
-const KEEP_MOUNTED_TO_REPORT_THE_WORK_ITEM_COUNT = 'hidden'
-
 const InspirationDraftPanel = (props: Props) => {
   const {meetingId, teamId, service, items, prompts, composer, workItemCount, dateRange} = props
   const {onRegenerate, regenerating, error, onTune, tuneDirty, filters, children} = props
@@ -92,13 +90,7 @@ const InspirationDraftPanel = (props: Props) => {
           </div>
         </>
       )}
-      <div
-        className={
-          browsing
-            ? 'flex min-h-0 flex-1 flex-col overflow-y-auto'
-            : KEEP_MOUNTED_TO_REPORT_THE_WORK_ITEM_COUNT
-        }
-      >
+      <div className={browsing ? 'flex min-h-0 flex-1 flex-col overflow-y-auto' : 'hidden'}>
         {children}
       </div>
     </div>

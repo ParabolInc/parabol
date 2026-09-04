@@ -96,8 +96,6 @@ const InspirationItemsPanel = (props: Props) => {
 
   const structured = getStructuredInspiration(consume)
 
-  // the Parabol count follows the visible sub-tab's filters, while the server drafts from every task
-  // status plus standup responses, so a filtered-out list must not be read as "no work to draft from"
   const hasWorkItems = service === 'PARABOL' ? workItemCount !== 0 : !!workItemCount
 
   useInspirationAutoGenerate({
