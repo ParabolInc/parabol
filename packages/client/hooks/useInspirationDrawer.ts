@@ -8,7 +8,7 @@ import useSessionStorageState from './useSessionStorageState'
 
 // Shared state for the "Your Work" inspiration drawer panels (GitHub, Jira, Linear, …). Each panel
 // builds its own service-specific searchQuery and renders its own results, but they all need the
-// same date-range filter and the results-count handshake. Works for both team prompt
+// same date-range filter and the results-count -> hasResults handshake. Works for both team prompt
 // and retrospective meetings (the NewMeeting interface).
 const useInspirationDrawer = (service: string, meetingRef: useInspirationDrawer_meeting$key) => {
   const meeting = useFragment(

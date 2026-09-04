@@ -19,7 +19,6 @@ export type WorkDrawerConsume =
   | {
       mode: 'teamPrompt'
       viewerResponse: ViewerResponse | null
-      // Null for legacy stand-ups, which have no per-prompt answer editors to insert into.
       composer: TeamPromptComposerApi | null
       prompts: readonly WorkDrawerPrompt[]
     }
