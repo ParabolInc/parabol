@@ -2,6 +2,7 @@ import {AutoAwesome} from '~/ui/icons'
 import {Button} from '../../../ui/Button/Button'
 import {cn} from '../../../ui/cn'
 import {modKey} from '../../../utils/platform'
+import shareButtonState from './shareButtonState'
 
 interface Props {
   isShared: boolean
@@ -25,8 +26,14 @@ const TeamPromptComposerFooter = (props: Props) => {
     onOpenInspiration,
     onShare
   } = props
-  const label = isShared ? 'Share changes' : promptCount > 1 ? 'Share Responses' : 'Share Response'
-  const disabled = submitting || answeredCount === 0 || (isShared && !isDirty)
+  const {label, disabled} = shareButtonState({
+    isShared,
+    isDirty,
+    answeredCount,
+    promptCount,
+    submitting,
+    isEnded: false
+  })
   return (
     <div className='flex items-center gap-3 px-1 pt-2'>
       <div className='flex-1 text-fg-muted text-xs'>
