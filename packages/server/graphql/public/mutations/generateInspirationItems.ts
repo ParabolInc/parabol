@@ -6,6 +6,7 @@ import getKysely from '../../../postgres/getKysely'
 import {getUserId, isSuperUser} from '../../../utils/authorization'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import canAccessAI from '../../mutations/helpers/canAccessAI'
+import getTeamPromptMeetingPrompts from '../../mutations/helpers/getTeamPromptMeetingPrompts'
 import type {MutationResolvers} from '../resolverTypes'
 import fetchGCalWorkItems from './helpers/fetchGCalWorkItems'
 import fetchGitHubWorkItems from './helpers/fetchGitHubWorkItems'
@@ -88,8 +89,6 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
   const viewer = await dataLoader.get('users').loadNonNull(viewerId)
 
   const manager = new OpenAIServerManager()
-  // Each generated item, ready to persist. promptId is set for retrospective meetings (the
-  // AI-chosen reflect prompt/column) and null for team prompt meetings.
   let generatedItems: {title: string | null; content: string; promptId: string | null}[]
   let tokenCost: number
 
@@ -120,7 +119,6 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
       promptId: prompts[item.promptIndex]?.id ?? prompts[0]!.id
     }))
   } else {
-    // Pull the viewer's most recent answers from other standups to use as a style guide
     const pastResponseRows = await pg
       .selectFrom('TeamPromptResponse')
       .select('plaintextContent')
@@ -131,23 +129,43 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
       .limit(5)
       .execute()
     const pastResponses = pastResponseRows.map((row) => row.plaintextContent)
+    const prompts = await getTeamPromptMeetingPrompts(meeting, dataLoader)
 
-    const result = await manager.generateInspirationItems(
-      workItemsText,
-      meeting.meetingPrompt,
-      viewer.preferredName,
-      pastResponses,
-      userPrompt
-    )
-    if (!result) {
-      throw new GraphQLError('Unable to draft a response right now. Please try again.')
+    if (prompts.length > 1) {
+      const result = await manager.generateStandupInspirationItems(
+        workItemsText,
+        prompts.map(({question, description}) => ({question, description})),
+        viewer.preferredName,
+        pastResponses,
+        userPrompt
+      )
+      if (!result) {
+        throw new GraphQLError('Unable to draft a response right now. Please try again.')
+      }
+      tokenCost = result.tokenCost
+      generatedItems = result.items.map((item) => ({
+        title: item.title,
+        content: item.content,
+        promptId: prompts[item.promptIndex]?.id ?? prompts[0]!.id
+      }))
+    } else {
+      const result = await manager.generateInspirationItems(
+        workItemsText,
+        meeting.meetingPrompt,
+        viewer.preferredName,
+        pastResponses,
+        userPrompt
+      )
+      if (!result) {
+        throw new GraphQLError('Unable to draft a response right now. Please try again.')
+      }
+      tokenCost = result.tokenCost
+      generatedItems = result.items.map((item) => ({
+        title: item.title,
+        content: item.content,
+        promptId: prompts[0]?.id ?? null
+      }))
     }
-    tokenCost = result.tokenCost
-    generatedItems = result.items.map((item) => ({
-      title: item.title,
-      content: item.content,
-      promptId: null
-    }))
   }
 
   await pg.insertInto('AIRequest').values({userId: viewerId, tokenCost}).execute()
