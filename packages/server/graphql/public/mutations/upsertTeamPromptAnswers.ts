@@ -38,10 +38,10 @@ const upsertTeamPromptAnswers: MutationResolvers['upsertTeamPromptAnswers'] = as
     throw new GraphQLError('Meeting already ended')
   }
   const {teamId} = meeting
-  const prompts = await getTeamPromptMeetingPrompts(meeting, dataLoader)
-  if (prompts.length === 0) {
+  if (!meeting.templateId) {
     throw new GraphQLError('Meeting does not use a template')
   }
+  const prompts = await getTeamPromptMeetingPrompts(meeting, dataLoader)
   const promptIds = new Set(prompts.map(({id}) => id))
   const seenPromptIds = new Set<string>()
   const parsedAnswers = answers.map(({promptId, content}) => {
@@ -72,6 +72,9 @@ const upsertTeamPromptAnswers: MutationResolvers['upsertTeamPromptAnswers'] = as
   const existingResponses = await dataLoader.get('teamPromptResponsesByMeetingId').load(meetingId)
   const oldResponse = existingResponses.find((response) => response.userId === viewerId)
   const wasShared = oldResponse?.isShared ?? false
+  if (wasShared && !share) {
+    throw new GraphQLError('Response is already shared')
+  }
   if (!oldResponse && !share && answered.length === 0) {
     throw new GraphQLError('Nothing to save')
   }
