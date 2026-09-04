@@ -25,8 +25,7 @@ export const insertedRangeKey = new PluginKey<RangeMap>('insertedRangeHighlight'
 const buildDecorations = (doc: Parameters<typeof DecorationSet.create>[0], ranges: RangeMap) => {
   const decorations: Decoration[] = []
   ranges.forEach((range, id) => {
-    doc.nodesBetween(range.from, range.to, (node, pos, parent) => {
-      if (parent?.type.name !== 'doc') return true
+    doc.nodesBetween(range.from, range.to, (node, pos) => {
       if (pos < range.from || pos + node.nodeSize > range.to) return false
       decorations.push(
         Decoration.node(pos, pos + node.nodeSize, {
@@ -90,11 +89,9 @@ export const InsertedRangeHighlight = Extension.create({
           apply: (tr, ranges) => {
             const next: RangeMap = new Map()
             ranges.forEach((range, id) => {
-              next.set(id, {
-                from: tr.mapping.map(range.from, -1),
-                to: tr.mapping.map(range.to, 1),
-                settled: range.settled
-              })
+              const from = tr.mapping.map(range.from, -1)
+              const to = tr.mapping.map(range.to, 1)
+              if (to > from) next.set(id, {from, to, settled: range.settled})
             })
             const meta = tr.getMeta(insertedRangeKey) as RangeMeta | undefined
             if (meta?.mark)
