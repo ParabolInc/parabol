@@ -18,6 +18,7 @@ import InspirationDraftPanel from './InspirationDraftPanel'
 import InspirationItemCard from './InspirationItemCard'
 import RetroInspirationItemCard from './RetroInspirationItemCard'
 import useInspirationAutoGenerate from './useInspirationAutoGenerate'
+import {getStructuredInspiration} from './useIsStructuredInspiration'
 import {useWorkDrawerConsume} from './WorkDrawerConsumeContext'
 import type {WorkDrawerDateRange} from './WorkDrawerDateFilter'
 
@@ -93,10 +94,7 @@ const InspirationItemsPanel = (props: Props) => {
     })
   }, [submitting, meetingId, service, searchQuery, userPrompt, generateInspirationItems])
 
-  const structured =
-    consume.mode === 'teamPrompt' && consume.composer && consume.prompts.length > 0
-      ? {composer: consume.composer, prompts: consume.prompts}
-      : null
+  const structured = getStructuredInspiration(consume)
 
   // the Parabol count follows the visible sub-tab's filters, while the server drafts from every task
   // status plus standup responses, so a filtered-out list must not be read as "no work to draft from"
@@ -206,7 +204,6 @@ const InspirationItemsPanel = (props: Props) => {
 
   return (
     <>
-      {filters}
       {!hideDraftPanel && (
         <div className='flex flex-col gap-2 px-4 pb-4'>
           <div className='flex gap-2'>

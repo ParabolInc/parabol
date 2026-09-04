@@ -12,6 +12,7 @@ import LinearSVG from '../../LinearSVG'
 import InspirationItemsPanel from './InspirationItemsPanel'
 import LinearIntegrationResultsRoot from './LinearIntegrationResultsRoot'
 import LinearProjectFilterBar from './LinearProjectFilterBar'
+import useIsStructuredInspiration from './useIsStructuredInspiration'
 import {WorkDrawerDateFilter} from './WorkDrawerDateFilter'
 
 interface Props {
@@ -74,6 +75,7 @@ const LinearIntegrationPanel = (props: Props) => {
   const filter = makeLinearWorkFilter(selectedLinearIds, dateRange)
   const searchQuery = JSON.stringify(filter)
 
+  const isStructured = useIsStructuredInspiration()
   const mutationProps = useMutationProps()
   const {error, onError} = mutationProps
 
@@ -93,31 +95,34 @@ const LinearIntegrationPanel = (props: Props) => {
     })
   }
 
+  const filterBar = teamMember ? (
+    <>
+      <LinearProjectFilterBar
+        teamMemberRef={teamMember}
+        selectedLinearIds={selectedLinearIds}
+        setSelectedLinearIds={(ids) => {
+          SendClientSideEvent(atmosphere, 'Your Work Filter Changed', {
+            teamId: meeting.teamId,
+            meetingId: meeting.id,
+            service: 'linear'
+          })
+          setSelectedLinearIds(ids)
+        }}
+      />
+      <div className='mb-2 flex w-full px-2'>
+        <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
+      </div>
+    </>
+  ) : null
+
   return (
     <>
       {isActive && teamMember ? (
         <>
+          {!isStructured && filterBar}
           <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
             <InspirationItemsPanel
-              filters={
-                <>
-                  <LinearProjectFilterBar
-                    teamMemberRef={teamMember}
-                    selectedLinearIds={selectedLinearIds}
-                    setSelectedLinearIds={(ids) => {
-                      SendClientSideEvent(atmosphere, 'Your Work Filter Changed', {
-                        teamId: meeting.teamId,
-                        meetingId: meeting.id,
-                        service: 'linear'
-                      })
-                      setSelectedLinearIds(ids)
-                    }}
-                  />
-                  <div className='mb-2 flex w-full px-2'>
-                    <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
-                  </div>
-                </>
-              }
+              filters={isStructured ? filterBar : undefined}
               meetingId={meeting.id}
               teamId={meeting.teamId}
               service='linear'
