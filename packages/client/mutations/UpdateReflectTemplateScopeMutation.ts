@@ -6,6 +6,7 @@ import type {
   SharingScopeEnum,
   UpdateReflectTemplateScopeMutation_organization$data
 } from '../__generated__/UpdateReflectTemplateScopeMutation_organization.graphql'
+import type Atmosphere from '../Atmosphere'
 import type {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import addNodeToArray from '../utils/relay/addNodeToArray'
 import getBaseRecord from '../utils/relay/getBaseRecord'
@@ -89,13 +90,22 @@ const addTemplateToScope = (
   }
 }
 
+const isTemplateAvailableToViewer = (template: RecordProxy, atmosphere: Atmosphere) => {
+  if (template.getValue('scope') !== 'TEAM') return true
+  const teamId = template.getValue('teamId') as string | undefined
+  if (!teamId) return false
+  return !!atmosphere.authObj?.tms.includes(teamId)
+}
+
 const swapTemplateInViewerConnections = (
   templateId: string,
   clonedTemplate: RecordProxy,
-  store: RecordSourceSelectorProxy
+  store: RecordSourceSelectorProxy,
+  atmosphere: Atmosphere
 ) => {
   const viewer = store.getRoot().getLinkedRecord('viewer')
   if (!viewer) return
+  const isAvailable = isTemplateAvailableToViewer(clonedTemplate, atmosphere)
   const connections = [
     ConnectionHandler.getConnection(viewer, 'ActivityLibrary_availableTemplates'),
     ConnectionHandler.getConnection(viewer, 'ActivityDetails_availableTemplates')
@@ -103,7 +113,7 @@ const swapTemplateInViewerConnections = (
   connections.forEach((connection) => {
     if (!connection) return
     safeRemoveNodeFromConn(templateId, connection)
-    putTemplateInConnection(clonedTemplate, connection, store)
+    if (isAvailable) putTemplateInConnection(clonedTemplate, connection, store)
   })
 }
 
@@ -112,12 +122,18 @@ const handleUpdateTemplateScope = (
   template: RecordProxy,
   newScope: SharingScopeEnum,
   store: RecordSourceSelectorProxy,
+  atmosphere: Atmosphere,
   clonedTemplate?: RecordProxy
 ) => {
   const templateType = template.getValue('type')
   if (templateType === 'teamPrompt') {
     if (clonedTemplate) {
-      swapTemplateInViewerConnections(template.getValue('id') as string, clonedTemplate, store)
+      swapTemplateInViewerConnections(
+        template.getValue('id') as string,
+        clonedTemplate,
+        store,
+        atmosphere
+      )
     }
     return
   }
@@ -159,13 +175,13 @@ const handleUpdateTemplateScope = (
 
 export const updateTemplateScopeOrganizationUpdater: SharedUpdater<
   UpdateReflectTemplateScopeMutation_organization$data
-> = (payload: any, {store}) => {
+> = (payload: any, {atmosphere, store}) => {
   const template = payload.getLinkedRecord('template')
   if (!template) return
   const clonedTemplate = payload.getLinkedRecord('clonedTemplate')
   const nextTemplate = clonedTemplate || template
   const newScope = nextTemplate.getValue('scope')
-  handleUpdateTemplateScope(template, newScope, store, clonedTemplate)
+  handleUpdateTemplateScope(template, newScope, store, atmosphere, clonedTemplate)
 }
 
 const UpdateReflectTemplateScopeMutation: StandardMutation<TUpdateTemplateScopeMutation> = (
@@ -189,7 +205,7 @@ const UpdateReflectTemplateScopeMutation: StandardMutation<TUpdateTemplateScopeM
       const template = store.get(templateId)
       if (!template) return
       template.setValue(scope, 'scope')
-      handleUpdateTemplateScope(template, scope, store)
+      handleUpdateTemplateScope(template, scope, store, atmosphere)
     },
     onCompleted,
     onError
