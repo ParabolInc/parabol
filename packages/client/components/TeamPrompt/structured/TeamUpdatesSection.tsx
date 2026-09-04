@@ -16,10 +16,11 @@ interface Props {
   meetingRef: TeamUpdatesSection_meeting$key
   scrollContainerRef: RefObject<HTMLDivElement | null>
   composerRef: RefObject<HTMLDivElement | null>
+  sectionRef: RefObject<HTMLDivElement>
 }
 
 const TeamUpdatesSection = (props: Props) => {
-  const {meetingRef, scrollContainerRef, composerRef} = props
+  const {meetingRef, scrollContainerRef, composerRef, sectionRef} = props
   const meeting = useFragment(
     graphql`
       fragment TeamUpdatesSection_meeting on TeamPromptMeeting {
@@ -69,7 +70,6 @@ const TeamUpdatesSection = (props: Props) => {
   const isPhone = usePhoneViewport()
   const headerRef = useRef<HTMLDivElement>(null)
   const gridRef = useRef<HTMLDivElement>(null)
-  const sectionRef = useRef<HTMLDivElement>(null)
   const viewerStage = stages.find((stage) => stage.teamMember.userId === viewerId)
   const {shared, drafting, notStarted} = sortTeamStages(stages, viewerId)
   const canPin = !isPhone && !endedAt && !viewerStage?.response?.isShared && shared.length > 0

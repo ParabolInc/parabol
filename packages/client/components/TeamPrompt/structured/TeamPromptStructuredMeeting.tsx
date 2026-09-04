@@ -18,6 +18,7 @@ import TeamPromptDrawer from '../TeamPromptDrawer'
 import TeamPromptTopBar from '../TeamPromptTopBar'
 import TeamPromptKeyboardBar from './mobile/TeamPromptKeyboardBar'
 import TeamPromptPhoneAppBar from './mobile/TeamPromptPhoneAppBar'
+import TeamPromptPhoneBottomBar from './mobile/TeamPromptPhoneBottomBar'
 import TeamPromptPhoneFocusedBar from './mobile/TeamPromptPhoneFocusedBar'
 import {type PhoneComposerControls, PhoneComposerStateContext} from './mobile/usePhoneComposerState'
 import TeamPromptComposer from './TeamPromptComposer'
@@ -43,6 +44,7 @@ const TeamPromptStructuredMeeting = (props: Props) => {
         ...TeamPromptTemplateHeader_meeting
         ...TeamPromptComposer_meeting
         ...TeamPromptPhoneAppBar_meeting
+        ...TeamPromptPhoneBottomBar_meeting
         ...TeamUpdatesSection_meeting
         id
         endedAt
@@ -68,6 +70,7 @@ const TeamPromptStructuredMeeting = (props: Props) => {
   const responseId = new URLSearchParams(location.search).get('responseId')
   const scrollRef = useRef<HTMLDivElement>(null)
   const composerRef = useRef<HTMLDivElement>(null)
+  const teamSectionRef = useRef<HTMLDivElement>(null)
   const composerApiRef = useRef<TeamPromptComposerApi | null>(null)
   const composerControlsRef = useRef<PhoneComposerControls | null>(null)
   const isPhone = usePhoneViewport()
@@ -75,6 +78,7 @@ const TeamPromptStructuredMeeting = (props: Props) => {
   const [focusedPromptId, setFocusedPromptId] = useState<string | null>(null)
   const [progress, setProgress] = useState({answeredCount: 0, promptCount: 0})
   const [isLastPrompt, setIsLastPrompt] = useState(false)
+  const [shareState, setShareState] = useState({isShared: false, isDirty: false, submitting: false})
   const publishProgress = useCallback((answeredCount: number, promptCount: number) => {
     setProgress((prev) =>
       prev.answeredCount === answeredCount && prev.promptCount === promptCount
@@ -85,6 +89,16 @@ const TeamPromptStructuredMeeting = (props: Props) => {
   const publishIsLastPrompt = useCallback((nextIsLastPrompt: boolean) => {
     setIsLastPrompt((prev) => (prev === nextIsLastPrompt ? prev : nextIsLastPrompt))
   }, [])
+  const publishShareState = useCallback(
+    (isShared: boolean, isDirty: boolean, submitting: boolean) => {
+      setShareState((prev) =>
+        prev.isShared === isShared && prev.isDirty === isDirty && prev.submitting === submitting
+          ? prev
+          : {isShared, isDirty, submitting}
+      )
+    },
+    []
+  )
   const requestBlur = useCallback(() => {
     composerControlsRef.current?.blur()
     setFocusedPromptId(null)
@@ -93,6 +107,11 @@ const TeamPromptStructuredMeeting = (props: Props) => {
     () => composerControlsRef.current?.focusNextUnanswered() ?? false,
     []
   )
+  const share = useCallback(() => composerControlsRef.current?.share(), [])
+  const openInspiration = useCallback(() => composerControlsRef.current?.openInspiration(), [])
+  const onSeeTeam = useCallback(() => {
+    scrollRef.current?.scrollTo({top: teamSectionRef.current?.offsetTop ?? 0, behavior: 'smooth'})
+  }, [])
   const phoneComposerState = useMemo(
     () => ({
       focusedPromptId,
@@ -104,7 +123,13 @@ const TeamPromptStructuredMeeting = (props: Props) => {
       focusNextUnanswered,
       controlsRef: composerControlsRef,
       isLastPrompt,
-      publishIsLastPrompt
+      publishIsLastPrompt,
+      share,
+      openInspiration,
+      isShared: shareState.isShared,
+      isDirty: shareState.isDirty,
+      submitting: shareState.submitting,
+      publishShareState
     }),
     [
       focusedPromptId,
@@ -113,7 +138,11 @@ const TeamPromptStructuredMeeting = (props: Props) => {
       requestBlur,
       focusNextUnanswered,
       isLastPrompt,
-      publishIsLastPrompt
+      publishIsLastPrompt,
+      share,
+      openInspiration,
+      shareState,
+      publishShareState
     ]
   )
 
@@ -189,11 +218,13 @@ const TeamPromptStructuredMeeting = (props: Props) => {
                         meetingRef={meeting}
                         scrollContainerRef={scrollRef}
                         composerRef={composerRef}
+                        sectionRef={teamSectionRef}
                       />
                     </div>
                   </ErrorBoundary>
                 </MeetingHeaderAndPhase>
                 <TeamPromptDrawer meetingRef={meeting} />
+                {isPhone && <TeamPromptPhoneBottomBar meetingRef={meeting} onSeeTeam={onSeeTeam} />}
                 {isPhone && <TeamPromptKeyboardBar />}
               </MeetingContent>
             </PhoneComposerStateContext.Provider>
