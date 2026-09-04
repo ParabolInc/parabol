@@ -3,7 +3,7 @@ import sortByISO8601Date from '../../../utils/sortByISO8601Date'
 export interface StructuredResponseSummary {
   id: string
   isShared: boolean
-  sharedAt: string | null
+  sharedAt: string | null | undefined
   updatedAt: string
   answeredPromptIds: readonly string[]
 }
@@ -11,7 +11,7 @@ export interface StructuredResponseSummary {
 export interface StructuredStage<R extends StructuredResponseSummary = StructuredResponseSummary> {
   id: string
   teamMember: {userId: string; user: {preferredName: string; picture: string}}
-  response: R | null
+  response: R | null | undefined
 }
 
 export const sortTeamStages = <S extends StructuredStage>(
