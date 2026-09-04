@@ -59,7 +59,7 @@ const InspirationDraftPanel = (props: Props) => {
             <KeyboardArrowLeft className='h-5 w-5' />
             Your draft
           </button>
-          {filters}
+          <div className='shrink-0'>{filters}</div>
         </>
       ) : (
         <>
@@ -94,7 +94,9 @@ const InspirationDraftPanel = (props: Props) => {
       )}
       <div
         className={
-          browsing ? 'flex min-h-0 flex-1 flex-col' : KEEP_MOUNTED_TO_REPORT_THE_WORK_ITEM_COUNT
+          browsing
+            ? 'flex min-h-0 flex-1 flex-col overflow-y-auto'
+            : KEEP_MOUNTED_TO_REPORT_THE_WORK_ITEM_COUNT
         }
       >
         {children}

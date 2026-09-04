@@ -28,7 +28,8 @@ export const metaLine = (workItemCount: number | undefined, since: string, promp
   return `Drafted from ${source} since ${since} · routed to ${routed}`
 }
 
-export const EMPTY_DRAFT_LINE = 'Nothing drafted yet — use Refresh to draft from your work'
+export const EMPTY_DRAFT_LINE =
+  'Nothing drafted yet — use Refresh draft to write one from your work'
 
 export const browseLabel = (workItemCount: number | undefined) =>
   workItemCount ? `Browse all ${workItemCount} work items` : 'Browse work items'
