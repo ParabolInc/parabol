@@ -134,9 +134,9 @@ const TeamPickerModal = (props: Props) => {
         variables,
         onError,
         onCompleted: (res: useAddTeamPromptTemplateMutation$data, errors) => {
-          const error = errors?.[0]
-          if (error) {
-            setError(error.message)
+          const payloadError = errors?.[0]
+          if (payloadError) {
+            setError(payloadError.message)
             return
           }
           onTemplateCreated(res.addTeamPromptTemplate?.teamPromptTemplate?.id)

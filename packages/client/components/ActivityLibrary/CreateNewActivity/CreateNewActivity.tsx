@@ -1,7 +1,7 @@
 import * as RadioGroup from '@radix-ui/react-radio-group'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
-import {type ComponentPropsWithoutRef, useEffect, useState} from 'react'
+import {type ComponentPropsWithoutRef, useEffect, useMemo, useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Link, useNavigate, useParams} from 'react-router'
 import type {CreateNewActivityQuery} from '~/__generated__/CreateNewActivityQuery.graphql'
@@ -171,13 +171,15 @@ export const CreateNewActivity = (props: Props) => {
     teams.find((team) => team.id === preferredTeamId) ?? sortedTeams[0]
   )
 
-  const standupOrgIds = new Set(
-    organizations.filter((org) => org.hasStandupTemplates).map((org) => org.id)
-  )
-  const supportedActivities = SUPPORTED_CUSTOM_ACTIVITIES.filter(
-    (activity) =>
-      activity.type !== 'teamPrompt' || (selectedTeam && standupOrgIds.has(selectedTeam.orgId))
-  )
+  const supportedActivities = useMemo(() => {
+    const standupOrgIds = new Set(
+      organizations.filter((org) => org.hasStandupTemplates).map((org) => org.id)
+    )
+    return SUPPORTED_CUSTOM_ACTIVITIES.filter(
+      (activity) =>
+        activity.type !== 'teamPrompt' || (selectedTeam && standupOrgIds.has(selectedTeam.orgId))
+    )
+  }, [organizations, selectedTeam?.orgId])
 
   const [selectedActivity, setSelectedActivity] = useState(() => {
     const defaultActivity = supportedActivities[0]!

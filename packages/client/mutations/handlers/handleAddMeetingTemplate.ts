@@ -14,6 +14,14 @@ const handleAddMeetingTemplate = (
   store: RecordSourceSelectorProxy
 ) => {
   if (!newNode) return
+  const viewer = store.getRoot().getLinkedRecord('viewer')
+  const allTemplatesDetailsConn =
+    viewer && ConnectionHandler.getConnection(viewer, 'ActivityDetails_availableTemplates')
+  putTemplateInConnection(newNode, allTemplatesDetailsConn, store)
+  const allTemplatesLibraryConn =
+    viewer && ConnectionHandler.getConnection(viewer, 'ActivityLibrary_availableTemplates')
+  putTemplateInConnection(newNode, allTemplatesLibraryConn, store)
+
   const teamId = newNode.getValue('teamId') as string
   const team = store.get(teamId)
   if (!team) return
@@ -23,14 +31,6 @@ const handleAddMeetingTemplate = (
   if (meetingSettings) {
     addNodeToArray(newNode, meetingSettings, TEAM_TEMPLATES_FIELD[meetingType], 'name')
   }
-
-  const viewer = store.getRoot().getLinkedRecord('viewer')
-  const allTemplatesDetailsConn =
-    viewer && ConnectionHandler.getConnection(viewer, 'ActivityDetails_availableTemplates')
-  putTemplateInConnection(newNode, allTemplatesDetailsConn, store)
-  const allTemplatesLibraryConn =
-    viewer && ConnectionHandler.getConnection(viewer, 'ActivityLibrary_availableTemplates')
-  putTemplateInConnection(newNode, allTemplatesLibraryConn, store)
 }
 
 export default handleAddMeetingTemplate
