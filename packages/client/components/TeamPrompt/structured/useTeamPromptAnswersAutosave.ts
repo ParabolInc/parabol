@@ -31,12 +31,12 @@ const useTeamPromptAnswersAutosave = (options: Options) => {
 
   const send = useCallback(
     (share: boolean) => {
-      const answers = [...pendingRef.current.entries()].map(([promptId, doc]) => ({
+      const sentDocs = new Map(pendingRef.current)
+      const answers = [...sentDocs.entries()].map(([promptId, doc]) => ({
         promptId,
         content: JSON.stringify(doc)
       }))
       if (!share && answers.length === 0) return
-      const sentPromptIds = answers.map(({promptId}) => promptId)
       execute({
         variables: {meetingId, answers, share},
         onCompleted: (_res, errors) => {
@@ -55,13 +55,16 @@ const useTeamPromptAnswersAutosave = (options: Options) => {
             return
           }
           setError(null)
-          sentPromptIds.forEach((promptId) => pendingRef.current.delete(promptId))
+          const evictedPromptIds = [...sentDocs.entries()]
+            .filter(([promptId, doc]) => pendingRef.current.get(promptId) === doc)
+            .map(([promptId]) => promptId)
+          evictedPromptIds.forEach((promptId) => pendingRef.current.delete(promptId))
           setDirtyPromptIds((prev) => {
             const next = new Set(prev)
-            sentPromptIds.forEach((promptId) => next.delete(promptId))
+            evictedPromptIds.forEach((promptId) => next.delete(promptId))
             return next
           })
-          clearDraftAnswers(stageId, sentPromptIds)
+          clearDraftAnswers(stageId, evictedPromptIds)
           if (share) {
             SendClientSideEvent(atmosphere, 'Standup Response Shared', {
               teamId,

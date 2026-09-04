@@ -35,7 +35,9 @@ const TeamPromptComposerHeader = (props: Props) => {
       aria-expanded={isExpanded}
       onClick={onToggle}
       onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') onToggle()
+        if (e.key !== 'Enter' && e.key !== ' ') return
+        e.preventDefault()
+        onToggle()
       }}
       className='flex min-h-12 cursor-pointer items-center gap-2 rounded-md px-2 hover:bg-surface-hover'
     >
