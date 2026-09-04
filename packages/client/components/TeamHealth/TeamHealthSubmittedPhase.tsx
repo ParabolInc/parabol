@@ -48,7 +48,7 @@ const TeamHealthSubmittedPhase = (props: Props) => {
     .find((phase) => phase.phaseType === 'TEAM_HEALTH_RESPONSE')
     ?.stages.filter(isNotNull)[0]?.id
 
-  // revealing the results is the act of ending the meeting, which sends everyone to the summary
+  // revealing the results is the act of ending the meeting, everyone stays in it to view them
   const onReveal = () => {
     endTeamHealth({variables: {meetingId}})
   }

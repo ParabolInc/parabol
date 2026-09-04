@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {type UseMutationConfig, useMutation} from 'react-relay'
+import {commitLocalUpdate, type UseMutationConfig, useMutation} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {RecordProxy} from 'relay-runtime'
 import type {useEndTeamHealthMutation_team$data} from '~/__generated__/useEndTeamHealthMutation_team.graphql'
@@ -7,7 +7,7 @@ import onMeetingRoute from '~/utils/onMeetingRoute'
 import type {useEndTeamHealthMutation as TEndTeamHealthMutation} from '../__generated__/useEndTeamHealthMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import type {OnNextHandler, OnNextNavigateContext, SharedUpdater} from '../types/relayMutations'
-import {GQLID} from '../utils/GQLID'
+import {setLocalStageAndPhase} from '../utils/relay/updateLocalStage'
 import handleAddTimelineEvent from './handlers/handleAddTimelineEvent'
 
 graphql`
@@ -34,6 +34,24 @@ graphql`
     meeting {
       id
       endedAt
+      # ending the meeting is the reveal: it unlocks every aggregate and reorders the result
+      # stages by urgency, so anyone sitting in the meeting needs the new phases pushed to them
+      phases {
+        id
+        phaseType
+        stages {
+          id
+          ... on TeamHealthResultStage {
+            score
+            previousScore
+            responses {
+              id
+              score
+              commentParaphrased
+            }
+          }
+        }
+      }
     }
   }
 `
@@ -52,15 +70,20 @@ export const endTeamHealthTeamOnNext: OnNextHandler<
   OnNextNavigateContext
 > = (payload, context) => {
   const {meeting} = payload
-  const {navigate} = context
+  const {atmosphere} = context
   if (!meeting) return
-  const {id: meetingId, summaryPageId} = meeting
-  if (onMeetingRoute(window.location.pathname, [meetingId])) {
-    if (summaryPageId) {
-      const pageCode = GQLID.fromKey(summaryPageId)[0]
-      navigate(`/pages/${pageCode}`)
-    }
-  }
+  const {id: meetingId} = meeting
+  if (!onMeetingRoute(window.location.pathname, [meetingId])) return
+  // the reveal keeps everyone in the meeting, landing on the stage the sort deemed most urgent
+  commitLocalUpdate(atmosphere, (store) => {
+    const meetingProxy = store.get(meetingId)
+    const resultPhase = meetingProxy
+      ?.getLinkedRecords('phases')
+      ?.find((phase) => phase?.getValue('phaseType') === 'TEAM_HEALTH_RESULT')
+    const firstStageId = resultPhase?.getLinkedRecords('stages')?.[0]?.getValue('id')
+    if (typeof firstStageId !== 'string') return
+    setLocalStageAndPhase(store, meetingId, firstStageId)
+  })
 }
 
 export const endTeamHealthTeamUpdater: SharedUpdater<useEndTeamHealthMutation_team$data> = (

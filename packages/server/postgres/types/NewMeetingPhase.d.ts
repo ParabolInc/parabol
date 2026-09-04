@@ -185,11 +185,13 @@ export interface TeamHealthIntroPhase extends GenericMeetingPhase {
 
 export interface TeamHealthResultStage extends GenericMeetingStage {
   phaseType: 'TEAM_HEALTH_RESULT'
+  questionId: number
+  sortOrder: number
 }
 
 export interface TeamHealthResultPhase extends GenericMeetingPhase {
   phaseType: 'TEAM_HEALTH_RESULT'
-  stages: [TeamHealthResultStage]
+  stages: [TeamHealthResultStage, ...TeamHealthResultStage[]]
 }
 
 export interface UpdatesPhase extends GenericMeetingPhase {

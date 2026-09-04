@@ -1,0 +1,10 @@
+"""
+Success result for the dragTeamHealthResultStage mutation
+"""
+type DragTeamHealthResultStageSuccess {
+  "The meeting whose result stages were reordered"
+  meeting: TeamHealthMeeting!
+
+  "The stage that was dragged, at its new sortOrder"
+  stage: TeamHealthResultStage!
+}
