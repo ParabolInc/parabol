@@ -36,7 +36,7 @@ const TeamPromptResponseFooter = ({meetingId, responseRef, edgesRef, onReply}: P
     <div className='flex flex-wrap items-center justify-start pt-1'>
       <TeamPromptResponseEmojis responseRef={response} meetingId={meetingId} />
       <PlainButton
-        className='flex items-start pt-2 font-semibold text-accent leading-6 hover:text-sky-400 focus:text-sky-400'
+        className='flex items-start pt-2 font-semibold text-accent leading-6 hover:underline focus-visible:underline'
         onClick={onReply}
       >
         {replyCount > 0 ? (
