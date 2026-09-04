@@ -30,9 +30,11 @@ import {
 import {removeReflectTemplateTeamUpdater} from '../mutations/RemoveReflectTemplateMutation'
 import {removeTeamMemberTeamUpdater} from '../mutations/RemoveTeamMemberMutation'
 import {removeTemplatePromptTeamUpdater} from '../mutations/RemoveTemplatePromptMutation'
+import {removeTeamPromptTemplateTeamUpdater} from '../mutations/RemoveTeamPromptTemplateMutation'
 import {updateAgendaItemUpdater} from '../mutations/UpdateAgendaItemMutation'
 import {addPokerTemplateTeamUpdater} from '../mutations/useAddPokerTemplateMutation'
 import {addReflectTemplateTeamUpdater} from '../mutations/useAddReflectTemplateMutation'
+import {addTeamPromptTemplateTeamUpdater} from '../mutations/useAddTeamPromptTemplateMutation'
 import {endTeamHealthTeamUpdater} from '../mutations/useEndTeamHealthMutation'
 import {createSubscription} from './createSubscription'
 
@@ -63,6 +65,9 @@ const subscription = graphql`
       }
       AddTemplatePromptSuccess {
         ...AddTemplatePromptMutation_team @relay(mask: false)
+      }
+      AddTeamPromptTemplateSuccess {
+        ...useAddTeamPromptTemplateMutation_team @relay(mask: false)
       }
       BatchArchiveTasksSuccess {
         ...BatchArchiveTasksMutation_tasks @relay(mask: false)
@@ -120,6 +125,9 @@ const subscription = graphql`
       }
       RemoveTemplatePromptSuccess {
         ...RemoveTemplatePromptMutation_team @relay(mask: false)
+      }
+      RemoveTeamPromptTemplateSuccess {
+        ...RemoveTeamPromptTemplateMutation_team @relay(mask: false)
       }
       RemoveTeamMemberPayload {
         ...RemoveTeamMemberMutation_team @relay(mask: false)
@@ -210,6 +218,7 @@ const updateHandlers = {
   AddReflectTemplateSuccess: addReflectTemplateTeamUpdater,
   AddPokerTemplateSuccess: addPokerTemplateTeamUpdater,
   AddTemplatePromptSuccess: addTemplatePromptTeamUpdater,
+  AddTeamPromptTemplateSuccess: addTeamPromptTemplateTeamUpdater,
   ArchiveTeamPayload: archiveTeamTeamUpdater,
   BatchArchiveTasksSuccess: batchArchiveTasksTaskUpdater,
   EndCheckInSuccess: endCheckInTeamUpdater,
@@ -222,6 +231,7 @@ const updateHandlers = {
   RemoveOrgUsersSuccess: removeOrgUsersTeamUpdater,
   RemoveReflectTemplatePayload: removeReflectTemplateTeamUpdater,
   RemoveTemplatePromptSuccess: removeTemplatePromptTeamUpdater,
+  RemoveTeamPromptTemplateSuccess: removeTeamPromptTemplateTeamUpdater,
   RemoveTeamMemberPayload: removeTeamMemberTeamUpdater
 } as const
 
