@@ -9,7 +9,7 @@ graphql`
   fragment RemoveTemplatePromptMutation_team on RemoveTemplatePromptSuccess {
     prompt {
       id
-      teamId
+      templateId
     }
   }
 `
@@ -26,8 +26,8 @@ export const removeTemplatePromptTeamUpdater: SharedUpdater<
   RemoveTemplatePromptMutation_team$data
 > = (payload, {store}) => {
   const promptId = payload.getLinkedRecord('prompt').getValue('id')
-  const teamId = payload.getLinkedRecord('prompt').getValue('teamId')
-  handleRemoveTemplatePrompt(promptId, teamId, store)
+  const templateId = payload.getLinkedRecord('prompt').getValue('templateId')
+  handleRemoveTemplatePrompt(promptId, templateId, store)
 }
 
 const RemoveTemplatePromptMutation: StandardMutation<TRemoveTemplatePromptMutation> = (
@@ -49,9 +49,9 @@ const RemoveTemplatePromptMutation: StandardMutation<TRemoveTemplatePromptMutati
       const {promptId} = variables
       const prompt = store.get(promptId)
       if (!prompt) return
-      const teamId = prompt.getValue('teamId') as string
-      if (!teamId) return
-      handleRemoveTemplatePrompt(promptId, teamId, store)
+      const templateId = prompt.getValue('templateId') as string
+      if (!templateId) return
+      handleRemoveTemplatePrompt(promptId, templateId, store)
     }
   })
 }

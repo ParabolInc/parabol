@@ -4,17 +4,12 @@ import pluralizeHandler from './pluralizeHandler'
 
 const handleRemoveTemplatePrompt = (
   promptId: string,
-  teamId: string,
+  templateId: string,
   store: RecordSourceSelectorProxy
 ) => {
-  const team = store.get(teamId)!
-  const settings = team.getLinkedRecord('meetingSettings', {
-    meetingType: 'retrospective'
-  })
-  if (!settings) return
-  const activeTemplate = settings.getLinkedRecord('activeTemplate')
-  if (!activeTemplate) return
-  safeRemoveNodeFromArray(promptId, activeTemplate, 'prompts')
+  const template = store.get(templateId)
+  if (!template) return
+  safeRemoveNodeFromArray(promptId, template, 'prompts')
 }
 
 const handleRemoveTemplatePrompts = pluralizeHandler(handleRemoveTemplatePrompt)
