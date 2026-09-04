@@ -33,7 +33,7 @@ const TeamUpdatesByPerson = (props: Props) => {
     <div
       className={cn(
         'mx-auto grid max-w-[1240px] gap-[28px_32px] px-[5%] py-4',
-        layout === 'grid' ? 'min-[880px]:grid-cols-2' : 'grid-cols-1'
+        layout === 'grid' ? '@min-[900px]:grid-cols-2' : 'grid-cols-1'
       )}
     >
       {sharedStages.map((stage) => (
