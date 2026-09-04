@@ -11,12 +11,13 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   className?: string
   buttonClassName?: string
   showListControls?: boolean
+  offset?: number
 }
 
 const shortcut = (key: string) => `${modKey === '⌘' ? '⌘' : 'Ctrl+'}${key}`
 
 export const StandardBubbleMenu = (props: Props) => {
-  const {editor, className, buttonClassName, showListControls = false} = props
+  const {editor, className, buttonClassName, showListControls = false, offset = 6} = props
   const openLinkEditor = () => {
     editor.emit('linkStateChange', {editor, linkState: 'edit'})
   }
@@ -31,7 +32,7 @@ export const StandardBubbleMenu = (props: Props) => {
       }}
       className={cn(className)}
       options={{
-        offset: 6,
+        offset,
         placement: 'top'
       }}
     >
