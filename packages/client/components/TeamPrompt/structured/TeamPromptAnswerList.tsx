@@ -59,7 +59,10 @@ const TeamPromptAnswerList = (props: Props) => {
             onModEnter={onModEnter}
             onTab={
               nextPromptId
-                ? () => editorRefs.current.get(nextPromptId)?.current?.commands.focus('end')
+                ? () =>
+                    isPhone
+                      ? focusMode.focusPrompt(nextPromptId)
+                      : editorRefs.current.get(nextPromptId)?.current?.commands.focus('end')
                 : undefined
             }
             isPhone={isPhone}

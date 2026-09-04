@@ -14,6 +14,8 @@ export interface PhoneComposerState {
   requestBlur: () => void
   focusNextUnanswered: () => boolean
   controlsRef: MutableRefObject<PhoneComposerControls | null>
+  isLastPrompt: boolean
+  publishIsLastPrompt: (isLastPrompt: boolean) => void
 }
 
 export const PhoneComposerStateContext = createContext<PhoneComposerState | null>(null)

@@ -7,16 +7,22 @@ interface Options {
   focusNextUnanswered: () => boolean
   answeredCount: number
   promptCount: number
+  isLastPrompt: boolean
 }
 
 const usePhoneComposerBridge = (options: Options) => {
-  const {focusedPromptId, blur, focusNextUnanswered, answeredCount, promptCount} = options
+  const {focusedPromptId, blur, focusNextUnanswered, answeredCount, promptCount, isLastPrompt} =
+    options
   const phoneState = usePhoneComposerState()
-  const {publishProgress, setFocusedPromptId, controlsRef} = phoneState ?? {}
+  const {publishProgress, publishIsLastPrompt, setFocusedPromptId, controlsRef} = phoneState ?? {}
 
   useEffect(() => {
     publishProgress?.(answeredCount, promptCount)
   }, [publishProgress, answeredCount, promptCount])
+
+  useEffect(() => {
+    publishIsLastPrompt?.(isLastPrompt)
+  }, [publishIsLastPrompt, isLastPrompt])
 
   useEffect(() => {
     setFocusedPromptId?.(focusedPromptId)
