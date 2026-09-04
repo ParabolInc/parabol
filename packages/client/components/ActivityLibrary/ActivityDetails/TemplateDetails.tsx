@@ -163,6 +163,7 @@ export const TemplateDetails = (props: Props) => {
         ...ActivityCardFavorite_user
         preferredTeamId
         organizations {
+          id
           hasStandupTemplates: featureFlag(featureName: "standupTemplates")
         }
         teams {
@@ -181,6 +182,7 @@ export const TemplateDetails = (props: Props) => {
   const isFixedActivity = __typename === 'FixedActivity'
   const showParabolByline = isFixedActivity || (isParabolTemplate && isLockedStandup)
   const showNonOwnerActions = !isOwner && !isFixedActivity && !isLockedStandup
+  const showOwnerActions = isOwner && !isLockedStandup
 
   const navigate = useNavigate()
   const location = useLocation() as {state?: {prevCategory?: string; edit?: boolean}}
@@ -188,6 +190,7 @@ export const TemplateDetails = (props: Props) => {
 
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, error, submitting, submitMutation} = useMutationProps()
+  const [errorActivityId, setErrorActivityId] = useState<string | null>(null)
 
   const removeTemplate = useCallback(() => {
     if (submitting) return
@@ -202,6 +205,7 @@ export const TemplateDetails = (props: Props) => {
     const removeTemplateMutation = removeTemplateMutationLookup[type]
     if (!removeTemplateMutation) return
 
+    setErrorActivityId(activityId)
     submitMutation()
     const mutationArgs = {
       onError,
@@ -248,8 +252,12 @@ export const TemplateDetails = (props: Props) => {
   const description = useTemplateDescription(viewerLowestScope, activity)
 
   useEffect(() => {
-    setIsEditing(!!location.state?.edit)
-  }, [location.state?.edit, activityId, setIsEditing])
+    setIsEditing(!isLockedStandup && !!location.state?.edit)
+  }, [location.state?.edit, activityId, isLockedStandup, setIsEditing])
+
+  useEffect(() => {
+    setErrorActivityId(null)
+  }, [activityId])
 
   useEffect(() => setActiveTemplate(atmosphere, teamId, activityId, type), [activity])
 
@@ -261,7 +269,7 @@ export const TemplateDetails = (props: Props) => {
           {showParabolByline && (
             <div className='font-semibold text-base text-fg-secondary'>Created by Parabol</div>
           )}
-          {isOwner && (
+          {showOwnerActions && (
             <>
               <div className='flex items-center justify-between'>
                 <div
@@ -306,7 +314,9 @@ export const TemplateDetails = (props: Props) => {
                   )}
                 </div>
               </div>
-              {error && <div className='text-fg-error text-sm'>{error.message}</div>}
+              {error && errorActivityId === activityId && (
+                <div className='text-fg-error text-sm'>{error.message}</div>
+              )}
             </>
           )}
           {showNonOwnerActions && (
@@ -355,14 +365,14 @@ export const TemplateDetails = (props: Props) => {
       )}
 
       <div className='sm:-ml-14 pt-4'>
-        {prompts && (
+        {prompts && !isLockedStandup && (
           <>
             <TemplatePromptList
-              isOwner={isOwner && isEditing}
+              isOwner={showOwnerActions && isEditing}
               prompts={prompts}
               templateId={activityId}
             />
-            {isOwner && isEditing && (
+            {showOwnerActions && isEditing && (
               <AddTemplatePrompt templateId={activityId} prompts={prompts} />
             )}
           </>
