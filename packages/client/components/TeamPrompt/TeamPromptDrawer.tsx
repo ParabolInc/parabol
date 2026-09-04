@@ -80,9 +80,11 @@ const TeamPromptDrawer = ({meetingRef}: Props) => {
   const allStages = meeting.phases.flatMap((p) => p.stages)
   const selectedStage = localStageId ? findStageById(meeting.phases, localStageId)?.stage : null
   const activeStage =
-    selectedStage?.discussionId && selectedStage?.teamMember
-      ? selectedStage
-      : allStages.find((s) => s.discussionId && s.teamMember && s.response?.content)
+    rightDrawerOpen !== 'discussion'
+      ? undefined
+      : selectedStage?.discussionId && selectedStage?.teamMember
+        ? selectedStage
+        : allStages.find((s) => s.discussionId && s.teamMember && s.response?.content)
 
   const {discussionId, teamMember, response} = activeStage ?? {}
 
