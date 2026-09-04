@@ -1,18 +1,21 @@
 import * as RadioGroup from '@radix-ui/react-radio-group'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
-import {type ComponentPropsWithoutRef, useState} from 'react'
+import {type ComponentPropsWithoutRef, useEffect, useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Link, useNavigate, useParams} from 'react-router'
 import type {CreateNewActivityQuery} from '~/__generated__/CreateNewActivityQuery.graphql'
 import estimatedEffortTemplate from '../../../../../static/images/illustrations/estimatedEffortTemplate.png'
 import newTemplate from '../../../../../static/images/illustrations/newTemplate.png'
+import teamPromptTemplate from '../../../../../static/images/illustrations/teamPrompt.png'
 import type {useAddPokerTemplateMutation$data} from '../../../__generated__/useAddPokerTemplateMutation.graphql'
 import type {useAddReflectTemplateMutation$data} from '../../../__generated__/useAddReflectTemplateMutation.graphql'
+import type {useAddTeamPromptTemplateMutation$data} from '../../../__generated__/useAddTeamPromptTemplateMutation.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import useAddPokerTemplateMutation from '../../../mutations/useAddPokerTemplateMutation'
 import useAddReflectTemplateMutation from '../../../mutations/useAddReflectTemplateMutation'
+import useAddTeamPromptTemplateMutation from '../../../mutations/useAddTeamPromptTemplateMutation'
 import {Button} from '../../../ui/Button/Button'
 import {cn} from '../../../ui/cn'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
@@ -38,7 +41,7 @@ const Bold = (props: ComponentPropsWithoutRef<'span'>) => {
   )
 }
 
-type ActivityType = 'retrospective' | 'poker'
+type ActivityType = 'retrospective' | 'poker' | 'teamPrompt'
 
 type SupportedActivity = {
   title: string
@@ -46,6 +49,12 @@ type SupportedActivity = {
   includedCategories: CategoryID[]
   image: string
   phases: React.ReactNode
+}
+
+const ACTIVITY_TYPE_CATEGORY: Record<ActivityType, CategoryID> = {
+  retrospective: 'retrospective',
+  poker: 'estimation',
+  teamPrompt: 'standup'
 }
 
 const SUPPORTED_CUSTOM_ACTIVITIES: SupportedActivity[] = [
@@ -92,6 +101,25 @@ const SUPPORTED_CUSTOM_ACTIVITIES: SupportedActivity[] = [
         </div>
       </>
     )
+  },
+  {
+    title: 'Async Standup',
+    type: 'teamPrompt',
+    includedCategories: ['standup'],
+    image: teamPromptTemplate,
+    phases: (
+      <>
+        <div>
+          <Bold>Answer</Bold> each question on your own time
+        </div>
+        <div>
+          <Bold>Discuss</Bold> updates in threads
+        </div>
+        <div>
+          <Bold>Review</Bold> together on a call
+        </div>
+      </>
+    )
   }
 ]
 
@@ -100,7 +128,12 @@ const query = graphql`
     viewer {
       freeCustomRetroTemplatesRemaining
       freeCustomPokerTemplatesRemaining
+      freeCustomStandupTemplatesRemaining
       preferredTeamId
+      organizations {
+        id
+        hasStandupTemplates: featureFlag(featureName: "standupTemplates")
+      }
       teams {
         id
         tier
@@ -124,38 +157,57 @@ export const CreateNewActivity = (props: Props) => {
 
   const {categoryId} = useParams()
 
-  const [selectedActivity, setSelectedActivity] = useState(() => {
-    const defaultActivity = SUPPORTED_CUSTOM_ACTIVITIES[0]!
-    if (!categoryId) return defaultActivity
-
-    const selectedActivity = SUPPORTED_CUSTOM_ACTIVITIES.find((activity) =>
-      activity.includedCategories.includes(categoryId as CategoryID)
-    )
-    if (!selectedActivity) return defaultActivity
-    return selectedActivity
-  })
   const {viewer} = data
   const {
     teams,
     preferredTeamId,
+    organizations,
     freeCustomRetroTemplatesRemaining,
-    freeCustomPokerTemplatesRemaining
+    freeCustomPokerTemplatesRemaining,
+    freeCustomStandupTemplatesRemaining
   } = viewer
   const sortedTeams = sortByTier(teams)
   const [selectedTeam, setSelectedTeam] = useState(
     teams.find((team) => team.id === preferredTeamId) ?? sortedTeams[0]
   )
 
+  const standupOrgIds = new Set(
+    organizations.filter((org) => org.hasStandupTemplates).map((org) => org.id)
+  )
+  const supportedActivities = SUPPORTED_CUSTOM_ACTIVITIES.filter(
+    (activity) =>
+      activity.type !== 'teamPrompt' || (selectedTeam && standupOrgIds.has(selectedTeam.orgId))
+  )
+
+  const [selectedActivity, setSelectedActivity] = useState(() => {
+    const defaultActivity = supportedActivities[0]!
+    if (!categoryId) return defaultActivity
+    return (
+      supportedActivities.find((activity) =>
+        activity.includedCategories.includes(categoryId as CategoryID)
+      ) ?? defaultActivity
+    )
+  })
+
+  useEffect(() => {
+    if (!supportedActivities.some((activity) => activity.type === selectedActivity.type)) {
+      setSelectedActivity(supportedActivities[0]!)
+    }
+  }, [supportedActivities, selectedActivity.type])
+
   const {submitting, error, submitMutation, onError, onCompleted} = useMutationProps()
   const [executeAddReflectTemplate] = useAddReflectTemplateMutation()
   const [executeAddPokerTemplate] = useAddPokerTemplateMutation()
+  const [executeAddTeamPromptTemplate] = useAddTeamPromptTemplateMutation()
   const navigate = useNavigate()
 
   if (!selectedTeam) return null
-  const freeCustomTemplatesRemaining =
-    selectedActivity.type === 'retrospective'
-      ? freeCustomRetroTemplatesRemaining
-      : freeCustomPokerTemplatesRemaining
+  const freeCustomTemplatesRemainingByType: Record<ActivityType, number> = {
+    retrospective: freeCustomRetroTemplatesRemaining,
+    poker: freeCustomPokerTemplatesRemaining,
+    teamPrompt: freeCustomStandupTemplatesRemaining
+  }
+  const freeCustomTemplatesRemaining = freeCustomTemplatesRemainingByType[selectedActivity.type]
 
   const handleCreateRetroTemplate = () => {
     if (submitting) {
@@ -200,6 +252,26 @@ export const CreateNewActivity = (props: Props) => {
     })
   }
 
+  const handleCreateStandupTemplate = () => {
+    if (submitting) {
+      return
+    }
+    submitMutation()
+    executeAddTeamPromptTemplate({
+      variables: {teamId: selectedTeam.id},
+      onCompleted: (res: useAddTeamPromptTemplateMutation$data, errors) => {
+        onCompleted(res, errors)
+        const templateId = res.addTeamPromptTemplate?.teamPromptTemplate?.id
+        if (templateId && !errors?.length) {
+          navigate(`/activity-library/details/${templateId}`, {
+            state: {prevCategory: categoryId, edit: true}
+          })
+        }
+      },
+      onError
+    })
+  }
+
   const handleUpgrade = () => {
     SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
       upgradeCTALocation: 'createNewTemplateAL',
@@ -210,13 +282,12 @@ export const CreateNewActivity = (props: Props) => {
 
   const createCustomActivityLookup: Record<ActivityType, () => void> = {
     retrospective: handleCreateRetroTemplate,
-    poker: handleCreatePokerTemplate
+    poker: handleCreatePokerTemplate,
+    teamPrompt: handleCreateStandupTemplate
   }
 
   const handleActivitySelection = (activityType: ActivityType) => {
-    setSelectedActivity(
-      SUPPORTED_CUSTOM_ACTIVITIES.find((acitivty) => acitivty.type === activityType)!
-    )
+    setSelectedActivity(supportedActivities.find((activity) => activity.type === activityType)!)
   }
 
   return (
@@ -241,7 +312,7 @@ export const CreateNewActivity = (props: Props) => {
           value={selectedActivity?.type}
           onValueChange={handleActivitySelection}
         >
-          {SUPPORTED_CUSTOM_ACTIVITIES.map((activity) => {
+          {supportedActivities.map((activity) => {
             return (
               <RadioGroup.Item
                 key={activity.title}
@@ -256,7 +327,7 @@ export const CreateNewActivity = (props: Props) => {
                 >
                   <ActivityCardImage
                     src={activity.image}
-                    category={activity.type === 'retrospective' ? 'retrospective' : 'estimation'}
+                    category={ACTIVITY_TYPE_CATEGORY[activity.type]}
                   />
                 </ActivityCard>
                 <div className='flex gap-x-3 p-3'>
