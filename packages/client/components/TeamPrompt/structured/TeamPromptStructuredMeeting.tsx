@@ -68,6 +68,9 @@ const TeamPromptStructuredMeeting = (props: Props) => {
   const location = useLocation()
   const {id: meetingId, localStageId, endedAt, phases} = meeting
   const responseId = new URLSearchParams(location.search).get('responseId')
+  const permalinkStage = responseId
+    ? (phases[0]?.stages?.find((stage) => stage.response?.id === responseId) ?? null)
+    : null
   const scrollRef = useRef<HTMLDivElement>(null)
   const composerRef = useRef<HTMLDivElement>(null)
   const teamSectionRef = useRef<HTMLDivElement>(null)
@@ -147,20 +150,18 @@ const TeamPromptStructuredMeeting = (props: Props) => {
   )
 
   useEffect(() => {
-    if (!responseId) return
-    const stage = phases[0]?.stages?.find((stage) => stage.response?.id === responseId)
-    if (!stage) return
+    if (!permalinkStage) return
     commitLocalUpdate(atmosphere, (store) => {
       const meetingProxy = store.get(meetingId)
       if (!meetingProxy) return
-      meetingProxy.setValue(stage.id, 'localStageId')
+      meetingProxy.setValue(permalinkStage.id, 'localStageId')
       meetingProxy.setValue('discussion', 'rightDrawerOpen')
     })
   }, [responseId])
 
   useLayoutEffect(() => {
     const onPhone = isPhoneViewport()
-    if (onPhone && responseId) return
+    if (onPhone && permalinkStage) return
     if (!onPhone && (localStageId || endedAt)) return
     commitLocalUpdate(atmosphere, (store) => {
       store.get(meetingId)?.setValue(onPhone ? null : 'inspiration', 'rightDrawerOpen')
