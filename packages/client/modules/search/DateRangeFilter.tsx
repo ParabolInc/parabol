@@ -99,14 +99,14 @@ export const DateRangeFilter = ({dateField, setDateField, dateRange, setDateRang
               <SelectContent className='px-1'>
                 <SelectItem
                   value='createdAt'
-                  className='h-5 rounded py-0 text-xs hover:bg-surface-hover'
+                  className='rounded text-xs hover:bg-surface-hover'
                   checkClassName='h-4 w-4'
                 >
                   Created
                 </SelectItem>
                 <SelectItem
                   value='updatedAt'
-                  className='h-5 rounded py-0 text-xs hover:bg-surface-hover'
+                  className='rounded text-xs hover:bg-surface-hover'
                   checkClassName='h-4 w-4'
                 >
                   Last edited

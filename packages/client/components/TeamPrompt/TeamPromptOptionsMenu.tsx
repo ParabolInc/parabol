@@ -14,7 +14,7 @@ import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import SlackSVG from '../SlackSVG'
 
 const OptionMenuItem = ({children}: {children: ReactNode}) => (
-  <div className='flex w-60 flex-1 items-center overflow-hidden text-ellipsis whitespace-nowrap px-4 py-1 text-sm leading-6'>
+  <div className='flex w-60 flex-1 items-center overflow-hidden text-ellipsis whitespace-nowrap'>
     {children}
   </div>
 )
@@ -68,7 +68,6 @@ const TeamPromptOptionsMenu = (props: Props) => {
     <MenuContent align='end'>
       {hasRecurrenceEnabled && (
         <MenuItem
-          className='p-0'
           onClick={async () => {
             popTooltip()
             const copyUrl = makeAppURL(window.location.origin, `meeting-series/${meetingId}`)
@@ -87,7 +86,6 @@ const TeamPromptOptionsMenu = (props: Props) => {
         </MenuItem>
       )}
       <MenuItem
-        className='p-0'
         isDisabled={!canToggleRecurrence}
         onSelect={canToggleRecurrence ? undefined : (e) => e.preventDefault()}
         onClick={canToggleRecurrence ? openRecurrenceSettingsModal : undefined}
@@ -102,7 +100,6 @@ const TeamPromptOptionsMenu = (props: Props) => {
         </OptionMenuItem>
       </MenuItem>
       <MenuItem
-        className='p-0'
         asChild
         onClick={() => {
           SendClientSideEvent(atmosphere, 'Configure Slack Standup Clicked', {
@@ -120,7 +117,6 @@ const TeamPromptOptionsMenu = (props: Props) => {
         </Link>
       </MenuItem>
       <MenuItem
-        className='p-0'
         isDisabled={isEnded}
         onSelect={isEnded ? (e) => e.preventDefault() : undefined}
         onClick={

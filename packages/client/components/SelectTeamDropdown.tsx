@@ -4,7 +4,6 @@ import {useFragment} from 'react-relay'
 import type {SelectTeamDropdown_teams$key} from '~/__generated__/SelectTeamDropdown_teams.graphql'
 import {MenuContent} from '../ui/Menu/MenuContent'
 import {MenuItem} from '../ui/Menu/MenuItem'
-import DropdownMenuItemLabel from './DropdownMenuItemLabel'
 import DropdownMenuLabel from './DropdownMenuLabel'
 
 interface Props {
@@ -29,7 +28,7 @@ const SelectTeamDropdown = (props: Props) => {
       {teams.map((team) => {
         return (
           <MenuItem key={team.id} onClick={(e) => teamHandleClick(team.id, e)}>
-            <DropdownMenuItemLabel>{team.name}</DropdownMenuItemLabel>
+            {team.name}
           </MenuItem>
         )
       })}
