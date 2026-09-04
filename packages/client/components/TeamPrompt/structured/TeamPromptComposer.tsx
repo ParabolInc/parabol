@@ -10,7 +10,7 @@ import lastAnswerUpdatedAt from './lastAnswerUpdatedAt'
 import TeamPromptAnswerEditor from './TeamPromptAnswerEditor'
 import TeamPromptComposerFooter from './TeamPromptComposerFooter'
 import TeamPromptComposerHeader from './TeamPromptComposerHeader'
-import {isDocEmpty, readDraftAnswer} from './teamPromptDraftStorage'
+import {clearStageDrafts, isDocEmpty, readDraftAnswer} from './teamPromptDraftStorage'
 import {TEAM_UPDATES_BAND, TEAM_UPDATES_COLUMN} from './teamUpdatesLayout'
 import useTeamPromptAnswersAutosave, {type DirtyAnswer} from './useTeamPromptAnswersAutosave'
 
@@ -110,6 +110,11 @@ const TeamPromptComposer = (props: Props) => {
     }, [])
     seedDirty(entries)
   }, [stage?.id])
+
+  useEffect(() => {
+    if (!stage || !endedAt) return
+    clearStageDrafts(stage.id)
+  }, [stage?.id, endedAt])
 
   const onChange = useCallback(
     (promptId: string, editor: Editor) => {

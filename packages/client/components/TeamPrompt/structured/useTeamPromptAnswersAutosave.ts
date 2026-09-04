@@ -6,7 +6,8 @@ import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import {clearDraftAnswers, writeDraftAnswer} from './teamPromptDraftStorage'
 
 const AUTOSAVE_DEBOUNCE_MS = 800
-const BENIGN_ERROR = 'Nothing to save'
+const NOTHING_TO_SAVE_ERROR = 'Nothing to save'
+const ALREADY_SHARED_ERROR = 'Response is already shared'
 
 export interface DirtyAnswer {
   promptId: string
@@ -26,6 +27,8 @@ const useTeamPromptAnswersAutosave = (options: Options) => {
   const [execute, submitting] = useUpsertTeamPromptAnswersMutation()
   const pendingRef = useRef(new Map<string, JSONContent>())
   const timerRef = useRef<number | null>(null)
+  const inFlightRef = useRef(false)
+  const hasRequestedShareRef = useRef(false)
   const [dirtyPromptIds, setDirtyPromptIds] = useState<Set<string>>(new Set())
   const [error, setError] = useState<string | null>(null)
 
@@ -37,11 +40,34 @@ const useTeamPromptAnswersAutosave = (options: Options) => {
         content: JSON.stringify(doc)
       }))
       if (!share && answers.length === 0) return
+      if (share) hasRequestedShareRef.current = true
+      inFlightRef.current = true
+      const evictSentAnswers = () => {
+        const evictedPromptIds = [...sentDocs.entries()]
+          .filter(([promptId, doc]) => pendingRef.current.get(promptId) === doc)
+          .map(([promptId]) => promptId)
+        evictedPromptIds.forEach((promptId) => pendingRef.current.delete(promptId))
+        setDirtyPromptIds((prev) => {
+          const next = new Set(prev)
+          evictedPromptIds.forEach((promptId) => next.delete(promptId))
+          return next
+        })
+        clearDraftAnswers(stageId, evictedPromptIds)
+      }
       execute({
         variables: {meetingId, answers, share},
+        onError: () => {
+          inFlightRef.current = false
+        },
         onCompleted: (_res, errors) => {
+          inFlightRef.current = false
           const message = errors?.[0]?.message
-          if (message === BENIGN_ERROR) {
+          if (message === NOTHING_TO_SAVE_ERROR) {
+            setError(null)
+            evictSentAnswers()
+            return
+          }
+          if (message === ALREADY_SHARED_ERROR && !share && hasRequestedShareRef.current) {
             setError(null)
             return
           }
@@ -55,16 +81,7 @@ const useTeamPromptAnswersAutosave = (options: Options) => {
             return
           }
           setError(null)
-          const evictedPromptIds = [...sentDocs.entries()]
-            .filter(([promptId, doc]) => pendingRef.current.get(promptId) === doc)
-            .map(([promptId]) => promptId)
-          evictedPromptIds.forEach((promptId) => pendingRef.current.delete(promptId))
-          setDirtyPromptIds((prev) => {
-            const next = new Set(prev)
-            evictedPromptIds.forEach((promptId) => next.delete(promptId))
-            return next
-          })
-          clearDraftAnswers(stageId, evictedPromptIds)
+          evictSentAnswers()
           if (share) {
             SendClientSideEvent(atmosphere, 'Standup Response Shared', {
               teamId,
@@ -78,16 +95,26 @@ const useTeamPromptAnswersAutosave = (options: Options) => {
     [execute, meetingId, teamId, stageId, atmosphere]
   )
 
+  const armAutosave = useCallback(() => {
+    if (timerRef.current) window.clearTimeout(timerRef.current)
+    timerRef.current = window.setTimeout(function autosave() {
+      if (inFlightRef.current) {
+        timerRef.current = window.setTimeout(autosave, AUTOSAVE_DEBOUNCE_MS)
+        return
+      }
+      send(false)
+    }, AUTOSAVE_DEBOUNCE_MS)
+  }, [send])
+
   const queueAnswer = useCallback(
     (promptId: string, doc: JSONContent) => {
       writeDraftAnswer(stageId, promptId, doc)
       pendingRef.current.set(promptId, doc)
       setDirtyPromptIds((prev) => new Set(prev).add(promptId))
       if (isShared) return
-      if (timerRef.current) window.clearTimeout(timerRef.current)
-      timerRef.current = window.setTimeout(() => send(false), AUTOSAVE_DEBOUNCE_MS)
+      armAutosave()
     },
-    [stageId, isShared, send]
+    [stageId, isShared, armAutosave]
   )
 
   const seedDirty = useCallback((entries: readonly DirtyAnswer[]) => {
