@@ -53,11 +53,8 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
     if (requestedTemplate.scope === 'TEAM' && !isTeamMember(authToken, requestedTemplate.teamId)) {
       return standardError(new Error('Template is scoped to team'), {userId: viewerId})
     }
-    if (requestedTemplate.scope === 'ORGANIZATION') {
-      const templateTeam = await dataLoader.get('teams').loadNonNull(requestedTemplate.teamId)
-      if (templateTeam.orgId !== team.orgId) {
-        return standardError(new Error('Template is scoped to organization'), {userId: viewerId})
-      }
+    if (requestedTemplate.scope === 'ORGANIZATION' && requestedTemplate.orgId !== team.orgId) {
+      return standardError(new Error('Template is scoped to organization'), {userId: viewerId})
     }
   }
   const templateId = isTemplated

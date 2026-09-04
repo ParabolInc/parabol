@@ -27,17 +27,10 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('plaintextContent', 'text', (col) => col.notNull())
     .addColumn('createdAt', 'timestamptz', (col) => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
     .addColumn('updatedAt', 'timestamptz', (col) => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
-    .addUniqueConstraint('TeamPromptResponseAnswer_responseId_promptId_unique', [
+    .addUniqueConstraint('uniq_TeamPromptResponseAnswer_responseId_promptId', [
       'responseId',
       'promptId'
     ])
-    .execute()
-
-  await db.schema
-    .createIndex('idx_TeamPromptResponseAnswer_responseId')
-    .ifNotExists()
-    .on('TeamPromptResponseAnswer')
-    .column('responseId')
     .execute()
 
   await sql`
