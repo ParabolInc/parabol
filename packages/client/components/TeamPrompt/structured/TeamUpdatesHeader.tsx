@@ -30,7 +30,8 @@ const TeamUpdatesHeader = forwardRef<HTMLDivElement, Props>((props, ref) => {
       <div
         className={cn(
           'mx-auto flex w-full items-center gap-3',
-          layout === 'feed' && !isPinned && 'max-w-[640px]'
+          !isPinned && layout === 'feed' && 'max-w-[640px]',
+          !isPinned && layout === 'grid' && '@min-[900px]:max-w-none max-w-[640px]'
         )}
       >
         <TeamUpdatesAvatarStack members={sharedMembers} />

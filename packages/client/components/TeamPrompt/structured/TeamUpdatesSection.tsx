@@ -78,7 +78,7 @@ const TeamUpdatesSection = (props: Props) => {
     scrollContainerRef.current?.scrollTo({top: gridRef.current?.offsetTop ?? 0, behavior: 'smooth'})
   }
   return (
-    <>
+    <div className='@container'>
       <TeamUpdatesHeader
         ref={headerRef}
         sharedMembers={sharedMembers}
@@ -88,7 +88,7 @@ const TeamUpdatesSection = (props: Props) => {
         isPinned={isPinned}
         onSeeTeam={onSeeTeam}
       />
-      <div ref={gridRef} className='@container'>
+      <div ref={gridRef}>
         {layout === 'byQuestion' ? (
           <TeamUpdatesByQuestion
             prompts={prompts}
@@ -110,7 +110,7 @@ const TeamUpdatesSection = (props: Props) => {
           />
         )}
       </div>
-    </>
+    </div>
   )
 }
 
