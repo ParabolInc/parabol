@@ -68,7 +68,7 @@ const TeamUpdatesSection = (props: Props) => {
   const sectionRef = useRef<HTMLDivElement>(null)
   const viewerStage = stages.find((stage) => stage.teamMember.userId === viewerId)
   const {shared, drafting, notStarted} = sortTeamStages(stages, viewerId)
-  const canPin = !viewerStage?.response?.isShared && shared.length > 0
+  const canPin = !endedAt && !viewerStage?.response?.isShared && shared.length > 0
   const isPinned = useTeamHeaderPin(headerRef, scrollContainerRef, composerRef, sectionRef, canPin)
   const onReply = useOpenResponseDiscussion(meetingId, rightDrawerOpen, localStageId)
   const selectedStageId = rightDrawerOpen === 'discussion' ? localStageId : null

@@ -99,8 +99,35 @@ describe('isDocEmpty', () => {
     expect(isDocEmpty({type: 'doc', content: [{type: 'paragraph'}]})).toBe(true)
   })
 
-  it('treats text and non-paragraph nodes as answered', () => {
+  it('treats an empty bullet list as empty', () => {
+    expect(
+      isDocEmpty({
+        type: 'doc',
+        content: [
+          {type: 'bulletList', content: [{type: 'listItem', content: [{type: 'paragraph'}]}]}
+        ]
+      })
+    ).toBe(true)
+  })
+
+  it('treats text and content atom nodes as answered', () => {
     expect(isDocEmpty(doc)).toBe(false)
-    expect(isDocEmpty({type: 'doc', content: [{type: 'bulletList'}]})).toBe(false)
+    expect(
+      isDocEmpty({
+        type: 'doc',
+        content: [
+          {
+            type: 'bulletList',
+            content: [
+              {
+                type: 'listItem',
+                content: [{type: 'paragraph', content: [{type: 'text', text: 'hi'}]}]
+              }
+            ]
+          }
+        ]
+      })
+    ).toBe(false)
+    expect(isDocEmpty({type: 'doc', content: [{type: 'horizontalRule'}]})).toBe(false)
   })
 })
