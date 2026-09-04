@@ -5,7 +5,8 @@ import {
   type InspirationDraftItem,
   isItemTextInAnswer,
   MIN_MATCHABLE_ITEM_TEXT_LENGTH,
-  runInspirationInsert
+  runInspirationInsert,
+  trimTrailingEmptyParagraph
 } from '../inspirationInsertPlan'
 import type {WorkDrawerPrompt} from '../WorkDrawerConsumeContext'
 
@@ -284,5 +285,30 @@ describe('isItemTextInAnswer', () => {
   it('matches once the normalized item text reaches the minimum length', () => {
     const itemText = 'A'.repeat(MIN_MATCHABLE_ITEM_TEXT_LENGTH)
     expect(isItemTextInAnswer(`prefix ${itemText} suffix`, itemText)).toBe(true)
+  })
+})
+
+describe('trimTrailingEmptyParagraph', () => {
+  const paragraph = (text: string) => ({type: 'paragraph', content: [{type: 'text', text}]})
+  const bulletList = {
+    type: 'bulletList',
+    content: [{type: 'listItem', content: [paragraph('alpha')]}]
+  }
+
+  it('drops the trailing node the card editor appends after a list', () => {
+    expect(trimTrailingEmptyParagraph([bulletList, {type: 'paragraph'}])).toEqual([bulletList])
+  })
+
+  it('keeps a trailing paragraph that has content', () => {
+    const blocks = [bulletList, paragraph('written by the reader')]
+    expect(trimTrailingEmptyParagraph(blocks)).toEqual(blocks)
+  })
+
+  it('returns nothing for a document that is only an empty paragraph', () => {
+    expect(trimTrailingEmptyParagraph([{type: 'paragraph'}])).toEqual([])
+  })
+
+  it('returns nothing for an empty block list', () => {
+    expect(trimTrailingEmptyParagraph([])).toEqual([])
   })
 })

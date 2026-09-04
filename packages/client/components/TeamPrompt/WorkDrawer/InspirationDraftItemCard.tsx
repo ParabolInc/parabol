@@ -7,6 +7,7 @@ import {Button} from '../../../ui/Button/Button'
 import {TipTapEditor} from '../../TipTapEditor/TipTapEditor'
 import {TiptapLinkExtension} from '../../TipTapEditor/TiptapLinkExtension'
 import InspirationDestinationChip from './InspirationDestinationChip'
+import {trimTrailingEmptyParagraph} from './inspirationInsertPlan'
 import type {WorkDrawerPrompt} from './WorkDrawerConsumeContext'
 
 interface Props {
@@ -21,6 +22,9 @@ interface Props {
   onAdd: () => void
 }
 
+const hasBlocksToAdd = (editor: Editor) =>
+  trimTrailingEmptyParagraph(editor.getJSON().content ?? []).length > 0
+
 const InspirationDraftItemCard = (props: Props) => {
   const {itemId, title, content, prompt, source, isAdded, disabled, onEditorChange, onAdd} = props
   const [isEmpty, setIsEmpty] = useState(false)
@@ -31,11 +35,11 @@ const InspirationDraftItemCard = (props: Props) => {
       TiptapLinkExtension.configure({openOnClick: false})
     ],
     editorProps: {attributes: {'aria-label': title ?? 'Drafted answer'}},
-    onUpdate: ({editor}) => setIsEmpty(editor.isEmpty)
+    onUpdate: ({editor}) => setIsEmpty(!hasBlocksToAdd(editor))
   })
   useEffect(() => {
     if (!editor) return
-    setIsEmpty(editor.isEmpty)
+    setIsEmpty(!hasBlocksToAdd(editor))
     onEditorChange(itemId, editor)
     return () => onEditorChange(itemId, null)
   }, [editor, itemId, onEditorChange])
@@ -61,7 +65,7 @@ const InspirationDraftItemCard = (props: Props) => {
             size='sm'
             disabled={disabled || isEmpty}
             onClick={() => {
-              if (editor.isEmpty) return
+              if (!hasBlocksToAdd(editor)) return
               onAdd()
             }}
           >
