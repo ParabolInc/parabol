@@ -6,7 +6,7 @@ import type {TeamPromptOptionsMenu_meeting$key} from '~/__generated__/TeamPrompt
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import EndTeamPromptMutation from '~/mutations/EndTeamPromptMutation'
-import {Flag, Link as MuiLink, OpenInNew, Replay} from '~/ui/icons'
+import {Edit, Flag, Link as MuiLink, OpenInNew, Replay} from '~/ui/icons'
 import {MenuContent} from '../../ui/Menu/MenuContent'
 import {MenuItem} from '../../ui/Menu/MenuItem'
 import makeAppURL from '../../utils/makeAppURL'
@@ -36,6 +36,11 @@ const TeamPromptOptionsMenu = (props: Props) => {
         team {
           id
         }
+        templateId
+        template {
+          id
+          viewerLowestScope
+        }
         meetingSeries {
           id
           recurrenceRule
@@ -50,7 +55,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
     meetingRef
   )
 
-  const {id: meetingId, meetingSeries, endedAt, team} = meeting
+  const {id: meetingId, meetingSeries, endedAt, team, template} = meeting
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
   const navigate = useNavigate()
@@ -116,6 +121,17 @@ const TeamPromptOptionsMenu = (props: Props) => {
           </OptionMenuItem>
         </Link>
       </MenuItem>
+      {template && template.viewerLowestScope === 'TEAM' && (
+        <MenuItem asChild>
+          <Link to={`/activity-library/details/${template.id}`}>
+            <OptionMenuItem>
+              <Edit className='mr-2 text-fg-secondary' />
+              <span>Edit template</span>
+              <OpenInNew className='ml-auto text-base text-fg-secondary' />
+            </OptionMenuItem>
+          </Link>
+        </MenuItem>
+      )}
       <MenuItem
         isDisabled={isEnded}
         onSelect={isEnded ? (e) => e.preventDefault() : undefined}
