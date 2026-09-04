@@ -88,7 +88,7 @@ const TeamUpdatesSection = (props: Props) => {
         isPinned={isPinned}
         onSeeTeam={onSeeTeam}
       />
-      <div ref={gridRef}>
+      <div ref={gridRef} className='@container'>
         {layout === 'byQuestion' ? (
           <TeamUpdatesByQuestion
             prompts={prompts}
