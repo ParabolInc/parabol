@@ -9,10 +9,12 @@ import type {MeetingTypeEnum} from '~/__generated__/TemplateDetails_activity.gra
 import type {useAddPokerTemplateMutation$data} from '../../__generated__/useAddPokerTemplateMutation.graphql'
 import type {useAddReflectTemplateMutation$data} from '../../__generated__/useAddReflectTemplateMutation.graphql'
 import type {useAddTeamHealthTemplateMutation$data} from '../../__generated__/useAddTeamHealthTemplateMutation.graphql'
+import type {useAddTeamPromptTemplateMutation$data} from '../../__generated__/useAddTeamPromptTemplateMutation.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useAddPokerTemplateMutation from '../../mutations/useAddPokerTemplateMutation'
 import useAddReflectTemplateMutation from '../../mutations/useAddReflectTemplateMutation'
 import useAddTeamHealthTemplateMutation from '../../mutations/useAddTeamHealthTemplateMutation'
+import useAddTeamPromptTemplateMutation from '../../mutations/useAddTeamPromptTemplateMutation'
 import {cn} from '../../ui/cn'
 import {Dialog} from '../../ui/Dialog/Dialog'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
@@ -59,7 +61,9 @@ const TeamPickerModal = (props: Props) => {
   const [executeAddReflectTemplate, reflectSubmitting] = useAddReflectTemplateMutation()
   const [executeAddPokerTemplate, pokerSubmitting] = useAddPokerTemplateMutation()
   const [executeAddTeamHealthTemplate, teamHealthSubmitting] = useAddTeamHealthTemplateMutation()
-  const submitting = reflectSubmitting || pokerSubmitting || teamHealthSubmitting
+  const [executeAddTeamPromptTemplate, teamPromptSubmitting] = useAddTeamPromptTemplateMutation()
+  const submitting =
+    reflectSubmitting || pokerSubmitting || teamHealthSubmitting || teamPromptSubmitting
 
   useEffect(() => {
     setError(null)
@@ -114,6 +118,19 @@ const TeamPickerModal = (props: Props) => {
         onError,
         onCompleted: (res: useAddTeamHealthTemplateMutation$data) =>
           onTemplateCreated(res.addTeamHealthTemplate?.teamHealthTemplate?.id)
+      })
+    } else if (type === 'teamPrompt') {
+      executeAddTeamPromptTemplate({
+        variables,
+        onError,
+        onCompleted: (res: useAddTeamPromptTemplateMutation$data, errors) => {
+          const error = errors?.[0]
+          if (error) {
+            setError(error.message)
+            return
+          }
+          onTemplateCreated(res.addTeamPromptTemplate?.teamPromptTemplate?.id)
+        }
       })
     }
   }

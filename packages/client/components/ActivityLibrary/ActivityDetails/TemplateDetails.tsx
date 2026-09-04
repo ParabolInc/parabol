@@ -3,6 +3,7 @@ import type * as React from 'react'
 import {useCallback, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {useLocation, useNavigate} from 'react-router'
+import type {PayloadError} from 'relay-runtime'
 import type {MeetingTypeEnum} from '~/__generated__/ActivityDetailsQuery.graphql'
 import type {TemplateDetails_activity$key} from '~/__generated__/TemplateDetails_activity.graphql'
 import type {TemplateDetails_user$key} from '~/__generated__/TemplateDetails_user.graphql'
@@ -18,6 +19,7 @@ import TemplatePromptList from '../../../modules/meeting/components/TemplateProm
 import {UnstyledTemplateSharing} from '../../../modules/meeting/components/TemplateSharing'
 import RemovePokerTemplateMutation from '../../../mutations/RemovePokerTemplateMutation'
 import RemoveReflectTemplateMutation from '../../../mutations/RemoveReflectTemplateMutation'
+import RemoveTeamPromptTemplateMutation from '../../../mutations/RemoveTeamPromptTemplateMutation'
 import {Button} from '../../../ui/Button/Button'
 import {cn} from '../../../ui/cn'
 import {Dialog} from '../../../ui/Dialog/Dialog'
@@ -104,6 +106,7 @@ export const TemplateDetails = (props: Props) => {
         __typename
         id
         category
+        orgId
         type
         team {
           id
@@ -118,6 +121,12 @@ export const TemplateDetails = (props: Props) => {
           }
         }
         ... on ReflectTemplate {
+          prompts {
+            ...AddTemplatePrompt_prompts
+            ...TemplatePromptList_prompts
+          }
+        }
+        ... on TeamPromptTemplate {
           prompts {
             ...AddTemplatePrompt_prompts
             ...TemplatePromptList_prompts
@@ -138,13 +147,13 @@ export const TemplateDetails = (props: Props) => {
     id: activityId,
     category,
     dimensions,
+    orgId,
     prompts,
     team,
     type,
     viewerLowestScope
   } = activity
   const {id: teamId, editingScaleId} = team
-  const isParabolFixedActivity = __typename === 'FixedActivity' || type === 'teamPrompt'
 
   const {description: activityDescription, integrationsTip} = ACTIVITY_TYPE_DATA_LOOKUP[type]
 
@@ -153,6 +162,9 @@ export const TemplateDetails = (props: Props) => {
       fragment TemplateDetails_user on User {
         ...ActivityCardFavorite_user
         preferredTeamId
+        organizations {
+          hasStandupTemplates: featureFlag(featureName: "standupTemplates")
+        }
         teams {
           ...TeamPickerModal_teams
         }
@@ -162,12 +174,20 @@ export const TemplateDetails = (props: Props) => {
   )
 
   const {teams, preferredTeamId} = viewer
+  const isOwner = viewerLowestScope === 'TEAM'
+  const hasStandupTemplates = viewer.organizations.some((org) => org.hasStandupTemplates)
+  const isParabolTemplate = orgId === 'aGhostOrg'
+  const isLockedStandup = type === 'teamPrompt' && !hasStandupTemplates
+  const isFixedActivity = __typename === 'FixedActivity'
+  const showParabolByline = isFixedActivity || (isParabolTemplate && isLockedStandup)
+  const showNonOwnerActions = !isOwner && !isFixedActivity && !isLockedStandup
+
   const navigate = useNavigate()
   const location = useLocation() as {state?: {prevCategory?: string; edit?: boolean}}
   const prevCategory = location.state?.prevCategory
 
   const atmosphere = useAtmosphere()
-  const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
+  const {onError, onCompleted, error, submitting, submitMutation} = useMutationProps()
 
   const removeTemplate = useCallback(() => {
     if (submitting) return
@@ -175,7 +195,7 @@ export const TemplateDetails = (props: Props) => {
       retrospective: RemoveReflectTemplateMutation,
       poker: RemovePokerTemplateMutation,
       action: null,
-      teamPrompt: null,
+      teamPrompt: RemoveTeamPromptTemplateMutation,
       teamHealth: null
     } as const
 
@@ -185,8 +205,9 @@ export const TemplateDetails = (props: Props) => {
     submitMutation()
     const mutationArgs = {
       onError,
-      onCompleted: () => {
-        onCompleted()
+      onCompleted: (res: unknown, errors?: readonly PayloadError[] | null) => {
+        onCompleted(res, errors)
+        if (errors?.length) return
         navigate(
           `/activity-library/category/${prevCategory ?? category ?? QUICK_START_CATEGORY_ID}`,
           {replace: true}
@@ -224,8 +245,6 @@ export const TemplateDetails = (props: Props) => {
     }
   }, [editingScaleId])
 
-  const isOwner = viewerLowestScope === 'TEAM'
-
   const description = useTemplateDescription(viewerLowestScope, activity)
 
   useEffect(() => {
@@ -239,55 +258,58 @@ export const TemplateDetails = (props: Props) => {
       <ActivityDetailsBadges isEditing={isEditing} templateRef={activity} />
       <div className='max-w-[480px]'>
         <div className='mb-6'>
-          {isParabolFixedActivity && (
+          {showParabolByline && (
             <div className='font-semibold text-base text-fg-secondary'>Created by Parabol</div>
           )}
           {isOwner && (
-            <div className='flex items-center justify-between'>
-              <div
-                className={cn(
-                  'w-max',
-                  isEditing && 'rounded-md border border-hairline-strong border-solid pl-3'
-                )}
-              >
-                <UnstyledTemplateSharing
-                  isOwner={isOwner}
-                  template={activity}
-                  readOnly={!isEditing}
-                />
-              </div>
-              <div className='flex gap-2'>
-                {isEditing ? (
-                  <div className='rounded-md border border-hairline-strong border-solid'>
-                    <DetailAction
-                      icon={'delete'}
-                      tooltip={'Delete template'}
-                      onClick={removeTemplate}
-                    />
-                  </div>
-                ) : (
-                  <>
-                    <div
-                      className={cn(
-                        'rounded-md border border-hairline-strong border-solid',
-                        highlightEdit && 'animate-pulse ring-2 ring-sky-500 ring-offset-2'
-                      )}
-                    >
+            <>
+              <div className='flex items-center justify-between'>
+                <div
+                  className={cn(
+                    'w-max',
+                    isEditing && 'rounded-md border border-hairline-strong border-solid pl-3'
+                  )}
+                >
+                  <UnstyledTemplateSharing
+                    isOwner={isOwner}
+                    template={activity}
+                    readOnly={!isEditing}
+                  />
+                </div>
+                <div className='flex gap-2'>
+                  {isEditing ? (
+                    <div className='rounded-md border border-hairline-strong border-solid'>
                       <DetailAction
-                        icon={'edit'}
-                        tooltip={'Edit template'}
-                        onClick={() => setIsEditing(true)}
+                        icon={'delete'}
+                        tooltip={'Delete template'}
+                        onClick={removeTemplate}
                       />
                     </div>
-                    <div className='rounded-md border border-hairline-strong border-solid'>
-                      <CloneTemplate onClick={() => setTeamPickerOpen(true)} />
-                    </div>
-                  </>
-                )}
+                  ) : (
+                    <>
+                      <div
+                        className={cn(
+                          'rounded-md border border-hairline-strong border-solid',
+                          highlightEdit && 'animate-pulse ring-2 ring-sky-500 ring-offset-2'
+                        )}
+                      >
+                        <DetailAction
+                          icon={'edit'}
+                          tooltip={'Edit template'}
+                          onClick={() => setIsEditing(true)}
+                        />
+                      </div>
+                      <div className='rounded-md border border-hairline-strong border-solid'>
+                        <CloneTemplate onClick={() => setTeamPickerOpen(true)} />
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
+              {error && <div className='text-fg-error text-sm'>{error.message}</div>}
+            </>
           )}
-          {!isOwner && !isParabolFixedActivity && (
+          {showNonOwnerActions && (
             <div className='flex items-center justify-between'>
               <div className='py-2 font-semibold text-fg-secondary text-sm'>{description}</div>
               <div className='flex items-center gap-2'>
