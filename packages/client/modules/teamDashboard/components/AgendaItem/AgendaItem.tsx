@@ -11,15 +11,16 @@ import Avatar from '../../../../components/Avatar/Avatar'
 import IconButton from '../../../../components/IconButton'
 import MeetingSubnavItem from '../../../../components/MeetingSubnavItem'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {MenuPosition} from '../../../../hooks/useCoords'
 import type useGotoStageId from '../../../../hooks/useGotoStageId'
 import useScrollIntoView from '../../../../hooks/useScrollIntoVIew'
-import useTooltip from '../../../../hooks/useTooltip'
 import RemoveAgendaItemMutation from '../../../../mutations/RemoveAgendaItemMutation'
 import UpdateAgendaItemMutation from '../../../../mutations/UpdateAgendaItemMutation'
 import pinIcon from '../../../../styles/theme/images/icons/pin.svg'
 import unpinIcon from '../../../../styles/theme/images/icons/unpin.svg'
 import {cn} from '../../../../ui/cn'
+import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../../../../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../../../../ui/Tooltip/TooltipTrigger'
 import findStageAfterId from '../../../../utils/meetings/findStageAfterId'
 
 const getItemProps = (
@@ -125,9 +126,6 @@ const AgendaItem = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const ref = useRef<HTMLDivElement>(null)
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.UPPER_CENTER
-  )
   const {
     isDisabled,
     onClick,
@@ -167,30 +165,36 @@ const AgendaItem = (props: Props) => {
       <div className='group relative'>
         <MeetingSubnavItem
           metaContent={
-            <div
-              onClick={handleIconClick}
-              onMouseOver={openTooltip}
-              onMouseOut={closeTooltip}
-              ref={originRef}
-              className='flex w-6 cursor-pointer justify-center active:opacity-70'
-            >
-              {/* Idle shows the avatar (or a pin badge when already pinned); hovering the
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div
+                  onClick={handleIconClick}
+                  className='flex w-6 cursor-pointer justify-center active:opacity-70'
+                >
+                  {/* Idle shows the avatar (or a pin badge when already pinned); hovering the
                   row swaps in the pin/unpin action icon — all via group-hover, no JS state */}
-              {pinned ? (
-                <img
-                  alt='Pinned'
-                  className='opacity-70 group-hover:hidden dark:invert'
-                  src={pinIcon}
-                />
-              ) : (
-                <Avatar picture={picture} className='h-6 w-6 group-hover:hidden' />
-              )}
-              <img
-                alt={pinned ? 'Unpin' : 'Pin'}
-                className='hidden opacity-70 hover:opacity-100 group-hover:block dark:invert'
-                src={pinned ? unpinIcon : pinIcon}
-              />
-            </div>
+                  {pinned ? (
+                    <img
+                      alt='Pinned'
+                      className='opacity-70 group-hover:hidden dark:invert'
+                      src={pinIcon}
+                    />
+                  ) : (
+                    <Avatar picture={picture} className='h-6 w-6 group-hover:hidden' />
+                  )}
+                  <img
+                    alt={pinned ? 'Unpin' : 'Pin'}
+                    className='hidden opacity-70 hover:opacity-100 group-hover:block dark:invert'
+                    src={pinned ? unpinIcon : pinIcon}
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side='bottom'>
+                {pinned
+                  ? `Unpin this agenda topic from every check-in`
+                  : `Pin this agenda topic to every check-in`}
+              </TooltipContent>
+            </Tooltip>
           }
           labelClassName='pl-7'
           isDisabled={isDisabled}
@@ -215,11 +219,6 @@ const AgendaItem = (props: Props) => {
           palette='midGray'
         />
       </div>
-      {tooltipPortal(
-        pinned
-          ? `Unpin this agenda topic from every check-in`
-          : `Pin this agenda topic to every check-in`
-      )}
     </>
   )
 }

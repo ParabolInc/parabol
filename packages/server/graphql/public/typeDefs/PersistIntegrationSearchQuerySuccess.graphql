@@ -11,7 +11,7 @@ type PersistIntegrationSearchQuerySuccess {
   """
   teamId: ID
   """
-  The team member whose saved queries changed. Select the integration that owns the saved query
+  The service whose saved queries changed. Select searchQueries to pick up the saved query
   """
-  teamMember: TeamMember!
+  service: IntegrationService!
 }

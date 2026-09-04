@@ -1,6 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import useTooltip from '~/hooks/useTooltip'
+import {Tooltip} from '~/ui/Tooltip/Tooltip'
+import {TooltipContent} from '~/ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '~/ui/Tooltip/TooltipTrigger'
 import type {TaskFooterTeamAssignee_task$key} from '../../../../__generated__/TaskFooterTeamAssignee_task.graphql'
 import CardButton from '../../../../components/CardButton'
 import {MenuPosition} from '../../../../hooks/useCoords'
@@ -41,34 +43,25 @@ const TaskFooterTeamAssignee = (props: Props) => {
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT, {
     id: 'taskFooterTeamAssigneeMenu'
   })
-  const {
-    tooltipPortal,
-    openTooltip,
-    closeTooltip,
-    originRef: tipRef
-  } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER)
   return (
     <>
-      <div
-        className='w-full'
-        onClick={closeTooltip}
-        onMouseEnter={openTooltip}
-        onMouseLeave={closeTooltip}
-      >
-        <CardButton
-          className='-ml-2 block h-6 max-w-full truncate rounded-md border-0 px-2 text-left font-semibold text-fg-secondary text-xs leading-6 opacity-100 outline-0 hover:text-fg-primary focus:text-fg-primary'
-          aria-label='Assign this task to another team'
-          onClick={canAssign ? togglePortal : undefined}
-          onMouseEnter={TaskFooterTeamAssigneeMenuRoot.preload}
-          ref={originRef}
-        >
-          <div className='w-fit' ref={tipRef}>
-            {teamName}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className='w-full'>
+            <CardButton
+              className='-ml-2 block h-6 max-w-full truncate rounded-md border-0 px-2 text-left font-semibold text-fg-secondary text-xs leading-6 opacity-100 outline-0 hover:text-fg-primary focus:text-fg-primary'
+              aria-label='Assign this task to another team'
+              onClick={canAssign ? togglePortal : undefined}
+              onMouseEnter={TaskFooterTeamAssigneeMenuRoot.preload}
+              ref={originRef}
+            >
+              <div className='w-fit'>{teamName}</div>
+              {teamName}
+            </CardButton>
           </div>
-          {teamName}
-        </CardButton>
-      </div>
-      {tooltipPortal(<div>{'Reassign Team'}</div>)}
+        </TooltipTrigger>
+        <TooltipContent side='bottom'>Reassign Team</TooltipContent>
+      </Tooltip>
       {menuPortal(
         <TaskFooterTeamAssigneeMenuRoot
           menuProps={menuProps}

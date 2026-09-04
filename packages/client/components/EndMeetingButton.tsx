@@ -4,11 +4,11 @@ import EndCheckInMutation from '~/mutations/EndCheckInMutation'
 import EndRetrospectiveMutation from '~/mutations/EndRetrospectiveMutation'
 import {Flag} from '~/ui/icons'
 import useAtmosphere from '../hooks/useAtmosphere'
-import {MenuPosition} from '../hooks/useCoords'
 import useMutationProps from '../hooks/useMutationProps'
-import useTooltip from '../hooks/useTooltip'
 import EndSprintPokerMutation from '../mutations/EndSprintPokerMutation'
-import {Times} from '../types/constEnums'
+import {Tooltip} from '../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../ui/Tooltip/TooltipTrigger'
 import isDemoRoute from '../utils/isDemoRoute'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
@@ -27,13 +27,6 @@ const EndMeetingButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) 
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
   const {submitMutation, onCompleted, onError, submitting} = useMutationProps()
-  const {openTooltip, tooltipPortal, originRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.UPPER_CENTER,
-    {
-      disabled: !isConfirming,
-      delay: Times.MEETING_CONFIRM_TOOLTIP_DELAY
-    }
-  )
   const endMeeting = () => {
     if (submitting) return
     if (isConfirming) {
@@ -48,13 +41,12 @@ const EndMeetingButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) 
       }
     } else {
       setConfirmingButton('end')
-      setTimeout(openTooltip)
     }
   }
 
   const label = isDemoRoute() ? 'End Demo' : 'End Meeting'
   return (
-    <>
+    <Tooltip open={isConfirming}>
       <BottomNavControl
         confirming={!!cancelConfirm}
         dataCy='end-button'
@@ -63,12 +55,14 @@ const EndMeetingButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) 
         ref={ref}
         disabled={isEnded}
       >
-        <BottomNavIconLabel label={label} ref={originRef}>
-          <Flag className='text-sky-500' />
-        </BottomNavIconLabel>
+        <TooltipTrigger asChild>
+          <BottomNavIconLabel label={label}>
+            <Flag className='text-sky-500' />
+          </BottomNavIconLabel>
+        </TooltipTrigger>
       </BottomNavControl>
-      {tooltipPortal(`Tap '${label}' again to Confirm`)}
-    </>
+      <TooltipContent>{`Tap '${label}' again to Confirm`}</TooltipContent>
+    </Tooltip>
   )
 })
 

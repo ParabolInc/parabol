@@ -28,6 +28,25 @@ type ParabolSearchQuery {
   statusFilters: [TaskStatusEnum!]
 }
 
+type GitLabSearchQuery {
+  id: ID!
+  queryString: String!
+  selectedProjectsIds: [ID!]
+}
+
+type LinearSearchQuery {
+  id: ID!
+  queryString: String!
+  selectedProjectsIds: [ID!]
+}
+
+type AzureDevOpsSearchQuery {
+  id: ID!
+  queryString: String!
+  projectKeyFilters: [String!]!
+  isWIQL: Boolean!
+}
+
 extend type PokerMeeting {
   isCommentUnread: Boolean!
   # null = the right drawer is closed. Otherwise the active tab id it is open to

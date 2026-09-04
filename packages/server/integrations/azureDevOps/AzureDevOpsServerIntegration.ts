@@ -9,9 +9,10 @@ import {
   type RepoListCapability,
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
+import describeAzureDevOpsDimensionField from './describeAzureDevOpsDimensionField'
 import fetchAzureDevOpsProjects from './fetchAzureDevOpsProjects'
 import pushEstimateToAzureDevOps from './pushEstimateToAzureDevOps'
-import resolveAzureDevOpsServiceField from './resolveAzureDevOpsServiceField'
+import resolveAzureDevOpsDimensionFieldKey from './resolveAzureDevOpsDimensionFieldKey'
 import resolveAzureDevOpsTaskIntegration from './resolveAzureDevOpsTaskIntegration'
 
 export class AzureDevOpsServerIntegration extends ServerIntegrationDefinition {
@@ -47,7 +48,8 @@ export class AzureDevOpsServerIntegration extends ServerIntegrationDefinition {
     estimatePush: {
       targets: ['comment', 'field'],
       pushEstimate: pushEstimateToAzureDevOps,
-      resolveServiceField: resolveAzureDevOpsServiceField
+      resolveDimensionFieldKey: resolveAzureDevOpsDimensionFieldKey,
+      describeDimensionField: describeAzureDevOpsDimensionField
     }
   }
 }

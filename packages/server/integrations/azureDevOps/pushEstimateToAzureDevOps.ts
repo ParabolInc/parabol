@@ -1,12 +1,18 @@
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
+import type {EstimatePushResult} from '../../postgres/types/EstimatePushResult'
 import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
 import {fieldTypeToId} from '../../utils/azureDevOps/azureDevOpsFieldTypeToId'
-import type {EstimatePushCtx, EstimatePushResult} from '../platform/ServerIntegrationDefinition'
+import loadDimensionField from '../platform/loadDimensionField'
+import type {EstimatePushCtx} from '../platform/ServerIntegrationDefinition'
+import resolveAzureDevOpsDimensionFieldKey from './resolveAzureDevOpsDimensionFieldKey'
 
 const pushEstimateToAzureDevOps = async ({
   task,
   taskEstimate,
   dataLoader,
+  context,
+  info,
+  viewerId,
   meetingName,
   discussionURL
 }: EstimatePushCtx): Promise<EstimatePushResult | Error> => {
@@ -31,25 +37,16 @@ const pushEstimateToAzureDevOps = async ({
     return new Error('User no longer has access to Azure DevOps')
   }
 
-  const workItemType = azureDevOpsWorkItem?.type ? azureDevOpsWorkItem?.type : ''
+  const dimensionFieldLookup = await loadDimensionField(
+    resolveAzureDevOpsDimensionFieldKey,
+    {dataLoader, teamId, userId: accessUserId, context, info, task, viewerId},
+    dimensionName
+  )
+  const dimensionField = dimensionFieldLookup?.field
 
-  const azureDevOpsDimensionFieldMapEntry = await dataLoader
-    .get('azureDevOpsDimensionFieldMap')
-    .load({
-      teamId,
-      dimensionName,
-      instanceId,
-      projectKey,
-      workItemType
-    })
+  const fieldId = dimensionField?.fieldId ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
 
-  const fieldName = azureDevOpsDimensionFieldMapEntry
-    ? azureDevOpsDimensionFieldMapEntry.fieldName
-    : SprintPokerDefaults.SERVICE_FIELD_COMMENT.toString()
-
-  const fieldType = azureDevOpsDimensionFieldMapEntry
-    ? azureDevOpsDimensionFieldMapEntry.fieldType
-    : 'string'
+  const fieldType = dimensionField ? dimensionField.fieldType : 'string'
 
   if (!azureDevOpsWorkItem) {
     return new Error('Cannot find the correct work item to push changes to.')
@@ -57,7 +54,7 @@ const pushEstimateToAzureDevOps = async ({
 
   const manager = new AzureDevOpsServerManager(auth, null)
 
-  if (fieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
+  if (fieldId === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
     const res = await manager.addScoreComment(
       instanceId,
       dimensionName,
@@ -70,11 +67,17 @@ const pushEstimateToAzureDevOps = async ({
     if ('message' in res) {
       return new Error(res.message)
     }
-  } else if (fieldName !== SprintPokerDefaults.SERVICE_FIELD_NULL) {
-    const fieldId = fieldTypeToId[azureDevOpsWorkItem.type as keyof typeof fieldTypeToId]
+  } else if (fieldId !== SprintPokerDefaults.SERVICE_FIELD_NULL) {
+    const azureFieldId = fieldTypeToId[azureDevOpsWorkItem.type as keyof typeof fieldTypeToId]
     try {
       const updatedStoryPoints = fieldType === 'string' ? value : Number(value)
-      await manager.addScoreField(instanceId, fieldId, updatedStoryPoints, issueKey, projectKey)
+      await manager.addScoreField(
+        instanceId,
+        azureFieldId,
+        updatedStoryPoints,
+        issueKey,
+        projectKey
+      )
     } catch (e) {
       return new Error(e instanceof Error ? e.message : 'Unable to updateStoryPoints')
     }

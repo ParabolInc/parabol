@@ -1,5 +1,6 @@
 import {GraphQLError} from 'graphql'
 import AtlassianIntegrationId from '../../../../client/shared/gqlIds/AtlassianIntegrationId'
+import type {JiraIntegrationSearchQuery} from '../../../postgres/types'
 import AtlassianServerManager from '../../../utils/AtlassianServerManager'
 import {processJiraImages} from '../../../utils/atlassian/jiraImages'
 import {getUserId} from '../../../utils/authorization'
@@ -201,18 +202,10 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
     return dataLoader.get('allJiraProjects').load({teamId, userId})
   },
 
-  jiraSearchQueries: async ({teamId, userId, providerId}, _args, {dataLoader}) => {
-    const queries = await dataLoader
-      .get('recentIntegrationSearchQueries')
-      .load({teamId, userId, providerId})
-    return queries
-      .filter((row) => row.service === 'jira')
-      .map(({id, query, lastUsedAt}) => ({
-        id: String(id),
-        ...query,
-        lastUsedAt: lastUsedAt.toJSON()
-      }))
-  }
+  jiraSearchQueries: ({teamId, userId, providerId}, _args, {dataLoader}) =>
+    dataLoader.get('recentIntegrationSearchQueries').load({teamId, userId, providerId}) as Promise<
+      JiraIntegrationSearchQuery[]
+    >
 }
 
 export default AtlassianIntegration

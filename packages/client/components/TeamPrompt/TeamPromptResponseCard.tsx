@@ -2,7 +2,7 @@ import type {Editor} from '@tiptap/core'
 import type {JSONContent} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import {motion} from 'motion/react'
-import {useMemo} from 'react'
+import {useMemo, useState} from 'react'
 import CopyToClipboard from 'react-copy-to-clipboard'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import type {TeamPromptResponseCard_stage$key} from '~/__generated__/TeamPromptResponseCard_stage.graphql'
@@ -10,13 +10,13 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useEventCallback from '~/hooks/useEventCallback'
 import {Link} from '~/ui/icons'
 import plural from '~/utils/plural'
-import {MenuPosition} from '../../hooks/useCoords'
 import useMutationProps from '../../hooks/useMutationProps'
-import useTooltip from '../../hooks/useTooltip'
 import UpsertTeamPromptResponseMutation from '../../mutations/UpsertTeamPromptResponseMutation'
 import {cn} from '../../ui/cn'
+import {Tooltip} from '../../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
 import makeAppURL from '../../utils/makeAppURL'
-import {mergeRefs} from '../../utils/react/mergeRefs'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import Avatar from '../Avatar/Avatar'
 import PlainButton from '../PlainButton/PlainButton'
@@ -145,25 +145,17 @@ const TeamPromptResponseCard = (props: Props) => {
     }
   })
 
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.UPPER_CENTER
-  )
-
-  const {
-    tooltipPortal: copiedTooltipPortal,
-    openTooltip: openCopiedTooltip,
-    closeTooltip: closeCopiedTooltip,
-    originRef: copiedTooltipRef
-  } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_CENTER)
+  const [isHovered, setIsHovered] = useState(false)
+  const [isCopied, setIsCopied] = useState(false)
 
   const handleCopy = () => {
-    openCopiedTooltip()
+    setIsCopied(true)
     SendClientSideEvent(atmosphere, 'Copied Standup Response Link', {
       teamId: teamId,
       meetingId: meetingId
     })
     setTimeout(() => {
-      closeCopiedTooltip()
+      setIsCopied(false)
     }, 2000)
   }
 
@@ -190,16 +182,18 @@ const TeamPromptResponseCard = (props: Props) => {
           )}
         </TeamMemberName>
         {response && (
-          <CopyToClipboard text={responsePermalink} onCopy={handleCopy}>
-            <div
-              className='ml-auto h-7 rounded-md bg-transparent p-0 text-fg-muted hover:bg-surface-hover hover:text-fg-secondary'
-              onMouseEnter={openTooltip}
-              onMouseLeave={closeTooltip}
-              ref={mergeRefs(originRef, copiedTooltipRef)}
-            >
-              <Link className='h-7 w-7 cursor-pointer p-0.5' />
-            </div>
-          </CopyToClipboard>
+          <Tooltip open={isCopied || isHovered} onOpenChange={setIsHovered}>
+            <CopyToClipboard text={responsePermalink} onCopy={handleCopy}>
+              <TooltipTrigger asChild>
+                <div className='ml-auto h-7 rounded-md bg-transparent p-0 text-fg-muted hover:bg-surface-hover hover:text-fg-secondary'>
+                  <Link className='h-7 w-7 cursor-pointer p-0.5' />
+                </div>
+              </TooltipTrigger>
+            </CopyToClipboard>
+            <TooltipContent side={isCopied ? 'top' : 'bottom'}>
+              {isCopied ? 'Copied!' : 'Copy permalink'}
+            </TooltipContent>
+          </Tooltip>
         )}
       </div>
       <div
@@ -248,8 +242,6 @@ const TeamPromptResponseCard = (props: Props) => {
           </>
         )}
       </div>
-      {tooltipPortal('Copy permalink')}
-      {copiedTooltipPortal('Copied!')}
     </motion.div>
   )
 }

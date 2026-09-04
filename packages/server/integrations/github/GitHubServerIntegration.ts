@@ -11,9 +11,10 @@ import {
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
 import buildGitHubSearchQuery from './buildGitHubSearchQuery'
+import describeGitHubDimensionField from './describeGitHubDimensionField'
 import GitHubServerManager from './GitHubServerManager'
 import pushEstimateToGitHub from './pushEstimateToGitHub'
-import resolveGitHubServiceField from './resolveGitHubServiceField'
+import resolveGitHubDimensionFieldKey from './resolveGitHubDimensionFieldKey'
 import resolveGitHubTaskIntegration from './resolveGitHubTaskIntegration'
 
 export class GitHubServerIntegration extends ServerIntegrationDefinition {
@@ -53,7 +54,8 @@ export class GitHubServerIntegration extends ServerIntegrationDefinition {
     estimatePush: {
       targets: ['comment', 'label'],
       pushEstimate: pushEstimateToGitHub,
-      resolveServiceField: resolveGitHubServiceField
+      resolveDimensionFieldKey: resolveGitHubDimensionFieldKey,
+      describeDimensionField: describeGitHubDimensionField
     }
   }
 }

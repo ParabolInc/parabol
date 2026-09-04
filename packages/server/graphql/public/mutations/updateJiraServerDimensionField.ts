@@ -1,10 +1,12 @@
+import JiraServerProjectId from 'parabol-client/shared/gqlIds/JiraServerProjectId'
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import JiraServerRestManager from '../../../integrations/jiraServer/JiraServerRestManager'
-import getKysely from '../../../postgres/getKysely'
-import type {IntegrationProviderJiraServer} from '../../../postgres/types/IntegrationProvider'
+import pickDimensionField from '../../../integrations/platform/pickDimensionField'
+import upsertIntegrationDimensionFieldMap from '../../../postgres/queries/upsertIntegrationDimensionFieldMap'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
+import validateDimensionFieldMutation from './helpers/validateDimensionFieldMutation'
 
 const updateJiraServerDimensionField: MutationResolvers['updateJiraServerDimensionField'] = async (
   _source,
@@ -16,20 +18,11 @@ const updateJiraServerDimensionField: MutationResolvers['updateJiraServerDimensi
   const subOptions = {mutatorId, operationId}
 
   // VALIDATION
-  const meeting = await dataLoader.get('newMeetings').load(meetingId)
-  if (!meeting) {
-    return {error: {message: 'Invalid meetingId'}}
+  const meeting = await validateDimensionFieldMutation(dataLoader, meetingId, dimensionName)
+  if (meeting instanceof Error) {
+    return {error: {message: meeting.message}}
   }
-  if (meeting.meetingType !== 'poker') {
-    return {error: {message: 'Not a poker meeting'}}
-  }
-  const {teamId, templateRefId} = meeting
-  const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
-  const {dimensions} = templateRef
-  const matchingDimension = dimensions.find((dimension) => dimension.name === dimensionName)
-  if (!matchingDimension) {
-    return {error: {message: 'Invalid dimension name'}}
-  }
+  const {teamId} = meeting
 
   // RESOLUTION
   const data = {teamId, meetingId}
@@ -41,12 +34,13 @@ const updateJiraServerDimensionField: MutationResolvers['updateJiraServerDimensi
     return {error: {message: 'Not authenticated with JiraServer'}}
   }
 
-  const existingDimensionField = await dataLoader.get('jiraServerDimensionFieldMap').load({
-    providerId: auth.providerId,
-    projectId,
-    issueType: issueType,
-    teamId,
-    dimensionName
+  const repoId = JiraServerProjectId.join(auth.providerId, projectId)
+  const dimensionFields = await dataLoader
+    .get('integrationDimensionFieldMaps')
+    .load({teamId, service: 'jiraServer', repoId, dimensionName})
+  const existingDimensionField = pickDimensionField(dimensionFields, {
+    repoId,
+    issueType
   })
   if (existingDimensionField?.fieldName === fieldName) return data
 
@@ -60,7 +54,10 @@ const updateJiraServerDimensionField: MutationResolvers['updateJiraServerDimensi
     fieldType = 'string'
   } else {
     const provider = await dataLoader.get('integrationProviders').loadNonNull(auth.providerId)
-    const manager = new JiraServerRestManager(auth, provider as IntegrationProviderJiraServer)
+    if (provider.service !== 'jiraServer') {
+      return {error: {message: 'Not authenticated with JiraServer'}}
+    }
+    const manager = new JiraServerRestManager(auth, provider)
     const fieldTypes = await manager.getFieldTypes(projectId, issueType)
     if (fieldTypes instanceof Error) {
       return {error: fieldTypes}
@@ -73,34 +70,19 @@ const updateJiraServerDimensionField: MutationResolvers['updateJiraServerDimensi
     fieldType = jiraFieldType.schema.type
   }
 
-  const newField = {
-    providerId: auth.providerId,
+  await upsertIntegrationDimensionFieldMap({
     teamId,
-    projectId,
-    issueType: issueType,
+    service: 'jiraServer',
+    repoId,
+    issueType,
     dimensionName,
     fieldId,
     fieldName,
     fieldType
-  }
-
-  // udpate dataloader object
-  if (existingDimensionField) {
-    Object.assign(existingDimensionField, newField)
-  }
-  await getKysely()
-    .insertInto('JiraServerDimensionFieldMap')
-    .values(newField)
-    .onConflict((oc) =>
-      oc
-        .columns(['providerId', 'teamId', 'projectId', 'issueType', 'dimensionName'])
-        .doUpdateSet((eb) => ({
-          fieldId: eb.ref('excluded.fieldId'),
-          fieldName: eb.ref('excluded.fieldName'),
-          fieldType: eb.ref('excluded.fieldType')
-        }))
-    )
-    .execute()
+  })
+  dataLoader
+    .get('integrationDimensionFieldMaps')
+    .clear({teamId, service: 'jiraServer', repoId, dimensionName})
 
   publish(SubscriptionChannel.TEAM, teamId, 'UpdateDimensionFieldSuccess', data, subOptions)
   return data

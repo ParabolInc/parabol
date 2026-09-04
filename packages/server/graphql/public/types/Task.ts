@@ -1,4 +1,6 @@
 import GitHubRepoId from '../../../../client/shared/gqlIds/GitHubRepoId'
+import {estimatePushColumns} from '../../../integrations/platform/estimatePushColumns'
+import {previousPushLabelName} from '../../../integrations/platform/previousPushLabel'
 import getKysely from '../../../postgres/getKysely'
 import {selectTaskEstimate} from '../../../postgres/select'
 import type {GetIssueLabelsQuery, GetIssueLabelsQueryVariables} from '../../../types/githubTypes'
@@ -88,9 +90,9 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
       const ghIssueLabels = labelNodes.map((node) => node?.name).filter(isValid)
       await Promise.all(
         estimates.map(async (estimate) => {
-          const {githubLabelName, name: dimensionName} = estimate
-          const existingLabel = ghIssueLabels.includes(githubLabelName!)
-          if (existingLabel) return
+          const {name: dimensionName} = estimate
+          const previousLabelName = previousPushLabelName(estimate)
+          if (previousLabelName && ghIssueLabels.includes(previousLabelName)) return
           // VERY EXPENSIVE. We do this only if we're darn sure we need to
           const taskIds = await dataLoader
             .get('taskIdsByTeamAndGitHubRepo')
@@ -98,7 +100,8 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
           const similarEstimate = await selectTaskEstimate()
             .where('taskId', 'in', taskIds)
             .where('name', '=', dimensionName)
-            .where('githubLabelName', 'in', ghIssueLabels)
+            .where('pushService', '=', 'github')
+            .where('pushTargetId', 'in', ghIssueLabels)
             .limit(1)
             .executeTakeFirst()
           if (!similarEstimate) return
@@ -109,14 +112,17 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
               changeSource: 'external',
               // keep the link to the discussion alive, if possible
               discussionId: estimate.discussionId,
-              jiraFieldId: undefined,
               label: similarEstimate.label,
               name: estimate.name,
               meetingId: null,
               stageId: null,
               taskId,
               userId: accessUserId,
-              githubLabelName: similarEstimate.githubLabelName!
+              ...estimatePushColumns(
+                similarEstimate.pushTargetId
+                  ? {service: 'github', target: 'label', targetId: similarEstimate.pushTargetId}
+                  : null
+              )
             })
             .execute()
         })

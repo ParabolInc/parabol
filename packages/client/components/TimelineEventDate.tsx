@@ -1,8 +1,10 @@
 import ms from 'ms'
 import {useEffect, useState} from 'react'
+import {Tooltip} from '../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../ui/Tooltip/TooltipTrigger'
 import absoluteDate from '../utils/date/absoluteDate'
 import relativeDate from '../utils/date/relativeDate'
-import SimpleTooltip from './SimpleTooltip'
 
 interface Props {
   createdAt: string | Date
@@ -24,7 +26,12 @@ const TimelineEventDate = (props: Props) => {
 
   return (
     <span className='text-[11px] text-fg-secondary leading-4'>
-      <SimpleTooltip text={absoluteDate(createdAt)}>{fromNow}</SimpleTooltip>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className='cursor-pointer'>{fromNow}</span>
+        </TooltipTrigger>
+        <TooltipContent side='bottom'>{absoluteDate(createdAt)}</TooltipContent>
+      </Tooltip>
     </span>
   )
 }

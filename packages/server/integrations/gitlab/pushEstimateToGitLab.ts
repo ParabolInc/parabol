@@ -1,11 +1,15 @@
+import GitLabProjectId from 'parabol-client/shared/gqlIds/GitLabProjectId'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import interpolateVotingLabelTemplate from '../../../client/shared/interpolateVotingLabelTemplate'
 import appOrigin from '../../appOrigin'
+import type {EstimatePushResult} from '../../postgres/types/EstimatePushResult'
 import getPhase from '../../utils/getPhase'
 import makeScoreGitLabComment from '../../utils/makeScoreGitLabComment'
-import type {EstimatePushCtx, EstimatePushResult} from '../platform/ServerIntegrationDefinition'
+import pickDimensionField from '../platform/pickDimensionField'
+import {previousPushLabelId} from '../platform/previousPushLabel'
+import type {EstimatePushCtx} from '../platform/ServerIntegrationDefinition'
 import GitLabServerManager from './GitLabServerManager'
 
 const pushEstimateToGitLab = async ({
@@ -40,10 +44,12 @@ const pushEstimateToGitLab = async ({
   if (!issue) return new Error(`Unable to get GitLab issue with id: ${gid}`)
   const {iid, projectId} = issue
   if (!projectId) return new Error(`Unable to get GitLab projectId for issue with id: ${gid}`)
-  const fieldMap = await dataLoader
-    .get('gitlabDimensionFieldMaps')
-    .load({teamId, dimensionName, projectId, providerId})
-  const labelTemplate = fieldMap?.labelTemplate ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
+  const repoId = GitLabProjectId.join(providerId, projectId)
+  const rows = await dataLoader
+    .get('integrationDimensionFieldMaps')
+    .load({teamId, service: 'gitlab', repoId, dimensionName})
+  const dimensionField = pickDimensionField(rows, {repoId, issueType: null})
+  const labelTemplate = dimensionField?.fieldId ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
 
   if (labelTemplate === SprintPokerDefaults.SERVICE_FIELD_NULL) {
     return null
@@ -145,11 +151,9 @@ const pushEstimateToGitLab = async ({
     const dimensionTaskEstimate = latestTaskEstimates.find(
       (estimate) => estimate.name === dimensionName
     )
-    if (dimensionTaskEstimate) {
-      const oldLabelId = dimensionTaskEstimate.gitlabLabelId
-      if (oldLabelId) {
-        removeLabelIds.push(oldLabelId)
-      }
+    const oldLabelId = dimensionTaskEstimate ? previousPushLabelId(dimensionTaskEstimate) : null
+    if (oldLabelId) {
+      removeLabelIds.push(oldLabelId)
     }
 
     const [, updateError] = await manager.updateIssue({
@@ -159,7 +163,7 @@ const pushEstimateToGitLab = async ({
       removeLabelIds
     })
     if (updateError) return updateError
-    return {column: 'gitlabLabelId', value: labelId}
+    return {service: 'gitlab', target: 'label', targetId: labelId}
   }
 
   return null

@@ -9,10 +9,11 @@ import {
   type RepoListCapability,
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
+import describeJiraServerDimensionField from './describeJiraServerDimensionField'
 import fetchJiraServerProjects from './fetchJiraServerProjects'
 import JiraServerRestManager from './JiraServerRestManager'
 import pushEstimateToJiraServer from './pushEstimateToJiraServer'
-import resolveJiraServerServiceField from './resolveJiraServerServiceField'
+import resolveJiraServerDimensionFieldKey from './resolveJiraServerDimensionFieldKey'
 import resolveJiraServerTaskIntegration from './resolveJiraServerTaskIntegration'
 
 export class JiraServerServerIntegration extends ServerIntegrationDefinition {
@@ -44,7 +45,8 @@ export class JiraServerServerIntegration extends ServerIntegrationDefinition {
     estimatePush: {
       targets: ['comment', 'field'],
       pushEstimate: pushEstimateToJiraServer,
-      resolveServiceField: resolveJiraServerServiceField
+      resolveDimensionFieldKey: resolveJiraServerDimensionFieldKey,
+      describeDimensionField: describeJiraServerDimensionField
     }
   }
 }

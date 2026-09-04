@@ -11,6 +11,7 @@ import standardError from '../../../utils/standardError'
 import connectionFromTasks from '../../queries/helpers/connectionFromTasks'
 import getPrevUsedRepoIntegrations from '../../queries/helpers/getPrevUsedRepoIntegrations'
 import type {TeamMemberResolvers} from '../resolverTypes'
+import {makeIntegrationServiceSource} from './IntegrationService'
 
 const TeamMember: TeamMemberResolvers = {
   isOrgAdmin: async ({teamId, userId}, _args, {dataLoader}) => {
@@ -27,13 +28,9 @@ const TeamMember: TeamMemberResolvers = {
   },
 
   services: ({teamId, userId}) => {
-    return Object.values(serverIntegrations).map((definition) => ({
-      service: definition.service,
-      title: definition.title,
-      capabilities: definition.getCapabilityKeys(),
-      teamId,
-      userId
-    }))
+    return Object.values(serverIntegrations).map((definition) =>
+      makeIntegrationServiceSource(definition.service, teamId, userId)
+    )
   },
 
   integrations: ({teamId, userId}) => {
