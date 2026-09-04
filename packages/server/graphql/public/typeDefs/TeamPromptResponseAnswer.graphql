@@ -1,0 +1,34 @@
+"""
+One member's answer to one prompt of a templated stand-up
+"""
+type TeamPromptResponseAnswer {
+  """
+  Answer id in the format `teamPromptResponseAnswer:idGeneratedByDatabase`
+  """
+  id: ID!
+
+  """
+  The id of the prompt this answer responds to
+  """
+  promptId: ID!
+
+  """
+  The prompt this answer responds to
+  """
+  prompt: ReflectPrompt!
+
+  """
+  The stringified TipTap document of the answer
+  """
+  content: String!
+
+  """
+  The plain text of the answer
+  """
+  plaintextContent: String!
+
+  """
+  The last time the answer was edited
+  """
+  updatedAt: DateTime!
+}

@@ -46,4 +46,27 @@ type TeamPromptResponse implements Reactable {
   the shared sort order for reponses
   """
   sortOrder: Float!
+
+  """
+  True once the author shared the response with the team. Until then only the author can read
+  content, plaintextContent and answers
+  """
+  isShared: Boolean!
+
+  """
+  The first time the response was shared with the team
+  """
+  sharedAt: DateTime
+
+  """
+  One answer per prompt the author has written, in insertion order. Empty for another member's
+  unshared draft and for legacy single-prompt responses
+  """
+  answers: [TeamPromptResponseAnswer!]!
+
+  """
+  The ids of the prompts the author has answered so far, visible to the whole team even while
+  the response is a draft
+  """
+  answeredPromptIds: [ID!]!
 }
