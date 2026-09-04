@@ -1,6 +1,7 @@
 import type {Editor, JSONContent} from '@tiptap/core'
 import {useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
+import {useEffect} from 'react'
 import {Check as CheckIcon} from '~/ui/icons'
 import {Button} from '../../../ui/Button/Button'
 import {TipTapEditor} from '../../TipTapEditor/TipTapEditor'
@@ -9,17 +10,19 @@ import InspirationDestinationChip from './InspirationDestinationChip'
 import type {WorkDrawerPrompt} from './WorkDrawerConsumeContext'
 
 interface Props {
+  itemId: string
   title: string | null
   content: JSONContent
   prompt: WorkDrawerPrompt
   source: string
   isAdded: boolean
   disabled: boolean
-  onAdd: (editor: Editor) => void
+  onEditorReady: (itemId: string, editor: Editor) => void
+  onAdd: () => void
 }
 
 const InspirationDraftItemCard = (props: Props) => {
-  const {title, content, prompt, source, isAdded, disabled, onAdd} = props
+  const {itemId, title, content, prompt, source, isAdded, disabled, onEditorReady, onAdd} = props
   const editor = useEditor({
     content,
     extensions: [
@@ -27,6 +30,9 @@ const InspirationDraftItemCard = (props: Props) => {
       TiptapLinkExtension.configure({openOnClick: false})
     ]
   })
+  useEffect(() => {
+    if (editor) onEditorReady(itemId, editor)
+  }, [editor, itemId, onEditorReady])
   if (!editor) return null
   return (
     <div className='flex flex-col gap-2 rounded-card bg-surface-card p-3 shadow-[var(--shadow-card)]'>
@@ -48,7 +54,7 @@ const InspirationDraftItemCard = (props: Props) => {
             variant='secondary'
             size='sm'
             disabled={disabled || editor.isEmpty}
-            onClick={() => onAdd(editor)}
+            onClick={onAdd}
           >
             Add to response
           </Button>
