@@ -249,7 +249,7 @@ export const TemplateDetails = (props: Props) => {
 
   useEffect(() => {
     setIsEditing(!!location.state?.edit)
-  }, [location.state?.edit, setIsEditing])
+  }, [location.state?.edit, activityId, setIsEditing])
 
   useEffect(() => setActiveTemplate(atmosphere, teamId, activityId, type), [activity])
 
