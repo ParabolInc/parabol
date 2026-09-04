@@ -1,6 +1,7 @@
 import type {JSONContent} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import dayjs from 'dayjs'
+import {useEffect} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 import type {ParabolStandupsResultsQuery} from '../../../__generated__/ParabolStandupsResultsQuery.graphql'
@@ -19,10 +20,12 @@ const isContentEmpty = (node: JSONContent): boolean => {
 interface Props {
   queryRef: PreloadedQuery<ParabolStandupsResultsQuery>
   teamId: string
+  searchQuery: string
+  onResultCount: (searchQuery: string, count: number) => void
 }
 
 const ParabolStandupsResults = (props: Props) => {
-  const {queryRef, teamId} = props
+  const {queryRef, teamId, searchQuery, onResultCount} = props
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
 
@@ -80,6 +83,11 @@ const ParabolStandupsResults = (props: Props) => {
           : []
     }))
     .filter((group) => group.responses.length > 0)
+
+  const resultCount = groups.reduce((total, group) => total + group.responses.length, 0)
+  useEffect(() => {
+    onResultCount(searchQuery, resultCount)
+  }, [searchQuery, resultCount, onResultCount])
 
   if (groups.length === 0) {
     return (

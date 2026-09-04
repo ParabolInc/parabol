@@ -1,5 +1,5 @@
 import type {Editor, JSONContent} from '@tiptap/core'
-import {type ReactNode, useState} from 'react'
+import {type ReactNode, useCallback, useState} from 'react'
 import {Tune as TuneIcon} from '~/ui/icons'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import UpsertTeamPromptResponseMutation from '../../../mutations/UpsertTeamPromptResponseMutation'
@@ -13,8 +13,10 @@ import {Tooltip} from '../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../ui/Tooltip/TooltipTrigger'
 import Ellipsis from '../../Ellipsis/Ellipsis'
+import InspirationDraftPanel from './InspirationDraftPanel'
 import InspirationItemCard from './InspirationItemCard'
 import RetroInspirationItemCard from './RetroInspirationItemCard'
+import useInspirationAutoGenerate from './useInspirationAutoGenerate'
 import {useWorkDrawerConsume} from './WorkDrawerConsumeContext'
 import type {WorkDrawerDateRange} from './WorkDrawerDateFilter'
 
@@ -27,6 +29,7 @@ interface InspirationItemData {
 
 interface Props {
   meetingId: string
+  teamId: string
   service: string
   searchQuery: string
   initialItems: readonly {
@@ -51,7 +54,8 @@ const parseContent = (raw: string): JSONContent => {
 }
 
 const InspirationItemsPanel = (props: Props) => {
-  const {meetingId, service, searchQuery, initialItems, hideDraftPanel, children} = props
+  const {meetingId, teamId, service, searchQuery, initialItems, hideDraftPanel, children} = props
+  const {dateRange, workItemCount} = props
   const consume = useWorkDrawerConsume()
   const isRetro = consume.mode === 'retro'
   const viewerResponse = consume.mode === 'teamPrompt' ? consume.viewerResponse : null
@@ -70,7 +74,7 @@ const InspirationItemsPanel = (props: Props) => {
   const [addingToResponse, setAddingToResponse] = useState(false)
   const [generateInspirationItems, submitting] = useGenerateInspirationItemsMutation()
 
-  const onGenerate = () => {
+  const onGenerate = useCallback(() => {
     if (submitting) return
     setError(null)
     generateInspirationItems({
@@ -92,7 +96,20 @@ const InspirationItemsPanel = (props: Props) => {
         )
       }
     })
-  }
+  }, [submitting, meetingId, service, searchQuery, userPrompt, generateInspirationItems])
+
+  const structured =
+    consume.mode === 'teamPrompt' && consume.composer && consume.prompts.length > 0
+      ? {composer: consume.composer, prompts: consume.prompts}
+      : null
+
+  useInspirationAutoGenerate({
+    enabled: !!structured,
+    hasItems: items.length > 0,
+    hasWorkItems: workItemCount !== undefined && workItemCount > 0,
+    submitting,
+    generate: onGenerate
+  })
 
   const onAddToResponse = (editor: Editor) => {
     if (addingToResponse) return
@@ -135,6 +152,56 @@ const InspirationItemsPanel = (props: Props) => {
     ? 'Tell the AI how to draft your reflections…'
     : 'Tell the AI how to draft your response…'
 
+  const customInstructionsDialog = (
+    <Dialog isOpen={promptOpen} onClose={() => setPromptOpen(false)}>
+      <DialogContent className='z-10'>
+        <DialogTitle className='mb-4'>Custom instructions</DialogTitle>
+        <textarea
+          autoFocus
+          className='min-h-32 w-full resize-y rounded-md border border-hairline-field p-2 text-fg-primary text-sm focus:border-accent focus:outline-none'
+          value={userPrompt}
+          onChange={(e) => setUserPrompt(e.target.value)}
+          placeholder={customInstructionsPlaceholder}
+        />
+        <DialogActions>
+          {userPrompt.trim() && (
+            <Button variant='ghost' size='md' onClick={() => setUserPrompt('')}>
+              Clear
+            </Button>
+          )}
+          <Button variant='secondary' size='md' onClick={() => setPromptOpen(false)}>
+            Done
+          </Button>
+        </DialogActions>
+      </DialogContent>
+    </Dialog>
+  )
+
+  if (structured) {
+    return (
+      <>
+        <InspirationDraftPanel
+          meetingId={meetingId}
+          teamId={teamId}
+          service={service}
+          items={items}
+          prompts={structured.prompts}
+          composer={structured.composer}
+          workItemCount={workItemCount}
+          dateRange={dateRange}
+          onRegenerate={onGenerate}
+          regenerating={submitting}
+          error={error}
+          onTune={() => setPromptOpen(true)}
+          tuneDirty={!!userPrompt.trim()}
+        >
+          {children}
+        </InspirationDraftPanel>
+        {customInstructionsDialog}
+      </>
+    )
+  }
+
   return (
     <>
       {!hideDraftPanel && (
@@ -166,28 +233,7 @@ const InspirationItemsPanel = (props: Props) => {
               <TooltipContent>{customInstructionsHint}</TooltipContent>
             </Tooltip>
           </div>
-          <Dialog isOpen={promptOpen} onClose={() => setPromptOpen(false)}>
-            <DialogContent className='z-10'>
-              <DialogTitle className='mb-4'>Custom instructions</DialogTitle>
-              <textarea
-                autoFocus
-                className='min-h-32 w-full resize-y rounded-md border border-hairline-field p-2 text-fg-primary text-sm focus:border-accent focus:outline-none'
-                value={userPrompt}
-                onChange={(e) => setUserPrompt(e.target.value)}
-                placeholder={customInstructionsPlaceholder}
-              />
-              <DialogActions>
-                {userPrompt.trim() && (
-                  <Button variant='ghost' size='md' onClick={() => setUserPrompt('')}>
-                    Clear
-                  </Button>
-                )}
-                <Button variant='secondary' size='md' onClick={() => setPromptOpen(false)}>
-                  Done
-                </Button>
-              </DialogActions>
-            </DialogContent>
-          </Dialog>
+          {customInstructionsDialog}
           {error && <div className='text-fg-error text-sm'>{error}</div>}
           {items.map((item) =>
             isRetro ? (

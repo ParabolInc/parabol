@@ -100,6 +100,7 @@ const GCalPanel = (props: Props) => {
           <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
             <InspirationItemsPanel
               meetingId={meeting.id}
+              teamId={meeting.teamId}
               service='gcal'
               searchQuery={searchQuery}
               initialItems={meeting.gcalInspirationItems}
