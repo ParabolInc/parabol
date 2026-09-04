@@ -4,6 +4,7 @@ import {useFragment} from 'react-relay'
 import type {TeamUpdatesSection_meeting$key} from '~/__generated__/TeamUpdatesSection_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import TeamUpdatesByPerson from './TeamUpdatesByPerson'
+import TeamUpdatesByQuestion from './TeamUpdatesByQuestion'
 import TeamUpdatesHeader from './TeamUpdatesHeader'
 import {sortTeamStages} from './teamPromptStages'
 import useOpenResponseDiscussion from './useOpenResponseDiscussion'
@@ -35,6 +36,7 @@ const TeamUpdatesSection = (props: Props) => {
             stages {
               id
               ...TeamPromptSharedResponseCard_stage
+              ...TeamUpdatesQuestionRow_stage
               teamMember {
                 userId
                 user {
@@ -82,7 +84,17 @@ const TeamUpdatesSection = (props: Props) => {
         onSeeTeam={onSeeTeam}
       />
       <div ref={gridRef}>
-        {layout !== 'byQuestion' && (
+        {layout === 'byQuestion' ? (
+          <TeamUpdatesByQuestion
+            prompts={prompts}
+            sharedStages={shared}
+            draftingStages={[...drafting, ...notStarted]}
+            teamId={teamId}
+            meetingId={meetingId}
+            selectedStageId={localStageId}
+            onReply={onReply}
+          />
+        ) : (
           <TeamUpdatesByPerson
             layout={layout}
             prompts={prompts}
