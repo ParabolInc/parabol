@@ -69,7 +69,12 @@ const InspirationDraftHeader = (props: Props) => {
           </Tooltip>
         </div>
       </div>
-      <div className='text-fg-muted text-xs' aria-live='polite' aria-labelledby={headingId}>
+      <div
+        className='text-fg-muted text-xs'
+        role='status'
+        aria-live='polite'
+        aria-labelledby={headingId}
+      >
         {subLine}
       </div>
     </div>

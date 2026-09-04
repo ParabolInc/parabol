@@ -1,5 +1,6 @@
 import type {Editor} from '@tiptap/core'
 import {Extension} from '@tiptap/core'
+import type {Node as ProseMirrorNode, ResolvedPos} from '@tiptap/pm/model'
 import type {Transaction} from '@tiptap/pm/state'
 import {Plugin, PluginKey} from '@tiptap/pm/state'
 import {Decoration, DecorationSet} from '@tiptap/pm/view'
@@ -30,11 +31,54 @@ export const insertedRangeKey = new PluginKey<RangeMap>('insertedRangeHighlight'
 
 const clampToDoc = (position: number, size: number) => Math.max(0, Math.min(position, size))
 
+const insideStart = (doc: ProseMirrorNode, from: number) => {
+  let position = clampToDoc(from + 1, doc.content.size)
+  if (doc.resolve(position).depth === 0) return null
+  while (true) {
+    const node = doc.resolve(position).nodeAfter
+    if (!node || node.isLeaf) return position
+    position += 1
+  }
+}
+
+const insideEnd = (doc: ProseMirrorNode, to: number) => {
+  let position = clampToDoc(to - 1, doc.content.size)
+  if (doc.resolve(position).depth === 0) return null
+  while (true) {
+    const node = doc.resolve(position).nodeBefore
+    if (!node || node.isLeaf) return position
+    position -= 1
+  }
+}
+
+const startOfBoundedBlock = ($anchor: ResolvedPos) => {
+  let depth = $anchor.depth
+  while (depth > 1 && $anchor.before(depth) === $anchor.before(depth - 1) + 1) depth -= 1
+  return $anchor.before(depth)
+}
+
+const endOfBoundedBlock = ($anchor: ResolvedPos) => {
+  let depth = $anchor.depth
+  while (depth > 1 && $anchor.after(depth) === $anchor.after(depth - 1) - 1) depth -= 1
+  return $anchor.after(depth)
+}
+
+const mapRangeStart = (tr: Transaction, from: number) => {
+  const size = tr.doc.content.size
+  const anchor = insideStart(tr.before, from)
+  const mapped = clampToDoc(tr.mapping.map(anchor ?? from, 1), size)
+  if (anchor === null) return mapped
+  const $mapped = tr.doc.resolve(mapped)
+  return $mapped.depth === 0 ? mapped : startOfBoundedBlock($mapped)
+}
+
 const mapRangeEnd = (tr: Transaction, to: number) => {
   const size = tr.doc.content.size
-  const insideEnd = clampToDoc(tr.mapping.map(Math.max(to - 1, 0), -1), size)
-  const $insideEnd = tr.doc.resolve(insideEnd)
-  return $insideEnd.depth === 0 ? insideEnd : $insideEnd.after(1)
+  const anchor = insideEnd(tr.before, to)
+  const mapped = clampToDoc(tr.mapping.map(anchor ?? to, -1), size)
+  if (anchor === null) return mapped
+  const $mapped = tr.doc.resolve(mapped)
+  return $mapped.depth === 0 ? mapped : endOfBoundedBlock($mapped)
 }
 
 const setClampedRange = (ranges: RangeMap, size: number, range: RestoredRange) => {
@@ -122,7 +166,7 @@ export const InsertedRangeHighlight = Extension.create({
             const size = tr.doc.content.size
             const next: RangeMap = new Map()
             ranges.forEach((range, id) => {
-              const from = clampToDoc(tr.mapping.map(range.from, 1), size)
+              const from = clampToDoc(mapRangeStart(tr, range.from), size)
               const to = clampToDoc(mapRangeEnd(tr, range.to), size)
               if (to > from) next.set(id, {from, to, settled: range.settled})
             })
