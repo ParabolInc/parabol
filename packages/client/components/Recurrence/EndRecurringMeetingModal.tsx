@@ -58,7 +58,9 @@ const RadioToggle = (props: RadioToggleProps) => {
 interface Props {
   isOpen: boolean
   meetingRef: EndRecurringMeetingModal_meeting$key
+  hasSeries: boolean
   nextMeetingDate?: string | null
+  unsharedDraftsCount?: number
   closeModal: () => void
 }
 
@@ -66,25 +68,25 @@ const ACTION_BUTTON_CLASSES =
   'font-sans text-base font-medium cursor-pointer text-center rounded-md px-4 py-2'
 
 export const EndRecurringMeetingModal = (props: Props) => {
-  const {isOpen, meetingRef, nextMeetingDate, closeModal} = props
+  const {
+    isOpen,
+    meetingRef,
+    hasSeries,
+    nextMeetingDate,
+    unsharedDraftsCount = 0,
+    closeModal
+  } = props
 
   const meeting = useFragment(
     graphql`
       fragment EndRecurringMeetingModal_meeting on NewMeeting {
         id
         meetingType
-        ... on TeamPromptMeeting {
-          templateId
-          responses {
-            isShared
-            answeredPromptIds
-          }
-        }
       }
     `,
     meetingRef
   )
-  const {meetingType, id: meetingId, templateId, responses} = meeting
+  const {meetingType, id: meetingId} = meeting
 
   const {onCompleted, onError} = useMutationProps()
   const navigate = useNavigate()
@@ -121,12 +123,6 @@ export const EndRecurringMeetingModal = (props: Props) => {
     if (!nextMeetingDate) return null
     return humanReadableCountdown(new Date(nextMeetingDate))
   }, [nextMeetingDate])
-
-  const hasSeries = !!nextMeetingDate
-  const unsharedDraftsCount = templateId
-    ? (responses?.filter((response) => !response.isShared && response.answeredPromptIds.length > 0)
-        .length ?? 0)
-    : 0
 
   return (
     <Dialog isOpen={isOpen} onClose={closeModal}>

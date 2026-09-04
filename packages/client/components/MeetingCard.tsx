@@ -345,6 +345,7 @@ const MeetingCard = (props: Props) => {
           {meeting && (
             <EndRecurringMeetingModal
               meetingRef={meeting}
+              hasSeries={isRecurring}
               nextMeetingDate={isRecurring ? meetingSeries.nextMeetingDate : undefined}
               isOpen={isEndRecurringMeetingOpen}
               closeModal={() => setIsEndRecurringMeetingOpen(false)}
