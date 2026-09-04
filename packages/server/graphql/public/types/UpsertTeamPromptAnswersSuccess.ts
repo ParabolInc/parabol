@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import type {UpsertTeamPromptAnswersSuccessResolvers} from '../resolverTypes'
 
 export type UpsertTeamPromptAnswersSuccessSource = {
@@ -8,7 +9,7 @@ export type UpsertTeamPromptAnswersSuccessSource = {
 const UpsertTeamPromptAnswersSuccess: UpsertTeamPromptAnswersSuccessResolvers = {
   meeting: async ({meetingId}, _args, {dataLoader}) => {
     const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
-    if (meeting.meetingType !== 'teamPrompt') throw new Error('Not a team prompt meeting')
+    if (meeting.meetingType !== 'teamPrompt') throw new GraphQLError('Not a team prompt meeting')
     return meeting
   },
   response: ({responseId}, _args, {dataLoader}) => {
