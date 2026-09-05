@@ -2,8 +2,7 @@ import type {NodeSelection} from '@tiptap/pm/state'
 import type {Editor} from '@tiptap/react'
 
 export const isTextSelected = (editor: Editor) => {
-  // tiptap 3 throws on view access once the view is gone, so bail before touching it
-  if (!editor.isEditable) return false
+  if (editor.isDestroyed || !editor.isEditable) return false
   const {state} = editor
   const {doc, selection} = state
   const {empty, from, to} = selection
