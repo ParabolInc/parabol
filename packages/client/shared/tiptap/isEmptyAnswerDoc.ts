@@ -4,7 +4,6 @@ const CONTENT_ATOM_TYPES = new Set([
   'database',
   'emojiMention',
   'fileBlock',
-  'fileUpload',
   'horizontalRule',
   'image',
   'imageBlock',

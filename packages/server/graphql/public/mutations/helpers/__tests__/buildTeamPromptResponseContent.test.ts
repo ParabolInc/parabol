@@ -81,7 +81,8 @@ describe('isEmptyAnswerDoc', () => {
   test.each([
     ['an empty 2x2 table', doc([emptyTable()])],
     ['an empty details node (blank summary and body)', doc([details('')])],
-    ['an empty code block', doc([emptyCodeBlock()])]
+    ['an empty code block', doc([emptyCodeBlock()])],
+    ['a doc whose only node is an abandoned upload placeholder', doc([{type: 'fileUpload'}])]
   ])('%s is empty', (_name, content) => {
     expect(isEmptyAnswerDoc(content)).toBe(true)
   })

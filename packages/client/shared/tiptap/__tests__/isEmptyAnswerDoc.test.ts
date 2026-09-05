@@ -22,11 +22,14 @@ describe('isEmptyAnswerDoc', () => {
     expect(isEmptyAnswerDoc(doc([paragraph([text('hi')])]))).toBe(false)
   })
 
+  it('treats a doc whose only node is an abandoned upload placeholder as empty', () => {
+    expect(isEmptyAnswerDoc(doc([{type: 'fileUpload'}]))).toBe(true)
+  })
+
   it.each([
     'database',
     'emojiMention',
     'fileBlock',
-    'fileUpload',
     'horizontalRule',
     'image',
     'imageBlock',
