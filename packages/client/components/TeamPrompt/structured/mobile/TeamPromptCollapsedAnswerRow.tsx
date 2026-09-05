@@ -25,10 +25,10 @@ const TeamPromptCollapsedAnswerRow = (props: Props) => {
         className={cn('h-2.5 w-2.5 shrink-0 rounded-full', !isAnswered && 'opacity-50')}
         style={{background: prompt.groupColor}}
       />
-      <div className='min-w-0 flex-1'>
-        <div className='truncate text-fg-secondary text-xs'>{prompt.question}</div>
-        <div className='truncate text-sm'>{isAnswered ? preview : 'Up next'}</div>
-      </div>
+      <span className='block min-w-0 flex-1'>
+        <span className='block truncate text-fg-secondary text-xs'>{prompt.question}</span>
+        <span className='block truncate text-sm'>{isAnswered ? preview : 'Up next'}</span>
+      </span>
       {isAnswered && <Check className='h-4 w-4 shrink-0 text-jade-600' aria-label='Answered' />}
     </button>
   )

@@ -10,32 +10,37 @@ const readBottom = () => {
   return visualViewportBottom(window.innerHeight, vv.height, vv.offsetTop)
 }
 
+export const subscribeVisualViewportBottom = (
+  enabled: boolean,
+  setBottom: (bottom: number) => void
+) => {
+  if (!enabled) {
+    setBottom(0)
+    return undefined
+  }
+  const vv = window.visualViewport
+  if (!vv) return undefined
+  let frame = 0
+  const update = () => {
+    if (frame) return
+    frame = window.requestAnimationFrame(() => {
+      frame = 0
+      setBottom(readBottom())
+    })
+  }
+  vv.addEventListener('resize', update)
+  vv.addEventListener('scroll', update)
+  update()
+  return () => {
+    vv.removeEventListener('resize', update)
+    vv.removeEventListener('scroll', update)
+    if (frame) window.cancelAnimationFrame(frame)
+  }
+}
+
 const useVisualViewportBottom = (enabled = true) => {
   const [bottom, setBottom] = useState(() => (enabled ? readBottom() : 0))
-  useEffect(() => {
-    if (!enabled) {
-      setBottom(0)
-      return
-    }
-    const vv = window.visualViewport
-    if (!vv) return
-    let frame = 0
-    const update = () => {
-      if (frame) return
-      frame = window.requestAnimationFrame(() => {
-        frame = 0
-        setBottom(readBottom())
-      })
-    }
-    vv.addEventListener('resize', update)
-    vv.addEventListener('scroll', update)
-    update()
-    return () => {
-      vv.removeEventListener('resize', update)
-      vv.removeEventListener('scroll', update)
-      if (frame) window.cancelAnimationFrame(frame)
-    }
-  }, [enabled])
+  useEffect(() => subscribeVisualViewportBottom(enabled, setBottom), [enabled])
   return bottom
 }
 
