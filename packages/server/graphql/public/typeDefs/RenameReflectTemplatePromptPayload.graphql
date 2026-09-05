@@ -3,5 +3,5 @@ Result of renaming a prompt in a retrospective reflection template
 """
 type RenameReflectTemplatePromptPayload {
   error: StandardMutationError
-  prompt: ReflectPrompt
+  prompt: TemplatePrompt
 }

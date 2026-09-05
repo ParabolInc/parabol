@@ -18,7 +18,7 @@ const PalettePicker = (props: Props) => {
   const {prompt: promptRef, prompts: promptsRef, onClose} = props
   const prompts = useFragment(
     graphql`
-      fragment PalettePicker_prompts on ReflectPrompt @relay(plural: true) {
+      fragment PalettePicker_prompts on TemplatePrompt @relay(plural: true) {
         id
         groupColor
       }
@@ -27,7 +27,7 @@ const PalettePicker = (props: Props) => {
   )
   const prompt = useFragment(
     graphql`
-      fragment PalettePicker_prompt on ReflectPrompt {
+      fragment PalettePicker_prompt on TemplatePrompt {
         id
         groupColor
       }

@@ -21,7 +21,7 @@ const AddTemplatePrompt = (props: Props) => {
   const {prompts: promptsRef, templateId} = props
   const prompts = useFragment(
     graphql`
-      fragment AddTemplatePrompt_prompts on ReflectPrompt @relay(plural: true) {
+      fragment AddTemplatePrompt_prompts on TemplatePrompt @relay(plural: true) {
         sortOrder
       }
     `,

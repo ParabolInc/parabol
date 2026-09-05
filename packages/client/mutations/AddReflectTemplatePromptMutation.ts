@@ -59,7 +59,7 @@ const AddReflectTemplatePromptMutation: StandardMutation<
     optimisticUpdater: (store) => {
       const {templateId} = variables
       const nowISO = new Date().toJSON()
-      const proxyTemplatePrompt = createProxyRecord(store, 'ReflectTemplatePrompt', {
+      const proxyTemplatePrompt = createProxyRecord(store, 'TemplatePrompt', {
         description: '',
         question: `New prompt #${promptCount + 1}`,
         createdAt: nowISO,
