@@ -19,13 +19,16 @@ interface Props {
 export const TipTapLinkMenu = (props: Props) => {
   const {editor, useLinkEditor} = props
   const [linkState, _setLinkState] = useState<LinkMenuState>(null)
+  const openStateRef = useRef<LinkMenuState>(null)
 
-  const setLinkState: typeof _setLinkState = (linkState) => {
-    if (!linkState) {
-      // closing the menu by hitting Esc should refocus on the editor
+  const setLinkState = (nextLinkState: LinkMenuState) => {
+    // closing the menu by hitting Esc should refocus on the editor, but a menu that was never open
+    // must not steal focus: every selection change emits linkStateChange, including programmatic ones
+    if (!nextLinkState && openStateRef.current) {
       editor.commands.focus()
     }
-    _setLinkState(linkState)
+    openStateRef.current = nextLinkState
+    _setLinkState(nextLinkState)
   }
 
   useEffect(() => {
