@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.42.2](https://github.com/ParabolInc/parabol/compare/v13.42.1...v13.42.2) (2026-09-05)
+
+
+### Fixed
+
+* support subscription push for updateMeetingTemplate ([#13469](https://github.com/ParabolInc/parabol/issues/13469)) ([fac95f6](https://github.com/ParabolInc/parabol/commit/fac95f6e92f2f4659569232702edb86a02cf9db5))
+* **theme:** adjust theme contrast and adds --shadow-bar-up ([#13474](https://github.com/ParabolInc/parabol/issues/13474)) ([04c87ad](https://github.com/ParabolInc/parabol/commit/04c87adc586187b9864bca9529fab375febc2079))
+
 ## [13.42.1](https://github.com/ParabolInc/parabol/compare/v13.42.0...v13.42.1) (2026-09-04)
 
 
