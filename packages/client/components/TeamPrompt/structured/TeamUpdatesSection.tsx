@@ -5,6 +5,7 @@ import type {TeamUpdatesSection_meeting$key} from '~/__generated__/TeamUpdatesSe
 import useAtmosphere from '~/hooks/useAtmosphere'
 import usePhoneViewport from '~/hooks/usePhoneViewport'
 import TeamUpdatesByPersonPhone from './mobile/TeamUpdatesByPersonPhone'
+import TeamUpdatesByQuestionPhone from './mobile/TeamUpdatesByQuestionPhone'
 import TeamUpdatesPhoneHeader from './mobile/TeamUpdatesPhoneHeader'
 import TeamUpdatesByPerson from './TeamUpdatesByPerson'
 import TeamUpdatesByQuestion from './TeamUpdatesByQuestion'
@@ -111,14 +112,25 @@ const TeamUpdatesSection = (props: Props) => {
       )}
       <div ref={gridRef}>
         {layout === 'byQuestion' ? (
-          <TeamUpdatesByQuestion
-            prompts={prompts}
-            sharedStages={shared}
-            waitingStages={waiting}
-            isEnded={!!endedAt}
-            selectedStageId={selectedStageId}
-            onReply={onReply}
-          />
+          isPhone ? (
+            <TeamUpdatesByQuestionPhone
+              prompts={prompts}
+              sharedStages={shared}
+              draftingStages={[...drafting, ...notStarted]}
+              isEnded={!!endedAt}
+              selectedStageId={selectedStageId}
+              onReply={onReply}
+            />
+          ) : (
+            <TeamUpdatesByQuestion
+              prompts={prompts}
+              sharedStages={shared}
+              draftingStages={[...drafting, ...notStarted]}
+              isEnded={!!endedAt}
+              selectedStageId={selectedStageId}
+              onReply={onReply}
+            />
+          )
         ) : isPhone ? (
           <TeamUpdatesByPersonPhone
             prompts={prompts}
