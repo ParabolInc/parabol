@@ -5,7 +5,9 @@ import {TaskItem, TaskList} from '@tiptap/extension-list'
 import {TableRow} from '@tiptap/extension-table'
 import {TextStyleKit} from '@tiptap/extension-text-style'
 import {Focus} from '@tiptap/extensions'
+import type Atmosphere from '../../Atmosphere'
 import type {useUploadUserAsset} from '../../mutations/useUploadUserAsset'
+import FileBlock from '../../tiptap/extensions/fileBlock/FileBlock'
 import {FileUpload} from '../../tiptap/extensions/fileUpload/FileUpload'
 import ImageBlock from '../../tiptap/extensions/imageBlock/ImageBlock'
 import type {CommandTitle} from '../../tiptap/extensions/slashCommand/slashCommands'
@@ -41,12 +43,14 @@ export const BLOCKED_STANDUP_SLASH_COMMANDS = (
 
 interface BlockExtensionOptions {
   teamId: string
+  atmosphere: Atmosphere
   commit: ReturnType<typeof useUploadUserAsset>[0]
   editorWidth: number
 }
 
 export const standupBlockExtensions = ({
   teamId,
+  atmosphere,
   commit,
   editorWidth
 }: BlockExtensionOptions): Extensions => [
@@ -66,9 +70,11 @@ export const standupBlockExtensions = ({
   TableCell,
   Focus,
   ImageBlock.configure({editorWidth, editorHeight: 88}),
+  FileBlock,
   FileUpload.configure({
     scopeKey: teamId,
     assetScope: 'Team',
+    atmosphere,
     highestTier: 'starter',
     commit
   })

@@ -151,6 +151,7 @@ const PromptResponseEditor = (props: Props) => {
         }),
         ...standupBlockExtensions({
           teamId,
+          atmosphere,
           commit: uploadUserAsset,
           editorWidth: 600 - 16 * 2
         }),
