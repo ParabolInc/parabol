@@ -1,6 +1,6 @@
 import {type KeyboardEvent, useEffect, useRef} from 'react'
 import {cn} from '../../../../ui/cn'
-import radioGroupNextValue from '../radioGroupNextValue'
+import {tablistNextValue} from '../radioGroupNextValue'
 import {SHORT_LABEL_MAX, shortPromptLabels} from './shortPromptLabel'
 
 interface Props {
@@ -26,7 +26,7 @@ const TeamUpdatesQuestionChips = (props: Props) => {
     list.scrollTo({left: Math.max(0, left), behavior: 'smooth'})
   }, [activePromptId])
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    const next = radioGroupNextValue(
+    const next = tablistNextValue(
       prompts.map((prompt) => prompt.id),
       activePromptId,
       e.key

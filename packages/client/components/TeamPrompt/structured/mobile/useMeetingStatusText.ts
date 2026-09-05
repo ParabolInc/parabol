@@ -4,9 +4,8 @@ const useMeetingStatusText = (
   endedAt: string | null | undefined,
   scheduledEndTime: string | null | undefined
 ) => {
-  const timeLeft = useTimeLeftLabel(scheduledEndTime)
-  if (endedAt) return 'Ended'
-  return timeLeft
+  const timeLeft = useTimeLeftLabel(scheduledEndTime, !endedAt)
+  return endedAt ? 'Ended' : timeLeft
 }
 
 export default useMeetingStatusText
