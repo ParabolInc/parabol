@@ -1,4 +1,4 @@
-import {type KeyboardEvent, useRef} from 'react'
+import {type KeyboardEvent, useEffect, useRef} from 'react'
 import {cn} from '../../../../ui/cn'
 import Avatar from '../../../Avatar/Avatar'
 import radioGroupNextValue from '../radioGroupNextValue'
@@ -23,6 +23,7 @@ const CHIP =
 
 const TeamUpdatesMemberChips = (props: Props) => {
   const {members, selectedId, onSelect} = props
+  const listRef = useRef<HTMLDivElement>(null)
   const chipsRef = useRef<Record<string, HTMLButtonElement | null>>({})
   const chips = [
     {value: ALL_MEMBERS_CHIP, label: 'All', picture: null, isDrafting: false},
@@ -34,6 +35,13 @@ const TeamUpdatesMemberChips = (props: Props) => {
     }))
   ]
   const current = selectedId ?? ALL_MEMBERS_CHIP
+  useEffect(() => {
+    const chip = chipsRef.current[current]
+    const list = listRef.current
+    if (!chip || !list) return
+    const left = chip.offsetLeft - (list.clientWidth - chip.clientWidth) / 2
+    list.scrollTo({left: Math.max(0, left), behavior: 'smooth'})
+  }, [current])
   const select = (value: string) => onSelect(value === ALL_MEMBERS_CHIP ? null : value)
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     const next = radioGroupNextValue(
@@ -49,6 +57,7 @@ const TeamUpdatesMemberChips = (props: Props) => {
   if (members.length === 0) return null
   return (
     <div
+      ref={listRef}
       role='tablist'
       aria-label='Teammates'
       onKeyDown={onKeyDown}
