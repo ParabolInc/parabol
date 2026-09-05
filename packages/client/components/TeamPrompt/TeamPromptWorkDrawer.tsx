@@ -221,7 +221,7 @@ const TeamPromptWorkDrawer = (props: Props) => {
               title='Inspiration'
               onClose={() => onClose?.()}
             >
-              <div className='min-w-0 flex-1 overflow-x-auto'>{serviceTabs}</div>
+              {serviceTabs}
             </BottomSheetHeader>
           ) : (
             <div className='flex justify-center pt-3 pb-2'>{serviceTabs}</div>

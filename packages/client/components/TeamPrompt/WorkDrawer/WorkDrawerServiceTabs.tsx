@@ -1,4 +1,4 @@
-import type {ReactNode} from 'react'
+import {type ReactNode, useEffect, useRef, useState} from 'react'
 import {cn} from '../../../ui/cn'
 import type {InspirationVariant} from './InspirationPresentationContext'
 
@@ -15,37 +15,66 @@ interface Props {
   onSelect: (idx: number) => void
 }
 
+const EDGE_FADE =
+  '[mask-image:linear-gradient(to_right,transparent_0,black_14px,black_calc(100%-14px),transparent_100%)]'
+
 const WorkDrawerServiceTabs = (props: Props) => {
   const {tabs, activeIdx, variant, onSelect} = props
   const isSheet = variant === 'sheet'
-  return (
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const activeRef = useRef<HTMLButtonElement>(null)
+  const [isScrollable, setIsScrollable] = useState(false)
+  useEffect(() => {
+    if (!isSheet) return
+    const scroller = scrollRef.current
+    if (!scroller) return
+    setIsScrollable(scroller.scrollWidth > scroller.clientWidth + 1)
+    activeRef.current?.scrollIntoView({inline: 'nearest', block: 'nearest'})
+  }, [isSheet, tabs.length, activeIdx])
+
+  const strip = (
     <div className='flex gap-1'>
-      {tabs.map((tab, idx) => (
-        <button
-          key={tab.label}
-          title={tab.label}
-          aria-label={tab.label}
-          onClick={() => onSelect(idx)}
-          className={cn(
-            'flex shrink-0 appearance-none items-center justify-center',
-            isSheet ? 'h-11 w-11' : 'h-10 w-10',
-            idx !== activeIdx && 'cursor-pointer'
-          )}
-        >
-          <span
+      {tabs.map((tab, idx) => {
+        const isActive = idx === activeIdx
+        return (
+          <button
+            key={tab.label}
+            ref={isActive ? activeRef : undefined}
+            type='button'
+            title={tab.label}
+            aria-label={tab.label}
+            aria-pressed={isActive}
+            onClick={() => onSelect(idx)}
             className={cn(
-              'flex items-center justify-center rounded-md transition-colors',
-              isSheet ? 'h-9 w-9' : 'h-10 w-10',
-              idx === activeIdx
-                ? // the logos are dark brand colors, so they go monochrome on the selected fill
-                  'bg-surface-selected text-fg-selected [&_path]:fill-current'
-                : 'text-fg-muted hover:bg-surface-hover'
+              'flex shrink-0 appearance-none items-center justify-center',
+              isSheet ? 'h-11 w-11' : 'h-10 w-10',
+              !isActive && 'cursor-pointer'
             )}
           >
-            {tab.icon}
-          </span>
-        </button>
-      ))}
+            <span
+              className={cn(
+                'flex items-center justify-center rounded-md transition-colors',
+                isSheet ? 'h-9 w-9' : 'h-10 w-10',
+                isActive
+                  ? // the logos are dark brand colors, so they go monochrome on the selected fill
+                    'bg-surface-selected text-fg-selected [&_path]:fill-current'
+                  : 'text-fg-muted hover:bg-surface-hover'
+              )}
+            >
+              {tab.icon}
+            </span>
+          </button>
+        )
+      })}
+    </div>
+  )
+  if (!isSheet) return strip
+  return (
+    <div
+      ref={scrollRef}
+      className={cn('ml-auto min-w-0 max-w-[45%] overflow-x-auto', isScrollable && EDGE_FADE)}
+    >
+      {strip}
     </div>
   )
 }

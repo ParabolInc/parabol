@@ -44,7 +44,10 @@ const InspirationDraftItemCard = (props: Props) => {
     if (!editor) return
     onEmptyChange(itemId, !hasContentToAdd(editor))
     onEditorChange(itemId, editor)
-    return () => onEditorChange(itemId, null)
+    return () => {
+      onEditorChange(itemId, null)
+      onEmptyChange(itemId, false)
+    }
   }, [editor, itemId, onEditorChange, onEmptyChange])
   if (!editor) return null
   return (
