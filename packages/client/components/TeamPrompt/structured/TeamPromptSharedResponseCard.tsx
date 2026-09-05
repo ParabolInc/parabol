@@ -17,10 +17,11 @@ interface Props {
   prompts: readonly {id: string; question: string; groupColor: string}[]
   isSelected: boolean
   onReply: (stageId: string) => void
+  isPhone?: boolean
 }
 
 const TeamPromptSharedResponseCard = (props: Props) => {
-  const {stageRef, prompts, isSelected, onReply} = props
+  const {stageRef, prompts, isSelected, onReply, isPhone} = props
   const stage = useFragment(
     graphql`
       fragment TeamPromptSharedResponseCard_stage on TeamPromptResponseStage {
@@ -64,15 +65,24 @@ const TeamPromptSharedResponseCard = (props: Props) => {
       animate={{opacity: 1}}
     >
       <div className='mb-3 flex items-center gap-2 px-2'>
-        <Avatar picture={picture} className='h-12 w-12 shrink-0' />
-        <h3 className='m-0 min-w-0 truncate font-semibold text-base'>{preferredName}</h3>
-        <span className='flex shrink-0 items-center gap-1 whitespace-nowrap text-fg-muted text-xs'>
-          · shared{' '}
-          <TeamPromptLastUpdatedTime
-            createdAt={sharedAt}
-            updatedAt={lastAnswerUpdatedAt(sharedResponses, sharedAt)}
-          />
-        </span>
+        <Avatar picture={picture} className={cn('shrink-0', isPhone ? 'h-9 w-9' : 'h-12 w-12')} />
+        <h3
+          className={cn(
+            'm-0 min-w-0 truncate font-semibold',
+            isPhone ? 'text-[15px]' : 'text-base'
+          )}
+        >
+          {preferredName}
+        </h3>
+        {response.sharedAt && (
+          <span className='flex shrink-0 items-center gap-1 whitespace-nowrap text-fg-muted text-xs'>
+            · shared{' '}
+            <TeamPromptLastUpdatedTime
+              createdAt={response.sharedAt}
+              updatedAt={lastAnswerUpdatedAt(response.answers, response.sharedAt)}
+            />
+          </span>
+        )}
         <TeamPromptResponsePermalink
           meetingId={meetingId}
           teamId={teamId}
@@ -85,10 +95,25 @@ const TeamPromptSharedResponseCard = (props: Props) => {
           isSelected ? 'outline-2 outline-sky-300' : 'outline-none'
         )}
       >
-        <TeamPromptSharedAnswers stageRef={stage} prompts={prompts} />
-        <TeamPromptReplyButton
+        {prompts.map((prompt) => {
+          const answer = answersByPrompt.get(prompt.id)
+          if (!answer) return null
+          return (
+            <TeamPromptAnswerBlock
+              key={answer.id}
+              teamId={teamId}
+              prompt={prompt}
+              content={answer.content}
+              textClassName={isPhone ? 'pl-[18px] text-[15px] leading-[22px]' : undefined}
+            />
+          )
+        })}
+        <TeamPromptResponseFooter
+          meetingId={meetingId}
+          responseRef={response}
           edgesRef={discussion.thread.edges}
           onReply={() => onReply(stageId)}
+          isPhone={isPhone}
         />
       </div>
     </motion.div>

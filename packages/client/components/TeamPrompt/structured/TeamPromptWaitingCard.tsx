@@ -6,16 +6,31 @@ interface Props {
   preferredName: string
   picture: string
   isEnded: boolean
+  isPhone?: boolean
 }
 
-const TeamPromptWaitingCard = (props: Props) => {
-  const {preferredName, picture, isEnded} = props
-  const title = isEnded ? 'No response' : "Hasn't shared yet"
+const TeamPromptDraftingCard = (props: Props) => {
+  const {preferredName, picture, answeredCount, promptCount, hasStarted, isEnded, isPhone} = props
+  const title = isEnded
+    ? 'No response'
+    : hasStarted
+      ? `Drafting · ${answeredCount} of ${promptCount} answered`
+      : "Hasn't started yet"
   return (
     <div className={cn(TEAM_UPDATES_COLUMN, 'flex flex-col')}>
       <div className='mb-3 flex items-center gap-2 px-2'>
-        <Avatar picture={picture} className='h-12 w-12 shrink-0 opacity-55' />
-        <h3 className='m-0 min-w-0 truncate font-semibold text-base'>{preferredName}</h3>
+        <Avatar
+          picture={picture}
+          className={cn('shrink-0 opacity-55', isPhone ? 'h-9 w-9' : 'h-12 w-12')}
+        />
+        <h3
+          className={cn(
+            'm-0 min-w-0 truncate font-semibold',
+            isPhone ? 'text-[15px]' : 'text-base'
+          )}
+        >
+          {preferredName}
+        </h3>
       </div>
       <div className='flex min-h-[92px] flex-col justify-center gap-1 rounded-card bg-surface-well p-4'>
         <div className='flex items-center gap-2 font-semibold text-sm'>{title}</div>
