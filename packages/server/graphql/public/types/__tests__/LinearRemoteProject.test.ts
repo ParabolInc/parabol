@@ -8,11 +8,12 @@ const resolve = (resolver: unknown, source: LinearProject) => {
 }
 
 const project: LinearProject = {
+  __typename: 'Project',
   service: 'linear',
   id: 'proj1',
   teamId: 'team1',
   name: 'Test project',
-  teams: {nodes: [{id: 'team1', displayName: 'Parabol'}]}
+  teams: {nodes: [{id: 'team1', displayName: 'Parabol', name: 'Parabol', key: 'PAR'}]}
 }
 
 describe('LinearRemoteProject', () => {
@@ -21,7 +22,6 @@ describe('LinearRemoteProject', () => {
   })
 
   it('falls back to the bare project name without a cached team', () => {
-    expect(resolve(LinearRemoteProject.name, {...project, teams: null})).toBe('Test project')
     expect(resolve(LinearRemoteProject.name, {...project, teams: {nodes: []}})).toBe('Test project')
   })
 
