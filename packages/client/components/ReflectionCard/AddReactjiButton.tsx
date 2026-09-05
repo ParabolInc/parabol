@@ -26,6 +26,7 @@ const AddReactjiButton = (props: Props) => {
     <Popover.Root open={open} onOpenChange={onOpenChange} modal>
       <Popover.Trigger asChild>
         <PlainButton
+          aria-label='Add reaction'
           className={cn(
             'leading-6 hover:text-fg-primary focus:text-fg-primary active:text-fg-primary',
             size === 'lg' ? 'flex h-10 w-10 items-center justify-center' : 'block h-6 w-6 py-0.75',

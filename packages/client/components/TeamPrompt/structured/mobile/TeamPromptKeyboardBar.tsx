@@ -18,7 +18,9 @@ const TeamPromptKeyboardBar = () => {
       onPointerDown={(e) => e.preventDefault()}
       onMouseDown={(e) => e.preventDefault()}
     >
-      <span className='text-fg-muted text-xs'>Select text to format · - starts a list</span>
+      <span className='text-fg-muted text-xs'>
+        Select text to format <span aria-hidden>·</span> - starts a list
+      </span>
       <Button
         type='button'
         onClick={onAdvance}

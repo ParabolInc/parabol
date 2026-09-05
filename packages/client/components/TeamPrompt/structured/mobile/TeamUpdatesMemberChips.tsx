@@ -19,7 +19,7 @@ interface Props {
 }
 
 const CHIP =
-  'relative flex h-9 shrink-0 items-center rounded-full border border-solid font-semibold text-sm after:-top-1.5 after:-bottom-1.5 after:absolute after:inset-x-0 after:content-[""]'
+  'relative flex h-9 shrink-0 items-center rounded-full border border-solid font-semibold text-sm after:-top-1.5 after:-bottom-1.5 after:absolute after:inset-x-0 after:content-[""] focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2'
 
 const TeamUpdatesMemberChips = (props: Props) => {
   const {members, selectedId, onSelect} = props

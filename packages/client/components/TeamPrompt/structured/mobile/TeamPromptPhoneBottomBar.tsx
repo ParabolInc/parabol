@@ -86,7 +86,7 @@ const TeamPromptPhoneBottomBar = (props: Props) => {
         </div>
         <span className='min-w-0 truncate font-semibold text-[13px]'>Team updates</span>
         <span className='min-w-0 truncate text-fg-muted text-xs'>
-          {sharedMembers.length} shared · {drafting.length} drafting
+          {sharedMembers.length} shared <span aria-hidden>·</span> {drafting.length} drafting
         </span>
         <span className='ml-auto flex shrink-0 items-center font-semibold text-[13px] text-accent'>
           See

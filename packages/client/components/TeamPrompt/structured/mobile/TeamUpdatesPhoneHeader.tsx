@@ -32,7 +32,7 @@ const TeamUpdatesPhoneHeader = (props: Props) => {
       <div className='min-w-0'>
         <h3 className='m-0 font-semibold text-base'>Team updates</h3>
         <div className='text-fg-muted text-xs'>
-          {sharedCount} shared · {draftingCount} drafting
+          {sharedCount} shared <span aria-hidden>·</span> {draftingCount} drafting
         </div>
       </div>
       <div
@@ -54,6 +54,7 @@ const TeamUpdatesPhoneHeader = (props: Props) => {
             onClick={() => onLayoutChange(value)}
             className={cn(
               'relative flex h-8 items-center gap-1 rounded px-2.5 font-semibold text-xs',
+              'focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-1',
               'after:-top-2 after:-bottom-2 after:absolute after:inset-x-0 after:content-[""]',
               layout === value
                 ? 'bg-surface-selected text-fg-selected'
