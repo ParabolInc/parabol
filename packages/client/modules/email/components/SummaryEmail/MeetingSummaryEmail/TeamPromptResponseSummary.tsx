@@ -21,6 +21,7 @@ const TeamPromptResponseSummary = (props: Props) => {
             stages {
               id
               response {
+                isShared
                 plaintextContent
                 createdAt
               }
@@ -37,7 +38,7 @@ const TeamPromptResponseSummary = (props: Props) => {
   const allStages = phase.stages.filter(isNotNull)
 
   const orderedNonEmptyStages = allStages
-    .filter((stage) => !!stage.response?.plaintextContent)
+    .filter((stage) => stage.response?.isShared && !!stage.response.plaintextContent)
     .sort((stageA, stageB) =>
       sortByISO8601Date(stageA.response!.createdAt, stageB.response!.createdAt)
     )
