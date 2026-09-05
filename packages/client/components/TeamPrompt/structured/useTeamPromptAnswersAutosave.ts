@@ -9,6 +9,7 @@ import {clearDraftAnswers, writeDraftAnswer} from './teamPromptDraftStorage'
 
 const AUTOSAVE_DEBOUNCE_MS = 800
 const IN_FLIGHT_CEILING_MS = 10000
+const TRANSPORT_ERROR = 'Could not save your update — try again'
 
 export interface DirtyAnswer {
   promptId: string
@@ -66,6 +67,11 @@ const useTeamPromptAnswersAutosave = (options: Options) => {
             inFlightRef.current = false
             inFlightSinceRef.current = null
           }
+          atmosphere.eventEmitter.emit('addSnackbar', {
+            key: 'standupAnswers:transport',
+            message: TRANSPORT_ERROR,
+            autoDismiss: 5
+          })
         },
         onCompleted: (_res, errors) => {
           if (sendId === latestSendIdRef.current) {
