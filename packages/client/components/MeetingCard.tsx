@@ -229,7 +229,7 @@ const MeetingCard = (props: Props) => {
                     </span>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <div className='cursor-pointer text-sm'>{dateLabel}</div>
+                        <div className='cursor-pointer text-fg-secondary text-sm'>{dateLabel}</div>
                       </TooltipTrigger>
                       <TooltipContent side='bottom'>{readableNextMeetingDate}</TooltipContent>
                     </Tooltip>
@@ -269,7 +269,7 @@ const MeetingCard = (props: Props) => {
               </Tooltip>
             </div>
             <Link to={meetingLink}>
-              <span className='wrap-break-word block pt-1 pb-2 text-fg-secondary text-sm'>
+              <span className='wrap-break-word block pt-1 pb-2 text-fg-muted text-sm'>
                 {teamName} • {meetingPhaseLabel}
               </span>
             </Link>
