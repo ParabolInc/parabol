@@ -251,7 +251,7 @@
           "Reactable": "../../postgres/types#Reactable as ReactableDB",
           "Reactji": "./types/Reactji#ReactjiSource",
           "ReflectPhaseCompletePayload": "./types/ReflectPhaseCompletePayload#ReflectPhaseCompletePayloadSource",
-          "ReflectPrompt": "../../postgres/types/index#ReflectPrompt as ReflectPromptDB",
+          "TemplatePrompt": "../../postgres/types/index#ReflectPrompt as ReflectPromptDB",
           "ReflectTemplate": "../../postgres/types/index#MeetingTemplate as MeetingTemplateDB",
           "ReflectTemplatePromptUpdateDescriptionPayload": "./types/ReflectTemplatePromptUpdateDescriptionPayload#ReflectTemplatePromptUpdateDescriptionPayloadSource",
           "ReflectTemplatePromptUpdateGroupColorPayload": "./types/ReflectTemplatePromptUpdateGroupColorPayload#ReflectTemplatePromptUpdateGroupColorPayloadSource",

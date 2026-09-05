@@ -25,7 +25,7 @@ const TemplatePromptItem = (props: Props) => {
   const {dragProvided, isDragging, isOwner, prompt: promptRef, prompts: promptsRef} = props
   const prompts = useFragment(
     graphql`
-      fragment TemplatePromptItem_prompts on ReflectPrompt @relay(plural: true) {
+      fragment TemplatePromptItem_prompts on TemplatePrompt @relay(plural: true) {
         ...EditableTemplatePromptColor_prompts
         ...EditableTemplatePrompt_prompts
       }
@@ -34,7 +34,7 @@ const TemplatePromptItem = (props: Props) => {
   )
   const prompt = useFragment(
     graphql`
-      fragment TemplatePromptItem_prompt on ReflectPrompt {
+      fragment TemplatePromptItem_prompt on TemplatePrompt {
         ...EditableTemplatePromptColor_prompt
         id
         question

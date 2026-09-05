@@ -1,6 +1,6 @@
-import type {ReflectPromptResolvers} from '../resolverTypes'
+import type {TemplatePromptResolvers} from '../resolverTypes'
 
-const ReflectPrompt: ReflectPromptResolvers = {
+const TemplatePrompt: TemplatePromptResolvers = {
   team: ({teamId}, _args, {dataLoader}) => {
     return dataLoader.get('teams').loadNonNull(teamId)
   },
@@ -10,4 +10,4 @@ const ReflectPrompt: ReflectPromptResolvers = {
   }
 }
 
-export default ReflectPrompt
+export default TemplatePrompt

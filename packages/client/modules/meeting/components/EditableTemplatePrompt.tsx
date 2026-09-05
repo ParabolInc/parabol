@@ -20,7 +20,7 @@ const EditableTemplatePrompt = (props: Props) => {
   const {isOwner, promptId, isHover, question, isEditingDescription, prompts: promptsRef} = props
   const prompts = useFragment(
     graphql`
-      fragment EditableTemplatePrompt_prompts on ReflectPrompt @relay(plural: true) {
+      fragment EditableTemplatePrompt_prompts on TemplatePrompt @relay(plural: true) {
         id
         question
       }

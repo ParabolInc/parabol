@@ -57,7 +57,7 @@ type TeamPromptTemplate implements MeetingTemplate {
   """
   The active prompts of this template, in display order
   """
-  prompts: [ReflectPrompt!]!
+  prompts: [TemplatePrompt!]!
 
   """
   The category this template falls under, always standup
