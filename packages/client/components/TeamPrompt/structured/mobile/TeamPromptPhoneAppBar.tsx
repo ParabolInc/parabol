@@ -9,7 +9,7 @@ import {EndRecurringMeetingModal} from '../../../Recurrence/EndRecurringMeetingM
 import TeamPromptOptions from '../../TeamPromptOptions'
 import countUnsharedDrafts from '../countUnsharedDrafts'
 import TeamUpdatesAvatarStack from '../TeamUpdatesAvatarStack'
-import useMeetingStatusText from './useMeetingStatusText'
+import TeamPromptPhoneAppBarSubtitle from './TeamPromptPhoneAppBarSubtitle'
 
 interface Props {
   meetingRef: TeamPromptPhoneAppBar_meeting$key
@@ -62,19 +62,21 @@ const TeamPromptPhoneAppBar = (props: Props) => {
   const [isEndRecurringMeetingOpen, setIsEndRecurringMeetingOpen] = useState(false)
   const {id: meetingId, name, endedAt, scheduledEndTime, templateId, responses} = meeting
   const {label: dateLabel} = useMeetingSeriesDate(meeting)
-  const statusText = useMeetingStatusText(endedAt, scheduledEndTime)
   const meetingSeries = meeting.meetingSeries
   const hasSeries = !!meetingSeries && !meetingSeries.cancelledAt
   const sharedMembers = (meeting.phases[0]?.stages ?? [])
     .filter((stage) => stage.response?.isShared)
     .map((stage) => stage.teamMember.user)
-  const subtitle = [dateLabel, statusText].filter(Boolean).join(' · ')
   return (
     <header className='flex h-14 shrink-0 items-center gap-2 border-hairline border-b border-solid bg-surface-card px-3'>
-      <LogoBlock className='shrink-0 items-center p-0' />
+      <LogoBlock className='shrink-0 items-center p-0 [&_img]:w-7' />
       <div className='min-w-0 flex-1'>
         <h1 className='m-0 truncate font-semibold text-[15px] leading-5'>{name}</h1>
-        {subtitle && <div className='truncate text-fg-secondary text-xs'>{subtitle}</div>}
+        <TeamPromptPhoneAppBarSubtitle
+          dateLabel={dateLabel}
+          endedAt={endedAt}
+          scheduledEndTime={scheduledEndTime}
+        />
       </div>
       <TeamUpdatesAvatarStack members={sharedMembers} />
       <TeamPromptOptions
