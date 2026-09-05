@@ -223,9 +223,9 @@ test('seeded standup templates are TeamPromptTemplates with prompts', async () =
     isRecommended: true
   })
   expect(enterprise.prompts.map((prompt: any) => prompt.question)).toEqual([
-    'What have you completed recently?',
-    "What's next for you?",
-    'What are you stuck on?'
+    'What are you working on? What has been completed recently?',
+    "What are you stuck on, what's holding you back?",
+    'What are you planning to work on next?'
   ])
 
   const demoDay = nodes.find((node: any) => node.id === 'demoDayTemplate')
@@ -289,14 +289,14 @@ test('addTeamPromptTemplate clones a public template with its prompts', async ()
   const {teamPromptTemplate} = res.data.addTeamPromptTemplate
   expect(teamPromptTemplate.name).toBe('Enterprise Daily Standup Copy')
   expect(teamPromptTemplate.prompts.map((prompt: any) => prompt.question)).toEqual([
-    'What have you completed recently?',
-    "What's next for you?",
-    'What are you stuck on?'
+    'What are you working on? What has been completed recently?',
+    "What are you stuck on, what's holding you back?",
+    'What are you planning to work on next?'
   ])
   expect(teamPromptTemplate.prompts.map((prompt: any) => prompt.groupColor)).toEqual([
     '#66BC8C',
-    '#329AE5',
-    '#FD6157'
+    '#FD6157',
+    '#329AE5'
   ])
   const clonedPromptIds = teamPromptTemplate.prompts.map((prompt: any) => prompt.id)
   const rows = await getKysely()
@@ -305,9 +305,9 @@ test('addTeamPromptTemplate clones a public template with its prompts', async ()
     .where('id', 'in', clonedPromptIds)
     .execute()
   expect(rows.map((row) => row.parentPromptId).sort()).toEqual([
-    'enterpriseDailyStandupTemplate:completedPrompt',
     'enterpriseDailyStandupTemplate:nextPrompt',
-    'enterpriseDailyStandupTemplate:stuckPrompt'
+    'enterpriseDailyStandupTemplate:stuckPrompt',
+    'enterpriseDailyStandupTemplate:workingOnPrompt'
   ])
 })
 
