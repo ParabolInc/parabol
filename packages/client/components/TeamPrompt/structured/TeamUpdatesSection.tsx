@@ -120,6 +120,7 @@ const TeamUpdatesSection = (props: Props) => {
               isEnded={!!endedAt}
               selectedStageId={selectedStageId}
               onReply={onReply}
+              scrollContainerRef={scrollContainerRef}
             />
           ) : (
             <TeamUpdatesByQuestion

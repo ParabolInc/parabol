@@ -15,3 +15,16 @@ test('an already scrolled container adds its own offset', () => {
 test('a card above the header offset never scrolls past the top', () => {
   expect(memberCardScrollTop({containerScrollTop: 0, containerTop: 100, cardTop: 120})).toBe(0)
 })
+
+test('the sticky header offset clears the chip row plus its padding', () => {
+  expect(STICKY_HEADER_OFFSET).toBe(64)
+})
+
+test('an explicit offset overrides the sticky header default', () => {
+  expect(
+    memberCardScrollTop({containerScrollTop: 0, containerTop: 100, cardTop: 900, offset: 0})
+  ).toBe(800)
+  expect(
+    memberCardScrollTop({containerScrollTop: 0, containerTop: 100, cardTop: 900, offset: 200})
+  ).toBe(600)
+})
