@@ -119,6 +119,7 @@ const TeamPromptStructuredMeeting = (props: Props) => {
     () => ({
       focusedPromptId,
       setFocusedPromptId,
+      keyboardBottom,
       answeredCount: progress.answeredCount,
       promptCount: progress.promptCount,
       publishProgress,
@@ -136,6 +137,7 @@ const TeamPromptStructuredMeeting = (props: Props) => {
     }),
     [
       focusedPromptId,
+      keyboardBottom,
       progress,
       publishProgress,
       requestBlur,

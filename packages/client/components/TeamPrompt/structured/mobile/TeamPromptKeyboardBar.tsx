@@ -1,13 +1,11 @@
 import {KeyboardArrowRight} from '~/ui/icons'
-import useVisualViewportBottom from '../../../../hooks/useVisualViewportBottom'
 import {Button} from '../../../../ui/Button/Button'
 import usePhoneComposerState from './usePhoneComposerState'
 
 const TeamPromptKeyboardBar = () => {
   const state = usePhoneComposerState()
-  const keyboardBottom = useVisualViewportBottom()
   if (!state?.focusedPromptId) return null
-  const {focusNextUnanswered, requestBlur, isLastPrompt} = state
+  const {focusNextUnanswered, requestBlur, isLastPrompt, keyboardBottom} = state
   const onAdvance = () => {
     if (!focusNextUnanswered()) requestBlur()
   }

@@ -10,6 +10,7 @@ export interface PhoneComposerControls {
 export interface PhoneComposerState {
   focusedPromptId: string | null
   setFocusedPromptId: (promptId: string | null) => void
+  keyboardBottom: number
   answeredCount: number
   promptCount: number
   publishProgress: (answeredCount: number, promptCount: number) => void
