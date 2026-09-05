@@ -205,8 +205,6 @@ const DiscussionThreadInput = (props: Props) => {
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
-    // a closed drawer keeps the thread mounted just off the viewport, where focusing steals the
-    // caret from whatever the reader is actually typing in
     const {left, right} = container.getBoundingClientRect()
     if (right <= 0 || left >= window.innerWidth) return
     container.scrollIntoView({
