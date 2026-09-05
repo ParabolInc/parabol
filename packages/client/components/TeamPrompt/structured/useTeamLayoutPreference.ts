@@ -39,4 +39,9 @@ export const toPhoneLayout = (layout: TeamLayout): PhoneTeamLayout =>
 export const fromPhoneLayout = (layout: PhoneTeamLayout): TeamLayout =>
   layout === 'question' ? 'byQuestion' : 'feed'
 
+export const nextLayoutForPhoneChoice = (
+  layout: TeamLayout,
+  choice: PhoneTeamLayout
+): TeamLayout | null => (choice === toPhoneLayout(layout) ? null : fromPhoneLayout(choice))
+
 export default useTeamLayoutPreference

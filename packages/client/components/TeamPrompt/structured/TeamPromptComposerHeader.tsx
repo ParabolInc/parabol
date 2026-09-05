@@ -1,4 +1,5 @@
 import {Check, ChevronRight} from '~/ui/icons'
+import {Button} from '../../../ui/Button/Button'
 import {cn} from '../../../ui/cn'
 import Avatar from '../../Avatar/Avatar'
 import TeamPromptLastUpdatedTime from '../TeamPromptLastUpdatedTime'
@@ -16,6 +17,7 @@ interface Props {
   promptCount: number
   isPhone?: boolean
   templateName?: string | null
+  onDone?: () => void
 }
 
 const TeamPromptComposerHeader = (props: Props) => {
@@ -30,7 +32,8 @@ const TeamPromptComposerHeader = (props: Props) => {
     answeredCount,
     promptCount,
     isPhone,
-    templateName
+    templateName,
+    onDone
   } = props
   return (
     <div
@@ -81,6 +84,16 @@ const TeamPromptComposerHeader = (props: Props) => {
       </div>
       {!isShared && (
         <TeamPromptProgressPill answeredCount={answeredCount} promptCount={promptCount} />
+      )}
+      {onDone && (
+        <Button
+          type='button'
+          variant='flat'
+          onClick={onDone}
+          className='h-11 min-w-11 px-2 font-semibold text-accent text-sm'
+        >
+          Done
+        </Button>
       )}
     </div>
   )
