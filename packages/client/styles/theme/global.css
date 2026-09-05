@@ -1073,6 +1073,16 @@
     line-height: 1.4;
   }
 
+  /* the meeting summary embeds a response card inside `.page-editor`, whose in-body h1 rule
+     (`h1:not(:first-child)`) outranks the plain element selector above */
+  h1:not(:first-child) {
+    font-size: 1.25rem;
+    line-height: 1.3;
+    letter-spacing: normal;
+    margin-top: 0.75rem;
+    margin-bottom: 0.25rem;
+  }
+
   pre {
     background-color: var(--color-surface-well);
     border: 1px solid var(--color-hairline);
@@ -1103,6 +1113,23 @@
 
   .details {
     margin: 0.25rem 0;
+  }
+}
+
+/* Read-only stand-up cards (shared cards, discussion header, Work drawer, summary response card)
+ * let a wide table scroll inside the card instead of squeezing every column. The editable composer
+ * keeps the fixed layout: its table node view hangs the Edit Table / Export buttons above the
+ * table, and a scroll container would clip them.
+ */
+.standup-editor .tiptap[contenteditable='false'] {
+  .node-table {
+    overflow-x: auto;
+  }
+
+  table {
+    table-layout: auto;
+    width: max-content;
+    min-width: 100%;
   }
 }
 
@@ -1395,6 +1422,108 @@
   a {
     text-decoration: underline;
     color: var(--color-slate-600);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-weight: 600;
+    margin-block-start: 12px;
+    margin-block-end: 4px;
+  }
+
+  h1 {
+    font-size: 20px;
+    line-height: 1.3;
+  }
+
+  h2 {
+    font-size: 18px;
+    line-height: 1.35;
+  }
+
+  h3 {
+    font-size: 16px;
+    line-height: 1.4;
+  }
+
+  blockquote {
+    border-left: 2px solid var(--color-slate-400);
+    padding-inline-start: 12px;
+    margin-block: 8px;
+    color: var(--color-slate-600);
+  }
+
+  pre {
+    background-color: var(--color-slate-200);
+    border: 1px solid var(--color-slate-300);
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-block: 8px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    overflow-x: auto;
+  }
+
+  :not(pre) > code {
+    background-color: var(--color-slate-200);
+    border-radius: 4px;
+    padding: 0.125em 0.375em;
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+  }
+
+  table {
+    display: block;
+    overflow-x: auto;
+    border-collapse: collapse;
+    margin-block: 8px;
+  }
+
+  th,
+  td {
+    border: 1px solid var(--color-slate-300);
+    padding: 4px 8px;
+    vertical-align: top;
+  }
+
+  th {
+    background-color: var(--color-slate-100);
+    text-align: left;
+  }
+
+  details {
+    margin-block: 8px;
+  }
+
+  summary {
+    font-weight: 600;
+    cursor: default;
+  }
+
+  ul[data-type='taskList'] {
+    list-style: none;
+    padding-inline-start: 0;
+  }
+
+  ul[data-type='taskList'] li {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  div[data-type='fileBlock'] {
+    display: block;
+    border: 1px solid var(--color-slate-300);
+    border-radius: 4px;
+    padding: 6px 8px;
+    margin-block: 8px;
+    font-size: 13px;
+    color: var(--color-slate-600);
+  }
+
+  div[data-type='fileBlock']::after {
+    content: attr(data-name) ' (' attr(data-size) ' bytes)';
   }
 }
 
