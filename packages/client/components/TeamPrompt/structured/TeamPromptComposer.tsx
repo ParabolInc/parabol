@@ -6,6 +6,7 @@ import type {TeamPromptComposer_meeting$key} from '~/__generated__/TeamPromptCom
 import useAtmosphere from '~/hooks/useAtmosphere'
 import usePhoneViewport from '~/hooks/usePhoneViewport'
 import {cn} from '../../../ui/cn'
+import TeamPromptOwnUpdateRow from './mobile/TeamPromptOwnUpdateRow'
 import TeamPromptPhoneComposerFooter from './mobile/TeamPromptPhoneComposerFooter'
 import useComposerFocusMode from './mobile/useComposerFocusMode'
 import usePhoneComposerBridge from './mobile/usePhoneComposerBridge'
@@ -72,6 +73,7 @@ const TeamPromptComposer = (props: Props) => {
   const stage = meeting.phases[0]?.stages?.find((stage) => stage.teamMember.userId === viewerId)
   const isShared = !!getMemberSharedAt(stage?.responses ?? [])
   const [isExpanded, setIsExpanded] = useState(!isShared)
+  const [isEditingAfterShare, setIsEditingAfterShare] = useState(false)
   const editorRefs = useRef(new Map<string, React.MutableRefObject<Editor | null>>())
   const {queueAnswer, seedDirty, share, submitting, dirtyPromptIds} = useTeamPromptAnswersAutosave({
     meetingId,
@@ -121,6 +123,7 @@ const TeamPromptComposer = (props: Props) => {
     share()
     setHasInsertedFromInspiration(false)
     setIsExpanded(false)
+    setIsEditingAfterShare(false)
   }, [share, answeredPromptIds.size, isShared, dirtyPromptIds.size])
 
   const onOpenInspiration = useCallback(() => {
@@ -148,25 +151,36 @@ const TeamPromptComposer = (props: Props) => {
 
   if (!stage) return null
   const isPhoneFocused = isPhone && !!focusMode.focusedPromptId
+  const isPhoneCollapsed = isPhone && isShared && !isEditingAfterShare
+  const isCardOpen = isPhone ? !isPhoneCollapsed : isExpanded
   return (
-    <div className={cn(TEAM_UPDATES_BAND, 'pt-6 pb-2')}>
+    <div className={cn(TEAM_UPDATES_BAND, isPhoneCollapsed ? 'px-0' : 'pt-6 pb-2')}>
       <div className={TEAM_UPDATES_COLUMN}>
-        {!isPhoneFocused && (
-          <TeamPromptComposerHeader
+        {isPhoneCollapsed ? (
+          <TeamPromptOwnUpdateRow
             picture={stage.teamMember.user.picture}
-            isExpanded={isExpanded}
-            onToggle={() => setIsExpanded((wasExpanded) => !wasExpanded)}
-            isShared={isShared}
             sharedAt={sharedAt}
             updatedAt={lastAnswerAt}
-            preview={preview}
-            answeredCount={answeredPromptIds.size}
-            promptCount={prompts.length}
-            isPhone={isPhone}
-            templateName={template?.name}
+            onEdit={() => setIsEditingAfterShare(true)}
           />
+        ) : (
+          !isPhoneFocused && (
+            <TeamPromptComposerHeader
+              picture={stage.teamMember.user.picture}
+              isExpanded={isCardOpen}
+              onToggle={() => setIsExpanded((wasExpanded) => !wasExpanded)}
+              isShared={isShared}
+              sharedAt={sharedAt}
+              updatedAt={lastAnswerAt}
+              preview={preview}
+              answeredCount={answeredPromptIds.size}
+              promptCount={prompts.length}
+              isPhone={isPhone}
+              templateName={template?.name}
+            />
+          )
         )}
-        <div className={cn(!isExpanded && 'hidden')}>
+        <div className={cn(!isCardOpen && 'hidden')}>
           <TeamPromptAnswerList
             teamId={teamId}
             prompts={prompts}
