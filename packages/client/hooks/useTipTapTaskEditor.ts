@@ -1,6 +1,8 @@
+import {Details, DetailsContent, DetailsSummary} from '@tiptap/extension-details'
 import Highlight from '@tiptap/extension-highlight'
 import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention from '@tiptap/extension-mention'
+import {TableRow} from '@tiptap/extension-table'
 import {TextStyleKit} from '@tiptap/extension-text-style'
 import {Placeholder} from '@tiptap/extensions'
 import {Extension, generateText, useEditor} from '@tiptap/react'
@@ -10,9 +12,13 @@ import type Atmosphere from '../Atmosphere'
 import {LoomExtension} from '../components/TipTapEditor/LoomExtension'
 import {TiptapLinkExtension} from '../components/TipTapEditor/TiptapLinkExtension'
 import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
+import FileBlock from '../tiptap/extensions/fileBlock/FileBlock'
 import {FileUpload} from '../tiptap/extensions/fileUpload/FileUpload'
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
 import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
+import {Table} from '../tiptap/extensions/table/Table'
+import {TableCell} from '../tiptap/extensions/table/TableCell'
+import {TableHeader} from '../tiptap/extensions/table/TableHeader'
 import {ElementWidth} from '../types/constEnums'
 import {MentionTaskTag} from '../utils/MentionTaskTag'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
@@ -53,6 +59,17 @@ export const useTipTapTaskEditor = (
           editorWidth: ElementWidth.REFLECTION_CARD - 16 * 2,
           editorHeight: 88
         }),
+        FileBlock,
+        Details.configure({
+          persist: true,
+          HTMLAttributes: {class: 'details'}
+        }),
+        DetailsSummary,
+        DetailsContent,
+        Table.configure({allowTableNodeSelection: true}),
+        TableRow,
+        TableHeader,
+        TableCell,
         LoomExtension,
         Mention.configure(
           atmosphere && teamId ? tiptapMentionConfig(atmosphere, teamId) : mentionConfig
