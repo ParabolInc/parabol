@@ -13,13 +13,30 @@ jest.mock('../../../tiptap/extensions/fileBlock/FileBlock', () => ({
   default: {name: 'fileBlock'}
 }))
 
+import type {Table as TiptapTable} from '@tiptap/extension-table'
 import type Atmosphere from '../../../Atmosphere'
+import type {FileBlockBase} from '../../../shared/tiptap/extensions/FileBlockBase'
+import type {FileUploadBase} from '../../../shared/tiptap/extensions/FileUploadBase'
+import type {ImageBlockBase} from '../../../tiptap/extensions/imageBlock/ImageBlockBase'
 import {slashCommands} from '../../../tiptap/extensions/slashCommand/slashCommands'
 import {
   BLOCKED_STANDUP_SLASH_COMMANDS,
   STANDUP_SLASH_COMMANDS,
   standupBlockExtensions
 } from '../standupEditorExtensions'
+
+const {Table: realTable} = jest.requireActual<{Table: typeof TiptapTable}>(
+  '@tiptap/extension-table'
+)
+const {FileBlockBase: realFileBlockBase} = jest.requireActual<{
+  FileBlockBase: typeof FileBlockBase
+}>('../../../shared/tiptap/extensions/FileBlockBase')
+const {FileUploadBase: realFileUploadBase} = jest.requireActual<{
+  FileUploadBase: typeof FileUploadBase
+}>('../../../shared/tiptap/extensions/FileUploadBase')
+const {ImageBlockBase: realImageBlockBase} = jest.requireActual<{
+  ImageBlockBase: typeof ImageBlockBase
+}>('../../../tiptap/extensions/imageBlock/ImageBlockBase')
 
 test('every slash command catalogue title has a stand-up policy entry', () => {
   const allTitles = slashCommands.flatMap((group) => group.commands.map((command) => command.title))
@@ -51,14 +68,14 @@ test('standupBlockExtensions registers the stand-up block nodes and excludes pag
       'details',
       'detailsSummary',
       'detailsContent',
-      'table',
+      realTable.name,
       'tableRow',
       'tableHeader',
       'tableCell',
       'focus',
-      'imageBlock',
-      'fileBlock',
-      'fileUpload'
+      realImageBlockBase.name,
+      realFileBlockBase.name,
+      realFileUploadBase.name
     ])
   )
   expect(extensionNames).not.toEqual(
