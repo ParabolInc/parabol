@@ -1,7 +1,10 @@
 import sortByISO8601Date from '../../../utils/sortByISO8601Date'
 
-export interface StructuredAnswer {
-  sharedAt?: string | null
+export interface StructuredResponseSummary {
+  id: string
+  isShared: boolean
+  sharedAt: string | null | undefined
+  createdAt: string
   updatedAt: string
 }
 
@@ -11,14 +14,7 @@ export interface StructuredStage<R extends StructuredAnswer = StructuredAnswer> 
   responses: readonly R[]
 }
 
-export const getSharedResponses = <R extends StructuredAnswer>(responses: readonly R[]) =>
-  responses.filter((response) => !!response.sharedAt)
-
-export const getMemberSharedAt = (responses: readonly StructuredAnswer[]) =>
-  responses.reduce<string | null>((earliest, {sharedAt}) => {
-    if (!sharedAt) return earliest
-    return !earliest || sharedAt < earliest ? sharedAt : earliest
-  }, null)
+const sharedOrder = (response: StructuredResponseSummary) => response.sharedAt ?? response.createdAt
 
 export const sortTeamStages = <S extends StructuredStage>(
   stages: readonly S[],
@@ -26,10 +22,11 @@ export const sortTeamStages = <S extends StructuredStage>(
 ) => {
   const others = stages.filter((stage) => stage.teamMember.userId !== viewerId)
   const shared = others
-    .filter((stage) => getMemberSharedAt(stage.responses))
-    .sort((a, b) =>
-      sortByISO8601Date(getMemberSharedAt(a.responses)!, getMemberSharedAt(b.responses)!)
-    )
-  const waiting = others.filter((stage) => !getMemberSharedAt(stage.responses))
-  return {shared, waiting}
+    .filter((stage) => stage.response?.isShared)
+    .sort((a, b) => sortByISO8601Date(sharedOrder(a.response!), sharedOrder(b.response!)))
+  const drafting = others
+    .filter((stage) => stage.response && !stage.response.isShared)
+    .sort((a, b) => sortByISO8601Date(b.response!.updatedAt, a.response!.updatedAt))
+  const notStarted = others.filter((stage) => !stage.response)
+  return {shared, drafting, notStarted}
 }
