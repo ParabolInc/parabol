@@ -32,7 +32,7 @@ const TeamUpdatesAvatarStack = ({members, size = 'md'}: Props) => {
       {hidden.length > 0 && (
         <div
           className={cn(
-            '-ml-2 flex items-center justify-center rounded-full border-2 border-surface-card bg-surface-well font-semibold text-fg-secondary',
+            '-ml-2 relative flex shrink-0 items-center justify-center rounded-full border-2 border-surface-card bg-surface-well font-semibold text-fg-secondary',
             sizeClassName,
             size === 'sm' ? 'text-[10px]' : 'text-[11px]'
           )}
