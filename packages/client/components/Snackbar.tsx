@@ -175,7 +175,7 @@ const Snackbar = memo(() => {
           height: '100vh',
           width: hasSidebar && isDesktop ? `calc(100% + ${NavSidebar.WIDTH}px)` : '100%',
           padding: 8,
-          paddingBottom: `calc(${hasSidebar ? 64 : 8}px + var(--tp-bottom-bar, 0px))`,
+          paddingBottom: `calc(${hasSidebar ? 64 : 8}px + var(--tp-bottom-bar, 0px) + var(--tp-keyboard, 0px))`,
           pointerEvents: 'none',
           zIndex: ZIndex.SNACKBAR,
           listStyle: 'none',
