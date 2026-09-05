@@ -15,10 +15,12 @@ const TeamPromptPhoneComposerFooter = (props: Props) => {
         ) : hasInsertedFromInspiration ? (
           <>
             <AutoAwesome className='h-3.5 w-3.5 shrink-0' />
-            Added from Inspiration · tap any answer to edit
+            Added from Inspiration <span aria-hidden>·</span> tap any answer to edit
           </>
         ) : (
-          'Draft auto-saved · only you can see it'
+          <>
+            Draft auto-saved <span aria-hidden>·</span> only you can see it
+          </>
         )}
       </div>
       {!isShared && (
