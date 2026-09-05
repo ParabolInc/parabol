@@ -1,14 +1,14 @@
 import {useState} from 'react'
 import useHorizontalSwipe from '~/hooks/useHorizontalSwipe'
 import {KeyboardArrowLeft, KeyboardArrowRight} from '~/ui/icons'
-import type {TeamUpdateStage} from '../TeamUpdatesByPerson'
+import type {TeamUpdatesQuestionStage} from '../TeamUpdatesByQuestion'
 import TeamUpdatesQuestionRow from '../TeamUpdatesQuestionRow'
 import TeamUpdatesQuestionChips from './TeamUpdatesQuestionChips'
 
 interface Props {
   prompts: readonly {id: string; question: string; groupColor: string}[]
-  sharedStages: readonly TeamUpdateStage[]
-  draftingStages: readonly TeamUpdateStage[]
+  sharedStages: readonly TeamUpdatesQuestionStage[]
+  draftingStages: readonly TeamUpdatesQuestionStage[]
   isEnded: boolean
   selectedStageId: string | null
   onReply: (stageId: string) => void

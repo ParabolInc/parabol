@@ -44,8 +44,8 @@ const TeamUpdatesSection = (props: Props) => {
           ... on TeamPromptResponsesPhase {
             stages {
               id
-              ...TeamPromptSharedResponseCard_stage
-              ...TeamUpdatesQuestionRow_stage
+              ...TeamUpdatesByPerson_stage @relay(mask: false)
+              ...TeamUpdatesByQuestion_stage @relay(mask: false)
               teamMember {
                 userId
                 user {
