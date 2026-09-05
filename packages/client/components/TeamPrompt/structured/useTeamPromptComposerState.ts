@@ -76,7 +76,7 @@ const useTeamPromptComposerState = (options: Options) => {
           response?.answers.find((answer) => answer.promptId === prompt.id)?.plaintextContent ?? ''
         ])
       ),
-    [response?.answers]
+    [response?.answers, prompts]
   )
 
   const savedText = prompts
