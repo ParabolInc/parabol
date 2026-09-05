@@ -243,6 +243,27 @@ const SELECT_TEMPLATE = `
   }
 `
 
+const UPDATE_RECURRENCE_SETTINGS = `
+  mutation UpdateRecurrenceSettings($meetingId: ID!, $name: String, $rrule: RRule) {
+    updateRecurrenceSettings(meetingId: $meetingId, name: $name, rrule: $rrule) {
+      ... on ErrorPayload {
+        error {
+          message
+        }
+      }
+      ... on UpdateRecurrenceSettingsSuccess {
+        meeting {
+          id
+          meetingSeries {
+            id
+            nextMeetingDate
+          }
+        }
+      }
+    }
+  }
+`
+
 const authTokenFor = async (userId: string) => {
   const teamMembers = await getKysely()
     .selectFrom('TeamMember')
@@ -314,7 +335,17 @@ const waitForSummaryText = async (meetingId: string, lastExpectedText: string) =
   }
 }
 
-const startTemplatedStandup = async () => {
+const seriesTemplateIdForMeeting = async (meetingId: string) => {
+  const row = await getKysely()
+    .selectFrom('NewMeeting')
+    .innerJoin('MeetingSeries', 'MeetingSeries.id', 'NewMeeting.meetingSeriesId')
+    .select('MeetingSeries.templateId')
+    .where('NewMeeting.id', '=', meetingId)
+    .executeTakeFirstOrThrow()
+  return row.templateId
+}
+
+const startTemplatedStandup = async (templateId = ENTERPRISE_TEMPLATE_ID) => {
   const owner = await signUp()
   const {meeting} = await startStandup({cookie: owner.cookie}, owner.teamId)
   await joinMeeting({cookie: owner.cookie}, meeting.id)
@@ -844,4 +875,202 @@ test('a template downscoped to another team cannot be selected or started', asyn
   expect(selected.error.message).toBe('Template is scoped to team')
   const {meeting} = await startStandup({cookie: outsider.cookie}, outsider.teamId)
   expect(meeting.template.id).toBe(ENTERPRISE_TEMPLATE_ID)
+})
+
+test('a block-node answer round-trips through upsertTeamPromptAnswers unchanged', async () => {
+  const {owner, meeting} = await startTemplatedStandup()
+  const [completed] = meeting.prompts
+  const blockDoc = {
+    type: 'doc',
+    content: [
+      {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'Release Notes'}]},
+      {
+        type: 'bulletList',
+        content: [
+          {
+            type: 'listItem',
+            content: [{type: 'paragraph', content: [{type: 'text', text: 'Bullet one'}]}]
+          }
+        ]
+      },
+      {
+        type: 'taskList',
+        content: [
+          {
+            type: 'taskItem',
+            attrs: {checked: false},
+            content: [{type: 'paragraph', content: [{type: 'text', text: 'Task one'}]}]
+          }
+        ]
+      },
+      {
+        type: 'blockquote',
+        content: [{type: 'paragraph', content: [{type: 'text', text: 'Quoted text'}]}]
+      },
+      {type: 'codeBlock', content: [{type: 'text', text: 'const x = 1'}]},
+      {type: 'horizontalRule'},
+      {
+        type: 'details',
+        attrs: {open: false},
+        content: [
+          {type: 'detailsSummary', content: [{type: 'text', text: 'Sum'}]},
+          {
+            type: 'detailsContent',
+            content: [{type: 'paragraph', content: [{type: 'text', text: 'Body'}]}]
+          }
+        ]
+      },
+      {
+        type: 'table',
+        content: [
+          {
+            type: 'tableRow',
+            content: [
+              {
+                type: 'tableHeader',
+                content: [{type: 'paragraph', content: [{type: 'text', text: 'Header A'}]}]
+              },
+              {
+                type: 'tableHeader',
+                content: [{type: 'paragraph', content: [{type: 'text', text: 'Header B'}]}]
+              }
+            ]
+          },
+          {
+            type: 'tableRow',
+            content: [
+              {
+                type: 'tableCell',
+                content: [{type: 'paragraph', content: [{type: 'text', text: 'Cell A'}]}]
+              },
+              {
+                type: 'tableCell',
+                content: [{type: 'paragraph', content: [{type: 'text', text: 'Cell B'}]}]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+  const blockNodeTypes = blockDoc.content.map(({type}) => type)
+
+  const res = await sendPublic({
+    query: UPSERT_ANSWERS,
+    variables: {
+      meetingId: meeting.id,
+      answers: [{promptId: completed.id, content: JSON.stringify(blockDoc)}],
+      share: false
+    },
+    cookie: owner.cookie
+  })
+  expect(res.errors).toBeUndefined()
+  const {response} = res.data.upsertTeamPromptAnswers
+  expect(response.answeredPromptIds).toEqual([completed.id])
+  for (const text of [
+    'Release Notes',
+    'Bullet one',
+    'Task one',
+    'Quoted text',
+    'const x = 1',
+    'Sum',
+    'Body',
+    'Header A',
+    'Header B',
+    'Cell A',
+    'Cell B'
+  ]) {
+    expect(response.plaintextContent).toContain(text)
+  }
+
+  const answerContent = JSON.parse(response.answers[0].content)
+  expect(answerContent.content.map(({type}: {type: string}) => type)).toEqual(blockNodeTypes)
+
+  const derivedContent = JSON.parse(response.content)
+  expect(derivedContent.content.map(({type}: {type: string}) => type)).toEqual([
+    'heading',
+    ...blockNodeTypes
+  ])
+})
+
+test('an empty-table-only answer is excluded and blocks sharing', async () => {
+  const {owner, meeting} = await startTemplatedStandup()
+  const [completed] = meeting.prompts
+  const emptyTableDoc = JSON.stringify({
+    type: 'doc',
+    content: [
+      {
+        type: 'table',
+        content: [
+          {
+            type: 'tableRow',
+            content: [
+              {type: 'tableHeader', content: [{type: 'paragraph'}]},
+              {type: 'tableHeader', content: [{type: 'paragraph'}]}
+            ]
+          },
+          {
+            type: 'tableRow',
+            content: [
+              {type: 'tableCell', content: [{type: 'paragraph'}]},
+              {type: 'tableCell', content: [{type: 'paragraph'}]}
+            ]
+          }
+        ]
+      }
+    ]
+  })
+
+  const draft = await sendPublic({
+    query: UPSERT_ANSWERS,
+    variables: {
+      meetingId: meeting.id,
+      answers: [{promptId: completed.id, content: emptyTableDoc}],
+      share: false
+    },
+    cookie: owner.cookie
+  })
+  expect(draft.errors).toEqual([expect.objectContaining({message: 'Nothing to save'})])
+
+  const shared = await sendPublic({
+    query: UPSERT_ANSWERS,
+    variables: {
+      meetingId: meeting.id,
+      answers: [{promptId: completed.id, content: emptyTableDoc}],
+      share: true
+    },
+    cookie: owner.cookie
+  })
+  expect(shared.errors).toEqual([
+    expect.objectContaining({message: 'Answer at least one prompt to share'})
+  ])
+})
+
+test('starting recurrence in-meeting carries the template onto the new series', async () => {
+  const {owner, meeting} = await startTemplatedStandup()
+  const res = await sendPublic({
+    query: UPDATE_RECURRENCE_SETTINGS,
+    variables: {meetingId: meeting.id, rrule: immediateRrule()},
+    cookie: owner.cookie
+  })
+  expect(res.errors).toBeUndefined()
+  expect(res.data.updateRecurrenceSettings.error).toBeUndefined()
+  const {nextMeetingDate} = res.data.updateRecurrenceSettings.meeting.meetingSeries
+  expect(typeof nextMeetingDate).toBe('string')
+  const templateId = await seriesTemplateIdForMeeting(meeting.id)
+  expect(templateId).toBe(ENTERPRISE_TEMPLATE_ID)
+})
+
+test('starting recurrence in a legacy standup leaves the series template null', async () => {
+  const {teamId, cookie} = await signUp()
+  const {meeting} = await startStandup({cookie}, teamId)
+  const res = await sendPublic({
+    query: UPDATE_RECURRENCE_SETTINGS,
+    variables: {meetingId: meeting.id, rrule: immediateRrule()},
+    cookie
+  })
+  expect(res.errors).toBeUndefined()
+  expect(res.data.updateRecurrenceSettings.error).toBeUndefined()
+  const templateId = await seriesTemplateIdForMeeting(meeting.id)
+  expect(templateId).toBeNull()
 })
