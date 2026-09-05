@@ -13,24 +13,36 @@ export const resolveSwipe = (dx: number, dy: number, threshold: number): SwipeDi
   return dx < 0 ? 'left' : 'right'
 }
 
+const releaseCapture = (e: PointerEvent<HTMLElement>) => {
+  if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+    e.currentTarget.releasePointerCapture(e.pointerId)
+  }
+}
+
 const useHorizontalSwipe = ({onSwipeLeft, onSwipeRight, threshold = 50}: Options) => {
   const startRef = useRef<{x: number; y: number; id: number} | null>(null)
   const onPointerDown = (e: PointerEvent<HTMLElement>) => {
     startRef.current = {x: e.clientX, y: e.clientY, id: e.pointerId}
   }
-  const onPointerMove = () => {}
+  const onPointerMove = (e: PointerEvent<HTMLElement>) => {
+    const start = startRef.current
+    if (!start || start.id !== e.pointerId) return
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) return
+    if (!resolveSwipe(e.clientX - start.x, e.clientY - start.y, threshold)) return
+    e.currentTarget.setPointerCapture(e.pointerId)
+  }
   const onPointerUp = (e: PointerEvent<HTMLElement>) => {
     const start = startRef.current
     startRef.current = null
+    releaseCapture(e)
     if (!start || start.id !== e.pointerId) return
-    const dx = e.clientX - start.x
-    const dy = e.clientY - start.y
-    const direction = resolveSwipe(dx, dy, threshold)
+    const direction = resolveSwipe(e.clientX - start.x, e.clientY - start.y, threshold)
     if (direction === 'left') onSwipeLeft()
     else if (direction === 'right') onSwipeRight()
   }
-  const onPointerCancel = () => {
+  const onPointerCancel = (e: PointerEvent<HTMLElement>) => {
     startRef.current = null
+    releaseCapture(e)
   }
   return {onPointerDown, onPointerMove, onPointerUp, onPointerCancel}
 }

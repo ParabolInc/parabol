@@ -16,10 +16,11 @@ interface Props {
   isSelected: boolean
   promptCount: number
   onReply: (stageId: string) => void
+  isPhone?: boolean
 }
 
 const TeamUpdatesQuestionRow = (props: Props) => {
-  const {stageRef, prompt, isDrafting, isEnded, isSelected, promptCount, onReply} = props
+  const {stageRef, prompt, isDrafting, isEnded, isSelected, promptCount, onReply, isPhone} = props
   const stage = useFragment(
     graphql`
       fragment TeamUpdatesQuestionRow_stage on TeamPromptResponseStage {
@@ -62,15 +63,26 @@ const TeamUpdatesQuestionRow = (props: Props) => {
   return (
     <div
       className={cn(
-        'flex gap-3.5 rounded-card px-4 py-3.5',
+        'flex rounded-card',
+        isPhone ? 'gap-2 p-[12px_14px]' : 'gap-3.5 px-4 py-3.5',
         isDrafting ? 'bg-surface-well' : 'bg-surface-card shadow-[var(--shadow-card)]',
         isSelected ? 'outline-2 outline-sky-300' : 'outline-none'
       )}
     >
-      <Avatar picture={picture} className={cn('h-10 w-10 shrink-0', isDrafting && 'opacity-55')} />
+      <Avatar
+        picture={picture}
+        className={cn('shrink-0', isPhone ? 'h-7 w-7' : 'h-10 w-10', isDrafting && 'opacity-55')}
+      />
       <div className='flex min-w-0 flex-1 flex-col gap-1'>
         <div className='flex items-center gap-2'>
-          <h3 className='m-0 min-w-0 truncate font-semibold text-[15px]'>{preferredName}</h3>
+          <h3
+            className={cn(
+              'm-0 min-w-0 truncate font-semibold',
+              isPhone ? 'text-sm' : 'text-[15px]'
+            )}
+          >
+            {preferredName}
+          </h3>
           {isDrafting ? (
             <span className='shrink-0 whitespace-nowrap text-fg-primary text-xs'>
               {isEnded
@@ -96,13 +108,14 @@ const TeamUpdatesQuestionRow = (props: Props) => {
               prompt={prompt}
               content={answer.content}
               showLabel={false}
-              textClassName='text-sm leading-6'
+              textClassName={isPhone ? 'text-[15px] leading-[22px]' : 'text-sm leading-6'}
             />
             <TeamPromptResponseFooter
               meetingId={meetingId}
               responseRef={response}
               edgesRef={discussion.thread.edges}
               onReply={() => onReply(stageId)}
+              isPhone={isPhone}
             />
           </>
         )}
