@@ -74,7 +74,7 @@ const updateTemplateScope: MutationResolvers['updateTemplateScope'] = async (
   const shouldClone = !!usedMeeting
   let clonedTemplateId: string | undefined
 
-  const cloneReflectTemplate = async () => {
+  const clonePromptTemplate = async () => {
     const pg = getKysely()
     const TemplateClass = template.type === 'teamPrompt' ? TeamPromptTemplate : ReflectTemplate
     const clonedTemplate = new TemplateClass({
@@ -159,7 +159,7 @@ const updateTemplateScope: MutationResolvers['updateTemplateScope'] = async (
 
   if (shouldClone) {
     if (isPromptTemplateType(template.type)) {
-      await cloneReflectTemplate()
+      await clonePromptTemplate()
     } else if (template.type === 'poker') {
       await clonePokerTemplate()
     }

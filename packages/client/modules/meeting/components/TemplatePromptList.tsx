@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {TemplatePromptList_prompts$key} from '../../../__generated__/TemplatePromptList_prompts.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import MoveReflectTemplatePromptMutation from '../../../mutations/MoveReflectTemplatePromptMutation'
+import MoveTemplatePromptMutation from '../../../mutations/MoveTemplatePromptMutation'
 import {getSortOrder} from '../../../shared/sortOrder'
 import {TEMPLATE_PROMPT} from '../../../utils/constants'
 import TemplatePromptItem from './TemplatePromptItem'
@@ -48,7 +48,7 @@ const TemplatePromptList = (props: Props) => {
     const sortOrder = getSortOrder(prompts, source.index, destination.index)
     const {id: promptId} = sourcePrompt
     const variables = {promptId, sortOrder}
-    MoveReflectTemplatePromptMutation(atmosphere, variables, {templateId})
+    MoveTemplatePromptMutation(atmosphere, variables, {templateId})
   }
 
   return (
