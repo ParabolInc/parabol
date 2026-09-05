@@ -11,18 +11,12 @@ interface Props {
 const TeamPromptCollapsedAnswerRow = (props: Props) => {
   const {prompt, isAnswered, preview, onClick} = props
   return (
-    <div
-      role='button'
-      tabIndex={0}
+    <button
+      type='button'
       onMouseDown={(e) => e.preventDefault()}
       onClick={onClick}
-      onKeyDown={(e) => {
-        if (e.key !== 'Enter' && e.key !== ' ') return
-        e.preventDefault()
-        onClick()
-      }}
       className={cn(
-        'flex min-h-12 cursor-pointer items-center gap-2 rounded-md bg-surface-card px-3 py-2 shadow-[var(--shadow-card)]',
+        'flex min-h-12 cursor-pointer items-center gap-2 rounded-md bg-surface-card px-3 py-2 text-left shadow-[var(--shadow-card)]',
         'focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2',
         !isAnswered && 'text-fg-muted'
       )}
@@ -36,7 +30,7 @@ const TeamPromptCollapsedAnswerRow = (props: Props) => {
         <div className='truncate text-sm'>{isAnswered ? preview : 'Up next'}</div>
       </div>
       {isAnswered && <Check className='h-4 w-4 shrink-0 text-jade-600' aria-label='Answered' />}
-    </div>
+    </button>
   )
 }
 
