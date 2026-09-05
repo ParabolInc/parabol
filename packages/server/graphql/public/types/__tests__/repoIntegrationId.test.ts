@@ -1,7 +1,6 @@
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
 import _xGitHubRepository from '../_xGitHubRepository'
 import _xGitLabProject from '../_xGitLabProject'
-import _xLinearProject from '../_xLinearProject'
 import _xLinearTeam from '../_xLinearTeam'
 import AzureDevOpsRemoteProject from '../AzureDevOpsRemoteProject'
 import JiraRemoteProject from '../JiraRemoteProject'
@@ -21,11 +20,6 @@ describe('RepoIntegration.integrationRepoId', () => {
 
     const gitlab = {service: 'gitlab' as const, fullPath: 'acme/web', id: 'gid://gitlab/Project/1'}
     expect(resolve(_xGitLabProject.integrationRepoId, gitlab)).toBe(IntegrationRepoId.join(gitlab))
-
-    const linearProject = {service: 'linear' as const, id: 'proj1', teamId: 'team1'}
-    expect(resolve(_xLinearProject.integrationRepoId, linearProject)).toBe(
-      IntegrationRepoId.join(linearProject)
-    )
 
     const jiraServer = {service: 'jiraServer' as const, id: '10001', providerId: 9, key: 'WEB'}
     expect(resolve(JiraServerRemoteProject.integrationRepoId, jiraServer)).toBe(
@@ -47,13 +41,10 @@ describe('RepoIntegration.integrationRepoId', () => {
     )
   })
 
-  it('joins a Linear team on its own id and a project from its first team when teamId is absent', () => {
+  it('joins a Linear team on its own id', () => {
     expect(resolve(_xLinearTeam.integrationRepoId, {id: 'team1'})).toBe(
       IntegrationRepoId.join({service: 'linear', id: 'team1', teamId: 'team1'})
     )
-    expect(
-      resolve(_xLinearProject.integrationRepoId, {id: 'proj1', teams: {nodes: [{id: 'team1'}]}})
-    ).toBe('team1:proj1')
   })
 
   it('throws when a stitched object lacks the parts the push id needs', () => {
@@ -61,6 +52,5 @@ describe('RepoIntegration.integrationRepoId', () => {
     expect(() =>
       resolve(_xGitLabProject.integrationRepoId, {id: 'gid://gitlab/Project/1'})
     ).toThrow()
-    expect(() => resolve(_xLinearProject.integrationRepoId, {id: 'proj1'})).toThrow()
   })
 })

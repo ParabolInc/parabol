@@ -3,15 +3,11 @@ type _xLinearIssue implements TaskIntegration
 
 "A Linear team available for integration"
 type _xLinearTeam implements RepoIntegration
-"A Linear project available for integration"
-type _xLinearProject implements RepoIntegration
+"A Linear project, exposed for scoping and issue creation"
+type _xLinearProject
 
 extend type _xLinearProject {
   service: IntegrationProviderServiceEnum!
-  """
-  The id createTaskIntegration expects for this repo. Differs from id where id is the vendor's node id
-  """
-  integrationRepoId: ID!
 }
 
 extend type _xLinearTeam {

@@ -2,7 +2,6 @@ import type {GraphQLResolveInfo} from 'graphql'
 import type {GQLContext} from '../../../graphql'
 import _xGitHubRepository from '../_xGitHubRepository'
 import _xGitLabProject from '../_xGitLabProject'
-import _xLinearProject from '../_xLinearProject'
 import _xLinearTeam from '../_xLinearTeam'
 import AzureDevOpsRemoteProject from '../AzureDevOpsRemoteProject'
 import JiraRemoteProject from '../JiraRemoteProject'
@@ -35,14 +34,6 @@ const linearTeam = {
   id: 'team-uuid',
   displayName: 'Engineering',
   key: 'ENG',
-  service: 'linear' as const,
-  teamId: 'team-uuid'
-}
-
-const linearProject = {
-  __typename: 'Project' as const,
-  id: 'project-uuid',
-  name: 'Q3 Roadmap',
   service: 'linear' as const,
   teamId: 'team-uuid'
 }
@@ -91,7 +82,6 @@ const cases: NameCase[] = [
   ['_xGitHubRepository', _xGitHubRepository, gitHubRepository, 'octocat/hello-world'],
   ['_xGitLabProject', _xGitLabProject, gitLabProject, 'gitlab-org/gitlab'],
   ['_xLinearTeam', _xLinearTeam, linearTeam, 'Engineering'],
-  ['_xLinearProject', _xLinearProject, linearProject, 'Q3 Roadmap'],
   ['JiraRemoteProject', JiraRemoteProject, jiraRemoteProject, 'Parabol'],
   ['JiraServerRemoteProject', JiraServerRemoteProject, jiraServerRemoteProject, 'Parabol'],
   ['AzureDevOpsRemoteProject', AzureDevOpsRemoteProject, azureDevOpsRemoteProject, 'Parabol']
