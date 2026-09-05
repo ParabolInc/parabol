@@ -164,6 +164,7 @@ const TeamPromptComposer = (props: Props) => {
             picture={stage.teamMember.user.picture}
             sharedAt={sharedAt}
             updatedAt={lastAnswerAt}
+            isEnded={!!endedAt}
             onEdit={() => setIsEditingAfterShare(true)}
           />
         ) : (

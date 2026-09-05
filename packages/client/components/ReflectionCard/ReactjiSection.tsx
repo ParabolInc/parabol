@@ -6,15 +6,17 @@ import {Threshold} from '~/types/constEnums'
 import {cn} from '~/ui/cn'
 import AddReactjiButton from './AddReactjiButton'
 import ReactjiCountWrapper from './ReactjiCountWrapper'
+import type {ReactjiSize} from './reactjiSize'
 
 interface Props {
   className?: string
   onToggle: (emojiId: string) => void
   reactjis: ReactjiSection_reactjis$key
+  size?: ReactjiSize
 }
 
 const ReactjiSection = (props: Props) => {
-  const {className, onToggle, reactjis: reactjisRef} = props
+  const {className, onToggle, reactjis: reactjisRef, size = 'sm'} = props
   const reactjis = useFragment(
     graphql`
       fragment ReactjiSection_reactjis on Reactji @relay(plural: true) {
@@ -31,10 +33,17 @@ const ReactjiSection = (props: Props) => {
     <div className={cn('flex flex-wrap items-start justify-start', className)}>
       <AnimatePresence initial={false}>
         {reactjis.map((reactji) => (
-          <ReactjiCountWrapper key={reactji.id} reactjiRef={reactji} onToggle={onToggle} />
+          <ReactjiCountWrapper
+            key={reactji.id}
+            reactjiRef={reactji}
+            onToggle={onToggle}
+            size={size}
+          />
         ))}
       </AnimatePresence>
-      {reactjis.length <= Threshold.MAX_REACTJIS - 1 && <AddReactjiButton onToggle={onToggle} />}
+      {reactjis.length <= Threshold.MAX_REACTJIS - 1 && (
+        <AddReactjiButton onToggle={onToggle} size={size} />
+      )}
     </div>
   )
 }

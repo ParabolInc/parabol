@@ -10,14 +10,16 @@ import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
 import getReactji from '../../utils/getReactji'
 import EmojiUsersReaction from './EmojiUsersReaction'
+import type {ReactjiSize} from './reactjiSize'
 
 interface Props {
   reactjiRef: ReactjiCount_reactji$key
   onToggle: (emojiId: string) => void
+  size?: ReactjiSize
 }
 
 const ReactjiCount = (props: Props) => {
-  const {onToggle, reactjiRef} = props
+  const {onToggle, reactjiRef, size = 'sm'} = props
   const reactji = useFragment(
     graphql`
       fragment ReactjiCount_reactji on Reactji {
@@ -45,7 +47,8 @@ const ReactjiCount = (props: Props) => {
       <TooltipTrigger asChild>
         <PlainButton
           className={cn(
-            'flex h-6 w-max items-center rounded-md bg-surface-well px-1.5 leading-6',
+            'flex w-max items-center rounded-md bg-surface-well px-1.5 leading-6',
+            size === 'lg' ? 'h-8' : 'h-6',
             isViewerReactji ? 'text-accent' : 'text-fg-primary'
           )}
           onClick={onClick}

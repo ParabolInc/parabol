@@ -4,6 +4,7 @@ import {useFragment} from 'react-relay'
 import type {TeamUpdatesSection_meeting$key} from '~/__generated__/TeamUpdatesSection_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import usePhoneViewport from '~/hooks/usePhoneViewport'
+import TeamUpdatesByPersonPhone from './mobile/TeamUpdatesByPersonPhone'
 import TeamUpdatesPhoneHeader from './mobile/TeamUpdatesPhoneHeader'
 import TeamUpdatesByPerson from './TeamUpdatesByPerson'
 import TeamUpdatesByQuestion from './TeamUpdatesByQuestion'
@@ -110,9 +111,20 @@ const TeamUpdatesSection = (props: Props) => {
             selectedStageId={selectedStageId}
             onReply={onReply}
           />
+        ) : isPhone ? (
+          <TeamUpdatesByPersonPhone
+            prompts={prompts}
+            sharedStages={shared}
+            draftingStages={drafting}
+            notStartedStages={notStarted}
+            isEnded={!!endedAt}
+            selectedStageId={selectedStageId}
+            onReply={onReply}
+            scrollContainerRef={scrollContainerRef}
+          />
         ) : (
           <TeamUpdatesByPerson
-            layout={isPhone ? 'feed' : layout}
+            layout={layout}
             prompts={prompts}
             sharedStages={shared}
             draftingStages={drafting}
