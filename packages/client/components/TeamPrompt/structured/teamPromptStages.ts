@@ -4,6 +4,7 @@ export interface StructuredResponseSummary {
   id: string
   isShared: boolean
   sharedAt: string | null | undefined
+  createdAt: string
   updatedAt: string
   answeredPromptIds: readonly string[]
 }
@@ -14,6 +15,8 @@ export interface StructuredStage<R extends StructuredResponseSummary = Structure
   response: R | null | undefined
 }
 
+const sharedOrder = (response: StructuredResponseSummary) => response.sharedAt ?? response.createdAt
+
 export const sortTeamStages = <S extends StructuredStage>(
   stages: readonly S[],
   viewerId: string
@@ -21,7 +24,7 @@ export const sortTeamStages = <S extends StructuredStage>(
   const others = stages.filter((stage) => stage.teamMember.userId !== viewerId)
   const shared = others
     .filter((stage) => stage.response?.isShared)
-    .sort((a, b) => sortByISO8601Date(a.response!.sharedAt!, b.response!.sharedAt!))
+    .sort((a, b) => sortByISO8601Date(sharedOrder(a.response!), sharedOrder(b.response!)))
   const drafting = others
     .filter((stage) => stage.response && !stage.response.isShared)
     .sort((a, b) => sortByISO8601Date(b.response!.updatedAt, a.response!.updatedAt))

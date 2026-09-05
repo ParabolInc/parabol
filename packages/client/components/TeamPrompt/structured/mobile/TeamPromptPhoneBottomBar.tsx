@@ -40,6 +40,7 @@ const TeamPromptPhoneBottomBar = (props: Props) => {
                 id
                 isShared
                 sharedAt
+                createdAt
                 updatedAt
                 answeredPromptIds
               }

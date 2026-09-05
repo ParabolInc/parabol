@@ -20,6 +20,7 @@ const makeResponse = (
   id: 'response1',
   isShared: false,
   sharedAt: null,
+  createdAt: '2026-09-01T00:00:00.000Z',
   updatedAt: '2026-09-01T00:00:00.000Z',
   answeredPromptIds: [],
   ...overrides
@@ -82,16 +83,20 @@ describe('sortTeamStages', () => {
     expect(drafting.map((stage) => stage.id)).toEqual(['fresh', 'stale'])
   })
 
-  it('tolerates a shared response with no sharedAt', () => {
+  it('orders a shared response with no sharedAt by createdAt', () => {
     const stages = [
-      makeStage('noSharedAt', 'user2', makeResponse({isShared: true, sharedAt: null})),
+      makeStage(
+        'noSharedAt',
+        'user2',
+        makeResponse({isShared: true, sharedAt: null, createdAt: '2026-09-01T03:00:00.000Z'})
+      ),
       makeStage(
         'shared',
         'user3',
         makeResponse({isShared: true, sharedAt: '2026-09-01T02:00:00.000Z'})
       )
     ]
-    expect(() => sortTeamStages(stages, 'user1')).not.toThrow()
-    expect(sortTeamStages(stages, 'user1').shared).toHaveLength(2)
+    const {shared} = sortTeamStages(stages, 'user1')
+    expect(shared.map((stage) => stage.id)).toEqual(['shared', 'noSharedAt'])
   })
 })
