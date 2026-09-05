@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {type RefObject, useRef} from 'react'
+import {memo, type RefObject, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import type {TeamUpdatesSection_meeting$key} from '~/__generated__/TeamUpdatesSection_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
@@ -159,4 +159,4 @@ const TeamUpdatesSection = (props: Props) => {
   )
 }
 
-export default TeamUpdatesSection
+export default memo(TeamUpdatesSection)
