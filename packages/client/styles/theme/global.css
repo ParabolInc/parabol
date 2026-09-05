@@ -1073,13 +1073,22 @@
     line-height: 1.4;
   }
 
-  /* the meeting summary embeds a response card inside `.page-editor`, whose in-body h1 rule
-     (`h1:not(:first-child)`) outranks the plain element selector above */
+  /* the meeting summary embeds a response card inside `.page-editor`, whose title
+     (`> h1:first-child`) and in-body (`h1:not(:first-child)`) rules outrank the plain
+     element selector above */
   h1:not(:first-child) {
     font-size: 1.25rem;
     line-height: 1.3;
     letter-spacing: normal;
     margin-top: 0.75rem;
+    margin-bottom: 0.25rem;
+  }
+
+  h1:first-child {
+    font-size: 1.25rem;
+    line-height: 1.3;
+    letter-spacing: normal;
+    margin-top: 0;
     margin-bottom: 0.25rem;
   }
 
@@ -1116,14 +1125,69 @@
   }
 }
 
+/* The meeting summary embeds a stand-up response card inside `.page-editor`, so the card also
+ * inherits the page's body scale, quote treatment and list rhythm. Reset those to what the other
+ * read-only cards get, so every stand-up card reads the same.
+ */
+.page-editor .standup-editor .tiptap {
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+
+  p {
+    font-size: inherit;
+    line-height: 1.4285714286;
+    margin-block: 4px;
+  }
+
+  p:first-of-type {
+    margin-block-start: 0;
+  }
+
+  p:last-of-type {
+    margin-block-end: 0;
+  }
+
+  blockquote {
+    border-left: 3px solid var(--color-hairline-strong);
+    background-color: transparent;
+    border-radius: 0;
+    margin: 1.5rem 0;
+    padding: 0 0 0 1rem;
+  }
+
+  pre {
+    line-height: 1.5rem;
+  }
+
+  ul,
+  ol {
+    padding-inline-start: 1rem;
+    margin: 0.25rem 0;
+  }
+
+  li {
+    margin: 0;
+  }
+
+  a {
+    color: var(--color-fg-primary);
+    text-decoration-color: currentColor;
+    text-underline-offset: auto;
+  }
+}
+
 /* Read-only stand-up cards (shared cards, discussion header, Work drawer, summary response card)
  * let a wide table scroll inside the card instead of squeezing every column. The editable composer
  * keeps the fixed layout: its table node view hangs the Edit Table / Export buttons above the
  * table, and a scroll container would clip them.
  */
 .standup-editor .tiptap[contenteditable='false'] {
+  /* the node view hangs its Export CSV button 2rem above the table, and a scroll container
+     clips it (overflow-x: auto computes overflow-y to auto), so reserve the row inside the box */
   .node-table {
     overflow-x: auto;
+    padding-top: 2rem;
+    margin-top: -2rem;
   }
 
   table {

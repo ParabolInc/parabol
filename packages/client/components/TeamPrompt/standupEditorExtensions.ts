@@ -42,7 +42,7 @@ export const BLOCKED_STANDUP_SLASH_COMMANDS = (
 ).filter((title) => !STANDUP_SLASH_COMMANDS[title])
 
 interface BlockExtensionOptions {
-  teamId: string
+  teamId?: string
   atmosphere: Atmosphere
   commit: ReturnType<typeof useUploadUserAsset>[0]
   editorWidth: number
@@ -72,7 +72,7 @@ export const standupBlockExtensions = ({
   ImageBlock.configure({editorWidth, editorHeight: 88}),
   FileBlock,
   FileUpload.configure({
-    scopeKey: teamId,
+    scopeKey: teamId ?? '',
     assetScope: 'Team',
     atmosphere,
     highestTier: 'starter',

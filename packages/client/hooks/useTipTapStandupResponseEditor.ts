@@ -32,7 +32,7 @@ export const standupResponseExtensions = ({
   Mention.extend({name: 'emojiMention'}).configure(tiptapEmojiConfig),
   MentionTaskTag.configure(tiptapTagConfig),
   LoomExtension,
-  ...standupBlockExtensions({teamId: '', atmosphere, commit, editorWidth})
+  ...standupBlockExtensions({atmosphere, commit, editorWidth})
 ]
 
 export const useTipTapStandupResponseEditor = (content: string, editorWidth: number) => {
