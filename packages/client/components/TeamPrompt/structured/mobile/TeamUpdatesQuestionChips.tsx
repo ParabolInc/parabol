@@ -1,7 +1,7 @@
 import {type KeyboardEvent, useEffect, useRef} from 'react'
 import {cn} from '../../../../ui/cn'
 import radioGroupNextValue from '../radioGroupNextValue'
-import shortPromptLabel from './shortPromptLabel'
+import {SHORT_LABEL_MAX, shortPromptLabels} from './shortPromptLabel'
 
 interface Props {
   prompts: readonly {id: string; question: string; groupColor: string}[]
@@ -10,10 +10,12 @@ interface Props {
 }
 
 const CHIP =
-  'relative flex h-9 shrink-0 items-center gap-2 rounded-full border border-solid px-3 font-semibold text-sm after:-top-1.5 after:-bottom-1.5 after:absolute after:inset-x-0 after:content-[""]'
+  'relative flex h-9 shrink-0 items-center gap-2 rounded-full border border-solid px-3 font-semibold text-sm after:-top-1.5 after:-bottom-1.5 after:absolute after:inset-x-0 after:content-[""] focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2'
 
 const TeamUpdatesQuestionChips = (props: Props) => {
   const {prompts, activePromptId, onChange} = props
+  const labels = shortPromptLabels(prompts.map((prompt) => prompt.question))
+  const isWidened = labels.some((label) => label.length > SHORT_LABEL_MAX + 1)
   const listRef = useRef<HTMLDivElement>(null)
   const chipsRef = useRef<Record<string, HTMLButtonElement | null>>({})
   useEffect(() => {
@@ -43,7 +45,7 @@ const TeamUpdatesQuestionChips = (props: Props) => {
       onKeyDown={onKeyDown}
       className='sticky top-0 z-10 flex gap-2 overflow-x-auto bg-surface-app px-4 pt-1.5 pb-2.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
     >
-      {prompts.map((prompt) => {
+      {prompts.map((prompt, index) => {
         const isActive = prompt.id === activePromptId
         return (
           <button
@@ -70,7 +72,7 @@ const TeamUpdatesQuestionChips = (props: Props) => {
               className='h-2 w-2 shrink-0 rounded-full'
               style={{background: prompt.groupColor}}
             />
-            <span className='max-w-[140px] truncate'>{shortPromptLabel(prompt.question)}</span>
+            <span className={cn('truncate', !isWidened && 'max-w-[140px]')}>{labels[index]}</span>
           </button>
         )
       })}

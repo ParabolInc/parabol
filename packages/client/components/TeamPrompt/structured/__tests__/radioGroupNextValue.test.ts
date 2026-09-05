@@ -6,8 +6,11 @@ test('arrow keys wrap around the group', () => {
   expect(radioGroupNextValue(VALUES, 'person', 'ArrowRight')).toBe('question')
   expect(radioGroupNextValue(VALUES, 'question', 'ArrowRight')).toBe('person')
   expect(radioGroupNextValue(VALUES, 'person', 'ArrowLeft')).toBe('question')
-  expect(radioGroupNextValue(VALUES, 'person', 'ArrowDown')).toBe('question')
-  expect(radioGroupNextValue(VALUES, 'question', 'ArrowUp')).toBe('person')
+})
+
+test('vertical arrows are left to the page so a horizontal row never blocks scrolling', () => {
+  expect(radioGroupNextValue(VALUES, 'person', 'ArrowDown')).toBe(null)
+  expect(radioGroupNextValue(VALUES, 'question', 'ArrowUp')).toBe(null)
 })
 
 test('Home and End jump to the edges', () => {

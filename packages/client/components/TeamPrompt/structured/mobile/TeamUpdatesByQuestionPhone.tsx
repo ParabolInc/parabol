@@ -1,8 +1,9 @@
-import {useState} from 'react'
+import {type RefObject, useRef, useState} from 'react'
 import useHorizontalSwipe from '~/hooks/useHorizontalSwipe'
 import {KeyboardArrowLeft, KeyboardArrowRight} from '~/ui/icons'
 import type {TeamUpdatesQuestionStage} from '../TeamUpdatesByQuestion'
 import TeamUpdatesQuestionRow from '../TeamUpdatesQuestionRow'
+import memberCardScrollTop from './memberCardScrollTop'
 import TeamUpdatesQuestionChips from './TeamUpdatesQuestionChips'
 
 interface Props {
@@ -12,18 +13,43 @@ interface Props {
   isEnded: boolean
   selectedStageId: string | null
   onReply: (stageId: string) => void
+  scrollContainerRef: RefObject<HTMLDivElement | null>
 }
 
 const TeamUpdatesByQuestionPhone = (props: Props) => {
-  const {prompts, sharedStages, draftingStages, isEnded, selectedStageId, onReply} = props
+  const {
+    prompts,
+    sharedStages,
+    draftingStages,
+    isEnded,
+    selectedStageId,
+    onReply,
+    scrollContainerRef
+  } = props
   const [activeId, setActiveId] = useState(prompts[0]?.id ?? '')
+  const rootRef = useRef<HTMLDivElement>(null)
+  const selectPrompt = (promptId: string) => {
+    setActiveId(promptId)
+    const container = scrollContainerRef.current
+    const root = rootRef.current
+    if (!container || !root) return
+    container.scrollTo({
+      top: memberCardScrollTop({
+        containerScrollTop: container.scrollTop,
+        containerTop: container.getBoundingClientRect().top,
+        cardTop: root.getBoundingClientRect().top,
+        offset: 0
+      }),
+      behavior: 'smooth'
+    })
+  }
   const activeIndex = Math.max(
     0,
     prompts.findIndex((prompt) => prompt.id === activeId)
   )
   const step = (delta: number) => {
     const next = prompts[(activeIndex + delta + prompts.length) % prompts.length]
-    if (next) setActiveId(next.id)
+    if (next) selectPrompt(next.id)
   }
   const swipeHandlers = useHorizontalSwipe({
     onSwipeLeft: () => step(1),
@@ -35,18 +61,19 @@ const TeamUpdatesByQuestionPhone = (props: Props) => {
     stage.response?.answers.some((answer) => answer.promptId === activePrompt.id)
   )
   return (
-    <div>
+    <div ref={rootRef}>
       <TeamUpdatesQuestionChips
         prompts={prompts}
         activePromptId={activePrompt.id}
-        onChange={setActiveId}
+        onChange={selectPrompt}
       />
       <div
         {...swipeHandlers}
         role='tabpanel'
+        tabIndex={0}
         id='team-question-phone-panel'
         aria-labelledby={`team-question-phone-tab-${activePrompt.id}`}
-        className='flex touch-pan-y flex-col gap-3 px-4 pb-2'
+        className='flex touch-pan-y touch-pinch-zoom flex-col gap-3 px-4 pb-2 focus-visible:outline-none'
       >
         <div className='flex items-center gap-2 pt-1 pb-1'>
           <span
