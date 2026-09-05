@@ -25,27 +25,27 @@ const PROMPTS = [
     sortOrder: '"'
   },
   {
-    id: 'enterpriseDailyStandupTemplate:completedPrompt',
+    id: 'enterpriseDailyStandupTemplate:workingOnPrompt',
     templateId: ENTERPRISE_TEMPLATE_ID,
-    question: 'What have you completed recently?',
-    description: 'Wins, shipped work, closed tasks',
+    question: 'What are you working on? What has been completed recently?',
+    description: 'In progress now, plus wins and shipped work',
     groupColor: JADE_400,
     sortOrder: '"'
   },
   {
-    id: 'enterpriseDailyStandupTemplate:nextPrompt',
+    id: 'enterpriseDailyStandupTemplate:stuckPrompt',
     templateId: ENTERPRISE_TEMPLATE_ID,
-    question: "What's next for you?",
-    description: 'Top priorities before the next standup',
-    groupColor: SKY_500,
+    question: "What are you stuck on, what's holding you back?",
+    description: 'Blockers, reviews you are waiting on, help needed',
+    groupColor: TOMATO_500,
     sortOrder: '#'
   },
   {
-    id: 'enterpriseDailyStandupTemplate:stuckPrompt',
+    id: 'enterpriseDailyStandupTemplate:nextPrompt',
     templateId: ENTERPRISE_TEMPLATE_ID,
-    question: 'What are you stuck on?',
-    description: 'Blockers, reviews you are waiting on, help needed',
-    groupColor: TOMATO_500,
+    question: 'What are you planning to work on next?',
+    description: 'Top priorities before the next standup',
+    groupColor: SKY_500,
     sortOrder: '$'
   },
   {
