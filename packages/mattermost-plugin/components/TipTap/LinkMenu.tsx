@@ -25,13 +25,12 @@ export const LinkMenu = (props: Props) => {
   const openStateRef = useRef<LinkMenuState>(null)
 
   const setLinkState = (nextLinkState: LinkMenuState) => {
-    // closing the menu by hitting Esc should refocus on the editor, but a menu that was never open
-    // must not steal focus: every selection change emits linkStateChange, including programmatic ones
-    if (!nextLinkState && openStateRef.current) {
-      editor.commands.focus()
-    }
+    const menuWasOpen = openStateRef.current !== null
     openStateRef.current = nextLinkState
     _setLinkState(nextLinkState)
+    if (!nextLinkState && menuWasOpen) {
+      editor.commands.focus()
+    }
   }
 
   useEffect(() => {

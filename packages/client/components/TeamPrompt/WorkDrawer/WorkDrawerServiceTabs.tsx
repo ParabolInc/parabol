@@ -88,8 +88,7 @@ const WorkDrawerServiceTabs = (props: Props) => {
                 'flex items-center justify-center rounded-md transition-colors',
                 isSheet ? 'h-9 w-9' : 'h-10 w-10',
                 isActive
-                  ? // the logos are dark brand colors, so they go monochrome on the selected fill
-                    'bg-surface-selected text-fg-selected [&_path]:fill-current'
+                  ? 'bg-surface-selected text-fg-selected [&_path]:fill-current'
                   : 'text-fg-muted hover:bg-surface-hover'
               )}
             >
