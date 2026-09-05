@@ -77,7 +77,7 @@ const useAddReflectTemplateMutation = () => {
           const currentPrompts = parentTemplate.getLinkedRecords('prompts')!
           proxyTemplate.setLinkedRecords(currentPrompts, 'prompts')
         } else {
-          const prompt = createProxyRecord(store, 'ReflectTemplatePrompt', {
+          const prompt = createProxyRecord(store, 'TemplatePrompt', {
             description: '',
             question: 'New prompt',
             createdAt: nowISO,

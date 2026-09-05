@@ -1,7 +1,0 @@
-"""
-Result of updating the group color of a retrospective template prompt
-"""
-type ReflectTemplatePromptUpdateGroupColorPayload {
-  error: StandardMutationError
-  prompt: TemplatePrompt
-}

@@ -46,11 +46,8 @@ const REMOVE_TEAM_PROMPT_TEMPLATE = `
 `
 
 const ADD_PROMPT = `
-  mutation AddReflectTemplatePrompt($templateId: ID!) {
-    addReflectTemplatePrompt(templateId: $templateId) {
-      error {
-        message
-      }
+  mutation AddTemplatePrompt($templateId: ID!) {
+    addTemplatePrompt(templateId: $templateId) {
       prompt {
         id
         question
@@ -60,11 +57,8 @@ const ADD_PROMPT = `
 `
 
 const RENAME_PROMPT = `
-  mutation RenameReflectTemplatePrompt($promptId: ID!, $question: String!) {
-    renameReflectTemplatePrompt(promptId: $promptId, question: $question) {
-      error {
-        message
-      }
+  mutation RenameTemplatePrompt($promptId: ID!, $question: String!) {
+    renameTemplatePrompt(promptId: $promptId, question: $question) {
       prompt {
         id
         question
@@ -74,11 +68,8 @@ const RENAME_PROMPT = `
 `
 
 const REMOVE_PROMPT = `
-  mutation RemoveReflectTemplatePrompt($promptId: ID!) {
-    removeReflectTemplatePrompt(promptId: $promptId) {
-      error {
-        message
-      }
+  mutation RemoveTemplatePrompt($promptId: ID!) {
+    removeTemplatePrompt(promptId: $promptId) {
       prompt {
         id
       }
@@ -337,29 +328,29 @@ test('prompt mutations work on a standup template and reject a poker template', 
   const [firstPrompt] = prompts
 
   const added = await sendPublic({query: ADD_PROMPT, variables: {templateId}, cookie})
-  expect(added.data.addReflectTemplatePrompt.error).toBeNull()
-  expect(added.data.addReflectTemplatePrompt.prompt.question).toBe('New prompt #2')
+  expect(added.errors).toBeUndefined()
+  expect(added.data.addTemplatePrompt.prompt.question).toBe('New prompt #2')
 
   const renamed = await sendPublic({
     query: RENAME_PROMPT,
     variables: {promptId: firstPrompt.id, question: 'What did you ship?'},
     cookie
   })
-  expect(renamed.data.renameReflectTemplatePrompt.prompt.question).toBe('What did you ship?')
+  expect(renamed.data.renameTemplatePrompt.prompt.question).toBe('What did you ship?')
 
   const removed = await sendPublic({
     query: REMOVE_PROMPT,
-    variables: {promptId: added.data.addReflectTemplatePrompt.prompt.id},
+    variables: {promptId: added.data.addTemplatePrompt.prompt.id},
     cookie
   })
-  expect(removed.data.removeReflectTemplatePrompt.error).toBeNull()
+  expect(removed.errors).toBeUndefined()
 
   const lastPrompt = await sendPublic({
     query: REMOVE_PROMPT,
     variables: {promptId: firstPrompt.id},
     cookie
   })
-  expect(lastPrompt.data.removeReflectTemplatePrompt.error.message).toBe('No prompts remain')
+  expect(lastPrompt.errors).toEqual([expect.objectContaining({message: 'No prompts remain'})])
 
   const poker = await sendPublic({query: ADD_POKER_TEMPLATE, variables: {teamId}, cookie})
   const pokerTemplateId = poker.data.addPokerTemplate.pokerTemplate.id
@@ -368,7 +359,7 @@ test('prompt mutations work on a standup template and reject a poker template', 
     variables: {templateId: pokerTemplateId},
     cookie
   })
-  expect(rejected.data.addReflectTemplatePrompt.error.message).toBe('Template not found')
+  expect(rejected.errors).toEqual([expect.objectContaining({message: 'Template not found'})])
 })
 
 test('selectTemplate persists the standup template for the team', async () => {

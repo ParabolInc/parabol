@@ -6,7 +6,7 @@ import {Threshold} from '~/types/constEnums'
 import {Button} from '~/ui/Button/Button'
 import {Add} from '~/ui/icons'
 import type {AddTemplatePrompt_prompts$key} from '../../../__generated__/AddTemplatePrompt_prompts.graphql'
-import AddReflectTemplatePromptMutation from '../../../mutations/AddReflectTemplatePromptMutation'
+import AddTemplatePromptMutation from '../../../mutations/AddTemplatePromptMutation'
 import {positionAfter} from '../../../shared/sortOrder'
 
 interface Props {
@@ -34,7 +34,7 @@ const AddTemplatePrompt = (props: Props) => {
     const lastPrompt = prompts.at(-1)!
     const sortOrder = positionAfter(lastPrompt.sortOrder)
     const promptCount = prompts.length
-    AddReflectTemplatePromptMutation(
+    AddTemplatePromptMutation(
       atmosphere,
       {templateId},
       {

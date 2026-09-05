@@ -1,46 +1,40 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import {positionAfter} from '../../../../client/shared/sortOrder'
 import palettePickerOptions from '../../../../client/styles/palettePickerOptions'
 import {PALETTE} from '../../../../client/styles/paletteV3'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 import {isPromptTemplateType} from './helpers/isPromptTemplateType'
 
-const addReflectTemplatePrompt: MutationResolvers['addReflectTemplatePrompt'] = async (
+const addTemplatePrompt: MutationResolvers['addTemplatePrompt'] = async (
   _source,
   {templateId},
-  {authToken, dataLoader, socketId: mutatorId}
+  {dataLoader, socketId: mutatorId}
 ) => {
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
   const template = await dataLoader.get('meetingTemplates').load(templateId)
-  const viewerId = getUserId(authToken)
 
-  // VALIDATION
   if (!template || !template.isActive || !isPromptTemplateType(template.type)) {
-    return standardError(new Error('Template not found'), {
-      userId: viewerId
-    })
+    throw new GraphQLError('Template not found')
   }
   const {teamId} = template
   const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(templateId)
   const activePrompts = prompts.filter(({removedAt}) => !removedAt)
 
   if (activePrompts.length >= Threshold.MAX_REFLECTION_PROMPTS) {
-    return standardError(new Error('Too many prompts'), {userId: viewerId})
+    throw new GraphQLError('Too many prompts')
   }
 
-  // RESOLUTION
   const lastPrompt = activePrompts.at(-1)
   const sortOrder = positionAfter(lastPrompt?.sortOrder ?? '')
   const pickedColors = activePrompts.map((prompt) => prompt.groupColor)
   const availableNewColor = palettePickerOptions.find((color) => !pickedColors.includes(color.hex))
-  const reflectPrompt = {
+  const prompt = {
     id: generateUID(),
     templateId: template.id,
     teamId: template.teamId,
@@ -51,13 +45,12 @@ const addReflectTemplatePrompt: MutationResolvers['addReflectTemplatePrompt'] = 
     removedAt: null
   }
 
-  await pg.insertInto('ReflectPrompt').values(reflectPrompt).execute()
+  await pg.insertInto('ReflectPrompt').values(prompt).execute()
 
   dataLoader.clearAll('reflectPrompts')
-  const promptId = reflectPrompt.id
-  const data = {promptId}
-  publish(SubscriptionChannel.TEAM, teamId, 'AddReflectTemplatePromptPayload', data, subOptions)
+  const data = {promptId: prompt.id}
+  publish(SubscriptionChannel.TEAM, teamId, 'AddTemplatePromptSuccess', data, subOptions)
   return data
 }
 
-export default addReflectTemplatePrompt
+export default addTemplatePrompt

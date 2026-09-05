@@ -64,7 +64,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     addReactjiToReactable: isMeetingMember<'Mutation.addReactjiToReactable'>('args.meetingId'),
     addReflectTemplate: isTeamMember<'Mutation.addReflectTemplate'>('args.teamId'),
-    addReflectTemplatePrompt: isTeamMember<'Mutation.addReflectTemplatePrompt'>(
+    addTemplatePrompt: isTeamMember<'Mutation.addTemplatePrompt'>(
       'args.templateId',
       'meetingTemplates'
     ),
@@ -190,7 +190,7 @@ const permissionMap: PermissionMap<Resolvers> = {
       'args.scaleId',
       'templateScales'
     ),
-    moveReflectTemplatePrompt: isTeamMember<'Mutation.moveReflectTemplatePrompt'>(
+    moveTemplatePrompt: isTeamMember<'Mutation.moveTemplatePrompt'>(
       'args.promptId',
       'reflectPrompts'
     ),
@@ -213,16 +213,6 @@ const permissionMap: PermissionMap<Resolvers> = {
       isViewerBillingLeader<'Mutation.promoteToTeamLead'>('args.teamId', 'teams')
     ),
     pushInvitation: rateLimit({perMinute: 10, perHour: 20}),
-    reflectTemplatePromptUpdateDescription:
-      isTeamMember<'Mutation.reflectTemplatePromptUpdateDescription'>(
-        'args.promptId',
-        'reflectPrompts'
-      ),
-    reflectTemplatePromptUpdateGroupColor:
-      isTeamMember<'Mutation.reflectTemplatePromptUpdateGroupColor'>(
-        'args.promptId',
-        'reflectPrompts'
-      ),
     regenerateOAuthAPIProviderSecret:
       hasProviderAccess<'Mutation.regenerateOAuthAPIProviderSecret'>('args.providerId'),
     removeAgendaItem: isTeamMember<'Mutation.removeAgendaItem'>('args.agendaItemId', 'agendaItems'),
@@ -255,7 +245,7 @@ const permissionMap: PermissionMap<Resolvers> = {
       ),
       isTeamMember<'Mutation.removeReflectTemplate'>('args.templateId', 'meetingTemplates')
     ),
-    removeReflectTemplatePrompt: isTeamMember<'Mutation.removeReflectTemplatePrompt'>(
+    removeTemplatePrompt: isTeamMember<'Mutation.removeTemplatePrompt'>(
       'args.promptId',
       'reflectPrompts'
     ),
@@ -299,7 +289,7 @@ const permissionMap: PermissionMap<Resolvers> = {
       'args.scaleId',
       'templateScales'
     ),
-    renameReflectTemplatePrompt: isTeamMember<'Mutation.renameReflectTemplatePrompt'>(
+    renameTemplatePrompt: isTeamMember<'Mutation.renameTemplatePrompt'>(
       'args.promptId',
       'reflectPrompts'
     ),
@@ -461,6 +451,14 @@ const permissionMap: PermissionMap<Resolvers> = {
     updateTemplateCategory: isTeamMember<'Mutation.updateTemplateCategory'>(
       'args.templateId',
       'meetingTemplates'
+    ),
+    updateTemplatePromptDescription: isTeamMember<'Mutation.updateTemplatePromptDescription'>(
+      'args.promptId',
+      'reflectPrompts'
+    ),
+    updateTemplatePromptGroupColor: isTeamMember<'Mutation.updateTemplatePromptGroupColor'>(
+      'args.promptId',
+      'reflectPrompts'
     ),
     uploadIdPMetadata: hasOrgRole<'Mutation.uploadIdPMetadata'>('args.orgId', 'ORG_ADMIN'),
     uploadOrgImage: isViewerBillingLeader<'Mutation.uploadOrgImage'>('args.orgId'),

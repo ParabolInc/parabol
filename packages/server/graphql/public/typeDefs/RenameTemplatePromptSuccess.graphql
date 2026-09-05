@@ -1,0 +1,9 @@
+"""
+Returned when renameTemplatePrompt succeeds
+"""
+type RenameTemplatePromptSuccess {
+  """
+  The prompt with its new question
+  """
+  prompt: TemplatePrompt!
+}

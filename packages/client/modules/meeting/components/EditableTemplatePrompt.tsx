@@ -4,7 +4,7 @@ import type {EditableTemplatePrompt_prompts$key} from '../../../__generated__/Ed
 import EditableText from '../../../components/EditableText'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
-import RenameReflectTemplatePromptMutation from '../../../mutations/RenameReflectTemplatePromptMutation'
+import RenameTemplatePromptMutation from '../../../mutations/RenameTemplatePromptMutation'
 import Legitity from '../../../validation/Legitity'
 
 interface Props {
@@ -35,7 +35,7 @@ const EditableTemplatePrompt = (props: Props) => {
     const {error, value: question} = validate(rawQuestion)
     if (error) return
     submitMutation()
-    RenameReflectTemplatePromptMutation(atmosphere, {promptId, question}, {onError, onCompleted})
+    RenameTemplatePromptMutation(atmosphere, {promptId, question}, {onError, onCompleted})
   }
 
   const legitify = (value: string) => {

@@ -2,7 +2,7 @@ import type {RecordSourceSelectorProxy} from 'relay-runtime'
 import safeRemoveNodeFromArray from '~/utils/relay/safeRemoveNodeFromArray'
 import pluralizeHandler from './pluralizeHandler'
 
-const handleRemoveReflectTemplatePrompt = (
+const handleRemoveTemplatePrompt = (
   promptId: string,
   teamId: string,
   store: RecordSourceSelectorProxy
@@ -17,5 +17,5 @@ const handleRemoveReflectTemplatePrompt = (
   safeRemoveNodeFromArray(promptId, activeTemplate, 'prompts')
 }
 
-const handleRemoveReflectTemplatePrompts = pluralizeHandler(handleRemoveReflectTemplatePrompt)
-export default handleRemoveReflectTemplatePrompts
+const handleRemoveTemplatePrompts = pluralizeHandler(handleRemoveTemplatePrompt)
+export default handleRemoveTemplatePrompts

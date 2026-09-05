@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {PalettePicker_prompt$key} from '~/__generated__/PalettePicker_prompt.graphql'
 import type {PalettePicker_prompts$key} from '~/__generated__/PalettePicker_prompts.graphql'
-import ReflectTemplatePromptUpdateGroupColorMutation from '~/mutations/ReflectTemplatePromptUpdateGroupColorMutation'
+import UpdateTemplatePromptGroupColorMutation from '~/mutations/UpdateTemplatePromptGroupColorMutation'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import palettePickerOptions from '../../styles/palettePickerOptions'
 import {MenuContent} from '../../ui/Menu/MenuContent'
@@ -38,7 +38,7 @@ const PalettePicker = (props: Props) => {
   const atmosphere = useAtmosphere()
   const allTakenColors = prompts.map((prompt) => prompt.groupColor)
   const handleClick = (color: string) => {
-    ReflectTemplatePromptUpdateGroupColorMutation(atmosphere, {
+    UpdateTemplatePromptGroupColorMutation(atmosphere, {
       promptId,
       groupColor: color
     })
