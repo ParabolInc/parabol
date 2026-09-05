@@ -3,9 +3,17 @@ import type {Kysely} from 'kysely'
 const SEED_DATE = new Date('2026-09-04T00:00:00.000Z')
 const CANONICAL_TEMPLATE_ID = 'teamPrompt'
 const ENTERPRISE_TEMPLATE_ID = 'enterpriseDailyStandupTemplate'
+const DEMO_DAY_TEMPLATE_ID = 'demoDayTemplate'
+const WEEKLY_WINS_TEMPLATE_ID = 'weeklyWinsAndPrioritiesTemplate'
 const JADE_400 = '#66BC8C'
 const SKY_500 = '#329AE5'
 const TOMATO_500 = '#FD6157'
+
+const TEMPLATES = [
+  {id: ENTERPRISE_TEMPLATE_ID, name: 'Enterprise Daily Standup'},
+  {id: DEMO_DAY_TEMPLATE_ID, name: 'Demo Day'},
+  {id: WEEKLY_WINS_TEMPLATE_ID, name: 'Weekly Wins & Priorities'}
+]
 
 const PROMPTS = [
   {
@@ -37,6 +45,54 @@ const PROMPTS = [
     templateId: ENTERPRISE_TEMPLATE_ID,
     question: 'What are you stuck on?',
     description: 'Blockers, reviews you are waiting on, help needed',
+    groupColor: TOMATO_500,
+    sortOrder: '$'
+  },
+  {
+    id: 'demoDayTemplate:shippedPrompt',
+    templateId: DEMO_DAY_TEMPLATE_ID,
+    question: 'What did you ship?',
+    description: 'Features, fixes, or experiments that landed since the last demo',
+    groupColor: JADE_400,
+    sortOrder: '"'
+  },
+  {
+    id: 'demoDayTemplate:showItOffPrompt',
+    templateId: DEMO_DAY_TEMPLATE_ID,
+    question: 'Show it off',
+    description: 'A link, screenshot, or short recording so the team can see it',
+    groupColor: SKY_500,
+    sortOrder: '#'
+  },
+  {
+    id: 'demoDayTemplate:feedbackPrompt',
+    templateId: DEMO_DAY_TEMPLATE_ID,
+    question: 'What feedback do you want?',
+    description: 'Questions, review requests, or decisions you need from the team',
+    groupColor: TOMATO_500,
+    sortOrder: '$'
+  },
+  {
+    id: 'weeklyWinsAndPrioritiesTemplate:winsPrompt',
+    templateId: WEEKLY_WINS_TEMPLATE_ID,
+    question: 'What were your wins this week?',
+    description: 'Shipped work, milestones, or something you are proud of',
+    groupColor: JADE_400,
+    sortOrder: '"'
+  },
+  {
+    id: 'weeklyWinsAndPrioritiesTemplate:learnedPrompt',
+    templateId: WEEKLY_WINS_TEMPLATE_ID,
+    question: 'What did you learn?',
+    description: 'A surprise, a mistake worth sharing, or a new skill',
+    groupColor: SKY_500,
+    sortOrder: '#'
+  },
+  {
+    id: 'weeklyWinsAndPrioritiesTemplate:prioritiesPrompt',
+    templateId: WEEKLY_WINS_TEMPLATE_ID,
+    question: 'What are your top priorities next week?',
+    description: 'The one to three things that matter most',
     groupColor: TOMATO_500,
     sortOrder: '$'
   }
@@ -94,21 +150,22 @@ const generateUID = () => {
 export async function up(db: Kysely<any>): Promise<void> {
   await db
     .insertInto('MeetingTemplate')
-    .values({
-      id: ENTERPRISE_TEMPLATE_ID,
-      name: 'Enterprise Daily Standup',
-      type: 'teamPrompt',
-      mainCategory: 'standup',
-      teamId: 'aGhostTeam',
-      orgId: 'aGhostOrg',
-      scope: 'PUBLIC',
-      isActive: true,
-      isStarter: false,
-      isFree: false,
-      illustrationUrl: '/assets/Organization/aGhostOrg/template/teamPrompt.png',
-      createdAt: SEED_DATE,
-      updatedAt: SEED_DATE
-    })
+    .values(
+      TEMPLATES.map((template) => ({
+        ...template,
+        type: 'teamPrompt',
+        mainCategory: 'standup',
+        teamId: 'aGhostTeam',
+        orgId: 'aGhostOrg',
+        scope: 'PUBLIC',
+        isActive: true,
+        isStarter: false,
+        isFree: false,
+        illustrationUrl: '/assets/Organization/aGhostOrg/template/teamPrompt.png',
+        createdAt: SEED_DATE,
+        updatedAt: SEED_DATE
+      }))
+    )
     .onConflict((oc) => oc.doNothing())
     .execute()
 
@@ -180,5 +237,12 @@ export async function down(db: Kysely<any>): Promise<void> {
       PROMPTS.map(({id}) => id)
     )
     .execute()
-  await db.deleteFrom('MeetingTemplate').where('id', '=', ENTERPRISE_TEMPLATE_ID).execute()
+  await db
+    .deleteFrom('MeetingTemplate')
+    .where(
+      'id',
+      'in',
+      TEMPLATES.map(({id}) => id)
+    )
+    .execute()
 }
