@@ -217,7 +217,6 @@ const PromptResponseEditor = (props: Props) => {
     <>
       <TipTapEditor
         editor={editor}
-        showBubbleMenu={!readOnly}
         showListControls={showListControls}
         className={cn('standup-editor', className)}
       />
