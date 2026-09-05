@@ -2,6 +2,8 @@ import type {NodeSelection} from '@tiptap/pm/state'
 import type {Editor} from '@tiptap/react'
 
 export const isTextSelected = (editor: Editor) => {
+  // tiptap 3 throws on view access once the view is gone, so bail before touching it
+  if (!editor.isEditable) return false
   const {state} = editor
   const {doc, selection} = state
   const {empty, from, to} = selection
@@ -15,7 +17,7 @@ export const isTextSelected = (editor: Editor) => {
   // when deleting a pageLinkBlock from the first line, from:4, to:6, but the selection is a Node, not text
   const hasEditorFocus = editor.view?.hasFocus() ?? false
   const isEmptyBlock = !doc.textBetween(from, to).length // && isTextSelection(selection)
-  return !(empty || isEmptyBlock || !editor.isEditable || !hasEditorFocus)
+  return !(empty || isEmptyBlock || !hasEditorFocus)
 }
 
 export default isTextSelected
