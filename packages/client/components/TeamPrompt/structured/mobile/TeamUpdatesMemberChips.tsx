@@ -46,12 +46,13 @@ const TeamUpdatesMemberChips = (props: Props) => {
     select(next)
     chipsRef.current[next]?.focus()
   }
+  if (members.length === 0) return null
   return (
     <div
       role='tablist'
       aria-label='Teammates'
       onKeyDown={onKeyDown}
-      className='flex gap-2 overflow-x-auto px-4 pt-1.5 pb-2.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
+      className='sticky top-0 z-10 flex gap-2 overflow-x-auto bg-surface-app px-4 pt-1.5 pb-2.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
     >
       {chips.map(({value, label, picture, isDrafting}) => {
         const isSelected = current === value
@@ -63,6 +64,7 @@ const TeamUpdatesMemberChips = (props: Props) => {
             }}
             type='button'
             role='tab'
+            aria-label={label}
             aria-selected={isSelected}
             tabIndex={isSelected ? 0 : -1}
             onClick={() => select(value)}
@@ -82,7 +84,7 @@ const TeamUpdatesMemberChips = (props: Props) => {
                 className={cn('h-[26px] w-[26px] shrink-0', isDrafting && 'opacity-55')}
               />
             )}
-            {label}
+            <span className='max-w-[140px] truncate'>{label}</span>
           </button>
         )
       })}
