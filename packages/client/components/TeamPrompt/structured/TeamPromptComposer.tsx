@@ -6,6 +6,7 @@ import type {TeamPromptComposer_meeting$key} from '~/__generated__/TeamPromptCom
 import useAtmosphere from '~/hooks/useAtmosphere'
 import usePhoneViewport from '~/hooks/usePhoneViewport'
 import {cn} from '../../../ui/cn'
+import composerDoneVisible from './composerDoneVisible'
 import TeamPromptOwnUpdateRow from './mobile/TeamPromptOwnUpdateRow'
 import TeamPromptPhoneComposerFooter from './mobile/TeamPromptPhoneComposerFooter'
 import useComposerFocusMode from './mobile/useComposerFocusMode'
@@ -126,8 +127,8 @@ const TeamPromptComposer = (props: Props) => {
     share(() => {
       setIsExpanded(false)
       setIsEditingAfterShare(false)
+      setHasInsertedFromInspiration(false)
     })
-    setHasInsertedFromInspiration(false)
   }, [share, answeredPromptIds.size, isShared, dirtyPromptIds.size])
 
   const onOpenInspiration = useCallback(() => {
@@ -183,7 +184,16 @@ const TeamPromptComposer = (props: Props) => {
               isPhone={isPhone}
               templateName={template?.name}
               onDone={
-                isPhone && isEditingAfterShare && dirtyPromptIds.size === 0
+                composerDoneVisible({
+                  isPhone,
+                  isEditingAfterShare,
+                  isShared,
+                  isDirty: dirtyPromptIds.size > 0,
+                  answeredCount: answeredPromptIds.size,
+                  promptCount: prompts.length,
+                  submitting,
+                  isEnded: !!endedAt
+                })
                   ? () => setIsEditingAfterShare(false)
                   : undefined
               }
