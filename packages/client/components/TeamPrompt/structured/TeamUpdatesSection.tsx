@@ -12,7 +12,10 @@ import TeamUpdatesHeader from './TeamUpdatesHeader'
 import {getMemberSharedAt, sortTeamStages} from './teamPromptStages'
 import useOpenResponseDiscussion from './useOpenResponseDiscussion'
 import useTeamHeaderPin from './useTeamHeaderPin'
-import useTeamLayoutPreference, {fromPhoneLayout, toPhoneLayout} from './useTeamLayoutPreference'
+import useTeamLayoutPreference, {
+  nextLayoutForPhoneChoice,
+  toPhoneLayout
+} from './useTeamLayoutPreference'
 
 interface Props {
   meetingRef: TeamUpdatesSection_meeting$key
@@ -89,7 +92,10 @@ const TeamUpdatesSection = (props: Props) => {
           sharedCount={shared.length}
           draftingCount={drafting.length}
           layout={toPhoneLayout(layout)}
-          onLayoutChange={(next) => setLayout(fromPhoneLayout(next))}
+          onLayoutChange={(choice) => {
+            const next = nextLayoutForPhoneChoice(layout, choice)
+            if (next) setLayout(next)
+          }}
         />
       ) : (
         <TeamUpdatesHeader

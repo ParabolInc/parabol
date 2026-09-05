@@ -4,6 +4,7 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import useShareTeamPromptResponsesMutation from '../../../mutations/useShareTeamPromptResponsesMutation'
 import useUpsertTeamPromptResponseMutation from '../../../mutations/useUpsertTeamPromptResponseMutation'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
+import autosaveCompletion from './autosaveCompletion'
 import {clearDraftAnswers, writeDraftAnswer} from './teamPromptDraftStorage'
 
 const AUTOSAVE_DEBOUNCE_MS = 800
@@ -33,12 +34,69 @@ const useTeamPromptAnswersAutosave = (options: Options) => {
   const [dirtyPromptIds, setDirtyPromptIds] = useState<Set<string>>(new Set())
   const [isSharing, setIsSharing] = useState(false)
 
-  const reportError = useCallback(
-    (message: string) => {
-      atmosphere.eventEmitter.emit('addSnackbar', {
-        key: `standupAnswers:${message}`,
-        message,
-        autoDismiss: 5
+  const send = useCallback(
+    (share: boolean, onShared?: () => void) => {
+      const sentDocs = new Map(pendingRef.current)
+      const answers = [...sentDocs.entries()].map(([promptId, doc]) => ({
+        promptId,
+        content: JSON.stringify(doc)
+      }))
+      if (!share && answers.length === 0) return
+      const sendId = ++sendCounterRef.current
+      if (share) shareSendIdRef.current = sendId
+      latestSendIdRef.current = sendId
+      inFlightRef.current = true
+      inFlightSinceRef.current = Date.now()
+      const evictSentAnswers = () => {
+        const evictedPromptIds = [...sentDocs.entries()]
+          .filter(([promptId, doc]) => pendingRef.current.get(promptId) === doc)
+          .map(([promptId]) => promptId)
+        evictedPromptIds.forEach((promptId) => pendingRef.current.delete(promptId))
+        setDirtyPromptIds((prev) => {
+          const next = new Set(prev)
+          evictedPromptIds.forEach((promptId) => next.delete(promptId))
+          return next
+        })
+        clearDraftAnswers(stageId, evictedPromptIds)
+      }
+      execute({
+        variables: {meetingId, answers, share},
+        onError: () => {
+          if (sendId === latestSendIdRef.current) {
+            inFlightRef.current = false
+            inFlightSinceRef.current = null
+          }
+        },
+        onCompleted: (_res, errors) => {
+          if (sendId === latestSendIdRef.current) {
+            inFlightRef.current = false
+            inFlightSinceRef.current = null
+          }
+          const message = errors?.[0]?.message
+          const completion = autosaveCompletion(message, !share && sendId < shareSendIdRef.current)
+          if (completion === 'ignore') return
+          if (completion === 'evict') {
+            evictSentAnswers()
+            return
+          }
+          if (completion === 'snackbar' && message) {
+            atmosphere.eventEmitter.emit('addSnackbar', {
+              key: `standupAnswers:${message}`,
+              message,
+              autoDismiss: 5
+            })
+            return
+          }
+          evictSentAnswers()
+          if (share) {
+            SendClientSideEvent(atmosphere, 'Standup Response Shared', {
+              teamId,
+              meetingId,
+              answerCount: answers.length
+            })
+            onShared?.()
+          }
+        }
       })
     },
     [atmosphere]
@@ -122,33 +180,13 @@ const useTeamPromptAnswersAutosave = (options: Options) => {
     })
   }, [])
 
-  const share = useCallback(async () => {
-    if (timerRef.current) window.clearTimeout(timerRef.current)
-    setIsSharing(true)
-    const isSaved = await flush()
-    if (!isSaved) {
-      setIsSharing(false)
-      return
-    }
-    shareResponses({
-      variables: {meetingId},
-      onError: () => setIsSharing(false),
-      onCompleted: (res, errors) => {
-        setIsSharing(false)
-        const message = errors?.[0]?.message
-        if (message) {
-          reportError(message)
-          return
-        }
-        SendClientSideEvent(atmosphere, 'Standup Response Shared', {
-          teamId,
-          meetingId,
-          answerCount: res.shareTeamPromptResponses.responses.filter(({sharedAt}) => !!sharedAt)
-            .length
-        })
-      }
-    })
-  }, [flush, shareResponses, meetingId, teamId, atmosphere, reportError])
+  const share = useCallback(
+    (onShared?: () => void) => {
+      if (timerRef.current) window.clearTimeout(timerRef.current)
+      send(true, onShared)
+    },
+    [send]
+  )
 
   useEffect(
     () => () => {

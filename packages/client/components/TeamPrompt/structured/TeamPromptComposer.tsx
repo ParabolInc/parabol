@@ -120,11 +120,19 @@ const TeamPromptComposer = (props: Props) => {
   const onShare = useCallback(() => {
     if (answeredPromptIds.size === 0) return
     if (isShared && dirtyPromptIds.size === 0) return
-    share()
+    share(() => {
+      setIsExpanded(false)
+      setIsEditingAfterShare(false)
+    })
     setHasInsertedFromInspiration(false)
-    setIsExpanded(false)
-    setIsEditingAfterShare(false)
   }, [share, answeredPromptIds.size, isShared, dirtyPromptIds.size])
+
+  const {focusPrompt} = focusMode
+  const onEditAfterShare = useCallback(() => {
+    setIsEditingAfterShare(true)
+    const firstPromptId = prompts[0]?.id
+    if (firstPromptId) focusPrompt(firstPromptId)
+  }, [prompts, focusPrompt])
 
   const onOpenInspiration = useCallback(() => {
     commitLocalUpdate(atmosphere, (store) => {
@@ -162,7 +170,7 @@ const TeamPromptComposer = (props: Props) => {
             sharedAt={sharedAt}
             updatedAt={lastAnswerAt}
             isEnded={!!endedAt}
-            onEdit={() => setIsEditingAfterShare(true)}
+            onEdit={onEditAfterShare}
           />
         ) : (
           !isPhoneFocused && (
@@ -178,6 +186,11 @@ const TeamPromptComposer = (props: Props) => {
               promptCount={prompts.length}
               isPhone={isPhone}
               templateName={template?.name}
+              onDone={
+                isPhone && isEditingAfterShare && dirtyPromptIds.size === 0
+                  ? () => setIsEditingAfterShare(false)
+                  : undefined
+              }
             />
           )
         )}
