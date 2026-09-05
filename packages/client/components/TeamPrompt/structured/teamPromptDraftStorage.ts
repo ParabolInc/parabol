@@ -1,4 +1,5 @@
 import type {JSONContent} from '@tiptap/react'
+import {isEmptyAnswerDoc} from '../../../shared/tiptap/isEmptyAnswerDoc'
 
 export const draftAnswerKey = (stageId: string, promptId: string) =>
   `draftAnswer:${stageId}:${promptId}`
@@ -39,32 +40,4 @@ export const clearStageDrafts = (stageId: string) => {
   } catch {}
 }
 
-const CONTENT_ATOM_TYPES = new Set([
-  'database',
-  'emojiMention',
-  'fileBlock',
-  'fileUpload',
-  'horizontalRule',
-  'image',
-  'imageBlock',
-  'insightsBlock',
-  'loom',
-  'mention',
-  'pageLinkBlock',
-  'pageUserMention',
-  'popoverMention',
-  'responseBlock',
-  'tableOfContents',
-  'taskBlock',
-  'taskTag',
-  'thinkingBlock'
-])
-
-const hasText = (node: JSONContent): boolean =>
-  !!node.text?.trim() || (node.content ?? []).some(hasText)
-
-const hasContentAtom = (node: JSONContent): boolean =>
-  (!!node.type && CONTENT_ATOM_TYPES.has(node.type)) || (node.content ?? []).some(hasContentAtom)
-
-export const isDocEmpty = (doc: JSONContent | null) =>
-  !doc || (!hasText(doc) && !hasContentAtom(doc))
+export const isDocEmpty = (doc: JSONContent | null) => !doc || isEmptyAnswerDoc(doc)
