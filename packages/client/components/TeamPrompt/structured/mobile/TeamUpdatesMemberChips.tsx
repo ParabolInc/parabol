@@ -1,7 +1,7 @@
 import {type KeyboardEvent, useEffect, useRef} from 'react'
 import {cn} from '../../../../ui/cn'
 import Avatar from '../../../Avatar/Avatar'
-import radioGroupNextValue from '../radioGroupNextValue'
+import {tablistNextValue} from '../radioGroupNextValue'
 
 const ALL_MEMBERS_CHIP = 'all'
 
@@ -44,7 +44,7 @@ const TeamUpdatesMemberChips = (props: Props) => {
   }, [current])
   const select = (value: string) => onSelect(value === ALL_MEMBERS_CHIP ? null : value)
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    const next = radioGroupNextValue(
+    const next = tablistNextValue(
       chips.map((chip) => chip.value),
       current,
       e.key
@@ -58,8 +58,9 @@ const TeamUpdatesMemberChips = (props: Props) => {
   return (
     <div
       ref={listRef}
-      role='tablist'
+      role='toolbar'
       aria-label='Teammates'
+      aria-orientation='horizontal'
       onKeyDown={onKeyDown}
       className='sticky top-0 z-10 flex gap-2 overflow-x-auto bg-surface-app px-4 pt-1.5 pb-2.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
     >
@@ -72,9 +73,8 @@ const TeamUpdatesMemberChips = (props: Props) => {
               chipsRef.current[value] = el
             }}
             type='button'
-            role='tab'
             aria-label={label}
-            aria-selected={isSelected}
+            aria-pressed={isSelected}
             tabIndex={isSelected ? 0 : -1}
             onClick={() => select(value)}
             className={cn(
