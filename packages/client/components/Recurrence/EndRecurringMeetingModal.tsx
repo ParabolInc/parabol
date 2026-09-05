@@ -20,6 +20,7 @@ import type {
 import {cn} from '../../ui/cn'
 import {Dialog} from '../../ui/Dialog/Dialog'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
+import {DialogTitle} from '../../ui/Dialog/DialogTitle'
 import {humanReadableCountdown} from '../../utils/date/relativeDate'
 
 export const EndMeetingMutationLookup = {
@@ -127,9 +128,7 @@ export const EndRecurringMeetingModal = (props: Props) => {
   return (
     <Dialog isOpen={isOpen} onClose={closeModal}>
       <DialogContent>
-        <div className='mb-4 font-semibold text-xl'>
-          {hasSeries ? 'End Meeting' : 'End this meeting'}
-        </div>
+        <DialogTitle className='mb-4'>{hasSeries ? 'End Meeting' : 'End this meeting'}</DialogTitle>
         {hasSeries && (
           <div className='mb-4 flex flex-col gap-2'>
             <RadioToggle
