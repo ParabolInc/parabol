@@ -24,7 +24,7 @@ type InspirationItem {
   service: String!
 
   """
-  For retrospective meetings, the id of the ReflectPrompt (column) the item should be added to.
+  For retrospective meetings, the id of the TemplatePrompt (column) the item should be added to.
   Null for team prompt meetings, which have no reflect prompts.
   """
   promptId: ID

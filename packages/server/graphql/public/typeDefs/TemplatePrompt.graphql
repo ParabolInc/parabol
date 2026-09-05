@@ -1,7 +1,7 @@
 """
-A team-specific reflection prompt. Usually 3 or 4 exist per team, eg Good/Bad/Change, 4Ls, etc.
+A prompt within a retrospective or stand-up template, eg "What went well?" or "What are you working on today?"
 """
-type ReflectPrompt {
+type TemplatePrompt {
   """
   shortid
   """
@@ -14,7 +14,7 @@ type ReflectPrompt {
   teamId: ID!
 
   """
-  The team that owns this reflectPrompt
+  The team that owns this prompt
   """
   team: Team
   updatedAt: DateTime!
@@ -35,7 +35,7 @@ type ReflectPrompt {
   template: MeetingTemplate!
 
   """
-  The question to answer during the phase of the retrospective (eg What went well?)
+  The question each participant answers, eg "What went well?"
   """
   question: String!
 

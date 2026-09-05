@@ -32,7 +32,7 @@ type RetroReflectionGroup {
   The retrospective meeting this reflection was created in
   """
   meeting: RetrospectiveMeeting!
-  prompt: ReflectPrompt!
+  prompt: TemplatePrompt!
 
   """
   The foreign key to link a reflection group to its prompt. Immutable.

@@ -57,7 +57,7 @@ type ReflectTemplate implements MeetingTemplate {
   """
   The prompts that are part of this template
   """
-  prompts: [ReflectPrompt!]!
+  prompts: [TemplatePrompt!]!
 
   """
   The category this template falls under, e.g. retro, feedback, strategy, etc.

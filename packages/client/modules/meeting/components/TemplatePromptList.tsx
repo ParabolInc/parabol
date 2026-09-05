@@ -18,7 +18,7 @@ const TemplatePromptList = (props: Props) => {
   const {isOwner, prompts: promptsRef, templateId} = props
   const prompts = useFragment(
     graphql`
-      fragment TemplatePromptList_prompts on ReflectPrompt @relay(plural: true) {
+      fragment TemplatePromptList_prompts on TemplatePrompt @relay(plural: true) {
         id
         sortOrder
         question

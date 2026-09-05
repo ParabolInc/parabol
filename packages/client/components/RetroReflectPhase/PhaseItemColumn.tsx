@@ -36,7 +36,7 @@ const PhaseItemColumn = (props: Props) => {
   const {idx, meeting: meetingRef, phaseRef, prompt: promptRef, isDesktop, autoFocus} = props
   const prompt = useFragment(
     graphql`
-      fragment PhaseItemColumn_prompt on ReflectPrompt {
+      fragment PhaseItemColumn_prompt on TemplatePrompt {
         id
         description
         editorIds
