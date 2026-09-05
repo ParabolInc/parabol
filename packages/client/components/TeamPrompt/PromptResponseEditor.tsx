@@ -1,8 +1,5 @@
 import {type Editor, Extension} from '@tiptap/core'
-import Highlight from '@tiptap/extension-highlight'
-import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention from '@tiptap/extension-mention'
-import {TextStyleKit} from '@tiptap/extension-text-style'
 import {CharacterCount, Placeholder} from '@tiptap/extensions'
 import {type JSONContent, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
@@ -10,8 +7,6 @@ import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {useUploadUserAsset} from '../../mutations/useUploadUserAsset'
 import {isEqualWhenSerialized} from '../../shared/isEqualWhenSerialized'
-import {FileUpload} from '../../tiptap/extensions/fileUpload/FileUpload'
-import ImageBlock from '../../tiptap/extensions/imageBlock/ImageBlock'
 import {InsertedRangeHighlight} from '../../tiptap/extensions/insertedRangeHighlight/InsertedRangeHighlight'
 import {SlashCommand} from '../../tiptap/extensions/slashCommand/SlashCommand'
 import {Button} from '../../ui/Button/Button'
@@ -23,6 +18,7 @@ import {LoomExtension, unfurlLoomLinks} from '../TipTapEditor/LoomExtension'
 import {TipTapEditor} from '../TipTapEditor/TipTapEditor'
 import {TiptapLinkExtension} from '../TipTapEditor/TiptapLinkExtension'
 import {useStreamedEditorContent} from '../TipTapEditor/useStreamedEditorContent'
+import {STANDUP_SLASH_COMMANDS, standupBlockExtensions} from './standupEditorExtensions'
 
 const submitButtonClasses = 'mt-3 rounded-[6px] px-3 py-1 font-normal text-sm leading-5 opacity-100'
 
@@ -142,7 +138,8 @@ const PromptResponseEditor = (props: Props) => {
                 onSubmit()
                 return true
               },
-              Tab: () => {
+              Tab: ({editor}) => {
+                if (editor.isActive('listItem') || editor.isActive('taskItem')) return false
                 if (onTabRef.current) {
                   onTabRef.current()
                   return true
@@ -152,33 +149,12 @@ const PromptResponseEditor = (props: Props) => {
             }
           }
         }),
-        ...(enableSlashCommands
-          ? [
-              SlashCommand.configure({
-                'Heading 1': false,
-                'Heading 2': false,
-                'To-do list': false,
-                Insights: false,
-                Table: false,
-                Details: false,
-                'Create page': false,
-                Database: false,
-                'Table of contents': false,
-                'Link to page': false
-              }),
-              TaskList,
-              TaskItem.configure({nested: true}),
-              TextStyleKit,
-              Highlight,
-              ImageBlock.configure({editorWidth: 600 - 16 * 2, editorHeight: 88}),
-              FileUpload.configure({
-                scopeKey: teamId,
-                assetScope: 'Team',
-                highestTier: 'starter',
-                commit: uploadUserAsset
-              })
-            ]
-          : [])
+        ...standupBlockExtensions({
+          teamId,
+          commit: uploadUserAsset,
+          editorWidth: 600 - 16 * 2
+        }),
+        ...(enableSlashCommands ? [SlashCommand.configure(STANDUP_SLASH_COMMANDS)] : [])
       ],
       autofocus: autoFocus,
       onUpdate,
@@ -242,7 +218,7 @@ const PromptResponseEditor = (props: Props) => {
         editor={editor}
         showBubbleMenu={!readOnly}
         showListControls={showListControls}
-        className={className}
+        className={cn('standup-editor', className)}
       />
       {!readOnly && showActions && (
         // The render conditions for these buttons *should* only be true when 'readOnly' is false, but let's be explicit
