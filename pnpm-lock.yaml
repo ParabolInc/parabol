@@ -16,7 +16,7 @@ overrides:
   ansi-regex: ^5.0.1
   json-schema: ^0.4.0
   nanoid: ^3.3.18
-  '@xmldom/xmldom': ^0.8.13
+  '@xmldom/xmldom': ^0.8.15
   node-gyp: ^8.4.1
   simple-get: ^4.0.1
   caniuse-lite: ~1.0.0
@@ -43,9 +43,9 @@ patchedDependencies:
   '@sereneinserenade/tiptap-search-and-replace@0.1.1':
     hash: 26cb9c1fd81d1b76f3ec04e395d579f47cc1cbdc428b137867f83d35c25189d5
     path: patches/@sereneinserenade__tiptap-search-and-replace@0.1.1.patch
-  '@tiptap/core@3.23.6':
-    hash: e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5
-    path: patches/@tiptap__core@3.23.6.patch
+  '@tiptap/core@3.31.2':
+    hash: e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3
+    path: patches/@tiptap__core@3.31.2.patch
 
 importers:
 
@@ -62,85 +62,85 @@ importers:
         version: 4.1.0(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
       '@hocuspocus/transformer':
         specifier: ^4.1.0
-        version: 4.1.0(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)(y-prosemirror@1.3.7(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-view@1.41.8)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30))(yjs@13.6.30)
+        version: 4.1.0(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)(y-prosemirror@1.3.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.3)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30))(yjs@13.6.30)
       '@sesamecare-oss/redlock':
         specifier: ^1.4.0
         version: 1.4.0(ioredis@5.10.1)
       '@tiptap/core':
-        specifier: 3.23.6
-        version: 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
+        specifier: 3.31.2
+        version: 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
       '@tiptap/extension-collaboration':
-        specifier: 3.23.6
-        version: 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)(@tiptap/y-tiptap@3.0.3(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-view@1.41.8)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30))(yjs@13.6.30)
+        specifier: 3.31.2
+        version: 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)(@tiptap/y-tiptap@3.0.9(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.3)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30))(yjs@13.6.30)
       '@tiptap/extension-collaboration-caret':
-        specifier: 3.23.6
-        version: 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)(@tiptap/y-tiptap@3.0.3(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-view@1.41.8)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30))
+        specifier: 3.31.2
+        version: 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)(@tiptap/y-tiptap@3.0.9(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.3)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30))
       '@tiptap/extension-details':
-        specifier: 3.23.6
-        version: 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/extension-text-style@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)))(@tiptap/pm@3.23.6)
+        specifier: 3.31.2
+        version: 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/extension-text-style@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)))(@tiptap/pm@3.31.2)
       '@tiptap/extension-document':
-        specifier: 3.23.6
-        version: 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))
+        specifier: 3.31.2
+        version: 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))
       '@tiptap/extension-drag-handle':
-        specifier: 3.23.6
-        version: 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/extension-collaboration@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)(@tiptap/y-tiptap@3.0.3(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-view@1.41.8)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30))(yjs@13.6.30))(@tiptap/extension-node-range@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)(@tiptap/y-tiptap@3.0.3(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-view@1.41.8)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30))
+        specifier: 3.31.2
+        version: 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/extension-collaboration@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)(@tiptap/y-tiptap@3.0.9(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.3)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30))(yjs@13.6.30))(@tiptap/extension-node-range@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)(@tiptap/y-tiptap@3.0.9(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.3)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30))
       '@tiptap/extension-file-handler':
-        specifier: 3.23.6
-        version: 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/extension-text-style@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)))(@tiptap/pm@3.23.6)
+        specifier: 3.31.2
+        version: 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/extension-text-style@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)))(@tiptap/pm@3.31.2)
       '@tiptap/extension-heading':
-        specifier: 3.23.6
-        version: 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))
+        specifier: 3.31.2
+        version: 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))
       '@tiptap/extension-highlight':
-        specifier: 3.23.6
-        version: 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))
+        specifier: 3.31.2
+        version: 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))
       '@tiptap/extension-image':
-        specifier: 3.23.6
-        version: 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))
+        specifier: 3.31.2
+        version: 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))
       '@tiptap/extension-link':
-        specifier: 3.23.6
-        version: 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)
+        specifier: 3.31.2
+        version: 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)
       '@tiptap/extension-list':
-        specifier: 3.23.6
-        version: 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)
+        specifier: 3.31.2
+        version: 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)
       '@tiptap/extension-mention':
-        specifier: 3.23.6
-        version: 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)(@tiptap/suggestion@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))
+        specifier: 3.31.2
+        version: 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)(@tiptap/suggestion@3.31.2(@floating-ui/dom@1.7.6)(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2))
       '@tiptap/extension-node-range':
-        specifier: 3.23.6
-        version: 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)
+        specifier: 3.31.2
+        version: 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)
       '@tiptap/extension-table':
-        specifier: 3.23.6
-        version: 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)
+        specifier: 3.31.2
+        version: 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)
       '@tiptap/extension-text':
-        specifier: 3.23.6
-        version: 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))
+        specifier: 3.31.2
+        version: 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))
       '@tiptap/extension-text-style':
-        specifier: 3.23.6
-        version: 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))
+        specifier: 3.31.2
+        version: 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))
       '@tiptap/extensions':
-        specifier: 3.23.6
-        version: 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)
+        specifier: 3.31.2
+        version: 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)
       '@tiptap/html':
-        specifier: 3.23.6
-        version: 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)(happy-dom@20.9.0)
+        specifier: 3.31.2
+        version: 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)(happy-dom@20.9.0)
       '@tiptap/markdown':
-        specifier: 3.23.6
-        version: 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)
+        specifier: 3.31.2
+        version: 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)
       '@tiptap/pm':
-        specifier: 3.23.6
-        version: 3.23.6
+        specifier: 3.31.2
+        version: 3.31.2
       '@tiptap/react':
-        specifier: 3.23.6
-        version: 3.23.6(@floating-ui/dom@1.7.6)(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)(@types/react-dom@18.3.7(@types/react@18.3.29))(@types/react@18.3.29)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: 3.31.2
+        version: 3.31.2(@floating-ui/dom@1.7.6)(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)(@types/react-dom@18.3.7(@types/react@18.3.29))(@types/react@18.3.29)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tiptap/starter-kit':
-        specifier: 3.23.6
-        version: 3.23.6
+        specifier: 3.31.2
+        version: 3.31.2
       '@tiptap/suggestion':
-        specifier: 3.23.6
-        version: 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)
+        specifier: 3.31.2
+        version: 3.31.2(@floating-ui/dom@1.7.6)(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)
       '@tiptap/y-tiptap':
-        specifier: 3.0.3
-        version: 3.0.3(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-view@1.41.8)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
+        specifier: 3.0.9
+        version: 3.0.9(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.3)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
       '@whatwg-node/fetch':
         specifier: ^0.10.10
         version: 0.10.13
@@ -212,7 +212,7 @@ importers:
         version: 9.0.12(yjs@13.6.30)
       y-prosemirror:
         specifier: ^1.3.7
-        version: 1.3.7(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-view@1.41.8)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
+        version: 1.3.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.3)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
       y-protocols:
         specifier: ^1.0.7
         version: 1.0.7(yjs@13.6.30)
@@ -531,7 +531,7 @@ importers:
         version: 1.2.4(@types/react-dom@18.3.7(@types/react@18.3.29))(@types/react@18.3.29)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@sereneinserenade/tiptap-search-and-replace':
         specifier: ^0.1.1
-        version: 0.1.1(patch_hash=26cb9c1fd81d1b76f3ec04e395d579f47cc1cbdc428b137867f83d35c25189d5)(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)
+        version: 0.1.1(patch_hash=26cb9c1fd81d1b76f3ec04e395d579f47cc1cbdc428b137867f83d35c25189d5)(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)
       '@stripe/react-stripe-js':
         specifier: ^1.16.5
         version: 1.16.5(@stripe/stripe-js@4.10.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -5070,248 +5070,250 @@ packages:
   '@tanstack/virtual-core@3.14.0':
     resolution: {integrity: sha512-JLANqGy/D6k4Ujmh8Tr25lGimuOXNiaVyXaCAZS0W+1390sADdGnyUdSWNIfd49gebtIxGMij4IktRVzrdr12Q==}
 
-  '@tiptap/core@3.23.6':
-    resolution: {integrity: sha512-MRB3pHz4Oxqmcawh0cQ5iOGdY5xtNYp/1CoK7hdTLzw5K0C6/gTC2VvanB1R4INaB6EpBkxG/GiWkVirDRnuXw==}
+  '@tiptap/core@3.31.2':
+    resolution: {integrity: sha512-TB+8pLk1k+fCpuPQ6vGNNhSRlvIiOks79oWGykCVut2nbRpQ8GsORP9VK6Eahj2fzdQA96UQMIcK7AxoOZG/2w==}
     peerDependencies:
-      '@tiptap/pm': 3.23.6
+      '@tiptap/pm': 3.31.2
 
-  '@tiptap/extension-blockquote@3.23.6':
-    resolution: {integrity: sha512-2RmnqNqTltZ2k1F7IfjoDNs935Uq4rRDR7d98mqkg3OlDktcQIyBpv0t9dTay6H5bkQeZUuS8ogK2S1E8Edjug==}
+  '@tiptap/extension-blockquote@3.31.2':
+    resolution: {integrity: sha512-1pveNPdqlOp2rtjmJ0Mpo9g/P/B69NdVWgp+6wzvkB5Hz6CRx/SXbAFa4P3/QSQ7D1L9d4tKOmoY/ZsFiYvgkA==}
     peerDependencies:
-      '@tiptap/core': 3.23.6
+      '@tiptap/core': 3.31.2
+      '@tiptap/pm': 3.31.2
 
-  '@tiptap/extension-bold@3.23.6':
-    resolution: {integrity: sha512-1LMhjnytdbbhWHSoOwnLxZAOQZWPkKyXVCNmaIk0Mhi4tLPUXptG4qKS5sVYTCveE5H6IBPFrbgBFi5dMI6krA==}
+  '@tiptap/extension-bold@3.31.2':
+    resolution: {integrity: sha512-Bk9d3nOU2ApGG0ZBBYCQPIKQxIDLPG35DvoH8q4Pw2/lSS2v2FxesyTqoVJriYrECO3sUTiCXJlqvYoKNPthzA==}
     peerDependencies:
-      '@tiptap/core': 3.23.6
+      '@tiptap/core': 3.31.2
 
-  '@tiptap/extension-bubble-menu@3.23.6':
-    resolution: {integrity: sha512-Mwkyp9LkDHFbqmWRIkp63FinRxFu3ajC4qSb9t4mnHsb4kAdbNLLsGtbFg+le0SWk4CxGwAOwM7SzeJ+6UGqCA==}
+  '@tiptap/extension-bubble-menu@3.31.2':
+    resolution: {integrity: sha512-3KASBe33OhFywqOU5xm29HAtNIgL5mLTaM9OpKRU7aP+5zbz02EdLbiTzhd1RJr1GWDsejjF8HrAf+oirudKrQ==}
     peerDependencies:
-      '@tiptap/core': 3.23.6
-      '@tiptap/pm': 3.23.6
+      '@tiptap/core': 3.31.2
+      '@tiptap/pm': 3.31.2
 
-  '@tiptap/extension-bullet-list@3.23.6':
-    resolution: {integrity: sha512-RMRgfXZykr/13X8UBOwvpgysVOo9KchwqMoEbvqQSj4YFfU56iIn59C8sbxiQ1sKfeltUf0wH4fPc0I4iwKqAA==}
+  '@tiptap/extension-bullet-list@3.31.2':
+    resolution: {integrity: sha512-o5TglfPwYZp/5NQ/fL8MG3k49na29pi2+10GS8kf+rqlYjVXKSI9MDu8GWssn0FZkr+BrIXWQAMtc56CbzJT4A==}
     peerDependencies:
-      '@tiptap/extension-list': 3.23.6
+      '@tiptap/extension-list': 3.31.2
 
-  '@tiptap/extension-code-block@3.23.6':
-    resolution: {integrity: sha512-4kccgcn5yHThxrzsIhJny3EwfEZYIk+BjUCL4uIuzOyWvExtGhZ6JMHVCZeMhI8D1/bX1LNkkAKN5DXPzH4lXQ==}
+  '@tiptap/extension-code-block@3.31.2':
+    resolution: {integrity: sha512-b1z3eJzuMNLConGnODliojJVV4vLN4LSZC1Rkebe85roFBnC8ROrSr3wwy5IALO4C18wW5fHeBufZCKO0EwVtQ==}
     peerDependencies:
-      '@tiptap/core': 3.23.6
-      '@tiptap/pm': 3.23.6
+      '@tiptap/core': 3.31.2
+      '@tiptap/pm': 3.31.2
 
-  '@tiptap/extension-code@3.23.6':
-    resolution: {integrity: sha512-KG8KXFYyLrtYvT7AZ1WGV61ofx8pDe5g9pH658MERxqQGii+Pyfc6xkz04l7XeBts/7+571UQp/0O7i/z560TA==}
+  '@tiptap/extension-code@3.31.2':
+    resolution: {integrity: sha512-oTYlWXk5GPK6BlbK77TNO5/JCGTcZ9SEAuQaPZCHGuGZQV1JT6uHRRH7e9LdPfiG4Qw8AtmKhPTMk6IQplf+ZQ==}
     peerDependencies:
-      '@tiptap/core': 3.23.6
+      '@tiptap/core': 3.31.2
 
-  '@tiptap/extension-collaboration-caret@3.23.6':
-    resolution: {integrity: sha512-yroX1gUueQTnd1ZUheM84GTPNJl626FoP4HDZm2s6wu+dFA8kecUMztyZBTwq65vBIPxdkcMPnJZsKtQRw2ExQ==}
+  '@tiptap/extension-collaboration-caret@3.31.2':
+    resolution: {integrity: sha512-IQ1QZNVFqWSuVScOI0BjL4Ri4lLUm0iv3ZzINZaWEEfsQImv/B5196VAQ3CeOfgKAdY/SgwyBSPA+haKDD2tyg==}
     peerDependencies:
-      '@tiptap/core': 3.23.6
-      '@tiptap/pm': 3.23.6
-      '@tiptap/y-tiptap': ^3.0.2
+      '@tiptap/core': 3.31.2
+      '@tiptap/pm': 3.31.2
+      '@tiptap/y-tiptap': ^3.0.7
 
-  '@tiptap/extension-collaboration@3.23.6':
-    resolution: {integrity: sha512-OvPtPUWH3uormtQ8Ei/di6h/gv9ttv+IDy8zz1t4hrP2XLQHgpd1yv8/bnwz0jsZhsl+4Km2Wb0H5oS3Rh5+cA==}
+  '@tiptap/extension-collaboration@3.31.2':
+    resolution: {integrity: sha512-KS+OLCgX+UpOdRYFHhkJOR6L0eDdzvmhalUJbJFaU+vg+LPMzjstOHWvE0FhbLVYDgcpf0re4VuTP44Adrp1Pg==}
     peerDependencies:
-      '@tiptap/core': 3.23.6
-      '@tiptap/pm': 3.23.6
-      '@tiptap/y-tiptap': ^3.0.2
+      '@tiptap/core': 3.31.2
+      '@tiptap/pm': 3.31.2
+      '@tiptap/y-tiptap': ^3.0.7
       yjs: ^13
 
-  '@tiptap/extension-details@3.23.6':
-    resolution: {integrity: sha512-1PgilGoaF6xyjEJoYb+R4aReAa/IfFv0M7RhgKRjp7b3/Vdoec7M1oFdc+a+5deAuz+8fd1AEF4ZWCxTH+ARAg==}
+  '@tiptap/extension-details@3.31.2':
+    resolution: {integrity: sha512-l+LHeC7HS9oYxbNTDzDtxlX21ut109bGwJnDNW19cyKMB2BDGZ0BZYk8A6W3JIg358JUSMxLd3eF34PyL8pJ4g==}
     peerDependencies:
-      '@tiptap/core': 3.23.6
-      '@tiptap/extension-text-style': 3.23.6
-      '@tiptap/pm': 3.23.6
+      '@tiptap/core': 3.31.2
+      '@tiptap/extension-text-style': 3.31.2
+      '@tiptap/pm': 3.31.2
 
-  '@tiptap/extension-document@3.23.6':
-    resolution: {integrity: sha512-XDAIgG9KcKumFM9KJWUEUhXPbFIhhl47bfy5GknareWTRKke85rcoj/oxKKO9ihLZr8JfpbXjqnS4SCm5yhYPw==}
+  '@tiptap/extension-document@3.31.2':
+    resolution: {integrity: sha512-YJ+bXwjS+5MOf/73m4ZVgOrrE7OOYqB6r3oYbAWCU8VxGFaNP5YA9a1HJgAYkc2hMmOZ6vqEHXPpaom0mGV7Lg==}
     peerDependencies:
-      '@tiptap/core': 3.23.6
+      '@tiptap/core': 3.31.2
 
-  '@tiptap/extension-drag-handle@3.23.6':
-    resolution: {integrity: sha512-+IJgVq7GDb4yDft5Dr8fW61qqdyeO30QgaS12GlvX+mfaurPOUtMhnr9POX1Vb4QMogxkwXD6pA0RA+AYkI3qw==}
+  '@tiptap/extension-drag-handle@3.31.2':
+    resolution: {integrity: sha512-sekG8inH5c0lK8gpfJsIhsjXm9RDCK7HJVCIrHyNeSyXX7pyd90Ji4YeeM/2alj/EY53ObcAanNG5omfQFyZvg==}
     peerDependencies:
-      '@tiptap/core': 3.23.6
-      '@tiptap/extension-collaboration': 3.23.6
-      '@tiptap/extension-node-range': 3.23.6
-      '@tiptap/pm': 3.23.6
-      '@tiptap/y-tiptap': ^3.0.2
+      '@tiptap/core': 3.31.2
+      '@tiptap/extension-collaboration': 3.31.2
+      '@tiptap/extension-node-range': 3.31.2
+      '@tiptap/pm': 3.31.2
+      '@tiptap/y-tiptap': ^3.0.7
 
-  '@tiptap/extension-dropcursor@3.23.6':
-    resolution: {integrity: sha512-+XWEoRKf3lXxi7Le1aOM2xU1XHwxICGpXjT3m4QaYqUgIpsq8gQEuso6kVg8DnTD7biKQs6+oIQ0o2b/gTW9WA==}
+  '@tiptap/extension-dropcursor@3.31.2':
+    resolution: {integrity: sha512-Vn/Wjp6D0O5rbf6JYi7jWSB1/mLsmlhAwIgFSa/wBMIqHtQ2Yza7O01sgaiErdVb1MkDY3k50KBAZcpeN6afXg==}
     peerDependencies:
-      '@tiptap/extensions': 3.23.6
+      '@tiptap/extensions': 3.31.2
 
-  '@tiptap/extension-file-handler@3.23.6':
-    resolution: {integrity: sha512-KB5x4UNurQOOojJzRH/q1jE8Dxeu2C3LPo3iQHPA8mcuiCjLV7NjCJNQuGYAhlO/Tagt71AKM6uUMgo5bpvyZQ==}
+  '@tiptap/extension-file-handler@3.31.2':
+    resolution: {integrity: sha512-d4pT9oJLGyOG7I/kwob2UZgHEfN1S6uyd63IPBuWu4jBMmcKbM7RnjNNyJ36qkiXJFA4j95fCzrWTwZzVwBkLg==}
     peerDependencies:
-      '@tiptap/core': 3.23.6
-      '@tiptap/extension-text-style': 3.23.6
-      '@tiptap/pm': 3.23.6
+      '@tiptap/core': 3.31.2
+      '@tiptap/extension-text-style': 3.31.2
+      '@tiptap/pm': 3.31.2
 
-  '@tiptap/extension-floating-menu@3.23.6':
-    resolution: {integrity: sha512-2kjuDcEq69lEcECl75xqY5MyzUSh2zcC5aLrpwP1WwhJz5bxsIFHiaps5AP6h9R4A+ZBj5b2haay2Y1wDUU3VA==}
+  '@tiptap/extension-floating-menu@3.31.2':
+    resolution: {integrity: sha512-DLjtMDg9kjv7tHFtms4OeZwEsa6tW60jexWMT3rTT4qQ+laqZjeNOYxJ0vwNmM4gDWXKkFifQHwzm13Zq5jv5A==}
     peerDependencies:
       '@floating-ui/dom': ^1.0.0
-      '@tiptap/core': 3.23.6
-      '@tiptap/pm': 3.23.6
+      '@tiptap/core': 3.31.2
+      '@tiptap/pm': 3.31.2
 
-  '@tiptap/extension-gapcursor@3.23.6':
-    resolution: {integrity: sha512-wbKmxXsszxWacEkrHucRpSQbiKjz4fmOebD6OVyL9AcrmlbxNk8vcM3iyh/8cVeRy09XY+morM165t/u7/z4IQ==}
+  '@tiptap/extension-gapcursor@3.31.2':
+    resolution: {integrity: sha512-ko/iP3qFWc+uD+KrKcgpL5J0tlTmyMaD5E8Bu0f3Z1zloWyRprulxwWKFS95VJE7XTxRoXu+d6A6M6Ri2JUQRg==}
     peerDependencies:
-      '@tiptap/extensions': 3.23.6
+      '@tiptap/extensions': 3.31.2
 
-  '@tiptap/extension-hard-break@3.23.6':
-    resolution: {integrity: sha512-KeUm+tkUfIVSX9QM9XOIhaay0Fn36sLKUo5NVYjN3uJaxFvaZXZmTlxdO85OTdgF2P5sqh9LomrIgliaFRGk4w==}
+  '@tiptap/extension-hard-break@3.31.2':
+    resolution: {integrity: sha512-hq8b0KwVufGtdNxxQXhVufhOAlNfrmU73fucNZvrZL+xhmhPzAkulByszsCneeY0MMtwzIyNtSiF0DBH6rgoPg==}
     peerDependencies:
-      '@tiptap/core': 3.23.6
+      '@tiptap/core': 3.31.2
 
-  '@tiptap/extension-heading@3.23.6':
-    resolution: {integrity: sha512-A/0jPhxnUh9THSZymlu0OGPZe1wdFdwHAXnRCmqvYUCwJjrG7LCC/ahzmcj1tcNzI9hgHyuYPSfev8RXYrNu/w==}
+  '@tiptap/extension-heading@3.31.2':
+    resolution: {integrity: sha512-TASYeQvg/M5ByvTFcVt2aZOJoU2f+H88W4MOq3gNNqORxuxmPEmiKUwJ2q1xjN71YqGy42b26onjoIr2ZU+iJQ==}
     peerDependencies:
-      '@tiptap/core': 3.23.6
+      '@tiptap/core': 3.31.2
 
-  '@tiptap/extension-highlight@3.23.6':
-    resolution: {integrity: sha512-GWv6R4iZzVrNeB33qtJDBt/BfVjuc5S/sUF/VDFAtK8h86bg4cEm1tGLEsui4T3+vij/t+P+eoGhkzF6NGogdg==}
+  '@tiptap/extension-highlight@3.31.2':
+    resolution: {integrity: sha512-1V/J1XkBj1SOwvf1Hs2WfWYWMaUtuLYcsYiUHPvogtx1SRo4kmQhw6Syf5xCPXVX3TcooRjsIeEj7CGWrwkBeA==}
     peerDependencies:
-      '@tiptap/core': 3.23.6
+      '@tiptap/core': 3.31.2
 
-  '@tiptap/extension-horizontal-rule@3.23.6':
-    resolution: {integrity: sha512-hEUlz4H+I64r+TH6LCuNCRgO7JTHncXGmx9+WbU69EOfY8O0ZurcgeJc8HeiAKL+r9YuC1e5YHfFxgCaaC0jlg==}
+  '@tiptap/extension-horizontal-rule@3.31.2':
+    resolution: {integrity: sha512-6ncBZCcwZc1/FJjfqZTWmFoGbHthNRWZcmKSKuDaljvNKwP5bHo2tLBOZXDJwY19DIjHqg/oBhI1mgxZxDR6LA==}
     peerDependencies:
-      '@tiptap/core': 3.23.6
-      '@tiptap/pm': 3.23.6
+      '@tiptap/core': 3.31.2
+      '@tiptap/pm': 3.31.2
 
-  '@tiptap/extension-image@3.23.6':
-    resolution: {integrity: sha512-vvNGxArvD2dW+XvV0KdYovRVUzCy8QVNulc2r5pV7umnG1E6cCmMkiHiif8J2ePJu2KtysAvJQe0iF+UqueGMw==}
+  '@tiptap/extension-image@3.31.2':
+    resolution: {integrity: sha512-xnv0QOL8VsZeSJimQWrVA1MBBvAi8iP94pORsLaqAT5TbK6ry6P1I4DA6uk33PnXjnZl56nZDWPvTLWQjFH4Dw==}
     peerDependencies:
-      '@tiptap/core': 3.23.6
+      '@tiptap/core': 3.31.2
 
-  '@tiptap/extension-italic@3.23.6':
-    resolution: {integrity: sha512-wol5KdwCPAvpiYhH9PLlvO8ZnJHwZtIboVevrfOGgBcKlXRA3dedR4OAMXHnUtkkzu9KtliLg1+TYzEx4JZG9Q==}
+  '@tiptap/extension-italic@3.31.2':
+    resolution: {integrity: sha512-LdpaPdfYH0P0S9LVlsZTphzUEmJl8eT+ojruFYKyxHmKhsejs/ppVW+MaIiIiOiZx0gGtxmTMb+iPJ+hu30acg==}
     peerDependencies:
-      '@tiptap/core': 3.23.6
+      '@tiptap/core': 3.31.2
 
-  '@tiptap/extension-link@3.23.6':
-    resolution: {integrity: sha512-KNZz7z7P2/qbQsx5bPAbSPjrKDg1VHsedGlLHJCr8U2VRD5VgmDLkMpkouP1CsDg15qgyUKv/nDib5KgPpLNWA==}
+  '@tiptap/extension-link@3.31.2':
+    resolution: {integrity: sha512-9Cajqh7f5jDZtjF5lxnOvAeL80MLql9i362KW0L6RbFaK0+yKGhbkAN41DN2gN7OYtZKkmwop1vExPEvtbeo7Q==}
     peerDependencies:
-      '@tiptap/core': 3.23.6
-      '@tiptap/pm': 3.23.6
+      '@tiptap/core': 3.31.2
+      '@tiptap/pm': 3.31.2
 
-  '@tiptap/extension-list-item@3.23.6':
-    resolution: {integrity: sha512-3zzyhdkUWcHVpXuvy6KiIwjh29rbH6gEDEqPQqHLrl1XGnO9pnShC7pSHctlCDjmcx3O4n9cd4QMtVBlUerbiA==}
+  '@tiptap/extension-list-item@3.31.2':
+    resolution: {integrity: sha512-35eDm4/VtiqtVXD2cjYd+mzEm1WYOLLA9ZHdg6KRDyTMpfSI3NV64VNIakux1wlh4yQNocuWhMsCwDBVQ78vEQ==}
     peerDependencies:
-      '@tiptap/extension-list': 3.23.6
+      '@tiptap/extension-list': 3.31.2
 
-  '@tiptap/extension-list-keymap@3.23.6':
-    resolution: {integrity: sha512-x8bPcLViGzg/RAmQM/XtmfqIwQ/Pv9Q8mkd+OgfUiTqjeJqKwVQmiqbLFNa7zw81+H61M+HDU+qGAaQ3vRIMjw==}
+  '@tiptap/extension-list-keymap@3.31.2':
+    resolution: {integrity: sha512-t+k0QEuFzR/9yBIs36pQrCgfg2gLhJP06stS3k5wpIQrKhnOrJ0W6/vLeMmNzIUFE18ak+/zkLCCDHXaka2WtA==}
     peerDependencies:
-      '@tiptap/extension-list': 3.23.6
+      '@tiptap/extension-list': 3.31.2
 
-  '@tiptap/extension-list@3.23.6':
-    resolution: {integrity: sha512-z6vj9+Qht2sjdQkyyHcUpsC/yCIZqTrQiyHDhs/HGKrfvoANyAZGpqdNeKf1wSyjIso+27tQuIH5NDfk8ygyNw==}
+  '@tiptap/extension-list@3.31.2':
+    resolution: {integrity: sha512-uaGNd2r/urhV9IJnOqk8t1d4/y/OAR0Wt0D9jtiL2IWDDnkoKvsQKnLms75ajPNz03QM5hFfmil9wHOpbrkFzQ==}
     peerDependencies:
-      '@tiptap/core': 3.23.6
-      '@tiptap/pm': 3.23.6
+      '@tiptap/core': 3.31.2
+      '@tiptap/pm': 3.31.2
 
-  '@tiptap/extension-mention@3.23.6':
-    resolution: {integrity: sha512-rSjeAAtuMwMA1lj4nbxz3rbmM06yPFUc8TFzhrEpmA4/l5XNWOk/PQef6uiGN+Isv2Z2PrIhr8XrR7Me8OSCiA==}
+  '@tiptap/extension-mention@3.31.2':
+    resolution: {integrity: sha512-6gwNXsTGc+/sG0ZrASuZHcnZJL5pDr8plIPcul2m/S7XJrMY8kvrmMFLquYkmVEzna0pJ7s4kuIXN+VqxhkLeg==}
     peerDependencies:
-      '@tiptap/core': 3.23.6
-      '@tiptap/pm': 3.23.6
-      '@tiptap/suggestion': 3.23.6
+      '@tiptap/core': 3.31.2
+      '@tiptap/pm': 3.31.2
+      '@tiptap/suggestion': 3.31.2
 
-  '@tiptap/extension-node-range@3.23.6':
-    resolution: {integrity: sha512-S+EN8HDnXOFxtamtkAkDY++B6jnVfjNBBHtDbO6i4as7PUeRY/JJIPPwlyL/cZULfP+ePYyr4eIVxFSMQxFXtg==}
+  '@tiptap/extension-node-range@3.31.2':
+    resolution: {integrity: sha512-jTKNjLr6PPz430GcXKDwkoG0CKfM7UibaWFteFnsE/T9HHtjhc7r15wrttGeTEXInsI/QQVoLtNC506xVCpiXQ==}
     peerDependencies:
-      '@tiptap/core': 3.23.6
-      '@tiptap/pm': 3.23.6
+      '@tiptap/core': 3.31.2
+      '@tiptap/pm': 3.31.2
 
-  '@tiptap/extension-ordered-list@3.23.6':
-    resolution: {integrity: sha512-1m/wWB/ZtXcmG2vNdiUkCqsOgqv5vBjCv/mVaHhF9OvV+zQS8YDjoWE7zEuT/GgELdT77Xq8lHrn4nCDudB3/A==}
+  '@tiptap/extension-ordered-list@3.31.2':
+    resolution: {integrity: sha512-E6PDRUx0bkyMq03E1BR/b62joaw2BaobnXh52MDE5y38YKxrmvmHJmXs/j1Ci6mADHfYsh6ZCSh+H3UjIMfhqQ==}
     peerDependencies:
-      '@tiptap/extension-list': 3.23.6
+      '@tiptap/extension-list': 3.31.2
 
-  '@tiptap/extension-paragraph@3.23.6':
-    resolution: {integrity: sha512-+7m58LUSncodjrIyXks4RZ3tLNYrvgT77wRR4l3HnM5OABY3GDsDTqi7c1t1yI29NVOSk/DUacqy6UwYAj1DGg==}
+  '@tiptap/extension-paragraph@3.31.2':
+    resolution: {integrity: sha512-UKhRMSM0WAes+ULAj6JQi9Iq0rWodn1Hrxybqj+Ezi8AS3o8fa+K3CDRgqKb1TKuqOs1aMTJv1h7RbqOp5jnTw==}
     peerDependencies:
-      '@tiptap/core': 3.23.6
+      '@tiptap/core': 3.31.2
 
-  '@tiptap/extension-strike@3.23.6':
-    resolution: {integrity: sha512-oF7FEZ37f15aCe5kPgzGDYf/m+hr7VdQ/Ko/Hds/UM9pX7AG1fdtmRrl6wqkRqDM/incZaC/AQR2/Dpo2VCNGQ==}
+  '@tiptap/extension-strike@3.31.2':
+    resolution: {integrity: sha512-w78sCBkTihmKB21bdTKYfaLwiSW6Gzq+0TixlrOR90wR4uA2hN9v8ivDEaoLB4/wIMOQvbQsAwawg6XSMmahkQ==}
     peerDependencies:
-      '@tiptap/core': 3.23.6
+      '@tiptap/core': 3.31.2
 
-  '@tiptap/extension-table@3.23.6':
-    resolution: {integrity: sha512-XbhZXjhsS6AP7ThoZxjAnNs+NiR81YRori25l6E+ORqB7quiPkIXOAi5h4AIpkn/CYIqze6ere11lWsYpDjtaQ==}
+  '@tiptap/extension-table@3.31.2':
+    resolution: {integrity: sha512-0LfcQG2YK2Q3q5BjvJqs8Zks1PuSdiNGYf2lnyC7ixtItuKXTL2xB5yzj53gMIdRfteqcUfbxIJjmU57W3F+Yg==}
     peerDependencies:
-      '@tiptap/core': 3.23.6
-      '@tiptap/pm': 3.23.6
+      '@tiptap/core': 3.31.2
+      '@tiptap/pm': 3.31.2
 
-  '@tiptap/extension-text-style@3.23.6':
-    resolution: {integrity: sha512-Auasgj469wkQ5ip+Zi2gaRzvqxx9qKG58+1mkT8yPE3QAGnOIg/AaKyQ7pTV77UyL3FHvLnU+KsWCad+qcobww==}
+  '@tiptap/extension-text-style@3.31.2':
+    resolution: {integrity: sha512-g99G5jdi+y4Gp27WWrI+ZmdgaclNNPaRNLda4Ht+RftLTgeTHBpWO92MvfYrPOcJkRv1V4lAB/Sd5tFHmNqxUA==}
     peerDependencies:
-      '@tiptap/core': 3.23.6
+      '@tiptap/core': 3.31.2
 
-  '@tiptap/extension-text@3.23.6':
-    resolution: {integrity: sha512-ipoC2TkIAIOTiF5ByiGgvQB1DqDyfP90wrUB3mohBcgvp7lQnwHszCDGv8dNnmcUek8uXV/uoLu2VXeVQlxjPA==}
+  '@tiptap/extension-text@3.31.2':
+    resolution: {integrity: sha512-Ktr+Sn6fTpIUDfVp4GSZJZwoAFgM3yvav0+PT8LHYi7wFl96L9VtxDrT+c/Jx1iqpcH59NWDYcZKDiDGyV8M8w==}
     peerDependencies:
-      '@tiptap/core': 3.23.6
+      '@tiptap/core': 3.31.2
 
-  '@tiptap/extension-underline@3.23.6':
-    resolution: {integrity: sha512-P55wGIZGYTVH92Fq0cgI4/O9AhLCaJC3hhxg15RSERP5/YegM9eJHDK/GQ1EE/DvYA+xpYGOV6agKwAUqfA/Iw==}
+  '@tiptap/extension-underline@3.31.2':
+    resolution: {integrity: sha512-8XNTcr6+26rPOPdmycPRo1F+bSUdbXMkjm1Hy+iPdOXgVSzixSIGM9t/lYltsgx8WAoXzYezWJIPinDaUkAHBQ==}
     peerDependencies:
-      '@tiptap/core': 3.23.6
+      '@tiptap/core': 3.31.2
 
-  '@tiptap/extensions@3.23.6':
-    resolution: {integrity: sha512-X09/Db1teB+ifXzDGVVFmOeQRx7wTAayE9/280spxpsHkHZvJ5bHRvWIzUzviMIjbBz+NPDIKYPK7gMfh9iaig==}
+  '@tiptap/extensions@3.31.2':
+    resolution: {integrity: sha512-CTOs3DiSV+hY8ipLS4rdP7X7MJUaPnDR81ZiPWJunk3MP+UZeBey3L6v/ky0SbZYQzJcl5X115uNNYXsYaatJg==}
     peerDependencies:
-      '@tiptap/core': 3.23.6
-      '@tiptap/pm': 3.23.6
+      '@tiptap/core': 3.31.2
+      '@tiptap/pm': 3.31.2
 
-  '@tiptap/html@3.23.6':
-    resolution: {integrity: sha512-cfQ8ijvkhkbt02x0tjtcahubWCqxkO7IJow0j2MgS6FHdXKv2QUrIvcpAqIqdv0lA4ozWmdmUpLFv+lA95kcPg==}
+  '@tiptap/html@3.31.2':
+    resolution: {integrity: sha512-/cK+NSNMh7q2mFFZVRIuh4YlAVbaAJwj+h8i8acFERbvA1PBYVfs9AVBxcBvhgSnnjZ5bV8v0C5xuf77Tgxj/Q==}
     peerDependencies:
-      '@tiptap/core': 3.23.6
-      '@tiptap/pm': 3.23.6
+      '@tiptap/core': 3.31.2
+      '@tiptap/pm': 3.31.2
       happy-dom: ^20.8.9
 
-  '@tiptap/markdown@3.23.6':
-    resolution: {integrity: sha512-11RS+WswVAtAJMn1CaXN1YblMdLn69I6TeFVoHwJXbprV8M45tjyID9uV0WoGYPnpjhfepPhaG7kivgAu5XukQ==}
+  '@tiptap/markdown@3.31.2':
+    resolution: {integrity: sha512-mSyy4nlqVBXW4cP6ZYVAFfizwBhUDqFo7lRyRBF8vcBYXi3SpGkqFeNs9BcoJ6TRpPzocDnqt/+zcSBA8BXcaQ==}
     peerDependencies:
-      '@tiptap/core': 3.23.6
-      '@tiptap/pm': 3.23.6
+      '@tiptap/core': 3.31.2
+      '@tiptap/pm': 3.31.2
 
-  '@tiptap/pm@3.23.6':
-    resolution: {integrity: sha512-in5CaMaWlJcH2A1q6GJKFtrodE8WLS3M9tIi/f89jPmIVHJShpodC0KZDNyJkrVBQomYk0DEh86Utm6ASXzQww==}
+  '@tiptap/pm@3.31.2':
+    resolution: {integrity: sha512-4OU/7ZIhA2ZfENB9c6TDRrjQJb+SoEwQmZSuy1Wyx4fNcGAN7+SPPICc0Hew1d7VlDgiJ2dKt6oa8iluSAsMBQ==}
 
-  '@tiptap/react@3.23.6':
-    resolution: {integrity: sha512-Tw9KZkYqFMk3vaJAEQKqEYIO/iq3cSJe7OUEGBul4k4GaMQeLItLf5EYhUd0GIPXci1WVVPNntKJsHfX25M37w==}
+  '@tiptap/react@3.31.2':
+    resolution: {integrity: sha512-ZHg1t9zwINlSgK9+Ky6K6bRP2pnX0/Z0W0DOV9B6sRhmxxK1xsUZ7o/spJ0FjKVqPYYi/Py2cQzX72nyiu2knQ==}
     peerDependencies:
-      '@tiptap/core': 3.23.6
-      '@tiptap/pm': 3.23.6
+      '@tiptap/core': 3.31.2
+      '@tiptap/pm': 3.31.2
       '@types/react': ^18.3.0
       '@types/react-dom': ^18.3.0
       react: ^18.3.1
       react-dom: ^18.3.1
 
-  '@tiptap/starter-kit@3.23.6':
-    resolution: {integrity: sha512-gykwtGWrnWCmtql1hid3opac/KV8zQvOAnu3bTqIqcHrn1FusbUwKmNzavSbfGvcktHM3hFjb35W48JyVLyu/A==}
+  '@tiptap/starter-kit@3.31.2':
+    resolution: {integrity: sha512-oMw5Kxcqkp/ehfHVxBhJ8L4MK/yaPF55H4hU74kLzVT9G1lRYz22hHAOF3s8NJ4dDf6GUXvKnfXMNLsypaR07Q==}
 
-  '@tiptap/suggestion@3.23.6':
-    resolution: {integrity: sha512-YAoI2jctPClcyUhIcpxb1QlrUFG2a1Xsv1gS4tIfgh5KoOuEfGfCoeCq89TKgz/rHeP+ktRhzg1E2E4EY68HEA==}
+  '@tiptap/suggestion@3.31.2':
+    resolution: {integrity: sha512-eufwrI5Hc9ZYmTJexhe6efFTRbL6y75wD7L2VgsjqWPdU7e9j4FFBZ214fIqzCR8BuUm6doPzStYU/JMOJNxDw==}
     peerDependencies:
-      '@tiptap/core': 3.23.6
-      '@tiptap/pm': 3.23.6
+      '@floating-ui/dom': ^1.0.0
+      '@tiptap/core': 3.31.2
+      '@tiptap/pm': 3.31.2
 
-  '@tiptap/y-tiptap@3.0.3':
-    resolution: {integrity: sha512-8UvuV4lTisCE9cMTc/X8kRyTn9edUO7Kball0I6wb17VwZSjNDfh/YKtP4O5vcPawEzFHQIvZGq/k1h37kAf0w==}
+  '@tiptap/y-tiptap@3.0.9':
+    resolution: {integrity: sha512-7/El8NQ8R5V5MkdrOUdfj9IgZacpt0H071xNimX7B0AnYiWiKefQnMKd41neQYzo2MOXbWdN3iZ+7Z7BruzOSA==}
     engines: {node: '>=16.0.0', npm: '>=8.0.0'}
     peerDependencies:
       prosemirror-model: ^1.7.1
@@ -5796,8 +5798,8 @@ packages:
     resolution: {integrity: sha512-CJDxIgE5I0FH+ttq/Fxy6nRpxP70+e2O048EPe85J2use3XKdatVM7dDVvFNjQudd9B49NPoZ+8PG49zj4Er8Q==}
     engines: {node: '>= 16'}
 
-  '@xmldom/xmldom@0.8.13':
-    resolution: {integrity: sha512-KRYzxepc14G/CEpEGc3Yn+JKaAeT63smlDr+vjB8jRfgTBBI9wRj/nkQEO+ucV8p8I9bfKLWp37uHgFrbntPvw==}
+  '@xmldom/xmldom@0.8.15':
+    resolution: {integrity: sha512-/5NV/vDALVFDXgLmfsy9TRCBlKwO2LNBFzpzvb9iIj+jR+eSc6DLYYvVOdivT/jm7MtU6TebYuRmzEOI7w40UA==}
     engines: {node: '>=10.0.0'}
 
   '@xtuc/ieee754@1.2.0':
@@ -9403,11 +9405,14 @@ packages:
   prosemirror-history@1.5.0:
     resolution: {integrity: sha512-zlzTiH01eKA55UAf1MEjtssJeHnGxO0j4K4Dpx+gnmX9n+SHNlDqI2oO1Kv1iPN5B1dm5fsljCfqKF9nFL6HRg==}
 
+  prosemirror-inputrules@1.5.1:
+    resolution: {integrity: sha512-7wj4uMjKaXWAQ1CDgxNzNtR9AlsuwzHfdFH1ygEHA2KHF2DOEaXl1CJfNPAKCg9qNEh4rum975QLaCiQPyY6Fw==}
+
   prosemirror-keymap@1.2.3:
     resolution: {integrity: sha512-4HucRlpiLd1IPQQXNqeo81BGtkY8Ai5smHhKW9jjPKRc2wQIxksg7Hl1tTI2IfT2B/LgX6bfYvXxEpJl7aKYKw==}
 
-  prosemirror-model@1.25.7:
-    resolution: {integrity: sha512-A79aN8QEFUwI6cax8Yq4Rpcx1TJZ3Kagn+ii7qLo4/V8H3mMiHrhFyhTyHHvpSnOgMPpWiDGSwM3etwrxE50ug==}
+  prosemirror-model@1.25.11:
+    resolution: {integrity: sha512-QWg9RhnpLlogAmp3p96uEFrE5txQpFynd4vhBAELkwgOCWQs/X0yCzB3/hrHqiPwf91RG5KyWq6553zs9JqIOQ==}
 
   prosemirror-schema-list@1.5.1:
     resolution: {integrity: sha512-927lFx/uwyQaGwJxLWCZRkjXG0p48KpMj6ueoYiu4JX05GGuGcgzAy62dfiV8eFZftgyBUvLx76RsMe20fJl+Q==}
@@ -9421,8 +9426,8 @@ packages:
   prosemirror-transform@1.12.0:
     resolution: {integrity: sha512-GxboyN4AMIsoHNtz5uf2r2Ru551i5hWeCMD6E2Ib4Eogqoub0NflniaBPVQ4MrGE5yZ8JV9tUHg9qcZTTrcN4w==}
 
-  prosemirror-view@1.41.8:
-    resolution: {integrity: sha512-TnKDdohEatgyZNGCDWIdccOHXhYloJwbwU+phw/a23KBvJIR9lWQWW7WHHK3vBdOLDNuF7TaX98GObUZOWkOnA==}
+  prosemirror-view@1.42.3:
+    resolution: {integrity: sha512-oTN7EtH+CpwxU9NrwEYWd0UZ4JUx7l048l5A2Xppm4p/60isZYLnth9QVQmC3VRIvdrIWCxwZSd+Uz791G31/w==}
 
   protobufjs@7.6.5:
     resolution: {integrity: sha512-/FPD0nUc9jH6rfFjji9IBqOz4pcSE3CsT1m7Ep6Mdb0LxSUMj8hgl6GomOvZzpNpAqqGaXA0P3VSrZLFzIhQrw==}
@@ -11117,7 +11122,7 @@ snapshots:
 
   '@authenio/xml-encryption@2.0.2':
     dependencies:
-      '@xmldom/xmldom': 0.8.13
+      '@xmldom/xmldom': 0.8.15
       escape-html: 1.0.3
       xpath: 0.0.32
 
@@ -13516,12 +13521,12 @@ snapshots:
     transitivePeerDependencies:
       - srvx
 
-  '@hocuspocus/transformer@4.1.0(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)(y-prosemirror@1.3.7(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-view@1.41.8)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30))(yjs@13.6.30)':
+  '@hocuspocus/transformer@4.1.0(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)(y-prosemirror@1.3.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.3)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30))(yjs@13.6.30)':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
-      '@tiptap/pm': 3.23.6
-      '@tiptap/starter-kit': 3.23.6
-      y-prosemirror: 1.3.7(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-view@1.41.8)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
+      '@tiptap/pm': 3.31.2
+      '@tiptap/starter-kit': 3.31.2
+      y-prosemirror: 1.3.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.3)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
       yjs: 13.6.30
 
   '@img/colour@1.1.0': {}
@@ -15313,10 +15318,10 @@ snapshots:
   '@rspack/lite-tapable@1.1.0':
     optional: true
 
-  '@sereneinserenade/tiptap-search-and-replace@0.1.1(patch_hash=26cb9c1fd81d1b76f3ec04e395d579f47cc1cbdc428b137867f83d35c25189d5)(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)':
+  '@sereneinserenade/tiptap-search-and-replace@0.1.1(patch_hash=26cb9c1fd81d1b76f3ec04e395d579f47cc1cbdc428b137867f83d35c25189d5)(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
-      '@tiptap/pm': 3.23.6
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
+      '@tiptap/pm': 3.31.2
 
   '@sesamecare-oss/redlock@1.4.0(ioredis@5.10.1)':
     dependencies:
@@ -15849,211 +15854,213 @@ snapshots:
 
   '@tanstack/virtual-core@3.14.0': {}
 
-  '@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)':
+  '@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)':
     dependencies:
-      '@tiptap/pm': 3.23.6
+      '@tiptap/pm': 3.31.2
 
-  '@tiptap/extension-blockquote@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))':
+  '@tiptap/extension-blockquote@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
+      '@tiptap/pm': 3.31.2
 
-  '@tiptap/extension-bold@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))':
+  '@tiptap/extension-bold@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
 
-  '@tiptap/extension-bubble-menu@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)':
+  '@tiptap/extension-bubble-menu@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)':
     dependencies:
       '@floating-ui/dom': 1.7.6
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
-      '@tiptap/pm': 3.23.6
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
+      '@tiptap/pm': 3.31.2
     optional: true
 
-  '@tiptap/extension-bullet-list@3.23.6(@tiptap/extension-list@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))':
+  '@tiptap/extension-bullet-list@3.31.2(@tiptap/extension-list@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2))':
     dependencies:
-      '@tiptap/extension-list': 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)
+      '@tiptap/extension-list': 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)
 
-  '@tiptap/extension-code-block@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)':
+  '@tiptap/extension-code-block@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
-      '@tiptap/pm': 3.23.6
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
+      '@tiptap/pm': 3.31.2
 
-  '@tiptap/extension-code@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))':
+  '@tiptap/extension-code@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
 
-  '@tiptap/extension-collaboration-caret@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)(@tiptap/y-tiptap@3.0.3(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-view@1.41.8)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30))':
+  '@tiptap/extension-collaboration-caret@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)(@tiptap/y-tiptap@3.0.9(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.3)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30))':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
-      '@tiptap/pm': 3.23.6
-      '@tiptap/y-tiptap': 3.0.3(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-view@1.41.8)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
+      '@tiptap/pm': 3.31.2
+      '@tiptap/y-tiptap': 3.0.9(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.3)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
 
-  '@tiptap/extension-collaboration@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)(@tiptap/y-tiptap@3.0.3(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-view@1.41.8)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30))(yjs@13.6.30)':
+  '@tiptap/extension-collaboration@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)(@tiptap/y-tiptap@3.0.9(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.3)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30))(yjs@13.6.30)':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
-      '@tiptap/pm': 3.23.6
-      '@tiptap/y-tiptap': 3.0.3(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-view@1.41.8)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
+      '@tiptap/pm': 3.31.2
+      '@tiptap/y-tiptap': 3.0.9(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.3)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
       yjs: 13.6.30
 
-  '@tiptap/extension-details@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/extension-text-style@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)))(@tiptap/pm@3.23.6)':
+  '@tiptap/extension-details@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/extension-text-style@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)))(@tiptap/pm@3.31.2)':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
-      '@tiptap/extension-text-style': 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))
-      '@tiptap/pm': 3.23.6
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
+      '@tiptap/extension-text-style': 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))
+      '@tiptap/pm': 3.31.2
 
-  '@tiptap/extension-document@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))':
+  '@tiptap/extension-document@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
 
-  '@tiptap/extension-drag-handle@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/extension-collaboration@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)(@tiptap/y-tiptap@3.0.3(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-view@1.41.8)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30))(yjs@13.6.30))(@tiptap/extension-node-range@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)(@tiptap/y-tiptap@3.0.3(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-view@1.41.8)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30))':
+  '@tiptap/extension-drag-handle@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/extension-collaboration@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)(@tiptap/y-tiptap@3.0.9(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.3)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30))(yjs@13.6.30))(@tiptap/extension-node-range@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)(@tiptap/y-tiptap@3.0.9(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.3)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30))':
     dependencies:
       '@floating-ui/dom': 1.7.6
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
-      '@tiptap/extension-collaboration': 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)(@tiptap/y-tiptap@3.0.3(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-view@1.41.8)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30))(yjs@13.6.30)
-      '@tiptap/extension-node-range': 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)
-      '@tiptap/pm': 3.23.6
-      '@tiptap/y-tiptap': 3.0.3(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-view@1.41.8)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
+      '@tiptap/extension-collaboration': 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)(@tiptap/y-tiptap@3.0.9(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.3)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30))(yjs@13.6.30)
+      '@tiptap/extension-node-range': 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)
+      '@tiptap/pm': 3.31.2
+      '@tiptap/y-tiptap': 3.0.9(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.3)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
 
-  '@tiptap/extension-dropcursor@3.23.6(@tiptap/extensions@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))':
+  '@tiptap/extension-dropcursor@3.31.2(@tiptap/extensions@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2))':
     dependencies:
-      '@tiptap/extensions': 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)
+      '@tiptap/extensions': 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)
 
-  '@tiptap/extension-file-handler@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/extension-text-style@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)))(@tiptap/pm@3.23.6)':
+  '@tiptap/extension-file-handler@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/extension-text-style@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)))(@tiptap/pm@3.31.2)':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
-      '@tiptap/extension-text-style': 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))
-      '@tiptap/pm': 3.23.6
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
+      '@tiptap/extension-text-style': 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))
+      '@tiptap/pm': 3.31.2
 
-  '@tiptap/extension-floating-menu@3.23.6(@floating-ui/dom@1.7.6)(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)':
+  '@tiptap/extension-floating-menu@3.31.2(@floating-ui/dom@1.7.6)(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)':
     dependencies:
       '@floating-ui/dom': 1.7.6
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
-      '@tiptap/pm': 3.23.6
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
+      '@tiptap/pm': 3.31.2
     optional: true
 
-  '@tiptap/extension-gapcursor@3.23.6(@tiptap/extensions@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))':
+  '@tiptap/extension-gapcursor@3.31.2(@tiptap/extensions@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2))':
     dependencies:
-      '@tiptap/extensions': 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)
+      '@tiptap/extensions': 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)
 
-  '@tiptap/extension-hard-break@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))':
+  '@tiptap/extension-hard-break@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
 
-  '@tiptap/extension-heading@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))':
+  '@tiptap/extension-heading@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
 
-  '@tiptap/extension-highlight@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))':
+  '@tiptap/extension-highlight@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
 
-  '@tiptap/extension-horizontal-rule@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)':
+  '@tiptap/extension-horizontal-rule@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
-      '@tiptap/pm': 3.23.6
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
+      '@tiptap/pm': 3.31.2
 
-  '@tiptap/extension-image@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))':
+  '@tiptap/extension-image@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
 
-  '@tiptap/extension-italic@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))':
+  '@tiptap/extension-italic@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
 
-  '@tiptap/extension-link@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)':
+  '@tiptap/extension-link@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
-      '@tiptap/pm': 3.23.6
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
+      '@tiptap/pm': 3.31.2
       linkifyjs: 4.3.3
 
-  '@tiptap/extension-list-item@3.23.6(@tiptap/extension-list@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))':
+  '@tiptap/extension-list-item@3.31.2(@tiptap/extension-list@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2))':
     dependencies:
-      '@tiptap/extension-list': 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)
+      '@tiptap/extension-list': 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)
 
-  '@tiptap/extension-list-keymap@3.23.6(@tiptap/extension-list@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))':
+  '@tiptap/extension-list-keymap@3.31.2(@tiptap/extension-list@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2))':
     dependencies:
-      '@tiptap/extension-list': 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)
+      '@tiptap/extension-list': 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)
 
-  '@tiptap/extension-list@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)':
+  '@tiptap/extension-list@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
-      '@tiptap/pm': 3.23.6
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
+      '@tiptap/pm': 3.31.2
 
-  '@tiptap/extension-mention@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)(@tiptap/suggestion@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))':
+  '@tiptap/extension-mention@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)(@tiptap/suggestion@3.31.2(@floating-ui/dom@1.7.6)(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2))':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
-      '@tiptap/pm': 3.23.6
-      '@tiptap/suggestion': 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
+      '@tiptap/pm': 3.31.2
+      '@tiptap/suggestion': 3.31.2(@floating-ui/dom@1.7.6)(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)
 
-  '@tiptap/extension-node-range@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)':
+  '@tiptap/extension-node-range@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
-      '@tiptap/pm': 3.23.6
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
+      '@tiptap/pm': 3.31.2
 
-  '@tiptap/extension-ordered-list@3.23.6(@tiptap/extension-list@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))':
+  '@tiptap/extension-ordered-list@3.31.2(@tiptap/extension-list@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2))':
     dependencies:
-      '@tiptap/extension-list': 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)
+      '@tiptap/extension-list': 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)
 
-  '@tiptap/extension-paragraph@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))':
+  '@tiptap/extension-paragraph@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
 
-  '@tiptap/extension-strike@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))':
+  '@tiptap/extension-strike@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
 
-  '@tiptap/extension-table@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)':
+  '@tiptap/extension-table@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
-      '@tiptap/pm': 3.23.6
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
+      '@tiptap/pm': 3.31.2
 
-  '@tiptap/extension-text-style@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))':
+  '@tiptap/extension-text-style@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
 
-  '@tiptap/extension-text@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))':
+  '@tiptap/extension-text@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
 
-  '@tiptap/extension-underline@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))':
+  '@tiptap/extension-underline@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
 
-  '@tiptap/extensions@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)':
+  '@tiptap/extensions@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
-      '@tiptap/pm': 3.23.6
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
+      '@tiptap/pm': 3.31.2
 
-  '@tiptap/html@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)(happy-dom@20.9.0)':
+  '@tiptap/html@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)(happy-dom@20.9.0)':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
-      '@tiptap/pm': 3.23.6
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
+      '@tiptap/pm': 3.31.2
       happy-dom: 20.9.0
 
-  '@tiptap/markdown@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)':
+  '@tiptap/markdown@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
-      '@tiptap/pm': 3.23.6
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
+      '@tiptap/pm': 3.31.2
       marked: 17.0.6
 
-  '@tiptap/pm@3.23.6':
+  '@tiptap/pm@3.31.2':
     dependencies:
       prosemirror-changeset: 2.4.1
       prosemirror-commands: 1.7.1
       prosemirror-dropcursor: 1.8.2
       prosemirror-gapcursor: 1.4.1
       prosemirror-history: 1.5.0
+      prosemirror-inputrules: 1.5.1
       prosemirror-keymap: 1.2.3
-      prosemirror-model: 1.25.7
+      prosemirror-model: 1.25.11
       prosemirror-schema-list: 1.5.1
       prosemirror-state: 1.4.4
       prosemirror-tables: 1.8.5
       prosemirror-transform: 1.12.0
-      prosemirror-view: 1.41.8
+      prosemirror-view: 1.42.3
 
-  '@tiptap/react@3.23.6(@floating-ui/dom@1.7.6)(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)(@types/react-dom@18.3.7(@types/react@18.3.29))(@types/react@18.3.29)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@tiptap/react@3.31.2(@floating-ui/dom@1.7.6)(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)(@types/react-dom@18.3.7(@types/react@18.3.29))(@types/react@18.3.29)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
-      '@tiptap/pm': 3.23.6
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
+      '@tiptap/pm': 3.31.2
       '@types/react': 18.3.29
       '@types/react-dom': 18.3.7(@types/react@18.3.29)
       '@types/use-sync-external-store': 0.0.6
@@ -16062,49 +16069,50 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
       use-sync-external-store: 1.6.0(react@18.3.1)
     optionalDependencies:
-      '@tiptap/extension-bubble-menu': 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)
-      '@tiptap/extension-floating-menu': 3.23.6(@floating-ui/dom@1.7.6)(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)
+      '@tiptap/extension-bubble-menu': 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)
+      '@tiptap/extension-floating-menu': 3.31.2(@floating-ui/dom@1.7.6)(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)
     transitivePeerDependencies:
       - '@floating-ui/dom'
 
-  '@tiptap/starter-kit@3.23.6':
+  '@tiptap/starter-kit@3.31.2':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
-      '@tiptap/extension-blockquote': 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))
-      '@tiptap/extension-bold': 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))
-      '@tiptap/extension-bullet-list': 3.23.6(@tiptap/extension-list@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))
-      '@tiptap/extension-code': 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))
-      '@tiptap/extension-code-block': 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)
-      '@tiptap/extension-document': 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))
-      '@tiptap/extension-dropcursor': 3.23.6(@tiptap/extensions@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))
-      '@tiptap/extension-gapcursor': 3.23.6(@tiptap/extensions@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))
-      '@tiptap/extension-hard-break': 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))
-      '@tiptap/extension-heading': 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))
-      '@tiptap/extension-horizontal-rule': 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)
-      '@tiptap/extension-italic': 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))
-      '@tiptap/extension-link': 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)
-      '@tiptap/extension-list': 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)
-      '@tiptap/extension-list-item': 3.23.6(@tiptap/extension-list@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))
-      '@tiptap/extension-list-keymap': 3.23.6(@tiptap/extension-list@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))
-      '@tiptap/extension-ordered-list': 3.23.6(@tiptap/extension-list@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))
-      '@tiptap/extension-paragraph': 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))
-      '@tiptap/extension-strike': 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))
-      '@tiptap/extension-text': 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))
-      '@tiptap/extension-underline': 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))
-      '@tiptap/extensions': 3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)
-      '@tiptap/pm': 3.23.6
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
+      '@tiptap/extension-blockquote': 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)
+      '@tiptap/extension-bold': 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))
+      '@tiptap/extension-bullet-list': 3.31.2(@tiptap/extension-list@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2))
+      '@tiptap/extension-code': 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))
+      '@tiptap/extension-code-block': 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)
+      '@tiptap/extension-document': 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))
+      '@tiptap/extension-dropcursor': 3.31.2(@tiptap/extensions@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2))
+      '@tiptap/extension-gapcursor': 3.31.2(@tiptap/extensions@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2))
+      '@tiptap/extension-hard-break': 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))
+      '@tiptap/extension-heading': 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))
+      '@tiptap/extension-horizontal-rule': 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)
+      '@tiptap/extension-italic': 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))
+      '@tiptap/extension-link': 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)
+      '@tiptap/extension-list': 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)
+      '@tiptap/extension-list-item': 3.31.2(@tiptap/extension-list@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2))
+      '@tiptap/extension-list-keymap': 3.31.2(@tiptap/extension-list@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2))
+      '@tiptap/extension-ordered-list': 3.31.2(@tiptap/extension-list@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2))
+      '@tiptap/extension-paragraph': 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))
+      '@tiptap/extension-strike': 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))
+      '@tiptap/extension-text': 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))
+      '@tiptap/extension-underline': 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))
+      '@tiptap/extensions': 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)
+      '@tiptap/pm': 3.31.2
 
-  '@tiptap/suggestion@3.23.6(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)':
+  '@tiptap/suggestion@3.31.2(@floating-ui/dom@1.7.6)(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)':
     dependencies:
-      '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
-      '@tiptap/pm': 3.23.6
+      '@floating-ui/dom': 1.7.6
+      '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
+      '@tiptap/pm': 3.31.2
 
-  '@tiptap/y-tiptap@3.0.3(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-view@1.41.8)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)':
+  '@tiptap/y-tiptap@3.0.9(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.3)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)':
     dependencies:
       lib0: 0.2.117
-      prosemirror-model: 1.25.7
+      prosemirror-model: 1.25.11
       prosemirror-state: 1.4.4
-      prosemirror-view: 1.41.8
+      prosemirror-view: 1.42.3
       y-protocols: 1.0.7(yjs@13.6.30)
       yjs: 13.6.30
 
@@ -16587,7 +16595,7 @@ snapshots:
 
   '@xmldom/is-dom-node@1.0.1': {}
 
-  '@xmldom/xmldom@0.8.13': {}
+  '@xmldom/xmldom@0.8.15': {}
 
   '@xtuc/ieee754@1.2.0': {}
 
@@ -20497,7 +20505,7 @@ snapshots:
 
   prosemirror-commands@1.7.1:
     dependencies:
-      prosemirror-model: 1.25.7
+      prosemirror-model: 1.25.11
       prosemirror-state: 1.4.4
       prosemirror-transform: 1.12.0
 
@@ -20505,58 +20513,63 @@ snapshots:
     dependencies:
       prosemirror-state: 1.4.4
       prosemirror-transform: 1.12.0
-      prosemirror-view: 1.41.8
+      prosemirror-view: 1.42.3
 
   prosemirror-gapcursor@1.4.1:
     dependencies:
       prosemirror-keymap: 1.2.3
-      prosemirror-model: 1.25.7
+      prosemirror-model: 1.25.11
       prosemirror-state: 1.4.4
-      prosemirror-view: 1.41.8
+      prosemirror-view: 1.42.3
 
   prosemirror-history@1.5.0:
     dependencies:
       prosemirror-state: 1.4.4
       prosemirror-transform: 1.12.0
-      prosemirror-view: 1.41.8
+      prosemirror-view: 1.42.3
       rope-sequence: 1.3.4
+
+  prosemirror-inputrules@1.5.1:
+    dependencies:
+      prosemirror-state: 1.4.4
+      prosemirror-transform: 1.12.0
 
   prosemirror-keymap@1.2.3:
     dependencies:
       prosemirror-state: 1.4.4
       w3c-keyname: 2.2.8
 
-  prosemirror-model@1.25.7:
+  prosemirror-model@1.25.11:
     dependencies:
       orderedmap: 2.1.1
 
   prosemirror-schema-list@1.5.1:
     dependencies:
-      prosemirror-model: 1.25.7
+      prosemirror-model: 1.25.11
       prosemirror-state: 1.4.4
       prosemirror-transform: 1.12.0
 
   prosemirror-state@1.4.4:
     dependencies:
-      prosemirror-model: 1.25.7
+      prosemirror-model: 1.25.11
       prosemirror-transform: 1.12.0
-      prosemirror-view: 1.41.8
+      prosemirror-view: 1.42.3
 
   prosemirror-tables@1.8.5:
     dependencies:
       prosemirror-keymap: 1.2.3
-      prosemirror-model: 1.25.7
+      prosemirror-model: 1.25.11
       prosemirror-state: 1.4.4
       prosemirror-transform: 1.12.0
-      prosemirror-view: 1.41.8
+      prosemirror-view: 1.42.3
 
   prosemirror-transform@1.12.0:
     dependencies:
-      prosemirror-model: 1.25.7
+      prosemirror-model: 1.25.11
 
-  prosemirror-view@1.41.8:
+  prosemirror-view@1.42.3:
     dependencies:
-      prosemirror-model: 1.25.7
+      prosemirror-model: 1.25.11
       prosemirror-state: 1.4.4
       prosemirror-transform: 1.12.0
 
@@ -21059,7 +21072,7 @@ snapshots:
   samlify@2.13.1:
     dependencies:
       '@authenio/xml-encryption': 2.0.2
-      '@xmldom/xmldom': 0.8.13
+      '@xmldom/xmldom': 0.8.15
       node-rsa: 1.1.1
       xml: 1.0.1
       xml-crypto: 6.1.2
@@ -22310,7 +22323,7 @@ snapshots:
   xml-crypto@6.1.2:
     dependencies:
       '@xmldom/is-dom-node': 1.0.1
-      '@xmldom/xmldom': 0.8.13
+      '@xmldom/xmldom': 0.8.15
       xpath: 0.0.33
 
   xml-escape@1.1.0: {}
@@ -22332,12 +22345,12 @@ snapshots:
       lib0: 0.2.117
       yjs: 13.6.30
 
-  y-prosemirror@1.3.7(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-view@1.41.8)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30):
+  y-prosemirror@1.3.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.3)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30):
     dependencies:
       lib0: 0.2.117
-      prosemirror-model: 1.25.7
+      prosemirror-model: 1.25.11
       prosemirror-state: 1.4.4
-      prosemirror-view: 1.41.8
+      prosemirror-view: 1.42.3
       y-protocols: 1.0.7(yjs@13.6.30)
       yjs: 13.6.30
 
