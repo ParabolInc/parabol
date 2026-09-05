@@ -227,6 +227,25 @@ test('seeded standup templates are TeamPromptTemplates with prompts', async () =
     "What's next for you?",
     'What are you stuck on?'
   ])
+
+  const demoDay = nodes.find((node: any) => node.id === 'demoDayTemplate')
+  expect(demoDay).toMatchObject({__typename: 'TeamPromptTemplate', name: 'Demo Day'})
+  expect(demoDay.prompts.map((prompt: any) => prompt.question)).toEqual([
+    'What did you ship?',
+    'Show it off',
+    'What feedback do you want?'
+  ])
+
+  const weeklyWins = nodes.find((node: any) => node.id === 'weeklyWinsAndPrioritiesTemplate')
+  expect(weeklyWins).toMatchObject({
+    __typename: 'TeamPromptTemplate',
+    name: 'Weekly Wins & Priorities'
+  })
+  expect(weeklyWins.prompts.map((prompt: any) => prompt.question)).toEqual([
+    'What were your wins this week?',
+    'What did you learn?',
+    'What are your top priorities next week?'
+  ])
 })
 
 test('every team has standup settings defaulting to the canonical template', async () => {
