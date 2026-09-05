@@ -52,6 +52,43 @@ const REMOVE_PROMPT_TEMPLATE = `
   }
 `
 
+const START_TEAM_PROMPT = `
+  mutation StartTeamPrompt($teamId: ID!, $templateId: ID) {
+    startTeamPrompt(teamId: $teamId, templateId: $templateId) {
+      ... on ErrorPayload {
+        error {
+          message
+        }
+      }
+      ... on StartTeamPromptSuccess {
+        meeting {
+          id
+        }
+      }
+    }
+  }
+`
+
+const UPDATE_RECURRENCE_SETTINGS = `
+  mutation UpdateRecurrenceSettings($meetingId: ID!, $rrule: RRule) {
+    updateRecurrenceSettings(meetingId: $meetingId, rrule: $rrule) {
+      ... on ErrorPayload {
+        error {
+          message
+        }
+      }
+      ... on UpdateRecurrenceSettingsSuccess {
+        meeting {
+          id
+        }
+      }
+    }
+  }
+`
+
+const RECURRING_RRULE = `DTSTART;TZID=America/Toronto:20260520T070000
+RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR`
+
 const ADD_PROMPT = `
   mutation AddTemplatePrompt($templateId: ID!) {
     addTemplatePrompt(templateId: $templateId) {
@@ -506,6 +543,40 @@ test('removePromptTemplate is blocked while a recurring standup uses the templat
   })
   expect(allowed.errors).toBeUndefined()
   expect(allowed.data.removePromptTemplate.template.isActive).toBe(false)
+})
+
+test('removePromptTemplate is blocked once recurrence starts in-meeting via updateRecurrenceSettings', async () => {
+  const {teamId, cookie} = await signUp()
+  const created = await sendPublic({
+    query: ADD_PROMPT_TEMPLATE,
+    variables: {teamId, type: STANDUP},
+    cookie
+  })
+  const {id: templateId} = created.data.addPromptTemplate.template
+
+  const started = await sendPublic({
+    query: START_TEAM_PROMPT,
+    variables: {teamId, templateId},
+    cookie
+  })
+  expect(started.errors).toBeUndefined()
+  const meetingId = started.data.startTeamPrompt.meeting.id
+
+  const recurrence = await sendPublic({
+    query: UPDATE_RECURRENCE_SETTINGS,
+    variables: {meetingId, rrule: RECURRING_RRULE},
+    cookie
+  })
+  expect(recurrence.errors).toBeUndefined()
+
+  const blocked = await sendPublic({
+    query: REMOVE_PROMPT_TEMPLATE,
+    variables: {templateId},
+    cookie
+  })
+  expect(blocked.errors).toEqual([
+    expect.objectContaining({message: 'Template is used by a recurring meeting'})
+  ])
 })
 
 test('removePromptTemplate rejects a template the viewer does not own', async () => {
