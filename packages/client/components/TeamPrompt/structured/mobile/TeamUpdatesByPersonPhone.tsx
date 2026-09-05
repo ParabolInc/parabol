@@ -2,7 +2,7 @@ import {type RefObject, useRef, useState} from 'react'
 import TeamPromptDraftingCard from '../TeamPromptDraftingCard'
 import TeamPromptSharedResponseCard from '../TeamPromptSharedResponseCard'
 import type {TeamUpdateStage} from '../TeamUpdatesByPerson'
-import memberCardScrollTop from './memberCardScrollTop'
+import memberCardScrollTop, {STICKY_HEADER_OFFSET} from './memberCardScrollTop'
 import TeamUpdatesMemberChips from './TeamUpdatesMemberChips'
 
 const toMember = (stage: TeamUpdateStage, isDrafting: boolean) => ({
@@ -35,6 +35,7 @@ const TeamUpdatesByPersonPhone = (props: Props) => {
     scrollContainerRef
   } = props
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null)
+  const rootRef = useRef<HTMLDivElement>(null)
   const cardsRef = useRef<Record<string, HTMLDivElement | null>>({})
   const members = [
     ...sharedStages.map((stage) => toMember(stage, false)),
@@ -44,13 +45,14 @@ const TeamUpdatesByPersonPhone = (props: Props) => {
   const onSelect = (stageId: string | null) => {
     setSelectedMemberId(stageId)
     const container = scrollContainerRef.current
-    const card = stageId ? cardsRef.current[stageId] : null
-    if (!container || !card) return
+    const target = stageId ? cardsRef.current[stageId] : rootRef.current
+    if (!container || !target) return
     container.scrollTo({
       top: memberCardScrollTop({
         containerScrollTop: container.scrollTop,
         containerTop: container.getBoundingClientRect().top,
-        cardTop: card.getBoundingClientRect().top
+        cardTop: target.getBoundingClientRect().top,
+        offset: stageId ? STICKY_HEADER_OFFSET : 0
       }),
       behavior: 'smooth'
     })
@@ -59,7 +61,7 @@ const TeamUpdatesByPersonPhone = (props: Props) => {
     cardsRef.current[stageId] = el
   }
   return (
-    <div>
+    <div ref={rootRef}>
       <TeamUpdatesMemberChips members={members} selectedId={selectedMemberId} onSelect={onSelect} />
       <div className='flex flex-col gap-6 px-4 py-2'>
         {sharedStages.map((stage) => (
