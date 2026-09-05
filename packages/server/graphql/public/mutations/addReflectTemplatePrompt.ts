@@ -8,6 +8,7 @@ import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
+import {isPromptTemplateType} from './helpers/isPromptTemplateType'
 
 const addReflectTemplatePrompt: MutationResolvers['addReflectTemplatePrompt'] = async (
   _source,
@@ -21,7 +22,7 @@ const addReflectTemplatePrompt: MutationResolvers['addReflectTemplatePrompt'] = 
   const viewerId = getUserId(authToken)
 
   // VALIDATION
-  if (!template || !template.isActive) {
+  if (!template || !template.isActive || !isPromptTemplateType(template.type)) {
     return standardError(new Error('Template not found'), {
       userId: viewerId
     })

@@ -711,6 +711,12 @@ type Mutation {
     @scope(name: TEMPLATES_WRITE)
 
   """
+  Remove a stand-up template. Fails if a recurring stand-up still uses it.
+  """
+  removeTeamPromptTemplate(templateId: ID!): RemoveTeamPromptTemplateSuccess!
+    @scope(name: TEMPLATES_WRITE)
+
+  """
   Remove a dimension from a template
   """
   removePokerTemplateDimension(dimensionId: ID!): RemovePokerTemplateDimensionPayload!
@@ -1462,6 +1468,21 @@ type Mutation {
     """
     teamId: ID!
   ): AddReflectTemplatePayload! @scope(name: TEMPLATES_WRITE)
+
+  """
+  Adds a new stand-up template with one default prompt, or clones an existing one.
+  """
+  addTeamPromptTemplate(
+    """
+    The ID of the parent template, if this is a clone operation.
+    """
+    parentTemplateId: ID
+
+    """
+    The ID of the team for which the template is being created.
+    """
+    teamId: ID!
+  ): AddTeamPromptTemplateSuccess! @scope(name: TEMPLATES_WRITE)
 
   """
   Adds a new team health template, optionally cloned from an existing template.

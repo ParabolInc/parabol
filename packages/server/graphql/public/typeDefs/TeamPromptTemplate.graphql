@@ -1,24 +1,20 @@
 """
-An activity that does not have a customizable template, e.g. check-in
+A stand-up template: an ordered list of prompts each team member answers asynchronously
 """
-type FixedActivity implements MeetingTemplate {
+type TeamPromptTemplate implements MeetingTemplate {
   """
-  The activity ID, always action
+  shortid
   """
   id: ID!
-
-  """
-  Date the activity was created
-  """
   createdAt: DateTime!
 
   """
-  Always true
+  True if template can be used, else false
   """
   isActive: Boolean!
 
   """
-  Always true
+  True if template is available to all teams including non-paying teams, else false
   """
   isFree: Boolean!
 
@@ -33,33 +29,38 @@ type FixedActivity implements MeetingTemplate {
   name: String!
 
   """
-  The org ID for fixed activities (always a placeholder ghost org)
+  *Foreign key. The organization that owns the team that created the template
   """
   orgId: ID!
 
   """
-  Sharing scope for fixed activities (always public)
+  Who can see this template
   """
   scope: SharingScopeEnum!
 
   """
-  The team ID for fixed activities (always a placeholder ghost team)
+  *Foreign key. The team this template belongs to
   """
   teamId: ID!
 
   """
-  The placeholder ghost team for fixed activities
+  The team this template belongs to
   """
   team: Team!
 
   """
-  The meeting type, always action
+  The type of the template
   """
   type: MeetingTypeEnum!
   updatedAt: DateTime!
 
   """
-  The category this template falls under, e.g. retro, feedback, strategy, etc.
+  The active prompts of this template, in display order
+  """
+  prompts: [ReflectPrompt!]!
+
+  """
+  The category this template falls under, always standup
   """
   category: String!
 

@@ -21,4 +21,19 @@ type TeamPromptMeetingSettings implements TeamMeetingSettings {
   The team these settings belong to
   """
   team: Team!
+
+  """
+  FK. The template that will be used to start the stand-up
+  """
+  selectedTemplateId: ID!
+
+  """
+  The template that will be used to start the stand-up
+  """
+  selectedTemplate: TeamPromptTemplate!
+
+  """
+  The stand-up templates owned by this team
+  """
+  teamPromptTemplates: [TeamPromptTemplate!]!
 }

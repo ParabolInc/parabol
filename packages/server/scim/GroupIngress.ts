@@ -45,6 +45,13 @@ const createEmptyTeam = async (team: Team) => {
         meetingType: 'poker',
         phaseTypes: ['checkin', 'SCOPE', 'ESTIMATE'],
         selectedTemplateId: 'estimatedEffortTemplate'
+      },
+      {
+        id: generateUID(),
+        teamId,
+        meetingType: 'teamPrompt',
+        phaseTypes: ['RESPONSES'],
+        selectedTemplateId: 'teamPrompt'
       }
     ])
     .execute()
