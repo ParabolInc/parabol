@@ -116,6 +116,7 @@ const TeamUpdatesQuestionRow = (props: Props) => {
               edgesRef={discussion.thread.edges}
               onReply={() => onReply(stageId)}
               isPhone={isPhone}
+              className={isPhone ? '-ml-2' : undefined}
             />
           </>
         )}

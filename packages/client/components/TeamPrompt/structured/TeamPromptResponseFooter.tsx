@@ -14,9 +14,17 @@ interface Props {
   edgesRef: TeamPromptResponseFooter_edges$key
   onReply: () => void
   isPhone?: boolean
+  className?: string
 }
 
-const TeamPromptResponseFooter = ({meetingId, responseRef, edgesRef, onReply, isPhone}: Props) => {
+const TeamPromptResponseFooter = ({
+  meetingId,
+  responseRef,
+  edgesRef,
+  onReply,
+  isPhone,
+  className
+}: Props) => {
   const response = useFragment(
     graphql`
       fragment TeamPromptResponseFooter_response on TeamPromptResponse {
@@ -35,7 +43,7 @@ const TeamPromptResponseFooter = ({meetingId, responseRef, edgesRef, onReply, is
   )
   const replyCount = edges.length
   return (
-    <div className='flex flex-wrap items-center justify-start pt-1'>
+    <div className={cn('flex flex-wrap items-center justify-start pt-1', className)}>
       <TeamPromptResponseEmojis responseRef={response} meetingId={meetingId} isPhone={isPhone} />
       <PlainButton
         className={cn(
