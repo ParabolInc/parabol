@@ -31,4 +31,12 @@ const useTeamLayoutPreference = (meetingId: string, teamId: string) => {
   return [layout, setLayout] as const
 }
 
+export type PhoneTeamLayout = 'person' | 'question'
+
+export const toPhoneLayout = (layout: TeamLayout): PhoneTeamLayout =>
+  layout === 'byQuestion' ? 'question' : 'person'
+
+export const fromPhoneLayout = (layout: PhoneTeamLayout): TeamLayout =>
+  layout === 'question' ? 'byQuestion' : 'feed'
+
 export default useTeamLayoutPreference

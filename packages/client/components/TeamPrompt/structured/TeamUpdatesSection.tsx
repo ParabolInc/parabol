@@ -4,13 +4,14 @@ import {useFragment} from 'react-relay'
 import type {TeamUpdatesSection_meeting$key} from '~/__generated__/TeamUpdatesSection_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import usePhoneViewport from '~/hooks/usePhoneViewport'
+import TeamUpdatesPhoneHeader from './mobile/TeamUpdatesPhoneHeader'
 import TeamUpdatesByPerson from './TeamUpdatesByPerson'
 import TeamUpdatesByQuestion from './TeamUpdatesByQuestion'
 import TeamUpdatesHeader from './TeamUpdatesHeader'
 import {sortTeamStages} from './teamPromptStages'
 import useOpenResponseDiscussion from './useOpenResponseDiscussion'
 import useTeamHeaderPin from './useTeamHeaderPin'
-import useTeamLayoutPreference from './useTeamLayoutPreference'
+import useTeamLayoutPreference, {fromPhoneLayout, toPhoneLayout} from './useTeamLayoutPreference'
 
 interface Props {
   meetingRef: TeamUpdatesSection_meeting$key
@@ -80,16 +81,25 @@ const TeamUpdatesSection = (props: Props) => {
   }
   return (
     <div ref={sectionRef} className='@container'>
-      <TeamUpdatesHeader
-        ref={headerRef}
-        sharedMembers={sharedMembers}
-        draftingCount={drafting.length}
-        layout={layout}
-        onLayoutChange={setLayout}
-        canPin={canPin}
-        isPinned={isPinned}
-        onSeeTeam={onSeeTeam}
-      />
+      {isPhone ? (
+        <TeamUpdatesPhoneHeader
+          sharedCount={shared.length}
+          draftingCount={drafting.length}
+          layout={toPhoneLayout(layout)}
+          onLayoutChange={(next) => setLayout(fromPhoneLayout(next))}
+        />
+      ) : (
+        <TeamUpdatesHeader
+          ref={headerRef}
+          sharedMembers={sharedMembers}
+          draftingCount={drafting.length}
+          layout={layout}
+          onLayoutChange={setLayout}
+          canPin={canPin}
+          isPinned={isPinned}
+          onSeeTeam={onSeeTeam}
+        />
+      )}
       <div ref={gridRef}>
         {layout === 'byQuestion' ? (
           <TeamUpdatesByQuestion
@@ -102,7 +112,7 @@ const TeamUpdatesSection = (props: Props) => {
           />
         ) : (
           <TeamUpdatesByPerson
-            layout={layout}
+            layout={isPhone ? 'feed' : layout}
             prompts={prompts}
             sharedStages={shared}
             draftingStages={drafting}

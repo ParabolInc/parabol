@@ -34,16 +34,23 @@ const TeamPromptComposerHeader = (props: Props) => {
   } = props
   return (
     <div
-      role='button'
-      tabIndex={0}
-      aria-expanded={isExpanded}
-      onClick={onToggle}
-      onKeyDown={(e) => {
-        if (e.key !== 'Enter' && e.key !== ' ') return
-        e.preventDefault()
-        onToggle()
-      }}
-      className='flex min-h-12 cursor-pointer items-center gap-2 rounded-md px-2 hover:bg-surface-hover'
+      role={isPhone ? undefined : 'button'}
+      tabIndex={isPhone ? undefined : 0}
+      aria-expanded={isPhone ? undefined : isExpanded}
+      onClick={isPhone ? undefined : onToggle}
+      onKeyDown={
+        isPhone
+          ? undefined
+          : (e) => {
+              if (e.key !== 'Enter' && e.key !== ' ') return
+              e.preventDefault()
+              onToggle()
+            }
+      }
+      className={cn(
+        'flex min-h-12 items-center gap-2 rounded-md px-2',
+        !isPhone && 'cursor-pointer hover:bg-surface-hover'
+      )}
     >
       {!isPhone && (
         <ChevronRight
