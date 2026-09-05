@@ -73,7 +73,7 @@ const TeamPromptPhoneBottomBar = (props: Props) => {
   return (
     <div
       ref={barRef}
-      className='fixed inset-x-0 bottom-0 z-[8] border-hairline border-t border-solid bg-surface-card px-4 pt-2 pb-[max(28px,env(safe-area-inset-bottom))] shadow-[0_-4px_16px_rgba(28,28,33,.06)]'
+      className='fixed inset-x-0 bottom-0 z-bottom-bar border-hairline border-t border-solid bg-surface-card px-4 pt-2 pb-[max(28px,env(safe-area-inset-bottom))] shadow-[var(--shadow-bar)]'
     >
       <button
         type='button'
