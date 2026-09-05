@@ -127,13 +127,6 @@ const TeamPromptComposer = (props: Props) => {
     setHasInsertedFromInspiration(false)
   }, [share, answeredPromptIds.size, isShared, dirtyPromptIds.size])
 
-  const {focusPrompt} = focusMode
-  const onEditAfterShare = useCallback(() => {
-    setIsEditingAfterShare(true)
-    const firstPromptId = prompts[0]?.id
-    if (firstPromptId) focusPrompt(firstPromptId)
-  }, [prompts, focusPrompt])
-
   const onOpenInspiration = useCallback(() => {
     commitLocalUpdate(atmosphere, (store) => {
       const proxy = store.get(meetingId)
@@ -170,7 +163,7 @@ const TeamPromptComposer = (props: Props) => {
             sharedAt={sharedAt}
             updatedAt={lastAnswerAt}
             isEnded={!!endedAt}
-            onEdit={onEditAfterShare}
+            onEdit={() => setIsEditingAfterShare(true)}
           />
         ) : (
           !isPhoneFocused && (
