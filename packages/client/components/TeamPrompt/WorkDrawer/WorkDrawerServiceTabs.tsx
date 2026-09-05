@@ -15,8 +15,12 @@ interface Props {
   onSelect: (idx: number) => void
 }
 
-const EDGE_FADE =
-  '[mask-image:linear-gradient(to_right,transparent_0,black_14px,black_calc(100%-14px),transparent_100%)]'
+const FADE_LEFT =
+  '[mask-image:linear-gradient(to_right,transparent_0,black_14px)] [-webkit-mask-image:linear-gradient(to_right,transparent_0,black_14px)]'
+const FADE_RIGHT =
+  '[mask-image:linear-gradient(to_left,transparent_0,black_14px)] [-webkit-mask-image:linear-gradient(to_left,transparent_0,black_14px)]'
+const FADE_BOTH =
+  '[mask-image:linear-gradient(to_right,transparent_0,black_14px,black_calc(100%-14px),transparent_100%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0,black_14px,black_calc(100%-14px),transparent_100%)]'
 
 const WorkDrawerServiceTabs = (props: Props) => {
   const {tabs, activeIdx, variant, onSelect} = props
@@ -24,13 +28,41 @@ const WorkDrawerServiceTabs = (props: Props) => {
   const scrollRef = useRef<HTMLDivElement>(null)
   const activeRef = useRef<HTMLButtonElement>(null)
   const [isScrollable, setIsScrollable] = useState(false)
+  const [fadeLeft, setFadeLeft] = useState(false)
+  const [fadeRight, setFadeRight] = useState(false)
+
+  const measureFade = (scroller: HTMLDivElement) => {
+    setFadeLeft(scroller.scrollLeft > 0)
+    setFadeRight(scroller.scrollLeft < scroller.scrollWidth - scroller.clientWidth - 1)
+  }
+
   useEffect(() => {
     if (!isSheet) return
     const scroller = scrollRef.current
     if (!scroller) return
     setIsScrollable(scroller.scrollWidth > scroller.clientWidth + 1)
-    activeRef.current?.scrollIntoView({inline: 'nearest', block: 'nearest'})
-  }, [isSheet, tabs.length, activeIdx])
+    measureFade(scroller)
+  }, [isSheet, tabs.length])
+
+  useEffect(() => {
+    if (!isSheet) return
+    const scroller = scrollRef.current
+    const active = activeRef.current
+    if (!scroller || !active) return
+    scroller.scrollLeft = active.offsetLeft - (scroller.clientWidth - active.offsetWidth) / 2
+  }, [isSheet, activeIdx])
+
+  useEffect(() => {
+    if (!isSheet) return
+    const scroller = scrollRef.current
+    if (!scroller) return
+    const observer = new ResizeObserver(() => {
+      setIsScrollable(scroller.scrollWidth > scroller.clientWidth + 1)
+      measureFade(scroller)
+    })
+    observer.observe(scroller)
+    return () => observer.disconnect()
+  }, [isSheet])
 
   const strip = (
     <div className='flex gap-1'>
@@ -72,7 +104,13 @@ const WorkDrawerServiceTabs = (props: Props) => {
   return (
     <div
       ref={scrollRef}
-      className={cn('ml-auto min-w-0 max-w-[45%] overflow-x-auto', isScrollable && EDGE_FADE)}
+      onScroll={(e) => measureFade(e.currentTarget)}
+      className={cn(
+        'ml-auto min-w-0 max-w-[45%] overflow-x-auto',
+        isScrollable && fadeLeft && fadeRight && FADE_BOTH,
+        isScrollable && fadeLeft && !fadeRight && FADE_LEFT,
+        isScrollable && !fadeLeft && fadeRight && FADE_RIGHT
+      )}
     >
       {strip}
     </div>
