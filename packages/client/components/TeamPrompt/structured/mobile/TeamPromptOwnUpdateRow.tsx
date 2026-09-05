@@ -24,16 +24,14 @@ const TeamPromptOwnUpdateRow = (props: Props) => {
           <TeamPromptLastUpdatedTime createdAt={sharedAt} updatedAt={updatedAt ?? sharedAt} />
         </div>
       )}
-      {!isEnded && (
-        <Button
-          type='button'
-          variant='flat'
-          onClick={onEdit}
-          className='ml-auto h-11 min-w-11 px-2 font-semibold text-accent text-sm'
-        >
-          Edit
-        </Button>
-      )}
+      <Button
+        type='button'
+        variant='flat'
+        onClick={onEdit}
+        className='ml-auto h-11 min-w-11 px-2 font-semibold text-accent text-sm'
+      >
+        {isEnded ? 'View' : 'Edit'}
+      </Button>
     </div>
   )
 }
