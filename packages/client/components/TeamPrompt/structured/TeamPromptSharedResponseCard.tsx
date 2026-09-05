@@ -89,6 +89,7 @@ const TeamPromptSharedResponseCard = (props: Props) => {
           meetingId={meetingId}
           teamId={teamId}
           responseId={response.id}
+          isPhone={isPhone}
         />
       </div>
       <div
