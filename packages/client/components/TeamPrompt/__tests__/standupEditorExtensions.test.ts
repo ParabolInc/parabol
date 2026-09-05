@@ -8,7 +8,12 @@ jest.mock('../../../tiptap/extensions/imageBlock/ImageBlock', () => ({
 jest.mock('../../../tiptap/extensions/fileUpload/FileUpload', () => ({
   FileUpload: {name: 'fileUpload', configure: () => ({name: 'fileUpload'})}
 }))
+jest.mock('../../../tiptap/extensions/fileBlock/FileBlock', () => ({
+  __esModule: true,
+  default: {name: 'fileBlock'}
+}))
 
+import type Atmosphere from '../../../Atmosphere'
 import {slashCommands} from '../../../tiptap/extensions/slashCommand/slashCommands'
 import {
   BLOCKED_STANDUP_SLASH_COMMANDS,
@@ -32,6 +37,7 @@ test('exactly the ruled-out titles are blocked', () => {
 test('standupBlockExtensions registers the stand-up block nodes and excludes page-only nodes', () => {
   const extensionNames = standupBlockExtensions({
     teamId: 't1',
+    atmosphere: {} as Atmosphere,
     commit: jest.fn(),
     editorWidth: 568
   }).map((extension) => extension.name)
@@ -51,6 +57,7 @@ test('standupBlockExtensions registers the stand-up block nodes and excludes pag
       'tableCell',
       'focus',
       'imageBlock',
+      'fileBlock',
       'fileUpload'
     ])
   )
