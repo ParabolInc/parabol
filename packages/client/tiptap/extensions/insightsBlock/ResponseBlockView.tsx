@@ -3,13 +3,11 @@ import Avatar from '../../../components/Avatar/Avatar'
 import {useTipTapStandupResponseEditor} from '../../../hooks/useTipTapStandupResponseEditor'
 import type {ResponseBlockAttrs} from '../../../shared/tiptap/extensions/ResponseBlockBase'
 
-const CARD_WIDTH = 268
-
 export const ResponseBlockView = (props: NodeViewProps) => {
   const {node} = props
   const attrs = node.attrs as ResponseBlockAttrs
   const {content, preferredName, avatar} = attrs
-  const {editor} = useTipTapStandupResponseEditor(content, CARD_WIDTH - 16 * 2)
+  const {editor} = useTipTapStandupResponseEditor(content, 268 - 16 * 2)
   return (
     <NodeViewWrapper data-type='taskBlock'>
       <div className='w-[268px] min-w-64 rounded bg-surface-card p-4 shadow-[var(--shadow-card)]'>
