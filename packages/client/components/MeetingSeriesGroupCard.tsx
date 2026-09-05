@@ -168,7 +168,7 @@ const MeetingSeriesGroupCard = (props: Props) => {
                 <span className='wrap-break-word block pt-1 pr-8 text-fg-primary text-xl leading-6'>
                   {title}
                 </span>
-                <div className='text-fg-primary text-sm'>{label}</div>
+                <div className='text-fg-secondary text-sm'>{label}</div>
               </div>
               <Menu
                 trigger={
@@ -203,7 +203,7 @@ const MeetingSeriesGroupCard = (props: Props) => {
                 </MenuContent>
               </Menu>
             </div>
-            <span className='wrap-break-word block pt-1 pb-2 text-fg-secondary text-sm'>
+            <span className='wrap-break-word block pt-1 pb-2 text-fg-muted text-sm'>
               {`Meeting series group • ${recurrenceLabel}`}
             </span>
             <div className='flex pl-1.5'>

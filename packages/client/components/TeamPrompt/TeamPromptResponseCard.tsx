@@ -200,7 +200,7 @@ const TeamPromptResponseCard = (props: Props) => {
         className={cn(
           'flex flex-1 flex-col justify-between rounded-card p-4',
           isEmptyResponse
-            ? 'bg-surface-well text-fg-muted'
+            ? 'bg-surface-well text-fg-secondary'
             : 'bg-surface-card shadow-[var(--shadow-card)]',
           meeting?.rightDrawerOpen != null && meeting?.localStageId === responseStage.id
             ? 'outline-2 outline-sky-300'

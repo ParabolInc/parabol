@@ -158,7 +158,7 @@ const ScheduledSeriesCard = (props: Props) => {
                 </span>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className='text-sm'>{label}</div>
+                    <div className='text-fg-secondary text-sm'>{label}</div>
                   </TooltipTrigger>
                   {tooltip && <TooltipContent>{tooltip}</TooltipContent>}
                 </Tooltip>
@@ -185,7 +185,7 @@ const ScheduledSeriesCard = (props: Props) => {
               </Menu>
             </div>
             <Link to={seriesLink} onClick={openEdit}>
-              <span className='block pt-1 pb-2 text-fg-secondary text-sm'>
+              <span className='block pt-1 pb-2 text-fg-muted text-sm'>
                 {MeetingTypeToReadable[meetingType]} • Awaiting first meeting
               </span>
             </Link>

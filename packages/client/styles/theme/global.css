@@ -185,12 +185,12 @@
   --color-surface-cta: var(--color-grape-700);
   --color-surface-cta-hover: var(--color-grape-600);
   --color-fg-selected: var(--color-white);
-  --color-fg-primary: #444258;
-  --color-fg-secondary: #82809a;
-  --color-fg-muted: #a7a3c2;
+  --color-fg-primary: #2d2d39;
+  --color-fg-secondary: #57556c;
+  --color-fg-muted: #6c6a83;
   --color-fg-topbar: #f1f0fa;
-  --color-fg-nav: #444258;
-  --color-fg-nav-muted: #82809a;
+  --color-fg-nav: #2d2d39;
+  --color-fg-nav-muted: #6c6a83;
   --color-hairline: #e0ddec;
   --color-hairline-strong: #c3c0d8;
   --color-hairline-field: #c3c0d8;
@@ -226,6 +226,8 @@
   --shadow-discussion-thread: rgba(0, 0, 0, 0.2) 0px 3px 1px -2px,
     rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
   --shadow-bar: 0 4px 8px rgba(0, 0, 0, 0.14), 0 0 2px rgba(0, 0, 0, 0.12);
+  --shadow-bar-up: 0 -5px 5px -3px rgba(0, 0, 0, 0.2), 0 -8px 10px 1px rgba(0, 0, 0, 0.14),
+    0 -3px 14px 2px rgba(0, 0, 0, 0.12);
   --shadow-status-ring: 0 0 0 0 transparent;
   --shadow-snackbar: rgba(0, 0, 0, 0.2) 0px 3px 5px -1px, rgba(0, 0, 0, 0.14) 0px 6px 10px 0px,
     rgba(0, 0, 0, 0.12) 0px 1px 18px 0px;
@@ -391,7 +393,7 @@
   --color-fg-selected: var(--color-white);
   --color-fg-primary: #eeedf7;
   --color-fg-secondary: #cac7f2;
-  --color-fg-muted: #938cbf;
+  --color-fg-muted: #aeaad8;
   --color-fg-topbar: #eeedf7;
   --color-fg-nav: #d4d2ef;
   /* lifted from #9b94c2 (exactly 4.50:1 on surface-nav-active — zero AA margin)
@@ -421,6 +423,7 @@
   --shadow-card-raised: inset 0 0 0 1px var(--color-hairline-strong),
     inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 16px 32px -10px rgba(0, 0, 0, 0.7);
   --shadow-bar: 0 4px 12px rgba(0, 0, 0, 0.55);
+  --shadow-bar-up: 0 -4px 12px rgba(0, 0, 0, 0.55);
   --shadow-status-ring: 0 0 0 1px rgba(238, 237, 247, 0.28);
 }
 
@@ -452,12 +455,12 @@
   --color-surface-cta: var(--color-grape-700);
   --color-surface-cta-hover: var(--color-grape-600);
   --color-fg-selected: var(--color-white);
-  --color-fg-primary: #444258;
-  --color-fg-secondary: #82809a;
-  --color-fg-muted: #a7a3c2;
+  --color-fg-primary: #2d2d39;
+  --color-fg-secondary: #57556c;
+  --color-fg-muted: #6c6a83;
   --color-fg-topbar: #f1f0fa;
-  --color-fg-nav: #444258;
-  --color-fg-nav-muted: #82809a;
+  --color-fg-nav: #2d2d39;
+  --color-fg-nav-muted: #6c6a83;
   --color-hairline: #e0ddec;
   --color-hairline-strong: #c3c0d8;
   --color-hairline-field: #c3c0d8;
