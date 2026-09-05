@@ -77,7 +77,7 @@ const TeamPromptStructuredMeeting = (props: Props) => {
   const composerApiRef = useRef<TeamPromptComposerApi | null>(null)
   const composerControlsRef = useRef<PhoneComposerControls | null>(null)
   const isPhone = usePhoneViewport()
-  const keyboardBottom = useVisualViewportBottom()
+  const keyboardBottom = useVisualViewportBottom(isPhone)
   const [focusedPromptId, setFocusedPromptId] = useState<string | null>(null)
   const [progress, setProgress] = useState({answeredCount: 0, promptCount: 0})
   const [isLastPrompt, setIsLastPrompt] = useState(false)
