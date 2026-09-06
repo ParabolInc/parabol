@@ -123,14 +123,14 @@ type EstimateStage implements NewMeetingStage & DiscussionThreadStage {
   taskId: ID!
 
   """
-  The field on the external service (e.g. Jira story points field) that this dimension maps to, used to push the final score back to the integration
+  The field on the task's service this dimension's estimate is pushed to. One of serviceFieldListing.options, a sentinel, or a label template
   """
   serviceField: ServiceField!
 
   """
   The estimate targets and candidate fields for this dimension on the task's service
   """
-  dimensionFieldListing: DimensionFieldListing!
+  serviceFieldListing: ServiceFieldListing!
 
   """
   The zero-based index of the TemplateDimensionRef used for this stage. Immutable after stage creation.

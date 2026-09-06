@@ -1,4 +1,5 @@
-import type {ComponentType} from 'react'
+import type {ComponentType, LazyExoticComponent} from 'react'
+import type {ScopePhaseArea_meeting$data} from '../../__generated__/ScopePhaseArea_meeting.graphql'
 import type Atmosphere from '../../Atmosphere'
 import type {MenuMutationProps} from '../../hooks/useMutationProps'
 import type {IntegrationIdCodec, IntegrationMeta} from '../../shared/integrations/IntegrationMeta'
@@ -26,6 +27,17 @@ export interface ConnectParams {
   heldScopes?: readonly string[] | null
 }
 
+export interface ScopingCapability {
+  /** The poker scope-tab panel. Lazy so importing the registry does not pull every panel into the main bundle */
+  Panel: LazyExoticComponent<ComponentType<{meetingRef: ScopePhaseArea_meeting$data}>>
+  /** Show the tab even when the team cannot use the service yet, as a pitch to contact sales */
+  advertiseWhenUnavailable?: boolean
+}
+
+export interface ClientIntegrationCapabilities {
+  scoping?: ScopingCapability
+}
+
 export abstract class ClientIntegrationDefinition {
   abstract readonly service: IntegrationMeta['service']
   abstract readonly title: string
@@ -33,8 +45,7 @@ export abstract class ClientIntegrationDefinition {
   abstract readonly ids: IntegrationIdCodec
   abstract readonly Icon: ComponentType<{className?: string}>
   readonly iconClassName?: string
-  /** Show the poker scope tab even when no provider is configured, as a pitch for the integration */
-  readonly isScopeTabAdvertised?: boolean
+  abstract readonly capabilities: ClientIntegrationCapabilities
   /** Where to send the viewer when the OAuth popup closes without completing */
   readonly authorizationHelpUrl?: string
   abstract connect(atmosphere: Atmosphere, params: ConnectParams): void

@@ -1,8 +1,9 @@
 import type {GraphQLResolveInfo} from 'graphql'
 import {GraphQLError} from 'graphql'
-import {SprintPokerDefaults} from '../../../../client/types/constEnums'
 import listDimensionFields from '../../../integrations/platform/listDimensionFields'
-import resolveServiceField from '../../../integrations/platform/resolveServiceField'
+import resolveServiceField, {
+  NULL_SERVICE_FIELD
+} from '../../../integrations/platform/resolveServiceField'
 import type {EstimateStage as EstimateStageDB} from '../../../postgres/types/NewMeetingPhase'
 import {getUserId} from '../../../utils/authorization'
 import getRedis from '../../../utils/getRedis'
@@ -45,18 +46,11 @@ const loadDimensionFieldCtx = async (
 const EstimateStage: EstimateStageResolvers = {
   __isTypeOf: ({phaseType}) => phaseType === 'ESTIMATE',
   serviceField: async (source, _args, context, info) => {
-    const NULL_FIELD = {
-      __typename: 'ServiceField' as const,
-      name: SprintPokerDefaults.SERVICE_FIELD_NULL,
-      type: 'string'
-    }
     const ctx = await loadDimensionFieldCtx(source, context, info)
-    if (!ctx) return NULL_FIELD
-    const field = await resolveServiceField(ctx)
-    return field ? {__typename: 'ServiceField' as const, ...field} : NULL_FIELD
+    return ctx ? resolveServiceField(ctx) : NULL_SERVICE_FIELD
   },
 
-  dimensionFieldListing: async (source, _args, context, info) => {
+  serviceFieldListing: async (source, _args, context, info) => {
     const ctx = await loadDimensionFieldCtx(source, context, info)
     if (!ctx) return {targets: [], options: [], helpUrl: null}
     return listDimensionFields(ctx)

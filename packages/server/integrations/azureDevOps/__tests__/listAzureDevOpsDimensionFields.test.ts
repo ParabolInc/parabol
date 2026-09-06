@@ -52,7 +52,7 @@ describe('listAzureDevOpsDimensionFields', () => {
   ])('offers the one field the push path writes for %s', async (type, fieldId, label) => {
     load.mockResolvedValue({type})
     await expect(listAzureDevOpsDimensionFields(buildCtx())).resolves.toEqual({
-      options: [{fieldId, label}]
+      options: [{fieldId, label, type: 'string'}]
     })
     expect(load).toHaveBeenCalledWith({
       teamId: 'team1',

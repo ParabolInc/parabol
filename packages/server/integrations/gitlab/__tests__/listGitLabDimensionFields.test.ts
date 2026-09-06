@@ -7,11 +7,13 @@ describe('listGitLabDimensionFields', () => {
       options: [
         {
           fieldId: SprintPokerDefaults.GITLAB_FIELD_TIME_ESTIMATE,
-          label: SprintPokerDefaults.GITLAB_FIELD_TIME_ESTIMATE_LABEL
+          label: SprintPokerDefaults.GITLAB_FIELD_TIME_ESTIMATE_LABEL,
+          type: 'string'
         },
         {
           fieldId: SprintPokerDefaults.GITLAB_FIELD_WEIGHT,
-          label: SprintPokerDefaults.GITLAB_FIELD_WEIGHT_LABEL
+          label: SprintPokerDefaults.GITLAB_FIELD_WEIGHT_LABEL,
+          type: 'string'
         }
       ]
     })

@@ -11,6 +11,7 @@ import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
 import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {splitTipTapContent} from '../shared/tiptap/splitTipTapContent'
 import {PALETTE} from '../styles/paletteV3'
+import {SprintPokerDefaults} from '../types/constEnums'
 import type {BaseLocalHandlers, StandardMutation} from '../types/relayMutations'
 import getSearchQueryFromMeeting from '../utils/getSearchQueryFromMeeting'
 import clientTempId from '../utils/relay/clientTempId'
@@ -43,7 +44,8 @@ graphql`
         }
       }
       serviceField {
-        name
+        fieldId
+        label
         type
       }
       scores {
@@ -283,7 +285,8 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
             nextStage
               .setLinkedRecord(
                 createProxyRecord(store, 'ServiceField', {
-                  name: 'Unknown',
+                  fieldId: SprintPokerDefaults.SERVICE_FIELD_NULL,
+                  label: SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL,
                   type: 'number'
                 }),
                 'serviceField'

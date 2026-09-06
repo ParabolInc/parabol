@@ -1,10 +1,11 @@
+import type {IntegrationProviderServiceEnum} from '../../../__generated__/CreateTaskIntegrationMutation.graphql'
 import findIntegrationService, {
   getConnectProvider,
   isServiceAvailable
 } from '../findIntegrationService'
 
 const services: readonly {
-  service: string
+  service: IntegrationProviderServiceEnum
   isAvailable: boolean
   cloudProvider: {
     id: string

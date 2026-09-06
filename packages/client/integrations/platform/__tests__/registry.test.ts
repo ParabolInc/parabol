@@ -23,6 +23,7 @@ jest.mock('../../../utils/LinearClientManager', () => ({
   default: {openOAuth: jest.fn()}
 }))
 
+import type {IntegrationProviderServiceEnum} from '../../../__generated__/CreateTaskIntegrationMutation.graphql'
 import type Atmosphere from '../../../Atmosphere'
 import type {MenuMutationProps} from '../../../hooks/useMutationProps'
 import type {IssueParts} from '../../../shared/integrations/IntegrationMeta'
@@ -67,12 +68,23 @@ describe('clientIntegrations registry', () => {
     expect(def.ids.joinIssue(def.ids.splitIssue(id))).toBe(id)
   })
 
-  it('returns null for an unknown service', () => {
-    expect(getClientIntegration('asana')).toBeNull()
+  it('every registered integration ships a lazy scope-tab panel', () => {
+    Object.values(clientIntegrations).forEach((definition) => {
+      const Panel = definition.capabilities.scoping?.Panel
+      expect(Panel).toBeDefined()
+      expect(String(Panel?.$$typeof)).toBe('Symbol(react.lazy)')
+    })
   })
 
-  it('returns null for an inherited prototype key', () => {
-    expect(getClientIntegration('toString')).toBeNull()
+  it('looks up a definition by service', () => {
+    expect(getClientIntegration('jira')).toBe(clientIntegrations.jira)
+  })
+
+  it('only Jira Data Center advertises its scope tab when the team cannot use it', () => {
+    const advertised = Object.entries(clientIntegrations)
+      .filter(([, definition]) => definition.capabilities.scoping?.advertiseWhenUnavailable)
+      .map(([key]) => key)
+    expect(advertised).toEqual(['jiraServer'])
   })
 })
 
@@ -139,6 +151,6 @@ describe('connect with an interface-shaped provider ref', () => {
   it('exposes a type guard over the registry keys', () => {
     expect(isRegisteredClientIntegration('linear')).toBe(true)
     expect(isRegisteredClientIntegration('gcal')).toBe(false)
-    expect(isRegisteredClientIntegration('toString')).toBe(false)
+    expect(isRegisteredClientIntegration('toString' as IntegrationProviderServiceEnum)).toBe(false)
   })
 })

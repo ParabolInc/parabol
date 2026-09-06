@@ -1,6 +1,6 @@
-import type {DimensionFieldListing} from '../platform/ServerIntegrationDefinition'
+import type {ServiceFieldListing} from '../platform/ServerIntegrationDefinition'
 
-const NO_FIELDS: DimensionFieldListing = {options: []}
+const NO_FIELDS: ServiceFieldListing = {options: []}
 
 const listGitHubDimensionFields = async () => NO_FIELDS
 

@@ -4,12 +4,12 @@ import {useFragment} from 'react-relay'
 import {ExpandMore} from '~/ui/icons'
 import type {EstimateFieldDropdown_stage$key} from '../__generated__/EstimateFieldDropdown_stage.graphql'
 import {cn} from '../ui/cn'
-import {Menu} from '../ui/Menu/Menu'
+import {SelectValue} from '../ui/Select/SelectValue'
 import EditVotingLabelTemplateModal from './EditVotingLabelTemplateModal'
 import type {EditModalConfig} from './EstimateFieldMenu'
 import EstimateFieldMenu from './EstimateFieldMenu'
-import {resolveEstimateFieldLabel} from './estimateFieldOptions'
 import PlainButton from './PlainButton/PlainButton'
+import {resolveServiceFieldLabel} from './serviceFieldLabel'
 
 interface Props {
   clearError: () => void
@@ -26,27 +26,25 @@ const EstimateFieldDropdown = (props: Props) => {
         ...EstimateFieldMenu_stage
         finalScore
         serviceField {
-          name
+          fieldId
+          label
         }
-        dimensionFieldListing {
+        serviceFieldListing {
           targets
           options {
             fieldId
-            label
           }
         }
       }
     `,
     stageRef
   )
-  const {finalScore, serviceField, dimensionFieldListing} = stage
+  const {finalScore, serviceField, serviceFieldListing} = stage
   const [editModalConfig, setEditModalConfig] = useState<EditModalConfig | null>(null)
-  const label = resolveEstimateFieldLabel({
-    name: serviceField.name,
-    options: dimensionFieldListing.options,
-    targets: dimensionFieldListing.targets,
-    finalScore
-  })
+  const label = resolveServiceFieldLabel(serviceField, serviceFieldListing, finalScore)
+  // a label service renders a Menu, every other service a Select, which anchors on its own value
+  const isSelect = isFacilitator && !serviceFieldListing.targets.includes('label')
+  const labelEl = <div className='text-sm'>{label}</div>
 
   const trigger = (
     <PlainButton
@@ -57,7 +55,7 @@ const EstimateFieldDropdown = (props: Props) => {
           : 'cursor-default pr-2'
       )}
     >
-      <div className='text-sm'>{label}</div>
+      {isSelect ? <SelectValue>{labelEl}</SelectValue> : labelEl}
       <ExpandMore className={cn('h-[18px] w-[18px]', !isFacilitator && 'hidden')} />
     </PlainButton>
   )
@@ -66,13 +64,13 @@ const EstimateFieldDropdown = (props: Props) => {
 
   return (
     <>
-      <Menu trigger={trigger} onOpenChange={(open) => open && clearError()}>
-        <EstimateFieldMenu
-          stageRef={stage}
-          submitScore={submitScore}
-          onOpenEditModal={setEditModalConfig}
-        />
-      </Menu>
+      <EstimateFieldMenu
+        stageRef={stage}
+        trigger={trigger}
+        onOpenChange={(isOpen) => isOpen && clearError()}
+        submitScore={submitScore}
+        onOpenEditModal={setEditModalConfig}
+      />
       {editModalConfig && (
         <EditVotingLabelTemplateModal
           isOpen

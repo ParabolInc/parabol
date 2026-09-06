@@ -4,7 +4,10 @@ import type {ScopePhaseAreaConnect_service$key} from '../__generated__/ScopePhas
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import type {ConnectProviderRef} from '../integrations/platform/ClientIntegrationDefinition'
-import {getClientIntegration} from '../integrations/platform/registry'
+import {
+  getClientIntegration,
+  isRegisteredClientIntegration
+} from '../integrations/platform/registry'
 import {Button} from '../ui/Button/Button'
 import {ERROR_POPUP_CLOSED} from '../utils/AtlassianClientManager'
 import {SALES_EMAIL} from '../utils/constants'
@@ -61,8 +64,8 @@ const ScopePhaseAreaConnect = (props: Props) => {
   )
   const {service, title, isAvailable, grantedScopes, cloudProvider, sharedProviders} =
     integrationService
+  if (!isRegisteredClientIntegration(service)) return null
   const definition = getClientIntegration(service)
-  if (!definition) return null
 
   if (!isAvailable) {
     return (

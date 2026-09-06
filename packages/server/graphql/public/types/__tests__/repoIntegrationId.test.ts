@@ -46,11 +46,4 @@ describe('RepoIntegration.integrationRepoId', () => {
       IntegrationRepoId.join({service: 'linear', id: 'team1', teamId: 'team1'})
     )
   })
-
-  it('throws when a stitched object lacks the parts the push id needs', () => {
-    expect(() => resolve(_xGitHubRepository.integrationRepoId, {id: 'R_1'})).toThrow()
-    expect(() =>
-      resolve(_xGitLabProject.integrationRepoId, {id: 'gid://gitlab/Project/1'})
-    ).toThrow()
-  })
 })

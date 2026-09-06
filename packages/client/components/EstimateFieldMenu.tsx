@@ -1,15 +1,18 @@
 import graphql from 'babel-plugin-relay/macro'
+import type {ReactNode} from 'react'
 import {useFragment} from 'react-relay'
 import {OpenInNew} from '~/ui/icons'
 import type {EstimateFieldMenu_stage$key} from '../__generated__/EstimateFieldMenu_stage.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useUpdateIntegrationDimensionFieldMutation from '../mutations/useUpdateIntegrationDimensionFieldMutation'
 import {SprintPokerDefaults} from '../types/constEnums'
+import {Menu} from '../ui/Menu/Menu'
 import {MenuContent} from '../ui/Menu/MenuContent'
 import {MenuItem} from '../ui/Menu/MenuItem'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 import EstimateFieldLabelTemplateItem from './EstimateFieldLabelTemplateItem'
-import {findEstimateFieldOption, SENTINEL_FIELD_LABELS} from './estimateFieldOptions'
+import EstimateFieldSelect from './EstimateFieldSelect'
+import {isLabelTemplate} from './serviceFieldLabel'
 
 export type EditModalConfig = {
   updateLabelTemplate: (labelTemplate: string) => () => void
@@ -19,12 +22,14 @@ export type EditModalConfig = {
 
 interface Props {
   onOpenEditModal: (config: EditModalConfig) => void
+  onOpenChange: (isOpen: boolean) => void
   stageRef: EstimateFieldMenu_stage$key
   submitScore(): void
+  trigger: ReactNode
 }
 
 const EstimateFieldMenu = (props: Props) => {
-  const {onOpenEditModal, stageRef, submitScore} = props
+  const {onOpenEditModal, onOpenChange, stageRef, submitScore, trigger} = props
   const atmosphere = useAtmosphere()
   const [updateIntegrationDimensionField] = useUpdateIntegrationDimensionFieldMutation()
   const stage = useFragment(
@@ -35,9 +40,10 @@ const EstimateFieldMenu = (props: Props) => {
           name
         }
         serviceField {
-          name
+          fieldId
+          label
         }
-        dimensionFieldListing {
+        serviceFieldListing {
           targets
           options {
             fieldId
@@ -56,31 +62,31 @@ const EstimateFieldMenu = (props: Props) => {
     `,
     stageRef
   )
-  const {meetingId, dimensionRef, serviceField, dimensionFieldListing, task} = stage
+  const {meetingId, dimensionRef, serviceField, serviceFieldListing, task} = stage
   if (!task?.integration) return null
   const {id: taskId, teamId, integration} = task
   const {name: dimensionName} = dimensionRef
-  const {name: serviceFieldName} = serviceField
-  const {targets, options, helpUrl} = dimensionFieldListing
+  const {targets, options, helpUrl} = serviceFieldListing
   const acceptsFields = targets.includes('field')
   const acceptsLabel = targets.includes('label')
+  const currentTemplate = isLabelTemplate(serviceField, serviceFieldListing)
+    ? serviceField.label
+    : null
 
-  const handleClick = (fieldId: string) => () => {
-    const isCurrent =
-      fieldId === serviceFieldName ||
-      findEstimateFieldOption(options, serviceFieldName)?.fieldId === fieldId
-    if (isCurrent) {
+  const selectField = (fieldId: string, label: string) => {
+    if (fieldId === serviceField.fieldId) {
       submitScore()
       return
     }
     updateIntegrationDimensionField(
       {
         variables: {meetingId, taskId, dimensionName, fieldId},
-        optimisticFieldName: options.find((option) => option.fieldId === fieldId)?.label
+        optimisticLabel: label
       },
       {onSuccess: submitScore}
     )
   }
+  const handleClick = (fieldId: string, label: string) => () => selectField(fieldId, label)
 
   const openHelp = () => {
     if (!helpUrl) return
@@ -94,39 +100,61 @@ const EstimateFieldMenu = (props: Props) => {
     })
   }
 
+  if (!acceptsLabel) {
+    return (
+      <EstimateFieldSelect
+        trigger={trigger}
+        onOpenChange={onOpenChange}
+        options={options}
+        serviceFieldId={serviceField.fieldId}
+        helpUrl={helpUrl}
+        onSelectField={selectField}
+        onOpenHelp={openHelp}
+        hasEmptyFieldList={acceptsFields && options.length === 0}
+      />
+    )
+  }
+
   return (
-    <MenuContent>
-      {acceptsFields && options.length === 0 && (
-        <div className='px-4 pt-2 pb-0 text-fg-secondary text-sm'>No fields found</div>
-      )}
-      {options.map(({fieldId, label}) => (
-        <MenuItem key={fieldId} onClick={handleClick(fieldId)}>
-          {label}
-        </MenuItem>
-      ))}
-      {acceptsLabel && (
+    <Menu trigger={trigger} onOpenChange={onOpenChange}>
+      <MenuContent>
+        {options.map(({fieldId, label}) => (
+          <MenuItem key={fieldId} onClick={handleClick(fieldId, label)}>
+            {label}
+          </MenuItem>
+        ))}
         <EstimateFieldLabelTemplateItem
           dimensionName={dimensionName}
-          serviceFieldName={serviceFieldName}
-          onSelect={handleClick}
+          currentTemplate={currentTemplate}
+          onSelect={(labelTemplate) => handleClick(labelTemplate, labelTemplate)}
           onOpenEditModal={onOpenEditModal}
         />
-      )}
-      <MenuItem onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_COMMENT)}>
-        {SENTINEL_FIELD_LABELS[SprintPokerDefaults.SERVICE_FIELD_COMMENT]}
-      </MenuItem>
-      <MenuItem onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_NULL)}>
-        {SENTINEL_FIELD_LABELS[SprintPokerDefaults.SERVICE_FIELD_NULL]}
-      </MenuItem>
-      {helpUrl && (
-        <MenuItem onClick={openHelp} onSelect={(e) => e.preventDefault()}>
-          <span className='flex w-full items-center italic'>
-            Where's my field?
-            <OpenInNew className='ml-auto h-[18px] w-[30px] pl-3 text-fg-muted' />
-          </span>
+        <MenuItem
+          onClick={handleClick(
+            SprintPokerDefaults.SERVICE_FIELD_COMMENT,
+            SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL
+          )}
+        >
+          {SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL}
         </MenuItem>
-      )}
-    </MenuContent>
+        <MenuItem
+          onClick={handleClick(
+            SprintPokerDefaults.SERVICE_FIELD_NULL,
+            SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL
+          )}
+        >
+          {SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL}
+        </MenuItem>
+        {helpUrl && (
+          <MenuItem onClick={openHelp} onSelect={(e) => e.preventDefault()}>
+            <span className='flex w-full items-center gap-2 italic'>
+              Where's my field?
+              <OpenInNew className='ml-auto h-[18px] w-[18px] text-fg-muted' />
+            </span>
+          </MenuItem>
+        )}
+      </MenuContent>
+    </Menu>
   )
 }
 

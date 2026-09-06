@@ -3,6 +3,7 @@ import type {
   DimensionFieldKey,
   DimensionFieldTarget
 } from '../platform/ServerIntegrationDefinition'
+import {getAzureDevOpsDimensionFieldLabel} from './azureDevOpsDimensionFieldOptions'
 
 const describeAzureDevOpsDimensionField = async (
   _ctx: DimensionFieldCtx,
@@ -12,7 +13,7 @@ const describeAzureDevOpsDimensionField = async (
   if (fieldId.trim().length === 0 || fieldId.length > 120) {
     return new Error('Field name must be 1–120 characters')
   }
-  return {fieldId, fieldName: null, fieldType: 'string'}
+  return {fieldId, fieldName: getAzureDevOpsDimensionFieldLabel(fieldId), fieldType: 'string'}
 }
 
 export default describeAzureDevOpsDimensionField

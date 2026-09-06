@@ -34,15 +34,15 @@ const source = {
 } as unknown as EstimateStageSource
 const info = {} as GraphQLResolveInfo
 
-const resolve = EstimateStage.dimensionFieldListing
+const resolve = EstimateStage.serviceFieldListing
 if (typeof resolve !== 'function') throw new Error('resolver must be a function')
 
-describe('EstimateStage.dimensionFieldListing', () => {
+describe('EstimateStage.serviceFieldListing', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     task.integration = {service: 'jira', accessUserId: 'user1'}
     listDimensionFields.mockResolvedValue({
-      options: [{fieldId: 'f1', label: 'Story Points'}],
+      options: [{fieldId: 'f1', label: 'Story Points', type: 'number'}],
       helpUrl: 'https://docs'
     })
   })
@@ -50,7 +50,7 @@ describe('EstimateStage.dimensionFieldListing', () => {
   it('merges the capability targets with the service listing', async () => {
     await expect(resolve(source, {}, buildContext(), info)).resolves.toEqual({
       targets: ['comment', 'field'],
-      options: [{fieldId: 'f1', label: 'Story Points'}],
+      options: [{fieldId: 'f1', label: 'Story Points', type: 'number'}],
       helpUrl: 'https://docs'
     })
     expect(listDimensionFields).toHaveBeenCalledWith(
