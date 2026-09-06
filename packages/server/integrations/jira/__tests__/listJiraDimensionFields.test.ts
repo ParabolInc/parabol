@@ -37,8 +37,8 @@ describe('listJiraDimensionFields', () => {
     })
     await expect(listJiraDimensionFields(buildCtx(jiraIntegration))).resolves.toEqual({
       options: [
-        {fieldId: 'customfield_1', label: 'Story Points'},
-        {fieldId: 'customfield_2', label: 'Effort'}
+        {fieldId: 'customfield_1', label: 'Story Points', type: 'number'},
+        {fieldId: 'customfield_2', label: 'Effort', type: 'number'}
       ]
     })
     expect(load).toHaveBeenCalledWith({

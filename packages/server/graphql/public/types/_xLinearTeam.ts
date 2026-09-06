@@ -3,7 +3,7 @@ import type {_XLinearTeamResolvers} from '../resolverTypes'
 
 const _xLinearTeam: _XLinearTeamResolvers = {
   service: () => 'linear',
-  name: ({displayName, name}) => displayName ?? name,
+  name: ({displayName}) => displayName,
   integrationRepoId: ({id}) => IntegrationRepoId.join({service: 'linear', id, teamId: id})
 }
 

@@ -2,21 +2,18 @@ import type {MouseEvent} from 'react'
 import {Edit} from '~/ui/icons'
 import {MenuItem} from '../ui/Menu/MenuItem'
 import type {EditModalConfig} from './EstimateFieldMenu'
-import {isFieldTemplate} from './estimateFieldOptions'
 
 interface Props {
   dimensionName: string
-  serviceFieldName: string
+  currentTemplate: string | null
   onSelect: (labelTemplate: string) => () => void
   onOpenEditModal: (config: EditModalConfig) => void
 }
 
 const EstimateFieldLabelTemplateItem = (props: Props) => {
-  const {dimensionName, serviceFieldName, onSelect, onOpenEditModal} = props
+  const {dimensionName, currentTemplate, onSelect, onOpenEditModal} = props
   const defaultLabelTemplate = `${dimensionName}: {{#}}`
-  const serviceFieldTemplate = isFieldTemplate(serviceFieldName)
-    ? serviceFieldName
-    : defaultLabelTemplate
+  const serviceFieldTemplate = currentTemplate ?? defaultLabelTemplate
   const openEditModal = (e: MouseEvent) => {
     e.stopPropagation()
     onOpenEditModal({

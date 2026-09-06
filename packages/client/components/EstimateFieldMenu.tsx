@@ -12,7 +12,7 @@ import {MenuItem} from '../ui/Menu/MenuItem'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 import EstimateFieldLabelTemplateItem from './EstimateFieldLabelTemplateItem'
 import EstimateFieldSelect from './EstimateFieldSelect'
-import {findEstimateFieldOption, SENTINEL_FIELD_LABELS} from './estimateFieldOptions'
+import {isLabelTemplate} from './serviceFieldLabel'
 
 export type EditModalConfig = {
   updateLabelTemplate: (labelTemplate: string) => () => void
@@ -40,9 +40,10 @@ const EstimateFieldMenu = (props: Props) => {
           name
         }
         serviceField {
-          name
+          fieldId
+          label
         }
-        dimensionFieldListing {
+        serviceFieldListing {
           targets
           options {
             fieldId
@@ -61,32 +62,31 @@ const EstimateFieldMenu = (props: Props) => {
     `,
     stageRef
   )
-  const {meetingId, dimensionRef, serviceField, dimensionFieldListing, task} = stage
+  const {meetingId, dimensionRef, serviceField, serviceFieldListing, task} = stage
   if (!task?.integration) return null
   const {id: taskId, teamId, integration} = task
   const {name: dimensionName} = dimensionRef
-  const {name: serviceFieldName} = serviceField
-  const {targets, options, helpUrl} = dimensionFieldListing
+  const {targets, options, helpUrl} = serviceFieldListing
   const acceptsFields = targets.includes('field')
   const acceptsLabel = targets.includes('label')
+  const currentTemplate = isLabelTemplate(serviceField, serviceFieldListing)
+    ? serviceField.label
+    : null
 
-  const selectField = (fieldId: string) => {
-    const isCurrent =
-      fieldId === serviceFieldName ||
-      findEstimateFieldOption(options, serviceFieldName)?.fieldId === fieldId
-    if (isCurrent) {
+  const selectField = (fieldId: string, label: string) => {
+    if (fieldId === serviceField.fieldId) {
       submitScore()
       return
     }
     updateIntegrationDimensionField(
       {
         variables: {meetingId, taskId, dimensionName, fieldId},
-        optimisticFieldName: options.find((option) => option.fieldId === fieldId)?.label
+        optimisticLabel: label
       },
       {onSuccess: submitScore}
     )
   }
-  const handleClick = (fieldId: string) => () => selectField(fieldId)
+  const handleClick = (fieldId: string, label: string) => () => selectField(fieldId, label)
 
   const openHelp = () => {
     if (!helpUrl) return
@@ -106,7 +106,7 @@ const EstimateFieldMenu = (props: Props) => {
         trigger={trigger}
         onOpenChange={onOpenChange}
         options={options}
-        serviceFieldName={serviceFieldName}
+        serviceFieldId={serviceField.fieldId}
         helpUrl={helpUrl}
         onSelectField={selectField}
         onOpenHelp={openHelp}
@@ -119,21 +119,31 @@ const EstimateFieldMenu = (props: Props) => {
     <Menu trigger={trigger} onOpenChange={onOpenChange}>
       <MenuContent>
         {options.map(({fieldId, label}) => (
-          <MenuItem key={fieldId} onClick={handleClick(fieldId)}>
+          <MenuItem key={fieldId} onClick={handleClick(fieldId, label)}>
             {label}
           </MenuItem>
         ))}
         <EstimateFieldLabelTemplateItem
           dimensionName={dimensionName}
-          serviceFieldName={serviceFieldName}
-          onSelect={handleClick}
+          currentTemplate={currentTemplate}
+          onSelect={(labelTemplate) => handleClick(labelTemplate, labelTemplate)}
           onOpenEditModal={onOpenEditModal}
         />
-        <MenuItem onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_COMMENT)}>
-          {SENTINEL_FIELD_LABELS[SprintPokerDefaults.SERVICE_FIELD_COMMENT]}
+        <MenuItem
+          onClick={handleClick(
+            SprintPokerDefaults.SERVICE_FIELD_COMMENT,
+            SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL
+          )}
+        >
+          {SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL}
         </MenuItem>
-        <MenuItem onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_NULL)}>
-          {SENTINEL_FIELD_LABELS[SprintPokerDefaults.SERVICE_FIELD_NULL]}
+        <MenuItem
+          onClick={handleClick(
+            SprintPokerDefaults.SERVICE_FIELD_NULL,
+            SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL
+          )}
+        >
+          {SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL}
         </MenuItem>
         {helpUrl && (
           <MenuItem onClick={openHelp} onSelect={(e) => e.preventDefault()}>

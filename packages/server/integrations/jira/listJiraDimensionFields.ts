@@ -1,9 +1,6 @@
 import {ExternalLinks} from 'parabol-client/types/constEnums'
 import type {JiraIssueMissingEstimationFieldHintEnum} from '../../graphql/public/resolverTypes'
-import type {
-  DimensionFieldCtx,
-  DimensionFieldListing
-} from '../platform/ServerIntegrationDefinition'
+import type {DimensionFieldCtx, ServiceFieldListing} from '../platform/ServerIntegrationDefinition'
 
 const MISSING_FIELD_DOCS: Record<JiraIssueMissingEstimationFieldHintEnum, string> = {
   companyManagedStoryPoints: ExternalLinks.INTEGRATIONS_SUPPORT_JIRA_MISSING_FIELD_COMPANY_MANAGED,
@@ -15,7 +12,7 @@ const listJiraDimensionFields = async ({
   dataLoader,
   teamId,
   viewerId
-}: DimensionFieldCtx): Promise<DimensionFieldListing> => {
+}: DimensionFieldCtx): Promise<ServiceFieldListing> => {
   const {integration, id: taskId} = task
   if (integration?.service !== 'jira') return {options: []}
   const {cloudId, issueKey, accessUserId} = integration
@@ -24,9 +21,10 @@ const listJiraDimensionFields = async ({
     .load({teamId, userId: accessUserId, cloudId, issueKey, taskId, viewerId})
   if (!jiraIssue) return {options: []}
   const {possibleEstimationFields, missingEstimationFieldHint} = jiraIssue
-  const options = possibleEstimationFields.map(({fieldId, fieldName}) => ({
+  const options = possibleEstimationFields.map(({fieldId, fieldName, fieldType}) => ({
     fieldId,
-    label: fieldName
+    label: fieldName,
+    type: fieldType
   }))
   if (!missingEstimationFieldHint) return {options}
   return {options, helpUrl: MISSING_FIELD_DOCS[missingEstimationFieldHint]}

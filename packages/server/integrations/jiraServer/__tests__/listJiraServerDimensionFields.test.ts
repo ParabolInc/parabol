@@ -38,7 +38,7 @@ describe('listJiraServerDimensionFields', () => {
       {fieldId: 'customfield_3', name: 'Sprint', operations: ['set'], schema: {type: 'array'}}
     ])
     await expect(listJiraServerDimensionFields(buildCtx())).resolves.toEqual({
-      options: [{fieldId: 'Story Points', label: 'Story Points'}]
+      options: [{fieldId: 'customfield_1', label: 'Story Points', type: 'number'}]
     })
     expect(loaders.jiraServerFieldTypes!.load).toHaveBeenCalledWith({
       teamId: 'team1',

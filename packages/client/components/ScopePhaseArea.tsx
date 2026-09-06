@@ -1,42 +1,22 @@
 import graphql from 'babel-plugin-relay/macro'
-import {type ComponentType, useState} from 'react'
+import {Suspense, useState} from 'react'
 import {useFragment} from 'react-relay'
-import type {
-  ScopePhaseArea_meeting$data,
-  ScopePhaseArea_meeting$key
-} from '~/__generated__/ScopePhaseArea_meeting.graphql'
+import type {ScopePhaseArea_meeting$key} from '~/__generated__/ScopePhaseArea_meeting.graphql'
 import useBreakpoint from '~/hooks/useBreakpoint'
-import {Breakpoint} from '~/types/constEnums'
+import {Breakpoint, LoaderSize} from '~/types/constEnums'
 import {
   compareClientIntegrationPopularity,
   getClientIntegration,
-  isRegisteredClientIntegration,
-  type RegisteredClientIntegration
+  isRegisteredClientIntegration
 } from '../integrations/platform/registry'
+import ErrorBoundary from './ErrorBoundary'
+import LoadingComponent from './LoadingComponent/LoadingComponent'
 import ParabolLogoSVG from './ParabolLogoSVG'
-import ScopePhaseAreaAzureDevOpsScoping from './ScopePhaseAreaAzureDevOpsScoping'
 import ScopePhaseAreaConnect from './ScopePhaseAreaConnect'
-import ScopePhaseAreaGitHubScoping from './ScopePhaseAreaGitHubScoping'
-import ScopePhaseAreaGitLabScoping from './ScopePhaseAreaGitLabScoping'
-import ScopePhaseAreaJiraScoping from './ScopePhaseAreaJiraScoping'
-import ScopePhaseAreaJiraServerScoping from './ScopePhaseAreaJiraServerScoping'
-import ScopePhaseAreaLinearScoping from './ScopePhaseAreaLinearScoping'
 import ScopePhaseAreaParabolScoping from './ScopePhaseAreaParabolScoping'
 import SwipeablePanel from './SwipeablePanel'
 import Tab from './Tab/Tab'
 import Tabs from './Tabs/Tabs'
-
-const SCOPING_PANEL_BY_SERVICE: Record<
-  RegisteredClientIntegration,
-  ComponentType<{meetingRef: ScopePhaseArea_meeting$data}>
-> = {
-  azureDevOps: ScopePhaseAreaAzureDevOpsScoping,
-  github: ScopePhaseAreaGitHubScoping,
-  gitlab: ScopePhaseAreaGitLabScoping,
-  jira: ScopePhaseAreaJiraScoping,
-  jiraServer: ScopePhaseAreaJiraServerScoping,
-  linear: ScopePhaseAreaLinearScoping
-}
 
 const PARABOL_TAB_KEY = 'parabol'
 const DEFAULT_TAB_KEY = 'jira'
@@ -85,8 +65,9 @@ const ScopePhaseArea = (props: Props) => {
     const {service, isAvailable, isConnected} = integrationService
     if (!isRegisteredClientIntegration(service)) return []
     const definition = getClientIntegration(service)
-    if (!isAvailable && !definition.isScopeTabAdvertised) return []
-    const ScopingPanel = SCOPING_PANEL_BY_SERVICE[service]
+    const {scoping} = definition.capabilities
+    if (!scoping) return []
+    if (!isAvailable && !scoping.advertiseWhenUnavailable) return []
     return [
       {
         key: service,
@@ -95,7 +76,11 @@ const ScopePhaseArea = (props: Props) => {
         label: definition.title,
         renderPanel: () =>
           isConnected ? (
-            <ScopingPanel meetingRef={meeting} />
+            <ErrorBoundary>
+              <Suspense fallback={<LoadingComponent spinnerSize={LoaderSize.PANEL} />}>
+                <scoping.Panel meetingRef={meeting} />
+              </Suspense>
+            </ErrorBoundary>
           ) : (
             <ScopePhaseAreaConnect
               teamId={teamId}

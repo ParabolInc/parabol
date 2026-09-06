@@ -5,7 +5,10 @@ import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
 import {Button} from '~/ui/Button/Button'
 import type {PokerDimensionFinalScorePicker_stage$key} from '../__generated__/PokerDimensionFinalScorePicker_stage.graphql'
-import {getClientIntegration} from '../integrations/platform/registry'
+import {
+  getClientIntegration,
+  isRegisteredClientIntegration
+} from '../integrations/platform/registry'
 import EstimateFieldDropdown from './EstimateFieldDropdown'
 
 interface Props {
@@ -35,7 +38,10 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
   )
 
   const service = stage.task?.integration?.service
-  const title = service ? getClientIntegration(service)?.title : undefined
+  const title =
+    service && isRegisteredClientIntegration(service)
+      ? getClientIntegration(service).title
+      : undefined
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const focusInput = () => inputRef.current!.focus()
   return (

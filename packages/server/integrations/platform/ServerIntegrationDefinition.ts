@@ -77,25 +77,22 @@ export interface DimensionFieldKey {
 
 export interface DimensionFieldTarget {
   fieldId: string
-  /** The service's human-readable name for fieldId; null when fieldId is already the label (templates, sentinels, Azure DevOps ids) */
+  /** The service's human-readable name for fieldId; null when fieldId is already the label (templates, sentinels) or the service knows no name for it */
   fieldName: string | null
   fieldType: string
 }
 
 export interface ServiceField {
-  name: string
+  /** What updateIntegrationDimensionField takes; the sentinels and a label template are their own id */
+  fieldId: string
+  label: string
   type: string
 }
 
 export type EstimatePushTarget = 'comment' | 'field' | 'label'
 
-export interface DimensionFieldOption {
-  fieldId: string
-  label: string
-}
-
-export interface DimensionFieldListing {
-  options: DimensionFieldOption[]
+export interface ServiceFieldListing {
+  options: ServiceField[]
   helpUrl?: string
 }
 
@@ -112,7 +109,7 @@ export interface EstimatePushCapability {
     fieldId: string
   ): Promise<DimensionFieldTarget | Error>
   /** The fields a facilitator can map this dimension to on this task. Label services return no options — the client offers the editable template instead. helpUrl explains an empty list when the service knows why */
-  listDimensionFields(ctx: DimensionFieldCtx): Promise<DimensionFieldListing>
+  listDimensionFields(ctx: DimensionFieldCtx): Promise<ServiceFieldListing>
 }
 
 export interface IssueListCapability {

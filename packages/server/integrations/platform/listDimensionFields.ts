@@ -1,21 +1,21 @@
 import {getServerIntegration} from './registry'
 import type {
   DimensionFieldCtx,
-  DimensionFieldOption,
-  EstimatePushTarget
+  EstimatePushTarget,
+  ServiceField
 } from './ServerIntegrationDefinition'
 
-export interface ResolvedDimensionFieldListing {
+export interface ResolvedServiceFieldListing {
   targets: EstimatePushTarget[]
-  options: DimensionFieldOption[]
+  options: ServiceField[]
   helpUrl: string | null
 }
 
-const EMPTY_LISTING: ResolvedDimensionFieldListing = {targets: [], options: [], helpUrl: null}
+const EMPTY_LISTING: ResolvedServiceFieldListing = {targets: [], options: [], helpUrl: null}
 
 const listDimensionFields = async (
   ctx: DimensionFieldCtx
-): Promise<ResolvedDimensionFieldListing> => {
+): Promise<ResolvedServiceFieldListing> => {
   const {integration} = ctx.task
   if (!integration) return EMPTY_LISTING
   const {estimatePush} = getServerIntegration(integration.service).capabilities

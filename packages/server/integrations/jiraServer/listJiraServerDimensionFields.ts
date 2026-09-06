@@ -1,14 +1,11 @@
-import type {
-  DimensionFieldCtx,
-  DimensionFieldListing
-} from '../platform/ServerIntegrationDefinition'
+import type {DimensionFieldCtx, ServiceFieldListing} from '../platform/ServerIntegrationDefinition'
 import {VOTE_FIELD_ALLOWED_TYPES, VOTE_FIELD_ID_BLACKLIST} from './jiraServerVoteFields'
 
 const listJiraServerDimensionFields = async ({
   task,
   dataLoader,
   teamId
-}: DimensionFieldCtx): Promise<DimensionFieldListing> => {
+}: DimensionFieldCtx): Promise<ServiceFieldListing> => {
   const {integration} = task
   if (integration?.service !== 'jiraServer') return {options: []}
   const {providerId, issueId, accessUserId} = integration
@@ -28,7 +25,7 @@ const listJiraServerDimensionFields = async ({
         operations.includes('set') &&
         VOTE_FIELD_ALLOWED_TYPES.includes(schema.type)
     )
-    .map(({name}) => ({fieldId: name, label: name}))
+    .map(({fieldId, name, schema}) => ({fieldId, label: name, type: schema.type}))
   return {options}
 }
 

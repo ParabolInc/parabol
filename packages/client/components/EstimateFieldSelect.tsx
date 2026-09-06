@@ -7,23 +7,28 @@ import {SelectItem} from '../ui/Select/SelectItem'
 import {SelectSeparator} from '../ui/Select/SelectSeparator'
 import {SelectTrigger} from '../ui/Select/SelectTrigger'
 import {fromSelectValue, SERVICE_FIELD_NULL_VALUE} from '../utils/serviceFieldSelectValue'
-import {
-  type EstimateFieldOption,
-  findEstimateFieldOption,
-  SENTINEL_FIELD_LABELS
-} from './estimateFieldOptions'
 
 // picking this doesn't change the field, it opens the service's docs
 const MISSING_FIELD = '__missingField'
+
+const SENTINEL_LABELS: Record<string, string> = {
+  [SprintPokerDefaults.SERVICE_FIELD_COMMENT]: SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL,
+  [SprintPokerDefaults.SERVICE_FIELD_NULL]: SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL
+}
+
+interface ServiceFieldOption {
+  fieldId: string
+  label: string
+}
 
 interface Props {
   hasEmptyFieldList: boolean
   helpUrl: string | null | undefined
   onOpenChange: (isOpen: boolean) => void
   onOpenHelp: () => void
-  onSelectField: (fieldId: string) => void
-  options: readonly EstimateFieldOption[]
-  serviceFieldName: string
+  onSelectField: (fieldId: string, label: string) => void
+  options: readonly ServiceFieldOption[]
+  serviceFieldId: string
   trigger: ReactNode
 }
 
@@ -35,14 +40,14 @@ const EstimateFieldSelect = (props: Props) => {
     onOpenHelp,
     onSelectField,
     options,
-    serviceFieldName,
+    serviceFieldId,
     trigger
   } = props
-  const selectedOption = findEstimateFieldOption(options, serviceFieldName)
+  const isListed = options.some((option) => option.fieldId === serviceFieldId)
   // radix hides an item-aligned menu when the value matches no item, so fall back to a rendered one
-  const value = selectedOption
-    ? selectedOption.fieldId
-    : serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_NULL
+  const value = isListed
+    ? serviceFieldId
+    : serviceFieldId === SprintPokerDefaults.SERVICE_FIELD_NULL
       ? SERVICE_FIELD_NULL_VALUE
       : SprintPokerDefaults.SERVICE_FIELD_COMMENT
 
@@ -51,7 +56,12 @@ const EstimateFieldSelect = (props: Props) => {
       onOpenHelp()
       return
     }
-    onSelectField(fromSelectValue(nextValue))
+    const fieldId = fromSelectValue(nextValue)
+    const label =
+      options.find((option) => option.fieldId === fieldId)?.label ??
+      SENTINEL_LABELS[fieldId] ??
+      fieldId
+    onSelectField(fieldId, label)
   }
 
   return (
@@ -68,10 +78,10 @@ const EstimateFieldSelect = (props: Props) => {
         ))}
         {options.length > 0 && <SelectSeparator />}
         <SelectItem value={SprintPokerDefaults.SERVICE_FIELD_COMMENT}>
-          {SENTINEL_FIELD_LABELS[SprintPokerDefaults.SERVICE_FIELD_COMMENT]}
+          {SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL}
         </SelectItem>
         <SelectItem value={SERVICE_FIELD_NULL_VALUE}>
-          {SENTINEL_FIELD_LABELS[SprintPokerDefaults.SERVICE_FIELD_NULL]}
+          {SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL}
         </SelectItem>
         {helpUrl && (
           <SelectItem

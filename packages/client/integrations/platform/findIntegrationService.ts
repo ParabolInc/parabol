@@ -1,7 +1,8 @@
+import type {IntegrationProviderServiceEnum} from '../../__generated__/CreateTaskIntegrationMutation.graphql'
 import type {ConnectProvider} from './ClientIntegrationDefinition'
 
 interface CloudProviderService {
-  service: string
+  service: IntegrationProviderServiceEnum
   cloudProvider:
     | {
         id: string
@@ -20,7 +21,7 @@ const findIntegrationService = <T extends {service: string}>(
 
 export const getConnectProvider = (
   services: readonly CloudProviderService[],
-  service: string
+  service: IntegrationProviderServiceEnum
 ): ConnectProvider | null => {
   const cloudProvider = findIntegrationService(services, service)?.cloudProvider
   if (!cloudProvider?.clientId || !cloudProvider.serverBaseUrl) return null
@@ -29,8 +30,8 @@ export const getConnectProvider = (
 }
 
 export const isServiceAvailable = (
-  services: readonly {service: string; isAvailable: boolean}[],
-  service: string
+  services: readonly {service: IntegrationProviderServiceEnum; isAvailable: boolean}[],
+  service: IntegrationProviderServiceEnum
 ) => findIntegrationService(services, service)?.isAvailable ?? false
 
 export default findIntegrationService
