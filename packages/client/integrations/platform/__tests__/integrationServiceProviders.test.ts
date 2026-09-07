@@ -116,6 +116,23 @@ describe('getProviderRowEntries', () => {
     ])
   })
 
+  it('labels a shared provider by host, keeping the port and dropping the path', () => {
+    const portedProvider: ServiceProvider = {
+      id: 'ported',
+      scope: 'team',
+      clientId: 'c4',
+      serverBaseUrl: 'https://jira.acme.com:8443/',
+      tenantId: null
+    }
+    const entries = getProviderRowEntries({
+      ...base,
+      isConnected: false,
+      auth: null,
+      providers: [portedProvider, cloud]
+    })
+    expect(entries[0]!.name).toBe('jira.acme.com:8443')
+  })
+
   it('falls back to the service title when a shared provider has no serverBaseUrl', () => {
     const providerWithoutBaseUrl: ServiceProvider = {
       id: 'no-base-url',

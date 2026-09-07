@@ -5,7 +5,7 @@ import JiraSVG from '../../components/JiraSVG'
 import {jiraIntegrationMeta} from '../../shared/integrations/jiraIntegrationMeta'
 import {ExternalLinks} from '../../types/constEnums'
 import AtlassianClientManager from '../../utils/AtlassianClientManager'
-import {hasConfluenceScopes, hasJiraScopes} from '../../utils/atlassianScopes'
+import {describeAtlassianDisconnect} from '../../utils/atlassianScopes'
 import {
   type ClientIntegrationCapabilities,
   ClientIntegrationDefinition,
@@ -31,10 +31,7 @@ export class JiraClientIntegration extends ClientIntegrationDefinition {
   }
   readonly authorizationHelpUrl = ExternalLinks.INTEGRATIONS_SUPPORT_JIRA_AUTHORIZATION
   getDisconnectSubline(grantedScopes: readonly string[]) {
-    const holdsJira = hasJiraScopes(grantedScopes)
-    const holdsConfluence = hasConfluenceScopes(grantedScopes)
-    if (holdsJira && holdsConfluence) return 'Disconnects Jira and Confluence'
-    return holdsConfluence ? 'Disconnects Confluence' : 'Disconnects Jira'
+    return describeAtlassianDisconnect(grantedScopes)
   }
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider, heldScopes}: ConnectParams) {
     if (!provider?.clientId) return
