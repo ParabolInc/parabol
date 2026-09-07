@@ -40,13 +40,7 @@ export interface ProviderRowEntryModel {
   description: string
 }
 
-const hostOf = (url: string) => {
-  try {
-    return new URL(url).host
-  } catch {
-    return url
-  }
-}
+const hostOf = (url: string) => new URL(url).host
 
 export const getProviderRowEntries = (input: {
   title: string
