@@ -1,5 +1,6 @@
 import {lazy} from 'react'
 import type Atmosphere from '../../Atmosphere'
+import GitHubProviderLogo from '../../components/GitHubProviderLogo'
 import GitHubSVG from '../../components/GitHubSVG'
 import {githubIntegrationMeta} from '../../shared/integrations/githubIntegrationMeta'
 import GitHubClientManager from '../../utils/GitHubClientManager'
@@ -15,6 +16,7 @@ export class GitHubClientIntegration extends ClientIntegrationDefinition {
   readonly description = githubIntegrationMeta.description
   readonly ids = githubIntegrationMeta.ids
   readonly Icon = GitHubSVG
+  readonly ProviderLogo = GitHubProviderLogo
   readonly iconClassName = 'dark:[&_path]:fill-white'
   readonly capabilities: ClientIntegrationCapabilities = {
     scoping: {

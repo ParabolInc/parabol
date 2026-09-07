@@ -7,12 +7,9 @@ graphql`
   fragment AddTeamMemberIntegrationAuthMutation_notification on AddTeamMemberIntegrationAuthSuccess {
     teamMember {
       ...useIsIntegrated_teamMember
-      ...GitLabProviderRowTeamMember
-      ...JiraServerProviderRowTeamMember
-      ...AzureDevOpsProviderRowTeamMember
       ...GcalProviderRowTeamMember
-      ...LinearProviderRowTeamMember
       services {
+        ...IntegrationServiceProviderRow_service
         ...usePersistIntegrationSearchQueryMutation_service @relay(mask: false)
       }
       integrations {
@@ -21,9 +18,17 @@ graphql`
         gitlab {
           auth {
             isActive
+            provider {
+              id
+            }
           }
         }
         linear {
+          auth {
+            isActive
+          }
+        }
+        jiraServer {
           auth {
             isActive
           }
@@ -36,10 +41,12 @@ graphql`
         }
         atlassian {
           isActive
-          ...AtlassianProviderRowAtlassianIntegration
+          accessToken
+          scope
         }
         github {
-          ...GitHubProviderRowGitHubIntegration
+          accessToken
+          login
         }
       }
     }

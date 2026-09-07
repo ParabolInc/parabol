@@ -45,8 +45,14 @@ export abstract class ClientIntegrationDefinition {
   abstract readonly ids: IntegrationIdCodec
   abstract readonly Icon: ComponentType<{className?: string}>
   readonly iconClassName?: string
+  /** The 48px logo on the team settings row; Icon is the small inline mark for menus and tabs */
+  abstract readonly ProviderLogo: ComponentType<{className?: string}>
   abstract readonly capabilities: ClientIntegrationCapabilities
   /** Where to send the viewer when the OAuth popup closes without completing */
   readonly authorizationHelpUrl?: string
+  /** Shown instead of Connect when the team cannot use the service; clickEvent is the client analytics event name */
+  readonly contactUs?: {url: string; clickEvent: string}
+  /** Second line under the Remove menu item for services whose grant covers more than themselves */
+  getDisconnectSubline?(grantedScopes: readonly string[]): string | undefined
   abstract connect(atmosphere: Atmosphere, params: ConnectParams): void
 }

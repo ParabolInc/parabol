@@ -1,5 +1,6 @@
 import {lazy} from 'react'
 import type Atmosphere from '../../Atmosphere'
+import LinearProviderLogo from '../../components/LinearProviderLogo'
 import LinearSVG from '../../components/LinearSVG'
 import {linearIntegrationMeta} from '../../shared/integrations/linearIntegrationMeta'
 import LinearClientManager from '../../utils/LinearClientManager'
@@ -15,6 +16,7 @@ export class LinearClientIntegration extends ClientIntegrationDefinition {
   readonly description = linearIntegrationMeta.description
   readonly ids = linearIntegrationMeta.ids
   readonly Icon = LinearSVG
+  readonly ProviderLogo = LinearProviderLogo
   readonly iconClassName = 'dark:[&_path]:fill-white'
   readonly capabilities: ClientIntegrationCapabilities = {
     scoping: {

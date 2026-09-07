@@ -7,14 +7,31 @@ graphql`
   fragment RemoveTeamMemberIntegrationAuthMutation_team on RemoveTeamMemberIntegrationAuthSuccess {
     teamMember {
       ...useIsIntegrated_teamMember
-      ...GitLabProviderRowTeamMember
-      ...JiraServerProviderRowTeamMember
-      ...AzureDevOpsProviderRowTeamMember
       ...GcalProviderRowTeamMember
+      services {
+        ...IntegrationServiceProviderRow_service
+      }
       integrations {
         ...MattermostProviderRowTeamMemberIntegrations
         ...MSTeamsProviderRowTeamMemberIntegrations
-        ...LinearProviderRowTeamMemberIntegrations
+        gitlab {
+          auth {
+            isActive
+            provider {
+              id
+            }
+          }
+        }
+        linear {
+          auth {
+            isActive
+          }
+        }
+        jiraServer {
+          auth {
+            isActive
+          }
+        }
         gmeet {
           isActive
         }
@@ -22,10 +39,12 @@ graphql`
           isActive
         }
         atlassian {
-          ...AtlassianProviderRowAtlassianIntegration @relay(mask: false)
+          accessToken
+          scope
         }
         github {
-          ...GitHubProviderRowGitHubIntegration @relay(mask: false)
+          accessToken
+          login
         }
       }
     }
