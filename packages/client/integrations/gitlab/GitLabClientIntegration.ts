@@ -1,5 +1,6 @@
 import {lazy} from 'react'
 import type Atmosphere from '../../Atmosphere'
+import GitLabProviderLogo from '../../components/GitLabProviderLogo'
 import GitLabSVG from '../../components/GitLabSVG'
 import {gitlabIntegrationMeta} from '../../shared/integrations/gitlabIntegrationMeta'
 import GitLabClientManager from '../../utils/GitLabClientManager'
@@ -15,6 +16,7 @@ export class GitLabClientIntegration extends ClientIntegrationDefinition {
   readonly description = gitlabIntegrationMeta.description
   readonly ids = gitlabIntegrationMeta.ids
   readonly Icon = GitLabSVG
+  readonly ProviderLogo = GitLabProviderLogo
   readonly capabilities: ClientIntegrationCapabilities = {
     scoping: {
       Panel: lazy(

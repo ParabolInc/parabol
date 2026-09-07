@@ -36,7 +36,10 @@ export class GitHubServerIntegration extends ServerIntegrationDefinition {
 
   async getAuthRow(ctx: IntegrationCtx): Promise<TeamMemberIntegrationAuth | null> {
     const auth = await super.getAuthRow(ctx)
-    return auth?.scopes === Providers.GITHUB_SCOPE ? auth : null
+    if (!auth?.scopes) return null
+    const grantedScopes = new Set(auth.scopes.split(/[\s,]+/).filter(Boolean))
+    const requiredScopes = Providers.GITHUB_SCOPE.split(',')
+    return requiredScopes.every((scope) => grantedScopes.has(scope)) ? auth : null
   }
 
   readonly capabilities: {

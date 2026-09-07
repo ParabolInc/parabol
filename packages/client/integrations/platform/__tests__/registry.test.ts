@@ -86,6 +86,44 @@ describe('clientIntegrations registry', () => {
       .map(([key]) => key)
     expect(advertised).toEqual(['jiraServer'])
   })
+
+  it('every registered integration ships a settings-row logo', () => {
+    Object.values(clientIntegrations).forEach((definition) => {
+      expect(definition.ProviderLogo).toBeDefined()
+    })
+  })
+
+  it('only Jira Data Center offers contact-us when the team cannot use it', () => {
+    const withContactUs = Object.entries(clientIntegrations)
+      .filter(([, definition]) => definition.contactUs)
+      .map(([key]) => key)
+    expect(withContactUs).toEqual(['jiraServer'])
+    expect(clientIntegrations.jiraServer.contactUs).toEqual({
+      url: 'https://www.parabol.co/integrations/jira-server',
+      clickEvent: 'Clicked Jira Server Request Button'
+    })
+  })
+
+  it('only Jira Cloud explains what a disconnect takes with it', () => {
+    const withSubline = Object.entries(clientIntegrations)
+      .filter(([, definition]) => definition.getDisconnectSubline)
+      .map(([key]) => key)
+    expect(withSubline).toEqual(['jira'])
+    const jira = clientIntegrations.jira
+    const jiraScopes = ['read:jira-user', 'read:jira-work', 'write:jira-work', 'offline_access']
+    const confluenceScopes = [
+      'read:page:confluence',
+      'write:page:confluence',
+      'read:space:confluence',
+      'write:attachment:confluence',
+      'read:content-details:confluence'
+    ]
+    expect(jira.getDisconnectSubline?.(jiraScopes)).toBe('Disconnects Jira')
+    expect(jira.getDisconnectSubline?.(confluenceScopes)).toBe('Disconnects Confluence')
+    expect(jira.getDisconnectSubline?.([...jiraScopes, ...confluenceScopes])).toBe(
+      'Disconnects Jira and Confluence'
+    )
+  })
 })
 
 const atmosphere = {} as Atmosphere
