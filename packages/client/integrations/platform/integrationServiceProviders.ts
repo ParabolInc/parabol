@@ -40,7 +40,13 @@ export interface ProviderRowEntryModel {
   description: string
 }
 
-const stripProtocol = (url: string) => url.replace(/^https?:\/\//, '')
+const hostOf = (url: string) => {
+  try {
+    return new URL(url).host
+  } catch {
+    return url
+  }
+}
 
 export const getProviderRowEntries = (input: {
   title: string
@@ -59,7 +65,7 @@ export const getProviderRowEntries = (input: {
     if (!labelPerProvider || isCloud) return {provider, name: title, description}
     return {
       provider,
-      name: provider.serverBaseUrl ? stripProtocol(provider.serverBaseUrl) : title,
+      name: provider.serverBaseUrl ? hostOf(provider.serverBaseUrl) : title,
       description: `Connect to your own ${title} server.`
     }
   })
