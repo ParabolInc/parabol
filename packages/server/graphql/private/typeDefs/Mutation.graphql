@@ -67,6 +67,29 @@ type Mutation {
   autopauseUsers: Int
 
   """
+  Run third-party account detection for existing users. Idempotent: a lookup that already
+  completed is never repeated, so this can be re-run until it reports 0. Returns the number of
+  users processed. Requires SUGGESTED_SERVICES_ENABLED, otherwise it is a no-op
+  """
+  detectSuggestedServices(
+    """
+    Only consider users seen since this time
+    """
+    lastSeenAfter: DateTime!
+
+    """
+    Maximum number of users to process in this call
+    """
+    limit: Int!
+
+    """
+    Also re-run lookups that previously came back inconclusive, e.g. a transient network failure
+    or a vendor credential that was missing at the time
+    """
+    retryInconclusive: Boolean
+  ): Int!
+
+  """
   CURRENTLY BROKEN. copies all the records from PG for a list of organizations
   """
   backupOrganization(orgIds: [ID!]!): String!

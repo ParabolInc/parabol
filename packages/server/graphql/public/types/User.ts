@@ -50,6 +50,7 @@ import {pages} from '../fields/pages'
 import {search} from '../fields/search'
 import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
 import type {ReqResolvers} from './ReqResolvers'
+import {loadSuggestedServiceRows, toSuggestedServices} from './SuggestedService'
 
 const SIMILARITY_THRESHOLD = 0.5
 
@@ -313,6 +314,21 @@ const User: ReqResolvers<'User'> = {
     const suggestedActions = await dataLoader.get('suggestedActionsByUserId').load(userId)
     suggestedActions.sort((a, b) => (a.priority! < b.priority! ? -1 : 1))
     return suggestedActions
+  },
+
+  suggestedServices: async ({email}, _args, {dataLoader}) => {
+    const {emailRows, domainRows} = await loadSuggestedServiceRows(email, dataLoader)
+    return toSuggestedServices([...emailRows, ...domainRows])
+  },
+
+  suggestedServicesUpdatedAt: async ({email}, _args, {dataLoader}) => {
+    // Only the email-keyed lookups are specific to this person. A domain row may have been
+    // written by a colleague's signup long before we ever looked this user up, so counting it
+    // would claim we had checked them when we had not.
+    const {emailRows} = await loadSuggestedServiceRows(email, dataLoader)
+    const timestamps = emailRows.map(({detectedAt}) => detectedAt).filter(isNotNull)
+    if (timestamps.length === 0) return null
+    return new Date(Math.max(...timestamps.map((detectedAt) => detectedAt.getTime())))
   },
 
   timeline: async (

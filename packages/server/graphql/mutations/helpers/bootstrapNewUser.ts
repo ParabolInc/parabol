@@ -1,12 +1,14 @@
 import AuthToken from '../../../database/types/AuthToken'
 import TimelineEventJoinedParabol from '../../../database/types/TimelineEventJoinedParabol'
 import generateUID from '../../../generateUID'
+import detectServicesForUser from '../../../integrations/probe/detectServicesForUser'
 import getKysely from '../../../postgres/getKysely'
 import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
 import type {User} from '../../../postgres/types'
 import acceptTeamInvitation from '../../../safeMutations/acceptTeamInvitation'
 import {analytics} from '../../../utils/analytics/analytics'
 import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
+import {Logger} from '../../../utils/Logger'
 import sendPromptToJoinOrg from '../../../utils/sendPromptToJoinOrg'
 import type {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
@@ -68,6 +70,10 @@ const bootstrapNewUser = async (
     if (tier === 'team') return tier
     return highestTier
   }, 'starter')
+
+  // Detached on purpose: this makes outbound requests to third parties, and signup must never
+  // wait on them or fail because one of them did.
+  detectServicesForUser(userId, email, dataLoader).catch(Logger.error)
 
   // Identify the user so user properties are set before any events are sent
   analytics.identify({

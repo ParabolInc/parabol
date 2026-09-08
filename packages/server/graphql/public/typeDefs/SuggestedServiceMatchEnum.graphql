@@ -1,0 +1,15 @@
+"""
+How strongly a SuggestedService is evidenced
+"""
+enum SuggestedServiceMatchEnum {
+  """
+  The viewer's own account was found on the service
+  """
+  account
+
+  """
+  The viewer's company was found to use the service. This does not establish that the viewer
+  personally has an account there
+  """
+  organization
+}
