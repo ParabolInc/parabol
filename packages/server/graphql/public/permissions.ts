@@ -120,6 +120,8 @@ const permissionMap: PermissionMap<Resolvers> = {
       isViewerBillingLeader<'Mutation.downgradeToStarter'>('args.orgId')
     ),
     dragDiscussionTopic: isTeamMemberOfMeeting<'Mutation.dragDiscussionTopic'>('args.meetingId'),
+    dragTeamHealthResultStage:
+      isTeamMemberOfMeeting<'Mutation.dragTeamHealthResultStage'>('args.meetingId'),
     dragEstimatingTask: isTeamMemberOfMeeting<'Mutation.dragEstimatingTask'>('args.meetingId'),
     editCommenting: isMeetingMember<'Mutation.editCommenting'>('args.discussionId', 'discussions'),
     editPageContent: hasPageAccess<'Mutation.editPageContent'>('args.pageId', 'editor'),

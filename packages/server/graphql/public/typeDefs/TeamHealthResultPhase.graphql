@@ -1,0 +1,19 @@
+"""
+The reveal phase of a standalone Team Health meeting, one stage per question category
+"""
+type TeamHealthResultPhase implements NewMeetingPhase {
+  "Unique identifier"
+  id: ID!
+  meetingId: ID!
+  teamId: ID!
+
+  """
+  The type of phase
+  """
+  phaseType: NewMeetingPhaseTypeEnum!
+
+  """
+  The categories to discuss, ordered by urgency once the meeting has ended
+  """
+  stages: [TeamHealthResultStage!]!
+}
