@@ -216,6 +216,50 @@ Respond in GitHub-flavored markdown. The first line MUST be exactly "**Estimate:
     }
   }
 
+  async paraphraseTeamHealthComment(comment: string, question: string) {
+    if (!this.openAIApi) return null
+
+    const prompt = `A teammate answered the survey question below and left an anonymous comment. Rewrite the comment so that nobody who knows the team could guess who wrote it, then return only the rewritten comment.
+
+Strip every signal of authorship:
+- Writing style: sentence length and rhythm, formality, humour, hedging, enthusiasm, profanity, ALL CAPS, exclamation marks, ellipses, emoji.
+- Word choice: pet phrases, jargon, slang, abbreviations, regional spellings, and any term a specific person is known for. Prefer plain, common synonyms.
+- Grammar and mechanics: fix or introduce nothing distinctive — use ordinary punctuation, correct any errors, and drop typing quirks like missing capitals or double spaces.
+- Content: remove names, roles, teams, tools, projects, clients, dates, and any incident specific enough to identify one person. Generalise them ("a recent release", "a teammate") rather than deleting the point they support.
+
+Keep the substance intact: the same claim, the same target of praise or criticism, and the same strength of feeling. Do not soften a complaint, add advice, or draw conclusions the author did not.
+
+Write 1-3 plain sentences in neutral third-person-free English (the author may say "I" about themselves). If the comment is too short or too specific to anonymise, return a single sentence that states only its general point.
+
+Question: """
+${question}
+"""
+
+Comment: """
+${comment}
+"""`
+
+    try {
+      const response = await this.openAIApi.chat.completions.create({
+        model: AI_MODEL,
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        reasoning_effort: 'low',
+        max_completion_tokens: 1000
+      })
+      return response.choices[0]?.message?.content?.trim() || null
+    } catch (e) {
+      const error =
+        e instanceof Error ? e : new Error('OpenAI failed to paraphraseTeamHealthComment')
+      logError(error)
+      return null
+    }
+  }
+
   async generateInspirationItems(
     workItemsText: string,
     meetingPrompt: string,

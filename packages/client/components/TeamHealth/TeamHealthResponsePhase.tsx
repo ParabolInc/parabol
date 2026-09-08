@@ -5,6 +5,7 @@ import useSetTeamHealthSpectateMutation from '../../mutations/useSetTeamHealthSp
 import {Button} from '../../ui/Button/Button'
 import {isNotNull} from '../../utils/predicates'
 import {getOrderedTeamHealthCategories} from '../ActivityLibrary/TeamHealth/getTeamHealthCategoryColor'
+import TeamHealthEndedResponseCard from './TeamHealthEndedResponseCard'
 import TeamHealthResponseCard from './TeamHealthResponseCard'
 
 interface Props {
@@ -18,7 +19,15 @@ const TeamHealthResponsePhase = (props: Props) => {
     graphql`
       fragment TeamHealthResponsePhase_meeting on TeamHealthMeeting {
         id
+        endedAt
+        organization {
+          useAI
+        }
         viewerMeetingMember {
+          user {
+            preferredName
+            picture
+          }
           ... on TeamHealthMeetingMember {
             isSpectating
           }
@@ -42,13 +51,29 @@ const TeamHealthResponsePhase = (props: Props) => {
           stages {
             id
             ...TeamHealthResponseCard_stage
+            ...TeamHealthEndedResponseCard_stage
           }
         }
       }
     `,
     meetingRef
   )
-  const {id: meetingId, viewerMeetingMember, localStage, phases, template} = meeting
+  const {
+    id: meetingId,
+    endedAt,
+    organization,
+    viewerMeetingMember,
+    localStage,
+    phases,
+    template
+  } = meeting
+  // an anonymous comment is reworded by AI before the team reads it, so without AI the only honest
+  // option is to send it as written
+  const aiDisabledReason = !window.__ACTION__.hasOpenAI
+    ? 'This Parabol instance has AI turned off, so comments are shared exactly as written.'
+    : !organization.useAI
+      ? 'Your organization has AI turned off, so comments are shared exactly as written.'
+      : null
   const orderedCategoryIds = getOrderedTeamHealthCategories(
     template?.availableQuestionPacks ?? []
   ).map((category) => category.id)
@@ -104,16 +129,31 @@ const TeamHealthResponsePhase = (props: Props) => {
 
   return (
     <div className='mx-auto flex h-full max-w-2xl flex-col items-center justify-center px-6'>
-      <TeamHealthResponseCard
-        key={currentStage.id}
-        meetingId={meetingId}
-        stage={currentStage}
-        stageIndex={currentIdx}
-        stageCount={responseStages.length}
-        orderedCategoryIds={orderedCategoryIds}
-        onPrev={onPrev}
-        onNext={onNext}
-      />
+      {endedAt ? (
+        <TeamHealthEndedResponseCard
+          key={currentStage.id}
+          stage={currentStage}
+          stageIndex={currentIdx}
+          stageCount={responseStages.length}
+          orderedCategoryIds={orderedCategoryIds}
+          onPrev={onPrev}
+          onNext={onNext}
+        />
+      ) : (
+        <TeamHealthResponseCard
+          key={currentStage.id}
+          meetingId={meetingId}
+          stage={currentStage}
+          stageIndex={currentIdx}
+          stageCount={responseStages.length}
+          orderedCategoryIds={orderedCategoryIds}
+          preferredName={viewerMeetingMember?.user.preferredName ?? ''}
+          picture={viewerMeetingMember?.user.picture ?? ''}
+          aiDisabledReason={aiDisabledReason}
+          onPrev={onPrev}
+          onNext={onNext}
+        />
+      )}
     </div>
   )
 }

@@ -41,4 +41,11 @@ enum DiscussionTopicTypeEnum {
   person's update.
   """
   teamPromptResponse
+
+  """
+  A question asked in a standalone Team Health meeting. The discussionTopicId references a
+  TeamHealthQuestion. One discussion is created per question, shared by that question's response
+  stage and its result stage, since both are about the same category.
+  """
+  teamHealthQuestion
 }

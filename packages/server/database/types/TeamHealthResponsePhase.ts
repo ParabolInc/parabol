@@ -2,7 +2,7 @@ import GenericMeetingPhase from './GenericMeetingPhase'
 import TeamHealthResponseStage from './TeamHealthResponseStage'
 
 interface Input {
-  questionIds: number[]
+  questions: {questionId: number; discussionId: string}[]
 }
 
 export default class TeamHealthResponsePhase extends GenericMeetingPhase {
@@ -11,11 +11,11 @@ export default class TeamHealthResponsePhase extends GenericMeetingPhase {
 
   constructor(input: Input) {
     super('TEAM_HEALTH_RESPONSE')
-    const {questionIds} = input
-    if (questionIds.length < 1) {
+    const {questions} = input
+    if (questions.length < 1) {
       throw new Error('TeamHealthResponsePhase must have at least one question')
     }
-    this.stages = questionIds.map((questionId) => new TeamHealthResponseStage({questionId})) as [
+    this.stages = questions.map((question) => new TeamHealthResponseStage(question)) as [
       TeamHealthResponseStage,
       ...TeamHealthResponseStage[]
     ]

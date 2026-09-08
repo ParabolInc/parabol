@@ -4,11 +4,15 @@ import {useFragment} from 'react-relay'
 import type {NewMeetingPhaseTypeEnum} from '~/__generated__/RetroMeeting_meeting.graphql'
 import type {TeamHealthMeeting_meeting$key} from '~/__generated__/TeamHealthMeeting_meeting.graphql'
 import useMeeting from '../hooks/useMeeting'
+import useRightDrawer from '../hooks/useRightDrawer'
+import {Forum} from '../ui/icons'
 import lazyPreload, {type LazyPreloadedComponent} from '../utils/lazyPreload'
+import IconLabel from './IconLabel'
 import MeetingLockedOverlay from './MeetingLockedOverlay'
 import MeetingStyles from './MeetingStyles'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 import SidebarToggle from './SidebarToggle'
+import TeamHealthDiscussionDrawer from './TeamHealth/TeamHealthDiscussionDrawer'
 import TeamHealthMeetingSidebar from './TeamHealthMeetingSidebar'
 
 interface Props {
@@ -51,19 +55,43 @@ const TeamHealthMeeting = (props: Props) => {
         ...TeamHealthResponsePhase_meeting
         ...TeamHealthSubmittedPhase_meeting
         ...TeamHealthResultPhase_meeting
+        ...TeamHealthDiscussionDrawer_meeting
         id
         endedAt
         showSidebar
+        rightDrawerOpen
         localPhase {
           phaseType
+        }
+        localStage {
+          id
+        }
+        # localStage is a client-side link into these records, so discussionId has to be selected
+        # here to be fetched at all. Concrete type conditions rather than DiscussionThreadStage,
+        # since relay can only match an abstract condition on a server-fetched field
+        phases {
+          stages {
+            id
+            ... on TeamHealthResponseStage {
+              discussionId
+            }
+            ... on TeamHealthResultStage {
+              discussionId
+            }
+          }
         }
       }
     `,
     meetingRef
   )
   const {gotoStageId, safeRoute, toggleSidebar, handleMenuClick} = useMeeting(meeting)
+  const [toggleDrawer] = useRightDrawer(meeting.id)
   if (!safeRoute) return null
-  const {endedAt, showSidebar} = meeting
+  const {endedAt, showSidebar, rightDrawerOpen, localStage, phases} = meeting
+  const discussionId = phases
+    .flatMap((phase) => phase.stages)
+    .find((stage) => stage.id === localStage?.id)?.discussionId
+  const showDrawerButton = !!discussionId && rightDrawerOpen == null
   const localPhaseType = meeting.localPhase?.phaseType as NewMeetingPhaseTypeEnum | undefined
   const Phase =
     localPhaseType === 'TEAM_HEALTH_RESULT' && !endedAt
@@ -82,9 +110,18 @@ const TeamHealthMeeting = (props: Props) => {
         />
       </ResponsiveDashSidebar>
       <div className='flex h-full min-w-0 flex-1 flex-col overflow-auto'>
-        {!showSidebar && (
-          <div className='shrink-0 px-4 pt-4'>
-            <SidebarToggle dataCy='topbar' onClick={toggleSidebar} />
+        {(!showSidebar || showDrawerButton) && (
+          <div className='flex shrink-0 items-center justify-between px-4 pt-4'>
+            {showSidebar ? <div /> : <SidebarToggle dataCy='topbar' onClick={toggleSidebar} />}
+            {showDrawerButton && (
+              <button
+                className='group flex h-max w-max cursor-pointer flex-col items-center bg-transparent px-2 font-semibold text-accent text-sm hover:text-sky-600'
+                onClick={toggleDrawer}
+              >
+                <IconLabel icon={Forum} iconLarge />
+                <div className='text-fg-primary group-hover:text-fg-primary'>Discussion</div>
+              </button>
+            )}
           </div>
         )}
         <div className='min-h-0 flex-1'>
@@ -93,6 +130,13 @@ const TeamHealthMeeting = (props: Props) => {
           </Suspense>
         </div>
       </div>
+      {discussionId && (
+        <TeamHealthDiscussionDrawer
+          meeting={meeting}
+          discussionId={discussionId}
+          toggleDrawer={toggleDrawer}
+        />
+      )}
       <MeetingLockedOverlay meetingRef={meeting} />
     </MeetingStyles>
   )

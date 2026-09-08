@@ -5,11 +5,14 @@ interface Input extends Omit<GenericMeetingStageInput, 'phaseType'> {
   // rotates between cycles while the category is the thing the team tracks over time
   questionId: number
   sortOrder: number
+  // one Discussion per question, shared with the response stage for the same question
+  discussionId: string
 }
 
 export default class TeamHealthResultStage extends GenericMeetingStage {
   questionId: number
   sortOrder: number
+  discussionId: string
   phaseType = 'TEAM_HEALTH_RESULT' as const
   constructor(input: Input) {
     // async meeting: everyone (including the owner/facilitator) self-navigates freely. Before the
@@ -22,5 +25,6 @@ export default class TeamHealthResultStage extends GenericMeetingStage {
     })
     this.questionId = input.questionId
     this.sortOrder = input.sortOrder
+    this.discussionId = input.discussionId
   }
 }
