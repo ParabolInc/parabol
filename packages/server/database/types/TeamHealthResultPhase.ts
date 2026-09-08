@@ -19,9 +19,6 @@ export default class TeamHealthResultPhase extends GenericMeetingPhase {
     // reorders them by urgency (see sortTeamHealthResultStages), after which anyone can drag them
     this.stages = questionIds.map(
       (questionId, sortOrder) => new TeamHealthResultStage({questionId, sortOrder})
-    ) as [
-      TeamHealthResultStage,
-      ...TeamHealthResultStage[]
-    ]
+    ) as [TeamHealthResultStage, ...TeamHealthResultStage[]]
   }
 }
