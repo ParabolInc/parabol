@@ -63,20 +63,14 @@ const startRecurringMeeting = async (
   const meeting = await (async () => {
     if (meetingSeries.meetingType === 'teamPrompt') {
       const teamPromptMeeting = lastMeeting as TeamPromptMeeting | null
-      const team = await dataLoader.get('teams').loadNonNull(teamId)
-      const isTemplated = await dataLoader
-        .get('featureFlagByOwnerId')
-        .load({ownerId: team.orgId, featureName: 'standupTemplates'})
-      const templateId = isTemplated
-        ? await resolveStandupTemplateId(
-            [
-              teamPromptMeeting?.templateId,
-              meetingSeries.templateId,
-              meetingSettings?.selectedTemplateId
-            ],
-            dataLoader
-          )
-        : null
+      const templateId = await resolveStandupTemplateId(
+        [
+          teamPromptMeeting?.templateId,
+          meetingSeries.templateId,
+          meetingSettings?.selectedTemplateId
+        ],
+        dataLoader
+      )
       const meeting = await safeCreateTeamPrompt(meetingName, teamId, facilitatorId, dataLoader, {
         scheduledEndTime,
         meetingSeriesId: meetingSeries.id,

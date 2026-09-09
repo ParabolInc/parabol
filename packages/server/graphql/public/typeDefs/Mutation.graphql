@@ -2171,7 +2171,6 @@ type Mutation {
 
     """
     The stand-up template to answer. Defaults to the team's selected stand-up template.
-    Ignored while the standupTemplates feature flag is off for the organization.
     """
     templateId: ID
 
