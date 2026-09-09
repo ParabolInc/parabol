@@ -283,9 +283,11 @@ const MeetingCard = (props: Props) => {
                 {isViewerComplete && (
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      {/* the icon does not forward a ref, so the span anchors the tooltip */}
+                      {/* the span anchors the tooltip, which the icon has no ref for. h-5 is the
+                          text-sm line box, so the icon centers on the caps; align-middle would
+                          center it on the x-height & read low next to a capitalized label */}
                       <span
-                        className='ml-1 align-text-bottom text-jade-500'
+                        className='ml-1 inline-flex h-5 items-center align-top text-jade-500'
                         aria-label='You have answered every question'
                       >
                         <TaskAlt className='text-[16px]' />
