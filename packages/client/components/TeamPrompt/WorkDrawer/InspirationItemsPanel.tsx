@@ -16,6 +16,7 @@ import getStructuredInspiration from './getStructuredInspiration'
 import type {InspirationItemData} from './InspirationDraftList'
 import InspirationDraftPanel from './InspirationDraftPanel'
 import InspirationItemCard from './InspirationItemCard'
+import {NO_WORK_LINE} from './inspirationCopy'
 import RetroInspirationItemCard from './RetroInspirationItemCard'
 import useInspirationAutoGenerate from './useInspirationAutoGenerate'
 import {useWorkDrawerConsume} from './WorkDrawerConsumeContext'
@@ -67,11 +68,14 @@ const InspirationItemsPanel = (props: Props) => {
   const [userPrompt, setUserPrompt] = useState('')
   const [promptOpen, setPromptOpen] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [noWorkFound, setNoWorkFound] = useState(false)
+  const [addingToResponse, setAddingToResponse] = useState(false)
   const [generateInspirationItems, submitting] = useGenerateInspirationItemsMutation()
 
   const onGenerate = useCallback(() => {
     if (submitting) return
     setError(null)
+    setNoWorkFound(false)
     generateInspirationItems({
       variables: {input: {meetingId, service, searchQuery, userPrompt: userPrompt.trim() || null}},
       onError: (e) => setError(e.message),
@@ -89,6 +93,7 @@ const InspirationItemsPanel = (props: Props) => {
             promptId: promptId ?? null
           }))
         )
+        setNoWorkFound(generated.length === 0)
       }
     })
   }, [submitting, meetingId, service, searchQuery, userPrompt, generateInspirationItems])
@@ -177,6 +182,7 @@ const InspirationItemsPanel = (props: Props) => {
           onRegenerate={onGenerate}
           regenerating={submitting}
           error={error}
+          noWorkFound={noWorkFound}
           onTune={() => setPromptOpen(true)}
           tuneDirty={!!userPrompt.trim()}
           filters={filters}
@@ -221,6 +227,11 @@ const InspirationItemsPanel = (props: Props) => {
           </div>
           {customInstructionsDialog}
           {error && <div className='text-fg-error text-sm'>{error}</div>}
+          {noWorkFound && (
+            <p role='status' className='m-0 py-2 text-fg-secondary text-sm'>
+              {NO_WORK_LINE}
+            </p>
+          )}
           {items.map((item) =>
             isRetro ? (
               <RetroInspirationItemCard
