@@ -106,8 +106,8 @@ const TeamHealthIntroPhase = (props: Props) => {
   return (
     <div className='flex h-full w-full items-center justify-center overflow-y-auto px-6 py-12'>
       <div className='flex w-full max-w-md flex-col items-center rounded-3xl bg-surface-card px-6 py-10 text-center shadow-card-raised'>
-        <div className='flex h-16 w-10 items-center justify-center rounded-2xl bg-lilac-100 dark:bg-lilac-900'>
-          <MonitorHeart className='text-grape-700 dark:text-lilac-200' fontSize='large' />
+        <div className='flex h-14 w-14 items-center justify-center rounded-2xl bg-lilac-100 dark:bg-lilac-900'>
+          <MonitorHeart className='text-grape-700 dark:text-lilac-200' />
         </div>
         <h1 className='mt-6 mb-2 font-bold text-4xl text-fg-primary'>Team Health</h1>
         <div className='mt-1 text-fg-secondary'>

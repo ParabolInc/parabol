@@ -92,6 +92,19 @@ const TeamHealthSubmittedPhase = (props: Props) => {
   const firstResponseStageId = responseStages[0]?.id
   const unansweredCount = questionCount - answeredCount
   const isMissingAnswers = !isSpectating && unansweredCount > 0
+  // on a short check-in "your first answer is in" buries the lede, so lead with what's still open
+  const isShortCheckIn = questionCount <= 2
+  const answerState = isSpectating
+    ? 'spectating'
+    : answeredCount === 0
+      ? 'none'
+      : unansweredCount === 0
+        ? 'all'
+        : isShortCheckIn
+          ? 'lastOne'
+          : answeredCount === 1
+            ? 'one'
+            : 'some'
 
   const pendingCount = Math.max(0, respondents.length - respondentCount)
 
@@ -109,17 +122,41 @@ const TeamHealthSubmittedPhase = (props: Props) => {
     setIsConfirmingReveal(true)
   }
 
-  const Icon = isSpectating ? Schedule : CheckCircle
-  const title = isSpectating
-    ? 'You’re sitting this one out'
-    : isMissingAnswers
-      ? 'Your answers are counted'
-      : 'Your answers are in'
-  const body = isSpectating
-    ? 'As the team lead, you’re not answering this check-in. We’re waiting on the rest of the team before the results reveal.'
-    : isMissingAnswers
-      ? `You answered ${answeredCount} of ${questionCount} questions. They all count, and the rest give your team a fuller picture.`
-      : 'Now we wait for the rest of the team before the results reveal.'
+  const {Icon, title, body} = {
+    spectating: {
+      Icon: Schedule,
+      title: 'You’re sitting this one out',
+      body: 'As the team lead, you’re not answering this check-in. We’re waiting on the rest of the team before the results reveal.'
+    },
+    none: {
+      Icon: Schedule,
+      title: 'Your team is waiting on you',
+      body:
+        questionCount === 1
+          ? 'You haven’t answered the question yet. Answer it so the results include your voice.'
+          : 'You haven’t answered any questions yet. Answer them so the results include your voice.'
+    },
+    lastOne: {
+      Icon: Schedule,
+      title: unansweredCount === 1 ? 'One question to go' : `${unansweredCount} questions to go`,
+      body: `You answered ${answeredCount} of ${questionCount} questions. Answer the ${unansweredCount === 1 ? 'last one' : 'rest'} so the results tell the whole story.`
+    },
+    one: {
+      Icon: CheckCircle,
+      title: 'Your first answer is in',
+      body: `You answered 1 of ${questionCount} questions. It counts, and the rest give your team a fuller picture.`
+    },
+    some: {
+      Icon: CheckCircle,
+      title: 'Your answers are counted',
+      body: `You answered ${answeredCount} of ${questionCount} questions. They all count, and the rest give your team a fuller picture.`
+    },
+    all: {
+      Icon: CheckCircle,
+      title: 'Your answers are in',
+      body: 'Now we wait for the rest of the team before the results reveal.'
+    }
+  }[answerState]
 
   return (
     <div className='mx-auto flex h-full max-w-2xl flex-col items-center justify-center px-6'>
