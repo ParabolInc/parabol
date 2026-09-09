@@ -19,7 +19,7 @@ const EditableTemplatePromptColor = (props: Props) => {
   const {isOwner, prompt: promptRef, prompts: promptsRef} = props
   const prompts = useFragment(
     graphql`
-      fragment EditableTemplatePromptColor_prompts on ReflectPrompt @relay(plural: true) {
+      fragment EditableTemplatePromptColor_prompts on TemplatePrompt @relay(plural: true) {
         ...PalettePicker_prompts
       }
     `,
@@ -27,7 +27,7 @@ const EditableTemplatePromptColor = (props: Props) => {
   )
   const prompt = useFragment(
     graphql`
-      fragment EditableTemplatePromptColor_prompt on ReflectPrompt {
+      fragment EditableTemplatePromptColor_prompt on TemplatePrompt {
         ...PalettePicker_prompt
         groupColor
       }

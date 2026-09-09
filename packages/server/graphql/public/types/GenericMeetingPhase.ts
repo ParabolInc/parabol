@@ -9,8 +9,7 @@ const GenericMeetingPhase: GenericMeetingPhaseResolvers = {
       'lastcall',
       'SCOPE',
       'TEAM_HEALTH_INTRO',
-      'TEAM_HEALTH_SUBMITTED',
-      'TEAM_HEALTH_RESULT'
+      'TEAM_HEALTH_SUBMITTED'
     ].includes(phaseType)
 }
 

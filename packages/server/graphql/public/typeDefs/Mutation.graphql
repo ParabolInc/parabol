@@ -39,10 +39,9 @@ type Mutation {
   ): AddPokerTemplateScaleValuePayload! @scope(name: TEMPLATES_WRITE)
 
   """
-  Add a new prompt to an existing reflect template
+  Add a new prompt to a retrospective or stand-up template
   """
-  addReflectTemplatePrompt(templateId: ID!): AddReflectTemplatePromptPayload!
-    @scope(name: TEMPLATES_WRITE)
+  addTemplatePrompt(templateId: ID!): AddTemplatePromptSuccess! @scope(name: TEMPLATES_WRITE)
   """
   Connect the current user's Slack account to a team
   """
@@ -580,9 +579,9 @@ type Mutation {
   ): MovePokerTemplateDimensionPayload! @scope(name: TEMPLATES_WRITE)
 
   """
-  Reorder a prompt within a reflect template
+  Reorder a prompt within its template
   """
-  moveReflectTemplatePrompt(promptId: ID!, sortOrder: String!): MoveReflectTemplatePromptPayload
+  moveTemplatePrompt(promptId: ID!, sortOrder: String!): MoveTemplatePromptSuccess!
     @scope(name: TEMPLATES_WRITE)
 
   """
@@ -647,12 +646,12 @@ type Mutation {
   ): PromoteToTeamLeadPayload @scope(name: TEAMS_WRITE)
 
   """
-  Update the description of a reflection prompt
+  Update the description of a template prompt
   """
-  reflectTemplatePromptUpdateDescription(
+  updateTemplatePromptDescription(
     promptId: ID!
     description: String!
-  ): ReflectTemplatePromptUpdateDescriptionPayload @scope(name: TEMPLATES_WRITE)
+  ): UpdateTemplatePromptDescriptionSuccess! @scope(name: TEMPLATES_WRITE)
 
   """
   Update the description of a poker template dimension
@@ -662,12 +661,12 @@ type Mutation {
     description: String!
   ): PokerTemplateDimensionUpdateDescriptionPayload @scope(name: TEMPLATES_WRITE)
   """
-  Update the color of a reflect template prompt
+  Update the color of a template prompt
   """
-  reflectTemplatePromptUpdateGroupColor(
+  updateTemplatePromptGroupColor(
     promptId: ID!
     groupColor: String!
-  ): ReflectTemplatePromptUpdateGroupColorPayload @scope(name: TEMPLATES_WRITE)
+  ): UpdateTemplatePromptGroupColorSuccess! @scope(name: TEMPLATES_WRITE)
 
   """
   Remove an agenda item
@@ -705,9 +704,14 @@ type Mutation {
   removeReflectTemplate(templateId: ID!): RemoveReflectTemplatePayload @scope(name: TEMPLATES_WRITE)
 
   """
-  Remove a prompt from a template
+  Remove a prompt from its template. The last prompt cannot be removed.
   """
-  removeReflectTemplatePrompt(promptId: ID!): RemoveReflectTemplatePromptPayload
+  removeTemplatePrompt(promptId: ID!): RemoveTemplatePromptSuccess! @scope(name: TEMPLATES_WRITE)
+
+  """
+  Remove a stand-up template. Fails if a recurring stand-up still uses it.
+  """
+  removeTeamPromptTemplate(templateId: ID!): RemoveTeamPromptTemplateSuccess!
     @scope(name: TEMPLATES_WRITE)
 
   """
@@ -738,9 +742,9 @@ type Mutation {
     @scope(name: TEMPLATES_WRITE)
 
   """
-  Rename a reflect template prompt
+  Rename a template prompt
   """
-  renameReflectTemplatePrompt(promptId: ID!, question: String!): RenameReflectTemplatePromptPayload
+  renameTemplatePrompt(promptId: ID!, question: String!): RenameTemplatePromptSuccess!
     @scope(name: TEMPLATES_WRITE)
 
   """
@@ -1464,6 +1468,21 @@ type Mutation {
   ): AddReflectTemplatePayload! @scope(name: TEMPLATES_WRITE)
 
   """
+  Adds a new stand-up template with one default prompt, or clones an existing one.
+  """
+  addTeamPromptTemplate(
+    """
+    The ID of the parent template, if this is a clone operation.
+    """
+    parentTemplateId: ID
+
+    """
+    The ID of the team for which the template is being created.
+    """
+    teamId: ID!
+  ): AddTeamPromptTemplateSuccess! @scope(name: TEMPLATES_WRITE)
+
+  """
   Adds a new team health template, optionally cloned from an existing template.
   """
   addTeamHealthTemplate(
@@ -1975,6 +1994,16 @@ type Mutation {
     """
     comment: String
   ): SetTeamHealthResponseSuccess! @scope(name: MEETINGS_WRITE)
+
+  """
+  Reorder the result stages of a standalone Team Health meeting, so the team can discuss the
+  categories in whatever order it likes
+  """
+  dragTeamHealthResultStage(
+    meetingId: ID!
+    stageId: ID!
+    sortOrder: Float!
+  ): DragTeamHealthResultStageSuccess! @scope(name: MEETINGS_WRITE)
 
   """
   Opt the viewer into or out of answering the questions in a standalone Team Health meeting.

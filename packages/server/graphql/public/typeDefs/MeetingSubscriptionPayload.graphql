@@ -15,6 +15,7 @@ type MeetingSubscriptionPayload {
   DeleteCommentSuccess: DeleteCommentSuccess
   DragDiscussionTopicPayload: DragDiscussionTopicPayload
   DragEstimatingTaskSuccess: DragEstimatingTaskSuccess
+  DragTeamHealthResultStageSuccess: DragTeamHealthResultStageSuccess
   EditCommentingSuccess: EditCommentingSuccess
   EditReflectionPayload: EditReflectionPayload
   EndDraggingReflectionPayload: EndDraggingReflectionPayload

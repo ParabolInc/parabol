@@ -1,0 +1,56 @@
+"""
+A prompt within a retrospective or stand-up template, eg "What went well?" or "What are you working on today?"
+"""
+type TemplatePrompt {
+  """
+  shortid
+  """
+  id: ID!
+  createdAt: DateTime!
+
+  """
+  foreign key. use the team field
+  """
+  teamId: ID!
+
+  """
+  The team that owns this prompt
+  """
+  team: Team
+  updatedAt: DateTime!
+
+  """
+  the order of the items in the template
+  """
+  sortOrder: String!
+
+  """
+  FK for template
+  """
+  templateId: ID!
+
+  """
+  The template that this prompt belongs to (a ReflectTemplate or a TeamPromptTemplate)
+  """
+  template: MeetingTemplate!
+
+  """
+  The question each participant answers, eg "What went well?"
+  """
+  question: String!
+
+  """
+  The description to the question for further context. A long version of the question.
+  """
+  description: String!
+
+  """
+  The color used to visually group a phase item.
+  """
+  groupColor: String!
+
+  """
+  The datetime that the prompt was removed. Null if it has not been removed.
+  """
+  removedAt: DateTime
+}

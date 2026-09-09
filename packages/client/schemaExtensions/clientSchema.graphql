@@ -174,7 +174,7 @@ extend type RetroReflection {
   isEditing: Boolean
 }
 
-extend type ReflectPrompt {
+extend type TemplatePrompt {
   editorIds: [ID!]
 }
 
@@ -215,6 +215,10 @@ extend type TeamPromptResponseStage {
 }
 
 extend type TeamHealthResponseStage {
+  localScheduledEndTime: String
+}
+
+extend type TeamHealthResultStage {
   localScheduledEndTime: String
 }
 

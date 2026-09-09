@@ -14,6 +14,7 @@ import standardError from '../../../utils/standardError'
 import type {InternalContext} from '../../graphql'
 import gatherInsights from './gatherInsights'
 import {IntegrationNotifier} from './notifications/IntegrationNotifier'
+import sortTeamHealthResultStages from './sortTeamHealthResultStages'
 import {publishSummaryPage} from './summaryPage/publishSummaryPage'
 import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
 
@@ -47,14 +48,18 @@ const safeEndTeamHealth = async ({
     })
 
   // RESOLUTION
-  const insights = await gatherInsights(meeting, dataLoader)
+  const [insights, phases] = await Promise.all([
+    gatherInsights(meeting, dataLoader),
+    sortTeamHealthResultStages(meeting, dataLoader)
+  ])
   // ending a team health meeting is what reveals its results, whether the owner clicked "Reveal
-  // results" or the recurrence cron hit scheduledEndTime. The result stage renders the reveal off
-  // endedAt, so there's no stage state to flip
+  // results" or the recurrence cron hit scheduledEndTime. The result stages render the reveal off
+  // endedAt, so the only stage state to flip is their order, which the answers now determine
   await pg
     .updateTable('NewMeeting')
     .set({
       endedAt: sql`CURRENT_TIMESTAMP`,
+      phases: JSON.stringify(phases),
       usedReactjis: JSON.stringify(insights.usedReactjis),
       engagement: insights.engagement
     })

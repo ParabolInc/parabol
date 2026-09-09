@@ -7,7 +7,7 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import {Cancel as CancelIcon} from '~/ui/icons'
 import type {TemplatePromptItem_prompt$key} from '../../../__generated__/TemplatePromptItem_prompt.graphql'
-import RemoveReflectTemplatePromptMutation from '../../../mutations/RemoveReflectTemplatePromptMutation'
+import RemoveTemplatePromptMutation from '../../../mutations/RemoveTemplatePromptMutation'
 import {cn} from '../../../ui/cn'
 import EditableTemplateDescription from './EditableTemplateDescription'
 import EditableTemplatePrompt from './EditableTemplatePrompt'
@@ -25,7 +25,7 @@ const TemplatePromptItem = (props: Props) => {
   const {dragProvided, isDragging, isOwner, prompt: promptRef, prompts: promptsRef} = props
   const prompts = useFragment(
     graphql`
-      fragment TemplatePromptItem_prompts on ReflectPrompt @relay(plural: true) {
+      fragment TemplatePromptItem_prompts on TemplatePrompt @relay(plural: true) {
         ...EditableTemplatePromptColor_prompts
         ...EditableTemplatePrompt_prompts
       }
@@ -34,7 +34,7 @@ const TemplatePromptItem = (props: Props) => {
   )
   const prompt = useFragment(
     graphql`
-      fragment TemplatePromptItem_prompt on ReflectPrompt {
+      fragment TemplatePromptItem_prompt on TemplatePrompt {
         ...EditableTemplatePromptColor_prompt
         id
         question
@@ -62,7 +62,7 @@ const TemplatePromptItem = (props: Props) => {
       return
     }
     submitMutation()
-    RemoveReflectTemplatePromptMutation(atmosphere, {promptId}, {onError, onCompleted})
+    RemoveTemplatePromptMutation(atmosphere, {promptId}, {onError, onCompleted})
   }
 
   return (

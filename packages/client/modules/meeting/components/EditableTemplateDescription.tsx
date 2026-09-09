@@ -1,7 +1,7 @@
 import EditableText from '../../../components/EditableText'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
-import ReflectTemplatePromptUpdateDescriptionMutation from '../../../mutations/ReflectTemplatePromptUpdateDescriptionMutation'
+import UpdateTemplatePromptDescriptionMutation from '../../../mutations/UpdateTemplatePromptDescriptionMutation'
 import Legitity from '../../../validation/Legitity'
 
 interface Props {
@@ -21,7 +21,7 @@ const EditableTemplateDescription = (props: Props) => {
     const {error, value: description = ''} = validate(rawQuestion)
     if (error) return
     submitMutation()
-    ReflectTemplatePromptUpdateDescriptionMutation(
+    UpdateTemplatePromptDescriptionMutation(
       atmosphere,
       {promptId, description},
       {onError, onCompleted}

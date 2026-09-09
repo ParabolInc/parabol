@@ -1,9 +1,9 @@
 """
-An activity that does not have a customizable template, e.g. standup, check-in
+An activity that does not have a customizable template, e.g. check-in
 """
 type FixedActivity implements MeetingTemplate {
   """
-  The activity ID, one of: teamPrompt or action
+  The activity ID, always action
   """
   id: ID!
 
@@ -53,7 +53,7 @@ type FixedActivity implements MeetingTemplate {
   team: Team!
 
   """
-  The meeting type, one of: teamPrompt or action
+  The meeting type, always action
   """
   type: MeetingTypeEnum!
   updatedAt: DateTime!
