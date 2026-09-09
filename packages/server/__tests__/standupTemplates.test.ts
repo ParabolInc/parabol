@@ -204,14 +204,6 @@ const getStandupSettings = async (teamId: string, cookie: string) => {
   return res.data.viewer
 }
 
-const grantStandupFlag = async (orgId: string) => {
-  await getKysely()
-    .insertInto('FeatureFlagOwner')
-    .values({orgId, featureName: 'standupTemplates'})
-    .onConflict((oc) => oc.doNothing())
-    .execute()
-}
-
 test('seeded standup templates are TeamPromptTemplates with prompts', async () => {
   const {cookie} = await signUp()
   const res = await sendPublic({query: AVAILABLE_STANDUP_TEMPLATES, cookie})
@@ -268,8 +260,7 @@ test('every team has standup settings defaulting to the canonical template', asy
 })
 
 test('addTeamPromptTemplate creates a blank standup template with one prompt', async () => {
-  const {teamId, orgId, cookie} = await signUp()
-  await grantStandupFlag(orgId)
+  const {teamId, cookie} = await signUp()
   const res = await sendPublic({query: ADD_TEAM_PROMPT_TEMPLATE, variables: {teamId}, cookie})
   expect(res.errors).toBeUndefined()
   const {teamPromptTemplate, user} = res.data.addTeamPromptTemplate
@@ -288,8 +279,7 @@ test('addTeamPromptTemplate creates a blank standup template with one prompt', a
 })
 
 test('addTeamPromptTemplate clones a public template with its prompts', async () => {
-  const {teamId, orgId, cookie} = await signUp()
-  await grantStandupFlag(orgId)
+  const {teamId, cookie} = await signUp()
   const res = await sendPublic({
     query: ADD_TEAM_PROMPT_TEMPLATE,
     variables: {teamId, parentTemplateId: ENTERPRISE_TEMPLATE_ID},
@@ -321,25 +311,8 @@ test('addTeamPromptTemplate clones a public template with its prompts', async ()
   ])
 })
 
-test('addTeamPromptTemplate rejects an org without the standupTemplates flag', async () => {
-  const {teamId, cookie} = await signUp()
-  const res = await sendPublic({query: ADD_TEAM_PROMPT_TEMPLATE, variables: {teamId}, cookie})
-  expect(res.errors).toEqual([
-    expect.objectContaining({
-      message: 'Standup templates are not enabled for this organization'
-    })
-  ])
-  const rows = await getKysely()
-    .selectFrom('MeetingTemplate')
-    .select('id')
-    .where('teamId', '=', teamId)
-    .execute()
-  expect(rows).toEqual([])
-})
-
 test('starter tier is limited by freeCustomStandupTemplatesRemaining', async () => {
-  const {teamId, orgId, cookie} = await signUp()
-  await grantStandupFlag(orgId)
+  const {teamId, cookie} = await signUp()
   const first = await sendPublic({query: ADD_TEAM_PROMPT_TEMPLATE, variables: {teamId}, cookie})
   expect(first.errors).toBeUndefined()
   const second = await sendPublic({query: ADD_TEAM_PROMPT_TEMPLATE, variables: {teamId}, cookie})
@@ -368,8 +341,7 @@ test('addTeamPromptTemplate rejects a team the viewer is not on', async () => {
 })
 
 test('prompt mutations work on a standup template and reject a poker template', async () => {
-  const {teamId, orgId, cookie} = await signUp()
-  await grantStandupFlag(orgId)
+  const {teamId, cookie} = await signUp()
   const created = await sendPublic({query: ADD_TEAM_PROMPT_TEMPLATE, variables: {teamId}, cookie})
   const {id: templateId, prompts} = created.data.addTeamPromptTemplate.teamPromptTemplate
   const [firstPrompt] = prompts
@@ -425,8 +397,7 @@ test('selectTemplate persists the standup template for the team', async () => {
 })
 
 test('removeTeamPromptTemplate soft-deletes and falls back the selected template', async () => {
-  const {teamId, orgId, cookie} = await signUp()
-  await grantStandupFlag(orgId)
+  const {teamId, cookie} = await signUp()
   const created = await sendPublic({query: ADD_TEAM_PROMPT_TEMPLATE, variables: {teamId}, cookie})
   const {id: templateId} = created.data.addTeamPromptTemplate.teamPromptTemplate
   await sendPublic({
@@ -461,8 +432,7 @@ test('removeTeamPromptTemplate soft-deletes and falls back the selected template
 
 test('removeTeamPromptTemplate is blocked while a recurring standup uses the template', async () => {
   const pg = getKysely()
-  const {userId, teamId, orgId, cookie} = await signUp()
-  await grantStandupFlag(orgId)
+  const {userId, teamId, cookie} = await signUp()
   const created = await sendPublic({query: ADD_TEAM_PROMPT_TEMPLATE, variables: {teamId}, cookie})
   const {id: templateId} = created.data.addTeamPromptTemplate.teamPromptTemplate
   const series = await pg
@@ -505,7 +475,6 @@ test('removeTeamPromptTemplate is blocked while a recurring standup uses the tem
 
 test('removeTeamPromptTemplate rejects a template the viewer does not own', async () => {
   const [owner, attacker] = await Promise.all([signUp(), signUp()])
-  await grantStandupFlag(owner.orgId)
   const created = await sendPublic({
     query: ADD_TEAM_PROMPT_TEMPLATE,
     variables: {teamId: owner.teamId},
@@ -542,7 +511,6 @@ test('removeTeamPromptTemplate refuses the seeded standup templates', async () =
 
 test('addTeamPromptTemplate honors the parent template scope', async () => {
   const [owner, attacker] = await Promise.all([signUp(), signUp()])
-  await Promise.all([grantStandupFlag(owner.orgId), grantStandupFlag(attacker.orgId)])
   const created = await sendPublic({
     query: ADD_TEAM_PROMPT_TEMPLATE,
     variables: {teamId: owner.teamId},
@@ -581,8 +549,7 @@ test('addTeamPromptTemplate honors the parent template scope', async () => {
 })
 
 test('updateTemplateCategory keeps standup templates in the standup category', async () => {
-  const {teamId, orgId, cookie} = await signUp()
-  await grantStandupFlag(orgId)
+  const {teamId, cookie} = await signUp()
   const created = await sendPublic({query: ADD_TEAM_PROMPT_TEMPLATE, variables: {teamId}, cookie})
   const {id: templateId} = created.data.addTeamPromptTemplate.teamPromptTemplate
 
@@ -609,7 +576,6 @@ test('updateTemplateCategory keeps standup templates in the standup category', a
 test('updateTemplateScope clones a standup template used by another team', async () => {
   const pg = getKysely()
   const {userId, teamId, orgId, cookie} = await signUp()
-  await grantStandupFlag(orgId)
   const created = await sendPublic({query: ADD_TEAM_PROMPT_TEMPLATE, variables: {teamId}, cookie})
   const {id: templateId, prompts} = created.data.addTeamPromptTemplate.teamPromptTemplate
 
@@ -662,8 +628,7 @@ test('updateTemplateScope clones a standup template used by another team', async
 
 test('a soft-deleted selected template falls back to the canonical standup template', async () => {
   const pg = getKysely()
-  const {teamId, orgId, cookie} = await signUp()
-  await grantStandupFlag(orgId)
+  const {teamId, cookie} = await signUp()
   const created = await sendPublic({query: ADD_TEAM_PROMPT_TEMPLATE, variables: {teamId}, cookie})
   const {id: templateId} = created.data.addTeamPromptTemplate.teamPromptTemplate
   await sendPublic({

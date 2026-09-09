@@ -106,7 +106,6 @@ export const TemplateDetails = (props: Props) => {
         __typename
         id
         category
-        orgId
         type
         team {
           id
@@ -147,7 +146,6 @@ export const TemplateDetails = (props: Props) => {
     id: activityId,
     category,
     dimensions,
-    orgId,
     prompts,
     team,
     type,
@@ -162,10 +160,6 @@ export const TemplateDetails = (props: Props) => {
       fragment TemplateDetails_user on User {
         ...ActivityCardFavorite_user
         preferredTeamId
-        organizations {
-          id
-          hasStandupTemplates: featureFlag(featureName: "standupTemplates")
-        }
         teams {
           ...TeamPickerModal_teams
         }
@@ -176,13 +170,9 @@ export const TemplateDetails = (props: Props) => {
 
   const {teams, preferredTeamId} = viewer
   const isOwner = viewerLowestScope === 'TEAM'
-  const hasStandupTemplates = viewer.organizations.some((org) => org.hasStandupTemplates)
-  const isParabolTemplate = orgId === 'aGhostOrg'
-  const isLockedStandup = type === 'teamPrompt' && !hasStandupTemplates
   const isFixedActivity = __typename === 'FixedActivity'
-  const showParabolByline = isFixedActivity || (isParabolTemplate && isLockedStandup)
-  const showNonOwnerActions = !isOwner && !isFixedActivity && !isLockedStandup
-  const showOwnerActions = isOwner && !isLockedStandup
+  const showNonOwnerActions = !isOwner && !isFixedActivity
+  const showOwnerActions = isOwner
 
   const navigate = useNavigate()
   const location = useLocation() as {state?: {prevCategory?: string; edit?: boolean}}
@@ -252,8 +242,8 @@ export const TemplateDetails = (props: Props) => {
   const description = useTemplateDescription(viewerLowestScope, activity)
 
   useEffect(() => {
-    setIsEditing(!isLockedStandup && !!location.state?.edit)
-  }, [location.state?.edit, activityId, isLockedStandup, setIsEditing])
+    setIsEditing(!!location.state?.edit)
+  }, [location.state?.edit, activityId, setIsEditing])
 
   useEffect(() => {
     setErrorActivityId(null)
@@ -266,7 +256,7 @@ export const TemplateDetails = (props: Props) => {
       <ActivityDetailsBadges isEditing={isEditing} templateRef={activity} />
       <div className='max-w-[480px]'>
         <div className='mb-6'>
-          {showParabolByline && (
+          {isFixedActivity && (
             <div className='font-semibold text-base text-fg-secondary'>Created by Parabol</div>
           )}
           {showOwnerActions && (
@@ -365,7 +355,7 @@ export const TemplateDetails = (props: Props) => {
       )}
 
       <div className='sm:-ml-14 pt-4'>
-        {prompts && !isLockedStandup && (
+        {prompts && (
           <>
             <TemplatePromptList
               isOwner={showOwnerActions && isEditing}

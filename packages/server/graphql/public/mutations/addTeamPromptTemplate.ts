@@ -29,12 +29,6 @@ const addTeamPromptTemplate: MutationResolvers['addTeamPromptTemplate'] = async 
     dataLoader.get('users').loadNonNull(viewerId)
   ])
   const org = await dataLoader.get('organizations').loadNonNull(viewerTeam.orgId)
-  const isStandupTemplatesEnabled = await dataLoader
-    .get('featureFlagByOwnerId')
-    .load({ownerId: viewerTeam.orgId, featureName: 'standupTemplates'})
-  if (!isStandupTemplatesEnabled) {
-    throw new GraphQLError('Standup templates are not enabled for this organization')
-  }
   if (getFeatureTier(org) === 'starter' && viewer.freeCustomStandupTemplatesRemaining === 0) {
     throw new GraphQLError('You have reached the limit of free custom templates.')
   }

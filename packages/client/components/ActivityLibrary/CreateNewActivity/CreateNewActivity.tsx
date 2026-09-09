@@ -1,7 +1,7 @@
 import * as RadioGroup from '@radix-ui/react-radio-group'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
-import {type ComponentPropsWithoutRef, useEffect, useMemo, useState} from 'react'
+import {type ComponentPropsWithoutRef, useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Link, useNavigate, useParams} from 'react-router'
 import type {CreateNewActivityQuery} from '~/__generated__/CreateNewActivityQuery.graphql'
@@ -130,10 +130,6 @@ const query = graphql`
       freeCustomPokerTemplatesRemaining
       freeCustomStandupTemplatesRemaining
       preferredTeamId
-      organizations {
-        id
-        hasStandupTemplates: featureFlag(featureName: "standupTemplates")
-      }
       teams {
         id
         tier
@@ -161,7 +157,6 @@ export const CreateNewActivity = (props: Props) => {
   const {
     teams,
     preferredTeamId,
-    organizations,
     freeCustomRetroTemplatesRemaining,
     freeCustomPokerTemplatesRemaining,
     freeCustomStandupTemplatesRemaining
@@ -171,31 +166,15 @@ export const CreateNewActivity = (props: Props) => {
     teams.find((team) => team.id === preferredTeamId) ?? sortedTeams[0]
   )
 
-  const supportedActivities = useMemo(() => {
-    const standupOrgIds = new Set(
-      organizations.filter((org) => org.hasStandupTemplates).map((org) => org.id)
-    )
-    return SUPPORTED_CUSTOM_ACTIVITIES.filter(
-      (activity) =>
-        activity.type !== 'teamPrompt' || (selectedTeam && standupOrgIds.has(selectedTeam.orgId))
-    )
-  }, [organizations, selectedTeam?.orgId])
-
   const [selectedActivity, setSelectedActivity] = useState(() => {
-    const defaultActivity = supportedActivities[0]!
+    const defaultActivity = SUPPORTED_CUSTOM_ACTIVITIES[0]!
     if (!categoryId) return defaultActivity
     return (
-      supportedActivities.find((activity) =>
+      SUPPORTED_CUSTOM_ACTIVITIES.find((activity) =>
         activity.includedCategories.includes(categoryId as CategoryID)
       ) ?? defaultActivity
     )
   })
-
-  useEffect(() => {
-    if (!supportedActivities.some((activity) => activity.type === selectedActivity.type)) {
-      setSelectedActivity(supportedActivities[0]!)
-    }
-  }, [supportedActivities, selectedActivity.type])
 
   const {submitting, error, submitMutation, onError, onCompleted} = useMutationProps()
   const [executeAddReflectTemplate] = useAddReflectTemplateMutation()
@@ -289,7 +268,9 @@ export const CreateNewActivity = (props: Props) => {
   }
 
   const handleActivitySelection = (activityType: ActivityType) => {
-    setSelectedActivity(supportedActivities.find((activity) => activity.type === activityType)!)
+    setSelectedActivity(
+      SUPPORTED_CUSTOM_ACTIVITIES.find((activity) => activity.type === activityType)!
+    )
   }
 
   return (
@@ -314,7 +295,7 @@ export const CreateNewActivity = (props: Props) => {
           value={selectedActivity?.type}
           onValueChange={handleActivitySelection}
         >
-          {supportedActivities.map((activity) => {
+          {SUPPORTED_CUSTOM_ACTIVITIES.map((activity) => {
             return (
               <RadioGroup.Item
                 key={activity.title}
