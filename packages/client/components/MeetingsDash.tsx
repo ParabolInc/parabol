@@ -26,8 +26,8 @@ import ScheduledSeriesCard from './ScheduledSeriesCard'
 import StartMeetingFAB from './StartMeetingFAB'
 import TutorialMeetingCard from './TutorialMeetingCard'
 
-type DashSeries =
-  MeetingsDash_viewer$data['teams'][number]['activeMeetingSeries'][number]['groupSeries'][number]
+type OwnSeries = MeetingsDash_viewer$data['teams'][number]['activeMeetingSeries'][number]
+type DashSeries = Omit<OwnSeries, 'groupSeries'>
 
 interface Props {
   meetingsDashRef: RefObject<HTMLDivElement>
@@ -39,7 +39,6 @@ const MeetingsDash = (props: Props) => {
   const viewer = useFragment(
     graphql`
       fragment MeetingsDash_viewer on User {
-        id
         dashSearch
         preferredName
         teams {
@@ -55,12 +54,16 @@ const MeetingsDash = (props: Props) => {
   const {teams = [], preferredName = '', dashSearch} = viewer ?? {}
   const allSeries = useMemo(() => {
     const seriesById = new Map<string, DashSeries>()
-    teams.forEach((team) => {
-      team.activeMeetingSeries.forEach((series) => {
-        // a sibling is deduped away when the viewer is on both teams & already has it first-hand
-        ;[series, ...series.groupSeries].forEach((s) => {
-          if (!s.cancelledAt) seriesById.set(s.id, s)
-        })
+    const ownSeries = teams.flatMap((team) => team.activeMeetingSeries)
+    ownSeries.forEach((series) => {
+      if (!series.cancelledAt) seriesById.set(series.id, series)
+    })
+    // a sibling is only fetched lightly: when the viewer is on its team it is already here
+    // first-hand, & when they are not the server has no meeting to give them anyway
+    ownSeries.forEach((series) => {
+      series.groupSeries.forEach((sibling) => {
+        if (sibling.cancelledAt || seriesById.has(sibling.id)) return
+        seriesById.set(sibling.id, {...sibling, mostRecentMeeting: null})
       })
     })
     return [...seriesById.values()]
@@ -210,7 +213,6 @@ const MeetingsDash = (props: Props) => {
 graphql`
   fragment MeetingsDash_meeting on NewMeeting {
     ...MeetingCard_meeting
-    ...useSnacksForNewMeetings_meetings
     id
     teamId
     name
@@ -228,9 +230,6 @@ graphql`
     groupId
     ownerUserId
     recurrenceRule
-    mostRecentMeeting {
-      ...MeetingsDash_meeting @relay(mask: false)
-    }
     ...ScheduledSeriesCard_series
     ...MeetingSeriesGroupCard_series
   }
@@ -240,13 +239,18 @@ graphql`
   fragment MeetingsDashActiveMeetings on Team {
     activeMeetings {
       ...MeetingsDash_meeting @relay(mask: false)
+      # Start* mutation payloads reuse this fragment, which is how a teammate's new meeting reaches
+      # the store with the fields Dashboard's snackbar reads
+      ...useSnacksForNewMeetings_meetings
       meetingSeries {
-        createdAt
         cancelledAt
       }
     }
     activeMeetingSeries {
       ...MeetingsDash_series @relay(mask: false)
+      mostRecentMeeting {
+        ...MeetingsDash_meeting @relay(mask: false)
+      }
       # the siblings a group covers on teams the viewer is not on, so the owner of a
       # multi-team series sees the whole group rather than the one slice they belong to
       groupSeries {

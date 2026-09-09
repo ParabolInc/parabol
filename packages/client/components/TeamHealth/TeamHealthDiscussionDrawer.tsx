@@ -42,6 +42,7 @@ const TeamHealthDiscussionDrawer = (props: Props) => {
         allowedThreadables={allowedThreadables}
         meetingRef={meeting}
         meetingId={meetingId}
+        autoFocus={false}
       />
     </ResponsiveDashSidebar>
   )

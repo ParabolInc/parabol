@@ -30,6 +30,9 @@ interface Props {
   // (e.g. TeamPrompt's rightDrawerOpen). Pair with onChangeTab to keep the parent in sync.
   activeTab?: string | null
   onChangeTab?: (tabId: string) => void
+  // false where the discussion changes as a side effect of navigating the meeting. See
+  // DiscussionThreadInput
+  autoFocus?: boolean
 }
 
 const DiscussionDrawer = ({
@@ -42,7 +45,8 @@ const DiscussionDrawer = ({
   workContent,
   activeTab,
   onChangeTab,
-  hideDiscussion
+  hideDiscussion,
+  autoFocus
 }: Props) => {
   const tabs = [
     ...(hideDiscussion ? [] : [{id: 'discussion', label: 'Discussion'}]),
@@ -102,6 +106,7 @@ const DiscussionDrawer = ({
           discussionId={discussionId}
           allowedThreadables={allowedThreadables}
           header={threadHeader}
+          autoFocus={autoFocus}
         />
       ) : null}
     </div>
