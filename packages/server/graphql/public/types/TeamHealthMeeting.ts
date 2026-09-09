@@ -17,9 +17,9 @@ const TeamHealthMeeting: TeamHealthMeetingResolvers = {
     if (!endedAt) return []
     return dataLoader.get('teamHealthResponsesByMeetingId').load(meetingId)
   },
-  respondentCount: async ({id: meetingId}, _args, {dataLoader}) => {
+  respondentUserIds: async ({id: meetingId}, _args, {dataLoader}) => {
     const responses = await dataLoader.get('teamHealthResponsesByMeetingId').load(meetingId)
-    return new Set(responses.map((response) => response.userId)).size
+    return [...new Set(responses.map((response) => response.userId))]
   },
   currentStreak: async ({id: meetingId, meetingSeriesId}, _args, {dataLoader}) => {
     if (!meetingSeriesId) return 0

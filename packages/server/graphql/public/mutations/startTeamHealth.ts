@@ -2,6 +2,7 @@ import {randomUUIDv7} from 'crypto'
 import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RRuleSet} from 'rrule-rust'
+import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import getKysely from '../../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
 import {type AnalyticsUser, analytics} from '../../../utils/analytics/analytics'
@@ -126,11 +127,10 @@ const startTeamHealthForTeam = async (
   if (!meeting) return undefined
 
   const meetingId = meeting.id
-  const meetingMember = createMeetingMember(meeting, {
-    userId: facilitatorId,
-    teamId,
-    isSpectatingPoker: false
-  })
+  const starterTeamMember = await dataLoader
+    .get('teamMembers')
+    .loadNonNull(toTeamMemberId(teamId, facilitatorId))
+  const meetingMember = createMeetingMember(meeting, starterTeamMember)
   const [meetingSeries] = await Promise.all([
     rrule && startNewMeetingSeries(meeting, rrule, seriesName, seriesParams),
     pg

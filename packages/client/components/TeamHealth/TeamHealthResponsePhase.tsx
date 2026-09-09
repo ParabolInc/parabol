@@ -2,7 +2,6 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {TeamHealthResponsePhase_meeting$key} from '~/__generated__/TeamHealthResponsePhase_meeting.graphql'
 import useSetTeamHealthSpectateMutation from '../../mutations/useSetTeamHealthSpectateMutation'
-import {Button} from '../../ui/Button/Button'
 import {isNotNull} from '../../utils/predicates'
 import {getOrderedTeamHealthCategories} from '../ActivityLibrary/TeamHealth/getTeamHealthCategoryColor'
 import TeamHealthEndedResponseCard from './TeamHealthEndedResponseCard'
@@ -83,33 +82,16 @@ const TeamHealthResponsePhase = (props: Props) => {
   const resultStageId = phases
     .find((phase) => phase.phaseType === 'TEAM_HEALTH_RESULT')
     ?.stages.filter(isNotNull)[0]?.id
-  const firstResponseStageId = responseStages[0]?.id
 
   const currentIdx = responseStages.findIndex((stage) => stage.id === localStage?.id)
   const currentStage = responseStages[currentIdx]
   const isLast = currentIdx === responseStages.length - 1
 
-  // the owner is a data collector, excluded from the questions unless they opt in
-  if (viewerMeetingMember?.isSpectating) {
-    const onShare = () => {
-      if (!firstResponseStageId) return
-      setSpectate({variables: {meetingId, isSpectating: false}})
-      gotoStageId(firstResponseStageId)
-    }
-    return (
-      <div className='mx-auto flex h-full max-w-2xl flex-col items-center justify-center px-6'>
-        <div className='flex w-full max-w-2xl flex-col items-center rounded-2xl bg-surface-card p-8 text-center shadow-card'>
-          <h2 className='font-bold text-2xl text-fg-primary'>You're the manager here</h2>
-          <p className='mt-3 text-fg-secondary'>
-            You're collecting the team's health data, so you're excluded from the questions. If
-            you'd like to answer them too, you can share your responses.
-          </p>
-          <Button variant='secondary' shape='default' size='lg' className='mt-6' onClick={onShare}>
-            Share your responses
-          </Button>
-        </div>
-      </div>
-    )
+  // the team lead is excluded from the questions unless they opt in. They still see every
+  // question, just read-only, so they know what they are asking the team
+  const isSpectating = !!viewerMeetingMember?.isSpectating
+  const onShareResponses = () => {
+    setSpectate({variables: {meetingId, isSpectating: false}})
   }
 
   if (!currentStage) return null
@@ -150,6 +132,7 @@ const TeamHealthResponsePhase = (props: Props) => {
           preferredName={viewerMeetingMember?.user.preferredName ?? ''}
           picture={viewerMeetingMember?.user.picture ?? ''}
           aiDisabledReason={aiDisabledReason}
+          onShareResponses={isSpectating ? onShareResponses : undefined}
           onPrev={onPrev}
           onNext={onNext}
         />

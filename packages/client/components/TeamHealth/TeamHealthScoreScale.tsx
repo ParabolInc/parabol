@@ -26,7 +26,7 @@ const TeamHealthScoreScale = (props: Props) => {
         {SCORES.map((value, idx) => {
           const isSelected = score === value
           const className = cn(
-            'flex h-14 w-14 items-center justify-center rounded-full font-semibold text-lg text-white transition-transform',
+            'flex h-14 w-14 select-none items-center justify-center rounded-full font-semibold text-lg text-white transition-transform',
             SCORE_COLORS[idx],
             isSelected
               ? 'scale-110 ring-2 ring-grape-700 ring-offset-2 ring-offset-surface-card dark:ring-grape-200'

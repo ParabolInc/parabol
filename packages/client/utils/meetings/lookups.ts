@@ -29,7 +29,7 @@ export const phaseLabelLookup = {
   RESPONSES: 'Active',
   TEAM_HEALTH_INTRO: 'Welcome',
   TEAM_HEALTH_RESPONSE: 'Respond',
-  TEAM_HEALTH_SUBMITTED: 'All Set',
+  TEAM_HEALTH_SUBMITTED: 'Results',
   TEAM_HEALTH_RESULT: 'Results'
 } as Record<NewMeetingPhaseTypeEnum, string>
 
