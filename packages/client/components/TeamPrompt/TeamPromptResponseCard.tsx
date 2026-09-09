@@ -59,11 +59,6 @@ const TeamPromptResponseCard = (props: Props) => {
             endedAt
             localStageId
             rightDrawerOpen
-            team {
-              organization {
-                hasStandupTemplates: featureFlag(featureName: "standupTemplates")
-              }
-            }
           }
         }
         teamMember {
@@ -122,7 +117,6 @@ const TeamPromptResponseCard = (props: Props) => {
   const discussionEdges = discussion.thread.edges
   const replyCount = discussionEdges.length
 
-  const hasStandupTemplates = !!meeting?.team?.organization?.hasStandupTemplates
   const isMeetingEnded = !!meeting?.endedAt
   const isViewerResponse = userId === viewerId
   const isEmptyResponse = !isViewerResponse && !plaintextContent
@@ -226,8 +220,8 @@ const TeamPromptResponseCard = (props: Props) => {
               readOnly={!isViewerResponse || isMeetingEnded}
               placeholder={viewerEmptyResponsePlaceholder}
               draftStorageKey={`draftResponse:${stageId}`}
-              enableSlashCommands={hasStandupTemplates}
-              showListControls={hasStandupTemplates}
+              enableSlashCommands
+              showListControls
             />
             {!!response && (
               <div className='flex flex-wrap items-center justify-start pt-1'>
