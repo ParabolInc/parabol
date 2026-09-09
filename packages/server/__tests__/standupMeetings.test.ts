@@ -272,6 +272,16 @@ const startStandup = async (
   return res.data.startTeamPrompt
 }
 
+const startLegacyStandup = async (auth: {cookie: string}, teamId: string) => {
+  const {meeting} = await startStandup(auth, teamId)
+  await getKysely()
+    .updateTable('NewMeeting')
+    .set({templateId: null})
+    .where('id', '=', meeting.id)
+    .execute()
+  return {meeting}
+}
+
 const joinMeeting = async (auth: {cookie?: string; bearerToken?: string}, meetingId: string) => {
   const res = await sendPublic({query: JOIN_MEETING, variables: {meetingId}, ...auth})
   expect(res.data.joinMeeting.error).toBeUndefined()
@@ -626,7 +636,7 @@ test('upsertTeamPromptAnswers rejects foreign prompts, duplicates, ended and leg
   expect(ended.errors).toEqual([expect.objectContaining({message: 'Meeting already ended'})])
 
   const legacy = await signUp()
-  const {meeting: legacyMeeting} = await startStandup({cookie: legacy.cookie}, legacy.teamId)
+  const {meeting: legacyMeeting} = await startLegacyStandup({cookie: legacy.cookie}, legacy.teamId)
   await joinMeeting({cookie: legacy.cookie}, legacyMeeting.id)
   const structuredOnLegacy = await sendPublic({
     query: UPSERT_ANSWERS,
@@ -644,7 +654,7 @@ test('upsertTeamPromptAnswers rejects foreign prompts, duplicates, ended and leg
 
 test('legacy standups still accept upsertTeamPromptResponse and count as shared', async () => {
   const {teamId, cookie} = await signUp()
-  const {meeting} = await startStandup({cookie}, teamId)
+  const {meeting} = await startLegacyStandup({cookie}, teamId)
   await joinMeeting({cookie}, meeting.id)
   const res = await sendPublic({
     query: UPSERT_LEGACY_RESPONSE,
@@ -796,7 +806,7 @@ test('an attachment-only answer counts as answered with empty plaintext', async 
 
 test('responseCount only counts shared responses with non-empty documents', async () => {
   const legacy = await signUp()
-  const {meeting: legacyMeeting} = await startStandup({cookie: legacy.cookie}, legacy.teamId)
+  const {meeting: legacyMeeting} = await startLegacyStandup({cookie: legacy.cookie}, legacy.teamId)
   await joinMeeting({cookie: legacy.cookie}, legacyMeeting.id)
   await sendPublic({
     query: UPSERT_LEGACY_RESPONSE,
@@ -841,7 +851,7 @@ test('responseCount only counts shared responses with non-empty documents', asyn
 
 test('updateMeetingPrompt succeeds on a legacy meeting and is blocked on a templated one', async () => {
   const {teamId, cookie} = await signUp()
-  const {meeting: legacyMeeting} = await startStandup({cookie}, teamId)
+  const {meeting: legacyMeeting} = await startLegacyStandup({cookie}, teamId)
   const updated = await sendPublic({
     query: UPDATE_MEETING_PROMPT,
     variables: {meetingId: legacyMeeting.id, newPrompt: 'What did you ship this week?'},
