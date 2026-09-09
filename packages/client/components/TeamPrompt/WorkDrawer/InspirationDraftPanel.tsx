@@ -5,7 +5,7 @@ import type {TeamPromptComposerApi} from '../structured/TeamPromptComposerApiCon
 import InspirationBrowseRow from './InspirationBrowseRow'
 import InspirationDraftHeader from './InspirationDraftHeader'
 import InspirationDraftList, {type InspirationItemData} from './InspirationDraftList'
-import {formatSince} from './inspirationCopy'
+import {formatSince, NO_WORK_LINE} from './inspirationCopy'
 import type {WorkDrawerPrompt} from './WorkDrawerConsumeContext'
 import type {WorkDrawerDateRange} from './WorkDrawerDateFilter'
 
@@ -21,6 +21,7 @@ interface Props {
   onRegenerate: () => void
   regenerating: boolean
   error: string | null
+  noWorkFound: boolean
   onTune: () => void
   tuneDirty: boolean
   filters?: ReactNode
@@ -29,7 +30,8 @@ interface Props {
 
 const InspirationDraftPanel = (props: Props) => {
   const {meetingId, teamId, service, items, prompts, composer, workItemCount, dateRange} = props
-  const {onRegenerate, regenerating, error, onTune, tuneDirty, filters, children} = props
+  const {onRegenerate, regenerating, error, noWorkFound, onTune, tuneDirty} = props
+  const {filters, children} = props
   const [browsing, setBrowsing] = useSessionStorageState<boolean>(
     `Inspiration:browse:${meetingId}:${service}`,
     false
@@ -74,6 +76,14 @@ const InspirationDraftPanel = (props: Props) => {
           />
           <div className='flex flex-col gap-2.5 px-4 pb-4'>
             {error && <div className='text-fg-error text-sm'>{error}</div>}
+            {noWorkFound && (
+              <p
+                role='status'
+                className='m-0 rounded-md bg-surface-well px-3 py-2 text-fg-secondary text-sm'
+              >
+                {NO_WORK_LINE}
+              </p>
+            )}
             <InspirationDraftList
               items={items}
               prompts={prompts}

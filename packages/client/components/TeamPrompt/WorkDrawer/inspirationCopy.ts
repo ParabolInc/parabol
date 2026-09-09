@@ -31,6 +31,9 @@ export const metaLine = (workItemCount: number | undefined, since: string, promp
 export const EMPTY_DRAFT_LINE =
   'Nothing drafted yet — use Refresh draft to write one from your work'
 
+export const NO_WORK_LINE =
+  'No work was found to draft from. Try adjusting your filters or date range.'
+
 export const browseLabel = (workItemCount: number | undefined) =>
   workItemCount ? `Browse all ${workItemCount} work items` : 'Browse work items'
 
