@@ -3,7 +3,7 @@ import Highlight from '@tiptap/extension-highlight'
 import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention from '@tiptap/extension-mention'
 import {TextStyleKit} from '@tiptap/extension-text-style'
-import {Placeholder} from '@tiptap/extensions'
+import {CharacterCount, Placeholder} from '@tiptap/extensions'
 import {type JSONContent, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
@@ -24,6 +24,8 @@ import {TiptapLinkExtension} from '../TipTapEditor/TiptapLinkExtension'
 import {useStreamedEditorContent} from '../TipTapEditor/useStreamedEditorContent'
 
 const submitButtonClasses = 'mt-3 rounded-[6px] px-3 py-1 font-normal text-sm leading-5 opacity-100'
+
+const RESPONSE_CHARACTER_LIMIT = 500
 
 interface Props {
   autoFocus?: boolean
@@ -115,6 +117,7 @@ const PromptResponseEditor = (props: Props) => {
       content,
       extensions: [
         StarterKit.configure({link: false}),
+        CharacterCount.configure({limit: RESPONSE_CHARACTER_LIMIT}),
         LoomExtension,
         Placeholder.configure({
           showOnlyWhenEditable: false,
