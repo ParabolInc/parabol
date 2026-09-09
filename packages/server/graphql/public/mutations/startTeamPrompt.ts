@@ -38,10 +38,7 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   ])
   if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
 
-  const isTemplated = await dataLoader
-    .get('featureFlagByOwnerId')
-    .load({ownerId: team.orgId, featureName: 'standupTemplates'})
-  if (isTemplated && requestedTemplateId) {
+  if (requestedTemplateId) {
     const requestedTemplate = await dataLoader.get('meetingTemplates').load(requestedTemplateId)
     if (
       !requestedTemplate ||
@@ -57,12 +54,10 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
       return standardError(new Error('Template is scoped to organization'), {userId: viewerId})
     }
   }
-  const templateId = isTemplated
-    ? await resolveStandupTemplateId(
-        [requestedTemplateId, meetingSettings?.selectedTemplateId],
-        dataLoader
-      )
-    : null
+  const templateId = await resolveStandupTemplateId(
+    [requestedTemplateId, meetingSettings?.selectedTemplateId],
+    dataLoader
+  )
 
   const meetingName = name || 'Standup'
   const eventName = rrule ? name || 'Standup' : meetingName

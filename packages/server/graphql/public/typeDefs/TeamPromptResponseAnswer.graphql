@@ -15,7 +15,7 @@ type TeamPromptResponseAnswer {
   """
   The prompt this answer responds to
   """
-  prompt: ReflectPrompt!
+  prompt: TemplatePrompt!
 
   """
   The stringified TipTap document of the answer

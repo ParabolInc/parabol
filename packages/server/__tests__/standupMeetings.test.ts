@@ -233,14 +233,6 @@ const UPDATE_MEETING_PROMPT = `
   }
 `
 
-const grantStandupFlag = async (orgId: string) => {
-  await getKysely()
-    .insertInto('FeatureFlagOwner')
-    .values({orgId, featureName: 'standupTemplates'})
-    .onConflict((oc) => oc.doNothing())
-    .execute()
-}
-
 const authTokenFor = async (userId: string) => {
   const teamMembers = await getKysely()
     .selectFrom('TeamMember')
@@ -287,38 +279,25 @@ const joinMeeting = async (auth: {cookie?: string; bearerToken?: string}, meetin
 
 const startTemplatedStandup = async (templateId = ENTERPRISE_TEMPLATE_ID) => {
   const owner = await signUp()
-  await grantStandupFlag(owner.orgId)
   const {meeting} = await startStandup({cookie: owner.cookie}, owner.teamId, templateId)
   await joinMeeting({cookie: owner.cookie}, meeting.id)
   return {owner, meeting}
 }
 
-test('flag off: startTeamPrompt ignores templateId and creates a legacy standup', async () => {
-  const {teamId, cookie} = await signUp()
-  const {meeting} = await startStandup({cookie}, teamId, ENTERPRISE_TEMPLATE_ID)
-  expect(meeting).toMatchObject({
-    templateId: null,
-    template: null,
-    prompts: [],
-    meetingPrompt: DEFAULT_PROMPT
-  })
-})
-
-test('flag on: startTeamPrompt uses the requested template and freezes its prompts', async () => {
+test('startTeamPrompt uses the requested template and freezes its prompts', async () => {
   const {meeting} = await startTemplatedStandup()
   expect(meeting.templateId).toBe(ENTERPRISE_TEMPLATE_ID)
   expect(meeting.template.id).toBe(ENTERPRISE_TEMPLATE_ID)
   expect(meeting.prompts.map((prompt: any) => prompt.question)).toEqual([
-    'What have you completed recently?',
-    "What's next for you?",
-    'What are you stuck on?'
+    'What are you working on? What has been completed recently?',
+    "What are you stuck on, what's holding you back?",
+    'What are you planning to work on next?'
   ])
-  expect(meeting.meetingPrompt).toBe('What have you completed recently?')
+  expect(meeting.meetingPrompt).toBe('What are you working on? What has been completed recently?')
 })
 
-test('flag on: startTeamPrompt without templateId uses the canonical template by default', async () => {
-  const {teamId, orgId, cookie} = await signUp()
-  await grantStandupFlag(orgId)
+test('startTeamPrompt without templateId uses the canonical template by default', async () => {
+  const {teamId, cookie} = await signUp()
   const {meeting} = await startStandup({cookie}, teamId)
   expect(meeting.templateId).toBe(CANONICAL_TEMPLATE_ID)
   expect(meeting.prompts).toHaveLength(1)
@@ -327,7 +306,6 @@ test('flag on: startTeamPrompt without templateId uses the canonical template by
 
 test('startTeamPrompt rejects a template scoped to another org', async () => {
   const [owner, attacker] = await Promise.all([signUp(), signUp()])
-  await Promise.all([grantStandupFlag(owner.orgId), grantStandupFlag(attacker.orgId)])
   const created = await sendPublic({
     query: ADD_TEAM_PROMPT_TEMPLATE,
     variables: {teamId: owner.teamId},
@@ -343,8 +321,7 @@ test('startTeamPrompt rejects a template scoped to another org', async () => {
 })
 
 test('startTeamPrompt records the template on a recurring series', async () => {
-  const {teamId, orgId, cookie} = await signUp()
-  await grantStandupFlag(orgId)
+  const {teamId, cookie} = await signUp()
   const {meeting, meetingSeries} = await startStandup(
     {cookie},
     teamId,
@@ -362,8 +339,7 @@ test('startTeamPrompt records the template on a recurring series', async () => {
 
 test('a recurring standup inherits the series template and skips an inactive one', async () => {
   const pg = getKysely()
-  const {userId, teamId, orgId, cookie} = await signUp()
-  await grantStandupFlag(orgId)
+  const {userId, teamId, cookie} = await signUp()
   const created = await sendPublic({
     query: ADD_TEAM_PROMPT_TEMPLATE,
     variables: {teamId, parentTemplateId: ENTERPRISE_TEMPLATE_ID},
@@ -416,7 +392,7 @@ test('a recurring standup inherits the series template and skips an inactive one
 
 test('answers are saved as a private draft and masked for teammates', async () => {
   const {owner, meeting} = await startTemplatedStandup()
-  const [completed, next] = meeting.prompts
+  const [workingOn, , next] = meeting.prompts
   const teammate = await addTeammate(owner.teamId)
   await joinMeeting({bearerToken: teammate.bearerToken}, meeting.id)
 
@@ -424,7 +400,7 @@ test('answers are saved as a private draft and masked for teammates', async () =
     query: UPSERT_ANSWERS,
     variables: {
       meetingId: meeting.id,
-      answers: [{promptId: completed.id, content: paragraph('Shipped the billing fix')}],
+      answers: [{promptId: workingOn.id, content: paragraph('Shipped the billing fix')}],
       share: false
     },
     cookie: owner.cookie
@@ -433,15 +409,16 @@ test('answers are saved as a private draft and masked for teammates', async () =
   expect(draft.data.upsertTeamPromptAnswers.response).toMatchObject({
     isShared: false,
     sharedAt: null,
-    answeredPromptIds: [completed.id],
+    answeredPromptIds: [workingOn.id],
     answers: [
       {
-        promptId: completed.id,
-        prompt: {id: completed.id},
+        promptId: workingOn.id,
+        prompt: {id: workingOn.id},
         plaintextContent: 'Shipped the billing fix'
       }
     ],
-    plaintextContent: 'What have you completed recently?\nShipped the billing fix'
+    plaintextContent:
+      'What are you working on? What has been completed recently?\nShipped the billing fix'
   })
   expect(JSON.parse(draft.data.upsertTeamPromptAnswers.response.content)).toEqual({
     type: 'doc',
@@ -449,7 +426,9 @@ test('answers are saved as a private draft and masked for teammates', async () =
       {
         type: 'heading',
         attrs: {level: 3},
-        content: [{type: 'text', text: 'What have you completed recently?'}]
+        content: [
+          {type: 'text', text: 'What are you working on? What has been completed recently?'}
+        ]
       },
       {type: 'paragraph', content: [{type: 'text', text: 'Shipped the billing fix'}]}
     ]
@@ -468,7 +447,7 @@ test('answers are saved as a private draft and masked for teammates', async () =
     userId: owner.userId,
     isShared: false,
     sharedAt: null,
-    answeredPromptIds: [completed.id],
+    answeredPromptIds: [workingOn.id],
     answers: [],
     content: EMPTY_DOC,
     plaintextContent: ''
@@ -483,14 +462,14 @@ test('answers are saved as a private draft and masked for teammates', async () =
   const ownResponse = asOwner.data.viewer.meeting.responses.find(
     (response: any) => response.userId === owner.userId
   )
-  expect(ownResponse.answers).toEqual([{promptId: completed.id}])
+  expect(ownResponse.answers).toEqual([{promptId: workingOn.id}])
   expect(ownResponse.plaintextContent).toContain('Shipped the billing fix')
   expect(next.id).toBeTruthy()
 })
 
 test('sharing reveals answers, sets sharedAt once and keeps the response shared', async () => {
   const {owner, meeting} = await startTemplatedStandup()
-  const [completed, next] = meeting.prompts
+  const [workingOn, , next] = meeting.prompts
   const teammate = await addTeammate(owner.teamId)
   await joinMeeting({bearerToken: teammate.bearerToken}, meeting.id)
 
@@ -499,7 +478,7 @@ test('sharing reveals answers, sets sharedAt once and keeps the response shared'
     variables: {
       meetingId: meeting.id,
       answers: [
-        {promptId: completed.id, content: paragraph('Closed 3 tickets')},
+        {promptId: workingOn.id, content: paragraph('Closed 3 tickets')},
         {promptId: next.id, content: paragraph('Start the audit')}
       ],
       share: true
@@ -510,7 +489,7 @@ test('sharing reveals answers, sets sharedAt once and keeps the response shared'
   const {response: sharedResponse, meeting: sharedMeeting} = shared.data.upsertTeamPromptAnswers
   expect(sharedResponse.isShared).toBe(true)
   expect(sharedResponse.sharedAt).not.toBeNull()
-  expect(sharedResponse.answeredPromptIds).toEqual([completed.id, next.id])
+  expect(sharedResponse.answeredPromptIds).toEqual([workingOn.id, next.id])
   expect(sharedMeeting.responseCount).toBe(1)
 
   const asTeammate = await sendPublic({
@@ -522,9 +501,9 @@ test('sharing reveals answers, sets sharedAt once and keeps the response shared'
     (response: any) => response.userId === owner.userId
   )
   expect(ownerResponse.isShared).toBe(true)
-  expect(ownerResponse.answers).toEqual([{promptId: completed.id}, {promptId: next.id}])
+  expect(ownerResponse.answers).toEqual([{promptId: workingOn.id}, {promptId: next.id}])
   expect(ownerResponse.plaintextContent).toBe(
-    "What have you completed recently?\nClosed 3 tickets\n\nWhat's next for you?\nStart the audit"
+    'What are you working on? What has been completed recently?\nClosed 3 tickets\n\nWhat are you planning to work on next?\nStart the audit'
   )
 
   const edited = await sendPublic({
@@ -541,7 +520,7 @@ test('sharing reveals answers, sets sharedAt once and keeps the response shared'
     isShared: true,
     sharedAt: sharedResponse.sharedAt,
     plaintextContent:
-      "What have you completed recently?\nClosed 3 tickets\n\nWhat's next for you?\nStart the audit tomorrow"
+      'What are you working on? What has been completed recently?\nClosed 3 tickets\n\nWhat are you planning to work on next?\nStart the audit tomorrow'
   })
 
   const reshared = await sendPublic({
@@ -554,7 +533,7 @@ test('sharing reveals answers, sets sharedAt once and keeps the response shared'
 
 test('an empty document removes an answer and the derived content follows template order', async () => {
   const {owner, meeting} = await startTemplatedStandup()
-  const [completed, next, stuck] = meeting.prompts
+  const [workingOn, stuck, next] = meeting.prompts
 
   await sendPublic({
     query: UPSERT_ANSWERS,
@@ -562,7 +541,7 @@ test('an empty document removes an answer and the derived content follows templa
       meetingId: meeting.id,
       answers: [
         {promptId: stuck.id, content: paragraph('Waiting on review')},
-        {promptId: completed.id, content: paragraph('Done with onboarding')}
+        {promptId: workingOn.id, content: paragraph('Done with onboarding')}
       ],
       share: false
     },
@@ -573,7 +552,7 @@ test('an empty document removes an answer and the derived content follows templa
     variables: {
       meetingId: meeting.id,
       answers: [
-        {promptId: completed.id, content: EMPTY_DOC},
+        {promptId: workingOn.id, content: EMPTY_DOC},
         {promptId: next.id, content: paragraph('Plan the release')}
       ],
       share: false
@@ -584,13 +563,13 @@ test('an empty document removes an answer and the derived content follows templa
   const {response} = removed.data.upsertTeamPromptAnswers
   expect(response.answeredPromptIds.sort()).toEqual([next.id, stuck.id].sort())
   expect(response.plaintextContent).toBe(
-    "What's next for you?\nPlan the release\n\nWhat are you stuck on?\nWaiting on review"
+    "What are you stuck on, what's holding you back?\nWaiting on review\n\nWhat are you planning to work on next?\nPlan the release"
   )
 })
 
 test('upsertTeamPromptAnswers rejects foreign prompts, duplicates, ended and legacy meetings', async () => {
   const {owner, meeting} = await startTemplatedStandup()
-  const [completed] = meeting.prompts
+  const [workingOn] = meeting.prompts
 
   const foreign = await sendPublic({
     query: UPSERT_ANSWERS,
@@ -610,8 +589,8 @@ test('upsertTeamPromptAnswers rejects foreign prompts, duplicates, ended and leg
     variables: {
       meetingId: meeting.id,
       answers: [
-        {promptId: completed.id, content: paragraph('a')},
-        {promptId: completed.id, content: paragraph('b')}
+        {promptId: workingOn.id, content: paragraph('a')},
+        {promptId: workingOn.id, content: paragraph('b')}
       ],
       share: false
     },
@@ -639,7 +618,7 @@ test('upsertTeamPromptAnswers rejects foreign prompts, duplicates, ended and leg
     query: UPSERT_ANSWERS,
     variables: {
       meetingId: meeting.id,
-      answers: [{promptId: completed.id, content: paragraph('late')}],
+      answers: [{promptId: workingOn.id, content: paragraph('late')}],
       share: true
     },
     cookie: owner.cookie
@@ -691,13 +670,13 @@ test('legacy standups still accept upsertTeamPromptResponse and count as shared'
 
 test('a teammate cannot write answers for a meeting they have not joined', async () => {
   const {owner, meeting} = await startTemplatedStandup()
-  const [completed] = meeting.prompts
+  const [workingOn] = meeting.prompts
   const outsider = await signUp()
   const res = await sendPublic({
     query: UPSERT_ANSWERS,
     variables: {
       meetingId: meeting.id,
-      answers: [{promptId: completed.id, content: paragraph('intruder')}],
+      answers: [{promptId: workingOn.id, content: paragraph('intruder')}],
       share: true
     },
     cookie: outsider.cookie
@@ -743,12 +722,12 @@ test('saving a fresh draft with nothing to save is rejected and creates no row',
     .execute()
   expect(rows).toHaveLength(0)
 
-  const [completed] = meeting.prompts
+  const [workingOn] = meeting.prompts
   await sendPublic({
     query: UPSERT_ANSWERS,
     variables: {
       meetingId: meeting.id,
-      answers: [{promptId: completed.id, content: paragraph('Getting started')}],
+      answers: [{promptId: workingOn.id, content: paragraph('Getting started')}],
       share: false
     },
     cookie: owner.cookie
@@ -757,7 +736,7 @@ test('saving a fresh draft with nothing to save is rejected and creates no row',
     query: UPSERT_ANSWERS,
     variables: {
       meetingId: meeting.id,
-      answers: [{promptId: completed.id, content: EMPTY_DOC}],
+      answers: [{promptId: workingOn.id, content: EMPTY_DOC}],
       share: false
     },
     cookie: owner.cookie
@@ -775,7 +754,7 @@ test('saving a fresh draft with nothing to save is rejected and creates no row',
 
 test('an attachment-only answer counts as answered with empty plaintext', async () => {
   const {owner, meeting} = await startTemplatedStandup()
-  const [completed] = meeting.prompts
+  const [workingOn] = meeting.prompts
   const attachmentDoc = JSON.stringify({
     type: 'doc',
     content: [
@@ -794,15 +773,15 @@ test('an attachment-only answer counts as answered with empty plaintext', async 
     query: UPSERT_ANSWERS,
     variables: {
       meetingId: meeting.id,
-      answers: [{promptId: completed.id, content: attachmentDoc}],
+      answers: [{promptId: workingOn.id, content: attachmentDoc}],
       share: false
     },
     cookie: owner.cookie
   })
   expect(draft.errors).toBeUndefined()
-  expect(draft.data.upsertTeamPromptAnswers.response.answeredPromptIds).toEqual([completed.id])
+  expect(draft.data.upsertTeamPromptAnswers.response.answeredPromptIds).toEqual([workingOn.id])
   expect(draft.data.upsertTeamPromptAnswers.response.answers[0]).toMatchObject({
-    promptId: completed.id,
+    promptId: workingOn.id,
     plaintextContent: ''
   })
 
@@ -841,12 +820,12 @@ test('responseCount only counts shared responses with non-empty documents', asyn
   expect(legacyResponses.data.viewer.meeting.responseCount).toBe(0)
 
   const {owner, meeting} = await startTemplatedStandup()
-  const [completed] = meeting.prompts
+  const [workingOn] = meeting.prompts
   const draft = await sendPublic({
     query: UPSERT_ANSWERS,
     variables: {
       meetingId: meeting.id,
-      answers: [{promptId: completed.id, content: paragraph('Writing tests')}],
+      answers: [{promptId: workingOn.id, content: paragraph('Writing tests')}],
       share: false
     },
     cookie: owner.cookie
@@ -885,7 +864,7 @@ test('updateMeetingPrompt succeeds on a legacy meeting and is blocked on a templ
 
 test('a shared response rejects a private edit and notifies newly mentioned teammates', async () => {
   const {owner, meeting} = await startTemplatedStandup()
-  const [completed] = meeting.prompts
+  const [workingOn] = meeting.prompts
   const teammate = await addTeammate(owner.teamId)
   await joinMeeting({bearerToken: teammate.bearerToken}, meeting.id)
 
@@ -893,7 +872,7 @@ test('a shared response rejects a private edit and notifies newly mentioned team
     query: UPSERT_ANSWERS,
     variables: {
       meetingId: meeting.id,
-      answers: [{promptId: completed.id, content: paragraph('Shipped the parser')}],
+      answers: [{promptId: workingOn.id, content: paragraph('Shipped the parser')}],
       share: true
     },
     cookie: owner.cookie
@@ -904,7 +883,7 @@ test('a shared response rejects a private edit and notifies newly mentioned team
     query: UPSERT_ANSWERS,
     variables: {
       meetingId: meeting.id,
-      answers: [{promptId: completed.id, content: paragraph('Shipped the parser and the lexer')}],
+      answers: [{promptId: workingOn.id, content: paragraph('Shipped the parser and the lexer')}],
       share: false
     },
     cookie: owner.cookie
@@ -919,7 +898,7 @@ test('a shared response rejects a private edit and notifies newly mentioned team
       meetingId: meeting.id,
       answers: [
         {
-          promptId: completed.id,
+          promptId: workingOn.id,
           content: paragraphWithMention('Shipped the parser with ', teammate.userId, 'Teammate')
         }
       ],
@@ -940,7 +919,6 @@ test('a shared response rejects a private edit and notifies newly mentioned team
 
 test('startTeamPrompt rejects a template downscoped to another team', async () => {
   const [owner, outsider] = await Promise.all([signUp(), signUp()])
-  await Promise.all([grantStandupFlag(owner.orgId), grantStandupFlag(outsider.orgId)])
   const created = await sendPublic({
     query: ADD_TEAM_PROMPT_TEMPLATE,
     variables: {teamId: owner.teamId},
@@ -964,7 +942,7 @@ test('startTeamPrompt rejects a template downscoped to another team', async () =
 
 test('two members keep their drafts private from each other until both share', async () => {
   const {owner, meeting} = await startTemplatedStandup()
-  const [completed] = meeting.prompts
+  const [workingOn] = meeting.prompts
   const teammate = await addTeammate(owner.teamId)
   await joinMeeting({bearerToken: teammate.bearerToken}, meeting.id)
 
@@ -972,7 +950,7 @@ test('two members keep their drafts private from each other until both share', a
     query: UPSERT_ANSWERS,
     variables: {
       meetingId: meeting.id,
-      answers: [{promptId: completed.id, content: paragraph('Owner draft')}],
+      answers: [{promptId: workingOn.id, content: paragraph('Owner draft')}],
       share: false
     },
     cookie: owner.cookie
@@ -981,7 +959,7 @@ test('two members keep their drafts private from each other until both share', a
     query: UPSERT_ANSWERS,
     variables: {
       meetingId: meeting.id,
-      answers: [{promptId: completed.id, content: paragraph('Teammate draft')}],
+      answers: [{promptId: workingOn.id, content: paragraph('Teammate draft')}],
       share: false
     },
     bearerToken: teammate.bearerToken
@@ -1042,7 +1020,7 @@ test('two members keep their drafts private from each other until both share', a
 
 test('a heading-only or empty-list document has nothing to save', async () => {
   const {owner, meeting} = await startTemplatedStandup()
-  const [completed] = meeting.prompts
+  const [workingOn] = meeting.prompts
   const emptyDocs = [
     JSON.stringify({type: 'doc', content: [{type: 'heading', attrs: {level: 3}}]}),
     JSON.stringify({
@@ -1055,7 +1033,7 @@ test('a heading-only or empty-list document has nothing to save', async () => {
       query: UPSERT_ANSWERS,
       variables: {
         meetingId: meeting.id,
-        answers: [{promptId: completed.id, content}],
+        answers: [{promptId: workingOn.id, content}],
         share: false
       },
       cookie: owner.cookie

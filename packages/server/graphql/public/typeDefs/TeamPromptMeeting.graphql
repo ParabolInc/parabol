@@ -26,7 +26,7 @@ type TeamPromptMeeting implements NewMeeting {
   The prompts every member answers, frozen to the template as it was when the meeting started.
   Empty for legacy stand-ups
   """
-  prompts: [ReflectPrompt!]!
+  prompts: [TemplatePrompt!]!
 
   """
   The tasks created within the meeting
