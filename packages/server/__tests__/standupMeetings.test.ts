@@ -1063,7 +1063,7 @@ test('starting recurrence in-meeting carries the template onto the new series', 
 
 test('starting recurrence in a legacy standup leaves the series template null', async () => {
   const {teamId, cookie} = await signUp()
-  const {meeting} = await startStandup({cookie}, teamId)
+  const {meeting} = await startLegacyStandup({cookie}, teamId)
   const res = await sendPublic({
     query: UPDATE_RECURRENCE_SETTINGS,
     variables: {meetingId: meeting.id, rrule: immediateRrule()},
