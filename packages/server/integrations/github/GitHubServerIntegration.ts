@@ -2,6 +2,7 @@ import {githubIntegrationMeta} from 'parabol-client/shared/integrations/githubIn
 import {Providers} from 'parabol-client/types/constEnums'
 import fetchGitHubRepos from '../../graphql/queries/helpers/fetchGitHubRepos'
 import type {GitHubSearchQueryJson, TeamMemberIntegrationAuth} from '../../postgres/types'
+import type {GitHubRepo} from '../platform/RemoteRepoIntegration'
 import {
   type EstimatePushCapability,
   type IntegrationCtx,
@@ -43,7 +44,7 @@ export class GitHubServerIntegration extends ServerIntegrationDefinition {
     issueCreate: IssueCreateCapability
     issueRead: IssueReadCapability
     issueSearch: IssueSearchCapability<GitHubSearchQueryJson>
-    repoList: RepoListCapability
+    repoList: RepoListCapability<GitHubRepo>
     estimatePush: EstimatePushCapability
   } = {
     issueCreate: {
@@ -56,7 +57,11 @@ export class GitHubServerIntegration extends ServerIntegrationDefinition {
     issueSearch: {buildQuery: buildGitHubSearchQuery},
     repoList: {
       fetchRepos: ({dataLoader, teamId, userId, context, info}) =>
-        fetchGitHubRepos(teamId, userId, dataLoader, context, info)
+        fetchGitHubRepos(teamId, userId, dataLoader, context, info),
+      vendorRepo: {
+        typename: () => '_xGitHubRepository',
+        name: ({nameWithOwner}) => nameWithOwner
+      }
     },
     estimatePush: {
       targets: ['comment', 'label'],

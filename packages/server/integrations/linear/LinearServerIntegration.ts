@@ -4,6 +4,7 @@ import {
   fetchLinearProjects,
   fetchLinearTeams
 } from '../../graphql/queries/helpers/fetchLinearTeamsAndProjects'
+import type {LinearRepo} from '../platform/RemoteRepoIntegration'
 import {
   type EstimatePushCapability,
   type IssueCreateCapability,
@@ -12,6 +13,7 @@ import {
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
 import describeLinearDimensionField from './describeLinearDimensionField'
+import isLinearTeam from './isLinearTeam'
 import LinearServerManager from './LinearServerManager'
 import listLinearDimensionFields from './listLinearDimensionFields'
 import pushEstimateToLinear from './pushEstimateToLinear'
@@ -26,7 +28,7 @@ export class LinearServerIntegration extends ServerIntegrationDefinition {
   readonly capabilities: {
     issueCreate: IssueCreateCapability
     issueRead: IssueReadCapability
-    repoList: RepoListCapability
+    repoList: RepoListCapability<LinearRepo>
     estimatePush: EstimatePushCapability
   } = {
     issueCreate: {
@@ -45,6 +47,14 @@ export class LinearServerIntegration extends ServerIntegrationDefinition {
         if (projects instanceof Error) return projects
         if (teams instanceof Error) return teams
         return interleave([projects, teams])
+      },
+      vendorRepo: {
+        typename: (repo) => (isLinearTeam(repo) ? '_xLinearTeam' : '_xLinearProject'),
+        name: (repo) => {
+          if (isLinearTeam(repo)) return repo.displayName
+          const teamName = repo.teams.nodes[0]?.displayName
+          return teamName ? `${teamName}/${repo.name}` : repo.name
+        }
       }
     },
     estimatePush: {

@@ -48,9 +48,24 @@ export type RepoFetchCtx = Omit<IntegrationCtx, 'dataLoader'> & {
   dataLoader: Pick<DataLoaderWorker, 'get'>
 }
 
-export interface RepoListCapability {
+export type VendorRepoTypename =
+  | '_xGitHubRepository'
+  | '_xGitLabProject'
+  | '_xLinearTeam'
+  | '_xLinearProject'
+
+/** Services whose cached repos are the vendor's own GraphQL records, served through RepoContainer */
+export interface VendorRepoCapability<TRepo extends RemoteRepoIntegration = RemoteRepoIntegration> {
+  /** The stitched type RepoContainer.repo resolves to */
+  typename(repo: TRepo): VendorRepoTypename
+  /** The label the repo picker renders */
+  name(repo: TRepo): string
+}
+
+export interface RepoListCapability<TRepo extends RemoteRepoIntegration = RemoteRepoIntegration> {
   /** Every repo/project the viewer can create issues in, in the exact object shape the client and the prev-used Redis cache already store. An Error is the remote failure and must never be cached */
-  fetchRepos(ctx: GqlIntegrationCtx): Promise<RemoteRepoIntegration[] | Error>
+  fetchRepos(ctx: GqlIntegrationCtx): Promise<TRepo[] | Error>
+  vendorRepo?: VendorRepoCapability<TRepo>
 }
 
 export interface EstimatePushCtx extends GqlIntegrationCtx {

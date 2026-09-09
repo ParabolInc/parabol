@@ -77,7 +77,10 @@
           }
         },
         "mappers": {
+          "_xGitHubRepository": "../../integrations/platform/RemoteRepoIntegration#GitHubRepo as _xGitHubRepository",
           "_xGitLabProject": "../../integrations/platform/RemoteRepoIntegration#GitLabProject as _xGitLabProject",
+          "_xLinearProject": "../../integrations/platform/RemoteRepoIntegration#LinearProject as _xLinearProject",
+          "_xLinearTeam": "../../integrations/platform/RemoteRepoIntegration#LinearTeam as _xLinearTeam",
           "AcceptRequestToJoinDomainSuccess": "./types/AcceptRequestToJoinDomainSuccess#AcceptRequestToJoinDomainSuccessSource",
           "AcceptTeamInvitationPayload": "./types/AcceptTeamInvitationPayload#AcceptTeamInvitationPayloadSource",
           "ActionMeeting": "../../postgres/types/Meeting#CheckInMeeting",
@@ -188,7 +191,6 @@
           "JoinMeetingSuccess": "./types/JoinMeetingSuccess#JoinMeetingSuccessSource",
           "JoinTeamSuccess": "./types/JoinTeamSuccess#JoinTeamSuccessSource",
           "LinearIntegration": "./types/LinearIntegration#LinearIntegrationSource",
-          "LinearRemoteProject": "../../integrations/platform/RemoteRepoIntegration#LinearProject",
           "MattermostIntegration": "./types/MattermostIntegration#MattermostIntegrationSource",
           "MeetingSeries": "../../postgres/types/index#MeetingSeries as MeetingSeriesDB",
           "MeetingTemplate": "../../postgres/types/index#MeetingTemplate as MeetingTemplateDB",
@@ -276,6 +278,7 @@
           "RenameReflectTemplatePromptPayload": "./types/RenameReflectTemplatePromptPayload#RenameReflectTemplatePromptPayloadSource",
           "ResetReflectionGroupsSuccess": "./types/ResetReflectionGroupsSuccess#ResetReflectionGroupsSuccessSource",
           "UpdatePersonalAccessTokenSuccess": "./types/UpdatePersonalAccessTokenSuccess#UpdatePersonalAccessTokenSuccessSource",
+          "RepoContainer": "../../integrations/platform/RemoteRepoIntegration#VendorRepoIntegration",
           "RepoIntegration": "../../integrations/platform/RemoteRepoIntegration#RemoteRepoIntegration",
           "RetroDiscussStage": "./types/RetroDiscussStage#DiscussStageSource",
           "RetroReflection": "../../postgres/types/index#RetroReflection as RetroReflectionDB",

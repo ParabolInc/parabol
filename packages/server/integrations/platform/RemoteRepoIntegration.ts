@@ -25,6 +25,8 @@ export type LinearProject = LinearRepoIntegration &
 
 export type LinearRepo = LinearTeam | LinearProject
 
+export type VendorRepoIntegration = GitHubRepo | GitLabProject | LinearRepo
+
 export type RemoteRepoIntegration =
   | JiraGQLProject
   | GitHubRepo

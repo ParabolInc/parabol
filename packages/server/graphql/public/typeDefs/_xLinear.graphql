@@ -1,22 +1,11 @@
 "A Linear issue linked to a Parabol task"
 type _xLinearIssue implements TaskIntegration
 
-"A Linear team available for integration"
-type _xLinearTeam implements RepoIntegration
+"A Linear team, exposed for scoping and issue creation"
+type _xLinearTeam
+
 "A Linear project, exposed for scoping and issue creation"
 type _xLinearProject
-
-extend type _xLinearProject {
-  service: IntegrationProviderServiceEnum!
-}
-
-extend type _xLinearTeam {
-  service: IntegrationProviderServiceEnum!
-  """
-  The id createTaskIntegration expects for this repo. Differs from id where id is the vendor's node id
-  """
-  integrationRepoId: ID!
-}
 
 extend type _xLinearIssue {
   service: IntegrationProviderServiceEnum!

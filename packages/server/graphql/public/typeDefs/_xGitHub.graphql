@@ -1,16 +1,8 @@
 "A GitHub issue linked to a Parabol task"
 type _xGitHubIssue implements TaskIntegration
 
-"A GitHub repository available for integration"
-type _xGitHubRepository implements RepoIntegration
-
-extend type _xGitHubRepository {
-  service: IntegrationProviderServiceEnum!
-  """
-  The id createTaskIntegration expects for this repo. Differs from id where id is the vendor's node id
-  """
-  integrationRepoId: ID!
-}
+"A GitHub repository, exposed for scoping and issue creation"
+type _xGitHubRepository
 
 extend type _xGitHubIssue {
   service: IntegrationProviderServiceEnum!

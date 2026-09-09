@@ -1,5 +1,6 @@
 import {gitlabIntegrationMeta} from 'parabol-client/shared/integrations/gitlabIntegrationMeta'
 import fetchGitLabProjects from '../../graphql/queries/helpers/fetchGitLabProjects'
+import type {GitLabProject} from '../platform/RemoteRepoIntegration'
 import {
   type EstimatePushCapability,
   type IssueCreateCapability,
@@ -22,7 +23,7 @@ export class GitLabServerIntegration extends ServerIntegrationDefinition {
   readonly capabilities: {
     issueCreate: IssueCreateCapability
     issueRead: IssueReadCapability
-    repoList: RepoListCapability
+    repoList: RepoListCapability<GitLabProject>
     estimatePush: EstimatePushCapability
   } = {
     issueCreate: {
@@ -37,7 +38,11 @@ export class GitLabServerIntegration extends ServerIntegrationDefinition {
     issueRead: {getIssue: resolveGitLabTaskIntegration},
     repoList: {
       fetchRepos: ({teamId, userId, context, info}) =>
-        fetchGitLabProjects(teamId, userId, context, info)
+        fetchGitLabProjects(teamId, userId, context, info),
+      vendorRepo: {
+        typename: () => '_xGitLabProject',
+        name: ({fullPath}) => fullPath
+      }
     },
     estimatePush: {
       targets: ['comment', 'label'],

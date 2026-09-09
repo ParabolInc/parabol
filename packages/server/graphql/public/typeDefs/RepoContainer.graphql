@@ -1,0 +1,29 @@
+"""
+A repo, project, or team from a stitched vendor API that the viewer can push tasks to. Wraps the vendor record so RepoIntegration fields never collide with vendor fields
+"""
+type RepoContainer implements RepoIntegration {
+  """
+  service:integrationRepoId, unique across services
+  """
+  id: ID!
+
+  service: IntegrationProviderServiceEnum!
+
+  """
+  The label a picker renders: owner/repo, group/project, a Linear team, or Team/Project
+  """
+  name: String!
+
+  """
+  The id createTaskIntegration expects for this repo
+  """
+  integrationRepoId: ID!
+
+  """
+  The vendor record, untouched
+  """
+  repo: VendorRepo!
+}
+
+"A repo-like vendor record Parabol can push tasks to"
+union VendorRepo = _xGitHubRepository | _xGitLabProject | _xLinearTeam | _xLinearProject

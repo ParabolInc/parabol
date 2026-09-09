@@ -11,7 +11,7 @@ import {
   getDocumentNodeFromSchema,
   printSchemaWithDirectives
 } from '@graphql-tools/utils'
-import {buildASTSchema, introspectionFromSchema, printSchema} from 'graphql'
+import {buildASTSchema, introspectionFromSchema, isUnionType, printSchema} from 'graphql'
 import path from 'path'
 import getProjectRoot from '../../../scripts/webpack/utils/getProjectRoot'
 import {typeDefs as privateTypeDefs} from '../graphql/private/importedTypeDefs'
@@ -42,9 +42,12 @@ const updateGQLSchema = async () => {
     schemas: [],
     typeDefs
   })
+  const isVendorType = (typeName: string) => typeName.startsWith('_x')
   const publicTypeDefs = filterSchema({
     schema: rawPublicTypeDefs,
-    typeFilter: (typeName) => !typeName.startsWith('_x')
+    typeFilter: (typeName, type) =>
+      !isVendorType(typeName) &&
+      !(isUnionType(type) && type.getTypes().every(({name}) => isVendorType(name)))
   })
 
   const publicSchema = nestLinear(nestGitLab(nestGitHub(rawPublicTypeDefs).schema).schema).schema

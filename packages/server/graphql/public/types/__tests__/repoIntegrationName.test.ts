@@ -1,11 +1,17 @@
+jest.mock('../../rootSchema', () => ({
+  __esModule: true,
+  githubRequest: jest.fn(),
+  gitlabRequest: jest.fn(),
+  linearRequest: jest.fn(),
+  default: {}
+}))
+
 import type {GraphQLResolveInfo} from 'graphql'
 import type {GQLContext} from '../../../graphql'
-import _xGitHubRepository from '../_xGitHubRepository'
-import _xGitLabProject from '../_xGitLabProject'
-import _xLinearTeam from '../_xLinearTeam'
 import AzureDevOpsRemoteProject from '../AzureDevOpsRemoteProject'
 import JiraRemoteProject from '../JiraRemoteProject'
 import JiraServerRemoteProject from '../JiraServerRemoteProject'
+import RepoContainer from '../RepoContainer'
 
 const context = {} as GQLContext
 const info = {} as GraphQLResolveInfo
@@ -79,9 +85,9 @@ const azureDevOpsRemoteProject = {
 type NameCase = [string, {name?: unknown}, Record<string, unknown>, string]
 
 const cases: NameCase[] = [
-  ['_xGitHubRepository', _xGitHubRepository, gitHubRepository, 'octocat/hello-world'],
-  ['_xGitLabProject', _xGitLabProject, gitLabProject, 'gitlab-org/gitlab'],
-  ['_xLinearTeam', _xLinearTeam, linearTeam, 'Engineering'],
+  ['RepoContainer(github)', RepoContainer, gitHubRepository, 'octocat/hello-world'],
+  ['RepoContainer(gitlab)', RepoContainer, gitLabProject, 'gitlab-org/gitlab'],
+  ['RepoContainer(linear team)', RepoContainer, linearTeam, 'Engineering'],
   ['JiraRemoteProject', JiraRemoteProject, jiraRemoteProject, 'Parabol'],
   ['JiraServerRemoteProject', JiraServerRemoteProject, jiraServerRemoteProject, 'Parabol'],
   ['AzureDevOpsRemoteProject', AzureDevOpsRemoteProject, azureDevOpsRemoteProject, 'Parabol']
