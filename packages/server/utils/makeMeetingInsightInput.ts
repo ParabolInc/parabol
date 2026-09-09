@@ -150,8 +150,10 @@ const makeTeamHealthMeetingInsightInput = async (
       grouped.set(questionId, entry)
     }
     if (response.score !== null && response.score !== undefined) entry.scores.push(response.score)
-    // prefer the anonymity-preserving paraphrase; fall back to the raw comment only if absent
-    const comment = response.commentParaphrased ?? response.comment
+    // commentParaphrased is the only comment safe to read here: an anonymous one has been rewritten
+    // to strip the author's voice, a signed one is itself. Empty means the rewrite is still in
+    // flight, null that it failed — either way the raw comment stays unread
+    const comment = response.commentParaphrased
     if (comment) entry.comments.push(comment)
   }
   return {meetingType, questions: [...grouped.values()]}

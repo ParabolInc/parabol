@@ -13,7 +13,9 @@ type TeamHealthResponse {
   score: Int
 
   """
-  A freeform comment the user left with their answer, paraphrased ot preserve anonymity
+  The comment the team reads: an anonymous comment rewritten by AI to strip the author's voice, or
+  a signed comment verbatim. Null while an anonymous comment is still being rewritten, so a raw
+  comment can never be read in the author's own words
   """
   commentParaphrased: String
 

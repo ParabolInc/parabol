@@ -1,7 +1,7 @@
 """
 A stage in a standalone Team Health meeting where members answer one template question
 """
-type TeamHealthResponseStage implements NewMeetingStage {
+type TeamHealthResponseStage implements NewMeetingStage & DiscussionThreadStage {
   "Unique identifier"
   id: ID!
 
@@ -104,4 +104,15 @@ type TeamHealthResponseStage implements NewMeetingStage {
   have not answered yet. A user may always see their own answer, so this preserves anonymity
   """
   viewerResponse: TeamHealthResponse
+
+  """
+  The ID to find the discussion that goes in the stage. One Discussion per question, shared by the
+  question's response stage and its result stage, since both are about the same category
+  """
+  discussionId: ID!
+
+  """
+  The discussion about this stage's category
+  """
+  discussion: Discussion!
 }

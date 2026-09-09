@@ -129,7 +129,9 @@ const addComment: MutationResolvers['addComment'] = async (
     'discuss',
     'agendaitems',
     'ESTIMATE',
-    'RESPONSES'
+    'RESPONSES',
+    'TEAM_HEALTH_RESPONSE',
+    'TEAM_HEALTH_RESULT'
   ] as Newmeetingphasetypeenum[]
   const containsThreadablePhase = phases.find(({phaseType}: GenericMeetingPhase) =>
     threadablePhases.includes(phaseType)

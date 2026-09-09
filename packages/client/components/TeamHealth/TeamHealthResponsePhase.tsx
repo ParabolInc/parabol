@@ -2,9 +2,9 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {TeamHealthResponsePhase_meeting$key} from '~/__generated__/TeamHealthResponsePhase_meeting.graphql'
 import useSetTeamHealthSpectateMutation from '../../mutations/useSetTeamHealthSpectateMutation'
-import {Button} from '../../ui/Button/Button'
 import {isNotNull} from '../../utils/predicates'
 import {getOrderedTeamHealthCategories} from '../ActivityLibrary/TeamHealth/getTeamHealthCategoryColor'
+import TeamHealthEndedResponseCard from './TeamHealthEndedResponseCard'
 import TeamHealthResponseCard from './TeamHealthResponseCard'
 
 interface Props {
@@ -18,7 +18,15 @@ const TeamHealthResponsePhase = (props: Props) => {
     graphql`
       fragment TeamHealthResponsePhase_meeting on TeamHealthMeeting {
         id
+        endedAt
+        organization {
+          useAI
+        }
         viewerMeetingMember {
+          user {
+            preferredName
+            picture
+          }
           ... on TeamHealthMeetingMember {
             isSpectating
           }
@@ -42,13 +50,29 @@ const TeamHealthResponsePhase = (props: Props) => {
           stages {
             id
             ...TeamHealthResponseCard_stage
+            ...TeamHealthEndedResponseCard_stage
           }
         }
       }
     `,
     meetingRef
   )
-  const {id: meetingId, viewerMeetingMember, localStage, phases, template} = meeting
+  const {
+    id: meetingId,
+    endedAt,
+    organization,
+    viewerMeetingMember,
+    localStage,
+    phases,
+    template
+  } = meeting
+  // an anonymous comment is reworded by AI before the team reads it, so without AI the only honest
+  // option is to send it as written
+  const aiDisabledReason = !window.__ACTION__.hasOpenAI
+    ? 'This Parabol instance has AI turned off, so comments are shared exactly as written.'
+    : !organization.useAI
+      ? 'Your organization has AI turned off, so comments are shared exactly as written.'
+      : null
   const orderedCategoryIds = getOrderedTeamHealthCategories(
     template?.availableQuestionPacks ?? []
   ).map((category) => category.id)
@@ -58,33 +82,16 @@ const TeamHealthResponsePhase = (props: Props) => {
   const resultStageId = phases
     .find((phase) => phase.phaseType === 'TEAM_HEALTH_RESULT')
     ?.stages.filter(isNotNull)[0]?.id
-  const firstResponseStageId = responseStages[0]?.id
 
   const currentIdx = responseStages.findIndex((stage) => stage.id === localStage?.id)
   const currentStage = responseStages[currentIdx]
   const isLast = currentIdx === responseStages.length - 1
 
-  // the owner is a data collector, excluded from the questions unless they opt in
-  if (viewerMeetingMember?.isSpectating) {
-    const onShare = () => {
-      if (!firstResponseStageId) return
-      setSpectate({variables: {meetingId, isSpectating: false}})
-      gotoStageId(firstResponseStageId)
-    }
-    return (
-      <div className='mx-auto flex h-full max-w-2xl flex-col items-center justify-center px-6'>
-        <div className='flex w-full max-w-2xl flex-col items-center rounded-2xl bg-surface-card p-8 text-center shadow-card'>
-          <h2 className='font-bold text-2xl text-fg-primary'>You're the manager here</h2>
-          <p className='mt-3 text-fg-secondary'>
-            You're collecting the team's health data, so you're excluded from the questions. If
-            you'd like to answer them too, you can share your responses.
-          </p>
-          <Button variant='secondary' shape='default' size='lg' className='mt-6' onClick={onShare}>
-            Share your responses
-          </Button>
-        </div>
-      </div>
-    )
+  // the team lead is excluded from the questions unless they opt in. They still see every
+  // question, just read-only, so they know what they are asking the team
+  const isSpectating = !!viewerMeetingMember?.isSpectating
+  const onShareResponses = () => {
+    setSpectate({variables: {meetingId, isSpectating: false}})
   }
 
   if (!currentStage) return null
@@ -104,16 +111,32 @@ const TeamHealthResponsePhase = (props: Props) => {
 
   return (
     <div className='mx-auto flex h-full max-w-2xl flex-col items-center justify-center px-6'>
-      <TeamHealthResponseCard
-        key={currentStage.id}
-        meetingId={meetingId}
-        stage={currentStage}
-        stageIndex={currentIdx}
-        stageCount={responseStages.length}
-        orderedCategoryIds={orderedCategoryIds}
-        onPrev={onPrev}
-        onNext={onNext}
-      />
+      {endedAt ? (
+        <TeamHealthEndedResponseCard
+          key={currentStage.id}
+          stage={currentStage}
+          stageIndex={currentIdx}
+          stageCount={responseStages.length}
+          orderedCategoryIds={orderedCategoryIds}
+          onPrev={onPrev}
+          onNext={onNext}
+        />
+      ) : (
+        <TeamHealthResponseCard
+          key={currentStage.id}
+          meetingId={meetingId}
+          stage={currentStage}
+          stageIndex={currentIdx}
+          stageCount={responseStages.length}
+          orderedCategoryIds={orderedCategoryIds}
+          preferredName={viewerMeetingMember?.user.preferredName ?? ''}
+          picture={viewerMeetingMember?.user.picture ?? ''}
+          aiDisabledReason={aiDisabledReason}
+          onShareResponses={isSpectating ? onShareResponses : undefined}
+          onPrev={onPrev}
+          onNext={onNext}
+        />
+      )}
     </div>
   )
 }

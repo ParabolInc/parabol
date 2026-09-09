@@ -13,7 +13,9 @@ const TeamHealthResponse: TeamHealthResponseResolvers = {
   // only the author may read their own raw (un-paraphrased) comment
   comment: ({userId, comment}, _args, {authToken}) => {
     return userId === getUserId(authToken) ? comment : null
-  }
+  },
+  // the empty string is the "waiting on its paraphrase" sentinel, which readers see as no comment
+  commentParaphrased: ({commentParaphrased}) => commentParaphrased || null
 }
 
 export default TeamHealthResponse

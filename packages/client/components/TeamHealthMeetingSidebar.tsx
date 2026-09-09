@@ -44,11 +44,13 @@ const TeamHealthMeetingSidebar = (props: Props) => {
     meetingRef
   )
   const {endedAt, localPhase, phases, summaryPageId} = meeting
-  // the intro phase is a bookend, not a destination, so it stays out of the nav
+  // the intro phase has no nav row of its own, it is the landing spot for the Respond row
+  const introStage = phases.find((phase) => phase.phaseType === 'TEAM_HEALTH_INTRO')?.stages[0]
   const questionStages = phases.find((phase) => phase.phaseType === 'TEAM_HEALTH_RESPONSE')?.stages
   const resultStages = phases.find((phase) => phase.phaseType === 'TEAM_HEALTH_RESULT')?.stages
   const firstQuestionStage = questionStages?.[0]
   const firstResultStage = resultStages?.[0]
+  const respondStage = introStage?.isNavigable ? introStage : firstQuestionStage
   const goto = (stageId: string) => {
     gotoStageId(stageId).catch(() => {
       /*ignore*/
@@ -60,14 +62,13 @@ const TeamHealthMeetingSidebar = (props: Props) => {
       handleMenuClick={handleMenuClick}
       toggleSidebar={toggleSidebar}
       meeting={meeting}
+      hideFacilitator
     >
       <MeetingNavList>
         <NewMeetingSidebarPhaseListItem
-          handleClick={
-            firstQuestionStage?.isNavigable ? () => goto(firstQuestionStage.id) : undefined
-          }
-          // the question stages below carry the active state for this phase
-          isActive={false}
+          handleClick={respondStage?.isNavigable ? () => goto(respondStage.id) : undefined}
+          // the question stages below carry the active state once the viewer leaves the intro
+          isActive={localPhase?.phaseType === 'TEAM_HEALTH_INTRO'}
           isCollapsible
           isFacilitatorPhase={false}
           isUnsyncedFacilitatorPhase={false}

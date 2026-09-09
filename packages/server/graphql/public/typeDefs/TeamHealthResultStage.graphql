@@ -1,7 +1,7 @@
 """
 A stage in a standalone Team Health meeting where the team discusses one category's results
 """
-type TeamHealthResultStage implements NewMeetingStage {
+type TeamHealthResultStage implements NewMeetingStage & DiscussionThreadStage {
   "Unique identifier"
   id: ID!
 
@@ -123,4 +123,15 @@ type TeamHealthResultStage implements NewMeetingStage {
   revealed, so raw answers can never be de-anonymized while it is in progress
   """
   responses: [TeamHealthResponse!]!
+
+  """
+  The ID to find the discussion that goes in the stage. One Discussion per question, shared by the
+  question's response stage and its result stage, since both are about the same category
+  """
+  discussionId: ID!
+
+  """
+  The discussion about this stage's category
+  """
+  discussion: Discussion!
 }

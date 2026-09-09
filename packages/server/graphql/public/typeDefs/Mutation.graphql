@@ -1974,6 +1974,11 @@ type Mutation {
     An optional freeform comment left with the answer
     """
     comment: String
+    """
+    true if the comment should be paraphrased before the team reads it, so the author's writing
+    style can't identify them. Ignored when there is no comment
+    """
+    isAnonymous: Boolean!
   ): SetTeamHealthResponseSuccess! @scope(name: MEETINGS_WRITE)
 
   """

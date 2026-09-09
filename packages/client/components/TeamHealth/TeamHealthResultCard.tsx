@@ -104,8 +104,8 @@ const TeamHealthResultCard = (props: Props) => {
       {comments.length > 0 && (
         <div className='mt-8'>
           <div className='font-semibold text-fg-muted text-xs uppercase tracking-wide'>
-            {comments.length} anonymous {plural(comments.length, 'comment')} · paraphrased before
-            display
+            {comments.length} {plural(comments.length, 'comment')} · anonymous ones are reworded by
+            AI
           </div>
           <div className='mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2'>
             {comments.map((comment, idx) => (

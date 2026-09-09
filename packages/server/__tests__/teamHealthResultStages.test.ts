@@ -37,7 +37,12 @@ const SPECTATE = `
 
 const RESPOND = `
   mutation SetTeamHealthResponse($meetingId: ID!, $stageId: ID!, $score: Int) {
-    setTeamHealthResponse(meetingId: $meetingId, stageId: $stageId, score: $score) {
+    setTeamHealthResponse(
+      meetingId: $meetingId
+      stageId: $stageId
+      score: $score
+      isAnonymous: true
+    ) {
       meetingId
     }
   }

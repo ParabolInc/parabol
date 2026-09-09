@@ -167,6 +167,7 @@ export interface TeamPromptResponsesPhase extends GenericMeetingPhase {
 export interface TeamHealthResponseStage extends GenericMeetingStage {
   phaseType: 'TEAM_HEALTH_RESPONSE'
   questionId: number
+  discussionId: string
 }
 
 export interface TeamHealthResponsePhase extends GenericMeetingPhase {
@@ -187,6 +188,7 @@ export interface TeamHealthResultStage extends GenericMeetingStage {
   phaseType: 'TEAM_HEALTH_RESULT'
   questionId: number
   sortOrder: number
+  discussionId: string
 }
 
 export interface TeamHealthResultPhase extends GenericMeetingPhase {
