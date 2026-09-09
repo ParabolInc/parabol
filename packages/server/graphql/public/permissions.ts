@@ -13,6 +13,7 @@ import {isOrgTier} from './rules/isOrgTier'
 import isSuperUser from './rules/isSuperUser'
 import {isTeamMember} from './rules/isTeamMember'
 import {isTeamMemberOfMeeting} from './rules/isTeamMemberOfMeeting'
+import {isTeamMemberOrOrgLeader} from './rules/isTeamMemberOrOrgLeader'
 import {isUser} from './rules/isUser'
 import {isUserViewer} from './rules/isUserViewer'
 import {isViewerBillingLeader} from './rules/isViewerBillingLeader'
@@ -345,10 +346,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     // that the resolver unwraps via MeetingSeriesId.split before any dataloader lookup).
     startRetrospective: isTeamMember<'Mutation.startRetrospective'>('args.teamId'),
     startSprintPoker: isTeamMember<'Mutation.startSprintPoker'>('args.teamId'),
-    startTeamHealth: or(
-      isTeamMember<'Mutation.startTeamHealth'>('args.teamIds'),
-      isViewerBillingLeader<'Mutation.startTeamHealth'>('args.teamIds', 'teams')
-    ),
+    startTeamHealth: isTeamMemberOrOrgLeader<'Mutation.startTeamHealth'>('args.teamIds'),
     startTeamPrompt: isTeamMember<'Mutation.startTeamPrompt'>('args.teamId'),
     // no isAuthenticated: errors can occur pre-auth (parity with the legacy Google Form flow)
     submitErrorFeedback: rateLimit({perMinute: 5, perHour: 20}),
@@ -495,13 +493,32 @@ const permissionMap: PermissionMap<Resolvers> = {
     smartTitle: isSuperUser,
     voterIds: isSuperUser
   },
+  // An org leader reaches a Team they are not on (e.g. Organization.teams, MeetingSeries.team).
+  // They get the identity & billing basics plus their own viewer-relative fields; everything that
+  // describes how the team works is for the team. Two sets stay out of the map: fields whose
+  // resolver already degrades to an empty value for a non-member (activeMeetings, agendaItems,
+  // tasks, ...), so a fragment shared with a member keeps rendering instead of erroring, and
+  // scale/scales, which the client fetches off MeetingTemplate.team for every org- & public-scoped
+  // template in the activity library, none of which is owned by the viewer's team.
   Team: {
+    autoAssignFacilitator: isTeamMember<'Team.autoAssignFacilitator'>('source.id'),
+    jiraDisplayFieldIds: isTeamMember<'Team.jiraDisplayFieldIds'>('source.id'),
+    lastMeetingType: isTeamMember<'Team.lastMeetingType'>('source.id'),
     massInvitation: or(
       // TODO or rules run in parallel, make it go in serial since org_admin check is rare
       isTeamMember<'Team.massInvitation'>('source.id'),
       hasOrgRole<'Team.massInvitation'>('source.orgId', 'ORG_ADMIN')
     ),
-    organization: isViewerOnOrg<'Team.organization'>('source.orgId')
+    meetingSettings: isTeamMember<'Team.meetingSettings'>('source.id'),
+    organization: isViewerOnOrg<'Team.organization'>('source.orgId'),
+    qualAIMeetingsCount: isTeamMember<'Team.qualAIMeetingsCount'>('source.id'),
+    retroMeetingsCount: isTeamMember<'Team.retroMeetingsCount'>('source.id'),
+    tags: isTeamMember<'Team.tags'>('source.id'),
+    // matches teamMembers, which an org leader may read to administer the team
+    teamLead: or(
+      isTeamMember<'Team.teamLead'>('source.id'),
+      isViewerBillingLeader<'Team.teamLead'>('source.orgId')
+    )
   },
   TeamMember: {
     integrations: isUserViewer<'TeamMember.integrations'>('source.userId'),

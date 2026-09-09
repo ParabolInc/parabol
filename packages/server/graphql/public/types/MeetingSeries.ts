@@ -5,6 +5,7 @@ import {isTeamMember} from '../../../utils/authorization'
 import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
 import logError from '../../../utils/logError'
 import {buildMeetingSeriesSlug} from '../../../utils/meetingSeriesSlug'
+import canReadMeetingSeries from '../../mutations/helpers/canReadMeetingSeries'
 import type {MeetingSeriesResolvers} from '../resolverTypes'
 
 const MeetingSeries: MeetingSeriesResolvers = {
@@ -16,7 +17,21 @@ const MeetingSeries: MeetingSeriesResolvers = {
     // an owner can schedule for a team they are not on, & they cannot join that team's meetings
     return meetings.filter((meeting) => isTeamMember(authToken, meeting.teamId))
   },
-  mostRecentMeeting: async ({id: meetingSeriesId}, _args, _context) => {
+  team: ({teamId}, _args, {dataLoader}) => {
+    return dataLoader.get('teams').loadNonNull(teamId)
+  },
+  owner: async ({ownerUserId}, _args, {dataLoader}) => {
+    if (!ownerUserId) return null
+    return (await dataLoader.get('users').load(ownerUserId)) ?? null
+  },
+  groupSeries: async ({id, groupId}, _args, {authToken, dataLoader}) => {
+    if (!groupId) return []
+    const siblings = await dataLoader.get('meetingSeriesByGroupId').load(groupId)
+    return siblings.filter((series) => series.id !== id && canReadMeetingSeries(series, authToken))
+  },
+  mostRecentMeeting: async ({id: meetingSeriesId, teamId}, _args, {authToken}) => {
+    // an owner can schedule for a team they are not on, & they cannot join that team's meetings
+    if (!isTeamMember(authToken, teamId)) return null
     const meeting = await selectNewMeetings()
       .where('meetingSeriesId', '=', meetingSeriesId)
       .orderBy('endedAt', 'desc')
