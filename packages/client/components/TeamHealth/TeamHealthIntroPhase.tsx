@@ -3,7 +3,6 @@ import dayjs from 'dayjs'
 import {useFragment} from 'react-relay'
 import type {TeamHealthIntroPhase_meeting$key} from '~/__generated__/TeamHealthIntroPhase_meeting.graphql'
 import {ArrowForward, MonitorHeart, Schedule} from '~/ui/icons'
-import NewMeetingAvatarGroup from '../../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import useSetTeamHealthSpectateMutation from '../../mutations/useSetTeamHealthSpectateMutation'
 import {Button} from '../../ui/Button/Button'
 import {isNotNull} from '../../utils/predicates'
@@ -23,7 +22,7 @@ const TeamHealthIntroPhase = (props: Props) => {
       fragment TeamHealthIntroPhase_meeting on TeamHealthMeeting {
         id
         name
-        respondentUserIds
+        respondentCount
         currentStreak
         meetingSeriesId
         scheduledEndTime
@@ -58,14 +57,13 @@ const TeamHealthIntroPhase = (props: Props) => {
             id
           }
         }
-        ...NewMeetingAvatarGroup_meeting
       }
     `,
     meetingRef
   )
   const {
     id: meetingId,
-    respondentUserIds,
+    respondentCount,
     currentStreak,
     meetingSeriesId,
     scheduledEndTime,
@@ -106,10 +104,7 @@ const TeamHealthIntroPhase = (props: Props) => {
   }
 
   return (
-    <div className='relative flex h-full w-full items-center justify-center overflow-y-auto px-6 py-12'>
-      <div className='absolute top-6 right-6'>
-        <NewMeetingAvatarGroup meetingRef={meeting} />
-      </div>
+    <div className='flex h-full w-full items-center justify-center overflow-y-auto px-6 py-12'>
       <div className='flex w-full max-w-md flex-col items-center rounded-3xl bg-surface-card px-6 py-10 text-center shadow-card-raised'>
         <div className='flex h-16 w-10 items-center justify-center rounded-2xl bg-lilac-100 dark:bg-lilac-900'>
           <MonitorHeart className='text-grape-700 dark:text-lilac-200' fontSize='large' />
@@ -127,7 +122,7 @@ const TeamHealthIntroPhase = (props: Props) => {
         <CurrentTeamHealthStreak className='mt-6' streak={currentStreak} />
         <TeamHealthProgress
           className='mt-8'
-          respondentUserIds={respondentUserIds}
+          respondentCount={respondentCount}
           respondents={respondents}
         />
         <Button

@@ -10,7 +10,7 @@ graphql`
   fragment useSetTeamHealthResponseMutation_meeting on SetTeamHealthResponseSuccess {
     meeting {
       id
-      respondentUserIds
+      respondentCount
     }
     stage {
       id

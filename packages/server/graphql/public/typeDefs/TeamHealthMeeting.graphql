@@ -25,10 +25,10 @@ type TeamHealthMeeting implements NewMeeting {
   responses: [TeamHealthResponse!]!
 
   """
-  The users who have submitted at least one response, so the team can chase the stragglers.
-  Who answered is public; what they answered stays hidden until the results are revealed
+  The number of distinct members who have submitted at least one response. A bare count only,
+  never the member ids, so a lone response cannot be attributed to a person
   """
-  respondentUserIds: [ID!]!
+  respondentCount: Int!
 
   """
   The number of consecutive completed meetings in this meeting's series that had at least

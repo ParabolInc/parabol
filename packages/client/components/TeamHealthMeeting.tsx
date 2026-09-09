@@ -5,13 +5,12 @@ import type {NewMeetingPhaseTypeEnum} from '~/__generated__/RetroMeeting_meeting
 import type {TeamHealthMeeting_meeting$key} from '~/__generated__/TeamHealthMeeting_meeting.graphql'
 import useMeeting from '../hooks/useMeeting'
 import useRightDrawer from '../hooks/useRightDrawer'
-import {Forum} from '../ui/icons'
+import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import lazyPreload, {type LazyPreloadedComponent} from '../utils/lazyPreload'
-import IconLabel from './IconLabel'
 import MeetingLockedOverlay from './MeetingLockedOverlay'
 import MeetingStyles from './MeetingStyles'
+import MeetingTopBar from './MeetingTopBar'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
-import SidebarToggle from './SidebarToggle'
 import TeamHealthDiscussionDrawer from './TeamHealth/TeamHealthDiscussionDrawer'
 import TeamHealthMeetingSidebar from './TeamHealthMeetingSidebar'
 
@@ -56,6 +55,7 @@ const TeamHealthMeeting = (props: Props) => {
         ...TeamHealthSubmittedPhase_meeting
         ...TeamHealthResultPhase_meeting
         ...TeamHealthDiscussionDrawer_meeting
+        ...NewMeetingAvatarGroup_meeting
         id
         endedAt
         showSidebar
@@ -88,17 +88,18 @@ const TeamHealthMeeting = (props: Props) => {
   const [toggleDrawer] = useRightDrawer(meeting.id)
   if (!safeRoute) return null
   const {endedAt, showSidebar, rightDrawerOpen, localStage, phases} = meeting
-  const discussionId = phases
-    .flatMap((phase) => phase.stages)
-    .find((stage) => stage.id === localStage?.id)?.discussionId
-  const showDrawerButton = !!discussionId && rightDrawerOpen == null
   const localPhaseType = meeting.localPhase?.phaseType as NewMeetingPhaseTypeEnum | undefined
-  const Phase =
-    localPhaseType === 'TEAM_HEALTH_RESULT' && !endedAt
-      ? TeamHealthSubmittedPhase
-      : localPhaseType
-        ? phaseLookup[localPhaseType]
-        : undefined
+  // the results are still hidden here, so the stage's discussion has nothing to discuss yet
+  const isAwaitingReveal = localPhaseType === 'TEAM_HEALTH_RESULT' && !endedAt
+  const Phase = isAwaitingReveal
+    ? TeamHealthSubmittedPhase
+    : localPhaseType
+      ? phaseLookup[localPhaseType]
+      : undefined
+  const discussionId = isAwaitingReveal
+    ? undefined
+    : phases.flatMap((phase) => phase.stages).find((stage) => stage.id === localStage?.id)
+        ?.discussionId
   return (
     <MeetingStyles>
       <ResponsiveDashSidebar isOpen={showSidebar} onToggle={toggleSidebar}>
@@ -110,20 +111,13 @@ const TeamHealthMeeting = (props: Props) => {
         />
       </ResponsiveDashSidebar>
       <div className='flex h-full min-w-0 flex-1 flex-col overflow-auto'>
-        {(!showSidebar || showDrawerButton) && (
-          <div className='flex shrink-0 items-center justify-between px-4 pt-4'>
-            {showSidebar ? <div /> : <SidebarToggle dataCy='topbar' onClick={toggleSidebar} />}
-            {showDrawerButton && (
-              <button
-                className='group flex h-max w-max cursor-pointer select-none flex-col items-center bg-transparent px-2 font-semibold text-accent text-sm hover:text-sky-600'
-                onClick={toggleDrawer}
-              >
-                <IconLabel icon={Forum} iconLarge />
-                <div className='text-fg-primary group-hover:text-fg-primary'>Discussion</div>
-              </button>
-            )}
-          </div>
-        )}
+        <MeetingTopBar
+          avatarGroup={<NewMeetingAvatarGroup meetingRef={meeting} />}
+          isMeetingSidebarCollapsed={!showSidebar}
+          rightDrawerOpen={rightDrawerOpen}
+          toggleDrawer={discussionId ? toggleDrawer : undefined}
+          toggleSidebar={toggleSidebar}
+        />
         <div className='min-h-0 flex-1'>
           <Suspense fallback={''}>
             {Phase && <Phase meeting={meeting} gotoStageId={gotoStageId} />}

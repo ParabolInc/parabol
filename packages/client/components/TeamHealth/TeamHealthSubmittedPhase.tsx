@@ -1,12 +1,14 @@
 import graphql from 'babel-plugin-relay/macro'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {TeamHealthSubmittedPhase_meeting$key} from '~/__generated__/TeamHealthSubmittedPhase_meeting.graphql'
-import {Cancel, CheckCircle, Schedule} from '~/ui/icons'
+import {CheckCircle, Schedule} from '~/ui/icons'
 import useEndTeamHealthMutation from '../../mutations/useEndTeamHealthMutation'
 import {Button} from '../../ui/Button/Button'
 import {isNotNull} from '../../utils/predicates'
 import {getTeamHealthRespondents} from './getTeamHealthRespondents'
 import TeamHealthProgress from './TeamHealthProgress'
+import TeamHealthRevealDialog from './TeamHealthRevealDialog'
 
 interface Props {
   meeting: TeamHealthSubmittedPhase_meeting$key
@@ -19,7 +21,7 @@ const TeamHealthSubmittedPhase = (props: Props) => {
     graphql`
       fragment TeamHealthSubmittedPhase_meeting on TeamHealthMeeting {
         id
-        respondentUserIds
+        respondentCount
         team {
           teamMembers {
             userId
@@ -61,13 +63,14 @@ const TeamHealthSubmittedPhase = (props: Props) => {
   )
   const {
     id: meetingId,
-    respondentUserIds,
+    respondentCount,
     team,
     meetingMembers,
     viewerMeetingMember,
     phases
   } = meeting
   const [endTeamHealth, revealing] = useEndTeamHealthMutation()
+  const [isConfirmingReveal, setIsConfirmingReveal] = useState(false)
   // the team lead collects the team's data, so the reveal is theirs to call
   const isLead = !!viewerMeetingMember?.teamMember.isLead
   const isSpectating = !!viewerMeetingMember?.isSpectating
@@ -90,42 +93,45 @@ const TeamHealthSubmittedPhase = (props: Props) => {
   const unansweredCount = questionCount - answeredCount
   const isMissingAnswers = !isSpectating && unansweredCount > 0
 
+  const pendingCount = Math.max(0, respondents.length - respondentCount)
+
   // revealing the results is the act of ending the meeting, everyone stays in it to view them
   const onReveal = () => {
     endTeamHealth({variables: {meetingId}})
   }
 
-  const Icon = isSpectating ? Schedule : isMissingAnswers ? Cancel : CheckCircle
+  // nobody loses their chance to answer once the whole team is in, so skip the warning
+  const onRevealClick = () => {
+    if (pendingCount === 0) {
+      onReveal()
+      return
+    }
+    setIsConfirmingReveal(true)
+  }
+
+  const Icon = isSpectating ? Schedule : CheckCircle
   const title = isSpectating
     ? 'You’re sitting this one out'
     : isMissingAnswers
-      ? 'Your team is missing your voice'
+      ? 'Your answers are counted'
       : 'Your answers are in'
   const body = isSpectating
     ? 'As the team lead, you’re not answering this check-in. We’re waiting on the rest of the team before the results reveal.'
     : isMissingAnswers
-      ? `You’ve answered ${answeredCount} of ${questionCount} questions. Answer the rest so the results tell the whole story.`
+      ? `You answered ${answeredCount} of ${questionCount} questions. They all count, and the rest give your team a fuller picture.`
       : 'Now we wait for the rest of the team before the results reveal.'
 
   return (
     <div className='mx-auto flex h-full max-w-2xl flex-col items-center justify-center px-6'>
       <div className='flex w-full max-w-2xl flex-col items-center rounded-2xl bg-surface-card p-8 text-center shadow-card'>
-        <div
-          className={
-            isMissingAnswers
-              ? 'flex h-14 w-14 items-center justify-center rounded-2xl bg-tomato-100 dark:bg-tomato-900'
-              : 'flex h-14 w-14 items-center justify-center rounded-2xl bg-jade-100 dark:bg-jade-900'
-          }
-        >
-          <Icon
-            className={isMissingAnswers ? 'text-tomato-500' : 'text-jade-500 dark:text-jade-300'}
-          />
+        <div className='flex h-14 w-14 items-center justify-center rounded-2xl bg-jade-100 dark:bg-jade-900'>
+          <Icon className='text-jade-500 dark:text-jade-300' />
         </div>
         <h1 className='mt-6 font-bold text-3xl text-fg-primary'>{title}</h1>
         <p className='mt-2 text-fg-secondary'>{body}</p>
         <TeamHealthProgress
           className='mt-8'
-          respondentUserIds={respondentUserIds}
+          respondentCount={respondentCount}
           respondents={respondents}
         />
         <div className='mt-8 flex flex-col items-center gap-3'>
@@ -146,7 +152,7 @@ const TeamHealthSubmittedPhase = (props: Props) => {
               variant={isMissingAnswers ? 'outline' : 'primary'}
               shape='default'
               size='lg'
-              onClick={onReveal}
+              onClick={onRevealClick}
               disabled={revealing}
             >
               Reveal results
@@ -164,6 +170,13 @@ const TeamHealthSubmittedPhase = (props: Props) => {
           )}
         </div>
       </div>
+      <TeamHealthRevealDialog
+        isOpen={isConfirmingReveal}
+        onClose={() => setIsConfirmingReveal(false)}
+        onConfirm={onReveal}
+        submitting={revealing}
+        pendingCount={pendingCount}
+      />
     </div>
   )
 }
