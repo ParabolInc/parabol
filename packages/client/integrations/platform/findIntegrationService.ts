@@ -1,31 +1,8 @@
-import graphql from 'babel-plugin-relay/macro'
+import type {IntegrationProviderServiceEnum} from '../../__generated__/CreateTaskIntegrationMutation.graphql'
 import type {ConnectProvider} from './ClientIntegrationDefinition'
 
-graphql`
-  fragment findIntegrationService_cloudProvider on IntegrationService {
-    service
-    cloudProvider {
-      id
-      ... on IntegrationProviderOAuth2 {
-        clientId
-        serverBaseUrl
-        tenantId
-      }
-    }
-  }
-`
-
-graphql`
-  fragment findIntegrationService_auth on IntegrationService {
-    service
-    auth {
-      providerId
-    }
-  }
-`
-
 interface CloudProviderService {
-  service: string
+  service: IntegrationProviderServiceEnum
   cloudProvider:
     | {
         id: string
@@ -44,12 +21,17 @@ const findIntegrationService = <T extends {service: string}>(
 
 export const getConnectProvider = (
   services: readonly CloudProviderService[],
-  service: string
+  service: IntegrationProviderServiceEnum
 ): ConnectProvider | null => {
   const cloudProvider = findIntegrationService(services, service)?.cloudProvider
   if (!cloudProvider?.clientId || !cloudProvider.serverBaseUrl) return null
   const {id, clientId, serverBaseUrl, tenantId} = cloudProvider
   return {id, clientId, serverBaseUrl, tenantId: tenantId ?? null}
 }
+
+export const isServiceAvailable = (
+  services: readonly {service: IntegrationProviderServiceEnum; isAvailable: boolean}[],
+  service: IntegrationProviderServiceEnum
+) => findIntegrationService(services, service)?.isAvailable ?? false
 
 export default findIntegrationService

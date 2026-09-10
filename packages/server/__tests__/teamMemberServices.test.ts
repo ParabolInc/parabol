@@ -8,6 +8,7 @@ const SERVICES_QUERY = `
         services {
           service
           isConnected
+          grantedScopes
           auth {
             ... on TeamMemberIntegrationAuthOAuth2 {
               accessToken

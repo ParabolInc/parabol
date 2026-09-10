@@ -1,12 +1,8 @@
 "A GitLab issue linked to a Parabol task"
 type _xGitLabIssue implements TaskIntegration
 
-"A GitLab project available for integration"
-type _xGitLabProject implements RepoIntegration
-
-extend type _xGitLabProject {
-  service: IntegrationProviderServiceEnum!
-}
+"A GitLab project, exposed for scoping and issue creation"
+type _xGitLabProject
 
 extend type _xGitLabIssue {
   service: IntegrationProviderServiceEnum!

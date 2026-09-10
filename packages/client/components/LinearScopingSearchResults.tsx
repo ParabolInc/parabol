@@ -38,25 +38,6 @@ const LinearScopingSearchResults = (props: Props) => {
         ...LinearScopingSearchResults_query @arguments(filter: $filter)
         viewer {
           ...NewLinearIssueInput_viewer
-          teamMember(teamId: $teamId) {
-            repoIntegrations(first: 20, networkOnly: false) {
-              items {
-                ... on _xLinearTeam {
-                  id
-                  displayName
-                }
-                ... on _xLinearProject {
-                  id
-                  teams(first: 1) {
-                    nodes {
-                      id
-                      name
-                    }
-                  }
-                }
-              }
-            }
-          }
         }
       }
     `,

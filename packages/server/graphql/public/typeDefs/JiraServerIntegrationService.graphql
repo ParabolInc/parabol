@@ -14,6 +14,14 @@ type JiraServerIntegrationService implements IntegrationService {
   """
   cloudProvider: IntegrationProvider
   """
+  The team- and org-scoped providers for this service on this team. Connect flows prefer these over cloudProvider
+  """
+  sharedProviders: [IntegrationProvider!]!
+  """
+  The scopes on the viewer's active grant for this service, whether or not they are enough to count as connected (a Jira grant may hold only Confluence scopes). Empty without a grant
+  """
+  grantedScopes: [String!]!
+  """
   The repos/projects the viewer can create issues in on this service, in the service's own order.
   [] when not connected; null when the live fetch failed. Cached per service for 90 days unless networkOnly
   """

@@ -1,3 +1,4 @@
+import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
 import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../../appOrigin'
@@ -15,6 +16,7 @@ const JiraRemoteProject: JiraRemoteProjectResolvers = {
   __isTypeOf: ({service}) => service === 'jira',
   id: ({cloudId, key}) => JiraProjectId.join(cloudId, key),
   service: () => 'jira',
+  integrationRepoId: ({cloudId, key}) => IntegrationRepoId.join({service: 'jira', cloudId, key}),
   avatar: ({avatarUrls, cloudId, teamId}) => {
     const url = avatarUrls['48x48']
     if (!url) return null

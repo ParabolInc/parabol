@@ -48,9 +48,13 @@ export type RepoFetchCtx = Omit<IntegrationCtx, 'dataLoader'> & {
   dataLoader: Pick<DataLoaderWorker, 'get'>
 }
 
-export interface RepoListCapability {
+export interface RepoListCapability<TRepo extends RemoteRepoIntegration = RemoteRepoIntegration> {
   /** Every repo/project the viewer can create issues in, in the exact object shape the client and the prev-used Redis cache already store. An Error is the remote failure and must never be cached */
-  fetchRepos(ctx: GqlIntegrationCtx): Promise<RemoteRepoIntegration[] | Error>
+  fetchRepos(ctx: GqlIntegrationCtx): Promise<TRepo[] | Error>
+  /** What createTaskIntegration takes for this repo; the caches dedupe on service + this */
+  integrationRepoId(repo: TRepo): string
+  /** The label the repo picker renders */
+  name(repo: TRepo): string
 }
 
 export interface EstimatePushCtx extends GqlIntegrationCtx {
@@ -77,28 +81,39 @@ export interface DimensionFieldKey {
 
 export interface DimensionFieldTarget {
   fieldId: string
-  /** The service's human-readable name for fieldId; null when fieldId is already the label (templates, sentinels, Azure DevOps ids) */
+  /** The service's human-readable name for fieldId; null when fieldId is already the label (templates, sentinels) or the service knows no name for it */
   fieldName: string | null
   fieldType: string
 }
 
 export interface ServiceField {
-  name: string
+  /** What updateIntegrationDimensionField takes; the sentinels and a label template are their own id */
+  fieldId: string
+  label: string
   type: string
 }
 
+export type EstimatePushTarget = 'comment' | 'field' | 'label'
+
+export interface ServiceFieldListing {
+  options: ServiceField[]
+  helpUrl?: string
+}
+
 export interface EstimatePushCapability {
-  targets: Array<'comment' | 'field' | 'label'>
+  targets: EstimatePushTarget[]
   /** An Error is the user-visible failure message; analytics and the TaskEstimate insert read the result */
   pushEstimate(ctx: EstimatePushCtx): Promise<EstimatePushResult | Error>
   /** The mapping key for this task; null when the issue or auth cannot be resolved */
   resolveDimensionFieldKey(ctx: DimensionFieldCtx): Promise<DimensionFieldKey | null>
-  /** Turns the client's chosen field id into the row to store. Sentinels never reach this. Field services validate against the issue's fields; label services accept the template verbatim */
+  /** Turns a chosen field id into the row to store. Sentinels never reach this, and updateIntegrationDimensionField has already checked the id against listDimensionFields for field services */
   describeDimensionField(
     ctx: DimensionFieldCtx,
     key: DimensionFieldKey,
     fieldId: string
   ): Promise<DimensionFieldTarget | Error>
+  /** The fields a facilitator can map this dimension to on this task. Label services return no options — the client offers the editable template instead. helpUrl explains an empty list when the service knows why */
+  listDimensionFields(ctx: DimensionFieldCtx): Promise<ServiceFieldListing>
 }
 
 export interface IssueListCapability {
@@ -154,6 +169,16 @@ export abstract class ServerIntegrationDefinition {
       .get('sharedIntegrationProviders')
       .load({service: this.service, orgIds: [team.orgId], teamIds: [teamId]})
     return providers.length > 0
+  }
+
+  /** The team- and org-scoped provider rows for this team, which connect flows prefer over the global row */
+  async getSharedProviders(ctx: IntegrationCtx): Promise<TIntegrationProvider[]> {
+    const {dataLoader, teamId} = ctx
+    const team = await dataLoader.get('teams').loadNonNull(teamId)
+    const providers = await dataLoader
+      .get('sharedIntegrationProviders')
+      .load({service: this.service, orgIds: [team.orgId], teamIds: [teamId]})
+    return providers.filter(({scope}) => scope !== 'global')
   }
 
   /** The instance-wide (cloud) provider row, the only one some connect flows can use */

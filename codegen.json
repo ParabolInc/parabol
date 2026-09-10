@@ -77,7 +77,7 @@
           }
         },
         "mappers": {
-          "_xGitLabProject": "./types/_xGitLabProject#_xGitLabProjectSource as _xGitLabProject",
+          "_xGitLabProject": "../../integrations/platform/RemoteRepoIntegration#GitLabProject as _xGitLabProject",
           "AcceptRequestToJoinDomainSuccess": "./types/AcceptRequestToJoinDomainSuccess#AcceptRequestToJoinDomainSuccessSource",
           "AcceptTeamInvitationPayload": "./types/AcceptTeamInvitationPayload#AcceptTeamInvitationPayloadSource",
           "ActionMeeting": "../../postgres/types/Meeting#CheckInMeeting",
@@ -275,6 +275,7 @@
           "RenameReflectTemplatePromptPayload": "./types/RenameReflectTemplatePromptPayload#RenameReflectTemplatePromptPayloadSource",
           "ResetReflectionGroupsSuccess": "./types/ResetReflectionGroupsSuccess#ResetReflectionGroupsSuccessSource",
           "UpdatePersonalAccessTokenSuccess": "./types/UpdatePersonalAccessTokenSuccess#UpdatePersonalAccessTokenSuccessSource",
+          "RepoContainer": "../../integrations/platform/RemoteRepoIntegration#VendorRepoIntegration",
           "RepoIntegration": "../../integrations/platform/RemoteRepoIntegration#RemoteRepoIntegration",
           "RetroDiscussStage": "./types/RetroDiscussStage#DiscussStageSource",
           "RetroReflection": "../../postgres/types/index#RetroReflection as RetroReflectionDB",
@@ -285,6 +286,7 @@
           "SAML": "./types/SAML#SAMLSource",
           "SearchResultEdge": "./types/SearchResultEdge#SearchResultEdgeSource",
           "SelectTemplatePayload": "./types/SelectTemplatePayload#SelectTemplatePayloadSource",
+          "ServiceField": "../../integrations/platform/ServerIntegrationDefinition#ServiceField as ServiceFieldSource",
           "SetDefaultSlackChannelSuccess": "./types/SetDefaultSlackChannelSuccess#SetDefaultSlackChannelSuccessSource",
           "SetJiraDisplayFieldIdsPayload": "./types/SetJiraDisplayFieldIdsPayload#SetJiraDisplayFieldIdsPayloadSource",
           "SetMeetingSettingsPayload": "./types/SetMeetingSettingsPayload#SetMeetingSettingsPayloadSource",

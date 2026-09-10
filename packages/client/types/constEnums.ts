@@ -292,7 +292,7 @@ export enum Pricing {
 }
 
 export enum Providers {
-  JIRA_CLOUD_NAME = 'Atlassian Jira',
+  JIRA_CLOUD_NAME = 'Jira Cloud',
   JIRA_CLOUD_DESC = 'Use Jira Cloud issues from within Parabol.',
   CONFLUENCE_NAME = 'Atlassian Confluence',
   CONFLUENCE_DESC = 'Export Pages and meeting summaries as native Confluence pages',
@@ -483,6 +483,8 @@ export enum SprintPokerDefaults {
   AZURE_DEVOPS_REMAINING_WORK_LABEL = 'Remaining Work',
   AZURE_DEVOPS_EFFORT_FIELD = '__effort',
   AZURE_DEVOPS_EFFORT_LABEL = 'Effort',
+  AZURE_DEVOPS_SIZE_FIELD = '__size',
+  AZURE_DEVOPS_SIZE_LABEL = 'Size',
   SERVICE_FIELD_COMMENT = '__comment',
   SERVICE_FIELD_COMMENT_LABEL = 'As Comment',
   SERVICE_FIELD_NULL = '',

@@ -1,4 +1,6 @@
+import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
 import {jiraServerIntegrationMeta} from 'parabol-client/shared/integrations/jiraServerIntegrationMeta'
+import type {JiraServerProject} from '../../dataloader/jiraServerLoaders'
 import type {JiraSearchQueryJson} from '../../postgres/types'
 import buildJiraSearchQuery from '../jira/buildJiraSearchQuery'
 import {
@@ -12,6 +14,7 @@ import {
 import describeJiraServerDimensionField from './describeJiraServerDimensionField'
 import fetchJiraServerProjects from './fetchJiraServerProjects'
 import JiraServerRestManager from './JiraServerRestManager'
+import listJiraServerDimensionFields from './listJiraServerDimensionFields'
 import pushEstimateToJiraServer from './pushEstimateToJiraServer'
 import resolveJiraServerDimensionFieldKey from './resolveJiraServerDimensionFieldKey'
 import resolveJiraServerTaskIntegration from './resolveJiraServerTaskIntegration'
@@ -25,7 +28,7 @@ export class JiraServerServerIntegration extends ServerIntegrationDefinition {
     issueCreate: IssueCreateCapability
     issueRead: IssueReadCapability
     issueSearch: IssueSearchCapability<JiraSearchQueryJson>
-    repoList: RepoListCapability
+    repoList: RepoListCapability<JiraServerProject>
     estimatePush: EstimatePushCapability
   } = {
     issueCreate: {
@@ -41,12 +44,17 @@ export class JiraServerServerIntegration extends ServerIntegrationDefinition {
     },
     issueRead: {getIssue: resolveJiraServerTaskIntegration},
     issueSearch: {buildQuery: buildJiraSearchQuery},
-    repoList: {fetchRepos: fetchJiraServerProjects},
+    repoList: {
+      fetchRepos: fetchJiraServerProjects,
+      integrationRepoId: (project) => IntegrationRepoId.join(project),
+      name: ({name}) => name
+    },
     estimatePush: {
       targets: ['comment', 'field'],
       pushEstimate: pushEstimateToJiraServer,
       resolveDimensionFieldKey: resolveJiraServerDimensionFieldKey,
-      describeDimensionField: describeJiraServerDimensionField
+      describeDimensionField: describeJiraServerDimensionField,
+      listDimensionFields: listJiraServerDimensionFields
     }
   }
 }

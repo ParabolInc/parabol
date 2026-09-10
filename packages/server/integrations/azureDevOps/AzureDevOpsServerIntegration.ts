@@ -1,4 +1,6 @@
+import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
 import {azureDevOpsIntegrationMeta} from 'parabol-client/shared/integrations/azureDevOpsIntegrationMeta'
+import type {AzureAccountProject} from '../../dataloader/azureDevOpsLoaders'
 import type {TeamMemberIntegrationAuth} from '../../postgres/types'
 import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
 import {
@@ -11,6 +13,7 @@ import {
 } from '../platform/ServerIntegrationDefinition'
 import describeAzureDevOpsDimensionField from './describeAzureDevOpsDimensionField'
 import fetchAzureDevOpsProjects from './fetchAzureDevOpsProjects'
+import listAzureDevOpsDimensionFields from './listAzureDevOpsDimensionFields'
 import pushEstimateToAzureDevOps from './pushEstimateToAzureDevOps'
 import resolveAzureDevOpsDimensionFieldKey from './resolveAzureDevOpsDimensionFieldKey'
 import resolveAzureDevOpsTaskIntegration from './resolveAzureDevOpsTaskIntegration'
@@ -29,7 +32,7 @@ export class AzureDevOpsServerIntegration extends ServerIntegrationDefinition {
   readonly capabilities: {
     issueCreate: IssueCreateCapability
     issueRead: IssueReadCapability
-    repoList: RepoListCapability
+    repoList: RepoListCapability<AzureAccountProject>
     estimatePush: EstimatePushCapability
   } = {
     issueCreate: {
@@ -44,12 +47,18 @@ export class AzureDevOpsServerIntegration extends ServerIntegrationDefinition {
       }
     },
     issueRead: {getIssue: resolveAzureDevOpsTaskIntegration},
-    repoList: {fetchRepos: fetchAzureDevOpsProjects},
+    repoList: {
+      fetchRepos: fetchAzureDevOpsProjects,
+      integrationRepoId: ({instanceId, projectId}) =>
+        IntegrationRepoId.join({service: 'azureDevOps', instanceId, projectId}),
+      name: ({name}) => name
+    },
     estimatePush: {
       targets: ['comment', 'field'],
       pushEstimate: pushEstimateToAzureDevOps,
       resolveDimensionFieldKey: resolveAzureDevOpsDimensionFieldKey,
-      describeDimensionField: describeAzureDevOpsDimensionField
+      describeDimensionField: describeAzureDevOpsDimensionField,
+      listDimensionFields: listAzureDevOpsDimensionFields
     }
   }
 }

@@ -1,8 +1,10 @@
+import {lazy} from 'react'
 import type Atmosphere from '../../Atmosphere'
 import AzureDevOpsSVG from '../../components/AzureDevOpsSVG'
 import {azureDevOpsIntegrationMeta} from '../../shared/integrations/azureDevOpsIntegrationMeta'
 import AzureDevOpsClientManager from '../../utils/AzureDevOpsClientManager'
 import {
+  type ClientIntegrationCapabilities,
   ClientIntegrationDefinition,
   type ConnectParams
 } from '../platform/ClientIntegrationDefinition'
@@ -13,8 +15,18 @@ export class AzureDevOpsClientIntegration extends ClientIntegrationDefinition {
   readonly description = azureDevOpsIntegrationMeta.description
   readonly ids = azureDevOpsIntegrationMeta.ids
   readonly Icon = AzureDevOpsSVG
+  readonly capabilities: ClientIntegrationCapabilities = {
+    scoping: {
+      Panel: lazy(
+        () =>
+          import(
+            /* webpackChunkName: 'ScopePhaseAreaAzureDevOpsScoping' */ '../../components/ScopePhaseAreaAzureDevOpsScoping'
+          )
+      )
+    }
+  }
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
-    if (!provider) return
+    if (!provider?.clientId) return
     void AzureDevOpsClientManager.openOAuth(
       atmosphere,
       teamId,

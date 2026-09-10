@@ -1,9 +1,11 @@
+import LinearProjectId from 'parabol-client/shared/gqlIds/LinearProjectId'
 import {linearIntegrationMeta} from 'parabol-client/shared/integrations/linearIntegrationMeta'
 import interleave from 'parabol-client/utils/interleave'
 import {
   fetchLinearProjects,
   fetchLinearTeams
 } from '../../graphql/queries/helpers/fetchLinearTeamsAndProjects'
+import type {LinearRepo} from '../platform/RemoteRepoIntegration'
 import {
   type EstimatePushCapability,
   type IssueCreateCapability,
@@ -12,7 +14,9 @@ import {
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
 import describeLinearDimensionField from './describeLinearDimensionField'
+import isLinearTeam from './isLinearTeam'
 import LinearServerManager from './LinearServerManager'
+import listLinearDimensionFields from './listLinearDimensionFields'
 import pushEstimateToLinear from './pushEstimateToLinear'
 import resolveLinearDimensionFieldKey from './resolveLinearDimensionFieldKey'
 import resolveLinearTaskIntegration from './resolveLinearTaskIntegration'
@@ -25,7 +29,7 @@ export class LinearServerIntegration extends ServerIntegrationDefinition {
   readonly capabilities: {
     issueCreate: IssueCreateCapability
     issueRead: IssueReadCapability
-    repoList: RepoListCapability
+    repoList: RepoListCapability<LinearRepo>
     estimatePush: EstimatePushCapability
   } = {
     issueCreate: {
@@ -43,14 +47,21 @@ export class LinearServerIntegration extends ServerIntegrationDefinition {
         ])
         if (projects instanceof Error) return projects
         if (teams instanceof Error) return teams
-        return interleave([projects, teams])
-      }
+        return interleave<LinearRepo>([projects, teams])
+      },
+      integrationRepoId: (repo) =>
+        isLinearTeam(repo)
+          ? LinearProjectId.join(repo.id)
+          : LinearProjectId.join(repo.teams.nodes[0].id, repo.id),
+      name: (repo) =>
+        isLinearTeam(repo) ? repo.displayName : `${repo.teams.nodes[0].displayName}/${repo.name}`
     },
     estimatePush: {
       targets: ['comment', 'field'],
       pushEstimate: pushEstimateToLinear,
       resolveDimensionFieldKey: resolveLinearDimensionFieldKey,
-      describeDimensionField: describeLinearDimensionField
+      describeDimensionField: describeLinearDimensionField,
+      listDimensionFields: listLinearDimensionFields
     }
   }
 }

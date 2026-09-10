@@ -21,7 +21,7 @@ const describeJiraServerDimensionField = async (
   const {projectId} = JiraServerProjectId.split(key.repoId)
   const fieldTypes = await manager.getFieldTypes(projectId, key.issueType ?? '')
   if (fieldTypes instanceof Error) return fieldTypes
-  const match = fieldTypes.find((candidate) => candidate.name === fieldId)
+  const match = fieldTypes.find((candidate) => candidate.fieldId === fieldId)
   if (!match) return new Error('Unknown field')
   return {fieldId: match.fieldId, fieldName: match.name, fieldType: match.schema.type}
 }
