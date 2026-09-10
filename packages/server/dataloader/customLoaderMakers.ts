@@ -30,6 +30,7 @@ import type {
 } from '../postgres/types'
 import type {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
 import type {Tierenum as TierEnum} from '../postgres/types/pg'
+import averageTeamHealthScore from '../utils/averageTeamHealthScore'
 import {
   type FeatureFlagName,
   type FeatureFlagRecord,
@@ -37,6 +38,7 @@ import {
   getFeatureFlagsByScope
 } from '../utils/featureFlags'
 import getRedis from '../utils/getRedis'
+import getTeamHealthDisplayComment from '../utils/getTeamHealthDisplayComment'
 import isUserVerified from '../utils/isUserVerified'
 import {Logger} from '../utils/Logger'
 import NullableDataLoader from './NullableDataLoader'
@@ -1024,6 +1026,104 @@ export const retroSuggestedGroupingByMeetingId = (parent: RootDataLoader) => {
         .execute()
       const rowByMeetingId = new Map(rows.map((row) => [row.meetingId, row]))
       return meetingIds.map((meetingId) => rowByMeetingId.get(meetingId) ?? null)
+    },
+    {...parent.dataLoaderOptions}
+  )
+}
+
+// how many cycles back to look for prior team health scores. A cycle nobody answered is not a data
+// point, so it is skipped rather than treated as a reset, but the search still has to stop
+const MAX_TEAM_HEALTH_CYCLE_LOOKBACK = 15
+
+// how many answered prior cycles a category's trend is drawn from
+export const TEAM_HEALTH_HISTORY_LENGTH = 5
+
+export interface PriorTeamHealthCycle {
+  meetingId: string
+  endedAt: Date
+  // the average Likert score each category earned that cycle, keyed by categoryId
+  scoreByCategoryId: Map<number, number>
+  // the comments the team could read that cycle for each category, keyed by categoryId. Anonymous
+  // comments only ever appear here in their paraphrased form (see getTeamHealthDisplayComment)
+  commentsByCategoryId: Map<number, string[]>
+}
+
+// The last few answered cycles before this meeting, newest first, with each category's score and
+// readable comments. Empty if this is the team's first cycle. Categories are the unit of comparison
+// because the question asked within a category rotates from one cycle to the next
+export const priorTeamHealthCyclesByMeetingId = (
+  parent: RootDataLoader,
+  dependsOn: RegisterDependsOn
+) => {
+  dependsOn(['newMeetings', 'teamHealthResponses'])
+  return new DataLoader<string, PriorTeamHealthCycle[], string>(
+    async (meetingIds) => {
+      return Promise.all(
+        meetingIds.map(async (meetingId) => {
+          const meeting = await parent.get('newMeetings').load(meetingId)
+          if (meeting?.meetingType !== 'teamHealth' || !meeting.meetingSeriesId) return []
+          const priorMeetings = await selectNewMeetings()
+            .where('meetingSeriesId', '=', meeting.meetingSeriesId)
+            .where('meetingType', '=', 'teamHealth')
+            .where('createdAt', '<', meeting.createdAt)
+            .where('endedAt', 'is not', null)
+            .orderBy('createdAt', 'desc')
+            .limit(MAX_TEAM_HEALTH_CYCLE_LOOKBACK)
+            .execute()
+          const priorResponses = await Promise.all(
+            priorMeetings.map((priorMeeting) =>
+              parent.get('teamHealthResponsesByMeetingId').load(priorMeeting.id)
+            )
+          )
+          const answeredCycles = priorMeetings
+            .map((priorMeeting, idx) => ({meeting: priorMeeting, responses: priorResponses[idx]!}))
+            .filter(({responses}) => responses.length > 0)
+            .slice(0, TEAM_HEALTH_HISTORY_LENGTH)
+          const questionIds = [
+            ...new Set(
+              answeredCycles.flatMap(({responses}) => responses.map(({questionId}) => questionId))
+            )
+          ]
+          const questions = (await parent.get('teamHealthQuestions').loadMany(questionIds)).filter(
+            isValid
+          )
+          const categoryIdByQuestionId = new Map(
+            questions.map((question) => [question.id, question.categoryId])
+          )
+          return answeredCycles.map(({meeting: priorMeeting, responses}) => {
+            const scoresByCategoryId = new Map<number, number[]>()
+            const commentsByCategoryId = new Map<number, string[]>()
+            for (const response of responses) {
+              const {questionId, score} = response
+              const categoryId = categoryIdByQuestionId.get(questionId)
+              if (categoryId === undefined) continue
+              if (score !== null) {
+                const scores = scoresByCategoryId.get(categoryId) ?? []
+                scores.push(score)
+                scoresByCategoryId.set(categoryId, scores)
+              }
+              const comment = getTeamHealthDisplayComment(response)
+              if (comment) {
+                const comments = commentsByCategoryId.get(categoryId) ?? []
+                comments.push(comment)
+                commentsByCategoryId.set(categoryId, comments)
+              }
+            }
+            const scoreByCategoryId = new Map(
+              [...scoresByCategoryId].flatMap(([categoryId, scores]) => {
+                const score = averageTeamHealthScore(scores)
+                return score === null ? [] : [[categoryId, score] as [number, number]]
+              })
+            )
+            return {
+              meetingId: priorMeeting.id,
+              endedAt: priorMeeting.endedAt!,
+              scoreByCategoryId,
+              commentsByCategoryId
+            }
+          })
+        })
+      )
     },
     {...parent.dataLoaderOptions}
   )

@@ -21,7 +21,6 @@ import {
 import type {MeetingSeriesGroupCard_series$key} from '../__generated__/MeetingSeriesGroupCard_series.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useStartMeetingSeriesNowMutation from '../mutations/useStartMeetingSeriesNowMutation'
-import {initials} from '../shared/initials'
 import {cn} from '../ui/cn'
 import {Menu} from '../ui/Menu/Menu'
 import {MenuContent} from '../ui/Menu/MenuContent'
@@ -53,8 +52,6 @@ const scheduleFormatter = new Intl.DateTimeFormat('en-US', {
   hour: 'numeric',
   minute: '2-digit'
 })
-
-const MAX_MONOGRAMS = 5
 
 interface Props {
   seriesRefs: MeetingSeriesGroupCard_series$key
@@ -168,7 +165,7 @@ const MeetingSeriesGroupCard = (props: Props) => {
                 <span className='wrap-break-word block pt-1 pr-8 text-fg-primary text-xl leading-6'>
                   {title}
                 </span>
-                <div className='text-fg-primary text-sm'>{label}</div>
+                <div className='text-fg-secondary text-sm'>{label}</div>
               </div>
               <Menu
                 trigger={
@@ -203,24 +200,9 @@ const MeetingSeriesGroupCard = (props: Props) => {
                 </MenuContent>
               </Menu>
             </div>
-            <span className='wrap-break-word block pt-1 pb-2 text-fg-secondary text-sm'>
+            <span className='wrap-break-word block pt-1 pb-2 text-fg-muted text-sm'>
               {`Meeting series group • ${recurrenceLabel}`}
             </span>
-            <div className='flex pl-1.5'>
-              {allSeries.slice(0, MAX_MONOGRAMS).map((series) => (
-                <div
-                  key={series.id}
-                  className='-ml-1.5 flex size-7 items-center justify-center rounded-full border-2 border-surface-card border-solid bg-grape-600 font-semibold text-[10px] text-white'
-                >
-                  {initials(series.title)}
-                </div>
-              ))}
-              {teamCount > MAX_MONOGRAMS && (
-                <div className='-ml-1.5 flex size-7 items-center justify-center rounded-full border-2 border-surface-card border-solid bg-surface-well font-semibold text-[10px] text-fg-primary'>
-                  {`+${teamCount - MAX_MONOGRAMS}`}
-                </div>
-              )}
-            </div>
           </div>
           <EditMeetingSeriesModal
             isOpen={isEditOpen}

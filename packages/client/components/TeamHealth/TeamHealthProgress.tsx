@@ -1,36 +1,56 @@
 import {cn} from '../../ui/cn'
+import Avatar from '../Avatar/Avatar'
+
+interface Respondent {
+  userId: string
+  preferredName: string
+  picture: string
+}
 
 interface Props {
   // number of members who have submitted at least one response
   respondentCount: number
-  // total members expected to respond (owner excluded unless they opted in)
-  total: number
+  // everyone expected to respond (spectators excluded)
+  respondents: ReadonlyArray<Respondent>
   className?: string
 }
 
-// anonymous progress: colored dots for how many teammates have voted out of the total. The dots
-// are deliberately generic (not member avatars) so a response can never be attributed to a person
-const DOT_COLORS = ['bg-grape-500', 'bg-jade-500', 'bg-sky-500', 'bg-gold-500', 'bg-tomato-500']
+// beyond this the row wraps into a wall of faces, so the rest collapse into a +N chip
+const MAX_AVATARS = 8
 
+// the faces are everyone we're waiting on, in no particular order, and the count is a bare tally.
+// Never mark which face has answered: with one response in, that would name the respondent
 const TeamHealthProgress = (props: Props) => {
-  const {respondentCount, total, className} = props
-  const dotCount = Math.max(total, respondentCount)
+  const {respondentCount, respondents, className} = props
+  const total = respondents.length
+  const shownRespondents = respondents.slice(0, MAX_AVATARS)
+  const overflowCount = total - shownRespondents.length
+  const percentComplete = total === 0 ? 0 : Math.min(100, (respondentCount / total) * 100)
   return (
-    <div className={cn('flex items-center gap-3', className)}>
-      <div className='-space-x-2 flex'>
-        {Array.from({length: dotCount}).map((_, idx) => {
-          const isFilled = idx < respondentCount
-          return (
-            <div
-              key={idx}
-              className={cn(
-                // the ring reads as a gap between overlapping dots, so it tracks the card behind them
-                'h-8 w-8 rounded-full border-2 border-surface-card',
-                isFilled ? DOT_COLORS[idx % DOT_COLORS.length] : 'bg-surface-well'
-              )}
+    <div className={cn('flex w-full flex-col items-center gap-3', className)}>
+      {total > 0 && (
+        <div className='-space-x-2 flex'>
+          {shownRespondents.map((respondent) => (
+            <Avatar
+              key={respondent.userId}
+              picture={respondent.picture}
+              alt={respondent.preferredName}
+              // the ring reads as a gap between overlapping avatars, so it tracks the card behind
+              className='size-8 border-2 border-surface-card'
             />
-          )
-        })}
+          ))}
+          {overflowCount > 0 && (
+            <div className='flex size-8 items-center justify-center rounded-full border-2 border-surface-card bg-surface-well font-semibold text-fg-secondary text-xs'>
+              {`+${overflowCount}`}
+            </div>
+          )}
+        </div>
+      )}
+      <div className='h-1.5 w-full max-w-64 overflow-hidden rounded-full bg-surface-well'>
+        <div
+          className='h-full rounded-full bg-jade-500 transition-[width]'
+          style={{width: `${percentComplete}%`}}
+        />
       </div>
       <div className='font-semibold text-fg-secondary'>
         {respondentCount} of {total} teammates voted

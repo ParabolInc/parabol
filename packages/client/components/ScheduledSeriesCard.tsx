@@ -22,6 +22,7 @@ import {
   meetingTypeToLabelClass
 } from '../utils/meetings/lookups'
 import {EditMeetingSeriesModal} from './EditMeetingSeriesModal'
+import MeetingSeriesManager from './MeetingSeriesManager'
 
 const STACK_CLASSES = {
   0: 'rotate-1 top-[3px] left-1',
@@ -65,13 +66,20 @@ const ScheduledSeriesCard = (props: Props) => {
         meetingType
         nextMeetingDate
         ownerUserId
+        groupId
+        team {
+          name
+        }
+        owner {
+          ...MeetingSeriesManager_user
+        }
         ...EditMeetingSeriesModal_series
       }
     `,
     seriesRef
   )
 
-  const {id, title, meetingType, nextMeetingDate, ownerUserId} = series
+  const {id, title, meetingType, nextMeetingDate, ownerUserId, groupId, owner, team} = series
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
   const [startNow, isStarting] = useStartMeetingSeriesNowMutation()
@@ -99,6 +107,8 @@ const ScheduledSeriesCard = (props: Props) => {
   }
 
   const isViewerOwner = ownerUserId === atmosphere.viewerId
+  // an owned series answers to its owner alone, so nobody else gets an edit affordance on it
+  const canEdit = !ownerUserId || isViewerOwner
   const nextDate = nextMeetingDate ? new Date(nextMeetingDate) : null
   const label = nextDate ? `Starts ${shortDateFormatter.format(nextDate)}` : 'Scheduled'
   const tooltip = nextDate ? `Starts ${timeFormatter.format(nextDate)}` : ''
@@ -108,6 +118,15 @@ const ScheduledSeriesCard = (props: Props) => {
     setIsEditOpen(true)
   }
   const seriesLink = `/meeting-series/manage/${MeetingSeriesId.split(id)}`
+  // every link on this card opens the edit form, so a viewer who cannot edit gets plain text
+  const withEditLink = (content: React.ReactNode) =>
+    canEdit ? (
+      <Link to={seriesLink} onClick={openEdit}>
+        {content}
+      </Link>
+    ) : (
+      content
+    )
   const bgClass = meetingTypeToBgClass[meetingType]
   const illustration = meetingTypeToIllustration[meetingType]
 
@@ -146,49 +165,52 @@ const ScheduledSeriesCard = (props: Props) => {
             >
               Scheduled
             </span>
-            <Link to={seriesLink} onClick={openEdit}>
-              <img className={MEETING_IMG} src={illustration} alt='' />
-            </Link>
+            {withEditLink(<img className={MEETING_IMG} src={illustration} alt='' />)}
           </div>
           <div className='pt-1 pr-2 pb-3 pl-4'>
             <div className='relative flex items-center'>
-              <Link to={seriesLink} onClick={openEdit}>
-                <span className='wrap-break-word block pt-1 pr-8 text-fg-primary text-xl leading-6'>
-                  {title}
-                </span>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className='text-sm'>{label}</div>
-                  </TooltipTrigger>
-                  {tooltip && <TooltipContent>{tooltip}</TooltipContent>}
-                </Tooltip>
-              </Link>
-              <Menu
-                trigger={
-                  <button className='absolute top-0 right-0 flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent opacity-50 outline-hidden hover:bg-surface-hover hover:opacity-100'>
-                    <MoreVert className='text-fg-primary text-lg' />
-                  </button>
-                }
-              >
-                <MenuContent align='end' sideOffset={4}>
-                  {isViewerOwner && (
-                    <MenuItem onSelect={onStartNow}>
-                      <PlayArrowIcon className={MENU_ITEM_ICON} />
-                      Start meeting now
+              {withEditLink(
+                <>
+                  <span className='wrap-break-word block pt-1 pr-8 text-fg-primary text-xl leading-6'>
+                    {title}
+                  </span>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className='text-fg-secondary text-sm'>{label}</div>
+                    </TooltipTrigger>
+                    {tooltip && <TooltipContent>{tooltip}</TooltipContent>}
+                  </Tooltip>
+                </>
+              )}
+              {canEdit && (
+                <Menu
+                  trigger={
+                    <button className='absolute top-0 right-0 flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent opacity-50 outline-hidden hover:bg-surface-hover hover:opacity-100'>
+                      <MoreVert className='text-fg-primary text-lg' />
+                    </button>
+                  }
+                >
+                  <MenuContent align='end' sideOffset={4}>
+                    {isViewerOwner && (
+                      <MenuItem onSelect={onStartNow}>
+                        <PlayArrowIcon className={MENU_ITEM_ICON} />
+                        Start meeting now
+                      </MenuItem>
+                    )}
+                    <MenuItem onSelect={() => setIsEditOpen(true)}>
+                      <ReplayIcon className={MENU_ITEM_ICON} />
+                      Edit recurrence settings
                     </MenuItem>
-                  )}
-                  <MenuItem onSelect={() => setIsEditOpen(true)}>
-                    <ReplayIcon className={MENU_ITEM_ICON} />
-                    Edit recurrence settings
-                  </MenuItem>
-                </MenuContent>
-              </Menu>
+                  </MenuContent>
+                </Menu>
+              )}
             </div>
-            <Link to={seriesLink} onClick={openEdit}>
-              <span className='block pt-1 pb-2 text-fg-secondary text-sm'>
-                {MeetingTypeToReadable[meetingType]} • Awaiting first meeting
+            {withEditLink(
+              <span className='block pt-1 pb-2 text-fg-muted text-sm'>
+                {team.name} • Awaiting first meeting
               </span>
-            </Link>
+            )}
+            {groupId && owner && <MeetingSeriesManager userRef={owner} />}
           </div>
           <EditMeetingSeriesModal
             isOpen={isEditOpen}

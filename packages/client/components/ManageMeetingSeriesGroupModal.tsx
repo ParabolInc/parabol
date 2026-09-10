@@ -134,6 +134,11 @@ export const ManageMeetingSeriesGroupModal = (props: Props) => {
           {filteredTeams.map((team) => {
             const checked = isInSeries(team)
             const canEnter = checked && team.isViewerOnTeam
+            const enterDisabledReason = !team.seriesId
+              ? 'Save changes to add this team to the series'
+              : !team.meetingId
+                ? 'The meeting series has not started yet'
+                : null
             return (
               <div
                 key={team.id}
@@ -160,19 +165,28 @@ export const ManageMeetingSeriesGroupModal = (props: Props) => {
                 </div>
                 <div className='flex items-center justify-end gap-1.5'>
                   {canEnter ? (
-                    <Button
-                      variant='outline'
-                      size='sm'
-                      onClick={() => onEnterMeeting(team)}
-                      disabled={!team.meetingId}
-                    >
-                      <PlayArrowIcon className='mr-1 text-[16px]' />
-                      Enter meeting
-                    </Button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div>
+                          <Button
+                            variant='outline'
+                            size='sm'
+                            onClick={() => onEnterMeeting(team)}
+                            disabled={!!enterDisabledReason}
+                          >
+                            <PlayArrowIcon className='mr-1 text-[16px]' />
+                            Enter meeting
+                          </Button>
+                        </div>
+                      </TooltipTrigger>
+                      {enterDisabledReason && (
+                        <TooltipContent>{enterDisabledReason}</TooltipContent>
+                      )}
+                    </Tooltip>
                   ) : checked ? (
                     <span className='text-fg-muted text-xs'>Not a member</span>
                   ) : null}
-                  {checked && (
+                  {checked && team.urlSlug && (
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button

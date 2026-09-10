@@ -11,6 +11,7 @@ import type {
   TeamPromptMeeting
 } from '../postgres/types/Meeting'
 import getPhase from './getPhase'
+import getTeamHealthDisplayComment from './getTeamHealthDisplayComment'
 import {Logger} from './Logger'
 
 const serializeReflections = async (
@@ -150,8 +151,7 @@ const makeTeamHealthMeetingInsightInput = async (
       grouped.set(questionId, entry)
     }
     if (response.score !== null && response.score !== undefined) entry.scores.push(response.score)
-    // prefer the anonymity-preserving paraphrase; fall back to the raw comment only if absent
-    const comment = response.commentParaphrased ?? response.comment
+    const comment = getTeamHealthDisplayComment(response)
     if (comment) entry.comments.push(comment)
   }
   return {meetingType, questions: [...grouped.values()]}

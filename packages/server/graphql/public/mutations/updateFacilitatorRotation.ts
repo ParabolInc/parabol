@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import publish from '../../../utils/publish'
@@ -13,9 +14,13 @@ const updateFacilitatorRotation: MutationResolvers['updateFacilitatorRotation'] 
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
-  const {teamId, endedAt, facilitatorUserId} = meeting
+  const {teamId, endedAt, facilitatorUserId, meetingType} = meeting
 
   // VALIDATION
+  // team health runs without a facilitator, like team prompt, so there is no role to hand off
+  if (meetingType === 'teamHealth') {
+    throw new GraphQLError('Team Health meetings do not have a facilitator')
+  }
   const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
   const activeUserIds = getRotationOrder(teamMembers)
   let nextRotation: string[] | undefined

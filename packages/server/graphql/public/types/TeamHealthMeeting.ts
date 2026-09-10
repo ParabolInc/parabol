@@ -1,4 +1,5 @@
 import {selectNewMeetings} from '../../../postgres/select'
+import {getUserId} from '../../../utils/authorization'
 import type {TeamHealthMeetingResolvers} from '../resolverTypes'
 
 // how far back to walk the series looking for the streak. teams meeting even weekly won't
@@ -20,6 +21,16 @@ const TeamHealthMeeting: TeamHealthMeetingResolvers = {
   respondentCount: async ({id: meetingId}, _args, {dataLoader}) => {
     const responses = await dataLoader.get('teamHealthResponsesByMeetingId').load(meetingId)
     return new Set(responses.map((response) => response.userId)).size
+  },
+  isViewerComplete: async ({id: meetingId, phases}, _args, {authToken, dataLoader}) => {
+    const responsePhase = phases.find((phase) => phase.phaseType === 'TEAM_HEALTH_RESPONSE')
+    if (!responsePhase) return false
+    const viewerId = getUserId(authToken)
+    const responses = await dataLoader.get('teamHealthResponsesByMeetingId').load(meetingId)
+    const answered = new Set(
+      responses.filter(({userId}) => userId === viewerId).map(({questionId}) => questionId)
+    )
+    return responsePhase.stages.every(({questionId}) => answered.has(questionId))
   },
   currentStreak: async ({id: meetingId, meetingSeriesId}, _args, {dataLoader}) => {
     if (!meetingSeriesId) return 0

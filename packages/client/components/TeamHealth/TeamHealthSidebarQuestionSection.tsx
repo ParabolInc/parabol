@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {TeamHealthSidebarQuestionSection_meeting$key} from '~/__generated__/TeamHealthSidebarQuestionSection_meeting.graphql'
 import type useGotoStageId from '~/hooks/useGotoStageId'
-import {CheckCircle} from '~/ui/icons'
+import {Cancel, CheckCircle} from '~/ui/icons'
 import MeetingSidebarPhaseItemChild from '../MeetingSidebarPhaseItemChild'
 import MeetingSubnavItem from '../MeetingSubnavItem'
 
@@ -17,8 +17,17 @@ const TeamHealthSidebarQuestionSection = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment TeamHealthSidebarQuestionSection_meeting on TeamHealthMeeting {
+        endedAt
+        localPhase {
+          phaseType
+        }
         localStage {
           id
+        }
+        viewerMeetingMember {
+          ... on TeamHealthMeetingMember {
+            isSpectating
+          }
         }
         phases {
           phaseType
@@ -41,8 +50,12 @@ const TeamHealthSidebarQuestionSection = (props: Props) => {
     `,
     meetingRef
   )
-  const {localStage, phases} = meeting
+  const {endedAt, localPhase, localStage, viewerMeetingMember, phases} = meeting
   const stages = phases.find((phase) => phase.phaseType === 'TEAM_HEALTH_RESPONSE')?.stages ?? []
+  // the waiting room is where a partial response first becomes a problem, so that is where the
+  // unanswered questions get called out
+  const isWaitingToReveal =
+    !endedAt && localPhase?.phaseType === 'TEAM_HEALTH_RESULT' && !viewerMeetingMember?.isSpectating
   const handleClick = (stageId: string) => {
     gotoStageId(stageId).catch(() => {
       /*ignore*/
@@ -64,6 +77,12 @@ const TeamHealthSidebarQuestionSection = (props: Props) => {
               metaContent={
                 viewerResponse?.score != null ? (
                   <CheckCircle className='size-4.5 text-jade-500' />
+                ) : isWaitingToReveal ? (
+                  <span className='relative flex size-4.5 items-center justify-center'>
+                    {/* the X is knocked out of the icon, so a white disc sits behind it */}
+                    <span className='absolute size-2.5 rounded-full bg-white' />
+                    <Cancel aria-label='Unanswered' className='relative size-4.5 text-tomato-500' />
+                  </span>
                 ) : null
               }
               onClick={() => handleClick(stageId)}

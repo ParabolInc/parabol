@@ -319,6 +319,186 @@ test('a member of one team in a group cannot read a sibling team series', async 
   expect(own.data.viewer.meetingSeries).toMatchObject({title: 'Weekly Health'})
 })
 
+const VIEWER_GROUP_SERIES = `
+  query ViewerGroupSeries {
+    viewer {
+      teams {
+        activeMeetingSeries {
+          teamId
+          team {
+            id
+            name
+          }
+          owner {
+            id
+            preferredName
+          }
+          groupSeries {
+            teamId
+          }
+        }
+      }
+    }
+  }
+`
+
+const START_TEAM_HEALTH = `
+  mutation StartTeamHealth($teamIds: [ID!]!, $templateId: ID!, $rrule: RRule) {
+    startTeamHealth(teamIds: $teamIds, templateId: $templateId, rrule: $rrule) {
+      meetings {
+        teamId
+      }
+      teams {
+        id
+      }
+    }
+  }
+`
+
+// The picker offers a billing leader every team in the org, so one call can mix teams the viewer
+// is on with teams they only lead. Checking the list as a whole fails both ways round: the viewer
+// is not on every team, and they do not lead every team's org.
+test('a leader starts for a team they only lead alongside a team they are only on', async () => {
+  const pg = getKysely()
+  const viewer = await signUp()
+  const otherOrgLeader = await signUp()
+  // a plain member of the second org, so leading it cannot be what carries the call
+  await pg
+    .insertInto('OrganizationUser')
+    .values({id: randomUUIDv7(), orgId: otherOrgLeader.orgId, userId: viewer.userId, role: null})
+    .execute()
+  const memberTeamId = await addTeam(otherOrgLeader.orgId, viewer.userId, false)
+  const ledTeamId = await addTeam(viewer.orgId, otherOrgLeader.userId, true)
+
+  const res = await sendPublic({
+    query: START_TEAM_HEALTH,
+    variables: {
+      teamIds: [memberTeamId, ledTeamId],
+      templateId: 'googleProjectAristotleTemplate'
+    },
+    bearerToken: await authTokenFor(viewer.userId)
+  })
+  expect(res.errors).toBeUndefined()
+  expect(res.data.startTeamHealth.meetings.map(({teamId}: any) => teamId).sort()).toEqual(
+    [memberTeamId, ledTeamId].sort()
+  )
+})
+
+const JOIN_TEAM_HEALTH = `
+  mutation StartTeamHealth(
+    $teamIds: [ID!]!
+    $templateId: ID!
+    $rrule: RRule
+    $joinMeetingSeriesId: ID
+  ) {
+    startTeamHealth(
+      teamIds: $teamIds
+      templateId: $templateId
+      rrule: $rrule
+      joinMeetingSeriesId: $joinMeetingSeriesId
+    ) {
+      teams {
+        id
+      }
+    }
+  }
+`
+
+// Adding a team from the Manage group dialog has to land on the group's card. A series with no
+// groupId stands alone, so the dash would grow a second card beside the group it belongs to.
+test('a team added to a group joins it rather than starting a series of its own', async () => {
+  const pg = getKysely()
+  const owner = await signUp()
+  const secondTeamId = await addTeam(owner.orgId, owner.userId, true)
+  const addedTeamId = await addTeam(owner.orgId, owner.userId, true)
+  const {groupId, rows} = await createGroupedSeries(
+    [owner.teamId, secondTeamId],
+    owner.userId,
+    owner.userId
+  )
+
+  const res = await sendPublic({
+    query: JOIN_TEAM_HEALTH,
+    variables: {
+      teamIds: [addedTeamId],
+      templateId: 'googleProjectAristotleTemplate',
+      rrule: RRULE,
+      joinMeetingSeriesId: MeetingSeriesId.join(rows[0]!.id)
+    },
+    bearerToken: await authTokenFor(owner.userId)
+  })
+  expect(res.errors).toBeUndefined()
+
+  const added = await pg
+    .selectFrom('MeetingSeries')
+    .select(['groupId', 'ownerUserId'])
+    .where('teamId', '=', addedTeamId)
+    .where('cancelledAt', 'is', null)
+    .executeTakeFirstOrThrow()
+  expect(added.groupId).toBe(groupId)
+  // the group keeps answering to whoever scheduled it, not to whoever added the team
+  expect(added.ownerUserId).toBe(owner.userId)
+})
+
+// A groupId is not an invitation: only someone who can already administer the group may widen it
+test('a team member of one team in a group cannot add a team to it', async () => {
+  const owner = await signUp()
+  const outsider = await signUp()
+  const secondTeamId = await addTeam(owner.orgId, owner.userId, true)
+  const {rows} = await createGroupedSeries([owner.teamId, secondTeamId], owner.userId, owner.userId)
+
+  const res = await sendPublic({
+    query: JOIN_TEAM_HEALTH,
+    variables: {
+      teamIds: [outsider.teamId],
+      templateId: 'googleProjectAristotleTemplate',
+      rrule: RRULE,
+      joinMeetingSeriesId: MeetingSeriesId.join(rows[0]!.id)
+    },
+    bearerToken: await authTokenFor(outsider.userId)
+  })
+  expect(res.errors![0].message).toBe('Viewer cannot administer that meeting series')
+})
+
+// The dash builds its group card from the series the viewer can see. An owner is on one team at
+// most, so without the siblings the group would collapse to the single slice they belong to.
+test('the owner of a group sees the sibling series of teams they are not on', async () => {
+  const owner = await signUp()
+  const secondTeamMember = await signUp()
+  const thirdTeamMember = await signUp()
+  const secondTeamId = await addTeam(owner.orgId, secondTeamMember.userId, true)
+  const thirdTeamId = await addTeam(owner.orgId, thirdTeamMember.userId, true)
+  await createGroupedSeries(
+    [owner.teamId, secondTeamId, thirdTeamId],
+    secondTeamMember.userId,
+    owner.userId
+  )
+
+  const res = await sendPublic({
+    query: VIEWER_GROUP_SERIES,
+    bearerToken: await authTokenFor(owner.userId)
+  })
+  const ownSeries = res.data.viewer.teams
+    .flatMap((team: any) => team.activeMeetingSeries)
+    .find((series: any) => series.teamId === owner.teamId)
+  expect(ownSeries.groupSeries.map((series: any) => series.teamId).sort()).toEqual(
+    [secondTeamId, thirdTeamId].sort()
+  )
+  // the cards name the owner and the team, so the series has to resolve both, not just their ids
+  expect(ownSeries.owner.id).toBe(owner.userId)
+  expect(ownSeries.team.id).toBe(owner.teamId)
+
+  // a member of one team never earned the siblings, so the group stays a group of one for them
+  const memberRes = await sendPublic({
+    query: VIEWER_GROUP_SERIES,
+    bearerToken: await authTokenFor(secondTeamMember.userId)
+  })
+  const memberSeries = memberRes.data.viewer.teams
+    .flatMap((team: any) => team.activeMeetingSeries)
+    .find((series: any) => series.teamId === secondTeamId)
+  expect(memberSeries.groupSeries).toEqual([])
+})
+
 const addOrgUser = async (orgId: string, userId: string, role: 'BILLING_LEADER' | null) => {
   await getKysely()
     .insertInto('OrganizationUser')
