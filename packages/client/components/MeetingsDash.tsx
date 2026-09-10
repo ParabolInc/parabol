@@ -3,7 +3,10 @@ import {AnimatePresence} from 'motion/react'
 import {type RefObject, useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import {RRule} from 'rrule'
-import type {MeetingsDash_viewer$key} from '~/__generated__/MeetingsDash_viewer.graphql'
+import type {
+  MeetingsDash_viewer$data,
+  MeetingsDash_viewer$key
+} from '~/__generated__/MeetingsDash_viewer.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useCardsPerRow from '../hooks/useCardsPerRow'
@@ -23,6 +26,9 @@ import ScheduledSeriesCard from './ScheduledSeriesCard'
 import StartMeetingFAB from './StartMeetingFAB'
 import TutorialMeetingCard from './TutorialMeetingCard'
 
+type OwnSeries = MeetingsDash_viewer$data['teams'][number]['activeMeetingSeries'][number]
+type DashSeries = Omit<OwnSeries, 'groupSeries'>
+
 interface Props {
   meetingsDashRef: RefObject<HTMLDivElement>
   viewer: MeetingsDash_viewer$key | null
@@ -33,7 +39,6 @@ const MeetingsDash = (props: Props) => {
   const viewer = useFragment(
     graphql`
       fragment MeetingsDash_viewer on User {
-        id
         dashSearch
         preferredName
         teams {
@@ -47,14 +52,31 @@ const MeetingsDash = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {teamIds: teamFilterIds} = useQueryParameterParser(atmosphere.viewerId)
   const {teams = [], preferredName = '', dashSearch} = viewer ?? {}
-  const allSeries = useMemo(
-    () => teams.flatMap((team) => team.activeMeetingSeries).filter((s) => !s.cancelledAt),
-    [teams]
-  )
-  // a group of one is a series the viewer can only partly see, so it stays a normal card
+  const allSeries = useMemo(() => {
+    const seriesById = new Map<string, DashSeries>()
+    const ownSeries = teams.flatMap((team) => team.activeMeetingSeries)
+    ownSeries.forEach((series) => {
+      if (!series.cancelledAt) seriesById.set(series.id, series)
+    })
+    // a sibling is only fetched lightly: when the viewer is on its team it is already here
+    // first-hand, & when they are not the server has no meeting to give them anyway
+    ownSeries.forEach((series) => {
+      series.groupSeries.forEach((sibling) => {
+        if (sibling.cancelledAt || seriesById.has(sibling.id)) return
+        seriesById.set(sibling.id, {...sibling, mostRecentMeeting: null})
+      })
+    })
+    return [...seriesById.values()]
+  }, [teams])
+  // Only the owner administers a group, so only they get the one card that stands in for all of
+  // it. Everyone else works from their own team's card, which is the only meeting they can join.
+  // A group of one is a series the viewer can only partly see, so it stays a normal card too.
   const seriesGroups = useMemo(
-    () => getMeetingSeriesGroups(allSeries).filter((group) => group.series.length > 1),
-    [allSeries]
+    () =>
+      getMeetingSeriesGroups(
+        allSeries.filter((series) => series.ownerUserId === atmosphere.viewerId)
+      ).filter((group) => group.series.length > 1),
+    [allSeries, atmosphere.viewerId]
   )
   const groupedSeriesIds = useMemo(
     () => new Set(seriesGroups.flatMap((group) => group.series.map((series) => series.id))),
@@ -191,7 +213,6 @@ const MeetingsDash = (props: Props) => {
 graphql`
   fragment MeetingsDash_meeting on NewMeeting {
     ...MeetingCard_meeting
-    ...useSnacksForNewMeetings_meetings
     id
     teamId
     name
@@ -200,27 +221,41 @@ graphql`
 `
 
 graphql`
+  fragment MeetingsDash_series on MeetingSeries {
+    id
+    title
+    teamId
+    createdAt
+    cancelledAt
+    groupId
+    ownerUserId
+    recurrenceRule
+    ...ScheduledSeriesCard_series
+    ...MeetingSeriesGroupCard_series
+  }
+`
+
+graphql`
   fragment MeetingsDashActiveMeetings on Team {
     activeMeetings {
       ...MeetingsDash_meeting @relay(mask: false)
+      # Start* mutation payloads reuse this fragment, which is how a teammate's new meeting reaches
+      # the store with the fields Dashboard's snackbar reads
+      ...useSnacksForNewMeetings_meetings
       meetingSeries {
-        createdAt
         cancelledAt
       }
     }
     activeMeetingSeries {
-      id
-      title
-      teamId
-      createdAt
-      cancelledAt
-      groupId
-      recurrenceRule
+      ...MeetingsDash_series @relay(mask: false)
       mostRecentMeeting {
         ...MeetingsDash_meeting @relay(mask: false)
       }
-      ...ScheduledSeriesCard_series
-      ...MeetingSeriesGroupCard_series
+      # the siblings a group covers on teams the viewer is not on, so the owner of a
+      # multi-team series sees the whole group rather than the one slice they belong to
+      groupSeries {
+        ...MeetingsDash_series @relay(mask: false)
+      }
     }
   }
 `

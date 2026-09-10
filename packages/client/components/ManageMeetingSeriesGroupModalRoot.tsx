@@ -105,7 +105,9 @@ const ManageMeetingSeriesGroupModalRoot = (props: Props) => {
           teamIds: addedTeamIds,
           templateId,
           name: firstSeries.title,
-          rrule: firstSeries.recurrenceRule
+          rrule: firstSeries.recurrenceRule,
+          // without this the new series stand alone & each gets its own card on the dash
+          joinMeetingSeriesId: firstSeries.id
         }
       })
     }

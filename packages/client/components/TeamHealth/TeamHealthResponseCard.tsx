@@ -1,13 +1,16 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useState} from 'react'
+import {useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {TeamHealthResponseCard_stage$key} from '~/__generated__/TeamHealthResponseCard_stage.graphql'
 import {ArrowForward} from '~/ui/icons'
+import useHotkey from '../../hooks/useHotkey'
 import useSaveTeamHealthResponse from '../../hooks/useSaveTeamHealthResponse'
 import {Button} from '../../ui/Button/Button'
 import TeamHealthAnonymousToggle from './TeamHealthAnonymousToggle'
 import TeamHealthResponseCardHeader from './TeamHealthResponseCardHeader'
 import TeamHealthScoreScale from './TeamHealthScoreScale'
+
+const SCORE_KEYS = ['1', '2', '3', '4', '5']
 
 interface Props {
   meetingId: string
@@ -72,6 +75,7 @@ const TeamHealthResponseCard = (props: Props) => {
   const [isAnonymous, setIsAnonymous] = useState(!aiDisabledReason)
   const save = useSaveTeamHealthResponse(meetingId, stageId)
   const isSpectating = !!onShareResponses
+  const commentRef = useRef<HTMLTextAreaElement>(null)
 
   // clicking the score already picked clears it, so a question answered by accident goes back to
   // unanswered rather than being stuck with a number the author never meant
@@ -80,6 +84,15 @@ const TeamHealthResponseCard = (props: Props) => {
     setScore(nextScore)
     save({score: nextScore, comment, isAnonymous})
   }
+
+  // Mousetrap ignores keystrokes made inside the comment box, so typing a digit there is safe.
+  // preventDefault stops the digit from landing in the comment box we just focused
+  useHotkey(SCORE_KEYS, (e, combo) => {
+    if (isSpectating) return
+    e.preventDefault()
+    onSelectScore(Number(combo))
+    commentRef.current?.focus()
+  })
 
   const onToggleAnonymous = () => {
     setIsAnonymous(!isAnonymous)
@@ -117,6 +130,7 @@ const TeamHealthResponseCard = (props: Props) => {
       ) : (
         <div className='mt-6 rounded-lg border border-hairline-field bg-surface-input focus-within:border-accent'>
           <textarea
+            ref={commentRef}
             className='w-full resize-none bg-transparent p-3 text-fg-primary placeholder:text-fg-muted focus:outline-hidden'
             rows={2}
             placeholder='Add an optional comment'
@@ -134,18 +148,26 @@ const TeamHealthResponseCard = (props: Props) => {
           />
         </div>
       )}
+      {/* Next comes first in the DOM so it takes the tab focus before Back, then flex order puts
+      Back back on the left */}
       <div className='mt-6 flex items-center justify-between'>
-        {stageIndex === 0 ? (
-          <div />
-        ) : (
-          <Button variant='ghost' shape='default' size='md' onClick={onPrev}>
-            Back
-          </Button>
-        )}
-        <Button variant='primary' shape='default' size='md' className='gap-1' onClick={onNext}>
+        <Button
+          variant='primary'
+          shape='default'
+          size='md'
+          className='order-2 gap-1'
+          onClick={onNext}
+        >
           {stageIndex !== stageCount - 1 ? 'Next' : isSpectating ? 'Skip to results' : 'Submit'}
           <ArrowForward className='size-5' />
         </Button>
+        {stageIndex === 0 ? (
+          <div className='order-1' />
+        ) : (
+          <Button variant='ghost' shape='default' size='md' className='order-1' onClick={onPrev}>
+            Back
+          </Button>
+        )}
       </div>
     </div>
   )

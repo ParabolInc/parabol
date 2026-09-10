@@ -5,6 +5,9 @@ import {KeyboardArrowDown as KeyboardArrowDownIcon} from '~/ui/icons'
 import {Menu} from '../ui/Menu/Menu'
 import {MenuContent} from '../ui/Menu/MenuContent'
 import {MenuItemCheckbox} from '../ui/Menu/MenuItemCheckbox'
+import {Tooltip} from '../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../ui/Tooltip/TooltipTrigger'
 
 interface Props {
   teamsRef: NewMeetingTeamPickerMultiple_teams$key
@@ -19,6 +22,10 @@ const NewMeetingTeamPickerMultiple = (props: Props) => {
       fragment NewMeetingTeamPickerMultiple_teams on Team @relay(plural: true) {
         id
         name
+        orgId
+        organization {
+          name
+        }
       }
     `,
     teamsRef
@@ -31,6 +38,11 @@ const NewMeetingTeamPickerMultiple = (props: Props) => {
       : selectedTeams.length <= 2
         ? selectedTeams.map((team) => team.name).join(', ')
         : `${selectedTeams.length} teams`
+
+  // the org disambiguates same-named teams only when the viewer can see teams from more than one
+  const isMultiOrg = new Set(teams.map(({orgId}) => orgId)).size > 1
+  // a series group is owned by a single org, so the first pick locks the org for the rest
+  const selectedOrgId = selectedTeams[0]?.orgId
 
   return (
     <Menu
@@ -51,15 +63,31 @@ const NewMeetingTeamPickerMultiple = (props: Props) => {
         <div className='px-3 py-2 font-semibold text-base'>Select Teams:</div>
         <div className='border-hairline border-b' />
         <div className='py-2'>
-          {teams.map((team) => (
-            <MenuItemCheckbox
-              key={team.id}
-              checked={selectedTeamIds.includes(team.id)}
-              onClick={() => onToggleTeam(team.id)}
-            >
-              {team.name}
-            </MenuItemCheckbox>
-          ))}
+          {teams.map((team) => {
+            const isDisabled = !!selectedOrgId && team.orgId !== selectedOrgId
+            const item = (
+              <MenuItemCheckbox
+                key={team.id}
+                checked={selectedTeamIds.includes(team.id)}
+                disabled={isDisabled}
+                onClick={() => !isDisabled && onToggleTeam(team.id)}
+              >
+                <div>{team.name}</div>
+                {isMultiOrg && (
+                  <div className='text-fg-muted text-xs'>{team.organization.name}</div>
+                )}
+              </MenuItemCheckbox>
+            )
+            if (!isDisabled) return item
+            return (
+              <Tooltip key={team.id}>
+                <TooltipTrigger asChild>{item}</TooltipTrigger>
+                <TooltipContent side='right' className='max-w-56 whitespace-normal'>
+                  {'A meeting series can only include teams from the same organization'}
+                </TooltipContent>
+              </Tooltip>
+            )
+          })}
         </div>
       </MenuContent>
     </Menu>

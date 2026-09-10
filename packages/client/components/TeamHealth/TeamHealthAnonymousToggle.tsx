@@ -41,7 +41,7 @@ const TeamHealthAnonymousToggle = (props: Props) => {
               onClick={onToggle}
             >
               <Avatar picture={isAnonymous ? anonymousAvatar : picture} className='h-5 w-5' />
-              {isAnonymous ? 'Send anonymously' : `Send as ${preferredName}`}
+              {isAnonymous ? 'Anonymize' : `Send as ${preferredName}`}
             </Button>
           </span>
         </TooltipTrigger>

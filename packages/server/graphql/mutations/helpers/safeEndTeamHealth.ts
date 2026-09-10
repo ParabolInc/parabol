@@ -14,6 +14,7 @@ import standardError from '../../../utils/standardError'
 import type {InternalContext} from '../../graphql'
 import gatherInsights from './gatherInsights'
 import {IntegrationNotifier} from './notifications/IntegrationNotifier'
+import seedTeamHealthDiscussions from './seedTeamHealthDiscussions'
 import sortTeamHealthResultStages from './sortTeamHealthResultStages'
 import {publishSummaryPage} from './summaryPage/publishSummaryPage'
 import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
@@ -66,6 +67,7 @@ const safeEndTeamHealth = async ({
     .where('id', '=', meetingId)
     .execute()
   dataLoader.clearAll('newMeetings')
+  seedTeamHealthDiscussions(meeting, dataLoader).catch(Logger.log)
 
   const [completedTeamHealth, meetingMembers, team, teamMembers] = await Promise.all([
     dataLoader.get('newMeetings').loadNonNull(meetingId) as Promise<TeamHealthMeeting>,

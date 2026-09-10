@@ -16,7 +16,7 @@ const START = `
             }
             ... on TeamHealthResultStage {
               score
-              previousScore
+              scoreHistory { score }
               question { id }
               responses { id }
             }
@@ -65,7 +65,7 @@ const MEETING = `
           stages {
             ... on TeamHealthResultStage {
               score
-              previousScore
+              scoreHistory { score }
               question { category { name } }
             }
           }
@@ -154,9 +154,7 @@ test('the result phase holds one stage per category, ordered by urgency once rev
   )
   // every aggregate stays hidden while the meeting is in progress
   expect(resultStages).toEqual(
-    resultStages.map(() =>
-      expect.objectContaining({score: null, previousScore: null, responses: []})
-    )
+    resultStages.map(() => expect.objectContaining({score: null, scoreHistory: [], responses: []}))
   )
 
   // the owner is a spectator by default, so opt in before answering
@@ -177,7 +175,12 @@ test('the result phase holds one stage per category, ordered by urgency once rev
   const revealedStages = getStages(revealed.data.viewer.meeting, 'TEAM_HEALTH_RESULT')
 
   // categories with no previous cycle lead, lowest score first, then the rest by steepest drop
-  expect(revealedStages.map(({score, previousScore}: any) => ({score, previousScore}))).toEqual([
+  expect(
+    revealedStages.map(({score, scoreHistory}: any) => ({
+      score,
+      previousScore: scoreHistory.at(-1)?.score ?? null
+    }))
+  ).toEqual([
     {score: 2, previousScore: null},
     {score: 3, previousScore: null},
     {score: 4, previousScore: null},

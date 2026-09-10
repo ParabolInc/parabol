@@ -8,7 +8,8 @@ type TeamHealthResponse {
   id: ID!
 
   """
-  The 1-5 Likert score the user gave. Null if the user skipped the question
+  The 1-5 Likert score the user gave. Only readable by the response's author, so a score can never
+  be attributed to a teammate. The team reads the spread through TeamHealthResultStage.spreadScores
   """
   score: Int
 
@@ -38,6 +39,12 @@ type TeamHealthResponse {
   true if the viewer authored this response. The author is otherwise kept private
   """
   isViewerCreator: Boolean!
+
+  """
+  The teammate who wrote the comment, so it can be attributed to them. Only set when they signed
+  it; null for an anonymous comment or a response with no comment
+  """
+  commentAuthor: User
   createdAt: DateTime!
   updatedAt: DateTime!
 }

@@ -61,17 +61,15 @@ const setTeamHealthResponse: MutationResolvers['setTeamHealthResponse'] = async 
     (response) => response.userId === viewerId && response.questionId === questionId
   )
   const isCommentUnchanged = !!nextComment && priorResponse?.comment === nextComment
-  const priorParaphrase = priorResponse?.commentParaphrased
-  const isAlreadyAnonymized =
-    isCommentUnchanged && priorParaphrase !== null && priorParaphrase !== nextComment
+  const priorParaphrase = priorResponse?.isAnonymous ? priorResponse.commentParaphrased : null
+  const isAlreadyAnonymized = isCommentUnchanged && priorParaphrase !== null
 
   // an anonymous comment is never readable in the author's own words, so it is stored pending a
   // paraphrase and only becomes visible once the LLM has rewritten it. A signed comment needs no
-  // rewrite, so it is its own display copy
-  const commentParaphrased = !nextComment
-    ? null
-    : !isAnonymous
-      ? nextComment
+  // rewrite, so it is shown as written and holds no paraphrase at all
+  const commentParaphrased =
+    !nextComment || !isAnonymous
+      ? null
       : isAlreadyAnonymized
         ? priorParaphrase!
         : PENDING_PARAPHRASE
@@ -85,6 +83,7 @@ const setTeamHealthResponse: MutationResolvers['setTeamHealthResponse'] = async 
       score: score ?? null,
       comment: nextComment,
       commentParaphrased,
+      isAnonymous: !!nextComment && !!isAnonymous,
       updatedAt: sql`CURRENT_TIMESTAMP`
     })
     .onConflict((oc) =>
@@ -92,6 +91,7 @@ const setTeamHealthResponse: MutationResolvers['setTeamHealthResponse'] = async 
         score: score ?? null,
         comment: nextComment,
         commentParaphrased,
+        isAnonymous: !!nextComment && !!isAnonymous,
         updatedAt: sql`CURRENT_TIMESTAMP`
       })
     )

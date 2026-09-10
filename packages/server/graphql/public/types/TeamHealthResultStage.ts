@@ -8,6 +8,10 @@ export type TeamHealthResultStageSource = TeamHealthResultStageDB & {
   teamId: string
 }
 
+// a spread of fewer scores than this could be matched to the people who answered, so only the
+// average is readable below it
+const MIN_SPREAD_RESPONDENTS = 4
+
 // revealing the results is the act of ending the meeting, so endedAt is the only reveal state. Keep
 // the aggregates unreadable until then so a small response set can't be polled and de-anonymized
 const isRevealed = async (meetingId: string, dataLoader: DataLoaderWorker) => {
@@ -26,10 +30,23 @@ const TeamHealthResultStage: TeamHealthResultStageResolvers = {
     const {score} = await getTeamHealthResultScore(meetingId, questionId, dataLoader)
     return score
   },
-  previousScore: async ({meetingId, questionId}, _args, {dataLoader}) => {
+  scoreHistory: async ({meetingId, questionId}, _args, {dataLoader}) => {
+    if (!(await isRevealed(meetingId, dataLoader))) return []
+    const {scoreHistory} = await getTeamHealthResultScore(meetingId, questionId, dataLoader)
+    return scoreHistory
+  },
+  respondentCount: async ({meetingId, questionId}, _args, {dataLoader}) => {
     if (!(await isRevealed(meetingId, dataLoader))) return null
-    const {previousScore} = await getTeamHealthResultScore(meetingId, questionId, dataLoader)
-    return previousScore
+    const responses = await dataLoader.get('teamHealthResponsesByMeetingId').load(meetingId)
+    return responses.filter(({questionId: id, score}) => id === questionId && score !== null).length
+  },
+  spreadScores: async ({meetingId, questionId}, _args, {dataLoader}) => {
+    if (!(await isRevealed(meetingId, dataLoader))) return null
+    const responses = await dataLoader.get('teamHealthResponsesByMeetingId').load(meetingId)
+    const scores = responses.flatMap((response) =>
+      response.questionId === questionId && response.score !== null ? [response.score] : []
+    )
+    return scores.length >= MIN_SPREAD_RESPONDENTS ? scores : null
   },
   responses: async ({meetingId, questionId}, _args, {dataLoader}) => {
     if (!(await isRevealed(meetingId, dataLoader))) return []

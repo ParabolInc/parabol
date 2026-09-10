@@ -10,6 +10,8 @@ interface RankedStage {
   previousScore: number | null
 }
 
+const previousScoreOf = (scoreHistory: {score: number}[]) => scoreHistory.at(-1)?.score ?? null
+
 // a category the team has never scored has no trend to lean on, so it leads the discussion. One
 // nobody answered this cycle has nothing to discuss, so it trails it
 const groupOf = ({score, previousScore}: RankedStage) =>
@@ -39,10 +41,14 @@ const sortTeamHealthResultStages = async (
   const {id: meetingId, phases} = meeting
   const resultPhase = getPhase(phases, 'TEAM_HEALTH_RESULT')
   const rankedStages = await Promise.all(
-    resultPhase.stages.map(async (stage) => ({
-      stage,
-      ...(await getTeamHealthResultScore(meetingId, stage.questionId, dataLoader))
-    }))
+    resultPhase.stages.map(async (stage) => {
+      const {score, scoreHistory} = await getTeamHealthResultScore(
+        meetingId,
+        stage.questionId,
+        dataLoader
+      )
+      return {stage, score, previousScore: previousScoreOf(scoreHistory)}
+    })
   )
   // sortOrder is what the client reads, and what a later drag interleaves against
   const stages = rankedStages

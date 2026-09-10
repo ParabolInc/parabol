@@ -1,5 +1,6 @@
 import {randomUUIDv7} from 'crypto'
 import {GraphQLError} from 'graphql'
+import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RRuleSet} from 'rrule-rust'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
@@ -12,6 +13,7 @@ import publish from '../../../utils/publish'
 import RedisLockQueue from '../../../utils/RedisLockQueue'
 import type {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
+import canAdminMeetingSeries from '../../mutations/helpers/canAdminMeetingSeries'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
 import getDefaultTeamFacilitator from '../../mutations/helpers/getDefaultTeamFacilitator'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
@@ -178,7 +180,7 @@ const startTeamHealthForTeam = async (
 
 const startTeamHealth: MutationResolvers['startTeamHealth'] = async (
   _source,
-  {teamIds, templateId, name, rrule: rruleString, gcalInput},
+  {teamIds, templateId, name, rrule: rruleString, gcalInput, joinMeetingSeriesId},
   {authToken, socketId: mutatorId, dataLoader}
 ) => {
   const operationId = dataLoader.share()
@@ -203,16 +205,44 @@ const startTeamHealth: MutationResolvers['startTeamHealth'] = async (
     throw new GraphQLError('Pick teams from a single organization to schedule a recurring meeting')
   }
 
+  // Joining an existing group: the new series inherit its id and its owner, so they show up on
+  // the group's card rather than standing up cards of their own.
+  const joinedSeries = joinMeetingSeriesId
+    ? await dataLoader.get('meetingSeries').load(MeetingSeriesId.split(joinMeetingSeriesId))
+    : null
+  if (joinMeetingSeriesId) {
+    if (!joinedSeries || joinedSeries.cancelledAt) {
+      throw new GraphQLError('Meeting series not found')
+    }
+    if (!joinedSeries.groupId) {
+      throw new GraphQLError('That meeting series is not part of a group')
+    }
+    if (!(await canAdminMeetingSeries(joinedSeries, authToken, dataLoader))) {
+      throw new GraphQLError('Viewer cannot administer that meeting series')
+    }
+    // a group is owned by one org, so a team from elsewhere cannot join it
+    const {orgId: groupOrgId} = await dataLoader.get('teams').loadNonNull(joinedSeries.teamId)
+    if (validTeams.some(({orgId}) => orgId !== groupOrgId)) {
+      throw new GraphQLError('Pick teams from the same organization as the group')
+    }
+  }
+
   // A series covering several teams, or one scheduled for a team the viewer is not on, is
   // administered by its owner alone. A team member scheduling for their own team keeps the
   // original rule, where anyone on the team may administer it.
   const isOwnerAdministered =
     uniqueTeamIds.length > 1 || !isTeamMember(authToken, uniqueTeamIds[0]!)
-  const seriesParams = {
-    groupId: uniqueTeamIds.length > 1 ? randomUUIDv7() : null,
-    ownerUserId: isOwnerAdministered ? viewerId : null,
-    templateId
-  } as const
+  const seriesParams = joinedSeries?.groupId
+    ? ({
+        groupId: joinedSeries.groupId,
+        ownerUserId: joinedSeries.ownerUserId,
+        templateId
+      } as const)
+    : ({
+        groupId: uniqueTeamIds.length > 1 ? randomUUIDv7() : null,
+        ownerUserId: isOwnerAdministered ? viewerId : null,
+        templateId
+      } as const)
 
   // Every team answers the same questions in an occurrence, so rotate once and share the result.
   // The tie-break is random, so letting each meeting rotate for itself would diverge immediately.

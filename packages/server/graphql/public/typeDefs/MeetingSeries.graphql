@@ -13,6 +13,11 @@ type MeetingSeries {
   teamId: ID!
 
   """
+  The team that owns the meeting series
+  """
+  team: Team!
+
+  """
   The type of the recurring meeting
   """
   meetingType: MeetingTypeEnum!
@@ -23,6 +28,12 @@ type MeetingSeries {
   Null when anyone on the team may do those things.
   """
   ownerUserId: ID
+
+  """
+  The user who scheduled the series. Null when anyone on the team may administer it, which is
+  every series scheduled by a team for itself.
+  """
+  owner: User
 
   """
   Correlates the sibling series scheduled together across several teams: they share this id and
@@ -72,9 +83,17 @@ type MeetingSeries {
   activeMeetings: [NewMeeting!]!
 
   """
+  The sibling series scheduled alongside this one across other teams, excluding this series.
+  Limited to the siblings the viewer may read, which for anyone but the owner is none.
+  Empty when the series covers a single team.
+  """
+  groupSeries: [MeetingSeries!]!
+
+  """
   The most recent meeting in the series. Any active meeting takes precendence over inactive
   meetings. Null when the series has been scheduled for the future and no meeting has
-  spawned from the recurrence cron yet.
+  spawned from the recurrence cron yet. Null for a team the viewer is not on, since they
+  cannot join that meeting.
   """
   mostRecentMeeting: NewMeeting
 

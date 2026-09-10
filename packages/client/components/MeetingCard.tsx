@@ -4,7 +4,7 @@ import {motion} from 'motion/react'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router'
-import {Lock} from '~/ui/icons'
+import {Lock, TaskAlt} from '~/ui/icons'
 import type {MeetingCard_meeting$key} from '../__generated__/MeetingCard_meeting.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useMeetingMemberAvatars from '../hooks/useMeetingMemberAvatars'
@@ -29,6 +29,7 @@ import CardButton from './CardButton'
 import {EditMeetingSeriesModal} from './EditMeetingSeriesModal'
 import IconLabel from './IconLabel'
 import MeetingCardOptionsMenuRoot from './MeetingCardOptionsMenuRoot'
+import MeetingSeriesManager from './MeetingSeriesManager'
 import {EndRecurringMeetingModal} from './Recurrence/EndRecurringMeetingModal'
 
 const STACK_DEGREES = {0: 1, 1: -2} as const
@@ -75,7 +76,14 @@ const MeetingCard = (props: Props) => {
           title
           cancelledAt
           nextMeetingDate
+          groupId
+          owner {
+            ...MeetingSeriesManager_user
+          }
           ...EditMeetingSeriesModal_series
+        }
+        ... on TeamHealthMeeting {
+          isViewerComplete
         }
       }
     `,
@@ -90,7 +98,8 @@ const MeetingCard = (props: Props) => {
     facilitatorStageId,
     meetingSeries,
     endedAt,
-    locked
+    locked,
+    isViewerComplete
   } = meeting
   const connectedUsers = useMeetingMemberAvatars(meeting)
   const {label: dateLabel, tooltip: readableNextMeetingDate} = useMeetingSeriesDate(meeting)
@@ -271,8 +280,27 @@ const MeetingCard = (props: Props) => {
             <Link to={meetingLink}>
               <span className='wrap-break-word block pt-1 pb-2 text-fg-muted text-sm'>
                 {teamName} • {meetingPhaseLabel}
+                {isViewerComplete && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      {/* the span anchors the tooltip, which the icon has no ref for. h-5 is the
+                          text-sm line box, so the icon centers on the caps; align-middle would
+                          center it on the x-height & read low next to a capitalized label */}
+                      <span
+                        className='ml-1 inline-flex h-5 items-center align-top text-jade-500'
+                        aria-label='You have answered every question'
+                      >
+                        <TaskAlt className='text-[16px]' />
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent side='bottom'>You have answered every question</TooltipContent>
+                  </Tooltip>
+                )}
               </span>
             </Link>
+            {isRecurring && meetingSeries.groupId && meetingSeries.owner && (
+              <MeetingSeriesManager userRef={meetingSeries.owner} />
+            )}
             <AvatarList users={connectedUsers} size={28} borderColor='var(--color-surface-card)' />
           </div>
           {meeting && (

@@ -43,10 +43,13 @@ graphql`
           id
           ... on TeamHealthResultStage {
             score
-            previousScore
+            scoreHistory {
+              endedAt
+              score
+            }
+            spreadScores
             responses {
               id
-              score
               commentParaphrased
             }
           }

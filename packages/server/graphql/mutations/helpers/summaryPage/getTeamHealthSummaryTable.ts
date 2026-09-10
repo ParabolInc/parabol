@@ -1,4 +1,5 @@
 import type {DataLoaderInstance} from '../../../../dataloader/RootDataLoader'
+import getTeamHealthDisplayComment from '../../../../utils/getTeamHealthDisplayComment'
 import isValid from '../../../isValid'
 import {getSummaryTable} from './getSummaryTable'
 
@@ -25,10 +26,7 @@ const getRowData = async (meetingId: string, dataLoader: DataLoaderInstance) => 
       grouped.set(questionId, entry)
     }
     if (response.score !== null && response.score !== undefined) entry.scores.push(response.score)
-    // commentParaphrased is the only comment safe to read here: an anonymous one has been rewritten
-    // to strip the author's voice, a signed one is itself. Empty means the rewrite is still in
-    // flight, null that it failed — either way the raw comment stays unread
-    const comment = response.commentParaphrased
+    const comment = getTeamHealthDisplayComment(response)
     if (comment) entry.comments.push(comment)
   }
 

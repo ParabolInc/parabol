@@ -11,6 +11,7 @@ import type {
   TeamPromptMeeting
 } from '../postgres/types/Meeting'
 import getPhase from './getPhase'
+import getTeamHealthDisplayComment from './getTeamHealthDisplayComment'
 import {Logger} from './Logger'
 
 const serializeReflections = async (
@@ -150,10 +151,7 @@ const makeTeamHealthMeetingInsightInput = async (
       grouped.set(questionId, entry)
     }
     if (response.score !== null && response.score !== undefined) entry.scores.push(response.score)
-    // commentParaphrased is the only comment safe to read here: an anonymous one has been rewritten
-    // to strip the author's voice, a signed one is itself. Empty means the rewrite is still in
-    // flight, null that it failed — either way the raw comment stays unread
-    const comment = response.commentParaphrased
+    const comment = getTeamHealthDisplayComment(response)
     if (comment) entry.comments.push(comment)
   }
   return {meetingType, questions: [...grouped.values()]}
