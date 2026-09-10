@@ -19,11 +19,22 @@ const resolve = (resolver: unknown, source: unknown) => {
 
 describe('RepoIntegration.integrationRepoId', () => {
   it('matches IntegrationRepoId.join for every cached repo shape', () => {
-    const github = {service: 'github' as const, nameWithOwner: 'ParabolInc/parabol', id: 'R_1'}
-    expect(resolve(RepoContainer.integrationRepoId, github)).toBe(IntegrationRepoId.join(github))
+    const github = {
+      service: 'github' as const,
+      nameWithOwner: 'ParabolInc/parabol',
+      hasIssuesEnabled: true,
+      updatedAt: new Date('2026-01-01'),
+      viewerCanAdminister: false
+    }
+    expect(resolve(RepoContainer.integrationRepoId, github)).toBe('ParabolInc/parabol')
 
-    const gitlab = {service: 'gitlab' as const, fullPath: 'acme/web', id: 'gid://gitlab/Project/1'}
-    expect(resolve(RepoContainer.integrationRepoId, gitlab)).toBe(IntegrationRepoId.join(gitlab))
+    const gitlab = {
+      __typename: 'Project' as const,
+      service: 'gitlab' as const,
+      fullPath: 'acme/web',
+      id: 'gid://gitlab/Project/1'
+    }
+    expect(resolve(RepoContainer.integrationRepoId, gitlab)).toBe('acme/web')
 
     const jiraServer = {service: 'jiraServer' as const, id: '10001', providerId: 9, key: 'WEB'}
     expect(resolve(JiraServerRemoteProject.integrationRepoId, jiraServer)).toBe(
@@ -47,7 +58,13 @@ describe('RepoIntegration.integrationRepoId', () => {
 
   it('joins a Linear team on its own id', () => {
     expect(
-      resolve(RepoContainer.integrationRepoId, {service: 'linear', id: 'team1', teamId: 'team1'})
-    ).toBe(IntegrationRepoId.join({service: 'linear', id: 'team1', teamId: 'team1'}))
+      resolve(RepoContainer.integrationRepoId, {
+        __typename: 'Team',
+        service: 'linear',
+        id: 'team1',
+        displayName: 'Parabol',
+        key: 'PAR'
+      })
+    ).toBe('team1')
   })
 })

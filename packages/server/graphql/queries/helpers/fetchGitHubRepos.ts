@@ -32,11 +32,7 @@ const fetchGitHubRepos = async (
     const {nameWithOwner, hasIssuesEnabled} = repo
     if (repoSet.has(nameWithOwner) || !hasIssuesEnabled) return
     repoSet.add(nameWithOwner)
-    repos.push({
-      id: nameWithOwner,
-      service: 'github' as const,
-      nameWithOwner
-    })
+    repos.push({...repo, service: 'github' as const})
   })
   return repos
 }

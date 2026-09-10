@@ -1,22 +1,11 @@
 import AzureDevOpsProjectId from 'parabol-client/shared/gqlIds/AzureDevOpsProjectId'
 import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
-import LinearProjectId from 'parabol-client/shared/gqlIds/LinearProjectId'
-
-export type GitHubRepoIntegration = {
-  nameWithOwner: string
-  service: 'github'
-}
 
 export type JiraRepoIntegration = {
   cloudId: string
   projectKey?: string
   key?: string
   service: 'jira'
-}
-
-export type GitLabRepoIntegration = {
-  service: 'gitlab'
-  fullPath: string
 }
 
 type AzureDevOpsRepoIntegration = {
@@ -32,38 +21,21 @@ type JiraServerRepoIntegration = {
   service: 'jiraServer'
 }
 
-export type LinearRepoIntegration = {
-  id: string
-  service: 'linear'
-  teamId: string
-}
-
 export type RepoIntegration =
-  | GitHubRepoIntegration
   | JiraRepoIntegration
   | JiraServerRepoIntegration
   | AzureDevOpsRepoIntegration
-  | GitLabRepoIntegration
-  | LinearRepoIntegration
 
 const IntegrationRepoId = {
   join: (integration: RepoIntegration) => {
     const {service} = integration
     switch (service) {
-      case 'github':
-        return integration.nameWithOwner
       case 'jira':
         return JiraProjectId.join(integration.cloudId, integration.projectKey ?? integration.key!)
       case 'jiraServer':
         return `${integration.service}:${integration.providerId}:${integration.id}:${integration.key}`
       case 'azureDevOps':
         return AzureDevOpsProjectId.join(integration.instanceId, integration.projectId)
-      case 'gitlab':
-        return integration.fullPath
-      case 'linear':
-        return integration.id === integration.teamId
-          ? LinearProjectId.join(integration.teamId)
-          : LinearProjectId.join(integration.teamId, integration.id)
     }
   },
   split: (id: string) => {

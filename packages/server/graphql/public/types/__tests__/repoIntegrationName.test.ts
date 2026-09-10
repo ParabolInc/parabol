@@ -23,9 +23,11 @@ const resolveName = (resolvers: {name?: unknown}, source: Record<string, unknown
 }
 
 const gitHubRepository = {
-  id: 'MDEwOlJlcG9zaXRvcnkx',
-  service: 'github' as const,
-  nameWithOwner: 'octocat/hello-world'
+  hasIssuesEnabled: true,
+  nameWithOwner: 'octocat/hello-world',
+  updatedAt: new Date('2026-01-01'),
+  viewerCanAdminister: false,
+  service: 'github' as const
 }
 
 const gitLabProject = {
@@ -40,8 +42,7 @@ const linearTeam = {
   id: 'team-uuid',
   displayName: 'Engineering',
   key: 'ENG',
-  service: 'linear' as const,
-  teamId: 'team-uuid'
+  service: 'linear' as const
 }
 
 const jiraRemoteProject = {

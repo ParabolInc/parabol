@@ -58,10 +58,8 @@ export class GitHubServerIntegration extends ServerIntegrationDefinition {
     repoList: {
       fetchRepos: ({dataLoader, teamId, userId, context, info}) =>
         fetchGitHubRepos(teamId, userId, dataLoader, context, info),
-      vendorRepo: {
-        typename: () => '_xGitHubRepository',
-        name: ({nameWithOwner}) => nameWithOwner
-      }
+      integrationRepoId: ({nameWithOwner}) => nameWithOwner,
+      name: ({nameWithOwner}) => nameWithOwner
     },
     estimatePush: {
       targets: ['comment', 'label'],

@@ -17,9 +17,15 @@ const mockGetPrevUsed = getPrevUsedRepoIntegrations as jest.MockedFunction<
 >
 const del = jest.fn().mockResolvedValue(1)
 const zrem = jest.fn().mockResolvedValue(0)
-const githubRepo: GitHubRepo = {id: 'o/g', service: 'github', nameWithOwner: 'o/g'}
-const gitlabA: GitLabProject = {id: 'a', service: 'gitlab', __typename: 'Project', fullPath: 'o/a'}
-const gitlabB: GitLabProject = {id: 'b', service: 'gitlab', __typename: 'Project', fullPath: 'o/b'}
+const githubRepo: GitHubRepo = {
+  hasIssuesEnabled: true,
+  nameWithOwner: 'o/g',
+  updatedAt: new Date('2026-01-01'),
+  viewerCanAdminister: false,
+  service: 'github'
+}
+const gitlabA: GitLabProject = {__typename: 'Project', id: 'a', fullPath: 'o/a', service: 'gitlab'}
+const gitlabB: GitLabProject = {__typename: 'Project', id: 'b', fullPath: 'o/b', service: 'gitlab'}
 
 beforeEach(() => {
   jest.clearAllMocks()

@@ -1,3 +1,4 @@
+import LinearProjectId from 'parabol-client/shared/gqlIds/LinearProjectId'
 import {linearIntegrationMeta} from 'parabol-client/shared/integrations/linearIntegrationMeta'
 import interleave from 'parabol-client/utils/interleave'
 import {
@@ -46,16 +47,14 @@ export class LinearServerIntegration extends ServerIntegrationDefinition {
         ])
         if (projects instanceof Error) return projects
         if (teams instanceof Error) return teams
-        return interleave([projects, teams])
+        return interleave<LinearRepo>([projects, teams])
       },
-      vendorRepo: {
-        typename: (repo) => (isLinearTeam(repo) ? '_xLinearTeam' : '_xLinearProject'),
-        name: (repo) => {
-          if (isLinearTeam(repo)) return repo.displayName
-          const teamName = repo.teams.nodes[0]?.displayName
-          return teamName ? `${teamName}/${repo.name}` : repo.name
-        }
-      }
+      integrationRepoId: (repo) =>
+        isLinearTeam(repo)
+          ? LinearProjectId.join(repo.id)
+          : LinearProjectId.join(repo.teams.nodes[0].id, repo.id),
+      name: (repo) =>
+        isLinearTeam(repo) ? repo.displayName : `${repo.teams.nodes[0].displayName}/${repo.name}`
     },
     estimatePush: {
       targets: ['comment', 'field'],

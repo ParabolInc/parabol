@@ -39,10 +39,8 @@ export class GitLabServerIntegration extends ServerIntegrationDefinition {
     repoList: {
       fetchRepos: ({teamId, userId, context, info}) =>
         fetchGitLabProjects(teamId, userId, context, info),
-      vendorRepo: {
-        typename: () => '_xGitLabProject',
-        name: ({fullPath}) => fullPath
-      }
+      integrationRepoId: ({fullPath}) => fullPath,
+      name: ({fullPath}) => fullPath
     },
     estimatePush: {
       targets: ['comment', 'label'],

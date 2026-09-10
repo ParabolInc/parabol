@@ -130,12 +130,7 @@ const makeRepoIntegrationGitHub = (nameWithOwner: keyof typeof GitHubProjectKeyL
   id: `github:${nameWithOwner}`,
   service: 'github',
   name: nameWithOwner,
-  integrationRepoId: nameWithOwner,
-  repo: {
-    __typename: '_xGitHubRepository',
-    id: `si:${nameWithOwner}`,
-    ...GitHubProjectKeyLookup[nameWithOwner]
-  }
+  integrationRepoId: nameWithOwner
 })
 
 const initSlackNotification = (userId: string) => ({
@@ -631,12 +626,5 @@ const makeRepoIntegrationGitLab = (fullPath: string) => ({
   id: `gitlab:${fullPath}`,
   service: 'gitlab',
   name: fullPath,
-  integrationRepoId: fullPath,
-  repo: {
-    __typename: '_xGitLabProject',
-    id: fullPath,
-    fullPath,
-    name: fullPath.split('/')[1],
-    description: 'Parabol GitLab Demo Project'
-  }
+  integrationRepoId: fullPath
 })

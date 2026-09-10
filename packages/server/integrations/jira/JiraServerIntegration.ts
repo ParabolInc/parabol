@@ -1,4 +1,6 @@
+import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
 import {jiraIntegrationMeta} from 'parabol-client/shared/integrations/jiraIntegrationMeta'
+import type {JiraGQLProject} from '../../dataloader/atlassianLoaders'
 import type {
   AtlassianAuth,
   JiraSearchQueryJson,
@@ -48,7 +50,7 @@ export class JiraServerIntegration extends ServerIntegrationDefinition {
     issueCreate: IssueCreateCapability
     issueRead: IssueReadCapability
     issueSearch: IssueSearchCapability<JiraSearchQueryJson>
-    repoList: RepoListCapability
+    repoList: RepoListCapability<JiraGQLProject>
     estimatePush: EstimatePushCapability
   } = {
     issueCreate: {
@@ -59,7 +61,12 @@ export class JiraServerIntegration extends ServerIntegrationDefinition {
     },
     issueRead: {getIssue: resolveJiraTaskIntegration},
     issueSearch: {buildQuery: buildJiraSearchQuery},
-    repoList: {fetchRepos: fetchJiraProjects},
+    repoList: {
+      fetchRepos: fetchJiraProjects,
+      integrationRepoId: ({cloudId, key}) =>
+        IntegrationRepoId.join({service: 'jira', cloudId, key}),
+      name: ({name}) => name
+    },
     estimatePush: {
       targets: ['comment', 'field'],
       pushEstimate: pushEstimateToJira,

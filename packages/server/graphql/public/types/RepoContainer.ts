@@ -1,12 +1,10 @@
-import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
-import getVendorRepo from '../../../integrations/platform/getVendorRepo'
+import getRepoListCapability from '../../../integrations/platform/getRepoListCapability'
 import type {RepoContainerResolvers} from '../resolverTypes'
 
 const RepoContainer: RepoContainerResolvers = {
-  id: (repo) => `${repo.service}:${IntegrationRepoId.join(repo)}`,
-  integrationRepoId: (repo) => IntegrationRepoId.join(repo),
-  name: (repo) => getVendorRepo(repo).name(repo),
-  repo: (repo) => repo
+  id: (repo) => `${repo.service}:${getRepoListCapability(repo).integrationRepoId(repo)}`,
+  integrationRepoId: (repo) => getRepoListCapability(repo).integrationRepoId(repo),
+  name: (repo) => getRepoListCapability(repo).name(repo)
 }
 
 export default RepoContainer

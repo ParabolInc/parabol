@@ -1,12 +1,6 @@
 "A Linear issue linked to a Parabol task"
 type _xLinearIssue implements TaskIntegration
 
-"A Linear team, exposed for scoping and issue creation"
-type _xLinearTeam
-
-"A Linear project, exposed for scoping and issue creation"
-type _xLinearProject
-
 extend type _xLinearIssue {
   service: IntegrationProviderServiceEnum!
 }

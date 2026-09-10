@@ -6,7 +6,6 @@ jest.mock('../../rootSchema', () => ({
   default: {}
 }))
 
-import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
 import type {
   GitHubRepo,
   GitLabProject,
@@ -21,9 +20,11 @@ const resolve = (resolver: unknown, source: unknown) => {
 }
 
 const gitHubRepo: GitHubRepo = {
-  id: 'ParabolInc/parabol',
-  service: 'github',
-  nameWithOwner: 'ParabolInc/parabol'
+  hasIssuesEnabled: true,
+  nameWithOwner: 'ParabolInc/parabol',
+  updatedAt: new Date('2026-01-01'),
+  viewerCanAdminister: false,
+  service: 'github'
 }
 
 const gitLabProject: GitLabProject = {
@@ -38,8 +39,7 @@ const linearTeam: LinearTeam = {
   id: 'team1',
   displayName: 'Parabol',
   key: 'PAR',
-  service: 'linear',
-  teamId: 'team1'
+  service: 'linear'
 }
 
 const linearProject: LinearProject = {
@@ -47,8 +47,7 @@ const linearProject: LinearProject = {
   id: 'proj1',
   name: 'Test project',
   teams: {nodes: [{id: 'team1', displayName: 'Parabol', name: 'Parabol', key: 'PAR'}]},
-  service: 'linear',
-  teamId: 'team1'
+  service: 'linear'
 }
 
 describe('RepoContainer', () => {
@@ -61,28 +60,23 @@ describe('RepoContainer', () => {
     expect(resolve(RepoContainer.name, source)).toBe(expected)
   })
 
-  it('falls back to the bare Linear project name without a cached team', () => {
-    expect(resolve(RepoContainer.name, {...linearProject, teams: {nodes: []}})).toBe('Test project')
-  })
-
   it.each([
-    ['a GitHub repo', gitHubRepo],
-    ['a GitLab project', gitLabProject],
-    ['a Linear team', linearTeam],
-    ['a Linear project', linearProject]
-  ])('keys %s on the shared codec, namespaced by service', (_label, source) => {
-    const integrationRepoId = IntegrationRepoId.join(source)
+    ['a GitHub repo', gitHubRepo, 'ParabolInc/parabol'],
+    ['a GitLab project', gitLabProject, 'acme/web'],
+    ['a Linear team', linearTeam, 'team1'],
+    ['a Linear project', linearProject, 'team1:proj1']
+  ])('keys %s on its push id, namespaced by service', (_label, source, integrationRepoId) => {
     expect(resolve(RepoContainer.integrationRepoId, source)).toBe(integrationRepoId)
     expect(resolve(RepoContainer.id, source)).toBe(`${source.service}:${integrationRepoId}`)
   })
 
-  it('composes the Linear project push id from team and project', () => {
-    expect(resolve(RepoContainer.integrationRepoId, linearProject)).toBe('team1:proj1')
-    expect(resolve(RepoContainer.integrationRepoId, linearTeam)).toBe('team1')
-  })
-
-  it('hands back the vendor record untouched', () => {
-    expect(resolve(RepoContainer.repo, gitHubRepo)).toBe(gitHubRepo)
-    expect(resolve(RepoContainer.repo, linearProject)).toBe(linearProject)
+  it('still keys cache members written with the old teamId and id fields', () => {
+    expect(resolve(RepoContainer.integrationRepoId, {...linearProject, teamId: 'team1'})).toBe(
+      'team1:proj1'
+    )
+    expect(resolve(RepoContainer.integrationRepoId, {...linearTeam, teamId: 'team1'})).toBe('team1')
+    expect(resolve(RepoContainer.id, {...gitHubRepo, id: 'ParabolInc/parabol'})).toBe(
+      'github:ParabolInc/parabol'
+    )
   })
 })

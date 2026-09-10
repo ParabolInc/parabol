@@ -77,10 +77,7 @@
           }
         },
         "mappers": {
-          "_xGitHubRepository": "../../integrations/platform/RemoteRepoIntegration#GitHubRepo as _xGitHubRepository",
           "_xGitLabProject": "../../integrations/platform/RemoteRepoIntegration#GitLabProject as _xGitLabProject",
-          "_xLinearProject": "../../integrations/platform/RemoteRepoIntegration#LinearProject as _xLinearProject",
-          "_xLinearTeam": "../../integrations/platform/RemoteRepoIntegration#LinearTeam as _xLinearTeam",
           "AcceptRequestToJoinDomainSuccess": "./types/AcceptRequestToJoinDomainSuccess#AcceptRequestToJoinDomainSuccessSource",
           "AcceptTeamInvitationPayload": "./types/AcceptTeamInvitationPayload#AcceptTeamInvitationPayloadSource",
           "ActionMeeting": "../../postgres/types/Meeting#CheckInMeeting",

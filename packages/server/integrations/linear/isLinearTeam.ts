@@ -1,6 +1,6 @@
 import type {LinearRepo, LinearTeam} from '../platform/RemoteRepoIntegration'
 
-/** A cached Linear team is keyed on itself; a project carries the team it belongs to */
-const isLinearTeam = (repo: LinearRepo): repo is LinearTeam => repo.id === repo.teamId
+/** Only projects carry their teams; the stitched __typename is prefixed at runtime so it cannot be compared to the generated literal */
+const isLinearTeam = (repo: LinearRepo): repo is LinearTeam => !('teams' in repo)
 
 export default isLinearTeam
