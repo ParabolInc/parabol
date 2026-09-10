@@ -1,4 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
+import dayjs from 'dayjs'
 import {useFragment} from 'react-relay'
 import type {TeamHealthResultCard_stage$key} from '~/__generated__/TeamHealthResultCard_stage.graphql'
 import {ArrowForward} from '~/ui/icons'
@@ -7,7 +8,13 @@ import {cn} from '../../ui/cn'
 import plural from '../../utils/plural'
 import {getTeamHealthCategoryColor} from '../ActivityLibrary/TeamHealth/getTeamHealthCategoryColor'
 import TeamHealthDistributionChart from './TeamHealthDistributionChart'
+import TeamHealthResultComment from './TeamHealthResultComment'
 import TeamHealthScoreDelta from './TeamHealthScoreDelta'
+import TeamHealthTrendChart, {type TeamHealthTrendPoint} from './TeamHealthTrendChart'
+
+// a neutral, made-up spread to sit under the blur when the real one is withheld, so nothing about
+// how the few respondents voted can be read through it
+const HIDDEN_SPREAD_PLACEHOLDER = [1, 2, 3, 2, 1]
 
 interface Props {
   stage: TeamHealthResultCard_stage$key
@@ -27,7 +34,15 @@ const TeamHealthResultCard = (props: Props) => {
     graphql`
       fragment TeamHealthResultCard_stage on TeamHealthResultStage {
         score
-        previousScore
+        respondentCount
+        spreadScores
+        scoreHistory {
+          endedAt
+          score
+        }
+        meeting {
+          endedAt
+        }
         # aliased for the same reason as TeamHealthResponseCard: NewMeetingStage.question is a
         # String on the embedded TeamHealthStage, so the raw key would conflict
         healthQuestion: question {
@@ -39,23 +54,43 @@ const TeamHealthResultCard = (props: Props) => {
         }
         responses {
           id
-          score
           commentParaphrased
+          ...TeamHealthResultComment_response
         }
       }
     `,
     stageRef
   )
-  const {score, previousScore, healthQuestion: question, responses} = stage
+  const {
+    score,
+    respondentCount,
+    spreadScores,
+    scoreHistory,
+    meeting,
+    healthQuestion: question,
+    responses
+  } = stage
   const distribution = [0, 0, 0, 0, 0]
-  responses.forEach((response) => {
-    const answer = response.score
-    if (answer != null && answer >= 1 && answer <= 5) distribution[answer - 1]!++
+  spreadScores?.forEach((answer) => {
+    if (answer >= 1 && answer <= 5) distribution[answer - 1]!++
   })
-  const answerCount = distribution.reduce((sum, count) => sum + count, 0)
-  const comments = responses
-    .map(({commentParaphrased}) => commentParaphrased)
-    .filter((comment): comment is string => !!comment)
+  const answerCount = respondentCount ?? 0
+  const isSpreadHidden = !spreadScores
+  const comments = responses.filter(({commentParaphrased}) => !!commentParaphrased)
+  const trendPoints: TeamHealthTrendPoint[] = [
+    ...scoreHistory,
+    ...(score == null || !meeting.endedAt ? [] : [{endedAt: meeting.endedAt, score}])
+  ]
+  const firstCycle = trendPoints[0]
+  const lastCycle = trendPoints.at(-1)
+  const previousCycle = scoreHistory.at(-1)
+  const spansOneMonth =
+    !!firstCycle && !!lastCycle && dayjs(firstCycle.endedAt).isSame(lastCycle.endedAt, 'month')
+  const rangeFormat = spansOneMonth ? 'MMM D' : 'MMM'
+  const trendCaption =
+    !firstCycle || !lastCycle || !previousCycle
+      ? ''
+      : `${dayjs(firstCycle.endedAt).format(rangeFormat)} – ${dayjs(lastCycle.endedAt).format(rangeFormat)} · was ${previousCycle.score.toFixed(1)} on ${dayjs(previousCycle.endedAt).format('MMM D')}`
   const isLast = stageIndex === stageCount - 1
 
   return (
@@ -82,23 +117,52 @@ const TeamHealthResultCard = (props: Props) => {
         <TeamHealthScoreDelta
           className='pb-1 text-sm'
           score={score}
-          previousScore={previousScore}
+          previousScore={previousCycle?.score}
         />
         <span className='pb-1 text-fg-muted text-sm'>
-          {previousScore == null
-            ? 'first time this category was asked'
-            : `was ${previousScore.toFixed(1)} last cycle`}
+          {previousCycle
+            ? `was ${previousCycle.score.toFixed(1)} last cycle`
+            : 'first time this category was asked'}
         </span>
       </div>
-      <div className='mt-6'>
-        <div className='font-semibold text-fg-muted text-xs uppercase tracking-wide'>
-          This check · 1–5 spread
-        </div>
-        <div className='mt-2'>
-          <TeamHealthDistributionChart distribution={distribution} />
-        </div>
-        <div className='mt-1 text-fg-muted text-sm'>
-          {answerCount} {plural(answerCount, 'answer')}
+      <div
+        className={cn(
+          'mt-6 grid grid-cols-1 gap-6',
+          scoreHistory.length > 0 ? 'sm:grid-cols-2' : 'sm:mx-auto sm:max-w-sm'
+        )}
+      >
+        {scoreHistory.length > 0 && (
+          <div>
+            <div className='font-semibold text-fg-muted text-xs uppercase tracking-wide'>
+              Trend · last {trendPoints.length} checks
+            </div>
+            <div className='mt-2'>
+              <TeamHealthTrendChart points={trendPoints} />
+            </div>
+            <div className='mt-1 text-fg-muted text-sm'>{trendCaption}</div>
+          </div>
+        )}
+        <div>
+          <div className='font-semibold text-fg-muted text-xs uppercase tracking-wide'>
+            This check · 1–5 spread
+          </div>
+          <div className='relative mt-2'>
+            <div className={cn(isSpreadHidden && 'pointer-events-none select-none blur-sm')}>
+              <TeamHealthDistributionChart
+                distribution={isSpreadHidden ? HIDDEN_SPREAD_PLACEHOLDER : distribution}
+              />
+            </div>
+            {isSpreadHidden && (
+              <div className='absolute inset-0 flex items-center justify-center px-4'>
+                <span className='rounded-md border border-hairline bg-surface-raised px-3 py-1.5 text-center font-semibold text-fg-secondary text-xs shadow-card'>
+                  Spread hidden until more people answer
+                </span>
+              </div>
+            )}
+          </div>
+          <div className='mt-1 text-fg-muted text-sm'>
+            {answerCount} {plural(answerCount, 'answer')}
+          </div>
         </div>
       </div>
       {comments.length > 0 && (
@@ -108,14 +172,9 @@ const TeamHealthResultCard = (props: Props) => {
             AI
           </div>
           <div className='mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2'>
-            {comments.map((comment, idx) => (
-              <div key={idx} className='rounded-lg bg-surface-well p-4 text-fg-primary'>
-                “{comment}”
-              </div>
+            {comments.map((response) => (
+              <TeamHealthResultComment key={response.id} response={response} />
             ))}
-          </div>
-          <div className='mt-3 text-fg-muted text-xs'>
-            Authorship is never shown — comments read like reflections
           </div>
         </div>
       )}

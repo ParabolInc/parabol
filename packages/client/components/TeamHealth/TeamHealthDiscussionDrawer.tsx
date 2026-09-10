@@ -13,7 +13,9 @@ interface Props {
 }
 
 // each question gets one discussion, shared by its response stage and its result stage, so the
-// thread the team starts while answering is still there when the results are revealed
+// thread the team starts while answering is still there when the results are revealed. Unlike a
+// retro, revealing the results is what ends the meeting, so the thread stays open afterwards:
+// that is when the team actually discusses them
 const TeamHealthDiscussionDrawer = (props: Props) => {
   const {meeting: meetingRef, discussionId, toggleDrawer} = props
   const meeting = useFragment(
@@ -21,14 +23,13 @@ const TeamHealthDiscussionDrawer = (props: Props) => {
       fragment TeamHealthDiscussionDrawer_meeting on TeamHealthMeeting {
         ...DiscussionDrawerTranscripts_meeting
         id
-        endedAt
         rightDrawerOpen
       }
     `,
     meetingRef
   )
-  const {id: meetingId, endedAt, rightDrawerOpen} = meeting
-  const allowedThreadables: DiscussionThreadables[] = endedAt ? [] : ['comment', 'task', 'poll']
+  const {id: meetingId, rightDrawerOpen} = meeting
+  const allowedThreadables: DiscussionThreadables[] = ['comment', 'task', 'poll']
   return (
     <ResponsiveDashSidebar
       isOpen={rightDrawerOpen != null}

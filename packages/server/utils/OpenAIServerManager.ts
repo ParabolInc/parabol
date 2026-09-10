@@ -6,6 +6,14 @@ import groupReflections from './groupReflections/groupReflectionsStructured'
 import type {GroupReflectionsInput, GroupReflectionsOptions} from './groupReflections/types'
 import logError from './logError'
 
+export interface TeamHealthDiscussionStarterInput {
+  category: string
+  question: string
+  current: {score: number | null; responseCount: number; comments: string[]}
+  // newest first
+  priorCycles: {endedAt: string; score: number | null; comments: string[]}[]
+}
+
 class OpenAIServerManager {
   openAIApi
   constructor() {
@@ -219,19 +227,21 @@ Respond in GitHub-flavored markdown. The first line MUST be exactly "**Estimate:
   async paraphraseTeamHealthComment(comment: string, question: string) {
     if (!this.openAIApi) return null
 
-    const prompt = `A teammate answered the survey question below and left an anonymous comment. Rewrite the comment so that nobody who knows the team could guess who wrote it, then return only the rewritten comment.
+    const systemPrompt = `You anonymise anonymous survey comments. The user message contains a survey question and a teammate's comment. Rewrite the comment so that nobody who knows the team could guess who wrote it.
 
 Strip every signal of authorship:
 - Writing style: sentence length and rhythm, formality, humour, hedging, enthusiasm, profanity, ALL CAPS, exclamation marks, ellipses, emoji.
 - Word choice: pet phrases, jargon, slang, abbreviations, regional spellings, and any term a specific person is known for. Prefer plain, common synonyms.
-- Grammar and mechanics: fix or introduce nothing distinctive — use ordinary punctuation, correct any errors, and drop typing quirks like missing capitals or double spaces.
+- Grammar and mechanics: fix or introduce nothing distinctive. Use ordinary punctuation, correct any errors, and drop typing quirks like missing capitals or double spaces.
 - Content: remove names, roles, teams, tools, projects, clients, dates, and any incident specific enough to identify one person. Generalise them ("a recent release", "a teammate") rather than deleting the point they support.
 
 Keep the substance intact: the same claim, the same target of praise or criticism, and the same strength of feeling. Do not soften a complaint, add advice, or draw conclusions the author did not.
 
-Write 1-3 plain sentences in neutral third-person-free English (the author may say "I" about themselves). If the comment is too short or too specific to anonymise, return a single sentence that states only its general point.
+Write 1-3 plain sentences in neutral English (the author may say "I" about themselves). If the comment is too short or too specific to anonymise, write a single sentence that states only its general point.
 
-Question: """
+Output format: respond with the rewritten comment text and nothing else. It must read as if the teammate had typed it themselves. Never add a label, prefix, heading, or preamble such as "Paraphrased:", "Rewritten:", or "Here is". Do not wrap it in quotation marks, code fences, or markdown.`
+
+    const userPrompt = `Question: """
 ${question}
 """
 
@@ -243,10 +253,8 @@ ${comment}
       const response = await this.openAIApi.chat.completions.create({
         model: AI_MODEL,
         messages: [
-          {
-            role: 'user',
-            content: prompt
-          }
+          {role: 'system', content: systemPrompt},
+          {role: 'user', content: userPrompt}
         ],
         reasoning_effort: 'low',
         max_completion_tokens: 1000
@@ -255,6 +263,62 @@ ${comment}
     } catch (e) {
       const error =
         e instanceof Error ? e : new Error('OpenAI failed to paraphraseTeamHealthComment')
+      logError(error)
+      return null
+    }
+  }
+
+  async generateTeamHealthDiscussionStarter(input: TeamHealthDiscussionStarterInput) {
+    if (!this.openAIApi) return null
+    const {category, question, current, priorCycles} = input
+    const formatCycle = (
+      label: string,
+      cycle: {score: number | null; responseCount?: number; comments: string[]}
+    ) => {
+      const score = cycle.score === null ? 'no score' : `${cycle.score.toFixed(1)} / 5`
+      const count = cycle.responseCount === undefined ? '' : ` (${cycle.responseCount} answers)`
+      const comments =
+        cycle.comments.length === 0
+          ? '  (no comments)'
+          : cycle.comments.map((comment) => `  - ${comment.replace(/\n/g, ' ')}`).join('\n')
+      return `${label}: ${score}${count}\n${comments}`
+    }
+    const systemPrompt = `You are a facilitator opening a team discussion about one dimension of team health. The team just revealed the results of an anonymous survey and will now talk about this dimension. Write one short comment to start that conversation.
+
+Ground the comment in the data: name the trend across cycles if there is one, and draw on what the comments say. When a comment explains a score, connect the two. When the comments contradict each other or the score, name the tension. Stay on this dimension only.
+
+End with a single open question the team can answer together. The question must be specific to this team's data, never generic.
+
+Constraints:
+- 2-4 plain sentences, then the question. Under 90 words total.
+- Speak to the team as "you". Refer to people only as teammates; never guess at who wrote a comment or assume anyone's gender.
+- Do not moralise, give advice, or tell the team what to do. Do not restate every number.
+- Respond with the comment text only: no label, heading, preamble, quotation marks, or markdown.`
+    const cycles = [
+      formatCycle('This cycle', current),
+      ...priorCycles.map((cycle, idx) =>
+        formatCycle(`${idx + 1} ${idx === 0 ? 'cycle' : 'cycles'} ago (${cycle.endedAt})`, cycle)
+      )
+    ]
+    const userPrompt = `Dimension: ${category}
+Question asked this cycle: ${question}
+Scores are 1-5 Likert averages, where 5 is strongly agree. Comments are the team's own words.
+
+${cycles.join('\n\n')}`
+    try {
+      const response = await this.openAIApi.chat.completions.create({
+        model: AI_MODEL,
+        messages: [
+          {role: 'system', content: systemPrompt},
+          {role: 'user', content: userPrompt}
+        ],
+        reasoning_effort: 'low',
+        max_completion_tokens: 1000
+      })
+      return response.choices[0]?.message?.content?.trim() || null
+    } catch (e) {
+      const error =
+        e instanceof Error ? e : new Error('OpenAI failed to generateTeamHealthDiscussionStarter')
       logError(error)
       return null
     }

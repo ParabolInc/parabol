@@ -56,7 +56,9 @@ const TeamHealthSidebarResultSection = (props: Props) => {
             ... on TeamHealthResultStage {
               sortOrder
               score
-              previousScore
+              scoreHistory {
+                score
+              }
               # aliased for the same reason as TeamHealthResponseCard: NewMeetingStage.question is
               # a String on the embedded TeamHealthStage, so the raw key would conflict
               healthQuestion: question {
@@ -109,7 +111,8 @@ const TeamHealthSidebarResultSection = (props: Props) => {
           {(provided) => (
             <div className='overflow-auto pb-2' ref={provided.innerRef}>
               {stages.map((stage, idx) => {
-                const {id: stageId, isNavigable, score, previousScore, healthQuestion} = stage
+                const {id: stageId, isNavigable, score, scoreHistory, healthQuestion} = stage
+                const previousScore = scoreHistory?.at(-1)?.score
                 const category = healthQuestion?.category
                 return (
                   <Draggable key={stageId} draggableId={stageId} index={idx}>
@@ -148,9 +151,6 @@ const TeamHealthSidebarResultSection = (props: Props) => {
                 )
               })}
               {provided.placeholder}
-              <div className='px-4 pt-1 text-fg-muted text-xs'>
-                Ordered by the steepest drop since the last cycle. Drag to reorder
-              </div>
             </div>
           )}
         </Droppable>

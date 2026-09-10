@@ -1,7 +1,10 @@
 import relativeDate from 'parabol-client/utils/date/relativeDate'
 import plural from 'parabol-client/utils/plural'
+import getKysely from '../../../../postgres/getKysely'
 import {getTeamPromptResponsesByMeetingId} from '../../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import type {AnyMeeting} from '../../../../postgres/types/Meeting'
+import averageTeamHealthScore from '../../../../utils/averageTeamHealthScore'
+import getTeamHealthDisplayComment from '../../../../utils/getTeamHealthDisplayComment'
 import logError from '../../../../utils/logError'
 
 const getSummaryText = async (meeting: AnyMeeting) => {
@@ -55,6 +58,20 @@ const getSummaryText = async (meeting: AnyMeeting) => {
       'story',
       'stories'
     )} and added ${commentCount} ${plural(commentCount, 'comment')}.`
+  } else if (meeting.meetingType === 'teamHealth') {
+    const responses = await getKysely()
+      .selectFrom('TeamHealthResponse')
+      .select(['userId', 'score', 'comment', 'commentParaphrased', 'isAnonymous'])
+      .where('meetingId', '=', meeting.id)
+      .execute()
+    const respondentCount = new Set(responses.map(({userId}) => userId)).size
+    const scores = responses.flatMap(({score}) => (score === null ? [] : [score]))
+    const averageScore = averageTeamHealthScore(scores)
+    const commentCount = responses.filter(
+      (response) => !!getTeamHealthDisplayComment(response)
+    ).length
+    const scoreText = averageScore === null ? '' : ` with an average score of ${averageScore}/5`
+    return `${respondentCount} ${plural(respondentCount, 'team member')} responded${scoreText}.\nYou added ${commentCount} ${plural(commentCount, 'comment')}.`
   } else {
     throw new Error(`Meeting type not supported ${(meeting as any).meetingType}`)
   }
