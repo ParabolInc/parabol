@@ -218,6 +218,7 @@
           "NotifyTeamArchived": "../../postgres/types/Notification.d#TeamArchivedNotification as TeamArchivedNotificationDB",
           "NotifyTeamsLimitExceeded": "../../postgres/types/Notification.d#TeamsLimitExceededNotification as TeamsLimitExceededNotificationDB",
           "NotifyTeamsLimitReminder": "../../postgres/types/Notification.d#TeamsLimitReminderNotification as TeamsLimitReminderNotificationDB",
+          "NotifyTeamHealthResponseDue": "../../postgres/types/Notification.d#TeamHealthResponseDueNotification as TeamHealthResponseDueNotificationDB",
           "ExportPagesToConfluenceSuccess": "./types/ExportPagesToConfluenceSuccess#ExportPagesToConfluenceSuccessSource",
           "OAuthAPIProvider": "../../postgres/types/index#OAuthAPIProvider as OAuthAPIProviderDB",
           "OAuthScopeEnum": "../../postgres/types/pg#Oauthscopeenum",

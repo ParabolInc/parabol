@@ -12,6 +12,7 @@ import mapPromptToJoinOrgToToast from './mapPromptToJoinOrgToToast'
 import mapRequestToJoinOrgToToast from './mapRequestToJoinOrgToToast'
 import mapResponseMentionedToToast from './mapResponseMentionedToToast'
 import mapResponseRepliedToToast from './mapResponseRepliedToToast'
+import mapTeamHealthResponseDueToToast from './mapTeamHealthResponseDueToToast'
 import mapTeamsLimitReminderToToast from './mapTeamsLimitReminderToToast'
 
 const typePicker: Partial<
@@ -23,7 +24,8 @@ const typePicker: Partial<
   RESPONSE_REPLIED: mapResponseRepliedToToast,
   TEAMS_LIMIT_REMINDER: mapTeamsLimitReminderToToast,
   PROMPT_TO_JOIN_ORG: mapPromptToJoinOrgToToast,
-  REQUEST_TO_JOIN_ORG: mapRequestToJoinOrgToToast
+  REQUEST_TO_JOIN_ORG: mapRequestToJoinOrgToToast,
+  TEAM_HEALTH_RESPONSE_DUE: mapTeamHealthResponseDueToToast
 }
 
 graphql`
@@ -38,6 +40,7 @@ graphql`
       ...mapTeamsLimitReminderToToast_notification @relay(mask: false)
       ...mapPromptToJoinOrgToToast_notification @relay(mask: false)
       ...mapRequestToJoinOrgToToast_notification @relay(mask: false)
+      ...mapTeamHealthResponseDueToToast_notification @relay(mask: false)
     }
   }
 `

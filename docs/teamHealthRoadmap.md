@@ -53,9 +53,11 @@ is currently neither measured nor defended.
 - [x] **Persist participation rate per cycle** so it can be trended alongside the scores.
       `fix/team-health-participation` freezes `eligibleCount` onto the meeting when it ends, since
       team membership drifts and a recomputed denominator would rewrite history.
-- [x] **Nudge non-responders.** `feat/team-health-response-reminders`. A recurring cycle opens, one generic "meeting started" notification
-      fires, and nothing else happens until auto-reveal. Send a reminder to members with no response
-      some hours before `scheduledEndTime`.
+- [x] **Nudge non-responders.** `feat/notifications-on-health`. The recurrence sweep reminds every
+      eligible member who has not answered every question ~24h before `scheduledEndTime`: an in-app
+      notification (which also rides the daily digest email) plus a Slack DM when the member has their
+      own Slack auth. The team channel gets a count-only progress post at the same time, and the
+      start card names the close time and question count. Cycles without a deadline are skipped.
 - [ ] **Answer in place** (Slack modal / email) — optional, but it is the difference between 40% and
       80% participation.
 
@@ -92,7 +94,8 @@ category score is a dead end — a number on a card.
 - [ ] **Only the `likert` question type exists.** eNPS is the single number executives ask for and it
       cannot currently be asked.
 - [ ] **No CSV export** of aggregate scores.
-- [ ] **No in-app notification** when a cycle opens.
+- [ ] **No in-app notification** when a cycle opens. `feat/notifications-on-health` covers the
+      closing reminder only; the open moment is still channel-only.
 
 ---
 
@@ -106,8 +109,8 @@ Stacked branches are listed under the branch they build on. All branch off `fix/
 - `fix/team-health-reveal-floor` — respondent floor, raw-comment fallbacks removed
   - `feat/team-health-comment-paraphrase` — writes `commentParaphrased` at reveal
 - `fix/team-health-participation` — `eligibleCount` / `participationRate`
-  - `feat/team-health-response-reminders` — hourly nudge for non-responders
 - `fix/team-health-engagement` — credit answers toward engagement
+- `feat/notifications-on-health` — richer start card, channel progress post, per-person closing nudge
 
 None of the UI in these branches has been checked against a running app yet — every change
 typechecks and the relay artifacts build, but the rendered result still needs eyes on it.

@@ -10,6 +10,7 @@ import getKysely from '../../../postgres/getKysely'
 import {selectNewMeetings} from '../../../postgres/select'
 import standardError from '../../../utils/standardError'
 import getDefaultTeamFacilitator from '../../mutations/helpers/getDefaultTeamFacilitator'
+import remindTeamHealthResponders from '../../mutations/helpers/remindTeamHealthResponders'
 import rotateSeriesTeamHealthQuestionIds from '../../mutations/helpers/rotateSeriesTeamHealthQuestionIds'
 import safeEndRetrospective from '../../mutations/helpers/safeEndRetrospective'
 import safeEndTeamHealth from '../../mutations/helpers/safeEndTeamHealth'
@@ -53,25 +54,28 @@ const processRecurrence: MutationResolvers['processRecurrence'] = checkSequentia
             rol: 'impersonate'
           })
           const context = {...serverContext, authToken}
-          if (meeting.meetingType === 'teamPrompt') {
-            return safeEndTeamPrompt({meeting, context, info})
-          } else if (meeting.meetingType === 'retrospective') {
-            return safeEndRetrospective({meeting, context, info})
-          } else if (meeting.meetingType === 'teamHealth') {
-            return safeEndTeamHealth({meeting, context, info})
-          } else {
-            return standardError(new Error('Unhandled recurring meeting type'), {
-              tags: {
-                meetingId: meeting.id,
-                meetingType: meeting.meetingType
-              }
-            })
+          const tags = {meetingId: meeting.id, meetingType: meeting.meetingType}
+          const endMeeting = async () => {
+            if (meeting.meetingType === 'teamPrompt') {
+              return safeEndTeamPrompt({meeting, context, info})
+            } else if (meeting.meetingType === 'retrospective') {
+              return safeEndRetrospective({meeting, context, info})
+            } else if (meeting.meetingType === 'teamHealth') {
+              return safeEndTeamHealth({meeting, context, info})
+            }
+            return standardError(new Error('Unhandled recurring meeting type'), {tags})
           }
+          // one meeting that cannot be closed must not stop every other series from advancing
+          return endMeeting().catch((e: Error) => standardError(e, {tags}))
         })
       )
     )
 
     const meetingsEnded = res.filter((res) => !('error' in res)).length
+
+    const remindersSent = await tracer.trace('processRecurrence.remindTeamHealthResponders', () =>
+      remindTeamHealthResponders(dataLoader, subOptions)
+    )
 
     let meetingsStarted = 0
 
@@ -189,7 +193,7 @@ const processRecurrence: MutationResolvers['processRecurrence'] = checkSequentia
       )
     )
 
-    const data = {meetingsStarted, meetingsEnded}
+    const data = {meetingsStarted, meetingsEnded, remindersSent}
     return data
   }
 )

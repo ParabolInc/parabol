@@ -33,6 +33,13 @@ export const IntegrationNotifier: Notifier = {
       notifiers.map(async (notifier) => notifier.endTimeLimit(dataLoader, meetingId, teamId))
     )
   },
+  async teamHealthResponseReminder(dataLoader, meetingId, teamId, progress) {
+    await Promise.allSettled(
+      notifiers.map(async (notifier) =>
+        notifier.teamHealthResponseReminder(dataLoader, meetingId, teamId, progress)
+      )
+    )
+  },
   async integrationUpdated(dataLoader, teamId, userId) {
     await Promise.allSettled(
       notifiers.map(async (notifier) => notifier.integrationUpdated(dataLoader, teamId, userId))
