@@ -1,12 +1,15 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {useNavigate} from 'react-router'
 import type {TeamHealthMeetingSidebar_meeting$key} from '~/__generated__/TeamHealthMeetingSidebar_meeting.graphql'
 import type useGotoStageId from '../hooks/useGotoStageId'
+import {GQLID} from '../utils/GQLID'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import MeetingNavList from './MeetingNavList'
 import NewMeetingSidebar from './NewMeetingSidebar'
 import NewMeetingSidebarPhaseListItem from './NewMeetingSidebarPhaseListItem'
 import TeamHealthSidebarQuestionSection from './TeamHealth/TeamHealthSidebarQuestionSection'
+import TeamHealthSidebarResultSection from './TeamHealth/TeamHealthSidebarResultSection'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
@@ -17,12 +20,15 @@ interface Props {
 
 const TeamHealthMeetingSidebar = (props: Props) => {
   const {gotoStageId, handleMenuClick, toggleSidebar, meeting: meetingRef} = props
+  const navigate = useNavigate()
   const meeting = useFragment(
     graphql`
       fragment TeamHealthMeetingSidebar_meeting on TeamHealthMeeting {
         ...NewMeetingSidebar_meeting
         ...TeamHealthSidebarQuestionSection_meeting
+        ...TeamHealthSidebarResultSection_meeting
         endedAt
+        summaryPageId
         localPhase {
           phaseType
         }
@@ -37,11 +43,14 @@ const TeamHealthMeetingSidebar = (props: Props) => {
     `,
     meetingRef
   )
-  const {endedAt, localPhase, phases} = meeting
-  // the intro & submitted phases are bookends, not destinations, so they stay out of the nav
+  const {endedAt, localPhase, phases, summaryPageId} = meeting
+  // the intro phase has no nav row of its own, it is the landing spot for the Respond row
+  const introStage = phases.find((phase) => phase.phaseType === 'TEAM_HEALTH_INTRO')?.stages[0]
   const questionStages = phases.find((phase) => phase.phaseType === 'TEAM_HEALTH_RESPONSE')?.stages
-  const resultStage = phases.find((phase) => phase.phaseType === 'TEAM_HEALTH_RESULT')?.stages[0]
+  const resultStages = phases.find((phase) => phase.phaseType === 'TEAM_HEALTH_RESULT')?.stages
   const firstQuestionStage = questionStages?.[0]
+  const firstResultStage = resultStages?.[0]
+  const respondStage = introStage?.isNavigable ? introStage : firstQuestionStage
   const goto = (stageId: string) => {
     gotoStageId(stageId).catch(() => {
       /*ignore*/
@@ -53,14 +62,13 @@ const TeamHealthMeetingSidebar = (props: Props) => {
       handleMenuClick={handleMenuClick}
       toggleSidebar={toggleSidebar}
       meeting={meeting}
+      hideFacilitator
     >
       <MeetingNavList>
         <NewMeetingSidebarPhaseListItem
-          handleClick={
-            firstQuestionStage?.isNavigable ? () => goto(firstQuestionStage.id) : undefined
-          }
-          // the question stages below carry the active state for this phase
-          isActive={false}
+          handleClick={respondStage?.isNavigable ? () => goto(respondStage.id) : undefined}
+          // the question stages below carry the active state once the viewer leaves the intro
+          isActive={localPhase?.phaseType === 'TEAM_HEALTH_INTRO'}
           isCollapsible
           isFacilitatorPhase={false}
           isUnsyncedFacilitatorPhase={false}
@@ -73,14 +81,36 @@ const TeamHealthMeetingSidebar = (props: Props) => {
           meeting={meeting}
         />
         <NewMeetingSidebarPhaseListItem
-          handleClick={resultStage?.isNavigable ? () => goto(resultStage.id) : undefined}
-          isActive={localPhase?.phaseType === 'TEAM_HEALTH_RESULT'}
+          handleClick={firstResultStage?.isNavigable ? () => goto(firstResultStage.id) : undefined}
+          // once revealed, the category stages below carry the active state for this phase
+          isActive={!endedAt && localPhase?.phaseType === 'TEAM_HEALTH_RESULT'}
+          isCollapsible={!!endedAt}
           isFacilitatorPhase={false}
           isUnsyncedFacilitatorPhase={false}
+          phaseCount={endedAt ? resultStages?.length : undefined}
           // until the owner reveals, this row opens the waiting room rather than the results
           phaseLabel={endedAt ? undefined : phaseLabelLookup.TEAM_HEALTH_SUBMITTED}
           phaseType='TEAM_HEALTH_RESULT'
         />
+        {endedAt && (
+          <TeamHealthSidebarResultSection
+            gotoStageId={gotoStageId}
+            handleMenuClick={handleMenuClick}
+            meeting={meeting}
+          />
+        )}
+        {summaryPageId && (
+          <NewMeetingSidebarPhaseListItem
+            handleClick={() => {
+              navigate(`/pages/${GQLID.fromKey(summaryPageId)[0]}`)
+              handleMenuClick()
+            }}
+            isActive={false}
+            isFacilitatorPhase={false}
+            isUnsyncedFacilitatorPhase={false}
+            phaseType='SUMMARY'
+          />
+        )}
       </MeetingNavList>
     </NewMeetingSidebar>
   )

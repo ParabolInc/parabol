@@ -1,5 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RRuleSet} from 'rrule-rust'
+import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import getKysely from '../../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -116,11 +117,10 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
   await updateMeetingTemplateLastUsedAt(selectedTemplateId, teamId)
 
-  const meetingMember = createMeetingMember(meeting, {
-    userId: viewerId,
-    teamId,
-    isSpectatingPoker: false
-  })
+  const teamMember = await dataLoader
+    .get('teamMembers')
+    .loadNonNull(toTeamMemberId(teamId, viewerId))
+  const meetingMember = createMeetingMember(meeting, teamMember)
   const [meetingSeries] = await Promise.all([
     rrule && startNewMeetingSeries(meeting, rrule, meetingSeriesName),
     pg

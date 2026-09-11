@@ -1,4 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import MeetingAction from '../../../database/types/MeetingAction'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
@@ -73,11 +74,10 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
   if (rotation) await setFacilitatorRotation(teamId, rotation, dataLoader)
   const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
   const agendaItemIds = agendaItems.map(({id}) => id)
-  const meetingMember = createMeetingMember(meeting, {
-    userId: viewerId,
-    teamId,
-    isSpectatingPoker: false
-  })
+  const teamMember = await dataLoader
+    .get('teamMembers')
+    .loadNonNull(toTeamMemberId(teamId, viewerId))
+  const meetingMember = createMeetingMember(meeting, teamMember)
   await Promise.all([
     pg
       .with('TeamUpdates', (qb) =>

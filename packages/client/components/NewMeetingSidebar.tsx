@@ -29,10 +29,12 @@ interface Props {
   handleMenuClick: () => void
   toggleSidebar: () => void
   meeting: NewMeetingSidebar_meeting$key
+  // meetings that run without a facilitator, e.g. team health, hide the role entirely
+  hideFacilitator?: boolean
 }
 
 const NewMeetingSidebar = (props: Props) => {
-  const {children, handleMenuClick, toggleSidebar, meeting: meetingRef} = props
+  const {children, handleMenuClick, toggleSidebar, meeting: meetingRef, hideFacilitator} = props
   const meeting = useFragment(
     graphql`
       fragment NewMeetingSidebar_meeting on NewMeeting {
@@ -101,7 +103,7 @@ const NewMeetingSidebar = (props: Props) => {
           {endedAt && <InactiveTag className='m-0 mt-1 inline-flex'>Meeting Completed</InactiveTag>}
         </div>
       </div>
-      <Facilitator meetingRef={meeting} />
+      {!hideFacilitator && <Facilitator meetingRef={meeting} />}
       {children}
       {tierLimitExceededAt && (
         <NewMeetingSidebarUpgradeBlock

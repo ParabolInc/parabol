@@ -5,6 +5,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.43.0](https://github.com/ParabolInc/parabol/compare/v13.42.1...v13.43.0) (2026-09-10)
+
+
+### Added
+
+* add discussion to stages. add paraphrasing ([#13481](https://github.com/ParabolInc/parabol/issues/13481)) ([2f81f77](https://github.com/ParabolInc/parabol/commit/2f81f7725f0c3fc68abce2bd1b714e071782485e))
+* convert results to per-category stages ([#13473](https://github.com/ParabolInc/parabol/issues/13473)) ([2a365ee](https://github.com/ParabolInc/parabol/commit/2a365eed6efa7a9577b3c62e5c247ce3178c25d7))
+
+
+### Fixed
+
+* support subscription push for updateMeetingTemplate ([#13469](https://github.com/ParabolInc/parabol/issues/13469)) ([fac95f6](https://github.com/ParabolInc/parabol/commit/fac95f6e92f2f4659569232702edb86a02cf9db5))
+* Team Health admin when not on team ([#13482](https://github.com/ParabolInc/parabol/issues/13482)) ([ff2dc43](https://github.com/ParabolInc/parabol/commit/ff2dc4336dc86269868736b1d8c034b1cecd9c57))
+* **theme:** adjust theme contrast and adds --shadow-bar-up ([#13474](https://github.com/ParabolInc/parabol/issues/13474)) ([04c87ad](https://github.com/ParabolInc/parabol/commit/04c87adc586187b9864bca9529fab375febc2079))
+
+
+### Changed
+
+* upgrade tiptap + xmldom ([#13468](https://github.com/ParabolInc/parabol/issues/13468)) ([d3d6394](https://github.com/ParabolInc/parabol/commit/d3d6394e97e0242a101989f11a09435910c9b4c4))
+
 ## [13.42.1](https://github.com/ParabolInc/parabol/compare/v13.42.0...v13.42.1) (2026-09-04)
 
 

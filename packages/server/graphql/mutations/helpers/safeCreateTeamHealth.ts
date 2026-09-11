@@ -46,12 +46,18 @@ const safeCreateTeamHealth = async (
   const questionIds =
     input.questionIds ??
     (await rotateTeamHealthQuestionIds(questions, meetingSeriesId ? [meetingSeriesId] : []))
-  // intro -> response (one stage per question) -> result, which is the waiting room until the
-  // meeting ends and the answers are revealed in place
+  // the response stage & the result stage for a question are two views of the same category, so
+  // they share one discussion thread and the team's comments carry across the reveal
+  const stageQuestions = questionIds.map((questionId) => ({
+    questionId,
+    discussionId: generateUID()
+  }))
+  // intro -> response (one stage per question) -> result (one stage per category), which is the
+  // waiting room until the meeting ends and the answers are revealed in place
   const phases = [
     new TeamHealthIntroPhase(),
-    new TeamHealthResponsePhase({questionIds}),
-    new TeamHealthResultPhase()
+    new TeamHealthResponsePhase({questions: stageQuestions}),
+    new TeamHealthResultPhase({questions: stageQuestions})
   ] as [TeamHealthIntroPhase, TeamHealthResponsePhase, TeamHealthResultPhase]
   primePhases(phases)
 
@@ -77,6 +83,18 @@ const safeCreateTeamHealth = async (
     // meeting already started
     return null
   }
+  await pg
+    .insertInto('Discussion')
+    .values(
+      stageQuestions.map(({questionId, discussionId}) => ({
+        id: discussionId,
+        teamId,
+        meetingId,
+        discussionTopicId: String(questionId),
+        discussionTopicType: 'teamHealthQuestion' as const
+      }))
+    )
+    .execute()
   return meeting
 }
 

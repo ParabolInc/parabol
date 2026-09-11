@@ -122,9 +122,10 @@ const Team: TeamResolvers = {
     if (meeting && meeting.teamId === teamId) return meeting
     return null
   },
-  meetingSettings: async ({id: teamId}, {meetingType}, {authToken, dataLoader}) => {
-    if (!isTeamMember(authToken, teamId)) return null as any
-    const settings = await dataLoader.get('meetingSettingsByType').load({teamId, meetingType})
+  meetingSettings: async ({id: teamId}, {meetingType}, {dataLoader}) => {
+    const settings = await dataLoader
+      .get('meetingSettingsByType')
+      .loadNonNull({teamId, meetingType})
     return settings
   },
   organization: async ({orgId}, _args, {dataLoader}) => {
@@ -215,8 +216,8 @@ const Team: TeamResolvers = {
     const viewerId = getUserId(authToken)
     if (!viewerId) return null
     const teamMemberId = toTeamMemberId(teamId, viewerId)
-    const teamMember = await dataLoader.get('teamMembers').loadNonNull(teamMemberId)
-    return teamMember
+    const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
+    return teamMember ?? null
   }
 }
 

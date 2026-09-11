@@ -69,6 +69,9 @@ const MeetingCardOptionsMenu = (props: Props) => {
   const hasRecurrenceEnabled = meetingSeries && !meetingSeries.cancelledAt
   const canStartSeriesNow =
     hasRecurrenceEnabled && !!endedAt && meetingSeries.ownerUserId === viewerId
+  // an owned series answers to its owner alone, so the rest of the team cannot reschedule it
+  const isSeriesManagedByOther =
+    !!meetingSeries?.ownerUserId && meetingSeries.ownerUserId !== viewerId
 
   return (
     <>
@@ -131,7 +134,7 @@ const MeetingCardOptionsMenu = (props: Props) => {
           Start meeting now
         </MenuItem>
       )}
-      {canManageMeeting && hasRecurrenceEnabled && (
+      {canManageMeeting && hasRecurrenceEnabled && !isSeriesManagedByOther && (
         <MenuItem onSelect={openRecurrenceSettingsModal}>
           <ReplayIcon className={MENU_ITEM_ICON} />
           Edit recurrence settings
