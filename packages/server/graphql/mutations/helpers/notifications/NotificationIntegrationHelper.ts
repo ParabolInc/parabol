@@ -8,6 +8,11 @@ export type NotifyResponse =
       retry?: boolean
     }
 
+export type TeamHealthProgress = {
+  respondentCount: number
+  eligibleCount: number
+}
+
 export type NotificationIntegration = {
   startMeeting(meeting: AnyMeeting, team: Team, user: User): Promise<NotifyResponse>
   updateMeeting?(meeting: AnyMeeting, team: Team, user: User): Promise<NotifyResponse>
@@ -24,6 +29,12 @@ export type NotificationIntegration = {
     user: User
   ): Promise<NotifyResponse>
   endTimeLimit(meeting: AnyMeeting, team: Team, user: User): Promise<NotifyResponse>
+  teamHealthResponseReminder(
+    meeting: AnyMeeting,
+    team: Team,
+    user: User,
+    progress: TeamHealthProgress
+  ): Promise<NotifyResponse>
   integrationUpdated(user: User): Promise<NotifyResponse>
   standupResponseSubmitted(
     meeting: AnyMeeting,
