@@ -22,6 +22,7 @@ import {
 import buildJiraSearchQuery from './buildJiraSearchQuery'
 import describeJiraDimensionField from './describeJiraDimensionField'
 import fetchJiraProjects from './fetchJiraProjects'
+import hasAtlassianSiteAccess from './hasAtlassianSiteAccess'
 import JiraIntegrationManager from './JiraIntegrationManager'
 import listJiraDimensionFields from './listJiraDimensionFields'
 import pushEstimateToJira from './pushEstimateToJira'
@@ -49,13 +50,21 @@ export class JiraServerIntegration extends ServerIntegrationDefinition {
     return auth && hasJiraScopes(auth.scopes) ? auth : null
   }
 
-  async resolveIssue({userId}: GqlIntegrationCtx, id: string): Promise<IssueRef | null> {
+  async resolveIssue(ctx: GqlIntegrationCtx, id: string): Promise<IssueRef | null> {
     const {cloudId, issueKey, projectKey} = JiraIssueId.split(id)
     const integrationHash = JiraIssueId.join(cloudId, issueKey)
     if (!cloudId || !issueKey || integrationHash !== id) return null
+    const auth = await this.resolveAuth(ctx)
+    if (!auth || !(await hasAtlassianSiteAccess(auth, cloudId))) return null
     return {
       integrationHash,
-      integration: {accessUserId: userId, service: 'jira' as const, cloudId, issueKey, projectKey}
+      integration: {
+        accessUserId: ctx.userId,
+        service: 'jira' as const,
+        cloudId,
+        issueKey,
+        projectKey
+      }
     }
   }
 

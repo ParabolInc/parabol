@@ -1,5 +1,4 @@
-import getKysely from '../../../../../postgres/getKysely'
-import AtlassianServerManager from '../../../../../utils/AtlassianServerManager'
+import hasAtlassianSiteAccess from '../../../../../integrations/jira/hasAtlassianSiteAccess'
 import {hasConfluenceScopes} from '../../../../../utils/hasConfluenceScopes'
 import type {DataLoaderWorker} from '../../../../graphql'
 
@@ -24,25 +23,11 @@ export const resolveConfluenceAuth = async (
       error: 'Your Atlassian connection has not granted Confluence access'
     } as const
   }
-  if (!auth.cloudIds.includes(cloudId)) {
-    // stored cloudIds lag behind sites granted after consent; the site picker lists
-    // sites live, so confirm against the live list before rejecting
-    const sites = await new AtlassianServerManager(auth.accessToken).getAccessibleResources()
-    const hasSite = Array.isArray(sites) && sites.some(({id}) => id === cloudId)
-    if (!hasSite) {
-      return {
-        auth: null,
-        error: 'Your Atlassian connection cannot access this Confluence site'
-      } as const
-    }
-    await getKysely()
-      .updateTable('TeamMemberIntegrationAuth')
-      .set({meta: JSON.stringify({cloudIds: sites.map(({id}) => id)})})
-      .where('userId', '=', userId)
-      .where('providerId', '=', auth.providerId)
-      .where('providerUserId', '=', auth.providerUserId)
-      .where('isActive', '=', true)
-      .execute()
+  if (!(await hasAtlassianSiteAccess(auth, cloudId))) {
+    return {
+      auth: null,
+      error: 'Your Atlassian connection cannot access this Confluence site'
+    } as const
   }
   return {auth, error: null} as const
 }

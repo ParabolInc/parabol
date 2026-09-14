@@ -35,7 +35,15 @@ export class AzureDevOpsServerIntegration extends ServerIntegrationDefinition {
   async resolveIssue({userId}: GqlIntegrationCtx, id: string): Promise<IssueRef | null> {
     const {instanceId, projectKey, issueKey} = AzureDevOpsIssueId.split(id)
     const integrationHash = AzureDevOpsIssueId.join(instanceId, projectKey, issueKey)
-    if (!instanceId || !projectKey || !issueKey || integrationHash !== id) return null
+    if (
+      !instanceId ||
+      !projectKey ||
+      !issueKey ||
+      integrationHash !== id ||
+      !instanceId.startsWith('dev.azure.com/')
+    ) {
+      return null
+    }
     return {
       integrationHash,
       integration: {

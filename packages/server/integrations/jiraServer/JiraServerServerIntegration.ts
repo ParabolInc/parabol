@@ -27,13 +27,18 @@ export class JiraServerServerIntegration extends ServerIntegrationDefinition {
   readonly title = jiraServerIntegrationMeta.title
   readonly authStrategy = 'oauth1' as const
 
-  async resolveIssue({userId}: GqlIntegrationCtx, id: string): Promise<IssueRef | null> {
+  async resolveIssue(ctx: GqlIntegrationCtx, id: string): Promise<IssueRef | null> {
     const {providerId, repositoryId, issueId} = JiraServerIssueId.split(id)
-    if (Number.isNaN(providerId) || !repositoryId || !issueId) return null
+    const integrationHash = JiraServerIssueId.join(providerId, repositoryId, issueId)
+    if (Number.isNaN(providerId) || !repositoryId || !issueId || integrationHash !== id) {
+      return null
+    }
+    const auth = await this.resolveAuth(ctx)
+    if (auth?.providerId !== providerId) return null
     return {
-      integrationHash: JiraServerIssueId.join(providerId, repositoryId, issueId),
+      integrationHash,
       integration: {
-        accessUserId: userId,
+        accessUserId: ctx.userId,
         service: 'jiraServer' as const,
         providerId,
         repositoryId,
