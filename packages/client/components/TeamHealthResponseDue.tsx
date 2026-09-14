@@ -34,7 +34,7 @@ const TeamHealthResponseDue = (props: Props) => {
   const {id: meetingId, name: meetingName, scheduledEndTime, team} = meeting
   const closesAt = scheduledEndTime ? dayjs(scheduledEndTime).format('ddd h:mm A') : 'soon'
   const goThere = () => {
-    navigate(`/meet/${meetingId}`)
+    navigate(`/meet/${meetingId}/respond`)
   }
 
   return (

@@ -1,10 +1,9 @@
 import ms from 'ms'
+import {getNewDataLoader} from '../../../dataloader/getNewDataLoader'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {selectNewMeetings} from '../../../postgres/select'
 import type {TeamHealthResponsePhase} from '../../../postgres/types/NewMeetingPhase'
-import type {SubOptions} from '../../../utils/publish'
-import type {DataLoaderWorker} from '../../graphql'
 import publishNotification from '../../public/mutations/helpers/publishNotification'
 import getTeamHealthStragglers from './getTeamHealthStragglers'
 import {IntegrationNotifier} from './notifications/IntegrationNotifier'
@@ -14,8 +13,10 @@ const MIN_OPEN_BEFORE_REMINDER = ms('1h')
 
 // A cycle is reminded once, when it is within REMINDER_LEAD of closing, provided it has been open
 // long enough that the start notification is not still fresh. The reminder is a Notification row,
-// so its existence is also the record that this cycle was already handled
-const remindTeamHealthResponders = async (dataLoader: DataLoaderWorker, subOptions: SubOptions) => {
+// so its existence is also the record that this cycle was already handled.
+// Each cycle publishes under its own dataloader: the Slack DM lookup reprimes team rows, which
+// would invalidate the snapshot a sibling cycle already published against
+const remindTeamHealthResponders = async (mutatorId?: string) => {
   const now = Date.now()
   const pg = getKysely()
   const candidates = await selectNewMeetings()
@@ -37,15 +38,16 @@ const remindTeamHealthResponders = async (dataLoader: DataLoaderWorker, subOptio
     .execute()
   const meetings = candidates.filter((meeting) => meeting.meetingType === 'teamHealth')
 
-  const reminded = await Promise.all(
-    meetings.map(async (meeting) => {
-      const {id: meetingId, teamId, phases} = meeting
-      const responsePhase = phases.find(
-        (phase): phase is TeamHealthResponsePhase => phase.phaseType === 'TEAM_HEALTH_RESPONSE'
-      )
-      if (!responsePhase) return false
-      const questionIds = responsePhase.stages.map(({questionId}) => questionId)
-
+  const remindMeeting = async (meeting: (typeof meetings)[number]) => {
+    const {id: meetingId, teamId, phases} = meeting
+    const responsePhase = phases.find(
+      (phase): phase is TeamHealthResponsePhase => phase.phaseType === 'TEAM_HEALTH_RESPONSE'
+    )
+    if (!responsePhase) return false
+    const questionIds = responsePhase.stages.map(({questionId}) => questionId)
+    const dataLoader = getNewDataLoader('processRecurrence.remindTeamHealthResponders')
+    const subOptions = {mutatorId, operationId: dataLoader.share()}
+    try {
       const [teamMembers, meetingMembers, responses] = await Promise.all([
         dataLoader.get('teamMembersByTeamId').load(teamId),
         dataLoader.get('meetingMembersByMeetingId').load(meetingId),
@@ -89,8 +91,12 @@ const remindTeamHealthResponders = async (dataLoader: DataLoaderWorker, subOptio
         eligibleCount: eligibleUserIds.length
       })
       return true
-    })
-  )
+    } finally {
+      dataLoader.dispose()
+    }
+  }
+
+  const reminded = await Promise.all(meetings.map(remindMeeting))
   return reminded.filter(Boolean).length
 }
 

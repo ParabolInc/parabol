@@ -136,6 +136,14 @@ const makeEndMeetingButtons = (meeting: AnyMeeting) => {
       }
       return makeButtons([responsesButton, summaryButton])
     }
+    case 'teamHealth': {
+      const resultsUrl = makeAppURL(appOrigin, `meet/${meetingId}/result/1`)
+      const resultsButton = {
+        text: 'See results',
+        url: resultsUrl
+      }
+      return makeButtons([resultsButton, summaryButton])
+    }
     default:
       throw new Error('Invalid meeting type')
   }
@@ -381,7 +389,7 @@ const getSlackMessageForNotification = async (
   } else if (notification.type === 'TEAM_HEALTH_RESPONSE_DUE') {
     const {scheduledEndTime} = meeting
     if (!scheduledEndTime) return null
-    const buttonUrl = makeAppURL(appOrigin, `meet/${notification.meetingId}`, {
+    const buttonUrl = makeAppURL(appOrigin, `meet/${notification.meetingId}/respond`, {
       searchParams: {
         utm_source: 'slack team health reminder',
         utm_medium: 'product',
@@ -570,7 +578,7 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
     const {scheduledEndTime} = meeting
     if (!scheduledEndTime) return 'success'
     const {respondentCount, eligibleCount} = progress
-    const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`, {
+    const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}/respond`, {
       searchParams: {
         utm_source: 'slack team health reminder',
         utm_medium: 'product',

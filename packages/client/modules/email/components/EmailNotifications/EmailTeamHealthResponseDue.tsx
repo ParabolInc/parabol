@@ -34,7 +34,7 @@ const EmailTeamHealthResponseDue = (props: Props) => {
   const {id: meetingId, name: meetingName, scheduledEndTime, team} = meeting
   const closesAt = scheduledEndTime ? dayjs(scheduledEndTime).format('ddd h:mm A') : 'soon'
 
-  const linkUrl = makeAppURL(appOrigin, `/meet/${meetingId}`, {
+  const linkUrl = makeAppURL(appOrigin, `/meet/${meetingId}/respond`, {
     searchParams: notificationSummaryUrlParams
   })
 

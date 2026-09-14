@@ -102,6 +102,14 @@ const makeEndMeetingButtons = (meeting: AnyMeeting) => {
       }
       return makeHackedButtonPairFields(responseButton, summaryButton)
     }
+    case 'teamHealth': {
+      const resultsUrl = makeAppURL(appOrigin, `meet/${meetingId}/result/1`)
+      const resultsButton = {
+        label: 'See results',
+        link: resultsUrl
+      }
+      return makeHackedButtonPairFields(resultsButton, summaryButton)
+    }
     default:
       throw new Error('Invalid meeting type')
   }
@@ -407,7 +415,7 @@ const MattermostNotificationHelper: NotificationIntegrationHelper<MattermostNoti
     const {scheduledEndTime} = meeting
     if (!scheduledEndTime) return 'success'
     const {respondentCount, eligibleCount} = progress
-    const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`, {
+    const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}/respond`, {
       searchParams: {
         utm_source: 'mattermost team health reminder',
         utm_medium: 'product',

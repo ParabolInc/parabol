@@ -187,9 +187,16 @@ export const removeTeamMemberNotificationUpdater: SharedUpdater<
   handleRemoveTasks(taskIds, store)
 }
 
-export const removeTeamMemberUpdater: SharedUpdater<any> = (payload, context) => {
+export const removeTeamMemberUpdater: SharedUpdater<
+  TRemoveTeamMemberMutation['response']['removeTeamMember']
+> = (payload, context) => {
   removeTeamMemberTasksUpdater(payload, context)
   removeTeamMemberTeamUpdater(payload, context)
+  const {atmosphere, store} = context
+  const removedUserId = payload.getLinkedRecord('teamMember').getValue('userId')
+  if (removedUserId !== atmosphere.viewerId) return
+  const teamId = payload.getLinkedRecord('team').getValue('id')
+  handleRemoveTeams(teamId, store)
 }
 
 const RemoveTeamMemberMutation: SimpleMutation<TRemoveTeamMemberMutation> = (

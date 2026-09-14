@@ -359,7 +359,7 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
     if (!scheduledEndTime) return 'success'
     const {webhookUrl} = notificationChannel
     const {respondentCount, eligibleCount} = progress
-    const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`, {
+    const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}/respond`, {
       searchParams: {
         utm_source: 'MS Teams team health reminder',
         utm_medium: 'product',

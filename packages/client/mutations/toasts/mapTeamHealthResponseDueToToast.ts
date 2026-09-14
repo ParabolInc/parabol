@@ -32,7 +32,7 @@ const mapTeamHealthResponseDueToToast = (
     action: {
       label: 'Share your responses',
       callback: () => {
-        navigate(`/meet/${meetingId}`)
+        navigate(`/meet/${meetingId}/respond`)
       }
     }
   }
