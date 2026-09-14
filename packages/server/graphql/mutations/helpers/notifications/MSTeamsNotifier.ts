@@ -380,7 +380,7 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
 
     const adaptiveCard = JSON.stringify(card.toJSON())
     const attachments = MakeACAttachment(adaptiveCard)
-    return notifyMSTeams('meetingStart', webhookUrl, user, team.id, attachments)
+    return notifyMSTeams('TEAM_HEALTH_RESPONSE_DUE', webhookUrl, user, team.id, attachments)
   },
   async integrationUpdated(user) {
     const {webhookUrl, teamId} = notificationChannel

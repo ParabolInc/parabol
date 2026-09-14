@@ -445,7 +445,13 @@ const MattermostNotificationHelper: NotificationIntegrationHelper<MattermostNoti
         }
       )
     ]
-    return notifyMattermost('meetingStart', notificationChannel, user, team.id, attachments)
+    return notifyMattermost(
+      'TEAM_HEALTH_RESPONSE_DUE',
+      notificationChannel,
+      user,
+      team.id,
+      attachments
+    )
   },
   async integrationUpdated(user) {
     const message = `Integration webhook configuration updated`

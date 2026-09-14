@@ -153,8 +153,8 @@ const MattermostPanel = (props: Props) => {
             Mattermost Webhook
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className='ml-1 h-6 w-6 text-fg-secondary hover:cursor-pointer'>
-                  <InfoIcon />
+                <div className='ml-1 flex h-4 w-4 items-center text-fg-secondary hover:cursor-pointer'>
+                  <InfoIcon className='text-base' />
                 </div>
               </TooltipTrigger>
               <TooltipContent>
@@ -172,7 +172,7 @@ const MattermostPanel = (props: Props) => {
           <Button
             variant='flat'
             size='md'
-            className='mx-4 min-w-9 border-hairline-strong font-semibold text-[12px] text-fg-primary'
+            className='ml-4 min-w-9 border-hairline-strong font-semibold text-[12px] text-fg-primary'
             disabled={isUpdateDisabled(fieldError, fieldValue)}
           >
             Update

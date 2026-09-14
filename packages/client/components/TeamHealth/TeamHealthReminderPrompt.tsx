@@ -13,21 +13,27 @@ import SlackClientManager from '../../utils/SlackClientManager'
 import MattermostSVG from '../MattermostSVG'
 import MSTeamsSVG from '../MSTeamsSVG'
 import SlackSVG from '../SlackSVG'
+import TeamHealthReminderStatus, {type ReminderService} from './TeamHealthReminderStatus'
 
 interface Props {
   meeting: TeamHealthReminderPrompt_meeting$key
 }
 
 // Mattermost and MS Teams have no per-user DM, so their reminder is the team channel post, which
-// only fires for teams that subscribed a channel to meeting events. Slack DMs each member who has
-// their own auth, and posts to the channel a member subscribed to meeting events
+// only fires for teams that subscribed a channel to the reminder event. Slack DMs each member who
+// has their own auth, and posts to the channel a member subscribed to meeting events
 const isChannelReminderActive = (integration: {
   isActive: boolean
   teamNotificationSettings: {events: readonly SlackNotificationEventEnum[]} | null | undefined
 }) => {
   const {isActive, teamNotificationSettings} = integration
-  return !!isActive && !!teamNotificationSettings?.events.includes('meetingStart')
+  return !!isActive && !!teamNotificationSettings?.events.includes('TEAM_HEALTH_RESPONSE_DUE')
 }
+
+const toServices = (slack: boolean, mattermost: boolean, teams: boolean) =>
+  [slack && 'Slack', mattermost && 'Mattermost', teams && 'Teams'].filter(
+    (service): service is ReminderService => !!service
+  )
 
 const TeamHealthReminderPrompt = (props: Props) => {
   const {meeting: meetingRef} = props
@@ -79,18 +85,38 @@ const TeamHealthReminderPrompt = (props: Props) => {
   const hasSlackChannel = !!slack?.notifications.some(
     ({event, channelId}) => event === 'meetingStart' && !!channelId
   )
-  const hasChannelReminder =
-    hasSlackChannel ||
-    (!!integrations && isChannelReminderActive(integrations.mattermost)) ||
-    (!!integrations && isChannelReminderActive(integrations.msTeams))
+  const hasMattermostChannel = !!integrations && isChannelReminderActive(integrations.mattermost)
+  const hasMSTeamsChannel = !!integrations && isChannelReminderActive(integrations.msTeams)
   // a spectator (usually the lead) is not nudged personally, so what they care about is the team
   const isSpectating = !!viewerMeetingMember?.isSpectating
-  const hasReminder = isSpectating ? hasChannelReminder : !!slack?.isActive || hasChannelReminder
+  const hasSlackDm =
+    !!slack?.isActive &&
+    !!slack.notifications.some(
+      ({event, channelId}) => event === 'TEAM_HEALTH_RESPONSE_DUE' && !!channelId
+    )
+  // a respondent is nudged on Slack by DM, so the channel post only counts for a spectator
+  const hasSlackReminder = isSpectating ? hasSlackChannel : hasSlackDm
+  const activeServices = toServices(hasSlackReminder, hasMattermostChannel, hasMSTeamsChannel)
+  const connectedServices = toServices(
+    !!slack?.isActive,
+    !!integrations?.mattermost.isActive,
+    !!integrations?.msTeams.isActive
+  )
   const isWebhookAvailable = !window.__ACTION__.mattermostWebhookIntegrationDisabled
   const hasIntegration = SlackClientManager.isAvailable || isWebhookAvailable
-  if (!meetingSeriesId || !scheduledEndTime || hasReminder || !hasIntegration) {
-    return null
+  if (!meetingSeriesId || !scheduledEndTime) return null
+  if (connectedServices.length > 0) {
+    const isOn = activeServices.length > 0
+    return (
+      <TeamHealthReminderStatus
+        services={isOn ? activeServices : connectedServices}
+        isOn={isOn}
+        isSpectating={isSpectating}
+        teamId={teamId}
+      />
+    )
   }
+  if (!hasIntegration) return null
 
   const onConnectSlack = () => {
     if (submitting) return

@@ -642,9 +642,12 @@ async function getSlack(
   _userId: string,
   event: SlackNotification['event']
 ) {
+  // TEAM_HEALTH_RESPONSE_DUE rows are each member's DM toggle (see sendNotificationToUser), so the
+  // channel post for the reminder follows the meetingStart subscription instead
+  const channelEvent = event === 'TEAM_HEALTH_RESPONSE_DUE' ? 'meetingStart' : event
   const notifications = await dataLoader
     .get('slackNotificationsByTeamIdAndEvent')
-    .load({event, teamId})
+    .load({event: channelEvent, teamId})
   return notifications.map(SlackSingleChannelNotifier)
 }
 
@@ -779,6 +782,20 @@ export const SlackNotifier = {
     }
 
     const meeting = await dataLoader.get('newMeetings').loadNonNull(notification.meetingId)
+
+    if (notification.type === 'TEAM_HEALTH_RESPONSE_DUE') {
+      const teamNotifications = await dataLoader
+        .get('slackNotificationsByTeamId')
+        .load(meeting.teamId)
+      const setting = teamNotifications.find(
+        (slackNotification) =>
+          slackNotification.userId === userId &&
+          slackNotification.event === 'TEAM_HEALTH_RESPONSE_DUE'
+      )
+      if (setting && !setting.channelId) {
+        return
+      }
+    }
 
     const userSlackAuth = await getDmSlackForMeeting(dataLoader, meeting, userId)
     if (!userSlackAuth) {

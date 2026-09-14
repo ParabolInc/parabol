@@ -152,7 +152,12 @@ export const createNotifier = (loader: NotificationIntegrationLoader): Notifier 
   ) {
     const {meeting, team, user} = await loadMeetingTeam(dataLoader, meetingId, teamId)
     if (!meeting || !team || !user) return
-    const notifiers = await loader(dataLoader, team.id, meeting.facilitatorUserId!, 'meetingStart')
+    const notifiers = await loader(
+      dataLoader,
+      team.id,
+      meeting.facilitatorUserId!,
+      'TEAM_HEALTH_RESPONSE_DUE'
+    )
     fireAndForget(notifiers, (notifier) =>
       notifier.teamHealthResponseReminder(meeting, team, user, progress)
     )

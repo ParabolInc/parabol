@@ -34,7 +34,7 @@ const MSTeamsIntegration: MsTeamsIntegrationResolvers = {
     const auths = await dataLoader
       .get('teamMemberIntegrationAuthsByTeamIdAndService')
       .load({teamId, service: 'msTeams'})
-    return auths && auths.length > 1
+    return auths && auths.length > 0
   },
 
   activeProvider: async ({teamId}, _args, {dataLoader}) => {
