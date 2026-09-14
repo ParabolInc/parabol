@@ -14,4 +14,6 @@ enum SlackNotificationEventEnum {
   TOPIC_SHARED
   "A standup response was submitted"
   STANDUP_RESPONSE_SUBMITTED
+  "A team health cycle closes soon and the member has not responded"
+  TEAM_HEALTH_RESPONSE_DUE
 }

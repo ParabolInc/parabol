@@ -6,10 +6,12 @@ import {DateTime, RRuleSet} from 'rrule-rust'
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {fromDateTime, toDateTime} from '../../../../client/shared/rruleUtil'
 import AuthToken from '../../../database/types/AuthToken'
+import {getNewDataLoader} from '../../../dataloader/getNewDataLoader'
 import getKysely from '../../../postgres/getKysely'
 import {selectNewMeetings} from '../../../postgres/select'
 import standardError from '../../../utils/standardError'
 import getDefaultTeamFacilitator from '../../mutations/helpers/getDefaultTeamFacilitator'
+import remindTeamHealthResponders from '../../mutations/helpers/remindTeamHealthResponders'
 import rotateSeriesTeamHealthQuestionIds from '../../mutations/helpers/rotateSeriesTeamHealthQuestionIds'
 import safeEndRetrospective from '../../mutations/helpers/safeEndRetrospective'
 import safeEndTeamHealth from '../../mutations/helpers/safeEndTeamHealth'
@@ -26,12 +28,14 @@ import {checkSequential} from './helpers/checkSequential'
 // so they only ever differ by rounding. Anything closer than this is treated as the same occurrence.
 const SAME_OCCURRENCE_TOLERANCE = ms('1m')
 
+// The first publish under an operationId snapshots its dataloader to redis and every later publish
+// under that id resolves against the snapshot. This mutation ends, reminds, and starts many
+// meetings, each of which writes and reloads rows the others already cached, so every unit of work
+// gets its own dataloader & operationId instead of sharing the request's
 const processRecurrence: MutationResolvers['processRecurrence'] = checkSequential(
   async (_source, _args, serverContext, info) => {
     const {dataLoader, socketId: mutatorId} = serverContext
     const now = new Date()
-    const operationId = dataLoader.share()
-    const subOptions = {mutatorId, operationId}
 
     // RESOLUTION
     // Find any meetings with a scheduledEndTime before now, and close them
@@ -52,26 +56,32 @@ const processRecurrence: MutationResolvers['processRecurrence'] = checkSequentia
             tms,
             rol: 'impersonate'
           })
-          const context = {...serverContext, authToken}
-          if (meeting.meetingType === 'teamPrompt') {
-            return safeEndTeamPrompt({meeting, context, info})
-          } else if (meeting.meetingType === 'retrospective') {
-            return safeEndRetrospective({meeting, context, info})
-          } else if (meeting.meetingType === 'teamHealth') {
-            return safeEndTeamHealth({meeting, context, info})
-          } else {
-            return standardError(new Error('Unhandled recurring meeting type'), {
-              tags: {
-                meetingId: meeting.id,
-                meetingType: meeting.meetingType
-              }
-            })
+          const meetingDataLoader = getNewDataLoader('processRecurrence.endMeeting')
+          const context = {...serverContext, authToken, dataLoader: meetingDataLoader}
+          const tags = {meetingId: meeting.id, meetingType: meeting.meetingType}
+          const endMeeting = async () => {
+            if (meeting.meetingType === 'teamPrompt') {
+              return safeEndTeamPrompt({meeting, context, info})
+            } else if (meeting.meetingType === 'retrospective') {
+              return safeEndRetrospective({meeting, context, info})
+            } else if (meeting.meetingType === 'teamHealth') {
+              return safeEndTeamHealth({meeting, context, info})
+            }
+            return standardError(new Error('Unhandled recurring meeting type'), {tags})
           }
+          // one meeting that cannot be closed must not stop every other series from advancing
+          return endMeeting()
+            .catch((e: Error) => standardError(e, {tags}))
+            .finally(() => meetingDataLoader.dispose())
         })
       )
     )
 
     const meetingsEnded = res.filter((res) => !('error' in res)).length
+
+    const remindersSent = await tracer.trace('processRecurrence.remindTeamHealthResponders', () =>
+      remindTeamHealthResponders(mutatorId)
+    )
 
     let meetingsStarted = 0
 
@@ -175,21 +185,25 @@ const processRecurrence: MutationResolvers['processRecurrence'] = checkSequentia
           })
           if (hasUnusedOccurrence) {
             const questionIds = await getSharedQuestionIds(meetingSeries)
-            const res = await tracer.trace('startRecurringMeeting', async (span) => {
-              span?.addTags({meetingSeriesId})
-              return startRecurringMeeting(meetingSeries, dataLoader, subOptions, {
-                // the series row was just rotated, so meetingSeries still holds the departed one
-                facilitatorId: runFacilitatorId,
-                questionIds
+            const seriesDataLoader = getNewDataLoader('processRecurrence.startRecurringMeeting')
+            const subOptions = {mutatorId, operationId: seriesDataLoader.share()}
+            const res = await tracer
+              .trace('startRecurringMeeting', async (span) => {
+                span?.addTags({meetingSeriesId})
+                return startRecurringMeeting(meetingSeries, seriesDataLoader, subOptions, {
+                  // the series row was just rotated, so meetingSeries still holds the departed one
+                  facilitatorId: runFacilitatorId,
+                  questionIds
+                })
               })
-            })
+              .finally(() => seriesDataLoader.dispose())
             if (!('error' in res)) meetingsStarted++
           }
         })
       )
     )
 
-    const data = {meetingsStarted, meetingsEnded}
+    const data = {meetingsStarted, meetingsEnded, remindersSent}
     return data
   }
 )

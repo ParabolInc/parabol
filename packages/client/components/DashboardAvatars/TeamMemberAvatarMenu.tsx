@@ -36,14 +36,14 @@ const TeamMemberAvatarMenu = (props: Props) => {
     teamMemberRef
   )
   const atmosphere = useAtmosphere()
-  const {userId} = teamMember
+  const {userId, isLead} = teamMember
   const {viewerId} = atmosphere
   const isSelf = userId === viewerId
   const isViewerTeamAdmin = isViewerLead || isViewerOrgAdmin
 
   return (
     <MenuContent align='start'>
-      {isViewerTeamAdmin && (!isSelf || !isViewerLead) && (
+      {isViewerTeamAdmin && !isLead && (
         <MenuItem onClick={togglePromote}>Promote to Team Lead</MenuItem>
       )}
       {isViewerTeamAdmin && !isSelf && <MenuItem onClick={toggleRemove}>Remove from Team</MenuItem>}
