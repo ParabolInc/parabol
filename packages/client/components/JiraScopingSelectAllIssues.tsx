@@ -12,7 +12,7 @@ import Checkbox from './Checkbox'
 interface Props {
   meetingId: string
   issues: JiraScopingSelectAllIssues_issues$key
-  usedServiceTaskIds: Set<string>
+  usedServiceTaskIds: ReadonlyMap<string, string>
   persistQuery?: () => void
 }
 

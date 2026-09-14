@@ -9,8 +9,6 @@ import type {NewJiraIssueInput_viewer$key} from '../__generated__/NewJiraIssueIn
 import useForm from '../hooks/useForm'
 import CreateTaskMutation from '../mutations/CreateTaskMutation'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
-import JiraIssueId from '../shared/gqlIds/JiraIssueId'
-import JiraProjectId from '../shared/gqlIds/JiraProjectId'
 import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
 import type {CompletedHandler} from '../types/relayMutations'
 import {Menu} from '../ui/Menu/Menu'
@@ -55,8 +53,8 @@ const NewJiraIssueInput = (props: Props) => {
                 projects {
                   ...NewJiraIssueMenu_JiraRemoteProjects
                   id
-                  cloudId
                   key
+                  integrationRepoId
                 }
               }
             }
@@ -80,9 +78,11 @@ const NewJiraIssueInput = (props: Props) => {
   }, [isEditing])
   const projects = integrations.atlassian?.projects
   const firstProject = projects?.find((project) => project.key)
-  const cloudId = firstProject?.cloudId
-  const projectKey = firstProject?.key
-  const [selectedProjectKey, setSelectedProjectKey] = useState(projectKey)
+  const [selectedProjectId, setSelectedProjectId] = useState(firstProject?.integrationRepoId)
+  const selectedProject = projects?.find(
+    (project) => project.integrationRepoId === selectedProjectId
+  )
+  const selectedProjectKey = selectedProject?.key
   const isMenuOpenRef = useRef(false)
   const {fields, onChange, validateField, setDirtyField} = useForm({
     newIssue: {
@@ -94,7 +94,7 @@ const NewJiraIssueInput = (props: Props) => {
   const ref = useRef<HTMLInputElement>(null)
   const handleCreateNewIssue = (e: FormEvent) => {
     e.preventDefault()
-    if (isMenuOpenRef.current || !selectedProjectKey || !cloudId) return
+    if (isMenuOpenRef.current || !selectedProjectId) return
     const {newIssue: newIssueRes} = validateField()
     const {value: newIssueTitle, error} = newIssueRes
     if (error) {
@@ -117,7 +117,7 @@ const NewJiraIssueInput = (props: Props) => {
       status: 'active' as const,
       integration: {
         service: 'jira' as const,
-        serviceProjectHash: JiraProjectId.join(cloudId, selectedProjectKey)
+        serviceProjectHash: selectedProjectId
       }
     }
     const handleCompleted: CompletedHandler = (res) => {
@@ -126,15 +126,14 @@ const NewJiraIssueInput = (props: Props) => {
         setCreateTaskError(`${selectedProjectKey}: ${error.message}`)
       }
       if (error || !task) return
-      const {integration} = task
-      if (!integration) return
-      const {issueKey} = integration
+      const {integrationHash} = task
+      if (!integrationHash) return
       const pokerScopeVariables = {
         meetingId,
         updates: [
           {
             service: 'jira',
-            serviceTaskId: JiraIssueId.join(cloudId, issueKey),
+            serviceTaskId: integrationHash,
             action: 'ADD'
           } as const
         ]
@@ -149,7 +148,8 @@ const NewJiraIssueInput = (props: Props) => {
   }
 
   const handleSelectProjectKey = (projectKey: string) => {
-    setSelectedProjectKey(projectKey)
+    const project = projects?.find((project) => project.key === projectKey)
+    if (project) setSelectedProjectId(project.integrationRepoId)
   }
 
   if (createTaskError) {

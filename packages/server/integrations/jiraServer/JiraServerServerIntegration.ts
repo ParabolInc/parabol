@@ -1,12 +1,15 @@
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
+import JiraServerIssueId from 'parabol-client/shared/gqlIds/JiraServerIssueId'
 import {jiraServerIntegrationMeta} from 'parabol-client/shared/integrations/jiraServerIntegrationMeta'
 import type {JiraServerProject} from '../../dataloader/jiraServerLoaders'
 import type {JiraSearchQueryJson} from '../../postgres/types'
 import buildJiraSearchQuery from '../jira/buildJiraSearchQuery'
 import {
   type EstimatePushCapability,
+  type GqlIntegrationCtx,
   type IssueCreateCapability,
   type IssueReadCapability,
+  type IssueRef,
   type IssueSearchCapability,
   type RepoListCapability,
   ServerIntegrationDefinition
@@ -23,6 +26,21 @@ export class JiraServerServerIntegration extends ServerIntegrationDefinition {
   readonly service = jiraServerIntegrationMeta.service
   readonly title = jiraServerIntegrationMeta.title
   readonly authStrategy = 'oauth1' as const
+
+  async resolveIssue({userId}: GqlIntegrationCtx, id: string): Promise<IssueRef | null> {
+    const {providerId, repositoryId, issueId} = JiraServerIssueId.split(id)
+    if (Number.isNaN(providerId) || !repositoryId || !issueId) return null
+    return {
+      integrationHash: JiraServerIssueId.join(providerId, repositoryId, issueId),
+      integration: {
+        accessUserId: userId,
+        service: 'jiraServer' as const,
+        providerId,
+        repositoryId,
+        issueId
+      }
+    }
+  }
 
   readonly capabilities: {
     issueCreate: IssueCreateCapability

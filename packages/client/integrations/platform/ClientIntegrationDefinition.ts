@@ -2,7 +2,7 @@ import type {ComponentType, LazyExoticComponent} from 'react'
 import type {ScopePhaseArea_meeting$data} from '../../__generated__/ScopePhaseArea_meeting.graphql'
 import type Atmosphere from '../../Atmosphere'
 import type {MenuMutationProps} from '../../hooks/useMutationProps'
-import type {IntegrationIdCodec, IntegrationMeta} from '../../shared/integrations/IntegrationMeta'
+import type {IntegrationMeta} from '../../shared/integrations/IntegrationMeta'
 
 export interface ConnectProvider {
   id: string
@@ -42,7 +42,6 @@ export abstract class ClientIntegrationDefinition {
   abstract readonly service: IntegrationMeta['service']
   abstract readonly title: string
   abstract readonly description: string
-  abstract readonly ids: IntegrationIdCodec
   abstract readonly Icon: ComponentType<{className?: string}>
   readonly iconClassName?: string
   abstract readonly capabilities: ClientIntegrationCapabilities

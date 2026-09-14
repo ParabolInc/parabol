@@ -5,16 +5,14 @@ import type {AzureDevOpsScopingSelectAllIssues_workItems$key} from '../__generat
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
-import AzureDevOpsIssueId from '../shared/gqlIds/AzureDevOpsIssueId'
 import {Threshold} from '../types/constEnums'
-import AzureDevOpsClientManager from '../utils/AzureDevOpsClientManager'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
 import Checkbox from './Checkbox'
 
 interface Props {
   meetingId: string
   workItems: AzureDevOpsScopingSelectAllIssues_workItems$key
-  usedServiceTaskIds: Set<string>
+  usedServiceTaskIds: ReadonlyMap<string, string>
   providerId: string
 }
 
@@ -35,21 +33,7 @@ const AzureDevOpsScopingSelectAllIssues = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, error} = useMutationProps()
-  const getProjectId = (url: URL) => {
-    const firstIndex = url.pathname.indexOf('/', 1)
-    const seconedIndex = url.pathname.indexOf('/', firstIndex + 1)
-    return url.pathname.substring(firstIndex + 1, seconedIndex)
-  }
-
-  const serviceTaskIds = workItems.map((userStory) => {
-    const url = new URL(userStory.node.url)
-    return AzureDevOpsIssueId.join(
-      AzureDevOpsClientManager.getInstanceId(url),
-      getProjectId(url),
-      userStory.node.id
-    )
-  })
-
+  const serviceTaskIds = workItems.map(({node}) => node.id)
   const [unusedServiceTaskIds, allSelected] = useUnusedRecords(serviceTaskIds, usedServiceTaskIds)
   const availableCountToAdd = Threshold.MAX_POKER_STORIES - usedServiceTaskIds.size
   const onClick = () => {

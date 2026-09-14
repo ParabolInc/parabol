@@ -60,7 +60,7 @@ const getHeaderFields = (integration: Integration | null): HeaderFields | null =
       const {summary, descriptionHTML, jiraUrl, issueKey} = integration
       return {
         cardTitle: summary,
-        descriptionHTML,
+        descriptionHTML: descriptionHTML ?? '',
         url: jiraUrl,
         linkTitle: `${name} Issue #${issueKey}`,
         linkText: issueKey
@@ -70,7 +70,7 @@ const getHeaderFields = (integration: Integration | null): HeaderFields | null =
       const {number, title: githubTitle, bodyHTML, ghUrl} = integration
       return {
         cardTitle: githubTitle,
-        descriptionHTML: bodyHTML,
+        descriptionHTML: bodyHTML ?? '',
         url: ghUrl,
         linkTitle: `GitHub Issue #${number}`,
         linkText: `#${number}`
@@ -85,7 +85,7 @@ const getHeaderFields = (integration: Integration | null): HeaderFields | null =
       } = integration
       return {
         cardTitle: azureDevOpsTitle,
-        descriptionHTML,
+        descriptionHTML: descriptionHTML ?? '',
         url: azureDevOpsUrl,
         linkTitle: `${azureDevOpsTitle} Issue #${workItemId}`,
         linkText: `#${workItemId}`

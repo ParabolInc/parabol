@@ -2,7 +2,6 @@ import type {JSONContent} from '@tiptap/core'
 import {fetch} from '@whatwg-node/fetch'
 import tracer from 'dd-trace'
 import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
-import IntegrationHash from 'parabol-client/shared/gqlIds/IntegrationHash'
 import {splitTipTapContent} from 'parabol-client/shared/tiptap/splitTipTapContent'
 import {ExternalLinks} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
@@ -427,7 +426,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
     issueId: string,
     integrationHash: string
   ): Promise<string | Error> {
-    const integration = IntegrationHash.split('azureDevOps', integrationHash)
+    const integration = AzureDevOpsIssueId.split(integrationHash)
     if (!integration?.projectKey || !integration?.issueKey) {
       return new Error(`Invalid integrationHash: ${integrationHash}`)
     }

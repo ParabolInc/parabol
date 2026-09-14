@@ -5,8 +5,6 @@ import type {LinearScopingSelectAllIssues_issues$key} from '../__generated__/Lin
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
-import LinearIssueId from '../shared/gqlIds/LinearIssueId'
-import LinearProjectId from '../shared/gqlIds/LinearProjectId'
 import {Threshold} from '../types/constEnums'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
 import Checkbox from './Checkbox'
@@ -14,7 +12,7 @@ import Checkbox from './Checkbox'
 interface Props {
   meetingId: string
   issuesRef: LinearScopingSelectAllIssues_issues$key
-  usedServiceTaskIds: Set<string>
+  usedServiceTaskIds: ReadonlyMap<string, string>
 }
 
 const LinearScopingSelectAllIssues = (props: Props) => {
@@ -40,16 +38,16 @@ const LinearScopingSelectAllIssues = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting, error} = useMutationProps()
-  const serviceTaskIds = issues.map((issue) => {
-    const repoId = LinearProjectId.join(issue.team.id, issue.project?.id)
-    return LinearIssueId.join(repoId, issue.id)
-  })
+  const serviceTaskIds = issues.map((issue) => issue.id)
   const [unusedServiceTaskIds, allSelected] = useUnusedRecords(serviceTaskIds, usedServiceTaskIds)
   const availableCountToAdd = Threshold.MAX_POKER_STORIES - usedServiceTaskIds.size
   const onClick = () => {
     if (submitting) return
     submitMutation()
-    const updateArr = allSelected === true ? serviceTaskIds : unusedServiceTaskIds
+    const updateArr =
+      allSelected === true
+        ? serviceTaskIds.flatMap((id) => usedServiceTaskIds.get(id) ?? [])
+        : unusedServiceTaskIds
     const action = allSelected === true ? 'DELETE' : 'ADD'
     const limit = action === 'ADD' ? availableCountToAdd : 1e6
     const updates = updateArr.slice(0, limit).map(
@@ -66,10 +64,7 @@ const LinearScopingSelectAllIssues = (props: Props) => {
       updates
     }
     const contents = updates.map((update) => {
-      const issue = issues.find((issue) => {
-        const repoId = LinearProjectId.join(issue.team.id, issue.project?.id)
-        return LinearIssueId.join(repoId, issue.id) === update.serviceTaskId
-      })
+      const issue = issues.find((issue) => issue.id === update.serviceTaskId)
       return issue?.title ?? 'Unknown Story'
     })
     UpdatePokerScopeMutation(atmosphere, variables, {

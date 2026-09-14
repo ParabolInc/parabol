@@ -1,7 +1,5 @@
 import {commitLocalUpdate} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
-import IntegrationRepoId from '../shared/gqlIds/IntegrationRepoId'
-import JiraProjectId from '../shared/gqlIds/JiraProjectId'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
 import ScopingSearchHistoryToggle from './ScopingSearchHistoryToggle'
 
@@ -12,6 +10,7 @@ interface Props {
     readonly queryString: string
     readonly isJQL: boolean
     readonly projectKeyFilters: readonly string[]
+    readonly projectKeyFilterLabels: readonly string[]
   }[]
   meetingId: string
   onDeleteQuery: (id: string) => void
@@ -23,7 +22,7 @@ const JiraUniversalScopingSearchHistoryToggle = (props: Props) => {
 
   const searchQueries =
     savedQueries?.map((jiraSearchQuery) => {
-      const {id, queryString, isJQL, projectKeyFilters} = jiraSearchQuery
+      const {id, queryString, isJQL, projectKeyFilters, projectKeyFilterLabels} = jiraSearchQuery
 
       const selectQuery = () => {
         commitLocalUpdate(atmosphere, (store) => {
@@ -35,13 +34,7 @@ const JiraUniversalScopingSearchHistoryToggle = (props: Props) => {
         })
       }
       const queryStringLabel = isJQL ? queryString : `“${queryString}”`
-      const projectFilters = projectKeyFilters
-        .map((filter) => {
-          return service === 'jiraServer'
-            ? IntegrationRepoId.split(filter).projectKey
-            : JiraProjectId.split(filter).projectKey
-        })
-        .join(', ')
+      const projectFilters = projectKeyFilterLabels.join(', ')
 
       return {
         id,

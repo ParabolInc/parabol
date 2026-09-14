@@ -13,7 +13,6 @@ export class LinearClientIntegration extends ClientIntegrationDefinition {
   readonly service = linearIntegrationMeta.service
   readonly title = linearIntegrationMeta.title
   readonly description = linearIntegrationMeta.description
-  readonly ids = linearIntegrationMeta.ids
   readonly Icon = LinearSVG
   readonly iconClassName = 'dark:[&_path]:fill-white'
   readonly capabilities: ClientIntegrationCapabilities = {

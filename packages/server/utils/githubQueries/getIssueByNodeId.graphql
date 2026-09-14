@@ -1,0 +1,10 @@
+query getIssueByNodeId($id: ID!) {
+  node(id: $id) {
+    ... on Issue {
+      number
+      repository {
+        nameWithOwner
+      }
+    }
+  }
+}

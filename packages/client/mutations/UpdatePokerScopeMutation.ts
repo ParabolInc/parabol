@@ -1,14 +1,8 @@
-//import AzureDevOpsIssueId from '~/shared/gqlIds/AzureDevOpsIssueId'
-import {generateHTML} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import GitLabIssueId from '~/shared/gqlIds/GitLabIssueId'
+import type {RecordProxy} from 'relay-runtime'
 import type {UpdatePokerScopeMutation as TUpdatePokerScopeMutation} from '../__generated__/UpdatePokerScopeMutation.graphql'
-import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
-import JiraIssueId from '../shared/gqlIds/JiraIssueId'
-import LinearIssueId from '../shared/gqlIds/LinearIssueId'
 import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
-import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {splitTipTapContent} from '../shared/tiptap/splitTipTapContent'
 import {PALETTE} from '../styles/paletteV3'
 import {SprintPokerDefaults} from '../types/constEnums'
@@ -112,6 +106,15 @@ export type PokerScopeMeeting = NonNullable<
   TUpdatePokerScopeMutation['response']['updatePokerScope']['meeting']
 >
 
+const stageMatchesScopeKey = (stage: RecordProxy, key: string) => {
+  const task = stage.getLinkedRecord('task')
+  return (
+    stage.getValue('taskId') === key ||
+    task?.getValue('integrationHash') === key ||
+    task?.getLinkedRecord('integration')?.getValue('id') === key
+  )
+}
+
 interface Handlers extends BaseLocalHandlers {
   contents: string[]
   selectedAll?: boolean
@@ -169,19 +172,12 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
       updates.forEach((update, idx) => {
         const {serviceTaskId, action, service} = update
         if (action === 'ADD') {
-          const stageTasks = stages.map((stage) =>
-            stage.getLinkedRecord<{integrationHash: string}>('task')
-          )
-          const stageIntegrationHashes = stageTasks.map(
-            (task) => task?.getValue('integrationHash') ?? ''
-          )
-          const stageExists = stageIntegrationHashes.includes(serviceTaskId)
+          const stageExists = stages.some((stage) => stageMatchesScopeKey(stage, serviceTaskId))
           if (stageExists) return
 
-          // create a task if it doesn't exist
           const plaintextContent = contents[idx] ?? ''
           const content = JSON.stringify(plaintextToTipTap(plaintextContent))
-          const {title, bodyContent} = splitTipTapContent(JSON.parse(content))
+          const {title} = splitTipTapContent(JSON.parse(content))
           const optimisticTask = createProxyRecord(store, 'Task', {
             createdBy: viewerId,
             plaintextContent,
@@ -190,88 +186,15 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
             status: 'future',
             tags: ['#archived'],
             teamId,
-            title,
-            integrationHash: service === 'PARABOL' ? '' : serviceTaskId
+            title
           })
           optimisticTask
             .setLinkedRecord(viewer, 'createdByUser')
             .setLinkedRecords([], 'estimates')
             .setLinkedRecords([], 'editors')
             .setLinkedRecord(team!, 'team')
-          if (service === 'jira') {
-            const descriptionHTML = generateHTML(bodyContent, serverTipTapExtensions)
-            const {cloudId, issueKey, projectKey} = JiraIssueId.split(serviceTaskId)
-            const optimisticTaskIntegration = createProxyRecord(store, 'JiraIssue', {
-              service,
-              teamId,
-              meetingId,
-              userId: viewerId,
-              cloudId,
-              cloudName: '',
-              url: '',
-              issueKey,
-              projectKey,
-              summary: plaintextContent,
-              title: plaintextContent,
-              description: '',
-              descriptionHTML
-            })
-            optimisticTask.setLinkedRecord(optimisticTaskIntegration, 'integration')
-          } else if (service === 'azureDevOps') {
-            //const descriptionHTML = stateToHTML(contentState)
-            //const {instanceId, issueKey, projectKey} = AzureDevOpsIssueId.split(serviceTaskId)
-            const optimisticTaskIntegration = createProxyRecord(store, 'AzureDevOpsWorkItem', {
-              service,
-              teamId,
-              meetingId,
-              userId: viewerId,
-              url: '',
-              title,
-              state: '',
-              type: ''
-            })
-            optimisticTask.setLinkedRecord(optimisticTaskIntegration, 'integration')
-          } else if (service === 'github') {
-            const bodyHTML = generateHTML(bodyContent, serverTipTapExtensions)
-            const {issueNumber, nameWithOwner, repoName, repoOwner} =
-              GitHubIssueId.split(serviceTaskId)
-            const repository = createProxyRecord(store, '_xGitHubRepository', {
-              nameWithOwner,
-              name: repoName,
-              owner: repoOwner
-            })
-            const optimisticTaskIntegration = createProxyRecord(store, '_xGitHubIssue', {
-              service,
-              number: issueNumber,
-              title,
-              description: '',
-              url: '',
-              bodyHTML
-            })
-            optimisticTaskIntegration.setLinkedRecord(repository, 'repository')
-            optimisticTask.setLinkedRecord(optimisticTaskIntegration, 'integration')
-          } else if (service === 'gitlab') {
-            const {gid} = GitLabIssueId.split(serviceTaskId)
-            const gitlabIssue = store.get(gid)
-            const iid = gitlabIssue?.getValue('iid')
-            const optimisticGitLabIssue = createProxyRecord(store, '_xGitLabIssue', {
-              service,
-              title,
-              iid
-            })
-            optimisticTask.setLinkedRecord(optimisticGitLabIssue, 'integration')
-          } else if (service === 'linear') {
-            const {issueId} = LinearIssueId.split(serviceTaskId)
-            const linearIssue = store.get(issueId)
-            const identifier = linearIssue?.getValue('identifier')
-            const optimisticTaskIntegration = createProxyRecord(store, '_xLinearIssue', {
-              service,
-              title,
-              description: '',
-              identifier,
-              url: ''
-            })
-            optimisticTask.setLinkedRecord(optimisticTaskIntegration, 'integration')
+          if (service !== 'PARABOL') {
+            optimisticTask.setLinkedRecord(store.get(serviceTaskId) ?? null, 'integration')
           }
 
           const newStages = dimensionRefIds.map((dimensionRefId, dimensionRefIdx) => {
@@ -301,11 +224,7 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
           const nextStages = [...estimatePhase.getLinkedRecords('stages'), ...newStages]
           estimatePhase.setLinkedRecords(nextStages, 'stages')
         } else if (action === 'DELETE') {
-          const nextStages = stages.filter((stage) => {
-            const task = stage.getLinkedRecord('task')
-            const integrationHash = task?.getValue('integrationHash')
-            return integrationHash !== serviceTaskId
-          })
+          const nextStages = stages.filter((stage) => !stageMatchesScopeKey(stage, serviceTaskId))
           estimatePhase.setLinkedRecords(nextStages, 'stages')
         }
       })

@@ -1,13 +1,19 @@
+import GitHubIssueId from 'parabol-client/shared/gqlIds/GitHubIssueId'
 import {githubIntegrationMeta} from 'parabol-client/shared/integrations/githubIntegrationMeta'
 import {Providers} from 'parabol-client/types/constEnums'
 import fetchGitHubRepos from '../../graphql/queries/helpers/fetchGitHubRepos'
 import type {GitHubSearchQueryJson, TeamMemberIntegrationAuth} from '../../postgres/types'
+import type {GetIssueByNodeIdQuery, GetIssueByNodeIdQueryVariables} from '../../types/githubTypes'
+import getGitHubRequest from '../../utils/getGitHubRequest'
+import getIssueByNodeId from '../../utils/githubQueries/getIssueByNodeId.graphql'
 import type {GitHubRepo} from '../platform/RemoteRepoIntegration'
 import {
   type EstimatePushCapability,
+  type GqlIntegrationCtx,
   type IntegrationCtx,
   type IssueCreateCapability,
   type IssueReadCapability,
+  type IssueRef,
   type IssueSearchCapability,
   type RepoListCapability,
   ServerIntegrationDefinition
@@ -38,6 +44,37 @@ export class GitHubServerIntegration extends ServerIntegrationDefinition {
   async getAuthRow(ctx: IntegrationCtx): Promise<TeamMemberIntegrationAuth | null> {
     const auth = await super.getAuthRow(ctx)
     return auth?.scopes === Providers.GITHUB_SCOPE ? auth : null
+  }
+
+  async resolveIssue(ctx: GqlIntegrationCtx, id: string): Promise<IssueRef | null> {
+    const {userId, context, info} = ctx
+    if (id.includes(':')) {
+      const {nameWithOwner, issueNumber} = GitHubIssueId.split(id)
+      if (!nameWithOwner || !Number.isInteger(issueNumber) || issueNumber < 1) return null
+      return {
+        integrationHash: GitHubIssueId.join(nameWithOwner, issueNumber),
+        integration: {accessUserId: userId, service: 'github' as const, nameWithOwner, issueNumber}
+      }
+    }
+    const auth = await this.resolveAuth(ctx)
+    if (!auth?.accessToken) return null
+    const githubRequest = getGitHubRequest(info, context, {accessToken: auth.accessToken})
+    const [data, error] = await githubRequest<
+      GetIssueByNodeIdQuery,
+      GetIssueByNodeIdQueryVariables
+    >(getIssueByNodeId, {id})
+    const node = data?.node
+    if (error || !node || !('number' in node) || !node.repository) return null
+    const {nameWithOwner} = node.repository
+    return {
+      integrationHash: GitHubIssueId.join(nameWithOwner, node.number),
+      integration: {
+        accessUserId: userId,
+        service: 'github' as const,
+        nameWithOwner,
+        issueNumber: node.number
+      }
+    }
   }
 
   readonly capabilities: {

@@ -13,25 +13,47 @@ import publish from '../../../utils/publish'
 import RedisLockQueue from '../../../utils/RedisLockQueue'
 import getNextFacilitatorStageAfterStageRemoved from '../../mutations/helpers/getNextFacilitatorStageAfterStageRemoved'
 import importTasksForPoker from '../../mutations/helpers/importTasksForPoker'
+import resolveScopeAdds from '../../mutations/helpers/resolveScopeAdds'
 import type {MutationResolvers} from '../resolverTypes'
 
 const updatePokerScope: MutationResolvers['updatePokerScope'] = async (
   _source,
   {meetingId, updates},
-  {authToken, dataLoader, socketId: mutatorId}
+  context,
+  info
 ) => {
+  const {authToken, dataLoader, socketId: mutatorId} = context
   const pg = getKysely()
   const redis = getRedis()
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const now = new Date()
+  const meetingSnapshot = await dataLoader.get('newMeetings').load(meetingId)
+  if (!meetingSnapshot) {
+    return {error: {message: `Meeting not found`}}
+  }
+  if (meetingSnapshot.meetingType !== 'poker') {
+    return {error: {message: 'Not a poker meeting'}}
+  }
+  if (meetingSnapshot.endedAt) {
+    return {error: {message: `Meeting already ended`}}
+  }
+  const resolvedAdds = await resolveScopeAdds(
+    updates.filter((update) => update.action === 'ADD'),
+    {dataLoader, teamId: meetingSnapshot.teamId, userId: viewerId, context, info}
+  )
+  if (resolvedAdds instanceof Error) {
+    return {error: {message: resolvedAdds.message}}
+  }
+
   // lock the meeting while the scope is updating
   const redisLock = new RedisLockQueue(`meeting:${meetingId}`, 3000)
   await redisLock.lock(10000)
 
   // Wrap everything in try catch to ensure the lock is released
   try {
+    dataLoader.get('newMeetings').clear(meetingId)
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) {
       return {error: {message: `Meeting not found`}}
@@ -52,11 +74,38 @@ const updatePokerScope: MutationResolvers['updatePokerScope'] = async (
     // delete stages
     const subtractiveUpdates = updates.filter((update) => {
       const {action, serviceTaskId} = update
-      return action === 'DELETE' && !!stages.find((stage) => stage.serviceTaskId === serviceTaskId)
+      return (
+        action === 'DELETE' &&
+        !!stages.find(
+          (stage) => stage.serviceTaskId === serviceTaskId || stage.taskId === serviceTaskId
+        )
+      )
     })
+    const stageIdsToRemove = new Set(
+      subtractiveUpdates.flatMap(({serviceTaskId}) =>
+        stages
+          .filter(
+            (stage) => stage.serviceTaskId === serviceTaskId || stage.taskId === serviceTaskId
+          )
+          .map(({id}) => id)
+      )
+    )
+    const survivingStages = stages.filter((stage) => !stageIdsToRemove.has(stage.id))
+    const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
+    const {dimensions} = templateRef
+    const additiveUpdates = resolvedAdds.filter(
+      (update) => !survivingStages.find((stage) => stage.serviceTaskId === update.serviceTaskId)
+    )
+    const projectedStageCount = survivingStages.length + additiveUpdates.length * dimensions.length
+    if (projectedStageCount > Threshold.MAX_POKER_STORIES * dimensions.length) {
+      return {error: {message: 'Story limit reached'}}
+    }
+
     subtractiveUpdates.forEach((update) => {
       const {serviceTaskId} = update
-      const stagesToRemove = stages.filter((stage) => stage.serviceTaskId === serviceTaskId)
+      const stagesToRemove = stages.filter(
+        (stage) => stage.serviceTaskId === serviceTaskId || stage.taskId === serviceTaskId
+      )
       // since meeting.facilitatorStageId is mutated below, we want to use the updated value here
       const removingTatorStage = stagesToRemove.find(
         (stage) => stage.id === meeting.facilitatorStageId
@@ -72,7 +121,7 @@ const updatePokerScope: MutationResolvers['updatePokerScope'] = async (
       }
       if (stagesToRemove.length > 0) {
         // MUTATIVE
-        stages = stages.filter((stage) => stage.serviceTaskId !== serviceTaskId)
+        stages = stages.filter((stage) => !stagesToRemove.includes(stage))
         estimatePhase.stages = stages
         const writes = stagesToRemove.map((stage) => {
           return ['del', `pokerHover:${stage.id}`]
@@ -82,14 +131,7 @@ const updatePokerScope: MutationResolvers['updatePokerScope'] = async (
     })
 
     // add stages
-    const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
-    const {dimensions} = templateRef
     const newDiscussions = [] as Insertable<Discussion>[]
-    const additiveUpdates = updates.filter((update) => {
-      const {action, serviceTaskId} = update
-      return action === 'ADD' && !stages.find((stage) => stage.serviceTaskId === serviceTaskId)
-    })
-
     const additiveUpdatesWithTaskIds = await importTasksForPoker(
       additiveUpdates,
       teamId,
@@ -126,10 +168,6 @@ const updatePokerScope: MutationResolvers['updatePokerScope'] = async (
       const newIds = newStages.map(({id}) => id)
       newStageIds.push(...newIds)
     })
-
-    if (stages.length > Threshold.MAX_POKER_STORIES * dimensions.length) {
-      return {error: {message: 'Story limit reached'}}
-    }
 
     const validatedFacilitatorStageRes = findStageById(phases, meeting.facilitatorStageId)
     if (!validatedFacilitatorStageRes) {

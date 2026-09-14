@@ -13,7 +13,6 @@ export class JiraServerClientIntegration extends ClientIntegrationDefinition {
   readonly service = jiraServerIntegrationMeta.service
   readonly title = jiraServerIntegrationMeta.title
   readonly description = jiraServerIntegrationMeta.description
-  readonly ids = jiraServerIntegrationMeta.ids
   readonly Icon = JiraServerSVG
   readonly capabilities: ClientIntegrationCapabilities = {
     scoping: {

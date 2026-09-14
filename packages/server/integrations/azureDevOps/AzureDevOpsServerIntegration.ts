@@ -1,3 +1,4 @@
+import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
 import {azureDevOpsIntegrationMeta} from 'parabol-client/shared/integrations/azureDevOpsIntegrationMeta'
 import type {AzureAccountProject} from '../../dataloader/azureDevOpsLoaders'
@@ -5,9 +6,11 @@ import type {TeamMemberIntegrationAuth} from '../../postgres/types'
 import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
 import {
   type EstimatePushCapability,
+  type GqlIntegrationCtx,
   type IntegrationCtx,
   type IssueCreateCapability,
   type IssueReadCapability,
+  type IssueRef,
   type RepoListCapability,
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
@@ -27,6 +30,22 @@ export class AzureDevOpsServerIntegration extends ServerIntegrationDefinition {
     const {dataLoader, teamId, userId} = ctx
     const auth = await dataLoader.get('freshAzureDevOpsAuth').load({teamId, userId})
     return auth?.accessToken ? auth : null
+  }
+
+  async resolveIssue({userId}: GqlIntegrationCtx, id: string): Promise<IssueRef | null> {
+    const {instanceId, projectKey, issueKey} = AzureDevOpsIssueId.split(id)
+    const integrationHash = AzureDevOpsIssueId.join(instanceId, projectKey, issueKey)
+    if (!instanceId || !projectKey || !issueKey || integrationHash !== id) return null
+    return {
+      integrationHash,
+      integration: {
+        accessUserId: userId,
+        service: 'azureDevOps' as const,
+        instanceId,
+        projectKey,
+        issueKey
+      }
+    }
   }
 
   readonly capabilities: {

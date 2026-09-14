@@ -1,4 +1,5 @@
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
+import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
 import {jiraIntegrationMeta} from 'parabol-client/shared/integrations/jiraIntegrationMeta'
 import type {JiraGQLProject} from '../../dataloader/atlassianLoaders'
 import type {
@@ -9,9 +10,11 @@ import type {
 import {hasJiraScopes} from '../../utils/hasJiraScopes'
 import {
   type EstimatePushCapability,
+  type GqlIntegrationCtx,
   type IntegrationCtx,
   type IssueCreateCapability,
   type IssueReadCapability,
+  type IssueRef,
   type IssueSearchCapability,
   type RepoListCapability,
   ServerIntegrationDefinition
@@ -44,6 +47,16 @@ export class JiraServerIntegration extends ServerIntegrationDefinition {
   async getAuthRow(ctx: IntegrationCtx): Promise<TeamMemberIntegrationAuth | null> {
     const auth = await super.getAuthRow(ctx)
     return auth && hasJiraScopes(auth.scopes) ? auth : null
+  }
+
+  async resolveIssue({userId}: GqlIntegrationCtx, id: string): Promise<IssueRef | null> {
+    const {cloudId, issueKey, projectKey} = JiraIssueId.split(id)
+    const integrationHash = JiraIssueId.join(cloudId, issueKey)
+    if (!cloudId || !issueKey || integrationHash !== id) return null
+    return {
+      integrationHash,
+      integration: {accessUserId: userId, service: 'jira' as const, cloudId, issueKey, projectKey}
+    }
   }
 
   readonly capabilities: {

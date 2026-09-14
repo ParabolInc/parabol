@@ -13,8 +13,6 @@ import type {LinearScopingSearchResultsPaginationQuery} from '../__generated__/L
 import type {LinearScopingSearchResultsQuery} from '../__generated__/LinearScopingSearchResultsQuery.graphql'
 import useGetUsedServiceTaskIds from '../hooks/useGetUsedServiceTaskIds'
 import useLoadNextOnScrollBottom from '../hooks/useLoadNextOnScrollBottom'
-import LinearIssueId from '../shared/gqlIds/LinearIssueId'
-import LinearProjectId from '../shared/gqlIds/LinearProjectId'
 import type {GQLType} from '../types/generics'
 import {getLinearRepoName} from '../utils/getLinearRepoName'
 import getNonNullEdges from '../utils/getNonNullEdges'
@@ -81,6 +79,7 @@ const LinearScopingSearchResults = (props: Props) => {
                           ... on _xLinearIssue {
                             ...LinearScopingSelectAllIssues_issues
                             id
+                            service
                             identifier
                             title
                             project {
@@ -89,6 +88,7 @@ const LinearScopingSearchResults = (props: Props) => {
                             }
                             team {
                               id
+                              name
                               displayName
                             }
                             url
@@ -173,19 +173,16 @@ const LinearScopingSearchResults = (props: Props) => {
         )}
         {issues.map((node) => {
           const {id: issueId, identifier, title, project, team, url} = node
-          const {id: projectId} = project ?? {id: undefined}
           const teamName = team?.displayName ?? ''
 
           const repoStr = getLinearRepoName(project, teamName)
           const linkText = `${identifier} ${repoStr}`
-          const repoId = LinearProjectId.join(team?.id ?? 'unknown-team-id', projectId)
-          const serviceTaskId = LinearIssueId.join(repoId, issueId)
           return (
             <ScopingSearchResultItem
               key={issueId}
               service={'linear'}
               usedServiceTaskIds={usedServiceTaskIds}
-              serviceTaskId={serviceTaskId}
+              serviceTaskId={issueId}
               meetingId={meetingId}
               summary={title}
               url={url}

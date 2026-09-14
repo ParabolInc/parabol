@@ -3,7 +3,9 @@ import {useMemo} from 'react'
 import {readInlineData} from 'react-relay'
 import type {useGetUsedServiceTaskIds_phase$key} from '../__generated__/useGetUsedServiceTaskIds_phase.graphql'
 
-const useGetUsedServiceTaskIds = (phaseRef: useGetUsedServiceTaskIds_phase$key) => {
+const useGetUsedServiceTaskIds = (
+  phaseRef: useGetUsedServiceTaskIds_phase$key
+): ReadonlyMap<string, string> => {
   return useMemo(() => {
     const estimatePhase = readInlineData(
       graphql`
@@ -12,6 +14,9 @@ const useGetUsedServiceTaskIds = (phaseRef: useGetUsedServiceTaskIds_phase$key) 
             taskId
             task {
               integrationHash
+              integration {
+                id
+              }
             }
           }
         }
@@ -19,12 +24,9 @@ const useGetUsedServiceTaskIds = (phaseRef: useGetUsedServiceTaskIds_phase$key) 
       phaseRef
     )
     const {stages} = estimatePhase
-    const usedServiceTaskIds = new Set<string>()
-    stages.forEach((stage) => {
-      const {task, taskId} = stage
-      const serviceTaskId = task?.integrationHash ?? taskId
-      // a new serviceTaskId uniquely identifies an issue that doesn't exist in our system yet (integrationHash)
-      usedServiceTaskIds.add(serviceTaskId)
+    const usedServiceTaskIds = new Map<string, string>()
+    stages.forEach(({task, taskId}) => {
+      usedServiceTaskIds.set(task?.integration?.id ?? task?.integrationHash ?? taskId, taskId)
     })
     return usedServiceTaskIds
   }, [phaseRef])

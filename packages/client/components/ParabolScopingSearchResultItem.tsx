@@ -18,7 +18,7 @@ import {TipTapEditor} from './TipTapEditor/TipTapEditor'
 
 interface Props {
   meetingId: string
-  usedServiceTaskIds: Set<string>
+  usedServiceTaskIds: ReadonlyMap<string, string>
   task: ParabolScopingSearchResultItem_task$key
   teamId: string
   setIsEditing: (isEditing: boolean) => void

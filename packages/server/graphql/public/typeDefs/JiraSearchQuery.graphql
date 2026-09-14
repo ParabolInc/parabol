@@ -23,6 +23,11 @@ type JiraSearchQuery implements IntegrationSearchQuery {
   projectKeyFilters: [ID!]!
 
   """
+  The project key each projectKeyFilters entry stands for, in the same order. For display; send projectKeyFilters back as the filter
+  """
+  projectKeyFilterLabels: [String!]!
+
+  """
   the time the search query was last used. Used for sorting
   """
   lastUsedAt: DateTime!

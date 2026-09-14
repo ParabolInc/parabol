@@ -13,7 +13,6 @@ export class AzureDevOpsClientIntegration extends ClientIntegrationDefinition {
   readonly service = azureDevOpsIntegrationMeta.service
   readonly title = azureDevOpsIntegrationMeta.title
   readonly description = azureDevOpsIntegrationMeta.description
-  readonly ids = azureDevOpsIntegrationMeta.ids
   readonly Icon = AzureDevOpsSVG
   readonly capabilities: ClientIntegrationCapabilities = {
     scoping: {

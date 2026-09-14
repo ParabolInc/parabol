@@ -1,4 +1,3 @@
-import IntegrationHash from 'parabol-client/shared/gqlIds/IntegrationHash'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import {getTagsFromTipTapTask} from '../../../../client/shared/tiptap/getTagsFromTipTapTask'
 import {plaintextToTipTap} from '../../../../client/shared/tiptap/plaintextToTipTap'
@@ -6,10 +5,10 @@ import dndNoise from '../../../../client/utils/dndNoise'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {selectTasks} from '../../../postgres/select'
-import type {UpdatePokerScopeItemInput} from '../../public/resolverTypes'
+import type {ResolvedScopeAdd} from './resolveScopeAdds'
 
 const importTasksForPoker = async (
-  additiveUpdates: UpdatePokerScopeItemInput[],
+  additiveUpdates: ResolvedScopeAdd[],
   teamId: string,
   userId: string,
   meetingId: string
@@ -25,25 +24,13 @@ const importTasksForPoker = async (
           .where('teamId', '=', teamId)
           .where('userId', '=', userId)
           .execute()
-  const integrationHashToTaskId = {} as Record<string, string>
-  additiveUpdates.map((update) => {
-    if (update.service === 'PARABOL') {
-      integrationHashToTaskId[update.serviceTaskId] = update.serviceTaskId
-    }
-  })
   const newIntegrationUpdates = integratedUpdates.filter(
     (update) => !existingTasks.find(({integrationHash}) => update.serviceTaskId === integrationHash)
   )
   const tasksToAdd = newIntegrationUpdates
     .map((update) => {
-      const {service, serviceTaskId} = update
-      const integrationSplit = IntegrationHash.split(service, serviceTaskId)
-      if (!integrationSplit) return null
-      const integration = {
-        accessUserId: userId,
-        ...integrationSplit
-      }
-      const integrationHash = IntegrationHash.join(integration)
+      const {integration, serviceTaskId: integrationHash} = update
+      if (!integration) return null
       const plaintextContent = `Task imported from ${integration.service} #archived`
       const content = JSON.stringify(plaintextToTipTap(plaintextContent, {taskTags: ['archived']}))
       return {

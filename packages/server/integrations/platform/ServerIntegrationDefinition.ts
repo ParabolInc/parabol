@@ -120,6 +120,12 @@ export interface IssueListCapability {
   getViewerIssues(ctx: GqlIntegrationCtx): Promise<unknown[]>
 }
 
+/** What a service stores for a linked issue: the private dedup key and the parts the Task row keeps */
+export interface IssueRef {
+  integrationHash: string
+  integration: NonNullable<Task['integration']>
+}
+
 export interface ServerIntegrationCapabilities {
   issueCreate?: IssueCreateCapability
   issueRead?: IssueReadCapability
@@ -142,6 +148,9 @@ export abstract class ServerIntegrationDefinition {
     const auth = await dataLoader.get('freshAuth').load({service: this.service, teamId, userId})
     return auth?.accessToken ? auth : null
   }
+
+  /** The id a client echoes for an issue, either TaskIntegration.id or Task.integrationHash, to what the Task row stores. null when it cannot be resolved for this viewer */
+  abstract resolveIssue(ctx: GqlIntegrationCtx, id: string): Promise<IssueRef | null>
 
   /** A team, org, or global provider row exists. Services whose connect flow needs the global row override this */
   async isAvailable(ctx: IntegrationCtx) {

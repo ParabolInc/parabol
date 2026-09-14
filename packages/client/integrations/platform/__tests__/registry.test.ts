@@ -26,21 +26,11 @@ jest.mock('../../../utils/LinearClientManager', () => ({
 import type {IntegrationProviderServiceEnum} from '../../../__generated__/CreateTaskIntegrationMutation.graphql'
 import type Atmosphere from '../../../Atmosphere'
 import type {MenuMutationProps} from '../../../hooks/useMutationProps'
-import type {IssueParts} from '../../../shared/integrations/IntegrationMeta'
 import AtlassianClientManager from '../../../utils/AtlassianClientManager'
 import GitLabClientManager from '../../../utils/GitLabClientManager'
 import JiraServerClientManager from '../../../utils/JiraServerClientManager'
 import LinearClientManager from '../../../utils/LinearClientManager'
 import {clientIntegrations, getClientIntegration, isRegisteredClientIntegration} from '../registry'
-
-const SAMPLE_ISSUE_PARTS: Record<string, IssueParts> = {
-  azureDevOps: {instanceId: 'dev.azure.com/acme', projectKey: 'WebApp', issueKey: '42'},
-  github: {nameWithOwner: 'ParabolInc/parabol', issueNumber: 123},
-  gitlab: {providerId: '7', gid: 'gid://gitlab/Issue/321'},
-  jira: {cloudId: 'cloud-123', issueKey: 'WEB-42'},
-  jiraServer: {providerId: 9, repositoryId: '10001', issueId: '10042'},
-  linear: {repoId: 'team1:proj1', issueId: 'a1b2c3'}
-}
 
 describe('clientIntegrations registry', () => {
   it('registers exactly the six task services', () => {
@@ -61,11 +51,6 @@ describe('clientIntegrations registry', () => {
   it.each(Object.entries(clientIntegrations))('%s: has title and description', (_key, def) => {
     expect(def.title.length).toBeGreaterThan(0)
     expect(def.description.length).toBeGreaterThan(0)
-  })
-
-  it.each(Object.entries(clientIntegrations))('%s: issue codec round-trips', (key, def) => {
-    const id = def.ids.joinIssue(SAMPLE_ISSUE_PARTS[key]!)
-    expect(def.ids.joinIssue(def.ids.splitIssue(id))).toBe(id)
   })
 
   it('every registered integration ships a lazy scope-tab panel', () => {

@@ -13,7 +13,6 @@ export class GitLabClientIntegration extends ClientIntegrationDefinition {
   readonly service = gitlabIntegrationMeta.service
   readonly title = gitlabIntegrationMeta.title
   readonly description = gitlabIntegrationMeta.description
-  readonly ids = gitlabIntegrationMeta.ids
   readonly Icon = GitLabSVG
   readonly capabilities: ClientIntegrationCapabilities = {
     scoping: {

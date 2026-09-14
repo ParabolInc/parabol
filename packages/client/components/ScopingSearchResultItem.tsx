@@ -10,7 +10,7 @@ import Ellipsis from './Ellipsis/Ellipsis'
 
 interface Props {
   meetingId: string
-  usedServiceTaskIds: Set<string>
+  usedServiceTaskIds: ReadonlyMap<string, string>
   persistQuery?: () => void
   summary: string
   url: string
@@ -44,11 +44,9 @@ const ScopingSearchResultItem = (props: Props) => {
     const variables = {
       meetingId,
       updates: [
-        {
-          service,
-          serviceTaskId,
-          action: isSelected ? 'DELETE' : 'ADD'
-        }
+        isSelected
+          ? {service, serviceTaskId: usedServiceTaskIds.get(serviceTaskId)!, action: 'DELETE'}
+          : {service, serviceTaskId, action: 'ADD'}
       ]
     } as TUpdatePokerScopeMutation['variables']
     UpdatePokerScopeMutation(atmosphere, variables, {

@@ -5,7 +5,6 @@ import type {GitHubScopingSelectAllIssues_issues$key} from '../__generated__/Git
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
-import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
 import {Threshold} from '../types/constEnums'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
 import Checkbox from './Checkbox'
@@ -13,7 +12,7 @@ import Checkbox from './Checkbox'
 interface Props {
   meetingId: string
   issuesRef: GitHubScopingSelectAllIssues_issues$key
-  usedServiceTaskIds: Set<string>
+  usedServiceTaskIds: ReadonlyMap<string, string>
   persistQuery?: () => void
 }
 
@@ -34,15 +33,16 @@ const GitHubScopingSelectAllIssues = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting, error} = useMutationProps()
-  const serviceTaskIds = issues.map((issue) =>
-    GitHubIssueId.join(issue.repository.nameWithOwner, issue.number)
-  )
+  const serviceTaskIds = issues.map((issue) => issue.id)
   const [unusedServiceTaskIds, allSelected] = useUnusedRecords(serviceTaskIds, usedServiceTaskIds)
   const availableCountToAdd = Threshold.MAX_POKER_STORIES - usedServiceTaskIds.size
   const onClick = () => {
     if (submitting) return
     submitMutation()
-    const updateArr = allSelected === true ? serviceTaskIds : unusedServiceTaskIds
+    const updateArr =
+      allSelected === true
+        ? serviceTaskIds.flatMap((id) => usedServiceTaskIds.get(id) ?? [])
+        : unusedServiceTaskIds
     const action = allSelected === true ? 'DELETE' : 'ADD'
     const limit = action === 'ADD' ? availableCountToAdd : 1e6
     const updates = updateArr.slice(0, limit).map(
@@ -59,10 +59,7 @@ const GitHubScopingSelectAllIssues = (props: Props) => {
       updates
     }
     const contents = updates.map((update) => {
-      const issue = issues.find(
-        (issue) =>
-          GitHubIssueId.join(issue.repository.nameWithOwner, issue.number) === update.serviceTaskId
-      )
+      const issue = issues.find((issue) => issue.id === update.serviceTaskId)
       return issue?.title ?? 'Unknown Story'
     })
     UpdatePokerScopeMutation(atmosphere, variables, {
