@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.44.0](https://github.com/ParabolInc/parabol/compare/v13.43.0...v13.44.0) (2026-09-14)
+
+
+### Added
+
+* add notifications for team health meetings ([#13485](https://github.com/ParabolInc/parabol/issues/13485)) ([6a022c3](https://github.com/ParabolInc/parabol/commit/6a022c30b9c13563f79853d8452ce49b14311297))
+
 ## [13.43.0](https://github.com/ParabolInc/parabol/compare/v13.42.1...v13.43.0) (2026-09-10)
 
 
