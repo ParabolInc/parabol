@@ -27,7 +27,10 @@ const TEAM_EVENTS = [
   'MEETING_STAGE_TIME_LIMIT_START',
   'STANDUP_RESPONSE_SUBMITTED'
 ] as SlackNotificationEventEnum[]
-const USER_EVENTS = ['MEETING_STAGE_TIME_LIMIT_END'] as SlackNotificationEventEnum[]
+const USER_EVENTS = [
+  'MEETING_STAGE_TIME_LIMIT_END',
+  'TEAM_HEALTH_RESPONSE_DUE'
+] as SlackNotificationEventEnum[]
 
 const SlackNotificationList = (props: Props) => {
   const {teamId, viewer: viewerRef} = props

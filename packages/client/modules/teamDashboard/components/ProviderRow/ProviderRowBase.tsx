@@ -19,6 +19,9 @@ export interface ProviderRowBaseProps {
   error?: React.ReactElement | string
 }
 
+export const getProviderAnchorId = (providerName: string) =>
+  providerName.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+
 const ProviderRowBase = (props: ProviderRowBaseProps) => {
   const {
     connectButton,
@@ -36,9 +39,12 @@ const ProviderRowBase = (props: ProviderRowBaseProps) => {
       <div className='flex justify-start p-row-gutter'>
         {providerLogo}
         <RowInfo>
-          <div className='mr-4 flex items-center align-middle font-semibold text-fg-primary leading-6'>
+          <h1
+            id={getProviderAnchorId(providerName)}
+            className='my-0 mr-4 flex scroll-mt-12 items-center align-middle font-semibold text-base text-fg-primary leading-6'
+          >
             {providerName}
-          </div>
+          </h1>
           <RowInfoCopy>{providerDescription} </RowInfoCopy>
           {!!error && (
             <div className='text-fg-error text-sm [&_a]:font-semibold [&_a]:text-fg-error [&_a]:underline'>

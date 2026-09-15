@@ -166,7 +166,7 @@ const MSTeamsPanel = (props: Props) => {
           />
           <Button
             variant='flat'
-            className='mx-4 min-w-9 border-hairline-strong font-semibold text-[12px] text-fg-primary'
+            className='ml-4 min-w-9 border-hairline-strong font-semibold text-[12px] text-fg-primary'
             size='md'
             disabled={isUpdateDisabled(fieldError, fieldValue)}
           >

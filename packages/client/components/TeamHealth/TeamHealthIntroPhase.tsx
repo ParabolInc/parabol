@@ -9,6 +9,7 @@ import {isNotNull} from '../../utils/predicates'
 import CurrentTeamHealthStreak from './CurrentTeamHealthStreak'
 import {getTeamHealthRespondents} from './getTeamHealthRespondents'
 import TeamHealthProgress from './TeamHealthProgress'
+import TeamHealthReminderPrompt from './TeamHealthReminderPrompt'
 
 interface Props {
   meeting: TeamHealthIntroPhase_meeting$key
@@ -20,6 +21,7 @@ const TeamHealthIntroPhase = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment TeamHealthIntroPhase_meeting on TeamHealthMeeting {
+        ...TeamHealthReminderPrompt_meeting
         id
         name
         respondentCount
@@ -119,6 +121,7 @@ const TeamHealthIntroPhase = (props: Props) => {
             Open until {dayjs(scheduledEndTime).format('ddd h:mm A')} · auto-reveals at close
           </div>
         )}
+        <TeamHealthReminderPrompt meeting={meeting} />
         <CurrentTeamHealthStreak className='mt-6' streak={currentStreak} />
         <TeamHealthProgress
           className='mt-8'

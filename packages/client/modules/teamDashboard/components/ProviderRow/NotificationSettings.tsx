@@ -15,7 +15,8 @@ const EVENTS = [
   'meetingStart',
   'meetingEnd',
   'MEETING_STAGE_TIME_LIMIT_START',
-  'MEETING_STAGE_TIME_LIMIT_END'
+  'MEETING_STAGE_TIME_LIMIT_END',
+  'TEAM_HEALTH_RESPONSE_DUE'
   //TODO these are not implemented yet:
   //'STANDUP_RESPONSE_SUBMITTED',
   //'TOPIC_SHARED',
@@ -27,7 +28,8 @@ const labelLookup = {
   MEETING_STAGE_TIME_LIMIT_END: `Meeting ${MeetingLabels.TIME_LIMIT} Ended`,
   MEETING_STAGE_TIME_LIMIT_START: `Meeting ${MeetingLabels.TIME_LIMIT} Started`,
   TOPIC_SHARED: `Topic Shared`,
-  STANDUP_RESPONSE_SUBMITTED: 'Standup Response Submitted'
+  STANDUP_RESPONSE_SUBMITTED: 'Standup Response Submitted',
+  TEAM_HEALTH_RESPONSE_DUE: 'Team Health Reminder'
 } as Record<SlackNotificationEventEnum, string>
 
 interface Props {
@@ -75,7 +77,7 @@ const NotificationSettings = (props: Props) => {
         const label = labelLookup[event]
         const active = events.includes(event)
         return (
-          <div className='flex items-center py-2'>
+          <div key={event} className='flex items-center py-2'>
             <div className='mr-4 w-full text-sm'>{label}</div>
             <Toggle active={active} onClick={() => setNotificationSetting(event, !active)} />
           </div>
