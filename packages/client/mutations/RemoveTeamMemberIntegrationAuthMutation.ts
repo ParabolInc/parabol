@@ -6,6 +6,7 @@ import type {StandardMutation} from '../types/relayMutations'
 graphql`
   fragment RemoveTeamMemberIntegrationAuthMutation_team on RemoveTeamMemberIntegrationAuthSuccess {
     teamMember {
+      ...useIsIntegrated_teamMember
       ...GitLabProviderRowTeamMember
       ...JiraServerProviderRowTeamMember
       ...AzureDevOpsProviderRowTeamMember

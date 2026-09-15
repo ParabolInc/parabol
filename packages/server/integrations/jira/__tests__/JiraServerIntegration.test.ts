@@ -30,13 +30,13 @@ const makeCtx = (scope: string) => {
       }
     }
   } as unknown as GqlIntegrationCtx
-  return ctx
+  return {ctx, rowLoad}
 }
 
 const jira = new JiraServerIntegration()
 
 test('a Confluence-only grant is not usable for Jira anywhere', async () => {
-  const ctx = makeCtx(CONFLUENCE_ONLY)
+  const {ctx} = makeCtx(CONFLUENCE_ONLY)
   await expect(jira.resolveAuth(ctx)).resolves.toBeNull()
   await expect(jira.getAuthRow(ctx)).resolves.toBeNull()
   await expect(jira.isConnected(ctx)).resolves.toBe(false)
@@ -44,9 +44,17 @@ test('a Confluence-only grant is not usable for Jira anywhere', async () => {
 })
 
 test('a grant with the Jira scopes is usable everywhere', async () => {
-  const ctx = makeCtx(JIRA_SCOPES)
+  const {ctx} = makeCtx(JIRA_SCOPES)
   await expect(jira.resolveAuth(ctx)).resolves.toMatchObject({accessToken: 'tok'})
   await expect(jira.getAuthRow(ctx)).resolves.toMatchObject({accessToken: 'tok'})
   await expect(jira.isConnected(ctx)).resolves.toBe(true)
   await expect(jira.capabilities.issueCreate.initManager(ctx)).resolves.not.toBeNull()
+})
+
+test('a Confluence-only grant still exposes its scopes via the raw loader row, even though getAuthRow hides it', async () => {
+  const confluenceOnlyScopes = 'read:confluence-space.summary offline_access'
+  const {ctx, rowLoad} = makeCtx(confluenceOnlyScopes)
+  await expect(jira.getAuthRow(ctx)).resolves.toBeNull()
+  expect(rowLoad).toHaveBeenCalledWith(expect.objectContaining({service: 'jira'}))
+  await expect(jira.isConnected(ctx)).resolves.toBe(false)
 })

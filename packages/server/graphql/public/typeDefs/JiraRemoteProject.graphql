@@ -58,4 +58,9 @@ type JiraRemoteProject implements RepoIntegration {
   The project style: classic or next-gen
   """
   style: String!
+
+  """
+  The id createTaskIntegration expects for this repo. Differs from id where id is the vendor's node id
+  """
+  integrationRepoId: ID!
 }

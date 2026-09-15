@@ -1,36 +1,30 @@
 import ms from 'ms'
-import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
 import getPrevUsedRepoIntegrations from '../graphql/queries/helpers/getPrevUsedRepoIntegrations'
-import type {Integrationproviderserviceenum} from '../postgres/types/pg'
 import getPrevUsedRepoIntegrationsRedisKey from '../utils/getPrevUsedRepoIntegrationsRedisKey'
 import getRedis from '../utils/getRedis'
-import getRepoIntegrationsRedisKey from '../utils/getRepoIntegrationsRedisKey'
+import loadServiceRepoIntegrations from './loadServiceRepoIntegrations'
+import getRepoListCapability from './platform/getRepoListCapability'
 import type {RemoteRepoIntegration} from './platform/RemoteRepoIntegration'
+import type {RegisteredServerIntegration} from './platform/registry'
+import type {GqlIntegrationCtx} from './platform/ServerIntegrationDefinition'
 
 const updatePrevUsedRepoIntegrationsCache = async (
-  teamId: string,
-  repoIntegrationId: string,
-  viewerId: string,
-  service: Integrationproviderserviceenum
+  service: RegisteredServerIntegration,
+  integrationRepoId: string,
+  ctx: GqlIntegrationCtx
 ) => {
+  const {teamId} = ctx
+  const isUsedRepo = (repo: RemoteRepoIntegration) =>
+    repo.service === service &&
+    getRepoListCapability(repo).integrationRepoId(repo) === integrationRepoId
+  const prevUsedRepoIntegrations = await getPrevUsedRepoIntegrations(teamId)
+  const usedRepo =
+    prevUsedRepoIntegrations?.find(isUsedRepo) ??
+    (await loadServiceRepoIntegrations(service, ctx))?.find(isUsedRepo)
+  if (!usedRepo) return
   const redis = getRedis()
   const prevUsedRepoIntegrationsKey = getPrevUsedRepoIntegrationsRedisKey(teamId)
-  const [prevUsedRepoIntegrations, cachedRes] = await Promise.all([
-    getPrevUsedRepoIntegrations(teamId),
-    redis.get(getRepoIntegrationsRedisKey(service, teamId, viewerId))
-  ])
-  const cachedRepoIntegrations = cachedRes ? (JSON.parse(cachedRes) as RemoteRepoIntegration[]) : []
-  const remoteRepoIntegration = cachedRepoIntegrations.find(
-    (repo) => IntegrationRepoId.join(repo) === repoIntegrationId
-  )
-  if (!remoteRepoIntegration) return
-  const oldPrevUsedRepoIntegration = prevUsedRepoIntegrations?.find(
-    (repo) => repo.service === service && IntegrationRepoId.join(repo) === repoIntegrationId
-  )
-  if (oldPrevUsedRepoIntegration) {
-    await redis.zrem(prevUsedRepoIntegrationsKey, JSON.stringify(oldPrevUsedRepoIntegration))
-  }
-  await redis.zadd(prevUsedRepoIntegrationsKey, Date.now(), JSON.stringify(remoteRepoIntegration))
+  await redis.zadd(prevUsedRepoIntegrationsKey, Date.now(), JSON.stringify(usedRepo))
   await redis.pexpire(prevUsedRepoIntegrationsKey, ms('180d'))
 }
 

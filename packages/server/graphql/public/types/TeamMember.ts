@@ -63,14 +63,12 @@ const TeamMember: TeamMemberResolvers = {
     }
   },
 
-  repoIntegrations: async ({teamId, userId}, {first, networkOnly}, context, info) => {
+  repoIntegrations: async ({teamId, userId}, {first}, context, info) => {
     const ctx = {dataLoader: context.dataLoader, teamId, userId, context, info}
     const services = Object.keys(serverIntegrations) as RegisteredServerIntegration[]
     const [prevUsedRepoIntegrations, repoLists, connected] = await Promise.all([
       getPrevUsedRepoIntegrations(teamId),
-      Promise.all(
-        services.map((service) => loadServiceRepoIntegrations(service, ctx, !!networkOnly))
-      ),
+      Promise.all(services.map((service) => loadServiceRepoIntegrations(service, ctx))),
       Promise.all(services.map((service) => serverIntegrations[service].isConnected(ctx)))
     ])
     const connectedServices = new Set(services.filter((_, idx) => connected[idx]))

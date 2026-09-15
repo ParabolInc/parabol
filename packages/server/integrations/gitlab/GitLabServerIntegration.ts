@@ -1,5 +1,7 @@
+import GitLabIssueId from 'parabol-client/shared/gqlIds/GitLabIssueId'
 import {gitlabIntegrationMeta} from 'parabol-client/shared/integrations/gitlabIntegrationMeta'
 import fetchGitLabProjects from '../../graphql/queries/helpers/fetchGitLabProjects'
+import type {GitLabProject} from '../platform/RemoteRepoIntegration'
 import {
   type EstimatePushCapability,
   type IssueCreateCapability,
@@ -9,6 +11,7 @@ import {
 } from '../platform/ServerIntegrationDefinition'
 import describeGitLabDimensionField from './describeGitLabDimensionField'
 import GitLabServerManager from './GitLabServerManager'
+import listGitLabDimensionFields from './listGitLabDimensionFields'
 import pushEstimateToGitLab from './pushEstimateToGitLab'
 import resolveGitLabDimensionFieldKey from './resolveGitLabDimensionFieldKey'
 import resolveGitLabTaskIntegration from './resolveGitLabTaskIntegration'
@@ -18,10 +21,18 @@ export class GitLabServerIntegration extends ServerIntegrationDefinition {
   readonly title = gitlabIntegrationMeta.title
   readonly authStrategy = 'oauth2' as const
 
+  parseIntegrationHash(integrationHash: string) {
+    const {providerId, gid} = GitLabIssueId.split(integrationHash)
+    if (!gid?.startsWith('gid://') || GitLabIssueId.join(providerId, gid) !== integrationHash) {
+      return null
+    }
+    return {service: 'gitlab' as const, providerId, gid}
+  }
+
   readonly capabilities: {
     issueCreate: IssueCreateCapability
     issueRead: IssueReadCapability
-    repoList: RepoListCapability
+    repoList: RepoListCapability<GitLabProject>
     estimatePush: EstimatePushCapability
   } = {
     issueCreate: {
@@ -36,13 +47,16 @@ export class GitLabServerIntegration extends ServerIntegrationDefinition {
     issueRead: {getIssue: resolveGitLabTaskIntegration},
     repoList: {
       fetchRepos: ({teamId, userId, context, info}) =>
-        fetchGitLabProjects(teamId, userId, context, info)
+        fetchGitLabProjects(teamId, userId, context, info),
+      integrationRepoId: ({fullPath}) => fullPath,
+      name: ({fullPath}) => fullPath
     },
     estimatePush: {
       targets: ['comment', 'label'],
       pushEstimate: pushEstimateToGitLab,
       resolveDimensionFieldKey: resolveGitLabDimensionFieldKey,
-      describeDimensionField: describeGitLabDimensionField
+      describeDimensionField: describeGitLabDimensionField,
+      listDimensionFields: listGitLabDimensionFields
     }
   }
 }

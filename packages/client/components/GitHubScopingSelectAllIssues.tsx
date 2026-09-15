@@ -13,7 +13,7 @@ import Checkbox from './Checkbox'
 interface Props {
   meetingId: string
   issuesRef: GitHubScopingSelectAllIssues_issues$key
-  usedServiceTaskIds: Set<string>
+  usedServiceTaskIds: ReadonlySet<string>
   persistQuery?: () => void
 }
 

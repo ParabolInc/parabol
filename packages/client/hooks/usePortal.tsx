@@ -17,12 +17,8 @@ export enum PortalStatus {
 export type PortalId =
   | 'spotlight'
   | 'snackbar'
-  | 'githubFieldMenu'
-  | 'gitlabFieldMenu'
-  | 'linearFieldMenu'
   | 'editGitHubLabel'
   | 'editGitLabLabel'
-  | 'azureDevOpsFieldMenu'
   | 'editAzureDevOpsLabel'
   | 'templateModal'
   | 'scaleDropdown'

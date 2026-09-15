@@ -1,26 +1,18 @@
 import graphql from 'babel-plugin-relay/macro'
-import {type FormEvent, useEffect, useMemo, useRef, useState} from 'react'
+import {type FormEvent, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
-import type {
-  NewLinearIssueInput_viewer$data,
-  NewLinearIssueInput_viewer$key
-} from '~/__generated__/NewLinearIssueInput_viewer.graphql'
+import type {NewLinearIssueInput_viewer$key} from '~/__generated__/NewLinearIssueInput_viewer.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import {ExpandMore} from '~/ui/icons'
-import {getLinearRepoName} from '~/utils/getLinearRepoName'
-import getNonNullEdges from '~/utils/getNonNullEdges'
 import type {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/CreateTaskMutation.graphql'
 import useForm from '../hooks/useForm'
 import useTimedState from '../hooks/useTimedState'
 import CreateTaskMutation from '../mutations/CreateTaskMutation'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
-import LinearProjectId from '../shared/gqlIds/LinearProjectId'
 import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
-import type {DeepNonNullable} from '../types/generics'
 import type {CompletedHandler} from '../types/relayMutations'
 import {Menu} from '../ui/Menu/Menu'
-import getUniqueEdges from '../utils/getUniqueEdges'
 import Legitity from '../validation/Legitity'
 import Checkbox from './Checkbox'
 import NewLinearIssueMenu from './NewLinearIssueMenu'
@@ -36,34 +28,6 @@ const validateIssue = (issue: string) => {
   return new Legitity(issue).trim().min(2, `C'mon, you call that an issue?`)
 }
 
-type LinearApiQueryFromViewer =
-  DeepNonNullable<NewLinearIssueInput_viewer$data>['teamMember']['integrations']['linear']['api']['query']
-
-type ProjectEdge = LinearApiQueryFromViewer['allProjects']['edges'][number]
-
-type Project = ProjectEdge['node']
-
-type TeamEdge = LinearApiQueryFromViewer['teams']['edges'][number]
-
-type Team = TeamEdge['node']
-
-const getProjectId = (item: Project | Team) => {
-  if ('teams' in item) {
-    const {id: teamId} = (item as Project).teams?.nodes?.[0] ?? {
-      id: undefined
-    }
-    if (!teamId) return null
-    const {id: projectId} = item
-    return LinearProjectId.join(teamId, projectId)
-  }
-  const {id: teamId} = item as Team
-  return LinearProjectId.join(teamId)
-}
-
-const getProjectName = (item: Project | Team) => {
-  return getLinearRepoName(item as Project, undefined)
-}
-
 const NewLinearIssueInput = (props: Props) => {
   const {isEditing, meetingId, setIsEditing, viewerRef} = props
   const viewer = useFragment(
@@ -74,59 +38,11 @@ const NewLinearIssueInput = (props: Props) => {
           id
         }
         teamMember(teamId: $teamId) {
-          integrations {
-            linear {
-              api {
-                errors {
-                  message
-                  locations {
-                    line
-                    column
-                  }
-                  path
-                }
-                query {
-                  myProjects: projects(first: 100, filter: {members: {isMe: {eq: true}}}) {
-                    edges {
-                      node {
-                        __typename
-                        id
-                        name
-                        teams(first: 1) {
-                          nodes {
-                            id
-                            displayName
-                          }
-                        }
-                      }
-                    }
-                  }
-                  allProjects: projects(first: 100) {
-                    edges {
-                      node {
-                        __typename
-                        id
-                        name
-                        teams(first: 1) {
-                          nodes {
-                            id
-                            displayName
-                          }
-                        }
-                      }
-                    }
-                  }
-                  teams(first: 100) {
-                    edges {
-                      node {
-                        __typename
-                        id
-                        name
-                      }
-                    }
-                  }
-                }
-              }
+          services {
+            service
+            repos {
+              integrationRepoId
+              name
             }
           }
         }
@@ -137,36 +53,12 @@ const NewLinearIssueInput = (props: Props) => {
   const {id: userId, team, teamMember} = viewer
   const {id: teamId} = team!
 
-  const nullableProjectEdges = [
-    ...(teamMember?.integrations.linear.api?.query?.myProjects?.edges ?? []),
-    ...(teamMember?.integrations.linear.api?.query?.allProjects?.edges ?? [])
-  ]
-  const projects = useMemo(
-    () =>
-      getUniqueEdges(getNonNullEdges(nullableProjectEdges), (edge) => edge.node.id).map(
-        ({node}) => node
-      ),
-    [teamMember]
-  )
-
-  const nullableTeamEdges = teamMember?.integrations.linear.api?.query?.teams?.edges ?? []
-  const teams = useMemo(
-    () => getNonNullEdges(nullableTeamEdges).map(({node}) => node),
-    [teamMember]
-  )
-
-  const projectsAndTeams = useMemo(
-    () => (projects as (Project | Team)[]).concat(teams as (Project | Team)[]),
-    [teamMember]
-  )
-
-  const projectsAndIds = useMemo(
-    () =>
-      projectsAndTeams
-        .map((node) => ({id: getProjectId(node), name: getProjectName(node)}))
-        .filter((node) => node.id !== null) as {id: string; name: string}[],
-    [teamMember]
-  )
+  const services = teamMember?.services ?? []
+  const linearRepos = services.find(({service}) => service === 'linear')?.repos ?? []
+  const linearProjects = linearRepos.map(({integrationRepoId, name}) => ({
+    id: integrationRepoId,
+    name
+  }))
 
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
@@ -176,11 +68,10 @@ const NewLinearIssueInput = (props: Props) => {
       setCreateTaskError(undefined)
     }
   }, [isEditing])
-  const maybeProjectNode = projectsAndTeams[0]
-  const [selectedProjectAndId, setSelectedProjectAndId] = useState({
-    id: maybeProjectNode ? getProjectId(maybeProjectNode) : null,
-    name: maybeProjectNode ? getProjectName(maybeProjectNode) : 'Unknown'
-  })
+  const [selectedProjectAndId, setSelectedProjectAndId] = useState<{
+    id: string | null
+    name: string
+  }>(linearProjects[0] ?? {id: null, name: 'Unknown'})
   const {fields, onChange, validateField, setDirtyField} = useForm({
     newIssue: {
       getDefault: () => '',
@@ -292,7 +183,7 @@ const NewLinearIssueInput = (props: Props) => {
           }}
         >
           <NewLinearIssueMenu
-            linearProjects={projectsAndIds}
+            linearProjects={linearProjects}
             handleSelectProject={setSelectedProjectAndId}
           />
         </Menu>

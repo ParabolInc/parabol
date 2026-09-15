@@ -12,7 +12,7 @@ import Checkbox from './Checkbox'
 interface Props {
   meetingId: string
   tasks: ParabolScopingSelectAllTasks_tasks$key
-  usedServiceTaskIds: Set<string>
+  usedServiceTaskIds: ReadonlySet<string>
 }
 
 const ParabolScopingSelectAllTasks = (props: Props) => {

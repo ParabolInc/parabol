@@ -33,6 +33,12 @@ const updateIntegrationDimensionField: MutationResolvers['updateIntegrationDimen
     const ctx = {dataLoader, teamId, userId: accessUserId, context, info, task, viewerId}
     const key = await estimatePush.resolveDimensionFieldKey(ctx)
     if (!key) throw new GraphQLError('Issue not found')
+    if (!SENTINELS.includes(fieldId) && estimatePush.targets.includes('field')) {
+      const {options} = await estimatePush.listDimensionFields(ctx)
+      if (!options.some((option) => option.fieldId === fieldId)) {
+        throw new GraphQLError('That field is not available on this issue')
+      }
+    }
     const target: DimensionFieldTarget | Error = SENTINELS.includes(fieldId)
       ? {fieldId, fieldName: null, fieldType: 'string'}
       : await estimatePush.describeDimensionField(ctx, key, fieldId)

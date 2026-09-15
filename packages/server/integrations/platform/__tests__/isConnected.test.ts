@@ -28,10 +28,15 @@ const JIRA_SCOPES = 'offline_access read:jira-user read:jira-work write:jira-wor
 const CONFLUENCE_ONLY_SCOPES = 'offline_access read:confluence-content.all write:confluence-content'
 
 describe('isConnected', () => {
-  it('github is connected by an active row with a token', async () => {
-    const {ctx, load} = makeCtx({accessToken: 'token'})
+  it('github is connected by an active row that carries the current scopes', async () => {
+    const {ctx, load} = makeCtx({accessToken: 'token', scopes: 'read:org,repo'})
     await expect(serverIntegrations.github.isConnected(ctx)).resolves.toBe(true)
     expect(load).toHaveBeenCalledWith({service: 'github', teamId: 'team1', userId: 'user1'})
+  })
+
+  it('github is not connected by a grant made before read:org was required', async () => {
+    const {ctx} = makeCtx({accessToken: 'token', scopes: 'repo'})
+    await expect(serverIntegrations.github.isConnected(ctx)).resolves.toBe(false)
   })
 
   it('github is not connected without a row', async () => {

@@ -1,12 +1,9 @@
 "A GitLab issue linked to a Parabol task"
 type _xGitLabIssue implements TaskIntegration
 
-"A GitLab project available for integration"
-type _xGitLabProject implements RepoIntegration
-
-extend type _xGitLabProject {
-  service: IntegrationProviderServiceEnum!
-}
+# Declared so GitLabIntegration.projects can name it: the public SDL is merged before the GitLab schema is nested, and mergeSchemas rejects an unknown type. The stitcher supplies every field
+"A GitLab project, exposed for scoping and issue creation"
+type _xGitLabProject
 
 extend type _xGitLabIssue {
   service: IntegrationProviderServiceEnum!

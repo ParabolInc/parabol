@@ -1,6 +1,9 @@
+import GitHubIssueId from 'parabol-client/shared/gqlIds/GitHubIssueId'
 import {githubIntegrationMeta} from 'parabol-client/shared/integrations/githubIntegrationMeta'
+import {Providers} from 'parabol-client/types/constEnums'
 import fetchGitHubRepos from '../../graphql/queries/helpers/fetchGitHubRepos'
 import type {GitHubSearchQueryJson, TeamMemberIntegrationAuth} from '../../postgres/types'
+import type {GitHubRepo} from '../platform/RemoteRepoIntegration'
 import {
   type EstimatePushCapability,
   type IntegrationCtx,
@@ -13,6 +16,7 @@ import {
 import buildGitHubSearchQuery from './buildGitHubSearchQuery'
 import describeGitHubDimensionField from './describeGitHubDimensionField'
 import GitHubServerManager from './GitHubServerManager'
+import listGitHubDimensionFields from './listGitHubDimensionFields'
 import pushEstimateToGitHub from './pushEstimateToGitHub'
 import resolveGitHubDimensionFieldKey from './resolveGitHubDimensionFieldKey'
 import resolveGitHubTaskIntegration from './resolveGitHubTaskIntegration'
@@ -32,11 +36,22 @@ export class GitHubServerIntegration extends ServerIntegrationDefinition {
     return !!(await this.getGlobalProvider(ctx))
   }
 
+  async getAuthRow(ctx: IntegrationCtx): Promise<TeamMemberIntegrationAuth | null> {
+    const auth = await super.getAuthRow(ctx)
+    return auth?.scopes === Providers.GITHUB_SCOPE ? auth : null
+  }
+
+  parseIntegrationHash(integrationHash: string) {
+    const {nameWithOwner, issueNumber} = GitHubIssueId.split(integrationHash)
+    if (!nameWithOwner || !Number.isInteger(issueNumber) || issueNumber < 1) return null
+    return {service: 'github' as const, nameWithOwner, issueNumber}
+  }
+
   readonly capabilities: {
     issueCreate: IssueCreateCapability
     issueRead: IssueReadCapability
     issueSearch: IssueSearchCapability<GitHubSearchQueryJson>
-    repoList: RepoListCapability
+    repoList: RepoListCapability<GitHubRepo>
     estimatePush: EstimatePushCapability
   } = {
     issueCreate: {
@@ -49,13 +64,16 @@ export class GitHubServerIntegration extends ServerIntegrationDefinition {
     issueSearch: {buildQuery: buildGitHubSearchQuery},
     repoList: {
       fetchRepos: ({dataLoader, teamId, userId, context, info}) =>
-        fetchGitHubRepos(teamId, userId, dataLoader, context, info)
+        fetchGitHubRepos(teamId, userId, dataLoader, context, info),
+      integrationRepoId: ({nameWithOwner}) => nameWithOwner,
+      name: ({nameWithOwner}) => nameWithOwner
     },
     estimatePush: {
       targets: ['comment', 'label'],
       pushEstimate: pushEstimateToGitHub,
       resolveDimensionFieldKey: resolveGitHubDimensionFieldKey,
-      describeDimensionField: describeGitHubDimensionField
+      describeDimensionField: describeGitHubDimensionField,
+      listDimensionFields: listGitHubDimensionFields
     }
   }
 }

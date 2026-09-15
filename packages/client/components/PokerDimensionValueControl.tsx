@@ -52,7 +52,6 @@ const PokerDimensionValueControl = (props: Props) => {
         teamId
         finalScore
         serviceField {
-          name
           type
         }
         taskId

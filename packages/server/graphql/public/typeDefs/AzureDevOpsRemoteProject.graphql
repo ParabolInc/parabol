@@ -85,4 +85,9 @@ type AzureDevOpsRemoteProject implements RepoIntegration {
   in the UI when helping users understand who can see linked work items.
   """
   visibility: String!
+
+  """
+  The id createTaskIntegration expects for this repo. Differs from id where id is the vendor's node id
+  """
+  integrationRepoId: ID!
 }

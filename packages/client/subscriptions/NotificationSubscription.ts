@@ -177,6 +177,10 @@ const subscription = graphql`
         descriptionHTML
       }
 
+      IntegrationService {
+        ...TaskFooterIntegrateMenuServiceRepos_service @relay(mask: false)
+      }
+
       ToggleFeatureFlagSuccess {
         featureFlag {
           featureName

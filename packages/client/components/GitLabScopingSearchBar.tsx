@@ -27,10 +27,8 @@ const GitLabScopingSearchBar = (props: Props) => {
             integrations {
               gitlab {
                 projects {
-                  ... on _xGitLabProject {
-                    id
-                    fullPath
-                  }
+                  id
+                  fullPath
                 }
               }
             }
