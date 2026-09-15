@@ -11,6 +11,7 @@ import EmailResponseMentioned from './EmailResponseMentioned'
 import EmailResponseReplied from './EmailResponseReplied'
 import EmailTaskInvolves from './EmailTaskInvolves'
 import EmailTeamArchived from './EmailTeamArchived'
+import EmailTeamHealthResponseDue from './EmailTeamHealthResponseDue'
 import EmailTeamInvitation from './EmailTeamInvitation'
 
 export const NOTIFICATION_TEMPLATE_TYPE = {
@@ -23,7 +24,8 @@ export const NOTIFICATION_TEMPLATE_TYPE = {
   TEAM_INVITATION: EmailTeamInvitation,
   MEETING_STAGE_TIME_LIMIT_END: EmailMeetingStageTimeLimitEnd,
   RESPONSE_MENTIONED: EmailResponseMentioned,
-  RESPONSE_REPLIED: EmailResponseReplied
+  RESPONSE_REPLIED: EmailResponseReplied,
+  TEAM_HEALTH_RESPONSE_DUE: EmailTeamHealthResponseDue
 }
 
 interface Props {
@@ -48,6 +50,7 @@ const EmailNotificationPicker = (props: Props) => {
         ...EmailMeetingStageTimeLimitEnd_notification
         ...EmailResponseMentioned_notification
         ...EmailResponseReplied_notification
+        ...EmailTeamHealthResponseDue_notification
       }
     `,
     notificationRef

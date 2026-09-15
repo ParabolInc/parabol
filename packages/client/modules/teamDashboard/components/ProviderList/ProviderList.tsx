@@ -1,5 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
+import {useEffect} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {useLocation} from 'react-router'
 import type {ProviderListQuery} from '../../../../__generated__/ProviderListQuery.graphql'
 import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
 import {hasConfluenceScopes, hasJiraScopes} from '../../../../utils/atlassianScopes'
@@ -102,6 +104,11 @@ const ProviderList = (props: Props) => {
   const {queryRef, retry, teamId} = props
   const data = usePreloadedQuery<ProviderListQuery>(query, queryRef)
   const {viewer} = data
+  const {hash} = useLocation()
+  useEffect(() => {
+    if (!hash) return
+    document.getElementById(hash.slice(1))?.scrollIntoView({block: 'start'})
+  }, [hash])
   const integrations = viewer.teamMember?.integrations
 
   const allIntegrations = [
