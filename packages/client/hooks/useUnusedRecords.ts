@@ -3,7 +3,7 @@ import {Threshold} from '~/types/constEnums'
 
 const useUnusedRecords = (
   serviceTaskIds: string[],
-  usedServiceTaskIds: ReadonlyMap<string, string>
+  usedServiceTaskIds: ReadonlySet<string>
 ): [string[], boolean | null] => {
   return useMemo(() => {
     const unusedServiceTaskIds = [] as string[]

@@ -12,7 +12,7 @@ import Checkbox from './Checkbox'
 interface Props {
   meetingId: string
   workItems: AzureDevOpsScopingSelectAllIssues_workItems$key
-  usedServiceTaskIds: ReadonlyMap<string, string>
+  usedServiceTaskIds: ReadonlySet<string>
   providerId: string
 }
 

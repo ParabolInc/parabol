@@ -5,7 +5,7 @@ import type {useGetUsedServiceTaskIds_phase$key} from '../__generated__/useGetUs
 
 const useGetUsedServiceTaskIds = (
   phaseRef: useGetUsedServiceTaskIds_phase$key
-): ReadonlyMap<string, string> => {
+): ReadonlySet<string> => {
   return useMemo(() => {
     const estimatePhase = readInlineData(
       graphql`
@@ -21,9 +21,9 @@ const useGetUsedServiceTaskIds = (
       phaseRef
     )
     const {stages} = estimatePhase
-    const usedServiceTaskIds = new Map<string, string>()
+    const usedServiceTaskIds = new Set<string>()
     stages.forEach(({task, taskId}) => {
-      usedServiceTaskIds.set(task?.integrationHash ?? taskId, taskId)
+      usedServiceTaskIds.add(task?.integrationHash ?? taskId)
     })
     return usedServiceTaskIds
   }, [phaseRef])

@@ -14,7 +14,7 @@ import Checkbox from './Checkbox'
 interface Props {
   meetingId: string
   issuesRef: LinearScopingSelectAllIssues_issues$key
-  usedServiceTaskIds: ReadonlyMap<string, string>
+  usedServiceTaskIds: ReadonlySet<string>
 }
 
 const LinearScopingSelectAllIssues = (props: Props) => {
@@ -48,10 +48,7 @@ const LinearScopingSelectAllIssues = (props: Props) => {
   const onClick = () => {
     if (submitting) return
     submitMutation()
-    const updateArr =
-      allSelected === true
-        ? serviceTaskIds.flatMap((id) => usedServiceTaskIds.get(id) ?? [])
-        : unusedServiceTaskIds
+    const updateArr = allSelected === true ? serviceTaskIds : unusedServiceTaskIds
     const action = allSelected === true ? 'DELETE' : 'ADD'
     const limit = action === 'ADD' ? availableCountToAdd : 1e6
     const updates = updateArr.slice(0, limit).map(
