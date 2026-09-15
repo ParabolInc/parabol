@@ -45,6 +45,15 @@ export const FEATURE_FLAGS = {
     updatedAt: new Date('2026-07-10T00:00:00+00:00'),
     isPublic: false
   },
+  suggestedServices: {
+    featureName: 'suggestedServices',
+    scope: 'Organization',
+    description: 'Surface third-party services the user already uses as integration suggestions',
+    expiresAt: new Date('2027-06-01T00:00:00+00:00'),
+    createdAt: new Date('2026-09-03T00:00:00+00:00'),
+    updatedAt: new Date('2026-09-03T00:00:00+00:00'),
+    isPublic: false
+  },
   ConfluenceExport: {
     featureName: 'ConfluenceExport',
     scope: 'Organization',

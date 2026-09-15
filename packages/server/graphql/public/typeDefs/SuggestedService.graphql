@@ -1,0 +1,35 @@
+"""
+A third-party service the viewer appears to already use, detected from their email address
+"""
+type SuggestedService {
+  id: ID!
+
+  """
+  The service worth suggesting the viewer connect
+  """
+  service: IntegrationProviderServiceEnum!
+
+  """
+  Whether the viewer's own account was found, or only that their company uses the service
+  """
+  matchType: SuggestedServiceMatchEnum!
+
+  """
+  What the lookup actually found, e.g. the GitHub login it matched or the Jira site it reached.
+  Reported raw so a caller can judge the strength of the match rather than trusting a score
+  """
+  evidence: [SuggestedServiceEvidence!]!
+
+  """
+  When the lookup that produced this suggestion ran
+  """
+  detectedAt: DateTime!
+}
+
+"""
+One detail recorded by the lookup behind a SuggestedService
+"""
+type SuggestedServiceEvidence {
+  key: String!
+  value: String!
+}
