@@ -4,6 +4,7 @@ import type {Integrationproviderserviceenum} from '../postgres/types/pg'
 import getPrevUsedRepoIntegrationsRedisKey from '../utils/getPrevUsedRepoIntegrationsRedisKey'
 import getRedis from '../utils/getRedis'
 import getRepoIntegrationsRedisKey from '../utils/getRepoIntegrationsRedisKey'
+import {peekRedisStoreAndNetwork} from '../utils/redisStoreAndNetwork'
 import getRepoListCapability from './platform/getRepoListCapability'
 import type {RemoteRepoIntegration} from './platform/RemoteRepoIntegration'
 
@@ -15,12 +16,13 @@ const updatePrevUsedRepoIntegrationsCache = async (
 ) => {
   const redis = getRedis()
   const prevUsedRepoIntegrationsKey = getPrevUsedRepoIntegrationsRedisKey(teamId)
-  const [prevUsedRepoIntegrations, cachedRes] = await Promise.all([
+  const [prevUsedRepoIntegrations, cachedRepoIntegrations] = await Promise.all([
     getPrevUsedRepoIntegrations(teamId),
-    redis.get(getRepoIntegrationsRedisKey(service, teamId, viewerId))
+    peekRedisStoreAndNetwork<RemoteRepoIntegration[]>(
+      getRepoIntegrationsRedisKey(service, teamId, viewerId)
+    )
   ])
-  const cachedRepoIntegrations = cachedRes ? (JSON.parse(cachedRes) as RemoteRepoIntegration[]) : []
-  const remoteRepoIntegration = cachedRepoIntegrations.find(
+  const remoteRepoIntegration = cachedRepoIntegrations?.find(
     (repo) => getRepoListCapability(repo).integrationRepoId(repo) === repoIntegrationId
   )
   if (!remoteRepoIntegration) return

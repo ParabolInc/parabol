@@ -36,7 +36,7 @@ beforeEach(() => {
 
 test('connecting a service only drops that service key', async () => {
   await invalidateRepoIntegrationsCache('t1', 'u1', 'gitlab', 'added')
-  expect(del).toHaveBeenCalledWith('repoIntegrations:gitlab:t1:u1')
+  expect(del).toHaveBeenCalledWith('repoIntegrations:v2:gitlab:t1:u1')
   expect(mockGetPrevUsed).not.toHaveBeenCalled()
   expect(zrem).not.toHaveBeenCalled()
 })
@@ -44,7 +44,7 @@ test('connecting a service only drops that service key', async () => {
 test('disconnecting drops the key and the team prev-used entries for that service in one zrem', async () => {
   mockGetPrevUsed.mockResolvedValue([gitlabA, githubRepo, gitlabB])
   await invalidateRepoIntegrationsCache('t1', 'u1', 'gitlab', 'removed')
-  expect(del).toHaveBeenCalledWith('repoIntegrations:gitlab:t1:u1')
+  expect(del).toHaveBeenCalledWith('repoIntegrations:v2:gitlab:t1:u1')
   expect(zrem).toHaveBeenCalledTimes(1)
   expect(zrem).toHaveBeenCalledWith('prevUsedRepoIntegrations:t1', [
     JSON.stringify(gitlabA),

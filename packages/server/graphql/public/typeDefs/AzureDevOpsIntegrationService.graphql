@@ -23,7 +23,7 @@ type AzureDevOpsIntegrationService implements IntegrationService {
   grantedScopes: [String!]!
   """
   The repos/projects the viewer can create issues in on this service, in the service's own order.
-  [] when not connected; null when the live fetch failed. Cached per service for 90 days unless networkOnly
+  [] when not connected; null when the live fetch failed. Served from a 2-day per-service cache that refreshes in the background; networkOnly fetches live
   """
   repos(networkOnly: Boolean = false): [AzureDevOpsRemoteProject!]
 
