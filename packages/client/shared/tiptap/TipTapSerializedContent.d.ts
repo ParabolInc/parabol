@@ -62,12 +62,20 @@ interface TipTapOrderedListNode {
     start: number
     type: null
   }
-  content: [TipTapListItemNode]
+  content: TipTapListItemNode[]
 }
+
+// A list item (or nested task item) may hold a paragraph plus nested lists of
+// any type — mixed nesting is a valid document structure.
+type TipTapListItemChild =
+  | TipTapParagraphNode
+  | TipTapBulletListNode
+  | TipTapOrderedListNode
+  | TipTapTaskListNode
 
 interface TipTapListItemNode {
   type: 'listItem'
-  content: TipTapParagraphNode[]
+  content: TipTapListItemChild[]
 }
 
 interface TipTapTaskListNode {
@@ -80,7 +88,7 @@ interface TipTapTaskItemNode {
   attrs: {
     checked: boolean
   }
-  content: TipTapParagraphNode[]
+  content: TipTapListItemChild[]
 }
 interface TipTapTaskBlockNode {
   type: 'taskBlock'
