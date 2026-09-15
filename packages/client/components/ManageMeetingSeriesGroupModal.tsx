@@ -137,7 +137,7 @@ export const ManageMeetingSeriesGroupModal = (props: Props) => {
             const enterDisabledReason = !team.seriesId
               ? 'Save changes to add this team to the series'
               : !team.meetingId
-                ? 'The meeting series has not started yet'
+                ? 'No meeting is in progress for this team'
                 : null
             return (
               <div

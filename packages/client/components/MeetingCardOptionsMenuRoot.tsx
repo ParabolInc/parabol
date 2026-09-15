@@ -11,11 +11,18 @@ interface Props {
   popTooltip: () => void
   openRecurrenceSettingsModal: () => void
   openEndRecurringMeetingModal: () => void
+  onStartSeriesNow: () => void
 }
 
 const MeetingCardOptionsMenuRoot = (props: Props) => {
-  const {meetingId, teamId, popTooltip, openRecurrenceSettingsModal, openEndRecurringMeetingModal} =
-    props
+  const {
+    meetingId,
+    teamId,
+    popTooltip,
+    openRecurrenceSettingsModal,
+    openEndRecurringMeetingModal,
+    onStartSeriesNow
+  } = props
   const queryRef = useQueryLoaderNow<MeetingCardOptionsMenuQuery>(meetingCardOptionsMenuQuery, {
     meetingId,
     teamId
@@ -28,6 +35,7 @@ const MeetingCardOptionsMenuRoot = (props: Props) => {
           popTooltip={popTooltip}
           openRecurrenceSettingsModal={openRecurrenceSettingsModal}
           openEndRecurringMeetingModal={openEndRecurringMeetingModal}
+          onStartSeriesNow={onStartSeriesNow}
         />
       )}
     </Suspense>
