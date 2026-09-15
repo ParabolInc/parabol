@@ -3,12 +3,14 @@ import graphql from 'babel-plugin-relay/macro'
 import {motion} from 'motion/react'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {Link} from 'react-router'
+import {Link, useNavigate} from 'react-router'
 import {Lock, TaskAlt} from '~/ui/icons'
 import type {MeetingCard_meeting$key} from '../__generated__/MeetingCard_meeting.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useMeetingMemberAvatars from '../hooks/useMeetingMemberAvatars'
 import {useMeetingSeriesDate} from '../hooks/useMeetingSeriesDate'
+import useStartMeetingSeriesNowMutation from '../mutations/useStartMeetingSeriesNowMutation'
 import {Breakpoint, ElementWidth} from '../types/constEnums'
 import {cn} from '../ui/cn'
 import {Menu} from '../ui/Menu/Menu'
@@ -31,6 +33,7 @@ import IconLabel from './IconLabel'
 import MeetingCardOptionsMenuRoot from './MeetingCardOptionsMenuRoot'
 import MeetingSeriesManager from './MeetingSeriesManager'
 import {EndRecurringMeetingModal} from './Recurrence/EndRecurringMeetingModal'
+import StartMeetingSeriesNowDialog from './StartMeetingSeriesNowDialog'
 
 const STACK_DEGREES = {0: 1, 1: -2} as const
 const STACK_OFFSET_LEFT = {0: 4, 1: 2} as const
@@ -77,6 +80,9 @@ const MeetingCard = (props: Props) => {
           cancelledAt
           nextMeetingDate
           groupId
+          groupSeries {
+            id
+          }
           owner {
             ...MeetingSeriesManager_user
           }
@@ -114,6 +120,34 @@ const MeetingCard = (props: Props) => {
 
   const [isRecurrenceSettingsOpen, setIsRecurrenceSettingsOpen] = useState(false)
   const [isEndRecurringMeetingOpen, setIsEndRecurringMeetingOpen] = useState(false)
+  const [isStartSeriesNowOpen, setIsStartSeriesNowOpen] = useState(false)
+  const atmosphere = useAtmosphere()
+  const navigate = useNavigate()
+  const [startSeriesNow, isStartingSeries] = useStartMeetingSeriesNowMutation()
+
+  const startNextMeeting = () => {
+    if (!meetingSeries || isStartingSeries) return
+    setIsStartSeriesNowOpen(false)
+    startSeriesNow({
+      variables: {meetingSeriesId: meetingSeries.id},
+      onCompleted: (res) => {
+        // an owner can schedule for teams they are not on, & cannot join those meetings
+        const {meeting: nextMeeting} = res.startMeetingSeriesNow
+        if (nextMeeting) {
+          navigate(`/meet/${nextMeeting.id}`)
+          return
+        }
+        atmosphere.eventEmitter.emit('addSnackbar', {
+          key: 'startMeetingSeriesNow',
+          autoDismiss: 5,
+          showDismissButton: true,
+          message: 'Started the next meeting for each team'
+        })
+      }
+    })
+  }
+  // a meeting that already ended has nothing to confirm; a running one is ended by the next
+  const onStartSeriesNow = () => (endedAt ? startNextMeeting() : setIsStartSeriesNowOpen(true))
 
   if (!team) {
     // 95% sure there's a bug in relay causing this
@@ -222,6 +256,13 @@ const MeetingCard = (props: Props) => {
                 className='relative mx-auto block h-45 overflow-hidden rounded-t-card pt-6 dark:brightness-[.94]'
               />
             </Link>
+            {isRecurring && meetingSeries.owner && (
+              <MeetingSeriesManager
+                userRef={meetingSeries.owner}
+                meetingType={meetingType}
+                isGroup={!!meetingSeries.groupId}
+              />
+            )}
           </div>
           <div className='pt-1 pr-2 pb-3 pl-4'>
             <div className='relative flex items-center'>
@@ -269,6 +310,7 @@ const MeetingCard = (props: Props) => {
                       popTooltip={popTooltip}
                       openEndRecurringMeetingModal={() => setIsEndRecurringMeetingOpen(true)}
                       openRecurrenceSettingsModal={() => setIsRecurrenceSettingsOpen(true)}
+                      onStartSeriesNow={onStartSeriesNow}
                     />
                   </MenuContent>
                 </Menu>
@@ -298,9 +340,6 @@ const MeetingCard = (props: Props) => {
                 )}
               </span>
             </Link>
-            {isRecurring && meetingSeries.groupId && meetingSeries.owner && (
-              <MeetingSeriesManager userRef={meetingSeries.owner} />
-            )}
             <AvatarList users={connectedUsers} size={28} borderColor='var(--color-surface-card)' />
           </div>
           {meeting && (
@@ -309,6 +348,16 @@ const MeetingCard = (props: Props) => {
               nextMeetingDate={isRecurring ? meetingSeries.nextMeetingDate : undefined}
               isOpen={isEndRecurringMeetingOpen}
               closeModal={() => setIsEndRecurringMeetingOpen(false)}
+            />
+          )}
+          {isRecurring && (
+            <StartMeetingSeriesNowDialog
+              isOpen={isStartSeriesNowOpen}
+              onClose={() => setIsStartSeriesNowOpen(false)}
+              onConfirm={startNextMeeting}
+              isSubmitting={isStartingSeries}
+              // the siblings are only handed to the owner, who is the one that can start them
+              teamCount={meetingSeries.groupSeries.length + 1}
             />
           )}
           {isRecurring && (

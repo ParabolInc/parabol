@@ -862,3 +862,57 @@ test('an invitee on only the second team resolves that team series link', async 
   })
   expect(foreign.data.viewer.meetingSeries).toBeNull()
 })
+
+const START_MEETING_SERIES_NOW = `
+  mutation StartMeetingSeriesNow($meetingSeriesId: ID!) {
+    startMeetingSeriesNow(meetingSeriesId: $meetingSeriesId) {
+      meeting {
+        id
+        teamId
+      }
+    }
+  }
+`
+
+// The first occurrence is not special: the owner starts the next one for the whole group with a
+// single call, and a team still mid-meeting has that meeting ended so the next one can begin.
+test('the owner starts the next meeting of a started group for every team at once', async () => {
+  const pg = getKysely()
+  const owner = await signUp()
+  const secondTeamId = await addTeam(owner.orgId, owner.userId, true)
+  const {rows} = await createGroupedSeries([owner.teamId, secondTeamId], owner.userId, owner.userId)
+  const seriesIds = rows.map(({id}) => id)
+  const variables = {meetingSeriesId: MeetingSeriesId.join(rows[0]!.id)}
+  const bearerToken = await authTokenFor(owner.userId)
+  const selectSeriesMeetings = () =>
+    pg
+      .selectFrom('NewMeeting')
+      .select(['id', 'teamId', 'endedAt'])
+      .where('meetingSeriesId', 'in', seriesIds)
+      .execute()
+
+  const first = await sendPublic({query: START_MEETING_SERIES_NOW, variables, bearerToken})
+  expect(first.errors).toBeUndefined()
+  const firstMeetings = await selectSeriesMeetings()
+  expect(firstMeetings.map(({teamId}) => teamId).sort()).toEqual(
+    [owner.teamId, secondTeamId].sort()
+  )
+
+  // every team is mid-meeting: those meetings end, and each team gets a fresh one
+  const second = await sendPublic({query: START_MEETING_SERIES_NOW, variables, bearerToken})
+  expect(second.errors).toBeUndefined()
+  expect(second.data.startMeetingSeriesNow.meeting.teamId).toBe(owner.teamId)
+  const after = await selectSeriesMeetings()
+  expect(after).toHaveLength(4)
+  const firstIds = new Set(firstMeetings.map(({id}) => id))
+  for (const meeting of after) {
+    if (firstIds.has(meeting.id)) expect(meeting.endedAt).not.toBeNull()
+    else expect(meeting.endedAt).toBeNull()
+  }
+  expect(
+    after
+      .filter(({endedAt}) => !endedAt)
+      .map(({teamId}) => teamId)
+      .sort()
+  ).toEqual([owner.teamId, secondTeamId].sort())
+})

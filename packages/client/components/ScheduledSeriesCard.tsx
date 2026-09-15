@@ -107,8 +107,10 @@ const ScheduledSeriesCard = (props: Props) => {
   }
 
   const isViewerOwner = ownerUserId === atmosphere.viewerId
-  // an owned series answers to its owner alone, so nobody else gets an edit affordance on it
-  const canEdit = !ownerUserId || isViewerOwner
+  // an owned series answers to its owner alone, so nobody else gets an admin affordance on it
+  const canAdmin = !ownerUserId || isViewerOwner
+  // a group is rescheduled as a whole from its group card, never one team at a time
+  const canEdit = canAdmin && !groupId
   const nextDate = nextMeetingDate ? new Date(nextMeetingDate) : null
   const label = nextDate ? `Starts ${shortDateFormatter.format(nextDate)}` : 'Scheduled'
   const tooltip = nextDate ? `Starts ${timeFormatter.format(nextDate)}` : ''
@@ -166,6 +168,9 @@ const ScheduledSeriesCard = (props: Props) => {
               Scheduled
             </span>
             {withEditLink(<img className={MEETING_IMG} src={illustration} alt='' />)}
+            {owner && (
+              <MeetingSeriesManager userRef={owner} meetingType={meetingType} isGroup={!!groupId} />
+            )}
           </div>
           <div className='pt-1 pr-2 pb-3 pl-4'>
             <div className='relative flex items-center'>
@@ -182,7 +187,7 @@ const ScheduledSeriesCard = (props: Props) => {
                   </Tooltip>
                 </>
               )}
-              {canEdit && (
+              {canAdmin && (
                 <Menu
                   trigger={
                     <button className='absolute top-0 right-0 flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent opacity-50 outline-hidden hover:bg-surface-hover hover:opacity-100'>
@@ -191,16 +196,16 @@ const ScheduledSeriesCard = (props: Props) => {
                   }
                 >
                   <MenuContent align='end' sideOffset={4}>
-                    {isViewerOwner && (
-                      <MenuItem onSelect={onStartNow}>
-                        <PlayArrowIcon className={MENU_ITEM_ICON} />
-                        Start meeting now
+                    <MenuItem onSelect={onStartNow}>
+                      <PlayArrowIcon className={MENU_ITEM_ICON} />
+                      Start meeting now
+                    </MenuItem>
+                    {canEdit && (
+                      <MenuItem onSelect={() => setIsEditOpen(true)}>
+                        <ReplayIcon className={MENU_ITEM_ICON} />
+                        Edit recurrence settings
                       </MenuItem>
                     )}
-                    <MenuItem onSelect={() => setIsEditOpen(true)}>
-                      <ReplayIcon className={MENU_ITEM_ICON} />
-                      Edit recurrence settings
-                    </MenuItem>
                   </MenuContent>
                 </Menu>
               )}
@@ -210,7 +215,6 @@ const ScheduledSeriesCard = (props: Props) => {
                 {team.name} • Awaiting first meeting
               </span>
             )}
-            {groupId && owner && <MeetingSeriesManager userRef={owner} />}
           </div>
           <EditMeetingSeriesModal
             isOpen={isEditOpen}
