@@ -3,38 +3,30 @@ import getPrevUsedRepoIntegrations from '../graphql/queries/helpers/getPrevUsedR
 import type {Integrationproviderserviceenum} from '../postgres/types/pg'
 import getPrevUsedRepoIntegrationsRedisKey from '../utils/getPrevUsedRepoIntegrationsRedisKey'
 import getRedis from '../utils/getRedis'
-import getRepoIntegrationsRedisKey from '../utils/getRepoIntegrationsRedisKey'
-import {peekRedisStoreAndNetwork} from '../utils/redisStoreAndNetwork'
+import loadServiceRepoIntegrations from './loadServiceRepoIntegrations'
 import getRepoListCapability from './platform/getRepoListCapability'
 import type {RemoteRepoIntegration} from './platform/RemoteRepoIntegration'
+import {isRegisteredServerIntegration} from './platform/registry'
+import type {GqlIntegrationCtx} from './platform/ServerIntegrationDefinition'
 
 const updatePrevUsedRepoIntegrationsCache = async (
-  teamId: string,
-  repoIntegrationId: string,
-  viewerId: string,
-  service: Integrationproviderserviceenum
+  service: Integrationproviderserviceenum,
+  integrationRepoId: string,
+  ctx: GqlIntegrationCtx
 ) => {
+  if (!isRegisteredServerIntegration(service)) return
+  const {teamId} = ctx
+  const isUsedRepo = (repo: RemoteRepoIntegration) =>
+    repo.service === service &&
+    getRepoListCapability(repo).integrationRepoId(repo) === integrationRepoId
+  const prevUsedRepoIntegrations = await getPrevUsedRepoIntegrations(teamId)
+  const usedRepo =
+    prevUsedRepoIntegrations?.find(isUsedRepo) ??
+    (await loadServiceRepoIntegrations(service, ctx))?.find(isUsedRepo)
+  if (!usedRepo) return
   const redis = getRedis()
   const prevUsedRepoIntegrationsKey = getPrevUsedRepoIntegrationsRedisKey(teamId)
-  const [prevUsedRepoIntegrations, cachedRepoIntegrations] = await Promise.all([
-    getPrevUsedRepoIntegrations(teamId),
-    peekRedisStoreAndNetwork<RemoteRepoIntegration[]>(
-      getRepoIntegrationsRedisKey(service, teamId, viewerId)
-    )
-  ])
-  const remoteRepoIntegration = cachedRepoIntegrations?.find(
-    (repo) => getRepoListCapability(repo).integrationRepoId(repo) === repoIntegrationId
-  )
-  if (!remoteRepoIntegration) return
-  const oldPrevUsedRepoIntegration = prevUsedRepoIntegrations?.find(
-    (repo) =>
-      repo.service === service &&
-      getRepoListCapability(repo).integrationRepoId(repo) === repoIntegrationId
-  )
-  if (oldPrevUsedRepoIntegration) {
-    await redis.zrem(prevUsedRepoIntegrationsKey, JSON.stringify(oldPrevUsedRepoIntegration))
-  }
-  await redis.zadd(prevUsedRepoIntegrationsKey, Date.now(), JSON.stringify(remoteRepoIntegration))
+  await redis.zadd(prevUsedRepoIntegrationsKey, Date.now(), JSON.stringify(usedRepo))
   await redis.pexpire(prevUsedRepoIntegrationsKey, ms('180d'))
 }
 

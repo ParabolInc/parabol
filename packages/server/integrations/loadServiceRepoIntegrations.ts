@@ -1,6 +1,9 @@
 import ms from 'ms'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {makeIntegrationServiceSource} from '../graphql/public/types/IntegrationService'
 import getRepoIntegrationsRedisKey from '../utils/getRepoIntegrationsRedisKey'
 import logError from '../utils/logError'
+import publish from '../utils/publish'
 import {redisStoreAndNetwork} from '../utils/redisStoreAndNetwork'
 import type {RemoteRepoIntegration} from './platform/RemoteRepoIntegration'
 import {getServerIntegration, type RegisteredServerIntegration} from './platform/registry'
@@ -11,13 +14,12 @@ const CACHE_TTL = ms('2d')
 
 /**
  * One service's repo list for the user on this team, served from Redis and refreshed in the
- * background once it is older than REFRESH_AFTER. networkOnly fetches live and stores the result.
+ * background once it is older than REFRESH_AFTER. A refresh that changes the list is pushed to the user.
  * [] when the service is not connected; null when the fetch failed or the token is unusable
  */
 const loadServiceRepoIntegrations = async (
   service: RegisteredServerIntegration,
-  ctx: GqlIntegrationCtx,
-  networkOnly: boolean
+  ctx: GqlIntegrationCtx
 ): Promise<RemoteRepoIntegration[] | null> => {
   const {teamId, userId} = ctx
   const definition = getServerIntegration(service)
@@ -37,7 +39,18 @@ const loadServiceRepoIntegrations = async (
     getRepoIntegrationsRedisKey(service, teamId, userId),
     fetchRepos,
     (repos) => repos,
-    {maxAge: REFRESH_AFTER, ttl: CACHE_TTL, networkOnly}
+    {
+      maxAge: REFRESH_AFTER,
+      ttl: CACHE_TTL,
+      onUpdate: () => {
+        publish(
+          SubscriptionChannel.NOTIFICATION,
+          userId,
+          'IntegrationService',
+          makeIntegrationServiceSource(service, teamId, userId)
+        )
+      }
+    }
   )
   return repos instanceof Error ? null : repos
 }

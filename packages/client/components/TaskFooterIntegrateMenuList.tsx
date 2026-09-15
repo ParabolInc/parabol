@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {Suspense, useCallback, useEffect, useMemo, useState} from 'react'
+import {Suspense, useCallback, useMemo, useState} from 'react'
 import {useLazyLoadQuery} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import mergeRepoIntegrationItems from '~/utils/mergeRepoIntegrationItems'
@@ -42,11 +42,10 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
     }
   `
 
-  const [networkOnly, setNetworkOnly] = useState(false)
   const [reposByService, setReposByService] = useState<ReposByService>({})
   const {viewer} = useLazyLoadQuery<TaskFooterIntegrateMenuListLocalQuery>(
     graphql`
-      query TaskFooterIntegrateMenuListLocalQuery($teamId: ID!, $networkOnly: Boolean!) {
+      query TaskFooterIntegrateMenuListLocalQuery($teamId: ID!) {
         viewer {
           teamMember(teamId: $teamId) {
             prevUsedRepoIntegrations(first: 50) {
@@ -63,7 +62,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
         }
       }
     `,
-    {teamId, networkOnly}
+    {teamId}
   )
   const services = viewer?.teamMember?.services ?? []
   const prevUsedItems = viewer?.teamMember?.prevUsedRepoIntegrations.items ?? []
@@ -76,7 +75,6 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
       services.map(({service}) => reposByService[service] ?? [])
     )
   }, [prevUsedItems, services, reposByService])
-  const isEveryServiceResolved = services.every(({service}) => service in reposByService)
   const onRepos = useCallback((service: RepoIntegrationService, repos: readonly Item[] | null) => {
     setReposByService((prev) => ({...prev, [service]: repos}))
   }, [])
@@ -86,14 +84,6 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
     filteredItems: filteredIntegrations,
     onQueryChange
   } = useSearchFilter(items, getValue)
-
-  useEffect(() => {
-    // a search miss against the cache may be stale, so refetch every service from the network once
-    if (!networkOnly && isEveryServiceResolved && filteredIntegrations.length === 0) {
-      setNetworkOnly(true)
-      setReposByService({})
-    }
-  }, [isEveryServiceResolved, filteredIntegrations.length])
 
   return (
     <>

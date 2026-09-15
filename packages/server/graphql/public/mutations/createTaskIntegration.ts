@@ -101,12 +101,13 @@ const createTaskIntegration: MutationResolvers['createTaskIntegration'] = async 
     }
   }
 
-  updatePrevUsedRepoIntegrationsCache(
+  updatePrevUsedRepoIntegrationsCache(integrationProviderService, integrationRepoId, {
+    dataLoader,
     teamId,
-    integrationRepoId,
-    viewerId,
-    integrationProviderService
-  )
+    userId: viewerId,
+    context,
+    info
+  })
   await pg
     .updateTable('Task')
     .set({

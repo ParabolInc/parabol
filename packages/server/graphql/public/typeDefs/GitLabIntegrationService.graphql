@@ -23,9 +23,9 @@ type GitLabIntegrationService implements IntegrationService {
   grantedScopes: [String!]!
   """
   The repos/projects the viewer can create issues in on this service, in the service's own order.
-  [] when not connected; null when the live fetch failed. Served from a 2-day per-service cache that refreshes in the background; networkOnly fetches live
+  [] when not connected; null when the live fetch failed. Served from a 2-day per-service cache that refreshes in the background
   """
-  repos(networkOnly: Boolean = false): [RepoContainer!]
+  repos: [RepoContainer!]
 
   """
   The viewer's saved searches on this service, most recently used first.

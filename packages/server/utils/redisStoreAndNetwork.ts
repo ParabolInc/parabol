@@ -67,7 +67,12 @@ async function refresh<TRaw extends object, TTransformed>(
     return
   }
   const transformedPayload = await transform(raw)
-  redis.set(key, pack({rawHash: newHash, transformedPayload, cachedAt: Date.now()}), 'PX', ttl)
+  await redis.set(
+    key,
+    pack({rawHash: newHash, transformedPayload, cachedAt: Date.now()}),
+    'PX',
+    ttl
+  )
   if (onUpdate) await onUpdate(transformedPayload)
 }
 
@@ -104,12 +109,10 @@ export async function redisStoreAndNetwork<TRaw extends object, TTransformed>(
   options?: {
     maxAge?: number
     ttl?: number
-    /** Skip whatever is cached and fetch now; the result is stored for the next reader */
-    networkOnly?: boolean
     onUpdate?: (transformed: TTransformed) => void | Promise<void>
   }
 ): Promise<TTransformed | Error> {
-  const {maxAge = DEFAULT_MAX_AGE, ttl = DEFAULT_TTL, networkOnly, onUpdate} = options ?? {}
+  const {maxAge = DEFAULT_MAX_AGE, ttl = DEFAULT_TTL, onUpdate} = options ?? {}
   const redis = getRedis()
 
   // Atomically get the current value and claim the key with a PENDING sentinel if it's empty.
@@ -118,8 +121,8 @@ export async function redisStoreAndNetwork<TRaw extends object, TTransformed>(
   //   Buffer → key already had a value (real entry or PENDING from another request)
   const prev = await redis.setBuffer(key, PENDING, 'PX', PENDING_TTL_MS, 'NX', 'GET')
 
-  // this is the first request for this key, or the caller wants the network regardless
-  if (prev === null || networkOnly) return fetchAndStore(key, thunk, transform, ttl)
+  // this is the first request for this key
+  if (prev === null) return fetchAndStore(key, thunk, transform, ttl)
 
   if (isPending(prev)) {
     // Another request is already fetching — wait for it to finish
@@ -135,11 +138,4 @@ export async function redisStoreAndNetwork<TRaw extends object, TTransformed>(
     }
     return entry.transformedPayload
   }
-}
-
-/** The cached value as stored, without fetching or refreshing; null when absent or still being fetched */
-export async function peekRedisStoreAndNetwork<T>(key: string): Promise<T | null> {
-  const buf = await getRedis().getBuffer(key)
-  if (buf === null || isPending(buf)) return null
-  return (unpack(buf) as CachedEntry<T>).transformedPayload
 }

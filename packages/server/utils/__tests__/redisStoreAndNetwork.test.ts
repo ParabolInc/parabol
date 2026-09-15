@@ -1,12 +1,11 @@
 import {pack} from 'msgpackr'
 import getRedis from '../getRedis'
-import {peekRedisStoreAndNetwork, redisStoreAndNetwork} from '../redisStoreAndNetwork'
+import {redisStoreAndNetwork} from '../redisStoreAndNetwork'
 
 jest.mock('../getRedis', () => ({__esModule: true, default: jest.fn()}))
 
 const mockGetRedis = getRedis as jest.MockedFunction<typeof getRedis>
 const setBuffer = jest.fn()
-const getBuffer = jest.fn()
 const set = jest.fn()
 const del = jest.fn()
 const identity = <T>(raw: T) => raw
@@ -15,9 +14,7 @@ const packEntry = (transformedPayload: unknown, cachedAt = Date.now()) =>
 
 beforeEach(() => {
   jest.clearAllMocks()
-  mockGetRedis.mockReturnValue({setBuffer, getBuffer, set, del} as unknown as ReturnType<
-    typeof getRedis
-  >)
+  mockGetRedis.mockReturnValue({setBuffer, set, del} as unknown as ReturnType<typeof getRedis>)
 })
 
 test('a fresh hit is served from the cache without fetching', async () => {
@@ -28,25 +25,19 @@ test('a fresh hit is served from the cache without fetching', async () => {
   expect(set).not.toHaveBeenCalled()
 })
 
-test('networkOnly fetches and stores even when the cache has a fresh entry', async () => {
-  setBuffer.mockResolvedValue(packEntry(['cached']))
+test('a stale hit is served at once and a changed refresh is stored before onUpdate runs', async () => {
+  setBuffer.mockResolvedValue(packEntry(['cached'], 0))
+  let resolveSet = () => {}
+  set.mockReturnValue(new Promise<void>((resolve) => (resolveSet = resolve)))
+  const onUpdate = jest.fn()
   const thunk = jest.fn().mockResolvedValue(['fresh'])
   await expect(
-    redisStoreAndNetwork('k', thunk, identity, {networkOnly: true, ttl: 1000})
-  ).resolves.toEqual(['fresh'])
-  expect(thunk).toHaveBeenCalledTimes(1)
-  expect(set).toHaveBeenCalledWith('k', expect.any(Buffer), 'PX', 1000)
-})
-
-test('peek returns the cached payload without fetching or refreshing', async () => {
-  getBuffer.mockResolvedValue(packEntry(['cached'], 0))
-  await expect(peekRedisStoreAndNetwork('k')).resolves.toEqual(['cached'])
-  expect(setBuffer).not.toHaveBeenCalled()
-  expect(set).not.toHaveBeenCalled()
-})
-
-test('peek is null when the key is absent or another request is still fetching', async () => {
-  getBuffer.mockResolvedValueOnce(null).mockResolvedValueOnce(Buffer.from('__pending__'))
-  await expect(peekRedisStoreAndNetwork('k')).resolves.toBeNull()
-  await expect(peekRedisStoreAndNetwork('k')).resolves.toBeNull()
+    redisStoreAndNetwork('k', thunk, identity, {maxAge: 1000, ttl: 5000, onUpdate})
+  ).resolves.toEqual(['cached'])
+  await new Promise(setImmediate)
+  expect(set).toHaveBeenCalledWith('k', expect.any(Buffer), 'PX', 5000)
+  expect(onUpdate).not.toHaveBeenCalled()
+  resolveSet()
+  await new Promise(setImmediate)
+  expect(onUpdate).toHaveBeenCalledWith(['fresh'])
 })

@@ -72,11 +72,6 @@ type TeamMember {
     """
     first: Int!
     after: DateTime
-
-    """
-    true if we should fetch from the network, false if we should use the cache
-    """
-    networkOnly: Boolean!
   ): RepoIntegrationQueryPayload!
 
   """
