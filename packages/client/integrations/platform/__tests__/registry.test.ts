@@ -65,6 +65,17 @@ describe('clientIntegrations registry', () => {
     expect(getClientIntegration('jira')).toBe(clientIntegrations.jira)
   })
 
+  it('the two Jira services label a saved project filter by its project key', () => {
+    expect(clientIntegrations.jira.capabilities.scoping?.projectFilterLabel?.('cloud1:WEB')).toBe(
+      'WEB'
+    )
+    expect(
+      clientIntegrations.jiraServer.capabilities.scoping?.projectFilterLabel?.(
+        'jiraServer:9:10001:WEB'
+      )
+    ).toBe('WEB')
+  })
+
   it('only Jira Data Center advertises its scope tab when the team cannot use it', () => {
     const advertised = Object.entries(clientIntegrations)
       .filter(([, definition]) => definition.capabilities.scoping?.advertiseWhenUnavailable)

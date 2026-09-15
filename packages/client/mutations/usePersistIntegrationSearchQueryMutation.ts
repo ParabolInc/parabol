@@ -13,7 +13,6 @@ graphql`
       ... on JiraSearchQuery {
         isJQL
         projectKeyFilters
-        projectKeyFilterLabels
       }
     }
   }

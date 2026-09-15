@@ -32,6 +32,8 @@ export interface ScopingCapability {
   Panel: LazyExoticComponent<ComponentType<{meetingRef: ScopePhaseArea_meeting$data}>>
   /** Show the tab even when the team cannot use the service yet, as a pitch to contact sales */
   advertiseWhenUnavailable?: boolean
+  /** What the search history shows for a saved project filter id; absent when the id is already readable */
+  projectFilterLabel?(filter: string): string
 }
 
 export interface ClientIntegrationCapabilities {

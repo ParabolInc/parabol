@@ -1,6 +1,7 @@
 import {lazy} from 'react'
 import type Atmosphere from '../../Atmosphere'
 import JiraSVG from '../../components/JiraSVG'
+import JiraProjectId from '../../shared/gqlIds/JiraProjectId'
 import {jiraIntegrationMeta} from '../../shared/integrations/jiraIntegrationMeta'
 import {ExternalLinks} from '../../types/constEnums'
 import AtlassianClientManager from '../../utils/AtlassianClientManager'
@@ -22,7 +23,8 @@ export class JiraClientIntegration extends ClientIntegrationDefinition {
           import(
             /* webpackChunkName: 'ScopePhaseAreaJiraScoping' */ '../../components/ScopePhaseAreaJiraScoping'
           )
-      )
+      ),
+      projectFilterLabel: (filter) => JiraProjectId.split(filter).projectKey
     }
   }
   readonly authorizationHelpUrl = ExternalLinks.INTEGRATIONS_SUPPORT_JIRA_AUTHORIZATION

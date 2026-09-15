@@ -33,12 +33,11 @@ const JiraServerScopingSearchHistoryToggle = (props: Props) => {
   const {id: meetingId, teamId} = meeting
   const services = meeting.viewerMeetingMember?.teamMember.services ?? []
   const savedQueries = findIntegrationService(services, 'jiraServer')?.searchQueries.map(
-    ({id, queryString, isJQL, projectKeyFilters, projectKeyFilterLabels}) => ({
+    ({id, queryString, isJQL, projectKeyFilters}) => ({
       id,
       queryString,
       isJQL: isJQL ?? false,
-      projectKeyFilters: projectKeyFilters ?? [],
-      projectKeyFilterLabels: projectKeyFilterLabels ?? []
+      projectKeyFilters: projectKeyFilters ?? []
     })
   )
   const onDeleteQuery = (id: string) => {

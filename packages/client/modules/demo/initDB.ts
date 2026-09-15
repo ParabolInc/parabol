@@ -1,4 +1,5 @@
 import type {SlackNotificationEventEnum} from '~/__generated__/SlackNotificationList_viewer.graphql'
+import JiraProjectId from '../../shared/gqlIds/JiraProjectId'
 import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import {ExternalLinks, MeetingSettingsThreshold, RetroDemo} from '../../types/constEnums'
 import {DISCUSS, GROUP, REFLECT, RETROSPECTIVE, VOTE} from '../../utils/constants'
@@ -105,7 +106,7 @@ class DemoJiraRemoteProject {
   constructor(key: keyof typeof JiraProjectKeyLookup) {
     const details = JiraProjectKeyLookup[key]
     const {key: projectKey, name, cloudId, avatar} = details
-    this.id = `${cloudId}:${projectKey}`
+    this.id = JiraProjectId.join(cloudId, projectKey)
     this.teamId = RetroDemo.TEAM_ID
     this.userId = demoViewerId
     this.cloudId = cloudId

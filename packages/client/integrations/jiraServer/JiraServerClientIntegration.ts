@@ -1,6 +1,7 @@
 import {lazy} from 'react'
 import type Atmosphere from '../../Atmosphere'
 import JiraServerSVG from '../../components/JiraServerSVG'
+import IntegrationRepoId from '../../shared/gqlIds/IntegrationRepoId'
 import {jiraServerIntegrationMeta} from '../../shared/integrations/jiraServerIntegrationMeta'
 import JiraServerClientManager from '../../utils/JiraServerClientManager'
 import {
@@ -22,7 +23,8 @@ export class JiraServerClientIntegration extends ClientIntegrationDefinition {
             /* webpackChunkName: 'ScopePhaseAreaJiraServerScoping' */ '../../components/ScopePhaseAreaJiraServerScoping'
           )
       ),
-      advertiseWhenUnavailable: true
+      advertiseWhenUnavailable: true,
+      projectFilterLabel: (filter) => IntegrationRepoId.split(filter).projectKey ?? filter
     }
   }
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
