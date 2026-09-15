@@ -916,3 +916,58 @@ test('the owner starts the next meeting of a started group for every team at onc
       .sort()
   ).toEqual([owner.teamId, secondTeamId].sort())
 })
+
+// The summary of an ended meeting lands in its team's page tree, which only that team can write
+// to. Restarting the group must still close a meeting on a team the owner is not on, summary
+// included, rather than log an access error and leave the team with two open meetings.
+test('restarting a group closes and summarizes a meeting on a team the owner is not on', async () => {
+  const pg = getKysely()
+  const owner = await signUp()
+  const foreignMember = await signUp()
+  const foreignTeamId = await addTeam(owner.orgId, foreignMember.userId, true)
+  const groupId = randomUUIDv7()
+  const rows = await pg
+    .insertInto('MeetingSeries')
+    .values(
+      [
+        {teamId: owner.teamId, facilitatorId: owner.userId},
+        {teamId: foreignTeamId, facilitatorId: foreignMember.userId}
+      ].map((row) => ({
+        ...row,
+        meetingType: 'teamHealth' as const,
+        title: 'Weekly Health',
+        recurrenceRule: RRULE,
+        duration: 24 * 60,
+        groupId,
+        ownerUserId: owner.userId
+      }))
+    )
+    .returning(['id', 'teamId'])
+    .execute()
+  const seriesIds = rows.map(({id}) => id)
+  const variables = {meetingSeriesId: MeetingSeriesId.join(rows[0]!.id)}
+  const bearerToken = await authTokenFor(owner.userId)
+
+  const first = await sendPublic({query: START_MEETING_SERIES_NOW, variables, bearerToken})
+  expect(first.errors).toBeUndefined()
+  const second = await sendPublic({query: START_MEETING_SERIES_NOW, variables, bearerToken})
+  expect(second.errors).toBeUndefined()
+
+  const foreignMeetings = await pg
+    .selectFrom('NewMeeting')
+    .select(['id', 'endedAt'])
+    .where('meetingSeriesId', 'in', seriesIds)
+    .where('teamId', '=', foreignTeamId)
+    .orderBy('createdAt')
+    .execute()
+  expect(foreignMeetings).toHaveLength(2)
+  const [ended, running] = foreignMeetings
+  expect(ended!.endedAt).not.toBeNull()
+  expect(running!.endedAt).toBeNull()
+  const summaryPage = await pg
+    .selectFrom('Page')
+    .select('id')
+    .where('summaryMeetingId', '=', ended!.id)
+    .executeTakeFirst()
+  expect(summaryPage).toBeTruthy()
+})
