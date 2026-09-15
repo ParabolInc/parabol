@@ -1,7 +1,6 @@
 import {commitLocalUpdate} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
-import IntegrationRepoId from '../shared/gqlIds/IntegrationRepoId'
-import JiraProjectId from '../shared/gqlIds/JiraProjectId'
+import {getClientIntegration} from '../integrations/platform/registry'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
 import ScopingSearchHistoryToggle from './ScopingSearchHistoryToggle'
 
@@ -20,6 +19,7 @@ interface Props {
 const JiraUniversalScopingSearchHistoryToggle = (props: Props) => {
   const {savedQueries, meetingId, onDeleteQuery, service} = props
   const atmosphere = useAtmosphere()
+  const {projectFilterLabel} = getClientIntegration(service).capabilities.scoping ?? {}
 
   const searchQueries =
     savedQueries?.map((jiraSearchQuery) => {
@@ -36,11 +36,7 @@ const JiraUniversalScopingSearchHistoryToggle = (props: Props) => {
       }
       const queryStringLabel = isJQL ? queryString : `“${queryString}”`
       const projectFilters = projectKeyFilters
-        .map((filter) => {
-          return service === 'jiraServer'
-            ? IntegrationRepoId.split(filter).projectKey
-            : JiraProjectId.split(filter).projectKey
-        })
+        .map((filter) => projectFilterLabel?.(filter) ?? filter)
         .join(', ')
 
       return {

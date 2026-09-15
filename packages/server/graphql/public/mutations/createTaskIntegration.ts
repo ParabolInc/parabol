@@ -34,8 +34,9 @@ const createTaskIntegration: MutationResolvers['createTaskIntegration'] = async 
     }
   }
 
-  const issueCreate = getServerIntegration(integrationProviderService)?.capabilities.issueCreate
-  if (!issueCreate) {
+  const definition = getServerIntegration(integrationProviderService)
+  const issueCreate = definition?.capabilities.issueCreate
+  if (!definition || !issueCreate) {
     return {error: {message: 'Unknown integration'}}
   }
   const initManager = (accessUserId: string) =>
@@ -101,12 +102,13 @@ const createTaskIntegration: MutationResolvers['createTaskIntegration'] = async 
     }
   }
 
-  updatePrevUsedRepoIntegrationsCache(
+  updatePrevUsedRepoIntegrationsCache(definition.service, integrationRepoId, {
+    dataLoader,
     teamId,
-    integrationRepoId,
-    viewerId,
-    integrationProviderService
-  )
+    userId: viewerId,
+    context,
+    info
+  })
   await pg
     .updateTable('Task')
     .set({

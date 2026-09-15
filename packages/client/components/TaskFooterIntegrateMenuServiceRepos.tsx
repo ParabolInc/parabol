@@ -24,7 +24,7 @@ const TaskFooterIntegrateMenuServiceRepos = (props: Props) => {
     graphql`
       fragment TaskFooterIntegrateMenuServiceRepos_service on IntegrationService {
         service
-        repos(networkOnly: $networkOnly) {
+        repos {
           ...TaskFooterIntegrateMenuListItem @relay(mask: false)
         }
       }

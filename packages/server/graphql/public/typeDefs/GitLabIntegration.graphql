@@ -20,7 +20,7 @@ type GitLabIntegration {
   """
   A list of projects accessible by this team member
   """
-  projects: [RepoIntegration!]!
+  projects: [_xGitLabProject!]!
   projectsIssues(
     first: Int!
 

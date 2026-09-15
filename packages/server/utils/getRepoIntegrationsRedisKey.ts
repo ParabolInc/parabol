@@ -4,6 +4,6 @@ const getRepoIntegrationsRedisKey = (
   service: Integrationproviderserviceenum,
   teamId: string,
   userId: string
-) => `repoIntegrations:${service}:${teamId}:${userId}`
+) => `repoIntegrations:v2:${service}:${teamId}:${userId}`
 
 export default getRepoIntegrationsRedisKey

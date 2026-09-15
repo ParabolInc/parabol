@@ -45,14 +45,6 @@ const GitHubScopingSearchResults = (props: Props) => {
               ...findIntegrationService_auth @relay(mask: false)
               ...usePersistIntegrationSearchQueryMutation_service @relay(mask: false)
             }
-            repoIntegrations(first: 20, networkOnly: false) {
-              items {
-                ... on _xGitHubRepository {
-                  id
-                  nameWithOwner
-                }
-              }
-            }
           }
         }
       }

@@ -1,22 +1,40 @@
-import IntegrationHash from 'parabol-client/shared/gqlIds/IntegrationHash'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import {getTagsFromTipTapTask} from '../../../../client/shared/tiptap/getTagsFromTipTapTask'
 import {plaintextToTipTap} from '../../../../client/shared/tiptap/plaintextToTipTap'
 import dndNoise from '../../../../client/utils/dndNoise'
 import generateUID from '../../../generateUID'
+import {getServerIntegration} from '../../../integrations/platform/registry'
+import type {IntegrationCtx} from '../../../integrations/platform/ServerIntegrationDefinition'
 import getKysely from '../../../postgres/getKysely'
 import {selectTasks} from '../../../postgres/select'
+import logError from '../../../utils/logError'
 import type {UpdatePokerScopeItemInput} from '../../public/resolverTypes'
+
+const parseIntegration = (ctx: IntegrationCtx, update: UpdatePokerScopeItemInput) => {
+  const {service, serviceTaskId} = update
+  const issueParts = getServerIntegration(service)?.parseIntegrationHash(serviceTaskId)
+  if (!issueParts) {
+    logError(new Error(`Invalid ${service} integrationHash: ${serviceTaskId}`), {
+      tags: {service, teamId: ctx.teamId},
+      userId: ctx.userId
+    })
+    return null
+  }
+  return {update, integration: {accessUserId: ctx.userId, ...issueParts}}
+}
 
 const importTasksForPoker = async (
   additiveUpdates: UpdatePokerScopeItemInput[],
-  teamId: string,
-  userId: string,
+  ctx: IntegrationCtx,
   meetingId: string
 ) => {
+  const {teamId, userId} = ctx
   const pg = getKysely()
   const integratedUpdates = additiveUpdates.filter((update) => update.service !== 'PARABOL')
-  const integrationHashes = integratedUpdates.map((update) => update.serviceTaskId)
+  const parsedUpdates = integratedUpdates
+    .map((update) => parseIntegration(ctx, update))
+    .filter(isNotNull)
+  const integrationHashes = parsedUpdates.map(({update}) => update.serviceTaskId)
   const existingTasks =
     integrationHashes.length === 0
       ? []
@@ -25,25 +43,11 @@ const importTasksForPoker = async (
           .where('teamId', '=', teamId)
           .where('userId', '=', userId)
           .execute()
-  const integrationHashToTaskId = {} as Record<string, string>
-  additiveUpdates.map((update) => {
-    if (update.service === 'PARABOL') {
-      integrationHashToTaskId[update.serviceTaskId] = update.serviceTaskId
-    }
-  })
-  const newIntegrationUpdates = integratedUpdates.filter(
-    (update) => !existingTasks.find(({integrationHash}) => update.serviceTaskId === integrationHash)
-  )
-  const tasksToAdd = newIntegrationUpdates
-    .map((update) => {
-      const {service, serviceTaskId} = update
-      const integrationSplit = IntegrationHash.split(service, serviceTaskId)
-      if (!integrationSplit) return null
-      const integration = {
-        accessUserId: userId,
-        ...integrationSplit
-      }
-      const integrationHash = IntegrationHash.join(integration)
+  const tasksToAdd = parsedUpdates
+    .filter(
+      ({update}) => !existingTasks.some((task) => task.integrationHash === update.serviceTaskId)
+    )
+    .map(({update, integration}) => {
       const plaintextContent = `Task imported from ${integration.service} #archived`
       const content = JSON.stringify(plaintextToTipTap(plaintextContent, {taskTags: ['archived']}))
       return {
@@ -54,28 +58,22 @@ const importTasksForPoker = async (
         sortOrder: dndNoise(),
         status: 'future' as const,
         teamId,
-        integrationHash,
+        integrationHash: update.serviceTaskId,
         integration: JSON.stringify(integration),
         meetingId,
         tags: getTagsFromTipTapTask(JSON.parse(content))
       }
     })
-    .filter(isNotNull)
   if (tasksToAdd.length > 0) {
     await pg.insertInto('Task').values(tasksToAdd).execute()
   }
-  const integratedTasks = [...existingTasks, ...tasksToAdd]
-
-  return additiveUpdates.map((update) => {
+  const taskIdByHash = new Map(
+    [...existingTasks, ...tasksToAdd].map(({integrationHash, id}) => [integrationHash, id])
+  )
+  return additiveUpdates.flatMap((update) => {
     const {service, serviceTaskId} = update
-    const taskId =
-      service === 'PARABOL'
-        ? serviceTaskId
-        : integratedTasks.find((task) => task.integrationHash === serviceTaskId)!.id
-    return {
-      ...update,
-      taskId
-    }
+    const taskId = service === 'PARABOL' ? serviceTaskId : taskIdByHash.get(serviceTaskId)
+    return taskId ? [{...update, taskId}] : []
   })
 }
 

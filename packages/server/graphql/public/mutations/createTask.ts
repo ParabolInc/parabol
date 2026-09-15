@@ -181,7 +181,13 @@ const createTask: MutationResolvers['createTask'] = async (
   // RESOLUTION
   const {integrationHash, integration, integrationRepoId, service} = integrationRes
   if (integrationRepoId && service) {
-    updatePrevUsedRepoIntegrationsCache(teamId, integrationRepoId, viewerId, service)
+    updatePrevUsedRepoIntegrationsCache(service, integrationRepoId, {
+      dataLoader,
+      teamId,
+      userId: viewerId,
+      context,
+      info
+    })
   }
   const task = {
     id: generateUID(),

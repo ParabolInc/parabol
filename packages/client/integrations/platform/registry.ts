@@ -1,3 +1,5 @@
+import type {IntegrationProviderServiceEnum} from '../../__generated__/CreateTaskIntegrationMutation.graphql'
+import type {TaskServiceEnum} from '../../__generated__/CreateTaskMutation.graphql'
 import {AzureDevOpsClientIntegration} from '../azureDevOps/AzureDevOpsClientIntegration'
 import {GitHubClientIntegration} from '../github/GitHubClientIntegration'
 import {GitLabClientIntegration} from '../gitlab/GitLabClientIntegration'
@@ -6,25 +8,37 @@ import {JiraServerClientIntegration} from '../jiraServer/JiraServerClientIntegra
 import {LinearClientIntegration} from '../linear/LinearClientIntegration'
 import type {ClientIntegrationDefinition} from './ClientIntegrationDefinition'
 
+/** The task services; the chat, calendar, and meeting services have no client integration */
+export type RegisteredClientIntegration = Exclude<
+  IntegrationProviderServiceEnum,
+  'mattermost' | 'msTeams' | 'gcal' | 'gmeet' | 'zoom'
+>
+
 export const clientIntegrations = {
-  azureDevOps: new AzureDevOpsClientIntegration(),
-  github: new GitHubClientIntegration(),
-  gitlab: new GitLabClientIntegration(),
   jira: new JiraClientIntegration(),
   jiraServer: new JiraServerClientIntegration(),
-  linear: new LinearClientIntegration()
-} satisfies Record<string, ClientIntegrationDefinition>
+  github: new GitHubClientIntegration(),
+  linear: new LinearClientIntegration(),
+  gitlab: new GitLabClientIntegration(),
+  azureDevOps: new AzureDevOpsClientIntegration()
+} satisfies Record<RegisteredClientIntegration, ClientIntegrationDefinition>
 
 export type ClientIntegrations = typeof clientIntegrations
-export type RegisteredClientIntegration = keyof ClientIntegrations
 
-const isRegistered = (service: string): service is RegisteredClientIntegration =>
-  Object.hasOwn(clientIntegrations, service)
+/** Registry order is popularity order; hosts that list services sort by it */
+export const clientIntegrationsByPopularity = Object.keys(
+  clientIntegrations
+) as RegisteredClientIntegration[]
 
-export function getClientIntegration<N extends RegisteredClientIntegration>(
+export const compareClientIntegrationPopularity = (
+  a: RegisteredClientIntegration,
+  b: RegisteredClientIntegration
+) => clientIntegrationsByPopularity.indexOf(a) - clientIntegrationsByPopularity.indexOf(b)
+
+export const isRegisteredClientIntegration = (
+  service: IntegrationProviderServiceEnum | TaskServiceEnum
+): service is RegisteredClientIntegration => Object.hasOwn(clientIntegrations, service)
+
+export const getClientIntegration = <N extends RegisteredClientIntegration>(
   service: N
-): ClientIntegrations[N]
-export function getClientIntegration(service: string): ClientIntegrationDefinition | null
-export function getClientIntegration(service: string) {
-  return isRegistered(service) ? clientIntegrations[service] : null
-}
+): ClientIntegrations[N] => clientIntegrations[service]

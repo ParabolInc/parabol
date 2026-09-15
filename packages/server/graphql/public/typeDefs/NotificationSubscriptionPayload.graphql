@@ -23,6 +23,7 @@ type NotificationSubscriptionPayload {
   JiraServerIssue: JiraServerIssue
   AddedNotification: AddedNotification
   JiraIssue: JiraIssue
+  IntegrationService: IntegrationService
   UpdatedNotification: UpdatedNotification
   RemoveIntegrationSearchQuerySuccess: RemoveIntegrationSearchQuerySuccess
   PersistIntegrationSearchQuerySuccess: PersistIntegrationSearchQuerySuccess

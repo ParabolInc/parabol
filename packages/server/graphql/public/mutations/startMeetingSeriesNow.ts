@@ -1,11 +1,17 @@
 import {GraphQLError} from 'graphql'
 import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
 import {RRuleSet} from 'rrule-rust'
+import AuthToken from '../../../database/types/AuthToken'
+import {getNewDataLoader} from '../../../dataloader/getNewDataLoader'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import {getUpcomingRRuleDates} from '../../../utils/getNextRRuleDate'
+import standardError from '../../../utils/standardError'
 import isValid from '../../isValid'
 import canAdminMeetingSeries from '../../mutations/helpers/canAdminMeetingSeries'
 import rotateSeriesTeamHealthQuestionIds from '../../mutations/helpers/rotateSeriesTeamHealthQuestionIds'
+import safeEndRetrospective from '../../mutations/helpers/safeEndRetrospective'
+import safeEndTeamHealth from '../../mutations/helpers/safeEndTeamHealth'
+import safeEndTeamPrompt from '../../mutations/helpers/safeEndTeamPrompt'
 import startRecurringMeeting from '../../mutations/helpers/startRecurringMeeting'
 import type {MutationResolvers} from '../resolverTypes'
 import {selectGroupSeriesIds, stopMeetingSeriesGroup} from './updateRecurrenceSettings'
@@ -13,8 +19,10 @@ import {selectGroupSeriesIds, stopMeetingSeriesGroup} from './updateRecurrenceSe
 const startMeetingSeriesNow: MutationResolvers['startMeetingSeriesNow'] = async (
   _source,
   {meetingSeriesId},
-  {authToken, dataLoader, socketId: mutatorId}
+  context,
+  info
 ) => {
+  const {authToken, dataLoader, socketId: mutatorId} = context
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
@@ -41,20 +49,49 @@ const startMeetingSeriesNow: MutationResolvers['startMeetingSeriesNow'] = async 
     .filter(isValid)
     .filter((series) => !series.cancelledAt)
 
-  // A team already mid-occurrence is skipped rather than blocking its siblings, so only a group
-  // with nothing left to open is an error. For a single-team series this is the original check.
-  const activeMeetingsBySeries = await Promise.all(
-    groupSeries.map(async (series) => ({
-      series,
-      activeMeetings: await dataLoader.get('activeMeetingsByMeetingSeriesId').load(series.id)
-    }))
+  // The next occurrence replaces the current one: a team still mid-meeting has that meeting
+  // closed, with its summary, so the new one never runs alongside it
+  const activeMeetings = (
+    await dataLoader.get('activeMeetingsByMeetingSeriesId').loadMany(seriesIds)
   )
-  const startableSeries = activeMeetingsBySeries
-    .filter(({activeMeetings}) => activeMeetings.length === 0)
-    .map(({series}) => series)
-  if (startableSeries.length === 0) {
-    throw new GraphQLError('A meeting in this series is already in progress')
-  }
+    .filter(isValid)
+    .flat()
+  await Promise.all(
+    activeMeetings.map(async (meeting) => {
+      const {facilitatorUserId, teamId} = meeting
+      if (!facilitatorUserId) return
+      // The summary page lands in the team's page tree, which only its members can write to. An
+      // owner may not be on this team, so end it as its facilitator, the way the cron does
+      const endAuthToken = isTeamMember(authToken, teamId)
+        ? authToken
+        : new AuthToken({
+            sub: facilitatorUserId,
+            tms: (await dataLoader.get('teamMembersByUserId').load(facilitatorUserId)).map(
+              (teamMember) => teamMember.teamId
+            ),
+            rol: 'impersonate'
+          })
+      // ending publishes a snapshot of its dataloader, so it gets one of its own rather than
+      // freezing the loader the starts below still write through
+      const meetingDataLoader = getNewDataLoader('startMeetingSeriesNow.endMeeting')
+      const endContext = {...context, authToken: endAuthToken, dataLoader: meetingDataLoader}
+      const tags = {meetingId: meeting.id, meetingType: meeting.meetingType}
+      const endMeeting = async () => {
+        if (meeting.meetingType === 'teamPrompt') {
+          return safeEndTeamPrompt({meeting, context: endContext, info})
+        } else if (meeting.meetingType === 'retrospective') {
+          return safeEndRetrospective({meeting, context: endContext, info})
+        } else if (meeting.meetingType === 'teamHealth') {
+          return safeEndTeamHealth({meeting, context: endContext, info})
+        }
+        return standardError(new Error('Unhandled recurring meeting type'), {tags})
+      }
+      return endMeeting()
+        .catch((e: Error) => standardError(e, {tags}))
+        .finally(() => meetingDataLoader.dispose())
+    })
+  )
+  dataLoader.clearAll('newMeetings')
 
   // This meeting stands in for the upcoming occurrence, so it runs until the occurrence after that.
   // Ending it on the upcoming occurrence would close it as soon as the schedule caught up.
@@ -68,7 +105,7 @@ const startMeetingSeriesNow: MutationResolvers['startMeetingSeriesNow'] = async 
 
   const startedMeetings = (
     await Promise.all(
-      startableSeries.map(async (series) => {
+      groupSeries.map(async (series) => {
         const res = await startRecurringMeeting(series, dataLoader, subOptions, {
           // whoever kicks off an occurrence early facilitates it, but only on teams they are on.
           // An owner may not be on every team the group covers

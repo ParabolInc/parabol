@@ -11,7 +11,6 @@ import type {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/C
 import useForm from '../hooks/useForm'
 import CreateTaskMutation from '../mutations/CreateTaskMutation'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
-import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
 import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
 import type {CompletedHandler} from '../types/relayMutations'
 import {Menu} from '../ui/Menu/Menu'
@@ -114,17 +113,14 @@ const NewGitHubIssueInput = (props: Props) => {
         setCreateTaskError(`${selectedNameWithOwner}: ${error.message}`)
       }
       if (error || !task) return
-      const {integration} = task
-      if (!integration) return
-      if (integration.__typename !== '_xGitHubIssue') return
-      const {number: issueNumber, repository} = integration
-      const {nameWithOwner} = repository
+      const {integrationHash} = task
+      if (!integrationHash) return
       const pokerScopeVariables = {
         meetingId,
         updates: [
           {
             service: 'github',
-            serviceTaskId: GitHubIssueId.join(nameWithOwner, issueNumber),
+            serviceTaskId: integrationHash,
             action: 'ADD'
           } as const
         ]

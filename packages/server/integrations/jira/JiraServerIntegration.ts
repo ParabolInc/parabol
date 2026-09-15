@@ -1,4 +1,7 @@
+import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
+import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
 import {jiraIntegrationMeta} from 'parabol-client/shared/integrations/jiraIntegrationMeta'
+import type {JiraGQLProject} from '../../dataloader/atlassianLoaders'
 import type {
   AtlassianAuth,
   JiraSearchQueryJson,
@@ -18,6 +21,7 @@ import buildJiraSearchQuery from './buildJiraSearchQuery'
 import describeJiraDimensionField from './describeJiraDimensionField'
 import fetchJiraProjects from './fetchJiraProjects'
 import JiraIntegrationManager from './JiraIntegrationManager'
+import listJiraDimensionFields from './listJiraDimensionFields'
 import pushEstimateToJira from './pushEstimateToJira'
 import resolveJiraDimensionFieldKey from './resolveJiraDimensionFieldKey'
 import resolveJiraTaskIntegration from './resolveJiraTaskIntegration'
@@ -43,11 +47,18 @@ export class JiraServerIntegration extends ServerIntegrationDefinition {
     return auth && hasJiraScopes(auth.scopes) ? auth : null
   }
 
+  parseIntegrationHash(integrationHash: string) {
+    const {cloudId, issueKey, projectKey} = JiraIssueId.split(integrationHash)
+    if (!cloudId || !issueKey || JiraIssueId.join(cloudId, issueKey) !== integrationHash)
+      return null
+    return {service: 'jira' as const, cloudId, issueKey, projectKey}
+  }
+
   readonly capabilities: {
     issueCreate: IssueCreateCapability
     issueRead: IssueReadCapability
     issueSearch: IssueSearchCapability<JiraSearchQueryJson>
-    repoList: RepoListCapability
+    repoList: RepoListCapability<JiraGQLProject>
     estimatePush: EstimatePushCapability
   } = {
     issueCreate: {
@@ -58,12 +69,18 @@ export class JiraServerIntegration extends ServerIntegrationDefinition {
     },
     issueRead: {getIssue: resolveJiraTaskIntegration},
     issueSearch: {buildQuery: buildJiraSearchQuery},
-    repoList: {fetchRepos: fetchJiraProjects},
+    repoList: {
+      fetchRepos: fetchJiraProjects,
+      integrationRepoId: ({cloudId, key}) =>
+        IntegrationRepoId.join({service: 'jira', cloudId, key}),
+      name: ({name}) => name
+    },
     estimatePush: {
       targets: ['comment', 'field'],
       pushEstimate: pushEstimateToJira,
       resolveDimensionFieldKey: resolveJiraDimensionFieldKey,
-      describeDimensionField: describeJiraDimensionField
+      describeDimensionField: describeJiraDimensionField,
+      listDimensionFields: listJiraDimensionFields
     }
   }
 }

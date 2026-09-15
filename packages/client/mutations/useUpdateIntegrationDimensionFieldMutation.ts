@@ -11,7 +11,8 @@ graphql`
         ... on EstimatePhase {
           stages {
             serviceField {
-              name
+              fieldId
+              label
               type
             }
           }
@@ -45,13 +46,13 @@ type Handlers = {
 }
 
 type Config = UseMutationConfig<TUpdateIntegrationDimensionFieldMutation> & {
-  optimisticFieldName?: string
+  optimisticLabel?: string
 }
 
 const useUpdateIntegrationDimensionFieldMutation = () => {
   const [commit, submitting] = useMutation<TUpdateIntegrationDimensionFieldMutation>(mutation)
   const atmosphere = useAtmosphere()
-  const execute = ({optimisticFieldName, ...config}: Config, handlers?: Handlers) => {
+  const execute = ({optimisticLabel, ...config}: Config, handlers?: Handlers) => {
     const {meetingId, taskId, dimensionName, fieldId} = config.variables
     return commit({
       optimisticUpdater: (store) => {
@@ -63,7 +64,8 @@ const useUpdateIntegrationDimensionFieldMutation = () => {
           if (stage?.getLinkedRecord('task')?.getValue('id') !== taskId) return
           if (stage.getLinkedRecord('dimensionRef')?.getValue('name') !== dimensionName) return
           const nextServiceField = createProxyRecord(store, 'ServiceField', {
-            name: optimisticFieldName ?? fieldId,
+            fieldId,
+            label: optimisticLabel ?? fieldId,
             type: 'string'
           })
           stage.setLinkedRecord(nextServiceField, 'serviceField')

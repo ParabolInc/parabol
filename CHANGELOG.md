@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.45.0](https://github.com/ParabolInc/parabol/compare/v13.44.0...v13.45.0) (2026-09-15)
+
+
+### Added
+
+* Support starting next meeting in series immediately ([#13490](https://github.com/ParabolInc/parabol/issues/13490)) ([19c780a](https://github.com/ParabolInc/parabol/commit/19c780a6d29830f675c4448739c5d8f95ffcabc4))
+
+
+### Fixed
+
+* integrations client host generalization ([#13460](https://github.com/ParabolInc/parabol/issues/13460)) ([3224715](https://github.com/ParabolInc/parabol/commit/3224715bf852c1a6b4343a66f299c82ed4013f82))
+
 ## [13.44.0](https://github.com/ParabolInc/parabol/compare/v13.43.0...v13.44.0) (2026-09-14)
 
 

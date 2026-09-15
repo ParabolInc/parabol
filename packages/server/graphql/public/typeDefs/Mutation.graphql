@@ -2066,7 +2066,8 @@ type Mutation {
   ): StartCheckInPayload! @scope(name: MEETINGS_WRITE)
 
   """
-  Start the next meeting of a scheduled meeting series right now, ahead of its schedule
+  Start the next meeting of a meeting series right now, ahead of its schedule, on every team the
+  series covers. A meeting still in progress for one of those teams is ended first.
   """
   startMeetingSeriesNow(
     """

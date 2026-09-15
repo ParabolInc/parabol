@@ -11,6 +11,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {motion} from 'motion/react'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
+import {useNavigate} from 'react-router'
 import {
   Groups as GroupsIcon,
   MoreVert,
@@ -33,6 +34,7 @@ import {
 } from '../utils/meetings/lookups'
 import {EditMeetingSeriesModal} from './EditMeetingSeriesModal'
 import ManageMeetingSeriesGroupModalRoot from './ManageMeetingSeriesGroupModalRoot'
+import StartMeetingSeriesNowDialog from './StartMeetingSeriesNowDialog'
 
 // one more layer than a single recurring card, so a group reads as a deeper deck
 const STACK_CLASSES = {
@@ -83,9 +85,11 @@ const MeetingSeriesGroupCard = (props: Props) => {
     seriesRefs
   )
   const atmosphere = useAtmosphere()
+  const navigate = useNavigate()
   const [startNow, isStarting] = useStartMeetingSeriesNowMutation()
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [isManageOpen, setIsManageOpen] = useState(false)
+  const [isStartNowOpen, setIsStartNowOpen] = useState(false)
 
   const firstSeries = allSeries[0]!
   const {title, meetingType} = firstSeries
@@ -98,12 +102,24 @@ const MeetingSeriesGroupCard = (props: Props) => {
 
   const onStartNow = () => {
     if (isStarting) return
-    allSeries.forEach((series) => startNow({variables: {meetingSeriesId: series.id}}))
-    atmosphere.eventEmitter.emit('addSnackbar', {
-      key: 'startMeetingSeriesGroupNow',
-      autoDismiss: 5,
-      showDismissButton: true,
-      message: `Started the next meeting for ${teamCount} teams`
+    setIsStartNowOpen(false)
+    // one call ends whatever is in progress & starts the next meeting on every series in the group
+    startNow({
+      variables: {meetingSeriesId: firstSeries.id},
+      onCompleted: (res) => {
+        // an owner can schedule for teams they are not on, & they cannot join those meetings
+        const {meeting} = res.startMeetingSeriesNow
+        if (meeting) {
+          navigate(`/meet/${meeting.id}`)
+          return
+        }
+        atmosphere.eventEmitter.emit('addSnackbar', {
+          key: 'startMeetingSeriesGroupNow',
+          autoDismiss: 5,
+          showDismissButton: true,
+          message: `Started the next meeting for ${teamCount} teams`
+        })
+      }
     })
   }
 
@@ -184,7 +200,7 @@ const MeetingSeriesGroupCard = (props: Props) => {
                       : `Applies to all ${teamCount} teams`}
                   </div>
                   {isViewerOwner && (
-                    <MenuItem onSelect={onStartNow}>
+                    <MenuItem onSelect={() => setIsStartNowOpen(true)}>
                       <PlayArrowIcon className={MENU_ITEM_ICON} />
                       Start next meeting now
                     </MenuItem>
@@ -204,6 +220,13 @@ const MeetingSeriesGroupCard = (props: Props) => {
               {`Meeting series group • ${recurrenceLabel}`}
             </span>
           </div>
+          <StartMeetingSeriesNowDialog
+            isOpen={isStartNowOpen}
+            onClose={() => setIsStartNowOpen(false)}
+            onConfirm={onStartNow}
+            isSubmitting={isStarting}
+            teamCount={teamCount}
+          />
           <EditMeetingSeriesModal
             isOpen={isEditOpen}
             onClose={() => setIsEditOpen(false)}
