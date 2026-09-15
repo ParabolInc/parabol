@@ -13,7 +13,9 @@ import type {GitLabScopingSearchResults_meeting$key} from '../__generated__/GitL
 import type {GitLabScopingSearchResults_query$key} from '../__generated__/GitLabScopingSearchResults_query.graphql'
 import type {GitLabScopingSearchResultsPaginationQuery} from '../__generated__/GitLabScopingSearchResultsPaginationQuery.graphql'
 import type {GitLabScopingSearchResultsQuery} from '../__generated__/GitLabScopingSearchResultsQuery.graphql'
+import findIntegrationService from '../integrations/platform/findIntegrationService'
 import GitLabIssueId from '../shared/gqlIds/GitLabIssueId'
+import type {GQLType} from '../types/generics'
 import getNonNullEdges from '../utils/getNonNullEdges'
 import {parseWebPath} from '../utils/parseWebPath'
 import Ellipsis from './Ellipsis/Ellipsis'
@@ -44,14 +46,8 @@ const GitLabScopingSearchResults = (props: Props) => {
         viewer {
           ...NewGitLabIssueInput_viewer
           teamMember(teamId: $teamId) {
-            integrations {
-              gitlab {
-                auth {
-                  provider {
-                    id
-                  }
-                }
-              }
+            services {
+              ...findIntegrationService_auth @relay(mask: false)
             }
           }
         }
@@ -85,6 +81,7 @@ const GitLabScopingSearchResults = (props: Props) => {
                   }
                   edges {
                     node {
+                      __typename
                       ... on _xGitLabIssue {
                         ...GitLabScopingSelectAllIssues_issues
                         id
@@ -124,12 +121,14 @@ const GitLabScopingSearchResults = (props: Props) => {
     meetingRef
   )
   const {viewer} = query
-  const teamMember = viewer.teamMember!
-  const {integrations} = teamMember
-  const {gitlab} = integrations
+  const providerId =
+    findIntegrationService(viewer.teamMember?.services ?? [], 'gitlab')?.auth?.providerId ?? ''
   const {id: meetingId, phases} = meeting
-  const providerId = gitlab.auth!.provider.id
-  const issues = nullableEdges ? getNonNullEdges(nullableEdges).map(({node}) => node) : null
+  const issues = nullableEdges
+    ? getNonNullEdges(nullableEdges)
+        .filter((edge) => edge.node.__typename === '_xGitLabIssue')
+        .map(({node}) => node as GQLType<typeof node, '_xGitLabIssue'>)
+    : null
   const [isEditing, setIsEditing] = useState(false)
   const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
   const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
@@ -163,7 +162,7 @@ const GitLabScopingSearchResults = (props: Props) => {
         )}
         {issues.map((issue) => {
           const {id, iid, title, webUrl, webPath} = issue
-          const {fullPath} = parseWebPath(webPath ?? '')
+          const {fullPath} = parseWebPath(webPath)
           const linkText = `#${iid} ${fullPath}`
 
           return (
@@ -171,10 +170,10 @@ const GitLabScopingSearchResults = (props: Props) => {
               key={id}
               service={'gitlab'}
               usedServiceTaskIds={usedServiceTaskIds}
-              serviceTaskId={GitLabIssueId.join(providerId, id ?? '')}
+              serviceTaskId={GitLabIssueId.join(providerId, id)}
               meetingId={meetingId}
-              summary={title ?? ''}
-              url={webUrl ?? ''}
+              summary={title}
+              url={webUrl}
               linkText={linkText}
               linkTitle={linkText}
             />

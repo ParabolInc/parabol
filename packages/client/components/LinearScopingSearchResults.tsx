@@ -38,25 +38,6 @@ const LinearScopingSearchResults = (props: Props) => {
         ...LinearScopingSearchResults_query @arguments(filter: $filter)
         viewer {
           ...NewLinearIssueInput_viewer
-          teamMember(teamId: $teamId) {
-            repoIntegrations(first: 20, networkOnly: false) {
-              items {
-                ... on _xLinearTeam {
-                  id
-                  displayName
-                }
-                ... on _xLinearProject {
-                  id
-                  teams(first: 1) {
-                    nodes {
-                      id
-                      name
-                    }
-                  }
-                }
-              }
-            }
-          }
         }
       }
     `,
@@ -192,12 +173,9 @@ const LinearScopingSearchResults = (props: Props) => {
         )}
         {issues.map((node) => {
           const {id: issueId, identifier, title, project, team, url} = node
-          const {id: projectId} = project ?? {id: undefined}
-          const teamName = team?.displayName ?? ''
-
-          const repoStr = getLinearRepoName(project, teamName)
+          const repoStr = getLinearRepoName(project, team.displayName)
           const linkText = `${identifier} ${repoStr}`
-          const repoId = LinearProjectId.join(team?.id ?? 'unknown-team-id', projectId)
+          const repoId = LinearProjectId.join(team.id, project?.id)
           const serviceTaskId = LinearIssueId.join(repoId, issueId)
           return (
             <ScopingSearchResultItem

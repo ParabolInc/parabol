@@ -13,7 +13,7 @@ import Checkbox from './Checkbox'
 interface Props {
   meetingId: string
   issuesRef: GitLabScopingSelectAllIssues_issues$key
-  usedServiceTaskIds: Set<string>
+  usedServiceTaskIds: ReadonlySet<string>
   providerId: string
 }
 

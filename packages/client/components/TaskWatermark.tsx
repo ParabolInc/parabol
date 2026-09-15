@@ -1,5 +1,9 @@
 import type React from 'react'
-import {getClientIntegration} from '../integrations/platform/registry'
+import type {IntegrationProviderServiceEnum} from '../__generated__/CreateTaskIntegrationMutation.graphql'
+import {
+  getClientIntegration,
+  isRegisteredClientIntegration
+} from '../integrations/platform/registry'
 import {cn} from '../ui/cn'
 
 interface WatermarkSVGProps {
@@ -14,15 +18,13 @@ const WatermarkSVG = ({Icon, className}: WatermarkSVGProps) => (
 )
 
 interface Props {
-  service: string | undefined
+  service: IntegrationProviderServiceEnum | null | undefined
 }
 
 const TaskWatermark = (props: Props) => {
   const {service} = props
-  if (!service) return null
-  const definition = getClientIntegration(service)
-  if (!definition) return null
-  const {Icon, iconClassName} = definition
+  if (!service || !isRegisteredClientIntegration(service)) return null
+  const {Icon, iconClassName} = getClientIntegration(service)
 
   return (
     <div className='pointer-events-none absolute inset-0 z-10 overflow-hidden text-center align-middle opacity-20'>

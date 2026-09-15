@@ -4,6 +4,7 @@ import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {useLocation} from 'react-router'
 import type {ProviderListQuery} from '../../../../__generated__/ProviderListQuery.graphql'
 import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
+import {Providers} from '../../../../types/constEnums'
 import {hasConfluenceScopes, hasJiraScopes} from '../../../../utils/atlassianScopes'
 import AtlassianProviderRow from '../ProviderRow/AtlassianProviderRow'
 import AzureDevOpsProviderRow from '../ProviderRow/AzureDevOpsProviderRow'
@@ -113,7 +114,7 @@ const ProviderList = (props: Props) => {
 
   const allIntegrations = [
     {
-      name: 'Atlassian Jira',
+      name: Providers.JIRA_CLOUD_NAME,
       connected:
         !!integrations?.atlassian?.accessToken && hasJiraScopes(integrations?.atlassian?.scope),
       component: (

@@ -126,9 +126,11 @@ export const GitHubProjectKeyLookup = {
 }
 
 const makeRepoIntegrationGitHub = (nameWithOwner: keyof typeof GitHubProjectKeyLookup) => ({
-  __typename: '_xGitHubRepository',
-  id: `si:${nameWithOwner}`,
-  ...GitHubProjectKeyLookup[nameWithOwner]
+  __typename: 'RepoContainer',
+  id: `github:${nameWithOwner}`,
+  service: 'github',
+  name: nameWithOwner,
+  integrationRepoId: nameWithOwner
 })
 
 const initSlackNotification = (userId: string) => ({
@@ -619,13 +621,10 @@ const initDB = (botScript: ReturnType<typeof initBotScript>) => {
 export type RetroDemoDB = ReturnType<typeof initDB>
 export default initDB
 
-const makeRepoIntegrationGitLab = (fullPath: string) => {
-  return {
-    __typename: '_xGitLabProject',
-    id: fullPath,
-    service: 'gitlab',
-    fullPath,
-    name: fullPath.split('/')[1],
-    description: 'Parabol GitLab Demo Project'
-  }
-}
+const makeRepoIntegrationGitLab = (fullPath: string) => ({
+  __typename: 'RepoContainer',
+  id: `gitlab:${fullPath}`,
+  service: 'gitlab',
+  name: fullPath,
+  integrationRepoId: fullPath
+})

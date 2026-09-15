@@ -11,7 +11,6 @@ import {
   Replay as ReplayIcon
 } from '~/ui/icons'
 import type {MeetingCardOptionsMenuQuery} from '../__generated__/MeetingCardOptionsMenuQuery.graphql'
-import useStartMeetingSeriesNowMutation from '../mutations/useStartMeetingSeriesNowMutation'
 import {MENU_ITEM_ICON, MenuItem} from '../ui/Menu/MenuItem'
 import getMassInvitationUrl from '../utils/getMassInvitationUrl'
 import makeAppURL from '../utils/makeAppURL'
@@ -23,6 +22,7 @@ interface Props {
   queryRef: PreloadedQuery<MeetingCardOptionsMenuQuery>
   openRecurrenceSettingsModal: () => void
   openEndRecurringMeetingModal: () => void
+  onStartSeriesNow: () => void
 }
 
 const query = graphql`
@@ -44,6 +44,8 @@ const query = graphql`
           id
           cancelledAt
           ownerUserId
+          groupId
+          urlSlug
         }
       }
     }
@@ -51,7 +53,13 @@ const query = graphql`
 `
 
 const MeetingCardOptionsMenu = (props: Props) => {
-  const {popTooltip, queryRef, openRecurrenceSettingsModal, openEndRecurringMeetingModal} = props
+  const {
+    popTooltip,
+    queryRef,
+    openRecurrenceSettingsModal,
+    openEndRecurringMeetingModal,
+    onStartSeriesNow
+  } = props
   const data = usePreloadedQuery<MeetingCardOptionsMenuQuery>(query, queryRef)
   const {viewer} = data
   const {id: viewerId, team, meeting} = viewer
@@ -64,14 +72,17 @@ const MeetingCardOptionsMenu = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
   const navigate = useNavigate()
-  const [startSeriesNow, isStartingSeries] = useStartMeetingSeriesNowMutation()
 
   const hasRecurrenceEnabled = meetingSeries && !meetingSeries.cancelledAt
-  const canStartSeriesNow =
-    hasRecurrenceEnabled && !!endedAt && meetingSeries.ownerUserId === viewerId
   // an owned series answers to its owner alone, so the rest of the team cannot reschedule it
   const isSeriesManagedByOther =
     !!meetingSeries?.ownerUserId && meetingSeries.ownerUserId !== viewerId
+  // whoever administers the series may open the next occurrence early, ending this one if it
+  // is still running
+  const canStartSeriesNow = hasRecurrenceEnabled && !isSeriesManagedByOther
+  // a group is rescheduled as a whole from its group card, never one team at a time
+  const canEditRecurrence =
+    canManageMeeting && hasRecurrenceEnabled && !isSeriesManagedByOther && !meetingSeries.groupId
 
   return (
     <>
@@ -79,7 +90,10 @@ const MeetingCardOptionsMenu = (props: Props) => {
         <MenuItem
           onSelect={async () => {
             popTooltip()
-            const copyUrl = makeAppURL(window.location.origin, `meeting-series/${meetingId}`)
+            const copyUrl = makeAppURL(
+              window.location.origin,
+              `meeting-series/${meetingSeries.urlSlug}`
+            )
             await navigator.clipboard.writeText(copyUrl)
 
             SendClientSideEvent(atmosphere, 'Copied Meeting Series Link', {
@@ -108,33 +122,12 @@ const MeetingCardOptionsMenu = (props: Props) => {
         Copy invite link
       </MenuItem>
       {canStartSeriesNow && (
-        <MenuItem
-          onSelect={() => {
-            if (isStartingSeries) return
-            startSeriesNow({
-              variables: {meetingSeriesId: meetingSeries.id},
-              onCompleted: (res) => {
-                // an owner can schedule for teams they are not on, & cannot join those meetings
-                const {meeting} = res.startMeetingSeriesNow
-                if (meeting) {
-                  navigate(`/meet/${meeting.id}`)
-                  return
-                }
-                atmosphere.eventEmitter.emit('addSnackbar', {
-                  key: 'startMeetingSeriesNow',
-                  autoDismiss: 5,
-                  showDismissButton: true,
-                  message: 'Started the next meeting for each team'
-                })
-              }
-            })
-          }}
-        >
+        <MenuItem onSelect={onStartSeriesNow}>
           <PlayArrowIcon className={MENU_ITEM_ICON} />
-          Start meeting now
+          Start next meeting now
         </MenuItem>
       )}
-      {canManageMeeting && hasRecurrenceEnabled && !isSeriesManagedByOther && (
+      {canEditRecurrence && (
         <MenuItem onSelect={openRecurrenceSettingsModal}>
           <ReplayIcon className={MENU_ITEM_ICON} />
           Edit recurrence settings

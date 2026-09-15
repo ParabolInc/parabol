@@ -5,7 +5,6 @@ import type {NewAzureIssueInput_viewer$key} from '~/__generated__/NewAzureIssueI
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import CreateTaskMutation from '~/mutations/CreateTaskMutation'
-import AzureDevOpsProjectId from '~/shared/gqlIds/AzureDevOpsProjectId'
 import {ExpandMore} from '~/ui/icons'
 import type {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/CreateTaskMutation.graphql'
 import useForm from '../hooks/useForm'
@@ -50,7 +49,7 @@ const NewAzureIssueInput = (props: Props) => {
                 ...NewAzureIssueMenu_AzureDevOpsRemoteProjects
                 id
                 name
-                instanceId
+                integrationRepoId
               }
             }
           }
@@ -96,10 +95,6 @@ const NewAzureIssueInput = (props: Props) => {
       return
     }
     const selectedProject = projects.find((project) => project.name === selectedProjectName)!
-    const serviceProjectHash = AzureDevOpsProjectId.join(
-      selectedProject.instanceId,
-      selectedProject.id
-    )
     const newTask = {
       teamId,
       userId,
@@ -109,7 +104,7 @@ const NewAzureIssueInput = (props: Props) => {
       status: 'active' as const,
       integration: {
         service: 'azureDevOps' as const,
-        serviceProjectHash
+        serviceProjectHash: selectedProject.integrationRepoId
       }
     }
     const handleCompleted: CompletedHandler<TCreateTaskMutation['response']> = (res) => {

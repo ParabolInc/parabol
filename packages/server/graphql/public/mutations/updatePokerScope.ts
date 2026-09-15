@@ -54,6 +54,38 @@ const updatePokerScope: MutationResolvers['updatePokerScope'] = async (
       const {action, serviceTaskId} = update
       return action === 'DELETE' && !!stages.find((stage) => stage.serviceTaskId === serviceTaskId)
     })
+    const stageIdsToRemove = new Set(
+      subtractiveUpdates.flatMap(({serviceTaskId}) =>
+        stages.filter((stage) => stage.serviceTaskId === serviceTaskId).map(({id}) => id)
+      )
+    )
+    const survivingStages = stages.filter((stage) => !stageIdsToRemove.has(stage.id))
+    const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
+    const {dimensions} = templateRef
+    const additiveUpdates = [
+      ...new Map(
+        updates
+          .filter(
+            (update) =>
+              update.action === 'ADD' &&
+              !survivingStages.find((stage) => stage.serviceTaskId === update.serviceTaskId)
+          )
+          .map((update) => [update.serviceTaskId, update])
+      ).values()
+    ]
+    const projectedStageCount = survivingStages.length + additiveUpdates.length * dimensions.length
+    if (projectedStageCount > Threshold.MAX_POKER_STORIES * dimensions.length) {
+      return {error: {message: 'Story limit reached'}}
+    }
+    const additiveUpdatesWithTaskIds = await importTasksForPoker(
+      additiveUpdates,
+      {dataLoader, teamId, userId: viewerId},
+      meetingId
+    )
+    if (additiveUpdates.length > 0 && additiveUpdatesWithTaskIds.length === 0) {
+      return {error: {message: 'Could not add that issue'}}
+    }
+
     subtractiveUpdates.forEach((update) => {
       const {serviceTaskId} = update
       const stagesToRemove = stages.filter((stage) => stage.serviceTaskId === serviceTaskId)
@@ -82,21 +114,7 @@ const updatePokerScope: MutationResolvers['updatePokerScope'] = async (
     })
 
     // add stages
-    const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
-    const {dimensions} = templateRef
     const newDiscussions = [] as Insertable<Discussion>[]
-    const additiveUpdates = updates.filter((update) => {
-      const {action, serviceTaskId} = update
-      return action === 'ADD' && !stages.find((stage) => stage.serviceTaskId === serviceTaskId)
-    })
-
-    const additiveUpdatesWithTaskIds = await importTasksForPoker(
-      additiveUpdates,
-      teamId,
-      viewerId,
-      meetingId
-    )
-
     const newStageIds = [] as string[]
     additiveUpdatesWithTaskIds.forEach((update) => {
       const {serviceTaskId, taskId} = update
@@ -126,10 +144,6 @@ const updatePokerScope: MutationResolvers['updatePokerScope'] = async (
       const newIds = newStages.map(({id}) => id)
       newStageIds.push(...newIds)
     })
-
-    if (stages.length > Threshold.MAX_POKER_STORIES * dimensions.length) {
-      return {error: {message: 'Story limit reached'}}
-    }
 
     const validatedFacilitatorStageRes = findStageById(phases, meeting.facilitatorStageId)
     if (!validatedFacilitatorStageRes) {

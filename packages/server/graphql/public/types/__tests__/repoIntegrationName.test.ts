@@ -1,12 +1,17 @@
+jest.mock('../../rootSchema', () => ({
+  __esModule: true,
+  githubRequest: jest.fn(),
+  gitlabRequest: jest.fn(),
+  linearRequest: jest.fn(),
+  default: {}
+}))
+
 import type {GraphQLResolveInfo} from 'graphql'
 import type {GQLContext} from '../../../graphql'
-import _xGitHubRepository from '../_xGitHubRepository'
-import _xGitLabProject from '../_xGitLabProject'
-import _xLinearProject from '../_xLinearProject'
-import _xLinearTeam from '../_xLinearTeam'
 import AzureDevOpsRemoteProject from '../AzureDevOpsRemoteProject'
 import JiraRemoteProject from '../JiraRemoteProject'
 import JiraServerRemoteProject from '../JiraServerRemoteProject'
+import RepoContainer from '../RepoContainer'
 
 const context = {} as GQLContext
 const info = {} as GraphQLResolveInfo
@@ -18,9 +23,11 @@ const resolveName = (resolvers: {name?: unknown}, source: Record<string, unknown
 }
 
 const gitHubRepository = {
-  id: 'MDEwOlJlcG9zaXRvcnkx',
-  service: 'github' as const,
-  nameWithOwner: 'octocat/hello-world'
+  hasIssuesEnabled: true,
+  nameWithOwner: 'octocat/hello-world',
+  updatedAt: new Date('2026-01-01'),
+  viewerCanAdminister: false,
+  service: 'github' as const
 }
 
 const gitLabProject = {
@@ -35,16 +42,7 @@ const linearTeam = {
   id: 'team-uuid',
   displayName: 'Engineering',
   key: 'ENG',
-  service: 'linear' as const,
-  teamId: 'team-uuid'
-}
-
-const linearProject = {
-  __typename: 'Project' as const,
-  id: 'project-uuid',
-  name: 'Q3 Roadmap',
-  service: 'linear' as const,
-  teamId: 'team-uuid'
+  service: 'linear' as const
 }
 
 const jiraRemoteProject = {
@@ -88,19 +86,12 @@ const azureDevOpsRemoteProject = {
 type NameCase = [string, {name?: unknown}, Record<string, unknown>, string]
 
 const cases: NameCase[] = [
-  ['_xGitHubRepository', _xGitHubRepository, gitHubRepository, 'octocat/hello-world'],
-  ['_xGitLabProject', _xGitLabProject, gitLabProject, 'gitlab-org/gitlab'],
-  ['_xLinearTeam', _xLinearTeam, linearTeam, 'Engineering'],
-  ['_xLinearProject', _xLinearProject, linearProject, 'Q3 Roadmap'],
+  ['RepoContainer(github)', RepoContainer, gitHubRepository, 'octocat/hello-world'],
+  ['RepoContainer(gitlab)', RepoContainer, gitLabProject, 'gitlab-org/gitlab'],
+  ['RepoContainer(linear team)', RepoContainer, linearTeam, 'Engineering'],
   ['JiraRemoteProject', JiraRemoteProject, jiraRemoteProject, 'Parabol'],
   ['JiraServerRemoteProject', JiraServerRemoteProject, jiraServerRemoteProject, 'Parabol'],
   ['AzureDevOpsRemoteProject', AzureDevOpsRemoteProject, azureDevOpsRemoteProject, 'Parabol']
-]
-
-const apiObjectCases: NameCase[] = [
-  ['_xGitHubRepository', _xGitHubRepository, {id: 'R_1', name: 'hello-world'}, 'hello-world'],
-  ['_xGitLabProject', _xGitLabProject, {id: 'gid://gitlab/Project/1', name: 'gitlab'}, 'gitlab'],
-  ['_xLinearTeam', _xLinearTeam, {id: 'team-uuid', name: 'Engineering'}, 'Engineering']
 ]
 
 describe('RepoIntegration.name', () => {
@@ -110,13 +101,6 @@ describe('RepoIntegration.name', () => {
       const name = resolveName(resolvers, source)
       expect(typeof name).toBe('string')
       expect(name).toBe(expected)
-    }
-  )
-
-  it.each(apiObjectCases)(
-    '%s keeps the vendor name when a nested selection fetched only `name`',
-    (_typeName, resolvers, source, expected) => {
-      expect(resolveName(resolvers, source)).toBe(expected)
     }
   )
 })
