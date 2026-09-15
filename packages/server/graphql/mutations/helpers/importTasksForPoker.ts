@@ -12,7 +12,7 @@ import type {UpdatePokerScopeItemInput} from '../../public/resolverTypes'
 
 const parseIntegration = (ctx: IntegrationCtx, update: UpdatePokerScopeItemInput) => {
   const {service, serviceTaskId} = update
-  const issueParts = getServerIntegration(service)?.parseIssueHash(serviceTaskId)
+  const issueParts = getServerIntegration(service)?.parseIntegrationHash(serviceTaskId)
   if (!issueParts) {
     logError(new Error(`Invalid ${service} integrationHash: ${serviceTaskId}`), {
       tags: {service, teamId: ctx.teamId},

@@ -21,7 +21,7 @@ export class GitLabServerIntegration extends ServerIntegrationDefinition {
   readonly title = gitlabIntegrationMeta.title
   readonly authStrategy = 'oauth2' as const
 
-  parseIssueHash(integrationHash: string) {
+  parseIntegrationHash(integrationHash: string) {
     const {providerId, gid} = GitLabIssueId.split(integrationHash)
     if (!gid?.startsWith('gid://') || GitLabIssueId.join(providerId, gid) !== integrationHash) {
       return null

@@ -30,7 +30,7 @@ export class AzureDevOpsServerIntegration extends ServerIntegrationDefinition {
     return auth?.accessToken ? auth : null
   }
 
-  parseIssueHash(integrationHash: string) {
+  parseIntegrationHash(integrationHash: string) {
     const {instanceId, projectKey, issueKey} = AzureDevOpsIssueId.split(integrationHash)
     if (
       !instanceId ||

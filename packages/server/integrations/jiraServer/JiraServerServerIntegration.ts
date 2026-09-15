@@ -25,7 +25,7 @@ export class JiraServerServerIntegration extends ServerIntegrationDefinition {
   readonly title = jiraServerIntegrationMeta.title
   readonly authStrategy = 'oauth1' as const
 
-  parseIssueHash(integrationHash: string) {
+  parseIntegrationHash(integrationHash: string) {
     const {providerId, repositoryId, issueId} = JiraServerIssueId.split(integrationHash)
     if (
       Number.isNaN(providerId) ||

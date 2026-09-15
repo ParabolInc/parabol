@@ -41,7 +41,7 @@ export class GitHubServerIntegration extends ServerIntegrationDefinition {
     return auth?.scopes === Providers.GITHUB_SCOPE ? auth : null
   }
 
-  parseIssueHash(integrationHash: string) {
+  parseIntegrationHash(integrationHash: string) {
     const {nameWithOwner, issueNumber} = GitHubIssueId.split(integrationHash)
     if (!nameWithOwner || !Number.isInteger(issueNumber) || issueNumber < 1) return null
     return {service: 'github' as const, nameWithOwner, issueNumber}

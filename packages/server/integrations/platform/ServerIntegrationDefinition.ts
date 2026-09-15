@@ -154,7 +154,7 @@ export abstract class ServerIntegrationDefinition {
   }
 
   /** The Task.integrationHash a client echoed, parsed into the issue parts the Task row stores. null when malformed */
-  abstract parseIssueHash(integrationHash: string): IssueParts | null
+  abstract parseIntegrationHash(integrationHash: string): IssueParts | null
 
   /** A team, org, or global provider row exists. Services whose connect flow needs the global row override this */
   async isAvailable(ctx: IntegrationCtx) {
