@@ -22,7 +22,7 @@ const isConnected = jest.fn()
 const fetchRepos = jest.fn()
 const githubRepo = {id: 'o/a', service: 'github' as const, nameWithOwner: 'o/a'}
 const expectedOptions = {
-  maxAge: 30 * 1000,
+  maxAge: 60 * 1000,
   ttl: 2 * 24 * 60 * 60 * 1000,
   onUpdate: expect.any(Function)
 }
