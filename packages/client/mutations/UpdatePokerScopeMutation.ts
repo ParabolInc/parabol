@@ -106,14 +106,9 @@ export type PokerScopeMeeting = NonNullable<
   TUpdatePokerScopeMutation['response']['updatePokerScope']['meeting']
 >
 
-const stageMatchesScopeKey = (stage: RecordProxy, key: string) => {
-  const task = stage.getLinkedRecord('task')
-  return (
-    stage.getValue('taskId') === key ||
-    task?.getValue('integrationHash') === key ||
-    task?.getLinkedRecord('integration')?.getValue('id') === key
-  )
-}
+const stageMatchesScopeKey = (stage: RecordProxy, key: string) =>
+  stage.getValue('taskId') === key ||
+  stage.getLinkedRecord('task')?.getValue('integrationHash') === key
 
 interface Handlers extends BaseLocalHandlers {
   contents: string[]
@@ -186,7 +181,8 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
             status: 'future',
             tags: ['#archived'],
             teamId,
-            title
+            title,
+            integrationHash: service === 'PARABOL' ? null : serviceTaskId
           })
           optimisticTask
             .setLinkedRecord(viewer, 'createdByUser')

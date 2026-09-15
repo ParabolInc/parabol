@@ -15,6 +15,7 @@ import useGetUsedServiceTaskIds from '../hooks/useGetUsedServiceTaskIds'
 import useLoadNextOnScrollBottom from '../hooks/useLoadNextOnScrollBottom'
 import findIntegrationService from '../integrations/platform/findIntegrationService'
 import usePersistIntegrationSearchQueryMutation from '../mutations/usePersistIntegrationSearchQueryMutation'
+import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
 import {SprintPokerDefaults} from '../types/constEnums'
 import type {GQLType} from '../types/generics'
 import getNonNullEdges from '../utils/getNonNullEdges'
@@ -81,7 +82,6 @@ const GitHubScopingSearchResults = (props: Props) => {
                           ... on _xGitHubIssue {
                             ...GitHubScopingSelectAllIssues_issues
                             id
-                            service
                             title
                             number
                             repository {
@@ -198,7 +198,7 @@ const GitHubScopingSearchResults = (props: Props) => {
               key={node.id}
               service={'github'}
               usedServiceTaskIds={usedServiceTaskIds}
-              serviceTaskId={node.id}
+              serviceTaskId={GitHubIssueId.join(nameWithOwner, number)}
               meetingId={meetingId}
               persistQuery={persistQuery}
               summary={title}

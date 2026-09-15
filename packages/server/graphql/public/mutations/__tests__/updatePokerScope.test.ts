@@ -2,8 +2,6 @@ import type {GraphQLResolveInfo} from 'graphql'
 import {Threshold} from 'parabol-client/types/constEnums'
 import type {GQLContext} from '../../../graphql'
 import importTasksForPoker from '../../../mutations/helpers/importTasksForPoker'
-import type {ResolvedScopeAdd} from '../../../mutations/helpers/resolveScopeAdds'
-import resolveScopeAdds from '../../../mutations/helpers/resolveScopeAdds'
 import updatePokerScope from '../updatePokerScope'
 
 jest.mock('../../../../utils/RedisLockQueue', () => {
@@ -45,10 +43,6 @@ jest.mock('../../../../utils/getRedis', () => {
   }
 })
 jest.mock('../../../../utils/publish', () => ({__esModule: true, default: jest.fn()}))
-jest.mock('../../../mutations/helpers/resolveScopeAdds', () => ({
-  __esModule: true,
-  default: jest.fn()
-}))
 jest.mock('../../../mutations/helpers/importTasksForPoker', () => ({
   __esModule: true,
   default: jest.fn(async (additiveUpdates: {serviceTaskId: string}[]) =>
@@ -63,7 +57,6 @@ const {setPayloads} = jest.requireMock('../../../../postgres/getKysely') as {
 const {multiCalls} = jest.requireMock('../../../../utils/getRedis') as {
   multiCalls: string[][][]
 }
-const resolveAdds = jest.mocked(resolveScopeAdds)
 const importTasks = jest.mocked(importTasksForPoker)
 
 type Stage = {
@@ -107,20 +100,12 @@ const buildMeeting = (endedAt: Date | null = null) => ({
   ] as Phase[]
 })
 
-const buildContext = (
-  meeting: ReturnType<typeof buildMeeting>,
-  freshMeeting: ReturnType<typeof buildMeeting> | null = meeting
-) => {
-  let loadCount = 0
+const buildContext = (meeting: ReturnType<typeof buildMeeting>) => {
   const loaders: Record<string, unknown> = {
     newMeetings: {
       load: async () => {
         events.push('load')
-        loadCount += 1
-        return loadCount === 1 ? meeting : freshMeeting
-      },
-      clear: (id: string) => {
-        events.push(`clear:${id}`)
+        return meeting
       }
     },
     templateRefs: {loadNonNull: async () => ({dimensions: [{name: 'Story Points'}]})}
@@ -142,17 +127,8 @@ if (typeof resolve !== 'function') throw new Error('resolver must be a function'
 
 type ScopeUpdate = {service: string; serviceTaskId: string; action: string}
 
-const run = (
-  updates: ScopeUpdate[],
-  meeting = buildMeeting(),
-  freshMeeting: ReturnType<typeof buildMeeting> | null = meeting
-) =>
-  resolve(
-    {},
-    {meetingId, updates} as Parameters<typeof resolve>[1],
-    buildContext(meeting, freshMeeting),
-    info
-  )
+const run = (updates: ScopeUpdate[], meeting = buildMeeting()) =>
+  resolve({}, {meetingId, updates} as Parameters<typeof resolve>[1], buildContext(meeting), info)
 
 const writtenStages = () => {
   const payload = setPayloads.at(-1)!
@@ -166,7 +142,6 @@ describe('updatePokerScope', () => {
     setPayloads.splice(0, setPayloads.length)
     multiCalls.splice(0, multiCalls.length)
     importTasks.mockClear()
-    resolveAdds.mockResolvedValue([])
   })
 
   it('removes a stage deleted by taskId', async () => {
@@ -180,30 +155,26 @@ describe('updatePokerScope', () => {
     expect(writtenStages().map(({id}) => id)).toEqual(['stageParabol'])
   })
 
-  it('dedupes an add that resolves to a hash already in scope', async () => {
-    resolveAdds.mockResolvedValue([
-      {
-        service: 'jira',
-        serviceTaskId: 'cloud1:WEB-12',
-        action: 'ADD',
-        integration: null
-      } as ResolvedScopeAdd
-    ])
-    const res = await run([{service: 'jira', serviceTaskId: 'anything', action: 'ADD'}])
+  it('dedupes an add whose hash is already in scope', async () => {
+    const res = await run([{service: 'jira', serviceTaskId: 'cloud1:WEB-12', action: 'ADD'}])
     expect(writtenStages().map(({id}) => id)).toEqual(['stageJira', 'stageParabol'])
+    expect(importTasks).toHaveBeenCalledWith([], expect.anything(), meetingId)
     expect(res).toEqual({meetingId, newStageIds: []})
   })
 
-  it('adds a stage for an unused hash', async () => {
-    resolveAdds.mockResolvedValue([
-      {
-        service: 'jira',
-        serviceTaskId: 'cloud1:WEB-99',
-        action: 'ADD',
-        integration: null
-      } as ResolvedScopeAdd
+  it('dedupes the same hash sent twice in one request', async () => {
+    await run([
+      {service: 'jira', serviceTaskId: 'cloud1:WEB-99', action: 'ADD'},
+      {service: 'jira', serviceTaskId: 'cloud1:WEB-99', action: 'ADD'}
     ])
-    await run([{service: 'jira', serviceTaskId: 'anything', action: 'ADD'}])
+    expect(importTasks.mock.calls[0]![0]).toHaveLength(1)
+    expect(
+      writtenStages().filter(({serviceTaskId}) => serviceTaskId === 'cloud1:WEB-99')
+    ).toHaveLength(1)
+  })
+
+  it('adds a stage for an unused hash', async () => {
+    await run([{service: 'jira', serviceTaskId: 'cloud1:WEB-99', action: 'ADD'}])
     const stages = writtenStages()
     expect(stages.map(({serviceTaskId}) => serviceTaskId)).toEqual([
       'cloud1:WEB-12',
@@ -213,54 +184,31 @@ describe('updatePokerScope', () => {
     expect(stages.at(-1)!.taskId).toBe('task:cloud1:WEB-99')
   })
 
-  it('surfaces an unresolvable add without taking the lock', async () => {
-    resolveAdds.mockResolvedValue(new Error('Jira issue not found'))
+  it('reports an add that could not be imported', async () => {
+    importTasks.mockResolvedValueOnce([])
     const res = await run([{service: 'jira', serviceTaskId: 'nope', action: 'ADD'}])
-    expect(res).toEqual({error: {message: 'Jira issue not found'}})
-    expect(events).not.toContain('lock')
+    expect(res).toEqual({error: {message: 'Could not add that issue'}})
     expect(setPayloads).toHaveLength(0)
+    expect(events).toEqual(['lock', 'load', 'unlock'])
   })
 
-  it('guards an ended meeting before taking the lock', async () => {
+  it('guards an ended meeting', async () => {
     const res = await run(
       [{service: 'jira', serviceTaskId: 'taskJira', action: 'DELETE'}],
       buildMeeting(new Date())
     )
     expect(res).toEqual({error: {message: 'Meeting already ended'}})
-    expect(events).toEqual(['load'])
-  })
-
-  it('re-reads the meeting fresh inside the lock', async () => {
-    await run([{service: 'jira', serviceTaskId: 'taskJira', action: 'DELETE'}])
-    expect(events).toEqual(['load', 'lock', `clear:${meetingId}`, 'load', 'unlock'])
-  })
-
-  it('reports a meeting deleted between the snapshot and the in-lock re-read', async () => {
-    const res = await run(
-      [{service: 'jira', serviceTaskId: 'taskJira', action: 'DELETE'}],
-      buildMeeting(),
-      null
-    )
-    expect(res).toEqual({error: {message: 'Meeting not found'}})
-    expect(setPayloads).toHaveLength(0)
+    expect(events).toEqual(['lock', 'load', 'unlock'])
   })
 
   it('rejects an over-limit scope before any side effect runs', async () => {
-    resolveAdds.mockResolvedValue(
-      Array.from(
-        {length: Threshold.MAX_POKER_STORIES},
-        (_, idx) =>
-          ({
-            service: 'jira',
-            serviceTaskId: `cloud1:WEB-${idx}`,
-            action: 'ADD',
-            integration: null
-          }) as ResolvedScopeAdd
-      )
-    )
     const res = await run([
       {service: 'jira', serviceTaskId: 'taskJira', action: 'DELETE'},
-      {service: 'jira', serviceTaskId: 'anything', action: 'ADD'}
+      ...Array.from({length: Threshold.MAX_POKER_STORIES}, (_, idx) => ({
+        service: 'jira',
+        serviceTaskId: `cloud1:WEB-${idx}`,
+        action: 'ADD'
+      }))
     ])
     expect(res).toEqual({error: {message: 'Story limit reached'}})
     expect(importTasks).not.toHaveBeenCalled()

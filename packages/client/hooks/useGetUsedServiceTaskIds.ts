@@ -14,9 +14,6 @@ const useGetUsedServiceTaskIds = (
             taskId
             task {
               integrationHash
-              integration {
-                id
-              }
             }
           }
         }
@@ -26,7 +23,7 @@ const useGetUsedServiceTaskIds = (
     const {stages} = estimatePhase
     const usedServiceTaskIds = new Map<string, string>()
     stages.forEach(({task, taskId}) => {
-      usedServiceTaskIds.set(task?.integration?.id ?? task?.integrationHash ?? taskId, taskId)
+      usedServiceTaskIds.set(task?.integrationHash ?? taskId, taskId)
     })
     return usedServiceTaskIds
   }, [phaseRef])

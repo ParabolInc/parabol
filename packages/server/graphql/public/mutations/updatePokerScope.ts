@@ -13,47 +13,25 @@ import publish from '../../../utils/publish'
 import RedisLockQueue from '../../../utils/RedisLockQueue'
 import getNextFacilitatorStageAfterStageRemoved from '../../mutations/helpers/getNextFacilitatorStageAfterStageRemoved'
 import importTasksForPoker from '../../mutations/helpers/importTasksForPoker'
-import resolveScopeAdds from '../../mutations/helpers/resolveScopeAdds'
 import type {MutationResolvers} from '../resolverTypes'
 
 const updatePokerScope: MutationResolvers['updatePokerScope'] = async (
   _source,
   {meetingId, updates},
-  context,
-  info
+  {authToken, dataLoader, socketId: mutatorId}
 ) => {
-  const {authToken, dataLoader, socketId: mutatorId} = context
   const pg = getKysely()
   const redis = getRedis()
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const now = new Date()
-  const meetingSnapshot = await dataLoader.get('newMeetings').load(meetingId)
-  if (!meetingSnapshot) {
-    return {error: {message: `Meeting not found`}}
-  }
-  if (meetingSnapshot.meetingType !== 'poker') {
-    return {error: {message: 'Not a poker meeting'}}
-  }
-  if (meetingSnapshot.endedAt) {
-    return {error: {message: `Meeting already ended`}}
-  }
-  const resolvedAdds = await resolveScopeAdds(
-    updates.filter((update) => update.action === 'ADD'),
-    {dataLoader, teamId: meetingSnapshot.teamId, userId: viewerId, context, info}
-  )
-  if (resolvedAdds instanceof Error) {
-    return {error: {message: resolvedAdds.message}}
-  }
-
   // lock the meeting while the scope is updating
   const redisLock = new RedisLockQueue(`meeting:${meetingId}`, 3000)
   await redisLock.lock(10000)
 
   // Wrap everything in try catch to ensure the lock is released
   try {
-    dataLoader.get('newMeetings').clear(meetingId)
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) {
       return {error: {message: `Meeting not found`}}
@@ -93,12 +71,28 @@ const updatePokerScope: MutationResolvers['updatePokerScope'] = async (
     const survivingStages = stages.filter((stage) => !stageIdsToRemove.has(stage.id))
     const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
     const {dimensions} = templateRef
-    const additiveUpdates = resolvedAdds.filter(
-      (update) => !survivingStages.find((stage) => stage.serviceTaskId === update.serviceTaskId)
-    )
+    const additiveUpdates = [
+      ...new Map(
+        updates
+          .filter(
+            (update) =>
+              update.action === 'ADD' &&
+              !survivingStages.find((stage) => stage.serviceTaskId === update.serviceTaskId)
+          )
+          .map((update) => [update.serviceTaskId, update])
+      ).values()
+    ]
     const projectedStageCount = survivingStages.length + additiveUpdates.length * dimensions.length
     if (projectedStageCount > Threshold.MAX_POKER_STORIES * dimensions.length) {
       return {error: {message: 'Story limit reached'}}
+    }
+    const additiveUpdatesWithTaskIds = await importTasksForPoker(
+      additiveUpdates,
+      {dataLoader, teamId, userId: viewerId},
+      meetingId
+    )
+    if (additiveUpdates.length > 0 && additiveUpdatesWithTaskIds.length === 0) {
+      return {error: {message: 'Could not add that issue'}}
     }
 
     subtractiveUpdates.forEach((update) => {
@@ -132,13 +126,6 @@ const updatePokerScope: MutationResolvers['updatePokerScope'] = async (
 
     // add stages
     const newDiscussions = [] as Insertable<Discussion>[]
-    const additiveUpdatesWithTaskIds = await importTasksForPoker(
-      additiveUpdates,
-      teamId,
-      viewerId,
-      meetingId
-    )
-
     const newStageIds = [] as string[]
     additiveUpdatesWithTaskIds.forEach((update) => {
       const {serviceTaskId, taskId} = update

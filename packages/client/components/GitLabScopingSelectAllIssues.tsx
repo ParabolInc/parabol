@@ -5,6 +5,7 @@ import type {GitLabScopingSelectAllIssues_issues$key} from '../__generated__/Git
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
+import GitLabIssueId from '../shared/gqlIds/GitLabIssueId'
 import {Threshold} from '../types/constEnums'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
 import Checkbox from './Checkbox'
@@ -13,10 +14,11 @@ interface Props {
   meetingId: string
   issuesRef: GitLabScopingSelectAllIssues_issues$key
   usedServiceTaskIds: ReadonlyMap<string, string>
+  providerId: string
 }
 
 const GitLabScopingSelectAllIssues = (props: Props) => {
-  const {meetingId, usedServiceTaskIds, issuesRef} = props
+  const {meetingId, usedServiceTaskIds, issuesRef, providerId} = props
   const issues = useFragment(
     graphql`
       fragment GitLabScopingSelectAllIssues_issues on _xGitLabIssue @relay(plural: true) {
@@ -30,7 +32,7 @@ const GitLabScopingSelectAllIssues = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting, error} = useMutationProps()
-  const serviceTaskIds = issues.map((issue) => issue.id)
+  const serviceTaskIds = issues.map((issue) => GitLabIssueId.join(providerId, issue.id))
   const [unusedServiceTaskIds, allSelected] = useUnusedRecords(serviceTaskIds, usedServiceTaskIds)
   const availableCountToAdd = Threshold.MAX_POKER_STORIES - usedServiceTaskIds.size
   const onClick = () => {
@@ -56,7 +58,9 @@ const GitLabScopingSelectAllIssues = (props: Props) => {
       updates
     }
     const contents = updates.map((update) => {
-      const issue = issues.find((issue) => issue.id === update.serviceTaskId)
+      const issue = issues.find(
+        (issue) => GitLabIssueId.join(providerId, issue.id) === update.serviceTaskId
+      )
       return issue?.title ?? 'Unknown Story'
     })
     UpdatePokerScopeMutation(atmosphere, variables, {

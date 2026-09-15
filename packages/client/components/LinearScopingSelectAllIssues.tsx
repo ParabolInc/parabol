@@ -5,6 +5,8 @@ import type {LinearScopingSelectAllIssues_issues$key} from '../__generated__/Lin
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
+import LinearIssueId from '../shared/gqlIds/LinearIssueId'
+import LinearProjectId from '../shared/gqlIds/LinearProjectId'
 import {Threshold} from '../types/constEnums'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
 import Checkbox from './Checkbox'
@@ -38,7 +40,9 @@ const LinearScopingSelectAllIssues = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting, error} = useMutationProps()
-  const serviceTaskIds = issues.map((issue) => issue.id)
+  const getServiceTaskId = (issue: (typeof issues)[number]) =>
+    LinearIssueId.join(LinearProjectId.join(issue.team?.id ?? '', issue.project?.id), issue.id)
+  const serviceTaskIds = issues.map(getServiceTaskId)
   const [unusedServiceTaskIds, allSelected] = useUnusedRecords(serviceTaskIds, usedServiceTaskIds)
   const availableCountToAdd = Threshold.MAX_POKER_STORIES - usedServiceTaskIds.size
   const onClick = () => {
@@ -64,7 +68,7 @@ const LinearScopingSelectAllIssues = (props: Props) => {
       updates
     }
     const contents = updates.map((update) => {
-      const issue = issues.find((issue) => issue.id === update.serviceTaskId)
+      const issue = issues.find((issue) => getServiceTaskId(issue) === update.serviceTaskId)
       return issue?.title ?? 'Unknown Story'
     })
     UpdatePokerScopeMutation(atmosphere, variables, {

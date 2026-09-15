@@ -6,11 +6,9 @@ import type {TeamMemberIntegrationAuth} from '../../postgres/types'
 import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
 import {
   type EstimatePushCapability,
-  type GqlIntegrationCtx,
   type IntegrationCtx,
   type IssueCreateCapability,
   type IssueReadCapability,
-  type IssueRef,
   type RepoListCapability,
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
@@ -32,28 +30,18 @@ export class AzureDevOpsServerIntegration extends ServerIntegrationDefinition {
     return auth?.accessToken ? auth : null
   }
 
-  async resolveIssue({userId}: GqlIntegrationCtx, id: string): Promise<IssueRef | null> {
-    const {instanceId, projectKey, issueKey} = AzureDevOpsIssueId.split(id)
-    const integrationHash = AzureDevOpsIssueId.join(instanceId, projectKey, issueKey)
+  async parseIssueHash({userId}: IntegrationCtx, integrationHash: string) {
+    const {instanceId, projectKey, issueKey} = AzureDevOpsIssueId.split(integrationHash)
     if (
       !instanceId ||
       !projectKey ||
       !issueKey ||
-      integrationHash !== id ||
+      AzureDevOpsIssueId.join(instanceId, projectKey, issueKey) !== integrationHash ||
       !instanceId.startsWith('dev.azure.com/')
     ) {
       return null
     }
-    return {
-      integrationHash,
-      integration: {
-        accessUserId: userId,
-        service: 'azureDevOps' as const,
-        instanceId,
-        projectKey,
-        issueKey
-      }
-    }
+    return {accessUserId: userId, service: 'azureDevOps' as const, instanceId, projectKey, issueKey}
   }
 
   readonly capabilities: {

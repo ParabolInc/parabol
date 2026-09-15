@@ -5,6 +5,7 @@ import type {GitHubScopingSelectAllIssues_issues$key} from '../__generated__/Git
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
+import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
 import {Threshold} from '../types/constEnums'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
 import Checkbox from './Checkbox'
@@ -33,7 +34,9 @@ const GitHubScopingSelectAllIssues = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting, error} = useMutationProps()
-  const serviceTaskIds = issues.map((issue) => issue.id)
+  const serviceTaskIds = issues.map((issue) =>
+    GitHubIssueId.join(issue.repository.nameWithOwner, issue.number)
+  )
   const [unusedServiceTaskIds, allSelected] = useUnusedRecords(serviceTaskIds, usedServiceTaskIds)
   const availableCountToAdd = Threshold.MAX_POKER_STORIES - usedServiceTaskIds.size
   const onClick = () => {
@@ -59,7 +62,10 @@ const GitHubScopingSelectAllIssues = (props: Props) => {
       updates
     }
     const contents = updates.map((update) => {
-      const issue = issues.find((issue) => issue.id === update.serviceTaskId)
+      const issue = issues.find(
+        (issue) =>
+          GitHubIssueId.join(issue.repository.nameWithOwner, issue.number) === update.serviceTaskId
+      )
       return issue?.title ?? 'Unknown Story'
     })
     UpdatePokerScopeMutation(atmosphere, variables, {

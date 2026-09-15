@@ -5,10 +5,9 @@ import fetchGitLabProjects from '../../graphql/queries/helpers/fetchGitLabProjec
 import type {GitLabProject} from '../platform/RemoteRepoIntegration'
 import {
   type EstimatePushCapability,
-  type GqlIntegrationCtx,
+  type IntegrationCtx,
   type IssueCreateCapability,
   type IssueReadCapability,
-  type IssueRef,
   type RepoListCapability,
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
@@ -19,28 +18,19 @@ import pushEstimateToGitLab from './pushEstimateToGitLab'
 import resolveGitLabDimensionFieldKey from './resolveGitLabDimensionFieldKey'
 import resolveGitLabTaskIntegration from './resolveGitLabTaskIntegration'
 
-const parseIssueHashGid = (hash: string) => {
-  const {providerId, gid} = GitLabIssueId.split(hash)
-  if (!gid?.startsWith('gid://')) return null
-  return GitLabIssueId.join(providerId, gid) === hash ? gid : null
-}
-
 export class GitLabServerIntegration extends ServerIntegrationDefinition {
   readonly service = gitlabIntegrationMeta.service
   readonly title = gitlabIntegrationMeta.title
   readonly authStrategy = 'oauth2' as const
 
-  async resolveIssue(ctx: GqlIntegrationCtx, id: string): Promise<IssueRef | null> {
-    const isBareGid = id.startsWith('gid://') && !id.includes('::')
-    const gid = isBareGid ? id : parseIssueHashGid(id)
-    if (!gid) return null
-    const auth = await this.resolveAuth(ctx)
-    if (!auth) return null
-    const providerId = IntegrationProviderId.join(auth.providerId)
-    return {
-      integrationHash: GitLabIssueId.join(providerId, gid),
-      integration: {accessUserId: ctx.userId, service: 'gitlab' as const, providerId, gid}
+  async parseIssueHash(ctx: IntegrationCtx, integrationHash: string) {
+    const {providerId, gid} = GitLabIssueId.split(integrationHash)
+    if (!gid?.startsWith('gid://') || GitLabIssueId.join(providerId, gid) !== integrationHash) {
+      return null
     }
+    const auth = await this.getAuthRow(ctx)
+    if (!auth || IntegrationProviderId.join(auth.providerId) !== providerId) return null
+    return {accessUserId: ctx.userId, service: 'gitlab' as const, providerId, gid}
   }
 
   readonly capabilities: {

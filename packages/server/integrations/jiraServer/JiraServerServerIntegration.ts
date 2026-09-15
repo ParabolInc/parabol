@@ -6,10 +6,9 @@ import type {JiraSearchQueryJson} from '../../postgres/types'
 import buildJiraSearchQuery from '../jira/buildJiraSearchQuery'
 import {
   type EstimatePushCapability,
-  type GqlIntegrationCtx,
+  type IntegrationCtx,
   type IssueCreateCapability,
   type IssueReadCapability,
-  type IssueRef,
   type IssueSearchCapability,
   type RepoListCapability,
   ServerIntegrationDefinition
@@ -27,23 +26,24 @@ export class JiraServerServerIntegration extends ServerIntegrationDefinition {
   readonly title = jiraServerIntegrationMeta.title
   readonly authStrategy = 'oauth1' as const
 
-  async resolveIssue(ctx: GqlIntegrationCtx, id: string): Promise<IssueRef | null> {
-    const {providerId, repositoryId, issueId} = JiraServerIssueId.split(id)
-    const integrationHash = JiraServerIssueId.join(providerId, repositoryId, issueId)
-    if (Number.isNaN(providerId) || !repositoryId || !issueId || integrationHash !== id) {
+  async parseIssueHash(ctx: IntegrationCtx, integrationHash: string) {
+    const {providerId, repositoryId, issueId} = JiraServerIssueId.split(integrationHash)
+    if (
+      Number.isNaN(providerId) ||
+      !repositoryId ||
+      !issueId ||
+      JiraServerIssueId.join(providerId, repositoryId, issueId) !== integrationHash
+    ) {
       return null
     }
-    const auth = await this.resolveAuth(ctx)
+    const auth = await this.getAuthRow(ctx)
     if (auth?.providerId !== providerId) return null
     return {
-      integrationHash,
-      integration: {
-        accessUserId: ctx.userId,
-        service: 'jiraServer' as const,
-        providerId,
-        repositoryId,
-        issueId
-      }
+      accessUserId: ctx.userId,
+      service: 'jiraServer' as const,
+      providerId,
+      repositoryId,
+      issueId
     }
   }
 

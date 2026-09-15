@@ -9,10 +9,9 @@ import {
 import type {LinearRepo} from '../platform/RemoteRepoIntegration'
 import {
   type EstimatePushCapability,
-  type GqlIntegrationCtx,
+  type IntegrationCtx,
   type IssueCreateCapability,
   type IssueReadCapability,
-  type IssueRef,
   type RepoListCapability,
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
@@ -29,26 +28,10 @@ export class LinearServerIntegration extends ServerIntegrationDefinition {
   readonly title = linearIntegrationMeta.title
   readonly authStrategy = 'oauth2' as const
 
-  async resolveIssue(ctx: GqlIntegrationCtx, id: string): Promise<IssueRef | null> {
-    const {userId, context, info} = ctx
-    if (id.includes('::')) {
-      const {repoId, issueId} = LinearIssueId.split(id)
-      if (!repoId || !issueId) return null
-      return {
-        integrationHash: LinearIssueId.join(repoId, issueId),
-        integration: {accessUserId: userId, service: 'linear' as const, repoId, issueId}
-      }
-    }
-    const auth = await this.resolveAuth(ctx)
-    if (!auth) return null
-    const [data, error] = await new LinearServerManager(auth, context, info).getIssue({id})
-    const issue = data?.issue
-    if (error || !issue) return null
-    const repoId = LinearProjectId.join(issue.team.id, issue.project?.id)
-    return {
-      integrationHash: LinearIssueId.join(repoId, issue.id),
-      integration: {accessUserId: userId, service: 'linear' as const, repoId, issueId: issue.id}
-    }
+  async parseIssueHash({userId}: IntegrationCtx, integrationHash: string) {
+    const {repoId, issueId} = LinearIssueId.split(integrationHash)
+    if (!repoId || !issueId || LinearIssueId.join(repoId, issueId) !== integrationHash) return null
+    return {accessUserId: userId, service: 'linear' as const, repoId, issueId}
   }
 
   readonly capabilities: {

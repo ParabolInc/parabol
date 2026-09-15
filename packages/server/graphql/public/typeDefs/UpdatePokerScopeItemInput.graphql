@@ -5,7 +5,7 @@ input UpdatePokerScopeItemInput {
   service: TaskServiceEnum!
 
   """
-  For a vanilla Parabol task, the taskId. For an integrated task: on ADD, the TaskIntegration.id or Task.integrationHash the server returned; on DELETE, the taskId or Task.integrationHash
+  For a vanilla Parabol task, the taskId. For an integrated task, the Task.integrationHash; DELETE also accepts the taskId
   """
   serviceTaskId: ID!
 

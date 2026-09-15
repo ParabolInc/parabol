@@ -149,8 +149,11 @@ export abstract class ServerIntegrationDefinition {
     return auth?.accessToken ? auth : null
   }
 
-  /** The id a client echoes for an issue, either TaskIntegration.id or Task.integrationHash, to what the Task row stores. null when it cannot be resolved for this viewer */
-  abstract resolveIssue(ctx: GqlIntegrationCtx, id: string): Promise<IssueRef | null>
+  /** The Task.integrationHash a client echoed, parsed into what the Task row stores. Never calls the vendor; may check the viewer's stored auth row. null when malformed or not the viewer's */
+  abstract parseIssueHash(
+    ctx: IntegrationCtx,
+    integrationHash: string
+  ): Promise<NonNullable<Task['integration']> | null>
 
   /** A team, org, or global provider row exists. Services whose connect flow needs the global row override this */
   async isAvailable(ctx: IntegrationCtx) {

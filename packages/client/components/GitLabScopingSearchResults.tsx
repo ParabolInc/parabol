@@ -13,6 +13,8 @@ import type {GitLabScopingSearchResults_meeting$key} from '../__generated__/GitL
 import type {GitLabScopingSearchResults_query$key} from '../__generated__/GitLabScopingSearchResults_query.graphql'
 import type {GitLabScopingSearchResultsPaginationQuery} from '../__generated__/GitLabScopingSearchResultsPaginationQuery.graphql'
 import type {GitLabScopingSearchResultsQuery} from '../__generated__/GitLabScopingSearchResultsQuery.graphql'
+import findIntegrationService from '../integrations/platform/findIntegrationService'
+import GitLabIssueId from '../shared/gqlIds/GitLabIssueId'
 import type {GQLType} from '../types/generics'
 import getNonNullEdges from '../utils/getNonNullEdges'
 import {parseWebPath} from '../utils/parseWebPath'
@@ -43,6 +45,11 @@ const GitLabScopingSearchResults = (props: Props) => {
         ...GitLabScopingSearchResults_query
         viewer {
           ...NewGitLabIssueInput_viewer
+          teamMember(teamId: $teamId) {
+            services {
+              ...findIntegrationService_auth @relay(mask: false)
+            }
+          }
         }
       }
     `,
@@ -78,7 +85,6 @@ const GitLabScopingSearchResults = (props: Props) => {
                       ... on _xGitLabIssue {
                         ...GitLabScopingSelectAllIssues_issues
                         id
-                        service
                         iid
                         title
                         webPath
@@ -115,6 +121,8 @@ const GitLabScopingSearchResults = (props: Props) => {
     meetingRef
   )
   const {viewer} = query
+  const providerId =
+    findIntegrationService(viewer.teamMember?.services ?? [], 'gitlab')?.auth?.providerId ?? ''
   const {id: meetingId, phases} = meeting
   const issues = nullableEdges
     ? getNonNullEdges(nullableEdges)
@@ -141,6 +149,7 @@ const GitLabScopingSearchResults = (props: Props) => {
         usedServiceTaskIds={usedServiceTaskIds}
         issuesRef={issues}
         meetingId={meetingId}
+        providerId={providerId}
       />
       <div className='overflow-auto'>
         {query && (
@@ -161,7 +170,7 @@ const GitLabScopingSearchResults = (props: Props) => {
               key={id}
               service={'gitlab'}
               usedServiceTaskIds={usedServiceTaskIds}
-              serviceTaskId={id}
+              serviceTaskId={GitLabIssueId.join(providerId, id)}
               meetingId={meetingId}
               summary={title}
               url={webUrl}
