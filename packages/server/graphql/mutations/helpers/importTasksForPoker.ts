@@ -12,15 +12,15 @@ import type {UpdatePokerScopeItemInput} from '../../public/resolverTypes'
 
 const parseIntegration = async (ctx: IntegrationCtx, update: UpdatePokerScopeItemInput) => {
   const {service, serviceTaskId} = update
-  const integration = await getServerIntegration(service)?.parseIssueHash(ctx, serviceTaskId)
-  if (!integration) {
+  const issueParts = await getServerIntegration(service)?.parseIssueHash(serviceTaskId, ctx)
+  if (!issueParts) {
     logError(new Error(`Invalid ${service} integrationHash: ${serviceTaskId}`), {
       tags: {service, teamId: ctx.teamId},
       userId: ctx.userId
     })
     return null
   }
-  return {update, integration}
+  return {update, integration: {accessUserId: ctx.userId, ...issueParts}}
 }
 
 const importTasksForPoker = async (

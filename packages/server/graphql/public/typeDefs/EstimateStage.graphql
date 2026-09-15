@@ -123,6 +123,11 @@ type EstimateStage implements NewMeetingStage & DiscussionThreadStage {
   taskId: ID!
 
   """
+  The key this stage was scoped with: the task's integrationHash if integrated, else the taskId. Kept even if the task is deleted
+  """
+  serviceTaskId: ID!
+
+  """
   The field on the task's service this dimension's estimate is pushed to. One of serviceFieldListing.options, a sentinel, or a label template
   """
   serviceField: ServiceField!

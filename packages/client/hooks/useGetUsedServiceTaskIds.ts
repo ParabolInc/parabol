@@ -11,21 +11,13 @@ const useGetUsedServiceTaskIds = (
       graphql`
         fragment useGetUsedServiceTaskIds_phase on EstimatePhase @inline {
           stages {
-            taskId
-            task {
-              integrationHash
-            }
+            serviceTaskId
           }
         }
       `,
       phaseRef
     )
-    const {stages} = estimatePhase
-    const usedServiceTaskIds = new Set<string>()
-    stages.forEach(({task, taskId}) => {
-      usedServiceTaskIds.add(task?.integrationHash ?? taskId)
-    })
-    return usedServiceTaskIds
+    return new Set(estimatePhase.stages.map(({serviceTaskId}) => serviceTaskId))
   }, [phaseRef])
 }
 

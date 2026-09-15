@@ -23,14 +23,14 @@ export class GitLabServerIntegration extends ServerIntegrationDefinition {
   readonly title = gitlabIntegrationMeta.title
   readonly authStrategy = 'oauth2' as const
 
-  async parseIssueHash(ctx: IntegrationCtx, integrationHash: string) {
+  async parseIssueHash(integrationHash: string, ctx: IntegrationCtx) {
     const {providerId, gid} = GitLabIssueId.split(integrationHash)
     if (!gid?.startsWith('gid://') || GitLabIssueId.join(providerId, gid) !== integrationHash) {
       return null
     }
     const auth = await this.getAuthRow(ctx)
     if (!auth || IntegrationProviderId.join(auth.providerId) !== providerId) return null
-    return {accessUserId: ctx.userId, service: 'gitlab' as const, providerId, gid}
+    return {service: 'gitlab' as const, providerId, gid}
   }
 
   readonly capabilities: {

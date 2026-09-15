@@ -41,10 +41,10 @@ export class GitHubServerIntegration extends ServerIntegrationDefinition {
     return auth?.scopes === Providers.GITHUB_SCOPE ? auth : null
   }
 
-  async parseIssueHash({userId}: IntegrationCtx, integrationHash: string) {
+  async parseIssueHash(integrationHash: string) {
     const {nameWithOwner, issueNumber} = GitHubIssueId.split(integrationHash)
     if (!nameWithOwner || !Number.isInteger(issueNumber) || issueNumber < 1) return null
-    return {accessUserId: userId, service: 'github' as const, nameWithOwner, issueNumber}
+    return {service: 'github' as const, nameWithOwner, issueNumber}
   }
 
   readonly capabilities: {

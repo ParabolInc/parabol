@@ -1,6 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import type {RecordProxy} from 'relay-runtime'
 import type {UpdatePokerScopeMutation as TUpdatePokerScopeMutation} from '../__generated__/UpdatePokerScopeMutation.graphql'
 import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
 import {splitTipTapContent} from '../shared/tiptap/splitTipTapContent'
@@ -28,6 +27,7 @@ graphql`
       isNavigableByFacilitator
       isVoting
       taskId
+      serviceTaskId
       dimensionRef {
         name
         scale {
@@ -106,10 +106,6 @@ export type PokerScopeMeeting = NonNullable<
   TUpdatePokerScopeMutation['response']['updatePokerScope']['meeting']
 >
 
-const stageMatchesScopeKey = (stage: RecordProxy, key: string) =>
-  stage.getValue('taskId') === key ||
-  stage.getLinkedRecord('task')?.getValue('integrationHash') === key
-
 interface Handlers extends BaseLocalHandlers {
   contents: string[]
   selectedAll?: boolean
@@ -167,7 +163,9 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
       updates.forEach((update, idx) => {
         const {serviceTaskId, action, service} = update
         if (action === 'ADD') {
-          const stageExists = stages.some((stage) => stageMatchesScopeKey(stage, serviceTaskId))
+          const stageExists = stages.some(
+            (stage) => stage.getValue('serviceTaskId') === serviceTaskId
+          )
           if (stageExists) return
 
           const plaintextContent = contents[idx] ?? ''
@@ -199,7 +197,8 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
               dimensionRefIdx,
               teamId,
               meetingId,
-              taskId: optimisticTask.getValue('id')
+              taskId: optimisticTask.getValue('id'),
+              serviceTaskId
             })
             nextStage
               .setLinkedRecord(
@@ -220,7 +219,9 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
           const nextStages = [...estimatePhase.getLinkedRecords('stages'), ...newStages]
           estimatePhase.setLinkedRecords(nextStages, 'stages')
         } else if (action === 'DELETE') {
-          const nextStages = stages.filter((stage) => !stageMatchesScopeKey(stage, serviceTaskId))
+          const nextStages = stages.filter(
+            (stage) => stage.getValue('serviceTaskId') !== serviceTaskId
+          )
           estimatePhase.setLinkedRecords(nextStages, 'stages')
         }
       })

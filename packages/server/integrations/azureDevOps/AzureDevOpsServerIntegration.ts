@@ -30,7 +30,7 @@ export class AzureDevOpsServerIntegration extends ServerIntegrationDefinition {
     return auth?.accessToken ? auth : null
   }
 
-  async parseIssueHash({userId}: IntegrationCtx, integrationHash: string) {
+  async parseIssueHash(integrationHash: string) {
     const {instanceId, projectKey, issueKey} = AzureDevOpsIssueId.split(integrationHash)
     if (
       !instanceId ||
@@ -41,7 +41,7 @@ export class AzureDevOpsServerIntegration extends ServerIntegrationDefinition {
     ) {
       return null
     }
-    return {accessUserId: userId, service: 'azureDevOps' as const, instanceId, projectKey, issueKey}
+    return {service: 'azureDevOps' as const, instanceId, projectKey, issueKey}
   }
 
   readonly capabilities: {

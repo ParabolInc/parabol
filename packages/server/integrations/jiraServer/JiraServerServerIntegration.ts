@@ -26,7 +26,7 @@ export class JiraServerServerIntegration extends ServerIntegrationDefinition {
   readonly title = jiraServerIntegrationMeta.title
   readonly authStrategy = 'oauth1' as const
 
-  async parseIssueHash(ctx: IntegrationCtx, integrationHash: string) {
+  async parseIssueHash(integrationHash: string, ctx: IntegrationCtx) {
     const {providerId, repositoryId, issueId} = JiraServerIssueId.split(integrationHash)
     if (
       Number.isNaN(providerId) ||
@@ -38,13 +38,7 @@ export class JiraServerServerIntegration extends ServerIntegrationDefinition {
     }
     const auth = await this.getAuthRow(ctx)
     if (auth?.providerId !== providerId) return null
-    return {
-      accessUserId: ctx.userId,
-      service: 'jiraServer' as const,
-      providerId,
-      repositoryId,
-      issueId
-    }
+    return {service: 'jiraServer' as const, providerId, repositoryId, issueId}
   }
 
   readonly capabilities: {

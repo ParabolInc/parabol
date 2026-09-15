@@ -52,20 +52,11 @@ const updatePokerScope: MutationResolvers['updatePokerScope'] = async (
     // delete stages
     const subtractiveUpdates = updates.filter((update) => {
       const {action, serviceTaskId} = update
-      return (
-        action === 'DELETE' &&
-        !!stages.find(
-          (stage) => stage.serviceTaskId === serviceTaskId || stage.taskId === serviceTaskId
-        )
-      )
+      return action === 'DELETE' && !!stages.find((stage) => stage.serviceTaskId === serviceTaskId)
     })
     const stageIdsToRemove = new Set(
       subtractiveUpdates.flatMap(({serviceTaskId}) =>
-        stages
-          .filter(
-            (stage) => stage.serviceTaskId === serviceTaskId || stage.taskId === serviceTaskId
-          )
-          .map(({id}) => id)
+        stages.filter((stage) => stage.serviceTaskId === serviceTaskId).map(({id}) => id)
       )
     )
     const survivingStages = stages.filter((stage) => !stageIdsToRemove.has(stage.id))
@@ -97,9 +88,7 @@ const updatePokerScope: MutationResolvers['updatePokerScope'] = async (
 
     subtractiveUpdates.forEach((update) => {
       const {serviceTaskId} = update
-      const stagesToRemove = stages.filter(
-        (stage) => stage.serviceTaskId === serviceTaskId || stage.taskId === serviceTaskId
-      )
+      const stagesToRemove = stages.filter((stage) => stage.serviceTaskId === serviceTaskId)
       // since meeting.facilitatorStageId is mutated below, we want to use the updated value here
       const removingTatorStage = stagesToRemove.find(
         (stage) => stage.id === meeting.facilitatorStageId
@@ -115,7 +104,7 @@ const updatePokerScope: MutationResolvers['updatePokerScope'] = async (
       }
       if (stagesToRemove.length > 0) {
         // MUTATIVE
-        stages = stages.filter((stage) => !stagesToRemove.includes(stage))
+        stages = stages.filter((stage) => stage.serviceTaskId !== serviceTaskId)
         estimatePhase.stages = stages
         const writes = stagesToRemove.map((stage) => {
           return ['del', `pokerHover:${stage.id}`]

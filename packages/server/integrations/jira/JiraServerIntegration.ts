@@ -47,11 +47,11 @@ export class JiraServerIntegration extends ServerIntegrationDefinition {
     return auth && hasJiraScopes(auth.scopes) ? auth : null
   }
 
-  async parseIssueHash({userId}: IntegrationCtx, integrationHash: string) {
+  async parseIssueHash(integrationHash: string) {
     const {cloudId, issueKey, projectKey} = JiraIssueId.split(integrationHash)
     if (!cloudId || !issueKey || JiraIssueId.join(cloudId, issueKey) !== integrationHash)
       return null
-    return {accessUserId: userId, service: 'jira' as const, cloudId, issueKey, projectKey}
+    return {service: 'jira' as const, cloudId, issueKey, projectKey}
   }
 
   readonly capabilities: {

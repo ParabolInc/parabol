@@ -182,6 +182,7 @@ const PokerEstimateHeaderCard = (props: Props) => {
         creatorUserId
         meetingId
         taskId
+        serviceTaskId
         task {
           ...PokerEstimateHeaderCardTask @relay(mask: false)
         }
@@ -189,7 +190,7 @@ const PokerEstimateHeaderCard = (props: Props) => {
     `,
     stageRef
   )
-  const {meetingId, task, creatorUserId} = stage
+  const {meetingId, task, creatorUserId, serviceTaskId} = stage
   const integration = task?.integration
   const editorContent = useMemo(() => {
     if (creatorUserId !== atmosphere.viewerId) return null
@@ -202,15 +203,15 @@ const PokerEstimateHeaderCard = (props: Props) => {
     }
   }, [integration, creatorUserId, atmosphere.viewerId])
 
+  const onRemove = () => {
+    UpdatePokerScopeMutation(
+      atmosphere,
+      {meetingId, updates: [{service: 'PARABOL', serviceTaskId, action: 'DELETE'}]},
+      {onCompleted: () => {}, onError: () => {}, contents: []}
+    )
+  }
+
   if (!task) {
-    const {taskId} = stage
-    const onRemove = () => {
-      UpdatePokerScopeMutation(
-        atmosphere,
-        {meetingId, updates: [{service: 'PARABOL', serviceTaskId: taskId, action: 'DELETE'}]},
-        {onCompleted: () => {}, onError: () => {}, contents: []}
-      )
-    }
     return <PokerEstimateHeaderCardError onRemove={onRemove} />
   }
 
@@ -231,16 +232,6 @@ const PokerEstimateHeaderCard = (props: Props) => {
 
   const headerFields = getHeaderFields(integration)
   if (!headerFields) {
-    const onRemove = () => {
-      UpdatePokerScopeMutation(
-        atmosphere,
-        {
-          meetingId,
-          updates: [{service: 'PARABOL', serviceTaskId: integrationHash, action: 'DELETE'}]
-        },
-        {onCompleted: () => {}, onError: () => {}, contents: []}
-      )
-    }
     return <PokerEstimateHeaderCardError service={'Integration'} onRemove={onRemove} />
   }
 

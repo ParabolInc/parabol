@@ -9,7 +9,6 @@ import {
 import type {LinearRepo} from '../platform/RemoteRepoIntegration'
 import {
   type EstimatePushCapability,
-  type IntegrationCtx,
   type IssueCreateCapability,
   type IssueReadCapability,
   type RepoListCapability,
@@ -28,10 +27,10 @@ export class LinearServerIntegration extends ServerIntegrationDefinition {
   readonly title = linearIntegrationMeta.title
   readonly authStrategy = 'oauth2' as const
 
-  async parseIssueHash({userId}: IntegrationCtx, integrationHash: string) {
+  async parseIssueHash(integrationHash: string) {
     const {repoId, issueId} = LinearIssueId.split(integrationHash)
     if (!repoId || !issueId || LinearIssueId.join(repoId, issueId) !== integrationHash) return null
-    return {accessUserId: userId, service: 'linear' as const, repoId, issueId}
+    return {service: 'linear' as const, repoId, issueId}
   }
 
   readonly capabilities: {

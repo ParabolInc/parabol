@@ -126,6 +126,10 @@ export interface IssueRef {
   integration: NonNullable<Task['integration']>
 }
 
+type WithoutAccessUser<T> = T extends unknown ? Omit<T, 'accessUserId'> : never
+/** A linked issue as the Task row stores it, minus whose auth reaches it */
+export type IssueParts = WithoutAccessUser<NonNullable<Task['integration']>>
+
 export interface ServerIntegrationCapabilities {
   issueCreate?: IssueCreateCapability
   issueRead?: IssueReadCapability
@@ -149,11 +153,8 @@ export abstract class ServerIntegrationDefinition {
     return auth?.accessToken ? auth : null
   }
 
-  /** The Task.integrationHash a client echoed, parsed into what the Task row stores. Never calls the vendor; may check the viewer's stored auth row. null when malformed or not the viewer's */
-  abstract parseIssueHash(
-    ctx: IntegrationCtx,
-    integrationHash: string
-  ): Promise<NonNullable<Task['integration']> | null>
+  /** The Task.integrationHash a client echoed, parsed into the issue parts the Task row stores. Never calls the vendor; may check the viewer's stored auth row. null when malformed or not the viewer's */
+  abstract parseIssueHash(integrationHash: string, ctx: IntegrationCtx): Promise<IssueParts | null>
 
   /** A team, org, or global provider row exists. Services whose connect flow needs the global row override this */
   async isAvailable(ctx: IntegrationCtx) {

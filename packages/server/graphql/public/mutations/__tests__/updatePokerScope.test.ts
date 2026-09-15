@@ -144,15 +144,10 @@ describe('updatePokerScope', () => {
     importTasks.mockClear()
   })
 
-  it('removes a stage deleted by taskId', async () => {
-    const res = await run([{service: 'jira', serviceTaskId: 'taskJira', action: 'DELETE'}])
+  it('removes a stage deleted by integration hash', async () => {
+    const res = await run([{service: 'jira', serviceTaskId: 'cloud1:WEB-12', action: 'DELETE'}])
     expect(writtenStages().map(({id}) => id)).toEqual(['stageParabol'])
     expect(res).toEqual({meetingId, newStageIds: []})
-  })
-
-  it('removes a stage deleted by integration hash', async () => {
-    await run([{service: 'jira', serviceTaskId: 'cloud1:WEB-12', action: 'DELETE'}])
-    expect(writtenStages().map(({id}) => id)).toEqual(['stageParabol'])
   })
 
   it('dedupes an add whose hash is already in scope', async () => {
@@ -194,7 +189,7 @@ describe('updatePokerScope', () => {
 
   it('guards an ended meeting', async () => {
     const res = await run(
-      [{service: 'jira', serviceTaskId: 'taskJira', action: 'DELETE'}],
+      [{service: 'jira', serviceTaskId: 'cloud1:WEB-12', action: 'DELETE'}],
       buildMeeting(new Date())
     )
     expect(res).toEqual({error: {message: 'Meeting already ended'}})
@@ -203,7 +198,7 @@ describe('updatePokerScope', () => {
 
   it('rejects an over-limit scope before any side effect runs', async () => {
     const res = await run([
-      {service: 'jira', serviceTaskId: 'taskJira', action: 'DELETE'},
+      {service: 'jira', serviceTaskId: 'cloud1:WEB-12', action: 'DELETE'},
       ...Array.from({length: Threshold.MAX_POKER_STORIES}, (_, idx) => ({
         service: 'jira',
         serviceTaskId: `cloud1:WEB-${idx}`,
