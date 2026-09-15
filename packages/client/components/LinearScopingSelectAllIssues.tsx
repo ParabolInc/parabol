@@ -41,7 +41,7 @@ const LinearScopingSelectAllIssues = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting, error} = useMutationProps()
   const getServiceTaskId = (issue: (typeof issues)[number]) =>
-    LinearIssueId.join(LinearProjectId.join(issue.team?.id ?? '', issue.project?.id), issue.id)
+    LinearIssueId.join(LinearProjectId.join(issue.team.id, issue.project?.id), issue.id)
   const serviceTaskIds = issues.map(getServiceTaskId)
   const [unusedServiceTaskIds, allSelected] = useUnusedRecords(serviceTaskIds, usedServiceTaskIds)
   const availableCountToAdd = Threshold.MAX_POKER_STORIES - usedServiceTaskIds.size

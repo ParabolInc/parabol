@@ -10,9 +10,9 @@ import {selectTasks} from '../../../postgres/select'
 import logError from '../../../utils/logError'
 import type {UpdatePokerScopeItemInput} from '../../public/resolverTypes'
 
-const parseIntegration = async (ctx: IntegrationCtx, update: UpdatePokerScopeItemInput) => {
+const parseIntegration = (ctx: IntegrationCtx, update: UpdatePokerScopeItemInput) => {
   const {service, serviceTaskId} = update
-  const issueParts = await getServerIntegration(service)?.parseIssueHash(serviceTaskId, ctx)
+  const issueParts = getServerIntegration(service)?.parseIssueHash(serviceTaskId)
   if (!issueParts) {
     logError(new Error(`Invalid ${service} integrationHash: ${serviceTaskId}`), {
       tags: {service, teamId: ctx.teamId},
@@ -31,9 +31,9 @@ const importTasksForPoker = async (
   const {teamId, userId} = ctx
   const pg = getKysely()
   const integratedUpdates = additiveUpdates.filter((update) => update.service !== 'PARABOL')
-  const parsedUpdates = (
-    await Promise.all(integratedUpdates.map((update) => parseIntegration(ctx, update)))
-  ).filter(isNotNull)
+  const parsedUpdates = integratedUpdates
+    .map((update) => parseIntegration(ctx, update))
+    .filter(isNotNull)
   const integrationHashes = parsedUpdates.map(({update}) => update.serviceTaskId)
   const existingTasks =
     integrationHashes.length === 0

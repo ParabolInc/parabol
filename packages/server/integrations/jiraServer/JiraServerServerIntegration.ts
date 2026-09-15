@@ -6,7 +6,6 @@ import type {JiraSearchQueryJson} from '../../postgres/types'
 import buildJiraSearchQuery from '../jira/buildJiraSearchQuery'
 import {
   type EstimatePushCapability,
-  type IntegrationCtx,
   type IssueCreateCapability,
   type IssueReadCapability,
   type IssueSearchCapability,
@@ -26,7 +25,7 @@ export class JiraServerServerIntegration extends ServerIntegrationDefinition {
   readonly title = jiraServerIntegrationMeta.title
   readonly authStrategy = 'oauth1' as const
 
-  async parseIssueHash(integrationHash: string, ctx: IntegrationCtx) {
+  parseIssueHash(integrationHash: string) {
     const {providerId, repositoryId, issueId} = JiraServerIssueId.split(integrationHash)
     if (
       Number.isNaN(providerId) ||
@@ -36,8 +35,6 @@ export class JiraServerServerIntegration extends ServerIntegrationDefinition {
     ) {
       return null
     }
-    const auth = await this.getAuthRow(ctx)
-    if (auth?.providerId !== providerId) return null
     return {service: 'jiraServer' as const, providerId, repositoryId, issueId}
   }
 

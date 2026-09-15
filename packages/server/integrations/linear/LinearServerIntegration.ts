@@ -27,7 +27,7 @@ export class LinearServerIntegration extends ServerIntegrationDefinition {
   readonly title = linearIntegrationMeta.title
   readonly authStrategy = 'oauth2' as const
 
-  async parseIssueHash(integrationHash: string) {
+  parseIssueHash(integrationHash: string) {
     const {repoId, issueId} = LinearIssueId.split(integrationHash)
     if (!repoId || !issueId || LinearIssueId.join(repoId, issueId) !== integrationHash) return null
     return {service: 'linear' as const, repoId, issueId}

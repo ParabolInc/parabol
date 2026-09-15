@@ -173,11 +173,9 @@ const LinearScopingSearchResults = (props: Props) => {
         )}
         {issues.map((node) => {
           const {id: issueId, identifier, title, project, team, url} = node
-          const teamName = team?.displayName ?? ''
-
-          const repoStr = getLinearRepoName(project, teamName)
+          const repoStr = getLinearRepoName(project, team.displayName)
           const linkText = `${identifier} ${repoStr}`
-          const repoId = LinearProjectId.join(team?.id ?? '', project?.id)
+          const repoId = LinearProjectId.join(team.id, project?.id)
           const serviceTaskId = LinearIssueId.join(repoId, issueId)
           return (
             <ScopingSearchResultItem

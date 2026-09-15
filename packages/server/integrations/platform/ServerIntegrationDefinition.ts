@@ -153,8 +153,8 @@ export abstract class ServerIntegrationDefinition {
     return auth?.accessToken ? auth : null
   }
 
-  /** The Task.integrationHash a client echoed, parsed into the issue parts the Task row stores. Never calls the vendor; may check the viewer's stored auth row. null when malformed or not the viewer's */
-  abstract parseIssueHash(integrationHash: string, ctx: IntegrationCtx): Promise<IssueParts | null>
+  /** The Task.integrationHash a client echoed, parsed into the issue parts the Task row stores. null when malformed */
+  abstract parseIssueHash(integrationHash: string): IssueParts | null
 
   /** A team, org, or global provider row exists. Services whose connect flow needs the global row override this */
   async isAvailable(ctx: IntegrationCtx) {

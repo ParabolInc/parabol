@@ -9,7 +9,7 @@ import type {RemoteRepoIntegration} from './platform/RemoteRepoIntegration'
 import {getServerIntegration, type RegisteredServerIntegration} from './platform/registry'
 import type {GqlIntegrationCtx} from './platform/ServerIntegrationDefinition'
 
-const REFRESH_AFTER = ms('30s')
+const REFRESH_AFTER = ms('1m')
 const CACHE_TTL = ms('2d')
 
 /**

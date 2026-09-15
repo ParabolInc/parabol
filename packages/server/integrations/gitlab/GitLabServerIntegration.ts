@@ -1,11 +1,9 @@
 import GitLabIssueId from 'parabol-client/shared/gqlIds/GitLabIssueId'
-import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import {gitlabIntegrationMeta} from 'parabol-client/shared/integrations/gitlabIntegrationMeta'
 import fetchGitLabProjects from '../../graphql/queries/helpers/fetchGitLabProjects'
 import type {GitLabProject} from '../platform/RemoteRepoIntegration'
 import {
   type EstimatePushCapability,
-  type IntegrationCtx,
   type IssueCreateCapability,
   type IssueReadCapability,
   type RepoListCapability,
@@ -23,13 +21,11 @@ export class GitLabServerIntegration extends ServerIntegrationDefinition {
   readonly title = gitlabIntegrationMeta.title
   readonly authStrategy = 'oauth2' as const
 
-  async parseIssueHash(integrationHash: string, ctx: IntegrationCtx) {
+  parseIssueHash(integrationHash: string) {
     const {providerId, gid} = GitLabIssueId.split(integrationHash)
     if (!gid?.startsWith('gid://') || GitLabIssueId.join(providerId, gid) !== integrationHash) {
       return null
     }
-    const auth = await this.getAuthRow(ctx)
-    if (!auth || IntegrationProviderId.join(auth.providerId) !== providerId) return null
     return {service: 'gitlab' as const, providerId, gid}
   }
 

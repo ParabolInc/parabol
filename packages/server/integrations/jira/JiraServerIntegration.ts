@@ -47,7 +47,7 @@ export class JiraServerIntegration extends ServerIntegrationDefinition {
     return auth && hasJiraScopes(auth.scopes) ? auth : null
   }
 
-  async parseIssueHash(integrationHash: string) {
+  parseIssueHash(integrationHash: string) {
     const {cloudId, issueKey, projectKey} = JiraIssueId.split(integrationHash)
     if (!cloudId || !issueKey || JiraIssueId.join(cloudId, issueKey) !== integrationHash)
       return null

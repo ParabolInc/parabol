@@ -1,20 +1,18 @@
 import ms from 'ms'
 import getPrevUsedRepoIntegrations from '../graphql/queries/helpers/getPrevUsedRepoIntegrations'
-import type {Integrationproviderserviceenum} from '../postgres/types/pg'
 import getPrevUsedRepoIntegrationsRedisKey from '../utils/getPrevUsedRepoIntegrationsRedisKey'
 import getRedis from '../utils/getRedis'
 import loadServiceRepoIntegrations from './loadServiceRepoIntegrations'
 import getRepoListCapability from './platform/getRepoListCapability'
 import type {RemoteRepoIntegration} from './platform/RemoteRepoIntegration'
-import {isRegisteredServerIntegration} from './platform/registry'
+import type {RegisteredServerIntegration} from './platform/registry'
 import type {GqlIntegrationCtx} from './platform/ServerIntegrationDefinition'
 
 const updatePrevUsedRepoIntegrationsCache = async (
-  service: Integrationproviderserviceenum,
+  service: RegisteredServerIntegration,
   integrationRepoId: string,
   ctx: GqlIntegrationCtx
 ) => {
-  if (!isRegisteredServerIntegration(service)) return
   const {teamId} = ctx
   const isUsedRepo = (repo: RemoteRepoIntegration) =>
     repo.service === service &&
