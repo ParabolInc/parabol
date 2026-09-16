@@ -2,6 +2,7 @@ import {GraphQLError} from 'graphql'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import type {MutationResolvers} from '../resolverTypes'
+import pickTeamHealthCategory from './helpers/pickTeamHealthCategory'
 
 const addTeamHealthQuestion: MutationResolvers['addTeamHealthQuestion'] = async (
   _source,
@@ -36,14 +37,7 @@ const addTeamHealthQuestion: MutationResolvers['addTeamHealthQuestion'] = async 
       .returning('id')
       .executeTakeFirstOrThrow())
 
-  // new questions default to the built-in Psychological Safety category; the author re-categorizes later
-  const {id: categoryId} = await pg
-    .selectFrom('TeamHealthCategory')
-    .select('id')
-    .where('userId', '=', 'aGhostUser')
-    .where('name', '=', 'Psychological Safety')
-    .where('removedAt', 'is', null)
-    .executeTakeFirstOrThrow()
+  const categoryId = await pickTeamHealthCategory(trimmed, viewerId, dataLoader)
 
   const {id: questionId} = await pg
     .insertInto('TeamHealthQuestion')

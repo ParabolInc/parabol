@@ -268,6 +268,45 @@ ${comment}
     }
   }
 
+  async pickTeamHealthCategory(
+    question: string,
+    categories: {id: number; name: string; description: string | null}[]
+  ) {
+    if (!this.openAIApi || categories.length === 0) return null
+
+    const catalog = categories
+      .map((c) => `- ${c.name}${c.description ? `: ${c.description}` : ''}`)
+      .join('\n')
+    const systemPrompt = `You classify team health survey questions into categories. The user message contains a question and a list of categories. Pick the single category that best fits what the question measures.
+
+Output format: respond with the category name exactly as it appears in the list and nothing else. Never invent a category, add a label, or wrap the name in quotation marks or markdown.`
+    const userPrompt = `Question: """
+${question}
+"""
+
+Categories:
+${catalog}`
+
+    try {
+      const response = await this.openAIApi.chat.completions.create({
+        model: AI_MODEL,
+        messages: [
+          {role: 'system', content: systemPrompt},
+          {role: 'user', content: userPrompt}
+        ],
+        reasoning_effort: 'low',
+        max_completion_tokens: 500
+      })
+      const picked = response.choices[0]?.message?.content?.trim().toLowerCase()
+      if (!picked) return null
+      return categories.find((c) => c.name.toLowerCase() === picked) ?? null
+    } catch (e) {
+      const error = e instanceof Error ? e : new Error('OpenAI failed to pickTeamHealthCategory')
+      logError(error)
+      return null
+    }
+  }
+
   async generateTeamHealthDiscussionStarter(input: TeamHealthDiscussionStarterInput) {
     if (!this.openAIApi) return null
     const {category, question, current, priorCycles} = input

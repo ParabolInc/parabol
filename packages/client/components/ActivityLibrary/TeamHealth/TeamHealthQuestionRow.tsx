@@ -13,6 +13,7 @@ import {cn} from '../../../ui/cn'
 import {Tooltip} from '../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../ui/Tooltip/TooltipTrigger'
+import isTempId from '../../../utils/relay/isTempId'
 import TeamHealthCategoryTag from './TeamHealthCategoryTag'
 
 interface Props {
@@ -54,7 +55,9 @@ const TeamHealthQuestionRow = (props: Props) => {
   )
   const {id: questionId, question: text, createdBy, category} = question
   // question text/category may only be changed by its author, and only while the template is editable
-  const canEdit = !!createdBy && createdBy === viewerId && isEditing
+  // an optimistic (temp-id) question has no server row to edit, select, or delete yet
+  const isPending = isTempId(questionId)
+  const canEdit = !!createdBy && createdBy === viewerId && isEditing && !isPending
 
   const atmosphere = useAtmosphere()
   const [addQuestion] = useAddTeamHealthTemplateQuestionMutation()
@@ -74,6 +77,7 @@ const TeamHealthQuestionRow = (props: Props) => {
 
   const toggleSelected = (checked: boolean) => {
     if (!isEditing) return onEditHint()
+    if (isPending) return
     const config = {variables: {templateId, questionIds: [questionId]}, onError}
     if (checked) {
       addQuestion(config)
@@ -108,7 +112,10 @@ const TeamHealthQuestionRow = (props: Props) => {
       <TooltipTrigger asChild>
         <button
           type='button'
-          onClick={startEditing}
+          onClick={(e) => {
+            e.stopPropagation()
+            startEditing()
+          }}
           aria-label='Edit question'
           className='flex shrink-0 cursor-pointer items-center text-fg-muted hover:text-fg-primary'
         >
@@ -124,7 +131,10 @@ const TeamHealthQuestionRow = (props: Props) => {
       <TooltipTrigger asChild>
         <button
           type='button'
-          onClick={onDelete}
+          onClick={(e) => {
+            e.stopPropagation()
+            onDelete()
+          }}
           aria-label='Delete question'
           className='flex shrink-0 cursor-pointer items-center text-fg-muted hover:text-fg-error'
         >
@@ -136,10 +146,15 @@ const TeamHealthQuestionRow = (props: Props) => {
   )
 
   return (
-    <div className='group flex items-center gap-1.5 rounded-md px-2 py-2 hover:bg-surface-hover'>
+    // the whole row is a click target for the checkbox; inner controls stop propagation
+    <div
+      className='group flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-2 hover:bg-surface-hover'
+      onClick={() => toggleSelected(!isSelected)}
+    >
       <Checkbox
         className={cn('ml-5', readOnly && 'border-hairline')}
         checked={isSelected}
+        onClick={(e) => e.stopPropagation()}
         onCheckedChange={(checked) => toggleSelected(checked === true)}
       />
       <div className='min-w-0 flex-1'>
@@ -147,6 +162,7 @@ const TeamHealthQuestionRow = (props: Props) => {
           <input
             autoFocus
             value={draft}
+            onClick={(e) => e.stopPropagation()}
             onChange={(e) => setDraft(e.target.value)}
             onBlur={submitEdit}
             onKeyDown={(e) => {
@@ -159,16 +175,9 @@ const TeamHealthQuestionRow = (props: Props) => {
             className='w-full rounded-xs border border-accent border-solid bg-surface-input px-1 py-0.5 text-fg-primary text-sm outline-none'
           />
         ) : (
-          <button
-            type='button'
-            onClick={startEditing}
-            className={cn(
-              'w-full text-left text-fg-primary text-sm',
-              canEdit ? 'cursor-pointer' : 'cursor-default'
-            )}
-          >
-            <span className='wrap-break-word min-w-0'>{text}</span>
-          </button>
+          <span className='wrap-break-word block min-w-0 select-none text-fg-primary text-sm'>
+            {text}
+          </span>
         )}
       </div>
       {/* built-in questions (no author) get no edit/delete affordance; the viewer only ever sees

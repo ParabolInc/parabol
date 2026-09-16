@@ -12,6 +12,7 @@ import {cn} from '../../../ui/cn'
 import {Tooltip} from '../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../ui/Tooltip/TooltipTrigger'
+import isTempId from '../../../utils/relay/isTempId'
 import {getTeamHealthCategoryDotColor} from './getTeamHealthCategoryColor'
 import TeamHealthQuestionRow from './TeamHealthQuestionRow'
 
@@ -74,7 +75,9 @@ const TeamHealthQuestionPackSection = (props: Props) => {
   const someSelected = unselectedIds.length < packQuestionIds.length
   const checked = allSelected ? true : someSelected ? 'indeterminate' : false
   // one dot per distinct category in the pack, in first-seen order
-  const distinctCategoryIds = [...new Set(pack.questions.map((q) => q.category.id))]
+  const distinctCategoryIds = [
+    ...new Set(pack.questions.map((q) => q.category.id).filter((id) => !isTempId(id)))
+  ]
   // the globally-ordered category ids drive round-robin color assignment
   const orderedCategoryIds = categories.map((c) => c.id)
 

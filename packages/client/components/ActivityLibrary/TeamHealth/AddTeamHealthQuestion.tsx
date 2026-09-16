@@ -25,19 +25,19 @@ const AddTeamHealthQuestion = (props: Props) => {
     })
   }
 
+  const cancel = () => {
+    setValue('')
+    setIsAdding(false)
+  }
+
   const submit = () => {
     const trimmed = value.trim()
-    if (!trimmed || submitting) {
-      if (!trimmed) setIsAdding(false)
-      return
-    }
+    if (!trimmed) return cancel()
+    if (submitting) return
     addQuestion({
       variables: {question: trimmed},
       onError,
-      onCompleted: () => {
-        setValue('')
-        setIsAdding(false)
-      }
+      onCompleted: cancel
     })
   }
 
@@ -55,21 +55,30 @@ const AddTeamHealthQuestion = (props: Props) => {
   }
 
   return (
-    <input
-      autoFocus
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
-      onBlur={submit}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter') submit()
-        else if (e.key === 'Escape') {
-          setValue('')
-          setIsAdding(false)
-        }
+    <form
+      className='flex items-center gap-2'
+      onSubmit={(e) => {
+        e.preventDefault()
+        submit()
       }}
-      placeholder='Type a question and press Enter…'
-      className='w-full rounded-sm border border-accent border-solid bg-surface-input px-2 py-1 text-fg-primary text-sm outline-none placeholder:text-fg-muted'
-    />
+    >
+      <input
+        autoFocus
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onBlur={() => {
+          if (!value.trim()) cancel()
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Escape') cancel()
+        }}
+        placeholder='Type a question and press Enter…'
+        className='min-w-0 flex-1 rounded-sm border border-accent border-solid bg-surface-input px-2 py-1 text-fg-primary text-sm outline-none placeholder:text-fg-muted'
+      />
+      <Button type='submit' variant='secondary' size='sm' disabled={submitting}>
+        Add
+      </Button>
+    </form>
   )
 }
 
