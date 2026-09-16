@@ -124,7 +124,7 @@ export const TemplateDetails = (props: Props) => {
           }
         }
         ... on TeamHealthTemplate {
-          ...TeamHealthTemplateQuestionEditor_template
+          ...TeamHealthTemplateQuestionEditor_template @alias
         }
         ...ActivityDetailsBadges_template
         ...TemplateSharing_template
@@ -322,9 +322,9 @@ export const TemplateDetails = (props: Props) => {
         <IntegrationsTip className='flex-wrap'>{integrationsTip}</IntegrationsTip>
       )}
 
-      {type === 'teamHealth' && (
+      {type === 'teamHealth' && activity.TeamHealthTemplateQuestionEditor_template && (
         <TeamHealthTemplateQuestionEditor
-          templateRef={activity}
+          templateRef={activity.TeamHealthTemplateQuestionEditor_template}
           isEditing={isEditing}
           readOnly={!isOwner}
           onEditHint={flashEditHint}

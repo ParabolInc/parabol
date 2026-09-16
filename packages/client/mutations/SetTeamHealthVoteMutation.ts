@@ -23,13 +23,17 @@ const mutation = graphql`
           message
         }
       }
-      ...SetTeamHealthVoteMutation_meeting @relay(mask: false)
+      ...SetTeamHealthVoteMutation_meeting @relay(mask: false) @alias
     }
   }
 `
 
 type Stage = NonNullable<
-  NonNullable<TSetTeamHealthVoteMutation['response']>['setTeamHealthVote']['stage']
+  NonNullable<
+    NonNullable<
+      TSetTeamHealthVoteMutation['response']
+    >['setTeamHealthVote']['SetTeamHealthVoteMutation_meeting']
+  >['stage']
 >
 
 const SetTeamHealthVoteMutation: StandardMutation<TSetTeamHealthVoteMutation> = (

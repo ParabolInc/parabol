@@ -45,7 +45,7 @@ const PokerEstimateHeaderCardContent = (props: PokerEstimateHeaderCardContentPro
     integration {
       __typename
       ... on JiraIssue {
-        ...JiraExtraFieldsContent_issue
+        ...JiraExtraFieldsContent_issue @alias
       }
     }
   }`,
@@ -96,10 +96,10 @@ const PokerEstimateHeaderCardContent = (props: PokerEstimateHeaderCardContentPro
             className='[&_a:focus]:text-fg-primary [&_a:hover]:text-fg-primary [&_a]:underline'
             dangerouslySetInnerHTML={{__html: sanitizeExternalHtml(descriptionHTML)}}
           />
-          {integration?.__typename === 'JiraIssue' && (
+          {integration?.__typename === 'JiraIssue' && integration.JiraExtraFieldsContent_issue && (
             <JiraExtraFieldsContent
               jiraDisplayFieldIds={jiraDisplayFieldIds!}
-              issueRef={integration}
+              issueRef={integration.JiraExtraFieldsContent_issue}
             />
           )}
         </div>

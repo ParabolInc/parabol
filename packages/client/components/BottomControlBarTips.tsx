@@ -110,15 +110,15 @@ const BottomControlBarTips = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment BottomControlBarTips_meeting on NewMeeting {
-        ...VoteHelpMenu_meeting
-        ...ReflectHelpMenu_settings
+        ...VoteHelpMenu_meeting @alias
+        ...ReflectHelpMenu_settings @alias
         id
         meetingType
         localPhase {
           phaseType
         }
         localStage {
-          ...TeamHealthHelpMenu_stage
+          ...TeamHealthHelpMenu_stage @alias
         }
         phases {
           phaseType
@@ -161,6 +161,25 @@ const BottomControlBarTips = (props: Props) => {
     )
   }
 
+  const onClose = () => setIsOpen(false)
+  const renderHelpMenu = () => {
+    if (menus === helps) {
+      if (phaseType === 'vote') {
+        const voteRef = meeting.VoteHelpMenu_meeting
+        return voteRef ? <VoteHelpMenu meetingRef={voteRef} onClose={onClose} /> : null
+      }
+      if (phaseType === 'reflect') {
+        const settingsRef = meeting.ReflectHelpMenu_settings
+        return settingsRef ? <ReflectHelpMenu meetingRef={settingsRef} onClose={onClose} /> : null
+      }
+      if (phaseType === 'TEAM_HEALTH') {
+        const stageRef = localStage.TeamHealthHelpMenu_stage
+        return stageRef ? <TeamHealthHelpMenu stageRef={stageRef} onClose={onClose} /> : null
+      }
+    }
+    return <HelpMenu meetingType={meetingType} onClose={onClose} />
+  }
+
   return (
     <Menu
       open={isOpen}
@@ -172,14 +191,7 @@ const BottomControlBarTips = (props: Props) => {
       }
     >
       <MenuContent side='top' align='start' className='max-h-80'>
-        <Suspense fallback={null}>
-          <HelpMenu
-            meetingType={meetingType}
-            stageRef={localStage}
-            meetingRef={meeting}
-            onClose={() => setIsOpen(false)}
-          />
-        </Suspense>
+        <Suspense fallback={null}>{renderHelpMenu()}</Suspense>
       </MenuContent>
     </Menu>
   )

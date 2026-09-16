@@ -24,11 +24,11 @@ const RetroMeetingUpdates = (props: Props) => {
         endedAt
         showSidebar
         localStage {
-          ...RetroMeetingUpdatesStage @relay(mask: false)
+          ...RetroMeetingUpdatesStage @relay(mask: false) @alias
         }
         phases {
           stages {
-            ...RetroMeetingUpdatesStage @relay(mask: false)
+            ...RetroMeetingUpdatesStage @relay(mask: false) @alias
           }
         }
         team {
@@ -54,7 +54,7 @@ const RetroMeetingUpdates = (props: Props) => {
   const {viewerId} = atmosphere
   const {id: meetingId, endedAt, localStage, showSidebar, team} = meeting
   const {id: teamId, tasks} = team
-  const stageOwner = localStage?.teamMember
+  const stageOwner = localStage?.RetroMeetingUpdatesStage?.teamMember
   const stageOwnerUserId = stageOwner?.userId ?? viewerId
   const teamMemberTasks = useMemo(() => {
     return tasks.edges

@@ -20,7 +20,7 @@ const mutation = graphql`
           message
         }
       }
-      ...ToggleAIFeaturesMutation_organization @relay(mask: false)
+      ...ToggleAIFeaturesMutation_organization @relay(mask: false) @alias
     }
   }
 `

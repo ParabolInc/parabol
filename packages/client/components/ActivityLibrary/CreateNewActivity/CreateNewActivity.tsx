@@ -167,7 +167,8 @@ export const CreateNewActivity = (props: Props) => {
       variables: {teamId: selectedTeam.id},
       onError,
       onCompleted: (res: useAddReflectTemplateMutation$data) => {
-        const templateId = res.addReflectTemplate?.reflectTemplate?.id
+        const templateId =
+          res.addReflectTemplate?.useAddReflectTemplateMutation_team?.reflectTemplate?.id
         if (templateId) {
           navigate(`/activity-library/details/${templateId}`, {
             state: {prevCategory: categoryId, edit: true}
@@ -188,7 +189,7 @@ export const CreateNewActivity = (props: Props) => {
       variables: {teamId: selectedTeam.id},
       onError,
       onCompleted: (res: useAddPokerTemplateMutation$data) => {
-        const templateId = res.addPokerTemplate?.pokerTemplate?.id
+        const templateId = res.addPokerTemplate?.useAddPokerTemplateMutation_team?.pokerTemplate?.id
         if (templateId) {
           navigate(`/activity-library/details/${templateId}`, {
             state: {prevCategory: categoryId, edit: true}

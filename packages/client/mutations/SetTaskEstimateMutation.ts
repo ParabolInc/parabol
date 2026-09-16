@@ -20,7 +20,7 @@ const mutation = graphql`
           message
         }
       }
-      ...SetTaskEstimateMutation_meeting @relay(mask: false)
+      ...SetTaskEstimateMutation_meeting @relay(mask: false) @alias
     }
   }
 `

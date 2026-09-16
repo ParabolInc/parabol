@@ -33,7 +33,7 @@ graphql`
       }
     }
     timelineEvent {
-      ...TimelineEventTeamPromptComplete_timelineEvent @relay(mask: false)
+      ...TimelineEventTeamPromptComplete_timelineEvent @relay(mask: false) @alias
     }
   }
 `
@@ -54,8 +54,8 @@ const mutation = graphql`
           message
         }
       }
-      ...EndTeamPromptMutation_team @relay(mask: false)
-      ...EndTeamPromptMutation_meeting @relay(mask: false)
+      ...EndTeamPromptMutation_team @relay(mask: false) @alias
+      ...EndTeamPromptMutation_meeting @relay(mask: false) @alias
     }
   }
 `

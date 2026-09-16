@@ -24,7 +24,7 @@ const mutation = graphql`
           message
         }
       }
-      ...useModifyCheckInQuestionMutation_success @relay(mask: false)
+      ...useModifyCheckInQuestionMutation_success @relay(mask: false) @alias
     }
   }
 `

@@ -4,9 +4,10 @@ import {readInlineData} from 'react-relay'
 import type {useGetUsedServiceTaskIds_phase$key} from '../__generated__/useGetUsedServiceTaskIds_phase.graphql'
 
 const useGetUsedServiceTaskIds = (
-  phaseRef: useGetUsedServiceTaskIds_phase$key
+  phaseRef: useGetUsedServiceTaskIds_phase$key | null | undefined
 ): ReadonlySet<string> => {
   return useMemo(() => {
+    if (!phaseRef) return new Set<string>()
     const estimatePhase = readInlineData(
       graphql`
         fragment useGetUsedServiceTaskIds_phase on EstimatePhase @inline {

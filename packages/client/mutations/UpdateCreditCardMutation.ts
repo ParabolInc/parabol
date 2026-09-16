@@ -27,7 +27,7 @@ const mutation = graphql`
           message
         }
       }
-      ...UpdateCreditCardMutation_organization @relay(mask: false)
+      ...UpdateCreditCardMutation_organization @relay(mask: false) @alias
     }
   }
 `

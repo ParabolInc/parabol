@@ -83,7 +83,7 @@ const GitLabScopingSearchResults = (props: Props) => {
                     node {
                       __typename
                       ... on _xGitLabIssue {
-                        ...GitLabScopingSelectAllIssues_issues
+                        ...GitLabScopingSelectAllIssues_issues @alias
                         id
                         iid
                         title
@@ -113,7 +113,7 @@ const GitLabScopingSearchResults = (props: Props) => {
         id
         teamId
         phases {
-          ...useGetUsedServiceTaskIds_phase
+          ...useGetUsedServiceTaskIds_phase @alias
           phaseType
         }
       }
@@ -131,7 +131,7 @@ const GitLabScopingSearchResults = (props: Props) => {
     : null
   const [isEditing, setIsEditing] = useState(false)
   const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
-  const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
+  const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase.useGetUsedServiceTaskIds_phase)
   const handleAddIssueClick = () => setIsEditing(true)
 
   if (!issues) return <MockScopingList />
@@ -147,7 +147,11 @@ const GitLabScopingSearchResults = (props: Props) => {
     <>
       <GitLabScopingSelectAllIssues
         usedServiceTaskIds={usedServiceTaskIds}
-        issuesRef={issues}
+        issuesRef={
+          issues?.flatMap(({GitLabScopingSelectAllIssues_issues: issue}) =>
+            issue ? [issue] : []
+          ) ?? null
+        }
         meetingId={meetingId}
         providerId={providerId}
       />

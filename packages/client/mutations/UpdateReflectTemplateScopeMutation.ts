@@ -41,7 +41,7 @@ const mutation = graphql`
           message
         }
       }
-      ...UpdateReflectTemplateScopeMutation_organization @relay(mask: false)
+      ...UpdateReflectTemplateScopeMutation_organization @relay(mask: false) @alias
     }
   }
 `

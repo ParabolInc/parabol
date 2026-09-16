@@ -32,7 +32,7 @@ const mutation = graphql`
           message
         }
       }
-      ...ResetReflectionGroupsMutation_meeting @relay(mask: false)
+      ...ResetReflectionGroupsMutation_meeting @relay(mask: false) @alias
     }
   }
 `

@@ -24,7 +24,7 @@ graphql`
       }
     }
     timelineEvent {
-      ...TimelineEventTeamHealthComplete_timelineEvent @relay(mask: false)
+      ...TimelineEventTeamHealthComplete_timelineEvent @relay(mask: false) @alias
     }
   }
 `

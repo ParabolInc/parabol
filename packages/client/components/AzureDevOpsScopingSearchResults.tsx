@@ -72,7 +72,7 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
         id
         teamId
         phases {
-          ...useGetUsedServiceTaskIds_phase
+          ...useGetUsedServiceTaskIds_phase @alias
           phaseType
         }
       }
@@ -89,7 +89,7 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
   const [isEditing, setIsEditing] = useState(false)
   const {id: meetingId, phases} = meeting
   const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
-  const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
+  const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase.useGetUsedServiceTaskIds_phase)
   const handleAddIssueClick = () => setIsEditing(true)
 
   if (!edges) {
