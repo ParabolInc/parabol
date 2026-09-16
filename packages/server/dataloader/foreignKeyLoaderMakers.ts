@@ -8,7 +8,6 @@ import {
   selectNewMeetings,
   selectOAuthAPIProvider,
   selectOrganizations,
-  selectReflectPrompts,
   selectRetroReflections,
   selectSlackAuths,
   selectSlackNotifications,
@@ -21,6 +20,7 @@ import {
   selectTeamInvitations,
   selectTeams,
   selectTemplateDimension,
+  selectTemplatePrompts,
   selectTemplateScale,
   selectTimelineEvent
 } from '../postgres/select'
@@ -271,11 +271,11 @@ export const commentsByDiscussionId = foreignKeyLoaderMaker(
   }
 )
 
-export const reflectPromptsByTemplateId = foreignKeyLoaderMaker(
-  'reflectPrompts',
+export const templatePromptsByTemplateId = foreignKeyLoaderMaker(
+  'templatePrompts',
   'templateId',
   async (templateIds) => {
-    return selectReflectPrompts()
+    return selectTemplatePrompts()
       .where('templateId', 'in', templateIds)
       .orderBy('sortOrder')
       .execute()

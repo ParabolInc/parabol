@@ -4,7 +4,7 @@ import {putTemplateInConnection} from '../UpdatePokerTemplateScopeMutation'
 
 const handleAddMeetingTemplate = (
   newNode: RecordProxy | null,
-  meetingType: 'retrospective' | 'poker',
+  meetingType: 'retrospective' | 'poker' | 'teamPrompt',
   store: RecordSourceSelectorProxy
 ) => {
   if (!newNode) return

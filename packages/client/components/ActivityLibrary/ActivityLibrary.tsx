@@ -52,18 +52,12 @@ graphql`
         }
       }
     }
-    ... on ReflectTemplate {
+    ... on PromptTemplate {
       prompts {
         question
         description
       }
       subCategories
-    }
-    ... on TeamPromptTemplate {
-      prompts {
-        question
-        description
-      }
     }
   }
 `

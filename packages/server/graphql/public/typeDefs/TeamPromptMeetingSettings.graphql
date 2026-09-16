@@ -30,10 +30,10 @@ type TeamPromptMeetingSettings implements TeamMeetingSettings {
   """
   The template that will be used to start the stand-up
   """
-  selectedTemplate: TeamPromptTemplate!
+  selectedTemplate: PromptTemplate!
 
   """
   The stand-up templates owned by this team
   """
-  teamPromptTemplates: [TeamPromptTemplate!]!
+  teamTemplates: [PromptTemplate!]!
 }

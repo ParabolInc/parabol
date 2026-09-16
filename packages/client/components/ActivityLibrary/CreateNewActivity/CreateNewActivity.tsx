@@ -9,12 +9,12 @@ import estimatedEffortTemplate from '../../../../../static/images/illustrations/
 import newTemplate from '../../../../../static/images/illustrations/newTemplate.png'
 import teamHealthTemplate from '../../../../../static/images/illustrations/teamHealth.png'
 import type {useAddPokerTemplateMutation$data} from '../../../__generated__/useAddPokerTemplateMutation.graphql'
-import type {useAddReflectTemplateMutation$data} from '../../../__generated__/useAddReflectTemplateMutation.graphql'
+import type {useAddPromptTemplateMutation$data} from '../../../__generated__/useAddPromptTemplateMutation.graphql'
 import type {useAddTeamHealthTemplateMutation$data} from '../../../__generated__/useAddTeamHealthTemplateMutation.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import useAddPokerTemplateMutation from '../../../mutations/useAddPokerTemplateMutation'
-import useAddReflectTemplateMutation from '../../../mutations/useAddReflectTemplateMutation'
+import useAddPromptTemplateMutation from '../../../mutations/useAddPromptTemplateMutation'
 import useAddTeamHealthTemplateMutation from '../../../mutations/useAddTeamHealthTemplateMutation'
 import {Button} from '../../../ui/Button/Button'
 import {cn} from '../../../ui/cn'
@@ -180,7 +180,7 @@ export const CreateNewActivity = (props: Props) => {
   )
 
   const {submitting, error, submitMutation, onError, onCompleted} = useMutationProps()
-  const [executeAddReflectTemplate] = useAddReflectTemplateMutation()
+  const [executeAddPromptTemplate] = useAddPromptTemplateMutation()
   const [executeAddPokerTemplate] = useAddPokerTemplateMutation()
   const [executeAddTeamHealthTemplate] = useAddTeamHealthTemplateMutation()
   const navigate = useNavigate()
@@ -200,18 +200,15 @@ export const CreateNewActivity = (props: Props) => {
     }
 
     submitMutation()
-    executeAddReflectTemplate({
-      variables: {teamId: selectedTeam.id},
+    executeAddPromptTemplate({
+      variables: {teamId: selectedTeam.id, type: 'retrospective'},
       onError,
-      onCompleted: (res: useAddReflectTemplateMutation$data) => {
-        const templateId =
-          res.addReflectTemplate?.useAddReflectTemplateMutation_team?.reflectTemplate?.id
-        if (templateId) {
-          navigate(`/activity-library/details/${templateId}`, {
-            state: {prevCategory: categoryId, edit: true}
-          })
-        }
-        onCompleted()
+      onCompleted: (res: useAddPromptTemplateMutation$data, errors) => {
+        onCompleted(res, errors)
+        if (errors?.length) return
+        navigate(`/activity-library/details/${res.addPromptTemplate.template.id}`, {
+          state: {prevCategory: categoryId, edit: true}
+        })
       }
     })
   }

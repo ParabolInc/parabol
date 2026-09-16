@@ -5,20 +5,22 @@ import getReflectTemplateOrgConn from '../connections/getReflectTemplateOrgConn'
 import getReflectTemplatePublicConn from '../connections/getReflectTemplatePublicConn'
 import pluralizeHandler from './pluralizeHandler'
 
-const handleRemoveReflectTemplate = (
+const handleRemovePromptTemplate = (
   templateId: string,
   teamId: string,
   store: RecordSourceSelectorProxy<any>
 ) => {
   const team = store.get(teamId)!
-  const settings = team.getLinkedRecord('meetingSettings', {
+  const retroSettings = team.getLinkedRecord('meetingSettings', {
     meetingType: 'retrospective'
   })
-  safeRemoveNodeFromArray(templateId, settings, 'teamTemplates')
-  const orgConn = getReflectTemplateOrgConn(settings)
-  const publicConn = getReflectTemplatePublicConn(settings)
-  safeRemoveNodeFromConn(templateId, orgConn)
-  safeRemoveNodeFromConn(templateId, publicConn)
+  safeRemoveNodeFromArray(templateId, retroSettings, 'teamTemplates')
+  safeRemoveNodeFromConn(templateId, getReflectTemplateOrgConn(retroSettings))
+  safeRemoveNodeFromConn(templateId, getReflectTemplatePublicConn(retroSettings))
+  const standupSettings = team.getLinkedRecord('meetingSettings', {
+    meetingType: 'teamPrompt'
+  })
+  safeRemoveNodeFromArray(templateId, standupSettings, 'teamTemplates')
 
   const viewer = store.getRoot().getLinkedRecord('viewer')
   const allAvailableConn =
@@ -26,5 +28,5 @@ const handleRemoveReflectTemplate = (
   safeRemoveNodeFromConn(templateId, allAvailableConn)
 }
 
-const handleRemoveReflectTemplates = pluralizeHandler(handleRemoveReflectTemplate)
-export default handleRemoveReflectTemplates
+const handleRemovePromptTemplates = pluralizeHandler(handleRemovePromptTemplate)
+export default handleRemovePromptTemplates

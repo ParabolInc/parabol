@@ -448,7 +448,7 @@ class Analytics {
 
   templateMetrics = (
     user: AnalyticsUser,
-    template: MeetingTemplate,
+    template: Pick<MeetingTemplate, 'id' | 'type' | 'scope' | 'teamId'>,
     eventName: 'Template Created' | 'Template Cloned' | 'Template Shared'
   ) => {
     this.track(user, eventName, {

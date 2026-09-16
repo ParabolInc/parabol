@@ -1,12 +1,12 @@
 import {getUserId} from '../../../utils/authorization'
-import type {AddTeamPromptTemplateSuccessResolvers} from '../resolverTypes'
+import type {AddPromptTemplateSuccessResolvers} from '../resolverTypes'
 
-export type AddTeamPromptTemplateSuccessSource = {
+export type AddPromptTemplateSuccessSource = {
   templateId: string
 }
 
-const AddTeamPromptTemplateSuccess: AddTeamPromptTemplateSuccessResolvers = {
-  teamPromptTemplate: async ({templateId}, _args, {dataLoader}) => {
+const AddPromptTemplateSuccess: AddPromptTemplateSuccessResolvers = {
+  template: async ({templateId}, _args, {dataLoader}) => {
     return dataLoader.get('meetingTemplates').loadNonNull(templateId)
   },
   user: async (_src, _args, {authToken, dataLoader}) => {
@@ -15,4 +15,4 @@ const AddTeamPromptTemplateSuccess: AddTeamPromptTemplateSuccessResolvers = {
   }
 }
 
-export default AddTeamPromptTemplateSuccess
+export default AddPromptTemplateSuccess

@@ -27,12 +27,12 @@ import {
   removeOrgUsersTeamOnNext,
   removeOrgUsersTeamUpdater
 } from '../mutations/RemoveOrgUsersMutation'
-import {removeReflectTemplateTeamUpdater} from '../mutations/RemoveReflectTemplateMutation'
+import {removePromptTemplateTeamUpdater} from '../mutations/RemovePromptTemplateMutation'
 import {removeTeamMemberTeamUpdater} from '../mutations/RemoveTeamMemberMutation'
 import {removeTemplatePromptTeamUpdater} from '../mutations/RemoveTemplatePromptMutation'
 import {updateAgendaItemUpdater} from '../mutations/UpdateAgendaItemMutation'
 import {addPokerTemplateTeamUpdater} from '../mutations/useAddPokerTemplateMutation'
-import {addReflectTemplateTeamUpdater} from '../mutations/useAddReflectTemplateMutation'
+import {addPromptTemplateTeamUpdater} from '../mutations/useAddPromptTemplateMutation'
 import {endTeamHealthTeamUpdater} from '../mutations/useEndTeamHealthMutation'
 import {createSubscription} from './createSubscription'
 
@@ -55,8 +55,8 @@ const subscription = graphql`
       AddAgendaItemPayload {
         ...AddAgendaItemMutation_team @relay(mask: false)
       }
-      AddReflectTemplateSuccess {
-        ...useAddReflectTemplateMutation_team @relay(mask: false)
+      AddPromptTemplateSuccess {
+        ...useAddPromptTemplateMutation_team @relay(mask: false)
       }
       AddPokerTemplateSuccess {
         ...useAddPokerTemplateMutation_team @relay(mask: false)
@@ -115,8 +115,8 @@ const subscription = graphql`
       RemovePokerTemplateScalePayload {
         ...RemovePokerTemplateScaleMutation_team @relay(mask: false)
       }
-      RemoveReflectTemplatePayload {
-        ...RemoveReflectTemplateMutation_team @relay(mask: false)
+      RemovePromptTemplateSuccess {
+        ...RemovePromptTemplateMutation_team @relay(mask: false)
       }
       RemoveTemplatePromptSuccess {
         ...RemoveTemplatePromptMutation_team @relay(mask: false)
@@ -207,7 +207,7 @@ const updateHandlers = {
   RemoveAgendaItemPayload: removeAgendaItemUpdater,
   UpdateAgendaItemPayload: updateAgendaItemUpdater,
   AcceptTeamInvitationPayload: acceptTeamInvitationTeamUpdater,
-  AddReflectTemplateSuccess: addReflectTemplateTeamUpdater,
+  AddPromptTemplateSuccess: addPromptTemplateTeamUpdater,
   AddPokerTemplateSuccess: addPokerTemplateTeamUpdater,
   AddTemplatePromptSuccess: addTemplatePromptTeamUpdater,
   ArchiveTeamPayload: archiveTeamTeamUpdater,
@@ -220,7 +220,7 @@ const updateHandlers = {
   MoveTemplatePromptSuccess: moveTemplatePromptTeamUpdater,
   NavigateMeetingPayload: navigateMeetingTeamUpdater,
   RemoveOrgUsersSuccess: removeOrgUsersTeamUpdater,
-  RemoveReflectTemplatePayload: removeReflectTemplateTeamUpdater,
+  RemovePromptTemplateSuccess: removePromptTemplateTeamUpdater,
   RemoveTemplatePromptSuccess: removeTemplatePromptTeamUpdater,
   RemoveTeamMemberPayload: removeTeamMemberTeamUpdater
 } as const

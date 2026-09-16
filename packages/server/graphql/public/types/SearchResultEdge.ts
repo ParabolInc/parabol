@@ -34,8 +34,8 @@ const SearchResultEdge: ReqResolvers<'SearchResultEdge'> = {
       const meetingTypeToTemplateType = {
         action: 'FixedActivity',
         poker: 'PokerTemplate',
-        retrospective: 'ReflectTemplate',
-        teamPrompt: 'TeamPromptTemplate',
+        retrospective: 'PromptTemplate',
+        teamPrompt: 'PromptTemplate',
         teamHealth: 'TeamHealthTemplate'
       } as const
       return {

@@ -1,4 +1,4 @@
-import type {Kysely} from 'kysely'
+import {type Kysely, sql} from 'kysely'
 
 const SEED_DATE = new Date('2026-09-04T00:00:00.000Z')
 const CANONICAL_TEMPLATE_ID = 'teamPrompt'
@@ -148,6 +148,16 @@ const generateUID = () => {
 
 // `any` is required here since migrations should be frozen in time. alternatively, keep a "snapshot" db interface.
 export async function up(db: Kysely<any>): Promise<void> {
+  await sql`
+    ALTER TABLE "ReflectPrompt" RENAME TO "TemplatePrompt";
+    ALTER TABLE "TemplatePrompt" RENAME CONSTRAINT "ReflectPrompt_pkey" TO "TemplatePrompt_pkey";
+    ALTER INDEX "idx_ReflectPrompt_parentPromptId" RENAME TO "idx_TemplatePrompt_parentPromptId";
+    ALTER INDEX "idx_ReflectPrompt_teamId" RENAME TO "idx_TemplatePrompt_teamId";
+    ALTER INDEX "idx_ReflectPrompt_templateId" RENAME TO "idx_TemplatePrompt_templateId";
+    ALTER TRIGGER "update_MeetingTemplate_updatedAt_from_ReflectPrompt" ON "TemplatePrompt"
+      RENAME TO "update_MeetingTemplate_updatedAt_from_TemplatePrompt";
+  `.execute(db)
+
   await db
     .insertInto('MeetingTemplate')
     .values(
@@ -160,7 +170,7 @@ export async function up(db: Kysely<any>): Promise<void> {
         scope: 'PUBLIC',
         isActive: true,
         isStarter: false,
-        isFree: false,
+        isFree: true,
         illustrationUrl: '/assets/Organization/aGhostOrg/template/teamPrompt.png',
         createdAt: SEED_DATE,
         updatedAt: SEED_DATE
@@ -170,7 +180,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute()
 
   await db
-    .insertInto('ReflectPrompt')
+    .insertInto('TemplatePrompt')
     .values(
       PROMPTS.map((prompt) => ({
         ...prompt,
@@ -185,34 +195,55 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute()
 
   await db.schema
-    .alterTable('User')
+    .alterTable('UserDetail')
+    .addColumn('freeCustomRetroTemplatesRemaining', 'integer', (col) => col.notNull().defaultTo(2))
+    .addColumn('freeCustomPokerTemplatesRemaining', 'integer', (col) => col.notNull().defaultTo(2))
     .addColumn('freeCustomStandupTemplatesRemaining', 'integer', (col) =>
       col.notNull().defaultTo(2)
     )
     .execute()
+  await sql`
+    INSERT INTO "UserDetail" ("id", "freeCustomRetroTemplatesRemaining", "freeCustomPokerTemplatesRemaining")
+    SELECT "id", "freeCustomRetroTemplatesRemaining", "freeCustomPokerTemplatesRemaining"
+    FROM "User"
+    WHERE "freeCustomRetroTemplatesRemaining" <> 2 OR "freeCustomPokerTemplatesRemaining" <> 2
+    ON CONFLICT ("id") DO UPDATE SET
+      "freeCustomRetroTemplatesRemaining" = EXCLUDED."freeCustomRetroTemplatesRemaining",
+      "freeCustomPokerTemplatesRemaining" = EXCLUDED."freeCustomPokerTemplatesRemaining"
+  `.execute(db)
+  await db.schema
+    .alterTable('User')
+    .dropColumn('freeCustomRetroTemplatesRemaining')
+    .dropColumn('freeCustomPokerTemplatesRemaining')
+    .execute()
 
-  const teams = await db
-    .selectFrom('Team')
-    .select('Team.id')
-    .where((eb) =>
-      eb.not(
-        eb.exists(
-          eb
-            .selectFrom('MeetingSettings')
-            .select('MeetingSettings.id')
-            .whereRef('MeetingSettings.teamId', '=', 'Team.id')
-            .where('MeetingSettings.meetingType', '=', 'teamPrompt')
+  const BATCH_SIZE = 1000
+  let lastTeamId = ''
+  while (true) {
+    const teams: {id: string}[] = await db
+      .selectFrom('Team')
+      .select('Team.id')
+      .where('Team.id', '>', lastTeamId)
+      .where((eb) =>
+        eb.not(
+          eb.exists(
+            eb
+              .selectFrom('MeetingSettings')
+              .select('MeetingSettings.id')
+              .whereRef('MeetingSettings.teamId', '=', 'Team.id')
+              .where('MeetingSettings.meetingType', '=', 'teamPrompt')
+          )
         )
       )
-    )
-    .execute()
-  const CHUNK_SIZE = 1000
-  for (let i = 0; i < teams.length; i += CHUNK_SIZE) {
-    const chunk = teams.slice(i, i + CHUNK_SIZE)
+      .orderBy('Team.id')
+      .limit(BATCH_SIZE)
+      .execute()
+    const lastTeam = teams.at(-1)
+    if (!lastTeam) break
     await db
       .insertInto('MeetingSettings')
       .values(
-        chunk.map((team: {id: string}) => ({
+        teams.map((team) => ({
           id: generateUID(),
           teamId: team.id,
           meetingType: 'teamPrompt',
@@ -222,15 +253,36 @@ export async function up(db: Kysely<any>): Promise<void> {
       )
       .onConflict((oc) => oc.doNothing())
       .execute()
+    lastTeamId = lastTeam.id
   }
 }
 
 // `any` is required here since migrations should be frozen in time. alternatively, keep a "snapshot" db interface.
 export async function down(db: Kysely<any>): Promise<void> {
   await db.deleteFrom('MeetingSettings').where('meetingType', '=', 'teamPrompt').execute()
-  await db.schema.alterTable('User').dropColumn('freeCustomStandupTemplatesRemaining').execute()
+
+  await db.schema
+    .alterTable('User')
+    .addColumn('freeCustomRetroTemplatesRemaining', 'integer', (col) => col.notNull().defaultTo(2))
+    .addColumn('freeCustomPokerTemplatesRemaining', 'integer', (col) => col.notNull().defaultTo(2))
+    .execute()
+  await sql`
+    UPDATE "User" SET
+      "freeCustomRetroTemplatesRemaining" = "UserDetail"."freeCustomRetroTemplatesRemaining",
+      "freeCustomPokerTemplatesRemaining" = "UserDetail"."freeCustomPokerTemplatesRemaining"
+    FROM "UserDetail"
+    WHERE "User"."id" = "UserDetail"."id"
+      AND ("UserDetail"."freeCustomRetroTemplatesRemaining" <> 2 OR "UserDetail"."freeCustomPokerTemplatesRemaining" <> 2)
+  `.execute(db)
+  await db.schema
+    .alterTable('UserDetail')
+    .dropColumn('freeCustomRetroTemplatesRemaining')
+    .dropColumn('freeCustomPokerTemplatesRemaining')
+    .dropColumn('freeCustomStandupTemplatesRemaining')
+    .execute()
+
   await db
-    .deleteFrom('ReflectPrompt')
+    .deleteFrom('TemplatePrompt')
     .where(
       'id',
       'in',
@@ -245,4 +297,14 @@ export async function down(db: Kysely<any>): Promise<void> {
       TEMPLATES.map(({id}) => id)
     )
     .execute()
+
+  await sql`
+    ALTER TRIGGER "update_MeetingTemplate_updatedAt_from_TemplatePrompt" ON "TemplatePrompt"
+      RENAME TO "update_MeetingTemplate_updatedAt_from_ReflectPrompt";
+    ALTER INDEX "idx_TemplatePrompt_templateId" RENAME TO "idx_ReflectPrompt_templateId";
+    ALTER INDEX "idx_TemplatePrompt_teamId" RENAME TO "idx_ReflectPrompt_teamId";
+    ALTER INDEX "idx_TemplatePrompt_parentPromptId" RENAME TO "idx_ReflectPrompt_parentPromptId";
+    ALTER TABLE "TemplatePrompt" RENAME CONSTRAINT "TemplatePrompt_pkey" TO "ReflectPrompt_pkey";
+    ALTER TABLE "TemplatePrompt" RENAME TO "ReflectPrompt";
+  `.execute(db)
 }

@@ -36,9 +36,8 @@ type TeamSubscriptionPayload {
   UpdateFacilitatorRotationSuccess: UpdateFacilitatorRotationSuccess
   UpdateTeamNamePayload: UpdateTeamNamePayload
   UpgradeToTeamTierSuccess: UpgradeToTeamTierSuccess
-  AddReflectTemplateSuccess: AddReflectTemplateSuccess
+  AddPromptTemplateSuccess: AddPromptTemplateSuccess
   AddPokerTemplateSuccess: AddPokerTemplateSuccess
-  AddTeamPromptTemplateSuccess: AddTeamPromptTemplateSuccess
   AddTemplatePromptSuccess: AddTemplatePromptSuccess
   AddPokerTemplateDimensionPayload: AddPokerTemplateDimensionPayload
   AddPokerTemplateScalePayload: AddPokerTemplateScalePayload
@@ -49,8 +48,7 @@ type TeamSubscriptionPayload {
   PokerTemplateDimensionUpdateDescriptionPayload: PokerTemplateDimensionUpdateDescriptionPayload
   UpdateTemplatePromptGroupColorSuccess: UpdateTemplatePromptGroupColorSuccess
   RemoveSlackAuthPayload: RemoveSlackAuthPayload
-  RemoveReflectTemplatePayload: RemoveReflectTemplatePayload
-  RemoveTeamPromptTemplateSuccess: RemoveTeamPromptTemplateSuccess
+  RemovePromptTemplateSuccess: RemovePromptTemplateSuccess
   RemovePokerTemplatePayload: RemovePokerTemplatePayload
   RemoveTemplatePromptSuccess: RemoveTemplatePromptSuccess
   RemovePokerTemplateDimensionPayload: RemovePokerTemplateDimensionPayload

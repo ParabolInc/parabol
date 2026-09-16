@@ -4,11 +4,12 @@ import {sendPublic, signUp} from './common'
 
 const CANONICAL_TEMPLATE_ID = 'teamPrompt'
 const ENTERPRISE_TEMPLATE_ID = 'enterpriseDailyStandupTemplate'
+const STANDUP = 'teamPrompt'
 
-const ADD_TEAM_PROMPT_TEMPLATE = `
-  mutation AddTeamPromptTemplate($teamId: ID!, $parentTemplateId: ID) {
-    addTeamPromptTemplate(teamId: $teamId, parentTemplateId: $parentTemplateId) {
-      teamPromptTemplate {
+const ADD_PROMPT_TEMPLATE = `
+  mutation AddPromptTemplate($teamId: ID!, $parentTemplateId: ID, $type: PromptTemplateTypeEnum!) {
+    addPromptTemplate(teamId: $teamId, parentTemplateId: $parentTemplateId, type: $type) {
+      template {
         __typename
         id
         name
@@ -25,21 +26,27 @@ const ADD_TEAM_PROMPT_TEMPLATE = `
         }
       }
       user {
+        freeCustomRetroTemplatesRemaining
         freeCustomStandupTemplatesRemaining
       }
     }
   }
 `
 
-const REMOVE_TEAM_PROMPT_TEMPLATE = `
-  mutation RemoveTeamPromptTemplate($templateId: ID!) {
-    removeTeamPromptTemplate(templateId: $templateId) {
-      teamPromptTemplate {
+const REMOVE_PROMPT_TEMPLATE = `
+  mutation RemovePromptTemplate($templateId: ID!) {
+    removePromptTemplate(templateId: $templateId) {
+      template {
         id
         isActive
       }
       meetingSettings {
-        selectedTemplateId
+        ... on RetrospectiveMeetingSettings {
+          selectedTemplateId
+        }
+        ... on TeamPromptMeetingSettings {
+          selectedTemplateId
+        }
       }
     }
   }
@@ -121,7 +128,7 @@ const UPDATE_TEMPLATE_SCOPE = `
           id
           isActive
           scope
-          ... on TeamPromptTemplate {
+          ... on PromptTemplate {
             prompts {
               question
               groupColor
@@ -166,7 +173,7 @@ const STANDUP_SETTINGS = `
                 question
               }
             }
-            teamPromptTemplates {
+            teamTemplates {
               id
             }
           }
@@ -186,7 +193,7 @@ const AVAILABLE_STANDUP_TEMPLATES = `
             id
             name
             isRecommended
-            ... on TeamPromptTemplate {
+            ... on PromptTemplate {
               prompts {
                 question
                 groupColor
@@ -204,21 +211,21 @@ const getStandupSettings = async (teamId: string, cookie: string) => {
   return res.data.viewer
 }
 
-test('seeded standup templates are TeamPromptTemplates with prompts', async () => {
+test('seeded standup templates are PromptTemplates with prompts', async () => {
   const {cookie} = await signUp()
   const res = await sendPublic({query: AVAILABLE_STANDUP_TEMPLATES, cookie})
   const nodes = res.data.viewer.availableTemplates.edges.map((edge: any) => edge.node)
 
   const canonical = nodes.find((node: any) => node.id === CANONICAL_TEMPLATE_ID)
   expect(canonical).toMatchObject({
-    __typename: 'TeamPromptTemplate',
+    __typename: 'PromptTemplate',
     name: 'Standup',
     prompts: [{question: 'What are you working on today? Stuck on anything?'}]
   })
 
   const enterprise = nodes.find((node: any) => node.id === ENTERPRISE_TEMPLATE_ID)
   expect(enterprise).toMatchObject({
-    __typename: 'TeamPromptTemplate',
+    __typename: 'PromptTemplate',
     name: 'Enterprise Daily Standup',
     isRecommended: true
   })
@@ -229,7 +236,7 @@ test('seeded standup templates are TeamPromptTemplates with prompts', async () =
   ])
 
   const demoDay = nodes.find((node: any) => node.id === 'demoDayTemplate')
-  expect(demoDay).toMatchObject({__typename: 'TeamPromptTemplate', name: 'Demo Day'})
+  expect(demoDay).toMatchObject({__typename: 'PromptTemplate', name: 'Demo Day'})
   expect(demoDay.prompts.map((prompt: any) => prompt.question)).toEqual([
     'What did you ship?',
     'Show it off',
@@ -238,7 +245,7 @@ test('seeded standup templates are TeamPromptTemplates with prompts', async () =
 
   const weeklyWins = nodes.find((node: any) => node.id === 'weeklyWinsAndPrioritiesTemplate')
   expect(weeklyWins).toMatchObject({
-    __typename: 'TeamPromptTemplate',
+    __typename: 'PromptTemplate',
     name: 'Weekly Wins & Priorities'
   })
   expect(weeklyWins.prompts.map((prompt: any) => prompt.question)).toEqual([
@@ -248,24 +255,28 @@ test('seeded standup templates are TeamPromptTemplates with prompts', async () =
   ])
 })
 
-test('every team has standup settings defaulting to the canonical template', async () => {
+test('every team has standup settings defaulting to the Enterprise Daily Standup', async () => {
   const {teamId, cookie} = await signUp()
   const viewer = await getStandupSettings(teamId, cookie)
   expect(viewer.freeCustomStandupTemplatesRemaining).toBe(2)
   expect(viewer.team.meetingSettings).toMatchObject({
-    selectedTemplateId: CANONICAL_TEMPLATE_ID,
-    selectedTemplate: {id: CANONICAL_TEMPLATE_ID},
-    teamPromptTemplates: []
+    selectedTemplateId: ENTERPRISE_TEMPLATE_ID,
+    selectedTemplate: {id: ENTERPRISE_TEMPLATE_ID},
+    teamTemplates: []
   })
 })
 
-test('addTeamPromptTemplate creates a blank standup template with one prompt', async () => {
+test('addPromptTemplate creates a blank standup template with one prompt', async () => {
   const {teamId, cookie} = await signUp()
-  const res = await sendPublic({query: ADD_TEAM_PROMPT_TEMPLATE, variables: {teamId}, cookie})
+  const res = await sendPublic({
+    query: ADD_PROMPT_TEMPLATE,
+    variables: {teamId, type: STANDUP},
+    cookie
+  })
   expect(res.errors).toBeUndefined()
-  const {teamPromptTemplate, user} = res.data.addTeamPromptTemplate
-  expect(teamPromptTemplate).toMatchObject({
-    __typename: 'TeamPromptTemplate',
+  const {template, user} = res.data.addPromptTemplate
+  expect(template).toMatchObject({
+    __typename: 'PromptTemplate',
     name: '*New Template #1',
     type: 'teamPrompt',
     category: 'standup',
@@ -275,32 +286,32 @@ test('addTeamPromptTemplate creates a blank standup template with one prompt', a
   expect(user.freeCustomStandupTemplatesRemaining).toBe(1)
 
   const viewer = await getStandupSettings(teamId, cookie)
-  expect(viewer.team.meetingSettings.teamPromptTemplates).toEqual([{id: teamPromptTemplate.id}])
+  expect(viewer.team.meetingSettings.teamTemplates).toEqual([{id: template.id}])
 })
 
-test('addTeamPromptTemplate clones a public template with its prompts', async () => {
+test('addPromptTemplate clones a public template with its prompts', async () => {
   const {teamId, cookie} = await signUp()
   const res = await sendPublic({
-    query: ADD_TEAM_PROMPT_TEMPLATE,
-    variables: {teamId, parentTemplateId: ENTERPRISE_TEMPLATE_ID},
+    query: ADD_PROMPT_TEMPLATE,
+    variables: {teamId, parentTemplateId: ENTERPRISE_TEMPLATE_ID, type: STANDUP},
     cookie
   })
   expect(res.errors).toBeUndefined()
-  const {teamPromptTemplate} = res.data.addTeamPromptTemplate
-  expect(teamPromptTemplate.name).toBe('Enterprise Daily Standup Copy')
-  expect(teamPromptTemplate.prompts.map((prompt: any) => prompt.question)).toEqual([
+  const {template} = res.data.addPromptTemplate
+  expect(template.name).toBe('Enterprise Daily Standup Copy')
+  expect(template.prompts.map((prompt: any) => prompt.question)).toEqual([
     'What are you working on? What has been completed recently?',
     "What are you stuck on, what's holding you back?",
     'What are you planning to work on next?'
   ])
-  expect(teamPromptTemplate.prompts.map((prompt: any) => prompt.groupColor)).toEqual([
+  expect(template.prompts.map((prompt: any) => prompt.groupColor)).toEqual([
     '#66BC8C',
     '#FD6157',
     '#329AE5'
   ])
-  const clonedPromptIds = teamPromptTemplate.prompts.map((prompt: any) => prompt.id)
+  const clonedPromptIds = template.prompts.map((prompt: any) => prompt.id)
   const rows = await getKysely()
-    .selectFrom('ReflectPrompt')
+    .selectFrom('TemplatePrompt')
     .select(['id', 'parentPromptId'])
     .where('id', 'in', clonedPromptIds)
     .execute()
@@ -313,13 +324,25 @@ test('addTeamPromptTemplate clones a public template with its prompts', async ()
 
 test('starter tier is limited by freeCustomStandupTemplatesRemaining', async () => {
   const {teamId, cookie} = await signUp()
-  const first = await sendPublic({query: ADD_TEAM_PROMPT_TEMPLATE, variables: {teamId}, cookie})
+  const first = await sendPublic({
+    query: ADD_PROMPT_TEMPLATE,
+    variables: {teamId, type: STANDUP},
+    cookie
+  })
   expect(first.errors).toBeUndefined()
-  const second = await sendPublic({query: ADD_TEAM_PROMPT_TEMPLATE, variables: {teamId}, cookie})
+  const second = await sendPublic({
+    query: ADD_PROMPT_TEMPLATE,
+    variables: {teamId, type: STANDUP},
+    cookie
+  })
   expect(second.errors).toBeUndefined()
-  expect(second.data.addTeamPromptTemplate.user.freeCustomStandupTemplatesRemaining).toBe(0)
+  expect(second.data.addPromptTemplate.user.freeCustomStandupTemplatesRemaining).toBe(0)
 
-  const third = await sendPublic({query: ADD_TEAM_PROMPT_TEMPLATE, variables: {teamId}, cookie})
+  const third = await sendPublic({
+    query: ADD_PROMPT_TEMPLATE,
+    variables: {teamId, type: STANDUP},
+    cookie
+  })
   expect(third.data).toBeNull()
   expect(third.errors).toEqual([
     expect.objectContaining({
@@ -328,11 +351,11 @@ test('starter tier is limited by freeCustomStandupTemplatesRemaining', async () 
   ])
 })
 
-test('addTeamPromptTemplate rejects a team the viewer is not on', async () => {
+test('addPromptTemplate rejects a team the viewer is not on', async () => {
   const [attacker, victim] = await Promise.all([signUp(), signUp()])
   const res = await sendPublic({
-    query: ADD_TEAM_PROMPT_TEMPLATE,
-    variables: {teamId: victim.teamId},
+    query: ADD_PROMPT_TEMPLATE,
+    variables: {teamId: victim.teamId, type: STANDUP},
     cookie: attacker.cookie
   })
   expect(res.errors).toEqual([
@@ -342,8 +365,12 @@ test('addTeamPromptTemplate rejects a team the viewer is not on', async () => {
 
 test('prompt mutations work on a standup template and reject a poker template', async () => {
   const {teamId, cookie} = await signUp()
-  const created = await sendPublic({query: ADD_TEAM_PROMPT_TEMPLATE, variables: {teamId}, cookie})
-  const {id: templateId, prompts} = created.data.addTeamPromptTemplate.teamPromptTemplate
+  const created = await sendPublic({
+    query: ADD_PROMPT_TEMPLATE,
+    variables: {teamId, type: STANDUP},
+    cookie
+  })
+  const {id: templateId, prompts} = created.data.addPromptTemplate.template
   const [firstPrompt] = prompts
 
   const added = await sendPublic({query: ADD_PROMPT, variables: {templateId}, cookie})
@@ -396,10 +423,14 @@ test('selectTemplate persists the standup template for the team', async () => {
   })
 })
 
-test('removeTeamPromptTemplate soft-deletes and falls back the selected template', async () => {
+test('removePromptTemplate soft-deletes and falls back the selected template', async () => {
   const {teamId, cookie} = await signUp()
-  const created = await sendPublic({query: ADD_TEAM_PROMPT_TEMPLATE, variables: {teamId}, cookie})
-  const {id: templateId} = created.data.addTeamPromptTemplate.teamPromptTemplate
+  const created = await sendPublic({
+    query: ADD_PROMPT_TEMPLATE,
+    variables: {teamId, type: STANDUP},
+    cookie
+  })
+  const {id: templateId} = created.data.addPromptTemplate.template
   await sendPublic({
     query: SELECT_TEMPLATE,
     variables: {selectedTemplateId: templateId, teamId},
@@ -407,20 +438,20 @@ test('removeTeamPromptTemplate soft-deletes and falls back the selected template
   })
 
   const res = await sendPublic({
-    query: REMOVE_TEAM_PROMPT_TEMPLATE,
+    query: REMOVE_PROMPT_TEMPLATE,
     variables: {templateId},
     cookie
   })
   expect(res.errors).toBeUndefined()
-  expect(res.data.removeTeamPromptTemplate).toEqual({
-    teamPromptTemplate: {id: templateId, isActive: false},
-    meetingSettings: {selectedTemplateId: CANONICAL_TEMPLATE_ID}
+  expect(res.data.removePromptTemplate).toEqual({
+    template: {id: templateId, isActive: false},
+    meetingSettings: {selectedTemplateId: ENTERPRISE_TEMPLATE_ID}
   })
 
   const viewer = await getStandupSettings(teamId, cookie)
-  expect(viewer.team.meetingSettings.teamPromptTemplates).toEqual([])
+  expect(viewer.team.meetingSettings.teamTemplates).toEqual([])
   const prompts = await getKysely()
-    .selectFrom('ReflectPrompt')
+    .selectFrom('TemplatePrompt')
     .select('removedAt')
     .where('templateId', '=', templateId)
     .execute()
@@ -430,11 +461,15 @@ test('removeTeamPromptTemplate soft-deletes and falls back the selected template
   }
 })
 
-test('removeTeamPromptTemplate is blocked while a recurring standup uses the template', async () => {
+test('removePromptTemplate is blocked while a recurring standup uses the template', async () => {
   const pg = getKysely()
   const {userId, teamId, cookie} = await signUp()
-  const created = await sendPublic({query: ADD_TEAM_PROMPT_TEMPLATE, variables: {teamId}, cookie})
-  const {id: templateId} = created.data.addTeamPromptTemplate.teamPromptTemplate
+  const created = await sendPublic({
+    query: ADD_PROMPT_TEMPLATE,
+    variables: {teamId, type: STANDUP},
+    cookie
+  })
+  const {id: templateId} = created.data.addPromptTemplate.template
   const series = await pg
     .insertInto('MeetingSeries')
     .values({
@@ -451,12 +486,12 @@ test('removeTeamPromptTemplate is blocked while a recurring standup uses the tem
     .executeTakeFirstOrThrow()
 
   const blocked = await sendPublic({
-    query: REMOVE_TEAM_PROMPT_TEMPLATE,
+    query: REMOVE_PROMPT_TEMPLATE,
     variables: {templateId},
     cookie
   })
   expect(blocked.errors).toEqual([
-    expect.objectContaining({message: 'Template is used by a recurring standup'})
+    expect.objectContaining({message: 'Template is used by a recurring meeting'})
   ])
 
   await pg
@@ -465,35 +500,35 @@ test('removeTeamPromptTemplate is blocked while a recurring standup uses the tem
     .where('id', '=', series.id)
     .execute()
   const allowed = await sendPublic({
-    query: REMOVE_TEAM_PROMPT_TEMPLATE,
+    query: REMOVE_PROMPT_TEMPLATE,
     variables: {templateId},
     cookie
   })
   expect(allowed.errors).toBeUndefined()
-  expect(allowed.data.removeTeamPromptTemplate.teamPromptTemplate.isActive).toBe(false)
+  expect(allowed.data.removePromptTemplate.template.isActive).toBe(false)
 })
 
-test('removeTeamPromptTemplate rejects a template the viewer does not own', async () => {
+test('removePromptTemplate rejects a template the viewer does not own', async () => {
   const [owner, attacker] = await Promise.all([signUp(), signUp()])
   const created = await sendPublic({
-    query: ADD_TEAM_PROMPT_TEMPLATE,
-    variables: {teamId: owner.teamId},
+    query: ADD_PROMPT_TEMPLATE,
+    variables: {teamId: owner.teamId, type: STANDUP},
     cookie: owner.cookie
   })
-  const {id: templateId} = created.data.addTeamPromptTemplate.teamPromptTemplate
+  const {id: templateId} = created.data.addPromptTemplate.template
   const res = await sendPublic({
-    query: REMOVE_TEAM_PROMPT_TEMPLATE,
+    query: REMOVE_PROMPT_TEMPLATE,
     variables: {templateId},
     cookie: attacker.cookie
   })
   expect(res.errors).toEqual([expect.objectContaining({message: 'Viewer is not on Organization'})])
 })
 
-test('removeTeamPromptTemplate refuses the seeded standup templates', async () => {
+test('removePromptTemplate refuses the seeded standup templates', async () => {
   const {cookie} = await signUp()
   for (const templateId of [CANONICAL_TEMPLATE_ID, ENTERPRISE_TEMPLATE_ID]) {
     const res = await sendPublic({
-      query: REMOVE_TEAM_PROMPT_TEMPLATE,
+      query: REMOVE_PROMPT_TEMPLATE,
       variables: {templateId},
       cookie
     })
@@ -509,19 +544,19 @@ test('removeTeamPromptTemplate refuses the seeded standup templates', async () =
   expect(rows.every((row) => row.isActive)).toBe(true)
 })
 
-test('addTeamPromptTemplate honors the parent template scope', async () => {
+test('addPromptTemplate honors the parent template scope', async () => {
   const [owner, attacker] = await Promise.all([signUp(), signUp()])
   const created = await sendPublic({
-    query: ADD_TEAM_PROMPT_TEMPLATE,
-    variables: {teamId: owner.teamId},
+    query: ADD_PROMPT_TEMPLATE,
+    variables: {teamId: owner.teamId, type: STANDUP},
     cookie: owner.cookie
   })
-  const {id: templateId, scope} = created.data.addTeamPromptTemplate.teamPromptTemplate
+  const {id: templateId, scope} = created.data.addPromptTemplate.template
   expect(scope).toBe('ORGANIZATION')
 
   const outsideOrg = await sendPublic({
-    query: ADD_TEAM_PROMPT_TEMPLATE,
-    variables: {teamId: attacker.teamId, parentTemplateId: templateId},
+    query: ADD_PROMPT_TEMPLATE,
+    variables: {teamId: attacker.teamId, parentTemplateId: templateId, type: STANDUP},
     cookie: attacker.cookie
   })
   expect(outsideOrg.errors).toEqual([
@@ -539,8 +574,8 @@ test('addTeamPromptTemplate honors the parent template scope', async () => {
   })
 
   const outsideTeam = await sendPublic({
-    query: ADD_TEAM_PROMPT_TEMPLATE,
-    variables: {teamId: attacker.teamId, parentTemplateId: templateId},
+    query: ADD_PROMPT_TEMPLATE,
+    variables: {teamId: attacker.teamId, parentTemplateId: templateId, type: STANDUP},
     cookie: attacker.cookie
   })
   expect(outsideTeam.errors).toEqual([
@@ -550,8 +585,12 @@ test('addTeamPromptTemplate honors the parent template scope', async () => {
 
 test('updateTemplateCategory keeps standup templates in the standup category', async () => {
   const {teamId, cookie} = await signUp()
-  const created = await sendPublic({query: ADD_TEAM_PROMPT_TEMPLATE, variables: {teamId}, cookie})
-  const {id: templateId} = created.data.addTeamPromptTemplate.teamPromptTemplate
+  const created = await sendPublic({
+    query: ADD_PROMPT_TEMPLATE,
+    variables: {teamId, type: STANDUP},
+    cookie
+  })
+  const {id: templateId} = created.data.addPromptTemplate.template
 
   const rejected = await sendPublic({
     query: UPDATE_TEMPLATE_CATEGORY,
@@ -576,8 +615,12 @@ test('updateTemplateCategory keeps standup templates in the standup category', a
 test('updateTemplateScope clones a standup template used by another team', async () => {
   const pg = getKysely()
   const {userId, teamId, orgId, cookie} = await signUp()
-  const created = await sendPublic({query: ADD_TEAM_PROMPT_TEMPLATE, variables: {teamId}, cookie})
-  const {id: templateId, prompts} = created.data.addTeamPromptTemplate.teamPromptTemplate
+  const created = await sendPublic({
+    query: ADD_PROMPT_TEMPLATE,
+    variables: {teamId, type: STANDUP},
+    cookie
+  })
+  const {id: templateId, prompts} = created.data.addPromptTemplate.template
 
   const borrowerTeamId = randomUUIDv7()
   await pg
@@ -607,7 +650,7 @@ test('updateTemplateScope clones a standup template used by another team', async
   })
   const {clonedTemplate} = res.data.updateTemplateScope
   expect(clonedTemplate).toMatchObject({
-    __typename: 'TeamPromptTemplate',
+    __typename: 'PromptTemplate',
     isActive: true,
     scope: 'TEAM',
     prompts: prompts.map(({question, groupColor}: any) => ({question, groupColor}))
@@ -626,11 +669,15 @@ test('updateTemplateScope clones a standup template used by another team', async
   })
 })
 
-test('a soft-deleted selected template falls back to the canonical standup template', async () => {
+test('a soft-deleted selected template falls back to the Enterprise Daily Standup', async () => {
   const pg = getKysely()
   const {teamId, cookie} = await signUp()
-  const created = await sendPublic({query: ADD_TEAM_PROMPT_TEMPLATE, variables: {teamId}, cookie})
-  const {id: templateId} = created.data.addTeamPromptTemplate.teamPromptTemplate
+  const created = await sendPublic({
+    query: ADD_PROMPT_TEMPLATE,
+    variables: {teamId, type: STANDUP},
+    cookie
+  })
+  const {id: templateId} = created.data.addPromptTemplate.template
   await sendPublic({
     query: SELECT_TEMPLATE,
     variables: {selectedTemplateId: templateId, teamId},
@@ -645,8 +692,8 @@ test('a soft-deleted selected template falls back to the canonical standup templ
 
   const viewer = await getStandupSettings(teamId, cookie)
   expect(viewer.team.meetingSettings.selectedTemplate).toMatchObject({
-    id: CANONICAL_TEMPLATE_ID,
-    name: 'Standup'
+    id: ENTERPRISE_TEMPLATE_ID,
+    name: 'Enterprise Daily Standup'
   })
   const settings = await pg
     .selectFrom('MeetingSettings')
@@ -654,8 +701,56 @@ test('a soft-deleted selected template falls back to the canonical standup templ
     .where('teamId', '=', teamId)
     .where('meetingType', '=', 'teamPrompt')
     .executeTakeFirstOrThrow()
-  expect(settings.selectedTemplateId).toBe(CANONICAL_TEMPLATE_ID)
+  expect(settings.selectedTemplateId).toBe(ENTERPRISE_TEMPLATE_ID)
 
   const reread = await getStandupSettings(teamId, cookie)
-  expect(reread.team.meetingSettings.selectedTemplateId).toBe(CANONICAL_TEMPLATE_ID)
+  expect(reread.team.meetingSettings.selectedTemplateId).toBe(ENTERPRISE_TEMPLATE_ID)
+})
+
+test('addPromptTemplate creates a blank retrospective template', async () => {
+  const {teamId, cookie} = await signUp()
+  const res = await sendPublic({
+    query: ADD_PROMPT_TEMPLATE,
+    variables: {teamId, type: 'retrospective'},
+    cookie
+  })
+  expect(res.errors).toBeUndefined()
+  const {template, user} = res.data.addPromptTemplate
+  expect(template).toMatchObject({
+    __typename: 'PromptTemplate',
+    name: '*New Template #1',
+    type: 'retrospective',
+    category: 'retrospective',
+    prompts: [{question: 'New prompt', groupColor: '#66BC8C'}]
+  })
+  expect(user).toEqual({
+    freeCustomRetroTemplatesRemaining: 1,
+    freeCustomStandupTemplatesRemaining: 2
+  })
+})
+
+test('addPromptTemplate rejects a parent template of another type', async () => {
+  const {teamId, cookie} = await signUp()
+  const res = await sendPublic({
+    query: ADD_PROMPT_TEMPLATE,
+    variables: {teamId, parentTemplateId: 'workingStuckTemplate', type: STANDUP},
+    cookie
+  })
+  expect(res.errors).toEqual([expect.objectContaining({message: 'Parent template not found'})])
+})
+
+test('standup templates are capped at 5 prompts', async () => {
+  const {teamId, cookie} = await signUp()
+  const created = await sendPublic({
+    query: ADD_PROMPT_TEMPLATE,
+    variables: {teamId, type: STANDUP},
+    cookie
+  })
+  const {id: templateId} = created.data.addPromptTemplate.template
+  for (let i = 0; i < 4; i++) {
+    const added = await sendPublic({query: ADD_PROMPT, variables: {templateId}, cookie})
+    expect(added.errors).toBeUndefined()
+  }
+  const rejected = await sendPublic({query: ADD_PROMPT, variables: {templateId}, cookie})
+  expect(rejected.errors).toEqual([expect.objectContaining({message: 'Too many prompts'})])
 })

@@ -6,7 +6,7 @@ export type RenameTemplatePromptSuccessSource = {
 
 const RenameTemplatePromptSuccess: RenameTemplatePromptSuccessResolvers = {
   prompt: ({promptId}, _args, {dataLoader}) => {
-    return dataLoader.get('reflectPrompts').loadNonNull(promptId)
+    return dataLoader.get('templatePrompts').loadNonNull(promptId)
   }
 }
 

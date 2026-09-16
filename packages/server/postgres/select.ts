@@ -291,7 +291,7 @@ export const selectComments = () => {
   return query as AssertedQuery<typeof query, {reactjis: ReactjiDB[]}>
 }
 
-export const selectReflectPrompts = () => getKysely().selectFrom('ReflectPrompt').selectAll()
+export const selectTemplatePrompts = () => getKysely().selectFrom('TemplatePrompt').selectAll()
 
 export const selectNewMeetings = () => {
   const query = getKysely()

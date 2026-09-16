@@ -3,6 +3,7 @@ import type * as React from 'react'
 import {useCallback, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {useLocation, useNavigate} from 'react-router'
+import type {PayloadError} from 'relay-runtime'
 import type {MeetingTypeEnum} from '~/__generated__/ActivityDetailsQuery.graphql'
 import type {TemplateDetails_activity$key} from '~/__generated__/TemplateDetails_activity.graphql'
 import type {TemplateDetails_user$key} from '~/__generated__/TemplateDetails_user.graphql'
@@ -17,7 +18,7 @@ import TemplateDimensionList from '../../../modules/meeting/components/TemplateD
 import TemplatePromptList from '../../../modules/meeting/components/TemplatePromptList'
 import {UnstyledTemplateSharing} from '../../../modules/meeting/components/TemplateSharing'
 import RemovePokerTemplateMutation from '../../../mutations/RemovePokerTemplateMutation'
-import RemoveReflectTemplateMutation from '../../../mutations/RemoveReflectTemplateMutation'
+import RemovePromptTemplateMutation from '../../../mutations/RemovePromptTemplateMutation'
 import {Button} from '../../../ui/Button/Button'
 import {cn} from '../../../ui/cn'
 import {Dialog} from '../../../ui/Dialog/Dialog'
@@ -123,7 +124,7 @@ export const TemplateDetails = (props: Props) => {
             ...TemplateDimensionList_dimensions
           }
         }
-        ... on ReflectTemplate {
+        ... on PromptTemplate {
           prompts {
             ...AddTemplatePrompt_prompts
             ...TemplatePromptList_prompts
@@ -150,7 +151,6 @@ export const TemplateDetails = (props: Props) => {
     viewerLowestScope
   } = activity
   const {id: teamId, editingScaleId} = team
-  const isParabolFixedActivity = __typename === 'FixedActivity' || type === 'teamPrompt'
 
   const {description: activityDescription, integrationsTip} = ACTIVITY_TYPE_DATA_LOOKUP[type]
 
@@ -173,15 +173,15 @@ export const TemplateDetails = (props: Props) => {
   const prevCategory = location.state?.prevCategory
 
   const atmosphere = useAtmosphere()
-  const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
+  const {onError, onCompleted, error, submitting, submitMutation} = useMutationProps()
 
   const removeTemplate = useCallback(() => {
     if (submitting) return
     const removeTemplateMutationLookup = {
-      retrospective: RemoveReflectTemplateMutation,
+      retrospective: RemovePromptTemplateMutation,
       poker: RemovePokerTemplateMutation,
       action: null,
-      teamPrompt: null,
+      teamPrompt: RemovePromptTemplateMutation,
       teamHealth: null
     } as const
 
@@ -191,8 +191,9 @@ export const TemplateDetails = (props: Props) => {
     submitMutation()
     const mutationArgs = {
       onError,
-      onCompleted: () => {
-        onCompleted()
+      onCompleted: (res: unknown, errors?: readonly PayloadError[] | null) => {
+        onCompleted(res, errors)
+        if (errors?.length) return
         navigate(
           `/activity-library/category/${prevCategory ?? category ?? QUICK_START_CATEGORY_ID}`,
           {replace: true}
@@ -245,7 +246,7 @@ export const TemplateDetails = (props: Props) => {
       <ActivityDetailsBadges isEditing={isEditing} templateRef={activity} />
       <div className='max-w-[480px]'>
         <div className='mb-6'>
-          {isParabolFixedActivity && (
+          {__typename === 'FixedActivity' && (
             <div className='font-semibold text-base text-fg-secondary'>Created by Parabol</div>
           )}
           {isOwner && (
@@ -293,7 +294,8 @@ export const TemplateDetails = (props: Props) => {
               </div>
             </div>
           )}
-          {!isOwner && !isParabolFixedActivity && (
+          {isOwner && error && <div className='text-fg-error text-sm'>{error.message}</div>}
+          {!isOwner && __typename !== 'FixedActivity' && (
             <div className='flex items-center justify-between'>
               <div className='py-2 font-semibold text-fg-secondary text-sm'>{description}</div>
               <div className='flex items-center gap-2'>
@@ -347,7 +349,7 @@ export const TemplateDetails = (props: Props) => {
               templateId={activityId}
             />
             {isOwner && isEditing && (
-              <AddTemplatePrompt templateId={activityId} prompts={prompts} />
+              <AddTemplatePrompt templateId={activityId} templateType={type} prompts={prompts} />
             )}
           </>
         )}

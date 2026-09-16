@@ -1,7 +1,7 @@
 """
-A stand-up template: an ordered list of prompts each team member answers asynchronously
+A template made of ordered prompts, used by retrospectives and stand-ups
 """
-type TeamPromptTemplate implements MeetingTemplate {
+type PromptTemplate implements MeetingTemplate {
   """
   shortid
   """
@@ -55,12 +55,12 @@ type TeamPromptTemplate implements MeetingTemplate {
   updatedAt: DateTime!
 
   """
-  The active prompts of this template, in display order
+  The prompts that are part of this template
   """
   prompts: [TemplatePrompt!]!
 
   """
-  The category this template falls under, always standup
+  The category this template falls under, e.g. retro, feedback, strategy, etc.
   """
   category: String!
 
@@ -78,4 +78,10 @@ type TeamPromptTemplate implements MeetingTemplate {
   The lowest scope of the permissions available to the viewer
   """
   viewerLowestScope: SharingScopeEnum!
+
+  """
+  Experimental: sub-categories that this template is in (e.g. "popular", "recentlyUsed", "unused",
+  etc.)
+  """
+  subCategories: [String!]!
 }

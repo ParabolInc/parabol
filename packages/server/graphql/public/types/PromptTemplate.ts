@@ -3,7 +3,8 @@ import {getUserId} from '../../../utils/authorization'
 import errorFilter from '../../errorFilter'
 import type {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
-import type {ReflectTemplateResolvers} from '../resolverTypes'
+import {isPromptTemplateType} from '../mutations/helpers/promptTemplateRules'
+import type {PromptTemplateResolvers} from '../resolverTypes'
 
 const POPULAR_RETROS = [
   'workingStuckTemplate',
@@ -28,10 +29,10 @@ const getLastUsedAtForTeams = async (
   return Math.max(...lastUsedAtsForTemplateId)
 }
 
-const ReflectTemplate: ReflectTemplateResolvers = {
-  __isTypeOf: ({type}) => type === 'retrospective',
+const PromptTemplate: PromptTemplateResolvers = {
+  __isTypeOf: ({type}) => isPromptTemplateType(type),
   prompts: async ({id: templateId}, _args, {dataLoader}) => {
-    const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(templateId)
+    const prompts = await dataLoader.get('templatePromptsByTemplateId').load(templateId)
     return prompts
       .filter((prompt) => !prompt.removedAt)
       .sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
@@ -90,4 +91,4 @@ const ReflectTemplate: ReflectTemplateResolvers = {
   }
 }
 
-export default ReflectTemplate
+export default PromptTemplate

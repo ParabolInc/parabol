@@ -6,6 +6,7 @@ import {DataLoaderWorker} from '../graphql/graphql'
 import isValid from '../graphql/isValid'
 import createTeamAndLeader from '../graphql/mutations/helpers/createTeamAndLeader'
 import removeTeamMember from '../graphql/mutations/helpers/removeTeamMember'
+import promptTemplateRules from '../graphql/public/mutations/helpers/promptTemplateRules'
 import {USER_PREFERRED_NAME_LIMIT} from '../postgres/constants'
 import getKysely from '../postgres/getKysely'
 import acceptTeamInvitation from '../safeMutations/acceptTeamInvitation'
@@ -51,7 +52,7 @@ const createEmptyTeam = async (team: Team) => {
         teamId,
         meetingType: 'teamPrompt',
         phaseTypes: ['RESPONSES'],
-        selectedTemplateId: 'teamPrompt'
+        selectedTemplateId: promptTemplateRules.teamPrompt.defaultTemplateId
       }
     ])
     .execute()

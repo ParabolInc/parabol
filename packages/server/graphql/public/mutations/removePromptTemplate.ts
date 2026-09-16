@@ -4,10 +4,9 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
+import promptTemplateRules, {isPromptTemplateType} from './helpers/promptTemplateRules'
 
-const CANONICAL_STANDUP_TEMPLATE_ID = 'teamPrompt'
-
-const removeTeamPromptTemplate: MutationResolvers['removeTeamPromptTemplate'] = async (
+const removePromptTemplate: MutationResolvers['removePromptTemplate'] = async (
   _source,
   {templateId},
   {dataLoader, socketId: mutatorId}
@@ -16,14 +15,14 @@ const removeTeamPromptTemplate: MutationResolvers['removeTeamPromptTemplate'] = 
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
   const template = await dataLoader.get('meetingTemplates').load(templateId)
-  if (!template || !template.isActive || template.type !== 'teamPrompt') {
+  if (!template || !template.isActive || !isPromptTemplateType(template.type)) {
     throw new GraphQLError('Template not found')
   }
 
-  const {teamId} = template
+  const {teamId, type} = template
   const [templates, settings, activeSeries] = await Promise.all([
-    dataLoader.get('meetingTemplatesByType').load({meetingType: 'teamPrompt', teamId}),
-    dataLoader.get('meetingSettingsByType').loadNonNull({meetingType: 'teamPrompt', teamId}),
+    dataLoader.get('meetingTemplatesByType').load({meetingType: type, teamId}),
+    dataLoader.get('meetingSettingsByType').loadNonNull({meetingType: type, teamId}),
     pg
       .selectFrom('MeetingSeries')
       .select('id')
@@ -33,23 +32,23 @@ const removeTeamPromptTemplate: MutationResolvers['removeTeamPromptTemplate'] = 
       .executeTakeFirst()
   ])
   if (activeSeries) {
-    throw new GraphQLError('Template is used by a recurring standup')
+    throw new GraphQLError('Template is used by a recurring meeting')
   }
 
   await pg
     .with('RemoveTemplate', (qb) =>
       qb.updateTable('MeetingTemplate').set({isActive: false}).where('id', '=', templateId)
     )
-    .updateTable('ReflectPrompt')
+    .updateTable('TemplatePrompt')
     .set({removedAt: sql`CURRENT_TIMESTAMP`})
     .where('templateId', '=', templateId)
     .execute()
-  dataLoader.clearAll(['reflectPrompts', 'meetingTemplates'])
+  dataLoader.clearAll(['templatePrompts', 'meetingTemplates'])
 
   const {id: settingsId} = settings
   if (settings.selectedTemplateId === templateId) {
     const nextTemplate = templates.find((t) => t.id !== templateId)
-    const nextTemplateId = nextTemplate?.id ?? CANONICAL_STANDUP_TEMPLATE_ID
+    const nextTemplateId = nextTemplate?.id ?? promptTemplateRules[type].defaultTemplateId
     await pg
       .updateTable('MeetingSettings')
       .set({selectedTemplateId: nextTemplateId})
@@ -59,8 +58,8 @@ const removeTeamPromptTemplate: MutationResolvers['removeTeamPromptTemplate'] = 
   }
 
   const data = {templateId, settingsId}
-  publish(SubscriptionChannel.TEAM, teamId, 'RemoveTeamPromptTemplateSuccess', data, subOptions)
+  publish(SubscriptionChannel.TEAM, teamId, 'RemovePromptTemplateSuccess', data, subOptions)
   return data
 }
 
-export default removeTeamPromptTemplate
+export default removePromptTemplate

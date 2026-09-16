@@ -9,7 +9,7 @@ const updateTemplatePromptDescription: MutationResolvers['updateTemplatePromptDe
     const pg = getKysely()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const prompt = await dataLoader.get('reflectPrompts').load(promptId)
+    const prompt = await dataLoader.get('templatePrompts').load(promptId)
 
     if (!prompt || prompt.removedAt) {
       throw new GraphQLError('Prompt not found')
@@ -18,11 +18,11 @@ const updateTemplatePromptDescription: MutationResolvers['updateTemplatePromptDe
     const normalizedDescription = description.trim().slice(0, 256)
 
     await pg
-      .updateTable('ReflectPrompt')
+      .updateTable('TemplatePrompt')
       .set({description: normalizedDescription})
       .where('id', '=', promptId)
       .execute()
-    dataLoader.clearAll('reflectPrompts')
+    dataLoader.clearAll('templatePrompts')
     const data = {promptId}
     publish(
       SubscriptionChannel.TEAM,

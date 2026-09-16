@@ -699,20 +699,14 @@ type Mutation {
   removePokerTemplate(templateId: ID!): RemovePokerTemplatePayload! @scope(name: TEMPLATES_WRITE)
 
   """
-  Remove a template full of prompts
+  Remove a retrospective or stand-up template. Fails if a recurring meeting still uses it.
   """
-  removeReflectTemplate(templateId: ID!): RemoveReflectTemplatePayload @scope(name: TEMPLATES_WRITE)
+  removePromptTemplate(templateId: ID!): RemovePromptTemplateSuccess! @scope(name: TEMPLATES_WRITE)
 
   """
   Remove a prompt from its template. The last prompt cannot be removed.
   """
   removeTemplatePrompt(promptId: ID!): RemoveTemplatePromptSuccess! @scope(name: TEMPLATES_WRITE)
-
-  """
-  Remove a stand-up template. Fails if a recurring stand-up still uses it.
-  """
-  removeTeamPromptTemplate(templateId: ID!): RemoveTeamPromptTemplateSuccess!
-    @scope(name: TEMPLATES_WRITE)
 
   """
   Remove a dimension from a template
@@ -1453,11 +1447,11 @@ type Mutation {
   ): AddPokerTemplatePayload! @scope(name: TEMPLATES_WRITE)
 
   """
-  Adds a new reflect template with a default dimension created.
+  Adds a new retrospective or stand-up template with one default prompt, or clones an existing one.
   """
-  addReflectTemplate(
+  addPromptTemplate(
     """
-    The ID of the parent template, if this is a clone operation.
+    The ID of the parent template, if this is a clone operation. It must be of the same type.
     """
     parentTemplateId: ID
 
@@ -1465,22 +1459,12 @@ type Mutation {
     The ID of the team for which the template is being created.
     """
     teamId: ID!
-  ): AddReflectTemplatePayload! @scope(name: TEMPLATES_WRITE)
-
-  """
-  Adds a new stand-up template with one default prompt, or clones an existing one.
-  """
-  addTeamPromptTemplate(
-    """
-    The ID of the parent template, if this is a clone operation.
-    """
-    parentTemplateId: ID
 
     """
-    The ID of the team for which the template is being created.
+    The meeting type of the template
     """
-    teamId: ID!
-  ): AddTeamPromptTemplateSuccess! @scope(name: TEMPLATES_WRITE)
+    type: PromptTemplateTypeEnum!
+  ): AddPromptTemplateSuccess! @scope(name: TEMPLATES_WRITE)
 
   """
   Adds a new team health template, optionally cloned from an existing template.

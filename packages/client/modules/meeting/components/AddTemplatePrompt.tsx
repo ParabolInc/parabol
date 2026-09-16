@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import type {MeetingTypeEnum} from '~/__generated__/ActivityDetailsQuery.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import {Threshold} from '~/types/constEnums'
@@ -12,13 +13,14 @@ import {positionAfter} from '../../../shared/sortOrder'
 interface Props {
   prompts: AddTemplatePrompt_prompts$key
   templateId: string
+  templateType: MeetingTypeEnum
 }
 
 const AddTemplatePrompt = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
 
-  const {prompts: promptsRef, templateId} = props
+  const {prompts: promptsRef, templateId, templateType} = props
   const prompts = useFragment(
     graphql`
       fragment AddTemplatePrompt_prompts on TemplatePrompt @relay(plural: true) {
@@ -45,7 +47,9 @@ const AddTemplatePrompt = (props: Props) => {
       }
     )
   }
-  if (prompts.length >= Threshold.MAX_REFLECTION_PROMPTS) return null
+  const maxPrompts =
+    templateType === 'teamPrompt' ? Threshold.MAX_STANDUP_PROMPTS : Threshold.MAX_REFLECTION_PROMPTS
+  if (prompts.length >= maxPrompts) return null
   return (
     <Button
       size='default'

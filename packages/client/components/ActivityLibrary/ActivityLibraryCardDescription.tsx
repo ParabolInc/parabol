@@ -104,15 +104,7 @@ export const ActivityLibraryCardDescription = (props: Props) => {
             }
           }
         }
-        ... on ReflectTemplate {
-          prompts {
-            id
-            question
-            groupColor
-            description
-          }
-        }
-        ... on TeamPromptTemplate {
+        ... on PromptTemplate {
           prompts {
             id
             question

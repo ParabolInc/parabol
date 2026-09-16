@@ -30,6 +30,7 @@ import {
 import {getUserId, isSuperUser, isTeamMember} from '../../../utils/authorization'
 import type {FeatureFlagName} from '../../../utils/featureFlags'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
+import getFreeTemplatesRemaining from '../../../utils/getFreeTemplatesRemaining'
 import getMonthlyStreak from '../../../utils/getMonthlyStreak'
 import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
 import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
@@ -79,6 +80,12 @@ const User: ReqResolvers<'User'> = {
     return dataLoader.get('organizations').loadNonNull(orgId)
   },
   invoices,
+  freeCustomRetroTemplatesRemaining: ({id: userId}, _args, {dataLoader}) =>
+    getFreeTemplatesRemaining(userId, 'retrospective', dataLoader),
+  freeCustomPokerTemplatesRemaining: ({id: userId}, _args, {dataLoader}) =>
+    getFreeTemplatesRemaining(userId, 'poker', dataLoader),
+  freeCustomStandupTemplatesRemaining: ({id: userId}, _args, {dataLoader}) =>
+    getFreeTemplatesRemaining(userId, 'teamPrompt', dataLoader),
   archivedTasks: async (_source, {first, after, teamId}, {authToken}) => {
     const userId = getUserId(authToken)
     const tasks = await selectTasks()

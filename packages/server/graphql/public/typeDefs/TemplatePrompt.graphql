@@ -30,7 +30,7 @@ type TemplatePrompt {
   templateId: ID!
 
   """
-  The template that this prompt belongs to (a ReflectTemplate or a TeamPromptTemplate)
+  The template that this prompt belongs to
   """
   template: MeetingTemplate!
 

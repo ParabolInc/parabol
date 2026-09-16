@@ -1,24 +1,22 @@
+import {
+  DEFAULT_FREE_TEMPLATES,
+  FREE_TEMPLATE_COLUMNS,
+  type FreeTemplateType
+} from '../../utils/getFreeTemplatesRemaining'
 import getKysely from '../getKysely'
 
-const FREE_TEMPLATE_COLUMNS = {
-  retro: 'freeCustomRetroTemplatesRemaining',
-  poker: 'freeCustomPokerTemplatesRemaining',
-  teamPrompt: 'freeCustomStandupTemplatesRemaining'
-} as const
-
-const decrementFreeTemplatesRemaining = async (
-  userId: string,
-  templateType: keyof typeof FREE_TEMPLATE_COLUMNS
-) => {
-  const pg = getKysely()
-  const customTemplateType = FREE_TEMPLATE_COLUMNS[templateType]
-
-  await pg
-    .updateTable('User')
-    .set((eb) => ({[customTemplateType]: eb(customTemplateType, '-', 1)}))
-    .where('id', '=', userId)
-    .where(customTemplateType, '>', 0)
-    .executeTakeFirst()
+const decrementFreeTemplatesRemaining = async (userId: string, templateType: FreeTemplateType) => {
+  const column = FREE_TEMPLATE_COLUMNS[templateType]
+  await getKysely()
+    .insertInto('UserDetail')
+    .values({id: userId, [column]: DEFAULT_FREE_TEMPLATES - 1})
+    .onConflict((oc) =>
+      oc
+        .column('id')
+        .doUpdateSet((eb) => ({[column]: eb(`UserDetail.${column}`, '-', 1)}))
+        .where(`UserDetail.${column}`, '>', 0)
+    )
+    .execute()
 }
 
 export default decrementFreeTemplatesRemaining

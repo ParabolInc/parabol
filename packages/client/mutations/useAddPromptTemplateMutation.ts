@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
-import type {useAddReflectTemplateMutation as TAddReflectTemplateMutation} from '../__generated__/useAddReflectTemplateMutation.graphql'
-import type {useAddReflectTemplateMutation_team$data} from '../__generated__/useAddReflectTemplateMutation_team.graphql'
+import type {useAddPromptTemplateMutation as TAddPromptTemplateMutation} from '../__generated__/useAddPromptTemplateMutation.graphql'
+import type {useAddPromptTemplateMutation_team$data} from '../__generated__/useAddPromptTemplateMutation_team.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import type {SharedUpdater} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
@@ -9,55 +9,59 @@ import {setActiveTemplateInRelayStore} from '../utils/relay/setActiveTemplate'
 import handleAddMeetingTemplate from './handlers/handleAddMeetingTemplate'
 
 graphql`
-  fragment useAddReflectTemplateMutation_team on AddReflectTemplateSuccess {
+  fragment useAddPromptTemplateMutation_team on AddPromptTemplateSuccess {
     user {
       freeCustomRetroTemplatesRemaining
+      freeCustomStandupTemplatesRemaining
     }
-    reflectTemplate {
+    template {
       ...TemplateSharing_template
       ...ActivityDetails_template
       id
       teamId
+      type
     }
   }
 `
 
 const mutation = graphql`
-  mutation useAddReflectTemplateMutation($teamId: ID!, $parentTemplateId: ID) {
-    addReflectTemplate(teamId: $teamId, parentTemplateId: $parentTemplateId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
-      ...useAddReflectTemplateMutation_team @relay(mask: false) @alias
+  mutation useAddPromptTemplateMutation(
+    $teamId: ID!
+    $parentTemplateId: ID
+    $type: PromptTemplateTypeEnum!
+  ) {
+    addPromptTemplate(teamId: $teamId, parentTemplateId: $parentTemplateId, type: $type) {
+      ...useAddPromptTemplateMutation_team @relay(mask: false)
     }
   }
 `
 
-export const addReflectTemplateTeamUpdater: SharedUpdater<
-  useAddReflectTemplateMutation_team$data
-> = (payload, {store}) => {
-  const template = payload.getLinkedRecord('reflectTemplate')
+export const addPromptTemplateTeamUpdater: SharedUpdater<useAddPromptTemplateMutation_team$data> = (
+  payload,
+  {store}
+) => {
+  const template = payload.getLinkedRecord('template')
   if (!template) return
   const templateId = template.getValue('id')
-  handleAddMeetingTemplate(template, 'retrospective', store)
+  const type = template.getValue('type')
+  if (type !== 'retrospective' && type !== 'teamPrompt') return
+  handleAddMeetingTemplate(template, type, store)
   const teamId = template.getValue('teamId')
   const team = store.get(teamId)
   if (!team) return
-  setActiveTemplateInRelayStore(store, teamId, templateId, 'retrospective')
+  setActiveTemplateInRelayStore(store, teamId, templateId, type)
 }
 
-const useAddReflectTemplateMutation = () => {
-  const [commit, submitting] = useMutation<TAddReflectTemplateMutation>(mutation)
+const useAddPromptTemplateMutation = () => {
+  const [commit, submitting] = useMutation<TAddPromptTemplateMutation>(mutation)
   const atmosphere = useAtmosphere()
-  const execute = (config: UseMutationConfig<TAddReflectTemplateMutation>) => {
-    const {parentTemplateId, teamId} = config.variables
+  const execute = (config: UseMutationConfig<TAddPromptTemplateMutation>) => {
+    const {parentTemplateId, teamId, type} = config.variables
     return commit({
       updater: (store) => {
-        const payload = store.getRootField('addReflectTemplate')
+        const payload = store.getRootField('addPromptTemplate')
         if (!payload) return
-        addReflectTemplateTeamUpdater(payload as any, {atmosphere, store})
+        addPromptTemplateTeamUpdater(payload, {atmosphere, store})
       },
       optimisticUpdater: (store) => {
         const nowISO = new Date().toJSON()
@@ -65,10 +69,11 @@ const useAddReflectTemplateMutation = () => {
         const parentTemplate = parentTemplateId ? store.get(parentTemplateId) : null
         const name = parentTemplate ? parentTemplate.getValue('name') + ' Copy' : '*New Template ##'
 
-        const proxyTemplate = createProxyRecord(store, 'ReflectTemplate', {
+        const proxyTemplate = createProxyRecord(store, 'PromptTemplate', {
           name,
           createdAt: nowISO,
-          teamId
+          teamId,
+          type
         })
         proxyTemplate.setLinkedRecord(team, 'team')
         const templateId = proxyTemplate.getValue('id')
@@ -87,7 +92,7 @@ const useAddReflectTemplateMutation = () => {
           })
           proxyTemplate.setLinkedRecords([prompt], 'prompts')
         }
-        handleAddMeetingTemplate(proxyTemplate, 'retrospective', store)
+        handleAddMeetingTemplate(proxyTemplate, type, store)
       },
       ...config
     })
@@ -95,4 +100,4 @@ const useAddReflectTemplateMutation = () => {
   return [execute, submitting] as const
 }
 
-export default useAddReflectTemplateMutation
+export default useAddPromptTemplateMutation

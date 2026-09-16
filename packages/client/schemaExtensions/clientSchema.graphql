@@ -126,7 +126,7 @@ extend type PokerMeetingSettings {
 }
 
 extend type RetrospectiveMeetingSettings {
-  activeTemplate: ReflectTemplate!
+  activeTemplate: PromptTemplate!
   templateSearchQuery: String
 }
 

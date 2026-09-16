@@ -46,7 +46,7 @@ const computeAISuggestedGroups = async (
 
   const promptIds = [...new Set(groupable.map((r) => r.promptId))]
   const prompts = await Promise.all(
-    promptIds.map((id) => dataLoader.get('reflectPrompts').loadNonNull(id))
+    promptIds.map((id) => dataLoader.get('templatePrompts').loadNonNull(id))
   )
   const promptMap = new Map(prompts.map((p) => [p.id, p.question]))
 

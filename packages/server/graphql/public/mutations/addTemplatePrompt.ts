@@ -1,5 +1,5 @@
 import {GraphQLError} from 'graphql'
-import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {positionAfter} from '../../../../client/shared/sortOrder'
 import palettePickerOptions from '../../../../client/styles/palettePickerOptions'
 import {PALETTE} from '../../../../client/styles/paletteV3'
@@ -7,7 +7,7 @@ import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
-import {isPromptTemplateType} from './helpers/isPromptTemplateType'
+import promptTemplateRules, {isPromptTemplateType} from './helpers/promptTemplateRules'
 
 const addTemplatePrompt: MutationResolvers['addTemplatePrompt'] = async (
   _source,
@@ -23,10 +23,10 @@ const addTemplatePrompt: MutationResolvers['addTemplatePrompt'] = async (
     throw new GraphQLError('Template not found')
   }
   const {teamId} = template
-  const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(templateId)
+  const prompts = await dataLoader.get('templatePromptsByTemplateId').load(templateId)
   const activePrompts = prompts.filter(({removedAt}) => !removedAt)
 
-  if (activePrompts.length >= Threshold.MAX_REFLECTION_PROMPTS) {
+  if (activePrompts.length >= promptTemplateRules[template.type].maxPrompts) {
     throw new GraphQLError('Too many prompts')
   }
 
@@ -45,9 +45,9 @@ const addTemplatePrompt: MutationResolvers['addTemplatePrompt'] = async (
     removedAt: null
   }
 
-  await pg.insertInto('ReflectPrompt').values(prompt).execute()
+  await pg.insertInto('TemplatePrompt').values(prompt).execute()
 
-  dataLoader.clearAll('reflectPrompts')
+  dataLoader.clearAll('templatePrompts')
   const data = {promptId: prompt.id}
   publish(SubscriptionChannel.TEAM, teamId, 'AddTemplatePromptSuccess', data, subOptions)
   return data
