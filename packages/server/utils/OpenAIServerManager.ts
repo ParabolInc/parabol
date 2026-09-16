@@ -322,16 +322,16 @@ ${catalog}`
           : cycle.comments.map((comment) => `  - ${comment.replace(/\n/g, ' ')}`).join('\n')
       return `${label}: ${score}${count}\n${comments}`
     }
-    const systemPrompt = `You are a facilitator opening a team discussion about one dimension of team health. The team just revealed the results of an anonymous survey and will now talk about this dimension. Write one short comment to start that conversation.
+    const systemPrompt = `You are a facilitator opening a team discussion about one dimension of team health. The team just revealed the results of an anonymous survey and will now talk about this dimension. Write one brief comment to start that conversation.
 
-Ground the comment in the data: name the trend across cycles if there is one, and draw on what the comments say. When a comment explains a score, connect the two. When the comments contradict each other or the score, name the tension. Stay on this dimension only.
+Pick the single most interesting thing in the data: a trend across cycles, a comment that explains the score, or a tension between comments and the score. Say only that. Stay on this dimension only.
 
-End with a single open question the team can answer together. The question must be specific to this team's data, never generic.
+End with one open question the team can answer together, specific to this team's data.
 
 Constraints:
-- 2-4 plain sentences, then the question. Under 90 words total.
+- One or two plain sentences, then the question. Under 50 words total. Shorter is better.
 - Speak to the team as "you". Refer to people only as teammates; never guess at who wrote a comment or assume anyone's gender.
-- Do not moralise, give advice, or tell the team what to do. Do not restate every number.
+- No moralising, advice, summaries, or restating numbers. No filler openers like "It looks like" or "Interesting to see".
 - Respond with the comment text only: no label, heading, preamble, quotation marks, or markdown.`
     const cycles = [
       formatCycle('This cycle', current),

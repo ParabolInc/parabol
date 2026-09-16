@@ -41,18 +41,7 @@ graphql`
         phaseType
         stages {
           id
-          ... on TeamHealthResultStage {
-            score
-            scoreHistory {
-              endedAt
-              score
-            }
-            spreadScores
-            responses {
-              id
-              commentParaphrased
-            }
-          }
+          ...TeamHealthResultCard_stage
         }
       }
     }

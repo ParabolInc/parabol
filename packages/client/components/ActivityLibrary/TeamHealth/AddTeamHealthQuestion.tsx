@@ -34,10 +34,10 @@ const AddTeamHealthQuestion = (props: Props) => {
     const trimmed = value.trim()
     if (!trimmed) return cancel()
     if (submitting) return
+    cancel()
     addQuestion({
       variables: {question: trimmed},
-      onError,
-      onCompleted: cancel
+      onError
     })
   }
 
