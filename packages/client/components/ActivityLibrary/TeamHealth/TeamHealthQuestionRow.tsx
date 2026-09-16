@@ -138,7 +138,7 @@ const TeamHealthQuestionRow = (props: Props) => {
   return (
     <div className='group flex items-center gap-1.5 rounded-md px-2 py-2 hover:bg-surface-hover'>
       <Checkbox
-        className={cn('ml-3', readOnly && 'border-hairline')}
+        className={cn('ml-5', readOnly && 'border-hairline')}
         checked={isSelected}
         onCheckedChange={(checked) => toggleSelected(checked === true)}
       />

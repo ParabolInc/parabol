@@ -45,7 +45,7 @@ const AddTeamHealthQuestion = (props: Props) => {
     return (
       <Button
         variant='flat'
-        className='flex items-center gap-1 px-2 py-1 font-semibold text-sky-500 text-sm hover:text-sky-600 focus:text-sky-600 active:text-sky-600'
+        className='flex items-center gap-1 px-2 py-1 font-semibold text-accent text-sm'
         onClick={() => (isEditing ? setIsAdding(true) : onEditHint())}
       >
         <Add className='size-4' />
