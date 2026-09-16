@@ -8,6 +8,7 @@ import {
   getClientIntegration,
   isRegisteredClientIntegration
 } from '../../../../integrations/platform/registry'
+import {Providers} from '../../../../types/constEnums'
 import {hasConfluenceScopes} from '../../../../utils/atlassianScopes'
 import ConfluenceProviderRow from '../ProviderRow/ConfluenceProviderRow'
 import GcalProviderRow from '../ProviderRow/GcalProviderRow'
@@ -31,7 +32,6 @@ const query = graphql`
       ...GcalProviderRow_viewer
       teamMember(teamId: $teamId) {
         services {
-          id
           service
           title
           isAvailable
@@ -94,7 +94,7 @@ const ProviderList = (props: Props) => {
       connected: integrationService.isConnected && integrationService.isAvailable,
       component: (
         <IntegrationServiceProviderRow
-          key={integrationService.id}
+          key={integrationService.service}
           teamId={teamId}
           serviceRef={integrationService}
         />
@@ -104,29 +104,29 @@ const ProviderList = (props: Props) => {
   const allIntegrations = [
     ...taskIntegrations,
     {
-      name: 'Atlassian Confluence',
+      name: Providers.CONFLUENCE_NAME,
       connected:
         !!integrations?.atlassian?.accessToken &&
         hasConfluenceScopes(integrations?.atlassian?.scope),
       component: <ConfluenceProviderRow key='confluence' teamId={teamId} viewerRef={viewer} />
     },
     {
-      name: 'Mattermost',
+      name: Providers.MATTERMOST_NAME,
       connected: !!integrations?.mattermost.auth,
       component: <MattermostProviderRow key='mm' teamId={teamId} viewerRef={viewer} />
     },
     {
-      name: 'Slack',
+      name: Providers.SLACK_NAME,
       connected: !!integrations?.slack?.isActive,
       component: <SlackProviderRow key='slack' teamId={teamId} viewer={viewer} />
     },
     {
-      name: 'MS Teams',
+      name: Providers.MSTEAMS_NAME,
       connected: !!integrations?.msTeams.auth,
       component: <MSTeamsProviderRow key='teams' teamId={teamId} viewerRef={viewer} />
     },
     {
-      name: 'Gcal Integration',
+      name: Providers.GCAL_NAME,
       connected: !!integrations?.gcal?.auth,
       component: <GcalProviderRow key='gcal' viewerRef={viewer} teamId={teamId} />
     }

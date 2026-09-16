@@ -1,5 +1,5 @@
 import type {ReactNode} from 'react'
-import {ERROR_POPUP_CLOSED} from '../../utils/AtlassianClientManager'
+import {ERROR_POPUP_CLOSED} from '../../utils/oauthPopupError'
 import type {ClientIntegrationDefinition} from './ClientIntegrationDefinition'
 
 export const getConnectErrorMessage = (

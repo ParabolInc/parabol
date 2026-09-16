@@ -76,36 +76,36 @@ describe('clientIntegrations registry', () => {
     ).toBe('WEB')
   })
 
-  it('only Jira Data Center advertises its scope tab when the team cannot use it', () => {
+  it('only Jira Data Center sets contactUs, the slot both surfaces advertise on', () => {
     const advertised = Object.entries(clientIntegrations)
-      .filter(([, definition]) => definition.capabilities.scoping?.advertiseWhenUnavailable)
-      .map(([key]) => key)
-    expect(advertised).toEqual(['jiraServer'])
-  })
-
-  it('every registered integration ships a settings-row logo', () => {
-    Object.values(clientIntegrations).forEach((definition) => {
-      expect(definition.ProviderLogo).toBeDefined()
-    })
-  })
-
-  it('only Jira Data Center offers contact-us when the team cannot use it', () => {
-    const withContactUs = Object.entries(clientIntegrations)
       .filter(([, definition]) => definition.contactUs)
       .map(([key]) => key)
-    expect(withContactUs).toEqual(['jiraServer'])
+    expect(advertised).toEqual(['jiraServer'])
     expect(clientIntegrations.jiraServer.contactUs).toEqual({
       url: 'https://www.parabol.co/integrations/jira-server',
       clickEvent: 'Clicked Jira Server Request Button'
     })
   })
 
+  it('every registered integration ships its own settings-row logo asset', () => {
+    const sources = Object.values(clientIntegrations).map((definition) => definition.logo.src)
+    sources.forEach((src) => expect(src).toBeTruthy())
+    expect(new Set(sources).size).toBe(sources.length)
+  })
+
+  it('only GitHub carries a dark-theme logo, whose mark is otherwise invisible', () => {
+    const withDarkSrc = Object.entries(clientIntegrations)
+      .filter(([, definition]) => definition.logo.darkSrc)
+      .map(([key]) => key)
+    expect(withDarkSrc).toEqual(['github'])
+  })
+
   it('only Jira Cloud explains what a disconnect takes with it', () => {
     const withSubline = Object.entries(clientIntegrations)
-      .filter(([, definition]) => definition.getDisconnectSubline)
+      .filter(([, definition]) => definition.capabilities.settings?.getDisconnectSubline)
       .map(([key]) => key)
     expect(withSubline).toEqual(['jira'])
-    const jira = clientIntegrations.jira
+    const getDisconnectSubline = clientIntegrations.jira.capabilities.settings?.getDisconnectSubline
     const jiraScopes = ['read:jira-user', 'read:jira-work', 'write:jira-work', 'offline_access']
     const confluenceScopes = [
       'read:page:confluence',
@@ -114,9 +114,9 @@ describe('clientIntegrations registry', () => {
       'write:attachment:confluence',
       'read:content-details:confluence'
     ]
-    expect(jira.getDisconnectSubline?.(jiraScopes)).toBe('Disconnects Jira')
-    expect(jira.getDisconnectSubline?.(confluenceScopes)).toBe('Disconnects Confluence')
-    expect(jira.getDisconnectSubline?.([...jiraScopes, ...confluenceScopes])).toBe(
+    expect(getDisconnectSubline?.(jiraScopes)).toBe('Disconnects Jira')
+    expect(getDisconnectSubline?.(confluenceScopes)).toBe('Disconnects Confluence')
+    expect(getDisconnectSubline?.([...jiraScopes, ...confluenceScopes])).toBe(
       'Disconnects Jira and Confluence'
     )
   })

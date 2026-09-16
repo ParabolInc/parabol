@@ -1,9 +1,23 @@
 import {
   getProviderRowEntries,
   listServiceProviders,
+  type RawServiceProvider,
   type ServiceProvider,
   toConnectProviderRef
 } from '../integrationServiceProviders'
+
+const rawCloud: RawServiceProvider = {
+  id: 'cloud',
+  scope: 'global',
+  clientId: 'c1',
+  serverBaseUrl: 'https://gitlab.com'
+}
+const rawSelfHosted: RawServiceProvider = {
+  id: 'acme',
+  scope: 'team',
+  clientId: 'c2',
+  serverBaseUrl: 'https://gitlab.acme.com'
+}
 
 const cloud: ServiceProvider = {
   id: 'cloud',
@@ -34,7 +48,10 @@ describe('toConnectProviderRef', () => {
 
 describe('listServiceProviders', () => {
   it('lists shared providers first, then the cloud provider', () => {
-    const providers = listServiceProviders({cloudProvider: cloud, sharedProviders: [selfHosted]})
+    const providers = listServiceProviders({
+      cloudProvider: rawCloud,
+      sharedProviders: [rawSelfHosted]
+    })
     expect(providers.map(({id}) => id)).toEqual(['acme', 'cloud'])
   })
 
@@ -131,6 +148,23 @@ describe('getProviderRowEntries', () => {
       providers: [portedProvider, cloud]
     })
     expect(entries[0]!.name).toBe('jira.acme.com:8443')
+  })
+
+  it('falls back to the service title when a shared provider has an unparseable serverBaseUrl', () => {
+    const providerWithBadBaseUrl: ServiceProvider = {
+      id: 'bad-base-url',
+      scope: 'team',
+      clientId: 'c5',
+      serverBaseUrl: 'jira.acme.com',
+      tenantId: null
+    }
+    const entries = getProviderRowEntries({
+      ...base,
+      isConnected: false,
+      auth: null,
+      providers: [providerWithBadBaseUrl, cloud]
+    })
+    expect(entries[0]!.name).toBe('GitLab')
   })
 
   it('falls back to the service title when a shared provider has no serverBaseUrl', () => {

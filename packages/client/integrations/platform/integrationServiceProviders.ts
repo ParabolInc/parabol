@@ -1,19 +1,17 @@
+import type {
+  IntegrationProviderScopeEnum,
+  IntegrationServiceProviderRow_service$data
+} from '../../__generated__/IntegrationServiceProviderRow_service.graphql'
 import type {ConnectProviderRef} from './ClientIntegrationDefinition'
 
-export type ProviderScope = 'global' | 'org' | 'team'
-
 export interface ServiceProvider extends ConnectProviderRef {
-  scope: ProviderScope
+  scope: IntegrationProviderScopeEnum
 }
 
 /** A provider as a Relay fragment on the IntegrationProvider interface returns it; OAuth2 fields are absent on other strategies */
-export interface RawServiceProvider {
-  id: string
-  scope: ProviderScope
-  clientId?: string | null
-  serverBaseUrl?: string | null
-  tenantId?: string | null
-}
+export type RawServiceProvider = NonNullable<
+  IntegrationServiceProviderRow_service$data['cloudProvider']
+>
 
 export const toConnectProviderRef = (provider: RawServiceProvider): ServiceProvider => ({
   id: provider.id,
@@ -40,7 +38,13 @@ export interface ProviderRowEntryModel {
   description: string
 }
 
-const hostOf = (url: string) => new URL(url).host
+const hostOf = (url: string) => {
+  try {
+    return new URL(url).host
+  } catch {
+    return undefined
+  }
+}
 
 export const getProviderRowEntries = (input: {
   title: string
@@ -59,7 +63,7 @@ export const getProviderRowEntries = (input: {
     if (!labelPerProvider || isCloud) return {provider, name: title, description}
     return {
       provider,
-      name: provider.serverBaseUrl ? hostOf(provider.serverBaseUrl) : title,
+      name: (provider.serverBaseUrl && hostOf(provider.serverBaseUrl)) || title,
       description: `Connect to your own ${title} server.`
     }
   })

@@ -21,7 +21,7 @@ const IntegrationServiceConfigMenu = forwardRef<HTMLDivElement, Props>((props, r
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
   const atmosphere = useAtmosphere()
   const {service, title} = definition
-  const disconnectSubline = definition.getDisconnectSubline?.(grantedScopes)
+  const disconnectSubline = definition.capabilities.settings?.getDisconnectSubline(grantedScopes)
 
   const refreshToken = () => {
     definition.connect(atmosphere, {teamId, mutationProps, provider, heldScopes: grantedScopes})

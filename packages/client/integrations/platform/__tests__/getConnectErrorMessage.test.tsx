@@ -1,13 +1,8 @@
-jest.mock('../../../utils/AtlassianClientManager', () => ({
-  __esModule: true,
-  default: {},
-  ERROR_POPUP_CLOSED: 'Popup closed before authorization was complete'
-}))
-
 import {isValidElement} from 'react'
+import {ERROR_POPUP_CLOSED} from '../../../utils/oauthPopupError'
 import {getConnectErrorMessage} from '../getConnectErrorMessage'
 
-const popupClosed = {message: 'Popup closed before authorization was complete'}
+const popupClosed = {message: ERROR_POPUP_CLOSED}
 
 describe('getConnectErrorMessage', () => {
   it('is undefined without an error', () => {

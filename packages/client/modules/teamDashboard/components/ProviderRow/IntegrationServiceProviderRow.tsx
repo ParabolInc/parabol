@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {IntegrationServiceProviderRow_service$key} from '../../../../__generated__/IntegrationServiceProviderRow_service.graphql'
+import ProviderLogo from '../../../../components/ProviderLogo'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import {getConnectErrorMessage} from '../../../../integrations/platform/getConnectErrorMessage'
@@ -75,12 +76,12 @@ const IntegrationServiceProviderRow = (props: Props) => {
   } = integrationService
   if (!isRegisteredClientIntegration(service)) return null
   const definition = getClientIntegration(service)
-  const {description, contactUs, ProviderLogo} = definition
+  const {description, contactUs, logo} = definition
 
   if (!isAvailable) {
     if (!contactUs) return null
     return (
-      <ProviderRowShell providerLogo={<ProviderLogo />}>
+      <ProviderRowShell providerLogo={<ProviderLogo logo={logo} />}>
         <ProviderRowEntry
           name={title}
           description={description}
@@ -133,14 +134,14 @@ const IntegrationServiceProviderRow = (props: Props) => {
 
   if (entries.length === 1) {
     return (
-      <ProviderRowShell providerLogo={<ProviderLogo />}>
+      <ProviderRowShell providerLogo={<ProviderLogo logo={logo} />}>
         <ProviderRowEntry {...entryProps(entries[0]!)} />
       </ProviderRowShell>
     )
   }
 
   return (
-    <ProviderRowShell providerLogo={<ProviderLogo />} headerClassName='pb-0'>
+    <ProviderRowShell providerLogo={<ProviderLogo logo={logo} />} headerClassName='pb-0'>
       <div className='flex w-full flex-col'>
         {entries.map((entry) => (
           <div key={entry.provider.id} className='flex w-full flex-row pb-4'>
