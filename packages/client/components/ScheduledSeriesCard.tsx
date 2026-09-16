@@ -175,7 +175,7 @@ const ScheduledSeriesCard = (props: Props) => {
           <div className='pt-1 pr-2 pb-3 pl-4'>
             <div className='relative flex items-center'>
               {withEditLink(
-                <>
+                <div>
                   <span className='wrap-break-word block pt-1 pr-8 text-fg-primary text-xl leading-6'>
                     {title}
                   </span>
@@ -185,7 +185,7 @@ const ScheduledSeriesCard = (props: Props) => {
                     </TooltipTrigger>
                     {tooltip && <TooltipContent>{tooltip}</TooltipContent>}
                   </Tooltip>
-                </>
+                </div>
               )}
               {canAdmin && (
                 <Menu

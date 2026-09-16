@@ -35,7 +35,7 @@ export const DEFAULT_CARD_THEME: CardTheme = {
 
 export const CATEGORY_THEMES: Record<AllCategoryID, CardTheme> = {
   [QUICK_START_CATEGORY_ID]: {
-    primary: 'bg-grape-700',
+    primary: 'bg-grape-700 dark:bg-grape-600',
     secondary: 'bg-surface-well',
     text: 'text-fg-muted'
   },
@@ -85,7 +85,7 @@ export const CATEGORY_THEMES: Record<AllCategoryID, CardTheme> = {
     text: 'text-fg-muted'
   },
   [FAVORITE_CATEGORY_ID]: {
-    primary: 'bg-grape-700',
+    primary: 'bg-grape-700 dark:bg-grape-600',
     secondary: 'bg-surface-well',
     text: 'text-fg-muted'
   }

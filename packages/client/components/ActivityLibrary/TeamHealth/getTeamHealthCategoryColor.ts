@@ -1,3 +1,5 @@
+import isTempId from '../../../utils/relay/isTempId'
+
 // Full, literal Tailwind class strings so the JIT scanner detects them — never build these dynamically.
 // A category's color is its position in the globally-ordered category list (sorted by createdAt, then
 // name), assigned round-robin so every color is used before any repeats. The tag and dot arrays share
@@ -46,7 +48,8 @@ export const getOrderedTeamHealthCategories = (
   const categoryMap = new Map<string, {id: string; name: string; createdAt: string}>()
   packs.forEach((pack) =>
     pack.questions.forEach((q) => {
-      if (q.category) categoryMap.set(q.category.id, q.category)
+      // skip the optimistic placeholder so it never claims a color or a menu entry
+      if (q.category && !isTempId(q.category.id)) categoryMap.set(q.category.id, q.category)
     })
   )
   return Array.from(categoryMap.values()).sort(

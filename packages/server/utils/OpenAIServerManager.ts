@@ -268,6 +268,45 @@ ${comment}
     }
   }
 
+  async pickTeamHealthCategory(
+    question: string,
+    categories: {id: number; name: string; description: string | null}[]
+  ) {
+    if (!this.openAIApi || categories.length === 0) return null
+
+    const catalog = categories
+      .map((c) => `- ${c.name}${c.description ? `: ${c.description}` : ''}`)
+      .join('\n')
+    const systemPrompt = `You classify team health survey questions into categories. The user message contains a question and a list of categories. Pick the single category that best fits what the question measures.
+
+Output format: respond with the category name exactly as it appears in the list and nothing else. Never invent a category, add a label, or wrap the name in quotation marks or markdown.`
+    const userPrompt = `Question: """
+${question}
+"""
+
+Categories:
+${catalog}`
+
+    try {
+      const response = await this.openAIApi.chat.completions.create({
+        model: AI_MODEL,
+        messages: [
+          {role: 'system', content: systemPrompt},
+          {role: 'user', content: userPrompt}
+        ],
+        reasoning_effort: 'low',
+        max_completion_tokens: 500
+      })
+      const picked = response.choices[0]?.message?.content?.trim().toLowerCase()
+      if (!picked) return null
+      return categories.find((c) => c.name.toLowerCase() === picked) ?? null
+    } catch (e) {
+      const error = e instanceof Error ? e : new Error('OpenAI failed to pickTeamHealthCategory')
+      logError(error)
+      return null
+    }
+  }
+
   async generateTeamHealthDiscussionStarter(input: TeamHealthDiscussionStarterInput) {
     if (!this.openAIApi) return null
     const {category, question, current, priorCycles} = input
@@ -283,16 +322,16 @@ ${comment}
           : cycle.comments.map((comment) => `  - ${comment.replace(/\n/g, ' ')}`).join('\n')
       return `${label}: ${score}${count}\n${comments}`
     }
-    const systemPrompt = `You are a facilitator opening a team discussion about one dimension of team health. The team just revealed the results of an anonymous survey and will now talk about this dimension. Write one short comment to start that conversation.
+    const systemPrompt = `You are a facilitator opening a team discussion about one dimension of team health. The team just revealed the results of an anonymous survey and will now talk about this dimension. Write one brief comment to start that conversation.
 
-Ground the comment in the data: name the trend across cycles if there is one, and draw on what the comments say. When a comment explains a score, connect the two. When the comments contradict each other or the score, name the tension. Stay on this dimension only.
+Pick the single most interesting thing in the data: a trend across cycles, a comment that explains the score, or a tension between comments and the score. Say only that. Stay on this dimension only.
 
-End with a single open question the team can answer together. The question must be specific to this team's data, never generic.
+End with one open question the team can answer together, specific to this team's data.
 
 Constraints:
-- 2-4 plain sentences, then the question. Under 90 words total.
+- One or two plain sentences, then the question. Under 50 words total. Shorter is better.
 - Speak to the team as "you". Refer to people only as teammates; never guess at who wrote a comment or assume anyone's gender.
-- Do not moralise, give advice, or tell the team what to do. Do not restate every number.
+- No moralising, advice, summaries, or restating numbers. No filler openers like "It looks like" or "Interesting to see".
 - Respond with the comment text only: no label, heading, preamble, quotation marks, or markdown.`
     const cycles = [
       formatCycle('This cycle', current),

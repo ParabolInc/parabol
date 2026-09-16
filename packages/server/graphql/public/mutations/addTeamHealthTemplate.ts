@@ -18,9 +18,6 @@ const addTeamHealthTemplate: MutationResolvers['addTeamHealthTemplate'] = async 
   const viewerId = getUserId(authToken)
 
   // VALIDATION
-  if (!parentTemplateId) {
-    throw new GraphQLError('A team health template must be cloned from a parent template')
-  }
   const [allTemplates, viewerTeam, viewer] = await Promise.all([
     dataLoader.get('meetingTemplatesByType').load({meetingType: 'teamHealth', teamId}),
     dataLoader.get('teams').load(teamId),
@@ -28,6 +25,21 @@ const addTeamHealthTemplate: MutationResolvers['addTeamHealthTemplate'] = async 
   ])
   if (!viewerTeam) {
     throw new GraphQLError('Team not found')
+  }
+  if (!parentTemplateId) {
+    const newTemplate = new MeetingTemplate({
+      name: `*New Template #${allTemplates.length + 1}`,
+      teamId,
+      orgId: viewerTeam.orgId,
+      type: 'teamHealth',
+      mainCategory: 'teamHealth',
+      illustrationUrl: '/assets/Organization/aGhostOrg/template/teamHealth.png'
+    })
+    await pg.insertInto('MeetingTemplate').values(newTemplate).execute()
+    analytics.templateMetrics(viewer, newTemplate, 'Template Created')
+    const data = {templateId: newTemplate.id}
+    publish(SubscriptionChannel.TEAM, teamId, 'AddTeamHealthTemplateSuccess', data, subOptions)
+    return data
   }
   const parentTemplate = await dataLoader.get('meetingTemplates').load(parentTemplateId)
   if (!parentTemplate || parentTemplate.type !== 'teamHealth') {

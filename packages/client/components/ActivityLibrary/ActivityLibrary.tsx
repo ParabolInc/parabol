@@ -416,7 +416,7 @@ export const ActivityLibrary = (props: Props) => {
                 >
                   {CATEGORY_ID_TO_NAME[category]}
                   {category === 'teamHealth' && (
-                    <sup className='-top-1 -right-1 absolute rounded-full bg-grape-700 px-1.5 py-0.5 font-semibold text-[10px] text-white leading-none'>
+                    <sup className='-top-1 -right-1 absolute rounded-full bg-grape-700 px-1.5 py-0.5 font-semibold text-[10px] text-white leading-none dark:bg-grape-600'>
                       NEW
                     </sup>
                   )}

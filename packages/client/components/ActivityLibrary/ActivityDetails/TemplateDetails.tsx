@@ -77,12 +77,18 @@ const ACTIVITY_TYPE_DATA_LOOKUP: Record<
   },
   teamHealth: {
     description: (
-      <>
-        Take the pulse of your team by answering research-backed survey questions across categories
-        like psychological safety, dependability, and impact.
-        <br />
-        Each round we ask one new question from each category and track health trends over time.
-      </>
+      <div className='space-y-1'>
+        <div>
+          <b>Pick</b> research-backed questions across categories like psychological safety and
+          impact
+        </div>
+        <div>
+          <b>Answer</b> one new question per category each round
+        </div>
+        <div>
+          <b>Track</b> health trends over time
+        </div>
+      </div>
     ),
     integrationsTip: <>push takeaway tasks to your backlog</>
   }

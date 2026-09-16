@@ -1,10 +1,12 @@
 import {useState} from 'react'
+import Ellipsis from '../../../components/Ellipsis/Ellipsis'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useUpsertTeamHealthQuestionCategoryMutation from '../../../mutations/useUpsertTeamHealthQuestionCategoryMutation'
 import {cn} from '../../../ui/cn'
 import {Menu} from '../../../ui/Menu/Menu'
 import {MenuContent} from '../../../ui/Menu/MenuContent'
 import {MenuItem} from '../../../ui/Menu/MenuItem'
+import isTempId from '../../../utils/relay/isTempId'
 import {getTeamHealthCategoryColor} from './getTeamHealthCategoryColor'
 
 interface Props {
@@ -21,11 +23,23 @@ const TeamHealthCategoryTag = (props: Props) => {
   const [open, setOpen] = useState(false)
   const [newCategory, setNewCategory] = useState('')
 
+  // a temp-id category is the optimistic placeholder while the server picks the real one
+  if (isTempId(category.id)) {
+    return (
+      <span className='select-none whitespace-nowrap rounded-full bg-surface-well px-2 py-0.5 font-semibold text-fg-muted text-xs'>
+        <Ellipsis />
+      </span>
+    )
+  }
+
   const orderedCategoryIds = categories.map((c) => c.id)
   const colorClass = getTeamHealthCategoryColor(category.id, orderedCategoryIds)
   const tag = (
     <span
-      className={cn('whitespace-nowrap rounded-full px-2 py-0.5 font-semibold text-xs', colorClass)}
+      className={cn(
+        'select-none whitespace-nowrap rounded-full px-2 py-0.5 font-semibold text-xs',
+        colorClass
+      )}
     >
       {category.name}
     </span>
@@ -59,12 +73,12 @@ const TeamHealthCategoryTag = (props: Props) => {
       open={open}
       onOpenChange={setOpen}
       trigger={
-        <button type='button' className='cursor-pointer'>
+        <button type='button' className='cursor-pointer' onClick={(e) => e.stopPropagation()}>
           {tag}
         </button>
       }
     >
-      <MenuContent align='end'>
+      <MenuContent align='end' onClick={(e) => e.stopPropagation()}>
         {categories.map((c) => (
           <MenuItem key={c.id} onClick={() => pickCategory(c.name)}>
             <span

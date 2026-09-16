@@ -7,7 +7,6 @@ interface Props {
   response: TeamHealthResultComment_response$key
 }
 
-// a signed comment carries its author underneath; an anonymous one reads as a bare reflection
 const TeamHealthResultComment = (props: Props) => {
   const {response: responseRef} = props
   const response = useFragment(
@@ -25,12 +24,12 @@ const TeamHealthResultComment = (props: Props) => {
   const {commentParaphrased, commentAuthor} = response
   if (!commentParaphrased) return null
   return (
-    <div className='flex flex-col gap-3 rounded-lg bg-surface-well p-4 text-fg-primary'>
-      <div>“{commentParaphrased}”</div>
+    <div className='flex flex-col rounded-lg bg-surface-well p-2 text-fg-primary'>
+      <div className='p-2'>“{commentParaphrased}”</div>
       {commentAuthor && (
-        <div className='mt-auto flex items-center gap-2'>
-          <Avatar picture={commentAuthor.picture} className='size-6' />
-          <span className='font-semibold text-fg-secondary text-sm'>
+        <div className='mt-auto flex items-center justify-end gap-1.5'>
+          <Avatar picture={commentAuthor.picture} className='size-5' />
+          <span className='font-semibold text-[13px] text-fg-secondary'>
             {commentAuthor.preferredName}
           </span>
         </div>
