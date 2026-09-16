@@ -34,7 +34,6 @@ const DeckActivityAvatars = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   // FIXME: DEBUG ONLY!!!
-  // useMockPeekers(stageId)
   const peekingUsers = useMemo(() => {
     const scoredUserIds = new Set(scores.map(({userId}) => userId))
     return hoveringUsers

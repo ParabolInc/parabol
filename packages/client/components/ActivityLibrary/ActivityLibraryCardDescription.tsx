@@ -7,6 +7,7 @@ import type {
 } from '~/__generated__/ActivityLibraryCardDescription_template.graphql'
 import {Comment, LinearScale, Update} from '~/ui/icons'
 import {cn} from '../../ui/cn'
+import {TeamHealthCoverage} from './TeamHealth/TeamHealthCoverage'
 
 interface RetroDescriptionProps {
   prompts: ActivityLibraryCardDescription_template$data['prompts']
@@ -133,6 +134,9 @@ export const ActivityLibraryCardDescription = (props: Props) => {
             description
           }
         }
+        ... on TeamHealthTemplate {
+          ...TeamHealthCoverage_template
+        }
       }
     `,
     templateRef
@@ -146,6 +150,9 @@ export const ActivityLibraryCardDescription = (props: Props) => {
           {template.type === 'poker' && <PokerDescription dimensions={template.dimensions} />}
           {template.type === 'action' && <ActionDescription />}
           {template.type === 'teamPrompt' && <TeamPromptDescription />}
+          {/* a team health template has far too many questions to list, so it gets a coverage
+              summary (categories + counts) instead of the question text */}
+          {template.type === 'teamHealth' && <TeamHealthCoverage templateRef={template} />}
         </div>
       </ScrollArea.Viewport>
       <ScrollArea.Scrollbar orientation='vertical' className='hidden' />

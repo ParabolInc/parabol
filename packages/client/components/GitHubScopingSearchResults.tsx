@@ -80,7 +80,7 @@ const GitHubScopingSearchResults = (props: Props) => {
                         node {
                           __typename
                           ... on _xGitHubIssue {
-                            ...GitHubScopingSelectAllIssues_issues
+                            ...GitHubScopingSelectAllIssues_issues @alias
                             id
                             title
                             number
@@ -114,7 +114,7 @@ const GitHubScopingSearchResults = (props: Props) => {
           queryString
         }
         phases {
-          ...useGetUsedServiceTaskIds_phase
+          ...useGetUsedServiceTaskIds_phase @alias
           phaseType
         }
       }
@@ -137,7 +137,7 @@ const GitHubScopingSearchResults = (props: Props) => {
   const [isEditing, setIsEditing] = useState(false)
   const [persistIntegrationSearchQuery] = usePersistIntegrationSearchQueryMutation()
   const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
-  const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
+  const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase.useGetUsedServiceTaskIds_phase)
   const handleAddIssueClick = () => setIsEditing(true)
 
   const errorMessage = gitHubQueryValidation(queryString) ?? errors?.[0]?.message ?? undefined
@@ -176,7 +176,11 @@ const GitHubScopingSearchResults = (props: Props) => {
     <>
       <GitHubScopingSelectAllIssues
         usedServiceTaskIds={usedServiceTaskIds}
-        issuesRef={issues}
+        issuesRef={
+          issues?.flatMap(({GitHubScopingSelectAllIssues_issues: issue}) =>
+            issue ? [issue] : []
+          ) ?? null
+        }
         meetingId={meetingId}
         persistQuery={persistQuery}
       />

@@ -107,11 +107,11 @@ const ActivityDetails = (props: Props) => {
   // two panes sit side by side, each owning its own scroll, so a long template (e.g. an expanded
   // team health question pack) never pushes the layout past the bottom of the viewport
   return (
-    <div className='flex h-full w-full flex-col overflow-auto bg-surface-card lg:overflow-hidden'>
+    <div className='flex h-full w-full flex-col overflow-auto bg-surface-card [scrollbar-gutter:stable] lg:overflow-hidden'>
       <div className='flex grow flex-col lg:min-h-0 lg:flex-row'>
         <div
           className={cn(
-            'mt-4 w-full grow lg:min-h-0 lg:overflow-y-auto',
+            'mt-4 w-full grow lg:min-h-0 lg:overflow-y-auto lg:[scrollbar-gutter:stable]',
             // keep the last rows clear of the fixed "Done Editing" bar
             isEditing && 'pb-24'
           )}

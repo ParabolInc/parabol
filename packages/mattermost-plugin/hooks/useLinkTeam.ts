@@ -22,7 +22,7 @@ export const useLinkTeam = () => {
             message
           }
         }
-        ...useLinkTeam_success
+        ...useLinkTeam_success @alias
       }
     }
   `)

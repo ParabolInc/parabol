@@ -24,7 +24,7 @@ graphql`
       }
     }
     timelineEvent {
-      ...TimelineEventTeamHealthComplete_timelineEvent @relay(mask: false)
+      ...TimelineEventTeamHealthComplete_timelineEvent @relay(mask: false) @alias
     }
   }
 `
@@ -41,18 +41,7 @@ graphql`
         phaseType
         stages {
           id
-          ... on TeamHealthResultStage {
-            score
-            scoreHistory {
-              endedAt
-              score
-            }
-            spreadScores
-            responses {
-              id
-              commentParaphrased
-            }
-          }
+          ...TeamHealthResultCard_stage
         }
       }
     }

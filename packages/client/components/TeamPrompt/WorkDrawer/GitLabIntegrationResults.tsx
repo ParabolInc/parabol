@@ -55,7 +55,7 @@ const GitLabIntegrationResults = (props: Props) => {
                     node {
                       ... on _xGitLabIssue {
                         id
-                        ...GitLabObjectCard_issue
+                        ...GitLabObjectCard_issue @alias
                       }
                     }
                   }
@@ -84,7 +84,8 @@ const GitLabIntegrationResults = (props: Props) => {
             if (!result) {
               return null
             }
-            return <GitLabObjectCard key={idx} issueRef={result} />
+            if (!result.GitLabObjectCard_issue) return null
+            return <GitLabObjectCard key={idx} issueRef={result.GitLabObjectCard_issue} />
           })
         ) : (
           <div className='flex flex-col items-center pt-12'>

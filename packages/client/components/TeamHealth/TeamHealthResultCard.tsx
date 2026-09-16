@@ -155,7 +155,7 @@ const TeamHealthResultCard = (props: Props) => {
             {isSpreadHidden && (
               <div className='absolute inset-0 flex items-center justify-center px-4'>
                 <span className='rounded-md border border-hairline bg-surface-raised px-3 py-1.5 text-center font-semibold text-fg-secondary text-xs shadow-card'>
-                  Spread hidden until more people answer
+                  Spread hidden to protect anonymity
                 </span>
               </div>
             )}

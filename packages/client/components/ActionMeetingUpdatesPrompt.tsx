@@ -47,11 +47,11 @@ const ActionMeetingUpdatesPrompt = (props: Props) => {
         }
         phases {
           stages {
-            ...ActionMeetingUpdatesPromptLocalStage @relay(mask: false)
+            ...ActionMeetingUpdatesPromptLocalStage @relay(mask: false) @alias
           }
         }
         localStage {
-          ...ActionMeetingUpdatesPromptLocalStage @relay(mask: false)
+          ...ActionMeetingUpdatesPromptLocalStage @relay(mask: false) @alias
         }
       }
     `,
@@ -60,7 +60,8 @@ const ActionMeetingUpdatesPrompt = (props: Props) => {
   const {localStage, team, meetingMembers} = meeting
   const {tasks} = team
   const currentMeetingMember = meetingMembers.find(
-    (meetingMember) => meetingMember.teamMember.id === localStage.teamMemberId
+    (meetingMember) =>
+      meetingMember.teamMember.id === localStage.ActionMeetingUpdatesPromptLocalStage?.teamMemberId
   )
   if (!currentMeetingMember) return null
   const {teamMember, user, isConnectedAt} = currentMeetingMember

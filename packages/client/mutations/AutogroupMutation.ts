@@ -28,7 +28,7 @@ const mutation = graphql`
           message
         }
       }
-      ...AutogroupMutation_meeting @relay(mask: false)
+      ...AutogroupMutation_meeting @relay(mask: false) @alias
     }
   }
 `

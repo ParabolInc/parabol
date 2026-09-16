@@ -49,8 +49,8 @@ const TeamHealthResponsePhase = (props: Props) => {
           phaseType
           stages {
             id
-            ...TeamHealthResponseCard_stage
-            ...TeamHealthEndedResponseCard_stage
+            ...TeamHealthResponseCard_stage @alias
+            ...TeamHealthEndedResponseCard_stage @alias
           }
         }
       }
@@ -109,23 +109,25 @@ const TeamHealthResponsePhase = (props: Props) => {
     if (prevStage) gotoStageId(prevStage.id)
   }
 
+  const responseStageRef = currentStage.TeamHealthResponseCard_stage
+  const endedStageRef = currentStage.TeamHealthEndedResponseCard_stage
   return (
     <div className='mx-auto flex h-full max-w-2xl flex-col items-center justify-center px-6'>
-      {endedAt ? (
+      {endedAt && endedStageRef ? (
         <TeamHealthEndedResponseCard
           key={currentStage.id}
-          stage={currentStage}
+          stage={endedStageRef}
           stageIndex={currentIdx}
           stageCount={responseStages.length}
           orderedCategoryIds={orderedCategoryIds}
           onPrev={onPrev}
           onNext={onNext}
         />
-      ) : (
+      ) : responseStageRef ? (
         <TeamHealthResponseCard
           key={currentStage.id}
           meetingId={meetingId}
-          stage={currentStage}
+          stage={responseStageRef}
           stageIndex={currentIdx}
           stageCount={responseStages.length}
           orderedCategoryIds={orderedCategoryIds}
@@ -136,7 +138,7 @@ const TeamHealthResponsePhase = (props: Props) => {
           onPrev={onPrev}
           onNext={onNext}
         />
-      )}
+      ) : null}
     </div>
   )
 }

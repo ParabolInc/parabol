@@ -86,10 +86,10 @@ const mutation = graphql`
           message
         }
       }
-      ...RemoveOrgUsersMutation_organization @relay(mask: false)
-      ...RemoveOrgUsersMutation_team @relay(mask: false)
-      ...RemoveOrgUsersMutation_task @relay(mask: false)
-      ...RemoveOrgUsersMutation_notification @relay(mask: false)
+      ...RemoveOrgUsersMutation_organization @relay(mask: false) @alias
+      ...RemoveOrgUsersMutation_team @relay(mask: false) @alias
+      ...RemoveOrgUsersMutation_task @relay(mask: false) @alias
+      ...RemoveOrgUsersMutation_notification @relay(mask: false) @alias
     }
   }
 `
