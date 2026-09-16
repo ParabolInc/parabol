@@ -28,8 +28,8 @@ const SpotlightResults = (props: Props) => {
           }
           meeting(meetingId: $meetingId) {
             ... on RetrospectiveMeeting {
-              ...DraggableReflectionCard_meeting
-              ...ReflectionGroup_meeting
+              ...DraggableReflectionCard_meeting @alias
+              ...ReflectionGroup_meeting @alias
               id
               teamId
               localPhase {
@@ -59,13 +59,14 @@ const SpotlightResults = (props: Props) => {
   )
   const {viewer} = data
   const {meeting, similarReflectionGroups} = viewer
+  const reflectionGroupMeetingRef = meeting?.ReflectionGroup_meeting
   const resultsRef = useRef<HTMLDivElement>(null)
   const groupMatrix = useGroupMatrix(similarReflectionGroups, resultsRef, phaseRef)
   const scrollHeight = useResultsHeight(resultsRef)
 
   return (
     <div className='h-full w-full overflow-hidden bg-surface-well pt-10 pb-6'>
-      {!similarReflectionGroups.length ? (
+      {!similarReflectionGroups.length || !reflectionGroupMeetingRef ? (
         <SpotlightResultsEmptyState height={scrollHeight} />
       ) : (
         <div
@@ -78,7 +79,7 @@ const SpotlightResults = (props: Props) => {
               {row.map((group) => (
                 <ReflectionGroup
                   key={group.id}
-                  meetingRef={meeting!}
+                  meetingRef={reflectionGroupMeetingRef}
                   phaseRef={phaseRef}
                   reflectionGroupRef={group}
                 />

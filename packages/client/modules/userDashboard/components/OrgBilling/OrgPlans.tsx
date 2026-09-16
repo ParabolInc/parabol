@@ -51,7 +51,6 @@ const OrgPlans = (props: Props) => {
     graphql`
       fragment OrgPlans_organization on Organization {
         ...DowngradeModal_organization
-        ...LimitExceededWarning_organization
         id
         billingTier
         isBillingLeader

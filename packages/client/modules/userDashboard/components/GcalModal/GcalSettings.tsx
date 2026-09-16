@@ -4,7 +4,7 @@ import type {Dayjs} from 'dayjs'
 import type * as React from 'react'
 import {useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
-import type {GcalModal_team$key} from '../../../../__generated__/GcalModal_team.graphql'
+import type {GcalSettings_team$key} from '../../../../__generated__/GcalSettings_team.graphql'
 import type {GcalVideoTypeEnum} from '../../../../__generated__/StartTeamPromptMutation.graphql'
 import Checkbox from '../../../../components/Checkbox'
 import BasicTextArea from '../../../../components/InputField/BasicTextArea'
@@ -21,7 +21,7 @@ export interface GcalEventInput {
 }
 
 interface Props {
-  teamRef: GcalModal_team$key
+  teamRef: GcalSettings_team$key
   onSettingsChanged: (input: GcalEventInput) => void
   settings: GcalEventInput
 }

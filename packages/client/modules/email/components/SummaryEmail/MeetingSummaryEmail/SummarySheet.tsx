@@ -79,9 +79,9 @@ const SummarySheet = (props: Props) => {
         ...TeamHealthSummary_meeting
         ...MeetingMembersWithTasks_meeting
         ...MeetingMembersWithoutTasks_meeting
-        ...RetroTopics_meeting
+        ...RetroTopics_meeting @alias
         ...SummaryPokerStories_meeting
-        ...TeamPromptResponseSummary_meeting
+        ...TeamPromptResponseSummary_meeting @alias
         ...ExportAllTasks_meeting
         meetingType
         name
@@ -264,17 +264,21 @@ const SummarySheet = (props: Props) => {
         {isDemo && <CreateAccountSection dataCy='create-account-section' />}
         <WholeMeetingSummary meetingRef={meeting} />
         {meetingType === 'teamPrompt' ? (
-          <TeamPromptResponseSummary meetingRef={meeting} />
+          meeting.TeamPromptResponseSummary_meeting && (
+            <TeamPromptResponseSummary meetingRef={meeting.TeamPromptResponseSummary_meeting} />
+          )
         ) : (
           <>
             <MeetingMembersWithTasks meeting={meeting} />
             <MeetingMembersWithoutTasks meeting={meeting} />
-            <RetroTopics
-              isDemo={isDemo}
-              isEmail={referrer === 'email'}
-              meeting={meeting}
-              appOrigin={appOrigin}
-            />
+            {meeting.RetroTopics_meeting && (
+              <RetroTopics
+                isDemo={isDemo}
+                isEmail={referrer === 'email'}
+                meeting={meeting.RetroTopics_meeting}
+                appOrigin={appOrigin}
+              />
+            )}
             <SummaryPokerStories
               appOrigin={appOrigin}
               meeting={meeting}

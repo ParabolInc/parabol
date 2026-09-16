@@ -30,7 +30,7 @@ const mutation = graphql`
           message
         }
       }
-      ...UpsertTeamPromptResponseMutation_meeting @relay(mask: false)
+      ...UpsertTeamPromptResponseMutation_meeting @relay(mask: false) @alias
     }
   }
 `

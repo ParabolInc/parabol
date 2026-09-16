@@ -20,13 +20,17 @@ const mutation = graphql`
           message
         }
       }
-      ...FlagReadyToAdvanceMutation_meeting @relay(mask: false)
+      ...FlagReadyToAdvanceMutation_meeting @relay(mask: false) @alias
     }
   }
 `
 
 type Stage = NonNullable<
-  NonNullable<TFlagReadyToAdvanceMutation['response']['flagReadyToAdvance']>['stage']
+  NonNullable<
+    NonNullable<
+      TFlagReadyToAdvanceMutation['response']['flagReadyToAdvance']
+    >['FlagReadyToAdvanceMutation_meeting']
+  >['stage']
 >
 
 const FlagReadyToAdvanceMutation: SimpleMutation<TFlagReadyToAdvanceMutation> = (

@@ -7,12 +7,15 @@ import {Link, useNavigate, useParams} from 'react-router'
 import type {CreateNewActivityQuery} from '~/__generated__/CreateNewActivityQuery.graphql'
 import estimatedEffortTemplate from '../../../../../static/images/illustrations/estimatedEffortTemplate.png'
 import newTemplate from '../../../../../static/images/illustrations/newTemplate.png'
+import teamHealthTemplate from '../../../../../static/images/illustrations/teamHealth.png'
 import type {useAddPokerTemplateMutation$data} from '../../../__generated__/useAddPokerTemplateMutation.graphql'
 import type {useAddReflectTemplateMutation$data} from '../../../__generated__/useAddReflectTemplateMutation.graphql'
+import type {useAddTeamHealthTemplateMutation$data} from '../../../__generated__/useAddTeamHealthTemplateMutation.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import useAddPokerTemplateMutation from '../../../mutations/useAddPokerTemplateMutation'
 import useAddReflectTemplateMutation from '../../../mutations/useAddReflectTemplateMutation'
+import useAddTeamHealthTemplateMutation from '../../../mutations/useAddTeamHealthTemplateMutation'
 import {Button} from '../../../ui/Button/Button'
 import {cn} from '../../../ui/cn'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
@@ -38,12 +41,14 @@ const Bold = (props: ComponentPropsWithoutRef<'span'>) => {
   )
 }
 
-type ActivityType = 'retrospective' | 'poker'
+type ActivityType = 'retrospective' | 'poker' | 'teamHealth'
 
 type SupportedActivity = {
   title: string
   type: ActivityType
   includedCategories: CategoryID[]
+  // the background illustration behind the card image
+  imageCategory: CategoryID
   image: string
   phases: React.ReactNode
 }
@@ -53,6 +58,7 @@ const SUPPORTED_CUSTOM_ACTIVITIES: SupportedActivity[] = [
     title: 'Process Feedback',
     type: 'retrospective',
     includedCategories: ['retrospective', 'feedback', 'strategy'],
+    imageCategory: 'retrospective',
     image: newTemplate,
     phases: (
       <>
@@ -78,6 +84,7 @@ const SUPPORTED_CUSTOM_ACTIVITIES: SupportedActivity[] = [
     title: 'Estimate Items',
     type: 'poker',
     includedCategories: ['estimation'],
+    imageCategory: 'estimation',
     image: estimatedEffortTemplate,
     phases: (
       <>
@@ -89,6 +96,32 @@ const SUPPORTED_CUSTOM_ACTIVITIES: SupportedActivity[] = [
         </div>
         <div>
           <Bold>Push</Bold> esimations to your backlog
+        </div>
+      </>
+    )
+  },
+  {
+    title: 'Measure Team Health',
+    type: 'teamHealth',
+    includedCategories: ['teamHealth'],
+    imageCategory: 'teamHealth',
+    image: teamHealthTemplate,
+    phases: (
+      <>
+        <div>
+          <Bold>Pick</Bold> questions from research-backed packs
+        </div>
+        <div>
+          <Bold>Run</Bold> across one or many teams in your org
+        </div>
+        <div>
+          <Bold>Answer</Bold> anonymously on a 1–5 scale
+        </div>
+        <div>
+          <Bold>Reveal</Bold> results by category
+        </div>
+        <div>
+          <Bold>Discuss</Bold> where each team can improve
         </div>
       </>
     )
@@ -149,13 +182,17 @@ export const CreateNewActivity = (props: Props) => {
   const {submitting, error, submitMutation, onError, onCompleted} = useMutationProps()
   const [executeAddReflectTemplate] = useAddReflectTemplateMutation()
   const [executeAddPokerTemplate] = useAddPokerTemplateMutation()
+  const [executeAddTeamHealthTemplate] = useAddTeamHealthTemplateMutation()
   const navigate = useNavigate()
 
   if (!selectedTeam) return null
+  // team health has no free-template allowance, so starter teams always see the upgrade CTA
   const freeCustomTemplatesRemaining =
     selectedActivity.type === 'retrospective'
       ? freeCustomRetroTemplatesRemaining
-      : freeCustomPokerTemplatesRemaining
+      : selectedActivity.type === 'poker'
+        ? freeCustomPokerTemplatesRemaining
+        : 0
 
   const handleCreateRetroTemplate = () => {
     if (submitting) {
@@ -167,7 +204,8 @@ export const CreateNewActivity = (props: Props) => {
       variables: {teamId: selectedTeam.id},
       onError,
       onCompleted: (res: useAddReflectTemplateMutation$data) => {
-        const templateId = res.addReflectTemplate?.reflectTemplate?.id
+        const templateId =
+          res.addReflectTemplate?.useAddReflectTemplateMutation_team?.reflectTemplate?.id
         if (templateId) {
           navigate(`/activity-library/details/${templateId}`, {
             state: {prevCategory: categoryId, edit: true}
@@ -188,7 +226,28 @@ export const CreateNewActivity = (props: Props) => {
       variables: {teamId: selectedTeam.id},
       onError,
       onCompleted: (res: useAddPokerTemplateMutation$data) => {
-        const templateId = res.addPokerTemplate?.pokerTemplate?.id
+        const templateId = res.addPokerTemplate?.useAddPokerTemplateMutation_team?.pokerTemplate?.id
+        if (templateId) {
+          navigate(`/activity-library/details/${templateId}`, {
+            state: {prevCategory: categoryId, edit: true}
+          })
+        }
+        onCompleted()
+      }
+    })
+  }
+
+  const handleCreateTeamHealthTemplate = () => {
+    if (submitting) {
+      return
+    }
+
+    submitMutation()
+    executeAddTeamHealthTemplate({
+      variables: {teamId: selectedTeam.id},
+      onError,
+      onCompleted: (res: useAddTeamHealthTemplateMutation$data) => {
+        const templateId = res.addTeamHealthTemplate?.teamHealthTemplate?.id
         if (templateId) {
           navigate(`/activity-library/details/${templateId}`, {
             state: {prevCategory: categoryId, edit: true}
@@ -209,7 +268,8 @@ export const CreateNewActivity = (props: Props) => {
 
   const createCustomActivityLookup: Record<ActivityType, () => void> = {
     retrospective: handleCreateRetroTemplate,
-    poker: handleCreatePokerTemplate
+    poker: handleCreatePokerTemplate,
+    teamHealth: handleCreateTeamHealthTemplate
   }
 
   const handleActivitySelection = (activityType: ActivityType) => {
@@ -253,10 +313,7 @@ export const CreateNewActivity = (props: Props) => {
                   title={activity.title}
                   type={activity.type}
                 >
-                  <ActivityCardImage
-                    src={activity.image}
-                    category={activity.type === 'retrospective' ? 'retrospective' : 'estimation'}
-                  />
+                  <ActivityCardImage src={activity.image} category={activity.imageCategory} />
                 </ActivityCard>
                 <div className='flex gap-x-3 p-3'>
                   {activity.includedCategories.map((badge) => (

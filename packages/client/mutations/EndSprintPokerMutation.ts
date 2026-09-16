@@ -50,7 +50,7 @@ graphql`
       }
     }
     timelineEvent {
-      ...TimelineEventPokerComplete_timelineEvent @relay(mask: false)
+      ...TimelineEventPokerComplete_timelineEvent @relay(mask: false) @alias
     }
     removedTaskIds
   }
@@ -64,7 +64,7 @@ const mutation = graphql`
           message
         }
       }
-      ...EndSprintPokerMutation_team @relay(mask: false)
+      ...EndSprintPokerMutation_team @relay(mask: false) @alias
     }
   }
 `

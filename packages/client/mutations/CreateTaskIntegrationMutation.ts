@@ -69,12 +69,12 @@ graphql`
           }
           url
         }
-        ...TaskIntegrationLinkIntegrationGitHub
-        ...TaskIntegrationLinkIntegrationJira
-        ...TaskIntegrationLinkIntegrationJiraServer
-        ...TaskIntegrationLinkIntegrationGitLab
-        ...TaskIntegrationLinkIntegrationAzure
-        ...TaskIntegrationLinkIntegrationLinear
+        ...TaskIntegrationLinkIntegrationGitHub @alias
+        ...TaskIntegrationLinkIntegrationJira @alias
+        ...TaskIntegrationLinkIntegrationJiraServer @alias
+        ...TaskIntegrationLinkIntegrationGitLab @alias
+        ...TaskIntegrationLinkIntegrationAzure @alias
+        ...TaskIntegrationLinkIntegrationLinear @alias
       }
       updatedAt
       teamId

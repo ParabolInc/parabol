@@ -43,7 +43,7 @@ const mutation = graphql`
           message
         }
       }
-      ...JoinTeamMutation_team @relay(mask: false)
+      ...JoinTeamMutation_team @relay(mask: false) @alias
     }
   }
 `

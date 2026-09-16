@@ -59,7 +59,10 @@ graphql`
   }
 `
 
-const useMakeStageSummaries = (phaseRef: useMakeStageSummaries_phase$key, localStageId: string) => {
+const useMakeStageSummaries = (
+  phaseRef: useMakeStageSummaries_phase$key | null | undefined,
+  localStageId: string
+) => {
   const estimatePhase = readInlineData(
     graphql`
       fragment useMakeStageSummaries_phase on EstimatePhase @inline {
@@ -72,8 +75,9 @@ const useMakeStageSummaries = (phaseRef: useMakeStageSummaries_phase$key, localS
     phaseRef
   )
   return useMemo(() => {
-    const {stages} = estimatePhase
     const summaries = [] as StageSummary[]
+    if (!estimatePhase) return summaries
+    const {stages} = estimatePhase
     for (let i = 0; i < stages.length; i++) {
       const stage = stages[i]!
       const {taskId, task} = stage

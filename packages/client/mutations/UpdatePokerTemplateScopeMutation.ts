@@ -39,7 +39,7 @@ const mutation = graphql`
           message
         }
       }
-      ...UpdatePokerTemplateScopeMutation_organization @relay(mask: false)
+      ...UpdatePokerTemplateScopeMutation_organization @relay(mask: false) @alias
     }
   }
 `

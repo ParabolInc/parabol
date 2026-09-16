@@ -118,7 +118,7 @@ const LinearScopingSearchResults = (props: Props) => {
           selectedProjectsIds
         }
         phases {
-          ...useGetUsedServiceTaskIds_phase
+          ...useGetUsedServiceTaskIds_phase @alias
           phaseType
         }
       }
@@ -139,7 +139,7 @@ const LinearScopingSearchResults = (props: Props) => {
     : null
   const [isEditing, setIsEditing] = useState(false)
   const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
-  const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
+  const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase.useGetUsedServiceTaskIds_phase)
   const handleAddIssueClick = () => setIsEditing(true)
 
   if (!issues) return <MockScopingList />
