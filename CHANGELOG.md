@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.45.1](https://github.com/ParabolInc/parabol/compare/v13.45.0...v13.45.1) (2026-09-16)
+
+
+### Fixed
+
+* cleanup unused files in repo ([#13495](https://github.com/ParabolInc/parabol/issues/13495)) ([1d92d1b](https://github.com/ParabolInc/parabol/commit/1d92d1b91fecdd1ad242606dd2d4dad073351524))
+* Relay alias ambiguous fragments ([#13391](https://github.com/ParabolInc/parabol/issues/13391)) ([5c7b9b3](https://github.com/ParabolInc/parabol/commit/5c7b9b3d96843b0cb7c3781df49aeb6991b95b9f))
+* Team Health Activity Library tooltips and new activity ([#13508](https://github.com/ParabolInc/parabol/issues/13508)) ([07eb0b6](https://github.com/ParabolInc/parabol/commit/07eb0b6a41ff64577acfc0b7ac76d595022c13c8))
+* vuln bumps ([#13507](https://github.com/ParabolInc/parabol/issues/13507)) ([7341da5](https://github.com/ParabolInc/parabol/commit/7341da573c4951402610d54fa7d83e26b15f5a89))
+
 ## [13.45.0](https://github.com/ParabolInc/parabol/compare/v13.44.0...v13.45.0) (2026-09-15)
 
 
