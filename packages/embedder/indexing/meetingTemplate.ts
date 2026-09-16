@@ -1,16 +1,15 @@
 import type {DataLoaderInstance} from 'parabol-server/dataloader/RootDataLoader'
 import type MeetingTemplate from '../../server/database/types/MeetingTemplate'
 import type PokerTemplate from '../../server/database/types/PokerTemplate'
-import type ReflectTemplate from '../../server/database/types/ReflectTemplate'
 import {inferLanguage} from '../inferLanguage'
 
 const MIN_TEXT_LENGTH = 10
 
 const createTextFromRetrospectiveMeetingTemplate = async (
-  template: ReflectTemplate,
+  template: MeetingTemplate,
   dataLoader: DataLoaderInstance
 ) => {
-  const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(template.id)
+  const prompts = await dataLoader.get('templatePromptsByTemplateId').load(template.id)
   const promptText = prompts
     .map(({question, description}) => {
       return `${question}\n${description}`
