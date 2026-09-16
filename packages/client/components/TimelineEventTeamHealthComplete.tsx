@@ -54,9 +54,15 @@ const TimelineEventTeamHealthComplete = (props: Props) => {
         {'Your team checked in on how it’s doing.'}
         <br />
         {!locked && (
-          <StyledLink className='font-semibold' to={summaryURL}>
-            Review a summary
-          </StyledLink>
+          <>
+            <StyledLink className='font-semibold' to={`/meet/${meetingId}/result/1`}>
+              See results
+            </StyledLink>
+            {' or '}
+            <StyledLink className='font-semibold' to={summaryURL}>
+              review a summary
+            </StyledLink>
+          </>
         )}
       </TimelineEventBody>
     </TimelineEventCard>

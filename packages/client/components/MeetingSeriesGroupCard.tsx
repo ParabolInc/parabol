@@ -99,6 +99,8 @@ const MeetingSeriesGroupCard = (props: Props) => {
     .filter(Boolean)
     .sort()[0]
   const teamCount = allSeries.length
+  // nothing gets ended when no team is mid-meeting, so there is nothing to confirm
+  const hasActiveMeeting = allSeries.some((series) => series.activeMeetings.length > 0)
 
   const onStartNow = () => {
     if (isStarting) return
@@ -200,7 +202,9 @@ const MeetingSeriesGroupCard = (props: Props) => {
                       : `Applies to all ${teamCount} teams`}
                   </div>
                   {isViewerOwner && (
-                    <MenuItem onSelect={() => setIsStartNowOpen(true)}>
+                    <MenuItem
+                      onSelect={() => (hasActiveMeeting ? setIsStartNowOpen(true) : onStartNow())}
+                    >
                       <PlayArrowIcon className={MENU_ITEM_ICON} />
                       Start next meeting now
                     </MenuItem>
