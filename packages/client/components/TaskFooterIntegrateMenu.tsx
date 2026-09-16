@@ -5,14 +5,12 @@ import type {TaskFooterIntegrateMenu_task$key} from '../__generated__/TaskFooter
 import type {TaskFooterIntegrateMenuQuery} from '../__generated__/TaskFooterIntegrateMenuQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {makePlaceholder, useIsIntegrated} from '../hooks/useIsIntegrated'
-import type {MenuProps} from '../hooks/useMenu'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
 import CreateTaskIntegrationMutation from '../mutations/CreateTaskIntegrationMutation'
 import TaskFooterIntegrateMenuList from './TaskFooterIntegrateMenuList'
 import TaskFooterIntegrateMenuSignup from './TaskFooterIntegrateMenuSignup'
 
 interface Props {
-  menuProps: MenuProps
   mutationProps: MenuMutationProps
   task: TaskFooterIntegrateMenu_task$key
   queryRef: PreloadedQuery<TaskFooterIntegrateMenuQuery>
@@ -31,23 +29,18 @@ const query = graphql`
             id
           }
         }
-        integrations {
-          ...useIsIntegrated_integrations
-          ...TaskFooterIntegrateMenuSignup_TeamMemberIntegrations
-        }
+        ...useIsIntegrated_teamMember
       }
       viewerTeamMember: teamMember(userId: null, teamId: $teamId) {
-        integrations {
-          ...useIsIntegrated_integrations
-          ...TaskFooterIntegrateMenuSignup_TeamMemberIntegrations
-        }
+        ...TaskFooterIntegrateMenuSignup_teamMember
+        ...useIsIntegrated_teamMember
       }
     }
   }
 `
 
 const TaskFooterIntegrateMenu = (props: Props) => {
-  const {menuProps, mutationProps, task: taskRef, queryRef} = props
+  const {mutationProps, task: taskRef, queryRef} = props
   const data = usePreloadedQuery<TaskFooterIntegrateMenuQuery>(query, queryRef)
   const {viewer} = data
   const task = useFragment(
@@ -63,10 +56,9 @@ const TaskFooterIntegrateMenu = (props: Props) => {
   const atmosphere = useAtmosphere()
 
   const {id: viewerId, viewerTeamMember, assigneeTeamMember} = viewer
-  const isViewerIntegrated = useIsIntegrated(viewerTeamMember?.integrations)
-  const isAssigneeIntegrated = useIsIntegrated(assigneeTeamMember?.integrations)
+  const isViewerIntegrated = useIsIntegrated(viewerTeamMember)
+  const isAssigneeIntegrated = useIsIntegrated(assigneeTeamMember)
   if (!assigneeTeamMember || !viewerTeamMember) return null
-  const {integrations: viewerIntegrations} = viewerTeamMember
   const {user: assigneeUser, prevUsedRepoIntegrations} = assigneeTeamMember
   const {preferredName: assigneeName} = assigneeUser
   const {teamId, userId, id: taskId} = task
@@ -97,7 +89,6 @@ const TaskFooterIntegrateMenu = (props: Props) => {
     const label = 'Push with your credentials'
     return (
       <TaskFooterIntegrateMenuList
-        menuProps={menuProps}
         placeholder={placeholder}
         teamId={task.teamId}
         onPushToIntegration={handlePushToIntegration}
@@ -111,7 +102,6 @@ const TaskFooterIntegrateMenu = (props: Props) => {
     const label = isViewerAssignee ? undefined : `Push as ${assigneeName}`
     return (
       <TaskFooterIntegrateMenuList
-        menuProps={menuProps}
         placeholder={placeholder}
         teamId={task.teamId}
         onPushToIntegration={handlePushToIntegration}
@@ -125,11 +115,10 @@ const TaskFooterIntegrateMenu = (props: Props) => {
 
   return (
     <TaskFooterIntegrateMenuSignup
-      menuProps={menuProps}
       mutationProps={mutationProps}
       teamId={teamId}
       label={label}
-      integrationsRef={viewerIntegrations}
+      teamMemberRef={viewerTeamMember}
     />
   )
 }

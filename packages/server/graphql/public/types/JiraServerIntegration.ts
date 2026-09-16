@@ -1,9 +1,7 @@
-import {sql} from 'kysely'
 import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
 import JiraServerRestManager from '../../../integrations/jiraServer/JiraServerRestManager'
-import {selectIntegrationSearchQuery} from '../../../postgres/select'
-import type {TeamMember} from '../../../postgres/types'
+import type {JiraIntegrationSearchQuery, TeamMember} from '../../../postgres/types'
 import type {IntegrationProviderJiraServer} from '../../../postgres/types/IntegrationProvider'
 import {getUserId} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
@@ -183,32 +181,9 @@ const JiraServerIntegration: JiraServerIntegrationResolvers = {
     }
 
     const {providerId} = auth
-    const searchQueries = await selectIntegrationSearchQuery()
-      .where('teamId', '=', teamId)
-      .where('userId', '=', userId)
-      .where('service', '=', 'jiraServer')
-      .$if(!providerId, (qb) => qb.where('providerId', 'is', null))
-      .$if(!!providerId, (qb) => qb.where('providerId', '=', providerId))
-      .where('lastUsedAt', '>', sql<Date>`NOW() - INTERVAL '60 days'`)
-      .orderBy('lastUsedAt', 'desc')
-      .limit(5)
-      .execute()
-
-    return searchQueries.map((searchQuery) => {
-      const query = searchQuery.query as {
-        queryString: string | null
-        isJQL: boolean
-        projectKeyFilters: string[] | null
-      }
-
-      return {
-        id: String(searchQuery.id),
-        queryString: query.queryString || '',
-        isJQL: query.isJQL,
-        projectKeyFilters: query.projectKeyFilters || [],
-        lastUsedAt: searchQuery.lastUsedAt.toJSON()
-      }
-    })
+    return dataLoader
+      .get('recentIntegrationSearchQueries')
+      .load({teamId, userId, providerId}) as Promise<JiraIntegrationSearchQuery[]>
   }
 }
 

@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {EditableTemplateScaleValueColor_scale$key} from '~/__generated__/EditableTemplateScaleValueColor_scale.graphql'
 import PlainButton from '~/components/PlainButton/PlainButton'
 import {ArrowDropDown as ArrowDropDownIcon} from '~/ui/icons'
-import {MenuPosition} from '../../../hooks/useCoords'
-import useMenu from '../../../hooks/useMenu'
+import {Menu} from '../../../ui/Menu/Menu'
 import ScaleValuePalettePicker from './ScaleValuePalettePicker'
 
 interface Props {
@@ -24,29 +24,31 @@ const EditableTemplateScaleValueColor = (props: Props) => {
     `,
     scaleRef
   )
-  const {menuProps, menuPortal, originRef, togglePortal} = useMenu<HTMLButtonElement>(
-    MenuPosition.UPPER_LEFT
-  )
+  const [isOpen, setIsOpen] = useState(false)
   return (
-    <PlainButton
-      ref={originRef}
-      className='group relative block h-6 w-6 flex-1 shrink-0 cursor-pointer p-1'
-      onClick={togglePortal}
+    <Menu
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      trigger={
+        <PlainButton className='group relative block h-6 w-6 flex-1 shrink-0 cursor-pointer p-1'>
+          <div
+            className='m-px h-3.5 w-3.5 rounded-full'
+            style={{backgroundColor: scaleValueColor}}
+          />
+          <div className='-right-1.5 absolute bottom-0 h-6 w-3 text-fg-secondary opacity-0 transition-opacity duration-300 ease-[cubic-bezier(0,0,.2,1)] group-hover:opacity-100 [&_svg]:text-[18px]'>
+            <ArrowDropDownIcon />
+          </div>
+        </PlainButton>
+      }
     >
-      <div className='m-px h-3.5 w-3.5 rounded-full' style={{backgroundColor: scaleValueColor}} />
-      <div className='-right-1.5 absolute bottom-0 h-6 w-3 text-fg-secondary opacity-0 transition-opacity duration-300 ease-[cubic-bezier(0,0,.2,1)] group-hover:opacity-100 [&_svg]:text-[18px]'>
-        <ArrowDropDownIcon />
-      </div>
-      {menuPortal(
-        <ScaleValuePalettePicker
-          menuProps={menuProps}
-          scaleValueLabel={scaleValueLabel}
-          scaleValueColor={scaleValueColor}
-          scale={scale}
-          setScaleValueColor={setScaleValueColor}
-        />
-      )}
-    </PlainButton>
+      <ScaleValuePalettePicker
+        scaleValueLabel={scaleValueLabel}
+        scaleValueColor={scaleValueColor}
+        scale={scale}
+        setScaleValueColor={setScaleValueColor}
+        onClose={() => setIsOpen(false)}
+      />
+    </Menu>
   )
 }
 

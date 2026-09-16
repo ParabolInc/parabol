@@ -15,7 +15,8 @@ import {
   NoteAdd as NoteAddIcon,
   GridOn as TableIcon,
   TextFields as TextFieldsIcon,
-  Title as TitleIcon
+  Title as TitleIcon,
+  Toc as TocIcon
 } from '~/ui/icons'
 
 declare module '@tiptap/core' {
@@ -118,6 +119,13 @@ export const slashCommands = [
         searchTerms: ['codeblock'],
         icon: CodeIcon,
         action: (editor: Editor) => editor.chain().focus().toggleCodeBlock().run()
+      },
+      {
+        title: 'Table of contents',
+        description: 'Navigate the headings on this page',
+        searchTerms: ['toc', 'table of contents', 'contents', 'outline', 'navigation', 'headings'],
+        icon: TocIcon,
+        action: (editor: Editor) => editor.chain().focus().setTableOfContents().run()
       },
       {
         title: 'Details',

@@ -1,6 +1,6 @@
 import * as Y from 'yjs'
+import {escapeHtml} from '../escapeHtml'
 import {statusMacro} from './convertTipTapToConfluenceStorage'
-import {escapeXml} from './escapeXhtml'
 import type {StorageConversionCtx, StorageConversionResult} from './types'
 
 // Mirrors packages/client/tiptap/extensions/database/data.ts (yjs layout):
@@ -36,7 +36,7 @@ const renderCell = (value: string | null, type: ColumnMeta['type']): string => {
         .map((tag) => statusMacro('Grey', tag))
         .join(' ')
     default:
-      return escapeXml(value)
+      return escapeHtml(value)
   }
 }
 
@@ -50,7 +50,7 @@ export const convertDatabasePageToStorage = (
   const data = ydoc.getMap<unknown>('data')
 
   const columns = columnIds.map((id) => columnMeta.get(id) ?? {name: '', type: 'text' as const})
-  const headerRow = `<tr>${columns.map((col) => `<th>${escapeXml(col.name)}</th>`).join('')}</tr>`
+  const headerRow = `<tr>${columns.map((col) => `<th>${escapeHtml(col.name)}</th>`).join('')}</tr>`
   const bodyRows = rowIds
     .map((rowId) => {
       const cells = readRowCells(data.get(rowId))
@@ -61,8 +61,8 @@ export const convertDatabasePageToStorage = (
     })
     .join('')
 
-  const note = `<p><em>Snapshot from Parabol · ${escapeXml(ctx.snapshotDate)} · <a href="${escapeXml(ctx.parabolPageUrl)}">live version ↗</a></em></p>`
-  const footer = `<p><em>Exported from Parabol · <a href="${escapeXml(ctx.parabolPageUrl)}">Open the live page</a></em></p>`
+  const note = `<p><em>Snapshot from Parabol · ${escapeHtml(ctx.snapshotDate)} · <a href="${escapeHtml(ctx.parabolPageUrl)}">live version ↗</a></em></p>`
+  const footer = `<p><em>Exported from Parabol · <a href="${escapeHtml(ctx.parabolPageUrl)}">Open the live page</a></em></p>`
   return {
     title: ctx.pageTitle,
     xhtml: `${note}<table><tbody>${headerRow}${bodyRows}</tbody></table>${footer}`,

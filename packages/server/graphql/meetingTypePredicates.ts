@@ -6,6 +6,7 @@ import type {
   EstimateStage,
   NewMeetingPhase,
   NewMeetingStage,
+  TeamHealthResultPhase,
   TeamPromptResponsesPhase
 } from '../postgres/types/NewMeetingPhase'
 
@@ -24,3 +25,6 @@ export const isDiscussPhase = (phase: NewMeetingPhase): phase is DiscussPhase =>
 
 export const isEstimatePhase = (phase: NewMeetingPhase): phase is EstimatePhase =>
   phase.phaseType === 'ESTIMATE'
+
+export const isTeamHealthResultPhase = (phase: NewMeetingPhase): phase is TeamHealthResultPhase =>
+  phase.phaseType === 'TEAM_HEALTH_RESULT'

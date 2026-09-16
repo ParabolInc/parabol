@@ -2,21 +2,19 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {SelectSharingScopeDropdown_template$key} from '../__generated__/SelectSharingScopeDropdown_template.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import type {MenuProps} from '../hooks/useMenu'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerTemplateScopeMutation from '../mutations/UpdatePokerTemplateScopeMutation'
 import UpdateReflectTemplateScopeMutation from '../mutations/UpdateReflectTemplateScopeMutation'
+import {MenuContent} from '../ui/Menu/MenuContent'
+import {MenuItem} from '../ui/Menu/MenuItem'
 import DropdownMenuIconItemLabel from './DropdownMenuIconItemLabel'
-import Menu from './Menu'
-import MenuItem from './MenuItem'
 
 interface Props {
-  menuProps: MenuProps
   template: SelectSharingScopeDropdown_template$key
 }
 
 const SelectSharingScopeDropdown = (props: Props) => {
-  const {menuProps, template: templateRef} = props
+  const {template: templateRef} = props
   const template = useFragment(
     graphql`
       fragment SelectSharingScopeDropdown_template on MeetingTemplate {
@@ -56,28 +54,23 @@ const SelectSharingScopeDropdown = (props: Props) => {
     }
   }
   return (
-    <Menu ariaLabel={'Select the suitable scope for sharing'} {...menuProps}>
+    <MenuContent align='start' className='min-w-80'>
       {scope === 'TEAM' ? null : (
-        <MenuItem
-          label={<DropdownMenuIconItemLabel label={`Share only with ${teamName}`} icon={'group'} />}
-          onClick={setScope('TEAM')}
-        />
+        <MenuItem onClick={setScope('TEAM')}>
+          <DropdownMenuIconItemLabel label={`Share only with ${teamName}`} icon={'group'} />
+        </MenuItem>
       )}
       {scope === 'ORGANIZATION' ? null : (
-        <MenuItem
-          label={
-            <DropdownMenuIconItemLabel label={`Share with all of ${orgName}`} icon={'business'} />
-          }
-          onClick={setScope('ORGANIZATION')}
-        />
+        <MenuItem onClick={setScope('ORGANIZATION')}>
+          <DropdownMenuIconItemLabel label={`Share with all of ${orgName}`} icon={'business'} />
+        </MenuItem>
       )}
       {scope === 'PUBLIC' ? null : (
-        <MenuItem
-          label={<DropdownMenuIconItemLabel label={`Share with the world`} icon={'public'} />}
-          onClick={setScope('PUBLIC')}
-        />
+        <MenuItem onClick={setScope('PUBLIC')}>
+          <DropdownMenuIconItemLabel label={`Share with the world`} icon={'public'} />
+        </MenuItem>
       )}
-    </Menu>
+    </MenuContent>
   )
 }
 

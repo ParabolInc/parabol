@@ -14,29 +14,12 @@ interface Props {
 const LinearScopingSearchBar = (props: Props) => {
   const {meetingRef} = props
 
-  graphql`
-    fragment LinearScopingSearchBarLinearIntegration on LinearIntegration {
-      linearSearchQueries {
-        queryString
-      }
-    }
-  `
-
   const meeting = useFragment(
     graphql`
       fragment LinearScopingSearchBar_meeting on PokerMeeting {
         id
         linearSearchQuery {
           queryString
-        }
-        viewerMeetingMember {
-          teamMember {
-            integrations {
-              linear {
-                ...LinearScopingSearchBarLinearIntegration @relay(mask: false)
-              }
-            }
-          }
         }
         ...LinearScopingSearchFilterToggle_meeting
       }
@@ -46,11 +29,6 @@ const LinearScopingSearchBar = (props: Props) => {
 
   const {queryString} = meeting.linearSearchQuery
 
-  const linearSearchQueries =
-    meeting.viewerMeetingMember?.teamMember?.integrations?.linear?.linearSearchQueries
-  const defaultInput =
-    linearSearchQueries?.[0]?.queryString ?? SprintPokerDefaults.LINEAR_DEFAULT_QUERY
-
   return (
     <ScopingSearchBar>
       <ScopingSearchHistoryToggle />
@@ -59,7 +37,7 @@ const LinearScopingSearchBar = (props: Props) => {
         queryString={queryString}
         meetingId={meeting.id}
         linkedRecordName={'linearSearchQuery'}
-        defaultInput={defaultInput}
+        defaultInput={SprintPokerDefaults.LINEAR_DEFAULT_QUERY}
         service={'linear'}
       />
       <LinearScopingSearchFilterToggle meetingRef={meeting} />

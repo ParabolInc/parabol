@@ -76,7 +76,7 @@ const StageTimerModalTimeLimit = (props: Props) => {
           <SelectTrigger className='ml-2 h-9 rounded-sm'>
             <SelectValue />
           </SelectTrigger>
-          <SelectContent position='popper'>
+          <SelectContent>
             {minuteOptions.map((n) => (
               <SelectItem key={n} value={String(n)} checkClassName='text-accent-active'>
                 {`${n} ${plural(n, 'minute')}`}

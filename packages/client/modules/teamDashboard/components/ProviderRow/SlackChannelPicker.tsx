@@ -1,13 +1,14 @@
-import type * as React from 'react'
-import DropdownMenuToggle from '../../../../components/DropdownMenuToggle'
+import {Suspense} from 'react'
 import type {
   SlackChannelDropdownChannels,
   SlackChannelDropdownOnClick
 } from '../../../../components/SlackChannelDropdown'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useMenu from '../../../../hooks/useMenu'
 import useMutationProps from '../../../../hooks/useMutationProps'
+import {Button} from '../../../../ui/Button/Button'
+import {Select} from '../../../../ui/Select/Select'
+import {SelectTrigger} from '../../../../ui/Select/SelectTrigger'
+import {SelectValue} from '../../../../ui/Select/SelectValue'
 import lazyPreload from '../../../../utils/lazyPreload'
 import SlackClientManager from '../../../../utils/SlackClientManager'
 
@@ -28,62 +29,44 @@ const SlackChannelDropdown = lazyPreload(
     )
 )
 
-enum ChannelState {
-  ready,
-  loading,
-  error
-}
-
 const SlackChannelPicker = (props: Props) => {
   const {isTokenValid, channels, localChannelId, onClick, onOpen, teamId} = props
-  const activeIdx = localChannelId
-    ? channels.findIndex((channel) => channel.id === localChannelId)
-    : -1
-  const activeChannel = channels[activeIdx]
-  const channelState = activeChannel
-    ? ChannelState.ready
-    : localChannelId && isTokenValid
-      ? ChannelState.loading
-      : ChannelState.error
-  const activeText = activeChannel
-    ? activeChannel.name
-    : channelState === ChannelState.loading
-      ? ''
-      : 'Token Expired! Click to renew'
-  const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLDivElement>(
-    MenuPosition.UPPER_RIGHT,
-    {
-      isDropdown: true
-    }
-  )
+  const activeChannel = channels.find((channel) => channel.id === localChannelId)
+  const isLoading = !activeChannel && !!localChannelId && isTokenValid
   const atmosphere = useAtmosphere()
   const mutationProps = useMutationProps()
-  const handleClick =
-    channelState !== ChannelState.error
-      ? (e?: React.MouseEvent | React.TouchEvent) => {
-          onOpen()
-          togglePortal(e)
-        }
-      : () => {
+
+  if (!activeChannel && !isLoading) {
+    return (
+      <Button
+        variant='outline'
+        className='h-11 w-full justify-start rounded-sm border-hairline-field px-2 py-1 font-normal text-sm'
+        onClick={() => {
           SlackClientManager.openOAuth(atmosphere, teamId, mutationProps)
-        }
+        }}
+      >
+        {'Token Expired! Click to renew'}
+      </Button>
+    )
+  }
+
   return (
-    <>
-      <DropdownMenuToggle
+    <Select
+      value={activeChannel?.id}
+      onValueChange={onClick}
+      onOpenChange={(isOpen) => isOpen && onOpen()}
+    >
+      <SelectTrigger
+        isLoading={isLoading}
+        disabled={isLoading}
         onMouseEnter={SlackChannelDropdown.preload}
-        onClick={handleClick}
-        ref={originRef}
-        defaultText={activeText}
-      />
-      {menuPortal(
-        <SlackChannelDropdown
-          channels={channels}
-          defaultActiveIdx={activeIdx}
-          menuProps={menuProps}
-          onClick={onClick}
-        />
-      )}
-    </>
+      >
+        <SelectValue />
+      </SelectTrigger>
+      <Suspense fallback={null}>
+        <SlackChannelDropdown channels={channels} />
+      </Suspense>
+    </Select>
   )
 }
 

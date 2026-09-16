@@ -1,26 +1,24 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import type {MenuProps} from '~/hooks/useMenu'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import type {
   NewAzureIssueMenu_AzureDevOpsRemoteProjects$data,
   NewAzureIssueMenu_AzureDevOpsRemoteProjects$key
 } from '../__generated__/NewAzureIssueMenu_AzureDevOpsRemoteProjects.graphql'
+import {MenuContent} from '../ui/Menu/MenuContent'
+import {MenuSearch} from '../ui/Menu/MenuSearch'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
-import Menu from './Menu'
-import {SearchMenuItem} from './SearchMenuItem'
 import TaskIntegrationMenuItem from './TaskIntegrationMenuItem'
 
 interface Props {
   setSelectedProjectName: (key: string) => void
-  menuProps: MenuProps
   projectsRef: NewAzureIssueMenu_AzureDevOpsRemoteProjects$key
 }
 
 const getValue = (project: NewAzureIssueMenu_AzureDevOpsRemoteProjects$data[0]) => project.name
 
 const NewAzureIssueMenu = (props: Props) => {
-  const {setSelectedProjectName, menuProps, projectsRef} = props
+  const {setSelectedProjectName, projectsRef} = props
 
   const projects = useFragment(
     graphql`
@@ -39,13 +37,8 @@ const NewAzureIssueMenu = (props: Props) => {
   } = useSearchFilter(projects ?? [], getValue)
 
   return (
-    <Menu
-      ariaLabel='Select Azure project'
-      keepParentFocus
-      {...menuProps}
-      resetActiveOnChanges={[projects]}
-    >
-      <SearchMenuItem placeholder='Search Azure' onChange={onQueryChange} value={query} />
+    <MenuContent align='start' className='min-w-[300px]'>
+      <MenuSearch placeholder='Search Azure' onChange={onQueryChange} value={query} />
       {query && projects.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>No projects found!</EmptyDropdownMenuItemLabel>
       )}
@@ -65,7 +58,7 @@ const NewAzureIssueMenu = (props: Props) => {
           />
         )
       })}
-    </Menu>
+    </MenuContent>
   )
 }
 

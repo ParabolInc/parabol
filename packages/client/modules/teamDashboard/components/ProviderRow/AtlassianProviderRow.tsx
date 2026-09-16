@@ -6,9 +6,8 @@ import type {AtlassianProviderRow_viewer$key} from '../../../../__generated__/At
 import AtlassianProviderLogo from '../../../../AtlassianProviderLogo'
 import AtlassianConfigMenu from '../../../../components/AtlassianConfigMenu'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useMenu from '../../../../hooks/useMenu'
 import useMutationProps, {type MenuMutationProps} from '../../../../hooks/useMutationProps'
+import {getConnectProvider} from '../../../../integrations/platform/findIntegrationService'
 import type {AuthToken} from '../../../../types/AuthToken'
 import {ExternalLinks, Providers} from '../../../../types/constEnums'
 import AtlassianClientManager, {ERROR_POPUP_CLOSED} from '../../../../utils/AtlassianClientManager'
@@ -42,6 +41,9 @@ const AtlassianProviderRow = (props: Props) => {
     graphql`
       fragment AtlassianProviderRow_viewer on User {
         teamMember(teamId: $teamId) {
+          services {
+            ...findIntegrationService_cloudProvider @relay(mask: false)
+          }
           integrations {
             atlassian {
               ...AtlassianProviderRowAtlassianIntegration @relay(mask: false)
@@ -61,23 +63,23 @@ const AtlassianProviderRow = (props: Props) => {
     onCompleted
   } as MenuMutationProps
   const {teamMember} = viewer
-  const {integrations} = teamMember!
+  const {integrations, services} = teamMember!
   const {atlassian} = integrations
+  const provider = getConnectProvider(services, 'jira')
   const accessToken = atlassian?.accessToken ?? undefined
   const jiraConnected = !!accessToken && hasJiraScopes(atlassian?.scope)
   useFreshToken(accessToken, retry)
-
   const openOAuth = () => {
+    if (!provider) return
     AtlassianClientManager.openOAuth(
       atmosphere,
       teamId,
+      provider,
       mutationProps,
       AtlassianClientManager.JIRA_SCOPE,
       atlassian?.scope
     )
   }
-
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
 
   const errorMessage = useMemo(() => {
     if (!error) return undefined
@@ -99,30 +101,26 @@ const AtlassianProviderRow = (props: Props) => {
     return message
   }, [error])
 
-  if (!AtlassianClientManager.isAvailable) return null
+  if (!provider) return null
 
   return (
-    <>
-      <ProviderRow
-        connected={jiraConnected}
-        onConnectClick={openOAuth}
-        submitting={submitting}
-        togglePortal={togglePortal}
-        menuRef={originRef}
-        providerName={Providers.ATLASSIAN_NAME}
-        providerDescription={Providers.ATLASSIAN_DESC}
-        providerLogo={<AtlassianProviderLogo />}
-        error={errorMessage}
-      />
-      {menuPortal(
+    <ProviderRow
+      connected={jiraConnected}
+      onConnectClick={openOAuth}
+      submitting={submitting}
+      configMenu={
         <AtlassianConfigMenu
           mutationProps={mutationProps}
-          menuProps={menuProps}
           teamId={teamId}
+          provider={provider}
           heldScopes={atlassian?.scope}
         />
-      )}
-    </>
+      }
+      providerName={Providers.JIRA_CLOUD_NAME}
+      providerDescription={Providers.JIRA_CLOUD_DESC}
+      providerLogo={<AtlassianProviderLogo />}
+      error={errorMessage}
+    />
   )
 }
 

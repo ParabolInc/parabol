@@ -1,4 +1,4 @@
-import {datadogRum} from '@datadog/browser-rum'
+import {datadogLogs} from '@datadog/browser-logs'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {RetroDiscussPhase_meeting$key} from '~/__generated__/RetroDiscussPhase_meeting.graphql'
@@ -84,8 +84,7 @@ const RetroDiscussPhase = (props: Props) => {
 
   const reflections = reflectionGroup.reflections ?? []
   if (!reflectionGroup.reflections) {
-    const errObj = {id: reflectionGroup.id} as Parameters<typeof JSON.stringify>[0]
-    datadogRum.addError(new Error(`NO REFLECTIONS ${JSON.stringify(errObj)}`))
+    datadogLogs.logger.error('NO REFLECTIONS', {reflectionGroupId: reflectionGroup.id})
   }
 
   return (

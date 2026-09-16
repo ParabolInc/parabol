@@ -88,10 +88,7 @@ export enum Duration {
   MENU_OPEN_MAX = 188,
   MODAL_OPEN = 200,
   PORTAL_CLOSE = 120,
-  SELECTION_CONTROL = 100,
-  TOOLTIP_DELAY = 400,
-  TOOLTIP_OPEN = 150,
-  TOOLTIP_CLOSE = 75
+  SELECTION_CONTROL = 100
 }
 
 export enum ElementWidth {
@@ -295,8 +292,8 @@ export enum Pricing {
 }
 
 export enum Providers {
-  ATLASSIAN_NAME = 'Atlassian Jira',
-  ATLASSIAN_DESC = 'Use Jira Cloud issues from within Parabol.',
+  JIRA_CLOUD_NAME = 'Jira Cloud',
+  JIRA_CLOUD_DESC = 'Use Jira Cloud issues from within Parabol.',
   CONFLUENCE_NAME = 'Atlassian Confluence',
   CONFLUENCE_DESC = 'Export Pages and meeting summaries as native Confluence pages',
   JIRA_SERVER_NAME = 'Jira Data Center',
@@ -432,7 +429,6 @@ export enum Times {
   // ms
   HUMAN_ADDICTION_THRESH = 300,
   MAX_WAIT_TIME = 5000,
-  MEETING_CONFIRM_TOOLTIP_DELAY = 0,
   MEETING_CONFIRM_DURATION = 8000,
   REFLECTION_DEAL_CARD_INIT_DELAY = 100,
   REFLECTION_DEAL_CARD_MIN_DELAY = 30,
@@ -487,6 +483,8 @@ export enum SprintPokerDefaults {
   AZURE_DEVOPS_REMAINING_WORK_LABEL = 'Remaining Work',
   AZURE_DEVOPS_EFFORT_FIELD = '__effort',
   AZURE_DEVOPS_EFFORT_LABEL = 'Effort',
+  AZURE_DEVOPS_SIZE_FIELD = '__size',
+  AZURE_DEVOPS_SIZE_LABEL = 'Size',
   SERVICE_FIELD_COMMENT = '__comment',
   SERVICE_FIELD_COMMENT_LABEL = 'As Comment',
   SERVICE_FIELD_NULL = '',

@@ -47,6 +47,9 @@ export const query = graphql`
       }
       organizations {
         id
+        viewerOrganizationUser {
+          role
+        }
         teams {
           id
           ...TeamHealthDetailsSidebar_teams
@@ -85,7 +88,11 @@ const ActivityDetails = (props: Props) => {
   }, [])
 
   const {category, illustrationUrl, viewerLowestScope, type} = activity
-  const orgTeams = viewer.organizations.flatMap((org) => org.teams)
+  // Organization.teams also returns public teams to a regular member, but only an org leader may
+  // start a meeting for a team they are not on, so everyone else sees just their own teams
+  const orgTeams = viewer.organizations
+    .filter((org) => !!org.viewerOrganizationUser?.role)
+    .flatMap((org) => org.teams)
   const teamHealthTeams = [...teams, ...orgTeams].filter(
     (team, index, arr) => arr.findIndex((t) => t.id === team.id) === index
   )

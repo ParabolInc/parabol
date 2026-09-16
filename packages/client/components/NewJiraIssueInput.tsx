@@ -2,21 +2,16 @@ import graphql from 'babel-plugin-relay/macro'
 import {type FormEvent, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import {MenuPosition} from '~/hooks/useCoords'
-import useMenu from '~/hooks/useMenu'
 import useMutationProps from '~/hooks/useMutationProps'
 import {ExpandMore} from '~/ui/icons'
 import type {NewJiraIssueInput_meeting$key} from '../__generated__/NewJiraIssueInput_meeting.graphql'
 import type {NewJiraIssueInput_viewer$key} from '../__generated__/NewJiraIssueInput_viewer.graphql'
 import useForm from '../hooks/useForm'
-import {PortalStatus} from '../hooks/usePortal'
-import useTimedState from '../hooks/useTimedState'
 import CreateTaskMutation from '../mutations/CreateTaskMutation'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
-import JiraIssueId from '../shared/gqlIds/JiraIssueId'
-import JiraProjectId from '../shared/gqlIds/JiraProjectId'
 import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
 import type {CompletedHandler} from '../types/relayMutations'
+import {Menu} from '../ui/Menu/Menu'
 import Legitity from '../validation/Legitity'
 import Checkbox from './Checkbox'
 import NewJiraIssueMenu from './NewJiraIssueMenu'
@@ -58,8 +53,8 @@ const NewJiraIssueInput = (props: Props) => {
                 projects {
                   ...NewJiraIssueMenu_JiraRemoteProjects
                   id
-                  cloudId
                   key
+                  integrationRepoId
                 }
               }
             }
@@ -75,7 +70,7 @@ const NewJiraIssueInput = (props: Props) => {
   const {integrations} = teamMember!
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
-  const [createTaskError, setCreateTaskError] = useTimedState()
+  const [createTaskError, setCreateTaskError] = useState<string>()
   useEffect(() => {
     if (isEditing) {
       setCreateTaskError(undefined)
@@ -83,30 +78,23 @@ const NewJiraIssueInput = (props: Props) => {
   }, [isEditing])
   const projects = integrations.atlassian?.projects
   const firstProject = projects?.find((project) => project.key)
-  const cloudId = firstProject?.cloudId
-  const projectKey = firstProject?.key
-  const [selectedProjectKey, setSelectedProjectKey] = useState(projectKey)
-  const {originRef, menuPortal, menuProps, togglePortal, portalStatus} = useMenu(
-    MenuPosition.UPPER_LEFT,
-    {isDropdown: true}
+  const [selectedProjectId, setSelectedProjectId] = useState(firstProject?.integrationRepoId)
+  const selectedProject = projects?.find(
+    (project) => project.integrationRepoId === selectedProjectId
   )
+  const selectedProjectKey = selectedProject?.key
+  const isMenuOpenRef = useRef(false)
   const {fields, onChange, validateField, setDirtyField} = useForm({
     newIssue: {
       getDefault: () => '',
       validate: validateIssue
     }
   })
-  const {dirty, error} = fields.newIssue
+  const {value, dirty, error} = fields.newIssue
   const ref = useRef<HTMLInputElement>(null)
-  useEffect(() => {
-    if (portalStatus === PortalStatus.Exited) {
-      ref.current && ref.current.focus()
-    }
-  }, [portalStatus])
-
   const handleCreateNewIssue = (e: FormEvent) => {
     e.preventDefault()
-    if (portalStatus !== PortalStatus.Exited || !selectedProjectKey || !cloudId) return
+    if (isMenuOpenRef.current || !selectedProjectId) return
     const {newIssue: newIssueRes} = validateField()
     const {value: newIssueTitle, error} = newIssueRes
     if (error) {
@@ -129,24 +117,23 @@ const NewJiraIssueInput = (props: Props) => {
       status: 'active' as const,
       integration: {
         service: 'jira' as const,
-        serviceProjectHash: JiraProjectId.join(cloudId, selectedProjectKey)
+        serviceProjectHash: selectedProjectId
       }
     }
     const handleCompleted: CompletedHandler = (res) => {
       const {error, task} = res.createTask
       if (error) {
-        setCreateTaskError(error.message)
+        setCreateTaskError(`${selectedProjectKey}: ${error.message}`)
       }
       if (error || !task) return
-      const {integration} = task
-      if (!integration) return
-      const {issueKey} = integration
+      const {integrationHash} = task
+      if (!integrationHash) return
       const pokerScopeVariables = {
         meetingId,
         updates: [
           {
             service: 'jira',
-            serviceTaskId: JiraIssueId.join(cloudId, issueKey),
+            serviceTaskId: integrationHash,
             action: 'ADD'
           } as const
         ]
@@ -161,7 +148,8 @@ const NewJiraIssueInput = (props: Props) => {
   }
 
   const handleSelectProjectKey = (projectKey: string) => {
-    setSelectedProjectKey(projectKey)
+    const project = projects?.find((project) => project.key === projectKey)
+    if (project) setSelectedProjectId(project.integrationRepoId)
   }
 
   if (createTaskError) {
@@ -179,48 +167,50 @@ const NewJiraIssueInput = (props: Props) => {
   }
   if (!isEditing) return null
   return (
-    <>
-      <div className='flex cursor-pointer bg-surface-raised py-2 pl-4'>
-        <Checkbox active />
-        <div className='flex w-full flex-col pl-4'>
-          <form className='flex w-full flex-col' onSubmit={handleCreateNewIssue}>
-            <input
-              autoFocus
-              {...fields.newIssue}
-              className='m-0 w-full appearance-none border-none bg-transparent p-0 pr-2 text-[16px] text-fg-primary outline-none'
-              onBlur={handleCreateNewIssue}
-              onChange={onChange}
-              maxLength={254}
-              name='newIssue'
-              placeholder='New issue title'
-              ref={ref}
-              type='text'
-            />
-            {dirty && error && (
-              <StyledError className='w-full text-left text-[13px]'>{error}</StyledError>
-            )}
-          </form>
-          <PlainButton
-            className='m-0 flex h-5 w-fit items-center justify-start bg-transparent opacity-100 hover:bg-transparent focus:bg-transparent'
-            ref={originRef}
-            onMouseDown={togglePortal}
-          >
-            <a className='block text-accent text-xs leading-5 no-underline hover:underline focus:underline'>
-              {selectedProjectKey}
-            </a>
-            <ExpandMore className='h-5 w-5 p-0 text-accent' />
-          </PlainButton>
-        </div>
-      </div>
-      {projects &&
-        menuPortal(
-          <NewJiraIssueMenu
-            handleSelectProjectKey={handleSelectProjectKey}
-            menuProps={menuProps}
-            projectsRef={projects}
+    <div className='flex cursor-pointer bg-surface-raised py-2 pl-4'>
+      <Checkbox active />
+      <div className='flex w-full flex-col pl-4'>
+        <form className='flex w-full flex-col' onSubmit={handleCreateNewIssue}>
+          <input
+            autoFocus
+            value={value}
+            className='m-0 w-full appearance-none border-none bg-transparent p-0 pr-2 text-[16px] text-fg-primary outline-none'
+            onBlur={handleCreateNewIssue}
+            onChange={onChange}
+            maxLength={254}
+            name='newIssue'
+            placeholder='New issue title'
+            ref={ref}
+            type='text'
           />
+          {dirty && error && (
+            <StyledError className='w-full text-left text-[13px]'>{error}</StyledError>
+          )}
+        </form>
+        {projects && (
+          <Menu
+            trigger={
+              <PlainButton className='m-0 flex h-5 w-fit items-center justify-start bg-transparent opacity-100 hover:bg-transparent focus:bg-transparent'>
+                <a className='block text-accent text-xs leading-5 no-underline hover:underline focus:underline'>
+                  {selectedProjectKey}
+                </a>
+                <ExpandMore className='h-5 w-5 p-0 text-accent' />
+              </PlainButton>
+            }
+            onOpenChange={(open) => {
+              isMenuOpenRef.current = open
+              // radix returns focus to the trigger on close; the title input should keep it
+              if (!open) requestAnimationFrame(() => ref.current?.focus())
+            }}
+          >
+            <NewJiraIssueMenu
+              handleSelectProjectKey={handleSelectProjectKey}
+              projectsRef={projects}
+            />
+          </Menu>
         )}
-    </>
+      </div>
+    </div>
   )
 }
 

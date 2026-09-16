@@ -1,14 +1,12 @@
 import type {Repo} from '~/hooks/useGetRepoContributions'
-import type {MenuProps} from '~/hooks/useMenu'
 import useSearchFilter from '~/hooks/useSearchFilter'
+import {MenuContent} from '../ui/Menu/MenuContent'
+import {MenuSearch} from '../ui/Menu/MenuSearch'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
-import Menu from './Menu'
-import {SearchMenuItem} from './SearchMenuItem'
 import TaskIntegrationMenuItem from './TaskIntegrationMenuItem'
 
 interface Props {
   handleSelectNameWithOwner: (key: string) => void
-  menuProps: MenuProps
   repos: Repo[]
   teamId: string
   userId: string
@@ -17,7 +15,7 @@ interface Props {
 const getValue = (item: Repo) => item.nameWithOwner
 
 const NewGitHubIssueMenu = (props: Props) => {
-  const {handleSelectNameWithOwner, menuProps, repos} = props
+  const {handleSelectNameWithOwner, repos} = props
 
   const {
     query,
@@ -26,13 +24,8 @@ const NewGitHubIssueMenu = (props: Props) => {
   } = useSearchFilter(repos ?? [], getValue)
 
   return (
-    <Menu
-      ariaLabel='Select GitHub project'
-      keepParentFocus
-      {...menuProps}
-      resetActiveOnChanges={[filteredRepos]}
-    >
-      <SearchMenuItem placeholder='Search GitHub' onChange={onQueryChange} value={query} />
+    <MenuContent align='start' className='min-w-[300px]'>
+      <MenuSearch placeholder='Search GitHub' onChange={onQueryChange} value={query} />
       {query && filteredRepos.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>No repos found!</EmptyDropdownMenuItemLabel>
       )}
@@ -52,7 +45,7 @@ const NewGitHubIssueMenu = (props: Props) => {
           />
         )
       })}
-    </Menu>
+    </MenuContent>
   )
 }
 

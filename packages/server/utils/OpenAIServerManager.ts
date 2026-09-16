@@ -1,9 +1,18 @@
 import OpenAI from 'openai'
 import type {ModifyType} from '../graphql/public/resolverTypes'
 import type {RetroReflection} from '../postgres/types'
+import {AI_MODEL} from './aiModel'
 import groupReflections from './groupReflections/groupReflectionsStructured'
 import type {GroupReflectionsInput, GroupReflectionsOptions} from './groupReflections/types'
 import logError from './logError'
+
+export interface TeamHealthDiscussionStarterInput {
+  category: string
+  question: string
+  current: {score: number | null; responseCount: number; comments: string[]}
+  // newest first
+  priorCycles: {endedAt: string; score: number | null; comments: string[]}[]
+}
 
 class OpenAIServerManager {
   openAIApi
@@ -24,7 +33,7 @@ class OpenAIServerManager {
       {
         label: 'openai',
         client: this.openAIApi,
-        model: 'gpt-5.6-luna',
+        model: AI_MODEL,
         // Hidden reasoning dominated grouping latency, and holding the effort down is only safe
         // because repairGroups patches a forgotten card instead of discarding the whole batch
         params: {reasoning_effort: 'low'}
@@ -53,18 +62,15 @@ class OpenAIServerManager {
 
     try {
       const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-4o',
+        model: AI_MODEL,
         messages: [
           {
             role: 'user',
             content: prompt
           }
         ],
-        temperature: 0.7,
-        max_tokens: 500,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0
+        reasoning_effort: 'low',
+        max_completion_tokens: 4000
       })
       return (response.choices[0]?.message?.content?.trim() as string) ?? null
     } catch (e) {
@@ -103,15 +109,15 @@ class OpenAIServerManager {
       .join('\n')}`
     try {
       const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-4o-mini',
+        model: AI_MODEL,
         messages: [
           {
             role: 'user',
             content: prompt
           }
         ],
-        temperature: 0.3,
-        max_tokens: 80
+        reasoning_effort: 'low',
+        max_completion_tokens: 2000
       })
       const question =
         (response.choices[0]?.message?.content?.trim() as string).replace(
@@ -161,13 +167,14 @@ Compare the scope and complexity of the issue to estimate against the reference 
 Respond in GitHub-flavored markdown. The first line MUST be exactly "**Estimate: <value>**" where <value> is the chosen allowed value. After a blank line, justify the estimate in 2-3 sentences. When you cite a reference issue, refer to it by its bare issue key only (e.g. ${references[0]?.issueKey ?? 'PROJ-123'}) — do not include its title or a link.`
     try {
       const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-5.4-mini',
+        model: AI_MODEL,
         messages: [
           {
             role: 'user',
             content: prompt
           }
-        ]
+        ],
+        reasoning_effort: 'low'
       })
       const estimate = response.choices[0]?.message?.content?.trim()
       return estimate || null
@@ -198,23 +205,120 @@ Respond in GitHub-flavored markdown. The first line MUST be exactly "**Estimate:
 
     try {
       const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-4',
+        model: AI_MODEL,
         messages: [
           {
             role: 'user',
             content: prompt[modifyType]
           }
         ],
-        temperature: 0.8,
-        max_tokens: 256,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0
+        reasoning_effort: 'low',
+        max_completion_tokens: 2000
       })
 
       return (response.choices[0]?.message?.content?.trim() as string).replaceAll(`"`, '') ?? null
     } catch (e) {
       const error = e instanceof Error ? e : new Error('OpenAI failed to modifyCheckInQuestion')
+      logError(error)
+      return null
+    }
+  }
+
+  async paraphraseTeamHealthComment(comment: string, question: string) {
+    if (!this.openAIApi) return null
+
+    const systemPrompt = `You anonymise anonymous survey comments. The user message contains a survey question and a teammate's comment. Rewrite the comment so that nobody who knows the team could guess who wrote it.
+
+Strip every signal of authorship:
+- Writing style: sentence length and rhythm, formality, humour, hedging, enthusiasm, profanity, ALL CAPS, exclamation marks, ellipses, emoji.
+- Word choice: pet phrases, jargon, slang, abbreviations, regional spellings, and any term a specific person is known for. Prefer plain, common synonyms.
+- Grammar and mechanics: fix or introduce nothing distinctive. Use ordinary punctuation, correct any errors, and drop typing quirks like missing capitals or double spaces.
+- Content: remove names, roles, teams, tools, projects, clients, dates, and any incident specific enough to identify one person. Generalise them ("a recent release", "a teammate") rather than deleting the point they support.
+
+Keep the substance intact: the same claim, the same target of praise or criticism, and the same strength of feeling. Do not soften a complaint, add advice, or draw conclusions the author did not.
+
+Write 1-3 plain sentences in neutral English (the author may say "I" about themselves). If the comment is too short or too specific to anonymise, write a single sentence that states only its general point.
+
+Output format: respond with the rewritten comment text and nothing else. It must read as if the teammate had typed it themselves. Never add a label, prefix, heading, or preamble such as "Paraphrased:", "Rewritten:", or "Here is". Do not wrap it in quotation marks, code fences, or markdown.`
+
+    const userPrompt = `Question: """
+${question}
+"""
+
+Comment: """
+${comment}
+"""`
+
+    try {
+      const response = await this.openAIApi.chat.completions.create({
+        model: AI_MODEL,
+        messages: [
+          {role: 'system', content: systemPrompt},
+          {role: 'user', content: userPrompt}
+        ],
+        reasoning_effort: 'low',
+        max_completion_tokens: 1000
+      })
+      return response.choices[0]?.message?.content?.trim() || null
+    } catch (e) {
+      const error =
+        e instanceof Error ? e : new Error('OpenAI failed to paraphraseTeamHealthComment')
+      logError(error)
+      return null
+    }
+  }
+
+  async generateTeamHealthDiscussionStarter(input: TeamHealthDiscussionStarterInput) {
+    if (!this.openAIApi) return null
+    const {category, question, current, priorCycles} = input
+    const formatCycle = (
+      label: string,
+      cycle: {score: number | null; responseCount?: number; comments: string[]}
+    ) => {
+      const score = cycle.score === null ? 'no score' : `${cycle.score.toFixed(1)} / 5`
+      const count = cycle.responseCount === undefined ? '' : ` (${cycle.responseCount} answers)`
+      const comments =
+        cycle.comments.length === 0
+          ? '  (no comments)'
+          : cycle.comments.map((comment) => `  - ${comment.replace(/\n/g, ' ')}`).join('\n')
+      return `${label}: ${score}${count}\n${comments}`
+    }
+    const systemPrompt = `You are a facilitator opening a team discussion about one dimension of team health. The team just revealed the results of an anonymous survey and will now talk about this dimension. Write one short comment to start that conversation.
+
+Ground the comment in the data: name the trend across cycles if there is one, and draw on what the comments say. When a comment explains a score, connect the two. When the comments contradict each other or the score, name the tension. Stay on this dimension only.
+
+End with a single open question the team can answer together. The question must be specific to this team's data, never generic.
+
+Constraints:
+- 2-4 plain sentences, then the question. Under 90 words total.
+- Speak to the team as "you". Refer to people only as teammates; never guess at who wrote a comment or assume anyone's gender.
+- Do not moralise, give advice, or tell the team what to do. Do not restate every number.
+- Respond with the comment text only: no label, heading, preamble, quotation marks, or markdown.`
+    const cycles = [
+      formatCycle('This cycle', current),
+      ...priorCycles.map((cycle, idx) =>
+        formatCycle(`${idx + 1} ${idx === 0 ? 'cycle' : 'cycles'} ago (${cycle.endedAt})`, cycle)
+      )
+    ]
+    const userPrompt = `Dimension: ${category}
+Question asked this cycle: ${question}
+Scores are 1-5 Likert averages, where 5 is strongly agree. Comments are the team's own words.
+
+${cycles.join('\n\n')}`
+    try {
+      const response = await this.openAIApi.chat.completions.create({
+        model: AI_MODEL,
+        messages: [
+          {role: 'system', content: systemPrompt},
+          {role: 'user', content: userPrompt}
+        ],
+        reasoning_effort: 'low',
+        max_completion_tokens: 1000
+      })
+      return response.choices[0]?.message?.content?.trim() || null
+    } catch (e) {
+      const error =
+        e instanceof Error ? e : new Error('OpenAI failed to generateTeamHealthDiscussionStarter')
       logError(error)
       return null
     }
@@ -266,7 +370,7 @@ Return JSON of the form: { "items": [{ "title": "<short heading, or null>", "con
 
     try {
       const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-4o',
+        model: AI_MODEL,
         messages: [
           {
             role: 'user',
@@ -274,10 +378,7 @@ Return JSON of the form: { "items": [{ "title": "<short heading, or null>", "con
           }
         ],
         response_format: {type: 'json_object'},
-        temperature: 0.7,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0
+        reasoning_effort: 'low'
       })
 
       const content = response.choices[0]?.message?.content
@@ -356,7 +457,7 @@ Return JSON of the form: { "items": [{ "title": "<short heading, or null>", "con
 
     try {
       const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-4o',
+        model: AI_MODEL,
         messages: [
           {
             role: 'user',
@@ -364,10 +465,7 @@ Return JSON of the form: { "items": [{ "title": "<short heading, or null>", "con
           }
         ],
         response_format: {type: 'json_object'},
-        temperature: 0.7,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0
+        reasoning_effort: 'low'
       })
 
       const content = response.choices[0]?.message?.content
@@ -422,18 +520,14 @@ Return JSON of the form: { "items": [{ "title": "<short heading, or null>", "con
 
     try {
       const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-4o',
+        model: AI_MODEL,
         messages: [
           {
             role: 'user',
             content: `${prompt}\n\n${yamlData}`
           }
         ],
-
-        temperature: 0.7,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0
+        reasoning_effort: 'low'
       })
 
       const content = response.choices[0]?.message.content as string
@@ -455,18 +549,15 @@ Important: Respond with ONLY the title itself. Do not include any prefixes like 
 
     try {
       const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-4o-mini',
+        model: AI_MODEL,
         messages: [
           {
             role: 'user',
             content: prompt
           }
         ],
-        temperature: 0.3,
-        max_tokens: 20,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0
+        reasoning_effort: 'low',
+        max_completion_tokens: 1000
       })
       const title =
         (response.choices[0]?.message?.content?.trim() as string)

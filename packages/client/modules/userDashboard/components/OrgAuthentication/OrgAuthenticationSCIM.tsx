@@ -262,7 +262,7 @@ const OrgAuthenticationSCIM = (props: Props) => {
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent position='item-aligned'>
+              <SelectContent>
                 <SelectGroup>
                   <SelectItem value={'disabled'}>Disabled</SelectItem>
                   <SelectItem value={'bearerToken'}>Bearer Token</SelectItem>

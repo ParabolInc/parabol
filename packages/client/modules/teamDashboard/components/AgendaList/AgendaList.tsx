@@ -87,7 +87,7 @@ const AgendaList = (props: Props) => {
           return (
             <div
               ref={provided.innerRef}
-              className={cn('flex h-full w-full flex-col pr-2', !meeting && 'overflow-auto')}
+              className={cn('flex h-full w-full flex-col', !meeting && 'overflow-auto pr-2')}
             >
               {filteredAgendaItems.map((item, idx) => {
                 return (

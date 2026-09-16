@@ -561,6 +561,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           integration: {
             __typename: '_xGitHubIssue',
             id: `${taskId}:GitHub`,
+            service: 'github',
             title,
             bodyHTML,
             repository: {
@@ -584,6 +585,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           integration: {
             __typename: 'JiraIssue',
             id: `jira:${taskId}`,
+            service: 'jira',
             issueKey,
             projectKey: key,
             cloudId,
@@ -613,6 +615,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           integration: {
             __typename: '_xGitLabIssue',
             id: `gitlab:${taskId}`,
+            service: 'gitlab',
             iid,
             title,
             description: bodyHTML,

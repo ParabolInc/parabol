@@ -12,15 +12,9 @@ import AtlassianManager, {
 } from 'parabol-client/utils/AtlassianManager'
 import composeJQL from 'parabol-client/utils/composeJQL'
 import {MAX_REQUEST_TIME} from 'parabol-client/utils/constants'
-import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
-import type {
-  OAuth2AuthorizationParams,
-  OAuth2RefreshAuthorizationParams
-} from '../integrations/OAuth2Manager'
 import fetchWithRetry from './fetchWithRetry'
 import {generateJiraExtraFields} from './generateJiraExtraFields'
 import {Logger} from './Logger'
-import {makeOAuth2Redirect} from './makeOAuth2Redirect'
 
 export interface JiraUser {
   self: string
@@ -81,15 +75,16 @@ export interface JiraIssueType {
   iconUrl: string
   name: string
   subtask: boolean
-  fields?: {
-    issuetype: {
+  fields?: Record<
+    string,
+    {
       required: boolean
       name: string
       key: string
-      hasDefaultValue: false
+      hasDefaultValue: boolean
       operations: string[]
     }
-  }
+  >
 }
 
 interface GetProjectsResult {
@@ -106,7 +101,7 @@ interface Assignee {
 }
 
 interface CreateIssueFields {
-  assignee: Assignee
+  assignee?: Assignee
   summary: string
   description?: Record<any, any>
   reporter?: Reporter // probably can't use, it throws a lot of errors
@@ -370,34 +365,6 @@ class AtlassianServerManager extends AtlassianManager {
     }
   }
 
-  static async init(code: string) {
-    return AtlassianServerManager.fetchToken({
-      grant_type: 'authorization_code',
-      code,
-      redirect_uri: makeOAuth2Redirect()
-    })
-  }
-
-  static async refresh(refreshToken: string) {
-    return AtlassianServerManager.fetchToken({
-      grant_type: 'refresh_token',
-      refresh_token: refreshToken
-    })
-  }
-
-  private static async fetchToken(
-    partialQueryParams: OAuth2AuthorizationParams | OAuth2RefreshAuthorizationParams
-  ) {
-    const body = {
-      ...partialQueryParams,
-      client_id: process.env.ATLASSIAN_CLIENT_ID!,
-      client_secret: process.env.ATLASSIAN_CLIENT_SECRET!
-    }
-
-    const authUrl = `https://auth.atlassian.com/oauth/token`
-    return authorizeOAuth2({authUrl, body})
-  }
-
   constructor(accessToken: string) {
     super(accessToken)
   }
@@ -513,11 +480,7 @@ class AtlassianServerManager extends AtlassianManager {
     }
 
     await Promise.all(cloudIds.map((cloudId) => getProjects(cloudId)))
-
-    if (error) {
-      Logger.log('getAllProjects ERROR:', error)
-    }
-    return projects
+    return {projects, error}
   }
 
   async getProject(cloudId: string, projectKey: string) {
@@ -528,16 +491,13 @@ class AtlassianServerManager extends AtlassianManager {
     return project
   }
 
-  async getCreateMeta(cloudId: string, projectKeys?: string[]) {
-    let args = ''
-    if (projectKeys) {
-      args += `projectKeys=${projectKeys.join(',')}`
-    }
-    if (args.length) {
-      args = '?' + args
-    }
+  async getCreateMeta(cloudId: string, projectKeys?: string[], expandFields = false) {
+    const params = new URLSearchParams()
+    if (projectKeys) params.set('projectKeys', projectKeys.join(','))
+    if (expandFields) params.set('expand', 'projects.issuetypes.fields')
+    const query = params.size ? `?${params}` : ''
     return this.get<IssueCreateMetadata>(
-      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/createmeta${args}`
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/createmeta${query}`
     )
   }
 

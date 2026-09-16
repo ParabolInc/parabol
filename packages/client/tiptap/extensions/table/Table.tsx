@@ -26,7 +26,7 @@ import EditTableSVG from './icons/EditTableSVG'
 import Toolbar from './icons/ToolbarSVG'
 
 const Item = twStyled(DropdownMenu.Item)`
-flex items-center gap-2 text-fg-primary hover:bg-surface-hover rounded px-2 py-1 cursor-pointer text-sm
+flex items-center gap-2 text-fg-primary hover:bg-surface-hover rounded px-3 py-2 cursor-pointer text-sm
 `
 
 type Highlight =

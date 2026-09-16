@@ -1,7 +1,7 @@
 import faker from 'faker'
 import createEmailVerification from '../email/createEmailVerification'
 import getKysely from '../postgres/getKysely'
-import {getUserTeams, sendIntranet, sendPublic} from './common'
+import {getTestDomain, getTestEmail, getUserTeams, sendIntranet, sendPublic} from './common'
 
 const signUpVerified = async (email: string) => {
   const password = faker.internet.password()
@@ -74,9 +74,9 @@ const signUpVerified = async (email: string) => {
 }
 
 test('autoJoin on multiple teams does not create duplicate `OrganizationUser`s', async () => {
-  const domain = `${faker.internet.domainWord()}.parabol.fun`
+  const domain = getTestDomain('parabol.fun')
 
-  const email = `${faker.internet.userName()}@${domain}`.toLowerCase()
+  const email = getTestEmail(domain)
   const {cookie, user, userId} = await signUpVerified(email)
   const orgId = user.organizations[0].id
 
@@ -151,7 +151,7 @@ test('autoJoin on multiple teams does not create duplicate `OrganizationUser`s',
   })
 
   // sign up a new user with same domain and check number of `OrganizationUser`s
-  const newEmail = `${faker.internet.userName()}@${domain}`.toLowerCase()
+  const newEmail = getTestEmail(domain)
   const {user: newUser} = await signUpVerified(newEmail)
 
   expect(newUser.tms).toEqual(expect.arrayContaining(teamIds))

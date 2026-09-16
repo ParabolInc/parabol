@@ -1,69 +1,28 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {FacilitatorMenu_meeting$key} from '../__generated__/FacilitatorMenu_meeting.graphql'
-import Menu from '../components/Menu'
-import MenuItem from '../components/MenuItem'
-import MenuItemLabel from '../components/MenuItemLabel'
-import useAtmosphere from '../hooks/useAtmosphere'
-import type {MenuProps} from '../hooks/useMenu'
-import PromoteNewMeetingFacilitatorMutation from '../mutations/PromoteNewMeetingFacilitatorMutation'
+import {MenuContent} from '../ui/Menu/MenuContent'
+import FacilitatorRotationPanel from './FacilitatorRotationPanel'
 
 interface Props {
-  menuProps: MenuProps
   meeting: FacilitatorMenu_meeting$key
+  onClose: () => void
 }
 
 const FacilitatorMenu = (props: Props) => {
-  const {menuProps, meeting: meetingRef} = props
+  const {meeting: meetingRef, onClose} = props
   const meeting = useFragment(
     graphql`
       fragment FacilitatorMenu_meeting on NewMeeting {
-        id
-        facilitatorUserId
-        meetingMembers {
-          isConnectedAt
-          userId
-        }
+        ...FacilitatorRotationPanel_meeting
       }
     `,
     meetingRef
   )
-  const {id: meetingId, facilitatorUserId, meetingMembers} = meeting
-  const atmosphere = useAtmosphere()
-  const {viewerId} = atmosphere
-  const facilitatorCandidateIds = meetingMembers
-    .filter((mm) => mm.isConnectedAt)
-    .map((mm) => mm.userId)
-  const promoteViewerToFacilitator = () => {
-    PromoteNewMeetingFacilitatorMutation(atmosphere, {
-      facilitatorUserId: viewerId,
-      meetingId
-    })
-  }
-  const promoteRandomPersonToFacilitator = () => {
-    // ! here because we know that facilitatorCandidateIds.length >= 1 so newFacilitatorUserId is always defined
-    const newFacilitatorId =
-      facilitatorCandidateIds[Math.floor(Math.random() * facilitatorCandidateIds.length)]!
-    PromoteNewMeetingFacilitatorMutation(atmosphere, {
-      facilitatorUserId: newFacilitatorId,
-      meetingId
-    })
-  }
   return (
-    <Menu ariaLabel={'Change the facilitator role'} {...menuProps}>
-      {viewerId !== facilitatorUserId && (
-        <MenuItem
-          label={<MenuItemLabel>{'Take the facilitator role'}</MenuItemLabel>}
-          onClick={promoteViewerToFacilitator}
-        />
-      )}
-      {facilitatorCandidateIds.length >= 1 && (
-        <MenuItem
-          label={<MenuItemLabel>{'Randomize facilitator'}</MenuItemLabel>}
-          onClick={promoteRandomPersonToFacilitator}
-        />
-      )}
-    </Menu>
+    <MenuContent align='end' className='max-h-[none] overflow-y-visible'>
+      <FacilitatorRotationPanel meeting={meeting} onDone={onClose} />
+    </MenuContent>
   )
 }
 

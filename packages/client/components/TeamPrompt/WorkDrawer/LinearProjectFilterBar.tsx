@@ -3,10 +3,9 @@ import clsx from 'clsx'
 import {useFragment} from 'react-relay'
 import {ExpandMore, FilterList} from '~/ui/icons'
 import type {LinearProjectFilterBar_teamMember$key} from '../../../__generated__/LinearProjectFilterBar_teamMember.graphql'
-import {MenuPosition} from '../../../hooks/useCoords'
 import useLinearProjectsAndTeams from '../../../hooks/useLinearProjectsAndTeams'
-import useMenu from '../../../hooks/useMenu'
-import {PortalStatus} from '../../../hooks/usePortal'
+import {Menu} from '../../../ui/Menu/Menu'
+import {MenuContent} from '../../../ui/Menu/MenuContent'
 import plural from '../../../utils/plural'
 import LinearSelectorMenu from '../../LinearSelectorMenu'
 
@@ -27,17 +26,6 @@ const LinearProjectFilterBar = (props: Props) => {
     teamMemberRef
   )
 
-  const {togglePortal, originRef, menuPortal, menuProps, portalStatus} = useMenu(
-    MenuPosition.UPPER_LEFT,
-    {
-      loadingWidth: 200,
-      noClose: true,
-      isDropdown: true
-    }
-  )
-
-  const isMenuOpen = ![PortalStatus.Exited, PortalStatus.Exiting].includes(portalStatus)
-
   const {searchQuery, setSearchQuery, filteredProjectsAndTeams} =
     useLinearProjectsAndTeams(teamMember)
 
@@ -55,38 +43,33 @@ const LinearProjectFilterBar = (props: Props) => {
       : `${selectedLinearIds.length} ${plural(selectedLinearIds.length, 'item', 'items')} selected`
 
   return (
-    <>
-      <button
-        className={clsx(
-          'mx-4 mt-4 mb-2 flex cursor-pointer items-center gap-2 rounded-sm border border-solid bg-surface-card px-3 py-0.5 text-left transition',
-          isMenuOpen ? 'border-accent' : 'border-hairline hover:border-hairline-strong'
-        )}
-        onClick={togglePortal}
-        ref={originRef}
-      >
-        <FilterList className='h-5 w-5 text-fg-secondary' />
-        {buttonLabel}
-        <ExpandMore
-          className={clsx(
-            'ml-auto rounded-full transition duration-300',
-            isMenuOpen ? 'rotate-180' : '',
-            selectedLinearIds.length > 0 && !isMenuOpen ? 'bg-accent text-white' : ''
-          )}
-        />
-      </button>
-      {menuPortal(
+    <Menu
+      trigger={
+        <button className='group mx-4 mt-4 mb-2 flex cursor-pointer items-center gap-2 rounded-sm border border-hairline border-solid bg-surface-card px-3 py-0.5 text-left transition hover:border-hairline-strong data-[state=open]:border-accent'>
+          <FilterList className='h-5 w-5 text-fg-secondary' />
+          {buttonLabel}
+          <ExpandMore
+            className={clsx(
+              'ml-auto rounded-full transition duration-300 group-data-[state=open]:rotate-180',
+              selectedLinearIds.length > 0 &&
+                'group-data-[state=closed]:bg-accent group-data-[state=closed]:text-white'
+            )}
+          />
+        </button>
+      }
+    >
+      <MenuContent align='start' className='max-w-full'>
         <LinearSelectorMenu
           items={filteredProjectsAndTeams}
           selectedItemIds={selectedLinearIds}
           onSelectItem={handleSelectItem}
           searchQuery={searchQuery}
           onSearchQueryChange={setSearchQuery}
-          menuProps={menuProps}
           placeholder='Search Linear projects or teams'
           emptyStateMessage='No projects or teams found!'
         />
-      )}
-    </>
+      </MenuContent>
+    </Menu>
   )
 }
 

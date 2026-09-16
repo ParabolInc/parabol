@@ -3,10 +3,11 @@ import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
 import {Suspense, useState} from 'react'
 import {useFragment} from 'react-relay'
-import useTooltip from '~/hooks/useTooltip'
 import {AccessTime} from '~/ui/icons'
+import {Tooltip} from '~/ui/Tooltip/Tooltip'
+import {TooltipContent} from '~/ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '~/ui/Tooltip/TooltipTrigger'
 import type {DueDateToggle_task$key} from '../__generated__/DueDateToggle_task.graphql'
-import {MenuPosition} from '../hooks/useCoords'
 import type {UseTaskChild} from '../hooks/useTaskChildFocus'
 import {cn} from '../ui/cn'
 import lazyPreload from '../utils/lazyPreload'
@@ -61,12 +62,6 @@ const DueDateToggle = (props: Props) => {
   )
   const {dueDate} = task
   const [open, setOpen] = useState(false)
-  const {
-    tooltipPortal,
-    openTooltip,
-    closeTooltip,
-    originRef: tipRef
-  } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER)
   const {title, isPastDue, isDueSoon} = getDateInfo(dueDate)
   const toggleIsActive = !dueDate && cardIsActive
   if (isArchived) return null
@@ -90,19 +85,17 @@ const DueDateToggle = (props: Props) => {
           tabIndex={0}
           onMouseEnter={DueDatePicker.preload}
         >
-          <div
-            className='h-[18px] w-[18px] [&_svg]:text-[18px]'
-            onClick={closeTooltip}
-            onMouseEnter={openTooltip}
-            onMouseLeave={closeTooltip}
-            ref={tipRef}
-          >
-            <AccessTime />
-          </div>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className='h-[18px] w-[18px] [&_svg]:text-[18px]'>
+                <AccessTime />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side='bottom'>{title}</TooltipContent>
+          </Tooltip>
           {dueDate && <span className='ml-0.5'>{formatDueDate(dueDate)}</span>}
         </CardButton>
       </RadixPopover.Trigger>
-      {tooltipPortal(<div>{title}</div>)}
       <RadixPopover.Portal>
         <RadixPopover.Content
           align='end'

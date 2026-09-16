@@ -1,4 +1,5 @@
 import type {DataLoaderInstance} from '../../../../dataloader/RootDataLoader'
+import getTeamHealthDisplayComment from '../../../../utils/getTeamHealthDisplayComment'
 import isValid from '../../../isValid'
 import {getSummaryTable} from './getSummaryTable'
 
@@ -25,8 +26,7 @@ const getRowData = async (meetingId: string, dataLoader: DataLoaderInstance) => 
       grouped.set(questionId, entry)
     }
     if (response.score !== null && response.score !== undefined) entry.scores.push(response.score)
-    // prefer the anonymity-preserving paraphrase; fall back to the raw comment only if absent
-    const comment = response.commentParaphrased ?? response.comment
+    const comment = getTeamHealthDisplayComment(response)
     if (comment) entry.comments.push(comment)
   }
 

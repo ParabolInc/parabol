@@ -1,10 +1,11 @@
 import {useState} from 'react'
 import {Info} from '~/ui/icons'
 import type {TierEnum} from '../../../../__generated__/OrganizationSubscription.graphql'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useTooltip from '../../../../hooks/useTooltip'
 import {Button} from '../../../../ui/Button/Button'
 import {cn} from '../../../../ui/cn'
+import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../../../../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../../../../ui/Tooltip/TooltipTrigger'
 import {MONTHLY_PRICE} from '../../../../utils/constants'
 
 const TIER_BACKGROUND: Record<TierEnum, string> = {
@@ -63,9 +64,6 @@ const OrgPlan = (props: Props) => {
     isActive
   } = plan
   const [hasSelectedTeamPlan, setHasSelectedTeamPlan] = useState(false)
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLSpanElement>(
-    MenuPosition.LOWER_CENTER
-  )
 
   const handleClickCTA = () => {
     handleClick(defaultLabel, planTier)
@@ -96,19 +94,20 @@ const OrgPlan = (props: Props) => {
           <>
             <span className='flex w-full items-center justify-center font-normal text-[16px] text-fg-primary normal-case not-italic leading-6'>
               {`$${MONTHLY_PRICE} per active user `}
-              <span
-                className='flex h-[18px] w-[18px] items-center pl-2 text-fg-secondary hover:cursor-pointer'
-                ref={originRef}
-                onMouseOver={openTooltip}
-                onMouseOut={closeTooltip}
-              >
-                {<Info />}
-              </span>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className='flex h-[18px] w-[18px] items-center pl-2 text-fg-secondary hover:cursor-pointer'>
+                    <Info />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  Active users are anyone who uses Parabol within a billing period
+                </TooltipContent>
+              </Tooltip>
             </span>
             <span className='flex w-full items-center justify-center font-normal text-[16px] text-fg-secondary normal-case italic leading-6'>
               {'paid monthly'}
             </span>
-            {tooltipPortal('Active users are anyone who uses Parabol within a billing period')}
           </>
         ) : (
           <span className='flex w-full items-center justify-center font-normal text-[16px] text-fg-primary normal-case not-italic leading-6'>

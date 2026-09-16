@@ -1,19 +1,17 @@
 import useAtmosphere from '../hooks/useAtmosphere'
-import type {MenuProps} from '../hooks/useMenu'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
 import RemoveTeamMemberIntegrationAuthMutation from '../mutations/RemoveTeamMemberIntegrationAuthMutation'
 import {Duration} from '../types/constEnums'
-import Menu from './Menu'
-import MenuItem from './MenuItem'
+import {MenuContent} from '../ui/Menu/MenuContent'
+import {MenuItem} from '../ui/Menu/MenuItem'
 
 interface Props {
-  menuProps: MenuProps
   mutationProps: MenuMutationProps
   teamId: string
 }
 
 const GcalConfigMenu = (props: Props) => {
-  const {menuProps, mutationProps, teamId} = props
+  const {mutationProps, teamId} = props
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
   const atmosphere = useAtmosphere()
 
@@ -30,9 +28,9 @@ const GcalConfigMenu = (props: Props) => {
     }, Duration.PORTAL_CLOSE)
   }
   return (
-    <Menu ariaLabel={'Configure your Google Calendar integration'} {...menuProps}>
-      <MenuItem label='Remove Google Calendar' onClick={removeGcal} />
-    </Menu>
+    <MenuContent>
+      <MenuItem onClick={removeGcal}>Remove Google Calendar</MenuItem>
+    </MenuContent>
   )
 }
 

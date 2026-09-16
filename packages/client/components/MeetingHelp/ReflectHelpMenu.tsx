@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import {forwardRef} from 'react'
 import {useFragment} from 'react-relay'
 import type {ReflectHelpMenu_settings$key} from '~/__generated__/ReflectHelpMenu_settings.graphql'
 import useClientSideTrack from '../../hooks/useClientSideTrack'
@@ -11,12 +10,13 @@ import HelpMenuHeader from './HelpMenuHeader'
 import HelpMenuLink from './HelpMenuLink'
 
 interface Props {
+  onClose: () => void
   meetingRef: ReflectHelpMenu_settings$key
 }
 
-const ReflectHelpMenu = forwardRef((_props: Props, ref: any) => {
-  const {closePortal} = ref
-  const {meetingRef} = _props
+const ReflectHelpMenu = (props: Props) => {
+  const {onClose} = props
+  const {meetingRef} = props
   const settings = useFragment(
     graphql`
       fragment ReflectHelpMenu_settings on RetrospectiveMeeting {
@@ -29,7 +29,7 @@ const ReflectHelpMenu = forwardRef((_props: Props, ref: any) => {
   const disableAnonymity = settings.disableAnonymity
   useClientSideTrack('Help Menu Open', {phase: 'reflect'})
   return (
-    <HelpMenuContent closePortal={closePortal}>
+    <HelpMenuContent onClose={onClose}>
       <HelpMenuHeader>{phaseLabelLookup.reflect}</HelpMenuHeader>
       <HelpMenuCopy>The goal of this phase is to gather honest input from the team.</HelpMenuCopy>
       <HelpMenuCopy>
@@ -43,6 +43,6 @@ const ReflectHelpMenu = forwardRef((_props: Props, ref: any) => {
       <HelpMenuLink copy='Learn More' href={`${ExternalLinks.GETTING_STARTED_RETROS}#reflect`} />
     </HelpMenuContent>
   )
-})
+}
 
 export default ReflectHelpMenu

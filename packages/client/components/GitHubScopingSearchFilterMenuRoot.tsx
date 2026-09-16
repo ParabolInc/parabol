@@ -5,19 +5,17 @@ import githubScopingSearchFilterMenuQuery, {
   type GitHubScopingSearchFilterMenuQuery
 } from '../__generated__/GitHubScopingSearchFilterMenuQuery.graphql'
 import type {GitHubScopingSearchFilterMenuRoot_meeting$key} from '../__generated__/GitHubScopingSearchFilterMenuRoot_meeting.graphql'
-import type {MenuProps} from '../hooks/useMenu'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import GitHubScopingSearchFilterMenu from './GitHubScopingSearchFilterMenu'
 import MockFieldList from './MockFieldList'
 
 interface Props {
-  menuProps: MenuProps
   teamId: string
   meetingRef: GitHubScopingSearchFilterMenuRoot_meeting$key
 }
 
 const GitHubScopingSearchFilterMenuRoot = (props: Props) => {
-  const {menuProps, teamId, meetingRef} = props
+  const {teamId, meetingRef} = props
   const meeting = useFragment(
     graphql`
       fragment GitHubScopingSearchFilterMenuRoot_meeting on PokerMeeting {
@@ -36,7 +34,7 @@ const GitHubScopingSearchFilterMenuRoot = (props: Props) => {
 
   return (
     <Suspense fallback={<MockFieldList />}>
-      {queryRef && <GitHubScopingSearchFilterMenu queryRef={queryRef} menuProps={menuProps} />}
+      {queryRef && <GitHubScopingSearchFilterMenu queryRef={queryRef} />}
     </Suspense>
   )
 }

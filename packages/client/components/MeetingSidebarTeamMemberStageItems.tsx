@@ -86,7 +86,7 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
             <MeetingSubnavItem
               key={stageId}
               metaContent={
-                <div className='w-8'>
+                <div className='flex w-6 justify-center'>
                   <Avatar picture={picture} className='h-6 w-6' />
                 </div>
               }

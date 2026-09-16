@@ -10,6 +10,7 @@ import EmailResponseMentioned from './EmailResponseMentioned'
 import EmailResponseReplied from './EmailResponseReplied'
 import EmailTaskInvolves from './EmailTaskInvolves'
 import EmailTeamArchived from './EmailTeamArchived'
+import EmailTeamHealthResponseDue from './EmailTeamHealthResponseDue'
 import EmailTeamInvitation from './EmailTeamInvitation'
 
 export const NOTIFICATION_TEMPLATE_TYPE = {
@@ -22,7 +23,8 @@ export const NOTIFICATION_TEMPLATE_TYPE = {
   TEAM_INVITATION: EmailTeamInvitation,
   MEETING_STAGE_TIME_LIMIT_END: EmailMeetingStageTimeLimitEnd,
   RESPONSE_MENTIONED: EmailResponseMentioned,
-  RESPONSE_REPLIED: EmailResponseReplied
+  RESPONSE_REPLIED: EmailResponseReplied,
+  TEAM_HEALTH_RESPONSE_DUE: EmailTeamHealthResponseDue
 }
 
 interface Props {
@@ -47,6 +49,7 @@ const EmailNotificationPicker = (props: Props) => {
         ...EmailMeetingStageTimeLimitEnd_notification @alias
         ...EmailResponseMentioned_notification @alias
         ...EmailResponseReplied_notification @alias
+        ...EmailTeamHealthResponseDue_notification @alias
       }
     `,
     notificationRef
@@ -61,7 +64,8 @@ const EmailNotificationPicker = (props: Props) => {
     EmailTeamInvitation_notification: teamInvitation,
     EmailMeetingStageTimeLimitEnd_notification: meetingStageTimeLimitEnd,
     EmailResponseMentioned_notification: responseMentioned,
-    EmailResponseReplied_notification: responseReplied
+    EmailResponseReplied_notification: responseReplied,
+    EmailTeamHealthResponseDue_notification: teamHealthResponseDue
   } = notification
   if (discussionMentioned)
     return <EmailDiscussionMentioned appOrigin={appOrigin} notificationRef={discussionMentioned} />
@@ -88,6 +92,10 @@ const EmailNotificationPicker = (props: Props) => {
     return <EmailResponseMentioned appOrigin={appOrigin} notificationRef={responseMentioned} />
   if (responseReplied)
     return <EmailResponseReplied appOrigin={appOrigin} notificationRef={responseReplied} />
+  if (teamHealthResponseDue)
+    return (
+      <EmailTeamHealthResponseDue appOrigin={appOrigin} notificationRef={teamHealthResponseDue} />
+    )
   return null
 }
 

@@ -6,8 +6,10 @@ import type {DegradedItem, PageExportPageState} from '../utils/confluence/types'
 import getKysely from './getKysely'
 import type {
   AutogroupReflectionGroupType,
-  GitHubSearchQuery,
+  GitHubSearchQueryJson,
+  IntegrationAuthMetaByService,
   JiraSearchQuery,
+  JiraSearchQueryJson,
   ReactjiDB,
   TaskTag,
   UserAuthIdentity
@@ -15,7 +17,7 @@ import type {
 import type {TIntegrationProvider} from './types/IntegrationProvider'
 import type {AnyMeeting, AnyMeetingMember} from './types/Meeting'
 import type {AnyNotification} from './types/Notification'
-import type {DB, Newmeetingphasetypeenum} from './types/pg'
+import type {DB, Integrationproviderserviceenum, Newmeetingphasetypeenum} from './types/pg'
 
 // This type is to allow us to perform a selectAll & then overwrite any column with another type
 // e.g. a column might be of type string[] but when calling to_json it will be {id: string}[]
@@ -46,8 +48,58 @@ export const selectDiscussion = () => {
   return getKysely().selectFrom('Discussion').selectAll()
 }
 
+type TeamMemberIntegrationAuthByService = {
+  [S in Integrationproviderserviceenum]: {
+    service: S
+    meta: S extends keyof IntegrationAuthMetaByService ? IntegrationAuthMetaByService[S] : null
+  }
+}[Integrationproviderserviceenum]
+
 export const selectTeamMemberIntegrationAuth = () => {
-  return getKysely().selectFrom('TeamMemberIntegrationAuth').selectAll()
+  return getKysely()
+    .selectFrom('TeamMemberIntegrationAuth')
+    .selectAll()
+    .$narrowType<TeamMemberIntegrationAuthByService>()
+}
+
+export const selectAtlassianAuth = () => {
+  return getKysely()
+    .selectFrom('TeamMemberIntegrationAuth')
+    .selectAll()
+    .select([
+      sql<string>`coalesce("scopes", '')`.as('scope'),
+      sql<string[]>`coalesce("meta" -> 'cloudIds', '[]'::jsonb)`.as('cloudIds')
+    ])
+    .where('service', '=', 'jira')
+    .where('accessToken', 'is not', null)
+    .where('refreshToken', 'is not', null)
+    .where('providerUserId', 'is not', null)
+    .$narrowType<{
+      service: 'jira'
+      meta: IntegrationAuthMetaByService['jira']
+      accessToken: NotNull
+      refreshToken: NotNull
+      providerUserId: NotNull
+    }>()
+}
+
+export const selectGitHubAuth = () => {
+  return getKysely()
+    .selectFrom('TeamMemberIntegrationAuth')
+    .selectAll()
+    .select(({ref}) => [
+      ref('providerUserId').as('login'),
+      sql<string>`coalesce("scopes", '')`.as('scope')
+    ])
+    .where('service', '=', 'github')
+    .where('accessToken', 'is not', null)
+    .where('providerUserId', 'is not', null)
+    .$narrowType<{
+      service: 'github'
+      meta: null
+      accessToken: NotNull
+      login: NotNull
+    }>()
 }
 
 export const selectTemplateRef = () => {
@@ -386,40 +438,8 @@ export const selectDescendantPages = (
       )
   )
 
-export const selectGitHubAuth = () => {
-  const query = getKysely()
-    .selectFrom('GitHubAuth')
-    .selectAll()
-    .select(({fn}) => [
-      fn<GitHubSearchQuery[]>('to_json', ['githubSearchQueries']).as('githubSearchQueries')
-    ])
-  return query as AssertedQuery<typeof query, {githubSearchQueries: GitHubSearchQuery[]}>
-}
-
-export const selectAtlassianAuth = () => {
-  const query = getKysely()
-    .selectFrom('AtlassianAuth')
-    .selectAll()
-    .select(({fn}) => [
-      fn<JiraSearchQuery[]>('to_json', ['jiraSearchQueries']).as('jiraSearchQueries')
-    ])
-  return query as AssertedQuery<typeof query, {jiraSearchQueries: JiraSearchQuery[]}>
-}
-
-export const selectGitHubDimensionFieldMap = () => {
-  return getKysely().selectFrom('GitHubDimensionFieldMap').selectAll()
-}
-
-export const selectGitLabDimensionFieldMap = () => {
-  return getKysely().selectFrom('GitLabDimensionFieldMap').selectAll()
-}
-
-export const selectJiraDimensionFieldMap = () => {
-  return getKysely().selectFrom('JiraDimensionFieldMap').selectAll()
-}
-
-export const selectJiraServerDimensionFieldMap = () => {
-  return getKysely().selectFrom('JiraServerDimensionFieldMap').selectAll()
+export const selectIntegrationDimensionFieldMap = () => {
+  return getKysely().selectFrom('IntegrationDimensionFieldMap').selectAll()
 }
 
 export const selectIntegrationProvider = () => {
@@ -430,7 +450,14 @@ export const selectIntegrationProvider = () => {
 }
 
 export const selectIntegrationSearchQuery = () => {
-  return getKysely().selectFrom('IntegrationSearchQuery').selectAll()
+  return getKysely()
+    .selectFrom('IntegrationSearchQuery')
+    .selectAll()
+    .$narrowType<
+      | {service: 'jira'; query: JiraSearchQueryJson}
+      | {service: 'jiraServer'; query: JiraSearchQueryJson}
+      | {service: 'github'; query: GitHubSearchQueryJson}
+    >()
 }
 
 export const selectMeetingSeries = () => {

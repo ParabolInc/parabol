@@ -1,0 +1,14 @@
+"""
+A category's average score from one past team health cycle
+"""
+type TeamHealthScorePoint {
+  """
+  When the cycle's results were revealed
+  """
+  endedAt: DateTime!
+
+  """
+  The average 1-5 Likert score the category earned that cycle
+  """
+  score: Float!
+}

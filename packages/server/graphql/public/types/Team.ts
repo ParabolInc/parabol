@@ -16,6 +16,7 @@ import standardError from '../../../utils/standardError'
 import isValid from '../../isValid'
 import connectionFromTasks from '../../queries/helpers/connectionFromTasks'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
+import getRotationOrder from '../mutations/helpers/getRotationOrder'
 import type {TeamResolvers} from '../resolverTypes'
 
 const Team: TeamResolvers = {
@@ -37,6 +38,12 @@ const Team: TeamResolvers = {
     const org = await dataLoader.get('organizations').loadNonNull(orgId)
     const {tier} = org
     return tier
+  },
+  facilitatorRotation: async ({id: teamId}, _args, {authToken, dataLoader}) => {
+    if (!isTeamMember(authToken, teamId)) return []
+    const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
+    const order = getRotationOrder(teamMembers)
+    return order.map((userId) => teamMembers.find((tm) => tm.userId === userId)!)
   },
   featureFlag: async ({id: teamId}, {featureName}, {dataLoader}) => {
     return await dataLoader
@@ -115,9 +122,10 @@ const Team: TeamResolvers = {
     if (meeting && meeting.teamId === teamId) return meeting
     return null
   },
-  meetingSettings: async ({id: teamId}, {meetingType}, {authToken, dataLoader}) => {
-    if (!isTeamMember(authToken, teamId)) return null as any
-    const settings = await dataLoader.get('meetingSettingsByType').load({teamId, meetingType})
+  meetingSettings: async ({id: teamId}, {meetingType}, {dataLoader}) => {
+    const settings = await dataLoader
+      .get('meetingSettingsByType')
+      .loadNonNull({teamId, meetingType})
     return settings
   },
   organization: async ({orgId}, _args, {dataLoader}) => {
@@ -208,8 +216,8 @@ const Team: TeamResolvers = {
     const viewerId = getUserId(authToken)
     if (!viewerId) return null
     const teamMemberId = toTeamMemberId(teamId, viewerId)
-    const teamMember = await dataLoader.get('teamMembers').loadNonNull(teamMemberId)
-    return teamMember
+    const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
+    return teamMember ?? null
   }
 }
 

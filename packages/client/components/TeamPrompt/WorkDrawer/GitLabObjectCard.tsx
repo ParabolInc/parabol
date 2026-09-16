@@ -1,15 +1,15 @@
 import graphql from 'babel-plugin-relay/macro'
-import {memo} from 'react'
+import {memo, useState} from 'react'
 import CopyToClipboard from 'react-copy-to-clipboard'
 import {useFragment} from 'react-relay'
 import {Link} from '~/ui/icons'
+import {Tooltip} from '~/ui/Tooltip/Tooltip'
+import {TooltipContent} from '~/ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '~/ui/Tooltip/TooltipTrigger'
 import type {GitLabObjectCard_issue$key} from '../../../__generated__/GitLabObjectCard_issue.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import {MenuPosition} from '../../../hooks/useCoords'
-import useTooltip from '../../../hooks/useTooltip'
 import relativeDate from '../../../utils/date/relativeDate'
 import {parseWebPath} from '../../../utils/parseWebPath'
-import {mergeRefs} from '../../../utils/react/mergeRefs'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import GitLabSVG from '../../GitLabSVG'
 
@@ -36,16 +36,8 @@ const GitLabObjectCard = memo((props: Props) => {
 
   const atmosphere = useAtmosphere()
 
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.UPPER_CENTER
-  )
-
-  const {
-    tooltipPortal: copiedTooltipPortal,
-    openTooltip: openCopiedTooltip,
-    closeTooltip: closeCopiedTooltip,
-    originRef: copiedTooltipRef
-  } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_CENTER)
+  const [isHovered, setIsHovered] = useState(false)
+  const [isCopied, setIsCopied] = useState(false)
 
   const trackLinkClick = () => {
     SendClientSideEvent(atmosphere, 'Inspiration Drawer Card Link Clicked', {
@@ -60,10 +52,10 @@ const GitLabObjectCard = memo((props: Props) => {
   }
 
   const handleCopy = () => {
-    openCopiedTooltip()
+    setIsCopied(true)
     trackCopy()
     setTimeout(() => {
-      closeCopiedTooltip()
+      setIsCopied(false)
     }, 2000)
   }
 
@@ -115,18 +107,18 @@ const GitLabObjectCard = memo((props: Props) => {
             {fullPath}
           </a>
         </div>
-        <CopyToClipboard text={webUrl} onCopy={handleCopy}>
-          <div
-            className='h-6 w-6 cursor-pointer rounded-md bg-transparent p-0.5 text-fg-muted hover:bg-surface-hover'
-            onMouseEnter={openTooltip}
-            onMouseLeave={closeTooltip}
-            ref={mergeRefs(originRef, copiedTooltipRef)}
-          >
-            <Link className='h-full w-full' />
-          </div>
-        </CopyToClipboard>
-        {tooltipPortal('Copy link')}
-        {copiedTooltipPortal('Copied!')}
+        <Tooltip open={isCopied || isHovered} onOpenChange={setIsHovered}>
+          <CopyToClipboard text={webUrl} onCopy={handleCopy}>
+            <TooltipTrigger asChild>
+              <div className='h-6 w-6 cursor-pointer rounded-md bg-transparent p-0.5 text-fg-muted hover:bg-surface-hover'>
+                <Link className='h-full w-full' />
+              </div>
+            </TooltipTrigger>
+          </CopyToClipboard>
+          <TooltipContent side={isCopied ? 'top' : 'bottom'}>
+            {isCopied ? 'Copied!' : 'Copy link'}
+          </TooltipContent>
+        </Tooltip>
       </div>
     </div>
   )

@@ -30,7 +30,7 @@ import type {
   UpdateIssueMutationVariables
 } from '../../types/linearTypes'
 import {convertTipTapToMarkdown} from '../../utils/convertTipTapToMarkdown'
-import type {CreateTaskResponse, TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
+import type {CreateTaskResponse, TaskIntegrationManager} from '../platform/TaskIntegrationManager'
 import makeCreateLinearTaskComment from './makeCreateLinearTaskComment'
 
 class LinearServerManager implements TaskIntegrationManager {

@@ -1,9 +1,11 @@
-jest.mock('../../TaskIntegrationManagerFactory', () => ({
+jest.mock('../../../graphql/public/rootSchema', () => ({
   __esModule: true,
-  default: {initManager: jest.fn()}
+  githubRequest: jest.fn(),
+  gitlabRequest: jest.fn(),
+  linearRequest: jest.fn(),
+  default: {}
 }))
 
-import {deriveCapabilityKeys} from '../capabilities'
 import {getServerIntegration, serverIntegrations} from '../registry'
 import type {IntegrationCapabilityKey} from '../ServerIntegrationDefinition'
 
@@ -13,7 +15,7 @@ const KNOWN_CAPABILITIES: IntegrationCapabilityKey[] = [
   'issueSearch',
   'repoList',
   'estimatePush',
-  'workItems'
+  'issueList'
 ]
 
 describe('serverIntegrations registry', () => {
@@ -39,13 +41,28 @@ describe('serverIntegrations registry', () => {
   })
 
   it.each(entries)('%s: declares only known capability keys', (_key, def) => {
-    for (const capability of deriveCapabilityKeys(def)) {
+    for (const capability of def.getCapabilityKeys()) {
       expect(KNOWN_CAPABILITIES).toContain(capability)
     }
   })
 
   it.each(entries)('%s: declares issueCreate', (_key, def) => {
     expect(def.capabilities.issueCreate).toBeDefined()
+  })
+
+  it.each(entries)('%s: declares repoList', (_key, def) => {
+    expect(def.capabilities.repoList).toBeDefined()
+  })
+
+  it.each(entries)('%s: declares issueRead with a getIssue function', (_key, def) => {
+    expect(typeof def.capabilities.issueRead.getIssue).toBe('function')
+  })
+
+  it.each(entries)('%s: declares estimatePush with a pushEstimate function', (_key, def) => {
+    expect(typeof def.capabilities.estimatePush.pushEstimate).toBe('function')
+    expect(def.capabilities.estimatePush.targets).toContain('comment')
+    expect(typeof def.capabilities.estimatePush.resolveDimensionFieldKey).toBe('function')
+    expect(typeof def.capabilities.estimatePush.describeDimensionField).toBe('function')
   })
 
   it('getServerIntegration returns null for an unknown service', () => {

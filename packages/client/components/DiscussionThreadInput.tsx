@@ -54,6 +54,9 @@ interface Props {
   isReply?: boolean
   isDisabled?: boolean
   isCreatingPoll?: boolean
+  // false where the discussion changes as a side effect of navigating the meeting rather than
+  // because the viewer went looking for the thread, e.g. team health advancing to the next question
+  autoFocus?: boolean
 }
 
 const DiscussionThreadInput = (props: Props) => {
@@ -62,7 +65,8 @@ const DiscussionThreadInput = (props: Props) => {
     getMaxSortOrder,
     discussion: discussionRef,
     viewer: viewerRef,
-    isCreatingPoll
+    isCreatingPoll,
+    autoFocus = true
   } = props
   const viewer = useFragment(
     graphql`
@@ -203,8 +207,8 @@ const DiscussionThreadInput = (props: Props) => {
       behavior: 'smooth',
       block: 'center'
     })
-    editor?.commands.focus('end')
-  }, [discussionId, editor])
+    if (autoFocus) editor?.commands.focus('end')
+  }, [discussionId, editor, autoFocus])
   const containerRef = useRef<HTMLDivElement>(null)
   useClickAway(containerRef, clearReplyingTo)
   if (!editor) return null

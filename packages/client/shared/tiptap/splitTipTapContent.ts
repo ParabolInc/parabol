@@ -1,8 +1,10 @@
 import {generateText, type JSONContent} from '@tiptap/core'
+import {removeNodeByType} from './removeNodeByType'
 import {serverTipTapExtensions} from './serverTipTapExtensions'
 import type {TipTapSerializedContent} from './TipTapSerializedContent'
 
-export const splitTipTapContent = (doc: JSONContent, maxLength = 256) => {
+export const splitTipTapContent = (rawDoc: JSONContent, maxLength = 256) => {
+  const doc = removeNodeByType(rawDoc, 'taskTag')
   const [firstBlock, ...bodyBlocks] = doc.content!
   const fullTitle = generateText({...doc, content: [firstBlock!]}, serverTipTapExtensions)
     // Remove newlines from the title

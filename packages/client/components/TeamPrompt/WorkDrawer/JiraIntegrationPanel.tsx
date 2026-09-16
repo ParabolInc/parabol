@@ -5,6 +5,7 @@ import type {JiraIntegrationPanel_meeting$key} from '../../../__generated__/Jira
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useInspirationDrawer from '../../../hooks/useInspirationDrawer'
 import useMutationProps from '../../../hooks/useMutationProps'
+import {getConnectProvider} from '../../../integrations/platform/findIntegrationService'
 import AtlassianClientManager from '../../../utils/AtlassianClientManager'
 import {hasJiraScopes} from '../../../utils/atlassianScopes'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
@@ -33,6 +34,9 @@ const JiraIntegrationPanel = (props: Props) => {
         viewerMeetingMember {
           teamMember {
             teamId
+            services {
+              ...findIntegrationService_cloudProvider @relay(mask: false)
+            }
             integrations {
               atlassian {
                 isActive
@@ -67,12 +71,14 @@ const JiraIntegrationPanel = (props: Props) => {
   const {error, onError} = mutationProps
 
   const authJira = () => {
-    if (!teamMember) {
+    const provider = teamMember && getConnectProvider(teamMember.services, 'jira')
+    if (!teamMember || !provider) {
       return onError(new Error('Could not find team member'))
     }
     AtlassianClientManager.openOAuth(
       atmosphere,
       teamMember.teamId,
+      provider,
       mutationProps,
       AtlassianClientManager.JIRA_SCOPE,
       teamMember.integrations.atlassian?.scope

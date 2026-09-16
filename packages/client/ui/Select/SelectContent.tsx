@@ -5,7 +5,7 @@ import {cn} from '../cn'
 export const SelectContent = React.forwardRef<
   HTMLDivElement,
   React.ComponentPropsWithoutRef<typeof RadixSelect.Content>
->(({className, children, position = 'popper', ...props}, ref) => (
+>(({className, children, position = 'item-aligned', ...props}, ref) => (
   <RadixSelect.Portal>
     <RadixSelect.Content
       ref={ref}
@@ -18,7 +18,7 @@ export const SelectContent = React.forwardRef<
     >
       <RadixSelect.Viewport
         className={cn(
-          'p-0',
+          'py-1',
           position === 'popper' &&
             'min-h-(--radix-select-trigger-height) w-full min-w-(--radix-select-trigger-width)'
         )}

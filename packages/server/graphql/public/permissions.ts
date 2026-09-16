@@ -13,6 +13,7 @@ import {isOrgTier} from './rules/isOrgTier'
 import isSuperUser from './rules/isSuperUser'
 import {isTeamMember} from './rules/isTeamMember'
 import {isTeamMemberOfMeeting} from './rules/isTeamMemberOfMeeting'
+import {isTeamMemberOrOrgLeader} from './rules/isTeamMemberOrOrgLeader'
 import {isUser} from './rules/isUser'
 import {isUserViewer} from './rules/isUserViewer'
 import {isViewerBillingLeader} from './rules/isViewerBillingLeader'
@@ -40,7 +41,6 @@ const permissionMap: PermissionMap<Resolvers> = {
     // don't check isAuthenticated for acceptTeamInvitation here because there are special cases handled in the resolver
     acceptTeamInvitation: rateLimit({perMinute: 50, perHour: 100}),
     addAgendaItem: isTeamMember<'Mutation.addAgendaItem'>('args.newAgendaItem.teamId'),
-    addAtlassianAuth: isTeamMember<'Mutation.addAtlassianAuth'>('args.teamId'),
     addApprovedOrganizationDomains: or(
       isSuperUser,
       and(
@@ -49,7 +49,6 @@ const permissionMap: PermissionMap<Resolvers> = {
       )
     ),
     addComment: isMeetingMember<'Mutation.addComment'>('args.comment.discussionId', 'discussions'),
-    addGitHubAuth: isTeamMember<'Mutation.addGitHubAuth'>('args.teamId'),
     addOrg: and(
       not(and(isEnvVarTrue('IS_SINGLE_ORG'), isEnvVarTrue('IS_ENTERPRISE'))),
       rateLimit({perMinute: 2, perHour: 5})
@@ -122,6 +121,8 @@ const permissionMap: PermissionMap<Resolvers> = {
       isViewerBillingLeader<'Mutation.downgradeToStarter'>('args.orgId')
     ),
     dragDiscussionTopic: isTeamMemberOfMeeting<'Mutation.dragDiscussionTopic'>('args.meetingId'),
+    dragTeamHealthResultStage:
+      isTeamMemberOfMeeting<'Mutation.dragTeamHealthResultStage'>('args.meetingId'),
     dragEstimatingTask: isTeamMemberOfMeeting<'Mutation.dragEstimatingTask'>('args.meetingId'),
     editCommenting: isMeetingMember<'Mutation.editCommenting'>('args.discussionId', 'discussions'),
     editPageContent: hasPageAccess<'Mutation.editPageContent'>('args.pageId', 'editor'),
@@ -195,10 +196,8 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     moveTeamToOrg: or(isSuperUser, isViewerBillingLeader<'Mutation.moveTeamToOrg'>('args.orgId')),
     navigateMeeting: isMeetingFacilitator<'Mutation.navigateMeeting'>('args.meetingId'),
-    persistGitHubSearchQuery: isTeamMember<'Mutation.persistGitHubSearchQuery'>('args.teamId'),
     persistIntegrationSearchQuery:
       isTeamMember<'Mutation.persistIntegrationSearchQuery'>('args.teamId'),
-    persistJiraSearchQuery: isTeamMember<'Mutation.persistJiraSearchQuery'>('args.teamId'),
     pokerAnnounceDeckHover:
       isTeamMemberOfMeeting<'Mutation.pokerAnnounceDeckHover'>('args.meetingId'),
     pokerResetDimension: isMeetingFacilitator<'Mutation.pokerResetDimension'>('args.meetingId'),
@@ -208,8 +207,6 @@ const permissionMap: PermissionMap<Resolvers> = {
         'args.dimensionId',
         'templateDimensions'
       ),
-    promoteNewMeetingFacilitator:
-      isTeamMemberOfMeeting<'Mutation.promoteNewMeetingFacilitator'>('args.meetingId'),
     promoteToTeamLead: or(
       isSuperUser,
       isViewerTeamLead<'Mutation.promoteToTeamLead'>('args.teamId'),
@@ -233,8 +230,8 @@ const permissionMap: PermissionMap<Resolvers> = {
       isSuperUser,
       isViewerBillingLeader<'Mutation.removeApprovedOrganizationDomains'>('args.orgId')
     ),
-    removeAtlassianAuth: isTeamMember<'Mutation.removeAtlassianAuth'>('args.teamId'),
-    removeGitHubAuth: isTeamMember<'Mutation.removeGitHubAuth'>('args.teamId'),
+    removeIntegrationSearchQuery:
+      isTeamMember<'Mutation.removeIntegrationSearchQuery'>('args.teamId'),
     removePokerTemplate: or(
       isViewerBillingLeader<'Mutation.removePokerTemplate'>('args.templateId', 'meetingTemplates'),
       isTeamMember<'Mutation.removePokerTemplate'>('args.templateId', 'meetingTemplates')
@@ -349,11 +346,10 @@ const permissionMap: PermissionMap<Resolvers> = {
     // that the resolver unwraps via MeetingSeriesId.split before any dataloader lookup).
     startRetrospective: isTeamMember<'Mutation.startRetrospective'>('args.teamId'),
     startSprintPoker: isTeamMember<'Mutation.startSprintPoker'>('args.teamId'),
-    startTeamHealth: or(
-      isTeamMember<'Mutation.startTeamHealth'>('args.teamIds'),
-      isViewerBillingLeader<'Mutation.startTeamHealth'>('args.teamIds', 'teams')
-    ),
+    startTeamHealth: isTeamMemberOrOrgLeader<'Mutation.startTeamHealth'>('args.teamIds'),
     startTeamPrompt: isTeamMember<'Mutation.startTeamPrompt'>('args.teamId'),
+    // no isAuthenticated: errors can occur pre-auth (parity with the legacy Google Form flow)
+    submitErrorFeedback: rateLimit({perMinute: 5, perHour: 20}),
     toggleAIFeatures: or(
       isSuperUser,
       isViewerBillingLeader<'Mutation.toggleAIFeatures'>('args.orgId')
@@ -375,11 +371,17 @@ const permissionMap: PermissionMap<Resolvers> = {
     updateCommentContent: isMeetingMember<'Mutation.updateCommentContent'>('args.meetingId'),
     updateCreditCard: isViewerBillingLeader<'Mutation.updateCreditCard'>('args.orgId'),
     updateDragLocation: isTeamMember<'Mutation.updateDragLocation'>('args.input.teamId'),
+    updateFacilitatorRotation:
+      isTeamMemberOfMeeting<'Mutation.updateFacilitatorRotation'>('args.meetingId'),
     updateGitHubDimensionField: isTeamMember<'Mutation.updateGitHubDimensionField'>(
       'args.meetingId',
       'newMeetings'
     ),
     updateGitLabDimensionField: isTeamMember<'Mutation.updateGitLabDimensionField'>(
+      'args.meetingId',
+      'newMeetings'
+    ),
+    updateIntegrationDimensionField: isTeamMember<'Mutation.updateIntegrationDimensionField'>(
       'args.meetingId',
       'newMeetings'
     ),
@@ -491,16 +493,43 @@ const permissionMap: PermissionMap<Resolvers> = {
     smartTitle: isSuperUser,
     voterIds: isSuperUser
   },
+  // An org leader reaches a Team they are not on (e.g. Organization.teams, MeetingSeries.team).
+  // They get the identity & billing basics plus their own viewer-relative fields; everything that
+  // describes how the team works is for the team. Two sets stay out of the map: fields whose
+  // resolver already degrades to an empty value for a non-member (activeMeetings, agendaItems,
+  // tasks, ...), so a fragment shared with a member keeps rendering instead of erroring, and
+  // scale/scales, which the client fetches off MeetingTemplate.team for every org- & public-scoped
+  // template in the activity library, none of which is owned by the viewer's team.
   Team: {
+    autoAssignFacilitator: isTeamMember<'Team.autoAssignFacilitator'>('source.id'),
+    jiraDisplayFieldIds: isTeamMember<'Team.jiraDisplayFieldIds'>('source.id'),
+    lastMeetingType: isTeamMember<'Team.lastMeetingType'>('source.id'),
     massInvitation: or(
       // TODO or rules run in parallel, make it go in serial since org_admin check is rare
       isTeamMember<'Team.massInvitation'>('source.id'),
       hasOrgRole<'Team.massInvitation'>('source.orgId', 'ORG_ADMIN')
     ),
-    organization: isViewerOnOrg<'Team.organization'>('source.orgId')
+    meetingSettings: isTeamMember<'Team.meetingSettings'>('source.id'),
+    organization: isViewerOnOrg<'Team.organization'>('source.orgId'),
+    qualAIMeetingsCount: isTeamMember<'Team.qualAIMeetingsCount'>('source.id'),
+    retroMeetingsCount: isTeamMember<'Team.retroMeetingsCount'>('source.id'),
+    tags: isTeamMember<'Team.tags'>('source.id'),
+    // matches teamMembers, which an org leader may read to administer the team
+    teamLead: or(
+      isTeamMember<'Team.teamLead'>('source.id'),
+      isViewerBillingLeader<'Team.teamLead'>('source.orgId')
+    )
   },
   TeamMember: {
-    integrations: isUserViewer<'TeamMember.integrations'>('source.userId')
+    integrations: isUserViewer<'TeamMember.integrations'>('source.userId'),
+    repoIntegrations: isUserViewer<'TeamMember.repoIntegrations'>('source.userId'),
+    services: isUserViewer<'TeamMember.services'>('source.userId')
+  },
+  IntegrationService: {
+    auth: isUserViewer<'IntegrationService.auth'>('source.userId'),
+    grantedScopes: isUserViewer<'IntegrationService.grantedScopes'>('source.userId'),
+    repos: isUserViewer<'IntegrationService.repos'>('source.userId'),
+    searchQueries: isUserViewer<'IntegrationService.searchQueries'>('source.userId')
   },
   User: {
     archivedTasks: isTeamMember<'User.archivedTasks'>('args.teamId'),

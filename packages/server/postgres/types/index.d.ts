@@ -6,11 +6,9 @@ import {
   type selectComments,
   type selectDiscussion,
   type selectGitHubAuth,
-  type selectGitHubDimensionFieldMap,
-  type selectGitLabDimensionFieldMap,
   type selectInspirationItems,
-  type selectJiraDimensionFieldMap,
-  type selectJiraServerDimensionFieldMap,
+  type selectIntegrationDimensionFieldMap,
+  type selectIntegrationSearchQuery,
   type selectMassInvitations,
   type selectMeetingSeries,
   type selectMeetingSettings,
@@ -31,6 +29,7 @@ import {
   type selectSlackAuths,
   type selectSlackNotifications,
   type selectSuggestedAction,
+  type selectTaskEstimate,
   type selectTasks,
   type selectTeamInvitations,
   type selectTeamMemberIntegrationAuth,
@@ -58,7 +57,6 @@ import {
   PageOrganizationAccess as PageOrganizationAccessPG,
   PageTeamAccess as PageTeamAccessPG,
   PageUserAccess as PageUserAccessPG,
-  TaskEstimate as TaskEstimatePG,
   TeamMember as TeamMemberPG
 } from './pg'
 
@@ -111,8 +109,9 @@ export type SuggestedAction = ExtractTypeFromQueryBuilderSelect<typeof selectSug
 export interface Team extends ExtractTypeFromQueryBuilderSelect<typeof selectTeams> {}
 
 export type TeamMember = Selectable<TeamMemberPG>
-export interface TeamMemberIntegrationAuth
-  extends ExtractTypeFromQueryBuilderSelect<typeof selectTeamMemberIntegrationAuth> {}
+export type TeamMemberIntegrationAuth = ExtractTypeFromQueryBuilderSelect<
+  typeof selectTeamMemberIntegrationAuth
+>
 export type TeamPromptResponse = ExtractTypeFromQueryBuilderSelect<typeof selectTeamPromptResponses>
 export type InspirationItem = ExtractTypeFromQueryBuilderSelect<typeof selectInspirationItems>
 export type TeamHealthCategory = ExtractTypeFromQueryBuilderSelect<
@@ -153,7 +152,7 @@ export type NewMeeting = ExtractTypeFromQueryBuilderSelect<typeof selectNewMeeti
 export type NewFeature = ExtractTypeFromQueryBuilderSelect<typeof selectNewFeatures>
 export type TeamInvitation = ExtractTypeFromQueryBuilderSelect<typeof selectTeamInvitations>
 export type Task = ExtractTypeFromQueryBuilderSelect<typeof selectTasks>
-export type TaskEstimate = Selectable<TaskEstimatePG>
+export type TaskEstimate = ExtractTypeFromQueryBuilderSelect<typeof selectTaskEstimate>
 
 export type Discussion = ExtractTypeFromQueryBuilderSelect<typeof selectDiscussion>
 // userSortOrder comes from PageUserSortOrder table, and is sometimes prefetched for performance
@@ -183,27 +182,39 @@ export type JiraSearchQuery = {
   lastUsedAt: string
 }
 
+export type JiraSearchQueryJson = {
+  queryString: string
+  isJQL: boolean
+  projectKeyFilters: string[]
+}
+
+export type GitHubSearchQueryJson = {
+  queryString: string
+}
+
+export type IntegrationSearchQuery = ExtractTypeFromQueryBuilderSelect<
+  typeof selectIntegrationSearchQuery
+>
+
+export type JiraIntegrationSearchQuery = Extract<
+  IntegrationSearchQuery,
+  {service: 'jira' | 'jiraServer'}
+>
+export type GitHubIntegrationSearchQuery = Extract<IntegrationSearchQuery, {service: 'github'}>
+
+export type JiraAuthMeta = {cloudIds: string[]}
+
+/** Services that persist something in TeamMemberIntegrationAuth.meta and its shape; services absent here have meta: null.
+ * This map is the only place to extend when a new integration stores auth meta. */
+export type IntegrationAuthMetaByService = {
+  jira: JiraAuthMeta
+}
+
 export type AtlassianAuth = ExtractTypeFromQueryBuilderSelect<typeof selectAtlassianAuth>
 
-export interface GitHubSearchQuery {
-  id: string
-  queryString: string
-  lastUsedAt: string
-}
 export type GitHubAuth = ExtractTypeFromQueryBuilderSelect<typeof selectGitHubAuth>
-export type GitLabDimensionFieldMap = ExtractTypeFromQueryBuilderSelect<
-  typeof selectGitLabDimensionFieldMap
->
-export type GitHubDimensionFieldMap = ExtractTypeFromQueryBuilderSelect<
-  typeof selectGitHubDimensionFieldMap
->
-
-export type JiraDimensionFieldMap = ExtractTypeFromQueryBuilderSelect<
-  typeof selectJiraDimensionFieldMap
->
-
-export type JiraServerDimensionFieldMap = ExtractTypeFromQueryBuilderSelect<
-  typeof selectJiraServerDimensionFieldMap
+export type IntegrationDimensionFieldMap = ExtractTypeFromQueryBuilderSelect<
+  typeof selectIntegrationDimensionFieldMap
 >
 
 export type TAuthIdentity = 'GOOGLE' | 'LOCAL' | 'MICROSOFT'

@@ -1,11 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect, useMemo} from 'react'
+import {Suspense, useEffect, useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import type {NewTeamOrgPicker_organizations$key} from '../../../__generated__/NewTeamOrgPicker_organizations.graphql'
 import DropdownMenuToggle from '../../../components/DropdownMenuToggle'
 import TierTag from '../../../components/Tag/TierTag'
-import {MenuPosition} from '../../../hooks/useCoords'
-import useMenu from '../../../hooks/useMenu'
+import {Select} from '../../../ui/Select/Select'
+import {SelectTrigger} from '../../../ui/Select/SelectTrigger'
+import {SelectValue} from '../../../ui/Select/SelectValue'
 import lazyPreload from '../../../utils/lazyPreload'
 import sortByTier from '../../../utils/sortByTier'
 
@@ -51,39 +52,36 @@ const NewTeamOrgPicker = (props: Props) => {
   const orgIdx = orgId ? sortedOrgs.findIndex((org) => org.id === orgId) : 0
   const org = sortedOrgs[orgIdx]
   const defaultText = org ? org.name : NO_ORGS
-  const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLDivElement>(
-    MenuPosition.UPPER_RIGHT,
-    {
-      isDropdown: true
-    }
+  const isDisabled = disabled || defaultText === NO_ORGS
+  const orgLabel = (
+    <div className='flex min-w-0 flex-wrap items-center'>
+      <div className='flex-1 overflow-hidden text-ellipsis whitespace-nowrap'>{defaultText}</div>
+      {org && org.tier !== 'starter' && <TierTag tier={org.tier} billingTier={org.billingTier} />}
+    </div>
   )
+  const toggle = (
+    <DropdownMenuToggle
+      onMouseEnter={NewTeamOrgDropdown.preload}
+      disabled={isDisabled}
+      defaultText={
+        isDisabled ? (
+          orgLabel
+        ) : (
+          <SelectValue className='flex min-w-0 flex-1'>{orgLabel}</SelectValue>
+        )
+      }
+    />
+  )
+
+  if (isDisabled) return toggle
+
   return (
-    <>
-      <DropdownMenuToggle
-        onMouseEnter={NewTeamOrgDropdown.preload}
-        onClick={togglePortal}
-        ref={originRef}
-        disabled={disabled || defaultText === NO_ORGS}
-        defaultText={
-          <div className='flex min-w-0 flex-wrap items-center'>
-            <div className='flex-1 overflow-hidden text-ellipsis whitespace-nowrap'>
-              {defaultText}
-            </div>
-            {org && org.tier !== 'starter' && (
-              <TierTag tier={org.tier} billingTier={org.billingTier} />
-            )}
-          </div>
-        }
-      />
-      {menuPortal(
-        <NewTeamOrgDropdown
-          menuProps={menuProps}
-          onChange={onChange}
-          organizations={sortedOrgs}
-          defaultActiveIdx={orgIdx}
-        />
-      )}
-    </>
+    <Select value={org?.id} onValueChange={onChange}>
+      <SelectTrigger asChild>{toggle}</SelectTrigger>
+      <Suspense fallback={null}>
+        <NewTeamOrgDropdown organizations={sortedOrgs} />
+      </Suspense>
+    </Select>
   )
 }
 

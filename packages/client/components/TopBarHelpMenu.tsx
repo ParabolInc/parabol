@@ -45,7 +45,7 @@ const TopBarHelpMenu = (props: Props) => {
         <Comment className={iconClassName} />
         {'Get help'}
       </MenuItem>
-      <MenuItem className='py-1 text-fg-muted text-xs' onSelect={gotoVersion}>
+      <MenuItem className='text-fg-muted text-xs' onSelect={gotoVersion}>
         Version {__APP_VERSION__}
         {swVersion !== __APP_VERSION__ && ` (sw${swVersion ?? ' unknown'})`}
       </MenuItem>

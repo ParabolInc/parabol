@@ -8,4 +8,9 @@ type ProcessRecurrenceSuccess {
   Number of meetings that were started because of this mutation.
   """
   meetingsStarted: Int!
+
+  """
+  Number of Team Health cycles whose non-responders were reminded because of this mutation.
+  """
+  remindersSent: Int!
 }

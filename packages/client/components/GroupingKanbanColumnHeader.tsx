@@ -1,10 +1,11 @@
 import type {MouseEvent} from 'react'
 import useBreakpoint from '~/hooks/useBreakpoint'
-import {MenuPosition} from '~/hooks/useCoords'
-import useTooltip from '~/hooks/useTooltip'
 import {Breakpoint} from '~/types/constEnums'
 import {Button} from '~/ui/Button/Button'
 import {Add, UnfoldLess, UnfoldMore} from '~/ui/icons'
+import {Tooltip} from '~/ui/Tooltip/Tooltip'
+import {TooltipContent} from '~/ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '~/ui/Tooltip/TooltipTrigger'
 import RetroPrompt from './RetroPrompt'
 
 const addReflectionButtonClass = 'h-6 w-6 border-0 p-0 leading-6'
@@ -31,20 +32,7 @@ const GroupingKanbanColumnHeader = (props: Props) => {
     submitting,
     toggleWidth
   } = props
-  const {
-    tooltipPortal: addReflectionPortal,
-    openTooltip: openReflectionTooltip,
-    closeTooltip: closeReflectionTooltip,
-    originRef: addReflectionRef
-  } = useTooltip<HTMLButtonElement>(MenuPosition.UPPER_CENTER)
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLButtonElement>(
-    MenuPosition.UPPER_CENTER
-  )
-  const handleClick = () => {
-    onClick()
-    closeReflectionTooltip()
-  }
 
   return (
     <div className='w-full'>
@@ -58,39 +46,41 @@ const GroupingKanbanColumnHeader = (props: Props) => {
         </RetroPrompt>
         <div className='flex items-start'>
           {phaseType === 'group' && (
-            <Button
-              variant='flat'
-              size='sm'
-              className={addReflectionButtonClass}
-              data-cy={`add-reflection-${question}`}
-              aria-label={'Add a reflection'}
-              disabled={!canAdd || submitting}
-              onClick={handleClick}
-              onMouseEnter={openReflectionTooltip}
-              onMouseLeave={closeReflectionTooltip}
-              ref={addReflectionRef}
-            >
-              <Add />
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant='flat'
+                  size='sm'
+                  className={addReflectionButtonClass}
+                  data-cy={`add-reflection-${question}`}
+                  aria-label={'Add a reflection'}
+                  disabled={!canAdd || submitting}
+                  onClick={onClick}
+                >
+                  <Add />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side='bottom'>Add new reflection</TooltipContent>
+            </Tooltip>
           )}
-          {addReflectionPortal(<div>Add new reflection</div>)}
           {isDesktop && (
-            <>
-              <Button
-                variant='flat'
-                size='sm'
-                className={`${addReflectionButtonClass} ml-1`}
-                onClick={toggleWidth}
-                onMouseEnter={openTooltip}
-                onMouseLeave={closeTooltip}
-                ref={originRef}
-              >
-                <div className='flex h-6 w-6 rotate-45 items-center justify-center'>
-                  {isWidthExpanded ? <UnfoldLess /> : <UnfoldMore />}
-                </div>
-              </Button>
-              {tooltipPortal(<div>{`${isWidthExpanded ? 'Minimise' : 'Expand'}`}</div>)}
-            </>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant='flat'
+                  size='sm'
+                  className={`${addReflectionButtonClass} ml-1`}
+                  onClick={toggleWidth}
+                >
+                  <div className='flex h-6 w-6 rotate-45 items-center justify-center'>
+                    {isWidthExpanded ? <UnfoldLess /> : <UnfoldMore />}
+                  </div>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side='bottom'>
+                {isWidthExpanded ? 'Minimise' : 'Expand'}
+              </TooltipContent>
+            </Tooltip>
           )}
         </div>
       </div>

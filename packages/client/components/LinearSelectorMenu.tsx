@@ -1,13 +1,10 @@
 import type {LinearProjectOrTeam} from '../hooks/useLinearProjectsAndTeams'
-import type {MenuProps} from '../hooks/useMenu'
+import {MenuItem} from '../ui/Menu/MenuItem'
+import {MenuSearch} from '../ui/Menu/MenuSearch'
 import {Spinner} from '../ui/Spinner/Spinner'
 import {getLinearRepoName} from '../utils/getLinearRepoName'
 import Checkbox from './Checkbox'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
-import Menu from './Menu'
-import MenuItem from './MenuItem'
-import MenuItemLabel from './MenuItemLabel'
-import {SearchMenuItem} from './SearchMenuItem'
 import TypeAheadLabel from './TypeAheadLabel'
 
 const getItemId = (item: LinearProjectOrTeam): string => {
@@ -27,7 +24,6 @@ export interface LinearSelectorMenuProps {
   onSelectItem: (itemId: string, currentSelectedState: boolean) => void
   searchQuery: string
   onSearchQueryChange: (query: string) => void
-  menuProps: MenuProps
   isLoading?: boolean
   placeholder?: string
   emptyStateMessage?: string
@@ -40,23 +36,14 @@ const LinearSelectorMenu = (props: LinearSelectorMenuProps) => {
     onSelectItem,
     searchQuery,
     onSearchQueryChange,
-    menuProps,
     isLoading = false,
     placeholder = 'Search items',
     emptyStateMessage = 'No items found!'
   } = props
 
-  const {portalStatus, isDropdown} = menuProps
-
   return (
-    <Menu
-      className='max-w-full'
-      keepParentFocus
-      ariaLabel='Select Linear projects or teams'
-      portalStatus={portalStatus}
-      isDropdown={isDropdown}
-    >
-      <SearchMenuItem
+    <>
+      <MenuSearch
         placeholder={placeholder}
         onChange={(e) => onSearchQueryChange(e.target.value)}
         value={searchQuery}
@@ -81,19 +68,13 @@ const LinearSelectorMenu = (props: LinearSelectorMenuProps) => {
         }
 
         return (
-          <MenuItem
-            key={itemId}
-            label={
-              <MenuItemLabel className=''>
-                <Checkbox className='-ml-2 mr-2' active={isSelected} />
-                <TypeAheadLabel query={searchQuery} label={itemLabel} />
-              </MenuItemLabel>
-            }
-            onClick={handleClick}
-          />
+          <MenuItem key={itemId} onSelect={(e) => e.preventDefault()} onClick={handleClick}>
+            <Checkbox className='-ml-2 mr-2' active={isSelected} />
+            <TypeAheadLabel query={searchQuery} label={itemLabel} />
+          </MenuItem>
         )
       })}
-    </Menu>
+    </>
   )
 }
 

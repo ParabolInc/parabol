@@ -2,41 +2,40 @@ import {Suspense} from 'react'
 import meetingCardOptionsMenuQuery, {
   type MeetingCardOptionsMenuQuery
 } from '../__generated__/MeetingCardOptionsMenuQuery.graphql'
-import type {MenuProps} from '../hooks/useMenu'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import MeetingCardOptionsMenu from './MeetingCardOptionsMenu'
 
 interface Props {
   meetingId: string
   teamId: string
-  menuProps: MenuProps
   popTooltip: () => void
   openRecurrenceSettingsModal: () => void
   openEndRecurringMeetingModal: () => void
+  onStartSeriesNow: () => void
 }
 
 const MeetingCardOptionsMenuRoot = (props: Props) => {
   const {
     meetingId,
     teamId,
-    menuProps,
     popTooltip,
     openRecurrenceSettingsModal,
-    openEndRecurringMeetingModal
+    openEndRecurringMeetingModal,
+    onStartSeriesNow
   } = props
   const queryRef = useQueryLoaderNow<MeetingCardOptionsMenuQuery>(meetingCardOptionsMenuQuery, {
     meetingId,
     teamId
   })
   return (
-    <Suspense fallback={''}>
+    <Suspense fallback={<div className='h-7 min-w-[200px]' />}>
       {queryRef && (
         <MeetingCardOptionsMenu
           queryRef={queryRef}
-          menuProps={menuProps}
           popTooltip={popTooltip}
           openRecurrenceSettingsModal={openRecurrenceSettingsModal}
           openEndRecurringMeetingModal={openEndRecurringMeetingModal}
+          onStartSeriesNow={onStartSeriesNow}
         />
       )}
     </Suspense>

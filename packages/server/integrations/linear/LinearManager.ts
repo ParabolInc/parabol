@@ -1,12 +1,18 @@
+import {fetch} from '@whatwg-node/fetch'
+import makeAppURL from 'parabol-client/utils/makeAppURL'
 import {URL} from 'url'
+import appOrigin from '../../appOrigin'
 import {authorizeOAuth2} from '../helpers/authorizeOAuth2'
 import OAuth2Manager, {
   type OAuth2AuthorizationParams,
   type OAuth2AuthorizeResponse,
-  type OAuth2RefreshAuthorizationParams
+  type OAuth2RefreshAuthorizationParams,
+  type OAuth2RefreshResponse,
+  type OAuth2TokenResponse
 } from '../OAuth2Manager'
 
 export default class LinearManager extends OAuth2Manager {
+  static readonly REDIRECT_URI = makeAppURL(appOrigin, 'auth/linear')
   private apiServerBaseUrl: string
 
   constructor(clientId: string, clientSecret: string, serverBaseUrl: string) {
@@ -17,19 +23,35 @@ export default class LinearManager extends OAuth2Manager {
     this.apiServerBaseUrl = `${url.protocol}//${apiHostname}`
   }
 
-  async authorize(code: string, redirectUri: string): Promise<Error | OAuth2AuthorizeResponse> {
-    return this.fetchToken<OAuth2AuthorizeResponse>({
+  async authorize(code: string): Promise<Error | OAuth2AuthorizeResponse> {
+    const auth = await this.fetchToken<OAuth2TokenResponse>({
       grant_type: 'authorization_code',
       code,
-      redirect_uri: redirectUri
+      redirect_uri: LinearManager.REDIRECT_URI
     })
+    if (auth instanceof Error) return auth
+    const res = await fetch(`${this.apiServerBaseUrl}/graphql`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${auth.accessToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({query: '{ viewer { id } }'})
+    })
+    if (!res.ok) return new Error(`Linear: could not read the authorized user (${res.status})`)
+    const {data} = (await res.json()) as {data?: {viewer?: {id?: string}}}
+    const providerUserId = data?.viewer?.id
+    if (!providerUserId) return new Error('Linear: user has no id')
+    return {...auth, providerUserId}
   }
 
-  async refresh(refreshToken: string): Promise<Error | OAuth2AuthorizeResponse> {
-    return this.fetchToken<OAuth2AuthorizeResponse>({
+  async refresh(refreshToken: string): Promise<Error | OAuth2RefreshResponse> {
+    const res = await this.fetchToken<OAuth2TokenResponse>({
       grant_type: 'refresh_token',
       refresh_token: refreshToken
     })
+    if (res instanceof Error) return res
+    return {...res, expiresIn: res.expiresIn ?? 86400}
   }
 
   protected async fetchToken<TSuccess>(

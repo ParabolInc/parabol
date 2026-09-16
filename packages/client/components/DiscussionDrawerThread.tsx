@@ -8,9 +8,16 @@ interface Props {
   allowedThreadables: DiscussionThreadables[]
   header?: ReactNode
   emptyState?: ReactNode
+  autoFocus?: boolean
 }
 
-const DiscussionDrawerThread = ({discussionId, allowedThreadables, header, emptyState}: Props) => {
+const DiscussionDrawerThread = ({
+  discussionId,
+  allowedThreadables,
+  header,
+  emptyState,
+  autoFocus
+}: Props) => {
   const isReadOnly = allowedThreadables.length === 0
   const allowTasks = allowedThreadables.includes('task')
   return (
@@ -20,6 +27,7 @@ const DiscussionDrawerThread = ({discussionId, allowedThreadables, header, empty
         allowedThreadables={allowedThreadables}
         width='100%'
         header={header}
+        autoFocus={autoFocus}
         emptyState={
           emptyState ?? (
             <DiscussionThreadListEmptyState allowTasks={allowTasks} isReadOnly={isReadOnly} />

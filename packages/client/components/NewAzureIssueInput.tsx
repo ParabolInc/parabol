@@ -3,19 +3,16 @@ import {type FormEvent, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {NewAzureIssueInput_viewer$key} from '~/__generated__/NewAzureIssueInput_viewer.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import {MenuPosition} from '~/hooks/useCoords'
-import useMenu from '~/hooks/useMenu'
 import useMutationProps from '~/hooks/useMutationProps'
 import CreateTaskMutation from '~/mutations/CreateTaskMutation'
-import AzureDevOpsProjectId from '~/shared/gqlIds/AzureDevOpsProjectId'
 import {ExpandMore} from '~/ui/icons'
 import type {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/CreateTaskMutation.graphql'
 import useForm from '../hooks/useForm'
-import {PortalStatus} from '../hooks/usePortal'
 import useTimedState from '../hooks/useTimedState'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
 import type {CompletedHandler} from '../types/relayMutations'
+import {Menu} from '../ui/Menu/Menu'
 import Legitity from '../validation/Legitity'
 import Checkbox from './Checkbox'
 import NewAzureIssueMenu from './NewAzureIssueMenu'
@@ -52,7 +49,7 @@ const NewAzureIssueInput = (props: Props) => {
                 ...NewAzureIssueMenu_AzureDevOpsRemoteProjects
                 id
                 name
-                instanceId
+                integrationRepoId
               }
             }
           }
@@ -79,21 +76,12 @@ const NewAzureIssueInput = (props: Props) => {
       validate: validateIssue
     }
   })
-  const {originRef, menuPortal, menuProps, togglePortal, portalStatus} = useMenu(
-    MenuPosition.UPPER_LEFT,
-    {isDropdown: true}
-  )
+  const isMenuOpenRef = useRef(false)
   const ref = useRef<HTMLInputElement>(null)
   const {dirty, error} = fields.newIssue
-  useEffect(() => {
-    if (portalStatus === PortalStatus.Exited) {
-      ref.current?.focus()
-    }
-  }, [portalStatus])
-
   const handleCreateNewIssue = (e: FormEvent) => {
     e.preventDefault()
-    if (portalStatus !== PortalStatus.Exited || !selectedProjectName) return
+    if (isMenuOpenRef.current || !selectedProjectName) return
     const {newIssue: newIssueRes} = validateField()
     const {value: newIssueTitle, error} = newIssueRes
     if (error) {
@@ -107,10 +95,6 @@ const NewAzureIssueInput = (props: Props) => {
       return
     }
     const selectedProject = projects.find((project) => project.name === selectedProjectName)!
-    const serviceProjectHash = AzureDevOpsProjectId.join(
-      selectedProject.instanceId,
-      selectedProject.id
-    )
     const newTask = {
       teamId,
       userId,
@@ -120,7 +104,7 @@ const NewAzureIssueInput = (props: Props) => {
       status: 'active' as const,
       integration: {
         service: 'azureDevOps' as const,
-        serviceProjectHash
+        serviceProjectHash: selectedProject.integrationRepoId
       }
     }
     const handleCompleted: CompletedHandler<TCreateTaskMutation['response']> = (res) => {
@@ -163,45 +147,48 @@ const NewAzureIssueInput = (props: Props) => {
   }
   if (!isEditing) return null
   return (
-    <>
-      <div className='flex cursor-pointer bg-surface-raised py-2 pl-4'>
-        <Checkbox active />
-        <div className='flex w-full flex-col pl-4'>
-          <form className='flex w-full flex-col' onSubmit={handleCreateNewIssue}>
-            <input
-              className='m-0 w-full appearance-none border-none bg-transparent py-0 pr-2 pl-0 text-[16px] text-fg-primary outline-none'
-              autoFocus
-              autoComplete='off'
-              onBlur={handleCreateNewIssue}
-              onChange={onChange}
-              maxLength={255}
-              name='newIssue'
-              placeholder='New issue title'
-              ref={ref}
-              type='text'
-            />
-            {dirty && error && (
-              <StyledError className='w-full text-left text-[13px]'>{error}</StyledError>
-            )}
-          </form>
-          <PlainButton
-            className='flex h-5 w-fit items-center justify-start bg-transparent opacity-100 hover:bg-transparent focus:bg-transparent'
-            ref={originRef}
-            onMouseDown={togglePortal}
-          >
-            <a className={linkClassName}>{selectedProjectName}</a>
-            <ExpandMore className='h-5 w-5 content-center p-0 text-accent'>expand_more</ExpandMore>
-          </PlainButton>
-        </div>
+    <div className='flex cursor-pointer bg-surface-raised py-2 pl-4'>
+      <Checkbox active />
+      <div className='flex w-full flex-col pl-4'>
+        <form className='flex w-full flex-col' onSubmit={handleCreateNewIssue}>
+          <input
+            className='m-0 w-full appearance-none border-none bg-transparent py-0 pr-2 pl-0 text-[16px] text-fg-primary outline-none'
+            autoFocus
+            autoComplete='off'
+            onBlur={handleCreateNewIssue}
+            onChange={onChange}
+            maxLength={255}
+            name='newIssue'
+            placeholder='New issue title'
+            ref={ref}
+            type='text'
+          />
+          {dirty && error && (
+            <StyledError className='w-full text-left text-[13px]'>{error}</StyledError>
+          )}
+        </form>
+        <Menu
+          trigger={
+            <PlainButton className='flex h-5 w-fit items-center justify-start bg-transparent opacity-100 hover:bg-transparent focus:bg-transparent'>
+              <a className={linkClassName}>{selectedProjectName}</a>
+              <ExpandMore className='h-5 w-5 content-center p-0 text-accent'>
+                expand_more
+              </ExpandMore>
+            </PlainButton>
+          }
+          onOpenChange={(open) => {
+            isMenuOpenRef.current = open
+            // radix returns focus to the trigger on close; the title input should keep it
+            if (!open) requestAnimationFrame(() => ref.current?.focus())
+          }}
+        >
+          <NewAzureIssueMenu
+            projectsRef={projects}
+            setSelectedProjectName={setSelectedProjectName}
+          />
+        </Menu>
       </div>
-      {menuPortal(
-        <NewAzureIssueMenu
-          projectsRef={projects}
-          setSelectedProjectName={setSelectedProjectName}
-          menuProps={menuProps}
-        />
-      )}
-    </>
+    </div>
   )
 }
 

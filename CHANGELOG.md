@@ -5,6 +5,165 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.45.0](https://github.com/ParabolInc/parabol/compare/v13.44.0...v13.45.0) (2026-09-15)
+
+
+### Added
+
+* Support starting next meeting in series immediately ([#13490](https://github.com/ParabolInc/parabol/issues/13490)) ([19c780a](https://github.com/ParabolInc/parabol/commit/19c780a6d29830f675c4448739c5d8f95ffcabc4))
+
+
+### Fixed
+
+* integrations client host generalization ([#13460](https://github.com/ParabolInc/parabol/issues/13460)) ([3224715](https://github.com/ParabolInc/parabol/commit/3224715bf852c1a6b4343a66f299c82ed4013f82))
+
+## [13.44.0](https://github.com/ParabolInc/parabol/compare/v13.43.0...v13.44.0) (2026-09-14)
+
+
+### Added
+
+* add notifications for team health meetings ([#13485](https://github.com/ParabolInc/parabol/issues/13485)) ([6a022c3](https://github.com/ParabolInc/parabol/commit/6a022c30b9c13563f79853d8452ce49b14311297))
+
+## [13.43.0](https://github.com/ParabolInc/parabol/compare/v13.42.1...v13.43.0) (2026-09-10)
+
+
+### Added
+
+* add discussion to stages. add paraphrasing ([#13481](https://github.com/ParabolInc/parabol/issues/13481)) ([2f81f77](https://github.com/ParabolInc/parabol/commit/2f81f7725f0c3fc68abce2bd1b714e071782485e))
+* convert results to per-category stages ([#13473](https://github.com/ParabolInc/parabol/issues/13473)) ([2a365ee](https://github.com/ParabolInc/parabol/commit/2a365eed6efa7a9577b3c62e5c247ce3178c25d7))
+
+
+### Fixed
+
+* support subscription push for updateMeetingTemplate ([#13469](https://github.com/ParabolInc/parabol/issues/13469)) ([fac95f6](https://github.com/ParabolInc/parabol/commit/fac95f6e92f2f4659569232702edb86a02cf9db5))
+* Team Health admin when not on team ([#13482](https://github.com/ParabolInc/parabol/issues/13482)) ([ff2dc43](https://github.com/ParabolInc/parabol/commit/ff2dc4336dc86269868736b1d8c034b1cecd9c57))
+* **theme:** adjust theme contrast and adds --shadow-bar-up ([#13474](https://github.com/ParabolInc/parabol/issues/13474)) ([04c87ad](https://github.com/ParabolInc/parabol/commit/04c87adc586187b9864bca9529fab375febc2079))
+
+
+### Changed
+
+* upgrade tiptap + xmldom ([#13468](https://github.com/ParabolInc/parabol/issues/13468)) ([d3d6394](https://github.com/ParabolInc/parabol/commit/d3d6394e97e0242a101989f11a09435910c9b4c4))
+
+## [13.42.1](https://github.com/ParabolInc/parabol/compare/v13.42.0...v13.42.1) (2026-09-04)
+
+
+### Fixed
+
+* remove usePortal everywhere except useMenu, also ReflectionEmbeddingSuccess ([#13459](https://github.com/ParabolInc/parabol/issues/13459)) ([66624ac](https://github.com/ParabolInc/parabol/commit/66624ac46455a782ac44497161b4be78e8e40981))
+
+## [13.42.0](https://github.com/ParabolInc/parabol/compare/v13.41.0...v13.42.0) (2026-09-03)
+
+
+### Added
+
+* multi team Meeting Series card ([#13456](https://github.com/ParabolInc/parabol/issues/13456)) ([52119f5](https://github.com/ParabolInc/parabol/commit/52119f57a80f692640cd524c43b417f488c3835d))
+
+
+### Fixed
+
+* hide Next button for participants if next stage isn't navigable ([#13462](https://github.com/ParabolInc/parabol/issues/13462)) ([5067b9a](https://github.com/ParabolInc/parabol/commit/5067b9a915395508a2c596dac8efa33e2b92388c))
+* replace useTooltip with radix-ui ([#13458](https://github.com/ParabolInc/parabol/issues/13458)) ([4d990c7](https://github.com/ParabolInc/parabol/commit/4d990c79df6b2f83fa009d55eb4fee5240738691))
+
+
+### Changed
+
+* continue consolidating integration schema ([#13438](https://github.com/ParabolInc/parabol/issues/13438)) ([e542bdc](https://github.com/ParabolInc/parabol/commit/e542bdc32944d318bdbaf1a47a0d06c59c589507))
+
+## [13.41.0](https://github.com/ParabolInc/parabol/compare/v13.40.0...v13.41.0) (2026-09-02)
+
+
+### Added
+
+* meeting series: support admin for teams the owner is not on ([#13443](https://github.com/ParabolInc/parabol/issues/13443)) ([4f7eed5](https://github.com/ParabolInc/parabol/commit/4f7eed515462bbd7cb1a2fbc80854ff3f69a841a))
+
+
+### Changed
+
+* disable RUM completely ([#13448](https://github.com/ParabolInc/parabol/issues/13448)) ([cb4114c](https://github.com/ParabolInc/parabol/commit/cb4114c327b8c05fb78a31af12b8bda296b4723f))
+
+## [13.40.0](https://github.com/ParabolInc/parabol/compare/v13.39.0...v13.40.0) (2026-09-01)
+
+
+### Added
+
+* table of contents block for Pages ([#13433](https://github.com/ParabolInc/parabol/issues/13433)) ([21310c9](https://github.com/ParabolInc/parabol/commit/21310c943c4c7161bce2961488c96878632da5f2))
+
+
+### Fixed
+
+* add entropy to server test dummy data ([#13444](https://github.com/ParabolInc/parabol/issues/13444)) ([159c9ae](https://github.com/ParabolInc/parabol/commit/159c9aeee60eb75f28c9032e9d8d02090ed5f63b))
+* exclude test files from PR sizes ([#13445](https://github.com/ParabolInc/parabol/issues/13445)) ([ef4aca8](https://github.com/ParabolInc/parabol/commit/ef4aca8791de5b91f3ab69524ed84828fb1fbf62))
+* reject updatePersonalAccessToken with no fields ([#13447](https://github.com/ParabolInc/parabol/issues/13447)) ([d307210](https://github.com/ParabolInc/parabol/commit/d3072103307c7441ec68181cbb224d84b1b176e5))
+* support multiple insights blocks on a Page ([#12465](https://github.com/ParabolInc/parabol/issues/12465)) ([#13446](https://github.com/ParabolInc/parabol/issues/13446)) ([72e10fd](https://github.com/ParabolInc/parabol/commit/72e10fdc64bd56341157f847eecfa4302c2c7563))
+
+
+### Changed
+
+* collapse server task-integration dispatch onto the registry ([#13429](https://github.com/ParabolInc/parabol/issues/13429)) ([46a40af](https://github.com/ParabolInc/parabol/commit/46a40af690057ecb5aacd06011bec6708a10da41))
+
+## [13.39.0](https://github.com/ParabolInc/parabol/compare/v13.38.2...v13.39.0) (2026-08-28)
+
+
+### Added
+
+* Facilitator rotation ([#13439](https://github.com/ParabolInc/parabol/issues/13439)) ([74e08d6](https://github.com/ParabolInc/parabol/commit/74e08d6c419c447dc3620b7774c7bf317d59e570))
+
+
+### Fixed
+
+* handle incremental payloads for websockets ([#13436](https://github.com/ParabolInc/parabol/issues/13436)) ([f4b516c](https://github.com/ParabolInc/parabol/commit/f4b516c3b4339eda3258011740646839274610e6))
+* truncate long Page titles with ellipsis ([#13432](https://github.com/ParabolInc/parabol/issues/13432)) ([d6fcf18](https://github.com/ParabolInc/parabol/commit/d6fcf18e5efd1223cbb348e631bdd159b3e5ce2c))
+
+
+### Changed
+
+* move Jira + GitHub auth onto IntegrationProvider/TeamMemberInt… ([#13399](https://github.com/ParabolInc/parabol/issues/13399)) ([aaa903c](https://github.com/ParabolInc/parabol/commit/aaa903c776132a8810bf4350bd0c9c77d93970ec))
+
+## [13.38.2](https://github.com/ParabolInc/parabol/compare/v13.38.1...v13.38.2) (2026-08-25)
+
+
+### Fixed
+
+* page kebab menu jumps when cursor leaves the nav row ([#13417](https://github.com/ParabolInc/parabol/issues/13417)) ([b054cc5](https://github.com/ParabolInc/parabol/commit/b054cc5855349387fc8471d5481eadd2961fb966))
+
+## [13.38.1](https://github.com/ParabolInc/parabol/compare/v13.38.0...v13.38.1) (2026-08-25)
+
+
+### Fixed
+
+* limit codeQL to pushes to master ([#13406](https://github.com/ParabolInc/parabol/issues/13406)) ([691d347](https://github.com/ParabolInc/parabol/commit/691d347e83555c45ebe6549e37d06a3d4d552b0d))
+* meeting left nav right padding issues ([#13412](https://github.com/ParabolInc/parabol/issues/13412)) ([516f233](https://github.com/ParabolInc/parabol/commit/516f23357d460d4e9bc037e337a0b3f93a964e9b))
+* page kebab menu triggers full page reload ([#13414](https://github.com/ParabolInc/parabol/issues/13414)) ([ad7effa](https://github.com/ParabolInc/parabol/commit/ad7effa6211f47b301d7c3dcaa6fb4d71189ebeb))
+* persistedquerynotfound error ([#13401](https://github.com/ParabolInc/parabol/issues/13401)) ([97968a7](https://github.com/ParabolInc/parabol/commit/97968a719d7aac1fc980bc08a2f253f8862f43bd))
+* various style fixes ([#13415](https://github.com/ParabolInc/parabol/issues/13415)) ([4feb3bd](https://github.com/ParabolInc/parabol/commit/4feb3bdeec47fc5a3da70aa5b7482861c848d426))
+
+## [13.38.0](https://github.com/ParabolInc/parabol/compare/v13.37.0...v13.38.0) (2026-08-25)
+
+
+### Added
+
+* decrease necessary scope for google meet transcripts ([#13394](https://github.com/ParabolInc/parabol/issues/13394)) ([50f61ae](https://github.com/ParabolInc/parabol/commit/50f61ae899f07bb03b9db27564526e6ab99ac53f))
+* update AI model to luna ([#13403](https://github.com/ParabolInc/parabol/issues/13403)) ([97799d2](https://github.com/ParabolInc/parabol/commit/97799d2067846535ed6b4ffa6e5542549476d673))
+
+## [13.37.0](https://github.com/ParabolInc/parabol/compare/v13.36.4...v13.37.0) (2026-08-21)
+
+
+### Added
+
+* decouple HubSpot from app; add BigQuery integration ([#13277](https://github.com/ParabolInc/parabol/issues/13277)) ([bac5eb6](https://github.com/ParabolInc/parabol/commit/bac5eb69534ff7c4787e6e8db528573d09b371f5))
+* Zoom transcripts to GA ([#13397](https://github.com/ParabolInc/parabol/issues/13397)) ([04f9641](https://github.com/ParabolInc/parabol/commit/04f9641c87642fa31f807c947981a5707046e87c))
+
+
+### Fixed
+
+* bump relay to v21 ([#13388](https://github.com/ParabolInc/parabol/issues/13388)) ([5e3883b](https://github.com/ParabolInc/parabol/commit/5e3883b9f499036e96c9b860b3ff9dd513ca7690))
+* height reflection in flight. autofocus editor. editor height ([#13396](https://github.com/ParabolInc/parabol/issues/13396)) ([d20c588](https://github.com/ParabolInc/parabol/commit/d20c5888a99e4113b4ee55e281efdc875a966466))
+
+
+### Changed
+
+* task titles and integrations capability query (integrations refactor part 2) ([#13372](https://github.com/ParabolInc/parabol/issues/13372)) ([a64e9c1](https://github.com/ParabolInc/parabol/commit/a64e9c1335c81d9c72dc329f39d99e7dd6b97fbc))
+
 ## [13.36.4](https://github.com/ParabolInc/parabol/compare/v13.36.3...v13.36.4) (2026-08-18)
 
 

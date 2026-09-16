@@ -11,7 +11,7 @@ type PersistIntegrationSearchQuerySuccess {
   """
   teamId: ID
   """
-  The updated Jira Server integration with the saved query
+  The service whose saved queries changed. Select searchQueries to pick up the saved query
   """
-  jiraServerIntegration: JiraServerIntegration
+  service: IntegrationService!
 }

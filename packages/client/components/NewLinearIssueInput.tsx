@@ -1,28 +1,18 @@
 import graphql from 'babel-plugin-relay/macro'
-import {type FormEvent, useEffect, useMemo, useRef, useState} from 'react'
+import {type FormEvent, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
-import type {
-  NewLinearIssueInput_viewer$data,
-  NewLinearIssueInput_viewer$key
-} from '~/__generated__/NewLinearIssueInput_viewer.graphql'
+import type {NewLinearIssueInput_viewer$key} from '~/__generated__/NewLinearIssueInput_viewer.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import {MenuPosition} from '~/hooks/useCoords'
-import useMenu from '~/hooks/useMenu'
 import useMutationProps from '~/hooks/useMutationProps'
 import {ExpandMore} from '~/ui/icons'
-import {getLinearRepoName} from '~/utils/getLinearRepoName'
-import getNonNullEdges from '~/utils/getNonNullEdges'
 import type {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/CreateTaskMutation.graphql'
 import useForm from '../hooks/useForm'
-import {PortalStatus} from '../hooks/usePortal'
 import useTimedState from '../hooks/useTimedState'
 import CreateTaskMutation from '../mutations/CreateTaskMutation'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
-import LinearProjectId from '../shared/gqlIds/LinearProjectId'
 import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
-import type {DeepNonNullable} from '../types/generics'
 import type {CompletedHandler} from '../types/relayMutations'
-import getUniqueEdges from '../utils/getUniqueEdges'
+import {Menu} from '../ui/Menu/Menu'
 import Legitity from '../validation/Legitity'
 import Checkbox from './Checkbox'
 import NewLinearIssueMenu from './NewLinearIssueMenu'
@@ -38,34 +28,6 @@ const validateIssue = (issue: string) => {
   return new Legitity(issue).trim().min(2, `C'mon, you call that an issue?`)
 }
 
-type LinearApiQueryFromViewer =
-  DeepNonNullable<NewLinearIssueInput_viewer$data>['teamMember']['integrations']['linear']['api']['query']
-
-type ProjectEdge = LinearApiQueryFromViewer['allProjects']['edges'][number]
-
-type Project = ProjectEdge['node']
-
-type TeamEdge = LinearApiQueryFromViewer['teams']['edges'][number]
-
-type Team = TeamEdge['node']
-
-const getProjectId = (item: Project | Team) => {
-  if ('teams' in item) {
-    const {id: teamId} = (item as Project).teams?.nodes?.[0] ?? {
-      id: undefined
-    }
-    if (!teamId) return null
-    const {id: projectId} = item
-    return LinearProjectId.join(teamId, projectId)
-  }
-  const {id: teamId} = item as Team
-  return LinearProjectId.join(teamId)
-}
-
-const getProjectName = (item: Project | Team) => {
-  return getLinearRepoName(item as Project, undefined)
-}
-
 const NewLinearIssueInput = (props: Props) => {
   const {isEditing, meetingId, setIsEditing, viewerRef} = props
   const viewer = useFragment(
@@ -76,59 +38,11 @@ const NewLinearIssueInput = (props: Props) => {
           id
         }
         teamMember(teamId: $teamId) {
-          integrations {
-            linear {
-              api {
-                errors {
-                  message
-                  locations {
-                    line
-                    column
-                  }
-                  path
-                }
-                query {
-                  myProjects: projects(first: 100, filter: {members: {isMe: {eq: true}}}) {
-                    edges {
-                      node {
-                        __typename
-                        id
-                        name
-                        teams(first: 1) {
-                          nodes {
-                            id
-                            displayName
-                          }
-                        }
-                      }
-                    }
-                  }
-                  allProjects: projects(first: 100) {
-                    edges {
-                      node {
-                        __typename
-                        id
-                        name
-                        teams(first: 1) {
-                          nodes {
-                            id
-                            displayName
-                          }
-                        }
-                      }
-                    }
-                  }
-                  teams(first: 100) {
-                    edges {
-                      node {
-                        __typename
-                        id
-                        name
-                      }
-                    }
-                  }
-                }
-              }
+          services {
+            service
+            repos {
+              integrationRepoId
+              name
             }
           }
         }
@@ -139,36 +53,12 @@ const NewLinearIssueInput = (props: Props) => {
   const {id: userId, team, teamMember} = viewer
   const {id: teamId} = team!
 
-  const nullableProjectEdges = [
-    ...(teamMember?.integrations.linear.api?.query?.myProjects?.edges ?? []),
-    ...(teamMember?.integrations.linear.api?.query?.allProjects?.edges ?? [])
-  ]
-  const projects = useMemo(
-    () =>
-      getUniqueEdges(getNonNullEdges(nullableProjectEdges), (edge) => edge.node.id).map(
-        ({node}) => node
-      ),
-    [teamMember]
-  )
-
-  const nullableTeamEdges = teamMember?.integrations.linear.api?.query?.teams?.edges ?? []
-  const teams = useMemo(
-    () => getNonNullEdges(nullableTeamEdges).map(({node}) => node),
-    [teamMember]
-  )
-
-  const projectsAndTeams = useMemo(
-    () => (projects as (Project | Team)[]).concat(teams as (Project | Team)[]),
-    [teamMember]
-  )
-
-  const projectsAndIds = useMemo(
-    () =>
-      projectsAndTeams
-        .map((node) => ({id: getProjectId(node), name: getProjectName(node)}))
-        .filter((node) => node.id !== null) as {id: string; name: string}[],
-    [teamMember]
-  )
+  const services = teamMember?.services ?? []
+  const linearRepos = services.find(({service}) => service === 'linear')?.repos ?? []
+  const linearProjects = linearRepos.map(({integrationRepoId, name}) => ({
+    id: integrationRepoId,
+    name
+  }))
 
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
@@ -178,32 +68,22 @@ const NewLinearIssueInput = (props: Props) => {
       setCreateTaskError(undefined)
     }
   }, [isEditing])
-  const maybeProjectNode = projectsAndTeams[0]
-  const [selectedProjectAndId, setSelectedProjectAndId] = useState({
-    id: maybeProjectNode ? getProjectId(maybeProjectNode) : null,
-    name: maybeProjectNode ? getProjectName(maybeProjectNode) : 'Unknown'
-  })
+  const [selectedProjectAndId, setSelectedProjectAndId] = useState<{
+    id: string | null
+    name: string
+  }>(linearProjects[0] ?? {id: null, name: 'Unknown'})
   const {fields, onChange, validateField, setDirtyField} = useForm({
     newIssue: {
       getDefault: () => '',
       validate: validateIssue
     }
   })
-  const {originRef, menuPortal, menuProps, togglePortal, portalStatus} = useMenu(
-    MenuPosition.UPPER_LEFT,
-    {isDropdown: true}
-  )
+  const isMenuOpenRef = useRef(false)
   const ref = useRef<HTMLInputElement>(null)
   const {dirty, error} = fields.newIssue
-  useEffect(() => {
-    if (portalStatus === PortalStatus.Exited) {
-      ref.current?.focus()
-    }
-  }, [portalStatus])
-
   const handleCreateNewIssue = (e: FormEvent) => {
     e.preventDefault()
-    if (portalStatus !== PortalStatus.Exited || !selectedProjectAndId.id) return
+    if (isMenuOpenRef.current || !selectedProjectAndId.id) return
     const {newIssue: newIssueRes} = validateField()
     const {value: newIssueTitle, error} = newIssueRes
     if (error) {
@@ -270,46 +150,45 @@ const NewLinearIssueInput = (props: Props) => {
   }
   if (!isEditing) return null
   return (
-    <>
-      <div className='flex cursor-pointer bg-surface-raised py-2 pl-4'>
-        <Checkbox active />
-        <div className='flex w-full flex-col pl-4'>
-          <form onSubmit={handleCreateNewIssue} className='flex w-full flex-col'>
-            <input
-              autoFocus
-              onBlur={handleCreateNewIssue}
-              onChange={onChange}
-              maxLength={255}
-              name='newIssue'
-              placeholder='New issue title'
-              ref={ref}
-              type='text'
-              className='m-0 w-full appearance-none border-none bg-transparent p-0 pr-2 text-base text-fg-primary outline-none'
-            />
-            {dirty && error && (
-              <div className='w-full text-left text-fg-error text-sm'>{error}</div>
-            )}
-          </form>
-          <button
-            ref={originRef}
-            onMouseDown={togglePortal}
-            className='m-0 flex w-fit items-center justify-start bg-transparent opacity-100 hover:bg-transparent focus:bg-transparent'
-          >
-            <a className='block text-accent text-xs leading-5 no-underline hover:underline focus:underline'>
-              {selectedProjectAndId.name}
-            </a>
-            <ExpandMore className='h-5 w-5 p-0 text-accent' />
-          </button>
-        </div>
+    <div className='flex cursor-pointer bg-surface-raised py-2 pl-4'>
+      <Checkbox active />
+      <div className='flex w-full flex-col pl-4'>
+        <form onSubmit={handleCreateNewIssue} className='flex w-full flex-col'>
+          <input
+            autoFocus
+            onBlur={handleCreateNewIssue}
+            onChange={onChange}
+            maxLength={255}
+            name='newIssue'
+            placeholder='New issue title'
+            ref={ref}
+            type='text'
+            className='m-0 w-full appearance-none border-none bg-transparent p-0 pr-2 text-base text-fg-primary outline-none'
+          />
+          {dirty && error && <div className='w-full text-left text-fg-error text-sm'>{error}</div>}
+        </form>
+        <Menu
+          trigger={
+            <button className='m-0 flex w-fit items-center justify-start bg-transparent opacity-100 hover:bg-transparent focus:bg-transparent'>
+              <a className='block text-accent text-xs leading-5 no-underline hover:underline focus:underline'>
+                {selectedProjectAndId.name}
+              </a>
+              <ExpandMore className='h-5 w-5 p-0 text-accent' />
+            </button>
+          }
+          onOpenChange={(open) => {
+            isMenuOpenRef.current = open
+            // radix returns focus to the trigger on close; the title input should keep it
+            if (!open) requestAnimationFrame(() => ref.current?.focus())
+          }}
+        >
+          <NewLinearIssueMenu
+            linearProjects={linearProjects}
+            handleSelectProject={setSelectedProjectAndId}
+          />
+        </Menu>
       </div>
-      {menuPortal(
-        <NewLinearIssueMenu
-          linearProjects={projectsAndIds}
-          handleSelectProject={setSelectedProjectAndId}
-          menuProps={menuProps}
-        />
-      )}
-    </>
+    </div>
   )
 }
 

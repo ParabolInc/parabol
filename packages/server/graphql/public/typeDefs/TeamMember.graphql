@@ -43,6 +43,11 @@ type TeamMember {
   integrations: TeamMemberIntegrations!
 
   """
+  All registered task-integration services and what the viewer can do with each on this team
+  """
+  services: [IntegrationService!]!
+
+  """
   The meeting specifics for the meeting the team member is currently in
   """
   meetingMember(meetingId: ID!): MeetingMember
@@ -67,11 +72,6 @@ type TeamMember {
     """
     first: Int!
     after: DateTime
-
-    """
-    true if we should fetch from the network, false if we should use the cache
-    """
-    networkOnly: Boolean!
   ): RepoIntegrationQueryPayload!
 
   """
@@ -101,11 +101,6 @@ type TeamMember {
 
   "The ID of the Parabol user"
   userId: ID!
-
-  """
-  All the integrations that the user could possibly use
-  """
-  allAvailableRepoIntegrations: [RepoIntegration!]!
 
   """
   Is user an admin of the team's org?

@@ -3,14 +3,11 @@ import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import type {GitHubRepoSearchFilterMenu_teamMember$key} from '../__generated__/GitHubRepoSearchFilterMenu_teamMember.graphql'
 import useGetRepoContributions from '../hooks/useGetRepoContributions'
-import type {MenuProps} from '../hooks/useMenu'
 import useSearchFilter from '../hooks/useSearchFilter'
+import {MenuItem} from '../ui/Menu/MenuItem'
+import {MenuSearch} from '../ui/Menu/MenuSearch'
 import Checkbox from './Checkbox'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
-import Menu from './Menu'
-import MenuItem from './MenuItem'
-import MenuItemLabel from './MenuItemLabel'
-import {SearchMenuItem} from './SearchMenuItem'
 import TypeAheadLabel from './TypeAheadLabel'
 
 const getValue = (item: {nameWithOwner?: string}) => {
@@ -23,12 +20,11 @@ interface Props {
   selectedRepos: string[]
   onToggleRepo: (repoName: string, isSelected: boolean) => void
   teamMemberRef: GitHubRepoSearchFilterMenu_teamMember$key
-  menuProps: MenuProps
   menuLabel?: string
 }
 
 const GitHubRepoSearchFilterMenu = (props: Props) => {
-  const {teamMemberRef, menuProps, selectedRepos, onToggleRepo, menuLabel} = props
+  const {teamMemberRef, selectedRepos, onToggleRepo, menuLabel} = props
   const teamMember = useFragment(
     graphql`
       fragment GitHubRepoSearchFilterMenu_teamMember on TeamMember {
@@ -54,19 +50,12 @@ const GitHubRepoSearchFilterMenu = (props: Props) => {
     return Array.from(new Set([...selectedRepos, ...repos])).slice(0, adjustedMax)
   }, [filteredRepoContributions])
 
-  const {portalStatus, isDropdown} = menuProps
   return (
-    <Menu
-      className='max-h-full min-w-[300px] max-w-full p-2'
-      keepParentFocus
-      ariaLabel='Define the GitHub search query'
-      portalStatus={portalStatus}
-      isDropdown={isDropdown}
-    >
+    <>
       {menuLabel && (
         <div className='mx-2 mb-2 font-semibold text-fg-secondary text-sm'>{menuLabel}</div>
       )}
-      <SearchMenuItem
+      <MenuSearch
         placeholder='Search your GitHub repos'
         onChange={onQueryChange}
         value={searchQuery}
@@ -79,17 +68,15 @@ const GitHubRepoSearchFilterMenu = (props: Props) => {
         return (
           <MenuItem
             key={repo}
-            label={
-              <MenuItemLabel>
-                <Checkbox className='-ml-2 mr-2' active={isSelected} />
-                <TypeAheadLabel query={searchQuery} label={repo} />
-              </MenuItemLabel>
-            }
+            onSelect={(e) => e.preventDefault()}
             onClick={() => onToggleRepo(repo, isSelected)}
-          />
+          >
+            <Checkbox className='-ml-2 mr-2' active={isSelected} />
+            <TypeAheadLabel query={searchQuery} label={repo} />
+          </MenuItem>
         )
       })}
-    </Menu>
+    </>
   )
 }
 

@@ -7,7 +7,6 @@ import type {TeamLimitsEmailType} from '../../billing/helpers/sendTeamsLimitEmai
 import type MeetingTemplate from '../../database/types/MeetingTemplate'
 import type {DataLoaderWorker} from '../../graphql/graphql'
 import type {ModifyType, ReactableEnum} from '../../graphql/public/resolverTypes'
-import type {IntegrationProviderServiceEnumType} from '../../integrations/TaskIntegrationManagerFactory'
 import type {
   MeetingSeries,
   SlackNotification,
@@ -21,6 +20,7 @@ import type {
   MeetingTypeEnum,
   RetrospectiveMeeting
 } from '../../postgres/types/Meeting'
+import type {Integrationproviderserviceenum} from '../../postgres/types/pg'
 import {AmplitudeAnalytics} from './amplitude/AmplitudeAnalytics'
 import {createMeetingProperties} from './helpers'
 
@@ -490,7 +490,7 @@ class Analytics {
   integrationAdded = (
     user: AnalyticsUser,
     teamId: string,
-    service: IntegrationProviderServiceEnumType | 'slack'
+    service: Integrationproviderserviceenum | 'slack'
   ) => {
     this.track(user, 'Integration Added', {
       teamId,
@@ -501,7 +501,7 @@ class Analytics {
   integrationRemoved = (
     user: AnalyticsUser,
     teamId: string,
-    service: IntegrationProviderServiceEnumType | 'slack'
+    service: Integrationproviderserviceenum | 'slack'
   ) => {
     this.track(user, 'Integration Removed', {
       teamId,
@@ -587,7 +587,7 @@ class Analytics {
   taskPublished = (
     user: AnalyticsUser,
     taskProperties: TaskProperties,
-    service: IntegrationProviderServiceEnumType
+    service: Integrationproviderserviceenum
   ) => {
     this.track(user, 'Task Published', {
       ...taskProperties,

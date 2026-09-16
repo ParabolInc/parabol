@@ -80,6 +80,7 @@ const MeetingControlBar = (props: Props) => {
           phaseType
           stages {
             id
+            isNavigable
           }
         }
       }
@@ -107,13 +108,16 @@ const MeetingControlBar = (props: Props) => {
   const {id: localStageId, isComplete} = localStage
   const isCheckIn = phaseType === 'checkin'
   const isPoker = meetingType === 'poker'
+  const nextStage = findStageAfterId(phases, localStageId)?.stage
+  // poker participants advance themselves, but only through stages the facilitator has unlocked
+  const canGotoNext = !!nextStage && (isFacilitating || (isPoker && nextStage.isNavigable))
   const getPossibleButtons = () => {
     const buttons = ['music']
     if (isFacilitating && !isComplete && showTimerInPhase(phaseType)) buttons.push('timer')
     if (isDesktop) buttons.push('tips')
     if (!isFacilitating && !isCheckIn && !isComplete && !isPoker) buttons.push('ready')
     if (!isFacilitating && localStageId !== facilitatorStageId) buttons.push('rejoin')
-    if ((isFacilitating || isPoker) && findStageAfterId(phases, localStageId)) buttons.push('next')
+    if (canGotoNext) buttons.push('next')
     if (isFacilitating) buttons.push('end')
     return buttons.map((key) => ({key}))
   }
@@ -186,10 +190,7 @@ const MeetingControlBar = (props: Props) => {
       ref={ref}
       className={cn(
         'fixed bottom-0 single-reflection-column:bottom-2 flex h-14 min-h-14 single-reflection-column:w-auto w-full flex-nowrap items-center justify-between single-reflection-column:rounded bg-surface-card p-2 text-fg-primary text-sm',
-        isDesktop
-          ? 'shadow-[var(--shadow-bar)]'
-          : // bottomBarShadow (Elevation.Z8)
-            'shadow-[0px_5px_5px_-3px_rgba(0,0,0,.2),0px_8px_10px_1px_rgba(0,0,0,.14),0px_3px_14px_2px_rgba(0,0,0,.12)]'
+        isDesktop ? 'shadow-[var(--shadow-bar)]' : 'shadow-[var(--shadow-bar-up)]'
       )}
       style={{
         left: controlBarLeft,

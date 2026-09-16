@@ -1,21 +1,19 @@
-import {forwardRef, type Ref} from 'react'
+import {type ComponentPropsWithoutRef, forwardRef, type ReactNode, type Ref} from 'react'
 import {FilterList, Group, Person} from '~/ui/icons'
 import {Button} from '../../ui/Button/Button'
 import {cn} from '../../ui/cn'
 
-interface Props {
+interface Props extends Omit<ComponentPropsWithoutRef<'button'>, 'value'> {
   className?: string
   label: string
-  value: string
+  value: ReactNode
   //FIXME 6062: change to React.ComponentType
   iconText?: string
   dataCy?: string
-  onClick: () => void
-  onMouseEnter: () => void
 }
 
 const DashFilterToggle = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {
-  const {className, label, value, iconText, onClick, onMouseEnter, dataCy} = props
+  const {className, label, value, iconText, dataCy, ...rest} = props
   return (
     <Button
       aria-label={`Filter by ${label}`}
@@ -25,10 +23,9 @@ const DashFilterToggle = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) 
         'shrink-0 font-semibold text-fg-secondary hover:text-fg-primary focus:text-fg-primary active:text-fg-primary',
         className
       )}
-      onClick={onClick}
-      onMouseEnter={onMouseEnter}
       ref={ref}
       data-cy={dataCy}
+      {...rest}
     >
       <div className='mr-2 h-6 w-6'>
         {

@@ -1,8 +1,7 @@
-import faker from 'faker'
 import type {Doc, YXmlEvent} from 'yjs'
 import {createPageLinkElement} from '../../client/shared/tiptap/createPageLinkElement'
 import getKysely from '../postgres/getKysely'
-import {sendPublic, sendTipTap, signUp, signUpWithEmail} from './common'
+import {getTestEmail, sendPublic, sendTipTap, signUp, signUpWithEmail} from './common'
 
 afterAll(async () => {
   await getKysely().destroy()
@@ -466,7 +465,7 @@ test('Revoking access unlinks children', async () => {
 
 test('New User adopts external access', async () => {
   const owner = await signUp()
-  const inviteeEmail = faker.internet.email().toLowerCase()
+  const inviteeEmail = getTestEmail()
   const {cookie} = owner
 
   const page = await sendPublic({

@@ -1,10 +1,13 @@
-import useTooltip from '~/hooks/useTooltip'
+import {Suspense} from 'react'
+import {Tooltip} from '~/ui/Tooltip/Tooltip'
+import {TooltipContent} from '~/ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '~/ui/Tooltip/TooltipTrigger'
 import CardButton from '../../../../components/CardButton'
 import IconLabel from '../../../../components/IconLabel'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useMenu from '../../../../hooks/useMenu'
 import type {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import type {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
+import {Menu} from '../../../../ui/Menu/Menu'
+import {MenuContent} from '../../../../ui/Menu/MenuContent'
 import lazyPreload from '../../../../utils/lazyPreload'
 
 const TaskFooterIntegrateMenuRoot = lazyPreload(
@@ -22,45 +25,29 @@ interface Props {
 
 const TaskFooterIntegrateToggle = (props: Props) => {
   const {mutationProps, task, useTaskChild} = props
-  const {togglePortal, originRef, menuPortal, menuProps, loadingWidth, loadingDelay} = useMenu(
-    MenuPosition.UPPER_RIGHT,
-    {
-      loadingWidth: 200
-    }
-  )
-  const {
-    tooltipPortal,
-    openTooltip,
-    closeTooltip,
-    originRef: tipRef
-  } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER)
   return (
-    <>
-      <CardButton
-        onClick={togglePortal}
-        ref={originRef}
-        onMouseEnter={TaskFooterIntegrateMenuRoot.preload}
+    <Tooltip>
+      <Menu
+        trigger={
+          <TooltipTrigger asChild>
+            <CardButton onMouseEnter={TaskFooterIntegrateMenuRoot.preload}>
+              <IconLabel icon='widgets' />
+            </CardButton>
+          </TooltipTrigger>
+        }
       >
-        <IconLabel
-          icon='widgets'
-          onMouseEnter={openTooltip}
-          onMouseLeave={closeTooltip}
-          onClick={closeTooltip}
-          ref={tipRef}
-        />
-      </CardButton>
-      {tooltipPortal(<div>{'Push to Integration'}</div>)}
-      {menuPortal(
-        <TaskFooterIntegrateMenuRoot
-          menuProps={menuProps}
-          loadingDelay={loadingDelay}
-          loadingWidth={loadingWidth}
-          mutationProps={mutationProps}
-          task={task}
-          useTaskChild={useTaskChild}
-        />
-      )}
-    </>
+        <MenuContent align='end' className='w-[250px]'>
+          <Suspense fallback={null}>
+            <TaskFooterIntegrateMenuRoot
+              mutationProps={mutationProps}
+              task={task}
+              useTaskChild={useTaskChild}
+            />
+          </Suspense>
+        </MenuContent>
+      </Menu>
+      <TooltipContent side='bottom'>Push to Integration</TooltipContent>
+    </Tooltip>
   )
 }
 

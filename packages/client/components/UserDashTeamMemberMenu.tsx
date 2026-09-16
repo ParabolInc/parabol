@@ -11,21 +11,19 @@ import type {
   UserDashTeamMemberMenu_viewer$data,
   UserDashTeamMemberMenu_viewer$key
 } from '../__generated__/UserDashTeamMemberMenu_viewer.graphql'
-import type {MenuProps} from '../hooks/useMenu'
+import {MenuContent} from '../ui/Menu/MenuContent'
+import {MenuItem} from '../ui/Menu/MenuItem'
+import {MenuSearch} from '../ui/Menu/MenuSearch'
 import DropdownMenuLabel from './DropdownMenuLabel'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
-import Menu from './Menu'
-import MenuItem from './MenuItem'
-import {SearchMenuItem} from './SearchMenuItem'
 
 interface Props {
-  menuProps: MenuProps
   viewer: UserDashTeamMemberMenu_viewer$key | null | undefined
 }
 
 const UserDashTeamMemberMenu = (props: Props) => {
   const navigate = useNavigate()
-  const {menuProps, viewer: viewerRef} = props
+  const {viewer: viewerRef} = props
 
   const viewer = useFragment(
     graphql`
@@ -57,7 +55,7 @@ const UserDashTeamMemberMenu = (props: Props) => {
   const teams = oldTeamsRef.current
 
   const showAllTeamMembers = !!teamIds
-  const {filteredTeamMembers, defaultActiveIdx} = useMemo(() => {
+  const filteredTeamMembers = useMemo(() => {
     const filteredTeams = teamIds ? teams.filter(({id: teamId}) => teamIds.includes(teamId)) : teams
     const keySet = new Set()
     const filteredTeamMembers = [] as {
@@ -73,12 +71,7 @@ const UserDashTeamMemberMenu = (props: Props) => {
       }
     })
     filteredTeamMembers.sort((a, b) => (a.preferredName > b.preferredName ? 1 : -1))
-    return {
-      filteredTeamMembers,
-      defaultActiveIdx:
-        filteredTeamMembers.findIndex((teamMember) => userIds?.includes(teamMember.userId)) +
-        (showAllTeamMembers ? 2 : 1)
-    }
+    return filteredTeamMembers
   }, [teamIds, userIds])
 
   const {
@@ -88,15 +81,10 @@ const UserDashTeamMemberMenu = (props: Props) => {
   } = useSearchFilter(filteredTeamMembers, (item) => item.preferredName)
 
   return (
-    <Menu
-      keepParentFocus
-      ariaLabel={'Select the team member to filter by'}
-      {...menuProps}
-      defaultActiveIdx={defaultActiveIdx}
-    >
+    <MenuContent align='start'>
       <DropdownMenuLabel>{'Filter by team member:'}</DropdownMenuLabel>
       {filteredTeamMembers.length > 5 && (
-        <SearchMenuItem placeholder='Search team members' onChange={onQueryChange} value={query} />
+        <MenuSearch placeholder='Search team members' onChange={onQueryChange} value={query} />
       )}
       {query && matchedFilteredTeamMembers.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>
@@ -105,22 +93,23 @@ const UserDashTeamMemberMenu = (props: Props) => {
       )}
       {query === '' && showAllTeamMembers && (
         <MenuItem
-          key={'teamMemberFilterNULL'}
-          label={FilterLabels.ALL_TEAM_MEMBERS}
           onClick={() => navigate(constructFilterQueryParamURL(teamIds, null, showArchived))}
-        />
+        >
+          {FilterLabels.ALL_TEAM_MEMBERS}
+        </MenuItem>
       )}
       {matchedFilteredTeamMembers.map((teamMember) => (
         <MenuItem
           key={`teamMemberFilter${teamMember.userId}`}
-          dataCy={`team-member-filter-${teamMember.userId}`}
-          label={teamMember.preferredName}
+          data-cy={`team-member-filter-${teamMember.userId}`}
           onClick={() =>
             navigate(constructFilterQueryParamURL(teamIds, [teamMember.userId], showArchived))
           }
-        />
+        >
+          {teamMember.preferredName}
+        </MenuItem>
       ))}
-    </Menu>
+    </MenuContent>
   )
 }
 

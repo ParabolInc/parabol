@@ -103,7 +103,7 @@ const DowngradeModal = (props: Props) => {
                     placeholder='Please enter the name of the tool'
                     rows={2}
                     value={otherTool ?? ''}
-                    className='mt-4 rounded border border-hairline-field bg-surface-well px-4 py-3 text-fg-primary outline-none [font:inherit] placeholder:text-fg-muted'
+                    className='mt-4 rounded border border-hairline-field bg-surface-well px-4 py-3 text-fg-primary outline-none [font:inherit] placeholder:text-fg-secondary'
                   />
                   <div
                     className={cn(

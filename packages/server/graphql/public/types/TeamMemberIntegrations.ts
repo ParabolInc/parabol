@@ -15,7 +15,7 @@ const TeamMemberIntegrations: TeamMemberIntegrationsResolvers = {
 
   atlassian: async ({teamId, userId}, _args, {authToken, dataLoader}) => {
     if (!isTeamMember(authToken, teamId)) return null
-    return dataLoader.get('freshAtlassianAuth').load({teamId, userId})
+    return dataLoader.get('atlassianAuth').load({teamId, userId})
   },
 
   jiraServer: (source) => source,
@@ -38,7 +38,7 @@ const TeamMemberIntegrations: TeamMemberIntegrationsResolvers = {
   azureDevOps: (source) => source,
   msTeams: (source) => source,
   linear: (source) => source,
-  gdrive: ({teamId, userId}) => ({teamId, userId}),
+  gmeet: ({teamId, userId}) => ({teamId, userId}),
   zoom: ({teamId, userId}) => ({teamId, userId})
 }
 

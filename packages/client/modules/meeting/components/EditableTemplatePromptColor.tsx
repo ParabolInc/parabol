@@ -1,13 +1,13 @@
 import graphql from 'babel-plugin-relay/macro'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {EditableTemplatePromptColor_prompt$key} from '~/__generated__/EditableTemplatePromptColor_prompt.graphql'
 import type {EditableTemplatePromptColor_prompts$key} from '~/__generated__/EditableTemplatePromptColor_prompts.graphql'
 import PlainButton from '~/components/PlainButton/PlainButton'
 import {ArrowDropDown as ArrowDropDownIcon} from '~/ui/icons'
 import PalettePicker from '../../../components/PalettePicker/PalettePicker'
-import {MenuPosition} from '../../../hooks/useCoords'
-import useMenu from '../../../hooks/useMenu'
 import {cn} from '../../../ui/cn'
+import {Menu} from '../../../ui/Menu/Menu'
 
 interface Props {
   isOwner: boolean
@@ -35,17 +35,13 @@ const EditableTemplatePromptColor = (props: Props) => {
     promptRef
   )
   const {groupColor} = prompt
-  const {menuProps, menuPortal, originRef, togglePortal} = useMenu<HTMLButtonElement>(
-    MenuPosition.UPPER_LEFT
-  )
-  return (
+  const [isOpen, setIsOpen] = useState(false)
+  const trigger = (
     <PlainButton
-      ref={originRef}
       className={cn(
         'group relative block h-6 w-6 flex-1 shrink-0 p-1',
         isOwner ? 'cursor-pointer' : 'cursor-default'
       )}
-      onClick={isOwner ? togglePortal : undefined}
     >
       <div className='m-px h-3.5 w-3.5 rounded-full' style={{backgroundColor: groupColor}} />
       <div
@@ -56,8 +52,15 @@ const EditableTemplatePromptColor = (props: Props) => {
       >
         <ArrowDropDownIcon />
       </div>
-      {menuPortal(<PalettePicker menuProps={menuProps} prompt={prompt} prompts={prompts} />)}
     </PlainButton>
+  )
+
+  if (!isOwner) return trigger
+
+  return (
+    <Menu open={isOpen} onOpenChange={setIsOpen} trigger={trigger}>
+      <PalettePicker prompt={prompt} prompts={prompts} onClose={() => setIsOpen(false)} />
+    </Menu>
   )
 }
 

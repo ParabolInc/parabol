@@ -1,48 +1,39 @@
-import {datadogRum} from '@datadog/browser-rum'
+import {datadogLogs} from '@datadog/browser-logs'
 import graphql from 'babel-plugin-relay/macro'
 import {motion} from 'motion/react'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {Link} from 'react-router'
-import {Lock} from '~/ui/icons'
-import action from '../../../static/images/illustrations/action.png'
-import retrospective from '../../../static/images/illustrations/retrospective.png'
-import poker from '../../../static/images/illustrations/sprintPoker.png'
-import teamPrompt from '../../../static/images/illustrations/teamPrompt.png'
+import {Link, useNavigate} from 'react-router'
+import {Lock, TaskAlt} from '~/ui/icons'
 import type {MeetingCard_meeting$key} from '../__generated__/MeetingCard_meeting.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
-import {MenuPosition} from '../hooks/useCoords'
 import useMeetingMemberAvatars from '../hooks/useMeetingMemberAvatars'
 import {useMeetingSeriesDate} from '../hooks/useMeetingSeriesDate'
-import useMenu from '../hooks/useMenu'
-import useTooltip from '../hooks/useTooltip'
+import useStartMeetingSeriesNowMutation from '../mutations/useStartMeetingSeriesNowMutation'
 import {Breakpoint, ElementWidth} from '../types/constEnums'
 import {cn} from '../ui/cn'
+import {Menu} from '../ui/Menu/Menu'
+import {MenuContent} from '../ui/Menu/MenuContent'
+import {Tooltip} from '../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../ui/Tooltip/TooltipTrigger'
 import getMeetingPhase from '../utils/getMeetingPhase'
-import {MeetingTypeToReadable, phaseLabelLookup} from '../utils/meetings/lookups'
+import {
+  MeetingTypeToReadable,
+  meetingTypeToBgClass,
+  meetingTypeToIllustration,
+  meetingTypeToLabelClass,
+  phaseLabelLookup
+} from '../utils/meetings/lookups'
 import AvatarList from './AvatarList'
 import CardButton from './CardButton'
+import {EditMeetingSeriesModal} from './EditMeetingSeriesModal'
 import IconLabel from './IconLabel'
 import MeetingCardOptionsMenuRoot from './MeetingCardOptionsMenuRoot'
+import MeetingSeriesManager from './MeetingSeriesManager'
 import {EndRecurringMeetingModal} from './Recurrence/EndRecurringMeetingModal'
-import {UpdateRecurrenceSettingsModal} from './Recurrence/UpdateRecurrenceSettingsModal'
-import Tooltip from './Tooltip'
-
-const BACKGROUND_CLASSES = {
-  retrospective: 'bg-grape-500',
-  action: 'bg-aqua-400',
-  poker: 'bg-tomato-400',
-  teamPrompt: 'bg-jade-400',
-  teamHealth: 'bg-rose-500'
-} as const
-
-const RECURRING_LABEL_COLORS = {
-  retrospective: 'text-grape-600',
-  action: 'text-aqua-600',
-  poker: 'text-tomato-600',
-  teamPrompt: 'text-jade-600',
-  teamHealth: 'text-rose-600'
-}
+import StartMeetingSeriesNowDialog from './StartMeetingSeriesNowDialog'
 
 const STACK_DEGREES = {0: 1, 1: -2} as const
 const STACK_OFFSET_LEFT = {0: 4, 1: 2} as const
@@ -52,9 +43,6 @@ interface Props {
   meeting: MeetingCard_meeting$key
 }
 
-// TODO: add a dedicated teamHealth illustration
-const ILLUSTRATIONS = {retrospective, action, poker, teamPrompt, teamHealth: retrospective}
-
 const MeetingCard = (props: Props) => {
   const {meeting: meetingRef} = props
   const meeting = useFragment(
@@ -62,7 +50,6 @@ const MeetingCard = (props: Props) => {
       fragment MeetingCard_meeting on NewMeeting {
         ...useMeetingMemberAvatars_meeting
         ...EndRecurringMeetingModal_meeting
-        ...UpdateRecurrenceSettingsModal_meeting
         ...useMeetingSeriesDate_meeting
         id
         name
@@ -92,6 +79,17 @@ const MeetingCard = (props: Props) => {
           title
           cancelledAt
           nextMeetingDate
+          groupId
+          groupSeries {
+            id
+          }
+          owner {
+            ...MeetingSeriesManager_user
+          }
+          ...EditMeetingSeriesModal_series
+        }
+        ... on TeamHealthMeeting {
+          isViewerComplete
         }
       }
     `,
@@ -106,32 +104,54 @@ const MeetingCard = (props: Props) => {
     facilitatorStageId,
     meetingSeries,
     endedAt,
-    locked
+    locked,
+    isViewerComplete
   } = meeting
   const connectedUsers = useMeetingMemberAvatars(meeting)
   const {label: dateLabel, tooltip: readableNextMeetingDate} = useMeetingSeriesDate(meeting)
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
+  const [isCopied, setIsCopied] = useState(false)
   const popTooltip = () => {
-    openTooltip()
+    setIsCopied(true)
     setTimeout(() => {
-      closeTooltip()
+      setIsCopied(false)
     }, 2000)
   }
-  const {
-    tooltipPortal,
-    openTooltip,
-    closeTooltip,
-    originRef: tooltipRef
-  } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_RIGHT)
 
   const [isRecurrenceSettingsOpen, setIsRecurrenceSettingsOpen] = useState(false)
   const [isEndRecurringMeetingOpen, setIsEndRecurringMeetingOpen] = useState(false)
+  const [isStartSeriesNowOpen, setIsStartSeriesNowOpen] = useState(false)
+  const atmosphere = useAtmosphere()
+  const navigate = useNavigate()
+  const [startSeriesNow, isStartingSeries] = useStartMeetingSeriesNowMutation()
+
+  const startNextMeeting = () => {
+    if (!meetingSeries || isStartingSeries) return
+    setIsStartSeriesNowOpen(false)
+    startSeriesNow({
+      variables: {meetingSeriesId: meetingSeries.id},
+      onCompleted: (res) => {
+        // an owner can schedule for teams they are not on, & cannot join those meetings
+        const {meeting: nextMeeting} = res.startMeetingSeriesNow
+        if (nextMeeting) {
+          navigate(`/meet/${nextMeeting.id}`)
+          return
+        }
+        atmosphere.eventEmitter.emit('addSnackbar', {
+          key: 'startMeetingSeriesNow',
+          autoDismiss: 5,
+          showDismissButton: true,
+          message: 'Started the next meeting for each team'
+        })
+      }
+    })
+  }
+  // a meeting that already ended has nothing to confirm; a running one is ended by the next
+  const onStartSeriesNow = () => (endedAt ? startNextMeeting() : setIsStartSeriesNowOpen(true))
 
   if (!team) {
     // 95% sure there's a bug in relay causing this
-    const errObj = {id: meetingId} as any
-    datadogRum.addError(new Error(`Missing Team on Meeting ${JSON.stringify(errObj)}`))
+    datadogLogs.logger.error('Missing Team on Meeting', {meetingId})
     return null
   }
   const {id: teamId, name: teamName, orgId} = team
@@ -150,7 +170,7 @@ const MeetingCard = (props: Props) => {
       <div
         className={cn(
           'absolute top-0 bottom-1.5 block w-full rounded-t-card',
-          BACKGROUND_CLASSES[meetingType]
+          meetingTypeToBgClass[meetingType]
         )}
       />
       <span className='absolute top-2 left-2 font-semibold text-white text-xs'>
@@ -160,14 +180,14 @@ const MeetingCard = (props: Props) => {
         <span
           className={cn(
             'absolute top-2 right-2 rounded-[64px] bg-[#fffc] px-2 py-1 font-medium text-[11px] leading-3',
-            RECURRING_LABEL_COLORS[meetingType]
+            meetingTypeToLabelClass[meetingType]
           )}
         >
           Recurring
         </span>
       )}
       <img
-        src={ILLUSTRATIONS[meetingType]}
+        src={meetingTypeToIllustration[meetingType]}
         alt=''
         className='relative mx-auto block h-45 overflow-hidden rounded-t-card pt-6 dark:brightness-[.94]'
       />
@@ -213,7 +233,7 @@ const MeetingCard = (props: Props) => {
             <div
               className={cn(
                 'absolute top-0 bottom-1.5 block w-full rounded-t-card',
-                BACKGROUND_CLASSES[meetingType]
+                meetingTypeToBgClass[meetingType]
               )}
             />
             <span className='absolute top-2 left-2 font-semibold text-white text-xs'>
@@ -223,7 +243,7 @@ const MeetingCard = (props: Props) => {
               <span
                 className={cn(
                   'absolute top-2 right-2 rounded-[64px] bg-[#fffc] px-2 py-1 font-medium text-[11px] leading-3',
-                  RECURRING_LABEL_COLORS[meetingType]
+                  meetingTypeToLabelClass[meetingType]
                 )}
               >
                 Recurring
@@ -231,11 +251,18 @@ const MeetingCard = (props: Props) => {
             )}
             <Link to={meetingLink}>
               <img
-                src={ILLUSTRATIONS[meetingType]}
+                src={meetingTypeToIllustration[meetingType]}
                 alt=''
                 className='relative mx-auto block h-45 overflow-hidden rounded-t-card pt-6 dark:brightness-[.94]'
               />
             </Link>
+            {isRecurring && meetingSeries.owner && (
+              <MeetingSeriesManager
+                userRef={meetingSeries.owner}
+                meetingType={meetingType}
+                isGroup={!!meetingSeries.groupId}
+              />
+            )}
           </div>
           <div className='pt-1 pr-2 pb-3 pl-4'>
             <div className='relative flex items-center'>
@@ -250,8 +277,11 @@ const MeetingCard = (props: Props) => {
                     <span className='wrap-break-word block pt-1 pr-8 text-fg-primary text-xl leading-6'>
                       {meetingSeries.title}
                     </span>
-                    <Tooltip text={readableNextMeetingDate}>
-                      <div className='text-sm'>{dateLabel}</div>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className='cursor-pointer text-fg-secondary text-sm'>{dateLabel}</div>
+                      </TooltipTrigger>
+                      <TooltipContent side='bottom'>{readableNextMeetingDate}</TooltipContent>
                     </Tooltip>
                   </>
                 ) : (
@@ -260,32 +290,58 @@ const MeetingCard = (props: Props) => {
                   </span>
                 )}
               </Link>
-              <CardButton
-                className='absolute top-0 right-0 h-8 w-8 text-fg-primary opacity-100 hover:bg-surface-hover'
-                ref={originRef}
-                onClick={togglePortal}
-              >
-                <IconLabel ref={tooltipRef} icon='more_vert' />
-              </CardButton>
+              <Tooltip open={isCopied}>
+                <Menu
+                  trigger={
+                    <CardButton
+                      className='absolute top-0 right-0 h-8 w-8 text-fg-primary opacity-100 hover:bg-surface-hover'
+                      aria-label='Edit the meeting'
+                    >
+                      <TooltipTrigger asChild>
+                        <IconLabel icon='more_vert' />
+                      </TooltipTrigger>
+                    </CardButton>
+                  }
+                >
+                  <MenuContent align='end' sideOffset={4}>
+                    <MeetingCardOptionsMenuRoot
+                      meetingId={meetingId}
+                      teamId={teamId}
+                      popTooltip={popTooltip}
+                      openEndRecurringMeetingModal={() => setIsEndRecurringMeetingOpen(true)}
+                      openRecurrenceSettingsModal={() => setIsRecurrenceSettingsOpen(true)}
+                      onStartSeriesNow={onStartSeriesNow}
+                    />
+                  </MenuContent>
+                </Menu>
+                <TooltipContent side='bottom' align='end'>
+                  Copied!
+                </TooltipContent>
+              </Tooltip>
             </div>
             <Link to={meetingLink}>
-              <span className='wrap-break-word block pt-1 pb-2 text-fg-secondary text-sm'>
+              <span className='wrap-break-word block pt-1 pb-2 text-fg-muted text-sm'>
                 {teamName} • {meetingPhaseLabel}
+                {isViewerComplete && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      {/* the span anchors the tooltip, which the icon has no ref for. h-5 is the
+                          text-sm line box, so the icon centers on the caps; align-middle would
+                          center it on the x-height & read low next to a capitalized label */}
+                      <span
+                        className='ml-1 inline-flex h-5 items-center align-top text-jade-500'
+                        aria-label='You have answered every question'
+                      >
+                        <TaskAlt className='text-[16px]' />
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent side='bottom'>You have answered every question</TooltipContent>
+                  </Tooltip>
+                )}
               </span>
             </Link>
             <AvatarList users={connectedUsers} size={28} borderColor='var(--color-surface-card)' />
           </div>
-          {menuPortal(
-            <MeetingCardOptionsMenuRoot
-              meetingId={meetingId}
-              teamId={teamId}
-              menuProps={menuProps}
-              popTooltip={popTooltip}
-              openEndRecurringMeetingModal={() => setIsEndRecurringMeetingOpen(true)}
-              openRecurrenceSettingsModal={() => setIsRecurrenceSettingsOpen(true)}
-            />
-          )}
-          {tooltipPortal('Copied!')}
           {meeting && (
             <EndRecurringMeetingModal
               meetingRef={meeting}
@@ -294,11 +350,21 @@ const MeetingCard = (props: Props) => {
               closeModal={() => setIsEndRecurringMeetingOpen(false)}
             />
           )}
-          {meeting && (
-            <UpdateRecurrenceSettingsModal
-              meeting={meeting}
+          {isRecurring && (
+            <StartMeetingSeriesNowDialog
+              isOpen={isStartSeriesNowOpen}
+              onClose={() => setIsStartSeriesNowOpen(false)}
+              onConfirm={startNextMeeting}
+              isSubmitting={isStartingSeries}
+              // the siblings are only handed to the owner, who is the one that can start them
+              teamCount={meetingSeries.groupSeries.length + 1}
+            />
+          )}
+          {isRecurring && (
+            <EditMeetingSeriesModal
+              seriesRef={meetingSeries}
               isOpen={isRecurrenceSettingsOpen}
-              closeModal={() => setIsRecurrenceSettingsOpen(false)}
+              onClose={() => setIsRecurrenceSettingsOpen(false)}
             />
           )}
         </div>

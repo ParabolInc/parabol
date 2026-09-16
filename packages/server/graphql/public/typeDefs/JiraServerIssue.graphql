@@ -47,9 +47,19 @@ type JiraServerIssue implements TaskIntegration {
   url: String!
 
   """
+  The service this issue comes from
+  """
+  service: IntegrationProviderServiceEnum!
+
+  """
   The plaintext summary of the jira issue
   """
   summary: String!
+
+  """
+  The plaintext title of the issue, same as the summary
+  """
+  title: String!
 
   """
   The stringified ADF description of the Jira issue

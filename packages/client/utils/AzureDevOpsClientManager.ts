@@ -74,7 +74,6 @@ class AzureDevOpsClientManager {
           providerId,
           oauthCodeOrPat: code,
           oauthVerifier: verifier,
-          redirectUri: redirect,
           teamId
         },
         {onError, onCompleted}

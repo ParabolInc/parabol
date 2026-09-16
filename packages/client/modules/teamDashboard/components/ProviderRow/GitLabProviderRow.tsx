@@ -9,10 +9,9 @@ import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useMenu from '../../../../hooks/useMenu'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import {Breakpoint} from '../../../../types/constEnums'
+import {Menu} from '../../../../ui/Menu/Menu'
 import GitLabClientManager from '../../../../utils/GitLabClientManager'
 import ConnectButton from './ConnectButton'
 import GitLabConfigMenu from './GitLabConfigMenu'
@@ -62,12 +61,6 @@ const GitLabProviderRow = (props: Props) => {
       mutationProps
     )
   }
-  const {
-    originRef: menuRef,
-    menuPortal,
-    menuProps,
-    togglePortal
-  } = useMenu(MenuPosition.UPPER_RIGHT)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
   const viewer = useFragment(
@@ -91,83 +84,78 @@ const GitLabProviderRow = (props: Props) => {
   if (availableProviders.length === 0) return null
 
   return (
-    <>
-      <div className='relative my-4 flex w-full shrink-0 flex-col justify-start rounded-sm bg-surface-card shadow-[var(--shadow-card)]'>
-        <div className='flex justify-start p-row-gutter pb-0'>
-          <GitLabProviderLogo />
-          <div className='flex w-full flex-col'>
-            {availableProviders.map(({id, serverBaseUrl, clientId}) => {
-              const showProvider = !connected || id === connectedProviderId
-              const isCloudProvider = cloudProvider?.id === id
-              if (!showProvider) return null
-              return (
-                <div key={id} className='flex w-full flex-row pb-4'>
-                  <RowInfo>
-                    <div className='mr-4 flex items-center align-middle font-semibold text-fg-primary leading-6'>
-                      {isCloudProvider ? 'GitLab' : serverBaseUrl.replace(/https:\/\//, '')}
+    <div className='relative my-4 flex w-full shrink-0 flex-col justify-start rounded-sm bg-surface-card shadow-[var(--shadow-card)]'>
+      <div className='flex justify-start p-row-gutter pb-0'>
+        <GitLabProviderLogo />
+        <div className='flex w-full flex-col'>
+          {availableProviders.map(({id, serverBaseUrl, clientId}) => {
+            const showProvider = !connected || id === connectedProviderId
+            const isCloudProvider = cloudProvider?.id === id
+            if (!showProvider) return null
+            return (
+              <div key={id} className='flex w-full flex-row pb-4'>
+                <RowInfo>
+                  <div className='mr-4 flex items-center align-middle font-semibold text-fg-primary leading-6'>
+                    {isCloudProvider ? 'GitLab' : serverBaseUrl.replace(/https:\/\//, '')}
+                  </div>
+                  <RowInfoCopy>
+                    {isCloudProvider
+                      ? 'Use GitLab Issues from within Parabol.'
+                      : 'Connect to your own GitLab server.'}
+                  </RowInfoCopy>
+                  {!!error?.message && (
+                    <div className='text-fg-error text-sm [&_a]:font-semibold [&_a]:text-fg-error [&_a]:underline'>
+                      {error.message}
                     </div>
-                    <RowInfoCopy>
-                      {isCloudProvider
-                        ? 'Use GitLab Issues from within Parabol.'
-                        : 'Connect to your own GitLab server.'}
-                    </RowInfoCopy>
-                    {!!error?.message && (
-                      <div className='text-fg-error text-sm [&_a]:font-semibold [&_a]:text-fg-error [&_a]:underline'>
-                        {error.message}
-                      </div>
-                    )}
-                  </RowInfo>
-                  <ProviderActions>
-                    {!connected && (
-                      <ConnectButton
-                        onConnectClick={() => openOAuth(id, clientId, serverBaseUrl)}
-                        submitting={submitting}
-                      />
-                    )}
-                    {id === connectedProviderId && (
-                      <>
-                        {isDesktop ? (
-                          <>
-                            <div className='flex items-center pr-6'>
-                              <DoneIcon className='h-[18px] w-[18px] text-lg text-success-light' />
-                              <div className='pl-[6px] font-semibold text-fg-primary text-sm'>
-                                Connected
-                              </div>
-                            </div>
-                            <Button
-                              variant='flat'
-                              size='sm'
-                              className='min-w-[30px] border-hairline-strong pr-0 pl-0 font-semibold text-fg-primary text-sm'
-                              onClick={togglePortal}
-                              ref={menuRef}
-                            >
-                              <MoreVertIcon className='h-[18px] w-[18px] text-lg' />
-                            </Button>
-                          </>
-                        ) : (
+                  )}
+                </RowInfo>
+                <ProviderActions>
+                  {!connected && (
+                    <ConnectButton
+                      onConnectClick={() => openOAuth(id, clientId, serverBaseUrl)}
+                      submitting={submitting}
+                    />
+                  )}
+                  {id === connectedProviderId && (
+                    <>
+                      {isDesktop && (
+                        <div className='flex items-center pr-6'>
+                          <DoneIcon className='h-[18px] w-[18px] text-lg text-success-light' />
+                          <div className='pl-[6px] font-semibold text-fg-primary text-sm'>
+                            Connected
+                          </div>
+                        </div>
+                      )}
+                      <Menu
+                        trigger={
                           <Button
                             variant='flat'
                             size='sm'
-                            className='min-w-[36px] border-hairline-strong pr-0 pl-0 font-semibold text-fg-primary text-sm'
-                            onClick={togglePortal}
-                            ref={menuRef}
+                            className={
+                              isDesktop
+                                ? 'min-w-[30px] border-hairline-strong pr-0 pl-0 font-semibold text-fg-primary text-sm'
+                                : 'min-w-[36px] border-hairline-strong pr-0 pl-0 font-semibold text-fg-primary text-sm'
+                            }
                           >
-                            <MoreVertIcon />
+                            {isDesktop ? (
+                              <MoreVertIcon className='h-[18px] w-[18px] text-lg' />
+                            ) : (
+                              <MoreVertIcon />
+                            )}
                           </Button>
-                        )}
-                      </>
-                    )}
-                  </ProviderActions>
-                </div>
-              )
-            })}
-          </div>
+                        }
+                      >
+                        <GitLabConfigMenu mutationProps={mutationProps} teamId={teamId} />
+                      </Menu>
+                    </>
+                  )}
+                </ProviderActions>
+              </div>
+            )
+          })}
         </div>
       </div>
-      {menuPortal(
-        <GitLabConfigMenu menuProps={menuProps} mutationProps={mutationProps} teamId={teamId} />
-      )}
-    </>
+    </div>
   )
 }
 

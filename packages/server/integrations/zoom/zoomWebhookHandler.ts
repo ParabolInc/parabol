@@ -8,7 +8,7 @@ import uWSAsyncHandler from '../../graphql/uWSAsyncHandler'
 import parseBody from '../../parseBody'
 import getKysely from '../../postgres/getKysely'
 import {Logger} from '../../utils/Logger'
-import {attachTranscriptToSummaryPage} from '../gdrive/attachTranscriptToSummaryPage'
+import {attachTranscriptToSummaryPage} from '../gmeet/attachTranscriptToSummaryPage'
 import {matchExternalMeetingToMeeting} from '../matchExternalMeetingToMeeting'
 import {processZoomTranscript} from './processZoomTranscript'
 

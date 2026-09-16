@@ -11,7 +11,7 @@ type RemoveIntegrationSearchQuerySuccess {
   """
   teamId: ID
   """
-  The updated Jira Server integration after removing the query
+  The service whose saved queries changed. Select searchQueries to pick up the removed query
   """
-  jiraServerIntegration: JiraServerIntegration
+  service: IntegrationService!
 }

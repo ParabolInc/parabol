@@ -1,5 +1,4 @@
-import {MenuPosition} from '../hooks/useCoords'
-import useMenu from '../hooks/useMenu'
+import {SelectValue} from '../ui/Select/SelectValue'
 import formatTime from '../utils/date/formatTime'
 import DropdownMenuToggle from './DropdownMenuToggle'
 import StageTimerHourPicker from './StageTimerHourPicker'
@@ -12,33 +11,21 @@ interface Props {
 const StageTimerModalEndTimeHour = (props: Props) => {
   const {endTime, setEndTime} = props
   const timeStr = formatTime(endTime)
-  const {menuPortal, togglePortal, menuProps, originRef} = useMenu<HTMLDivElement>(
-    MenuPosition.LOWER_LEFT,
-    {
-      id: 'StageTimerEndTimePicker',
-      isDropdown: true
-    }
-  )
-
-  const handleHourPick = (nextEndTime: Date) => {
-    setEndTime(nextEndTime)
-    menuProps.closePortal()
-  }
 
   return (
-    <>
-      <DropdownMenuToggle
-        className='min-w-[160px] py-1 pr-0 pl-8 text-[14px]'
-        defaultText={timeStr}
-        onClick={togglePortal}
-        ref={originRef}
-        flat
-        size='small'
-      />
-      {menuPortal(
-        <StageTimerHourPicker endTime={endTime} menuProps={menuProps} onClick={handleHourPick} />
-      )}
-    </>
+    <StageTimerHourPicker
+      endTime={endTime}
+      onClick={setEndTime}
+      trigger={
+        <DropdownMenuToggle
+          className='min-w-[160px] py-1 pr-0 pl-8 text-[14px]'
+          // SelectValue anchors radix's item-aligned positioning over the trigger
+          defaultText={<SelectValue>{timeStr}</SelectValue>}
+          flat
+          size='small'
+        />
+      }
+    />
   )
 }
 

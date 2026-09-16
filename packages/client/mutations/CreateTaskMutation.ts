@@ -1,13 +1,10 @@
 import {generateJSON, generateText, type JSONContent} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import AzureDevOpsProjectId from '~/shared/gqlIds/AzureDevOpsProjectId'
 import type {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/CreateTaskMutation.graphql'
 import type {CreateTaskMutation_notification$data} from '../__generated__/CreateTaskMutation_notification.graphql'
 import type {CreateTaskMutation_task$data} from '../__generated__/CreateTaskMutation_task.graphql'
 import type Atmosphere from '../Atmosphere'
-import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
-import JiraProjectId from '../shared/gqlIds/JiraProjectId'
 import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import type {
   OnNextHandler,
@@ -43,6 +40,7 @@ graphql`
       integrationHash
       integration {
         ... on JiraIssue {
+          service
           cloudId
           cloudName
           url
@@ -52,6 +50,7 @@ graphql`
           descriptionHTML
         }
         ... on _xGitHubIssue {
+          service
           number
           title
           repository {
@@ -59,6 +58,7 @@ graphql`
           }
         }
         ... on _xGitLabIssue {
+          service
           id
           iid
           title
@@ -66,6 +66,7 @@ graphql`
           webUrl
         }
         ... on AzureDevOpsWorkItem {
+          service
           id
           title
           url
@@ -75,6 +76,7 @@ graphql`
         }
         ... on _xLinearIssue {
           __typename
+          service
           id
           description
           identifier
@@ -197,77 +199,6 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
         .setLinkedRecord(userId ? store.get(userId)! : null, 'user')
         .setLinkedRecord(viewer, 'createdByUser')
         .setLinkedRecords([], 'replies')
-      if (integration) {
-        const {service, serviceProjectHash} = integration
-        if (service === 'jira') {
-          const {cloudId, projectKey} = JiraProjectId.split(serviceProjectHash)
-          const optimisticJiraIssue = createProxyRecord(store, 'JiraIssue', {
-            cloudId,
-            url: '',
-            issueKey: `${projectKey}-?`,
-            summary: plaintextContent,
-            title: plaintextContent,
-            descriptionHTML: ''
-          })
-          task.setLinkedRecord(optimisticJiraIssue, 'integration')
-        } else if (service === 'github') {
-          const {nameWithOwner, repoName, repoOwner} = GitHubIssueId.split(serviceProjectHash)
-          const repository = createProxyRecord(store, '_xGitHubRepository', {
-            nameWithOwner,
-            name: repoName,
-            owner: repoOwner
-          })
-          const optimisticTaskIntegration = createProxyRecord(store, '_xGitHubIssue', {
-            number: 0,
-            title: plaintextContent,
-            description: '',
-            url: '',
-            bodyHTML: ''
-          })
-          optimisticTaskIntegration.setLinkedRecord(repository, 'repository')
-          task.setLinkedRecord(optimisticTaskIntegration, 'integration')
-        } else if (service === 'gitlab') {
-          const webPath = `/${serviceProjectHash}/-/issues/?`
-          const optimisticTaskIntegration = createProxyRecord(store, '_xGitLabIssue', {
-            state: 'opened',
-            title: plaintextContent,
-            description: '',
-            webPath,
-            webUrl: `/${webPath}`,
-            iid: '?'
-          })
-          task.setLinkedRecord(optimisticTaskIntegration, 'integration')
-        } else if (service === 'azureDevOps') {
-          const {instanceId} = AzureDevOpsProjectId.split(serviceProjectHash)
-          const project = createProxyRecord(store, 'AzureDevOpsRemoteProject', {
-            name: '?'
-          })
-          const optimisticTaskIntegration = createProxyRecord(store, 'AzureDevOpsWorkItem', {
-            title: plaintextContent,
-            url: `https://${instanceId}`,
-            type: 'Basic:Issue',
-            id: '?'
-          })
-          optimisticTaskIntegration.setLinkedRecord(project, 'project')
-          task.setLinkedRecord(optimisticTaskIntegration, 'integration')
-        } else if (service === 'linear') {
-          const optimisticTaskIntegration = createProxyRecord(store, '_xLinearIssue', {
-            state: 'opened',
-            identifier: '?',
-            title: plaintextContent,
-            description: '',
-            url: '?'
-          })
-          const optimisticTeam = createProxyRecord(store, '_xLinearTeam', {
-            id: 'temp-linear-team-id:' + (integration.serviceProjectHash || 'unknown'),
-            name: '?'
-          })
-          optimisticTaskIntegration.setLinkedRecord(optimisticTeam, 'team')
-          task.setLinkedRecord(optimisticTaskIntegration, 'integration')
-        } else {
-          console.log('FIXME: implement createTask')
-        }
-      }
       const editorPayload = getOptimisticTaskEditor(store, taskId, isEditing)
       handleEditTask(editorPayload, store)
       //TODO #7943 Optimistic updates on arrays has a bug in Relay. As a workaround until it's fixed properly, let's just not do optimistic updates

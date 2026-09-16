@@ -6,11 +6,11 @@ import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {Breakpoint} from '../../../../types/constEnums'
 import {Button} from '../../../../ui/Button/Button'
+import {Menu} from '../../../../ui/Menu/Menu'
 
 export interface ProviderRowBaseProps {
   connected: boolean
-  togglePortal: () => void
-  menuRef: React.MutableRefObject<HTMLButtonElement | null> // TODO: make generic menu component
+  configMenu: React.ReactNode
   providerName: string
   providerDescription: React.ReactElement | string
   providerLogo: React.ReactElement
@@ -19,13 +19,15 @@ export interface ProviderRowBaseProps {
   error?: React.ReactElement | string
 }
 
+export const getProviderAnchorId = (providerName: string) =>
+  providerName.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+
 const ProviderRowBase = (props: ProviderRowBaseProps) => {
   const {
     connectButton,
     connected,
     error,
-    togglePortal,
-    menuRef,
+    configMenu,
     providerName,
     providerDescription,
     providerLogo,
@@ -37,9 +39,12 @@ const ProviderRowBase = (props: ProviderRowBaseProps) => {
       <div className='flex justify-start p-row-gutter'>
         {providerLogo}
         <RowInfo>
-          <div className='mr-4 flex items-center align-middle font-semibold text-fg-primary leading-6'>
+          <h1
+            id={getProviderAnchorId(providerName)}
+            className='my-0 mr-4 flex scroll-mt-12 items-center align-middle font-semibold text-base text-fg-primary leading-6'
+          >
             {providerName}
-          </div>
+          </h1>
           <RowInfoCopy>{providerDescription} </RowInfoCopy>
           {!!error && (
             <div className='text-fg-error text-sm [&_a]:font-semibold [&_a]:text-fg-error [&_a]:underline'>
@@ -51,33 +56,33 @@ const ProviderRowBase = (props: ProviderRowBaseProps) => {
           {!connected && connectButton}
           {connected && (
             <>
-              {isDesktop ? (
-                <>
-                  <div className='flex items-center pr-[25px]'>
-                    <DoneIcon className='h-[18px] w-[18px] text-lg text-success-light' />
-                    <div className='pl-[6px] font-semibold text-fg-primary text-sm'>Connected</div>
-                  </div>
+              {isDesktop && (
+                <div className='flex items-center pr-[25px]'>
+                  <DoneIcon className='h-[18px] w-[18px] text-lg text-success-light' />
+                  <div className='pl-[6px] font-semibold text-fg-primary text-sm'>Connected</div>
+                </div>
+              )}
+              <Menu
+                trigger={
                   <Button
                     variant='flat'
                     size='sm'
-                    className='min-w-[30px] border-hairline-strong pr-0 pl-0 font-semibold text-fg-primary text-sm'
-                    onClick={togglePortal}
-                    ref={menuRef}
+                    className={
+                      isDesktop
+                        ? 'min-w-[30px] border-hairline-strong pr-0 pl-0 font-semibold text-fg-primary text-sm'
+                        : 'min-w-[36px] border-hairline-strong pr-0 pl-0 font-semibold text-fg-primary text-sm'
+                    }
                   >
-                    <MoreVertIcon className='h-[18px] w-[18px] text-lg' />
+                    {isDesktop ? (
+                      <MoreVertIcon className='h-[18px] w-[18px] text-lg' />
+                    ) : (
+                      <MoreVertIcon />
+                    )}
                   </Button>
-                </>
-              ) : (
-                <Button
-                  variant='flat'
-                  size='sm'
-                  className='min-w-[36px] border-hairline-strong pr-0 pl-0 font-semibold text-fg-primary text-sm'
-                  onClick={togglePortal}
-                  ref={menuRef}
-                >
-                  <MoreVertIcon />
-                </Button>
-              )}
+                }
+              >
+                {configMenu}
+              </Menu>
             </>
           )}
         </ProviderActions>

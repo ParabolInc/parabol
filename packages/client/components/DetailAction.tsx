@@ -1,8 +1,9 @@
 import type * as React from 'react'
 import {ContentCopy, Delete, Edit} from '~/ui/icons'
-import {MenuPosition} from '../hooks/useCoords'
-import useTooltip from '../hooks/useTooltip'
 import {Button} from '../ui/Button/Button'
+import {Tooltip} from '../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../ui/Tooltip/TooltipTrigger'
 
 interface Props {
   disabled?: boolean
@@ -14,32 +15,28 @@ interface Props {
 
 const DetailAction = (props: Props) => {
   const {disabled, tooltip, icon, onClick} = props
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLButtonElement>(
-    MenuPosition.UPPER_CENTER
-  )
   return (
-    <>
-      <Button
-        variant='flat'
-        ref={originRef}
-        onClick={disabled ? openTooltip : onClick}
-        size='sm'
-        onMouseEnter={openTooltip}
-        onMouseLeave={closeTooltip}
-        className='h-8 w-8 items-center justify-center p-0 text-fg-secondary'
-      >
-        <div className='h-[18px] w-[18px] [&_svg]:text-[18px]'>
-          {
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          variant='flat'
+          onClick={disabled ? undefined : onClick}
+          size='sm'
+          className='h-8 w-8 items-center justify-center p-0 text-fg-secondary'
+        >
+          <div className='h-[18px] w-[18px] [&_svg]:text-[18px]'>
             {
-              content_copy: <ContentCopy />,
-              delete: <Delete />,
-              edit: <Edit />
-            }[icon]
-          }
-        </div>
-      </Button>
-      {tooltipPortal(<div>{tooltip}</div>)}
-    </>
+              {
+                content_copy: <ContentCopy />,
+                delete: <Delete />,
+                edit: <Edit />
+              }[icon]
+            }
+          </div>
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent side='bottom'>{tooltip}</TooltipContent>
+    </Tooltip>
   )
 }
 

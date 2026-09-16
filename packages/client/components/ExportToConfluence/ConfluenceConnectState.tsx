@@ -2,6 +2,7 @@ import {useEffect} from 'react'
 import AtlassianProviderLogo from '../../AtlassianProviderLogo'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps, {type MenuMutationProps} from '../../hooks/useMutationProps'
+import type {ConnectProvider} from '../../integrations/platform/ClientIntegrationDefinition'
 import {Button} from '../../ui/Button/Button'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
 import AtlassianClientManager, {ERROR_POPUP_CLOSED} from '../../utils/AtlassianClientManager'
@@ -9,12 +10,13 @@ import SendClientSideEvent from '../../utils/SendClientSideEvent'
 
 interface Props {
   teamId: string | null
+  provider: ConnectProvider | null
   heldScopes?: readonly string[] | null
   onAuthed: () => void
 }
 
 export const ConfluenceConnectState = (props: Props) => {
-  const {teamId, heldScopes, onAuthed} = props
+  const {teamId, provider, heldScopes, onAuthed} = props
   const atmosphere = useAtmosphere()
   useEffect(() => {
     SendClientSideEvent(atmosphere, 'Confluence Export Connect Shown')
@@ -31,10 +33,11 @@ export const ConfluenceConnectState = (props: Props) => {
   } as MenuMutationProps
 
   const connect = () => {
-    if (submitting || !teamId) return
+    if (submitting || !teamId || !provider) return
     AtlassianClientManager.openOAuth(
       atmosphere,
       teamId,
+      provider,
       mutationProps,
       [...AtlassianClientManager.CONFLUENCE_SCOPE, 'offline_access' as const],
       heldScopes
@@ -50,7 +53,12 @@ export const ConfluenceConnectState = (props: Props) => {
           "Export this page as a native Confluence page — headings, tables, task lists, and images included. We'll open a secure Atlassian sign-in window."
         }
       </p>
-      <Button variant='dialogPrimary' size='md' onClick={connect} disabled={submitting || !teamId}>
+      <Button
+        variant='dialogPrimary'
+        size='md'
+        onClick={connect}
+        disabled={submitting || !teamId || !provider}
+      >
         Connect Atlassian
       </Button>
       {error && (

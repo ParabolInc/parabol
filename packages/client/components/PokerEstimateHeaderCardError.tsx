@@ -25,7 +25,7 @@ const PokerEstimateHeaderCardError = (props: Props) => {
         <div className={headerCardClassName}>
           <Tooltip>
             <TooltipTrigger asChild>
-              <button className='absolute top-2 right-2 cursor-pointer bg-inherit'>
+              <button className='absolute top-2 right-2 cursor-pointer select-none bg-inherit'>
                 <DeleteIcon onClick={() => onRemove()} />
               </button>
             </TooltipTrigger>
@@ -49,7 +49,7 @@ const PokerEstimateHeaderCardError = (props: Props) => {
       <div className={headerCardClassName}>
         <Tooltip>
           <TooltipTrigger asChild>
-            <button className='absolute top-2 right-2 cursor-pointer bg-inherit'>
+            <button className='absolute top-2 right-2 cursor-pointer select-none bg-inherit'>
               <DeleteIcon onClick={() => onRemove()} />
             </button>
           </TooltipTrigger>

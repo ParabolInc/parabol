@@ -1,5 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RRuleSet} from 'rrule-rust'
+import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import getKysely from '../../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -13,6 +14,8 @@ import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import safeCreateRetrospective from '../../mutations/helpers/safeCreateRetrospective'
 import type {MutationResolvers} from '../resolverTypes'
+import getNextFacilitatorUserId from './helpers/getNextFacilitatorUserId'
+import setFacilitatorRotation from './helpers/setFacilitatorRotation'
 import {createMeetingMember} from './joinMeeting'
 import {createMeetingSeries, startNewMeetingSeries} from './updateRecurrenceSettings'
 
@@ -92,10 +95,11 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     return data
   }
 
+  const {facilitatorUserId, rotation} = await getNextFacilitatorUserId(teamId, viewerId, dataLoader)
   const meeting = await safeCreateRetrospective(
     {
       teamId,
-      facilitatorUserId: viewerId,
+      facilitatorUserId,
       totalVotes,
       maxVotesPerGroup,
       disableAnonymity,
@@ -109,14 +113,14 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     return {error: {message: 'Meeting already started'}}
   }
   const meetingId = meeting.id
+  if (rotation) await setFacilitatorRotation(teamId, rotation, dataLoader)
   const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
   await updateMeetingTemplateLastUsedAt(selectedTemplateId, teamId)
 
-  const meetingMember = createMeetingMember(meeting, {
-    userId: viewerId,
-    teamId,
-    isSpectatingPoker: false
-  })
+  const teamMember = await dataLoader
+    .get('teamMembers')
+    .loadNonNull(toTeamMemberId(teamId, viewerId))
+  const meetingMember = createMeetingMember(meeting, teamMember)
   const [meetingSeries] = await Promise.all([
     rrule && startNewMeetingSeries(meeting, rrule, meetingSeriesName),
     pg

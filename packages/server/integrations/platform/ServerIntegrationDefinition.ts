@@ -1,9 +1,13 @@
 import type {GraphQLResolveInfo} from 'graphql'
-import type {DataLoaderWorker, GQLContext} from '../../graphql/graphql'
-import type {
-  IntegrationProviderServiceEnumType,
-  TaskIntegrationManager
-} from '../TaskIntegrationManagerFactory'
+import type {IntegrationMeta} from 'parabol-client/shared/integrations/IntegrationMeta'
+import type {DataLoaderWorker, GQLContext, InternalContext} from '../../graphql/graphql'
+import type {TaskEstimateInput} from '../../graphql/public/resolverTypes'
+import type {Task, TeamMemberIntegrationAuth} from '../../postgres/types'
+import type {EstimatePushResult} from '../../postgres/types/EstimatePushResult'
+import type {TIntegrationProvider} from '../../postgres/types/IntegrationProvider'
+import type {JsonObject} from '../../postgres/types/pg'
+import type {RemoteRepoIntegration} from './RemoteRepoIntegration'
+import type {TaskIntegrationManager} from './TaskIntegrationManager'
 
 export interface IntegrationCtx {
   dataLoader: DataLoaderWorker
@@ -16,52 +20,190 @@ export interface GqlIntegrationCtx extends IntegrationCtx {
   info: GraphQLResolveInfo
 }
 
-export interface IntegrationAuth {
-  accessToken: string
-  accessUserId: string
-  providerId: number | null
-  raw: unknown
-}
-
 export interface IssueCreateCapability {
   initManager(ctx: GqlIntegrationCtx): Promise<TaskIntegrationManager | null>
 }
 
+export interface IssueReadCtx extends IntegrationCtx {
+  context: InternalContext
+  info: GraphQLResolveInfo
+  task: Task
+  viewerId: string
+  /** Selection spliced into the vendor query by services proxied through a nested schema; '...info' forwards the client's */
+  fieldsToFetch: string
+}
+
 export interface IssueReadCapability {
-  getIssue(ctx: GqlIntegrationCtx, issueId: string): Promise<unknown>
+  /** The raw issue payload in the shape the service's TaskIntegration GraphQL type resolves — never re-wrapped, so __typename/discriminant keys survive */
+  getIssue(ctx: IssueReadCtx): Promise<unknown>
 }
 
-export interface IssueSearchCapability {
-  persistQueries: boolean
+export interface IssueSearchCapability<TQuery extends JsonObject = JsonObject> {
+  /** Validates a client-supplied search before it is stored as IntegrationSearchQuery.query; services with issueSearch offer stored searches back as recents */
+  buildQuery(queryString: string, meta: JsonObject): TQuery | Error
 }
 
-export interface RepoListCapability {
-  fetchRepos(ctx: GqlIntegrationCtx): Promise<unknown[]>
+/** The dataloaders reach the repo fetchers with a bare RootDataLoader, the capabilities with the request's worker */
+export type RepoFetchCtx = Omit<IntegrationCtx, 'dataLoader'> & {
+  dataLoader: Pick<DataLoaderWorker, 'get'>
+}
+
+export interface RepoListCapability<TRepo extends RemoteRepoIntegration = RemoteRepoIntegration> {
+  /** Every repo/project the viewer can create issues in, in the exact object shape the client and the prev-used Redis cache already store. An Error is the remote failure and must never be cached */
+  fetchRepos(ctx: GqlIntegrationCtx): Promise<TRepo[] | Error>
+  /** What createTaskIntegration takes for this repo; the caches dedupe on service + this */
+  integrationRepoId(repo: TRepo): string
+  /** The label the repo picker renders */
+  name(repo: TRepo): string
+}
+
+export interface EstimatePushCtx extends GqlIntegrationCtx {
+  task: Task
+  taskEstimate: TaskEstimateInput
+  stageId: string
+  viewerId: string
+  meetingName: string
+  discussionURL: string
+}
+
+export interface DimensionFieldCtx extends GqlIntegrationCtx {
+  task: Task
+  viewerId: string
+}
+
+/** Which stored mapping applies to a task: the repo/project it lives in and, for services whose fields vary by issue type, that type */
+export interface DimensionFieldKey {
+  repoId: string
+  issueType: string | null
+  /** Field ids the current issue can accept. When set, stored rows for other fields are ignored and a row saved for another issue type may be reused; when absent only an exact issue type match counts */
+  usableFieldIds?: string[]
+}
+
+export interface DimensionFieldTarget {
+  fieldId: string
+  /** The service's human-readable name for fieldId; null when fieldId is already the label (templates, sentinels) or the service knows no name for it */
+  fieldName: string | null
+  fieldType: string
+}
+
+export interface ServiceField {
+  /** What updateIntegrationDimensionField takes; the sentinels and a label template are their own id */
+  fieldId: string
+  label: string
+  type: string
+}
+
+export type EstimatePushTarget = 'comment' | 'field' | 'label'
+
+export interface ServiceFieldListing {
+  options: ServiceField[]
+  helpUrl?: string
 }
 
 export interface EstimatePushCapability {
-  targets: Array<'comment' | 'field' | 'label'>
+  targets: EstimatePushTarget[]
+  /** An Error is the user-visible failure message; analytics and the TaskEstimate insert read the result */
+  pushEstimate(ctx: EstimatePushCtx): Promise<EstimatePushResult | Error>
+  /** The mapping key for this task; null when the issue or auth cannot be resolved */
+  resolveDimensionFieldKey(ctx: DimensionFieldCtx): Promise<DimensionFieldKey | null>
+  /** Turns a chosen field id into the row to store. Sentinels never reach this, and updateIntegrationDimensionField has already checked the id against listDimensionFields for field services */
+  describeDimensionField(
+    ctx: DimensionFieldCtx,
+    key: DimensionFieldKey,
+    fieldId: string
+  ): Promise<DimensionFieldTarget | Error>
+  /** The fields a facilitator can map this dimension to on this task. Label services return no options — the client offers the editable template instead. helpUrl explains an empty list when the service knows why */
+  listDimensionFields(ctx: DimensionFieldCtx): Promise<ServiceFieldListing>
 }
 
-export interface WorkItemsCapability {
-  getUserWorkItems(ctx: GqlIntegrationCtx): Promise<unknown[]>
+export interface IssueListCapability {
+  getViewerIssues(ctx: GqlIntegrationCtx): Promise<unknown[]>
 }
+
+/** What a service stores for a linked issue: the private dedup key and the parts the Task row keeps */
+export interface IssueRef {
+  integrationHash: string
+  integration: NonNullable<Task['integration']>
+}
+
+type WithoutAccessUser<T> = T extends unknown ? Omit<T, 'accessUserId'> : never
+/** A linked issue as the Task row stores it, minus whose auth reaches it */
+export type IssueParts = WithoutAccessUser<NonNullable<Task['integration']>>
 
 export interface ServerIntegrationCapabilities {
   issueCreate?: IssueCreateCapability
   issueRead?: IssueReadCapability
   issueSearch?: IssueSearchCapability
+  issueList?: IssueListCapability
   repoList?: RepoListCapability
   estimatePush?: EstimatePushCapability
-  workItems?: WorkItemsCapability
 }
 
 export type IntegrationCapabilityKey = keyof ServerIntegrationCapabilities
 
-export interface ServerIntegrationDefinition {
-  service: IntegrationProviderServiceEnumType
-  title: string
-  authStrategy: 'oauth1' | 'oauth2' | 'pat' | 'webhook'
-  resolveAuth(ctx: IntegrationCtx): Promise<IntegrationAuth | null>
-  capabilities: ServerIntegrationCapabilities
+export abstract class ServerIntegrationDefinition {
+  abstract readonly service: IntegrationMeta['service']
+  abstract readonly title: string
+  abstract readonly authStrategy: 'oauth1' | 'oauth2' | 'pat' | 'webhook'
+  abstract readonly capabilities: ServerIntegrationCapabilities
+  /** The viewer's usable auth row for this team, refreshed first when the service supports it */
+  async resolveAuth(ctx: IntegrationCtx): Promise<TeamMemberIntegrationAuth | null> {
+    const {dataLoader, teamId, userId} = ctx
+    const auth = await dataLoader.get('freshAuth').load({service: this.service, teamId, userId})
+    return auth?.accessToken ? auth : null
+  }
+
+  /** The Task.integrationHash a client echoed, parsed into the issue parts the Task row stores. null when malformed */
+  abstract parseIntegrationHash(integrationHash: string): IssueParts | null
+
+  /** A team, org, or global provider row exists. Services whose connect flow needs the global row override this */
+  async isAvailable(ctx: IntegrationCtx) {
+    return this.hasSharedProvider(ctx)
+  }
+
+  /** The viewer's active auth row for this team as stored — never refreshed, so it is safe to read on any surface. Services whose grant may not cover them override this */
+  async getAuthRow(ctx: IntegrationCtx): Promise<TeamMemberIntegrationAuth | null> {
+    const {dataLoader, teamId, userId} = ctx
+    const auth = await dataLoader
+      .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
+      .load({service: this.service, teamId, userId})
+    return auth?.accessToken ? auth : null
+  }
+
+  /** A cheap DB-row check. Never refreshes tokens — resolveAuth does that at time of use. */
+  async isConnected(ctx: IntegrationCtx) {
+    return !!(await this.getAuthRow(ctx))
+  }
+
+  protected async hasSharedProvider(ctx: IntegrationCtx) {
+    const {dataLoader, teamId} = ctx
+    const team = await dataLoader.get('teams').loadNonNull(teamId)
+    const providers = await dataLoader
+      .get('sharedIntegrationProviders')
+      .load({service: this.service, orgIds: [team.orgId], teamIds: [teamId]})
+    return providers.length > 0
+  }
+
+  /** The team- and org-scoped provider rows for this team, which connect flows prefer over the global row */
+  async getSharedProviders(ctx: IntegrationCtx): Promise<TIntegrationProvider[]> {
+    const {dataLoader, teamId} = ctx
+    const team = await dataLoader.get('teams').loadNonNull(teamId)
+    const providers = await dataLoader
+      .get('sharedIntegrationProviders')
+      .load({service: this.service, orgIds: [team.orgId], teamIds: [teamId]})
+    return providers.filter(({scope}) => scope !== 'global')
+  }
+
+  /** The instance-wide (cloud) provider row, the only one some connect flows can use */
+  async getGlobalProvider(ctx: IntegrationCtx): Promise<TIntegrationProvider | null> {
+    const [globalProvider] = await ctx.dataLoader
+      .get('sharedIntegrationProviders')
+      .load({service: this.service, orgIds: [], teamIds: []})
+    return globalProvider ?? null
+  }
+
+  getCapabilityKeys() {
+    const keys = Object.keys(this.capabilities) as IntegrationCapabilityKey[]
+    return keys.filter((key) => this.capabilities[key] !== undefined)
+  }
 }

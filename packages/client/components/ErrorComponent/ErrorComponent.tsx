@@ -1,5 +1,5 @@
 import {useState} from 'react'
-import ReportErrorFeedback, {ERROR_FEEDBACK_ENABLED} from '~/components/ReportErrorFeedback'
+import ReportErrorFeedback from '~/components/ReportErrorFeedback'
 import {Button} from '~/ui/Button/Button'
 import {twStyled} from '../../ui/twStyled'
 import {
@@ -78,7 +78,7 @@ const ErrorComponent = (props: Props) => {
   return (
     <ErrorBlock>
       {'An error has occurred! We’ve alerted the developers. Try refreshing the page'}
-      {ERROR_FEEDBACK_ENABLED && eventId && (
+      {eventId && (
         <Button variant='primary' size='sm' className='mt-2' onClick={() => setIsOpen(true)}>
           Report Feedback
         </Button>

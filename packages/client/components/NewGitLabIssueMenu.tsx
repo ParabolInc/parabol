@@ -1,13 +1,11 @@
-import type {MenuProps} from '~/hooks/useMenu'
 import useSearchFilter from '~/hooks/useSearchFilter'
+import {MenuContent} from '../ui/Menu/MenuContent'
+import {MenuSearch} from '../ui/Menu/MenuSearch'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
-import Menu from './Menu'
-import {SearchMenuItem} from './SearchMenuItem'
 import TaskIntegrationMenuItem from './TaskIntegrationMenuItem'
 
 interface Props {
   handleSelectFullPath: (key: string) => void
-  menuProps: MenuProps
   gitlabProjects: {id: string; fullPath: string}[]
 }
 
@@ -16,7 +14,7 @@ const getValue = (item: {fullPath?: string}) => {
 }
 
 const NewGitLabIssueMenu = (props: Props) => {
-  const {handleSelectFullPath, menuProps, gitlabProjects} = props
+  const {handleSelectFullPath, gitlabProjects} = props
 
   const {
     query,
@@ -25,8 +23,8 @@ const NewGitLabIssueMenu = (props: Props) => {
   } = useSearchFilter(gitlabProjects, getValue)
 
   return (
-    <Menu ariaLabel='Select GitLab project' keepParentFocus {...menuProps}>
-      <SearchMenuItem placeholder='Search GitLab' onChange={onQueryChange} value={query} />
+    <MenuContent align='start' className='min-w-[300px]'>
+      <MenuSearch placeholder='Search GitLab' onChange={onQueryChange} value={query} />
       {filteredProjects.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>No projects found!</EmptyDropdownMenuItemLabel>
       )}
@@ -45,7 +43,7 @@ const NewGitLabIssueMenu = (props: Props) => {
           />
         )
       })}
-    </Menu>
+    </MenuContent>
   )
 }
 

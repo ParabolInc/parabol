@@ -33,9 +33,10 @@ export const useTipTapReflectionEditor = (
     readOnly?: boolean
     placeholder?: string
     onModEnter?: () => void
+    autoFocus?: boolean
   }
 ) => {
-  const {atmosphere, teamId, readOnly, placeholder, onModEnter} = options
+  const {atmosphere, teamId, readOnly, placeholder, onModEnter, autoFocus} = options
   const [contentJSON] = useState(() => (content ? JSON.parse(content) : undefined))
   const placeholderRef = useRef(placeholder)
   const [commit] = useUploadUserAsset()
@@ -107,7 +108,9 @@ export const useTipTapReflectionEditor = (
           openOnClick: false
         })
       ].filter(isValid),
-      autofocus: generateText(contentJSON, serverTipTapExtensions).length === 0,
+      // every reflect column starts empty, so defaulting to "focus when empty" made all of them
+      // grab focus on mount and the last one mounted won. Callers with siblings must opt in
+      autofocus: autoFocus ?? generateText(contentJSON, serverTipTapExtensions).length === 0,
       editable: !readOnly
     },
     []

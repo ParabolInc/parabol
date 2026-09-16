@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {ExportToConfluenceModalQuery} from '../../__generated__/ExportToConfluenceModalQuery.graphql'
+import {getConnectProvider} from '../../integrations/platform/findIntegrationService'
 import {Dialog} from '../../ui/Dialog/Dialog'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
 import {hasConfluenceScopes} from '../../utils/atlassianScopes'
@@ -17,6 +18,9 @@ const query = graphql`
       teams {
         id
         viewerTeamMember {
+          services {
+            ...findIntegrationService_cloudProvider @relay(mask: false)
+          }
           integrations {
             atlassian {
               accessToken
@@ -93,7 +97,9 @@ export const ExportToConfluenceModal = (props: Props) => {
     ) ?? null
   const authTeam = confluenceTeam ?? teamsWithAtlassian[0] ?? viewer.teams[0] ?? null
   const heldScopes = authTeam?.viewerTeamMember?.integrations.atlassian?.scope
-
+  const provider = authTeam?.viewerTeamMember
+    ? getConnectProvider(authTeam.viewerTeamMember.services, 'jira')
+    : null
   const lastExport = page.lastPageExport
   const wantsReport = initialReport && !activeExportId
   const activeExport =
@@ -114,6 +120,7 @@ export const ExportToConfluenceModal = (props: Props) => {
         {state === 'connectAtlassian' && (
           <ConfluenceConnectState
             teamId={authTeam?.id ?? null}
+            provider={provider}
             heldScopes={heldScopes}
             onAuthed={retry}
           />
@@ -121,6 +128,7 @@ export const ExportToConfluenceModal = (props: Props) => {
         {state === 'enableConfluence' && (
           <ConfluenceEnableState
             teamId={authTeam?.id ?? null}
+            provider={provider}
             heldScopes={heldScopes}
             onAuthed={retry}
           />

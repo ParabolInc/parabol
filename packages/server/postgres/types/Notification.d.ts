@@ -125,6 +125,11 @@ export interface PageAccessRequestedNotification extends BaseNotification {
   role: Pageroleenum
 }
 
+export interface TeamHealthResponseDueNotification extends BaseNotification {
+  type: 'TEAM_HEALTH_RESPONSE_DUE'
+  meetingId: string
+}
+
 export type AnyNotification =
   | DiscussionMentionedNotification
   | KickedOutNotification
@@ -141,3 +146,4 @@ export type AnyNotification =
   | TeamInvitationNotification
   | TeamsLimitExceededNotification
   | TeamsLimitReminderNotification
+  | TeamHealthResponseDueNotification

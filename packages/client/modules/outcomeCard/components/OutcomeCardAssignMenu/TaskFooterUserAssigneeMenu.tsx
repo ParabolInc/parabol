@@ -3,23 +3,19 @@ import {useMemo} from 'react'
 import {type PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import type {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import {EmptyDropdownMenuItemLabel} from '~/components/EmptyDropdownMenuItemLabel'
-import {SearchMenuItem} from '~/components/SearchMenuItem'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import type {TaskFooterUserAssigneeMenu_task$key} from '../../../../__generated__/TaskFooterUserAssigneeMenu_task.graphql'
 import type {TaskFooterUserAssigneeMenuQuery} from '../../../../__generated__/TaskFooterUserAssigneeMenuQuery.graphql'
 import DropdownMenuLabel from '../../../../components/DropdownMenuLabel'
-import Menu from '../../../../components/Menu'
 import MenuAvatar from '../../../../components/MenuAvatar'
-import MenuItem from '../../../../components/MenuItem'
-import MenuItemLabel from '../../../../components/MenuItemLabel'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import type {MenuProps} from '../../../../hooks/useMenu'
 import UpdateTaskMutation from '../../../../mutations/UpdateTaskMutation'
 import avatarUser from '../../../../styles/theme/images/avatar-user.svg'
+import {MenuItem} from '../../../../ui/Menu/MenuItem'
+import {MenuSearch} from '../../../../ui/Menu/MenuSearch'
 
 interface Props {
   area: AreaEnum
-  menuProps: MenuProps
   queryRef: PreloadedQuery<TaskFooterUserAssigneeMenuQuery>
   task: TaskFooterUserAssigneeMenu_task$key
 }
@@ -43,7 +39,7 @@ const gqlQuery = graphql`
   }
 `
 const TaskFooterUserAssigneeMenu = (props: Props) => {
-  const {area, menuProps, task: taskRef, queryRef} = props
+  const {area, task: taskRef, queryRef} = props
   const task = useFragment(
     graphql`
       fragment TaskFooterUserAssigneeMenu_task on Task {
@@ -63,10 +59,6 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
   const {team} = viewer
   const atmosphere = useAtmosphere()
   const teamMembers = team?.teamMembers || []
-  const taskUserIdx = useMemo(
-    () => teamMembers.findIndex(({user}) => user.id === userId) + 1,
-    [userId, teamMembers]
-  )
   const assignees = useMemo(
     () => teamMembers.filter(({user}) => user.id !== userId),
     [userId, teamMembers]
@@ -84,15 +76,10 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
 
   if (!team) return null
   return (
-    <Menu
-      keepParentFocus
-      ariaLabel={'Assign this task to a teammate'}
-      defaultActiveIdx={userId ? taskUserIdx : undefined}
-      {...menuProps}
-    >
+    <>
       <DropdownMenuLabel>Assign to:</DropdownMenuLabel>
       {assignees.length > 5 && (
-        <SearchMenuItem placeholder='Search team members' onChange={onQueryChange} value={query} />
+        <MenuSearch placeholder='Search team members' onChange={onQueryChange} value={query} />
       )}
       {query && matchedAssignees.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>
@@ -101,24 +88,18 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
       )}
       {matchedAssignees.map((assignee) => {
         return (
-          <MenuItem
-            key={assignee.id}
-            label={
-              <MenuItemLabel>
-                <MenuAvatar
-                  alt={assignee.user.preferredName}
-                  src={assignee.user.picture || avatarUser}
-                />
-                <div className='overflow-hidden text-ellipsis whitespace-nowrap'>
-                  {assignee.user.preferredName}
-                </div>
-              </MenuItemLabel>
-            }
-            onClick={handleTaskUpdate(assignee)}
-          />
+          <MenuItem key={assignee.id} onClick={handleTaskUpdate(assignee)}>
+            <MenuAvatar
+              alt={assignee.user.preferredName}
+              src={assignee.user.picture || avatarUser}
+            />
+            <div className='overflow-hidden text-ellipsis whitespace-nowrap'>
+              {assignee.user.preferredName}
+            </div>
+          </MenuItem>
         )
       })}
-    </Menu>
+    </>
   )
 }
 

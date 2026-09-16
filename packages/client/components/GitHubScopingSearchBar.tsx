@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {GitHubScopingSearchBar_meeting$key} from '../__generated__/GitHubScopingSearchBar_meeting.graphql'
+import findIntegrationService from '../integrations/platform/findIntegrationService'
 import {SprintPokerDefaults} from '../types/constEnums'
 import GitHubScopingSearchFilterToggle from './GitHubScopingSearchFilterToggle'
 import GitHubScopingSearchHistoryToggle from './GitHubScopingSearchHistoryToggle'
@@ -14,14 +15,6 @@ interface Props {
 const GitHubScopingSearchBar = (props: Props) => {
   const {meetingRef} = props
 
-  graphql`
-    fragment GitHubScopingSearchBarGitHubIntegration on GitHubIntegration {
-      githubSearchQueries {
-        queryString
-      }
-    }
-  `
-
   const meeting = useFragment(
     graphql`
       fragment GitHubScopingSearchBar_meeting on PokerMeeting {
@@ -31,10 +24,9 @@ const GitHubScopingSearchBar = (props: Props) => {
         }
         viewerMeetingMember {
           teamMember {
-            integrations {
-              github {
-                ...GitHubScopingSearchBarGitHubIntegration @relay(mask: false)
-              }
+            services {
+              ...findIntegrationService_auth @relay(mask: false)
+              ...usePersistIntegrationSearchQueryMutation_service @relay(mask: false)
             }
           }
         }
@@ -46,11 +38,9 @@ const GitHubScopingSearchBar = (props: Props) => {
   )
 
   const {queryString} = meeting.githubSearchQuery
-
-  const githubSearchQueries =
-    meeting.viewerMeetingMember?.teamMember?.integrations?.github?.githubSearchQueries
-  const defaultInput =
-    githubSearchQueries?.[0]?.queryString ?? SprintPokerDefaults.GITHUB_DEFAULT_QUERY
+  const services = meeting.viewerMeetingMember?.teamMember.services ?? []
+  const searchQueries = findIntegrationService(services, 'github')?.searchQueries
+  const defaultInput = searchQueries?.[0]?.queryString ?? SprintPokerDefaults.GITHUB_DEFAULT_QUERY
 
   return (
     <ScopingSearchBar>

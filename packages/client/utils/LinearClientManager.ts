@@ -61,7 +61,6 @@ class LinearClientManager {
         {
           providerId,
           oauthCodeOrPat: code,
-          redirectUri,
           teamId
         },
         {onError, onCompleted}

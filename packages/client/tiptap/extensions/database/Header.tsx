@@ -146,7 +146,7 @@ export const Header = (props: Props) => {
               />
             </form>
             <DropdownMenu.Sub>
-              <DropdownMenu.SubTrigger className='flex cursor-pointer items-center gap-2 rounded-md p-2 hover:bg-surface-hover'>
+              <DropdownMenu.SubTrigger className='flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 hover:bg-surface-hover'>
                 <SwapHoriz />
                 Change type
                 <ChevronRight className='ml-auto' />
@@ -173,7 +173,7 @@ export const Header = (props: Props) => {
             {dataActions.map(({label, icon, action}) => (
               <DropdownMenu.Item
                 key={label}
-                className='flex cursor-pointer items-center gap-2 rounded-md p-2 hover:bg-surface-hover'
+                className='flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 hover:bg-surface-hover'
                 onSelect={action}
               >
                 {icon}

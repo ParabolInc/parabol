@@ -1,6 +1,7 @@
 import type {GraphQLResolveInfo} from 'graphql'
 import {getNewDataLoader} from '../../../../dataloader/getNewDataLoader'
 import {redisHocusPocus} from '../../../../hocusPocus'
+import {scheduleMeetTranscriptJob} from '../../../../integrations/gmeet/scheduleMeetTranscriptJob'
 import getKysely from '../../../../postgres/getKysely'
 import {getUserId} from '../../../../utils/authorization'
 import {CipherId} from '../../../../utils/CipherId'
@@ -60,6 +61,7 @@ export const publishSummaryPage = async (
       .where('id', '=', meetingId)
       .execute()
     meeting.summaryPageId = pageId
+    await scheduleMeetTranscriptJob(meetingId, teamId).catch(Logger.log)
     // don't wait for the stream to finish
     streamStarted = true
     streamSummaryBlocksToPage(pageId, meetingId, context, info)

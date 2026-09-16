@@ -16,7 +16,7 @@ type Size = 'sm' | 'md' | 'lg' | 'default'
 type Shape = 'icon' | 'default'
 
 const BASE_STYLES =
-  'inline-flex shrink-0 cursor-pointer items-center justify-center whitespace-nowrap rounded-md transition-colors focus-visible:outline-hidden focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50'
+  'inline-flex shrink-0 cursor-pointer select-none items-center justify-center whitespace-nowrap rounded-md transition-colors focus-visible:outline-hidden focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50'
 
 // TODO: make sure the styles match the designs
 const VARIANT_STYLES: Record<Variant, string> = {
@@ -25,7 +25,7 @@ const VARIANT_STYLES: Record<Variant, string> = {
   outline:
     'text-fg-primary border border-hairline-strong hover:bg-surface-hover px-2.5 py-1 bg-transparent font-semibold',
   dialogPrimary:
-    'text-white bg-grape-700 hover:bg-grape-600 focus-visible:ring-grape-500 font-semibold',
+    'text-white bg-surface-cta hover:bg-surface-cta-hover focus-visible:ring-grape-500 font-semibold',
   secondary: 'bg-sky-500 text-white hover:bg-sky-500/80 font-semibold',
   ghost: 'hover:opacity-80 bg-transparent font-semibold',
   link: 'text-primary underline-offset-4 hover:underline',

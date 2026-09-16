@@ -18,6 +18,9 @@ module.exports = {
     RedirectURI: 'string'
   },
   noFutureProofEnums: true,
+  featureFlags: {
+    enforce_fragment_alias_where_ambiguous: {kind: 'disabled'}
+  },
   schema: path.join(__dirname, 'packages/server/graphql/public/schema.graphql'),
   excludes: ['**/node_modules/**', '**/__generated__/**']
 }

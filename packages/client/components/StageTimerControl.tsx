@@ -1,9 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
+import {Suspense, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {StageTimerControl_meeting$key} from '~/__generated__/StageTimerControl_meeting.graphql'
-import {MenuPosition} from '../hooks/useCoords'
-import useMenu from '../hooks/useMenu'
 import {MeetingLabels} from '../types/constEnums'
+import {Menu} from '../ui/Menu/Menu'
+import {MenuContent} from '../ui/Menu/MenuContent'
 import lazyPreload from '../utils/lazyPreload'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
@@ -54,34 +55,52 @@ const StageTimerControl = (props: Props) => {
   const color = 'green'
   const icon = isAsync ? 'event' : 'timer'
   const label = isAsync ? MeetingLabels.TIME_LIMIT : MeetingLabels.TIMER
-  const {menuProps, menuPortal, originRef, togglePortal} = useMenu<HTMLDivElement>(
-    MenuPosition.LOWER_LEFT,
-    {
-      isDropdown: true,
-      id: 'StageTimerModal'
-    }
-  )
-  return (
-    <>
-      <BottomNavControl
-        confirming={!!cancelConfirm}
-        onMouseEnter={StageTimerModal.preload}
-        onClick={cancelConfirm || togglePortal}
-      >
-        <BottomNavIconLabel ref={originRef} icon={icon} iconColor={color} label={label} />
+  const [isOpen, setIsOpen] = useState(false)
+
+  if (cancelConfirm) {
+    return (
+      <BottomNavControl confirming onMouseEnter={StageTimerModal.preload} onClick={cancelConfirm}>
+        <BottomNavIconLabel icon={icon} iconColor={color} label={label} />
       </BottomNavControl>
-      {teamMember &&
-        menuPortal(
-          <StageTimerModal
-            defaultToAsync={connectedMemberCount <= 1}
-            defaultTimeLimit={defaultTimeLimit}
-            meetingId={meetingId}
-            menuProps={menuProps}
-            stage={localStage}
-            teamMember={teamMember}
-          />
-        )}
-    </>
+    )
+  }
+
+  return (
+    <Menu
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      trigger={
+        <BottomNavControl onMouseEnter={StageTimerModal.preload}>
+          <BottomNavIconLabel icon={icon} iconColor={color} label={label} />
+        </BottomNavControl>
+      }
+    >
+      <MenuContent
+        side='top'
+        align='start'
+        className='max-h-none w-auto max-w-none overflow-visible'
+        // the date & hour pickers open their own radix menus, which would otherwise dismiss this one
+        onInteractOutside={(e) => {
+          const target = e.target as HTMLElement | null
+          // the hour picker is item-aligned, so it has no popper wrapper to match on
+          if (target?.closest('[data-radix-popper-content-wrapper],[role="listbox"]'))
+            e.preventDefault()
+        }}
+      >
+        <Suspense fallback={null}>
+          {teamMember && (
+            <StageTimerModal
+              defaultToAsync={connectedMemberCount <= 1}
+              defaultTimeLimit={defaultTimeLimit}
+              meetingId={meetingId}
+              closePortal={() => setIsOpen(false)}
+              stage={localStage}
+              teamMember={teamMember}
+            />
+          )}
+        </Suspense>
+      </MenuContent>
+    </Menu>
   )
 }
 

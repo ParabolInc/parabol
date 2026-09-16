@@ -72,7 +72,7 @@ export const PageHeader = (props: Props) => {
     }
   }, [location.key])
   return (
-    <div className='sticky top-0 z-10 w-full bg-surface-document print:hidden'>
+    <div data-page-header className='sticky top-0 z-10 w-full bg-surface-document print:hidden'>
       <div className='flex items-center justify-between px-4 py-2'>
         <PageBreadCrumbs pageRef={page} />
         <div className='flex items-center justify-center space-x-3 pt-1 font-semibold text-md'>

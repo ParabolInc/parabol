@@ -59,6 +59,7 @@ const OutcomeCard = memo((props: Props) => {
         id
         integration {
           __typename
+          service
           ...TaskIntegrationLink_integration
         }
         status
@@ -102,7 +103,7 @@ const OutcomeCard = memo((props: Props) => {
   const {viewerId} = atmosphere
   const otherEditors = editors.filter((editor) => editor.userId !== viewerId)
   const isEditing = editors.length > otherEditors.length
-  const type = integration?.__typename
+  const service = integration?.service
   const statusTitle = `Card status: ${taskStatusLabels[status]}`
   const privateTitle = ', marked as #private'
   const archivedTitle = ', set as #archived'
@@ -141,7 +142,7 @@ const OutcomeCard = memo((props: Props) => {
         !isHighlighted && 'outline-none'
       )}
     >
-      <TaskWatermark type={type} />
+      <TaskWatermark service={service} />
       <div className='relative'>
         <EditingStatus
           isTaskHovered={isTaskHovered}
@@ -158,7 +159,7 @@ const OutcomeCard = memo((props: Props) => {
           </div>
         </EditingStatus>
         <IntegratedTaskContent task={task} />
-        {!type && (
+        {!integration && (
           <div
             className='cursor-text'
             onBlur={() => {

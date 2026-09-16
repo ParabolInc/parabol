@@ -43,11 +43,8 @@ const subscription = graphql`
       UpdateRecurrenceSettingsSuccess {
         ...UpdateRecurrenceSettingsMutation_team @relay(mask: false)
       }
-      UpdateDimensionFieldSuccess {
-        ...UpdateJiraDimensionFieldMutation_team @relay(mask: false)
-      }
-      UpdateGitHubDimensionFieldSuccess {
-        ...UpdateGitHubDimensionFieldMutation_team @relay(mask: false)
+      UpdateIntegrationDimensionFieldSuccess {
+        ...useUpdateIntegrationDimensionFieldMutation_team @relay(mask: false)
       }
       MovePokerTemplateScaleValueSuccess {
         ...MovePokerTemplateScaleValueMutation_team @relay(mask: false)
@@ -57,9 +54,6 @@ const subscription = graphql`
       }
       AddAgendaItemPayload {
         ...AddAgendaItemMutation_team @relay(mask: false)
-      }
-      AddAtlassianAuthPayload {
-        ...AddAtlassianAuthMutation_team @relay(mask: false)
       }
       AddReflectTemplateSuccess {
         ...useAddReflectTemplateMutation_team @relay(mask: false)
@@ -174,6 +168,9 @@ const subscription = graphql`
       }
       UpdateCreditCardPayload {
         ...UpdateCreditCardMutation_organization @relay(mask: false) @alias
+      }
+      UpdateFacilitatorRotationSuccess {
+        ...useUpdateFacilitatorRotationMutation_team @relay(mask: false)
       }
       UpdateTeamNamePayload {
         ...UpdateTeamNameMutation_team @relay(mask: false)

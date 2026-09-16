@@ -1,7 +1,9 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
+import fetchAzureDevOpsProjects from '../integrations/azureDevOps/fetchAzureDevOpsProjects'
+import {estimatePushColumns} from '../integrations/platform/estimatePushColumns'
 import getKysely from '../postgres/getKysely'
-import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
+import syncTeamMemberIntegrationAuthTokens from '../postgres/queries/syncTeamMemberIntegrationAuthTokens'
 import type {TeamMemberIntegrationAuth} from '../postgres/types'
 import type {IntegrationProviderAzureDevOps} from '../postgres/types/IntegrationProvider'
 import AzureDevOpsServerManager, {
@@ -13,7 +15,9 @@ import AzureDevOpsServerManager, {
 import {getInstanceId} from '../utils/azureDevOps/azureDevOpsFieldTypeToId'
 import {Logger} from '../utils/Logger'
 import logError from '../utils/logError'
+import handleAuthRefreshFailure from './handleAuthRefreshFailure'
 import type RootDataLoader from './RootDataLoader'
+import settleOrLogRejection from './settleOrLogRejection'
 
 type TeamUserKey = {
   teamId: string
@@ -72,25 +76,6 @@ export interface AzureDevOpsWorkItemsKey {
   teamId: string
   instanceId: string
   projectId: string
-}
-
-export interface AzureDevOpsDimensionFieldMapKey {
-  teamId: string
-  dimensionName: string
-  instanceId: string
-  projectKey: string
-  workItemType: string
-}
-
-export interface AzureDevOpsDimensionFieldMapEntry {
-  teamId: string
-  dimensionName: string
-  fieldName: string
-  fieldId: string
-  instanceId: string
-  fieldType: string
-  projectKey: string
-  workItemType: string
 }
 
 export interface AzureDevOpsWorkItem {
@@ -164,33 +149,29 @@ export const freshAzureDevOpsAuth = (parent: RootDataLoader) => {
             )
             const oauthRes = await manager.refresh(refreshToken)
             if (oauthRes instanceof Error) {
-              // Azure refresh token only lasts 24 hrs for SPAs. User must manually re-auth after that: https://github.com/AzureAD/microsoft-authentication-library-for-js/issues/4104
-              if (oauthRes.message === 'invalid_grant') {
-                await getKysely()
-                  .updateTable('TeamMemberIntegrationAuth')
-                  .set({isActive: false})
-                  .where('userId', '=', userId)
-                  .where('teamId', '=', teamId)
-                  .where('service', '=', 'azureDevOps')
-                  .where('isActive', '=', true)
-                  .execute()
-              }
-              return null
+              return handleAuthRefreshFailure(oauthRes, azureDevOpsAuthToRefresh)
             }
             const {accessToken, refreshToken: newRefreshToken} = oauthRes
             const updatedRefreshToken = newRefreshToken || refreshToken
-            const newAzureDevOpsAuth = {
-              ...azureDevOpsAuthToRefresh,
+            const tokens = {
               accessToken,
-              refreshToken: updatedRefreshToken
+              refreshToken: updatedRefreshToken,
+              scopes: azureDevOpsAuthToRefresh.scopes,
+              expiresAt: azureDevOpsAuthToRefresh.expiresAt
             }
-            await upsertTeamMemberIntegrationAuth(newAzureDevOpsAuth)
-            return newAzureDevOpsAuth
+            await syncTeamMemberIntegrationAuthTokens({
+              userId,
+              teamId,
+              providerId,
+              providerUserId: azureDevOpsAuthToRefresh.providerUserId,
+              ...tokens
+            })
+            return {...azureDevOpsAuthToRefresh, ...tokens}
           }
           return azureDevOpsAuthToRefresh
         })
       )
-      return results.map((result) => (result.status === 'fulfilled' ? result.value : null))
+      return settleOrLogRejection(results, keys)
     },
     {
       ...parent.dataLoaderOptions,
@@ -328,36 +309,8 @@ export const allAzureDevOpsProjects = (parent: RootDataLoader) => {
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
-          const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
-          if (!auth) {
-            return []
-          }
-          const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
-          if (!provider) {
-            return []
-          }
-          const manager = new AzureDevOpsServerManager(
-            auth,
-            provider as IntegrationProviderAzureDevOps
-          )
-          const {error, projects} = await manager.getAllUserProjects()
-          if (error !== undefined) {
-            Logger.log(error)
-            return []
-          }
-          const resultReferences = [] as TeamProjectReference[]
-          if (projects !== null) resultReferences.push(...projects)
-          return resultReferences.map((project) => {
-            const instanceId = getInstanceId(project.url)
-            return {
-              ...project,
-              instanceId,
-              userId,
-              projectId: project.id,
-              teamId,
-              service: 'azureDevOps' as const
-            }
-          })
+          const projects = await fetchAzureDevOpsProjects({dataLoader: parent, teamId, userId})
+          return projects instanceof Error ? [] : projects
         })
       )
       return results.map((result) => (result.status === 'fulfilled' ? result.value : []))
@@ -402,42 +355,6 @@ export const azureDevOpsProject = (parent: RootDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.userId}:${key.teamId}:${key.instanceId}:${key.projectId}`
-    }
-  )
-}
-
-export const azureDevOpsDimensionFieldMap = (parent: RootDataLoader) => {
-  return new DataLoader<
-    AzureDevOpsDimensionFieldMapKey,
-    AzureDevOpsDimensionFieldMapEntry | null,
-    string
-  >(
-    async (keys) => {
-      const results = await Promise.allSettled(
-        keys.map(async ({teamId, dimensionName, instanceId, projectKey, workItemType}) => {
-          const azureDevOpsDimensionFieldMap = await getKysely()
-            .selectFrom('AzureDevOpsDimensionFieldMap')
-            .selectAll()
-            .where('teamId', '=', teamId)
-            .where('dimensionName', '=', dimensionName)
-            .where('instanceId', '=', instanceId)
-            .where('projectKey', '=', projectKey)
-            .where('workItemType', '=', workItemType)
-            .executeTakeFirst()
-          if (!azureDevOpsDimensionFieldMap) {
-            return null
-          }
-          return {
-            ...azureDevOpsDimensionFieldMap
-          } as AzureDevOpsDimensionFieldMapEntry
-        })
-      )
-      return results.map((result) => (result.status === 'fulfilled' ? result.value : null))
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) =>
-        `${key.teamId}:${key.dimensionName}:${key.instanceId}:${key.projectKey}:${key.workItemType}`
     }
   )
 }
@@ -533,8 +450,9 @@ export const azureDevOpsWorkItem = (parent: RootDataLoader) => {
           // update our records
           await Promise.all(
             estimates.map((estimate) => {
-              const {azureDevOpsFieldName, label, discussionId, name, taskId, userId} = estimate
-              if (!azureDevOpsFieldName) {
+              const {label, discussionId, name, taskId, userId, pushService, pushTargetId} =
+                estimate
+              if (pushService !== 'azureDevOps' || !pushTargetId) {
                 return undefined
               }
               let freshEstimate = ''
@@ -552,7 +470,11 @@ export const azureDevOpsWorkItem = (parent: RootDataLoader) => {
                 .values({
                   changeSource: 'external',
                   discussionId,
-                  azureDevOpsFieldName,
+                  ...estimatePushColumns({
+                    service: 'azureDevOps',
+                    target: 'field',
+                    targetId: pushTargetId
+                  }),
                   label: freshEstimate,
                   name,
                   meetingId: null,

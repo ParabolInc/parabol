@@ -96,7 +96,7 @@ const MeetingTopBar = (props: Props) => {
               />
             </div>
             <button
-              className='group flex h-max w-max cursor-pointer flex-col items-center bg-transparent px-2 font-semibold text-accent text-sm hover:text-sky-600'
+              className='group flex h-max w-max cursor-pointer select-none flex-col items-center bg-transparent px-2 font-semibold text-accent text-sm hover:text-sky-600'
               onClick={toggleDrawer}
             >
               <IconLabel icon={drawerButton.icon} iconLarge />

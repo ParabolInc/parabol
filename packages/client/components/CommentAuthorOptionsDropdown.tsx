@@ -1,36 +1,33 @@
 import useAtmosphere from '~/hooks/useAtmosphere'
 import DeleteCommentMutation from '~/mutations/DeleteCommentMutation'
-import type {MenuProps} from '../hooks/useMenu'
-import Menu from './Menu'
-import MenuItem from './MenuItem'
-import MenuItemWithIcon from './MenuItemWithIcon'
+import Delete from '../ui/icons/Delete'
+import Edit from '../ui/icons/Edit'
+import {MenuContent} from '../ui/Menu/MenuContent'
+import {MENU_ITEM_ICON, MenuItem} from '../ui/Menu/MenuItem'
 
 interface Props {
-  menuProps: MenuProps
   commentId: string
   editComment: () => void
   meetingId: string
 }
 
 const CommentAuthorOptionsDropdown = (props: Props) => {
-  const {commentId, editComment, meetingId, menuProps} = props
+  const {commentId, editComment, meetingId} = props
   const atmosphere = useAtmosphere()
   const deleteComment = () => {
     DeleteCommentMutation(atmosphere, {commentId, meetingId})
   }
   return (
-    <Menu ariaLabel={'Select the action for your comment'} {...menuProps}>
-      <MenuItem
-        label={<MenuItemWithIcon dataCy='edit-comment' label={'Edit Comment'} icon={'edit'} />}
-        onClick={editComment}
-      />
-      <MenuItem
-        label={
-          <MenuItemWithIcon dataCy='delete-comment' label={'Delete Comment'} icon={'delete'} />
-        }
-        onClick={deleteComment}
-      />
-    </Menu>
+    <MenuContent align='end'>
+      <MenuItem onClick={editComment} data-cy='edit-comment'>
+        <Edit className={MENU_ITEM_ICON} />
+        Edit Comment
+      </MenuItem>
+      <MenuItem onClick={deleteComment} data-cy='delete-comment'>
+        <Delete className={MENU_ITEM_ICON} />
+        Delete Comment
+      </MenuItem>
+    </MenuContent>
   )
 }
 

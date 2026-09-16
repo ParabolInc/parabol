@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import {forwardRef} from 'react'
 import {useFragment} from 'react-relay'
 import type {TeamHealthHelpMenu_stage$key} from '~/__generated__/TeamHealthHelpMenu_stage.graphql'
 import useClientSideTrack from '../../hooks/useClientSideTrack'
@@ -9,6 +8,7 @@ import HelpMenuCopy from './HelpMenuCopy'
 import HelpMenuHeader from './HelpMenuHeader'
 
 interface Props {
+  onClose: () => void
   stageRef: TeamHealthHelpMenu_stage$key
 }
 
@@ -80,9 +80,8 @@ const VeryMixed = () => (
   </>
 )
 
-const TeamHealthHelpMenu = forwardRef((props: Props, ref: any) => {
-  const {stageRef} = props
-  const {closePortal} = ref
+const TeamHealthHelpMenu = (props: Props) => {
+  const {stageRef, onClose} = props
   useClientSideTrack('Help Menu Open', {phase: 'TEAM_HEALTH'})
 
   const stage = useFragment(
@@ -113,11 +112,11 @@ const TeamHealthHelpMenu = forwardRef((props: Props, ref: any) => {
   })()
 
   return (
-    <HelpMenuContent closePortal={closePortal}>
+    <HelpMenuContent onClose={onClose}>
       <HelpMenuHeader>{phaseLabelLookup.TEAM_HEALTH}</HelpMenuHeader>
       {Tip && <Tip />}
     </HelpMenuContent>
   )
-})
+}
 
 export default TeamHealthHelpMenu

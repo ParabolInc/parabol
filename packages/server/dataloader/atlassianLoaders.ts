@@ -1,12 +1,14 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
 import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
-import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import type {JiraIssueMissingEstimationFieldHintEnum} from '../graphql/private/resolverTypes'
+import {fetchJiraProjectsResult} from '../integrations/jira/fetchJiraProjects'
+import refreshAtlassianAuth from '../integrations/jira/refreshAtlassianAuth'
+import {estimatePushColumns} from '../integrations/platform/estimatePushColumns'
 import getKysely from '../postgres/getKysely'
-import {selectAtlassianAuth, selectJiraDimensionFieldMap} from '../postgres/select'
-import type {AtlassianAuth, JiraDimensionFieldMap} from '../postgres/types'
+import {selectAtlassianAuth} from '../postgres/select'
+import type {AtlassianAuth} from '../postgres/types'
 import AtlassianServerManager, {
   type JiraIssueRaw,
   type JiraProject
@@ -18,6 +20,7 @@ import logError from '../utils/logError'
 import publish from '../utils/publish'
 import {redisStoreAndNetwork} from '../utils/redisStoreAndNetwork'
 import type RootDataLoader from './RootDataLoader'
+import settleOrLogRejection from './settleOrLogRejection'
 
 type TeamUserKey = {
   teamId: string
@@ -40,77 +43,65 @@ export interface JiraIssueKey {
   taskId?: string
 }
 
+const isAccessTokenFresh = (accessToken: string, inAMinute: number) => {
+  const decoded = decode(accessToken)
+  const exp = decoded && typeof decoded === 'object' ? decoded.exp : undefined
+  return typeof exp === 'number' && exp * 1000 > inAMinute
+}
+
+/** The stored Atlassian row, never refreshed — safe for any surface that only reports on the connection */
+export const atlassianAuth = (
+  parent: RootDataLoader
+): DataLoader<TeamUserKey, AtlassianAuth | null, string> => {
+  return new DataLoader<TeamUserKey, AtlassianAuth | null, string>(
+    async (keys) => {
+      const results = await Promise.allSettled(
+        keys.map(async ({userId, teamId}) => {
+          const auth = await selectAtlassianAuth()
+            .where('userId', '=', userId)
+            .where('teamId', '=', teamId)
+            .where('isActive', '=', true)
+            .executeTakeFirst()
+          return auth ?? null
+        })
+      )
+      return settleOrLogRejection(results, keys)
+    },
+    {...parent.dataLoaderOptions, cacheKeyFn: (key) => `${key.userId}:${key.teamId}`}
+  )
+}
+
 export const freshAtlassianAuth = (
   parent: RootDataLoader
 ): DataLoader<TeamUserKey, AtlassianAuth | null, string> => {
   return new DataLoader<TeamUserKey, AtlassianAuth | null, string>(
     async (keys) => {
-      const pg = getKysely()
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
-          const atlassianAuthToRefresh = await selectAtlassianAuth()
-            .where('userId', '=', userId)
-            .where('teamId', '=', teamId)
-            .where('isActive', '=', true)
-            .executeTakeFirst()
-          if (!atlassianAuthToRefresh) {
+          const auth = await parent.get('atlassianAuth').load({userId, teamId})
+          if (!auth) return null
+          const inAMinute = Date.now() + 60_000
+          const isFresh = auth.expiresAt
+            ? auth.expiresAt.getTime() > inAMinute
+            : isAccessTokenFresh(auth.accessToken, inAMinute)
+          if (isFresh) return auth
+          const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
+          if (provider.service !== 'jira') {
+            logError(new Error(`Auth ${auth.id} points at a ${provider.service} provider`), {
+              userId,
+              tags: {teamId}
+            })
             return null
           }
-
-          const {accessToken: existingAccessToken, refreshToken} = atlassianAuthToRefresh
-          const decodedToken = existingAccessToken && (decode(existingAccessToken) as any)
-          const now = new Date()
-          const inAMinute = Math.floor((now.getTime() + 60000) / 1000)
-          if (!decodedToken || decodedToken.exp < inAMinute) {
-            const oauthRes = await AtlassianServerManager.refresh(refreshToken)
-            if (oauthRes instanceof Error) {
-              // If we can't refresh it, it's broken. mark it inactive
-              if (oauthRes.message === 'refresh_token is invalid') {
-                await pg
-                  .updateTable('AtlassianAuth')
-                  .set({isActive: false})
-                  .where('userId', '=', userId)
-                  .where('teamId', '=', teamId)
-                  .where('isActive', '=', true)
-                  .execute()
-              }
-              logError(oauthRes)
-              return null
-            }
-            const {accessToken, refreshToken: newRefreshToken, scopes} = oauthRes
-            const updatedRefreshToken = newRefreshToken ?? atlassianAuthToRefresh.refreshToken
-            const updatedScope = scopes ?? atlassianAuthToRefresh.scope
-            // if user integrated the same Jira account with using different teams we need to update them as well
-            // reference: https://github.com/ParabolInc/parabol/issues/5601
-            await pg
-              .updateTable('AtlassianAuth')
-              .set({
-                accessToken,
-                refreshToken: updatedRefreshToken,
-                scope: updatedScope
-              })
-              .where('userId', '=', userId)
-              .where('isActive', '=', true)
-              .where('accountId', '=', atlassianAuthToRefresh.accountId)
-              .execute()
-
-            return {
-              ...atlassianAuthToRefresh,
-              accessToken,
-              refreshToken: updatedRefreshToken,
-              scope: updatedScope
-            }
-          }
-
-          return atlassianAuthToRefresh
+          const refreshed = await refreshAtlassianAuth(auth, provider)
+          parent.get('teamMemberIntegrationAuthsByServiceTeamAndUserId').clearAll()
+          parent.get('atlassianAuth').clearAll()
+          return refreshed
         })
       )
-      return results.map((result) => (result.status === 'fulfilled' ? result.value : null))
+      return settleOrLogRejection(results, keys)
     },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) => `${key.userId}:${key.teamId}`
-    }
+    {...parent.dataLoaderOptions, cacheKeyFn: (key) => `${key.userId}:${key.teamId}`}
   )
 }
 
@@ -127,22 +118,13 @@ export const allJiraProjects = (
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
-          const auth = await parent.get('freshAtlassianAuth').load({teamId, userId})
-          if (!auth) return []
-          const cloudNameLookup = await parent
-            .get('atlassianCloudNameLookup')
-            .load({teamId, userId})
-          const cloudIds = Object.keys(cloudNameLookup)
-          const {accessToken} = auth
-          const manager = new AtlassianServerManager(accessToken)
-          const projects = await manager.getAllProjects(cloudIds)
-          return projects.map((project) => ({
-            ...project,
-            id: JiraProjectId.join(project.cloudId, project.key),
-            userId,
+          const {projects, error} = await fetchJiraProjectsResult({
+            dataLoader: parent,
             teamId,
-            service: 'jira' as const
-          }))
+            userId
+          })
+          if (error) logError(error, {userId, tags: {teamId, service: 'jira'}})
+          return projects
         })
       )
       return results.map((result) => (result.status === 'fulfilled' ? result.value : []))
@@ -232,8 +214,10 @@ export const jiraIssue = (
             // update our records
             await Promise.all(
               estimates.map((estimate) => {
-                const {label, discussionId, name, taskId, userId} = estimate
-                const jiraFieldId = estimate.jiraFieldId as keyof typeof fields | null
+                const {label, discussionId, name, taskId, userId, pushService, pushTargetId} =
+                  estimate
+                const jiraFieldId =
+                  pushService === 'jira' ? (pushTargetId as keyof typeof fields) : null
                 if (!jiraFieldId) {
                   return undefined
                 }
@@ -247,7 +231,11 @@ export const jiraIssue = (
                     changeSource: 'external',
                     // keep the link to the discussion alive, if possible
                     discussionId,
-                    jiraFieldId,
+                    ...estimatePushColumns({
+                      service: 'jira',
+                      target: 'field',
+                      targetId: jiraFieldId
+                    }),
                     label: freshEstimate,
                     name,
                     meetingId: null,
@@ -397,31 +385,3 @@ export const atlassianCloudName = (
     }
   )
 }
-
-export const jiraDimensionFieldMap = (parent: RootDataLoader) =>
-  new DataLoader<
-    {teamId: string; cloudId: string; projectKey: string; dimensionName: string; issueType: string},
-    JiraDimensionFieldMap[],
-    string
-  >(
-    async (keys) => {
-      return Promise.all(
-        keys.map(async (params) => {
-          const {cloudId, dimensionName, issueType, projectKey, teamId} = params
-          return selectJiraDimensionFieldMap()
-            .where('teamId', '=', teamId)
-            .where('cloudId', '=', cloudId)
-            .where('projectKey', '=', projectKey)
-            .where('dimensionName', '=', dimensionName)
-            .orderBy(({eb}) => eb.case().when('issueType', '=', issueType).then(0).else(1).end())
-            .orderBy('updatedAt', 'desc')
-            .execute()
-        })
-      )
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: ({teamId, cloudId, projectKey, issueType, dimensionName}) =>
-        `${teamId}:${cloudId}:${projectKey}:${issueType}:${dimensionName}`
-    }
-  )

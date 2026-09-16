@@ -1,18 +1,15 @@
-export type PersistIntegrationSearchQuerySource =
-  | {
-      userId: string
-      teamId: string
-    }
-  | {error: {message: string}}
+import type {RegisteredServerIntegration} from '../../../integrations/platform/registry'
+import type {PersistIntegrationSearchQuerySuccessResolvers} from '../resolverTypes'
+import {makeIntegrationServiceSource} from './IntegrationService'
 
-const PersistIntegrationSearchQuerySuccess: {
-  jiraServerIntegration: (
-    source: PersistIntegrationSearchQuerySource
-  ) => PersistIntegrationSearchQuerySource
-} = {
-  jiraServerIntegration: (source) => {
-    return source
-  }
+export type PersistIntegrationSearchQuerySuccessSource = {
+  teamId: string
+  userId: string
+  service: RegisteredServerIntegration
+}
+
+const PersistIntegrationSearchQuerySuccess: PersistIntegrationSearchQuerySuccessResolvers = {
+  service: ({service, teamId, userId}) => makeIntegrationServiceSource(service, teamId, userId)
 }
 
 export default PersistIntegrationSearchQuerySuccess

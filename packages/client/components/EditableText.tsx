@@ -1,5 +1,5 @@
 import type * as React from 'react'
-import {forwardRef, useEffect, useRef, useState} from 'react'
+import {forwardRef, useEffect, useLayoutEffect, useRef, useState} from 'react'
 import TextAreaAutoSize from 'react-textarea-autosize'
 import {Edit} from '~/ui/icons'
 import {cn} from '../ui/cn'
@@ -51,10 +51,6 @@ const EditableText = forwardRef((props: Props, ref: React.Ref<HTMLDivElement>) =
 
   const setEditing = (isEditing: boolean) => {
     setIsEditing(isEditing)
-    if (isEditing) {
-      // Pre-calculate width when entering edit mode
-      setTimeout(calculateWidth, 0)
-    }
     setAutoFocus(false)
     onEditingChange?.(isEditing)
   }
@@ -64,9 +60,11 @@ const EditableText = forwardRef((props: Props, ref: React.Ref<HTMLDivElement>) =
     setValue(initialValue)
   }, [initialValue])
 
-  useEffect(() => {
+  const showEditing = (error || isEditing || autoFocus) && !disabled
+
+  useLayoutEffect(() => {
     calculateWidth()
-  }, [value])
+  }, [value, showEditing])
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const nextValue = e.target.value || ''
@@ -111,7 +109,6 @@ const EditableText = forwardRef((props: Props, ref: React.Ref<HTMLDivElement>) =
     }
   }
 
-  const showEditing = (error || isEditing || autoFocus) && !disabled
   if (showEditing) {
     const commonProps = {
       autoFocus: true,

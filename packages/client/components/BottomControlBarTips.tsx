@@ -1,18 +1,17 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect} from 'react'
+import {Suspense, useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {BottomControlBarTips_meeting$key} from '~/__generated__/BottomControlBarTips_meeting.graphql'
-import {MenuPosition} from '~/hooks/useCoords'
-import useMenu from '~/hooks/useMenu'
 import useTimeout from '~/hooks/useTimeout'
 import type LocalAtmosphere from '~/modules/demo/LocalAtmosphere'
 import lazyPreload, {type LazyPreloadedComponent} from '~/utils/lazyPreload'
 import type {NewMeetingPhaseTypeEnum} from '../__generated__/BottomControlBarTips_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
+import {Menu} from '../ui/Menu/Menu'
+import {MenuContent} from '../ui/Menu/MenuContent'
 import isDemoRoute from '../utils/isDemoRoute'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
-import Menu from './Menu'
 
 const CheckInHelpMenu = lazyPreload(
   async () => import(/* webpackChunkName: 'CheckInHelpMenu' */ './MeetingHelp/CheckInHelpMenu')
@@ -131,63 +130,70 @@ const BottomControlBarTips = (props: Props) => {
 
   const {localPhase, localStage, meetingType} = meeting
   const {phaseType} = localPhase
-  const {menuProps, menuPortal, originRef, togglePortal, openPortal} = useMenu(
-    MenuPosition.LOWER_LEFT
-  )
+  const [isOpen, setIsOpen] = useState(false)
   const atmosphere = useAtmosphere()
   const demoPauseOpen = useTimeout(1000)
   const menus = isDemoRoute() ? demoHelps : helps
-  const MenuContent = menus[phaseType]
+  const HelpMenu = menus[phaseType]
   useEffect(() => {
     if (demoPauseOpen && isDemoRoute()) {
       const {clientGraphQLServer} = atmosphere as unknown as LocalAtmosphere
       if (clientGraphQLServer.db._started) {
-        openPortal()
+        setIsOpen(true)
       } else {
         // wait for the startBot event to occur
         clientGraphQLServer.once('startDemo', () => {
-          openPortal()
+          setIsOpen(true)
         })
       }
     }
-  }, [demoPauseOpen, openPortal])
+  }, [demoPauseOpen])
 
-  if (!MenuContent) {
+  if (!HelpMenu) {
     return null
   }
 
-  const renderMenuContent = () => {
+  if (cancelConfirm) {
+    return (
+      <BottomNavControl dataCy={'tip-menu-toggle'} confirming onClick={cancelConfirm}>
+        <BottomNavIconLabel icon='help_outline' iconColor='midGray' label={'Tips'} />
+      </BottomNavControl>
+    )
+  }
+
+  const onClose = () => setIsOpen(false)
+  const renderHelpMenu = () => {
     if (menus === helps) {
       if (phaseType === 'vote') {
         const voteRef = meeting.VoteHelpMenu_meeting
-        return voteRef ? <VoteHelpMenu meetingRef={voteRef} /> : null
+        return voteRef ? <VoteHelpMenu meetingRef={voteRef} onClose={onClose} /> : null
       }
       if (phaseType === 'reflect') {
         const settingsRef = meeting.ReflectHelpMenu_settings
-        return settingsRef ? <ReflectHelpMenu meetingRef={settingsRef} /> : null
+        return settingsRef ? <ReflectHelpMenu meetingRef={settingsRef} onClose={onClose} /> : null
       }
       if (phaseType === 'TEAM_HEALTH') {
         const stageRef = localStage.TeamHealthHelpMenu_stage
-        return stageRef ? <TeamHealthHelpMenu stageRef={stageRef} /> : null
+        return stageRef ? <TeamHealthHelpMenu stageRef={stageRef} onClose={onClose} /> : null
       }
     }
-    return <MenuContent meetingType={meetingType} />
+    return <HelpMenu meetingType={meetingType} onClose={onClose} />
   }
 
   return (
-    <BottomNavControl
-      dataCy={`tip-menu-toggle`}
-      confirming={!!cancelConfirm}
-      onClick={cancelConfirm || togglePortal}
-      ref={originRef}
+    <Menu
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      trigger={
+        <BottomNavControl dataCy={'tip-menu-toggle'}>
+          <BottomNavIconLabel icon='help_outline' iconColor='midGray' label={'Tips'} />
+        </BottomNavControl>
+      }
     >
-      <BottomNavIconLabel icon='help_outline' iconColor='midGray' label={'Tips'} />
-      {menuPortal(
-        <Menu ariaLabel='Meeting tips' {...menuProps} className='max-h-80'>
-          {renderMenuContent()}
-        </Menu>
-      )}
-    </BottomNavControl>
+      <MenuContent side='top' align='start' className='max-h-80'>
+        <Suspense fallback={null}>{renderHelpMenu()}</Suspense>
+      </MenuContent>
+    </Menu>
   )
 }
 

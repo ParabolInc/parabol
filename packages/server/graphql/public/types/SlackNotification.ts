@@ -6,7 +6,8 @@ export const slackNotificationEventTypeLookup = {
   MEETING_STAGE_TIME_LIMIT_END: 'member',
   MEETING_STAGE_TIME_LIMIT_START: 'team',
   TOPIC_SHARED: 'member',
-  STANDUP_RESPONSE_SUBMITTED: 'team'
+  STANDUP_RESPONSE_SUBMITTED: 'team',
+  TEAM_HEALTH_RESPONSE_DUE: 'member'
 } as const
 
 const SlackNotification: SlackNotificationResolvers = {

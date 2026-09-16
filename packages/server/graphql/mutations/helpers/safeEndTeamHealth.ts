@@ -7,7 +7,6 @@ import getKysely from '../../../postgres/getKysely'
 import type {TeamHealthMeeting} from '../../../postgres/types/Meeting'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
-import getPhase from '../../../utils/getPhase'
 import {Logger} from '../../../utils/Logger'
 import logError from '../../../utils/logError'
 import publish from '../../../utils/publish'
@@ -15,6 +14,8 @@ import standardError from '../../../utils/standardError'
 import type {InternalContext} from '../../graphql'
 import gatherInsights from './gatherInsights'
 import {IntegrationNotifier} from './notifications/IntegrationNotifier'
+import seedTeamHealthDiscussions from './seedTeamHealthDiscussions'
+import sortTeamHealthResultStages from './sortTeamHealthResultStages'
 import {publishSummaryPage} from './summaryPage/publishSummaryPage'
 import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
 
@@ -40,7 +41,7 @@ const safeEndTeamHealth = async ({
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
-  const {endedAt, id: meetingId, teamId, phases} = meeting
+  const {endedAt, id: meetingId, teamId} = meeting
 
   if (endedAt)
     return standardError(new Error('Meeting already ended'), {
@@ -48,30 +49,25 @@ const safeEndTeamHealth = async ({
     })
 
   // RESOLUTION
-  const insights = await gatherInsights(meeting, dataLoader)
+  const [insights, phases] = await Promise.all([
+    gatherInsights(meeting, dataLoader),
+    sortTeamHealthResultStages(meeting, dataLoader)
+  ])
   // ending a team health meeting is what reveals its results, whether the owner clicked "Reveal
-  // results" or the recurrence cron hit scheduledEndTime. All that's left to persist is the result
-  // stage's navigability, which lives in the phases JSONB like every other meeting type's
-  const resultPhase = getPhase(phases, 'TEAM_HEALTH_RESULT')
-  const resultPhaseIdx = resultPhase ? phases.indexOf(resultPhase) : -1
+  // results" or the recurrence cron hit scheduledEndTime. The result stages render the reveal off
+  // endedAt, so the only stage state to flip is their order, which the answers now determine
   await pg
     .updateTable('NewMeeting')
     .set({
       endedAt: sql`CURRENT_TIMESTAMP`,
+      phases: JSON.stringify(phases),
       usedReactjis: JSON.stringify(insights.usedReactjis),
-      engagement: insights.engagement,
-      ...(!!resultPhase && {
-        phases: sql`jsonb_set(
-          jsonb_set(phases, ${sql.lit(`{${resultPhaseIdx},stages,0,isNavigable}`)}, 'true'::jsonb, false),
-          ${sql.lit(`{${resultPhaseIdx},stages,0,isNavigableByFacilitator}`)},
-          'true'::jsonb,
-          false
-        )`
-      })
+      engagement: insights.engagement
     })
     .where('id', '=', meetingId)
     .execute()
   dataLoader.clearAll('newMeetings')
+  seedTeamHealthDiscussions(meeting, dataLoader).catch(Logger.log)
 
   const [completedTeamHealth, meetingMembers, team, teamMembers] = await Promise.all([
     dataLoader.get('newMeetings').loadNonNull(meetingId) as Promise<TeamHealthMeeting>,

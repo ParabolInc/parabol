@@ -1,16 +1,9 @@
 import {useCallback} from 'react'
 import {Link} from 'react-router'
-import retrospective from '../../../static/images/illustrations/retrospective.png'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {cn} from '../ui/cn'
+import {meetingTypeToBgClass, meetingTypeToIllustration} from '../utils/meetings/lookups'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
-
-const BACKGROUND_CLASSES = {
-  retrospective: 'bg-grape-500',
-  action: 'bg-aqua-400',
-  poker: 'bg-tomato-400',
-  teamPrompt: 'bg-jade-400'
-} as const
 
 const DemoMeetingCard = () => {
   const atmospehere = useAtmosphere()
@@ -29,12 +22,12 @@ const DemoMeetingCard = () => {
           <div
             className={cn(
               'absolute top-0 bottom-1.5 block w-full rounded-t-card',
-              BACKGROUND_CLASSES.retrospective
+              meetingTypeToBgClass.retrospective
             )}
           />
           <span className='absolute top-2 left-2 font-semibold text-white text-xs'>Retro</span>
           <img
-            src={retrospective}
+            src={meetingTypeToIllustration.retrospective}
             alt=''
             className='relative mx-auto block h-45 overflow-hidden rounded-t-card pt-6 dark:brightness-[.94]'
           />

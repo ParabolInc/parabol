@@ -4,7 +4,6 @@ import {useFragment} from 'react-relay'
 import {Event as EventIcon, Timer as TimerIcon} from '~/ui/icons'
 import type {StageTimerModal_stage$key} from '../__generated__/StageTimerModal_stage.graphql'
 import type {StageTimerModal_teamMember$key} from '../__generated__/StageTimerModal_teamMember.graphql'
-import type {MenuProps} from '../hooks/useMenu'
 import StageTimerModalEditTimeEnd from './StageTimerModalEditTimeEnd'
 import StageTimerModalEditTimeLimit from './StageTimerModalEditTimeLimit'
 import StageTimerModalEndTime from './StageTimerModalEndTime'
@@ -20,7 +19,7 @@ interface Props {
   defaultToAsync: boolean
   meetingId: string
   stage: StageTimerModal_stage$key
-  menuProps: MenuProps
+  closePortal: () => void
   teamMember: StageTimerModal_teamMember$key
 }
 
@@ -29,7 +28,7 @@ const StageTimerModal = (props: Props) => {
     defaultTimeLimit,
     defaultToAsync,
     meetingId,
-    menuProps,
+    closePortal,
     stage: stageRef,
     teamMember: teamMemberRef
   } = props
@@ -57,7 +56,6 @@ const StageTimerModal = (props: Props) => {
   )
   const {isAsync} = stage
   const [activeIdx, setActiveIdx] = useState(defaultToAsync ? 1 : 0)
-  const {closePortal} = menuProps
   if (isAsync === false) {
     return (
       <StageTimerModalEditTimeLimit meetingId={meetingId} closePortal={closePortal} stage={stage} />

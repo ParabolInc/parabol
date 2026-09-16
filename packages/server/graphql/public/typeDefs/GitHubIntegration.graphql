@@ -26,6 +26,7 @@ type GitHubIntegration {
   the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old
   """
   githubSearchQueries: [GitHubSearchQuery!]!
+    @deprecated(reason: "Use TeamMember.services { searchQueries }")
 
   """
   The GitHub username used for API queries

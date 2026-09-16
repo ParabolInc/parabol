@@ -4,8 +4,6 @@ import {useFragment} from 'react-relay'
 import type {MSTeamsProviderRow_viewer$key} from '~/__generated__/MSTeamsProviderRow_viewer.graphql'
 import {Add as AddIcon, Close as CloseIcon} from '~/ui/icons'
 import MSTeamsProviderLogo from '../../../../components/MSTeamsProviderLogo'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useMenu from '../../../../hooks/useMenu'
 import useMutationProps, {type MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {Providers} from '../../../../types/constEnums'
 import MSTeamsConfigMenu from './MSTeamsConfigMenu'
@@ -47,7 +45,6 @@ const MSTeamsProviderRow = (props: Props) => {
     viewerRef
   )
   const [isConnectClicked, setConnectClicked] = useState(false)
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   const {submitting, submitMutation, error, onError, onCompleted} = useMutationProps()
   const mutationProps = {
     submitting,
@@ -63,31 +60,22 @@ const MSTeamsProviderRow = (props: Props) => {
   if (window.__ACTION__.mattermostWebhookIntegrationDisabled) return null
 
   return (
-    <>
-      <ProviderRow
-        connected={!!auth}
-        onConnectClick={() => setConnectClicked(!isConnectClicked)}
-        submitting={submitting}
-        togglePortal={togglePortal}
-        menuRef={originRef}
-        providerName={Providers.MSTEAMS_NAME}
-        providerDescription={Providers.MSTEAMS_DESC}
-        providerLogo={<MSTeamsProviderLogo />}
-        connectButtonText={!isConnectClicked ? 'Connect' : 'Cancel'}
-        connectButtonIcon={!isConnectClicked ? <AddIcon /> : <CloseIcon />}
-        error={error?.message}
-      >
-        {(auth || isConnectClicked) && <MSTeamsPanel teamId={teamId} viewerRef={viewer} />}
-      </ProviderRow>
-      {auth &&
-        menuPortal(
-          <MSTeamsConfigMenu
-            menuProps={menuProps}
-            mutationProps={mutationProps}
-            providerId={auth.provider.id}
-          />
-        )}
-    </>
+    <ProviderRow
+      connected={!!auth}
+      onConnectClick={() => setConnectClicked(!isConnectClicked)}
+      submitting={submitting}
+      configMenu={
+        auth && <MSTeamsConfigMenu mutationProps={mutationProps} providerId={auth.provider.id} />
+      }
+      providerName={Providers.MSTEAMS_NAME}
+      providerDescription={Providers.MSTEAMS_DESC}
+      providerLogo={<MSTeamsProviderLogo />}
+      connectButtonText={!isConnectClicked ? 'Connect' : 'Cancel'}
+      connectButtonIcon={!isConnectClicked ? <AddIcon /> : <CloseIcon />}
+      error={error?.message}
+    >
+      {(auth || isConnectClicked) && <MSTeamsPanel teamId={teamId} viewerRef={viewer} />}
+    </ProviderRow>
   )
 }
 

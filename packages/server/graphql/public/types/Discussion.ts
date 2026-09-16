@@ -5,6 +5,7 @@ import {
   isAgendaItemsPhase,
   isDiscussPhase,
   isEstimatePhase,
+  isTeamHealthResultPhase,
   isTeamPromptResponsesPhase
 } from '../../meetingTypePredicates'
 import {augmentDBStage} from '../../resolvers'
@@ -63,6 +64,18 @@ const Discussion: DiscussionResolvers = {
         )
 
         return dbStage ? augmentDBStage(dbStage, meetingId, 'ESTIMATE', teamId) : null
+      }
+      case 'teamHealthQuestion': {
+        // the response stage & the result stage for a question share one discussion. The result
+        // stage is where the team actually discusses the category, so that's the stage returned
+        const phase = phases.find(isTeamHealthResultPhase)
+        if (!phase) {
+          return null
+        }
+        const {stages} = phase
+        const dbStage = stages.find((stage) => String(stage.questionId) === discussionTopicId)
+
+        return dbStage ? augmentDBStage(dbStage, meetingId, 'TEAM_HEALTH_RESULT', teamId) : null
       }
     }
 

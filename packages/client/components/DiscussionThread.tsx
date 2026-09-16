@@ -17,10 +17,12 @@ interface Props {
   queryRef: PreloadedQuery<DiscussionThreadQuery>
   header?: ReactNode
   emptyState?: ReactNode
+  autoFocus?: boolean
 }
 
 const DiscussionThread = (props: Props) => {
-  const {meetingContentRef, allowedThreadables, width, queryRef, header, emptyState} = props
+  const {meetingContentRef, allowedThreadables, width, queryRef, header, emptyState, autoFocus} =
+    props
   const {viewerId} = useAtmosphere()
   const isDrawer = !!width // hack to say this is in a poker meeting
   const ref = useRef<HTMLDivElement>(null)
@@ -113,6 +115,7 @@ const DiscussionThread = (props: Props) => {
         discussion={discussion}
         viewer={viewer}
         isCreatingPoll={isCreatingPoll}
+        autoFocus={autoFocus}
       />
     </div>
   )

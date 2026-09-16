@@ -2,7 +2,6 @@ import MeetingTeamHealth from '../../../database/types/MeetingTeamHealth'
 import TeamHealthIntroPhase from '../../../database/types/TeamHealthIntroPhase'
 import TeamHealthResponsePhase from '../../../database/types/TeamHealthResponsePhase'
 import TeamHealthResultPhase from '../../../database/types/TeamHealthResultPhase'
-import TeamHealthSubmittedPhase from '../../../database/types/TeamHealthSubmittedPhase'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import type {TeamHealthMeeting} from '../../../postgres/types/Meeting'
@@ -19,6 +18,10 @@ const safeCreateTeamHealth = async (
     name?: string
     meetingSeriesId?: number
     scheduledEndTime?: Date | null
+    // Set only when this meeting is one of several a multi-team group opens for the same
+    // occurrence, since they must all ask the same questions & the rotation breaks ties at
+    // random. Left undefined otherwise, so a lone meeting rotates its own.
+    questionIds?: number[]
   },
   dataLoader: DataLoaderWorker
 ) => {
@@ -40,19 +43,22 @@ const safeCreateTeamHealth = async (
   }
 
   // stages reference the immutable question by its raw id, one least-asked question per category
-  const questionIds = await rotateTeamHealthQuestionIds(questions, meetingSeriesId)
-  // intro -> response (one stage per question) -> submitted -> result (locked until reveal)
+  const questionIds =
+    input.questionIds ??
+    (await rotateTeamHealthQuestionIds(questions, meetingSeriesId ? [meetingSeriesId] : []))
+  // the response stage & the result stage for a question are two views of the same category, so
+  // they share one discussion thread and the team's comments carry across the reveal
+  const stageQuestions = questionIds.map((questionId) => ({
+    questionId,
+    discussionId: generateUID()
+  }))
+  // intro -> response (one stage per question) -> result (one stage per category), which is the
+  // waiting room until the meeting ends and the answers are revealed in place
   const phases = [
     new TeamHealthIntroPhase(),
-    new TeamHealthResponsePhase({questionIds}),
-    new TeamHealthSubmittedPhase(),
-    new TeamHealthResultPhase()
-  ] as [
-    TeamHealthIntroPhase,
-    TeamHealthResponsePhase,
-    TeamHealthSubmittedPhase,
-    TeamHealthResultPhase
-  ]
+    new TeamHealthResponsePhase({questions: stageQuestions}),
+    new TeamHealthResultPhase({questions: stageQuestions})
+  ] as [TeamHealthIntroPhase, TeamHealthResponsePhase, TeamHealthResultPhase]
   primePhases(phases)
 
   const meetingId = generateUID()
@@ -77,6 +83,18 @@ const safeCreateTeamHealth = async (
     // meeting already started
     return null
   }
+  await pg
+    .insertInto('Discussion')
+    .values(
+      stageQuestions.map(({questionId, discussionId}) => ({
+        id: discussionId,
+        teamId,
+        meetingId,
+        discussionTopicId: String(questionId),
+        discussionTopicType: 'teamHealthQuestion' as const
+      }))
+    )
+    .execute()
   return meeting
 }
 

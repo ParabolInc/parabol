@@ -5,31 +5,20 @@ import type {useGetUsedServiceTaskIds_phase$key} from '../__generated__/useGetUs
 
 const useGetUsedServiceTaskIds = (
   phaseRef: useGetUsedServiceTaskIds_phase$key | null | undefined
-) => {
+): ReadonlySet<string> => {
   return useMemo(() => {
-    const usedServiceTaskIds = new Set<string>()
-    if (!phaseRef) return usedServiceTaskIds
+    if (!phaseRef) return new Set<string>()
     const estimatePhase = readInlineData(
       graphql`
         fragment useGetUsedServiceTaskIds_phase on EstimatePhase @inline {
           stages {
-            taskId
-            task {
-              integrationHash
-            }
+            serviceTaskId
           }
         }
       `,
       phaseRef
     )
-    const {stages} = estimatePhase
-    stages.forEach((stage) => {
-      const {task, taskId} = stage
-      const serviceTaskId = task?.integrationHash ?? taskId
-      // a new serviceTaskId uniquely identifies an issue that doesn't exist in our system yet (integrationHash)
-      usedServiceTaskIds.add(serviceTaskId)
-    })
-    return usedServiceTaskIds
+    return new Set(estimatePhase.stages.map(({serviceTaskId}) => serviceTaskId))
   }, [phaseRef])
 }
 

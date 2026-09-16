@@ -3,22 +3,61 @@ import {commitMutation} from 'react-relay'
 import type {AddTeamMemberIntegrationAuthMutation as TAddTeamMemberIntegrationAuthMutation} from '../__generated__/AddTeamMemberIntegrationAuthMutation.graphql'
 import type {StandardMutation} from '../types/relayMutations'
 
+graphql`
+  fragment AddTeamMemberIntegrationAuthMutation_notification on AddTeamMemberIntegrationAuthSuccess {
+    teamMember {
+      ...useIsIntegrated_teamMember
+      ...GitLabProviderRowTeamMember
+      ...JiraServerProviderRowTeamMember
+      ...AzureDevOpsProviderRowTeamMember
+      ...GcalProviderRowTeamMember
+      ...LinearProviderRowTeamMember
+      services {
+        ...usePersistIntegrationSearchQueryMutation_service @relay(mask: false)
+      }
+      integrations {
+        ...MattermostProviderRowTeamMemberIntegrations
+        ...MSTeamsProviderRowTeamMemberIntegrations
+        gitlab {
+          auth {
+            isActive
+          }
+        }
+        linear {
+          auth {
+            isActive
+          }
+        }
+        gmeet {
+          isActive
+        }
+        zoom {
+          isActive
+        }
+        atlassian {
+          isActive
+          ...AtlassianProviderRowAtlassianIntegration
+        }
+        github {
+          ...GitHubProviderRowGitHubIntegration
+        }
+      }
+    }
+  }
+`
+
 const mutation = graphql`
   mutation AddTeamMemberIntegrationAuthMutation(
     $providerId: ID!
-    $service: IntegrationProviderServiceEnum
     $oauthCodeOrPat: ID
     $oauthVerifier: ID
     $teamId: ID!
-    $redirectUri: URL
   ) {
     addTeamMemberIntegrationAuth(
       providerId: $providerId
-      service: $service
       oauthCodeOrPat: $oauthCodeOrPat
       oauthVerifier: $oauthVerifier
       teamId: $teamId
-      redirectUri: $redirectUri
     ) {
       ... on ErrorPayload {
         error {
@@ -26,34 +65,7 @@ const mutation = graphql`
         }
       }
       ... on AddTeamMemberIntegrationAuthSuccess {
-        teamMember {
-          ...GitLabProviderRowTeamMember
-          ...ScopePhaseAreaGitLab_teamMember
-          ...JiraServerProviderRowTeamMember
-          ...AzureDevOpsProviderRowTeamMember
-          ...GcalProviderRowTeamMember
-          ...LinearProviderRowTeamMember
-          integrations {
-            ...MattermostProviderRowTeamMemberIntegrations
-            ...MSTeamsProviderRowTeamMemberIntegrations
-            gitlab {
-              auth {
-                isActive
-              }
-            }
-            linear {
-              auth {
-                isActive
-              }
-            }
-            gdrive {
-              isActive
-            }
-            zoom {
-              isActive
-            }
-          }
-        }
+        ...AddTeamMemberIntegrationAuthMutation_notification @relay(mask: false)
       }
     }
   }

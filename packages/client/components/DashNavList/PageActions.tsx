@@ -1,4 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type * as Y from 'yjs'
@@ -9,6 +10,7 @@ import {useArchivePageMutation} from '../../mutations/useArchivePageMutation'
 import {hasMinPageRole} from '../../shared/hasMinPageRole'
 import {createPageLinkElement} from '../../shared/tiptap/createPageLinkElement'
 import {providerManager} from '../../tiptap/providerManager'
+import {cn} from '../../ui/cn'
 import {Menu} from '../../ui/Menu/Menu'
 import {MenuContent} from '../../ui/Menu/MenuContent'
 import {MenuItem} from '../../ui/Menu/MenuItem'
@@ -42,6 +44,7 @@ export const PageActions = (props: Props) => {
   const [executeArchive] = useArchivePageMutation()
   const atmosphere = useAtmosphere()
   const canEdit = hasMinPageRole('editor', viewerAccess)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const archivePage = () => {
     executeArchive({
       variables: {pageId, action: 'archive'},
@@ -101,10 +104,12 @@ export const PageActions = (props: Props) => {
   }
 
   return (
-    <LeftNavItemButtons>
+    <LeftNavItemButtons isMenuOpen={isMenuOpen}>
       {viewerAccess === 'owner' && (
         <div className='flex size-6 items-center justify-center rounded-sm hover:bg-surface-nav-button-hover'>
           <Menu
+            open={isMenuOpen}
+            onOpenChange={setIsMenuOpen}
             trigger={
               <div>
                 <Tooltip>
@@ -112,7 +117,10 @@ export const PageActions = (props: Props) => {
                     <button
                       type='button'
                       aria-label={'More page actions'}
-                      className='hidden size-5 cursor-pointer items-center justify-center group-hover:flex'
+                      className={cn(
+                        'hidden size-5 cursor-pointer items-center justify-center group-hover:flex',
+                        isMenuOpen && 'flex'
+                      )}
                     >
                       <MoreVertIcon className='size-5' />
                     </button>

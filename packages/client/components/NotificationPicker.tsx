@@ -57,6 +57,9 @@ const typePicker = {
   ),
   PAGE_ACCESS_REQUESTED: lazyPreload(
     () => import(/* webpackChunkName: 'PageAccessRequested' */ './PageAccessRequested')
+  ),
+  TEAM_HEALTH_RESPONSE_DUE: lazyPreload(
+    () => import(/* webpackChunkName: 'TeamHealthResponseDue' */ './TeamHealthResponseDue')
   )
 }
 
@@ -88,6 +91,7 @@ const NotificationPicker = (props: Props) => {
         ...RequestToJoinOrgNotification_notification @alias
         ...PageAccessGranted_notification @alias
         ...PageAccessRequested_notification @alias
+        ...TeamHealthResponseDue_notification @alias
       }
     `,
     notificationRef
@@ -110,7 +114,8 @@ const NotificationPicker = (props: Props) => {
       PromptToJoinOrgNotification_notification: promptToJoinOrg,
       RequestToJoinOrgNotification_notification: requestToJoinOrg,
       PageAccessGranted_notification: pageAccessGranted,
-      PageAccessRequested_notification: pageAccessRequested
+      PageAccessRequested_notification: pageAccessRequested,
+      TeamHealthResponseDue_notification: teamHealthResponseDue
     } = notification
     if (discussionMentioned)
       return <typePicker.DISCUSSION_MENTIONED notification={discussionMentioned} />
@@ -136,6 +141,8 @@ const NotificationPicker = (props: Props) => {
       return <typePicker.PAGE_ACCESS_GRANTED notification={pageAccessGranted} />
     if (pageAccessRequested)
       return <typePicker.PAGE_ACCESS_REQUESTED notification={pageAccessRequested} />
+    if (teamHealthResponseDue)
+      return <typePicker.TEAM_HEALTH_RESPONSE_DUE notification={teamHealthResponseDue} />
     return null
   }
   return <Suspense fallback={''}>{renderNotification()}</Suspense>

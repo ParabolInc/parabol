@@ -13,7 +13,9 @@ export const Checkbox = forwardRadix<typeof CheckboxPrimitive.Root>(
       <CheckboxPrimitive.Root
         ref={ref}
         className={cn(
-          'group flex size-4 cursor-pointer appearance-none items-center justify-center rounded-xs border-hairline-strong bg-surface-input outline-none data-[state=unchecked]:border-2',
+          'group flex size-4 cursor-pointer appearance-none items-center justify-center rounded-xs border-hairline-control bg-surface-input outline-none data-[state=unchecked]:border-2',
+          // a Tooltip/Popover trigger overwrites data-state, so the border can't ride on it alone
+          checked === false && 'border-2',
           className
         )}
         checked={checked}

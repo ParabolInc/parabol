@@ -16,7 +16,7 @@ const updateUserTheme: MutationResolvers['updateUserTheme'] = async (
   const operationId = dataLoader.share()
   const subOptions = {operationId}
   const data = {viewerId}
-  publish(SubscriptionChannel.NOTIFICATION, viewerId, 'UpdateUserThemePayload', data, subOptions)
+  publish(SubscriptionChannel.NOTIFICATION, viewerId, 'UpdateUserThemeSuccess', data, subOptions)
 
   return data
 }

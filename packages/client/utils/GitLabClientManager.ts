@@ -35,7 +35,7 @@ class GitLabClientManager {
       submitMutation()
       AddTeamMemberIntegrationAuthMutation(
         atmosphere,
-        {providerId, oauthCodeOrPat: code, teamId, redirectUri},
+        {providerId, oauthCodeOrPat: code, teamId},
         {onError, onCompleted}
       )
       popup && popup.close()

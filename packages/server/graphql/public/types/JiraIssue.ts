@@ -8,6 +8,7 @@ export type JiraIssueSource = {
   issueKey: string
   teamId: string
   userId: string
+  summary: string
   description?: string
   issuetype: {
     iconUrl: string
@@ -46,6 +47,8 @@ const JiraIssue: JiraIssueResolvers = {
         }
       : null
   },
+  service: () => 'jira' as const,
+  title: ({summary}) => summary,
   description: ({description}) => (description ? JSON.stringify(description) : ''),
   extraFields: async ({extraFields}) => extraFields || []
 }

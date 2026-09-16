@@ -1,21 +1,14 @@
 import {createAvatar} from '@dicebear/core'
 import * as initials from '@dicebear/initials'
 import sharp from 'sharp'
+import {initials as getInitials} from '../../../../../client/shared/initials'
 import {themeBackgroundColors} from '../../../../../client/shared/themeBackgroundColors'
 import getFileStoreManager from '../../../../fileStorage/getFileStoreManager'
 export const generateIdenticon = async (userId: string, name: string) => {
-  const letters = 'abcdefghijklmnopqrstuvwxyz'
-  // 500 color value from our theme
-
-  const seed =
-    name
-      .toLowerCase()
-      .split('')
-      .filter((letter) => letters.includes(letter))
-      .slice(0, 2)
-      .join('') || 'pa'
+  const seed = getInitials(name, 'pa').toLowerCase()
   const avatar = createAvatar(initials, {
     seed,
+    // 500 color value from our theme
     backgroundColor: themeBackgroundColors,
     fontFamily: ['IBM Plex Sans']
   })

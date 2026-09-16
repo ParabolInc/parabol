@@ -1,11 +1,13 @@
 import graphql from 'babel-plugin-relay/macro'
+import {useState} from 'react'
 import CopyToClipboard from 'react-copy-to-clipboard'
 import {useFragment} from 'react-relay'
 import {Link} from '~/ui/icons'
+import {Tooltip} from '~/ui/Tooltip/Tooltip'
+import {TooltipContent} from '~/ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '~/ui/Tooltip/TooltipTrigger'
 import type {GitHubObjectCard_result$key} from '../../../__generated__/GitHubObjectCard_result.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import {MenuPosition} from '../../../hooks/useCoords'
-import useTooltip from '../../../hooks/useTooltip'
 import githubIssueClosed from '../../../styles/theme/images/graphics/github-issue-closed.svg'
 import githubIssueOpen from '../../../styles/theme/images/graphics/github-issue-open.svg'
 import gitHubMerged from '../../../styles/theme/images/graphics/github-merged.svg'
@@ -13,7 +15,6 @@ import githubPRClosed from '../../../styles/theme/images/graphics/github-pr-clos
 import githubPRDraft from '../../../styles/theme/images/graphics/github-pr-draft.svg'
 import githubPROpen from '../../../styles/theme/images/graphics/github-pr-open.svg'
 import relativeDate from '../../../utils/date/relativeDate'
-import {mergeRefs} from '../../../utils/react/mergeRefs'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import GitHubSVG from '../../GitHubSVG'
 
@@ -76,16 +77,8 @@ const GitHubObjectCard = (props: Props) => {
 
   const atmosphere = useAtmosphere()
 
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.UPPER_CENTER
-  )
-
-  const {
-    tooltipPortal: copiedTooltipPortal,
-    openTooltip: openCopiedTooltip,
-    closeTooltip: closeCopiedTooltip,
-    originRef: copiedTooltipRef
-  } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_CENTER)
+  const [isHovered, setIsHovered] = useState(false)
+  const [isCopied, setIsCopied] = useState(false)
 
   const trackLinkClick = () => {
     SendClientSideEvent(atmosphere, 'Inspiration Drawer Card Link Clicked', {
@@ -100,10 +93,10 @@ const GitHubObjectCard = (props: Props) => {
   }
 
   const handleCopy = () => {
-    openCopiedTooltip()
+    setIsCopied(true)
     trackCopy()
     setTimeout(() => {
-      closeCopiedTooltip()
+      setIsCopied(false)
     }, 2000)
   }
 
@@ -165,18 +158,18 @@ const GitHubObjectCard = (props: Props) => {
             {repoName}
           </a>
         </div>
-        <CopyToClipboard text={url} onCopy={handleCopy}>
-          <div
-            className='h-6 rounded-md bg-transparent p-0 text-fg-muted hover:bg-surface-hover'
-            onMouseEnter={openTooltip}
-            onMouseLeave={closeTooltip}
-            ref={mergeRefs(originRef, copiedTooltipRef)}
-          >
-            <Link className='h-6 w-6 cursor-pointer p-0.5' />
-          </div>
-        </CopyToClipboard>
-        {tooltipPortal('Copy link')}
-        {copiedTooltipPortal('Copied!')}
+        <Tooltip open={isCopied || isHovered} onOpenChange={setIsHovered}>
+          <CopyToClipboard text={url} onCopy={handleCopy}>
+            <TooltipTrigger asChild>
+              <div className='h-6 rounded-md bg-transparent p-0 text-fg-muted hover:bg-surface-hover'>
+                <Link className='h-6 w-6 cursor-pointer p-0.5' />
+              </div>
+            </TooltipTrigger>
+          </CopyToClipboard>
+          <TooltipContent side={isCopied ? 'top' : 'bottom'}>
+            {isCopied ? 'Copied!' : 'Copy link'}
+          </TooltipContent>
+        </Tooltip>
       </div>
     </div>
   )

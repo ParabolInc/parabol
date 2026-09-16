@@ -1,4 +1,4 @@
-import {datadogRum} from '@datadog/browser-rum'
+import {datadogLogs} from '@datadog/browser-logs'
 import graphql from 'babel-plugin-relay/macro'
 import {AnimatePresence} from 'motion/react'
 import {type RefObject, useCallback, useEffect, useMemo, useRef, useState} from 'react'
@@ -229,7 +229,9 @@ const GroupingKanban = (props: Props) => {
       container[promptId] = container[promptId] ?? []
       container[promptId]!.push(group)
       if (!reflections) {
-        datadogRum.addError(new Error('Invalid invariant: reflectionGroup.reflections is null'))
+        datadogLogs.logger.error('Invalid invariant: reflectionGroup.reflections is null', {
+          reflectionGroupId: group.id
+        })
       } else if (!isEditing && reflections.some((reflection) => reflection.isEditing)) {
         isEditing = true
       }

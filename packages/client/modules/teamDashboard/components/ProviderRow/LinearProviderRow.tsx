@@ -3,8 +3,6 @@ import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import type {LinearProviderRow_viewer$key} from '../../../../__generated__/LinearProviderRow_viewer.graphql'
 import LinearProviderLogo from '../../../../components/LinearProviderLogo'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useMenu from '../../../../hooks/useMenu'
 import useMutationProps, {type MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {Providers} from '../../../../types/constEnums'
 import LinearClientManager from '../../../../utils/LinearClientManager'
@@ -64,7 +62,6 @@ const LinearProviderRow = (props: Props) => {
   const {linear} = integrations
   const provider = linear?.cloudProvider
   const accessToken = linear?.auth?.accessToken ?? undefined
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
 
   if (!provider) {
     return null
@@ -75,22 +72,16 @@ const LinearProviderRow = (props: Props) => {
   }
 
   return (
-    <>
-      <ProviderRow
-        connected={!!accessToken}
-        onConnectClick={openOAuth}
-        submitting={submitting}
-        togglePortal={togglePortal}
-        menuRef={originRef}
-        providerName={Providers.LINEAR_NAME}
-        providerDescription={Providers.LINEAR_DESC}
-        providerLogo={<LinearProviderLogo />}
-        error={error?.message}
-      />
-      {menuPortal(
-        <LinearConfigMenu menuProps={menuProps} mutationProps={mutationProps} teamId={teamId} />
-      )}
-    </>
+    <ProviderRow
+      connected={!!accessToken}
+      onConnectClick={openOAuth}
+      submitting={submitting}
+      configMenu={<LinearConfigMenu mutationProps={mutationProps} teamId={teamId} />}
+      providerName={Providers.LINEAR_NAME}
+      providerDescription={Providers.LINEAR_DESC}
+      providerLogo={<LinearProviderLogo />}
+      error={error?.message}
+    />
   )
 }
 

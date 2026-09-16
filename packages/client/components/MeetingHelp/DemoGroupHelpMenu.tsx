@@ -1,18 +1,19 @@
-import {forwardRef} from 'react'
 import useInterval from '../../hooks/useInterval'
 import DelayedCopy from './DelayedCopy'
 import HelpMenuContent from './HelpMenuContent'
 import HelpMenuHeader from './HelpMenuHeader'
 
 let permShow = 0
-type Props = {}
+interface Props {
+  onClose: () => void
+}
 
-const DemoGroupHelpMenu = forwardRef((_props: Props, ref: any) => {
-  const {closePortal} = ref
+const DemoGroupHelpMenu = (props: Props) => {
+  const {onClose} = props
   const staggerShow = useInterval(2000, 2)
   if (staggerShow > permShow) permShow = staggerShow
   return (
-    <HelpMenuContent closePortal={closePortal}>
+    <HelpMenuContent onClose={onClose}>
       <HelpMenuHeader>Grouping Time!</HelpMenuHeader>
       <DelayedCopy show={permShow} thresh={1}>
         Join in by grouping cards and perfecting the titles.
@@ -22,6 +23,6 @@ const DemoGroupHelpMenu = forwardRef((_props: Props, ref: any) => {
       </DelayedCopy>
     </HelpMenuContent>
   )
-})
+}
 
 export default DemoGroupHelpMenu

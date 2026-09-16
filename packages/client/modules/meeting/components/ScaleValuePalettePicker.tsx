@@ -1,24 +1,23 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import Menu from '~/components/Menu'
 import PaletteColor from '~/components/PaletteColor/PaletteColor'
 import UpdatePokerTemplateScaleValueMutation from '~/mutations/UpdatePokerTemplateScaleValueMutation'
 import palettePickerOptions from '~/styles/palettePickerOptions'
 import type {ScaleValuePalettePicker_scale$key} from '../../../__generated__/ScaleValuePalettePicker_scale.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import type {MenuProps} from '../../../hooks/useMenu'
 import useMutationProps from '../../../hooks/useMutationProps'
+import {MenuContent} from '../../../ui/Menu/MenuContent'
 
 interface Props {
   scale: ScaleValuePalettePicker_scale$key
   scaleValueLabel: string
   scaleValueColor: string
-  menuProps: MenuProps
+  onClose: () => void
   setScaleValueColor?: (scaleValueColor: string) => void
 }
 
 const ScaleValuePalettePicker = (props: Props) => {
-  const {scaleValueLabel, scaleValueColor, scale: scaleRef, menuProps, setScaleValueColor} = props
+  const {scaleValueLabel, scaleValueColor, scale: scaleRef, onClose, setScaleValueColor} = props
   const scale = useFragment(
     graphql`
       fragment ScaleValuePalettePicker_scale on TemplateScale {
@@ -32,7 +31,6 @@ const ScaleValuePalettePicker = (props: Props) => {
     scaleRef
   )
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
-  const {closePortal} = menuProps
   const atmosphere = useAtmosphere()
   const allTakenColors = scale.values.map((scaleValue) => scaleValue.color)
   const handleClick = (newColor: string) => {
@@ -52,11 +50,11 @@ const ScaleValuePalettePicker = (props: Props) => {
       {scaleId, oldScaleValue, newScaleValue},
       {onError, onCompleted}
     )
-    closePortal()
+    onClose()
   }
 
   return (
-    <Menu ariaLabel='Pick a group color' {...menuProps} className='w-[214px] min-w-[214px] p-[5px]'>
+    <MenuContent align='start' className='w-[214px] min-w-[214px] p-[5px]'>
       <ul className='m-0 flex list-none flex-wrap justify-center p-0'>
         {palettePickerOptions.map((color) => {
           return (
@@ -70,7 +68,7 @@ const ScaleValuePalettePicker = (props: Props) => {
           )
         })}
       </ul>
-    </Menu>
+    </MenuContent>
   )
 }
 

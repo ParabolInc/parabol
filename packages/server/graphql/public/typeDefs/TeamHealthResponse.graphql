@@ -8,12 +8,15 @@ type TeamHealthResponse {
   id: ID!
 
   """
-  The 1-5 Likert score the user gave. Null if the user skipped the question
+  The 1-5 Likert score the user gave. Only readable by the response's author, so a score can never
+  be attributed to a teammate. The team reads the spread through TeamHealthResultStage.spreadScores
   """
   score: Int
 
   """
-  A freeform comment the user left with their answer, paraphrased ot preserve anonymity
+  The comment the team reads: an anonymous comment rewritten by AI to strip the author's voice, or
+  a signed comment verbatim. Null while an anonymous comment is still being rewritten, so a raw
+  comment can never be read in the author's own words
   """
   commentParaphrased: String
 
@@ -36,6 +39,12 @@ type TeamHealthResponse {
   true if the viewer authored this response. The author is otherwise kept private
   """
   isViewerCreator: Boolean!
+
+  """
+  The teammate who wrote the comment, so it can be attributed to them. Only set when they signed
+  it; null for an anonymous comment or a response with no comment
+  """
+  commentAuthor: User
   createdAt: DateTime!
   updatedAt: DateTime!
 }

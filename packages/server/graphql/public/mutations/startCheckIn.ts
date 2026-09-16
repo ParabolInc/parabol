@@ -1,4 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import MeetingAction from '../../../database/types/MeetingAction'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
@@ -13,6 +14,8 @@ import createNewMeetingPhases from '../../mutations/helpers/createNewMeetingPhas
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import type {MutationResolvers} from '../resolverTypes'
+import getNextFacilitatorUserId from './helpers/getNextFacilitatorUserId'
+import setFacilitatorRotation from './helpers/setFacilitatorRotation'
 import {createMeetingMember} from './joinMeeting'
 
 const startCheckIn: MutationResolvers['startCheckIn'] = async (
@@ -47,13 +50,14 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
     dataLoader
   )
 
+  const {facilitatorUserId, rotation} = await getNextFacilitatorUserId(teamId, viewerId, dataLoader)
   const meeting = new MeetingAction({
     id: meetingId,
     teamId,
     name: name ?? `Check-in #${meetingCount + 1}`,
     meetingCount,
     phases,
-    facilitatorUserId: viewerId
+    facilitatorUserId
   }) as CheckInMeeting
   try {
     await pg.transaction().execute(async (pg) => {
@@ -67,13 +71,13 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
     return {error: {message: 'Meeting already started'}}
   }
   dataLoader.clearAll('newMeetings')
+  if (rotation) await setFacilitatorRotation(teamId, rotation, dataLoader)
   const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
   const agendaItemIds = agendaItems.map(({id}) => id)
-  const meetingMember = createMeetingMember(meeting, {
-    userId: viewerId,
-    teamId,
-    isSpectatingPoker: false
-  })
+  const teamMember = await dataLoader
+    .get('teamMembers')
+    .loadNonNull(toTeamMemberId(teamId, viewerId))
+  const meetingMember = createMeetingMember(meeting, teamMember)
   await Promise.all([
     pg
       .with('TeamUpdates', (qb) =>

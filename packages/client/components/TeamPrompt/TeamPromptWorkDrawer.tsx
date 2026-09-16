@@ -4,10 +4,9 @@ import {useFragment} from 'react-relay'
 import type {TeamPromptWorkDrawer_meeting$key} from '../../__generated__/TeamPromptWorkDrawer_meeting.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useSessionStorageState from '../../hooks/useSessionStorageState'
+import {getConnectProvider} from '../../integrations/platform/findIntegrationService'
 import gcalLogo from '../../styles/theme/images/graphics/google-calendar.svg'
 import {cn} from '../../ui/cn'
-import AtlassianClientManager from '../../utils/AtlassianClientManager'
-import GitHubClientManager from '../../utils/GitHubClientManager'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import GitHubSVG from '../GitHubSVG'
 import GitLabSVG from '../GitLabSVG'
@@ -51,6 +50,9 @@ const TeamPromptWorkDrawer = (props: Props) => {
         viewerMeetingMember {
           teamMember {
             teamId
+            services {
+              ...findIntegrationService_cloudProvider @relay(mask: false)
+            }
             integrations {
               jiraServer {
                 sharedProviders {
@@ -89,6 +91,9 @@ const TeamPromptWorkDrawer = (props: Props) => {
   const hasGCal = !!meeting.viewerMeetingMember?.teamMember?.integrations.gcal?.cloudProvider?.id
   const hasGitLab =
     !!meeting.viewerMeetingMember?.teamMember?.integrations.gitlab?.cloudProvider?.id
+  const services = meeting.viewerMeetingMember?.teamMember?.services ?? []
+  const hasGitHub = !!getConnectProvider(services, 'github')
+  const hasJira = !!getConnectProvider(services, 'jira')
 
   useEffect(() => {
     SendClientSideEvent(atmosphere, 'Inspiration Drawer Impression', {
@@ -114,7 +119,7 @@ const TeamPromptWorkDrawer = (props: Props) => {
           }
         ]
       : []),
-    ...(GitHubClientManager.isAvailable
+    ...(hasGitHub
       ? [
           {
             icon: <GitHubSVG className='dark:[&_path]:fill-white' />,
@@ -134,7 +139,7 @@ const TeamPromptWorkDrawer = (props: Props) => {
           }
         ]
       : []),
-    ...(AtlassianClientManager.isAvailable
+    ...(hasJira
       ? [
           {
             icon: <JiraSVG />,

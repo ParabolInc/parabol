@@ -1,10 +1,9 @@
 import DataLoader from 'dataloader'
+import fetchJiraServerProjects from '../integrations/jiraServer/fetchJiraServerProjects'
 import JiraServerRestManager, {
   type JiraServerFieldType,
   type JiraServerRestProject
 } from '../integrations/jiraServer/JiraServerRestManager'
-import {selectJiraServerDimensionFieldMap} from '../postgres/select'
-import type {JiraServerDimensionFieldMap} from '../postgres/types'
 import type {IntegrationProviderJiraServer} from '../postgres/types/IntegrationProvider'
 import logError from '../utils/logError'
 import type RootDataLoader from './RootDataLoader'
@@ -22,13 +21,6 @@ export interface JiraServerIssueTypeKey {
   providerId: number
   issueType: string
   projectId: string
-}
-
-export interface JiraServerDimensionFieldKey {
-  providerId: number
-  teamId: string
-  projectId: string
-  dimensionName: string
 }
 
 export interface JiraServerIssue {
@@ -107,26 +99,8 @@ export const allJiraServerProjects = (parent: RootDataLoader) => {
   return new DataLoader<TeamUserKey, JiraServerProject[], string>(async (keys) => {
     return Promise.all(
       keys.map(async ({userId, teamId}) => {
-        const auth = await parent
-          .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
-          .load({service: 'jiraServer', teamId, userId})
-        if (!auth) return []
-        const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
-
-        const manager = new JiraServerRestManager(auth, provider as IntegrationProviderJiraServer)
-        const projects = await manager.getProjects()
-        if (projects instanceof Error) {
-          return []
-        }
-        return projects
-          .filter((project) => !project.archived)
-          .map((project) => ({
-            ...project,
-            service: 'jiraServer' as const,
-            providerId: provider.id,
-            userId,
-            teamId
-          }))
+        const projects = await fetchJiraServerProjects({dataLoader: parent, teamId, userId})
+        return projects instanceof Error ? [] : projects
       })
     )
   })
@@ -156,39 +130,5 @@ export const jiraServerFieldTypes = (parent: RootDataLoader) =>
       ...parent.dataLoaderOptions,
       cacheKeyFn: ({teamId, userId, projectId, issueType}) =>
         `${teamId}:${userId}:${projectId}:${issueType}`
-    }
-  )
-
-export const jiraServerDimensionFieldMap = (parent: RootDataLoader) =>
-  new DataLoader<
-    {
-      teamId: string
-      projectId: string
-      dimensionName: string
-      issueType: string
-      providerId: number
-    },
-    JiraServerDimensionFieldMap | null,
-    string
-  >(
-    async (keys) => {
-      return Promise.all(
-        keys.map(async (params) => {
-          const {teamId, projectId, dimensionName, issueType, providerId} = params
-          const res = await selectJiraServerDimensionFieldMap()
-            .where('teamId', '=', teamId)
-            .where('providerId', '=', providerId)
-            .where('projectId', '=', projectId)
-            .where('issueType', '=', issueType)
-            .where('dimensionName', '=', dimensionName)
-            .executeTakeFirst()
-          return res || null
-        })
-      )
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: ({providerId, teamId, projectId, issueType, dimensionName}) =>
-        `${providerId}:${teamId}:${projectId}:${issueType}:${dimensionName}`
     }
   )

@@ -1,23 +1,19 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useMemo, useState} from 'react'
+import {useMemo} from 'react'
 import {type PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import type {TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery} from '~/__generated__/TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery.graphql'
 import {EmptyDropdownMenuItemLabel} from '~/components/EmptyDropdownMenuItemLabel'
-import {SearchMenuItem} from '~/components/SearchMenuItem'
-import useEventCallback from '~/hooks/useEventCallback'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
 import type {TaskFooterTeamAssigneeMenu_task$key} from '../../../../__generated__/TaskFooterTeamAssigneeMenu_task.graphql'
 import type {TaskFooterTeamAssigneeMenuQuery} from '../../../../__generated__/TaskFooterTeamAssigneeMenuQuery.graphql'
 import DropdownMenuLabel from '../../../../components/DropdownMenuLabel'
-import Menu from '../../../../components/Menu'
-import MenuItem from '../../../../components/MenuItem'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import type {MenuProps} from '../../../../hooks/useMenu'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import ChangeTaskTeamMutation from '../../../../mutations/ChangeTaskTeamMutation'
+import {MenuItem} from '../../../../ui/Menu/MenuItem'
+import {MenuSearch} from '../../../../ui/Menu/MenuSearch'
 import {hasJiraScopes} from '../../../../utils/atlassianScopes'
-import TaskFooterTeamAssigneeAddIntegrationDialog from './TaskFooterTeamAssigneeAddIntegrationDialog'
 
 const query = graphql`
   query TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery($teamId: ID!) {
@@ -40,10 +36,16 @@ const query = graphql`
   }
 `
 
+export type PendingTeamAssignment = {
+  id: string
+  name: string
+  serviceName: string
+}
+
 interface Props {
-  menuProps: MenuProps
   queryRef: PreloadedQuery<TaskFooterTeamAssigneeMenuQuery>
   task: TaskFooterTeamAssigneeMenu_task$key
+  onRequestIntegration: (pending: PendingTeamAssignment) => void
 }
 
 const gqlQuery = graphql`
@@ -62,11 +64,10 @@ const gqlQuery = graphql`
 `
 
 const TaskFooterTeamAssigneeMenu = (props: Props) => {
-  const {menuProps, task: taskRef, queryRef} = props
+  const {task: taskRef, queryRef, onRequestIntegration} = props
   const data = usePreloadedQuery<TaskFooterTeamAssigneeMenuQuery>(gqlQuery, queryRef)
   const {viewer} = data
 
-  const {closePortal: closeTeamAssigneeMenu} = menuProps
   const {userIds, teamIds} = useQueryParameterParser(viewer.id)
 
   const task = useFragment(
@@ -100,59 +101,30 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
     }
     return teams
   }, [teamIds, userIds])
-  const taskTeamIdx = useMemo(
-    () => assignableTeams.findIndex(({id}) => id === teamId) + 1,
-    [teamId, assignableTeams]
-  )
 
   const atmosphere = useAtmosphere()
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
 
-  const onDialogClose = useEventCallback(() => {
-    closeTeamAssigneeMenu()
-  })
+  const handleTaskUpdate = (nextTeam: {id: string; name: string}) => async () => {
+    if (submitting || teamId === nextTeam.id) return
+    if (isGitHubTask || isJiraTask) {
+      const result =
+        await atmosphere.fetchQuery<TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery>(query, {
+          teamId: nextTeam.id
+        })
+      const safeRes = result instanceof Error ? undefined : result
+      const {github, atlassian} = safeRes?.viewer?.teamMember?.integrations ?? {}
 
-  const [isAddIntegrationOpen, setIsAddIntegrationOpen] = useState(false)
-  const [newTeam, setNewTeam] = useState({id: '', name: ''})
-
-  const handleAddIntegrationConfirmed = () => {
-    setIsAddIntegrationOpen(false)
-    onDialogClose()
-    if (!newTeam.id) return
-
-    submitMutation()
-    ChangeTaskTeamMutation(atmosphere, {taskId, teamId: newTeam.id}, {onError, onCompleted})
-    setNewTeam({id: '', name: ''})
-    closeTeamAssigneeMenu()
-  }
-  const handleClose = () => {
-    setIsAddIntegrationOpen(false)
-    closeTeamAssigneeMenu()
-  }
-
-  const handleTaskUpdate = (nextTeam: typeof newTeam) => async () => {
-    if (!submitting && teamId !== nextTeam.id) {
-      if (isGitHubTask || isJiraTask) {
-        const result =
-          await atmosphere.fetchQuery<TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery>(query, {
-            teamId: nextTeam.id
-          })
-        const safeRes = result instanceof Error ? undefined : result
-        const {github, atlassian} = safeRes?.viewer?.teamMember?.integrations ?? {}
-
-        if (
-          (isGitHubTask && !github?.isActive) ||
-          (isJiraTask && !(atlassian?.isActive && hasJiraScopes(atlassian?.scope)))
-        ) {
-          setNewTeam(nextTeam)
-          setIsAddIntegrationOpen(true)
-          return
-        }
+      if (
+        (isGitHubTask && !github?.isActive) ||
+        (isJiraTask && !(atlassian?.isActive && hasJiraScopes(atlassian?.scope)))
+      ) {
+        onRequestIntegration({...nextTeam, serviceName: isGitHubTask ? 'GitHub' : 'Jira'})
+        return
       }
-      submitMutation()
-      ChangeTaskTeamMutation(atmosphere, {taskId, teamId: nextTeam.id}, {onError, onCompleted})
-      closeTeamAssigneeMenu()
     }
+    submitMutation()
+    ChangeTaskTeamMutation(atmosphere, {taskId, teamId: nextTeam.id}, {onError, onCompleted})
   }
 
   const {
@@ -162,39 +134,22 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
   } = useSearchFilter(assignableTeams, (team) => team.name)
 
   return (
-    <Menu
-      keepParentFocus
-      {...menuProps}
-      defaultActiveIdx={taskTeamIdx}
-      ariaLabel={'Assign this task to another team'}
-    >
+    <>
       <DropdownMenuLabel>Move to:</DropdownMenuLabel>
       {assignableTeams.length > 5 && (
-        <SearchMenuItem placeholder='Search teams' onChange={onQueryChange} value={searchQuery} />
+        <MenuSearch placeholder='Search teams' onChange={onQueryChange} value={searchQuery} />
       )}
-      {query && matchedAssignableTeams.length === 0 && (
+      {matchedAssignableTeams.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>No teams found!</EmptyDropdownMenuItemLabel>
       )}
       {matchedAssignableTeams.map((team) => {
         return (
-          <MenuItem
-            key={team.id}
-            label={team.name}
-            onClick={handleTaskUpdate(team)}
-            noCloseOnClick
-          />
+          <MenuItem key={team.id} onClick={handleTaskUpdate(team)}>
+            {team.name}
+          </MenuItem>
         )
       })}
-      {(isGitHubTask || isJiraTask) && (
-        <TaskFooterTeamAssigneeAddIntegrationDialog
-          isOpen={isAddIntegrationOpen}
-          onClose={handleClose}
-          onConfirm={handleAddIntegrationConfirmed}
-          serviceName={isGitHubTask ? 'GitHub' : 'Jira'}
-          teamName={newTeam.name}
-        />
-      )}
-    </Menu>
+    </>
   )
 }
 

@@ -1,8 +1,9 @@
 import ms from 'ms'
+import {useState} from 'react'
 import {type DayModifiers, DayPicker} from 'react-day-picker'
 import {Event} from '~/ui/icons'
-import {MenuPosition} from '../hooks/useCoords'
-import useMenu from '../hooks/useMenu'
+import {Menu} from '../ui/Menu/Menu'
+import {MenuContent} from '../ui/Menu/MenuContent'
 import {shortDays, shortMonths} from '../utils/makeDateString'
 import roundDateToNearestHalfHour from '../utils/roundDateToNearestHalfHour'
 import DropdownMenuToggle from './DropdownMenuToggle'
@@ -27,15 +28,7 @@ const StageTimerModalEndTimeDate = (props: Props) => {
   const dayStr = formatDay(endTime)
 
   const now = new Date()
-  const {
-    menuPortal,
-    togglePortal,
-    menuProps: endTimeMenuProps,
-    originRef
-  } = useMenu<HTMLDivElement>(MenuPosition.LOWER_LEFT, {
-    id: 'StageTimerEndTimePicker',
-    isDropdown: true
-  })
+  const [isOpen, setIsOpen] = useState(false)
   const handleDayClick = (day: Date, {disabled, selected}: DayModifiers) => {
     if (disabled || selected) return
     const nextDate = new Date(endTime)
@@ -46,30 +39,35 @@ const StageTimerModalEndTimeDate = (props: Props) => {
       nextDate.setHours(roundedDate.getHours() + 1, roundedDate.getMinutes())
     }
     setEndTime(nextDate)
-    endTimeMenuProps.closePortal()
+    setIsOpen(false)
   }
 
   return (
     <>
       <Event className='text-fg-secondary' />
-      <DropdownMenuToggle
-        className='min-w-[160px] py-1 pr-0 pl-2 text-[14px]'
-        defaultText={dayStr}
-        onClick={togglePortal}
-        ref={originRef}
-        flat
-        size='small'
-      />
-      {menuPortal(
-        <DayPicker
-          disabled={{before: now}}
-          fromMonth={now}
-          defaultMonth={endTime}
-          onDayClick={handleDayClick}
-          selected={endTime}
-          toMonth={NEXT_YEAR}
-        />
-      )}
+      <Menu
+        open={isOpen}
+        onOpenChange={setIsOpen}
+        trigger={
+          <DropdownMenuToggle
+            className='min-w-[160px] py-1 pr-0 pl-2 text-[14px]'
+            defaultText={dayStr}
+            flat
+            size='small'
+          />
+        }
+      >
+        <MenuContent align='start' className='max-h-none w-auto max-w-none p-2'>
+          <DayPicker
+            disabled={{before: now}}
+            fromMonth={now}
+            defaultMonth={endTime}
+            onDayClick={handleDayClick}
+            selected={endTime}
+            toMonth={NEXT_YEAR}
+          />
+        </MenuContent>
+      </Menu>
     </>
   )
 }

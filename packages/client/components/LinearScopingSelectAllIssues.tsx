@@ -14,7 +14,7 @@ import Checkbox from './Checkbox'
 interface Props {
   meetingId: string
   issuesRef: LinearScopingSelectAllIssues_issues$key
-  usedServiceTaskIds: Set<string>
+  usedServiceTaskIds: ReadonlySet<string>
 }
 
 const LinearScopingSelectAllIssues = (props: Props) => {
@@ -40,10 +40,9 @@ const LinearScopingSelectAllIssues = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting, error} = useMutationProps()
-  const serviceTaskIds = issues.map((issue) => {
-    const repoId = LinearProjectId.join(issue.team.id, issue.project?.id)
-    return LinearIssueId.join(repoId, issue.id)
-  })
+  const getServiceTaskId = (issue: (typeof issues)[number]) =>
+    LinearIssueId.join(LinearProjectId.join(issue.team.id, issue.project?.id), issue.id)
+  const serviceTaskIds = issues.map(getServiceTaskId)
   const [unusedServiceTaskIds, allSelected] = useUnusedRecords(serviceTaskIds, usedServiceTaskIds)
   const availableCountToAdd = Threshold.MAX_POKER_STORIES - usedServiceTaskIds.size
   const onClick = () => {
@@ -66,10 +65,7 @@ const LinearScopingSelectAllIssues = (props: Props) => {
       updates
     }
     const contents = updates.map((update) => {
-      const issue = issues.find((issue) => {
-        const repoId = LinearProjectId.join(issue.team.id, issue.project?.id)
-        return LinearIssueId.join(repoId, issue.id) === update.serviceTaskId
-      })
+      const issue = issues.find((issue) => getServiceTaskId(issue) === update.serviceTaskId)
       return issue?.title ?? 'Unknown Story'
     })
     UpdatePokerScopeMutation(atmosphere, variables, {

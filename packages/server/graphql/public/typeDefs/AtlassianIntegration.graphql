@@ -82,6 +82,7 @@ type AtlassianIntegration {
   "recent searches" dropdown so the user can quickly repeat previous searches.
   """
   jiraSearchQueries: [JiraSearchQuery!]!
+    @deprecated(reason: "Use TeamMember.services { searchQueries }")
 
   """
   A paginated list of Jira issues fetched live from the Jira API for this team member.

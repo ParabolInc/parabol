@@ -5,13 +5,5 @@ interface Props {
 }
 export const LeftNavItem = (props: Props) => {
   const {children} = props
-  return (
-    <div
-      className={
-        'flex flex-1 flex-col overflow-hidden text-clip whitespace-nowrap font-medium text-sm'
-      }
-    >
-      {children}
-    </div>
-  )
+  return <div className='flex-1 truncate font-medium text-sm'>{children}</div>
 }

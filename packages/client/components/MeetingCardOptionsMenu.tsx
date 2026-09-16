@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import type {ReactNode} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {useNavigate} from 'react-router'
 import useAtmosphere from '~/hooks/useAtmosphere'
@@ -8,29 +7,23 @@ import {
   Close as CloseIcon,
   Link,
   PersonAdd as PersonAddIcon,
+  PlayArrow as PlayArrowIcon,
   Replay as ReplayIcon
 } from '~/ui/icons'
 import type {MeetingCardOptionsMenuQuery} from '../__generated__/MeetingCardOptionsMenuQuery.graphql'
-import type {MenuProps} from '../hooks/useMenu'
+import {MENU_ITEM_ICON, MenuItem} from '../ui/Menu/MenuItem'
 import getMassInvitationUrl from '../utils/getMassInvitationUrl'
 import makeAppURL from '../utils/makeAppURL'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
-import Menu from './Menu'
-import MenuItem from './MenuItem'
-import MenuItemLabel from './MenuItemLabel'
 import {EndMeetingMutationLookup} from './Recurrence/EndRecurringMeetingModal'
 
 interface Props {
-  menuProps: MenuProps
   popTooltip: () => void
   queryRef: PreloadedQuery<MeetingCardOptionsMenuQuery>
   openRecurrenceSettingsModal: () => void
   openEndRecurringMeetingModal: () => void
+  onStartSeriesNow: () => void
 }
-
-const StyledIcon = (props: {children: ReactNode}) => (
-  <div className='mr-2 h-6 w-6 text-fg-secondary [&_svg]:text-[24px]'>{props.children}</div>
-)
 
 const query = graphql`
   query MeetingCardOptionsMenuQuery($teamId: ID!, $meetingId: ID!) {
@@ -48,7 +41,11 @@ const query = graphql`
         facilitatorUserId
         endedAt
         meetingSeries {
+          id
           cancelledAt
+          ownerUserId
+          groupId
+          urlSlug
         }
       }
     }
@@ -57,11 +54,11 @@ const query = graphql`
 
 const MeetingCardOptionsMenu = (props: Props) => {
   const {
-    menuProps,
     popTooltip,
     queryRef,
     openRecurrenceSettingsModal,
-    openEndRecurringMeetingModal
+    openEndRecurringMeetingModal,
+    onStartSeriesNow
   } = props
   const data = usePreloadedQuery<MeetingCardOptionsMenuQuery>(query, queryRef)
   const {viewer} = data
@@ -77,23 +74,26 @@ const MeetingCardOptionsMenu = (props: Props) => {
   const navigate = useNavigate()
 
   const hasRecurrenceEnabled = meetingSeries && !meetingSeries.cancelledAt
+  // an owned series answers to its owner alone, so the rest of the team cannot reschedule it
+  const isSeriesManagedByOther =
+    !!meetingSeries?.ownerUserId && meetingSeries.ownerUserId !== viewerId
+  // whoever administers the series may open the next occurrence early, ending this one if it
+  // is still running
+  const canStartSeriesNow = hasRecurrenceEnabled && !isSeriesManagedByOther
+  // a group is rescheduled as a whole from its group card, never one team at a time
+  const canEditRecurrence =
+    canManageMeeting && hasRecurrenceEnabled && !isSeriesManagedByOther && !meetingSeries.groupId
 
-  const {closePortal} = menuProps
   return (
-    <Menu ariaLabel={'Edit the meeting'} {...menuProps}>
+    <>
       {hasRecurrenceEnabled && (
         <MenuItem
-          key='link'
-          label={
-            <MenuItemLabel className='min-w-[200px]'>
-              <Link className='mr-2 text-fg-secondary' />
-              Copy meeting permalink
-            </MenuItemLabel>
-          }
-          onClick={async () => {
+          onSelect={async () => {
             popTooltip()
-            closePortal()
-            const copyUrl = makeAppURL(window.location.origin, `meeting-series/${meetingId}`)
+            const copyUrl = makeAppURL(
+              window.location.origin,
+              `meeting-series/${meetingSeries.urlSlug}`
+            )
             await navigator.clipboard.writeText(copyUrl)
 
             SendClientSideEvent(atmosphere, 'Copied Meeting Series Link', {
@@ -101,21 +101,14 @@ const MeetingCardOptionsMenu = (props: Props) => {
               meetingId: meetingId
             })
           }}
-        />
+        >
+          <Link className={MENU_ITEM_ICON} />
+          Copy meeting permalink
+        </MenuItem>
       )}
       <MenuItem
-        key='copy'
-        label={
-          <MenuItemLabel className='min-w-[200px]'>
-            <StyledIcon>
-              <PersonAddIcon />
-            </StyledIcon>
-            <span>{'Copy invite link'}</span>
-          </MenuItemLabel>
-        }
-        onClick={async () => {
+        onSelect={async () => {
           popTooltip()
-          closePortal()
           const copyUrl = getMassInvitationUrl(token)
           await navigator.clipboard.writeText(copyUrl)
 
@@ -124,37 +117,25 @@ const MeetingCardOptionsMenu = (props: Props) => {
             meetingId: meetingId
           })
         }}
-      />
-      {canManageMeeting && hasRecurrenceEnabled && (
-        <MenuItem
-          key='edit-recurrence'
-          label={
-            <MenuItemLabel className='min-w-[200px]'>
-              <StyledIcon>
-                <ReplayIcon />
-              </StyledIcon>
-              <span>{'Edit recurrence settings'}</span>
-            </MenuItemLabel>
-          }
-          onClick={() => {
-            closePortal()
-            openRecurrenceSettingsModal()
-          }}
-        />
+      >
+        <PersonAddIcon className={MENU_ITEM_ICON} />
+        Copy invite link
+      </MenuItem>
+      {canStartSeriesNow && (
+        <MenuItem onSelect={onStartSeriesNow}>
+          <PlayArrowIcon className={MENU_ITEM_ICON} />
+          Start next meeting now
+        </MenuItem>
+      )}
+      {canEditRecurrence && (
+        <MenuItem onSelect={openRecurrenceSettingsModal}>
+          <ReplayIcon className={MENU_ITEM_ICON} />
+          Edit recurrence settings
+        </MenuItem>
       )}
       {canEndMeeting && (
         <MenuItem
-          key='close'
-          label={
-            <MenuItemLabel className='min-w-[200px]'>
-              <StyledIcon>
-                <CloseIcon />
-              </StyledIcon>
-              <span>{'End this meeting'}</span>
-            </MenuItemLabel>
-          }
-          onClick={() => {
-            closePortal()
+          onSelect={() => {
             if (!hasRecurrenceEnabled) {
               EndMeetingMutationLookup[meetingType]?.(
                 atmosphere,
@@ -165,9 +146,12 @@ const MeetingCardOptionsMenu = (props: Props) => {
               openEndRecurringMeetingModal()
             }
           }}
-        />
+        >
+          <CloseIcon className={MENU_ITEM_ICON} />
+          End this meeting
+        </MenuItem>
       )}
-    </Menu>
+    </>
   )
 }
 

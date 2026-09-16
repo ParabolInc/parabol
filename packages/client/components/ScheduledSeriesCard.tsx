@@ -4,51 +4,30 @@ import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {Link, useNavigate} from 'react-router'
-import {MoreVert} from '~/ui/icons'
-import action from '../../../static/images/illustrations/action.png'
-import retrospective from '../../../static/images/illustrations/retrospective.png'
-import poker from '../../../static/images/illustrations/sprintPoker.png'
-import teamPrompt from '../../../static/images/illustrations/teamPrompt.png'
+import {MoreVert, PlayArrow as PlayArrowIcon, Replay as ReplayIcon} from '~/ui/icons'
 import type {ScheduledSeriesCard_series$key} from '../__generated__/ScheduledSeriesCard_series.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import useMutationProps from '../hooks/useMutationProps'
-import UpdateMeetingSeriesMutation from '../mutations/UpdateMeetingSeriesMutation'
 import useStartMeetingSeriesNowMutation from '../mutations/useStartMeetingSeriesNowMutation'
 import {cn} from '../ui/cn'
-import {useDialogState} from '../ui/Dialog/useDialogState'
 import {Menu} from '../ui/Menu/Menu'
 import {MenuContent} from '../ui/Menu/MenuContent'
-import {MenuItem} from '../ui/Menu/MenuItem'
+import {MENU_ITEM_ICON, MenuItem} from '../ui/Menu/MenuItem'
 import {Tooltip} from '../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../ui/Tooltip/TooltipTrigger'
-import {MeetingTypeToReadable} from '../utils/meetings/lookups'
-import {CancelSeriesConfirmationModal} from './CancelSeriesConfirmationModal'
+import {
+  MeetingTypeToReadable,
+  meetingTypeToBgClass,
+  meetingTypeToIllustration,
+  meetingTypeToLabelClass
+} from '../utils/meetings/lookups'
 import {EditMeetingSeriesModal} from './EditMeetingSeriesModal'
+import MeetingSeriesManager from './MeetingSeriesManager'
 
 const STACK_CLASSES = {
   0: 'rotate-1 top-[3px] left-1',
   1: '-rotate-2 top-0.5 left-0.5'
 }
-
-const MEETING_TYPE_BG = {
-  retrospective: 'bg-grape-500',
-  action: 'bg-aqua-400',
-  poker: 'bg-tomato-400',
-  teamPrompt: 'bg-jade-400',
-  teamHealth: 'bg-rose-500'
-}
-
-const RECURRING_LABEL_COLORS = {
-  retrospective: 'text-grape-600',
-  action: 'text-aqua-600',
-  poker: 'text-tomato-600',
-  teamPrompt: 'text-jade-600',
-  teamHealth: 'text-rose-600'
-}
-
-// TODO: add a dedicated teamHealth illustration
-const ILLUSTRATIONS = {retrospective, action, poker, teamPrompt, teamHealth: retrospective}
 
 const STACKED_CARD_BASE =
   'absolute block h-full w-full rounded-card bg-surface-card shadow-[var(--shadow-card)]'
@@ -86,52 +65,52 @@ const ScheduledSeriesCard = (props: Props) => {
         title
         meetingType
         nextMeetingDate
-        ...MeetingSeriesEditForm_series
+        ownerUserId
+        groupId
+        team {
+          name
+        }
+        owner {
+          ...MeetingSeriesManager_user
+        }
+        ...EditMeetingSeriesModal_series
       }
     `,
     seriesRef
   )
 
-  const {id, title, meetingType, nextMeetingDate} = series
+  const {id, title, meetingType, nextMeetingDate, ownerUserId, groupId, owner, team} = series
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
-  const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
   const [startNow, isStarting] = useStartMeetingSeriesNowMutation()
   const [isEditOpen, setIsEditOpen] = useState(false)
-  const cancelDialog = useDialogState()
 
   const onStartNow = () => {
     if (isStarting) return
     startNow({
       variables: {meetingSeriesId: id},
       onCompleted: (res) => {
-        navigate(`/meet/${res.startMeetingSeriesNow.meeting.id}`)
+        // an owner can schedule for teams they are not on, & they cannot join those meetings
+        const {meeting} = res.startMeetingSeriesNow
+        if (meeting) {
+          navigate(`/meet/${meeting.id}`)
+          return
+        }
+        atmosphere.eventEmitter.emit('addSnackbar', {
+          key: 'startMeetingSeriesNow',
+          autoDismiss: 5,
+          showDismissButton: true,
+          message: 'Started the next meeting for each team'
+        })
       }
     })
   }
 
-  const onCancelConfirmed = () => {
-    if (submitting) return
-    submitMutation()
-    UpdateMeetingSeriesMutation(
-      atmosphere,
-      {meetingSeriesId: id, rrule: null},
-      {
-        onError,
-        onCompleted: (res, errors) => {
-          onCompleted(res, errors)
-          atmosphere.eventEmitter.emit('addSnackbar', {
-            key: 'meetingSeriesCancelled',
-            message: 'Recurrence cancelled.',
-            autoDismiss: 8,
-            showDismissButton: true
-          })
-        }
-      }
-    )
-    cancelDialog.close()
-  }
-
+  const isViewerOwner = ownerUserId === atmosphere.viewerId
+  // an owned series answers to its owner alone, so nobody else gets an admin affordance on it
+  const canAdmin = !ownerUserId || isViewerOwner
+  // a group is rescheduled as a whole from its group card, never one team at a time
+  const canEdit = canAdmin && !groupId
   const nextDate = nextMeetingDate ? new Date(nextMeetingDate) : null
   const label = nextDate ? `Starts ${shortDateFormatter.format(nextDate)}` : 'Scheduled'
   const tooltip = nextDate ? `Starts ${timeFormatter.format(nextDate)}` : ''
@@ -141,8 +120,17 @@ const ScheduledSeriesCard = (props: Props) => {
     setIsEditOpen(true)
   }
   const seriesLink = `/meeting-series/manage/${MeetingSeriesId.split(id)}`
-  const bgClass = MEETING_TYPE_BG[meetingType]
-  const illustration = ILLUSTRATIONS[meetingType]
+  // every link on this card opens the edit form, so a viewer who cannot edit gets plain text
+  const withEditLink = (content: React.ReactNode) =>
+    canEdit ? (
+      <Link to={seriesLink} onClick={openEdit}>
+        {content}
+      </Link>
+    ) : (
+      content
+    )
+  const bgClass = meetingTypeToBgClass[meetingType]
+  const illustration = meetingTypeToIllustration[meetingType]
 
   return (
     <motion.div
@@ -174,56 +162,60 @@ const ScheduledSeriesCard = (props: Props) => {
             <span
               className={cn(
                 'absolute top-2 right-2 rounded-[64px] bg-[#fffc] px-2 py-1 font-medium text-[11px] leading-3',
-                RECURRING_LABEL_COLORS[meetingType]
+                meetingTypeToLabelClass[meetingType]
               )}
             >
               Scheduled
             </span>
-            <Link to={seriesLink} onClick={openEdit}>
-              <img className={MEETING_IMG} src={illustration} alt='' />
-            </Link>
+            {withEditLink(<img className={MEETING_IMG} src={illustration} alt='' />)}
+            {owner && (
+              <MeetingSeriesManager userRef={owner} meetingType={meetingType} isGroup={!!groupId} />
+            )}
           </div>
           <div className='pt-1 pr-2 pb-3 pl-4'>
             <div className='relative flex items-center'>
-              <Link to={seriesLink} onClick={openEdit}>
-                <span className='wrap-break-word block pt-1 pr-8 text-fg-primary text-xl leading-6'>
-                  {title}
-                </span>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className='text-sm'>{label}</div>
-                  </TooltipTrigger>
-                  {tooltip && <TooltipContent>{tooltip}</TooltipContent>}
-                </Tooltip>
-              </Link>
-              <Menu
-                trigger={
-                  <button className='absolute top-0 right-0 flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent opacity-50 outline-hidden hover:bg-surface-hover hover:opacity-100'>
-                    <MoreVert className='text-fg-primary text-lg' />
-                  </button>
-                }
-              >
-                <MenuContent align='end' sideOffset={4}>
-                  {/* unconditional: the dash only renders this card while the series is
-                      awaiting its first meeting */}
-                  <MenuItem onSelect={onStartNow}>Start meeting now</MenuItem>
-                  <MenuItem onSelect={() => setIsEditOpen(true)}>Edit schedule</MenuItem>
-                  <MenuItem onSelect={cancelDialog.open}>Cancel series</MenuItem>
-                </MenuContent>
-              </Menu>
+              {withEditLink(
+                <>
+                  <span className='wrap-break-word block pt-1 pr-8 text-fg-primary text-xl leading-6'>
+                    {title}
+                  </span>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className='text-fg-secondary text-sm'>{label}</div>
+                    </TooltipTrigger>
+                    {tooltip && <TooltipContent>{tooltip}</TooltipContent>}
+                  </Tooltip>
+                </>
+              )}
+              {canAdmin && (
+                <Menu
+                  trigger={
+                    <button className='absolute top-0 right-0 flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent opacity-50 outline-hidden hover:bg-surface-hover hover:opacity-100'>
+                      <MoreVert className='text-fg-primary text-lg' />
+                    </button>
+                  }
+                >
+                  <MenuContent align='end' sideOffset={4}>
+                    <MenuItem onSelect={onStartNow}>
+                      <PlayArrowIcon className={MENU_ITEM_ICON} />
+                      Start meeting now
+                    </MenuItem>
+                    {canEdit && (
+                      <MenuItem onSelect={() => setIsEditOpen(true)}>
+                        <ReplayIcon className={MENU_ITEM_ICON} />
+                        Edit recurrence settings
+                      </MenuItem>
+                    )}
+                  </MenuContent>
+                </Menu>
+              )}
             </div>
-            <Link to={seriesLink} onClick={openEdit}>
-              <span className='block pt-1 pb-2 text-fg-secondary text-sm'>
-                {MeetingTypeToReadable[meetingType]} • Awaiting first meeting
+            {withEditLink(
+              <span className='block pt-1 pb-2 text-fg-muted text-sm'>
+                {team.name} • Awaiting first meeting
               </span>
-            </Link>
+            )}
           </div>
-          <CancelSeriesConfirmationModal
-            isOpen={cancelDialog.isOpen}
-            onClose={cancelDialog.close}
-            seriesTitle={title}
-            onConfirm={onCancelConfirmed}
-          />
           <EditMeetingSeriesModal
             isOpen={isEditOpen}
             onClose={() => setIsEditOpen(false)}

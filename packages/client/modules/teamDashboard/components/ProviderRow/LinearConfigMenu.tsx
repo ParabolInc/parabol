@@ -1,19 +1,17 @@
-import Menu from '../../../../components/Menu'
-import MenuItem from '../../../../components/MenuItem'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import type {MenuProps} from '../../../../hooks/useMenu'
 import type {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import RemoveTeamMemberIntegrationAuthMutation from '../../../../mutations/RemoveTeamMemberIntegrationAuthMutation'
 import {Duration} from '../../../../types/constEnums'
+import {MenuContent} from '../../../../ui/Menu/MenuContent'
+import {MenuItem} from '../../../../ui/Menu/MenuItem'
 
 interface Props {
-  menuProps: MenuProps
   mutationProps: MenuMutationProps
   teamId: string
 }
 
 const LinearConfigMenu = (props: Props) => {
-  const {menuProps, mutationProps, teamId} = props
+  const {mutationProps, teamId} = props
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
   const atmosphere = useAtmosphere()
 
@@ -30,9 +28,9 @@ const LinearConfigMenu = (props: Props) => {
     }, Duration.PORTAL_CLOSE)
   }
   return (
-    <Menu ariaLabel={'Configure your Linear integration'} {...menuProps}>
-      <MenuItem label='Remove Linear' onClick={removeLinearAuth} />
-    </Menu>
+    <MenuContent>
+      <MenuItem onClick={removeLinearAuth}>Remove Linear</MenuItem>
+    </MenuContent>
   )
 }
 

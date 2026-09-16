@@ -2,7 +2,6 @@ import type {JSONContent} from '@tiptap/core'
 import {fetch} from '@whatwg-node/fetch'
 import tracer from 'dd-trace'
 import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
-import IntegrationHash from 'parabol-client/shared/gqlIds/IntegrationHash'
 import {splitTipTapContent} from 'parabol-client/shared/tiptap/splitTipTapContent'
 import {ExternalLinks} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
@@ -12,12 +11,13 @@ import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
 import type {
   OAuth2AuthorizeResponse,
   OAuth2PkceAuthorizationParams,
-  OAuth2PkceRefreshAuthorizationParams
+  OAuth2PkceRefreshAuthorizationParams,
+  OAuth2TokenResponse
 } from '../integrations/OAuth2Manager'
 import type {
   CreateTaskResponse,
   TaskIntegrationManager
-} from '../integrations/TaskIntegrationManagerFactory'
+} from '../integrations/platform/TaskIntegrationManager'
 import type {TeamMemberIntegrationAuth} from '../postgres/types'
 import type {IntegrationProviderAzureDevOps} from '../postgres/types/IntegrationProvider'
 import logError from './logError'
@@ -262,16 +262,25 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
   }
   private readonly auth: TeamMemberIntegrationAuth | null
 
-  async authorize(code: string, codeVerifier: string | null) {
+  async authorize(
+    code: string,
+    codeVerifier: string | null
+  ): Promise<OAuth2AuthorizeResponse | Error> {
     if (!codeVerifier) {
       return new Error('Missing OAuth2 Verifier required for Azure DevOps authentication')
     }
-    return this.fetchToken({
+    const auth = await this.fetchToken({
       grant_type: 'authorization_code',
       code: code,
       code_verifier: codeVerifier,
       redirect_uri: makeAppURL(appOrigin, 'auth/ado2')
-    }) as Promise<OAuth2AuthorizeResponse | Error>
+    })
+    if (auth instanceof Error) return auth
+    const {azureDevOpsUser, error} = await this.getMe()
+    if (error || !azureDevOpsUser) {
+      return error ?? new Error('Azure DevOps: could not read the authorized user')
+    }
+    return {...auth, providerUserId: azureDevOpsUser.id}
   }
 
   private readonly provider: IntegrationProviderAzureDevOps | undefined
@@ -417,7 +426,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
     issueId: string,
     integrationHash: string
   ): Promise<string | Error> {
-    const integration = IntegrationHash.split('azureDevOps', integrationHash)
+    const integration = AzureDevOpsIssueId.split(integrationHash)
     if (!integration?.projectKey || !integration?.issueKey) {
       return new Error(`Invalid integrationHash: ${integrationHash}`)
     }
@@ -737,9 +746,9 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
     const tenantId = this.provider.tenantId
     const authUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`
     const contentType = 'application/x-www-form-urlencoded'
-    const oAuthRes = await authorizeOAuth2({authUrl, body, contentType})
+    const oAuthRes = await authorizeOAuth2<OAuth2TokenResponse>({authUrl, body, contentType})
     if (!(oAuthRes instanceof Error)) {
-      this.accessToken = oAuthRes.accessToken
+      this.setToken(oAuthRes.accessToken)
     }
     return oAuthRes
   }

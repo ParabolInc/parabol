@@ -1,10 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
+import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import type {GitLabScopingSearchFilterToggle_meeting$key} from '../__generated__/GitLabScopingSearchFilterToggle_meeting.graphql'
-import {MenuPosition} from '../hooks/useCoords'
-import useMenu from '../hooks/useMenu'
+import {Menu} from '../ui/Menu/Menu'
+import {MenuContent} from '../ui/Menu/MenuContent'
 import lazyPreload from '../utils/lazyPreload'
 import FilterButton from './FilterButton'
+import MockFieldList from './MockFieldList'
 
 const GitLabScopingSearchFilterMenuRoot = lazyPreload(
   () =>
@@ -29,21 +31,14 @@ const GitLabScopingSearchFilterToggle = (props: Props) => {
     meetingRef
   )
   const {teamId} = meeting
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT, {
-    loadingWidth: 200,
-    noClose: true
-  })
   return (
-    <>
-      <FilterButton onClick={togglePortal} ref={originRef} />
-      {menuPortal(
-        <GitLabScopingSearchFilterMenuRoot
-          teamId={teamId}
-          meetingRef={meeting}
-          menuProps={menuProps}
-        />
-      )}
-    </>
+    <Menu trigger={<FilterButton onMouseEnter={GitLabScopingSearchFilterMenuRoot.preload} />}>
+      <MenuContent align='end' className='w-[250px]'>
+        <Suspense fallback={<MockFieldList />}>
+          <GitLabScopingSearchFilterMenuRoot teamId={teamId} meetingRef={meeting} />
+        </Suspense>
+      </MenuContent>
+    </Menu>
   )
 }
 

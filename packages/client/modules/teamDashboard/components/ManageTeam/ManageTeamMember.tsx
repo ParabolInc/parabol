@@ -1,16 +1,15 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useRef, useState} from 'react'
+import {Suspense, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {ManageTeamMember_teamMember$key} from '~/__generated__/ManageTeamMember_teamMember.graphql'
 import {MoreVert as MoreVertIcon} from '~/ui/icons'
 import Avatar from '../../../../components/Avatar/Avatar'
 import Row from '../../../../components/Row/Row'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useMenu from '../../../../hooks/useMenu'
 import useScrollIntoView from '../../../../hooks/useScrollIntoVIew'
 import {Button} from '../../../../ui/Button/Button'
 import {cn} from '../../../../ui/cn'
+import {Menu} from '../../../../ui/Menu/Menu'
 import lazyPreload from '../../../../utils/lazyPreload'
 import LeaveTeamModal from '../LeaveTeamModal/LeaveTeamModal'
 import PromoteTeamMemberModal from '../PromoteTeamMemberModal/PromoteTeamMemberModal'
@@ -72,7 +71,6 @@ const ManageTeamMember = (props: Props) => {
   const [isPromoteOpen, setIsPromoteOpen] = useState(false)
   const [isRemoveOpen, setIsRemoveOpen] = useState(false)
   const [isLeaveOpen, setIsLeaveOpen] = useState(false)
-  const {togglePortal, originRef, menuProps, menuPortal} = useMenu(MenuPosition.UPPER_RIGHT)
   const ref = useRef<HTMLDivElement>(null)
   useScrollIntoView(ref, isSelectedAvatar)
 
@@ -94,30 +92,32 @@ const ManageTeamMember = (props: Props) => {
           {isOrgAdmin && 'Org Admin'}
         </div>
       </div>
-      <Button
-        variant='flat'
-        size='sm'
-        className={cn(showMenuButton ? 'flex' : 'hidden', 'p-0 text-[18px] text-fg-secondary')}
-        onClick={togglePortal}
-        onMouseEnter={TeamMemberAvatarMenu.preload}
-        ref={originRef}
+      <Menu
+        trigger={
+          <Button
+            variant='flat'
+            size='sm'
+            className={cn(showMenuButton ? 'flex' : 'hidden', 'p-0 text-[18px] text-fg-secondary')}
+            onMouseEnter={TeamMemberAvatarMenu.preload}
+          >
+            <div className='h-[18px] w-[18px] [&_svg]:text-[18px]'>
+              <MoreVertIcon />
+            </div>
+          </Button>
+        }
       >
-        <div className='h-[18px] w-[18px] [&_svg]:text-[18px]'>
-          <MoreVertIcon />
-        </div>
-      </Button>
-      {menuPortal(
-        <TeamMemberAvatarMenu
-          menuProps={menuProps}
-          isLead={isLead}
-          isViewerLead={isViewerLead}
-          isViewerOrgAdmin={isViewerOrgAdmin}
-          teamMember={teamMember}
-          togglePromote={() => setIsPromoteOpen(true)}
-          toggleRemove={() => setIsRemoveOpen(true)}
-          toggleLeave={() => setIsLeaveOpen(true)}
-        />
-      )}
+        <Suspense fallback={null}>
+          <TeamMemberAvatarMenu
+            isLead={isLead}
+            isViewerLead={isViewerLead}
+            isViewerOrgAdmin={isViewerOrgAdmin}
+            teamMember={teamMember}
+            togglePromote={() => setIsPromoteOpen(true)}
+            toggleRemove={() => setIsRemoveOpen(true)}
+            toggleLeave={() => setIsLeaveOpen(true)}
+          />
+        </Suspense>
+      </Menu>
       <PromoteTeamMemberModal
         isOpen={isPromoteOpen}
         teamMember={teamMember}

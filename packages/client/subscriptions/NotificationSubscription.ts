@@ -92,16 +92,16 @@ const subscription = graphql`
       }
 
       RemoveIntegrationSearchQuerySuccess {
-        ...RemoveJiraServerSearchQueryMutation_notification @relay(mask: false)
-      }
-      PersistGitHubSearchQuerySuccess {
-        ...PersistGitHubSearchQueryMutation_notification @relay(mask: false)
+        ...useRemoveIntegrationSearchQueryMutation_success @relay(mask: false)
       }
       AddOrgPayload {
         ...AddOrgMutation_notification @relay(mask: false)
       }
       AddTeamPayload {
         ...AddTeamMutation_notification @relay(mask: false)
+      }
+      AddTeamMemberIntegrationAuthSuccess {
+        ...AddTeamMemberIntegrationAuthMutation_notification @relay(mask: false)
       }
       ArchiveTimelineEventSuccess {
         ...ArchiveTimelineEventMutation_notification @relay(mask: false)
@@ -130,11 +130,8 @@ const subscription = graphql`
       InvalidateSessionsPayload {
         ...InvalidateSessionsMutation_notification @relay(mask: false)
       }
-      PersistJiraSearchQuerySuccess {
-        ...PersistJiraSearchQueryMutation_notification @relay(mask: false)
-      }
       PersistIntegrationSearchQuerySuccess {
-        ...PersistJiraServerSearchQueryMutation_notification @relay(mask: false)
+        ...usePersistIntegrationSearchQueryMutation_success @relay(mask: false)
       }
 
       AuthTokenPayload {
@@ -178,6 +175,10 @@ const subscription = graphql`
         id
         summary
         descriptionHTML
+      }
+
+      IntegrationService {
+        ...TaskFooterIntegrateMenuServiceRepos_service @relay(mask: false)
       }
 
       ToggleFeatureFlagSuccess {

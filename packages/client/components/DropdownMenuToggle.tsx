@@ -1,8 +1,7 @@
 /* DEPRECATED. SEE DropdownToggleV2 */
 
-import {forwardRef, type ReactElement, type Ref} from 'react'
+import {type ComponentPropsWithoutRef, forwardRef, type ReactElement, type Ref} from 'react'
 import {ExpandMore} from '~/ui/icons'
-import type useMenu from '../hooks/useMenu'
 import {cn} from '../ui/cn'
 
 const sizeStyles = {
@@ -11,25 +10,23 @@ const sizeStyles = {
   large: 'text-[1rem] leading-7 px-[0.9375rem] py-[0.6875rem]'
 } as const
 
-interface Props {
+interface Props extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
   className?: string
   defaultText: string | ReactElement<any>
   disabled?: boolean
-  onClick: ReturnType<typeof useMenu>['togglePortal']
-  onMouseEnter?: () => void
   // style hacks until a better pattern
   flat?: boolean
   size?: 'small' | 'medium' | 'large'
 }
 
 const DropdownMenuToggle = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
-  const {className, onClick, onMouseEnter, defaultText, disabled, flat, size} = props
+  const {className, onClick, defaultText, disabled, flat, size, ...rest} = props
   return (
     <div
       className={cn('mx-auto my-0 inline-block w-full max-w-full', className)}
-      onMouseEnter={onMouseEnter}
       ref={ref}
       onClick={disabled ? undefined : onClick}
+      {...rest}
     >
       <div
         className={cn(

@@ -1,7 +1,8 @@
 import dayjs from 'dayjs'
-import {MenuPosition} from '../../hooks/useCoords'
 import useRefreshInterval from '../../hooks/useRefreshInterval'
-import useTooltip from '../../hooks/useTooltip'
+import {Tooltip} from '../../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
 import {humanReadableCountdown} from '../../utils/date/relativeDate'
 import {TeamPromptBadge} from '../TeamPrompt/TeamPromptBadge'
 
@@ -12,9 +13,6 @@ interface Props {
 export const TimeLeftBadge = (props: Props) => {
   const {meetingEndTime} = props
 
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.UPPER_CENTER
-  )
   useRefreshInterval(1000)
   const meetingEndTimeDate = new Date(meetingEndTime)
   const fromNow = humanReadableCountdown(meetingEndTime)
@@ -22,11 +20,11 @@ export const TimeLeftBadge = (props: Props) => {
   const endTime = dayjs(meetingEndTimeDate)
 
   return (
-    <>
-      <TeamPromptBadge onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={originRef}>
-        {fromNow} left
-      </TeamPromptBadge>
-      {tooltipPortal(`Restarts on ${endTime.format('MMM D, YYYY')} at ${endTime.format('h:mm A')}`)}
-    </>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <TeamPromptBadge>{fromNow} left</TeamPromptBadge>
+      </TooltipTrigger>
+      <TooltipContent side='bottom'>{`Restarts on ${endTime.format('MMM D, YYYY')} at ${endTime.format('h:mm A')}`}</TooltipContent>
+    </Tooltip>
   )
 }

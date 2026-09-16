@@ -3,7 +3,15 @@ import fs from 'fs'
 import {InvoiceItemType} from '../../client/types/constEnums'
 import adjustUserCount from '../billing/helpers/adjustUserCount'
 import {getNewDataLoader} from '../dataloader/getNewDataLoader'
-import {HOST, PROTOCOL, sendIntranet, sendPublic, signUpWithEmail} from './common'
+import {
+  getTestDomain,
+  getTestEmail,
+  HOST,
+  PROTOCOL,
+  sendIntranet,
+  sendPublic,
+  signUpWithEmail
+} from './common'
 
 const SCIM_URL = `${PROTOCOL}://${HOST}/scim`
 
@@ -313,7 +321,7 @@ const enableSCIM = async (orgId: string, cookie: string) => {
 
 describe('Okta SCIM 2.0', () => {
   let bearerToken: string
-  const domain = faker.internet.domainName()
+  const domain = getTestDomain()
 
   beforeAll(async () => {
     const {orgId, cookie} = await createOrgAdmin(`admin@${domain}`)
@@ -335,7 +343,7 @@ describe('Okta SCIM 2.0', () => {
         randomUsernameCaps: randomUsername.toUpperCase(),
         randomGivenName: faker.name.firstName(),
         randomFamilyName: faker.name.lastName(),
-        randomEmail: faker.internet.email()
+        randomEmail: getTestEmail()
       })
     })
 
@@ -362,7 +370,7 @@ describe('Okta SCIM 2.0', () => {
     const userName = faker.internet.userName().toLowerCase()
     const givenName = faker.name.firstName()
     const familyName = faker.name.lastName()
-    const testEmail = faker.internet.userName().toLowerCase() + '@' + domain
+    const testEmail = getTestEmail(domain)
     const displayName = faker.name.firstName()
     const externalId = faker.datatype.uuid()
 
@@ -483,7 +491,7 @@ describe('Okta SCIM 2.0', () => {
       })
     })
 
-    const newEmail = faker.internet.userName().toLowerCase() + '@' + domain
+    const newEmail = getTestEmail(domain)
     const newUserName = faker.internet.userName().toLowerCase()
 
     test('PUT /Users/{id} - Update User with the latest email and username', async () => {
@@ -534,7 +542,7 @@ describe('Microsoft Entra SCIM 2.0', () => {
   // see https://learn.microsoft.com/en-us/entra/identity/app-provisioning/use-scim-to-provision-users-and-groups#user-operations
 
   let bearerToken: string
-  const domain = faker.internet.domainName()
+  const domain = getTestDomain()
   beforeAll(async () => {
     const {orgId, cookie} = await createOrgAdmin(`admin@${domain}`)
     await verifyDomain(domain, orgId)
@@ -543,7 +551,7 @@ describe('Microsoft Entra SCIM 2.0', () => {
 
   describe('Create New User', () => {
     const userName = faker.internet.userName().toLowerCase()
-    const testEmail = faker.internet.userName().toLowerCase() + '@' + domain
+    const testEmail = getTestEmail(domain)
     const externalId = faker.datatype.uuid()
     const givenName = faker.name.firstName()
     const familyName = faker.name.lastName()
@@ -701,7 +709,7 @@ describe('Microsoft Entra SCIM 2.0', () => {
 
   test('Create Duplicate User', async () => {
     const userName = faker.internet.userName().toLowerCase()
-    const testEmail = faker.internet.userName().toLowerCase() + '@' + domain
+    const testEmail = getTestEmail(domain)
 
     const post1 = await fetch(`${SCIM_URL}/Users`, {
       method: 'POST',
@@ -724,7 +732,7 @@ describe('Microsoft Entra SCIM 2.0', () => {
     })
     expect(post1.status).toBe(201)
 
-    const otherEmail = faker.internet.userName().toLowerCase() + '@' + domain
+    const otherEmail = getTestEmail(domain)
     const post2 = await fetch(`${SCIM_URL}/Users`, {
       method: 'POST',
       headers: {
@@ -775,7 +783,7 @@ describe('Microsoft Entra SCIM 2.0', () => {
 
   describe('Update User', () => {
     const userName = faker.internet.userName().toLowerCase()
-    const testEmail = faker.internet.userName().toLowerCase() + '@' + domain
+    const testEmail = getTestEmail(domain)
     const givenName = faker.name.firstName()
     const familyName = faker.name.lastName()
 
@@ -885,7 +893,7 @@ describe('Microsoft Entra SCIM 2.0', () => {
       })
     })
 
-    const newEmail = faker.internet.email().toLowerCase()
+    const newEmail = getTestEmail()
     const newFamilyName = faker.name.lastName()
     test('PATCH /Users/{id} Replace multi-valued properties', async () => {
       const res = await fetch(`${SCIM_URL}/Users/${id}`, {
@@ -1172,7 +1180,7 @@ test('Invalid endpoint returns 404', async () => {
 
 describe('Org membership is reflected in SCIM', () => {
   let bearerToken: string
-  const domain = faker.internet.domainName()
+  const domain = getTestDomain()
   let orgId: string
 
   beforeAll(async () => {
@@ -1243,7 +1251,7 @@ describe('Org membership is reflected in SCIM', () => {
   })
 
   test('External user in org shows up', async () => {
-    const email = faker.internet.email().toLowerCase()
+    const email = getTestEmail()
     const {userId} = await signUpWithEmail(email)
     const dataLoader = getNewDataLoader('test-loader')
     await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
@@ -1277,7 +1285,7 @@ describe('Org membership is reflected in SCIM', () => {
   })
 
   test('PATCH active=false deletes managed user from org', async () => {
-    const email = faker.internet.userName().toLowerCase() + '@' + domain
+    const email = getTestEmail(domain)
     const {userId} = await signUpWithEmail(email)
     const dataLoader = getNewDataLoader('test-loader')
     await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
@@ -1329,7 +1337,7 @@ describe('Org membership is reflected in SCIM', () => {
   })
 
   test('PATCH active=false invalidates the managed user JWT', async () => {
-    const email = faker.internet.userName().toLowerCase() + '@' + domain
+    const email = getTestEmail(domain)
     const {userId, cookie} = await signUpWithEmail(email)
     const dataLoader = getNewDataLoader('test-loader')
     await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
@@ -1362,7 +1370,7 @@ describe('Org membership is reflected in SCIM', () => {
   })
 
   test('PATCH active=false removes external user from org', async () => {
-    const email = faker.internet.email().toLowerCase()
+    const email = getTestEmail()
     const {userId} = await signUpWithEmail(email)
     const dataLoader = getNewDataLoader('test-loader')
     await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
@@ -1414,7 +1422,7 @@ describe('Org membership is reflected in SCIM', () => {
   })
 
   test('DELETE hard deletes managed user', async () => {
-    const email = faker.internet.userName().toLowerCase() + '@' + domain
+    const email = getTestEmail(domain)
     const {userId} = await signUpWithEmail(email)
 
     const res = await fetch(`${SCIM_URL}/Users/${userId}`, {
@@ -1432,7 +1440,7 @@ describe('Org membership is reflected in SCIM', () => {
   })
 
   test('DELETE external user just removes from org', async () => {
-    const email = faker.internet.email().toLowerCase()
+    const email = getTestEmail()
     const {userId} = await signUpWithEmail(email)
     const dataLoader = getNewDataLoader('test-loader')
     await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
@@ -1464,7 +1472,7 @@ describe('Org membership is reflected in SCIM', () => {
   })
 
   test('PATCH on managed user outside org adds user to org', async () => {
-    const email = faker.internet.userName().toLowerCase() + '@' + domain
+    const email = getTestEmail(domain)
     const {userId} = await signUpWithEmail(email)
 
     const res = await fetch(`${SCIM_URL}/Users/${userId}`, {
@@ -1506,7 +1514,7 @@ describe('Org membership is reflected in SCIM', () => {
 
 describe('Unrelated users are inaccessible', () => {
   let bearerToken: string
-  const domain = faker.internet.domainName()
+  const domain = getTestDomain()
 
   let userId: string
   let email: string
@@ -1516,7 +1524,7 @@ describe('Unrelated users are inaccessible', () => {
     await verifyDomain(domain, orgId)
     bearerToken = await enableSCIM(orgId, cookie)
 
-    email = faker.internet.email().toLowerCase()
+    email = getTestEmail()
     const user = await signUpWithEmail(email)
     userId = user.userId
   })
@@ -1591,7 +1599,7 @@ describe('Unrelated users are inaccessible', () => {
         emails: [
           {
             type: 'work',
-            value: faker.internet.email().toLowerCase()
+            value: getTestEmail()
           }
         ]
       })
@@ -1600,7 +1608,7 @@ describe('Unrelated users are inaccessible', () => {
   })
 
   test('DELETE unrelated user returns 404', async () => {
-    const email = faker.internet.email().toLowerCase()
+    const email = getTestEmail()
     const {userId} = await signUpWithEmail(email)
 
     const res = await fetch(`${SCIM_URL}/Users/${userId}`, {
@@ -1624,7 +1632,7 @@ describe('Unrelated users are inaccessible', () => {
 
 describe('External Users cannot be modified', () => {
   let bearerToken: string
-  const domain = faker.internet.domainName()
+  const domain = getTestDomain()
   let userId: string
   let email: string
 
@@ -1633,7 +1641,7 @@ describe('External Users cannot be modified', () => {
     await verifyDomain(domain, orgId)
     bearerToken = await enableSCIM(orgId, cookie)
 
-    email = faker.internet.email().toLowerCase()
+    email = getTestEmail()
     const user = await signUpWithEmail(email)
     userId = user.userId
 
@@ -1654,7 +1662,7 @@ describe('External Users cannot be modified', () => {
           {
             op: 'Replace',
             path: 'emails[type eq "work"].value',
-            value: faker.internet.email().toLowerCase()
+            value: getTestEmail()
           }
         ]
       })
@@ -1685,7 +1693,7 @@ describe('External Users cannot be modified', () => {
         emails: [
           {
             type: 'work',
-            value: faker.internet.email().toLowerCase()
+            value: getTestEmail()
           }
         ]
       })
@@ -1704,7 +1712,7 @@ describe('External Users cannot be modified', () => {
 
 describe('Provisioned Users with external emails can be managed', () => {
   let bearerToken: string
-  const domain = faker.internet.domainName()
+  const domain = getTestDomain()
   let email: string
 
   let userId: string
@@ -1714,7 +1722,7 @@ describe('Provisioned Users with external emails can be managed', () => {
     await verifyDomain(domain, orgId)
     bearerToken = await enableSCIM(orgId, cookie)
 
-    email = faker.internet.email().toLowerCase()
+    email = getTestEmail()
   })
 
   test('POST new user with external email', async () => {
@@ -1762,7 +1770,7 @@ describe('Provisioned Users with external emails can be managed', () => {
   })
 
   test('PATCH user with external email', async () => {
-    const newEmail = faker.internet.email().toLowerCase()
+    const newEmail = getTestEmail()
     const res = await fetch(`${SCIM_URL}/Users/${userId}`, {
       method: 'PATCH',
       headers: {
@@ -1862,8 +1870,8 @@ describe('Managed User can be taken over by SCIM with matched domain', () => {
   // user is first provisioned by company A but domain matches with B, so B can take over
   let bearerTokenA: string
   let bearerTokenB: string
-  const domainA = faker.internet.domainName()
-  const domainB = faker.internet.domainName()
+  const domainA = getTestDomain()
+  const domainB = getTestDomain()
   let email: string
 
   let userId: string
@@ -1877,7 +1885,7 @@ describe('Managed User can be taken over by SCIM with matched domain', () => {
     await verifyDomain(domainB, orgIdB)
     bearerTokenB = await enableSCIM(orgIdB, cookieB)
 
-    email = faker.internet.userName().toLowerCase() + '@' + domainB
+    email = getTestEmail(domainB)
   })
 
   test('POST new user with domainB email under orgA', async () => {
@@ -1970,7 +1978,7 @@ describe('Managed User can be taken over by SCIM with matched domain', () => {
           {
             op: 'Replace',
             path: 'emails[type eq "work"].value',
-            value: faker.internet.email().toLowerCase()
+            value: getTestEmail()
           }
         ]
       })
@@ -1988,7 +1996,7 @@ describe('Managed User can be taken over by SCIM with matched domain', () => {
 
 describe('Groups', () => {
   let bearerToken: string
-  const domain = faker.internet.domainName()
+  const domain = getTestDomain()
 
   beforeAll(async () => {
     const {orgId, cookie} = await createOrgAdmin(`admin@${domain}`)
@@ -2152,12 +2160,12 @@ describe('Groups', () => {
         },
         body: JSON.stringify({
           schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
-          userName: faker.internet.email().toLowerCase(),
+          userName: getTestEmail(),
           active: true,
           emails: [
             {
               type: 'work',
-              value: faker.internet.email().toLowerCase()
+              value: getTestEmail()
             }
           ]
         })
@@ -2178,12 +2186,12 @@ describe('Groups', () => {
         },
         body: JSON.stringify({
           schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
-          userName: faker.internet.email().toLowerCase(),
+          userName: getTestEmail(),
           active: true,
           emails: [
             {
               type: 'work',
-              value: faker.internet.email().toLowerCase()
+              value: getTestEmail()
             }
           ]
         })
@@ -2297,7 +2305,7 @@ describe('Groups', () => {
   })
 
   describe('Empty teams are archived', () => {
-    const userEmail = faker.internet.userName().toLowerCase() + '@' + domain
+    const userEmail = getTestEmail(domain)
     let userId: string
     let groupId: string
 
@@ -2399,7 +2407,7 @@ describe('Groups', () => {
     let groupId: string
 
     test('Create group with one member', async () => {
-      const userEmail = faker.internet.userName().toLowerCase() + '@' + domain
+      const userEmail = getTestEmail(domain)
       const user = await signUpWithEmail(userEmail)
       const userId = user.userId
 
@@ -2486,7 +2494,7 @@ describe('Groups', () => {
     })
 
     test('Add new member and check if they are lead', async () => {
-      const userEmail = faker.internet.userName().toLowerCase() + '@' + domain
+      const userEmail = getTestEmail(domain)
       const user = await signUpWithEmail(userEmail)
       const userId = user.userId
 
@@ -2545,7 +2553,7 @@ describe('Groups', () => {
 
 describe('Pagination', () => {
   let bearerToken: string
-  const domain = faker.internet.domainName()
+  const domain = getTestDomain()
   const PAGE_SIZE = 10
 
   beforeAll(async () => {
@@ -2820,7 +2828,7 @@ describe('SCIM OAuth Client Credentials authentication', () => {
   }
 
   test('can obtain access token and use it for SCIM requests', async () => {
-    const domain = faker.internet.domainName()
+    const domain = getTestDomain()
     const {orgId, cookie} = await createOrgAdmin(`admin@${domain}`)
     await verifyDomain(domain, orgId)
     const {scimOAuthClientId, scimOAuthClientSecret} = await enableSCIMOAuth(orgId, cookie)
@@ -2857,7 +2865,7 @@ describe('SCIM OAuth Client Credentials authentication', () => {
   })
 
   test('wrong client_secret returns 401', async () => {
-    const domain = faker.internet.domainName()
+    const domain = getTestDomain()
     const {orgId, cookie} = await createOrgAdmin(`admin@${domain}`)
     await verifyDomain(domain, orgId)
     const {scimOAuthClientId} = await enableSCIMOAuth(orgId, cookie)
@@ -2879,7 +2887,7 @@ describe('SCIM OAuth Client Credentials authentication', () => {
 
 describe('SCIM Bearer Token authentication', () => {
   test('Refreshing creates a new token', async () => {
-    const domain = faker.internet.domainName()
+    const domain = getTestDomain()
     const {orgId, cookie} = await createOrgAdmin(`admin@${domain}`)
     await verifyDomain(domain, orgId)
     const bearerToken = await enableSCIM(orgId, cookie)
@@ -2897,7 +2905,7 @@ describe('SCIM Bearer Token authentication', () => {
   })
 
   test('Refreshing invalidates the old one', async () => {
-    const domain = faker.internet.domainName()
+    const domain = getTestDomain()
     const {orgId, cookie} = await createOrgAdmin(`admin@${domain}`)
     await verifyDomain(domain, orgId)
     const oldBearerToken = await enableSCIM(orgId, cookie)

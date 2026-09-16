@@ -4,9 +4,11 @@ import {useFragment} from 'react-relay'
 import {RRule} from 'rrule'
 import type {MeetingDateLabel_meeting$key} from '~/__generated__/MeetingDateLabel_meeting.graphql'
 import {Info} from '~/ui/icons'
+import {Tooltip} from '~/ui/Tooltip/Tooltip'
+import {TooltipContent} from '~/ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '~/ui/Tooltip/TooltipTrigger'
 import {useMeetingSeriesDate} from '../../hooks/useMeetingSeriesDate'
 import {toHumanReadable} from '../../utils/humanReadableRecurrenceRule'
-import Tooltip from '../Tooltip'
 
 interface Props {
   meetingRef: MeetingDateLabel_meeting$key
@@ -48,11 +50,13 @@ const MeetingDateLabel = (props: Props) => {
     <div className='hidden md:block'>
       <div className='flex flex-row items-center text-sm'>
         {dateLabel}
-        <Tooltip
-          className='flex flex-row items-center pl-2 text-fg-secondary'
-          text={humanReadableRecurrenceRule}
-        >
-          <Info className='size-4.5' />
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className='flex cursor-pointer flex-row items-center pl-2 text-fg-secondary'>
+              <Info className='size-4.5' />
+            </div>
+          </TooltipTrigger>
+          <TooltipContent side='bottom'>{humanReadableRecurrenceRule}</TooltipContent>
         </Tooltip>
       </div>
     </div>

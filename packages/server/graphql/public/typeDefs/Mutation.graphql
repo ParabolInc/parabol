@@ -9,11 +9,6 @@ type Mutation {
     newAgendaItem: CreateAgendaItemInput!
   ): AddAgendaItemPayload @scope(name: TEAMS_WRITE)
   """
-  Connect the current user's Atlassian (Jira Cloud) account to a team
-  """
-  addAtlassianAuth(code: ID!, teamId: ID!): AddAtlassianAuthPayload! @scope(name: TEAMS_WRITE)
-
-  """
   Add a comment to a discussion
   """
   addComment(
@@ -52,10 +47,6 @@ type Mutation {
   Connect the current user's Slack account to a team
   """
   addSlackAuth(code: ID!, teamId: ID!): AddSlackAuthPayload! @scope(name: TEAMS_WRITE)
-  """
-  Connect the current user's GitHub account to a team
-  """
-  addGitHubAuth(code: ID!, teamId: ID!): AddGitHubAuthPayload! @scope(name: TEAMS_WRITE)
 
   """
   Create a new organization with an initial team, optionally inviting members by email
@@ -630,21 +621,6 @@ type Mutation {
   ): NavigateMeetingPayload! @scope(name: MEETINGS_WRITE)
 
   """
-  Save or remove a Jira search query for a team's sprint poker backlog
-  """
-  persistJiraSearchQuery(
-    """
-    the team with the settings we add the query to
-    """
-    teamId: ID!
-
-    """
-    the jira search query to persist (or remove, if isRemove is true)
-    """
-    input: JiraSearchQueryInput!
-  ): PersistJiraSearchQueryPayload! @scope(name: TEAMS_WRITE)
-
-  """
   Request to be invited to a team in real time
   """
   pushInvitation(
@@ -654,17 +630,6 @@ type Mutation {
     meetingId: ID
     teamId: ID!
   ): PushInvitationPayload @scope(name: TEAMS_WRITE)
-
-  """
-  Change a facilitator while the meeting is in progress
-  """
-  promoteNewMeetingFacilitator(
-    """
-    userId of the new facilitator for this meeting
-    """
-    facilitatorUserId: ID!
-    meetingId: ID!
-  ): PromoteNewMeetingFacilitatorPayload @scope(name: MEETINGS_WRITE)
 
   """
   Promote another team member to be the leader
@@ -713,26 +678,6 @@ type Mutation {
     """
     agendaItemId: ID!
   ): RemoveAgendaItemPayload @scope(name: TEAMS_WRITE)
-
-  """
-  Disconnect a team member from atlassian
-  """
-  removeAtlassianAuth(
-    """
-    the teamId to disconnect from the token
-    """
-    teamId: ID!
-  ): RemoveAtlassianAuthPayload! @scope(name: TEAMS_WRITE)
-
-  """
-  Disconnect a team member from GitHub
-  """
-  removeGitHubAuth(
-    """
-    the teamId to disconnect from the token
-    """
-    teamId: ID!
-  ): RemoveGitHubAuthPayload! @scope(name: TEAMS_WRITE)
 
   """
   Remove multiple users from an org
@@ -1022,6 +967,20 @@ type Mutation {
     @scope(name: MEETINGS_WRITE)
 
   """
+  Persist user-submitted feedback about a client error to Postgres
+  """
+  submitErrorFeedback(
+    "The error message shown to the user"
+    errorMessage: String!
+    "What the user was doing when the error happened"
+    content: String!
+    "Client-generated UUID correlating this feedback with Datadog RUM"
+    eventId: ID!
+    "Contact email; only used when the submitter is not authenticated"
+    email: String
+  ): SubmitErrorFeedbackSuccess! @scope(name: USERS_WRITE)
+
+  """
   Update an agenda item
   """
   updateAgendaItem(
@@ -1298,26 +1257,6 @@ type Mutation {
   ): SetPokerSpectatePayload! @scope(name: MEETINGS_WRITE)
 
   """
-  Save or remove a GitHub search query for a team's sprint poker backlog
-  """
-  persistGitHubSearchQuery(
-    """
-    the team witht the settings we add the query to
-    """
-    teamId: ID!
-
-    """
-    The query string as sent to GitHub
-    """
-    queryString: String!
-
-    """
-    true if this query should be deleted
-    """
-    isRemove: Boolean
-  ): PersistGitHubSearchQueryPayload! @scope(name: TEAMS_WRITE)
-
-  """
   Update a task estimate
   """
   setTaskEstimate(taskEstimate: TaskEstimateInput!): SetTaskEstimatePayload!
@@ -1400,7 +1339,9 @@ type Mutation {
     The meeting the update happend in. Returns a meeting object with updated serviceField
     """
     meetingId: ID!
-  ): UpdateGitHubDimensionFieldPayload! @scope(name: MEETINGS_WRITE)
+  ): UpdateGitHubDimensionFieldPayload!
+    @scope(name: MEETINGS_WRITE)
+    @deprecated(reason: "Use updateIntegrationDimensionField")
   createPoll(
     """
     The new poll including title and poll options
@@ -1488,7 +1429,9 @@ type Mutation {
     The work item type in Azure DevOps
     """
     workItemType: ID!
-  ): UpdateAzureDevOpsDimensionFieldPayload! @scope(name: MEETINGS_WRITE)
+  ): UpdateAzureDevOpsDimensionFieldPayload!
+    @scope(name: MEETINGS_WRITE)
+    @deprecated(reason: "Use updateIntegrationDimensionField")
 
   """
   Adds a new poker template with a default dimension created.
@@ -1709,8 +1652,10 @@ type Mutation {
   Add an integration authorization for a specific team member
   """
   addTeamMemberIntegrationAuth(
+    """
+    The provider to connect. Services with a single global provider (jira, github) expose it as IntegrationService.cloudProvider
+    """
     providerId: ID!
-    service: IntegrationProviderServiceEnum # Add optional service enum
     teamId: ID!
 
     """
@@ -1722,22 +1667,7 @@ type Mutation {
     OAuth1 token verifier
     """
     oauthVerifier: ID
-
-    """
-    The URL the OAuth2 token will be sent to. Null for webhook auth
-    """
-    redirectUri: URL
   ): AddTeamMemberIntegrationAuthPayload! @scope(name: TEAMS_WRITE)
-
-  """
-  Watch the Google Meet Recordings folder for new transcripts and notes
-  """
-  setupGoogleDriveWatch(
-    """
-    The team to associate the watch channel with
-    """
-    teamId: ID!
-  ): SetupGoogleDriveWatchSuccess! @scope(name: TEAMS_WRITE)
 
   """
   Link a Mattermost channel to a team to receive meeting notifications
@@ -1889,13 +1819,22 @@ type Mutation {
     modifyType: ModifyType!
   ): ModifyCheckInQuestionPayload! @scope(name: MEETINGS_WRITE)
   """
-  Save a search query for a team's integration provider (e.g. Jira Server) for reuse in sprint poker
+  Save a search query for a team's integration provider for reuse in sprint poker
   """
   persistIntegrationSearchQuery(
     teamId: ID!
-    service: IntegrationProviderServiceEnum!
-    providerId: ID
-    jiraServerSearchQuery: JiraServerSearchQueryInput
+    """
+    The provider the query was run against
+    """
+    providerId: ID!
+    """
+    The search text in the service's own syntax, normalized by the client
+    """
+    queryString: String!
+    """
+    Service-specific search options as a JSON object, e.g. {"isJQL": true, "projectKeyFilters": []} for Jira. Stored alongside queryString
+    """
+    meta: String
   ): PersistIntegrationSearchQueryPayload! @scope(name: TEAMS_WRITE)
 
   """
@@ -2035,7 +1974,22 @@ type Mutation {
     An optional freeform comment left with the answer
     """
     comment: String
+    """
+    true if the comment should be paraphrased before the team reads it, so the author's writing
+    style can't identify them. Ignored when there is no comment
+    """
+    isAnonymous: Boolean!
   ): SetTeamHealthResponseSuccess! @scope(name: MEETINGS_WRITE)
+
+  """
+  Reorder the result stages of a standalone Team Health meeting, so the team can discuss the
+  categories in whatever order it likes
+  """
+  dragTeamHealthResultStage(
+    meetingId: ID!
+    stageId: ID!
+    sortOrder: Float!
+  ): DragTeamHealthResultStageSuccess! @scope(name: MEETINGS_WRITE)
 
   """
   Opt the viewer into or out of answering the questions in a standalone Team Health meeting.
@@ -2112,7 +2066,8 @@ type Mutation {
   ): StartCheckInPayload! @scope(name: MEETINGS_WRITE)
 
   """
-  Start the next meeting of a scheduled meeting series right now, ahead of its schedule
+  Start the next meeting of a meeting series right now, ahead of its schedule, on every team the
+  series covers. A meeting still in progress for one of those teams is ended first.
   """
   startMeetingSeriesNow(
     """
@@ -2178,6 +2133,12 @@ type Mutation {
     The gcal input if creating a gcal event. Applied to every selected team.
     """
     gcalInput: CreateGcalEventInput
+
+    """
+    An existing series whose group the new series join, so they land on its card instead of
+    standing up cards of their own. The viewer must be able to administer that series.
+    """
+    joinMeetingSeriesId: ID
   ): StartTeamHealthSuccess! @scope(name: MEETINGS_WRITE)
 
   """
@@ -2282,7 +2243,9 @@ type Mutation {
     The id of the project the issue belongs to
     """
     projectId: Int!
-  ): UpdateGitLabDimensionFieldPayload! @scope(name: MEETINGS_WRITE)
+  ): UpdateGitLabDimensionFieldPayload!
+    @scope(name: MEETINGS_WRITE)
+    @deprecated(reason: "Use updateIntegrationDimensionField")
 
   """
   Update how a parabol dimension maps to a Linear label
@@ -2307,7 +2270,9 @@ type Mutation {
     The id of the project the issue belongs to
     """
     repoId: String!
-  ): UpdateLinearDimensionFieldPayload! @scope(name: MEETINGS_WRITE)
+  ): UpdateLinearDimensionFieldPayload!
+    @scope(name: MEETINGS_WRITE)
+    @deprecated(reason: "Use updateIntegrationDimensionField")
 
   """
   Set the jira field that the poker dimension should map to
@@ -2332,7 +2297,9 @@ type Mutation {
     The meeting the update happend in. Returns a meeting object with updated serviceField
     """
     meetingId: ID!
-  ): UpdateDimensionFieldPayload! @scope(name: MEETINGS_WRITE)
+  ): UpdateDimensionFieldPayload!
+    @scope(name: MEETINGS_WRITE)
+    @deprecated(reason: "Use updateIntegrationDimensionField")
 
   """
   Set the JiraServer field that the poker dimension should map to`,
@@ -2359,7 +2326,21 @@ type Mutation {
     The meeting the update happend in. Returns a meeting object with updated serviceField
     """
     meetingId: ID!
-  ): UpdateDimensionFieldPayload! @scope(name: MEETINGS_WRITE)
+  ): UpdateDimensionFieldPayload!
+    @scope(name: MEETINGS_WRITE)
+    @deprecated(reason: "Use updateIntegrationDimensionField")
+
+  """
+  Choose where a poker dimension's estimate lands for the integration this task belongs to.
+  The repo/project (and issue type) are derived from the task server-side; fieldId is
+  __comment, the empty string (skip), a field id/name the service exposes, or a label template
+  """
+  updateIntegrationDimensionField(
+    meetingId: ID!
+    taskId: ID!
+    dimensionName: String!
+    fieldId: String!
+  ): UpdateIntegrationDimensionFieldSuccess! @scope(name: MEETINGS_WRITE)
 
   """
   Describe the mutation here
@@ -2681,4 +2662,25 @@ type Mutation {
     """
     action: ArchivePageActionEnum!
   ): ArchivePagePayload @scope(name: PAGES_WRITE)
+
+  """
+  Reorder the facilitator rotation and/or toggle auto-assignment. Any team member may edit.
+  """
+  updateFacilitatorRotation(
+    """
+    The meeting whose team owns the rotation. Whoever heads the new order takes the
+    facilitator role for this meeting.
+    """
+    meetingId: ID!
+
+    """
+    The full rotation, soonest first. Omit to leave the order untouched.
+    """
+    userIds: [ID!]
+
+    """
+    Whether the next meeting auto-assigns the next person in the rotation. Omit to leave as-is.
+    """
+    autoAssignFacilitator: Boolean
+  ): UpdateFacilitatorRotationSuccess! @scope(name: MEETINGS_WRITE)
 }

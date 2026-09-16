@@ -41,14 +41,6 @@ const dumpPgDataToOrgBackupSchema = async (orgIds: string[]) => {
   //     [orgIds]
   //   )
   //   await client.query(
-  //     `CREATE TABLE "orgBackup"."GitHubAuth" AS (SELECT * FROM "GitHubAuth" WHERE "teamId" = ANY ($1));`,
-  //     [teamIds]
-  //   )
-  //   await client.query(
-  //     `CREATE TABLE "orgBackup"."AtlassianAuth" AS (SELECT * FROM "AtlassianAuth" WHERE "teamId" = ANY ($1));`,
-  //     [teamIds]
-  //   )
-  //   await client.query(
   //     `CREATE TABLE "orgBackup"."Discussion" AS (SELECT * FROM "Discussion" WHERE "teamId" = ANY ($1));`,
   //     [teamIds]
   //   )

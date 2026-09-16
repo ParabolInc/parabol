@@ -1,11 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useMemo} from 'react'
+import {Suspense, useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import type {MeetingsDashHeader_viewer$key} from '../__generated__/MeetingsDashHeader_viewer.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import {MenuPosition} from '../hooks/useCoords'
-import useMenu from '../hooks/useMenu'
 import {FilterLabels} from '../types/constEnums'
+import {Menu} from '../ui/Menu/Menu'
 import lazyPreload from '../utils/lazyPreload'
 import {useQueryParameterParser} from '../utils/useQueryParameterParser'
 import DashSectionControls from './Dashboard/DashSectionControls'
@@ -42,14 +41,6 @@ const MeetingsDashHeader = (props: Props) => {
     viewerRef
   )
 
-  const {
-    menuPortal: teamFilterMenuPortal,
-    togglePortal: teamFilterTogglePortal,
-    originRef: teamFilterOriginRef,
-    menuProps: teamFilterMenuProps
-  } = useMenu(MenuPosition.UPPER_LEFT, {
-    isDropdown: true
-  })
   const teams = viewer?.teams ?? []
   const {teamIds} = useQueryParameterParser(viewerId)
   const teamFilter = useMemo(
@@ -62,17 +53,22 @@ const MeetingsDashHeader = (props: Props) => {
   return (
     <DashSectionHeader>
       <DashSectionControls className='w-full flex-wrap justify-start overflow-visible'>
-        <DashFilterToggle
-          className='mt-4 sidebar-left:mt-0 mr-16 sidebar-left:mr-24 mb-4 sidebar-left:mb-0 ml-0 sidebar-left:ml-0'
-          label='Team'
-          onClick={teamFilterTogglePortal}
-          onMouseEnter={TeamFilterMenu.preload}
-          ref={teamFilterOriginRef}
-          value={teamFilterName}
-          iconText='group'
-          dataCy='team-filter'
-        />
-        {teamFilterMenuPortal(<TeamFilterMenu menuProps={teamFilterMenuProps} viewer={viewer} />)}
+        <Menu
+          trigger={
+            <DashFilterToggle
+              className='mt-4 sidebar-left:mt-0 mr-16 sidebar-left:mr-24 mb-4 sidebar-left:mb-0 ml-0 sidebar-left:ml-0'
+              label='Team'
+              onMouseEnter={TeamFilterMenu.preload}
+              value={teamFilterName}
+              iconText='group'
+              dataCy='team-filter'
+            />
+          }
+        >
+          <Suspense fallback={null}>
+            <TeamFilterMenu viewer={viewer} />
+          </Suspense>
+        </Menu>
       </DashSectionControls>
     </DashSectionHeader>
   )

@@ -4,19 +4,18 @@ import type {PalettePicker_prompt$key} from '~/__generated__/PalettePicker_promp
 import type {PalettePicker_prompts$key} from '~/__generated__/PalettePicker_prompts.graphql'
 import ReflectTemplatePromptUpdateGroupColorMutation from '~/mutations/ReflectTemplatePromptUpdateGroupColorMutation'
 import useAtmosphere from '../../hooks/useAtmosphere'
-import type {MenuProps} from '../../hooks/useMenu'
 import palettePickerOptions from '../../styles/palettePickerOptions'
-import Menu from '../Menu'
+import {MenuContent} from '../../ui/Menu/MenuContent'
 import PaletteColor from '../PaletteColor/PaletteColor'
 
 interface Props {
   prompt: PalettePicker_prompt$key
   prompts: PalettePicker_prompts$key
-  menuProps: MenuProps
+  onClose: () => void
 }
 
 const PalettePicker = (props: Props) => {
-  const {prompt: promptRef, prompts: promptsRef, menuProps} = props
+  const {prompt: promptRef, prompts: promptsRef, onClose} = props
   const prompts = useFragment(
     graphql`
       fragment PalettePicker_prompts on ReflectPrompt @relay(plural: true) {
@@ -35,7 +34,6 @@ const PalettePicker = (props: Props) => {
     `,
     promptRef
   )
-  const {closePortal} = menuProps
   const {id: promptId, groupColor} = prompt
   const atmosphere = useAtmosphere()
   const allTakenColors = prompts.map((prompt) => prompt.groupColor)
@@ -44,11 +42,11 @@ const PalettePicker = (props: Props) => {
       promptId,
       groupColor: color
     })
-    closePortal()
+    onClose()
   }
 
   return (
-    <Menu className='w-[214px] min-w-[214px] p-[5px]' ariaLabel='Pick a group color' {...menuProps}>
+    <MenuContent align='start' className='w-[214px] min-w-[214px] p-[5px]'>
       <ul className='m-0 flex list-none flex-wrap justify-center p-0'>
         {palettePickerOptions.map((color) => {
           return (
@@ -62,7 +60,7 @@ const PalettePicker = (props: Props) => {
           )
         })}
       </ul>
-    </Menu>
+    </MenuContent>
   )
 }
 

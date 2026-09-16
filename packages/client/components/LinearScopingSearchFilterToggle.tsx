@@ -1,10 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
+import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import type {LinearScopingSearchFilterToggle_meeting$key} from '../__generated__/LinearScopingSearchFilterToggle_meeting.graphql'
-import {MenuPosition} from '../hooks/useCoords'
-import useMenu from '../hooks/useMenu'
+import {Menu} from '../ui/Menu/Menu'
+import {MenuContent} from '../ui/Menu/MenuContent'
 import lazyPreload from '../utils/lazyPreload'
 import FilterButton from './FilterButton'
+import MockFieldList from './MockFieldList'
 
 const LinearScopingSearchFilterMenuRoot = lazyPreload(
   () =>
@@ -28,21 +30,14 @@ const LinearScopingSearchFilterToggle = (props: Props) => {
     meetingRef
   )
   const {teamId} = meeting
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT, {
-    loadingWidth: 200,
-    noClose: true
-  })
   return (
-    <>
-      <FilterButton onClick={togglePortal} ref={originRef} />
-      {menuPortal(
-        <LinearScopingSearchFilterMenuRoot
-          teamId={teamId}
-          meetingId={meeting.id}
-          menuProps={menuProps}
-        />
-      )}
-    </>
+    <Menu trigger={<FilterButton onMouseEnter={LinearScopingSearchFilterMenuRoot.preload} />}>
+      <MenuContent align='end' className='w-[250px]'>
+        <Suspense fallback={<MockFieldList />}>
+          <LinearScopingSearchFilterMenuRoot teamId={teamId} meetingId={meeting.id} />
+        </Suspense>
+      </MenuContent>
+    </Menu>
   )
 }
 

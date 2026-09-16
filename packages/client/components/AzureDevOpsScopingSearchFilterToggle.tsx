@@ -1,11 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {MenuPosition} from '~/hooks/useCoords'
-import useMenu from '~/hooks/useMenu'
-import {Button} from '~/ui/Button/Button'
-import {FilterList} from '~/ui/icons'
 import type {AzureDevOpsScopingSearchFilterToggle_meeting$key} from '../__generated__/AzureDevOpsScopingSearchFilterToggle_meeting.graphql'
+import {Menu} from '../ui/Menu/Menu'
+import {MenuContent} from '../ui/Menu/MenuContent'
 import AzureDevOpsScopingSearchFilterMenu from './AzureDevOpsScopingSearchFilterMenu'
+import FilterButton from './FilterButton'
 
 interface Props {
   meeting: AzureDevOpsScopingSearchFilterToggle_meeting$key
@@ -22,23 +21,12 @@ const AzureDevOpsScopingSearchFilterToggle = (props: Props) => {
     `,
     meetingRef
   )
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT, {
-    loadingWidth: 200,
-    noClose: true
-  })
   return (
-    <>
-      <Button
-        variant='flat'
-        size='sm'
-        className='ml-1 h-6 w-6 bg-sky-500 p-0 hover:bg-sky-500'
-        onClick={togglePortal}
-        ref={originRef}
-      >
-        <FilterList className='h-[18px] w-[18px] text-white' />
-      </Button>
-      {menuPortal(<AzureDevOpsScopingSearchFilterMenu meeting={meeting} menuProps={menuProps} />)}
-    </>
+    <Menu trigger={<FilterButton />}>
+      <MenuContent align='end'>
+        <AzureDevOpsScopingSearchFilterMenu meeting={meeting} />
+      </MenuContent>
+    </Menu>
   )
 }
 

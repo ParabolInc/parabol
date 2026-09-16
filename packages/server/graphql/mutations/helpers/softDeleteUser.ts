@@ -4,28 +4,21 @@ import type {DataLoaderWorker} from '../../graphql'
 import removeFromOrg from './removeFromOrg'
 import removeSlackAuths from './removeSlackAuths'
 
-const removeGitHubAuths = async (userId: string, teamIds: string[]) =>
-  Promise.all(
-    teamIds.map((teamId) => {
-      return getKysely()
-        .updateTable('GitHubAuth')
-        .set({isActive: false})
-        .where('userId', '=', userId)
-        .where('teamId', '=', teamId)
-        .where('isActive', '=', true)
-        .execute()
-    })
-  )
-
-const removeAtlassianAuths = async (userId: string, teamIds: string[]) => {
+const removeIntegrationAuths = async (userId: string, teamIds: string[]) => {
   if (teamIds.length === 0) return
-  const pg = getKysely()
-  return pg
-    .updateTable('AtlassianAuth')
+  await getKysely()
+    .updateTable('TeamMemberIntegrationAuth')
     .set({isActive: false})
     .where('userId', '=', userId)
     .where('teamId', 'in', teamIds)
     .where('isActive', '=', true)
+    // team-level webhook/sharedSecret rows (Mattermost, MS Teams) outlive the member who connected them
+    .where('providerId', 'not in', (eb) =>
+      eb
+        .selectFrom('IntegrationProvider')
+        .select('id')
+        .where('authStrategy', 'in', ['webhook', 'sharedSecret'])
+    )
     .execute()
 }
 
@@ -51,8 +44,7 @@ const softDeleteUser = async (userIdToDelete: string, dataLoader: DataLoaderWork
   const teamIds = teamMembers.map(({teamId}) => teamId)
 
   await Promise.all([
-    removeAtlassianAuths(userIdToDelete, teamIds),
-    removeGitHubAuths(userIdToDelete, teamIds),
+    removeIntegrationAuths(userIdToDelete, teamIds),
     removeSlackAuths(userIdToDelete, teamIds, true),
     removePageAcces(userIdToDelete)
   ])

@@ -1,36 +1,29 @@
-import type * as React from 'react'
-import type {MenuProps} from '../hooks/useMenu'
-import Menu from './Menu'
-import MenuItem from './MenuItem'
-import MenuItemHR from './MenuItemHR'
+import {SelectContent} from '../ui/Select/SelectContent'
+import {SelectItem} from '../ui/Select/SelectItem'
+import {SelectSeparator} from '../ui/Select/SelectSeparator'
 import SlackPrivateChannelHint from './SlackPrivateChannelHint'
 
 export type SlackChannelDropdownChannels = {id: string; name: string}[]
-export type SlackChannelDropdownOnClick = (
-  channelId: string | null
-) => (e: React.MouseEvent) => void
+export type SlackChannelDropdownOnClick = (channelId: string) => void
 
 interface Props {
   channels: SlackChannelDropdownChannels
-  menuProps: MenuProps
-  defaultActiveIdx: number
-  onClick: SlackChannelDropdownOnClick
 }
 
 const SlackChannelDropdown = (props: Props) => {
-  const {defaultActiveIdx, channels, menuProps, onClick} = props
+  const {channels} = props
   return (
-    <Menu
-      ariaLabel={'Select the channel to send notifications to'}
-      {...menuProps}
-      defaultActiveIdx={defaultActiveIdx}
-    >
+    <SelectContent>
       {channels.map((channel) => {
-        return <MenuItem key={channel.id!} label={channel.name} onClick={onClick(channel.id)} />
+        return (
+          <SelectItem key={channel.id} value={channel.id}>
+            {channel.name}
+          </SelectItem>
+        )
       })}
-      <MenuItemHR />
+      <SelectSeparator />
       <SlackPrivateChannelHint />
-    </Menu>
+    </SelectContent>
   )
 }
 

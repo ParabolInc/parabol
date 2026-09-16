@@ -90,7 +90,7 @@ const ReflectionGroupHeader = forwardRef((props: Props, ref: Ref<HTMLDivElement>
           {canEdit && (
             <Edit
               className={cn(
-                'top-px mr-1 block h-4.5 w-4.5 opacity-50 hover:cursor-pointer',
+                'top-px mr-1 block h-4.5 w-4.5 select-none opacity-50 hover:cursor-pointer',
                 isExpanded ? 'text-white' : 'text-fg-secondary'
               )}
               onClick={onClick}

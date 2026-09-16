@@ -21,7 +21,7 @@ const fetchLinearWorkItems = async (
   info: GraphQLResolveInfo
 ): Promise<string> => {
   const {dataLoader} = context
-  const auth = await dataLoader.get('freshLinearAuth').load({teamId, userId})
+  const auth = await dataLoader.get('freshAuth').load({service: 'linear', teamId, userId})
   if (!auth?.accessToken) return ''
 
   let filter: Record<string, unknown> | undefined

@@ -15,7 +15,7 @@ const fetchGCalWorkItems = async (
   searchQuery: string,
   dataLoader: DataLoaderWorker
 ): Promise<string> => {
-  const gcalAuth = await dataLoader.get('freshGcalAuth').load({teamId, userId})
+  const gcalAuth = await dataLoader.get('freshAuth').load({service: 'gcal', teamId, userId})
   if (!gcalAuth) return ''
 
   let range: {startDate?: string; endDate?: string}

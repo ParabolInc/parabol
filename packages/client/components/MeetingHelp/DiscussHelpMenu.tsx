@@ -1,4 +1,3 @@
-import {forwardRef} from 'react'
 import useClientSideTrack from '../../hooks/useClientSideTrack'
 import {ExternalLinks} from '../../types/constEnums'
 import {phaseLabelLookup} from '../../utils/meetings/lookups'
@@ -7,13 +6,15 @@ import HelpMenuCopy from './HelpMenuCopy'
 import HelpMenuHeader from './HelpMenuHeader'
 import HelpMenuLink from './HelpMenuLink'
 
-type Props = {}
+interface Props {
+  onClose: () => void
+}
 
-const DiscussHelpMenu = forwardRef((_props: Props, ref: any) => {
-  const {closePortal} = ref
+const DiscussHelpMenu = (props: Props) => {
+  const {onClose} = props
   useClientSideTrack('Help Menu Open', {phase: 'discuss'})
   return (
-    <HelpMenuContent closePortal={closePortal}>
+    <HelpMenuContent onClose={onClose}>
       <HelpMenuHeader>{phaseLabelLookup.discuss}</HelpMenuHeader>
       <HelpMenuCopy>
         The goal of this phase is to identify next steps and capture them as task cards assigned to
@@ -26,6 +27,6 @@ const DiscussHelpMenu = forwardRef((_props: Props, ref: any) => {
       <HelpMenuLink copy='Learn More' href={`${ExternalLinks.GETTING_STARTED_RETROS}#discuss`} />
     </HelpMenuContent>
   )
-})
+}
 
 export default DiscussHelpMenu

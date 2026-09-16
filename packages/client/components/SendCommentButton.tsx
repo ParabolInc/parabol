@@ -1,6 +1,7 @@
 import {ArrowUpward} from '~/ui/icons'
-import {MenuPosition} from '../hooks/useCoords'
-import useTooltip from '../hooks/useTooltip'
+import {Tooltip} from '~/ui/Tooltip/Tooltip'
+import {TooltipContent} from '~/ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '~/ui/Tooltip/TooltipTrigger'
 
 export type CommentSubmitState = 'idle' | 'typing'
 
@@ -11,29 +12,21 @@ interface Props {
 
 const SendCommentButton = (props: Props) => {
   const {commentSubmitState, onSubmit} = props
-  const {
-    tooltipPortal,
-    openTooltip,
-    closeTooltip,
-    originRef: tipRef
-  } = useTooltip<HTMLButtonElement>(MenuPosition.LOWER_CENTER)
-
   const isDisabled = commentSubmitState === 'idle'
 
   return (
-    <>
-      <button
-        className='m-2 flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-md bg-accent transition-colors hover:bg-sky-600 focus:bg-sky-600 active:bg-sky-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-accent'
-        onClick={onSubmit}
-        onMouseEnter={openTooltip}
-        onMouseLeave={closeTooltip}
-        disabled={isDisabled}
-        ref={tipRef}
-      >
-        <ArrowUpward className='m-1 h-5 w-5 text-white transition-colors' />
-      </button>
-      {tooltipPortal(<div>{'Send comment'}</div>)}
-    </>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          className='m-2 flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-md bg-accent transition-colors hover:bg-sky-600 focus:bg-sky-600 active:bg-sky-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-accent'
+          onClick={onSubmit}
+          disabled={isDisabled}
+        >
+          <ArrowUpward className='m-1 h-5 w-5 text-white transition-colors' />
+        </button>
+      </TooltipTrigger>
+      <TooltipContent>Send comment</TooltipContent>
+    </Tooltip>
   )
 }
 

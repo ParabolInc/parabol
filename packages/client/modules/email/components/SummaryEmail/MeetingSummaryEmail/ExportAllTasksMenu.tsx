@@ -6,11 +6,9 @@ import type {ExportAllTasksMenuQuery} from '../../../../../__generated__/ExportA
 import TaskFooterIntegrateMenuList from '../../../../../components/TaskFooterIntegrateMenuList'
 import TaskFooterIntegrateMenuSignup from '../../../../../components/TaskFooterIntegrateMenuSignup'
 import {makePlaceholder, useIsIntegrated} from '../../../../../hooks/useIsIntegrated'
-import type {MenuProps} from '../../../../../hooks/useMenu'
 import type {MenuMutationProps} from '../../../../../hooks/useMutationProps'
 
 interface Props {
-  menuProps: MenuProps
   mutationProps: MenuMutationProps
   meetingRef: ExportAllTasksMenu_meeting$key
   queryRef: PreloadedQuery<ExportAllTasksMenuQuery>
@@ -26,10 +24,8 @@ const query = graphql`
     viewer {
       id
       viewerTeamMember: teamMember(userId: null, teamId: $teamId) {
-        integrations {
-          ...useIsIntegrated_integrations
-          ...TaskFooterIntegrateMenuSignup_TeamMemberIntegrations
-        }
+        ...TaskFooterIntegrateMenuSignup_teamMember
+        ...useIsIntegrated_teamMember
       }
     }
   }
@@ -45,7 +41,7 @@ graphql`
 `
 
 const ExportAllTasksMenu = (props: Props) => {
-  const {menuProps, mutationProps, meetingRef, queryRef, handlePushToIntegration} = props
+  const {mutationProps, meetingRef, queryRef, handlePushToIntegration} = props
   const data = usePreloadedQuery<ExportAllTasksMenuQuery>(query, queryRef)
   const {viewer} = data
   const meeting = useFragment(
@@ -74,10 +70,9 @@ const ExportAllTasksMenu = (props: Props) => {
 
   const {viewerTeamMember} = viewer
   const {teamId, tasks} = meeting
-  const isViewerIntegrated = useIsIntegrated(viewerTeamMember?.integrations)
+  const isViewerIntegrated = useIsIntegrated(viewerTeamMember)
 
   if (!viewerTeamMember) return null
-  const {integrations: viewerIntegrations} = viewerTeamMember
 
   const filteredTasks = tasks?.filter((task) => !task.integration)
 
@@ -90,7 +85,6 @@ const ExportAllTasksMenu = (props: Props) => {
     const label = 'Push with your credentials'
     return (
       <TaskFooterIntegrateMenuList
-        menuProps={menuProps}
         placeholder={placeholder}
         teamId={teamId}
         onPushToIntegration={handlePushToIntegration}
@@ -103,11 +97,10 @@ const ExportAllTasksMenu = (props: Props) => {
 
   return (
     <TaskFooterIntegrateMenuSignup
-      menuProps={menuProps}
       mutationProps={mutationProps}
       teamId={teamId}
       label={label}
-      integrationsRef={viewerIntegrations}
+      teamMemberRef={viewerTeamMember}
     />
   )
 }

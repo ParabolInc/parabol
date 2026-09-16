@@ -6,6 +6,7 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import useInspirationDrawer from '../../../hooks/useInspirationDrawer'
 import useMutationProps from '../../../hooks/useMutationProps'
 import useSessionStorageState from '../../../hooks/useSessionStorageState'
+import {getConnectProvider} from '../../../integrations/platform/findIntegrationService'
 import {Button} from '../../../ui/Button/Button'
 import {cn} from '../../../ui/cn'
 import GitHubClientManager from '../../../utils/GitHubClientManager'
@@ -53,6 +54,9 @@ const GitHubIntegrationPanel = (props: Props) => {
         viewerMeetingMember {
           teamMember {
             teamId
+            services {
+              ...findIntegrationService_cloudProvider @relay(mask: false)
+            }
             integrations {
               github {
                 isActive
@@ -96,10 +100,11 @@ const GitHubIntegrationPanel = (props: Props) => {
   const {error, onError} = mutationProps
 
   const authGitHub = () => {
-    if (!teamMember) {
+    const provider = teamMember && getConnectProvider(teamMember.services, 'github')
+    if (!teamMember || !provider) {
       return onError(new Error('Could not find team member'))
     }
-    teamMember && GitHubClientManager.openOAuth(atmosphere, teamMember.teamId, mutationProps)
+    GitHubClientManager.openOAuth(atmosphere, teamMember.teamId, provider, mutationProps)
 
     SendClientSideEvent(atmosphere, 'Inspiration Drawer Integration Connected', {
       teamId: meeting.teamId,

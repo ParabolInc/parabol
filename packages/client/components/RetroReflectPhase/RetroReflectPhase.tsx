@@ -60,6 +60,9 @@ const RetroReflectPhase = (props: Props) => {
   const reflectPrompts = reflectPhase.reflectPrompts
   const focusedPromptId = reflectPhase.focusedPromptId
   const ColumnWrapper = isDesktop ? ReflectWrapperDesktop : ReflectWrapperMobile
+  const focusedIdx = reflectPrompts.findIndex(({id}) => id === focusedPromptId)
+  // a focusedPromptId from another phase (or none at all) falls back to the first column
+  const autoFocusIdx = focusedIdx === -1 ? 0 : focusedIdx
 
   return (
     <MeetingContent ref={callbackRef}>
@@ -80,11 +83,7 @@ const RetroReflectPhase = (props: Props) => {
         </MeetingTopBar>
         <PhaseWrapper>
           <StageTimerDisplay meeting={meeting} />
-          <ColumnWrapper
-            setActiveIdx={setActiveIdx}
-            activeIdx={activeIdx}
-            focusedIdx={reflectPrompts.findIndex(({id}) => id === focusedPromptId)}
-          >
+          <ColumnWrapper setActiveIdx={setActiveIdx} activeIdx={activeIdx} focusedIdx={focusedIdx}>
             {reflectPrompts.map((prompt, idx) => (
               <PhaseItemColumn
                 key={prompt.id}
@@ -93,6 +92,7 @@ const RetroReflectPhase = (props: Props) => {
                 idx={idx}
                 phaseRef={phaseRef}
                 isDesktop={isDesktop}
+                autoFocus={idx === autoFocusIdx}
               />
             ))}
           </ColumnWrapper>

@@ -45,8 +45,8 @@ const ActivityCardFavorite = (props: Props) => {
     <Tooltip>
       <div
         className={cn(
-          className,
-          `flex h-10 w-10 items-center justify-center rounded-md border border-slate-600 bg-slate-700`
+          'flex h-10 w-10 items-center justify-center rounded-md bg-surface-card',
+          className
         )}
       >
         <TooltipTrigger asChild>
@@ -54,7 +54,7 @@ const ActivityCardFavorite = (props: Props) => {
             onClick={handleClick}
             className='flex h-full w-full cursor-pointer items-center justify-center bg-transparent'
           >
-            <Favorite className={isFavorite ? 'text-rose-500' : 'text-slate-200'} />
+            <Favorite className={isFavorite ? 'text-rose-500' : 'text-fg-secondary'} />
           </button>
         </TooltipTrigger>
       </div>

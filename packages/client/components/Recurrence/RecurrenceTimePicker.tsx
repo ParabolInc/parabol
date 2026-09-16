@@ -36,7 +36,7 @@ export const RecurrenceTimePicker = ({value, onValueChange}: Props) => {
       <SelectTrigger className='w-full text-sm'>
         <SelectValue />
       </SelectTrigger>
-      <SelectContent position='item-aligned' className='max-h-60 overflow-y-auto'>
+      <SelectContent>
         <RadixSelect.ScrollUpButton className='flex cursor-default items-center justify-center py-1' />
         {OPTIONS.map((n) => {
           const label = dayjs().startOf('day').add(n, 'ms').format('h:mm A')

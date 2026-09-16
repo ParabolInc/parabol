@@ -2,9 +2,15 @@
 Success result for the startMeetingSeriesNow mutation
 """
 type StartMeetingSeriesNowSuccess {
-  "The meeting that was just started"
-  meeting: NewMeeting!
+  """
+  The meeting the viewer can join. Null when the series group only covers teams they are not on,
+  which happens when an org leader starts a group they own but does not participate in.
+  """
+  meeting: NewMeeting
 
-  "The team the meeting was started for"
+  """
+  The team whose meeting the viewer can join, so its dash picks up the new meeting. Falls back to
+  the requested series' team when the viewer is on none of them.
+  """
   team: Team!
 }
