@@ -1,15 +1,12 @@
-import {
-  DEFAULT_FREE_TEMPLATES,
-  FREE_TEMPLATE_COLUMNS,
-  type FreeTemplateType
-} from '../../utils/getFreeTemplatesRemaining'
+import {USER_DETAIL_DEFAULTS, type UserDetailColumn} from '../../utils/getUserDetail'
 import getKysely from '../getKysely'
 
-const decrementFreeTemplatesRemaining = async (userId: string, templateType: FreeTemplateType) => {
-  const column = FREE_TEMPLATE_COLUMNS[templateType]
+type FreeTemplatesColumn = Exclude<UserDetailColumn, 'bytesUploaded'>
+
+const decrementFreeTemplatesRemaining = async (userId: string, column: FreeTemplatesColumn) => {
   await getKysely()
     .insertInto('UserDetail')
-    .values({id: userId, [column]: DEFAULT_FREE_TEMPLATES - 1})
+    .values({id: userId, [column]: USER_DETAIL_DEFAULTS[column] - 1})
     .onConflict((oc) =>
       oc
         .column('id')

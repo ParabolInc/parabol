@@ -6,13 +6,15 @@ const promptTemplateRules = {
     defaultTemplateId: 'workingStuckTemplate',
     mainCategory: 'retrospective',
     illustrationUrl: '/assets/Organization/aGhostOrg/template/gladSadMadTemplate.png',
-    maxPrompts: Threshold.MAX_REFLECTION_PROMPTS
+    maxPrompts: Threshold.MAX_REFLECTION_PROMPTS,
+    freeTemplatesColumn: 'freeCustomRetroTemplatesRemaining'
   },
   teamPrompt: {
     defaultTemplateId: 'enterpriseDailyStandupTemplate',
     mainCategory: 'standup',
     illustrationUrl: '/assets/Organization/aGhostOrg/template/teamPrompt.png',
-    maxPrompts: Threshold.MAX_STANDUP_PROMPTS
+    maxPrompts: Threshold.MAX_STANDUP_PROMPTS,
+    freeTemplatesColumn: 'freeCustomStandupTemplatesRemaining'
   }
 } as const
 

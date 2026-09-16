@@ -1,4 +1,10 @@
 import {type Kysely, sql} from 'kysely'
+import type {MigrationConfig} from 'kysely/migration'
+
+// Each MeetingSettings batch commits on its own so no lock outlives its batch & a rerun resumes via
+// ON CONFLICT. The renames & the User column move run last in one short transaction, so the
+// ACCESS EXCLUSIVE locks they take on User & TemplatePrompt are held for milliseconds, not the backfill.
+export const config: MigrationConfig = {transaction: false}
 
 const SEED_DATE = new Date('2026-09-04T00:00:00.000Z')
 const CANONICAL_TEMPLATE_ID = 'teamPrompt'
@@ -148,94 +154,14 @@ const generateUID = () => {
 
 // `any` is required here since migrations should be frozen in time. alternatively, keep a "snapshot" db interface.
 export async function up(db: Kysely<any>): Promise<void> {
-  await sql`
-    ALTER TABLE "ReflectPrompt" RENAME TO "TemplatePrompt";
-    ALTER TABLE "TemplatePrompt" RENAME CONSTRAINT "ReflectPrompt_pkey" TO "TemplatePrompt_pkey";
-    ALTER INDEX "idx_ReflectPrompt_parentPromptId" RENAME TO "idx_TemplatePrompt_parentPromptId";
-    ALTER INDEX "idx_ReflectPrompt_teamId" RENAME TO "idx_TemplatePrompt_teamId";
-    ALTER INDEX "idx_ReflectPrompt_templateId" RENAME TO "idx_TemplatePrompt_templateId";
-    ALTER TRIGGER "update_MeetingTemplate_updatedAt_from_ReflectPrompt" ON "TemplatePrompt"
-      RENAME TO "update_MeetingTemplate_updatedAt_from_TemplatePrompt";
-  `.execute(db)
-
-  await db
-    .insertInto('MeetingTemplate')
-    .values(
-      TEMPLATES.map((template) => ({
-        ...template,
-        type: 'teamPrompt',
-        mainCategory: 'standup',
-        teamId: 'aGhostTeam',
-        orgId: 'aGhostOrg',
-        scope: 'PUBLIC',
-        isActive: true,
-        isStarter: false,
-        isFree: true,
-        illustrationUrl: '/assets/Organization/aGhostOrg/template/teamPrompt.png',
-        createdAt: SEED_DATE,
-        updatedAt: SEED_DATE
-      }))
-    )
-    .onConflict((oc) => oc.doNothing())
-    .execute()
-
-  await db
-    .insertInto('TemplatePrompt')
-    .values(
-      PROMPTS.map((prompt) => ({
-        ...prompt,
-        teamId: 'aGhostTeam',
-        parentPromptId: null,
-        removedAt: null,
-        createdAt: SEED_DATE,
-        updatedAt: SEED_DATE
-      }))
-    )
-    .onConflict((oc) => oc.doNothing())
-    .execute()
-
-  await db.schema
-    .alterTable('UserDetail')
-    .addColumn('freeCustomRetroTemplatesRemaining', 'integer', (col) => col.notNull().defaultTo(2))
-    .addColumn('freeCustomPokerTemplatesRemaining', 'integer', (col) => col.notNull().defaultTo(2))
-    .addColumn('freeCustomStandupTemplatesRemaining', 'integer', (col) =>
-      col.notNull().defaultTo(2)
-    )
-    .execute()
-  await sql`
-    INSERT INTO "UserDetail" ("id", "freeCustomRetroTemplatesRemaining", "freeCustomPokerTemplatesRemaining")
-    SELECT "id", "freeCustomRetroTemplatesRemaining", "freeCustomPokerTemplatesRemaining"
-    FROM "User"
-    WHERE "freeCustomRetroTemplatesRemaining" <> 2 OR "freeCustomPokerTemplatesRemaining" <> 2
-    ON CONFLICT ("id") DO UPDATE SET
-      "freeCustomRetroTemplatesRemaining" = EXCLUDED."freeCustomRetroTemplatesRemaining",
-      "freeCustomPokerTemplatesRemaining" = EXCLUDED."freeCustomPokerTemplatesRemaining"
-  `.execute(db)
-  await db.schema
-    .alterTable('User')
-    .dropColumn('freeCustomRetroTemplatesRemaining')
-    .dropColumn('freeCustomPokerTemplatesRemaining')
-    .execute()
-
   const BATCH_SIZE = 1000
   let lastTeamId = ''
   while (true) {
     const teams: {id: string}[] = await db
       .selectFrom('Team')
-      .select('Team.id')
-      .where('Team.id', '>', lastTeamId)
-      .where((eb) =>
-        eb.not(
-          eb.exists(
-            eb
-              .selectFrom('MeetingSettings')
-              .select('MeetingSettings.id')
-              .whereRef('MeetingSettings.teamId', '=', 'Team.id')
-              .where('MeetingSettings.meetingType', '=', 'teamPrompt')
-          )
-        )
-      )
-      .orderBy('Team.id')
+      .select('id')
+      .where('id', '>', lastTeamId)
+      .orderBy('id')
       .limit(BATCH_SIZE)
       .execute()
     const lastTeam = teams.at(-1)
@@ -251,60 +177,141 @@ export async function up(db: Kysely<any>): Promise<void> {
           selectedTemplateId: CANONICAL_TEMPLATE_ID
         }))
       )
-      .onConflict((oc) => oc.doNothing())
+      .onConflict((oc) => oc.columns(['teamId', 'meetingType']).doNothing())
       .execute()
     lastTeamId = lastTeam.id
   }
+
+  await db.transaction().execute(async (trx) => {
+    await sql`
+      ALTER TABLE "ReflectPrompt" RENAME TO "TemplatePrompt";
+      ALTER TABLE "TemplatePrompt" RENAME CONSTRAINT "ReflectPrompt_pkey" TO "TemplatePrompt_pkey";
+      ALTER INDEX "idx_ReflectPrompt_parentPromptId" RENAME TO "idx_TemplatePrompt_parentPromptId";
+      ALTER INDEX "idx_ReflectPrompt_teamId" RENAME TO "idx_TemplatePrompt_teamId";
+      ALTER INDEX "idx_ReflectPrompt_templateId" RENAME TO "idx_TemplatePrompt_templateId";
+      ALTER TRIGGER "update_MeetingTemplate_updatedAt_from_ReflectPrompt" ON "TemplatePrompt"
+        RENAME TO "update_MeetingTemplate_updatedAt_from_TemplatePrompt";
+    `.execute(trx)
+
+    await trx
+      .insertInto('MeetingTemplate')
+      .values(
+        TEMPLATES.map((template) => ({
+          ...template,
+          type: 'teamPrompt',
+          mainCategory: 'standup',
+          teamId: 'aGhostTeam',
+          orgId: 'aGhostOrg',
+          scope: 'PUBLIC',
+          isActive: true,
+          isStarter: false,
+          isFree: true,
+          illustrationUrl: '/assets/Organization/aGhostOrg/template/teamPrompt.png',
+          createdAt: SEED_DATE,
+          updatedAt: SEED_DATE
+        }))
+      )
+      .onConflict((oc) => oc.doNothing())
+      .execute()
+
+    await trx
+      .insertInto('TemplatePrompt')
+      .values(
+        PROMPTS.map((prompt) => ({
+          ...prompt,
+          teamId: 'aGhostTeam',
+          parentPromptId: null,
+          removedAt: null,
+          createdAt: SEED_DATE,
+          updatedAt: SEED_DATE
+        }))
+      )
+      .onConflict((oc) => oc.doNothing())
+      .execute()
+
+    await trx.schema
+      .alterTable('UserDetail')
+      .addColumn('freeCustomRetroTemplatesRemaining', 'integer', (col) =>
+        col.notNull().defaultTo(2)
+      )
+      .addColumn('freeCustomPokerTemplatesRemaining', 'integer', (col) =>
+        col.notNull().defaultTo(2)
+      )
+      .addColumn('freeCustomStandupTemplatesRemaining', 'integer', (col) =>
+        col.notNull().defaultTo(2)
+      )
+      .execute()
+    await sql`
+      INSERT INTO "UserDetail" ("id", "freeCustomRetroTemplatesRemaining", "freeCustomPokerTemplatesRemaining")
+      SELECT "id", "freeCustomRetroTemplatesRemaining", "freeCustomPokerTemplatesRemaining"
+      FROM "User"
+      WHERE "freeCustomRetroTemplatesRemaining" <> 2 OR "freeCustomPokerTemplatesRemaining" <> 2
+      ON CONFLICT ("id") DO UPDATE SET
+        "freeCustomRetroTemplatesRemaining" = EXCLUDED."freeCustomRetroTemplatesRemaining",
+        "freeCustomPokerTemplatesRemaining" = EXCLUDED."freeCustomPokerTemplatesRemaining"
+    `.execute(trx)
+    await trx.schema
+      .alterTable('User')
+      .dropColumn('freeCustomRetroTemplatesRemaining')
+      .dropColumn('freeCustomPokerTemplatesRemaining')
+      .execute()
+  })
 }
 
 // `any` is required here since migrations should be frozen in time. alternatively, keep a "snapshot" db interface.
 export async function down(db: Kysely<any>): Promise<void> {
-  await db.deleteFrom('MeetingSettings').where('meetingType', '=', 'teamPrompt').execute()
+  await db.transaction().execute(async (trx) => {
+    await trx.deleteFrom('MeetingSettings').where('meetingType', '=', 'teamPrompt').execute()
 
-  await db.schema
-    .alterTable('User')
-    .addColumn('freeCustomRetroTemplatesRemaining', 'integer', (col) => col.notNull().defaultTo(2))
-    .addColumn('freeCustomPokerTemplatesRemaining', 'integer', (col) => col.notNull().defaultTo(2))
-    .execute()
-  await sql`
-    UPDATE "User" SET
-      "freeCustomRetroTemplatesRemaining" = "UserDetail"."freeCustomRetroTemplatesRemaining",
-      "freeCustomPokerTemplatesRemaining" = "UserDetail"."freeCustomPokerTemplatesRemaining"
-    FROM "UserDetail"
-    WHERE "User"."id" = "UserDetail"."id"
-      AND ("UserDetail"."freeCustomRetroTemplatesRemaining" <> 2 OR "UserDetail"."freeCustomPokerTemplatesRemaining" <> 2)
-  `.execute(db)
-  await db.schema
-    .alterTable('UserDetail')
-    .dropColumn('freeCustomRetroTemplatesRemaining')
-    .dropColumn('freeCustomPokerTemplatesRemaining')
-    .dropColumn('freeCustomStandupTemplatesRemaining')
-    .execute()
+    await trx.schema
+      .alterTable('User')
+      .addColumn('freeCustomRetroTemplatesRemaining', 'integer', (col) =>
+        col.notNull().defaultTo(2)
+      )
+      .addColumn('freeCustomPokerTemplatesRemaining', 'integer', (col) =>
+        col.notNull().defaultTo(2)
+      )
+      .execute()
+    await sql`
+      UPDATE "User" SET
+        "freeCustomRetroTemplatesRemaining" = "UserDetail"."freeCustomRetroTemplatesRemaining",
+        "freeCustomPokerTemplatesRemaining" = "UserDetail"."freeCustomPokerTemplatesRemaining"
+      FROM "UserDetail"
+      WHERE "User"."id" = "UserDetail"."id"
+        AND ("UserDetail"."freeCustomRetroTemplatesRemaining" <> 2 OR "UserDetail"."freeCustomPokerTemplatesRemaining" <> 2)
+    `.execute(trx)
+    await trx.schema
+      .alterTable('UserDetail')
+      .dropColumn('freeCustomRetroTemplatesRemaining')
+      .dropColumn('freeCustomPokerTemplatesRemaining')
+      .dropColumn('freeCustomStandupTemplatesRemaining')
+      .execute()
 
-  await db
-    .deleteFrom('TemplatePrompt')
-    .where(
-      'id',
-      'in',
-      PROMPTS.map(({id}) => id)
-    )
-    .execute()
-  await db
-    .deleteFrom('MeetingTemplate')
-    .where(
-      'id',
-      'in',
-      TEMPLATES.map(({id}) => id)
-    )
-    .execute()
+    await trx
+      .deleteFrom('TemplatePrompt')
+      .where(
+        'id',
+        'in',
+        PROMPTS.map(({id}) => id)
+      )
+      .execute()
+    await trx
+      .deleteFrom('MeetingTemplate')
+      .where(
+        'id',
+        'in',
+        TEMPLATES.map(({id}) => id)
+      )
+      .execute()
 
-  await sql`
-    ALTER TRIGGER "update_MeetingTemplate_updatedAt_from_TemplatePrompt" ON "TemplatePrompt"
-      RENAME TO "update_MeetingTemplate_updatedAt_from_ReflectPrompt";
-    ALTER INDEX "idx_TemplatePrompt_templateId" RENAME TO "idx_ReflectPrompt_templateId";
-    ALTER INDEX "idx_TemplatePrompt_teamId" RENAME TO "idx_ReflectPrompt_teamId";
-    ALTER INDEX "idx_TemplatePrompt_parentPromptId" RENAME TO "idx_ReflectPrompt_parentPromptId";
-    ALTER TABLE "TemplatePrompt" RENAME CONSTRAINT "TemplatePrompt_pkey" TO "ReflectPrompt_pkey";
-    ALTER TABLE "TemplatePrompt" RENAME TO "ReflectPrompt";
-  `.execute(db)
+    await sql`
+      ALTER TRIGGER "update_MeetingTemplate_updatedAt_from_TemplatePrompt" ON "TemplatePrompt"
+        RENAME TO "update_MeetingTemplate_updatedAt_from_ReflectPrompt";
+      ALTER INDEX "idx_TemplatePrompt_templateId" RENAME TO "idx_ReflectPrompt_templateId";
+      ALTER INDEX "idx_TemplatePrompt_teamId" RENAME TO "idx_ReflectPrompt_teamId";
+      ALTER INDEX "idx_TemplatePrompt_parentPromptId" RENAME TO "idx_ReflectPrompt_parentPromptId";
+      ALTER TABLE "TemplatePrompt" RENAME CONSTRAINT "TemplatePrompt_pkey" TO "ReflectPrompt_pkey";
+      ALTER TABLE "TemplatePrompt" RENAME TO "ReflectPrompt";
+    `.execute(trx)
+  })
 }

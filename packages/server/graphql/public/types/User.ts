@@ -30,10 +30,10 @@ import {
 import {getUserId, isSuperUser, isTeamMember} from '../../../utils/authorization'
 import type {FeatureFlagName} from '../../../utils/featureFlags'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
-import getFreeTemplatesRemaining from '../../../utils/getFreeTemplatesRemaining'
 import getMonthlyStreak from '../../../utils/getMonthlyStreak'
 import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
 import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
+import getUserDetail from '../../../utils/getUserDetail'
 import {getUserSocketCount} from '../../../utils/getUserSocketCount'
 import logError from '../../../utils/logError'
 import standardError from '../../../utils/standardError'
@@ -81,11 +81,11 @@ const User: ReqResolvers<'User'> = {
   },
   invoices,
   freeCustomRetroTemplatesRemaining: ({id: userId}, _args, {dataLoader}) =>
-    getFreeTemplatesRemaining(userId, 'retrospective', dataLoader),
+    getUserDetail(userId, 'freeCustomRetroTemplatesRemaining', dataLoader),
   freeCustomPokerTemplatesRemaining: ({id: userId}, _args, {dataLoader}) =>
-    getFreeTemplatesRemaining(userId, 'poker', dataLoader),
+    getUserDetail(userId, 'freeCustomPokerTemplatesRemaining', dataLoader),
   freeCustomStandupTemplatesRemaining: ({id: userId}, _args, {dataLoader}) =>
-    getFreeTemplatesRemaining(userId, 'teamPrompt', dataLoader),
+    getUserDetail(userId, 'freeCustomStandupTemplatesRemaining', dataLoader),
   archivedTasks: async (_source, {first, after, teamId}, {authToken}) => {
     const userId = getUserId(authToken)
     const tasks = await selectTasks()

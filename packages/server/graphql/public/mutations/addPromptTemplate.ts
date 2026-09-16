@@ -7,7 +7,7 @@ import getKysely from '../../../postgres/getKysely'
 import decrementFreeTemplatesRemaining from '../../../postgres/queries/decrementFreeTemplatesRemaining'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember, isUserInOrg} from '../../../utils/authorization'
-import getFreeTemplatesRemaining from '../../../utils/getFreeTemplatesRemaining'
+import getUserDetail from '../../../utils/getUserDetail'
 import publish from '../../../utils/publish'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import type {MutationResolvers} from '../resolverTypes'
@@ -27,7 +27,7 @@ const addPromptTemplate: MutationResolvers['addPromptTemplate'] = async (
     dataLoader.get('meetingTemplatesByType').load({meetingType: type, teamId}),
     dataLoader.get('teams').loadNonNull(teamId),
     dataLoader.get('users').loadNonNull(viewerId),
-    getFreeTemplatesRemaining(viewerId, type, dataLoader)
+    getUserDetail(viewerId, promptTemplateRules[type].freeTemplatesColumn, dataLoader)
   ])
   const org = await dataLoader.get('organizations').loadNonNull(viewerTeam.orgId)
   if (getFeatureTier(org) === 'starter' && freeTemplatesRemaining === 0) {
@@ -111,7 +111,7 @@ const addPromptTemplate: MutationResolvers['addPromptTemplate'] = async (
       .insertInto('TemplatePrompt')
       .values(newPrompts)
       .execute(),
-    decrementFreeTemplatesRemaining(viewerId, type)
+    decrementFreeTemplatesRemaining(viewerId, promptTemplateRules[type].freeTemplatesColumn)
   ])
   dataLoader.clearAll(['meetingTemplates', 'userDetails'])
   analytics.templateMetrics(

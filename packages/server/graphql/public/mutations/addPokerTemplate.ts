@@ -6,7 +6,7 @@ import getKysely from '../../../postgres/getKysely'
 import decrementFreeTemplatesRemaining from '../../../postgres/queries/decrementFreeTemplatesRemaining'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember, isUserInOrg} from '../../../utils/authorization'
-import getFreeTemplatesRemaining from '../../../utils/getFreeTemplatesRemaining'
+import getUserDetail from '../../../utils/getUserDetail'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
@@ -32,7 +32,11 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
     return standardError(new Error('Team not found'), {userId: viewerId})
   }
   const org = await dataLoader.get('organizations').loadNonNull(viewerTeam.orgId)
-  const freeTemplatesRemaining = await getFreeTemplatesRemaining(viewerId, 'poker', dataLoader)
+  const freeTemplatesRemaining = await getUserDetail(
+    viewerId,
+    'freeCustomPokerTemplatesRemaining',
+    dataLoader
+  )
   if (getFeatureTier(org) === 'starter' && freeTemplatesRemaining === 0) {
     return standardError(new Error('You have reached the limit of free custom templates.'), {
       userId: viewerId
@@ -92,7 +96,7 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
         .insertInto('TemplateDimension')
         .values(newTemplateDimensions)
         .execute(),
-      decrementFreeTemplatesRemaining(viewerId, 'poker')
+      decrementFreeTemplatesRemaining(viewerId, 'freeCustomPokerTemplatesRemaining')
     ])
     dataLoader.clearAll(['users', 'userDetails', 'meetingTemplates', 'templateDimensions'])
     analytics.templateMetrics(viewer, newTemplate, 'Template Cloned')
@@ -124,7 +128,7 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
           templateId
         })
         .execute(),
-      decrementFreeTemplatesRemaining(viewerId, 'poker')
+      decrementFreeTemplatesRemaining(viewerId, 'freeCustomPokerTemplatesRemaining')
     ])
     dataLoader.clearAll(['users', 'userDetails', 'meetingTemplates', 'templateDimensions'])
     analytics.templateMetrics(viewer, newTemplate, 'Template Created')
