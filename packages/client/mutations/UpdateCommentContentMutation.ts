@@ -21,13 +21,15 @@ const mutation = graphql`
           message
         }
       }
-      ...UpdateCommentContentMutation_meeting @relay(mask: false)
+      ...UpdateCommentContentMutation_meeting @relay(mask: false) @alias
     }
   }
 `
 
 type Comment = NonNullable<
-  TUpdateCommentContentMutation['response']['updateCommentContent']
+  NonNullable<
+    TUpdateCommentContentMutation['response']['updateCommentContent']
+  >['UpdateCommentContentMutation_meeting']
 >['comment']
 
 const UpdateCommentContentMutation: StandardMutation<TUpdateCommentContentMutation> = (

@@ -95,14 +95,18 @@ const TeamPickerModal = (props: Props) => {
         variables,
         onError,
         onCompleted: (res: useAddReflectTemplateMutation$data) =>
-          onTemplateCreated(res.addReflectTemplate?.reflectTemplate?.id)
+          onTemplateCreated(
+            res.addReflectTemplate?.useAddReflectTemplateMutation_team?.reflectTemplate?.id
+          )
       })
     } else if (type === 'poker') {
       executeAddPokerTemplate({
         variables,
         onError,
         onCompleted: (res: useAddPokerTemplateMutation$data) =>
-          onTemplateCreated(res.addPokerTemplate?.pokerTemplate?.id)
+          onTemplateCreated(
+            res.addPokerTemplate?.useAddPokerTemplateMutation_team?.pokerTemplate?.id
+          )
       })
     } else if (type === 'teamHealth') {
       executeAddTeamHealthTemplate({

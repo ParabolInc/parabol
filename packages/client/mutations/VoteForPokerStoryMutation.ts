@@ -24,13 +24,17 @@ const mutation = graphql`
           message
         }
       }
-      ...VoteForPokerStoryMutation_meeting @relay(mask: false)
+      ...VoteForPokerStoryMutation_meeting @relay(mask: false) @alias
     }
   }
 `
 
 type Stage = NonNullable<
-  NonNullable<TVoteForPokerStoryMutation['response']>['voteForPokerStory']['stage']
+  NonNullable<
+    NonNullable<
+      TVoteForPokerStoryMutation['response']
+    >['voteForPokerStory']['VoteForPokerStoryMutation_meeting']
+  >['stage']
 >
 
 const VoteForPokerStoryMutation: StandardMutation<TVoteForPokerStoryMutation> = (

@@ -2,7 +2,6 @@ import graphql from 'babel-plugin-relay/macro'
 import {lazy, Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import type {TimelineEvent_timelineEvent$key} from '../__generated__/TimelineEvent_timelineEvent.graphql'
-import type {ValueOf} from '../types/generics'
 import DelayUnmount from './DelayUnmount'
 import TimelineEventMock from './TimelineEventMock'
 
@@ -53,28 +52,45 @@ function TimelineEvent(props: Props) {
   const timelineEvent = useFragment(
     graphql`
       fragment TimelineEvent_timelineEvent on TimelineEvent {
-        ...TimelineEventJoinedParabol_timelineEvent
-        ...TimelineEventTeamCreated_timelineEvent
-        ...TimelineEventCompletedRetroMeeting_timelineEvent
-        ...TimelineEventCompletedActionMeeting_timelineEvent
-        ...TimelineEventPokerComplete_timelineEvent
-        ...TimelineEventTeamPromptComplete_timelineEvent
-        ...TimelineEventTeamHealthComplete_timelineEvent
+        ...TimelineEventJoinedParabol_timelineEvent @alias
+        ...TimelineEventTeamCreated_timelineEvent @alias
+        ...TimelineEventCompletedRetroMeeting_timelineEvent @alias
+        ...TimelineEventCompletedActionMeeting_timelineEvent @alias
+        ...TimelineEventPokerComplete_timelineEvent @alias
+        ...TimelineEventTeamPromptComplete_timelineEvent @alias
+        ...TimelineEventTeamHealthComplete_timelineEvent @alias
         __typename
       }
     `,
     timelineEventRef
   )
-  let AsyncComponent: undefined | ValueOf<typeof lookup>
-  if (timelineEvent) {
-    const {__typename} = timelineEvent
-    AsyncComponent = lookup[__typename as keyof typeof lookup]
+  const renderEvent = () => {
+    if (!timelineEvent) return null
+    const {
+      TimelineEventJoinedParabol_timelineEvent: joinedParabol,
+      TimelineEventTeamCreated_timelineEvent: teamCreated,
+      TimelineEventCompletedRetroMeeting_timelineEvent: retroComplete,
+      TimelineEventCompletedActionMeeting_timelineEvent: actionComplete,
+      TimelineEventPokerComplete_timelineEvent: pokerComplete,
+      TimelineEventTeamPromptComplete_timelineEvent: teamPromptComplete,
+      TimelineEventTeamHealthComplete_timelineEvent: teamHealthComplete
+    } = timelineEvent
+    if (joinedParabol) return <lookup.TimelineEventJoinedParabol timelineEvent={joinedParabol} />
+    if (teamCreated) return <lookup.TimelineEventTeamCreated timelineEvent={teamCreated} />
+    if (retroComplete)
+      return <lookup.TimelineEventCompletedRetroMeeting timelineEvent={retroComplete} />
+    if (actionComplete)
+      return <lookup.TimelineEventCompletedActionMeeting timelineEvent={actionComplete} />
+    if (pokerComplete) return <lookup.TimelineEventPokerComplete timelineEvent={pokerComplete} />
+    if (teamPromptComplete)
+      return <lookup.TimelineEventTeamPromptComplete timelineEvent={teamPromptComplete} />
+    if (teamHealthComplete)
+      return <lookup.TimelineEventTeamHealthComplete timelineEvent={teamHealthComplete} />
+    return null
   }
   return (
     <DelayUnmount unmountAfter={500}>
-      <Suspense fallback={<TimelineEventMock />}>
-        {AsyncComponent ? <AsyncComponent timelineEvent={timelineEvent!} /> : null}
-      </Suspense>
+      <Suspense fallback={<TimelineEventMock />}>{renderEvent()}</Suspense>
     </DelayUnmount>
   )
 }

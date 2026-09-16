@@ -42,7 +42,7 @@ graphql`
       }
     }
     timelineEvent {
-      ...TimelineEventCompletedActionMeeting_timelineEvent @relay(mask: false)
+      ...TimelineEventCompletedActionMeeting_timelineEvent @relay(mask: false) @alias
     }
     updatedTasks {
       id
@@ -71,8 +71,8 @@ const mutation = graphql`
           message
         }
       }
-      ...EndCheckInMutation_notification @relay(mask: false)
-      ...EndCheckInMutation_team @relay(mask: false)
+      ...EndCheckInMutation_notification @relay(mask: false) @alias
+      ...EndCheckInMutation_team @relay(mask: false) @alias
     }
   }
 `

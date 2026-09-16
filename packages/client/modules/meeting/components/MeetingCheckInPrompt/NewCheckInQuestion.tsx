@@ -143,12 +143,14 @@ const NewCheckInQuestion = (props: Props) => {
         modifyType
       },
       onCompleted: (res: TModifyCheckInQuestion$data) => {
-        const {modifyCheckInQuestion} = res
-        if (!modifyCheckInQuestion.modifiedCheckInQuestion) {
+        const modifiedCheckInQuestion =
+          res.modifyCheckInQuestion.useModifyCheckInQuestionMutation_success
+            ?.modifiedCheckInQuestion
+        if (!modifiedCheckInQuestion) {
           return
         }
 
-        setAiUpdatedIcebreaker(modifyCheckInQuestion.modifiedCheckInQuestion)
+        setAiUpdatedIcebreaker(modifiedCheckInQuestion)
       }
     })
   }

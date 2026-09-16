@@ -74,7 +74,7 @@ const JiraScopingSearchResults = (props: Props) => {
           queryString
         }
         phases {
-          ...useGetUsedServiceTaskIds_phase
+          ...useGetUsedServiceTaskIds_phase @alias
           phaseType
         }
       }
@@ -91,7 +91,7 @@ const JiraScopingSearchResults = (props: Props) => {
   const [persistIntegrationSearchQuery] = usePersistIntegrationSearchQueryMutation()
   const {id: meetingId, teamId, phases, jiraSearchQuery} = meeting
   const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
-  const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
+  const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase.useGetUsedServiceTaskIds_phase)
   const handleAddIssueClick = () => setIsEditing(true)
 
   if (!edges) {

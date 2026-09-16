@@ -20,7 +20,7 @@ const IntegratedTaskContent = (props: Props) => {
         integration {
           __typename
           ... on JiraIssue {
-            ...JiraExtraFieldsContent_issue
+            ...JiraExtraFieldsContent_issue @alias
             descriptionHTML
             summary
           }
@@ -58,7 +58,12 @@ const IntegratedTaskContent = (props: Props) => {
       <div className='max-h-80 overflow-auto px-4 [&_img]:h-auto'>
         <div className='font-semibold'>{summary}</div>
         <div dangerouslySetInnerHTML={{__html: sanitizeExternalHtml(descriptionHTML)}} />
-        <JiraExtraFieldsContent jiraDisplayFieldIds={jiraDisplayFieldIds} issueRef={integration} />
+        {integration.JiraExtraFieldsContent_issue && (
+          <JiraExtraFieldsContent
+            jiraDisplayFieldIds={jiraDisplayFieldIds}
+            issueRef={integration.JiraExtraFieldsContent_issue}
+          />
+        )}
       </div>
     )
   } else if (integration.__typename === 'JiraServerIssue') {

@@ -27,7 +27,7 @@ const mutation = graphql`
           message
         }
       }
-      ...SetTeamNotificationSettingMutation_settings @relay(mask: false)
+      ...SetTeamNotificationSettingMutation_settings @relay(mask: false) @alias
     }
   }
 `

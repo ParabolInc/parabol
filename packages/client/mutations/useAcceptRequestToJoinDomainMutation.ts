@@ -21,7 +21,7 @@ const mutation = graphql`
           message
         }
       }
-      ...useAcceptRequestToJoinDomainMutation_success @arguments(requestId: $requestId)
+      ...useAcceptRequestToJoinDomainMutation_success @arguments(requestId: $requestId) @alias
     }
   }
 `

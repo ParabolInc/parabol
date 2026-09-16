@@ -20,19 +20,24 @@ const TaskIntegrationLink = (props: Props) => {
     graphql`
       fragment TaskIntegrationLink_integration on TaskIntegration {
         __typename
-        ...TaskIntegrationLinkIntegrationGitHub @relay(mask: false)
-        ...TaskIntegrationLinkIntegrationJira @relay(mask: false)
-        ...TaskIntegrationLinkIntegrationJiraServer @relay(mask: false)
-        ...TaskIntegrationLinkIntegrationGitLab @relay(mask: false)
-        ...TaskIntegrationLinkIntegrationAzure @relay(mask: false)
-        ...TaskIntegrationLinkIntegrationLinear @relay(mask: false)
+        ...TaskIntegrationLinkIntegrationGitHub @relay(mask: false) @alias
+        ...TaskIntegrationLinkIntegrationJira @relay(mask: false) @alias
+        ...TaskIntegrationLinkIntegrationJiraServer @relay(mask: false) @alias
+        ...TaskIntegrationLinkIntegrationGitLab @relay(mask: false) @alias
+        ...TaskIntegrationLinkIntegrationAzure @relay(mask: false) @alias
+        ...TaskIntegrationLinkIntegrationLinear @relay(mask: false) @alias
       }
     `,
     integrationRef
   )
   if (!integration) return null
-  if (integration.__typename === 'JiraIssue') {
-    const {issueKey, projectKey, cloudName} = integration
+  const linkClassName = cn(
+    'block px-4 text-[14px] text-fg-primary leading-5 underline hover:underline focus:underline',
+    className
+  )
+  const jira = integration.TaskIntegrationLinkIntegrationJira
+  if (jira) {
+    const {issueKey, projectKey, cloudName} = jira
     return (
       <JiraIssueLink
         issueKey={issueKey}
@@ -44,25 +49,26 @@ const TaskIntegrationLink = (props: Props) => {
         {children}
       </JiraIssueLink>
     )
-  } else if (integration.__typename === 'JiraServerIssue') {
-    const {url, issueKey, projectKey} = integration
+  }
+  const jiraServer = integration.TaskIntegrationLinkIntegrationJiraServer
+  if (jiraServer) {
+    const {url, issueKey, projectKey} = jiraServer
     return (
       <a
         href={url}
         rel='noopener noreferrer'
         target='_blank'
         title={`Jira Data Center Issue #${issueKey} on ${projectKey}`}
-        className={cn(
-          'block px-4 text-[14px] text-fg-primary leading-5 underline hover:underline focus:underline',
-          className
-        )}
+        className={linkClassName}
       >
         {`Issue #${issueKey}`}
         {children}
       </a>
     )
-  } else if (integration.__typename === '_xGitHubIssue') {
-    const {repository, number} = integration
+  }
+  const github = integration.TaskIntegrationLinkIntegrationGitHub
+  if (github) {
+    const {repository, number} = github
     const {nameWithOwner} = repository
     const href =
       nameWithOwner === 'ParabolInc/ParabolDemo'
@@ -74,17 +80,16 @@ const TaskIntegrationLink = (props: Props) => {
         rel='noopener noreferrer'
         target='_blank'
         title={`GitHub Issue #${number} on ${nameWithOwner}`}
-        className={cn(
-          'block px-4 text-[14px] text-fg-primary leading-5 underline hover:underline focus:underline',
-          className
-        )}
+        className={linkClassName}
       >
         {`Issue #${number}`}
         {children}
       </a>
     )
-  } else if (integration.__typename === '_xGitLabIssue') {
-    const {webPath, iid, webUrl} = integration
+  }
+  const gitlab = integration.TaskIntegrationLinkIntegrationGitLab
+  if (gitlab) {
+    const {webPath, iid, webUrl} = gitlab
     const {fullPath} = parseWebPath(webPath)
     return (
       <a
@@ -92,17 +97,16 @@ const TaskIntegrationLink = (props: Props) => {
         rel='noopener noreferrer'
         target='_blank'
         title={`GitLab Issue #${iid} on ${fullPath}`}
-        className={cn(
-          'block px-4 text-[14px] text-fg-primary leading-5 underline hover:underline focus:underline',
-          className
-        )}
+        className={linkClassName}
       >
         {`Issue #${iid}`}
         {children}
       </a>
     )
-  } else if (integration.__typename === 'AzureDevOpsWorkItem') {
-    const {id, teamProject, url, type} = integration
+  }
+  const azure = integration.TaskIntegrationLinkIntegrationAzure
+  if (azure) {
+    const {id, teamProject, url, type} = azure
     const integrationType = type.includes('Issue') ? 'Issue' : type
     return (
       <a
@@ -110,22 +114,21 @@ const TaskIntegrationLink = (props: Props) => {
         rel='noopener noreferrer'
         target='_blank'
         title={`Azure Item #${id} on ${teamProject}`}
-        className={cn(
-          'block px-4 text-[14px] text-fg-primary leading-5 underline hover:underline focus:underline',
-          className
-        )}
+        className={linkClassName}
       >
         {`${integrationType} #${id}`}
         {children}
       </a>
     )
-  } else if (integration.__typename === '_xLinearIssue') {
+  }
+  const linear = integration.TaskIntegrationLinkIntegrationLinear
+  if (linear) {
     const {
       identifier,
       team: {name: teamName},
       linearProject,
       url
-    } = integration
+    } = linear
     const nameWithTeam = getLinearRepoName(linearProject, teamName)
     return (
       <a
@@ -133,10 +136,7 @@ const TaskIntegrationLink = (props: Props) => {
         rel='noopener noreferrer'
         target='_blank'
         title={`Linear Issue #${identifier} on ${nameWithTeam}`}
-        className={cn(
-          'block px-4 text-[14px] text-fg-primary leading-5 underline hover:underline focus:underline',
-          className
-        )}
+        className={linkClassName}
       >
         {`Issue #${identifier}`}
         {children}
