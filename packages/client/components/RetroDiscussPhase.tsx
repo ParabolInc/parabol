@@ -75,8 +75,6 @@ const RetroDiscussPhase = (props: Props) => {
   // bugs shown on screen when the discussion group title contains "bug"
   //
   // const {isComplete} = localStage
-  // const isBuggy = (!isComplete && title?.toLowerCase().includes('bug')) ?? false
-  // useScreenBugs(isBuggy, meetingId)
 
   // reflection group will be null until the server overwrites the placeholder.
   if (!reflectionGroup) return null

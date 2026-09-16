@@ -72,7 +72,6 @@ export const ScheduleDialog = (props: Props) => {
             }
           }
         }
-        ...GcalModal_team
         ...GcalSettings_team
       }
     `,
