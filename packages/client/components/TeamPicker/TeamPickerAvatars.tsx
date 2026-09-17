@@ -1,21 +1,21 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
-import type {NewMeetingTeamPickerAvatars_team$key} from '../__generated__/NewMeetingTeamPickerAvatars_team.graphql'
-import {cn} from '../ui/cn'
-import getShuffledArr from '../utils/getShuffledArr'
-import Avatar from './Avatar/Avatar'
+import type {TeamPickerAvatars_team$key} from '../../__generated__/TeamPickerAvatars_team.graphql'
+import {cn} from '../../ui/cn'
+import getShuffledArr from '../../utils/getShuffledArr'
+import Avatar from '../Avatar/Avatar'
 
 interface Props {
-  teamRef: NewMeetingTeamPickerAvatars_team$key
+  teamRef: TeamPickerAvatars_team$key
 }
 
-const NewMeetingTeamPickerAvatars = (props: Props) => {
+const TeamPickerAvatars = (props: Props) => {
   const {teamRef} = props
 
   const team = useFragment(
     graphql`
-      fragment NewMeetingTeamPickerAvatars_team on Team {
+      fragment TeamPickerAvatars_team on Team {
         teamMembers {
           id
           user {
@@ -53,4 +53,4 @@ const NewMeetingTeamPickerAvatars = (props: Props) => {
   )
 }
 
-export default NewMeetingTeamPickerAvatars
+export default TeamPickerAvatars

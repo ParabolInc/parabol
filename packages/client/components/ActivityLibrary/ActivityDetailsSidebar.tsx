@@ -28,10 +28,10 @@ import NewMeetingSettingsToggleAnonymity from '../NewMeetingSettingsToggleAnonym
 import NewMeetingSettingsToggleCheckIn from '../NewMeetingSettingsToggleCheckIn'
 import NewMeetingSettingsToggleReviewPastTasks from '../NewMeetingSettingsToggleReviewPastTasks'
 import NewMeetingSettingsToggleTeamHealth from '../NewMeetingSettingsToggleTeamHealth'
-import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
 import StartMeetingUpgradeModal from '../StartMeetingUpgradeModal'
 import StyledError from '../StyledError'
 import StyledLink from '../StyledLink'
+import TeamPicker from '../TeamPicker/TeamPicker'
 import ScheduleMeetingButton from './ScheduleMeetingButton'
 
 interface Props {
@@ -93,8 +93,7 @@ const ActivityDetailsSidebar = (props: Props) => {
           ...NewMeetingSettingsToggleCheckIn_settings
         }
         ...NewMeetingSettingsToggleTeamHealth_team
-        ...NewMeetingTeamPicker_selectedTeam
-        ...NewMeetingTeamPicker_teams
+        ...TeamPicker_teams
         ...NewMeetingActionsCurrentMeetings_team
         ...ScheduleMeetingButton_team
         ...ScheduleDialog_team
@@ -294,9 +293,9 @@ const ActivityDetailsSidebar = (props: Props) => {
             )}
           >
             <div className='mt-6 flex grow flex-col gap-2'>
-              <NewMeetingTeamPicker
+              <TeamPicker
                 onSelectTeam={onSelectTeam}
-                selectedTeamRef={selectedTeam}
+                selectedTeamId={selectedTeam.id}
                 teamsRef={availableTeams}
                 onShareToOrg={handleShareToOrg}
               />
