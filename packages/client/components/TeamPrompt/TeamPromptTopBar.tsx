@@ -2,12 +2,14 @@ import graphql from 'babel-plugin-relay/macro'
 import {type ComponentPropsWithoutRef, forwardRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {Link} from 'react-router'
+import {RRule} from 'rrule'
 import type {TeamPromptTopBar_meeting$key} from '~/__generated__/TeamPromptTopBar_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {useRenameMeeting} from '~/hooks/useRenameMeeting'
 import NewMeetingAvatarGroup from '~/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import {KeyboardArrowLeft, KeyboardArrowRight} from '~/ui/icons'
 import {cn} from '../../ui/cn'
+import {toHumanReadable} from '../../utils/humanReadableRecurrenceRule'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import EditableText from '../EditableText'
 import {EditMeetingSeriesModal} from '../EditMeetingSeriesModal'
@@ -16,6 +18,7 @@ import LogoBlock from '../LogoBlock/LogoBlock'
 import {IconGroupBlock, MeetingTopBarStyles} from '../MeetingTopBar'
 import {EndRecurringMeetingModal} from '../Recurrence/EndRecurringMeetingModal'
 import MeetingDateLabel from '../Recurrence/MeetingDateLabel'
+import countUnsharedDrafts from './structured/countUnsharedDrafts'
 import {TeamPromptMeetingStatus} from './TeamPromptMeetingStatus'
 import TeamPromptOptions from './TeamPromptOptions'
 
@@ -49,6 +52,7 @@ const TeamPromptTopBar = (props: Props) => {
         id
         name
         teamId
+        templateId
         rightDrawerOpen
         facilitatorUserId
         localStageId
@@ -62,7 +66,12 @@ const TeamPromptTopBar = (props: Props) => {
           id
           cancelledAt
           nextMeetingDate
+          recurrenceRule
           ...EditMeetingSeriesModal_series
+        }
+        responses {
+          isShared
+          answeredPromptIds
         }
         ...MeetingDateLabel_meeting
         ...TeamPromptOptions_meeting
@@ -81,14 +90,17 @@ const TeamPromptTopBar = (props: Props) => {
   const {
     id: meetingId,
     name: meetingName,
+    templateId,
     facilitatorUserId,
     meetingSeries,
     prevMeeting,
-    nextMeeting
+    nextMeeting,
+    responses
   } = meeting
   const isFacilitator = viewerId === facilitatorUserId
   const {handleSubmit, validate, error} = useRenameMeeting(meetingId)
   const isRecurrenceEnabled = meetingSeries && !meetingSeries.cancelledAt
+  const unsharedDraftsCount = countUnsharedDrafts(templateId, responses)
 
   const onOpenWorkSidebar = () => {
     if (meeting.rightDrawerOpen === 'inspiration') {
@@ -127,7 +139,14 @@ const TeamPromptTopBar = (props: Props) => {
         onClick={onOpenWorkSidebar}
       >
         <IconLabel icon='task_alt' iconLarge />
-        <div className='text-fg-primary group-hover:text-fg-primary'>Inspiration</div>
+        <div
+          className={cn(
+            'group-hover:text-fg-primary',
+            meeting.rightDrawerOpen === 'inspiration' ? 'text-accent' : 'text-fg-primary'
+          )}
+        >
+          Inspiration
+        </div>
       </button>
       <TeamPromptOptions
         meetingRef={meeting}
@@ -165,6 +184,11 @@ const TeamPromptTopBar = (props: Props) => {
                   <h1 className={headerTitleClassName}>{meetingName}</h1>
                 )}
                 <MeetingDateLabel meetingRef={meeting} />
+                {templateId && isRecurrenceEnabled && (
+                  <div className='hidden text-[12px] text-fg-secondary md:block'>
+                    {toHumanReadable(RRule.fromString(meetingSeries.recurrenceRule))}
+                  </div>
+                )}
               </div>
               {isRecurrenceEnabled && nextMeeting && (
                 <Link className='text-fg-secondary' to={`/meet/${nextMeeting.id}`}>
@@ -193,7 +217,9 @@ const TeamPromptTopBar = (props: Props) => {
         <EndRecurringMeetingModal
           meetingRef={meeting}
           isOpen={isEndRecurringMeetingOpen}
+          hasSeries={!!isRecurrenceEnabled}
           nextMeetingDate={isRecurrenceEnabled ? meetingSeries.nextMeetingDate : undefined}
+          unsharedDraftsCount={unsharedDraftsCount}
           closeModal={() => setIsEndRecurringMeetingOpen(false)}
         />
       </MeetingTopBarStyles>
