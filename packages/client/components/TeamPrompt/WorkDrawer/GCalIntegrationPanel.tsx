@@ -10,6 +10,7 @@ import GcalClientManager from '../../../utils/GcalClientManager'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import GCalIntegrationResultsRoot from './GCalIntegrationResultsRoot'
 import InspirationItemsPanel from './InspirationItemsPanel'
+import useIsStructuredInspiration from './useIsStructuredInspiration'
 import {WorkDrawerDateFilter} from './WorkDrawerDateFilter'
 
 const TODAY_MIDNIGHT = new Date().setHours(0, 0, 0, 0)
@@ -55,7 +56,7 @@ const GCalPanel = (props: Props) => {
 
   const teamMember = meeting.viewerMeetingMember?.teamMember
 
-  const {dateRange, setDateRange, onResultCount, getHasResults} = useInspirationDrawer(
+  const {dateRange, setDateRange, onResultCount, getResultCount} = useInspirationDrawer(
     'gcal',
     meeting
   )
@@ -67,9 +68,8 @@ const GCalPanel = (props: Props) => {
   const order = new Date(endDate).getTime() <= Date.now() ? 'DESC' : 'ASC'
   const searchQuery = JSON.stringify({startDate, endDate})
 
-  const hasResults = getHasResults(searchQuery)
-
   const atmosphere = useAtmosphere()
+  const isStructured = useIsStructuredInspiration()
   const mutationProps = useMutationProps()
   const {error, onError} = mutationProps
 
@@ -92,30 +92,38 @@ const GCalPanel = (props: Props) => {
     })
   }
 
+  const filterBar = (
+    <div className='mb-2 flex w-full px-2'>
+      <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
+    </div>
+  )
+
   return (
     <>
       {teamMember?.integrations.gcal?.auth?.providerId ? (
         <>
-          <div className='mb-2 flex w-full px-2'>
-            <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
-          </div>
+          {!isStructured && filterBar}
           <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
-            {hasResults && (
-              <InspirationItemsPanel
-                meetingId={meeting.id}
-                service='gcal'
-                searchQuery={searchQuery}
-                initialItems={meeting.gcalInspirationItems}
-              />
-            )}
-            <GCalIntegrationResultsRoot
-              teamId={teamMember.teamId}
-              startDate={startDate}
-              endDate={endDate}
-              order={order}
+            <InspirationItemsPanel
+              filters={isStructured ? filterBar : undefined}
+              meetingId={meeting.id}
+              teamId={meeting.teamId}
+              service='gcal'
               searchQuery={searchQuery}
-              onResultCount={onResultCount}
-            />
+              initialItems={meeting.gcalInspirationItems}
+              dateRange={dateRange}
+              workItemCount={getResultCount(searchQuery)}
+              hideDraftPanel={!getResultCount(searchQuery)}
+            >
+              <GCalIntegrationResultsRoot
+                teamId={teamMember.teamId}
+                startDate={startDate}
+                endDate={endDate}
+                order={order}
+                searchQuery={searchQuery}
+                onResultCount={onResultCount}
+              />
+            </InspirationItemsPanel>
           </div>
         </>
       ) : (

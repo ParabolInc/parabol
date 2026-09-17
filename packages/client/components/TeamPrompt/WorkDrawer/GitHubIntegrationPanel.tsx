@@ -15,6 +15,7 @@ import GitHubSVG from '../../GitHubSVG'
 import GitHubIntegrationResultsRoot from './GitHubIntegrationResultsRoot'
 import GitHubRepoFilterBar from './GitHubRepoFilterBar'
 import InspirationItemsPanel from './InspirationItemsPanel'
+import useIsStructuredInspiration from './useIsStructuredInspiration'
 import {WorkDrawerDateFilter} from './WorkDrawerDateFilter'
 
 const GITHUB_QUERY_TABS: {key: 'issue' | 'pullRequest'; label: string}[] = [
@@ -73,7 +74,7 @@ const GitHubIntegrationPanel = (props: Props) => {
   const atmosphere = useAtmosphere()
   const teamMember = meeting.viewerMeetingMember?.teamMember
 
-  const {dateRange, setDateRange, onResultCount, getHasResults} = useInspirationDrawer(
+  const {dateRange, setDateRange, onResultCount, getResultCount} = useInspirationDrawer(
     'github',
     meeting
   )
@@ -94,8 +95,8 @@ const GitHubIntegrationPanel = (props: Props) => {
   const searchQuery = [GITHUB_QUERY_MAPPING[githubType], repoQueryString, dateQueryString]
     .filter(Boolean)
     .join(' ')
-  const hasResults = getHasResults(searchQuery)
 
+  const isStructured = useIsStructuredInspiration()
   const mutationProps = useMutationProps()
   const {error, onError} = mutationProps
 
@@ -120,61 +121,71 @@ const GitHubIntegrationPanel = (props: Props) => {
     })
   }
 
+  const filterBar = teamMember ? (
+    <>
+      <GitHubRepoFilterBar
+        teamMemberRef={teamMember}
+        selectedRepos={selectedRepos}
+        setSelectedRepos={(repos) => {
+          SendClientSideEvent(atmosphere, 'Your Work Filter Changed', {
+            teamId: meeting.teamId,
+            meetingId: meeting.id,
+            service: 'github'
+          })
+          setSelectedRepos(repos)
+        }}
+      />
+      <div className='mb-2 flex w-full gap-2 px-4'>
+        {GITHUB_QUERY_TABS.map((tab) => (
+          <Button
+            key={tab.key}
+            size='md'
+            aria-pressed={tab.key === githubType}
+            className={cn(
+              'w-1/2 text-fg-primary',
+              tab.key === githubType
+                ? 'bg-surface-selected font-semibold text-fg-selected hover:bg-surface-selected focus:text-fg-selected'
+                : 'border border-hairline-strong bg-transparent hover:bg-surface-hover'
+            )}
+            onClick={() => {
+              trackTabNavigated(tab.label)
+              setGithubType(tab.key)
+            }}
+          >
+            {tab.label}
+          </Button>
+        ))}
+      </div>
+      <div className='mb-2 flex w-full px-2'>
+        <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
+      </div>
+    </>
+  ) : null
+
   return (
     <>
       {teamMember?.integrations.github?.isActive ? (
         <>
-          <GitHubRepoFilterBar
-            teamMemberRef={teamMember}
-            selectedRepos={selectedRepos}
-            setSelectedRepos={(repos) => {
-              SendClientSideEvent(atmosphere, 'Your Work Filter Changed', {
-                teamId: meeting.teamId,
-                meetingId: meeting.id,
-                service: 'github'
-              })
-              setSelectedRepos(repos)
-            }}
-          />
-          <div className='mb-2 flex w-full gap-2 px-4'>
-            {GITHUB_QUERY_TABS.map((tab) => (
-              <Button
-                key={tab.key}
-                size='md'
-                aria-pressed={tab.key === githubType}
-                className={cn(
-                  'w-1/2 text-fg-primary',
-                  tab.key === githubType
-                    ? 'bg-surface-selected font-semibold text-fg-selected hover:bg-surface-selected focus:text-fg-selected'
-                    : 'border border-hairline-strong bg-transparent hover:bg-surface-hover'
-                )}
-                onClick={() => {
-                  trackTabNavigated(tab.label)
-                  setGithubType(tab.key)
-                }}
-              >
-                {tab.label}
-              </Button>
-            ))}
-          </div>
-          <div className='mb-2 flex w-full px-2'>
-            <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
-          </div>
+          {!isStructured && filterBar}
           <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
-            {hasResults && (
-              <InspirationItemsPanel
-                meetingId={meeting.id}
-                service='github'
-                searchQuery={searchQuery}
-                initialItems={meeting.githubInspirationItems}
-              />
-            )}
-            <GitHubIntegrationResultsRoot
-              teamId={teamMember.teamId}
-              queryType={githubType}
+            <InspirationItemsPanel
+              filters={isStructured ? filterBar : undefined}
+              meetingId={meeting.id}
+              teamId={meeting.teamId}
+              service='github'
               searchQuery={searchQuery}
-              onResultCount={onResultCount}
-            />
+              initialItems={meeting.githubInspirationItems}
+              dateRange={dateRange}
+              workItemCount={getResultCount(searchQuery)}
+              hideDraftPanel={!getResultCount(searchQuery)}
+            >
+              <GitHubIntegrationResultsRoot
+                teamId={teamMember.teamId}
+                queryType={githubType}
+                searchQuery={searchQuery}
+                onResultCount={onResultCount}
+              />
+            </InspirationItemsPanel>
           </div>
         </>
       ) : (
