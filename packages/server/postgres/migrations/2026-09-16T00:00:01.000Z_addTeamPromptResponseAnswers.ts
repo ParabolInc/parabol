@@ -21,7 +21,7 @@ export async function up(db: Kysely<any>): Promise<void> {
       col.notNull().references('TeamPromptResponse.id').onDelete('cascade')
     )
     .addColumn('promptId', 'varchar(100)', (col) =>
-      col.notNull().references('ReflectPrompt.id').onDelete('cascade')
+      col.notNull().references('TemplatePrompt.id').onDelete('cascade')
     )
     .addColumn('content', 'jsonb', (col) => col.notNull())
     .addColumn('plaintextContent', 'text', (col) => col.notNull())

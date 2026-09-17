@@ -4,7 +4,7 @@ import type {TeamPromptResponseAnswerResolvers} from '../resolverTypes'
 const TeamPromptResponseAnswer: TeamPromptResponseAnswerResolvers = {
   id: ({id}) => TeamPromptResponseAnswerId.join(id),
   prompt: ({promptId}, _args, {dataLoader}) => {
-    return dataLoader.get('reflectPrompts').loadNonNull(promptId)
+    return dataLoader.get('templatePrompts').loadNonNull(promptId)
   },
   content: ({content}) => JSON.stringify(content)
 }

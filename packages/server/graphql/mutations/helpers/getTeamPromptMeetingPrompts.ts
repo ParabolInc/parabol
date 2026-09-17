@@ -6,7 +6,7 @@ const getTeamPromptMeetingPrompts = async (
 ) => {
   const {templateId, createdAt} = meeting
   if (!templateId) return []
-  const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(templateId)
+  const prompts = await dataLoader.get('templatePromptsByTemplateId').load(templateId)
   return prompts.filter(
     (prompt) => prompt.createdAt < createdAt && (!prompt.removedAt || createdAt < prompt.removedAt)
   )

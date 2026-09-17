@@ -20,7 +20,7 @@ type TeamPromptMeeting implements NewMeeting {
   """
   The stand-up template whose prompts this meeting answers. Null for legacy stand-ups
   """
-  template: TeamPromptTemplate
+  template: PromptTemplate
 
   """
   The prompts every member answers, frozen to the template as it was when the meeting started.
