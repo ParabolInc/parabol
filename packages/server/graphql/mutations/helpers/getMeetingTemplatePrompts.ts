@@ -1,6 +1,6 @@
 import type {DataLoaderWorker} from '../../graphql'
 
-const getTeamPromptMeetingPrompts = async (
+const getMeetingTemplatePrompts = async (
   meeting: {templateId: string | null; createdAt: Date},
   dataLoader: DataLoaderWorker
 ) => {
@@ -12,4 +12,4 @@ const getTeamPromptMeetingPrompts = async (
   )
 }
 
-export default getTeamPromptMeetingPrompts
+export default getMeetingTemplatePrompts

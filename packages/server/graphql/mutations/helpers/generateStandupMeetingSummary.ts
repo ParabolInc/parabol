@@ -3,7 +3,8 @@ import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import type {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
 import canAccessAI from './canAccessAI'
-import getTeamPromptMeetingPrompts from './getTeamPromptMeetingPrompts'
+import getMeetingTemplatePrompts from './getMeetingTemplatePrompts'
+import getSharedTeamPromptResponses from './getSharedTeamPromptResponses'
 
 const generateStandupMeetingSummary = async (
   meeting: TeamPromptMeeting,
@@ -13,11 +14,10 @@ const generateStandupMeetingSummary = async (
   const isAIAvailable = await canAccessAI(team, dataLoader)
   if (!isAIAvailable) return null
 
-  const [allResponses, prompts] = await Promise.all([
-    dataLoader.get('teamPromptResponsesByMeetingId').load(meeting.id),
-    getTeamPromptMeetingPrompts(meeting, dataLoader)
+  const [responses, prompts] = await Promise.all([
+    getSharedTeamPromptResponses(meeting.id, dataLoader),
+    getMeetingTemplatePrompts(meeting, dataLoader)
   ])
-  const responses = allResponses.filter((response) => response.isShared)
 
   const userIds = responses.map((response) => response.userId)
   const users = (await dataLoader.get('users').loadMany(userIds)).filter(isValid)

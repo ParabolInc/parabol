@@ -6,7 +6,7 @@ import {getUserId} from '../../../utils/authorization'
 import filterTasksByMeeting from '../../../utils/filterTasksByMeeting'
 import getPhase from '../../../utils/getPhase'
 import isValid from '../../isValid'
-import getTeamPromptMeetingPrompts from '../../mutations/helpers/getTeamPromptMeetingPrompts'
+import getMeetingTemplatePrompts from '../../mutations/helpers/getMeetingTemplatePrompts'
 import {hasSharedContent} from '../mutations/helpers/buildTeamPromptResponseContent'
 import type {TeamPromptMeetingResolvers} from '../resolverTypes'
 
@@ -64,7 +64,7 @@ const TeamPromptMeeting: TeamPromptMeetingResolvers = {
   },
 
   prompts: (meeting, _args, {dataLoader}) => {
-    return getTeamPromptMeetingPrompts(meeting, dataLoader)
+    return getMeetingTemplatePrompts(meeting, dataLoader)
   },
 
   responseCount: async ({id: meetingId}) => {

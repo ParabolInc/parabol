@@ -28,6 +28,10 @@ const TeamPromptResponse: TeamPromptResponseResolvers = {
     return isContentVisible(response, authToken) ? response.plaintextContent : ''
   },
 
+  sharedAt: ({isShared, sharedAt, createdAt}) => {
+    return isShared ? (sharedAt ?? createdAt) : null
+  },
+
   answers: async (response, _args, {authToken, dataLoader}) => {
     if (!isContentVisible(response, authToken)) return []
     return dataLoader.get('teamPromptResponseAnswersByResponseId').load(response.id)

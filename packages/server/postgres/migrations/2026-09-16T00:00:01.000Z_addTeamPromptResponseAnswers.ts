@@ -7,15 +7,9 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('isShared', 'boolean', (col) => col.notNull().defaultTo(true))
     .execute()
   await db.schema.alterTable('TeamPromptResponse').addColumn('sharedAt', 'timestamptz').execute()
-  await db
-    .updateTable('TeamPromptResponse')
-    .set({sharedAt: sql`"createdAt"`})
-    .where('sharedAt', 'is', null)
-    .execute()
 
   await db.schema
     .createTable('TeamPromptResponseAnswer')
-    .ifNotExists()
     .addColumn('id', 'integer', (col) => col.generatedByDefaultAsIdentity().primaryKey())
     .addColumn('responseId', 'integer', (col) =>
       col.notNull().references('TeamPromptResponse.id').onDelete('cascade')

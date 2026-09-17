@@ -4,6 +4,7 @@ import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
 import {toDateTime} from 'parabol-client/shared/rruleUtil'
 import AuthToken from '../database/types/AuthToken'
 import getKysely from '../postgres/getKysely'
+import {CipherId} from '../utils/CipherId'
 import encodeAuthToken from '../utils/encodeAuthToken'
 import {sendPublic, signUp} from './common'
 
@@ -35,8 +36,8 @@ const paragraphWithMention = (text: string, userId: string, label: string) =>
 const EMPTY_DOC = JSON.stringify({type: 'doc', content: []})
 
 const START_TEAM_PROMPT = `
-  mutation StartTeamPrompt($teamId: ID!, $templateId: ID, $rrule: RRule) {
-    startTeamPrompt(teamId: $teamId, templateId: $templateId, rrule: $rrule) {
+  mutation StartTeamPrompt($teamId: ID!, $rrule: RRule) {
+    startTeamPrompt(teamId: $teamId, rrule: $rrule) {
       ... on ErrorPayload {
         error {
           message
@@ -45,7 +46,6 @@ const START_TEAM_PROMPT = `
       ... on StartTeamPromptSuccess {
         meeting {
           id
-          templateId
           meetingPrompt
           template {
             id
@@ -172,7 +172,9 @@ const START_SERIES_NOW = `
       meeting {
         id
         ... on TeamPromptMeeting {
-          templateId
+          template {
+            id
+          }
           prompts {
             id
           }
@@ -208,6 +210,16 @@ const UPDATE_TEMPLATE_SCOPE = `
           id
           scope
         }
+      }
+    }
+  }
+`
+
+const SELECT_TEMPLATE = `
+  mutation SelectTemplate($selectedTemplateId: ID!, $teamId: ID!) {
+    selectTemplate(selectedTemplateId: $selectedTemplateId, teamId: $teamId) {
+      error {
+        message
       }
     }
   }
@@ -258,16 +270,29 @@ const addTeammate = async (teamId: string) => {
 const startStandup = async (
   auth: {cookie?: string; bearerToken?: string},
   teamId: string,
-  templateId?: string,
   rrule?: string
 ) => {
   const res = await sendPublic({
     query: START_TEAM_PROMPT,
-    variables: {teamId, templateId, rrule},
+    variables: {teamId, rrule},
     ...auth
   })
   expect(res.errors).toBeUndefined()
   return res.data.startTeamPrompt
+}
+
+const selectTemplate = async (
+  auth: {cookie: string},
+  teamId: string,
+  selectedTemplateId: string
+) => {
+  const res = await sendPublic({
+    query: SELECT_TEMPLATE,
+    variables: {teamId, selectedTemplateId},
+    ...auth
+  })
+  expect(res.errors).toBeUndefined()
+  return res.data.selectTemplate
 }
 
 const startLegacyStandup = async (auth: {cookie: string}, teamId: string) => {
@@ -285,16 +310,15 @@ const joinMeeting = async (auth: {cookie?: string; bearerToken?: string}, meetin
   expect(res.data.joinMeeting.error).toBeUndefined()
 }
 
-const startTemplatedStandup = async (templateId = ENTERPRISE_TEMPLATE_ID) => {
+const startTemplatedStandup = async () => {
   const owner = await signUp()
-  const {meeting} = await startStandup({cookie: owner.cookie}, owner.teamId, templateId)
+  const {meeting} = await startStandup({cookie: owner.cookie}, owner.teamId)
   await joinMeeting({cookie: owner.cookie}, meeting.id)
   return {owner, meeting}
 }
 
-test('startTeamPrompt uses the requested template and freezes its prompts', async () => {
+test('startTeamPrompt uses the team default template and freezes its prompts', async () => {
   const {meeting} = await startTemplatedStandup()
-  expect(meeting.templateId).toBe(ENTERPRISE_TEMPLATE_ID)
   expect(meeting.template.id).toBe(ENTERPRISE_TEMPLATE_ID)
   expect(meeting.prompts.map((prompt: any) => prompt.question)).toEqual([
     'What are you working on? What has been completed recently?',
@@ -304,14 +328,22 @@ test('startTeamPrompt uses the requested template and freezes its prompts', asyn
   expect(meeting.meetingPrompt).toBe('What are you working on? What has been completed recently?')
 })
 
-test('startTeamPrompt without templateId uses the team default template', async () => {
+test('startTeamPrompt uses the template selected for the team', async () => {
   const {teamId, cookie} = await signUp()
+  const created = await sendPublic({
+    query: ADD_TEAM_PROMPT_TEMPLATE,
+    variables: {teamId, parentTemplateId: ENTERPRISE_TEMPLATE_ID},
+    cookie
+  })
+  const {id: customTemplateId} = created.data.addPromptTemplate.template
+  const selected = await selectTemplate({cookie}, teamId, customTemplateId)
+  expect(selected.error).toBeNull()
   const {meeting} = await startStandup({cookie}, teamId)
-  expect(meeting.templateId).toBe(ENTERPRISE_TEMPLATE_ID)
+  expect(meeting.template.id).toBe(customTemplateId)
   expect(meeting.prompts).toHaveLength(3)
 })
 
-test('startTeamPrompt rejects a template scoped to another org', async () => {
+test('a template scoped to another org cannot be selected or started', async () => {
   const [owner, attacker] = await Promise.all([signUp(), signUp()])
   const created = await sendPublic({
     query: ADD_TEAM_PROMPT_TEMPLATE,
@@ -319,23 +351,16 @@ test('startTeamPrompt rejects a template scoped to another org', async () => {
     cookie: owner.cookie
   })
   const {id: templateId} = created.data.addPromptTemplate.template
-  const res = await sendPublic({
-    query: START_TEAM_PROMPT,
-    variables: {teamId: attacker.teamId, templateId},
-    cookie: attacker.cookie
-  })
-  expect(res.data.startTeamPrompt.error.message).toBe('Template is scoped to organization')
+  const selected = await selectTemplate({cookie: attacker.cookie}, attacker.teamId, templateId)
+  expect(selected.error.message).toBe('Template is scoped to organization')
+  const {meeting} = await startStandup({cookie: attacker.cookie}, attacker.teamId)
+  expect(meeting.template.id).toBe(ENTERPRISE_TEMPLATE_ID)
 })
 
 test('startTeamPrompt records the template on a recurring series', async () => {
   const {teamId, cookie} = await signUp()
-  const {meeting, meetingSeries} = await startStandup(
-    {cookie},
-    teamId,
-    ENTERPRISE_TEMPLATE_ID,
-    immediateRrule()
-  )
-  expect(meeting.templateId).toBe(ENTERPRISE_TEMPLATE_ID)
+  const {meeting, meetingSeries} = await startStandup({cookie}, teamId, immediateRrule())
+  expect(meeting.template.id).toBe(ENTERPRISE_TEMPLATE_ID)
   const series = await getKysely()
     .selectFrom('MeetingSeries')
     .select('templateId')
@@ -374,7 +399,7 @@ test('a recurring standup inherits the series template and skips an inactive one
     cookie
   })
   expect(first.errors).toBeUndefined()
-  expect(first.data.startMeetingSeriesNow.meeting.templateId).toBe(customTemplateId)
+  expect(first.data.startMeetingSeriesNow.meeting.template.id).toBe(customTemplateId)
   expect(first.data.startMeetingSeriesNow.meeting.prompts).toHaveLength(3)
 
   await sendPublic({
@@ -394,7 +419,7 @@ test('a recurring standup inherits the series template and skips an inactive one
     cookie
   })
   expect(second.errors).toBeUndefined()
-  expect(second.data.startMeetingSeriesNow.meeting.templateId).toBe(ENTERPRISE_TEMPLATE_ID)
+  expect(second.data.startMeetingSeriesNow.meeting.template.id).toBe(ENTERPRISE_TEMPLATE_ID)
 })
 
 test('answers are saved as a private draft and masked for teammates', async () => {
@@ -427,6 +452,16 @@ test('answers are saved as a private draft and masked for teammates', async () =
     plaintextContent:
       'What are you working on? What has been completed recently?\nShipped the billing fix'
   })
+  const [draftAnswer] = draft.data.upsertTeamPromptAnswers.response.answers
+  const [answerRow] = await getKysely()
+    .selectFrom('TeamPromptResponseAnswer')
+    .innerJoin('TeamPromptResponse', 'TeamPromptResponse.id', 'TeamPromptResponseAnswer.responseId')
+    .select('TeamPromptResponseAnswer.id')
+    .where('TeamPromptResponse.meetingId', '=', meeting.id)
+    .where('TeamPromptResponse.userId', '=', owner.userId)
+    .execute()
+  expect(draftAnswer.id).not.toBe(`teamPromptResponseAnswer:${answerRow!.id}`)
+  expect(CipherId.fromClient(draftAnswer.id)[0]).toBe(answerRow!.id)
   expect(JSON.parse(draft.data.upsertTeamPromptAnswers.response.content)).toEqual({
     type: 'doc',
     content: [
@@ -673,6 +708,7 @@ test('legacy standups still accept upsertTeamPromptResponse and count as shared'
     answers: [],
     answeredPromptIds: []
   })
+  expect(responses.data.viewer.meeting.responses[0].sharedAt).not.toBeNull()
 })
 
 test('a teammate cannot write answers for a meeting they have not joined', async () => {
@@ -924,7 +960,7 @@ test('a shared response rejects a private edit and notifies newly mentioned team
   expect(notifications).toEqual([{type: 'RESPONSE_MENTIONED', userId: teammate.userId}])
 })
 
-test('startTeamPrompt rejects a template downscoped to another team', async () => {
+test('a template downscoped to another team cannot be selected or started', async () => {
   const [owner, outsider] = await Promise.all([signUp(), signUp()])
   const created = await sendPublic({
     query: ADD_TEAM_PROMPT_TEMPLATE,
@@ -939,12 +975,10 @@ test('startTeamPrompt rejects a template downscoped to another team', async () =
   })
   expect(downscoped.data.updateTemplateScope.template.scope).toBe('TEAM')
 
-  const res = await sendPublic({
-    query: START_TEAM_PROMPT,
-    variables: {teamId: outsider.teamId, templateId},
-    cookie: outsider.cookie
-  })
-  expect(res.data.startTeamPrompt.error.message).toBe('Template is scoped to team')
+  const selected = await selectTemplate({cookie: outsider.cookie}, outsider.teamId, templateId)
+  expect(selected.error.message).toBe('Template is scoped to team')
+  const {meeting} = await startStandup({cookie: outsider.cookie}, outsider.teamId)
+  expect(meeting.template.id).toBe(ENTERPRISE_TEMPLATE_ID)
 })
 
 test('two members keep their drafts private from each other until both share', async () => {

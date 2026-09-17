@@ -3,7 +3,7 @@ import {RRuleSet} from 'rrule-rust'
 import getKysely from '../../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import {isImmediateOccurrence} from '../../../utils/isImmediateOccurrence'
 import publish from '../../../utils/publish'
 import RedisLockQueue from '../../../utils/RedisLockQueue'
@@ -20,7 +20,7 @@ const MEETING_START_DELAY_MS = 3000
 
 const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   _source,
-  {teamId, templateId: requestedTemplateId, name, rrule: rruleString, gcalInput},
+  {teamId, name, rrule: rruleString, gcalInput},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const operationId = dataLoader.share()
@@ -30,32 +30,15 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   // AUTH
   const viewerId = getUserId(authToken)
 
-  const [unpaidError, viewer, team, meetingSettings] = await Promise.all([
+  const [unpaidError, viewer, meetingSettings] = await Promise.all([
     isStartMeetingLocked(teamId, dataLoader),
     dataLoader.get('users').loadNonNull(viewerId),
-    dataLoader.get('teams').loadNonNull(teamId),
     dataLoader.get('meetingSettingsByType').load({teamId, meetingType: 'teamPrompt'})
   ])
   if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
 
-  if (requestedTemplateId) {
-    const requestedTemplate = await dataLoader.get('meetingTemplates').load(requestedTemplateId)
-    if (
-      !requestedTemplate ||
-      !requestedTemplate.isActive ||
-      requestedTemplate.type !== 'teamPrompt'
-    ) {
-      return standardError(new Error('Template not found'), {userId: viewerId})
-    }
-    if (requestedTemplate.scope === 'TEAM' && !isTeamMember(authToken, requestedTemplate.teamId)) {
-      return standardError(new Error('Template is scoped to team'), {userId: viewerId})
-    }
-    if (requestedTemplate.scope === 'ORGANIZATION' && requestedTemplate.orgId !== team.orgId) {
-      return standardError(new Error('Template is scoped to organization'), {userId: viewerId})
-    }
-  }
   const templateId = await resolveStandupTemplateId(
-    [requestedTemplateId, meetingSettings?.selectedTemplateId],
+    [meetingSettings?.selectedTemplateId],
     dataLoader
   )
 

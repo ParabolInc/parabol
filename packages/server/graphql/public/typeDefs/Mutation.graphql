@@ -2154,11 +2154,6 @@ type Mutation {
     teamId: ID!
 
     """
-    The stand-up template to answer. Defaults to the team's selected stand-up template.
-    """
-    templateId: ID
-
-    """
     Meeting or series name, by default "Standup"
     """
     name: String

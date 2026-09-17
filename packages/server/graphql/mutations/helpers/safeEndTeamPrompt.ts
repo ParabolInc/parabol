@@ -4,7 +4,6 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import TimelineEventTeamPromptComplete from '../../../database/types/TimelineEventTeamPromptComplete'
 import {sendSummaryEmail} from '../../../email/sendSummaryEmail'
 import getKysely from '../../../postgres/getKysely'
-import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import type {TeamPromptMeeting} from '../../../postgres/types/Meeting'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
@@ -15,6 +14,7 @@ import standardError from '../../../utils/standardError'
 import type {InternalContext} from '../../graphql'
 import gatherInsights from './gatherInsights'
 import generateStandupMeetingSummary from './generateStandupMeetingSummary'
+import getSharedTeamPromptResponses from './getSharedTeamPromptResponses'
 import {IntegrationNotifier} from './notifications/IntegrationNotifier'
 import {publishSummaryPage} from './summaryPage/publishSummaryPage'
 import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
@@ -73,7 +73,7 @@ const safeEndTeamPrompt = async ({
     dataLoader.get('meetingMembersByMeetingId').load(meetingId),
     dataLoader.get('teams').loadNonNull(teamId),
     dataLoader.get('teamMembersByTeamId').load(teamId),
-    getTeamPromptResponsesByMeetingId(meetingId)
+    getSharedTeamPromptResponses(meetingId, dataLoader)
   ])
 
   const events = teamMembers.map(
@@ -86,12 +86,7 @@ const safeEndTeamPrompt = async ({
       })
   )
   await pg.insertInto('TimelineEvent').values(events).execute()
-  analytics.teamPromptEnd(
-    completedTeamPrompt,
-    meetingMembers,
-    responses.filter((response) => response.isShared),
-    dataLoader
-  )
+  analytics.teamPromptEnd(completedTeamPrompt, meetingMembers, responses, dataLoader)
   const [page, summary] = await Promise.all([
     publishSummaryPage(meetingId, context, info).catch((e) => {
       logError(e instanceof Error ? e : new Error(`publishSummaryPage failed: ${e}`), {

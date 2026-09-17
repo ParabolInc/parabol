@@ -28,12 +28,22 @@ const responses = [
       type: 'doc',
       content: [{type: 'paragraph', content: [{type: 'text', text: 'Still drafting'}]}]
     }
+  },
+  {
+    id: 3,
+    meetingId,
+    userId: 'emptyUser',
+    isShared: true,
+    createdAt: new Date('2026-09-01T00:00:00.000Z'),
+    plaintextContent: '',
+    content: {type: 'doc', content: [{type: 'paragraph'}]}
   }
 ]
 
 const users: Record<string, {preferredName: string; picture: string}> = {
   sharedUser: {preferredName: 'Shared Sally', picture: 'https://example.com/sally.png'},
-  draftUser: {preferredName: 'Drafty Dan', picture: 'https://example.com/dan.png'}
+  draftUser: {preferredName: 'Drafty Dan', picture: 'https://example.com/dan.png'},
+  emptyUser: {preferredName: 'Empty Emma', picture: 'https://example.com/emma.png'}
 }
 
 const makeDataLoader = () =>
@@ -63,6 +73,7 @@ test('getTeamPromptBlocks only renders shared responses', async () => {
     type: 'responseBlock',
     attrs: {preferredName: 'Shared Sally', avatar: 'https://example.com/sally.png'}
   })
+  expect(JSON.stringify(blocks)).not.toContain('Empty Emma')
 })
 
 test('getTeamPromptSummaryTable only rows shared responses', async () => {
@@ -71,4 +82,5 @@ test('getTeamPromptSummaryTable only rows shared responses', async () => {
   expect(serialized).toContain('Shared Sally')
   expect(serialized).not.toContain('Drafty Dan')
   expect(serialized).not.toContain('Still drafting')
+  expect(serialized).not.toContain('Empty Emma')
 })

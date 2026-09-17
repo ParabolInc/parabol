@@ -7,7 +7,7 @@ import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import getTeamPromptMeetingPrompts from '../../mutations/helpers/getTeamPromptMeetingPrompts'
+import getMeetingTemplatePrompts from '../../mutations/helpers/getMeetingTemplatePrompts'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import type {MutationResolvers} from '../resolverTypes'
 import buildTeamPromptResponseContent, {
@@ -41,7 +41,7 @@ const upsertTeamPromptAnswers: MutationResolvers['upsertTeamPromptAnswers'] = as
   if (!meeting.templateId) {
     throw new GraphQLError('Meeting does not use a template')
   }
-  const prompts = await getTeamPromptMeetingPrompts(meeting, dataLoader)
+  const prompts = await getMeetingTemplatePrompts(meeting, dataLoader)
   const promptIds = new Set(prompts.map(({id}) => id))
   const seenPromptIds = new Set<string>()
   const parsedAnswers = answers.map(({promptId, content}) => {

@@ -3,7 +3,7 @@ One member's answer to one prompt of a templated stand-up
 """
 type TeamPromptResponseAnswer {
   """
-  Answer id in the format `teamPromptResponseAnswer:idGeneratedByDatabase`
+  The answer id
   """
   id: ID!
 

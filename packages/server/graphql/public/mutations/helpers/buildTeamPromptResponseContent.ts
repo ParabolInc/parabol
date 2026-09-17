@@ -1,27 +1,18 @@
-import type {JSONContent} from '@tiptap/core'
+import {getSchema, type JSONContent} from '@tiptap/core'
+import {serverTipTapExtensions} from '../../../../../client/shared/tiptap/serverTipTapExtensions'
 
 export const EMPTY_TIPTAP_DOC: Readonly<JSONContent> = Object.freeze({type: 'doc', content: []})
 
-const CONTENT_ATOM_TYPES = new Set([
-  'database',
-  'emojiMention',
-  'fileBlock',
-  'fileUpload',
-  'horizontalRule',
-  'image',
-  'imageBlock',
-  'insightsBlock',
-  'loom',
-  'mention',
-  'pageLinkBlock',
-  'pageUserMention',
-  'popoverMention',
-  'responseBlock',
-  'tableOfContents',
-  'taskBlock',
-  'taskTag',
-  'thinkingBlock'
-])
+const NON_CONTENT_ATOM_TYPES = new Set(['hardBreak', 'fileUpload'])
+
+const CONTENT_ATOM_TYPES = new Set(
+  Object.values(getSchema(serverTipTapExtensions).nodes)
+    .filter(
+      (nodeType) =>
+        nodeType.isAtom && !nodeType.isText && !NON_CONTENT_ATOM_TYPES.has(nodeType.name)
+    )
+    .map((nodeType) => nodeType.name)
+)
 
 const hasText = (node: JSONContent): boolean =>
   !!node.text?.trim() || (node.content ?? []).some(hasText)

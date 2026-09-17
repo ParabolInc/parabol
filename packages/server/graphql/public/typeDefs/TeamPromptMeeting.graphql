@@ -12,12 +12,6 @@ type TeamPromptMeeting implements NewMeeting {
   meetingPrompt: String!
 
   """
-  The stand-up template whose prompts this meeting answers. Null for legacy stand-ups that
-  use a single free-text meetingPrompt
-  """
-  templateId: ID
-
-  """
   The stand-up template whose prompts this meeting answers. Null for legacy stand-ups
   """
   template: PromptTemplate

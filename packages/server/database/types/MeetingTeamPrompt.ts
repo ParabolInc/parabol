@@ -6,18 +6,16 @@ interface Input {
   teamId: string
   meetingCount: number
   meetingPrompt: string
-  templateId?: string | null
   name?: string
   phases: [TeamPromptPhase, ...TeamPromptPhase[]]
   facilitatorUserId: string
   meetingSeriesId?: number
-  scheduledEndTime?: Date | null
+  scheduledEndTime?: Date
 }
 
 export default class MeetingTeamPrompt extends Meeting {
   meetingType = 'teamPrompt' as const
   meetingPrompt: string
-  templateId: string | null
 
   constructor(input: Input) {
     const {
@@ -25,7 +23,6 @@ export default class MeetingTeamPrompt extends Meeting {
       teamId,
       meetingCount,
       meetingPrompt,
-      templateId,
       name,
       phases,
       facilitatorUserId,
@@ -44,6 +41,5 @@ export default class MeetingTeamPrompt extends Meeting {
       scheduledEndTime
     })
     this.meetingPrompt = meetingPrompt
-    this.templateId = templateId ?? null
   }
 }

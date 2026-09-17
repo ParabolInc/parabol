@@ -1,13 +1,12 @@
 import {isNotNull} from '../../../../../client/utils/predicates'
 import type {DataLoaderInstance} from '../../../../dataloader/RootDataLoader'
+import getSharedTeamPromptResponses from '../getSharedTeamPromptResponses'
 import {getSummaryTable} from './getSummaryTable'
 
 const headers = ['Author', 'Created at', 'Content'] as const
 
 const getRowData = async (meetingId: string, dataLoader: DataLoaderInstance) => {
-  const responses = (await dataLoader.get('teamPromptResponsesByMeetingId').load(meetingId)).filter(
-    (response) => response.isShared
-  )
+  const responses = await getSharedTeamPromptResponses(meetingId, dataLoader)
 
   const responseRows = await Promise.all(
     responses.map(async (response) => {
