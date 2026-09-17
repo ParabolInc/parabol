@@ -8,6 +8,7 @@ import type {CreateNewActivityQuery} from '~/__generated__/CreateNewActivityQuer
 import estimatedEffortTemplate from '../../../../../static/images/illustrations/estimatedEffortTemplate.png'
 import newTemplate from '../../../../../static/images/illustrations/newTemplate.png'
 import teamHealthTemplate from '../../../../../static/images/illustrations/teamHealth.png'
+import teamPromptTemplate from '../../../../../static/images/illustrations/teamPrompt.png'
 import type {useAddPokerTemplateMutation$data} from '../../../__generated__/useAddPokerTemplateMutation.graphql'
 import type {useAddPromptTemplateMutation$data} from '../../../__generated__/useAddPromptTemplateMutation.graphql'
 import type {useAddTeamHealthTemplateMutation$data} from '../../../__generated__/useAddTeamHealthTemplateMutation.graphql'
@@ -41,7 +42,7 @@ const Bold = (props: ComponentPropsWithoutRef<'span'>) => {
   )
 }
 
-type ActivityType = 'retrospective' | 'poker' | 'teamHealth'
+type ActivityType = 'retrospective' | 'poker' | 'teamPrompt' | 'teamHealth'
 
 type SupportedActivity = {
   title: string
@@ -101,6 +102,26 @@ const SUPPORTED_CUSTOM_ACTIVITIES: SupportedActivity[] = [
     )
   },
   {
+    title: 'Async Standup',
+    type: 'teamPrompt',
+    includedCategories: ['standup'],
+    imageCategory: 'standup',
+    image: teamPromptTemplate,
+    phases: (
+      <>
+        <div>
+          <Bold>Answer</Bold> each question on your own time
+        </div>
+        <div>
+          <Bold>Discuss</Bold> updates in threads
+        </div>
+        <div>
+          <Bold>Review</Bold> together on a call
+        </div>
+      </>
+    )
+  },
+  {
     title: 'Measure Team Health',
     type: 'teamHealth',
     includedCategories: ['teamHealth'],
@@ -133,6 +154,7 @@ const query = graphql`
     viewer {
       freeCustomRetroTemplatesRemaining
       freeCustomPokerTemplatesRemaining
+      freeCustomStandupTemplatesRemaining
       preferredTeamId
       teams {
         id
@@ -172,7 +194,8 @@ export const CreateNewActivity = (props: Props) => {
     teams,
     preferredTeamId,
     freeCustomRetroTemplatesRemaining,
-    freeCustomPokerTemplatesRemaining
+    freeCustomPokerTemplatesRemaining,
+    freeCustomStandupTemplatesRemaining
   } = viewer
   const sortedTeams = sortByTier(teams)
   const [selectedTeam, setSelectedTeam] = useState(
@@ -186,13 +209,14 @@ export const CreateNewActivity = (props: Props) => {
   const navigate = useNavigate()
 
   if (!selectedTeam) return null
-  // team health has no free-template allowance, so starter teams always see the upgrade CTA
-  const freeCustomTemplatesRemaining =
-    selectedActivity.type === 'retrospective'
-      ? freeCustomRetroTemplatesRemaining
-      : selectedActivity.type === 'poker'
-        ? freeCustomPokerTemplatesRemaining
-        : 0
+  const freeCustomTemplatesRemainingByType: Record<ActivityType, number> = {
+    retrospective: freeCustomRetroTemplatesRemaining,
+    poker: freeCustomPokerTemplatesRemaining,
+    teamPrompt: freeCustomStandupTemplatesRemaining,
+    // team health has no free-template allowance, so starter teams always see the upgrade CTA
+    teamHealth: 0
+  }
+  const freeCustomTemplatesRemaining = freeCustomTemplatesRemainingByType[selectedActivity.type]
 
   const handleCreateRetroTemplate = () => {
     if (submitting) {
@@ -234,6 +258,25 @@ export const CreateNewActivity = (props: Props) => {
     })
   }
 
+  const handleCreateStandupTemplate = () => {
+    if (submitting) {
+      return
+    }
+
+    submitMutation()
+    executeAddPromptTemplate({
+      variables: {teamId: selectedTeam.id, type: 'teamPrompt'},
+      onError,
+      onCompleted: (res: useAddPromptTemplateMutation$data, errors) => {
+        onCompleted(res, errors)
+        if (errors?.length) return
+        navigate(`/activity-library/details/${res.addPromptTemplate.template.id}`, {
+          state: {prevCategory: categoryId, edit: true}
+        })
+      }
+    })
+  }
+
   const handleCreateTeamHealthTemplate = () => {
     if (submitting) {
       return
@@ -266,6 +309,7 @@ export const CreateNewActivity = (props: Props) => {
   const createCustomActivityLookup: Record<ActivityType, () => void> = {
     retrospective: handleCreateRetroTemplate,
     poker: handleCreatePokerTemplate,
+    teamPrompt: handleCreateStandupTemplate,
     teamHealth: handleCreateTeamHealthTemplate
   }
 
@@ -292,7 +336,7 @@ export const CreateNewActivity = (props: Props) => {
           Choose an <span className='font-semibold'>Activity Format:</span>
         </h1>
         <RadioGroup.Root
-          className='mx-auto flex flex-col gap-8 sm:flex-row'
+          className='mx-auto flex flex-col gap-8 md:grid md:grid-cols-2 2xl:grid-cols-4'
           aria-label='Choose an Activity Format'
           value={selectedActivity?.type}
           onValueChange={handleActivitySelection}

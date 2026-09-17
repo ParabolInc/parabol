@@ -23,6 +23,7 @@ const TemplatePromptList = (props: Props) => {
         sortOrder
         question
         groupColor
+        templateId
         ...TemplatePromptItem_prompt
         ...TemplatePromptItem_prompts
       }
