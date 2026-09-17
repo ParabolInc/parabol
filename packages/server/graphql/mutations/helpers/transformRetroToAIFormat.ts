@@ -76,7 +76,7 @@ export const transformRetroToAIFormat = async (meetingId: string, dataLoader: Da
           rawReflections.map(async (reflection) => {
             const {promptId, creatorId, plaintextContent} = reflection
             const [prompt, creator] = await Promise.all([
-              dataLoader.get('reflectPrompts').loadNonNull(promptId),
+              dataLoader.get('templatePrompts').loadNonNull(promptId),
               creatorId ? dataLoader.get('users').loadNonNull(creatorId) : null
             ])
             const {question} = prompt

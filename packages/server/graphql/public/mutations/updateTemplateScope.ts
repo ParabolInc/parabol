@@ -1,7 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import type {SharingScopeEnum as ESharingScope} from '../../../database/types/MeetingTemplate'
 import PokerTemplate from '../../../database/types/PokerTemplate'
-import ReflectTemplate from '../../../database/types/ReflectTemplate'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import type {MeetingTypeEnum} from '../../../postgres/types/Meeting'
@@ -10,6 +9,7 @@ import {getUserId, isTeamMember, isUserOrgAdmin} from '../../../utils/authorizat
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
+import {isPromptTemplateType} from './helpers/promptTemplateRules'
 
 const updateTemplateScope: MutationResolvers['updateTemplateScope'] = async (
   _source,
@@ -72,20 +72,22 @@ const updateTemplateScope: MutationResolvers['updateTemplateScope'] = async (
   const shouldClone = !!usedMeeting
   let clonedTemplateId: string | undefined
 
-  const cloneReflectTemplate = async () => {
+  const clonePromptTemplate = async () => {
     const pg = getKysely()
-    const clonedTemplate = new ReflectTemplate({
+    const clonedTemplate = {
+      id: generateUID(),
       name,
       teamId,
       orgId,
+      type: template.type,
       scope: newScope,
       parentTemplateId: templateId,
       lastUsedAt: template.lastUsedAt,
       illustrationUrl: template.illustrationUrl,
       mainCategory: template.mainCategory
-    })
+    }
     clonedTemplateId = clonedTemplate.id
-    const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(templateId)
+    const prompts = await dataLoader.get('templatePromptsByTemplateId').load(templateId)
     const activePrompts = prompts.filter(({removedAt}) => !removedAt)
     const promptIds = activePrompts.map(({id}) => id)
     const clonedPrompts = activePrompts.map((prompt) => {
@@ -109,12 +111,12 @@ const updateTemplateScope: MutationResolvers['updateTemplateScope'] = async (
         qc.updateTable('MeetingTemplate').set({isActive: false}).where('id', '=', templateId)
       )
       .with('RemovePrompts', (qc) =>
-        qc.updateTable('ReflectPrompt').set({removedAt: now}).where('id', 'in', promptIds)
+        qc.updateTable('TemplatePrompt').set({removedAt: now}).where('id', 'in', promptIds)
       )
-      .insertInto('ReflectPrompt')
+      .insertInto('TemplatePrompt')
       .values(clonedPrompts.map((p) => ({...p, sortOrder: String(p.sortOrder)})))
       .execute()
-    dataLoader.clearAll(['reflectPrompts', 'meetingTemplates'])
+    dataLoader.clearAll(['templatePrompts', 'meetingTemplates'])
   }
 
   const clonePokerTemplate = async () => {
@@ -155,10 +157,10 @@ const updateTemplateScope: MutationResolvers['updateTemplateScope'] = async (
   }
 
   if (shouldClone) {
-    if (template.type === 'retrospective') {
-      cloneReflectTemplate()
+    if (isPromptTemplateType(template.type)) {
+      await clonePromptTemplate()
     } else if (template.type === 'poker') {
-      clonePokerTemplate()
+      await clonePokerTemplate()
     }
   } else {
     await getKysely()

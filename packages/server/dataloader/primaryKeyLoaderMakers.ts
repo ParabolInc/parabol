@@ -19,7 +19,6 @@ import {
   selectPageExports,
   selectPages,
   selectPersonalAccessToken,
-  selectReflectPrompts,
   selectRetroReflections,
   selectSlackAuths,
   selectSlackNotifications,
@@ -34,6 +33,7 @@ import {
   selectTeamPromptResponses,
   selectTeams,
   selectTemplateDimension,
+  selectTemplatePrompts,
   selectTemplateRef,
   selectTemplateScale,
   selectTemplateScaleRef,
@@ -161,8 +161,8 @@ export const comments = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectComments().where('id', 'in', ids).execute()
 })
 
-export const reflectPrompts = primaryKeyLoaderMaker((ids: readonly string[]) => {
-  return selectReflectPrompts().where('id', 'in', ids).execute()
+export const templatePrompts = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectTemplatePrompts().where('id', 'in', ids).execute()
 })
 
 export const newMeetings = primaryKeyLoaderMaker((ids: readonly string[]) => {

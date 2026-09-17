@@ -7,11 +7,11 @@ import {useNavigate} from 'react-router'
 import type {TeamPickerModal_teams$key} from '~/__generated__/TeamPickerModal_teams.graphql'
 import type {MeetingTypeEnum} from '~/__generated__/TemplateDetails_activity.graphql'
 import type {useAddPokerTemplateMutation$data} from '../../__generated__/useAddPokerTemplateMutation.graphql'
-import type {useAddReflectTemplateMutation$data} from '../../__generated__/useAddReflectTemplateMutation.graphql'
+import type {useAddPromptTemplateMutation$data} from '../../__generated__/useAddPromptTemplateMutation.graphql'
 import type {useAddTeamHealthTemplateMutation$data} from '../../__generated__/useAddTeamHealthTemplateMutation.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useAddPokerTemplateMutation from '../../mutations/useAddPokerTemplateMutation'
-import useAddReflectTemplateMutation from '../../mutations/useAddReflectTemplateMutation'
+import useAddPromptTemplateMutation from '../../mutations/useAddPromptTemplateMutation'
 import useAddTeamHealthTemplateMutation from '../../mutations/useAddTeamHealthTemplateMutation'
 import {cn} from '../../ui/cn'
 import {Dialog} from '../../ui/Dialog/Dialog'
@@ -56,10 +56,10 @@ const TeamPickerModal = (props: Props) => {
 
   const atmosphere = useAtmosphere()
   const [error, setError] = useState<string | null>(null)
-  const [executeAddReflectTemplate, reflectSubmitting] = useAddReflectTemplateMutation()
+  const [executeAddPromptTemplate, promptSubmitting] = useAddPromptTemplateMutation()
   const [executeAddPokerTemplate, pokerSubmitting] = useAddPokerTemplateMutation()
   const [executeAddTeamHealthTemplate, teamHealthSubmitting] = useAddTeamHealthTemplateMutation()
-  const submitting = reflectSubmitting || pokerSubmitting || teamHealthSubmitting
+  const submitting = promptSubmitting || pokerSubmitting || teamHealthSubmitting
 
   useEffect(() => {
     setError(null)
@@ -90,14 +90,18 @@ const TeamPickerModal = (props: Props) => {
 
     const variables = {teamId: selectedTeam.id, parentTemplateId}
     setError(null)
-    if (type === 'retrospective') {
-      executeAddReflectTemplate({
-        variables,
+    if (type === 'retrospective' || type === 'teamPrompt') {
+      executeAddPromptTemplate({
+        variables: {...variables, type},
         onError,
-        onCompleted: (res: useAddReflectTemplateMutation$data) =>
-          onTemplateCreated(
-            res.addReflectTemplate?.useAddReflectTemplateMutation_team?.reflectTemplate?.id
-          )
+        onCompleted: (res: useAddPromptTemplateMutation$data, errors) => {
+          const [firstError] = errors ?? []
+          if (firstError) {
+            setError(firstError.message)
+            return
+          }
+          onTemplateCreated(res.addPromptTemplate.template.id)
+        }
       })
     } else if (type === 'poker') {
       executeAddPokerTemplate({

@@ -27,7 +27,7 @@ const createReflection: MutationResolvers['createReflection'] = async (
   // AUTH
   const viewerId = getUserId(authToken)
   const [reflectPrompt, meeting, viewer] = await Promise.all([
-    dataLoader.get('reflectPrompts').load(promptId),
+    dataLoader.get('templatePrompts').load(promptId),
     dataLoader.get('newMeetings').load(meetingId),
     dataLoader.get('users').loadNonNull(viewerId)
   ])

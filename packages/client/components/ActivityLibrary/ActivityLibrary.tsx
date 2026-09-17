@@ -52,7 +52,7 @@ graphql`
         }
       }
     }
-    ... on ReflectTemplate {
+    ... on PromptTemplate {
       prompts {
         question
         description

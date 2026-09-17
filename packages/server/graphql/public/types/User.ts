@@ -33,6 +33,7 @@ import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import getMonthlyStreak from '../../../utils/getMonthlyStreak'
 import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
 import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
+import getUserDetail from '../../../utils/getUserDetail'
 import {getUserSocketCount} from '../../../utils/getUserSocketCount'
 import logError from '../../../utils/logError'
 import standardError from '../../../utils/standardError'
@@ -79,6 +80,12 @@ const User: ReqResolvers<'User'> = {
     return dataLoader.get('organizations').loadNonNull(orgId)
   },
   invoices,
+  freeCustomRetroTemplatesRemaining: ({id: userId}, _args, {dataLoader}) =>
+    getUserDetail(userId, 'freeCustomRetroTemplatesRemaining', dataLoader),
+  freeCustomPokerTemplatesRemaining: ({id: userId}, _args, {dataLoader}) =>
+    getUserDetail(userId, 'freeCustomPokerTemplatesRemaining', dataLoader),
+  freeCustomStandupTemplatesRemaining: ({id: userId}, _args, {dataLoader}) =>
+    getUserDetail(userId, 'freeCustomStandupTemplatesRemaining', dataLoader),
   archivedTasks: async (_source, {first, after, teamId}, {authToken}) => {
     const userId = getUserId(authToken)
     const tasks = await selectTasks()

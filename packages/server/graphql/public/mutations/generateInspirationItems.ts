@@ -95,7 +95,7 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
 
   if (meeting.meetingType === 'retrospective') {
     // The retro's reflect prompts are the columns the model assigns each reflection to.
-    const allPrompts = await dataLoader.get('reflectPromptsByTemplateId').load(meeting.templateId)
+    const allPrompts = await dataLoader.get('templatePromptsByTemplateId').load(meeting.templateId)
     const prompts = allPrompts.filter(
       (prompt) =>
         prompt.createdAt < meeting.createdAt &&

@@ -8,7 +8,7 @@ const resolveSelectedTemplate =
     const {id: settingsId, selectedTemplateId} = source
     if (selectedTemplateId) {
       const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
-      if (template) {
+      if (template?.isActive) {
         return template
       }
     }

@@ -15,7 +15,7 @@ const editReflection: MutationResolvers['editReflection'] = async (
   const viewerId = getUserId(authToken)
 
   // AUTH
-  const reflectPrompt = await dataLoader.get('reflectPrompts').load(promptId)
+  const reflectPrompt = await dataLoader.get('templatePrompts').load(promptId)
   if (!reflectPrompt) {
     return standardError(new Error('Category not found'), {userId: viewerId})
   }

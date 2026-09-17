@@ -64,8 +64,8 @@ const permissionMap: PermissionMap<Resolvers> = {
       'templateScales'
     ),
     addReactjiToReactable: isMeetingMember<'Mutation.addReactjiToReactable'>('args.meetingId'),
-    addReflectTemplate: isTeamMember<'Mutation.addReflectTemplate'>('args.teamId'),
-    addReflectTemplatePrompt: isTeamMember<'Mutation.addReflectTemplatePrompt'>(
+    addPromptTemplate: isTeamMember<'Mutation.addPromptTemplate'>('args.teamId'),
+    addTemplatePrompt: isTeamMember<'Mutation.addTemplatePrompt'>(
       'args.templateId',
       'meetingTemplates'
     ),
@@ -190,9 +190,9 @@ const permissionMap: PermissionMap<Resolvers> = {
       'args.scaleId',
       'templateScales'
     ),
-    moveReflectTemplatePrompt: isTeamMember<'Mutation.moveReflectTemplatePrompt'>(
+    moveTemplatePrompt: isTeamMember<'Mutation.moveTemplatePrompt'>(
       'args.promptId',
-      'reflectPrompts'
+      'templatePrompts'
     ),
     moveTeamToOrg: or(isSuperUser, isViewerBillingLeader<'Mutation.moveTeamToOrg'>('args.orgId')),
     navigateMeeting: isMeetingFacilitator<'Mutation.navigateMeeting'>('args.meetingId'),
@@ -213,16 +213,6 @@ const permissionMap: PermissionMap<Resolvers> = {
       isViewerBillingLeader<'Mutation.promoteToTeamLead'>('args.teamId', 'teams')
     ),
     pushInvitation: rateLimit({perMinute: 10, perHour: 20}),
-    reflectTemplatePromptUpdateDescription:
-      isTeamMember<'Mutation.reflectTemplatePromptUpdateDescription'>(
-        'args.promptId',
-        'reflectPrompts'
-      ),
-    reflectTemplatePromptUpdateGroupColor:
-      isTeamMember<'Mutation.reflectTemplatePromptUpdateGroupColor'>(
-        'args.promptId',
-        'reflectPrompts'
-      ),
     regenerateOAuthAPIProviderSecret:
       hasProviderAccess<'Mutation.regenerateOAuthAPIProviderSecret'>('args.providerId'),
     removeAgendaItem: isTeamMember<'Mutation.removeAgendaItem'>('args.agendaItemId', 'agendaItems'),
@@ -248,16 +238,13 @@ const permissionMap: PermissionMap<Resolvers> = {
       'args.scaleId',
       'templateScales'
     ),
-    removeReflectTemplate: or(
-      isViewerBillingLeader<'Mutation.removeReflectTemplate'>(
-        'args.templateId',
-        'meetingTemplates'
-      ),
-      isTeamMember<'Mutation.removeReflectTemplate'>('args.templateId', 'meetingTemplates')
+    removePromptTemplate: or(
+      isViewerBillingLeader<'Mutation.removePromptTemplate'>('args.templateId', 'meetingTemplates'),
+      isTeamMember<'Mutation.removePromptTemplate'>('args.templateId', 'meetingTemplates')
     ),
-    removeReflectTemplatePrompt: isTeamMember<'Mutation.removeReflectTemplatePrompt'>(
+    removeTemplatePrompt: isTeamMember<'Mutation.removeTemplatePrompt'>(
       'args.promptId',
-      'reflectPrompts'
+      'templatePrompts'
     ),
     removeReflection: isUser<'Mutation.removeReflection'>(
       'args.reflectionId',
@@ -292,9 +279,9 @@ const permissionMap: PermissionMap<Resolvers> = {
       'args.scaleId',
       'templateScales'
     ),
-    renameReflectTemplatePrompt: isTeamMember<'Mutation.renameReflectTemplatePrompt'>(
+    renameTemplatePrompt: isTeamMember<'Mutation.renameTemplatePrompt'>(
       'args.promptId',
-      'reflectPrompts'
+      'templatePrompts'
     ),
     resetPassword: rateLimit({perMinute: 10, perHour: 100}),
     resetReflectionGroups:
@@ -452,6 +439,14 @@ const permissionMap: PermissionMap<Resolvers> = {
       'args.templateId',
       'meetingTemplates'
     ),
+    updateTemplatePromptDescription: isTeamMember<'Mutation.updateTemplatePromptDescription'>(
+      'args.promptId',
+      'templatePrompts'
+    ),
+    updateTemplatePromptGroupColor: isTeamMember<'Mutation.updateTemplatePromptGroupColor'>(
+      'args.promptId',
+      'templatePrompts'
+    ),
     uploadIdPMetadata: hasOrgRole<'Mutation.uploadIdPMetadata'>('args.orgId', 'ORG_ADMIN'),
     uploadOrgImage: isViewerBillingLeader<'Mutation.uploadOrgImage'>('args.orgId'),
     upsertTeamHealthQuestionCategory: isUserViewer<'Mutation.upsertTeamHealthQuestionCategory'>(
@@ -538,6 +533,9 @@ const permissionMap: PermissionMap<Resolvers> = {
     company: isSuperUser,
     discussion: isTeamMember<'User.discussion'>('args.id', 'discussions'),
     domains: or(isSuperUser, isUserViewer<'User.id'>('source.id')),
+    freeCustomRetroTemplatesRemaining: isUserViewer<'User.id'>('source.id'),
+    freeCustomPokerTemplatesRemaining: isUserViewer<'User.id'>('source.id'),
+    freeCustomStandupTemplatesRemaining: isUserViewer<'User.id'>('source.id'),
     meeting: isTeamMemberOfMeeting<'User.meeting'>('args.meetingId'),
     organization: or(isSuperUser, isViewerOnOrg<'User.organization'>('args.orgId')),
     organizationUser: or(isSuperUser, isViewerOnOrg<'User.organizationUser'>('args.orgId')),
