@@ -7,13 +7,14 @@ import TipTapLinkMenu from './TipTapLinkMenu'
 interface Props extends EditorContentProps {
   editor: Editor
   showBubbleMenu?: boolean
+  showListControls?: boolean
   useLinkEditor?: () => void
 }
 export const TipTapEditor = (props: Props) => {
-  const {className, editor, showBubbleMenu, useLinkEditor, ref, ...rest} = props
+  const {className, editor, showBubbleMenu, showListControls, useLinkEditor, ref, ...rest} = props
   return (
     <>
-      <StandardBubbleMenu editor={editor} />
+      <StandardBubbleMenu editor={editor} showListControls={showListControls} />
       <TipTapLinkMenu editor={editor} useLinkEditor={useLinkEditor} />
       <ImportDatabaseDialog editor={editor} />
       <EditorContent

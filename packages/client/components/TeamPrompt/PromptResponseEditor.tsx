@@ -1,11 +1,18 @@
 import {type Editor, Extension} from '@tiptap/core'
+import Highlight from '@tiptap/extension-highlight'
+import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention from '@tiptap/extension-mention'
-import {Placeholder} from '@tiptap/extensions'
+import {TextStyleKit} from '@tiptap/extension-text-style'
+import {CharacterCount, Placeholder} from '@tiptap/extensions'
 import {type JSONContent, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import useAtmosphere from '../../hooks/useAtmosphere'
+import {useUploadUserAsset} from '../../mutations/useUploadUserAsset'
 import {isEqualWhenSerialized} from '../../shared/isEqualWhenSerialized'
+import {FileUpload} from '../../tiptap/extensions/fileUpload/FileUpload'
+import ImageBlock from '../../tiptap/extensions/imageBlock/ImageBlock'
+import {SlashCommand} from '../../tiptap/extensions/slashCommand/SlashCommand'
 import {Button} from '../../ui/Button/Button'
 import {cn} from '../../ui/cn'
 import {modEnter} from '../../utils/platform'
@@ -18,6 +25,8 @@ import {useStreamedEditorContent} from '../TipTapEditor/useStreamedEditorContent
 
 const submitButtonClasses = 'mt-3 rounded-[6px] px-3 py-1 font-normal text-sm leading-5 opacity-100'
 
+const RESPONSE_CHARACTER_LIMIT = 500
+
 interface Props {
   autoFocus?: boolean
   teamId: string
@@ -26,6 +35,15 @@ interface Props {
   readOnly: boolean
   placeholder?: string
   draftStorageKey?: string
+  showActions?: boolean
+  onChange?: (editor: Editor) => void
+  onModEnter?: () => void
+  onTab?: () => void
+  onFocusChange?: (isFocused: boolean) => void
+  showListControls?: boolean
+  enableSlashCommands?: boolean
+  className?: string
+  editorRef?: React.MutableRefObject<Editor | null>
 }
 
 const PromptResponseEditor = (props: Props) => {
@@ -36,9 +54,27 @@ const PromptResponseEditor = (props: Props) => {
     readOnly,
     placeholder,
     teamId,
-    draftStorageKey
+    draftStorageKey,
+    showActions = true,
+    onChange,
+    onModEnter,
+    onTab,
+    onFocusChange,
+    showListControls,
+    enableSlashCommands = false,
+    className,
+    editorRef
   } = props
   const atmosphere = useAtmosphere()
+  const [uploadUserAsset] = useUploadUserAsset()
+  const onChangeRef = useRef(onChange)
+  onChangeRef.current = onChange
+  const onModEnterRef = useRef(onModEnter)
+  onModEnterRef.current = onModEnter
+  const onTabRef = useRef(onTab)
+  onTabRef.current = onTab
+  const onFocusChangeRef = useRef(onFocusChange)
+  onFocusChangeRef.current = onFocusChange
   const [isEditing, setIsEditing] = useState(false)
   const [autoFocus, setAutoFocus] = useState(autoFocusProp)
   const [isEditorEmpty, setIsEditorEmpty] = useState(true)
@@ -63,6 +99,7 @@ const PromptResponseEditor = (props: Props) => {
       if (draftStorageKey) {
         window.localStorage.setItem(draftStorageKey, JSON.stringify(editor.getJSON()))
       }
+      onChangeRef.current?.(editor)
     },
     [setEditing, draftStorageKey]
   )
@@ -80,6 +117,7 @@ const PromptResponseEditor = (props: Props) => {
       content,
       extensions: [
         StarterKit.configure({link: false}),
+        CharacterCount.configure({limit: RESPONSE_CHARACTER_LIMIT}),
         LoomExtension,
         Placeholder.configure({
           showOnlyWhenEditable: false,
@@ -95,15 +133,55 @@ const PromptResponseEditor = (props: Props) => {
           addKeyboardShortcuts(this) {
             return {
               'Mod-Enter': () => {
+                if (onModEnterRef.current) {
+                  onModEnterRef.current()
+                  return true
+                }
                 onSubmit()
                 return true
+              },
+              Tab: () => {
+                if (onTabRef.current) {
+                  onTabRef.current()
+                  return true
+                }
+                return false
               }
             }
           }
-        })
+        }),
+        ...(enableSlashCommands
+          ? [
+              SlashCommand.configure({
+                'Heading 1': false,
+                'Heading 2': false,
+                'To-do list': false,
+                Insights: false,
+                Table: false,
+                Details: false,
+                'Create page': false,
+                Database: false,
+                'Table of contents': false,
+                'Link to page': false
+              }),
+              TaskList,
+              TaskItem.configure({nested: true}),
+              TextStyleKit,
+              Highlight,
+              ImageBlock.configure({editorWidth: 600 - 16 * 2, editorHeight: 88}),
+              FileUpload.configure({
+                scopeKey: teamId,
+                assetScope: 'Team',
+                highestTier: 'starter',
+                commit: uploadUserAsset
+              })
+            ]
+          : [])
       ],
       autofocus: autoFocus,
       onUpdate,
+      onFocus: () => onFocusChangeRef.current?.(true),
+      onBlur: () => onFocusChangeRef.current?.(false),
       editable: !readOnly
     },
     // Intentionally omit `content`: we don't want to recreate the editor when the response grows.
@@ -114,6 +192,10 @@ const PromptResponseEditor = (props: Props) => {
   // Reconcile content updates into the editor: appended blocks (e.g. "Add to response") stream in
   // word by word, everything else applies instantly. See the hook for the full reconciliation rules.
   useStreamedEditorContent(editor, content, {wordDelayMs: 3})
+
+  useEffect(() => {
+    if (editorRef) editorRef.current = editor ?? null
+  }, [editor, editorRef])
 
   const onSubmit = useCallback(() => {
     if (!editor) return
@@ -154,8 +236,13 @@ const PromptResponseEditor = (props: Props) => {
   const buttonTitle = !content ? 'Submit' : 'Update'
   return (
     <>
-      <TipTapEditor editor={editor} showBubbleMenu={!readOnly} />
-      {!readOnly && (
+      <TipTapEditor
+        editor={editor}
+        showBubbleMenu={!readOnly}
+        showListControls={showListControls}
+        className={className}
+      />
+      {!readOnly && showActions && (
         // The render conditions for these buttons *should* only be true when 'readOnly' is false, but let's be explicit
         // about it.
         <div className='flex items-center justify-end'>
