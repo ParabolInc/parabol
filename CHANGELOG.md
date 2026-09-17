@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.45.2](https://github.com/ParabolInc/parabol/compare/v13.45.1...v13.45.2) (2026-09-17)
+
+
+### Fixed
+
+* change template type in search results for team health ([#13510](https://github.com/ParabolInc/parabol/issues/13510)) ([0094ea3](https://github.com/ParabolInc/parabol/commit/0094ea341217e691766c6316ea0644290ad97b41))
+* TaskCard padding ([#13515](https://github.com/ParabolInc/parabol/issues/13515)) ([5360f22](https://github.com/ParabolInc/parabol/commit/5360f22ed8cf158c7b2368c3ce4b64d8ae29d479))
+* team menu selector ([#13514](https://github.com/ParabolInc/parabol/issues/13514)) ([c86a187](https://github.com/ParabolInc/parabol/commit/c86a187296a3f9ff1f7682a1bfba12812e8ae19a))
+
 ## [13.45.1](https://github.com/ParabolInc/parabol/compare/v13.45.0...v13.45.1) (2026-09-16)
 
 

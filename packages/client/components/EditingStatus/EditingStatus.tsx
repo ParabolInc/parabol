@@ -95,7 +95,7 @@ const EditingStatus = (props: Props) => {
     metaField === 'createdIn' ? 'createdAt' : metaField
 
   return (
-    <div className='flex min-h-[20px] items-start justify-between px-4 pb-1 text-left font-semibold text-fg-secondary text-xs leading-5'>
+    <div className='flex min-h-[20px] items-start justify-between pr-2 pb-1 pl-4 text-left font-semibold text-fg-secondary text-xs leading-5'>
       <div className='w-full'>
         {children}
         <Tooltip>
@@ -129,12 +129,14 @@ const EditingStatus = (props: Props) => {
           />
         )}
       </div>
-      <DueDateToggle
-        cardIsActive={isEditing || isTaskHovered}
-        isArchived={isArchived}
-        task={task}
-        useTaskChild={useTaskChild}
-      />
+      <div className='-mt-2 shrink-0'>
+        <DueDateToggle
+          cardIsActive={isEditing || isTaskHovered}
+          isArchived={isArchived}
+          task={task}
+          useTaskChild={useTaskChild}
+        />
+      </div>
     </div>
   )
 }

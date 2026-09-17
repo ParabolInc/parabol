@@ -70,13 +70,13 @@ const DueDateToggle = (props: Props) => {
       <RadixPopover.Trigger asChild>
         <CardButton
           className={cn(
-            'flex items-center justify-center rounded-md',
+            'flex h-5 items-center justify-center rounded-md text-xs leading-5',
             toggleIsActive
               ? 'opacity-50 hover:opacity-100 focus:opacity-100'
               : 'opacity-0 hover:opacity-0 focus:opacity-0',
             'hover:bg-surface-hover focus:bg-surface-hover',
             dueDate &&
-              'h-6 bg-surface-well pr-1 pl-px text-[length:inherit] text-fg-secondary leading-[1em] opacity-100 hover:bg-surface-raised hover:text-fg-primary hover:opacity-100 focus:bg-surface-raised focus:text-fg-primary focus:opacity-100',
+              'bg-surface-well px-1 text-fg-secondary opacity-100 hover:bg-surface-raised hover:text-fg-primary hover:opacity-100 focus:bg-surface-raised focus:text-fg-primary focus:opacity-100',
             isDueSoon &&
               'bg-gold-100 text-gold-500 hover:bg-gold-200 hover:text-terra-500 focus:bg-gold-200 focus:text-terra-500',
             isPastDue &&
@@ -87,7 +87,7 @@ const DueDateToggle = (props: Props) => {
         >
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className='h-[18px] w-[18px] [&_svg]:text-[18px]'>
+              <div className='flex h-4 w-4 items-center [&_svg]:text-[16px]'>
                 <AccessTime />
               </div>
             </TooltipTrigger>
