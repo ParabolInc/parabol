@@ -15,6 +15,7 @@ import standardError from '../../../utils/standardError'
 import type {DataLoaderWorker} from '../../graphql'
 import isStartMeetingLocked from './isStartMeetingLocked'
 import {IntegrationNotifier} from './notifications/IntegrationNotifier'
+import resolveStandupTemplateId from './resolveStandupTemplateId'
 import safeCreateRetrospective from './safeCreateRetrospective'
 import safeCreateTeamHealth from './safeCreateTeamHealth'
 import safeCreateTeamPrompt, {DEFAULT_PROMPT} from './safeCreateTeamPrompt'
@@ -62,9 +63,18 @@ const startRecurringMeeting = async (
   const meeting = await (async () => {
     if (meetingSeries.meetingType === 'teamPrompt') {
       const teamPromptMeeting = lastMeeting as TeamPromptMeeting | null
+      const templateId = await resolveStandupTemplateId(
+        [
+          teamPromptMeeting?.templateId,
+          meetingSeries.templateId,
+          meetingSettings?.selectedTemplateId
+        ],
+        dataLoader
+      )
       const meeting = await safeCreateTeamPrompt(meetingName, teamId, facilitatorId, dataLoader, {
         scheduledEndTime,
         meetingSeriesId: meetingSeries.id,
+        templateId,
         meetingPrompt: teamPromptMeeting?.meetingPrompt ?? DEFAULT_PROMPT
       })
       if (!meeting) {

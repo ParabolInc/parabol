@@ -97,7 +97,9 @@ export const createNotifier = (loader: NotificationIntegrationLoader): Notifier 
   async endMeeting(dataLoader: DataLoaderWorker, meetingId: string, teamId: string) {
     const {meeting, team, user} = await loadMeetingTeam(dataLoader, meetingId, teamId)
     if (!meeting || !team || !user) return
-    const meetingResponses = await getTeamPromptResponsesByMeetingId(meetingId)
+    const meetingResponses = (await getTeamPromptResponsesByMeetingId(meetingId)).filter(
+      (response) => response.isShared
+    )
     const standupResponses = await Promise.all(
       meetingResponses.map(async (response) => {
         const user = await dataLoader.get('users').loadNonNull(response.userId)

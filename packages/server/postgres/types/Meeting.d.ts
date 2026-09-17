@@ -73,7 +73,8 @@ export type CheckInMeeting = BaseNewMeeting &
   }
 
 export type TeamPromptMeeting = BaseNewMeeting &
-  NonNullableProps<Pick<NewMeeting, 'meetingPrompt'>> & {
+  NonNullableProps<Pick<NewMeeting, 'meetingPrompt'>> &
+  Pick<NewMeeting, 'templateId'> & {
     meetingType: 'teamPrompt'
     phases: TeamPromptPhase[]
   }

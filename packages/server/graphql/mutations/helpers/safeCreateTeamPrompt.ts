@@ -5,21 +5,33 @@ import getKysely from '../../../postgres/getKysely'
 import type {MeetingTypeEnum, TeamPromptMeeting} from '../../../postgres/types/Meeting'
 import type {DataLoaderWorker} from '../../graphql'
 import {primePhases} from './createNewMeetingPhases'
+import getTeamPromptMeetingPrompts from './getTeamPromptMeetingPrompts'
 
 export const DEFAULT_PROMPT = 'What are you working on today? Stuck on anything?'
+
+type TeamPromptOverrides = {
+  scheduledEndTime?: Date | null
+  meetingSeriesId?: number
+  meetingPrompt?: string
+  templateId?: string | null
+}
 
 const safeCreateTeamPrompt = async (
   name: string,
   teamId: string,
   facilitatorId: string,
   dataLoader: DataLoaderWorker,
-  meetingOverrideProps = {}
+  overrides: TeamPromptOverrides = {}
 ) => {
   const pg = getKysely()
   const meetingType: MeetingTypeEnum = 'teamPrompt'
-  const meetingCount = await dataLoader.get('meetingCount').load({teamId, meetingType})
+  const {templateId = null, meetingPrompt: legacyPrompt, ...meetingOverrideProps} = overrides
+  const [meetingCount, teamMembers, prompts] = await Promise.all([
+    dataLoader.get('meetingCount').load({teamId, meetingType}),
+    dataLoader.get('teamMembersByTeamId').load(teamId),
+    getTeamPromptMeetingPrompts({templateId, createdAt: new Date()}, dataLoader)
+  ])
   const meetingId = generateUID()
-  const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
   const teamMemberIds = teamMembers.map(({id}) => id)
   const teamPromptResponsesPhase = new TeamPromptResponsesPhase(teamMemberIds)
   const {stages: teamPromptStages} = teamPromptResponsesPhase
@@ -31,6 +43,7 @@ const safeCreateTeamPrompt = async (
     discussionTopicType: 'teamPromptResponse' as const
   }))
   primePhases([teamPromptResponsesPhase])
+  const firstPrompt = prompts[0]
   const meeting = new MeetingTeamPrompt({
     id: meetingId,
     name,
@@ -38,7 +51,8 @@ const safeCreateTeamPrompt = async (
     meetingCount,
     phases: [teamPromptResponsesPhase],
     facilitatorUserId: facilitatorId,
-    meetingPrompt: DEFAULT_PROMPT, // :TODO: (jmtaber129): Get this from meeting settings.
+    meetingPrompt: firstPrompt?.question ?? legacyPrompt ?? DEFAULT_PROMPT,
+    templateId: firstPrompt ? templateId : null,
     ...meetingOverrideProps
   }) as TeamPromptMeeting
   try {
@@ -47,7 +61,7 @@ const safeCreateTeamPrompt = async (
       .values({...meeting, phases: JSON.stringify(meeting.phases)})
       .execute()
   } catch {
-    // can't insert, meeting already exists?
+    // insert failed: a meeting for this team was just created concurrently
     return null
   }
   await pg

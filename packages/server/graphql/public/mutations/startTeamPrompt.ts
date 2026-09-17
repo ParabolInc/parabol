@@ -1,8 +1,9 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RRuleSet} from 'rrule-rust'
 import getKysely from '../../../postgres/getKysely'
+import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId} from '../../../utils/authorization'
+import {getUserId, isTeamMember} from '../../../utils/authorization'
 import {isImmediateOccurrence} from '../../../utils/isImmediateOccurrence'
 import publish from '../../../utils/publish'
 import RedisLockQueue from '../../../utils/RedisLockQueue'
@@ -10,6 +11,7 @@ import standardError from '../../../utils/standardError'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
+import resolveStandupTemplateId from '../../mutations/helpers/resolveStandupTemplateId'
 import safeCreateTeamPrompt from '../../mutations/helpers/safeCreateTeamPrompt'
 import type {MutationResolvers} from '../resolverTypes'
 import {createMeetingSeries, startNewMeetingSeries} from './updateRecurrenceSettings'
@@ -18,7 +20,7 @@ const MEETING_START_DELAY_MS = 3000
 
 const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   _source,
-  {teamId, name, rrule: rruleString, gcalInput},
+  {teamId, templateId: requestedTemplateId, name, rrule: rruleString, gcalInput},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const operationId = dataLoader.share()
@@ -28,11 +30,34 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   // AUTH
   const viewerId = getUserId(authToken)
 
-  const [unpaidError, viewer] = await Promise.all([
+  const [unpaidError, viewer, team, meetingSettings] = await Promise.all([
     isStartMeetingLocked(teamId, dataLoader),
-    dataLoader.get('users').loadNonNull(viewerId)
+    dataLoader.get('users').loadNonNull(viewerId),
+    dataLoader.get('teams').loadNonNull(teamId),
+    dataLoader.get('meetingSettingsByType').load({teamId, meetingType: 'teamPrompt'})
   ])
   if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
+
+  if (requestedTemplateId) {
+    const requestedTemplate = await dataLoader.get('meetingTemplates').load(requestedTemplateId)
+    if (
+      !requestedTemplate ||
+      !requestedTemplate.isActive ||
+      requestedTemplate.type !== 'teamPrompt'
+    ) {
+      return standardError(new Error('Template not found'), {userId: viewerId})
+    }
+    if (requestedTemplate.scope === 'TEAM' && !isTeamMember(authToken, requestedTemplate.teamId)) {
+      return standardError(new Error('Template is scoped to team'), {userId: viewerId})
+    }
+    if (requestedTemplate.scope === 'ORGANIZATION' && requestedTemplate.orgId !== team.orgId) {
+      return standardError(new Error('Template is scoped to organization'), {userId: viewerId})
+    }
+  }
+  const templateId = await resolveStandupTemplateId(
+    [requestedTemplateId, meetingSettings?.selectedTemplateId],
+    dataLoader
+  )
 
   const meetingName = name || 'Standup'
   const eventName = rrule ? name || 'Standup' : meetingName
@@ -49,7 +74,8 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
       title: name || meetingName,
       recurrenceRule: rrule,
       teamId,
-      facilitatorId: viewerId
+      facilitatorId: viewerId,
+      templateId
     })
     analytics.recurrenceStarted(viewer, meetingSeries)
     const {error: gcalError, gcalSeriesId} = await createGcalEvent({
@@ -88,12 +114,18 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
     })
   }
 
-  const meeting = await safeCreateTeamPrompt(meetingName, teamId, viewerId, dataLoader)
+  const meeting = await safeCreateTeamPrompt(meetingName, teamId, viewerId, dataLoader, {
+    templateId
+  })
   if (!meeting) {
     return {error: {message: 'Meeting already started'}}
   }
   const {id: meetingId} = meeting
-  const meetingSeries = rrule && (await startNewMeetingSeries(meeting, rrule, name))
+  if (meeting.templateId) {
+    await updateMeetingTemplateLastUsedAt(meeting.templateId, teamId)
+  }
+  const meetingSeries =
+    rrule && (await startNewMeetingSeries(meeting, rrule, name, {templateId: meeting.templateId}))
   if (meetingSeries) {
     // meeting was modified if a new meeting series was created
     dataLoader.get('newMeetings').clear(meetingId)

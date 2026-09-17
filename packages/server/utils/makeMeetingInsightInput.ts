@@ -110,7 +110,9 @@ const makeTeamPromptMeetingInsightInput = async (
 ) => {
   const MIN_RESPONSES = 2
   const {id: meetingId, meetingType} = meeting
-  const responses = await dataLoader.get('teamPromptResponsesByMeetingId').load(meetingId)
+  const responses = (await dataLoader.get('teamPromptResponsesByMeetingId').load(meetingId)).filter(
+    (response) => response.isShared
+  )
   if (responses.length < MIN_RESPONSES) return null
   const userIds = responses.map(({userId}) => userId)
   const users = (await dataLoader.get('users').loadMany(userIds)).filter(isValid)

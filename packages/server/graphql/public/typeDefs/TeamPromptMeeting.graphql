@@ -12,6 +12,23 @@ type TeamPromptMeeting implements NewMeeting {
   meetingPrompt: String!
 
   """
+  The stand-up template whose prompts this meeting answers. Null for legacy stand-ups that
+  use a single free-text meetingPrompt
+  """
+  templateId: ID
+
+  """
+  The stand-up template whose prompts this meeting answers. Null for legacy stand-ups
+  """
+  template: PromptTemplate
+
+  """
+  The prompts every member answers, frozen to the template as it was when the meeting started.
+  Empty for legacy stand-ups
+  """
+  prompts: [TemplatePrompt!]!
+
+  """
   The tasks created within the meeting
   """
   responses: [TeamPromptResponse!]!
@@ -22,7 +39,7 @@ type TeamPromptMeeting implements NewMeeting {
   viewerMeetingMember: TeamPromptMeetingMember
 
   """
-  The number of responses generated in the meeting
+  The number of shared responses with content in the meeting
   """
   responseCount: Int!
 

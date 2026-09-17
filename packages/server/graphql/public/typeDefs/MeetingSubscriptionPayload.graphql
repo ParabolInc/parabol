@@ -60,6 +60,7 @@ type MeetingSubscriptionPayload {
   SetPokerSpectateSuccess: SetPokerSpectateSuccess
   SetTaskEstimateSuccess: SetTaskEstimateSuccess
   UpsertTeamPromptResponseSuccess: UpsertTeamPromptResponseSuccess
+  UpsertTeamPromptAnswersSuccess: UpsertTeamPromptAnswersSuccess
   UpdateMeetingTemplateSuccess: UpdateMeetingTemplateSuccess
   SuggestedGroupsSuccess: SuggestedGroupsSuccess
 }

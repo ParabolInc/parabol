@@ -6,6 +6,8 @@ import {getUserId} from '../../../utils/authorization'
 import filterTasksByMeeting from '../../../utils/filterTasksByMeeting'
 import getPhase from '../../../utils/getPhase'
 import isValid from '../../isValid'
+import getTeamPromptMeetingPrompts from '../../mutations/helpers/getTeamPromptMeetingPrompts'
+import {hasSharedContent} from '../mutations/helpers/buildTeamPromptResponseContent'
 import type {TeamPromptMeetingResolvers} from '../resolverTypes'
 
 const TeamPromptMeeting: TeamPromptMeetingResolvers = {
@@ -55,10 +57,18 @@ const TeamPromptMeeting: TeamPromptMeetingResolvers = {
     return getTeamPromptResponsesByMeetingId(meetingId)
   },
 
+  template: async ({templateId}, _args, {dataLoader}) => {
+    if (!templateId) return null
+    const template = await dataLoader.get('meetingTemplates').load(templateId)
+    return template?.type === 'teamPrompt' ? template : null
+  },
+
+  prompts: (meeting, _args, {dataLoader}) => {
+    return getTeamPromptMeetingPrompts(meeting, dataLoader)
+  },
+
   responseCount: async ({id: meetingId}) => {
-    return (await getTeamPromptResponsesByMeetingId(meetingId)).filter(
-      (response) => !!response.plaintextContent
-    ).length
+    return (await getTeamPromptResponsesByMeetingId(meetingId)).filter(hasSharedContent).length
   },
 
   taskCount: async ({id: meetingId}, _args, {dataLoader}) => {

@@ -454,6 +454,7 @@ const permissionMap: PermissionMap<Resolvers> = {
       'teamHealthQuestions',
       'createdBy'
     ),
+    upsertTeamPromptAnswers: isMeetingMember<'Mutation.upsertTeamPromptAnswers'>('args.meetingId'),
     upsertTeamPromptResponse:
       isMeetingMember<'Mutation.upsertTeamPromptResponse'>('args.meetingId'),
     verifyEmail: rateLimit({perMinute: 50, perHour: 100}),

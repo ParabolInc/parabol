@@ -2154,6 +2154,11 @@ type Mutation {
     teamId: ID!
 
     """
+    The stand-up template to answer. Defaults to the team's selected stand-up template.
+    """
+    templateId: ID
+
+    """
     Meeting or series name, by default "Standup"
     """
     name: String
@@ -2558,6 +2563,26 @@ type Mutation {
     """
     content: String!
   ): UpsertTeamPromptResponsePayload! @scope(name: MEETINGS_WRITE)
+
+  """
+  Save the viewer's answers to a templated stand-up as a draft, or share them with the team
+  """
+  upsertTeamPromptAnswers(
+    """
+    The id of the stand-up meeting
+    """
+    meetingId: ID!
+
+    """
+    The answers to write. Prompts not listed are left unchanged
+    """
+    answers: [TeamPromptAnswerInput!]!
+
+    """
+    True to share the response with the team, false to keep it a private draft
+    """
+    share: Boolean!
+  ): UpsertTeamPromptAnswersSuccess! @scope(name: MEETINGS_WRITE)
 
   """
   Verify an email address and sign in if not already a user
