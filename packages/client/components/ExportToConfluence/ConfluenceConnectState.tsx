@@ -5,7 +5,8 @@ import useMutationProps, {type MenuMutationProps} from '../../hooks/useMutationP
 import type {ConnectProvider} from '../../integrations/platform/ClientIntegrationDefinition'
 import {Button} from '../../ui/Button/Button'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
-import AtlassianClientManager, {ERROR_POPUP_CLOSED} from '../../utils/AtlassianClientManager'
+import AtlassianClientManager from '../../utils/AtlassianClientManager'
+import {ERROR_POPUP_CLOSED} from '../../utils/oauthPopupError'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 
 interface Props {

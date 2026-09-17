@@ -2,10 +2,11 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {Add as AddIcon} from '~/ui/icons'
 import type {GitLabProviders_organization$key} from '../../../../__generated__/GitLabProviders_organization.graphql'
-import GitLabProviderLogo from '../../../../components/GitLabProviderLogo'
 import ProviderActions from '../../../../components/ProviderActions'
+import ProviderLogo from '../../../../components/ProviderLogo'
 import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
+import {getClientIntegration} from '../../../../integrations/platform/registry'
 import {Breakpoint} from '../../../../types/constEnums'
 import {useDialogState} from '../../../../ui/Dialog/useDialogState'
 import ProviderRowActionButton from '../../../teamDashboard/components/ProviderRow/ProviderRowActionButton'
@@ -54,7 +55,7 @@ const GitLabProviders = (props: Props) => {
     <>
       <div className='my-4 flex flex-col rounded-sm bg-surface-card shadow-[var(--shadow-card)]'>
         <div className='flex flex-center items-center p-4'>
-          <GitLabProviderLogo />
+          <ProviderLogo logo={getClientIntegration('gitlab').logo} />
           <div className='flex flex-col px-4'>
             <div className='font-semibold text-fg-primary'>GitLab</div>
             <RowInfoCopy>Add private servers for use by your teams.</RowInfoCopy>

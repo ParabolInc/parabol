@@ -1,7 +1,8 @@
 import ErrorAlert from '../../../../components/ErrorAlert/ErrorAlert'
-import GitLabProviderLogo from '../../../../components/GitLabProviderLogo'
 import BasicInput from '../../../../components/InputField/BasicInput'
+import ProviderLogo from '../../../../components/ProviderLogo'
 import useForm from '../../../../hooks/useForm'
+import {getClientIntegration} from '../../../../integrations/platform/registry'
 import {Button} from '../../../../ui/Button/Button'
 import {Dialog} from '../../../../ui/Dialog/Dialog'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
@@ -63,7 +64,7 @@ const UpsertGitLabProviderDialog = (props: Props) => {
     <Dialog isOpen={isOpen} onClose={onClose}>
       <DialogContent>
         <DialogTitle className='flex items-center'>
-          <GitLabProviderLogo />
+          <ProviderLogo logo={getClientIntegration('gitlab').logo} />
           <div className='ml-2'>Add GitLab Server</div>
         </DialogTitle>
         <form
