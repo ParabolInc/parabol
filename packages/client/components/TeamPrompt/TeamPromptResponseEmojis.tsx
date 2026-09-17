@@ -10,10 +10,11 @@ import ReactjiSection from '../ReflectionCard/ReactjiSection'
 interface Props {
   meetingId: string
   responseRef: TeamPromptResponseEmojis_response$key
+  isPhone?: boolean
 }
 
 export const TeamPromptResponseEmojis = (props: Props) => {
-  const {responseRef, meetingId} = props
+  const {responseRef, meetingId, isPhone} = props
 
   const response = useFragment(
     graphql`
@@ -52,5 +53,12 @@ export const TeamPromptResponseEmojis = (props: Props) => {
     )
   }
 
-  return <ReactjiSection className='pt-2 pr-2' reactjis={reactjis} onToggle={onToggleReactji} />
+  return (
+    <ReactjiSection
+      className='pt-2 pr-2'
+      reactjis={reactjis}
+      onToggle={onToggleReactji}
+      size={isPhone ? 'lg' : 'sm'}
+    />
+  )
 }

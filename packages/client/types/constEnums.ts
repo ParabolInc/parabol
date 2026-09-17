@@ -34,6 +34,7 @@ export enum BezierCurve {
 }
 
 export enum Breakpoint {
+  PHONE = 640,
   SIDEBAR_LEFT = 1024,
   NEW_MEETING_GRID = 1112,
   NEW_MEETING_SELECTOR = 500,

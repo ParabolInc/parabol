@@ -22,6 +22,7 @@ interface Options {
   editorRefs: EditorRefs
   onChange: (promptId: string, editor: Editor) => void
   expand: () => void
+  onInserted?: () => void
 }
 
 const delay = (timers: Timers, ms: number) =>
@@ -53,7 +54,7 @@ const endOfInsertedBlocks = (editor: Editor, from: number, firstIndex: number, c
 }
 
 const useTeamPromptComposerApiRegistration = (options: Options) => {
-  const {editorRefs, onChange, expand} = options
+  const {editorRefs, onChange, expand, onInserted} = options
   const apiRef = useContext(TeamPromptComposerApiContext)
   const insertCountRef = useRef(0)
   const insertQueuesRef = useRef(new Map<string, Promise<unknown>>())
@@ -142,6 +143,7 @@ const useTeamPromptComposerApiRegistration = (options: Options) => {
       }, HIGHLIGHT_MS)
       timers.set(timer, () => {})
       onChange(promptId, editor)
+      onInserted?.()
       return {id, promptId} satisfies InsertHandle
     }
     apiRef.current = {
@@ -175,7 +177,7 @@ const useTeamPromptComposerApiRegistration = (options: Options) => {
     return () => {
       apiRef.current = null
     }
-  }, [apiRef, editorRefs, onChange, expand])
+  }, [apiRef, editorRefs, onChange, expand, onInserted])
 }
 
 export default useTeamPromptComposerApiRegistration

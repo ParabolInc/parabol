@@ -2,6 +2,7 @@ import {generateText, type JSONContent} from '@tiptap/core'
 import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {isEmptyAnswerDoc} from '../../../../client/shared/tiptap/isEmptyAnswerDoc'
 import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
 import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -11,8 +12,7 @@ import getTeamPromptMeetingPrompts from '../../mutations/helpers/getTeamPromptMe
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import type {MutationResolvers} from '../resolverTypes'
 import buildTeamPromptResponseContent, {
-  EMPTY_TIPTAP_DOC,
-  isEmptyAnswerDoc
+  EMPTY_TIPTAP_DOC
 } from './helpers/buildTeamPromptResponseContent'
 import publishNotification from './helpers/publishNotification'
 import createTeamPromptMentionNotifications from './helpers/publishTeamPromptMentions'

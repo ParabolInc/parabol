@@ -1,24 +1,32 @@
 import graphql from 'babel-plugin-relay/macro'
-import {type RefObject, useRef} from 'react'
+import {memo, type RefObject, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import type {TeamUpdatesSection_meeting$key} from '~/__generated__/TeamUpdatesSection_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import usePhoneViewport from '~/hooks/usePhoneViewport'
+import TeamUpdatesByPersonPhone from './mobile/TeamUpdatesByPersonPhone'
+import TeamUpdatesByQuestionPhone from './mobile/TeamUpdatesByQuestionPhone'
+import TeamUpdatesPhoneHeader from './mobile/TeamUpdatesPhoneHeader'
 import TeamUpdatesByPerson from './TeamUpdatesByPerson'
 import TeamUpdatesByQuestion from './TeamUpdatesByQuestion'
 import TeamUpdatesHeader from './TeamUpdatesHeader'
 import {sortTeamStages} from './teamPromptStages'
 import useOpenResponseDiscussion from './useOpenResponseDiscussion'
 import useTeamHeaderPin from './useTeamHeaderPin'
-import useTeamLayoutPreference from './useTeamLayoutPreference'
+import useTeamLayoutPreference, {
+  nextLayoutForPhoneChoice,
+  toPhoneLayout
+} from './useTeamLayoutPreference'
 
 interface Props {
   meetingRef: TeamUpdatesSection_meeting$key
   scrollContainerRef: RefObject<HTMLDivElement | null>
   composerRef: RefObject<HTMLDivElement | null>
+  sectionRef: RefObject<HTMLDivElement>
 }
 
 const TeamUpdatesSection = (props: Props) => {
-  const {meetingRef, scrollContainerRef, composerRef} = props
+  const {meetingRef, scrollContainerRef, composerRef, sectionRef} = props
   const meeting = useFragment(
     graphql`
       fragment TeamUpdatesSection_meeting on TeamPromptMeeting {
@@ -36,8 +44,8 @@ const TeamUpdatesSection = (props: Props) => {
           ... on TeamPromptResponsesPhase {
             stages {
               id
-              ...TeamPromptSharedResponseCard_stage
-              ...TeamUpdatesQuestionRow_stage
+              ...TeamUpdatesByPerson_stage @relay(mask: false)
+              ...TeamUpdatesByQuestion_stage @relay(mask: false)
               teamMember {
                 userId
                 user {
@@ -63,12 +71,12 @@ const TeamUpdatesSection = (props: Props) => {
   const rightDrawerOpen = meeting.rightDrawerOpen ?? null
   const stages = meeting.phases[0]?.stages ?? []
   const [layout, setLayout] = useTeamLayoutPreference(meetingId, teamId)
+  const isPhone = usePhoneViewport()
   const headerRef = useRef<HTMLDivElement>(null)
   const gridRef = useRef<HTMLDivElement>(null)
-  const sectionRef = useRef<HTMLDivElement>(null)
   const viewerStage = stages.find((stage) => stage.teamMember.userId === viewerId)
   const {shared, drafting, notStarted} = sortTeamStages(stages, viewerId)
-  const canPin = !endedAt && !viewerStage?.response?.isShared && shared.length > 0
+  const canPin = !isPhone && !endedAt && !viewerStage?.response?.isShared && shared.length > 0
   const isPinned = useTeamHeaderPin(headerRef, scrollContainerRef, composerRef, sectionRef, canPin)
   const onReply = useOpenResponseDiscussion(meetingId, rightDrawerOpen, localStageId)
   const selectedStageId = rightDrawerOpen === 'discussion' ? localStageId : null
@@ -78,25 +86,60 @@ const TeamUpdatesSection = (props: Props) => {
   }
   return (
     <div ref={sectionRef} className='@container'>
-      <TeamUpdatesHeader
-        ref={headerRef}
-        sharedMembers={sharedMembers}
-        draftingCount={drafting.length}
-        layout={layout}
-        onLayoutChange={setLayout}
-        canPin={canPin}
-        isPinned={isPinned}
-        onSeeTeam={onSeeTeam}
-      />
+      {isPhone ? (
+        <TeamUpdatesPhoneHeader
+          sharedCount={shared.length}
+          draftingCount={drafting.length}
+          layout={toPhoneLayout(layout)}
+          onLayoutChange={(choice) => {
+            const next = nextLayoutForPhoneChoice(layout, choice)
+            if (next) setLayout(next)
+          }}
+        />
+      ) : (
+        <TeamUpdatesHeader
+          ref={headerRef}
+          sharedMembers={sharedMembers}
+          draftingCount={drafting.length}
+          layout={layout}
+          onLayoutChange={setLayout}
+          canPin={canPin}
+          isPinned={isPinned}
+          onSeeTeam={onSeeTeam}
+        />
+      )}
       <div ref={gridRef}>
         {layout === 'byQuestion' ? (
-          <TeamUpdatesByQuestion
+          isPhone ? (
+            <TeamUpdatesByQuestionPhone
+              prompts={prompts}
+              sharedStages={shared}
+              draftingStages={[...drafting, ...notStarted]}
+              isEnded={!!endedAt}
+              selectedStageId={selectedStageId}
+              onReply={onReply}
+              scrollContainerRef={scrollContainerRef}
+            />
+          ) : (
+            <TeamUpdatesByQuestion
+              prompts={prompts}
+              sharedStages={shared}
+              draftingStages={[...drafting, ...notStarted]}
+              isEnded={!!endedAt}
+              selectedStageId={selectedStageId}
+              onReply={onReply}
+            />
+          )
+        ) : isPhone ? (
+          <TeamUpdatesByPersonPhone
             prompts={prompts}
             sharedStages={shared}
-            draftingStages={[...drafting, ...notStarted]}
+            draftingStages={drafting}
+            notStartedStages={notStarted}
             isEnded={!!endedAt}
             selectedStageId={selectedStageId}
             onReply={onReply}
+            scrollContainerRef={scrollContainerRef}
           />
         ) : (
           <TeamUpdatesByPerson
@@ -115,4 +158,4 @@ const TeamUpdatesSection = (props: Props) => {
   )
 }
 
-export default TeamUpdatesSection
+export default memo(TeamUpdatesSection)

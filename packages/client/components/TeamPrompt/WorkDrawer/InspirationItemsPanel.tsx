@@ -17,6 +17,7 @@ import getStructuredInspiration from './getStructuredInspiration'
 import type {InspirationItemData} from './InspirationDraftList'
 import InspirationDraftPanel from './InspirationDraftPanel'
 import InspirationItemCard from './InspirationItemCard'
+import {useInspirationPresentation} from './InspirationPresentationContext'
 import {NO_WORK_LINE} from './inspirationCopy'
 import RetroInspirationItemCard from './RetroInspirationItemCard'
 import useInspirationAutoGenerate from './useInspirationAutoGenerate'
@@ -54,6 +55,7 @@ const InspirationItemsPanel = (props: Props) => {
   const {meetingId, teamId, service, searchQuery, initialItems, hideDraftPanel, children} = props
   const {dateRange, workItemCount, filters} = props
   const consume = useWorkDrawerConsume()
+  const {variant, onAdded} = useInspirationPresentation()
   const isRetro = consume.mode === 'retro'
   const viewerResponse = consume.mode === 'teamPrompt' ? consume.viewerResponse : null
   const atmosphere = useAtmosphere()
@@ -197,6 +199,8 @@ const InspirationItemsPanel = (props: Props) => {
           onTune={() => setPromptOpen(true)}
           tuneDirty={!!userPrompt.trim()}
           filters={filters}
+          variant={variant}
+          onAdded={onAdded}
         >
           {children}
         </InspirationDraftPanel>

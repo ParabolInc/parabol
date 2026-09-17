@@ -1,11 +1,13 @@
 interface Props {
   answeredCount: number
   promptCount: number
+  short?: boolean
 }
 
-const TeamPromptProgressPill = ({answeredCount, promptCount}: Props) => {
-  const label =
-    promptCount === 1
+const TeamPromptProgressPill = ({answeredCount, promptCount, short}: Props) => {
+  const label = short
+    ? `${answeredCount} of ${promptCount}`
+    : promptCount === 1
       ? answeredCount === 1
         ? 'Answered'
         : 'Not answered'
