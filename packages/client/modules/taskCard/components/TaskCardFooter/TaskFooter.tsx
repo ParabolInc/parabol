@@ -82,7 +82,7 @@ const TaskFooter = (props: Props) => {
   const canAssignTeam = !isArchived
   return (
     <Fragment>
-      <div className='flex max-w-full justify-between px-4 py-2'>
+      <div className='flex max-w-full justify-between py-2 pr-2 pl-4'>
         <div className='h-6 min-w-0 flex-1'>
           {showTeam ? (
             <TaskFooterTeamAssignee
