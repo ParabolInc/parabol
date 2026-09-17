@@ -12,6 +12,7 @@ import {useUploadUserAsset} from '../../mutations/useUploadUserAsset'
 import {isEqualWhenSerialized} from '../../shared/isEqualWhenSerialized'
 import {FileUpload} from '../../tiptap/extensions/fileUpload/FileUpload'
 import ImageBlock from '../../tiptap/extensions/imageBlock/ImageBlock'
+import {InsertedRangeHighlight} from '../../tiptap/extensions/insertedRangeHighlight/InsertedRangeHighlight'
 import {SlashCommand} from '../../tiptap/extensions/slashCommand/SlashCommand'
 import {Button} from '../../ui/Button/Button'
 import {cn} from '../../ui/cn'
@@ -128,6 +129,7 @@ const PromptResponseEditor = (props: Props) => {
         TiptapLinkExtension.configure({
           openOnClick: false
         }),
+        InsertedRangeHighlight,
         Extension.create({
           name: 'promptEditorKeyboardShortcuts',
           addKeyboardShortcuts(this) {

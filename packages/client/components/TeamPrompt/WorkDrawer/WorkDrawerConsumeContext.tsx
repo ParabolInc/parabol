@@ -1,4 +1,5 @@
 import {createContext, useContext} from 'react'
+import type {TeamPromptComposerApi} from '../structured/TeamPromptComposerApiContext'
 
 export interface ViewerResponse {
   id: string
@@ -6,10 +7,21 @@ export interface ViewerResponse {
   plaintextContent: string
 }
 
+export interface WorkDrawerPrompt {
+  id: string
+  question: string
+  groupColor: string
+}
+
 // Tells InspirationItemsPanel how generated items are consumed, which differs by meeting type:
 // team prompt merges an item into the viewer's response; retro adds each item as a reflection card.
 export type WorkDrawerConsume =
-  | {mode: 'teamPrompt'; viewerResponse: ViewerResponse | null}
+  | {
+      mode: 'teamPrompt'
+      viewerResponse: ViewerResponse | null
+      composer: TeamPromptComposerApi | null
+      prompts: readonly WorkDrawerPrompt[]
+    }
   | {
       mode: 'retro'
       // The sort order to give a new reflection so it lands on top of the prompt's stack.
@@ -23,7 +35,9 @@ export type WorkDrawerConsume =
 
 const WorkDrawerConsumeContext = createContext<WorkDrawerConsume>({
   mode: 'teamPrompt',
-  viewerResponse: null
+  viewerResponse: null,
+  composer: null,
+  prompts: []
 })
 
 export const useWorkDrawerConsume = () => useContext(WorkDrawerConsumeContext)

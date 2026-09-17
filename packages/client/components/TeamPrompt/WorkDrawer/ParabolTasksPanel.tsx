@@ -15,6 +15,7 @@ import {taskStatusDotColors, taskStatusLabels} from '../../../utils/taskStatus'
 import InspirationItemsPanel from './InspirationItemsPanel'
 import ParabolStandupsResultsRoot from './ParabolStandupsResultsRoot'
 import ParabolTasksResultsRoot from './ParabolTasksResultsRoot'
+import useIsStructuredInspiration from './useIsStructuredInspiration'
 import {WorkDrawerDateFilter} from './WorkDrawerDateFilter'
 
 const SUB_TABS = [
@@ -54,7 +55,11 @@ const ParabolTasksPanel = (props: Props) => {
   )
 
   const atmosphere = useAtmosphere()
-  const {dateRange, setDateRange} = useInspirationDrawer('PARABOL', meeting)
+  const isStructured = useIsStructuredInspiration()
+  const {dateRange, setDateRange, onResultCount, getResultCount} = useInspirationDrawer(
+    'PARABOL',
+    meeting
+  )
   const [subTab, setSubTab] = useSessionStorageState<SubTab>(
     `Inspiration:parabol:subTab:${meeting.id}`,
     'tasks'
@@ -83,8 +88,8 @@ const ParabolTasksPanel = (props: Props) => {
     })
   }
 
-  return (
-    <div className='flex min-h-0 flex-1 flex-col'>
+  const filterBar = (
+    <>
       {/* Row 1: content type */}
       <div className='flex gap-2 px-4 pt-3 pb-1'>
         {SUB_TABS.map((tab) => (
@@ -126,19 +131,40 @@ const ParabolTasksPanel = (props: Props) => {
       <div className='flex px-2 py-1'>
         <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
       </div>
+    </>
+  )
+
+  return (
+    <div className='flex min-h-0 flex-1 flex-col'>
+      {!isStructured && filterBar}
       {/* Row 4: draft button + suggestions, then results (scrollable) */}
       <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
         <InspirationItemsPanel
+          filters={isStructured ? filterBar : undefined}
           meetingId={meeting.id}
+          teamId={meeting.teamId}
           service='PARABOL'
           searchQuery={searchQuery}
           initialItems={meeting.parabolInspirationItems}
-        />
-        {subTab === 'tasks' ? (
-          <ParabolTasksResultsRoot selectedStatuses={selectedStatuses} dateRange={dateRange} />
-        ) : (
-          <ParabolStandupsResultsRoot teamId={meeting.teamId} dateRange={dateRange} />
-        )}
+          dateRange={dateRange}
+          workItemCount={getResultCount(searchQuery)}
+        >
+          {subTab === 'tasks' ? (
+            <ParabolTasksResultsRoot
+              selectedStatuses={selectedStatuses}
+              dateRange={dateRange}
+              searchQuery={searchQuery}
+              onResultCount={onResultCount}
+            />
+          ) : (
+            <ParabolStandupsResultsRoot
+              teamId={meeting.teamId}
+              dateRange={dateRange}
+              searchQuery={searchQuery}
+              onResultCount={onResultCount}
+            />
+          )}
+        </InspirationItemsPanel>
       </div>
     </div>
   )

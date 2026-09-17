@@ -81,9 +81,14 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
   }
 
   if (!workItemsText.trim()) {
-    throw new GraphQLError(
-      'No work was found to draft a response from. Try adjusting your filters or date range.'
-    )
+    await pg
+      .deleteFrom('InspirationItem')
+      .where('meetingId', '=', meetingId)
+      .where('userId', '=', viewerId)
+      .where('service', '=', service)
+      .execute()
+    dataLoader.get('inspirationItemsByMeeting').clear({meetingId, userId: viewerId, service})
+    return {meetingId, service}
   }
 
   const viewer = await dataLoader.get('users').loadNonNull(viewerId)
