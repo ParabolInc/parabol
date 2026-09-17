@@ -1,0 +1,84 @@
+jest.mock('../../../tiptap/extensions/table/Table', () => ({
+  Table: {name: 'table', configure: () => ({name: 'table'})}
+}))
+jest.mock('../../../tiptap/extensions/imageBlock/ImageBlock', () => ({
+  __esModule: true,
+  default: {name: 'imageBlock', configure: () => ({name: 'imageBlock'})}
+}))
+jest.mock('../../../tiptap/extensions/fileUpload/FileUpload', () => ({
+  FileUpload: {name: 'fileUpload', configure: () => ({name: 'fileUpload'})}
+}))
+jest.mock('../../../tiptap/extensions/fileBlock/FileBlock', () => ({
+  __esModule: true,
+  default: {name: 'fileBlock'}
+}))
+
+import type {Table as TiptapTable} from '@tiptap/extension-table'
+import type Atmosphere from '../../../Atmosphere'
+import type {FileBlockBase} from '../../../shared/tiptap/extensions/FileBlockBase'
+import type {FileUploadBase} from '../../../shared/tiptap/extensions/FileUploadBase'
+import type {ImageBlockBase} from '../../../tiptap/extensions/imageBlock/ImageBlockBase'
+import {slashCommands} from '../../../tiptap/extensions/slashCommand/slashCommands'
+import {
+  BLOCKED_STANDUP_SLASH_COMMANDS,
+  STANDUP_SLASH_COMMANDS,
+  standupBlockExtensions
+} from '../standupEditorExtensions'
+
+const {Table: realTable} = jest.requireActual<{Table: typeof TiptapTable}>(
+  '@tiptap/extension-table'
+)
+const {FileBlockBase: realFileBlockBase} = jest.requireActual<{
+  FileBlockBase: typeof FileBlockBase
+}>('../../../shared/tiptap/extensions/FileBlockBase')
+const {FileUploadBase: realFileUploadBase} = jest.requireActual<{
+  FileUploadBase: typeof FileUploadBase
+}>('../../../shared/tiptap/extensions/FileUploadBase')
+const {ImageBlockBase: realImageBlockBase} = jest.requireActual<{
+  ImageBlockBase: typeof ImageBlockBase
+}>('../../../tiptap/extensions/imageBlock/ImageBlockBase')
+
+test('every slash command catalogue title has a stand-up policy entry', () => {
+  const allTitles = slashCommands.flatMap((group) => group.commands.map((command) => command.title))
+  for (const title of allTitles) {
+    expect(Object.hasOwn(STANDUP_SLASH_COMMANDS, title)).toBe(true)
+  }
+})
+
+test('exactly the ruled-out titles are blocked', () => {
+  expect(new Set(BLOCKED_STANDUP_SLASH_COMMANDS)).toEqual(
+    new Set(['Table of contents', 'Link to page', 'Create page', 'Database', 'Insights'])
+  )
+})
+
+test('standupBlockExtensions registers the stand-up block nodes and excludes page-only nodes', () => {
+  const extensionNames = standupBlockExtensions({
+    teamId: 't1',
+    atmosphere: {} as Atmosphere,
+    commit: jest.fn(),
+    editorWidth: 568
+  }).map((extension) => extension.name)
+
+  expect(extensionNames).toEqual(
+    expect.arrayContaining([
+      'taskList',
+      'taskItem',
+      'textStyleKit',
+      'highlight',
+      'details',
+      'detailsSummary',
+      'detailsContent',
+      realTable.name,
+      'tableRow',
+      'tableHeader',
+      'tableCell',
+      'focus',
+      realImageBlockBase.name,
+      realFileBlockBase.name,
+      realFileUploadBase.name
+    ])
+  )
+  expect(extensionNames).not.toEqual(
+    expect.arrayContaining(['tableOfContents', 'pageLinkBlock', 'insightsBlock', 'database'])
+  )
+})

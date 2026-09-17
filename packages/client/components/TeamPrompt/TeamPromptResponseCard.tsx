@@ -220,6 +220,8 @@ const TeamPromptResponseCard = (props: Props) => {
               readOnly={!isViewerResponse || isMeetingEnded}
               placeholder={viewerEmptyResponsePlaceholder}
               draftStorageKey={`draftResponse:${stageId}`}
+              enableSlashCommands
+              showListControls
             />
             {!!response && (
               <div className='flex flex-wrap items-center justify-start pt-1'>

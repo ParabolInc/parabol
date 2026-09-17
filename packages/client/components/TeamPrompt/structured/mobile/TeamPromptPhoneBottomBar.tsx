@@ -81,9 +81,9 @@ const TeamPromptPhoneBottomBar = (props: Props) => {
         aria-label='See team updates'
         className='flex h-11 w-full items-center gap-2 bg-transparent text-left'
       >
-        <div className='shrink-0'>
+        <span className='block shrink-0'>
           <TeamUpdatesAvatarStack members={sharedMembers} size='sm' />
-        </div>
+        </span>
         <span className='min-w-0 truncate font-semibold text-[13px]'>Team updates</span>
         <span className='min-w-0 truncate text-fg-muted text-xs'>
           {sharedMembers.length} shared <span aria-hidden>·</span> {drafting.length} drafting
