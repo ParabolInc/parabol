@@ -5,7 +5,13 @@ interface Props {
   className?: string
 }
 
-const CATEGORY_COLORS = ['var(--color-aqua-500)', 'var(--color-tomato-500)', 'var(--color-sky-500)']
+// spread across the hue arc the likert scale leaves free: its chips are tomato, gold, jade and a
+// desaturated slate, so categories stay clear of red, amber and green
+const CATEGORY_COLORS = [
+  'var(--color-aqua-500)',
+  'var(--color-lilac-500)',
+  'var(--color-fuscia-500)'
+]
 // SCORE_COLORS from TeamHealthScoreScale, low (disagree) to high (agree)
 const SCORE_COLORS = [
   'var(--color-tomato-500)',
