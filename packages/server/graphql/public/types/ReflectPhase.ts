@@ -1,3 +1,4 @@
+import getMeetingTemplatePrompts from '../../mutations/helpers/getMeetingTemplatePrompts'
 import type {ReflectPhaseResolvers} from '../resolverTypes'
 
 const ReflectPhase: ReflectPhaseResolvers = {
@@ -10,14 +11,7 @@ const ReflectPhase: ReflectPhaseResolvers = {
   reflectPrompts: async ({meetingId}, _args, {dataLoader}) => {
     const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     if (meeting.meetingType !== 'retrospective') return []
-    const prompts = await dataLoader.get('templatePromptsByTemplateId').load(meeting.templateId)
-    // only show prompts that were created before the meeting and
-    // either have not been removed or they were removed after the meeting was created
-    return prompts.filter(
-      (prompt) =>
-        prompt.createdAt < meeting.createdAt &&
-        (!prompt.removedAt || meeting.createdAt < prompt.removedAt)
-    )
+    return getMeetingTemplatePrompts(meeting, dataLoader)
   }
 }
 

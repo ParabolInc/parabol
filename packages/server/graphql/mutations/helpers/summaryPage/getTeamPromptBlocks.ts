@@ -1,9 +1,10 @@
 import plural from '../../../../../client/utils/plural'
 import type {DataLoaderInstance} from '../../../../dataloader/RootDataLoader'
 import isValid from '../../../isValid'
+import getSharedTeamPromptResponses from '../getSharedTeamPromptResponses'
 
 export const getTeamPromptBlocks = async (meetingId: string, dataLoader: DataLoaderInstance) => {
-  const responses = await dataLoader.get('teamPromptResponsesByMeetingId').load(meetingId)
+  const responses = await getSharedTeamPromptResponses(meetingId, dataLoader)
   const responseBlocks = await Promise.all(
     responses.map(async (response) => {
       const {userId, content} = response

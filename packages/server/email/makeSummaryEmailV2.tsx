@@ -18,6 +18,7 @@ import plural from '../../client/utils/plural'
 import appOrigin from '../appOrigin'
 import type {DataLoaderInstance} from '../dataloader/RootDataLoader'
 import type {InternalContext} from '../graphql/graphql'
+import getSharedTeamPromptResponses from '../graphql/mutations/helpers/getSharedTeamPromptResponses'
 import {
   getDimensionNames,
   getPokerRowData
@@ -76,7 +77,7 @@ const makeTeamPromptFallbackInsights = async (
   meetingId: string,
   dataLoader: DataLoaderInstance
 ) => {
-  const responses = await dataLoader.get('teamPromptResponsesByMeetingId').load(meetingId)
+  const responses = await getSharedTeamPromptResponses(meetingId, dataLoader)
   const responseBlock = await Promise.all(
     responses.map(async (response) => {
       const {userId, content} = response
@@ -324,8 +325,7 @@ export const makeSummaryEmailV2 = async (
       </Html>
     )
   } else if (meetingType === 'teamPrompt') {
-    const responses = await dataLoader.get('teamPromptResponsesByMeetingId').load(meetingId)
-    const responseCount = responses.length
+    const responseCount = (await getSharedTeamPromptResponses(meetingId, dataLoader)).length
     const responseLabel = `${responseCount} ${plural(responseCount || 0, 'response')}`
     const subHeadingMeta = `${responseLabel}`
     const {content: insightsMarkdown} = await dataLoader

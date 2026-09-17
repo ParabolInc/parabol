@@ -6,6 +6,7 @@ import getKysely from '../../../postgres/getKysely'
 import {getUserId, isSuperUser} from '../../../utils/authorization'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import canAccessAI from '../../mutations/helpers/canAccessAI'
+import getMeetingTemplatePrompts from '../../mutations/helpers/getMeetingTemplatePrompts'
 import type {MutationResolvers} from '../resolverTypes'
 import fetchGCalWorkItems from './helpers/fetchGCalWorkItems'
 import fetchGitHubWorkItems from './helpers/fetchGitHubWorkItems'
@@ -88,19 +89,12 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
   const viewer = await dataLoader.get('users').loadNonNull(viewerId)
 
   const manager = new OpenAIServerManager()
-  // Each generated item, ready to persist. promptId is set for retrospective meetings (the
-  // AI-chosen reflect prompt/column) and null for team prompt meetings.
   let generatedItems: {title: string | null; content: string; promptId: string | null}[]
   let tokenCost: number
 
   if (meeting.meetingType === 'retrospective') {
     // The retro's reflect prompts are the columns the model assigns each reflection to.
-    const allPrompts = await dataLoader.get('templatePromptsByTemplateId').load(meeting.templateId)
-    const prompts = allPrompts.filter(
-      (prompt) =>
-        prompt.createdAt < meeting.createdAt &&
-        (!prompt.removedAt || meeting.createdAt < prompt.removedAt)
-    )
+    const prompts = await getMeetingTemplatePrompts(meeting, dataLoader)
     if (prompts.length === 0) {
       throw new GraphQLError('This retrospective has no reflect prompts to draft reflections for.')
     }
@@ -131,10 +125,14 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
       .limit(5)
       .execute()
     const pastResponses = pastResponseRows.map((row) => row.plaintextContent)
-
+    const prompts = await getMeetingTemplatePrompts(meeting, dataLoader)
+    const questions =
+      prompts.length > 0
+        ? prompts.map(({question, description}) => ({question, description}))
+        : [{question: meeting.meetingPrompt, description: ''}]
     const result = await manager.generateInspirationItems(
       workItemsText,
-      meeting.meetingPrompt,
+      questions,
       viewer.preferredName,
       pastResponses,
       userPrompt
@@ -146,7 +144,7 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
     generatedItems = result.items.map((item) => ({
       title: item.title,
       content: item.content,
-      promptId: null
+      promptId: prompts[item.promptIndex]?.id ?? null
     }))
   }
 
