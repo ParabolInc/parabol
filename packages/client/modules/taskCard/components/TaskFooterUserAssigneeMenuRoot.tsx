@@ -9,7 +9,7 @@ import type {AreaEnum} from '../../../__generated__/UpdateTaskMutation.graphql'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import type {UseTaskChild} from '../../../hooks/useTaskChildFocus'
 import {Loader} from '../../../utils/relay/renderLoader'
-import TaskFooterUserAssigneeMenu from './OutcomeCardAssignMenu/TaskFooterUserAssigneeMenu'
+import TaskFooterUserAssigneeMenu from './TaskCardAssignMenu/TaskFooterUserAssigneeMenu'
 
 interface Props {
   area: string

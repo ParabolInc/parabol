@@ -13,7 +13,7 @@ interface Props {
   status: keyof typeof taskStatusColors
   className?: string
 }
-const OutcomeCardStatusIndicator = (props: Props) => {
+const TaskCardStatusIndicator = (props: Props) => {
   const {className, status} = props
   return (
     <div
@@ -26,4 +26,4 @@ const OutcomeCardStatusIndicator = (props: Props) => {
   )
 }
 
-export default OutcomeCardStatusIndicator
+export default TaskCardStatusIndicator

@@ -8,7 +8,7 @@ import type {UseTaskChild} from '../../../hooks/useTaskChildFocus'
 import {MenuContent} from '../../../ui/Menu/MenuContent'
 import TaskFooterTeamAssigneeMenu, {
   type PendingTeamAssignment
-} from './OutcomeCardAssignMenu/TaskFooterTeamAssigneeMenu'
+} from './TaskCardAssignMenu/TaskFooterTeamAssigneeMenu'
 
 interface Props {
   task: any
