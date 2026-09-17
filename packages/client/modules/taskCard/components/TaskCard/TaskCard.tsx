@@ -2,7 +2,7 @@ import type {Editor} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import {memo, useEffect} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
-import type {OutcomeCard_task$key} from '~/__generated__/OutcomeCard_task.graphql'
+import type {TaskCard_task$key} from '~/__generated__/TaskCard_task.graphql'
 import type {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import EditingStatus from '~/components/EditingStatus/EditingStatus'
 import {cn} from '~/ui/cn'
@@ -17,8 +17,8 @@ import {MEETING} from '../../../../utils/constants'
 import isTaskArchived from '../../../../utils/isTaskArchived'
 import isTaskPrivate from '../../../../utils/isTaskPrivate'
 import {taskStatusLabels} from '../../../../utils/taskStatus'
-import TaskFooter from '../OutcomeCardFooter/TaskFooter'
-import OutcomeCardStatusIndicator from '../OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
+import TaskFooter from '../TaskCardFooter/TaskFooter'
+import TaskCardStatusIndicator from '../TaskCardStatusIndicator/TaskCardStatusIndicator'
 
 interface Props {
   area: AreaEnum
@@ -28,13 +28,13 @@ interface Props {
   handleCardUpdate: () => void
   isAgenda: boolean
   isDraggingOver: TaskStatusEnum | undefined
-  task: OutcomeCard_task$key
+  task: TaskCard_task$key
   useTaskChild: UseTaskChild
   addTaskChild(name: string): void
   removeTaskChild(name: string): void
 }
 
-const OutcomeCard = memo((props: Props) => {
+const TaskCard = memo((props: Props) => {
   const {
     addTaskChild,
     removeTaskChild,
@@ -50,7 +50,7 @@ const OutcomeCard = memo((props: Props) => {
   } = props
   const task = useFragment(
     graphql`
-      fragment OutcomeCard_task on Task @argumentDefinitions(meetingId: {type: "ID"}) {
+      fragment TaskCard_task on Task @argumentDefinitions(meetingId: {type: "ID"}) {
         ...IntegratedTaskContent_task
         discussionId
         editors {
@@ -153,9 +153,9 @@ const OutcomeCard = memo((props: Props) => {
           openTopicInNewTab={area === MEETING}
         >
           <div className='flex' title={statusIndicatorTitle}>
-            <OutcomeCardStatusIndicator status={isDraggingOver || status} />
-            {isPrivate && <OutcomeCardStatusIndicator status='private' />}
-            {isArchived && <OutcomeCardStatusIndicator status='archived' />}
+            <TaskCardStatusIndicator status={isDraggingOver || status} />
+            {isPrivate && <TaskCardStatusIndicator status='private' />}
+            {isArchived && <TaskCardStatusIndicator status='archived' />}
           </div>
         </EditingStatus>
         <IntegratedTaskContent task={task} />
@@ -192,4 +192,4 @@ const OutcomeCard = memo((props: Props) => {
   )
 })
 
-export default OutcomeCard
+export default TaskCard

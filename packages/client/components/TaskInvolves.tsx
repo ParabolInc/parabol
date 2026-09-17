@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import NotificationAction from '~/components/NotificationAction'
-import OutcomeCardStatusIndicator from '~/modules/outcomeCard/components/OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
+import TaskCardStatusIndicator from '~/modules/taskCard/components/TaskCardStatusIndicator/TaskCardStatusIndicator'
 import type {TaskInvolves_notification$key} from '../__generated__/TaskInvolves_notification.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
@@ -98,9 +98,9 @@ const TaskInvolves = (props: Props) => {
     >
       <div className='mt-1 w-60 self-center rounded bg-surface-card p-2 text-sm shadow-[var(--shadow-card)]'>
         <div className='mb-2 flex'>
-          <OutcomeCardStatusIndicator status={status} />
-          {tags.includes('private') && <OutcomeCardStatusIndicator status='private' />}
-          {tags.includes('archived') && <OutcomeCardStatusIndicator status='archived' />}
+          <TaskCardStatusIndicator status={status} />
+          {tags.includes('private') && <TaskCardStatusIndicator status='private' />}
+          {tags.includes('archived') && <TaskCardStatusIndicator status='archived' />}
         </div>
         <TipTapEditor editor={editor} />
         <div className='flex items-center pt-2'>

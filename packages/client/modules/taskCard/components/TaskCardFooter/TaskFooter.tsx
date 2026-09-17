@@ -15,8 +15,8 @@ import type {CompletedHandler} from '../../../../types/relayMutations'
 import {USER_DASH} from '../../../../utils/constants'
 import isTaskArchived from '../../../../utils/isTaskArchived'
 import setLocalTaskError from '../../../../utils/relay/setLocalTaskError'
-import OutcomeCardMessage from '../OutcomeCardMessage/OutcomeCardMessage'
-import {TaskTagContent} from '../OutcomeCardStatusMenu/TaskTagContent'
+import TaskCardMessage from '../TaskCardMessage/TaskCardMessage'
+import {TaskTagContent} from '../TaskCardStatusMenu/TaskTagContent'
 import TaskFooterIntegrateToggle from './TaskFooterIntegrateToggle'
 import TaskFooterTeamAssignee from './TaskFooterTeamAssignee'
 import TaskFooterUserAssignee from './TaskFooterUserAssignee'
@@ -82,7 +82,7 @@ const TaskFooter = (props: Props) => {
   const canAssignTeam = !isArchived
   return (
     <Fragment>
-      <div className='flex max-w-full justify-between px-4 pt-2 pb-4'>
+      <div className='flex max-w-full justify-between py-2 pr-2 pl-4'>
         <div className='h-6 min-w-0 flex-1'>
           {showTeam ? (
             <TaskFooterTeamAssignee
@@ -132,7 +132,7 @@ const TaskFooter = (props: Props) => {
           )}
         </div>
       </div>
-      {error && <OutcomeCardMessage onClose={handleCompleted} message={error} />}
+      {error && <TaskCardMessage onClose={handleCompleted} message={error} />}
     </Fragment>
   )
 }

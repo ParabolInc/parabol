@@ -12,8 +12,8 @@ import type {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 import ChangeTaskTeamMutation from '../../../../mutations/ChangeTaskTeamMutation'
 import {Menu} from '../../../../ui/Menu/Menu'
 import lazyPreload from '../../../../utils/lazyPreload'
-import TaskFooterTeamAssigneeAddIntegrationDialog from '../OutcomeCardAssignMenu/TaskFooterTeamAssigneeAddIntegrationDialog'
-import type {PendingTeamAssignment} from '../OutcomeCardAssignMenu/TaskFooterTeamAssigneeMenu'
+import TaskFooterTeamAssigneeAddIntegrationDialog from '../TaskCardAssignMenu/TaskFooterTeamAssigneeAddIntegrationDialog'
+import type {PendingTeamAssignment} from '../TaskCardAssignMenu/TaskFooterTeamAssigneeMenu'
 
 interface Props {
   canAssign: boolean
@@ -63,7 +63,6 @@ const TaskFooterTeamAssignee = (props: Props) => {
       aria-label='Assign this task to another team'
       onMouseEnter={TaskFooterTeamAssigneeMenuRoot.preload}
     >
-      <div className='w-fit'>{teamName}</div>
       {teamName}
     </CardButton>
   )
