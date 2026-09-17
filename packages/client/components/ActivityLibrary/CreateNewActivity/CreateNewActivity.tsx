@@ -336,7 +336,7 @@ export const CreateNewActivity = (props: Props) => {
           Choose an <span className='font-semibold'>Activity Format:</span>
         </h1>
         <RadioGroup.Root
-          className='mx-auto flex flex-col gap-8 sm:flex-row'
+          className='mx-auto flex flex-col gap-8 md:grid md:grid-cols-2 2xl:grid-cols-4'
           aria-label='Choose an Activity Format'
           value={selectedActivity?.type}
           onValueChange={handleActivitySelection}
