@@ -11,7 +11,6 @@ import useMutationProps from '../../../../hooks/useMutationProps'
 import type {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 import ChangeTaskTeamMutation from '../../../../mutations/ChangeTaskTeamMutation'
 import {Menu} from '../../../../ui/Menu/Menu'
-import {MenuContent} from '../../../../ui/Menu/MenuContent'
 import lazyPreload from '../../../../utils/lazyPreload'
 import TaskFooterTeamAssigneeAddIntegrationDialog from '../OutcomeCardAssignMenu/TaskFooterTeamAssigneeAddIntegrationDialog'
 import type {PendingTeamAssignment} from '../OutcomeCardAssignMenu/TaskFooterTeamAssigneeMenu'
@@ -76,15 +75,13 @@ const TaskFooterTeamAssignee = (props: Props) => {
           <div className='w-full'>
             {canAssign ? (
               <Menu trigger={trigger}>
-                <MenuContent align='start'>
-                  <Suspense fallback={null}>
-                    <TaskFooterTeamAssigneeMenuRoot
-                      task={task}
-                      useTaskChild={useTaskChild}
-                      onRequestIntegration={setPendingTeam}
-                    />
-                  </Suspense>
-                </MenuContent>
+                <Suspense fallback={null}>
+                  <TaskFooterTeamAssigneeMenuRoot
+                    task={task}
+                    useTaskChild={useTaskChild}
+                    onRequestIntegration={setPendingTeam}
+                  />
+                </Suspense>
               </Menu>
             ) : (
               trigger

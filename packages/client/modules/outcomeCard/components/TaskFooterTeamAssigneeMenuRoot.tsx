@@ -5,6 +5,7 @@ import taskFooterTeamAssigneeMenuQuery, {
 import MockFieldList from '../../../components/MockFieldList'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import type {UseTaskChild} from '../../../hooks/useTaskChildFocus'
+import {MenuContent} from '../../../ui/Menu/MenuContent'
 import TaskFooterTeamAssigneeMenu, {
   type PendingTeamAssignment
 } from './OutcomeCardAssignMenu/TaskFooterTeamAssigneeMenu'
@@ -23,7 +24,13 @@ const TaskFooterTeamAssigneeMenuRoot = (props: Props) => {
     {}
   )
   return (
-    <Suspense fallback={<MockFieldList />}>
+    <Suspense
+      fallback={
+        <MenuContent align='start'>
+          <MockFieldList />
+        </MenuContent>
+      }
+    >
       {queryRef && (
         <TaskFooterTeamAssigneeMenu
           queryRef={queryRef}
