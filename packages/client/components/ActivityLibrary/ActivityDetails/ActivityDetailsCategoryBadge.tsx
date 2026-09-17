@@ -21,12 +21,14 @@ const ActivityDetailsCategoryBadge = (props: Props) => {
       fragment ActivityDetailsCategoryBadge_template on MeetingTemplate {
         id
         category
+        type
       }
     `,
     templateRef
   )
-  const {id: templateId} = template
+  const {id: templateId, type} = template
   const category = template.category as CategoryID
+  const canChangeCategory = isEditing && type !== 'teamPrompt'
   const [commit] = useTemplateCategoryMutation()
 
   const updateTemplateCategory = (mainCategory: string) => {
@@ -35,14 +37,17 @@ const ActivityDetailsCategoryBadge = (props: Props) => {
 
   return (
     <DropdownMenu.Root>
-      <DropdownMenu.Trigger asChild disabled={!isEditing}>
-        <PlainButton className={cn(!isEditing && 'cursor-default', 'flex')} disabled={false}>
+      <DropdownMenu.Trigger asChild disabled={!canChangeCategory}>
+        <PlainButton
+          className={cn(!canChangeCategory && 'cursor-default', 'flex')}
+          disabled={false}
+        >
           <ActivityDetailsBadge
             className={cn(`${CATEGORY_THEMES[category].primary}`, 'select-none text-white')}
           >
             {CATEGORY_ID_TO_NAME[category]}
           </ActivityDetailsBadge>
-          {isEditing && <KeyboardArrowDownIcon />}
+          {canChangeCategory && <KeyboardArrowDownIcon />}
         </PlainButton>
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>

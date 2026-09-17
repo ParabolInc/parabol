@@ -39,7 +39,7 @@ const SelectSharingScopeDropdown = (props: Props) => {
   const setScope = (newScope: any) => () => {
     if (submitting) return
     submitMutation()
-    if (type === 'retrospective') {
+    if (type === 'retrospective' || type === 'teamPrompt') {
       UpdateReflectTemplateScopeMutation(
         atmosphere,
         {scope: newScope, templateId},

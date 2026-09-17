@@ -174,6 +174,7 @@ export const TemplateDetails = (props: Props) => {
 
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, error, submitting, submitMutation} = useMutationProps()
+  const [errorActivityId, setErrorActivityId] = useState<string | null>(null)
 
   const removeTemplate = useCallback(() => {
     if (submitting) return
@@ -188,6 +189,7 @@ export const TemplateDetails = (props: Props) => {
     const removeTemplateMutation = removeTemplateMutationLookup[type]
     if (!removeTemplateMutation) return
 
+    setErrorActivityId(activityId)
     submitMutation()
     const mutationArgs = {
       onError,
@@ -237,7 +239,11 @@ export const TemplateDetails = (props: Props) => {
 
   useEffect(() => {
     setIsEditing(!!location.state?.edit)
-  }, [location.state?.edit, setIsEditing])
+  }, [location.state?.edit, activityId, setIsEditing])
+
+  useEffect(() => {
+    setErrorActivityId(null)
+  }, [activityId])
 
   useEffect(() => setActiveTemplate(atmosphere, teamId, activityId, type), [activity])
 
@@ -294,7 +300,9 @@ export const TemplateDetails = (props: Props) => {
               </div>
             </div>
           )}
-          {isOwner && error && <div className='text-fg-error text-sm'>{error.message}</div>}
+          {isOwner && error && errorActivityId === activityId && (
+            <div className='text-fg-error text-sm'>{error.message}</div>
+          )}
           {!isOwner && __typename !== 'FixedActivity' && (
             <div className='flex items-center justify-between'>
               <div className='py-2 font-semibold text-fg-secondary text-sm'>{description}</div>
