@@ -148,7 +148,7 @@ const TeamHealthQuestionRow = (props: Props) => {
   return (
     // the whole row is a click target for the checkbox; inner controls stop propagation
     <div
-      className='group flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-2 hover:bg-surface-hover'
+      className='group flex cursor-pointer flex-wrap items-center gap-1.5 rounded-md px-2 py-2 hover:bg-surface-hover sm:flex-nowrap'
       onClick={() => toggleSelected(!isSelected)}
     >
       <Checkbox
@@ -188,12 +188,14 @@ const TeamHealthQuestionRow = (props: Props) => {
           {deleteButton}
         </>
       )}
-      <TeamHealthCategoryTag
-        questionId={questionId}
-        category={category}
-        canEdit={canEdit}
-        categories={categories}
-      />
+      <div className='flex basis-full pl-10.5 sm:contents'>
+        <TeamHealthCategoryTag
+          questionId={questionId}
+          category={category}
+          canEdit={canEdit}
+          categories={categories}
+        />
+      </div>
     </div>
   )
 }
