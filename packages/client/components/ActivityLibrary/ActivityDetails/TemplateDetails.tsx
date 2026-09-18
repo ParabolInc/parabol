@@ -206,16 +206,34 @@ export const TemplateDetails = (props: Props) => {
   const [highlightEdit, setHighlightEdit] = useState(false)
   const editHintTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
+  const editHintRef = useRef<HTMLDivElement>(null)
+  const editHintObserverRef = useRef<IntersectionObserver | undefined>(undefined)
+
   // Called when a viewer tries to change a read-only template; pulse the Edit (owner) or
-  // Clone & Edit (non-owner) button to hint at what they need to do first
+  // Clone & Edit (non-owner) button to hint at what they need to do first. The button may be
+  // scrolled out of view, so the pulse waits until the button is fully visible
   const flashEditHint = useCallback(() => {
-    setHighlightEdit(true)
-    if (editHintTimeoutRef.current) clearTimeout(editHintTimeoutRef.current)
-    editHintTimeoutRef.current = setTimeout(() => setHighlightEdit(false), 1500)
+    const editHint = editHintRef.current
+    if (!editHint) return
+    editHintObserverRef.current?.disconnect()
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return
+        observer.disconnect()
+        setHighlightEdit(true)
+        if (editHintTimeoutRef.current) clearTimeout(editHintTimeoutRef.current)
+        editHintTimeoutRef.current = setTimeout(() => setHighlightEdit(false), 1950)
+      },
+      {threshold: 1}
+    )
+    editHintObserverRef.current = observer
+    observer.observe(editHint)
+    editHint.scrollIntoView({behavior: 'smooth', block: 'center'})
   }, [])
 
   useEffect(
     () => () => {
+      editHintObserverRef.current?.disconnect()
       if (editHintTimeoutRef.current) clearTimeout(editHintTimeoutRef.current)
     },
     []
@@ -252,7 +270,9 @@ export const TemplateDetails = (props: Props) => {
               <div
                 className={cn(
                   'w-max',
-                  isEditing && 'rounded-md border border-hairline-strong border-solid pl-3'
+                  isEditing &&
+                    type !== 'teamHealth' &&
+                    'rounded-md border border-hairline-strong border-solid pl-3'
                 )}
               >
                 <UnstyledTemplateSharing
@@ -273,9 +293,11 @@ export const TemplateDetails = (props: Props) => {
                 ) : (
                   <>
                     <div
+                      ref={editHintRef}
                       className={cn(
                         'rounded-md border border-hairline-strong border-solid',
-                        highlightEdit && 'animate-pulse ring-2 ring-sky-500 ring-offset-2'
+                        highlightEdit &&
+                          'animate-attention-ripple ring-2 ring-sky-500 motion-reduce:animate-none'
                       )}
                     >
                       <DetailAction
@@ -302,9 +324,11 @@ export const TemplateDetails = (props: Props) => {
                   className='rounded-md border border-hairline-strong border-solid hover:bg-surface-hover'
                 />
                 <div
+                  ref={editHintRef}
                   className={cn(
                     'rounded-md border border-hairline-strong border-solid',
-                    highlightEdit && 'animate-pulse ring-2 ring-sky-500 ring-offset-2'
+                    highlightEdit &&
+                      'animate-attention-ripple ring-2 ring-sky-500 motion-reduce:animate-none'
                   )}
                 >
                   <Button
