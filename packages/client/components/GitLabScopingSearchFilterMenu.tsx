@@ -1,12 +1,9 @@
-import graphql from 'babel-plugin-relay/macro'
-import {useMemo} from 'react'
-import {commitLocalUpdate, type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
-import getNonNullEdges from '~/utils/getNonNullEdges'
 import SendClientSideEvent from '~/utils/SendClientSideEvent'
-import type {GitLabScopingSearchFilterMenuQuery} from '../__generated__/GitLabScopingSearchFilterMenuQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import SearchQueryId from '../shared/gqlIds/SearchQueryId'
+import useScopingSearchState from '../hooks/useScopingSearchState'
+import type {ScopingSearchState} from '../integrations/platform/ScopingSearchState'
+import {searchFiltersByKey} from '../shared/integrations/IntegrationSearchFilter'
 import {MenuItem} from '../ui/Menu/MenuItem'
 import {MenuSearch} from '../ui/Menu/MenuSearch'
 import Checkbox from './Checkbox'
@@ -14,14 +11,10 @@ import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import TypeAheadLabel from './TypeAheadLabel'
 
 interface Props {
-  queryRef: PreloadedQuery<GitLabScopingSearchFilterMenuQuery>
+  meetingId: string
+  state: ScopingSearchState
+  projects: readonly {id: string; fullPath: string}[]
 }
-
-type GitLabSearchQuery = NonNullable<
-  NonNullable<
-    GitLabScopingSearchFilterMenuQuery['response']['viewer']['meeting']
-  >['gitlabSearchQuery']
->
 
 const MAX_PROJECTS = 10
 
@@ -30,62 +23,11 @@ const getValue = (item: {fullPath?: string}) => {
 }
 
 const GitLabScopingSearchFilterMenu = (props: Props) => {
-  const {queryRef} = props
-  const query = usePreloadedQuery<GitLabScopingSearchFilterMenuQuery>(
-    graphql`
-      query GitLabScopingSearchFilterMenuQuery($teamId: ID!, $meetingId: ID!) {
-        viewer {
-          meeting(meetingId: $meetingId) {
-            id
-            ... on PokerMeeting {
-              gitlabSearchQuery {
-                selectedProjectsIds
-                queryString
-              }
-            }
-          }
-          teamMember(teamId: $teamId) {
-            integrations {
-              gitlab {
-                api {
-                  query {
-                    projects(
-                      ids: null
-                      membership: true
-                      first: 100
-                      sort: "latest_activity_desc"
-                      search: "" # search tells Relay this query differs to the GitLabScopingSearchResults query
-                    ) {
-                      edges {
-                        node {
-                          ... on _xGitLabProject {
-                            __typename
-                            id
-                            fullPath
-                            path
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    `,
-    queryRef
-  )
-
-  const nullableEdges =
-    query.viewer.teamMember?.integrations.gitlab.api?.query?.projects?.edges ?? []
-  const projects = useMemo(() => getNonNullEdges(nullableEdges).map(({node}) => node), [query])
-  const meeting = query?.viewer?.meeting
-  const meetingId = meeting?.id ?? ''
-  const gitlabSearchQuery = meeting?.gitlabSearchQuery
-  const {selectedProjectsIds} = gitlabSearchQuery!
+  const {meetingId, state, projects} = props
+  const {filters} = state
+  const selectedProjectsIds = searchFiltersByKey(filters, 'project')
   const atmosphere = useAtmosphere()
+  const setSearchState = useScopingSearchState(meetingId, 'gitlab')
 
   const {
     query: searchQuery,
@@ -106,19 +48,13 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
       )}
       {visibleProjects.map((project) => {
         const {id: projectId, fullPath} = project
-        const isSelected = !!selectedProjectsIds?.includes(projectId)
+        const isSelected = selectedProjectsIds.includes(projectId)
 
         const handleClick = () => {
-          commitLocalUpdate(atmosphere, (store) => {
-            const searchQueryId = SearchQueryId.join('gitlab', meetingId)
-            const gitlabSearchQuery = store.get<GitLabSearchQuery>(searchQueryId)!
-            const selectedProjectsIds = gitlabSearchQuery.getValue(
-              'selectedProjectsIds'
-            ) as string[]
-            const newSelectedProjectsIds = isSelected
-              ? selectedProjectsIds.filter((id) => id !== projectId)
-              : [...selectedProjectsIds, projectId]
-            gitlabSearchQuery.setValue(newSelectedProjectsIds, 'selectedProjectsIds')
+          setSearchState({
+            filters: isSelected
+              ? filters.filter((filter) => filter.key !== 'project' || filter.value !== projectId)
+              : [...filters, {key: 'project', value: projectId}]
           })
           SendClientSideEvent(atmosphere, 'Selected Poker Scope Project Filter', {
             meetingId,

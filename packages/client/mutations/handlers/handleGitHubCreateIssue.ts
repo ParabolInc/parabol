@@ -1,5 +1,6 @@
 import {ConnectionHandler, type RecordProxy, type RecordSourceSelectorProxy} from 'relay-runtime'
 import type {CreateTaskMutation} from '../../__generated__/CreateTaskMutation.graphql'
+import toGitHubQueryString from '../../integrations/github/gitHubSearchTokens'
 import SearchQueryId from '../../shared/gqlIds/SearchQueryId'
 import toTeamMemberId from '../../utils/relay/toTeamMemberId'
 import getGitHubIssuesConn from '../connections/getGitHubIssuesConn'
@@ -22,10 +23,18 @@ const handleGitHubCreateIssue = (
     ?.getLinkedRecord('github')
     ?.getLinkedRecord('api')
     ?.getLinkedRecord('query')
-  const githubSearchQueryId = SearchQueryId.join('github', meetingId)
-  const githubSearchQuery = store.get(githubSearchQueryId)
-  const queryString = githubSearchQuery?.getValue('queryString') as string | undefined
-  const query = queryString?.trim() ?? ''
+  const searchQueryId = SearchQueryId.join('github', meetingId)
+  const searchQueryRecord = store.get(searchQueryId)
+  const filters =
+    searchQueryRecord?.getLinkedRecords('filters')?.map((filter) => ({
+      key: filter.getValue('key') as string,
+      value: filter.getValue('value') as string
+    })) ?? []
+  const query = toGitHubQueryString({
+    queryString: (searchQueryRecord?.getValue('queryString') as string | undefined) ?? '',
+    isAdvancedQuery: false,
+    filters
+  })
   const typename = integration.getType()
   if (typename !== '_xGitHubIssue') return
   const githubIssueConn = getGitHubIssuesConn(github, query)

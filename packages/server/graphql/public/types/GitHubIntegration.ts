@@ -1,5 +1,4 @@
 import GitHubIntegrationId from '../../../../client/shared/gqlIds/GitHubIntegrationId'
-import type {GitHubIntegrationSearchQuery} from '../../../postgres/types'
 import {getUserId} from '../../../utils/authorization'
 import type {GitHubIntegrationResolvers} from '../resolverTypes'
 
@@ -11,12 +10,7 @@ const GitHubIntegration: GitHubIntegrationResolvers = {
     return viewerId === userId ? accessToken : null
   },
 
-  isActive: ({accessToken}) => !!accessToken,
-
-  githubSearchQueries: ({teamId, userId, providerId}, _args, {dataLoader}) =>
-    dataLoader.get('recentIntegrationSearchQueries').load({teamId, userId, providerId}) as Promise<
-      GitHubIntegrationSearchQuery[]
-    >
+  isActive: ({accessToken}) => !!accessToken
 }
 
 export default GitHubIntegration

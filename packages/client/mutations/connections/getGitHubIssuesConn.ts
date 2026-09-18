@@ -9,7 +9,7 @@ const getGitHubIssuesConn = (
     githubTeamMemberIntegration,
     'GitHubScopingSearchResults_search',
     {
-      // query must be trimmed because it is trimmed in GitHubSearchResultsRoot
+      // query must be the effective query toGitHubQueryString built for the search
       query,
       type: 'ISSUE'
     }

@@ -1,8 +1,8 @@
-import IntegrationSearchQueryId from 'parabol-client/shared/gqlIds/IntegrationSearchQueryId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {isRegisteredServerIntegration} from '../../../integrations/platform/registry'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
+import {CipherId} from '../../../utils/CipherId'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -15,7 +15,7 @@ const removeIntegrationSearchQuery: MutationResolvers['removeIntegrationSearchQu
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
-  const dbId = IntegrationSearchQueryId.split(id)
+  const [dbId] = CipherId.fromClient(id)
   const removedQuery = await getKysely()
     .deleteFrom('IntegrationSearchQuery')
     .where('id', '=', dbId)

@@ -19,11 +19,14 @@ const handleAzureCreateIssue = (
   const teamMember = store.get(teamMemberId)
   const integrations = teamMember?.getLinkedRecord('integrations')
   const azureDevOps = integrations?.getLinkedRecord('azureDevOps')
-  const azureSearchQueryId = SearchQueryId.join('azureDevOps', meetingId)
-  const azureSearchQuery = store.get(azureSearchQueryId)
-  const queryString = azureSearchQuery?.getValue('queryString') as string | undefined
-  const isWIQL = azureSearchQuery?.getValue('isWIQL') as boolean | undefined
-  const projectKeyFilters = azureSearchQuery?.getValue('projectKeyFilters') as string[] | undefined
+  const searchQueryId = SearchQueryId.join('azureDevOps', meetingId)
+  const searchQueryRecord = store.get(searchQueryId)
+  const queryString = (searchQueryRecord?.getValue('queryString') as string | undefined)?.trim()
+  const isWIQL = searchQueryRecord?.getValue('isAdvancedQuery') as boolean | undefined
+  const projectKeyFilters = searchQueryRecord
+    ?.getLinkedRecords('filters')
+    ?.filter((filter) => filter.getValue('key') === 'project')
+    .map((filter) => filter.getValue('value') as string)
   const typename = integration.getType()
   if (typename === 'AzureDevOpsWorkItem') {
     const azureWorkItemsConn = getAzureWorkItemsConn(

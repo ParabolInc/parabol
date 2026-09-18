@@ -1,72 +1,31 @@
-import graphql from 'babel-plugin-relay/macro'
-import {commitLocalUpdate, type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import type {GitHubScopingSearchFilterMenuQuery} from '../__generated__/GitHubScopingSearchFilterMenuQuery.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
-import SearchQueryId from '../shared/gqlIds/SearchQueryId'
-import getReposFromQueryStr from '../utils/getReposFromQueryStr'
+import type {GitHubRepoSearchFilterMenu_teamMember$key} from '../__generated__/GitHubRepoSearchFilterMenu_teamMember.graphql'
+import useScopingSearchState from '../hooks/useScopingSearchState'
+import type {ScopingSearchState} from '../integrations/platform/ScopingSearchState'
+import {searchFiltersByKey} from '../shared/integrations/IntegrationSearchFilter'
 import GitHubRepoSearchFilterMenu from './GitHubRepoSearchFilterMenu'
 
 interface Props {
-  queryRef: PreloadedQuery<GitHubScopingSearchFilterMenuQuery>
+  meetingId: string
+  state: ScopingSearchState
+  teamMemberRef: GitHubRepoSearchFilterMenu_teamMember$key
 }
 
-type GitHubSearchQuery = NonNullable<
-  NonNullable<
-    GitHubScopingSearchFilterMenuQuery['response']['viewer']['meeting']
-  >['githubSearchQuery']
->
-
 const GitHubScopingSearchFilterMenu = (props: Props) => {
-  const {queryRef} = props
-  const query = usePreloadedQuery<GitHubScopingSearchFilterMenuQuery>(
-    graphql`
-      query GitHubScopingSearchFilterMenuQuery($teamId: ID!, $meetingId: ID!) {
-        viewer {
-          meeting(meetingId: $meetingId) {
-            id
-            ... on PokerMeeting {
-              githubSearchQuery {
-                queryString
-              }
-            }
-          }
-          teamMember(teamId: $teamId) {
-            ...GitHubRepoSearchFilterMenu_teamMember
-          }
-        }
-      }
-    `,
-    queryRef
-  )
-
-  const meeting = query?.viewer?.meeting
-  const meetingId = meeting?.id ?? ''
-  const githubSearchQuery = meeting?.githubSearchQuery
-  const queryString = githubSearchQuery?.queryString ?? null
-  const atmosphere = useAtmosphere()
-  const selectedRepos = getReposFromQueryStr(queryString)
+  const {meetingId, state, teamMemberRef} = props
+  const setSearchState = useScopingSearchState(meetingId, 'github')
+  const {filters} = state
+  const selectedRepos = searchFiltersByKey(filters, 'repo')
 
   return (
     <GitHubRepoSearchFilterMenu
       selectedRepos={selectedRepos}
       onToggleRepo={(repo, isSelected) => {
-        commitLocalUpdate(atmosphere, (store) => {
-          const searchQueryId = SearchQueryId.join('github', meetingId)
-          const githubSearchQuery = store.get<GitHubSearchQuery>(searchQueryId)!
-          const newFilters = isSelected
-            ? selectedRepos.filter((name) => name !== repo)
-            : selectedRepos.concat(repo)
-          const queryString = githubSearchQuery.getValue('queryString')
-          const queryWithoutRepos = queryString
-            .trim()
-            .split(' ')
-            .filter((str) => !str.includes('repo:'))
-          const newRepos = newFilters.map((name) => `repo:${name}`)
-          const newQueryStr = queryWithoutRepos.concat(newRepos).join(' ')
-          githubSearchQuery.setValue(newQueryStr, 'queryString')
-        })
+        const nextFilters = isSelected
+          ? filters.filter((filter) => !(filter.key === 'repo' && filter.value === repo))
+          : [...filters, {key: 'repo', value: repo}]
+        setSearchState({filters: nextFilters})
       }}
-      teamMemberRef={query.viewer.teamMember!}
+      teamMemberRef={teamMemberRef}
     />
   )
 }

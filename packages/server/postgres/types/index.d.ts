@@ -190,17 +190,40 @@ export type JiraSearchQueryJson = {
 
 export type GitHubSearchQueryJson = {
   queryString: string
+  repos?: string[]
+}
+
+export type GitLabSearchQueryJson = {
+  queryString: string
+  projectIds: string[]
+}
+
+export type LinearSearchQueryJson = {
+  queryString: string
+  projectIds: string[]
+  teamIds: string[]
+}
+
+export type AzureDevOpsSearchQueryJson = {
+  queryString: string
+  isWIQL: boolean
+  projectNames: string[]
+}
+
+/** What each service's issueSearch.buildQuery stores in IntegrationSearchQuery.query.
+ * This map is the only place to extend when a new integration saves searches. */
+export type IntegrationSearchQueryJsonByService = {
+  jira: JiraSearchQueryJson
+  jiraServer: JiraSearchQueryJson
+  github: GitHubSearchQueryJson
+  gitlab: GitLabSearchQueryJson
+  linear: LinearSearchQueryJson
+  azureDevOps: AzureDevOpsSearchQueryJson
 }
 
 export type IntegrationSearchQuery = ExtractTypeFromQueryBuilderSelect<
   typeof selectIntegrationSearchQuery
 >
-
-export type JiraIntegrationSearchQuery = Extract<
-  IntegrationSearchQuery,
-  {service: 'jira' | 'jiraServer'}
->
-export type GitHubIntegrationSearchQuery = Extract<IntegrationSearchQuery, {service: 'github'}>
 
 export type JiraAuthMeta = {cloudIds: string[]}
 

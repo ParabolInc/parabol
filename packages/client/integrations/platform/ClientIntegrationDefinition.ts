@@ -1,8 +1,16 @@
-import type {ComponentType, LazyExoticComponent} from 'react'
-import type {ScopePhaseArea_meeting$data} from '../../__generated__/ScopePhaseArea_meeting.graphql'
+import type {ComponentType, LazyExoticComponent, ReactNode} from 'react'
 import type Atmosphere from '../../Atmosphere'
 import type {MenuMutationProps} from '../../hooks/useMutationProps'
 import type {IntegrationMeta} from '../../shared/integrations/IntegrationMeta'
+import type {IntegrationSearchFilter} from '../../shared/integrations/IntegrationSearchFilter'
+import type {
+  FilterMenuProps,
+  NewRecordInputProps,
+  ScopingResultsProps,
+  ScopingSearchContext,
+  ScopingSearchState,
+  SearchMetaCodec
+} from './ScopingSearchState'
 
 export interface ConnectProvider {
   id: string
@@ -27,11 +35,37 @@ export interface ConnectParams {
   heldScopes?: readonly string[] | null
 }
 
-export interface ScopingCapability {
-  /** The poker scope-tab panel. Lazy so importing the registry does not pull every panel into the main bundle */
-  Panel: LazyExoticComponent<ComponentType<{meetingRef: ScopePhaseArea_meeting$data}>>
-  /** What the search history shows for a saved project filter id; absent when the id is already readable */
-  projectFilterLabel?(filter: string): string
+/** One of the viewer's saved searches for a service, in the normalized shape the host renders */
+export interface ScopingSavedQuery {
+  id: string
+  queryString: string
+  isAdvancedQuery: boolean
+  filters: readonly IntegrationSearchFilter[]
+}
+
+/** Everything IntegrationScopingPanel needs to run one service's scope tab */
+export interface ScopingCapability extends SearchMetaCodec {
+  /** Runs the service's own results query for the search state and renders the host's list with the normalized items; build it with makeScopingResults */
+  Results: ComponentType<ScopingResultsProps>
+  /** Omit for a service with nothing to filter by; the host then hides the filter button */
+  FilterMenu?: LazyExoticComponent<ComponentType<FilterMenuProps>>
+  /** Omit for a service that cannot create a record from the panel; the host then hides the new-record button */
+  NewRecordInput?: LazyExoticComponent<ComponentType<NewRecordInputProps>>
+  placeholder(state: ScopingSearchState): string
+  /** The "Current filters:" line; a ReactNode so a service can suspend on its own data, as Jira does */
+  currentFilters?(state: ScopingSearchState, ctx: ScopingSearchContext): ReactNode
+  /** What the search history shows for a saved filter; absent when the value is already readable */
+  filterChipLabel?(filter: IntegrationSearchFilter): string
+  /** A client-side rejection of the query before the vendor sees it, shown in place of results */
+  validate?(state: ScopingSearchState): string | undefined
+  /** Omit for a service with no select-all row; the noun labels it, e.g. "Select all 12 issues" */
+  selectAllNoun?: string
+  /** What the new-record button says; defaults to New Issue */
+  newRecordLabel?: string
+  /** Seeds an untouched search box on mount; GitHub's search is useless without its default tokens */
+  defaultQueryString?(savedQueries: readonly ScopingSavedQuery[]): string | undefined
+  /** A query the service seeds itself is not worth saving to the viewer's history */
+  isDefaultQuery?(state: ScopingSearchState): boolean
 }
 
 export interface SettingsCapability {

@@ -10,10 +10,7 @@ graphql`
       id
       queryString
       lastUsedAt
-      ... on JiraSearchQuery {
-        isJQL
-        projectKeyFilters
-      }
+      meta
     }
   }
 `

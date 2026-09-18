@@ -1,15 +1,59 @@
 import {lazy} from 'react'
+import azureDevOpsScopingResultsQuery, {
+  type AzureDevOpsScopingResultsAdapterQuery
+} from '../../__generated__/AzureDevOpsScopingResultsAdapterQuery.graphql'
 import type Atmosphere from '../../Atmosphere'
 import AzureDevOpsSVG from '../../components/AzureDevOpsSVG'
 import {azureDevOpsIntegrationMeta} from '../../shared/integrations/azureDevOpsIntegrationMeta'
+import {searchFiltersByKey} from '../../shared/integrations/IntegrationSearchFilter'
 import azureDevOpsLogo from '../../styles/theme/images/graphics/azure-devops.svg'
 import AzureDevOpsClientManager from '../../utils/AzureDevOpsClientManager'
 import {
   type ClientIntegrationCapabilities,
   ClientIntegrationDefinition,
   type ConnectParams,
-  type ProviderLogoAsset
+  type ProviderLogoAsset,
+  type ScopingCapability
 } from '../platform/ClientIntegrationDefinition'
+import makeScopingResults from '../platform/makeScopingResults'
+import azureDevOpsSearchMeta from './azureDevOpsSearchMeta'
+
+const scoping: ScopingCapability = {
+  ...azureDevOpsSearchMeta,
+  Results: makeScopingResults<AzureDevOpsScopingResultsAdapterQuery>({
+    query: azureDevOpsScopingResultsQuery,
+    searchArgs: (state, {teamId}) => ({
+      teamId,
+      first: 25,
+      queryString: state.queryString.trim(),
+      projectKeyFilters: searchFiltersByKey(state.filters, 'project'),
+      isWIQL: state.isAdvancedQuery
+    }),
+    ResultsAdapter: lazy(
+      () =>
+        import(
+          /* webpackChunkName: 'AzureDevOpsScopingResultsAdapter' */ './AzureDevOpsScopingResultsAdapter'
+        )
+    )
+  }),
+  FilterMenu: lazy(
+    () =>
+      import(
+        /* webpackChunkName: 'AzureDevOpsScopingSearchFilterMenu' */ '../../components/AzureDevOpsScopingSearchFilterMenu'
+      )
+  ),
+  NewRecordInput: lazy(
+    () =>
+      import(
+        /* webpackChunkName: 'NewAzureIssueInputRoot' */ '../../components/NewAzureIssueInputRoot'
+      )
+  ),
+  placeholder: (state) =>
+    state.isAdvancedQuery
+      ? `[System.WorkItemType] = 'User Story' AND [System.State] <> 'Closed'`
+      : 'Search issues on Azure DevOps',
+  newRecordLabel: 'New User Story'
+}
 
 export class AzureDevOpsClientIntegration extends ClientIntegrationDefinition {
   readonly service = azureDevOpsIntegrationMeta.service
@@ -17,16 +61,7 @@ export class AzureDevOpsClientIntegration extends ClientIntegrationDefinition {
   readonly description = azureDevOpsIntegrationMeta.description
   readonly Icon = AzureDevOpsSVG
   readonly logo: ProviderLogoAsset = {src: azureDevOpsLogo}
-  readonly capabilities: ClientIntegrationCapabilities = {
-    scoping: {
-      Panel: lazy(
-        () =>
-          import(
-            /* webpackChunkName: 'ScopePhaseAreaAzureDevOpsScoping' */ '../../components/ScopePhaseAreaAzureDevOpsScoping'
-          )
-      )
-    }
-  }
+  readonly capabilities: ClientIntegrationCapabilities = {scoping}
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
     if (!provider?.clientId) return
     void AzureDevOpsClientManager.openOAuth(

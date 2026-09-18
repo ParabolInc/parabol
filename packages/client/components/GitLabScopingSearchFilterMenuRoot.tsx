@@ -1,42 +1,56 @@
 import graphql from 'babel-plugin-relay/macro'
-import {Suspense} from 'react'
-import {useFragment} from 'react-relay'
-import gitlabScopingSearchFilterMenuQuery, {
-  type GitLabScopingSearchFilterMenuQuery
-} from '../__generated__/GitLabScopingSearchFilterMenuQuery.graphql'
-import type {GitLabScopingSearchFilterMenuRoot_meeting$key} from '../__generated__/GitLabScopingSearchFilterMenuRoot_meeting.graphql'
-import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
+import {useMemo} from 'react'
+import {useLazyLoadQuery} from 'react-relay'
+import getNonNullEdges from '~/utils/getNonNullEdges'
+import type {GitLabScopingSearchFilterMenuRootQuery} from '../__generated__/GitLabScopingSearchFilterMenuRootQuery.graphql'
+import type {FilterMenuProps} from '../integrations/platform/ScopingSearchState'
 import GitLabScopingSearchFilterMenu from './GitLabScopingSearchFilterMenu'
-import MockFieldList from './MockFieldList'
 
-interface Props {
-  teamId: string
-  meetingRef: GitLabScopingSearchFilterMenuRoot_meeting$key
-}
-
-const GitLabScopingSearchFilterMenuRoot = (props: Props) => {
-  const {teamId, meetingRef} = props
-  const meeting = useFragment(
-    graphql`
-      fragment GitLabScopingSearchFilterMenuRoot_meeting on PokerMeeting {
-        id
+const query = graphql`
+  query GitLabScopingSearchFilterMenuRootQuery($teamId: ID!) {
+    viewer {
+      teamMember(teamId: $teamId) {
+        integrations {
+          gitlab {
+            api {
+              query {
+                projects(
+                  ids: null
+                  membership: true
+                  first: 100
+                  sort: "latest_activity_desc"
+                  search: "" # search tells Relay this query differs to the scoping results query
+                ) {
+                  edges {
+                    node {
+                      ... on _xGitLabProject {
+                        __typename
+                        id
+                        fullPath
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
-    `,
-    meetingRef
-  )
-  const {id: meetingId} = meeting
-  const queryRef = useQueryLoaderNow<GitLabScopingSearchFilterMenuQuery>(
-    gitlabScopingSearchFilterMenuQuery,
-    {meetingId, teamId}
-  )
+    }
+  }
+`
 
-  if (!meetingId) return null
-
-  return (
-    <Suspense fallback={<MockFieldList />}>
-      {queryRef && <GitLabScopingSearchFilterMenu queryRef={queryRef} />}
-    </Suspense>
+const GitLabScopingSearchFilterMenuRoot = (props: FilterMenuProps) => {
+  const {teamId, meetingId, state} = props
+  const data = useLazyLoadQuery<GitLabScopingSearchFilterMenuRootQuery>(
+    query,
+    {teamId},
+    {fetchPolicy: 'store-or-network'}
   )
+  const nullableEdges =
+    data.viewer.teamMember?.integrations.gitlab.api?.query?.projects?.edges ?? []
+  const projects = useMemo(() => getNonNullEdges(nullableEdges).map(({node}) => node), [data])
+  return <GitLabScopingSearchFilterMenu meetingId={meetingId} state={state} projects={projects} />
 }
 
 export default GitLabScopingSearchFilterMenuRoot

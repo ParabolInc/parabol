@@ -15,11 +15,14 @@ const handleJiraCreateIssue = (task: RecordProxy<any>, store: RecordSourceSelect
   const teamMember = store.get(teamMemberId)
   const integrations = teamMember?.getLinkedRecord('integrations')
   const atlassian = integrations?.getLinkedRecord('atlassian')
-  const jiraSearchQueryId = SearchQueryId.join('jira', meetingId)
-  const jiraSearchQuery = store.get(jiraSearchQueryId)
-  const queryString = jiraSearchQuery?.getValue('queryString') as string | undefined
-  const isJql = jiraSearchQuery?.getValue('isJql') as boolean | undefined
-  const projectKeyFilters = jiraSearchQuery?.getValue('projectKeyFilters') as string[] | undefined
+  const searchQueryId = SearchQueryId.join('jira', meetingId)
+  const searchQueryRecord = store.get(searchQueryId)
+  const queryString = (searchQueryRecord?.getValue('queryString') as string | undefined)?.trim()
+  const isJql = searchQueryRecord?.getValue('isAdvancedQuery') as boolean | undefined
+  const projectKeyFilters = searchQueryRecord
+    ?.getLinkedRecords('filters')
+    ?.filter((filter) => filter.getValue('key') === 'project')
+    .map((filter) => filter.getValue('value') as string)
   const typename = integration.getType()
   if (typename === 'JiraIssue') {
     const jiraIssuesConn = getJiraIssuesConn(atlassian, isJql, queryString, projectKeyFilters)
