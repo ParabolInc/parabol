@@ -64,9 +64,10 @@ const TeamHealthMeetingPreview = (props: Props) => {
   const questionCount = `${meetingQuestions.length} ${plural(meetingQuestions.length, 'question')}`
 
   return (
+    // sized like TeamHealthSurveyFlowAnimation so the card sits squarely under it
     <section
       id={MEETING_PREVIEW_ID}
-      className='mb-4 max-w-200 scroll-mt-4 rounded-lg border border-hairline bg-surface-app p-4'
+      className='mb-4 max-w-[612px] scroll-mt-4 rounded-lg border border-hairline bg-surface-app p-4'
     >
       <div className='flex flex-wrap items-center justify-between gap-2'>
         <TeamHealthMeetingPreviewPager
@@ -81,7 +82,7 @@ const TeamHealthMeetingPreview = (props: Props) => {
       <p className='mt-1 text-fg-muted text-xs'>
         {meetingNumber === 1
           ? `Your first meeting will ask ${questionCount}, one from each category.`
-          : `Meeting #${meetingNumber} could ask ${questionCount}, one from each category.`}
+          : `Meeting #${meetingNumber} will ask ${questionCount}, one from each category.`}
       </p>
       <ol className='mt-3 flex list-none flex-col gap-2 p-0'>
         {meetingQuestions.map(({id, question, category}) => (
