@@ -29,7 +29,6 @@ const ACCELERATE = 'cubic-bezier(0.4, 0, 1, 1)'
 const POP = 'cubic-bezier(0.34, 1.56, 0.64, 1)'
 
 const ROUND_S = 6.5
-// three meetings plus a short tail, so the last line still has room to finish growing
 const LOOP_S = 21
 const rounds = [0, 1, 2]
 const at = (round: number, seconds: number) =>
@@ -37,17 +36,104 @@ const at = (round: number, seconds: number) =>
 const abs = (seconds: number) => ((seconds / LOOP_S) * 100).toFixed(3)
 const just = (round: number, seconds: number) => (Number(at(round, seconds)) - 0.01).toFixed(3)
 const after = (round: number, seconds: number) => (Number(at(round, seconds)) + 0.01).toFixed(3)
-// a line starts the moment its meeting hands over a score and takes the same flat second to grow,
-// so every segment advances at one pace and the last finishes a second after the last delta lands
-const GROW = [
-  {from: at(1, 5.75), to: abs(13.25)},
-  {from: at(2, 5.75), to: abs(19.75)}
-]
+// a score leaves the team for the chart here, so the second meeting's deltas land at GROW_FROM and
+// the third's at 1s before GROW_TO
+const HANDOFF = 5.75
+const GROW_FROM = ROUND_S + HANDOFF
+const GROW_TO = 2 * ROUND_S + HANDOFF + 1
 const CHART_OUT = abs(20.5)
 
+// every gap in the layout is this wide, which is what keeps the canvas narrow
+const GAP = 26
+const BANK_X = 14
+const BANK_W = 132
+const PAGE_X = BANK_X + BANK_W + GAP
+const PAGE_W = 120
+const BAR_X = 34
+const BAR_W = 96
+const BAR_H = 8
+const SURVEY_BAR_X = PAGE_X + 12
+const DX = SURVEY_BAR_X - BAR_X
+const SURVEY_ROWS = [58, 96, 134]
+const LIKERT_CX = [0, 1, 2, 3, 4].map((i) => SURVEY_BAR_X + 20 + i * 14)
+// the trend chart sits beside the teams, bare: the shape of the line is the whole message
+const AXIS_X = 472
+const AXIS_Y = 165
+const CHART_TOP = 45
+const UNIT = (AXIS_Y - CHART_TOP) / 5
+const MEETING_X = [487, 530, 573]
+const scoreY = (value: number) => AXIS_Y - value * UNIT
+
+// Each category keeps its own pool and the meeting takes one from each. Over three meetings the
+// first category walks all three of its questions, the second wraps after two, and the third has
+// only one so it joins every meeting. `flyOn` is the keyframe set per round, indexed by question.
+const BANK = [
+  {
+    dotY: 50,
+    headerY: 47.5,
+    questionYs: [58, 70, 82],
+    landsOn: 58,
+    flyOn: ['thsfa-fly-r0', 'thsfa-fly-r1', 'thsfa-fly-r2']
+  },
+  {
+    dotY: 106,
+    headerY: 103.5,
+    questionYs: [114, 126],
+    landsOn: 96,
+    flyOn: ['thsfa-fly-r02', 'thsfa-fly-r1']
+  },
+  {dotY: 148, headerY: 145.5, questionYs: [156], landsOn: 134, flyOn: ['thsfa-fly-all']}
+]
+// the first meeting reports a score, later ones report the move, which is what a team watches
+const TEAMS = [
+  {
+    name: 'Product',
+    cx: 344,
+    cy: 56,
+    labelW: 50,
+    link: 'M294,98 C302,98 304,56 312,56',
+    answers: [-18, -4, 10, 20],
+    values: [3, 3.3, 3.5]
+  },
+  {
+    name: 'Engineering',
+    cx: 410,
+    cy: 94,
+    labelW: 72,
+    link: 'M294,98 C320,94 344,94 378,94',
+    answers: [-22, -10, 2, 14, 24],
+    values: [4, 3.9, 4.5]
+  },
+  {
+    name: 'Marketing',
+    cx: 364,
+    cy: 150,
+    labelW: 62,
+    link: 'M294,98 C304,98 308,150 332,150',
+    answers: [-14, 0, 14],
+    values: [2, 2.8, 2.9]
+  }
+]
+
+// A line never pauses between its two segments: it starts when the first deltas land and runs at one
+// speed until a second after the last ones do. So the handover percentage is where the first segment
+// has used up its share of the distance, which differs per team.
+const TRENDS = TEAMS.map((team) => {
+  const points = team.values.map((value, round) => ({x: MEETING_X[round]!, y: scoreY(value)}))
+  const legs = [1, 2].map((i) =>
+    Math.hypot(points[i]!.x - points[i - 1]!.x, points[i]!.y - points[i - 1]!.y)
+  )
+  const total = legs[0]! + legs[1]!
+  return {
+    points,
+    legs,
+    handover: abs(GROW_FROM + (GROW_TO - GROW_FROM) * (legs[0]! / total))
+  }
+})
+
 // Within each round: the meeting page rises (0-0.6s), the picked questions fly in (0.9-2.0s), the
-// likert scales appear (2.1s), lines reach the teams (2.5s), members answer (2.9-4.3s), each team's
-// score lands (4.1s) and then rides the departing page over to the chart (5.8-6.4s).
+// likert scales appear (2.1s), lines reach the teams (2.5s), members answer (2.9-4.3s) and each
+// team's score lands (4.1s) before riding the departing page to the chart (5.15-5.75s).
 const flyFrames = (name: string, firesOn: number[]) => `
 @keyframes ${name} {
   0% {opacity: 0; transform: translate(0, 0)}
@@ -130,19 +216,25 @@ ${rounds
   ${at(0, 5)}%, ${CHART_OUT}% {opacity: 0.6}
   100% {opacity: 0}
 }
-@keyframes thsfa-dot {
+${TRENDS.map(
+  (trend, i) => `@keyframes thsfa-dot-t${i} {
   0%, ${at(0, 5.75)}% {opacity: 0; transform: translate(0, 0) scale(0.3); animation-timing-function: ${POP}}
-  ${at(0, 6.05)}%, ${GROW[0]!.from}% {opacity: 1; transform: translate(0, 0) scale(1); animation-timing-function: linear}
-  ${GROW[0]!.to}%, ${GROW[1]!.from}% {opacity: 1; transform: translate(var(--d2x), var(--d2y)) scale(1); animation-timing-function: linear}
-  ${GROW[1]!.to}%, ${CHART_OUT}% {opacity: 1; transform: translate(var(--d3x), var(--d3y)) scale(1)}
+  ${at(0, 6.05)}%, ${abs(GROW_FROM)}% {opacity: 1; transform: translate(0, 0) scale(1); animation-timing-function: linear}
+  ${trend.handover}% {opacity: 1; transform: translate(var(--d2x), var(--d2y)) scale(1); animation-timing-function: linear}
+  ${abs(GROW_TO)}%, ${CHART_OUT}% {opacity: 1; transform: translate(var(--d3x), var(--d3y)) scale(1)}
   100% {opacity: 0; transform: translate(var(--d3x), var(--d3y)) scale(1)}
 }
-${GROW.map(
-  // a round linecap paints a dot even at full offset, so a segment stays hidden until it draws
-  (grow, idx) => `@keyframes thsfa-seg${idx + 1} {
-  0%, ${(Number(grow.from) - 0.01).toFixed(3)}% {stroke-dashoffset: var(--len); opacity: 0}
-  ${grow.from}% {stroke-dashoffset: var(--len); opacity: 1; animation-timing-function: linear}
-  ${grow.to}%, ${CHART_OUT}% {stroke-dashoffset: 0; opacity: 1}
+@keyframes thsfa-seg1-t${i} {
+  0%, ${(Number(abs(GROW_FROM)) - 0.01).toFixed(3)}% {stroke-dashoffset: var(--len); opacity: 0}
+  ${abs(GROW_FROM)}% {stroke-dashoffset: var(--len); opacity: 1; animation-timing-function: linear}
+  ${trend.handover}%, ${CHART_OUT}% {stroke-dashoffset: 0; opacity: 1}
+  99.99% {stroke-dashoffset: 0; opacity: 0}
+  100% {stroke-dashoffset: var(--len); opacity: 0}
+}
+@keyframes thsfa-seg2-t${i} {
+  0%, ${(Number(trend.handover) - 0.01).toFixed(3)}% {stroke-dashoffset: var(--len); opacity: 0}
+  ${trend.handover}% {stroke-dashoffset: var(--len); opacity: 1; animation-timing-function: linear}
+  ${abs(GROW_TO)}%, ${CHART_OUT}% {stroke-dashoffset: 0; opacity: 1}
   99.99% {stroke-dashoffset: 0; opacity: 0}
   100% {stroke-dashoffset: var(--len); opacity: 0}
 }`
@@ -170,7 +262,7 @@ ${flyFrames('thsfa-fly-all', [0, 1, 2])}
 .thsfa-fly {transform: translate(var(--dx), var(--dy))}
 .thsfa-fly-r1, .thsfa-fly-r2 {opacity: 0}
 .thsfa-likert, .thsfa-answer, .thsfa-dot, .thsfa-score-r0, .thsfa-score-r1, .thsfa-score-r2 {transform-box: fill-box; transform-origin: center}
-.thsfa-title-r1, .thsfa-title-r2, .thsfa-score-r1, .thsfa-score-r2, .thsfa-seg1, .thsfa-seg2 {opacity: 0}
+.thsfa-title-r1, .thsfa-title-r2, .thsfa-score-r1, .thsfa-score-r2, .thsfa-seg {opacity: 0}
 .thsfa-axes {opacity: 0.6}
 @media (prefers-reduced-motion: no-preference) {
   .thsfa-page {animation: thsfa-page ${LOOP_S}s linear infinite}
@@ -180,9 +272,11 @@ ${flyFrames('thsfa-fly-all', [0, 1, 2])}
   .thsfa-select-3 {animation: thsfa-select-3 ${LOOP_S}s linear infinite}
   .thsfa-select-2 {animation: thsfa-select-2 ${LOOP_S}s linear infinite}
   .thsfa-axes {animation: thsfa-axes ${LOOP_S}s linear infinite}
-  .thsfa-dot {animation: thsfa-dot ${LOOP_S}s linear infinite}
-  .thsfa-seg1 {animation: thsfa-seg1 ${LOOP_S}s linear infinite}
-  .thsfa-seg2 {animation: thsfa-seg2 ${LOOP_S}s linear infinite}
+${TRENDS.map(
+  (_, i) => `  .thsfa-dot-t${i} {animation: thsfa-dot-t${i} ${LOOP_S}s linear infinite}
+  .thsfa-seg1-t${i} {animation: thsfa-seg1-t${i} ${LOOP_S}s linear infinite}
+  .thsfa-seg2-t${i} {animation: thsfa-seg2-t${i} ${LOOP_S}s linear infinite}`
+).join('\n')}
 ${rounds
   .map(
     (r) => `  .thsfa-title-r${r} {animation: thsfa-title-r${r} ${LOOP_S}s linear infinite}
@@ -197,69 +291,6 @@ ${rounds
 }
 `
 
-// Each category keeps its own pool and the meeting takes one from each. Over three meetings the
-// first category walks all three of its questions, the second wraps after two, and the third has
-// only one so it joins every meeting. `flyOn` is the keyframe set per round, indexed by question.
-const BANK = [
-  {
-    dotY: 50,
-    headerY: 47.5,
-    questionYs: [58, 70, 82],
-    landsOn: 58,
-    flyOn: ['thsfa-fly-r0', 'thsfa-fly-r1', 'thsfa-fly-r2']
-  },
-  {
-    dotY: 106,
-    headerY: 103.5,
-    questionYs: [114, 126],
-    landsOn: 96,
-    flyOn: ['thsfa-fly-r02', 'thsfa-fly-r1']
-  },
-  {dotY: 148, headerY: 145.5, questionYs: [156], landsOn: 134, flyOn: ['thsfa-fly-all']}
-]
-// the first meeting reports a score, later ones report the move, which is what a team watches
-const TEAMS = [
-  {
-    name: 'Product',
-    cx: 362,
-    cy: 56,
-    labelW: 50,
-    link: 'M294,98 C310,98 314,56 330,56',
-    answers: [-18, -4, 10, 20],
-    values: [3, 3.3, 3.5]
-  },
-  {
-    name: 'Engineering',
-    cx: 428,
-    cy: 94,
-    labelW: 72,
-    link: 'M294,98 C330,94 360,94 396,94',
-    answers: [-22, -10, 2, 14, 24],
-    values: [4, 3.9, 4.5]
-  },
-  {
-    name: 'Marketing',
-    cx: 382,
-    cy: 150,
-    labelW: 62,
-    link: 'M294,98 C312,98 318,150 350,150',
-    answers: [-14, 0, 14],
-    values: [2, 2.8, 2.9]
-  }
-]
-const SURVEY_ROWS = [58, 96, 134]
-const LIKERT_CX = [204, 218, 232, 246, 260]
-const BAR_X = 34
-const BAR_W = 96
-const BAR_H = 8
-const DX = 184 - BAR_X
-// the trend chart sits beside the teams, bare: the shape of the line is the whole message
-const AXIS_X = 500
-const AXIS_Y = 165
-const CHART_TOP = 45
-const UNIT = (AXIS_Y - CHART_TOP) / 5
-const MEETING_X = [515, 558, 601]
-const scoreY = (value: number) => AXIS_Y - value * UNIT
 const GROUPS_ICON =
   'M12 12.75c1.63 0 3.07.39 4.24.9 1.08.48 1.76 1.56 1.76 2.73V18H6v-1.61c0-1.18.68-2.26 1.76-2.73 1.17-.52 2.61-.91 4.24-.91M4 13c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2m1.13 1.1c-.37-.06-.74-.1-1.13-.1-.99 0-1.93.21-2.78.58C.48 14.9 0 15.62 0 16.43V18h4.5v-1.61c0-.83.23-1.61.63-2.29M20 13c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2m4 3.43c0-.81-.48-1.53-1.22-1.85-.85-.37-1.79-.58-2.78-.58-.39 0-.76.04-1.13.1.4.68.63 1.46.63 2.29V18H24zM12 6c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3'
 
@@ -272,8 +303,8 @@ const TeamHealthSurveyFlowAnimation = (props: Props) => {
 
   return (
     <svg
-      viewBox='0 0 650 200'
-      className={cn('h-auto w-full max-w-[650px]', className)}
+      viewBox='0 0 612 200'
+      className={cn('h-auto w-full max-w-[612px]', className)}
       role='img'
       aria-label='One question is picked from each category in the question bank and flows into a meeting that goes out to the Product, Engineering and Marketing teams. Each team scores, and those scores carry over into a trend line across three meetings.'
     >
@@ -281,9 +312,9 @@ const TeamHealthSurveyFlowAnimation = (props: Props) => {
       <style>{KEYFRAMES}</style>
 
       <rect
-        x='14'
+        x={BANK_X}
         y='14'
-        width='132'
+        width={BANK_W}
         height='172'
         rx='8'
         fill='var(--color-surface-card)'
@@ -350,9 +381,9 @@ const TeamHealthSurveyFlowAnimation = (props: Props) => {
 
       <g className='thsfa-page'>
         <rect
-          x='172'
+          x={PAGE_X}
           y='22'
-          width='120'
+          width={PAGE_W}
           height='152'
           rx='8'
           fill='var(--color-surface-card)'
@@ -362,7 +393,7 @@ const TeamHealthSurveyFlowAnimation = (props: Props) => {
           <text
             key={r}
             className={`thsfa-title-r${r}`}
-            x='184'
+            x={SURVEY_BAR_X}
             y='40'
             fontFamily={FONT}
             fontSize='11'
@@ -434,25 +465,29 @@ const TeamHealthSurveyFlowAnimation = (props: Props) => {
 
       <g className='thsfa-axes'>
         <path
-          d={`M${AXIS_X},${CHART_TOP} L${AXIS_X},${AXIS_Y} L625,${AXIS_Y}`}
+          d={`M${AXIS_X},${CHART_TOP} L${AXIS_X},${AXIS_Y} L597,${AXIS_Y}`}
           fill='none'
           stroke={muted}
           strokeWidth='1.5'
         />
       </g>
-      {TEAMS.map((team, teamIdx) => {
+      {TRENDS.map((trend, teamIdx) => {
         const color = CATEGORY_COLORS[teamIdx]!
-        const points = team.values.map((value, r) => ({x: MEETING_X[r]!, y: scoreY(value)}))
+        const [p1, p2, p3] = trend.points as [
+          {x: number; y: number},
+          {x: number; y: number},
+          {x: number; y: number}
+        ]
         return (
-          <g key={team.name}>
-            {[1, 2].map((r) => {
-              const a = points[r - 1]!
-              const b = points[r]!
-              const len = Math.hypot(b.x - a.x, b.y - a.y).toFixed(2)
+          <g key={TEAMS[teamIdx]!.name}>
+            {[1, 2].map((seg) => {
+              const a = trend.points[seg - 1]!
+              const b = trend.points[seg]!
+              const len = trend.legs[seg - 1]!.toFixed(2)
               return (
                 <line
-                  key={r}
-                  className={`thsfa-seg${r}`}
+                  key={seg}
+                  className={cn('thsfa-seg', `thsfa-seg${seg}-t${teamIdx}`)}
                   x1={a.x}
                   y1={a.y}
                   x2={b.x}
@@ -467,17 +502,17 @@ const TeamHealthSurveyFlowAnimation = (props: Props) => {
             })}
             {/* one dot per team, always riding the growing end of its line */}
             <circle
-              className='thsfa-dot'
-              cx={points[0]!.x}
-              cy={points[0]!.y}
+              className={`thsfa-dot thsfa-dot-t${teamIdx}`}
+              cx={p1.x}
+              cy={p1.y}
               r='3.5'
               fill={color}
               style={
                 {
-                  '--d2x': `${points[1]!.x - points[0]!.x}px`,
-                  '--d2y': `${points[1]!.y - points[0]!.y}px`,
-                  '--d3x': `${points[2]!.x - points[0]!.x}px`,
-                  '--d3y': `${points[2]!.y - points[0]!.y}px`
+                  '--d2x': `${p2.x - p1.x}px`,
+                  '--d2y': `${p2.y - p1.y}px`,
+                  '--d3x': `${p3.x - p1.x}px`,
+                  '--d3y': `${p3.y - p1.y}px`
                 } as CSSProperties
               }
             />
@@ -485,7 +520,7 @@ const TeamHealthSurveyFlowAnimation = (props: Props) => {
         )
       })}
 
-      {TEAMS.map((team, teamIdx) => (
+      {TEAMS.map((team) => (
         <g key={team.name}>
           <circle
             cx={team.cx}
@@ -562,8 +597,7 @@ const TeamHealthSurveyFlowAnimation = (props: Props) => {
                     // the score hands itself to the chart: meeting one becomes the starting dot,
                     // later ones land where their line is headed
                     '--sx': `${MEETING_X[r]! - originX}px`,
-                    '--sy': `${scoreY(team.values[r]!) - originY}px`,
-                    animationDelay: lag(teamIdx * 0.1)
+                    '--sy': `${scoreY(team.values[r]!) - originY}px`
                   } as CSSProperties
                 }
               >
