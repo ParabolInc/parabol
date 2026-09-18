@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useState} from 'react'
+import {useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {RRule} from 'rrule'
@@ -27,6 +27,7 @@ import {ScheduleDialog} from '../ScheduleDialog'
 import type {SnackAction} from '../Snackbar'
 import StyledLink from '../StyledLink'
 import TeamPicker from '../TeamPicker/TeamPicker'
+import {FIRST_MEETING_PREVIEW_ID} from './TeamHealth/TeamHealthFirstMeetingPreview'
 import TeamHealthFirstMeetingSummary from './TeamHealth/TeamHealthFirstMeetingSummary'
 
 type StartTeamHealthResult = useStartTeamHealthMutation$data['startTeamHealth']
@@ -36,10 +37,11 @@ interface Props {
   templateRef: TeamHealthDetailsSidebar_template$key
   teamsRef: TeamHealthDetailsSidebar_teams$key
   preferredTeamId: string | null | undefined
+  onPreviewFirstMeeting: () => void
 }
 
 const TeamHealthDetailsSidebar = (props: Props) => {
-  const {templateId, templateRef, teamsRef, preferredTeamId} = props
+  const {templateId, templateRef, teamsRef, preferredTeamId, onPreviewFirstMeeting} = props
   const template = useFragment(
     graphql`
       fragment TeamHealthDetailsSidebar_template on MeetingTemplate {
@@ -69,6 +71,7 @@ const TeamHealthDetailsSidebar = (props: Props) => {
   const navigate = useNavigate()
   const [isMinimized, setIsMinimized] = useState(false)
   const [isScheduleOpen, setIsScheduleOpen] = useState(false)
+  const scrollToPreviewOnCloseRef = useRef(false)
   const [execute, submitting] = useStartTeamHealthMutation()
   const [startMeetingSeriesNow] = useStartMeetingSeriesNowMutation()
   // ScheduleDialog drives the Google Calendar OAuth flow through the legacy mutationProps shape
@@ -211,7 +214,21 @@ const TeamHealthDetailsSidebar = (props: Props) => {
               <div className='text-lg'>Start Meeting Series</div>
             </Button>
           </DialogTrigger>
-          <DialogContent noClose className='md:max-w-md'>
+          <DialogContent
+            noClose
+            className='md:max-w-md'
+            // the closing dialog hands focus back to its trigger right after this, which cancels a smooth
+            // scroll already in flight, so start scrolling on the next frame
+            onCloseAutoFocus={() => {
+              if (!scrollToPreviewOnCloseRef.current) return
+              scrollToPreviewOnCloseRef.current = false
+              requestAnimationFrame(() =>
+                document
+                  .getElementById(FIRST_MEETING_PREVIEW_ID)
+                  ?.scrollIntoView({behavior: 'smooth', block: 'start'})
+              )
+            }}
+          >
             <ScheduleDialog
               teamRef={gcalTeam}
               placeholder='Team Health'
@@ -222,7 +239,11 @@ const TeamHealthDetailsSidebar = (props: Props) => {
               summary={
                 <TeamHealthFirstMeetingSummary
                   questionCount={template.firstMeetingQuestions?.length ?? 0}
-                  onPreview={() => setIsScheduleOpen(false)}
+                  onPreview={() => {
+                    scrollToPreviewOnCloseRef.current = true
+                    onPreviewFirstMeeting()
+                    setIsScheduleOpen(false)
+                  }}
                 />
               }
             />

@@ -27,6 +27,7 @@ import useTemplateDescription from '../../../utils/useTemplateDescription'
 import DetailAction from '../../DetailAction'
 import ActivityCardFavorite from '../ActivityCardFavorite'
 import {QUICK_START_CATEGORY_ID} from '../Categories'
+import type {TeamHealthQuestionView} from '../TeamHealth/TeamHealthQuestionViewToggle'
 import TeamHealthTemplateQuestionEditor from '../TeamHealth/TeamHealthTemplateQuestionEditor'
 import TeamPickerModal from '../TeamPickerModal'
 import ActivityDetailsBadges from './ActivityDetailsBadges'
@@ -98,11 +99,13 @@ interface Props {
   activityRef: TemplateDetails_activity$key
   isEditing: boolean
   setIsEditing: (isEditing: boolean) => void
+  teamHealthView: TeamHealthQuestionView
+  setTeamHealthView: (view: TeamHealthQuestionView) => void
   viewerRef: TemplateDetails_user$key
 }
 
 export const TemplateDetails = (props: Props) => {
-  const {viewerRef, isEditing, setIsEditing, activityRef} = props
+  const {viewerRef, isEditing, setIsEditing, teamHealthView, setTeamHealthView, activityRef} = props
 
   const activity = useFragment(
     graphql`
@@ -332,6 +335,8 @@ export const TemplateDetails = (props: Props) => {
         <TeamHealthTemplateQuestionEditor
           templateRef={activity.TeamHealthTemplateQuestionEditor_template}
           isEditing={isEditing}
+          view={teamHealthView}
+          onViewChange={setTeamHealthView}
           readOnly={!isOwner}
           onEditHint={flashEditHint}
         />

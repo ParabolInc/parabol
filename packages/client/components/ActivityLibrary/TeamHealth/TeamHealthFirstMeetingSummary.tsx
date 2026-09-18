@@ -1,5 +1,4 @@
 import plural from '../../../utils/plural'
-import {FIRST_MEETING_PREVIEW_ID} from './TeamHealthFirstMeetingPreview'
 
 interface Props {
   questionCount: number
@@ -9,18 +8,12 @@ interface Props {
 const TeamHealthFirstMeetingSummary = (props: Props) => {
   const {questionCount, onPreview} = props
   if (questionCount === 0) return null
-  const preview = () => {
-    onPreview()
-    document
-      .getElementById(FIRST_MEETING_PREVIEW_ID)
-      ?.scrollIntoView({behavior: 'smooth', block: 'start'})
-  }
   return (
     <div className='text-fg-secondary text-sm'>
       First meeting: {questionCount} {plural(questionCount, 'question')} ·{' '}
       <button
         type='button'
-        onClick={preview}
+        onClick={onPreview}
         className='cursor-pointer font-semibold text-accent hover:underline'
       >
         Preview

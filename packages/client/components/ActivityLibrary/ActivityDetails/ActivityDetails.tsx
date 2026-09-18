@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Link, Navigate, useLocation} from 'react-router'
 import type {ActivityDetailsQuery} from '~/__generated__/ActivityDetailsQuery.graphql'
@@ -11,6 +11,7 @@ import IconLabel from '../../IconLabel'
 import {ActivityCard, ActivityCardImage} from '../ActivityCard'
 import ActivityDetailsSidebarSwitch from '../ActivityDetailsSidebarSwitch'
 import {CATEGORY_THEMES, type CategoryID, QUICK_START_CATEGORY_ID} from '../Categories'
+import type {TeamHealthQuestionView} from '../TeamHealth/TeamHealthQuestionViewToggle'
 import {TemplateDetails} from './TemplateDetails'
 
 graphql`
@@ -73,7 +74,13 @@ const ActivityDetails = (props: Props) => {
   const {viewer} = data
   const {activity, activityLibrarySearch, preferredTeamId, teams} = viewer
   const location = useLocation() as {state?: {prevCategory?: string}}
-  const [isEditing, setIsEditing] = useState(false)
+  const [isEditing, setIsEditingState] = useState(false)
+  const [teamHealthView, setTeamHealthView] = useState<TeamHealthQuestionView>('firstMeeting')
+  const setIsEditing = useCallback((nextIsEditing: boolean) => {
+    setIsEditingState(nextIsEditing)
+    if (!nextIsEditing) setTeamHealthView('firstMeeting')
+  }, [])
+  const previewFirstMeeting = useCallback(() => setTeamHealthView('firstMeeting'), [])
 
   if (!activity) {
     return <Navigate to='/activity-library' replace />
@@ -150,6 +157,8 @@ const ActivityDetails = (props: Props) => {
                   viewerRef={viewer}
                   isEditing={isEditing}
                   setIsEditing={setIsEditing}
+                  teamHealthView={teamHealthView}
+                  setTeamHealthView={setTeamHealthView}
                 />
               </div>
             </div>
@@ -168,6 +177,7 @@ const ActivityDetails = (props: Props) => {
             teamsRef={teams}
             teamHealthTeamsRef={teamHealthTeams}
             preferredTeamId={preferredTeamId}
+            onPreviewFirstMeeting={previewFirstMeeting}
           />
         </div>
       </div>

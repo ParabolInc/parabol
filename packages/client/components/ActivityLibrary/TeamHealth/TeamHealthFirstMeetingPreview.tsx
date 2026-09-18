@@ -10,10 +10,11 @@ interface Props {
   templateRef: TeamHealthFirstMeetingPreview_template$key
   // globally-ordered category ids that drive each category's color (see getTeamHealthCategoryColor)
   orderedCategoryIds: ReadonlyArray<string>
+  changedQuestionIds: ReadonlySet<string>
 }
 
 const TeamHealthFirstMeetingPreview = (props: Props) => {
-  const {templateRef, orderedCategoryIds} = props
+  const {templateRef, orderedCategoryIds, changedQuestionIds} = props
   const template = useFragment(
     graphql`
       fragment TeamHealthFirstMeetingPreview_template on TeamHealthTemplate {
@@ -51,7 +52,6 @@ const TeamHealthFirstMeetingPreview = (props: Props) => {
       id={FIRST_MEETING_PREVIEW_ID}
       className='mb-4 scroll-mt-4 rounded-lg border border-hairline bg-surface-app p-4'
     >
-      <h2 className='font-semibold text-fg-primary text-sm'>Your first meeting</h2>
       <p className='text-fg-muted text-xs'>
         {firstMeetingQuestions.length === 1
           ? 'Everyone answers this question'
@@ -61,7 +61,12 @@ const TeamHealthFirstMeetingPreview = (props: Props) => {
         {firstMeetingQuestions.map(({id, question, category}) => (
           <li
             key={id}
-            className='flex gap-2.5 rounded-md border border-hairline bg-surface-card px-3 py-2'
+            className={cn(
+              'flex gap-2.5 rounded-md border px-3 py-2 transition-colors duration-1000',
+              changedQuestionIds.has(id)
+                ? 'border-accent bg-accent/15'
+                : 'border-hairline bg-surface-card'
+            )}
           >
             <span
               className={cn(
@@ -69,8 +74,13 @@ const TeamHealthFirstMeetingPreview = (props: Props) => {
                 getTeamHealthCategoryDotColor(category.id, orderedCategoryIds)
               )}
             />
-            <div className='min-w-0'>
-              <div className='font-semibold text-fg-secondary text-xs'>{category.name}</div>
+            <div className='min-w-0 grow'>
+              <div className='flex items-center justify-between gap-2 font-semibold text-fg-secondary text-xs'>
+                {category.name}
+                {changedQuestionIds.has(id) && (
+                  <span className='rounded border border-accent px-1 text-fg-primary'>Updated</span>
+                )}
+              </div>
               <div className='text-fg-primary text-sm'>{question}</div>
             </div>
           </li>

@@ -6,23 +6,32 @@ import AddTeamHealthQuestion from './AddTeamHealthQuestion'
 import {getOrderedTeamHealthCategories} from './getTeamHealthCategoryColor'
 import TeamHealthFirstMeetingPreview from './TeamHealthFirstMeetingPreview'
 import TeamHealthQuestionPackSection from './TeamHealthQuestionPackSection'
+import TeamHealthQuestionViewToggle, {
+  type TeamHealthQuestionView
+} from './TeamHealthQuestionViewToggle'
 import TeamHealthSurveyFlowAnimation from './TeamHealthSurveyFlowAnimation'
+import useChangedFirstMeetingQuestionIds from './useChangedFirstMeetingQuestionIds'
 
 interface Props {
   templateRef: TeamHealthTemplateQuestionEditor_template$key
   isEditing: boolean
+  view: TeamHealthQuestionView
+  onViewChange: (view: TeamHealthQuestionView) => void
   // the viewer doesn't own this template; render every pack as non-interactive
   readOnly: boolean
   onEditHint: () => void
 }
 
 const TeamHealthTemplateQuestionEditor = (props: Props) => {
-  const {templateRef, isEditing, readOnly, onEditHint} = props
+  const {templateRef, isEditing, view, onViewChange, readOnly, onEditHint} = props
   const template = useFragment(
     graphql`
       fragment TeamHealthTemplateQuestionEditor_template on TeamHealthTemplate {
         id
         questions {
+          id
+        }
+        firstMeetingQuestions {
           id
         }
         availableQuestionPacks {
@@ -43,9 +52,15 @@ const TeamHealthTemplateQuestionEditor = (props: Props) => {
     `,
     templateRef
   )
-  const {id: templateId, questions, availableQuestionPacks} = template
+  const {id: templateId, questions, firstMeetingQuestions, availableQuestionPacks} = template
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
+
+  const changedQuestionIds = useChangedFirstMeetingQuestionIds(
+    isEditing,
+    firstMeetingQuestions.map((q) => q.id)
+  )
+  const displayedView = isEditing ? 'questionBank' : view
 
   const selectedIds = new Set(questions.map((q) => q.id))
 
@@ -76,33 +91,46 @@ const TeamHealthTemplateQuestionEditor = (props: Props) => {
   return (
     <div className='pt-4'>
       <TeamHealthSurveyFlowAnimation className='mx-auto mb-4' />
-      <TeamHealthFirstMeetingPreview
-        templateRef={template}
-        orderedCategoryIds={categories.map((category) => category.id)}
-      />
-      {!myPackId && isEditing && (
-        <div className='border-hairline border-b pb-2'>
-          <div className='py-2 font-semibold text-fg-primary text-sm'>My Questions</div>
-          <div className='px-1'>{addQuestion}</div>
-        </div>
+      {isEditing ? (
+        <p className='mb-4 text-fg-secondary text-sm'>
+          Editing the question bank. Your first meeting updates when you're done.
+        </p>
+      ) : (
+        <TeamHealthQuestionViewToggle view={view} onChange={onViewChange} />
       )}
-      {sortedPacks.map((pack, index) => (
-        <TeamHealthQuestionPackSection
-          key={pack.id}
-          packRef={pack}
-          templateId={templateId}
-          viewerId={viewerId}
-          selectedIds={selectedIds}
-          categories={categories}
-          isEditing={isEditing}
-          readOnly={readOnly}
-          onEditHint={onEditHint}
-          // read-only viewers see only built-in packs, so open the first one instead of the org pack
-          defaultOpen={readOnly ? index === 0 : pack.userId !== 'aGhostUser'}
-          title={pack.id === myPackId ? 'My Questions' : undefined}
-          footer={pack.id === myPackId && isEditing ? addQuestion : undefined}
+      {displayedView === 'firstMeeting' ? (
+        <TeamHealthFirstMeetingPreview
+          templateRef={template}
+          orderedCategoryIds={categories.map((category) => category.id)}
+          changedQuestionIds={changedQuestionIds}
         />
-      ))}
+      ) : (
+        <>
+          {!myPackId && isEditing && (
+            <div className='border-hairline border-b pb-2'>
+              <div className='py-2 font-semibold text-fg-primary text-sm'>My Questions</div>
+              <div className='px-1'>{addQuestion}</div>
+            </div>
+          )}
+          {sortedPacks.map((pack, index) => (
+            <TeamHealthQuestionPackSection
+              key={pack.id}
+              packRef={pack}
+              templateId={templateId}
+              viewerId={viewerId}
+              selectedIds={selectedIds}
+              categories={categories}
+              isEditing={isEditing}
+              readOnly={readOnly}
+              onEditHint={onEditHint}
+              // read-only viewers see only built-in packs, so open the first one instead of the org pack
+              defaultOpen={readOnly ? index === 0 : pack.userId !== 'aGhostUser'}
+              title={pack.id === myPackId ? 'My Questions' : undefined}
+              footer={pack.id === myPackId && isEditing ? addQuestion : undefined}
+            />
+          ))}
+        </>
+      )}
     </div>
   )
 }

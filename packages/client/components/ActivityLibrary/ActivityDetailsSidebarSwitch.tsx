@@ -13,17 +13,26 @@ interface Props {
   teamsRef: ActivityDetailsSidebar_teams$key
   teamHealthTeamsRef: TeamHealthDetailsSidebar_teams$key
   preferredTeamId: string | null | undefined
+  onPreviewFirstMeeting: () => void
 }
 
 const ActivityDetailsSidebarSwitch = (props: Props) => {
-  const {type, templateId, selectedTemplateRef, teamsRef, teamHealthTeamsRef, preferredTeamId} =
-    props
+  const {
+    type,
+    templateId,
+    selectedTemplateRef,
+    teamsRef,
+    teamHealthTeamsRef,
+    preferredTeamId,
+    onPreviewFirstMeeting
+  } = props
   return type === 'teamHealth' ? (
     <TeamHealthDetailsSidebar
       templateId={templateId}
       templateRef={selectedTemplateRef}
       teamsRef={teamHealthTeamsRef}
       preferredTeamId={preferredTeamId}
+      onPreviewFirstMeeting={onPreviewFirstMeeting}
     />
   ) : (
     <ActivityDetailsSidebar
