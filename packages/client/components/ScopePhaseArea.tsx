@@ -67,7 +67,7 @@ const ScopePhaseArea = (props: Props) => {
     const definition = getClientIntegration(service)
     const {scoping} = definition.capabilities
     if (!scoping) return []
-    if (!isAvailable && !scoping.advertiseWhenUnavailable) return []
+    if (!isAvailable && !definition.contactUs) return []
     return [
       {
         key: service,

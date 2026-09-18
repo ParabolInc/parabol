@@ -30,14 +30,25 @@ export interface ConnectParams {
 export interface ScopingCapability {
   /** The poker scope-tab panel. Lazy so importing the registry does not pull every panel into the main bundle */
   Panel: LazyExoticComponent<ComponentType<{meetingRef: ScopePhaseArea_meeting$data}>>
-  /** Show the tab even when the team cannot use the service yet, as a pitch to contact sales */
-  advertiseWhenUnavailable?: boolean
   /** What the search history shows for a saved project filter id; absent when the id is already readable */
   projectFilterLabel?(filter: string): string
 }
 
+export interface SettingsCapability {
+  /** Second line under the Remove menu item for services whose grant covers more than themselves */
+  getDisconnectSubline(grantedScopes: readonly string[]): string | undefined
+}
+
+/** Behavior a single surface owns; a service fact that several surfaces read stays flat on the definition */
 export interface ClientIntegrationCapabilities {
   scoping?: ScopingCapability
+  settings?: SettingsCapability
+}
+
+/** The brand art for the 48px settings row; darkSrc is only for marks that vanish on a dark surface */
+export interface ProviderLogoAsset {
+  src: string
+  darkSrc?: string
 }
 
 export abstract class ClientIntegrationDefinition {
@@ -46,8 +57,15 @@ export abstract class ClientIntegrationDefinition {
   abstract readonly description: string
   abstract readonly Icon: ComponentType<{className?: string}>
   readonly iconClassName?: string
+  /** Brand art for the settings row; Icon is the small inline mark for menus and tabs */
+  abstract readonly logo: ProviderLogoAsset
   abstract readonly capabilities: ClientIntegrationCapabilities
   /** Where to send the viewer when the OAuth popup closes without completing */
   readonly authorizationHelpUrl?: string
+  /**
+   * Advertises the service on the settings row and the scope tab even when the team cannot use it,
+   * and points the Contact Us button at url; clickEvent is the client analytics event name
+   */
+  readonly contactUs?: {url: string; clickEvent: string}
   abstract connect(atmosphere: Atmosphere, params: ConnectParams): void
 }

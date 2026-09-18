@@ -2,7 +2,7 @@ import {EditorContent, type NodeViewProps, NodeViewWrapper} from '@tiptap/react'
 import type {TaskStatusEnum} from '../../../__generated__/CreateTaskMutation.graphql'
 import Avatar from '../../../components/Avatar/Avatar'
 import {useTipTapTaskEditor} from '../../../hooks/useTipTapTaskEditor'
-import OutcomeCardStatusIndicator from '../../../modules/outcomeCard/components/OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
+import TaskCardStatusIndicator from '../../../modules/taskCard/components/TaskCardStatusIndicator/TaskCardStatusIndicator'
 import type {TaskBlockAttrs} from '../../../shared/tiptap/extensions/TaskBlockBase'
 export const TaskBlockView = (props: NodeViewProps) => {
   const {node} = props
@@ -13,10 +13,7 @@ export const TaskBlockView = (props: NodeViewProps) => {
   return (
     <NodeViewWrapper data-type='taskBlock'>
       <div className='w-[268px] min-w-64 rounded bg-surface-card p-4 shadow-[var(--shadow-card)]'>
-        <OutcomeCardStatusIndicator
-          status={(status as TaskStatusEnum) || 'active'}
-          className='mb-1'
-        />
+        <TaskCardStatusIndicator status={(status as TaskStatusEnum) || 'active'} className='mb-1' />
         {editor && (
           <EditorContent
             editor={editor}

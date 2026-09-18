@@ -2,7 +2,7 @@ import type {Editor} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import {memo, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
-import type {OutcomeCardContainer_task$key} from '~/__generated__/OutcomeCardContainer_task.graphql'
+import type {TaskCardContainer_task$key} from '~/__generated__/TaskCardContainer_task.graphql'
 import type {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import useClickAway from '~/hooks/useClickAway'
 import useScrollIntoView from '~/hooks/useScrollIntoVIew'
@@ -10,7 +10,7 @@ import SetTaskHighlightMutation from '~/mutations/SetTaskHighlightMutation'
 import {cn} from '~/ui/cn'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useTaskChildFocus from '../../../../hooks/useTaskChildFocus'
-import OutcomeCard from '../../components/OutcomeCard/OutcomeCard'
+import TaskCard from '../../components/TaskCard/TaskCard'
 
 interface Props {
   area: AreaEnum
@@ -18,14 +18,14 @@ interface Props {
   className?: string
   isAgenda: boolean | undefined
   isDraggingOver: TaskStatusEnum | undefined
-  task: OutcomeCardContainer_task$key
+  task: TaskCardContainer_task$key
   clearIsCreatingNewTask?: () => void
   isViewerMeetingSection?: boolean
   meetingId?: string
   handleCardUpdate: () => void
 }
 
-const OutcomeCardContainer = memo((props: Props) => {
+const TaskCardContainer = memo((props: Props) => {
   const {
     editor,
     className,
@@ -39,12 +39,12 @@ const OutcomeCardContainer = memo((props: Props) => {
   } = props
   const task = useFragment(
     graphql`
-      fragment OutcomeCardContainer_task on Task @argumentDefinitions(meetingId: {type: "ID"}) {
+      fragment TaskCardContainer_task on Task @argumentDefinitions(meetingId: {type: "ID"}) {
         editors {
           userId
         }
         id
-        ...OutcomeCard_task @arguments(meetingId: $meetingId)
+        ...TaskCard_task @arguments(meetingId: $meetingId)
       }
     `,
     taskRef
@@ -78,7 +78,7 @@ const OutcomeCardContainer = memo((props: Props) => {
       onMouseOver={() => setIsTaskHovered(true)}
       ref={ref}
     >
-      <OutcomeCard
+      <TaskCard
         area={area}
         editor={editor}
         handleCardUpdate={handleCardUpdate}
@@ -95,4 +95,4 @@ const OutcomeCardContainer = memo((props: Props) => {
   )
 })
 
-export default OutcomeCardContainer
+export default TaskCardContainer

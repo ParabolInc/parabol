@@ -5,7 +5,7 @@ interface Props {
   message: string
 }
 
-const OutcomeCardMessage = (props: Props) => {
+const TaskCardMessage = (props: Props) => {
   const {onClose, message} = props
   return (
     <div className='px-4 pb-4'>
@@ -25,4 +25,4 @@ const OutcomeCardMessage = (props: Props) => {
   )
 }
 
-export default OutcomeCardMessage
+export default TaskCardMessage

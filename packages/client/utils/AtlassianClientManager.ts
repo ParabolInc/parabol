@@ -7,8 +7,7 @@ import AtlassianManager, {
   unionAtlassianScopes
 } from './AtlassianManager'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
-
-export const ERROR_POPUP_CLOSED = 'Popup closed before authorization was complete'
+import {ERROR_POPUP_CLOSED} from './oauthPopupError'
 
 class AtlassianClientManager extends AtlassianManager {
   fetch = window.fetch.bind(window)
