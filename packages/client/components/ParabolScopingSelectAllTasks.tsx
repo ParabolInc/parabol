@@ -1,11 +1,9 @@
 /* Copy and pasted from `./JiraScopingSelectAllIssues.tsx` */
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import useMutationProps from '~/hooks/useMutationProps'
 import useUnusedRecords from '~/hooks/useUnusedRecords'
-import UpdatePokerScopeMutation from '~/mutations/UpdatePokerScopeMutation'
+import useUpdatePokerScopeMutation from '~/mutations/useUpdatePokerScopeMutation'
 import type {ParabolScopingSelectAllTasks_tasks$key} from '../__generated__/ParabolScopingSelectAllTasks_tasks.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
 import Checkbox from './Checkbox'
 
@@ -30,12 +28,10 @@ const ParabolScopingSelectAllTasks = (props: Props) => {
     tasksRef
   )
   const taskIds = tasks.map((taskEdge) => taskEdge.node.id)
-  const atmosphere = useAtmosphere()
   const [unusedTasks, allSelected] = useUnusedRecords(taskIds, usedServiceTaskIds)
-  const {submitting, submitMutation, onCompleted, onError} = useMutationProps()
+  const [updatePokerScope, submitting] = useUpdatePokerScopeMutation()
   const onClick = () => {
     if (submitting) return
-    submitMutation()
     const updateArr = allSelected ? Array.from(taskIds) : unusedTasks
     const action = allSelected ? 'DELETE' : 'ADD'
     const updates = updateArr.map(
@@ -54,15 +50,10 @@ const ParabolScopingSelectAllTasks = (props: Props) => {
       const task = tasks.find((taskEdge) => taskEdge.node.id === update.serviceTaskId)
       return task?.node.plaintextContent ?? 'Unknown Story'
     })
-    UpdatePokerScopeMutation(atmosphere, variables, {
-      onError,
-      onCompleted,
-      contents,
-      selectedAll: true
-    })
+    updatePokerScope({variables, contents, selectedAll: true})
   }
   if (tasks.length < 2) return null
-  const title = getSelectAllTitle(tasks.length, usedServiceTaskIds.size, 'task')
+  const title = getSelectAllTitle(unusedTasks.length, usedServiceTaskIds.size, 'task', allSelected)
   return (
     <div className='flex pl-4' onClick={onClick}>
       <Checkbox active={allSelected} />

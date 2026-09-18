@@ -53,11 +53,9 @@ describe('clientIntegrations registry', () => {
     expect(def.description.length).toBeGreaterThan(0)
   })
 
-  it('every registered integration ships a lazy scope-tab panel', () => {
+  it('every registered integration ships a scoping results component', () => {
     Object.values(clientIntegrations).forEach((definition) => {
-      const Panel = definition.capabilities.scoping?.Panel
-      expect(Panel).toBeDefined()
-      expect(String(Panel?.$$typeof)).toBe('Symbol(react.lazy)')
+      expect(definition.capabilities.scoping?.Results).toBeInstanceOf(Function)
     })
   })
 
@@ -66,13 +64,17 @@ describe('clientIntegrations registry', () => {
   })
 
   it('the two Jira services label a saved project filter by its project key', () => {
-    expect(clientIntegrations.jira.capabilities.scoping?.projectFilterLabel?.('cloud1:WEB')).toBe(
-      'WEB'
-    )
     expect(
-      clientIntegrations.jiraServer.capabilities.scoping?.projectFilterLabel?.(
-        'jiraServer:9:10001:WEB'
-      )
+      clientIntegrations.jira.capabilities.scoping?.filterChipLabel?.({
+        key: 'project',
+        value: 'cloud1:WEB'
+      })
+    ).toBe('WEB')
+    expect(
+      clientIntegrations.jiraServer.capabilities.scoping?.filterChipLabel?.({
+        key: 'project',
+        value: 'jiraServer:9:10001:WEB'
+      })
     ).toBe('WEB')
   })
 

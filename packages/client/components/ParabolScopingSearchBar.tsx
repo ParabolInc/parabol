@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useFragment} from 'react-relay'
+import {commitLocalUpdate, useFragment} from 'react-relay'
 import type {ParabolScopingSearchBar_meeting$key} from '../__generated__/ParabolScopingSearchBar_meeting.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
 import ParabolScopingSearchFilterToggle from './ParabolScopingSearchFilterToggle'
 import ScopingSearchBar from './ScopingSearchBar'
 import ScopingSearchHistoryToggle from './ScopingSearchHistoryToggle'
@@ -27,9 +28,18 @@ const ParabolScopingSearchBar = (props: Props) => {
     meetingRef
   )
 
+  const atmosphere = useAtmosphere()
   const {id: meetingId, parabolSearchQuery} = meeting
   const {queryString, statusFilters} = parabolSearchQuery
   const currentFilters = statusFilters?.length ? statusFilters.join(', ') : 'None'
+  const setQueryString = (nextQueryString: string) => {
+    commitLocalUpdate(atmosphere, (store) => {
+      store
+        .get(meetingId)
+        ?.getLinkedRecord('parabolSearchQuery')
+        ?.setValue(nextQueryString, 'queryString')
+    })
+  }
 
   return (
     <ScopingSearchBar currentFilters={currentFilters}>
@@ -38,8 +48,8 @@ const ParabolScopingSearchBar = (props: Props) => {
         placeholder={'Search Parabol tasks'}
         queryString={queryString ?? ''}
         meetingId={meetingId}
-        linkedRecordName={'parabolSearchQuery'}
         service={'PARABOL'}
+        onQueryStringChange={setQueryString}
       />
       <ParabolScopingSearchFilterToggle meeting={meeting} />
     </ScopingSearchBar>

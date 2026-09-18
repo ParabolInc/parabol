@@ -1,4 +1,5 @@
 import type {LinearProjectOrTeam} from '../hooks/useLinearProjectsAndTeams'
+import getLinearSelectorItemId from '../integrations/linear/getLinearSelectorItemId'
 import {MenuItem} from '../ui/Menu/MenuItem'
 import {MenuSearch} from '../ui/Menu/MenuSearch'
 import {Spinner} from '../ui/Spinner/Spinner'
@@ -6,11 +7,6 @@ import {getLinearRepoName} from '../utils/getLinearRepoName'
 import Checkbox from './Checkbox'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import TypeAheadLabel from './TypeAheadLabel'
-
-const getItemId = (item: LinearProjectOrTeam): string => {
-  const typeName = item.__typename ?? 'UnknownType'
-  return `${typeName}:${item.id}`
-}
 
 const getItemLabel = (item: LinearProjectOrTeam): string => {
   if ('teams' in item && item.teams !== undefined) {
@@ -21,12 +17,13 @@ const getItemLabel = (item: LinearProjectOrTeam): string => {
 export interface LinearSelectorMenuProps {
   items: ReadonlyArray<LinearProjectOrTeam>
   selectedItemIds: ReadonlyArray<string>
-  onSelectItem: (itemId: string, currentSelectedState: boolean) => void
+  onSelectItem: (item: LinearProjectOrTeam, currentSelectedState: boolean) => void
   searchQuery: string
   onSearchQueryChange: (query: string) => void
   isLoading?: boolean
   placeholder?: string
   emptyStateMessage?: string
+  getItemId?: (item: LinearProjectOrTeam) => string
 }
 
 const LinearSelectorMenu = (props: LinearSelectorMenuProps) => {
@@ -38,7 +35,8 @@ const LinearSelectorMenu = (props: LinearSelectorMenuProps) => {
     onSearchQueryChange,
     isLoading = false,
     placeholder = 'Search items',
-    emptyStateMessage = 'No items found!'
+    emptyStateMessage = 'No items found!',
+    getItemId = getLinearSelectorItemId
   } = props
 
   return (
@@ -64,7 +62,7 @@ const LinearSelectorMenu = (props: LinearSelectorMenuProps) => {
         const isSelected = selectedItemIds.includes(itemId)
 
         const handleClick = () => {
-          onSelectItem(itemId, isSelected)
+          onSelectItem(item, isSelected)
         }
 
         return (

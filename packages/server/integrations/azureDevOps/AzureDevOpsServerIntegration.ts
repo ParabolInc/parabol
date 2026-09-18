@@ -2,16 +2,18 @@ import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
 import {azureDevOpsIntegrationMeta} from 'parabol-client/shared/integrations/azureDevOpsIntegrationMeta'
 import type {AzureAccountProject} from '../../dataloader/azureDevOpsLoaders'
-import type {TeamMemberIntegrationAuth} from '../../postgres/types'
+import type {AzureDevOpsSearchQueryJson, TeamMemberIntegrationAuth} from '../../postgres/types'
 import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
 import {
   type EstimatePushCapability,
   type IntegrationCtx,
   type IssueCreateCapability,
   type IssueReadCapability,
+  type IssueSearchCapability,
   type RepoListCapability,
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
+import buildAzureDevOpsSearchQuery from './buildAzureDevOpsSearchQuery'
 import describeAzureDevOpsDimensionField from './describeAzureDevOpsDimensionField'
 import fetchAzureDevOpsProjects from './fetchAzureDevOpsProjects'
 import listAzureDevOpsDimensionFields from './listAzureDevOpsDimensionFields'
@@ -47,6 +49,7 @@ export class AzureDevOpsServerIntegration extends ServerIntegrationDefinition {
   readonly capabilities: {
     issueCreate: IssueCreateCapability
     issueRead: IssueReadCapability
+    issueSearch: IssueSearchCapability<AzureDevOpsSearchQueryJson>
     repoList: RepoListCapability<AzureAccountProject>
     estimatePush: EstimatePushCapability
   } = {
@@ -62,6 +65,7 @@ export class AzureDevOpsServerIntegration extends ServerIntegrationDefinition {
       }
     },
     issueRead: {getIssue: resolveAzureDevOpsTaskIntegration},
+    issueSearch: {buildQuery: buildAzureDevOpsSearchQuery},
     repoList: {
       fetchRepos: fetchAzureDevOpsProjects,
       integrationRepoId: ({instanceId, projectId}) =>

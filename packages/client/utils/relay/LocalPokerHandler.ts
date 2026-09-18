@@ -1,92 +1,28 @@
 import type {Handler} from 'relay-runtime/store/RelayStoreTypes'
 import type {TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
-import SearchQueryId from '../../shared/gqlIds/SearchQueryId'
+import SearchQueryId from '~/shared/gqlIds/SearchQueryId'
 import createProxyRecord from './createProxyRecord'
 import initHandler from './initHandler'
-
-const defaults = [
-  {
-    service: 'jira',
-    meetingPropName: 'jiraSearchQuery',
-    type: 'JiraSearchQuery',
-    defaultQuery: {
-      queryString: '',
-      projectKeyFilters: [] as string[],
-      isJQL: false
-    }
-  },
-  {
-    service: 'jiraServer',
-    meetingPropName: 'jiraServerSearchQuery',
-    type: 'JiraSearchQuery',
-    defaultQuery: {
-      queryString: '',
-      projectKeyFilters: [] as string[],
-      isJQL: false
-    }
-  },
-  {
-    service: 'PARABOL',
-    meetingPropName: 'parabolSearchQuery',
-    type: 'ParabolSearchQuery',
-    defaultQuery: {
-      queryString: '',
-      statusFilters: ['active'] as TaskStatusEnum[]
-    }
-  },
-  {
-    service: 'github',
-    meetingPropName: 'githubSearchQuery',
-    type: 'GitHubSearchQuery',
-    defaultQuery: {
-      queryString: ''
-    }
-  },
-  {
-    service: 'azureDevOps',
-    meetingPropName: 'azureDevOpsSearchQuery',
-    type: 'AzureDevOpsSearchQuery',
-    defaultQuery: {
-      queryString: '',
-      projectKeyFilters: [] as string[],
-      isWIQL: false
-    }
-  },
-  {
-    service: 'gitlab',
-    meetingPropName: 'gitlabSearchQuery',
-    type: 'GitLabSearchQuery',
-    defaultQuery: {
-      queryString: '',
-      selectedProjectsIds: [] as string[]
-    }
-  },
-  {
-    service: 'linear',
-    meetingPropName: 'linearSearchQuery',
-    type: 'LinearSearchQuery',
-    defaultQuery: {
-      queryString: '',
-      selectedProjectsIds: [] as string[]
-    }
-  }
-] as const
 
 const LocalPokerHandler: Handler = {
   update(store, payload) {
     initHandler(store, payload)
     const meetingId = payload.dataID
     const meeting = store.get(meetingId)!
-    defaults.forEach(({service, type, meetingPropName, defaultQuery}) => {
-      const queryId = SearchQueryId.join(service, meetingId)
-      const existingQuery = store.get(queryId)
-      if (existingQuery) return
-      const newQuery = createProxyRecord(store, type, {
-        id: queryId,
-        ...defaultQuery
+
+    if (!meeting.getLinkedRecords('scopingSearchQueries')) {
+      meeting.setLinkedRecords([], 'scopingSearchQueries')
+    }
+
+    const parabolQueryId = SearchQueryId.join('PARABOL', meetingId)
+    if (!store.get(parabolQueryId)) {
+      const parabolQuery = createProxyRecord(store, 'ParabolSearchQuery', {
+        id: parabolQueryId,
+        queryString: '',
+        statusFilters: ['active'] as TaskStatusEnum[]
       })
-      meeting.setLinkedRecord(newQuery, meetingPropName)
-    })
+      meeting.setLinkedRecord(parabolQuery, 'parabolSearchQuery')
+    }
   }
 }
 

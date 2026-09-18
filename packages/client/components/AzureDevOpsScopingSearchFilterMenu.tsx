@@ -1,34 +1,30 @@
 import graphql from 'babel-plugin-relay/macro'
-import {commitLocalUpdate, useFragment} from 'react-relay'
-import useAtmosphere from '~/hooks/useAtmosphere'
-import type {
-  AzureDevOpsScopingSearchFilterMenu_meeting$data,
-  AzureDevOpsScopingSearchFilterMenu_meeting$key
-} from '../__generated__/AzureDevOpsScopingSearchFilterMenu_meeting.graphql'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import type {AzureDevOpsScopingSearchFilterMenuQuery} from '../__generated__/AzureDevOpsScopingSearchFilterMenuQuery.graphql'
+import useSetScopingSearchState from '../hooks/useSetScopingSearchState'
+import {
+  searchFiltersByKey,
+  toggleSearchFilter
+} from '../integrations/platform/IntegrationSearchFilter'
+import type {ScopingSearchState} from '../integrations/platform/ScopingSearchState'
+import {cn} from '../ui/cn'
 import {MenuItem} from '../ui/Menu/MenuItem'
 import Checkbox from './Checkbox'
 import DropdownMenuLabel from './DropdownMenuLabel'
 
 interface Props {
-  meeting: AzureDevOpsScopingSearchFilterMenu_meeting$key
+  meetingId: string
+  state: ScopingSearchState
+  queryRef: PreloadedQuery<AzureDevOpsScopingSearchFilterMenuQuery>
 }
 
-type AzureDevOpsSearchQuery = NonNullable<
-  NonNullable<AzureDevOpsScopingSearchFilterMenu_meeting$data>['azureDevOpsSearchQuery']
->
-
 const AzureDevOpsScopingSearchFilterMenu = (props: Props) => {
-  const {meeting: meetingRef} = props
-  const meeting = useFragment(
+  const {meetingId, state, queryRef} = props
+  const data = usePreloadedQuery<AzureDevOpsScopingSearchFilterMenuQuery>(
     graphql`
-      fragment AzureDevOpsScopingSearchFilterMenu_meeting on PokerMeeting {
-        id
-        azureDevOpsSearchQuery {
-          projectKeyFilters
-          isWIQL
-        }
-        viewerMeetingMember {
-          teamMember {
+      query AzureDevOpsScopingSearchFilterMenuQuery($teamId: ID!) {
+        viewer {
+          teamMember(teamId: $teamId) {
             integrations {
               azureDevOps {
                 projects {
@@ -41,27 +37,19 @@ const AzureDevOpsScopingSearchFilterMenu = (props: Props) => {
         }
       }
     `,
-    meetingRef
+    queryRef
   )
-  const {viewerMeetingMember, azureDevOpsSearchQuery, id: meetingId} = meeting
-  const {isWIQL, projectKeyFilters} = azureDevOpsSearchQuery
-  const projects = viewerMeetingMember?.teamMember.integrations.azureDevOps.projects ?? []
-  const atmosphere = useAtmosphere()
-  const toggleWIQL = () => {
-    commitLocalUpdate(atmosphere, (store) => {
-      const meeting = store.get(meetingId)
-      if (!meeting) return
-      const azureDevOpsSearchQuery = meeting.getLinkedRecord('azureDevOpsSearchQuery')!
-      // this might bork if the checkbox is ticked before the full query loads
-      if (!azureDevOpsSearchQuery) return
-      azureDevOpsSearchQuery.setValue(!isWIQL, 'isWIQL')
-      azureDevOpsSearchQuery.setValue([], 'projectKeyFilters')
-    })
+  const projects = data.viewer.teamMember?.integrations.azureDevOps.projects ?? []
+  const {isAdvancedQuery, filters} = state
+  const projectNames = searchFiltersByKey(filters, 'project')
+  const setSearchState = useSetScopingSearchState(meetingId, 'azureDevOps')
+  const toggleAdvancedQuery = () => {
+    setSearchState({isAdvancedQuery: !isAdvancedQuery, filters: []})
   }
   return (
     <>
-      <MenuItem onSelect={(e) => e.preventDefault()} onClick={toggleWIQL}>
-        <Checkbox className='-ml-2 mr-2' active={isWIQL} />
+      <MenuItem onSelect={(e) => e.preventDefault()} onClick={toggleAdvancedQuery}>
+        <Checkbox className='-ml-2 mr-2' active={isAdvancedQuery} />
         <span className='font-semibold'>{'Use WIQL'}</span>
       </MenuItem>
 
@@ -69,35 +57,20 @@ const AzureDevOpsScopingSearchFilterMenu = (props: Props) => {
         <DropdownMenuLabel className='border-b-0'>Filter by project:</DropdownMenuLabel>
       )}
       {projects.map((project) => {
-        const {id: globalProjectKey, name} = project
-        const toggleProjectKeyFilter = () => {
-          commitLocalUpdate(atmosphere, (store) => {
-            const meeting = store.get(meetingId)!
-            const azureDevOpsSearchQuery =
-              meeting.getLinkedRecord<AzureDevOpsSearchQuery>('azureDevOpsSearchQuery')!
-            const projectKeyFiltersProxy = azureDevOpsSearchQuery
-              .getValue('projectKeyFilters')!
-              .slice()
-            const keyIdx = projectKeyFiltersProxy.indexOf(name)
-            keyIdx !== -1
-              ? projectKeyFiltersProxy.splice(keyIdx, 1)
-              : projectKeyFiltersProxy.push(name)
-            azureDevOpsSearchQuery.setValue(projectKeyFiltersProxy, 'projectKeyFilters')
-          })
+        const {id: projectId, name} = project
+        const isSelected = projectNames.includes(name)
+        const toggleProjectFilter = () => {
+          setSearchState({filters: toggleSearchFilter(filters, 'project', name)})
         }
         return (
           <MenuItem
-            key={globalProjectKey}
-            className={isWIQL ? 'opacity-50' : undefined}
+            key={projectId}
+            className={cn(isAdvancedQuery && 'opacity-50')}
             onSelect={(e) => e.preventDefault()}
-            onClick={isWIQL ? undefined : toggleProjectKeyFilter}
-            isDisabled={isWIQL}
+            onClick={isAdvancedQuery ? undefined : toggleProjectFilter}
+            isDisabled={isAdvancedQuery}
           >
-            <Checkbox
-              className='-ml-2 mr-2'
-              active={projectKeyFilters?.includes(name) ?? null}
-              disabled={isWIQL}
-            />
+            <Checkbox className='-ml-2 mr-2' active={isSelected} disabled={isAdvancedQuery} />
             {name}
           </MenuItem>
         )

@@ -1,16 +1,15 @@
 import graphql from 'babel-plugin-relay/macro'
-import {Suspense, useState} from 'react'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {ScopePhaseArea_meeting$key} from '~/__generated__/ScopePhaseArea_meeting.graphql'
 import useBreakpoint from '~/hooks/useBreakpoint'
-import {Breakpoint, LoaderSize} from '~/types/constEnums'
+import {Breakpoint} from '~/types/constEnums'
 import {
   compareClientIntegrationPopularity,
   getClientIntegration,
   isRegisteredClientIntegration
 } from '../integrations/platform/registry'
-import ErrorBoundary from './ErrorBoundary'
-import LoadingComponent from './LoadingComponent/LoadingComponent'
+import IntegrationScopingPanel from './IntegrationScopingPanel'
 import ParabolLogoSVG from './ParabolLogoSVG'
 import ScopePhaseAreaConnect from './ScopePhaseAreaConnect'
 import ScopePhaseAreaParabolScoping from './ScopePhaseAreaParabolScoping'
@@ -31,13 +30,8 @@ const ScopePhaseArea = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment ScopePhaseArea_meeting on PokerMeeting {
-        ...ScopePhaseAreaAzureDevOpsScoping_meeting
-        ...ScopePhaseAreaGitHubScoping_meeting
-        ...ScopePhaseAreaGitLabScoping_meeting
-        ...ScopePhaseAreaJiraScoping_meeting
-        ...ScopePhaseAreaJiraServerScoping_meeting
-        ...ScopePhaseAreaLinearScoping_meeting
         ...ScopePhaseAreaParabolScoping_meeting
+        ...IntegrationScopingPanel_meeting
         teamId
         viewerMeetingMember {
           teamMember {
@@ -76,11 +70,7 @@ const ScopePhaseArea = (props: Props) => {
         label: definition.title,
         renderPanel: () =>
           isConnected ? (
-            <ErrorBoundary>
-              <Suspense fallback={<LoadingComponent spinnerSize={LoaderSize.PANEL} />}>
-                <scoping.Panel meetingRef={meeting} />
-              </Suspense>
-            </ErrorBoundary>
+            <IntegrationScopingPanel service={service} meetingRef={meeting} />
           ) : (
             <ScopePhaseAreaConnect
               teamId={teamId}
