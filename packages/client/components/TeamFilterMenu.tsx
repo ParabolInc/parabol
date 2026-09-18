@@ -7,15 +7,11 @@ import type {
   TeamFilterMenu_viewer$key
 } from '~/__generated__/TeamFilterMenu_viewer.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import useSearchFilter from '~/hooks/useSearchFilter'
 import {FilterLabels} from '~/types/constEnums'
 import constructFilterQueryParamURL from '~/utils/constructFilterQueryParamURL'
 import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
-import {MenuContent} from '../ui/Menu/MenuContent'
 import {MenuItem} from '../ui/Menu/MenuItem'
-import {MenuSearch} from '../ui/Menu/MenuSearch'
-import DropdownMenuLabel from './DropdownMenuLabel'
-import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
+import TeamPickerMenuContent from './TeamPicker/TeamPickerMenuContent'
 
 interface Props {
   viewer: TeamFilterMenu_viewer$key | null | undefined
@@ -29,6 +25,7 @@ const TeamFilterMenu = (props: Props) => {
       fragment TeamFilterMenu_viewer on User {
         id
         teams {
+          ...TeamPickerMenuContent_teams
           id
           name
           teamMembers(sortBy: "preferredName") {
@@ -58,22 +55,15 @@ const TeamFilterMenu = (props: Props) => {
     [userIds, teamIds]
   )
 
-  const {
-    query,
-    filteredItems: matchedFilteredTeams,
-    onQueryChange
-  } = useSearchFilter(filteredTeams, (team) => team.name)
-
   return (
-    <MenuContent align='start'>
-      <DropdownMenuLabel>{'Filter by team:'}</DropdownMenuLabel>
-      {filteredTeams.length > 5 && (
-        <MenuSearch placeholder='Search teams' onChange={onQueryChange} value={query} />
-      )}
-      {query && matchedFilteredTeams.length === 0 && (
-        <EmptyDropdownMenuItemLabel key='no-results'>No teams found!</EmptyDropdownMenuItemLabel>
-      )}
-      {query === '' && showAllTeams && (
+    <TeamPickerMenuContent
+      teamsRef={filteredTeams}
+      selectedTeamIds={teamIds ?? []}
+      onSelectTeam={(teamId) =>
+        navigate(constructFilterQueryParamURL([teamId], userIds, showArchived, eventTypes))
+      }
+    >
+      {showAllTeams && (
         <MenuItem
           onClick={() =>
             navigate(constructFilterQueryParamURL(null, userIds, showArchived, eventTypes))
@@ -82,18 +72,7 @@ const TeamFilterMenu = (props: Props) => {
           {FilterLabels.ALL_TEAMS}
         </MenuItem>
       )}
-      {matchedFilteredTeams.map((team) => (
-        <MenuItem
-          key={`teamFilter${team.id}`}
-          data-cy={`team-filter-${team.id}`}
-          onClick={() =>
-            navigate(constructFilterQueryParamURL([team.id], userIds, showArchived, eventTypes))
-          }
-        >
-          {team.name}
-        </MenuItem>
-      ))}
-    </MenuContent>
+    </TeamPickerMenuContent>
   )
 }
 

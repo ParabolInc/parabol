@@ -8,7 +8,7 @@ import DraggableTaskWrapper from '../../containers/TaskCard/DraggableTaskWrapper
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useTaskChildFocus from '../../hooks/useTaskChildFocus'
 import {useTipTapTaskEditor} from '../../hooks/useTipTapTaskEditor'
-import OutcomeCardContainer from '../../modules/outcomeCard/containers/OutcomeCard/OutcomeCardContainer'
+import TaskCardContainer from '../../modules/taskCard/containers/TaskCard/TaskCardContainer'
 import DeleteTaskMutation from '../../mutations/DeleteTaskMutation'
 import UpdateTaskMutation from '../../mutations/UpdateTaskMutation'
 import {isEqualWhenSerialized} from '../../shared/isEqualWhenSerialized'
@@ -63,7 +63,7 @@ const NullableTask = (props: Props) => {
         status
         teamId
         tags
-        ...OutcomeCardContainer_task @arguments(meetingId: $meetingId)
+        ...TaskCardContainer_task @arguments(meetingId: $meetingId)
       }
     `,
     taskRef
@@ -105,11 +105,10 @@ const NullableTask = (props: Props) => {
     onModEnter: onModEnter
   })
 
-  const showOutcome =
-    editor && (!editor.isEmpty || createdBy === atmosphere.viewerId || isIntegration)
+  const showTask = editor && (!editor.isEmpty || createdBy === atmosphere.viewerId || isIntegration)
   const renderTask = (_dragProvided?: DraggableProvided, dragSnapshot?: DraggableStateSnapshot) =>
-    showOutcome ? (
-      <OutcomeCardContainer
+    showTask ? (
+      <TaskCardContainer
         area={area}
         className={className}
         editor={editor}

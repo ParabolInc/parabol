@@ -1,7 +1,7 @@
 import type {ReactNode} from 'react'
 import {Link} from 'react-router'
 import {Notifications, NotificationsOff} from '~/ui/icons'
-import {getProviderAnchorId} from '../../modules/teamDashboard/components/ProviderRow/ProviderRowBase'
+import {getProviderAnchorId} from '../../modules/teamDashboard/components/ProviderRow/ProviderRowEntry'
 import {Providers} from '../../types/constEnums'
 import MattermostSVG from '../MattermostSVG'
 import MSTeamsSVG from '../MSTeamsSVG'
