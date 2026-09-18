@@ -82,8 +82,10 @@ const TeamHealthTemplateQuestionEditor = (props: Props) => {
   )
 
   // the list grows freely; from lg up ActivityDetails gives this pane its own scroll
+  // the column is centered & sized by its content, so this section takes the column's width instead of
+  // setting it; otherwise the wider bank re-centers the whole page when edit mode swaps it in
   return (
-    <div className='pt-4'>
+    <div className='w-0 min-w-full pt-4'>
       <TeamHealthSurveyFlowAnimation className='mx-auto mb-4' />
       {isEditing ? (
         <>

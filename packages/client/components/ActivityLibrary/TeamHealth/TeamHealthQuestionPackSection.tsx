@@ -143,7 +143,7 @@ const TeamHealthQuestionPackSection = (props: Props) => {
         {toggleAllCheckbox}
         <Collapsible.Trigger asChild>
           <button type='button' className='flex min-w-0 items-center gap-2 text-left'>
-            <span className='shrink-0 font-semibold text-fg-primary text-sm'>
+            <span className='min-w-0 truncate font-semibold text-fg-primary text-sm'>
               {title ?? pack.name}
             </span>
             <span className='shrink-0 rounded-full bg-surface-well px-2 py-0.5 font-medium text-fg-secondary text-xs'>
@@ -168,13 +168,13 @@ const TeamHealthQuestionPackSection = (props: Props) => {
               href={pack.sourceUrl}
               target='_blank'
               rel='noopener noreferrer'
-              className='flex min-w-0 items-center gap-0.5 text-fg-muted text-xs hover:text-fg-secondary hover:underline'
+              className='flex min-w-0 shrink-[999] items-center gap-0.5 text-fg-muted text-xs hover:text-fg-secondary hover:underline'
             >
               <span className='truncate'>{pack.source}</span>
               <OpenInNew className='size-3.5 shrink-0' />
             </a>
           ) : (
-            <span className='truncate text-fg-muted text-xs'>{pack.source}</span>
+            <span className='shrink-[999] truncate text-fg-muted text-xs'>{pack.source}</span>
           ))}
       </div>
       <Collapsible.Content>
