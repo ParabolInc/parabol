@@ -27,8 +27,8 @@ import {ScheduleDialog} from '../ScheduleDialog'
 import type {SnackAction} from '../Snackbar'
 import StyledLink from '../StyledLink'
 import TeamPicker from '../TeamPicker/TeamPicker'
-import {FIRST_MEETING_PREVIEW_ID} from './TeamHealth/TeamHealthFirstMeetingPreview'
 import TeamHealthFirstMeetingSummary from './TeamHealth/TeamHealthFirstMeetingSummary'
+import {MEETING_PREVIEW_ID} from './TeamHealth/TeamHealthMeetingPreview'
 
 type StartTeamHealthResult = useStartTeamHealthMutation$data['startTeamHealth']
 
@@ -46,8 +46,10 @@ const TeamHealthDetailsSidebar = (props: Props) => {
     graphql`
       fragment TeamHealthDetailsSidebar_template on MeetingTemplate {
         ... on TeamHealthTemplate {
-          firstMeetingQuestions {
-            id
+          upcomingMeetingPreviews {
+            questions {
+              id
+            }
           }
         }
       }
@@ -224,7 +226,7 @@ const TeamHealthDetailsSidebar = (props: Props) => {
               scrollToPreviewOnCloseRef.current = false
               requestAnimationFrame(() =>
                 document
-                  .getElementById(FIRST_MEETING_PREVIEW_ID)
+                  .getElementById(MEETING_PREVIEW_ID)
                   ?.scrollIntoView({behavior: 'smooth', block: 'start'})
               )
             }}
@@ -238,7 +240,7 @@ const TeamHealthDetailsSidebar = (props: Props) => {
               withRecurrence
               summary={
                 <TeamHealthFirstMeetingSummary
-                  questionCount={template.firstMeetingQuestions?.length ?? 0}
+                  questionCount={template.upcomingMeetingPreviews?.[0]?.questions.length ?? 0}
                   onPreview={() => {
                     scrollToPreviewOnCloseRef.current = true
                     onPreviewFirstMeeting()

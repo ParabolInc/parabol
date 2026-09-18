@@ -245,7 +245,7 @@ const startTeamHealth: MutationResolvers['startTeamHealth'] = async (
       } as const)
 
   // Every team answers the same questions in an occurrence, so rotate once and share the result.
-  // With no history this is the draw TeamHealthTemplate.firstMeetingQuestions previews.
+  // With no history this is the draw TeamHealthTemplate.upcomingMeetingPreviews previews.
   const questionIds =
     uniqueTeamIds.length > 1
       ? await rotateSeriesTeamHealthQuestionIds(templateId, [], dataLoader)

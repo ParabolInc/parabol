@@ -1,6 +1,6 @@
 import {getUserId} from '../../../utils/authorization'
 import isValid from '../../isValid'
-import rotateSeriesTeamHealthQuestionIds from '../../mutations/helpers/rotateSeriesTeamHealthQuestionIds'
+import previewTeamHealthMeetingQuestionIds from '../../mutations/helpers/previewTeamHealthMeetingQuestionIds'
 import type {TeamHealthTemplateResolvers} from '../resolverTypes'
 
 const TeamHealthTemplate: TeamHealthTemplateResolvers = {
@@ -12,13 +12,16 @@ const TeamHealthTemplate: TeamHealthTemplateResolvers = {
       .loadMany(links.map(({questionId}) => questionId))
     return questions.filter(isValid)
   },
-  firstMeetingQuestions: async ({id: templateId}, _args, {dataLoader}) => {
-    const questionIds = await rotateSeriesTeamHealthQuestionIds(templateId, [], dataLoader)
-    if (!questionIds) return []
-    return dataLoader
-      .get('teamHealthQuestions')
-      .loadMany(questionIds)
-      .then((q) => q.filter(isValid))
+  upcomingMeetingPreviews: async ({id: templateId}, _args, {dataLoader}) => {
+    const links = await dataLoader.get('teamHealthTemplateQuestionsByTemplateId').load(templateId)
+    const questions = (
+      await dataLoader.get('teamHealthQuestions').loadMany(links.map(({questionId}) => questionId))
+    ).filter(isValid)
+    const questionsById = new Map(questions.map((question) => [question.id, question]))
+    return previewTeamHealthMeetingQuestionIds(questions, templateId).map((questionIds, index) => ({
+      meetingNumber: index + 1,
+      questions: questionIds.map((questionId) => questionsById.get(questionId)).filter(isValid)
+    }))
   },
   // the viewer sees only the built-in (aGhostUser) packs and their own personal pack
   availableQuestionPacks: async (_source, _args, {authToken, dataLoader}) => {

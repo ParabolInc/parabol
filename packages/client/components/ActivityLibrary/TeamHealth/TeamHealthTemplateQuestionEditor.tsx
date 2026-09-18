@@ -4,7 +4,7 @@ import type {TeamHealthTemplateQuestionEditor_template$key} from '../../../__gen
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import AddTeamHealthQuestion from './AddTeamHealthQuestion'
 import {getOrderedTeamHealthCategories} from './getTeamHealthCategoryColor'
-import TeamHealthFirstMeetingPreview from './TeamHealthFirstMeetingPreview'
+import TeamHealthMeetingPreview from './TeamHealthMeetingPreview'
 import TeamHealthQuestionPackSection from './TeamHealthQuestionPackSection'
 import TeamHealthSurveyFlowAnimation from './TeamHealthSurveyFlowAnimation'
 import useChangedFirstMeetingQuestionIds from './useChangedFirstMeetingQuestionIds'
@@ -15,10 +15,11 @@ interface Props {
   // the viewer doesn't own this template; render every pack as non-interactive
   readOnly: boolean
   onEditHint: () => void
+  onEdit: () => void
 }
 
 const TeamHealthTemplateQuestionEditor = (props: Props) => {
-  const {templateRef, isEditing, readOnly, onEditHint} = props
+  const {templateRef, isEditing, readOnly, onEditHint, onEdit} = props
   const template = useFragment(
     graphql`
       fragment TeamHealthTemplateQuestionEditor_template on TeamHealthTemplate {
@@ -26,8 +27,10 @@ const TeamHealthTemplateQuestionEditor = (props: Props) => {
         questions {
           id
         }
-        firstMeetingQuestions {
-          id
+        upcomingMeetingPreviews {
+          questions {
+            id
+          }
         }
         availableQuestionPacks {
           id
@@ -42,18 +45,18 @@ const TeamHealthTemplateQuestionEditor = (props: Props) => {
           }
           ...TeamHealthQuestionPackSection_pack
         }
-        ...TeamHealthFirstMeetingPreview_template
+        ...TeamHealthMeetingPreview_template
       }
     `,
     templateRef
   )
-  const {id: templateId, questions, firstMeetingQuestions, availableQuestionPacks} = template
+  const {id: templateId, questions, upcomingMeetingPreviews, availableQuestionPacks} = template
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
 
   const changedQuestionIds = useChangedFirstMeetingQuestionIds(
     isEditing,
-    firstMeetingQuestions.map((q) => q.id)
+    upcomingMeetingPreviews[0]?.questions.map((q) => q.id) ?? []
   )
 
   const selectedIds = new Set(questions.map((q) => q.id))
@@ -90,9 +93,7 @@ const TeamHealthTemplateQuestionEditor = (props: Props) => {
       <div className='xl:-ml-96'>
         {isEditing ? (
           <>
-            <p className='mb-4 text-fg-secondary text-sm'>
-              Editing the question bank. Your first meeting updates when you're done.
-            </p>
+            <h2 className='mb-2 font-semibold text-fg-primary text-sm'>Question Bank</h2>
             {!myPackId && (
               <div className='border-hairline border-b pb-2'>
                 <div className='py-2 font-semibold text-fg-primary text-sm'>My Questions</div>
@@ -118,10 +119,11 @@ const TeamHealthTemplateQuestionEditor = (props: Props) => {
             ))}
           </>
         ) : (
-          <TeamHealthFirstMeetingPreview
+          <TeamHealthMeetingPreview
             templateRef={template}
             orderedCategoryIds={categories.map((category) => category.id)}
             changedQuestionIds={changedQuestionIds}
+            onEdit={readOnly ? undefined : onEdit}
           />
         )}
       </div>

@@ -11,7 +11,7 @@ import rotateTeamHealthQuestionIds from './rotateTeamHealthQuestionIds'
  * over a group rotate once here.
  *
  * With no series ids there is no history, so this is also the draw a new series' first meeting
- * makes, which TeamHealthTemplate.firstMeetingQuestions previews.
+ * makes, which TeamHealthTemplate.upcomingMeetingPreviews previews.
  *
  * Returns undefined when the template has no questions, leaving each meeting to rotate for itself.
  */

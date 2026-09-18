@@ -60,10 +60,10 @@ type TeamHealthTemplate implements MeetingTemplate {
   questions: [TeamHealthQuestion!]!
 
   """
-  The questions the first meeting of a new series using this template will ask: one per category,
-  in the order the meeting asks them. Computed, not stored, so editing the template changes it
+  The meetings a new series using this template would hold, in order, until every question has come
+  up once (capped). Computed, not stored, so editing the template changes it
   """
-  firstMeetingQuestions: [TeamHealthQuestion!]!
+  upcomingMeetingPreviews: [TeamHealthMeetingPreview!]!
 
   """
   All question packs a user can pick questions from when editing this template: this template's
