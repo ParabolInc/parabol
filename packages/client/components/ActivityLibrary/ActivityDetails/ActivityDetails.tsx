@@ -11,7 +11,6 @@ import IconLabel from '../../IconLabel'
 import {ActivityCard, ActivityCardImage} from '../ActivityCard'
 import ActivityDetailsSidebarSwitch from '../ActivityDetailsSidebarSwitch'
 import {CATEGORY_THEMES, type CategoryID, QUICK_START_CATEGORY_ID} from '../Categories'
-import type {TeamHealthQuestionView} from '../TeamHealth/TeamHealthQuestionViewToggle'
 import {TemplateDetails} from './TemplateDetails'
 
 graphql`
@@ -74,13 +73,8 @@ const ActivityDetails = (props: Props) => {
   const {viewer} = data
   const {activity, activityLibrarySearch, preferredTeamId, teams} = viewer
   const location = useLocation() as {state?: {prevCategory?: string}}
-  const [isEditing, setIsEditingState] = useState(false)
-  const [teamHealthView, setTeamHealthView] = useState<TeamHealthQuestionView>('firstMeeting')
-  const setIsEditing = useCallback((nextIsEditing: boolean) => {
-    setIsEditingState(nextIsEditing)
-    if (!nextIsEditing) setTeamHealthView('firstMeeting')
-  }, [])
-  const previewFirstMeeting = useCallback(() => setTeamHealthView('firstMeeting'), [])
+  const [isEditing, setIsEditing] = useState(false)
+  const previewFirstMeeting = useCallback(() => setIsEditing(false), [])
 
   if (!activity) {
     return <Navigate to='/activity-library' replace />
@@ -157,8 +151,6 @@ const ActivityDetails = (props: Props) => {
                   viewerRef={viewer}
                   isEditing={isEditing}
                   setIsEditing={setIsEditing}
-                  teamHealthView={teamHealthView}
-                  setTeamHealthView={setTeamHealthView}
                 />
               </div>
             </div>

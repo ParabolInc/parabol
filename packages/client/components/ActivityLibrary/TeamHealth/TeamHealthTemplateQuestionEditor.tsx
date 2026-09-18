@@ -6,24 +6,19 @@ import AddTeamHealthQuestion from './AddTeamHealthQuestion'
 import {getOrderedTeamHealthCategories} from './getTeamHealthCategoryColor'
 import TeamHealthFirstMeetingPreview from './TeamHealthFirstMeetingPreview'
 import TeamHealthQuestionPackSection from './TeamHealthQuestionPackSection'
-import TeamHealthQuestionViewToggle, {
-  type TeamHealthQuestionView
-} from './TeamHealthQuestionViewToggle'
 import TeamHealthSurveyFlowAnimation from './TeamHealthSurveyFlowAnimation'
 import useChangedFirstMeetingQuestionIds from './useChangedFirstMeetingQuestionIds'
 
 interface Props {
   templateRef: TeamHealthTemplateQuestionEditor_template$key
   isEditing: boolean
-  view: TeamHealthQuestionView
-  onViewChange: (view: TeamHealthQuestionView) => void
   // the viewer doesn't own this template; render every pack as non-interactive
   readOnly: boolean
   onEditHint: () => void
 }
 
 const TeamHealthTemplateQuestionEditor = (props: Props) => {
-  const {templateRef, isEditing, view, onViewChange, readOnly, onEditHint} = props
+  const {templateRef, isEditing, readOnly, onEditHint} = props
   const template = useFragment(
     graphql`
       fragment TeamHealthTemplateQuestionEditor_template on TeamHealthTemplate {
@@ -60,7 +55,6 @@ const TeamHealthTemplateQuestionEditor = (props: Props) => {
     isEditing,
     firstMeetingQuestions.map((q) => q.id)
   )
-  const displayedView = isEditing ? 'questionBank' : view
 
   const selectedIds = new Set(questions.map((q) => q.id))
 
@@ -92,21 +86,11 @@ const TeamHealthTemplateQuestionEditor = (props: Props) => {
     <div className='pt-4'>
       <TeamHealthSurveyFlowAnimation className='mx-auto mb-4' />
       {isEditing ? (
-        <p className='mb-4 text-fg-secondary text-sm'>
-          Editing the question bank. Your first meeting updates when you're done.
-        </p>
-      ) : (
-        <TeamHealthQuestionViewToggle view={view} onChange={onViewChange} />
-      )}
-      {displayedView === 'firstMeeting' ? (
-        <TeamHealthFirstMeetingPreview
-          templateRef={template}
-          orderedCategoryIds={categories.map((category) => category.id)}
-          changedQuestionIds={changedQuestionIds}
-        />
-      ) : (
         <>
-          {!myPackId && isEditing && (
+          <p className='mb-4 text-fg-secondary text-sm'>
+            Editing the question bank. Your first meeting updates when you're done.
+          </p>
+          {!myPackId && (
             <div className='border-hairline border-b pb-2'>
               <div className='py-2 font-semibold text-fg-primary text-sm'>My Questions</div>
               <div className='px-1'>{addQuestion}</div>
@@ -130,6 +114,12 @@ const TeamHealthTemplateQuestionEditor = (props: Props) => {
             />
           ))}
         </>
+      ) : (
+        <TeamHealthFirstMeetingPreview
+          templateRef={template}
+          orderedCategoryIds={categories.map((category) => category.id)}
+          changedQuestionIds={changedQuestionIds}
+        />
       )}
     </div>
   )

@@ -52,6 +52,7 @@ const TeamHealthFirstMeetingPreview = (props: Props) => {
       id={FIRST_MEETING_PREVIEW_ID}
       className='mb-4 scroll-mt-4 rounded-lg border border-hairline bg-surface-app p-4'
     >
+      <h2 className='font-semibold text-fg-primary text-sm'>Meeting #1</h2>
       <p className='text-fg-muted text-xs'>
         {firstMeetingQuestions.length === 1
           ? 'Everyone answers this question'
