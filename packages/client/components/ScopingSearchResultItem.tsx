@@ -1,8 +1,6 @@
 import type * as React from 'react'
-import type {UpdatePokerScopeMutation as TUpdatePokerScopeMutation} from '../__generated__/UpdatePokerScopeMutation.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
-import useMutationProps from '../hooks/useMutationProps'
-import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
+import type {useUpdatePokerScopeMutation as TUpdatePokerScopeMutation} from '../__generated__/useUpdatePokerScopeMutation.graphql'
+import useUpdatePokerScopeMutation from '../mutations/useUpdatePokerScopeMutation'
 import {Threshold} from '../types/constEnums'
 import isTempId from '../utils/relay/isTempId'
 import Checkbox from './Checkbox'
@@ -33,23 +31,17 @@ const ScopingSearchResultItem = (props: Props) => {
     service
   } = props
   const isSelected = usedServiceTaskIds.has(serviceTaskId)
-  const atmosphere = useAtmosphere()
-  const {onCompleted, onError, submitMutation} = useMutationProps()
+  const [updatePokerScope] = useUpdatePokerScopeMutation()
   const disabled = !isSelected && usedServiceTaskIds.size >= Threshold.MAX_POKER_STORIES
   const isTemp = isTempId(serviceTaskId)
 
   const onClick = () => {
     if (disabled || isTemp) return
-    submitMutation()
     const variables = {
       meetingId,
       updates: [{service, serviceTaskId, action: isSelected ? 'DELETE' : 'ADD'}]
     } as TUpdatePokerScopeMutation['variables']
-    UpdatePokerScopeMutation(atmosphere, variables, {
-      onError,
-      onCompleted,
-      contents: [summary]
-    })
+    updatePokerScope({variables, contents: [summary]})
     if (!isSelected) {
       // if they are adding an item, then their search criteria must be good, so persist it
       persistQuery?.()

@@ -10,7 +10,7 @@ import type {NewAzureIssueInputQuery} from '../__generated__/NewAzureIssueInputQ
 import useForm from '../hooks/useForm'
 import useTimedState from '../hooks/useTimedState'
 import type {NewRecordInputProps} from '../integrations/platform/ScopingSearchState'
-import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
+import useUpdatePokerScopeMutation from '../mutations/useUpdatePokerScopeMutation'
 import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
 import type {CompletedHandler} from '../types/relayMutations'
 import {Menu} from '../ui/Menu/Menu'
@@ -57,7 +57,8 @@ const NewAzureIssueInput = (props: Props) => {
   const {id: userId, teamMember} = data.viewer
   const projects = teamMember?.integrations.azureDevOps.projects ?? []
   const atmosphere = useAtmosphere()
-  const {onCompleted, onError} = useMutationProps()
+  const {onError} = useMutationProps()
+  const [updatePokerScope] = useUpdatePokerScopeMutation()
   const [createTaskError, setCreateTaskError] = useTimedState()
   useEffect(() => {
     if (isEditing) {
@@ -120,11 +121,7 @@ const NewAzureIssueInput = (props: Props) => {
           } as const
         ]
       }
-      UpdatePokerScopeMutation(atmosphere, pokerScopeVariables, {
-        onError,
-        onCompleted,
-        contents: [newIssueTitle]
-      })
+      updatePokerScope({variables: pokerScopeVariables, contents: [newIssueTitle]})
     }
     CreateTaskMutation(atmosphere, {newTask}, {onError, onCompleted: handleCompleted})
   }

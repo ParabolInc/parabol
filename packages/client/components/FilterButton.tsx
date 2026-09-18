@@ -8,7 +8,7 @@ const FilterButton = forwardRef<HTMLButtonElement, ComponentPropsWithoutRef<'but
       <Button
         variant='flat'
         size='sm'
-        className='ml-1 h-6 w-6 bg-sky-500 p-0 hover:bg-sky-500'
+        className='ml-1 h-6 w-6 bg-sky-500 p-0 hover:bg-sky-500 focus:bg-sky-500 active:bg-sky-500'
         ref={ref}
         {...props}
       >

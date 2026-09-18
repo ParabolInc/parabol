@@ -155,7 +155,7 @@ const subscription = graphql`
         ...UpdateDragLocationMutation_meeting @relay(mask: false)
       }
       UpdatePokerScopeSuccess {
-        ...UpdatePokerScopeMutation_meeting @relay(mask: false)
+        ...useUpdatePokerScopeMutation_meeting @relay(mask: false)
       }
       UpdateReflectionContentPayload {
         ...UpdateReflectionContentMutation_meeting @relay(mask: false)
