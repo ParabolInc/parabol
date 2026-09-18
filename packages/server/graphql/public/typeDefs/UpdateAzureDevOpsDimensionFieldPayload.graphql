@@ -1,4 +1,0 @@
-"""
-Return value for updateAzureDevOpsDimensionField mutation
-"""
-union UpdateAzureDevOpsDimensionFieldPayload = ErrorPayload | UpdateAzureDevOpsDimensionFieldSuccess
