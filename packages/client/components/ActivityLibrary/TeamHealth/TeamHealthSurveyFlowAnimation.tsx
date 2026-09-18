@@ -20,124 +20,53 @@ const SCORE_COLORS = [
   'var(--color-jade-400)',
   'var(--color-jade-500)'
 ]
+const UP = 'var(--color-forest-500)'
+const DOWN = 'var(--color-tomato-600)'
 const FONT = "'IBM Plex Sans', sans-serif"
 const STANDARD = 'cubic-bezier(0.4, 0, 0.2, 1)'
 const DECELERATE = 'cubic-bezier(0, 0, 0.2, 1)'
 const ACCELERATE = 'cubic-bezier(0.4, 0, 1, 1)'
 const POP = 'cubic-bezier(0.34, 1.56, 0.64, 1)'
 
-const ROUND_S = 6
-const LOOP_S = 18
-// a percentage of the whole loop, from a round index and a time within that round
+const ROUND_S = 6.5
+const LOOP_S = 21
+const rounds = [0, 1, 2]
 const at = (round: number, seconds: number) =>
   (((round * ROUND_S + seconds) / LOOP_S) * 100).toFixed(3)
-const rounds = [0, 1, 2]
+const abs = (seconds: number) => ((seconds / LOOP_S) * 100).toFixed(3)
+const just = (round: number, seconds: number) => (Number(at(round, seconds)) - 0.01).toFixed(3)
+const after = (round: number, seconds: number) => (Number(at(round, seconds)) + 0.01).toFixed(3)
+// a score leaves the team for the chart here, so the second meeting's deltas land at GROW_FROM and
+// the third's at 1s before GROW_TO
+const HANDOFF = 5.75
+const GROW_FROM = ROUND_S + HANDOFF
+const GROW_TO = 2 * ROUND_S + HANDOFF + 1
+const CHART_OUT = abs(20.5)
 
-// Within each round: the page rises (0-0.6s), the picked questions fly in (0.9-2.0s), the likert
-// scales appear (2.1s), the lines reach the teams (2.6s), members answer (3.0-4.4s), the page
-// leaves upward (4.8-5.4s) and the selection slides to the next question (5.4-6.0s).
-const flyFrames = (name: string, firesOn: number[]) => `
-@keyframes ${name} {
-  0% {opacity: 0; transform: translate(0, 0)}
-${firesOn
-  .map(
-    (r) => `  ${at(r, 0)}% {opacity: 0; transform: translate(0, 0)}
-  ${at(r, 0.9)}% {opacity: 1; transform: translate(0, 0); animation-timing-function: ${STANDARD}}
-  ${at(r, 2)}%, ${at(r, 4.8)}% {opacity: 1; transform: translate(var(--dx), var(--dy)); animation-timing-function: ${ACCELERATE}}
-  ${at(r, 5.4)}% {opacity: 0; transform: translate(var(--dx), calc(var(--dy) - 150px))}
-  ${Number(at(r, 5.4)) + 0.001}% {opacity: 0; transform: translate(0, 0)}`
-  )
-  .join('\n')}
-  100% {opacity: 0; transform: translate(0, 0)}
-}`
+// every gap in the layout is this wide, which is what keeps the canvas narrow
+const GAP = 26
+const BANK_X = 14
+const BANK_W = 132
+const PAGE_X = BANK_X + BANK_W + GAP
+const PAGE_W = 120
+const BAR_X = 34
+const BAR_W = 96
+const BAR_H = 8
+const SURVEY_BAR_X = PAGE_X + 12
+const DX = SURVEY_BAR_X - BAR_X
+const SURVEY_ROWS = [58, 96, 134]
+const LIKERT_CX = [0, 1, 2, 3, 4].map((i) => SURVEY_BAR_X + 20 + i * 14)
+// the trend chart sits beside the teams, bare: the shape of the line is the whole message
+const AXIS_X = 472
+const AXIS_Y = 165
+const CHART_TOP = 45
+const UNIT = (AXIS_Y - CHART_TOP) / 5
+const MEETING_X = [487, 530, 573]
+const scoreY = (value: number) => AXIS_Y - value * UNIT
 
-const KEYFRAMES = `
-@keyframes thsfa-page {
-  0% {opacity: 0; transform: translateY(130px); animation-timing-function: ${DECELERATE}}
-${rounds
-  .map(
-    (
-      r
-    ) => `  ${at(r, 0.6)}%, ${at(r, 4.8)}% {opacity: 1; transform: translateY(0); animation-timing-function: ${ACCELERATE}}
-  ${at(r, 5.4)}% {opacity: 0; transform: translateY(-150px)}
-  ${Number(at(r, 5.4)) + 0.001}%, ${at(r + 1, 0)}% {opacity: 0; transform: translateY(130px); animation-timing-function: ${DECELERATE}}`
-  )
-  .join('\n')}
-}
-@keyframes thsfa-likert {
-${rounds
-  .map(
-    (
-      r
-    ) => `  ${at(r, 0)}%, ${at(r, 2.1)}% {opacity: 0; transform: scale(0.5); animation-timing-function: ${POP}}
-  ${at(r, 2.5)}%, ${at(r, 5.4)}% {opacity: 1; transform: scale(1)}
-  ${Number(at(r, 5.4)) + 0.001}% {opacity: 0; transform: scale(0.5)}`
-  )
-  .join('\n')}
-  100% {opacity: 0; transform: scale(0.5)}
-}
-@keyframes thsfa-line {
-${rounds
-  .map(
-    (
-      r
-    ) => `  ${at(r, 0)}%, ${at(r, 2.6)}% {opacity: 0; stroke-dashoffset: 150; animation-timing-function: ${DECELERATE}}
-  ${at(r, 3)}%, ${at(r, 4.8)}% {opacity: 1; stroke-dashoffset: 0}
-  ${at(r, 5.4)}% {opacity: 0; stroke-dashoffset: 0}`
-  )
-  .join('\n')}
-  100% {opacity: 0; stroke-dashoffset: 150}
-}
-@keyframes thsfa-answer {
-${rounds
-  .map(
-    (
-      r
-    ) => `  ${at(r, 0)}%, ${at(r, 3)}% {opacity: 0; transform: translateY(6px); animation-timing-function: ${DECELERATE}}
-  ${at(r, 3.3)}% {opacity: 1; transform: translateY(0)}
-  ${at(r, 3.95)}% {opacity: 1; transform: translateY(-12px)}
-  ${at(r, 4.4)}% {opacity: 0; transform: translateY(-24px)}`
-  )
-  .join('\n')}
-  100% {opacity: 0; transform: translateY(6px)}
-}
-@keyframes thsfa-select-3 {
-  0%, ${at(0, 5.4)}% {transform: translateY(0); animation-timing-function: ${STANDARD}}
-  ${at(1, 0)}%, ${at(1, 5.4)}% {transform: translateY(var(--step)); animation-timing-function: ${STANDARD}}
-  ${at(2, 0)}%, ${at(2, 5.4)}% {transform: translateY(calc(var(--step) * 2)); animation-timing-function: ${STANDARD}}
-  100% {transform: translateY(0)}
-}
-@keyframes thsfa-select-2 {
-  0%, ${at(0, 5.4)}% {transform: translateY(0); animation-timing-function: ${STANDARD}}
-  ${at(1, 0)}%, ${at(1, 5.4)}% {transform: translateY(var(--step)); animation-timing-function: ${STANDARD}}
-  ${at(2, 0)}%, 100% {transform: translateY(0)}
-}
-${flyFrames('thsfa-fly-r0', [0])}
-${flyFrames('thsfa-fly-r1', [1])}
-${flyFrames('thsfa-fly-r2', [2])}
-${flyFrames('thsfa-fly-r02', [0, 2])}
-${flyFrames('thsfa-fly-all', [0, 1, 2])}
-.thsfa-fly {transform: translate(var(--dx), var(--dy))}
-.thsfa-fly-r1, .thsfa-fly-r2 {opacity: 0}
-.thsfa-likert, .thsfa-answer {transform-box: fill-box; transform-origin: center}
-@media (prefers-reduced-motion: no-preference) {
-  .thsfa-page {animation: thsfa-page ${LOOP_S}s linear infinite}
-  .thsfa-likert {animation: thsfa-likert ${LOOP_S}s linear infinite}
-  .thsfa-line {animation: thsfa-line ${LOOP_S}s linear infinite}
-  .thsfa-answer {animation: thsfa-answer ${LOOP_S}s linear infinite}
-  .thsfa-select-3 {animation: thsfa-select-3 ${LOOP_S}s linear infinite}
-  .thsfa-select-2 {animation: thsfa-select-2 ${LOOP_S}s linear infinite}
-  .thsfa-fly-r0 {animation: thsfa-fly-r0 ${LOOP_S}s linear infinite}
-  .thsfa-fly-r1 {animation: thsfa-fly-r1 ${LOOP_S}s linear infinite}
-  .thsfa-fly-r2 {animation: thsfa-fly-r2 ${LOOP_S}s linear infinite}
-  .thsfa-fly-r02 {animation: thsfa-fly-r02 ${LOOP_S}s linear infinite}
-  .thsfa-fly-all {animation: thsfa-fly-all ${LOOP_S}s linear infinite}
-}
-`
-
-// Each category keeps its own pool and the survey takes one from each. Over three rounds the first
-// category walks all three of its questions, the second wraps after two, and the third has only one
-// so it joins every survey. `flyOn` is the keyframe set per round, indexed by question.
+// Each category keeps its own pool and the meeting takes one from each. Over three meetings the
+// first category walks all three of its questions, the second wraps after two, and the third has
+// only one so it joins every meeting. `flyOn` is the keyframe set per round, indexed by question.
 const BANK = [
   {
     dotY: 50,
@@ -155,42 +84,213 @@ const BANK = [
   },
   {dotY: 148, headerY: 145.5, questionYs: [156], landsOn: 134, flyOn: ['thsfa-fly-all']}
 ]
-// scattered rather than stacked, so the survey visibly fans out rather than feeding a list
+// the first meeting reports a score, later ones report the move, which is what a team watches
 const TEAMS = [
   {
     name: 'Product',
-    cx: 424,
+    cx: 344,
     cy: 56,
     labelW: 50,
-    line: 'M362,98 C382,98 386,56 392,56',
-    answers: [-18, -4, 10, 20]
+    link: 'M294,98 C302,98 304,56 312,56',
+    answers: [-18, -4, 10, 20],
+    values: [3, 3.3, 3.5]
   },
   {
     name: 'Engineering',
-    cx: 524,
-    cy: 102,
+    cx: 410,
+    cy: 94,
     labelW: 72,
-    line: 'M362,98 C420,92 455,102 492,102',
-    answers: [-22, -10, 2, 14, 24]
+    link: 'M294,98 C320,94 344,94 378,94',
+    answers: [-22, -10, 2, 14, 24],
+    values: [4, 3.9, 4.5]
   },
   {
     name: 'Marketing',
-    cx: 452,
+    cx: 364,
     cy: 150,
     labelW: 62,
-    line: 'M362,98 C386,98 394,150 420,150',
-    answers: [-14, 0, 14]
+    link: 'M294,98 C304,98 308,150 332,150',
+    answers: [-14, 0, 14],
+    values: [2, 2.8, 2.9]
   }
 ]
-const SURVEY_ROWS = [58, 96, 134]
-// inset well inside the question bar above it, so the scale reads as an answer to that question
-const LIKERT_CX = [272, 286, 300, 314, 328]
-const BAR_X = 34
-const BAR_W = 96
-const BAR_H = 8
-const DX = 252 - BAR_X
-const TEAM_R = 26
-const TEAM_ICON = 26
+
+// A line never pauses between its two segments: it starts when the first deltas land and runs at one
+// speed until a second after the last ones do. So the handover percentage is where the first segment
+// has used up its share of the distance, which differs per team.
+const TRENDS = TEAMS.map((team) => {
+  const points = team.values.map((value, round) => ({x: MEETING_X[round]!, y: scoreY(value)}))
+  const legs = [1, 2].map((i) =>
+    Math.hypot(points[i]!.x - points[i - 1]!.x, points[i]!.y - points[i - 1]!.y)
+  )
+  const total = legs[0]! + legs[1]!
+  return {
+    points,
+    legs,
+    handover: abs(GROW_FROM + (GROW_TO - GROW_FROM) * (legs[0]! / total))
+  }
+})
+
+// Within each round: the meeting page rises (0-0.6s), the picked questions fly in (0.9-2.0s), the
+// likert scales appear (2.1s), lines reach the teams (2.5s), members answer (2.9-4.3s) and each
+// team's score lands (4.1s) before riding the departing page to the chart (5.15-5.75s).
+const flyFrames = (name: string, firesOn: number[]) => `
+@keyframes ${name} {
+  0% {opacity: 0; transform: translate(0, 0)}
+${firesOn
+  .map(
+    (r) => `  ${at(r, 0)}% {opacity: 0; transform: translate(0, 0)}
+  ${at(r, 0.9)}% {opacity: 1; transform: translate(0, 0); animation-timing-function: ${STANDARD}}
+  ${at(r, 2)}%, ${at(r, 5.15)}% {opacity: 1; transform: translate(var(--dx), var(--dy)); animation-timing-function: ${ACCELERATE}}
+  ${at(r, 5.75)}% {opacity: 0; transform: translate(var(--dx), calc(var(--dy) - 150px))}
+  ${after(r, 5.75)}% {opacity: 0; transform: translate(0, 0)}`
+  )
+  .join('\n')}
+  100% {opacity: 0; transform: translate(0, 0)}
+}`
+
+const KEYFRAMES = `
+@keyframes thsfa-page {
+  0% {opacity: 0; transform: translateY(130px); animation-timing-function: ${DECELERATE}}
+${rounds
+  .map(
+    (
+      r
+    ) => `  ${at(r, 0.6)}%, ${at(r, 5.15)}% {opacity: 1; transform: translateY(0); animation-timing-function: ${ACCELERATE}}
+  ${at(r, 5.75)}% {opacity: 0; transform: translateY(-150px)}
+  ${after(r, 5.75)}%, ${at(r + 1, 0)}% {opacity: 0; transform: translateY(130px); animation-timing-function: ${DECELERATE}}`
+  )
+  .join('\n')}
+  100% {opacity: 0; transform: translateY(130px)}
+}
+@keyframes thsfa-likert {
+${rounds
+  .map(
+    (
+      r
+    ) => `  ${at(r, 0)}%, ${at(r, 2.1)}% {opacity: 0; transform: scale(0.5); animation-timing-function: ${POP}}
+  ${at(r, 2.5)}%, ${at(r, 5.75)}% {opacity: 1; transform: scale(1)}
+  ${after(r, 5.75)}% {opacity: 0; transform: scale(0.5)}`
+  )
+  .join('\n')}
+  100% {opacity: 0; transform: scale(0.5)}
+}
+@keyframes thsfa-link {
+${rounds
+  .map(
+    (
+      r
+    ) => `  ${at(r, 0)}%, ${at(r, 2.5)}% {opacity: 0; stroke-dashoffset: 150; animation-timing-function: ${DECELERATE}}
+  ${at(r, 2.9)}%, ${at(r, 5.15)}% {opacity: 0.7; stroke-dashoffset: 0}
+  ${at(r, 5.55)}% {opacity: 0; stroke-dashoffset: 0}`
+  )
+  .join('\n')}
+  100% {opacity: 0; stroke-dashoffset: 150}
+}
+@keyframes thsfa-answer {
+${rounds
+  .map(
+    (
+      r
+    ) => `  ${at(r, 0)}%, ${at(r, 2.9)}% {opacity: 0; transform: translateY(6px); animation-timing-function: ${DECELERATE}}
+  ${at(r, 3.2)}% {opacity: 1; transform: translateY(0)}
+  ${at(r, 3.85)}% {opacity: 1; transform: translateY(-12px)}
+  ${at(r, 4.3)}% {opacity: 0; transform: translateY(-24px)}`
+  )
+  .join('\n')}
+  100% {opacity: 0; transform: translateY(6px)}
+}
+@keyframes thsfa-select-3 {
+  0%, ${at(0, 5.75)}% {transform: translateY(0); animation-timing-function: ${STANDARD}}
+  ${at(1, 0)}%, ${at(1, 5.75)}% {transform: translateY(var(--step)); animation-timing-function: ${STANDARD}}
+  ${at(2, 0)}%, ${CHART_OUT}% {transform: translateY(calc(var(--step) * 2)); animation-timing-function: ${STANDARD}}
+  100% {transform: translateY(0)}
+}
+@keyframes thsfa-select-2 {
+  0%, ${at(0, 5.75)}% {transform: translateY(0); animation-timing-function: ${STANDARD}}
+  ${at(1, 0)}%, ${at(1, 5.75)}% {transform: translateY(var(--step)); animation-timing-function: ${STANDARD}}
+  ${at(2, 0)}%, 100% {transform: translateY(0)}
+}
+@keyframes thsfa-axes {
+  0%, ${at(0, 4.3)}% {opacity: 0; animation-timing-function: ${DECELERATE}}
+  ${at(0, 5)}%, ${CHART_OUT}% {opacity: 0.6}
+  100% {opacity: 0}
+}
+${TRENDS.map(
+  (trend, i) => `@keyframes thsfa-dot-t${i} {
+  0%, ${at(0, 5.75)}% {opacity: 0; transform: translate(0, 0) scale(0.3); animation-timing-function: ${POP}}
+  ${at(0, 6.05)}%, ${abs(GROW_FROM)}% {opacity: 1; transform: translate(0, 0) scale(1); animation-timing-function: linear}
+  ${trend.handover}% {opacity: 1; transform: translate(var(--d2x), var(--d2y)) scale(1); animation-timing-function: linear}
+  ${abs(GROW_TO)}%, ${CHART_OUT}% {opacity: 1; transform: translate(var(--d3x), var(--d3y)) scale(1)}
+  100% {opacity: 0; transform: translate(var(--d3x), var(--d3y)) scale(1)}
+}
+@keyframes thsfa-seg1-t${i} {
+  0%, ${(Number(abs(GROW_FROM)) - 0.01).toFixed(3)}% {stroke-dashoffset: var(--len); opacity: 0}
+  ${abs(GROW_FROM)}% {stroke-dashoffset: var(--len); opacity: 1; animation-timing-function: linear}
+  ${trend.handover}%, ${CHART_OUT}% {stroke-dashoffset: 0; opacity: 1}
+  99.99% {stroke-dashoffset: 0; opacity: 0}
+  100% {stroke-dashoffset: var(--len); opacity: 0}
+}
+@keyframes thsfa-seg2-t${i} {
+  0%, ${(Number(trend.handover) - 0.01).toFixed(3)}% {stroke-dashoffset: var(--len); opacity: 0}
+  ${trend.handover}% {stroke-dashoffset: var(--len); opacity: 1; animation-timing-function: linear}
+  ${abs(GROW_TO)}%, ${CHART_OUT}% {stroke-dashoffset: 0; opacity: 1}
+  99.99% {stroke-dashoffset: 0; opacity: 0}
+  100% {stroke-dashoffset: var(--len); opacity: 0}
+}`
+).join('\n')}
+${rounds
+  .map(
+    (r) => `@keyframes thsfa-title-r${r} {
+  ${r === 0 ? '0%' : `0%, ${just(r, 0)}%`} {opacity: ${r === 0 ? 1 : 0}}
+  ${at(r, 0)}%, ${at(r, 5.75)}% {opacity: 1}
+  ${after(r, 5.75)}%, 100% {opacity: 0}
+}
+@keyframes thsfa-score-r${r} {
+  0%, ${at(r, 4.1)}% {opacity: 0; transform: translate(0, 6px) scale(0.6); animation-timing-function: ${POP}}
+  ${at(r, 4.5)}%, ${at(r, 5.15)}% {opacity: 1; transform: translate(0, 0) scale(1); animation-timing-function: ${STANDARD}}
+  ${at(r, 5.75)}% {opacity: 1; transform: translate(var(--sx), var(--sy)) scale(0.75)}
+  ${at(r, 6.05)}%, 100% {opacity: 0; transform: translate(var(--sx), var(--sy)) scale(0.75)}
+}`
+  )
+  .join('\n')}
+${flyFrames('thsfa-fly-r0', [0])}
+${flyFrames('thsfa-fly-r1', [1])}
+${flyFrames('thsfa-fly-r2', [2])}
+${flyFrames('thsfa-fly-r02', [0, 2])}
+${flyFrames('thsfa-fly-all', [0, 1, 2])}
+.thsfa-fly {transform: translate(var(--dx), var(--dy))}
+.thsfa-fly-r1, .thsfa-fly-r2 {opacity: 0}
+.thsfa-likert, .thsfa-answer, .thsfa-dot, .thsfa-score-r0, .thsfa-score-r1, .thsfa-score-r2 {transform-box: fill-box; transform-origin: center}
+.thsfa-title-r1, .thsfa-title-r2, .thsfa-score-r1, .thsfa-score-r2, .thsfa-seg {opacity: 0}
+.thsfa-axes {opacity: 0.6}
+@media (prefers-reduced-motion: no-preference) {
+  .thsfa-page {animation: thsfa-page ${LOOP_S}s linear infinite}
+  .thsfa-likert {animation: thsfa-likert ${LOOP_S}s linear infinite}
+  .thsfa-link {animation: thsfa-link ${LOOP_S}s linear infinite}
+  .thsfa-answer {animation: thsfa-answer ${LOOP_S}s linear infinite}
+  .thsfa-select-3 {animation: thsfa-select-3 ${LOOP_S}s linear infinite}
+  .thsfa-select-2 {animation: thsfa-select-2 ${LOOP_S}s linear infinite}
+  .thsfa-axes {animation: thsfa-axes ${LOOP_S}s linear infinite}
+${TRENDS.map(
+  (_, i) => `  .thsfa-dot-t${i} {animation: thsfa-dot-t${i} ${LOOP_S}s linear infinite}
+  .thsfa-seg1-t${i} {animation: thsfa-seg1-t${i} ${LOOP_S}s linear infinite}
+  .thsfa-seg2-t${i} {animation: thsfa-seg2-t${i} ${LOOP_S}s linear infinite}`
+).join('\n')}
+${rounds
+  .map(
+    (r) => `  .thsfa-title-r${r} {animation: thsfa-title-r${r} ${LOOP_S}s linear infinite}
+  .thsfa-score-r${r} {animation: thsfa-score-r${r} ${LOOP_S}s linear infinite}`
+  )
+  .join('\n')}
+  .thsfa-fly-r0 {animation: thsfa-fly-r0 ${LOOP_S}s linear infinite}
+  .thsfa-fly-r1 {animation: thsfa-fly-r1 ${LOOP_S}s linear infinite}
+  .thsfa-fly-r2 {animation: thsfa-fly-r2 ${LOOP_S}s linear infinite}
+  .thsfa-fly-r02 {animation: thsfa-fly-r02 ${LOOP_S}s linear infinite}
+  .thsfa-fly-all {animation: thsfa-fly-all ${LOOP_S}s linear infinite}
+}
+`
+
 const GROUPS_ICON =
   'M12 12.75c1.63 0 3.07.39 4.24.9 1.08.48 1.76 1.56 1.76 2.73V18H6v-1.61c0-1.18.68-2.26 1.76-2.73 1.17-.52 2.61-.91 4.24-.91M4 13c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2m1.13 1.1c-.37-.06-.74-.1-1.13-.1-.99 0-1.93.21-2.78.58C.48 14.9 0 15.62 0 16.43V18h4.5v-1.61c0-.83.23-1.61.63-2.29M20 13c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2m4 3.43c0-.81-.48-1.53-1.22-1.85-.85-.37-1.79-.58-2.78-.58-.39 0-.76.04-1.13.1.4.68.63 1.46.63 2.29V18H24zM12 6c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3'
 
@@ -203,18 +303,18 @@ const TeamHealthSurveyFlowAnimation = (props: Props) => {
 
   return (
     <svg
-      viewBox='0 0 600 200'
-      className={cn('h-auto w-full max-w-[600px]', className)}
+      viewBox='0 0 612 200'
+      className={cn('h-auto w-full max-w-[612px]', className)}
       role='img'
-      aria-label='One question is picked from each category in the question bank and flows into a survey that goes out to the Product, Engineering and Marketing teams, whose members answer. The next survey picks the next question down in each category.'
+      aria-label='One question is picked from each category in the question bank and flows into a meeting that goes out to the Product, Engineering and Marketing teams. Each team scores, and those scores carry over into a trend line across three meetings.'
     >
-      <title>How a team health survey is assembled</title>
+      <title>How a team health survey is assembled and tracked</title>
       <style>{KEYFRAMES}</style>
 
       <rect
-        x='14'
+        x={BANK_X}
         y='14'
-        width='132'
+        width={BANK_W}
         height='172'
         rx='8'
         fill='var(--color-surface-card)'
@@ -281,24 +381,28 @@ const TeamHealthSurveyFlowAnimation = (props: Props) => {
 
       <g className='thsfa-page'>
         <rect
-          x='240'
+          x={PAGE_X}
           y='22'
-          width='120'
+          width={PAGE_W}
           height='152'
           rx='8'
           fill='var(--color-surface-card)'
           stroke='var(--color-hairline-strong)'
         />
-        <text
-          x='252'
-          y='40'
-          fontFamily={FONT}
-          fontSize='11'
-          fontWeight='600'
-          fill='var(--color-fg-primary)'
-        >
-          Questions
-        </text>
+        {rounds.map((r) => (
+          <text
+            key={r}
+            className={`thsfa-title-r${r}`}
+            x={SURVEY_BAR_X}
+            y='40'
+            fontFamily={FONT}
+            fontSize='11'
+            fontWeight='600'
+            fill='var(--color-fg-primary)'
+          >
+            Meeting #{r + 1}
+          </text>
+        ))}
         {SURVEY_ROWS.map((rowY, rowIdx) => (
           <g key={rowY} className='thsfa-likert' style={{animationDelay: lag(rowIdx * 0.12)}}>
             {LIKERT_CX.map((cx, scoreIdx) => (
@@ -348,8 +452,8 @@ const TeamHealthSurveyFlowAnimation = (props: Props) => {
       {TEAMS.map((team) => (
         <path
           key={team.name}
-          className='thsfa-line'
-          d={team.line}
+          className='thsfa-link'
+          d={team.link}
           fill='none'
           stroke={muted}
           strokeWidth='1.5'
@@ -358,19 +462,77 @@ const TeamHealthSurveyFlowAnimation = (props: Props) => {
           opacity='0.7'
         />
       ))}
+
+      <g className='thsfa-axes'>
+        <path
+          d={`M${AXIS_X},${CHART_TOP} L${AXIS_X},${AXIS_Y} L597,${AXIS_Y}`}
+          fill='none'
+          stroke={muted}
+          strokeWidth='1.5'
+        />
+      </g>
+      {TRENDS.map((trend, teamIdx) => {
+        const color = CATEGORY_COLORS[teamIdx]!
+        const [p1, p2, p3] = trend.points as [
+          {x: number; y: number},
+          {x: number; y: number},
+          {x: number; y: number}
+        ]
+        return (
+          <g key={TEAMS[teamIdx]!.name}>
+            {[1, 2].map((seg) => {
+              const a = trend.points[seg - 1]!
+              const b = trend.points[seg]!
+              const len = trend.legs[seg - 1]!.toFixed(2)
+              return (
+                <line
+                  key={seg}
+                  className={cn('thsfa-seg', `thsfa-seg${seg}-t${teamIdx}`)}
+                  x1={a.x}
+                  y1={a.y}
+                  x2={b.x}
+                  y2={b.y}
+                  stroke={color}
+                  strokeWidth='2'
+                  strokeLinecap='round'
+                  strokeDasharray={len}
+                  style={{'--len': `${len}px`} as CSSProperties}
+                />
+              )
+            })}
+            {/* one dot per team, always riding the growing end of its line */}
+            <circle
+              className={`thsfa-dot thsfa-dot-t${teamIdx}`}
+              cx={p1.x}
+              cy={p1.y}
+              r='3.5'
+              fill={color}
+              style={
+                {
+                  '--d2x': `${p2.x - p1.x}px`,
+                  '--d2y': `${p2.y - p1.y}px`,
+                  '--d3x': `${p3.x - p1.x}px`,
+                  '--d3y': `${p3.y - p1.y}px`
+                } as CSSProperties
+              }
+            />
+          </g>
+        )
+      })}
+
       {TEAMS.map((team) => (
         <g key={team.name}>
           <circle
             cx={team.cx}
             cy={team.cy}
-            r={TEAM_R}
+            r='26'
             fill='var(--color-surface-well)'
             stroke='var(--color-hairline-strong)'
           />
           <path
             d={GROUPS_ICON}
             fill='var(--color-fg-secondary)'
-            transform={`translate(${team.cx - TEAM_ICON / 2} ${team.cy - 4 - TEAM_ICON / 2}) scale(${TEAM_ICON / 24})`}
+            transform={`translate(${team.cx - 13} ${team.cy - 17}) scale(${26 / 24})`}
           />
           <rect
             x={team.cx - team.labelW / 2}
@@ -397,14 +559,9 @@ const TeamHealthSurveyFlowAnimation = (props: Props) => {
             <g
               key={offsetX}
               className='thsfa-answer'
-              style={{animationDelay: lag(answerIdx * 0.18)}}
+              style={{animationDelay: lag(answerIdx * 0.15)}}
             >
-              <circle
-                cx={team.cx + offsetX}
-                cy={team.cy - 14}
-                r='7'
-                fill='var(--color-forest-500)'
-              />
+              <circle cx={team.cx + offsetX} cy={team.cy - 14} r='7' fill={UP} />
               <path
                 d={`M${team.cx + offsetX - 3},${team.cy - 14} L${team.cx + offsetX - 0.8},${team.cy - 11.8} L${team.cx + offsetX + 3},${team.cy - 17}`}
                 fill='none'
@@ -415,6 +572,39 @@ const TeamHealthSurveyFlowAnimation = (props: Props) => {
               />
             </g>
           ))}
+          {rounds.map((r) => {
+            const delta = r === 0 ? 0 : team.values[r]! - team.values[r - 1]!
+            const label =
+              r === 0
+                ? team.values[0]!.toFixed(1)
+                : `${delta >= 0 ? '+' : '−'}${Math.abs(delta).toFixed(1)}`
+            const originX = team.cx + 42
+            const originY = team.cy - 4
+            return (
+              <text
+                key={r}
+                className={`thsfa-score-r${r}`}
+                x={originX}
+                y={originY}
+                textAnchor='middle'
+                dominantBaseline='central'
+                fontFamily={FONT}
+                fontSize='13'
+                fontWeight='600'
+                fill={r === 0 ? 'var(--color-fg-primary)' : delta >= 0 ? UP : DOWN}
+                style={
+                  {
+                    // the score hands itself to the chart: meeting one becomes the starting dot,
+                    // later ones land where their line is headed
+                    '--sx': `${MEETING_X[r]! - originX}px`,
+                    '--sy': `${scoreY(team.values[r]!) - originY}px`
+                  } as CSSProperties
+                }
+              >
+                {label}
+              </text>
+            )
+          })}
         </g>
       ))}
     </svg>
