@@ -5,10 +5,10 @@ import type {LinearProjectFilterBar_teamMember$key} from '../../../__generated__
 import useLinearProjectsAndTeams, {
   type LinearProjectOrTeam
 } from '../../../hooks/useLinearProjectsAndTeams'
+import getLinearSelectorItemId from '../../../integrations/linear/getLinearSelectorItemId'
 import {cn} from '../../../ui/cn'
 import {Menu} from '../../../ui/Menu/Menu'
 import {MenuContent} from '../../../ui/Menu/MenuContent'
-import {getLinearSelectorItemId} from '../../../utils/linearSelectorItemId'
 import plural from '../../../utils/plural'
 import LinearSelectorMenu from '../../LinearSelectorMenu'
 

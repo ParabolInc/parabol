@@ -5,11 +5,11 @@ import jiraServerScopingResultsQuery, {
 import type Atmosphere from '../../Atmosphere'
 import JiraServerSVG from '../../components/JiraServerSVG'
 import IntegrationRepoId from '../../shared/gqlIds/IntegrationRepoId'
-import {searchFiltersByKey} from '../../shared/integrations/IntegrationSearchFilter'
 import {jiraServerIntegrationMeta} from '../../shared/integrations/jiraServerIntegrationMeta'
 import jiraServerLogo from '../../styles/theme/images/graphics/jira-software-blue.svg'
 import {ExternalLinks} from '../../types/constEnums'
 import JiraServerClientManager from '../../utils/JiraServerClientManager'
+import lazyPreload from '../../utils/lazyPreload'
 import jiraSearchMeta from '../jira/jiraSearchMeta'
 import {
   type ClientIntegrationCapabilities,
@@ -18,12 +18,13 @@ import {
   type ProviderLogoAsset,
   type ScopingCapability
 } from '../platform/ClientIntegrationDefinition'
+import {searchFiltersByKey} from '../platform/IntegrationSearchFilter'
 import makeScopingResults from '../platform/makeScopingResults'
 
-const JiraServerScopingCurrentFilters = lazy(
+const JiraServerScopingCurrentFiltersRoot = lazy(
   () =>
     import(
-      /* webpackChunkName: 'JiraServerScopingCurrentFilters' */ './JiraServerScopingCurrentFilters'
+      /* webpackChunkName: 'JiraServerScopingCurrentFiltersRoot' */ './JiraServerScopingCurrentFiltersRoot'
     )
 )
 
@@ -44,7 +45,7 @@ const scoping: ScopingCapability = {
         )
     )
   }),
-  FilterMenu: lazy(
+  FilterMenu: lazyPreload(
     () =>
       import(
         /* webpackChunkName: 'JiraServerScopingSearchFilterMenuRoot' */ '../../components/JiraServerScopingSearchFilterMenuRoot'
@@ -53,7 +54,7 @@ const scoping: ScopingCapability = {
   placeholder: (state) =>
     state.isAdvancedQuery ? 'SPRINT = fun AND PROJECT = dev' : 'Search issues on Jira Data Center',
   currentFilters: (state, {teamId}) =>
-    createElement(JiraServerScopingCurrentFilters, {state, teamId}),
+    createElement(JiraServerScopingCurrentFiltersRoot, {state, teamId}),
   filterChipLabel: (filter) => IntegrationRepoId.split(filter.value).projectKey ?? filter.value
 }
 

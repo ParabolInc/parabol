@@ -1,7 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import type {UpdatePokerScopeMutation as TUpdatePokerScopeMutation} from '../__generated__/UpdatePokerScopeMutation.graphql'
-import {readScopingSearchState} from '../hooks/useScopingSearchState'
 import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
 import {splitTipTapContent} from '../shared/tiptap/splitTipTapContent'
 import {PALETTE} from '../styles/paletteV3'
@@ -57,6 +56,16 @@ graphql`
       ...useUpdatedSafeRoute_meeting
       # Necessary to show the Next button if someone adds an issue and the facilitator is on the last one
       ...MeetingControlBar_meeting
+      scopingSearchQueries {
+        service
+        queryString
+        filters {
+          value
+        }
+      }
+      parabolSearchQuery {
+        queryString
+      }
       phases {
         ... on EstimatePhase {
           stages {
@@ -84,7 +93,7 @@ const mutation = graphql`
   }
 `
 
-export type PokerScopeMeeting = NonNullable<
+type PokerScopeMeeting = NonNullable<
   NonNullable<
     TUpdatePokerScopeMutation['response']['updatePokerScope']['UpdatePokerScopeMutation_meeting']
   >['meeting']
@@ -225,13 +234,16 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
       const {meetingId, updates} = variables
       const update = updates[0]!
       const {service, action} = update
-      const searchState = readScopingSearchState(atmosphere, meetingId, service)
+      const scopingSearchQuery = meeting.scopingSearchQueries.find(
+        (searchQuery) => searchQuery.service === service
+      )
+      const searchQuery = service === 'PARABOL' ? meeting.parabolSearchQuery : scopingSearchQuery
       SendClientSideEvent(atmosphere, 'Updated Poker Scope', {
         meetingId,
         service,
         action,
-        searchQueryString: searchState?.queryString,
-        searchQueryFilters: searchState?.filters.map(({value}) => value),
+        searchQueryString: searchQuery?.queryString ?? undefined,
+        searchQueryFilters: scopingSearchQuery?.filters.map(({value}) => value),
         selectedAll
       })
     },

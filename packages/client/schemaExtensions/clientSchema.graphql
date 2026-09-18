@@ -35,7 +35,7 @@ type IntegrationSearchFilter {
 
 type ScopingSearchQuery {
   id: ID!
-  service: String!
+  service: TaskServiceEnum!
   queryString: String!
   isAdvancedQuery: Boolean!
   filters: [IntegrationSearchFilter!]!

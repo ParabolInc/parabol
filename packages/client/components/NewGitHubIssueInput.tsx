@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type FormEvent, useEffect, useRef, useState} from 'react'
-import {useLazyLoadQuery} from 'react-relay'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useGetRepoContributions from '~/hooks/useGetRepoContributions'
 import useMutationProps from '~/hooks/useMutationProps'
@@ -35,13 +35,13 @@ const validateIssue = (issue: string) => {
   return new Legitity(issue).trim().min(2, `C’mon, you call that an issue?`)
 }
 
-const NewGitHubIssueInput = (props: NewRecordInputProps) => {
-  const {isEditing, setIsEditing, meetingId, teamId} = props
-  const data = useLazyLoadQuery<NewGitHubIssueInputQuery>(
-    query,
-    {teamId},
-    {fetchPolicy: 'store-or-network'}
-  )
+interface Props extends NewRecordInputProps {
+  queryRef: PreloadedQuery<NewGitHubIssueInputQuery>
+}
+
+const NewGitHubIssueInput = (props: Props) => {
+  const {isEditing, setIsEditing, meetingId, teamId, queryRef} = props
+  const data = usePreloadedQuery<NewGitHubIssueInputQuery>(query, queryRef)
   const {id: userId, teamMember} = data.viewer
   const repos = useGetRepoContributions(teamMember!)
   const atmosphere = useAtmosphere()

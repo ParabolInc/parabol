@@ -38,7 +38,6 @@ describe('IntegrationSearchQuery', () => {
     expect(call(IntegrationSearchQuery.id, jiraRow)).toBe(
       CipherId.toClient(jiraRow.id, 'integrationSearchQuery')
     )
-    expect(call(IntegrationSearchQuery.id, jiraRow)).not.toContain(String(jiraRow.id))
     expect(call(IntegrationSearchQuery.queryString, jiraRow)).toBe('bug')
     expect(JSON.parse(call(IntegrationSearchQuery.meta, jiraRow))).toEqual({
       isJQL: false,

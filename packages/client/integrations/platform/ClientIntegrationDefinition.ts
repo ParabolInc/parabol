@@ -2,7 +2,8 @@ import type {ComponentType, LazyExoticComponent, ReactNode} from 'react'
 import type Atmosphere from '../../Atmosphere'
 import type {MenuMutationProps} from '../../hooks/useMutationProps'
 import type {IntegrationMeta} from '../../shared/integrations/IntegrationMeta'
-import type {IntegrationSearchFilter} from '../../shared/integrations/IntegrationSearchFilter'
+import type {LazyExoticPreload} from '../../utils/lazyPreload'
+import type {IntegrationSearchFilter} from './IntegrationSearchFilter'
 import type {
   FilterMenuProps,
   NewRecordInputProps,
@@ -48,21 +49,25 @@ export interface ScopingCapability extends SearchMetaCodec {
   /** Runs the service's own results query for the search state and renders the host's list with the normalized items; build it with makeScopingResults */
   Results: ComponentType<ScopingResultsProps>
   /** Omit for a service with nothing to filter by; the host then hides the filter button */
-  FilterMenu?: LazyExoticComponent<ComponentType<FilterMenuProps>>
+  FilterMenu?: LazyExoticPreload<ComponentType<FilterMenuProps>>
   /** Omit for a service that cannot create a record from the panel; the host then hides the new-record button */
   NewRecordInput?: LazyExoticComponent<ComponentType<NewRecordInputProps>>
   placeholder(state: ScopingSearchState): string
-  /** The "Current filters:" line; a ReactNode so a service can suspend on its own data, as Jira does */
-  currentFilters?(state: ScopingSearchState, ctx: ScopingSearchContext): ReactNode
+  /** The "Current filters:" line; a ReactNode so a service can suspend on its own data */
+  currentFilters?(state: ScopingSearchState, context: ScopingSearchContext): ReactNode
   /** What the search history shows for a saved filter; absent when the value is already readable */
   filterChipLabel?(filter: IntegrationSearchFilter): string
+  /** What the search history shows for a saved query; defaults to quoting a plain search */
+  savedQueryLabel?(savedQuery: ScopingSavedQuery): string
+  /** How the service's server integration normalizes a queryString before storing it, so the host can spot an already saved search */
+  normalizeQueryString?(queryString: string): string
   /** A client-side rejection of the query before the vendor sees it, shown in place of results */
   validate?(state: ScopingSearchState): string | undefined
   /** Omit for a service with no select-all row; the noun labels it, e.g. "Select all 12 issues" */
   selectAllNoun?: string
   /** What the new-record button says; defaults to New Issue */
   newRecordLabel?: string
-  /** Seeds an untouched search box on mount; GitHub's search is useless without its default tokens */
+  /** Seeds an untouched search box on mount */
   defaultQueryString?(savedQueries: readonly ScopingSavedQuery[]): string | undefined
   /** A query the service seeds itself is not worth saving to the viewer's history */
   isDefaultQuery?(state: ScopingSearchState): boolean

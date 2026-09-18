@@ -1,31 +1,52 @@
-import type {GitHubRepoSearchFilterMenu_teamMember$key} from '../__generated__/GitHubRepoSearchFilterMenu_teamMember.graphql'
-import useScopingSearchState from '../hooks/useScopingSearchState'
+import graphql from 'babel-plugin-relay/macro'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import type {GitHubScopingSearchFilterMenuQuery} from '../__generated__/GitHubScopingSearchFilterMenuQuery.graphql'
+import useSetScopingSearchState from '../hooks/useSetScopingSearchState'
 import type {ScopingSearchState} from '../integrations/platform/ScopingSearchState'
-import {searchFiltersByKey} from '../shared/integrations/IntegrationSearchFilter'
+import getReposFromQueryStr from '../utils/getReposFromQueryStr'
 import GitHubRepoSearchFilterMenu from './GitHubRepoSearchFilterMenu'
 
 interface Props {
   meetingId: string
   state: ScopingSearchState
-  teamMemberRef: GitHubRepoSearchFilterMenu_teamMember$key
+  queryRef: PreloadedQuery<GitHubScopingSearchFilterMenuQuery>
 }
 
 const GitHubScopingSearchFilterMenu = (props: Props) => {
-  const {meetingId, state, teamMemberRef} = props
-  const setSearchState = useScopingSearchState(meetingId, 'github')
-  const {filters} = state
-  const selectedRepos = searchFiltersByKey(filters, 'repo')
+  const {meetingId, state, queryRef} = props
+  const data = usePreloadedQuery<GitHubScopingSearchFilterMenuQuery>(
+    graphql`
+      query GitHubScopingSearchFilterMenuQuery($teamId: ID!) {
+        viewer {
+          teamMember(teamId: $teamId) {
+            ...GitHubRepoSearchFilterMenu_teamMember
+          }
+        }
+      }
+    `,
+    queryRef
+  )
+  const setSearchState = useSetScopingSearchState(meetingId, 'github')
+  const {teamMember} = data.viewer
+  if (!teamMember) return null
+  const {queryString} = state
+  const selectedRepos = getReposFromQueryStr(queryString)
 
   return (
     <GitHubRepoSearchFilterMenu
       selectedRepos={selectedRepos}
       onToggleRepo={(repo, isSelected) => {
-        const nextFilters = isSelected
-          ? filters.filter((filter) => !(filter.key === 'repo' && filter.value === repo))
-          : [...filters, {key: 'repo', value: repo}]
-        setSearchState({filters: nextFilters})
+        const nextRepos = isSelected
+          ? selectedRepos.filter((name) => name !== repo)
+          : selectedRepos.concat(repo)
+        const queryWithoutRepos = queryString
+          .trim()
+          .split(' ')
+          .filter((str) => !str.includes('repo:'))
+        const repoTokens = nextRepos.map((name) => `repo:${name}`)
+        setSearchState({queryString: queryWithoutRepos.concat(repoTokens).join(' ')})
       }}
-      teamMemberRef={teamMemberRef}
+      teamMemberRef={teamMember}
     />
   )
 }

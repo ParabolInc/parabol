@@ -18,7 +18,7 @@ const IntegrationScopingFilterToggle = (props: Props) => {
   const {FilterMenu} = scoping
   if (!FilterMenu) return null
   return (
-    <Menu trigger={<FilterButton />}>
+    <Menu trigger={<FilterButton onMouseEnter={FilterMenu.preload} />}>
       <MenuContent align='end' className='w-[250px]'>
         <Suspense fallback={<MockFieldList />}>
           <FilterMenu meetingId={meetingId} teamId={teamId} state={state} />

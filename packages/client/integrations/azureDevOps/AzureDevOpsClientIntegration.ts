@@ -5,9 +5,9 @@ import azureDevOpsScopingResultsQuery, {
 import type Atmosphere from '../../Atmosphere'
 import AzureDevOpsSVG from '../../components/AzureDevOpsSVG'
 import {azureDevOpsIntegrationMeta} from '../../shared/integrations/azureDevOpsIntegrationMeta'
-import {searchFiltersByKey} from '../../shared/integrations/IntegrationSearchFilter'
 import azureDevOpsLogo from '../../styles/theme/images/graphics/azure-devops.svg'
 import AzureDevOpsClientManager from '../../utils/AzureDevOpsClientManager'
+import lazyPreload from '../../utils/lazyPreload'
 import {
   type ClientIntegrationCapabilities,
   ClientIntegrationDefinition,
@@ -15,6 +15,7 @@ import {
   type ProviderLogoAsset,
   type ScopingCapability
 } from '../platform/ClientIntegrationDefinition'
+import {searchFiltersByKey} from '../platform/IntegrationSearchFilter'
 import makeScopingResults from '../platform/makeScopingResults'
 import azureDevOpsSearchMeta from './azureDevOpsSearchMeta'
 
@@ -36,10 +37,10 @@ const scoping: ScopingCapability = {
         )
     )
   }),
-  FilterMenu: lazy(
+  FilterMenu: lazyPreload(
     () =>
       import(
-        /* webpackChunkName: 'AzureDevOpsScopingSearchFilterMenu' */ '../../components/AzureDevOpsScopingSearchFilterMenu'
+        /* webpackChunkName: 'AzureDevOpsScopingSearchFilterMenuRoot' */ '../../components/AzureDevOpsScopingSearchFilterMenuRoot'
       )
   ),
   NewRecordInput: lazy(

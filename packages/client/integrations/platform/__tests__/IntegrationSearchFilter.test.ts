@@ -1,8 +1,8 @@
-import {searchFiltersByKey, sortSearchFilters} from '../IntegrationSearchFilter'
+import {normalizeSearchFilters, searchFiltersByKey} from '../IntegrationSearchFilter'
 
-describe('sortSearchFilters', () => {
+describe('normalizeSearchFilters', () => {
   it('orders by key then value so equivalent searches dedupe', () => {
-    const sorted = sortSearchFilters([
+    const sorted = normalizeSearchFilters([
       {key: 'project', value: 'b'},
       {key: 'team', value: 'a'},
       {key: 'project', value: 'a'}
@@ -19,13 +19,13 @@ describe('sortSearchFilters', () => {
       {key: 'b', value: '1'},
       {key: 'a', value: '1'}
     ]
-    sortSearchFilters(input)
+    normalizeSearchFilters(input)
     expect(input[0]!.key).toBe('b')
   })
 
   it('drops exact duplicates', () => {
     expect(
-      sortSearchFilters([
+      normalizeSearchFilters([
         {key: 'p', value: 'x'},
         {key: 'p', value: 'x'}
       ])
@@ -33,7 +33,7 @@ describe('sortSearchFilters', () => {
   })
 
   it('uses ordinal comparison, not locale-aware collation', () => {
-    const sorted = sortSearchFilters([
+    const sorted = normalizeSearchFilters([
       {key: 'project', value: 'ä'},
       {key: 'project', value: 'z'}
     ])

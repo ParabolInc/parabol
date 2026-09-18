@@ -7,6 +7,7 @@ import LinearSVG from '../../components/LinearSVG'
 import {linearIntegrationMeta} from '../../shared/integrations/linearIntegrationMeta'
 import linearLogo from '../../styles/theme/images/graphics/linear.svg'
 import LinearClientManager from '../../utils/LinearClientManager'
+import lazyPreload from '../../utils/lazyPreload'
 import {makeLinearIssueFilter} from '../../utils/makeLinearIssueFilter'
 import {
   type ClientIntegrationCapabilities,
@@ -33,7 +34,7 @@ const scoping: ScopingCapability = {
         )
     )
   }),
-  FilterMenu: lazy(
+  FilterMenu: lazyPreload(
     () =>
       import(
         /* webpackChunkName: 'LinearScopingSearchFilterMenuRoot' */ '../../components/LinearScopingSearchFilterMenuRoot'

@@ -1,8 +1,11 @@
 import {useMemo} from 'react'
 import useSearchFilter from '~/hooks/useSearchFilter'
-import useScopingSearchState from '../hooks/useScopingSearchState'
+import useSetScopingSearchState from '../hooks/useSetScopingSearchState'
+import {
+  searchFiltersByKey,
+  toggleSearchFilter
+} from '../integrations/platform/IntegrationSearchFilter'
 import type {ScopingSearchState} from '../integrations/platform/ScopingSearchState'
-import {searchFiltersByKey} from '../shared/integrations/IntegrationSearchFilter'
 import {cn} from '../ui/cn'
 import {MenuItem} from '../ui/Menu/MenuItem'
 import {MenuSearch} from '../ui/Menu/MenuSearch'
@@ -34,7 +37,7 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
   const {projects, meetingId, state, service} = props
   const {isAdvancedQuery, filters} = state
   const projectIds = searchFiltersByKey(filters, 'project')
-  const setSearchState = useScopingSearchState(meetingId, service)
+  const setSearchState = useSetScopingSearchState(meetingId, service)
 
   const {
     query,
@@ -79,13 +82,7 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
         const {id: globalProjectKey, avatar, name} = project
         const isSelected = projectIds.includes(globalProjectKey)
         const toggleProjectFilter = () => {
-          setSearchState({
-            filters: isSelected
-              ? filters.filter(
-                  (filter) => filter.key !== 'project' || filter.value !== globalProjectKey
-                )
-              : [...filters, {key: 'project', value: globalProjectKey}]
-          })
+          setSearchState({filters: toggleSearchFilter(filters, 'project', globalProjectKey)})
         }
         return (
           <MenuItem

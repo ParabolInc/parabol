@@ -1,11 +1,11 @@
-import useScopingSearchState from '../hooks/useScopingSearchState'
+import useSetScopingSearchState from '../hooks/useSetScopingSearchState'
 import type {
   ScopingCapability,
   ScopingSavedQuery
 } from '../integrations/platform/ClientIntegrationDefinition'
+import type {IntegrationSearchFilter} from '../integrations/platform/IntegrationSearchFilter'
 import type {RegisteredClientIntegration} from '../integrations/platform/registry'
 import useRemoveIntegrationSearchQueryMutation from '../mutations/useRemoveIntegrationSearchQueryMutation'
-import type {IntegrationSearchFilter} from '../shared/integrations/IntegrationSearchFilter'
 import ScopingSearchHistoryToggle from './ScopingSearchHistoryToggle'
 
 const describeFilters = (
@@ -26,18 +26,22 @@ interface Props {
 
 const IntegrationScopingHistoryToggle = (props: Props) => {
   const {scoping, service, meetingId, teamId, savedQueries} = props
-  const setSearchState = useScopingSearchState(meetingId, service)
+  const setSearchState = useSetScopingSearchState(meetingId, service)
   const [removeIntegrationSearchQuery, submitting] = useRemoveIntegrationSearchQueryMutation()
-  const searchQueries = savedQueries.map(({id, queryString, isAdvancedQuery, filters}) => ({
-    id,
-    labelFirstLine: isAdvancedQuery ? queryString : `“${queryString}”`,
-    labelSecondLine: describeFilters(filters, scoping.filterChipLabel),
-    onClick: () => setSearchState({queryString, isAdvancedQuery, filters}),
-    onDelete: () => {
-      if (submitting) return
-      removeIntegrationSearchQuery({variables: {id, teamId}})
+  const searchQueries = savedQueries.map((savedQuery) => {
+    const {id, queryString, isAdvancedQuery, filters} = savedQuery
+    const defaultLabel = isAdvancedQuery ? queryString : `“${queryString}”`
+    return {
+      id,
+      labelFirstLine: scoping.savedQueryLabel?.(savedQuery) ?? defaultLabel,
+      labelSecondLine: describeFilters(filters, scoping.filterChipLabel),
+      onClick: () => setSearchState({queryString, isAdvancedQuery, filters}),
+      onDelete: () => {
+        if (submitting) return
+        removeIntegrationSearchQuery({variables: {id, teamId}})
+      }
     }
-  }))
+  })
   return <ScopingSearchHistoryToggle searchQueries={searchQueries} />
 }
 

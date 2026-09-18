@@ -3,12 +3,12 @@ import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
 import type {IntegrationScopingPanel_meeting$key} from '../__generated__/IntegrationScopingPanel_meeting.graphql'
-import {EMPTY_SCOPING_SEARCH_STATE} from '../hooks/useScopingSearchState'
 import findIntegrationService from '../integrations/platform/findIntegrationService'
 import {
   getClientIntegration,
   type RegisteredClientIntegration
 } from '../integrations/platform/registry'
+import {EMPTY_SCOPING_SEARCH_STATE} from '../integrations/platform/ScopingSearchState'
 import ErrorBoundary from './ErrorBoundary'
 import IntegrationScopingResults from './IntegrationScopingResults'
 import IntegrationScopingSearchBar from './IntegrationScopingSearchBar'

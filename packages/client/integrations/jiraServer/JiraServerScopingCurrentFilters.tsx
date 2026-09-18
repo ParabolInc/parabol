@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useLazyLoadQuery} from 'react-relay'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {JiraServerScopingCurrentFiltersQuery} from '../../__generated__/JiraServerScopingCurrentFiltersQuery.graphql'
-import {searchFiltersByKey} from '../../shared/integrations/IntegrationSearchFilter'
+import {searchFiltersByKey} from '../platform/IntegrationSearchFilter'
 import type {ScopingSearchState} from '../platform/ScopingSearchState'
 
 const query = graphql`
@@ -23,22 +23,16 @@ const query = graphql`
 
 interface Props {
   state: ScopingSearchState
-  teamId: string
+  queryRef: PreloadedQuery<JiraServerScopingCurrentFiltersQuery>
 }
 
 const JiraServerScopingCurrentFilters = (props: Props) => {
-  const {state, teamId} = props
-  const data = useLazyLoadQuery<JiraServerScopingCurrentFiltersQuery>(
-    query,
-    {teamId},
-    {fetchPolicy: 'store-or-network'}
-  )
+  const {state, queryRef} = props
+  const data = usePreloadedQuery<JiraServerScopingCurrentFiltersQuery>(query, queryRef)
   const projects = data.viewer.teamMember?.integrations.jiraServer?.projects
-  const selectedProjectNames = [] as string[]
-  searchFiltersByKey(state.filters, 'project').forEach((projectId) => {
-    const name = projects?.find((project) => project.id === projectId)?.name
-    if (name) selectedProjectNames.push(name)
-  })
+  const selectedProjectNames = searchFiltersByKey(state.filters, 'project').flatMap(
+    (projectId) => projects?.find((project) => project.id === projectId)?.name ?? []
+  )
   return <>{selectedProjectNames.length ? selectedProjectNames.join(', ') : 'None'}</>
 }
 

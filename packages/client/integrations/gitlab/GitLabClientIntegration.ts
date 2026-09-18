@@ -5,9 +5,9 @@ import gitLabScopingResultsQuery, {
 import type Atmosphere from '../../Atmosphere'
 import GitLabSVG from '../../components/GitLabSVG'
 import {gitlabIntegrationMeta} from '../../shared/integrations/gitlabIntegrationMeta'
-import {searchFiltersByKey} from '../../shared/integrations/IntegrationSearchFilter'
 import gitlabLogo from '../../styles/theme/images/graphics/gitlab-icon-rgb.svg'
 import GitLabClientManager from '../../utils/GitLabClientManager'
+import lazyPreload from '../../utils/lazyPreload'
 import {
   type ClientIntegrationCapabilities,
   ClientIntegrationDefinition,
@@ -15,13 +15,16 @@ import {
   type ProviderLogoAsset,
   type ScopingCapability
 } from '../platform/ClientIntegrationDefinition'
+import {searchFiltersByKey} from '../platform/IntegrationSearchFilter'
 import makeScopingResults from '../platform/makeScopingResults'
 import {gitLabIssueArgs} from './gitLabIssueArgs'
 import gitLabSearchMeta from './gitLabSearchMeta'
 
-const GitLabScopingCurrentFilters = lazy(
+const GitLabScopingCurrentFiltersRoot = lazy(
   () =>
-    import(/* webpackChunkName: 'GitLabScopingCurrentFilters' */ './GitLabScopingCurrentFilters')
+    import(
+      /* webpackChunkName: 'GitLabScopingCurrentFiltersRoot' */ './GitLabScopingCurrentFiltersRoot'
+    )
 )
 
 const scoping: ScopingCapability = {
@@ -44,7 +47,7 @@ const scoping: ScopingCapability = {
         )
     )
   }),
-  FilterMenu: lazy(
+  FilterMenu: lazyPreload(
     () =>
       import(
         /* webpackChunkName: 'GitLabScopingSearchFilterMenuRoot' */ '../../components/GitLabScopingSearchFilterMenuRoot'
@@ -57,7 +60,8 @@ const scoping: ScopingCapability = {
       )
   ),
   placeholder: () => 'Search GitLab issues...',
-  currentFilters: (state, {teamId}) => createElement(GitLabScopingCurrentFilters, {state, teamId}),
+  currentFilters: (state, {teamId}) =>
+    createElement(GitLabScopingCurrentFiltersRoot, {state, teamId}),
   selectAllNoun: 'issue'
 }
 

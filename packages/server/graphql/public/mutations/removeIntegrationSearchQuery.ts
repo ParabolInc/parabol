@@ -15,7 +15,10 @@ const removeIntegrationSearchQuery: MutationResolvers['removeIntegrationSearchQu
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
-  const [dbId] = CipherId.fromClient(id)
+  const [dbId, , entity] = CipherId.fromClient(id)
+  if (entity !== 'integrationSearchQuery') {
+    return {error: {message: 'Search query not found'}}
+  }
   const removedQuery = await getKysely()
     .deleteFrom('IntegrationSearchQuery')
     .where('id', '=', dbId)

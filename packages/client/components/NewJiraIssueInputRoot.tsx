@@ -1,13 +1,15 @@
-import {useState} from 'react'
+import newJiraIssueInputQuery, {
+  type NewJiraIssueInputQuery
+} from '../__generated__/NewJiraIssueInputQuery.graphql'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import type {NewRecordInputProps} from '../integrations/platform/ScopingSearchState'
 import NewJiraIssueInput from './NewJiraIssueInput'
 
 const NewJiraIssueInputRoot = (props: NewRecordInputProps) => {
-  const {isEditing} = props
-  const [wasEditing, setWasEditing] = useState(isEditing)
-  if (isEditing && !wasEditing) setWasEditing(true)
-  if (!wasEditing) return null
-  return <NewJiraIssueInput {...props} />
+  const {teamId} = props
+  const queryRef = useQueryLoaderNow<NewJiraIssueInputQuery>(newJiraIssueInputQuery, {teamId})
+  if (!queryRef) return null
+  return <NewJiraIssueInput {...props} queryRef={queryRef} />
 }
 
 export default NewJiraIssueInputRoot
