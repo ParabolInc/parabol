@@ -2,7 +2,7 @@ import * as Collapsible from '@radix-ui/react-collapsible'
 import graphql from 'babel-plugin-relay/macro'
 import dayjs from 'dayjs'
 import * as React from 'react'
-import {type ChangeEvent, useState} from 'react'
+import {type ChangeEvent, type ReactNode, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {RRule} from 'rrule'
 import type {ScheduleDialog_team$key} from '~/__generated__/ScheduleDialog_team.graphql'
@@ -38,10 +38,11 @@ interface Props {
   onCancel: () => void
   mutationProps: MenuMutationProps
   withRecurrence?: boolean
+  summary?: ReactNode
 }
 
 export const ScheduleDialog = (props: Props) => {
-  const {placeholder, teamRef, onCancel, mutationProps, withRecurrence} = props
+  const {placeholder, teamRef, onCancel, mutationProps, withRecurrence, summary} = props
   const [rrule, setRrule] = useState<RRule | null>(null)
   const [openRecurrence, setOpenRecurrence] = React.useState(!!rrule)
   const [openGcalEvent, setOpenGcalEvent] = React.useState(true)
@@ -140,6 +141,7 @@ export const ScheduleDialog = (props: Props) => {
     <div className='space-y-4 overflow-auto p-4'>
       <DialogTitle className='text-lg leading-none'>Schedule Your Meeting</DialogTitle>
       <div className='text-fg-primary text-sm'>{subTitle}</div>
+      {summary}
       <div className='flex flex-col'>
         <input
           className='form-input rounded-sm border border-hairline-field border-solid bg-surface-input p-2 font-sans text-base hover:border-fg-secondary focus:border-fg-secondary focus:outline-hidden focus:ring-1 focus:ring-fg-secondary'

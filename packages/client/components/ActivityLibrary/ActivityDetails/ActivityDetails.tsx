@@ -27,6 +27,7 @@ graphql`
     ...TemplateDetails_activity
     ...ActivityDetailsBadges_template
     ...ActivityDetailsSidebar_template
+    ...TeamHealthDetailsSidebar_template
     ...useTemplateDescription_template
   }
 `

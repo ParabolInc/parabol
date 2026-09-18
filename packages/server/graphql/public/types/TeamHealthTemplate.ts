@@ -1,5 +1,6 @@
 import {getUserId} from '../../../utils/authorization'
 import isValid from '../../isValid'
+import rotateSeriesTeamHealthQuestionIds from '../../mutations/helpers/rotateSeriesTeamHealthQuestionIds'
 import type {TeamHealthTemplateResolvers} from '../resolverTypes'
 
 const TeamHealthTemplate: TeamHealthTemplateResolvers = {
@@ -10,6 +11,14 @@ const TeamHealthTemplate: TeamHealthTemplateResolvers = {
       .get('teamHealthQuestions')
       .loadMany(links.map(({questionId}) => questionId))
     return questions.filter(isValid)
+  },
+  firstMeetingQuestions: async ({id: templateId}, _args, {dataLoader}) => {
+    const questionIds = await rotateSeriesTeamHealthQuestionIds(templateId, [], dataLoader)
+    if (!questionIds) return []
+    return dataLoader
+      .get('teamHealthQuestions')
+      .loadMany(questionIds)
+      .then((q) => q.filter(isValid))
   },
   // the viewer sees only the built-in (aGhostUser) packs and their own personal pack
   availableQuestionPacks: async (_source, _args, {authToken, dataLoader}) => {

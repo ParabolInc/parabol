@@ -4,6 +4,7 @@ import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {RRule} from 'rrule'
 import type {TeamHealthDetailsSidebar_teams$key} from '~/__generated__/TeamHealthDetailsSidebar_teams.graphql'
+import type {TeamHealthDetailsSidebar_template$key} from '~/__generated__/TeamHealthDetailsSidebar_template.graphql'
 import {
   KeyboardArrowDown as KeyboardArrowDownIcon,
   KeyboardArrowUp as KeyboardArrowUpIcon
@@ -26,17 +27,31 @@ import {ScheduleDialog} from '../ScheduleDialog'
 import type {SnackAction} from '../Snackbar'
 import StyledLink from '../StyledLink'
 import TeamPicker from '../TeamPicker/TeamPicker'
+import TeamHealthFirstMeetingSummary from './TeamHealth/TeamHealthFirstMeetingSummary'
 
 type StartTeamHealthResult = useStartTeamHealthMutation$data['startTeamHealth']
 
 interface Props {
   templateId: string
+  templateRef: TeamHealthDetailsSidebar_template$key
   teamsRef: TeamHealthDetailsSidebar_teams$key
   preferredTeamId: string | null | undefined
 }
 
 const TeamHealthDetailsSidebar = (props: Props) => {
-  const {templateId, teamsRef, preferredTeamId} = props
+  const {templateId, templateRef, teamsRef, preferredTeamId} = props
+  const template = useFragment(
+    graphql`
+      fragment TeamHealthDetailsSidebar_template on MeetingTemplate {
+        ... on TeamHealthTemplate {
+          firstMeetingQuestions {
+            id
+          }
+        }
+      }
+    `,
+    templateRef
+  )
   const teams = useFragment(
     graphql`
       fragment TeamHealthDetailsSidebar_teams on Team @relay(plural: true) {
@@ -204,6 +219,12 @@ const TeamHealthDetailsSidebar = (props: Props) => {
               onCancel={() => setIsScheduleOpen(false)}
               mutationProps={mutationProps}
               withRecurrence
+              summary={
+                <TeamHealthFirstMeetingSummary
+                  questionCount={template.firstMeetingQuestions?.length ?? 0}
+                  onPreview={() => setIsScheduleOpen(false)}
+                />
+              }
             />
           </DialogContent>
         </Dialog>

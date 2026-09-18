@@ -1,4 +1,8 @@
+import {createHash} from 'crypto'
 import getKysely from '../../../postgres/getKysely'
+
+const tiebreakHash = (templateId: string, questionId: number) =>
+  createHash('sha256').update(`${templateId}:${questionId}`).digest('hex')
 
 /**
  * Picks one question per category for a Team Health meeting, rotating so the
@@ -6,14 +10,18 @@ import getKysely from '../../../postgres/getKysely'
  *
  * For each category it tallies how many prior meetings in the series asked each
  * question (via the TeamHealthResponse table), finds the category minimum, and
- * picks one of the questions tied at that minimum.
+ * picks the question tied at that minimum with the lowest hash of (templateId, questionId).
+ * The tiebreak is deterministic so a new series' first meeting depends only on the template,
+ * which is what lets TeamHealthTemplate.firstMeetingQuestions preview it. Hashing each question on
+ * its own keeps that preview stable when unrelated questions are added or removed.
  *
  * Takes several series ids so a group spanning teams rotates against the whole
  * group's history rather than one team's.
  */
 const rotateTeamHealthQuestionIds = async (
   questions: readonly {id: number; categoryId: number}[],
-  meetingSeriesIds: readonly number[]
+  meetingSeriesIds: readonly number[],
+  templateId: string
 ) => {
   const pg = getKysely()
 
@@ -44,10 +52,10 @@ const rotateTeamHealthQuestionIds = async (
     const minAskCount = Math.min(
       ...categoryQuestions.map((question) => askCountByQuestionId.get(question.id) ?? 0)
     )
-    const leastAskedQuestions = categoryQuestions.filter(
-      (question) => (askCountByQuestionId.get(question.id) ?? 0) === minAskCount
-    )
-    return leastAskedQuestions[Math.floor(Math.random() * leastAskedQuestions.length)]!
+    return categoryQuestions
+      .filter((question) => (askCountByQuestionId.get(question.id) ?? 0) === minAskCount)
+      .map((question) => ({question, hash: tiebreakHash(templateId, question.id)}))
+      .reduce((lowest, candidate) => (candidate.hash < lowest.hash ? candidate : lowest)).question
   })
 
   return selectedQuestions.map((question) => question.id)
