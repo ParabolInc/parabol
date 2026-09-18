@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useLazyLoadQuery} from 'react-relay'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {GitLabScopingCurrentFiltersQuery} from '../../__generated__/GitLabScopingCurrentFiltersQuery.graphql'
-import {searchFiltersByKey} from '../../shared/integrations/IntegrationSearchFilter'
 import getNonNullEdges from '../../utils/getNonNullEdges'
+import {searchFiltersByKey} from '../platform/IntegrationSearchFilter'
 import type {ScopingSearchState} from '../platform/ScopingSearchState'
 
 const query = graphql`
@@ -41,24 +41,18 @@ const query = graphql`
 
 interface Props {
   state: ScopingSearchState
-  teamId: string
+  queryRef: PreloadedQuery<GitLabScopingCurrentFiltersQuery>
 }
 
 const GitLabScopingCurrentFilters = (props: Props) => {
-  const {state, teamId} = props
-  const data = useLazyLoadQuery<GitLabScopingCurrentFiltersQuery>(
-    query,
-    {teamId},
-    {fetchPolicy: 'store-or-network'}
-  )
+  const {state, queryRef} = props
+  const data = usePreloadedQuery<GitLabScopingCurrentFiltersQuery>(query, queryRef)
   const nullableEdges =
     data.viewer.teamMember?.integrations.gitlab.api?.query?.projects?.edges ?? []
   const projects = getNonNullEdges(nullableEdges).map(({node}) => node)
-  const selectedProjectsPaths = [] as string[]
-  searchFiltersByKey(state.filters, 'project').forEach((projectId) => {
-    const fullPath = projects.find((project) => project.id === projectId)?.fullPath
-    if (fullPath) selectedProjectsPaths.push(fullPath)
-  })
+  const selectedProjectsPaths = searchFiltersByKey(state.filters, 'project').flatMap(
+    (projectId) => projects.find((project) => project.id === projectId)?.fullPath ?? []
+  )
   return <>{selectedProjectsPaths.length ? selectedProjectsPaths.join(', ') : 'None'}</>
 }
 

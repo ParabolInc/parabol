@@ -3,6 +3,7 @@ import MockScopingTask from '~/modules/meeting/components/MockScopingTask'
 import type {useGetUsedServiceTaskIds_phase$key} from '../__generated__/useGetUsedServiceTaskIds_phase.graphql'
 import useGetUsedServiceTaskIds from '../hooks/useGetUsedServiceTaskIds'
 import useLoadNextOnScrollBottom from '../hooks/useLoadNextOnScrollBottom'
+import usePersistScopingQuery from '../hooks/usePersistScopingQuery'
 import type {
   ScopingCapability,
   ScopingSavedQuery
@@ -13,22 +14,11 @@ import type {
   ScopingSearchContext,
   ScopingSearchState
 } from '../integrations/platform/ScopingSearchState'
-import usePersistIntegrationSearchQueryMutation from '../mutations/usePersistIntegrationSearchQueryMutation'
-import {
-  type IntegrationSearchFilter,
-  sortSearchFilters
-} from '../shared/integrations/IntegrationSearchFilter'
 import Ellipsis from './Ellipsis/Ellipsis'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import IntegrationScopingSelectAll from './IntegrationScopingSelectAll'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
 import ScopingSearchResultItem from './ScopingSearchResultItem'
-
-const canonicalize = (
-  queryString: string,
-  isAdvancedQuery: boolean,
-  filters: readonly IntegrationSearchFilter[]
-) => JSON.stringify({queryString, isAdvancedQuery, filters: sortSearchFilters(filters)})
 
 interface Props {
   results: ScopingResults
@@ -42,37 +32,17 @@ interface Props {
 
 const IntegrationScopingResults = (props: Props) => {
   const {results, scoping, service, context, state, savedQueries, estimatePhaseRef} = props
-  const {meetingId, teamId, providerId} = context
+  const {meetingId, teamId} = context
   const {NewRecordInput} = scoping
   const {items, hasNext, isLoadingNext = false, loadNext} = results
   const [isEditing, setIsEditing] = useState(false)
   const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhaseRef)
-  const [persistIntegrationSearchQuery] = usePersistIntegrationSearchQueryMutation()
+  const persistQuery = usePersistScopingQuery(scoping, state, savedQueries, context)
   const lastItem = useLoadNextOnScrollBottom({
     hasNext,
     isLoadingNext,
     loadNext: () => loadNext?.()
   })
-
-  const persistQuery = () => {
-    const queryString = state.queryString.trim()
-    if (!queryString) return
-    if (scoping.isDefaultQuery?.(state)) return
-    const filters = sortSearchFilters(state.filters)
-    const lookupKey = canonicalize(queryString, state.isAdvancedQuery, filters)
-    const isQueryNew = !savedQueries.some(
-      (saved) => canonicalize(saved.queryString, saved.isAdvancedQuery, saved.filters) === lookupKey
-    )
-    if (!isQueryNew) return
-    persistIntegrationSearchQuery({
-      variables: {
-        teamId,
-        providerId,
-        queryString,
-        meta: scoping.serializeMeta({...state, filters})
-      }
-    })
-  }
 
   const newRecordButton = NewRecordInput ? (
     <NewIntegrationRecordButton
@@ -104,7 +74,7 @@ const IntegrationScopingResults = (props: Props) => {
       )}
       <div className='overflow-auto'>
         {NewRecordInput && (
-          <Suspense fallback={<MockScopingTask idx={0} />}>
+          <Suspense fallback={isEditing ? <MockScopingTask idx={0} /> : null}>
             <NewRecordInput
               isEditing={isEditing}
               setIsEditing={setIsEditing}

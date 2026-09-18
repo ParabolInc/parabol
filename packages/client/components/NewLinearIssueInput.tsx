@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type FormEvent, useEffect, useRef, useState} from 'react'
-import {useLazyLoadQuery} from 'react-relay'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import {ExpandMore} from '~/ui/icons'
@@ -39,13 +39,13 @@ const validateIssue = (issue: string) => {
   return new Legitity(issue).trim().min(2, `C'mon, you call that an issue?`)
 }
 
-const NewLinearIssueInput = (props: NewRecordInputProps) => {
-  const {isEditing, meetingId, setIsEditing, teamId} = props
-  const data = useLazyLoadQuery<NewLinearIssueInputQuery>(
-    query,
-    {teamId},
-    {fetchPolicy: 'store-or-network'}
-  )
+interface Props extends NewRecordInputProps {
+  queryRef: PreloadedQuery<NewLinearIssueInputQuery>
+}
+
+const NewLinearIssueInput = (props: Props) => {
+  const {isEditing, meetingId, setIsEditing, teamId, queryRef} = props
+  const data = usePreloadedQuery<NewLinearIssueInputQuery>(query, queryRef)
   const {id: userId, teamMember} = data.viewer
 
   const services = teamMember?.services ?? []

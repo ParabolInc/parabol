@@ -1,7 +1,13 @@
 import {commitLocalUpdate, Environment, Network, RecordSource, Store} from 'relay-runtime'
 import type {HandleFieldPayload, RecordSourceProxy} from 'relay-runtime/store/RelayStoreTypes'
-import LocalPokerHandler from '~/utils/relay/LocalPokerHandler'
-import {readScopingSearchState, setScopingSearchStateInRelayStore} from '../useScopingSearchState'
+import type {RegisteredClientIntegration} from '~/integrations/platform/registry'
+import {
+  EMPTY_SCOPING_SEARCH_STATE,
+  type ScopingSearchState
+} from '~/integrations/platform/ScopingSearchState'
+import LocalPokerHandler from '../LocalPokerHandler'
+import readScopingSearchStateFromRelayStore from '../readScopingSearchStateFromRelayStore'
+import setScopingSearchStateInRelayStore from '../setScopingSearchStateInRelayStore'
 
 const createTestEnvironment = () =>
   new Environment({
@@ -25,14 +31,28 @@ const seedMeeting = (environment: Environment, meetingId: string) => {
   })
 }
 
-describe('useScopingSearchState', () => {
+const readScopingSearchState = (
+  environment: Environment,
+  meetingId: string,
+  service: RegisteredClientIntegration
+) => {
+  const result: {state: ScopingSearchState | null} = {state: null}
+  commitLocalUpdate(environment, (store) => {
+    result.state = readScopingSearchStateFromRelayStore(store, meetingId, service)
+  })
+  return result.state
+}
+
+describe('setScopingSearchStateInRelayStore', () => {
   const meetingId = 'meeting1'
 
-  it('reads null for a service whose search the viewer has not touched', () => {
+  it('reads the empty state for a service whose search the viewer has not touched', () => {
     const environment = createTestEnvironment()
     seedMeeting(environment, meetingId)
 
-    expect(readScopingSearchState(environment, meetingId, 'jira')).toBeNull()
+    expect(readScopingSearchState(environment, meetingId, 'jira')).toEqual(
+      EMPTY_SCOPING_SEARCH_STATE
+    )
   })
 
   it('lists a service on the meeting the first time its search state is written', () => {
@@ -108,9 +128,11 @@ describe('useScopingSearchState', () => {
     expect(readScopingSearchState(environment, meetingId, 'jira')).toMatchObject({filters: []})
   })
 
-  it('reads null for a meeting the handler never seeded', () => {
+  it('reads the empty state for a meeting the handler never seeded', () => {
     const environment = createTestEnvironment()
-    expect(readScopingSearchState(environment, 'unseeded', 'jira')).toBeNull()
+    expect(readScopingSearchState(environment, 'unseeded', 'jira')).toEqual(
+      EMPTY_SCOPING_SEARCH_STATE
+    )
   })
 
   it('keeps jira and github state independent', () => {
@@ -127,6 +149,8 @@ describe('useScopingSearchState', () => {
     expect(readScopingSearchState(environment, meetingId, 'jira')).toMatchObject({
       queryString: 'jira query'
     })
-    expect(readScopingSearchState(environment, meetingId, 'github')).toBeNull()
+    expect(readScopingSearchState(environment, meetingId, 'github')).toEqual(
+      EMPTY_SCOPING_SEARCH_STATE
+    )
   })
 })

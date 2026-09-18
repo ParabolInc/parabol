@@ -190,7 +190,6 @@ export type JiraSearchQueryJson = {
 
 export type GitHubSearchQueryJson = {
   queryString: string
-  repos?: string[]
 }
 
 export type GitLabSearchQueryJson = {
@@ -210,8 +209,7 @@ export type AzureDevOpsSearchQueryJson = {
   projectNames: string[]
 }
 
-/** What each service's issueSearch.buildQuery stores in IntegrationSearchQuery.query.
- * This map is the only place to extend when a new integration saves searches. */
+/** What each service's issueSearch.buildQuery stores in IntegrationSearchQuery.query */
 export type IntegrationSearchQueryJsonByService = {
   jira: JiraSearchQueryJson
   jiraServer: JiraSearchQueryJson

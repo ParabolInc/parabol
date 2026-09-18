@@ -5,7 +5,7 @@ export interface IntegrationSearchFilter {
 
 const compare = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)
 
-export const sortSearchFilters = (filters: readonly IntegrationSearchFilter[]) => {
+export const normalizeSearchFilters = (filters: readonly IntegrationSearchFilter[]) => {
   const seen = new Set<string>()
   return [...filters]
     .sort((a, b) => (a.key === b.key ? compare(a.value, b.value) : compare(a.key, b.key)))
@@ -26,3 +26,14 @@ export const toSearchFilters = (key: string, values: unknown): IntegrationSearch
         .filter((value): value is string => typeof value === 'string')
         .map((value) => ({key, value}))
     : []
+
+export const toggleSearchFilter = (
+  filters: readonly IntegrationSearchFilter[],
+  key: string,
+  value: string
+) => {
+  const isSelected = filters.some((filter) => filter.key === key && filter.value === value)
+  return isSelected
+    ? filters.filter((filter) => filter.key !== key || filter.value !== value)
+    : [...filters, {key, value}]
+}

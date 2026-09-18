@@ -1,13 +1,15 @@
-import {useState} from 'react'
+import newGitHubIssueInputQuery, {
+  type NewGitHubIssueInputQuery
+} from '../__generated__/NewGitHubIssueInputQuery.graphql'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import type {NewRecordInputProps} from '../integrations/platform/ScopingSearchState'
 import NewGitHubIssueInput from './NewGitHubIssueInput'
 
 const NewGitHubIssueInputRoot = (props: NewRecordInputProps) => {
-  const {isEditing} = props
-  const [wasEditing, setWasEditing] = useState(isEditing)
-  if (isEditing && !wasEditing) setWasEditing(true)
-  if (!wasEditing) return null
-  return <NewGitHubIssueInput {...props} />
+  const {teamId} = props
+  const queryRef = useQueryLoaderNow<NewGitHubIssueInputQuery>(newGitHubIssueInputQuery, {teamId})
+  if (!queryRef) return null
+  return <NewGitHubIssueInput {...props} queryRef={queryRef} />
 }
 
 export default NewGitHubIssueInputRoot

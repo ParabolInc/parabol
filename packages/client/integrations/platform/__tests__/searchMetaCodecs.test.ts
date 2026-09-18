@@ -1,5 +1,4 @@
 import azureDevOpsSearchMeta from '../../azureDevOps/azureDevOpsSearchMeta'
-import gitHubSearchMeta from '../../github/gitHubSearchMeta'
 import gitLabSearchMeta from '../../gitlab/gitLabSearchMeta'
 import jiraSearchMeta from '../../jira/jiraSearchMeta'
 import linearSearchMeta from '../../linear/linearSearchMeta'
@@ -18,16 +17,6 @@ const codecs = [
       ]
     },
     wire: {isJQL: true, projectKeyFilters: ['cloud:ABC', 'cloud:DEF']}
-  },
-  {
-    name: 'github',
-    codec: gitHubSearchMeta,
-    state: {
-      queryString: 'is:issue',
-      isAdvancedQuery: false,
-      filters: [{key: 'repo', value: 'parabol/parabol'}]
-    },
-    wire: {repos: ['parabol/parabol']}
   },
   {
     name: 'gitlab',
@@ -80,7 +69,7 @@ describe.each(codecs)('$name search meta', ({codec, state, wire}) => {
     ['a JSON array', '[]'],
     [
       'wrongly typed values',
-      JSON.stringify(Object.fromEntries(Object.keys(wire).map((k) => [k, 7])))
+      JSON.stringify(Object.fromEntries(Object.keys(wire).map((key) => [key, 7])))
     ]
   ])('reads %s as a plain search with no filters', (_label, meta) => {
     expect(codec.parseSavedMeta(meta)).toEqual({isAdvancedQuery: false, filters: []})

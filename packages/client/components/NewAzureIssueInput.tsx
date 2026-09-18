@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type FormEvent, useEffect, useRef, useState} from 'react'
-import {useLazyLoadQuery} from 'react-relay'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import CreateTaskMutation from '~/mutations/CreateTaskMutation'
@@ -47,13 +47,13 @@ const validateIssue = (issue: string) => {
   return new Legitity(issue).trim().min(2, `C’mon, you call that an issue?`)
 }
 
-const NewAzureIssueInput = (props: NewRecordInputProps) => {
-  const {isEditing, setIsEditing, meetingId, teamId} = props
-  const data = useLazyLoadQuery<NewAzureIssueInputQuery>(
-    query,
-    {teamId},
-    {fetchPolicy: 'store-or-network'}
-  )
+interface Props extends NewRecordInputProps {
+  queryRef: PreloadedQuery<NewAzureIssueInputQuery>
+}
+
+const NewAzureIssueInput = (props: Props) => {
+  const {isEditing, setIsEditing, meetingId, teamId, queryRef} = props
+  const data = usePreloadedQuery<NewAzureIssueInputQuery>(query, queryRef)
   const {id: userId, teamMember} = data.viewer
   const projects = teamMember?.integrations.azureDevOps.projects ?? []
   const atmosphere = useAtmosphere()

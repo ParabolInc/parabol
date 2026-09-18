@@ -1,42 +1,48 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useLazyLoadQuery} from 'react-relay'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {AzureDevOpsScopingSearchFilterMenuQuery} from '../__generated__/AzureDevOpsScopingSearchFilterMenuQuery.graphql'
-import useScopingSearchState from '../hooks/useScopingSearchState'
-import type {FilterMenuProps} from '../integrations/platform/ScopingSearchState'
-import {searchFiltersByKey} from '../shared/integrations/IntegrationSearchFilter'
+import useSetScopingSearchState from '../hooks/useSetScopingSearchState'
+import {
+  searchFiltersByKey,
+  toggleSearchFilter
+} from '../integrations/platform/IntegrationSearchFilter'
+import type {ScopingSearchState} from '../integrations/platform/ScopingSearchState'
 import {cn} from '../ui/cn'
 import {MenuItem} from '../ui/Menu/MenuItem'
 import Checkbox from './Checkbox'
 import DropdownMenuLabel from './DropdownMenuLabel'
 
-const query = graphql`
-  query AzureDevOpsScopingSearchFilterMenuQuery($teamId: ID!) {
-    viewer {
-      teamMember(teamId: $teamId) {
-        integrations {
-          azureDevOps {
-            projects {
-              id
-              name
+interface Props {
+  meetingId: string
+  state: ScopingSearchState
+  queryRef: PreloadedQuery<AzureDevOpsScopingSearchFilterMenuQuery>
+}
+
+const AzureDevOpsScopingSearchFilterMenu = (props: Props) => {
+  const {meetingId, state, queryRef} = props
+  const data = usePreloadedQuery<AzureDevOpsScopingSearchFilterMenuQuery>(
+    graphql`
+      query AzureDevOpsScopingSearchFilterMenuQuery($teamId: ID!) {
+        viewer {
+          teamMember(teamId: $teamId) {
+            integrations {
+              azureDevOps {
+                projects {
+                  id
+                  name
+                }
+              }
             }
           }
         }
       }
-    }
-  }
-`
-
-const AzureDevOpsScopingSearchFilterMenu = (props: FilterMenuProps) => {
-  const {meetingId, teamId, state} = props
-  const data = useLazyLoadQuery<AzureDevOpsScopingSearchFilterMenuQuery>(
-    query,
-    {teamId},
-    {fetchPolicy: 'store-or-network'}
+    `,
+    queryRef
   )
   const projects = data.viewer.teamMember?.integrations.azureDevOps.projects ?? []
   const {isAdvancedQuery, filters} = state
   const projectNames = searchFiltersByKey(filters, 'project')
-  const setSearchState = useScopingSearchState(meetingId, 'azureDevOps')
+  const setSearchState = useSetScopingSearchState(meetingId, 'azureDevOps')
   const toggleAdvancedQuery = () => {
     setSearchState({isAdvancedQuery: !isAdvancedQuery, filters: []})
   }
@@ -54,11 +60,7 @@ const AzureDevOpsScopingSearchFilterMenu = (props: FilterMenuProps) => {
         const {id: projectId, name} = project
         const isSelected = projectNames.includes(name)
         const toggleProjectFilter = () => {
-          setSearchState({
-            filters: isSelected
-              ? filters.filter((filter) => filter.key !== 'project' || filter.value !== name)
-              : [...filters, {key: 'project', value: name}]
-          })
+          setSearchState({filters: toggleSearchFilter(filters, 'project', name)})
         }
         return (
           <MenuItem

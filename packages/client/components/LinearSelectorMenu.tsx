@@ -1,9 +1,9 @@
 import type {LinearProjectOrTeam} from '../hooks/useLinearProjectsAndTeams'
+import getLinearSelectorItemId from '../integrations/linear/getLinearSelectorItemId'
 import {MenuItem} from '../ui/Menu/MenuItem'
 import {MenuSearch} from '../ui/Menu/MenuSearch'
 import {Spinner} from '../ui/Spinner/Spinner'
 import {getLinearRepoName} from '../utils/getLinearRepoName'
-import {getLinearSelectorItemId} from '../utils/linearSelectorItemId'
 import Checkbox from './Checkbox'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import TypeAheadLabel from './TypeAheadLabel'
@@ -23,7 +23,6 @@ export interface LinearSelectorMenuProps {
   isLoading?: boolean
   placeholder?: string
   emptyStateMessage?: string
-  /** How an item matches selectedItemIds; the work drawer keys on the type-tagged id it persists */
   getItemId?: (item: LinearProjectOrTeam) => string
 }
 

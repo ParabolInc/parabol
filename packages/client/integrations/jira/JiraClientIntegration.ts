@@ -5,12 +5,12 @@ import jiraScopingResultsQuery, {
 import type Atmosphere from '../../Atmosphere'
 import JiraSVG from '../../components/JiraSVG'
 import JiraProjectId from '../../shared/gqlIds/JiraProjectId'
-import {searchFiltersByKey} from '../../shared/integrations/IntegrationSearchFilter'
 import {jiraIntegrationMeta} from '../../shared/integrations/jiraIntegrationMeta'
 import atlassianLogo from '../../styles/theme/images/graphics/atlassian-gradient.svg'
 import {ExternalLinks} from '../../types/constEnums'
 import AtlassianClientManager from '../../utils/AtlassianClientManager'
 import {describeAtlassianDisconnect} from '../../utils/atlassianScopes'
+import lazyPreload from '../../utils/lazyPreload'
 import {
   type ClientIntegrationCapabilities,
   ClientIntegrationDefinition,
@@ -18,11 +18,15 @@ import {
   type ProviderLogoAsset,
   type ScopingCapability
 } from '../platform/ClientIntegrationDefinition'
+import {searchFiltersByKey} from '../platform/IntegrationSearchFilter'
 import makeScopingResults from '../platform/makeScopingResults'
 import jiraSearchMeta from './jiraSearchMeta'
 
-const JiraScopingCurrentFilters = lazy(
-  () => import(/* webpackChunkName: 'JiraScopingCurrentFilters' */ './JiraScopingCurrentFilters')
+const JiraScopingCurrentFiltersRoot = lazy(
+  () =>
+    import(
+      /* webpackChunkName: 'JiraScopingCurrentFiltersRoot' */ './JiraScopingCurrentFiltersRoot'
+    )
 )
 
 const scoping: ScopingCapability = {
@@ -41,7 +45,7 @@ const scoping: ScopingCapability = {
         import(/* webpackChunkName: 'JiraScopingResultsAdapter' */ './JiraScopingResultsAdapter')
     )
   }),
-  FilterMenu: lazy(
+  FilterMenu: lazyPreload(
     () =>
       import(
         /* webpackChunkName: 'JiraScopingSearchFilterMenuRoot' */ '../../components/JiraScopingSearchFilterMenuRoot'
@@ -55,7 +59,8 @@ const scoping: ScopingCapability = {
   ),
   placeholder: (state) =>
     state.isAdvancedQuery ? 'SPRINT = fun AND PROJECT = dev' : 'Search issues on Jira',
-  currentFilters: (state, {teamId}) => createElement(JiraScopingCurrentFilters, {state, teamId}),
+  currentFilters: (state, {teamId}) =>
+    createElement(JiraScopingCurrentFiltersRoot, {state, teamId}),
   filterChipLabel: (filter) => JiraProjectId.split(filter.value).projectKey,
   selectAllNoun: 'issue'
 }

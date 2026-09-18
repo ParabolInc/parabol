@@ -1,4 +1,5 @@
 import {Suspense} from 'react'
+import useSetScopingSearchState from '../hooks/useSetScopingSearchState'
 import type {
   ScopingCapability,
   ScopingSavedQuery
@@ -24,6 +25,7 @@ interface Props {
 const IntegrationScopingSearchBar = (props: Props) => {
   const {scoping, service, context, state, savedQueries} = props
   const {meetingId, teamId} = context
+  const setSearchState = useSetScopingSearchState(meetingId, service)
   const currentFilters = scoping.currentFilters?.(state, context)
   return (
     <ScopingSearchBar
@@ -44,6 +46,7 @@ const IntegrationScopingSearchBar = (props: Props) => {
         meetingId={meetingId}
         service={service}
         defaultInput={scoping.defaultQueryString?.(savedQueries)}
+        onQueryStringChange={(queryString) => setSearchState({queryString})}
       />
       <IntegrationScopingFilterToggle
         scoping={scoping}

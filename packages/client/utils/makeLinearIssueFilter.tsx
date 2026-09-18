@@ -2,7 +2,7 @@ import type {_xLinearIssueFilter} from '../__generated__/LinearScopingResultsAda
 import {
   type IntegrationSearchFilter,
   searchFiltersByKey
-} from '../shared/integrations/IntegrationSearchFilter'
+} from '../integrations/platform/IntegrationSearchFilter'
 
 const parseLinearIdentifier = (query: string): {teamKey?: string; issueNumber: number} | null => {
   const fullMatch = query.match(/^([A-Za-z]+)[\s-](\d+)$/)

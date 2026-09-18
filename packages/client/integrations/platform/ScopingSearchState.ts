@@ -1,12 +1,18 @@
 import type {ReactNode} from 'react'
 import type {PreloadedQuery} from 'react-relay'
 import type {OperationType} from 'relay-runtime'
-import type {IntegrationSearchFilter} from '../../shared/integrations/IntegrationSearchFilter'
+import type {IntegrationSearchFilter} from './IntegrationSearchFilter'
 
 export interface ScopingSearchState {
   queryString: string
   isAdvancedQuery: boolean
   filters: readonly IntegrationSearchFilter[]
+}
+
+export const EMPTY_SCOPING_SEARCH_STATE: ScopingSearchState = {
+  queryString: '',
+  isAdvancedQuery: false,
+  filters: []
 }
 
 export type SavedSearchMeta = Pick<ScopingSearchState, 'isAdvancedQuery' | 'filters'>

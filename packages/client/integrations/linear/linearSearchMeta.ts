@@ -1,7 +1,4 @@
-import {
-  searchFiltersByKey,
-  toSearchFilters
-} from '../../shared/integrations/IntegrationSearchFilter'
+import {searchFiltersByKey, toSearchFilters} from '../platform/IntegrationSearchFilter'
 import parseSavedMetaObject from '../platform/parseSavedMetaObject'
 import type {SearchMetaCodec} from '../platform/ScopingSearchState'
 
