@@ -64,11 +64,8 @@ type TeamSubscriptionPayload {
   UpdatePokerTemplateScaleValuePayload: UpdatePokerTemplateScaleValuePayload
   UpdateUserProfilePayload: UpdateUserProfilePayload
   MovePokerTemplateScaleValueSuccess: MovePokerTemplateScaleValueSuccess
-  UpdateAzureDevOpsDimensionFieldSuccess: UpdateAzureDevOpsDimensionFieldSuccess
   SetDefaultSlackChannelSuccess: SetDefaultSlackChannelSuccess
-  UpdateGitHubDimensionFieldSuccess: UpdateGitHubDimensionFieldSuccess
   UpdateRecurrenceSettingsSuccess: UpdateRecurrenceSettingsSuccess
-  UpdateDimensionFieldSuccess: UpdateDimensionFieldSuccess
   UpdateIntegrationDimensionFieldSuccess: UpdateIntegrationDimensionFieldSuccess
   UpdateTemplateCategorySuccess: UpdateTemplateCategorySuccess
   JoinTeamSuccess: JoinTeamSuccess

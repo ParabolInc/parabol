@@ -364,36 +364,12 @@ const permissionMap: PermissionMap<Resolvers> = {
       'args.updatedAgendaItem.id',
       'agendaItems'
     ),
-    updateAzureDevOpsDimensionField: isTeamMember<'Mutation.updateAzureDevOpsDimensionField'>(
-      'args.meetingId',
-      'newMeetings'
-    ),
     updateCommentContent: isMeetingMember<'Mutation.updateCommentContent'>('args.meetingId'),
     updateCreditCard: isViewerBillingLeader<'Mutation.updateCreditCard'>('args.orgId'),
     updateDragLocation: isTeamMember<'Mutation.updateDragLocation'>('args.input.teamId'),
     updateFacilitatorRotation:
       isTeamMemberOfMeeting<'Mutation.updateFacilitatorRotation'>('args.meetingId'),
-    updateGitHubDimensionField: isTeamMember<'Mutation.updateGitHubDimensionField'>(
-      'args.meetingId',
-      'newMeetings'
-    ),
-    updateGitLabDimensionField: isTeamMember<'Mutation.updateGitLabDimensionField'>(
-      'args.meetingId',
-      'newMeetings'
-    ),
     updateIntegrationDimensionField: isTeamMember<'Mutation.updateIntegrationDimensionField'>(
-      'args.meetingId',
-      'newMeetings'
-    ),
-    updateJiraDimensionField: isTeamMember<'Mutation.updateJiraDimensionField'>(
-      'args.meetingId',
-      'newMeetings'
-    ),
-    updateJiraServerDimensionField: isTeamMember<'Mutation.updateJiraServerDimensionField'>(
-      'args.meetingId',
-      'newMeetings'
-    ),
-    updateLinearDimensionField: isTeamMember<'Mutation.updateLinearDimensionField'>(
       'args.meetingId',
       'newMeetings'
     ),
