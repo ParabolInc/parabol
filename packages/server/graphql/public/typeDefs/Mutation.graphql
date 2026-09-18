@@ -1778,7 +1778,7 @@ type Mutation {
     Service-specific search options as a JSON object, e.g. {"isJQL": true, "projectKeyFilters": []} for Jira. Stored alongside queryString
     """
     meta: String
-  ): PersistIntegrationSearchQueryPayload! @scope(name: TEAMS_WRITE)
+  ): PersistIntegrationSearchQuerySuccess! @scope(name: TEAMS_WRITE)
 
   """
   Remove the approved domains for a given organization
@@ -1804,7 +1804,7 @@ type Mutation {
     """
     id: ID!
     teamId: ID!
-  ): RemoveIntegrationSearchQueryPayload! @scope(name: TEAMS_WRITE)
+  ): RemoveIntegrationSearchQuerySuccess! @scope(name: TEAMS_WRITE)
 
   """
   Remove the integrated auth for a given team member

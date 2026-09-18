@@ -72,17 +72,14 @@ describe('persistIntegrationSearchQuery', () => {
     ['a JSON scalar', '"isJQL"', 'meta must be a JSON object'],
     ['more than 4096 characters', JSON.stringify({junk: 'x'.repeat(4096)}), 'at most 4096']
   ])('rejects meta that is %s before the service sees it', async (_label, meta, message) => {
-    const result = await run('bug', meta)
-    expect(result).toMatchObject({error: {message: expect.stringContaining(message)}})
+    await expect(run('bug', meta)).rejects.toThrow(message)
     expect(insertedValues).not.toHaveBeenCalled()
   })
 
   it('rejects a meta key the service does not own', async () => {
-    const result = await run(
-      'bug',
-      JSON.stringify({isJQL: false, projectKeyFilters: [], repos: []})
-    )
-    expect(result).toMatchObject({error: {message: expect.stringContaining('Unknown meta keys')}})
+    await expect(
+      run('bug', JSON.stringify({isJQL: false, projectKeyFilters: [], repos: []}))
+    ).rejects.toThrow('Unknown meta keys')
     expect(insertedValues).not.toHaveBeenCalled()
   })
 
