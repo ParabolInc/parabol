@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useCallback, useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Link, Navigate, useLocation} from 'react-router'
 import type {ActivityDetailsQuery} from '~/__generated__/ActivityDetailsQuery.graphql'
@@ -27,7 +27,6 @@ graphql`
     ...TemplateDetails_activity
     ...ActivityDetailsBadges_template
     ...ActivityDetailsSidebar_template
-    ...TeamHealthDetailsSidebar_template
     ...useTemplateDescription_template
   }
 `
@@ -74,7 +73,6 @@ const ActivityDetails = (props: Props) => {
   const {activity, activityLibrarySearch, preferredTeamId, teams} = viewer
   const location = useLocation() as {state?: {prevCategory?: string}}
   const [isEditing, setIsEditing] = useState(false)
-  const previewFirstMeeting = useCallback(() => setIsEditing(false), [])
 
   if (!activity) {
     return <Navigate to='/activity-library' replace />
@@ -180,7 +178,6 @@ const ActivityDetails = (props: Props) => {
             teamsRef={teams}
             teamHealthTeamsRef={teamHealthTeams}
             preferredTeamId={preferredTeamId}
-            onPreviewFirstMeeting={previewFirstMeeting}
           />
         </div>
       </div>

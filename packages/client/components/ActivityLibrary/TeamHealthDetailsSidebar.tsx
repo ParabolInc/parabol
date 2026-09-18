@@ -1,10 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useRef, useState} from 'react'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {RRule} from 'rrule'
 import type {TeamHealthDetailsSidebar_teams$key} from '~/__generated__/TeamHealthDetailsSidebar_teams.graphql'
-import type {TeamHealthDetailsSidebar_template$key} from '~/__generated__/TeamHealthDetailsSidebar_template.graphql'
 import {
   KeyboardArrowDown as KeyboardArrowDownIcon,
   KeyboardArrowUp as KeyboardArrowUpIcon
@@ -27,35 +26,17 @@ import {ScheduleDialog} from '../ScheduleDialog'
 import type {SnackAction} from '../Snackbar'
 import StyledLink from '../StyledLink'
 import TeamPicker from '../TeamPicker/TeamPicker'
-import TeamHealthFirstMeetingSummary from './TeamHealth/TeamHealthFirstMeetingSummary'
-import {MEETING_PREVIEW_ID} from './TeamHealth/TeamHealthMeetingPreview'
 
 type StartTeamHealthResult = useStartTeamHealthMutation$data['startTeamHealth']
 
 interface Props {
   templateId: string
-  templateRef: TeamHealthDetailsSidebar_template$key
   teamsRef: TeamHealthDetailsSidebar_teams$key
   preferredTeamId: string | null | undefined
-  onPreviewFirstMeeting: () => void
 }
 
 const TeamHealthDetailsSidebar = (props: Props) => {
-  const {templateId, templateRef, teamsRef, preferredTeamId, onPreviewFirstMeeting} = props
-  const template = useFragment(
-    graphql`
-      fragment TeamHealthDetailsSidebar_template on MeetingTemplate {
-        ... on TeamHealthTemplate {
-          upcomingMeetingPreviews {
-            questions {
-              id
-            }
-          }
-        }
-      }
-    `,
-    templateRef
-  )
+  const {templateId, teamsRef, preferredTeamId} = props
   const teams = useFragment(
     graphql`
       fragment TeamHealthDetailsSidebar_teams on Team @relay(plural: true) {
@@ -73,7 +54,6 @@ const TeamHealthDetailsSidebar = (props: Props) => {
   const navigate = useNavigate()
   const [isMinimized, setIsMinimized] = useState(false)
   const [isScheduleOpen, setIsScheduleOpen] = useState(false)
-  const scrollToPreviewOnCloseRef = useRef(false)
   const [execute, submitting] = useStartTeamHealthMutation()
   const [startMeetingSeriesNow] = useStartMeetingSeriesNowMutation()
   // ScheduleDialog drives the Google Calendar OAuth flow through the legacy mutationProps shape
@@ -216,21 +196,7 @@ const TeamHealthDetailsSidebar = (props: Props) => {
               <div className='text-lg'>Start Meeting Series</div>
             </Button>
           </DialogTrigger>
-          <DialogContent
-            noClose
-            className='md:max-w-md'
-            // the closing dialog hands focus back to its trigger right after this, which cancels a smooth
-            // scroll already in flight, so start scrolling on the next frame
-            onCloseAutoFocus={() => {
-              if (!scrollToPreviewOnCloseRef.current) return
-              scrollToPreviewOnCloseRef.current = false
-              requestAnimationFrame(() =>
-                document
-                  .getElementById(MEETING_PREVIEW_ID)
-                  ?.scrollIntoView({behavior: 'smooth', block: 'start'})
-              )
-            }}
-          >
+          <DialogContent noClose className='md:max-w-md'>
             <ScheduleDialog
               teamRef={gcalTeam}
               placeholder='Team Health'
@@ -238,16 +204,6 @@ const TeamHealthDetailsSidebar = (props: Props) => {
               onCancel={() => setIsScheduleOpen(false)}
               mutationProps={mutationProps}
               withRecurrence
-              summary={
-                <TeamHealthFirstMeetingSummary
-                  questionCount={template.upcomingMeetingPreviews?.[0]?.questions.length ?? 0}
-                  onPreview={() => {
-                    scrollToPreviewOnCloseRef.current = true
-                    onPreviewFirstMeeting()
-                    setIsScheduleOpen(false)
-                  }}
-                />
-              }
             />
           </DialogContent>
         </Dialog>

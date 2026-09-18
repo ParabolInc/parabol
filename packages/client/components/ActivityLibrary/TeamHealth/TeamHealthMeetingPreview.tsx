@@ -8,8 +8,6 @@ import TeamHealthMeetingPreviewFooter from './TeamHealthMeetingPreviewFooter'
 import TeamHealthMeetingPreviewPager from './TeamHealthMeetingPreviewPager'
 import TeamHealthMeetingPreviewQuestion from './TeamHealthMeetingPreviewQuestion'
 
-export const MEETING_PREVIEW_ID = 'team-health-meeting-preview'
-
 interface Props {
   templateRef: TeamHealthMeetingPreview_template$key
   // globally-ordered category ids that drive each category's color (see getTeamHealthCategoryColor)
@@ -65,10 +63,7 @@ const TeamHealthMeetingPreview = (props: Props) => {
 
   return (
     // sized like TeamHealthSurveyFlowAnimation so the card sits squarely under it
-    <section
-      id={MEETING_PREVIEW_ID}
-      className='mb-4 max-w-[612px] scroll-mt-4 rounded-lg border border-hairline bg-surface-app p-4'
-    >
+    <section className='mb-4 max-w-[612px] rounded-lg border border-hairline bg-surface-app p-4'>
       <div className='flex flex-wrap items-center justify-between gap-2'>
         <TeamHealthMeetingPreviewPager
           meetingNumber={meetingNumber}

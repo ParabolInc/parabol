@@ -10,7 +10,6 @@ graphql`
         id
       }
       ...TeamHealthMeetingPreview_template
-      ...TeamHealthDetailsSidebar_template
     }
   }
 `
