@@ -82,47 +82,49 @@ const TeamHealthTemplateQuestionEditor = (props: Props) => {
   )
 
   // the list grows freely; from lg up ActivityDetails gives this pane its own scroll
-  // the column is centered & sized by its content, so this section takes the column's width instead of
-  // setting it; otherwise the wider bank re-centers the whole page when edit mode swaps it in
   return (
-    <div className='w-0 min-w-full pt-4'>
+    <div className='pt-4'>
       <TeamHealthSurveyFlowAnimation className='mx-auto mb-4' />
-      {isEditing ? (
-        <>
-          <p className='mb-4 text-fg-secondary text-sm'>
-            Editing the question bank. Your first meeting updates when you're done.
-          </p>
-          {!myPackId && (
-            <div className='border-hairline border-b pb-2'>
-              <div className='py-2 font-semibold text-fg-primary text-sm'>My Questions</div>
-              <div className='px-1'>{addQuestion}</div>
-            </div>
-          )}
-          {sortedPacks.map((pack, index) => (
-            <TeamHealthQuestionPackSection
-              key={pack.id}
-              packRef={pack}
-              templateId={templateId}
-              viewerId={viewerId}
-              selectedIds={selectedIds}
-              categories={categories}
-              isEditing={isEditing}
-              readOnly={readOnly}
-              onEditHint={onEditHint}
-              // read-only viewers see only built-in packs, so open the first one instead of the org pack
-              defaultOpen={readOnly ? index === 0 : pack.userId !== 'aGhostUser'}
-              title={pack.id === myPackId ? 'My Questions' : undefined}
-              footer={pack.id === myPackId && isEditing ? addQuestion : undefined}
-            />
-          ))}
-        </>
-      ) : (
-        <TeamHealthFirstMeetingPreview
-          templateRef={template}
-          orderedCategoryIds={categories.map((category) => category.id)}
-          changedQuestionIds={changedQuestionIds}
-        />
-      )}
+      {/* from xl the illustration card sits to the left with nothing beneath it; pull the questions out
+          under it, flush with its left edge, so they get the full row before they wrap */}
+      <div className='xl:-ml-96'>
+        {isEditing ? (
+          <>
+            <p className='mb-4 text-fg-secondary text-sm'>
+              Editing the question bank. Your first meeting updates when you're done.
+            </p>
+            {!myPackId && (
+              <div className='border-hairline border-b pb-2'>
+                <div className='py-2 font-semibold text-fg-primary text-sm'>My Questions</div>
+                <div className='px-1'>{addQuestion}</div>
+              </div>
+            )}
+            {sortedPacks.map((pack, index) => (
+              <TeamHealthQuestionPackSection
+                key={pack.id}
+                packRef={pack}
+                templateId={templateId}
+                viewerId={viewerId}
+                selectedIds={selectedIds}
+                categories={categories}
+                isEditing={isEditing}
+                readOnly={readOnly}
+                onEditHint={onEditHint}
+                // read-only viewers see only built-in packs, so open the first one instead of the org pack
+                defaultOpen={readOnly ? index === 0 : pack.userId !== 'aGhostUser'}
+                title={pack.id === myPackId ? 'My Questions' : undefined}
+                footer={pack.id === myPackId && isEditing ? addQuestion : undefined}
+              />
+            ))}
+          </>
+        ) : (
+          <TeamHealthFirstMeetingPreview
+            templateRef={template}
+            orderedCategoryIds={categories.map((category) => category.id)}
+            changedQuestionIds={changedQuestionIds}
+          />
+        )}
+      </div>
     </div>
   )
 }
