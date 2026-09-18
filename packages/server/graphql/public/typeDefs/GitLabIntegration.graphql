@@ -20,7 +20,7 @@ type GitLabIntegration {
   """
   A list of projects accessible by this team member
   """
-  projects: [_xGitLabProject!]!
+  projects: [_xGitLabProject!]! @deprecated(reason: "Use api { query { projects } }")
   projectsIssues(
     first: Int!
 

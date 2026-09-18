@@ -23,15 +23,18 @@ const handleLinearCreateIssue = (
     ?.getLinkedRecord('linear')
     ?.getLinkedRecord('api')
     ?.getLinkedRecord('query')
-  const linearSearchQueryId = SearchQueryId.join('linear', meetingId)
-  const linearSearchQuery = store.get(linearSearchQueryId)
+  const searchQueryId = SearchQueryId.join('linear', meetingId)
+  const searchQueryRecord = store.get(searchQueryId)
   const queryString =
-    (linearSearchQuery?.getValue('queryString') as string | undefined)?.trim() ?? ''
-  const selectedProjectsIds =
-    (linearSearchQuery?.getValue('selectedProjectsIds') as string[] | undefined) ?? []
+    (searchQueryRecord?.getValue('queryString') as string | undefined)?.trim() ?? ''
+  const filters =
+    searchQueryRecord?.getLinkedRecords('filters')?.map((filter) => ({
+      key: filter.getValue('key') as string,
+      value: filter.getValue('value') as string
+    })) ?? []
   const typename = integration.getType()
   if (typename !== '_xLinearIssue') return
-  const filter = makeLinearIssueFilter(queryString, selectedProjectsIds)
+  const filter = makeLinearIssueFilter(queryString, filters)
   const linearIssueConn = getLinearIssuesConn(linear, {filter})
   if (!linearIssueConn) return
 

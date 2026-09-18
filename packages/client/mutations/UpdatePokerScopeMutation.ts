@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import type {UpdatePokerScopeMutation as TUpdatePokerScopeMutation} from '../__generated__/UpdatePokerScopeMutation.graphql'
+import {readScopingSearchState} from '../hooks/useScopingSearchState'
 import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
 import {splitTipTapContent} from '../shared/tiptap/splitTipTapContent'
 import {PALETTE} from '../styles/paletteV3'
 import {SprintPokerDefaults} from '../types/constEnums'
 import type {BaseLocalHandlers, StandardMutation} from '../types/relayMutations'
-import getSearchQueryFromMeeting from '../utils/getSearchQueryFromMeeting'
 import clientTempId from '../utils/relay/clientTempId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
@@ -57,24 +57,6 @@ graphql`
       ...useUpdatedSafeRoute_meeting
       # Necessary to show the Next button if someone adds an issue and the facilitator is on the last one
       ...MeetingControlBar_meeting
-      gitlabSearchQuery {
-        queryString
-        selectedProjectsIds
-      }
-      githubSearchQuery {
-        queryString
-      }
-      jiraSearchQuery {
-        queryString
-        projectKeyFilters
-      }
-      parabolSearchQuery {
-        queryString
-      }
-      linearSearchQuery {
-        queryString
-        selectedProjectsIds
-      }
       phases {
         ... on EstimatePhase {
           stages {
@@ -190,7 +172,12 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
             .setLinkedRecords([], 'editors')
             .setLinkedRecord(team!, 'team')
           if (service !== 'PARABOL') {
-            optimisticTask.setLinkedRecord(store.get(serviceTaskId) ?? null, 'integration')
+            const integration = store.get(serviceTaskId)
+            if (integration) {
+              optimisticTask.setLinkedRecord(integration, 'integration')
+            } else {
+              optimisticTask.setValue(null, 'integration')
+            }
           }
 
           const newStages = dimensionRefIds.map((dimensionRefId, dimensionRefIdx) => {
@@ -238,15 +225,13 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
       const {meetingId, updates} = variables
       const update = updates[0]!
       const {service, action} = update
-      const searchQuery = getSearchQueryFromMeeting(meeting, service)
-      if (!searchQuery) return
-      const {searchQueryString, searchQueryFilters} = searchQuery
+      const searchState = readScopingSearchState(atmosphere, meetingId, service)
       SendClientSideEvent(atmosphere, 'Updated Poker Scope', {
         meetingId,
         service,
         action,
-        searchQueryString,
-        searchQueryFilters,
+        searchQueryString: searchState?.queryString,
+        searchQueryFilters: searchState?.filters.map(({value}) => value),
         selectedAll
       })
     },

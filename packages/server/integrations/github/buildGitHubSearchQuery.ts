@@ -1,18 +1,20 @@
 import type {GitHubSearchQueryJson} from '../../postgres/types'
 import type {JsonObject} from '../../postgres/types/pg'
-
-const MAX_QUERY_STRING_LENGTH = 2000
+import {checkQueryString, parseMetaList, rejectUnknownKeys} from '../platform/searchMeta'
 
 const buildGitHubSearchQuery = (
   queryString: string,
   meta: JsonObject
 ): GitHubSearchQueryJson | Error => {
-  if (queryString.length > MAX_QUERY_STRING_LENGTH) {
-    return new Error(`queryString must be at most ${MAX_QUERY_STRING_LENGTH} characters`)
-  }
-  const unknownKeys = Object.keys(meta)
-  if (unknownKeys.length > 0) return new Error(`Unknown meta keys: ${unknownKeys.join(', ')}`)
-  return {queryString: queryString.toLowerCase().trim()}
+  const {repos, ...rest} = meta
+  const invalid = checkQueryString(queryString) ?? rejectUnknownKeys(rest)
+  if (invalid) return invalid
+  const sortedRepos = repos === undefined ? [] : parseMetaList('repos', repos)
+  if (sortedRepos instanceof Error) return sortedRepos
+  const normalizedQueryString = queryString.toLowerCase().trim()
+  return sortedRepos.length > 0
+    ? {queryString: normalizedQueryString, repos: sortedRepos}
+    : {queryString: normalizedQueryString}
 }
 
 export default buildGitHubSearchQuery

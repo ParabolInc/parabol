@@ -1,14 +1,15 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type FormEvent, useEffect, useRef, useState} from 'react'
-import {useFragment} from 'react-relay'
-import type {NewAzureIssueInput_viewer$key} from '~/__generated__/NewAzureIssueInput_viewer.graphql'
+import {useLazyLoadQuery} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import CreateTaskMutation from '~/mutations/CreateTaskMutation'
 import {ExpandMore} from '~/ui/icons'
 import type {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/CreateTaskMutation.graphql'
+import type {NewAzureIssueInputQuery} from '../__generated__/NewAzureIssueInputQuery.graphql'
 import useForm from '../hooks/useForm'
 import useTimedState from '../hooks/useTimedState'
+import type {NewRecordInputProps} from '../integrations/platform/ScopingSearchState'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
 import type {CompletedHandler} from '../types/relayMutations'
@@ -19,48 +20,42 @@ import NewAzureIssueMenu from './NewAzureIssueMenu'
 import PlainButton from './PlainButton/PlainButton'
 import StyledError from './StyledError'
 
+const query = graphql`
+  query NewAzureIssueInputQuery($teamId: ID!) {
+    viewer {
+      id
+      teamMember(teamId: $teamId) {
+        integrations {
+          azureDevOps {
+            projects {
+              ...NewAzureIssueMenu_AzureDevOpsRemoteProjects
+              id
+              name
+              integrationRepoId
+            }
+          }
+        }
+      }
+    }
+  }
+`
+
 const linkClassName =
   'block text-accent text-xs leading-5 no-underline hover:underline focus:underline'
-
-interface Props {
-  isEditing: boolean
-  meetingId: string
-  setIsEditing: (isEditing: boolean) => void
-  viewerRef: NewAzureIssueInput_viewer$key
-}
 
 const validateIssue = (issue: string) => {
   return new Legitity(issue).trim().min(2, `C’mon, you call that an issue?`)
 }
 
-const NewAzureIssueInput = (props: Props) => {
-  const {isEditing, meetingId, setIsEditing, viewerRef} = props
-  const viewer = useFragment(
-    graphql`
-      fragment NewAzureIssueInput_viewer on User {
-        id
-        team(teamId: $teamId) {
-          id
-        }
-        teamMember(teamId: $teamId) {
-          integrations {
-            azureDevOps {
-              projects {
-                ...NewAzureIssueMenu_AzureDevOpsRemoteProjects
-                id
-                name
-                integrationRepoId
-              }
-            }
-          }
-        }
-      }
-    `,
-    viewerRef
+const NewAzureIssueInput = (props: NewRecordInputProps) => {
+  const {isEditing, setIsEditing, meetingId, teamId} = props
+  const data = useLazyLoadQuery<NewAzureIssueInputQuery>(
+    query,
+    {teamId},
+    {fetchPolicy: 'store-or-network'}
   )
-  const {id: userId, team, teamMember} = viewer
-  const {id: teamId} = team!
-  const projects = teamMember?.integrations?.azureDevOps.projects ?? []
+  const {id: userId, teamMember} = data.viewer
+  const projects = teamMember?.integrations.azureDevOps.projects ?? []
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
   const [createTaskError, setCreateTaskError] = useTimedState()

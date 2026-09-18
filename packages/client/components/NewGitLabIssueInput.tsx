@@ -1,14 +1,15 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type FormEvent, useEffect, useRef, useState} from 'react'
-import {useFragment} from 'react-relay'
-import type {NewGitLabIssueInput_viewer$key} from '~/__generated__/NewGitLabIssueInput_viewer.graphql'
+import {useLazyLoadQuery} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import {ExpandMore} from '~/ui/icons'
 import getNonNullEdges from '~/utils/getNonNullEdges'
 import type {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/CreateTaskMutation.graphql'
+import type {NewGitLabIssueInputQuery} from '../__generated__/NewGitLabIssueInputQuery.graphql'
 import useForm from '../hooks/useForm'
 import useTimedState from '../hooks/useTimedState'
+import type {NewRecordInputProps} from '../integrations/platform/ScopingSearchState'
 import CreateTaskMutation from '../mutations/CreateTaskMutation'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
@@ -20,48 +21,23 @@ import NewGitLabIssueMenu from './NewGitLabIssueMenu'
 import PlainButton from './PlainButton/PlainButton'
 import StyledError from './StyledError'
 
-interface Props {
-  isEditing: boolean
-  meetingId: string
-  setIsEditing: (isEditing: boolean) => void
-  viewerRef: NewGitLabIssueInput_viewer$key
-}
-
-const validateIssue = (issue: string) => {
-  return new Legitity(issue).trim().min(2, `C’mon, you call that an issue?`)
-}
-
-const NewGitLabIssueInput = (props: Props) => {
-  const {isEditing, meetingId, setIsEditing, viewerRef} = props
-  const viewer = useFragment(
-    graphql`
-      fragment NewGitLabIssueInput_viewer on User {
-        id
-        team(teamId: $teamId) {
-          id
-        }
-        teamMember(teamId: $teamId) {
-          integrations {
-            gitlab {
-              api {
-                errors {
-                  message
-                  locations {
-                    line
-                    column
-                  }
-                  path
-                }
-                # use alias to tell relay that this query shouldn't be cached with GitLabScopingSearchResults query
-                newIssueQuery: query {
-                  projects(membership: true, first: 100, sort: "latest_activity_desc") {
-                    edges {
-                      node {
-                        ... on _xGitLabProject {
-                          __typename
-                          id
-                          fullPath
-                        }
+const query = graphql`
+  query NewGitLabIssueInputQuery($teamId: ID!) {
+    viewer {
+      id
+      teamMember(teamId: $teamId) {
+        integrations {
+          gitlab {
+            api {
+              # use alias to tell relay that this query shouldn't be cached with the scoping results query
+              newIssueQuery: query {
+                projects(membership: true, first: 100, sort: "latest_activity_desc") {
+                  edges {
+                    node {
+                      ... on _xGitLabProject {
+                        __typename
+                        id
+                        fullPath
                       }
                     }
                   }
@@ -71,11 +47,22 @@ const NewGitLabIssueInput = (props: Props) => {
           }
         }
       }
-    `,
-    viewerRef
+    }
+  }
+`
+
+const validateIssue = (issue: string) => {
+  return new Legitity(issue).trim().min(2, `C’mon, you call that an issue?`)
+}
+
+const NewGitLabIssueInput = (props: NewRecordInputProps) => {
+  const {isEditing, meetingId, setIsEditing, teamId} = props
+  const data = useLazyLoadQuery<NewGitLabIssueInputQuery>(
+    query,
+    {teamId},
+    {fetchPolicy: 'store-or-network'}
   )
-  const {id: userId, team, teamMember} = viewer
-  const {id: teamId} = team!
+  const {id: userId, teamMember} = data.viewer
   const nullableEdges = teamMember?.integrations?.gitlab?.api?.newIssueQuery?.projects?.edges ?? []
   const gitlabProjects = getNonNullEdges(nullableEdges).map(({node}) => node)
   const atmosphere = useAtmosphere()

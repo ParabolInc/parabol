@@ -1,4 +1,8 @@
-import type {_xLinearIssueFilter} from '../__generated__/LinearScopingSearchResultsQuery.graphql'
+import type {_xLinearIssueFilter} from '../__generated__/LinearScopingResultsAdapterQuery.graphql'
+import {
+  type IntegrationSearchFilter,
+  searchFiltersByKey
+} from '../shared/integrations/IntegrationSearchFilter'
 
 const parseLinearIdentifier = (query: string): {teamKey?: string; issueNumber: number} | null => {
   const fullMatch = query.match(/^([A-Za-z]+)[\s-](\d+)$/)
@@ -20,11 +24,11 @@ const parseLinearIdentifier = (query: string): {teamKey?: string; issueNumber: n
 
 export const makeLinearIssueFilter = (
   queryString: string,
-  selectedProjectsIds: readonly string[] | null | undefined
+  filters: readonly IntegrationSearchFilter[]
 ): _xLinearIssueFilter | null => {
   const normalizedQueryString = queryString.trim()
   const finalFilters: _xLinearIssueFilter[] = []
-  if (queryString.length) {
+  if (normalizedQueryString.length) {
     const textFilters: _xLinearIssueFilter[] = [
       {description: {containsIgnoreCaseAndAccent: normalizedQueryString}},
       {title: {containsIgnoreCaseAndAccent: normalizedQueryString}}
@@ -41,18 +45,15 @@ export const makeLinearIssueFilter = (
     }
     finalFilters.push({or: textFilters})
   }
-  if (selectedProjectsIds?.length) {
-    const teamAndProjectFilters: _xLinearIssueFilter[] = []
-    selectedProjectsIds.map((selectedTypeAndId) => {
-      const [typeName, id] = selectedTypeAndId.split(':') as [string?, string?]
-      if (id && typeName === '_xLinearProject') {
-        teamAndProjectFilters.push({project: {id: {eq: id}}})
-      }
-      if (id && typeName === '_xLinearTeam') {
-        teamAndProjectFilters.push({team: {id: {eq: id}}})
-      }
+  const projectIds = searchFiltersByKey(filters, 'project')
+  const teamIds = searchFiltersByKey(filters, 'team')
+  if (projectIds.length || teamIds.length) {
+    finalFilters.push({
+      or: [
+        ...projectIds.map((id) => ({project: {id: {eq: id}}})),
+        ...teamIds.map((id) => ({team: {id: {eq: id}}}))
+      ]
     })
-    finalFilters.push({or: teamAndProjectFilters})
   }
   if (finalFilters.length) {
     return {and: finalFilters}

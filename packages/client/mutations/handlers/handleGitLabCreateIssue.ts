@@ -1,5 +1,5 @@
 import {ConnectionHandler, type RecordProxy, type RecordSourceSelectorProxy} from 'relay-runtime'
-import {gitlabIssueArgs} from '~/components/GitLabScopingSearchResultsRoot'
+import {gitLabIssueArgs} from '~/integrations/gitlab/gitLabIssueArgs'
 import SearchQueryId from '~/shared/gqlIds/SearchQueryId'
 import type {CreateTaskMutation} from '../../__generated__/CreateTaskMutation.graphql'
 import toTeamMemberId from '../../utils/relay/toTeamMemberId'
@@ -16,9 +16,9 @@ const handleGitLabCreateIssue = (
   const meetingId = task.getValue('meetingId')
   if (!viewerId || !meetingId || !integration) return
 
-  const gitlabSearchQueryId = SearchQueryId.join('gitlab', meetingId)
-  const gitlabSearchQuery = store.get(gitlabSearchQueryId)
-  const queryString = gitlabSearchQuery?.getValue('queryString') as string | undefined
+  const searchQueryId = SearchQueryId.join('gitlab', meetingId)
+  const searchQueryRecord = store.get(searchQueryId)
+  const queryString = searchQueryRecord?.getValue('queryString') as string | undefined
   const searchQuery = queryString?.trim() ?? ''
 
   const teamMemberId = toTeamMemberId(teamId, viewerId)
@@ -27,14 +27,16 @@ const handleGitLabCreateIssue = (
   const gitlab = integrations?.getLinkedRecord('gitlab')
   const typename = integration.getType()
   if (typename !== '_xGitLabIssue') return
-  const selectedProjectsIds = gitlabSearchQuery?.getValue('selectedProjectsIds') as
-    | string[]
-    | undefined
-  const formattedProjectsIds = selectedProjectsIds?.length ? selectedProjectsIds : null
+  const selectedProjectsIds =
+    searchQueryRecord
+      ?.getLinkedRecords('filters')
+      ?.filter((filter) => filter.getValue('key') === 'project')
+      .map((filter) => filter.getValue('value') as string) ?? []
+  const formattedProjectsIds = selectedProjectsIds.length ? selectedProjectsIds : null
   const gitlabProjectsIssuesConn = getGitLabProjectsIssuesConn(gitlab, {
     searchQuery,
     projectsIds: formattedProjectsIds,
-    ...gitlabIssueArgs
+    ...gitLabIssueArgs
   })
   if (!gitlabProjectsIssuesConn) return
   const now = new Date().toISOString()

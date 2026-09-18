@@ -1,28 +1,18 @@
 import graphql from 'babel-plugin-relay/macro'
-import {Suspense} from 'react'
-import {commitLocalUpdate, type PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
+import {useLazyLoadQuery} from 'react-relay'
 import SendClientSideEvent from '~/utils/SendClientSideEvent'
-import type {LinearScopingSearchFilterMenuRoot_query$key} from '../__generated__/LinearScopingSearchFilterMenuRoot_query.graphql'
 import type {LinearScopingSearchFilterMenuRootQuery} from '../__generated__/LinearScopingSearchFilterMenuRootQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useLinearProjectsAndTeams from '../hooks/useLinearProjectsAndTeams'
-import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
+import useScopingSearchState from '../hooks/useScopingSearchState'
+import type {FilterMenuProps} from '../integrations/platform/ScopingSearchState'
+import {searchFiltersByKey} from '../shared/integrations/IntegrationSearchFilter'
 import LinearSelectorMenu from './LinearSelectorMenu'
 import MockFieldList from './MockFieldList'
 
-const LinearScopingSearchFilterMenuRootFragmentNode = graphql`
-  fragment LinearScopingSearchFilterMenuRoot_query on Query
-  @argumentDefinitions(teamId: {type: "ID!"}, meetingId: {type: "ID!"}) {
+const query = graphql`
+  query LinearScopingSearchFilterMenuRootQuery($teamId: ID!) {
     viewer {
-      meeting(meetingId: $meetingId) {
-        id
-        ... on PokerMeeting {
-          linearSearchQuery {
-            __id
-            selectedProjectsIds
-          }
-        }
-      }
       teamMember(teamId: $teamId) {
         ...useLinearProjectsAndTeams_teamMember
       }
@@ -30,90 +20,44 @@ const LinearScopingSearchFilterMenuRootFragmentNode = graphql`
   }
 `
 
-const LinearScopingSearchFilterMenuRootQueryNode = graphql`
-  query LinearScopingSearchFilterMenuRootQuery($teamId: ID!, $meetingId: ID!) {
-    ...LinearScopingSearchFilterMenuRoot_query @arguments(teamId: $teamId, meetingId: $meetingId)
-  }
-`
-interface Props {
-  teamId: string
-  meetingId: string
-}
-
-const LinearScopingSearchFilterMenuRoot = (props: Props) => {
-  const {teamId, meetingId} = props
-
-  const queryRef = useQueryLoaderNow<LinearScopingSearchFilterMenuRootQuery>(
-    LinearScopingSearchFilterMenuRootQueryNode,
-    {meetingId, teamId}
+const LinearScopingSearchFilterMenuRoot = (props: FilterMenuProps) => {
+  const {teamId, meetingId, state} = props
+  const data = useLazyLoadQuery<LinearScopingSearchFilterMenuRootQuery>(
+    query,
+    {teamId},
+    {fetchPolicy: 'store-or-network'}
   )
-
-  return (
-    <Suspense fallback={<MockFieldList />}>
-      {queryRef && (
-        <LinearScopingSearchFilterMenuContent queryRef={queryRef} meetingId={meetingId} />
-      )}
-    </Suspense>
-  )
-}
-
-interface ContentProps {
-  queryRef: PreloadedQuery<LinearScopingSearchFilterMenuRootQuery>
-  meetingId: string
-}
-
-const LinearScopingSearchFilterMenuContent = ({queryRef, meetingId}: ContentProps) => {
-  const queryData = usePreloadedQuery<LinearScopingSearchFilterMenuRootQuery>(
-    LinearScopingSearchFilterMenuRootQueryNode,
-    queryRef
-  )
-  const fragmentData = useFragment<LinearScopingSearchFilterMenuRoot_query$key>(
-    LinearScopingSearchFilterMenuRootFragmentNode,
-    queryData
-  )
-
+  const teamMember = data.viewer.teamMember ?? null
   const atmosphere = useAtmosphere()
-  const meeting = fragmentData.viewer?.meeting
-  const linearSearchQueryStoreObject = meeting?.linearSearchQuery
-  const selectedProjectsIds = linearSearchQueryStoreObject?.selectedProjectsIds ?? []
-
-  const teamMember = fragmentData.viewer?.teamMember ?? null
+  const setSearchState = useScopingSearchState(meetingId, 'linear')
   const {searchQuery, setSearchQuery, filteredProjectsAndTeams} =
     useLinearProjectsAndTeams(teamMember)
-  if (!teamMember) {
-    console.error('LinearScopingSearchFilterMenu: teamMember data is missing.')
-    return <MockFieldList />
-  }
+  if (!teamMember) return <MockFieldList />
 
-  const handleSelectItem = (itemId: string, isSelected: boolean) => {
-    if (!linearSearchQueryStoreObject) return
-
-    commitLocalUpdate(atmosphere, (store) => {
-      const linearSearchQueryRecord = store.get(linearSearchQueryStoreObject.__id)
-      if (!linearSearchQueryRecord) return
-
-      const currentSelectedIds =
-        (linearSearchQueryRecord.getValue('selectedProjectsIds') as string[] | null) ?? []
-
-      const newSelectedProjectsIds = isSelected
-        ? currentSelectedIds.filter((id) => id !== itemId)
-        : [...currentSelectedIds, itemId]
-
-      linearSearchQueryRecord.setValue(newSelectedProjectsIds, 'selectedProjectsIds')
-    })
-
-    SendClientSideEvent(atmosphere, 'Selected Poker Scope Project Filter', {
-      meetingId,
-      selectionValue: itemId,
-      service: 'linear'
-    })
-  }
+  const {filters} = state
+  const selectedItemIds = [
+    ...searchFiltersByKey(filters, 'project'),
+    ...searchFiltersByKey(filters, 'team')
+  ]
 
   return (
     <LinearSelectorMenu
       items={filteredProjectsAndTeams}
-      selectedItemIds={selectedProjectsIds}
-      onSelectItem={handleSelectItem}
+      selectedItemIds={selectedItemIds}
+      getItemId={(item) => item.id}
+      onSelectItem={(item, isSelected) => {
+        const key = item.__typename === '_xLinearProject' ? 'project' : 'team'
+        setSearchState({
+          filters: isSelected
+            ? filters.filter((filter) => filter.key !== key || filter.value !== item.id)
+            : [...filters, {key, value: item.id}]
+        })
+        SendClientSideEvent(atmosphere, 'Selected Poker Scope Project Filter', {
+          meetingId,
+          selectionValue: item.id,
+          service: 'linear'
+        })
+      }}
       searchQuery={searchQuery}
       onSearchQueryChange={setSearchQuery}
       placeholder='Search Linear projects or teams'

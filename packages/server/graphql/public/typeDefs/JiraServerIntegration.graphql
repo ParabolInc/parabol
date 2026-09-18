@@ -41,10 +41,4 @@ type JiraServerIntegration {
   """
   projects: [JiraServerRemoteProject!]!
   providerId: ID
-
-  """
-  the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old
-  """
-  searchQueries: [JiraSearchQuery!]!
-    @deprecated(reason: "Use TeamMember.services { searchQueries }")
 }
