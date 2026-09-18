@@ -75,7 +75,7 @@ const TeamHealthMeetingPreview = (props: Props) => {
           meetingCount={upcomingMeetingPreviews.length}
           onChange={setSelectedMeetingNumber}
         />
-        <span className='rounded-full bg-surface-well px-2 py-0.5 font-medium text-fg-secondary text-xs'>
+        <span className='rounded-full bg-surface-well px-2 py-0.5 font-medium text-fg-secondary text-xs dark:bg-surface-raised'>
           Example
         </span>
       </div>
