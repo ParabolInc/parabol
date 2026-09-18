@@ -3,13 +3,13 @@ import {useFragment} from 'react-relay'
 import type {ScopePhaseAreaConnect_service$key} from '../__generated__/ScopePhaseAreaConnect_service.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
-import type {ConnectProviderRef} from '../integrations/platform/ClientIntegrationDefinition'
+import {getConnectErrorMessage} from '../integrations/platform/getConnectErrorMessage'
+import {toConnectProviderRef} from '../integrations/platform/integrationServiceProviders'
 import {
   getClientIntegration,
   isRegisteredClientIntegration
 } from '../integrations/platform/registry'
 import {Button} from '../ui/Button/Button'
-import {ERROR_POPUP_CLOSED} from '../utils/AtlassianClientManager'
 import {SALES_EMAIL} from '../utils/constants'
 
 interface Props {
@@ -17,18 +17,6 @@ interface Props {
   gotoParabol: () => void
   serviceRef: ScopePhaseAreaConnect_service$key
 }
-
-const toConnectProviderRef = (provider: {
-  id: string
-  clientId?: string
-  serverBaseUrl?: string
-  tenantId?: string | null
-}): ConnectProviderRef => ({
-  id: provider.id,
-  clientId: provider.clientId ?? null,
-  serverBaseUrl: provider.serverBaseUrl ?? null,
-  tenantId: provider.tenantId ?? null
-})
 
 const ScopePhaseAreaConnect = (props: Props) => {
   const {teamId, gotoParabol, serviceRef} = props
@@ -44,6 +32,7 @@ const ScopePhaseAreaConnect = (props: Props) => {
         grantedScopes
         cloudProvider {
           id
+          scope
           ... on IntegrationProviderOAuth2 {
             clientId
             serverBaseUrl
@@ -52,6 +41,7 @@ const ScopePhaseAreaConnect = (props: Props) => {
         }
         sharedProviders {
           id
+          scope
           ... on IntegrationProviderOAuth2 {
             clientId
             serverBaseUrl
@@ -94,17 +84,7 @@ const ScopePhaseAreaConnect = (props: Props) => {
   const onConnect = () => {
     definition.connect(atmosphere, {teamId, mutationProps, provider, heldScopes: grantedScopes})
   }
-  const errorMessage =
-    error?.message === ERROR_POPUP_CLOSED && definition.authorizationHelpUrl ? (
-      <>
-        Having trouble authorizing Parabol? Try our{' '}
-        <a href={definition.authorizationHelpUrl} target='_blank' rel='noreferrer'>
-          troubleshooting guide
-        </a>
-      </>
-    ) : (
-      error?.message
-    )
+  const errorMessage = getConnectErrorMessage(error, definition)
 
   return (
     <div className='flex h-full flex-col items-center justify-center'>

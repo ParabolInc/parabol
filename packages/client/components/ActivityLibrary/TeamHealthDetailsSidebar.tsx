@@ -22,10 +22,10 @@ import {Dialog} from '../../ui/Dialog/Dialog'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
 import {DialogTrigger} from '../../ui/Dialog/DialogTrigger'
 import sortByTier from '../../utils/sortByTier'
-import NewMeetingTeamPickerMultiple from '../NewMeetingTeamPickerMultiple'
 import {ScheduleDialog} from '../ScheduleDialog'
 import type {SnackAction} from '../Snackbar'
 import StyledLink from '../StyledLink'
+import TeamPicker from '../TeamPicker/TeamPicker'
 
 type StartTeamHealthResult = useStartTeamHealthMutation$data['startTeamHealth']
 
@@ -43,7 +43,7 @@ const TeamHealthDetailsSidebar = (props: Props) => {
         id
         name
         tier
-        ...NewMeetingTeamPickerMultiple_teams
+        ...TeamPicker_teams
         ...ScheduleDialog_team
       }
     `,
@@ -172,7 +172,9 @@ const TeamHealthDetailsSidebar = (props: Props) => {
           )}
         >
           <div className='mt-6 flex grow flex-col gap-2'>
-            <NewMeetingTeamPickerMultiple
+            <TeamPicker
+              isMultiple
+              restrictToOneOrg
               teamsRef={teams}
               selectedTeamIds={selectedTeamIds}
               onToggleTeam={onToggleTeam}

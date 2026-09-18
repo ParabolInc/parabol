@@ -5,6 +5,7 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import AddTeamHealthQuestion from './AddTeamHealthQuestion'
 import {getOrderedTeamHealthCategories} from './getTeamHealthCategoryColor'
 import TeamHealthQuestionPackSection from './TeamHealthQuestionPackSection'
+import TeamHealthSurveyFlowAnimation from './TeamHealthSurveyFlowAnimation'
 
 interface Props {
   templateRef: TeamHealthTemplateQuestionEditor_template$key
@@ -72,6 +73,7 @@ const TeamHealthTemplateQuestionEditor = (props: Props) => {
   // the list grows freely; from lg up ActivityDetails gives this pane its own scroll
   return (
     <div className='pt-4'>
+      <TeamHealthSurveyFlowAnimation className='mx-auto mb-4' />
       {!myPackId && isEditing && (
         <div className='border-hairline border-b pb-2'>
           <div className='py-2 font-semibold text-fg-primary text-sm'>My Questions</div>

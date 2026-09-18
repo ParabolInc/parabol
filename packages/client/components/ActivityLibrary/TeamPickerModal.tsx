@@ -19,7 +19,7 @@ import {DialogContent} from '../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import sortByTier from '../../utils/sortByTier'
-import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
+import TeamPicker from '../TeamPicker/TeamPicker'
 
 const ACTION_BUTTON_CLASSES =
   'w-max cursor-pointer rounded-md px-4 py-2 text-center font-sans text-base font-medium'
@@ -43,8 +43,7 @@ const TeamPickerModal = (props: Props) => {
         tier
         name
         orgId
-        ...NewMeetingTeamPicker_selectedTeam
-        ...NewMeetingTeamPicker_teams
+        ...TeamPicker_teams
       }
     `,
     teamsRef
@@ -136,12 +135,12 @@ const TeamPickerModal = (props: Props) => {
           <div>
             <b>Select the team</b> to manage this cloned template
           </div>
-          <NewMeetingTeamPicker
+          <TeamPicker
             onSelectTeam={(teamId) => {
               const newTeam = teams.find((team) => team.id === teamId)
               newTeam && setSelectedTeam(newTeam)
             }}
-            selectedTeamRef={selectedTeam}
+            selectedTeamId={selectedTeam.id}
             teamsRef={teams}
           />
           {selectedTeam.tier === 'starter' && (
