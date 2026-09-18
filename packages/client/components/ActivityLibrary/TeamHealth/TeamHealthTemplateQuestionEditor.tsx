@@ -4,6 +4,7 @@ import type {TeamHealthTemplateQuestionEditor_template$key} from '../../../__gen
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import AddTeamHealthQuestion from './AddTeamHealthQuestion'
 import {getOrderedTeamHealthCategories} from './getTeamHealthCategoryColor'
+import TeamHealthMeetingPreview from './TeamHealthMeetingPreview'
 import TeamHealthQuestionPackSection from './TeamHealthQuestionPackSection'
 import TeamHealthSurveyFlowAnimation from './TeamHealthSurveyFlowAnimation'
 
@@ -37,6 +38,7 @@ const TeamHealthTemplateQuestionEditor = (props: Props) => {
           }
           ...TeamHealthQuestionPackSection_pack
         }
+        ...TeamHealthMeetingPreview_template
       }
     `,
     templateRef
@@ -74,6 +76,10 @@ const TeamHealthTemplateQuestionEditor = (props: Props) => {
   return (
     <div className='pt-4'>
       <TeamHealthSurveyFlowAnimation className='mx-auto mb-4' />
+      <TeamHealthMeetingPreview
+        templateRef={template}
+        orderedCategoryIds={categories.map((category) => category.id)}
+      />
       {!myPackId && isEditing && (
         <div className='border-hairline border-b pb-2'>
           <div className='py-2 font-semibold text-fg-primary text-sm'>My Questions</div>

@@ -4,6 +4,7 @@ interface Props {
   score: number | null
   // omit to render the scale as a read-only summary, e.g. once the meeting has ended
   onSelectScore?: (score: number) => void
+  compact?: boolean
 }
 
 const SCORES = [1, 2, 3, 4, 5]
@@ -19,14 +20,15 @@ const SCORE_COLORS = [
 ] as const
 
 const TeamHealthScoreScale = (props: Props) => {
-  const {score, onSelectScore} = props
+  const {score, onSelectScore, compact} = props
   return (
     <div>
-      <div className='flex items-center justify-center gap-4'>
+      <div className={cn('flex items-center justify-center', compact ? 'gap-2' : 'gap-4')}>
         {SCORES.map((value, idx) => {
           const isSelected = score === value
           const className = cn(
-            'flex h-14 w-14 select-none items-center justify-center rounded-full font-semibold text-lg text-white transition-transform',
+            'flex select-none items-center justify-center rounded-full font-semibold text-white transition-transform',
+            compact ? 'size-10 text-base' : 'h-14 w-14 text-lg',
             SCORE_COLORS[idx],
             isSelected
               ? 'scale-110 ring-2 ring-grape-700 ring-offset-2 ring-offset-surface-card dark:ring-grape-200'
