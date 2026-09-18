@@ -1,45 +1,19 @@
-import graphql from 'babel-plugin-relay/macro'
-import {useLazyLoadQuery} from 'react-relay'
-import type {JiraScopingSearchFilterMenuRootQuery} from '../__generated__/JiraScopingSearchFilterMenuRootQuery.graphql'
+import jiraCloudScopingSearchFilterMenuQuery, {
+  type JiraCloudScopingSearchFilterMenuQuery
+} from '../__generated__/JiraCloudScopingSearchFilterMenuQuery.graphql'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import type {FilterMenuProps} from '../integrations/platform/ScopingSearchState'
-import JiraScopingSearchFilterMenu from './JiraScopingSearchFilterMenu'
-
-const query = graphql`
-  query JiraScopingSearchFilterMenuRootQuery($teamId: ID!) {
-    viewer {
-      teamMember(teamId: $teamId) {
-        integrations {
-          atlassian {
-            projects {
-              id
-              name
-              avatar
-            }
-          }
-        }
-      }
-    }
-  }
-`
+import JiraCloudScopingSearchFilterMenu from './JiraCloudScopingSearchFilterMenu'
 
 const JiraScopingSearchFilterMenuRoot = (props: FilterMenuProps) => {
   const {teamId, meetingId, state} = props
-
-  const data = useLazyLoadQuery<JiraScopingSearchFilterMenuRootQuery>(
-    query,
-    {teamId},
-    {fetchPolicy: 'store-or-network'}
+  const queryRef = useQueryLoaderNow<JiraCloudScopingSearchFilterMenuQuery>(
+    jiraCloudScopingSearchFilterMenuQuery,
+    {teamId}
   )
-
-  const projects = data.viewer.teamMember?.integrations.atlassian?.projects ?? []
-
+  if (!queryRef) return null
   return (
-    <JiraScopingSearchFilterMenu
-      meetingId={meetingId}
-      state={state}
-      projects={projects}
-      service={'jira'}
-    />
+    <JiraCloudScopingSearchFilterMenu meetingId={meetingId} state={state} queryRef={queryRef} />
   )
 }
 
