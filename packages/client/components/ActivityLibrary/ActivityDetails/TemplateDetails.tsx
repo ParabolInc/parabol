@@ -358,6 +358,7 @@ export const TemplateDetails = (props: Props) => {
           isEditing={isEditing}
           readOnly={!isOwner}
           onEditHint={flashEditHint}
+          onEdit={() => setIsEditing(true)}
         />
       )}
 

@@ -19,8 +19,8 @@ const safeCreateTeamHealth = async (
     meetingSeriesId?: number
     scheduledEndTime?: Date | null
     // Set only when this meeting is one of several a multi-team group opens for the same
-    // occurrence, since they must all ask the same questions & the rotation breaks ties at
-    // random. Left undefined otherwise, so a lone meeting rotates its own.
+    // occurrence, since they must all ask the same questions & the rotation has to span the
+    // group's history. Left undefined otherwise, so a lone meeting rotates its own.
     questionIds?: number[]
   },
   dataLoader: DataLoaderWorker
@@ -45,7 +45,11 @@ const safeCreateTeamHealth = async (
   // stages reference the immutable question by its raw id, one least-asked question per category
   const questionIds =
     input.questionIds ??
-    (await rotateTeamHealthQuestionIds(questions, meetingSeriesId ? [meetingSeriesId] : []))
+    (await rotateTeamHealthQuestionIds(
+      questions,
+      meetingSeriesId ? [meetingSeriesId] : [],
+      templateId
+    ))
   // the response stage & the result stage for a question are two views of the same category, so
   // they share one discussion thread and the team's comments carry across the reveal
   const stageQuestions = questionIds.map((questionId) => ({

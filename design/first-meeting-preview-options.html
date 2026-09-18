@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>First Meeting Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --tomato-100: #ffe2e0; --tomato-500: #fd6157; --tomato-600: #f23b31; --tomato-700: #d5211a; --tomato-900: #6d1d1d;
+    --gold-100: #faebd3; --gold-500: #de8e02; --gold-700: #855000; --gold-900: #522c00;
+    --jade-100: #cff2de; --jade-400: #66bc8c; --jade-500: #40b574; --jade-700: #1d8647; --jade-900: #08491e;
+    --aqua-100: #cbecf0; --aqua-500: #33b1c7; --aqua-700: #1c748d; --aqua-900: #0a3a4c;
+    --sky-100: #e8f4fc; --sky-200: #bbddf7; --sky-500: #329ae5; --sky-700: #0f4a76; --sky-900: #051a29;
+    --rose-500: #ed4c86; --slate-600: #82809a;
+    --grape-200: #b66bd6; --grape-600: #7340b5; --grape-700: #493272; --grape-750: #362b63; --grape-900: #170f34; --grape-950: #130d24;
+
+    --surface-app: #f8f7fc;
+    --surface-well: #e0ddec;
+    --surface-card: #ffffff;
+    --surface-raised: #f8f7fc;
+    --surface-hover: rgba(68, 66, 88, 0.1);
+    --fg-primary: #2d2d39;
+    --fg-secondary: #57556c;
+    --fg-muted: #6c6a83;
+    --hairline: #e0ddec;
+    --hairline-strong: #c3c0d8;
+    --accent: #329ae5;
+    --progress-on: var(--grape-700);
+    --shadow-card: 0 2px 1px -1px rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 1px 3px 0 rgba(0,0,0,.12);
+    --shadow-dialog: 0 11px 15px -7px rgba(0,0,0,.2), 0 24px 38px 3px rgba(0,0,0,.14), 0 9px 46px 8px rgba(0,0,0,.12);
+
+    --cat-dep-bg: var(--tomato-100); --cat-dep-fg: var(--tomato-700); --cat-dep-dot: var(--tomato-500);
+    --cat-imp-bg: var(--gold-100); --cat-imp-fg: var(--gold-700); --cat-imp-dot: var(--gold-500);
+    --cat-mea-bg: var(--jade-100); --cat-mea-fg: var(--jade-700); --cat-mea-dot: var(--jade-500);
+    --cat-ps-bg: var(--aqua-100); --cat-ps-fg: var(--aqua-700); --cat-ps-dot: var(--aqua-500);
+    --cat-sc-bg: var(--sky-100); --cat-sc-fg: var(--sky-700); --cat-sc-dot: var(--sky-500);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --surface-app: var(--grape-900); --surface-well: var(--grape-950); --surface-card: var(--grape-750);
+      --surface-raised: var(--grape-700); --surface-hover: rgba(183,180,233,.22);
+      --fg-primary: #eeedf7; --fg-secondary: #cac7f2; --fg-muted: #aeaad8;
+      --hairline: rgba(183,180,233,.16); --hairline-strong: rgba(183,180,233,.32);
+      --progress-on: #b66bd6;
+      --cat-dep-bg: var(--tomato-900); --cat-dep-fg: #ffc1bd;
+      --cat-imp-bg: var(--gold-900); --cat-imp-fg: #fadc9e;
+      --cat-mea-bg: var(--jade-900); --cat-mea-fg: #abedc8;
+      --cat-ps-bg: var(--aqua-900); --cat-ps-fg: #a4dee5;
+      --cat-sc-bg: var(--sky-900); --cat-sc-fg: var(--sky-200);
+    }
+  }
+  :root[data-theme="dark"] {
+    --surface-app: var(--grape-900); --surface-well: var(--grape-950); --surface-card: var(--grape-750);
+    --surface-raised: var(--grape-700); --surface-hover: rgba(183,180,233,.22);
+    --fg-primary: #eeedf7; --fg-secondary: #cac7f2; --fg-muted: #aeaad8;
+    --hairline: rgba(183,180,233,.16); --hairline-strong: rgba(183,180,233,.32);
+    --progress-on: #b66bd6;
+    --cat-dep-bg: var(--tomato-900); --cat-dep-fg: #ffc1bd;
+    --cat-imp-bg: var(--gold-900); --cat-imp-fg: #fadc9e;
+    --cat-mea-bg: var(--jade-900); --cat-mea-fg: #abedc8;
+    --cat-ps-bg: var(--aqua-900); --cat-ps-fg: #a4dee5;
+    --cat-sc-bg: var(--sky-900); --cat-sc-fg: var(--sky-200);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--surface-app);
+    color: var(--fg-primary);
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+  .page { max-width: 1440px; margin: 0 auto; padding: 32px 16px 64px; }
+  header.intro { max-width: 760px; margin-bottom: 28px; }
+  h1 { font-size: 26px; line-height: 1.2; margin: 0 0 8px; }
+  .lede { color: var(--fg-secondary); margin: 0 0 12px; }
+  .facts { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .facts li { background: var(--surface-card); border: 1px solid var(--hairline); border-radius: 6px; padding: 4px 10px; font-size: 12px; color: var(--fg-secondary); }
+  .facts b { color: var(--fg-primary); }
+
+  .grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+  @media (min-width: 760px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1280px) { .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+  .option { background: var(--surface-card); border: 1px solid var(--hairline); border-radius: 8px; box-shadow: var(--shadow-card); display: flex; flex-direction: column; min-width: 0; }
+  .option.recommended { border: 2px solid var(--accent); }
+  .option-head { padding: 16px 16px 12px; border-bottom: 1px solid var(--hairline); }
+  .kicker { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: var(--fg-muted); text-transform: uppercase; letter-spacing: .04em; }
+  .badge { text-transform: none; letter-spacing: 0; background: var(--accent); color: #fff; border-radius: 4px; padding: 1px 6px; font-size: 11px; }
+  .option h2 { font-size: 17px; margin: 4px 0 4px; }
+  .option-head p { margin: 0; color: var(--fg-secondary); font-size: 13px; }
+
+  .stage { background: var(--surface-well); padding: 16px; min-height: 360px; display: flex; flex-direction: column; gap: 10px; position: relative; overflow: hidden; }
+  .stage-label { font-size: 11px; color: var(--fg-muted); font-weight: 600; }
+
+  .notes { padding: 14px 16px 16px; display: grid; gap: 10px; font-size: 13px; }
+  .notes h3 { margin: 0 0 2px; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--fg-muted); }
+  .notes p, .notes ul { margin: 0; color: var(--fg-secondary); }
+  .notes ul { padding-left: 16px; }
+  .notes li + li { margin-top: 2px; }
+  .pro::marker { content: '+  '; color: var(--jade-700); font-weight: 700; }
+  .con::marker { content: '−  '; color: var(--tomato-700); font-weight: 700; }
+  .effort { display: inline-flex; gap: 3px; vertical-align: middle; margin-left: 6px; }
+  .effort i { width: 10px; height: 10px; border-radius: 2px; background: var(--hairline-strong); }
+  .effort i.on { background: var(--fg-secondary); }
+
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-radius: 6px; font: inherit; font-weight: 600; font-size: 13px; height: 34px; padding: 0 14px; border: 0; cursor: pointer; white-space: nowrap; }
+  .btn-primary { color: #fff; background: linear-gradient(90deg, var(--tomato-600), var(--rose-500)); }
+  .btn-cta { color: #fff; background: var(--grape-700); }
+  .btn-outline { color: var(--fg-primary); background: transparent; border: 1px solid var(--hairline-strong); }
+  .btn-outline:hover, .btn-flat:hover { background: var(--surface-hover); }
+  .btn-flat { color: var(--fg-secondary); background: transparent; padding: 0 8px; }
+  .btn-lg { height: 48px; font-size: 16px; width: 100%; }
+  .icon { width: 16px; height: 16px; fill: currentColor; flex-shrink: 0; }
+
+  .card { background: var(--surface-card); border-radius: 12px; box-shadow: var(--shadow-card); padding: 14px; }
+  .pill { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; padding: 3px 9px; font-weight: 600; font-size: 12px; white-space: nowrap; }
+  .pill .icon { width: 14px; height: 14px; }
+  .cat-dep { background: var(--cat-dep-bg); color: var(--cat-dep-fg); }
+  .cat-imp { background: var(--cat-imp-bg); color: var(--cat-imp-fg); }
+  .cat-mea { background: var(--cat-mea-bg); color: var(--cat-mea-fg); }
+  .cat-ps { background: var(--cat-ps-bg); color: var(--cat-ps-fg); }
+  .cat-sc { background: var(--cat-sc-bg); color: var(--cat-sc-fg); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
+  .dot-dep { background: var(--cat-dep-dot); } .dot-imp { background: var(--cat-imp-dot); } .dot-mea { background: var(--cat-mea-dot); } .dot-ps { background: var(--cat-ps-dot); } .dot-sc { background: var(--cat-sc-dot); }
+
+  .card-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .progress { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: var(--fg-muted); }
+  .dashes { display: flex; gap: 4px; }
+  .dashes button { width: 16px; height: 6px; border-radius: 999px; border: 0; padding: 0; background: var(--surface-well); cursor: pointer; }
+  .dashes button.on { background: var(--progress-on); }
+  .q { font-weight: 700; font-size: 17px; text-align: center; margin: 14px 4px 12px; line-height: 1.3; }
+  .scale { display: flex; justify-content: center; gap: 8px; }
+  .scale span { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 600; opacity: .7; }
+  .s1 { background: var(--tomato-500); } .s2 { background: var(--gold-500); } .s3 { background: var(--slate-600); } .s4 { background: var(--jade-400); } .s5 { background: var(--jade-500); }
+  .scale-legend { display: flex; justify-content: space-between; font-size: 11px; color: var(--fg-muted); margin-top: 6px; }
+  .card-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .muted { color: var(--fg-muted); font-size: 12px; }
+
+  .qlist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .qlist li { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: start; background: var(--surface-card); border: 1px solid var(--hairline); border-radius: 6px; padding: 8px 10px; font-size: 13px; }
+  .qlist .dot { margin-top: 6px; }
+  .qlist .cat { font-size: 11px; font-weight: 600; color: var(--fg-muted); display: block; }
+  .swap { background: transparent; border: 0; color: var(--fg-muted); cursor: pointer; border-radius: 4px; padding: 2px; }
+  .swap:hover { background: var(--surface-hover); color: var(--fg-primary); }
+
+  .scrim { position: absolute; inset: 0; background: rgba(23,15,52,.45); }
+  .dialog { position: relative; background: var(--surface-card); border-radius: 8px; box-shadow: var(--shadow-dialog); padding: 16px; margin: 8px 0; }
+  .dialog h4 { margin: 0 0 4px; font-size: 16px; }
+  .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .callout { font-size: 12px; color: var(--fg-secondary); background: var(--surface-raised); border: 1px solid var(--hairline); border-radius: 6px; padding: 8px 10px; }
+  .callout.warn { border-left: 3px solid var(--gold-500); }
+  .callout.ok { border-left: 3px solid var(--jade-500); }
+
+  .sidebar-mock { background: var(--surface-card); border: 1px solid var(--hairline); border-radius: 8px; padding: 10px; display: grid; gap: 8px; }
+  .field { border: 1px solid var(--hairline-strong); border-radius: 6px; padding: 6px 10px; font-size: 13px; color: var(--fg-secondary); }
+
+  .roadmap { background: var(--surface-card); border: 1px solid var(--hairline); border-radius: 8px; padding: 12px; }
+  .road-row { display: grid; grid-template-columns: 110px 1fr 34px; gap: 8px; align-items: center; font-size: 12px; margin-top: 8px; }
+  .road-row .name { display: flex; gap: 6px; align-items: center; font-weight: 600; min-width: 0; }
+  .road-row .name span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bar { height: 8px; border-radius: 999px; background: var(--surface-well); position: relative; overflow: hidden; }
+  .bar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px; }
+  .road-row .n { text-align: right; color: var(--fg-muted); font-variant-numeric: tabular-nums; }
+  .meetings { display: flex; gap: 4px; margin-top: 12px; overflow: hidden; }
+  .meeting-col { flex: 1; min-width: 0; background: var(--surface-raised); border: 1px solid var(--hairline); border-radius: 6px; padding: 6px 4px; display: grid; gap: 4px; justify-items: center; font-size: 10px; color: var(--fg-muted); font-weight: 600; }
+  .meeting-col .chip { width: 100%; height: 6px; border-radius: 3px; }
+
+  .reco { margin-top: 28px; background: var(--surface-card); border: 1px solid var(--hairline); border-left: 4px solid var(--accent); border-radius: 8px; padding: 16px; max-width: 900px; }
+  .reco h2 { margin: 0 0 6px; font-size: 18px; }
+  .reco p { margin: 0 0 8px; color: var(--fg-secondary); }
+  .reco p:last-child { margin: 0; }
+  .theme-toggle { position: fixed; right: 16px; bottom: 16px; background: var(--surface-card); box-shadow: var(--shadow-card); }
+  @media (max-width: 420px) {
+    .scale span { width: 32px; height: 32px; }
+    .road-row { grid-template-columns: 92px 1fr 28px; }
+  }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M15.11 12.45 14 10.24l-3.11 6.21c-.16.34-.51.55-.89.55s-.73-.21-.89-.55L7.38 13H2v5c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-5h-6c-.38 0-.73-.21-.89-.55M20 4H4c-1.1 0-2 .9-2 2v5h6c.38 0 .73.21.89.55L10 13.76l3.11-6.21c.34-.68 1.45-.68 1.79 0L16.62 11H22V6c0-1.1-.9-2-2-2"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4z"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2M12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2m3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1z"/></symbol>
+</svg>
+
+<div class="page">
+  <header class="intro">
+    <h1>Showing what the first Team Health meeting looks like</h1>
+    <p class="lede">A user selects every question in the bank, clicks Start Meeting Series, and still can't picture the meeting. Four ways to show them, from the product owner's modal to a preview that commits to the real draw.</p>
+    <ul class="facts">
+      <li><b>1 question per category</b> per meeting</li>
+      <li>Everything Bagel: <b>101 questions · 5 categories</b></li>
+      <li>First draw is <b>uniform random</b> (no history yet)</li>
+      <li>Later draws favor the <b>least-asked</b> question</li>
+      <li>Scheduled series draw <b>when the rrule fires</b>, not on Start</li>
+    </ul>
+  </header>
+
+  <div class="grid">
+    <!-- A -->
+    <section class="option">
+      <div class="option-head">
+        <div class="kicker">Option A</div>
+        <h2>Sample on Start (the original idea)</h2>
+        <p>Start Meeting Series opens a preview step with one question per category before the schedule dialog.</p>
+      </div>
+      <div class="stage">
+        <div class="scrim"></div>
+        <div class="dialog">
+          <h4>Your meetings ask 5 questions</h4>
+          <div class="muted" style="margin-bottom:8px">One from each category. For example:</div>
+          <ul class="qlist">
+            <li><span class="dot dot-dep"></span><span><span class="cat">Dependability</span>Everyone on this team pulls their weight.</span><span></span></li>
+            <li><span class="dot dot-imp"></span><span><span class="cat">Impact</span>I can see the difference our team's work makes.</span><span></span></li>
+            <li><span class="dot dot-mea"></span><span><span class="cat">Meaning</span>I find a sense of personal purpose in my work.</span><span></span></li>
+            <li><span class="dot dot-ps"></span><span><span class="cat">Psychological Safety</span>It is safe to take a risk on this team.</span><span></span></li>
+            <li><span class="dot dot-sc"></span><span><span class="cat">Structure &amp; Clarity</span>Our team has an effective decision-making process.</span><span></span></li>
+          </ul>
+          <div class="callout warn" style="margin-top:10px">An example. The first meeting draws its own questions, so they will probably differ.</div>
+          <div class="dialog-actions">
+            <button class="btn btn-flat">Back</button>
+            <button class="btn btn-cta">Continue to schedule</button>
+          </div>
+        </div>
+      </div>
+      <div class="notes">
+        <div><h3>Where &amp; when</h3><p>A new first step in the Start dialog, before name/recurrence/calendar.</p></div>
+        <div><h3>Data</h3><p>Client only: the template's questions are already on the page. No server change.</p></div>
+        <div><h3>Tradeoffs</h3><ul>
+          <li class="pro">Cheapest option, and exactly what was asked for</li>
+          <li class="con">Shows up after the user has decided, and adds a click to every start</li>
+          <li class="con">Looks final, but it's a sample. Without the caveat it's misleading, and with it the preview feels hedged</li>
+          <li class="con">A list of questions doesn't show what taking the survey feels like</li>
+        </ul></div>
+        <div><h3>Effort <span class="effort"><i class="on"></i><i></i><i></i><i></i></span></h3><p>~½ day</p></div>
+      </div>
+    </section>
+
+    <!-- B -->
+    <section class="option recommended">
+      <div class="option-head">
+        <div class="kicker">Option B <span class="badge">Recommended</span></div>
+        <h2>Live meeting preview on the details page</h2>
+        <p>A small copy of the real response card sits next to the question bank. It updates as questions are checked and shows a new sample on each Draw again.</p>
+      </div>
+      <div class="stage">
+        <div class="stage-label">Details page, under the survey-flow animation</div>
+        <div class="card" id="b-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+            <div style="font-weight:600;font-size:13px">Preview a meeting</div>
+            <button class="btn btn-outline" id="b-draw" style="height:28px;padding:0 10px;font-size:12px"><svg class="icon"><use href="#i-refresh"/></svg>Draw again</button>
+          </div>
+          <div class="card-head">
+            <span class="pill" id="b-pill"><svg class="icon"><use href="#i-heart"/></svg><span id="b-cat"></span></span>
+            <div class="progress"><div class="dashes" id="b-dashes"></div><span id="b-count"></span></div>
+          </div>
+          <div class="q" id="b-q"></div>
+          <div class="scale"><span class="s1">1</span><span class="s2">2</span><span class="s3">3</span><span class="s4">4</span><span class="s5">5</span></div>
+          <div class="scale-legend"><span>Strongly disagree</span><span>Strongly agree</span></div>
+          <div class="card-foot">
+            <button class="btn btn-flat" id="b-prev">Back</button>
+            <button class="btn btn-outline" id="b-next">Next</button>
+          </div>
+        </div>
+        <div class="muted">Each meeting asks 5 questions, one per category. This is one possible draw. Later meetings favor questions that haven't been asked yet, so every question comes up within 34 meetings.</div>
+      </div>
+      <div class="notes">
+        <div><h3>Where &amp; when</h3><p>Inline on the Team Health details page, right where questions are selected. The Start flow doesn't change.</p></div>
+        <div><h3>Data</h3><p>Client only: <code>template.questions</code> + category, with the same color order as the meeting. Draws with the same rule the server uses for a first meeting. No new field.</p></div>
+        <div><h3>Tradeoffs</h3><ul>
+          <li class="pro">Answers the question while the user is choosing, before they commit</li>
+          <li class="pro">Uses the real card look (category pill, progress, 1–5 scale)</li>
+          <li class="pro">Draw again shows that it's a random draw without needing a disclaimer</li>
+          <li class="con">Still a sample. It doesn't promise which questions meeting #1 will use</li>
+        </ul></div>
+        <div><h3>Effort <span class="effort"><i class="on"></i><i class="on"></i><i></i><i></i></span></h3><p>~1 day (prototype included)</p></div>
+      </div>
+    </section>
+
+    <!-- C -->
+    <section class="option">
+      <div class="option-head">
+        <div class="kicker">Option C</div>
+        <h2>Lock in the first draw</h2>
+        <p>The Start dialog shows the draw for meeting #1. The user can reshuffle or swap a category, and those exact questions are sent to the server.</p>
+      </div>
+      <div class="stage">
+        <div class="scrim"></div>
+        <div class="dialog">
+          <h4>Meeting #1 will ask</h4>
+          <ul class="qlist">
+            <li><span class="dot dot-dep"></span><span><span class="cat">Dependability</span>I can count on my teammates to deliver quality work on time.</span><button class="swap" aria-label="Swap"><svg class="icon"><use href="#i-refresh"/></svg></button></li>
+            <li><span class="dot dot-imp"></span><span><span class="cat">Impact</span>I understand how our team's work contributes to the organization's goals.</span><button class="swap" aria-label="Swap"><svg class="icon"><use href="#i-refresh"/></svg></button></li>
+            <li><span class="dot dot-mea"></span><span><span class="cat">Meaning</span>The work I do for our team is meaningful to me.</span><button class="swap" aria-label="Swap"><svg class="icon"><use href="#i-refresh"/></svg></button></li>
+            <li><span class="dot dot-ps"></span><span><span class="cat">Psychological Safety</span>If I make a mistake on this team, it is not held against me.</span><button class="swap" aria-label="Swap"><svg class="icon"><use href="#i-refresh"/></svg></button></li>
+            <li><span class="dot dot-sc"></span><span><span class="cat">Structure &amp; Clarity</span>I know what's expected of me, and the goals for my work are clear.</span><button class="swap" aria-label="Swap"><svg class="icon"><use href="#i-refresh"/></svg></button></li>
+          </ul>
+          <div class="callout ok" style="margin-top:10px;display:flex;gap:6px;align-items:flex-start"><svg class="icon" style="margin-top:1px"><use href="#i-lock"/></svg><span>Locked in for the first meeting. After that, questions rotate.</span></div>
+          <div class="dialog-actions">
+            <button class="btn btn-outline"><svg class="icon"><use href="#i-refresh"/></svg>Shuffle all</button>
+            <button class="btn btn-cta">Start</button>
+          </div>
+        </div>
+      </div>
+      <div class="notes">
+        <div><h3>Where &amp; when</h3><p>Inside the Start dialog, where this is the actual draw.</p></div>
+        <div><h3>Data</h3><p>New <code>firstQuestionIds</code> arg on <code>startTeamHealth</code>, checked on the server (subset of the template, at most one per category). A series scheduled for later creates no meeting on Start, so the draw needs a new <code>MeetingSeries</code> column, or a deterministic seed the client can reproduce.</p></div>
+        <div><h3>Tradeoffs</h3><ul>
+          <li class="pro">True: what the user sees is what the team gets</li>
+          <li class="con">Adds a schema field and a mutation arg, plus edge cases (template edited before the first run, multi-team groups)</li>
+          <li class="con">Swapping questions lets leads cherry-pick, which works against the rotation's even coverage</li>
+          <li class="con">Only helps with meeting #1, not the series</li>
+        </ul></div>
+        <div><h3>Effort <span class="effort"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></h3><p>~3–4 days incl. scheduled-series persistence &amp; tests</p></div>
+      </div>
+    </section>
+
+    <!-- D -->
+    <section class="option">
+      <div class="option-head">
+        <div class="kicker">Option D</div>
+        <h2>Series roadmap</h2>
+        <p>Shows how the whole series rotates through the bank, since the question a user can't answer may be "what does the series look like?" rather than "what does meeting #1 look like?"</p>
+      </div>
+      <div class="stage">
+        <div class="stage-label">In the Start sidebar, above the button</div>
+        <div class="sidebar-mock">
+          <div class="field">Teams: Product, Engineering</div>
+          <div class="roadmap">
+            <div style="font-weight:600;font-size:13px">5 questions per meeting · ~3 min</div>
+            <div class="muted">Each category repeats once it runs out of new questions</div>
+            <div class="road-row"><span class="name"><span class="dot dot-ps"></span><span>Psych. Safety</span></span><span class="bar"><i style="width:100%;background:var(--cat-ps-dot)"></i></span><span class="n">34</span></div>
+            <div class="road-row"><span class="name"><span class="dot dot-sc"></span><span>Structure</span></span><span class="bar"><i style="width:73%;background:var(--cat-sc-dot)"></i></span><span class="n">25</span></div>
+            <div class="road-row"><span class="name"><span class="dot dot-mea"></span><span>Meaning</span></span><span class="bar"><i style="width:47%;background:var(--cat-mea-dot)"></i></span><span class="n">16</span></div>
+            <div class="road-row"><span class="name"><span class="dot dot-dep"></span><span>Dependability</span></span><span class="bar"><i style="width:44%;background:var(--cat-dep-dot)"></i></span><span class="n">15</span></div>
+            <div class="road-row"><span class="name"><span class="dot dot-imp"></span><span>Impact</span></span><span class="bar"><i style="width:32%;background:var(--cat-imp-dot)"></i></span><span class="n">11</span></div>
+            <div class="meetings" aria-label="Meetings 1 to 6, each with one chip per category">
+              <div class="meeting-col">#1<span class="chip" style="background:var(--cat-dep-dot)"></span><span class="chip" style="background:var(--cat-imp-dot)"></span><span class="chip" style="background:var(--cat-mea-dot)"></span><span class="chip" style="background:var(--cat-ps-dot)"></span><span class="chip" style="background:var(--cat-sc-dot)"></span></div>
+              <div class="meeting-col">#2<span class="chip" style="background:var(--cat-dep-dot)"></span><span class="chip" style="background:var(--cat-imp-dot)"></span><span class="chip" style="background:var(--cat-mea-dot)"></span><span class="chip" style="background:var(--cat-ps-dot)"></span><span class="chip" style="background:var(--cat-sc-dot)"></span></div>
+              <div class="meeting-col">#3<span class="chip" style="background:var(--cat-dep-dot)"></span><span class="chip" style="background:var(--cat-imp-dot)"></span><span class="chip" style="background:var(--cat-mea-dot)"></span><span class="chip" style="background:var(--cat-ps-dot)"></span><span class="chip" style="background:var(--cat-sc-dot)"></span></div>
+              <div class="meeting-col">…</div>
+              <div class="meeting-col">#34<span class="chip" style="background:var(--cat-dep-dot)"></span><span class="chip" style="background:var(--cat-imp-dot)"></span><span class="chip" style="background:var(--cat-mea-dot)"></span><span class="chip" style="background:var(--cat-ps-dot)"></span><span class="chip" style="background:var(--cat-sc-dot)"></span></div>
+            </div>
+          </div>
+          <div class="muted">Weekly, every question comes up at least once in ~8 months.</div>
+          <button class="btn btn-primary btn-lg">Start Meeting Series</button>
+        </div>
+      </div>
+      <div class="notes">
+        <div><h3>Where &amp; when</h3><p>In the Start sidebar, updated live as teams, questions and cadence change.</p></div>
+        <div><h3>Data</h3><p>Client only: question counts per category. Converting to months needs the cadence, which is only known once the schedule dialog opens.</p></div>
+        <div><h3>Tradeoffs</h3><ul>
+          <li class="pro">Shows why selecting everything is fine (and what it costs): more variety, slower repeats</li>
+          <li class="pro">Deterministic, so nothing can mislead</li>
+          <li class="con">Abstract. It doesn't show a single real question</li>
+          <li class="con">Overlaps with the survey-flow animation and the hover summary</li>
+        </ul></div>
+        <div><h3>Effort <span class="effort"><i class="on"></i><i class="on"></i><i></i><i></i></span></h3><p>~1 day; its one-line footnote is folded into B's prototype</p></div>
+      </div>
+    </section>
+  </div>
+
+  <section class="reco">
+    <h2>Recommendation: B, with D's one-line footnote</h2>
+    <p>The confusion happens while questions are being selected, not at Start, so the preview belongs next to the question bank. A sample card with Draw again is honest about the randomness without a disclaimer, and it reuses the real meeting card so users see the survey as their team will. The footnote ("every question comes up within N meetings") answers the next question: what happens when everything is selected.</p>
+    <p>Keep C in reserve. If users say they need to know exactly which questions meeting #1 will use, the cheapest honest version is a seeded tie-break the server and client share, which avoids a new column. That's worth a separate product decision because it removes the randomness from every series' first meeting.</p>
+  </section>
+</div>
+
+<button class="btn btn-outline theme-toggle" id="theme">Toggle theme</button>
+
+<script>
+  const BANK = [
+    {key: 'dep', name: 'Dependability', qs: ["When my teammates say they'll do something, they follow through with it.", 'I can count on my teammates to deliver quality work on time.', 'Everyone on this team pulls their weight.', "People on this team speak up to test assumptions about the issues we're working on."]},
+    {key: 'imp', name: 'Impact', qs: ["I understand how our team's work contributes to the organization's goals.", "I can see the difference our team's work makes.", 'The results of our work meet or exceed the standards of the people who use them.']},
+    {key: 'mea', name: 'Meaning', qs: ['The work I do for our team is meaningful to me.', 'I find a sense of personal purpose in my work.', 'Being on this team contributes to my own learning and growth.', 'At work, I have the opportunity to do what I do best every day.']},
+    {key: 'ps', name: 'Psychological Safety', qs: ['If I make a mistake on this team, it is not held against me.', 'I feel safe to take risks and be vulnerable in front of my teammates.', 'People on this team are accepted, even when they are different.', 'It is safe to take a risk on this team.', 'It is easy to ask other members of this team for help.']},
+    {key: 'sc', name: 'Structure & Clarity', qs: ['Our team has an effective decision-making process.', "I know what's expected of me, and the goals for my work are clear.", "I understand my role and how it fits with my teammates' roles.", 'Team members know what their peers are working on and how it contributes to the team.']}
+  ]
+  let draw = []
+  let step = 0
+  const el = (id) => document.getElementById(id)
+  const reshuffle = () => {
+    draw = BANK.map((c) => c.qs[Math.floor(Math.random() * c.qs.length)])
+    step = 0
+    render()
+  }
+  const render = () => {
+    const cat = BANK[step]
+    el('b-pill').className = 'pill cat-' + cat.key
+    el('b-cat').textContent = cat.name
+    el('b-q').textContent = draw[step]
+    el('b-count').textContent = `${step + 1} of ${BANK.length}`
+    el('b-dashes').innerHTML = BANK.map((_, i) => `<button aria-label="Question ${i + 1}" class="${i <= step ? 'on' : ''}" data-i="${i}"></button>`).join('')
+    el('b-prev').style.visibility = step === 0 ? 'hidden' : 'visible'
+    el('b-next').textContent = step === BANK.length - 1 ? 'Start over' : 'Next'
+  }
+  el('b-dashes').addEventListener('click', (e) => {
+    const i = e.target.dataset && e.target.dataset.i
+    if (i !== undefined) { step = Number(i); render() }
+  })
+  el('b-prev').addEventListener('click', () => { step = Math.max(0, step - 1); render() })
+  el('b-next').addEventListener('click', () => { step = (step + 1) % BANK.length; render() })
+  el('b-draw').addEventListener('click', reshuffle)
+  el('theme').addEventListener('click', () => {
+    const root = document.documentElement
+    const isDark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches
+    root.dataset.theme = isDark ? 'light' : 'dark'
+  })
+  reshuffle()
+</script>
+</body>
+</html>

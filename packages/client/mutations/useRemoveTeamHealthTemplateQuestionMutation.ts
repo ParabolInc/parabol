@@ -9,6 +9,7 @@ graphql`
       questions {
         id
       }
+      ...TeamHealthMeetingPreview_template
     }
   }
 `

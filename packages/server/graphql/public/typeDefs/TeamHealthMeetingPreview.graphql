@@ -1,0 +1,14 @@
+"""
+The questions one meeting of a new Team Health series would ask
+"""
+type TeamHealthMeetingPreview {
+  """
+  1 for the first meeting of the series
+  """
+  meetingNumber: Int!
+
+  """
+  One question per category, in the order the meeting asks them
+  """
+  questions: [TeamHealthQuestion!]!
+}
