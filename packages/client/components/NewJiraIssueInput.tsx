@@ -8,7 +8,7 @@ import type {NewJiraIssueInputQuery} from '../__generated__/NewJiraIssueInputQue
 import useForm from '../hooks/useForm'
 import type {NewRecordInputProps} from '../integrations/platform/ScopingSearchState'
 import CreateTaskMutation from '../mutations/CreateTaskMutation'
-import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
+import useUpdatePokerScopeMutation from '../mutations/useUpdatePokerScopeMutation'
 import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
 import type {CompletedHandler} from '../types/relayMutations'
 import {Menu} from '../ui/Menu/Menu'
@@ -52,7 +52,8 @@ const NewJiraIssueInput = (props: Props) => {
   const {id: userId, teamMember} = data.viewer
   const {integrations} = teamMember!
   const atmosphere = useAtmosphere()
-  const {onCompleted, onError} = useMutationProps()
+  const {onError} = useMutationProps()
+  const [updatePokerScope] = useUpdatePokerScopeMutation()
   const [createTaskError, setCreateTaskError] = useState<string>()
   useEffect(() => {
     if (isEditing) {
@@ -121,11 +122,7 @@ const NewJiraIssueInput = (props: Props) => {
           } as const
         ]
       }
-      UpdatePokerScopeMutation(atmosphere, pokerScopeVariables, {
-        onError,
-        onCompleted,
-        contents: [newIssueTitle]
-      })
+      updatePokerScope({variables: pokerScopeVariables, contents: [newIssueTitle]})
     }
     CreateTaskMutation(atmosphere, {newTask}, {onError, onCompleted: handleCompleted})
   }

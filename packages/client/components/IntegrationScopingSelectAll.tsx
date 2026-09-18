@@ -1,10 +1,8 @@
 import {useMemo} from 'react'
-import useAtmosphere from '../hooks/useAtmosphere'
-import useMutationProps from '../hooks/useMutationProps'
 import useUnusedRecords from '../hooks/useUnusedRecords'
 import type {RegisteredClientIntegration} from '../integrations/platform/registry'
 import type {ScopingItem} from '../integrations/platform/ScopingSearchState'
-import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
+import useUpdatePokerScopeMutation from '../mutations/useUpdatePokerScopeMutation'
 import {Threshold} from '../types/constEnums'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
 import Checkbox from './Checkbox'
@@ -20,14 +18,12 @@ interface Props {
 
 const IntegrationScopingSelectAll = (props: Props) => {
   const {items, usedServiceTaskIds, meetingId, service, noun, persistQuery} = props
-  const atmosphere = useAtmosphere()
-  const {onCompleted, onError, submitMutation, submitting, error} = useMutationProps()
+  const [updatePokerScope, submitting] = useUpdatePokerScopeMutation()
   const serviceTaskIds = useMemo(() => items.map((item) => item.serviceTaskId), [items])
   const [unusedServiceTaskIds, allSelected] = useUnusedRecords(serviceTaskIds, usedServiceTaskIds)
   const availableCountToAdd = Threshold.MAX_POKER_STORIES - usedServiceTaskIds.size
   const onClick = () => {
     if (submitting) return
-    submitMutation()
     const action = allSelected === true ? 'DELETE' : 'ADD'
     const limit = action === 'ADD' ? availableCountToAdd : 1e6
     const updateArr = action === 'DELETE' ? serviceTaskIds : unusedServiceTaskIds
@@ -38,24 +34,22 @@ const IntegrationScopingSelectAll = (props: Props) => {
       ({serviceTaskId}) =>
         items.find((item) => item.serviceTaskId === serviceTaskId)?.summary ?? 'Unknown Story'
     )
-    UpdatePokerScopeMutation(
-      atmosphere,
-      {meetingId, updates},
-      {onError, onCompleted, contents, selectedAll: true}
-    )
+    updatePokerScope({variables: {meetingId, updates}, contents, selectedAll: true})
     if (action === 'ADD') {
       persistQuery?.()
     }
   }
   if (items.length < 2) return null
-  const title = getSelectAllTitle(items.length, usedServiceTaskIds.size, noun)
+  const title = getSelectAllTitle(
+    unusedServiceTaskIds.length,
+    usedServiceTaskIds.size,
+    noun,
+    allSelected
+  )
   return (
     <div className='flex cursor-pointer px-4 py-2' onClick={onClick}>
       <Checkbox active={allSelected} />
-      <div className='flex flex-col pb-5 pl-4 font-semibold'>
-        <div>{title}</div>
-        {error && <div className='font-semibold text-fg-error'>{error.message}</div>}
-      </div>
+      <div className='pb-5 pl-4 font-semibold'>{title}</div>
     </div>
   )
 }

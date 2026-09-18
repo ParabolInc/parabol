@@ -1053,7 +1053,7 @@ type Mutation {
     The list of items to add/remove to the estimate phase
     """
     updates: [UpdatePokerScopeItemInput!]!
-  ): UpdatePokerScopePayload! @scope(name: MEETINGS_WRITE)
+  ): UpdatePokerScopeSuccess! @scope(name: MEETINGS_WRITE)
 
   """
   Update the content of a reflection
