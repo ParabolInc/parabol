@@ -28,22 +28,22 @@ const DECELERATE = 'cubic-bezier(0, 0, 0.2, 1)'
 const ACCELERATE = 'cubic-bezier(0.4, 0, 1, 1)'
 const POP = 'cubic-bezier(0.34, 1.56, 0.64, 1)'
 
-const ROUND_S = 7
-// three meetings plus a tail, so the last line still has room to finish growing
-const LOOP_S = 25
+const ROUND_S = 6.5
+// three meetings plus a short tail, so the last line still has room to finish growing
+const LOOP_S = 21
 const rounds = [0, 1, 2]
 const at = (round: number, seconds: number) =>
   (((round * ROUND_S + seconds) / LOOP_S) * 100).toFixed(3)
 const abs = (seconds: number) => ((seconds / LOOP_S) * 100).toFixed(3)
 const just = (round: number, seconds: number) => (Number(at(round, seconds)) - 0.01).toFixed(3)
 const after = (round: number, seconds: number) => (Number(at(round, seconds)) + 0.01).toFixed(3)
-// a line starts when the meeting before it hands over its score, and reaches the next point just as
-// the following meeting's answers start landing, which is what makes the growth feel slow
+// a line starts the moment its meeting hands over a score and takes the same flat second to grow,
+// so every segment advances at one pace and the last finishes a second after the last delta lands
 const GROW = [
-  {from: at(1, 6.4), to: abs(16.9)},
-  {from: at(2, 6.4), to: abs(23.9)}
+  {from: at(1, 5.75), to: abs(13.25)},
+  {from: at(2, 5.75), to: abs(19.75)}
 ]
-const CHART_OUT = abs(24.5)
+const CHART_OUT = abs(20.5)
 
 // Within each round: the meeting page rises (0-0.6s), the picked questions fly in (0.9-2.0s), the
 // likert scales appear (2.1s), lines reach the teams (2.5s), members answer (2.9-4.3s), each team's
@@ -55,9 +55,9 @@ ${firesOn
   .map(
     (r) => `  ${at(r, 0)}% {opacity: 0; transform: translate(0, 0)}
   ${at(r, 0.9)}% {opacity: 1; transform: translate(0, 0); animation-timing-function: ${STANDARD}}
-  ${at(r, 2)}%, ${at(r, 5.8)}% {opacity: 1; transform: translate(var(--dx), var(--dy)); animation-timing-function: ${ACCELERATE}}
-  ${at(r, 6.4)}% {opacity: 0; transform: translate(var(--dx), calc(var(--dy) - 150px))}
-  ${after(r, 6.4)}% {opacity: 0; transform: translate(0, 0)}`
+  ${at(r, 2)}%, ${at(r, 5.15)}% {opacity: 1; transform: translate(var(--dx), var(--dy)); animation-timing-function: ${ACCELERATE}}
+  ${at(r, 5.75)}% {opacity: 0; transform: translate(var(--dx), calc(var(--dy) - 150px))}
+  ${after(r, 5.75)}% {opacity: 0; transform: translate(0, 0)}`
   )
   .join('\n')}
   100% {opacity: 0; transform: translate(0, 0)}
@@ -70,9 +70,9 @@ ${rounds
   .map(
     (
       r
-    ) => `  ${at(r, 0.6)}%, ${at(r, 5.8)}% {opacity: 1; transform: translateY(0); animation-timing-function: ${ACCELERATE}}
-  ${at(r, 6.4)}% {opacity: 0; transform: translateY(-150px)}
-  ${after(r, 6.4)}%, ${at(r + 1, 0)}% {opacity: 0; transform: translateY(130px); animation-timing-function: ${DECELERATE}}`
+    ) => `  ${at(r, 0.6)}%, ${at(r, 5.15)}% {opacity: 1; transform: translateY(0); animation-timing-function: ${ACCELERATE}}
+  ${at(r, 5.75)}% {opacity: 0; transform: translateY(-150px)}
+  ${after(r, 5.75)}%, ${at(r + 1, 0)}% {opacity: 0; transform: translateY(130px); animation-timing-function: ${DECELERATE}}`
   )
   .join('\n')}
   100% {opacity: 0; transform: translateY(130px)}
@@ -83,8 +83,8 @@ ${rounds
     (
       r
     ) => `  ${at(r, 0)}%, ${at(r, 2.1)}% {opacity: 0; transform: scale(0.5); animation-timing-function: ${POP}}
-  ${at(r, 2.5)}%, ${at(r, 6.4)}% {opacity: 1; transform: scale(1)}
-  ${after(r, 6.4)}% {opacity: 0; transform: scale(0.5)}`
+  ${at(r, 2.5)}%, ${at(r, 5.75)}% {opacity: 1; transform: scale(1)}
+  ${after(r, 5.75)}% {opacity: 0; transform: scale(0.5)}`
   )
   .join('\n')}
   100% {opacity: 0; transform: scale(0.5)}
@@ -95,8 +95,8 @@ ${rounds
     (
       r
     ) => `  ${at(r, 0)}%, ${at(r, 2.5)}% {opacity: 0; stroke-dashoffset: 150; animation-timing-function: ${DECELERATE}}
-  ${at(r, 2.9)}%, ${at(r, 5.8)}% {opacity: 0.7; stroke-dashoffset: 0}
-  ${at(r, 6.2)}% {opacity: 0; stroke-dashoffset: 0}`
+  ${at(r, 2.9)}%, ${at(r, 5.15)}% {opacity: 0.7; stroke-dashoffset: 0}
+  ${at(r, 5.55)}% {opacity: 0; stroke-dashoffset: 0}`
   )
   .join('\n')}
   100% {opacity: 0; stroke-dashoffset: 150}
@@ -115,14 +115,14 @@ ${rounds
   100% {opacity: 0; transform: translateY(6px)}
 }
 @keyframes thsfa-select-3 {
-  0%, ${at(0, 6.4)}% {transform: translateY(0); animation-timing-function: ${STANDARD}}
-  ${at(1, 0)}%, ${at(1, 6.4)}% {transform: translateY(var(--step)); animation-timing-function: ${STANDARD}}
+  0%, ${at(0, 5.75)}% {transform: translateY(0); animation-timing-function: ${STANDARD}}
+  ${at(1, 0)}%, ${at(1, 5.75)}% {transform: translateY(var(--step)); animation-timing-function: ${STANDARD}}
   ${at(2, 0)}%, ${CHART_OUT}% {transform: translateY(calc(var(--step) * 2)); animation-timing-function: ${STANDARD}}
   100% {transform: translateY(0)}
 }
 @keyframes thsfa-select-2 {
-  0%, ${at(0, 6.4)}% {transform: translateY(0); animation-timing-function: ${STANDARD}}
-  ${at(1, 0)}%, ${at(1, 6.4)}% {transform: translateY(var(--step)); animation-timing-function: ${STANDARD}}
+  0%, ${at(0, 5.75)}% {transform: translateY(0); animation-timing-function: ${STANDARD}}
+  ${at(1, 0)}%, ${at(1, 5.75)}% {transform: translateY(var(--step)); animation-timing-function: ${STANDARD}}
   ${at(2, 0)}%, 100% {transform: translateY(0)}
 }
 @keyframes thsfa-axes {
@@ -131,8 +131,8 @@ ${rounds
   100% {opacity: 0}
 }
 @keyframes thsfa-dot {
-  0%, ${at(0, 6.4)}% {opacity: 0; transform: translate(0, 0) scale(0.3); animation-timing-function: ${POP}}
-  ${at(0, 6.8)}%, ${GROW[0]!.from}% {opacity: 1; transform: translate(0, 0) scale(1); animation-timing-function: linear}
+  0%, ${at(0, 5.75)}% {opacity: 0; transform: translate(0, 0) scale(0.3); animation-timing-function: ${POP}}
+  ${at(0, 6.05)}%, ${GROW[0]!.from}% {opacity: 1; transform: translate(0, 0) scale(1); animation-timing-function: linear}
   ${GROW[0]!.to}%, ${GROW[1]!.from}% {opacity: 1; transform: translate(var(--d2x), var(--d2y)) scale(1); animation-timing-function: linear}
   ${GROW[1]!.to}%, ${CHART_OUT}% {opacity: 1; transform: translate(var(--d3x), var(--d3y)) scale(1)}
   100% {opacity: 0; transform: translate(var(--d3x), var(--d3y)) scale(1)}
@@ -151,14 +151,14 @@ ${rounds
   .map(
     (r) => `@keyframes thsfa-title-r${r} {
   ${r === 0 ? '0%' : `0%, ${just(r, 0)}%`} {opacity: ${r === 0 ? 1 : 0}}
-  ${at(r, 0)}%, ${at(r, 6.4)}% {opacity: 1}
-  ${after(r, 6.4)}%, 100% {opacity: 0}
+  ${at(r, 0)}%, ${at(r, 5.75)}% {opacity: 1}
+  ${after(r, 5.75)}%, 100% {opacity: 0}
 }
 @keyframes thsfa-score-r${r} {
   0%, ${at(r, 4.1)}% {opacity: 0; transform: translate(0, 6px) scale(0.6); animation-timing-function: ${POP}}
-  ${at(r, 4.5)}%, ${at(r, 5.8)}% {opacity: 1; transform: translate(0, 0) scale(1); animation-timing-function: ${STANDARD}}
-  ${at(r, 6.4)}% {opacity: 1; transform: translate(var(--sx), var(--sy)) scale(0.75)}
-  ${at(r, 6.8)}%, 100% {opacity: 0; transform: translate(var(--sx), var(--sy)) scale(0.75)}
+  ${at(r, 4.5)}%, ${at(r, 5.15)}% {opacity: 1; transform: translate(0, 0) scale(1); animation-timing-function: ${STANDARD}}
+  ${at(r, 5.75)}% {opacity: 1; transform: translate(var(--sx), var(--sy)) scale(0.75)}
+  ${at(r, 6.05)}%, 100% {opacity: 0; transform: translate(var(--sx), var(--sy)) scale(0.75)}
 }`
   )
   .join('\n')}
@@ -221,44 +221,44 @@ const BANK = [
 const TEAMS = [
   {
     name: 'Product',
-    cx: 390,
+    cx: 362,
     cy: 56,
     labelW: 50,
-    link: 'M322,98 C342,98 346,56 358,56',
+    link: 'M294,98 C310,98 314,56 330,56',
     answers: [-18, -4, 10, 20],
     values: [3, 3.3, 3.5]
   },
   {
     name: 'Engineering',
-    cx: 480,
-    cy: 102,
+    cx: 428,
+    cy: 94,
     labelW: 72,
-    link: 'M322,98 C380,92 410,102 448,102',
+    link: 'M294,98 C330,94 360,94 396,94',
     answers: [-22, -10, 2, 14, 24],
     values: [4, 3.9, 4.5]
   },
   {
     name: 'Marketing',
-    cx: 410,
+    cx: 382,
     cy: 150,
     labelW: 62,
-    link: 'M322,98 C344,98 352,150 378,150',
+    link: 'M294,98 C312,98 318,150 350,150',
     answers: [-14, 0, 14],
     values: [2, 2.8, 2.9]
   }
 ]
 const SURVEY_ROWS = [58, 96, 134]
-const LIKERT_CX = [232, 246, 260, 274, 288]
+const LIKERT_CX = [204, 218, 232, 246, 260]
 const BAR_X = 34
 const BAR_W = 96
 const BAR_H = 8
-const DX = 212 - BAR_X
+const DX = 184 - BAR_X
 // the trend chart sits beside the teams, bare: the shape of the line is the whole message
-const AXIS_X = 570
+const AXIS_X = 500
 const AXIS_Y = 165
 const CHART_TOP = 45
 const UNIT = (AXIS_Y - CHART_TOP) / 5
-const MEETING_X = [585, 630, 675]
+const MEETING_X = [515, 558, 601]
 const scoreY = (value: number) => AXIS_Y - value * UNIT
 const GROUPS_ICON =
   'M12 12.75c1.63 0 3.07.39 4.24.9 1.08.48 1.76 1.56 1.76 2.73V18H6v-1.61c0-1.18.68-2.26 1.76-2.73 1.17-.52 2.61-.91 4.24-.91M4 13c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2m1.13 1.1c-.37-.06-.74-.1-1.13-.1-.99 0-1.93.21-2.78.58C.48 14.9 0 15.62 0 16.43V18h4.5v-1.61c0-.83.23-1.61.63-2.29M20 13c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2m4 3.43c0-.81-.48-1.53-1.22-1.85-.85-.37-1.79-.58-2.78-.58-.39 0-.76.04-1.13.1.4.68.63 1.46.63 2.29V18H24zM12 6c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3'
@@ -272,8 +272,8 @@ const TeamHealthSurveyFlowAnimation = (props: Props) => {
 
   return (
     <svg
-      viewBox='0 0 720 200'
-      className={cn('h-auto w-full max-w-[720px]', className)}
+      viewBox='0 0 650 200'
+      className={cn('h-auto w-full max-w-[650px]', className)}
       role='img'
       aria-label='One question is picked from each category in the question bank and flows into a meeting that goes out to the Product, Engineering and Marketing teams. Each team scores, and those scores carry over into a trend line across three meetings.'
     >
@@ -350,7 +350,7 @@ const TeamHealthSurveyFlowAnimation = (props: Props) => {
 
       <g className='thsfa-page'>
         <rect
-          x='200'
+          x='172'
           y='22'
           width='120'
           height='152'
@@ -362,7 +362,7 @@ const TeamHealthSurveyFlowAnimation = (props: Props) => {
           <text
             key={r}
             className={`thsfa-title-r${r}`}
-            x='212'
+            x='184'
             y='40'
             fontFamily={FONT}
             fontSize='11'
@@ -434,7 +434,7 @@ const TeamHealthSurveyFlowAnimation = (props: Props) => {
 
       <g className='thsfa-axes'>
         <path
-          d={`M${AXIS_X},${CHART_TOP} L${AXIS_X},${AXIS_Y} L700,${AXIS_Y}`}
+          d={`M${AXIS_X},${CHART_TOP} L${AXIS_X},${AXIS_Y} L625,${AXIS_Y}`}
           fill='none'
           stroke={muted}
           strokeWidth='1.5'
