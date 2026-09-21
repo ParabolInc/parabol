@@ -32,7 +32,7 @@ const useTeamPromptComposerState = (options: Options) => {
       map.set(prompt.id, saved ? JSON.parse(saved.content) : null)
     })
     return map
-  }, [stage?.id, isExpanded])
+  }, [stage?.id, isExpanded, isEnded])
 
   const initialContentByPrompt = useMemo(() => {
     const map = new Map<string, JSONContent | null>()
