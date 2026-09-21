@@ -4,7 +4,7 @@ import ReactjiCount from './ReactjiCount'
 
 interface Props {
   reactjiRef: ReactjiCount_reactji$key
-  onToggle: (emojiId: string) => void
+  onToggle?: (emojiId: string) => void
 }
 
 const ReactjiCountWrapper = ({reactjiRef, onToggle}: Props) => {

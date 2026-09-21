@@ -1,5 +1,6 @@
 import {DragDropContext, Draggable, Droppable, type DropResult} from '@hello-pangea/dnd'
 import graphql from 'babel-plugin-relay/macro'
+import {useContext} from 'react'
 import {useFragment} from 'react-relay'
 import type {TeamHealthSidebarResultSection_meeting$key} from '~/__generated__/TeamHealthSidebarResultSection_meeting.graphql'
 import type useGotoStageId from '~/hooks/useGotoStageId'
@@ -13,6 +14,7 @@ import {
 } from '../ActivityLibrary/TeamHealth/getTeamHealthCategoryColor'
 import MeetingSidebarPhaseItemChild from '../MeetingSidebarPhaseItemChild'
 import MeetingSubnavItem from '../MeetingSubnavItem'
+import ReadOnlyMeetingContext from '../ReadOnlyMeetingContext'
 import TeamHealthScoreDelta from './TeamHealthScoreDelta'
 
 // navItemRaised (Elevation.Z8)
@@ -30,6 +32,7 @@ interface Props {
 const TeamHealthSidebarResultSection = (props: Props) => {
   const {gotoStageId, handleMenuClick, meeting: meetingRef} = props
   const [dragTeamHealthResultStage] = useDragTeamHealthResultStageMutation()
+  const isReadOnly = useContext(ReadOnlyMeetingContext)
   const meeting = useFragment(
     graphql`
       fragment TeamHealthSidebarResultSection_meeting on TeamHealthMeeting {
@@ -115,7 +118,12 @@ const TeamHealthSidebarResultSection = (props: Props) => {
                 const previousScore = scoreHistory?.at(-1)?.score
                 const category = healthQuestion?.category
                 return (
-                  <Draggable key={stageId} draggableId={stageId} index={idx}>
+                  <Draggable
+                    key={stageId}
+                    draggableId={stageId}
+                    index={idx}
+                    isDragDisabled={isReadOnly}
+                  >
                     {(dragProvided, dragSnapshot) => (
                       <div
                         className={cn(dragSnapshot.isDragging && navItemRaisedShadowCls)}

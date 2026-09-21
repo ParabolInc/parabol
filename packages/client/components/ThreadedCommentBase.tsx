@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {type ReactNode, useEffect} from 'react'
+import {type ReactNode, useContext, useEffect} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import type {ThreadedCommentBase_comment$key} from '~/__generated__/ThreadedCommentBase_comment.graphql'
 import type {ThreadedCommentBase_discussion$key} from '~/__generated__/ThreadedCommentBase_discussion.graphql'
@@ -18,6 +18,7 @@ import {PARABOL_AI_USER_ID} from '../utils/constants'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 import DiscussionThreadInput from './DiscussionThreadInput'
 import type {DiscussionThreadables} from './DiscussionThreadList'
+import ReadOnlyMeetingContext from './ReadOnlyMeetingContext'
 import ThreadedAvatarColumn from './ThreadedAvatarColumn'
 import ThreadedCommentFooter from './ThreadedCommentFooter'
 import ThreadedCommentHeader from './ThreadedCommentHeader'
@@ -93,6 +94,7 @@ const ThreadedCommentBase = (props: Props) => {
   const picture = isActive ? (createdByUserNullable?.picture ?? anonymousAvatar) : deletedAvatar
   const {submitMutation, submitting, onError, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
+  const isReadOnly = useContext(ReadOnlyMeetingContext)
   const onSubmit = useEventCallback(() => {
     if (submitting || isTempId(commentId) || !editor || editor.isEmpty) return
     editor.setEditable(false)
@@ -176,6 +178,7 @@ const ThreadedCommentBase = (props: Props) => {
           meetingId={meetingId}
           onToggleReactji={onToggleReactji}
           onReply={onReply}
+          isReadOnly={isReadOnly}
         />
         {isActive && (
           <div className='pr-4'>
@@ -184,6 +187,7 @@ const ThreadedCommentBase = (props: Props) => {
         )}
         {isActive && (
           <ThreadedCommentFooter
+            isReadOnly={isReadOnly}
             reactjis={reactjis}
             onToggleReactji={onToggleReactji}
             onReply={onReply}
