@@ -11,7 +11,7 @@ import rotateTeamHealthQuestionIds from './rotateTeamHealthQuestionIds'
  * over a group rotate once here.
  *
  * With no series ids there is no history, so this is also the draw a new series' first meeting
- * makes, which TeamHealthTemplate.upcomingMeetingPreviews previews.
+ * makes, which the client previews on its own with the same picker.
  *
  * Returns undefined when the template has no questions, leaving each meeting to rotate for itself.
  */
@@ -29,7 +29,7 @@ const rotateSeriesTeamHealthQuestionIds = async (
     )
   ).filter(isValid)
   if (questions.length === 0) return undefined
-  return rotateTeamHealthQuestionIds(questions, meetingSeriesIds, templateId)
+  return rotateTeamHealthQuestionIds(questions, meetingSeriesIds)
 }
 
 export default rotateSeriesTeamHealthQuestionIds

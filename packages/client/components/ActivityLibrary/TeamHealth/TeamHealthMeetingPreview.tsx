@@ -12,6 +12,8 @@ interface Props {
   templateRef: TeamHealthMeetingPreview_template$key
   // globally-ordered category ids that drive each category's color (see getTeamHealthCategoryColor)
   orderedCategoryIds: ReadonlyArray<string>
+  // the question ids each meeting of a new series would ask (see useTeamHealthMeetingPreviews)
+  meetingPreviews: ReadonlyArray<ReadonlyArray<string>>
   // first-meeting questions that changed in the edit session that just ended
   changedQuestionIds: ReadonlySet<string>
   // absent when the viewer can't edit this template
@@ -19,38 +21,30 @@ interface Props {
 }
 
 const TeamHealthMeetingPreview = (props: Props) => {
-  const {templateRef, orderedCategoryIds, changedQuestionIds, onEdit} = props
+  const {templateRef, orderedCategoryIds, meetingPreviews, changedQuestionIds, onEdit} = props
   const template = useFragment(
     graphql`
       fragment TeamHealthMeetingPreview_template on TeamHealthTemplate {
         questions {
           id
+          question
           category {
             id
-          }
-        }
-        upcomingMeetingPreviews {
-          meetingNumber
-          questions {
-            id
-            question
-            category {
-              id
-              name
-            }
+            name
           }
         }
       }
     `,
     templateRef
   )
-  const {questions, upcomingMeetingPreviews} = template
+  const {questions} = template
   const [selectedMeetingNumber, setSelectedMeetingNumber] = useState(1)
-  const meeting =
-    upcomingMeetingPreviews.find(({meetingNumber}) => meetingNumber === selectedMeetingNumber) ??
-    upcomingMeetingPreviews[0]
-  if (!meeting) return null
-  const {meetingNumber, questions: meetingQuestions} = meeting
+  const meetingNumber = Math.min(selectedMeetingNumber, meetingPreviews.length)
+  const meetingQuestionIds = meetingPreviews[meetingNumber - 1]
+  if (!meetingQuestionIds) return null
+  const meetingQuestions = meetingQuestionIds
+    .map((questionId) => questions.find(({id}) => id === questionId))
+    .filter((question) => !!question)
 
   // a category with n questions asks each of them once every n meetings, so the biggest category
   // sets how long it takes for every question to come up
@@ -67,7 +61,7 @@ const TeamHealthMeetingPreview = (props: Props) => {
       <div className='flex flex-wrap items-center justify-between gap-2'>
         <TeamHealthMeetingPreviewPager
           meetingNumber={meetingNumber}
-          meetingCount={upcomingMeetingPreviews.length}
+          meetingCount={meetingPreviews.length}
           onChange={setSelectedMeetingNumber}
         />
         <span className='rounded-full bg-surface-well px-2 py-0.5 font-medium text-fg-secondary text-xs dark:bg-surface-raised'>

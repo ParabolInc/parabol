@@ -8,6 +8,7 @@ import TeamHealthMeetingPreview from './TeamHealthMeetingPreview'
 import TeamHealthQuestionPackSection from './TeamHealthQuestionPackSection'
 import TeamHealthSurveyFlowAnimation from './TeamHealthSurveyFlowAnimation'
 import useChangedFirstMeetingQuestionIds from './useChangedFirstMeetingQuestionIds'
+import useTeamHealthMeetingPreviews from './useTeamHealthMeetingPreviews'
 
 interface Props {
   templateRef: TeamHealthTemplateQuestionEditor_template$key
@@ -26,9 +27,7 @@ const TeamHealthTemplateQuestionEditor = (props: Props) => {
         id
         questions {
           id
-        }
-        upcomingMeetingPreviews {
-          questions {
+          category {
             id
           }
         }
@@ -50,14 +49,12 @@ const TeamHealthTemplateQuestionEditor = (props: Props) => {
     `,
     templateRef
   )
-  const {id: templateId, questions, upcomingMeetingPreviews, availableQuestionPacks} = template
+  const {id: templateId, questions, availableQuestionPacks} = template
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
 
-  const changedQuestionIds = useChangedFirstMeetingQuestionIds(
-    isEditing,
-    upcomingMeetingPreviews[0]?.questions.map((q) => q.id) ?? []
-  )
+  const meetingPreviews = useTeamHealthMeetingPreviews(questions)
+  const changedQuestionIds = useChangedFirstMeetingQuestionIds(isEditing, meetingPreviews[0] ?? [])
 
   const selectedIds = new Set(questions.map((q) => q.id))
 
@@ -121,6 +118,7 @@ const TeamHealthTemplateQuestionEditor = (props: Props) => {
         <TeamHealthMeetingPreview
           templateRef={template}
           orderedCategoryIds={categories.map((category) => category.id)}
+          meetingPreviews={meetingPreviews}
           changedQuestionIds={changedQuestionIds}
           onEdit={readOnly ? undefined : onEdit}
         />
