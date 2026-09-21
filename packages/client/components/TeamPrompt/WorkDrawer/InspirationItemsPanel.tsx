@@ -1,8 +1,7 @@
-import type {Editor, JSONContent} from '@tiptap/core'
+import type {JSONContent} from '@tiptap/core'
 import {type ReactNode, useCallback, useState} from 'react'
 import {Tune as TuneIcon} from '~/ui/icons'
 import useGenerateInspirationItemsMutation from '../../../mutations/useGenerateInspirationItemsMutation'
-import useUpsertTeamPromptResponseMutation from '../../../mutations/useUpsertTeamPromptResponseMutation'
 import {Button} from '../../../ui/Button/Button'
 import {Dialog} from '../../../ui/Dialog/Dialog'
 import {DialogActions} from '../../../ui/Dialog/DialogActions'
@@ -12,10 +11,8 @@ import {Tooltip} from '../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../ui/Tooltip/TooltipTrigger'
 import Ellipsis from '../../Ellipsis/Ellipsis'
-import getStructuredInspiration from './getStructuredInspiration'
 import type {InspirationItemData} from './InspirationDraftList'
 import InspirationDraftPanel from './InspirationDraftPanel'
-import InspirationItemCard from './InspirationItemCard'
 import {NO_WORK_LINE} from './inspirationCopy'
 import RetroInspirationItemCard from './RetroInspirationItemCard'
 import useInspirationAutoGenerate from './useInspirationAutoGenerate'
@@ -54,9 +51,6 @@ const InspirationItemsPanel = (props: Props) => {
   const {dateRange, workItemCount, filters} = props
   const consume = useWorkDrawerConsume()
   const isRetro = consume.mode === 'retro'
-  const viewerResponse = consume.mode === 'teamPrompt' ? consume.viewerResponse : null
-  const promptId = consume.mode === 'teamPrompt' ? consume.promptId : null
-  const [upsertResponse, addingToResponse] = useUpsertTeamPromptResponseMutation()
   const [items, setItems] = useState<InspirationItemData[]>(() =>
     initialItems.map(({id, title, content, promptId}) => ({
       id,
@@ -69,7 +63,6 @@ const InspirationItemsPanel = (props: Props) => {
   const [promptOpen, setPromptOpen] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [noWorkFound, setNoWorkFound] = useState(false)
-  const [addingToResponse, setAddingToResponse] = useState(false)
   const [generateInspirationItems, submitting] = useGenerateInspirationItemsMutation()
 
   const onGenerate = useCallback(() => {
@@ -98,7 +91,7 @@ const InspirationItemsPanel = (props: Props) => {
     })
   }, [submitting, meetingId, service, searchQuery, userPrompt, generateInspirationItems])
 
-  const structured = getStructuredInspiration(consume)
+  const structured = consume.mode === 'teamPrompt' ? consume : null
 
   const hasWorkItems = service === 'PARABOL' ? workItemCount !== 0 : !!workItemCount
 
@@ -111,26 +104,6 @@ const InspirationItemsPanel = (props: Props) => {
     submitting,
     generate: onGenerate
   })
-
-  const onAddToResponse = (editor: Editor) => {
-    if (addingToResponse) return
-    let existingContent: JSONContent[] = []
-    if (viewerResponse?.content) {
-      try {
-        const existing = JSON.parse(viewerResponse.content) as JSONContent
-        existingContent = existing.content ?? []
-      } catch {
-        existingContent = []
-      }
-    }
-    const itemBlocks = editor.getJSON().content ?? []
-    const content = JSON.stringify({
-      type: 'doc',
-      content: [...existingContent, ...itemBlocks]
-    })
-    if (!promptId) return
-    upsertResponse({variables: {meetingId, promptId, content}})
-  }
 
   const generateLabel = isRetro
     ? 'Draft reflections from this work'
@@ -232,26 +205,15 @@ const InspirationItemsPanel = (props: Props) => {
               {NO_WORK_LINE}
             </p>
           )}
-          {items.map((item) =>
-            isRetro ? (
-              <RetroInspirationItemCard
-                key={item.id}
-                meetingId={meetingId}
-                promptId={item.promptId}
-                title={item.title}
-                content={item.content}
-              />
-            ) : (
-              <InspirationItemCard
-                key={item.id}
-                title={item.title}
-                content={item.content}
-                onAddToResponse={onAddToResponse}
-                responsePlaintext={viewerResponse?.plaintextContent ?? ''}
-                disabled={addingToResponse}
-              />
-            )
-          )}
+          {items.map((item) => (
+            <RetroInspirationItemCard
+              key={item.id}
+              meetingId={meetingId}
+              promptId={item.promptId}
+              title={item.title}
+              content={item.content}
+            />
+          ))}
         </div>
       )}
       {children}

@@ -1,12 +1,6 @@
 import {createContext, useContext} from 'react'
 import type {TeamPromptComposerApi} from '../structured/TeamPromptComposerApiContext'
 
-export interface ViewerResponse {
-  id: string
-  content: string
-  plaintextContent: string
-}
-
 export interface WorkDrawerPrompt {
   id: string
   question: string
@@ -14,12 +8,11 @@ export interface WorkDrawerPrompt {
 }
 
 // Tells InspirationItemsPanel how generated items are consumed, which differs by meeting type:
-// team prompt merges an item into the viewer's response; retro adds each item as a reflection card.
+// team prompt routes an item into the composer's answer for its prompt; retro adds each item as a reflection card.
 export type WorkDrawerConsume =
   | {
       mode: 'teamPrompt'
-      viewerResponse: ViewerResponse | null
-      composer: TeamPromptComposerApi | null
+      composer: TeamPromptComposerApi
       prompts: readonly WorkDrawerPrompt[]
     }
   | {
@@ -33,13 +26,12 @@ export type WorkDrawerConsume =
       isReflectionAdded: (promptId: string | null, plaintext: string) => boolean
     }
 
-const WorkDrawerConsumeContext = createContext<WorkDrawerConsume>({
-  mode: 'teamPrompt',
-  viewerResponse: null,
-  composer: null,
-  prompts: []
-})
+const WorkDrawerConsumeContext = createContext<WorkDrawerConsume | null>(null)
 
-export const useWorkDrawerConsume = () => useContext(WorkDrawerConsumeContext)
+export const useWorkDrawerConsume = () => {
+  const consume = useContext(WorkDrawerConsumeContext)
+  if (!consume) throw new Error('useWorkDrawerConsume must be used within a work drawer')
+  return consume
+}
 
 export default WorkDrawerConsumeContext

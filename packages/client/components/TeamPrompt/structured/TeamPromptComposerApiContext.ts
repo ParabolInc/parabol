@@ -16,10 +16,10 @@ export interface TeamPromptComposerApi {
 const TeamPromptComposerApiContext =
   createContext<MutableRefObject<TeamPromptComposerApi | null> | null>(null)
 
-export const useTeamPromptComposerApi = (): TeamPromptComposerApi | null => {
+export const useTeamPromptComposerApi = (): TeamPromptComposerApi => {
   const apiRef = useContext(TeamPromptComposerApiContext)
+  if (!apiRef) throw new Error('useTeamPromptComposerApi must be used within a stand-up meeting')
   return useMemo(() => {
-    if (!apiRef) return null
     return {
       insertAnswerBlocks: (promptId, blocks) =>
         apiRef.current?.insertAnswerBlocks(promptId, blocks) ?? Promise.resolve(null),

@@ -1,6 +1,5 @@
-import getStructuredInspiration from './getStructuredInspiration'
 import {useWorkDrawerConsume} from './WorkDrawerConsumeContext'
 
-const useIsStructuredInspiration = () => !!getStructuredInspiration(useWorkDrawerConsume())
+const useIsStructuredInspiration = () => useWorkDrawerConsume().mode === 'teamPrompt'
 
 export default useIsStructuredInspiration

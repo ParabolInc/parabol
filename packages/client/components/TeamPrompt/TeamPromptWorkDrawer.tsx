@@ -40,13 +40,6 @@ const TeamPromptWorkDrawer = (props: Props) => {
           question
           groupColor
         }
-        responses {
-          id
-          userId
-          promptId
-          content
-          plaintextContent
-        }
         ...ParabolTasksPanel_meeting
         ...GitHubIntegrationPanel_meeting
         ...GitLabIntegrationPanel_meeting
@@ -89,8 +82,6 @@ const TeamPromptWorkDrawer = (props: Props) => {
     meetingRef
   )
   const atmosphere = useAtmosphere()
-  const {viewerId} = atmosphere
-  const viewerResponse = meeting.responses.find((response) => response.userId === viewerId) ?? null
   const composer = useTeamPromptComposerApi()
   const hasJiraServer =
     !!meeting.viewerMeetingMember?.teamMember?.integrations.jiraServer?.sharedProviders?.length
@@ -192,7 +183,7 @@ const TeamPromptWorkDrawer = (props: Props) => {
 
   return (
     <WorkDrawerConsumeContext.Provider
-      value={{mode: 'teamPrompt', viewerResponse, composer, prompts: meeting.prompts}}
+      value={{mode: 'teamPrompt', composer, prompts: meeting.prompts}}
     >
       <div className='flex min-h-0 flex-1 flex-col'>
         <div className='flex justify-center pt-3 pb-2'>
