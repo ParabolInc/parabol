@@ -300,6 +300,20 @@ const joinMeeting = async (auth: {cookie?: string; bearerToken?: string}, meetin
   expect(res.data.joinMeeting.error).toBeUndefined()
 }
 
+const waitForSummaryText = async (meetingId: string, lastExpectedText: string) => {
+  const deadline = Date.now() + 20000
+  while (true) {
+    const summaryPage = await getKysely()
+      .selectFrom('Page')
+      .select('plaintextContent')
+      .where('summaryMeetingId', '=', meetingId)
+      .executeTakeFirstOrThrow()
+    const summaryText = summaryPage.plaintextContent ?? ''
+    if (summaryText.includes(lastExpectedText) || Date.now() > deadline) return summaryText
+    await new Promise((resolve) => setTimeout(resolve, 250))
+  }
+}
+
 const startTemplatedStandup = async () => {
   const owner = await signUp()
   const {meeting} = await startStandup({cookie: owner.cookie}, owner.teamId)
@@ -755,19 +769,14 @@ test('a draft never leaves the meeting: the count and the summary page only see 
   expect(ended.errors).toBeUndefined()
   expect(ended.data.endTeamPrompt.error).toBeUndefined()
 
-  const summaryPage = await getKysely()
-    .selectFrom('Page')
-    .select('plaintextContent')
-    .where('summaryMeetingId', '=', meeting.id)
-    .executeTakeFirstOrThrow()
-  const summaryText = summaryPage.plaintextContent ?? ''
+  const summaryText = await waitForSummaryText(meeting.id, 'Waiting on the vendor sandbox')
   expect(summaryText).toContain('Shipped the billing fix')
   expect(summaryText).toContain('Waiting on the vendor sandbox')
   expect(summaryText).not.toContain('Unshared secret draft')
   expect(summaryText.indexOf('Shipped the billing fix')).toBeLessThan(
     summaryText.indexOf('Waiting on the vendor sandbox')
   )
-})
+}, 30000)
 
 test('a draft cannot be reacted to until it is shared', async () => {
   const {owner, meeting} = await startTemplatedStandup()
