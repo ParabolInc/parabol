@@ -220,7 +220,6 @@ const ActivityDetailsSidebar = (props: Props) => {
                 atmosphere,
                 {
                   teamId: selectedTeam.id,
-                  templateId: selectedTemplate.id,
                   name,
                   rrule: rrule?.toString(),
                   gcalInput,

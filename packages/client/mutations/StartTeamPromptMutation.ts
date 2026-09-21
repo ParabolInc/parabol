@@ -24,7 +24,6 @@ graphql`
 const mutation = graphql`
   mutation StartTeamPromptMutation(
     $teamId: ID!
-    $templateId: ID
     $name: String
     $rrule: RRule
     $gcalInput: CreateGcalEventInput
@@ -32,7 +31,6 @@ const mutation = graphql`
   ) {
     startTeamPrompt(
       teamId: $teamId
-      templateId: $templateId
       name: $name
       rrule: $rrule
       gcalInput: $gcalInput
