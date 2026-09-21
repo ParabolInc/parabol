@@ -2,10 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {TeamPromptReplyButton_edges$key} from '~/__generated__/TeamPromptReplyButton_edges.graphql'
 import type {TeamPromptResponseFooter_response$key} from '~/__generated__/TeamPromptResponseFooter_response.graphql'
-import plural from '~/utils/plural'
 import {cn} from '../../../ui/cn'
-import PlainButton from '../../PlainButton/PlainButton'
-import TeamPromptRepliesAvatarList from '../TeamPromptRepliesAvatarList'
 import {TeamPromptResponseEmojis} from '../TeamPromptResponseEmojis'
 import TeamPromptReplyButton from './TeamPromptReplyButton'
 
@@ -37,22 +34,7 @@ const TeamPromptResponseFooter = ({
   return (
     <div className={cn('flex flex-wrap items-center justify-start pt-1', className)}>
       <TeamPromptResponseEmojis responseRef={response} meetingId={meetingId} isPhone={isPhone} />
-      <PlainButton
-        className={cn(
-          'font-semibold text-accent hover:underline focus-visible:underline',
-          isPhone ? 'flex h-10 items-center text-sm' : 'flex items-start pt-2 leading-6'
-        )}
-        onClick={onReply}
-      >
-        {replyCount > 0 ? (
-          <>
-            <TeamPromptRepliesAvatarList edgesRef={edges} />
-            {replyCount} {plural(replyCount, 'Reply', 'Replies')}
-          </>
-        ) : (
-          'Reply'
-        )}
-      </PlainButton>
+      <TeamPromptReplyButton edgesRef={edgesRef} onReply={onReply} isPhone={isPhone} />
     </div>
   )
 }

@@ -8,10 +8,11 @@ import {getSharedResponses} from './teamPromptStages'
 interface Props {
   stageRef: TeamPromptSharedAnswers_stage$key
   prompts: readonly {id: string; question: string; groupColor: string}[]
+  isPhone?: boolean
 }
 
 const TeamPromptSharedAnswers = (props: Props) => {
-  const {stageRef, prompts} = props
+  const {stageRef, prompts, isPhone} = props
   const stage = useFragment(
     graphql`
       fragment TeamPromptSharedAnswers_stage on TeamPromptResponseStage {
@@ -40,9 +41,18 @@ const TeamPromptSharedAnswers = (props: Props) => {
         if (!response) return null
         return (
           <div key={response.id}>
-            <TeamPromptAnswerBlock teamId={teamId} prompt={prompt} content={response.content} />
+            <TeamPromptAnswerBlock
+              teamId={teamId}
+              prompt={prompt}
+              content={response.content}
+              textClassName={isPhone ? 'pl-[18px] text-[15px] leading-[22px]' : undefined}
+            />
             <div className='pl-[18px]'>
-              <TeamPromptResponseEmojis responseRef={response} meetingId={meetingId} />
+              <TeamPromptResponseEmojis
+                responseRef={response}
+                meetingId={meetingId}
+                isPhone={isPhone}
+              />
             </div>
           </div>
         )

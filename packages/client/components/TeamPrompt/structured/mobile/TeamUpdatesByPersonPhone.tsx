@@ -1,22 +1,21 @@
 import {type RefObject, useRef, useState} from 'react'
-import TeamPromptDraftingCard from '../TeamPromptDraftingCard'
 import TeamPromptSharedResponseCard from '../TeamPromptSharedResponseCard'
+import TeamPromptWaitingCard from '../TeamPromptWaitingCard'
 import type {TeamUpdateStage} from '../TeamUpdatesByPerson'
 import memberCardScrollTop, {STICKY_HEADER_OFFSET} from './memberCardScrollTop'
 import TeamUpdatesMemberChips from './TeamUpdatesMemberChips'
 
-const toMember = (stage: TeamUpdateStage, isDrafting: boolean) => ({
+const toMember = (stage: TeamUpdateStage, isWaiting: boolean) => ({
   id: stage.id,
   preferredName: stage.teamMember.user.preferredName,
   picture: stage.teamMember.user.picture,
-  isDrafting
+  isWaiting
 })
 
 interface Props {
   prompts: readonly {id: string; question: string; groupColor: string}[]
   sharedStages: readonly TeamUpdateStage[]
-  draftingStages: readonly TeamUpdateStage[]
-  notStartedStages: readonly TeamUpdateStage[]
+  waitingStages: readonly TeamUpdateStage[]
   isEnded: boolean
   selectedStageId: string | null
   onReply: (stageId: string) => void
@@ -27,8 +26,7 @@ const TeamUpdatesByPersonPhone = (props: Props) => {
   const {
     prompts,
     sharedStages,
-    draftingStages,
-    notStartedStages,
+    waitingStages,
     isEnded,
     selectedStageId,
     onReply,
@@ -39,8 +37,7 @@ const TeamUpdatesByPersonPhone = (props: Props) => {
   const cardsRef = useRef<Record<string, HTMLDivElement | null>>({})
   const members = [
     ...sharedStages.map((stage) => toMember(stage, false)),
-    ...draftingStages.map((stage) => toMember(stage, true)),
-    ...notStartedStages.map((stage) => toMember(stage, true))
+    ...waitingStages.map((stage) => toMember(stage, true))
   ]
   const onSelect = (stageId: string | null) => {
     setSelectedMemberId(stageId)
@@ -75,14 +72,11 @@ const TeamUpdatesByPersonPhone = (props: Props) => {
             />
           </div>
         ))}
-        {[...draftingStages, ...notStartedStages].map((stage) => (
+        {waitingStages.map((stage) => (
           <div key={stage.id} ref={setCardRef(stage.id)}>
-            <TeamPromptDraftingCard
+            <TeamPromptWaitingCard
               preferredName={stage.teamMember.user.preferredName}
               picture={stage.teamMember.user.picture}
-              answeredCount={stage.response?.answeredPromptIds.length ?? 0}
-              promptCount={prompts.length}
-              hasStarted={!!stage.response}
               isEnded={isEnded}
               isPhone
             />

@@ -9,13 +9,9 @@ interface Props {
   isPhone?: boolean
 }
 
-const TeamPromptDraftingCard = (props: Props) => {
-  const {preferredName, picture, answeredCount, promptCount, hasStarted, isEnded, isPhone} = props
-  const title = isEnded
-    ? 'No response'
-    : hasStarted
-      ? `Drafting · ${answeredCount} of ${promptCount} answered`
-      : "Hasn't started yet"
+const TeamPromptWaitingCard = (props: Props) => {
+  const {preferredName, picture, isEnded, isPhone} = props
+  const title = isEnded ? 'No response' : "Hasn't shared yet"
   return (
     <div className={cn(TEAM_UPDATES_COLUMN, 'flex flex-col')}>
       <div className='mb-3 flex items-center gap-2 px-2'>

@@ -77,8 +77,9 @@ const TeamUpdatesSection = (props: Props) => {
   const headerRef = useRef<HTMLDivElement>(null)
   const gridRef = useRef<HTMLDivElement>(null)
   const viewerStage = stages.find((stage) => stage.teamMember.userId === viewerId)
-  const {shared, drafting, notStarted} = sortTeamStages(stages, viewerId)
-  const canPin = !isPhone && !endedAt && !viewerStage?.response?.isShared && shared.length > 0
+  const {shared, waiting} = sortTeamStages(stages, viewerId)
+  const hasViewerShared = !!getMemberSharedAt(viewerStage?.responses ?? [])
+  const canPin = !isPhone && !endedAt && !hasViewerShared && shared.length > 0
   const isPinned = useTeamHeaderPin(headerRef, scrollContainerRef, composerRef, sectionRef, canPin)
   const onReply = useOpenResponseDiscussion(meetingId, rightDrawerOpen, localStageId)
   const selectedStageId = rightDrawerOpen === 'discussion' ? localStageId : null
@@ -91,7 +92,7 @@ const TeamUpdatesSection = (props: Props) => {
       {isPhone ? (
         <TeamUpdatesPhoneHeader
           sharedCount={shared.length}
-          draftingCount={drafting.length}
+          waitingCount={waiting.length}
           layout={toPhoneLayout(layout)}
           onLayoutChange={(choice) => {
             const next = nextLayoutForPhoneChoice(layout, choice)
@@ -102,7 +103,7 @@ const TeamUpdatesSection = (props: Props) => {
         <TeamUpdatesHeader
           ref={headerRef}
           sharedMembers={sharedMembers}
-          draftingCount={drafting.length}
+          waitingCount={waiting.length}
           layout={layout}
           onLayoutChange={setLayout}
           canPin={canPin}
@@ -116,7 +117,7 @@ const TeamUpdatesSection = (props: Props) => {
             <TeamUpdatesByQuestionPhone
               prompts={prompts}
               sharedStages={shared}
-              draftingStages={[...drafting, ...notStarted]}
+              waitingStages={waiting}
               isEnded={!!endedAt}
               selectedStageId={selectedStageId}
               onReply={onReply}
@@ -126,7 +127,7 @@ const TeamUpdatesSection = (props: Props) => {
             <TeamUpdatesByQuestion
               prompts={prompts}
               sharedStages={shared}
-              draftingStages={[...drafting, ...notStarted]}
+              waitingStages={waiting}
               isEnded={!!endedAt}
               selectedStageId={selectedStageId}
               onReply={onReply}
@@ -136,8 +137,7 @@ const TeamUpdatesSection = (props: Props) => {
           <TeamUpdatesByPersonPhone
             prompts={prompts}
             sharedStages={shared}
-            draftingStages={drafting}
-            notStartedStages={notStarted}
+            waitingStages={waiting}
             isEnded={!!endedAt}
             selectedStageId={selectedStageId}
             onReply={onReply}

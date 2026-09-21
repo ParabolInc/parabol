@@ -69,7 +69,9 @@ const TeamPromptStructuredMeeting = (props: Props) => {
   const {id: meetingId, localStageId, endedAt, phases} = meeting
   const responseId = new URLSearchParams(location.search).get('responseId')
   const permalinkStage = responseId
-    ? (phases[0]?.stages?.find((stage) => stage.response?.id === responseId) ?? null)
+    ? (phases[0]?.stages?.find((stage) =>
+        stage.responses.some((response) => response.id === responseId)
+      ) ?? null)
     : null
   const scrollRef = useRef<HTMLDivElement>(null)
   const composerRef = useRef<HTMLDivElement>(null)

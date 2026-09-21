@@ -9,7 +9,7 @@ interface Member {
   id: string
   preferredName: string
   picture: string
-  isDrafting: boolean
+  isWaiting: boolean
 }
 
 interface Props {
@@ -26,12 +26,12 @@ const TeamUpdatesMemberChips = (props: Props) => {
   const listRef = useRef<HTMLDivElement>(null)
   const chipsRef = useRef<Record<string, HTMLButtonElement | null>>({})
   const chips = [
-    {value: ALL_MEMBERS_CHIP, label: 'All', picture: null, isDrafting: false},
+    {value: ALL_MEMBERS_CHIP, label: 'All', picture: null, isWaiting: false},
     ...members.map((member) => ({
       value: member.id,
       label: member.preferredName.split(' ')[0] || member.preferredName,
       picture: member.picture,
-      isDrafting: member.isDrafting
+      isWaiting: member.isWaiting
     }))
   ]
   const current = selectedId ?? ALL_MEMBERS_CHIP
@@ -64,7 +64,7 @@ const TeamUpdatesMemberChips = (props: Props) => {
       onKeyDown={onKeyDown}
       className='sticky top-0 z-10 flex gap-2 overflow-x-auto bg-surface-app px-4 pt-1.5 pb-2.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
     >
-      {chips.map(({value, label, picture, isDrafting}) => {
+      {chips.map(({value, label, picture, isWaiting}) => {
         const isSelected = current === value
         return (
           <button
@@ -80,7 +80,7 @@ const TeamUpdatesMemberChips = (props: Props) => {
             className={cn(
               CHIP,
               picture ? 'gap-2 pr-3 pl-1' : 'px-3',
-              isDrafting ? 'text-fg-muted' : 'text-fg-secondary',
+              isWaiting ? 'text-fg-muted' : 'text-fg-secondary',
               isSelected
                 ? 'border-transparent bg-surface-selected text-fg-selected'
                 : 'border-hairline-strong bg-surface-card'
@@ -90,7 +90,7 @@ const TeamUpdatesMemberChips = (props: Props) => {
               <Avatar
                 picture={picture}
                 alt={label}
-                className={cn('h-[26px] w-[26px] shrink-0', isDrafting && 'opacity-55')}
+                className={cn('h-[26px] w-[26px] shrink-0', isWaiting && 'opacity-55')}
               />
             )}
             <span className='max-w-[140px] truncate'>{label}</span>

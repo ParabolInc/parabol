@@ -212,7 +212,7 @@ const TeamPromptWorkDrawer = (props: Props) => {
   return (
     <InspirationPresentationContext.Provider value={presentation}>
       <WorkDrawerConsumeContext.Provider
-        value={{mode: 'teamPrompt', viewerResponse, composer, prompts: meeting.prompts}}
+        value={{mode: 'teamPrompt', composer, prompts: meeting.prompts}}
       >
         <div className='flex min-h-0 flex-1 flex-col'>
           {variant === 'sheet' ? (

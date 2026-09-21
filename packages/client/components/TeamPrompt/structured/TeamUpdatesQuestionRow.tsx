@@ -20,7 +20,7 @@ interface Props {
 }
 
 const TeamUpdatesQuestionRow = (props: Props) => {
-  const {stageRef, prompt, isDrafting, isEnded, isSelected, promptCount, onReply, isPhone} = props
+  const {stageRef, prompt, isWaiting, isEnded, isSelected, onReply, isPhone} = props
   const stage = useFragment(
     graphql`
       fragment TeamUpdatesQuestionRow_stage on TeamPromptResponseStage {
@@ -62,13 +62,13 @@ const TeamUpdatesQuestionRow = (props: Props) => {
       className={cn(
         'flex rounded-card',
         isPhone ? 'gap-2 p-[12px_14px]' : 'gap-3.5 px-4 py-3.5',
-        isDrafting ? 'bg-surface-well' : 'bg-surface-card shadow-[var(--shadow-card)]',
+        isWaiting ? 'bg-surface-well' : 'bg-surface-card shadow-[var(--shadow-card)]',
         isSelected ? 'outline-2 outline-sky-300' : 'outline-none'
       )}
     >
       <Avatar
         picture={picture}
-        className={cn('shrink-0', isPhone ? 'h-7 w-7' : 'h-10 w-10', isDrafting && 'opacity-55')}
+        className={cn('shrink-0', isPhone ? 'h-7 w-7' : 'h-10 w-10', isWaiting && 'opacity-55')}
       />
       <div className='flex min-w-0 flex-1 flex-col gap-1'>
         <div className='flex items-center gap-2'>
@@ -80,7 +80,7 @@ const TeamUpdatesQuestionRow = (props: Props) => {
           >
             {preferredName}
           </h3>
-          {isDrafting ? (
+          {isWaiting ? (
             <span className='shrink-0 whitespace-nowrap text-fg-primary text-xs'>
               {isEnded ? 'No response' : "Hasn't shared yet"}
             </span>

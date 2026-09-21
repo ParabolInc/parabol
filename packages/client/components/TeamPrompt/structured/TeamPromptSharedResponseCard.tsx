@@ -74,19 +74,17 @@ const TeamPromptSharedResponseCard = (props: Props) => {
         >
           {preferredName}
         </h3>
-        {response.sharedAt && (
-          <span className='flex shrink-0 items-center gap-1 whitespace-nowrap text-fg-muted text-xs'>
-            · shared{' '}
-            <TeamPromptLastUpdatedTime
-              createdAt={response.sharedAt}
-              updatedAt={lastAnswerUpdatedAt(response.answers, response.sharedAt)}
-            />
-          </span>
-        )}
+        <span className='flex shrink-0 items-center gap-1 whitespace-nowrap text-fg-muted text-xs'>
+          · shared{' '}
+          <TeamPromptLastUpdatedTime
+            createdAt={sharedAt}
+            updatedAt={lastAnswerUpdatedAt(sharedResponses, sharedAt)}
+          />
+        </span>
         <TeamPromptResponsePermalink
           meetingId={meetingId}
           teamId={teamId}
-          responseId={response.id}
+          responseId={firstResponse.id}
           isPhone={isPhone}
         />
       </div>
@@ -96,22 +94,8 @@ const TeamPromptSharedResponseCard = (props: Props) => {
           isSelected ? 'outline-2 outline-sky-300' : 'outline-none'
         )}
       >
-        {prompts.map((prompt) => {
-          const answer = answersByPrompt.get(prompt.id)
-          if (!answer) return null
-          return (
-            <TeamPromptAnswerBlock
-              key={answer.id}
-              teamId={teamId}
-              prompt={prompt}
-              content={answer.content}
-              textClassName={isPhone ? 'pl-[18px] text-[15px] leading-[22px]' : undefined}
-            />
-          )
-        })}
-        <TeamPromptResponseFooter
-          meetingId={meetingId}
-          responseRef={response}
+        <TeamPromptSharedAnswers stageRef={stage} prompts={prompts} isPhone={isPhone} />
+        <TeamPromptReplyButton
           edgesRef={discussion.thread.edges}
           onReply={() => onReply(stageId)}
           isPhone={isPhone}

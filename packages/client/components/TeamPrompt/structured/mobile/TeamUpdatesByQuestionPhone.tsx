@@ -3,13 +3,14 @@ import useHorizontalSwipe from '~/hooks/useHorizontalSwipe'
 import {KeyboardArrowLeft, KeyboardArrowRight} from '~/ui/icons'
 import type {TeamUpdatesQuestionStage} from '../TeamUpdatesByQuestion'
 import TeamUpdatesQuestionRow from '../TeamUpdatesQuestionRow'
+import {getSharedResponses} from '../teamPromptStages'
 import memberCardScrollTop from './memberCardScrollTop'
 import TeamUpdatesQuestionChips from './TeamUpdatesQuestionChips'
 
 interface Props {
   prompts: readonly {id: string; question: string; groupColor: string}[]
   sharedStages: readonly TeamUpdatesQuestionStage[]
-  draftingStages: readonly TeamUpdatesQuestionStage[]
+  waitingStages: readonly TeamUpdatesQuestionStage[]
   isEnded: boolean
   selectedStageId: string | null
   onReply: (stageId: string) => void
@@ -20,7 +21,7 @@ const TeamUpdatesByQuestionPhone = (props: Props) => {
   const {
     prompts,
     sharedStages,
-    draftingStages,
+    waitingStages,
     isEnded,
     selectedStageId,
     onReply,
@@ -58,7 +59,7 @@ const TeamUpdatesByQuestionPhone = (props: Props) => {
   const activePrompt = prompts[activeIndex]
   if (!activePrompt) return null
   const answeringStages = sharedStages.filter((stage) =>
-    stage.response?.answers.some((answer) => answer.promptId === activePrompt.id)
+    getSharedResponses(stage.responses).some((response) => response.promptId === activePrompt.id)
   )
   return (
     <div ref={rootRef}>
@@ -90,23 +91,21 @@ const TeamUpdatesByQuestionPhone = (props: Props) => {
             key={stage.id}
             stageRef={stage}
             prompt={activePrompt}
-            isDrafting={false}
+            isWaiting={false}
             isEnded={isEnded}
             isSelected={selectedStageId === stage.id}
-            promptCount={prompts.length}
             onReply={onReply}
             isPhone
           />
         ))}
-        {draftingStages.map((stage) => (
+        {waitingStages.map((stage) => (
           <TeamUpdatesQuestionRow
             key={stage.id}
             stageRef={stage}
             prompt={activePrompt}
-            isDrafting
+            isWaiting
             isEnded={isEnded}
             isSelected={false}
-            promptCount={prompts.length}
             onReply={onReply}
             isPhone
           />

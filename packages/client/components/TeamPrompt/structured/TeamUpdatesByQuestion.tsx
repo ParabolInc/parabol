@@ -10,10 +10,10 @@ import {TEAM_UPDATES_QUESTION_BAND} from './teamUpdatesLayout'
 graphql`
   fragment TeamUpdatesByQuestion_stage on TeamPromptResponseStage {
     id
-    response {
-      answers {
-        promptId
-      }
+    responses {
+      promptId
+      sharedAt
+      updatedAt
     }
     ...TeamUpdatesQuestionRow_stage
   }
@@ -24,7 +24,7 @@ export type TeamUpdatesQuestionStage = Omit<TeamUpdatesByQuestion_stage$data, ' 
 interface Props {
   prompts: readonly {id: string; question: string; groupColor: string}[]
   sharedStages: readonly TeamUpdatesQuestionStage[]
-  draftingStages: readonly TeamUpdatesQuestionStage[]
+  waitingStages: readonly TeamUpdatesQuestionStage[]
   isEnded: boolean
   selectedStageId: string | null
   onReply: (stageId: string) => void

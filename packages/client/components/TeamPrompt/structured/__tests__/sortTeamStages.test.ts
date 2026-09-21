@@ -16,16 +16,32 @@ const makeStage = (
   responses
 })
 
-const makeResponse = (
-  overrides: Partial<StructuredResponseSummary> = {}
-): StructuredResponseSummary => ({
-  id: 'response1',
-  isShared: false,
-  sharedAt: null,
-  createdAt: '2026-09-01T00:00:00.000Z',
-  updatedAt: '2026-09-01T00:00:00.000Z',
-  answeredPromptIds: [],
-  ...overrides
+const makeAnswer = (sharedAt: string | null = null): StructuredAnswer => ({
+  sharedAt,
+  updatedAt: '2026-09-01T00:00:00.000Z'
+})
+
+describe('getMemberSharedAt', () => {
+  it('is null until an answer is shared', () => {
+    expect(getMemberSharedAt([])).toBeNull()
+    expect(getMemberSharedAt([makeAnswer(), makeAnswer()])).toBeNull()
+  })
+
+  it('is the earliest share across the answers', () => {
+    const answers = [
+      makeAnswer('2026-09-01T09:00:00.000Z'),
+      makeAnswer(),
+      makeAnswer('2026-09-01T07:00:00.000Z')
+    ]
+    expect(getMemberSharedAt(answers)).toBe('2026-09-01T07:00:00.000Z')
+  })
+})
+
+describe('getSharedResponses', () => {
+  it('drops drafts and cleared answers', () => {
+    const shared = makeAnswer('2026-09-01T07:00:00.000Z')
+    expect(getSharedResponses([makeAnswer(), shared])).toEqual([shared])
+  })
 })
 
 describe('sortTeamStages', () => {
@@ -60,23 +76,5 @@ describe('sortTeamStages', () => {
     ]
     const {shared} = sortTeamStages(stages, 'user1')
     expect(shared.map((stage) => stage.id)).toEqual(['early', 'late'])
-    expect(drafting.map((stage) => stage.id)).toEqual(['fresh', 'stale'])
-  })
-
-  it('orders a shared response with no sharedAt by createdAt', () => {
-    const stages = [
-      makeStage(
-        'noSharedAt',
-        'user2',
-        makeResponse({isShared: true, sharedAt: null, createdAt: '2026-09-01T03:00:00.000Z'})
-      ),
-      makeStage(
-        'shared',
-        'user3',
-        makeResponse({isShared: true, sharedAt: '2026-09-01T02:00:00.000Z'})
-      )
-    ]
-    const {shared} = sortTeamStages(stages, 'user1')
-    expect(shared.map((stage) => stage.id)).toEqual(['shared', 'noSharedAt'])
   })
 })

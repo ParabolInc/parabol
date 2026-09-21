@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {TeamPromptPhoneAppBar_meeting$key} from '~/__generated__/TeamPromptPhoneAppBar_meeting.graphql'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import {useMeetingSeriesDate} from '~/hooks/useMeetingSeriesDate'
 import {EditMeetingSeriesModal} from '../../../EditMeetingSeriesModal'
 import LogoBlock from '../../../LogoBlock/LogoBlock'
@@ -9,6 +10,7 @@ import {EndRecurringMeetingModal} from '../../../Recurrence/EndRecurringMeetingM
 import TeamPromptOptions from '../../TeamPromptOptions'
 import countUnsharedDrafts from '../countUnsharedDrafts'
 import TeamUpdatesAvatarStack from '../TeamUpdatesAvatarStack'
+import {getMemberSharedAt} from '../teamPromptStages'
 import TeamPromptPhoneAppBarSubtitle from './TeamPromptPhoneAppBarSubtitle'
 
 interface Props {
@@ -24,10 +26,10 @@ const TeamPromptPhoneAppBar = (props: Props) => {
         name
         endedAt
         scheduledEndTime
-        templateId
         responses {
-          isShared
-          answeredPromptIds
+          userId
+          sharedAt
+          content
         }
         meetingSeries {
           id
@@ -45,8 +47,9 @@ const TeamPromptPhoneAppBar = (props: Props) => {
                   picture
                 }
               }
-              response {
-                isShared
+              responses {
+                sharedAt
+                updatedAt
               }
             }
           }
@@ -58,14 +61,15 @@ const TeamPromptPhoneAppBar = (props: Props) => {
     `,
     meetingRef
   )
+  const {viewerId} = useAtmosphere()
   const [isRecurrenceSettingsOpen, setIsRecurrenceSettingsOpen] = useState(false)
   const [isEndRecurringMeetingOpen, setIsEndRecurringMeetingOpen] = useState(false)
-  const {id: meetingId, name, endedAt, scheduledEndTime, templateId, responses} = meeting
+  const {id: meetingId, name, endedAt, scheduledEndTime, responses} = meeting
   const {label: dateLabel} = useMeetingSeriesDate(meeting)
   const meetingSeries = meeting.meetingSeries
   const hasSeries = !!meetingSeries && !meetingSeries.cancelledAt
   const sharedMembers = (meeting.phases[0]?.stages ?? [])
-    .filter((stage) => stage.response?.isShared)
+    .filter((stage) => getMemberSharedAt(stage.responses))
     .map((stage) => stage.teamMember.user)
   return (
     <header className='flex h-14 shrink-0 items-center gap-2 border-hairline border-b border-solid bg-surface-card px-3'>
@@ -97,7 +101,7 @@ const TeamPromptPhoneAppBar = (props: Props) => {
         isOpen={isEndRecurringMeetingOpen}
         hasSeries={hasSeries}
         nextMeetingDate={hasSeries ? meetingSeries.nextMeetingDate : undefined}
-        unsharedDraftsCount={countUnsharedDrafts(templateId, responses)}
+        hasUnsharedDraft={countUnsharedDrafts(responses, viewerId) > 0}
         closeModal={() => setIsEndRecurringMeetingOpen(false)}
       />
     </header>

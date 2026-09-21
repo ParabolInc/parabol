@@ -1,5 +1,4 @@
 import type {JSONContent} from '@tiptap/react'
-import {isEmptyAnswerDoc} from '../../../shared/tiptap/isEmptyAnswerDoc'
 
 export const draftAnswerKey = (stageId: string, promptId: string) =>
   `draftAnswer:${stageId}:${promptId}`
@@ -39,5 +38,3 @@ export const clearStageDrafts = (stageId: string) => {
     staleKeys.forEach((key) => localStorage.removeItem(key))
   } catch {}
 }
-
-export const isDocEmpty = (doc: JSONContent | null) => !doc || isEmptyAnswerDoc(doc)

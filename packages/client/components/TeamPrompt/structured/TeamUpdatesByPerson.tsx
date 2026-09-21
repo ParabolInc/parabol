@@ -14,9 +14,6 @@ graphql`
         picture
       }
     }
-    response {
-      answeredPromptIds
-    }
     ...TeamPromptSharedResponseCard_stage
   }
 `

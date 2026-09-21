@@ -33,7 +33,7 @@ const TeamPromptComposer = (props: Props) => {
         teamId
         endedAt
         rightDrawerOpen
-        template {
+        promptTemplate: template {
           name
         }
         prompts {
@@ -69,7 +69,7 @@ const TeamPromptComposer = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {id: meetingId, teamId, endedAt, prompts, rightDrawerOpen, template} = meeting
+  const {id: meetingId, teamId, endedAt, prompts, rightDrawerOpen, promptTemplate} = meeting
   const isPhone = usePhoneViewport()
   const stage = meeting.phases[0]?.stages?.find((stage) => stage.teamMember.userId === viewerId)
   const isShared = !!getMemberSharedAt(stage?.responses ?? [])
@@ -179,7 +179,7 @@ const TeamPromptComposer = (props: Props) => {
               answeredCount={answeredPromptIds.size}
               promptCount={prompts.length}
               isPhone={isPhone}
-              templateName={template?.name}
+              templateName={promptTemplate.name}
               onDone={
                 composerDoneVisible({
                   isPhone,

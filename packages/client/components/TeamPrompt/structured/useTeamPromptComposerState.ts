@@ -79,10 +79,10 @@ const useTeamPromptComposerState = (options: Options) => {
       new Map(
         prompts.map((prompt) => [
           prompt.id,
-          response?.answers.find((answer) => answer.promptId === prompt.id)?.plaintextContent ?? ''
+          responses.find((response) => response.promptId === prompt.id)?.plaintextContent ?? ''
         ])
       ),
-    [response?.answers, prompts]
+    [responses, prompts]
   )
 
   const savedText = prompts

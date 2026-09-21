@@ -12,13 +12,13 @@ const VALUES = OPTIONS.map(({value}) => value)
 
 interface Props {
   sharedCount: number
-  draftingCount: number
+  waitingCount: number
   layout: PhoneTeamLayout
   onLayoutChange: (layout: PhoneTeamLayout) => void
 }
 
 const TeamUpdatesPhoneHeader = (props: Props) => {
-  const {sharedCount, draftingCount, layout, onLayoutChange} = props
+  const {sharedCount, waitingCount, layout, onLayoutChange} = props
   const radiosRef = useRef<Record<string, HTMLButtonElement | null>>({})
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     const next = radioGroupNextValue(VALUES, layout, e.key)
@@ -32,7 +32,7 @@ const TeamUpdatesPhoneHeader = (props: Props) => {
       <div className='min-w-0'>
         <h3 className='m-0 font-semibold text-base'>Team updates</h3>
         <div className='text-fg-muted text-xs'>
-          {sharedCount} shared <span aria-hidden>·</span> {draftingCount} drafting
+          {sharedCount} shared <span aria-hidden>·</span> {waitingCount} not shared
         </div>
       </div>
       <div

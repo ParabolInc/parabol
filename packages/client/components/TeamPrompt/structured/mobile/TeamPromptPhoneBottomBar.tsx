@@ -36,13 +36,9 @@ const TeamPromptPhoneBottomBar = (props: Props) => {
                   picture
                 }
               }
-              response {
-                id
-                isShared
+              responses {
                 sharedAt
-                createdAt
                 updatedAt
-                answeredPromptIds
               }
             }
           }
@@ -59,7 +55,7 @@ const TeamPromptPhoneBottomBar = (props: Props) => {
   if (!state || isHidden) return null
   const {answeredCount, promptCount, isShared, isDirty, submitting, share, openInspiration} = state
   const isEnded = !!meeting.endedAt
-  const {shared, drafting} = sortTeamStages(meeting.phases[0]?.stages ?? [], viewerId)
+  const {shared, waiting} = sortTeamStages(meeting.phases[0]?.stages ?? [], viewerId)
   const sharedMembers = shared.map((stage) => stage.teamMember.user)
   const isInspirationOpen = meeting.rightDrawerOpen === 'inspiration'
   const {label, disabled} = shareButtonState({
@@ -86,7 +82,7 @@ const TeamPromptPhoneBottomBar = (props: Props) => {
         </div>
         <span className='min-w-0 truncate font-semibold text-[13px]'>Team updates</span>
         <span className='min-w-0 truncate text-fg-muted text-xs'>
-          {sharedMembers.length} shared <span aria-hidden>·</span> {drafting.length} drafting
+          {sharedMembers.length} shared <span aria-hidden>·</span> {waiting.length} not shared
         </span>
         <span className='ml-auto flex shrink-0 items-center font-semibold text-[13px] text-accent'>
           See
