@@ -41,7 +41,9 @@ const TeamPromptSharedAnswers = (props: Props) => {
         return (
           <div key={response.id}>
             <TeamPromptAnswerBlock teamId={teamId} prompt={prompt} content={response.content} />
-            <TeamPromptResponseEmojis responseRef={response} meetingId={meetingId} />
+            <div className='pl-[18px]'>
+              <TeamPromptResponseEmojis responseRef={response} meetingId={meetingId} />
+            </div>
           </div>
         )
       })}

@@ -17,11 +17,12 @@ interface Options {
   prompts: readonly {id: string}[]
   stage: ComposerStage | undefined
   isEnded: boolean
+  isExpanded: boolean
   seedDirty: (entries: readonly DirtyAnswer[]) => void
 }
 
 const useTeamPromptComposerState = (options: Options) => {
-  const {prompts, stage, isEnded, seedDirty} = options
+  const {prompts, stage, isEnded, isExpanded, seedDirty} = options
   const responses = stage?.responses ?? []
 
   const savedDocs = useMemo(() => {
@@ -31,7 +32,7 @@ const useTeamPromptComposerState = (options: Options) => {
       map.set(prompt.id, saved ? JSON.parse(saved.content) : null)
     })
     return map
-  }, [stage?.id])
+  }, [stage?.id, isExpanded])
 
   const initialContentByPrompt = useMemo(() => {
     const map = new Map<string, JSONContent | null>()

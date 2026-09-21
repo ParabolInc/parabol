@@ -77,7 +77,7 @@ const TeamPromptComposer = (props: Props) => {
     preview,
     sharedAt,
     lastAnswerAt
-  } = useTeamPromptComposerState({prompts, stage, isEnded: !!endedAt, seedDirty})
+  } = useTeamPromptComposerState({prompts, stage, isEnded: !!endedAt, isExpanded, seedDirty})
 
   const onChange = useCallback(
     (promptId: string, editor: Editor) => {
