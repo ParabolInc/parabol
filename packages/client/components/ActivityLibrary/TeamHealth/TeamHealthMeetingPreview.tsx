@@ -7,21 +7,18 @@ import plural from '../../../utils/plural'
 import {getTeamHealthCategoryDotColor} from './getTeamHealthCategoryColor'
 import TeamHealthMeetingPreviewPager from './TeamHealthMeetingPreviewPager'
 import TeamHealthMeetingPreviewQuestion from './TeamHealthMeetingPreviewQuestion'
+import useTeamHealthMeetingPreviews from './useTeamHealthMeetingPreviews'
 
 interface Props {
   templateRef: TeamHealthMeetingPreview_template$key
   // globally-ordered category ids that drive each category's color (see getTeamHealthCategoryColor)
   orderedCategoryIds: ReadonlyArray<string>
-  // the question ids each meeting of a new series would ask (see useTeamHealthMeetingPreviews)
-  meetingPreviews: ReadonlyArray<ReadonlyArray<string>>
-  // first-meeting questions that changed in the edit session that just ended
-  changedQuestionIds: ReadonlySet<string>
   // absent when the viewer can't edit this template
   onEdit?: () => void
 }
 
 const TeamHealthMeetingPreview = (props: Props) => {
-  const {templateRef, orderedCategoryIds, meetingPreviews, changedQuestionIds, onEdit} = props
+  const {templateRef, orderedCategoryIds, onEdit} = props
   const template = useFragment(
     graphql`
       fragment TeamHealthMeetingPreview_template on TeamHealthTemplate {
@@ -38,6 +35,7 @@ const TeamHealthMeetingPreview = (props: Props) => {
     templateRef
   )
   const {questions} = template
+  const meetingPreviews = useTeamHealthMeetingPreviews(questions)
   const [selectedMeetingNumber, setSelectedMeetingNumber] = useState(1)
   const meetingNumber = Math.min(selectedMeetingNumber, meetingPreviews.length)
   const meetingQuestionIds = meetingPreviews[meetingNumber - 1]
@@ -50,7 +48,7 @@ const TeamHealthMeetingPreview = (props: Props) => {
 
   return (
     // sized like TeamHealthSurveyFlowAnimation so the card sits squarely under it
-    <section className='mb-4 max-w-[612px] rounded-lg border border-hairline bg-surface-app p-4'>
+    <section className='max-w-[612px] rounded-lg border border-hairline bg-surface-app p-3'>
       <div className='flex flex-wrap items-center justify-between gap-2'>
         <TeamHealthMeetingPreviewPager
           meetingNumber={meetingNumber}
@@ -65,18 +63,17 @@ const TeamHealthMeetingPreview = (props: Props) => {
         {meetingNumber === 1 ? 'Your first meeting' : `Meeting #${meetingNumber}`} will ask{' '}
         {questionCount}, one from each category.
       </p>
-      <ol className='mt-3 flex list-none flex-col gap-2 p-0'>
+      <ol className='mt-2 flex list-none flex-col gap-1.5 p-0'>
         {meetingQuestions.map(({id, question, category}) => (
           <TeamHealthMeetingPreviewQuestion
             key={id}
             question={question}
             categoryName={category.name}
             categoryDotColor={getTeamHealthCategoryDotColor(category.id, orderedCategoryIds)}
-            isChanged={meetingNumber === 1 && changedQuestionIds.has(id)}
           />
         ))}
       </ol>
-      <div className='mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-xs'>
+      <div className='mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-xs'>
         <p className='text-fg-muted'>
           {meetingPreviews.length > 1
             ? `Questions fully rotate every ${meetingPreviews.length} meetings`

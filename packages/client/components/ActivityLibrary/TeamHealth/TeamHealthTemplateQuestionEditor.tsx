@@ -7,8 +7,6 @@ import {getOrderedTeamHealthCategories} from './getTeamHealthCategoryColor'
 import TeamHealthMeetingPreview from './TeamHealthMeetingPreview'
 import TeamHealthQuestionPackSection from './TeamHealthQuestionPackSection'
 import TeamHealthSurveyFlowAnimation from './TeamHealthSurveyFlowAnimation'
-import useChangedFirstMeetingQuestionIds from './useChangedFirstMeetingQuestionIds'
-import useTeamHealthMeetingPreviews from './useTeamHealthMeetingPreviews'
 
 interface Props {
   templateRef: TeamHealthTemplateQuestionEditor_template$key
@@ -25,9 +23,6 @@ const TeamHealthTemplateQuestionEditor = (props: Props) => {
         id
         questions {
           id
-          category {
-            id
-          }
         }
         availableQuestionPacks {
           id
@@ -51,9 +46,6 @@ const TeamHealthTemplateQuestionEditor = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
 
-  const meetingPreviews = useTeamHealthMeetingPreviews(questions)
-  const changedQuestionIds = useChangedFirstMeetingQuestionIds(isEditing, meetingPreviews[0] ?? [])
-
   const selectedIds = new Set(questions.map((q) => q.id))
 
   // the category menu offers every category already in use across the packs (built-in + this org's),
@@ -75,8 +67,8 @@ const TeamHealthTemplateQuestionEditor = (props: Props) => {
 
   // the list grows freely; from lg up ActivityDetails gives this pane its own scroll
   return (
-    <div className='pt-4'>
-      <TeamHealthSurveyFlowAnimation className='mx-auto mb-4' />
+    <div>
+      <TeamHealthSurveyFlowAnimation className='mb-2' />
       {isEditing ? (
         // from xl the illustration card sits to the left with nothing beneath it; pull the bank out
         // under it, flush with its left edge, so questions get the full row before they wrap
@@ -106,8 +98,6 @@ const TeamHealthTemplateQuestionEditor = (props: Props) => {
         <TeamHealthMeetingPreview
           templateRef={template}
           orderedCategoryIds={categories.map((category) => category.id)}
-          meetingPreviews={meetingPreviews}
-          changedQuestionIds={changedQuestionIds}
           onEdit={onEdit}
         />
       )}

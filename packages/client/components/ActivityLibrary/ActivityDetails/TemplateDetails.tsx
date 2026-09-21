@@ -225,7 +225,7 @@ export const TemplateDetails = (props: Props) => {
     <div className='space-y-6'>
       <ActivityDetailsBadges isEditing={isEditing} templateRef={activity} />
       <div className='max-w-[480px]'>
-        <div className='mb-6'>
+        <div className={type === 'teamHealth' ? 'mb-3' : 'mb-6'}>
           {__typename === 'FixedActivity' && (
             <div className='font-semibold text-base text-fg-secondary'>Created by Parabol</div>
           )}
@@ -310,33 +310,35 @@ export const TemplateDetails = (props: Props) => {
         />
       )}
 
-      <div className='sm:-ml-14 pt-4'>
-        {prompts && (
-          <>
-            <TemplatePromptList
-              isOwner={isOwner && isEditing}
-              prompts={prompts}
-              templateId={activityId}
-            />
-            {isOwner && isEditing && (
-              <AddTemplatePrompt templateId={activityId} prompts={prompts} />
-            )}
-          </>
-        )}
-        {dimensions && (
-          <>
-            <TemplateDimensionList
-              isOwner={isOwner}
-              readOnly={!isEditing}
-              dimensions={dimensions}
-              templateId={activityId}
-            />
-            {isOwner && isEditing && (
-              <AddPokerTemplateDimension templateId={activityId} dimensions={dimensions} />
-            )}
-          </>
-        )}
-      </div>
+      {(prompts || dimensions) && (
+        <div className='sm:-ml-14 pt-4'>
+          {prompts && (
+            <>
+              <TemplatePromptList
+                isOwner={isOwner && isEditing}
+                prompts={prompts}
+                templateId={activityId}
+              />
+              {isOwner && isEditing && (
+                <AddTemplatePrompt templateId={activityId} prompts={prompts} />
+              )}
+            </>
+          )}
+          {dimensions && (
+            <>
+              <TemplateDimensionList
+                isOwner={isOwner}
+                readOnly={!isEditing}
+                dimensions={dimensions}
+                templateId={activityId}
+              />
+              {isOwner && isEditing && (
+                <AddPokerTemplateDimension templateId={activityId} dimensions={dimensions} />
+              )}
+            </>
+          )}
+        </div>
+      )}
 
       {isEditing && (
         <div className='fixed right-0 bottom-0 left-0 flex h-20 w-full items-center justify-center bg-surface-well'>
