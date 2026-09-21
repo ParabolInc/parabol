@@ -88,7 +88,7 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
   const viewer = await dataLoader.get('users').loadNonNull(viewerId)
 
   const manager = new OpenAIServerManager()
-  let generatedItems: {title: string | null; content: string; promptId: string | null}[]
+  let generatedItems: {title: string | null; content: string; promptId: string}[]
   let tokenCost: number
 
   if (meeting.meetingType === 'retrospective') {
@@ -139,7 +139,7 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
     generatedItems = result.items.map((item) => ({
       title: item.title,
       content: item.content,
-      promptId: prompts[item.promptIndex]?.id ?? null
+      promptId: prompts[item.promptIndex]!.id
     }))
   }
 
