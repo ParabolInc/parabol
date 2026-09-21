@@ -12,9 +12,11 @@ type TeamPromptMeeting implements NewMeeting {
   meetingPrompt: String! @deprecated(reason: "Use prompts")
 
   """
-  The stand-up template whose prompts this meeting answers
+  The stand-up template whose prompts this meeting answers. Every stand-up has one
   """
-  template: PromptTemplate!
+  # Nullable only because TeamHealthMeeting.template is nullable: a query that spreads both meeting
+  # types needs the two fields to share a response shape, and a non-null field here breaks that
+  template: PromptTemplate
 
   """
   The prompts every member answers, frozen to the template as it was when the meeting started
