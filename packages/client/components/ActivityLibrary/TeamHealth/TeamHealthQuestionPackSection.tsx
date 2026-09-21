@@ -20,10 +20,6 @@ interface Props {
   packRef: TeamHealthQuestionPackSection_pack$key
   templateId: string
   viewerId: string
-  isEditing: boolean
-  // the viewer doesn't own this template; gray out the read-only checkboxes
-  readOnly: boolean
-  onEditHint: () => void
   defaultOpen: boolean
   selectedIds: ReadonlySet<string>
   categories: ReadonlyArray<{id: string; name: string}>
@@ -34,19 +30,7 @@ interface Props {
 }
 
 const TeamHealthQuestionPackSection = (props: Props) => {
-  const {
-    packRef,
-    templateId,
-    viewerId,
-    isEditing,
-    readOnly,
-    onEditHint,
-    defaultOpen,
-    selectedIds,
-    categories,
-    footer,
-    title
-  } = props
+  const {packRef, templateId, viewerId, defaultOpen, selectedIds, categories, footer, title} = props
   const pack = useFragment(
     graphql`
       fragment TeamHealthQuestionPackSection_pack on TeamHealthQuestionPack {
@@ -82,7 +66,6 @@ const TeamHealthQuestionPackSection = (props: Props) => {
   const orderedCategoryIds = categories.map((c) => c.id)
 
   const toggleAll = () => {
-    if (!isEditing) return onEditHint()
     if (adding || removing || packQuestionIds.length === 0) return
     const onError = (err: Error) => {
       atmosphere.eventEmitter.emit('addSnackbar', {
@@ -102,7 +85,7 @@ const TeamHealthQuestionPackSection = (props: Props) => {
     <Tooltip>
       <TooltipTrigger asChild>
         <Checkbox
-          className={cn('shrink-0', readOnly && 'border-hairline')}
+          className='shrink-0'
           checked={checked}
           onCheckedChange={toggleAll}
           aria-label={allSelected ? 'Deselect all questions' : 'Select all questions'}
@@ -122,15 +105,12 @@ const TeamHealthQuestionPackSection = (props: Props) => {
       viewerId={viewerId}
       isSelected={selectedIds.has(question.id)}
       categories={categories}
-      isEditing={isEditing}
-      readOnly={readOnly}
-      onEditHint={onEditHint}
     />
   ))
 
   return (
     <Collapsible.Root defaultOpen={defaultOpen} className='border-hairline border-b'>
-      <div className='flex min-w-0 items-center gap-2 py-2'>
+      <div className='flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5 py-2 sm:flex-nowrap'>
         <Collapsible.Trigger asChild>
           <button
             type='button'
@@ -142,8 +122,11 @@ const TeamHealthQuestionPackSection = (props: Props) => {
         </Collapsible.Trigger>
         {toggleAllCheckbox}
         <Collapsible.Trigger asChild>
-          <button type='button' className='flex min-w-0 items-center gap-2 text-left'>
-            <span className='shrink-0 font-semibold text-fg-primary text-sm'>
+          <button
+            type='button'
+            className='flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-0.5 text-left sm:flex-initial sm:flex-nowrap'
+          >
+            <span className='min-w-0 font-semibold text-fg-primary text-sm sm:shrink-0'>
               {title ?? pack.name}
             </span>
             <span className='shrink-0 rounded-full bg-surface-well px-2 py-0.5 font-medium text-fg-secondary text-xs'>
@@ -162,20 +145,23 @@ const TeamHealthQuestionPackSection = (props: Props) => {
             </span>
           </button>
         </Collapsible.Trigger>
-        {pack.source &&
-          (pack.sourceUrl ? (
-            <a
-              href={pack.sourceUrl}
-              target='_blank'
-              rel='noopener noreferrer'
-              className='flex min-w-0 items-center gap-0.5 text-fg-muted text-xs hover:text-fg-secondary hover:underline'
-            >
-              <span className='truncate'>{pack.source}</span>
-              <OpenInNew className='size-3.5 shrink-0' />
-            </a>
-          ) : (
-            <span className='truncate text-fg-muted text-xs'>{pack.source}</span>
-          ))}
+        {pack.source && (
+          <div className='flex min-w-0 basis-full pl-13 sm:contents'>
+            {pack.sourceUrl ? (
+              <a
+                href={pack.sourceUrl}
+                target='_blank'
+                rel='noopener noreferrer'
+                className='flex min-w-0 items-center gap-0.5 text-fg-muted text-xs hover:text-fg-secondary hover:underline'
+              >
+                <span className='truncate'>{pack.source}</span>
+                <OpenInNew className='size-3.5 shrink-0' />
+              </a>
+            ) : (
+              <span className='truncate text-fg-muted text-xs'>{pack.source}</span>
+            )}
+          </div>
+        )}
       </div>
       <Collapsible.Content>
         <div className='pb-2'>

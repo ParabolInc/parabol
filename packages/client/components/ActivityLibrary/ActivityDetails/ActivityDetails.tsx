@@ -116,7 +116,13 @@ const ActivityDetails = (props: Props) => {
             isEditing && 'pb-24'
           )}
         >
-          <div className='mb-14 ml-4 flex h-min w-max items-center max-md:mb-6'>
+          <div
+            className={cn(
+              'mb-14 ml-4 flex h-min w-max items-center max-md:mb-6',
+              // team health has the most to show, so it trades page margins for fewer scrolls
+              type === 'teamHealth' && 'mb-6'
+            )}
+          >
             <div className='mr-4'>
               <Link to={categoryLink}>
                 <IconLabel icon={'arrow_back'} iconLarge />
@@ -135,7 +141,13 @@ const ActivityDetails = (props: Props) => {
                   <ActivityCardImage src={illustrationUrl} category={category as CategoryID} />
                 </ActivityCard>
               </div>
-              <div className='mb-10 space-y-2 sm:pl-14'>
+              <div
+                className={cn(
+                  'mb-10 space-y-2 sm:pl-14',
+                  // a content-sized column re-centers the page when edit mode swaps in the wider bank
+                  type === 'teamHealth' && 'mb-4 xl:min-w-0 xl:flex-1'
+                )}
+              >
                 <div className='flex min-h-[40px] items-center'>
                   <EditableTemplateName
                     className='text-[32px] leading-9'
