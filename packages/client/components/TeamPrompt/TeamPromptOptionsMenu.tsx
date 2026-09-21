@@ -37,7 +37,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
         team {
           id
         }
-        promptTemplate: template {
+        template {
           id
           viewerLowestScope
         }
@@ -60,7 +60,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
     meetingRef
   )
 
-  const {id: meetingId, meetingSeries, endedAt, team, promptTemplate, responses} = meeting
+  const {id: meetingId, meetingSeries, endedAt, team, template, responses} = meeting
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {onCompleted, onError} = useMutationProps()
@@ -128,9 +128,9 @@ const TeamPromptOptionsMenu = (props: Props) => {
           </OptionMenuItem>
         </Link>
       </MenuItem>
-      {promptTemplate.viewerLowestScope === 'TEAM' && (
+      {template?.viewerLowestScope === 'TEAM' && (
         <MenuItem asChild>
-          <Link to={`/activity-library/details/${promptTemplate.id}`}>
+          <Link to={`/activity-library/details/${template.id}`}>
             <OptionMenuItem>
               <Edit className='mr-2 text-fg-secondary' />
               <span>Edit template</span>
