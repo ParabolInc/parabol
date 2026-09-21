@@ -345,7 +345,7 @@ const seriesTemplateIdForMeeting = async (meetingId: string) => {
   return row.templateId
 }
 
-const startTemplatedStandup = async (templateId = ENTERPRISE_TEMPLATE_ID) => {
+const startTemplatedStandup = async () => {
   const owner = await signUp()
   const {meeting} = await startStandup({cookie: owner.cookie}, owner.teamId)
   await joinMeeting({cookie: owner.cookie}, meeting.id)
@@ -877,7 +877,7 @@ test('a template downscoped to another team cannot be selected or started', asyn
   expect(meeting.template.id).toBe(ENTERPRISE_TEMPLATE_ID)
 })
 
-test('a block-node answer round-trips through upsertTeamPromptAnswers unchanged', async () => {
+test('a block-node answer round-trips through upsertTeamPromptResponse unchanged', async () => {
   const {owner, meeting} = await startTemplatedStandup()
   const [completed] = meeting.prompts
   const blockDoc = {
@@ -956,17 +956,17 @@ test('a block-node answer round-trips through upsertTeamPromptAnswers unchanged'
   const blockNodeTypes = blockDoc.content.map(({type}) => type)
 
   const res = await sendPublic({
-    query: UPSERT_ANSWERS,
+    query: UPSERT,
     variables: {
       meetingId: meeting.id,
-      answers: [{promptId: completed.id, content: JSON.stringify(blockDoc)}],
-      share: false
+      promptId: completed.id,
+      content: JSON.stringify(blockDoc)
     },
     cookie: owner.cookie
   })
   expect(res.errors).toBeUndefined()
-  const {response} = res.data.upsertTeamPromptAnswers
-  expect(response.answeredPromptIds).toEqual([completed.id])
+  const {teamPromptResponse: response} = res.data.upsertTeamPromptResponse
+  expect(response.promptId).toBe(completed.id)
   for (const text of [
     'Release Notes',
     'Bullet one',
@@ -983,17 +983,11 @@ test('a block-node answer round-trips through upsertTeamPromptAnswers unchanged'
     expect(response.plaintextContent).toContain(text)
   }
 
-  const answerContent = JSON.parse(response.answers[0].content)
+  const answerContent = JSON.parse(response.content)
   expect(answerContent.content.map(({type}: {type: string}) => type)).toEqual(blockNodeTypes)
-
-  const derivedContent = JSON.parse(response.content)
-  expect(derivedContent.content.map(({type}: {type: string}) => type)).toEqual([
-    'heading',
-    ...blockNodeTypes
-  ])
 })
 
-test('an empty-table-only answer is excluded and blocks sharing', async () => {
+test('an empty-table-only answer is cleared and blocks sharing', async () => {
   const {owner, meeting} = await startTemplatedStandup()
   const [completed] = meeting.prompts
   const emptyTableDoc = JSON.stringify({
@@ -1021,24 +1015,19 @@ test('an empty-table-only answer is excluded and blocks sharing', async () => {
     ]
   })
 
-  const draft = await sendPublic({
-    query: UPSERT_ANSWERS,
-    variables: {
-      meetingId: meeting.id,
-      answers: [{promptId: completed.id, content: emptyTableDoc}],
-      share: false
-    },
+  const cleared = await sendPublic({
+    query: UPSERT,
+    variables: {meetingId: meeting.id, promptId: completed.id, content: emptyTableDoc},
     cookie: owner.cookie
   })
-  expect(draft.errors).toEqual([expect.objectContaining({message: 'Nothing to save'})])
+  expect(cleared.errors).toBeUndefined()
+  const {teamPromptResponse} = cleared.data.upsertTeamPromptResponse
+  expect(teamPromptResponse.plaintextContent).toBe('')
+  expect(teamPromptResponse.sharedAt).toBeNull()
 
   const shared = await sendPublic({
-    query: UPSERT_ANSWERS,
-    variables: {
-      meetingId: meeting.id,
-      answers: [{promptId: completed.id, content: emptyTableDoc}],
-      share: true
-    },
+    query: SHARE,
+    variables: {meetingId: meeting.id},
     cookie: owner.cookie
   })
   expect(shared.errors).toEqual([
@@ -1059,18 +1048,4 @@ test('starting recurrence in-meeting carries the template onto the new series', 
   expect(typeof nextMeetingDate).toBe('string')
   const templateId = await seriesTemplateIdForMeeting(meeting.id)
   expect(templateId).toBe(ENTERPRISE_TEMPLATE_ID)
-})
-
-test('starting recurrence in a legacy standup leaves the series template null', async () => {
-  const {teamId, cookie} = await signUp()
-  const {meeting} = await startLegacyStandup({cookie}, teamId)
-  const res = await sendPublic({
-    query: UPDATE_RECURRENCE_SETTINGS,
-    variables: {meetingId: meeting.id, rrule: immediateRrule()},
-    cookie
-  })
-  expect(res.errors).toBeUndefined()
-  expect(res.data.updateRecurrenceSettings.error).toBeUndefined()
-  const templateId = await seriesTemplateIdForMeeting(meeting.id)
-  expect(templateId).toBeNull()
 })

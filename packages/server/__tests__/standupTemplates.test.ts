@@ -53,8 +53,8 @@ const REMOVE_PROMPT_TEMPLATE = `
 `
 
 const START_TEAM_PROMPT = `
-  mutation StartTeamPrompt($teamId: ID!, $templateId: ID) {
-    startTeamPrompt(teamId: $teamId, templateId: $templateId) {
+  mutation StartTeamPrompt($teamId: ID!) {
+    startTeamPrompt(teamId: $teamId) {
       ... on ErrorPayload {
         error {
           message
@@ -554,9 +554,15 @@ test('removePromptTemplate is blocked once recurrence starts in-meeting via upda
   })
   const {id: templateId} = created.data.addPromptTemplate.template
 
+  const selected = await sendPublic({
+    query: SELECT_TEMPLATE,
+    variables: {selectedTemplateId: templateId, teamId},
+    cookie
+  })
+  expect(selected.errors).toBeUndefined()
   const started = await sendPublic({
     query: START_TEAM_PROMPT,
-    variables: {teamId, templateId},
+    variables: {teamId},
     cookie
   })
   expect(started.errors).toBeUndefined()
