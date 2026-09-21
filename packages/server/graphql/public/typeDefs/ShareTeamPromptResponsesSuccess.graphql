@@ -1,0 +1,14 @@
+"""
+Returned when shareTeamPromptResponses succeeds
+"""
+type ShareTeamPromptResponsesSuccess {
+  """
+  The stand-up the shared responses belong to
+  """
+  meeting: TeamPromptMeeting!
+
+  """
+  The viewer's responses after sharing
+  """
+  responses: [TeamPromptResponse!]!
+}

@@ -4,7 +4,6 @@ import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
 import {toDateTime} from 'parabol-client/shared/rruleUtil'
 import AuthToken from '../database/types/AuthToken'
 import getKysely from '../postgres/getKysely'
-import {CipherId} from '../utils/CipherId'
 import encodeAuthToken from '../utils/encodeAuthToken'
 import {sendPublic, signUp} from './common'
 
@@ -29,6 +28,19 @@ const paragraphWithMention = (text: string, userId: string, label: string) =>
         content: [
           {type: 'text', text},
           {type: 'mention', attrs: {id: userId, label}}
+        ]
+      }
+    ]
+  })
+const paragraphWithMentions = (text: string, mentions: {userId: string; label: string}[]) =>
+  JSON.stringify({
+    type: 'doc',
+    content: [
+      {
+        type: 'paragraph',
+        content: [
+          {type: 'text', text},
+          ...mentions.map(({userId, label}) => ({type: 'mention', attrs: {id: userId, label}}))
         ]
       }
     ]
@@ -78,47 +90,44 @@ const JOIN_MEETING = `
   }
 `
 
-const UPSERT_ANSWERS = `
-  mutation UpsertTeamPromptAnswers($meetingId: ID!, $answers: [TeamPromptAnswerInput!]!, $share: Boolean!) {
-    upsertTeamPromptAnswers(meetingId: $meetingId, answers: $answers, share: $share) {
-      response {
+const UPSERT = `
+  mutation Upsert($meetingId: ID!, $promptId: ID!, $content: String!) {
+    upsertTeamPromptResponse(meetingId: $meetingId, promptId: $promptId, content: $content) {
+      teamPromptResponse {
         id
-        isShared
+        promptId
         sharedAt
-        answeredPromptIds
-        answers {
-          id
-          promptId
-          prompt {
-            id
-          }
-          content
-          plaintextContent
-        }
         content
         plaintextContent
-      }
-      meeting {
-        id
-        responseCount
       }
     }
   }
 `
 
-const UPSERT_LEGACY_RESPONSE = `
-  mutation UpsertTeamPromptResponse($meetingId: ID!, $content: String!) {
-    upsertTeamPromptResponse(meetingId: $meetingId, content: $content) {
+const SHARE = `
+  mutation Share($meetingId: ID!) {
+    shareTeamPromptResponses(meetingId: $meetingId) {
+      responses {
+        id
+        promptId
+        sharedAt
+        plaintextContent
+      }
+    }
+  }
+`
+
+const ADD_REACTJI = `
+  mutation AddReactji($meetingId: ID!, $reactableId: ID!) {
+    addReactjiToReactable(
+      meetingId: $meetingId
+      reactableId: $reactableId
+      reactableType: RESPONSE
+      reactji: "heart"
+    ) {
       ... on ErrorPayload {
         error {
           message
-        }
-      }
-      ... on UpsertTeamPromptResponseSuccess {
-        teamPromptResponse {
-          id
-          isShared
-          plaintextContent
         }
       }
     }
@@ -134,14 +143,23 @@ const MEETING_RESPONSES = `
           responseCount
           responses {
             userId
-            isShared
+            promptId
             sharedAt
-            answeredPromptIds
-            answers {
-              promptId
-            }
             content
             plaintextContent
+          }
+          phases {
+            ... on TeamPromptResponsesPhase {
+              stages {
+                teamMemberId
+                responses {
+                  promptId
+                  sharedAt
+                  content
+                  plaintextContent
+                }
+              }
+            }
           }
         }
       }
@@ -225,24 +243,6 @@ const SELECT_TEMPLATE = `
   }
 `
 
-const UPDATE_MEETING_PROMPT = `
-  mutation UpdateMeetingPrompt($meetingId: ID!, $newPrompt: String!) {
-    updateMeetingPrompt(meetingId: $meetingId, newPrompt: $newPrompt) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
-      ... on UpdateMeetingPromptSuccess {
-        meeting {
-          id
-          meetingPrompt
-        }
-      }
-    }
-  }
-`
-
 const authTokenFor = async (userId: string) => {
   const teamMembers = await getKysely()
     .selectFrom('TeamMember')
@@ -293,16 +293,6 @@ const selectTemplate = async (
   })
   expect(res.errors).toBeUndefined()
   return res.data.selectTemplate
-}
-
-const startLegacyStandup = async (auth: {cookie: string}, teamId: string) => {
-  const {meeting} = await startStandup(auth, teamId)
-  await getKysely()
-    .updateTable('NewMeeting')
-    .set({templateId: null})
-    .where('id', '=', meeting.id)
-    .execute()
-  return {meeting}
 }
 
 const joinMeeting = async (auth: {cookie?: string; bearerToken?: string}, meetingId: string) => {
@@ -422,117 +412,130 @@ test('a recurring standup inherits the series template and skips an inactive one
   expect(second.data.startMeetingSeriesNow.meeting.template.id).toBe(ENTERPRISE_TEMPLATE_ID)
 })
 
-test('answers are saved as a private draft and masked for teammates', async () => {
+test('an answer is a private draft until shared', async () => {
   const {owner, meeting} = await startTemplatedStandup()
-  const [workingOn, , next] = meeting.prompts
+  const [workingOn] = meeting.prompts
   const teammate = await addTeammate(owner.teamId)
   await joinMeeting({bearerToken: teammate.bearerToken}, meeting.id)
 
   const draft = await sendPublic({
-    query: UPSERT_ANSWERS,
+    query: UPSERT,
     variables: {
       meetingId: meeting.id,
-      answers: [{promptId: workingOn.id, content: paragraph('Shipped the billing fix')}],
-      share: false
+      promptId: workingOn.id,
+      content: paragraph('Shipped the billing fix')
     },
     cookie: owner.cookie
   })
   expect(draft.errors).toBeUndefined()
-  expect(draft.data.upsertTeamPromptAnswers.response).toMatchObject({
-    isShared: false,
+  expect(draft.data.upsertTeamPromptResponse.teamPromptResponse).toMatchObject({
+    promptId: workingOn.id,
     sharedAt: null,
-    answeredPromptIds: [workingOn.id],
-    answers: [
-      {
-        promptId: workingOn.id,
-        prompt: {id: workingOn.id},
-        plaintextContent: 'Shipped the billing fix'
-      }
-    ],
-    plaintextContent:
-      'What are you working on? What has been completed recently?\nShipped the billing fix'
+    plaintextContent: 'Shipped the billing fix'
   })
-  const [draftAnswer] = draft.data.upsertTeamPromptAnswers.response.answers
-  const [answerRow] = await getKysely()
-    .selectFrom('TeamPromptResponseAnswer')
-    .innerJoin('TeamPromptResponse', 'TeamPromptResponse.id', 'TeamPromptResponseAnswer.responseId')
-    .select('TeamPromptResponseAnswer.id')
-    .where('TeamPromptResponse.meetingId', '=', meeting.id)
-    .where('TeamPromptResponse.userId', '=', owner.userId)
-    .execute()
-  expect(draftAnswer.id).not.toBe(`teamPromptResponseAnswer:${answerRow!.id}`)
-  expect(CipherId.fromClient(draftAnswer.id)[0]).toBe(answerRow!.id)
-  expect(JSON.parse(draft.data.upsertTeamPromptAnswers.response.content)).toEqual({
-    type: 'doc',
-    content: [
-      {
-        type: 'heading',
-        attrs: {level: 3},
-        content: [
-          {type: 'text', text: 'What are you working on? What has been completed recently?'}
-        ]
-      },
-      {type: 'paragraph', content: [{type: 'text', text: 'Shipped the billing fix'}]}
-    ]
-  })
-  expect(draft.data.upsertTeamPromptAnswers.meeting.responseCount).toBe(0)
 
   const asTeammate = await sendPublic({
     query: MEETING_RESPONSES,
     variables: {meetingId: meeting.id},
     bearerToken: teammate.bearerToken
   })
-  const ownerResponse = asTeammate.data.viewer.meeting.responses.find(
-    (response: any) => response.userId === owner.userId
-  )
-  expect(ownerResponse).toEqual({
-    userId: owner.userId,
-    isShared: false,
-    sharedAt: null,
-    answeredPromptIds: [workingOn.id],
-    answers: [],
-    content: EMPTY_DOC,
-    plaintextContent: ''
-  })
+  expect(asTeammate.data.viewer.meeting.responses).toEqual([])
   expect(asTeammate.data.viewer.meeting.responseCount).toBe(0)
+
+  const ownerTeamMemberId = TeamMemberId.join(owner.teamId, owner.userId)
+  const responsesPhase = asTeammate.data.viewer.meeting.phases.find((phase: any) => phase.stages)
+  const ownerStage = responsesPhase.stages.find(
+    (stage: any) => stage.teamMemberId === ownerTeamMemberId
+  )
+  expect(ownerStage.responses).toEqual([])
 
   const asOwner = await sendPublic({
     query: MEETING_RESPONSES,
     variables: {meetingId: meeting.id},
     cookie: owner.cookie
   })
-  const ownResponse = asOwner.data.viewer.meeting.responses.find(
-    (response: any) => response.userId === owner.userId
-  )
-  expect(ownResponse.answers).toEqual([{promptId: workingOn.id}])
-  expect(ownResponse.plaintextContent).toContain('Shipped the billing fix')
-  expect(next.id).toBeTruthy()
+  expect(asOwner.data.viewer.meeting.responses).toEqual([
+    expect.objectContaining({
+      userId: owner.userId,
+      promptId: workingOn.id,
+      sharedAt: null,
+      plaintextContent: 'Shipped the billing fix'
+    })
+  ])
 })
 
-test('sharing reveals answers, sets sharedAt once and keeps the response shared', async () => {
+test('sharing publishes every non-empty answer once', async () => {
   const {owner, meeting} = await startTemplatedStandup()
   const [workingOn, , next] = meeting.prompts
-  const teammate = await addTeammate(owner.teamId)
-  await joinMeeting({bearerToken: teammate.bearerToken}, meeting.id)
-
-  const shared = await sendPublic({
-    query: UPSERT_ANSWERS,
+  await sendPublic({
+    query: UPSERT,
     variables: {
       meetingId: meeting.id,
-      answers: [
-        {promptId: workingOn.id, content: paragraph('Closed 3 tickets')},
-        {promptId: next.id, content: paragraph('Start the audit')}
-      ],
-      share: true
+      promptId: workingOn.id,
+      content: paragraph('Closed 3 tickets')
     },
     cookie: owner.cookie
   })
+  await sendPublic({
+    query: UPSERT,
+    variables: {meetingId: meeting.id, promptId: next.id, content: paragraph('Start the audit')},
+    cookie: owner.cookie
+  })
+
+  const shared = await sendPublic({
+    query: SHARE,
+    variables: {meetingId: meeting.id},
+    cookie: owner.cookie
+  })
   expect(shared.errors).toBeUndefined()
-  const {response: sharedResponse, meeting: sharedMeeting} = shared.data.upsertTeamPromptAnswers
-  expect(sharedResponse.isShared).toBe(true)
-  expect(sharedResponse.sharedAt).not.toBeNull()
-  expect(sharedResponse.answeredPromptIds).toEqual([workingOn.id, next.id])
-  expect(sharedMeeting.responseCount).toBe(1)
+  const {responses} = shared.data.shareTeamPromptResponses
+  expect(responses).toHaveLength(2)
+  const sharedAt = responses[0].sharedAt
+  expect(sharedAt).not.toBeNull()
+  expect(responses.every((response: any) => response.sharedAt === sharedAt)).toBe(true)
+
+  const reshared = await sendPublic({
+    query: SHARE,
+    variables: {meetingId: meeting.id},
+    cookie: owner.cookie
+  })
+  expect(reshared.errors).toBeUndefined()
+  expect(reshared.data.shareTeamPromptResponses.responses).toEqual(responses)
+})
+
+test('editing a shared answer stays shared', async () => {
+  const {owner, meeting} = await startTemplatedStandup()
+  const [workingOn] = meeting.prompts
+  const teammate = await addTeammate(owner.teamId)
+  await joinMeeting({bearerToken: teammate.bearerToken}, meeting.id)
+
+  await sendPublic({
+    query: UPSERT,
+    variables: {
+      meetingId: meeting.id,
+      promptId: workingOn.id,
+      content: paragraph('Shipped the parser')
+    },
+    cookie: owner.cookie
+  })
+  const shared = await sendPublic({
+    query: SHARE,
+    variables: {meetingId: meeting.id},
+    cookie: owner.cookie
+  })
+  const sharedAt = shared.data.shareTeamPromptResponses.responses[0].sharedAt
+
+  const edited = await sendPublic({
+    query: UPSERT,
+    variables: {
+      meetingId: meeting.id,
+      promptId: workingOn.id,
+      content: paragraph('Shipped the parser and the lexer')
+    },
+    cookie: owner.cookie
+  })
+  expect(edited.errors).toBeUndefined()
+  expect(edited.data.upsertTeamPromptResponse.teamPromptResponse.sharedAt).toBe(sharedAt)
 
   const asTeammate = await sendPublic({
     query: MEETING_RESPONSES,
@@ -542,83 +545,59 @@ test('sharing reveals answers, sets sharedAt once and keeps the response shared'
   const ownerResponse = asTeammate.data.viewer.meeting.responses.find(
     (response: any) => response.userId === owner.userId
   )
-  expect(ownerResponse.isShared).toBe(true)
-  expect(ownerResponse.answers).toEqual([{promptId: workingOn.id}, {promptId: next.id}])
-  expect(ownerResponse.plaintextContent).toBe(
-    'What are you working on? What has been completed recently?\nClosed 3 tickets\n\nWhat are you planning to work on next?\nStart the audit'
-  )
-
-  const edited = await sendPublic({
-    query: UPSERT_ANSWERS,
-    variables: {
-      meetingId: meeting.id,
-      answers: [{promptId: next.id, content: paragraph('Start the audit tomorrow')}],
-      share: true
-    },
-    cookie: owner.cookie
-  })
-  expect(edited.errors).toBeUndefined()
-  expect(edited.data.upsertTeamPromptAnswers.response).toMatchObject({
-    isShared: true,
-    sharedAt: sharedResponse.sharedAt,
-    plaintextContent:
-      'What are you working on? What has been completed recently?\nClosed 3 tickets\n\nWhat are you planning to work on next?\nStart the audit tomorrow'
-  })
-
-  const reshared = await sendPublic({
-    query: UPSERT_ANSWERS,
-    variables: {meetingId: meeting.id, answers: [], share: true},
-    cookie: owner.cookie
-  })
-  expect(reshared.data.upsertTeamPromptAnswers.response.sharedAt).toBe(sharedResponse.sharedAt)
+  expect(ownerResponse.plaintextContent).toBe('Shipped the parser and the lexer')
 })
 
-test('an empty document removes an answer and the derived content follows template order', async () => {
+test('an empty document clears and unshares the answer without deleting the row', async () => {
   const {owner, meeting} = await startTemplatedStandup()
-  const [workingOn, stuck, next] = meeting.prompts
-
+  const [workingOn, stuck] = meeting.prompts
+  const draft = await sendPublic({
+    query: UPSERT,
+    variables: {
+      meetingId: meeting.id,
+      promptId: workingOn.id,
+      content: paragraph('Done with onboarding')
+    },
+    cookie: owner.cookie
+  })
+  const responseId = draft.data.upsertTeamPromptResponse.teamPromptResponse.id
   await sendPublic({
-    query: UPSERT_ANSWERS,
-    variables: {
-      meetingId: meeting.id,
-      answers: [
-        {promptId: stuck.id, content: paragraph('Waiting on review')},
-        {promptId: workingOn.id, content: paragraph('Done with onboarding')}
-      ],
-      share: false
-    },
+    query: UPSERT,
+    variables: {meetingId: meeting.id, promptId: stuck.id, content: paragraph('Waiting on review')},
     cookie: owner.cookie
   })
-  const removed = await sendPublic({
-    query: UPSERT_ANSWERS,
-    variables: {
-      meetingId: meeting.id,
-      answers: [
-        {promptId: workingOn.id, content: EMPTY_DOC},
-        {promptId: next.id, content: paragraph('Plan the release')}
-      ],
-      share: false
-    },
+  await sendPublic({query: SHARE, variables: {meetingId: meeting.id}, cookie: owner.cookie})
+
+  const cleared = await sendPublic({
+    query: UPSERT,
+    variables: {meetingId: meeting.id, promptId: workingOn.id, content: EMPTY_DOC},
     cookie: owner.cookie
   })
-  expect(removed.errors).toBeUndefined()
-  const {response} = removed.data.upsertTeamPromptAnswers
-  expect(response.answeredPromptIds.sort()).toEqual([next.id, stuck.id].sort())
-  expect(response.plaintextContent).toBe(
-    "What are you stuck on, what's holding you back?\nWaiting on review\n\nWhat are you planning to work on next?\nPlan the release"
-  )
+  expect(cleared.errors).toBeUndefined()
+  const {teamPromptResponse} = cleared.data.upsertTeamPromptResponse
+  expect(teamPromptResponse.id).toBe(responseId)
+  expect(teamPromptResponse.sharedAt).toBeNull()
+  expect(JSON.parse(teamPromptResponse.content)).toEqual({type: 'doc', content: []})
+
+  const rows = await getKysely()
+    .selectFrom('TeamPromptResponse')
+    .selectAll()
+    .where('meetingId', '=', meeting.id)
+    .where('userId', '=', owner.userId)
+    .execute()
+  expect(rows).toHaveLength(2)
 })
 
-test('upsertTeamPromptAnswers rejects foreign prompts, duplicates, ended and legacy meetings', async () => {
+test('rejects a prompt that is not part of the meeting, an ended meeting, a non-member', async () => {
   const {owner, meeting} = await startTemplatedStandup()
   const [workingOn] = meeting.prompts
 
   const foreign = await sendPublic({
-    query: UPSERT_ANSWERS,
+    query: UPSERT,
     variables: {
       meetingId: meeting.id,
-      answers: [{promptId: 'teamPromptTemplate:workingOnPrompt', content: paragraph('nope')}],
-      share: false
+      promptId: 'teamPromptTemplate:workingOnPrompt',
+      content: paragraph('nope')
     },
     cookie: owner.cookie
   })
@@ -626,30 +605,15 @@ test('upsertTeamPromptAnswers rejects foreign prompts, duplicates, ended and leg
     expect.objectContaining({message: 'Prompt is not part of this meeting'})
   ])
 
-  const duplicate = await sendPublic({
-    query: UPSERT_ANSWERS,
-    variables: {
-      meetingId: meeting.id,
-      answers: [
-        {promptId: workingOn.id, content: paragraph('a')},
-        {promptId: workingOn.id, content: paragraph('b')}
-      ],
-      share: false
-    },
-    cookie: owner.cookie
+  const outsider = await signUp()
+  const intruder = await sendPublic({
+    query: UPSERT,
+    variables: {meetingId: meeting.id, promptId: workingOn.id, content: paragraph('intruder')},
+    cookie: outsider.cookie
   })
-  expect(duplicate.errors).toEqual([
-    expect.objectContaining({message: 'Prompt was answered more than once'})
+  expect(intruder.errors).toEqual([
+    expect.objectContaining({message: expect.stringMatching('Viewer is not meeting member')})
   ])
-
-  const legacyOnTemplated = await sendPublic({
-    query: UPSERT_LEGACY_RESPONSE,
-    variables: {meetingId: meeting.id, content: paragraph('legacy')},
-    cookie: owner.cookie
-  })
-  expect(legacyOnTemplated.data.upsertTeamPromptResponse.error.message).toBe(
-    'Meeting uses a template'
-  )
 
   await sendPublic({
     query: END_TEAM_PROMPT,
@@ -657,307 +621,199 @@ test('upsertTeamPromptAnswers rejects foreign prompts, duplicates, ended and leg
     cookie: owner.cookie
   })
   const ended = await sendPublic({
-    query: UPSERT_ANSWERS,
-    variables: {
-      meetingId: meeting.id,
-      answers: [{promptId: workingOn.id, content: paragraph('late')}],
-      share: true
-    },
+    query: UPSERT,
+    variables: {meetingId: meeting.id, promptId: workingOn.id, content: paragraph('late')},
     cookie: owner.cookie
   })
   expect(ended.errors).toEqual([expect.objectContaining({message: 'Meeting already ended'})])
-
-  const legacy = await signUp()
-  const {meeting: legacyMeeting} = await startLegacyStandup({cookie: legacy.cookie}, legacy.teamId)
-  await joinMeeting({cookie: legacy.cookie}, legacyMeeting.id)
-  const structuredOnLegacy = await sendPublic({
-    query: UPSERT_ANSWERS,
-    variables: {
-      meetingId: legacyMeeting.id,
-      answers: [{promptId: 'teamPromptTemplate:workingOnPrompt', content: paragraph('x')}],
-      share: false
-    },
-    cookie: legacy.cookie
-  })
-  expect(structuredOnLegacy.errors).toEqual([
-    expect.objectContaining({message: 'Meeting does not use a template'})
-  ])
 })
 
-test('legacy standups still accept upsertTeamPromptResponse and count as shared', async () => {
-  const {teamId, cookie} = await signUp()
-  const {meeting} = await startLegacyStandup({cookie}, teamId)
-  await joinMeeting({cookie}, meeting.id)
+test('sharing with nothing written is rejected', async () => {
+  const {owner, meeting} = await startTemplatedStandup()
   const res = await sendPublic({
-    query: UPSERT_LEGACY_RESPONSE,
-    variables: {meetingId: meeting.id, content: paragraph('Working on the migration')},
-    cookie
-  })
-  expect(res.data.upsertTeamPromptResponse.teamPromptResponse).toMatchObject({
-    isShared: true,
-    plaintextContent: 'Working on the migration'
-  })
-  const responses = await sendPublic({
-    query: MEETING_RESPONSES,
+    query: SHARE,
     variables: {meetingId: meeting.id},
-    cookie
-  })
-  expect(responses.data.viewer.meeting.responseCount).toBe(1)
-  expect(responses.data.viewer.meeting.responses[0]).toMatchObject({
-    isShared: true,
-    answers: [],
-    answeredPromptIds: []
-  })
-  expect(responses.data.viewer.meeting.responses[0].sharedAt).not.toBeNull()
-})
-
-test('a teammate cannot write answers for a meeting they have not joined', async () => {
-  const {owner, meeting} = await startTemplatedStandup()
-  const [workingOn] = meeting.prompts
-  const outsider = await signUp()
-  const res = await sendPublic({
-    query: UPSERT_ANSWERS,
-    variables: {
-      meetingId: meeting.id,
-      answers: [{promptId: workingOn.id, content: paragraph('intruder')}],
-      share: true
-    },
-    cookie: outsider.cookie
-  })
-  expect(res.errors).toEqual([
-    expect.objectContaining({message: expect.stringMatching('Viewer is not meeting member')})
-  ])
-  expect(owner.userId).toBeTruthy()
-})
-
-test('sharing a fresh response with no answers is rejected and creates no row', async () => {
-  const {owner, meeting} = await startTemplatedStandup()
-  const res = await sendPublic({
-    query: UPSERT_ANSWERS,
-    variables: {meetingId: meeting.id, answers: [], share: true},
     cookie: owner.cookie
   })
   expect(res.errors).toEqual([
     expect.objectContaining({message: 'Answer at least one prompt to share'})
   ])
-  const rows = await getKysely()
-    .selectFrom('TeamPromptResponse')
-    .selectAll()
-    .where('meetingId', '=', meeting.id)
-    .where('userId', '=', owner.userId)
-    .execute()
-  expect(rows).toHaveLength(0)
 })
 
-test('saving a fresh draft with nothing to save is rejected and creates no row', async () => {
+test('mentions notify when an answer becomes visible, never from a draft', async () => {
   const {owner, meeting} = await startTemplatedStandup()
-  const res = await sendPublic({
-    query: UPSERT_ANSWERS,
-    variables: {meetingId: meeting.id, answers: [], share: false},
-    cookie: owner.cookie
-  })
-  expect(res.errors).toEqual([expect.objectContaining({message: 'Nothing to save'})])
-  const rows = await getKysely()
-    .selectFrom('TeamPromptResponse')
-    .selectAll()
-    .where('meetingId', '=', meeting.id)
-    .where('userId', '=', owner.userId)
-    .execute()
-  expect(rows).toHaveLength(0)
-
   const [workingOn] = meeting.prompts
+  const teammate = await addTeammate(owner.teamId)
+  await joinMeeting({bearerToken: teammate.bearerToken}, meeting.id)
+  const otherTeammate = await addTeammate(owner.teamId)
+  await joinMeeting({bearerToken: otherTeammate.bearerToken}, meeting.id)
+
   await sendPublic({
-    query: UPSERT_ANSWERS,
+    query: UPSERT,
     variables: {
       meetingId: meeting.id,
-      answers: [{promptId: workingOn.id, content: paragraph('Getting started')}],
-      share: false
+      promptId: workingOn.id,
+      content: paragraphWithMention('Shipped the parser with ', teammate.userId, 'Teammate')
     },
     cookie: owner.cookie
   })
-  const cleared = await sendPublic({
-    query: UPSERT_ANSWERS,
-    variables: {
-      meetingId: meeting.id,
-      answers: [{promptId: workingOn.id, content: EMPTY_DOC}],
-      share: false
-    },
-    cookie: owner.cookie
-  })
-  expect(cleared.errors).toBeUndefined()
-  expect(cleared.data.upsertTeamPromptAnswers.response.answeredPromptIds).toEqual([])
-  const remainingRows = await getKysely()
-    .selectFrom('TeamPromptResponse')
-    .selectAll()
+  const draftNotifications = await getKysely()
+    .selectFrom('Notification')
+    .select(['type', 'userId'])
     .where('meetingId', '=', meeting.id)
-    .where('userId', '=', owner.userId)
     .execute()
-  expect(remainingRows).toHaveLength(1)
-})
-
-test('an attachment-only answer counts as answered with empty plaintext', async () => {
-  const {owner, meeting} = await startTemplatedStandup()
-  const [workingOn] = meeting.prompts
-  const attachmentDoc = JSON.stringify({
-    type: 'doc',
-    content: [
-      {
-        type: 'fileBlock',
-        attrs: {
-          src: 'https://example.com/file.pdf',
-          name: 'file.pdf',
-          size: 1024,
-          fileType: 'application/pdf'
-        }
-      }
-    ]
-  })
-  const draft = await sendPublic({
-    query: UPSERT_ANSWERS,
-    variables: {
-      meetingId: meeting.id,
-      answers: [{promptId: workingOn.id, content: attachmentDoc}],
-      share: false
-    },
-    cookie: owner.cookie
-  })
-  expect(draft.errors).toBeUndefined()
-  expect(draft.data.upsertTeamPromptAnswers.response.answeredPromptIds).toEqual([workingOn.id])
-  expect(draft.data.upsertTeamPromptAnswers.response.answers[0]).toMatchObject({
-    promptId: workingOn.id,
-    plaintextContent: ''
-  })
+  expect(draftNotifications).toEqual([])
 
   const shared = await sendPublic({
-    query: UPSERT_ANSWERS,
-    variables: {meetingId: meeting.id, answers: [], share: true},
+    query: SHARE,
+    variables: {meetingId: meeting.id},
     cookie: owner.cookie
   })
   expect(shared.errors).toBeUndefined()
-  expect(shared.data.upsertTeamPromptAnswers.meeting.responseCount).toBe(1)
-})
+  const afterShare = await getKysely()
+    .selectFrom('Notification')
+    .select(['type', 'userId'])
+    .where('meetingId', '=', meeting.id)
+    .execute()
+  expect(afterShare).toEqual([{type: 'RESPONSE_MENTIONED', userId: teammate.userId}])
 
-test('responseCount only counts shared responses with non-empty documents', async () => {
-  const legacy = await signUp()
-  const {meeting: legacyMeeting} = await startLegacyStandup({cookie: legacy.cookie}, legacy.teamId)
-  await joinMeeting({cookie: legacy.cookie}, legacyMeeting.id)
-  await sendPublic({
-    query: UPSERT_LEGACY_RESPONSE,
-    variables: {meetingId: legacyMeeting.id, content: paragraph('Working on the launch')},
-    cookie: legacy.cookie
-  })
-  const legacyBlanked = await sendPublic({
-    query: UPSERT_LEGACY_RESPONSE,
-    variables: {
-      meetingId: legacyMeeting.id,
-      content: JSON.stringify({type: 'doc', content: [{type: 'paragraph'}]})
-    },
-    cookie: legacy.cookie
-  })
-  expect(legacyBlanked.errors).toBeUndefined()
-  const legacyResponses = await sendPublic({
-    query: MEETING_RESPONSES,
-    variables: {meetingId: legacyMeeting.id},
-    cookie: legacy.cookie
-  })
-  expect(legacyResponses.data.viewer.meeting.responseCount).toBe(0)
-
-  const {owner, meeting} = await startTemplatedStandup()
-  const [workingOn] = meeting.prompts
-  const draft = await sendPublic({
-    query: UPSERT_ANSWERS,
+  const reshared = await sendPublic({
+    query: UPSERT,
     variables: {
       meetingId: meeting.id,
-      answers: [{promptId: workingOn.id, content: paragraph('Writing tests')}],
-      share: false
+      promptId: workingOn.id,
+      content: paragraphWithMentions('Shipped the parser with ', [
+        {userId: teammate.userId, label: 'Teammate'},
+        {userId: otherTeammate.userId, label: 'Other'}
+      ])
     },
     cookie: owner.cookie
   })
-  expect(draft.data.upsertTeamPromptAnswers.meeting.responseCount).toBe(0)
-  const shared = await sendPublic({
-    query: UPSERT_ANSWERS,
-    variables: {meetingId: meeting.id, answers: [], share: true},
-    cookie: owner.cookie
-  })
-  expect(shared.data.upsertTeamPromptAnswers.meeting.responseCount).toBe(1)
-})
-
-test('updateMeetingPrompt succeeds on a legacy meeting and is blocked on a templated one', async () => {
-  const {teamId, cookie} = await signUp()
-  const {meeting: legacyMeeting} = await startLegacyStandup({cookie}, teamId)
-  const updated = await sendPublic({
-    query: UPDATE_MEETING_PROMPT,
-    variables: {meetingId: legacyMeeting.id, newPrompt: 'What did you ship this week?'},
-    cookie
-  })
-  expect(updated.errors).toBeUndefined()
-  expect(updated.data.updateMeetingPrompt.meeting.meetingPrompt).toBe(
-    'What did you ship this week?'
+  expect(reshared.errors).toBeUndefined()
+  const afterEdit = await getKysely()
+    .selectFrom('Notification')
+    .select(['type', 'userId'])
+    .where('meetingId', '=', meeting.id)
+    .execute()
+  expect(afterEdit).toEqual(
+    expect.arrayContaining([
+      {type: 'RESPONSE_MENTIONED', userId: teammate.userId},
+      {type: 'RESPONSE_MENTIONED', userId: otherTeammate.userId}
+    ])
   )
-
-  const {owner, meeting} = await startTemplatedStandup()
-  const blocked = await sendPublic({
-    query: UPDATE_MEETING_PROMPT,
-    variables: {meetingId: meeting.id, newPrompt: 'What did you ship this week?'},
-    cookie: owner.cookie
-  })
-  expect(blocked.errors).toBeUndefined()
-  expect(blocked.data.updateMeetingPrompt.error.message).toBe('Meeting uses a template')
+  expect(afterEdit).toHaveLength(2)
 })
 
-test('a shared response rejects a private edit and notifies newly mentioned teammates', async () => {
+test('a draft never leaves the meeting: the count and the summary page only see shared answers', async () => {
+  const {owner, meeting} = await startTemplatedStandup()
+  const [workingOn, stuckOn] = meeting.prompts
+  const teammate = await addTeammate(owner.teamId)
+  await joinMeeting({bearerToken: teammate.bearerToken}, meeting.id)
+
+  const ownerAnswers = [
+    {promptId: stuckOn.id, content: paragraph('Waiting on the vendor sandbox')},
+    {promptId: workingOn.id, content: paragraph('Shipped the billing fix')}
+  ]
+  for (const {promptId, content} of ownerAnswers) {
+    const saved = await sendPublic({
+      query: UPSERT,
+      variables: {meetingId: meeting.id, promptId, content},
+      cookie: owner.cookie
+    })
+    expect(saved.errors).toBeUndefined()
+  }
+  const shared = await sendPublic({
+    query: SHARE,
+    variables: {meetingId: meeting.id},
+    cookie: owner.cookie
+  })
+  expect(shared.errors).toBeUndefined()
+
+  const draft = await sendPublic({
+    query: UPSERT,
+    variables: {
+      meetingId: meeting.id,
+      promptId: workingOn.id,
+      content: paragraph('Unshared secret draft')
+    },
+    bearerToken: teammate.bearerToken
+  })
+  expect(draft.errors).toBeUndefined()
+
+  const counted = await sendPublic({
+    query: MEETING_RESPONSES,
+    variables: {meetingId: meeting.id},
+    cookie: owner.cookie
+  })
+  expect(counted.data.viewer.meeting.responseCount).toBe(1)
+
+  const ended = await sendPublic({
+    query: END_TEAM_PROMPT,
+    variables: {meetingId: meeting.id},
+    cookie: owner.cookie
+  })
+  expect(ended.errors).toBeUndefined()
+  expect(ended.data.endTeamPrompt.error).toBeUndefined()
+
+  const summaryPage = await getKysely()
+    .selectFrom('Page')
+    .select('plaintextContent')
+    .where('summaryMeetingId', '=', meeting.id)
+    .executeTakeFirstOrThrow()
+  const summaryText = summaryPage.plaintextContent ?? ''
+  expect(summaryText).toContain('Shipped the billing fix')
+  expect(summaryText).toContain('Waiting on the vendor sandbox')
+  expect(summaryText).not.toContain('Unshared secret draft')
+  expect(summaryText.indexOf('Shipped the billing fix')).toBeLessThan(
+    summaryText.indexOf('Waiting on the vendor sandbox')
+  )
+})
+
+test('a draft cannot be reacted to until it is shared', async () => {
   const {owner, meeting} = await startTemplatedStandup()
   const [workingOn] = meeting.prompts
   const teammate = await addTeammate(owner.teamId)
   await joinMeeting({bearerToken: teammate.bearerToken}, meeting.id)
 
-  const shared = await sendPublic({
-    query: UPSERT_ANSWERS,
+  const draft = await sendPublic({
+    query: UPSERT,
     variables: {
       meetingId: meeting.id,
-      answers: [{promptId: workingOn.id, content: paragraph('Shipped the parser')}],
-      share: true
+      promptId: workingOn.id,
+      content: paragraph('Shipped the billing fix')
     },
     cookie: owner.cookie
   })
-  expect(shared.errors).toBeUndefined()
+  const reactableId = draft.data.upsertTeamPromptResponse.teamPromptResponse.id
+  const react = () =>
+    sendPublic({
+      query: ADD_REACTJI,
+      variables: {meetingId: meeting.id, reactableId},
+      bearerToken: teammate.bearerToken
+    })
 
-  const privateEdit = await sendPublic({
-    query: UPSERT_ANSWERS,
-    variables: {
-      meetingId: meeting.id,
-      answers: [{promptId: workingOn.id, content: paragraph('Shipped the parser and the lexer')}],
-      share: false
-    },
+  const onDraft = await react()
+  expect(onDraft.data.addReactjiToReactable.error.message).toBe('Item does not exist')
+
+  await sendPublic({query: SHARE, variables: {meetingId: meeting.id}, cookie: owner.cookie})
+  const onShared = await react()
+  expect(onShared.errors).toBeUndefined()
+  expect(onShared.data.addReactjiToReactable.error).toBeUndefined()
+})
+
+test('updateMeetingTemplate rejects a stand-up instead of throwing', async () => {
+  const {owner, meeting} = await startTemplatedStandup()
+  const res = await sendPublic({
+    query: `mutation U($meetingId: ID!, $templateId: ID!) {
+      updateMeetingTemplate(meetingId: $meetingId, templateId: $templateId) {
+        ... on ErrorPayload { error { message } }
+      }
+    }`,
+    variables: {meetingId: meeting.id, templateId: ENTERPRISE_TEMPLATE_ID},
     cookie: owner.cookie
   })
-  expect(privateEdit.errors).toEqual([
-    expect.objectContaining({message: 'Response is already shared'})
-  ])
-
-  const reshared = await sendPublic({
-    query: UPSERT_ANSWERS,
-    variables: {
-      meetingId: meeting.id,
-      answers: [
-        {
-          promptId: workingOn.id,
-          content: paragraphWithMention('Shipped the parser with ', teammate.userId, 'Teammate')
-        }
-      ],
-      share: true
-    },
-    cookie: owner.cookie
-  })
-  expect(reshared.errors).toBeUndefined()
-
-  const notifications = await getKysely()
-    .selectFrom('Notification')
-    .select(['type', 'userId'])
-    .where('meetingId', '=', meeting.id)
-    .where('userId', '=', teammate.userId)
-    .execute()
-  expect(notifications).toEqual([{type: 'RESPONSE_MENTIONED', userId: teammate.userId}])
+  expect(res.errors).toBeUndefined()
+  expect(res.data.updateMeetingTemplate.error.message).toBe('Meeting has no template')
 })
 
 test('a template downscoped to another team cannot be selected or started', async () => {
@@ -979,106 +835,4 @@ test('a template downscoped to another team cannot be selected or started', asyn
   expect(selected.error.message).toBe('Template is scoped to team')
   const {meeting} = await startStandup({cookie: outsider.cookie}, outsider.teamId)
   expect(meeting.template.id).toBe(ENTERPRISE_TEMPLATE_ID)
-})
-
-test('two members keep their drafts private from each other until both share', async () => {
-  const {owner, meeting} = await startTemplatedStandup()
-  const [workingOn] = meeting.prompts
-  const teammate = await addTeammate(owner.teamId)
-  await joinMeeting({bearerToken: teammate.bearerToken}, meeting.id)
-
-  await sendPublic({
-    query: UPSERT_ANSWERS,
-    variables: {
-      meetingId: meeting.id,
-      answers: [{promptId: workingOn.id, content: paragraph('Owner draft')}],
-      share: false
-    },
-    cookie: owner.cookie
-  })
-  await sendPublic({
-    query: UPSERT_ANSWERS,
-    variables: {
-      meetingId: meeting.id,
-      answers: [{promptId: workingOn.id, content: paragraph('Teammate draft')}],
-      share: false
-    },
-    bearerToken: teammate.bearerToken
-  })
-
-  const asOwner = await sendPublic({
-    query: MEETING_RESPONSES,
-    variables: {meetingId: meeting.id},
-    cookie: owner.cookie
-  })
-  const ownDraft = asOwner.data.viewer.meeting.responses.find(
-    (response: any) => response.userId === owner.userId
-  )
-  const maskedTeammate = asOwner.data.viewer.meeting.responses.find(
-    (response: any) => response.userId === teammate.userId
-  )
-  expect(ownDraft.plaintextContent).toContain('Owner draft')
-  expect(maskedTeammate).toMatchObject({
-    isShared: false,
-    answers: [],
-    content: EMPTY_DOC,
-    plaintextContent: ''
-  })
-  expect(asOwner.data.viewer.meeting.responseCount).toBe(0)
-
-  const asTeammate = await sendPublic({
-    query: MEETING_RESPONSES,
-    variables: {meetingId: meeting.id},
-    bearerToken: teammate.bearerToken
-  })
-  const maskedOwner = asTeammate.data.viewer.meeting.responses.find(
-    (response: any) => response.userId === owner.userId
-  )
-  expect(maskedOwner).toMatchObject({content: EMPTY_DOC, plaintextContent: ''})
-
-  await sendPublic({
-    query: UPSERT_ANSWERS,
-    variables: {meetingId: meeting.id, answers: [], share: true},
-    cookie: owner.cookie
-  })
-  const bothShared = await sendPublic({
-    query: UPSERT_ANSWERS,
-    variables: {meetingId: meeting.id, answers: [], share: true},
-    bearerToken: teammate.bearerToken
-  })
-  expect(bothShared.data.upsertTeamPromptAnswers.meeting.responseCount).toBe(2)
-
-  const revealed = await sendPublic({
-    query: MEETING_RESPONSES,
-    variables: {meetingId: meeting.id},
-    cookie: owner.cookie
-  })
-  const revealedTeammate = revealed.data.viewer.meeting.responses.find(
-    (response: any) => response.userId === teammate.userId
-  )
-  expect(revealedTeammate.plaintextContent).toContain('Teammate draft')
-})
-
-test('a heading-only or empty-list document has nothing to save', async () => {
-  const {owner, meeting} = await startTemplatedStandup()
-  const [workingOn] = meeting.prompts
-  const emptyDocs = [
-    JSON.stringify({type: 'doc', content: [{type: 'heading', attrs: {level: 3}}]}),
-    JSON.stringify({
-      type: 'doc',
-      content: [{type: 'bulletList', content: [{type: 'listItem', content: [{type: 'paragraph'}]}]}]
-    })
-  ]
-  for (const content of emptyDocs) {
-    const res = await sendPublic({
-      query: UPSERT_ANSWERS,
-      variables: {
-        meetingId: meeting.id,
-        answers: [{promptId: workingOn.id, content}],
-        share: false
-      },
-      cookie: owner.cookie
-    })
-    expect(res.errors).toEqual([expect.objectContaining({message: 'Nothing to save'})])
-  }
 })

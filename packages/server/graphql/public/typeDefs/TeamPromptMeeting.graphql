@@ -9,16 +9,15 @@ type TeamPromptMeeting implements NewMeeting {
   inspirationItems(service: ServiceEnum!): [InspirationItem!]!
 
   "The prompt all team members are responding to"
-  meetingPrompt: String!
+  meetingPrompt: String! @deprecated(reason: "Use prompts")
 
   """
-  The stand-up template whose prompts this meeting answers. Null for legacy stand-ups
+  The stand-up template whose prompts this meeting answers
   """
-  template: PromptTemplate
+  template: PromptTemplate!
 
   """
-  The prompts every member answers, frozen to the template as it was when the meeting started.
-  Empty for legacy stand-ups
+  The prompts every member answers, frozen to the template as it was when the meeting started
   """
   prompts: [TemplatePrompt!]!
 
@@ -33,7 +32,7 @@ type TeamPromptMeeting implements NewMeeting {
   viewerMeetingMember: TeamPromptMeetingMember
 
   """
-  The number of shared responses with content in the meeting
+  The number of members who shared at least one answer
   """
   responseCount: Int!
 

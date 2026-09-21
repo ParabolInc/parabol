@@ -21,8 +21,7 @@ const renameTemplatePrompt: MutationResolvers['renameTemplatePrompt'] = async (
   const trimmedQuestion = question.trim().slice(0, 100)
   const normalizedQuestion = trimmedQuestion || 'Unnamed Prompt'
 
-  const prompts = await dataLoader.get('templatePromptsByTemplateId').load(templateId)
-  const activePrompts = prompts.filter(({removedAt}) => !removedAt)
+  const activePrompts = await dataLoader.get('templatePromptsByTemplateId').load(templateId)
   if (activePrompts.find((prompt) => prompt.question === normalizedQuestion)) {
     throw new GraphQLError('Duplicate question template')
   }

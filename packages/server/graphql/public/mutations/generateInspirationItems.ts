@@ -6,7 +6,6 @@ import getKysely from '../../../postgres/getKysely'
 import {getUserId, isSuperUser} from '../../../utils/authorization'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import canAccessAI from '../../mutations/helpers/canAccessAI'
-import getMeetingTemplatePrompts from '../../mutations/helpers/getMeetingTemplatePrompts'
 import type {MutationResolvers} from '../resolverTypes'
 import fetchGCalWorkItems from './helpers/fetchGCalWorkItems'
 import fetchGitHubWorkItems from './helpers/fetchGitHubWorkItems'
@@ -94,7 +93,7 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
 
   if (meeting.meetingType === 'retrospective') {
     // The retro's reflect prompts are the columns the model assigns each reflection to.
-    const prompts = await getMeetingTemplatePrompts(meeting, dataLoader)
+    const prompts = await dataLoader.get('templatePromptsByMeetingId').load(meetingId)
     if (prompts.length === 0) {
       throw new GraphQLError('This retrospective has no reflect prompts to draft reflections for.')
     }
@@ -125,14 +124,10 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
       .limit(5)
       .execute()
     const pastResponses = pastResponseRows.map((row) => row.plaintextContent)
-    const prompts = await getMeetingTemplatePrompts(meeting, dataLoader)
-    const questions =
-      prompts.length > 0
-        ? prompts.map(({question, description}) => ({question, description}))
-        : [{question: meeting.meetingPrompt, description: ''}]
+    const prompts = await dataLoader.get('templatePromptsByMeetingId').load(meetingId)
     const result = await manager.generateInspirationItems(
       workItemsText,
-      questions,
+      prompts.map(({question, description}) => ({question, description})),
       viewer.preferredName,
       pastResponses,
       userPrompt

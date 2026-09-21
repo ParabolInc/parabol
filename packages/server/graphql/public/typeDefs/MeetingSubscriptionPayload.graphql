@@ -44,7 +44,6 @@ type MeetingSubscriptionPayload {
   StartDraggingReflectionPayload: StartDraggingReflectionPayload
   UpdateCommentContentSuccess: UpdateCommentContentSuccess
   UpdateDragLocationPayload: UpdateDragLocationPayload
-  UpdateMeetingPromptSuccess: UpdateMeetingPromptSuccess
   UpdateNewCheckInQuestionPayload: UpdateNewCheckInQuestionPayload
   UpdatedNotification: UpdatedNotification
   UpdateReflectionContentPayload: UpdateReflectionContentPayload
@@ -60,7 +59,7 @@ type MeetingSubscriptionPayload {
   SetPokerSpectateSuccess: SetPokerSpectateSuccess
   SetTaskEstimateSuccess: SetTaskEstimateSuccess
   UpsertTeamPromptResponseSuccess: UpsertTeamPromptResponseSuccess
-  UpsertTeamPromptAnswersSuccess: UpsertTeamPromptAnswersSuccess
+  ShareTeamPromptResponsesSuccess: ShareTeamPromptResponsesSuccess
   UpdateMeetingTemplateSuccess: UpdateMeetingTemplateSuccess
   SuggestedGroupsSuccess: SuggestedGroupsSuccess
 }

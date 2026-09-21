@@ -9,7 +9,7 @@ export interface ViewerResponse {
 // Tells InspirationItemsPanel how generated items are consumed, which differs by meeting type:
 // team prompt merges an item into the viewer's response; retro adds each item as a reflection card.
 export type WorkDrawerConsume =
-  | {mode: 'teamPrompt'; viewerResponse: ViewerResponse | null}
+  | {mode: 'teamPrompt'; viewerResponse: ViewerResponse | null; promptId: string | null}
   | {
       mode: 'retro'
       // The sort order to give a new reflection so it lands on top of the prompt's stack.
@@ -23,7 +23,8 @@ export type WorkDrawerConsume =
 
 const WorkDrawerConsumeContext = createContext<WorkDrawerConsume>({
   mode: 'teamPrompt',
-  viewerResponse: null
+  viewerResponse: null,
+  promptId: null
 })
 
 export const useWorkDrawerConsume = () => useContext(WorkDrawerConsumeContext)

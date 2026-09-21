@@ -106,13 +106,13 @@ class OpenAIServerManager {
     )
   }
 
-  async getStandupSummary(
-    responses: Array<{content: string; user: string}>,
-    meetingPrompt: string
-  ) {
+  async getStandupSummary(responses: Array<{content: string; user: string}>, questions: string[]) {
     if (!this.openAIApi) return null
 
-    const prompt = `Below is a list of responses submitted by team members to the question "${meetingPrompt}". Each response includes the team member's name. Identify up to 3 key themes found within the responses. For each theme, provide a single concise sentence that includes who is working on what. Use "they/them" pronouns when referring to people.
+    const prompt = `Below is a list of responses submitted by team members to the questions:
+${questions.map((question, i) => `${i + 1}. ${question}`).join('\n')}
+
+Each response includes the team member's name. Identify up to 3 key themes found within the responses. For each theme, provide a single concise sentence that includes who is working on what. Use "they/them" pronouns when referring to people.
 
     Desired format:
     - <theme>: <brief summary including names>
@@ -438,7 +438,6 @@ ${cycles.join('\n\n')}`
   } | null> {
     if (!this.openAIApi) return null
     if (!workItemsText.trim()) return null
-    if (prompts.length === 0) return null
 
     const questionList = formatIndexedPrompts(prompts)
 

@@ -1,6 +1,5 @@
 import type {DataLoaderInstance} from '../dataloader/RootDataLoader'
 import isValid from '../graphql/isValid'
-import getSharedTeamPromptResponses from '../graphql/mutations/helpers/getSharedTeamPromptResponses'
 import {getComments} from '../graphql/public/mutations/helpers/getComments'
 import {resolveStoryFinalScore} from '../graphql/resolvers/resolveStoryFinalScore'
 import type {RetroReflection} from '../postgres/types'
@@ -111,7 +110,7 @@ const makeTeamPromptMeetingInsightInput = async (
 ) => {
   const MIN_RESPONSES = 2
   const {id: meetingId, meetingType} = meeting
-  const responses = await getSharedTeamPromptResponses(meetingId, dataLoader)
+  const responses = await dataLoader.get('teamPromptMemberResponsesByMeetingId').load(meetingId)
   if (responses.length < MIN_RESPONSES) return null
   const userIds = responses.map(({userId}) => userId)
   const users = (await dataLoader.get('users').loadMany(userIds)).filter(isValid)

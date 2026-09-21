@@ -1,6 +1,5 @@
 import {sql} from 'kysely'
 import getKysely from '../postgres/getKysely'
-import {getTeamPromptResponsesByMeetingIds} from '../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import {
   selectAgendaItems,
   selectComments,
@@ -18,7 +17,7 @@ import {
   selectTeamHealthResponses,
   selectTeamHealthTemplateQuestions,
   selectTeamInvitations,
-  selectTeamPromptResponseAnswers,
+  selectTeamPromptResponses,
   selectTeams,
   selectTemplateDimension,
   selectTemplatePrompts,
@@ -228,15 +227,10 @@ export const suggestedActionsByUserId = foreignKeyLoaderMaker(
 export const teamPromptResponsesByMeetingId = foreignKeyLoaderMaker(
   'teamPromptResponses',
   'meetingId',
-  getTeamPromptResponsesByMeetingIds
-)
-
-export const teamPromptResponseAnswersByResponseId = foreignKeyLoaderMaker(
-  'teamPromptResponseAnswers',
-  'responseId',
-  async (responseIds) => {
-    return selectTeamPromptResponseAnswers()
-      .where('responseId', 'in', responseIds)
+  async (meetingIds) => {
+    return selectTeamPromptResponses()
+      .where('meetingId', 'in', meetingIds)
+      .where('sharedAt', 'is not', null)
       .orderBy('id')
       .execute()
   }
@@ -289,6 +283,7 @@ export const templatePromptsByTemplateId = foreignKeyLoaderMaker(
   async (templateIds) => {
     return selectTemplatePrompts()
       .where('templateId', 'in', templateIds)
+      .where('removedAt', 'is', null)
       .orderBy('sortOrder')
       .execute()
   }

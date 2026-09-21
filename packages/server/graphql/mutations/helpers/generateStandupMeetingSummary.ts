@@ -3,8 +3,6 @@ import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import type {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
 import canAccessAI from './canAccessAI'
-import getMeetingTemplatePrompts from './getMeetingTemplatePrompts'
-import getSharedTeamPromptResponses from './getSharedTeamPromptResponses'
 
 const generateStandupMeetingSummary = async (
   meeting: TeamPromptMeeting,
@@ -15,8 +13,8 @@ const generateStandupMeetingSummary = async (
   if (!isAIAvailable) return null
 
   const [responses, prompts] = await Promise.all([
-    getSharedTeamPromptResponses(meeting.id, dataLoader),
-    getMeetingTemplatePrompts(meeting, dataLoader)
+    dataLoader.get('teamPromptMemberResponsesByMeetingId').load(meeting.id),
+    dataLoader.get('templatePromptsByMeetingId').load(meeting.id)
   ])
 
   const userIds = responses.map((response) => response.userId)
@@ -29,10 +27,11 @@ const generateStandupMeetingSummary = async (
 
   if (contentWithUsers.length === 0) return null
 
-  const meetingPrompt =
-    prompts.length > 0 ? prompts.map(({question}) => question).join(' / ') : meeting.meetingPrompt
   const manager = new OpenAIServerManager()
-  const summary = await manager.getStandupSummary(contentWithUsers, meetingPrompt)
+  const summary = await manager.getStandupSummary(
+    contentWithUsers,
+    prompts.map(({question}) => question)
+  )
   if (!summary) return null
   return summary
 }

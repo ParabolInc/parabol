@@ -318,6 +318,8 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     // not facilitator-only: spectating is a choice each member makes for themselves
     setTeamHealthSpectate: isMeetingMember<'Mutation.setTeamHealthSpectate'>('args.meetingId'),
+    shareTeamPromptResponses:
+      isMeetingMember<'Mutation.shareTeamPromptResponses'>('args.meetingId'),
     shareTopic: isTeamMember<'Mutation.shareTopic'>('args.meetingId', 'newMeetings'),
     signOut: allow,
     signUpWithPassword: and(
@@ -384,7 +386,6 @@ const permissionMap: PermissionMap<Resolvers> = {
       'args.meetingId',
       'newMeetings'
     ),
-    updateMeetingPrompt: isMeetingFacilitator<'Mutation.updateMeetingPrompt'>('args.meetingId'),
     updateMeetingTemplate: isTeamMember<'Mutation.updateMeetingTemplate'>(
       'args.meetingId',
       'newMeetings'
@@ -454,7 +455,6 @@ const permissionMap: PermissionMap<Resolvers> = {
       'teamHealthQuestions',
       'createdBy'
     ),
-    upsertTeamPromptAnswers: isMeetingMember<'Mutation.upsertTeamPromptAnswers'>('args.meetingId'),
     upsertTeamPromptResponse:
       isMeetingMember<'Mutation.upsertTeamPromptResponse'>('args.meetingId'),
     verifyEmail: rateLimit({perMinute: 50, perHour: 100}),

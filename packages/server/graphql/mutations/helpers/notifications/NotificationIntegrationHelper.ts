@@ -1,5 +1,6 @@
 import type {Team, TeamPromptResponse, User} from '../../../../postgres/types'
 import type {AnyMeeting} from '../../../../postgres/types/Meeting'
+import type {TeamPromptMemberResponse} from '../groupTeamPromptResponsesByUser'
 export type NotifyResponse =
   | 'success'
   | {
@@ -20,7 +21,7 @@ export type NotificationIntegration = {
     meeting: AnyMeeting,
     team: Team,
     user: User,
-    standupResponses: {user: User; response: TeamPromptResponse}[] | null
+    standupResponses: {user: User; response: TeamPromptMemberResponse}[] | null
   ): Promise<NotifyResponse>
   startTimeLimit(
     scheduledEndTime: Date,

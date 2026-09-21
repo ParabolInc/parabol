@@ -6,12 +6,12 @@ import {PARABOL_AI_USER_ID} from '../../../client/utils/constants'
 import type {TeamLimitsEmailType} from '../../billing/helpers/sendTeamsLimitEmail'
 import type MeetingTemplate from '../../database/types/MeetingTemplate'
 import type {DataLoaderWorker} from '../../graphql/graphql'
+import type {TeamPromptMemberResponse} from '../../graphql/mutations/helpers/groupTeamPromptResponsesByUser'
 import type {ModifyType, ReactableEnum} from '../../graphql/public/resolverTypes'
 import type {
   MeetingSeries,
   SlackNotification,
   SuggestedGroupsModeType,
-  TeamPromptResponse,
   TemplateScale
 } from '../../postgres/types'
 import type {
@@ -225,7 +225,7 @@ class Analytics {
   teamPromptEnd = async (
     completedMeeting: AnyMeeting,
     meetingMembers: AnyMeetingMember[],
-    responses: TeamPromptResponse[],
+    responses: TeamPromptMemberResponse[],
     dataLoader: DataLoaderWorker
   ) => {
     const userIdsResponses: Record<string, string> = responses.reduce(

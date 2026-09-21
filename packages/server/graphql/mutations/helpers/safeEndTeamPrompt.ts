@@ -14,7 +14,6 @@ import standardError from '../../../utils/standardError'
 import type {InternalContext} from '../../graphql'
 import gatherInsights from './gatherInsights'
 import generateStandupMeetingSummary from './generateStandupMeetingSummary'
-import getSharedTeamPromptResponses from './getSharedTeamPromptResponses'
 import {IntegrationNotifier} from './notifications/IntegrationNotifier'
 import {publishSummaryPage} from './summaryPage/publishSummaryPage'
 import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
@@ -73,7 +72,7 @@ const safeEndTeamPrompt = async ({
     dataLoader.get('meetingMembersByMeetingId').load(meetingId),
     dataLoader.get('teams').loadNonNull(teamId),
     dataLoader.get('teamMembersByTeamId').load(teamId),
-    getSharedTeamPromptResponses(meetingId, dataLoader)
+    dataLoader.get('teamPromptMemberResponsesByMeetingId').load(meetingId)
   ])
 
   const events = teamMembers.map(

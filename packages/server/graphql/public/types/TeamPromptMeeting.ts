@@ -1,13 +1,10 @@
 import getKysely from '../../../postgres/getKysely'
-import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import {selectNewMeetings} from '../../../postgres/select'
 import type {TeamPromptMeeting as TeamPromptMeetingSource} from '../../../postgres/types/Meeting'
 import {getUserId} from '../../../utils/authorization'
 import filterTasksByMeeting from '../../../utils/filterTasksByMeeting'
 import getPhase from '../../../utils/getPhase'
 import isValid from '../../isValid'
-import getMeetingTemplatePrompts from '../../mutations/helpers/getMeetingTemplatePrompts'
-import {hasSharedContent} from '../mutations/helpers/buildTeamPromptResponseContent'
 import type {TeamPromptMeetingResolvers} from '../resolverTypes'
 
 const TeamPromptMeeting: TeamPromptMeetingResolvers = {
@@ -53,22 +50,22 @@ const TeamPromptMeeting: TeamPromptMeetingResolvers = {
     return filterTasksByMeeting(teamTasks, meetingId, viewerId)
   },
 
-  responses: ({id: meetingId}, _args) => {
-    return getTeamPromptResponsesByMeetingId(meetingId)
+  responses: ({id: meetingId}, _args, {authToken, dataLoader}) => {
+    const viewerId = getUserId(authToken)
+    return dataLoader.get('teamPromptResponsesByMeetingIdForViewer').load({meetingId, viewerId})
   },
 
-  template: async ({templateId}, _args, {dataLoader}) => {
-    if (!templateId) return null
-    const template = await dataLoader.get('meetingTemplates').load(templateId)
-    return template?.type === 'teamPrompt' ? template : null
+  template: ({templateId}, _args, {dataLoader}) => {
+    return dataLoader.get('meetingTemplates').loadNonNull(templateId)
   },
 
-  prompts: (meeting, _args, {dataLoader}) => {
-    return getMeetingTemplatePrompts(meeting, dataLoader)
+  prompts: ({id: meetingId}, _args, {dataLoader}) => {
+    return dataLoader.get('templatePromptsByMeetingId').load(meetingId)
   },
 
-  responseCount: async ({id: meetingId}) => {
-    return (await getTeamPromptResponsesByMeetingId(meetingId)).filter(hasSharedContent).length
+  responseCount: async ({id: meetingId}, _args, {dataLoader}) => {
+    const responses = await dataLoader.get('teamPromptResponsesByMeetingId').load(meetingId)
+    return new Set(responses.map(({userId}) => userId)).size
   },
 
   taskCount: async ({id: meetingId}, _args, {dataLoader}) => {

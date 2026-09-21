@@ -9,9 +9,9 @@ import publish from '../../../utils/publish'
 import RedisLockQueue from '../../../utils/RedisLockQueue'
 import standardError from '../../../utils/standardError'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
+import getActiveStandupTemplateId from '../../mutations/helpers/getActiveStandupTemplateId'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
-import resolveStandupTemplateId from '../../mutations/helpers/resolveStandupTemplateId'
 import safeCreateTeamPrompt from '../../mutations/helpers/safeCreateTeamPrompt'
 import type {MutationResolvers} from '../resolverTypes'
 import {createMeetingSeries, startNewMeetingSeries} from './updateRecurrenceSettings'
@@ -37,8 +37,8 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   ])
   if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
 
-  const templateId = await resolveStandupTemplateId(
-    [meetingSettings?.selectedTemplateId],
+  const templateId = await getActiveStandupTemplateId(
+    meetingSettings?.selectedTemplateId ?? null,
     dataLoader
   )
 
@@ -104,9 +104,7 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
     return {error: {message: 'Meeting already started'}}
   }
   const {id: meetingId} = meeting
-  if (meeting.templateId) {
-    await updateMeetingTemplateLastUsedAt(meeting.templateId, teamId)
-  }
+  await updateMeetingTemplateLastUsedAt(meeting.templateId, teamId)
   const meetingSeries =
     rrule && (await startNewMeetingSeries(meeting, rrule, name, {templateId: meeting.templateId}))
   if (meetingSeries) {

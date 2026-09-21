@@ -4,8 +4,7 @@ import type {MeetingSeries} from '../../../postgres/types'
 import type {
   AnyMeeting,
   RetrospectiveMeeting,
-  TeamHealthMeeting,
-  TeamPromptMeeting
+  TeamHealthMeeting
 } from '../../../postgres/types/Meeting'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
@@ -13,12 +12,12 @@ import logError from '../../../utils/logError'
 import publish, {type SubOptions} from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {DataLoaderWorker} from '../../graphql'
+import getActiveStandupTemplateId from './getActiveStandupTemplateId'
 import isStartMeetingLocked from './isStartMeetingLocked'
 import {IntegrationNotifier} from './notifications/IntegrationNotifier'
-import resolveStandupTemplateId from './resolveStandupTemplateId'
 import safeCreateRetrospective from './safeCreateRetrospective'
 import safeCreateTeamHealth from './safeCreateTeamHealth'
-import safeCreateTeamPrompt, {DEFAULT_PROMPT} from './safeCreateTeamPrompt'
+import safeCreateTeamPrompt from './safeCreateTeamPrompt'
 
 type Options = {
   // Whoever kicks off an occurrence early facilitates it, else the series facilitator does
@@ -62,20 +61,11 @@ const startRecurringMeeting = async (
   const meetingName = meetingSeries.title
   const meeting = await (async () => {
     if (meetingSeries.meetingType === 'teamPrompt') {
-      const teamPromptMeeting = lastMeeting as TeamPromptMeeting | null
-      const templateId = await resolveStandupTemplateId(
-        [
-          teamPromptMeeting?.templateId,
-          meetingSeries.templateId,
-          meetingSettings?.selectedTemplateId
-        ],
-        dataLoader
-      )
+      const templateId = await getActiveStandupTemplateId(meetingSeries.templateId, dataLoader)
       const meeting = await safeCreateTeamPrompt(meetingName, teamId, facilitatorId, dataLoader, {
         scheduledEndTime,
         meetingSeriesId: meetingSeries.id,
-        templateId,
-        meetingPrompt: teamPromptMeeting?.meetingPrompt ?? DEFAULT_PROMPT
+        templateId
       })
       if (!meeting) {
         return {

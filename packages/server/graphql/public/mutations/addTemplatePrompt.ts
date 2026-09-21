@@ -23,8 +23,7 @@ const addTemplatePrompt: MutationResolvers['addTemplatePrompt'] = async (
     throw new GraphQLError('Template not found')
   }
   const {teamId} = template
-  const prompts = await dataLoader.get('templatePromptsByTemplateId').load(templateId)
-  const activePrompts = prompts.filter(({removedAt}) => !removedAt)
+  const activePrompts = await dataLoader.get('templatePromptsByTemplateId').load(templateId)
 
   if (activePrompts.length >= promptTemplateRules[template.type].maxPrompts) {
     throw new GraphQLError('Too many prompts')

@@ -25,7 +25,7 @@ type InspirationItem {
 
   """
   The id of the TemplatePrompt the item should be added to: the retro column, or the stand-up
-  prompt for templated stand-ups. Null for legacy single-prompt stand-ups.
+  prompt.
   """
   promptId: ID
 

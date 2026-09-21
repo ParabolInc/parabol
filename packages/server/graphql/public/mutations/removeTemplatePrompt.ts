@@ -19,8 +19,7 @@ const removeTemplatePrompt: MutationResolvers['removeTemplatePrompt'] = async (
     throw new GraphQLError('Prompt not found')
   }
   const {teamId, templateId} = prompt
-  const prompts = await dataLoader.get('templatePromptsByTemplateId').load(templateId)
-  const activePrompts = prompts.filter((p) => !p.removedAt)
+  const activePrompts = await dataLoader.get('templatePromptsByTemplateId').load(templateId)
 
   if (activePrompts.length <= 1) {
     throw new GraphQLError('No prompts remain')

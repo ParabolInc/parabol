@@ -1,8 +1,6 @@
-import {getTeamPromptResponsesByMeetingId} from '../../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import type {SlackNotification} from '../../../../postgres/types'
 import logError from '../../../../utils/logError'
 import type {DataLoaderWorker} from '../../../graphql'
-import getSharedTeamPromptResponses from '../getSharedTeamPromptResponses'
 import type {
   NotificationIntegration,
   NotifyResponse,
@@ -98,7 +96,9 @@ export const createNotifier = (loader: NotificationIntegrationLoader): Notifier 
   async endMeeting(dataLoader: DataLoaderWorker, meetingId: string, teamId: string) {
     const {meeting, team, user} = await loadMeetingTeam(dataLoader, meetingId, teamId)
     if (!meeting || !team || !user) return
-    const meetingResponses = await getSharedTeamPromptResponses(meetingId, dataLoader)
+    const meetingResponses = await dataLoader
+      .get('teamPromptMemberResponsesByMeetingId')
+      .load(meetingId)
     const standupResponses = await Promise.all(
       meetingResponses.map(async (response) => {
         const user = await dataLoader.get('users').loadNonNull(response.userId)
@@ -180,7 +180,7 @@ export const createNotifier = (loader: NotificationIntegrationLoader): Notifier 
     const [{meeting, team}, user, responses] = await Promise.all([
       loadMeetingTeam(dataLoader, meetingId, teamId),
       dataLoader.get('users').load(userId),
-      getTeamPromptResponsesByMeetingId(meetingId)
+      dataLoader.get('teamPromptResponsesByMeetingId').load(meetingId)
     ])
     const response = responses.find(({userId: responseUserId}) => responseUserId === userId)
     if (!meeting || !team || !response || !user) return

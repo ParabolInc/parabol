@@ -1,4 +1,3 @@
-import getMeetingTemplatePrompts from '../../mutations/helpers/getMeetingTemplatePrompts'
 import type {ReflectPhaseResolvers} from '../resolverTypes'
 
 const ReflectPhase: ReflectPhaseResolvers = {
@@ -11,7 +10,7 @@ const ReflectPhase: ReflectPhaseResolvers = {
   reflectPrompts: async ({meetingId}, _args, {dataLoader}) => {
     const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     if (meeting.meetingType !== 'retrospective') return []
-    return getMeetingTemplatePrompts(meeting, dataLoader)
+    return dataLoader.get('templatePromptsByMeetingId').load(meetingId)
   }
 }
 

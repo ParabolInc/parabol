@@ -13,13 +13,14 @@ import type {GQLContext} from '../../graphql'
 import type {MutationResolvers, ReactableEnum} from '../resolverTypes'
 import {getReactableType} from '../types/Reactable'
 
-export const getReactable = (
+export const getReactable = async (
   reactableDBId: string | number,
   reactableType: ReactableEnum,
   dataLoader: DataLoaderInstance
 ) => {
   if (reactableType === 'RESPONSE') {
-    return dataLoader.get('teamPromptResponses').load(reactableDBId as number)
+    const response = await dataLoader.get('teamPromptResponses').load(reactableDBId as number)
+    return response?.sharedAt ? response : undefined
   }
   if (reactableType === 'COMMENT') {
     return dataLoader.get('comments').load(reactableDBId as string)

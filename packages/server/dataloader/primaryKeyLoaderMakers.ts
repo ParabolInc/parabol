@@ -30,7 +30,6 @@ import {
   selectTeamHealthResponses,
   selectTeamHealthTemplateQuestions,
   selectTeamInvitations,
-  selectTeamPromptResponseAnswers,
   selectTeamPromptResponses,
   selectTeams,
   selectTemplateDimension,
@@ -61,9 +60,6 @@ export const templateScaleRefs = primaryKeyLoaderMaker((ids: readonly string[]) 
 })
 export const teamPromptResponses = primaryKeyLoaderMaker(async (ids: readonly number[]) => {
   return selectTeamPromptResponses().where('id', 'in', ids).execute()
-})
-export const teamPromptResponseAnswers = primaryKeyLoaderMaker(async (ids: readonly number[]) => {
-  return selectTeamPromptResponseAnswers().where('id', 'in', ids).execute()
 })
 export const meetingSeries = primaryKeyLoaderMaker((ids: readonly number[]) => {
   return selectMeetingSeries().where('id', 'in', ids).execute()

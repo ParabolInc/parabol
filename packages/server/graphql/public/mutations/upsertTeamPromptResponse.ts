@@ -1,142 +1,87 @@
 import {generateText, type JSONContent} from '@tiptap/core'
-import TeamPromptResponseId from 'parabol-client/shared/gqlIds/TeamPromptResponseId'
+import {GraphQLError} from 'graphql'
+import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import isEmptyTipTapDoc from '../../../../client/shared/tiptap/isEmptyTipTapDoc'
 import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
 import getKysely from '../../../postgres/getKysely'
-import type {TeamPromptResponse} from '../../../postgres/types'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import type {MutationResolvers} from '../resolverTypes'
 import publishNotification from './helpers/publishNotification'
 import createTeamPromptMentionNotifications from './helpers/publishTeamPromptMentions'
 
+const EMPTY_DOC = JSON.stringify({type: 'doc', content: []})
+
 const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = async (
   _source,
-  {teamPromptResponseId: inputTeamPromptResponseId, meetingId, content},
+  {meetingId, promptId, content},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
-  let oldTeamPromptResponse: TeamPromptResponse | undefined
-
-  // VALIDATION
-  if (inputTeamPromptResponseId) {
-    oldTeamPromptResponse = await dataLoader
-      .get('teamPromptResponses')
-      .load(TeamPromptResponseId.split(inputTeamPromptResponseId))
-    if (!oldTeamPromptResponse) {
-      return standardError(new Error('TeamPromptResponse not found'), {
-        userId: viewerId
-      })
-    }
-    const {userId, meetingId: responseMeetingId} = oldTeamPromptResponse
-    if (userId !== viewerId) {
-      return standardError(new Error("Can't edit other's response"), {
-        userId: viewerId
-      })
-    }
-    if (responseMeetingId !== meetingId) {
-      return standardError(new Error("Can't edit response in another meeting"), {userId: viewerId})
-    }
-  }
-  const [meeting, user] = await Promise.all([
+  const [meeting, prompts, viewerResponses] = await Promise.all([
     dataLoader.get('newMeetings').load(meetingId),
-    dataLoader.get('users').loadNonNull(viewerId)
+    dataLoader.get('templatePromptsByMeetingId').load(meetingId),
+    dataLoader.get('teamPromptResponsesByMeetingIdAndUserId').load({meetingId, userId: viewerId})
   ])
-  if (!meeting) {
-    return standardError(new Error('Meeting not found'), {
-      userId: viewerId
-    })
-  }
-  if (meeting.meetingType !== 'teamPrompt') {
-    return standardError(new Error('Meeting is not a team prompt meeting'), {userId: viewerId})
-  }
-  if (meeting.templateId) {
-    return standardError(new Error('Meeting uses a template'), {userId: viewerId})
-  }
-  const {endedAt, teamId} = meeting
-  if (endedAt)
-    return standardError(new Error('Meeting already ended'), {
-      userId: viewerId
-    })
-
-  // RESOLUTION
-  let contentJSON: JSONContent
-  try {
-    contentJSON = JSON.parse(content)
-  } catch {
-    return standardError(new Error('Invalid stringified JSON'), {
-      userId: viewerId
-    })
+  if (!meeting || meeting.meetingType !== 'teamPrompt') throw new GraphQLError('Meeting not found')
+  if (meeting.endedAt) throw new GraphQLError('Meeting already ended')
+  if (!prompts.some(({id}) => id === promptId)) {
+    throw new GraphQLError('Prompt is not part of this meeting')
   }
 
+  let doc: JSONContent
+  let isEmpty: boolean
   let plaintextContent: string
   try {
-    plaintextContent = generateText(contentJSON, serverTipTapExtensions)
+    doc = JSON.parse(content)
+    isEmpty = isEmptyTipTapDoc(doc)
+    plaintextContent = generateText(doc, serverTipTapExtensions).trim()
   } catch {
-    return standardError(new Error('Invalid editor format'), {
-      userId: viewerId
-    })
+    throw new GraphQLError('Invalid editor format')
   }
 
-  const teamPromptResponse = await getKysely()
+  const values = isEmpty
+    ? {content: EMPTY_DOC, plaintextContent: ''}
+    : {content: JSON.stringify(doc), plaintextContent}
+  const {id: responseId} = await getKysely()
     .insertInto('TeamPromptResponse')
-    .values({
-      meetingId,
-      userId: viewerId,
-      sortOrder: 0, //TODO: placeholder as currently it's defined as non-null. Might decide to remove the column entirely later.
-      content,
-      plaintextContent
-    })
+    .values({meetingId, userId: viewerId, promptId, sortOrder: 0, ...values})
     .onConflict((oc) =>
-      oc.columns(['meetingId', 'userId']).doUpdateSet((eb) => ({
+      oc.columns(['meetingId', 'userId', 'promptId']).doUpdateSet((eb) => ({
         content: eb.ref('excluded.content'),
-        plaintextContent: eb.ref('excluded.plaintextContent')
+        plaintextContent: eb.ref('excluded.plaintextContent'),
+        sharedAt: isEmpty ? null : sql`"TeamPromptResponse"."sharedAt"`
       }))
     )
     .returning('id')
     .executeTakeFirstOrThrow()
-  const teamPromptResponseId = teamPromptResponse.id
-  dataLoader.get('teamPromptResponses').clear(teamPromptResponseId)
 
-  const newTeamPromptResponse = await dataLoader
-    .get('teamPromptResponses')
-    .loadNonNull(teamPromptResponseId)
-
-  const notifications = await createTeamPromptMentionNotifications(
-    oldTeamPromptResponse,
-    newTeamPromptResponse
-  )
-
-  const data = {
-    meetingId,
-    teamPromptResponseId,
-    addedNotificationIds: notifications.map((notification) => notification.id)
+  dataLoader.clearAll('teamPromptResponses')
+  const newResponse = await dataLoader.get('teamPromptResponses').loadNonNull(responseId)
+  const oldResponse = viewerResponses.find(({id}) => id === responseId)
+  if (newResponse.sharedAt) {
+    const notifications = await createTeamPromptMentionNotifications(oldResponse, newResponse)
+    notifications.forEach((notification) => {
+      IntegrationNotifier.sendNotificationToUser?.(dataLoader, notification.id, notification.userId)
+      publishNotification(notification, subOptions)
+    })
   }
 
-  notifications.forEach((notification) => {
-    IntegrationNotifier.sendNotificationToUser?.(dataLoader, notification.id, notification.userId)
-    publishNotification(notification, subOptions)
-  })
-
-  if (!oldTeamPromptResponse) {
-    IntegrationNotifier.standupResponseSubmitted(dataLoader, meetingId, teamId, viewerId)
+  const data = {meetingId, teamPromptResponseId: responseId}
+  if (newResponse.sharedAt || oldResponse?.sharedAt) {
+    publish(
+      SubscriptionChannel.MEETING,
+      meetingId,
+      'UpsertTeamPromptResponseSuccess',
+      data,
+      subOptions
+    )
   }
-
-  analytics.responseAdded(user, meetingId, teamPromptResponseId, !!inputTeamPromptResponseId)
-  publish(
-    SubscriptionChannel.MEETING,
-    meetingId,
-    'UpsertTeamPromptResponseSuccess',
-    data,
-    subOptions
-  )
-
   return data
 }
 

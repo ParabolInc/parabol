@@ -1,12 +1,10 @@
 import relativeDate from 'parabol-client/utils/date/relativeDate'
 import plural from 'parabol-client/utils/plural'
 import getKysely from '../../../../postgres/getKysely'
-import {getTeamPromptResponsesByMeetingId} from '../../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import type {AnyMeeting} from '../../../../postgres/types/Meeting'
 import averageTeamHealthScore from '../../../../utils/averageTeamHealthScore'
 import getTeamHealthDisplayComment from '../../../../utils/getTeamHealthDisplayComment'
 import logError from '../../../../utils/logError'
-import {hasSharedContent} from '../../../public/mutations/helpers/buildTeamPromptResponseContent'
 
 const getSummaryText = async (meeting: AnyMeeting) => {
   if (meeting.meetingType === 'retrospective') {
@@ -46,9 +44,13 @@ const getSummaryText = async (meeting: AnyMeeting) => {
       'comment'
     )}.`
   } else if (meeting.meetingType === 'teamPrompt') {
-    const responseCount = (await getTeamPromptResponsesByMeetingId(meeting.id)).filter(
-      hasSharedContent
-    ).length
+    const {count} = await getKysely()
+      .selectFrom('TeamPromptResponse')
+      .select(({fn}) => fn.count<number>('userId').distinct().as('count'))
+      .where('meetingId', '=', meeting.id)
+      .where('sharedAt', 'is not', null)
+      .executeTakeFirstOrThrow()
+    const responseCount = Number(count)
     // :TODO: (jmtaber129): Add additional stats here.
     return `Your team shared ${responseCount} ${plural(responseCount, 'response', 'responses')}.`
   } else if (meeting.meetingType === 'poker') {
