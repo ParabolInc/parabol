@@ -6,12 +6,10 @@ import {Button} from '../../../ui/Button/Button'
 
 interface Props {
   templateId: string
-  isEditing: boolean
-  onEditHint: () => void
 }
 
 const AddTeamHealthQuestion = (props: Props) => {
-  const {templateId, isEditing, onEditHint} = props
+  const {templateId} = props
   const atmosphere = useAtmosphere()
   const [addQuestion, submitting] = useAddTeamHealthQuestionMutation(templateId)
   const [isAdding, setIsAdding] = useState(false)
@@ -46,7 +44,7 @@ const AddTeamHealthQuestion = (props: Props) => {
       <Button
         variant='flat'
         className='flex items-center gap-1 px-2 py-1 font-semibold text-accent text-sm'
-        onClick={() => (isEditing ? setIsAdding(true) : onEditHint())}
+        onClick={() => setIsAdding(true)}
       >
         <Add className='size-4' />
         Add a custom question
