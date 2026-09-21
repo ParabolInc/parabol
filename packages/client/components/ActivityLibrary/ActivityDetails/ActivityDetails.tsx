@@ -125,12 +125,7 @@ const ActivityDetails = (props: Props) => {
             <div className='w-max font-semibold text-xl'>Start Activity</div>
           </div>
           <div className='mx-auto'>
-            <div
-              className={cn(
-                'flex flex-col justify-start pr-4 pl-4 md:pr-14 xl:flex-row xl:justify-center xl:pl-14',
-                type === 'teamHealth' && 'xl:pr-4'
-              )}
-            >
+            <div className='flex flex-col justify-start pr-4 pl-4 md:pr-14 xl:flex-row xl:justify-center xl:pl-14'>
               <div>
                 <ActivityCard
                   className='mb-8 w-80 max-md:hidden sm:ml-14 xl:mb-0 xl:ml-0'
@@ -143,7 +138,7 @@ const ActivityDetails = (props: Props) => {
               <div
                 className={cn(
                   'mb-10 space-y-2 sm:pl-14',
-                  // fill the row so team health questions get every pixel before they wrap
+                  // a content-sized column re-centers the page when edit mode swaps in the wider bank
                   type === 'teamHealth' && 'xl:min-w-0 xl:flex-1'
                 )}
               >

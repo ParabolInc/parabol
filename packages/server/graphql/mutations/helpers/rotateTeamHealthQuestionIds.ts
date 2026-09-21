@@ -1,4 +1,3 @@
-import hashTeamHealthQuestionIds from 'parabol-client/shared/utils/hashTeamHealthQuestionIds'
 import pickLeastAskedTeamHealthQuestionIds from 'parabol-client/shared/utils/pickLeastAskedTeamHealthQuestionIds'
 import getKysely from '../../../postgres/getKysely'
 import {CipherId} from '../../../utils/CipherId'
@@ -44,14 +43,8 @@ const rotateTeamHealthQuestionIds = async (
     id: CipherId.toClient(id, 'teamHealthQuestion'),
     categoryId
   }))
-  const tiebreakHashByQuestionId = await hashTeamHealthQuestionIds(
-    clientQuestions.map(({id}) => id)
-  )
-  return pickLeastAskedTeamHealthQuestionIds(
-    clientQuestions,
-    askCountByQuestionId,
-    tiebreakHashByQuestionId
-  ).map((clientId) => CipherId.fromClient(clientId)[0])
+  const clientIds = await pickLeastAskedTeamHealthQuestionIds(clientQuestions, askCountByQuestionId)
+  return clientIds.map((clientId) => CipherId.fromClient(clientId)[0])
 }
 
 export default rotateTeamHealthQuestionIds

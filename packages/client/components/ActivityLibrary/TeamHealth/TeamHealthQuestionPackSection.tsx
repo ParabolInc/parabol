@@ -20,10 +20,6 @@ interface Props {
   packRef: TeamHealthQuestionPackSection_pack$key
   templateId: string
   viewerId: string
-  isEditing: boolean
-  // the viewer doesn't own this template; gray out the read-only checkboxes
-  readOnly: boolean
-  onEditHint: () => void
   defaultOpen: boolean
   selectedIds: ReadonlySet<string>
   categories: ReadonlyArray<{id: string; name: string}>
@@ -34,19 +30,7 @@ interface Props {
 }
 
 const TeamHealthQuestionPackSection = (props: Props) => {
-  const {
-    packRef,
-    templateId,
-    viewerId,
-    isEditing,
-    readOnly,
-    onEditHint,
-    defaultOpen,
-    selectedIds,
-    categories,
-    footer,
-    title
-  } = props
+  const {packRef, templateId, viewerId, defaultOpen, selectedIds, categories, footer, title} = props
   const pack = useFragment(
     graphql`
       fragment TeamHealthQuestionPackSection_pack on TeamHealthQuestionPack {
@@ -82,7 +66,6 @@ const TeamHealthQuestionPackSection = (props: Props) => {
   const orderedCategoryIds = categories.map((c) => c.id)
 
   const toggleAll = () => {
-    if (!isEditing) return onEditHint()
     if (adding || removing || packQuestionIds.length === 0) return
     const onError = (err: Error) => {
       atmosphere.eventEmitter.emit('addSnackbar', {
@@ -102,7 +85,7 @@ const TeamHealthQuestionPackSection = (props: Props) => {
     <Tooltip>
       <TooltipTrigger asChild>
         <Checkbox
-          className={cn('shrink-0', readOnly && 'border-hairline')}
+          className='shrink-0'
           checked={checked}
           onCheckedChange={toggleAll}
           aria-label={allSelected ? 'Deselect all questions' : 'Select all questions'}
@@ -122,9 +105,6 @@ const TeamHealthQuestionPackSection = (props: Props) => {
       viewerId={viewerId}
       isSelected={selectedIds.has(question.id)}
       categories={categories}
-      isEditing={isEditing}
-      readOnly={readOnly}
-      onEditHint={onEditHint}
     />
   ))
 

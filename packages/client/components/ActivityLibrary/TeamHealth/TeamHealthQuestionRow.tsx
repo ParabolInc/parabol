@@ -9,7 +9,6 @@ import useDeleteTeamHealthQuestionMutation from '../../../mutations/useDeleteTea
 import useEditTeamHealthQuestionMutation from '../../../mutations/useEditTeamHealthQuestionMutation'
 import useRemoveTeamHealthTemplateQuestionMutation from '../../../mutations/useRemoveTeamHealthTemplateQuestionMutation'
 import {Checkbox} from '../../../ui/Checkbox/Checkbox'
-import {cn} from '../../../ui/cn'
 import {Tooltip} from '../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../ui/Tooltip/TooltipTrigger'
@@ -21,24 +20,11 @@ interface Props {
   templateId: string
   viewerId: string
   isSelected: boolean
-  isEditing: boolean
-  // the viewer doesn't own this template; gray the checkbox but keep it clickable to hint at cloning
-  readOnly: boolean
-  onEditHint: () => void
   categories: ReadonlyArray<{id: string; name: string}>
 }
 
 const TeamHealthQuestionRow = (props: Props) => {
-  const {
-    questionRef,
-    templateId,
-    viewerId,
-    isSelected,
-    isEditing,
-    readOnly,
-    onEditHint,
-    categories
-  } = props
+  const {questionRef, templateId, viewerId, isSelected, categories} = props
   const question = useFragment(
     graphql`
       fragment TeamHealthQuestionRow_question on TeamHealthQuestion {
@@ -57,7 +43,7 @@ const TeamHealthQuestionRow = (props: Props) => {
   // question text/category may only be changed by its author, and only while the template is editable
   // an optimistic (temp-id) question has no server row to edit, select, or delete yet
   const isPending = isTempId(questionId)
-  const canEdit = !!createdBy && createdBy === viewerId && isEditing && !isPending
+  const canEdit = !!createdBy && createdBy === viewerId && !isPending
 
   const atmosphere = useAtmosphere()
   const [addQuestion] = useAddTeamHealthTemplateQuestionMutation()
@@ -76,7 +62,6 @@ const TeamHealthQuestionRow = (props: Props) => {
   }
 
   const toggleSelected = (checked: boolean) => {
-    if (!isEditing) return onEditHint()
     if (isPending) return
     const config = {variables: {templateId, questionIds: [questionId]}, onError}
     if (checked) {
@@ -152,7 +137,7 @@ const TeamHealthQuestionRow = (props: Props) => {
       onClick={() => toggleSelected(!isSelected)}
     >
       <Checkbox
-        className={cn('ml-5', readOnly && 'border-hairline')}
+        className='ml-5'
         checked={isSelected}
         onClick={(e) => e.stopPropagation()}
         onCheckedChange={(checked) => toggleSelected(checked === true)}

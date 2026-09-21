@@ -2,9 +2,9 @@ import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {TeamHealthMeetingPreview_template$key} from '../../../__generated__/TeamHealthMeetingPreview_template.graphql'
+import {Edit} from '../../../ui/icons'
 import plural from '../../../utils/plural'
 import {getTeamHealthCategoryDotColor} from './getTeamHealthCategoryColor'
-import TeamHealthMeetingPreviewFooter from './TeamHealthMeetingPreviewFooter'
 import TeamHealthMeetingPreviewPager from './TeamHealthMeetingPreviewPager'
 import TeamHealthMeetingPreviewQuestion from './TeamHealthMeetingPreviewQuestion'
 
@@ -46,13 +46,6 @@ const TeamHealthMeetingPreview = (props: Props) => {
     .map((questionId) => questions.find(({id}) => id === questionId))
     .filter((question) => !!question)
 
-  // a category with n questions asks each of them once every n meetings, so the biggest category
-  // sets how long it takes for every question to come up
-  const countByCategoryId = new Map<string, number>()
-  questions.forEach(({category}) =>
-    countByCategoryId.set(category.id, (countByCategoryId.get(category.id) ?? 0) + 1)
-  )
-  const largestCategorySize = Math.max(...countByCategoryId.values())
   const questionCount = `${meetingQuestions.length} ${plural(meetingQuestions.length, 'question')}`
 
   return (
@@ -69,9 +62,8 @@ const TeamHealthMeetingPreview = (props: Props) => {
         </span>
       </div>
       <p className='mt-1 text-fg-muted text-xs'>
-        {meetingNumber === 1
-          ? `Your first meeting will ask ${questionCount}, one from each category.`
-          : `Meeting #${meetingNumber} will ask ${questionCount}, one from each category.`}
+        {meetingNumber === 1 ? 'Your first meeting' : `Meeting #${meetingNumber}`} will ask{' '}
+        {questionCount}, one from each category.
       </p>
       <ol className='mt-3 flex list-none flex-col gap-2 p-0'>
         {meetingQuestions.map(({id, question, category}) => (
@@ -84,7 +76,23 @@ const TeamHealthMeetingPreview = (props: Props) => {
           />
         ))}
       </ol>
-      <TeamHealthMeetingPreviewFooter largestCategorySize={largestCategorySize} onEdit={onEdit} />
+      <div className='mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-xs'>
+        <p className='text-fg-muted'>
+          {meetingPreviews.length > 1
+            ? `Questions fully rotate every ${meetingPreviews.length} meetings`
+            : 'Every meeting asks these same questions.'}
+        </p>
+        {onEdit && (
+          <button
+            type='button'
+            onClick={onEdit}
+            className='flex cursor-pointer items-center gap-1 font-semibold text-accent hover:underline'
+          >
+            <Edit className='size-3.5' />
+            Edit question bank
+          </button>
+        )}
+      </div>
     </section>
   )
 }

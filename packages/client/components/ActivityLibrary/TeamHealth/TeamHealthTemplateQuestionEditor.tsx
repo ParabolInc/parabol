@@ -13,14 +13,12 @@ import useTeamHealthMeetingPreviews from './useTeamHealthMeetingPreviews'
 interface Props {
   templateRef: TeamHealthTemplateQuestionEditor_template$key
   isEditing: boolean
-  // the viewer doesn't own this template; render every pack as non-interactive
-  readOnly: boolean
-  onEditHint: () => void
-  onEdit: () => void
+  // absent when the viewer can't edit this template
+  onEdit?: () => void
 }
 
 const TeamHealthTemplateQuestionEditor = (props: Props) => {
-  const {templateRef, isEditing, readOnly, onEditHint, onEdit} = props
+  const {templateRef, isEditing, onEdit} = props
   const template = useFragment(
     graphql`
       fragment TeamHealthTemplateQuestionEditor_template on TeamHealthTemplate {
@@ -63,23 +61,17 @@ const TeamHealthTemplateQuestionEditor = (props: Props) => {
   const categories = getOrderedTeamHealthCategories(availableQuestionPacks)
 
   // the viewer's own pack sorts above the built-in aGhostUser packs; sort is stable, so server order
-  // (created-at within each group) is preserved. When the viewer can't edit this template, only show
-  // packs that contribute a selected question — this drops their personal "My Questions" pack and any
-  // built-in pack the template doesn't draw from.
-  const sortedPacks = [...availableQuestionPacks]
-    .filter((pack) => !readOnly || pack.questions.some((q) => selectedIds.has(q.id)))
-    .sort((a, b) => {
-      const aGhost = a.userId === 'aGhostUser'
-      const bGhost = b.userId === 'aGhostUser'
-      return aGhost === bGhost ? 0 : aGhost ? 1 : -1
-    })
+  // (created-at within each group) is preserved
+  const sortedPacks = [...availableQuestionPacks].sort((a, b) => {
+    const aGhost = a.userId === 'aGhostUser'
+    const bGhost = b.userId === 'aGhostUser'
+    return aGhost === bGhost ? 0 : aGhost ? 1 : -1
+  })
 
   // the "Add a custom question" control lives at the bottom of the viewer's own pack; when that pack
   // doesn't exist yet (no custom questions), it gets its own section so the first one can be added
   const myPackId = sortedPacks.find((pack) => pack.userId === viewerId)?.id
-  const addQuestion = (
-    <AddTeamHealthQuestion templateId={templateId} isEditing={isEditing} onEditHint={onEditHint} />
-  )
+  const addQuestion = <AddTeamHealthQuestion templateId={templateId} />
 
   // the list grows freely; from lg up ActivityDetails gives this pane its own scroll
   return (
@@ -96,7 +88,7 @@ const TeamHealthTemplateQuestionEditor = (props: Props) => {
               <div className='px-1'>{addQuestion}</div>
             </div>
           )}
-          {sortedPacks.map((pack, index) => (
+          {sortedPacks.map((pack) => (
             <TeamHealthQuestionPackSection
               key={pack.id}
               packRef={pack}
@@ -104,13 +96,9 @@ const TeamHealthTemplateQuestionEditor = (props: Props) => {
               viewerId={viewerId}
               selectedIds={selectedIds}
               categories={categories}
-              isEditing={isEditing}
-              readOnly={readOnly}
-              onEditHint={onEditHint}
-              // read-only viewers see only built-in packs, so open the first one instead of the org pack
-              defaultOpen={readOnly ? index === 0 : pack.userId !== 'aGhostUser'}
+              defaultOpen={pack.userId !== 'aGhostUser'}
               title={pack.id === myPackId ? 'My Questions' : undefined}
-              footer={pack.id === myPackId && isEditing ? addQuestion : undefined}
+              footer={pack.id === myPackId ? addQuestion : undefined}
             />
           ))}
         </div>
@@ -120,7 +108,7 @@ const TeamHealthTemplateQuestionEditor = (props: Props) => {
           orderedCategoryIds={categories.map((category) => category.id)}
           meetingPreviews={meetingPreviews}
           changedQuestionIds={changedQuestionIds}
-          onEdit={readOnly ? undefined : onEdit}
+          onEdit={onEdit}
         />
       )}
     </div>

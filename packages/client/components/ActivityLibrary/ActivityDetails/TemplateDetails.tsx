@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
-import {useCallback, useEffect, useRef, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {useLocation, useNavigate} from 'react-router'
 import type {MeetingTypeEnum} from '~/__generated__/ActivityDetailsQuery.graphql'
@@ -203,42 +203,6 @@ export const TemplateDetails = (props: Props) => {
 
   const [teamPickerOpen, setTeamPickerOpen] = useState(false)
   const [isScaleDetailsOpen, setIsScaleDetailsOpen] = useState(false)
-  const [highlightEdit, setHighlightEdit] = useState(false)
-  const editHintTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
-
-  const editHintRef = useRef<HTMLDivElement>(null)
-  const editHintObserverRef = useRef<IntersectionObserver | undefined>(undefined)
-
-  // Called when a viewer tries to change a read-only template; pulse the Edit (owner) or
-  // Clone & Edit (non-owner) button to hint at what they need to do first. The button may be
-  // scrolled out of view, so the pulse waits until the button is fully visible
-  const flashEditHint = useCallback(() => {
-    const editHint = editHintRef.current
-    if (!editHint) return
-    editHintObserverRef.current?.disconnect()
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry?.isIntersecting) return
-        observer.disconnect()
-        setHighlightEdit(true)
-        if (editHintTimeoutRef.current) clearTimeout(editHintTimeoutRef.current)
-        editHintTimeoutRef.current = setTimeout(() => setHighlightEdit(false), 1950)
-      },
-      {threshold: 1}
-    )
-    editHintObserverRef.current = observer
-    observer.observe(editHint)
-    editHint.scrollIntoView({behavior: 'smooth', block: 'center'})
-  }, [])
-
-  useEffect(
-    () => () => {
-      editHintObserverRef.current?.disconnect()
-      if (editHintTimeoutRef.current) clearTimeout(editHintTimeoutRef.current)
-    },
-    []
-  )
-
   useEffect(() => {
     if (editingScaleId) {
       setIsScaleDetailsOpen(true)
@@ -292,14 +256,7 @@ export const TemplateDetails = (props: Props) => {
                   </div>
                 ) : (
                   <>
-                    <div
-                      ref={editHintRef}
-                      className={cn(
-                        'rounded-md border border-hairline-strong border-solid',
-                        highlightEdit &&
-                          'animate-attention-ripple ring-2 ring-sky-500 motion-reduce:animate-none'
-                      )}
-                    >
+                    <div className='rounded-md border border-hairline-strong border-solid'>
                       <DetailAction
                         icon={'edit'}
                         tooltip={'Edit template'}
@@ -323,14 +280,7 @@ export const TemplateDetails = (props: Props) => {
                   viewerRef={viewer}
                   className='rounded-md border border-hairline-strong border-solid hover:bg-surface-hover'
                 />
-                <div
-                  ref={editHintRef}
-                  className={cn(
-                    'rounded-md border border-hairline-strong border-solid',
-                    highlightEdit &&
-                      'animate-attention-ripple ring-2 ring-sky-500 motion-reduce:animate-none'
-                  )}
-                >
+                <div className='rounded-md border border-hairline-strong border-solid'>
                   <Button
                     variant='flat'
                     size='sm'
@@ -356,9 +306,7 @@ export const TemplateDetails = (props: Props) => {
         <TeamHealthTemplateQuestionEditor
           templateRef={activity.TeamHealthTemplateQuestionEditor_template}
           isEditing={isEditing}
-          readOnly={!isOwner}
-          onEditHint={flashEditHint}
-          onEdit={() => setIsEditing(true)}
+          onEdit={isOwner ? () => setIsEditing(true) : undefined}
         />
       )}
 
