@@ -6,9 +6,10 @@ import {cn} from '../../../ui/cn'
 import Avatar from '../../Avatar/Avatar'
 import TeamPromptLastUpdatedTime from '../TeamPromptLastUpdatedTime'
 import lastAnswerUpdatedAt from './lastAnswerUpdatedAt'
-import TeamPromptAnswerBlock from './TeamPromptAnswerBlock'
-import TeamPromptResponseFooter from './TeamPromptResponseFooter'
+import TeamPromptReplyButton from './TeamPromptReplyButton'
 import TeamPromptResponsePermalink from './TeamPromptResponsePermalink'
+import TeamPromptSharedAnswers from './TeamPromptSharedAnswers'
+import {getMemberSharedAt, getSharedResponses} from './teamPromptStages'
 import {TEAM_UPDATES_COLUMN} from './teamUpdatesLayout'
 
 interface Props {
@@ -35,29 +36,26 @@ const TeamPromptSharedResponseCard = (props: Props) => {
         discussion {
           thread(first: 1000) @connection(key: "DiscussionThread_thread") {
             edges {
-              ...TeamPromptResponseFooter_edges
+              ...TeamPromptReplyButton_edges
             }
           }
         }
-        response {
+        responses {
           id
           sharedAt
-          answers {
-            id
-            promptId
-            content
-            updatedAt
-          }
-          ...TeamPromptResponseFooter_response
+          updatedAt
         }
+        ...TeamPromptSharedAnswers_stage
       }
     `,
     stageRef
   )
-  const {id: stageId, meetingId, teamId, teamMember, discussion, response} = stage
-  if (!response) return null
+  const {id: stageId, meetingId, teamId, teamMember, discussion, responses} = stage
+  const sharedResponses = getSharedResponses(responses)
+  const sharedAt = getMemberSharedAt(sharedResponses)
+  const firstResponse = sharedResponses[0]
+  if (!sharedAt || !firstResponse) return null
   const {preferredName, picture} = teamMember.user
-  const answersByPrompt = new Map(response.answers.map((answer) => [answer.promptId, answer]))
   return (
     <motion.div
       layout='position'
@@ -68,19 +66,17 @@ const TeamPromptSharedResponseCard = (props: Props) => {
       <div className='mb-3 flex items-center gap-2 px-2'>
         <Avatar picture={picture} className='h-12 w-12 shrink-0' />
         <h3 className='m-0 min-w-0 truncate font-semibold text-base'>{preferredName}</h3>
-        {response.sharedAt && (
-          <span className='flex shrink-0 items-center gap-1 whitespace-nowrap text-fg-muted text-xs'>
-            · shared{' '}
-            <TeamPromptLastUpdatedTime
-              createdAt={response.sharedAt}
-              updatedAt={lastAnswerUpdatedAt(response.answers, response.sharedAt)}
-            />
-          </span>
-        )}
+        <span className='flex shrink-0 items-center gap-1 whitespace-nowrap text-fg-muted text-xs'>
+          · shared{' '}
+          <TeamPromptLastUpdatedTime
+            createdAt={sharedAt}
+            updatedAt={lastAnswerUpdatedAt(sharedResponses, sharedAt)}
+          />
+        </span>
         <TeamPromptResponsePermalink
           meetingId={meetingId}
           teamId={teamId}
-          responseId={response.id}
+          responseId={firstResponse.id}
         />
       </div>
       <div
@@ -89,21 +85,8 @@ const TeamPromptSharedResponseCard = (props: Props) => {
           isSelected ? 'outline-2 outline-sky-300' : 'outline-none'
         )}
       >
-        {prompts.map((prompt) => {
-          const answer = answersByPrompt.get(prompt.id)
-          if (!answer) return null
-          return (
-            <TeamPromptAnswerBlock
-              key={answer.id}
-              teamId={teamId}
-              prompt={prompt}
-              content={answer.content}
-            />
-          )
-        })}
-        <TeamPromptResponseFooter
-          meetingId={meetingId}
-          responseRef={response}
+        <TeamPromptSharedAnswers stageRef={stage} prompts={prompts} />
+        <TeamPromptReplyButton
           edgesRef={discussion.thread.edges}
           onReply={() => onReply(stageId)}
         />

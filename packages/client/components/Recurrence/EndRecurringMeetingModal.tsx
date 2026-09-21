@@ -60,7 +60,7 @@ interface Props {
   meetingRef: EndRecurringMeetingModal_meeting$key
   hasSeries: boolean
   nextMeetingDate?: string | null
-  unsharedDraftsCount?: number
+  hasUnsharedDraft?: boolean
   closeModal: () => void
 }
 
@@ -73,7 +73,7 @@ export const EndRecurringMeetingModal = (props: Props) => {
     meetingRef,
     hasSeries,
     nextMeetingDate,
-    unsharedDraftsCount = 0,
+    hasUnsharedDraft = false,
     closeModal
   } = props
 
@@ -146,10 +146,9 @@ export const EndRecurringMeetingModal = (props: Props) => {
             />
           </div>
         )}
-        {unsharedDraftsCount > 0 && (
+        {hasUnsharedDraft && (
           <p className='mb-4 text-fg-primary text-sm'>
-            {unsharedDraftsCount} {unsharedDraftsCount === 1 ? 'member has' : 'members have'}{' '}
-            unshared drafts. Drafts are not included in the summary.
+            You have an unshared draft. Drafts are not included in the summary.
           </p>
         )}
         <div className='flex justify-end gap-2.5'>

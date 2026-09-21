@@ -40,6 +40,7 @@ const TeamPromptWorkDrawer = (props: Props) => {
         responses {
           id
           userId
+          promptId
           content
           plaintextContent
         }
@@ -86,8 +87,11 @@ const TeamPromptWorkDrawer = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const viewerResponse = meeting.responses.find((response) => response.userId === viewerId) ?? null
   const promptId = meeting.prompts[0]?.id ?? null
+  const viewerResponse =
+    meeting.responses.find(
+      (response) => response.userId === viewerId && response.promptId === promptId
+    ) ?? null
   const hasJiraServer =
     !!meeting.viewerMeetingMember?.teamMember?.integrations.jiraServer?.sharedProviders?.length
   const hasLinear =

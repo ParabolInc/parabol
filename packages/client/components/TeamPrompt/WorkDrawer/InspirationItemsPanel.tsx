@@ -1,10 +1,8 @@
 import type {Editor, JSONContent} from '@tiptap/core'
 import {useState} from 'react'
 import {Tune as TuneIcon} from '~/ui/icons'
-import useAtmosphere from '../../../hooks/useAtmosphere'
-import UpsertTeamPromptResponseMutation from '../../../mutations/UpsertTeamPromptResponseMutation'
 import useGenerateInspirationItemsMutation from '../../../mutations/useGenerateInspirationItemsMutation'
-import useShareTeamPromptResponsesMutation from '../../../mutations/useShareTeamPromptResponsesMutation'
+import useUpsertTeamPromptResponseMutation from '../../../mutations/useUpsertTeamPromptResponseMutation'
 import {Button} from '../../../ui/Button/Button'
 import {Dialog} from '../../../ui/Dialog/Dialog'
 import {DialogActions} from '../../../ui/Dialog/DialogActions'
@@ -52,8 +50,7 @@ const InspirationItemsPanel = (props: Props) => {
   const isRetro = consume.mode === 'retro'
   const viewerResponse = consume.mode === 'teamPrompt' ? consume.viewerResponse : null
   const promptId = consume.mode === 'teamPrompt' ? consume.promptId : null
-  const [shareResponses] = useShareTeamPromptResponsesMutation()
-  const atmosphere = useAtmosphere()
+  const [upsertResponse, addingToResponse] = useUpsertTeamPromptResponseMutation()
   const [items, setItems] = useState<InspirationItemData[]>(() =>
     initialItems.map(({id, title, content, promptId}) => ({
       id,
@@ -65,7 +62,6 @@ const InspirationItemsPanel = (props: Props) => {
   const [userPrompt, setUserPrompt] = useState('')
   const [promptOpen, setPromptOpen] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [addingToResponse, setAddingToResponse] = useState(false)
   const [generateInspirationItems, submitting] = useGenerateInspirationItemsMutation()
 
   const onGenerate = () => {
@@ -108,24 +104,8 @@ const InspirationItemsPanel = (props: Props) => {
       type: 'doc',
       content: [...existingContent, ...itemBlocks]
     })
-    const plaintextContent = [viewerResponse?.plaintextContent, editor.getText()]
-      .filter(Boolean)
-      .join('\n')
     if (!promptId) return
-    setAddingToResponse(true)
-    UpsertTeamPromptResponseMutation(
-      atmosphere,
-      {meetingId, promptId, content},
-      {
-        plaintextContent,
-        responseId: viewerResponse?.id,
-        onError: () => setAddingToResponse(false),
-        onCompleted: (_res, errors) => {
-          setAddingToResponse(false)
-          if (!errors) shareResponses({variables: {meetingId}})
-        }
-      }
-    )
+    upsertResponse({variables: {meetingId, promptId, content}})
   }
 
   const generateLabel = isRetro

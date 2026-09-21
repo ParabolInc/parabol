@@ -1,5 +1,7 @@
 import {
-  type StructuredResponseSummary,
+  getMemberSharedAt,
+  getSharedResponses,
+  type StructuredAnswer,
   type StructuredStage,
   sortTeamStages
 } from '../teamPromptStages'
@@ -7,91 +9,72 @@ import {
 const makeStage = (
   id: string,
   userId: string,
-  response: StructuredStage['response']
+  responses: readonly StructuredAnswer[]
 ): StructuredStage => ({
   id,
   teamMember: {userId, user: {preferredName: userId, picture: ''}},
-  response
+  responses
 })
 
-const makeResponse = (
-  overrides: Partial<StructuredResponseSummary> = {}
-): StructuredResponseSummary => ({
-  id: 'response1',
-  isShared: false,
-  sharedAt: null,
-  updatedAt: '2026-09-01T00:00:00.000Z',
-  answeredPromptIds: [],
-  ...overrides
+const makeAnswer = (sharedAt: string | null = null): StructuredAnswer => ({
+  sharedAt,
+  updatedAt: '2026-09-01T00:00:00.000Z'
+})
+
+describe('getMemberSharedAt', () => {
+  it('is null until an answer is shared', () => {
+    expect(getMemberSharedAt([])).toBeNull()
+    expect(getMemberSharedAt([makeAnswer(), makeAnswer()])).toBeNull()
+  })
+
+  it('is the earliest share across the answers', () => {
+    const answers = [
+      makeAnswer('2026-09-01T09:00:00.000Z'),
+      makeAnswer(),
+      makeAnswer('2026-09-01T07:00:00.000Z')
+    ]
+    expect(getMemberSharedAt(answers)).toBe('2026-09-01T07:00:00.000Z')
+  })
+})
+
+describe('getSharedResponses', () => {
+  it('drops drafts and cleared answers', () => {
+    const shared = makeAnswer('2026-09-01T07:00:00.000Z')
+    expect(getSharedResponses([makeAnswer(), shared])).toEqual([shared])
+  })
 })
 
 describe('sortTeamStages', () => {
   it('excludes the viewer from every partition', () => {
     const stages = [
-      makeStage(
-        'viewer',
-        'user1',
-        makeResponse({isShared: true, sharedAt: '2026-09-01T01:00:00.000Z'})
-      ),
-      makeStage(
-        'other',
-        'user2',
-        makeResponse({isShared: true, sharedAt: '2026-09-01T02:00:00.000Z'})
-      )
+      makeStage('viewer', 'user1', [makeAnswer('2026-09-01T01:00:00.000Z')]),
+      makeStage('other', 'user2', [makeAnswer('2026-09-01T02:00:00.000Z')])
     ]
-    const {shared, drafting, notStarted} = sortTeamStages(stages, 'user1')
+    const {shared, waiting} = sortTeamStages(stages, 'user1')
     expect(shared.map((stage) => stage.id)).toEqual(['other'])
-    expect(drafting).toHaveLength(0)
-    expect(notStarted).toHaveLength(0)
+    expect(waiting).toHaveLength(0)
   })
 
-  it('partitions shared, drafting and not started', () => {
+  it('partitions members who shared from members who have not', () => {
     const stages = [
-      makeStage(
-        'shared',
-        'user2',
-        makeResponse({isShared: true, sharedAt: '2026-09-01T02:00:00.000Z'})
-      ),
-      makeStage('drafting', 'user3', makeResponse({isShared: false})),
-      makeStage('nullResponse', 'user4', null),
-      makeStage('undefinedResponse', 'user5', undefined)
+      makeStage('shared', 'user2', [makeAnswer('2026-09-01T02:00:00.000Z'), makeAnswer()]),
+      makeStage('cleared', 'user3', [makeAnswer()]),
+      makeStage('empty', 'user4', [])
     ]
-    const {shared, drafting, notStarted} = sortTeamStages(stages, 'user1')
+    const {shared, waiting} = sortTeamStages(stages, 'user1')
     expect(shared.map((stage) => stage.id)).toEqual(['shared'])
-    expect(drafting.map((stage) => stage.id)).toEqual(['drafting'])
-    expect(notStarted.map((stage) => stage.id)).toEqual(['nullResponse', 'undefinedResponse'])
+    expect(waiting.map((stage) => stage.id)).toEqual(['cleared', 'empty'])
   })
 
-  it('orders shared by sharedAt ascending and drafting by updatedAt descending', () => {
+  it('orders shared members by their first share', () => {
     const stages = [
-      makeStage(
-        'late',
-        'user2',
-        makeResponse({isShared: true, sharedAt: '2026-09-01T09:00:00.000Z'})
-      ),
-      makeStage(
-        'early',
-        'user3',
-        makeResponse({isShared: true, sharedAt: '2026-09-01T07:00:00.000Z'})
-      ),
-      makeStage('stale', 'user4', makeResponse({updatedAt: '2026-09-01T05:00:00.000Z'})),
-      makeStage('fresh', 'user5', makeResponse({updatedAt: '2026-09-01T08:00:00.000Z'}))
+      makeStage('late', 'user2', [makeAnswer('2026-09-01T09:00:00.000Z')]),
+      makeStage('early', 'user3', [
+        makeAnswer('2026-09-01T10:00:00.000Z'),
+        makeAnswer('2026-09-01T07:00:00.000Z')
+      ])
     ]
-    const {shared, drafting} = sortTeamStages(stages, 'user1')
+    const {shared} = sortTeamStages(stages, 'user1')
     expect(shared.map((stage) => stage.id)).toEqual(['early', 'late'])
-    expect(drafting.map((stage) => stage.id)).toEqual(['fresh', 'stale'])
-  })
-
-  it('tolerates a shared response with no sharedAt', () => {
-    const stages = [
-      makeStage('noSharedAt', 'user2', makeResponse({isShared: true, sharedAt: null})),
-      makeStage(
-        'shared',
-        'user3',
-        makeResponse({isShared: true, sharedAt: '2026-09-01T02:00:00.000Z'})
-      )
-    ]
-    expect(() => sortTeamStages(stages, 'user1')).not.toThrow()
-    expect(sortTeamStages(stages, 'user1').shared).toHaveLength(2)
   })
 })

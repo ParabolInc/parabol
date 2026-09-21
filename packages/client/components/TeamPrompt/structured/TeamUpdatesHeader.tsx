@@ -13,7 +13,7 @@ import type {TeamLayout} from './useTeamLayoutPreference'
 
 interface Props {
   sharedMembers: readonly {id: string; preferredName: string; picture: string}[]
-  draftingCount: number
+  waitingCount: number
   layout: TeamLayout
   onLayoutChange: (layout: TeamLayout) => void
   canPin: boolean
@@ -22,7 +22,7 @@ interface Props {
 }
 
 const TeamUpdatesHeader = forwardRef<HTMLDivElement, Props>((props, ref) => {
-  const {sharedMembers, draftingCount, layout, onLayoutChange, canPin, isPinned, onSeeTeam} = props
+  const {sharedMembers, waitingCount, layout, onLayoutChange, canPin, isPinned, onSeeTeam} = props
   const sharedCount = sharedMembers.length
   return (
     <div
@@ -46,7 +46,7 @@ const TeamUpdatesHeader = forwardRef<HTMLDivElement, Props>((props, ref) => {
         <div className='flex min-w-0 flex-1 flex-col'>
           <h3 className='m-0 font-semibold text-base'>Team updates</h3>
           <div className='text-fg-muted text-xs'>
-            {sharedCount} shared · {draftingCount} drafting
+            {sharedCount} shared · {waitingCount} not shared
           </div>
         </div>
         {isPinned ? (

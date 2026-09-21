@@ -37,8 +37,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
         team {
           id
         }
-        templateId
-        template {
+        promptTemplate: template {
           id
           viewerLowestScope
         }
@@ -51,8 +50,9 @@ const TeamPromptOptionsMenu = (props: Props) => {
           }
         }
         responses {
-          isShared
-          answeredPromptIds
+          userId
+          sharedAt
+          content
         }
         endedAt
       }
@@ -60,8 +60,9 @@ const TeamPromptOptionsMenu = (props: Props) => {
     meetingRef
   )
 
-  const {id: meetingId, meetingSeries, endedAt, team, template, templateId, responses} = meeting
+  const {id: meetingId, meetingSeries, endedAt, team, promptTemplate, responses} = meeting
   const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
   const {onCompleted, onError} = useMutationProps()
   const navigate = useNavigate()
 
@@ -73,7 +74,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
   // it is somewhat arbitrary and might change in the future
   const canEndRecurrence = !isEnded || !hasActiveMeetings
   const canToggleRecurrence = hasRecurrenceEnabled ? canEndRecurrence : canStartRecurrence
-  const hasUnsharedDrafts = countUnsharedDrafts(templateId, responses) > 0
+  const hasUnsharedDraft = countUnsharedDrafts(responses, viewerId) > 0
 
   return (
     <MenuContent align='end'>
@@ -127,9 +128,9 @@ const TeamPromptOptionsMenu = (props: Props) => {
           </OptionMenuItem>
         </Link>
       </MenuItem>
-      {template && template.viewerLowestScope === 'TEAM' && (
+      {promptTemplate.viewerLowestScope === 'TEAM' && (
         <MenuItem asChild>
-          <Link to={`/activity-library/details/${template.id}`}>
+          <Link to={`/activity-library/details/${promptTemplate.id}`}>
             <OptionMenuItem>
               <Edit className='mr-2 text-fg-secondary' />
               <span>Edit template</span>
@@ -145,7 +146,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
           isEnded
             ? undefined
             : () => {
-                if (hasRecurrenceEnabled || hasUnsharedDrafts) {
+                if (hasRecurrenceEnabled || hasUnsharedDraft) {
                   openEndRecurringMeetingModal()
                 } else {
                   EndTeamPromptMutation(atmosphere, {meetingId}, {onCompleted, onError, navigate})

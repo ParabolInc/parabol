@@ -2,7 +2,6 @@ import {
   clearDraftAnswers,
   clearStageDrafts,
   draftAnswerKey,
-  isDocEmpty,
   readDraftAnswer,
   writeDraftAnswer
 } from '../teamPromptDraftStorage'
@@ -88,46 +87,5 @@ describe('draft answer storage', () => {
     expect(readDraftAnswer('stage1', 'prompt1')).toBeNull()
     expect(() => clearDraftAnswers('stage1', ['prompt1'])).not.toThrow()
     expect(() => clearStageDrafts('stage1')).not.toThrow()
-  })
-})
-
-describe('isDocEmpty', () => {
-  it('treats an empty doc and an empty paragraph as empty', () => {
-    expect(isDocEmpty(null)).toBe(true)
-    expect(isDocEmpty({type: 'doc'})).toBe(true)
-    expect(isDocEmpty({type: 'doc', content: []})).toBe(true)
-    expect(isDocEmpty({type: 'doc', content: [{type: 'paragraph'}]})).toBe(true)
-  })
-
-  it('treats an empty bullet list as empty', () => {
-    expect(
-      isDocEmpty({
-        type: 'doc',
-        content: [
-          {type: 'bulletList', content: [{type: 'listItem', content: [{type: 'paragraph'}]}]}
-        ]
-      })
-    ).toBe(true)
-  })
-
-  it('treats text and content atom nodes as answered', () => {
-    expect(isDocEmpty(doc)).toBe(false)
-    expect(
-      isDocEmpty({
-        type: 'doc',
-        content: [
-          {
-            type: 'bulletList',
-            content: [
-              {
-                type: 'listItem',
-                content: [{type: 'paragraph', content: [{type: 'text', text: 'hi'}]}]
-              }
-            ]
-          }
-        ]
-      })
-    ).toBe(false)
-    expect(isDocEmpty({type: 'doc', content: [{type: 'horizontalRule'}]})).toBe(false)
   })
 })

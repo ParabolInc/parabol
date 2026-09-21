@@ -40,7 +40,7 @@ const TeamPromptStructuredMeeting = (props: Props) => {
           ... on TeamPromptResponsesPhase {
             stages {
               id
-              response {
+              responses {
                 id
               }
             }
@@ -60,7 +60,9 @@ const TeamPromptStructuredMeeting = (props: Props) => {
 
   useEffect(() => {
     if (!responseId) return
-    const stage = phases[0]?.stages?.find((stage) => stage.response?.id === responseId)
+    const stage = phases[0]?.stages?.find((stage) =>
+      stage.responses.some((response) => response.id === responseId)
+    )
     if (!stage) return
     commitLocalUpdate(atmosphere, (store) => {
       const meetingProxy = store.get(meetingId)

@@ -6,7 +6,7 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import TeamUpdatesByPerson from './TeamUpdatesByPerson'
 import TeamUpdatesByQuestion from './TeamUpdatesByQuestion'
 import TeamUpdatesHeader from './TeamUpdatesHeader'
-import {sortTeamStages} from './teamPromptStages'
+import {getMemberSharedAt, sortTeamStages} from './teamPromptStages'
 import useOpenResponseDiscussion from './useOpenResponseDiscussion'
 import useTeamHeaderPin from './useTeamHeaderPin'
 import useTeamLayoutPreference from './useTeamLayoutPreference'
@@ -46,8 +46,10 @@ const TeamUpdatesSection = (props: Props) => {
                   picture
                 }
               }
-              response {
-                ...TeamPromptStructuredResponse_response @relay(mask: false)
+              responses {
+                promptId
+                sharedAt
+                updatedAt
               }
             }
           }
@@ -67,8 +69,9 @@ const TeamUpdatesSection = (props: Props) => {
   const gridRef = useRef<HTMLDivElement>(null)
   const sectionRef = useRef<HTMLDivElement>(null)
   const viewerStage = stages.find((stage) => stage.teamMember.userId === viewerId)
-  const {shared, drafting, notStarted} = sortTeamStages(stages, viewerId)
-  const canPin = !endedAt && !viewerStage?.response?.isShared && shared.length > 0
+  const {shared, waiting} = sortTeamStages(stages, viewerId)
+  const hasViewerShared = !!getMemberSharedAt(viewerStage?.responses ?? [])
+  const canPin = !endedAt && !hasViewerShared && shared.length > 0
   const isPinned = useTeamHeaderPin(headerRef, scrollContainerRef, composerRef, sectionRef, canPin)
   const onReply = useOpenResponseDiscussion(meetingId, rightDrawerOpen, localStageId)
   const selectedStageId = rightDrawerOpen === 'discussion' ? localStageId : null
@@ -81,7 +84,7 @@ const TeamUpdatesSection = (props: Props) => {
       <TeamUpdatesHeader
         ref={headerRef}
         sharedMembers={sharedMembers}
-        draftingCount={drafting.length}
+        waitingCount={waiting.length}
         layout={layout}
         onLayoutChange={setLayout}
         canPin={canPin}
@@ -93,7 +96,7 @@ const TeamUpdatesSection = (props: Props) => {
           <TeamUpdatesByQuestion
             prompts={prompts}
             sharedStages={shared}
-            draftingStages={[...drafting, ...notStarted]}
+            waitingStages={waiting}
             isEnded={!!endedAt}
             selectedStageId={selectedStageId}
             onReply={onReply}
@@ -103,8 +106,7 @@ const TeamUpdatesSection = (props: Props) => {
             layout={layout}
             prompts={prompts}
             sharedStages={shared}
-            draftingStages={drafting}
-            notStartedStages={notStarted}
+            waitingStages={waiting}
             isEnded={!!endedAt}
             selectedStageId={selectedStageId}
             onReply={onReply}

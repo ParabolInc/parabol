@@ -8,6 +8,7 @@ import {cn} from '../../../ui/cn'
 import TeamPromptAnswerEditor from './TeamPromptAnswerEditor'
 import TeamPromptComposerFooter from './TeamPromptComposerFooter'
 import TeamPromptComposerHeader from './TeamPromptComposerHeader'
+import {getMemberSharedAt} from './teamPromptStages'
 import {TEAM_UPDATES_BAND, TEAM_UPDATES_COLUMN} from './teamUpdatesLayout'
 import useTeamPromptAnswersAutosave from './useTeamPromptAnswersAutosave'
 import useTeamPromptComposerState from './useTeamPromptComposerState'
@@ -41,17 +42,13 @@ const TeamPromptComposer = (props: Props) => {
                   picture
                 }
               }
-              response {
+              responses {
                 id
-                isShared
+                promptId
+                content
+                plaintextContent
                 sharedAt
-                answers {
-                  id
-                  promptId
-                  content
-                  plaintextContent
-                  updatedAt
-                }
+                updatedAt
               }
             }
           }
@@ -64,7 +61,7 @@ const TeamPromptComposer = (props: Props) => {
   const {viewerId} = atmosphere
   const {id: meetingId, teamId, endedAt, prompts, rightDrawerOpen} = meeting
   const stage = meeting.phases[0]?.stages?.find((stage) => stage.teamMember.userId === viewerId)
-  const isShared = !!stage?.response?.isShared
+  const isShared = !!getMemberSharedAt(stage?.responses ?? [])
   const [isExpanded, setIsExpanded] = useState(!isShared)
   const editorRefs = useRef(new Map<string, React.MutableRefObject<Editor | null>>())
   const {queueAnswer, seedDirty, share, submitting, dirtyPromptIds} = useTeamPromptAnswersAutosave({

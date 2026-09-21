@@ -52,7 +52,6 @@ const TeamPromptTopBar = (props: Props) => {
         id
         name
         teamId
-        templateId
         rightDrawerOpen
         facilitatorUserId
         localStageId
@@ -70,8 +69,9 @@ const TeamPromptTopBar = (props: Props) => {
           ...EditMeetingSeriesModal_series
         }
         responses {
-          isShared
-          answeredPromptIds
+          userId
+          sharedAt
+          content
         }
         ...MeetingDateLabel_meeting
         ...TeamPromptOptions_meeting
@@ -90,7 +90,6 @@ const TeamPromptTopBar = (props: Props) => {
   const {
     id: meetingId,
     name: meetingName,
-    templateId,
     facilitatorUserId,
     meetingSeries,
     prevMeeting,
@@ -100,7 +99,7 @@ const TeamPromptTopBar = (props: Props) => {
   const isFacilitator = viewerId === facilitatorUserId
   const {handleSubmit, validate, error} = useRenameMeeting(meetingId)
   const isRecurrenceEnabled = meetingSeries && !meetingSeries.cancelledAt
-  const unsharedDraftsCount = countUnsharedDrafts(templateId, responses)
+  const hasUnsharedDraft = countUnsharedDrafts(responses, viewerId) > 0
 
   const onOpenWorkSidebar = () => {
     if (meeting.rightDrawerOpen === 'inspiration') {
@@ -184,7 +183,7 @@ const TeamPromptTopBar = (props: Props) => {
                   <h1 className={headerTitleClassName}>{meetingName}</h1>
                 )}
                 <MeetingDateLabel meetingRef={meeting} />
-                {templateId && isRecurrenceEnabled && (
+                {isRecurrenceEnabled && (
                   <div className='hidden text-[12px] text-fg-secondary md:block'>
                     {toHumanReadable(RRule.fromString(meetingSeries.recurrenceRule))}
                   </div>
@@ -219,7 +218,7 @@ const TeamPromptTopBar = (props: Props) => {
           isOpen={isEndRecurringMeetingOpen}
           hasSeries={!!isRecurrenceEnabled}
           nextMeetingDate={isRecurrenceEnabled ? meetingSeries.nextMeetingDate : undefined}
-          unsharedDraftsCount={unsharedDraftsCount}
+          hasUnsharedDraft={hasUnsharedDraft}
           closeModal={() => setIsEndRecurringMeetingOpen(false)}
         />
       </MeetingTopBarStyles>

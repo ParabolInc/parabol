@@ -1,8 +1,10 @@
 import type {JSONContent} from '@tiptap/react'
 import {useEffect, useMemo, useRef, useState} from 'react'
 import type {TeamPromptComposer_meeting$data} from '~/__generated__/TeamPromptComposer_meeting.graphql'
+import isEmptyTipTapDoc from '../../../shared/tiptap/isEmptyTipTapDoc'
 import lastAnswerUpdatedAt from './lastAnswerUpdatedAt'
-import {clearStageDrafts, isDocEmpty, readDraftAnswer} from './teamPromptDraftStorage'
+import {clearStageDrafts, readDraftAnswer} from './teamPromptDraftStorage'
+import {getMemberSharedAt, getSharedResponses} from './teamPromptStages'
 import type {DirtyAnswer} from './useTeamPromptAnswersAutosave'
 
 const PREVIEW_LENGTH = 90
@@ -20,12 +22,12 @@ interface Options {
 
 const useTeamPromptComposerState = (options: Options) => {
   const {prompts, stage, isEnded, seedDirty} = options
-  const response = stage?.response ?? null
+  const responses = stage?.responses ?? []
 
   const savedDocs = useMemo(() => {
     const map = new Map<string, JSONContent | null>()
     prompts.forEach((prompt) => {
-      const saved = response?.answers.find((answer) => answer.promptId === prompt.id)
+      const saved = responses.find((response) => response.promptId === prompt.id)
       map.set(prompt.id, saved ? JSON.parse(saved.content) : null)
     })
     return map
@@ -44,7 +46,10 @@ const useTeamPromptComposerState = (options: Options) => {
     () =>
       new Set(
         prompts
-          .filter((prompt) => !isDocEmpty(initialContentByPrompt.get(prompt.id) ?? null))
+          .filter((prompt) => {
+            const doc = initialContentByPrompt.get(prompt.id)
+            return !!doc && !isEmptyTipTapDoc(doc)
+          })
           .map((prompt) => prompt.id)
       )
   )
@@ -69,11 +74,13 @@ const useTeamPromptComposerState = (options: Options) => {
   }, [stage?.id, isEnded])
 
   const savedText = prompts
-    .map((prompt) => response?.answers.find((answer) => answer.promptId === prompt.id))
-    .find((answer) => !!answer?.plaintextContent.trim())?.plaintextContent
+    .map((prompt) => responses.find((response) => response.promptId === prompt.id))
+    .find((response) => !!response?.plaintextContent.trim())?.plaintextContent
   const preview = (savedText ?? '').replace(/\s+/g, ' ').trim().slice(0, PREVIEW_LENGTH)
-  const sharedAt = response?.sharedAt ?? null
-  const lastAnswerAt = response && sharedAt ? lastAnswerUpdatedAt(response.answers, sharedAt) : null
+  const sharedAt = getMemberSharedAt(responses)
+  const lastAnswerAt = sharedAt
+    ? lastAnswerUpdatedAt(getSharedResponses(responses), sharedAt)
+    : null
 
   return {
     initialContentByPrompt,

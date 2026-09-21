@@ -1,15 +1,15 @@
-interface ResponseSummary {
-  isShared: boolean
-  answeredPromptIds: readonly string[]
+import isEmptyTipTapDoc from '../../../shared/tiptap/isEmptyTipTapDoc'
+
+interface DraftCandidate {
+  userId: string
+  sharedAt?: string | null
+  content: string
 }
 
-const countUnsharedDrafts = (
-  templateId: string | null | undefined,
-  responses: readonly ResponseSummary[] | null | undefined
-) =>
-  templateId
-    ? (responses?.filter((response) => !response.isShared && response.answeredPromptIds.length > 0)
-        .length ?? 0)
-    : 0
+const countUnsharedDrafts = (responses: readonly DraftCandidate[], viewerId: string) =>
+  responses.filter(
+    ({userId, sharedAt, content}) =>
+      userId === viewerId && !sharedAt && !isEmptyTipTapDoc(JSON.parse(content))
+  ).length
 
 export default countUnsharedDrafts

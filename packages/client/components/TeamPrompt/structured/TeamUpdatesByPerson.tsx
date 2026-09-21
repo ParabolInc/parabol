@@ -1,7 +1,7 @@
 import type {TeamUpdatesSection_meeting$data} from '~/__generated__/TeamUpdatesSection_meeting.graphql'
 import {cn} from '../../../ui/cn'
-import TeamPromptDraftingCard from './TeamPromptDraftingCard'
 import TeamPromptSharedResponseCard from './TeamPromptSharedResponseCard'
+import TeamPromptWaitingCard from './TeamPromptWaitingCard'
 import {TEAM_UPDATES_BAND, TEAM_UPDATES_GRID_COLUMNS} from './teamUpdatesLayout'
 
 export type TeamUpdateStage = NonNullable<
@@ -12,24 +12,14 @@ interface Props {
   layout: 'grid' | 'feed'
   prompts: readonly {id: string; question: string; groupColor: string}[]
   sharedStages: readonly TeamUpdateStage[]
-  draftingStages: readonly TeamUpdateStage[]
-  notStartedStages: readonly TeamUpdateStage[]
+  waitingStages: readonly TeamUpdateStage[]
   isEnded: boolean
   selectedStageId: string | null
   onReply: (stageId: string) => void
 }
 
 const TeamUpdatesByPerson = (props: Props) => {
-  const {
-    layout,
-    prompts,
-    sharedStages,
-    draftingStages,
-    notStartedStages,
-    isEnded,
-    selectedStageId,
-    onReply
-  } = props
+  const {layout, prompts, sharedStages, waitingStages, isEnded, selectedStageId, onReply} = props
   return (
     <div
       className={cn(
@@ -47,25 +37,11 @@ const TeamUpdatesByPerson = (props: Props) => {
           onReply={onReply}
         />
       ))}
-      {draftingStages.map((stage) => (
-        <TeamPromptDraftingCard
+      {waitingStages.map((stage) => (
+        <TeamPromptWaitingCard
           key={stage.id}
           preferredName={stage.teamMember.user.preferredName}
           picture={stage.teamMember.user.picture}
-          answeredCount={stage.response?.answeredPromptIds.length ?? 0}
-          promptCount={prompts.length}
-          hasStarted
-          isEnded={isEnded}
-        />
-      ))}
-      {notStartedStages.map((stage) => (
-        <TeamPromptDraftingCard
-          key={stage.id}
-          preferredName={stage.teamMember.user.preferredName}
-          picture={stage.teamMember.user.picture}
-          answeredCount={0}
-          promptCount={prompts.length}
-          hasStarted={false}
           isEnded={isEnded}
         />
       ))}

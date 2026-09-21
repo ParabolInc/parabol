@@ -11,7 +11,7 @@ const TeamPromptTemplateHeader = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment TeamPromptTemplateHeader_meeting on TeamPromptMeeting {
-        template {
+        promptTemplate: template {
           name
         }
         prompts {
@@ -21,11 +21,11 @@ const TeamPromptTemplateHeader = (props: Props) => {
     `,
     meetingRef
   )
-  const {template, prompts} = meeting
+  const {promptTemplate, prompts} = meeting
   const isPlural = prompts.length > 1
   return (
     <div className='mx-[7%] my-4 flex flex-col items-center text-center'>
-      <h1 className='m-0 font-normal text-[20px] leading-8'>{template?.name}</h1>
+      <h1 className='m-0 font-normal text-[20px] leading-8'>{promptTemplate.name}</h1>
       <div className='text-[12px] text-fg-muted'>
         {isPlural
           ? 'Your responses are visible to the team once you share them'

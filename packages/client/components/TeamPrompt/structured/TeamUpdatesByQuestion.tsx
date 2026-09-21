@@ -3,19 +3,20 @@ import {cn} from '../../../ui/cn'
 import type {TeamUpdateStage} from './TeamUpdatesByPerson'
 import TeamUpdatesQuestionRow from './TeamUpdatesQuestionRow'
 import TeamUpdatesQuestionTabs from './TeamUpdatesQuestionTabs'
+import {getSharedResponses} from './teamPromptStages'
 import {TEAM_UPDATES_QUESTION_BAND} from './teamUpdatesLayout'
 
 interface Props {
   prompts: readonly {id: string; question: string; groupColor: string}[]
   sharedStages: readonly TeamUpdateStage[]
-  draftingStages: readonly TeamUpdateStage[]
+  waitingStages: readonly TeamUpdateStage[]
   isEnded: boolean
   selectedStageId: string | null
   onReply: (stageId: string) => void
 }
 
 const TeamUpdatesByQuestion = (props: Props) => {
-  const {prompts, sharedStages, draftingStages, isEnded, selectedStageId, onReply} = props
+  const {prompts, sharedStages, waitingStages, isEnded, selectedStageId, onReply} = props
   const [activeId, setActiveId] = useState(prompts[0]?.id ?? '')
   const activePrompt = prompts.find((prompt) => prompt.id === activeId) ?? prompts[0]
   if (!activePrompt) return null
@@ -23,7 +24,7 @@ const TeamUpdatesByQuestion = (props: Props) => {
   let answeringStages: readonly TeamUpdateStage[] = []
   for (const prompt of prompts) {
     const matchingStages = sharedStages.filter((stage) =>
-      stage.response?.answers.some((answer) => answer.promptId === prompt.id)
+      getSharedResponses(stage.responses).some((response) => response.promptId === prompt.id)
     )
     counts[prompt.id] = matchingStages.length
     if (prompt.id === activePrompt.id) answeringStages = matchingStages
@@ -51,22 +52,20 @@ const TeamUpdatesByQuestion = (props: Props) => {
             key={stage.id}
             stageRef={stage}
             prompt={activePrompt}
-            isDrafting={false}
+            isWaiting={false}
             isEnded={isEnded}
             isSelected={selectedStageId === stage.id}
-            promptCount={prompts.length}
             onReply={onReply}
           />
         ))}
-        {draftingStages.map((stage) => (
+        {waitingStages.map((stage) => (
           <TeamUpdatesQuestionRow
             key={stage.id}
             stageRef={stage}
             prompt={activePrompt}
-            isDrafting
+            isWaiting
             isEnded={isEnded}
             isSelected={false}
-            promptCount={prompts.length}
             onReply={onReply}
           />
         ))}
