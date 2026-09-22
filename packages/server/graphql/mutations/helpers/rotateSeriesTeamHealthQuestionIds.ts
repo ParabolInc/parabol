@@ -6,10 +6,12 @@ import rotateTeamHealthQuestionIds from './rotateTeamHealthQuestionIds'
  * Rotates one occurrence's questions for a whole group.
  *
  * A group can cover several teams, and every team must answer the same questions in a given
- * occurrence. Letting each meeting rotate for itself cannot produce that, for two reasons:
- * rotateTeamHealthQuestionIds breaks ties at random, so sibling meetings drawing from the same
- * tally still diverge; and the tally itself has to span the group's history, which a single
- * meeting cannot see from its own series. Callers that fan out over a group rotate once here.
+ * occurrence. Letting each meeting rotate for itself cannot produce that: the tally has to span the
+ * group's history, which a single meeting cannot see from its own series. Callers that fan out
+ * over a group rotate once here.
+ *
+ * With no series ids there is no history, so this is also the draw a new series' first meeting
+ * makes, which the client previews on its own with the same picker.
  *
  * Returns undefined when the template has no questions, leaving each meeting to rotate for itself.
  */

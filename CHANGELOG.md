@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.47.0](https://github.com/ParabolInc/parabol/compare/v13.46.1...v13.47.0) (2026-09-21)
+
+
+### Added
+
+* Team health first meeting preview ([#13526](https://github.com/ParabolInc/parabol/issues/13526)) ([7b21656](https://github.com/ParabolInc/parabol/commit/7b2165622c3e743fe7060e0bd82a9ede549fe0c6))
+
+## [13.46.1](https://github.com/ParabolInc/parabol/compare/v13.46.0...v13.46.1) (2026-09-18)
+
+
+### Fixed
+
+* mobile view, no changing scope, highlight edit button on click ([#13522](https://github.com/ParabolInc/parabol/issues/13522)) ([f3a15ee](https://github.com/ParabolInc/parabol/commit/f3a15eeadd3f45ce261fe5bef2e78bf4c8117d58))
+
+
+### Changed
+
+* delete deprecated per-service dimension field mutations ([#13521](https://github.com/ParabolInc/parabol/issues/13521)) ([2d0ccea](https://github.com/ParabolInc/parabol/commit/2d0ccead56a48698a418b4b167fd003b8048eb51))
+
 ## [13.46.0](https://github.com/ParabolInc/parabol/compare/v13.45.2...v13.46.0) (2026-09-18)
 
 

@@ -1,10 +1,13 @@
 import graphql from 'babel-plugin-relay/macro'
-import {Suspense} from 'react'
+import {Suspense, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {ExpandMore as ExpandMoreIcon, Share as ShareIcon} from '~/ui/icons'
 import type {TemplateSharing_template$key} from '../../../__generated__/TemplateSharing_template.graphql'
 import {cn} from '../../../ui/cn'
 import {Menu} from '../../../ui/Menu/Menu'
+import {Tooltip} from '../../../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../../../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../../../ui/Tooltip/TooltipTrigger'
 import lazyPreload from '../../../utils/lazyPreload'
 
 const SelectSharingScopeDropdown = lazyPreload(
@@ -44,6 +47,7 @@ export const UnstyledTemplateSharing = (props: Props) => {
         ...SelectSharingScopeDropdown_template
         id
         scope
+        type
         team {
           name
           organization {
@@ -54,7 +58,8 @@ export const UnstyledTemplateSharing = (props: Props) => {
     `,
     templateRef
   )
-  const {scope, team} = template
+  const {scope, team, type} = template
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false)
   const {name: teamName, organization} = team
   const {name: orgName} = organization
   if (!isOwner) return null
@@ -64,6 +69,34 @@ export const UnstyledTemplateSharing = (props: Props) => {
       : scope === 'ORGANIZATION'
         ? `Sharing with ${orgName}`
         : 'Sharing publicly'
+  if (type === 'teamHealth') {
+    return (
+      <Tooltip open={isTooltipOpen} onOpenChange={setIsTooltipOpen}>
+        <TooltipTrigger asChild>
+          <div
+            tabIndex={0}
+            className='flex select-none items-center text-base text-fg-primary'
+            // radix closes tooltips on click, which leaves touch users with no way to read it
+            onClick={(e) => {
+              e.preventDefault()
+              setIsTooltipOpen(true)
+            }}
+          >
+            <div className='mr-4 flex h-6 w-6 items-center justify-center text-fg-secondary [&_svg]:text-[18px]'>
+              <ShareIcon />
+            </div>
+            <div className='my-2 mr-2 min-h-6'>{label}</div>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent
+          collisionPadding={16}
+          className='max-w-[calc(100vw-32px)] whitespace-normal'
+        >
+          Team health templates are always shared across the organization
+        </TooltipContent>
+      </Tooltip>
+    )
+  }
   return (
     <Menu
       trigger={

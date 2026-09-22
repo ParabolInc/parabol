@@ -1,5 +1,8 @@
 import type {CSSProperties} from 'react'
+import {Button} from '../../../ui/Button/Button'
 import {cn} from '../../../ui/cn'
+import {Replay} from '../../../ui/icons'
+import useRunAnimationsOnce from './useRunAnimationsOnce'
 
 interface Props {
   className?: string
@@ -42,6 +45,8 @@ const HANDOFF = 5.75
 const GROW_FROM = ROUND_S + HANDOFF
 const GROW_TO = 2 * ROUND_S + HANDOFF + 1
 const CHART_OUT = abs(20.5)
+// the finished trend chart holds from GROW_TO until CHART_OUT; a single run stops inside that hold
+const RUN_ONCE_END_S = 20.25
 
 // every gap in the layout is this wide, which is what keeps the canvas narrow
 const GAP = 26
@@ -296,318 +301,334 @@ const GROUPS_ICON =
 
 const TeamHealthSurveyFlowAnimation = (props: Props) => {
   const {className} = props
+  const {ref, isFinished, replay} = useRunAnimationsOnce<SVGSVGElement>(RUN_ONCE_END_S)
   const muted = 'var(--color-fg-muted)'
   // a positive delay would hold an element at its resting style until the animation starts, so
   // every stagger is expressed as the negative equivalent inside the loop
   const lag = (seconds: number) => (seconds === 0 ? undefined : `${seconds - LOOP_S}s`)
 
   return (
-    <svg
-      viewBox='0 0 612 200'
-      className={cn('h-auto w-full max-w-[612px]', className)}
-      role='img'
-      aria-label='One question is picked from each category in the question bank and flows into a meeting that goes out to the Product, Engineering and Marketing teams. Each team scores, and those scores carry over into a trend line across three meetings.'
-    >
-      <title>How a team health survey is assembled and tracked</title>
-      <style>{KEYFRAMES}</style>
-
-      <rect
-        x={BANK_X}
-        y='14'
-        width={BANK_W}
-        height='172'
-        rx='8'
-        fill='var(--color-surface-card)'
-        stroke='var(--color-hairline-strong)'
-      />
-      <text
-        x='26'
-        y='34'
-        fontFamily={FONT}
-        fontSize='11'
-        fontWeight='600'
-        fill='var(--color-fg-primary)'
+    <div className={cn('relative w-full max-w-[612px]', className)}>
+      <svg
+        ref={ref}
+        viewBox='0 0 612 200'
+        className='block h-auto w-full'
+        role='img'
+        aria-label='One question is picked from each category in the question bank and flows into a meeting that goes out to the Product, Engineering and Marketing teams. Each team scores, and those scores carry over into a trend line across three meetings.'
       >
-        Question bank
-      </text>
-      {BANK.map((category, categoryIdx) => (
-        <g key={category.dotY}>
-          <circle cx='24' cy={category.dotY} r='3.5' fill={CATEGORY_COLORS[categoryIdx]} />
-          <rect
-            x={BAR_X}
-            y={category.headerY}
-            width='58'
-            height='5'
-            rx='2'
-            fill={muted}
-            opacity='0.5'
-          />
-          {category.questionYs.map((questionY) => (
-            <rect
-              key={questionY}
-              x={BAR_X}
-              y={questionY}
-              width={BAR_W}
-              height={BAR_H}
-              rx='2'
-              fill={muted}
-              opacity='0.25'
-            />
-          ))}
-          <rect
-            className={
-              category.questionYs.length === 3
-                ? 'thsfa-select-3'
-                : category.questionYs.length === 2
-                  ? 'thsfa-select-2'
-                  : undefined
-            }
-            style={
-              category.questionYs[1]
-                ? ({
-                    '--step': `${category.questionYs[1] - category.questionYs[0]!}px`
-                  } as CSSProperties)
-                : undefined
-            }
-            x={BAR_X}
-            y={category.questionYs[0]}
-            width={BAR_W}
-            height={BAR_H}
-            rx='2'
-            fill={CATEGORY_COLORS[categoryIdx]}
-          />
-        </g>
-      ))}
+        <title>How a team health survey is assembled and tracked</title>
+        <style>{KEYFRAMES}</style>
 
-      <g className='thsfa-page'>
         <rect
-          x={PAGE_X}
-          y='22'
-          width={PAGE_W}
-          height='152'
+          x={BANK_X}
+          y='14'
+          width={BANK_W}
+          height='172'
           rx='8'
           fill='var(--color-surface-card)'
           stroke='var(--color-hairline-strong)'
         />
-        {rounds.map((r) => (
-          <text
-            key={r}
-            className={`thsfa-title-r${r}`}
-            x={SURVEY_BAR_X}
-            y='40'
-            fontFamily={FONT}
-            fontSize='11'
-            fontWeight='600'
-            fill='var(--color-fg-primary)'
-          >
-            Meeting #{r + 1}
-          </text>
-        ))}
-        {SURVEY_ROWS.map((rowY, rowIdx) => (
-          <g key={rowY} className='thsfa-likert' style={{animationDelay: lag(rowIdx * 0.12)}}>
-            {LIKERT_CX.map((cx, scoreIdx) => (
-              <g key={cx}>
-                <circle cx={cx} cy={rowY + 16} r='6' fill={SCORE_COLORS[scoreIdx]} />
-                <text
-                  x={cx}
-                  y={rowY + 16}
-                  textAnchor='middle'
-                  dominantBaseline='central'
-                  fontFamily={FONT}
-                  fontSize='8'
-                  fontWeight='600'
-                  fill='#fff'
-                >
-                  {scoreIdx + 1}
-                </text>
-              </g>
+        <text
+          x='26'
+          y='34'
+          fontFamily={FONT}
+          fontSize='11'
+          fontWeight='600'
+          fill='var(--color-fg-primary)'
+        >
+          Question bank
+        </text>
+        {BANK.map((category, categoryIdx) => (
+          <g key={category.dotY}>
+            <circle cx='24' cy={category.dotY} r='3.5' fill={CATEGORY_COLORS[categoryIdx]} />
+            <rect
+              x={BAR_X}
+              y={category.headerY}
+              width='58'
+              height='5'
+              rx='2'
+              fill={muted}
+              opacity='0.5'
+            />
+            {category.questionYs.map((questionY) => (
+              <rect
+                key={questionY}
+                x={BAR_X}
+                y={questionY}
+                width={BAR_W}
+                height={BAR_H}
+                rx='2'
+                fill={muted}
+                opacity='0.25'
+              />
             ))}
-          </g>
-        ))}
-      </g>
-
-      {BANK.map((category, categoryIdx) =>
-        category.flyOn.map((flyClass, questionIdx) => (
-          <rect
-            key={flyClass + questionIdx}
-            className={cn('thsfa-fly', flyClass)}
-            x={BAR_X}
-            y={category.questionYs[questionIdx]}
-            width={BAR_W}
-            height={BAR_H}
-            rx='2'
-            fill={CATEGORY_COLORS[categoryIdx]}
-            style={
-              {
-                '--dx': `${DX}px`,
-                '--dy': `${category.landsOn - category.questionYs[questionIdx]!}px`,
-                animationDelay: lag(categoryIdx * 0.15)
-              } as CSSProperties
-            }
-          />
-        ))
-      )}
-
-      {/* no arrowheads: the line draws itself outward from the page, which carries the direction */}
-      {TEAMS.map((team) => (
-        <path
-          key={team.name}
-          className='thsfa-link'
-          d={team.link}
-          fill='none'
-          stroke={muted}
-          strokeWidth='1.5'
-          strokeLinecap='round'
-          strokeDasharray='150'
-          opacity='0.7'
-        />
-      ))}
-
-      <g className='thsfa-axes'>
-        <path
-          d={`M${AXIS_X},${CHART_TOP} L${AXIS_X},${AXIS_Y} L597,${AXIS_Y}`}
-          fill='none'
-          stroke={muted}
-          strokeWidth='1.5'
-        />
-      </g>
-      {TRENDS.map((trend, teamIdx) => {
-        const color = CATEGORY_COLORS[teamIdx]!
-        const [p1, p2, p3] = trend.points as [
-          {x: number; y: number},
-          {x: number; y: number},
-          {x: number; y: number}
-        ]
-        return (
-          <g key={TEAMS[teamIdx]!.name}>
-            {[1, 2].map((seg) => {
-              const a = trend.points[seg - 1]!
-              const b = trend.points[seg]!
-              const len = trend.legs[seg - 1]!.toFixed(2)
-              return (
-                <line
-                  key={seg}
-                  className={cn('thsfa-seg', `thsfa-seg${seg}-t${teamIdx}`)}
-                  x1={a.x}
-                  y1={a.y}
-                  x2={b.x}
-                  y2={b.y}
-                  stroke={color}
-                  strokeWidth='2'
-                  strokeLinecap='round'
-                  strokeDasharray={len}
-                  style={{'--len': `${len}px`} as CSSProperties}
-                />
-              )
-            })}
-            {/* one dot per team, always riding the growing end of its line */}
-            <circle
-              className={`thsfa-dot thsfa-dot-t${teamIdx}`}
-              cx={p1.x}
-              cy={p1.y}
-              r='3.5'
-              fill={color}
-              style={
-                {
-                  '--d2x': `${p2.x - p1.x}px`,
-                  '--d2y': `${p2.y - p1.y}px`,
-                  '--d3x': `${p3.x - p1.x}px`,
-                  '--d3y': `${p3.y - p1.y}px`
-                } as CSSProperties
+            <rect
+              className={
+                category.questionYs.length === 3
+                  ? 'thsfa-select-3'
+                  : category.questionYs.length === 2
+                    ? 'thsfa-select-2'
+                    : undefined
               }
+              style={
+                category.questionYs[1]
+                  ? ({
+                      '--step': `${category.questionYs[1] - category.questionYs[0]!}px`
+                    } as CSSProperties)
+                  : undefined
+              }
+              x={BAR_X}
+              y={category.questionYs[0]}
+              width={BAR_W}
+              height={BAR_H}
+              rx='2'
+              fill={CATEGORY_COLORS[categoryIdx]}
             />
           </g>
-        )
-      })}
+        ))}
 
-      {TEAMS.map((team) => (
-        <g key={team.name}>
-          <circle
-            cx={team.cx}
-            cy={team.cy}
-            r='26'
-            fill='var(--color-surface-well)'
-            stroke='var(--color-hairline-strong)'
-          />
-          <path
-            d={GROUPS_ICON}
-            fill='var(--color-fg-secondary)'
-            transform={`translate(${team.cx - 13} ${team.cy - 17}) scale(${26 / 24})`}
-          />
+        <g className='thsfa-page'>
           <rect
-            x={team.cx - team.labelW / 2}
-            y={team.cy + 12}
-            width={team.labelW}
-            height='16'
-            rx='4'
+            x={PAGE_X}
+            y='22'
+            width={PAGE_W}
+            height='152'
+            rx='8'
             fill='var(--color-surface-card)'
             stroke='var(--color-hairline-strong)'
           />
-          <text
-            x={team.cx}
-            y={team.cy + 20}
-            textAnchor='middle'
-            dominantBaseline='central'
-            fontFamily={FONT}
-            fontSize='9.5'
-            fontWeight='600'
-            fill='var(--color-fg-primary)'
-          >
-            {team.name}
-          </text>
-          {team.answers.map((offsetX, answerIdx) => (
-            <g
-              key={offsetX}
-              className='thsfa-answer'
-              style={{animationDelay: lag(answerIdx * 0.15)}}
+          {rounds.map((r) => (
+            <text
+              key={r}
+              className={`thsfa-title-r${r}`}
+              x={SURVEY_BAR_X}
+              y='40'
+              fontFamily={FONT}
+              fontSize='11'
+              fontWeight='600'
+              fill='var(--color-fg-primary)'
             >
-              <circle cx={team.cx + offsetX} cy={team.cy - 14} r='7' fill={UP} />
-              <path
-                d={`M${team.cx + offsetX - 3},${team.cy - 14} L${team.cx + offsetX - 0.8},${team.cy - 11.8} L${team.cx + offsetX + 3},${team.cy - 17}`}
-                fill='none'
-                stroke='#fff'
-                strokeWidth='1.6'
-                strokeLinecap='round'
-                strokeLinejoin='round'
-              />
+              Meeting #{r + 1}
+            </text>
+          ))}
+          {SURVEY_ROWS.map((rowY, rowIdx) => (
+            <g key={rowY} className='thsfa-likert' style={{animationDelay: lag(rowIdx * 0.12)}}>
+              {LIKERT_CX.map((cx, scoreIdx) => (
+                <g key={cx}>
+                  <circle cx={cx} cy={rowY + 16} r='6' fill={SCORE_COLORS[scoreIdx]} />
+                  <text
+                    x={cx}
+                    y={rowY + 16}
+                    textAnchor='middle'
+                    dominantBaseline='central'
+                    fontFamily={FONT}
+                    fontSize='8'
+                    fontWeight='600'
+                    fill='#fff'
+                  >
+                    {scoreIdx + 1}
+                  </text>
+                </g>
+              ))}
             </g>
           ))}
-          {rounds.map((r) => {
-            const delta = r === 0 ? 0 : team.values[r]! - team.values[r - 1]!
-            const label =
-              r === 0
-                ? team.values[0]!.toFixed(1)
-                : `${delta >= 0 ? '+' : '−'}${Math.abs(delta).toFixed(1)}`
-            const originX = team.cx + 42
-            const originY = team.cy - 4
-            return (
-              <text
-                key={r}
-                className={`thsfa-score-r${r}`}
-                x={originX}
-                y={originY}
-                textAnchor='middle'
-                dominantBaseline='central'
-                fontFamily={FONT}
-                fontSize='13'
-                fontWeight='600'
-                fill={r === 0 ? 'var(--color-fg-primary)' : delta >= 0 ? UP : DOWN}
+        </g>
+
+        {BANK.map((category, categoryIdx) =>
+          category.flyOn.map((flyClass, questionIdx) => (
+            <rect
+              key={flyClass + questionIdx}
+              className={cn('thsfa-fly', flyClass)}
+              x={BAR_X}
+              y={category.questionYs[questionIdx]}
+              width={BAR_W}
+              height={BAR_H}
+              rx='2'
+              fill={CATEGORY_COLORS[categoryIdx]}
+              style={
+                {
+                  '--dx': `${DX}px`,
+                  '--dy': `${category.landsOn - category.questionYs[questionIdx]!}px`,
+                  animationDelay: lag(categoryIdx * 0.15)
+                } as CSSProperties
+              }
+            />
+          ))
+        )}
+
+        {/* no arrowheads: the line draws itself outward from the page, which carries the direction */}
+        {TEAMS.map((team) => (
+          <path
+            key={team.name}
+            className='thsfa-link'
+            d={team.link}
+            fill='none'
+            stroke={muted}
+            strokeWidth='1.5'
+            strokeLinecap='round'
+            strokeDasharray='150'
+            opacity='0.7'
+          />
+        ))}
+
+        <g className='thsfa-axes'>
+          <path
+            d={`M${AXIS_X},${CHART_TOP} L${AXIS_X},${AXIS_Y} L597,${AXIS_Y}`}
+            fill='none'
+            stroke={muted}
+            strokeWidth='1.5'
+          />
+        </g>
+        {TRENDS.map((trend, teamIdx) => {
+          const color = CATEGORY_COLORS[teamIdx]!
+          const [p1, p2, p3] = trend.points as [
+            {x: number; y: number},
+            {x: number; y: number},
+            {x: number; y: number}
+          ]
+          return (
+            <g key={TEAMS[teamIdx]!.name}>
+              {[1, 2].map((seg) => {
+                const a = trend.points[seg - 1]!
+                const b = trend.points[seg]!
+                const len = trend.legs[seg - 1]!.toFixed(2)
+                return (
+                  <line
+                    key={seg}
+                    className={cn('thsfa-seg', `thsfa-seg${seg}-t${teamIdx}`)}
+                    x1={a.x}
+                    y1={a.y}
+                    x2={b.x}
+                    y2={b.y}
+                    stroke={color}
+                    strokeWidth='2'
+                    strokeLinecap='round'
+                    strokeDasharray={len}
+                    style={{'--len': `${len}px`} as CSSProperties}
+                  />
+                )
+              })}
+              {/* one dot per team, always riding the growing end of its line */}
+              <circle
+                className={`thsfa-dot thsfa-dot-t${teamIdx}`}
+                cx={p1.x}
+                cy={p1.y}
+                r='3.5'
+                fill={color}
                 style={
                   {
-                    // the score hands itself to the chart: meeting one becomes the starting dot,
-                    // later ones land where their line is headed
-                    '--sx': `${MEETING_X[r]! - originX}px`,
-                    '--sy': `${scoreY(team.values[r]!) - originY}px`
+                    '--d2x': `${p2.x - p1.x}px`,
+                    '--d2y': `${p2.y - p1.y}px`,
+                    '--d3x': `${p3.x - p1.x}px`,
+                    '--d3y': `${p3.y - p1.y}px`
                   } as CSSProperties
                 }
+              />
+            </g>
+          )
+        })}
+
+        {TEAMS.map((team) => (
+          <g key={team.name}>
+            <circle
+              cx={team.cx}
+              cy={team.cy}
+              r='26'
+              fill='var(--color-surface-well)'
+              stroke='var(--color-hairline-strong)'
+            />
+            <path
+              d={GROUPS_ICON}
+              fill='var(--color-fg-secondary)'
+              transform={`translate(${team.cx - 13} ${team.cy - 17}) scale(${26 / 24})`}
+            />
+            <rect
+              x={team.cx - team.labelW / 2}
+              y={team.cy + 12}
+              width={team.labelW}
+              height='16'
+              rx='4'
+              fill='var(--color-surface-card)'
+              stroke='var(--color-hairline-strong)'
+            />
+            <text
+              x={team.cx}
+              y={team.cy + 20}
+              textAnchor='middle'
+              dominantBaseline='central'
+              fontFamily={FONT}
+              fontSize='9.5'
+              fontWeight='600'
+              fill='var(--color-fg-primary)'
+            >
+              {team.name}
+            </text>
+            {team.answers.map((offsetX, answerIdx) => (
+              <g
+                key={offsetX}
+                className='thsfa-answer'
+                style={{animationDelay: lag(answerIdx * 0.15)}}
               >
-                {label}
-              </text>
-            )
-          })}
-        </g>
-      ))}
-    </svg>
+                <circle cx={team.cx + offsetX} cy={team.cy - 14} r='7' fill={UP} />
+                <path
+                  d={`M${team.cx + offsetX - 3},${team.cy - 14} L${team.cx + offsetX - 0.8},${team.cy - 11.8} L${team.cx + offsetX + 3},${team.cy - 17}`}
+                  fill='none'
+                  stroke='#fff'
+                  strokeWidth='1.6'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                />
+              </g>
+            ))}
+            {rounds.map((r) => {
+              const delta = r === 0 ? 0 : team.values[r]! - team.values[r - 1]!
+              const label =
+                r === 0
+                  ? team.values[0]!.toFixed(1)
+                  : `${delta >= 0 ? '+' : '−'}${Math.abs(delta).toFixed(1)}`
+              const originX = team.cx + 42
+              const originY = team.cy - 4
+              return (
+                <text
+                  key={r}
+                  className={`thsfa-score-r${r}`}
+                  x={originX}
+                  y={originY}
+                  textAnchor='middle'
+                  dominantBaseline='central'
+                  fontFamily={FONT}
+                  fontSize='13'
+                  fontWeight='600'
+                  fill={r === 0 ? 'var(--color-fg-primary)' : delta >= 0 ? UP : DOWN}
+                  style={
+                    {
+                      // the score hands itself to the chart: meeting one becomes the starting dot,
+                      // later ones land where their line is headed
+                      '--sx': `${MEETING_X[r]! - originX}px`,
+                      '--sy': `${scoreY(team.values[r]!) - originY}px`
+                    } as CSSProperties
+                  }
+                >
+                  {label}
+                </text>
+              )
+            })}
+          </g>
+        ))}
+      </svg>
+      {isFinished && (
+        <Button
+          variant='outline'
+          size='sm'
+          className='absolute right-0 bottom-0 gap-1 bg-surface-card max-sm:px-1.5'
+          onClick={replay}
+        >
+          <Replay className='size-3.5' />
+          {/* the canvas is only ~110px tall on a phone, so the label would cover the chart */}
+          <span className='max-sm:sr-only'>Replay</span>
+        </Button>
+      )}
+    </div>
   )
 }
 
