@@ -1,7 +1,7 @@
+import {isAnonymousRespondentCount} from '../../../../client/shared/utils/teamHealthAnonymity'
 import type {TeamHealthResultStage as TeamHealthResultStageDB} from '../../../postgres/types/NewMeetingPhase'
 import type {DataLoaderWorker} from '../../graphql'
 import getTeamHealthResultScore from '../../mutations/helpers/getTeamHealthResultScore'
-import {isAnonymousRespondentCount} from '../../mutations/helpers/teamHealthAnonymity'
 import type {TeamHealthResultStageResolvers} from '../resolverTypes'
 
 export type TeamHealthResultStageSource = TeamHealthResultStageDB & {
