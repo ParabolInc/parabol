@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.48.0](https://github.com/ParabolInc/parabol/compare/v13.47.0...v13.48.0) (2026-09-22)
+
+
+### Added
+
+* Demo Meeting Card ([#13538](https://github.com/ParabolInc/parabol/issues/13538)) ([8be988e](https://github.com/ParabolInc/parabol/commit/8be988e59dc1dee69bf814d594c98b583c79f57b))
+* Team Health Demo ([#13535](https://github.com/ParabolInc/parabol/issues/13535)) ([91fe359](https://github.com/ParabolInc/parabol/commit/91fe3599201b81e526ff003e18df2e529bffdd7f))
+
+
+### Fixed
+
+* add respondent userIds above 3 ([#13540](https://github.com/ParabolInc/parabol/issues/13540)) ([c05c414](https://github.com/ParabolInc/parabol/commit/c05c414167904619e831e4df12237321da575eb3))
+* bump pnpm ([#13541](https://github.com/ParabolInc/parabol/issues/13541)) ([31e85ce](https://github.com/ParabolInc/parabol/commit/31e85ce6ccbf38d532105c3b798414198c818613))
+* reveal results for facilitator ([#13539](https://github.com/ParabolInc/parabol/issues/13539)) ([ee74699](https://github.com/ParabolInc/parabol/commit/ee746994525618fec8711c38155b529c60bcd3c5))
+
 ## [13.47.0](https://github.com/ParabolInc/parabol/compare/v13.46.1...v13.47.0) (2026-09-21)
 
 
