@@ -121,6 +121,7 @@ const viewerMeetingMember: DemoViewerMeetingMember = {
   teamMember: {
     id: TeamMemberId.join(TEAM_ID, demoViewer.id),
     isLead: false,
+    isOrgAdmin: false,
     integrations: {
       id: `teamHealthDemoIntegrations:${demoViewer.id}`,
       mattermost: emptyNotificationIntegration,
