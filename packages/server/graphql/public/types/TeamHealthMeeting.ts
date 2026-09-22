@@ -1,6 +1,6 @@
+import {isAnonymousRespondentCount} from '../../../../client/shared/utils/teamHealthAnonymity'
 import {selectNewMeetings} from '../../../postgres/select'
 import {getUserId} from '../../../utils/authorization'
-import {isAnonymousRespondentCount} from '../../mutations/helpers/teamHealthAnonymity'
 import type {TeamHealthMeetingResolvers} from '../resolverTypes'
 
 // how far back to walk the series looking for the streak. teams meeting even weekly won't
