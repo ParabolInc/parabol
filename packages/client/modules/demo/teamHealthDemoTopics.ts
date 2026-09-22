@@ -13,6 +13,7 @@ export interface DemoSeedTask {
   text: string
   status: 'active' | 'done' | 'future' | 'stuck'
   jiraIssueKey?: string
+  githubIssueNumber?: number
 }
 
 export interface DemoTopic {
@@ -59,6 +60,15 @@ export const demoTopics: DemoTopic[] = [
         author: 'ingrid',
         text: 'On planning: could we collect estimates silently before we discuss them?',
         reactjis: [{emoji: '+1', from: ['tomas', 'priya']}]
+      }
+    ],
+    tasks: [
+      {
+        author: 'kwame',
+        assignee: 'kwame',
+        text: 'Add a blameless post-incident template to the runbook repo',
+        status: 'active',
+        githubIssueNumber: 318
       }
     ]
   },

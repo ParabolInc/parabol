@@ -53,6 +53,8 @@ type CreatedTask = Extract<OfType<CreatedTaskUnion, 'Task'>, {readonly integrati
 export type DemoTask = ThreadTask & CreatedTask
 export type DemoJiraIssue = OfType<NonNullable<ThreadTask['integration']>, 'JiraIssue'> &
   OfType<NonNullable<CreatedTask['integration']>, 'JiraIssue'>
+export type DemoGitHubIssue = OfType<NonNullable<ThreadTask['integration']>, '_xGitHubIssue'> &
+  OfType<NonNullable<CreatedTask['integration']>, '_xGitHubIssue'>
 
 // the unions end in a `{__typename: string}` member, so a plain __typename check cannot narrow them
 export const isDemoMeeting = (meeting: DemoMeetingUnion): meeting is DemoMeeting =>

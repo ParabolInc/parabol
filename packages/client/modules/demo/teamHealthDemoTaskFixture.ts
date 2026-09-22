@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import TeamMemberId from '../../shared/gqlIds/TeamMemberId'
-import {ExternalLinks} from '../../types/constEnums'
-import type {DemoJiraIssue, DemoTask} from './teamHealthDemoFixtureTypes'
+import {DemoIntegration} from '../../types/constEnums'
+import type {DemoGitHubIssue, DemoJiraIssue, DemoTask} from './teamHealthDemoFixtureTypes'
 import {TeamHealthDemo} from './teamHealthDemoIds'
 import {DEFAULT_DEMO_TEAM_NAME} from './teamHealthDemoMeetingFixture'
 import {type DemoTeammate, demoTeammateLookup} from './teamHealthDemoTeammates'
@@ -9,7 +9,7 @@ import type {DemoSeedTask, DemoTopic} from './teamHealthDemoTopics'
 
 const {MEETING_ID, TEAM_ID} = TeamHealthDemo
 const JIRA_PROJECT_KEY = 'ORB'
-const JIRA_CLOUD_NAME = 'orbit-squad'
+const {JIRA_CLOUD_NAME, GITHUB_REPO} = DemoIntegration
 
 // prosemirror rejects empty text nodes, so an empty task is a paragraph with no content
 export const toTaskContent = (text: string) =>
@@ -32,8 +32,25 @@ const createJiraIssue = (taskId: string, issueKey: string, summary: string): Dem
   summary,
   descriptionHTML: '',
   extraFields: [],
-  url: ExternalLinks.INTEGRATIONS_JIRA
+  url: DemoIntegration.JIRA_ISSUE_URL
 })
+
+const createGitHubIssue = (taskId: string, number: number, title: string): DemoGitHubIssue => ({
+  __typename: '_xGitHubIssue',
+  __isTaskIntegration: '_xGitHubIssue',
+  id: `github:${taskId}`,
+  service: 'github',
+  number,
+  title,
+  bodyHTML: '',
+  repository: {id: `github:${GITHUB_REPO}`, nameWithOwner: GITHUB_REPO},
+  ghUrl: DemoIntegration.GITHUB_ISSUE_URL
+})
+
+const integrationHash = (integration: DemoJiraIssue | DemoGitHubIssue) =>
+  integration.__typename === 'JiraIssue'
+    ? `${JIRA_CLOUD_NAME}:${integration.issueKey}`
+    : `${GITHUB_REPO}#${integration.number}`
 
 interface TaskInput {
   id: string
@@ -48,7 +65,7 @@ interface TaskInput {
   sortOrder: number
   threadSortOrder: number
   threadParentId: string | null
-  integration?: DemoJiraIssue
+  integration?: DemoJiraIssue | DemoGitHubIssue
 }
 
 export const createDemoTask = (input: TaskInput): DemoTask => {
@@ -68,7 +85,7 @@ export const createDemoTask = (input: TaskInput): DemoTask => {
     isHighlighted: false,
     tags: [],
     integration: integration ?? null,
-    integrationHash: integration ? `${JIRA_CLOUD_NAME}:${integration.issueKey}` : null,
+    integrationHash: integration ? integrationHash(integration) : null,
     userId: assignee?.id ?? null,
     user: assignee ? toUser(assignee) : null,
     teamId: TEAM_ID,
@@ -104,7 +121,11 @@ export const createSeedTasks = (
       sortOrder: idx,
       threadSortOrder: firstThreadSortOrder + idx,
       threadParentId: null,
-      integration: seed.jiraIssueKey ? createJiraIssue(id, seed.jiraIssueKey, seed.text) : undefined
+      integration: seed.jiraIssueKey
+        ? createJiraIssue(id, seed.jiraIssueKey, seed.text)
+        : seed.githubIssueNumber
+          ? createGitHubIssue(id, seed.githubIssueNumber, seed.text)
+          : undefined
     })
   })
 
