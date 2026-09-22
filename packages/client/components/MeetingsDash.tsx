@@ -197,7 +197,8 @@ const MeetingsDash = (props: Props) => {
           />
           {!teamFilterIds ? (
             <div className={cn('relative flex flex-wrap', maybeTabletPlus ? 'p-0' : 'p-4')}>
-              <DemoMeetingCard />
+              <DemoMeetingCard type='teamHealth' />
+              <DemoMeetingCard type='retrospective' />
               <TutorialMeetingCard type='retro' />
               <TutorialMeetingCard type='standup' />
               <TutorialMeetingCard type='poker' />

@@ -3,6 +3,7 @@ import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {useNavigate} from 'react-router'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
+import useEndTeamHealthMutation from '~/mutations/useEndTeamHealthMutation'
 import {
   Close as CloseIcon,
   Link,
@@ -72,6 +73,7 @@ const MeetingCardOptionsMenu = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
   const navigate = useNavigate()
+  const [endTeamHealth] = useEndTeamHealthMutation()
 
   const hasRecurrenceEnabled = meetingSeries && !meetingSeries.cancelledAt
   // an owned series answers to its owner alone, so the rest of the team cannot reschedule it
@@ -136,14 +138,16 @@ const MeetingCardOptionsMenu = (props: Props) => {
       {canEndMeeting && (
         <MenuItem
           onSelect={() => {
-            if (!hasRecurrenceEnabled) {
+            if (hasRecurrenceEnabled) {
+              openEndRecurringMeetingModal()
+            } else if (meetingType === 'teamHealth') {
+              endTeamHealth({variables: {meetingId}, onCompleted, onError})
+            } else {
               EndMeetingMutationLookup[meetingType]?.(
                 atmosphere,
                 {meetingId},
                 {onError, onCompleted, navigate}
               )
-            } else {
-              openEndRecurringMeetingModal()
             }
           }}
         >
