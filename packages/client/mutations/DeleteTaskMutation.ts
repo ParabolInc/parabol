@@ -15,7 +15,7 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation DeleteTaskMutation($taskId: ID!) {
+  mutation DeleteTaskMutation($taskId: ID!) @raw_response_type {
     deleteTask(taskId: $taskId) {
       error {
         message
