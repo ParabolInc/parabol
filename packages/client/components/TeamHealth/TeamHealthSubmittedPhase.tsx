@@ -24,6 +24,7 @@ const TeamHealthSubmittedPhase = (props: Props) => {
         id
         facilitatorUserId
         respondentCount
+        respondentUserIds
         meetingSeries {
           ownerUserId
         }
@@ -70,6 +71,7 @@ const TeamHealthSubmittedPhase = (props: Props) => {
     id: meetingId,
     facilitatorUserId,
     respondentCount,
+    respondentUserIds,
     meetingSeries,
     team,
     meetingMembers,
@@ -182,6 +184,7 @@ const TeamHealthSubmittedPhase = (props: Props) => {
         <TeamHealthProgress
           className='mt-8'
           respondentCount={respondentCount}
+          respondentUserIds={respondentUserIds}
           respondents={respondents}
         />
         <div className='mt-8 flex flex-col items-center gap-3'>

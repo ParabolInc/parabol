@@ -11,6 +11,7 @@ graphql`
     meeting {
       id
       respondentCount
+      respondentUserIds
     }
     stage {
       id

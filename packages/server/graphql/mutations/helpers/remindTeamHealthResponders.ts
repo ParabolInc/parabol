@@ -1,4 +1,5 @@
 import ms from 'ms'
+import {isNotNull} from '../../../../client/utils/predicates'
 import {getNewDataLoader} from '../../../dataloader/getNewDataLoader'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
@@ -7,6 +8,7 @@ import type {TeamHealthResponsePhase} from '../../../postgres/types/NewMeetingPh
 import publishNotification from '../../public/mutations/helpers/publishNotification'
 import getTeamHealthStragglers from './getTeamHealthStragglers'
 import {IntegrationNotifier} from './notifications/IntegrationNotifier'
+import {isAnonymousRespondentCount} from './teamHealthAnonymity'
 
 const REMINDER_LEAD = ms('24h')
 const MIN_OPEN_BEFORE_REMINDER = ms('1h')
@@ -86,9 +88,14 @@ const remindTeamHealthResponders = async (mutatorId?: string) => {
           notification.userId
         )
       })
+      const userById = new Map(users.map((user, idx) => [teamMembers[idx]!.userId, user]))
+      const stragglerNames = isAnonymousRespondentCount(respondentCount)
+        ? stragglerUserIds.map((userId) => userById.get(userId)?.preferredName).filter(isNotNull)
+        : []
       IntegrationNotifier.teamHealthResponseReminder(dataLoader, meetingId, teamId, {
         respondentCount,
-        eligibleCount: eligibleUserIds.length
+        eligibleCount: eligibleUserIds.length,
+        stragglerNames
       })
       return true
     } finally {
