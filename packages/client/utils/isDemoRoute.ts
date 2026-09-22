@@ -1,8 +1,6 @@
-import {TeamHealthDemo} from '../modules/demo/teamHealthDemoIds'
+import isTeamHealthDemoRoute from './isTeamHealthDemoRoute'
 
-const isDemoRoute = () => {
-  const {pathname} = window.location
-  return pathname.startsWith('/retrospective-demo') || pathname.startsWith(TeamHealthDemo.ROUTE)
-}
+const isDemoRoute = () =>
+  window.location.pathname.startsWith('/retrospective-demo') || isTeamHealthDemoRoute()
 
 export default isDemoRoute

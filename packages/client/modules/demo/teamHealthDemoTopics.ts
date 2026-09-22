@@ -7,6 +7,14 @@ interface DemoThreadComment {
   replies?: {author: DemoTeammateKey; text: string}[]
 }
 
+export interface DemoSeedTask {
+  author: DemoTeammateKey
+  assignee: DemoTeammateKey
+  text: string
+  status: 'active' | 'done' | 'future' | 'stuck'
+  jiraIssueKey?: string
+}
+
 export interface DemoTopic {
   id: string
   name: string
@@ -18,6 +26,7 @@ export interface DemoTopic {
   viewerComment: string | null
   paraphrasedComments: {author: DemoTeammateKey | null; text: string}[]
   thread: DemoThreadComment[]
+  tasks?: DemoSeedTask[]
 }
 
 export const demoTopics: DemoTopic[] = [
@@ -99,6 +108,15 @@ export const demoTopics: DemoTopic[] = [
         reactjis: [{emoji: '+1', from: ['ingrid', 'noor', 'kwame']}],
         replies: [{author: 'priya', text: 'I can own that. Starting this sprint.'}]
       }
+    ],
+    tasks: [
+      {
+        author: 'priya',
+        assignee: 'priya',
+        text: 'Post a note in #orbit-squad whenever sprint priorities change',
+        status: 'active',
+        jiraIssueKey: 'ORB-142'
+      }
     ]
   },
   {
@@ -152,6 +170,14 @@ export const demoTopics: DemoTopic[] = [
           {emoji: '+1', from: ['viewer', 'tomas', 'kwame', 'noor']},
           {emoji: 'rocket', from: ['priya']}
         ]
+      }
+    ],
+    tasks: [
+      {
+        author: 'ingrid',
+        assignee: 'ingrid',
+        text: 'Add a five-minute "what happened next" slot to the sprint review agenda',
+        status: 'active'
       }
     ]
   }

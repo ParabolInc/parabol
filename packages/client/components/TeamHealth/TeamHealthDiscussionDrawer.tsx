@@ -1,11 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useContext} from 'react'
 import {useFragment} from 'react-relay'
 import type {TeamHealthDiscussionDrawer_meeting$key} from '~/__generated__/TeamHealthDiscussionDrawer_meeting.graphql'
 import {DiscussionThreadEnum} from '../../types/constEnums'
 import DiscussionDrawer from '../DiscussionDrawer'
 import type {DiscussionThreadables} from '../DiscussionThreadList'
-import ReadOnlyMeetingContext from '../ReadOnlyMeetingContext'
 import ResponsiveDashSidebar from '../ResponsiveDashSidebar'
 
 interface Props {
@@ -31,8 +29,7 @@ const TeamHealthDiscussionDrawer = (props: Props) => {
     meetingRef
   )
   const {id: meetingId, rightDrawerOpen} = meeting
-  const isReadOnly = useContext(ReadOnlyMeetingContext)
-  const allowedThreadables: DiscussionThreadables[] = isReadOnly ? [] : ['comment', 'task', 'poll']
+  const allowedThreadables: DiscussionThreadables[] = ['comment', 'task', 'poll']
   return (
     <ResponsiveDashSidebar
       isOpen={rightDrawerOpen != null}

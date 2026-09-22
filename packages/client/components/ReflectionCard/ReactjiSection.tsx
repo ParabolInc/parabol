@@ -9,7 +9,7 @@ import ReactjiCountWrapper from './ReactjiCountWrapper'
 
 interface Props {
   className?: string
-  onToggle?: (emojiId: string) => void
+  onToggle: (emojiId: string) => void
   reactjis: ReactjiSection_reactjis$key
 }
 
@@ -34,9 +34,7 @@ const ReactjiSection = (props: Props) => {
           <ReactjiCountWrapper key={reactji.id} reactjiRef={reactji} onToggle={onToggle} />
         ))}
       </AnimatePresence>
-      {onToggle && reactjis.length <= Threshold.MAX_REACTJIS - 1 && (
-        <AddReactjiButton onToggle={onToggle} />
-      )}
+      {reactjis.length <= Threshold.MAX_REACTJIS - 1 && <AddReactjiButton onToggle={onToggle} />}
     </div>
   )
 }

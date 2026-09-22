@@ -13,7 +13,7 @@ import EmojiUsersReaction from './EmojiUsersReaction'
 
 interface Props {
   reactjiRef: ReactjiCount_reactji$key
-  onToggle?: (emojiId: string) => void
+  onToggle: (emojiId: string) => void
 }
 
 const ReactjiCount = (props: Props) => {
@@ -36,7 +36,9 @@ const ReactjiCount = (props: Props) => {
   const name = reactjiObj.name
 
   const {native, reactjiName} = getReactji(name)
-  const onClick = onToggle && (() => onToggle(name))
+  const onClick = () => {
+    onToggle(name)
+  }
 
   return (
     <Tooltip delayDuration={Times.SHOW_REACTJI_USERS_DELAY}>
@@ -44,8 +46,7 @@ const ReactjiCount = (props: Props) => {
         <PlainButton
           className={cn(
             'flex h-6 w-max items-center rounded-md bg-surface-well px-1.5 leading-6',
-            isViewerReactji ? 'text-accent' : 'text-fg-primary',
-            !onToggle && 'cursor-default'
+            isViewerReactji ? 'text-accent' : 'text-fg-primary'
           )}
           onClick={onClick}
         >

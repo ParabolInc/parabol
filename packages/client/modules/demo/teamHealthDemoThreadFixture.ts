@@ -9,6 +9,7 @@ import type {
 } from './teamHealthDemoFixtureTypes'
 import {TeamHealthDemo} from './teamHealthDemoIds'
 import {getDemoDiscussionId} from './teamHealthDemoMeetingFixture'
+import {createSeedTasks} from './teamHealthDemoTaskFixture'
 import {
   type DemoTeammate,
   type DemoTeammateKey,
@@ -47,13 +48,13 @@ const createDiscussion = (topic: DemoTopic): DemoDiscussion => {
     startedAt.add(commentCount++ * MINUTES_BETWEEN_COMMENTS, 'minute').toISOString()
 
   const comments = topic.thread.map((threadComment, commentIdx): DemoComment => {
-    const commentId = `${discussionId}:comment${commentIdx}`
+    const commentId = `${discussionId}_comment${commentIdx}`
     const updatedAt = nextTimestamp()
     const replies = (threadComment.replies ?? []).map(
       (reply, replyIdx): DemoReply => ({
         __typename: 'Comment',
         __isThreadable: 'Comment',
-        id: `${commentId}:reply${replyIdx}`,
+        id: `${commentId}_reply${replyIdx}`,
         content: toContent(reply.text),
         createdByUserNullable: toUser(demoTeammateLookup[reply.author]),
         isActive: true,
@@ -80,6 +81,13 @@ const createDiscussion = (topic: DemoTopic): DemoDiscussion => {
     }
   })
 
+  const tasks = createSeedTasks(
+    topic,
+    discussionId,
+    comments.length,
+    startedAt.add(commentCount * MINUTES_BETWEEN_COMMENTS, 'minute')
+  )
+  const nodes = [...comments, ...tasks]
   return {
     id: discussionId,
     discussionTopicId: `teamHealthDemoQuestion:${topic.id}`,
@@ -88,8 +96,8 @@ const createDiscussion = (topic: DemoTopic): DemoDiscussion => {
     team: {id: TEAM_ID},
     commentors: [],
     thread: {
-      edges: comments.map((node) => ({cursor: node.id, node})),
-      pageInfo: {endCursor: comments.at(-1)?.id ?? null, hasNextPage: false}
+      edges: nodes.map((node) => ({cursor: node.id, node})),
+      pageInfo: {endCursor: nodes.at(-1)?.id ?? null, hasNextPage: false}
     }
   }
 }

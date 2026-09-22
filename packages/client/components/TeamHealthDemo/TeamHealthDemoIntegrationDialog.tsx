@@ -6,33 +6,36 @@ import {DialogContent} from '../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
 import {TEAM_HEALTH_DETAILS_URL} from './teamHealthDetailsUrl'
 
-export type TranscriptionProvider = 'Google Meet' | 'Zoom'
-
-const BENEFITS = [
+export const TRANSCRIPTION_BENEFITS = [
   'The transcript of your call is imported automatically once the meeting ends',
   'It lands on the meeting summary, next to the scores and the discussion',
   'Nobody has to take notes, so the whole team can stay in the conversation'
 ]
 
+export const TASK_INTEGRATION_BENEFITS = [
+  'Push a task to Jira, GitHub, GitLab, Linear or Azure DevOps without leaving the meeting',
+  'The issue keeps its link back to the discussion that created it',
+  'Status changes sync, so the team sees the outcome at the next check'
+]
+
 interface Props {
-  provider: TranscriptionProvider | null
+  isOpen: boolean
   onClose: () => void
+  title: string
+  intro: string
+  benefits: string[]
 }
 
-const TranscriptionPreviewDialog = (props: Props) => {
-  const {provider, onClose} = props
+// the demo has no account behind it, so the integration entry points open this instead of OAuth
+const TeamHealthDemoIntegrationDialog = (props: Props) => {
+  const {isOpen, onClose, title, intro, benefits} = props
   return (
-    <Dialog isOpen={!!provider} onClose={onClose}>
+    <Dialog isOpen={isOpen} onClose={onClose}>
       <DialogContent className='max-w-md'>
-        <DialogTitle className='font-bold text-fg-primary text-xl'>
-          Connect {provider} on a real team
-        </DialogTitle>
-        <p className='mt-2 mb-0 text-fg-secondary text-sm leading-5'>
-          This is a sample meeting, so there is no account to connect. On your own team, connecting{' '}
-          {provider} gets you:
-        </p>
+        <DialogTitle className='font-bold text-fg-primary text-xl'>{title}</DialogTitle>
+        <p className='mt-2 mb-0 text-fg-secondary text-sm leading-5'>{intro}</p>
         <ul className='m-0 mt-4 flex list-none flex-col gap-3 p-0'>
-          {BENEFITS.map((benefit) => (
+          {benefits.map((benefit) => (
             <li
               key={benefit}
               className='flex items-start gap-2.5 text-fg-primary text-sm leading-5'
@@ -53,4 +56,4 @@ const TranscriptionPreviewDialog = (props: Props) => {
   )
 }
 
-export default TranscriptionPreviewDialog
+export default TeamHealthDemoIntegrationDialog

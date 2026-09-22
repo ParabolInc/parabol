@@ -29,7 +29,7 @@ const SORT_STEP = 1000
 // the one seam for personalizing the demo: pass a real team name here once there is one to pass
 export const DEFAULT_DEMO_TEAM_NAME = 'Orbit Squad'
 
-export const getDemoDiscussionId = (topic: DemoTopic) => `teamHealthDemoDiscussion:${topic.id}`
+export const getDemoDiscussionId = (topic: DemoTopic) => `teamHealthDemoDiscussion_${topic.id}`
 
 const toUser = ({id, picture, preferredName}: DemoTeammate) => ({id, picture, preferredName})
 

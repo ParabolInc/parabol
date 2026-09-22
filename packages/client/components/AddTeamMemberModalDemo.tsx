@@ -1,9 +1,9 @@
 import modalTeamInvitePng from '../../../static/images/illustrations/illus-modal-team-invite.png'
-import {TeamHealthDemo} from '../modules/demo/teamHealthDemoIds'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
 import hasToken from '../utils/hasToken'
+import isTeamHealthDemoRoute from '../utils/isTeamHealthDemoRoute'
 import DemoCreateAccountPrimaryButton from './DemoCreateAccountPrimaryButton'
 
 interface Props {
@@ -13,9 +13,7 @@ interface Props {
 
 const AddTeamMemberModalDemo = (props: Props) => {
   const {isOpen, onClose} = props
-  const activity = window.location.pathname.startsWith(TeamHealthDemo.ROUTE)
-    ? 'Team Health check'
-    : 'Retro'
+  const activity = isTeamHealthDemoRoute() ? 'Team Health check' : 'Retro'
   const copy = hasToken()
     ? `Invite your teammates to a team and kick off a real ${activity}!`
     : `Sign up, invite your teammates, and kick off a real ${activity}!`

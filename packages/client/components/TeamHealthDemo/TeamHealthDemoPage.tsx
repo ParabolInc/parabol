@@ -1,7 +1,6 @@
 import {Suspense} from 'react'
 import useMetaTagContent from '../../hooks/useMetaTagContent'
 import AtmosphereProvider from '../AtmosphereProvider/AtmosphereProvider'
-import ReadOnlyMeetingContext from '../ReadOnlyMeetingContext'
 import TeamHealthDemoBanner from './TeamHealthDemoBanner'
 import TeamHealthDemoRoot from './TeamHealthDemoRoot'
 
@@ -18,16 +17,14 @@ const TeamHealthDemoPage = () => {
   useMetaTagContent(CONTENT)
   return (
     <AtmosphereProvider getLocalAtmosphere={getTeamHealthDemoAtmosphere}>
-      <ReadOnlyMeetingContext.Provider value={true}>
-        <div className='flex h-full flex-col'>
-          <TeamHealthDemoBanner />
-          <div className='min-h-0 flex-1'>
-            <Suspense fallback={''}>
-              <TeamHealthDemoRoot />
-            </Suspense>
-          </div>
+      <div className='flex h-full flex-col'>
+        <TeamHealthDemoBanner />
+        <div className='min-h-0 flex-1'>
+          <Suspense fallback={''}>
+            <TeamHealthDemoRoot />
+          </Suspense>
         </div>
-      </ReadOnlyMeetingContext.Provider>
+      </div>
     </AtmosphereProvider>
   )
 }

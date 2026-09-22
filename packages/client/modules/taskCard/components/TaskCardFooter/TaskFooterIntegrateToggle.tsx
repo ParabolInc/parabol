@@ -8,7 +8,9 @@ import type {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import type {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 import {Menu} from '../../../../ui/Menu/Menu'
 import {MenuContent} from '../../../../ui/Menu/MenuContent'
+import isTeamHealthDemoRoute from '../../../../utils/isTeamHealthDemoRoute'
 import lazyPreload from '../../../../utils/lazyPreload'
+import TaskFooterIntegrateDemoToggle from './TaskFooterIntegrateDemoToggle'
 
 const TaskFooterIntegrateMenuRoot = lazyPreload(
   () =>
@@ -25,6 +27,7 @@ interface Props {
 
 const TaskFooterIntegrateToggle = (props: Props) => {
   const {mutationProps, task, useTaskChild} = props
+  if (isTeamHealthDemoRoute()) return <TaskFooterIntegrateDemoToggle />
   return (
     <Tooltip>
       <Menu

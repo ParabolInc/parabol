@@ -1,3 +1,4 @@
+import type {CreateTaskMutation$rawResponse} from '~/__generated__/CreateTaskMutation.graphql'
 import type {DiscussionThreadQuery$rawResponse} from '~/__generated__/DiscussionThreadQuery.graphql'
 import type {TeamHealthDemoRootQuery$rawResponse} from '~/__generated__/TeamHealthDemoRootQuery.graphql'
 
@@ -38,6 +39,28 @@ export type DemoTeamMember = DemoMeeting['team']['teamMembers'][number]
 
 export type TeamHealthDemoThreadResponse = Complete<DiscussionThreadQuery$rawResponse>
 export type DemoDiscussion = NonNullable<TeamHealthDemoThreadResponse['viewer']['discussion']>
-export type DemoComment = OfType<DemoDiscussion['thread']['edges'][number]['node'], 'Comment'>
+export type DemoThreadable = DemoDiscussion['thread']['edges'][number]['node']
+export type DemoComment = OfType<DemoThreadable, 'Comment'>
 export type DemoReply = OfType<DemoComment['replies'][number], 'Comment'>
 export type DemoReactji = DemoComment['reactjis'][number]
+
+// a task has to satisfy both the thread query and the createTask payload, which select slightly
+// different fields, so the demo's task type is the intersection of the two
+type CreateTaskResponse = Complete<CreateTaskMutation$rawResponse>
+type CreatedTaskUnion = NonNullable<NonNullable<CreateTaskResponse['createTask']>['task']>
+type ThreadTask = OfType<DemoThreadable, 'Task'>
+type CreatedTask = Extract<OfType<CreatedTaskUnion, 'Task'>, {readonly integrationHash: unknown}>
+export type DemoTask = ThreadTask & CreatedTask
+export type DemoJiraIssue = OfType<NonNullable<ThreadTask['integration']>, 'JiraIssue'> &
+  OfType<NonNullable<CreatedTask['integration']>, 'JiraIssue'>
+
+// the unions end in a `{__typename: string}` member, so a plain __typename check cannot narrow them
+export const isDemoMeeting = (meeting: DemoMeetingUnion): meeting is DemoMeeting =>
+  meeting.__typename === 'TeamHealthMeeting'
+export const isDemoResultStage = (stage: DemoPhase['stages'][number]): stage is DemoResultStage =>
+  stage.__typename === 'TeamHealthResultStage'
+export const isDemoComment = (node: DemoThreadable): node is DemoComment =>
+  node.__typename === 'Comment'
+export const isDemoTask = (node: DemoThreadable): node is DemoTask => node.__typename === 'Task'
+export const isDemoReply = (reply: DemoComment['replies'][number]): reply is DemoReply =>
+  reply.__typename === 'Comment'

@@ -18,7 +18,6 @@ interface Props {
   onToggleReactji: (emojiId: string) => void
   onReply: () => void
   meetingId: string
-  isReadOnly: boolean
 }
 
 const getName = (comment: ThreadedCommentHeader_comment$data) => {
@@ -29,7 +28,7 @@ const getName = (comment: ThreadedCommentHeader_comment$data) => {
 }
 
 const ThreadedCommentHeader = (props: Props) => {
-  const {comment: commentRef, onReply, editComment, onToggleReactji, meetingId, isReadOnly} = props
+  const {comment: commentRef, onReply, editComment, onToggleReactji, meetingId} = props
   const comment = useFragment(
     graphql`
       fragment ThreadedCommentHeader_comment on Comment {
@@ -62,7 +61,7 @@ const ThreadedCommentHeader = (props: Props) => {
   const isEditable = isViewerComment || isAIComment
   return (
     <ThreadedItemHeaderDescription title={name} subTitle={relativeDate(updatedAt)}>
-      {isActive && !isReadOnly && (
+      {isActive && (
         <div className={cn('flex font-semibold text-fg-secondary', isEditable ? 'pr-2' : 'pr-8')}>
           {!hasReactjis && (
             <>
