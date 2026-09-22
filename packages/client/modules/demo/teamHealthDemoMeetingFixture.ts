@@ -39,7 +39,14 @@ const getScore = (topic: DemoTopic) =>
   roundToTenth(topic.answers.reduce((sum, answer) => sum + answer, 0) / topic.answers.length)
 
 const emptyNotificationIntegration = {isActive: false, teamNotificationSettings: null}
-const emptyVideoIntegration = {isActive: false, cloudProvider: null}
+// the rows only render with a provider, and the demo swaps their OAuth click for a preview dialog
+const createVideoIntegration = (service: string) => ({
+  isActive: false,
+  cloudProvider: {
+    id: `teamHealthDemo${service}Provider`,
+    clientId: `teamHealthDemo${service}Client`
+  }
+})
 
 const createResponseStage = (topic: DemoTopic): DemoResponseStage => ({
   __typename: 'TeamHealthResponseStage',
@@ -187,8 +194,8 @@ export const createTeamHealthDemoMeetingResponse = (
         id: TeamMemberId.join(TEAM_ID, demoViewer.id),
         integrations: {
           id: `teamHealthDemoIntegrations:${demoViewer.id}`,
-          gmeet: emptyVideoIntegration,
-          zoom: emptyVideoIntegration
+          gmeet: createVideoIntegration('Gmeet'),
+          zoom: createVideoIntegration('Zoom')
         }
       }
     },
