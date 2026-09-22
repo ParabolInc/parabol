@@ -577,7 +577,7 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
   async teamHealthResponseReminder(meeting, team, user, progress) {
     const {scheduledEndTime} = meeting
     if (!scheduledEndTime) return 'success'
-    const {respondentCount, eligibleCount} = progress
+    const {respondentCount, eligibleCount, stragglerNames} = progress
     const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}/respond`, {
       searchParams: {
         utm_source: 'slack team health reminder',
@@ -592,6 +592,9 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
         createTeamSectionContent(team),
         `*Responses:*\n${respondentCount} of ${eligibleCount} teammates`
       ]),
+      ...(stragglerNames.length > 0
+        ? [makeSection(`*Still waiting on:*\n${stragglerNames.join(', ')}`)]
+        : []),
       makeTeamHealthRespondButton(meetingUrl)
     ]
     const res = await notifySlack(notificationChannel, 'meetingStart', team.id, user, blocks, title)

@@ -162,6 +162,7 @@ export const createTeamHealthDemoMeetingResponse = (
     locked: false,
     currentStreak: 5,
     respondentCount: demoTeammates.length,
+    respondentUserIds: demoTeammates.map((teammate) => teammate.id),
     scheduledEndTime: null,
     summaryPageId: null,
     meetingSeriesId: null,
