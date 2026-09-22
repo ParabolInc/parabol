@@ -25,6 +25,7 @@ const TeamHealthIntroPhase = (props: Props) => {
         id
         name
         respondentCount
+        respondentUserIds
         currentStreak
         meetingSeriesId
         scheduledEndTime
@@ -66,6 +67,7 @@ const TeamHealthIntroPhase = (props: Props) => {
   const {
     id: meetingId,
     respondentCount,
+    respondentUserIds,
     currentStreak,
     meetingSeriesId,
     scheduledEndTime,
@@ -126,6 +128,7 @@ const TeamHealthIntroPhase = (props: Props) => {
         <TeamHealthProgress
           className='mt-8'
           respondentCount={respondentCount}
+          respondentUserIds={respondentUserIds}
           respondents={respondents}
         />
         <Button

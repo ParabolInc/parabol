@@ -25,10 +25,16 @@ type TeamHealthMeeting implements NewMeeting {
   responses: [TeamHealthResponse!]!
 
   """
-  The number of distinct members who have submitted at least one response. A bare count only,
-  never the member ids, so a lone response cannot be attributed to a person
+  The number of distinct members who have submitted at least one response
   """
   respondentCount: Int!
+
+  """
+  The users who have submitted at least one response, so the team can chase the stragglers.
+  Empty until more than 3 members have responded, so a small response set cannot be attributed
+  to a person. Who answered is public; what they answered stays hidden until the results reveal
+  """
+  respondentUserIds: [ID!]!
 
   """
   true once the viewer has answered every question in the response phase. A skipped question

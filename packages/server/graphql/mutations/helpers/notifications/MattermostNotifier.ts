@@ -414,7 +414,7 @@ const MattermostNotificationHelper: NotificationIntegrationHelper<MattermostNoti
   async teamHealthResponseReminder(meeting, team, user, progress) {
     const {scheduledEndTime} = meeting
     if (!scheduledEndTime) return 'success'
-    const {respondentCount, eligibleCount} = progress
+    const {respondentCount, eligibleCount, stragglerNames} = progress
     const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}/respond`, {
       searchParams: {
         utm_source: 'mattermost team health reminder',
@@ -436,6 +436,9 @@ const MattermostNotificationHelper: NotificationIntegrationHelper<MattermostNoti
             title: 'Responses',
             value: `${respondentCount} of ${eligibleCount} teammates`
           },
+          ...(stragglerNames.length > 0
+            ? [{short: false, title: 'Still waiting on', value: stragglerNames.join(', ')}]
+            : []),
           makeTeamHealthRespondField(meetingUrl)
         ],
         {

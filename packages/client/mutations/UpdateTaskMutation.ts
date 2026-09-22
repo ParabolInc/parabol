@@ -45,7 +45,7 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation UpdateTaskMutation($updatedTask: UpdateTaskInput!, $area: AreaEnum) {
+  mutation UpdateTaskMutation($updatedTask: UpdateTaskInput!, $area: AreaEnum) @raw_response_type {
     updateTask(updatedTask: $updatedTask, area: $area) {
       error {
         message

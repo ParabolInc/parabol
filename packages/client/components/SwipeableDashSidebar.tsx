@@ -1,5 +1,5 @@
 import type * as React from 'react'
-import {type ReactNode, useCallback, useEffect, useState} from 'react'
+import {type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 import {createPortal} from 'react-dom'
 import useEventCallback from '~/hooks/useEventCallback'
 import {NavSidebar} from '../types/constEnums'
@@ -71,6 +71,7 @@ interface Props {
 const SwipeableDashSidebar = (props: Props) => {
   const {children, isOpen, isRightDrawer = false, onToggle, sidebarWidth} = props
   const [x, setX] = useState(0)
+  const appliedIsOpenRef = useRef(false)
   const SIDEBAR_WIDTH: number = sidebarWidth || NavSidebar.WIDTH
   const HYSTERESIS_THRESH = HYSTERESIS * SIDEBAR_WIDTH
 
@@ -93,7 +94,11 @@ const SwipeableDashSidebar = (props: Props) => {
   }, [])
 
   useEffect(() => {
-    if (isOpen !== swipe.isOpen) {
+    // swipe is shared by every sidebar on the page, so a meeting with both a left sidebar and a
+    // right drawer has to track what this instance last applied, or one skips the other's hide.
+    // A gesture then starts from this instance's state, see onMouseDown
+    if (isOpen !== appliedIsOpenRef.current) {
+      appliedIsOpenRef.current = isOpen
       swipe.isOpen = isOpen
       isOpen ? showSidebar() : hideSidebar()
     }
@@ -155,6 +160,7 @@ const SwipeableDashSidebar = (props: Props) => {
   const onMouseDown = useEventCallback((e: React.MouseEvent | React.TouchEvent) => {
     if (swipe.downCaptured) return
     if (x !== 0 && x !== SIDEBAR_WIDTH) return
+    swipe.isOpen = appliedIsOpenRef.current
     const isTouchStart = e.type === 'touchstart'
     let event: {clientX: number; clientY: number}
     if (isTouchStart) {

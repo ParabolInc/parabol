@@ -39,10 +39,7 @@ jobs:
 
       - name: Install node_modules
         if: steps.cache.outputs.cache-hit != 'true'
-        # pnpm has a bug that resolves git+https to ssh
-        run: |
-          git config --global url."https://github.com/enahum/redux-offline.git".insteadOf git@github.com:enahum/redux-offline.git
-          pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Check Code Quality
         run: pnpm exec biome ci

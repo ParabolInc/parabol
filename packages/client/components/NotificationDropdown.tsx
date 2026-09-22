@@ -66,7 +66,7 @@ const NotificationDropdown = (props: Props) => {
       align='end'
       sideOffset={4}
       aria-label='Select a notification'
-      className='max-h-96 w-100 max-w-[calc(100vw-16px)]'
+      className='max-h-96 w-100 max-w-[calc(100vw-16px)] py-0'
     >
       {!hasNotifications && (
         <div className='flex h-14 w-full items-center justify-center px-4 font-semibold text-base'>

@@ -21,7 +21,7 @@ interface Props {
 }
 
 const gqlQuery = graphql`
-  query TaskFooterUserAssigneeMenuQuery($teamId: ID!) {
+  query TaskFooterUserAssigneeMenuQuery($teamId: ID!) @raw_response_type {
     viewer {
       id
       team(teamId: $teamId) {

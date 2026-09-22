@@ -17,6 +17,9 @@ const AuthenticationPage = lazy(
   () => import(/* webpackChunkName: 'AuthenticationPage' */ '../AuthenticationPage')
 )
 const DemoMeeting = lazy(() => import(/* webpackChunkName: 'DemoMeeting' */ '../DemoMeeting'))
+const TeamHealthDemoPage = lazy(
+  () => import(/* webpackChunkName: 'TeamHealthDemoPage' */ '../TeamHealthDemo/TeamHealthDemoPage')
+)
 const DemoSummary = lazy(() => import(/* webpackChunkName: 'DemoSummary' */ '../DemoSummary'))
 const AuthProvider = lazy(() => import(/* webpackChunkName: 'AuthProvider' */ '../AuthProvider'))
 const SAMLRedirect = lazy(() => import(/* webpackChunkName: 'SAMLRedirect' */ '../SAMLRedirect'))
@@ -74,6 +77,7 @@ const Action = memo(() => {
               <Route path='/auth/:provider' element={<AuthProvider />} />
               <Route path='/saml-redirect' element={<SAMLRedirect />} />
               <Route path='/retrospective-demo/*' element={<DemoMeeting />} />
+              <Route path='/team-health-demo/*' element={<TeamHealthDemoPage />} />
               <Route path='/retrospective-demo-summary/:urlAction' element={<DemoSummary />} />
               <Route path='/retrospective-demo-summary' element={<DemoSummary />} />
               {isInternalAuthEnabled && (

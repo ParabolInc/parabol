@@ -106,7 +106,7 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation CreateTaskMutation($newTask: CreateTaskInput!) {
+  mutation CreateTaskMutation($newTask: CreateTaskInput!) @raw_response_type {
     createTask(newTask: $newTask) {
       error {
         message

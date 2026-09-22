@@ -20,7 +20,7 @@ const FacilitatorMenu = (props: Props) => {
     meetingRef
   )
   return (
-    <MenuContent align='end' className='max-h-[none] overflow-y-visible'>
+    <MenuContent align='end' className='max-h-[none] overflow-y-visible py-0'>
       <FacilitatorRotationPanel meeting={meeting} onDone={onClose} />
     </MenuContent>
   )

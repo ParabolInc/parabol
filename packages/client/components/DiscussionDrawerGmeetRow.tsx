@@ -15,9 +15,11 @@ import GoogleMeetProviderLogo from './GoogleMeetProviderLogo'
 interface Props {
   gmeetRef: DiscussionDrawerGmeetRow_gmeet$key
   teamId: string
+  // replaces the OAuth flow, e.g. a demo that has no account to connect
+  onConnect?: () => void
 }
 
-const DiscussionDrawerGmeetRow = ({gmeetRef, teamId}: Props) => {
+const DiscussionDrawerGmeetRow = ({gmeetRef, teamId, onConnect}: Props) => {
   const gmeet = useFragment(
     graphql`
       fragment DiscussionDrawerGmeetRow_gmeet on GmeetIntegration {
@@ -41,6 +43,7 @@ const DiscussionDrawerGmeetRow = ({gmeetRef, teamId}: Props) => {
   const isConnected = gmeet.isActive
 
   const handleConnect = () => {
+    if (onConnect) return onConnect()
     if (submitting) return
     GmeetClientManager.openOAuth(
       atmosphere,
