@@ -11,4 +11,4 @@
  * Effort is the cost knob too, since AIRequest.tokenCost bills reasoning tokens against the
  * caller's 500k monthly quota.
  */
-export const AI_MODEL = 'gpt-5.6-luna'
+export const AI_MODEL = 'gpt-6-luna'
