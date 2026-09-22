@@ -3,6 +3,7 @@ import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {TeamHealthSubmittedPhase_meeting$key} from '~/__generated__/TeamHealthSubmittedPhase_meeting.graphql'
 import {CheckCircle, Schedule} from '~/ui/icons'
+import useAtmosphere from '../../hooks/useAtmosphere'
 import useEndTeamHealthMutation from '../../mutations/useEndTeamHealthMutation'
 import {Button} from '../../ui/Button/Button'
 import {isNotNull} from '../../utils/predicates'
@@ -21,7 +22,12 @@ const TeamHealthSubmittedPhase = (props: Props) => {
     graphql`
       fragment TeamHealthSubmittedPhase_meeting on TeamHealthMeeting {
         id
+        facilitatorUserId
         respondentCount
+        respondentUserIds
+        meetingSeries {
+          ownerUserId
+        }
         team {
           teamMembers {
             userId
@@ -40,7 +46,7 @@ const TeamHealthSubmittedPhase = (props: Props) => {
         }
         viewerMeetingMember {
           teamMember {
-            isLead
+            isOrgAdmin
           }
           ... on TeamHealthMeetingMember {
             isSpectating
@@ -63,16 +69,25 @@ const TeamHealthSubmittedPhase = (props: Props) => {
   )
   const {
     id: meetingId,
+    facilitatorUserId,
     respondentCount,
+    respondentUserIds,
+    meetingSeries,
     team,
     meetingMembers,
     viewerMeetingMember,
     phases
   } = meeting
+  const atmosphere = useAtmosphere()
   const [endTeamHealth, revealing] = useEndTeamHealthMutation()
   const [isConfirmingReveal, setIsConfirmingReveal] = useState(false)
-  // the team lead collects the team's data, so the reveal is theirs to call
-  const isLead = !!viewerMeetingMember?.teamMember.isLead
+  const {viewerId} = atmosphere
+  // the facilitator started the check-in and is never reassigned; an org admin or the owner who
+  // scheduled the series may also call the reveal, so nobody is stuck waiting on one person
+  const isFacilitator = facilitatorUserId === viewerId
+  const isOrgAdmin = !!viewerMeetingMember?.teamMember.isOrgAdmin
+  const isSeriesOwner = !!meetingSeries?.ownerUserId && meetingSeries.ownerUserId === viewerId
+  const canReveal = isFacilitator || isOrgAdmin || isSeriesOwner
   const isSpectating = !!viewerMeetingMember?.isSpectating
   const respondents = getTeamHealthRespondents(team.teamMembers, meetingMembers).map(
     (teamMember) => ({
@@ -169,6 +184,7 @@ const TeamHealthSubmittedPhase = (props: Props) => {
         <TeamHealthProgress
           className='mt-8'
           respondentCount={respondentCount}
+          respondentUserIds={respondentUserIds}
           respondents={respondents}
         />
         <div className='mt-8 flex flex-col items-center gap-3'>
@@ -184,7 +200,7 @@ const TeamHealthSubmittedPhase = (props: Props) => {
                 : `Answer the last ${unansweredCount === 1 ? 'question' : `${unansweredCount} questions`}`}
             </Button>
           )}
-          {isLead && (
+          {canReveal && (
             <Button
               variant={isMissingAnswers ? 'outline' : 'primary'}
               shape='default'

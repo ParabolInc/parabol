@@ -4,6 +4,7 @@ import {useFragment} from 'react-relay'
 import {getLinearRepoName} from '~/utils/getLinearRepoName'
 import {parseWebPath} from '~/utils/parseWebPath'
 import type {TaskIntegrationLink_integration$key} from '../__generated__/TaskIntegrationLink_integration.graphql'
+import {DemoIntegration} from '../types/constEnums'
 import {cn} from '../ui/cn'
 import JiraIssueLink from './JiraIssueLink'
 
@@ -71,8 +72,8 @@ const TaskIntegrationLink = (props: Props) => {
     const {repository, number} = github
     const {nameWithOwner} = repository
     const href =
-      nameWithOwner === 'ParabolInc/ParabolDemo'
-        ? 'https://github.com/ParabolInc/parabol'
+      nameWithOwner === DemoIntegration.GITHUB_REPO
+        ? DemoIntegration.GITHUB_ISSUE_URL
         : `https://www.github.com/${nameWithOwner}/issues/${number}`
     return (
       <a

@@ -61,7 +61,7 @@ const TeamPickerMenuContent = forwardRef<HTMLDivElement, Props>((props, ref) => 
       ref={ref}
       align={align}
       sideOffset={4}
-      className='z-50 flex max-h-80 w-88 flex-col overflow-hidden'
+      className='z-50 flex max-h-80 w-88 flex-col overflow-hidden py-0'
     >
       {header && <DropdownMenuLabel className='mb-0 shrink-0'>{header}</DropdownMenuLabel>}
       {children && <div className='shrink-0'>{children}</div>}

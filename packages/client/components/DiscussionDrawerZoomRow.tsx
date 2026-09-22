@@ -15,9 +15,11 @@ import {ZoomSVG} from './ZoomSVG'
 interface Props {
   zoomRef: DiscussionDrawerZoomRow_zoom$key
   teamId: string
+  // replaces the OAuth flow, e.g. a demo that has no account to connect
+  onConnect?: () => void
 }
 
-const DiscussionDrawerZoomRow = ({zoomRef, teamId}: Props) => {
+const DiscussionDrawerZoomRow = ({zoomRef, teamId, onConnect}: Props) => {
   const zoom = useFragment(
     graphql`
       fragment DiscussionDrawerZoomRow_zoom on ZoomIntegration {
@@ -39,6 +41,7 @@ const DiscussionDrawerZoomRow = ({zoomRef, teamId}: Props) => {
   if (!cloudProvider) return null
 
   const handleConnect = () => {
+    if (onConnect) return onConnect()
     if (submitting) return
     ZoomClientManager.openOAuth(
       atmosphere,

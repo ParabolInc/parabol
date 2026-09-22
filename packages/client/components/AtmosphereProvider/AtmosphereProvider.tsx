@@ -1,17 +1,17 @@
 import {type ReactNode, useEffect, useState} from 'react'
 import {RelayEnvironmentProvider} from 'react-relay'
+import type {Environment} from 'relay-runtime'
 import Atmosphere from '../../Atmosphere'
-import type TLocalAtmosphere from '../../modules/demo/LocalAtmosphere'
 
 interface Props {
   children: ReactNode
-  // LocalAtmosphere has a bunch of junk we don't want to SSR, so we have client-only files pass it in
-  getLocalAtmosphere?: () => Promise<{default: {new (): TLocalAtmosphere}}>
+  // a demo atmosphere has a bunch of junk we don't want to SSR, so we have client-only files pass it in
+  getLocalAtmosphere?: () => Promise<{default: {new (): Environment}}>
 }
 
 const AtmosphereProvider = (props: Props) => {
   const {children, getLocalAtmosphere} = props
-  const [atmosphere, setAtmosphere] = useState<Atmosphere | TLocalAtmosphere | undefined>(() => {
+  const [atmosphere, setAtmosphere] = useState<Environment | undefined>(() => {
     if (!getLocalAtmosphere) {
       return new Atmosphere()
     }

@@ -14,7 +14,7 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation UpdateCommentContentMutation($commentId: ID!, $content: String!, $meetingId: ID!) {
+  mutation UpdateCommentContentMutation($commentId: ID!, $content: String!, $meetingId: ID!) @raw_response_type {
     updateCommentContent(commentId: $commentId, content: $content, meetingId: $meetingId) {
       ... on ErrorPayload {
         error {
