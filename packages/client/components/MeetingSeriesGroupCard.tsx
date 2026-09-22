@@ -196,7 +196,7 @@ const MeetingSeriesGroupCard = (props: Props) => {
                 }
               >
                 <MenuContent align='end' sideOffset={4}>
-                  <div className='select-none px-4 pt-1 pb-2 font-semibold text-[11px] text-fg-muted uppercase tracking-[0.08em]'>
+                  <div className='select-none px-4 pb-2 font-semibold text-[11px] text-fg-muted uppercase tracking-[0.08em]'>
                     {teamCount === 2
                       ? 'Applies to both teams'
                       : `Applies to all ${teamCount} teams`}
