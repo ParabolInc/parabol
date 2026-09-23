@@ -3,7 +3,8 @@ Returned when renameTemplatePrompt succeeds
 """
 type RenameTemplatePromptSuccess {
   """
-  The prompt with its new question
+  The prompt with its new question. A new prompt replaces the old one when the old one already
+  has stand-up responses or retro reflections, so past meetings keep the wording they were asked
   """
   prompt: TemplatePrompt!
 }

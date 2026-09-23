@@ -6,7 +6,17 @@ import type {StandardMutation} from '../types/relayMutations'
 graphql`
   fragment RenameTemplatePromptMutation_team on RenameTemplatePromptSuccess {
     prompt {
+      id
       question
+      template {
+        ... on PromptTemplate {
+          id
+          prompts {
+            ...AddTemplatePrompt_prompts
+            ...TemplatePromptList_prompts
+          }
+        }
+      }
     }
   }
 `
