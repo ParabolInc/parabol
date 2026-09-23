@@ -7,12 +7,11 @@ import TipTapLinkMenu from './TipTapLinkMenu'
 
 interface Props extends EditorContentProps {
   editor: Editor
-  showBubbleMenu?: boolean
   showListControls?: boolean
   useLinkEditor?: () => void
 }
 export const TipTapEditor = (props: Props) => {
-  const {className, editor, showBubbleMenu, showListControls, useLinkEditor, ref, ...rest} = props
+  const {className, editor, showListControls, useLinkEditor, ref, ...rest} = props
   const isCoarsePointer = useCoarsePointer()
   return (
     <>

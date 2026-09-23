@@ -156,84 +156,86 @@ function Component(props: NodeViewProps) {
         className='w-full table-fixed border-collapse border-hairline text-fg-primary'
         {...props.HTMLAttributes}
       />
-      <DropdownMenu.Root onOpenChange={onOpenChange}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <DropdownMenu.Trigger asChild>
-              <PlainButton
-                onMouseDown={(e) => e.preventDefault()}
-                className={cn(
-                  '-top-8 absolute right-8 flex size-7 items-center justify-center rounded bg-transparent text-fg-primary transition-opacity duration-300 hover:bg-surface-hover',
-                  selected ? 'opacity-100' : 'pointer-events-none opacity-0'
-                )}
+      {editor.isEditable && (
+        <DropdownMenu.Root onOpenChange={onOpenChange}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DropdownMenu.Trigger asChild>
+                <PlainButton
+                  onMouseDown={(e) => e.preventDefault()}
+                  className={cn(
+                    '-top-8 absolute right-8 flex size-7 items-center justify-center rounded bg-transparent text-fg-primary transition-opacity duration-300 hover:bg-surface-hover',
+                    selected ? 'opacity-100' : 'pointer-events-none opacity-0'
+                  )}
+                >
+                  <EditTableSVG />
+                </PlainButton>
+              </DropdownMenu.Trigger>
+            </TooltipTrigger>
+            <TooltipContent className='text-xs'>{'Edit Table'}</TooltipContent>
+          </Tooltip>
+          <DropdownMenu.Portal>
+            <DropdownMenu.Content
+              side='bottom'
+              align='start'
+              className='z-1 rounded bg-surface-card p-2 shadow-[var(--shadow-card-raised)]'
+            >
+              <Item
+                onFocus={focus('header')}
+                onBlur={blur}
+                onSelect={() => editor.chain().focus().toggleHeaderRow().run()}
               >
-                <EditTableSVG />
-              </PlainButton>
-            </DropdownMenu.Trigger>
-          </TooltipTrigger>
-          <TooltipContent className='text-xs'>{'Edit Table'}</TooltipContent>
-        </Tooltip>
-        <DropdownMenu.Portal>
-          <DropdownMenu.Content
-            side='bottom'
-            align='start'
-            className='z-1 rounded bg-surface-card p-2 shadow-[var(--shadow-card-raised)]'
-          >
-            <Item
-              onFocus={focus('header')}
-              onBlur={blur}
-              onSelect={() => editor.chain().focus().toggleHeaderRow().run()}
-            >
-              <Toolbar />
-              Toggle header row
-            </Item>
-            <Item onFocus={focus('above')} onBlur={blur} onSelect={addRowAbove}>
-              <AddRowAbove />
-              Add row above
-            </Item>
-            <Item
-              onFocus={focus('below')}
-              onBlur={blur}
-              onSelect={() => editor.chain().focus().addRowAfter().run()}
-            >
-              <AddRowBelow />
-              Add row below
-            </Item>
-            <Item
-              onFocus={focus('row')}
-              onBlur={blur}
-              onSelect={() => editor.chain().focus().deleteRow().run()}
-            >
-              <Backspace />
-              Remove row
-            </Item>
-            <Item
-              onFocus={focus('before')}
-              onBlur={blur}
-              onSelect={() => editor.chain().focus().addColumnBefore().run()}
-            >
-              <AddColumnLeft />
-              Add column before
-            </Item>
-            <Item
-              onFocus={focus('after')}
-              onBlur={blur}
-              onSelect={() => editor.chain().focus().addColumnAfter().run()}
-            >
-              <AddColumnRight />
-              Add column after
-            </Item>
-            <Item
-              onFocus={focus('column')}
-              onBlur={blur}
-              onSelect={() => editor.chain().focus().deleteColumn().run()}
-            >
-              <Backspace />
-              Remove column
-            </Item>
-          </DropdownMenu.Content>
-        </DropdownMenu.Portal>
-      </DropdownMenu.Root>
+                <Toolbar />
+                Toggle header row
+              </Item>
+              <Item onFocus={focus('above')} onBlur={blur} onSelect={addRowAbove}>
+                <AddRowAbove />
+                Add row above
+              </Item>
+              <Item
+                onFocus={focus('below')}
+                onBlur={blur}
+                onSelect={() => editor.chain().focus().addRowAfter().run()}
+              >
+                <AddRowBelow />
+                Add row below
+              </Item>
+              <Item
+                onFocus={focus('row')}
+                onBlur={blur}
+                onSelect={() => editor.chain().focus().deleteRow().run()}
+              >
+                <Backspace />
+                Remove row
+              </Item>
+              <Item
+                onFocus={focus('before')}
+                onBlur={blur}
+                onSelect={() => editor.chain().focus().addColumnBefore().run()}
+              >
+                <AddColumnLeft />
+                Add column before
+              </Item>
+              <Item
+                onFocus={focus('after')}
+                onBlur={blur}
+                onSelect={() => editor.chain().focus().addColumnAfter().run()}
+              >
+                <AddColumnRight />
+                Add column after
+              </Item>
+              <Item
+                onFocus={focus('column')}
+                onBlur={blur}
+                onSelect={() => editor.chain().focus().deleteColumn().run()}
+              >
+                <Backspace />
+                Remove column
+              </Item>
+            </DropdownMenu.Content>
+          </DropdownMenu.Portal>
+        </DropdownMenu.Root>
+      )}
 
       <Tooltip>
         <TooltipTrigger asChild>

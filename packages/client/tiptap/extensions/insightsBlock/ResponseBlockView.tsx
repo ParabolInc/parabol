@@ -1,13 +1,13 @@
 import {EditorContent, type NodeViewProps, NodeViewWrapper} from '@tiptap/react'
 import Avatar from '../../../components/Avatar/Avatar'
-import {useTipTapTaskEditor} from '../../../hooks/useTipTapTaskEditor'
+import {useTipTapStandupResponseEditor} from '../../../hooks/useTipTapStandupResponseEditor'
 import type {ResponseBlockAttrs} from '../../../shared/tiptap/extensions/ResponseBlockBase'
+
 export const ResponseBlockView = (props: NodeViewProps) => {
   const {node} = props
   const attrs = node.attrs as ResponseBlockAttrs
   const {content, preferredName, avatar} = attrs
-  // the task card should be one giant read-only block, so we render a read-only editor
-  const {editor} = useTipTapTaskEditor(content, {readOnly: true})
+  const {editor} = useTipTapStandupResponseEditor(content, 268 - 16 * 2)
   return (
     <NodeViewWrapper data-type='taskBlock'>
       <div className='w-[268px] min-w-64 rounded bg-surface-card p-4 shadow-[var(--shadow-card)]'>
@@ -19,7 +19,7 @@ export const ResponseBlockView = (props: NodeViewProps) => {
             </div>
           </div>
         </div>
-        {editor && <EditorContent editor={editor} />}
+        {editor && <EditorContent className='standup-editor' editor={editor} />}
       </div>
     </NodeViewWrapper>
   )
