@@ -5,6 +5,29 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [14.0.1](https://github.com/ParabolInc/parabol/compare/v14.0.0...v14.0.1) (2026-09-23)
+
+
+### Fixed
+
+* add team health to marketing ([#13547](https://github.com/ParabolInc/parabol/issues/13547)) ([0c4e54f](https://github.com/ParabolInc/parabol/commit/0c4e54f73adadab564279c6aad0bbb6aa031d3e1))
+
+## [14.0.0](https://github.com/ParabolInc/parabol/compare/v13.48.0...v14.0.0) (2026-09-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* Team Health ([#13545](https://github.com/ParabolInc/parabol/issues/13545))
+
+### Added
+
+* Team Health ([#13545](https://github.com/ParabolInc/parabol/issues/13545)) ([80234ae](https://github.com/ParabolInc/parabol/commit/80234aeb0749a885fffac1cdc8a9d5c3988cfc3d))
+
+
+### Fixed
+
+* bump luna ([#13543](https://github.com/ParabolInc/parabol/issues/13543)) ([049918e](https://github.com/ParabolInc/parabol/commit/049918e2ee3f60e23f6ebf65eeccbfa94555cc82))
+
 ## [13.48.0](https://github.com/ParabolInc/parabol/compare/v13.47.0...v13.48.0) (2026-09-22)
 
 

@@ -1,4 +1,5 @@
 import ms from 'ms'
+import {isAnonymousRespondentCount} from '../../../../client/shared/utils/teamHealthAnonymity'
 import {isNotNull} from '../../../../client/utils/predicates'
 import {getNewDataLoader} from '../../../dataloader/getNewDataLoader'
 import generateUID from '../../../generateUID'
@@ -8,7 +9,6 @@ import type {TeamHealthResponsePhase} from '../../../postgres/types/NewMeetingPh
 import publishNotification from '../../public/mutations/helpers/publishNotification'
 import getTeamHealthStragglers from './getTeamHealthStragglers'
 import {IntegrationNotifier} from './notifications/IntegrationNotifier'
-import {isAnonymousRespondentCount} from './teamHealthAnonymity'
 
 const REMINDER_LEAD = ms('24h')
 const MIN_OPEN_BEFORE_REMINDER = ms('1h')
