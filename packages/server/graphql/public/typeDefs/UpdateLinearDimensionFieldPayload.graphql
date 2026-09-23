@@ -1,4 +1,0 @@
-"""
-Return value for updateLinearDimensionField mutation
-"""
-union UpdateLinearDimensionFieldPayload = ErrorPayload | UpdateLinearDimensionFieldSuccess

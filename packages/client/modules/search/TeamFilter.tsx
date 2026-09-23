@@ -4,17 +4,17 @@ import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Groups as GroupsIcon} from '~/ui/icons'
 import type {TeamFilterQuery} from '../../__generated__/TeamFilterQuery.graphql'
 import query from '../../__generated__/TeamFilterQuery.graphql'
+import TeamPickerMenuContent from '../../components/TeamPicker/TeamPickerMenuContent'
 import useQueryLoaderNow from '../../hooks/useQueryLoaderNow'
 import {Button} from '../../ui/Button/Button'
 import {Menu} from '../../ui/Menu/Menu'
-import {MenuContent} from '../../ui/Menu/MenuContent'
-import {MenuItemCheckbox} from '../../ui/Menu/MenuItemCheckbox'
 import {ClearFilterIcon} from './ClearFilterIcon'
 
 const teamFilterQuery = graphql`
   query TeamFilterQuery {
     viewer {
       teams {
+        ...TeamPickerMenuContent_teams
         id
         name
       }
@@ -53,7 +53,9 @@ const TeamFilterContent = ({teamIds, setTeamIds, queryRef}: TeamFilterContentPro
     setOpen(willOpen)
   }
   return (
+    // the search dialog locks scrolling outside its DOM; a modal menu installs its own lock so the list can scroll
     <Menu
+      modal
       open={open}
       onOpenChange={onOpenChange}
       trigger={
@@ -74,35 +76,20 @@ const TeamFilterContent = ({teamIds, setTeamIds, queryRef}: TeamFilterContentPro
         </Button>
       }
     >
-      <MenuContent
-        align='start'
-        sideOffset={4}
-        className='z-30 h-fit max-h-96 w-auto min-w-[200px] max-w-none border border-hairline p-2 shadow-xl'
+      <TeamPickerMenuContent
+        isMultiple
+        teamsRef={teams}
+        selectedTeamIds={teamIds}
+        onSelectTeam={toggleSelectedTeamId}
       >
-        <div className='flex flex-col gap-1'>
-          {teamIds.length > 0 && (
-            <div className='flex justify-end pb-2'>
-              <Button className='p-1 font-semibold text-xs' onClick={() => setTeamIds([])}>
-                Clear
-              </Button>
-            </div>
-          )}
-          {teams.map((team) => {
-            const checked = teamIds.includes(team.id)
-            return (
-              <MenuItemCheckbox
-                key={team.id}
-                checked={checked}
-                onClick={() => {
-                  toggleSelectedTeamId(team.id)
-                }}
-              >
-                {team.name}
-              </MenuItemCheckbox>
-            )
-          })}
-        </div>
-      </MenuContent>
+        {teamIds.length > 0 && (
+          <div className='flex justify-end px-2 pt-1'>
+            <Button className='p-1 font-semibold text-xs' onClick={() => setTeamIds([])}>
+              Clear
+            </Button>
+          </div>
+        )}
+      </TeamPickerMenuContent>
     </Menu>
   )
 }

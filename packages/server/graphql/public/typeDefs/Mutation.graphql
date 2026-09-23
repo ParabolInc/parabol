@@ -1317,29 +1317,6 @@ type Mutation {
     teamId: ID!
   ): ToggleTeamPrivacyPayload! @scope(name: TEAMS_WRITE)
 
-  """
-  Update how a parabol dimension maps to a GitHub label
-  """
-  updateGitHubDimensionField(
-    dimensionName: String!
-
-    """
-    The template string to map to a label
-    """
-    labelTemplate: String!
-
-    """
-    The repo the issue lives on
-    """
-    nameWithOwner: ID!
-
-    """
-    The meeting the update happend in. Returns a meeting object with updated serviceField
-    """
-    meetingId: ID!
-  ): UpdateGitHubDimensionFieldPayload!
-    @scope(name: MEETINGS_WRITE)
-    @deprecated(reason: "Use updateIntegrationDimensionField")
   createPoll(
     """
     The new poll including title and poll options
@@ -1396,40 +1373,6 @@ type Mutation {
     """
     meetingId: ID!
   ): EndTeamHealthSuccess! @scope(name: MEETINGS_WRITE)
-
-  """
-  Set the Azure DevOps field that the poker dimension should map to
-  """
-  updateAzureDevOpsDimensionField(
-    dimensionName: String!
-
-    """
-    The Azure DevOps field name that we should push estimates to
-    """
-    fieldName: String!
-
-    """
-    The Azure DevOps instanceId the field lives on
-    """
-    instanceId: ID!
-
-    """
-    The project the field lives on
-    """
-    projectKey: ID!
-
-    """
-    The meeting the update happend in. Returns a meeting object with updated serviceField
-    """
-    meetingId: ID!
-
-    """
-    The work item type in Azure DevOps
-    """
-    workItemType: ID!
-  ): UpdateAzureDevOpsDimensionFieldPayload!
-    @scope(name: MEETINGS_WRITE)
-    @deprecated(reason: "Use updateIntegrationDimensionField")
 
   """
   Adds a new poker template with a default dimension created.
@@ -2228,116 +2171,6 @@ type Mutation {
     """
     paymentMethodId: ID!
   ): UpdateCreditCardPayload! @scope(name: ORGS_WRITE)
-
-  """
-  Update how a parabol dimension maps to a GitLab label
-  """
-  updateGitLabDimensionField(
-    """
-    The Poker dimension that we're updating, e.g. story points
-    """
-    dimensionName: String!
-
-    """
-    The template string to map to a label, e.g. __comment
-    """
-    labelTemplate: String!
-
-    """
-    The meeting the update happend in. Returns a meeting object with updated serviceField.
-    """
-    meetingId: ID!
-
-    """
-    The id of the project the issue belongs to
-    """
-    projectId: Int!
-  ): UpdateGitLabDimensionFieldPayload!
-    @scope(name: MEETINGS_WRITE)
-    @deprecated(reason: "Use updateIntegrationDimensionField")
-
-  """
-  Update how a parabol dimension maps to a Linear label
-  """
-  updateLinearDimensionField(
-    """
-    The Poker dimension that we're updating, e.g. story points
-    """
-    dimensionName: String!
-
-    """
-    The template string to map to a label, e.g. __comment
-    """
-    labelTemplate: String!
-
-    """
-    The meeting the update happend in. Returns a meeting object with updated serviceField.
-    """
-    meetingId: ID!
-
-    """
-    The id of the project the issue belongs to
-    """
-    repoId: String!
-  ): UpdateLinearDimensionFieldPayload!
-    @scope(name: MEETINGS_WRITE)
-    @deprecated(reason: "Use updateIntegrationDimensionField")
-
-  """
-  Set the jira field that the poker dimension should map to
-  """
-  updateJiraDimensionField(
-    """
-    Id of the parabol task on which the dimension was updated
-    """
-    taskId: ID!
-
-    """
-    Dimension name from the template used
-    """
-    dimensionName: String!
-
-    """
-    The jira field id that we should push estimates to
-    """
-    fieldId: ID!
-
-    """
-    The meeting the update happend in. Returns a meeting object with updated serviceField
-    """
-    meetingId: ID!
-  ): UpdateDimensionFieldPayload!
-    @scope(name: MEETINGS_WRITE)
-    @deprecated(reason: "Use updateIntegrationDimensionField")
-
-  """
-  Set the JiraServer field that the poker dimension should map to`,
-  """
-  updateJiraServerDimensionField(
-    dimensionName: String!
-
-    """
-    The Jira Data Center field name that we should push estimates to
-    """
-    fieldName: ID!
-
-    """
-    The Jira Data Center issue type for which to set the dimension
-    """
-    issueType: ID!
-
-    """
-    Project id for this setting
-    """
-    projectId: ID!
-
-    """
-    The meeting the update happend in. Returns a meeting object with updated serviceField
-    """
-    meetingId: ID!
-  ): UpdateDimensionFieldPayload!
-    @scope(name: MEETINGS_WRITE)
-    @deprecated(reason: "Use updateIntegrationDimensionField")
 
   """
   Choose where a poker dimension's estimate lands for the integration this task belongs to.

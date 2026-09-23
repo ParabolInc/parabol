@@ -17,7 +17,7 @@ interface Props {
 }
 
 const query = graphql`
-  query TaskFooterIntegrateMenuQuery($teamId: ID!, $userId: ID!) {
+  query TaskFooterIntegrateMenuQuery($teamId: ID!, $userId: ID!) @raw_response_type {
     viewer {
       id
       assigneeTeamMember: teamMember(userId: $userId, teamId: $teamId) {

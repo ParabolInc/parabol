@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
-import {useCallback, useEffect, useRef, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {useLocation, useNavigate} from 'react-router'
 import type {PayloadError} from 'relay-runtime'
@@ -205,24 +205,6 @@ export const TemplateDetails = (props: Props) => {
 
   const [teamPickerOpen, setTeamPickerOpen] = useState(false)
   const [isScaleDetailsOpen, setIsScaleDetailsOpen] = useState(false)
-  const [highlightEdit, setHighlightEdit] = useState(false)
-  const editHintTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
-
-  // Called when a viewer tries to change a read-only template; pulse the Edit (owner) or
-  // Clone & Edit (non-owner) button to hint at what they need to do first
-  const flashEditHint = useCallback(() => {
-    setHighlightEdit(true)
-    if (editHintTimeoutRef.current) clearTimeout(editHintTimeoutRef.current)
-    editHintTimeoutRef.current = setTimeout(() => setHighlightEdit(false), 1500)
-  }, [])
-
-  useEffect(
-    () => () => {
-      if (editHintTimeoutRef.current) clearTimeout(editHintTimeoutRef.current)
-    },
-    []
-  )
-
   useEffect(() => {
     if (editingScaleId) {
       setIsScaleDetailsOpen(true)
@@ -245,7 +227,7 @@ export const TemplateDetails = (props: Props) => {
     <div className='space-y-6'>
       <ActivityDetailsBadges isEditing={isEditing} templateRef={activity} />
       <div className='max-w-[480px]'>
-        <div className='mb-6'>
+        <div className={type === 'teamHealth' ? 'mb-3' : 'mb-6'}>
           {__typename === 'FixedActivity' && (
             <div className='font-semibold text-base text-fg-secondary'>Created by Parabol</div>
           )}
@@ -254,7 +236,9 @@ export const TemplateDetails = (props: Props) => {
               <div
                 className={cn(
                   'w-max',
-                  isEditing && 'rounded-md border border-hairline-strong border-solid pl-3'
+                  isEditing &&
+                    type !== 'teamHealth' &&
+                    'rounded-md border border-hairline-strong border-solid pl-3'
                 )}
               >
                 <UnstyledTemplateSharing
@@ -274,12 +258,7 @@ export const TemplateDetails = (props: Props) => {
                   </div>
                 ) : (
                   <>
-                    <div
-                      className={cn(
-                        'rounded-md border border-hairline-strong border-solid',
-                        highlightEdit && 'animate-pulse ring-2 ring-sky-500 ring-offset-2'
-                      )}
-                    >
+                    <div className='rounded-md border border-hairline-strong border-solid'>
                       <DetailAction
                         icon={'edit'}
                         tooltip={'Edit template'}
@@ -304,12 +283,7 @@ export const TemplateDetails = (props: Props) => {
                   viewerRef={viewer}
                   className='rounded-md border border-hairline-strong border-solid hover:bg-surface-hover'
                 />
-                <div
-                  className={cn(
-                    'rounded-md border border-hairline-strong border-solid',
-                    highlightEdit && 'animate-pulse ring-2 ring-sky-500 ring-offset-2'
-                  )}
-                >
+                <div className='rounded-md border border-hairline-strong border-solid'>
                   <Button
                     variant='flat'
                     size='sm'
@@ -335,38 +309,39 @@ export const TemplateDetails = (props: Props) => {
         <TeamHealthTemplateQuestionEditor
           templateRef={activity.TeamHealthTemplateQuestionEditor_template}
           isEditing={isEditing}
-          readOnly={!isOwner}
-          onEditHint={flashEditHint}
+          onEdit={isOwner ? () => setIsEditing(true) : undefined}
         />
       )}
 
-      <div className='sm:-ml-14 pt-4'>
-        {prompts && (
-          <>
-            <TemplatePromptList
-              isOwner={isOwner && isEditing}
-              prompts={prompts}
-              templateId={activityId}
-            />
-            {isOwner && isEditing && (
-              <AddTemplatePrompt templateId={activityId} templateType={type} prompts={prompts} />
-            )}
-          </>
-        )}
-        {dimensions && (
-          <>
-            <TemplateDimensionList
-              isOwner={isOwner}
-              readOnly={!isEditing}
-              dimensions={dimensions}
-              templateId={activityId}
-            />
-            {isOwner && isEditing && (
-              <AddPokerTemplateDimension templateId={activityId} dimensions={dimensions} />
-            )}
-          </>
-        )}
-      </div>
+      {(prompts || dimensions) && (
+        <div className='sm:-ml-14 pt-4'>
+          {prompts && (
+            <>
+              <TemplatePromptList
+                isOwner={isOwner && isEditing}
+                prompts={prompts}
+                templateId={activityId}
+              />
+              {isOwner && isEditing && (
+                <AddTemplatePrompt templateId={activityId} templateType={type} prompts={prompts} />
+              )}
+            </>
+          )}
+          {dimensions && (
+            <>
+              <TemplateDimensionList
+                isOwner={isOwner}
+                readOnly={!isEditing}
+                dimensions={dimensions}
+                templateId={activityId}
+              />
+              {isOwner && isEditing && (
+                <AddPokerTemplateDimension templateId={activityId} dimensions={dimensions} />
+              )}
+            </>
+          )}
+        </div>
+      )}
 
       {isEditing && (
         <div className='fixed right-0 bottom-0 left-0 flex h-20 w-full items-center justify-center bg-surface-well'>

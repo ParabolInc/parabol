@@ -21,7 +21,7 @@ import {cn} from '../../../ui/cn'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import sortByTier from '../../../utils/sortByTier'
 import IconLabel from '../../IconLabel'
-import NewMeetingTeamPicker from '../../NewMeetingTeamPicker'
+import TeamPicker from '../../TeamPicker/TeamPicker'
 import {ActivityBadge} from '../ActivityBadge'
 import {ActivityCard, ActivityCardImage} from '../ActivityCard'
 import {
@@ -139,8 +139,7 @@ const query = graphql`
         tier
         name
         orgId
-        ...NewMeetingTeamPicker_selectedTeam
-        ...NewMeetingTeamPicker_teams
+        ...TeamPicker_teams
       }
     }
   }
@@ -333,9 +332,9 @@ export const CreateNewActivity = (props: Props) => {
             template:
           </div>
           <div className='w-full px-4'>
-            <NewMeetingTeamPicker
+            <TeamPicker
               teamsRef={teams}
-              selectedTeamRef={selectedTeam}
+              selectedTeamId={selectedTeam.id}
               onSelectTeam={(teamId) => {
                 const newTeam = teams.find((team) => team.id === teamId)
                 newTeam && setSelectedTeam(newTeam)

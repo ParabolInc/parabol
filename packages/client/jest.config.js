@@ -2,7 +2,8 @@ module.exports = {
   testEnvironment: 'node',
   transform: {
     '\\.(gql|graphql)$': '../server/__tests__/jest-transform-graphql-shim.js',
-    '^.+\\.(t|j)sx?$': ['@swc/jest']
+    '\\.svg$': '<rootDir>/jest-transform-svg.js',
+    '^.+\\.(t|j)sx?$': ['@swc/jest', {jsc: {transform: {react: {runtime: 'automatic'}}}}]
   },
   transformIgnorePatterns: ['/marked\.esm\.js/'],
   modulePaths: ['<rootDir>/packages/'],

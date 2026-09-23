@@ -24,7 +24,7 @@ const mutation = graphql`
     $reactji: String!
     $isRemove: Boolean
     $meetingId: ID!
-  ) {
+  ) @raw_response_type {
     addReactjiToReactable(
       reactableId: $reactableId
       reactableType: $reactableType

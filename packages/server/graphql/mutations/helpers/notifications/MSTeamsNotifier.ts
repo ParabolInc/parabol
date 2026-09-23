@@ -358,7 +358,7 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
     const {scheduledEndTime} = meeting
     if (!scheduledEndTime) return 'success'
     const {webhookUrl} = notificationChannel
-    const {respondentCount, eligibleCount} = progress
+    const {respondentCount, eligibleCount, stragglerNames} = progress
     const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}/respond`, {
       searchParams: {
         utm_source: 'MS Teams team health reminder',
@@ -376,6 +376,9 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
     card.addItem(
       createTextColumnSet(`${respondentCount} of ${eligibleCount} teammates have responded.`)
     )
+    if (stragglerNames.length > 0) {
+      card.addItem(createTextColumnSet(`Still waiting on: ${stragglerNames.join(', ')}`))
+    }
     card.addItem(createActionColumnSet(createTeamHealthMeetingAction(meetingUrl)))
 
     const adaptiveCard = JSON.stringify(card.toJSON())

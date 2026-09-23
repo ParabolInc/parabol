@@ -52,6 +52,9 @@ const updateTemplateScope: MutationResolvers['updateTemplateScope'] = async (
   }
 
   // VALIDATION
+  if (template.type === 'teamHealth') {
+    return {error: {message: 'Team health templates are always shared across the organization'}}
+  }
   if (scope === newScope) {
     return {error: {message: 'Template scope already set'}}
   }

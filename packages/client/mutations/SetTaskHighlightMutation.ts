@@ -15,7 +15,7 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation SetTaskHighlightMutation($taskId: ID!, $meetingId: ID!, $isHighlighted: Boolean!) {
+  mutation SetTaskHighlightMutation($taskId: ID!, $meetingId: ID!, $isHighlighted: Boolean!) @raw_response_type {
     setTaskHighlight(taskId: $taskId, meetingId: $meetingId, isHighlighted: $isHighlighted) {
       ...SetTaskHighlightMutation_meeting @relay(mask: false) @alias
     }

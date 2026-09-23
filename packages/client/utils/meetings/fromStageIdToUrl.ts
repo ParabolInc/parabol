@@ -4,6 +4,7 @@ import type {
   fromStageIdToUrl_meeting$key,
   NewMeetingPhaseTypeEnum
 } from '~/__generated__/fromStageIdToUrl_meeting.graphql'
+import {TeamHealthDemo} from '../../modules/demo/teamHealthDemoIds'
 import {RetroDemo} from '../../types/constEnums'
 import findBestNavigableStage from './findBestNavigableStage'
 import findStageById from './findStageById'
@@ -60,6 +61,9 @@ const fromStageIdToUrl = (stageId: string, meetingRef: fromStageIdToUrl_meeting$
   const maybeStage = isPhaseMultiStage ? `/${stageIdx + 1}` : ''
   if (meetingId === RetroDemo.MEETING_ID) {
     return `/retrospective-demo/${phaseSlug}${maybeStage}`
+  }
+  if (meetingId === TeamHealthDemo.MEETING_ID) {
+    return `${TeamHealthDemo.ROUTE}/${phaseSlug}${maybeStage}`
   }
   return `/meet/${meetingId}/${phaseSlug}${maybeStage}`
 }

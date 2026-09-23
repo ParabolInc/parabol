@@ -1,4 +1,5 @@
 import type {ReactNode} from 'react'
+import {DemoIntegration} from '../types/constEnums'
 import {cn} from '../ui/cn'
 
 interface Props {
@@ -22,8 +23,8 @@ const JiraIssueLink = (props: Props) => {
     showLabelPrefix = true
   } = props
   const href =
-    cloudName === 'jira-demo'
-      ? 'https://www.parabol.co/features/integrations'
+    cloudName === DemoIntegration.JIRA_CLOUD_NAME
+      ? DemoIntegration.JIRA_ISSUE_URL
       : `https://${cloudName}.atlassian.net/browse/${issueKey}`
   return (
     <a

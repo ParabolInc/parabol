@@ -118,6 +118,15 @@ export enum ElementHeight {
   MEETING_CARD_MARGIN = 16
 }
 
+// the demos' fake integrations share these identifiers, so the issue links can send visitors to the
+// integration pages instead of a host that does not exist
+export enum DemoIntegration {
+  JIRA_CLOUD_NAME = 'jira-demo',
+  JIRA_ISSUE_URL = 'https://www.parabol.co/integrations/jira/',
+  GITHUB_REPO = 'ParabolInc/ParabolDemo',
+  GITHUB_ISSUE_URL = 'https://www.parabol.co/integrations/github/'
+}
+
 export enum ExternalLinks {
   EMAIL_CDN = 'https://action-files.parabol.co/static/email/',
   LOGO = 'https://action-files.parabol.co/static/favicon-with-more-padding.jpeg',
