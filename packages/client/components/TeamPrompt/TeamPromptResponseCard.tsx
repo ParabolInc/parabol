@@ -12,6 +12,7 @@ import {Link} from '~/ui/icons'
 import plural from '~/utils/plural'
 import useMutationProps from '../../hooks/useMutationProps'
 import UpsertTeamPromptResponseMutation from '../../mutations/UpsertTeamPromptResponseMutation'
+import useShareTeamPromptResponsesMutation from '../../mutations/useShareTeamPromptResponsesMutation'
 import {cn} from '../../ui/cn'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
@@ -58,6 +59,9 @@ const TeamPromptResponseCard = (props: Props) => {
           ... on TeamPromptMeeting {
             endedAt
             localStageId
+            prompts {
+              id
+            }
             rightDrawerOpen
           }
         }
@@ -124,8 +128,10 @@ const TeamPromptResponseCard = (props: Props) => {
   const nonViewerEmptyResponsePlaceholder = isMeetingEnded ? 'No response' : 'No response yet...'
 
   const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
+  const [shareResponses] = useShareTeamPromptResponsesMutation()
+  const promptId = meeting?.prompts?.[0]?.id
   const handleSubmit = useEventCallback((editor: Editor) => {
-    if (submitting) return
+    if (submitting || !promptId) return
     submitMutation()
 
     const content = JSON.stringify(editor.getJSON())
@@ -133,8 +139,16 @@ const TeamPromptResponseCard = (props: Props) => {
 
     UpsertTeamPromptResponseMutation(
       atmosphere,
-      {teamPromptResponseId: response?.id, meetingId, content},
-      {plaintextContent, onError, onCompleted}
+      {meetingId, promptId, content},
+      {
+        plaintextContent,
+        responseId: response?.id,
+        onError,
+        onCompleted: (res, errors) => {
+          onCompleted(res, errors)
+          if (!errors && !editor.isEmpty) shareResponses({variables: {meetingId}})
+        }
+      }
     )
   })
 

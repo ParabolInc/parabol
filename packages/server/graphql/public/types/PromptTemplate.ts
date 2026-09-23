@@ -32,10 +32,7 @@ const getLastUsedAtForTeams = async (
 const PromptTemplate: PromptTemplateResolvers = {
   __isTypeOf: ({type}) => isPromptTemplateType(type),
   prompts: async ({id: templateId}, _args, {dataLoader}) => {
-    const prompts = await dataLoader.get('templatePromptsByTemplateId').load(templateId)
-    return prompts
-      .filter((prompt) => !prompt.removedAt)
-      .sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
+    return dataLoader.get('templatePromptsByTemplateId').load(templateId)
   },
   team: async ({teamId}, _args, {dataLoader}) => {
     return dataLoader.get('teams').loadNonNull(teamId)

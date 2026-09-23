@@ -16,7 +16,7 @@ import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingLockedOverlay from './MeetingLockedOverlay'
 import MeetingStyles from './MeetingStyles'
 import TeamPromptDrawer from './TeamPrompt/TeamPromptDrawer'
-import TeamPromptEditablePrompt from './TeamPrompt/TeamPromptEditablePrompt'
+import TeamPromptMeetingPrompt from './TeamPrompt/TeamPromptMeetingPrompt'
 import TeamPromptResponseCard from './TeamPrompt/TeamPromptResponseCard'
 import TeamPromptTopBar from './TeamPrompt/TeamPromptTopBar'
 
@@ -32,7 +32,7 @@ const TeamPromptMeeting = (props: Props) => {
         ...useMeeting_meeting
         ...TeamPromptTopBar_meeting
         ...TeamPromptDrawer_meeting
-        ...TeamPromptEditablePrompt_meeting
+        ...TeamPromptMeetingPrompt_meeting
         ...TeamPromptMeetingStatus_meeting
         ...MeetingLockedOverlay_meeting
         id
@@ -128,7 +128,7 @@ const TeamPromptMeeting = (props: Props) => {
           <MeetingContent>
             <MeetingHeaderAndPhase hideBottomBar={true}>
               <TeamPromptTopBar meetingRef={meeting} />
-              <TeamPromptEditablePrompt meetingRef={meeting} />
+              <TeamPromptMeetingPrompt meetingRef={meeting} />
               <ErrorBoundary>
                 {/* twoColumnBreakpoint=880px, padding=10% of screen */}
                 <div className='h-full overflow-auto p-4 min-[880px]:px-[10%] min-[880px]:py-8'>

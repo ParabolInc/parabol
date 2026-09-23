@@ -45,9 +45,6 @@ const subscription = graphql`
       SuggestedGroupsSuccess {
         ...useGenerateSuggestedGroupsMutation_meeting @relay(mask: false)
       }
-      UpdateMeetingPromptSuccess {
-        ...UpdateMeetingPromptMutation_meeting @relay(mask: false)
-      }
       SetTaskEstimateSuccess {
         ...SetTaskEstimateMutation_meeting @relay(mask: false)
       }
@@ -176,6 +173,9 @@ const subscription = graphql`
       }
       UpsertTeamPromptResponseSuccess {
         ...UpsertTeamPromptResponseMutation_meeting @relay(mask: false)
+      }
+      ShareTeamPromptResponsesSuccess {
+        ...useShareTeamPromptResponsesMutation_meeting @relay(mask: false)
       }
     }
   }

@@ -32,9 +32,7 @@ const RetroDiscussStage: RetroDiscussStageResolvers = {
 
   reflectionGroup: async ({reflectionGroupId, meetingId}, _args, {dataLoader}) => {
     if (!reflectionGroupId) {
-      const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
-      if (!('templateId' in meeting)) throw new Error('Meeting has no template')
-      const prompts = await dataLoader.get('templatePromptsByTemplateId').load(meeting.templateId!)
+      const prompts = await dataLoader.get('templatePromptsByMeetingId').load(meetingId)
       return new ReflectionGroup({
         id: `${meetingId}:dummyGroup`,
         meetingId,

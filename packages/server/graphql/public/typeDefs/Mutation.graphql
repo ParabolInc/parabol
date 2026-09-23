@@ -1945,6 +1945,12 @@ type Mutation {
     @scope(name: MEETINGS_WRITE)
 
   """
+  Share every answer the viewer has written in this stand-up with the team
+  """
+  shareTeamPromptResponses(meetingId: ID!): ShareTeamPromptResponsesSuccess!
+    @scope(name: MEETINGS_WRITE)
+
+  """
   Shares retro discussion to integration
   """
   shareTopic(
@@ -2179,21 +2185,6 @@ type Mutation {
   ): UpdateIntegrationDimensionFieldSuccess! @scope(name: MEETINGS_WRITE)
 
   """
-  Describe the mutation here
-  """
-  updateMeetingPrompt(
-    """
-    The meeting to update the prompt
-    """
-    meetingId: ID!
-
-    """
-    The updated prompt
-    """
-    newPrompt: String!
-  ): UpdateMeetingPromptPayload! @scope(name: MEETINGS_WRITE)
-
-  """
   Update a meeting template
   """
   updateMeetingTemplate(
@@ -2373,24 +2364,26 @@ type Mutation {
   ): UpdateUserProfilePayload @scope(name: USERS_WRITE)
 
   """
-  upsert the content of a team prompt response
+  Save the viewer's answer to one prompt of a stand-up. An answer stays a private draft until the
+  viewer calls shareTeamPromptResponses; editing an already shared answer updates it for everyone.
+  An empty document clears the answer and unshares it
   """
   upsertTeamPromptResponse(
-    """
-    The id of the team prompt response to upsert
-    """
-    teamPromptResponseId: ID
-
     """
     The id of the team prompt meeting
     """
     meetingId: ID!
 
     """
+    The id of the prompt being answered. Must be one of the meeting's prompts
+    """
+    promptId: ID!
+
+    """
     The stringified content of the team prompt response
     """
     content: String!
-  ): UpsertTeamPromptResponsePayload! @scope(name: MEETINGS_WRITE)
+  ): UpsertTeamPromptResponseSuccess! @scope(name: MEETINGS_WRITE)
 
   """
   Verify an email address and sign in if not already a user

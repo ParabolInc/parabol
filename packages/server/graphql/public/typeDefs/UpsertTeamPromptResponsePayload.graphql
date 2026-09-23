@@ -1,4 +1,0 @@
-"""
-Return value for upsertTeamPromptResponse mutation
-"""
-union UpsertTeamPromptResponsePayload = UpsertTeamPromptResponseSuccess | ErrorPayload

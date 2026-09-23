@@ -5,6 +5,9 @@ import {activeEmbeddingModelId} from '../../embedder/activeEmbeddingModel'
 import {getEmbeddingsTableName} from '../../embedder/getEmbeddingsTableName'
 import type MeetingTemplate from '../database/types/MeetingTemplate'
 import isValid from '../graphql/isValid'
+import groupTeamPromptResponsesByUser, {
+  type TeamPromptMemberResponse
+} from '../graphql/mutations/helpers/groupTeamPromptResponsesByUser'
 import type {ReactableEnum} from '../graphql/public/resolverTypes'
 import type {SAMLSource} from '../graphql/public/types/SAML'
 import getKysely from '../postgres/getKysely'
@@ -16,6 +19,7 @@ import {
   selectRetroSuggestedGrouping,
   selectTaskEstimate,
   selectTasks,
+  selectTeamPromptResponses,
   selectTeams
 } from '../postgres/select'
 import type {
@@ -26,7 +30,9 @@ import type {
   RetroSuggestedGrouping,
   Task,
   TaskEstimate,
-  Team
+  Team,
+  TeamPromptResponse,
+  TemplatePrompt
 } from '../postgres/types'
 import type {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
 import type {Tierenum as TierEnum} from '../postgres/types/pg'
@@ -1046,6 +1052,118 @@ export interface PriorTeamHealthCycle {
   // the comments the team could read that cycle for each category, keyed by categoryId. Anonymous
   // comments only ever appear here in their paraphrased form (see getTeamHealthDisplayComment)
   commentsByCategoryId: Map<number, string[]>
+}
+
+// A stand-up's prompts are frozen at meeting creation: it sees prompts active when the meeting
+// was created, plus any removed afterward, so prompts don't retroactively vanish from a meeting
+// already in progress.
+export const templatePromptsByMeetingId = (
+  parent: RootDataLoader,
+  dependsOn: RegisterDependsOn
+) => {
+  dependsOn('templatePrompts')
+  return new DataLoader<string, TemplatePrompt[], string>(
+    async (meetingIds) => {
+      const rows = await getKysely()
+        .selectFrom('NewMeeting as m')
+        .innerJoin('TemplatePrompt as p', 'p.templateId', 'm.templateId')
+        .where('m.id', 'in', meetingIds)
+        .whereRef('p.createdAt', '<', 'm.createdAt')
+        .where(({eb, or, ref}) =>
+          or([eb('p.removedAt', 'is', null), eb('m.createdAt', '<', ref('p.removedAt'))])
+        )
+        .selectAll('p')
+        .select('m.id as meetingId')
+        .orderBy('p.sortOrder')
+        .execute()
+      return meetingIds.map((meetingId) =>
+        rows.filter((row) => row.meetingId === meetingId).map(({meetingId: _, ...prompt}) => prompt)
+      )
+    },
+    {...parent.dataLoaderOptions}
+  )
+}
+
+export const teamPromptResponsesByMeetingIdAndUserId = (
+  parent: RootDataLoader,
+  dependsOn: RegisterDependsOn
+) => {
+  dependsOn('teamPromptResponses')
+  return new DataLoader<{meetingId: string; userId: string}, TeamPromptResponse[], string>(
+    async (keys) => {
+      const rows = await selectTeamPromptResponses()
+        .where(({eb, refTuple, tuple}) =>
+          eb(
+            refTuple('meetingId', 'userId'),
+            'in',
+            keys.map(({meetingId, userId}) => tuple(meetingId, userId))
+          )
+        )
+        .orderBy('id')
+        .execute()
+      return keys.map(({meetingId, userId}) =>
+        rows.filter((row) => row.meetingId === meetingId && row.userId === userId)
+      )
+    },
+    {...parent.dataLoaderOptions, cacheKeyFn: ({meetingId, userId}) => `${meetingId}:${userId}`}
+  )
+}
+
+export const teamPromptResponsesByMeetingIdForViewer = (
+  parent: RootDataLoader,
+  dependsOn: RegisterDependsOn
+) => {
+  dependsOn('teamPromptResponses')
+  return new DataLoader<{meetingId: string; viewerId: string}, TeamPromptResponse[], string>(
+    async (keys) => {
+      const rows = await selectTeamPromptResponses()
+        .where(
+          'meetingId',
+          'in',
+          keys.map(({meetingId}) => meetingId)
+        )
+        .where(({eb, or}) =>
+          or([
+            eb('sharedAt', 'is not', null),
+            eb(
+              'userId',
+              'in',
+              keys.map(({viewerId}) => viewerId)
+            )
+          ])
+        )
+        .orderBy('id')
+        .execute()
+      return keys.map(({meetingId, viewerId}) =>
+        rows.filter(
+          (row) => row.meetingId === meetingId && (!!row.sharedAt || row.userId === viewerId)
+        )
+      )
+    },
+    {...parent.dataLoaderOptions, cacheKeyFn: ({meetingId, viewerId}) => `${meetingId}:${viewerId}`}
+  )
+}
+
+export const teamPromptMemberResponsesByMeetingId = (
+  parent: RootDataLoader,
+  dependsOn: RegisterDependsOn
+) => {
+  dependsOn('teamPromptResponses')
+  dependsOn('templatePrompts')
+  return new DataLoader<string, TeamPromptMemberResponse[], string>(
+    async (meetingIds) => {
+      return Promise.all(
+        meetingIds.map(async (meetingId) => {
+          const [prompts, responses] = await Promise.all([
+            parent.get('templatePromptsByMeetingId').load(meetingId),
+            parent.get('teamPromptResponsesByMeetingId').load(meetingId)
+          ])
+          return groupTeamPromptResponsesByUser(prompts, responses)
+        })
+      )
+    },
+    {...parent.dataLoaderOptions}
+  )
 }
 
 // The last few answered cycles before this meeting, newest first, with each category's score and

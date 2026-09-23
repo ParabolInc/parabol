@@ -34,6 +34,9 @@ const TeamPromptWorkDrawer = (props: Props) => {
       fragment TeamPromptWorkDrawer_meeting on TeamPromptMeeting {
         id
         teamId
+        prompts {
+          id
+        }
         responses {
           id
           userId
@@ -84,6 +87,7 @@ const TeamPromptWorkDrawer = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const viewerResponse = meeting.responses.find((response) => response.userId === viewerId) ?? null
+  const promptId = meeting.prompts[0]?.id ?? null
   const hasJiraServer =
     !!meeting.viewerMeetingMember?.teamMember?.integrations.jiraServer?.sharedProviders?.length
   const hasLinear =
@@ -183,7 +187,7 @@ const TeamPromptWorkDrawer = (props: Props) => {
   const {Component} = baseTabs[activeIdx]!
 
   return (
-    <WorkDrawerConsumeContext.Provider value={{mode: 'teamPrompt', viewerResponse}}>
+    <WorkDrawerConsumeContext.Provider value={{mode: 'teamPrompt', viewerResponse, promptId}}>
       <div className='flex min-h-0 flex-1 flex-col'>
         <div className='flex justify-center pt-3 pb-2'>
           <div className='flex gap-1'>

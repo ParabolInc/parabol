@@ -90,8 +90,7 @@ const updateTemplateScope: MutationResolvers['updateTemplateScope'] = async (
       mainCategory: template.mainCategory
     }
     clonedTemplateId = clonedTemplate.id
-    const prompts = await dataLoader.get('templatePromptsByTemplateId').load(templateId)
-    const activePrompts = prompts.filter(({removedAt}) => !removedAt)
+    const activePrompts = await dataLoader.get('templatePromptsByTemplateId').load(templateId)
     const promptIds = activePrompts.map(({id}) => id)
     const clonedPrompts = activePrompts.map((prompt) => {
       return {

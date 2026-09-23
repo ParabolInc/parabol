@@ -80,18 +80,16 @@ const addPromptTemplate: MutationResolvers['addPromptTemplate'] = async (
     ? await dataLoader.get('templatePromptsByTemplateId').load(parentTemplate.id)
     : []
   const newPrompts = parentTemplate
-    ? parentPrompts
-        .filter(({removedAt}) => !removedAt)
-        .map((prompt) => ({
-          id: generateUID(),
-          teamId,
-          templateId: newTemplate.id,
-          parentPromptId: prompt.id,
-          sortOrder: prompt.sortOrder,
-          question: prompt.question,
-          description: prompt.description,
-          groupColor: prompt.groupColor
-        }))
+    ? parentPrompts.map((prompt) => ({
+        id: generateUID(),
+        teamId,
+        templateId: newTemplate.id,
+        parentPromptId: prompt.id,
+        sortOrder: prompt.sortOrder,
+        question: prompt.question,
+        description: prompt.description,
+        groupColor: prompt.groupColor
+      }))
     : [
         {
           id: generateUID(),

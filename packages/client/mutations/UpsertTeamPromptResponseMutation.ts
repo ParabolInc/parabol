@@ -7,7 +7,9 @@ import type {LocalHandlers, SharedUpdater, StandardMutation} from '../types/rela
 
 graphql`
   fragment UpsertTeamPromptResponseMutation_meeting on UpsertTeamPromptResponseSuccess {
-    meetingId
+    meeting {
+      id
+    }
     teamPromptResponse {
       ...TeamPromptResponseCard_response @relay(mask: false)
     }
@@ -16,20 +18,15 @@ graphql`
 
 const mutation = graphql`
   mutation UpsertTeamPromptResponseMutation(
-    $teamPromptResponseId: ID
     $meetingId: ID!
+    $promptId: ID!
     $content: String!
   ) @raw_response_type {
     upsertTeamPromptResponse(
-      teamPromptResponseId: $teamPromptResponseId
       meetingId: $meetingId
+      promptId: $promptId
       content: $content
     ) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...UpsertTeamPromptResponseMutation_meeting @relay(mask: false) @alias
     }
   }
@@ -37,11 +34,10 @@ const mutation = graphql`
 
 export const upsertTeamPromptResponseUpdater: SharedUpdater<
   UpsertTeamPromptResponseMutation_meeting$data
-> = (payload, {store}) => {
+> = (payload) => {
   const newResponse = payload.getLinkedRecord('teamPromptResponse')
   const newResponseCreatorId = newResponse.getValue('userId')
-  const meetingId = payload.getValue('meetingId')
-  const meeting = store.get(meetingId)
+  const meeting = payload.getLinkedRecord('meeting')
   if (!meeting) return
   const phases = meeting.getLinkedRecords('phases')
   if (!phases) return
@@ -58,21 +54,21 @@ export const upsertTeamPromptResponseUpdater: SharedUpdater<
 
 interface Handlers extends LocalHandlers {
   plaintextContent: string
+  responseId?: string
 }
 
 const UpsertTeamPromptResponseMutation: StandardMutation<
   TUpsertTeamPromptResponseMutation,
   Handlers
-> = (atmosphere, variables, {plaintextContent, onError, onCompleted}) => {
+> = (atmosphere, variables, {plaintextContent, responseId, onError, onCompleted}) => {
   const {viewerId} = atmosphere
-  const {meetingId, teamPromptResponseId, content} = variables
+  const {meetingId, content} = variables
   const now = new Date().toJSON()
   const optimisticResponse = {
     upsertTeamPromptResponse: {
-      __typename: 'UpsertTeamPromptResponseSuccess',
-      meetingId,
+      meeting: {id: meetingId},
       teamPromptResponse: {
-        id: teamPromptResponseId ?? clientTempId(viewerId),
+        id: responseId ?? clientTempId(viewerId),
         userId: viewerId,
         content,
         plaintextContent,

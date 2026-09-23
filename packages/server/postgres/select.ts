@@ -248,7 +248,9 @@ export const selectTeamPromptResponses = () => {
       'userId',
       'sortOrder',
       'content',
-      'plaintextContent'
+      'plaintextContent',
+      'promptId',
+      'sharedAt'
     ])
     .select(({fn}) => [fn<ReactjiDB[]>('to_json', ['reactjis']).as('reactjis')])
   return query as AssertedQuery<typeof query, {content: JSONContent}>

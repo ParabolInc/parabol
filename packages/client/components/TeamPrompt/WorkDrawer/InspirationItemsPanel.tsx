@@ -4,6 +4,7 @@ import {Tune as TuneIcon} from '~/ui/icons'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import UpsertTeamPromptResponseMutation from '../../../mutations/UpsertTeamPromptResponseMutation'
 import useGenerateInspirationItemsMutation from '../../../mutations/useGenerateInspirationItemsMutation'
+import useShareTeamPromptResponsesMutation from '../../../mutations/useShareTeamPromptResponsesMutation'
 import {Button} from '../../../ui/Button/Button'
 import {Dialog} from '../../../ui/Dialog/Dialog'
 import {DialogActions} from '../../../ui/Dialog/DialogActions'
@@ -50,6 +51,8 @@ const InspirationItemsPanel = (props: Props) => {
   const consume = useWorkDrawerConsume()
   const isRetro = consume.mode === 'retro'
   const viewerResponse = consume.mode === 'teamPrompt' ? consume.viewerResponse : null
+  const promptId = consume.mode === 'teamPrompt' ? consume.promptId : null
+  const [shareResponses] = useShareTeamPromptResponsesMutation()
   const atmosphere = useAtmosphere()
   const [items, setItems] = useState<InspirationItemData[]>(() =>
     initialItems.map(({id, title, content, promptId}) => ({
@@ -108,14 +111,19 @@ const InspirationItemsPanel = (props: Props) => {
     const plaintextContent = [viewerResponse?.plaintextContent, editor.getText()]
       .filter(Boolean)
       .join('\n')
+    if (!promptId) return
     setAddingToResponse(true)
     UpsertTeamPromptResponseMutation(
       atmosphere,
-      {teamPromptResponseId: viewerResponse?.id, meetingId, content},
+      {meetingId, promptId, content},
       {
         plaintextContent,
+        responseId: viewerResponse?.id,
         onError: () => setAddingToResponse(false),
-        onCompleted: () => setAddingToResponse(false)
+        onCompleted: (_res, errors) => {
+          setAddingToResponse(false)
+          if (!errors) shareResponses({variables: {meetingId}})
+        }
       }
     )
   }
