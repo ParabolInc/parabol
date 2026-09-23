@@ -1,6 +1,6 @@
 # Parabol — Full API Reference for LLMs
 
-Parabol is a collaborative workspace that helps teams run more effective, inclusive, and engaging meetings.
+Parabol is an open-source collaborative workspace that helps teams run more effective, inclusive, and engaging meetings — retrospectives, sprint poker, check-ins, standups — and measure team health with anonymous, research-backed engagement surveys (team health checks) that turn into discussions and tasks.
 
 ## GraphQL API
 
@@ -271,9 +271,86 @@ Variables:
 
 ---
 
+### 8. Start a Team Health Check
+
+Requires: `meetings:write`
+
+Team Health is Parabol's anonymous engagement survey. Members answer research-backed questions on a 1–5 Likert scale; results are withheld until the meeting ends and are revealed by category (Psychological Safety, Dependability, Structure & Clarity, Meaning, Impact). Pass several `teamIds` to run the same check across many teams, and an `rrule` to make it recurring (weekly, per sprint, monthly).
+
+```graphql
+mutation StartTeamHealth($teamIds: [ID!]!, $templateId: ID!, $name: String, $rrule: RRule) {
+  startTeamHealth(teamIds: $teamIds, templateId: $templateId, name: $name, rrule: $rrule) {
+    meetings {
+      id
+      name
+      meetingType
+      template {
+        id
+        name
+      }
+    }
+    teams {
+      id
+      name
+    }
+  }
+}
+```
+
+Variables:
+```json
+{
+  "teamIds": ["team123"],
+  "templateId": "googleProjectAristotleTemplate",
+  "name": "Weekly Team Health",
+  "rrule": "DTSTART:20260921T090000Z\nRRULE:FREQ=WEEKLY;BYDAY=MO"
+}
+```
+
+> Built-in template ids include `googleProjectAristotleTemplate`, `edmondsonPsychologicalSafetyTemplate`, `lencioniFiveDysfunctionsTemplate`, `hackmanTeamDiagnosticTemplate`, `gallupQ12Template`, `spotifySquadHealthCheckTemplate`, `atlassianTeamHealthMonitorTemplate`, `googleProjectOxygenTemplate`, `scarfModelTemplate`, and `everythingBagelTemplate` (every built-in question). Custom templates are created with `addTeamHealthTemplate` (`templates:write`).
+
+---
+
+### 9. Answer a Team Health Question
+
+Requires: `meetings:write`
+
+Each question is a `TeamHealthResponseStage`. A `score` of `null` skips the question. Set `isAnonymous: true` to have the comment paraphrased by AI before the team reads it, so writing style cannot identify the author.
+
+```graphql
+mutation SetTeamHealthResponse($meetingId: ID!, $stageId: ID!, $score: Int, $comment: String, $isAnonymous: Boolean!) {
+  setTeamHealthResponse(meetingId: $meetingId, stageId: $stageId, score: $score, comment: $comment, isAnonymous: $isAnonymous) {
+    meeting {
+      id
+      isViewerComplete
+      respondentCount
+    }
+    stage {
+      id
+      isComplete
+    }
+  }
+}
+```
+
+Variables:
+```json
+{
+  "meetingId": "meeting123",
+  "stageId": "stage456",
+  "score": 4,
+  "comment": "Blameless write-ups after incidents have made it easier to speak up.",
+  "isAnonymous": true
+}
+```
+
+> Scores are only readable by their author. After `endTeamHealth` (`meetings:write`) closes the check, the team reads the aggregate via `TeamHealthResultStage.spreadScores` and `TeamHealthMeeting.responses`.
+
+---
+
 ## Error Handling
 
-Most mutations return a payload type with an optional `error` field:
+Older mutations return a payload type with an optional `error` field; newer ones (e.g. `startTeamHealth`, `setTeamHealthResponse`, `endTeamHealth`) return a `*Success` type directly and surface failures as GraphQL errors.
 
 ```graphql
 type StandardMutationError {
