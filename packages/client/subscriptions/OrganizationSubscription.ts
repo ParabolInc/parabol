@@ -11,7 +11,7 @@ import {
   setOrgUserRoleAddedOrganizationOnNext,
   setOrgUserRoleAddedOrganizationUpdater
 } from '../mutations/SetOrgUserRoleMutation'
-import {updateTemplateScopeOrganizationUpdater} from '../mutations/UpdateReflectTemplateScopeMutation'
+import {updateTemplateScopeOrganizationUpdater} from '../mutations/UpdateTemplateScopeMutation'
 import {createSubscription} from './createSubscription'
 
 const subscription = graphql`
@@ -43,7 +43,7 @@ const subscription = graphql`
         ...UpdateIntegrationProviderMutation_organization @relay(mask: false)
       }
       UpdateTemplateScopeSuccess {
-        ...UpdateReflectTemplateScopeMutation_organization @relay(mask: false)
+        ...UpdateTemplateScopeMutation_organization @relay(mask: false)
       }
 
 

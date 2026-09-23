@@ -7,7 +7,7 @@ import type {ActivityDetailsSidebar_teams$key} from '~/__generated__/ActivityDet
 import type {ActivityDetailsSidebar_template$key} from '~/__generated__/ActivityDetailsSidebar_template.graphql'
 import StartRetrospectiveMutation from '~/mutations/StartRetrospectiveMutation'
 import StartSprintPokerMutation from '~/mutations/StartSprintPokerMutation'
-import UpdateReflectTemplateScopeMutation from '~/mutations/UpdateReflectTemplateScopeMutation'
+import UpdateTemplateScopeMutation from '~/mutations/UpdateTemplateScopeMutation'
 import {
   KeyboardArrowDown as KeyboardArrowDownIcon,
   KeyboardArrowUp as KeyboardArrowUpIcon
@@ -250,7 +250,7 @@ const ActivityDetailsSidebar = (props: Props) => {
     templateTeam && selectedTemplate.scope === 'TEAM'
       ? () => {
           selectedTemplate &&
-            UpdateReflectTemplateScopeMutation(
+            UpdateTemplateScopeMutation(
               atmosphere,
               {scope: 'ORGANIZATION', templateId: selectedTemplate.id},
               {onError, onCompleted}

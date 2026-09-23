@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {ConnectionHandler, type RecordProxy, type RecordSourceSelectorProxy} from 'relay-runtime'
-import type {UpdateReflectTemplateScopeMutation as TUpdateTemplateScopeMutation} from '../__generated__/UpdateReflectTemplateScopeMutation.graphql'
+import type {UpdateTemplateScopeMutation as TUpdateTemplateScopeMutation} from '../__generated__/UpdateTemplateScopeMutation.graphql'
 import type {
   SharingScopeEnum,
-  UpdateReflectTemplateScopeMutation_organization$data
-} from '../__generated__/UpdateReflectTemplateScopeMutation_organization.graphql'
+  UpdateTemplateScopeMutation_organization$data
+} from '../__generated__/UpdateTemplateScopeMutation_organization.graphql'
 import type Atmosphere from '../Atmosphere'
 import type {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import addNodeToArray from '../utils/relay/addNodeToArray'
@@ -18,7 +18,7 @@ import safeRemoveNodeFromConn from '../utils/relay/safeRemoveNodeFromConn'
 import getReflectTemplateOrgConn from './connections/getReflectTemplateOrgConn'
 
 graphql`
-  fragment UpdateReflectTemplateScopeMutation_organization on UpdateTemplateScopeSuccess {
+  fragment UpdateTemplateScopeMutation_organization on UpdateTemplateScopeSuccess {
     template {
       # these fragments are needed for listening org members
       ...TemplateSharing_template
@@ -37,14 +37,14 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation UpdateReflectTemplateScopeMutation($templateId: ID!, $scope: SharingScopeEnum!) {
+  mutation UpdateTemplateScopeMutation($templateId: ID!, $scope: SharingScopeEnum!) {
     updateTemplateScope(templateId: $templateId, scope: $scope) {
       ... on ErrorPayload {
         error {
           message
         }
       }
-      ...UpdateReflectTemplateScopeMutation_organization @relay(mask: false) @alias
+      ...UpdateTemplateScopeMutation_organization @relay(mask: false) @alias
     }
   }
 `
@@ -174,7 +174,7 @@ const handleUpdateTemplateScope = (
 }
 
 export const updateTemplateScopeOrganizationUpdater: SharedUpdater<
-  UpdateReflectTemplateScopeMutation_organization$data
+  UpdateTemplateScopeMutation_organization$data
 > = (payload: any, {atmosphere, store}) => {
   const template = payload.getLinkedRecord('template')
   if (!template) return
@@ -184,7 +184,7 @@ export const updateTemplateScopeOrganizationUpdater: SharedUpdater<
   handleUpdateTemplateScope(template, newScope, store, atmosphere, clonedTemplate)
 }
 
-const UpdateReflectTemplateScopeMutation: StandardMutation<TUpdateTemplateScopeMutation> = (
+const UpdateTemplateScopeMutation: StandardMutation<TUpdateTemplateScopeMutation> = (
   atmosphere,
   variables,
   {onError, onCompleted}
@@ -212,4 +212,4 @@ const UpdateReflectTemplateScopeMutation: StandardMutation<TUpdateTemplateScopeM
   })
 }
 
-export default UpdateReflectTemplateScopeMutation
+export default UpdateTemplateScopeMutation
