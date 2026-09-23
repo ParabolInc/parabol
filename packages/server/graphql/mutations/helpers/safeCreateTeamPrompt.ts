@@ -1,7 +1,7 @@
 import TeamPromptResponsesPhase from '../../../database/types/TeamPromptResponsesPhase'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
-import type {MeetingTypeEnum} from '../../../postgres/types/Meeting'
+import type {MeetingTypeEnum, TeamPromptMeeting} from '../../../postgres/types/Meeting'
 import type {DataLoaderWorker} from '../../graphql'
 import {primePhases} from './createNewMeetingPhases'
 
@@ -68,9 +68,7 @@ const safeCreateTeamPrompt = async (
     .set({lastMeetingType: 'teamPrompt'})
     .where('id', '=', teamId)
     .execute()
-  const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
-  if (meeting.meetingType !== 'teamPrompt') throw new Error('Stand-up was not created')
-  return meeting
+  return dataLoader.get('newMeetings').loadNonNull<TeamPromptMeeting>(meetingId)
 }
 
 export default safeCreateTeamPrompt
