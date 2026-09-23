@@ -1,6 +1,6 @@
 import {VisuallyHidden} from '@radix-ui/react-visually-hidden'
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
@@ -65,6 +65,13 @@ const TeamPickerModal = (props: Props) => {
   }, [selectedTeam?.id])
 
   const navigate = useNavigate()
+  const isNavigatingAwayRef = useRef(false)
+
+  useEffect(() => {
+    if (isOpen) {
+      isNavigatingAwayRef.current = false
+    }
+  }, [isOpen])
 
   // user has no teams
   if (!selectedTeam) return null
@@ -74,6 +81,9 @@ const TeamPickerModal = (props: Props) => {
   }
 
   const onTemplateCreated = (templateId: string | undefined) => {
+    if (templateId) {
+      isNavigatingAwayRef.current = true
+    }
     closeModal()
     if (templateId) {
       navigate(`/activity-library/details/${templateId}`, {
@@ -131,7 +141,12 @@ const TeamPickerModal = (props: Props) => {
 
   return (
     <Dialog isOpen={isOpen} onClose={closeModal}>
-      <DialogContent className='w-[440px] p-6'>
+      <DialogContent
+        className='w-[440px] p-6'
+        onCloseAutoFocus={(e) => {
+          if (isNavigatingAwayRef.current) e.preventDefault()
+        }}
+      >
         <VisuallyHidden asChild>
           <DialogTitle>Select a team to clone this template</DialogTitle>
         </VisuallyHidden>

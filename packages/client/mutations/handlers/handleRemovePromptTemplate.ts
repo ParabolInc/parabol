@@ -26,6 +26,9 @@ const handleRemovePromptTemplate = (
   const allAvailableConn =
     viewer && ConnectionHandler.getConnection(viewer, 'ActivityLibrary_availableTemplates')
   safeRemoveNodeFromConn(templateId, allAvailableConn)
+  const allDetailsConn =
+    viewer && ConnectionHandler.getConnection(viewer, 'ActivityDetails_availableTemplates')
+  safeRemoveNodeFromConn(templateId, allDetailsConn)
 }
 
 const handleRemovePromptTemplates = pluralizeHandler(handleRemovePromptTemplate)

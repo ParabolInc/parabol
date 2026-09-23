@@ -7,7 +7,7 @@ import type {ActivityDetailsSidebar_teams$key} from '~/__generated__/ActivityDet
 import type {ActivityDetailsSidebar_template$key} from '~/__generated__/ActivityDetailsSidebar_template.graphql'
 import StartRetrospectiveMutation from '~/mutations/StartRetrospectiveMutation'
 import StartSprintPokerMutation from '~/mutations/StartSprintPokerMutation'
-import UpdateReflectTemplateScopeMutation from '~/mutations/UpdateReflectTemplateScopeMutation'
+import UpdateTemplateScopeMutation from '~/mutations/UpdateTemplateScopeMutation'
 import {
   KeyboardArrowDown as KeyboardArrowDownIcon,
   KeyboardArrowUp as KeyboardArrowUpIcon
@@ -185,19 +185,7 @@ const ActivityDetailsSidebar = (props: Props) => {
     submitMutation()
     const upgradeAwareOnCompleted = makeUpgradeAwareOnCompleted(onCompleted)
     const upgradeAwareOnError = makeUpgradeAwareOnError(onError)
-    if (type === 'teamPrompt') {
-      StartTeamPromptMutation(
-        atmosphere,
-        {
-          teamId: selectedTeam.id,
-          name,
-          rrule: rrule?.toString(),
-          gcalInput,
-          ignoreSuggestedUpgrade
-        },
-        {navigate, onError: upgradeAwareOnError, onCompleted: upgradeAwareOnCompleted}
-      )
-    } else if (type === 'action') {
+    if (type === 'action') {
       StartCheckInMutation(
         atmosphere,
         {teamId: selectedTeam.id, gcalInput, ignoreSuggestedUpgrade},
@@ -227,6 +215,18 @@ const ActivityDetailsSidebar = (props: Props) => {
                 {teamId: selectedTeam.id, gcalInput, ignoreSuggestedUpgrade},
                 {navigate, onError, onCompleted: upgradeAwareOnCompleted}
               )
+            } else if (type === 'teamPrompt') {
+              StartTeamPromptMutation(
+                atmosphere,
+                {
+                  teamId: selectedTeam.id,
+                  name,
+                  rrule: rrule?.toString(),
+                  gcalInput,
+                  ignoreSuggestedUpgrade
+                },
+                {navigate, onError: upgradeAwareOnError, onCompleted: upgradeAwareOnCompleted}
+              )
             }
           },
           onError
@@ -250,7 +250,7 @@ const ActivityDetailsSidebar = (props: Props) => {
     templateTeam && selectedTemplate.scope === 'TEAM'
       ? () => {
           selectedTemplate &&
-            UpdateReflectTemplateScopeMutation(
+            UpdateTemplateScopeMutation(
               atmosphere,
               {scope: 'ORGANIZATION', templateId: selectedTemplate.id},
               {onError, onCompleted}

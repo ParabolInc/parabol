@@ -46,7 +46,7 @@ const EditableTemplatePromptColor = (props: Props) => {
       <div className='m-px h-3.5 w-3.5 rounded-full' style={{backgroundColor: groupColor}} />
       <div
         className={cn(
-          '-right-1.5 absolute bottom-0 h-6 w-3 text-fg-secondary opacity-0 transition-opacity duration-300 ease-[cubic-bezier(0,0,.2,1)] [&_svg]:text-[18px]',
+          '-right-1.5 absolute bottom-0 flex h-6 w-3 items-center text-fg-secondary opacity-0 transition-opacity duration-300 ease-[cubic-bezier(0,0,.2,1)] [&_svg]:text-[18px]',
           isOwner && 'group-hover:opacity-100'
         )}
       >
