@@ -19,7 +19,9 @@ export const useBubbleMenuStates = (editor: Editor) => {
         isItalic: ctx.editor.isActive('italic'),
         isStrike: ctx.editor.isActive('strike'),
         isUnderline: ctx.editor.isActive('underline'),
-        isLink: ctx.editor.isActive('link')
+        isLink: ctx.editor.isActive('link'),
+        isBulletList: ctx.editor.isActive('bulletList'),
+        isOrderedList: ctx.editor.isActive('orderedList')
       }
     }
   })

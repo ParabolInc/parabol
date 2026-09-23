@@ -6,12 +6,13 @@ import type {TeamPromptOptionsMenu_meeting$key} from '~/__generated__/TeamPrompt
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import EndTeamPromptMutation from '~/mutations/EndTeamPromptMutation'
-import {Flag, Link as MuiLink, OpenInNew, Replay} from '~/ui/icons'
+import {Edit, Flag, Link as MuiLink, OpenInNew, Replay} from '~/ui/icons'
 import {MenuContent} from '../../ui/Menu/MenuContent'
 import {MenuItem} from '../../ui/Menu/MenuItem'
 import makeAppURL from '../../utils/makeAppURL'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import SlackSVG from '../SlackSVG'
+import countUnsharedDrafts from './structured/countUnsharedDrafts'
 
 const OptionMenuItem = ({children}: {children: ReactNode}) => (
   <div className='flex w-60 flex-1 items-center overflow-hidden text-ellipsis whitespace-nowrap'>
@@ -36,6 +37,10 @@ const TeamPromptOptionsMenu = (props: Props) => {
         team {
           id
         }
+        template {
+          id
+          viewerLowestScope
+        }
         meetingSeries {
           id
           recurrenceRule
@@ -44,14 +49,20 @@ const TeamPromptOptionsMenu = (props: Props) => {
             id
           }
         }
+        responses {
+          userId
+          sharedAt
+          content
+        }
         endedAt
       }
     `,
     meetingRef
   )
 
-  const {id: meetingId, meetingSeries, endedAt, team} = meeting
+  const {id: meetingId, meetingSeries, endedAt, team, template, responses} = meeting
   const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
   const {onCompleted, onError} = useMutationProps()
   const navigate = useNavigate()
 
@@ -63,6 +74,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
   // it is somewhat arbitrary and might change in the future
   const canEndRecurrence = !isEnded || !hasActiveMeetings
   const canToggleRecurrence = hasRecurrenceEnabled ? canEndRecurrence : canStartRecurrence
+  const hasUnsharedDraft = countUnsharedDrafts(responses, viewerId) > 0
 
   return (
     <MenuContent align='end'>
@@ -116,6 +128,17 @@ const TeamPromptOptionsMenu = (props: Props) => {
           </OptionMenuItem>
         </Link>
       </MenuItem>
+      {template?.viewerLowestScope === 'TEAM' && (
+        <MenuItem asChild>
+          <Link to={`/activity-library/details/${template.id}`}>
+            <OptionMenuItem>
+              <Edit className='mr-2 text-fg-secondary' />
+              <span>Edit template</span>
+              <OpenInNew className='ml-auto text-base text-fg-secondary' />
+            </OptionMenuItem>
+          </Link>
+        </MenuItem>
+      )}
       <MenuItem
         isDisabled={isEnded}
         onSelect={isEnded ? (e) => e.preventDefault() : undefined}
@@ -123,10 +146,10 @@ const TeamPromptOptionsMenu = (props: Props) => {
           isEnded
             ? undefined
             : () => {
-                if (!hasRecurrenceEnabled) {
-                  EndTeamPromptMutation(atmosphere, {meetingId}, {onCompleted, onError, navigate})
-                } else {
+                if (hasRecurrenceEnabled || hasUnsharedDraft) {
                   openEndRecurringMeetingModal()
+                } else {
+                  EndTeamPromptMutation(atmosphere, {meetingId}, {onCompleted, onError, navigate})
                 }
               }
         }

@@ -58,7 +58,9 @@ const RadioToggle = (props: RadioToggleProps) => {
 interface Props {
   isOpen: boolean
   meetingRef: EndRecurringMeetingModal_meeting$key
+  hasSeries: boolean
   nextMeetingDate?: string | null
+  hasUnsharedDraft?: boolean
   closeModal: () => void
 }
 
@@ -66,7 +68,14 @@ const ACTION_BUTTON_CLASSES =
   'font-sans text-base font-medium cursor-pointer text-center rounded-md px-4 py-2'
 
 export const EndRecurringMeetingModal = (props: Props) => {
-  const {isOpen, meetingRef, nextMeetingDate, closeModal} = props
+  const {
+    isOpen,
+    meetingRef,
+    hasSeries,
+    nextMeetingDate,
+    hasUnsharedDraft = false,
+    closeModal
+  } = props
 
   const meeting = useFragment(
     graphql`
@@ -118,21 +127,30 @@ export const EndRecurringMeetingModal = (props: Props) => {
   return (
     <Dialog isOpen={isOpen} onClose={closeModal}>
       <DialogContent>
-        <div className='mb-4 font-semibold text-xl'>End Meeting</div>
-        <div className='mb-4 flex flex-col gap-2'>
-          <RadioToggle
-            checked={isMeetingOnly}
-            value={true}
-            setChecked={setIsMeetingOnly}
-            label={`End this meeting (will restart ${fromNow ? `in ${fromNow}` : 'soon'})`}
-          />
-          <RadioToggle
-            checked={!isMeetingOnly}
-            value={false}
-            setChecked={setIsMeetingOnly}
-            label={"End this meeting and don't restart"}
-          />
+        <div className='mb-4 font-semibold text-xl'>
+          {hasSeries ? 'End Meeting' : 'End this meeting'}
         </div>
+        {hasSeries && (
+          <div className='mb-4 flex flex-col gap-2'>
+            <RadioToggle
+              checked={isMeetingOnly}
+              value={true}
+              setChecked={setIsMeetingOnly}
+              label={`End this meeting (will restart ${fromNow ? `in ${fromNow}` : 'soon'})`}
+            />
+            <RadioToggle
+              checked={!isMeetingOnly}
+              value={false}
+              setChecked={setIsMeetingOnly}
+              label={"End this meeting and don't restart"}
+            />
+          </div>
+        )}
+        {hasUnsharedDraft && (
+          <p className='mb-4 text-fg-primary text-sm'>
+            You have an unshared draft. Drafts are not included in the summary.
+          </p>
+        )}
         <div className='flex justify-end gap-2.5'>
           <button
             className={cn(
