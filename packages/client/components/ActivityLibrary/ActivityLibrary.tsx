@@ -104,9 +104,6 @@ const query = graphql`
     ...ActivityLibraryTemplateSearch_query @arguments(search: "")
     viewer {
       ...ActivityGrid_user
-      organizations {
-        hasTeamHealth: featureFlag(featureName: "teamHealth")
-      }
       favoriteTemplates {
         ...ActivityLibrary_template @relay(mask: false)
       }
@@ -246,11 +243,7 @@ export const ActivityLibrary = (props: Props) => {
     return templatesMap
   }, [availableTemplates])
 
-  const hasTeamHealth = viewer.organizations.some((org) => org.hasTeamHealth)
-
-  const availableCategoryIds = Object.keys(CATEGORY_ID_TO_NAME).filter(
-    (id) => hasTeamHealth || id !== 'teamHealth'
-  )
+  const availableCategoryIds = Object.keys(CATEGORY_ID_TO_NAME)
 
   const {
     query: searchQuery,
@@ -312,12 +305,12 @@ export const ActivityLibrary = (props: Props) => {
 
     return filteredTemplates.filter((template) =>
       categoryId === QUICK_START_CATEGORY_ID
-        ? template.isRecommended && (hasTeamHealth || template.id !== 'everythingBagelTemplate')
+        ? template.isRecommended
         : categoryId === CUSTOM_CATEGORY_ID
           ? template.scope !== 'PUBLIC'
           : template.category === categoryId
     )
-  }, [searchQuery, filteredTemplates, templateSearch, categoryId, hasTeamHealth])
+  }, [searchQuery, filteredTemplates, templateSearch, categoryId])
 
   const sectionedTemplates = useMemo(() => {
     // Show the teams on search as well, because you can search by team name
