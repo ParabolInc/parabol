@@ -14,6 +14,7 @@ import JiraServerSVG from '../JiraServerSVG'
 import JiraSVG from '../JiraSVG'
 import LinearSVG from '../LinearSVG'
 import ParabolLogoSVG from '../ParabolLogoSVG'
+import {useTeamPromptComposerApi} from './structured/TeamPromptComposerApiContext'
 import GCalIntegrationPanel from './WorkDrawer/GCalIntegrationPanel'
 import GitHubIntegrationPanel from './WorkDrawer/GitHubIntegrationPanel'
 import GitLabIntegrationPanel from './WorkDrawer/GitLabIntegrationPanel'
@@ -36,13 +37,8 @@ const TeamPromptWorkDrawer = (props: Props) => {
         teamId
         prompts {
           id
-        }
-        responses {
-          id
-          userId
-          promptId
-          content
-          plaintextContent
+          question
+          groupColor
         }
         ...ParabolTasksPanel_meeting
         ...GitHubIntegrationPanel_meeting
@@ -86,12 +82,7 @@ const TeamPromptWorkDrawer = (props: Props) => {
     meetingRef
   )
   const atmosphere = useAtmosphere()
-  const {viewerId} = atmosphere
-  const promptId = meeting.prompts[0]?.id ?? null
-  const viewerResponse =
-    meeting.responses.find(
-      (response) => response.userId === viewerId && response.promptId === promptId
-    ) ?? null
+  const composer = useTeamPromptComposerApi()
   const hasJiraServer =
     !!meeting.viewerMeetingMember?.teamMember?.integrations.jiraServer?.sharedProviders?.length
   const hasLinear =
@@ -191,7 +182,9 @@ const TeamPromptWorkDrawer = (props: Props) => {
   const {Component} = baseTabs[activeIdx]!
 
   return (
-    <WorkDrawerConsumeContext.Provider value={{mode: 'teamPrompt', viewerResponse, promptId}}>
+    <WorkDrawerConsumeContext.Provider
+      value={{mode: 'teamPrompt', composer, prompts: meeting.prompts}}
+    >
       <div className='flex min-h-0 flex-1 flex-col'>
         <div className='flex justify-center pt-3 pb-2'>
           <div className='flex gap-1'>
