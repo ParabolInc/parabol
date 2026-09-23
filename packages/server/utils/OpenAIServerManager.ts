@@ -14,69 +14,6 @@ export interface TeamHealthDiscussionStarterInput {
   priorCycles: {endedAt: string; score: number | null; comments: string[]}[]
 }
 
-type IndexedPrompt = {question: string; description: string}
-
-type IndexedInspirationItems = {
-  items: {title: string | null; content: string; promptIndex: number}[]
-  tokenCost: number
-}
-
-const formatIndexedPrompts = (prompts: IndexedPrompt[]) =>
-  prompts
-    .map(
-      (prompt, i) =>
-        `${i}: "${prompt.question}"${prompt.description ? ` — ${prompt.description}` : ''}`
-    )
-    .join('\n')
-
-const requestIndexedInspirationItems = async (
-  openAIApi: OpenAI,
-  operationName: string,
-  instructions: string,
-  workItemsText: string,
-  promptCount: number
-): Promise<IndexedInspirationItems | null> => {
-  try {
-    const response = await openAIApi.chat.completions.create({
-      model: AI_MODEL,
-      messages: [
-        {
-          role: 'user',
-          content: `${instructions}\n\nRecent work items:\n${workItemsText}`
-        }
-      ],
-      response_format: {type: 'json_object'},
-      reasoning_effort: 'low'
-    })
-
-    const content = response.choices[0]?.message?.content
-    if (!content) return null
-
-    let parsed: {items?: {title?: string | null; content?: string; promptIndex?: number}[]}
-    try {
-      parsed = JSON.parse(content)
-    } catch {
-      logError(new Error(`Failed to parse ${operationName} JSON response`))
-      return null
-    }
-
-    const items = (parsed.items ?? [])
-      .filter((item) => !!item?.content?.trim())
-      .map((item) => {
-        const rawIndex = Number(item.promptIndex)
-        const promptIndex =
-          Number.isInteger(rawIndex) && rawIndex >= 0 && rawIndex < promptCount ? rawIndex : 0
-        return {title: item.title?.trim() || null, content: item.content!.trim(), promptIndex}
-      })
-
-    return {items, tokenCost: response.usage?.total_tokens ?? 10_000}
-  } catch (e) {
-    const error = e instanceof Error ? e : new Error(`OpenAI failed to ${operationName}`)
-    logError(error)
-    return null
-  }
-}
-
 class OpenAIServerManager {
   openAIApi
   constructor() {
@@ -427,6 +364,7 @@ ${cycles.join('\n\n')}`
   }
 
   async generateInspirationItems(
+    meetingType: 'retrospective' | 'teamPrompt',
     workItemsText: string,
     prompts: {question: string; description: string}[],
     userName: string,
@@ -438,9 +376,14 @@ ${cycles.join('\n\n')}`
   } | null> {
     if (!this.openAIApi) return null
     if (!workItemsText.trim()) return null
+    if (prompts.length === 0) return null
 
-    const questionList = formatIndexedPrompts(prompts)
-
+    const promptList = prompts
+      .map(
+        (prompt, i) =>
+          `${i}: "${prompt.question}"${prompt.description ? ` — ${prompt.description}` : ''}`
+      )
+      .join('\n')
     const styleGuide =
       pastResponses.length > 0
         ? `\n\nHere are ${userName}'s most recent answers to past standup questions. Mimic their style: match the tone, length, level of detail, formatting, and how casual or formal they are. Do NOT reuse their content — only their voice.\n\n${pastResponses
@@ -448,10 +391,21 @@ ${cycles.join('\n\n')}`
             .join('\n\n')}`
         : ''
 
-    const defaultPrompt = `You are helping ${userName} quickly draft their standup answers, grounded in their recent work. You are writing AS ${userName}, in their voice.
+    let instructions: string
+    if (meetingType === 'teamPrompt') {
+      instructions = userPrompt
+        ? `${userPrompt}
+
+You are writing AS ${userName}, in the first person ("I", "my"). Never refer to ${userName} in the third person. Each work item lists a Status: use the past tense for completed work and the present/continuous tense for ongoing work. The standup questions are:
+${promptList}
+
+Produce AT MOST ONE item per question, grounded ONLY in the work items below. Each item synthesizes ALL of the work relevant to its question. Return the question index as "promptIndex" for each.${styleGuide}
+
+Return JSON of the form: { "items": [{ "title": "<short heading, or null>", "content": "<text>", "promptIndex": <question index> }] }`
+        : `You are helping ${userName} quickly draft their standup answers, grounded in their recent work. You are writing AS ${userName}, in their voice.
 
 The standup asks these questions:
-${questionList}
+${promptList}
 
 Below is a list of ${userName}'s recent work items (issues, pull requests, calendar events, tasks, and their discussion threads). Based ONLY on this work, draft a short, first-person answer to each question the work items can answer.
 
@@ -466,48 +420,20 @@ Rules:
 - If the work items are empty or irrelevant to every question, return an empty items array.${styleGuide}
 
 Return JSON of the form: { "items": [{ "title": "<short heading, or null>", "content": "<the drafted answer>", "promptIndex": <question index> }] }`
+    } else {
+      instructions = userPrompt
+        ? `${userPrompt}
 
-    const instructions = userPrompt
-      ? `${userPrompt}
+You are writing AS ${userName}, in the first person ("I", "my"). Never refer to ${userName} in the third person. The retro categories are:
+${promptList}
 
-You are writing AS ${userName}, in the first person ("I", "my"). Never refer to ${userName} in the third person. Each work item lists a Status: use the past tense for completed work and the present/continuous tense for ongoing work. The standup questions are:
-${questionList}
+Produce MULTIPLE distinct reflections grounded ONLY in the work items below. For each, choose the single best-fitting category and return its index as "promptIndex".
 
-Produce AT MOST ONE item per question, grounded ONLY in the work items below. Each item synthesizes ALL of the work relevant to its question. Return the question index as "promptIndex" for each.${styleGuide}
-
-Return JSON of the form: { "items": [{ "title": "<short heading, or null>", "content": "<text>", "promptIndex": <question index> }] }`
-      : defaultPrompt
-
-    return requestIndexedInspirationItems(
-      this.openAIApi,
-      'generateInspirationItems',
-      instructions,
-      workItemsText,
-      prompts.length
-    )
-  }
-
-  async generateRetroInspirationItems(
-    workItemsText: string,
-    prompts: {question: string; description: string}[],
-    userName: string,
-    userPrompt?: string | null
-  ): Promise<{
-    items: {title: string | null; content: string; promptIndex: number}[]
-    tokenCost: number
-  } | null> {
-    if (!this.openAIApi) return null
-    if (!workItemsText.trim()) return null
-    if (prompts.length === 0) return null
-
-    // The reflect prompts are the retro's columns. The model drafts reflections and assigns each
-    // to the single best-fitting column by index.
-    const categoryList = formatIndexedPrompts(prompts)
-
-    const defaultPrompt = `You are helping ${userName} prepare for a team retrospective, grounded in their recent work. You are writing AS ${userName}, in the first person ("I", "my").
+Return JSON of the form: { "items": [{ "title": "<short heading, or null>", "content": "<text>", "promptIndex": <category index> }] }`
+        : `You are helping ${userName} prepare for a team retrospective, grounded in their recent work. You are writing AS ${userName}, in the first person ("I", "my").
 
 A retrospective collects reflections into categories. The categories for this retro are:
-${categoryList}
+${promptList}
 
 Below is a list of ${userName}'s recent work items (issues, pull requests, calendar events, tasks, and their discussion threads). Based ONLY on this work, draft several short, first-person reflections that ${userName} could contribute to the retro.
 
@@ -521,25 +447,47 @@ Rules:
 - If the work items are empty or irrelevant, return an empty items array.
 
 Return JSON of the form: { "items": [{ "title": "<short heading, or null>", "content": "<the reflection>", "promptIndex": <category index> }] }`
+    }
 
-    const instructions = userPrompt
-      ? `${userPrompt}
+    try {
+      const response = await this.openAIApi.chat.completions.create({
+        model: AI_MODEL,
+        messages: [
+          {
+            role: 'user',
+            content: `${instructions}\n\nRecent work items:\n${workItemsText}`
+          }
+        ],
+        response_format: {type: 'json_object'},
+        reasoning_effort: 'low'
+      })
 
-You are writing AS ${userName}, in the first person ("I", "my"). Never refer to ${userName} in the third person. The retro categories are:
-${categoryList}
+      const content = response.choices[0]?.message?.content
+      if (!content) return null
 
-Produce MULTIPLE distinct reflections grounded ONLY in the work items below. For each, choose the single best-fitting category and return its index as "promptIndex".
+      let parsed: {items?: {title?: string | null; content?: string; promptIndex?: number}[]}
+      try {
+        parsed = JSON.parse(content)
+      } catch {
+        logError(new Error('Failed to parse generateInspirationItems JSON response'))
+        return null
+      }
 
-Return JSON of the form: { "items": [{ "title": "<short heading, or null>", "content": "<text>", "promptIndex": <category index> }] }`
-      : defaultPrompt
+      const items = (parsed.items ?? [])
+        .filter((item) => !!item?.content?.trim())
+        .map((item) => {
+          const rawIndex = Number(item.promptIndex)
+          const promptIndex =
+            Number.isInteger(rawIndex) && rawIndex >= 0 && rawIndex < prompts.length ? rawIndex : 0
+          return {title: item.title?.trim() || null, content: item.content!.trim(), promptIndex}
+        })
 
-    return requestIndexedInspirationItems(
-      this.openAIApi,
-      'generateRetroInspirationItems',
-      instructions,
-      workItemsText,
-      prompts.length
-    )
+      return {items, tokenCost: response.usage?.total_tokens ?? 10_000}
+    } catch (e) {
+      const error = e instanceof Error ? e : new Error('OpenAI failed to generateInspirationItems')
+      logError(error)
+      return null
+    }
   }
 
   async generateSummary(yamlData: string, userPrompt?: string | null): Promise<string | null> {
