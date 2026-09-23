@@ -3,6 +3,7 @@ import type {GraphQLResolveInfo} from 'graphql'
 import LinearIssueId from 'parabol-client/shared/gqlIds/LinearIssueId'
 import LinearProjectId from 'parabol-client/shared/gqlIds/LinearProjectId'
 import {splitTipTapContent} from 'parabol-client/shared/tiptap/splitTipTapContent'
+import {tipTapToMarkdown} from 'parabol-client/shared/tiptap/tipTapToMarkdown'
 import type {InternalContext} from '../../graphql/graphql'
 import createCommentMutation from '../../graphql/nestedSchema/Linear/mutations/createComment.graphql'
 import createIssueMutation from '../../graphql/nestedSchema/Linear/mutations/createIssue.graphql'
@@ -29,7 +30,6 @@ import type {
   UpdateIssueMutation,
   UpdateIssueMutationVariables
 } from '../../types/linearTypes'
-import {convertTipTapToMarkdown} from '../../utils/convertTipTapToMarkdown'
 import type {CreateTaskResponse, TaskIntegrationManager} from '../platform/TaskIntegrationManager'
 import makeCreateLinearTaskComment from './makeCreateLinearTaskComment'
 
@@ -79,7 +79,7 @@ class LinearServerManager implements TaskIntegrationManager {
       return new Error('Could not parse teamId from integrationRepoId.')
     }
     const {title, bodyContent} = splitTipTapContent(rawContentJSON)
-    const description = convertTipTapToMarkdown(bodyContent)
+    const description = tipTapToMarkdown(bodyContent)
 
     const [createIssueData, createIssueError] = await this.createIssueInternal({
       title,

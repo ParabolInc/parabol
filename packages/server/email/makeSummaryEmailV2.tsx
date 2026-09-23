@@ -10,6 +10,7 @@ import {Section} from '@react-email/section'
 import {Text} from '@react-email/text'
 import dayjs from 'dayjs'
 import type {GraphQLResolveInfo} from 'graphql'
+import {tipTapToMarkdown} from 'parabol-client/shared/tiptap/tipTapToMarkdown'
 import {Fragment} from 'react'
 import {PALETTE} from '../../client/styles/paletteV3'
 import logoImg from '../../client/styles/theme/images/brand/parabol_logo_transparent@1X.png'
@@ -23,7 +24,6 @@ import {
   getPokerRowData
 } from '../graphql/mutations/helpers/summaryPage/getPokerTable'
 import {CipherId} from '../utils/CipherId'
-import {convertTipTapToMarkdown} from '../utils/convertTipTapToMarkdown'
 
 const insightBox = {
   marginBottom: '20px'
@@ -83,7 +83,7 @@ const makeTeamPromptFallbackInsights = async (
       if (!userId) return null
       const user = await dataLoader.get('users').loadNonNull(userId)
       const {preferredName} = user
-      const markdown = convertTipTapToMarkdown(content)
+      const markdown = tipTapToMarkdown(content)
 
       return (
         <Fragment key={userId}>
