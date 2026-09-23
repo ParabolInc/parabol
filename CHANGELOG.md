@@ -5,6 +5,78 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [14.0.0](https://github.com/ParabolInc/parabol/compare/v13.48.0...v14.0.0) (2026-09-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* Team Health ([#13545](https://github.com/ParabolInc/parabol/issues/13545))
+
+### Added
+
+* Team Health ([#13545](https://github.com/ParabolInc/parabol/issues/13545)) ([80234ae](https://github.com/ParabolInc/parabol/commit/80234aeb0749a885fffac1cdc8a9d5c3988cfc3d))
+
+
+### Fixed
+
+* bump luna ([#13543](https://github.com/ParabolInc/parabol/issues/13543)) ([049918e](https://github.com/ParabolInc/parabol/commit/049918e2ee3f60e23f6ebf65eeccbfa94555cc82))
+
+## [13.48.0](https://github.com/ParabolInc/parabol/compare/v13.47.0...v13.48.0) (2026-09-22)
+
+
+### Added
+
+* Demo Meeting Card ([#13538](https://github.com/ParabolInc/parabol/issues/13538)) ([8be988e](https://github.com/ParabolInc/parabol/commit/8be988e59dc1dee69bf814d594c98b583c79f57b))
+* Team Health Demo ([#13535](https://github.com/ParabolInc/parabol/issues/13535)) ([91fe359](https://github.com/ParabolInc/parabol/commit/91fe3599201b81e526ff003e18df2e529bffdd7f))
+
+
+### Fixed
+
+* add respondent userIds above 3 ([#13540](https://github.com/ParabolInc/parabol/issues/13540)) ([c05c414](https://github.com/ParabolInc/parabol/commit/c05c414167904619e831e4df12237321da575eb3))
+* bump pnpm ([#13541](https://github.com/ParabolInc/parabol/issues/13541)) ([31e85ce](https://github.com/ParabolInc/parabol/commit/31e85ce6ccbf38d532105c3b798414198c818613))
+* reveal results for facilitator ([#13539](https://github.com/ParabolInc/parabol/issues/13539)) ([ee74699](https://github.com/ParabolInc/parabol/commit/ee746994525618fec8711c38155b529c60bcd3c5))
+
+## [13.47.0](https://github.com/ParabolInc/parabol/compare/v13.46.1...v13.47.0) (2026-09-21)
+
+
+### Added
+
+* Team health first meeting preview ([#13526](https://github.com/ParabolInc/parabol/issues/13526)) ([7b21656](https://github.com/ParabolInc/parabol/commit/7b2165622c3e743fe7060e0bd82a9ede549fe0c6))
+
+## [13.46.1](https://github.com/ParabolInc/parabol/compare/v13.46.0...v13.46.1) (2026-09-18)
+
+
+### Fixed
+
+* mobile view, no changing scope, highlight edit button on click ([#13522](https://github.com/ParabolInc/parabol/issues/13522)) ([f3a15ee](https://github.com/ParabolInc/parabol/commit/f3a15eeadd3f45ce261fe5bef2e78bf4c8117d58))
+
+
+### Changed
+
+* delete deprecated per-service dimension field mutations ([#13521](https://github.com/ParabolInc/parabol/issues/13521)) ([2d0ccea](https://github.com/ParabolInc/parabol/commit/2d0ccead56a48698a418b4b167fd003b8048eb51))
+
+## [13.46.0](https://github.com/ParabolInc/parabol/compare/v13.45.2...v13.46.0) (2026-09-18)
+
+
+### Added
+
+* Add trendline to animation ([#13519](https://github.com/ParabolInc/parabol/issues/13519)) ([e069d0e](https://github.com/ParabolInc/parabol/commit/e069d0ef2e4ba4dbf2b20d8cf5ebbd7d0dc0311e))
+* explain the team health question draw in the template editor ([#13516](https://github.com/ParabolInc/parabol/issues/13516)) ([1299aa9](https://github.com/ParabolInc/parabol/commit/1299aa9e87806aa293923885f62495884ba09992))
+
+
+### Changed
+
+* generic ProviderList host for task integrations (WIP) ([#13476](https://github.com/ParabolInc/parabol/issues/13476)) ([c29b543](https://github.com/ParabolInc/parabol/commit/c29b543755f9b2fa03485de61aa5c40d8d3fe5cc))
+
+## [13.45.2](https://github.com/ParabolInc/parabol/compare/v13.45.1...v13.45.2) (2026-09-17)
+
+
+### Fixed
+
+* change template type in search results for team health ([#13510](https://github.com/ParabolInc/parabol/issues/13510)) ([0094ea3](https://github.com/ParabolInc/parabol/commit/0094ea341217e691766c6316ea0644290ad97b41))
+* TaskCard padding ([#13515](https://github.com/ParabolInc/parabol/issues/13515)) ([5360f22](https://github.com/ParabolInc/parabol/commit/5360f22ed8cf158c7b2368c3ce4b64d8ae29d479))
+* team menu selector ([#13514](https://github.com/ParabolInc/parabol/issues/13514)) ([c86a187](https://github.com/ParabolInc/parabol/commit/c86a187296a3f9ff1f7682a1bfba12812e8ae19a))
+
 ## [13.45.1](https://github.com/ParabolInc/parabol/compare/v13.45.0...v13.45.1) (2026-09-16)
 
 

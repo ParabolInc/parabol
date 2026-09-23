@@ -1,13 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
-import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import type {TaskColumnAddTaskSelectTeam_teams$key} from '~/__generated__/TaskColumnAddTaskSelectTeam_teams.graphql'
 import type {TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import AddTaskButton from '../../../../components/AddTaskButton/AddTaskButton'
+import TeamPickerMenuContent from '../../../../components/TeamPicker/TeamPickerMenuContent'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import CreateTaskMutation from '../../../../mutations/CreateTaskMutation'
 import {Menu} from '../../../../ui/Menu/Menu'
-import lazyPreload from '../../../../utils/lazyPreload'
 import {taskStatusLabels} from '../../../../utils/taskStatus'
 
 interface Props {
@@ -17,27 +16,19 @@ interface Props {
   userId: string
 }
 
-const SelectTeamDropdown = lazyPreload(
-  () =>
-    import(
-      /* webpackChunkName: 'SelectTeamDropdown' */
-      '../../../../components/SelectTeamDropdown'
-    )
-)
-
 const TaskColumnAddTaskSelectTeam = (props: Props) => {
   const {sortOrder, status, teams: teamsRef, userId} = props
   const teams = useFragment(
     graphql`
       fragment TaskColumnAddTaskSelectTeam_teams on Team @relay(plural: true) {
-        ...SelectTeamDropdown_teams
+        ...TeamPickerMenuContent_teams
       }
     `,
     teamsRef
   )
   const label = taskStatusLabels[status]
   const atmosphere = useAtmosphere()
-  const teamHandleClick = (teamId: string) => {
+  const onSelectTeam = (teamId: string) => {
     CreateTaskMutation(
       atmosphere,
       {
@@ -52,10 +43,8 @@ const TaskColumnAddTaskSelectTeam = (props: Props) => {
     )
   }
   return (
-    <Menu trigger={<AddTaskButton onMouseEnter={SelectTeamDropdown.preload} label={label} />}>
-      <Suspense fallback={null}>
-        <SelectTeamDropdown teamHandleClick={teamHandleClick} teams={teams} />
-      </Suspense>
+    <Menu trigger={<AddTaskButton label={label} />}>
+      <TeamPickerMenuContent teamsRef={teams} selectedTeamIds={[]} onSelectTeam={onSelectTeam} />
     </Menu>
   )
 }

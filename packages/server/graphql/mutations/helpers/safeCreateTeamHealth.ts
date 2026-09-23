@@ -19,8 +19,8 @@ const safeCreateTeamHealth = async (
     meetingSeriesId?: number
     scheduledEndTime?: Date | null
     // Set only when this meeting is one of several a multi-team group opens for the same
-    // occurrence, since they must all ask the same questions & the rotation breaks ties at
-    // random. Left undefined otherwise, so a lone meeting rotates its own.
+    // occurrence, since they must all ask the same questions & the rotation has to span the
+    // group's history. Left undefined otherwise, so a lone meeting rotates its own.
     questionIds?: number[]
   },
   dataLoader: DataLoaderWorker

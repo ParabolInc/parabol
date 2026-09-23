@@ -28,7 +28,7 @@ const DiscussionThread = (props: Props) => {
   const ref = useRef<HTMLDivElement>(null)
   const data = usePreloadedQuery<DiscussionThreadQuery>(
     graphql`
-      query DiscussionThreadQuery($discussionId: ID!) {
+      query DiscussionThreadQuery($discussionId: ID!) @raw_response_type {
         viewer {
           ...DiscussionThreadInput_viewer
           ...DiscussionThreadList_viewer

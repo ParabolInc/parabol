@@ -11,6 +11,8 @@ export type NotifyResponse =
 export type TeamHealthProgress = {
   respondentCount: number
   eligibleCount: number
+  // who still owes a response. Empty while too few have answered to name anyone
+  stragglerNames: string[]
 }
 
 export type NotificationIntegration = {

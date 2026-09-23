@@ -1,7 +1,12 @@
 import type {SlackNotificationEventEnum} from '~/__generated__/SlackNotificationList_viewer.graphql'
 import JiraProjectId from '../../shared/gqlIds/JiraProjectId'
 import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'
-import {ExternalLinks, MeetingSettingsThreshold, RetroDemo} from '../../types/constEnums'
+import {
+  DemoIntegration,
+  ExternalLinks,
+  MeetingSettingsThreshold,
+  RetroDemo
+} from '../../types/constEnums'
 import {DISCUSS, GROUP, REFLECT, RETROSPECTIVE, VOTE} from '../../utils/constants'
 import getDemoAvatar from '../../utils/getDemoAvatar'
 import toTeamMemberId from '../../utils/relay/toTeamMemberId'
@@ -58,7 +63,7 @@ const initMeetingSettings = () => {
 }
 
 export const JiraDemoKey = 'Demo'
-export const JiraDemoCloudName = 'jira-demo'
+export const JiraDemoCloudName = DemoIntegration.JIRA_CLOUD_NAME
 const JiraSecretKey = 'jira-secret'
 const JiraDemoProjectId = '123:Demo'
 const JiraSecretProjectId = '123:jira-secret'
@@ -117,7 +122,7 @@ class DemoJiraRemoteProject {
   }
 }
 const GitLabDemoKey = 'parabol/parabol-demo'
-export const GitHubDemoKey = 'ParabolInc/ParabolDemo'
+export const GitHubDemoKey = DemoIntegration.GITHUB_REPO
 export const GitHubProjectKeyLookup = {
   [GitHubDemoKey]: {
     nameWithOwner: GitHubDemoKey,

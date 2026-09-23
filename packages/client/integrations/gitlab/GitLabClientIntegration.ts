@@ -2,11 +2,13 @@ import {lazy} from 'react'
 import type Atmosphere from '../../Atmosphere'
 import GitLabSVG from '../../components/GitLabSVG'
 import {gitlabIntegrationMeta} from '../../shared/integrations/gitlabIntegrationMeta'
+import gitlabLogo from '../../styles/theme/images/graphics/gitlab-icon-rgb.svg'
 import GitLabClientManager from '../../utils/GitLabClientManager'
 import {
   type ClientIntegrationCapabilities,
   ClientIntegrationDefinition,
-  type ConnectParams
+  type ConnectParams,
+  type ProviderLogoAsset
 } from '../platform/ClientIntegrationDefinition'
 
 export class GitLabClientIntegration extends ClientIntegrationDefinition {
@@ -14,6 +16,7 @@ export class GitLabClientIntegration extends ClientIntegrationDefinition {
   readonly title = gitlabIntegrationMeta.title
   readonly description = gitlabIntegrationMeta.description
   readonly Icon = GitLabSVG
+  readonly logo: ProviderLogoAsset = {src: gitlabLogo}
   readonly capabilities: ClientIntegrationCapabilities = {
     scoping: {
       Panel: lazy(

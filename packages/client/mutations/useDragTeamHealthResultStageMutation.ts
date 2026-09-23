@@ -29,7 +29,7 @@ const mutation = graphql`
     $meetingId: ID!
     $stageId: ID!
     $sortOrder: Float!
-  ) {
+  ) @raw_response_type {
     dragTeamHealthResultStage(meetingId: $meetingId, stageId: $stageId, sortOrder: $sortOrder) {
       ...useDragTeamHealthResultStageMutation_meeting @relay(mask: false)
     }

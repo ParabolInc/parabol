@@ -1,3 +1,4 @@
+import {isAnonymousRespondentCount} from '../../../../client/shared/utils/teamHealthAnonymity'
 import type {TeamHealthResultStage as TeamHealthResultStageDB} from '../../../postgres/types/NewMeetingPhase'
 import type {DataLoaderWorker} from '../../graphql'
 import getTeamHealthResultScore from '../../mutations/helpers/getTeamHealthResultScore'
@@ -7,10 +8,6 @@ export type TeamHealthResultStageSource = TeamHealthResultStageDB & {
   meetingId: string
   teamId: string
 }
-
-// a spread of fewer scores than this could be matched to the people who answered, so only the
-// average is readable below it
-const MIN_SPREAD_RESPONDENTS = 4
 
 // revealing the results is the act of ending the meeting, so endedAt is the only reveal state. Keep
 // the aggregates unreadable until then so a small response set can't be polled and de-anonymized
@@ -46,7 +43,7 @@ const TeamHealthResultStage: TeamHealthResultStageResolvers = {
     const scores = responses.flatMap((response) =>
       response.questionId === questionId && response.score !== null ? [response.score] : []
     )
-    return scores.length >= MIN_SPREAD_RESPONDENTS ? scores : null
+    return isAnonymousRespondentCount(scores.length) ? scores : null
   },
   responses: async ({meetingId, questionId}, _args, {dataLoader}) => {
     if (!(await isRevealed(meetingId, dataLoader))) return []

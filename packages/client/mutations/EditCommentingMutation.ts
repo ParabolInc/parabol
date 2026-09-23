@@ -16,7 +16,7 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation EditCommentingMutation($isCommenting: Boolean!, $discussionId: ID!) {
+  mutation EditCommentingMutation($isCommenting: Boolean!, $discussionId: ID!) @raw_response_type {
     editCommenting(isCommenting: $isCommenting, discussionId: $discussionId) {
       ...EditCommentingMutation_meeting @relay(mask: false) @alias
       ... on ErrorPayload {
