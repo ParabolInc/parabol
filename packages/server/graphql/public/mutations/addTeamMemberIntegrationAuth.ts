@@ -44,6 +44,11 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
   const subOptions = {mutatorId, operationId}
 
   const providerDbId = IntegrationProviderId.split(providerId)
+  if (!Number.isInteger(providerDbId)) {
+    return standardError(new Error(`Invalid integration provider id: ${providerId}`), {
+      userId: viewerId
+    })
+  }
   const [integrationProvider, viewer] = await Promise.all([
     dataLoader.get('integrationProviders').load(providerDbId),
     dataLoader.get('users').loadNonNull(viewerId)

@@ -18,6 +18,9 @@ const removeIntegrationProvider: MutationResolvers['removeIntegrationProvider'] 
 
   // AUTH
   const providerDbId = IntegrationProviderId.split(providerId)
+  if (!Number.isInteger(providerDbId)) {
+    return standardError(new Error('Integration Provider not found'))
+  }
   const provider = await dataLoader.get('integrationProviders').load(providerDbId)
   if (!provider) return standardError(new Error('Integration Provider not found'))
   const {teamId, orgId, scope} = provider
