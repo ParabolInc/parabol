@@ -1,4 +1,4 @@
-import {GraphQLError} from 'graphql'
+import type {TeamPromptMeeting} from '../../../postgres/types/Meeting'
 import {getUserId} from '../../../utils/authorization'
 import type {ShareTeamPromptResponsesSuccessResolvers} from '../resolverTypes'
 
@@ -6,9 +6,7 @@ export type ShareTeamPromptResponsesSuccessSource = {meetingId: string; userId: 
 
 const ShareTeamPromptResponsesSuccess: ShareTeamPromptResponsesSuccessResolvers = {
   meeting: async ({meetingId}, _args, {dataLoader}) => {
-    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
-    if (meeting.meetingType !== 'teamPrompt') throw new GraphQLError('Not a stand-up')
-    return meeting
+    return dataLoader.get('newMeetings').loadNonNull<TeamPromptMeeting>(meetingId)
   },
   responses: async ({meetingId, userId}, _args, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
