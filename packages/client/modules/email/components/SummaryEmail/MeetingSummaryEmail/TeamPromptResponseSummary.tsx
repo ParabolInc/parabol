@@ -20,9 +20,9 @@ const TeamPromptResponseSummary = (props: Props) => {
             __typename
             stages {
               id
-              response {
+              responses {
+                sharedAt
                 plaintextContent
-                createdAt
               }
               ...TeamPromptResponseSummaryCard_stage
             }
@@ -36,11 +36,14 @@ const TeamPromptResponseSummary = (props: Props) => {
   const phase = getPhaseByTypename(phases, 'TeamPromptResponsesPhase')
   const allStages = phase.stages.filter(isNotNull)
 
+  const firstSharedAt = (stage: (typeof allStages)[number]) =>
+    stage.responses
+      .filter(({sharedAt, plaintextContent}) => !!sharedAt && !!plaintextContent)
+      .map(({sharedAt}) => sharedAt!)
+      .sort()[0]
   const orderedNonEmptyStages = allStages
-    .filter((stage) => !!stage.response?.plaintextContent)
-    .sort((stageA, stageB) =>
-      sortByISO8601Date(stageA.response!.createdAt, stageB.response!.createdAt)
-    )
+    .filter((stage) => !!firstSharedAt(stage))
+    .sort((stageA, stageB) => sortByISO8601Date(firstSharedAt(stageA)!, firstSharedAt(stageB)!))
 
   return (
     <tr style={{width: '100%'}}>

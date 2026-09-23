@@ -129,7 +129,7 @@ export const ImageBlockBubbleMenu = (props: Props) => {
 
           {/* Delete */}
           <BubbleMenuButton
-            onClick={() => editor.chain().deleteSelection().run()}
+            onClick={() => editor.chain().focus().deleteSelection().run()}
             Icon={DeleteIcon}
             title='Delete image'
           />

@@ -84,7 +84,7 @@ export const ImageSelectorSearchTab = (props: Props) => {
               className={cn('row-span w-full cursor-pointer rounded-sm')}
               onClick={() => {
                 const src = originalUrl || previewUrl
-                editor.commands.setImageBlock({src})
+                editor.chain().focus().setImageBlock({src}).run()
               }}
             >
               <img

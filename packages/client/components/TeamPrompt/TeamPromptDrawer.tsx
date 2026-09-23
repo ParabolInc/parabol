@@ -2,10 +2,12 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import type {TeamPromptDrawer_meeting$key} from '~/__generated__/TeamPromptDrawer_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import usePhoneViewport from '~/hooks/usePhoneViewport'
 import {DiscussionThreadEnum} from '../../types/constEnums'
 import findStageById from '../../utils/meetings/findStageById'
 import DiscussionDrawer from '../DiscussionDrawer'
 import ResponsiveDashSidebar from '../ResponsiveDashSidebar'
+import InspirationBottomSheet from './structured/mobile/InspirationBottomSheet'
 import {getSharedResponses} from './structured/teamPromptStages'
 import TeamPromptDiscussionThreadHeader from './TeamPromptDiscussionThreadHeader'
 import TeamPromptWorkDrawer from './TeamPromptWorkDrawer'
@@ -48,7 +50,9 @@ const TeamPromptDrawer = ({meetingRef}: Props) => {
   )
 
   const atmosphere = useAtmosphere()
+  const isPhone = usePhoneViewport()
   const {id: meetingId, rightDrawerOpen, localStageId, prompts} = meeting
+  const showSheet = isPhone && rightDrawerOpen === 'inspiration'
 
   const onToggleDrawer = () => {
     commitLocalUpdate(atmosphere, (store) => {
@@ -67,35 +71,43 @@ const TeamPromptDrawer = ({meetingRef}: Props) => {
 
   const allStages = meeting.phases.flatMap((p) => p.stages)
   const selectedStage = localStageId ? findStageById(meeting.phases, localStageId)?.stage : null
-  const activeStage = selectedStage?.discussionId
-    ? selectedStage
-    : allStages.find(
-        (stage) => stage.discussionId && getSharedResponses(stage.responses ?? []).length > 0
-      )
+  const activeStage =
+    rightDrawerOpen !== 'discussion'
+      ? undefined
+      : selectedStage?.discussionId
+        ? selectedStage
+        : allStages.find(
+            (stage) => stage.discussionId && getSharedResponses(stage.responses ?? []).length > 0
+          )
 
   return (
-    <ResponsiveDashSidebar
-      isOpen={rightDrawerOpen !== null}
-      isRightDrawer
-      onToggle={onToggleDrawer}
-      sidebarWidth={DiscussionThreadEnum.WIDTH}
-    >
-      <DiscussionDrawer
-        discussionId={activeStage?.discussionId}
+    <>
+      <ResponsiveDashSidebar
+        isOpen={rightDrawerOpen !== null && !showSheet}
+        isRightDrawer
         onToggle={onToggleDrawer}
-        allowedThreadables={['comment', 'task']}
-        meetingRef={meeting}
-        meetingId={meetingId}
-        threadHeader={
-          activeStage && (
-            <TeamPromptDiscussionThreadHeader stageRef={activeStage} prompts={prompts} />
-          )
-        }
-        workContent={<TeamPromptWorkDrawer meetingRef={meeting} />}
-        activeTab={rightDrawerOpen}
-        onChangeTab={onChangeTab}
-      />
-    </ResponsiveDashSidebar>
+        sidebarWidth={DiscussionThreadEnum.WIDTH}
+      >
+        <DiscussionDrawer
+          discussionId={activeStage?.discussionId}
+          onToggle={onToggleDrawer}
+          allowedThreadables={['comment', 'task']}
+          meetingRef={meeting}
+          meetingId={meetingId}
+          threadHeader={
+            activeStage && (
+              <TeamPromptDiscussionThreadHeader stageRef={activeStage} prompts={prompts} />
+            )
+          }
+          workContent={showSheet ? null : <TeamPromptWorkDrawer meetingRef={meeting} />}
+          activeTab={rightDrawerOpen}
+          onChangeTab={onChangeTab}
+        />
+      </ResponsiveDashSidebar>
+      {isPhone && (
+        <InspirationBottomSheet meetingRef={meeting} isOpen={showSheet} onClose={onToggleDrawer} />
+      )}
+    </>
   )
 }
 

@@ -1,4 +1,5 @@
 import {type Editor, EditorContent, type EditorContentProps} from '@tiptap/react'
+import useCoarsePointer from '../../hooks/useCoarsePointer'
 import {cn} from '../../ui/cn'
 import {ImportDatabaseDialog} from './ImportDatabaseDialog'
 import {StandardBubbleMenu} from './StandardBubbleMenu'
@@ -12,9 +13,14 @@ interface Props extends EditorContentProps {
 }
 export const TipTapEditor = (props: Props) => {
   const {className, editor, showBubbleMenu, showListControls, useLinkEditor, ref, ...rest} = props
+  const isCoarsePointer = useCoarsePointer()
   return (
     <>
-      <StandardBubbleMenu editor={editor} showListControls={showListControls} />
+      <StandardBubbleMenu
+        editor={editor}
+        showListControls={showListControls}
+        offset={isCoarsePointer ? 12 : 6}
+      />
       <TipTapLinkMenu editor={editor} useLinkEditor={useLinkEditor} />
       <ImportDatabaseDialog editor={editor} />
       <EditorContent

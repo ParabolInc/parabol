@@ -1,6 +1,7 @@
 import {type KeyboardEvent, useRef} from 'react'
 import {Checklist, GridOn, Notes} from '~/ui/icons'
 import {cn} from '../../../ui/cn'
+import radioGroupNextValue from './radioGroupNextValue'
 import type {TeamLayout} from './useTeamLayoutPreference'
 
 const OPTIONS: {value: TeamLayout; label: string; Icon: typeof GridOn}[] = [
@@ -8,6 +9,7 @@ const OPTIONS: {value: TeamLayout; label: string; Icon: typeof GridOn}[] = [
   {value: 'feed', label: 'Feed', Icon: Notes},
   {value: 'byQuestion', label: 'By question', Icon: Checklist}
 ]
+const VALUES = OPTIONS.map(({value}) => value)
 
 interface Props {
   layout: TeamLayout
@@ -16,33 +18,12 @@ interface Props {
 
 const TeamUpdatesLayoutSwitch = ({layout, onChange}: Props) => {
   const radiosRef = useRef<Record<string, HTMLButtonElement | null>>({})
-  const focusLayout = (next: TeamLayout) => {
+  const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    const next = radioGroupNextValue(VALUES, layout, e.key)
+    if (!next) return
+    e.preventDefault()
     onChange(next)
     radiosRef.current[next]?.focus()
-  }
-  const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    const first = OPTIONS[0]!.value
-    const last = OPTIONS[OPTIONS.length - 1]!.value
-    if (e.key === 'Home') {
-      e.preventDefault()
-      focusLayout(first)
-      return
-    }
-    if (e.key === 'End') {
-      e.preventDefault()
-      focusLayout(last)
-      return
-    }
-    const delta =
-      e.key === 'ArrowRight' || e.key === 'ArrowDown'
-        ? 1
-        : e.key === 'ArrowLeft' || e.key === 'ArrowUp'
-          ? -1
-          : 0
-    if (!delta) return
-    e.preventDefault()
-    const idx = OPTIONS.findIndex((option) => option.value === layout)
-    focusLayout(OPTIONS[(idx + delta + OPTIONS.length) % OPTIONS.length]!.value)
   }
   return (
     <div

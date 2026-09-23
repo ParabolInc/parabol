@@ -1,15 +1,30 @@
+import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
+import type {TeamUpdatesByQuestion_stage$data} from '~/__generated__/TeamUpdatesByQuestion_stage.graphql'
 import {cn} from '../../../ui/cn'
-import type {TeamUpdateStage} from './TeamUpdatesByPerson'
 import TeamUpdatesQuestionRow from './TeamUpdatesQuestionRow'
 import TeamUpdatesQuestionTabs from './TeamUpdatesQuestionTabs'
 import {getSharedResponses} from './teamPromptStages'
 import {TEAM_UPDATES_QUESTION_BAND} from './teamUpdatesLayout'
 
+graphql`
+  fragment TeamUpdatesByQuestion_stage on TeamPromptResponseStage {
+    id
+    responses {
+      promptId
+      sharedAt
+      updatedAt
+    }
+    ...TeamUpdatesQuestionRow_stage
+  }
+`
+
+export type TeamUpdatesQuestionStage = Omit<TeamUpdatesByQuestion_stage$data, ' $fragmentType'>
+
 interface Props {
   prompts: readonly {id: string; question: string; groupColor: string}[]
-  sharedStages: readonly TeamUpdateStage[]
-  waitingStages: readonly TeamUpdateStage[]
+  sharedStages: readonly TeamUpdatesQuestionStage[]
+  waitingStages: readonly TeamUpdatesQuestionStage[]
   isEnded: boolean
   selectedStageId: string | null
   onReply: (stageId: string) => void
@@ -21,7 +36,7 @@ const TeamUpdatesByQuestion = (props: Props) => {
   const activePrompt = prompts.find((prompt) => prompt.id === activeId) ?? prompts[0]
   if (!activePrompt) return null
   const counts: Record<string, number> = {}
-  let answeringStages: readonly TeamUpdateStage[] = []
+  let answeringStages: readonly TeamUpdatesQuestionStage[] = []
   for (const prompt of prompts) {
     const matchingStages = sharedStages.filter((stage) =>
       getSharedResponses(stage.responses).some((response) => response.promptId === prompt.id)

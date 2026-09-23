@@ -1,12 +1,24 @@
-import type {TeamUpdatesSection_meeting$data} from '~/__generated__/TeamUpdatesSection_meeting.graphql'
+import graphql from 'babel-plugin-relay/macro'
+import type {TeamUpdatesByPerson_stage$data} from '~/__generated__/TeamUpdatesByPerson_stage.graphql'
 import {cn} from '../../../ui/cn'
 import TeamPromptSharedResponseCard from './TeamPromptSharedResponseCard'
 import TeamPromptWaitingCard from './TeamPromptWaitingCard'
 import {TEAM_UPDATES_BAND, TEAM_UPDATES_GRID_COLUMNS} from './teamUpdatesLayout'
 
-export type TeamUpdateStage = NonNullable<
-  TeamUpdatesSection_meeting$data['phases'][number]['stages']
->[number]
+graphql`
+  fragment TeamUpdatesByPerson_stage on TeamPromptResponseStage {
+    id
+    teamMember {
+      user {
+        preferredName
+        picture
+      }
+    }
+    ...TeamPromptSharedResponseCard_stage
+  }
+`
+
+export type TeamUpdateStage = Omit<TeamUpdatesByPerson_stage$data, ' $fragmentType'>
 
 interface Props {
   layout: 'grid' | 'feed'
