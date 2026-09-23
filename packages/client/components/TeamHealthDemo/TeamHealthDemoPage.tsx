@@ -1,11 +1,12 @@
 import {Suspense} from 'react'
+import useCanonical from '../../hooks/useCanonical'
 import useMetaTagContent from '../../hooks/useMetaTagContent'
 import AtmosphereProvider from '../AtmosphereProvider/AtmosphereProvider'
 import TeamHealthDemoBanner from './TeamHealthDemoBanner'
 import TeamHealthDemoRoot from './TeamHealthDemoRoot'
 
 const CONTENT =
-  'See what a Parabol Team Health check looks like after 5 rounds: scores per topic, trends, spread and the discussion that follows. Sample data, no account needed.'
+  'Try Parabol’s anonymous team health check, a free alternative to employee engagement pulse surveys. See scores for psychological safety, dependability, clarity, meaning and impact after 5 rounds, plus the discussion and action items that follow. Sample data, no account needed.'
 
 const getTeamHealthDemoAtmosphere = () => {
   return import(
@@ -15,6 +16,7 @@ const getTeamHealthDemoAtmosphere = () => {
 
 const TeamHealthDemoPage = () => {
   useMetaTagContent(CONTENT)
+  useCanonical('team-health-demo')
   return (
     <AtmosphereProvider getLocalAtmosphere={getTeamHealthDemoAtmosphere}>
       <div className='flex h-full flex-col'>
