@@ -1,8 +1,14 @@
 import {useEffect, useRef, useState} from 'react'
-import type {usePaginationFragmentHookType} from 'react-relay/relay-hooks/usePaginationFragment'
+
+/** The part of usePaginationFragment's result the sentinel drives; a host with normalized results can supply it too */
+interface LoadNextTarget {
+  hasNext: boolean
+  isLoadingNext: boolean
+  loadNext: (count: number) => void
+}
 
 const useLoadNextOnScrollBottom = (
-  paginationRes: usePaginationFragmentHookType<any, any, any>,
+  paginationRes: LoadNextTarget,
   options?: IntersectionObserverInit,
   loadNextQty = 20
 ) => {

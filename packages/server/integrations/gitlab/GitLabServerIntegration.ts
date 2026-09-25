@@ -1,14 +1,17 @@
 import GitLabIssueId from 'parabol-client/shared/gqlIds/GitLabIssueId'
 import {gitlabIntegrationMeta} from 'parabol-client/shared/integrations/gitlabIntegrationMeta'
 import fetchGitLabProjects from '../../graphql/queries/helpers/fetchGitLabProjects'
+import type {GitLabSearchQueryJson} from '../../postgres/types'
 import type {GitLabProject} from '../platform/RemoteRepoIntegration'
 import {
   type EstimatePushCapability,
   type IssueCreateCapability,
   type IssueReadCapability,
+  type IssueSearchCapability,
   type RepoListCapability,
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
+import buildGitLabSearchQuery from './buildGitLabSearchQuery'
 import describeGitLabDimensionField from './describeGitLabDimensionField'
 import GitLabServerManager from './GitLabServerManager'
 import listGitLabDimensionFields from './listGitLabDimensionFields'
@@ -32,6 +35,7 @@ export class GitLabServerIntegration extends ServerIntegrationDefinition {
   readonly capabilities: {
     issueCreate: IssueCreateCapability
     issueRead: IssueReadCapability
+    issueSearch: IssueSearchCapability<GitLabSearchQueryJson>
     repoList: RepoListCapability<GitLabProject>
     estimatePush: EstimatePushCapability
   } = {
@@ -45,6 +49,7 @@ export class GitLabServerIntegration extends ServerIntegrationDefinition {
       }
     },
     issueRead: {getIssue: resolveGitLabTaskIntegration},
+    issueSearch: {buildQuery: buildGitLabSearchQuery},
     repoList: {
       fetchRepos: ({teamId, userId, context, info}) =>
         fetchGitLabProjects(teamId, userId, context, info),

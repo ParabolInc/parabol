@@ -6,10 +6,9 @@ import type {DegradedItem, PageExportPageState} from '../utils/confluence/types'
 import getKysely from './getKysely'
 import type {
   AutogroupReflectionGroupType,
-  GitHubSearchQueryJson,
   IntegrationAuthMetaByService,
+  IntegrationSearchQueryJsonByService,
   JiraSearchQuery,
-  JiraSearchQueryJson,
   ReactjiDB,
   TaskTag,
   UserAuthIdentity
@@ -449,15 +448,18 @@ export const selectIntegrationProvider = () => {
     .$narrowType<TIntegrationProvider>()
 }
 
+type IntegrationSearchQueryByService = {
+  [S in keyof IntegrationSearchQueryJsonByService]: {
+    service: S
+    query: IntegrationSearchQueryJsonByService[S]
+  }
+}[keyof IntegrationSearchQueryJsonByService]
+
 export const selectIntegrationSearchQuery = () => {
   return getKysely()
     .selectFrom('IntegrationSearchQuery')
     .selectAll()
-    .$narrowType<
-      | {service: 'jira'; query: JiraSearchQueryJson}
-      | {service: 'jiraServer'; query: JiraSearchQueryJson}
-      | {service: 'github'; query: GitHubSearchQueryJson}
-    >()
+    .$narrowType<IntegrationSearchQueryByService>()
 }
 
 export const selectMeetingSeries = () => {

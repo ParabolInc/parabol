@@ -10,16 +10,13 @@ graphql`
       id
       queryString
       lastUsedAt
-      ... on JiraSearchQuery {
-        isJQL
-        projectKeyFilters
-      }
+      meta
     }
   }
 `
 
 graphql`
-  fragment usePersistIntegrationSearchQueryMutation_success on PersistIntegrationSearchQuerySuccess {
+  fragment usePersistIntegrationSearchQueryMutation_notification on PersistIntegrationSearchQuerySuccess {
     service {
       ...usePersistIntegrationSearchQueryMutation_service @relay(mask: false)
     }
@@ -39,42 +36,28 @@ const mutation = graphql`
       queryString: $queryString
       meta: $meta
     ) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
-      ...usePersistIntegrationSearchQueryMutation_success @relay(mask: false)
+      ...usePersistIntegrationSearchQueryMutation_notification @relay(mask: false)
     }
   }
 `
 
-type Handlers = {
-  onSuccess?: () => void
-  onError?: () => void
-}
-
 const usePersistIntegrationSearchQueryMutation = () => {
   const [commit, submitting] = useMutation<TPersistIntegrationSearchQueryMutation>(mutation)
   const atmosphere = useAtmosphere()
-  const execute = (
-    config: UseMutationConfig<TPersistIntegrationSearchQueryMutation>,
-    handlers?: Handlers
-  ) => {
+  const showError = (message: string) => {
+    atmosphere.eventEmitter.emit('addSnackbar', {
+      message,
+      autoDismiss: 5,
+      key: 'persistIntegrationSearchQueryError'
+    })
+  }
+  const execute = (config: UseMutationConfig<TPersistIntegrationSearchQueryMutation>) => {
     return commit({
-      onCompleted: (res) => {
-        const error = res.persistIntegrationSearchQuery.error
-        if (!error) {
-          handlers?.onSuccess?.()
-        } else {
-          atmosphere.eventEmitter.emit('addSnackbar', {
-            message: error.message,
-            autoDismiss: 5,
-            key: 'persistIntegrationSearchQueryError'
-          })
-          handlers?.onError?.()
-        }
+      onCompleted: (_res, errors) => {
+        const error = errors?.[0]
+        if (error) showError(error.message)
       },
+      onError: (error) => showError(error.message),
       ...config
     })
   }

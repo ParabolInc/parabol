@@ -2,14 +2,12 @@ import graphql from 'babel-plugin-relay/macro'
 import {useRef} from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import useMutationProps from '~/hooks/useMutationProps'
 import useScrollIntoView from '~/hooks/useScrollIntoVIew'
 import useTaskChildFocus from '~/hooks/useTaskChildFocus'
 import DeleteTaskMutation from '~/mutations/DeleteTaskMutation'
-import UpdatePokerScopeMutation from '~/mutations/UpdatePokerScopeMutation'
 import UpdateTaskMutation from '~/mutations/UpdateTaskMutation'
+import useUpdatePokerScopeMutation from '~/mutations/useUpdatePokerScopeMutation'
 import type {ParabolScopingSearchResultItem_task$key} from '../__generated__/ParabolScopingSearchResultItem_task.graphql'
-import type {UpdatePokerScopeMutation as TUpdatePokerScopeMutation} from '../__generated__/UpdatePokerScopeMutation.graphql'
 import {useTipTapTaskEditor} from '../hooks/useTipTapTaskEditor'
 import {isEqualWhenSerialized} from '../shared/isEqualWhenSerialized'
 import {Threshold} from '../types/constEnums'
@@ -53,7 +51,7 @@ const ParabolScopingSearchResultItem = (props: Props) => {
   const isSelected = usedServiceTaskIds.has(serviceTaskId)
   const disabled = !isSelected && usedServiceTaskIds.size >= Threshold.MAX_POKER_STORIES
   const atmosphere = useAtmosphere()
-  const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
+  const [commitUpdatePokerScope, submitting] = useUpdatePokerScopeMutation()
   const isEditingThisItem = !plaintextContent
   const {editor} = useTipTapTaskEditor(content, {
     atmosphere,
@@ -67,20 +65,11 @@ const ParabolScopingSearchResultItem = (props: Props) => {
 
   const updatePokerScope = () => {
     if (submitting || disabled) return
-    submitMutation()
-    const variables = {
-      meetingId,
-      updates: [
-        {
-          service: 'PARABOL',
-          serviceTaskId,
-          action: isSelected ? 'DELETE' : 'ADD'
-        }
-      ]
-    } as TUpdatePokerScopeMutation['variables']
-    UpdatePokerScopeMutation(atmosphere, variables, {
-      onError,
-      onCompleted,
+    commitUpdatePokerScope({
+      variables: {
+        meetingId,
+        updates: [{service: 'PARABOL', serviceTaskId, action: isSelected ? 'DELETE' : 'ADD'}]
+      },
       contents: [plaintextContent]
     })
   }

@@ -4,7 +4,7 @@ import type {useRemoveIntegrationSearchQueryMutation as TRemoveIntegrationSearch
 import useAtmosphere from '../hooks/useAtmosphere'
 
 graphql`
-  fragment useRemoveIntegrationSearchQueryMutation_success on RemoveIntegrationSearchQuerySuccess {
+  fragment useRemoveIntegrationSearchQueryMutation_notification on RemoveIntegrationSearchQuerySuccess {
     service {
       ...usePersistIntegrationSearchQueryMutation_service @relay(mask: false)
     }
@@ -14,42 +14,28 @@ graphql`
 const mutation = graphql`
   mutation useRemoveIntegrationSearchQueryMutation($id: ID!, $teamId: ID!) {
     removeIntegrationSearchQuery(id: $id, teamId: $teamId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
-      ...useRemoveIntegrationSearchQueryMutation_success @relay(mask: false)
+      ...useRemoveIntegrationSearchQueryMutation_notification @relay(mask: false)
     }
   }
 `
 
-type Handlers = {
-  onSuccess?: () => void
-  onError?: () => void
-}
-
 const useRemoveIntegrationSearchQueryMutation = () => {
   const [commit, submitting] = useMutation<TRemoveIntegrationSearchQueryMutation>(mutation)
   const atmosphere = useAtmosphere()
-  const execute = (
-    config: UseMutationConfig<TRemoveIntegrationSearchQueryMutation>,
-    handlers?: Handlers
-  ) => {
+  const showError = (message: string) => {
+    atmosphere.eventEmitter.emit('addSnackbar', {
+      message,
+      autoDismiss: 5,
+      key: 'removeIntegrationSearchQueryError'
+    })
+  }
+  const execute = (config: UseMutationConfig<TRemoveIntegrationSearchQueryMutation>) => {
     return commit({
-      onCompleted: (res) => {
-        const error = res.removeIntegrationSearchQuery.error
-        if (!error) {
-          handlers?.onSuccess?.()
-        } else {
-          atmosphere.eventEmitter.emit('addSnackbar', {
-            message: error.message,
-            autoDismiss: 5,
-            key: 'removeIntegrationSearchQueryError'
-          })
-          handlers?.onError?.()
-        }
+      onCompleted: (_res, errors) => {
+        const error = errors?.[0]
+        if (error) showError(error.message)
       },
+      onError: (error) => showError(error.message),
       ...config
     })
   }

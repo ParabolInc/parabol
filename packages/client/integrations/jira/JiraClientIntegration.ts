@@ -1,4 +1,7 @@
-import {lazy} from 'react'
+import {createElement, lazy} from 'react'
+import jiraScopingResultsQuery, {
+  type JiraScopingResultsAdapterQuery
+} from '../../__generated__/JiraScopingResultsAdapterQuery.graphql'
 import type Atmosphere from '../../Atmosphere'
 import JiraSVG from '../../components/JiraSVG'
 import JiraProjectId from '../../shared/gqlIds/JiraProjectId'
@@ -7,12 +10,60 @@ import atlassianLogo from '../../styles/theme/images/graphics/atlassian-gradient
 import {ExternalLinks} from '../../types/constEnums'
 import AtlassianClientManager from '../../utils/AtlassianClientManager'
 import {describeAtlassianDisconnect} from '../../utils/atlassianScopes'
+import lazyPreload from '../../utils/lazyPreload'
 import {
   type ClientIntegrationCapabilities,
   ClientIntegrationDefinition,
   type ConnectParams,
-  type ProviderLogoAsset
+  type ProviderLogoAsset,
+  type ScopingCapability
 } from '../platform/ClientIntegrationDefinition'
+import {searchFiltersByKey} from '../platform/IntegrationSearchFilter'
+import makeScopingResults from '../platform/makeScopingResults'
+import jiraSearchMeta from './jiraSearchMeta'
+
+const JiraScopingCurrentFiltersRoot = lazy(
+  () =>
+    import(
+      /* webpackChunkName: 'JiraScopingCurrentFiltersRoot' */ './JiraScopingCurrentFiltersRoot'
+    )
+)
+
+const scoping: ScopingCapability = {
+  ...jiraSearchMeta,
+  Results: makeScopingResults<JiraScopingResultsAdapterQuery>({
+    query: jiraScopingResultsQuery,
+    searchArgs: (state, {teamId}) => ({
+      teamId,
+      queryString: state.queryString.trim(),
+      isJQL: state.isAdvancedQuery,
+      projectKeyFilters: searchFiltersByKey(state.filters, 'project'),
+      first: 100
+    }),
+    ResultsAdapter: lazy(
+      () =>
+        import(/* webpackChunkName: 'JiraScopingResultsAdapter' */ './JiraScopingResultsAdapter')
+    )
+  }),
+  FilterMenu: lazyPreload(
+    () =>
+      import(
+        /* webpackChunkName: 'JiraScopingSearchFilterMenuRoot' */ '../../components/JiraScopingSearchFilterMenuRoot'
+      )
+  ),
+  NewRecordInput: lazy(
+    () =>
+      import(
+        /* webpackChunkName: 'NewJiraIssueInputRoot' */ '../../components/NewJiraIssueInputRoot'
+      )
+  ),
+  placeholder: (state) =>
+    state.isAdvancedQuery ? 'SPRINT = fun AND PROJECT = dev' : 'Search issues on Jira',
+  currentFilters: (state, {teamId}) =>
+    createElement(JiraScopingCurrentFiltersRoot, {state, teamId}),
+  filterChipLabel: (filter) => JiraProjectId.split(filter.value).projectKey,
+  selectAllNoun: 'issue'
+}
 
 export class JiraClientIntegration extends ClientIntegrationDefinition {
   readonly service = jiraIntegrationMeta.service
@@ -21,15 +72,7 @@ export class JiraClientIntegration extends ClientIntegrationDefinition {
   readonly Icon = JiraSVG
   readonly logo: ProviderLogoAsset = {src: atlassianLogo}
   readonly capabilities: ClientIntegrationCapabilities = {
-    scoping: {
-      Panel: lazy(
-        () =>
-          import(
-            /* webpackChunkName: 'ScopePhaseAreaJiraScoping' */ '../../components/ScopePhaseAreaJiraScoping'
-          )
-      ),
-      projectFilterLabel: (filter) => JiraProjectId.split(filter).projectKey
-    },
+    scoping,
     settings: {
       getDisconnectSubline: describeAtlassianDisconnect
     }

@@ -1,9 +1,14 @@
 """
 A search the viewer saved against a task-integration service so it can be re-run
 """
-interface IntegrationSearchQuery {
+type IntegrationSearchQuery {
   id: ID!
   queryString: String!
+
+  """
+  The service-specific search options stored alongside queryString, as a JSON object. The service's client integration parses it
+  """
+  meta: String!
 
   """
   the time the search query was last used. Used for sorting
