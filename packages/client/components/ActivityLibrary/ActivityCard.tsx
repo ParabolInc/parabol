@@ -4,6 +4,7 @@ import {type PropsWithChildren, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {ActivityCard_template$key} from '../../__generated__/ActivityCard_template.graphql'
 import type {MeetingTypeEnum} from '../../__generated__/MeetingSelectorQuery.graphql'
+import useResolvedTheme from '../../hooks/useResolvedTheme'
 import {cn} from '../../ui/cn'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
@@ -27,6 +28,9 @@ type ActivityCardImageProps = {
 export const ActivityCardImage = (props: PropsWithChildren<ActivityCardImageProps>) => {
   const {className, src, category} = props
   const backgroundSrc = backgroundImgMap[category]
+  const resolvedTheme = useResolvedTheme()
+  const hasDarkSurface = category === 'teamHealth'
+  const illustrationSrc = hasDarkSurface && resolvedTheme === 'dark' ? `${src}#dark` : src
 
   return (
     <div
@@ -35,10 +39,17 @@ export const ActivityCardImage = (props: PropsWithChildren<ActivityCardImageProp
         className
       )}
     >
-      <img className='object-contain dark:brightness-[.94]' src={backgroundSrc} alt='' />
       <img
-        className='absolute top-0 left-0 h-full w-full object-contain p-10 dark:brightness-[.94]'
-        src={src}
+        className={cn('object-contain dark:brightness-[.94]', hasDarkSurface && 'dark:invisible')}
+        src={backgroundSrc}
+        alt=''
+      />
+      <img
+        className={cn(
+          'absolute top-0 left-0 h-full w-full object-contain p-10',
+          !hasDarkSurface && 'dark:brightness-[.94]'
+        )}
+        src={illustrationSrc}
         alt='Card Illustration'
       />
     </div>
