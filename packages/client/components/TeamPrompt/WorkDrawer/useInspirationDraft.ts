@@ -20,6 +20,7 @@ export interface InspirationDraft {
 
 interface Options {
   meetingId: string
+  isMeetingMember: boolean
   sources: InspirationSourceInput[]
   instructions: string
 }
@@ -34,8 +35,10 @@ const toKey = (sources: readonly InspirationSourceInput[]) =>
 // The draft is stale when the viewer's sources no longer match the searches it was written from.
 // Opening the drawer on a stale draft redrafts once; after that a redraft waits for the viewer to
 // finish changing a source or the settings, so toggling switches never burns an AI request each.
+// Right after a meeting is created the viewer is not a member of it yet, and the server only drafts
+// for members, so the first draft waits for the viewer to join.
 const useInspirationDraft = (options: Options) => {
-  const {meetingId, sources, instructions} = options
+  const {meetingId, isMeetingMember, sources, instructions} = options
   const {viewerId} = useAtmosphere()
   const [generate, drafting] = useGenerateInspirationItemsMutation()
   const [error, setError] = useState<string | null>(null)
@@ -51,12 +54,20 @@ const useInspirationDraft = (options: Options) => {
   const draft = isKept ? storedDraft : null
   const isStale = !draft || toKey(draft.sources) !== toKey(sources)
 
+  // drafting only flips on the next render, so effects that run in the same commit need this
+  const isRequestingRef = useRef(false)
   const redraft = () => {
+    if (isRequestingRef.current) return
+    isRequestingRef.current = true
     setError(null)
     generate({
       variables: {input: {meetingId, sources, userPrompt: instructions.trim() || null}},
-      onError: (e) => setError(e.message),
+      onError: (e) => {
+        isRequestingRef.current = false
+        setError(e.message)
+      },
       onCompleted: (res, errors) => {
+        isRequestingRef.current = false
         if (errors) {
           setError(errors[0]?.message ?? 'Something went wrong')
           return
@@ -86,13 +97,14 @@ const useInspirationDraft = (options: Options) => {
   useEffect(() => {
     if (!request) return
     setRequest(null)
+    if (!isMeetingMember) return
     if (!request.force && !latest.current.isStale) return
     if (latest.current.drafting) {
       pendingRef.current = true
       return
     }
     latest.current.redraft()
-  }, [request])
+  }, [request, isMeetingMember])
 
   useEffect(() => {
     if (drafting || !pendingRef.current) return
@@ -101,10 +113,10 @@ const useInspirationDraft = (options: Options) => {
   }, [drafting])
 
   useEffect(() => {
-    if (latest.current.isStale) latest.current.redraft()
-  }, [])
+    if (isMeetingMember && latest.current.isStale) latest.current.redraft()
+  }, [isMeetingMember])
 
-  return {draft, requestRedraft, drafting, error}
+  return {draft, requestRedraft, drafting: drafting || (!isMeetingMember && isStale), error}
 }
 
 export default useInspirationDraft

@@ -76,6 +76,7 @@ const TeamPromptWorkDrawer = ({meetingRef}: Props) => {
     }))
   const {draft, requestRedraft, drafting, error} = useInspirationDraft({
     meetingId,
+    isMeetingMember: !!teamMember,
     sources,
     instructions
   })
