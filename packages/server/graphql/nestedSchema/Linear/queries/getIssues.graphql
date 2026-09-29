@@ -1,4 +1,4 @@
-query getWorkItems($filter: IssueFilter, $first: Int!, $commentLast: Int!) {
+query getIssues($filter: IssueFilter, $first: Int!, $commentLast: Int!) {
   issues(first: $first, filter: $filter, sort: {updatedAt: {order: Descending}}) {
     nodes {
       identifier

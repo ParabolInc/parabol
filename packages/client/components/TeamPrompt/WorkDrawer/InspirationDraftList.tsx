@@ -3,7 +3,7 @@ import {useCallback, useRef} from 'react'
 import type {TeamPromptComposerApi} from '../structured/TeamPromptComposerApiContext'
 import InspirationAddAllButton from './InspirationAddAllButton'
 import InspirationDraftItemCard from './InspirationDraftItemCard'
-import {collectText, itemSource} from './inspirationCopy'
+import {collectText} from './inspirationCopy'
 import {trimTrailingEmptyParagraph} from './inspirationInsertPlan'
 import useInspirationInsert, {type InspirationDraftItem} from './useInspirationInsert'
 import type {WorkDrawerPrompt} from './WorkDrawerConsumeContext'
@@ -18,7 +18,6 @@ export interface InspirationItemData {
 interface Props {
   items: InspirationItemData[]
   prompts: readonly WorkDrawerPrompt[]
-  service: string
   meetingId: string
   teamId: string
   composer: TeamPromptComposerApi
@@ -33,7 +32,7 @@ const toDraftItem = (item: InspirationItemData, promptId: string): InspirationDr
 }
 
 const InspirationDraftList = (props: Props) => {
-  const {items, prompts, service, meetingId, teamId, composer} = props
+  const {items, prompts, meetingId, teamId, composer} = props
   const {addItems, isAdded, adding} = useInspirationInsert({meetingId, teamId, composer, prompts})
   const editorsRef = useRef(new Map<string, Editor>())
   const trackEditor = useCallback((itemId: string, editor: Editor | null) => {
@@ -69,7 +68,6 @@ const InspirationDraftList = (props: Props) => {
           title={item.title}
           content={item.content}
           prompt={prompt}
-          source={itemSource(service)}
           isAdded={isAdded(draft)}
           disabled={adding}
           onEditorChange={trackEditor}

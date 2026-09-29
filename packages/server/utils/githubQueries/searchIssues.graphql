@@ -1,10 +1,11 @@
-query searchWorkItems($searchQuery: String!, $first: Int!, $commentLast: Int!) {
+query searchIssues($searchQuery: String!, $first: Int!, $commentLast: Int!) {
   search(query: $searchQuery, type: ISSUE, first: $first) {
     nodes {
       __typename
       ... on Issue {
         title
         url
+        updatedAt
         body
         issueState: state
         repository {
@@ -22,6 +23,7 @@ query searchWorkItems($searchQuery: String!, $first: Int!, $commentLast: Int!) {
       ... on PullRequest {
         title
         url
+        updatedAt
         body
         prState: state
         repository {

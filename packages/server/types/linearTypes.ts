@@ -16463,6 +16463,15 @@ export type GetIssueQueryVariables = Exact<{
 
 export type GetIssueQuery = { __typename?: 'Query', issue: { __typename?: 'Issue', id: string, identifier: string, project?: { __typename?: 'Project', id: string } | null, team: { __typename?: 'Team', id: string } } };
 
+export type GetIssuesQueryVariables = Exact<{
+  filter?: InputMaybe<IssueFilter>;
+  first: Scalars['Int']['input'];
+  commentLast: Scalars['Int']['input'];
+}>;
+
+
+export type GetIssuesQuery = { __typename?: 'Query', issues: { __typename?: 'IssueConnection', nodes: Array<{ __typename?: 'Issue', identifier: string, title: string, description?: string | null, url: string, updatedAt: Date, state: { __typename?: 'WorkflowState', name: string, type: string }, project?: { __typename?: 'Project', name: string } | null, team: { __typename?: 'Team', displayName: string }, comments: { __typename?: 'CommentConnection', nodes: Array<{ __typename?: 'Comment', body: string, user?: { __typename?: 'User', displayName: string } | null }> } }> } };
+
 export type GetProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -16497,12 +16506,3 @@ export type GetTeamsAndProjectsQueryVariables = Exact<{
 
 
 export type GetTeamsAndProjectsQuery = { __typename?: 'Query', teams: { __typename?: 'TeamConnection', edges: Array<{ __typename?: 'TeamEdge', node: { __typename: 'Team', id: string, displayName: string, key: string } }>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null } } };
-
-export type GetWorkItemsQueryVariables = Exact<{
-  filter?: InputMaybe<IssueFilter>;
-  first: Scalars['Int']['input'];
-  commentLast: Scalars['Int']['input'];
-}>;
-
-
-export type GetWorkItemsQuery = { __typename?: 'Query', issues: { __typename?: 'IssueConnection', nodes: Array<{ __typename?: 'Issue', identifier: string, title: string, description?: string | null, url: string, updatedAt: Date, state: { __typename?: 'WorkflowState', name: string, type: string }, project?: { __typename?: 'Project', name: string } | null, team: { __typename?: 'Team', displayName: string }, comments: { __typename?: 'CommentConnection', nodes: Array<{ __typename?: 'Comment', body: string, user?: { __typename?: 'User', displayName: string } | null }> } }> } };

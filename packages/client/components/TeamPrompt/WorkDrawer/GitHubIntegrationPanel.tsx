@@ -15,7 +15,6 @@ import GitHubSVG from '../../GitHubSVG'
 import GitHubIntegrationResultsRoot from './GitHubIntegrationResultsRoot'
 import GitHubRepoFilterBar from './GitHubRepoFilterBar'
 import InspirationItemsPanel from './InspirationItemsPanel'
-import useIsStructuredInspiration from './useIsStructuredInspiration'
 import {WorkDrawerDateFilter} from './WorkDrawerDateFilter'
 
 const GITHUB_QUERY_TABS: {key: 'issue' | 'pullRequest'; label: string}[] = [
@@ -96,7 +95,6 @@ const GitHubIntegrationPanel = (props: Props) => {
     .filter(Boolean)
     .join(' ')
 
-  const isStructured = useIsStructuredInspiration()
   const mutationProps = useMutationProps()
   const {error, onError} = mutationProps
 
@@ -166,17 +164,13 @@ const GitHubIntegrationPanel = (props: Props) => {
     <>
       {teamMember?.integrations.github?.isActive ? (
         <>
-          {!isStructured && filterBar}
+          {filterBar}
           <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
             <InspirationItemsPanel
-              filters={isStructured ? filterBar : undefined}
               meetingId={meeting.id}
-              teamId={meeting.teamId}
               service='github'
               searchQuery={searchQuery}
               initialItems={meeting.githubInspirationItems}
-              dateRange={dateRange}
-              workItemCount={getResultCount(searchQuery)}
               hideDraftPanel={!getResultCount(searchQuery)}
             >
               <GitHubIntegrationResultsRoot

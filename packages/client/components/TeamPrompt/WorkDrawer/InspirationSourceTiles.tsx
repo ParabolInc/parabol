@@ -1,0 +1,40 @@
+import type {InspirationSourcePopover_teamMember$key} from '../../../__generated__/InspirationSourcePopover_teamMember.graphql'
+import InspirationSourceTile from './InspirationSourceTile'
+import type {InspirationSourceSettings} from './inspirationSources'
+import type {InspirationSourceAvailability} from './useInspirationSourceAvailability'
+
+interface Props {
+  sources: InspirationSourceAvailability[]
+  issueCounts: Partial<Record<string, number>>
+  drafting: boolean
+  meetingId: string
+  settings: InspirationSourceSettings
+  setSettings: (update: (prev: InspirationSourceSettings) => InspirationSourceSettings) => void
+  onPopoverClose: () => void
+  teamMemberRef: InspirationSourcePopover_teamMember$key
+}
+
+const InspirationSourceTiles = (props: Props) => {
+  const {sources, issueCounts, onPopoverClose, ...tileProps} = props
+  return (
+    <div role='group' aria-label='Draft from' className='flex flex-col gap-2'>
+      <span className='font-bold text-[11px] text-fg-muted uppercase tracking-wider'>
+        Draft from
+      </span>
+      <div className='flex flex-wrap gap-2'>
+        {sources.map(({service, isConnected}) => (
+          <InspirationSourceTile
+            key={service}
+            service={service}
+            isConnected={isConnected}
+            issueCount={issueCounts[service]}
+            onClose={onPopoverClose}
+            {...tileProps}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+export default InspirationSourceTiles

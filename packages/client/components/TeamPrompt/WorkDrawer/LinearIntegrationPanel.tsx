@@ -12,7 +12,6 @@ import LinearSVG from '../../LinearSVG'
 import InspirationItemsPanel from './InspirationItemsPanel'
 import LinearIntegrationResultsRoot from './LinearIntegrationResultsRoot'
 import LinearProjectFilterBar from './LinearProjectFilterBar'
-import useIsStructuredInspiration from './useIsStructuredInspiration'
 import {WorkDrawerDateFilter} from './WorkDrawerDateFilter'
 
 interface Props {
@@ -75,7 +74,6 @@ const LinearIntegrationPanel = (props: Props) => {
   const filter = makeLinearWorkFilter(selectedLinearIds, dateRange)
   const searchQuery = JSON.stringify(filter)
 
-  const isStructured = useIsStructuredInspiration()
   const mutationProps = useMutationProps()
   const {error, onError} = mutationProps
 
@@ -119,17 +117,13 @@ const LinearIntegrationPanel = (props: Props) => {
     <>
       {isActive && teamMember ? (
         <>
-          {!isStructured && filterBar}
+          {filterBar}
           <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
             <InspirationItemsPanel
-              filters={isStructured ? filterBar : undefined}
               meetingId={meeting.id}
-              teamId={meeting.teamId}
               service='linear'
               searchQuery={searchQuery}
               initialItems={meeting.linearInspirationItems}
-              dateRange={dateRange}
-              workItemCount={getResultCount(searchQuery)}
               hideDraftPanel={!getResultCount(searchQuery)}
             >
               <LinearIntegrationResultsRoot
