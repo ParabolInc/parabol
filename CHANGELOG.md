@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [14.1.0](https://github.com/ParabolInc/parabol/compare/v14.0.1...v14.1.0) (2026-09-28)
+
+
+### Added
+
+* template illustrations ([#13552](https://github.com/ParabolInc/parabol/issues/13552)) ([d0001fd](https://github.com/ParabolInc/parabol/commit/d0001fd8368f18130d1a30647e772f7073cdd160))
+
 ## [14.0.1](https://github.com/ParabolInc/parabol/compare/v14.0.0...v14.0.1) (2026-09-23)
 
 
