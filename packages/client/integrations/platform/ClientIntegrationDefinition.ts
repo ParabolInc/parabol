@@ -45,7 +45,7 @@ export interface ClientIntegrationCapabilities {
   settings?: SettingsCapability
 }
 
-/** The brand art for the 48px settings row; darkSrc is only for marks that vanish on a dark surface */
+/** The brand art for the 48px settings row; darkSrc is only for marks that vanish on or clash with a dark surface */
 export interface ProviderLogoAsset {
   src: string
   darkSrc?: string

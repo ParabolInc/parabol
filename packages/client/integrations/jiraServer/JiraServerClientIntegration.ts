@@ -3,7 +3,8 @@ import type Atmosphere from '../../Atmosphere'
 import JiraServerSVG from '../../components/JiraServerSVG'
 import IntegrationRepoId from '../../shared/gqlIds/IntegrationRepoId'
 import {jiraServerIntegrationMeta} from '../../shared/integrations/jiraServerIntegrationMeta'
-import jiraServerLogo from '../../styles/theme/images/graphics/jira-software-blue.svg'
+import jiraDataCenterLogo from '../../styles/theme/images/graphics/jira-data-center.svg'
+import jiraDataCenterDarkLogo from '../../styles/theme/images/graphics/jira-data-center-dark.svg'
 import {ExternalLinks} from '../../types/constEnums'
 import JiraServerClientManager from '../../utils/JiraServerClientManager'
 import {
@@ -18,7 +19,7 @@ export class JiraServerClientIntegration extends ClientIntegrationDefinition {
   readonly title = jiraServerIntegrationMeta.title
   readonly description = jiraServerIntegrationMeta.description
   readonly Icon = JiraServerSVG
-  readonly logo: ProviderLogoAsset = {src: jiraServerLogo}
+  readonly logo: ProviderLogoAsset = {src: jiraDataCenterLogo, darkSrc: jiraDataCenterDarkLogo}
   readonly capabilities: ClientIntegrationCapabilities = {
     scoping: {
       Panel: lazy(
