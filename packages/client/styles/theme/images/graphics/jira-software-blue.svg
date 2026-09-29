@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 75.760003 75.76"
+   version="1.1"
+   id="svg46"
+   width="75.760002"
+   height="75.760002"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <defs
+     id="defs10">
+    <style
+       id="style2">.cls-1{fill:#253858;}.cls-2{fill:#2684ff;}.cls-3{fill:url(#linear-gradient);}.cls-4{fill:url(#linear-gradient-2);}</style>
+    <linearGradient
+       id="linear-gradient"
+       x1="34.639999"
+       y1="15.35"
+       x2="19"
+       y2="30.99"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         offset="0.18"
+         stop-color="#0052cc"
+         id="stop4" />
+      <stop
+         offset="1"
+         stop-color="#2684ff"
+         id="stop6" />
+    </linearGradient>
+    <linearGradient
+       id="linear-gradient-2"
+       x1="38.779999"
+       y1="60.279999"
+       x2="54.389999"
+       y2="44.669998"
+       xlink:href="#linear-gradient" />
+    <linearGradient
+       xlink:href="#linear-gradient"
+       id="linearGradient867"
+       gradientUnits="userSpaceOnUse"
+       x1="34.639999"
+       y1="15.35"
+       x2="19"
+       y2="30.99" />
+  </defs>
+  <title
+     id="title12">Jira Software-blue</title>
+  <g
+     id="g983"
+     transform="translate(1.2400011)">
+    <path
+       class="cls-2"
+       d="M 72.4,35.76 39.8,3.16 36.64,0 V 0 L 12.1,24.54 v 0 L 0.88,35.76 a 3,3 0 0 0 0,4.24 L 23.3,62.42 36.64,75.76 61.18,51.22 61.56,50.84 72.4,40 a 3,3 0 0 0 0,-4.24 z m -35.76,13.32 -11.2,-11.2 11.2,-11.2 11.2,11.2 z"
+       id="path38" />
+    <path
+       class="cls-3"
+       d="M 36.64,26.68 A 18.86,18.86 0 0 1 36.56,0.09 l -24.51,24.5 13.34,13.34 z"
+       id="path40"
+       style="fill:url(#linearGradient867)" />
+    <path
+       class="cls-4"
+       d="M 47.87,37.85 36.64,49.08 a 18.86,18.86 0 0 1 0,26.68 v 0 L 61.21,51.19 Z"
+       id="path42"
+       style="fill:url(#linear-gradient-2)" />
+  </g>
+  <metadata
+     id="metadata865">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:title>Jira Software-blue</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+</svg>

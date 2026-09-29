@@ -10,7 +10,7 @@ import type {JiraServerObjectCard_result$key} from '../../../__generated__/JiraS
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import relativeDate from '../../../utils/date/relativeDate'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
-import JiraServerSVG from '../../JiraServerSVG'
+import JiraSVG from '../../JiraSVG'
 
 interface Props {
   resultRef: JiraServerObjectCard_result$key
@@ -88,7 +88,7 @@ const JiraServerObjectCard = (props: Props) => {
       </div>
       <div className='flex items-center justify-between'>
         <div className='flex items-center gap-2'>
-          <JiraServerSVG className='size-4' />
+          <JiraSVG className='size-4' />
           <div className='text-fg-secondary text-xs'>{projectName}</div>
         </div>
         <Tooltip open={isCopied || isHovered} onOpenChange={setIsHovered}>

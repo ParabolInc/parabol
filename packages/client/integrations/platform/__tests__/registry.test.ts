@@ -93,11 +93,11 @@ describe('clientIntegrations registry', () => {
     expect(new Set(sources).size).toBe(sources.length)
   })
 
-  it('only marks that clash with a dark surface carry a dark-theme logo', () => {
+  it('only GitHub carries a dark-theme logo, whose mark is otherwise invisible', () => {
     const withDarkSrc = Object.entries(clientIntegrations)
       .filter(([, definition]) => definition.logo.darkSrc)
       .map(([key]) => key)
-    expect(withDarkSrc.sort()).toEqual(['github', 'jiraServer'])
+    expect(withDarkSrc).toEqual(['github'])
   })
 
   it('only Jira Cloud explains what a disconnect takes with it', () => {
