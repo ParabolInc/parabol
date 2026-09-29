@@ -19,9 +19,11 @@ export const hasPageAccess = <T>(dotPath: ResolverDotPath<T>, roleRequired: Page
       const {authToken, dataLoader} = context
       const viewerId = getUserId(authToken)
       const dbPageId = dotPath.startsWith('source') ? pageId : CipherId.fromClient(pageId)[0]
-      const userRole = await dataLoader
-        .get('pageAccessByPageIdUserId')
-        .load({pageId: dbPageId, userId: viewerId})
+      const userRole = CipherId.isValidDbId(dbPageId)
+        ? await dataLoader
+            .get('pageAccessByPageIdUserId')
+            .load({pageId: dbPageId, userId: viewerId})
+        : null
       if (!userRole || PAGE_ROLES.indexOf(roleRequired) < PAGE_ROLES.indexOf(userRole)) {
         return new GraphQLError(
           `Insufficient permission. User role: ${userRole || 'None'} Role required: ${roleRequired}`

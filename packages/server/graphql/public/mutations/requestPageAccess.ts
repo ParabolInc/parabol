@@ -23,6 +23,9 @@ const requestPageAccess: MutationResolvers['requestPageAccess'] = async (
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
   const [dbPageId, pageSlug] = CipherId.fromClient(pageId)
+  if (!CipherId.isValidDbId(dbPageId)) {
+    throw new GraphQLError('Page not found', {extensions: {code: 'NOT_FOUND'}})
+  }
 
   const [viewer, page, existingRequest, owners] = await Promise.all([
     dataLoader.get('users').loadNonNull(viewerId),
