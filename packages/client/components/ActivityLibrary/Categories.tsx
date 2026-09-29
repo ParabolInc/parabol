@@ -76,7 +76,7 @@ export const CATEGORY_THEMES: Record<AllCategoryID, CardTheme> = {
   },
   teamHealth: {
     primary: 'bg-rose-500',
-    secondary: 'bg-rose-100',
+    secondary: 'bg-rose-100 dark:bg-surface-well',
     text: 'text-rose-500'
   },
   [CUSTOM_CATEGORY_ID]: {
