@@ -7,11 +7,12 @@ import {getUserId, isSuperUser} from '../../../utils/authorization'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import canAccessAI from '../../mutations/helpers/canAccessAI'
 import type {MutationResolvers} from '../resolverTypes'
-import fetchGCalWorkItems from './helpers/fetchGCalWorkItems'
-import fetchGitHubWorkItems from './helpers/fetchGitHubWorkItems'
-import fetchJiraWorkItems from './helpers/fetchJiraWorkItems'
-import fetchLinearWorkItems from './helpers/fetchLinearWorkItems'
-import fetchParabolWorkItems from './helpers/fetchParabolWorkItems'
+import draftStandupFromSources from './helpers/draftStandupFromSources'
+import fetchIssues from './helpers/fetchIssues'
+import {formatIssuesForAI} from './helpers/issuesForAI'
+
+const toTipTapDoc = (markdown: string) =>
+  JSON.stringify({type: 'doc', content: markdownToTipTap(markdown)})
 
 const generateInspirationItems: MutationResolvers['generateInspirationItems'] = async (
   _source,
@@ -20,7 +21,7 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
   info
 ) => {
   const {authToken, dataLoader} = context
-  const {meetingId, service, searchQuery, userPrompt} = input
+  const {meetingId, sources, userPrompt} = input
   const viewerId = getUserId(authToken)
 
   // VALIDATION
@@ -31,6 +32,9 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
     throw new GraphQLError(
       'Inspiration items are only available in standup and retrospective meetings'
     )
+  }
+  if (meeting.meetingType === 'retrospective' && sources.length !== 1) {
+    throw new GraphQLError('A retrospective drafts from one source at a time')
   }
   const {teamId} = meeting
 
@@ -55,63 +59,49 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
     }
   }
 
-  // RESOLUTION
-  // Re-run the same search the user saw, server-side, fetching full content for each item.
-  let workItemsText = ''
-  if (service === 'github') {
-    workItemsText = await fetchGitHubWorkItems(
-      teamId,
-      viewerId,
-      searchQuery,
-      dataLoader,
-      context,
-      info
-    )
-  } else if (service === 'jira') {
-    workItemsText = await fetchJiraWorkItems(teamId, viewerId, searchQuery, dataLoader)
-  } else if (service === 'linear') {
-    workItemsText = await fetchLinearWorkItems(teamId, viewerId, searchQuery, context, info)
-  } else if (service === 'gcal') {
-    workItemsText = await fetchGCalWorkItems(teamId, viewerId, searchQuery, dataLoader)
-  } else if (service === 'PARABOL') {
-    workItemsText = await fetchParabolWorkItems(teamId, viewerId, searchQuery)
-  } else {
-    throw new GraphQLError(`Inspiration items are not yet supported for ${service}`)
-  }
-
-  if (!workItemsText.trim()) {
-    throw new GraphQLError(
-      'No work was found to draft a response from. Try adjusting your filters or date range.'
-    )
-  }
-
-  const viewer = await dataLoader.get('users').loadNonNull(viewerId)
   const prompts = await dataLoader.get('templatePromptsByMeetingId').load(meetingId)
   if (prompts.length === 0) {
     throw new GraphQLError('This meeting has no prompts to draft a response for.')
   }
+  const viewer = await dataLoader.get('users').loadNonNull(viewerId)
 
-  // The viewer's most recent answers from other standups serve as a style guide
-  const pastResponseRows =
-    meeting.meetingType === 'teamPrompt'
-      ? await pg
-          .selectFrom('TeamPromptResponse')
-          .select('plaintextContent')
-          .where('userId', '=', viewerId)
-          .where('meetingId', '!=', meetingId)
-          .where('plaintextContent', '!=', '')
-          .orderBy('createdAt', 'desc')
-          .limit(5)
-          .execute()
-      : []
+  // RESOLUTION
+  if (meeting.meetingType === 'teamPrompt') {
+    const draft = await draftStandupFromSources({
+      meetingId,
+      teamId,
+      viewerId,
+      viewerName: viewer.preferredName,
+      prompts,
+      sources,
+      userPrompt,
+      context,
+      info
+    })
+    return {meetingId, ...draft}
+  }
+
+  // Re-run the same search the user saw, server-side, fetching full content for each item.
+  const {service, searchQuery} = sources[0]!
+  const issues = await fetchIssues(service, searchQuery, teamId, viewerId, context, info)
+  const issuesText = formatIssuesForAI(issues)
+
+  if (!issuesText.trim()) {
+    await pg
+      .deleteFrom('InspirationItem')
+      .where('meetingId', '=', meetingId)
+      .where('userId', '=', viewerId)
+      .where('service', '=', service)
+      .execute()
+    dataLoader.get('inspirationItemsByMeeting').clear({meetingId, userId: viewerId, service})
+    return {meetingId, inspirationItems: [], issues: []}
+  }
 
   const manager = new OpenAIServerManager()
   const result = await manager.generateInspirationItems(
-    meeting.meetingType,
-    workItemsText,
+    issuesText,
     prompts.map(({question, description}) => ({question, description})),
     viewer.preferredName,
-    pastResponseRows.map((row) => row.plaintextContent),
     userPrompt
   )
   if (!result) {
@@ -148,14 +138,17 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
           service,
           title: item.title,
           promptId: item.promptId,
-          content: JSON.stringify({type: 'doc', content: markdownToTipTap(item.content)})
+          content: toTipTapDoc(item.content)
         }))
       )
       .execute()
   })
   dataLoader.get('inspirationItemsByMeeting').clear({meetingId, userId: viewerId, service})
+  const inspirationItems = await dataLoader
+    .get('inspirationItemsByMeeting')
+    .load({meetingId, userId: viewerId, service})
 
-  return {meetingId, service}
+  return {meetingId, inspirationItems, issues: []}
 }
 
 export default generateInspirationItems

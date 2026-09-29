@@ -13,10 +13,12 @@ import type {WorkDrawerDateRange} from './WorkDrawerDateFilter'
 interface Props {
   selectedStatuses: TaskStatusEnum[]
   dateRange: WorkDrawerDateRange | undefined
+  searchQuery: string
+  onResultCount: (searchQuery: string, count: number) => void
 }
 
 const ParabolTasksResultsRoot = (props: Props) => {
-  const {selectedStatuses, dateRange} = props
+  const {selectedStatuses, dateRange, searchQuery, onResultCount} = props
   const atmosphere = useAtmosphere()
   const queryRef = useQueryLoaderNow<ParabolTasksResultsQuery>(parabolTasksResultsQuery, {
     userId: atmosphere.viewerId
@@ -29,6 +31,8 @@ const ParabolTasksResultsRoot = (props: Props) => {
             queryRef={queryRef}
             selectedStatuses={selectedStatuses}
             dateRange={dateRange}
+            searchQuery={searchQuery}
+            onResultCount={onResultCount}
           />
         )}
       </Suspense>

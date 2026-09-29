@@ -153,6 +153,10 @@
   --color-surface-well: var(--color-slate-300);
   --color-surface-card: var(--color-white);
   --color-surface-raised: var(--color-slate-100);
+  /* Anything that floats over the page: dialogs, popovers, menus. surface-modal-nested is
+     for a modal opened from another modal, so the second layer reads apart from the first. */
+  --color-surface-modal: var(--color-surface-card);
+  --color-surface-modal-nested: var(--color-surface-raised);
   /* The page canvas. Deliberately the same fill as surface-app so a page reads as
      a continuation of the left nav rather than a sheet floating on top of it. */
   --color-surface-document: var(--color-surface-app);
@@ -373,6 +377,8 @@
   --color-surface-well: var(--color-grape-950);
   --color-surface-card: var(--color-grape-750);
   --color-surface-raised: var(--color-grape-700);
+  --color-surface-modal: var(--color-surface-card);
+  --color-surface-modal-nested: var(--color-surface-raised);
   --color-surface-drawer: var(--color-grape-950);
   --color-surface-document: var(--color-surface-app);
   --color-surface-hover: rgba(183, 180, 233, 0.22);
@@ -436,6 +442,8 @@
   --color-surface-well: var(--color-slate-300);
   --color-surface-card: var(--color-white);
   --color-surface-raised: var(--color-slate-100);
+  --color-surface-modal: var(--color-surface-card);
+  --color-surface-modal-nested: var(--color-surface-raised);
   --color-surface-document: var(--color-surface-app);
   --color-surface-drawer: var(--color-white);
   --color-surface-hover: rgba(68, 66, 88, 0.1);
