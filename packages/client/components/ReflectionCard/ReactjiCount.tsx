@@ -45,7 +45,7 @@ const ReactjiCount = (props: Props) => {
       <TooltipTrigger asChild>
         <PlainButton
           className={cn(
-            'flex h-6 w-max items-center rounded-md bg-surface-well px-1.5 leading-6',
+            'flex h-6 w-max items-center rounded-md bg-surface-well px-1.5 leading-6 hover:bg-surface-hover',
             isViewerReactji ? 'text-accent' : 'text-fg-primary'
           )}
           onClick={onClick}
