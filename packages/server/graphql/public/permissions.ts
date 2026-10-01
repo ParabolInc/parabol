@@ -116,6 +116,7 @@ const permissionMap: PermissionMap<Resolvers> = {
       'createdBy'
     ),
     denyPushInvitation: rateLimit({perMinute: 10, perHour: 20}),
+    disconnectSAML: hasOrgRole<'Mutation.disconnectSAML'>('args.samlId', 'ORG_ADMIN', 'saml'),
     downgradeToStarter: or(
       isSuperUser,
       isViewerBillingLeader<'Mutation.downgradeToStarter'>('args.orgId')
@@ -419,7 +420,7 @@ const permissionMap: PermissionMap<Resolvers> = {
       'retroReflectionGroups'
     ),
     updateRetroMaxVotes: isMeetingMember<'Mutation.updateRetroMaxVotes'>('args.meetingId'),
-    updateSCIM: hasOrgRole<'Mutation.updateSCIM'>('args.orgId', 'ORG_ADMIN'),
+    updateSCIM: hasOrgRole<'Mutation.updateSCIM'>('args.samlId', 'ORG_ADMIN', 'saml'),
     updateTask: isTeamMember<'Mutation.updateTask'>('args.updatedTask.id', 'tasks'),
     updateTaskDueDate: isTeamMember<'Mutation.updateTaskDueDate'>('args.taskId', 'tasks'),
     updateTeamName: isTeamMember<'Mutation.updateTeamName'>('args.updatedTeam.id'),
@@ -428,7 +429,7 @@ const permissionMap: PermissionMap<Resolvers> = {
       'args.templateId',
       'meetingTemplates'
     ),
-    uploadIdPMetadata: hasOrgRole<'Mutation.uploadIdPMetadata'>('args.orgId', 'ORG_ADMIN'),
+    uploadIdPMetadata: hasOrgRole<'Mutation.uploadIdPMetadata'>('args.samlId', 'ORG_ADMIN', 'saml'),
     uploadOrgImage: isViewerBillingLeader<'Mutation.uploadOrgImage'>('args.orgId'),
     upsertTeamHealthQuestionCategory: isUserViewer<'Mutation.upsertTeamHealthQuestionCategory'>(
       'args.questionId',
@@ -463,6 +464,10 @@ const permissionMap: PermissionMap<Resolvers> = {
     saml: and(
       isViewerOnOrg<'Organization.saml'>('source.id'),
       isOrgTier<'Organization.saml'>('source.id', 'enterprise')
+    ),
+    samls: and(
+      isViewerOnOrg<'Organization.samls'>('source.id'),
+      isOrgTier<'Organization.samls'>('source.id', 'enterprise')
     )
   },
   RetroReflectionGroup: {
