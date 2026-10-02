@@ -8,7 +8,7 @@ import type {
 import type {PokerEstimateHeaderCardQuery as TPokerEstimateHeaderCardQuery} from '../__generated__/PokerEstimateHeaderCardQuery.graphql'
 import type Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
-import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
+import useUpdatePokerScopeMutation from '../mutations/useUpdatePokerScopeMutation'
 import {convertADFToTipTap} from '../shared/tiptap/convertADFToTipTap'
 import renderMarkdown from '../utils/renderMarkdown'
 import PokerEstimateHeaderCardError from './PokerEstimateHeaderCardError'
@@ -174,6 +174,7 @@ graphql`
 const PokerEstimateHeaderCard = (props: Props) => {
   const {stage: stageRef} = props
   const atmosphere = useAtmosphere()
+  const [updatePokerScope] = useUpdatePokerScopeMutation()
   const [isRefreshing, setIsRefreshing] = useState(false)
   const stage = useFragment(
     graphql`
@@ -204,11 +205,10 @@ const PokerEstimateHeaderCard = (props: Props) => {
   }, [integration, creatorUserId, atmosphere.viewerId])
 
   const onRemove = () => {
-    UpdatePokerScopeMutation(
-      atmosphere,
-      {meetingId, updates: [{service: 'PARABOL', serviceTaskId, action: 'DELETE'}]},
-      {onCompleted: () => {}, onError: () => {}, contents: []}
-    )
+    updatePokerScope({
+      variables: {meetingId, updates: [{service: 'PARABOL', serviceTaskId, action: 'DELETE'}]},
+      contents: []
+    })
   }
 
   if (!task) {

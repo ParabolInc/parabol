@@ -1,14 +1,14 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type FormEvent, useEffect, useRef, useState} from 'react'
-import {useFragment} from 'react-relay'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import {ExpandMore} from '~/ui/icons'
-import type {NewJiraIssueInput_meeting$key} from '../__generated__/NewJiraIssueInput_meeting.graphql'
-import type {NewJiraIssueInput_viewer$key} from '../__generated__/NewJiraIssueInput_viewer.graphql'
+import type {NewJiraIssueInputQuery} from '../__generated__/NewJiraIssueInputQuery.graphql'
 import useForm from '../hooks/useForm'
+import type {NewRecordInputProps} from '../integrations/platform/ScopingSearchState'
 import CreateTaskMutation from '../mutations/CreateTaskMutation'
-import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
+import useUpdatePokerScopeMutation from '../mutations/useUpdatePokerScopeMutation'
 import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
 import type {CompletedHandler} from '../types/relayMutations'
 import {Menu} from '../ui/Menu/Menu'
@@ -18,58 +18,42 @@ import NewJiraIssueMenu from './NewJiraIssueMenu'
 import PlainButton from './PlainButton/PlainButton'
 import StyledError from './StyledError'
 
-interface Props {
-  isEditing: boolean
-  meetingRef: NewJiraIssueInput_meeting$key
-  setIsEditing: (isEditing: boolean) => void
-  viewerRef: NewJiraIssueInput_viewer$key
-}
+const query = graphql`
+  query NewJiraIssueInputQuery($teamId: ID!) {
+    viewer {
+      id
+      teamMember(teamId: $teamId) {
+        integrations {
+          atlassian {
+            projects {
+              ...NewJiraIssueMenu_JiraRemoteProjects
+              id
+              key
+              integrationRepoId
+            }
+          }
+        }
+      }
+    }
+  }
+`
 
 const validateIssue = (issue: string) => {
   return new Legitity(issue).trim().min(2, `C’mon, you call that an issue?`)
 }
 
+interface Props extends NewRecordInputProps {
+  queryRef: PreloadedQuery<NewJiraIssueInputQuery>
+}
+
 const NewJiraIssueInput = (props: Props) => {
-  const {isEditing, meetingRef, setIsEditing, viewerRef} = props
-  const meeting = useFragment(
-    graphql`
-      fragment NewJiraIssueInput_meeting on PokerMeeting {
-        id
-      }
-    `,
-    meetingRef
-  )
-  const viewer = useFragment(
-    graphql`
-      fragment NewJiraIssueInput_viewer on User {
-        id
-        team(teamId: $teamId) {
-          id
-        }
-        teamMember(teamId: $teamId) {
-          ... on TeamMember {
-            integrations {
-              atlassian {
-                projects {
-                  ...NewJiraIssueMenu_JiraRemoteProjects
-                  id
-                  key
-                  integrationRepoId
-                }
-              }
-            }
-          }
-        }
-      }
-    `,
-    viewerRef
-  )
-  const {id: meetingId} = meeting
-  const {id: userId, team, teamMember} = viewer
-  const {id: teamId} = team!
+  const {isEditing, setIsEditing, meetingId, teamId, queryRef} = props
+  const data = usePreloadedQuery<NewJiraIssueInputQuery>(query, queryRef)
+  const {id: userId, teamMember} = data.viewer
   const {integrations} = teamMember!
   const atmosphere = useAtmosphere()
-  const {onCompleted, onError} = useMutationProps()
+  const {onError} = useMutationProps()
+  const [updatePokerScope] = useUpdatePokerScopeMutation()
   const [createTaskError, setCreateTaskError] = useState<string>()
   useEffect(() => {
     if (isEditing) {
@@ -138,11 +122,7 @@ const NewJiraIssueInput = (props: Props) => {
           } as const
         ]
       }
-      UpdatePokerScopeMutation(atmosphere, pokerScopeVariables, {
-        onError,
-        onCompleted,
-        contents: [newIssueTitle]
-      })
+      updatePokerScope({variables: pokerScopeVariables, contents: [newIssueTitle]})
     }
     CreateTaskMutation(atmosphere, {newTask}, {onError, onCompleted: handleCompleted})
   }

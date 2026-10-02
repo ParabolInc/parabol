@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
@@ -40,35 +41,35 @@ const persistIntegrationSearchQuery: MutationResolvers['persistIntegrationSearch
   const subOptions = {mutatorId, operationId}
 
   const parsedMeta = parseMeta(meta)
-  if (parsedMeta instanceof Error) return {error: {message: parsedMeta.message}}
+  if (parsedMeta instanceof Error) throw new GraphQLError(parsedMeta.message)
 
   const dbProviderId = IntegrationProviderId.split(providerId)
   const [provider, team] = await Promise.all([
     dataLoader.get('integrationProviders').load(dbProviderId),
     dataLoader.get('teams').loadNonNull(teamId)
   ])
-  if (!provider) return {error: {message: 'Provider does not exist'}}
+  if (!provider) throw new GraphQLError('Provider does not exist')
   const {service} = provider
   const providers = await dataLoader
     .get('sharedIntegrationProviders')
     .load({service, orgIds: [team.orgId], teamIds: [teamId]})
   if (!providers.some(({id}) => id === dbProviderId)) {
-    return {error: {message: 'Provider is not available to this team'}}
+    throw new GraphQLError('Provider is not available to this team')
   }
 
   if (!isRegisteredServerIntegration(service)) {
-    return {error: {message: `${service} does not save search queries`}}
+    throw new GraphQLError(`${service} does not save search queries`)
   }
   const definition: ServerIntegrationDefinition = getServerIntegration(service)
   const issueSearch = definition.capabilities.issueSearch
   if (!issueSearch) {
-    return {error: {message: `${service} does not save search queries`}}
+    throw new GraphQLError(`${service} does not save search queries`)
   }
   if (!(await definition.isConnected({dataLoader, teamId, userId: viewerId}))) {
-    return {error: {message: `Not connected to ${definition.title}`}}
+    throw new GraphQLError(`Not connected to ${definition.title}`)
   }
   const query = issueSearch.buildQuery(queryString, parsedMeta)
-  if (query instanceof Error) return {error: {message: query.message}}
+  if (query instanceof Error) throw new GraphQLError(query.message)
 
   await getKysely()
     .insertInto('IntegrationSearchQuery')

@@ -1,16 +1,16 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type FormEvent, useEffect, useRef, useState} from 'react'
-import {useFragment} from 'react-relay'
-import type {NewGitHubIssueInput_meeting$key} from '~/__generated__/NewGitHubIssueInput_meeting.graphql'
-import type {NewGitHubIssueInput_viewer$key} from '~/__generated__/NewGitHubIssueInput_viewer.graphql'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useGetRepoContributions from '~/hooks/useGetRepoContributions'
 import useMutationProps from '~/hooks/useMutationProps'
 import {ExpandMore} from '~/ui/icons'
 import type {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/CreateTaskMutation.graphql'
+import type {NewGitHubIssueInputQuery} from '../__generated__/NewGitHubIssueInputQuery.graphql'
 import useForm from '../hooks/useForm'
+import type {NewRecordInputProps} from '../integrations/platform/ScopingSearchState'
 import CreateTaskMutation from '../mutations/CreateTaskMutation'
-import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
+import useUpdatePokerScopeMutation from '../mutations/useUpdatePokerScopeMutation'
 import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
 import type {CompletedHandler} from '../types/relayMutations'
 import {Menu} from '../ui/Menu/Menu'
@@ -20,49 +20,33 @@ import NewGitHubIssueMenu from './NewGitHubIssueMenu'
 import PlainButton from './PlainButton/PlainButton'
 import StyledError from './StyledError'
 
-interface Props {
-  isEditing: boolean
-  meetingRef: NewGitHubIssueInput_meeting$key
-  setIsEditing: (isEditing: boolean) => void
-  viewerRef: NewGitHubIssueInput_viewer$key
-}
+const query = graphql`
+  query NewGitHubIssueInputQuery($teamId: ID!) {
+    viewer {
+      id
+      teamMember(teamId: $teamId) {
+        ...useGetRepoContributions_teamMember
+      }
+    }
+  }
+`
 
 const validateIssue = (issue: string) => {
   return new Legitity(issue).trim().min(2, `C’mon, you call that an issue?`)
 }
 
+interface Props extends NewRecordInputProps {
+  queryRef: PreloadedQuery<NewGitHubIssueInputQuery>
+}
+
 const NewGitHubIssueInput = (props: Props) => {
-  const {isEditing, meetingRef, setIsEditing, viewerRef} = props
-  const viewer = useFragment(
-    graphql`
-      fragment NewGitHubIssueInput_viewer on User {
-        id
-        team(teamId: $teamId) {
-          id
-        }
-        teamMember(teamId: $teamId) {
-          ... on TeamMember {
-            ...useGetRepoContributions_teamMember
-          }
-        }
-      }
-    `,
-    viewerRef
-  )
-  const meeting = useFragment(
-    graphql`
-      fragment NewGitHubIssueInput_meeting on PokerMeeting {
-        id
-      }
-    `,
-    meetingRef
-  )
-  const {id: meetingId} = meeting
-  const {id: userId, team, teamMember} = viewer
+  const {isEditing, setIsEditing, meetingId, teamId, queryRef} = props
+  const data = usePreloadedQuery<NewGitHubIssueInputQuery>(query, queryRef)
+  const {id: userId, teamMember} = data.viewer
   const repos = useGetRepoContributions(teamMember!)
-  const {id: teamId} = team!
   const atmosphere = useAtmosphere()
-  const {onCompleted, onError} = useMutationProps()
+  const {onError} = useMutationProps()
+  const [updatePokerScope] = useUpdatePokerScopeMutation()
   const [createTaskError, setCreateTaskError] = useState<string>()
   useEffect(() => {
     if (isEditing) {
@@ -125,11 +109,7 @@ const NewGitHubIssueInput = (props: Props) => {
           } as const
         ]
       }
-      UpdatePokerScopeMutation(atmosphere, pokerScopeVariables, {
-        onError,
-        onCompleted,
-        contents: [newIssueTitle]
-      })
+      updatePokerScope({variables: pokerScopeVariables, contents: [newIssueTitle]})
     }
     CreateTaskMutation(atmosphere, {newTask}, {onError, onCompleted: handleCompleted})
   }

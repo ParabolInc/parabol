@@ -28,23 +28,17 @@ type ParabolSearchQuery {
   statusFilters: [TaskStatusEnum!]
 }
 
-type GitLabSearchQuery {
-  id: ID!
-  queryString: String!
-  selectedProjectsIds: [ID!]
+type IntegrationSearchFilter {
+  key: String!
+  value: String!
 }
 
-type LinearSearchQuery {
+type ScopingSearchQuery {
   id: ID!
+  service: TaskServiceEnum!
   queryString: String!
-  selectedProjectsIds: [ID!]
-}
-
-type AzureDevOpsSearchQuery {
-  id: ID!
-  queryString: String!
-  projectKeyFilters: [String!]!
-  isWIQL: Boolean!
+  isAdvancedQuery: Boolean!
+  filters: [IntegrationSearchFilter!]!
 }
 
 extend type PokerMeeting {
@@ -55,13 +49,8 @@ extend type PokerMeeting {
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
   showSidebar: Boolean!
-  githubSearchQuery: GitHubSearchQuery!
-  gitlabSearchQuery: GitLabSearchQuery!
-  jiraSearchQuery: JiraSearchQuery!
-  jiraServerSearchQuery: JiraSearchQuery!
+  scopingSearchQueries: [ScopingSearchQuery!]!
   parabolSearchQuery: ParabolSearchQuery!
-  azureDevOpsSearchQuery: AzureDevOpsSearchQuery!
-  linearSearchQuery: LinearSearchQuery!
   musicSettings: MusicSettings
 }
 

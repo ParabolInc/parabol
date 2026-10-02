@@ -3,7 +3,10 @@ import clsx from 'clsx'
 import {useFragment} from 'react-relay'
 import {ExpandMore, FilterList} from '~/ui/icons'
 import type {LinearProjectFilterBar_teamMember$key} from '../../../__generated__/LinearProjectFilterBar_teamMember.graphql'
-import useLinearProjectsAndTeams from '../../../hooks/useLinearProjectsAndTeams'
+import useLinearProjectsAndTeams, {
+  type LinearProjectOrTeam
+} from '../../../hooks/useLinearProjectsAndTeams'
+import getLinearSelectorItemId from '../../../integrations/linear/getLinearSelectorItemId'
 import {Menu} from '../../../ui/Menu/Menu'
 import {MenuContent} from '../../../ui/Menu/MenuContent'
 import plural from '../../../utils/plural'
@@ -29,7 +32,8 @@ const LinearProjectFilterBar = (props: Props) => {
   const {searchQuery, setSearchQuery, filteredProjectsAndTeams} =
     useLinearProjectsAndTeams(teamMember)
 
-  const handleSelectItem = (itemId: string, isSelected: boolean) => {
+  const handleSelectItem = (item: LinearProjectOrTeam, isSelected: boolean) => {
+    const itemId = getLinearSelectorItemId(item)
     if (!isSelected) {
       setSelectedLinearIds([...selectedLinearIds, itemId])
     } else {
