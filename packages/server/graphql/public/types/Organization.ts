@@ -35,8 +35,11 @@ const Organization: OrganizationResolvers = {
   },
   billingTier: ({tier}) => tier,
   saml: async ({id: orgId}, _args, {dataLoader}) => {
-    const saml = await dataLoader.get('samlByOrgId').load(orgId)
-    return saml || null
+    const samls = await dataLoader.get('samlsByOrgId').load(orgId)
+    return samls[0] ?? null
+  },
+  samls: ({id: orgId}, _args, {dataLoader}) => {
+    return dataLoader.get('samlsByOrgId').load(orgId)
   },
 
   isBillingLeader: async ({id: orgId}, _args, {authToken, dataLoader}) => {

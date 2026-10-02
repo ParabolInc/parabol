@@ -8,9 +8,9 @@ import {TooltipContent} from '~/ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '~/ui/Tooltip/TooltipTrigger'
 import type {JiraObjectCard_result$key} from '../../../__generated__/JiraObjectCard_result.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import jiraSVG from '../../../styles/theme/images/graphics/jira.svg'
 import relativeDate from '../../../utils/date/relativeDate'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
+import JiraSVG from '../../JiraSVG'
 
 interface Props {
   resultRef: JiraObjectCard_result$key
@@ -93,9 +93,7 @@ const JiraObjectCard = (props: Props) => {
       </div>
       <div className='flex items-center justify-between'>
         <div className='flex items-center gap-2'>
-          <div className='h-4 w-4'>
-            <img src={jiraSVG} />
-          </div>
+          <JiraSVG className='size-4' />
           {project && (
             <a
               href={`https://${cloudName}.atlassian.net/browse/${project.key}`}

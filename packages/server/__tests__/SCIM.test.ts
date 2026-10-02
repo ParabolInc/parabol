@@ -4,6 +4,7 @@ import {InvoiceItemType} from '../../client/types/constEnums'
 import adjustUserCount from '../billing/helpers/adjustUserCount'
 import {getNewDataLoader} from '../dataloader/getNewDataLoader'
 import {
+  createOrgAdmin,
   getTestDomain,
   getTestEmail,
   HOST,
@@ -217,39 +218,6 @@ type Step = {
   }>
 }
 
-const createOrgAdmin = async (email: string) => {
-  const {userId, cookie, orgId} = await signUpWithEmail(email)
-  const promoteToOrgAdmin = await sendIntranet({
-    query: `
-      mutation SetOrgUserRoleMutation($orgId: ID!, $userId: ID!, $role: OrgUserRole) {
-        setOrgUserRole(orgId: $orgId, userId: $userId, role: $role) {
-          __typename
-          ... on ErrorPayload {
-            error {
-              message
-            }
-          }
-        }
-      }
-    `,
-    variables: {
-      orgId,
-      userId,
-      role: 'ORG_ADMIN'
-    }
-  })
-
-  expect(promoteToOrgAdmin).toMatchObject({
-    data: {
-      setOrgUserRole: {
-        __typename: 'SetOrgUserRoleSuccess'
-      }
-    }
-  })
-
-  return {cookie, orgId, userId}
-}
-
 const verifyDomain = async (domain: string, orgId: string) => {
   const samlName = domain.split('.')[0]!
   const verifyDomain = await sendIntranet({
@@ -285,23 +253,24 @@ const verifyDomain = async (domain: string, orgId: string) => {
       }
     }
   })
+  return samlName
 }
 
-const enableSCIM = async (orgId: string, cookie: string) => {
+const enableSCIM = async (samlId: string, cookie: string) => {
   const res = await sendPublic({
     query: `
       mutation UpdateSCIM(
-        $orgId: ID!
+        $samlId: ID!
         $authenticationType: SCIMAuthenticationTypeEnum
       ) {
-        updateSCIM(orgId: $orgId, authenticationType: $authenticationType) {
+        updateSCIM(samlId: $samlId, authenticationType: $authenticationType) {
           scimBearerToken
           scimOAuthClientSecret
         }
       }
     `,
     variables: {
-      orgId,
+      samlId,
       authenticationType: 'bearerToken'
     },
     cookie
@@ -325,8 +294,8 @@ describe('Okta SCIM 2.0', () => {
 
   beforeAll(async () => {
     const {orgId, cookie} = await createOrgAdmin(`admin@${domain}`)
-    await verifyDomain(domain, orgId)
-    bearerToken = await enableSCIM(orgId, cookie)
+    const samlId = await verifyDomain(domain, orgId)
+    bearerToken = await enableSCIM(samlId, cookie)
   })
 
   describe('Okta SCIM 2.0 Runscope test spec', () => {
@@ -545,8 +514,8 @@ describe('Microsoft Entra SCIM 2.0', () => {
   const domain = getTestDomain()
   beforeAll(async () => {
     const {orgId, cookie} = await createOrgAdmin(`admin@${domain}`)
-    await verifyDomain(domain, orgId)
-    bearerToken = await enableSCIM(orgId, cookie)
+    const samlId = await verifyDomain(domain, orgId)
+    bearerToken = await enableSCIM(samlId, cookie)
   })
 
   describe('Create New User', () => {
@@ -1186,8 +1155,8 @@ describe('Org membership is reflected in SCIM', () => {
   beforeAll(async () => {
     const admin = await createOrgAdmin(`admin@${domain}`)
     orgId = admin.orgId
-    await verifyDomain(domain, orgId)
-    bearerToken = await enableSCIM(orgId, admin.cookie)
+    const samlId = await verifyDomain(domain, orgId)
+    bearerToken = await enableSCIM(samlId, admin.cookie)
   })
 
   test('Managed User in org shows up', async () => {
@@ -1521,8 +1490,8 @@ describe('Unrelated users are inaccessible', () => {
 
   beforeAll(async () => {
     const {orgId, cookie} = await createOrgAdmin(`admin@${domain}`)
-    await verifyDomain(domain, orgId)
-    bearerToken = await enableSCIM(orgId, cookie)
+    const samlId = await verifyDomain(domain, orgId)
+    bearerToken = await enableSCIM(samlId, cookie)
 
     email = getTestEmail()
     const user = await signUpWithEmail(email)
@@ -1638,8 +1607,8 @@ describe('External Users cannot be modified', () => {
 
   beforeAll(async () => {
     const {orgId, cookie} = await createOrgAdmin(`admin@${domain}`)
-    await verifyDomain(domain, orgId)
-    bearerToken = await enableSCIM(orgId, cookie)
+    const samlId = await verifyDomain(domain, orgId)
+    bearerToken = await enableSCIM(samlId, cookie)
 
     email = getTestEmail()
     const user = await signUpWithEmail(email)
@@ -1719,8 +1688,8 @@ describe('Provisioned Users with external emails can be managed', () => {
 
   beforeAll(async () => {
     const {orgId, cookie} = await createOrgAdmin(`admin@${domain}`)
-    await verifyDomain(domain, orgId)
-    bearerToken = await enableSCIM(orgId, cookie)
+    const samlId = await verifyDomain(domain, orgId)
+    bearerToken = await enableSCIM(samlId, cookie)
 
     email = getTestEmail()
   })
@@ -1878,12 +1847,12 @@ describe('Managed User can be taken over by SCIM with matched domain', () => {
 
   beforeAll(async () => {
     const {orgId: orgIdA, cookie: cookieA} = await createOrgAdmin(`admin@${domainA}`)
-    await verifyDomain(domainA, orgIdA)
-    bearerTokenA = await enableSCIM(orgIdA, cookieA)
+    const samlIdA = await verifyDomain(domainA, orgIdA)
+    bearerTokenA = await enableSCIM(samlIdA, cookieA)
 
     const {orgId: orgIdB, cookie: cookieB} = await createOrgAdmin(`admin@${domainB}`)
-    await verifyDomain(domainB, orgIdB)
-    bearerTokenB = await enableSCIM(orgIdB, cookieB)
+    const samlIdB = await verifyDomain(domainB, orgIdB)
+    bearerTokenB = await enableSCIM(samlIdB, cookieB)
 
     email = getTestEmail(domainB)
   })
@@ -2000,8 +1969,8 @@ describe('Groups', () => {
 
   beforeAll(async () => {
     const {orgId, cookie} = await createOrgAdmin(`admin@${domain}`)
-    await verifyDomain(domain, orgId)
-    bearerToken = await enableSCIM(orgId, cookie)
+    const samlId = await verifyDomain(domain, orgId)
+    bearerToken = await enableSCIM(samlId, cookie)
   })
 
   describe('Update Group displayName', () => {
@@ -2558,8 +2527,8 @@ describe('Pagination', () => {
 
   beforeAll(async () => {
     const {orgId, cookie} = await createOrgAdmin(`admin@${domain}`)
-    await verifyDomain(domain, orgId)
-    bearerToken = await enableSCIM(orgId, cookie)
+    const samlId = await verifyDomain(domain, orgId)
+    bearerToken = await enableSCIM(samlId, cookie)
   })
 
   describe('User Pagination', () => {
@@ -2776,21 +2745,21 @@ describe('Pagination', () => {
 describe('SCIM OAuth Client Credentials authentication', () => {
   const OAUTH_TOKEN_URL = `${PROTOCOL}://${HOST}/oauth/token`
 
-  const enableSCIMOAuth = async (orgId: string, cookie: string) => {
+  const enableSCIMOAuth = async (samlId: string, cookie: string) => {
     const res = await sendPublic({
       query: `
         mutation UpdateSCIM(
-          $orgId: ID!
+          $samlId: ID!
           $authenticationType: SCIMAuthenticationTypeEnum
         ) {
-          updateSCIM(orgId: $orgId, authenticationType: $authenticationType) {
+          updateSCIM(samlId: $samlId, authenticationType: $authenticationType) {
             scimOAuthClientId
             scimOAuthClientSecret
           }
         }
       `,
       variables: {
-        orgId,
+        samlId,
         authenticationType: 'oauthClientCredentials'
       },
       cookie
@@ -2830,8 +2799,8 @@ describe('SCIM OAuth Client Credentials authentication', () => {
   test('can obtain access token and use it for SCIM requests', async () => {
     const domain = getTestDomain()
     const {orgId, cookie} = await createOrgAdmin(`admin@${domain}`)
-    await verifyDomain(domain, orgId)
-    const {scimOAuthClientId, scimOAuthClientSecret} = await enableSCIMOAuth(orgId, cookie)
+    const samlId = await verifyDomain(domain, orgId)
+    const {scimOAuthClientId, scimOAuthClientSecret} = await enableSCIMOAuth(samlId, cookie)
 
     const accessToken = await getAccessToken(scimOAuthClientId, scimOAuthClientSecret)
 
@@ -2867,8 +2836,8 @@ describe('SCIM OAuth Client Credentials authentication', () => {
   test('wrong client_secret returns 401', async () => {
     const domain = getTestDomain()
     const {orgId, cookie} = await createOrgAdmin(`admin@${domain}`)
-    await verifyDomain(domain, orgId)
-    const {scimOAuthClientId} = await enableSCIMOAuth(orgId, cookie)
+    const samlId = await verifyDomain(domain, orgId)
+    const {scimOAuthClientId} = await enableSCIMOAuth(samlId, cookie)
 
     const res = await fetch(OAUTH_TOKEN_URL, {
       method: 'POST',
@@ -2889,9 +2858,9 @@ describe('SCIM Bearer Token authentication', () => {
   test('Refreshing creates a new token', async () => {
     const domain = getTestDomain()
     const {orgId, cookie} = await createOrgAdmin(`admin@${domain}`)
-    await verifyDomain(domain, orgId)
-    const bearerToken = await enableSCIM(orgId, cookie)
-    const refreshedBearerToken = await enableSCIM(orgId, cookie)
+    const samlId = await verifyDomain(domain, orgId)
+    const bearerToken = await enableSCIM(samlId, cookie)
+    const refreshedBearerToken = await enableSCIM(samlId, cookie)
     expect(refreshedBearerToken).not.toBe(bearerToken)
 
     const res = await fetch(`${SCIM_URL}/Users`, {
@@ -2907,9 +2876,9 @@ describe('SCIM Bearer Token authentication', () => {
   test('Refreshing invalidates the old one', async () => {
     const domain = getTestDomain()
     const {orgId, cookie} = await createOrgAdmin(`admin@${domain}`)
-    await verifyDomain(domain, orgId)
-    const oldBearerToken = await enableSCIM(orgId, cookie)
-    await enableSCIM(orgId, cookie)
+    const samlId = await verifyDomain(domain, orgId)
+    const oldBearerToken = await enableSCIM(samlId, cookie)
+    await enableSCIM(samlId, cookie)
 
     const res = await fetch(`${SCIM_URL}/Users`, {
       method: 'GET',

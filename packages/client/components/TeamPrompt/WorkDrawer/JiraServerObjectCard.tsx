@@ -8,9 +8,9 @@ import {TooltipContent} from '~/ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '~/ui/Tooltip/TooltipTrigger'
 import type {JiraServerObjectCard_result$key} from '../../../__generated__/JiraServerObjectCard_result.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import jiraSVG from '../../../styles/theme/images/graphics/jira.svg'
 import relativeDate from '../../../utils/date/relativeDate'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
+import JiraSVG from '../../JiraSVG'
 
 interface Props {
   resultRef: JiraServerObjectCard_result$key
@@ -88,9 +88,7 @@ const JiraServerObjectCard = (props: Props) => {
       </div>
       <div className='flex items-center justify-between'>
         <div className='flex items-center gap-2'>
-          <div className='h-4 w-4'>
-            <img src={jiraSVG} />
-          </div>
+          <JiraSVG className='size-4' />
           <div className='text-fg-secondary text-xs'>{projectName}</div>
         </div>
         <Tooltip open={isCopied || isHovered} onOpenChange={setIsHovered}>
