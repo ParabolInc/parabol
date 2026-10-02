@@ -8,7 +8,7 @@ export type FileAssetDir = 'store' | 'build'
 export type AssetType = 'assets' | 'atlassian' | 'picture' | 'metadata' | 'template'
 export type PartialPath =
   | `${AssetScopeEnum}/${string}/${AssetType}/${string}.${string}`
-  | `Organization/${string}/idpMetadata.xml`
+  | `Organization/${string}/idpMetadata/${string}.xml`
   | `__debug__/${string}`
   | `build/${string}`
 

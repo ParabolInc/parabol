@@ -23,7 +23,7 @@ import makeAppURL from '../../../../utils/makeAppURL'
 import {CopyServiceProviderURL} from './CopyServiceProviderURL'
 
 interface Props {
-  samlRef: OrgAuthenticationSCIM_saml$key | null
+  samlRef: OrgAuthenticationSCIM_saml$key
   scimEnabled: boolean
   isOrgAdmin: boolean
 }
@@ -91,10 +91,10 @@ const OrgAuthenticationSCIM = (props: Props) => {
   const {submitMutation, submitting, onCompleted, onError} = useMutationProps()
   const [commitUpdateSCIM] = useMutation<OrgAuthenticationSCIMUpdateSCIMMutation>(graphql`
     mutation OrgAuthenticationSCIMUpdateSCIMMutation(
-      $orgId: ID!
+      $samlId: ID!
       $authenticationType: SCIMAuthenticationTypeEnum
     ) {
-      updateSCIM(orgId: $orgId, authenticationType: $authenticationType) {
+      updateSCIM(samlId: $samlId, authenticationType: $authenticationType) {
         saml {
           ...OrgAuthenticationSCIM_saml
         }
@@ -107,9 +107,9 @@ const OrgAuthenticationSCIM = (props: Props) => {
   const [bearerToken, setBearerToken] = useState<string | null>(null)
   const [oauthClientSecret, setOAuthClientSecret] = useState<string | null>(null)
   const [nextScimAuthenticationType, setNextScimAuthenticationType] =
-    useState<SCIMAuthenticationTypeEnum | null>(saml?.scimAuthenticationType ?? null)
+    useState<SCIMAuthenticationTypeEnum | null>(saml.scimAuthenticationType ?? null)
 
-  if (!saml || !scimEnabled) {
+  if (!scimEnabled) {
     return (
       <div className='px-6 pb-8'>
         <div className='flex flex-row rounded border border-hairline-field px-2 py-1'>
@@ -156,7 +156,7 @@ const OrgAuthenticationSCIM = (props: Props) => {
     submitMutation()
     commitUpdateSCIM({
       variables: {
-        orgId,
+        samlId: saml.id,
         authenticationType
       },
       onCompleted: (data) => {

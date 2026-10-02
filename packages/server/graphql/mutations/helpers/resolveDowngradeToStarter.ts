@@ -5,6 +5,7 @@ import {identifyHighestUserTierForOrgId} from '../../../utils/identifyHighestUse
 import {Logger} from '../../../utils/Logger'
 import {getStripeManager} from '../../../utils/stripe'
 import type {ReasonToDowngradeEnum} from '../../public/resolverTypes'
+import clearSAMLConnection from './clearSAMLConnection'
 
 const resolveDowngradeToStarter = async (
   orgId: string,
@@ -34,11 +35,7 @@ const resolveDowngradeToStarter = async (
       })
       .where('id', '=', orgId)
       .execute(),
-    pg
-      .updateTable('SAML')
-      .set({metadata: null, metadataURL: null, lastUpdatedBy: user.id})
-      .where('orgId', '=', orgId)
-      .execute()
+    clearSAMLConnection('orgId', orgId, user.id)
   ])
   dataLoader.get('organizations').clear(orgId)
   await identifyHighestUserTierForOrgId(orgId, dataLoader)
