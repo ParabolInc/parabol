@@ -37,7 +37,7 @@ export const checkAccess = async (
   authToken: AuthToken | null,
   scope: AssetScopeEnum,
   scopeCode: string,
-  assetType: AssetType | 'idpMetadata.xml'
+  assetType: AssetType | 'idpMetadata' | 'idpMetadata.xml'
 ) => {
   const viewerId = getUserId(authToken)
   if (scope === 'User') {
@@ -55,7 +55,7 @@ export const checkAccess = async (
       if (isTeamMember(authToken, scopeCode)) return true
     }
   } else if (scope === 'Organization') {
-    if (assetType === 'picture' || assetType === 'idpMetadata.xml') {
+    if (assetType === 'picture' || assetType === 'idpMetadata' || assetType === 'idpMetadata.xml') {
       // all org avatars and metadata are visible to all users
       return true
     } else {

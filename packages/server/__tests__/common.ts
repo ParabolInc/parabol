@@ -85,30 +85,44 @@ export async function sendTipTap<T>(
     })
   })
 }
+const toFormData = (operations: string, uploadables: Record<string, File>) => {
+  const formData = new FormData()
+  formData.append('operations', operations)
+  const map: Record<string, string[]> = {}
+  Object.entries(uploadables).forEach(([key, file], idx) => {
+    map[idx] = [`variables.${key}`]
+    formData.append(String(idx), file)
+  })
+  formData.append('map', JSON.stringify(map))
+  return formData
+}
+
 export async function sendPublic(req: {
   query: string
   variables?: Record<string, any>
   cookie?: string
   bearerToken?: string
+  uploadables?: Record<string, File>
 }) {
   const cookie = req.cookie ?? ''
   const authorization = req.bearerToken ? `Bearer ${req.bearerToken}` : ''
-  const {query, variables} = req
+  const {query, variables, uploadables} = req
   // the production build doesn't allow ad-hoc queries, so persist it
 
   const docId = await persistQuery(query)
+  const operations = JSON.stringify({
+    docId,
+    variables
+  })
   const response = await fetch(`${PROTOCOL}://${HOST}/graphql`, {
     method: 'POST',
     headers: {
       accept: 'application/json',
-      'content-type': 'application/json',
+      ...(!uploadables && {'content-type': 'application/json'}),
       authorization,
       cookie
     },
-    body: JSON.stringify({
-      docId,
-      variables
-    })
+    body: uploadables ? toFormData(operations, uploadables) : operations
   })
 
   const authCookie = response.headers.get('set-cookie')
@@ -273,6 +287,39 @@ export const signUpWithEmail = async (emailInput: string) => {
 
 export const signUp = async () => {
   return signUpWithEmail(getTestEmail())
+}
+
+export const createOrgAdmin = async (email: string) => {
+  const {userId, cookie, orgId} = await signUpWithEmail(email)
+  const promoteToOrgAdmin = await sendIntranet({
+    query: `
+      mutation SetOrgUserRoleMutation($orgId: ID!, $userId: ID!, $role: OrgUserRole) {
+        setOrgUserRole(orgId: $orgId, userId: $userId, role: $role) {
+          __typename
+          ... on ErrorPayload {
+            error {
+              message
+            }
+          }
+        }
+      }
+    `,
+    variables: {
+      orgId,
+      userId,
+      role: 'ORG_ADMIN'
+    }
+  })
+
+  expect(promoteToOrgAdmin).toMatchObject({
+    data: {
+      setOrgUserRole: {
+        __typename: 'SetOrgUserRoleSuccess'
+      }
+    }
+  })
+
+  return {cookie, orgId, userId}
 }
 
 export const getUserTeams = async (userId: string) => {

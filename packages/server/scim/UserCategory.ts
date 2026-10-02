@@ -1,5 +1,6 @@
 import SAML from '../database/types/SAML'
 import {DataLoaderWorker} from '../graphql/graphql'
+import {getSiblingSAMLs} from './getSiblingSAMLs'
 
 export type UserCategory = 'managed' | 'external' | null
 
@@ -23,6 +24,14 @@ export const getUserCategory = async (
   }
 
   if (!orgId) {
+    return null
+  }
+
+  const siblingSAMLs = await getSiblingSAMLs(saml, dataLoader)
+  const isManagedBySibling = siblingSAMLs.some(
+    (sibling) => sibling.id === user.scimId || sibling.domains.includes(user.domain!)
+  )
+  if (isManagedBySibling) {
     return null
   }
 
