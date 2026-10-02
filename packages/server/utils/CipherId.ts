@@ -9,5 +9,7 @@ export const CipherId = {
     return [feistelCipher.decrypt(code), code, entity] as [id: number, code: number, entity: string]
   },
   encrypt: feistelCipher.encrypt,
-  decrypt: feistelCipher.decrypt
+  decrypt: feistelCipher.decrypt,
+  // decrypt returns any uint32, but serial ids are PG integers, so a forged code can overflow the column
+  isValidDbId: (id: number) => id >= 1 && id <= 2 ** 31 - 1
 }
