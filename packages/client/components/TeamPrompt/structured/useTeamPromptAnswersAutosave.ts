@@ -8,6 +8,7 @@ import {clearDraftAnswers, writeDraftAnswer} from './teamPromptDraftStorage'
 
 const AUTOSAVE_DEBOUNCE_MS = 800
 const IN_FLIGHT_CEILING_MS = 10000
+const TRANSPORT_ERROR = 'Could not save your update — try again'
 
 export interface DirtyAnswer {
   promptId: string
@@ -56,7 +57,10 @@ const useTeamPromptAnswersAutosave = (options: Options) => {
         }
         upsertResponse({
           variables: {meetingId, promptId, content: JSON.stringify(doc)},
-          onError: () => settle(false),
+          onError: () => {
+            reportError(TRANSPORT_ERROR)
+            settle(false)
+          },
           onCompleted: (_res, errors) => {
             const message = errors?.[0]?.message
             if (message) {
@@ -122,33 +126,40 @@ const useTeamPromptAnswersAutosave = (options: Options) => {
     })
   }, [])
 
-  const share = useCallback(async () => {
-    if (timerRef.current) window.clearTimeout(timerRef.current)
-    setIsSharing(true)
-    const isSaved = await flush()
-    if (!isSaved) {
-      setIsSharing(false)
-      return
-    }
-    shareResponses({
-      variables: {meetingId},
-      onError: () => setIsSharing(false),
-      onCompleted: (res, errors) => {
+  const share = useCallback(
+    async (onShared?: () => void) => {
+      if (timerRef.current) window.clearTimeout(timerRef.current)
+      setIsSharing(true)
+      const isSaved = await flush()
+      if (!isSaved) {
         setIsSharing(false)
-        const message = errors?.[0]?.message
-        if (message) {
-          reportError(message)
-          return
-        }
-        SendClientSideEvent(atmosphere, 'Standup Response Shared', {
-          teamId,
-          meetingId,
-          answerCount: res.shareTeamPromptResponses.responses.filter(({sharedAt}) => !!sharedAt)
-            .length
-        })
+        return
       }
-    })
-  }, [flush, shareResponses, meetingId, teamId, atmosphere, reportError])
+      shareResponses({
+        variables: {meetingId},
+        onError: () => {
+          setIsSharing(false)
+          reportError(TRANSPORT_ERROR)
+        },
+        onCompleted: (res, errors) => {
+          setIsSharing(false)
+          const message = errors?.[0]?.message
+          if (message) {
+            reportError(message)
+            return
+          }
+          SendClientSideEvent(atmosphere, 'Standup Response Shared', {
+            teamId,
+            meetingId,
+            answerCount: res.shareTeamPromptResponses.responses.filter(({sharedAt}) => !!sharedAt)
+              .length
+          })
+          onShared?.()
+        }
+      })
+    },
+    [flush, shareResponses, meetingId, teamId, atmosphere, reportError]
+  )
 
   useEffect(
     () => () => {

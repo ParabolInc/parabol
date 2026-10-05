@@ -67,11 +67,14 @@ const TeamPromptDrawer = ({meetingRef}: Props) => {
 
   const allStages = meeting.phases.flatMap((p) => p.stages)
   const selectedStage = localStageId ? findStageById(meeting.phases, localStageId)?.stage : null
-  const activeStage = selectedStage?.discussionId
-    ? selectedStage
-    : allStages.find(
-        (stage) => stage.discussionId && getSharedResponses(stage.responses ?? []).length > 0
-      )
+  const activeStage =
+    rightDrawerOpen !== 'discussion'
+      ? undefined
+      : selectedStage?.discussionId
+        ? selectedStage
+        : allStages.find(
+            (stage) => stage.discussionId && getSharedResponses(stage.responses ?? []).length > 0
+          )
 
   return (
     <ResponsiveDashSidebar

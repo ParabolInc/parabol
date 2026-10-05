@@ -82,9 +82,11 @@ const TeamPromptComposer = (props: Props) => {
   const onChange = useCallback(
     (promptId: string, editor: Editor) => {
       setAnsweredPromptIds((prev) => {
+        const isAnswered = !editor.isEmpty
+        if (prev.has(promptId) === isAnswered) return prev
         const next = new Set(prev)
-        if (editor.isEmpty) next.delete(promptId)
-        else next.add(promptId)
+        if (isAnswered) next.add(promptId)
+        else next.delete(promptId)
         return next
       })
       queueAnswer(promptId, editor.getJSON())
@@ -98,8 +100,7 @@ const TeamPromptComposer = (props: Props) => {
   const onShare = useCallback(() => {
     if (answeredPromptIds.size === 0) return
     if (isShared && dirtyPromptIds.size === 0) return
-    share()
-    setIsExpanded(false)
+    share(() => setIsExpanded(false))
   }, [share, answeredPromptIds.size, isShared, dirtyPromptIds.size])
 
   if (!stage) return null

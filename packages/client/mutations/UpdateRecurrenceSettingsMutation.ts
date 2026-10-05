@@ -14,6 +14,7 @@ graphql`
         recurrenceRule
         duration
         cancelledAt
+        nextMeetingDate
       }
       scheduledEndTime
     }

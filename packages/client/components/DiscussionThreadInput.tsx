@@ -203,7 +203,11 @@ const DiscussionThreadInput = (props: Props) => {
   const avatar = isAnonymousComment ? anonymousAvatar : picture
   const inputBottomRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    containerRef.current?.scrollIntoView({
+    const container = containerRef.current
+    if (!container) return
+    const {left, right} = container.getBoundingClientRect()
+    if (right <= 0 || left >= window.innerWidth) return
+    container.scrollIntoView({
       behavior: 'smooth',
       block: 'center'
     })
