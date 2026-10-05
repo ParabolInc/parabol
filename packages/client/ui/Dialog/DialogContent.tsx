@@ -26,8 +26,12 @@ export const DialogContent = React.forwardRef<HTMLDivElement, BaseProps>(
               asChild
               aria-describedby={undefined}
               onInteractOutside={(e) => {
-                // MUI pickers render popovers in a portal outside the dialog — don't close
-                if ((e.target as Element | null)?.closest('[data-popper-placement]')) {
+                // MUI pickers and tiptap suggestions render outside the dialog — don't close
+                if (
+                  (e.target as Element | null)?.closest(
+                    '[data-popper-placement], [data-suggestion-popup]'
+                  )
+                ) {
                   e.preventDefault()
                   return
                 }

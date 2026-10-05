@@ -5,6 +5,7 @@ import {Close} from '~/ui/icons'
 import {cn} from '../../../ui/cn'
 import {Dialog} from '../../../ui/Dialog/Dialog'
 import {DialogOverlay} from '../../../ui/Dialog/DialogOverlay'
+import {NestedModalContext} from '../../../ui/Modal/NestedModalContext'
 
 interface Props {
   isOpen: boolean
@@ -27,6 +28,11 @@ const TeamPromptMobileSheet = (props: Props) => {
               asChild
               aria-describedby={undefined}
               onOpenAutoFocus={(e) => e.preventDefault()}
+              onInteractOutside={(e) => {
+                if ((e.target as Element | null)?.closest('[data-suggestion-popup]')) {
+                  e.preventDefault()
+                }
+              }}
             >
               <motion.div
                 className={cn(
@@ -49,7 +55,9 @@ const TeamPromptMobileSheet = (props: Props) => {
                     <Close />
                   </RadixDialog.Close>
                 </div>
-                <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>{children}</div>
+                <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
+                  <NestedModalContext.Provider value={true}>{children}</NestedModalContext.Provider>
+                </div>
               </motion.div>
             </RadixDialog.Content>
           </RadixDialog.Portal>
