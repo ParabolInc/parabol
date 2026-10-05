@@ -1,15 +1,8 @@
 import type {JSONContent} from '@tiptap/core'
 import {createContext, type MutableRefObject, useContext, useMemo} from 'react'
 
-export interface InsertHandle {
-  id: string
-  promptId: string
-}
-
 export interface TeamPromptComposerApi {
-  insertAnswerBlocks: (promptId: string, blocks: JSONContent[]) => Promise<InsertHandle | null>
-  undoInsert: (handle: InsertHandle) => boolean
-  forgetInsert: (handle: InsertHandle) => void
+  insertAnswerBlocks: (promptId: string, blocks: JSONContent[]) => Promise<boolean>
   getAnswerText: (promptId: string) => string
 }
 
@@ -22,9 +15,7 @@ export const useTeamPromptComposerApi = (): TeamPromptComposerApi => {
   return useMemo(() => {
     return {
       insertAnswerBlocks: (promptId, blocks) =>
-        apiRef.current?.insertAnswerBlocks(promptId, blocks) ?? Promise.resolve(null),
-      undoInsert: (handle) => apiRef.current?.undoInsert(handle) ?? false,
-      forgetInsert: (handle) => apiRef.current?.forgetInsert(handle),
+        apiRef.current?.insertAnswerBlocks(promptId, blocks) ?? Promise.resolve(false),
       getAnswerText: (promptId) => apiRef.current?.getAnswerText(promptId) ?? ''
     }
   }, [apiRef])

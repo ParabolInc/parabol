@@ -3,8 +3,8 @@ import {useCallback, useEffect, useRef, useState} from 'react'
 import type {TeamPromptComposerApi} from '../structured/TeamPromptComposerApiContext'
 import InspirationAddAllButton from './InspirationAddAllButton'
 import InspirationDraftItemCard from './InspirationDraftItemCard'
-import type {InspirationVariant} from './InspirationPresentationContext'
-import {collectText, itemSource} from './inspirationCopy'
+import type {InspirationVariant} from './InspirationVariant'
+import {collectText} from './inspirationCopy'
 import {trimTrailingEmptyParagraphs} from './inspirationInsertPlan'
 import useInspirationInsert, {type InspirationDraftItem} from './useInspirationInsert'
 import type {WorkDrawerPrompt} from './WorkDrawerConsumeContext'
@@ -25,7 +25,6 @@ export interface InspirationAddAllState {
 interface Props {
   items: InspirationItemData[]
   prompts: readonly WorkDrawerPrompt[]
-  service: string
   meetingId: string
   teamId: string
   composer: TeamPromptComposerApi
@@ -43,9 +42,9 @@ const toDraftItem = (item: InspirationItemData, promptId: string): InspirationDr
 }
 
 const InspirationDraftList = (props: Props) => {
-  const {items, prompts, service, meetingId, teamId, composer} = props
+  const {items, prompts, meetingId, teamId, composer} = props
   const {variant, onAdded, onAddAllChange} = props
-  const {addItems, isAdded, adding} = useInspirationInsert({meetingId, teamId, composer, prompts})
+  const {addItems, isAdded, adding} = useInspirationInsert({meetingId, teamId, composer})
   const editorsRef = useRef(new Map<string, Editor>())
   const [emptyIds, setEmptyIds] = useState<ReadonlySet<string>>(() => new Set())
   const trackEditor = useCallback((itemId: string, editor: Editor | null) => {
@@ -94,6 +93,10 @@ const InspirationDraftList = (props: Props) => {
       addRemaining: () => addRemainingRef.current()
     })
   }, [remainingCount, adding, onAddAllChange])
+  useEffect(
+    () => () => onAddAllChange?.({remaining: 0, adding: false, addRemaining: () => {}}),
+    [onAddAllChange]
+  )
 
   return (
     <>
@@ -104,7 +107,6 @@ const InspirationDraftList = (props: Props) => {
           title={item.title}
           content={item.content}
           prompt={prompt}
-          source={itemSource(service)}
           isAdded={isAdded(draft)}
           isEmpty={emptyIds.has(item.id)}
           disabled={adding}

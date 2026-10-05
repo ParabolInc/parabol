@@ -9,7 +9,7 @@ import {TipTapEditor} from '../../TipTapEditor/TipTapEditor'
 import {TiptapLinkExtension} from '../../TipTapEditor/TiptapLinkExtension'
 import hasContentToAdd from './hasContentToAdd'
 import InspirationDestinationChip from './InspirationDestinationChip'
-import type {InspirationVariant} from './InspirationPresentationContext'
+import type {InspirationVariant} from './InspirationVariant'
 import type {WorkDrawerPrompt} from './WorkDrawerConsumeContext'
 
 interface Props {
@@ -17,7 +17,6 @@ interface Props {
   title: string | null
   content: JSONContent
   prompt: WorkDrawerPrompt
-  source: string
   isAdded: boolean
   isEmpty: boolean
   disabled: boolean
@@ -28,7 +27,7 @@ interface Props {
 }
 
 const InspirationDraftItemCard = (props: Props) => {
-  const {itemId, title, content, prompt, source, isAdded, isEmpty, disabled, variant} = props
+  const {itemId, title, content, prompt, isAdded, isEmpty, disabled, variant} = props
   const {onEditorChange, onEmptyChange, onAdd} = props
   const isSheet = variant === 'sheet'
   const editor = useEditor({
@@ -62,12 +61,11 @@ const InspirationDraftItemCard = (props: Props) => {
       <TipTapEditor
         editor={editor}
         className={cn(
-          'max-h-48 overflow-auto rounded-md border border-hairline-field p-2 text-fg-primary focus-within:border-accent',
-          isSheet ? 'text-[15px] leading-[22px]' : 'text-[13px] leading-5'
+          '[&_a]:no-underline! [&_a]:hover:underline! max-h-48 overflow-auto rounded-md border border-hairline-field p-2 text-fg-primary leading-[22px] focus-within:border-accent [&_a]:whitespace-nowrap [&_a]:rounded [&_a]:bg-surface-well [&_a]:px-1.5 [&_a]:py-px [&_a]:font-medium [&_a]:text-xs',
+          isSheet ? 'text-[15px]' : 'text-[13px]'
         )}
       />
-      <div className='flex items-center justify-between'>
-        <span className='text-[11px] text-fg-muted'>{source}</span>
+      <div className='flex items-center justify-end'>
         {isAdded ? (
           <div className='flex h-8 items-center gap-1 px-2 font-semibold text-[13px] text-jade-600'>
             <CheckIcon className='h-4 w-4' />

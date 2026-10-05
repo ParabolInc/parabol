@@ -10,7 +10,6 @@ import GcalClientManager from '../../../utils/GcalClientManager'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import GCalIntegrationResultsRoot from './GCalIntegrationResultsRoot'
 import InspirationItemsPanel from './InspirationItemsPanel'
-import useIsStructuredInspiration from './useIsStructuredInspiration'
 import {WorkDrawerDateFilter} from './WorkDrawerDateFilter'
 
 const TODAY_MIDNIGHT = new Date().setHours(0, 0, 0, 0)
@@ -69,7 +68,6 @@ const GCalPanel = (props: Props) => {
   const searchQuery = JSON.stringify({startDate, endDate})
 
   const atmosphere = useAtmosphere()
-  const isStructured = useIsStructuredInspiration()
   const mutationProps = useMutationProps()
   const {error, onError} = mutationProps
 
@@ -102,17 +100,13 @@ const GCalPanel = (props: Props) => {
     <>
       {teamMember?.integrations.gcal?.auth?.providerId ? (
         <>
-          {!isStructured && filterBar}
+          {filterBar}
           <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
             <InspirationItemsPanel
-              filters={isStructured ? filterBar : undefined}
               meetingId={meeting.id}
-              teamId={meeting.teamId}
               service='gcal'
               searchQuery={searchQuery}
               initialItems={meeting.gcalInspirationItems}
-              dateRange={dateRange}
-              workItemCount={getResultCount(searchQuery)}
               hideDraftPanel={!getResultCount(searchQuery)}
             >
               <GCalIntegrationResultsRoot

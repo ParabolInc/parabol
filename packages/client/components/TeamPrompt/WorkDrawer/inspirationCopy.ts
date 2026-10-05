@@ -14,43 +14,30 @@ const SERVICE_LABELS: Record<string, string> = {
 
 export const serviceLabel = (service: string) => SERVICE_LABELS[service] ?? service
 
-export const formatSince = (startAt?: string) => {
-  if (!startAt) return 'recently'
-  const start = dayjs(startAt)
-  const hoursAgo = dayjs().diff(start, 'hour')
-  if (hoursAgo <= 36) return 'yesterday'
-  return start.format('MMM D')
-}
-
-export const metaLine = (workItemCount: number | undefined, since: string, promptCount: number) => {
-  const source = workItemCount ? `${workItemCount} work items` : 'your work'
-  const routed = promptCount === 1 ? 'your question' : `your ${promptCount} questions`
-  return `Drafted from ${source} since ${since} · routed to ${routed}`
-}
-
-export const EMPTY_DRAFT_LINE =
-  'Nothing drafted yet — use Refresh draft to write one from your work'
-
 export const NO_WORK_LINE =
-  'No work was found to draft from. Try adjusting your filters or date range.'
+  'No work was found. Try turning on more sources or widening the date range.'
 
-export const browseLabel = (workItemCount: number | undefined) =>
-  workItemCount ? `Browse all ${workItemCount} work items` : 'Browse work items'
-
-export const browseSubline = (dateRange?: WorkDrawerDateRange) => {
-  if (!dateRange) return 'Tasks, PRs and issues · filter by status or source'
+export const dateRangeLabel = (dateRange: WorkDrawerDateRange, isSinceLastStandup: boolean) => {
+  if (isSinceLastStandup) return 'Since last standup'
   const from = dayjs(dateRange.startAt).format('MMM D')
   const to = dayjs(dateRange.endAt).format('MMM D')
-  return `Tasks, PRs and issues from ${from} – ${to} · filter by status or source`
+  return from === to ? from : `${from} – ${to}`
 }
+
+export const usedLabel = (unused: number, total: number) =>
+  total === 0 ? '' : `Uses ${total - unused} of ${total} items`
+
+export const issueCountLabel = (count: number | undefined, canDraft = true) =>
+  count === undefined
+    ? canDraft
+      ? 'Not drafted yet'
+      : 'Not loaded yet'
+    : count === 1
+      ? '1 item'
+      : `${count} items`
 
 export const addAllLabel = (remaining: number, total: number) =>
   remaining === total ? `Add all ${remaining} to my response` : `Add remaining ${remaining}`
-
-export const itemSource = (service: string) => {
-  const label = serviceLabel(service)
-  return label === 'Parabol' ? label : `${label} · Parabol`
-}
 
 export const collectText = (node: JSONContent): string[] =>
   node.text ? [node.text] : (node.content ?? []).flatMap(collectText)

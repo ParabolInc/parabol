@@ -1,16 +1,19 @@
-import {getUserId} from '../../../utils/authorization'
-import type {GenerateInspirationItemsSuccessResolvers} from '../resolverTypes'
+import type {InspirationItem} from '../../../postgres/types'
+import type {GenerateInspirationItemsSuccessResolvers, ServiceEnum} from '../resolverTypes'
 
 export type GenerateInspirationItemsSuccessSource = {
   meetingId: string
-  service: string
+  inspirationItems: (Omit<InspirationItem, 'id'> & {id: string})[]
+  issues: {
+    service: ServiceEnum
+    title: string
+    url: string | null
+    updatedAt: Date | null
+    unusedReason: string | null
+  }[]
 }
 
 const GenerateInspirationItemsSuccess: GenerateInspirationItemsSuccessResolvers = {
-  inspirationItems: async ({meetingId, service}, _args, {authToken, dataLoader}) => {
-    const userId = getUserId(authToken)
-    return dataLoader.get('inspirationItemsByMeeting').load({meetingId, userId, service})
-  },
   meeting: async ({meetingId}, _args, {dataLoader}) => {
     return dataLoader.get('newMeetings').loadNonNull(meetingId)
   }

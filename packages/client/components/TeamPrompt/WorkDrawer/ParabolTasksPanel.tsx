@@ -15,7 +15,6 @@ import {taskStatusDotColors, taskStatusLabels} from '../../../utils/taskStatus'
 import InspirationItemsPanel from './InspirationItemsPanel'
 import ParabolStandupsResultsRoot from './ParabolStandupsResultsRoot'
 import ParabolTasksResultsRoot from './ParabolTasksResultsRoot'
-import useIsStructuredInspiration from './useIsStructuredInspiration'
 import {WorkDrawerDateFilter} from './WorkDrawerDateFilter'
 
 const SUB_TABS = [
@@ -55,11 +54,7 @@ const ParabolTasksPanel = (props: Props) => {
   )
 
   const atmosphere = useAtmosphere()
-  const isStructured = useIsStructuredInspiration()
-  const {dateRange, setDateRange, onResultCount, getResultCount} = useInspirationDrawer(
-    'PARABOL',
-    meeting
-  )
+  const {dateRange, setDateRange, onResultCount} = useInspirationDrawer('PARABOL', meeting)
   const [subTab, setSubTab] = useSessionStorageState<SubTab>(
     `Inspiration:parabol:subTab:${meeting.id}`,
     'tasks'
@@ -76,7 +71,7 @@ const ParabolTasksPanel = (props: Props) => {
     )
   }
 
-  // The client serializes the date window as JSON; the server parses it to gather work items.
+  // The client serializes the date window as JSON; the server parses it to gather issues.
   const searchQuery = dateRange
     ? JSON.stringify({startAt: dateRange.startAt, endAt: dateRange.endAt})
     : ''
@@ -136,18 +131,14 @@ const ParabolTasksPanel = (props: Props) => {
 
   return (
     <div className='flex min-h-0 flex-1 flex-col'>
-      {!isStructured && filterBar}
+      {filterBar}
       {/* Row 4: draft button + suggestions, then results (scrollable) */}
       <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
         <InspirationItemsPanel
-          filters={isStructured ? filterBar : undefined}
           meetingId={meeting.id}
-          teamId={meeting.teamId}
           service='PARABOL'
           searchQuery={searchQuery}
           initialItems={meeting.parabolInspirationItems}
-          dateRange={dateRange}
-          workItemCount={getResultCount(searchQuery)}
         >
           {subTab === 'tasks' ? (
             <ParabolTasksResultsRoot

@@ -2,7 +2,6 @@ import type {Editor} from '@tiptap/core'
 import type {JSONContent} from '@tiptap/react'
 import {useState} from 'react'
 import {cn} from '../../../ui/cn'
-import {isOSX} from '../../../utils/platform'
 import PromptResponseEditor from '../PromptResponseEditor'
 import answerEditorClassName from './answerEditorClassName'
 import TeamPromptCollapsedAnswerRow from './mobile/TeamPromptCollapsedAnswerRow'
@@ -47,11 +46,9 @@ const TeamPromptAnswerEditor = (props: Props) => {
     editorRef
   } = props
   const [isFocused, setIsFocused] = useState(false)
-  const linkShortcut = isOSX ? '⌘K' : 'Ctrl+K'
   const editorClassName = answerEditorClassName({
     isPhone: !!isPhone,
     isFocusedBlock: !!isFocusedBlock,
-    isFocused,
     compact
   })
   return (
@@ -102,11 +99,6 @@ const TeamPromptAnswerEditor = (props: Props) => {
             editorRef={editorRef}
             className={editorClassName}
           />
-          {!isPhone && isFocused && !readOnly && (
-            <div className='pointer-events-none px-3 pb-1.5 text-right text-[11px] text-fg-muted'>
-              Select text to format · - starts a list · {linkShortcut} for a link
-            </div>
-          )}
         </div>
       </div>
     </>

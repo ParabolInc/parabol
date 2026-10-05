@@ -1,14 +1,11 @@
 import type {Editor, JSONContent} from '@tiptap/core'
 import {type MutableRefObject, useContext, useEffect, useRef} from 'react'
-import {
-  getInsertedRange,
-  getInsertedRanges
-} from '../../../tiptap/extensions/insertedRangeHighlight/InsertedRangeHighlight'
+import {getInsertedRanges} from '../../../tiptap/extensions/insertedRangeHighlight/InsertedRangeHighlight'
 import {
   type StreamHandle,
   streamContentIntoEditor
 } from '../../TipTapEditor/streamContentIntoEditor'
-import TeamPromptComposerApiContext, {type InsertHandle} from './TeamPromptComposerApiContext'
+import TeamPromptComposerApiContext from './TeamPromptComposerApiContext'
 
 const HIGHLIGHT_MS = 1800
 const STREAM_WORD_DELAY_MS = 3
@@ -84,10 +81,10 @@ const useTeamPromptComposerApiRegistration = (options: Options) => {
     const settledWhileStreaming = settledWhileStreamingRef.current
     const insert = async (promptId: string, blocks: JSONContent[]) => {
       const mounted = editorRefs.current.get(promptId)?.current
-      if (mounted && !mounted.isDestroyed && !mounted.isEditable) return null
+      if (mounted && !mounted.isDestroyed && !mounted.isEditable) return false
       expand()
       const editor = await waitForEditor(editorRefs, promptId, timers)
-      if (!editor || !editor.isEditable) return null
+      if (!editor || !editor.isEditable) return false
       const base = editor.getJSON()
       const wasEmpty = editor.isEmpty
       const baseBlocks = wasEmpty ? [] : (base.content ?? [])
@@ -115,7 +112,7 @@ const useTeamPromptComposerApiRegistration = (options: Options) => {
         streamingPromptIds.delete(promptId)
         streamHandles.delete(promptId)
       }
-      if (editor.isDestroyed) return null
+      if (editor.isDestroyed) return false
       if (!wasEmpty && trackedRanges.size > 0) {
         editor.commands.restoreInsertedRanges(
           Array.from(trackedRanges, ([trackedId, range]) => ({
@@ -144,7 +141,7 @@ const useTeamPromptComposerApiRegistration = (options: Options) => {
       timers.set(timer, () => {})
       onChange(promptId, editor)
       onInserted?.()
-      return {id, promptId} satisfies InsertHandle
+      return true
     }
     apiRef.current = {
       insertAnswerBlocks: (promptId, blocks) => {
@@ -155,22 +152,7 @@ const useTeamPromptComposerApiRegistration = (options: Options) => {
           promptId,
           queued.catch(() => undefined)
         )
-        return queued.catch(() => null)
-      },
-      undoInsert: ({id, promptId}) => {
-        if (streamingPromptIds.has(promptId)) return false
-        const editor = editorRefs.current.get(promptId)?.current
-        if (!editor || editor.isDestroyed) return false
-        const range = getInsertedRange(editor, id)
-        if (!range) return false
-        editor.chain().deleteRange(range).forgetInsertedRange(id).run()
-        return true
-      },
-      forgetInsert: ({id, promptId}) => {
-        if (streamingPromptIds.has(promptId)) return
-        const editor = editorRefs.current.get(promptId)?.current
-        if (!editor || editor.isDestroyed) return
-        editor.commands.forgetInsertedRange(id)
+        return queued.catch(() => false)
       },
       getAnswerText: (promptId) => editorRefs.current.get(promptId)?.current?.getText() ?? ''
     }

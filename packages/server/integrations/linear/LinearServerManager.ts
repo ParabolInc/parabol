@@ -9,11 +9,11 @@ import createCommentMutation from '../../graphql/nestedSchema/Linear/mutations/c
 import createIssueMutation from '../../graphql/nestedSchema/Linear/mutations/createIssue.graphql'
 import updateIssueMutation from '../../graphql/nestedSchema/Linear/mutations/updateIssue.graphql'
 import getIssueQuery from '../../graphql/nestedSchema/Linear/queries/getIssue.graphql'
+import getIssuesQuery from '../../graphql/nestedSchema/Linear/queries/getIssues.graphql'
 import getProfileQuery from '../../graphql/nestedSchema/Linear/queries/getProfile.graphql'
 import getProjectIssuesQuery from '../../graphql/nestedSchema/Linear/queries/getProjectIssues.graphql'
 import getProjectsQuery from '../../graphql/nestedSchema/Linear/queries/getProjects.graphql'
 import getTeamsAndProjectsQuery from '../../graphql/nestedSchema/Linear/queries/getTeamsAndProjects.graphql'
-import getWorkItemsQuery from '../../graphql/nestedSchema/Linear/queries/getWorkItems.graphql'
 import {linearRequest} from '../../graphql/public/rootSchema'
 import type {TeamMemberIntegrationAuth} from '../../postgres/types'
 import type {
@@ -21,12 +21,12 @@ import type {
   CreateCommentMutationVariables,
   CreateIssueMutation,
   GetIssueQuery,
+  GetIssuesQuery,
+  GetIssuesQueryVariables,
   GetProjectIssuesQuery,
   GetProjectIssuesQueryVariables,
   GetProjectsQuery,
   GetTeamsAndProjectsQuery,
-  GetWorkItemsQuery,
-  GetWorkItemsQueryVariables,
   UpdateIssueMutation,
   UpdateIssueMutationVariables
 } from '../../types/linearTypes'
@@ -164,9 +164,9 @@ class LinearServerManager implements TaskIntegrationManager {
     return [data, error] as const
   }
 
-  async getWorkItems(variables: GetWorkItemsQueryVariables) {
+  async getIssues(variables: GetIssuesQueryVariables) {
     const linearRequest = this.getLinearRequest(this.info, this.context)
-    const [data, error] = await linearRequest<GetWorkItemsQuery>(getWorkItemsQuery, variables)
+    const [data, error] = await linearRequest<GetIssuesQuery>(getIssuesQuery, variables)
     return [data, error] as const
   }
 

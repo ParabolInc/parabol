@@ -28,7 +28,7 @@ const GitHubRepoFilterBar = (props: Props) => {
   return (
     <Menu
       trigger={
-        <button className='group mx-4 mt-4 mb-2 flex cursor-pointer items-center gap-2 rounded-sm border border-hairline border-solid bg-surface-card px-3 py-0.5 text-left transition hover:border-hairline-strong data-[state=open]:border-accent'>
+        <button className='group flex cursor-pointer items-center gap-2 rounded-sm border border-hairline border-solid bg-surface-card px-3 py-0.5 text-left transition hover:border-hairline-strong data-[state=open]:border-accent'>
           <FilterList className='h-5 w-5 text-fg-secondary' />
           {selectedRepos.length === 0
             ? 'All repositories'

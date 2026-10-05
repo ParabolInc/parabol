@@ -1,6 +1,7 @@
 import type {JSONContent} from '@tiptap/core'
 import {type ReactNode, useCallback, useState} from 'react'
 import {Tune as TuneIcon} from '~/ui/icons'
+import type {ServiceEnum} from '../../../__generated__/useGenerateInspirationItemsMutation.graphql'
 import useGenerateInspirationItemsMutation from '../../../mutations/useGenerateInspirationItemsMutation'
 import {Button} from '../../../ui/Button/Button'
 import {Dialog} from '../../../ui/Dialog/Dialog'
@@ -12,18 +13,12 @@ import {TooltipContent} from '../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../ui/Tooltip/TooltipTrigger'
 import Ellipsis from '../../Ellipsis/Ellipsis'
 import type {InspirationItemData} from './InspirationDraftList'
-import InspirationDraftPanel from './InspirationDraftPanel'
-import {useInspirationPresentation} from './InspirationPresentationContext'
 import {NO_WORK_LINE} from './inspirationCopy'
 import RetroInspirationItemCard from './RetroInspirationItemCard'
-import useInspirationAutoGenerate from './useInspirationAutoGenerate'
-import {useWorkDrawerConsume} from './WorkDrawerConsumeContext'
-import type {WorkDrawerDateRange} from './WorkDrawerDateFilter'
 
 interface Props {
   meetingId: string
-  teamId: string
-  service: string
+  service: ServiceEnum
   searchQuery: string
   initialItems: readonly {
     id: string
@@ -31,10 +26,7 @@ interface Props {
     content: string
     promptId?: string | null
   }[]
-  dateRange?: WorkDrawerDateRange
-  workItemCount?: number
   hideDraftPanel?: boolean
-  filters?: ReactNode
   children?: ReactNode
 }
 
@@ -48,11 +40,7 @@ const parseContent = (raw: string): JSONContent => {
 }
 
 const InspirationItemsPanel = (props: Props) => {
-  const {meetingId, teamId, service, searchQuery, initialItems, hideDraftPanel, children} = props
-  const {dateRange, workItemCount, filters} = props
-  const consume = useWorkDrawerConsume()
-  const {variant, onAdded} = useInspirationPresentation()
-  const isRetro = consume.mode === 'retro'
+  const {meetingId, service, searchQuery, initialItems, hideDraftPanel, children} = props
   const [items, setItems] = useState<InspirationItemData[]>(() =>
     initialItems.map(({id, title, content, promptId}) => ({
       id,
@@ -72,7 +60,9 @@ const InspirationItemsPanel = (props: Props) => {
     setError(null)
     setNoWorkFound(false)
     generateInspirationItems({
-      variables: {input: {meetingId, service, searchQuery, userPrompt: userPrompt.trim() || null}},
+      variables: {
+        input: {meetingId, sources: [{service, searchQuery}], userPrompt: userPrompt.trim() || null}
+      },
       onError: (e) => setError(e.message),
       onCompleted: (res, errors) => {
         if (errors) {
@@ -93,29 +83,9 @@ const InspirationItemsPanel = (props: Props) => {
     })
   }, [submitting, meetingId, service, searchQuery, userPrompt, generateInspirationItems])
 
-  const structured = consume.mode === 'teamPrompt' ? consume : null
-
-  const hasWorkItems = service === 'PARABOL' ? workItemCount !== 0 : !!workItemCount
-
-  useInspirationAutoGenerate({
-    enabled: !!structured,
-    meetingId,
-    service,
-    hasItems: items.length > 0,
-    hasWorkItems,
-    submitting,
-    generate: onGenerate
-  })
-
-  const generateLabel = isRetro
-    ? 'Draft reflections from this work'
-    : 'Draft my response from this work'
-  const customInstructionsHint = isRetro
-    ? 'Customize how the AI drafts your reflections'
-    : 'Customize how the AI drafts your response'
-  const customInstructionsPlaceholder = isRetro
-    ? 'Tell the AI how to draft your reflections…'
-    : 'Tell the AI how to draft your response…'
+  const generateLabel = 'Draft reflections from this work'
+  const customInstructionsHint = 'Customize how the AI drafts your reflections'
+  const customInstructionsPlaceholder = 'Tell the AI how to draft your reflections…'
 
   const customInstructionsDialog = (
     <Dialog isOpen={promptOpen} onClose={() => setPromptOpen(false)}>
@@ -141,35 +111,6 @@ const InspirationItemsPanel = (props: Props) => {
       </DialogContent>
     </Dialog>
   )
-
-  if (structured) {
-    return (
-      <>
-        <InspirationDraftPanel
-          meetingId={meetingId}
-          teamId={teamId}
-          service={service}
-          items={items}
-          prompts={structured.prompts}
-          composer={structured.composer}
-          workItemCount={workItemCount}
-          dateRange={dateRange}
-          onRegenerate={onGenerate}
-          regenerating={submitting}
-          error={error}
-          noWorkFound={noWorkFound}
-          onTune={() => setPromptOpen(true)}
-          tuneDirty={!!userPrompt.trim()}
-          filters={filters}
-          variant={variant}
-          onAdded={onAdded}
-        >
-          {children}
-        </InspirationDraftPanel>
-        {customInstructionsDialog}
-      </>
-    )
-  }
 
   return (
     <>

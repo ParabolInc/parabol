@@ -224,8 +224,6 @@ const TeamPromptComposer = (props: Props) => {
                 answeredCount={answeredPromptIds.size}
                 promptCount={prompts.length}
                 submitting={submitting}
-                isInspirationOpen={rightDrawerOpen === 'inspiration'}
-                onOpenInspiration={onOpenInspiration}
                 onShare={onShare}
               />
             ))}

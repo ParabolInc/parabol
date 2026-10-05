@@ -1,38 +1,24 @@
-import type {Ref} from 'react'
 import {Button} from '../../../../ui/Button/Button'
 
 interface Props {
-  onBrowse: () => void
   onAddRemaining: () => void
   remainingCount: number
   adding: boolean
-  browseRef?: Ref<HTMLButtonElement>
 }
 
 const InspirationSheetFooter = (props: Props) => {
-  const {onBrowse, onAddRemaining, remainingCount, adding, browseRef} = props
+  const {onAddRemaining, remainingCount, adding} = props
   return (
-    <div className='flex shrink-0 gap-3 border-hairline border-t px-4 pt-2.5 pb-7'>
+    <div className='flex shrink-0 border-hairline border-t px-4 pt-2.5 pb-7'>
       <Button
-        ref={browseRef}
-        variant='outline'
+        variant='secondary'
         size='lg'
         className='h-12 flex-1 px-3'
-        onClick={onBrowse}
+        disabled={adding}
+        onClick={onAddRemaining}
       >
-        Browse work items
+        {`Add remaining ${remainingCount}`}
       </Button>
-      {remainingCount > 0 && (
-        <Button
-          variant='secondary'
-          size='lg'
-          className='h-12 flex-1 px-3'
-          disabled={adding}
-          onClick={onAddRemaining}
-        >
-          {`Add remaining ${remainingCount}`}
-        </Button>
-      )}
     </div>
   )
 }

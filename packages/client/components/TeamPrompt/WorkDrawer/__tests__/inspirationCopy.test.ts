@@ -1,84 +1,42 @@
 import dayjs from 'dayjs'
-import {
-  browseLabel,
-  browseSubline,
-  formatSince,
-  itemSource,
-  metaLine,
-  serviceLabel
-} from '../inspirationCopy'
+import {dateRangeLabel, issueCountLabel, serviceLabel, usedLabel} from '../inspirationCopy'
 
-describe('formatSince', () => {
-  it('returns recently when no start time is given', () => {
-    expect(formatSince(undefined)).toBe('recently')
+describe('dateRangeLabel', () => {
+  const local = (time: string) => dayjs(time).toISOString()
+  const dateRange = {startAt: local('2026-09-17T09:00'), endAt: local('2026-09-24T17:00')}
+
+  it('names the default window after the last standup', () => {
+    expect(dateRangeLabel(dateRange, true)).toBe('Since last standup')
   })
 
-  it('returns yesterday within the last 36 hours', () => {
-    const startAt = dayjs().subtract(20, 'hour').toISOString()
-    expect(formatSince(startAt)).toBe('yesterday')
+  it('formats a custom window as a date range', () => {
+    expect(dateRangeLabel(dateRange, false)).toBe('Sep 17 – Sep 24')
   })
 
-  it('returns a formatted date beyond 36 hours', () => {
-    const startAt = dayjs().subtract(72, 'hour')
-    expect(formatSince(startAt.toISOString())).toBe(startAt.format('MMM D'))
+  it('shows a single day once', () => {
+    const oneDay = {startAt: local('2026-09-24T09:00'), endAt: local('2026-09-24T17:00')}
+    expect(dateRangeLabel(oneDay, false)).toBe('Sep 24')
   })
 })
 
-describe('metaLine', () => {
-  it('uses singular question copy when promptCount is 1', () => {
-    expect(metaLine(5, 'yesterday', 1)).toBe(
-      'Drafted from 5 work items since yesterday · routed to your question'
-    )
+describe('usedLabel', () => {
+  it('counts the issues the draft used', () => {
+    expect(usedLabel(1, 6)).toBe('Uses 5 of 6 items')
   })
 
-  it('uses plural questions copy when promptCount is greater than 1', () => {
-    expect(metaLine(5, 'yesterday', 3)).toBe(
-      'Drafted from 5 work items since yesterday · routed to your 3 questions'
-    )
-  })
-
-  it('falls back to your work when workItemCount is unknown', () => {
-    expect(metaLine(undefined, 'yesterday', 2)).toBe(
-      'Drafted from your work since yesterday · routed to your 2 questions'
-    )
-  })
-
-  it('falls back to your work rather than counting zero work items', () => {
-    expect(metaLine(0, 'yesterday', 2)).toBe(
-      'Drafted from your work since yesterday · routed to your 2 questions'
-    )
+  it('says nothing when no work matched', () => {
+    expect(usedLabel(0, 0)).toBe('')
   })
 })
 
-describe('browseLabel', () => {
-  it('includes the count when known', () => {
-    expect(browseLabel(12)).toBe('Browse all 12 work items')
+describe('issueCountLabel', () => {
+  it('pluralizes the count', () => {
+    expect(issueCountLabel(1)).toBe('1 item')
+    expect(issueCountLabel(6)).toBe('6 items')
   })
 
-  it('falls back to a generic label when unknown', () => {
-    expect(browseLabel(undefined)).toBe('Browse work items')
-  })
-
-  it('falls back to a generic label rather than offering all zero work items', () => {
-    expect(browseLabel(0)).toBe('Browse work items')
-  })
-})
-
-describe('browseSubline', () => {
-  it('formats the date range when given', () => {
-    const dateRange = {
-      startAt: '2026-08-20T00:00:00.000Z',
-      endAt: '2026-08-27T00:00:00.000Z'
-    }
-    expect(browseSubline(dateRange)).toBe(
-      `Tasks, PRs and issues from ${dayjs(dateRange.startAt).format('MMM D')} – ${dayjs(
-        dateRange.endAt
-      ).format('MMM D')} · filter by status or source`
-    )
-  })
-
-  it('falls back to a generic subline when no date range is given', () => {
-    expect(browseSubline(undefined)).toBe('Tasks, PRs and issues · filter by status or source')
+  it('says when a source has not been drafted from yet', () => {
+    expect(issueCountLabel(undefined)).toBe('Not drafted yet')
   })
 })
 
@@ -91,15 +49,5 @@ describe('serviceLabel', () => {
 
   it('falls back to the raw service string for unknown services', () => {
     expect(serviceLabel('slack')).toBe('slack')
-  })
-})
-
-describe('itemSource', () => {
-  it('credits the work item source and the drafter', () => {
-    expect(itemSource('github')).toBe('GitHub · Parabol')
-  })
-
-  it('names Parabol once when the work items are already ours', () => {
-    expect(itemSource('PARABOL')).toBe('Parabol')
   })
 })

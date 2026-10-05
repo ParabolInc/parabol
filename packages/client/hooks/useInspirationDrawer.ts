@@ -59,7 +59,9 @@ const useInspirationDrawer = (service: string, meetingRef: useInspirationDrawer_
   const getResultCount = (searchQuery: string) =>
     searchResult?.query === searchQuery ? searchResult.count : undefined
 
-  return {dateRange, setDateRange, onResultCount, getResultCount} as const
+  const isDefaultRange = dateRange?.startAt === defaultStartAt
+
+  return {dateRange, setDateRange, isDefaultRange, onResultCount, getResultCount} as const
 }
 
 export default useInspirationDrawer
