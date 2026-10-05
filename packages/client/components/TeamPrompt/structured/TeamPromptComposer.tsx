@@ -1,7 +1,7 @@
 import type {Editor} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import {useCallback, useRef, useState} from 'react'
-import {commitLocalUpdate, useFragment} from 'react-relay'
+import {useFragment} from 'react-relay'
 import type {TeamPromptComposer_meeting$key} from '~/__generated__/TeamPromptComposer_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {cn} from '../../../ui/cn'
@@ -26,7 +26,6 @@ const TeamPromptComposer = (props: Props) => {
         id
         teamId
         endedAt
-        rightDrawerOpen
         prompts {
           id
           question
@@ -60,7 +59,7 @@ const TeamPromptComposer = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {id: meetingId, teamId, endedAt, prompts, rightDrawerOpen} = meeting
+  const {id: meetingId, teamId, endedAt, prompts} = meeting
   const stage = meeting.phases[0]?.stages?.find((stage) => stage.teamMember.userId === viewerId)
   const isShared = !!getMemberSharedAt(stage?.responses ?? [])
   const [isExpanded, setIsExpanded] = useState(!isShared)
@@ -102,15 +101,6 @@ const TeamPromptComposer = (props: Props) => {
     share()
     setIsExpanded(false)
   }, [share, answeredPromptIds.size, isShared, dirtyPromptIds.size])
-
-  const onOpenInspiration = () => {
-    commitLocalUpdate(atmosphere, (store) => {
-      const proxy = store.get(meetingId)
-      if (!proxy) return
-      proxy.setValue(null, 'localStageId')
-      proxy.setValue(rightDrawerOpen === 'inspiration' ? null : 'inspiration', 'rightDrawerOpen')
-    })
-  }
 
   if (!stage) return null
   return (
@@ -161,8 +151,6 @@ const TeamPromptComposer = (props: Props) => {
               answeredCount={answeredPromptIds.size}
               promptCount={prompts.length}
               submitting={submitting}
-              isInspirationOpen={rightDrawerOpen === 'inspiration'}
-              onOpenInspiration={onOpenInspiration}
               onShare={onShare}
             />
           )}

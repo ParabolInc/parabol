@@ -33,7 +33,7 @@ const toDraftItem = (item: InspirationItemData, promptId: string): InspirationDr
 
 const InspirationDraftList = (props: Props) => {
   const {items, prompts, meetingId, teamId, composer} = props
-  const {addItems, isAdded, adding} = useInspirationInsert({meetingId, teamId, composer, prompts})
+  const {addItems, isAdded, adding} = useInspirationInsert({meetingId, teamId, composer})
   const editorsRef = useRef(new Map<string, Editor>())
   const trackEditor = useCallback((itemId: string, editor: Editor | null) => {
     if (editor) editorsRef.current.set(itemId, editor)
