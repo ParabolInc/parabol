@@ -47,7 +47,9 @@ export const DialogContent = React.forwardRef<HTMLDivElement, BaseProps>(
                 transition={{duration: 0.25, ease: 'easeIn'}}
               >
                 <ScrollArea.Root className='flex-1 overflow-auto'>
-                  <ScrollArea.Viewport className='p-6'>{children}</ScrollArea.Viewport>
+                  <ScrollArea.Viewport className='[&>div]:block! p-6'>
+                    {children}
+                  </ScrollArea.Viewport>
                   <ScrollArea.Scrollbar orientation='vertical' />
                 </ScrollArea.Root>
                 {!noClose && <DialogClose />}
