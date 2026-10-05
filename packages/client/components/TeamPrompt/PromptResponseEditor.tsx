@@ -43,6 +43,7 @@ interface Props {
   onFocusChange?: (isFocused: boolean) => void
   showListControls?: boolean
   enableSlashCommands?: boolean
+  bubbleMenuPlacement?: 'top' | 'bottom'
   className?: string
   editorRef?: React.MutableRefObject<Editor | null>
 }
@@ -63,6 +64,7 @@ const PromptResponseEditor = (props: Props) => {
     onFocusChange,
     showListControls,
     enableSlashCommands = false,
+    bubbleMenuPlacement,
     className,
     editorRef
   } = props
@@ -241,6 +243,7 @@ const PromptResponseEditor = (props: Props) => {
       <TipTapEditor
         editor={editor}
         showBubbleMenu={!readOnly}
+        bubbleMenuPlacement={bubbleMenuPlacement}
         showListControls={showListControls}
         className={className}
       />

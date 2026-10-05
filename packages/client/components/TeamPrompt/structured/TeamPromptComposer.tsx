@@ -1,18 +1,12 @@
-import type {Editor} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
-import {useCallback, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {TeamPromptComposer_meeting$key} from '~/__generated__/TeamPromptComposer_meeting.graphql'
-import useAtmosphere from '~/hooks/useAtmosphere'
 import {cn} from '../../../ui/cn'
 import TeamPromptAnswerEditor from './TeamPromptAnswerEditor'
 import TeamPromptComposerFooter from './TeamPromptComposerFooter'
 import TeamPromptComposerHeader from './TeamPromptComposerHeader'
-import {getMemberSharedAt} from './teamPromptStages'
 import {TEAM_UPDATES_BAND, TEAM_UPDATES_COLUMN} from './teamUpdatesLayout'
-import useTeamPromptAnswersAutosave from './useTeamPromptAnswersAutosave'
-import useTeamPromptComposerApiRegistration from './useTeamPromptComposerApiRegistration'
-import useTeamPromptComposerState from './useTeamPromptComposerState'
+import useTeamPromptComposer from './useTeamPromptComposer'
 
 interface Props {
   meetingRef: TeamPromptComposer_meeting$key
@@ -23,85 +17,30 @@ const TeamPromptComposer = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment TeamPromptComposer_meeting on TeamPromptMeeting {
-        id
-        teamId
-        endedAt
-        prompts {
-          id
-          question
-          description
-          groupColor
-        }
-        phases {
-          ... on TeamPromptResponsesPhase {
-            stages {
-              id
-              teamMember {
-                userId
-                user {
-                  picture
-                }
-              }
-              responses {
-                id
-                promptId
-                content
-                plaintextContent
-                sharedAt
-                updatedAt
-              }
-            }
-          }
-        }
+        ...useTeamPromptComposer_meeting
       }
     `,
     meetingRef
   )
-  const atmosphere = useAtmosphere()
-  const {viewerId} = atmosphere
-  const {id: meetingId, teamId, endedAt, prompts} = meeting
-  const stage = meeting.phases[0]?.stages?.find((stage) => stage.teamMember.userId === viewerId)
-  const isShared = !!getMemberSharedAt(stage?.responses ?? [])
-  const [isExpanded, setIsExpanded] = useState(!isShared)
-  const editorRefs = useRef(new Map<string, React.MutableRefObject<Editor | null>>())
-  const {queueAnswer, seedDirty, share, submitting, dirtyPromptIds} = useTeamPromptAnswersAutosave({
-    meetingId,
-    teamId,
-    stageId: stage?.id ?? '',
-    isShared
-  })
   const {
+    teamId,
+    isEnded,
+    prompts,
+    stage,
+    isShared,
+    isExpanded,
+    setIsExpanded,
+    getEditorRef,
+    onChange,
+    onShare,
+    submitting,
+    isDirty,
     initialContentByPrompt,
     answeredPromptIds,
-    setAnsweredPromptIds,
     preview,
     sharedAt,
     lastAnswerAt
-  } = useTeamPromptComposerState({prompts, stage, isEnded: !!endedAt, isExpanded, seedDirty})
-
-  const onChange = useCallback(
-    (promptId: string, editor: Editor) => {
-      setAnsweredPromptIds((prev) => {
-        const isAnswered = !editor.isEmpty
-        if (prev.has(promptId) === isAnswered) return prev
-        const next = new Set(prev)
-        if (isAnswered) next.add(promptId)
-        else next.delete(promptId)
-        return next
-      })
-      queueAnswer(promptId, editor.getJSON())
-    },
-    [queueAnswer]
-  )
-
-  const expand = useCallback(() => setIsExpanded(true), [])
-  useTeamPromptComposerApiRegistration({editorRefs, onChange, expand})
-
-  const onShare = useCallback(() => {
-    if (answeredPromptIds.size === 0) return
-    if (isShared && dirtyPromptIds.size === 0) return
-    share(() => setIsExpanded(false))
-  }, [share, answeredPromptIds.size, isShared, dirtyPromptIds.size])
+  } = useTeamPromptComposer(meeting)
 
   if (!stage) return null
   return (
@@ -121,8 +60,6 @@ const TeamPromptComposer = (props: Props) => {
         <div className={cn(!isExpanded && 'hidden')}>
           <div className='flex flex-col gap-4 rounded-card bg-surface-card p-4 shadow-[var(--shadow-card)]'>
             {prompts.map((prompt, index) => {
-              if (!editorRefs.current.has(prompt.id))
-                editorRefs.current.set(prompt.id, {current: null})
               const nextPromptId = prompts[index + 1]?.id
               return (
                 <TeamPromptAnswerEditor
@@ -130,25 +67,25 @@ const TeamPromptComposer = (props: Props) => {
                   teamId={teamId}
                   prompt={prompt}
                   initialContent={initialContentByPrompt.get(prompt.id) ?? null}
-                  readOnly={!!endedAt}
+                  readOnly={isEnded}
                   isAnswered={answeredPromptIds.has(prompt.id)}
                   compact={prompts.length === 1}
                   onChange={onChange}
                   onModEnter={onShare}
                   onTab={
                     nextPromptId
-                      ? () => editorRefs.current.get(nextPromptId)?.current?.commands.focus('end')
+                      ? () => getEditorRef(nextPromptId).current?.commands.focus('end')
                       : undefined
                   }
-                  editorRef={editorRefs.current.get(prompt.id)!}
+                  editorRef={getEditorRef(prompt.id)}
                 />
               )
             })}
           </div>
-          {!endedAt && (
+          {!isEnded && (
             <TeamPromptComposerFooter
               isShared={isShared}
-              isDirty={dirtyPromptIds.size > 0}
+              isDirty={isDirty}
               answeredCount={answeredPromptIds.size}
               promptCount={prompts.length}
               submitting={submitting}
