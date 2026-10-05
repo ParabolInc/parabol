@@ -1,9 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
-import clsx from 'clsx'
 import {useFragment} from 'react-relay'
 import {ExpandMore, FilterList} from '~/ui/icons'
 import type {LinearProjectFilterBar_teamMember$key} from '../../../__generated__/LinearProjectFilterBar_teamMember.graphql'
 import useLinearProjectsAndTeams from '../../../hooks/useLinearProjectsAndTeams'
+import {cn} from '../../../ui/cn'
 import {Menu} from '../../../ui/Menu/Menu'
 import {MenuContent} from '../../../ui/Menu/MenuContent'
 import plural from '../../../utils/plural'
@@ -13,10 +13,11 @@ interface Props {
   teamMemberRef: LinearProjectFilterBar_teamMember$key
   selectedLinearIds: string[]
   setSelectedLinearIds: (ids: string[]) => void
+  className?: string
 }
 
 const LinearProjectFilterBar = (props: Props) => {
-  const {teamMemberRef, selectedLinearIds, setSelectedLinearIds} = props
+  const {teamMemberRef, selectedLinearIds, setSelectedLinearIds, className} = props
   const teamMember = useFragment(
     graphql`
       fragment LinearProjectFilterBar_teamMember on TeamMember {
@@ -45,11 +46,16 @@ const LinearProjectFilterBar = (props: Props) => {
   return (
     <Menu
       trigger={
-        <button className='group mx-4 mt-4 mb-2 flex cursor-pointer items-center gap-2 rounded-sm border border-hairline border-solid bg-surface-card px-3 py-0.5 text-left transition hover:border-hairline-strong data-[state=open]:border-accent'>
+        <button
+          className={cn(
+            'group mx-4 mt-4 mb-2 flex cursor-pointer items-center gap-2 rounded-sm border border-hairline border-solid bg-surface-card px-3 py-0.5 text-left transition hover:border-hairline-strong data-[state=open]:border-accent',
+            className
+          )}
+        >
           <FilterList className='h-5 w-5 text-fg-secondary' />
           {buttonLabel}
           <ExpandMore
-            className={clsx(
+            className={cn(
               'ml-auto rounded-full transition duration-300 group-data-[state=open]:rotate-180',
               selectedLinearIds.length > 0 &&
                 'group-data-[state=closed]:bg-accent group-data-[state=closed]:text-white'

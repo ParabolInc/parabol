@@ -1,42 +1,37 @@
 import type {GraphQLResolveInfo} from 'graphql'
-import type {SearchWorkItemsQuery} from '../../../../types/githubTypes'
+import type {SearchIssuesQuery} from '../../../../types/githubTypes'
 import getGitHubRequest from '../../../../utils/getGitHubRequest'
-import searchWorkItems from '../../../../utils/githubQueries/searchWorkItems.graphql'
+import searchIssues from '../../../../utils/githubQueries/searchIssues.graphql'
 import {Logger} from '../../../../utils/Logger'
 import type {DataLoaderWorker, GQLContext} from '../../../graphql'
-import {
-  formatWorkItemsForAI,
-  MAX_WORK_ITEM_COMMENTS,
-  MAX_WORK_ITEMS,
-  type WorkItem
-} from './workItemsForAI'
+import {type InspirationIssue, MAX_ISSUE_COMMENTS, MAX_ISSUES} from './issuesForAI'
 
 // Re-runs the GitHub search the user saw in the Your Work drawer, server-side, but fetches the
 // full body + discussion thread for each item so the AI has enough context to draft a response.
-// Returns a compact text blob suitable for an LLM prompt, or '' if there's nothing to send.
-const fetchGitHubWorkItems = async (
+// Returns the normalized issues, or [] if there's nothing to send.
+const fetchGitHubIssues = async (
   teamId: string,
   userId: string,
   searchQuery: string,
   dataLoader: DataLoaderWorker,
   context: GQLContext,
   info: GraphQLResolveInfo
-): Promise<string> => {
+): Promise<InspirationIssue[]> => {
   const auth = await dataLoader.get('githubAuth').load({teamId, userId})
-  if (!auth) return ''
+  if (!auth) return []
   const {accessToken} = auth
   const githubRequest = getGitHubRequest(info, context, {accessToken})
-  const [data, error] = await githubRequest<SearchWorkItemsQuery>(searchWorkItems, {
+  const [data, error] = await githubRequest<SearchIssuesQuery>(searchIssues, {
     searchQuery,
-    first: MAX_WORK_ITEMS,
-    commentLast: MAX_WORK_ITEM_COMMENTS
+    first: MAX_ISSUES,
+    commentLast: MAX_ISSUE_COMMENTS
   })
   if (error) {
     Logger.error(error.message)
-    return ''
+    return []
   }
   const nodes = data.search.nodes ?? []
-  const items = nodes.flatMap((node): WorkItem[] => {
+  const items = nodes.flatMap((node): InspirationIssue[] => {
     if (!node || (node.__typename !== '_xGitHubIssue' && node.__typename !== '_xGitHubPullRequest'))
       return []
     const kind = node.__typename === '_xGitHubIssue' ? 'Issue' : 'Pull Request'
@@ -62,12 +57,13 @@ const fetchGitHubWorkItems = async (
         reference: node.repository.nameWithOwner,
         status,
         url: node.url,
+        updatedAt: new Date(node.updatedAt),
         description: node.body,
         comments
       }
     ]
   })
-  return formatWorkItemsForAI(items)
+  return items
 }
 
-export default fetchGitHubWorkItems
+export default fetchGitHubIssues

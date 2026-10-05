@@ -79,6 +79,8 @@ const READING_SURFACES = [
   '--color-surface-card',
   '--color-surface-app',
   '--color-surface-raised',
+  '--color-surface-modal',
+  '--color-surface-modal-nested',
   '--color-surface-input',
   '--color-surface-sidebar'
 ]

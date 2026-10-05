@@ -1,228 +1,172 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect} from 'react'
+import dayjs from 'dayjs'
+import {useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {TeamPromptWorkDrawer_meeting$key} from '../../__generated__/TeamPromptWorkDrawer_meeting.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
-import useSessionStorageState from '../../hooks/useSessionStorageState'
-import {getConnectProvider} from '../../integrations/platform/findIntegrationService'
-import gcalLogo from '../../styles/theme/images/graphics/google-calendar.svg'
-import {cn} from '../../ui/cn'
+import useInspirationDrawer from '../../hooks/useInspirationDrawer'
+import useLocalStorageState from '../../hooks/useLocalStorageState'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
-import GitHubSVG from '../GitHubSVG'
-import GitLabSVG from '../GitLabSVG'
-import JiraServerSVG from '../JiraServerSVG'
-import JiraSVG from '../JiraSVG'
-import LinearSVG from '../LinearSVG'
-import ParabolLogoSVG from '../ParabolLogoSVG'
-import GCalIntegrationPanel from './WorkDrawer/GCalIntegrationPanel'
-import GitHubIntegrationPanel from './WorkDrawer/GitHubIntegrationPanel'
-import GitLabIntegrationPanel from './WorkDrawer/GitLabIntegrationPanel'
-import JiraIntegrationPanel from './WorkDrawer/JiraIntegrationPanel'
-import JiraServerIntegrationPanel from './WorkDrawer/JiraServerIntegrationPanel'
-import LinearIntegrationPanel from './WorkDrawer/LinearIntegrationPanel'
-import ParabolTasksPanel from './WorkDrawer/ParabolTasksPanel'
-import WorkDrawerConsumeContext from './WorkDrawer/WorkDrawerConsumeContext'
+import {useTeamPromptComposerApi} from './structured/TeamPromptComposerApiContext'
+import buildInspirationSearchQuery from './WorkDrawer/buildInspirationSearchQuery'
+import InspirationDraftSection from './WorkDrawer/InspirationDraftSection'
+import InspirationSettingsButton from './WorkDrawer/InspirationSettingsButton'
+import InspirationSettingsDialog from './WorkDrawer/InspirationSettingsDialog'
+import InspirationSourceTiles from './WorkDrawer/InspirationSourceTiles'
+import InspirationWorkSection from './WorkDrawer/InspirationWorkSection'
+import {dateRangeLabel} from './WorkDrawer/inspirationCopy'
+import {
+  DEFAULT_INSPIRATION_SOURCE_SETTINGS,
+  type InspirationSourceSettings,
+  withInspirationSourceDefaults
+} from './WorkDrawer/inspirationSources'
+import useInspirationDraft from './WorkDrawer/useInspirationDraft'
+import useInspirationSourceAvailability from './WorkDrawer/useInspirationSourceAvailability'
 
 interface Props {
   meetingRef: TeamPromptWorkDrawer_meeting$key
 }
 
-const TeamPromptWorkDrawer = (props: Props) => {
-  const {meetingRef} = props
+const TeamPromptWorkDrawer = ({meetingRef}: Props) => {
   const meeting = useFragment(
     graphql`
       fragment TeamPromptWorkDrawer_meeting on TeamPromptMeeting {
+        ...useInspirationDrawer_meeting
         id
         teamId
+        organization {
+          useAI
+        }
         prompts {
           id
+          question
+          groupColor
         }
-        responses {
-          id
-          userId
-          promptId
-          content
-          plaintextContent
-        }
-        ...ParabolTasksPanel_meeting
-        ...GitHubIntegrationPanel_meeting
-        ...GitLabIntegrationPanel_meeting
-        ...JiraIntegrationPanel_meeting
-        ...GCalIntegrationPanel_meeting
-        ...JiraServerIntegrationPanel_meeting
-        ...LinearIntegrationPanel_meeting
         viewerMeetingMember {
           teamMember {
-            teamId
-            services {
-              ...findIntegrationService_cloudProvider @relay(mask: false)
-            }
-            integrations {
-              jiraServer {
-                sharedProviders {
-                  id
-                }
-              }
-              gcal {
-                cloudProvider {
-                  id
-                }
-              }
-              linear {
-                cloudProvider {
-                  id
-                }
-              }
-              gitlab {
-                cloudProvider {
-                  id
-                }
-              }
-            }
+            ...useInspirationSourceAvailability_teamMember
+            ...InspirationSourcePopover_teamMember
           }
         }
       }
     `,
     meetingRef
   )
+  const {id: meetingId, teamId, prompts} = meeting
+  const teamMember = meeting.viewerMeetingMember?.teamMember
   const atmosphere = useAtmosphere()
-  const {viewerId} = atmosphere
-  const promptId = meeting.prompts[0]?.id ?? null
-  const viewerResponse =
-    meeting.responses.find(
-      (response) => response.userId === viewerId && response.promptId === promptId
-    ) ?? null
-  const hasJiraServer =
-    !!meeting.viewerMeetingMember?.teamMember?.integrations.jiraServer?.sharedProviders?.length
-  const hasLinear =
-    !!meeting.viewerMeetingMember?.teamMember?.integrations.linear?.cloudProvider?.id
-  const hasGCal = !!meeting.viewerMeetingMember?.teamMember?.integrations.gcal?.cloudProvider?.id
-  const hasGitLab =
-    !!meeting.viewerMeetingMember?.teamMember?.integrations.gitlab?.cloudProvider?.id
-  const services = meeting.viewerMeetingMember?.teamMember?.services ?? []
-  const hasGitHub = !!getConnectProvider(services, 'github')
-  const hasJira = !!getConnectProvider(services, 'jira')
+  const composer = useTeamPromptComposerApi()
+  const availability = useInspirationSourceAvailability(teamMember)
+  const {dateRange, setDateRange, isDefaultRange} = useInspirationDrawer('draft', meeting)
+  const [storedSettings, setStoredSettings] = useLocalStorageState<
+    Partial<InspirationSourceSettings>
+  >('Inspiration:sources', DEFAULT_INSPIRATION_SOURCE_SETTINGS)
+  const settings = withInspirationSourceDefaults(storedSettings)
+  const setSettings = (update: (prev: InspirationSourceSettings) => InspirationSourceSettings) =>
+    setStoredSettings((prev) => update(withInspirationSourceDefaults(prev)))
+  const [instructions, setInstructions] = useLocalStorageState('Inspiration:instructions', '')
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const aiOffMessage = !window.__ACTION__.hasOpenAI
+    ? 'AI drafting is turned off for this Parabol instance. Ask your org admin to turn it on.'
+    : !meeting.organization.useAI
+      ? 'AI drafting is turned off for your organization. Ask your org admin to turn it on.'
+      : null
+  const canDraft = !aiOffMessage
+
+  const [anyTimeRange] = useState(() => ({
+    startAt: dayjs().subtract(2, 'week').toISOString(),
+    endAt: dayjs().endOf('day').toISOString()
+  }))
+  const draftRange = dateRange ?? anyTimeRange
+  const sources = availability
+    .filter(({service, isConnected}) => isConnected && settings.kinds[service].length > 0)
+    .map(({service}) => ({
+      service,
+      searchQuery: buildInspirationSearchQuery(service, settings, draftRange)
+    }))
+  const {draft, requestRedraft, drafting, error} = useInspirationDraft({
+    meetingId,
+    isMeetingMember: !!teamMember,
+    sources,
+    instructions: canDraft ? instructions : ''
+  })
+  const draftedIssues = draft?.issues ?? []
+  const draftedQueries = new Map(
+    (draft?.sources ?? []).map(({service, searchQuery}) => [service, searchQuery])
+  )
+  const countingServices = drafting
+    ? sources.flatMap(({service, searchQuery}) =>
+        draftedQueries.get(service) === searchQuery ? [] : [service]
+      )
+    : []
+  const issueCounts = Object.fromEntries(
+    (draft?.sources ?? []).map(({service}) => [
+      service,
+      draftedIssues.filter((issue) => issue.service === service).length
+    ])
+  )
 
   useEffect(() => {
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Impression', {
-      teamId: meeting.teamId,
-      meetingId: meeting.id
-    })
+    SendClientSideEvent(atmosphere, 'Inspiration Drawer Impression', {teamId, meetingId})
   }, [])
 
-  const baseTabs = [
-    {
-      icon: <ParabolLogoSVG />,
-      service: 'PARABOL',
-      label: 'Parabol',
-      Component: ParabolTasksPanel
-    },
-    ...(hasJiraServer
-      ? [
-          {
-            icon: <JiraServerSVG />,
-            service: 'jiraServer',
-            label: 'Jira Data Center',
-            Component: JiraServerIntegrationPanel
-          }
-        ]
-      : []),
-    ...(hasGitHub
-      ? [
-          {
-            icon: <GitHubSVG className='dark:[&_path]:fill-white' />,
-            service: 'github',
-            label: 'GitHub',
-            Component: GitHubIntegrationPanel
-          }
-        ]
-      : []),
-    ...(hasGitLab
-      ? [
-          {
-            icon: <GitLabSVG />,
-            service: 'gitlab',
-            label: 'GitLab',
-            Component: GitLabIntegrationPanel
-          }
-        ]
-      : []),
-    ...(hasJira
-      ? [
-          {
-            icon: <JiraSVG />,
-            service: 'jira',
-            label: 'Jira',
-            Component: JiraIntegrationPanel
-          }
-        ]
-      : []),
-    ...(hasLinear
-      ? [
-          {
-            icon: <LinearSVG className='dark:[&_path]:fill-white' />,
-            service: 'linear',
-            label: 'Linear',
-            Component: LinearIntegrationPanel
-          }
-        ]
-      : []),
-    ...(hasGCal
-      ? [
-          {
-            icon: <img className='h-6 w-6' src={gcalLogo} />,
-            service: 'gcal',
-            label: 'Google Calendar',
-            Component: GCalIntegrationPanel
-          }
-        ]
-      : [])
-  ] as const
-
-  const [activeService, setActiveService] = useSessionStorageState<string>(
-    `Inspiration:tab:${meeting.id}`,
-    'PARABOL'
-  )
-  const activeIdx = Math.max(
-    0,
-    baseTabs.findIndex((tab) => tab.service === activeService)
-  )
-
-  const {Component} = baseTabs[activeIdx]!
-
   return (
-    <WorkDrawerConsumeContext.Provider value={{mode: 'teamPrompt', viewerResponse, promptId}}>
-      <div className='flex min-h-0 flex-1 flex-col'>
-        <div className='flex justify-center pt-3 pb-2'>
-          <div className='flex gap-1'>
-            {baseTabs.map((tab, idx) => (
-              <button
-                key={tab.label}
-                title={tab.label}
-                onClick={() => {
-                  SendClientSideEvent(atmosphere, 'Your Work Integration Clicked', {
-                    teamId: meeting.teamId,
-                    meetingId: meeting.id,
-                    service: baseTabs[idx]?.service
-                  })
-                  setActiveService(tab.service)
-                }}
-                className={cn(
-                  'flex h-10 w-10 appearance-none items-center justify-center rounded-md transition-colors',
-                  idx === activeIdx
-                    ? // the logos are dark brand colors, so they go monochrome on the selected fill
-                      'bg-surface-selected text-fg-selected [&_path]:fill-current'
-                    : 'cursor-pointer text-fg-muted hover:bg-surface-hover'
-                )}
-              >
-                {tab.icon}
-              </button>
-            ))}
-          </div>
-        </div>
-        <Component meetingRef={meeting} />
+    <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
+      <div className='flex flex-col gap-3 px-4 pt-4'>
+        {teamMember && (
+          <InspirationSourceTiles
+            sources={availability}
+            issueCounts={issueCounts}
+            countingServices={countingServices}
+            canDraft={canDraft}
+            meetingId={meetingId}
+            settings={settings}
+            setSettings={setSettings}
+            onPopoverClose={() => requestRedraft()}
+            teamMemberRef={teamMember}
+          />
+        )}
+        <InspirationSettingsButton
+          dateLabel={dateRangeLabel(draftRange, isDefaultRange)}
+          hasInstructions={canDraft && !!instructions.trim()}
+          canDraft={canDraft}
+          onClick={() => setSettingsOpen(true)}
+        />
       </div>
-    </WorkDrawerConsumeContext.Provider>
+      {aiOffMessage ? (
+        <InspirationWorkSection
+          draft={draft}
+          drafting={drafting}
+          error={error}
+          aiOffMessage={aiOffMessage}
+        />
+      ) : (
+        <InspirationDraftSection
+          draft={draft}
+          meetingId={meetingId}
+          teamId={teamId}
+          prompts={prompts}
+          composer={composer}
+          drafting={drafting}
+          error={error}
+        />
+      )}
+      {settingsOpen && (
+        <InspirationSettingsDialog
+          isOpen
+          onClose={() => setSettingsOpen(false)}
+          dateRange={dateRange}
+          instructions={instructions}
+          canDraft={canDraft}
+          onSave={(nextRange, nextInstructions) => {
+            setDateRange(nextRange)
+            setInstructions(nextInstructions)
+            setSettingsOpen(false)
+            requestRedraft(nextInstructions.trim() !== instructions.trim())
+          }}
+        />
+      )}
+    </div>
   )
 }
 

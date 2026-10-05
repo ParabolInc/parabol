@@ -3,7 +3,6 @@ import type {JSONContent} from '@tiptap/react'
 import {useState} from 'react'
 import {Check} from '~/ui/icons'
 import {cn} from '../../../ui/cn'
-import {isOSX} from '../../../utils/platform'
 import PromptResponseEditor from '../PromptResponseEditor'
 
 interface Props {
@@ -33,7 +32,6 @@ const TeamPromptAnswerEditor = (props: Props) => {
     editorRef
   } = props
   const [isFocused, setIsFocused] = useState(false)
-  const linkShortcut = isOSX ? '⌘K' : 'Ctrl+K'
   return (
     <div className='flex flex-col gap-1.5'>
       <div className='flex items-center gap-2 font-semibold text-[13px] text-fg-secondary'>
@@ -66,20 +64,9 @@ const TeamPromptAnswerEditor = (props: Props) => {
           editorRef={editorRef}
           className={cn(
             'max-h-[280px] overflow-auto p-[10px_12px_6px] text-sm leading-6',
-            compact
-              ? isFocused
-                ? 'min-h-[160px]'
-                : 'min-h-[120px]'
-              : isFocused
-                ? 'min-h-[112px]'
-                : 'min-h-[88px]'
+            compact ? 'min-h-[120px]' : 'min-h-[88px]'
           )}
         />
-        {isFocused && !readOnly && (
-          <div className='pointer-events-none px-3 pb-1.5 text-right text-[11px] text-fg-muted'>
-            Select text to format · - starts a list · {linkShortcut} for a link
-          </div>
-        )}
       </div>
     </div>
   )
