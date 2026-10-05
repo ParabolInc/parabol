@@ -39,13 +39,14 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
   const {teamId} = meeting
 
   const team = await dataLoader.get('teams').loadNonNull(teamId)
-  if (!(await canAccessAI(team, dataLoader, true))) {
+  const canDraft = !!process.env.OPEN_AI_API_KEY && (await canAccessAI(team, dataLoader, true))
+  if (!canDraft && meeting.meetingType === 'retrospective') {
     throw new GraphQLError('AI features are not enabled for this organization')
   }
 
   // AI quota
   const pg = getKysely()
-  if (!isSuperUser(authToken)) {
+  if (canDraft && !isSuperUser(authToken)) {
     const {tokenUsage} = await pg
       .selectFrom('AIRequest')
       .select(pg.fn.coalesce(pg.fn.sum<bigint>('tokenCost'), sql`0`).as('tokenUsage'))
@@ -75,6 +76,7 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
       prompts,
       sources,
       userPrompt,
+      canDraft,
       context,
       info
     })

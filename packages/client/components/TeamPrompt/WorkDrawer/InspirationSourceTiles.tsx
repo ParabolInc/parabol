@@ -7,6 +7,7 @@ interface Props {
   sources: InspirationSourceAvailability[]
   issueCounts: Partial<Record<string, number>>
   countingServices: string[]
+  canDraft: boolean
   meetingId: string
   settings: InspirationSourceSettings
   setSettings: (update: (prev: InspirationSourceSettings) => InspirationSourceSettings) => void
@@ -16,10 +17,11 @@ interface Props {
 
 const InspirationSourceTiles = (props: Props) => {
   const {sources, issueCounts, countingServices, onPopoverClose, ...tileProps} = props
+  const heading = tileProps.canDraft ? 'Draft from' : 'Work from'
   return (
-    <div role='group' aria-label='Draft from' className='flex flex-col gap-2'>
+    <div role='group' aria-label={heading} className='flex flex-col gap-2'>
       <span className='font-bold text-[11px] text-fg-muted uppercase tracking-wider'>
-        Draft from
+        {heading}
       </span>
       <div className='flex flex-wrap gap-2'>
         {sources.map(({service, isConnected}) => (

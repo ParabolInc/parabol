@@ -22,6 +22,7 @@ interface Props {
   isConnected: boolean
   issueCount: number | undefined
   isCounting: boolean
+  canDraft: boolean
   meetingId: string
   settings: InspirationSourceSettings
   setSettings: (update: (prev: InspirationSourceSettings) => InspirationSourceSettings) => void
@@ -34,6 +35,7 @@ const InspirationSourcePopover = (props: Props) => {
     isConnected,
     issueCount,
     isCounting,
+    canDraft,
     meetingId,
     settings,
     setSettings,
@@ -51,6 +53,7 @@ const InspirationSourcePopover = (props: Props) => {
     teamMemberRef
   )
   const label = serviceLabel(service)
+  const destination = canDraft ? 'draft' : 'list'
   const enabledKinds = settings.kinds[service]
   const kinds = INSPIRATION_SOURCE_KINDS[service]
   const toggleKind = (kind: string, checked: boolean) =>
@@ -71,14 +74,14 @@ const InspirationSourcePopover = (props: Props) => {
           <span className='font-semibold text-fg-primary text-sm'>{label}</span>
           <span className='text-fg-muted text-xs'>
             {!isIncluded ? (
-              'Not in your draft'
+              `Not in your ${destination}`
             ) : isCounting ? (
               <>
                 Counting items
                 <Ellipsis />
               </>
             ) : (
-              issueCountLabel(issueCount)
+              issueCountLabel(issueCount, canDraft)
             )}
           </span>
         </div>
@@ -123,8 +126,8 @@ const InspirationSourcePopover = (props: Props) => {
           </Suspense>
           <p className='m-0 text-fg-muted text-xs'>
             {kinds.length > 1
-              ? `Turn everything off to leave ${label} out of your draft.`
-              : `Turn this off to leave ${label} out of your draft.`}
+              ? `Turn everything off to leave ${label} out of your ${destination}.`
+              : `Turn this off to leave ${label} out of your ${destination}.`}
           </p>
         </>
       ) : (

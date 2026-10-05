@@ -29,6 +29,7 @@ interface Options {
   prompts: {id: string; question: string; description: string}[]
   sources: readonly InspirationSourceInput[]
   userPrompt: string | null | undefined
+  canDraft: boolean
   context: GQLContext
   info: GraphQLResolveInfo
 }
@@ -40,8 +41,18 @@ interface NumberedIssue {
 }
 
 const draftStandupFromSources = async (options: Options) => {
-  const {meetingId, teamId, viewerId, viewerName, prompts, sources, userPrompt, context, info} =
-    options
+  const {
+    meetingId,
+    teamId,
+    viewerId,
+    viewerName,
+    prompts,
+    sources,
+    userPrompt,
+    canDraft,
+    context,
+    info
+  } = options
   const pg = getKysely()
 
   const fetched = await Promise.all(
@@ -56,7 +67,18 @@ const draftStandupFromSources = async (options: Options) => {
     items.map((item): NumberedIssue => ({id: `W${nextId++}`, service, item}))
   )
 
+  const toIssue = ({service, item}: NumberedIssue, unusedReason: string | null) => ({
+    service,
+    title: item.title,
+    url: item.url || null,
+    updatedAt: item.updatedAt,
+    unusedReason
+  })
+
   if (numbered.length === 0) return {inspirationItems: [], issues: []}
+  if (!canDraft) {
+    return {inspirationItems: [], issues: numbered.map((entry) => toIssue(entry, null))}
+  }
 
   const issuesText = fetched
     .filter(({items}) => items.length > 0)
@@ -91,17 +113,12 @@ const draftStandupFromSources = async (options: Options) => {
 
   const draftText = result.items.map(({content}) => content).join('\n')
   const reasonById = new Map(result.unused.map(({id, reason}) => [id, reason]))
-  const issues = numbered.map(({id, service, item}) => {
-    const isLinked = !!item.url && draftText.includes(item.url)
-    const reason = reasonById.get(id)
-    const isUsed = isLinked || (!item.url && !reason)
-    return {
-      service,
-      title: item.title,
-      url: item.url || null,
-      updatedAt: item.updatedAt,
-      unusedReason: isUsed ? null : (reason ?? 'Not mentioned')
-    }
+  const issues = numbered.map((entry) => {
+    const {url} = entry.item
+    const isLinked = !!url && draftText.includes(url)
+    const reason = reasonById.get(entry.id)
+    const isUsed = isLinked || (!url && !reason)
+    return toIssue(entry, isUsed ? null : (reason ?? 'Not mentioned'))
   })
 
   // The AI sometimes splits one question's answer in two, so merge them and keep question order

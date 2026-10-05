@@ -15,7 +15,7 @@ const SERVICE_LABELS: Record<string, string> = {
 export const serviceLabel = (service: string) => SERVICE_LABELS[service] ?? service
 
 export const NO_WORK_LINE =
-  'No work was found to draft from. Try turning on more sources or widening the date range.'
+  'No work was found. Try turning on more sources or widening the date range.'
 
 export const dateRangeLabel = (dateRange: WorkDrawerDateRange, isSinceLastStandup: boolean) => {
   if (isSinceLastStandup) return 'Since last standup'
@@ -27,8 +27,14 @@ export const dateRangeLabel = (dateRange: WorkDrawerDateRange, isSinceLastStandu
 export const usedLabel = (unused: number, total: number) =>
   total === 0 ? '' : `Uses ${total - unused} of ${total} items`
 
-export const issueCountLabel = (count: number | undefined) =>
-  count === undefined ? 'Not drafted yet' : count === 1 ? '1 item' : `${count} items`
+export const issueCountLabel = (count: number | undefined, canDraft = true) =>
+  count === undefined
+    ? canDraft
+      ? 'Not drafted yet'
+      : 'Not loaded yet'
+    : count === 1
+      ? '1 item'
+      : `${count} items`
 
 export const addAllLabel = (remaining: number, total: number) =>
   remaining === total ? `Add all ${remaining} to my response` : `Add remaining ${remaining}`

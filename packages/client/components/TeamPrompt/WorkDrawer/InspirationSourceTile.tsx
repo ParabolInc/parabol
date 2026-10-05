@@ -15,6 +15,7 @@ interface Props {
   isConnected: boolean
   issueCount: number | undefined
   isCounting: boolean
+  canDraft: boolean
   meetingId: string
   settings: InspirationSourceSettings
   setSettings: (update: (prev: InspirationSourceSettings) => InspirationSourceSettings) => void
@@ -23,7 +24,7 @@ interface Props {
 }
 
 const InspirationSourceTile = (props: Props) => {
-  const {service, isConnected, issueCount, isCounting, settings, onClose} = props
+  const {service, isConnected, issueCount, isCounting, canDraft, settings, onClose} = props
   const [open, setOpen] = useState(false)
   const isIncluded = isConnected && settings.kinds[service].length > 0
   const label = serviceLabel(service)
@@ -37,7 +38,7 @@ const InspirationSourceTile = (props: Props) => {
       <RadixPopover.Trigger asChild>
         <button
           type='button'
-          aria-label={`${label}: ${isCounting ? 'counting items' : isIncluded ? 'in your draft' : isConnected ? 'off' : 'not connected'}. Settings`}
+          aria-label={`${label}: ${isCounting ? 'counting items' : isIncluded ? (canDraft ? 'in your draft' : 'in your list') : isConnected ? 'off' : 'not connected'}. Settings`}
           className={cn(
             'relative flex h-16 w-14 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border bg-surface-card transition-colors hover:bg-surface-hover data-[state=open]:border-accent data-[state=open]:ring-1 data-[state=open]:ring-accent',
             isIncluded

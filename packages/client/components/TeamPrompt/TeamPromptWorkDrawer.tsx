@@ -13,6 +13,7 @@ import InspirationDraftSection from './WorkDrawer/InspirationDraftSection'
 import InspirationSettingsButton from './WorkDrawer/InspirationSettingsButton'
 import InspirationSettingsDialog from './WorkDrawer/InspirationSettingsDialog'
 import InspirationSourceTiles from './WorkDrawer/InspirationSourceTiles'
+import InspirationWorkSection from './WorkDrawer/InspirationWorkSection'
 import {dateRangeLabel} from './WorkDrawer/inspirationCopy'
 import {
   DEFAULT_INSPIRATION_SOURCE_SETTINGS,
@@ -33,6 +34,9 @@ const TeamPromptWorkDrawer = ({meetingRef}: Props) => {
         ...useInspirationDrawer_meeting
         id
         teamId
+        organization {
+          useAI
+        }
         prompts {
           id
           question
@@ -62,6 +66,12 @@ const TeamPromptWorkDrawer = ({meetingRef}: Props) => {
     setStoredSettings((prev) => update(withInspirationSourceDefaults(prev)))
   const [instructions, setInstructions] = useLocalStorageState('Inspiration:instructions', '')
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const aiOffMessage = !window.__ACTION__.hasOpenAI
+    ? 'AI drafting is turned off for this Parabol instance. Ask your org admin to turn it on.'
+    : !meeting.organization.useAI
+      ? 'AI drafting is turned off for your organization. Ask your org admin to turn it on.'
+      : null
+  const canDraft = !aiOffMessage
 
   const [anyTimeRange] = useState(() => ({
     startAt: dayjs().subtract(2, 'week').toISOString(),
@@ -78,7 +88,7 @@ const TeamPromptWorkDrawer = ({meetingRef}: Props) => {
     meetingId,
     isMeetingMember: !!teamMember,
     sources,
-    instructions
+    instructions: canDraft ? instructions : ''
   })
   const draftedIssues = draft?.issues ?? []
   const draftedQueries = new Map(
@@ -108,6 +118,7 @@ const TeamPromptWorkDrawer = ({meetingRef}: Props) => {
             sources={availability}
             issueCounts={issueCounts}
             countingServices={countingServices}
+            canDraft={canDraft}
             meetingId={meetingId}
             settings={settings}
             setSettings={setSettings}
@@ -117,25 +128,36 @@ const TeamPromptWorkDrawer = ({meetingRef}: Props) => {
         )}
         <InspirationSettingsButton
           dateLabel={dateRangeLabel(draftRange, isDefaultRange)}
-          hasInstructions={!!instructions.trim()}
+          hasInstructions={canDraft && !!instructions.trim()}
+          canDraft={canDraft}
           onClick={() => setSettingsOpen(true)}
         />
       </div>
-      <InspirationDraftSection
-        draft={draft}
-        meetingId={meetingId}
-        teamId={teamId}
-        prompts={prompts}
-        composer={composer}
-        drafting={drafting}
-        error={error}
-      />
+      {aiOffMessage ? (
+        <InspirationWorkSection
+          draft={draft}
+          drafting={drafting}
+          error={error}
+          aiOffMessage={aiOffMessage}
+        />
+      ) : (
+        <InspirationDraftSection
+          draft={draft}
+          meetingId={meetingId}
+          teamId={teamId}
+          prompts={prompts}
+          composer={composer}
+          drafting={drafting}
+          error={error}
+        />
+      )}
       {settingsOpen && (
         <InspirationSettingsDialog
           isOpen
           onClose={() => setSettingsOpen(false)}
           dateRange={dateRange}
           instructions={instructions}
+          canDraft={canDraft}
           onSave={(nextRange, nextInstructions) => {
             setDateRange(nextRange)
             setInstructions(nextInstructions)
