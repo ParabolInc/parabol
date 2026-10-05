@@ -12,17 +12,25 @@ const OPTIONS: {value: TeamLayout; label: string; Icon: typeof GridOn}[] = [
 interface Props {
   layout: TeamLayout
   onChange: (layout: TeamLayout) => void
+  isSingleColumn?: boolean
 }
 
-const TeamUpdatesLayoutSwitch = ({layout, onChange}: Props) => {
+const SINGLE_COLUMN_OPTIONS: typeof OPTIONS = [
+  {value: 'feed', label: 'By person', Icon: Notes},
+  {value: 'byQuestion', label: 'By question', Icon: Checklist}
+]
+
+const TeamUpdatesLayoutSwitch = ({layout: layoutProp, onChange, isSingleColumn}: Props) => {
+  const options = isSingleColumn ? SINGLE_COLUMN_OPTIONS : OPTIONS
+  const layout = isSingleColumn && layoutProp === 'grid' ? 'feed' : layoutProp
   const radiosRef = useRef<Record<string, HTMLButtonElement | null>>({})
   const focusLayout = (next: TeamLayout) => {
     onChange(next)
     radiosRef.current[next]?.focus()
   }
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    const first = OPTIONS[0]!.value
-    const last = OPTIONS[OPTIONS.length - 1]!.value
+    const first = options[0]!.value
+    const last = options[options.length - 1]!.value
     if (e.key === 'Home') {
       e.preventDefault()
       focusLayout(first)
@@ -41,8 +49,8 @@ const TeamUpdatesLayoutSwitch = ({layout, onChange}: Props) => {
           : 0
     if (!delta) return
     e.preventDefault()
-    const idx = OPTIONS.findIndex((option) => option.value === layout)
-    focusLayout(OPTIONS[(idx + delta + OPTIONS.length) % OPTIONS.length]!.value)
+    const idx = options.findIndex((option) => option.value === layout)
+    focusLayout(options[(idx + delta + options.length) % options.length]!.value)
   }
   return (
     <div
@@ -51,7 +59,7 @@ const TeamUpdatesLayoutSwitch = ({layout, onChange}: Props) => {
       onKeyDown={onKeyDown}
       className='flex rounded-md border border-hairline border-solid bg-surface-card p-0.5'
     >
-      {OPTIONS.map(({value, label, Icon}) => (
+      {options.map(({value, label, Icon}) => (
         <button
           key={value}
           ref={(el) => {

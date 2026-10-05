@@ -15,6 +15,9 @@ interface Props {
   onChange: (promptId: string, editor: Editor) => void
   onModEnter: () => void
   onTab?: () => void
+  onFocusChange?: (promptId: string, isFocused: boolean) => void
+  bubbleMenuPlacement?: 'top' | 'bottom'
+  editorClassName?: string
   editorRef: React.MutableRefObject<Editor | null>
 }
 
@@ -29,6 +32,9 @@ const TeamPromptAnswerEditor = (props: Props) => {
     onChange,
     onModEnter,
     onTab,
+    onFocusChange,
+    bubbleMenuPlacement,
+    editorClassName,
     editorRef
   } = props
   const [isFocused, setIsFocused] = useState(false)
@@ -60,11 +66,16 @@ const TeamPromptAnswerEditor = (props: Props) => {
           onChange={(editor) => onChange(prompt.id, editor)}
           onModEnter={onModEnter}
           onTab={onTab}
-          onFocusChange={setIsFocused}
+          onFocusChange={(focused) => {
+            setIsFocused(focused)
+            onFocusChange?.(prompt.id, focused)
+          }}
+          bubbleMenuPlacement={bubbleMenuPlacement}
           editorRef={editorRef}
           className={cn(
             'max-h-[280px] overflow-auto p-[10px_12px_6px] text-sm leading-6',
-            compact ? 'min-h-[120px]' : 'min-h-[88px]'
+            compact ? 'min-h-[120px]' : 'min-h-[88px]',
+            editorClassName
           )}
         />
       </div>

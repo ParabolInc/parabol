@@ -18,6 +18,8 @@ import LogoBlock from '../LogoBlock/LogoBlock'
 import {IconGroupBlock, MeetingTopBarStyles} from '../MeetingTopBar'
 import {EndRecurringMeetingModal} from '../Recurrence/EndRecurringMeetingModal'
 import MeetingDateLabel from '../Recurrence/MeetingDateLabel'
+import TeamPromptMobileHeader from './mobile/TeamPromptMobileHeader'
+import useIsTeamPromptMobile from './mobile/useIsTeamPromptMobile'
 import countUnsharedDrafts from './structured/countUnsharedDrafts'
 import {TeamPromptMeetingStatus} from './TeamPromptMeetingStatus'
 import TeamPromptOptions from './TeamPromptOptions'
@@ -78,11 +80,13 @@ const TeamPromptTopBar = (props: Props) => {
         ...NewMeetingAvatarGroup_meeting
         ...TeamPromptMeetingStatus_meeting
         ...EndRecurringMeetingModal_meeting
+        ...TeamPromptMobileHeader_meeting
       }
     `,
     meetingRef
   )
   const atmosphere = useAtmosphere()
+  const isMobile = useIsTeamPromptMobile()
   const [isRecurrenceSettingsOpen, setIsRecurrenceSettingsOpen] = useState(false)
   const [isEndRecurringMeetingOpen, setIsEndRecurringMeetingOpen] = useState(false)
 
@@ -155,6 +159,38 @@ const TeamPromptTopBar = (props: Props) => {
     </div>
   )
 
+  const modals = (
+    <>
+      <EditMeetingSeriesModal
+        seriesRef={meetingSeries}
+        meetingId={meetingId}
+        defaultTitle={meetingName}
+        isOpen={isRecurrenceSettingsOpen}
+        onClose={() => setIsRecurrenceSettingsOpen(false)}
+      />
+      <EndRecurringMeetingModal
+        meetingRef={meeting}
+        isOpen={isEndRecurringMeetingOpen}
+        hasSeries={!!isRecurrenceEnabled}
+        nextMeetingDate={isRecurrenceEnabled ? meetingSeries.nextMeetingDate : undefined}
+        hasUnsharedDraft={hasUnsharedDraft}
+        closeModal={() => setIsEndRecurringMeetingOpen(false)}
+      />
+    </>
+  )
+
+  if (isMobile) {
+    return (
+      <>
+        <TeamPromptMobileHeader
+          meetingRef={meeting}
+          openRecurrenceSettingsModal={() => setIsRecurrenceSettingsOpen(true)}
+          openEndRecurringMeetingModal={() => setIsEndRecurringMeetingOpen(true)}
+        />
+        {modals}
+      </>
+    )
+  }
   return (
     <>
       <MeetingTopBarStyles>
@@ -206,28 +242,8 @@ const TeamPromptTopBar = (props: Props) => {
             <div className='hidden md:block'>{buttons}</div>
           </RightSectionContainer>
         </RightSection>
-        <EditMeetingSeriesModal
-          seriesRef={meetingSeries}
-          meetingId={meetingId}
-          defaultTitle={meetingName}
-          isOpen={isRecurrenceSettingsOpen}
-          onClose={() => setIsRecurrenceSettingsOpen(false)}
-        />
-        <EndRecurringMeetingModal
-          meetingRef={meeting}
-          isOpen={isEndRecurringMeetingOpen}
-          hasSeries={!!isRecurrenceEnabled}
-          nextMeetingDate={isRecurrenceEnabled ? meetingSeries.nextMeetingDate : undefined}
-          hasUnsharedDraft={hasUnsharedDraft}
-          closeModal={() => setIsEndRecurringMeetingOpen(false)}
-        />
       </MeetingTopBarStyles>
-      <div className='block flex justify-between border-hairline border-y border-solid px-4 py-2 md:hidden'>
-        <div className='my-1'>
-          <TeamPromptMeetingStatus meetingRef={meeting} />
-        </div>
-        {buttons}
-      </div>
+      {modals}
     </>
   )
 }
