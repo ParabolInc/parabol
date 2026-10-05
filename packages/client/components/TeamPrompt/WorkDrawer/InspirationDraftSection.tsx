@@ -29,18 +29,19 @@ const parseContent = (raw: string): JSONContent => {
 
 const InspirationDraftSection = (props: Props) => {
   const {draft, meetingId, teamId, prompts, composer, drafting, error} = props
-  const items = (draft?.items ?? []).map(({id, content, promptId}) => ({
+  const shownDraft = drafting ? null : draft
+  const items = (shownDraft?.items ?? []).map(({id, content, promptId}) => ({
     id,
     title: null,
     content: parseContent(content),
     promptId: promptId ?? null
   }))
-  const issues = draft?.issues ?? []
+  const issues = shownDraft?.issues ?? []
   const unusedIssues = issues.flatMap(({unusedReason, ...issue}) =>
     unusedReason ? [{...issue, reason: unusedReason}] : []
   )
   const issueCount = issues.length
-  const isEmpty = !!draft && !drafting && items.length === 0
+  const isEmpty = !!shownDraft && items.length === 0
 
   return (
     <section aria-labelledby='inspiration-draft-heading' aria-busy={drafting}>

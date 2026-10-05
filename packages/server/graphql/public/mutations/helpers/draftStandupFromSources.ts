@@ -1,6 +1,8 @@
+import type {JSONContent} from '@tiptap/core'
 import type {GraphQLResolveInfo} from 'graphql'
 import {GraphQLError} from 'graphql'
 import {markdownToTipTap} from '../../../../../client/shared/tiptap/markdownToTipTap'
+import {tipTapToMarkdown} from '../../../../../client/shared/tiptap/tipTapToMarkdown'
 import getKysely from '../../../../postgres/getKysely'
 import OpenAIServerManager from '../../../../utils/OpenAIServerManager'
 import type {GQLContext} from '../../../graphql'
@@ -66,7 +68,7 @@ const draftStandupFromSources = async (options: Options) => {
 
   const pastResponseRows = await pg
     .selectFrom('TeamPromptResponse')
-    .select('plaintextContent')
+    .select('content')
     .where('userId', '=', viewerId)
     .where('meetingId', '!=', meetingId)
     .where('plaintextContent', '!=', '')
@@ -79,7 +81,7 @@ const draftStandupFromSources = async (options: Options) => {
     issuesText,
     prompts.map(({question, description}) => ({question, description})),
     viewerName,
-    pastResponseRows.map((row) => row.plaintextContent),
+    pastResponseRows.map((row) => tipTapToMarkdown(row.content as JSONContent)),
     userPrompt
   )
   if (!result) {

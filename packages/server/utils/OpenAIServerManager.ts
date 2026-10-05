@@ -473,7 +473,7 @@ Return JSON of the form: { "items": [{ "title": "<short heading, or null>", "con
       .join('\n')
     const styleGuide =
       pastResponses.length > 0
-        ? `\n\nHere are ${userName}'s most recent answers to past standup questions. Mimic their style: match the tone, length, level of detail, formatting, and how casual or formal they are. Do NOT reuse their content — only their voice.\n\n${pastResponses
+        ? `\n\nHere are ${userName}'s most recent answers to past standup questions. Mimic their style: match the tone, length, level of detail, formatting, and how casual or formal they are. Do NOT reuse their content — only their voice. The linking rule above still applies: even if these examples mention work without links, link every work item you mention.\n\n${pastResponses
             .map((response, i) => `<example_${i + 1}>\n${response}\n</example_${i + 1}>`)
             .join('\n\n')}`
         : ''

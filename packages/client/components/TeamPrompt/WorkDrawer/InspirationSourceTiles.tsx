@@ -6,7 +6,7 @@ import type {InspirationSourceAvailability} from './useInspirationSourceAvailabi
 interface Props {
   sources: InspirationSourceAvailability[]
   issueCounts: Partial<Record<string, number>>
-  drafting: boolean
+  countingServices: string[]
   meetingId: string
   settings: InspirationSourceSettings
   setSettings: (update: (prev: InspirationSourceSettings) => InspirationSourceSettings) => void
@@ -15,7 +15,7 @@ interface Props {
 }
 
 const InspirationSourceTiles = (props: Props) => {
-  const {sources, issueCounts, onPopoverClose, ...tileProps} = props
+  const {sources, issueCounts, countingServices, onPopoverClose, ...tileProps} = props
   return (
     <div role='group' aria-label='Draft from' className='flex flex-col gap-2'>
       <span className='font-bold text-[11px] text-fg-muted uppercase tracking-wider'>
@@ -28,6 +28,7 @@ const InspirationSourceTiles = (props: Props) => {
             service={service}
             isConnected={isConnected}
             issueCount={issueCounts[service]}
+            isCounting={countingServices.includes(service)}
             onClose={onPopoverClose}
             {...tileProps}
           />

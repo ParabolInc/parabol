@@ -21,7 +21,7 @@ interface Props {
   service: InspirationSourceService
   isConnected: boolean
   issueCount: number | undefined
-  drafting: boolean
+  isCounting: boolean
   meetingId: string
   settings: InspirationSourceSettings
   setSettings: (update: (prev: InspirationSourceSettings) => InspirationSourceSettings) => void
@@ -33,7 +33,7 @@ const InspirationSourcePopover = (props: Props) => {
     service,
     isConnected,
     issueCount,
-    drafting,
+    isCounting,
     meetingId,
     settings,
     setSettings,
@@ -72,7 +72,7 @@ const InspirationSourcePopover = (props: Props) => {
           <span className='text-fg-muted text-xs'>
             {!isIncluded ? (
               'Not in your draft'
-            ) : drafting ? (
+            ) : isCounting ? (
               <>
                 Counting items
                 <Ellipsis />

@@ -81,6 +81,14 @@ const TeamPromptWorkDrawer = ({meetingRef}: Props) => {
     instructions
   })
   const draftedIssues = draft?.issues ?? []
+  const draftedQueries = new Map(
+    (draft?.sources ?? []).map(({service, searchQuery}) => [service, searchQuery])
+  )
+  const countingServices = drafting
+    ? sources.flatMap(({service, searchQuery}) =>
+        draftedQueries.get(service) === searchQuery ? [] : [service]
+      )
+    : []
   const issueCounts = Object.fromEntries(
     (draft?.sources ?? []).map(({service}) => [
       service,
@@ -99,7 +107,7 @@ const TeamPromptWorkDrawer = ({meetingRef}: Props) => {
           <InspirationSourceTiles
             sources={availability}
             issueCounts={issueCounts}
-            drafting={drafting}
+            countingServices={countingServices}
             meetingId={meetingId}
             settings={settings}
             setSettings={setSettings}

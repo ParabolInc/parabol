@@ -14,7 +14,7 @@ interface Props {
   service: InspirationSourceService
   isConnected: boolean
   issueCount: number | undefined
-  drafting: boolean
+  isCounting: boolean
   meetingId: string
   settings: InspirationSourceSettings
   setSettings: (update: (prev: InspirationSourceSettings) => InspirationSourceSettings) => void
@@ -23,11 +23,10 @@ interface Props {
 }
 
 const InspirationSourceTile = (props: Props) => {
-  const {service, isConnected, issueCount, drafting, settings, onClose} = props
+  const {service, isConnected, issueCount, isCounting, settings, onClose} = props
   const [open, setOpen] = useState(false)
   const isIncluded = isConnected && settings.kinds[service].length > 0
   const label = serviceLabel(service)
-  const isCounting = isIncluded && drafting
   const status = !isConnected ? 'Connect' : isIncluded ? (issueCount ?? '–') : 'Off'
   const onOpenChange = (nextOpen: boolean) => {
     setOpen(nextOpen)
