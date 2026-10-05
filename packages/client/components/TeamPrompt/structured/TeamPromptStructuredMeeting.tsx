@@ -4,6 +4,7 @@ import {commitLocalUpdate, useFragment} from 'react-relay'
 import {useLocation} from 'react-router'
 import type {TeamPromptStructuredMeeting_meeting$key} from '~/__generated__/TeamPromptStructuredMeeting_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import useIsMobile from '~/hooks/useIsMobile'
 import useMeeting from '~/hooks/useMeeting'
 import {Breakpoint} from '~/types/constEnums'
 import {cn} from '../../../ui/cn'
@@ -15,7 +16,6 @@ import MeetingLockedOverlay from '../../MeetingLockedOverlay'
 import MeetingStyles from '../../MeetingStyles'
 import TeamPromptMobileMeeting from '../mobile/TeamPromptMobileMeeting'
 import TeamPromptMobileSheets from '../mobile/TeamPromptMobileSheets'
-import useIsTeamPromptMobile from '../mobile/useIsTeamPromptMobile'
 import TeamPromptDrawer from '../TeamPromptDrawer'
 import TeamPromptTopBar from '../TeamPromptTopBar'
 import TeamPromptComposer from './TeamPromptComposer'
@@ -63,7 +63,7 @@ const TeamPromptStructuredMeeting = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {safeRoute} = useMeeting(meeting)
   const location = useLocation()
-  const isMobile = useIsTeamPromptMobile()
+  const isMobile = useIsMobile()
   const {id: meetingId, localStageId, endedAt, phases} = meeting
   const responseId = new URLSearchParams(location.search).get('responseId')
   const scrollRef = useRef<HTMLDivElement>(null)

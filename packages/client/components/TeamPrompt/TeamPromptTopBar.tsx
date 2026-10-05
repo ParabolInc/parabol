@@ -5,6 +5,7 @@ import {Link} from 'react-router'
 import {RRule} from 'rrule'
 import type {TeamPromptTopBar_meeting$key} from '~/__generated__/TeamPromptTopBar_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import useIsMobile from '~/hooks/useIsMobile'
 import {useRenameMeeting} from '~/hooks/useRenameMeeting'
 import NewMeetingAvatarGroup from '~/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import {KeyboardArrowLeft, KeyboardArrowRight} from '~/ui/icons'
@@ -19,7 +20,6 @@ import {IconGroupBlock, MeetingTopBarStyles} from '../MeetingTopBar'
 import {EndRecurringMeetingModal} from '../Recurrence/EndRecurringMeetingModal'
 import MeetingDateLabel from '../Recurrence/MeetingDateLabel'
 import TeamPromptMobileHeader from './mobile/TeamPromptMobileHeader'
-import useIsTeamPromptMobile from './mobile/useIsTeamPromptMobile'
 import countUnsharedDrafts from './structured/countUnsharedDrafts'
 import {TeamPromptMeetingStatus} from './TeamPromptMeetingStatus'
 import TeamPromptOptions from './TeamPromptOptions'
@@ -86,7 +86,7 @@ const TeamPromptTopBar = (props: Props) => {
     meetingRef
   )
   const atmosphere = useAtmosphere()
-  const isMobile = useIsTeamPromptMobile()
+  const isMobile = useIsMobile()
   const [isRecurrenceSettingsOpen, setIsRecurrenceSettingsOpen] = useState(false)
   const [isEndRecurringMeetingOpen, setIsEndRecurringMeetingOpen] = useState(false)
 
