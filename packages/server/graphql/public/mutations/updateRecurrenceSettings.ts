@@ -305,7 +305,9 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
       )
     }
 
-    const newMeetingSeries = await startNewMeetingSeries(meeting, rrule, name)
+    const newMeetingSeries = await startNewMeetingSeries(meeting, rrule, name, {
+      templateId: meeting.templateId
+    })
     analytics.recurrenceStarted(viewer, newMeetingSeries)
   }
 

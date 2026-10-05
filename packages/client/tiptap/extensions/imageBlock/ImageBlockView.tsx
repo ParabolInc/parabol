@@ -20,7 +20,7 @@ export const ImageBlockView = (props: NodeViewProps) => {
   const onClick = useCallback(() => {
     const pos = getPos()
     if (!pos) return
-    editor.commands.setNodeSelection(pos)
+    editor.chain().focus().setNodeSelection(pos).run()
   }, [getPos, editor])
 
   const [maxHeight, setMaxHeight] = useState(

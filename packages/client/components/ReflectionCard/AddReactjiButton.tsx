@@ -23,6 +23,7 @@ const AddReactjiButton = (props: Props) => {
     <Popover.Root open={open} onOpenChange={onOpenChange} modal>
       <Popover.Trigger asChild>
         <PlainButton
+          aria-label='Add reaction'
           className={`block h-6 w-6 py-0.75 leading-6 hover:text-fg-primary focus:text-fg-primary active:text-fg-primary ${className ?? ''}`}
         >
           <AddReactionOutlinedIcon className='h-4.5 w-4.5' />

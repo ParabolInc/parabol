@@ -19,6 +19,7 @@ const useTeamLayoutPreference = (meetingId: string, teamId: string) => {
   useEffect(() => () => window.clearTimeout(trackTimeoutRef.current), [])
   const setLayout = useCallback(
     (next: TeamLayout) => {
+      if (next === layout) return
       window.localStorage.setItem(STORAGE_KEY, next)
       setLayoutState(next)
       window.clearTimeout(trackTimeoutRef.current)
@@ -26,7 +27,7 @@ const useTeamLayoutPreference = (meetingId: string, teamId: string) => {
         SendClientSideEvent(atmosphere, 'Standup Layout Changed', {layout: next, meetingId, teamId})
       }, TRACK_DELAY_MS)
     },
-    [atmosphere, meetingId, teamId]
+    [atmosphere, meetingId, teamId, layout]
   )
   return [layout, setLayout] as const
 }

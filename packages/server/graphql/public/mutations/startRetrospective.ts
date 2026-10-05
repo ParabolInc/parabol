@@ -122,7 +122,8 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     .loadNonNull(toTeamMemberId(teamId, viewerId))
   const meetingMember = createMeetingMember(meeting, teamMember)
   const [meetingSeries] = await Promise.all([
-    rrule && startNewMeetingSeries(meeting, rrule, meetingSeriesName),
+    rrule &&
+      startNewMeetingSeries(meeting, rrule, meetingSeriesName, {templateId: meeting.templateId}),
     pg
       .with('TeamUpdates', (qb) =>
         qb.updateTable('Team').set({lastMeetingType: meetingType}).where('id', '=', teamId)

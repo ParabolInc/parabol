@@ -26,8 +26,12 @@ export const DialogContent = React.forwardRef<HTMLDivElement, BaseProps>(
               asChild
               aria-describedby={undefined}
               onInteractOutside={(e) => {
-                // MUI pickers render popovers in a portal outside the dialog — don't close
-                if ((e.target as Element | null)?.closest('[data-popper-placement]')) {
+                // MUI pickers and tiptap suggestions render outside the dialog — don't close
+                if (
+                  (e.target as Element | null)?.closest(
+                    '[data-popper-placement], [data-suggestion-popup]'
+                  )
+                ) {
                   e.preventDefault()
                   return
                 }
@@ -47,7 +51,9 @@ export const DialogContent = React.forwardRef<HTMLDivElement, BaseProps>(
                 transition={{duration: 0.25, ease: 'easeIn'}}
               >
                 <ScrollArea.Root className='flex-1 overflow-auto'>
-                  <ScrollArea.Viewport className='p-6'>{children}</ScrollArea.Viewport>
+                  <ScrollArea.Viewport className='[&>div]:block! p-6'>
+                    {children}
+                  </ScrollArea.Viewport>
                   <ScrollArea.Scrollbar orientation='vertical' />
                 </ScrollArea.Root>
                 {!noClose && <DialogClose />}

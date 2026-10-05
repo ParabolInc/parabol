@@ -6,6 +6,7 @@ import {Check as CheckIcon} from '~/ui/icons'
 import {Button} from '../../../ui/Button/Button'
 import {TipTapEditor} from '../../TipTapEditor/TipTapEditor'
 import {TiptapLinkExtension} from '../../TipTapEditor/TiptapLinkExtension'
+import hasContentToAdd from './hasContentToAdd'
 import InspirationDestinationChip from './InspirationDestinationChip'
 import type {WorkDrawerPrompt} from './WorkDrawerConsumeContext'
 
@@ -20,14 +21,6 @@ interface Props {
   onAdd: () => void
 }
 
-const hasBlocksToAdd = (editor: Editor) => {
-  const {doc} = editor.state
-  const last = doc.lastChild
-  if (!last) return false
-  const isTrailingNode = last.type.name === 'paragraph' && last.content.size === 0
-  return doc.childCount > (isTrailingNode ? 1 : 0)
-}
-
 const InspirationDraftItemCard = (props: Props) => {
   const {itemId, title, content, prompt, isAdded, disabled, onEditorChange, onAdd} = props
   const [isEmpty, setIsEmpty] = useState(false)
@@ -38,11 +31,11 @@ const InspirationDraftItemCard = (props: Props) => {
       TiptapLinkExtension.configure({openOnClick: false})
     ],
     editorProps: {attributes: {'aria-label': title ?? 'Drafted answer'}},
-    onUpdate: ({editor}) => setIsEmpty(!hasBlocksToAdd(editor))
+    onUpdate: ({editor}) => setIsEmpty(!hasContentToAdd(editor))
   })
   useEffect(() => {
     if (!editor) return
-    setIsEmpty(!hasBlocksToAdd(editor))
+    setIsEmpty(!hasContentToAdd(editor))
     onEditorChange(itemId, editor)
     return () => onEditorChange(itemId, null)
   }, [editor, itemId, onEditorChange])
@@ -67,7 +60,7 @@ const InspirationDraftItemCard = (props: Props) => {
             size='sm'
             disabled={disabled || isEmpty}
             onClick={() => {
-              if (!hasBlocksToAdd(editor)) return
+              if (!hasContentToAdd(editor)) return
               onAdd()
             }}
           >

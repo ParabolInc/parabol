@@ -50,7 +50,7 @@ interface Props {
 
 const PromptResponseEditor = (props: Props) => {
   const {
-    autoFocus: autoFocusProp,
+    autoFocus: autoFocusProp = false,
     content: rawContent,
     handleSubmit,
     readOnly,

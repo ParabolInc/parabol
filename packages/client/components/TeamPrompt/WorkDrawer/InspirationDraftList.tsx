@@ -4,7 +4,7 @@ import type {TeamPromptComposerApi} from '../structured/TeamPromptComposerApiCon
 import InspirationAddAllButton from './InspirationAddAllButton'
 import InspirationDraftItemCard from './InspirationDraftItemCard'
 import {collectText} from './inspirationCopy'
-import {trimTrailingEmptyParagraph} from './inspirationInsertPlan'
+import {trimTrailingEmptyParagraphs} from './inspirationInsertPlan'
 import useInspirationInsert, {type InspirationDraftItem} from './useInspirationInsert'
 import type {WorkDrawerPrompt} from './WorkDrawerConsumeContext'
 
@@ -54,7 +54,7 @@ const InspirationDraftList = (props: Props) => {
     if (!editor || editor.isDestroyed) return draft
     return {
       ...draft,
-      blocks: trimTrailingEmptyParagraph(editor.getJSON().content ?? []),
+      blocks: trimTrailingEmptyParagraphs(editor.getJSON().content ?? []),
       text: editor.getText().trim()
     }
   }
