@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {motion} from 'motion/react'
+import type {ReactNode} from 'react'
 import {useFragment} from 'react-relay'
 import type {TeamPromptSharedResponseCard_stage$key} from '~/__generated__/TeamPromptSharedResponseCard_stage.graphql'
 import {cn} from '../../../ui/cn'
@@ -17,10 +18,12 @@ interface Props {
   prompts: readonly {id: string; question: string; groupColor: string}[]
   isSelected: boolean
   onReply: (stageId: string) => void
+  title?: string
+  footerAction?: ReactNode
 }
 
 const TeamPromptSharedResponseCard = (props: Props) => {
-  const {stageRef, prompts, isSelected, onReply} = props
+  const {stageRef, prompts, isSelected, onReply, title, footerAction} = props
   const stage = useFragment(
     graphql`
       fragment TeamPromptSharedResponseCard_stage on TeamPromptResponseStage {
@@ -56,6 +59,9 @@ const TeamPromptSharedResponseCard = (props: Props) => {
   const firstResponse = sharedResponses[0]
   if (!sharedAt || !firstResponse) return null
   const {preferredName, picture} = teamMember.user
+  const replyButton = (
+    <TeamPromptReplyButton edgesRef={discussion.thread.edges} onReply={() => onReply(stageId)} />
+  )
   return (
     <motion.div
       layout='position'
@@ -63,9 +69,9 @@ const TeamPromptSharedResponseCard = (props: Props) => {
       initial={{opacity: 0}}
       animate={{opacity: 1}}
     >
-      <div className='mb-3 flex items-center gap-2 px-2'>
-        <Avatar picture={picture} className='h-12 w-12 shrink-0' />
-        <h3 className='m-0 min-w-0 truncate font-semibold text-base'>{preferredName}</h3>
+      <div className='mb-3 flex items-center gap-2 px-2 max-md:mb-2 max-md:px-1'>
+        <Avatar picture={picture} className='h-12 w-12 shrink-0 max-md:h-8 max-md:w-8' />
+        <h3 className='m-0 min-w-0 truncate font-semibold text-base'>{title ?? preferredName}</h3>
         <span className='flex shrink-0 items-center gap-1 whitespace-nowrap text-fg-muted text-xs'>
           · shared{' '}
           <TeamPromptLastUpdatedTime
@@ -86,10 +92,14 @@ const TeamPromptSharedResponseCard = (props: Props) => {
         )}
       >
         <TeamPromptSharedAnswers stageRef={stage} prompts={prompts} />
-        <TeamPromptReplyButton
-          edgesRef={discussion.thread.edges}
-          onReply={() => onReply(stageId)}
-        />
+        {footerAction ? (
+          <div className='flex items-end justify-between gap-2'>
+            {replyButton}
+            {footerAction}
+          </div>
+        ) : (
+          replyButton
+        )}
       </div>
     </motion.div>
   )

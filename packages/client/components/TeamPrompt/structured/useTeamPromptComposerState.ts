@@ -1,6 +1,6 @@
 import type {JSONContent} from '@tiptap/react'
 import {useEffect, useMemo, useRef, useState} from 'react'
-import type {TeamPromptComposer_meeting$data} from '~/__generated__/TeamPromptComposer_meeting.graphql'
+import type {useTeamPromptComposer_meeting$data} from '~/__generated__/useTeamPromptComposer_meeting.graphql'
 import isEmptyTipTapDoc from '../../../shared/tiptap/isEmptyTipTapDoc'
 import lastAnswerUpdatedAt from './lastAnswerUpdatedAt'
 import {clearStageDrafts, readDraftAnswer} from './teamPromptDraftStorage'
@@ -10,7 +10,7 @@ import type {DirtyAnswer} from './useTeamPromptAnswersAutosave'
 const PREVIEW_LENGTH = 90
 
 type ComposerStage = NonNullable<
-  TeamPromptComposer_meeting$data['phases'][number]['stages']
+  useTeamPromptComposer_meeting$data['phases'][number]['stages']
 >[number]
 
 interface Options {
