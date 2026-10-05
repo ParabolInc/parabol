@@ -7,6 +7,7 @@ import useSessionStorageState from '../../../hooks/useSessionStorageState'
 import {getConnectProvider} from '../../../integrations/platform/findIntegrationService'
 import gcalLogo from '../../../styles/theme/images/graphics/google-calendar.svg'
 import {cn} from '../../../ui/cn'
+import {hasJiraScopes} from '../../../utils/atlassianScopes'
 import dndNoise from '../../../utils/dndNoise'
 import getNextSortOrder from '../../../utils/getNextSortOrder'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
@@ -19,6 +20,7 @@ import ParabolLogoSVG from '../../ParabolLogoSVG'
 import GCalIntegrationPanel from './GCalIntegrationPanel'
 import GitHubIntegrationPanel from './GitHubIntegrationPanel'
 import GitLabIntegrationPanel from './GitLabIntegrationPanel'
+import getActiveInspirationService from './getActiveInspirationService'
 import JiraIntegrationPanel from './JiraIntegrationPanel'
 import JiraServerIntegrationPanel from './JiraServerIntegrationPanel'
 import LinearIntegrationPanel from './LinearIntegrationPanel'
@@ -67,22 +69,41 @@ const RetroWorkDrawer = (props: Props) => {
               ...findIntegrationService_cloudProvider @relay(mask: false)
             }
             integrations {
+              github {
+                isActive
+              }
+              atlassian {
+                isActive
+                scope
+              }
               jiraServer {
+                auth {
+                  isActive
+                }
                 sharedProviders {
                   id
                 }
               }
               gcal {
+                auth {
+                  providerId
+                }
                 cloudProvider {
                   id
                 }
               }
               linear {
+                auth {
+                  isActive
+                }
                 cloudProvider {
                   id
                 }
               }
               gitlab {
+                auth {
+                  isActive
+                }
                 cloudProvider {
                   id
                 }
@@ -95,13 +116,11 @@ const RetroWorkDrawer = (props: Props) => {
     meetingRef
   )
   const atmosphere = useAtmosphere()
-  const hasJiraServer =
-    !!meeting.viewerMeetingMember?.teamMember?.integrations.jiraServer?.sharedProviders?.length
-  const hasLinear =
-    !!meeting.viewerMeetingMember?.teamMember?.integrations.linear?.cloudProvider?.id
-  const hasGCal = !!meeting.viewerMeetingMember?.teamMember?.integrations.gcal?.cloudProvider?.id
-  const hasGitLab =
-    !!meeting.viewerMeetingMember?.teamMember?.integrations.gitlab?.cloudProvider?.id
+  const integrations = meeting.viewerMeetingMember?.teamMember?.integrations
+  const hasJiraServer = !!integrations?.jiraServer?.sharedProviders?.length
+  const hasLinear = !!integrations?.linear?.cloudProvider?.id
+  const hasGCal = !!integrations?.gcal?.cloudProvider?.id
+  const hasGitLab = !!integrations?.gitlab?.cloudProvider?.id
   const services = meeting.viewerMeetingMember?.teamMember?.services ?? []
   const hasGitHub = !!getConnectProvider(services, 'github')
   const hasJira = !!getConnectProvider(services, 'jira')
@@ -140,6 +159,7 @@ const RetroWorkDrawer = (props: Props) => {
     {
       icon: <ParabolLogoSVG />,
       service: 'PARABOL',
+      isConnected: true,
       label: 'Parabol',
       Component: ParabolTasksPanel
     },
@@ -148,6 +168,7 @@ const RetroWorkDrawer = (props: Props) => {
           {
             icon: <JiraServerSVG />,
             service: 'jiraServer',
+            isConnected: !!integrations?.jiraServer?.auth?.isActive,
             label: 'Jira Data Center',
             Component: JiraServerIntegrationPanel
           }
@@ -158,6 +179,7 @@ const RetroWorkDrawer = (props: Props) => {
           {
             icon: <GitHubSVG className='dark:[&_path]:fill-white' />,
             service: 'github',
+            isConnected: !!integrations?.github?.isActive,
             label: 'GitHub',
             Component: GitHubIntegrationPanel
           }
@@ -168,6 +190,7 @@ const RetroWorkDrawer = (props: Props) => {
           {
             icon: <GitLabSVG />,
             service: 'gitlab',
+            isConnected: !!integrations?.gitlab?.auth?.isActive,
             label: 'GitLab',
             Component: GitLabIntegrationPanel
           }
@@ -178,6 +201,8 @@ const RetroWorkDrawer = (props: Props) => {
           {
             icon: <JiraSVG />,
             service: 'jira',
+            isConnected:
+              !!integrations?.atlassian?.isActive && hasJiraScopes(integrations.atlassian.scope),
             label: 'Jira',
             Component: JiraIntegrationPanel
           }
@@ -188,6 +213,7 @@ const RetroWorkDrawer = (props: Props) => {
           {
             icon: <LinearSVG className='dark:[&_path]:fill-white' />,
             service: 'linear',
+            isConnected: !!integrations?.linear?.auth?.isActive,
             label: 'Linear',
             Component: LinearIntegrationPanel
           }
@@ -198,6 +224,7 @@ const RetroWorkDrawer = (props: Props) => {
           {
             icon: <img className='h-6 w-6' src={gcalLogo} />,
             service: 'gcal',
+            isConnected: !!integrations?.gcal?.auth?.providerId,
             label: 'Google Calendar',
             Component: GCalIntegrationPanel
           }
@@ -205,12 +232,11 @@ const RetroWorkDrawer = (props: Props) => {
       : [])
   ] as const
 
-  // Default to the first enabled non-Parabol integration, falling back to the Parabol section
-  const defaultService = baseTabs.find((tab) => tab.service !== 'PARABOL')?.service ?? 'PARABOL'
-  const [activeService, setActiveService] = useSessionStorageState<string>(
+  const [storedService, setActiveService] = useSessionStorageState<string>(
     `Inspiration:tab:${meeting.id}`,
-    defaultService
+    ''
   )
+  const activeService = getActiveInspirationService(baseTabs, storedService)
   const activeIdx = Math.max(
     0,
     baseTabs.findIndex((tab) => tab.service === activeService)
