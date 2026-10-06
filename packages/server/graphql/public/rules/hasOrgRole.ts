@@ -5,11 +5,17 @@ import {getUserId} from '../../../utils/authorization'
 import type {GQLContext} from '../../graphql'
 import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
-export const hasOrgRole = <T>(orgIdDotPath: ResolverDotPath<T>, role: Orguserroleenum) =>
-  rule(`hasOrgRole-${orgIdDotPath}`, {cache: 'strict'})(
+export const hasOrgRole = <T>(
+  dotPath: ResolverDotPath<T>,
+  role: Orguserroleenum,
+  dataLoaderName?: 'saml'
+) =>
+  rule(`hasOrgRole-${dotPath}-${dataLoaderName ?? 'orgId'}`, {cache: 'strict'})(
     async (source, args, context: GQLContext) => {
       const {authToken, dataLoader} = context
-      const orgId = getResolverDotPath(orgIdDotPath, source, args)
+      const id = getResolverDotPath(dotPath, source, args)
+      const orgId = dataLoaderName ? (await dataLoader.get(dataLoaderName).load(id))?.orgId : id
+      if (!orgId) return new GraphQLError('Organization not found')
       const viewerId = getUserId(authToken)
       const organizationUser = await dataLoader
         .get('organizationUsersByUserIdOrgId')

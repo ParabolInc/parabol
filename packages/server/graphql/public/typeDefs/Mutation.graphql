@@ -233,19 +233,29 @@ type Mutation {
     @scope(name: ORGS_WRITE)
 
   """
-  Update SCIM settings for the organization
+  Update SCIM settings for a SAML identity provider
   """
   updateSCIM(
     """
-    The organization's ID to update SCIM for
+    The SAML identity provider to update SCIM for
     """
-    orgId: ID!
+    samlId: ID!
 
     """
     The authentication type. SCIM will be disabled if set to null
     """
     authenticationType: SCIMAuthenticationTypeEnum
   ): UpdateSCIMPayload! @scope(name: ORGS_WRITE)
+
+  """
+  Disconnect a SAML identity provider: clears its metadata and SCIM credentials so its users sign in with email. Its email domains stay reserved
+  """
+  disconnectSAML(
+    """
+    The SAML identity provider to disconnect
+    """
+    samlId: ID!
+  ): DisconnectSAMLSuccess! @scope(name: ORGS_WRITE)
 
   """
   Create a new reflection
@@ -2288,7 +2298,7 @@ type Mutation {
   ): UpdateUserThemePayload! @scope(name: USERS_WRITE)
 
   """
-  Upload the IdP Metadata file for an org for those who cannot self-host the file
+  Upload the metadata file for a SAML identity provider, for those who cannot self-host the file
   """
   uploadIdPMetadata(
     """
@@ -2297,10 +2307,10 @@ type Mutation {
     file: File!
 
     """
-    The orgId to upload the IdP Metadata for
+    The SAML identity provider the metadata belongs to
     """
-    orgId: ID!
-  ): UploadIdPMetadataPayload! @scope(name: ORGS_WRITE)
+    samlId: ID!
+  ): UploadIdPMetadataSuccess! @scope(name: ORGS_WRITE)
 
   """
   Upload an image for an org avatar

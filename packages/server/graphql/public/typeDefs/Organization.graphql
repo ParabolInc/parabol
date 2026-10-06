@@ -196,9 +196,14 @@ type Organization implements OrganizationPartial {
   featureFlag(featureName: String!): Boolean!
 
   """
-  The SAML record attached to the Organization, if any
+  The oldest SAML identity provider attached to the Organization, if any
   """
-  saml: SAML
+  saml: SAML @deprecated(reason: "An organization can own many identity providers. Use samls")
+
+  """
+  The SAML identity providers owned by the Organization, oldest first. Null if the viewer may not see them
+  """
+  samls: [SAML!]
 
   """
   The SAML id for the organization if it is provisioned via SAML attribute

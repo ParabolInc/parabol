@@ -130,6 +130,7 @@ export const yoga = createYoga<ServerContext, UserContext>({
         'deleteOAuthAPIProvider',
         'deleteUser',
         'denyPushInvitation',
+        'disconnectSAML',
         'emailPasswordReset',
         'hardDeleteUser',
         'invalidateSessions',

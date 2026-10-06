@@ -5,6 +5,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [14.2.0](https://github.com/ParabolInc/parabol/compare/v14.1.0...v14.2.0) (2026-10-02)
+
+
+### Added
+
+* supprt multiple identity providers per org ([#13561](https://github.com/ParabolInc/parabol/issues/13561)) ([8961590](https://github.com/ParabolInc/parabol/commit/8961590976b8026613ec84fe0a1c2c51c7f4fade))
+
+
+### Fixed
+
+* add hover fill to the reactji chip ([#13560](https://github.com/ParabolInc/parabol/issues/13560)) ([ae85b36](https://github.com/ParabolInc/parabol/commit/ae85b367d4530d7d105b9e28b2ba3af3d5955962))
+* atlassian dark mode icon updates ([#13558](https://github.com/ParabolInc/parabol/issues/13558)) ([5581fba](https://github.com/ParabolInc/parabol/commit/5581fba3695a85a5bb25b00cddba302dd2430621))
+
+## [14.1.0](https://github.com/ParabolInc/parabol/compare/v14.0.1...v14.1.0) (2026-09-28)
+
+
+### Added
+
+* template illustrations ([#13552](https://github.com/ParabolInc/parabol/issues/13552)) ([d0001fd](https://github.com/ParabolInc/parabol/commit/d0001fd8368f18130d1a30647e772f7073cdd160))
+
 ## [14.0.1](https://github.com/ParabolInc/parabol/compare/v14.0.0...v14.0.1) (2026-09-23)
 
 

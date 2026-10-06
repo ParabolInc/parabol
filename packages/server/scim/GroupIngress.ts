@@ -7,10 +7,12 @@ import isValid from '../graphql/isValid'
 import createTeamAndLeader from '../graphql/mutations/helpers/createTeamAndLeader'
 import removeTeamMember from '../graphql/mutations/helpers/removeTeamMember'
 import promptTemplateRules from '../graphql/public/mutations/helpers/promptTemplateRules'
+import type {SAMLSource} from '../graphql/public/types/SAML'
 import {USER_PREFERRED_NAME_LIMIT} from '../postgres/constants'
 import getKysely from '../postgres/getKysely'
 import acceptTeamInvitation from '../safeMutations/acceptTeamInvitation'
 import {Logger} from '../utils/Logger'
+import {getVisibleUserIds} from './getVisibleUserIds'
 import {logSCIMRequest} from './logSCIMRequest'
 import {mapGroupToSCIM} from './mapToSCIM'
 import {reservedUserIds} from './reservedIds'
@@ -58,7 +60,11 @@ const createEmptyTeam = async (team: Team) => {
     .execute()
 }
 
-const applyMembers = async (group: SCIMMY.Schemas.Group, dataLoader: DataLoaderWorker) => {
+const applyMembers = async (
+  group: SCIMMY.Schemas.Group,
+  saml: SAMLSource,
+  dataLoader: DataLoaderWorker
+) => {
   const members = group.members || []
   if (members.length > 100) {
     throw new SCIMMY.Types.Error(400, 'invalidValue', 'Too many members')
@@ -71,9 +77,18 @@ const applyMembers = async (group: SCIMMY.Schemas.Group, dataLoader: DataLoaderW
   if (!team) {
     throw new SCIMMY.Types.Error(404, '', 'Team not found')
   }
-  const toAdd = members.filter((member) => !existingMembers.some((m) => m.userId === member.value))
+  const visibleUserIds = await getVisibleUserIds(
+    [...existingMembers.map(({userId}) => userId), ...members.map(({value}) => value)],
+    saml,
+    dataLoader
+  )
+  const toAdd = members.filter(
+    (member) =>
+      visibleUserIds.includes(member.value) &&
+      !existingMembers.some((m) => m.userId === member.value)
+  )
   const toRemove = existingMembers.filter(
-    (m) => !members!.some((member) => member.value === m.userId)
+    (m) => visibleUserIds.includes(m.userId) && !members.some((member) => member.value === m.userId)
   )
 
   if (existingMembers.length === 0 && toAdd.length > 0) {
@@ -164,8 +179,8 @@ SCIMMY.Resources.declare(SCIMMY.Resources.Group).ingress(
         if (!updatedTeam) {
           throw new SCIMMY.Types.Error(412, '', 'Team update failed')
         }
-        await applyMembers({...instance, id: teamId}, dataLoader)
-        return mapGroupToSCIM(updatedTeam, dataLoader)
+        await applyMembers({...instance, id: teamId}, saml, dataLoader)
+        return mapGroupToSCIM(updatedTeam, saml, dataLoader)
       } catch (error) {
         if (error instanceof Error && 'code' in error && error.code === '23505') {
           throw new SCIMMY.Types.Error(409, 'uniqueness', 'Team exists')
@@ -178,9 +193,12 @@ SCIMMY.Resources.declare(SCIMMY.Resources.Group).ingress(
       if (!displayName) {
         throw new SCIMMY.Types.Error(400, 'invalidValue', 'displayName is required')
       }
-      const users = (
-        await dataLoader.get('users').loadMany(members?.map((m) => m.value) ?? [])
-      ).filter(isValid)
+      const visibleUserIds = await getVisibleUserIds(
+        members?.map((m) => m.value) ?? [],
+        saml,
+        dataLoader
+      )
+      const users = (await dataLoader.get('users').loadMany(visibleUserIds)).filter(isValid)
 
       try {
         const teamId = generateUID()
@@ -206,10 +224,10 @@ SCIMMY.Resources.declare(SCIMMY.Resources.Group).ingress(
           )
         } else {
           await createTeamAndLeader(teamLead, validNewTeam, dataLoader)
-          await applyMembers({...instance, id: teamId}, dataLoader)
+          await applyMembers({...instance, id: teamId}, saml, dataLoader)
         }
 
-        return mapGroupToSCIM(validNewTeam, dataLoader)
+        return mapGroupToSCIM(validNewTeam, saml, dataLoader)
       } catch (error) {
         Logger.error('Failed to create team for SCIM group', {displayName, error})
         throw new SCIMMY.Types.Error(500, '', 'Internal server error')

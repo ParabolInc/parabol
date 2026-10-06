@@ -619,21 +619,21 @@ export const samlByDomain = (parent: RootDataLoader, dependsOn: RegisterDependsO
     }
   )
 }
-export const samlByOrgId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+export const samlsByOrgId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
   dependsOn('saml')
-  return new NullableDataLoader<string, SAMLSource | null, string>(
+  return new DataLoader<string, SAMLSource[], string>(
     async (orgIds) => {
-      const pg = getKysely()
-      const res = await pg
+      const res = await getKysely()
         .selectFrom('SAMLDomain')
         .innerJoin('SAML', 'SAML.id', 'SAMLDomain.samlId')
         .where('SAML.orgId', 'in', orgIds)
         .groupBy('SAML.id')
         .selectAll('SAML')
         .select(({fn}) => [fn.agg<string[]>('array_agg', ['SAMLDomain.domain']).as('domains')])
+        .orderBy('SAML.createdAt')
+        .orderBy('SAML.id')
         .execute()
-      // not the same as normalizeResults
-      return orgIds.map((orgId) => res.find((row) => row.orgId === orgId))
+      return orgIds.map((orgId) => res.filter((row) => row.orgId === orgId))
     },
     {
       ...parent.dataLoaderOptions
@@ -662,8 +662,8 @@ export const isOrgVerified = (parent: RootDataLoader, dependsOn: RegisterDepends
             (user) => isUserVerified(user) && user.domain === organization.activeDomain
           )
           if (isALeaderVerifiedAtOrgDomain) return true
-          const isOrgSAML = await parent.get('samlByOrgId').load(orgId)
-          return !!isOrgSAML
+          const samls = await parent.get('samlsByOrgId').load(orgId)
+          return samls.length > 0
         })
       )
     },

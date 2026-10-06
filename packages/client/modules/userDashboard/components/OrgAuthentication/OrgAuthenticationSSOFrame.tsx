@@ -1,29 +1,34 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {Add, Check} from '~/ui/icons'
-import type {OrgAuthenticationSSOFrame_saml$key} from '../../../../__generated__/OrgAuthenticationSSOFrame_saml.graphql'
+import type {OrgAuthenticationSSOFrame_samls$key} from '../../../../__generated__/OrgAuthenticationSSOFrame_samls.graphql'
 import {ExternalLinks} from '../../../../types/constEnums'
 
 interface Props {
-  samlRef: OrgAuthenticationSSOFrame_saml$key | null
+  samlsRef: OrgAuthenticationSSOFrame_samls$key
 }
 
 const OrgAuthenticationSSOFrame = (props: Props) => {
-  const {samlRef} = props
-  const saml = useFragment(
+  const {samlsRef} = props
+  const samls = useFragment(
     graphql`
-      fragment OrgAuthenticationSSOFrame_saml on SAML {
-        id
-        domains
+      fragment OrgAuthenticationSSOFrame_samls on SAML @relay(plural: true) {
+        metadataURL
       }
     `,
-    samlRef
+    samlsRef
   )
-  const disabled = !saml
-  const domains: readonly string[] = saml?.domains ?? []
+  const total = samls.length
+  const activeCount = samls.filter(({metadataURL}) => metadataURL).length
+  const disabled = total === 0
+  const title = disabled
+    ? 'Enable SSO'
+    : total === 1
+      ? 'SSO Enabled'
+      : `SSO Enabled · ${activeCount} of ${total} identity providers active`
 
   return (
-    <div className='px-6 pb-8'>
+    <div className='px-6 pb-6'>
       <div className='flex flex-row rounded border border-hairline-field px-2 py-1'>
         <div className='px-2'>
           {disabled ? (
@@ -32,34 +37,20 @@ const OrgAuthenticationSSOFrame = (props: Props) => {
             <Check className='h-6 w-6 text-jade-500' />
           )}
         </div>
-        <div className='flex flex-col'>
-          <span className='font-semibold text-base text-fg-primary'>
-            {disabled ? 'Enable SSO' : 'SSO Enabled'}
-          </span>
+        <div className='flex min-w-0 flex-1 flex-col'>
+          <span className='font-semibold text-base text-fg-primary'>{title}</span>
           <span className='text-fg-primary text-sm'>
+            {!disabled &&
+              'People sign in with the identity provider that owns their email domain. '}
             <a
               className='font-semibold text-accent text-sm focus:text-accent active:text-accent'
-              href={`${ExternalLinks.CONTACT}?subject=${
-                disabled ? 'Enable SSO' : 'Update Email Domains'
-              }`}
-              title={'Contact customer success to enable SSO'}
+              href={`${ExternalLinks.CONTACT}?subject=${disabled ? 'Enable SSO' : 'Update Identity Providers'}`}
+              title={'Contact customer success'}
             >
               Contact customer success
             </a>{' '}
-            {disabled ? 'to enable SSO' : 'to update email domains'}
+            {disabled ? 'to enable SSO' : 'to add an identity provider or change email domains.'}
           </span>
-          <div className='flex flex-wrap gap-2 pt-2 pb-1 empty:hidden'>
-            {domains.map((domain) => {
-              return (
-                <div
-                  key={domain}
-                  className='w-max select-none rounded-full bg-surface-well px-3 py-1 font-semibold text-fg-primary text-xs'
-                >
-                  {domain}
-                </div>
-              )
-            })}
-          </div>
         </div>
       </div>
     </div>
