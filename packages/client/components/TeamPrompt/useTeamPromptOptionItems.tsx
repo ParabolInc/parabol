@@ -7,6 +7,8 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import EndTeamPromptMutation from '~/mutations/EndTeamPromptMutation'
 import {Edit, Flag, Link as MuiLink, Replay} from '~/ui/icons'
+import {getProviderAnchorId} from '../../modules/teamDashboard/components/ProviderRow/ProviderRowEntry'
+import {Providers} from '../../types/constEnums'
 import makeAppURL from '../../utils/makeAppURL'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import SlackSVG from '../SlackSVG'
@@ -108,7 +110,7 @@ const useTeamPromptOptionItems = (
     key: 'slack',
     label: 'Configure Slack',
     icon: <SlackSVG />,
-    to: `/team/${team.id}/integrations`,
+    to: `/team/${team.id}/integrations#${getProviderAnchorId(Providers.SLACK_NAME)}`,
     isNewTab: true,
     onClick: () => {
       SendClientSideEvent(atmosphere, 'Configure Slack Standup Clicked', {

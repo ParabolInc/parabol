@@ -35,6 +35,9 @@ const TeamPromptDrawer = ({meetingRef}: Props) => {
             ... on TeamPromptResponseStage {
               ...TeamPromptDiscussionThreadHeader_stage
               discussionId
+              teamMember {
+                userId
+              }
               responses {
                 sharedAt
                 updatedAt
@@ -48,6 +51,7 @@ const TeamPromptDrawer = ({meetingRef}: Props) => {
   )
 
   const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
   const {id: meetingId, rightDrawerOpen, localStageId, prompts} = meeting
 
   const onToggleDrawer = () => {
@@ -65,16 +69,16 @@ const TeamPromptDrawer = ({meetingRef}: Props) => {
     })
   }
 
-  const allStages = meeting.phases.flatMap((p) => p.stages)
+  const discussionStages = meeting.phases.flatMap((p) => p.stages).filter((s) => s.discussionId)
   const selectedStage = localStageId ? findStageById(meeting.phases, localStageId)?.stage : null
   const activeStage =
     rightDrawerOpen !== 'discussion'
       ? undefined
       : selectedStage?.discussionId
         ? selectedStage
-        : allStages.find(
-            (stage) => stage.discussionId && getSharedResponses(stage.responses ?? []).length > 0
-          )
+        : (discussionStages.find((stage) => stage.teamMember?.userId === viewerId) ??
+          discussionStages.find((stage) => getSharedResponses(stage.responses ?? []).length > 0) ??
+          discussionStages[0])
 
   return (
     <ResponsiveDashSidebar

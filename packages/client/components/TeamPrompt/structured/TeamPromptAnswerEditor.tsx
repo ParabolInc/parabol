@@ -63,6 +63,7 @@ const TeamPromptAnswerEditor = (props: Props) => {
           showActions={false}
           enableSlashCommands
           showListControls
+          showCharacterCount
           onChange={(editor) => onChange(prompt.id, editor)}
           onModEnter={onModEnter}
           onTab={onTab}

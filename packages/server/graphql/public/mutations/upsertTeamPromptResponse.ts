@@ -4,6 +4,7 @@ import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isEmptyTipTapDoc from '../../../../client/shared/tiptap/isEmptyTipTapDoc'
 import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
+import {isStandupResponseTooLong} from '../../../../client/shared/tiptap/standupResponseLength'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -44,6 +45,7 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
   } catch {
     throw new GraphQLError('Invalid editor format')
   }
+  if (isStandupResponseTooLong(doc)) throw new GraphQLError('Response is too long')
 
   const values = isEmpty
     ? {content: EMPTY_DOC, plaintextContent: ''}

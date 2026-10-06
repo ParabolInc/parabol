@@ -1,12 +1,13 @@
 import {type Editor, Extension} from '@tiptap/core'
 import Mention from '@tiptap/extension-mention'
 import {CharacterCount, Placeholder} from '@tiptap/extensions'
-import {type JSONContent, useEditor} from '@tiptap/react'
+import {type JSONContent, useEditor, useEditorState} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {useUploadUserAsset} from '../../mutations/useUploadUserAsset'
 import {isEqualWhenSerialized} from '../../shared/isEqualWhenSerialized'
+import {STANDUP_RESPONSE_CHARACTER_LIMIT} from '../../shared/tiptap/standupResponseLength'
 import {InsertedRangeHighlight} from '../../tiptap/extensions/insertedRangeHighlight/InsertedRangeHighlight'
 import {SlashCommand} from '../../tiptap/extensions/slashCommand/SlashCommand'
 import {Button} from '../../ui/Button/Button'
@@ -18,11 +19,12 @@ import {LoomExtension, unfurlLoomLinks} from '../TipTapEditor/LoomExtension'
 import {TipTapEditor} from '../TipTapEditor/TipTapEditor'
 import {TiptapLinkExtension} from '../TipTapEditor/TiptapLinkExtension'
 import {useStreamedEditorContent} from '../TipTapEditor/useStreamedEditorContent'
+import PromptResponseCharacterCount from './PromptResponseCharacterCount'
 import {STANDUP_SLASH_COMMANDS, standupBlockExtensions} from './standupEditorExtensions'
 
 const submitButtonClasses = 'mt-3 rounded-[6px] px-3 py-1 font-normal text-sm leading-5 opacity-100'
 
-const RESPONSE_CHARACTER_LIMIT = 500
+const CHARACTER_COUNT_VISIBLE_FROM = STANDUP_RESPONSE_CHARACTER_LIMIT * 0.8
 
 interface Props {
   autoFocus?: boolean
@@ -38,6 +40,7 @@ interface Props {
   onTab?: () => void
   onFocusChange?: (isFocused: boolean) => void
   showListControls?: boolean
+  showCharacterCount?: boolean
   enableSlashCommands?: boolean
   bubbleMenuPlacement?: 'top' | 'bottom'
   className?: string
@@ -59,6 +62,7 @@ const PromptResponseEditor = (props: Props) => {
     onTab,
     onFocusChange,
     showListControls,
+    showCharacterCount = false,
     enableSlashCommands = false,
     bubbleMenuPlacement,
     className,
@@ -116,7 +120,7 @@ const PromptResponseEditor = (props: Props) => {
       content,
       extensions: [
         StarterKit.configure({link: false}),
-        CharacterCount.configure({limit: RESPONSE_CHARACTER_LIMIT}),
+        CharacterCount.configure({limit: STANDUP_RESPONSE_CHARACTER_LIMIT}),
         LoomExtension,
         Placeholder.configure({
           showOnlyWhenEditable: false,
@@ -174,6 +178,12 @@ const PromptResponseEditor = (props: Props) => {
   // word by word, everything else applies instantly. See the hook for the full reconciliation rules.
   useStreamedEditorContent(editor, content, {wordDelayMs: 3})
 
+  const isNearCharacterLimit = useEditorState({
+    editor,
+    selector: ({editor}) =>
+      !!editor && editor.storage.characterCount.characters() >= CHARACTER_COUNT_VISIBLE_FROM
+  })
+
   useEffect(() => {
     if (editorRef) editorRef.current = editor ?? null
   }, [editor, editorRef])
@@ -215,14 +225,18 @@ const PromptResponseEditor = (props: Props) => {
   if (!editor) return null
 
   const buttonTitle = !content ? 'Submit' : 'Update'
+  const isCharacterCountVisible = !readOnly && showCharacterCount && isNearCharacterLimit
   return (
     <>
       <TipTapEditor
         editor={editor}
         bubbleMenuPlacement={bubbleMenuPlacement}
         showListControls={showListControls}
-        className={cn('compact-editor', className)}
+        className={cn('compact-editor', className, isCharacterCountVisible && 'mb-5')}
       />
+      {isCharacterCountVisible && (
+        <PromptResponseCharacterCount editor={editor} limit={STANDUP_RESPONSE_CHARACTER_LIMIT} />
+      )}
       {!readOnly && showActions && (
         // The render conditions for these buttons *should* only be true when 'readOnly' is false, but let's be explicit
         // about it.
