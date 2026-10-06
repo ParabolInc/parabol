@@ -7,7 +7,7 @@ import type {JiraScopingSearchBarLabel_meeting$key} from '../__generated__/JiraS
 import ScopingSearchBar from './ScopingSearchBar'
 
 interface LabelProps {
-  integrationRef: JiraScopingSearchBarLabel_integration$key
+  integrationRef: JiraScopingSearchBarLabel_integration$key | null | undefined
   meetingRef: JiraScopingSearchBarLabel_meeting$key
 }
 
@@ -36,7 +36,7 @@ const JiraScopingSearchBarCurrentFilters = (props: LabelProps) => {
   )
   const {jiraSearchQuery} = meeting
   const {queryString, projectKeyFilters} = jiraSearchQuery
-  const {projects} = integration
+  const projects = integration?.projects
   const selectedProjectsPaths = [] as string[]
   projectKeyFilters?.forEach((projectId) => {
     const selectedProjectPath = projects?.find((project) => project.id === projectId)?.name
@@ -52,7 +52,7 @@ const JiraScopingSearchBarCurrentFilters = (props: LabelProps) => {
 
 interface Props {
   children: ReactNode
-  integrationRef: JiraScopingSearchBarLabel_integration$key
+  integrationRef: JiraScopingSearchBarLabel_integration$key | null | undefined
   meetingRef: JiraScopingSearchBarLabel_meeting$key
 }
 
