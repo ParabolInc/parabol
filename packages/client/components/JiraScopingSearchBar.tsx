@@ -39,7 +39,7 @@ const JiraScopingSearchBar = (props: Props) => {
   const {viewerMeetingMember} = meeting
   const integration = viewerMeetingMember?.teamMember.integrations.atlassian
   return (
-    <JiraScopingSearchBarLabel meetingRef={meeting} integrationRef={integration!}>
+    <JiraScopingSearchBarLabel meetingRef={meeting} integrationRef={integration}>
       <JiraScopingSearchHistoryToggle meetingRef={meeting} />
       <JiraScopingSearchInput meetingRef={meeting} />
       <JiraScopingSearchFilterToggle meetingRef={meeting} />
