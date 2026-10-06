@@ -29,6 +29,9 @@ const updateIntegrationProvider: MutationResolvers['updateIntegrationProvider'] 
 
   // INPUT VALIDATION
   const providerDbId = IntegrationProviderId.split(providerId)
+  if (!Number.isInteger(providerDbId)) {
+    return {error: {message: 'Invalid provider ID'}}
+  }
   const currentProvider = await pg
     .selectFrom('IntegrationProvider')
     .selectAll()
