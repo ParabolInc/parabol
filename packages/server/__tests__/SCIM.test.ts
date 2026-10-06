@@ -2205,15 +2205,12 @@ describe('Groups', () => {
         schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
         id: expect.anything(),
         displayName: expect.anything(),
-        members: [
-          {
-            value: memberId1
-          },
-          {
-            value: memberId2
-          }
-        ]
+        members: expect.arrayContaining([
+          expect.objectContaining({value: memberId1}),
+          expect.objectContaining({value: memberId2})
+        ])
       })
+      expect(memberData1.members).toHaveLength(2)
     })
 
     test('Get Group with Members', async () => {
@@ -2230,15 +2227,12 @@ describe('Groups', () => {
         schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
         id: groupId,
         displayName: expect.anything(),
-        members: [
-          {
-            value: memberId1
-          },
-          {
-            value: memberId2
-          }
-        ]
+        members: expect.arrayContaining([
+          expect.objectContaining({value: memberId1}),
+          expect.objectContaining({value: memberId2})
+        ])
       })
+      expect(data.members).toHaveLength(2)
     })
 
     test('Remove Member from Group', async () => {
