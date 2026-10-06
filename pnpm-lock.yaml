@@ -944,12 +944,6 @@ importers:
       '@aws-sdk/s3-request-presigner':
         specifier: 3.1146.0
         version: 3.1146.0
-      '@dicebear/core':
-        specifier: 9.4.3
-        version: 9.4.3
-      '@dicebear/initials':
-        specifier: 9.4.3
-        version: 9.4.3(@dicebear/core@9.4.3)
       '@emoji-mart/data':
         specifier: ^1.2.1
         version: 1.2.1
@@ -2195,16 +2189,6 @@ packages:
   '@datadog/wasm-js-rewriter@4.0.1':
     resolution: {integrity: sha512-JRa05Je6gw+9+3yZnm/BroQZrEfNwRYCxms56WCCHzOBnoPihQLB0fWy5coVJS29kneCUueUvBvxGp6NVXgdqw==}
     engines: {node: '>= 10'}
-
-  '@dicebear/core@9.4.3':
-    resolution: {integrity: sha512-9ITrQI57k3p5hKuU8HZJ1d0kPdrmTKEJDOdlKQ8CpaChbtmnD1R+dtWmNz5IesYThXM8F64pJ0ZvJ2rsY8Hciw==}
-    engines: {node: '>=18.0.0'}
-
-  '@dicebear/initials@9.4.3':
-    resolution: {integrity: sha512-/3Mzpr0FciRPWqxswOOsgjyO6tE7ZhNax/kXES050rnw8XdJ/viezN+Ip7FtNfXm+QF7sboxE8JX3L3hq54rIw==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      '@dicebear/core': ^9.0.0
 
   '@discoveryjs/json-ext@0.5.7':
     resolution: {integrity: sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==}
@@ -12223,14 +12207,6 @@ snapshots:
       lru-cache: 7.18.3
       module-details-from-path: 1.0.4
       node-gyp-build: 4.8.4
-
-  '@dicebear/core@9.4.3':
-    dependencies:
-      '@types/json-schema': 7.0.15
-
-  '@dicebear/initials@9.4.3(@dicebear/core@9.4.3)':
-    dependencies:
-      '@dicebear/core': 9.4.3
 
   '@discoveryjs/json-ext@0.5.7': {}
 
