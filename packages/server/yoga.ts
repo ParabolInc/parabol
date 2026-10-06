@@ -6,6 +6,7 @@ import {useCookies} from '@whatwg-node/server-plugin-cookies'
 import {print} from 'graphql'
 import {createYoga, type GraphQLParams, useReadinessCheck} from 'graphql-yoga'
 import {sql} from 'kysely'
+import {MAX_FILE_SIZE_PAID} from '../client/utils/constants'
 import sleep from '../client/utils/sleep'
 import type AuthToken from './database/types/AuthToken'
 import {getIsBusy} from './getIsBusy'
@@ -93,10 +94,14 @@ export const getPersistedOperation = async (docId: string) => {
   return queryString || null
 }
 
+// the largest upload plus the multipart boundaries and operations JSON that wrap it
+const MAX_REQUEST_BODY_SIZE = MAX_FILE_SIZE_PAID + 1_000_000
+
 export const yoga = createYoga<ServerContext, UserContext>({
   graphqlEndpoint: '/graphql',
   landingPage: false,
   logging: Logger,
+  maxRequestBodySize: MAX_REQUEST_BODY_SIZE,
   plugins: [
     useRemoveDuplicateTransferEncoding,
     useSchemaLink,
