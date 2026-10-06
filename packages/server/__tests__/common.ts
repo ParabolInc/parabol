@@ -1,8 +1,10 @@
 import {HocuspocusProvider, HocuspocusProviderWebsocket} from '@hocuspocus/provider'
 import base64url from 'base64url'
+import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
 import faker from 'faker'
 import {sql} from 'kysely'
+import {Threshold} from 'parabol-client/types/constEnums'
 import {Doc} from 'yjs'
 import AuthToken from '../database/types/AuthToken'
 import getKysely from '../postgres/getKysely'
@@ -190,7 +192,71 @@ export const getTestEmail = (domain?: string) => {
   return `${localPart}-${uniqueToken()}@${emailDomain}`
 }
 
-export const signUpWithEmail = async (emailInput: string) => {
+const completeEmailVerification = async (
+  email: string,
+  password: string,
+  verificationToken: string
+) => {
+  const verifyEmail = await sendPublic({
+    query: `
+      mutation VerifyEmailMutation(
+        $verificationToken: ID!
+      ) {
+        verifyEmail(verificationToken: $verificationToken) {
+          error {
+            message
+          }
+          user {
+            tms
+            id
+            email
+            picture
+            preferredName
+            createdAt
+            teams {
+              id
+            }
+            organizations {
+              id
+            }
+          }
+        }
+      }
+    `,
+    variables: {
+      verificationToken
+    }
+  })
+
+  expect(verifyEmail).toMatchObject({
+    cookie: expect.anything(),
+    data: {
+      verifyEmail: {
+        error: null,
+        user: {
+          id: expect.anything(),
+          email
+        }
+      }
+    }
+  })
+
+  const {data, cookie} = verifyEmail
+  const {user} = data.verifyEmail
+  const {id: userId, teams, organizations} = user
+  const teamId = teams[0]!.id
+  const orgId = organizations[0]!.id
+  return {
+    userId,
+    email,
+    password,
+    teamId,
+    orgId,
+    cookie
+  }
+}
+
+export const signUpWithPasswordMutation = async (emailInput: string) => {
   //FIXME #1402 email addresses are case sensitive
   const email = emailInput.toLowerCase()
 
@@ -226,63 +292,29 @@ export const signUpWithEmail = async (emailInput: string) => {
     .where('expiration', '>', new Date())
     .executeTakeFirst()
 
-  const verifyEmail = await sendPublic({
-    query: `
-      mutation VerifyEmailMutation(
-        $verificationToken: ID!
-      ) {
-        verifyEmail(verificationToken: $verificationToken) {
-          error {
-            message
-          }
-          user {
-            tms
-            id
-            email
-            picture
-            preferredName
-            createdAt
-            teams {
-              id
-            }
-            organizations {
-              id
-            }
-          }
-        }
-      }
-    `,
-    variables: {
-      verificationToken: verification!.token
-    }
-  })
+  return completeEmailVerification(email, password, verification!.token)
+}
 
-  expect(verifyEmail).toMatchObject({
-    cookie: expect.anything(),
-    data: {
-      verifyEmail: {
-        error: null,
-        user: {
-          id: expect.anything(),
-          email
-        }
-      }
-    }
-  })
+// The signUpWithPassword mutation hashes at Security.SALT_ROUNDS, ~250ms of server CPU per user.
+// Seeding the verification with a cheap hash keeps hundreds of signups from dominating the run;
+// signUpWithPasswordMutation covers the real mutation
+const TEST_SALT_ROUNDS = 4
 
-  const {data, cookie} = verifyEmail
-  const {user} = data.verifyEmail
-  const {id: userId, teams, organizations} = user
-  const teamId = teams[0]!.id
-  const orgId = organizations[0]!.id
-  return {
-    userId,
-    email,
-    password,
-    teamId,
-    orgId,
-    cookie
-  }
+export const signUpWithEmail = async (emailInput: string) => {
+  //FIXME #1402 email addresses are case sensitive
+  const email = emailInput.toLowerCase()
+  const password = faker.internet.password()
+  const verificationToken = crypto.randomBytes(48).toString('base64url')
+  await getKysely()
+    .insertInto('EmailVerification')
+    .values({
+      email,
+      token: verificationToken,
+      hashedPassword: await bcrypt.hash(password, TEST_SALT_ROUNDS),
+      expiration: new Date(Date.now() + Threshold.EMAIL_VERIFICATION_LIFESPAN)
+    })
+    .execute()
+  return completeEmailVerification(email, password, verificationToken)
 }
 
 export const signUp = async () => {

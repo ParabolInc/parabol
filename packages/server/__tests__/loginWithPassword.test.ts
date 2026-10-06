@@ -1,7 +1,7 @@
-import {sendPublic, signUp} from './common'
+import {getTestEmail, sendPublic, signUpWithPasswordMutation} from './common'
 
 test('Login after signup', async () => {
-  const {email, password} = await signUp()
+  const {email, password} = await signUpWithPasswordMutation(getTestEmail())
 
   const login = await sendPublic({
     query: `

@@ -28,6 +28,7 @@ module.exports = {
   globals: {
     __PRODUCTION__: false
   },
+  setupFiles: ['./__tests__/setWorkerServerId.ts'],
   setupFilesAfterEnv: ['./__tests__/setup.ts'],
   globalSetup: './__tests__/globalSetup.ts',
   globalTeardown: './__tests__/globalTeardown.ts',
