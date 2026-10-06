@@ -14,7 +14,7 @@
   },
   "scripts": {
     "precommit": "lint-staged",
-    "test": "jest --verbose --runInBand",
+    "test": "jest --verbose",
     "postversion": "git push --follow-tags",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
