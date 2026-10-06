@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [14.3.4](https://github.com/ParabolInc/parabol/compare/v14.3.3...v14.3.4) (2026-10-06)
+
+
+### Fixed
+
+* bump graphql-yoga so @include/[@skip](https://github.com/skip) variables resolve ([#13594](https://github.com/ParabolInc/parabol/issues/13594)) ([5135ada](https://github.com/ParabolInc/parabol/commit/5135ada350021e2749e03b37f99755cbc4b8ca88))
+* release PR only lists commits since the last production release ([#13592](https://github.com/ParabolInc/parabol/issues/13592)) ([b9497ca](https://github.com/ParabolInc/parabol/commit/b9497ca0aa19397cd056f2a04b357101e4cd4bdd))
+
+
+### Changed
+
+* run server tests in parallel and skip bcrypt cost in test signups ([#13591](https://github.com/ParabolInc/parabol/issues/13591)) ([f2a4293](https://github.com/ParabolInc/parabol/commit/f2a429383dfa1f9663d46fd40447b6816f5da417))
+
 ## [14.3.3](https://github.com/ParabolInc/parabol/compare/v14.3.2...v14.3.3) (2026-10-06)
 
 
