@@ -39,10 +39,9 @@ type Mutation {
   ): AddPokerTemplateScaleValuePayload! @scope(name: TEMPLATES_WRITE)
 
   """
-  Add a new prompt to an existing reflect template
+  Add a new prompt to a retrospective or stand-up template
   """
-  addReflectTemplatePrompt(templateId: ID!): AddReflectTemplatePromptPayload!
-    @scope(name: TEMPLATES_WRITE)
+  addTemplatePrompt(templateId: ID!): AddTemplatePromptSuccess! @scope(name: TEMPLATES_WRITE)
   """
   Connect the current user's Slack account to a team
   """
@@ -590,9 +589,9 @@ type Mutation {
   ): MovePokerTemplateDimensionPayload! @scope(name: TEMPLATES_WRITE)
 
   """
-  Reorder a prompt within a reflect template
+  Reorder a prompt within its template
   """
-  moveReflectTemplatePrompt(promptId: ID!, sortOrder: String!): MoveReflectTemplatePromptPayload
+  moveTemplatePrompt(promptId: ID!, sortOrder: String!): MoveTemplatePromptSuccess!
     @scope(name: TEMPLATES_WRITE)
 
   """
@@ -657,12 +656,12 @@ type Mutation {
   ): PromoteToTeamLeadPayload @scope(name: TEAMS_WRITE)
 
   """
-  Update the description of a reflection prompt
+  Update the description of a template prompt
   """
-  reflectTemplatePromptUpdateDescription(
+  updateTemplatePromptDescription(
     promptId: ID!
     description: String!
-  ): ReflectTemplatePromptUpdateDescriptionPayload @scope(name: TEMPLATES_WRITE)
+  ): UpdateTemplatePromptDescriptionSuccess! @scope(name: TEMPLATES_WRITE)
 
   """
   Update the description of a poker template dimension
@@ -672,12 +671,12 @@ type Mutation {
     description: String!
   ): PokerTemplateDimensionUpdateDescriptionPayload @scope(name: TEMPLATES_WRITE)
   """
-  Update the color of a reflect template prompt
+  Update the color of a template prompt
   """
-  reflectTemplatePromptUpdateGroupColor(
+  updateTemplatePromptGroupColor(
     promptId: ID!
     groupColor: String!
-  ): ReflectTemplatePromptUpdateGroupColorPayload @scope(name: TEMPLATES_WRITE)
+  ): UpdateTemplatePromptGroupColorSuccess! @scope(name: TEMPLATES_WRITE)
 
   """
   Remove an agenda item
@@ -710,15 +709,14 @@ type Mutation {
   removePokerTemplate(templateId: ID!): RemovePokerTemplatePayload! @scope(name: TEMPLATES_WRITE)
 
   """
-  Remove a template full of prompts
+  Remove a retrospective or stand-up template. Fails if a recurring meeting still uses it.
   """
-  removeReflectTemplate(templateId: ID!): RemoveReflectTemplatePayload @scope(name: TEMPLATES_WRITE)
+  removePromptTemplate(templateId: ID!): RemovePromptTemplateSuccess! @scope(name: TEMPLATES_WRITE)
 
   """
-  Remove a prompt from a template
+  Remove a prompt from its template. The last prompt cannot be removed.
   """
-  removeReflectTemplatePrompt(promptId: ID!): RemoveReflectTemplatePromptPayload
-    @scope(name: TEMPLATES_WRITE)
+  removeTemplatePrompt(promptId: ID!): RemoveTemplatePromptSuccess! @scope(name: TEMPLATES_WRITE)
 
   """
   Remove a dimension from a template
@@ -748,9 +746,9 @@ type Mutation {
     @scope(name: TEMPLATES_WRITE)
 
   """
-  Rename a reflect template prompt
+  Rename a template prompt
   """
-  renameReflectTemplatePrompt(promptId: ID!, question: String!): RenameReflectTemplatePromptPayload
+  renameTemplatePrompt(promptId: ID!, question: String!): RenameTemplatePromptSuccess!
     @scope(name: TEMPLATES_WRITE)
 
   """
@@ -1402,11 +1400,11 @@ type Mutation {
   ): AddPokerTemplatePayload! @scope(name: TEMPLATES_WRITE)
 
   """
-  Adds a new reflect template with a default dimension created.
+  Adds a new retrospective or stand-up template with one default prompt, or clones an existing one.
   """
-  addReflectTemplate(
+  addPromptTemplate(
     """
-    The ID of the parent template, if this is a clone operation.
+    The ID of the parent template, if this is a clone operation. It must be of the same type.
     """
     parentTemplateId: ID
 
@@ -1414,7 +1412,12 @@ type Mutation {
     The ID of the team for which the template is being created.
     """
     teamId: ID!
-  ): AddReflectTemplatePayload! @scope(name: TEMPLATES_WRITE)
+
+    """
+    The meeting type of the template
+    """
+    type: PromptTemplateTypeEnum!
+  ): AddPromptTemplateSuccess! @scope(name: TEMPLATES_WRITE)
 
   """
   Adds a new team health template, optionally cloned from an existing template.
@@ -1952,6 +1955,12 @@ type Mutation {
     @scope(name: MEETINGS_WRITE)
 
   """
+  Share every answer the viewer has written in this stand-up with the team
+  """
+  shareTeamPromptResponses(meetingId: ID!): ShareTeamPromptResponsesSuccess!
+    @scope(name: MEETINGS_WRITE)
+
+  """
   Shares retro discussion to integration
   """
   shareTopic(
@@ -2186,21 +2195,6 @@ type Mutation {
   ): UpdateIntegrationDimensionFieldSuccess! @scope(name: MEETINGS_WRITE)
 
   """
-  Describe the mutation here
-  """
-  updateMeetingPrompt(
-    """
-    The meeting to update the prompt
-    """
-    meetingId: ID!
-
-    """
-    The updated prompt
-    """
-    newPrompt: String!
-  ): UpdateMeetingPromptPayload! @scope(name: MEETINGS_WRITE)
-
-  """
   Update a meeting template
   """
   updateMeetingTemplate(
@@ -2380,24 +2374,26 @@ type Mutation {
   ): UpdateUserProfilePayload @scope(name: USERS_WRITE)
 
   """
-  upsert the content of a team prompt response
+  Save the viewer's answer to one prompt of a stand-up. An answer stays a private draft until the
+  viewer calls shareTeamPromptResponses; editing an already shared answer updates it for everyone.
+  An empty document clears the answer and unshares it
   """
   upsertTeamPromptResponse(
-    """
-    The id of the team prompt response to upsert
-    """
-    teamPromptResponseId: ID
-
     """
     The id of the team prompt meeting
     """
     meetingId: ID!
 
     """
+    The id of the prompt being answered. Must be one of the meeting's prompts
+    """
+    promptId: ID!
+
+    """
     The stringified content of the team prompt response
     """
     content: String!
-  ): UpsertTeamPromptResponsePayload! @scope(name: MEETINGS_WRITE)
+  ): UpsertTeamPromptResponseSuccess! @scope(name: MEETINGS_WRITE)
 
   """
   Verify an email address and sign in if not already a user

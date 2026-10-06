@@ -39,7 +39,11 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
     if (json.type === 'pageLinkBlock' && json.attrs?.canonical) {
       json.attrs = {...json.attrs, canonical: false}
     }
-    editor.commands.insertContentAt(pos + node.nodeSize, json)
+    editor
+      .chain()
+      .focus()
+      .insertContentAt(pos + node.nodeSize, json)
+      .run()
   }
 
   const handleDelete = () => {
@@ -48,6 +52,7 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
       return
     }
     editor.view.dispatch(editor.state.tr.delete(pos, pos + node.nodeSize))
+    editor.commands.focus()
   }
 
   const handleContentKeyDown = (e: React.KeyboardEvent) => {

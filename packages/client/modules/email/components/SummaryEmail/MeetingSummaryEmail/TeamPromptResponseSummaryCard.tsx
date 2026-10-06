@@ -51,21 +51,26 @@ const TeamPromptResponseSummaryCard = (props: Props) => {
             preferredName
           }
         }
-        response {
-          plaintextContent
+        responses {
+          id
+          sharedAt
           content
-          createdAt
+          prompt {
+            question
+            sortOrder
+          }
         }
       }
     `,
     stageRef
   )
-  const {teamMember, response} = stage
+  const {teamMember, responses} = stage
   const {user} = teamMember
   const {rasterPicture, preferredName} = user
-  const contentJSON = response ? JSON.parse(response.content) : null
   const {generateHTML} = useTipTapContext()
-  const html = generateHTML(contentJSON)
+  const sharedResponses = responses
+    .filter(({sharedAt}) => !!sharedAt)
+    .sort((a, b) => (a.prompt.sortOrder < b.prompt.sortOrder ? -1 : 1))
 
   return (
     <div style={responseSummaryCardStyles}>
@@ -74,11 +79,18 @@ const TeamPromptResponseSummaryCard = (props: Props) => {
         <h3 style={{padding: '0 8px', margin: 'auto auto auto 0'}}>{preferredName}</h3>
       </div>
       <div style={promptResponseStyles}>
-        <div
-          className='summary-response-editor'
-          style={responseEditorStyles}
-          dangerouslySetInnerHTML={{__html: html}}
-        />
+        {sharedResponses.map(({id, content, prompt}) => (
+          <div key={id}>
+            {sharedResponses.length > 1 && (
+              <div style={{fontWeight: 600, padding: '8px 0 4px'}}>{prompt.question}</div>
+            )}
+            <div
+              className='summary-response-editor'
+              style={responseEditorStyles}
+              dangerouslySetInnerHTML={{__html: generateHTML(JSON.parse(content))}}
+            />
+          </div>
+        ))}
       </div>
     </div>
   )

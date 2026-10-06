@@ -20,7 +20,7 @@ const updateMeetingTemplate: MutationResolvers['updateMeetingTemplate'] = async 
     return standardError(new Error('Meeting not found'), {
       userId: viewerId
     })
-  if (!('templateId' in meeting)) return {error: {message: 'Meeting has no template'}}
+  if (meeting.meetingType !== 'retrospective') return {error: {message: 'Meeting has no template'}}
   const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
   if (reflections.length > 0) {
     return standardError(new Error('Cannot change template after reflections have been created'), {

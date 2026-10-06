@@ -1,18 +1,19 @@
+import {USER_DETAIL_DEFAULTS, type UserDetailColumn} from '../../utils/getUserDetail'
 import getKysely from '../getKysely'
 
-const decrementFreeTemplatesRemaining = async (userId: string, templateType: 'retro' | 'poker') => {
-  const pg = getKysely()
-  const customTemplateType =
-    templateType === 'retro'
-      ? 'freeCustomRetroTemplatesRemaining'
-      : 'freeCustomPokerTemplatesRemaining'
+type FreeTemplatesColumn = Exclude<UserDetailColumn, 'bytesUploaded'>
 
-  await pg
-    .updateTable('User')
-    .set((eb) => ({[customTemplateType]: eb(customTemplateType, '-', 1)}))
-    .where('id', '=', userId)
-    .where(customTemplateType, '>', 0)
-    .executeTakeFirst()
+const decrementFreeTemplatesRemaining = async (userId: string, column: FreeTemplatesColumn) => {
+  await getKysely()
+    .insertInto('UserDetail')
+    .values({id: userId, [column]: USER_DETAIL_DEFAULTS[column] - 1})
+    .onConflict((oc) =>
+      oc
+        .column('id')
+        .doUpdateSet((eb) => ({[column]: eb(`UserDetail.${column}`, '-', 1)}))
+        .where(`UserDetail.${column}`, '>', 0)
+    )
+    .execute()
 }
 
 export default decrementFreeTemplatesRemaining

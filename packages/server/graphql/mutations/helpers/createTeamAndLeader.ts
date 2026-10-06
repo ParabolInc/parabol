@@ -6,6 +6,7 @@ import type {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import type {User} from '../../../postgres/types'
+import promptTemplateRules from '../../public/mutations/helpers/promptTemplateRules'
 
 interface ValidNewTeam {
   id: string
@@ -122,6 +123,13 @@ export default async function createTeamAndLeader(
             meetingType: 'teamHealth',
             phaseTypes: ['TEAM_HEALTH_RESPONSE'],
             selectedTemplateId: 'everythingBagelTemplate'
+          },
+          {
+            id: generateUID(),
+            teamId,
+            meetingType: 'teamPrompt',
+            phaseTypes: ['RESPONSES'],
+            selectedTemplateId: promptTemplateRules.teamPrompt.defaultTemplateId
           }
         ])
       )

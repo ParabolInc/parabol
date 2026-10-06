@@ -15,6 +15,7 @@ import {getUserId} from '../../../utils/authorization'
 import {compressImage} from '../../../utils/compressImage'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
 import {fetchUntrusted} from '../../../utils/fetchUntrusted'
+import getUserDetail from '../../../utils/getUserDetail'
 import {Logger} from '../../../utils/Logger'
 import type {AssetScopeEnum, MutationResolvers} from '../resolverTypes'
 import {incrementUserBytesUploaded, validateScope} from './uploadUserAsset'
@@ -37,13 +38,13 @@ const embedUserAsset: MutationResolvers['embedUserAsset'] = async (
   }
   const url = parsedUrl.href
   const viewerId = getUserId(authToken)
-  const [scopeCode, userDetails, viewerTier] = await Promise.all([
+  const [scopeCode, bytesUploaded, viewerTier] = await Promise.all([
     validateScope(authToken, scope, scopeKey, dataLoader, resourceGrants),
-    dataLoader.get('userDetails').load(viewerId),
+    getUserDetail(viewerId, 'bytesUploaded', dataLoader),
     dataLoader.get('highestTierForUserId').load(viewerId)
   ])
   const maxSize = viewerTier === 'starter' ? MAX_USER_UPLOAD_BYTES_FREE : MAX_USER_UPLOAD_BYTES_PAID
-  if (BigInt(userDetails?.bytesUploaded || 0) > BigInt(maxSize)) {
+  if (BigInt(bytesUploaded) > BigInt(maxSize)) {
     return {error: {message: `Upload limit reached. Please contact sales`}}
   }
   if (typeof scopeCode !== 'string') return scopeCode
