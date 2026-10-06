@@ -11,6 +11,10 @@ const TeamPromptResponse: TeamPromptResponseResolvers = {
 
   content: ({content}) => {
     return JSON.stringify(content)
+  },
+
+  prompt: ({promptId}, _args, {dataLoader}) => {
+    return dataLoader.get('templatePrompts').loadNonNull(promptId)
   }
 }
 

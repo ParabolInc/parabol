@@ -39,12 +39,12 @@ export const useMeetingSeriesDate = (meetingRef: useMeetingSeriesDate_meeting$ke
     return {label: null, tooltip: null}
   }
 
-  const shortEndDate =
-    scheduledEndTime &&
-    new Date(scheduledEndTime).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric'
-    })
+  const shortEndDate = (
+    scheduledEndTime ? new Date(scheduledEndTime) : nextMeetingDate
+  ).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric'
+  })
   const shortStartDate =
     createdAt &&
     new Date(createdAt).toLocaleDateString('en-US', {

@@ -1,7 +1,7 @@
 import * as RadixPopover from '@radix-ui/react-popover'
 import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
-import {Suspense, useState} from 'react'
+import {Suspense, useContext, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {AccessTime} from '~/ui/icons'
 import {Tooltip} from '~/ui/Tooltip/Tooltip'
@@ -10,6 +10,7 @@ import {TooltipTrigger} from '~/ui/Tooltip/TooltipTrigger'
 import type {DueDateToggle_task$key} from '../__generated__/DueDateToggle_task.graphql'
 import type {UseTaskChild} from '../hooks/useTaskChildFocus'
 import {cn} from '../ui/cn'
+import {NestedModalContext} from '../ui/Modal/NestedModalContext'
 import lazyPreload from '../utils/lazyPreload'
 import {shortMonths} from '../utils/makeDateString'
 import CardButton from './CardButton'
@@ -62,6 +63,7 @@ const DueDateToggle = (props: Props) => {
   )
   const {dueDate} = task
   const [open, setOpen] = useState(false)
+  const isNested = useContext(NestedModalContext)
   const {title, isPastDue, isDueSoon} = getDateInfo(dueDate)
   const toggleIsActive = !dueDate && cardIsActive
   if (isArchived) return null
@@ -101,7 +103,10 @@ const DueDateToggle = (props: Props) => {
           align='end'
           sideOffset={4}
           collisionPadding={8}
-          className='z-10 rounded-lg bg-surface-card shadow-[var(--shadow-card-raised)]'
+          className={cn(
+            'rounded-lg bg-surface-card shadow-[var(--shadow-card-raised)]',
+            isNested ? 'z-40' : 'z-10'
+          )}
         >
           <Suspense fallback={<div className='h-90 w-78' />}>
             <DueDatePicker

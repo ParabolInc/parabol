@@ -9,11 +9,11 @@ import {Comment, LinearScale, Update} from '~/ui/icons'
 import {cn} from '../../ui/cn'
 import {TeamHealthCoverage} from './TeamHealth/TeamHealthCoverage'
 
-interface RetroDescriptionProps {
+interface PromptDescriptionProps {
   prompts: ActivityLibraryCardDescription_template$data['prompts']
 }
 
-export const RetroDescription = (props: RetroDescriptionProps) => {
+export const PromptDescription = (props: PromptDescriptionProps) => {
   const {prompts} = props
   return (
     <>
@@ -82,28 +82,6 @@ const ActionDescription = () => {
   )
 }
 
-const TeamPromptDescription = () => {
-  const items = [
-    {
-      icon: <Comment className='h-5 w-5' />,
-      description: 'What are you working on today? Stuck on anything?'
-    }
-  ]
-
-  return (
-    <>
-      {items.map((item, index) => (
-        <div key={index} className='mb-1 flex items-start py-1 sm:flex-row'>
-          <div className='mr-4 flex shrink-0 items-center self-start'>{item.icon}</div>
-          <div className='flex min-w-0 grow flex-col'>
-            <div className='font-normal text-sm'>{item.description}</div>
-          </div>
-        </div>
-      ))}
-    </>
-  )
-}
-
 interface Props {
   className?: string
   templateRef: ActivityLibraryCardDescription_template$key
@@ -126,7 +104,7 @@ export const ActivityLibraryCardDescription = (props: Props) => {
             }
           }
         }
-        ... on ReflectTemplate {
+        ... on PromptTemplate {
           prompts {
             id
             question
@@ -146,10 +124,10 @@ export const ActivityLibraryCardDescription = (props: Props) => {
     <ScrollArea.Root className={cn('flex-1 overflow-auto', className)}>
       <ScrollArea.Viewport>
         <div className='flex flex-1 flex-col gap-y-1 px-2 py-1'>
-          {template.type === 'retrospective' && <RetroDescription prompts={template.prompts} />}
+          {template.type === 'retrospective' && <PromptDescription prompts={template.prompts} />}
           {template.type === 'poker' && <PokerDescription dimensions={template.dimensions} />}
           {template.type === 'action' && <ActionDescription />}
-          {template.type === 'teamPrompt' && <TeamPromptDescription />}
+          {template.type === 'teamPrompt' && <PromptDescription prompts={template.prompts} />}
           {/* a team health template has far too many questions to list, so it gets a coverage
               summary (categories + counts) instead of the question text */}
           {template.type === 'teamHealth' && <TeamHealthCoverage templateRef={template} />}

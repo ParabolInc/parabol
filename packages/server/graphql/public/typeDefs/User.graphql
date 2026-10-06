@@ -507,6 +507,12 @@ type User implements UserPartial {
   The number of free custom poker templates remaining
   """
   freeCustomPokerTemplatesRemaining: Int!
+
+  """
+  The number of free custom stand-up templates remaining
+  """
+  freeCustomStandupTemplatesRemaining: Int!
+
   """
   AI-provided Insights
   """

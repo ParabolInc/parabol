@@ -10,9 +10,10 @@ const createOAuth1AuthorizeUrl: MutationResolvers['createOAuth1AuthorizeUrl'] = 
   {authToken, dataLoader}
 ) => {
   const viewerId = getUserId(authToken)
-  const provider = await dataLoader
-    .get('integrationProviders')
-    .load(IntegrationProviderId.split(providerId))
+  const providerDbId = IntegrationProviderId.split(providerId)
+  const provider = Number.isInteger(providerDbId)
+    ? await dataLoader.get('integrationProviders').load(providerDbId)
+    : undefined
   if (!provider || provider.authStrategy !== 'oauth1') {
     return standardError(new Error('Integration provider not found'), {
       userId: viewerId,

@@ -43,6 +43,7 @@ const persistIntegrationSearchQuery: MutationResolvers['persistIntegrationSearch
   if (parsedMeta instanceof Error) return {error: {message: parsedMeta.message}}
 
   const dbProviderId = IntegrationProviderId.split(providerId)
+  if (!Number.isInteger(dbProviderId)) return {error: {message: 'Provider does not exist'}}
   const [provider, team] = await Promise.all([
     dataLoader.get('integrationProviders').load(dbProviderId),
     dataLoader.get('teams').loadNonNull(teamId)

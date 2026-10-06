@@ -26,7 +26,7 @@ const updateReflectionContent: MutationResolvers['updateReflectionContent'] = as
   dataLoader.get('retroReflections').clear(reflectionId)
   if (!reflection) return standardError(new Error('Reflection not found'), {userId: viewerId})
   const {creatorId, meetingId, reflectionGroupId, promptId} = reflection
-  const reflectPrompt = await dataLoader.get('reflectPrompts').load(promptId)
+  const reflectPrompt = await dataLoader.get('templatePrompts').load(promptId)
   if (!reflectPrompt) return standardError(new Error('Category not found'), {userId: viewerId})
   const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
   const {endedAt, phases, teamId} = meeting

@@ -26,8 +26,12 @@ export const DialogContent = React.forwardRef<HTMLDivElement, BaseProps>(
               asChild
               aria-describedby={undefined}
               onInteractOutside={(e) => {
-                // MUI pickers render popovers in a portal outside the dialog — don't close
-                if ((e.target as Element | null)?.closest('[data-popper-placement]')) {
+                // MUI pickers and tiptap suggestions render outside the dialog — don't close
+                if (
+                  (e.target as Element | null)?.closest(
+                    '[data-popper-placement], [data-suggestion-popup]'
+                  )
+                ) {
                   e.preventDefault()
                   return
                 }
@@ -38,7 +42,7 @@ export const DialogContent = React.forwardRef<HTMLDivElement, BaseProps>(
               <motion.div
                 ref={ref}
                 className={cn(
-                  'fixed top-[50%] left-[50%] z-20 flex max-h-[85vh] w-[95vw] max-w-[95vw] translate-x-[-50%] translate-y-[-50%] flex-col overflow-hidden rounded-lg bg-surface-card shadow-dialog focus:outline-hidden md:w-2xl md:max-w-2xl dark:border dark:border-hairline-strong',
+                  'fixed top-[50%] left-[50%] z-20 flex max-h-[85vh] w-[95vw] max-w-[95vw] translate-x-[-50%] translate-y-[-50%] flex-col overflow-hidden rounded-lg bg-surface-modal shadow-dialog focus:outline-hidden md:w-2xl md:max-w-2xl dark:border dark:border-hairline-strong',
                   className
                 )}
                 initial={{opacity: 0, y: 8}}
@@ -47,7 +51,9 @@ export const DialogContent = React.forwardRef<HTMLDivElement, BaseProps>(
                 transition={{duration: 0.25, ease: 'easeIn'}}
               >
                 <ScrollArea.Root className='flex-1 overflow-auto'>
-                  <ScrollArea.Viewport className='p-6'>{children}</ScrollArea.Viewport>
+                  <ScrollArea.Viewport className='[&>div]:block! p-6'>
+                    {children}
+                  </ScrollArea.Viewport>
                   <ScrollArea.Scrollbar orientation='vertical' />
                 </ScrollArea.Root>
                 {!noClose && <DialogClose />}

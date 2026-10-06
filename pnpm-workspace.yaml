@@ -60,7 +60,7 @@ overrides:
   qs: '^6.14.1'
   handlebars: '^4.7.9'
   brace-expansion: '^1.1.18'
-  '@graphql-tools/utils': '^11.0.1'
+  '@graphql-tools/utils': '^12.0.3'
   'pm2>js-yaml': '^4.3.2'
   '@emotion/is-prop-valid': '-'
 

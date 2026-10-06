@@ -16,6 +16,13 @@ const mutation = graphql`
         promptId
         createdAt
       }
+      issues {
+        service
+        title
+        url
+        updatedAt
+        unusedReason
+      }
     }
   }
 `
@@ -23,16 +30,16 @@ const mutation = graphql`
 const useGenerateInspirationItemsMutation = () => {
   const [commit, submitting] = useMutation<TGenerateInspirationItemsMutation>(mutation)
   const execute = (config: UseMutationConfig<TGenerateInspirationItemsMutation>) => {
-    const {service} = config.variables.input
+    const service = config.variables.input.sources[0]?.service
     return commit({
       updater: (store) => {
-        // Keep the cached `inspirationItems(service)` field in sync so re-opening the drawer
-        // shows the latest generation without a refetch.
+        // Keep a retro's cached `inspirationItems(service)` field in sync so re-opening the drawer
+        // shows the latest generation without a refetch. A standup's draft is never saved to the meeting.
         const payload = store.getRootField('generateInspirationItems')
         if (!payload) return
         const items = payload.getLinkedRecords('inspirationItems')
         const meeting = payload.getLinkedRecord('meeting')
-        if (!meeting || !items) return
+        if (!service || !meeting || !items || meeting.getType() !== 'RetrospectiveMeeting') return
         meeting.setLinkedRecords(items, 'inspirationItems', {service})
       },
       // allow components to override default config
