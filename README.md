@@ -125,7 +125,7 @@ pnpm i && pnpm build && pnpm predeploy && pnpm start
 
 - [Code Reviews](./docs/codeReview.md)
 - [Create new GraphQL Mutations](./packages/server/graphql/public/README.md)
-- [Docker](./docker/README.md)
+- [Docker](./docker/stacks/development/README.md)
 - [File Storage (CDN, Local, S3)](./packages/server/fileStorage/README.md)
 - [GraphiQL, Private Schema Admin](./packages/server/graphql/private/README.md)
 - [Integrations (GitHub, Jira, Slack, etc.)](./docs/integrations.md)
