@@ -25,7 +25,7 @@ const CopyShortLink = (props: Props) => {
         )}
       >
         {icon && (
-          <div className='mr-3 block h-6 w-6'>
+          <div className='mr-3 block h-6 w-6 shrink-0'>
             {
               {
                 link: <Link />
@@ -33,7 +33,7 @@ const CopyShortLink = (props: Props) => {
             }
           </div>
         )}
-        <div className='whitespace-nowrap'>{theLabel}</div>
+        <div className='min-w-0 truncate'>{theLabel}</div>
       </div>
     </CopyLink>
   )

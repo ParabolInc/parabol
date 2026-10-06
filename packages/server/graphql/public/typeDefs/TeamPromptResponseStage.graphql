@@ -116,6 +116,13 @@ type TeamPromptResponseStage implements NewMeetingStage & DiscussionThreadStage 
   The response to the prompt
   """
   response: TeamPromptResponse
+    @deprecated(reason: "A member has one response per prompt. Use responses")
+
+  """
+  The member's responses in this stand-up, one per prompt. Another member's responses are only
+  returned once shared
+  """
+  responses: [TeamPromptResponse!]!
 
   """
   The meeting member that is the focus for this phase item

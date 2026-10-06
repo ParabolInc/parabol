@@ -47,6 +47,7 @@ const EditableTemplateName = (props: Props) => {
     <div className='flex-1 font-semibold text-[20px] leading-6'>
       <div className={cn('leading-6', className)}>
         <EditableText
+          key={templateId}
           autoFocus={autoFocus}
           disabled={!isOwner}
           error={error ? error.message : undefined}

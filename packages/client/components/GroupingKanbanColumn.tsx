@@ -103,7 +103,7 @@ const GroupingKanbanColumn = (props: Props) => {
   )
   const prompt = useFragment(
     graphql`
-      fragment GroupingKanbanColumn_prompt on ReflectPrompt {
+      fragment GroupingKanbanColumn_prompt on TemplatePrompt {
         id
         question
         groupColor

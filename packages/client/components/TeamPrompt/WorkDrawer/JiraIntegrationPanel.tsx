@@ -53,7 +53,7 @@ const JiraIntegrationPanel = (props: Props) => {
   const atmosphere = useAtmosphere()
   const teamMember = meeting.viewerMeetingMember?.teamMember
 
-  const {dateRange, setDateRange, onResultCount, getHasResults} = useInspirationDrawer(
+  const {dateRange, setDateRange, onResultCount, getResultCount} = useInspirationDrawer(
     'jira',
     meeting
   )
@@ -65,7 +65,6 @@ const JiraIntegrationPanel = (props: Props) => {
     : ''
   const conditions = ['assignee = currentUser()', dateQueryString].filter(Boolean).join(' AND ')
   const searchQuery = `${conditions} order by updated DESC`
-  const hasResults = getHasResults(searchQuery)
 
   const mutationProps = useMutationProps()
   const {error, onError} = mutationProps
@@ -91,28 +90,32 @@ const JiraIntegrationPanel = (props: Props) => {
     })
   }
 
+  const filterBar = (
+    <div className='mb-2 flex w-full px-2'>
+      <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
+    </div>
+  )
+
   return (
     <>
       {teamMember?.integrations.atlassian?.isActive &&
       hasJiraScopes(teamMember?.integrations.atlassian?.scope) ? (
         <>
-          <div className='mb-2 flex w-full px-2'>
-            <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
-          </div>
+          {filterBar}
           <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
-            {hasResults && (
-              <InspirationItemsPanel
-                meetingId={meeting.id}
-                service='jira'
-                searchQuery={searchQuery}
-                initialItems={meeting.jiraInspirationItems}
-              />
-            )}
-            <JiraIntegrationResultsRoot
-              teamId={teamMember.teamId}
+            <InspirationItemsPanel
+              meetingId={meeting.id}
+              service='jira'
               searchQuery={searchQuery}
-              onResultCount={onResultCount}
-            />
+              initialItems={meeting.jiraInspirationItems}
+              hideDraftPanel={!getResultCount(searchQuery)}
+            >
+              <JiraIntegrationResultsRoot
+                teamId={teamMember.teamId}
+                searchQuery={searchQuery}
+                onResultCount={onResultCount}
+              />
+            </InspirationItemsPanel>
           </div>
         </>
       ) : (

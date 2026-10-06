@@ -4,7 +4,7 @@ import type {SelectSharingScopeDropdown_template$key} from '../__generated__/Sel
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerTemplateScopeMutation from '../mutations/UpdatePokerTemplateScopeMutation'
-import UpdateReflectTemplateScopeMutation from '../mutations/UpdateReflectTemplateScopeMutation'
+import UpdateTemplateScopeMutation from '../mutations/UpdateTemplateScopeMutation'
 import {MenuContent} from '../ui/Menu/MenuContent'
 import {MenuItem} from '../ui/Menu/MenuItem'
 import DropdownMenuIconItemLabel from './DropdownMenuIconItemLabel'
@@ -39,12 +39,8 @@ const SelectSharingScopeDropdown = (props: Props) => {
   const setScope = (newScope: any) => () => {
     if (submitting) return
     submitMutation()
-    if (type === 'retrospective') {
-      UpdateReflectTemplateScopeMutation(
-        atmosphere,
-        {scope: newScope, templateId},
-        {onError, onCompleted}
-      )
+    if (type === 'retrospective' || type === 'teamPrompt') {
+      UpdateTemplateScopeMutation(atmosphere, {scope: newScope, templateId}, {onError, onCompleted})
     } else if (type === 'poker') {
       UpdatePokerTemplateScopeMutation(
         atmosphere,

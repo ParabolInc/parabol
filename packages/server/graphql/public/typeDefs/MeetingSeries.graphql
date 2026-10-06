@@ -42,8 +42,8 @@ type MeetingSeries {
   groupId: ID
 
   """
-  The template every meeting in the series is built from. Set for meeting types that pick a
-  template up front, such as teamHealth; null for the rest.
+  The template the series was started with. Stand-ups and teamHealth build every meeting from it;
+  a retrospective copies the template of its previous meeting instead, so this can go stale there.
   """
   templateId: ID
 
