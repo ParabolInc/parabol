@@ -1,4 +1,3 @@
-import type {JSONContent} from '@tiptap/core'
 import type {GraphQLResolveInfo} from 'graphql'
 import GitHubIssueId from '../../../client/shared/gqlIds/GitHubIssueId'
 import GitHubRepoId from '../../../client/shared/gqlIds/GitHubRepoId'
@@ -8,7 +7,11 @@ import type {AddCommentMutation, AddCommentMutationVariables} from '../../types/
 import getGitHubRequest from '../../utils/getGitHubRequest'
 import addComment from '../../utils/githubQueries/addComment.graphql'
 import makeCreateGitHubTaskComment from '../../utils/makeCreateGitHubTaskComment'
-import type {CreateTaskResponse, TaskIntegrationManager} from '../platform/TaskIntegrationManager'
+import type {
+  CreateTaskParams,
+  CreateTaskResponse,
+  TaskIntegrationManager
+} from '../platform/TaskIntegrationManager'
 import createGitHubTask from './createGitHubTask'
 
 export default class GitHubServerManager implements TaskIntegrationManager {
@@ -61,16 +64,15 @@ export default class GitHubServerManager implements TaskIntegrationManager {
   }
 
   async createTask({
-    rawContentJSON,
+    title,
+    bodyContent,
     integrationRepoId
-  }: {
-    rawContentJSON: JSONContent
-    integrationRepoId: string
-  }): Promise<CreateTaskResponse> {
+  }: CreateTaskParams): Promise<CreateTaskResponse> {
     const {repoOwner, repoName} = GitHubRepoId.split(integrationRepoId)
 
     const res = await createGitHubTask(
-      rawContentJSON,
+      title,
+      bodyContent,
       repoOwner,
       repoName,
       this.auth,

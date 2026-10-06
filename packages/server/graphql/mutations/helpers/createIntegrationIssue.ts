@@ -3,6 +3,7 @@ import type {GraphQLResolveInfo} from 'graphql'
 import {getServerIntegration} from '../../../integrations/platform/registry'
 import type {GQLContext} from '../../graphql'
 import type {CreateTaskIntegrationInput} from '../../public/resolverTypes'
+import getIssueTitleAndBody from './getIssueTitleAndBody'
 
 const createIntegrationIssue = async (
   integrationInput: CreateTaskIntegrationInput | null | undefined,
@@ -36,8 +37,10 @@ const createIntegrationIssue = async (
     const {title} = definition
     return {error: new Error(`Cannot create ${title} task without a valid ${title} token`)}
   }
+  const {title, bodyContent} = await getIssueTitleAndBody(rawContent, teamId, dataLoader)
   const res = await manager.createTask({
-    rawContentJSON: rawContent,
+    title,
+    bodyContent,
     integrationRepoId: serviceProjectHash
   })
   if (res instanceof Error) return {error: res}

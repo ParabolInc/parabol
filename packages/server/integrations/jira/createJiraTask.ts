@@ -1,19 +1,16 @@
-import type {JSONContent} from '@tiptap/react'
 import {convertTiptapToADF} from 'parabol-client/shared/tiptap/convertTipTapToADF'
-import {splitTipTapContent} from 'parabol-client/shared/tiptap/splitTipTapContent'
+import type {TipTapSerializedContent} from 'parabol-client/shared/tiptap/TipTapSerializedContent'
 import {RateLimitError} from 'parabol-client/utils/AtlassianManager'
 import type {AtlassianAuth} from '../../postgres/types'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 
 const createJiraTask = async (
-  rawContent: JSONContent,
+  summary: string,
+  bodyContent: TipTapSerializedContent | null,
   cloudId: string,
   projectKey: string,
   atlassianAuth: AtlassianAuth
 ) => {
-  const {title: summary, bodyContent} = splitTipTapContent(rawContent)
-  const description = convertTiptapToADF(bodyContent)
-
   const {accessToken, providerUserId} = atlassianAuth
   const manager = new AtlassianServerManager(accessToken)
 
@@ -27,10 +24,19 @@ const createJiraTask = async (
   const bestType = issuetypes.find((type) => type.name === 'Task') || issuetypes[0]
   const {fields} = bestType
   const isOnCreateScreen = (fieldId: string) => !fields || fieldId in fields
+  const description = bodyContent
+    ? convertTiptapToADF(bodyContent)
+    : fields?.description?.required
+      ? {
+          type: 'doc',
+          version: 1,
+          content: [{type: 'paragraph', content: [{type: 'text', text: summary}]}]
+        }
+      : null
   const payload = {
     summary,
     issuetype: {id: bestType.id},
-    ...(isOnCreateScreen('description') && {description}),
+    ...(description && isOnCreateScreen('description') && {description}),
     ...(isOnCreateScreen('assignee') && {assignee: {id: providerUserId}}),
     ...(isOnCreateScreen('labels') && {labels: ['parabol']})
   }

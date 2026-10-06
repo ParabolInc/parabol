@@ -24,10 +24,8 @@ test('created issues carry the global provider id the scoping UI compares agains
     .spyOn(manager, 'createIssue')
     .mockResolvedValue([{createIssue: {issue: {id: 'gid://gitlab/Issue/123'}}}, null] as never)
   const res = await manager.createTask({
-    rawContentJSON: {
-      type: 'doc',
-      content: [{type: 'paragraph', content: [{type: 'text', text: 'Fix the build'}]}]
-    },
+    title: 'Fix the build',
+    bodyContent: null,
     integrationRepoId: 'group/project'
   })
   expect(res).toEqual({

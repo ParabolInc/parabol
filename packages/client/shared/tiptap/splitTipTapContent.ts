@@ -3,22 +3,24 @@ import {removeNodeByType} from './removeNodeByType'
 import {serverTipTapExtensions} from './serverTipTapExtensions'
 import type {TipTapSerializedContent} from './TipTapSerializedContent'
 
-export const splitTipTapContent = (rawDoc: JSONContent, maxLength = 256) => {
-  const doc = removeNodeByType(rawDoc, 'taskTag')
-  const [firstBlock, ...bodyBlocks] = doc.content!
-  const fullTitle = generateText({...doc, content: [firstBlock!]}, serverTipTapExtensions)
-    // Remove newlines from the title
+const toText = (doc: JSONContent, content: JSONContent[]) =>
+  generateText({...doc, content}, serverTipTapExtensions)
     .split(/\s/)
-    .filter((s) => s.length)
+    .filter(Boolean)
     .join(' ')
-  if (fullTitle.length < maxLength) {
-    const bodyText = generateText({...doc, content: bodyBlocks}, serverTipTapExtensions)
-    const content = bodyText.trim().length > 0 ? bodyBlocks : doc.content!
-    return {title: fullTitle, bodyContent: {...doc, content} as TipTapSerializedContent}
-  }
+
+export const splitTipTapContent = (rawDoc: JSONContent, maxTitleLength = 255) => {
+  const doc = removeNodeByType(rawDoc, 'taskTag')
+  const blocks = (doc.content ?? []).filter(
+    (block) => block.type !== 'paragraph' || toText(doc, [block])
+  )
+  const [titleBlock, ...bodyBlocks] = blocks
+  const title = titleBlock ? toText(doc, [titleBlock]) : ''
+  const isTitleExcerpt = title.length > maxTitleLength
+  const content = isTitleExcerpt ? blocks : bodyBlocks
   return {
-    title: fullTitle.slice(0, maxLength),
-    // repeat the full title in the body since we had to truncate it
-    bodyContent: doc as TipTapSerializedContent
+    title: title.slice(0, maxTitleLength),
+    bodyContent: content.length > 0 ? ({...doc, content} as TipTapSerializedContent) : null,
+    isTitleExcerpt
   }
 }
