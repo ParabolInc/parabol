@@ -9,7 +9,14 @@ jest.mock('../../../graphql/public/rootSchema', () => ({
 import {serverIntegrations} from '../registry'
 import type {IntegrationCtx} from '../ServerIntegrationDefinition'
 
-const makeCtx = (auth: {accessToken: string | null; scopes?: string | null} | null) => {
+const makeCtx = (
+  auth: {
+    accessToken: string | null
+    scopes?: string | null
+    refreshToken?: string | null
+    providerUserId?: string | null
+  } | null
+) => {
   const load = jest.fn().mockResolvedValue(auth)
   const ctx: IntegrationCtx = {
     teamId: 'team1',
@@ -44,7 +51,12 @@ describe('isConnected', () => {
   })
 
   it('jira is connected when the grant carries the Jira scopes', async () => {
-    const {ctx} = makeCtx({accessToken: 'token', scopes: JIRA_SCOPES})
+    const {ctx} = makeCtx({
+      accessToken: 'token',
+      scopes: JIRA_SCOPES,
+      refreshToken: 'refresh',
+      providerUserId: 'account'
+    })
     await expect(serverIntegrations.jira.isConnected(ctx)).resolves.toBe(true)
   })
 
