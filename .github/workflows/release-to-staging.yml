@@ -15,12 +15,10 @@ jobs:
       id-token: "write"
       pull-requests: "write"
     steps:
-      - name: Checkout production
-        uses: actions/checkout@v4
-        with:
-          ref: production
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Setup environment variables
         run: |
           ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
@@ -118,9 +116,17 @@ jobs:
           export BODY=$(cat BODY)
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git checkout -b "release/v${{ env.ACTION_VERSION }}" origin/production
-          git merge origin/master --allow-unrelated-histories -X theirs -m "chore(release): v${{ env.ACTION_VERSION }}"
-          git push --set-upstream origin "release/v${{ env.ACTION_VERSION }}"
+          git fetch origin production
+          PRODUCTION=$(git rev-parse origin/production)
+          PRODUCTION_TAG="v$(git show origin/production:package.json | grep '"version":' | cut -d\" -f4)"
+          # PRs are squashed into production, so it never gains the history of what it released.
+          # Recording the released tag as a parent keeps the PR to the commits made since then
+          if ! git merge-base --is-ancestor "$PRODUCTION_TAG" "$PRODUCTION"; then
+            PRODUCTION=$(git commit-tree "$PRODUCTION^{tree}" -p "$PRODUCTION" -p "$PRODUCTION_TAG^{commit}" -m "chore(release): record $PRODUCTION_TAG history")
+            git push origin "$PRODUCTION:refs/heads/production"
+          fi
+          RELEASE=$(git commit-tree "HEAD^{tree}" -p "$PRODUCTION" -p HEAD -m "chore(release): v${{ env.ACTION_VERSION }}")
+          git push origin "$RELEASE:refs/heads/release/v${{ env.ACTION_VERSION }}"
           gh pr create \
             --assignee ${{ github.actor }} \
             --base production \
