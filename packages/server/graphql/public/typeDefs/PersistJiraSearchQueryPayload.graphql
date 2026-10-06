@@ -1,4 +1,0 @@
-"""
-Result of saving a Jira search query for later reuse
-"""
-union PersistJiraSearchQueryPayload = ErrorPayload | PersistJiraSearchQuerySuccess

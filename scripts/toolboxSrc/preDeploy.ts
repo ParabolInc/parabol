@@ -9,6 +9,7 @@ import {applyEnvVarsToClientAssets} from './applyEnvVarsToClientAssets'
 import primeIntegrations from './primeIntegrations'
 import pushToCDN from './pushToCDN'
 import standaloneMigrations from './standaloneMigrations'
+import waitForServices from './waitForServices'
 
 const PROJECT_ROOT = getProjectRoot()
 
@@ -38,6 +39,7 @@ const preDeploy = async () => {
   const myEnv = dotenv.config({path: envPath})
   dotenvExpand(myEnv)
   Logger.log(`🚀 Predeploy Started v${__APP_VERSION__} sha:${__COMMIT_HASH__}`)
+  await waitForServices()
   // first we migrate DBs & add env vars to client assets
   await Promise.all([standaloneMigrations(), applyEnvVarsToClientAssets()])
 
