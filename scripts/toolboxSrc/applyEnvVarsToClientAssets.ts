@@ -23,6 +23,8 @@ const writeManifest = () => {
   const manifest = {
     short_name: 'Parabol',
     name: 'Parabol',
+    description:
+      'Open-source agile meetings and team health checks: retrospectives, Sprint Poker, standups, and anonymous engagement surveys.',
     icons: [
       {
         src: logo192,

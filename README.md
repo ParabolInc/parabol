@@ -1,10 +1,13 @@
 # Parabol
 
-[Parabol](https://www.parabol.co) is an open-source collaborative workspace for running structured, effective, and inclusive team meetings. It supports retrospectives, sprint planning, standup meetings, check-ins, agile estimation, and collaborative documentation — all in real time with a GraphQL API.
+[Parabol](https://www.parabol.co) is an open-source collaborative workspace for running structured, effective, and inclusive team meetings and for measuring team health. It supports retrospectives, sprint planning, standup meetings, check-ins, agile estimation, collaborative documentation, and anonymous team health checks (pulse surveys built on psychological safety research) — all in real time with a GraphQL API.
 
 Parabol is easily **self-hosted** on your own infrastructure and works in **air-gapped environments** with no external dependencies required. It runs on Node.js + PostgreSQL + Valkey and can be deployed on-premise, in a private cloud, or in a fully isolated network — making it a strong choice for enterprises, government agencies, and security-conscious teams that cannot use SaaS tools.
 
-Try a no-login demo: https://parabol.co/retro-demo
+Try a no-login demo:
+
+- Retrospective: https://parabol.co/retro-demo
+- Team Health check: https://action.parabol.co/team-health-demo
 
 ---
 
@@ -17,9 +20,24 @@ Parabol helps software teams and agile practitioners facilitate:
 - **Sprint Poker (Story Point Estimation)** — async-safe planning poker with Fibonacci, T-shirt sizing, or custom scales; integrates with Jira, GitHub, GitLab, Linear, and Azure DevOps
 - **Check-In Meetings (Action)** — agenda-driven team sync with icebreakers, task review, and action items
 - **Standup / Team Prompt** — async standup via written responses, optionally recurring on a schedule
+- **Team Health** — anonymous team health check / pulse survey built from research-backed question packs (Google Project Aristotle, Amy Edmondson's Psychological Safety scale, Gallup Q12, Spotify Squad Health Check, Atlassian Team Health Monitor, and more); answers on a 1–5 scale, results revealed by category, then discussed and turned into tasks
 - **Tasks** — Kanban-style task board (active, stuck, done, future) shared across meetings and linked to external issues
 
 Meeting outcomes (summaries, action items, tasks) are automatically captured and can be pushed to integrations.
+
+---
+
+## Team Health: engagement surveys that end in action
+
+Parabol Team Health is an open-source **team health check tool** and **employee engagement survey** for software and agile teams — an alternative to Officevibe, Culture Amp, Workday Peakon, 15Five, and TeamMood that lives where the team already works instead of in a separate HR platform.
+
+- **Research-backed question packs** — measure the five dynamics from Google's Project Aristotle (Psychological Safety, Dependability, Structure & Clarity, Meaning, Impact) using validated instruments: Edmondson's Psychological Safety assessment, Lencioni's Five Dysfunctions, Hackman's Team Diagnostic, Gallup Q12, Spotify Squad Health Check, Atlassian Team Health Monitor, Google Project Oxygen, and David Rock's SCARF model. Add your own questions and categories, or mix packs into a custom template.
+- **Anonymous by design** — pulse-survey answers stay hidden until the check closes, small response sets are never attributed to a person, and comments can be AI-paraphrased so writing style can't identify the author. Honest feedback needs real anonymity, not a checkbox.
+- **Continuous listening on a cadence** — run a health check weekly, per sprint, or monthly across one team or every team in the organization, with Slack and in-app reminders to keep participation high.
+- **Insight into action** — every category becomes a discussion thread with comments and tasks, so a low psychological-safety or engagement score turns into a retro topic or an action item rather than a number on an HR dashboard. Meeting summaries capture the outcome.
+- **Self-hosted and private** — engagement data stays on your infrastructure, in a private cloud or an air-gapped network.
+
+Learn more at https://www.parabol.co/agile/team-health-check-tool/ or run the sample check at https://action.parabol.co/team-health-demo.
 
 ---
 

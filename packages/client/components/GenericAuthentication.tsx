@@ -51,8 +51,8 @@ const GenericAuthentication = (props: Props) => {
   const action = isCreate ? CREATE_ACCOUNT_LABEL : SIGNIN_LABEL
   const pageTitle = `${action} | Parabol`
   const metaCopy = isCreate
-    ? 'Give structure to your meetings to get your team talking and moving forward faster. Get started in 44 seconds or less.'
-    : 'Access Parabol to streamline your agile meetings. Collaborate, reflect, and grow with your team in real-time.'
+    ? 'Run better retrospectives, sprint planning and anonymous team health checks that turn engagement feedback into action. Get started in 44 seconds or less.'
+    : 'Access Parabol to run your agile meetings and team health checks. Collaborate, reflect, measure psychological safety, and grow with your team in real time.'
   useDocumentTitle(pageTitle, action)
   useMetaTagContent(metaCopy)
 

@@ -1,6 +1,6 @@
 # Parabol
 
-Parabol is a collaborative workspace that helps teams run more effective, inclusive, and engaging meetings.
+Parabol is an open-source collaborative workspace that helps teams run more effective, inclusive, and engaging meetings — retrospectives, sprint poker, check-ins, standups — and measure team health with anonymous, research-backed engagement surveys (team health checks) that turn into discussions and tasks.
 
 ## GraphQL API
 
@@ -43,12 +43,14 @@ Tokens are scoped — you must request only the scopes your integration needs. A
 
 - **Organization** — top-level billing and membership container
 - **Team** — a group of users within an organization; meetings and tasks belong to teams
-- **Meeting** — one of four types: Retrospective, Check-In (action), Sprint Poker (estimation), or Team Prompt (standup)
+- **Meeting** — one of five types: Retrospective, Check-In (action), Sprint Poker (estimation), Team Prompt (standup), or Team Health (anonymous engagement survey)
 - **Task** — an actionable item, optionally linked to integrations (Jira, GitHub, GitLab, Linear, Azure DevOps)
 - **Reflection** — a card added by a participant during the reflect phase of a retrospective
 - **Agenda Item** — a discussion topic added to a Check-In meeting
 - **Page** — a rich-text collaborative document scoped to a team or personal workspace
-- **Template** — a reusable meeting structure (reflect or poker)
+- **Template** — a reusable meeting structure (reflect, poker, or team health)
+- **Team Health Question Pack** — a research-backed set of survey questions (e.g. Google Project Aristotle, Edmondson Psychological Safety, Gallup Q12, Spotify Squad Health Check); each question belongs to a **Team Health Category** (Psychological Safety, Dependability, Structure & Clarity, Meaning, Impact, or a custom one)
+- **Team Health Response** — one member's anonymous 1–5 Likert answer (plus optional comment) to a question; scores are only readable by their author and the team sees the aggregate spread once the meeting ends
 
 ## Key Mutations
 
@@ -58,6 +60,11 @@ Tokens are scoped — you must request only the scopes your integration needs. A
 | `startSprintPoker`    | `meetings:write`  | Start a new sprint poker meeting         |
 | `startCheckIn`        | `meetings:write`  | Start a new check-in meeting             |
 | `startTeamPrompt`     | `meetings:write`  | Start a new standup meeting              |
+| `startTeamHealth`     | `meetings:write`  | Start a team health check for one or more teams, optionally recurring |
+| `setTeamHealthResponse` | `meetings:write` | Answer a team health question (1–5 score, optional comment) |
+| `endTeamHealth`       | `meetings:write`  | Close a team health check and reveal results by category |
+| `addTeamHealthTemplate` | `templates:write` | Create a team health template from question packs |
+| `addTeamHealthQuestion` | `templates:write` | Add a custom question to your question pack |
 | `createReflection`    | `meetings:write`  | Add a reflection card during a retro     |
 | `addAgendaItem`       | `teams:write`     | Add a topic to a check-in meeting        |
 | `addTeam`             | `teams:write`     | Create a new team                        |
