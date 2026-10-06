@@ -1,0 +1,7 @@
+"""
+The meeting types whose templates are made of prompts
+"""
+enum PromptTemplateTypeEnum {
+  retrospective
+  teamPrompt
+}

@@ -1,3 +1,4 @@
+import type {TeamPromptMeeting} from '../../../postgres/types/Meeting'
 import type {StartTeamPromptSuccessResolvers} from '../resolverTypes'
 
 export type StartTeamPromptSuccessSource = {
@@ -10,9 +11,7 @@ export type StartTeamPromptSuccessSource = {
 const StartTeamPromptSuccess: StartTeamPromptSuccessResolvers = {
   meeting: async ({meetingId}, _args, {dataLoader}) => {
     if (!meetingId) return null
-    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
-    if (meeting.meetingType !== 'teamPrompt') throw new Error('Not a team prompt meeting')
-    return meeting
+    return dataLoader.get('newMeetings').loadNonNull<TeamPromptMeeting>(meetingId)
   },
   meetingSeries: async ({meetingSeriesId}, _args, {dataLoader}) => {
     if (!meetingSeriesId) return null

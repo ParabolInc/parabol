@@ -66,7 +66,7 @@ module.exports = [
     externals: [
       {
         ...nodeExternals({
-          allowlist: [/parabol-client/, /parabol-server/, /@dicebear/, 'node:crypto']
+          allowlist: [/parabol-client/, /parabol-server/, 'node:crypto']
         }),
         sharp: 'commonjs sharp',
         'string-score': 'commonjs string-score'
@@ -85,22 +85,6 @@ module.exports = [
       new webpack.IgnorePlugin({
         resourceRegExp: /^pg-cloudflare$/,
         contextRegExp: /pg\/lib/
-      }),
-      new webpack.IgnorePlugin({
-        resourceRegExp: /^exiftool-vendored$/,
-        contextRegExp: /@dicebear/
-      }),
-      new webpack.IgnorePlugin({
-        resourceRegExp: /^@resvg\/resvg-js$/,
-        contextRegExp: /@dicebear/
-      }),
-      new webpack.IgnorePlugin({
-        resourceRegExp: /inter-regular.otf$/,
-        contextRegExp: /@dicebear/
-      }),
-      new webpack.IgnorePlugin({
-        resourceRegExp: /inter-bold.otf$/,
-        contextRegExp: /@dicebear/
       })
     ],
     module: {

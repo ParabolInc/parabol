@@ -23,7 +23,7 @@ const serializeReflections = async (
     rawReflections.map(async (reflection) => {
       const {promptId, creatorId, plaintextContent} = reflection
       const [prompt, creator] = await Promise.all([
-        dataLoader.get('reflectPrompts').loadNonNull(promptId),
+        dataLoader.get('templatePrompts').loadNonNull(promptId),
         creatorId ? dataLoader.get('users').loadNonNull(creatorId) : null
       ])
       const {question} = prompt
@@ -110,7 +110,7 @@ const makeTeamPromptMeetingInsightInput = async (
 ) => {
   const MIN_RESPONSES = 2
   const {id: meetingId, meetingType} = meeting
-  const responses = await dataLoader.get('teamPromptResponsesByMeetingId').load(meetingId)
+  const responses = await dataLoader.get('teamPromptMemberResponsesByMeetingId').load(meetingId)
   if (responses.length < MIN_RESPONSES) return null
   const userIds = responses.map(({userId}) => userId)
   const users = (await dataLoader.get('users').loadMany(userIds)).filter(isValid)

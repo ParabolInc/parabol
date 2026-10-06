@@ -3,7 +3,7 @@ import type {DataLoaderInstance} from '../../../../dataloader/RootDataLoader'
 import isValid from '../../../isValid'
 
 export const getTeamPromptBlocks = async (meetingId: string, dataLoader: DataLoaderInstance) => {
-  const responses = await dataLoader.get('teamPromptResponsesByMeetingId').load(meetingId)
+  const responses = await dataLoader.get('teamPromptMemberResponsesByMeetingId').load(meetingId)
   const responseBlocks = await Promise.all(
     responses.map(async (response) => {
       const {userId, content} = response

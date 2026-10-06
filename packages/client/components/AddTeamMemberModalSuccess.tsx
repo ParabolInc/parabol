@@ -1,4 +1,5 @@
 import {useEffect} from 'react'
+import {DialogTitle} from '../ui/Dialog/DialogTitle'
 
 interface Props {
   onClose: () => void
@@ -19,7 +20,7 @@ const AddTeamMemberModalSuccess = (props: Props) => {
 
   return (
     <div>
-      <div className='mb-4 font-semibold text-xl'>Success!</div>
+      <DialogTitle className='mb-4'>Success!</DialogTitle>
       <div>
         <span>An invitation has been sent to</span>
         {successfulInvitations.length === 1 ? <span> {successfulInvitations[0]}.</span> : ':'}

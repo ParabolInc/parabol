@@ -7,7 +7,8 @@ import {
 import {addCommentMeetingUpdater} from '~/mutations/AddCommentMutation'
 import {createPollMeetingUpdater} from '~/mutations/CreatePollMutation'
 import {deleteCommentMeetingUpdater} from '~/mutations/DeleteCommentMutation'
-import {upsertTeamPromptResponseUpdater} from '~/mutations/UpsertTeamPromptResponseMutation'
+import {shareTeamPromptResponsesMeetingUpdater} from '~/mutations/useShareTeamPromptResponsesMutation'
+import {upsertTeamPromptResponseMeetingUpdater} from '~/mutations/useUpsertTeamPromptResponseMutation'
 import Atmosphere from '../Atmosphere'
 import {createReflectionMeetingUpdater} from '../mutations/CreateReflectionMutation'
 import {dragDiscussionTopicMeetingUpdater} from '../mutations/DragDiscussionTopicMutation'
@@ -44,9 +45,6 @@ const subscription = graphql`
       }
       SuggestedGroupsSuccess {
         ...useGenerateSuggestedGroupsMutation_meeting @relay(mask: false)
-      }
-      UpdateMeetingPromptSuccess {
-        ...UpdateMeetingPromptMutation_meeting @relay(mask: false)
       }
       SetTaskEstimateSuccess {
         ...SetTaskEstimateMutation_meeting @relay(mask: false)
@@ -175,7 +173,10 @@ const subscription = graphql`
         ...VoteForReflectionGroupMutation_meeting @relay(mask: false)
       }
       UpsertTeamPromptResponseSuccess {
-        ...UpsertTeamPromptResponseMutation_meeting @relay(mask: false)
+        ...useUpsertTeamPromptResponseMutation_meeting @relay(mask: false)
+      }
+      ShareTeamPromptResponsesSuccess {
+        ...useShareTeamPromptResponsesMutation_meeting @relay(mask: false)
       }
     }
   }
@@ -199,7 +200,8 @@ const updateHandlers = {
   ResetRetroMeetingToGroupStagePayload: resetRetroMeetingToGroupStageUpdater,
   StartDraggingReflectionPayload: startDraggingReflectionMeetingUpdater,
   PokerAnnounceDeckHoverSuccess: pokerAnnounceDeckHoverMeetingUpdater,
-  UpsertTeamPromptResponseSuccess: upsertTeamPromptResponseUpdater,
+  UpsertTeamPromptResponseSuccess: upsertTeamPromptResponseMeetingUpdater,
+  ShareTeamPromptResponsesSuccess: shareTeamPromptResponsesMeetingUpdater,
   SetMeetingMusicSuccess: setMeetingMusicMeetingUpdater,
   SuggestedGroupsSuccess: suggestedGroupsMeetingUpdater
 } as const

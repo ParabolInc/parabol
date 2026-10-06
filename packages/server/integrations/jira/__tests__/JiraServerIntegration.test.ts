@@ -16,7 +16,12 @@ const CONFLUENCE_ONLY = 'offline_access read:confluence-content.all write:conflu
 
 const makeCtx = (scope: string) => {
   const freshLoad = jest.fn().mockResolvedValue({accessToken: 'tok', scope, scopes: scope})
-  const rowLoad = jest.fn().mockResolvedValue({accessToken: 'tok', scopes: scope})
+  const rowLoad = jest.fn().mockResolvedValue({
+    accessToken: 'tok',
+    refreshToken: 'refresh',
+    providerUserId: 'account',
+    scopes: scope
+  })
   const ctx = {
     teamId: 't1',
     userId: 'u1',
@@ -34,6 +39,22 @@ const makeCtx = (scope: string) => {
 }
 
 const jira = new JiraServerIntegration()
+
+test.each(['refreshToken', 'providerUserId'])(
+  'a Jira grant missing %s is disconnected, matching the Atlassian auth lookup',
+  async (field) => {
+    const {ctx, rowLoad} = makeCtx(JIRA_SCOPES)
+    rowLoad.mockResolvedValue({
+      accessToken: 'tok',
+      refreshToken: 'refresh',
+      providerUserId: 'account',
+      scopes: JIRA_SCOPES,
+      [field]: null
+    })
+    await expect(jira.getAuthRow(ctx)).resolves.toBeNull()
+    await expect(jira.isConnected(ctx)).resolves.toBe(false)
+  }
+)
 
 test('a Confluence-only grant is not usable for Jira anywhere', async () => {
   const {ctx} = makeCtx(CONFLUENCE_ONLY)

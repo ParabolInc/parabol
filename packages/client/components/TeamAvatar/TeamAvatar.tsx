@@ -1,5 +1,5 @@
 import {initials as getInitials} from '../../shared/initials'
-import {themeBackgroundColors} from '../../shared/themeBackgroundColors'
+import {selectThemeBackgroundColor} from '../../shared/selectThemeBackgroundColor'
 import {cn} from '../../ui/cn'
 
 interface TeamAvatarProps {
@@ -8,19 +8,9 @@ interface TeamAvatarProps {
   className?: string
 }
 
-const selectColor = (seed: string): string => {
-  let hash = 0
-  for (let i = 0; i < seed.length; i++) {
-    hash = seed.charCodeAt(i) + ((hash << 5) - hash)
-    hash = hash & hash
-  }
-  const idx = Math.abs(hash) % themeBackgroundColors.length
-  return themeBackgroundColors[idx]!
-}
-
 export const TeamAvatar = ({teamName, teamId, className}: TeamAvatarProps) => {
   const initials = getInitials(teamName)
-  const backgroundColor = selectColor(teamId)
+  const backgroundColor = selectThemeBackgroundColor(teamId)
   return (
     <div
       className={cn(

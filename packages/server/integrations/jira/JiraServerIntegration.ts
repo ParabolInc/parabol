@@ -44,7 +44,7 @@ export class JiraServerIntegration extends ServerIntegrationDefinition {
 
   async getAuthRow(ctx: IntegrationCtx): Promise<TeamMemberIntegrationAuth | null> {
     const auth = await super.getAuthRow(ctx)
-    return auth && hasJiraScopes(auth.scopes) ? auth : null
+    return auth?.refreshToken && auth.providerUserId && hasJiraScopes(auth.scopes) ? auth : null
   }
 
   parseIntegrationHash(integrationHash: string) {

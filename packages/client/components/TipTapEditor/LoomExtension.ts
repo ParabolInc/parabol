@@ -18,7 +18,7 @@ export const unfurlLoomLinks = (rawContent: JSONContent): JSONContent => {
   })
 
   return {
-    type: rawContent.type,
+    ...rawContent,
     content: newContent
   }
 }

@@ -14,6 +14,7 @@ import type {CompletedHandler} from '../types/relayMutations'
 import {Button} from '../ui/Button/Button'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogContent} from '../ui/Dialog/DialogContent'
+import {DialogTitle} from '../ui/Dialog/DialogTitle'
 import parseEmailAddressList from '../utils/parseEmailAddressList'
 import plural from '../utils/plural'
 import AddTeamMemberModalSuccess from './AddTeamMemberModalSuccess'
@@ -155,10 +156,10 @@ const AddTeamMemberModal = (props: Props) => {
                 }}
               />
             )}
-            <div className='flex-1'>
-              <h2 className='mb-2 font-semibold text-2xl leading-8'>Invite to Team</h2>
+            <div className='min-w-0 flex-1'>
+              <DialogTitle className='mb-2 text-2xl leading-8'>Invite to Team</DialogTitle>
               <div className='flex items-center'>
-                <div className='w-full'>
+                <div className='w-full min-w-0'>
                   <h3 className='m-0 flex items-center pb-[3px] font-semibold text-[15px] leading-[21px]'>
                     Share this link
                   </h3>

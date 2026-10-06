@@ -3,6 +3,7 @@ import type * as React from 'react'
 import {useCallback, useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {useLocation, useNavigate} from 'react-router'
+import type {PayloadError} from 'relay-runtime'
 import type {MeetingTypeEnum} from '~/__generated__/ActivityDetailsQuery.graphql'
 import type {TemplateDetails_activity$key} from '~/__generated__/TemplateDetails_activity.graphql'
 import type {TemplateDetails_user$key} from '~/__generated__/TemplateDetails_user.graphql'
@@ -17,7 +18,7 @@ import TemplateDimensionList from '../../../modules/meeting/components/TemplateD
 import TemplatePromptList from '../../../modules/meeting/components/TemplatePromptList'
 import {UnstyledTemplateSharing} from '../../../modules/meeting/components/TemplateSharing'
 import RemovePokerTemplateMutation from '../../../mutations/RemovePokerTemplateMutation'
-import RemoveReflectTemplateMutation from '../../../mutations/RemoveReflectTemplateMutation'
+import RemovePromptTemplateMutation from '../../../mutations/RemovePromptTemplateMutation'
 import {Button} from '../../../ui/Button/Button'
 import {cn} from '../../../ui/cn'
 import {Dialog} from '../../../ui/Dialog/Dialog'
@@ -123,7 +124,7 @@ export const TemplateDetails = (props: Props) => {
             ...TemplateDimensionList_dimensions
           }
         }
-        ... on ReflectTemplate {
+        ... on PromptTemplate {
           prompts {
             ...AddTemplatePrompt_prompts
             ...TemplatePromptList_prompts
@@ -172,26 +173,29 @@ export const TemplateDetails = (props: Props) => {
   const prevCategory = location.state?.prevCategory
 
   const atmosphere = useAtmosphere()
-  const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
+  const {onError, onCompleted, error, submitting, submitMutation} = useMutationProps()
+  const [errorActivityId, setErrorActivityId] = useState<string | null>(null)
 
   const removeTemplate = useCallback(() => {
     if (submitting) return
     const removeTemplateMutationLookup = {
-      retrospective: RemoveReflectTemplateMutation,
+      retrospective: RemovePromptTemplateMutation,
       poker: RemovePokerTemplateMutation,
       action: null,
-      teamPrompt: null,
+      teamPrompt: RemovePromptTemplateMutation,
       teamHealth: null
     } as const
 
     const removeTemplateMutation = removeTemplateMutationLookup[type]
     if (!removeTemplateMutation) return
 
+    setErrorActivityId(activityId)
     submitMutation()
     const mutationArgs = {
       onError,
-      onCompleted: () => {
-        onCompleted()
+      onCompleted: (res: unknown, errors?: readonly PayloadError[] | null) => {
+        onCompleted(res, errors)
+        if (errors?.length) return
         navigate(
           `/activity-library/category/${prevCategory ?? category ?? QUICK_START_CATEGORY_ID}`,
           {replace: true}
@@ -217,7 +221,11 @@ export const TemplateDetails = (props: Props) => {
 
   useEffect(() => {
     setIsEditing(!!location.state?.edit)
-  }, [location.state?.edit, setIsEditing])
+  }, [location.state?.edit, activityId, setIsEditing])
+
+  useEffect(() => {
+    setErrorActivityId(null)
+  }, [activityId])
 
   useEffect(() => setActiveTemplate(atmosphere, teamId, activityId, type), [activity])
 
@@ -271,6 +279,9 @@ export const TemplateDetails = (props: Props) => {
               </div>
             </div>
           )}
+          {isOwner && error && errorActivityId === activityId && (
+            <div className='text-fg-error text-sm'>{error.message}</div>
+          )}
           {!isOwner && __typename !== 'FixedActivity' && (
             <div className='flex items-center justify-between'>
               <div className='py-2 font-semibold text-fg-secondary text-sm'>{description}</div>
@@ -320,7 +331,7 @@ export const TemplateDetails = (props: Props) => {
                 templateId={activityId}
               />
               {isOwner && isEditing && (
-                <AddTemplatePrompt templateId={activityId} prompts={prompts} />
+                <AddTemplatePrompt templateId={activityId} templateType={type} prompts={prompts} />
               )}
             </>
           )}

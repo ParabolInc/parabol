@@ -3,16 +3,17 @@ import type {GraphQLResolveInfo} from 'graphql'
 import LinearIssueId from 'parabol-client/shared/gqlIds/LinearIssueId'
 import LinearProjectId from 'parabol-client/shared/gqlIds/LinearProjectId'
 import {splitTipTapContent} from 'parabol-client/shared/tiptap/splitTipTapContent'
+import {tipTapToMarkdown} from 'parabol-client/shared/tiptap/tipTapToMarkdown'
 import type {InternalContext} from '../../graphql/graphql'
 import createCommentMutation from '../../graphql/nestedSchema/Linear/mutations/createComment.graphql'
 import createIssueMutation from '../../graphql/nestedSchema/Linear/mutations/createIssue.graphql'
 import updateIssueMutation from '../../graphql/nestedSchema/Linear/mutations/updateIssue.graphql'
 import getIssueQuery from '../../graphql/nestedSchema/Linear/queries/getIssue.graphql'
+import getIssuesQuery from '../../graphql/nestedSchema/Linear/queries/getIssues.graphql'
 import getProfileQuery from '../../graphql/nestedSchema/Linear/queries/getProfile.graphql'
 import getProjectIssuesQuery from '../../graphql/nestedSchema/Linear/queries/getProjectIssues.graphql'
 import getProjectsQuery from '../../graphql/nestedSchema/Linear/queries/getProjects.graphql'
 import getTeamsAndProjectsQuery from '../../graphql/nestedSchema/Linear/queries/getTeamsAndProjects.graphql'
-import getWorkItemsQuery from '../../graphql/nestedSchema/Linear/queries/getWorkItems.graphql'
 import {linearRequest} from '../../graphql/public/rootSchema'
 import type {TeamMemberIntegrationAuth} from '../../postgres/types'
 import type {
@@ -20,16 +21,15 @@ import type {
   CreateCommentMutationVariables,
   CreateIssueMutation,
   GetIssueQuery,
+  GetIssuesQuery,
+  GetIssuesQueryVariables,
   GetProjectIssuesQuery,
   GetProjectIssuesQueryVariables,
   GetProjectsQuery,
   GetTeamsAndProjectsQuery,
-  GetWorkItemsQuery,
-  GetWorkItemsQueryVariables,
   UpdateIssueMutation,
   UpdateIssueMutationVariables
 } from '../../types/linearTypes'
-import {convertTipTapToMarkdown} from '../../utils/convertTipTapToMarkdown'
 import type {CreateTaskResponse, TaskIntegrationManager} from '../platform/TaskIntegrationManager'
 import makeCreateLinearTaskComment from './makeCreateLinearTaskComment'
 
@@ -79,7 +79,7 @@ class LinearServerManager implements TaskIntegrationManager {
       return new Error('Could not parse teamId from integrationRepoId.')
     }
     const {title, bodyContent} = splitTipTapContent(rawContentJSON)
-    const description = convertTipTapToMarkdown(bodyContent)
+    const description = tipTapToMarkdown(bodyContent)
 
     const [createIssueData, createIssueError] = await this.createIssueInternal({
       title,
@@ -164,9 +164,9 @@ class LinearServerManager implements TaskIntegrationManager {
     return [data, error] as const
   }
 
-  async getWorkItems(variables: GetWorkItemsQueryVariables) {
+  async getIssues(variables: GetIssuesQueryVariables) {
     const linearRequest = this.getLinearRequest(this.info, this.context)
-    const [data, error] = await linearRequest<GetWorkItemsQuery>(getWorkItemsQuery, variables)
+    const [data, error] = await linearRequest<GetIssuesQuery>(getIssuesQuery, variables)
     return [data, error] as const
   }
 

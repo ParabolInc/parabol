@@ -78,7 +78,7 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
   const promptIds = [...new Set(reflections.map((r) => r.promptId))]
   const [template, ...prompts] = await Promise.all([
     dataLoader.get('meetingTemplates').load(templateId),
-    ...promptIds.map((promptId) => dataLoader.get('reflectPrompts').load(promptId))
+    ...promptIds.map((promptId) => dataLoader.get('templatePrompts').load(promptId))
   ])
 
   let markdown = ''
