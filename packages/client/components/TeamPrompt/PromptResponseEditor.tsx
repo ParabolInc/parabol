@@ -181,7 +181,9 @@ const PromptResponseEditor = (props: Props) => {
   const isNearCharacterLimit = useEditorState({
     editor,
     selector: ({editor}) =>
-      !!editor && editor.storage.characterCount.characters() >= CHARACTER_COUNT_VISIBLE_FROM
+      !!editor &&
+      !editor.isDestroyed &&
+      editor.storage.characterCount.characters() >= CHARACTER_COUNT_VISIBLE_FROM
   })
 
   useEffect(() => {
