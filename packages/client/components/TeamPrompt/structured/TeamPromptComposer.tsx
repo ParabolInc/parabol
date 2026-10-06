@@ -5,7 +5,9 @@ import {cn} from '../../../ui/cn'
 import TeamPromptAnswerEditor from './TeamPromptAnswerEditor'
 import TeamPromptComposerFooter from './TeamPromptComposerFooter'
 import TeamPromptComposerHeader from './TeamPromptComposerHeader'
+import TeamPromptReplyButton from './TeamPromptReplyButton'
 import {TEAM_UPDATES_BAND, TEAM_UPDATES_COLUMN} from './teamUpdatesLayout'
+import useOpenResponseDiscussion from './useOpenResponseDiscussion'
 import useTeamPromptComposer from './useTeamPromptComposer'
 
 interface Props {
@@ -18,6 +20,9 @@ const TeamPromptComposer = (props: Props) => {
     graphql`
       fragment TeamPromptComposer_meeting on TeamPromptMeeting {
         ...useTeamPromptComposer_meeting
+        id
+        localStageId
+        rightDrawerOpen
       }
     `,
     meetingRef
@@ -41,8 +46,14 @@ const TeamPromptComposer = (props: Props) => {
     sharedAt,
     lastAnswerAt
   } = useTeamPromptComposer(meeting)
+  const onReply = useOpenResponseDiscussion(
+    meeting.id,
+    meeting.rightDrawerOpen ?? null,
+    meeting.localStageId ?? stage?.id ?? null
+  )
 
   if (!stage) return null
+  const showShareFooter = isExpanded && !isEnded
   return (
     <div className={cn(TEAM_UPDATES_BAND, 'pt-6 pb-2')}>
       <div className={TEAM_UPDATES_COLUMN}>
@@ -82,17 +93,28 @@ const TeamPromptComposer = (props: Props) => {
               )
             })}
           </div>
-          {!isEnded && (
-            <TeamPromptComposerFooter
-              isShared={isShared}
-              isDirty={isDirty}
-              answeredCount={answeredPromptIds.size}
-              promptCount={prompts.length}
-              submitting={submitting}
-              onShare={onShare}
-            />
-          )}
         </div>
+        {(isShared || showShareFooter) && (
+          <div className={cn('flex items-center gap-3 px-1', isExpanded ? 'pt-2' : 'pl-22')}>
+            {isShared && (
+              <TeamPromptReplyButton
+                className='shrink-0 items-center pt-0'
+                edgesRef={stage.discussion.thread.edges}
+                onReply={() => onReply(stage.id)}
+              />
+            )}
+            {showShareFooter && (
+              <TeamPromptComposerFooter
+                isShared={isShared}
+                isDirty={isDirty}
+                answeredCount={answeredPromptIds.size}
+                promptCount={prompts.length}
+                submitting={submitting}
+                onShare={onShare}
+              />
+            )}
+          </div>
+        )}
       </div>
     </div>
   )

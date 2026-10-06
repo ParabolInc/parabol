@@ -32,6 +32,13 @@ const useTeamPromptComposer = (meetingRef: useTeamPromptComposer_meeting$key) =>
                   picture
                 }
               }
+              discussion {
+                thread(first: 1000) @connection(key: "DiscussionThread_thread") {
+                  edges {
+                    ...TeamPromptReplyButton_edges
+                  }
+                }
+              }
               responses {
                 id
                 promptId

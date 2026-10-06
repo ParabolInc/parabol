@@ -85,10 +85,10 @@ const TeamPromptStructuredMeeting = (props: Props) => {
   }, [responseId])
 
   useEffect(() => {
-    if (localStageId || endedAt) return
+    if (localStageId) return
     if (!window.matchMedia(`(min-width: ${Breakpoint.SIDEBAR_LEFT}px)`).matches) return
     commitLocalUpdate(atmosphere, (store) => {
-      store.get(meetingId)?.setValue('inspiration', 'rightDrawerOpen')
+      store.get(meetingId)?.setValue(endedAt ? 'discussion' : 'inspiration', 'rightDrawerOpen')
     })
   }, [])
 
