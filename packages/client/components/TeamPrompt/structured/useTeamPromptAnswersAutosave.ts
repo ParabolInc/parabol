@@ -3,6 +3,7 @@ import {useCallback, useEffect, useRef, useState} from 'react'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useShareTeamPromptResponsesMutation from '../../../mutations/useShareTeamPromptResponsesMutation'
 import useUpsertTeamPromptResponseMutation from '../../../mutations/useUpsertTeamPromptResponseMutation'
+import replaceFileUploadPlaceholders from '../../../shared/tiptap/replaceFileUploadPlaceholders'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import {clearDraftAnswers, writeDraftAnswer} from './teamPromptDraftStorage'
 
@@ -56,7 +57,11 @@ const useTeamPromptAnswersAutosave = (options: Options) => {
           resolve(isSaved)
         }
         upsertResponse({
-          variables: {meetingId, promptId, content: JSON.stringify(doc)},
+          variables: {
+            meetingId,
+            promptId,
+            content: JSON.stringify(replaceFileUploadPlaceholders(doc))
+          },
           onError: () => {
             reportError(TRANSPORT_ERROR)
             settle(false)
