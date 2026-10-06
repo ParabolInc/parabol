@@ -4,8 +4,8 @@ FROM node:${_NODE_VERSION}-trixie-slim as base
 ARG DD_GIT_REPOSITORY_URL
 ARG DD_GIT_COMMIT_SHA
 
-# Install Fontconfig for SVG rendering
-RUN apt-get update && apt-get install -y fontconfig
+# Install Fontconfig for SVG rendering and woff2 to convert the web fonts below
+RUN apt-get update && apt-get install -y fontconfig woff2
 
 ENV HOME=/home/node \
     USER=node \
@@ -23,6 +23,8 @@ RUN mkdir -p ${HOME}/parabol/self-hosted && \
 # Create a directory to store fonts
 RUN mkdir -p /usr/share/fonts
 COPY --chown=node static/fonts /usr/share/fonts
+# sharp cannot read woff2, so SVG text falls back to DejaVu unless a ttf exists
+RUN for font in /usr/share/fonts/*.woff2; do woff2_decompress "$font"; done
 
 COPY --chown=node .env.example ${HOME}/parabol/.env.example
 
