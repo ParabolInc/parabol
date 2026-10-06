@@ -10,7 +10,7 @@ interface Props {
 const PromptResponseCharacterCount = ({editor, limit}: Props) => {
   const characterCount = useEditorState({
     editor,
-    selector: ({editor}) => editor.storage.characterCount.characters()
+    selector: ({editor}) => (editor.isDestroyed ? 0 : editor.storage.characterCount.characters())
   })
   const isAtLimit = characterCount >= limit
   return (
