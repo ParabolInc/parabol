@@ -54,9 +54,9 @@ const handleCompletedRetrospectiveStage = async (
       )
 
       data.reflectionGroups = sortedReflectionGroups
-      // Entering the group phase. Don't await: grouping by similar wording is a convenience, and
-      // the navigation must not wait on it (or fail with it)
-      generateDefaultSuggestedGroups(meeting.id, meeting.facilitatorUserId!)
+      // Entering the group phase. Don't await: suggested groups are a convenience, and the
+      // navigation must not wait on them (or fail with them)
+      generateDefaultSuggestedGroups(meeting.id, meeting.teamId, meeting.facilitatorUserId!)
     } else if (stage.phaseType === GROUP) {
       const {facilitatorUserId, phases, teamId} = meeting
       unlockAllStagesForPhase(phases, 'discuss', true)
