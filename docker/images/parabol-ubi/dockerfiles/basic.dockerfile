@@ -4,12 +4,8 @@ FROM node:${_NODE_VERSION}-trixie-slim as base
 ARG DD_GIT_REPOSITORY_URL
 ARG DD_GIT_COMMIT_SHA
 
-# Install Fontconfig for SVG rendering and woff2 to convert the web fonts below
-RUN apt-get update && apt-get install -y fontconfig woff2
-
 ENV HOME=/home/node \
     USER=node \
-    FONTCONFIG_PATH=/etc/fonts \
     NPM_CONFIG_PREFIX=/home/node/.npm-global \
     PORT=3000
 
@@ -19,12 +15,6 @@ COPY --chown=node docker/images/parabol-ubi/tools/ip-to-server_id ${HOME}/tools/
 # Required for pushToCDN to work with FILE_STORE_PROVIDER set to 'local'
 RUN mkdir -p ${HOME}/parabol/self-hosted && \
     chown node:node ${HOME}/parabol/self-hosted
-
-# Create a directory to store fonts
-RUN mkdir -p /usr/share/fonts
-COPY --chown=node static/fonts /usr/share/fonts
-# sharp cannot read woff2, so SVG text falls back to DejaVu unless a ttf exists
-RUN for font in /usr/share/fonts/*.woff2; do woff2_decompress "$font"; done
 
 COPY --chown=node .env.example ${HOME}/parabol/.env.example
 
