@@ -1,5 +1,4 @@
 import getKysely from '../../../postgres/getKysely'
-import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import {selectNewMeetings} from '../../../postgres/select'
 import type {TeamPromptMeeting as TeamPromptMeetingSource} from '../../../postgres/types/Meeting'
 import {getUserId} from '../../../utils/authorization'
@@ -51,14 +50,22 @@ const TeamPromptMeeting: TeamPromptMeetingResolvers = {
     return filterTasksByMeeting(teamTasks, meetingId, viewerId)
   },
 
-  responses: ({id: meetingId}, _args) => {
-    return getTeamPromptResponsesByMeetingId(meetingId)
+  responses: ({id: meetingId}, _args, {authToken, dataLoader}) => {
+    const viewerId = getUserId(authToken)
+    return dataLoader.get('teamPromptResponsesByMeetingIdForViewer').load({meetingId, viewerId})
   },
 
-  responseCount: async ({id: meetingId}) => {
-    return (await getTeamPromptResponsesByMeetingId(meetingId)).filter(
-      (response) => !!response.plaintextContent
-    ).length
+  template: ({templateId}, _args, {dataLoader}) => {
+    return dataLoader.get('meetingTemplates').loadNonNull(templateId)
+  },
+
+  prompts: ({id: meetingId}, _args, {dataLoader}) => {
+    return dataLoader.get('templatePromptsByMeetingId').load(meetingId)
+  },
+
+  responseCount: async ({id: meetingId}, _args, {dataLoader}) => {
+    const responses = await dataLoader.get('teamPromptResponsesByMeetingId').load(meetingId)
+    return new Set(responses.map(({userId}) => userId)).size
   },
 
   taskCount: async ({id: meetingId}, _args, {dataLoader}) => {

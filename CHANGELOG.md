@@ -5,6 +5,31 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [14.3.2](https://github.com/ParabolInc/parabol/compare/v14.3.1...v14.3.2) (2026-10-06)
+
+
+### Fixed
+
+* standup character count crash on destroyed editor ([#13584](https://github.com/ParabolInc/parabol/issues/13584)) ([bebe317](https://github.com/ParabolInc/parabol/commit/bebe3178b9fa6842bfb48e52cea4a3648b0bee70))
+
+## [14.3.1](https://github.com/ParabolInc/parabol/compare/v14.3.0...v14.3.1) (2026-10-06)
+
+
+### Fixed
+
+* bump deps like nodemailer ([#13573](https://github.com/ParabolInc/parabol/issues/13573)) ([1447c7c](https://github.com/ParabolInc/parabol/commit/1447c7c0e4d23d494bf9fbc96dc10e72aa7d3a40))
+* Jira scoping crash when the Atlassian integration is null ([#13580](https://github.com/ParabolInc/parabol/issues/13580)) ([e2b3fa3](https://github.com/ParabolInc/parabol/commit/e2b3fa3fb2658bccb650ea8992fc371c2d63bfc0))
+* Plex used for avatars ([#13579](https://github.com/ParabolInc/parabol/issues/13579)) ([cba8e38](https://github.com/ParabolInc/parabol/commit/cba8e389299262b8295d3df7e0f2ce37c6428c29))
+* standup char count, link to slack integration, discussion ([#13582](https://github.com/ParabolInc/parabol/issues/13582)) ([ddb80f9](https://github.com/ParabolInc/parabol/commit/ddb80f9d55476f23664c7425f0ed19dbd1df5157))
+* validate providerId ([#13549](https://github.com/ParabolInc/parabol/issues/13549)) ([5bc31f9](https://github.com/ParabolInc/parabol/commit/5bc31f924297739a82f7e12541e3fb060bda7f63))
+
+## [14.3.0](https://github.com/ParabolInc/parabol/compare/v14.2.0...v14.3.0) (2026-10-06)
+
+
+### Added
+
+* standup templates ([#13570](https://github.com/ParabolInc/parabol/issues/13570)) ([40bba79](https://github.com/ParabolInc/parabol/commit/40bba790cf7eb11c7dcd833c355bd3f27ff6d5fc))
+
 ## [14.2.0](https://github.com/ParabolInc/parabol/compare/v14.1.0...v14.2.0) (2026-10-02)
 
 

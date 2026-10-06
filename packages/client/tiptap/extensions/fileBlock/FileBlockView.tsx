@@ -139,7 +139,7 @@ export const FileBlockView = (props: NodeViewProps) => {
               </>
             )}
           </div>
-          {!isEditing && (
+          {!isEditing && editor.isEditable && (
             <div className='flex items-center' onClick={(e) => e.stopPropagation()}>
               <Menu
                 trigger={

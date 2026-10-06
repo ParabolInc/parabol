@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {Route, Routes} from 'react-router'
+import {Route, Routes, useMatch} from 'react-router'
 import type {TeamDashMainQuery} from '~/__generated__/TeamDashMainQuery.graphql'
 import StartMeetingFAB from '../../../../components/StartMeetingFAB'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
@@ -39,6 +39,7 @@ const TeamDashMain = (props: Props) => {
   const {name: teamName} = team
   const teamId = getTeamIdFromPathname()
   useDocumentTitle(`Team Dashboard | ${teamName}`, teamName)
+  const isIntegrationsTab = !!useMatch('/team/:teamId/integrations')
 
   return (
     <div className='flex h-full w-full'>
@@ -52,7 +53,7 @@ const TeamDashMain = (props: Props) => {
           {/*Fall back to activity view if nothing is specified*/}
           <Route path='*' element={<TeamDashActivityTab teamRef={team} />} />
         </Routes>
-        <StartMeetingFAB className='absolute' />
+        {!isIntegrationsTab && <StartMeetingFAB className='absolute' />}
       </div>
       <TeamDrawer viewer={viewer} />
     </div>

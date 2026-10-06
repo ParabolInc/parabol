@@ -84,7 +84,7 @@ module.exports = (config) => {
     externals: [
       !noDeps && {
         ...nodeExternals({
-          allowlist: [/parabol-client/, /parabol-server/, /@dicebear/, 'node:crypto']
+          allowlist: [/parabol-client/, /parabol-server/, 'node:crypto']
         }),
         sharp: 'commonjs sharp'
       }
@@ -117,28 +117,12 @@ module.exports = (config) => {
         contextRegExp: /pg\/lib/
       }),
       new webpack.IgnorePlugin({
-        resourceRegExp: /^exiftool-vendored$/,
-        contextRegExp: /@dicebear/
-      }),
-      new webpack.IgnorePlugin({
-        resourceRegExp: /^@resvg\/resvg-js$/,
-        contextRegExp: /@dicebear/
-      }),
-      new webpack.IgnorePlugin({
         // sharp statically requires a prebuilt binary for every platform, we only ship ours
         resourceRegExp: new RegExp(`^@img/sharp-(?!${runtimePlatform}/)[^/]+/sharp\\.node$`)
       }),
       new webpack.IgnorePlugin({
         // the prebuilt binary finds libvips via rpath, the dylib itself is copied below
         resourceRegExp: /^@img\/sharp-libvips-[^/]+\/binary$/
-      }),
-      new webpack.IgnorePlugin({
-        resourceRegExp: /inter-regular.otf$/,
-        contextRegExp: /@dicebear/
-      }),
-      new webpack.IgnorePlugin({
-        resourceRegExp: /inter-bold.otf$/,
-        contextRegExp: /@dicebear/
       }),
       new CopyWebpackPlugin({
         patterns: [

@@ -9,8 +9,7 @@ import appOrigin from '../../../../appOrigin'
 import type SlackAuth from '../../../../database/types/SlackAuth'
 import type {SlackNotificationAuth} from '../../../../dataloader/integrationAuthLoaders'
 import getKysely from '../../../../postgres/getKysely'
-import {getTeamPromptResponsesByMeetingId} from '../../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
-import type {SlackNotification, Team, TeamPromptResponse, User} from '../../../../postgres/types'
+import type {SlackNotification, Team, User} from '../../../../postgres/types'
 import type {AnyMeeting, MeetingTypeEnum} from '../../../../postgres/types/Meeting'
 import type {AnyNotification} from '../../../../postgres/types/Notification'
 import {analytics} from '../../../../utils/analytics/analytics'
@@ -19,6 +18,7 @@ import logError from '../../../../utils/logError'
 import SlackServerManager from '../../../../utils/SlackServerManager'
 import {convertToMarkdown} from '../../../../utils/tiptap/convertToMarkdown'
 import type {DataLoaderWorker} from '../../../graphql'
+import type {TeamPromptMemberResponse} from '../groupTeamPromptResponsesByUser'
 import joinSlackChannel from '../joinSlackChannel'
 import getSummaryText from './getSummaryText'
 import {getTeamHealthQuestionCount} from './getTeamHealthQuestionCount'
@@ -231,7 +231,7 @@ const makeStartMeetingNotificationLookup: Record<
 
 const addStandupResponsesToThread = async (
   res: PostMessageResponse,
-  standupResponses: Array<{user: User; response: TeamPromptResponse}> | null,
+  standupResponses: Array<{user: User; response: TeamPromptMemberResponse}> | null,
   team: Team,
   user: User,
   meeting: AnyMeeting,
@@ -302,7 +302,9 @@ const getSlackMessageForNotification = async (
   userId: string
 ) => {
   if (notification.type === 'RESPONSE_REPLIED') {
-    const responses = await getTeamPromptResponsesByMeetingId(notification.meetingId)
+    const responses = await dataLoader
+      .get('teamPromptResponsesByMeetingId')
+      .load(notification.meetingId)
     const responseId = responses.find(({userId: responseUserId}) => responseUserId === userId)?.id
     if (!responseId) {
       return null

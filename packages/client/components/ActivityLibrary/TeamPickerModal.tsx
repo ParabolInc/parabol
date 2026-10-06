@@ -1,17 +1,17 @@
 import {VisuallyHidden} from '@radix-ui/react-visually-hidden'
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {TeamPickerModal_teams$key} from '~/__generated__/TeamPickerModal_teams.graphql'
 import type {MeetingTypeEnum} from '~/__generated__/TemplateDetails_activity.graphql'
 import type {useAddPokerTemplateMutation$data} from '../../__generated__/useAddPokerTemplateMutation.graphql'
-import type {useAddReflectTemplateMutation$data} from '../../__generated__/useAddReflectTemplateMutation.graphql'
+import type {useAddPromptTemplateMutation$data} from '../../__generated__/useAddPromptTemplateMutation.graphql'
 import type {useAddTeamHealthTemplateMutation$data} from '../../__generated__/useAddTeamHealthTemplateMutation.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useAddPokerTemplateMutation from '../../mutations/useAddPokerTemplateMutation'
-import useAddReflectTemplateMutation from '../../mutations/useAddReflectTemplateMutation'
+import useAddPromptTemplateMutation from '../../mutations/useAddPromptTemplateMutation'
 import useAddTeamHealthTemplateMutation from '../../mutations/useAddTeamHealthTemplateMutation'
 import {cn} from '../../ui/cn'
 import {Dialog} from '../../ui/Dialog/Dialog'
@@ -55,16 +55,23 @@ const TeamPickerModal = (props: Props) => {
 
   const atmosphere = useAtmosphere()
   const [error, setError] = useState<string | null>(null)
-  const [executeAddReflectTemplate, reflectSubmitting] = useAddReflectTemplateMutation()
+  const [executeAddPromptTemplate, promptSubmitting] = useAddPromptTemplateMutation()
   const [executeAddPokerTemplate, pokerSubmitting] = useAddPokerTemplateMutation()
   const [executeAddTeamHealthTemplate, teamHealthSubmitting] = useAddTeamHealthTemplateMutation()
-  const submitting = reflectSubmitting || pokerSubmitting || teamHealthSubmitting
+  const submitting = promptSubmitting || pokerSubmitting || teamHealthSubmitting
 
   useEffect(() => {
     setError(null)
   }, [selectedTeam?.id])
 
   const navigate = useNavigate()
+  const isNavigatingAwayRef = useRef(false)
+
+  useEffect(() => {
+    if (isOpen) {
+      isNavigatingAwayRef.current = false
+    }
+  }, [isOpen])
 
   // user has no teams
   if (!selectedTeam) return null
@@ -74,6 +81,9 @@ const TeamPickerModal = (props: Props) => {
   }
 
   const onTemplateCreated = (templateId: string | undefined) => {
+    if (templateId) {
+      isNavigatingAwayRef.current = true
+    }
     closeModal()
     if (templateId) {
       navigate(`/activity-library/details/${templateId}`, {
@@ -89,14 +99,18 @@ const TeamPickerModal = (props: Props) => {
 
     const variables = {teamId: selectedTeam.id, parentTemplateId}
     setError(null)
-    if (type === 'retrospective') {
-      executeAddReflectTemplate({
-        variables,
+    if (type === 'retrospective' || type === 'teamPrompt') {
+      executeAddPromptTemplate({
+        variables: {...variables, type},
         onError,
-        onCompleted: (res: useAddReflectTemplateMutation$data) =>
-          onTemplateCreated(
-            res.addReflectTemplate?.useAddReflectTemplateMutation_team?.reflectTemplate?.id
-          )
+        onCompleted: (res: useAddPromptTemplateMutation$data, errors) => {
+          const [firstError] = errors ?? []
+          if (firstError) {
+            setError(firstError.message)
+            return
+          }
+          onTemplateCreated(res.addPromptTemplate.template.id)
+        }
       })
     } else if (type === 'poker') {
       executeAddPokerTemplate({
@@ -127,7 +141,12 @@ const TeamPickerModal = (props: Props) => {
 
   return (
     <Dialog isOpen={isOpen} onClose={closeModal}>
-      <DialogContent className='w-[440px] p-6'>
+      <DialogContent
+        className='w-[440px] p-6'
+        onCloseAutoFocus={(e) => {
+          if (isNavigatingAwayRef.current) e.preventDefault()
+        }}
+      >
         <VisuallyHidden asChild>
           <DialogTitle>Select a team to clone this template</DialogTitle>
         </VisuallyHidden>

@@ -46,13 +46,14 @@ export const useEmbedNewUserAsset = (
     }
   }, [scopeKey])
 
+  const isReadOnly = !editor.isEditable
   useEffect(() => {
     // blob urls are local and are in the process of being uploaded at this point
-    if (isHosted || !src || src.startsWith('blob:') || src.startsWith('data:')) return
+    if (isReadOnly || isHosted || !src || src.startsWith('blob:') || src.startsWith('data:')) return
     requestEmbed(src, assetScope, scopeKey, atmosphere, editor)
-  }, [isHosted, src])
+  }, [isHosted, src, isReadOnly])
 
-  const result = isHosted || embedStatus === 'success'
-  const embedError = embedStatus === 'error'
+  const result = isHosted || isReadOnly || embedStatus === 'success'
+  const embedError = !isReadOnly && embedStatus === 'error'
   return {isHosted: result, embedError}
 }

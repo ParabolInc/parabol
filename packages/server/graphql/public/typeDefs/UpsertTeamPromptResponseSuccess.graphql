@@ -2,18 +2,13 @@
 Success result for upsertTeamPromptResponse mutation
 """
 type UpsertTeamPromptResponseSuccess {
-  "ID of the created or updated team prompt response"
-  teamPromptResponseId: ID!
-  "ID of the standup meeting this response belongs to"
-  meetingId: ID!
-
   """
   The created/updated team prompt response
   """
-  teamPromptResponse: TeamPromptResponse
+  teamPromptResponse: TeamPromptResponse!
 
   """
   The updated meeting
   """
-  meeting: NewMeeting
+  meeting: TeamPromptMeeting!
 }

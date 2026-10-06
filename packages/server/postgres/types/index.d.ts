@@ -23,7 +23,7 @@ import {
   selectPersonalAccessToken,
   type selectPoll,
   type selectPollOption,
-  type selectReflectPrompts,
+  type selectTemplatePrompts,
   type selectRetroReflections,
   type selectRetroSuggestedGrouping,
   type selectSlackAuths,
@@ -145,7 +145,7 @@ export type TemplateDimension = ExtractTypeFromQueryBuilderSelect<typeof selectT
 export type SlackNotification = ExtractTypeFromQueryBuilderSelect<typeof selectSlackNotifications>
 
 export type Comment = ExtractTypeFromQueryBuilderSelect<typeof selectComments>
-export type ReflectPrompt = ExtractTypeFromQueryBuilderSelect<typeof selectReflectPrompts>
+export type TemplatePrompt = ExtractTypeFromQueryBuilderSelect<typeof selectTemplatePrompts>
 export type Insight = Selectable<InsightPG>
 
 export type NewMeeting = ExtractTypeFromQueryBuilderSelect<typeof selectNewMeetings>
