@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [14.3.2](https://github.com/ParabolInc/parabol/compare/v14.3.1...v14.3.2) (2026-10-06)
+
+
+### Fixed
+
+* standup character count crash on destroyed editor ([#13584](https://github.com/ParabolInc/parabol/issues/13584)) ([bebe317](https://github.com/ParabolInc/parabol/commit/bebe3178b9fa6842bfb48e52cea4a3648b0bee70))
+
 ## [14.3.1](https://github.com/ParabolInc/parabol/compare/v14.3.0...v14.3.1) (2026-10-06)
 
 
