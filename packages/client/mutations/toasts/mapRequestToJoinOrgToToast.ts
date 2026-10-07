@@ -4,6 +4,7 @@ import type {Snack} from '../../components/Snackbar'
 import type {OnNextNavigateContext} from '../../types/relayMutations'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import makeNotificationToastKey from './makeNotificationToastKey'
+import type {UnmaskedNotification} from './mapNotificationToToast'
 
 graphql`
   fragment mapRequestToJoinOrgToToast_notification on NotifyRequestToJoinOrg {
@@ -16,7 +17,7 @@ graphql`
 `
 
 const mapRequestToJoinOrgToToast = (
-  notification: mapRequestToJoinOrgToToast_notification$data,
+  notification: UnmaskedNotification<mapRequestToJoinOrgToToast_notification$data>,
   {atmosphere, navigate}: OnNextNavigateContext
 ): Snack => {
   const {id: notificationId, email, domainJoinRequestId} = notification

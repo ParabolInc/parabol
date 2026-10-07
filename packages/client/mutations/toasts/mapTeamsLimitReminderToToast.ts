@@ -6,6 +6,7 @@ import type {OnNextNavigateContext} from '../../types/relayMutations'
 import makeDateString from '../../utils/makeDateString'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import makeNotificationToastKey from './makeNotificationToastKey'
+import type {UnmaskedNotification} from './mapNotificationToToast'
 
 graphql`
   fragment mapTeamsLimitReminderToToast_notification on NotifyTeamsLimitReminder {
@@ -17,7 +18,7 @@ graphql`
 `
 
 const mapTeamsLimitReminderToToast = (
-  notification: mapTeamsLimitReminderToToast_notification$data,
+  notification: UnmaskedNotification<mapTeamsLimitReminderToToast_notification$data>,
   {navigate, atmosphere}: OnNextNavigateContext
 ): Snack => {
   const {id: notificationId, scheduledLockAt, orgId, orgName} = notification

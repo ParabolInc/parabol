@@ -4,6 +4,7 @@ import type {Snack} from '../../components/Snackbar'
 import type {OnNextNavigateContext} from '../../types/relayMutations'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import makeNotificationToastKey from './makeNotificationToastKey'
+import type {UnmaskedNotification} from './mapNotificationToToast'
 
 graphql`
   fragment mapResponseMentionedToToast_notification on NotifyResponseMentioned {
@@ -22,10 +23,9 @@ graphql`
 `
 
 const mapResponseMentionedToToast = (
-  notification: mapResponseMentionedToToast_notification$data,
+  notification: UnmaskedNotification<mapResponseMentionedToToast_notification$data>,
   {atmosphere, navigate}: OnNextNavigateContext
 ): Snack | null => {
-  if (!notification) return null
   const {id: notificationId, meeting, response} = notification
   const {preferredName: authorName} = response.user
   const {id: meetingId, name: meetingName} = meeting
