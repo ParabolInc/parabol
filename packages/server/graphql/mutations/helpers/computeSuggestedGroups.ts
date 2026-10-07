@@ -50,8 +50,8 @@ const isReusable = (
  * equivalent request.
  *
  * Similarity grouping is derived from embeddings the embedder already wrote as reflections were
- * typed, so it is cheap enough to run automatically on entering the group phase. AI grouping costs
- * an LLM call, so it is only computed when a user asks for it.
+ * typed, so it is cheap enough to recompute on every edit. AI grouping costs an LLM call, so it
+ * runs once on entering the group phase and after that only when a user asks for it.
  *
  * The cache is the meeting's RetroSuggestedGrouping row, keyed on the full config plus a hash of the
  * live reflection ids, so previewing on hover and then applying costs one LLM call rather than two.
