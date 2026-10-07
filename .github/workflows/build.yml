@@ -45,6 +45,7 @@ jobs:
           ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
           echo "ACTION_VERSION=${ACTION_VERSION}" >> $GITHUB_ENV
           echo "NODE_VERSION=$(jq -r -j '.engines.node|ltrimstr("^")' package.json)" >> $GITHUB_ENV
+          echo "NODE_MAJOR=$(jq -r -j '.engines.node|ltrimstr("^")|split(".")[0]' package.json)" >> $GITHUB_ENV
 
           DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL_DEV }}
           echo "DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL_DEV }}" >> $GITHUB_ENV
@@ -105,7 +106,7 @@ jobs:
           file: ${{ env.PARABOL_DOCKERFILE }}
           context: .
           build-args: |
-            "_NODE_VERSION=${{ env.NODE_VERSION }}"
+            "_NODE_MAJOR=${{ env.NODE_MAJOR }}"
             "DD_GIT_REPOSITORY_URL=${{ github.repositoryUrl }}"
             "DD_GIT_COMMIT_SHA=${{ github.sha }}"
           push: true
