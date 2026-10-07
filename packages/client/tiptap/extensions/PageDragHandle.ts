@@ -1,7 +1,7 @@
 import {type Editor, Extension} from '@tiptap/core'
 import DragHandle from '@tiptap/extension-drag-handle'
 import type {Node} from '@tiptap/pm/model'
-import {NodeSelection} from '@tiptap/pm/state'
+import {NodeSelection, Plugin, PluginKey} from '@tiptap/pm/state'
 import {isNodeSelection, ReactRenderer} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate} from 'relay-runtime'
@@ -10,6 +10,10 @@ import type Atmosphere from '../../Atmosphere'
 import type {PageLinkBlockAttrs} from '../../shared/tiptap/extensions/PageLinkBlockBase'
 import {GQLID} from '../../utils/GQLID'
 import DragHandleMenu from './DragHandleMenu'
+import {findNestDropTarget, isListNode, moveListIntoItem} from './nestListDrop'
+
+// px the cursor must be indented past a list item's left edge to nest into it
+const NEST_INDENT_PX = 24
 
 const queryNode = graphql`
   query PageDragHandleQuery($pageId: ID!) {
@@ -47,7 +51,9 @@ export const PageDragHandle = Extension.create<Options>({
   addStorage() {
     return {
       dragHandleElement: null as HTMLDivElement | null,
-      closeMenu: null as (() => void) | null
+      closeMenu: null as (() => void) | null,
+      // position of the list node being dragged, or -1 when the drag isn't a list
+      draggedListPos: -1 as number
     }
   },
 
@@ -95,6 +101,81 @@ export const PageDragHandle = Extension.create<Options>({
     }
   },
 
+  addProseMirrorPlugins() {
+    const storage = this.storage
+    let dropIndicator: HTMLDivElement | null = null
+    const getIndicator = () => {
+      if (dropIndicator) return dropIndicator
+      const el = document.createElement('div')
+      el.className = 'pointer-events-none fixed z-50 h-0.5 rounded-full bg-accent'
+      el.style.display = 'none'
+      document.body.appendChild(el)
+      dropIndicator = el
+      return el
+    }
+    const hideIndicator = () => {
+      if (dropIndicator) dropIndicator.style.display = 'none'
+    }
+    return [
+      new Plugin({
+        key: new PluginKey('pageListNestDrop'),
+        props: {
+          handleDrop: (view, event, _slice, moved) => {
+            if (!moved) return false
+            const sourcePos = storage.draggedListPos
+            if (sourcePos < 0) return false
+            const sourceNode = view.state.doc.nodeAt(sourcePos)
+            if (!sourceNode || !isListNode(sourceNode)) return false
+            const target = findNestDropTarget(view, event, NEST_INDENT_PX)
+            if (!target) return false // fall back to default (sibling) placement
+            // Never nest a list into its own descendant
+            if (
+              target.targetItemPos > sourcePos &&
+              target.targetItemPos < sourcePos + sourceNode.nodeSize
+            ) {
+              return false
+            }
+            const tr = moveListIntoItem(view.state, sourcePos, target.targetItemPos)
+            view.dispatch(tr)
+            hideIndicator()
+            event.preventDefault()
+            return true
+          },
+          handleDOMEvents: {
+            dragover: (view, event) => {
+              const indicator = getIndicator()
+              const sourcePos = storage.draggedListPos
+              if (sourcePos < 0) {
+                indicator.style.display = 'none'
+                return false
+              }
+              const target = findNestDropTarget(view, event, NEST_INDENT_PX)
+              const dom = target ? view.nodeDOM(target.targetItemPos) : null
+              if (!target || !(dom instanceof HTMLElement)) {
+                indicator.style.display = 'none'
+                return false
+              }
+              const rect = dom.getBoundingClientRect()
+              indicator.style.display = 'block'
+              indicator.style.left = `${rect.left + NEST_INDENT_PX}px`
+              indicator.style.top = `${rect.bottom}px`
+              indicator.style.width = `${Math.max(rect.width - NEST_INDENT_PX, 0)}px`
+              return false
+            },
+            drop: () => {
+              hideIndicator()
+              return false
+            },
+            dragend: () => {
+              hideIndicator()
+              return false
+            }
+          }
+        }
+      })
+    ]
+  },
+
   addExtensions() {
     const dragHandleElement = document.createElement('div')
     this.storage.dragHandleElement = dragHandleElement
@@ -103,6 +184,7 @@ export const PageDragHandle = Extension.create<Options>({
     let menuRenderer: ReactRenderer<typeof DragHandleMenu> | null = null
     let editorRef: Editor | null = null
     const {atmosphere, pageId} = this.options
+    const storage = this.storage
 
     const closeMenu = () => {
       if (!menuRenderer) return
@@ -174,6 +256,10 @@ export const PageDragHandle = Extension.create<Options>({
       // Tells ProseMirror this is an internal drag-move so drop deletes the source
       view.dragging = {slice, move: true}
 
+      // Record the source list position so handleDrop can relocate it (rather
+      // than let the default sibling placement run) on a nest gesture.
+      storage.draggedListPos = isListNode(dragHandleNode) ? from : -1
+
       const selection = NodeSelection.create(doc, from)
       const {tr} = view.state
       tr.setSelection(selection)
@@ -210,6 +296,7 @@ export const PageDragHandle = Extension.create<Options>({
     })
 
     dragHandleElement.addEventListener('dragend', () => {
+      storage.draggedListPos = -1
       commitLocalUpdate(atmosphere, (store) => {
         store
           .getRoot()
