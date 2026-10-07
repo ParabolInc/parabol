@@ -4,7 +4,7 @@ import type {ScopePhaseAreaConnect_service$key} from '../__generated__/ScopePhas
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import {getConnectErrorMessage} from '../integrations/platform/getConnectErrorMessage'
-import {toConnectProviderRef} from '../integrations/platform/integrationServiceProviders'
+import {listServiceProviders} from '../integrations/platform/integrationServiceProviders'
 import {
   getClientIntegration,
   isRegisteredClientIntegration
@@ -30,30 +30,12 @@ const ScopePhaseAreaConnect = (props: Props) => {
         title
         isAvailable
         grantedScopes
-        cloudProvider {
-          id
-          scope
-          ... on IntegrationProviderOAuth2 {
-            clientId
-            serverBaseUrl
-            tenantId
-          }
-        }
-        sharedProviders {
-          id
-          scope
-          ... on IntegrationProviderOAuth2 {
-            clientId
-            serverBaseUrl
-            tenantId
-          }
-        }
+        ...integrationServiceProviders_service @relay(mask: false)
       }
     `,
     serviceRef
   )
-  const {service, title, isAvailable, grantedScopes, cloudProvider, sharedProviders} =
-    integrationService
+  const {service, title, isAvailable, grantedScopes} = integrationService
   if (!isRegisteredClientIntegration(service)) return null
   const definition = getClientIntegration(service)
 
@@ -79,8 +61,7 @@ const ScopePhaseAreaConnect = (props: Props) => {
     )
   }
 
-  const rawProvider = sharedProviders[0] ?? cloudProvider
-  const provider = rawProvider ? toConnectProviderRef(rawProvider) : undefined
+  const [provider] = listServiceProviders(integrationService)
   const onConnect = () => {
     definition.connect(atmosphere, {teamId, mutationProps, provider, heldScopes: grantedScopes})
   }

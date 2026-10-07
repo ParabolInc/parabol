@@ -1,5 +1,4 @@
-import * as google from 'googleapis/build/src/apis/calendar'
-import appOrigin from '../../../appOrigin'
+import makeGcalCalendar from '../../../integrations/gcal/makeGcalCalendar'
 import type {GcalIntegrationResolvers} from '../resolverTypes'
 
 export type GcalIntegrationSource = {
@@ -23,17 +22,7 @@ const GcalIntegration: GcalIntegrationResolvers = {
     if (!gcalAuth) {
       return []
     }
-    const {accessToken: access_token, refreshToken: refresh_token, expiresAt} = gcalAuth
-
-    const CLIENT_ID = process.env.GOOGLE_OAUTH_CLIENT_ID
-    const CLIENT_SECRET = process.env.GOOGLE_OAUTH_CLIENT_SECRET
-    const REDIRECT_URI = appOrigin
-
-    const expiry_date = expiresAt ? expiresAt.getTime() : undefined
-
-    const oauth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
-    oauth2Client.setCredentials({access_token, refresh_token, expiry_date})
-    const calendar = google.calendar({version: 'v3', auth: oauth2Client})
+    const calendar = makeGcalCalendar(gcalAuth)
     const calendarEventResponse = await calendar.events.list({
       calendarId: 'primary',
       // Cap the attendee list per event so we can display a meeting-size count without huge payloads

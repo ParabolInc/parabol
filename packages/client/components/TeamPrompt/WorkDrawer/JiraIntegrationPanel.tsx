@@ -1,57 +1,41 @@
 import graphql from 'babel-plugin-relay/macro'
 import dayjs from 'dayjs'
-import {useFragment} from 'react-relay'
+import {useFragment, usePreloadedQuery} from 'react-relay'
 import type {JiraIntegrationPanel_meeting$key} from '../../../__generated__/JiraIntegrationPanel_meeting.graphql'
-import useAtmosphere from '../../../hooks/useAtmosphere'
+import type {JiraIntegrationPanelQuery} from '../../../__generated__/JiraIntegrationPanelQuery.graphql'
 import useInspirationDrawer from '../../../hooks/useInspirationDrawer'
-import useMutationProps from '../../../hooks/useMutationProps'
-import {getConnectProvider} from '../../../integrations/platform/findIntegrationService'
-import AtlassianClientManager from '../../../utils/AtlassianClientManager'
-import {hasJiraScopes} from '../../../utils/atlassianScopes'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
+import type {WorkDrawerQueryPanelProps} from '../../../integrations/platform/ClientIntegrationDefinition'
 import InspirationItemsPanel from './InspirationItemsPanel'
 import JiraIntegrationResultsRoot from './JiraIntegrationResultsRoot'
 import {WorkDrawerDateFilter} from './WorkDrawerDateFilter'
 
-interface Props {
-  meetingRef: JiraIntegrationPanel_meeting$key
-}
+const query = graphql`
+  query JiraIntegrationPanelQuery($meetingId: ID!) {
+    viewer {
+      meeting(meetingId: $meetingId) @required(action: THROW) {
+        ...JiraIntegrationPanel_meeting
+      }
+    }
+  }
+`
 
-const JiraIntegrationPanel = (props: Props) => {
-  const {meetingRef} = props
-  const meeting = useFragment(
+const JiraIntegrationPanel = (props: WorkDrawerQueryPanelProps<JiraIntegrationPanelQuery>) => {
+  const {queryRef, meetingId, teamId} = props
+  const {viewer} = usePreloadedQuery<JiraIntegrationPanelQuery>(query, queryRef)
+  const meeting = useFragment<JiraIntegrationPanel_meeting$key>(
     graphql`
       fragment JiraIntegrationPanel_meeting on NewMeeting {
         ...useInspirationDrawer_meeting
-        id
-        teamId
         jiraInspirationItems: inspirationItems(service: jira) {
           id
           title
           content
           promptId
         }
-        viewerMeetingMember {
-          teamMember {
-            teamId
-            services {
-              ...findIntegrationService_cloudProvider @relay(mask: false)
-            }
-            integrations {
-              atlassian {
-                isActive
-                scope
-              }
-            }
-          }
-        }
       }
     `,
-    meetingRef
+    viewer.meeting
   )
-
-  const atmosphere = useAtmosphere()
-  const teamMember = meeting.viewerMeetingMember?.teamMember
 
   const {dateRange, setDateRange, onResultCount, getResultCount} = useInspirationDrawer(
     'jira',
@@ -66,30 +50,6 @@ const JiraIntegrationPanel = (props: Props) => {
   const conditions = ['assignee = currentUser()', dateQueryString].filter(Boolean).join(' AND ')
   const searchQuery = `${conditions} order by updated DESC`
 
-  const mutationProps = useMutationProps()
-  const {error, onError} = mutationProps
-
-  const authJira = () => {
-    const provider = teamMember && getConnectProvider(teamMember.services, 'jira')
-    if (!teamMember || !provider) {
-      return onError(new Error('Could not find team member'))
-    }
-    AtlassianClientManager.openOAuth(
-      atmosphere,
-      teamMember.teamId,
-      provider,
-      mutationProps,
-      AtlassianClientManager.JIRA_SCOPE,
-      teamMember.integrations.atlassian?.scope
-    )
-
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Integration Connected', {
-      teamId: meeting.teamId,
-      meetingId: meeting.id,
-      service: 'jira'
-    })
-  }
-
   const filterBar = (
     <div className='mb-2 flex w-full px-2'>
       <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
@@ -98,40 +58,22 @@ const JiraIntegrationPanel = (props: Props) => {
 
   return (
     <>
-      {teamMember?.integrations.atlassian?.isActive &&
-      hasJiraScopes(teamMember?.integrations.atlassian?.scope) ? (
-        <>
-          {filterBar}
-          <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
-            <InspirationItemsPanel
-              meetingId={meeting.id}
-              service='jira'
-              searchQuery={searchQuery}
-              initialItems={meeting.jiraInspirationItems}
-              hideDraftPanel={!getResultCount(searchQuery)}
-            >
-              <JiraIntegrationResultsRoot
-                teamId={teamMember.teamId}
-                searchQuery={searchQuery}
-                onResultCount={onResultCount}
-              />
-            </InspirationItemsPanel>
-          </div>
-        </>
-      ) : (
-        <div className='flex flex-col items-center gap-2 pt-12'>
-          <div className='h-10 w-10'>{/* <img className='h-10 w-10' src={gitHubSVG} /> */}</div>
-          <b>Connect to Jira</b>
-          <div className='w-1/2 text-center text-sm'>Connect to Jira to view your issues.</div>
-          <button
-            className='mt-4 cursor-pointer rounded-md bg-sky-500 px-8 py-2 font-semibold text-white hover:bg-sky-600'
-            onClick={authJira}
-          >
-            Connect
-          </button>
-          {error && <div className='text-fg-error'>Error: {error.message}</div>}
-        </div>
-      )}
+      {filterBar}
+      <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
+        <InspirationItemsPanel
+          meetingId={meetingId}
+          service='jira'
+          searchQuery={searchQuery}
+          initialItems={meeting.jiraInspirationItems}
+          hideDraftPanel={!getResultCount(searchQuery)}
+        >
+          <JiraIntegrationResultsRoot
+            teamId={teamId}
+            searchQuery={searchQuery}
+            onResultCount={onResultCount}
+          />
+        </InspirationItemsPanel>
+      </div>
     </>
   )
 }

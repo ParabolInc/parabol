@@ -6,6 +6,7 @@ import type {Task, TeamMemberIntegrationAuth} from '../../postgres/types'
 import type {EstimatePushResult} from '../../postgres/types/EstimatePushResult'
 import type {TIntegrationProvider} from '../../postgres/types/IntegrationProvider'
 import type {JsonObject} from '../../postgres/types/pg'
+import type {InspirationIssue} from './InspirationIssue'
 import type {RemoteRepoIntegration} from './RemoteRepoIntegration'
 import type {TaskIntegrationManager} from './TaskIntegrationManager'
 
@@ -128,7 +129,8 @@ export interface EstimatePushCapability {
 }
 
 export interface IssueListCapability {
-  getViewerIssues(ctx: GqlIntegrationCtx): Promise<unknown[]>
+  /** Re-runs a drawer search for the viewer with enough detail to draft from; [] when not connected or the service fails */
+  listIssues(ctx: GqlIntegrationCtx, searchQuery: string): Promise<InspirationIssue[]>
 }
 
 /** What a service stores for a linked issue: the private dedup key and the parts the Task row keeps */

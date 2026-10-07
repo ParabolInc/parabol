@@ -9,7 +9,8 @@ import GitHubRepoFilterBar from './GitHubRepoFilterBar'
 import InspirationKindSwitch from './InspirationKindSwitch'
 import InspirationSourceConnectButton from './InspirationSourceConnectButton'
 import InspirationSourceLogo from './InspirationSourceLogo'
-import {issueCountLabel, serviceLabel} from './inspirationCopy'
+import {issueCountLabel} from './inspirationCopy'
+import inspirationServiceLabel from './inspirationServiceLabel'
 import {
   INSPIRATION_SOURCE_KINDS,
   type InspirationSourceService,
@@ -54,7 +55,7 @@ const InspirationSourcePopover = (props: Props) => {
     `,
     teamMemberRef
   )
-  const label = serviceLabel(service)
+  const label = inspirationServiceLabel(service)
   const destination = canDraft ? 'draft' : 'list'
   const enabledKinds = settings.kinds[service]
   const kinds = INSPIRATION_SOURCE_KINDS[service]
@@ -142,11 +143,13 @@ const InspirationSourcePopover = (props: Props) => {
           </p>
         </>
       ) : (
-        <InspirationSourceConnectButton
-          service={service}
-          meetingId={meetingId}
-          teamMemberRef={teamMember}
-        />
+        service !== 'PARABOL' && (
+          <InspirationSourceConnectButton
+            service={service}
+            meetingId={meetingId}
+            teamMemberRef={teamMember}
+          />
+        )
       )}
     </div>
   )
