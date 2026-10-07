@@ -4,24 +4,22 @@ import useAtmosphere from './useAtmosphere'
 
 const useServiceWorkerUpdater = () => {
   const atmosphere = useAtmosphere()
-  const isFirstServiceWorkerRef = useRef(true)
+  // A page that loaded without a controller gets claimed by the first service worker, which cached the sources it already runs
+  const isFirstServiceWorkerRef = useRef(
+    'serviceWorker' in navigator && !navigator.serviceWorker.controller
+  )
   const sourcesAreDirtyRef = useRef(false)
 
   const location = useLocation()
 
   useEffect(() => {
-    const setFirstServiceWorker = async () => {
-      const registration = await navigator.serviceWorker.getRegistration()
-      isFirstServiceWorkerRef.current = !registration
-    }
     const onServiceWorkerChange = () => {
-      // new service worker means new sources
-      sourcesAreDirtyRef.current = true
-
       if (isFirstServiceWorkerRef.current) {
         isFirstServiceWorkerRef.current = false
         return
       }
+      // new service worker means new sources
+      sourcesAreDirtyRef.current = true
       atmosphere.eventEmitter.emit('addSnackbar', {
         key: 'newVersion',
         autoDismiss: 5,
@@ -36,9 +34,6 @@ const useServiceWorkerUpdater = () => {
       })
     }
     if ('serviceWorker' in navigator) {
-      setFirstServiceWorker().catch(() => {
-        /*ignore*/
-      })
       navigator.serviceWorker.addEventListener('controllerchange', onServiceWorkerChange)
       return () => {
         navigator.serviceWorker.removeEventListener('controllerchange', onServiceWorkerChange)

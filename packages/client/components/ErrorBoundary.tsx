@@ -1,8 +1,6 @@
-import {datadogLogs} from '@datadog/browser-logs'
 import {Component, type ErrorInfo, type ReactNode} from 'react'
 import type Atmosphere from '~/Atmosphere'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import SendClientSideEvent from '~/utils/SendClientSideEvent'
 import {isIgnoredError, isNotSignedInError} from '../utils/errorFilters'
 import ErrorComponent from './ErrorComponent/ErrorComponent'
 
@@ -30,7 +28,10 @@ class ErrorBoundary extends Component<Props & {atmosphere: Atmosphere}, State> {
     const {error, isIgnoredError} = this.state
     if (!error || isIgnoredError) return
     const {atmosphere} = this.props
-    SendClientSideEvent(atmosphere, 'Fatal Error')
+    // the analytics libraries stay out of the entry bundle. AnalyticsPage has already loaded them by now
+    import('~/utils/SendClientSideEvent')
+      .then(({default: SendClientSideEvent}) => SendClientSideEvent(atmosphere, 'Fatal Error'))
+      .catch(() => {})
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
@@ -51,7 +52,11 @@ class ErrorBoundary extends Component<Props & {atmosphere: Atmosphere}, State> {
     })
 
     const {componentStack} = errorInfo
-    datadogLogs.logger.error(error.message, {viewerId, email, componentStack, eventId}, error)
+    import('@datadog/browser-logs')
+      .then(({datadogLogs}) => {
+        datadogLogs.logger.error(error.message, {viewerId, email, componentStack, eventId}, error)
+      })
+      .catch(() => {})
   }
 
   render() {

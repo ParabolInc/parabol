@@ -1,4 +1,4 @@
-import {google} from 'googleapis'
+import * as google from 'googleapis/build/src/apis/calendar'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import type {RRuleSet} from 'rrule-rust'
 import appOrigin from '../../../appOrigin'

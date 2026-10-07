@@ -15,7 +15,6 @@ const {PORT, SOCKET_PORT, HOST} = process.env
 // When using ngrok, we want localhost to run with http
 const isProxiedDev = HOST !== 'localhost'
 
-const USE_REFRESH = false
 module.exports = {
   stats: 'errors-warnings',
   ignoreWarnings: [
@@ -173,38 +172,7 @@ module.exports = {
   ],
   module: {
     rules: [
-      ...clientTransformRules(PROJECT_ROOT, USE_REFRESH),
-      {
-        test: /\.js$/,
-        include: [path.join(CLIENT_ROOT)],
-        use: [
-          {
-            loader: 'babel-loader',
-            options: {
-              cacheDirectory: true,
-              babelrc: false,
-              plugins: [
-                [
-                  'macros',
-                  {
-                    relay: {
-                      artifactDirectory: path.join(CLIENT_ROOT, '__generated__')
-                    }
-                  }
-                ],
-                'react-refresh/babel'
-              ]
-            }
-          },
-          {
-            loader: '@sucrase/webpack-loader',
-            options: {
-              transforms: ['jsx'],
-              jsxRuntime: 'automatic'
-            }
-          }
-        ]
-      },
+      ...clientTransformRules(PROJECT_ROOT),
       {
         test: /\.mjs$/,
         include: /node_modules/,
