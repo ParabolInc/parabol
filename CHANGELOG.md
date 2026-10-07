@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.0.0](https://github.com/ParabolInc/parabol/compare/v14.4.0...v15.0.0) (2026-10-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* Go distroless for a base image ([#13601](https://github.com/ParabolInc/parabol/issues/13601))
+
+### Added
+
+* Go distroless for a base image ([#13601](https://github.com/ParabolInc/parabol/issues/13601)) ([400c702](https://github.com/ParabolInc/parabol/commit/400c702ce5647a22eaf45328ee1af9d5bc5f13fc))
+
 ## [14.4.0](https://github.com/ParabolInc/parabol/compare/v14.3.4...v14.4.0) (2026-10-07)
 
 
