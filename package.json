@@ -153,6 +153,7 @@
     "yargs": "^17.7.2"
   },
   "dependencies": {
+    "@extractus/oembed-extractor": "^6.0.0",
     "@floating-ui/dom": "^1.6.13",
     "@graphql-yoga/plugin-prometheus": "^6.8.5",
     "@hocuspocus/provider": "^4.1.0",
@@ -194,6 +195,12 @@
     "kysely": "0.30.0-beta.1",
     "magic-bytes.js": "^1.13.0",
     "markdown-it": "^14.3.0",
+    "metascraper": "^5.56.2",
+    "metascraper-description": "^5.56.2",
+    "metascraper-image": "^5.56.2",
+    "metascraper-logo": "^5.56.2",
+    "metascraper-publisher": "^5.56.2",
+    "metascraper-title": "^5.56.2",
     "ms": "^2.0.0",
     "msgpackr": "^1.11.8",
     "openai": "^6.9.1",
