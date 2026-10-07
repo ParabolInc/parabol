@@ -1,7 +1,7 @@
 import {ConnectionHandler, type RecordProxy, type RecordSourceSelectorProxy} from 'relay-runtime'
-import SearchQueryId from '~/shared/gqlIds/SearchQueryId'
 import {makeLinearIssueFilter} from '~/utils/makeLinearIssueFilter'
 import type {CreateTaskMutation} from '../../__generated__/CreateTaskMutation.graphql'
+import readScopingSearchStateFromRelayStore from '../../utils/relay/readScopingSearchStateFromRelayStore'
 import toTeamMemberId from '../../utils/relay/toTeamMemberId'
 import getLinearIssuesConn from '../connections/getLinearIssuesConn'
 
@@ -23,15 +23,10 @@ const handleLinearCreateIssue = (
     ?.getLinkedRecord('linear')
     ?.getLinkedRecord('api')
     ?.getLinkedRecord('query')
-  const linearSearchQueryId = SearchQueryId.join('linear', meetingId)
-  const linearSearchQuery = store.get(linearSearchQueryId)
-  const queryString =
-    (linearSearchQuery?.getValue('queryString') as string | undefined)?.trim() ?? ''
-  const selectedProjectsIds =
-    (linearSearchQuery?.getValue('selectedProjectsIds') as string[] | undefined) ?? []
+  const {queryString, filters} = readScopingSearchStateFromRelayStore(store, meetingId, 'linear')
   const typename = integration.getType()
   if (typename !== '_xLinearIssue') return
-  const filter = makeLinearIssueFilter(queryString, selectedProjectsIds)
+  const filter = makeLinearIssueFilter(queryString.trim(), filters)
   const linearIssueConn = getLinearIssuesConn(linear, {filter})
   if (!linearIssueConn) return
 

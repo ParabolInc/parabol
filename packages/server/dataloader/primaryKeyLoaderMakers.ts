@@ -6,6 +6,7 @@ import {
   selectAgendaItems,
   selectComments,
   selectDiscussion,
+  selectIntegrationSearchQuery,
   selectMassInvitations,
   selectMeetingMembers,
   selectMeetingSeries,
@@ -215,6 +216,10 @@ export const teamNotificationSettings = primaryKeyLoaderMaker((ids: readonly num
 
 export const pages = primaryKeyLoaderMaker((ids: readonly number[]) => {
   return selectPages().where('id', 'in', ids).execute()
+})
+
+export const integrationSearchQueries = primaryKeyLoaderMaker((ids: readonly number[]) => {
+  return selectIntegrationSearchQuery().where('id', 'in', ids).execute()
 })
 
 export const oAuthProviders = primaryKeyLoaderMaker((ids: readonly number[]) => {

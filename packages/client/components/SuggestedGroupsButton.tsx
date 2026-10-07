@@ -43,7 +43,6 @@ const SuggestedGroupsButton = (props: Props) => {
   const {useAI, tier} = organization
   const {qualAIMeetingsCount} = team
   const {isOpen, open, close} = useDialogState()
-  const [settings, updateSettings] = useSuggestedGroupsSettings(meetingId)
   const [execute, submitting] = useGenerateSuggestedGroupsMutation()
 
   const teamOverLimit = qualAIMeetingsCount >= Threshold.MAX_QUAL_AI_MEETINGS && tier === 'starter'
@@ -53,11 +52,17 @@ const SuggestedGroupsButton = (props: Props) => {
       ? 'You have used all your AI retros. Upgrade to a paid plan to keep going.'
       : null
 
-  // Nothing generated yet falls back to the ambient default the group phase computes on its own,
-  // so a fresh meeting starts with the button disabled too.
-  const appliedMode = suggestedGrouping?.mode ?? 'similarity'
+  // Nothing generated yet falls back to the ambient default the group phase computes on its own
+  // (AI when the team can use it, similar wording otherwise), so a fresh meeting starts with the
+  // button disabled too.
+  const appliedMode = suggestedGrouping?.mode ?? (aiDisabledReason ? 'similarity' : 'ai')
   const appliedSameColumnOnly = suggestedGrouping?.sameColumnOnly ?? false
   const appliedPrompt = (suggestedGrouping?.userPrompt ?? '').trim()
+  const [settings, updateSettings] = useSuggestedGroupsSettings(meetingId, {
+    mode: appliedMode,
+    userPrompt: appliedPrompt,
+    sameColumnOnly: appliedSameColumnOnly
+  })
   // Stale suggestions re-open the button even when nothing was retyped: only similarity grouping is
   // refreshed automatically, so this is how an AI board asks to be regrouped after the cards change
   const isUpToDate =

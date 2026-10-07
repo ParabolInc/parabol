@@ -77,14 +77,6 @@ type AtlassianIntegration {
   projects: [JiraRemoteProject!]!
 
   """
-  The user's recent Jira search queries, ordered from most recently used to oldest.
-  Only includes queries used within the last 60 days. Use this to populate a
-  "recent searches" dropdown so the user can quickly repeat previous searches.
-  """
-  jiraSearchQueries: [JiraSearchQuery!]!
-    @deprecated(reason: "Use TeamMember.services { searchQueries }")
-
-  """
   A paginated list of Jira issues fetched live from the Jira API for this team member.
   Returns an empty connection if the viewer is not the owner of this integration.
   Use this to let users search for and select Jira issues to bring into a Parabol meeting.

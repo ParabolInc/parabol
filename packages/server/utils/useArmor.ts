@@ -5,7 +5,7 @@ import {maxDirectivesRule} from '@escape.tech/graphql-armor-max-directives'
 import {MaxTokensParserWLexer} from '@escape.tech/graphql-armor-max-tokens'
 import {GraphQLError, print, Source} from 'graphql'
 import {ParseOptions} from 'graphql/language/parser'
-import type {Plugin} from 'graphql-yoga'
+import type {GraphQLParams, Plugin} from 'graphql-yoga'
 import type {DataLoaderWorker} from '../graphql/graphql'
 import type {Tierenum} from '../postgres/types/pg'
 import type {ServerContext} from '../yoga'
@@ -78,19 +78,8 @@ const checkUsage = async (userId: string, cost: number) => {
 
 export const useArmor = (): Plugin<ServerContext & {dataLoader: DataLoaderWorker}> => {
   return {
-    async onParams({request, context}) {
-      const contentType = request.headers.get('content-type') ?? ''
-      let docId: string | undefined
-      if (contentType.includes('multipart/form-data')) {
-        const form = await request.formData()
-        const operations = form.get('operations')
-        if (typeof operations === 'string') {
-          docId = JSON.parse(operations).docId
-        }
-      } else {
-        const body = await request.json()
-        docId = body.docId
-      }
+    onParams({params, context}) {
+      const {docId} = params as GraphQLParams & {docId?: string}
       // set the docId so we know which are persisted (i.e. trusted)
       ;(context as ServerContext).docId = docId
     },

@@ -5,6 +5,29 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.0.0](https://github.com/ParabolInc/parabol/compare/v14.4.0...v15.0.0) (2026-10-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* Go distroless for a base image ([#13601](https://github.com/ParabolInc/parabol/issues/13601))
+
+### Added
+
+* Go distroless for a base image ([#13601](https://github.com/ParabolInc/parabol/issues/13601)) ([400c702](https://github.com/ParabolInc/parabol/commit/400c702ce5647a22eaf45328ee1af9d5bc5f13fc))
+
+## [14.4.0](https://github.com/ParabolInc/parabol/compare/v14.3.4...v14.4.0) (2026-10-07)
+
+
+### Added
+
+* six new retro templates ([#13588](https://github.com/ParabolInc/parabol/issues/13588)) ([00dcecc](https://github.com/ParabolInc/parabol/commit/00dceccc83e51b796347d5cc182dbbdf1217f096))
+
+
+### Fixed
+
+* file uploads after the graphql-yoga bump ([#13599](https://github.com/ParabolInc/parabol/issues/13599)) ([48c81a7](https://github.com/ParabolInc/parabol/commit/48c81a7e7f7ea65cd1df8d8644020a5d6c6d0585))
+
 ## [14.3.4](https://github.com/ParabolInc/parabol/compare/v14.3.3...v14.3.4) (2026-10-06)
 
 
