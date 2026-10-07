@@ -4,6 +4,7 @@ import type {mapTeamHealthResponseDueToToast_notification$data} from '../../__ge
 import type {Snack} from '../../components/Snackbar'
 import type {OnNextNavigateContext} from '../../types/relayMutations'
 import makeNotificationToastKey from './makeNotificationToastKey'
+import type {UnmaskedNotification} from './mapNotificationToToast'
 
 graphql`
   fragment mapTeamHealthResponseDueToToast_notification on NotifyTeamHealthResponseDue {
@@ -17,10 +18,9 @@ graphql`
 `
 
 const mapTeamHealthResponseDueToToast = (
-  notification: mapTeamHealthResponseDueToToast_notification$data,
+  notification: UnmaskedNotification<mapTeamHealthResponseDueToToast_notification$data>,
   {navigate}: OnNextNavigateContext
 ): Snack | null => {
-  if (!notification) return null
   const {id: notificationId, meeting} = notification
   const {id: meetingId, name: meetingName, scheduledEndTime} = meeting
   const closesAt = scheduledEndTime ? dayjs(scheduledEndTime).format('ddd h:mm A') : 'soon'
