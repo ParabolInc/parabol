@@ -44,7 +44,7 @@ const persistIntegrationSearchQuery: MutationResolvers['persistIntegrationSearch
   if (parsedMeta instanceof Error) throw new GraphQLError(parsedMeta.message)
 
   const dbProviderId = IntegrationProviderId.split(providerId)
-  if (!Number.isInteger(dbProviderId)) return {error: {message: 'Provider does not exist'}}
+  if (!Number.isInteger(dbProviderId)) throw new GraphQLError('Provider does not exist')
   const [provider, team] = await Promise.all([
     dataLoader.get('integrationProviders').load(dbProviderId),
     dataLoader.get('teams').loadNonNull(teamId)

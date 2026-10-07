@@ -51,7 +51,7 @@ describe('removeIntegrationSearchQuery', () => {
     expect(deletedRow).not.toHaveBeenCalled()
   })
 
-  it('throws when no row matches the viewer and team', async () => {
+  it('throws when no row matches the team', async () => {
     deletedRow.mockResolvedValue(undefined)
     await expect(run(CipherId.toClient(7, 'integrationSearchQuery'))).rejects.toThrow(
       'Search query not found'
@@ -66,13 +66,12 @@ describe('removeIntegrationSearchQuery', () => {
     )
   })
 
-  it('scopes the delete to the viewer and returns the service source', async () => {
+  it('scopes the delete to the team and returns the service source', async () => {
     deletedRow.mockResolvedValue({service: 'jira'})
     const result = await run(CipherId.toClient(7, 'integrationSearchQuery'))
     expect(result).toEqual({teamId, userId: viewerId, service: 'jira'})
     expect(where.mock.calls).toEqual([
       ['id', '=', 7],
-      ['userId', '=', viewerId],
       ['teamId', '=', teamId]
     ])
     expect(publish).toHaveBeenCalledTimes(1)

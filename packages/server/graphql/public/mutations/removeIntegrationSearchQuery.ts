@@ -23,7 +23,6 @@ const removeIntegrationSearchQuery: MutationResolvers['removeIntegrationSearchQu
   const removedQuery = await getKysely()
     .deleteFrom('IntegrationSearchQuery')
     .where('id', '=', dbId)
-    .where('userId', '=', viewerId)
     .where('teamId', '=', teamId)
     .returning('service')
     .executeTakeFirst()
