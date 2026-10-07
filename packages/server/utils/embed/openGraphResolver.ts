@@ -10,17 +10,32 @@ import {Logger} from '../Logger'
 
 const MAX_HTML_BYTES = 512_000
 
+// metascraper-publisher falls back to the alt text of a logo image, which is as often "logo" or
+// "Home" as it is the site name. Rules for a property run in order, so this clears those alts
+// before the publisher rules can read them.
+const ignoreLogoAltText: createMetascraper.Rules = {
+  publisher: ({htmlDom}) => {
+    htmlDom('[class*="logo" i] img[alt]').removeAttr('alt')
+    return undefined
+  }
+}
+
 const scraper = createMetascraper([
   metascraperTitle(),
   metascraperDescription(),
   metascraperImage(),
   metascraperLogo(),
+  ignoreLogoAltText,
   metascraperPublisher()
 ])
 
 /** Never produces an embedSrc. A page we had to scrape is a page that would not frame. */
 export const resolveOpenGraph = async (url: string): Promise<Partial<EmbedMetadata> | null> => {
-  const result = await fetchUntrusted(url, MAX_HTML_BYTES, {maxRedirects: 3})
+  // The tags we read sit in <head>, so a long page is cut short rather than rejected
+  const result = await fetchUntrusted(url, MAX_HTML_BYTES, {
+    maxRedirects: 3,
+    onOverflow: 'truncate'
+  })
   if (!result) return null
   if (!result.contentType.startsWith('text/html')) return null
   try {
