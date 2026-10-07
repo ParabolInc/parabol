@@ -1,16 +1,19 @@
-import {generateText, type JSONContent} from '@tiptap/core'
+import {generateText} from '@tiptap/core'
 import {fetch} from '@whatwg-node/fetch'
 import crypto from 'crypto'
 import OAuth from 'oauth-1.0a'
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
 import JiraServerIssueId from 'parabol-client/shared/gqlIds/JiraServerIssueId'
 import {serverTipTapExtensions} from 'parabol-client/shared/tiptap/serverTipTapExtensions'
-import {splitTipTapContent} from 'parabol-client/shared/tiptap/splitTipTapContent'
 import {ExternalLinks} from 'parabol-client/types/constEnums'
 import composeJQL from 'parabol-client/utils/composeJQL'
 import type {TeamMemberIntegrationAuth} from '../../postgres/types'
 import type {IntegrationProviderJiraServer} from '../../postgres/types/IntegrationProvider'
-import type {CreateTaskResponse, TaskIntegrationManager} from '../platform/TaskIntegrationManager'
+import type {
+  CreateTaskParams,
+  CreateTaskResponse,
+  TaskIntegrationManager
+} from '../platform/TaskIntegrationManager'
 
 const MAX_PAGINATION_RESULTS = 5000
 const MAX_RESULTS_PER_PAGE = 50
@@ -228,7 +231,7 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
     return this.request<JiraServerIssuesResponse>('POST', '/rest/api/2/search', payload)
   }
 
-  async createIssue(projectId: string, summary: string, description: string) {
+  async createIssue(projectId: string, summary: string, description: string | null) {
     const issueTypes = await this.getIssueTypes(projectId)
     if (issueTypes instanceof Error) {
       return issueTypes
@@ -252,7 +255,7 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
             id: bestIssueType.id
           },
           summary,
-          description
+          ...(description && {description})
         }
       }
     )
@@ -290,16 +293,12 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
   }
 
   async createTask({
-    rawContentJSON,
+    title: summary,
+    bodyContent,
     integrationRepoId
-  }: {
-    rawContentJSON: JSONContent
-    integrationRepoId: string
-  }): Promise<CreateTaskResponse> {
-    const {title: summary, bodyContent} = splitTipTapContent(rawContentJSON)
-
+  }: CreateTaskParams): Promise<CreateTaskResponse> {
     // TODO: implement stateToJiraServerFormat
-    const description = generateText(bodyContent, serverTipTapExtensions)
+    const description = bodyContent ? generateText(bodyContent, serverTipTapExtensions) : null
 
     const {repositoryId} = IntegrationRepoId.split(integrationRepoId)
 
