@@ -7,7 +7,6 @@ graphql`
   fragment AddTeamMemberIntegrationAuthMutation_notification on AddTeamMemberIntegrationAuthSuccess {
     teamMember {
       ...useIsIntegrated_teamMember
-      ...GcalProviderRowTeamMember
       services {
         ...IntegrationServiceProviderRow_service
         ...usePersistIntegrationSearchQueryMutation_service @relay(mask: false)
@@ -15,6 +14,12 @@ graphql`
       integrations {
         ...MattermostProviderRowTeamMemberIntegrations
         ...MSTeamsProviderRowTeamMemberIntegrations
+        gcal {
+          auth {
+            id
+            providerId
+          }
+        }
         gitlab {
           auth {
             isActive

@@ -1,4 +1,5 @@
 import {AzureDevOpsServerIntegration} from '../azureDevOps/AzureDevOpsServerIntegration'
+import {GcalServerIntegration} from '../gcal/GcalServerIntegration'
 import {GitHubServerIntegration} from '../github/GitHubServerIntegration'
 import {GitLabServerIntegration} from '../gitlab/GitLabServerIntegration'
 import {JiraServerIntegration} from '../jira/JiraServerIntegration'
@@ -8,6 +9,7 @@ import type {ServerIntegrationDefinition} from './ServerIntegrationDefinition'
 
 export const serverIntegrations = {
   azureDevOps: new AzureDevOpsServerIntegration(),
+  gcal: new GcalServerIntegration(),
   github: new GitHubServerIntegration(),
   gitlab: new GitLabServerIntegration(),
   jira: new JiraServerIntegration(),

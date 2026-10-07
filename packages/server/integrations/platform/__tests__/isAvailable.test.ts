@@ -47,3 +47,28 @@ describe('isAvailable', () => {
     })
   })
 })
+
+describe('gcal', () => {
+  const ctxWithTeamProviderOnly = makeCtx([])
+  ctxWithTeamProviderOnly.dataLoader.get = jest.fn((loaderName: string) => {
+    if (loaderName === 'teams') {
+      return {loadNonNull: jest.fn().mockResolvedValue({id: 'team1', orgId: 'org1'})}
+    }
+    return {
+      load: jest.fn(({teamIds}: {teamIds: string[]}) =>
+        Promise.resolve(teamIds.length ? [{id: 2, scope: 'team'}] : [])
+      )
+    }
+  }) as unknown as IntegrationCtx['dataLoader']['get']
+
+  it('is available only through the instance-wide Google app', async () => {
+    await expect(
+      serverIntegrations.gcal.isAvailable(makeCtx([{id: 1, scope: 'global'}]))
+    ).resolves.toBe(true)
+    await expect(serverIntegrations.gcal.isAvailable(ctxWithTeamProviderOnly)).resolves.toBe(false)
+  })
+
+  it('never offers a team or org provider', async () => {
+    await expect(serverIntegrations.gcal.getSharedProviders()).resolves.toEqual([])
+  })
+})

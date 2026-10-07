@@ -1,4 +1,3 @@
-import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
 import {azureDevOpsIntegrationMeta} from 'parabol-client/shared/integrations/azureDevOpsIntegrationMeta'
 import type {AzureAccountProject} from '../../dataloader/azureDevOpsLoaders'
@@ -17,6 +16,7 @@ import buildAzureDevOpsSearchQuery from './buildAzureDevOpsSearchQuery'
 import describeAzureDevOpsDimensionField from './describeAzureDevOpsDimensionField'
 import fetchAzureDevOpsProjects from './fetchAzureDevOpsProjects'
 import listAzureDevOpsDimensionFields from './listAzureDevOpsDimensionFields'
+import parseAzureDevOpsIntegrationHash from './parseAzureDevOpsIntegrationHash'
 import pushEstimateToAzureDevOps from './pushEstimateToAzureDevOps'
 import resolveAzureDevOpsDimensionFieldKey from './resolveAzureDevOpsDimensionFieldKey'
 import resolveAzureDevOpsTaskIntegration from './resolveAzureDevOpsTaskIntegration'
@@ -30,20 +30,6 @@ export class AzureDevOpsServerIntegration extends ServerIntegrationDefinition {
     const {dataLoader, teamId, userId} = ctx
     const auth = await dataLoader.get('freshAzureDevOpsAuth').load({teamId, userId})
     return auth?.accessToken ? auth : null
-  }
-
-  parseIntegrationHash(integrationHash: string) {
-    const {instanceId, projectKey, issueKey} = AzureDevOpsIssueId.split(integrationHash)
-    if (
-      !instanceId ||
-      !projectKey ||
-      !issueKey ||
-      AzureDevOpsIssueId.join(instanceId, projectKey, issueKey) !== integrationHash ||
-      !instanceId.startsWith('dev.azure.com/')
-    ) {
-      return null
-    }
-    return {service: 'azureDevOps' as const, instanceId, projectKey, issueKey}
   }
 
   readonly capabilities: {
@@ -64,7 +50,10 @@ export class AzureDevOpsServerIntegration extends ServerIntegrationDefinition {
         return new AzureDevOpsServerManager(auth, provider)
       }
     },
-    issueRead: {getIssue: resolveAzureDevOpsTaskIntegration},
+    issueRead: {
+      getIssue: resolveAzureDevOpsTaskIntegration,
+      parseIntegrationHash: parseAzureDevOpsIntegrationHash
+    },
     issueSearch: {buildQuery: buildAzureDevOpsSearchQuery},
     repoList: {
       fetchRepos: fetchAzureDevOpsProjects,

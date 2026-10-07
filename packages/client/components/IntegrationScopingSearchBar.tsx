@@ -4,7 +4,7 @@ import type {
   ScopingCapability,
   ScopingSavedQuery
 } from '../integrations/platform/ClientIntegrationDefinition'
-import type {RegisteredClientIntegration} from '../integrations/platform/registry'
+import type {TaskClientIntegration} from '../integrations/platform/registry'
 import type {
   ScopingSearchContext,
   ScopingSearchState
@@ -16,7 +16,7 @@ import ScopingSearchInput from './ScopingSearchInput'
 
 interface Props {
   scoping: ScopingCapability
-  service: RegisteredClientIntegration
+  service: TaskClientIntegration
   context: ScopingSearchContext
   state: ScopingSearchState
   savedQueries: readonly ScopingSavedQuery[]
