@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.2.5](https://github.com/ParabolInc/parabol/compare/v15.2.4...v15.2.5) (2026-10-08)
+
+
+### Changed
+
+* **ci:** remove host networking from the release image build ([#13639](https://github.com/ParabolInc/parabol/issues/13639)) ([d941f6c](https://github.com/ParabolInc/parabol/commit/d941f6c33b7129d980927ef97f82f61918980fcc))
+
 ## [15.2.4](https://github.com/ParabolInc/parabol/compare/v15.2.3...v15.2.4) (2026-10-08)
 
 
