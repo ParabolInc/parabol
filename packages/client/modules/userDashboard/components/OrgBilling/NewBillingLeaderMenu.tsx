@@ -9,23 +9,23 @@ import Avatar from '../../../../components/Avatar/Avatar'
 import {EmptyDropdownMenuItemLabel} from '../../../../components/EmptyDropdownMenuItemLabel'
 import TypeAheadLabel from '../../../../components/TypeAheadLabel'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import useFilteredItems from '../../../../hooks/useFilteredItems'
 import useMutationProps from '../../../../hooks/useMutationProps'
+import useSearchFilter from '../../../../hooks/useSearchFilter'
 import SetOrgUserRoleMutation from '../../../../mutations/SetOrgUserRoleMutation'
 import {MenuContent} from '../../../../ui/Menu/MenuContent'
 import {MenuItem} from '../../../../ui/Menu/MenuItem'
+import {MenuSearch} from '../../../../ui/Menu/MenuSearch'
 
 interface Props {
   organizationRef: NewBillingLeaderMenu_organization$key
-  newLeaderSearchQuery: string
 }
 
 const getOrgUserPreferredName = (
   orgUser: NewBillingLeaderMenu_organization$data['organizationUsers']['edges'][0]
-) => orgUser.node.user.preferredName.toLowerCase()
+) => orgUser.node.user.preferredName
 
 const NewBillingLeaderMenu = (props: Props) => {
-  const {organizationRef, newLeaderSearchQuery} = props
+  const {organizationRef} = props
   const atmosphere = useAtmosphere()
   const {onError, onCompleted} = useMutationProps()
   const organization = useFragment(
@@ -64,10 +64,11 @@ const NewBillingLeaderMenu = (props: Props) => {
     })
   }, [billingLeaders, organizationUsers])
 
-  const query = newLeaderSearchQuery.toLowerCase()
-  const filteredOrgUsers = useFilteredItems(query, nonLeaderOrgUsers, (orgUser) =>
-    getOrgUserPreferredName(orgUser)
-  )
+  const {
+    query,
+    filteredItems: filteredOrgUsers,
+    onQueryChange
+  } = useSearchFilter(nonLeaderOrgUsers, getOrgUserPreferredName)
 
   const handleClick = (userId: string) => {
     const role = 'BILLING_LEADER' as const
@@ -76,7 +77,13 @@ const NewBillingLeaderMenu = (props: Props) => {
   }
 
   return (
-    <MenuContent align='start' onCloseAutoFocus={(e) => e.preventDefault()}>
+    <MenuContent align='start'>
+      <MenuSearch
+        className='mt-1'
+        placeholder='Search for a new billing leader'
+        onChange={onQueryChange}
+        value={query}
+      />
       {filteredOrgUsers.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>
           No team members found!
@@ -91,7 +98,7 @@ const NewBillingLeaderMenu = (props: Props) => {
             <div className='pr-8'>
               <Avatar picture={picture} className='h-8 w-8' />
             </div>
-            <TypeAheadLabel query={newLeaderSearchQuery} label={preferredName} />
+            <TypeAheadLabel query={query} label={preferredName} />
           </MenuItem>
         )
       })}
