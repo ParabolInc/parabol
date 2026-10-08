@@ -17,7 +17,6 @@ import privateSchema from './graphql/private/rootSchema'
 import {handleFirstConnection} from './handleFirstConnection'
 import {logOperation} from './logOperation'
 import getKysely from './postgres/getKysely'
-import {analytics} from './utils/analytics/analytics'
 import {createCookieHeaders, getAuthTokenFromCookie} from './utils/authCookie'
 import checkBlacklistJWT from './utils/checkBlacklistJWT'
 import {getTeamMemberUserIds} from './utils/getTeamMemberUserIds'
@@ -120,11 +119,6 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string}>({
     extra.dataLoaders = {}
     activeClients.set(extra.socketId, extra.socket)
     logOperation(viewerId, extra.ip, 'connectSocket', {})
-    analytics.websocketConnected(user, {
-      socketCount,
-      socketId: extra.socketId,
-      tms: teamIds
-    })
     if (socketCount === 0) {
       handleFirstConnection(user, teamIds).catch(Logger.log)
     }
@@ -253,7 +247,7 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string}>({
   },
   onDisconnect: async (ctx) => {
     const {extra} = ctx
-    const {authToken, socketId} = extra
+    const {authToken} = extra
     const {sub: viewerId, tms: teamIds} = authToken
     // Ensure every active subscription iterator is released.
     // graphql-ws is supposed to .return() each entry in ctx.subscriptions
@@ -287,11 +281,6 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string}>({
     await sleep(1000)
     const socketCount = await getUserSocketCount(viewerId)
     const user = {id: viewerId, isConnected: false}
-    analytics.websocketDisconnected(user, {
-      socketCount: socketCount + 1,
-      socketId,
-      tms: teamIds
-    })
     if (socketCount === 0) {
       const userIds = await getTeamMemberUserIds(teamIds)
       const data = {user}
