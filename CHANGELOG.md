@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.2.0](https://github.com/ParabolInc/parabol/compare/v15.1.1...v15.2.0) (2026-10-08)
+
+
+### Added
+
+* redesign the TipTap link popup ([#13611](https://github.com/ParabolInc/parabol/issues/13611)) ([c589841](https://github.com/ParabolInc/parabol/commit/c5898416cdbd3d65f56e91f6251886452d72ac96))
+* restyle page databases and fix their menu and tag picker bugs ([#13612](https://github.com/ParabolInc/parabol/issues/13612)) ([778c1e9](https://github.com/ParabolInc/parabol/commit/778c1e99b119e4e21fc9d50db94a595ff63801f9))
+
 ## [15.1.1](https://github.com/ParabolInc/parabol/compare/v15.1.0...v15.1.1) (2026-10-08)
 
 

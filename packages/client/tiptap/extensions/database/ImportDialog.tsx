@@ -159,10 +159,10 @@ export const ImportDialog = (props: Props) => {
             onError={onError}
           />
         ) : (
-          <div className='mb-3 text-left font-semibold text-fg-secondary text-sm'>
-            Import settings
+          <div className='mb-3 text-left text-sm'>
+            <div className='font-semibold text-fg-secondary'>Import settings</div>
             <div
-              className='flex cursor-pointer flex-row gap-2 p-1 align-center'
+              className='flex cursor-pointer items-center gap-2 py-1'
               onClick={() => setFirstRowIsHeader(!firstRowIsHeader)}
             >
               <Checkbox checked={firstRowIsHeader} />
@@ -170,35 +170,33 @@ export const ImportDialog = (props: Props) => {
             </div>
             {!dataIsEmpty && (
               <div
-                className='flex cursor-pointer flex-row gap-2 p-1 align-center'
+                className='flex cursor-pointer items-center gap-2 py-1'
                 onClick={() => setDiscardExistingData(!discardExistingData)}
               >
                 <Checkbox checked={discardExistingData} disabled={dataIsEmpty} />
                 Discard existing data ({yRows.length} {plural(yRows.length, 'row')})
               </div>
             )}
-            <div className={'mt-4 text-sm'}>
+            <div className='mt-4 mb-2 text-fg-secondary'>
               Previewing {previewLength < recordCount ? `the first ${previewLength} of` : 'all'}{' '}
               {recordCount} {plural(recordCount, 'record')}...
             </div>
-            <div
-              className={
-                'mb-4 flex h-50 w-full flex-col overflow-auto rounded-lg border-2 border-hairline-strong text-fg-muted'
-              }
-            >
-              <table className={'relative min-w-full border-collapse bg-surface-card'}>
+            <div className='mb-4 flex max-h-50 w-full flex-col overflow-auto rounded-lg border border-hairline bg-surface-card'>
+              <table className='relative min-w-full border-collapse [&_tbody_tr:last-child_td]:border-b-0'>
                 <thead>
-                  <tr className='text-fg-secondary'>
+                  <tr className='bg-surface-raised text-fg-secondary'>
                     {headers.map((name, index) => (
                       <th
                         key={index}
-                        className='w-24 min-w-24 truncate border-hairline-strong border-b-1 p-2 text-left'
+                        className='w-24 min-w-24 truncate border-hairline border-b border-l px-3 py-2 text-left font-medium first:border-l-0'
                       >
                         {name}
                       </th>
                     ))}
                     {moreExistingHeaders && (
-                      <th className='w-4 max-w-4 border-hairline-strong border-b-1 p-2'>...</th>
+                      <th className='w-4 max-w-4 border-hairline border-b border-l px-3 py-2 font-medium'>
+                        ...
+                      </th>
                     )}
                   </tr>
                 </thead>
@@ -208,8 +206,8 @@ export const ImportDialog = (props: Props) => {
                       <td
                         colSpan={headers.length + (moreExistingHeaders ? 1 : 0)}
                         className={cn(
-                          'h-8 border-hairline-strong border-b-1 border-dashed px-2',
-                          discardExistingData && 'text-tomato-600'
+                          'h-8 border-hairline border-b border-dashed px-3 text-fg-muted',
+                          discardExistingData && 'text-fg-error'
                         )}
                       >
                         <div className='-translate-x-1/2 sticky left-1/2 w-fit'>
@@ -227,13 +225,13 @@ export const ImportDialog = (props: Props) => {
                         {record.map((cell, cellIndex) => (
                           <td
                             key={cellIndex}
-                            className='border-hairline-strong border-b-1 border-l-1 p-2 text-left align-top first:border-l-0'
+                            className='border-hairline border-b border-l px-3 py-2 text-left align-top first:border-l-0'
                           >
                             {cell}
                           </td>
                         ))}
                         {moreExistingHeaders && (
-                          <td className='border-hairline-strong border-b-1 border-l-1'></td>
+                          <td className='border-hairline border-b border-l' />
                         )}
                       </tr>
                     ))}
@@ -243,7 +241,7 @@ export const ImportDialog = (props: Props) => {
           </div>
         )}
         {error && (
-          <div className='mb-4 rounded-md bg-red-50 p-3 text-sm text-tomato-700'>
+          <div className='mb-4 rounded-md bg-tomato-100 p-3 text-sm text-tomato-800'>
             Error importing: {error.message}
           </div>
         )}

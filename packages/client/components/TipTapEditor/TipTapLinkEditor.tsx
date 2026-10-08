@@ -1,75 +1,83 @@
-import {useCallback, useMemo, useState} from 'react'
-import {Link, Title} from '~/ui/icons'
+import {useMemo, useState} from 'react'
 import {Button} from '../../ui/Button/Button'
+import {Input} from '../../ui/Input/Input'
 import linkify from '../../utils/linkify'
 
 export type props = {
   initialUrl: string
   initialText: string
   onSetLink: (link: {text: string; url: string}) => void
+  onUnsetLink: () => void
   useLinkEditor?: () => void
 }
 
-export const TipTapLinkEditor = (props: props) => {
-  const {useLinkEditor, onSetLink, initialUrl, initialText} = props
+const getHref = (input: string) => {
+  const trimmedInput = input.trim()
+  const matches = linkify.match(trimmedInput)
+  if (matches?.length !== 1) return null
+  const [match] = matches
+  if (!match || match.index !== 0 || match.lastIndex !== trimmedInput.length) return null
+  return match.schema ? match.url : `https://${match.raw}`
+}
 
+export const TipTapLinkEditor = (props: props) => {
+  const {useLinkEditor, onSetLink, onUnsetLink, initialUrl, initialText} = props
   const [url, setUrl] = useState(initialUrl)
   const [text, setText] = useState(initialText)
-  const onChangeURL = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    setUrl(event.target.value)
-  }, [])
-  const onChangeText = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    setText(event.target.value)
-  }, [])
-  const isValidUrl = useMemo(() => (!url ? false : linkify.match(url)), [url])
-  const handleSubmit = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault()
-      if (!isValidUrl) return
-      onSetLink({text, url})
-    },
-    [url, text, isValidUrl, onSetLink]
-  )
+  const href = useMemo(() => getHref(url), [url])
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!href) return
+    onSetLink({text: text || url.trim(), url: href})
+  }
   useLinkEditor?.()
   return (
-    <div
-      className={
-        'flex items-center rounded-md border border-hairline bg-surface-card p-2 shadow-lg'
-      }
+    <form
+      onSubmit={handleSubmit}
+      className='flex w-72 flex-col gap-3 rounded-md border border-hairline bg-surface-modal p-3 font-semibold text-fg-secondary text-xs shadow-[var(--shadow-card-raised)]'
     >
-      <form onSubmit={handleSubmit} className='flex flex-col items-center'>
-        <label className='flex cursor-text items-center gap-2 rounded-lg bg-surface-well p-2'>
-          <Link className='flex-none text-fg-secondary' />
-          <input
-            autoFocus
-            type='url'
-            className='min-w-52 flex-1 bg-transparent text-fg-primary text-sm outline-hidden'
-            placeholder='Enter URL'
-            value={url}
-            onChange={onChangeURL}
-          />
-        </label>
-        <label className='flex cursor-text items-center gap-2 rounded-lg bg-surface-well p-2'>
-          <Title className='flex-none text-fg-secondary' />
-          <input
-            className='min-w-52 flex-1 bg-transparent text-fg-primary text-sm outline-hidden'
-            placeholder='Link Title'
-            value={text}
-            onChange={onChangeText}
-          />
-        </label>
-        <div className='flex w-full items-end justify-end'>
+      <label className='flex flex-col gap-1'>
+        Text
+        <Input
+          className='h-8 font-normal text-base text-fg-primary sm:text-sm'
+          maxLength={255}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+        />
+      </label>
+      <label className='flex flex-col gap-1'>
+        Link
+        <Input
+          autoFocus
+          inputMode='url'
+          autoCapitalize='off'
+          autoCorrect='off'
+          spellCheck={false}
+          className='h-8 font-normal text-base text-fg-primary sm:text-sm'
+          maxLength={2048}
+          placeholder='Paste or type a link'
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+        />
+      </label>
+      <div className='flex items-center justify-between'>
+        {initialUrl ? (
           <Button
+            type='button'
             variant='flat'
             size='sm'
-            type='submit'
-            disabled={!isValidUrl}
-            className='font-semibold text-fg-primary'
+            className='-ml-2 px-2'
+            onClick={onUnsetLink}
           >
-            Save
+            Remove link
           </Button>
-        </div>
-      </form>
-    </div>
+        ) : (
+          <span />
+        )}
+        <Button type='submit' variant='dialogPrimary' size='sm' disabled={!href}>
+          Apply
+        </Button>
+      </div>
+    </form>
   )
 }

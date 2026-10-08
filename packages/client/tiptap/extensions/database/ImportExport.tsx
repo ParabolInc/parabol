@@ -1,11 +1,13 @@
 import {Parser} from '@json2csv/plainjs'
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import {Editor} from '@tiptap/core'
 import {useState} from 'react'
 import * as Y from 'yjs'
 import {FileDownload, FileUpload, MoreVert} from '~/ui/icons'
 import {toSlug} from '../../../shared/toSlug'
 import {quickHash} from '../../../shared/utils/quickHash'
+import {Menu} from '../../../ui/Menu/Menu'
+import {MenuContent} from '../../../ui/Menu/MenuContent'
+import {MENU_ITEM_ICON, MenuItem} from '../../../ui/Menu/MenuItem'
 import {getColumnMeta, getColumns, getRowData, getRows} from './data'
 import {ImportDialog} from './ImportDialog'
 
@@ -59,38 +61,28 @@ export const ImportExport = (props: {doc: Y.Doc; editor: Editor}) => {
 
   return (
     <>
-      <DropdownMenu.Root>
-        <DropdownMenu.Trigger asChild>
-          <div className='items-cursor-pointer flex w-10 items-center justify-center rounded-md p-2 hover:bg-surface-hover'>
-            <MoreVert />
-          </div>
-        </DropdownMenu.Trigger>
-        <DropdownMenu.Portal>
-          <DropdownMenu.Content
-            asChild
-            className='bg-surface-card p-2 text-fg-primary'
-            align='start'
-            collisionPadding={8}
+      <Menu
+        trigger={
+          <button
+            type='button'
+            aria-label='Database options'
+            className='flex size-7 cursor-pointer items-center justify-center rounded-md text-fg-secondary hover:bg-surface-hover data-[state=open]:bg-surface-hover'
           >
-            <div className='top-0 left-0 flex max-h-[var(--radix-popper-available-height)] max-w-[var(--radix-popover-content-available-width)] flex-col overflow-hidden rounded-lg shadow-dialog data-[side=bottom]:animate-slide-down data-[side=top]:animate-slide-up'>
-              <DropdownMenu.Item
-                className='flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 hover:bg-surface-hover'
-                onSelect={() => setImportDialogOpen(true)}
-              >
-                <FileUpload />
-                Import Data
-              </DropdownMenu.Item>
-              <DropdownMenu.Item
-                className='flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 hover:bg-surface-hover'
-                onSelect={exportCSV}
-              >
-                <FileDownload />
-                Export CSV
-              </DropdownMenu.Item>
-            </div>
-          </DropdownMenu.Content>
-        </DropdownMenu.Portal>
-      </DropdownMenu.Root>
+            <MoreVert className='text-[20px]' />
+          </button>
+        }
+      >
+        <MenuContent align='end' sideOffset={4} collisionPadding={8}>
+          <MenuItem onSelect={() => setImportDialogOpen(true)}>
+            <FileUpload className={MENU_ITEM_ICON} />
+            Import data
+          </MenuItem>
+          <MenuItem onSelect={exportCSV}>
+            <FileDownload className={MENU_ITEM_ICON} />
+            Export CSV
+          </MenuItem>
+        </MenuContent>
+      </Menu>
       <ImportDialog
         isOpen={importDialogOpen}
         onClose={() => setImportDialogOpen(false)}
