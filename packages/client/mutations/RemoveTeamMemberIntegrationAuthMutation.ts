@@ -7,13 +7,18 @@ graphql`
   fragment RemoveTeamMemberIntegrationAuthMutation_team on RemoveTeamMemberIntegrationAuthSuccess {
     teamMember {
       ...useIsIntegrated_teamMember
-      ...GcalProviderRowTeamMember
       services {
         ...IntegrationServiceProviderRow_service
       }
       integrations {
         ...MattermostProviderRowTeamMemberIntegrations
         ...MSTeamsProviderRowTeamMemberIntegrations
+        gcal {
+          auth {
+            id
+            providerId
+          }
+        }
         gitlab {
           auth {
             isActive

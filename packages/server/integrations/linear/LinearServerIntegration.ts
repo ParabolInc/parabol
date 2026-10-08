@@ -1,4 +1,3 @@
-import LinearIssueId from 'parabol-client/shared/gqlIds/LinearIssueId'
 import LinearProjectId from 'parabol-client/shared/gqlIds/LinearProjectId'
 import {linearIntegrationMeta} from 'parabol-client/shared/integrations/linearIntegrationMeta'
 import interleave from 'parabol-client/utils/interleave'
@@ -21,6 +20,7 @@ import describeLinearDimensionField from './describeLinearDimensionField'
 import isLinearTeam from './isLinearTeam'
 import LinearServerManager from './LinearServerManager'
 import listLinearDimensionFields from './listLinearDimensionFields'
+import parseLinearIntegrationHash from './parseLinearIntegrationHash'
 import pushEstimateToLinear from './pushEstimateToLinear'
 import resolveLinearDimensionFieldKey from './resolveLinearDimensionFieldKey'
 import resolveLinearTaskIntegration from './resolveLinearTaskIntegration'
@@ -29,12 +29,6 @@ export class LinearServerIntegration extends ServerIntegrationDefinition {
   readonly service = linearIntegrationMeta.service
   readonly title = linearIntegrationMeta.title
   readonly authStrategy = 'oauth2' as const
-
-  parseIntegrationHash(integrationHash: string) {
-    const {repoId, issueId} = LinearIssueId.split(integrationHash)
-    if (!repoId || !issueId || LinearIssueId.join(repoId, issueId) !== integrationHash) return null
-    return {service: 'linear' as const, repoId, issueId}
-  }
 
   readonly capabilities: {
     issueCreate: IssueCreateCapability
@@ -49,7 +43,10 @@ export class LinearServerIntegration extends ServerIntegrationDefinition {
         return auth ? new LinearServerManager(auth, ctx.context, ctx.info) : null
       }
     },
-    issueRead: {getIssue: resolveLinearTaskIntegration},
+    issueRead: {
+      getIssue: resolveLinearTaskIntegration,
+      parseIntegrationHash: parseLinearIntegrationHash
+    },
     issueSearch: {buildQuery: buildLinearSearchQuery},
     repoList: {
       fetchRepos: async ({teamId, userId, context, info}) => {

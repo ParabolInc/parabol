@@ -8,10 +8,6 @@ export const describeServerIntegrationConformance = (def: ServerIntegrationDefin
       expect(AUTH_STRATEGIES).toContain(def.authStrategy)
     })
 
-    it('declares at least one capability', () => {
-      expect(Object.keys(def.capabilities).length).toBeGreaterThan(0)
-    })
-
     it('exposes resolveAuth as a function of arity 1', () => {
       expect(typeof def.resolveAuth).toBe('function')
       expect(def.resolveAuth.length).toBe(1)

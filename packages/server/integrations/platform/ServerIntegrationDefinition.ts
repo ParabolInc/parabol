@@ -36,6 +36,8 @@ export interface IssueReadCtx extends IntegrationCtx {
 export interface IssueReadCapability {
   /** The raw issue payload in the shape the service's TaskIntegration GraphQL type resolves — never re-wrapped, so __typename/discriminant keys survive */
   getIssue(ctx: IssueReadCtx): Promise<unknown>
+  /** The Task.integrationHash a client echoed, parsed into the issue parts the Task row stores. null when malformed */
+  parseIntegrationHash(integrationHash: string): IssueParts | null
 }
 
 export interface IssueSearchCapability<TQuery extends JsonObject = JsonObject> {
@@ -152,9 +154,6 @@ export abstract class ServerIntegrationDefinition {
     const auth = await dataLoader.get('freshAuth').load({service: this.service, teamId, userId})
     return auth?.accessToken ? auth : null
   }
-
-  /** The Task.integrationHash a client echoed, parsed into the issue parts the Task row stores. null when malformed */
-  abstract parseIntegrationHash(integrationHash: string): IssueParts | null
 
   /** A team, org, or global provider row exists. Services whose connect flow needs the global row override this */
   async isAvailable(ctx: IntegrationCtx) {

@@ -1,5 +1,5 @@
 import type {RecordSourceProxy} from 'relay-runtime'
-import type {RegisteredClientIntegration} from '~/integrations/platform/registry'
+import type {TaskClientIntegration} from '~/integrations/platform/registry'
 import {
   EMPTY_SCOPING_SEARCH_STATE,
   type ScopingSearchState
@@ -15,7 +15,7 @@ interface ScopingSearchQueryRecord {
 const readScopingSearchStateFromRelayStore = (
   store: RecordSourceProxy,
   meetingId: string,
-  service: RegisteredClientIntegration
+  service: TaskClientIntegration
 ): ScopingSearchState => {
   const query = store.get<ScopingSearchQueryRecord>(SearchQueryId.join(service, meetingId))
   if (!query) return EMPTY_SCOPING_SEARCH_STATE
