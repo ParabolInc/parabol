@@ -3,6 +3,8 @@ import * as React from 'react'
 import {cn} from '../cn'
 
 export const MENU_ITEM_ICON = 'mr-2 text-[20px] text-fg-secondary'
+export const MENU_ITEM =
+  'mx-1 flex select-none items-center rounded-md px-2 py-1 text-fg-primary text-sm outline-hidden hover:bg-surface-hover focus:bg-surface-hover'
 
 interface MenuItemProps
   extends Omit<React.ComponentPropsWithoutRef<typeof DropdownMenu.Item>, 'disabled'> {
@@ -18,7 +20,7 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
       <DropdownMenu.Item
         asChild={asChild}
         className={cn(
-          'mx-1 flex select-none items-center rounded-md px-2 py-1 text-fg-primary text-sm outline-hidden hover:bg-surface-hover focus:bg-surface-hover',
+          MENU_ITEM,
           isDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
           className
         )}

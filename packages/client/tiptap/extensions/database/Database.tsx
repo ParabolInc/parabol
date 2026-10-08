@@ -1,7 +1,7 @@
 import {HocuspocusProvider} from '@hocuspocus/provider'
 import {Node} from '@tiptap/core'
 import {type NodeViewProps, NodeViewWrapper, ReactNodeViewRenderer} from '@tiptap/react'
-import {lazy} from 'react'
+import {lazy, Suspense} from 'react'
 import {appendColumn, appendRow, getColumns, getRows} from './data'
 
 const DatabaseView = lazy(() => import(/* webpackChunkName: 'DatabaseView' */ './DatabaseView'))
@@ -17,11 +17,16 @@ function Component(props: NodeViewProps) {
 
   return (
     <NodeViewWrapper className='relative'>
-      <DatabaseView
-        provider={extension.options.provider}
-        editor={editor}
-        userId={extension.options.userId}
-      />
+      {/* without a boundary of its own, the suspending chunk hides the editor, which tears down & recreates this node view in a loop */}
+      <Suspense
+        fallback={<div className='h-28 rounded-lg border border-hairline bg-surface-card' />}
+      >
+        <DatabaseView
+          provider={extension.options.provider}
+          editor={editor}
+          userId={extension.options.userId}
+        />
+      </Suspense>
     </NodeViewWrapper>
   )
 }
@@ -54,6 +59,10 @@ export const Database = Node.create<DatabaseOptions>({
     return [{tag: 'database'}]
   },
   addNodeView() {
-    return ReactNodeViewRenderer(Component, {contentDOMElementTag: 'div'})
+    return ReactNodeViewRenderer(Component, {
+      contentDOMElementTag: 'div',
+      // the grid handles its own input. Left to ProseMirror, a click on an icon or label selects the node & pulls focus back to the editor, closing the menu that click just opened
+      stopEvent: () => true
+    })
   }
 })
