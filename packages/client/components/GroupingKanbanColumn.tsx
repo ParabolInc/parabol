@@ -163,7 +163,6 @@ const GroupingKanbanColumn = (props: Props) => {
     <div
       className={`relative mr-2 ml-2 flex h-full min-w-80 single-reflection-column:max-w-min flex-1 flex-col content-start rounded-lg bg-surface-well p-0 transition-all duration-100 ease-out first-of-type:ml-4 last-of-type:mr-4 ${isLengthExpanded ? '' : 'single-reflection-column:h-[calc(100%-68px)]'} max-w-min`}
       ref={columnRef}
-      data-cy={`group-column-${question}`}
     >
       <GroupingKanbanColumnHeader
         canAdd={canAdd}
@@ -185,7 +184,6 @@ const GroupingKanbanColumn = (props: Props) => {
                 isWidthExpanded ? 'py-3' : 'py-1.5',
                 isDesktop ? 'px-3' : 'px-2'
               )}
-              data-cy={subColumnIdx === 0 ? `group-column-${question}-body` : undefined}
               key={`${promptId}-${subColumnIdx}`}
               ref={subColumnIdx === 0 ? columnBodyRef : undefined}
               {...{[DragAttribute.DROPZONE]: `${promptId}-${subColumnIdx}`}}
@@ -195,7 +193,6 @@ const GroupingKanbanColumn = (props: Props) => {
                 .map((reflectionGroup, idx) => {
                   return (
                     <ReflectionGroup
-                      dataCy={`${question}-group-${idx}`}
                       key={reflectionGroup.id}
                       meetingRef={meeting}
                       onHoverReflection={onHoverReflection}

@@ -19,6 +19,8 @@ module.exports = {
     RedirectURI: 'string'
   },
   noFutureProofEnums: true,
+  // artifacts are gitignored, but from a git hook in a worktree relay's own `git add` stages them under a bogus path
+  noSourceControl: true,
   featureFlags: {
     enforce_fragment_alias_where_ambiguous: {kind: 'disabled'}
   },
