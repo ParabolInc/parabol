@@ -6,21 +6,23 @@ import {parseWebPath} from '~/utils/parseWebPath'
 import type {TaskIntegrationLink_integration$key} from '../__generated__/TaskIntegrationLink_integration.graphql'
 import {DemoIntegration} from '../types/constEnums'
 import {cn} from '../ui/cn'
+import isTempId from '../utils/relay/isTempId'
+import Ellipsis from './Ellipsis/Ellipsis'
 import JiraIssueLink from './JiraIssueLink'
 
 interface Props {
   integration: TaskIntegrationLink_integration$key | null
   className?: string
   children?: ReactNode
-  showJiraLabelPrefix?: boolean
 }
 
 const TaskIntegrationLink = (props: Props) => {
-  const {integration: integrationRef, className, children, showJiraLabelPrefix} = props
+  const {integration: integrationRef, className, children} = props
   const integration = useFragment(
     graphql`
       fragment TaskIntegrationLink_integration on TaskIntegration {
         __typename
+        id
         ...TaskIntegrationLinkIntegrationGitHub @relay(mask: false) @alias
         ...TaskIntegrationLinkIntegrationJira @relay(mask: false) @alias
         ...TaskIntegrationLinkIntegrationJiraServer @relay(mask: false) @alias
@@ -32,6 +34,16 @@ const TaskIntegrationLink = (props: Props) => {
     integrationRef
   )
   if (!integration) return null
+  if (isTempId(integration.id)) {
+    return (
+      <div
+        className={cn('block px-4 text-[14px] text-fg-primary leading-5', className)}
+        aria-live='polite'
+      >
+        Issue #<Ellipsis />
+      </div>
+    )
+  }
   const linkClassName = cn(
     'block px-4 text-[14px] text-fg-primary leading-5 underline hover:underline focus:underline',
     className
@@ -45,7 +57,6 @@ const TaskIntegrationLink = (props: Props) => {
         projectKey={projectKey}
         cloudName={cloudName}
         className={className}
-        showLabelPrefix={showJiraLabelPrefix}
       >
         {children}
       </JiraIssueLink>
@@ -107,17 +118,19 @@ const TaskIntegrationLink = (props: Props) => {
   }
   const azure = integration.TaskIntegrationLinkIntegrationAzure
   if (azure) {
-    const {id, teamProject, url, type} = azure
+    const {workItemKey, azureProject, url, type} = azure
+    const {organization, name: projectName} = azureProject
     const integrationType = type.includes('Issue') ? 'Issue' : type
+    const workItemLabel = `${organization}:${workItemKey}`
     return (
       <a
         href={url}
         rel='noopener noreferrer'
         target='_blank'
-        title={`Azure Item #${id} on ${teamProject}`}
+        title={`Azure Item #${workItemLabel} on ${projectName}`}
         className={linkClassName}
       >
-        {`${integrationType} #${id}`}
+        {`${integrationType} #${workItemLabel}`}
         {children}
       </a>
     )
@@ -184,7 +197,11 @@ graphql`
 graphql`
   fragment TaskIntegrationLinkIntegrationAzure on AzureDevOpsWorkItem {
     id
-    teamProject
+    workItemKey: issueKey
+    azureProject: project {
+      organization
+      name
+    }
     type
     url
   }
