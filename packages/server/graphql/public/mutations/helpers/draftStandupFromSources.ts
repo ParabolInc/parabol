@@ -2,6 +2,7 @@ import type {JSONContent} from '@tiptap/core'
 import type {GraphQLResolveInfo} from 'graphql'
 import {GraphQLError} from 'graphql'
 import {markdownToTipTap} from '../../../../../client/shared/tiptap/markdownToTipTap'
+import tagIssueLinks from '../../../../../client/shared/tiptap/tagIssueLinks'
 import {tipTapToMarkdown} from '../../../../../client/shared/tiptap/tipTapToMarkdown'
 import getKysely from '../../../../postgres/getKysely'
 import OpenAIServerManager from '../../../../utils/OpenAIServerManager'
@@ -37,7 +38,7 @@ interface Options {
 interface NumberedIssue {
   id: string
   service: ServiceEnum
-  item: InspirationIssue
+  issue: InspirationIssue
 }
 
 const draftStandupFromSources = async (options: Options) => {
@@ -55,36 +56,41 @@ const draftStandupFromSources = async (options: Options) => {
   } = options
   const pg = getKysely()
 
-  const fetched = await Promise.all(
+  const issuesBySource = await Promise.all(
     sources.map(async ({service, searchQuery}) => ({
       service,
       searchQuery,
-      items: await fetchIssues(service, searchQuery, teamId, viewerId, context, info)
+      sourceIssues: await fetchIssues(service, searchQuery, teamId, viewerId, context, info)
     }))
   )
   let nextId = 1
-  const numbered = fetched.flatMap(({service, items}) =>
-    items.map((item): NumberedIssue => ({id: `W${nextId++}`, service, item}))
+  const numberedIssues = issuesBySource.flatMap(({service, sourceIssues}) =>
+    sourceIssues.map((issue): NumberedIssue => ({id: `W${nextId++}`, service, issue}))
   )
 
-  const toIssue = ({service, item}: NumberedIssue, unusedReason: string | null) => ({
+  const toIssue = ({service, issue}: NumberedIssue, unusedReason: string | null) => ({
     service,
-    title: item.title,
-    url: item.url || null,
-    updatedAt: item.updatedAt,
+    title: issue.title,
+    url: issue.url || null,
+    updatedAt: issue.updatedAt,
     unusedReason
   })
 
-  if (numbered.length === 0) return {inspirationItems: [], issues: []}
+  if (numberedIssues.length === 0) return {inspirationItems: [], issues: []}
   if (!canDraft) {
-    return {inspirationItems: [], issues: numbered.map((entry) => toIssue(entry, null))}
+    return {
+      inspirationItems: [],
+      issues: numberedIssues.map((numberedIssue) => toIssue(numberedIssue, null))
+    }
   }
 
-  const issuesText = fetched
-    .filter(({items}) => items.length > 0)
-    .map(({service, items}) => {
-      const ids = numbered.filter((entry) => entry.service === service).map(({id}) => id)
-      return `## ${SOURCE_LABELS[service] ?? service}\n\n${formatIssuesForAI(items, ids)}`
+  const issuesText = issuesBySource
+    .filter(({sourceIssues}) => sourceIssues.length > 0)
+    .map(({service, sourceIssues}) => {
+      const ids = numberedIssues
+        .filter((numberedIssue) => numberedIssue.service === service)
+        .map(({id}) => id)
+      return `## ${SOURCE_LABELS[service] ?? service}\n\n${formatIssuesForAI(sourceIssues, ids)}`
     })
     .join('\n\n')
 
@@ -113,20 +119,23 @@ const draftStandupFromSources = async (options: Options) => {
 
   const draftText = result.items.map(({content}) => content).join('\n')
   const reasonById = new Map(result.unused.map(({id, reason}) => [id, reason]))
-  const issues = numbered.map((entry) => {
-    const {url} = entry.item
+  const issues = numberedIssues.map((numberedIssue) => {
+    const {url} = numberedIssue.issue
     const isLinked = !!url && draftText.includes(url)
-    const reason = reasonById.get(entry.id)
+    const reason = reasonById.get(numberedIssue.id)
     const isUsed = isLinked || (!url && !reason)
-    return toIssue(entry, isUsed ? null : (reason ?? 'Not mentioned'))
+    return toIssue(numberedIssue, isUsed ? null : (reason ?? 'Not mentioned'))
   })
 
+  const serviceByUrl = new Map(
+    numberedIssues.flatMap(({service, issue}) => (issue.url ? [[issue.url, service] as const] : []))
+  )
   // The AI sometimes splits one question's answer in two, so merge them and keep question order
   const createdAt = new Date()
   const inspirationItems = prompts.flatMap((prompt, promptIndex) => {
-    const parts = result.items.filter((item) => item.promptIndex === promptIndex)
-    if (parts.length === 0) return []
-    const markdown = parts.map(({content}) => content).join('\n\n')
+    const answers = result.items.filter((answer) => answer.promptIndex === promptIndex)
+    if (answers.length === 0) return []
+    const markdown = answers.map(({content}) => content).join('\n\n')
     return [
       {
         id: `${INSPIRATION_DRAFT_SERVICE}:${meetingId}:${prompt.id}`,
@@ -135,7 +144,7 @@ const draftStandupFromSources = async (options: Options) => {
         service: INSPIRATION_DRAFT_SERVICE,
         title: null,
         promptId: prompt.id,
-        content: {type: 'doc', content: markdownToTipTap(markdown)},
+        content: tagIssueLinks({type: 'doc', content: markdownToTipTap(markdown)}, serviceByUrl),
         createdAt
       }
     ]
