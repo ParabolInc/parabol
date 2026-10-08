@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.2.2](https://github.com/ParabolInc/parabol/compare/v15.2.1...v15.2.2) (2026-10-08)
+
+
+### Fixed
+
+* add billing leader button does nothing ([#13628](https://github.com/ParabolInc/parabol/issues/13628)) ([ff3c97a](https://github.com/ParabolInc/parabol/commit/ff3c97aac8be045226920399295d4cd42e1ea998))
+
+
+### Changed
+
+* remove websocket connect and disconnect analytics events ([#13626](https://github.com/ParabolInc/parabol/issues/13626)) ([bd6d8f5](https://github.com/ParabolInc/parabol/commit/bd6d8f59435cf7eac9cae5caee3adb0498aabfe2))
+
 ## [15.2.1](https://github.com/ParabolInc/parabol/compare/v15.2.0...v15.2.1) (2026-10-08)
 
 
