@@ -9,6 +9,7 @@ import type {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/C
 import type {NewAzureIssueInputQuery} from '../__generated__/NewAzureIssueInputQuery.graphql'
 import useForm from '../hooks/useForm'
 import useTimedState from '../hooks/useTimedState'
+import {getAzureDevOpsSharedProjects} from '../integrations/azureDevOps/azureDevOpsSharedProjects'
 import type {NewRecordInputProps} from '../integrations/platform/ScopingSearchState'
 import useUpdatePokerScopeMutation from '../mutations/useUpdatePokerScopeMutation'
 import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
@@ -16,7 +17,7 @@ import type {CompletedHandler} from '../types/relayMutations'
 import {Menu} from '../ui/Menu/Menu'
 import Legitity from '../validation/Legitity'
 import Checkbox from './Checkbox'
-import NewAzureIssueMenu from './NewAzureIssueMenu'
+import NewAzureIssueMenu, {getAzureProjectLabel} from './NewAzureIssueMenu'
 import PlainButton from './PlainButton/PlainButton'
 import StyledError from './StyledError'
 
@@ -25,15 +26,9 @@ const query = graphql`
     viewer {
       id
       teamMember(teamId: $teamId) {
-        integrations {
-          azureDevOps {
-            projects {
-              ...NewAzureIssueMenu_AzureDevOpsRemoteProjects
-              id
-              name
-              integrationRepoId
-            }
-          }
+        services {
+          service
+          ...azureDevOpsSharedProjects_service @relay(mask: false)
         }
       }
     }
@@ -55,7 +50,7 @@ const NewAzureIssueInput = (props: Props) => {
   const {isEditing, setIsEditing, meetingId, teamId, queryRef} = props
   const data = usePreloadedQuery<NewAzureIssueInputQuery>(query, queryRef)
   const {id: userId, teamMember} = data.viewer
-  const projects = teamMember?.integrations.azureDevOps.projects ?? []
+  const {projects} = getAzureDevOpsSharedProjects(teamMember?.services)
   const atmosphere = useAtmosphere()
   const {onError} = useMutationProps()
   const [updatePokerScope] = useUpdatePokerScopeMutation()
@@ -65,7 +60,13 @@ const NewAzureIssueInput = (props: Props) => {
       setCreateTaskError(undefined)
     }
   }, [isEditing])
-  const [selectedProjectName, setSelectedProjectName] = useState(projects[0]?.name ?? '')
+  const [selectedProjectId, setSelectedProjectId] = useState(projects[0]?.integrationRepoId)
+  const selectedProject = projects.find(
+    (project) => project.integrationRepoId === selectedProjectId
+  )
+  const selectedProjectLabel = selectedProject
+    ? getAzureProjectLabel(selectedProject)
+    : 'No projects shared. Choose projects in Team Settings › Integrations'
   const {fields, onChange, validateField, setDirtyField} = useForm({
     newIssue: {
       getDefault: () => '',
@@ -77,7 +78,7 @@ const NewAzureIssueInput = (props: Props) => {
   const {dirty, error} = fields.newIssue
   const handleCreateNewIssue = (e: FormEvent) => {
     e.preventDefault()
-    if (isMenuOpenRef.current || !selectedProjectName) return
+    if (isMenuOpenRef.current || !selectedProject) return
     const {newIssue: newIssueRes} = validateField()
     const {value: newIssueTitle, error} = newIssueRes
     if (error) {
@@ -90,7 +91,6 @@ const NewAzureIssueInput = (props: Props) => {
       fields.newIssue.dirty = false
       return
     }
-    const selectedProject = projects.find((project) => project.name === selectedProjectName)!
     const newTask = {
       teamId,
       userId,
@@ -132,7 +132,7 @@ const NewAzureIssueInput = (props: Props) => {
         <Checkbox active disabled />
         <div className='flex w-full flex-col pl-4'>
           <StyledError className='w-full text-left text-[13px]'>{createTaskError}</StyledError>
-          <a className={linkClassName}>{selectedProjectName}</a>
+          <a className={linkClassName}>{selectedProjectLabel}</a>
         </div>
       </div>
     )
@@ -162,7 +162,7 @@ const NewAzureIssueInput = (props: Props) => {
         <Menu
           trigger={
             <PlainButton className='flex h-5 w-fit items-center justify-start bg-transparent opacity-100 hover:bg-transparent focus:bg-transparent'>
-              <a className={linkClassName}>{selectedProjectName}</a>
+              <a className={linkClassName}>{selectedProjectLabel}</a>
               <ExpandMore className='h-5 w-5 content-center p-0 text-accent'>
                 expand_more
               </ExpandMore>
@@ -174,10 +174,7 @@ const NewAzureIssueInput = (props: Props) => {
             if (!open) requestAnimationFrame(() => ref.current?.focus())
           }}
         >
-          <NewAzureIssueMenu
-            projectsRef={projects}
-            setSelectedProjectName={setSelectedProjectName}
-          />
+          <NewAzureIssueMenu projects={projects} onSelectProject={setSelectedProjectId} />
         </Menu>
       </div>
     </div>

@@ -361,6 +361,8 @@ const permissionMap: PermissionMap<Resolvers> = {
     updateDragLocation: isTeamMember<'Mutation.updateDragLocation'>('args.input.teamId'),
     updateFacilitatorRotation:
       isTeamMemberOfMeeting<'Mutation.updateFacilitatorRotation'>('args.meetingId'),
+    updateIntegrationRepoAccess:
+      isTeamMember<'Mutation.updateIntegrationRepoAccess'>('args.teamId'),
     updateIntegrationDimensionField: isTeamMember<'Mutation.updateIntegrationDimensionField'>(
       'args.meetingId',
       'newMeetings'
@@ -509,6 +511,13 @@ const permissionMap: PermissionMap<Resolvers> = {
     grantedScopes: isUserViewer<'IntegrationService.grantedScopes'>('source.userId'),
     repos: isUserViewer<'IntegrationService.repos'>('source.userId'),
     searchQueries: isUserViewer<'IntegrationService.searchQueries'>('source.userId')
+  },
+  AzureDevOpsIntegrationService: {
+    repoAccess: isUserViewer<'AzureDevOpsIntegrationService.repoAccess'>('source.userId'),
+    availableRepos: isUserViewer<'AzureDevOpsIntegrationService.availableRepos'>('source.userId')
+  },
+  AzureDevOpsIntegration: {
+    workItems: isUserViewer<'AzureDevOpsIntegration.workItems'>('source.userId')
   },
   User: {
     archivedTasks: isTeamMember<'User.archivedTasks'>('args.teamId'),

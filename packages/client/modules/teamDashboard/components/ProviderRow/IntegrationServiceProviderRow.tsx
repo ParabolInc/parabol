@@ -1,4 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
+import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import type {IntegrationServiceProviderRow_service$key} from '../../../../__generated__/IntegrationServiceProviderRow_service.graphql'
 import ProviderLogo from '../../../../components/ProviderLogo'
@@ -36,6 +37,7 @@ const IntegrationServiceProviderRow = (props: Props) => {
         isAvailable
         isConnected
         grantedScopes
+        ...AzureDevOpsProjectAccessPanel_service
         auth {
           providerId
         }
@@ -102,6 +104,12 @@ const IntegrationServiceProviderRow = (props: Props) => {
   const entries = getProviderRowEntries({title, description, isConnected, auth, providers})
   if (entries.length === 0) return null
   const errorMessage = getConnectErrorMessage(error, definition)
+  const Panel = definition.capabilities.settings?.Panel
+  const panel = isConnected && Panel && (
+    <Suspense fallback={null}>
+      <Panel teamId={teamId} serviceRef={integrationService} />
+    </Suspense>
+  )
 
   const entryProps = (entry: ProviderRowEntryModel): ProviderRowEntryProps => ({
     name: entry.name,
@@ -134,14 +142,18 @@ const IntegrationServiceProviderRow = (props: Props) => {
 
   if (entries.length === 1) {
     return (
-      <ProviderRowShell providerLogo={<ProviderLogo logo={logo} />}>
+      <ProviderRowShell providerLogo={<ProviderLogo logo={logo} />} panel={panel}>
         <ProviderRowEntry {...entryProps(entries[0]!)} />
       </ProviderRowShell>
     )
   }
 
   return (
-    <ProviderRowShell providerLogo={<ProviderLogo logo={logo} />} headerClassName='pb-0'>
+    <ProviderRowShell
+      providerLogo={<ProviderLogo logo={logo} />}
+      headerClassName='pb-0'
+      panel={panel}
+    >
       <div className='flex w-full flex-col'>
         {entries.map((entry) => (
           <div key={entry.provider.id} className='flex w-full flex-row pb-4'>

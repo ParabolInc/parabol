@@ -2195,6 +2195,21 @@ type Mutation {
   ): UpdateIntegrationDimensionFieldSuccess! @scope(name: MEETINGS_WRITE)
 
   """
+  Choose which of the viewer's repos/projects the team can reach through their connection to a
+  service. Only services with the repoAccess capability support this
+  """
+  updateIntegrationRepoAccess(
+    teamId: ID!
+    service: IntegrationProviderServiceEnum!
+
+    """
+    The integrationRepoId of each repo/project to share. Null shares every one the viewer can see,
+    including ones created later
+    """
+    integrationRepoIds: [ID!]
+  ): UpdateIntegrationRepoAccessSuccess! @scope(name: TEAMS_WRITE)
+
+  """
   Update a meeting template
   """
   updateMeetingTemplate(

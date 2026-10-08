@@ -1,5 +1,5 @@
-import {getUserId, isTeamMember} from '../../../utils/authorization'
-import standardError from '../../../utils/standardError'
+import {buildAzureDevOpsSearchWiql} from '../../../integrations/azureDevOps/buildAzureDevOpsWiql'
+import searchAzureDevOpsWorkItems from '../../../integrations/azureDevOps/searchAzureDevOpsWorkItems'
 import connectionFromTasks from '../../queries/helpers/connectionFromTasks'
 import type {AzureDevOpsIntegrationResolvers} from '../resolverTypes'
 
@@ -7,6 +7,8 @@ export type AzureDevOpsIntegrationSource = {
   teamId: string
   userId: string
 }
+
+const MAX_WORK_ITEMS = 100
 
 const AzureDevOpsIntegration: AzureDevOpsIntegrationResolvers = {
   auth: async ({teamId, userId}, _args, {dataLoader}) => {
@@ -20,56 +22,24 @@ const AzureDevOpsIntegration: AzureDevOpsIntegrationResolvers = {
   workItems: async (
     {teamId, userId},
     {first, queryString, projectKeyFilters, isWIQL},
-    {authToken, dataLoader}
+    {dataLoader}
   ) => {
-    const viewerId = getUserId(authToken)
-    if (!isTeamMember(authToken, teamId)) {
-      const err = new Error("Cannot access another team member's user stories")
-      standardError(err, {tags: {teamId, userId}, userId: viewerId})
-      return connectionFromTasks([], 0, err)
-    }
-    try {
-      const allUserWorkItems = await dataLoader.get('azureDevOpsAllWorkItems').load({
-        teamId,
-        userId,
-        queryString: queryString ?? null,
-        projectKeyFilters,
-        isWIQL,
-        limit: first
-      })
-      if (allUserWorkItems instanceof Error) {
-        return connectionFromTasks([], 0, allUserWorkItems)
-      } else {
-        const workItems = Array.from(
-          allUserWorkItems.map((userWorkItem) => {
-            return {
-              ...userWorkItem,
-              updatedAt: new Date()
-            } as any
-          })
-        )
-        return connectionFromTasks(workItems, first, undefined)
-      }
-    } catch (error) {
-      return connectionFromTasks(
-        [],
-        0,
-        error instanceof Error ? error : new Error('Failed to fetch work items')
-      )
-    }
-  },
-
-  projects: ({teamId, userId}, _args, {authToken, dataLoader}) => {
-    const viewerId = getUserId(authToken)
-    if (viewerId !== userId) return []
-    return dataLoader.get('allAzureDevOpsProjects').load({teamId, userId})
+    const limit = Math.min(Math.max(first ?? MAX_WORK_ITEMS, 1), MAX_WORK_ITEMS)
+    const wiql = buildAzureDevOpsSearchWiql(queryString ?? null, isWIQL)
+    if (wiql instanceof Error) return connectionFromTasks([], 0, wiql)
+    const workItems = await searchAzureDevOpsWorkItems(
+      {dataLoader, teamId, userId},
+      {...wiql, projects: projectKeyFilters, limit}
+    )
+    if (workItems instanceof Error) return connectionFromTasks([], 0, workItems)
+    return connectionFromTasks(workItems, limit)
   },
 
   cloudProvider: async (_source, _args, {dataLoader}) => {
     const [globalProvider] = await dataLoader
       .get('sharedIntegrationProviders')
       .load({service: 'azureDevOps', orgIds: [], teamIds: []})
-    return globalProvider!
+    return globalProvider ?? null
   },
 
   sharedProviders: async ({teamId}, _args, {dataLoader}) => {

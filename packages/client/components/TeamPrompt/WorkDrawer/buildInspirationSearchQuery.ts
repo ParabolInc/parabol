@@ -40,6 +40,8 @@ const buildInspirationSearchQuery = (
     }
     case 'linear':
       return JSON.stringify(makeLinearWorkFilter(settings.linearIds, dateRange))
+    case 'azureDevOps':
+      return JSON.stringify({startAt, endAt, kinds, projectIds: settings.azureDevOpsProjectIds})
     case 'gcal':
       return JSON.stringify({startDate: startAt, endDate: endAt})
   }

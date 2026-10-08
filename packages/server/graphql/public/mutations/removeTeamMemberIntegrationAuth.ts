@@ -16,7 +16,7 @@ const removeTeamMemberIntegrationAuth: MutationResolvers['removeTeamMemberIntegr
       dataLoader.get('users').loadNonNull(viewerId),
       pg
         .updateTable('TeamMemberIntegrationAuth')
-        .set({isActive: false})
+        .set({isActive: false, meta: null})
         .where('userId', '=', viewerId)
         .where('teamId', '=', teamId)
         .where('service', '=', service as Integrationproviderserviceenum)

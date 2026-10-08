@@ -3,6 +3,7 @@ import {useFragment} from 'react-relay'
 import type {InspirationSourceConnectButton_teamMember$key} from '../../../__generated__/InspirationSourceConnectButton_teamMember.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
+import connectAzureDevOps from '../../../integrations/azureDevOps/connectAzureDevOps'
 import {getConnectProvider} from '../../../integrations/platform/findIntegrationService'
 import {Button} from '../../../ui/Button/Button'
 import AtlassianClientManager from '../../../utils/AtlassianClientManager'
@@ -27,6 +28,7 @@ const InspirationSourceConnectButton = (props: Props) => {
         teamId
         services {
           ...findIntegrationService_cloudProvider @relay(mask: false)
+          ...connectAzureDevOps_service @relay(mask: false)
         }
         integrations {
           atlassian {
@@ -75,6 +77,10 @@ const InspirationSourceConnectButton = (props: Props) => {
       const provider = integrations.linear?.cloudProvider
       if (!provider) return onError(new Error('Could not find the Linear app'))
       LinearClientManager.openOAuth(atmosphere, teamId, provider, mutationProps)
+    } else if (service === 'azureDevOps') {
+      if (!connectAzureDevOps(atmosphere, teamId, services, mutationProps)) {
+        return onError(new Error('Could not find the Azure DevOps app'))
+      }
     } else if (service === 'gcal') {
       const provider = integrations.gcal?.cloudProvider
       if (!provider) return onError(new Error('Could not find the Google Calendar app'))

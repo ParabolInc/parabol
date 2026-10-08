@@ -4,24 +4,18 @@ import type {DimensionFieldCtx, DimensionFieldKey} from '../platform/ServerInteg
 const resolveAzureDevOpsDimensionFieldKey = async ({
   task,
   dataLoader,
-  teamId,
-  viewerId
+  teamId
 }: DimensionFieldCtx): Promise<DimensionFieldKey | null> => {
-  const {integration, id: taskId} = task
+  const {integration} = task
   if (integration?.service !== 'azureDevOps') return null
-  const {instanceId, projectKey, issueKey, accessUserId} = integration
-  const azureDevOpsWorkItem = await dataLoader.get('azureDevOpsWorkItem').load({
-    teamId,
-    userId: accessUserId,
-    taskId,
-    instanceId,
-    projectId: projectKey,
-    viewerId,
-    workItemId: issueKey
-  })
+  const {instanceId, issueKey, accessUserId} = integration
+  const workItem = await dataLoader
+    .get('azureDevOpsWorkItem')
+    .load({teamId, userId: accessUserId, instanceId, workItemId: issueKey})
+  if (!workItem) return null
   return {
-    repoId: AzureDevOpsProjectId.join(instanceId, projectKey),
-    issueType: azureDevOpsWorkItem?.type ?? null
+    repoId: AzureDevOpsProjectId.join(instanceId, workItem.teamProject),
+    issueType: workItem.type
   }
 }
 

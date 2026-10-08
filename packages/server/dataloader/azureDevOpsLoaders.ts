@@ -1,19 +1,14 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
-import fetchAzureDevOpsProjects from '../integrations/azureDevOps/fetchAzureDevOpsProjects'
-import {estimatePushColumns} from '../integrations/platform/estimatePushColumns'
-import getKysely from '../postgres/getKysely'
+import AzureDevOpsServerManager from '../integrations/azureDevOps/AzureDevOpsServerManager'
+import {listAzureDevOpsEstimateFields} from '../integrations/azureDevOps/azureDevOpsEstimateFields'
+import getAzureDevOpsManager from '../integrations/azureDevOps/getAzureDevOpsManager'
+import mapAzureDevOpsWorkItem, {
+  type AzureDevOpsWorkItem
+} from '../integrations/azureDevOps/mapAzureDevOpsWorkItem'
+import type {ServiceField} from '../integrations/platform/ServerIntegrationDefinition'
 import syncTeamMemberIntegrationAuthTokens from '../postgres/queries/syncTeamMemberIntegrationAuthTokens'
 import type {TeamMemberIntegrationAuth} from '../postgres/types'
-import type {IntegrationProviderAzureDevOps} from '../postgres/types/IntegrationProvider'
-import AzureDevOpsServerManager, {
-  type ProjectRes,
-  type Resource,
-  type TeamProjectReference,
-  type WorkItem
-} from '../utils/AzureDevOpsServerManager'
-import {getInstanceId} from '../utils/azureDevOps/azureDevOpsFieldTypeToId'
-import {Logger} from '../utils/Logger'
 import logError from '../utils/logError'
 import handleAuthRefreshFailure from './handleAuthRefreshFailure'
 import type RootDataLoader from './RootDataLoader'
@@ -24,95 +19,27 @@ type TeamUserKey = {
   userId: string
 }
 
-export interface AzureDevOpsAllUserWorkItemsKey {
-  teamId: string
-  userId: string
-  queryString: string | null
-  projectKeyFilters: string[] | null
-  isWIQL: boolean
-  limit?: number
-}
-
-export interface AzureDevOpsAccessibleOrgsKey {
-  userId: string
-  teamId: string
-  accountId: string
-}
-
-export interface AzureDevOpsProjectsKey {
-  userId: string
-  teamId: string
-  accountName: string
-}
-
-export interface AzureDevOpsRemoteProjectKey {
-  userId: string
-  teamId: string
-  instanceId: string
-  projectId: string
-}
-
-export interface AzureDevOpsIssueKey {
-  teamId: string
-  userId: string
-  instanceId: string
-  issueKey: string
-  viewerId: string
-  taskId?: string
-}
-
 export interface AzureDevOpsWorkItemKey {
   teamId: string
-  taskId?: string
+  /** Whose connection reads the work item */
   userId: string
   instanceId: string
-  projectId: string
-  viewerId: string
   workItemId: string
 }
 
-export interface AzureDevOpsWorkItemsKey {
-  userId: string
+export interface AzureDevOpsEstimateFieldsKey {
   teamId: string
+  userId: string
   instanceId: string
   projectId: string
+  workItemType: string
 }
 
-export interface AzureDevOpsWorkItem {
-  id: string
-  title: string
-  teamProject: string
-  url: string
-  state: string
-  type: string
-  descriptionHTML: string
-  service: 'azureDevOps'
-  teamId: string
-  userId: string
-}
+const REFRESH_MARGIN_SECONDS = 60
 
-export interface AzureUserInfo {
-  displayName: string
-  publicAlias: string
-  emailAddress: string
-  id: string
-  coreRevision: number
-  revision: number
-  timeStamp: string
-}
-
-export interface AzureAccountProject extends TeamProjectReference {
-  userId: string
-  teamId: string
-  instanceId: string
-  projectId: string
-  service: 'azureDevOps'
-}
-
-export interface AzureProject extends ProjectRes {
-  userId: string
-  teamId: string
-  service: 'azureDevOps'
+const getTokenExpiry = (accessToken: string | null) => {
+  const decoded = accessToken ? decode(accessToken) : null
+  return decoded && typeof decoded === 'object' && typeof decoded.exp === 'number' ? decoded.exp : 0
 }
 
 export const freshAzureDevOpsAuth = (parent: RootDataLoader) => {
@@ -120,55 +47,31 @@ export const freshAzureDevOpsAuth = (parent: RootDataLoader) => {
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
-          const azureDevOpsAuthToRefresh = await parent
+          const auth = await parent
             .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
-            .load({
-              service: 'azureDevOps',
-              teamId,
-              userId
-            })
-          if (azureDevOpsAuthToRefresh === null) {
-            return null
+            .load({service: 'azureDevOps', teamId, userId})
+          if (!auth?.refreshToken) return null
+          const {accessToken: staleAccessToken, refreshToken, providerId} = auth
+          const expiresSoonAt = Math.floor(Date.now() / 1000) + REFRESH_MARGIN_SECONDS
+          if (getTokenExpiry(staleAccessToken) >= expiresSoonAt) return auth
+          const provider = await parent.get('integrationProviders').loadNonNull(providerId)
+          if (provider.service !== 'azureDevOps') return null
+          const oauthRes = await new AzureDevOpsServerManager(auth, provider).refresh(refreshToken)
+          if (oauthRes instanceof Error) return handleAuthRefreshFailure(oauthRes, auth)
+          const tokens = {
+            accessToken: oauthRes.accessToken,
+            refreshToken: oauthRes.refreshToken || refreshToken,
+            scopes: auth.scopes,
+            expiresAt: auth.expiresAt
           }
-          const {
-            accessToken: existingAccessToken,
-            refreshToken,
-            providerId
-          } = azureDevOpsAuthToRefresh
-          if (!refreshToken) {
-            return null
-          }
-          const decodedToken = existingAccessToken && (decode(existingAccessToken) as any)
-          const now = new Date()
-          const inAMinute = Math.floor((now.getTime() + 60000) / 1000)
-          if (!decodedToken || decodedToken.exp < inAMinute) {
-            const provider = await parent.get('integrationProviders').loadNonNull(providerId)
-            const manager = new AzureDevOpsServerManager(
-              azureDevOpsAuthToRefresh,
-              provider as IntegrationProviderAzureDevOps
-            )
-            const oauthRes = await manager.refresh(refreshToken)
-            if (oauthRes instanceof Error) {
-              return handleAuthRefreshFailure(oauthRes, azureDevOpsAuthToRefresh)
-            }
-            const {accessToken, refreshToken: newRefreshToken} = oauthRes
-            const updatedRefreshToken = newRefreshToken || refreshToken
-            const tokens = {
-              accessToken,
-              refreshToken: updatedRefreshToken,
-              scopes: azureDevOpsAuthToRefresh.scopes,
-              expiresAt: azureDevOpsAuthToRefresh.expiresAt
-            }
-            await syncTeamMemberIntegrationAuthTokens({
-              userId,
-              teamId,
-              providerId,
-              providerUserId: azureDevOpsAuthToRefresh.providerUserId,
-              ...tokens
-            })
-            return {...azureDevOpsAuthToRefresh, ...tokens}
-          }
-          return azureDevOpsAuthToRefresh
+          await syncTeamMemberIntegrationAuthTokens({
+            userId,
+            teamId,
+            providerId,
+            providerUserId: auth.providerUserId,
+            ...tokens
+          })
+          return {...auth, ...tokens}
         })
       )
       return settleOrLogRejection(results, keys)
@@ -180,407 +83,79 @@ export const freshAzureDevOpsAuth = (parent: RootDataLoader) => {
   )
 }
 
-export const azureDevOpsAllWorkItems = (parent: RootDataLoader) => {
-  return new DataLoader<AzureDevOpsAllUserWorkItemsKey, AzureDevOpsWorkItem[] | Error, string>(
-    async (keys) => {
-      const results = await Promise.allSettled(
-        keys.map(async ({userId, teamId, queryString, projectKeyFilters, isWIQL, limit}) => {
-          const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
-          if (!auth) {
-            return new Error('Failed to fetch a new access token, try re-authenticating')
-          }
-          const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
-          const manager = new AzureDevOpsServerManager(
-            auth,
-            provider as IntegrationProviderAzureDevOps
-          )
+const toWorkItemCacheKey = ({teamId, userId, instanceId, workItemId}: AzureDevOpsWorkItemKey) =>
+  `${teamId}:${userId}:${instanceId.toLowerCase()}:${workItemId}`
 
-          const restResult = await manager.getAllUserWorkItems(
-            queryString,
-            projectKeyFilters,
-            isWIQL,
-            limit
-          )
-
-          const {error, workItems} = restResult
-          if (error !== undefined || workItems === undefined) {
-            return error ?? new Error('Failed to fetch work items')
-          }
-
-          const mappedWorkItems: AzureDevOpsWorkItem[] = await Promise.all(
-            workItems.map(async (returnedWorkItem): Promise<AzureDevOpsWorkItem> => {
-              const instanceId = getInstanceId(new URL(returnedWorkItem.url))
-              const mappedWorkItem = await getMappedAzureDevOpsWorkItem(
-                userId,
-                teamId,
-                instanceId,
-                returnedWorkItem,
-                parent
-              )
-              return mappedWorkItem
-            })
-          )
-
-          return mappedWorkItems
-        })
-      )
-      return results.map((result) =>
-        result.status === 'fulfilled' ? result.value : new Error('Failed to fetch work items')
-      )
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) => `${key.teamId}:${key.userId}`
-    }
-  )
-}
-
-export const azureDevUserInfo = (parent: RootDataLoader) => {
-  return new DataLoader<TeamUserKey, AzureUserInfo | undefined, string>(
-    async (keys) => {
-      const results = await Promise.allSettled(
-        keys.map(async ({userId, teamId}) => {
-          const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
-          if (!auth) {
-            return undefined
-          }
-          const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
-          const manager = new AzureDevOpsServerManager(
-            auth,
-            provider as IntegrationProviderAzureDevOps
-          )
-          const restResult = await manager.getMe()
-          const {error, azureDevOpsUser} = restResult
-          if (error !== undefined || azureDevOpsUser === undefined) {
-            Logger.log(error)
-            return undefined
-          }
-          return {
-            ...azureDevOpsUser
-          }
-        })
-      )
-      return results.map((result) => (result.status === 'fulfilled' ? result.value : undefined))
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) => `${key.teamId}:${key.userId}`
-    }
-  )
-}
-
-export const allAzureDevOpsAccessibleOrgs = (parent: RootDataLoader) => {
-  return new DataLoader<TeamUserKey, Resource[], string>(
-    async (keys) => {
-      const results = await Promise.allSettled(
-        keys.map(async ({userId, teamId}) => {
-          const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
-          if (!auth) {
-            return []
-          }
-          const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
-          const manager = new AzureDevOpsServerManager(
-            auth,
-            provider as IntegrationProviderAzureDevOps
-          )
-          const userInfo = await parent.get('azureDevUserInfo').load({teamId, userId})
-          if (!userInfo) return []
-          const {id} = userInfo
-          const results = await manager.getAccessibleOrgs(id)
-          const {error, accessibleOrgs} = results
-          // handle error if defined
-          Logger.log(error)
-          return accessibleOrgs.map((resource) => ({
-            ...resource
-          }))
-        })
-      )
-      return results.map((result) => (result.status === 'fulfilled' ? result.value : []))
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) => `${key.userId}:${key.teamId}`
-    }
-  )
-}
-
-export const allAzureDevOpsProjects = (parent: RootDataLoader) => {
-  return new DataLoader<TeamUserKey, AzureAccountProject[], string>(
-    async (keys) => {
-      const results = await Promise.allSettled(
-        keys.map(async ({userId, teamId}) => {
-          const projects = await fetchAzureDevOpsProjects({dataLoader: parent, teamId, userId})
-          return projects instanceof Error ? [] : projects
-        })
-      )
-      return results.map((result) => (result.status === 'fulfilled' ? result.value : []))
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) => `${key.userId}:${key.teamId}`
-    }
-  )
-}
-
-export const azureDevOpsProject = (parent: RootDataLoader) => {
-  return new DataLoader<AzureDevOpsRemoteProjectKey, AzureProject | null, string>(
-    async (keys) => {
-      const results = await Promise.allSettled(
-        keys.map(async ({instanceId, userId, teamId, projectId}) => {
-          const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
-          if (!auth) return null
-          const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
-          if (!provider) return null
-          const manager = new AzureDevOpsServerManager(
-            auth,
-            provider as IntegrationProviderAzureDevOps
-          )
-          const projectRes = await manager.getProject(instanceId, projectId)
-          if (projectRes instanceof Error) {
-            Logger.log(projectRes)
-            return null
-          }
-          return {
-            ...projectRes,
-            teamId,
-            userId,
-            self: projectRes._links.self.href,
-            instanceId,
-            service: 'azureDevOps' as const
-          }
-        })
-      )
-      return results.map((result) => (result.status === 'fulfilled' ? result.value : null))
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) => `${key.userId}:${key.teamId}:${key.instanceId}:${key.projectId}`
-    }
-  )
-}
-
-const getProjectId = (url: URL) => {
-  const firstIndex = url.pathname.indexOf('/', 1)
-  const seconedIndex = url.pathname.indexOf('/', firstIndex + 1)
-  return url.pathname.substring(firstIndex + 1, seconedIndex)
-}
-
-export const azureDevOpsUserStory = (parent: RootDataLoader) => {
-  return new DataLoader<AzureDevOpsWorkItemKey, AzureDevOpsWorkItem | null, string>(
-    async (keys) => {
-      const results = await Promise.allSettled(
-        keys.map(async ({teamId, userId, instanceId, workItemId}) => {
-          const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
-          if (!auth) {
-            return null
-          }
-          const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
-          const manager = new AzureDevOpsServerManager(
-            auth,
-            provider as IntegrationProviderAzureDevOps
-          )
-          const workItemIds: number[] = []
-          const workItemNum = parseInt(workItemId)
-          if (!isNaN(workItemNum)) {
-            workItemIds.push(workItemNum)
-          }
-          const restResult = await manager.getWorkItemData(instanceId, workItemIds)
-          const {error, workItems} = restResult
-          if (error !== undefined || workItems.length !== 1 || !workItems[0]) {
-            Logger.log(error)
-            return null
-          } else {
-            const returnedWorkItem: WorkItem = workItems[0]
-            const azureDevOpsWorkItem = await getMappedAzureDevOpsWorkItem(
-              userId,
-              teamId,
-              instanceId,
-              returnedWorkItem,
-              parent
-            )
-            return azureDevOpsWorkItem
-          }
-        })
-      )
-      return results.map((result) => (result.status === 'fulfilled' ? result.value : null))
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) => `${key.teamId}:${key.userId}:${key.instanceId}:${key.workItemId}`
-    }
-  )
-}
-
+/** Null when the work item is gone, the connection is dead, or its project is not shared with the team */
 export const azureDevOpsWorkItem = (parent: RootDataLoader) => {
   return new DataLoader<AzureDevOpsWorkItemKey, AzureDevOpsWorkItem | null, string>(
     async (keys) => {
-      const results = await Promise.allSettled(
-        keys.map(async ({userId, teamId, instanceId, workItemId, taskId}) => {
-          const [auth, estimates] = await Promise.all([
-            parent.get('freshAzureDevOpsAuth').load({teamId, userId}),
-            taskId ? parent.get('latestTaskEstimates').load(taskId) : []
-          ])
-          if (!auth) return null
-          const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
-          const manager = new AzureDevOpsServerManager(
-            auth,
-            provider as IntegrationProviderAzureDevOps
-          )
-          const workItemDataResponse = await manager.getWorkItemData(instanceId, [
-            parseInt(workItemId)
-          ])
-          if (workItemDataResponse instanceof Error) {
-            logError(workItemDataResponse, {
-              userId,
-              tags: {instanceId, workItemId, teamId}
-            })
-            return null
+      const keysByConnection = new Map<string, AzureDevOpsWorkItemKey[]>()
+      keys.forEach((key) => {
+        const connection = `${key.teamId}:${key.userId}:${key.instanceId.toLowerCase()}`
+        keysByConnection.set(connection, [...(keysByConnection.get(connection) ?? []), key])
+      })
+      const workItems = new Map<string, AzureDevOpsWorkItem>()
+      await Promise.all(
+        [...keysByConnection.values()].map(async (connectionKeys) => {
+          const {teamId, userId, instanceId} = connectionKeys[0]!
+          const manager = await getAzureDevOpsManager({dataLoader: parent, teamId, userId})
+          if (!manager) return
+          const ids = connectionKeys
+            .map(({workItemId}) => Number(workItemId))
+            .filter((id) => Number.isInteger(id) && id > 0)
+          const rawWorkItems = await manager.getWorkItems(instanceId, [...new Set(ids)])
+          if (rawWorkItems instanceof Error) {
+            logError(rawWorkItems, {userId, tags: {teamId, instanceId}})
+            return
           }
-          const {workItems: returnedWorkItems} = workItemDataResponse
-          if (returnedWorkItems.length !== 1 || !returnedWorkItems[0]) return null
-          const returnedWorkItem = returnedWorkItems[0]
-          const azureDevOpsWorkItem = await getMappedAzureDevOpsWorkItem(
-            userId,
-            teamId,
-            instanceId,
-            returnedWorkItem,
-            parent
-          )
-
-          // update our records
-          await Promise.all(
-            estimates.map((estimate) => {
-              const {label, discussionId, name, taskId, userId, pushService, pushTargetId} =
-                estimate
-              if (pushService !== 'azureDevOps' || !pushTargetId) {
-                return undefined
-              }
-              let freshEstimate = ''
-              if (azureDevOpsWorkItem.type === 'User Story') {
-                freshEstimate = returnedWorkItem.fields['Microsoft.VSTS.Scheduling.StoryPoints']
-              } else if (azureDevOpsWorkItem.type === 'Task') {
-                freshEstimate =
-                  returnedWorkItem.fields['Microsoft.VSTS.Scheduling.OriginalEstimate']
-              }
-              if (freshEstimate === label) return undefined
-              // mutate current dataloader
-              estimate.label = freshEstimate
-              return getKysely()
-                .insertInto('TaskEstimate')
-                .values({
-                  changeSource: 'external',
-                  discussionId,
-                  ...estimatePushColumns({
-                    service: 'azureDevOps',
-                    target: 'field',
-                    targetId: pushTargetId
-                  }),
-                  label: freshEstimate,
-                  name,
-                  meetingId: null,
-                  stageId: null,
-                  taskId,
-                  userId
-                })
-                .execute()
-            })
-          )
-          return azureDevOpsWorkItem
+          rawWorkItems.forEach((rawWorkItem) => {
+            const owner = {access: manager.access, instanceId, teamId, userId}
+            const workItem = mapAzureDevOpsWorkItem(rawWorkItem, owner)
+            if (!workItem) return
+            workItems.set(
+              toWorkItemCacheKey({teamId, userId, instanceId, workItemId: workItem.id}),
+              workItem
+            )
+          })
         })
       )
-      return results.map((result) => (result.status === 'fulfilled' ? result.value : null))
+      return keys.map((key) => workItems.get(toWorkItemCacheKey(key)) ?? null)
     },
     {
       ...parent.dataLoaderOptions,
-      cacheKeyFn: ({userId, teamId, instanceId, workItemId}) =>
-        `${userId}:${teamId}:${instanceId}:${workItemId}`
+      cacheKeyFn: toWorkItemCacheKey
     }
   )
 }
 
-export type AzureDevOpsProjectProcessTemplateKey = {
-  userId: string
-  teamId: string
-  instanceId: string
-  projectId: string
-}
-export type AzureDevOpsProjectProcessTemplate = {
-  error?: Error
-  projectTemplate?: string
-}
-
-export const azureDevOpsProjectProcessTemplate = (parent: RootDataLoader) => {
-  return new DataLoader<
-    AzureDevOpsProjectProcessTemplateKey,
-    AzureDevOpsProjectProcessTemplate,
-    string
-  >(
+/** The fields of one work item type that can take an estimate; [] when Azure DevOps cannot list them */
+export const azureDevOpsEstimateFields = (parent: RootDataLoader) => {
+  return new DataLoader<AzureDevOpsEstimateFieldsKey, ServiceField[], string>(
     async (keys) => {
       const results = await Promise.allSettled(
-        keys.map(async ({userId, teamId, instanceId, projectId}) => {
-          const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
-          if (!auth) return null
-          const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
-          const manager = new AzureDevOpsServerManager(
-            auth,
-            provider as IntegrationProviderAzureDevOps
-          )
-
-          return manager.getProjectProcessTemplate(instanceId, projectId)
+        keys.map(async ({teamId, userId, instanceId, projectId, workItemType}) => {
+          const manager = await getAzureDevOpsManager({dataLoader: parent, teamId, userId})
+          if (!manager) return []
+          const [projectFields, workItemTypeFieldNames] = await Promise.all([
+            manager.listFields(instanceId, projectId),
+            manager.listWorkItemTypeFieldNames(instanceId, projectId, workItemType)
+          ])
+          const fail = (error: Error): ServiceField[] => {
+            logError(error, {userId, tags: {teamId, instanceId, projectId}})
+            return []
+          }
+          if (projectFields instanceof Error) return fail(projectFields)
+          if (workItemTypeFieldNames instanceof Error) return fail(workItemTypeFieldNames)
+          return listAzureDevOpsEstimateFields(projectFields, workItemTypeFieldNames)
         })
       )
-      return results.map((result) =>
-        result.status === 'fulfilled' && result.value
-          ? result.value
-          : {error: new Error('Failed to get project process template')}
-      )
+      return results.map((result) => (result.status === 'fulfilled' ? result.value : []))
     },
     {
       ...parent.dataLoaderOptions,
-      cacheKeyFn: ({userId, teamId, instanceId, projectId}) =>
-        `${userId}:${teamId}:${instanceId}:${projectId}`
+      cacheKeyFn: ({teamId, userId, instanceId, projectId, workItemType}) =>
+        `${teamId}:${userId}:${instanceId.toLowerCase()}:${projectId}:${workItemType}`
     }
   )
-}
-
-const getMappedAzureDevOpsWorkItem = async (
-  userId: string,
-  teamId: string,
-  instanceId: string,
-  returnedWorkItem: WorkItem,
-  dataLoader: RootDataLoader
-) => {
-  const mappedUrl = returnedWorkItem._links['html']?.href ?? returnedWorkItem.url
-  const azureDevOpsWorkItem = {
-    id: returnedWorkItem.id.toString(),
-    title: returnedWorkItem.fields['System.Title'],
-    teamProject: getProjectId(new URL(returnedWorkItem.url)),
-    url: mappedUrl,
-    state: returnedWorkItem.fields['System.State'],
-    type: returnedWorkItem.fields['System.WorkItemType'],
-    descriptionHTML: returnedWorkItem.fields['System.Description']
-      ? returnedWorkItem.fields['System.Description']
-      : '',
-    service: 'azureDevOps',
-    teamId,
-    userId
-  } as AzureDevOpsWorkItem
-
-  const projectResult = await dataLoader.get('azureDevOpsProjectProcessTemplate').load({
-    userId,
-    teamId,
-    instanceId,
-    projectId: azureDevOpsWorkItem.teamProject
-  })
-  const {error: projectResultError, projectTemplate} = projectResult
-  if (projectResultError) {
-    const workItemId = returnedWorkItem.id.toString()
-    logError(projectResultError, {
-      userId,
-      tags: {instanceId, workItemId, teamId}
-    })
-  } else {
-    azureDevOpsWorkItem.type = `${projectTemplate}:${returnedWorkItem.fields['System.WorkItemType']}`
-  }
-  return azureDevOpsWorkItem
 }

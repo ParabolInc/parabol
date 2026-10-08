@@ -1,0 +1,6 @@
+type UpdateIntegrationRepoAccessSuccess {
+  """
+  The viewer's service on the team, with the repos it now shares
+  """
+  integrationService: IntegrationService!
+}

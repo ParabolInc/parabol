@@ -15,6 +15,7 @@ const SOURCE_LABELS: Partial<Record<ServiceEnum, string>> = {
   github: 'GitHub',
   jira: 'Jira',
   linear: 'Linear',
+  azureDevOps: 'Azure DevOps',
   gcal: 'Google Calendar'
 }
 

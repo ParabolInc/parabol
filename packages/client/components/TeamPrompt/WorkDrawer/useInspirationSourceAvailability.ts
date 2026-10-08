@@ -1,7 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {useInspirationSourceAvailability_teamMember$key} from '../../../__generated__/useInspirationSourceAvailability_teamMember.graphql'
-import {getConnectProvider} from '../../../integrations/platform/findIntegrationService'
+import findIntegrationService, {
+  getConnectProvider
+} from '../../../integrations/platform/findIntegrationService'
 import {hasJiraScopes} from '../../../utils/atlassianScopes'
 import type {InspirationSourceService} from './inspirationSources'
 
@@ -17,6 +19,8 @@ const useInspirationSourceAvailability = (
     graphql`
       fragment useInspirationSourceAvailability_teamMember on TeamMember {
         services {
+          isAvailable
+          isConnected
           ...findIntegrationService_cloudProvider @relay(mask: false)
         }
         integrations {
@@ -51,6 +55,7 @@ const useInspirationSourceAvailability = (
   if (!teamMember) return [{service: 'PARABOL', isConnected: true}]
   const {services, integrations} = teamMember
   const {github, atlassian, linear, gcal} = integrations
+  const azureDevOps = findIntegrationService(services, 'azureDevOps')
   const sources: (InspirationSourceAvailability | null)[] = [
     {service: 'PARABOL', isConnected: true},
     getConnectProvider(services, 'github')
@@ -60,6 +65,9 @@ const useInspirationSourceAvailability = (
       ? {service: 'jira', isConnected: !!atlassian?.isActive && hasJiraScopes(atlassian.scope)}
       : null,
     linear?.cloudProvider?.id ? {service: 'linear', isConnected: !!linear.auth?.isActive} : null,
+    azureDevOps?.isAvailable
+      ? {service: 'azureDevOps', isConnected: azureDevOps.isConnected}
+      : null,
     gcal?.cloudProvider?.id ? {service: 'gcal', isConnected: !!gcal.auth?.providerId} : null
   ]
   return sources.filter((source): source is InspirationSourceAvailability => !!source)
