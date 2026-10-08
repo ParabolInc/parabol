@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.2.1](https://github.com/ParabolInc/parabol/compare/v15.2.0...v15.2.1) (2026-10-08)
+
+
+### Fixed
+
+* rewrite the service worker, precache 3.6MB instead of 37MB ([#13613](https://github.com/ParabolInc/parabol/issues/13613)) ([cc97211](https://github.com/ParabolInc/parabol/commit/cc9721150e778e1c2fa5aa516fec523ccd8d3bac))
+
+
+### Changed
+
+* faster dev stack on rspack, without pm2 ([#13615](https://github.com/ParabolInc/parabol/issues/13615)) ([27793f3](https://github.com/ParabolInc/parabol/commit/27793f368da699b75398126545af5071a1094974))
+
 ## [15.2.0](https://github.com/ParabolInc/parabol/compare/v15.1.1...v15.2.0) (2026-10-08)
 
 
