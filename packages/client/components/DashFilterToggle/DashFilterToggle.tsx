@@ -9,11 +9,10 @@ interface Props extends Omit<ComponentPropsWithoutRef<'button'>, 'value'> {
   value: ReactNode
   //FIXME 6062: change to React.ComponentType
   iconText?: string
-  dataCy?: string
 }
 
 const DashFilterToggle = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {
-  const {className, label, value, iconText, dataCy, ...rest} = props
+  const {className, label, value, iconText, ...rest} = props
   return (
     <Button
       aria-label={`Filter by ${label}`}
@@ -24,7 +23,6 @@ const DashFilterToggle = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) 
         className
       )}
       ref={ref}
-      data-cy={dataCy}
       {...rest}
     >
       <div className='mr-2 h-6 w-6'>

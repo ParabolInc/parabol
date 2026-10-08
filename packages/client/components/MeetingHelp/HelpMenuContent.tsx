@@ -12,7 +12,6 @@ const HelpMenuContent = (props: Props) => {
     <div className='relative w-[272px] px-4 py-3 text-[13px] leading-[1.5384615385]'>
       <div
         className='absolute top-1 right-1 flex h-[18px] w-[18px] cursor-pointer text-fg-secondary hover:opacity-50'
-        data-cy='help-menu-close'
         onClick={onClose}
         title='Close help menu'
       >

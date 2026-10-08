@@ -3,12 +3,8 @@ import {Button} from '../ui/Button/Button'
 import {cn} from '../ui/cn'
 import {Menu} from '../ui/icons'
 
-interface Props extends ComponentPropsWithoutRef<'button'> {
-  dataCy?: string
-}
-
-const SidebarToggle = (props: Props) => {
-  const {dataCy, className, ...rest} = props
+const SidebarToggle = (props: ComponentPropsWithoutRef<'button'>) => {
+  const {className, ...rest} = props
   return (
     <Button
       {...rest}
@@ -18,7 +14,6 @@ const SidebarToggle = (props: Props) => {
         'h-6 p-0 text-fg-secondary hover:text-fg-secondary focus:text-fg-secondary active:text-fg-secondary',
         className
       )}
-      data-cy={`${dataCy}-toggle`}
       aria-label='Toggle the sidebar'
       type='button'
     >
