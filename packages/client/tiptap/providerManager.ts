@@ -1,7 +1,7 @@
 import {HocuspocusProvider, HocuspocusProviderWebsocket} from '@hocuspocus/provider'
 import {IndexeddbPersistence} from 'y-indexeddb'
 import * as Y from 'yjs'
-import type Atmosphere from '../Atmosphere'
+import Atmosphere from '../Atmosphere'
 
 class ProviderManager {
   socket: HocuspocusProviderWebsocket | undefined = undefined
@@ -9,10 +9,6 @@ class ProviderManager {
     string,
     {count: number; provider: HocuspocusProvider; persistence?: IndexeddbPersistence}
   > = {}
-  atmosphere?: Atmosphere
-  setAtmosphere(atmosphere: Atmosphere) {
-    this.atmosphere = atmosphere
-  }
   getSocket() {
     if (!this.socket) {
       const wsProtocol = window.location.protocol.replace('http', 'ws')
@@ -57,7 +53,7 @@ class ProviderManager {
           window.location.href = '/'
         }
         if (reason === 'Unauthenticated') {
-          this.atmosphere?.invalidateSession(reason)
+          Atmosphere.current?.invalidateSession(reason)
         }
       }
     })
@@ -116,15 +112,9 @@ class ProviderManager {
     const entries = Object.values(this.providers)
     this.providers = {}
     entries.forEach((e) => e.provider.destroy())
-    // fire-and-forget: clearData is best-effort before the page redirects
-    void Promise.all(entries.map((e) => e.persistence?.clearData())).then(() => {
-      void indexedDB.databases().then((dbs) => {
-        dbs.forEach(({name}) => {
-          if (name?.startsWith('page:')) indexedDB.deleteDatabase(name)
-        })
-      })
-    })
+    return Promise.all(entries.map((e) => e.persistence?.clearData()))
   }
 }
 
 export const providerManager = new ProviderManager()
+Atmosphere.closeHandlers.add(() => providerManager.close())

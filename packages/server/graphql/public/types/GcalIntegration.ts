@@ -1,4 +1,4 @@
-import {google} from 'googleapis'
+import * as google from 'googleapis/build/src/apis/calendar'
 import appOrigin from '../../../appOrigin'
 import type {GcalIntegrationResolvers} from '../resolverTypes'
 

@@ -2,39 +2,26 @@ require('./utils/dotenv')
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const webpack = require('webpack')
-const {CleanWebpackPlugin} = require('clean-webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const TerserPlugin = require('terser-webpack-plugin')
 const {InjectManifest} = require('workbox-webpack-plugin')
 const CopyPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const getProjectRoot = require('./utils/getProjectRoot')
+const IncrementalMinChunkSizePlugin = require('./utils/IncrementalMinChunkSizePlugin')
+const swcLoader = require('./utils/swcLoader')
 
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
+const RELAY_ARTIFACTS = path.join(CLIENT_ROOT, '__generated__')
 const STATIC_ROOT = path.join(PROJECT_ROOT, 'static')
 const buildPath = path.join(PROJECT_ROOT, 'build')
 
-// babel-plugin-relay requires a prod BABEL_ENV to remove hash checking logic. Probably a bug in the package.
-process.env.BABEL_ENV = 'production'
-
-const babelPresets = [
-  [
-    '@babel/preset-env',
-    {
-      targets: {
-        browsers: ['> 1%', 'not ie 11']
-      },
-      bugfixes: true,
-      // debug: true,
-      corejs: 3,
-      useBuiltIns: 'entry'
-    }
-  ]
-]
+const relayTagLoader = path.join(__dirname, 'utils/relayTagLoader.js')
 
 module.exports = (config) => {
   const minimize = config.minimize === 'true'
+  const sourceMaps = config.sourceMaps === 'true'
   const isStats = false // true to analyzing bundle size
   return {
     stats: {
@@ -45,7 +32,7 @@ module.exports = (config) => {
       // avoid static analysis by bundlers; it works fine at runtime
       {module: /framer-motion.*filter-props/}
     ],
-    devtool: 'source-map',
+    devtool: sourceMaps ? 'source-map' : false,
     mode: 'production',
     entry: {
       app: [path.join(CLIENT_ROOT, 'polyfills.ts'), path.join(CLIENT_ROOT, 'client.tsx')]
@@ -74,10 +61,28 @@ module.exports = (config) => {
     },
     optimization: {
       minimize,
+      // The runtime holds the hash of every chunk, so it changes with every release
+      // In its own tiny file, a release no longer makes returning users download the whole entry chunk again
+      runtimeChunk: 'single',
+      splitChunks: {
+        cacheGroups: {
+          // node_modules rarely change between releases, but the app code in the entry chunk almost always does
+          entryVendors: {
+            name: 'vendors',
+            chunks: 'initial',
+            test: /[\\/]node_modules[\\/]/,
+            // css stays with the app so there is still only 1 render-blocking stylesheet
+            type: /^javascript\//,
+            enforce: true
+          }
+        }
+      },
       minimizer: [
         new TerserPlugin({
           minify: TerserPlugin.swcMinify,
           parallel: true,
+          // license comments stay inline, otherwise each chunk gets a .LICENSE.txt that the service worker would precache
+          extractComments: false,
           terserOptions: {
             mangle: true,
             compress: true
@@ -86,10 +91,6 @@ module.exports = (config) => {
       ]
     },
     plugins: [
-      new MiniCssExtractPlugin({
-        // persist across builds, only emit 1 file per entry
-        filename: '[contenthash].css'
-      }),
       new CopyPlugin({
         patterns: [
           {
@@ -104,15 +105,6 @@ module.exports = (config) => {
         title: 'Retrospectives, Standups, Sprint Poker & Team Health Checks | Parabol',
         // we'll overwrite this in preDeploy since it depends on process.env.{HOST,CDN_BASE_URL}
         publicPath: '__PUBLIC_PATH__'
-      }),
-      new CleanWebpackPlugin({
-        cleanOnceBeforeBuildPatterns: [
-          '**/*',
-          '!*worker.js',
-          '!workerManifest.d.ts',
-          '!schema.graphql',
-          '!schema.json'
-        ]
       }),
       new webpack.DefinePlugin({
         __CLIENT__: true,
@@ -135,80 +127,48 @@ module.exports = (config) => {
         // name refers to the chunk name, which would create 1 copy for each chunk referencing the css
         chunkFilename: '[contenthash].css'
       }),
-      new webpack.optimize.MinChunkSizePlugin({
-        // Too many and the extra size from the boostrapping causes bloat
-        // Too few & untouched modules will get invalidated between versions
-        // e.g. 100_000 -> 3.5MB bundle. 1_000 -> 4.05MB. That's a 550KB gzipped savings!
-        minChunkSize: 100_000
+      new IncrementalMinChunkSizePlugin({
+        // Chunks smaller than this get merged into another chunk
+        // Too low & the modules shared by small chunks are duplicated in each of them, which bloats the total size
+        // Too high & a small change makes returning users download big chunks again,
+        // and a route that loads on demand carries modules from unrelated routes
+        // Measured Oct 2026 as total gzipped JS & the download a returning user gets from a typical release:
+        // 100_000 -> 3.08MB & 70-360KB. 50_000 -> 3.15MB & 55-160KB. No merging -> 3.32MB & 50-145KB
+        minChunkSize: 50_000,
+        // what a signed out visitor loads before the first screen renders
+        unmergedChunkGroups: [
+          'AnalyticsPage',
+          'AuthenticationPage',
+          'InvitationLinkRoot',
+          'TeamInvitationRoot'
+        ]
       }),
       isStats && new BundleAnalyzerPlugin({generateStatsFile: true})
     ].filter(Boolean),
     module: {
       rules: [
         {
-          test: /\.tsx?$/,
-          // things that need the relay plugin
-          include: [path.join(CLIENT_ROOT)],
-          use: [
-            {
-              loader: 'babel-loader',
-              options: {
-                cacheDirectory: true,
-                babelrc: false,
-                presets: babelPresets,
-                plugins: [
-                  [
-                    'macros',
-                    {
-                      relay: {
-                        artifactDirectory: path.join(CLIENT_ROOT, '__generated__')
-                      }
-                    }
-                  ]
-                ]
-              }
-            },
-            {
-              loader: '@sucrase/webpack-loader',
-              options: {
-                production: true,
-                transforms: ['jsx', 'typescript'],
-                jsxRuntime: 'automatic'
-              }
-            }
-          ]
+          // relay artifacts are more than half of the client source, but they are plain data
+          // their whitespace is a third of their size, and smaller modules let IncrementalMinChunkSizePlugin merge them into fewer chunks
+          test: /\.ts$/,
+          include: [RELAY_ARTIFACTS],
+          use: [swcLoader({extension: 'ts', minify: {compress: false, mangle: false}})]
+        },
+        {
+          test: /\.ts$/,
+          include: [CLIENT_ROOT],
+          exclude: [RELAY_ARTIFACTS],
+          use: [swcLoader({extension: 'ts'}), relayTagLoader]
+        },
+        {
+          test: /\.tsx$/,
+          include: [CLIENT_ROOT],
+          use: [swcLoader({extension: 'tsx'}), relayTagLoader]
         },
         {
           test: /\.js$/,
-          include: [path.join(CLIENT_ROOT)],
-          use: [
-            {
-              loader: 'babel-loader',
-              options: {
-                cacheDirectory: true,
-                babelrc: false,
-                presets: babelPresets,
-                plugins: [
-                  [
-                    'macros',
-                    {
-                      relay: {
-                        artifactDirectory: path.join(CLIENT_ROOT, '__generated__')
-                      }
-                    }
-                  ]
-                ]
-              }
-            },
-            {
-              loader: '@sucrase/webpack-loader',
-              options: {
-                production: true,
-                transforms: ['jsx'],
-                jsxRuntime: 'automatic'
-              }
-            }
-          ]
+          include: [CLIENT_ROOT],
+          use: [swcLoader({extension: 'js'}), relayTagLoader]
         },
         {test: /\.flow$/, loader: 'ignore-loader'},
         {
