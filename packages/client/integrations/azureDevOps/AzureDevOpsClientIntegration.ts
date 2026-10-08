@@ -52,8 +52,8 @@ const scoping: ScopingCapability = {
   placeholder: (state) =>
     state.isAdvancedQuery
       ? `[System.WorkItemType] = 'User Story' AND [System.State] <> 'Closed'`
-      : 'Search issues on Azure DevOps',
-  newRecordLabel: 'New User Story'
+      : 'Search work items by title or ID',
+  newRecordLabel: 'New Work Item'
 }
 
 export class AzureDevOpsClientIntegration extends ClientIntegrationDefinition {
@@ -62,7 +62,17 @@ export class AzureDevOpsClientIntegration extends ClientIntegrationDefinition {
   readonly description = azureDevOpsIntegrationMeta.description
   readonly Icon = AzureDevOpsSVG
   readonly logo: ProviderLogoAsset = {src: azureDevOpsLogo}
-  readonly capabilities: ClientIntegrationCapabilities = {scoping}
+  readonly capabilities: ClientIntegrationCapabilities = {
+    scoping,
+    settings: {
+      Panel: lazy(
+        () =>
+          import(
+            /* webpackChunkName: 'AzureDevOpsProjectAccessPanel' */ './AzureDevOpsProjectAccessPanel'
+          )
+      )
+    }
+  }
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
     if (!provider?.clientId) return
     void AzureDevOpsClientManager.openOAuth(

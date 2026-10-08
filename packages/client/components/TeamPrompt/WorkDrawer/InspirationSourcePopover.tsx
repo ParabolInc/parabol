@@ -4,6 +4,7 @@ import {useFragment} from 'react-relay'
 import type {InspirationSourcePopover_teamMember$key} from '../../../__generated__/InspirationSourcePopover_teamMember.graphql'
 import {Spinner} from '../../../ui/Spinner/Spinner'
 import Ellipsis from '../../Ellipsis/Ellipsis'
+import AzureDevOpsProjectFilterBar from './AzureDevOpsProjectFilterBar'
 import GitHubRepoFilterBar from './GitHubRepoFilterBar'
 import InspirationKindSwitch from './InspirationKindSwitch'
 import InspirationSourceConnectButton from './InspirationSourceConnectButton'
@@ -48,6 +49,7 @@ const InspirationSourcePopover = (props: Props) => {
         ...GitHubRepoFilterBar_teamMember
         ...JiraProjectFilterBar_teamMember @defer
         ...LinearProjectFilterBar_teamMember
+        ...AzureDevOpsProjectFilterBar_teamMember
       }
     `,
     teamMemberRef
@@ -121,6 +123,15 @@ const InspirationSourcePopover = (props: Props) => {
                 teamMemberRef={teamMember}
                 selectedLinearIds={settings.linearIds}
                 setSelectedLinearIds={(linearIds) => setSettings((prev) => ({...prev, linearIds}))}
+              />
+            )}
+            {service === 'azureDevOps' && (
+              <AzureDevOpsProjectFilterBar
+                teamMemberRef={teamMember}
+                selectedProjectIds={settings.azureDevOpsProjectIds}
+                setSelectedProjectIds={(azureDevOpsProjectIds) =>
+                  setSettings((prev) => ({...prev, azureDevOpsProjectIds}))
+                }
               />
             )}
           </Suspense>

@@ -8,8 +8,8 @@ jest.mock('../../../graphql/public/rootSchema', () => ({
 
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
 import type {JiraGQLProject} from '../../../dataloader/atlassianLoaders'
-import type {AzureAccountProject} from '../../../dataloader/azureDevOpsLoaders'
 import type {JiraServerProject} from '../../../dataloader/jiraServerLoaders'
+import type {AzureDevOpsProject} from '../../azureDevOps/fetchAvailableAzureDevOpsProjects'
 import getRepoListCapability from '../getRepoListCapability'
 import type {GitHubRepo, GitLabProject, LinearProject, LinearTeam} from '../RemoteRepoIntegration'
 
@@ -61,14 +61,14 @@ const jiraServerProject = {
   name: 'Web'
 } as unknown as JiraServerProject
 
-const azureProject = {
+const azureProject: AzureDevOpsProject = {
   service: 'azureDevOps',
   instanceId: 'dev.azure.com/acme',
   projectId: 'abc123',
-  id: 'abc123',
   name: 'Acme',
-  url: 'https://dev.azure.com/acme/_apis/projects/abc123'
-} as unknown as AzureAccountProject
+  teamId: 't1',
+  userId: 'u1'
+}
 
 describe('getRepoListCapability', () => {
   it.each([

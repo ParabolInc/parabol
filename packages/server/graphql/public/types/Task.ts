@@ -1,4 +1,5 @@
 import GitHubRepoId from '../../../../client/shared/gqlIds/GitHubRepoId'
+import refreshAzureDevOpsEstimates from '../../../integrations/azureDevOps/refreshAzureDevOpsEstimates'
 import {estimatePushColumns} from '../../../integrations/platform/estimatePushColumns'
 import {previousPushLabelName} from '../../../integrations/platform/previousPushLabel'
 import getKysely from '../../../postgres/getKysely'
@@ -47,16 +48,11 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
         viewerId
       })
     } else if (integration?.service === 'azureDevOps') {
-      const {accessUserId, instanceId, projectKey, issueKey} = integration
-      await dataLoader.get('azureDevOpsWorkItem').load({
-        teamId,
-        userId: accessUserId,
-        instanceId,
-        workItemId: issueKey,
-        taskId,
-        projectId: projectKey,
-        viewerId
-      })
+      const {accessUserId, instanceId, issueKey} = integration
+      const workItem = await dataLoader
+        .get('azureDevOpsWorkItem')
+        .load({teamId, userId: accessUserId, instanceId, workItemId: issueKey})
+      if (workItem) await refreshAzureDevOpsEstimates(dataLoader, taskId, workItem)
     } else if (integration?.service === 'github') {
       const {accessUserId, nameWithOwner, issueNumber} = integration
       const [githubAuth, estimates] = await Promise.all([

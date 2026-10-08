@@ -1,6 +1,7 @@
 import type {GraphQLResolveInfo} from 'graphql'
 import {GraphQLError} from 'graphql'
 import type {GQLContext} from '../../../graphql'
+import fetchAzureDevOpsIssues from './fetchAzureDevOpsIssues'
 import fetchGCalIssues from './fetchGCalIssues'
 import fetchGitHubIssues from './fetchGitHubIssues'
 import fetchJiraIssues from './fetchJiraIssues'
@@ -26,6 +27,8 @@ const fetchIssues = async (
       return fetchLinearIssues(teamId, viewerId, searchQuery, context, info)
     case 'gcal':
       return fetchGCalIssues(teamId, viewerId, searchQuery, dataLoader)
+    case 'azureDevOps':
+      return fetchAzureDevOpsIssues(teamId, viewerId, searchQuery, dataLoader)
     case 'PARABOL':
       return fetchParabolIssues(teamId, viewerId, searchQuery)
     default:

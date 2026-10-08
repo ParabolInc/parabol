@@ -9,19 +9,10 @@ interface Props {
   issueKey: string
   projectKey: string
   children?: ReactNode
-  showLabelPrefix?: boolean
 }
 
 const JiraIssueLink = (props: Props) => {
-  const {
-    dataCy,
-    className,
-    cloudName,
-    issueKey,
-    projectKey,
-    children,
-    showLabelPrefix = true
-  } = props
+  const {dataCy, className, cloudName, issueKey, projectKey, children} = props
   const href =
     cloudName === DemoIntegration.JIRA_CLOUD_NAME
       ? DemoIntegration.JIRA_ISSUE_URL
@@ -38,8 +29,7 @@ const JiraIssueLink = (props: Props) => {
       target='_blank'
       title={`Jira Issue #${issueKey} on ${projectKey}`}
     >
-      {`${showLabelPrefix ? 'Issue #' : ''}
-      ${issueKey}`}
+      {`Issue #${issueKey}`}
       {children}
     </a>
   )

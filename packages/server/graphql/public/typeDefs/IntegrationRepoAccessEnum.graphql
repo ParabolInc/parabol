@@ -1,0 +1,14 @@
+"""
+How much of the viewer's account a team reaches through their connection to a service
+"""
+enum IntegrationRepoAccessEnum {
+  """
+  Every repo/project the viewer can see on the service, including ones created later
+  """
+  all
+
+  """
+  Only the repos/projects the viewer picked
+  """
+  selected
+}

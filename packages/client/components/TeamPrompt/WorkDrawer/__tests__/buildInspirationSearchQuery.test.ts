@@ -47,6 +47,35 @@ describe('buildInspirationSearchQuery for jira', () => {
   })
 })
 
+describe('buildInspirationSearchQuery for azureDevOps', () => {
+  it('sends the date range, the kinds and the chosen projects for the server to build the WIQL', () => {
+    const projectIds = ['dev.azure.com/acme:6ce954b1-ce1f-45d1-b94d-e6bf2464ba2c']
+    const searchQuery = buildInspirationSearchQuery(
+      'azureDevOps',
+      {
+        ...DEFAULT_INSPIRATION_SOURCE_SETTINGS,
+        kinds: {...DEFAULT_INSPIRATION_SOURCE_SETTINGS.kinds, azureDevOps: ['assigned', 'created']},
+        azureDevOpsProjectIds: projectIds
+      },
+      dateRange
+    )
+    expect(JSON.parse(searchQuery)).toEqual({
+      ...dateRange,
+      kinds: ['assigned', 'created'],
+      projectIds
+    })
+  })
+
+  it('searches every shared project when none is chosen', () => {
+    const searchQuery = buildInspirationSearchQuery(
+      'azureDevOps',
+      DEFAULT_INSPIRATION_SOURCE_SETTINGS,
+      dateRange
+    )
+    expect(JSON.parse(searchQuery)).toMatchObject({kinds: ['assigned'], projectIds: []})
+  })
+})
+
 describe('withInspirationSourceDefaults', () => {
   it('fills settings saved before a field existed', () => {
     const stored = {

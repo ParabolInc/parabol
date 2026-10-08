@@ -28,6 +28,11 @@ enum IntegrationCapabilityEnum {
   repoList
 
   """
+  Let the viewer choose which of their repos/projects the team can reach
+  """
+  repoAccess
+
+  """
   Push a poker estimate back to the service (comment, field, or label)
   """
   estimatePush

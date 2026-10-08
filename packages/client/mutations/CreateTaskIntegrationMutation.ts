@@ -1,9 +1,66 @@
+import {generateHTML} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import type {CreateTaskIntegrationMutation as TCreateTaskIntegrationMutation} from '../__generated__/CreateTaskIntegrationMutation.graphql'
+import type {
+  IntegrationProviderServiceEnum,
+  CreateTaskIntegrationMutation as TCreateTaskIntegrationMutation
+} from '../__generated__/CreateTaskIntegrationMutation.graphql'
+import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
+import {splitTipTapContent} from '../shared/tiptap/splitTipTapContent'
+import {tipTapToMarkdown} from '../shared/tiptap/tipTapToMarkdown'
 import type {StandardMutation} from '../types/relayMutations'
 import getMeetingPathParams from '../utils/meetings/getMeetingPathParams'
+import clientTempId from '../utils/relay/clientTempId'
+import createProxyRecord from '../utils/relay/createProxyRecord'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
+
+interface OptimisticIntegrationFields {
+  typename: string
+  titleField: string
+  bodyField: string
+  bodyFormat: 'html' | 'markdown'
+}
+
+const optimisticIntegrationFields: Partial<
+  Record<IntegrationProviderServiceEnum, OptimisticIntegrationFields>
+> = {
+  azureDevOps: {
+    typename: 'AzureDevOpsWorkItem',
+    titleField: 'title',
+    bodyField: 'descriptionHTML',
+    bodyFormat: 'html'
+  },
+  github: {
+    typename: '_xGitHubIssue',
+    titleField: 'title',
+    bodyField: 'bodyHTML',
+    bodyFormat: 'html'
+  },
+  gitlab: {
+    typename: '_xGitLabIssue',
+    titleField: 'title',
+    bodyField: 'descriptionHtml',
+    bodyFormat: 'html'
+  },
+  jira: {
+    typename: 'JiraIssue',
+    titleField: 'summary',
+    bodyField: 'descriptionHTML',
+    bodyFormat: 'html'
+  },
+  jiraServer: {
+    typename: 'JiraServerIssue',
+    titleField: 'summary',
+    bodyField: 'descriptionHTML',
+    bodyFormat: 'html'
+  },
+  linear: {
+    typename: '_xLinearIssue',
+    titleField: 'title',
+    bodyField: 'description',
+    bodyFormat: 'markdown'
+  }
+}
 
 graphql`
   fragment CreateTaskIntegrationMutation_task on CreateTaskIntegrationPayload {
@@ -112,6 +169,28 @@ const CreateTaskIntegrationMutation: StandardMutation<TCreateTaskIntegrationMuta
   return commitMutation<TCreateTaskIntegrationMutation>(atmosphere, {
     mutation,
     variables,
+    optimisticUpdater: (store) => {
+      const {taskId, integrationProviderService} = variables
+      const task = store.get(taskId)
+      const optimisticFields = optimisticIntegrationFields[integrationProviderService]
+      const content = task?.getValue('content')
+      if (!task || !optimisticFields || typeof content !== 'string') return
+      const {typename, titleField, bodyField, bodyFormat} = optimisticFields
+      const {title, bodyContent} = splitTipTapContent(JSON.parse(content))
+      const body = !bodyContent
+        ? ''
+        : bodyFormat === 'markdown'
+          ? tipTapToMarkdown(bodyContent)
+          : generateHTML(bodyContent, serverTipTapExtensions)
+      const integration = createProxyRecord(store, typename, {
+        id: clientTempId(taskId),
+        service: integrationProviderService,
+        title,
+        [titleField]: title,
+        [bodyField]: body
+      })
+      task.setLinkedRecord(integration, 'integration')
+    },
     onCompleted: (data, errors) => {
       if (onCompleted) {
         onCompleted(data, errors)

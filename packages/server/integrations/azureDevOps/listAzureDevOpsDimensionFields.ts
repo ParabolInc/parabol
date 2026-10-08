@@ -1,10 +1,6 @@
-import {fieldTypeToId} from '../../utils/azureDevOps/azureDevOpsFieldTypeToId'
 import type {DimensionFieldCtx, ServiceFieldListing} from '../platform/ServerIntegrationDefinition'
-import azureDevOpsDimensionFieldOptions from './azureDevOpsDimensionFieldOptions'
 
-const isKnownWorkItemType = (type: string): type is keyof typeof fieldTypeToId =>
-  Object.hasOwn(fieldTypeToId, type)
-
+/** Read from the work item's own type, so custom types and inherited processes list what they really have */
 const listAzureDevOpsDimensionFields = async ({
   task,
   dataLoader,
@@ -12,18 +8,19 @@ const listAzureDevOpsDimensionFields = async ({
 }: DimensionFieldCtx): Promise<ServiceFieldListing> => {
   const {integration} = task
   if (integration?.service !== 'azureDevOps') return {options: []}
-  const {accessUserId, instanceId, issueKey, projectKey} = integration
-  const workItem = await dataLoader.get('azureDevOpsWorkItem').load({
+  const {accessUserId, instanceId, issueKey} = integration
+  const workItem = await dataLoader
+    .get('azureDevOpsWorkItem')
+    .load({teamId, userId: accessUserId, instanceId, workItemId: issueKey})
+  if (!workItem) return {options: []}
+  const options = await dataLoader.get('azureDevOpsEstimateFields').load({
     teamId,
     userId: accessUserId,
     instanceId,
-    projectId: projectKey,
-    viewerId: accessUserId,
-    workItemId: issueKey
+    projectId: workItem.teamProject,
+    workItemType: workItem.type
   })
-  if (!workItem || !isKnownWorkItemType(workItem.type)) return {options: []}
-  const option = azureDevOpsDimensionFieldOptions[fieldTypeToId[workItem.type]]
-  return {options: option ? [option] : []}
+  return {options}
 }
 
 export default listAzureDevOpsDimensionFields

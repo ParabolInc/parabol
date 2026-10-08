@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {AzureDevOpsScopingSearchFilterMenuQuery} from '../__generated__/AzureDevOpsScopingSearchFilterMenuQuery.graphql'
 import useSetScopingSearchState from '../hooks/useSetScopingSearchState'
+import {getAzureDevOpsSharedProjects} from '../integrations/azureDevOps/azureDevOpsSharedProjects'
 import {
   searchFiltersByKey,
   toggleSearchFilter
@@ -25,13 +26,9 @@ const AzureDevOpsScopingSearchFilterMenu = (props: Props) => {
       query AzureDevOpsScopingSearchFilterMenuQuery($teamId: ID!) {
         viewer {
           teamMember(teamId: $teamId) {
-            integrations {
-              azureDevOps {
-                projects {
-                  id
-                  name
-                }
-              }
+            services {
+              service
+              ...azureDevOpsSharedProjects_service @relay(mask: false)
             }
           }
         }
@@ -39,7 +36,7 @@ const AzureDevOpsScopingSearchFilterMenu = (props: Props) => {
     `,
     queryRef
   )
-  const projects = data.viewer.teamMember?.integrations.azureDevOps.projects ?? []
+  const {projects} = getAzureDevOpsSharedProjects(data.viewer.teamMember?.services)
   const {isAdvancedQuery, filters} = state
   const projectNames = searchFiltersByKey(filters, 'project')
   const setSearchState = useSetScopingSearchState(meetingId, 'azureDevOps')
@@ -53,9 +50,11 @@ const AzureDevOpsScopingSearchFilterMenu = (props: Props) => {
         <span className='font-semibold'>{'Use WIQL'}</span>
       </MenuItem>
 
-      {projects.length > 0 && (
-        <DropdownMenuLabel className='border-b-0'>Filter by project:</DropdownMenuLabel>
-      )}
+      <DropdownMenuLabel className='border-b-0'>
+        {projects.length > 0
+          ? 'Filter by project:'
+          : 'No projects shared. Choose projects in Team Settings › Integrations.'}
+      </DropdownMenuLabel>
       {projects.map((project) => {
         const {id: projectId, name} = project
         const isSelected = projectNames.includes(name)

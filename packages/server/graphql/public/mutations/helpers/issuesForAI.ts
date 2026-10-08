@@ -1,5 +1,5 @@
 // Shared formatting for the "draft my response from this work" AI feature. Each integration
-// (GitHub, Jira, Linear) fetches its own issues, normalizes them to InspirationIssue, and hands them
+// (GitHub, Jira, Linear, Azure DevOps) fetches its own issues, normalizes them to InspirationIssue, and hands them
 // here to be rendered into one compact text blob suitable for an LLM prompt.
 
 const MAX_BODY_LEN = 1500

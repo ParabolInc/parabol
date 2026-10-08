@@ -1,4 +1,5 @@
 import type {ComponentType, LazyExoticComponent, ReactNode} from 'react'
+import type {IntegrationServiceProviderRow_service$data} from '../../__generated__/IntegrationServiceProviderRow_service.graphql'
 import type Atmosphere from '../../Atmosphere'
 import type {MenuMutationProps} from '../../hooks/useMutationProps'
 import type {IntegrationMeta} from '../../shared/integrations/IntegrationMeta'
@@ -73,9 +74,16 @@ export interface ScopingCapability extends SearchMetaCodec {
   isDefaultQuery?(state: ScopingSearchState): boolean
 }
 
+export interface SettingsPanelProps {
+  teamId: string
+  serviceRef: IntegrationServiceProviderRow_service$data
+}
+
 export interface SettingsCapability {
   /** Second line under the Remove menu item for services whose grant covers more than themselves */
-  getDisconnectSubline(grantedScopes: readonly string[]): string | undefined
+  getDisconnectSubline?(grantedScopes: readonly string[]): string | undefined
+  /** Controls shown under the settings row while the service is connected */
+  Panel?: ComponentType<SettingsPanelProps>
 }
 
 /** Behavior a single surface owns; a service fact that several surfaces read stays flat on the definition */

@@ -1,49 +1,63 @@
-import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import type {DimensionFieldCtx, DimensionFieldKey} from '../../platform/ServerIntegrationDefinition'
 import describeAzureDevOpsDimensionField from '../describeAzureDevOpsDimensionField'
 
-const ctx = {} as DimensionFieldCtx
-const key = {} as DimensionFieldKey
+const loaders: Record<string, {load: jest.Mock}> = {
+  azureDevOpsWorkItem: {load: jest.fn()},
+  azureDevOpsEstimateFields: {load: jest.fn()}
+}
+
+const ctx = {
+  dataLoader: {get: (name: string) => loaders[name]},
+  teamId: 'team1',
+  viewerId: 'viewer1',
+  task: {
+    id: 'task1',
+    integration: {
+      service: 'azureDevOps',
+      accessUserId: 'user1',
+      instanceId: 'dev.azure.com/acme',
+      projectKey: 'WebApp',
+      issueKey: '42'
+    }
+  }
+} as unknown as DimensionFieldCtx
+
+const key: DimensionFieldKey = {repoId: 'dev.azure.com/acme:WebApp', issueType: 'User Story'}
 
 describe('describeAzureDevOpsDimensionField', () => {
-  it.each([
-    [
-      SprintPokerDefaults.AZURE_DEVOPS_USERSTORY_FIELD,
-      SprintPokerDefaults.AZURE_DEVOPS_USERSTORY_FIELD_LABEL
-    ],
-    [
-      SprintPokerDefaults.AZURE_DEVOPS_TASK_FIELD,
-      SprintPokerDefaults.AZURE_DEVOPS_TASK_FIELD_LABEL
-    ],
-    [
-      SprintPokerDefaults.AZURE_DEVOPS_REMAINING_WORK_FIELD,
-      SprintPokerDefaults.AZURE_DEVOPS_REMAINING_WORK_LABEL
-    ],
-    [SprintPokerDefaults.AZURE_DEVOPS_EFFORT_FIELD, SprintPokerDefaults.AZURE_DEVOPS_EFFORT_LABEL],
-    [SprintPokerDefaults.AZURE_DEVOPS_SIZE_FIELD, SprintPokerDefaults.AZURE_DEVOPS_SIZE_LABEL]
-  ])(
-    'stores the human label for %s so the dropdown never renders the raw id',
-    async (fieldId, label) => {
-      await expect(describeAzureDevOpsDimensionField(ctx, key, fieldId)).resolves.toEqual({
-        fieldId,
-        fieldName: label,
-        fieldType: 'string'
-      })
-    }
-  )
+  beforeEach(() => {
+    loaders.azureDevOpsWorkItem!.load.mockResolvedValue({teamProject: 'WebApp', type: 'User Story'})
+    loaders.azureDevOpsEstimateFields!.load.mockResolvedValue([
+      {fieldId: 'Microsoft.VSTS.Scheduling.StoryPoints', label: 'Story Points', type: 'number'},
+      {fieldId: 'Custom.TShirtSize', label: 'T-Shirt Size', type: 'string'}
+    ])
+  })
 
-  it('leaves fieldName null for an id the option table does not know', async () => {
-    await expect(describeAzureDevOpsDimensionField(ctx, key, 'Custom.Points')).resolves.toEqual({
-      fieldId: 'Custom.Points',
-      fieldName: null,
-      fieldType: 'string'
+  it.each([
+    ['Microsoft.VSTS.Scheduling.StoryPoints', 'Story Points', 'number'],
+    ['Custom.TShirtSize', 'T-Shirt Size', 'string']
+  ])('stores the label and type Azure DevOps reports for %s', async (fieldId, label, type) => {
+    await expect(describeAzureDevOpsDimensionField(ctx, key, fieldId)).resolves.toEqual({
+      fieldId,
+      fieldName: label,
+      fieldType: type
     })
   })
 
-  it('rejects an empty or overlong field id', async () => {
-    await expect(describeAzureDevOpsDimensionField(ctx, key, '  ')).resolves.toBeInstanceOf(Error)
+  it.each([
+    ['a field of another work item type', 'Microsoft.VSTS.Scheduling.RemainingWork'],
+    ['a legacy sentinel id', '__storyPoints'],
+    ['an empty id', '']
+  ])('rejects %s', async (_label, fieldId) => {
+    const res = await describeAzureDevOpsDimensionField(ctx, key, fieldId)
+    expect(res).toBeInstanceOf(Error)
+    expect(res).toHaveProperty('message', 'That field is not on this work item type')
+  })
+
+  it('rejects every field when the work item cannot be loaded', async () => {
+    loaders.azureDevOpsWorkItem!.load.mockResolvedValue(null)
     await expect(
-      describeAzureDevOpsDimensionField(ctx, key, 'x'.repeat(121))
+      describeAzureDevOpsDimensionField(ctx, key, 'Microsoft.VSTS.Scheduling.StoryPoints')
     ).resolves.toBeInstanceOf(Error)
   })
 })

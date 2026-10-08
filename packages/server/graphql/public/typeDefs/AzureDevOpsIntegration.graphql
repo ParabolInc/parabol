@@ -1,121 +1,68 @@
 """
-Represents a single team member's Azure DevOps integration, including their OAuth2 credentials,
-the ADO instances they have access to, and helpers for querying work items and projects. One record
-exists per (team, user) pair. Use this type to fetch ADO work items for display in Parabol (e.g.
-linking a task to an ADO work item during a meeting) or to surface the member's available ADO
-projects and saved search queries.
+A team member's Azure DevOps connection: their OAuth2 grant and the work items and projects it
+shares with the team. One exists per (team, user) pair
 """
 type AzureDevOpsIntegration {
   """
-  The OAuth2 access and refresh tokens for this team member's Azure DevOps connection. Null when
-  the user has not yet authorized Parabol to access their ADO account, or when the token has been
-  revoked. Check this field before attempting to fetch work items or projects.
+  The OAuth2 grant for this team member's Azure DevOps connection. Null when they have not
+  connected, or the grant was revoked
   """
   auth: TeamMemberIntegrationAuthOAuth2
 
   """
-  Composite primary key in the format "ado:{teamId}:{userId}". Uniquely identifies this integration
-  record across all teams and users.
+  Composite key in the format "ado:{teamId}:{userId}"
   """
   id: ID!
 
   """
-  The Azure DevOps account (organization-level) ID associated with this integration. Corresponds to
-  the ADO organization that owns the instances the user granted access to.
-  """
-  accountId: ID!
-
-  """
-  The list of Azure DevOps instance (organization) IDs the user has explicitly granted Parabol
-  access to. Each entry is an ADO organization URL slug or ID. Use this to scope API requests to
-  only the instances the user has authorized.
-  """
-  instanceIds: [ID!]!
-
-  """
-  The timestamp when this integration record was first created, i.e. when the user first connected
-  their ADO account to this Parabol team.
-  """
-  createdAt: DateTime!
-
-  """
-  The Parabol team ID this integration belongs to. An ADO integration is always scoped to a single
-  team — the same ADO account can be connected to multiple teams, each producing a separate record.
+  The Parabol team this connection belongs to
   """
   teamId: ID!
 
   """
-  The timestamp when this integration record was last updated, e.g. when the OAuth token was
-  refreshed or when the user updated their authorized instances.
-  """
-  updatedAt: DateTime!
-
-  """
-  The Parabol user ID of the team member who owns this integration. Combined with teamId, this
-  uniquely identifies the integration.
+  The Parabol user who owns this connection
   """
   userId: ID!
 
   """
-  A paginated list of Azure DevOps work items fetched live from the ADO API for this team member.
-  Use this field to search for work items to link to a Parabol task or meeting agenda item. Supports
-  free-text search or full WIQL (Work Item Query Language) for advanced filtering. Results are
-  ordered by most recently updated first.
+  Work items fetched live from the projects this connection shares with the team, most recently
+  changed first. A plain search matches titles, or a work item id when it is a number
   """
   workItems(
     """
-    Maximum number of work items to return. Defaults to 100. Use with `after` for pagination.
+    Maximum number of work items to return
     """
     first: Int = 100
 
     """
-    An ISO8601 datetime cursor for pagination. Pass the `endCursor` from a previous page's
-    `pageInfo` to retrieve the next page of results.
+    Unused: results are not paginated
     """
     after: DateTime
 
     """
-    A plain-text search string, or a full WIQL query string if `isWIQL` is true. When plain text,
-    the ADO API performs a full-text search against work item titles and descriptions. Leave null or
-    empty to return the most recently updated items without filtering.
+    A plain-text search string, or a WIQL WHERE clause if isWIQL is true. Null or empty returns
+    the most recently changed open work items
     """
     queryString: String
 
     """
-    An optional list of ADO project IDs or names to restrict the search to. Pass an empty array or
-    omit filtering to search across all projects the user has access to within their authorized
-    instances.
+    Names or integrationRepoIds of shared projects to restrict the search to. Empty searches all of them
     """
     projectKeyFilters: [String!]!
 
     """
-    Set to true when `queryString` contains a WIQL (Work Item Query Language) expression, which
-    allows advanced filtering by any work item field. Set to false (or omit) for a simple
-    full-text keyword search.
+    True when queryString is a WIQL (Work Item Query Language) WHERE clause
     """
     isWIQL: Boolean!
   ): AzureDevOpsWorkItemConnection!
 
   """
-  The complete list of Azure DevOps projects the team member has access to across all of their
-  authorized instances. Use this to populate a project picker so the user can filter work item
-  searches by project.
-  """
-  projects: [AzureDevOpsRemoteProject!]!
-
-  """
-  The global (cloud-level) OAuth2 integration provider for Azure DevOps configured via Parabol
-  environment variables. This is the system-wide ADO provider available to all teams. Null when
-  no cloud ADO provider has been configured in the environment (i.e. the ADO integration is
-  disabled at the instance level).
+  The global OAuth2 provider for Azure DevOps. Null when this instance has no credentials for it
   """
   cloudProvider: IntegrationProviderOAuth2
 
   """
-  OAuth2 integration providers for Azure DevOps that have been shared at the team or organization
-  level (as opposed to the global cloud provider). These are custom ADO provider configurations an
-  admin has made available to specific teams. Use this list alongside `cloudProvider` to show the
-  user all available ADO providers they can authorize against.
+  The team- and org-scoped OAuth2 providers for Azure DevOps on this team
   """
   sharedProviders: [IntegrationProviderOAuth2!]!
 }

@@ -27,7 +27,7 @@ graphql`
         ... on AzureDevOpsWorkItem {
           __typename
           title
-          id
+          workItemKey: issueKey
         }
         ... on JiraIssue {
           __typename
@@ -112,7 +112,7 @@ const useMakeStageSummaries = (
           case 'AzureDevOpsWorkItem':
             return {
               title: integration.title,
-              subtitle: `#${integration.id}`
+              subtitle: `#${integration.workItemKey}`
             }
           case '_xGitHubIssue':
             return {

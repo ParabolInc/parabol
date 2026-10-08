@@ -7,8 +7,8 @@ Use this type when displaying, linking, or syncing a specific work item inside a
 type AzureDevOpsWorkItem implements TaskIntegration {
   """
   Globally unique identifier for this work item within Parabol, formed by joining the Azure DevOps
-  instance ID, the team project name/ID, and the numeric work item ID with colons:
-  "<instanceId>:<teamProject>:<issueKey>" (e.g. "a1b2c3.visualstudio.com:MyProject:42").
+  instance ID, the team project ID, and the numeric work item ID with colons:
+  "<instanceId>:<teamProject>:<issueKey>" (e.g. "dev.azure.com/myorg:6ce954b1-ce1f-45d1-b94d-e6bf2464ba2c:42").
   Use this as the stable reference when storing or querying the work item inside Parabol.
   """
   id: ID!
@@ -34,17 +34,13 @@ type AzureDevOpsWorkItem implements TaskIntegration {
   title: String!
 
   """
-  The name or ID of the Azure DevOps Team Project that owns this work item
-  (e.g. "MyProject"). Team Projects are the top-level organizational unit inside an Azure DevOps instance.
-  Use this to scope API calls or to display which project the work item belongs to.
+  The ID of the Azure DevOps Team Project that owns this work item. It survives a project rename;
+  use project.name to display which project the work item belongs to.
   """
   teamProject: String!
 
   """
-  The full AzureDevOpsRemoteProject record for the team project that owns this work item.
-  Provides richer project metadata (instance ID, visibility, revision, etc.) beyond the plain teamProject name.
-  Use this when you need project-level details alongside the work item, such as constructing links or
-  validating access.
+  The team project that owns this work item, with its name and organization
   """
   project: AzureDevOpsRemoteProject!
 
@@ -74,4 +70,9 @@ type AzureDevOpsWorkItem implements TaskIntegration {
   Use this when showing a preview of the work item's details inside Parabol (e.g. in a task drawer).
   """
   descriptionHTML: String!
+
+  """
+  When the work item last changed in Azure DevOps
+  """
+  updatedAt: DateTime!
 }

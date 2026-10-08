@@ -1,6 +1,8 @@
 import type Atmosphere from '../Atmosphere'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
+import {expectAzureDevOpsProjectChoice} from '../integrations/azureDevOps/azureDevOpsProjectChoice'
 import AddTeamMemberIntegrationAuthMutation from '../mutations/AddTeamMemberIntegrationAuthMutation'
+import azureDevOpsOAuthScope from '../shared/integrations/azureDevOpsOAuthScope'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 import makeHref from './makeHref'
 
@@ -45,9 +47,17 @@ class AzureDevOpsClientManager {
     const verifier = AzureDevOpsClientManager.generateVerifier()
     const code = await AzureDevOpsClientManager.generateCodeChallenge(verifier)
     const redirect = makeHref('/auth/ado2')
-    const scope =
-      '499b84ac-1321-427f-aa17-267ca6975798/vso.project 499b84ac-1321-427f-aa17-267ca6975798/vso.work_write offline_access'
-    const url = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirect}&response_mode=query&scope=${scope}&state=${providerState}&code_challenge=${code}&code_challenge_method=S256`
+    const params = new URLSearchParams({
+      client_id: clientId,
+      response_type: 'code',
+      redirect_uri: redirect,
+      response_mode: 'query',
+      scope: azureDevOpsOAuthScope,
+      state: providerState,
+      code_challenge: code,
+      code_challenge_method: 'S256'
+    })
+    const url = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize?${params}`
 
     // Open synchronously because of Safari
     const popup = window.open(
@@ -68,6 +78,7 @@ class AzureDevOpsClientManager {
       const {code, state} = event.data
       if (state !== providerState || typeof code !== 'string') return
       submitMutation()
+      expectAzureDevOpsProjectChoice(teamId)
       AddTeamMemberIntegrationAuthMutation(
         atmosphere,
         {
