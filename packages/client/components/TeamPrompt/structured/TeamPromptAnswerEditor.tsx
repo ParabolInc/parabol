@@ -74,7 +74,7 @@ const TeamPromptAnswerEditor = (props: Props) => {
           bubbleMenuPlacement={bubbleMenuPlacement}
           editorRef={editorRef}
           className={cn(
-            'max-h-[280px] overflow-auto p-[10px_12px_6px] text-sm leading-6',
+            'issue-chips-on-well max-h-[280px] overflow-auto p-[10px_12px_6px] text-sm leading-6',
             compact ? 'min-h-[120px]' : 'min-h-[88px]',
             editorClassName
           )}
