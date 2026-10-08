@@ -8,7 +8,7 @@ const clientTransformRules = (projectRoot) => {
   return ['ts', 'tsx', 'js'].map((extension) => ({
     test: new RegExp(`\\.${extension}$`),
     include: [CLIENT_ROOT],
-    use: [swcLoader({extension, development: true, refresh: true}), relayTagLoader]
+    use: [swcLoader({extension, development: true, refresh: true, builtin: true}), relayTagLoader]
   }))
 }
 

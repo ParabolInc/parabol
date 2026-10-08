@@ -71,7 +71,7 @@ module.exports = {
   ],
   module: {
     rules: [
-      ...transformRules(PROJECT_ROOT, true),
+      ...transformRules(PROJECT_ROOT, {isProd: true}),
       {
         test: /\.js$/,
         include: [path.join(SERVER_ROOT), path.join(CLIENT_ROOT)],

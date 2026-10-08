@@ -155,7 +155,7 @@ module.exports = (config) => {
         }
       },
       rules: [
-        ...transformRules(PROJECT_ROOT, true),
+        ...transformRules(PROJECT_ROOT, {isProd: true}),
         {
           test: /\.(png|jpg|jpeg|gif|svg)$/,
           type: 'asset/resource',
