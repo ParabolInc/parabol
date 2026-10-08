@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.2.3](https://github.com/ParabolInc/parabol/compare/v15.2.2...v15.2.3) (2026-10-08)
+
+
+### Fixed
+
+* show only the current and last 3 invoices on org billing ([#13632](https://github.com/ParabolInc/parabol/issues/13632)) ([a4b2df7](https://github.com/ParabolInc/parabol/commit/a4b2df76e925429be37e81fc233f14fd99a78342))
+
+
+### Changed
+
+* remove dataCy attributes ([#13634](https://github.com/ParabolInc/parabol/issues/13634)) ([dafc7bc](https://github.com/ParabolInc/parabol/commit/dafc7bc2b1186831e042f2d9d9f494f2ac06c798))
+
 ## [15.2.2](https://github.com/ParabolInc/parabol/compare/v15.2.1...v15.2.2) (2026-10-08)
 
 
