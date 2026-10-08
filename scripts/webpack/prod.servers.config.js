@@ -6,7 +6,7 @@ const getProjectRoot = require('./utils/getProjectRoot')
 const webpack = require('webpack')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const {CleanWebpackPlugin} = require('clean-webpack-plugin')
-const cp = require('child_process')
+const getCommitHash = require('./utils/getCommitHash')
 
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
@@ -20,7 +20,7 @@ const INIT_LOGGING = path.join(SERVER_ROOT, 'initLogging.ts')
 const MONKEYPATCHES = path.join(SERVER_ROOT, 'monkeyPatches.ts')
 const DUMP_ON_USR2 = path.join(SERVER_ROOT, 'dumpOnUSR2.ts')
 
-const COMMIT_HASH = cp.execSync('git rev-parse HEAD').toString().trim()
+const COMMIT_HASH = getCommitHash()
 const runtimePlatform = `${process.platform}-${process.arch}`
 const SHARP_ROOT = path.dirname(path.dirname(require.resolve('sharp', {paths: [SERVER_ROOT]})))
 const SHARP_LIBVIPS_ROOT = path.dirname(
