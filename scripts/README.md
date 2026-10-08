@@ -22,6 +22,7 @@ To run in production,
 - build the assets with `node scripts/prod.js`
 - If you'd like to uglify & upload assets to the CDN, use `--deploy`
 - The client is only minified & its source maps are only written for `--deploy` and `--no-deps` builds
+- `--deploy` and `--no-deps` builds skip the GraphQL codegen types, because only `tsc` reads them. Run `pnpm codegen` before typechecking one
 - Run `node dist/preDeploy.js` to prime the DBs and CDN
 
 ## Background

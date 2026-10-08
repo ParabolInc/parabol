@@ -48,11 +48,12 @@ const runCodegen = () =>
 
 // webpack bundles the relay artifacts, but only tsc reads the codegen types
 // They are returned separately so a build can start bundling without waiting for the types
-const generateGraphQLArtifacts = () => {
+// A build that is never typechecked can skip them entirely
+const generateGraphQLArtifacts = ({skipTypes = false} = {}) => {
   const schema = runSchemaUpdater(true)
   return {
     relay: schema.then(compileRelay),
-    types: schema.then(runCodegen)
+    types: skipTypes ? Promise.resolve() : schema.then(runCodegen)
   }
 }
 
