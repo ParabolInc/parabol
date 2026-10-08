@@ -7,7 +7,9 @@ import type {IncomingMessage} from 'http'
 import {createRequire} from 'module'
 import path from 'path'
 import clientTransformRules from './utils/clientTransformRules.js'
+import getCommitHash from './utils/getCommitHash.js'
 import getProjectRoot from './utils/getProjectRoot.js'
+import ServiceWorkerPlugin from './utils/ServiceWorkerPlugin.js'
 
 type OAuth2RedirectModule = {makeOAuth2Redirect: () => string}
 
@@ -25,6 +27,12 @@ const {PORT, SOCKET_PORT, HOST} = process.env
 
 // When using ngrok, we want localhost to run with http
 const isProxiedDev = HOST !== 'localhost'
+// Environment variables go in the __ACTION__ object below, not here
+// This build may be deployed to many different environments
+const defines = {
+  __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
+  __COMMIT_HASH__: JSON.stringify(getCommitHash())
+}
 
 export const devServer: DevServerConfiguration = {
   allowedHosts: process.env.DEV_WEBHOOK_URL
@@ -181,9 +189,15 @@ const devClientConfig: Configuration = {
     new rspack.DefinePlugin({
       __CLIENT__: true,
       __PRODUCTION__: false,
-      __APP_VERSION__: JSON.stringify(process.env.npm_package_version)
-      // Environment variables go in the __ACTION__ object above, not here
-      // This build may be deployed to many different environments
+      ...defines
+    }),
+    // The scripts & styles have no content hash here, so the worker leaves them to HMR
+    new ServiceWorkerPlugin({
+      src: path.join(CLIENT_ROOT, 'serviceWorker/sw.ts'),
+      filename: 'sw.js',
+      minify: false,
+      defines: {...defines, __PUBLIC_PATH__: JSON.stringify('/')},
+      maxAssetSize: 100_000
     })
   ],
   module: {

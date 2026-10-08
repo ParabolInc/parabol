@@ -40,6 +40,7 @@ declare module '*workerManifest.js' {
 declare let __webpack_public_path__: string
 declare const __PRODUCTION__: boolean
 declare const __APP_VERSION__: string
+declare const __COMMIT_HASH__: string
 
 interface Window {
   __ACTION__: {

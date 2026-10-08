@@ -1,7 +1,7 @@
 import * as Popover from '@radix-ui/react-popover'
-import type {EditorEvents} from '@tiptap/core'
+import {type EditorEvents, posToDOMRect} from '@tiptap/core'
 import {type Editor, getTextBetween, useEditorState} from '@tiptap/react'
-import {useCallback, useEffect, useRef, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {TipTapLinkEditor} from './TipTapLinkEditor'
 import {TipTapLinkPreview} from './TipTapLinkPreview'
 import {getRangeForType, type LinkMenuState} from './TiptapLinkExtension'
@@ -55,10 +55,8 @@ export const TipTapLinkMenu = (props: Props) => {
       return {link: '', text}
     }
   })
-  const oldLinkStateRef = useRef<LinkMenuState>(null)
   const handleEdit = () => {
     setLinkState('edit')
-    oldLinkStateRef.current = 'preview'
   }
 
   const onSetLink = useCallback(
@@ -77,47 +75,54 @@ export const TipTapLinkMenu = (props: Props) => {
     if (willOpen) {
       setLinkState(isLinkActive ? 'preview' : 'edit')
     } else {
-      // special case when switching from preview to edit radix-ui triggers onOpenChange(false)
-      if (!(oldLinkStateRef.current === 'preview' && linkState === 'edit')) {
-        setLinkState(null)
+      setLinkState(null)
+    }
+  }
+  const lastAnchorRectRef = useRef(new DOMRect())
+  const anchorRef = useMemo(
+    () => ({
+      current: {
+        getBoundingClientRect: () => {
+          // the view is unmounted while useEditor swaps in a new editor
+          if (editor.isDestroyed) return lastAnchorRectRef.current
+          const {state, view} = editor
+          const {from, to} = getRangeForType(state, 'link') ?? state.selection
+          lastAnchorRectRef.current = posToDOMRect(view, from, to)
+          return lastAnchorRectRef.current
+        }
       }
-      oldLinkStateRef.current = null
-    }
-  }
-  const transformRef = useRef<undefined | string>(undefined)
-  const getTransform = () => {
-    const coords = editor.view.coordsAtPos(editor.state.selection.from)
-    const {left, top} = coords
-    if (left !== 0 && top !== 0) {
-      transformRef.current = `translate(${coords.left}px,${coords.top + 20}px)`
-    }
-    return transformRef.current
-  }
+    }),
+    [editor]
+  )
   if (!linkState) return null
   return (
     <Popover.Root open onOpenChange={onOpenChange}>
-      <Popover.Trigger asChild />
+      <Popover.Anchor virtualRef={anchorRef} />
       <Popover.Portal>
         <Popover.Content
-          asChild
+          side='bottom'
+          align='start'
+          sideOffset={6}
+          collisionPadding={8}
+          updatePositionStrategy='always'
+          className='z-dialog outline-hidden'
           onOpenAutoFocus={(e) => {
             // necessary for link preview to prevent focusing the first button
             e.preventDefault()
           }}
         >
-          <div className='absolute top-0 left-0 z-dialog' style={{transform: getTransform()}}>
-            {linkState === 'edit' && (
-              <TipTapLinkEditor
-                initialUrl={link}
-                initialText={text}
-                onSetLink={onSetLink}
-                useLinkEditor={useLinkEditor}
-              />
-            )}
-            {linkState === 'preview' && (
-              <TipTapLinkPreview url={link} onClear={onUnsetLink} onEdit={handleEdit} />
-            )}
-          </div>
+          {linkState === 'edit' && (
+            <TipTapLinkEditor
+              initialUrl={link}
+              initialText={text}
+              onSetLink={onSetLink}
+              onUnsetLink={onUnsetLink}
+              useLinkEditor={useLinkEditor}
+            />
+          )}
+          {linkState === 'preview' && (
+            <TipTapLinkPreview url={link} onClear={onUnsetLink} onEdit={handleEdit} />
+          )}
         </Popover.Content>
       </Popover.Portal>
     </Popover.Root>
