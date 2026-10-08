@@ -1,13 +1,24 @@
-require('./utils/dotenv')
-const path = require('path')
-const webpack = require('webpack')
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const clientTransformRules = require('./utils/clientTransformRules')
-const getCommitHash = require('./utils/getCommitHash')
-const getProjectRoot = require('./utils/getProjectRoot')
-const ServiceWorkerPlugin = require('./utils/ServiceWorkerPlugin')
-const {makeOAuth2Redirect} = require('../../packages/server/utils/makeOAuth2Redirect')
+import './utils/dotenv.js'
+import {type Configuration, rspack} from '@rspack/core'
+import type {Configuration as DevServerConfiguration} from '@rspack/dev-server'
+import ReactRefreshRspackPlugin from '@rspack/plugin-react-refresh'
+import HtmlWebpackPlugin from 'html-webpack-plugin'
+import type {IncomingMessage} from 'http'
+import {createRequire} from 'module'
+import path from 'path'
+import clientTransformRules from './utils/clientTransformRules.js'
+import getCommitHash from './utils/getCommitHash.js'
+import getProjectRoot from './utils/getProjectRoot.js'
+import ServiceWorkerPlugin from './utils/ServiceWorkerPlugin.js'
+
+type OAuth2RedirectModule = {makeOAuth2Redirect: () => string}
+
+const require = createRequire(import.meta.url)
+// node cannot run the app's TypeScript by itself (its imports have no extensions), so sucrase loads it
+require('sucrase/register')
+const {
+  makeOAuth2Redirect
+}: OAuth2RedirectModule = require('../../packages/server/utils/makeOAuth2Redirect')
 
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
@@ -23,76 +34,81 @@ const defines = {
   __COMMIT_HASH__: JSON.stringify(getCommitHash())
 }
 
-module.exports = {
+export const devServer: DevServerConfiguration = {
+  allowedHosts: process.env.DEV_WEBHOOK_URL
+    ? 'all'
+    : ['localhost', 'host.docker.internal', ...(HOST ? [HOST] : [])],
+  server: isProxiedDev ? 'http' : 'https',
+  client: {
+    logging: 'warn'
+  },
+  static: [
+    {
+      directory: path.join(PROJECT_ROOT, 'static'),
+      publicPath: '/static/'
+    },
+    {
+      directory: path.join(PROJECT_ROOT, 'build'),
+      publicPath: '/static/'
+    }
+  ],
+  devMiddleware: {
+    publicPath: '/',
+    index: 'index.html'
+  },
+  hot: true,
+  historyApiFallback: true,
+  port: PORT,
+  proxy: [
+    ...[
+      'jira-attachments',
+      'stripe',
+      'gdrive',
+      'webhooks',
+      'health',
+      'ready',
+      'self-hosted',
+      'mattermost',
+      'assets',
+      // important terminating / so saml-redirect doesn't get targeted, too
+      'saml/',
+      'scim',
+      'oauth',
+      'zoom'
+    ].map((name) => ({
+      context: [`/${name}`],
+      target: `http://localhost:${SOCKET_PORT}`
+    })),
+    {
+      context: '/components',
+      pathRewrite: {'^/components': ''},
+      target: `http://localhost:3002`
+    },
+    {
+      context: (pathname: string, req: IncomingMessage) =>
+        pathname === '/graphql'
+          ? req.method === 'POST'
+          : pathname.startsWith('/graphql/') && pathname.length > '/graphql/'.length,
+      target: `http://localhost:${SOCKET_PORT}`
+    },
+    {
+      context: (pathname: string) => pathname === '/' || pathname === '/yjs',
+      target: `ws://localhost:${SOCKET_PORT}`,
+      ws: true,
+      logLevel: 'silent'
+    }
+  ]
+}
+
+const devClientConfig: Configuration = {
   stats: 'errors-warnings',
   ignoreWarnings: [
     // framer-motion intentionally uses string concatenation for @emotion/is-prop-valid to
     // avoid static analysis by bundlers; it works fine at runtime
-    {module: /framer-motion.*filter-props/}
+    {module: /framer-motion.*filter-props/},
+    // monaco falls back to an AMD require when it is not loaded as ESM, which never happens here
+    {module: /monaco-editor.*editorSimpleWorker/}
   ],
-  devServer: {
-    allowedHosts: process.env.DEV_WEBHOOK_URL ? 'all' : ['localhost', 'host.docker.internal', HOST],
-    server: isProxiedDev ? 'http' : 'https',
-    client: {
-      logging: 'warn'
-    },
-    static: [
-      {
-        directory: path.join(PROJECT_ROOT, 'static'),
-        publicPath: '/static/'
-      },
-      {
-        directory: path.join(PROJECT_ROOT, 'build'),
-        publicPath: '/static/'
-      }
-    ],
-    devMiddleware: {
-      publicPath: '/',
-      index: 'index.html'
-    },
-    hot: true,
-    historyApiFallback: true,
-    port: PORT,
-    proxy: [
-      ...[
-        'jira-attachments',
-        'stripe',
-        'gdrive',
-        'webhooks',
-        'health',
-        'ready',
-        'self-hosted',
-        'mattermost',
-        'assets',
-        // important terminating / so saml-redirect doesn't get targeted, too
-        'saml/',
-        'scim',
-        'oauth',
-        'zoom'
-      ].map((name) => ({
-        context: [`/${name}`],
-        target: `http://localhost:${SOCKET_PORT}`
-      })),
-      {
-        context: '/components',
-        pathRewrite: {'^/components': ''},
-        target: `http://localhost:3002`
-      },
-      {
-        context: (path, req) =>
-          path === '/graphql'
-            ? req.method === 'POST'
-            : path.startsWith('/graphql/') && path.length > '/graphql/'.length,
-        target: `http://localhost:${SOCKET_PORT}`
-      },
-      {
-        context: (path) => path === '/' || path === '/yjs',
-        target: `ws://localhost:${SOCKET_PORT}`,
-        ws: true,
-        logLevel: 'silent'
-      }
-    ]
-  },
   infrastructureLogging: {level: 'warn'},
   watchOptions: {
     ignored: ['**/node_modules/**', path.join(PROJECT_ROOT, 'packages/integration-tests/**/*')]
@@ -169,8 +185,8 @@ module.exports = {
         IS_SINGLE_ORG: process.env.IS_SINGLE_ORG === 'true' && process.env.IS_ENTERPRISE === 'true'
       })
     }),
-    new ReactRefreshWebpackPlugin(),
-    new webpack.DefinePlugin({
+    new ReactRefreshRspackPlugin(),
+    new rspack.DefinePlugin({
       __CLIENT__: true,
       __PRODUCTION__: false,
       ...defines
@@ -217,3 +233,5 @@ module.exports = {
     ]
   }
 }
+
+export default devClientConfig

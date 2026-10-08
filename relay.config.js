@@ -4,7 +4,8 @@ module.exports = {
   artifactDirectory: path.join(__dirname, 'packages/client/__generated__'),
   schemaExtensions: [path.join(__dirname, 'packages/client/schemaExtensions')],
   persistConfig: {
-    url: 'http://localhost:2999',
+    // RelayPersistServer listens on a free port & whoever starts the compiler passes it along
+    url: `http://localhost:${process.env.RELAY_PERSIST_PORT}`,
     concurrency: 10
   },
   language: 'typescript',

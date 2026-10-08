@@ -7,14 +7,16 @@ const PARSERS = {
 // swc keeps the syntax that every supported browser & node has shipped since 2022 instead of transpiling it
 // useDefineForClassFields is off because a field that is only declared for its type must not overwrite what the parent constructor set
 // Only pass minify for files without dynamic imports, because minifying here strips the webpackChunkName comments
+// rspack runs swc natively, so builtin skips handing every file to a JS loader & back
 const swcLoader = ({
   extension,
   development = false,
   refresh = false,
   commonjs = false,
+  builtin = false,
   minify
 }) => ({
-  loader: 'swc-loader',
+  loader: builtin ? 'builtin:swc-loader' : 'swc-loader',
   options: {
     swcrc: false,
     configFile: false,
