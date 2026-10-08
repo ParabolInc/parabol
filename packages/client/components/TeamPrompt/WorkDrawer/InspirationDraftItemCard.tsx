@@ -46,7 +46,7 @@ const InspirationDraftItemCard = (props: Props) => {
       {title && <div className='font-semibold text-fg-primary text-sm'>{title}</div>}
       <TipTapEditor
         editor={editor}
-        className='[&_a]:no-underline! [&_a]:hover:underline! max-h-48 overflow-auto rounded-md border border-hairline-field p-2 text-[13px] text-fg-primary leading-[22px] focus-within:border-accent [&_a]:whitespace-nowrap [&_a]:rounded [&_a]:bg-surface-well [&_a]:px-1.5 [&_a]:py-px [&_a]:font-medium [&_a]:text-xs'
+        className='issue-chips max-h-48 overflow-auto rounded-md border border-hairline-field p-2 text-[13px] text-fg-primary leading-[22px] focus-within:border-accent'
       />
       <div className='flex items-center justify-end'>
         {isAdded ? (

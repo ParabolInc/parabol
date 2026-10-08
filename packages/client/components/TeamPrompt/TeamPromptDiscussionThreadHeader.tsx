@@ -48,7 +48,7 @@ const TeamPromptDiscussionThreadHeader = ({stageRef, prompts}: Props) => {
           )}
         </h3>
       </div>
-      <div className='flex flex-col gap-3.5'>
+      <div className='issue-chips-on-well flex flex-col gap-3.5'>
         <TeamPromptSharedAnswers stageRef={stage} prompts={prompts} />
       </div>
     </div>
