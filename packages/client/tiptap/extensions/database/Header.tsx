@@ -1,28 +1,10 @@
 import {HocuspocusProvider} from '@hocuspocus/provider'
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
-import {useEffect, useState} from 'react'
-import {
-  Check,
-  ChevronRight,
-  ContentCopy,
-  DeleteOutline,
-  FirstPage,
-  LastPage,
-  Notes,
-  SwapHoriz
-} from '~/ui/icons'
+import {useEffect, useRef, useState} from 'react'
+import {Notes} from '~/ui/icons'
 import useForm from '../../../hooks/useForm'
-import {DATABASE_COLUMN_NAME_MAX_CHARS} from '../../../utils/constants'
-import {DropdownMenuInputItem} from './DropdownMenuInputItem'
-import {
-  ColumnId,
-  changeColumn,
-  deleteColumn,
-  duplicateColumn,
-  getColumnMeta,
-  insertColumnAfter,
-  insertColumnBefore
-} from './data'
+import {Menu} from '../../../ui/Menu/Menu'
+import {ColumnMenu} from './ColumnMenu'
+import {ColumnId, changeColumn, getColumnMeta} from './data'
 import {DataType, DataTypeIcons} from './types'
 import {useFocus} from './useFocus'
 
@@ -76,37 +58,6 @@ export const Header = (props: Props) => {
     fields.newTitle.resetValue()
   }
 
-  const dataActions = [
-    {
-      label: 'Insert left',
-      icon: <FirstPage />,
-      action: () => {
-        insertColumnBefore(doc, columnId)
-      }
-    },
-    {
-      label: 'Insert right',
-      icon: <LastPage />,
-      action: () => {
-        insertColumnAfter(doc, columnId)
-      }
-    },
-    {
-      label: 'Duplicate property',
-      icon: <ContentCopy />,
-      action: () => {
-        duplicateColumn(doc, columnId)
-      }
-    },
-    {
-      label: 'Delete property',
-      icon: <DeleteOutline />,
-      action: () => {
-        deleteColumn(doc, columnId)
-      }
-    }
-  ]
-
   const [menuOpen, setMenuOpen] = useState(false)
   const onOpenChange = (open: boolean) => {
     if (!open) {
@@ -115,74 +66,43 @@ export const Header = (props: Props) => {
     setMenuOpen(open)
   }
 
+  // a pointer user never asked for focus, so handing it back on close would leave a stray focus ring on the header
+  const openedByPointerRef = useRef(false)
+  const onCloseAutoFocus = (e: Event) => {
+    if (!openedByPointerRef.current) return
+    openedByPointerRef.current = false
+    e.preventDefault()
+  }
+
+  const TypeIcon = DataTypeIcons[type] ?? Notes
+
   return (
-    <DropdownMenu.Root open={menuOpen} onOpenChange={onOpenChange}>
-      <DropdownMenu.Trigger asChild {...focusProps}>
-        <button className='items-cursor-pointer flex h-full w-full items-center gap-2 p-2 hover:bg-surface-hover focus:outline-2 focus:outline-accent'>
-          {DataTypeIcons[type as DataType] || <Notes />}
+    <Menu
+      open={menuOpen}
+      onOpenChange={onOpenChange}
+      trigger={
+        <button
+          {...focusProps}
+          onPointerDown={() => {
+            openedByPointerRef.current = true
+          }}
+          className='-outline-offset-2 flex h-full w-full cursor-pointer items-center gap-1.5 px-3 text-left font-medium outline-accent hover:bg-surface-hover focus-visible:outline-2 data-[state=open]:bg-surface-hover'
+        >
+          <TypeIcon className='text-[16px] text-fg-muted' />
           <span className='truncate'>{name}</span>
         </button>
-      </DropdownMenu.Trigger>
-      <DropdownMenu.Portal>
-        <DropdownMenu.Content
-          asChild
-          className='bg-surface-card p-2 text-fg-primary'
-          align='start'
-          collisionPadding={8}
-        >
-          <div className='top-0 left-0 flex max-h-[var(--radix-popper-available-height)] max-w-[var(--radix-popover-content-available-width)] flex-col overflow-hidden rounded-lg shadow-dialog data-[side=bottom]:animate-slide-down data-[side=top]:animate-slide-up'>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault()
-                handleChangeTitle()
-              }}
-            >
-              <DropdownMenuInputItem
-                className='mb-2 w-full border-hairline border-b pb-1'
-                name='newTitle'
-                defaultValue={name}
-                onChange={onChange}
-                maxLength={DATABASE_COLUMN_NAME_MAX_CHARS}
-              />
-            </form>
-            <DropdownMenu.Sub>
-              <DropdownMenu.SubTrigger className='flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 hover:bg-surface-hover'>
-                <SwapHoriz />
-                Change type
-                <ChevronRight className='ml-auto' />
-              </DropdownMenu.SubTrigger>
-              <DropdownMenu.Portal>
-                <DropdownMenu.SubContent className='min-w-[200px] bg-surface-card p-2 text-fg-primary'>
-                  <DropdownMenu.RadioGroup value={type} onValueChange={changeType}>
-                    {Object.entries(DataTypeIcons).map(([type, icon]) => (
-                      <DropdownMenu.RadioItem
-                        key={type}
-                        value={type}
-                        className='group flex cursor-pointer items-center gap-2 rounded-md p-2 capitalize hover:bg-surface-hover'
-                      >
-                        {icon}
-                        {type}
-                        <Check className='ml-auto hidden group-data-[state=checked]:inline' />
-                      </DropdownMenu.RadioItem>
-                    ))}
-                  </DropdownMenu.RadioGroup>
-                </DropdownMenu.SubContent>
-              </DropdownMenu.Portal>
-            </DropdownMenu.Sub>
-            <DropdownMenu.Separator className='my-1 h-px bg-hairline' />
-            {dataActions.map(({label, icon, action}) => (
-              <DropdownMenu.Item
-                key={label}
-                className='flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 hover:bg-surface-hover'
-                onSelect={action}
-              >
-                {icon}
-                {label}
-              </DropdownMenu.Item>
-            ))}
-          </div>
-        </DropdownMenu.Content>
-      </DropdownMenu.Portal>
-    </DropdownMenu.Root>
+      }
+    >
+      <ColumnMenu
+        doc={doc}
+        columnId={columnId}
+        name={name}
+        type={type}
+        onNameChange={onChange}
+        onNameSubmit={handleChangeTitle}
+        onTypeChange={changeType}
+        onCloseAutoFocus={onCloseAutoFocus}
+      />
+    </Menu>
   )
 }

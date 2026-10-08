@@ -10,7 +10,7 @@ export const TableBody = ({table}: {table: Table<string>}) => {
       const scoller = document.getElementById('main') as HTMLDivElement
       return scoller
     },
-    estimateSize: () => 48,
+    estimateSize: () => 36,
     overscan: 40
   })
 
@@ -22,21 +22,21 @@ export const TableBody = ({table}: {table: Table<string>}) => {
   return (
     <tbody className='h-full w-full' style={{height: rowVirtualizer.getTotalSize()}}>
       <tr>
-        <td style={{height: paddingTop}} />
+        <td className='p-0' style={{height: paddingTop}} />
       </tr>
       {rowVirtualizer.getVirtualItems().map((virtualRow) => {
         const row = rows[virtualRow.index]!
         return (
           <tr
             key={row.id}
-            className=''
+            className='group/row hover:bg-surface-hover'
             data-index={virtualRow.index}
             ref={(el) => rowVirtualizer.measureElement(el)}
           >
             {row.getVisibleCells().map((cell) => (
               <td
                 key={cell.id}
-                className='h-12 border-hairline-strong border-b-1 border-l-1 first:border-l-0 first:pl-1 last:pr-1'
+                className='h-9 pointer-coarse:h-11 border-hairline border-b border-l p-0 first:border-l-0'
               >
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </td>
@@ -45,7 +45,7 @@ export const TableBody = ({table}: {table: Table<string>}) => {
         )
       })}
       <tr>
-        <td style={{height: paddingBottom}} />
+        <td className='p-0' style={{height: paddingBottom}} />
       </tr>
     </tbody>
   )

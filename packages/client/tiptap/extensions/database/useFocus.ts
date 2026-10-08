@@ -181,13 +181,17 @@ export const useFocus = (props: Props) => {
 
   const isFocused = useIsFocused(provider, key)
   const ref = useRef<HTMLElement | null>(null)
+  const hasDomFocusRef = useRef(false)
 
   useEffect(() => {
-    if (isFocused) {
-      requestAnimationFrame(() => {
-        ref.current?.focus()
-      })
+    if (!isFocused) return
+    if (hasDomFocusRef.current) {
+      hasDomFocusRef.current = false
+      return
     }
+    requestAnimationFrame(() => {
+      ref.current?.focus()
+    })
   }, [isFocused, ref])
 
   const onKeyDown = useCallback(
@@ -229,10 +233,15 @@ export const useFocus = (props: Props) => {
     [key, provider.document, awareness, onStartEditing, onStopEditing, ref.current]
   )
 
-  const onFocus = useCallback(() => {
-    if (isFocused) return
-    awareness?.setLocalStateField('focusedCell', key)
-  }, [awareness, key, isFocused])
+  const onFocus = useCallback(
+    (e: Pick<FocusEvent, 'target'>) => {
+      if (isFocused) return
+      // a cell that took focus itself may have opened a menu or popover, refocusing it would pull focus back out & close it
+      hasDomFocusRef.current = e.target === ref.current
+      awareness?.setLocalStateField('focusedCell', key)
+    },
+    [awareness, key, isFocused]
+  )
 
   const focusCell = useCallback(() => {
     ref.current?.focus()
