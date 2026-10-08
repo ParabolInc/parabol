@@ -6,7 +6,7 @@ import type {Invoice, InvoiceStatusEnum, UserResolvers} from '../resolverTypes'
 
 export const invoices: NonNullable<UserResolvers['invoices']> = async (
   _source,
-  {orgId},
+  {orgId, first},
   {dataLoader}
 ) => {
   const org = await dataLoader.get('organizations').loadNonNull(orgId)
@@ -67,17 +67,18 @@ export const invoices: NonNullable<UserResolvers['invoices']> = async (
         status
       }
     })
-  const edges = [parabolUpcomingInvoice, ...parabolPastInvoices].map((node) => ({
+  const allEdges = [parabolUpcomingInvoice, ...parabolPastInvoices].map((node) => ({
     cursor: node.periodEndAt,
     node
   }))
+  const edges = allEdges.slice(0, first)
   const firstEdge = edges[0]
   return {
     edges,
     pageInfo: {
       startCursor: firstEdge && firstEdge.cursor,
       endCursor: firstEdge && edges[edges.length - 1]!.cursor,
-      hasNextPage: invoices.has_more,
+      hasNextPage: invoices.has_more || allEdges.length > edges.length,
       hasPreviousPage: false
     }
   }

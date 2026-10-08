@@ -101,7 +101,6 @@ const UserDashTeamMemberMenu = (props: Props) => {
       {matchedFilteredTeamMembers.map((teamMember) => (
         <MenuItem
           key={`teamMemberFilter${teamMember.userId}`}
-          data-cy={`team-member-filter-${teamMember.userId}`}
           onClick={() =>
             navigate(constructFilterQueryParamURL(teamIds, [teamMember.userId], showArchived))
           }

@@ -52,8 +52,8 @@ const OrgBillingInvoices = (props: Props) => {
         {edges.map(({node: invoice}) => (
           <InvoiceRow key={`invoiceRow${invoice.id}`} invoice={invoice} />
         ))}
-        <div className='flex justify-center pb-4'>
-          <Button variant={'outline'}>
+        <div className='flex justify-center border-hairline border-t py-3'>
+          <Button variant={'outline'} asChild>
             <a href={portalUrl} rel='noopener noreferrer'>
               {'See All Invoices'}
             </a>

@@ -4,13 +4,16 @@ import '../../../scripts/webpack/utils/dotenv'
 
 const EnvConfig = {
   HOST: string(),
-  PORT: number({optional: true})
+  PORT: number({optional: true}),
+  PROTO: string()
 }
 
 export class Config {
   readonly rootUrlPath: string
+  readonly isLocalhost: boolean
 
   constructor(env = newConfig(EnvConfig, process.env)) {
+    this.isLocalhost = env.HOST === 'localhost'
     this.rootUrlPath = this.rootUrlPathFromEnv(env)
   }
 
@@ -22,9 +25,8 @@ export class Config {
     return `${this.rootUrlPath}${path}`
   }
 
-  private rootUrlPathFromEnv({HOST, PORT}: typeof EnvConfig): string {
-    const scheme = HOST === 'localhost' ? 'http' : 'https'
-    return `${scheme}://${HOST}${HOST === 'localhost' ? `:${PORT}` : ''}`
+  private rootUrlPathFromEnv({HOST, PORT, PROTO}: typeof EnvConfig): string {
+    return `${PROTO}://${HOST}${this.isLocalhost ? `:${PORT}` : ''}`
   }
 }
 

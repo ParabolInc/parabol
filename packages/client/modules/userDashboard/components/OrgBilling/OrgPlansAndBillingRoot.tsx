@@ -26,7 +26,7 @@ const OrgPlansAndBillingRoot = (props: Props) => {
 
   const queryRef = useQueryLoaderNow<OrgPlansAndBillingQuery>(orgPlansAndBillingQuery, {
     orgId: organization.id,
-    first: 3
+    first: 4
   })
   return (
     <Suspense fallback={''}>

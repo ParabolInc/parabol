@@ -68,7 +68,6 @@ const NewMeetingSidebar = (props: Props) => {
 
   return (
     <div
-      data-cy='sidebar'
       className={cn(
         // NavSidebar.WIDTH === 256px
         'meeting-sidebar flex min-w-64 max-w-64 flex-1 select-none flex-col bg-surface-meeting-sidebar',
@@ -76,7 +75,7 @@ const NewMeetingSidebar = (props: Props) => {
       )}
     >
       <div className='relative mb-2 flex items-start border-hairline border-b p-4 pr-2'>
-        <SidebarToggle className='pr-4' dataCy={`sidebar`} onClick={toggleSidebar} />
+        <SidebarToggle className='pr-4' onClick={toggleSidebar} />
         <div className='min-w-0 flex-1'>
           {isFacilitator ? (
             <EditableText

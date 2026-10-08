@@ -15,7 +15,6 @@ const AddTaskButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => 
       aria-label={`Add a Task set to ${label}`}
       className='h-6 w-6 border-0 bg-surface-card p-0 text-fg-primary text-sm leading-6'
       ref={ref}
-      data-cy={`add-task-${label}`}
       {...rest}
     >
       <IconLabel icon='add' />
