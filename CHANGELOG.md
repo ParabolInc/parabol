@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.1.1](https://github.com/ParabolInc/parabol/compare/v15.1.0...v15.1.1) (2026-10-08)
+
+
+### Changed
+
+* build with swc, ship a minified client and cut the first load ([#13607](https://github.com/ParabolInc/parabol/issues/13607)) ([1db4da6](https://github.com/ParabolInc/parabol/commit/1db4da6b199921c5b8ea618762c237ad25f7f778))
+
 ## [15.1.0](https://github.com/ParabolInc/parabol/compare/v15.0.0...v15.1.0) (2026-10-07)
 
 

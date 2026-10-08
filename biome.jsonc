@@ -224,6 +224,23 @@
       }
     },
     {
+      "includes": ["packages/server/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "paths": {
+                  "googleapis": "Import a single API instead, e.g. googleapis/build/src/apis/calendar. The package root pulls every Google API (32MB) into the server bundle."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
       "includes": ["**/__tests__/**"],
       "linter": {
         "domains": {

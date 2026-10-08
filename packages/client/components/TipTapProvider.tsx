@@ -1,6 +1,5 @@
 // TipTapRenderContext.ts
 import type {Extensions, generateHTML, generateJSON, JSONContent} from '@tiptap/core'
-import StarterKit from '@tiptap/starter-kit'
 import {createContext, type ReactNode, useContext} from 'react'
 
 export interface TipTapContextValue {
@@ -20,10 +19,10 @@ interface Props {
   children: ReactNode
   generateHTML: typeof generateHTML
   generateJSON: typeof generateJSON
-  extensions?: Extensions
+  extensions: Extensions
 }
 export function TipTapProvider(props: Props) {
-  const defaultExtensions: Extensions = props.extensions || [StarterKit]
+  const {extensions: defaultExtensions} = props
   const generateHTML = (doc: JSONContent, extensions = defaultExtensions) => {
     return props.generateHTML(doc, extensions)
   }

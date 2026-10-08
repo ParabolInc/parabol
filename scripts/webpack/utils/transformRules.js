@@ -1,96 +1,39 @@
 const path = require('path')
+const swcLoader = require('./swcLoader')
+
+const relayTagLoader = path.join(__dirname, 'relayTagLoader.js')
 
 const transformRules = (projectRoot, isProd) => {
   const CLIENT_ROOT = path.join(projectRoot, 'packages', 'client')
   const SERVER_ROOT = path.join(projectRoot, 'packages', 'server')
   const EMBEDDER_ROOT = path.join(projectRoot, 'packages', 'embedder')
   const TOOLBOX_SRC = path.join(projectRoot, 'scripts', 'toolboxSrc')
+  const development = !isProd
+  const relayRule = (extension) => ({
+    test: new RegExp(`\\.${extension}$`),
+    // things that use relay artifacts
+    include: [path.join(SERVER_ROOT, 'email'), CLIENT_ROOT],
+    use: [swcLoader({extension, development}), relayTagLoader]
+  })
+  const serverRule = (extension) => ({
+    test: new RegExp(`\\.${extension}$`),
+    include: [SERVER_ROOT, EMBEDDER_ROOT, TOOLBOX_SRC],
+    exclude: path.join(SERVER_ROOT, 'email'),
+    // commonjs is needed because the toolbox entries run themselves when require.main === module
+    // without it, webpack treats that as an unused export & drops it
+    use: [swcLoader({extension, development, commonjs: true})]
+  })
   return [
     {
       test: /\.graphql$/,
       include: SERVER_ROOT,
       type: 'asset/source'
     },
-    {
-      test: /\.tsx?$/,
-      // things that need the relay plugin
-      include: [path.join(SERVER_ROOT, 'email'), path.join(CLIENT_ROOT)],
-      use: [
-        {
-          loader: 'babel-loader',
-          options: {
-            cacheDirectory: true,
-            babelrc: false,
-            plugins: [
-              [
-                'macros',
-                {
-                  relay: {
-                    artifactDirectory: path.join(CLIENT_ROOT, '__generated__')
-                  }
-                }
-              ]
-            ]
-          }
-        },
-        {
-          loader: '@sucrase/webpack-loader',
-          options: {
-            production: isProd,
-            transforms: ['jsx', 'typescript'],
-            jsxRuntime: 'automatic'
-          }
-        }
-      ]
-    },
-    {
-      test: /\.(tsx?|js)$/,
-      // things that don't need babel
-      include: [SERVER_ROOT, EMBEDDER_ROOT, TOOLBOX_SRC],
-      // things that need babel
-      exclude: path.join(SERVER_ROOT, 'email'),
-      use: {
-        loader: '@sucrase/webpack-loader',
-        options: {
-          production: isProd,
-          // imports is needed for applyEnvVarsToClientAssets since it uses CJS
-          // otherwise it gets ignored and treated as an unused export in the build
-          transforms: ['jsx', 'typescript', 'imports'],
-          jsxRuntime: 'automatic'
-        }
-      }
-    },
-    {
-      // things that need inline-import
-      include: [path.join(SERVER_ROOT, 'graphql'), path.join(SERVER_ROOT, 'integrations')],
-      test: /\.tsx?/,
-      use: [
-        {
-          loader: 'babel-loader',
-          options: {
-            // for whatever reason, .graphql files are not invalidated
-            // cacheDirectory: true,
-            babelrc: false,
-            plugins: [
-              [
-                'inline-import',
-                {
-                  extensions: ['.graphql']
-                }
-              ]
-            ]
-          }
-        },
-        {
-          loader: '@sucrase/webpack-loader',
-          options: {
-            production: isProd,
-            transforms: ['jsx', 'typescript'],
-            jsxRuntime: 'automatic'
-          }
-        }
-      ]
-    }
+    relayRule('ts'),
+    relayRule('tsx'),
+    serverRule('ts'),
+    serverRule('tsx'),
+    serverRule('js')
   ]
 }
 

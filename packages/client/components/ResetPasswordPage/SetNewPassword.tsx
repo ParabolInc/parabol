@@ -5,7 +5,6 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import useForm from '../../hooks/useForm'
 import useMutationProps from '../../hooks/useMutationProps'
 import ResetPasswordMutation from '../../mutations/ResetPasswordMutation'
-import {passwordStrength} from '../../shared/passwordStrength'
 import {Security} from '../../types/constEnums'
 import {Button} from '../../ui/Button/Button'
 import Legitity from '../../validation/Legitity'
@@ -47,11 +46,6 @@ const SetNewPassword = () => {
     setDirtyField()
     const {password: passwordRes} = validateField()
     if (passwordRes.error) return
-    const strengthError = passwordStrength(passwordRes.value)
-    if (strengthError) {
-      fields.password.setError(strengthError)
-      return
-    }
     const {value: newPassword} = passwordRes
     submitMutation()
     ResetPasswordMutation(

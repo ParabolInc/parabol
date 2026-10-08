@@ -1,6 +1,10 @@
 const generateGraphQLArtifacts = require('./generateGraphQLArtifacts')
 const cp = require('child_process')
+const fs = require('fs')
+const path = require('path')
 const {Logger} = require('../packages/server/utils/Logger')
+
+const BUILD_PATH = path.join(__dirname, '../build')
 
 const runChild = (cmd) => {
   return new Promise((resolve, reject) => {
@@ -19,37 +23,46 @@ const runChild = (cmd) => {
   })
 }
 
+// The client, web workers & mattermost-plugin all emit to /build at the same time, so none of them can be the one to clean it
+// The web workers & schema are kept because the dev server reads them from /build, too
+const cleanBuildDir = () => {
+  const isKept = (name) => /worker\.js$|^workerManifest\.js$|^schema\.(graphql|json)$/.test(name)
+  if (!fs.existsSync(BUILD_PATH)) return
+  fs.readdirSync(BUILD_PATH)
+    .filter((name) => !isKept(name))
+    .forEach((name) => {
+      fs.rmSync(path.join(BUILD_PATH, name), {recursive: true, force: true})
+    })
+}
+
 const prod = async (isDeploy, noDeps) => {
   Logger.log('🙏🙏🙏      Building Production Server      🙏🙏🙏')
-  try {
-    await generateGraphQLArtifacts()
-  } catch (e) {
-    Logger.log('ERR generating artifacts', e)
-    process.exit(1)
-  }
-
-  Logger.log('starting webpack build')
-  try {
-    const webworkersPromise = runChild(
-      `pnpm webpack --config ./scripts/webpack/prod.webworkers.config.js`
-    )
-    const clientPromise = webworkersPromise.then(() =>
-      runChild(
-        `pnpm webpack --config ./scripts/webpack/prod.client.config.js --env=minimize=${isDeploy}`
-      )
-    )
-    await Promise.all([
+  cleanBuildDir()
+  const {relay, types} = generateGraphQLArtifacts()
+  // the client imports the manifest of web workers, but the web workers do not depend on any graphql artifacts
+  const webworkers = runChild(`pnpm webpack --config ./scripts/webpack/prod.webworkers.config.js`)
+  // only the builds that get shipped are minified & upload their source maps, so the rest skip the seconds that takes
+  const isShipped = isDeploy || noDeps
+  const bundles = relay.then(() => {
+    Logger.log('starting webpack build')
+    return Promise.all([
+      webworkers.then(() =>
+        runChild(
+          `pnpm webpack --config ./scripts/webpack/prod.client.config.js --env=minimize=${isShipped} --env=sourceMaps=${isShipped}`
+        )
+      ),
       runChild(
         `pnpm webpack --config ./scripts/webpack/prod.servers.config.js --env=noDeps=${noDeps}`
       ),
-      clientPromise
+      runChild(
+        `pnpm webpack --config ./packages/mattermost-plugin/prod.webpack.config.js --env=minimize=${isDeploy}`
+      )
     ])
-    Logger.log('building mattermost-plugin')
-    await runChild(
-      `pnpm webpack --config ./packages/mattermost-plugin/prod.webpack.config.js --env=minimize=${isDeploy}`
-    )
+  })
+  try {
+    await Promise.all([types, webworkers, bundles])
   } catch (e) {
-    Logger.log('error webpackifying', e)
+    Logger.log('error building', e)
     process.exit(1)
   }
 }
