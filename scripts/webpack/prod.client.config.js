@@ -4,11 +4,12 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const webpack = require('webpack')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const TerserPlugin = require('terser-webpack-plugin')
-const {InjectManifest} = require('workbox-webpack-plugin')
 const CopyPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const getCommitHash = require('./utils/getCommitHash')
 const getProjectRoot = require('./utils/getProjectRoot')
 const IncrementalMinChunkSizePlugin = require('./utils/IncrementalMinChunkSizePlugin')
+const ServiceWorkerPlugin = require('./utils/ServiceWorkerPlugin')
 const swcLoader = require('./utils/swcLoader')
 
 const PROJECT_ROOT = getProjectRoot()
@@ -23,6 +24,12 @@ module.exports = (config) => {
   const minimize = config.minimize === 'true'
   const sourceMaps = config.sourceMaps === 'true'
   const isStats = false // true to analyzing bundle size
+  // Environment variables go in applyEnvVarsToClientAssets.ts, not here
+  // This build may be deployed to many different environments
+  const defines = {
+    __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
+    __COMMIT_HASH__: JSON.stringify(getCommitHash())
+  }
   return {
     stats: {
       assets: false
@@ -81,7 +88,7 @@ module.exports = (config) => {
         new TerserPlugin({
           minify: TerserPlugin.swcMinify,
           parallel: true,
-          // license comments stay inline, otherwise each chunk gets a .LICENSE.txt that the service worker would precache
+          // license comments stay inline, otherwise each chunk gets a .LICENSE.txt
           extractComments: false,
           terserOptions: {
             mangle: true,
@@ -109,18 +116,21 @@ module.exports = (config) => {
       new webpack.DefinePlugin({
         __CLIENT__: true,
         __PRODUCTION__: true,
-        __APP_VERSION__: JSON.stringify(process.env.npm_package_version)
-        // Environment variables go in applyEnvVarsToClientAssets.ts, not here
-        // This build may be deployed to many different environments
+        ...defines
       }),
-      new InjectManifest({
-        swSrc: path.join(PROJECT_ROOT, 'packages/client/serviceWorker/sw.ts'),
-        swDest: 'swSkeleton.js',
-        // Trying to keep GraphqlContainer out of here is difficult because there are a lot of common dependencies
-        exclude: [/\.map$/, /^manifest.*\.js$/, /skeleton.html$/],
-        modifyURLPrefix: {
-          '': '__PUBLIC_PATH__'
-        }
+      new ServiceWorkerPlugin({
+        src: path.join(CLIENT_ROOT, 'serviceWorker/sw.ts'),
+        filename: 'swSkeleton.js',
+        minify: minimize,
+        defines: {
+          ...defines,
+          // we'll overwrite this in preDeploy since it depends on process.env.{HOST,CDN_BASE_URL}
+          __PUBLIC_PATH__: JSON.stringify('__PUBLIC_PATH__')
+        },
+        // the meeting music & the largest illustrations are more than the rest of the app combined
+        maxAssetSize: 100_000,
+        // only super users open GraphiQL, which is 30% of the JS & most of the CSS
+        onDemandChunkGroups: ['GraphqlContainer']
       }),
       new MiniCssExtractPlugin({
         filename: '[name]_[contenthash].css',

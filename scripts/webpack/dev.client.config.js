@@ -4,7 +4,9 @@ const webpack = require('webpack')
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const clientTransformRules = require('./utils/clientTransformRules')
+const getCommitHash = require('./utils/getCommitHash')
 const getProjectRoot = require('./utils/getProjectRoot')
+const ServiceWorkerPlugin = require('./utils/ServiceWorkerPlugin')
 const {makeOAuth2Redirect} = require('../../packages/server/utils/makeOAuth2Redirect')
 
 const PROJECT_ROOT = getProjectRoot()
@@ -14,6 +16,12 @@ const {PORT, SOCKET_PORT, HOST} = process.env
 
 // When using ngrok, we want localhost to run with http
 const isProxiedDev = HOST !== 'localhost'
+// Environment variables go in the __ACTION__ object below, not here
+// This build may be deployed to many different environments
+const defines = {
+  __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
+  __COMMIT_HASH__: JSON.stringify(getCommitHash())
+}
 
 module.exports = {
   stats: 'errors-warnings',
@@ -165,9 +173,15 @@ module.exports = {
     new webpack.DefinePlugin({
       __CLIENT__: true,
       __PRODUCTION__: false,
-      __APP_VERSION__: JSON.stringify(process.env.npm_package_version)
-      // Environment variables go in the __ACTION__ object above, not here
-      // This build may be deployed to many different environments
+      ...defines
+    }),
+    // The scripts & styles have no content hash here, so the worker leaves them to HMR
+    new ServiceWorkerPlugin({
+      src: path.join(CLIENT_ROOT, 'serviceWorker/sw.ts'),
+      filename: 'sw.js',
+      minify: false,
+      defines: {...defines, __PUBLIC_PATH__: JSON.stringify('/')},
+      maxAssetSize: 100_000
     })
   ],
   module: {
