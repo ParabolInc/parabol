@@ -1,4 +1,6 @@
 import type uws from 'uWebSockets.js'
+import {readFileSync} from 'node:fs'
+import path from 'node:path'
 import {OneOfInputObjectsRule, useExtendedValidation} from '@envelop/extended-validation'
 import {useDeferStream} from '@graphql-yoga/plugin-defer-stream'
 import {usePersistedOperations} from '@graphql-yoga/plugin-persisted-operations'
@@ -6,6 +8,7 @@ import {useCookies} from '@whatwg-node/server-plugin-cookies'
 import {print} from 'graphql'
 import {createYoga, type GraphQLParams, useReadinessCheck} from 'graphql-yoga'
 import {sql} from 'kysely'
+import getProjectRoot from '../../scripts/webpack/utils/getProjectRoot'
 import {MAX_FILE_SIZE_PAID} from '../client/utils/constants'
 import sleep from '../client/utils/sleep'
 import type AuthToken from './database/types/AuthToken'
@@ -60,12 +63,12 @@ export const extractPersistedOperationId = (
 }
 
 const queryMap = {} as Record<string, string | undefined>
+// In development the map is read off disk instead of bundled, because relay keeps persisting queries while the server runs
 const primeQueryMap = () => {
   if (__PRODUCTION__) return
   let primed: Record<string, string>
   try {
-    // resolved off disk at boot, see the externals in dev.servers.config.js
-    primed = require('../../queryMap.json')
+    primed = JSON.parse(readFileSync(path.join(getProjectRoot()!, 'queryMap.json'), 'utf-8'))
   } catch {
     Logger.warn('queryMap.json not found. Run `pnpm relay:build`')
     return
@@ -78,6 +81,11 @@ primeQueryMap()
 
 export const getPersistedOperation = async (docId: string) => {
   let queryString = queryMap[docId]
+  if (!queryString && !__PRODUCTION__) {
+    // a query that was written after the server started
+    primeQueryMap()
+    queryString = queryMap[docId]
+  }
   if (!queryString) {
     const queryStringRes = await getKysely()
       .selectFrom('QueryMap')

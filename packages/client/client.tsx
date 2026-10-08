@@ -4,7 +4,10 @@ import './scrollIntoViewIfNeeded'
 
 const container = document.getElementById('root')!
 createRoot(container).render(<Root />)
-if (__PRODUCTION__ && 'serviceWorker' in navigator) {
+// Browsers refuse a service worker from a self-signed certificate & log an error on every page load,
+// so in development the worker is only registered when the dev server runs over http
+const canRegisterServiceWorker = __PRODUCTION__ || window.location.protocol === 'http:'
+if (canRegisterServiceWorker && 'serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     navigator.serviceWorker.register('/sw.js', {scope: '/'}).catch(console.error)
   })
