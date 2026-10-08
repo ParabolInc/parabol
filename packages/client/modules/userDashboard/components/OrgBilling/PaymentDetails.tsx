@@ -69,7 +69,7 @@ const PaymentDetails = (props: Props) => {
                 {'Active Users'}
               </span>
               <span className='block pb-2 text-left font-semibold text-fg-secondary text-xs normal-case'>
-                {'Active users are anyone who uses Parabol within a billing period'}
+                {'Active users are people seen in the last 30 days'}
               </span>
               <div className='flex pb-2 font-semibold text-base text-fg-primary capitalize leading-[30px]'>
                 {activeUserCount}
