@@ -11,9 +11,10 @@ type SuggestedGroupsSuccess {
   meeting: RetrospectiveMeeting!
 
   """
-  True when someone asked for these suggestions, false when the server refreshed them on its own
-  after a reflection changed. Clients should announce the former and absorb the latter quietly,
-  since an automatic refresh can land while a viewer is mid-sentence on an unrelated card.
+  True when someone asked for these suggestions, false when the server produced them on its own,
+  either on entering the group phase or after a reflection changed. Clients should announce the
+  former and absorb the latter quietly, since an automatic refresh can land while a viewer is
+  mid-sentence on an unrelated card.
   """
   isUserInitiated: Boolean!
 }

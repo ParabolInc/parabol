@@ -66,7 +66,11 @@ const updateTask: MutationResolvers['updateTask'] = async (
     const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: viewerId})
     if (auth) {
       const manager = new AtlassianServerManager(auth.accessToken)
-      const adf = convertTiptapToADF(validContent as TipTapSerializedContent)
+      const [, ...descriptionBlocks] = validContent.content ?? []
+      const adf = convertTiptapToADF({
+        ...validContent,
+        content: descriptionBlocks
+      } as TipTapSerializedContent)
       // fire-and-forget; don't block the response on Jira's API
       manager.updateDescription(cloudId, issueKey, adf).catch(() => {})
     }

@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import type {Insertable} from 'kysely'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import {ESTIMATE_TASK_SORT_ORDER} from '../../../../client/utils/constants'
@@ -34,14 +35,14 @@ const updatePokerScope: MutationResolvers['updatePokerScope'] = async (
   try {
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) {
-      return {error: {message: `Meeting not found`}}
+      throw new GraphQLError('Meeting not found')
     }
     if (meeting.meetingType !== 'poker') {
-      return {error: {message: 'Not a poker meeting'}}
+      throw new GraphQLError('Not a poker meeting')
     }
     const {endedAt, teamId, phases, templateRefId, facilitatorStageId} = meeting
     if (endedAt) {
-      return {error: {message: `Meeting already ended`}}
+      throw new GraphQLError('Meeting already ended')
     }
 
     // RESOLUTION
@@ -75,7 +76,7 @@ const updatePokerScope: MutationResolvers['updatePokerScope'] = async (
     ]
     const projectedStageCount = survivingStages.length + additiveUpdates.length * dimensions.length
     if (projectedStageCount > Threshold.MAX_POKER_STORIES * dimensions.length) {
-      return {error: {message: 'Story limit reached'}}
+      throw new GraphQLError('Story limit reached')
     }
     const additiveUpdatesWithTaskIds = await importTasksForPoker(
       additiveUpdates,
@@ -83,7 +84,7 @@ const updatePokerScope: MutationResolvers['updatePokerScope'] = async (
       meetingId
     )
     if (additiveUpdates.length > 0 && additiveUpdatesWithTaskIds.length === 0) {
-      return {error: {message: 'Could not add that issue'}}
+      throw new GraphQLError('Could not add that issue')
     }
 
     subtractiveUpdates.forEach((update) => {

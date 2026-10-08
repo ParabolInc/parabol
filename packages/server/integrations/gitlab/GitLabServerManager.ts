@@ -1,8 +1,6 @@
-import type {JSONContent} from '@tiptap/core'
 import type {GraphQLResolveInfo} from 'graphql'
 import GitLabIssueId from 'parabol-client/shared/gqlIds/GitLabIssueId'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
-import {splitTipTapContent} from 'parabol-client/shared/tiptap/splitTipTapContent'
 import {tipTapToMarkdown} from 'parabol-client/shared/tiptap/tipTapToMarkdown'
 import type {InternalContext} from '../../graphql/graphql'
 import createIssueMutation from '../../graphql/nestedSchema/GitLab/mutations/createIssue.graphql'
@@ -31,7 +29,11 @@ import type {
   UpdateIssueMutationVariables
 } from '../../types/gitlabTypes'
 import makeCreateGitLabTaskComment from '../../utils/makeCreateGitLabTaskComment'
-import type {CreateTaskResponse, TaskIntegrationManager} from '../platform/TaskIntegrationManager'
+import type {
+  CreateTaskParams,
+  CreateTaskResponse,
+  TaskIntegrationManager
+} from '../platform/TaskIntegrationManager'
 
 class GitLabServerManager implements TaskIntegrationManager {
   public title = 'GitLab'
@@ -95,14 +97,11 @@ class GitLabServerManager implements TaskIntegrationManager {
   }
 
   async createTask({
-    rawContentJSON,
+    title,
+    bodyContent,
     integrationRepoId
-  }: {
-    rawContentJSON: JSONContent
-    integrationRepoId: string
-  }): Promise<CreateTaskResponse> {
-    const {title, bodyContent} = splitTipTapContent(rawContentJSON)
-    const description = tipTapToMarkdown(bodyContent)
+  }: CreateTaskParams): Promise<CreateTaskResponse> {
+    const description = bodyContent ? tipTapToMarkdown(bodyContent) : ''
     const [createIssueData, createIssueError] = await this.createIssue({
       title,
       description,

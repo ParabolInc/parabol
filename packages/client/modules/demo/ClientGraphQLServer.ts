@@ -552,7 +552,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const {content} = task
       const doc = JSON.parse(content)
       const {title, bodyContent} = splitTipTapContent(doc)
-      const bodyHTML = generateHTML(bodyContent, serverTipTapExtensions)
+      const bodyHTML = bodyContent ? generateHTML(bodyContent, serverTipTapExtensions) : ''
       const now = new Date().toJSON()
 
       if (integrationProviderService === 'github') {

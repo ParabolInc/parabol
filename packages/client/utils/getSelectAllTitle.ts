@@ -2,18 +2,16 @@ import {Threshold} from '../types/constEnums'
 import plural from './plural'
 
 const getSelectAllTitle = (
-  availableStoryCount: number,
+  unusedStoryCount: number,
   usedServiceTaskIdCount: number,
-  storyLabel: string
+  storyLabel: string,
+  allSelected: boolean | null
 ) => {
+  if (allSelected) return 'Deselect all'
   const availableCountToAdd = Threshold.MAX_POKER_STORIES - usedServiceTaskIdCount
-  const selectableCount = Math.min(availableCountToAdd, availableStoryCount)
-  const adjective = selectableCount === availableStoryCount ? 'all' : 'next'
-  const selectLabel = `Select ${adjective} ${selectableCount} ${plural(
-    selectableCount,
-    storyLabel
-  )}`
-  return selectableCount === 0 ? 'Deselect all' : selectLabel
+  const selectableCount = Math.min(availableCountToAdd, unusedStoryCount)
+  const adjective = selectableCount === unusedStoryCount ? 'all' : 'next'
+  return `Select ${adjective} ${selectableCount} ${plural(selectableCount, storyLabel)}`
 }
 
 export default getSelectAllTitle

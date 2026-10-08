@@ -88,9 +88,11 @@ describe('createIntegrationIssue', () => {
       context,
       info
     })
-    const {rawContentJSON, integrationRepoId} = createTask.mock.calls[0]![0]
-    expect(integrationRepoId).toBe('org/repo')
-    expect(rawContentJSON).toBe(content)
+    expect(createTask).toHaveBeenCalledWith({
+      title: 'Fix it',
+      bodyContent: null,
+      integrationRepoId: 'org/repo'
+    })
     expect(res).toEqual({
       integrationHash: 'org/repo:7',
       integration: {

@@ -3,25 +3,12 @@ import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {PinnedSnackbarNotifications_query$key} from '~/__generated__/PinnedSnackbarNotifications_query.graphql'
-import type {NotificationEnum} from '../__generated__/popNotificationToast_notification.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import SetNotificationStatusMutation from '../mutations/SetNotificationStatusMutation'
-import mapPromptToJoinOrgToToast from '../mutations/toasts/mapPromptToJoinOrgToToast'
-import mapRequestToJoinOrgToToast from '../mutations/toasts/mapRequestToJoinOrgToToast'
-import mapTeamsLimitReminderToToast from '../mutations/toasts/mapTeamsLimitReminderToToast'
-import type {OnNextNavigateContext} from '../types/relayMutations'
-import type {Snack} from './Snackbar'
+import mapNotificationToToast from '../mutations/toasts/mapNotificationToToast'
 
 interface Props {
   queryRef: PinnedSnackbarNotifications_query$key
-}
-
-const typePicker: Partial<
-  Record<NotificationEnum, (notification: any, context: OnNextNavigateContext) => Snack | null>
-> = {
-  TEAMS_LIMIT_REMINDER: mapTeamsLimitReminderToToast,
-  PROMPT_TO_JOIN_ORG: mapPromptToJoinOrgToToast,
-  REQUEST_TO_JOIN_ORG: mapRequestToJoinOrgToToast
 }
 
 const PinnedSnackbarNotifications = ({queryRef}: Props) => {
@@ -54,21 +41,11 @@ const PinnedSnackbarNotifications = ({queryRef}: Props) => {
   const {viewer} = data
   const notifications = viewer?.pinnedNotifications || {edges: []}
   const {edges} = notifications
-  const snackbarNotifications = edges.filter(
-    ({node}) => node.status === 'UNREAD' && Object.keys(typePicker).includes(node.type)
-  )
+  const snackbarNotifications = edges.filter(({node}) => node.status === 'UNREAD')
 
   useEffect(() => {
     snackbarNotifications.forEach(({node}) => {
-      const specificNotificationToastMapper = typePicker[node.type]
-      if (!specificNotificationToastMapper) {
-        return
-      }
-
-      const notificationSnack = specificNotificationToastMapper(node, {
-        atmosphere,
-        navigate
-      })
+      const notificationSnack = mapNotificationToToast(node, {atmosphere, navigate})
 
       if (!notificationSnack) {
         return

@@ -1,10 +1,13 @@
-import type {JSONContent} from '@tiptap/core'
 import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
 import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
 import type {AtlassianAuth} from '../../postgres/types'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import makeCreateJiraTaskComment from '../../utils/makeCreateJiraTaskComment'
-import type {CreateTaskResponse, TaskIntegrationManager} from '../platform/TaskIntegrationManager'
+import type {
+  CreateTaskParams,
+  CreateTaskResponse,
+  TaskIntegrationManager
+} from '../platform/TaskIntegrationManager'
 import createJiraTask from './createJiraTask'
 
 export default class JiraIntegrationManager
@@ -36,15 +39,13 @@ export default class JiraIntegrationManager
   }
 
   async createTask({
-    rawContentJSON,
+    title,
+    bodyContent,
     integrationRepoId
-  }: {
-    rawContentJSON: JSONContent
-    integrationRepoId: string
-  }): Promise<CreateTaskResponse> {
+  }: CreateTaskParams): Promise<CreateTaskResponse> {
     const {cloudId, projectKey} = JiraProjectId.split(integrationRepoId)
 
-    const res = await createJiraTask(rawContentJSON, cloudId, projectKey, this.auth)
+    const res = await createJiraTask(title, bodyContent, cloudId, projectKey, this.auth)
 
     if (res.error) return res.error
 

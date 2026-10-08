@@ -1,8 +1,6 @@
-import type {JSONContent} from '@tiptap/core'
 import type {GraphQLResolveInfo} from 'graphql'
 import LinearIssueId from 'parabol-client/shared/gqlIds/LinearIssueId'
 import LinearProjectId from 'parabol-client/shared/gqlIds/LinearProjectId'
-import {splitTipTapContent} from 'parabol-client/shared/tiptap/splitTipTapContent'
 import {tipTapToMarkdown} from 'parabol-client/shared/tiptap/tipTapToMarkdown'
 import type {InternalContext} from '../../graphql/graphql'
 import createCommentMutation from '../../graphql/nestedSchema/Linear/mutations/createComment.graphql'
@@ -30,7 +28,11 @@ import type {
   UpdateIssueMutation,
   UpdateIssueMutationVariables
 } from '../../types/linearTypes'
-import type {CreateTaskResponse, TaskIntegrationManager} from '../platform/TaskIntegrationManager'
+import type {
+  CreateTaskParams,
+  CreateTaskResponse,
+  TaskIntegrationManager
+} from '../platform/TaskIntegrationManager'
 import makeCreateLinearTaskComment from './makeCreateLinearTaskComment'
 
 class LinearServerManager implements TaskIntegrationManager {
@@ -63,11 +65,9 @@ class LinearServerManager implements TaskIntegrationManager {
     }
   }
 
-  async createTask(params: {
-    rawContentJSON: JSONContent
-    integrationRepoId: string // Format: "teamId:projectId" or "teamId"
-  }): Promise<CreateTaskResponse | Error> {
-    const {rawContentJSON, integrationRepoId} = params
+  async createTask(params: CreateTaskParams): Promise<CreateTaskResponse | Error> {
+    // integrationRepoId format: "teamId:projectId" or "teamId"
+    const {title, bodyContent, integrationRepoId} = params
 
     if (!integrationRepoId) {
       return new Error('integrationRepoId is required and cannot be empty.')
@@ -78,8 +78,7 @@ class LinearServerManager implements TaskIntegrationManager {
     if (!teamId) {
       return new Error('Could not parse teamId from integrationRepoId.')
     }
-    const {title, bodyContent} = splitTipTapContent(rawContentJSON)
-    const description = tipTapToMarkdown(bodyContent)
+    const description = bodyContent ? tipTapToMarkdown(bodyContent) : ''
 
     const [createIssueData, createIssueError] = await this.createIssueInternal({
       title,

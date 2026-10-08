@@ -46,10 +46,9 @@ jobs:
           docker cp temp-container:/home/node/parabol/dist ./dist
           docker cp temp-container:/home/node/parabol/build ./build
           docker cp temp-container:/home/node/parabol/pnpm-lock.yaml ./pnpm-lock.yaml
-          docker cp temp-container:/home/node/tools/ip-to-server_id ./ip-to-server_id
 
       - name: Zip the files
-        run: zip -r ${{ github.ref_name }}.zip dist build pnpm-lock.yaml ip-to-server_id
+        run: zip -r ${{ github.ref_name }}.zip dist build pnpm-lock.yaml
 
       - name: Upload to GCS
         env:
@@ -94,12 +93,12 @@ jobs:
           git checkout -b "${BRANCH}"
 
           # Update Dockerfile
-          sed -i "s|^ARG BASE_TAG=.*|ARG BASE_TAG=${NODE_VERSION}${NODE_VERSION_SUFFIX}|" Dockerfile
+          grep -q "^ARG NODE_TAG=" Dockerfile
+          sed -i "s|^ARG NODE_TAG=.*|ARG NODE_TAG=${NODE_VERSION}${NODE_VERSION_SUFFIX}|" Dockerfile
           sed -i "s|^COPY .*\.zip /home/node/app.zip|COPY ${REF_NAME}.zip /home/node/app.zip|" Dockerfile
 
           # Update hardening_manifest.yaml
           sed -i "11s|.*|- \"${VERSION}\"|" hardening_manifest.yaml
-          sed -i "17s|.*|  BASE_TAG: \"${NODE_VERSION}${NODE_VERSION_SUFFIX}\"|" hardening_manifest.yaml
           sed -i "36s|.*|  org.opencontainers.image.version: \"${VERSION}\"|" hardening_manifest.yaml
           sed -i "46s|.*|  - url: \"https://storage.googleapis.com/parabol-ironbank-resources/${REF_NAME}.zip\"|" hardening_manifest.yaml
           sed -i "47s|.*|    filename: \"${REF_NAME}.zip\"|" hardening_manifest.yaml

@@ -6,14 +6,17 @@ import {
   fetchLinearProjects,
   fetchLinearTeams
 } from '../../graphql/queries/helpers/fetchLinearTeamsAndProjects'
+import type {LinearSearchQueryJson} from '../../postgres/types'
 import type {LinearRepo} from '../platform/RemoteRepoIntegration'
 import {
   type EstimatePushCapability,
   type IssueCreateCapability,
   type IssueReadCapability,
+  type IssueSearchCapability,
   type RepoListCapability,
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
+import buildLinearSearchQuery from './buildLinearSearchQuery'
 import describeLinearDimensionField from './describeLinearDimensionField'
 import isLinearTeam from './isLinearTeam'
 import LinearServerManager from './LinearServerManager'
@@ -36,6 +39,7 @@ export class LinearServerIntegration extends ServerIntegrationDefinition {
   readonly capabilities: {
     issueCreate: IssueCreateCapability
     issueRead: IssueReadCapability
+    issueSearch: IssueSearchCapability<LinearSearchQueryJson>
     repoList: RepoListCapability<LinearRepo>
     estimatePush: EstimatePushCapability
   } = {
@@ -46,6 +50,7 @@ export class LinearServerIntegration extends ServerIntegrationDefinition {
       }
     },
     issueRead: {getIssue: resolveLinearTaskIntegration},
+    issueSearch: {buildQuery: buildLinearSearchQuery},
     repoList: {
       fetchRepos: async ({teamId, userId, context, info}) => {
         const [projects, teams] = await Promise.all([

@@ -1,15 +1,16 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type FormEvent, useEffect, useRef, useState} from 'react'
-import {useFragment} from 'react-relay'
-import type {NewLinearIssueInput_viewer$key} from '~/__generated__/NewLinearIssueInput_viewer.graphql'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import {ExpandMore} from '~/ui/icons'
 import type {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/CreateTaskMutation.graphql'
+import type {NewLinearIssueInputQuery} from '../__generated__/NewLinearIssueInputQuery.graphql'
 import useForm from '../hooks/useForm'
 import useTimedState from '../hooks/useTimedState'
+import type {NewRecordInputProps} from '../integrations/platform/ScopingSearchState'
 import CreateTaskMutation from '../mutations/CreateTaskMutation'
-import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
+import useUpdatePokerScopeMutation from '../mutations/useUpdatePokerScopeMutation'
 import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
 import type {CompletedHandler} from '../types/relayMutations'
 import {Menu} from '../ui/Menu/Menu'
@@ -17,41 +18,35 @@ import Legitity from '../validation/Legitity'
 import Checkbox from './Checkbox'
 import NewLinearIssueMenu from './NewLinearIssueMenu'
 
-interface Props {
-  isEditing: boolean
-  meetingId: string
-  setIsEditing: (isEditing: boolean) => void
-  viewerRef: NewLinearIssueInput_viewer$key
-}
+const query = graphql`
+  query NewLinearIssueInputQuery($teamId: ID!) {
+    viewer {
+      id
+      teamMember(teamId: $teamId) {
+        services {
+          service
+          repos {
+            integrationRepoId
+            name
+          }
+        }
+      }
+    }
+  }
+`
 
 const validateIssue = (issue: string) => {
   return new Legitity(issue).trim().min(2, `C'mon, you call that an issue?`)
 }
 
+interface Props extends NewRecordInputProps {
+  queryRef: PreloadedQuery<NewLinearIssueInputQuery>
+}
+
 const NewLinearIssueInput = (props: Props) => {
-  const {isEditing, meetingId, setIsEditing, viewerRef} = props
-  const viewer = useFragment(
-    graphql`
-      fragment NewLinearIssueInput_viewer on User {
-        id
-        team(teamId: $teamId) {
-          id
-        }
-        teamMember(teamId: $teamId) {
-          services {
-            service
-            repos {
-              integrationRepoId
-              name
-            }
-          }
-        }
-      }
-    `,
-    viewerRef
-  )
-  const {id: userId, team, teamMember} = viewer
-  const {id: teamId} = team!
+  const {isEditing, meetingId, setIsEditing, teamId, queryRef} = props
+  const data = usePreloadedQuery<NewLinearIssueInputQuery>(query, queryRef)
+  const {id: userId, teamMember} = data.viewer
 
   const services = teamMember?.services ?? []
   const linearRepos = services.find(({service}) => service === 'linear')?.repos ?? []
@@ -61,7 +56,8 @@ const NewLinearIssueInput = (props: Props) => {
   }))
 
   const atmosphere = useAtmosphere()
-  const {onCompleted, onError} = useMutationProps()
+  const {onError} = useMutationProps()
+  const [updatePokerScope] = useUpdatePokerScopeMutation()
   const [createTaskError, setCreateTaskError] = useTimedState()
   useEffect(() => {
     if (isEditing) {
@@ -126,11 +122,7 @@ const NewLinearIssueInput = (props: Props) => {
           } as const
         ]
       }
-      UpdatePokerScopeMutation(atmosphere, pokerScopeVariables, {
-        onError,
-        onCompleted,
-        contents: [newIssueTitle]
-      })
+      updatePokerScope({variables: pokerScopeVariables, contents: [newIssueTitle]})
     }
     CreateTaskMutation(atmosphere, {newTask}, {onError, onCompleted: handleCompleted})
   }

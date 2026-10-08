@@ -1,42 +1,18 @@
-import graphql from 'babel-plugin-relay/macro'
-import {Suspense} from 'react'
-import {useFragment} from 'react-relay'
-import githubScopingSearchFilterMenuQuery, {
+import gitHubScopingSearchFilterMenuQuery, {
   type GitHubScopingSearchFilterMenuQuery
 } from '../__generated__/GitHubScopingSearchFilterMenuQuery.graphql'
-import type {GitHubScopingSearchFilterMenuRoot_meeting$key} from '../__generated__/GitHubScopingSearchFilterMenuRoot_meeting.graphql'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
+import type {FilterMenuProps} from '../integrations/platform/ScopingSearchState'
 import GitHubScopingSearchFilterMenu from './GitHubScopingSearchFilterMenu'
-import MockFieldList from './MockFieldList'
 
-interface Props {
-  teamId: string
-  meetingRef: GitHubScopingSearchFilterMenuRoot_meeting$key
-}
-
-const GitHubScopingSearchFilterMenuRoot = (props: Props) => {
-  const {teamId, meetingRef} = props
-  const meeting = useFragment(
-    graphql`
-      fragment GitHubScopingSearchFilterMenuRoot_meeting on PokerMeeting {
-        id
-      }
-    `,
-    meetingRef
-  )
-  const {id: meetingId} = meeting
+const GitHubScopingSearchFilterMenuRoot = (props: FilterMenuProps) => {
+  const {teamId, meetingId, state} = props
   const queryRef = useQueryLoaderNow<GitHubScopingSearchFilterMenuQuery>(
-    githubScopingSearchFilterMenuQuery,
-    {meetingId, teamId}
+    gitHubScopingSearchFilterMenuQuery,
+    {teamId}
   )
-
-  if (!meetingId) return null
-
-  return (
-    <Suspense fallback={<MockFieldList />}>
-      {queryRef && <GitHubScopingSearchFilterMenu queryRef={queryRef} />}
-    </Suspense>
-  )
+  if (!queryRef) return null
+  return <GitHubScopingSearchFilterMenu meetingId={meetingId} state={state} queryRef={queryRef} />
 }
 
 export default GitHubScopingSearchFilterMenuRoot
