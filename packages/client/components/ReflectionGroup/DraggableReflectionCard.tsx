@@ -51,7 +51,6 @@ interface Props {
   staticIdx?: number
   staticReflections: DraggableReflectionCard_staticReflections$key | null
   swipeColumn?: SwipeColumn
-  dataCy?: string
   isExpanded?: boolean
   showDragHintAnimation?: boolean
 }
@@ -76,7 +75,6 @@ const DraggableReflectionCard = (props: Props) => {
     isDraggable,
     isExpanded,
     swipeColumn,
-    dataCy,
     showDragHintAnimation
   } = props
   const staticReflections = useFragment(
@@ -181,7 +179,6 @@ const DraggableReflectionCard = (props: Props) => {
       onMouseLeave={() => onHoverReflection?.(null)}
     >
       <ReflectionCard
-        dataCy={dataCy}
         reflectionRef={reflection}
         isClipped={isClipped}
         meetingRef={meeting}

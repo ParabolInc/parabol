@@ -116,7 +116,6 @@ const UserTasksHeader = (props: Props) => {
               onMouseEnter={TeamFilterMenu.preload}
               value={teamFilterName}
               iconText='group'
-              dataCy='team-filter'
             />
           }
         >
@@ -134,7 +133,6 @@ const UserTasksHeader = (props: Props) => {
               onMouseEnter={UserDashTeamMemberMenu.preload}
               value={teamMemberFilterName}
               iconText='person'
-              dataCy='team-member-filter'
             />
           }
         >
@@ -147,7 +145,6 @@ const UserTasksHeader = (props: Props) => {
           size='default'
           className='my-1 sidebar-left:my-0 shrink-0 bg-transparent p-0 font-semibold text-[14px] text-fg-secondary leading-5 shadow-none hover:text-fg-primary focus:text-fg-primary active:text-fg-primary'
           onClick={() => navigate(constructFilterQueryParamURL(teamIds, userIds, !showArchived))}
-          data-cy='archived-checkbox'
         >
           <Checkbox className='mr-2 w-6 text-center text-[24px]' active={showArchived} />
           {'Archived'}

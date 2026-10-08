@@ -28,18 +28,16 @@ interface Props extends Omit<ButtonProps, 'size' | 'variant'> {
   iconLarge?: boolean
   palette?: keyof typeof paletteStyles
   waiting?: boolean
-  dataCy?: string
 }
 
 const IconButton = (props: Props) => {
-  const {icon, iconLarge, className, palette = 'dark', waiting, disabled, dataCy, ...rest} = props
+  const {icon, iconLarge, className, palette = 'dark', waiting, disabled, ...rest} = props
 
   return (
     <Button
       {...rest}
       size='default'
       disabled={disabled || waiting}
-      data-cy={dataCy}
       className={cn(
         'bg-transparent p-0 text-[14px] leading-5 shadow-none',
         paletteStyles[palette],
