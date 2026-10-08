@@ -32,46 +32,6 @@
         return tag
       }).join('')
     %>
-    <!-- Safari sometimes kills the current service worker before it can load the initial script to load the updated one -->
-    <script>
-      if ('serviceWorker' in navigator) {
-        let loadError = false
-        let serviceWorkerUpdateFound = false
-
-        function unregisterSW(event) {
-          if (!loadError || !serviceWorkerUpdateFound) return
-          location.reload()
-        }
-
-        // because the script tag is `defer` we need to attach the handler via script
-        document.querySelectorAll('script').forEach((script) => {
-          if (script.src) {
-            script.onerror = () => {
-              console.log('Error loading script ', script.src)
-              loadError = true
-              unregisterSW()
-            }
-            script.onload = () => {
-              console.log('Load script ', script.src)
-              loadError = false
-              script.onerror = null
-              script.onload = null
-            }
-          }
-        })
-
-        // context closed event happens because the old service worker is killed because a new one is found
-        navigator.serviceWorker.getRegistration().then((reg) => {
-          if (!reg) return
-          reg.addEventListener('updatefound', () => {
-            console.log('Service worker update found')
-            serviceWorkerUpdateFound = true
-            unregisterSW()
-          })
-        })
-      }
-    </script>
-    <!-- End Safari hack -->
   </head>
 
   <body>
