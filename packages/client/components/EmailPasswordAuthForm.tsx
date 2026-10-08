@@ -9,7 +9,6 @@ import useMutationProps from '../hooks/useMutationProps'
 import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutation'
 import LoginWithPasswordMutation from '../mutations/LoginWithPasswordMutation'
 import SignUpWithPasswordMutation from '../mutations/SignUpWithPasswordMutation'
-import {passwordStrength} from '../shared/passwordStrength'
 import {LocalStorageKey, Security} from '../types/constEnums'
 import {Button} from '../ui/Button/Button'
 import {cn} from '../ui/cn'
@@ -212,11 +211,6 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
       return
     }
     if (signInWithSSOSucceeded || passwordRes.error) return
-    const strengthError = passwordStrength(passwordRes.value, email)
-    if (strengthError) {
-      fields.password.setError(strengthError)
-      return
-    }
     const {value: password} = passwordRes
     submitMutation()
     if (isSignin) {

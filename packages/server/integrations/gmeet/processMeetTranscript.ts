@@ -1,4 +1,4 @@
-import type {meet_v2} from 'googleapis'
+import type {meet_v2} from 'googleapis/build/src/apis/meet'
 import {serverTipTapExtensions} from 'parabol-client/shared/tiptap/serverTipTapExtensions'
 import type {TipTapSerializedPageContent} from 'parabol-client/shared/tiptap/TipTapSerializedContent'
 import {escapeHtml} from '../../utils/escapeHtml'

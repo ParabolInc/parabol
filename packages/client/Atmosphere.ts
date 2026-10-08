@@ -28,11 +28,11 @@ import type StrictEventEmitter from 'strict-event-emitter-types'
 import type {AtmosphereSignOutMutation} from './__generated__/AtmosphereSignOutMutation.graphql'
 import type {InviteToTeamMutation_notification$data} from './__generated__/InviteToTeamMutation_notification.graphql'
 import type {Snack, SnackbarRemoveFn} from './components/Snackbar'
-import {providerManager} from './tiptap/providerManager'
 import {AuthToken} from './types/AuthToken'
 import type {NavigateFn} from './types/relayMutations'
 import {getAuthCookie, onAuthCookieChange} from './utils/authCookie'
 import {createWSClient} from './utils/createWSClient'
+import deletePageDatabases from './utils/deletePageDatabases'
 import handlerProvider from './utils/relay/handlerProvider'
 import sleep from './utils/sleep'
 
@@ -112,6 +112,10 @@ export interface AtmosphereEvents {
 const store = new Store(new RecordSource(), {gcReleaseBufferSize: 10000})
 
 export default class Atmosphere extends Environment {
+  // yjs only loads once a page or a meeting is open, so its provider manager finds the session & registers its teardown here
+  // If the session imported the provider manager instead, yjs would be part of the entry bundle
+  static current?: Atmosphere
+  static closeHandlers = new Set<() => Promise<unknown>>()
   static getKey = (name: string, variables: Variables | undefined) => {
     return JSON.stringify({name, variables})
   }
@@ -148,7 +152,7 @@ export default class Atmosphere extends Environment {
       network: Network.create(noop)
     })
     this._network = Network.create(this.fetchFunction, this.fetchOrSubscribe) as any
-    providerManager.setAtmosphere(this)
+    Atmosphere.current = this
     this.initAuthFromCookie()
   }
 
@@ -559,6 +563,9 @@ export default class Atmosphere extends Environment {
     this.subscriptions = {}
     this.viewerId = null!
     this.connectWebsocketPromise = null
-    providerManager.close()
+    // fire-and-forget: clearing the local page data is best-effort before the page redirects
+    void Promise.all([...Atmosphere.closeHandlers].map((closeHandler) => closeHandler())).then(
+      deletePageDatabases
+    )
   }
 }
