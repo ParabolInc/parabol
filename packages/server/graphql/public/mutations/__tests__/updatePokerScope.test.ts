@@ -181,31 +181,34 @@ describe('updatePokerScope', () => {
 
   it('reports an add that could not be imported', async () => {
     importTasks.mockResolvedValueOnce([])
-    const res = await run([{service: 'jira', serviceTaskId: 'nope', action: 'ADD'}])
-    expect(res).toEqual({error: {message: 'Could not add that issue'}})
+    await expect(run([{service: 'jira', serviceTaskId: 'nope', action: 'ADD'}])).rejects.toThrow(
+      'Could not add that issue'
+    )
     expect(setPayloads).toHaveLength(0)
     expect(events).toEqual(['lock', 'load', 'unlock'])
   })
 
   it('guards an ended meeting', async () => {
-    const res = await run(
-      [{service: 'jira', serviceTaskId: 'cloud1:WEB-12', action: 'DELETE'}],
-      buildMeeting(new Date())
-    )
-    expect(res).toEqual({error: {message: 'Meeting already ended'}})
+    await expect(
+      run(
+        [{service: 'jira', serviceTaskId: 'cloud1:WEB-12', action: 'DELETE'}],
+        buildMeeting(new Date())
+      )
+    ).rejects.toThrow('Meeting already ended')
     expect(events).toEqual(['lock', 'load', 'unlock'])
   })
 
   it('rejects an over-limit scope before any side effect runs', async () => {
-    const res = await run([
-      {service: 'jira', serviceTaskId: 'cloud1:WEB-12', action: 'DELETE'},
-      ...Array.from({length: Threshold.MAX_POKER_STORIES}, (_, idx) => ({
-        service: 'jira',
-        serviceTaskId: `cloud1:WEB-${idx}`,
-        action: 'ADD'
-      }))
-    ])
-    expect(res).toEqual({error: {message: 'Story limit reached'}})
+    await expect(
+      run([
+        {service: 'jira', serviceTaskId: 'cloud1:WEB-12', action: 'DELETE'},
+        ...Array.from({length: Threshold.MAX_POKER_STORIES}, (_, idx) => ({
+          service: 'jira',
+          serviceTaskId: `cloud1:WEB-${idx}`,
+          action: 'ADD'
+        }))
+      ])
+    ).rejects.toThrow('Story limit reached')
     expect(importTasks).not.toHaveBeenCalled()
     expect(multiCalls).toHaveLength(0)
     expect(setPayloads).toHaveLength(0)

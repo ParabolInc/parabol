@@ -18,15 +18,8 @@ const START_SPRINT_POKER = `
 const UPDATE_POKER_SCOPE = `
   mutation UpdatePokerScope($meetingId: ID!, $updates: [UpdatePokerScopeItemInput!]!) {
     updatePokerScope(meetingId: $meetingId, updates: $updates) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
-      ... on UpdatePokerScopeSuccess {
-        newStages {
-          taskId
-        }
+      newStages {
+        taskId
       }
     }
   }
@@ -98,6 +91,6 @@ test('an integrated stage whose task was deleted can be removed by its serviceTa
     },
     cookie
   })
-  expect(removed.data.updatePokerScope.error).toBeUndefined()
+  expect(removed.errors).toBeUndefined()
   expect(await getEstimateStages(meetingId, cookie)).toEqual([])
 })

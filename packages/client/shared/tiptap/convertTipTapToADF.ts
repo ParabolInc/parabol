@@ -390,8 +390,7 @@ export const CUSTOM_NODE_HANDLERS: {
  */
 export function convertTiptapToADF(doc: TipTapSerializedContent): AdfNode {
   // ADF requires at least one block node; guard against empty docs
-  const bodyNodes = doc.content.slice(1) as TipTapContentNode[] // skip H1 title
-  const converted = convertChildren(bodyNodes)
+  const converted = convertChildren(doc.content)
   return {
     type: 'doc',
     version: 1,

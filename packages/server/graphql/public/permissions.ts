@@ -221,8 +221,10 @@ const permissionMap: PermissionMap<Resolvers> = {
       isSuperUser,
       isViewerBillingLeader<'Mutation.removeApprovedOrganizationDomains'>('args.orgId')
     ),
-    removeIntegrationSearchQuery:
-      isTeamMember<'Mutation.removeIntegrationSearchQuery'>('args.teamId'),
+    removeIntegrationSearchQuery: isUserViewer<'Mutation.removeIntegrationSearchQuery'>(
+      'args.id',
+      'integrationSearchQueries'
+    ),
     removePokerTemplate: or(
       isViewerBillingLeader<'Mutation.removePokerTemplate'>('args.templateId', 'meetingTemplates'),
       isTeamMember<'Mutation.removePokerTemplate'>('args.templateId', 'meetingTemplates')

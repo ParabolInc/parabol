@@ -1,6 +1,7 @@
 import {ConnectionHandler, type RecordProxy, type RecordSourceSelectorProxy} from 'relay-runtime'
 import toTeamMemberId from '~/utils/relay/toTeamMemberId'
-import SearchQueryId from '../../shared/gqlIds/SearchQueryId'
+import {searchFiltersByKey} from '../../integrations/platform/IntegrationSearchFilter'
+import readScopingSearchStateFromRelayStore from '../../utils/relay/readScopingSearchStateFromRelayStore'
 import getJiraIssuesConn from '../connections/getJiraIssuesConn'
 
 const handleJiraCreateIssue = (task: RecordProxy<any>, store: RecordSourceSelectorProxy) => {
@@ -15,14 +16,19 @@ const handleJiraCreateIssue = (task: RecordProxy<any>, store: RecordSourceSelect
   const teamMember = store.get(teamMemberId)
   const integrations = teamMember?.getLinkedRecord('integrations')
   const atlassian = integrations?.getLinkedRecord('atlassian')
-  const jiraSearchQueryId = SearchQueryId.join('jira', meetingId)
-  const jiraSearchQuery = store.get(jiraSearchQueryId)
-  const queryString = jiraSearchQuery?.getValue('queryString') as string | undefined
-  const isJql = jiraSearchQuery?.getValue('isJql') as boolean | undefined
-  const projectKeyFilters = jiraSearchQuery?.getValue('projectKeyFilters') as string[] | undefined
+  const {queryString, isAdvancedQuery, filters} = readScopingSearchStateFromRelayStore(
+    store,
+    meetingId,
+    'jira'
+  )
   const typename = integration.getType()
   if (typename === 'JiraIssue') {
-    const jiraIssuesConn = getJiraIssuesConn(atlassian, isJql, queryString, projectKeyFilters)
+    const jiraIssuesConn = getJiraIssuesConn(
+      atlassian,
+      isAdvancedQuery,
+      queryString.trim(),
+      searchFiltersByKey(filters, 'project')
+    )
     if (!jiraIssuesConn) return
     const now = new Date().toISOString()
     const newEdge = ConnectionHandler.createEdge(

@@ -1,8 +1,7 @@
-import type {JSONContent} from '@tiptap/core'
 import {fetch} from '@whatwg-node/fetch'
 import tracer from 'dd-trace'
 import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
-import {splitTipTapContent} from 'parabol-client/shared/tiptap/splitTipTapContent'
+import {serverTipTapExtensions} from 'parabol-client/shared/tiptap/serverTipTapExtensions'
 import {ExternalLinks} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import AzureDevOpsProjectId from '../../client/shared/gqlIds/AzureDevOpsProjectId'
@@ -15,6 +14,7 @@ import type {
   OAuth2TokenResponse
 } from '../integrations/OAuth2Manager'
 import type {
+  CreateTaskParams,
   CreateTaskResponse,
   TaskIntegrationManager
 } from '../integrations/platform/TaskIntegrationManager'
@@ -22,6 +22,7 @@ import type {TeamMemberIntegrationAuth} from '../postgres/types'
 import type {IntegrationProviderAzureDevOps} from '../postgres/types/IntegrationProvider'
 import logError from './logError'
 import makeCreateAzureTaskComment from './makeCreateAzureTaskComment'
+import {generateHTML} from './tiptap/generateHTML'
 
 export interface AzureDevOpsUser {
   // self: string
@@ -375,15 +376,13 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
   }
 
   async createTask({
-    rawContentJSON,
+    title,
+    bodyContent,
     integrationRepoId
-  }: {
-    rawContentJSON: JSONContent
-    integrationRepoId: string
-  }): Promise<CreateTaskResponse> {
-    const {title} = splitTipTapContent(rawContentJSON)
+  }: CreateTaskParams): Promise<CreateTaskResponse> {
+    const description = bodyContent ? generateHTML(bodyContent, serverTipTapExtensions) : null
     const {instanceId, projectId} = AzureDevOpsProjectId.split(integrationRepoId)
-    const issueRes = await this.createIssue({title, instanceId, projectId})
+    const issueRes = await this.createIssue({title, description, instanceId, projectId})
     if (issueRes instanceof Error) return issueRes
     return {
       integrationHash: AzureDevOpsIssueId.join(instanceId, projectId, String(issueRes.id)),
@@ -400,10 +399,12 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
 
   async createIssue({
     title,
+    description,
     instanceId,
     projectId
   }: {
     title: string
+    description: string | null
     instanceId: string
     projectId: string
   }) {
@@ -414,7 +415,10 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
         path: '/fields/System.Title',
         from: null,
         value: title
-      }
+      },
+      ...(description
+        ? [{op: 'add', path: '/fields/System.Description', from: null, value: description}]
+        : [])
     ])
   }
 

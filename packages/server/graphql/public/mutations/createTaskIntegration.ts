@@ -7,6 +7,7 @@ import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import logError from '../../../utils/logError'
 import publish from '../../../utils/publish'
+import getIssueTitleAndBody from '../../mutations/helpers/getIssueTitleAndBody'
 import type {MutationResolvers} from '../resolverTypes'
 
 const createTaskIntegration: MutationResolvers['createTaskIntegration'] = async (
@@ -76,8 +77,14 @@ const createTaskIntegration: MutationResolvers['createTaskIntegration'] = async 
   const {preferredName: assigneeName = ''} = assigneeUser || {}
 
   const teamDashboardUrl = makeAppURL(appOrigin, `team/${teamId}`)
+  const {title, bodyContent} = await getIssueTitleAndBody(
+    JSON.parse(rawContentJSON),
+    teamId,
+    dataLoader
+  )
   const createTaskResponse = await taskIntegrationManager.createTask({
-    rawContentJSON: JSON.parse(rawContentJSON),
+    title,
+    bodyContent,
     integrationRepoId
   })
 
