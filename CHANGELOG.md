@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.1.0](https://github.com/ParabolInc/parabol/compare/v15.0.0...v15.1.0) (2026-10-07)
+
+
+### Added
+
+* cleaner titles and bodies for issues created from tasks ([#13600](https://github.com/ParabolInc/parabol/issues/13600)) ([75180e1](https://github.com/ParabolInc/parabol/commit/75180e1e170701123bea6154eefbf03917f535b8))
+* new icebreakers, remove dupes ([#13596](https://github.com/ParabolInc/parabol/issues/13596)) ([54f2b42](https://github.com/ParabolInc/parabol/commit/54f2b42b761463e087a6da805d899f1e1118969f))
+* suggest retro groups with AI by default ([#13587](https://github.com/ParabolInc/parabol/issues/13587)) ([146ee0b](https://github.com/ParabolInc/parabol/commit/146ee0b384de6f494e8305420321f4044ab3419c))
+
+
+### Fixed
+
+* notification toasts read fields from aliased fragments ([#13606](https://github.com/ParabolInc/parabol/issues/13606)) ([5df4f4a](https://github.com/ParabolInc/parabol/commit/5df4f4a0b61a9758d360b44fbceab59f79fa9d57))
+
+
+### Changed
+
+* one generic scoping panel for poker integrations ([#13524](https://github.com/ParabolInc/parabol/issues/13524)) ([fd8a63b](https://github.com/ParabolInc/parabol/commit/fd8a63b31618543c39e496590d0a67fe4147a3c8))
+
 ## [15.0.0](https://github.com/ParabolInc/parabol/compare/v14.4.0...v15.0.0) (2026-10-07)
 
 
