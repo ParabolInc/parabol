@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.2.4](https://github.com/ParabolInc/parabol/compare/v15.2.3...v15.2.4) (2026-10-08)
+
+
+### Fixed
+
+* keep issue chip styling in standup responses ([#13638](https://github.com/ParabolInc/parabol/issues/13638)) ([372c88e](https://github.com/ParabolInc/parabol/commit/372c88ee517f94cd6b80466de9a68ca076aa4e38))
+* wrap long URLs in the standup discussion drawer header ([#13636](https://github.com/ParabolInc/parabol/issues/13636)) ([ba4c3c9](https://github.com/ParabolInc/parabol/commit/ba4c3c97f12007d0fd686a087a33b15826422831))
+
+
+### Changed
+
+* **build:** skip type generation in release builds ([#13641](https://github.com/ParabolInc/parabol/issues/13641)) ([59380b9](https://github.com/ParabolInc/parabol/commit/59380b9cdaf0ee3700fa5efcd779da9946ec51ca))
+* shorten issue and PR templates ([#13640](https://github.com/ParabolInc/parabol/issues/13640)) ([7813bf7](https://github.com/ParabolInc/parabol/commit/7813bf74cc874fdf995c60c1b18f085a3db16abf))
+
 ## [15.2.3](https://github.com/ParabolInc/parabol/compare/v15.2.2...v15.2.3) (2026-10-08)
 
 
