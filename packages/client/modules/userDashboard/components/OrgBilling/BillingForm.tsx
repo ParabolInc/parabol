@@ -21,7 +21,6 @@ import useMutationProps from '../../../../hooks/useMutationProps'
 import CreateStripeSubscriptionMutation from '../../../../mutations/CreateStripeSubscriptionMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Button} from '../../../../ui/Button/Button'
-import {cn} from '../../../../ui/cn'
 import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 
 const getCardElementOptions = (): StripeCardNumberElementOptions => {
@@ -211,15 +210,9 @@ const BillingForm = (props: Props) => {
         {error && <StyledError className='pt-2 normal-case'>{error.message}</StyledError>}
         <Button
           variant='primary'
-          size='md'
           disabled={isUpgradeDisabled}
           type={'submit'}
-          className={cn(
-            'mt-4 w-full bg-none bg-sky-500 text-white hover:bg-none focus:bg-none active:bg-none',
-            isUpgradeDisabled
-              ? 'opacity-50 hover:opacity-50 focus:opacity-50 active:opacity-50'
-              : 'opacity-100 hover:bg-sky-600 focus:bg-sky-600'
-          )}
+          className='mt-4 h-10 w-full text-[15px]'
         >
           {submitting ? (
             <>

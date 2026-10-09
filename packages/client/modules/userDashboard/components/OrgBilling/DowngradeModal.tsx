@@ -11,12 +11,10 @@ import {cn} from '../../../../ui/cn'
 import {Dialog} from '../../../../ui/Dialog/Dialog'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
-import {
-  readableReasonsToDowngrade,
-  reasonsToDowngradeLookup,
-  TeamBenefits
-} from '../../../../utils/constants'
+import {readableReasonsToDowngrade, reasonsToDowngradeLookup} from '../../../../utils/constants'
 import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
+import getPlanBenefitLabel from './getPlanBenefitLabel'
+import orgPlanDetails from './orgPlanDetails'
 
 type Props = {
   isOpen: boolean
@@ -136,7 +134,7 @@ const DowngradeModal = (props: Props) => {
             </p>
             <div className='flex flex-col'>
               <ul className='m-0'>
-                {TeamBenefits.map((benefit) => (
+                {orgPlanDetails.team.included.map(getPlanBenefitLabel).map((benefit) => (
                   <li
                     key={benefit}
                     className='text-left font-normal text-[16px] text-fg-primary normal-case leading-8'

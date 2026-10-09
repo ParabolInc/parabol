@@ -145,8 +145,6 @@
   --color-slate-900: #1c1c21;
   --color-success-light: #2db553;
   --color-starter: #f2e1f7;
-  --color-team: #cbecf0;
-  --color-enterprise: #ffe2e0;
 
   --color-surface-app: var(--color-slate-100);
   --color-surface-sidebar: var(--color-slate-200);
@@ -415,8 +413,6 @@
   --color-search-bg: rgba(255, 255, 255, 0.1);
   --color-search-placeholder: #b7b4e9;
   --color-starter: #3a2857;
-  --color-team: #12404c;
-  --color-enterprise: #4a2430;
   --default-ring-color: var(--color-accent);
   --shadow-card: inset 0 0 0 1px var(--color-hairline), inset 0 1px 0 rgba(255, 255, 255, 0.05),
     0 6px 16px -6px rgba(0, 0, 0, 0.6);
@@ -479,8 +475,6 @@
   --color-search-bg: rgba(255, 255, 255, 0.125);
   --color-search-placeholder: #c3c0d8;
   --color-starter: #f2e1f7;
-  --color-team: #cbecf0;
-  --color-enterprise: #ffe2e0;
   --default-ring-color: var(--color-sky-500);
 }
 
@@ -1189,6 +1183,33 @@
     width: max-content;
     min-width: 100%;
   }
+}
+
+/* ── Issue Chips ─────────────────────────────────────────────────
+ * A link drafted from an issue in an external service carries that
+ * service (the link mark's issueService) and reads as a chip instead
+ * of a link. Opt-in per editor: stand-up drafts and responses today.
+ */
+.issue-chips .tiptap a[data-issue-service] {
+  background-color: var(--color-surface-well);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.issue-chips .tiptap a[data-issue-service]:hover {
+  text-decoration: underline;
+}
+
+/* In dark, surface-input and surface-drawer share surface-well's fill, so a chip
+ * that sits on one of them lifts to the card fill instead of sinking.
+ */
+.theme-dark .issue-chips-on-well .tiptap a[data-issue-service] {
+  background-color: var(--color-surface-card);
 }
 
 /* If a page title is empty, always show it */

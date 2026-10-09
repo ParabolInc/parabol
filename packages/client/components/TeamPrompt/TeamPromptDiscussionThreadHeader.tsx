@@ -35,7 +35,7 @@ const TeamPromptDiscussionThreadHeader = ({stageRef, prompts}: Props) => {
   const sharedResponses = getSharedResponses(responses)
   const sharedAt = getMemberSharedAt(sharedResponses)
   return (
-    <div className='self-start px-3 pt-4 pb-5'>
+    <div className='w-full px-3 pt-4 pb-5'>
       <div className='flex items-center px-0 pb-3'>
         <Avatar picture={teamMember.user.picture} className='h-12 w-12' />
         <h3 className='m-0 px-2'>
@@ -48,7 +48,7 @@ const TeamPromptDiscussionThreadHeader = ({stageRef, prompts}: Props) => {
           )}
         </h3>
       </div>
-      <div className='flex flex-col gap-3.5'>
+      <div className='issue-chips-on-well flex flex-col gap-3.5'>
         <TeamPromptSharedAnswers stageRef={stage} prompts={prompts} />
       </div>
     </div>
