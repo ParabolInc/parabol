@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.3.0](https://github.com/ParabolInc/parabol/compare/v15.2.5...v15.3.0) (2026-10-09)
+
+
+### Added
+
+* redesign the org billing plan cards ([#13644](https://github.com/ParabolInc/parabol/issues/13644)) ([26153b5](https://github.com/ParabolInc/parabol/commit/26153b51a93431ccd727a5aec1336565069856b2))
+
 ## [15.2.5](https://github.com/ParabolInc/parabol/compare/v15.2.4...v15.2.5) (2026-10-08)
 
 
