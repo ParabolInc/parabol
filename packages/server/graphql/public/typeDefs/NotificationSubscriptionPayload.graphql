@@ -32,6 +32,10 @@ type NotificationSubscriptionPayload {
   CreatePagePayload: CreatePagePayload
   UpdatePagePayload: UpdatePagePayload
   UpdatePageAccessPayload: UpdatePageAccessPayload
+  AddPageCommentSuccess: AddPageCommentSuccess
+  UpdatePageCommentSuccess: UpdatePageCommentSuccess
+  DeletePageCommentSuccess: DeletePageCommentSuccess
+  UpdatePageThreadSuccess: UpdatePageThreadSuccess
   UpdateUserThemeSuccess: UpdateUserThemeSuccess
   ExportPagesToConfluenceSuccess: ExportPagesToConfluenceSuccess
 }

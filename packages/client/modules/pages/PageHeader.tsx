@@ -31,10 +31,12 @@ interface Props {
   pageRef: PageHeader_page$key
   showConfluenceExport: boolean
   isPageGenerating: boolean
+  // the page's comments render their button here, since they live next to the editor
+  commentsSlotRef: (commentsSlot: HTMLDivElement | null) => void
 }
 
 export const PageHeader = (props: Props) => {
-  const {pageRef, showConfluenceExport, isPageGenerating} = props
+  const {pageRef, showConfluenceExport, isPageGenerating, commentsSlotRef} = props
   const page = useFragment(
     graphql`
       fragment PageHeader_page on Page {
@@ -76,6 +78,7 @@ export const PageHeader = (props: Props) => {
       <div className='flex items-center justify-between px-4 py-2'>
         <PageBreadCrumbs pageRef={page} />
         <div className='flex items-center justify-center space-x-3 pt-1 font-semibold text-md'>
+          <div ref={commentsSlotRef} className='flex empty:hidden' />
           <Popover.Root
             key={`${page.id}-${sharePageDefaultOpen}`}
             defaultOpen={sharePageDefaultOpen}

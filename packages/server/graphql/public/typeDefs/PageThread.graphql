@@ -1,0 +1,40 @@
+"""
+A thread of comments anchored to a range of text in a page. The range is a mark in the page
+content that carries the thread ID, so it follows the text as the page is edited.
+"""
+type PageThread {
+  """
+  The unique thread ID. The page content refers to the thread by this ID
+  """
+  id: ID!
+
+  """
+  The ID of the page the thread was made on
+  """
+  pageId: ID!
+
+  """
+  The text the thread was anchored to when it was created
+  """
+  quote: String!
+
+  """
+  When the thread was created
+  """
+  createdAt: DateTime!
+
+  """
+  When the thread was resolved, null if it is open
+  """
+  resolvedAt: DateTime
+
+  """
+  The user who resolved the thread, null if it is open
+  """
+  resolvedByUser: UserPreview
+
+  """
+  The comments in the thread, oldest first. The first comment started the thread
+  """
+  comments: [PageComment!]!
+}

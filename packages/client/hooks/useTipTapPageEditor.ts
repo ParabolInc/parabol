@@ -33,6 +33,7 @@ import {ResponseBlock} from '../tiptap/extensions/insightsBlock/ResponseBlock'
 import {TaskBlock} from '../tiptap/extensions/insightsBlock/TaskBlock'
 import {ThinkingBlock} from '../tiptap/extensions/insightsBlock/ThinkingBlock'
 import {PageDragHandle} from '../tiptap/extensions/PageDragHandle'
+import {PageComment} from '../tiptap/extensions/pageComment/PageComment'
 import {PageLinkBlock} from '../tiptap/extensions/pageLinkBlock/PageLinkBlock'
 import {PageLinkPicker} from '../tiptap/extensions/pageLinkPicker/PageLinkPicker'
 import {PageUserMention} from '../tiptap/extensions/pageUserMention/PageUserMention'
@@ -254,6 +255,7 @@ export const useTipTapPageEditor = (
           atmosphere
         }),
         PageLinkBlock.configure({yDoc: provider.document}),
+        PageComment,
         TableOfContents,
         TaskBlock,
         ThinkingBlock,

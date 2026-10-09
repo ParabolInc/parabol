@@ -1,0 +1,39 @@
+"""
+A comment in a thread on a page
+"""
+type PageComment {
+  """
+  The unique comment ID
+  """
+  id: ID!
+
+  """
+  The ID of the thread the comment belongs to
+  """
+  threadId: ID!
+
+  """
+  The comment body, a stringified TipTap JSONContent document
+  """
+  content: String!
+
+  """
+  When the comment was created
+  """
+  createdAt: DateTime!
+
+  """
+  When the comment was last edited. Equal to createdAt if it was never edited
+  """
+  updatedAt: DateTime!
+
+  """
+  The ID of the user who wrote the comment, null if that user was deleted
+  """
+  createdBy: ID
+
+  """
+  The user who wrote the comment, null if that user was deleted
+  """
+  createdByUser: UserPreview
+}

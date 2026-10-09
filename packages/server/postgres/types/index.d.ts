@@ -18,7 +18,9 @@ import {
   type selectOAuthAPICode,
   type selectOAuthAPIProvider,
   type selectOrganizations,
+  type selectPageComments,
   type selectPageExports,
+  type selectPageThreads,
   type selectPages,
   selectPersonalAccessToken,
   type selectPoll,
@@ -265,3 +267,7 @@ export type PersonalAccessToken = ExtractTypeFromQueryBuilderSelect<
 >
 
 export type PageExport = ExtractTypeFromQueryBuilderSelect<typeof selectPageExports>
+
+export type PageThread = ExtractTypeFromQueryBuilderSelect<typeof selectPageThreads>
+
+export type PageComment = ExtractTypeFromQueryBuilderSelect<typeof selectPageComments>

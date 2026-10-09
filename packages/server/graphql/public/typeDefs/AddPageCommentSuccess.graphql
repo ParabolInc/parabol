@@ -1,0 +1,9 @@
+"""
+Return value for addPageComment
+"""
+type AddPageCommentSuccess {
+  "The comment that was added"
+  comment: PageComment!
+  "The thread the comment was added to. It is a new thread if the mutation was given an anchor"
+  thread: PageThread!
+}
