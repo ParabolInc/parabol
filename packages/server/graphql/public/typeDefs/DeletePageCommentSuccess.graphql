@@ -1,0 +1,12 @@
+"""
+Return value for deletePageComment
+"""
+type DeletePageCommentSuccess {
+  "The comment that was deleted"
+  comment: PageComment!
+  """
+  The thread the comment was deleted from. Deleting the first comment of a thread deletes
+  the thread, in which case it has no comments left
+  """
+  thread: PageThread!
+}

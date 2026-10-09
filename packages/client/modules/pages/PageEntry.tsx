@@ -31,6 +31,7 @@ export const PageEntry = (props: Props) => {
           page(pageId: $pageId) {
             ...Page_page
             ...PageEntry_page @relay(mask: false)
+            ...PageComments_page
           }
         }
       }
@@ -41,5 +42,5 @@ export const PageEntry = (props: Props) => {
   const {page} = query.public
   const canAccess = page?.access.viewer || page?.access.public
   if (!canAccess) return <PageNoAccess pageId={pageId} />
-  return <Page pageRef={page} viewerRef={viewerRef} isPublic={isPublic} />
+  return <Page pageRef={page} commentsRef={page} viewerRef={viewerRef} isPublic={isPublic} />
 }

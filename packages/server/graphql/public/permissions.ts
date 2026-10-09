@@ -1,6 +1,7 @@
 import {allow, and, not, or} from 'graphql-shield'
 import type {ShieldRule} from '../composeResolvers'
 import type {Resolvers} from './resolverTypes'
+import {hasOrgFeatureFlag} from './rules/hasOrgFeatureFlag'
 import {hasOrgRole} from './rules/hasOrgRole'
 import {hasPageAccess} from './rules/hasPageAccess'
 import {hasProviderAccess} from './rules/hasProviderAccess'
@@ -49,6 +50,12 @@ const permissionMap: PermissionMap<Resolvers> = {
       )
     ),
     addComment: isMeetingMember<'Mutation.addComment'>('args.comment.discussionId', 'discussions'),
+    addPageComment: and(
+      isAuthenticated,
+      hasOrgFeatureFlag('PageComments'),
+      hasPageAccess<'Mutation.addPageComment'>('args.pageId', 'commenter'),
+      rateLimit({perMinute: 30, perHour: 500})
+    ),
     addOrg: and(
       not(and(isEnvVarTrue('IS_SINGLE_ORG'), isEnvVarTrue('IS_ENTERPRISE'))),
       rateLimit({perMinute: 2, perHour: 5})
@@ -108,6 +115,16 @@ const permissionMap: PermissionMap<Resolvers> = {
     createTask: isTeamMember<'Mutation.createTask'>('args.newTask.teamId'),
     createTaskIntegration: isTeamMember<'Mutation.createTaskIntegration'>('args.taskId', 'tasks'),
     deleteComment: isMeetingMember<'Mutation.deleteComment'>('args.meetingId'),
+    deletePageComment: and(
+      isAuthenticated,
+      or(
+        and(
+          isUserViewer<'Mutation.deletePageComment'>('args.commentId', 'pageComments', 'createdBy'),
+          hasPageAccess<'Mutation.deletePageComment'>('args.commentId', 'commenter', 'pageComments')
+        ),
+        hasPageAccess<'Mutation.deletePageComment'>('args.commentId', 'owner', 'pageComments')
+      )
+    ),
     deleteOAuthAPIProvider: hasProviderAccess<'Mutation.deleteOAuthAPIProvider'>('args.providerId'),
     deleteTask: isTeamMember<'Mutation.deleteTask'>('args.taskId', 'tasks'),
     deleteTeamHealthQuestion: isUserViewer<'Mutation.deleteTeamHealthQuestion'>(
@@ -385,7 +402,16 @@ const permissionMap: PermissionMap<Resolvers> = {
       // limit looking up users by email
       rateLimit({perMinute: 50, perHour: 100})
     ),
+    updatePageComment: and(
+      isAuthenticated,
+      isUserViewer<'Mutation.updatePageComment'>('args.commentId', 'pageComments', 'createdBy'),
+      hasPageAccess<'Mutation.updatePageComment'>('args.commentId', 'commenter', 'pageComments')
+    ),
     updatePageParentLink: hasPageAccess<'Mutation.updatePageParentLink'>('args.pageId', 'owner'),
+    updatePageThread: and(
+      isAuthenticated,
+      hasPageAccess<'Mutation.updatePageThread'>('args.threadId', 'commenter', 'pageThreads')
+    ),
     updatePokerScope: isTeamMember<'Mutation.updatePokerScope'>('args.meetingId', 'newMeetings'),
     updatePokerTemplateDimensionScale: isTeamMember<'Mutation.updatePokerTemplateDimensionScale'>(
       'args.dimensionId',

@@ -1,4 +1,5 @@
 import {GraphQLError} from 'graphql'
+import {hasMinPageRole} from '../../../../client/shared/hasMinPageRole'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import isValid from '../../isValid'
@@ -59,6 +60,15 @@ const Page: Omit<ReqResolvers<'Page'>, 'team'> = {
     const viewerId = getUserId(authToken)
     const exports = await dataLoader.get('pageExportsByPageId').load(id)
     return exports.find(({userId}) => userId === viewerId) ?? null
+  },
+  // Threads are scoped to the viewer instead of guarded by a rule: everyone who opens the page
+  // asks for them, and a denial would be logged as an error for every viewer
+  threads: async ({id}, _args, {authToken, dataLoader}) => {
+    const viewerRole = await dataLoader
+      .get('pageAccessByPageIdUserId')
+      .load({pageId: id, userId: getUserId(authToken)})
+    if (!hasMinPageRole('commenter', viewerRole)) return null
+    return dataLoader.get('pageThreadsByPageId').load(id)
   }
 }
 

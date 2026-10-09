@@ -1,0 +1,7 @@
+"""
+Return value for updatePageThread
+"""
+type UpdatePageThreadSuccess {
+  "The updated thread"
+  thread: PageThread!
+}

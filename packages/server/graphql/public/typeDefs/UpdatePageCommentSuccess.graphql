@@ -1,0 +1,7 @@
+"""
+Return value for updatePageComment
+"""
+type UpdatePageCommentSuccess {
+  "The edited comment"
+  comment: PageComment!
+}
