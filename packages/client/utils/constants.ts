@@ -7,7 +7,6 @@
 */
 import type {TimelineEventEnum} from '../__generated__/MyDashboardTimelineQuery.graphql'
 import type {TaskStatusEnum} from '../__generated__/UpdateTaskMutation.graphql'
-import {Threshold} from '../types/constEnums'
 
 /* Meeting Misc. */
 export const MEETING_NAME = 'Check-in Meeting'
@@ -161,34 +160,6 @@ export const MAX_SPOTLIGHT_COLUMNS = 3
 export const SPOTLIGHT_TOP_SECTION_HEIGHT = 236
 
 export const PARABOL_AI_USER_ID = 'parabolAIUser'
-
-export const StarterBenefits = [
-  `${Threshold.MAX_STARTER_TIER_TEAMS} teams`,
-  'Retrospectives, Sprint Poker, Standups, Check-Ins',
-  'Unlimited meeting templates',
-  'Unlimited team members'
-]
-
-export const TeamBenefits = [
-  'Unlimited teams',
-  'Unlimited custom templates',
-  'Unlimited meeting history',
-  'Priority customer support',
-  'AI Summaries',
-  'Team Health',
-  'Private Teams'
-]
-
-export const EnterpriseBenefits = [
-  'Single Sign-On (SSO)',
-  'Org Admin Role',
-  'Annual Billing',
-  'Domain Whitelisting',
-  'Uptime Service Level Agreement (SLA)',
-  'On-Premises Hosting Option',
-  'Jira Data Center Integration',
-  'Self Managed GitLab Integration'
-]
 
 export const readableReasonsToDowngrade = [
   'Parabol is too expensive',

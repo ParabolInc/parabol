@@ -1,141 +1,52 @@
-import {useState} from 'react'
-import {Info} from '~/ui/icons'
 import type {TierEnum} from '../../../../__generated__/OrganizationSubscription.graphql'
-import {Button} from '../../../../ui/Button/Button'
 import {cn} from '../../../../ui/cn'
-import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
-import {TooltipContent} from '../../../../ui/Tooltip/TooltipContent'
-import {TooltipTrigger} from '../../../../ui/Tooltip/TooltipTrigger'
-import {MONTHLY_PRICE} from '../../../../utils/constants'
-
-const TIER_BACKGROUND: Record<TierEnum, string> = {
-  starter: 'bg-starter',
-  team: 'bg-team',
-  enterprise: 'bg-enterprise'
-}
-
-const TIER_ACTIVE_OUTLINE: Record<TierEnum, string> = {
-  starter: 'outline-grape-500',
-  team: 'outline-aqua-400',
-  enterprise: 'outline-tomato-400'
-}
-
-const TIER_HOVER_OUTLINE: Record<TierEnum, string> = {
-  starter: 'hover:outline-grape-500',
-  team: 'hover:outline-aqua-400',
-  enterprise: 'hover:outline-tomato-500'
-}
-
-const CTA_STYLES = {
-  primary:
-    'border-0 bg-linear-to-r from-tomato-600 to-rose-500 text-white shadow-[0px_5px_5px_-3px_rgba(0,0,0,.2),0px_8px_10px_1px_rgba(0,0,0,.14),0px_3px_14px_2px_rgba(0,0,0,.12)] hover:from-tomato-700 hover:to-rose-600',
-  secondary:
-    'border border-hairline-strong bg-surface-card text-fg-primary shadow-none hover:bg-surface-hover',
-  disabled:
-    'border border-hairline-strong bg-transparent text-fg-secondary shadow-none hover:bg-transparent'
-} as const
+import getPlanAction, {type PlanAction} from './getPlanAction'
+import OrgPlanAction from './OrgPlanAction'
+import OrgPlanBenefits from './OrgPlanBenefits'
+import OrgPlanCap from './OrgPlanCap'
+import orgPlanDetails from './orgPlanDetails'
+import orgPlanTierClasses from './orgPlanTierClasses'
 
 type Props = {
-  plan: {
-    tier: TierEnum
-    subtitle?: string
-    details: readonly string[]
-    buttonStyle: 'disabled' | 'primary' | 'secondary'
-    buttonLabel: 'Contact' | 'Select Plan' | 'Downgrade' | 'Current Plan'
-    buttonTooltip?: string
-    isActive: boolean
-  }
-  isTablet: boolean
-  handleClick: (
-    label: 'Contact' | 'Select Plan' | 'Downgrade' | 'Current Plan',
-    tier: TierEnum
-  ) => void
+  tier: TierEnum
+  billingTier: TierEnum
+  note: string
+  isTeamSelected: boolean
+  canChangePlans: boolean
+  onAction: (action: PlanAction, tier: TierEnum) => void
 }
 
 const OrgPlan = (props: Props) => {
-  const {plan, isTablet, handleClick} = props
-  const {
-    subtitle,
-    tier: planTier,
-    details,
-    buttonStyle,
-    buttonLabel: defaultLabel,
-    buttonTooltip,
-    isActive
-  } = plan
-  const [hasSelectedTeamPlan, setHasSelectedTeamPlan] = useState(false)
-
-  const handleClickCTA = () => {
-    handleClick(defaultLabel, planTier)
-    if (buttonLabel === 'Select Plan') {
-      setHasSelectedTeamPlan(true)
-    }
-  }
-
-  const buttonLabel =
-    defaultLabel === 'Select Plan' && hasSelectedTeamPlan ? 'Selected Plan' : defaultLabel
+  const {tier, billingTier, note, isTeamSelected, canChangePlans, onAction} = props
+  const action = getPlanAction(billingTier, tier)
+  const isCurrent = action === 'current'
+  const isSelected = isTeamSelected && tier === 'team'
+  const isHighlighted = isTeamSelected ? isSelected : isCurrent
+  const isRecommended = tier === 'team' && billingTier === 'starter'
+  const tag = isCurrent ? 'current' : isRecommended ? 'recommended' : null
 
   return (
     <div
       className={cn(
-        'flex flex-1 flex-col items-center rounded border-2 border-surface-card px-2 py-4 text-center font-semibold text-xs capitalize outline-2 outline-transparent transition-all duration-500 ease-[ease] last-of-type:mr-0 last-of-type:mb-0',
-        TIER_BACKGROUND[planTier],
-        isTablet ? 'mr-2 mb-0' : 'mr-0 mb-2',
-        isActive && TIER_ACTIVE_OUTLINE[planTier],
-        TIER_HOVER_OUTLINE[planTier]
+        'row-span-5 grid grid-rows-subgrid gap-y-0 overflow-hidden rounded-lg border border-hairline-strong bg-surface-app text-fg-primary',
+        isHighlighted && orgPlanTierClasses[tier].highlight
       )}
-      onClick={handleClickCTA}
     >
-      <div className='flex w-full flex-wrap pb-6 leading-[30px]'>
-        <h6 className='m-0 flex w-full justify-center pb-2 text-center font-semibold text-[22px] text-fg-primary capitalize leading-[30px]'>
-          {planTier}
-        </h6>
-        {planTier === 'team' ? (
-          <>
-            <span className='flex w-full items-center justify-center font-normal text-[16px] text-fg-primary normal-case not-italic leading-6'>
-              {`$${MONTHLY_PRICE} per active user `}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <span className='flex h-[18px] w-[18px] items-center pl-2 text-fg-secondary hover:cursor-pointer'>
-                    <Info />
-                  </span>
-                </TooltipTrigger>
-                <TooltipContent>
-                  Active users are anyone who uses Parabol within a billing period
-                </TooltipContent>
-              </Tooltip>
-            </span>
-            <span className='flex w-full items-center justify-center font-normal text-[16px] text-fg-secondary normal-case italic leading-6'>
-              {'paid monthly'}
-            </span>
-          </>
-        ) : (
-          <span className='flex w-full items-center justify-center font-normal text-[16px] text-fg-primary normal-case not-italic leading-6'>
-            {subtitle}
-          </span>
-        )}
+      <OrgPlanCap tier={tier} tag={tag} />
+      <p className='m-0 px-5 pt-4 text-fg-secondary text-sm leading-5'>
+        {orgPlanDetails[tier].audience}
+      </p>
+      <p className='m-0 px-5 pt-1.5 font-medium text-[13px] leading-[18px]'>{note}</p>
+      <div className='px-5 pt-3.5'>
+        <OrgPlanAction
+          tier={tier}
+          action={action}
+          isSelected={isSelected}
+          canChangePlans={canChangePlans}
+          onClick={() => onAction(action, tier)}
+        />
       </div>
-      <ul className='m-0 mb-4 flex h-full w-4/5 flex-col items-center p-0 md:items-start'>
-        {details.map((detail) => (
-          <li
-            className='list-none text-center font-normal text-[16px] text-fg-primary normal-case leading-8 md:list-disc md:text-left'
-            key={detail}
-          >
-            {detail}
-          </li>
-        ))}
-      </ul>
-      <Button
-        className={cn(
-          'h-10 w-4/5 rounded-md font-semibold text-[15px] opacity-100 transition-all duration-500 ease-[ease] hover:opacity-100',
-          CTA_STYLES[buttonStyle]
-        )}
-        disabled={buttonStyle === 'disabled'}
-        title={buttonTooltip}
-        size='md'
-      >
-        {buttonLabel}
-      </Button>
+      <OrgPlanBenefits tier={tier} />
     </div>
   )
 }
