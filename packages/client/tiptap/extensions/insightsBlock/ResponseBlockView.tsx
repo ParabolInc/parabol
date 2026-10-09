@@ -18,7 +18,7 @@ export const ResponseBlockView = (props: NodeViewProps) => {
             </div>
           </div>
         </div>
-        {editor && <EditorContent className='compact-editor' editor={editor} />}
+        {editor && <EditorContent className='compact-editor issue-chips' editor={editor} />}
       </div>
     </NodeViewWrapper>
   )

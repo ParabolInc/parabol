@@ -1,7 +1,8 @@
 import type {ReactNode} from 'react'
 import type {TierEnum} from '../../../../__generated__/DowngradeToStarterMutation.graphql'
-import {EnterpriseBenefits, TeamBenefits} from '../../../../utils/constants'
 import {upperFirst} from '../../../../utils/upperFirst'
+import getPlanBenefitLabel from './getPlanBenefitLabel'
+import orgPlanDetails from './orgPlanDetails'
 
 const List = (props: {children: ReactNode}) => (
   <div className='relative flex w-full flex-col py-4'>{props.children}</div>
@@ -95,11 +96,6 @@ const enterpriseResources = {
   integrations: 'https://www.parabol.co/integrations/'
 }
 
-const featuresLookup = {
-  team: TeamBenefits,
-  enterprise: EnterpriseBenefits
-} as const
-
 const starterFeatures = [
   {
     title: 'Retrospectives',
@@ -173,7 +169,7 @@ const OrgPlanDrawerContent = (props: Props) => {
       <List>
         <Subtitle>{subtitle}</Subtitle>
         <UL>
-          {featuresLookup[tier].map((feature) => (
+          {orgPlanDetails[tier].included.map(getPlanBenefitLabel).map((feature) => (
             <LI key={feature}>{feature}</LI>
           ))}
         </UL>
