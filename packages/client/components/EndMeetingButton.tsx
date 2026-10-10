@@ -49,7 +49,6 @@ const EndMeetingButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) 
     <Tooltip open={isConfirming}>
       <BottomNavControl
         confirming={!!cancelConfirm}
-        dataCy='end-button'
         onClick={cancelConfirm || endMeeting}
         waiting={submitting}
         ref={ref}

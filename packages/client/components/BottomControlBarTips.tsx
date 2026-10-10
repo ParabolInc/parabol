@@ -155,7 +155,7 @@ const BottomControlBarTips = (props: Props) => {
 
   if (cancelConfirm) {
     return (
-      <BottomNavControl dataCy={'tip-menu-toggle'} confirming onClick={cancelConfirm}>
+      <BottomNavControl confirming onClick={cancelConfirm}>
         <BottomNavIconLabel icon='help_outline' iconColor='midGray' label={'Tips'} />
       </BottomNavControl>
     )
@@ -185,7 +185,7 @@ const BottomControlBarTips = (props: Props) => {
       open={isOpen}
       onOpenChange={setIsOpen}
       trigger={
-        <BottomNavControl dataCy={'tip-menu-toggle'}>
+        <BottomNavControl>
           <BottomNavIconLabel icon='help_outline' iconColor='midGray' label={'Tips'} />
         </BottomNavControl>
       }

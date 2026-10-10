@@ -61,7 +61,6 @@ const MeetingsDashHeader = (props: Props) => {
               onMouseEnter={TeamFilterMenu.preload}
               value={teamFilterName}
               iconText='group'
-              dataCy='team-filter'
             />
           }
         >

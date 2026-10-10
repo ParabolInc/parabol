@@ -35,7 +35,6 @@ interface Props {
   phaseEditorRef: React.RefObject<HTMLDivElement>
   promptId: string
   stackTopRef: RefObject<HTMLDivElement>
-  dataCy: string
   readOnly?: boolean
   autoFocus: boolean
   meetingRef: PhaseItemEditor_meeting$key
@@ -50,7 +49,6 @@ const PhaseItemEditor = (props: Props) => {
     stackTopRef,
     cardsInFlightRef,
     forceUpdateColumn,
-    dataCy,
     readOnly,
     autoFocus,
     meetingRef
@@ -228,7 +226,7 @@ const PhaseItemEditor = (props: Props) => {
   if (!editor) return null
   return (
     <>
-      <ReflectionCardRoot data-cy={dataCy} ref={phaseEditorRef} className='pb-2'>
+      <ReflectionCardRoot ref={phaseEditorRef} className='pb-2'>
         <TipTapEditor
           className={cn('flex h-fit max-h-41 overflow-auto px-4 pt-2 transition-all', {
             'min-h-16': isFocused

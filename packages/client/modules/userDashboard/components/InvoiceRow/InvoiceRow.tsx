@@ -5,7 +5,6 @@ import {Receipt} from '~/ui/icons'
 import Row from '../../../../components/Row/Row'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoHeading from '../../../../components/Row/RowInfoHeading'
-import {cn} from '../../../../ui/cn'
 import makeDateString from '../../../../utils/makeDateString'
 import invoiceLineFormat from '../../../invoice/helpers/invoiceLineFormat'
 
@@ -31,15 +30,15 @@ const InvoiceRow = (props: Props) => {
   const isEstimate = status === 'UPCOMING'
 
   return (
-    <Row>
+    <Row className='p-0'>
       <a
         href={payUrl}
         target='_blank'
         rel='noopener noreferrer'
-        className='flex w-full flex-row items-center justify-between text-fg-primary no-underline'
+        className='flex w-full flex-row items-center justify-between px-4 py-3 text-fg-primary no-underline'
       >
         <Receipt className={isEstimate ? 'text-accent' : 'text-fg-secondary'} />
-        <RowInfo className='w-full'>
+        <RowInfo className='w-full pr-0'>
           <div className='flex w-full items-center'>
             <RowInfoHeading>
               {status === 'UPCOMING'
@@ -61,21 +60,7 @@ const InvoiceRow = (props: Props) => {
             )}
             {status === 'PAID' && <span className='text-[13px] text-fg-secondary'>{'Paid'}</span>}
             {status !== 'PAID' && status !== 'UPCOMING' && (
-              <span
-                className={cn(
-                  'text-[13px]',
-                  status === 'PENDING' ? 'text-fg-secondary' : 'text-fg-error'
-                )}
-              >
-                <a
-                  rel='noopener noreferrer'
-                  target='_blank'
-                  href={payUrl}
-                  className='font-semibold text-accent no-underline'
-                >
-                  {'PAY NOW'}
-                </a>
-              </span>
+              <span className='font-semibold text-[13px] text-accent'>{'PAY NOW'}</span>
             )}
           </div>
         </RowInfo>

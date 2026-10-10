@@ -1,40 +1,41 @@
-import base64url from 'base64url'
 import crypto from 'crypto'
 import fs from 'fs'
 import http, {type RequestListener, type Server} from 'http'
+import type {AddressInfo} from 'net'
 import path from 'path'
-import clientConfig from '../relay.config'
+import clientConfig from '../relay.config.js'
+
+const BATCH_WINDOW_MS = 10
 
 export default class RelayPersistServer {
   server: Server
   ready: Promise<void>
-  queryMapPath = path.join(__dirname, '../queryMap.json')
+  port = 0
+  queryMapPath = path.join(import.meta.dirname, '../queryMap.json')
   queryMap: Record<string, string>
-  constructor(port = 2999) {
+  batch: Promise<void> | undefined
+  // The OS picks the port, so 2 checkouts can never persist into each other's queryMap
+  // Whoever starts the relay compiler passes the port along as RELAY_PERSIST_PORT, which relay.config.js reads
+  constructor() {
     this.server = http.createServer(this.requestListener)
     this.ready = new Promise<void>((resolve, reject) => {
-      this.server.listen(port, resolve)
+      this.server.listen(0, () => {
+        this.port = (this.server.address() as AddressInfo).port
+        resolve()
+      })
       this.server.on('error', reject)
     })
-    let flushArtifacts = false
-    try {
-      this.queryMap = JSON.parse(fs.readFileSync(this.queryMapPath, 'utf-8'))
-    } catch {
-      // If queryMap doesn't exist, make sure artifacts doesn't either so it isn't missing any
-      flushArtifacts = true
-      this.queryMap = {}
-    }
-    this.prepareArtifactDirectory(flushArtifacts)
+    const queryMap = this.readQueryMap()
+    // If queryMap doesn't exist, make sure artifacts doesn't either so it isn't missing any
+    this.prepareArtifactDirectory(!queryMap)
+    this.queryMap = queryMap ?? {}
   }
 
   close() {
     this.server.close()
   }
   makeHash(text: string) {
-    const hasher = crypto.createHash('md5')
-    hasher.update(text)
-    const unsafeId = hasher.digest('base64')
-    const safeId = base64url.fromBase64(unsafeId)
+    const safeId = crypto.createHash('md5').update(text).digest('base64url')
     const prefix = text[0]
     const id = `${prefix}_${safeId}`
     return id
@@ -63,20 +64,46 @@ export default class RelayPersistServer {
       return
     }
     const id = this.makeHash(text)
-    this.queryMap[id] = text
+    const query = text
       .replace(/\n|\r/g, '')
       .replace(/\s{2,}/g, ' ')
       // biome-ignore lint/suspicious/noControlCharactersInRegex: disallow null char
       .replace(/\u0000/g, '')
-    this.writeQueryMap()
+    if (this.queryMap[id] !== query) {
+      this.queryMap[id] = query
+      // relay only writes the artifact after it gets the id, so by then the query is on disk for the server to find
+      await this.writeBatch()
+    }
     res.writeHead(200, {
       'Content-Type': 'application/json'
     })
     res.end(JSON.stringify({id}))
   }
+  // relay persists a burst of queries concurrently. They share 1 write instead of rewriting the whole map for each query
+  writeBatch() {
+    if (!this.batch) {
+      this.batch = new Promise<void>((resolve) => {
+        setTimeout(() => {
+          this.batch = undefined
+          this.writeQueryMap()
+          resolve()
+        }, BATCH_WINDOW_MS)
+      })
+    }
+    return this.batch
+  }
+  readQueryMap() {
+    try {
+      return JSON.parse(fs.readFileSync(this.queryMapPath, 'utf-8')) as Record<string, string>
+    } catch {
+      return null
+    }
+  }
   // write via a temp file + rename so a reader (or a kill mid-write) never sees a truncated map.
   // a corrupt map makes the next boot flush the whole artifact directory & recompile from scratch
   writeQueryMap() {
+    // another compile of this checkout (e.g. the postcheckout hook) may have persisted queries since the map was read
+    this.queryMap = {...this.readQueryMap(), ...this.queryMap}
     const tmpPath = `${this.queryMapPath}.${process.pid}.tmp`
     fs.writeFileSync(tmpPath, JSON.stringify(this.queryMap))
     fs.renameSync(tmpPath, this.queryMapPath)

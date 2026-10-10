@@ -5,20 +5,18 @@ import {cn} from '../ui/cn'
 
 interface Props extends ButtonProps {
   confirming?: boolean
-  dataCy?: string
   disabled?: boolean
   waiting?: boolean
 }
 
 const BottomNavControl = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {
-  const {confirming, dataCy, disabled, waiting, className, style, ...rest} = props
+  const {confirming, disabled, waiting, className, style, ...rest} = props
   const visuallyDisabled = disabled || waiting
   return (
     <Button
       variant='flat'
       size='sm'
       {...rest}
-      data-cy={dataCy}
       disabled={disabled || waiting}
       ref={ref}
       className={cn(

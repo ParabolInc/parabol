@@ -21,20 +21,6 @@ jobs:
     permissions:
       contents: "read"
       id-token: "write"
-    services:
-      postgres:
-        image: pgvector/pgvector:0.8.2-pg18-trixie
-        # This env variables must be the same in the file PARABOL_BUILD_ENV_PATH
-        env:
-          POSTGRES_PASSWORD: "temppassword"
-          POSTGRES_USER: "tempuser"
-          POSTGRES_DB: "tempdb"
-        ports:
-          - 5432:5432
-      valkey:
-        image: valkey/valkey:9.0-alpine
-        ports:
-          - 6379:6379
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -67,22 +53,15 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: pnpm install --frozen-lockfile
 
-      - name: Build the DBs
-        run: |
-          cp ${{ env.PARABOL_BUILD_ENV_PATH }} ./.env
-          pnpm kysely migrate:latest
-          pnpm pg:generate
-
       - name: Build for release
         env:
           NODE_OPTIONS: "--max_old_space_size=8192"
-        run: pnpm build --no-deps
+        run: |
+          cp ${{ env.PARABOL_BUILD_ENV_PATH }} ./.env
+          pnpm build --no-deps
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-        with:
-          buildkitd-flags: "--allow-insecure-entitlement network.host"
-          driver-opts: network=host
 
       - id: "auth"
         name: "Authenticate to Google Cloud"
@@ -100,8 +79,6 @@ jobs:
       - name: Push build to dev
         uses: docker/build-push-action@v6
         with:
-          network: host
-          allow: network.host
           provenance: false
           file: ${{ env.PARABOL_DOCKERFILE }}
           context: .

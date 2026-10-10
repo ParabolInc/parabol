@@ -86,8 +86,7 @@ const makeFeatureRow = (featureIconFile: string, featureCopy: string, idx: numbe
   )
 }
 
-const CreateAccountSection = (props: {dataCy?: string}) => {
-  const {dataCy} = props
+const CreateAccountSection = () => {
   const isLoggedIn = useIsAuthenticated()
 
   const primaryActionLabel = isLoggedIn ? 'Go to My Dashboard' : 'Create a Free Account'
@@ -106,25 +105,24 @@ const CreateAccountSection = (props: {dataCy?: string}) => {
   )
   return (
     <>
-      <tr data-cy={dataCy}>
+      <tr>
         <td style={headingStyle} align='center'>
           {'Thanks for playing!'}
         </td>
       </tr>
-      <tr data-cy={dataCy}>
+      <tr>
         <td align='center' style={copyStyle}>
           {copyLineOne}
         </td>
       </tr>
-      <tr data-cy={dataCy}>
+      <tr>
         <td align='center' style={copyStyle}>
           {copyLineTwo}
         </td>
       </tr>
-      <tr data-cy={dataCy}>
+      <tr>
         <td style={buttonCellStyle}>
           <a
-            data-cy='create-account'
             role='button'
             href={primaryActionLink}
             style={primaryButtonStyle}
@@ -134,12 +132,12 @@ const CreateAccountSection = (props: {dataCy?: string}) => {
           </a>
         </td>
       </tr>
-      <tr data-cy={dataCy}>
+      <tr>
         <td align='center' style={subHeadingStyle}>
           {'The Parabol Difference'}
         </td>
       </tr>
-      <tr data-cy={dataCy}>
+      <tr>
         <td>
           <table style={featureTableStyle} width={featureWidth}>
             <tbody>{features.map(({icon, copy}, idx) => makeFeatureRow(icon, copy, idx))}</tbody>

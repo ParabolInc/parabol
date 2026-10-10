@@ -135,7 +135,6 @@ const BottomControlBarReady = (props: Props) => {
   return (
     <Tooltip open={isConfirming}>
       <BottomNavControl
-        dataCy={`next-phase`}
         confirming={!!cancelConfirm}
         onClick={cancelConfirm || onClick}
         onKeyDown={onKeyDown}

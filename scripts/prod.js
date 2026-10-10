@@ -38,11 +38,12 @@ const cleanBuildDir = () => {
 const prod = async (isDeploy, noDeps) => {
   Logger.log('🙏🙏🙏      Building Production Server      🙏🙏🙏')
   cleanBuildDir()
-  const {relay, types} = generateGraphQLArtifacts()
-  // the client imports the manifest of web workers, but the web workers do not depend on any graphql artifacts
-  const webworkers = runChild(`pnpm webpack --config ./scripts/webpack/prod.webworkers.config.js`)
   // only the builds that get shipped are minified & upload their source maps, so the rest skip the seconds that takes
   const isShipped = isDeploy || noDeps
+  // a shipped build is bundled without being typechecked, so it never reads the codegen types
+  const {relay, types} = generateGraphQLArtifacts({skipTypes: isShipped})
+  // the client imports the manifest of web workers, but the web workers do not depend on any graphql artifacts
+  const webworkers = runChild(`pnpm webpack --config ./scripts/webpack/prod.webworkers.config.js`)
   const bundles = relay.then(() => {
     Logger.log('starting webpack build')
     return Promise.all([

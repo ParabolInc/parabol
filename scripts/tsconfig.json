@@ -1,0 +1,16 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    // The .mts files here are run by node itself, which only strips the types
+    // nodenext & erasableSyntaxOnly make tsc reject what node could not run
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true,
+    "allowImportingTsExtensions": true,
+    // lets them import the CommonJS helpers that the production build shares
+    "allowJs": true,
+    "types": ["node"]
+  },
+  "include": ["**/*.mts"]
+}

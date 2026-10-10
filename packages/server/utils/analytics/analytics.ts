@@ -101,12 +101,6 @@ export type MeetingSettings = {
   videoMeetingURL?: string | null
 }
 
-export type WebSocketProperties = {
-  socketCount: number
-  socketId: string
-  tms: string[]
-}
-
 export type MusicEventProperties = {
   meetingId: string
   trackName: string
@@ -175,8 +169,6 @@ export type AnalyticsEvent =
   | 'Account Unpaused'
   | 'Account Name Changed'
   | 'User Removed From Org'
-  | 'Connect WebSocket'
-  | 'Disconnect WebSocket'
   | 'Summary Email Setting Changed'
   | 'Page Invitation Email Setting Changed'
   // snackbar
@@ -691,14 +683,6 @@ class Analytics {
 
   userRemovedFromOrg = (user: AnalyticsUser, orgId: string) =>
     this.track(user, 'User Removed From Org', {user: user.id, orgId})
-
-  websocketConnected = (user: AnalyticsUser, websocketProperties: WebSocketProperties) => {
-    this.track(user, 'Connect WebSocket', websocketProperties)
-  }
-
-  websocketDisconnected = (user: AnalyticsUser, websocketProperties: WebSocketProperties) => {
-    this.track(user, 'Disconnect WebSocket', websocketProperties)
-  }
 
   toggleSubToPageInvitationEmail = (
     user: AnalyticsUser,

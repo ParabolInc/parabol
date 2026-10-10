@@ -18,7 +18,6 @@ interface Props {
   isExpanded?: boolean
   portalStatus: PortalStatus
   titleInputRef: RefObject<HTMLInputElement>
-  dataCy?: string
 }
 
 const ReflectionGroupHeader = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
@@ -26,8 +25,7 @@ const ReflectionGroupHeader = forwardRef((props: Props, ref: Ref<HTMLDivElement>
     meeting: meetingRef,
     reflectionGroup: reflectionGroupRef,
     titleInputRef,
-    portalStatus,
-    dataCy
+    portalStatus
   } = props
   const meeting = useFragment(
     graphql`
@@ -70,7 +68,6 @@ const ReflectionGroupHeader = forwardRef((props: Props, ref: Ref<HTMLDivElement>
 
   return (
     <div
-      data-cy={dataCy}
       className={cn(
         'relative flex min-h-8 w-full max-w-74 shrink items-center justify-between pr-2 pl-4 text-[14px]',
         isExpanded && 'mx-3',

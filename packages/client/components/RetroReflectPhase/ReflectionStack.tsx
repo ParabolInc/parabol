@@ -15,13 +15,12 @@ interface Props {
   meeting: ReflectionStack_meeting$key
   phaseEditorRef: React.RefObject<HTMLDivElement>
   phaseRef: RefObject<HTMLDivElement>
-  dataCy: string
   reflectionStack: readonly PhaseItemColumn_meeting$data['reflectionGroups'][0]['reflections'][0][]
   stackTopRef: RefObject<HTMLDivElement>
 }
 
 const ReflectionStack = (props: Props) => {
-  const {phaseRef, idx, meeting: meetingRef, reflectionStack, stackTopRef, dataCy} = props
+  const {phaseRef, idx, meeting: meetingRef, reflectionStack, stackTopRef} = props
   const meeting = useFragment(
     graphql`
       fragment ReflectionStack_meeting on RetrospectiveMeeting {
@@ -58,7 +57,6 @@ const ReflectionStack = (props: Props) => {
 
       <div>
         <div
-          data-cy={dataCy}
           onClick={expand}
           ref={stackRef}
           className='relative mb-6 flex single-reflection-column:min-h-[104px] flex-1 select-none items-start justify-start'
@@ -78,10 +76,8 @@ const ReflectionStack = (props: Props) => {
                   style={{transform, zIndex}}
                   key={reflection.id}
                   ref={idx === 0 ? stackTopRef : undefined}
-                  data-cy={`${dataCy}-card-wrapper-${idx}`}
                 >
                   <ReflectionCard
-                    dataCy={`${dataCy}-card-${idx}`}
                     meetingRef={meeting}
                     reflectionRef={reflection}
                     stackCount={reflectionStack.length}

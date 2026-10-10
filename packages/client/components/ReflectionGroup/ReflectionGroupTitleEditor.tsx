@@ -122,7 +122,7 @@ const ReflectionGroupTitleEditor = (props: Props) => {
 
   return (
     <div className='flex items-center'>
-      <div className='flex max-w-full shrink flex-col' data-cy='group-title-editor'>
+      <div className='flex max-w-full shrink flex-col'>
         <form className='flex max-w-full shrink' onSubmit={onSubmit}>
           <div className='relative w-[172px]'>
             {!isEditing && (
@@ -137,7 +137,6 @@ const ReflectionGroupTitleEditor = (props: Props) => {
               />
             )}
             <input
-              data-cy='group-title-editor-input'
               className={cn(
                 'm-0 block w-[172px] appearance-none rounded-sm border-0 font-sans outline-0',
                 'px-[.4375rem] py-[.3125rem] text-sm leading-5',

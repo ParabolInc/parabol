@@ -55,16 +55,12 @@ const RetroVoteMetaHeader = (props: Props) => {
     <div className='mx-auto mt-0 mb-2 vote-phase:mb-4 flex w-full items-center justify-center border-hairline-strong border-b p-2 vote-phase:px-0 vote-phase:pt-0 vote-phase:pb-2'>
       <div className={voteMetaBlockClass}>
         <LabelHeading className={voteLabelClass}>{'My Votes'}</LabelHeading>
-        <div className={voteCountClass} data-cy={'my-votes-remaining'}>
-          {myVotesRemaining}
-        </div>
+        <div className={voteCountClass}>{myVotesRemaining}</div>
       </div>
       <div className={`${voteMetaBlockClass} ml-6 vote-phase:ml-8`}>
         <LabelHeading className={voteLabelClass}>{'Team Votes'}</LabelHeading>
         {/* most likely will start out with 2 digits; min-width reduces change in layout */}
-        <div className={`${voteCountClass} min-w-5`} data-cy={'team-votes-remaining'}>
-          {teamVotesRemaining}
-        </div>
+        <div className={`${voteCountClass} min-w-5`}>{teamVotesRemaining}</div>
       </div>
       {isFacilitating && (
         <Menu

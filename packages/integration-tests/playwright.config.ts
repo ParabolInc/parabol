@@ -1,4 +1,5 @@
 import {devices, type PlaywrightTestConfig} from '@playwright/test'
+import testConfig from './tests/config'
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -35,6 +36,9 @@ const config: PlaywrightTestConfig = {
   use: {
     /* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
     actionTimeout: 0,
+
+    /* The local dev server signs its own certificate */
+    ignoreHTTPSErrors: testConfig.isLocalhost,
 
     /* Base URL to use in actions like `await page.goto('/')`. */
     // baseURL: 'http://localhost:3000',

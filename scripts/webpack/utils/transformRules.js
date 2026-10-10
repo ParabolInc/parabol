@@ -3,7 +3,7 @@ const swcLoader = require('./swcLoader')
 
 const relayTagLoader = path.join(__dirname, 'relayTagLoader.js')
 
-const transformRules = (projectRoot, isProd) => {
+const transformRules = (projectRoot, {isProd = false, builtin = false} = {}) => {
   const CLIENT_ROOT = path.join(projectRoot, 'packages', 'client')
   const SERVER_ROOT = path.join(projectRoot, 'packages', 'server')
   const EMBEDDER_ROOT = path.join(projectRoot, 'packages', 'embedder')
@@ -13,7 +13,7 @@ const transformRules = (projectRoot, isProd) => {
     test: new RegExp(`\\.${extension}$`),
     // things that use relay artifacts
     include: [path.join(SERVER_ROOT, 'email'), CLIENT_ROOT],
-    use: [swcLoader({extension, development}), relayTagLoader]
+    use: [swcLoader({extension, development, builtin}), relayTagLoader]
   })
   const serverRule = (extension) => ({
     test: new RegExp(`\\.${extension}$`),
@@ -21,7 +21,7 @@ const transformRules = (projectRoot, isProd) => {
     exclude: path.join(SERVER_ROOT, 'email'),
     // commonjs is needed because the toolbox entries run themselves when require.main === module
     // without it, webpack treats that as an unused export & drops it
-    use: [swcLoader({extension, development, commonjs: true})]
+    use: [swcLoader({extension, development, builtin, commonjs: true})]
   })
   return [
     {

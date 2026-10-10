@@ -234,7 +234,7 @@ const PromptResponseEditor = (props: Props) => {
         editor={editor}
         bubbleMenuPlacement={bubbleMenuPlacement}
         showListControls={showListControls}
-        className={cn('compact-editor', className, isCharacterCountVisible && 'mb-5')}
+        className={cn('compact-editor issue-chips', className, isCharacterCountVisible && 'mb-5')}
       />
       {isCharacterCountVisible && (
         <PromptResponseCharacterCount editor={editor} limit={STANDUP_RESPONSE_CHARACTER_LIMIT} />

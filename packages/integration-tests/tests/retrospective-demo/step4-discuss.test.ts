@@ -3,6 +3,8 @@ import config from '../config'
 import {
   dragReflectionCard,
   goToNextPhase,
+  meetingNav,
+  reflectionEditor,
   skipToDiscussPhase,
   startDemo
 } from './retrospective-demo-helpers'
@@ -16,14 +18,14 @@ test.describe('retrospective-demo / discuss page', () => {
 
     await startDemo(page)
 
-    const startTextbox = '[data-cy=reflection-column-Start] [role=textbox]'
-    await page.click(startTextbox)
-    await page.type(startTextbox, 'Documenting things in Notion')
+    const startTextbox = reflectionEditor(page, 'Start')
+    await startTextbox.click()
+    await startTextbox.pressSequentially('Documenting things in Notion')
     await page.keyboard.press('Tab')
     await page.keyboard.press('Enter')
 
-    await page.click(startTextbox)
-    await page.type(startTextbox, 'Writing things down')
+    await startTextbox.click()
+    await startTextbox.pressSequentially('Writing things down')
     await page.keyboard.press('Tab')
     await page.keyboard.press('Enter')
 
@@ -51,13 +53,13 @@ test.describe('retrospective-demo / discuss page', () => {
       await page.click('button[aria-label="Toggle the sidebar"]')
     }
 
-    await expect(page.locator('[data-cy=sidebar] div:text("Meetings")')).toBeVisible()
-    await expect(page.locator('[data-cy=sidebar] div:text("Work")')).toBeVisible()
-    await expect(page.locator('[data-cy=sidebar] div:text("Processes")')).toBeVisible()
-    await expect(page.locator('[data-cy=sidebar] div:text("Team")')).toBeVisible()
-    await expect(page.locator('[data-cy=sidebar] div:text("Debates")')).toBeVisible()
-    await expect(page.locator('[data-cy=sidebar] div:text("Decisions")')).toBeVisible()
-    await expect(page.locator('[data-cy=sidebar] div:text("People")')).toBeVisible()
+    await expect(meetingNav(page).getByRole('button', {name: 'Meetings'})).toBeVisible()
+    await expect(meetingNav(page).getByRole('button', {name: 'Work'})).toBeVisible()
+    await expect(meetingNav(page).getByRole('button', {name: 'Processes'})).toBeVisible()
+    await expect(meetingNav(page).getByRole('button', {name: 'Team'})).toBeVisible()
+    await expect(meetingNav(page).getByRole('button', {name: 'Debates'})).toBeVisible()
+    await expect(meetingNav(page).getByRole('button', {name: 'Decisions'})).toBeVisible()
+    await expect(meetingNav(page).getByRole('button', {name: 'People'})).toBeVisible()
   })
 
   interface DiscussTestCase {
@@ -123,7 +125,7 @@ test.describe('retrospective-demo / discuss page', () => {
         await page.click('button[aria-label="Toggle the sidebar"]')
       }
 
-      await page.click(`[data-cy=sidebar] div:text("${name}")`)
+      await meetingNav(page).getByRole('button', {name}).click()
 
       if (isMobile) {
         await page.click('button[aria-label="Toggle the sidebar"]')

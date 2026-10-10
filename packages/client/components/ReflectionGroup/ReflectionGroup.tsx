@@ -41,7 +41,6 @@ interface Props {
   openSpotlight?: OpenSpotlight
   reflectionGroupRef: ReflectionGroup_reflectionGroup$key
   swipeColumn?: SwipeColumn
-  dataCy?: string
   reflectionIdsToHide?: string[] | null
   showDragHintAnimation?: boolean
 }
@@ -58,7 +57,6 @@ const ReflectionGroup = (props: Props) => {
     phaseRef,
     reflectionGroupRef,
     swipeColumn,
-    dataCy,
     reflectionIdsToHide,
     showDragHintAnimation
   } = props
@@ -261,11 +259,9 @@ const ReflectionGroup = (props: Props) => {
         className='relative h-max py-1.5'
         {...(disableDrop ? null : {[DragAttribute.DROPPABLE]: reflectionGroupId})}
         ref={groupRef}
-        data-cy={dataCy}
       >
         {showHeader && (
           <ReflectionGroupHeader
-            dataCy={`${dataCy}-header`}
             ref={headerRef}
             meeting={meeting}
             reflectionGroup={reflectionGroup}
@@ -285,7 +281,7 @@ const ReflectionGroup = (props: Props) => {
               : `padding-bottom ${Times.REFLECTION_DROP_DURATION}ms, box-shadow 150ms ease`
           }}
         >
-          <div className='relative' data-cy={`${dataCy}-stack`} ref={stackRef} onClick={onClick}>
+          <div className='relative' ref={stackRef} onClick={onClick}>
             {visibleReflections.map((reflection) => {
               const staticIdx = staticReflections.indexOf(reflection)
               const {id: reflectionId, isDropping} = reflection
@@ -298,7 +294,6 @@ const ReflectionGroup = (props: Props) => {
               const translateY = ReflectionStackPerspective.Y * multiple
               return (
                 <div
-                  data-cy={`${dataCy}-card-${staticIdx}`}
                   key={reflectionId}
                   className={cn(
                     'bottom-0 left-0 outline-0',
@@ -317,7 +312,6 @@ const ReflectionGroup = (props: Props) => {
                   }}
                 >
                   <DraggableReflectionCard
-                    dataCy={`${dataCy}-card-${staticIdx}`}
                     key={reflection.id}
                     staticIdx={staticIdx}
                     isClipped={staticIdx > 0 || isRemoteSpotlightSrc}

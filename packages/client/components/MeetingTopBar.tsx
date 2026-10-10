@@ -73,9 +73,7 @@ const MeetingTopBar = (props: Props) => {
           !isMeetingSidebarCollapsed && 'pl-2'
         )}
       >
-        {isMeetingSidebarCollapsed && (
-          <SidebarToggle className='mr-4' dataCy='topbar' onClick={toggleSidebar} />
-        )}
+        {isMeetingSidebarCollapsed && <SidebarToggle className='mr-4' onClick={toggleSidebar} />}
         <div className='w-full'>{children}</div>
       </div>
       <IconGroupBlock>

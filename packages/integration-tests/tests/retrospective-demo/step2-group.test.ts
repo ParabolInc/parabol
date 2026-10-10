@@ -3,6 +3,9 @@ import config from '../config'
 import {
   dragReflectionCard,
   goToNextPhase,
+  meetingNav,
+  promptColumn,
+  reflectionEditor,
   skipToGroupPhase,
   startDemo
 } from './retrospective-demo-helpers'
@@ -11,34 +14,30 @@ test.describe('retrospective-demo / group page', () => {
   test('it carries over user-entered input from the reflect phase', async ({page}) => {
     await startDemo(page)
 
-    const startTextbox = '[data-cy=reflection-column-Start] [role=textbox]'
-    await page.click(startTextbox)
-    await page.type(startTextbox, 'Start doing this')
+    const startTextbox = reflectionEditor(page, 'Start')
+    await startTextbox.click()
+    await startTextbox.pressSequentially('Start doing this')
     await page.keyboard.press('Tab')
     await page.keyboard.press('Enter')
 
-    const stopTextbox = '[data-cy=reflection-column-Stop] [role=textbox]'
-    await page.click(stopTextbox)
-    await page.type(stopTextbox, 'Stop doing this')
+    const stopTextbox = reflectionEditor(page, 'Stop')
+    await stopTextbox.click()
+    await stopTextbox.pressSequentially('Stop doing this')
     await page.keyboard.press('Tab')
     await page.keyboard.press('Enter')
 
-    const continueTextbox = '[data-cy=reflection-column-Continue] [role=textbox]'
-    await page.click(continueTextbox)
-    await page.type(continueTextbox, 'Continue doing this')
+    const continueTextbox = reflectionEditor(page, 'Continue')
+    await continueTextbox.click()
+    await continueTextbox.pressSequentially('Continue doing this')
     await page.keyboard.press('Tab')
     await page.keyboard.press('Enter')
 
     await goToNextPhase(page)
     expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/group`)
 
-    await expect(
-      page.locator('[data-cy=group-column-Start] :text("Start doing this")')
-    ).toBeVisible()
-    await expect(page.locator('[data-cy=group-column-Stop] :text("Stop doing this")')).toBeVisible()
-    await expect(
-      page.locator('[data-cy=group-column-Continue] :text("Continue doing this")')
-    ).toBeVisible()
+    await expect(promptColumn(page, 'Start').getByText('Start doing this')).toBeVisible()
+    await expect(promptColumn(page, 'Stop').getByText('Stop doing this')).toBeVisible()
+    await expect(promptColumn(page, 'Continue').getByText('Continue doing this')).toBeVisible()
   })
 
   test('it allows grouping user-entered input from the reflect phase - same column', async ({
@@ -46,22 +45,20 @@ test.describe('retrospective-demo / group page', () => {
   }) => {
     await startDemo(page)
 
-    const startTextbox = '[data-cy=reflection-column-Start] [role=textbox]'
-    await page.click(startTextbox)
-    await page.type(startTextbox, 'Documenting things in Notion')
+    const startTextbox = reflectionEditor(page, 'Start')
+    await startTextbox.click()
+    await startTextbox.pressSequentially('Documenting things in Notion')
     await page.keyboard.press('Tab')
     await page.keyboard.press('Enter')
     await expect(
-      page.locator('[data-cy="reflection-column-Start"] :text("Documenting things in Notion")')
+      promptColumn(page, 'Start').getByText('Documenting things in Notion')
     ).toBeVisible()
 
-    await page.click(startTextbox)
-    await page.type(startTextbox, 'Writing things down')
+    await startTextbox.click()
+    await startTextbox.pressSequentially('Writing things down')
     await page.keyboard.press('Tab')
     await page.keyboard.press('Enter')
-    await expect(
-      page.locator('[data-cy="reflection-column-Start"] :text("Writing things down")')
-    ).toBeVisible()
+    await expect(promptColumn(page, 'Start').getByText('Writing things down')).toBeVisible()
 
     await goToNextPhase(page)
     expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/group`)
@@ -91,24 +88,22 @@ test.describe('retrospective-demo / group page', () => {
 
     await startDemo(page)
 
-    const startTextbox = '[data-cy=reflection-column-Start] [role=textbox]'
-    await page.click(startTextbox)
-    await page.fill(startTextbox, 'Documenting things in Notion')
+    const startTextbox = reflectionEditor(page, 'Start')
+    await startTextbox.click()
+    await startTextbox.fill('Documenting things in Notion')
     await page.keyboard.press('Tab')
     await page.keyboard.press('Enter')
     await expect(
-      page.locator('[data-cy="reflection-column-Start"] :text("Documenting things in Notion")')
+      promptColumn(page, 'Start').getByText('Documenting things in Notion')
     ).toBeVisible()
 
-    const stopTextbox = '[data-cy=reflection-column-Stop] [role=textbox]'
-    await page.click(stopTextbox)
-    await page.fill(stopTextbox, 'Making decisions in one-on-one meetings')
+    const stopTextbox = reflectionEditor(page, 'Stop')
+    await stopTextbox.click()
+    await stopTextbox.fill('Making decisions in one-on-one meetings')
     await page.keyboard.press('Tab')
     await page.keyboard.press('Enter')
     await expect(
-      page.locator(
-        '[data-cy="reflection-column-Stop"] :text("Making decisions in one-on-one meetings")'
-      )
+      promptColumn(page, 'Stop').getByText('Making decisions in one-on-one meetings')
     ).toBeVisible()
 
     await goToNextPhase(page)
@@ -136,41 +131,31 @@ test.describe('retrospective-demo / group page', () => {
 
     // Validate all dragged cards begin in the "Stop" column
     const airTimeText = `Some people always take all the air time. It's hard to get my ideas on the floor`
-    await expect(page.locator(`[data-cy=group-column-Stop] :text("${airTimeText}")`)).toBeVisible()
+    await expect(promptColumn(page, 'Stop').getByText(airTimeText)).toBeVisible()
     const decisionsText = `Making important decisions in chat`
-    await expect(
-      page.locator(`[data-cy=group-column-Stop] :text("${decisionsText}")`)
-    ).toBeVisible()
+    await expect(promptColumn(page, 'Stop').getByText(decisionsText)).toBeVisible()
     const prioritizingWorkText = `Prioritizing so much work every sprint, we can't get it all done!`
-    await expect(
-      page.locator(`[data-cy=group-column-Stop] :text("${prioritizingWorkText}")`)
-    ).toBeVisible()
+    await expect(promptColumn(page, 'Stop').getByText(prioritizingWorkText)).toBeVisible()
     const debatesText = `Having debates that go nowhere over group chat`
-    await expect(page.locator(`[data-cy=group-column-Stop] :text("${debatesText}")`)).toBeVisible()
+    await expect(promptColumn(page, 'Stop').getByText(debatesText)).toBeVisible()
 
     // It first drags the "some people always take all the air time" card from Stop to Start
-    await expect(page.locator(`[data-cy=group-column-Start] :text("${airTimeText}")`)).toBeVisible({
+    await expect(promptColumn(page, 'Start').getByText(airTimeText)).toBeVisible({
       timeout
     })
 
     // It drags the "making important decisions in chat" card from Stop to Start
-    await expect(
-      page.locator(`[data-cy=group-column-Start] :text("${decisionsText}")`)
-    ).toBeVisible({
+    await expect(promptColumn(page, 'Start').getByText(decisionsText)).toBeVisible({
       timeout
     })
 
     // It drags "prioritizing work" card from Stop to Continue
-    await expect(
-      page.locator(`[data-cy=group-column-Continue] :text("${prioritizingWorkText}")`)
-    ).toBeVisible({
+    await expect(promptColumn(page, 'Continue').getByText(prioritizingWorkText)).toBeVisible({
       timeout
     })
 
     // It drags "debates" card from Stop to Continue
-    await expect(
-      page.locator(`[data-cy=group-column-Continue] :text("${debatesText}")`)
-    ).toBeVisible({
+    await expect(promptColumn(page, 'Continue').getByText(debatesText)).toBeVisible({
       timeout
     })
   })
@@ -198,7 +183,7 @@ test.describe('retrospective-demo / group page', () => {
       await page.click('button[aria-label="Toggle the sidebar"]')
     }
 
-    await page.click('[data-cy=sidebar] :text("Group")')
+    await meetingNav(page).getByText('Group', {exact: true}).click()
     expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/group`)
     await expect(page.locator(':text("Phase Completed")')).toBeVisible()
   })

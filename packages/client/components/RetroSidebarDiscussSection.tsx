@@ -110,11 +110,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
         <Droppable droppableId={DISCUSSION_TOPIC}>
           {(provided) => {
             return (
-              <div
-                className='h-full overflow-auto pb-2'
-                data-cy='discussion-section'
-                ref={provided.innerRef}
-              >
+              <div className='h-full overflow-auto pb-2' ref={provided.innerRef}>
                 {stages.map((stage, idx) => {
                   const {reflectionGroup} = stage
                   if (!reflectionGroup) return null
@@ -151,7 +147,6 @@ const RetroSidebarDiscussSection = (props: Props) => {
                       {(dragProvided, dragSnapshot) => {
                         return (
                           <div
-                            data-cy={`discuss-item-${idx}`}
                             className={cn(dragSnapshot.isDragging && navItemRaisedShadowCls)}
                             ref={dragProvided.innerRef}
                             {...dragProvided.draggableProps}

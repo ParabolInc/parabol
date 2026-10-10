@@ -52,7 +52,6 @@ const GroupingKanbanColumnHeader = (props: Props) => {
                   variant='flat'
                   size='sm'
                   className={addReflectionButtonClass}
-                  data-cy={`add-reflection-${question}`}
                   aria-label={'Add a reflection'}
                   disabled={!canAdd || submitting}
                   onClick={onClick}

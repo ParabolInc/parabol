@@ -19,11 +19,11 @@ const CommentAuthorOptionsDropdown = (props: Props) => {
   }
   return (
     <MenuContent align='end'>
-      <MenuItem onClick={editComment} data-cy='edit-comment'>
+      <MenuItem onClick={editComment}>
         <Edit className={MENU_ITEM_ICON} />
         Edit Comment
       </MenuItem>
-      <MenuItem onClick={deleteComment} data-cy='delete-comment'>
+      <MenuItem onClick={deleteComment}>
         <Delete className={MENU_ITEM_ICON} />
         Delete Comment
       </MenuItem>

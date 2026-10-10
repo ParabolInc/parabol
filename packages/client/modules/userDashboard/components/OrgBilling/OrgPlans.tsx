@@ -1,43 +1,20 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import useBreakpoint from '~/hooks/useBreakpoint'
-import {Breakpoint} from '~/types/constEnums'
+import {Info} from '~/ui/icons'
 import type {TierEnum} from '../../../../__generated__/OrganizationSubscription.graphql'
 import type {OrgPlans_organization$key} from '../../../../__generated__/OrgPlans_organization.graphql'
 import Panel from '../../../../components/Panel/Panel'
-import Row from '../../../../components/Row/Row'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {cn} from '../../../../ui/cn'
-import {EnterpriseBenefits, StarterBenefits, TeamBenefits} from '../../../../utils/constants'
+import {MONTHLY_PRICE} from '../../../../utils/constants'
+import plural from '../../../../utils/plural'
 import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 import DowngradeModal from './DowngradeModal'
+import type {PlanAction} from './getPlanAction'
 import OrgPlan from './OrgPlan'
+import orgPlanDetails from './orgPlanDetails'
 
-const getButtonSettings = (tier: TierEnum, plan: TierEnum, canChangePlans: boolean) => {
-  if (tier === plan) {
-    return {
-      buttonLabel: 'Current Plan' as const,
-      buttonStyle: 'disabled' as const
-    }
-  } else if (tier === 'enterprise' || plan === 'enterprise') {
-    return {
-      buttonLabel: 'Contact' as const,
-      buttonStyle: 'secondary' as const
-    }
-  } else if (plan === 'starter') {
-    return {
-      buttonLabel: 'Downgrade' as const,
-      buttonStyle: canChangePlans ? ('secondary' as const) : ('disabled' as const),
-      buttonTooltip: canChangePlans ? undefined : 'Only billing leaders can change plans'
-    }
-  } else {
-    return {
-      buttonLabel: 'Select Plan' as const,
-      buttonStyle: 'primary' as const
-    }
-  }
-}
+const PLAN_TIERS = ['starter', 'team', 'enterprise'] as const
 
 type Props = {
   organizationRef: OrgPlans_organization$key
@@ -54,72 +31,55 @@ const OrgPlans = (props: Props) => {
         id
         billingTier
         isBillingLeader
+        orgUserCount {
+          activeUserCount
+        }
       }
     `,
     organizationRef
   )
   const [isDowngradeOpen, setIsDowngradeOpen] = useState(false)
   const atmosphere = useAtmosphere()
-  const {id: orgId, billingTier, isBillingLeader} = organization
-  const isTablet = useBreakpoint(Breakpoint.FUZZY_TABLET)
+  const {id: orgId, billingTier, isBillingLeader, orgUserCount} = organization
+  const {activeUserCount} = orgUserCount
+  const teamPlanNote = `About $${activeUserCount * MONTHLY_PRICE} a month for ${activeUserCount} active ${plural(activeUserCount, 'user')}`
 
-  const plans = [
-    {
-      tier: 'starter',
-      subtitle: 'Free',
-      details: [...StarterBenefits],
-      ...getButtonSettings(billingTier, 'starter', isBillingLeader),
-      isActive: !hasSelectedTeamPlan && billingTier === 'starter'
-    },
-    {
-      tier: 'team',
-      details: ['Everything in Starter', ...TeamBenefits],
-      ...getButtonSettings(billingTier, 'team', isBillingLeader),
-      isActive: hasSelectedTeamPlan || billingTier === 'team'
-    },
-    {
-      tier: 'enterprise',
-      subtitle: 'Contact for quote',
-      details: ['Everything in Team', ...EnterpriseBenefits],
-      ...getButtonSettings(billingTier, 'enterprise', isBillingLeader),
-      isActive: billingTier === 'enterprise'
-    }
-  ] as const
-
-  const handleClick = (
-    label: 'Contact' | 'Select Plan' | 'Downgrade' | 'Current Plan',
-    planTier: TierEnum
-  ) => {
-    SendClientSideEvent(atmosphere, 'Plan Tier Selected', {
-      orgId,
-      tier: planTier
-    })
-    if (label === 'Contact') {
+  const handleAction = (action: PlanAction, tier: TierEnum) => {
+    SendClientSideEvent(atmosphere, 'Plan Tier Selected', {orgId, tier})
+    if (action === 'contact') {
       window.open('mailto:love@parabol.co', '_blank')
-    } else if (label === 'Select Plan') {
+    } else if (action === 'upgrade') {
       handleSelectTeamPlan()
-    } else if (label === 'Downgrade') {
+    } else if (action === 'downgrade') {
       setIsDowngradeOpen(true)
-      SendClientSideEvent(atmosphere, 'Downgrade Clicked', {
-        orgId,
-        tier: planTier
-      })
+      SendClientSideEvent(atmosphere, 'Downgrade Clicked', {orgId, tier})
     }
   }
 
   return (
     <>
-      <Panel className='max-w-[976px] pb-4' label='Plans'>
-        <Row
-          className={cn(
-            'flex flex-1 items-stretch px-4 py-3 first-of-type:pt-4 [&:nth-of-type(2)]:border-none',
-            isTablet ? 'flex-row' : 'flex-col'
-          )}
-        >
-          {plans.map((plan) => (
-            <OrgPlan key={plan.tier} plan={plan} isTablet={isTablet} handleClick={handleClick} />
-          ))}
-        </Row>
+      <Panel className='max-w-[976px]' label='Plans'>
+        <div className='@container/plans border-hairline border-t'>
+          <div className='grid @2xl/plans:grid-cols-3 grid-cols-1 gap-3 p-4'>
+            {PLAN_TIERS.map((tier) => (
+              <OrgPlan
+                key={tier}
+                tier={tier}
+                billingTier={billingTier}
+                note={orgPlanDetails[tier].note ?? teamPlanNote}
+                isTeamSelected={hasSelectedTeamPlan && billingTier === 'starter'}
+                canChangePlans={isBillingLeader}
+                onAction={handleAction}
+              />
+            ))}
+          </div>
+        </div>
+        <p className='m-0 flex items-start gap-2 px-4 pb-4 text-[13px] text-fg-secondary leading-[18px]'>
+          <Info className='mt-px text-[16px] text-fg-muted' />
+          {
+            'Active users are people seen in the last 30 days. Billed monthly in USD. Downgrade any time and keep your data.'
+          }
+        </p>
       </Panel>
       <DowngradeModal
         isOpen={isDowngradeOpen}

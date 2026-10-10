@@ -102,7 +102,7 @@ const ReflectionGroupVoting = (props: Props) => {
 
   return (
     <div className='flex w-24 flex-col justify-center'>
-      <div className='flex items-center justify-end' data-cy='reflection-vote-row'>
+      <div className='flex items-center justify-end'>
         <Button
           variant='flat'
           size='sm'
@@ -132,7 +132,7 @@ const ReflectionGroupVoting = (props: Props) => {
           <div className='flex h-6 w-6 select-none items-center justify-center'>
             <ThumbUp className='h-4.5 w-4.5' />
           </div>
-          <span data-cy={`completed-vote-count`}>{viewerVoteCount}</span>
+          <span>{viewerVoteCount}</span>
         </span>
         <Button
           variant='flat'

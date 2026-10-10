@@ -48,7 +48,8 @@ Tokens are scoped — you must request only the scopes your integration needs. A
 - **Reflection** — a card added by a participant during the reflect phase of a retrospective
 - **Agenda Item** — a discussion topic added to a Check-In meeting
 - **Page** — a rich-text collaborative document scoped to a team or personal workspace
-- **Template** — a reusable meeting structure (reflect, poker, or team health)
+- **Template** — a reusable meeting structure: prompts for a retrospective or standup, estimation dimensions for poker, or questions for team health
+- **Standup Response** — a member's answer to one prompt of a standup; it stays a private draft until the member shares their answers with the team
 - **Team Health Question Pack** — a research-backed set of survey questions (e.g. Google Project Aristotle, Edmondson Psychological Safety, Gallup Q12, Spotify Squad Health Check); each question belongs to a **Team Health Category** (Psychological Safety, Dependability, Structure & Clarity, Meaning, Impact, or a custom one)
 - **Team Health Response** — one member's anonymous 1–5 Likert answer (plus optional comment) to a question; scores are only readable by their author and the team sees the aggregate spread once the meeting ends
 
@@ -59,7 +60,10 @@ Tokens are scoped — you must request only the scopes your integration needs. A
 | `startRetrospective`  | `meetings:write`  | Start a new retrospective meeting        |
 | `startSprintPoker`    | `meetings:write`  | Start a new sprint poker meeting         |
 | `startCheckIn`        | `meetings:write`  | Start a new check-in meeting             |
-| `startTeamPrompt`     | `meetings:write`  | Start a new standup meeting              |
+| `startTeamPrompt`     | `meetings:write`  | Start a new standup from the team's selected standup template |
+| `upsertTeamPromptResponse` | `meetings:write` | Save a draft answer to one standup prompt |
+| `shareTeamPromptResponses` | `meetings:write` | Share all of your standup answers with the team |
+| `addPromptTemplate`   | `templates:write` | Create or clone a retrospective or standup template |
 | `startTeamHealth`     | `meetings:write`  | Start a team health check for one or more teams, optionally recurring |
 | `setTeamHealthResponse` | `meetings:write` | Answer a team health question (1–5 score, optional comment) |
 | `endTeamHealth`       | `meetings:write`  | Close a team health check and reveal results by category |

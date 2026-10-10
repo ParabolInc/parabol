@@ -20,7 +20,7 @@ const BeginDemoModal = (props: Props) => {
             Try Parabol for yourself by holding a 2-minute retrospective meeting with our simulated
             colleagues
           </p>
-          <Button variant='primary' data-cy='start-demo-button' onClick={startDemo} size='md'>
+          <Button variant='primary' onClick={startDemo} size='md'>
             Start Demo
           </Button>
         </div>

@@ -1,130 +1,188 @@
-// This file must have worker types, but not DOM types.
-// The global should be that of a service worker.
+// ServiceWorkerPlugin transpiles this file by itself, so it cannot import anything
+// It must have worker types, but not DOM types
 
-// This fixes `self`'s type.
 declare let self: ServiceWorkerGlobalScope
+declare const __APP_VERSION__: string
+declare const __COMMIT_HASH__: string
+// In production this is a placeholder until applyEnvVarsToClientAssets knows where the build is deployed
+declare const __PUBLIC_PATH__: string
+declare const __PRECACHE_MANIFEST__: string[]
 
-declare global {
-  interface ServiceWorkerGlobalScope {
-    __WB_MANIFEST: {
-      url: string
-      revision: string | null
-    }[]
+// Holds the build files that have a content hash in their name
+// The URL identifies the content, so an entry is never stale & every build shares this 1 cache
+const BUILD_CACHE = 'parabol-build'
+const UPLOAD_CACHE = 'parabol-uploads'
+// The previous worker kept 2 caches per app version
+const LEGACY_CACHE = /^parabol-(static|dynamic)-/
+
+const PUBLIC_PATH = new URL(__PUBLIC_PATH__, self.location.href).href
+const PRECACHE_URLS = new Set(__PRECACHE_MANIFEST__.map((filename) => PUBLIC_PATH + filename))
+// a webpack content hash is 20 hex characters
+const CONTENT_HASHED = /[-_/][0-9a-f]{20}(\.[a-z0-9]+)+$/
+// assetProxyHandler serves these to everyone & a new upload gets a new name
+// The rest of /assets depends on who is asking, so the server must answer every time
+const PUBLIC_UPLOAD =
+  /^\/assets\/((User|Team|Organization)\/[^/]+\/picture|Organization\/aGhostOrg\/[^/]+)\/[^/]+$/
+
+const PRECACHE_CONCURRENCY = 6
+// Files of other builds & files that are not precached. Pages of the previous build may still need theirs
+const MAX_UNLISTED_BUILD_FILES = 100
+const MAX_UPLOADS = 500
+const LEGACY_PAGE_LOAD_GRACE = 15_000
+
+let isUploadStorageReadable = true
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+// An <img> can leave a copy without CORS headers in the HTTP cache
+// That copy fails every CORS request for the same URL until the HTTP cache is bypassed
+const fetchReadable = async (url: string, init?: RequestInit) => {
+  try {
+    return await fetch(url, init)
+  } catch {
+    return fetch(url, {...init, cache: 'reload'})
   }
 }
 
-const STATIC_CACHE = `parabol-static-${__APP_VERSION__}`
-const DYNAMIC_CACHE = `parabol-dynamic-${__APP_VERSION__}`
-const cacheList = [STATIC_CACHE, DYNAMIC_CACHE]
+const store = async (cacheName: string, url: string, response: Response) => {
+  // If a missing file were answered with the app's HTML, caching it would break that file for good
+  if (!response.ok || response.headers.get('content-type')?.startsWith('text/html')) return
+  // A redirected response cannot answer a request that forbids redirects, so only its content is kept
+  const storable = response.redirected
+    ? new Response(response.body, {headers: response.headers})
+    : response
+  const cache = await caches.open(cacheName)
+  await cache.put(url, storable)
+}
 
-// this gets built in applyEnvVarToClientAssets
-const PUBLIC_PATH = `__PUBLIC_PATH__`.replace(/^\/{2,}/, 'https://')
-const waitUntil =
-  <T>(cb: (e: ExtendableEvent) => Promise<T>) =>
-  (e: ExtendableEvent) => {
-    e.waitUntil(cb(e))
+// cache.keys() goes from the oldest entry to the newest
+const trim = async (
+  cacheName: string,
+  maxEntries: number,
+  isEvictable = (_url: string) => true
+) => {
+  const cache = await caches.open(cacheName)
+  const requests = await cache.keys()
+  const evictable = requests.filter(({url}) => isEvictable(url))
+  await Promise.all(evictable.slice(0, -maxEntries).map((request) => cache.delete(request)))
+}
+
+const precache = async () => {
+  const cache = await caches.open(BUILD_CACHE)
+  const urls = [...PRECACHE_URLS]
+  const fetchUntilDone = async () => {
+    for (let url = urls.pop(); url; url = urls.pop()) {
+      try {
+        if (await cache.match(url, {ignoreVary: true})) continue
+        // caches.match looks in every cache, so files the previous worker fetched are reused
+        const response =
+          (await caches.match(url, {ignoreVary: true})) ??
+          (await fetchReadable(url, {priority: 'low'}))
+        await store(BUILD_CACHE, url, response)
+      } catch {
+        // Precaching is a head start. A page that needs a missing file fetches it
+      }
+    }
   }
+  await Promise.all(Array.from({length: PRECACHE_CONCURRENCY}, fetchUntilDone))
+}
 
-const onInstall = async (_event: ExtendableEvent) => {
+const install = async () => {
+  const cacheNames = await caches.keys()
+  const isReplacingLegacyWorker = cacheNames.some((name) => LEGACY_CACHE.test(name))
+  await precache()
+  if (!isReplacingLegacyWorker) return
+  // A worker waits until a page of its own build asks it to take over (see useServiceWorkerUpdater)
+  // Pages from before that hook never ask. They only reload after their controller changes
+  // Taking over is delayed, because Safari has killed the old worker while a page was loading through it
+  await sleep(LEGACY_PAGE_LOAD_GRACE)
   await self.skipWaiting()
-  const urls = self.__WB_MANIFEST.map(({url}) => url)
-  const cacheNames = await caches.keys()
-  const oldStaticCacheName = cacheNames.find((cacheName) => cacheName.startsWith('parabol-static'))
-  const newCache = await caches.open(STATIC_CACHE)
-  const fetchCachedFiles = async (urls: string[]) =>
-    Promise.all(urls.map((url) => newCache.add(url)))
-
-  // if this is their first service worker, fetch it all
-  if (!oldStaticCacheName) {
-    console.log('Installing service worker')
-    return fetchCachedFiles(urls).catch(console.error)
-  }
-
-  // if they already have some assets, forward them over to the new cache & fetch the rest
-  const oldStaticCache = await caches.open(oldStaticCacheName)
-  const cachedResponses = await Promise.all(urls.map((url) => oldStaticCache.match(url)))
-  const newUrls = urls.filter((_url, idx) => !cachedResponses[idx])
-  console.log(`Installing ${urls.length} modules (${newUrls.length} new)`)
-  await Promise.all(
-    cachedResponses.map((res: Response | undefined, idx) => {
-      if (!res) return
-      newCache.put(urls[idx]!, res)
-    })
-  )
-  return fetchCachedFiles(newUrls).catch(console.error)
 }
 
-const onActivate = async (_event: ExtendableEvent) => {
+const activate = async () => {
+  const cacheNames = await caches.keys()
+  const obsoleteCacheNames = cacheNames.filter(
+    (name) => name !== BUILD_CACHE && name !== UPLOAD_CACHE
+  )
+  await Promise.all(obsoleteCacheNames.map((name) => caches.delete(name)))
+  await trim(BUILD_CACHE, MAX_UNLISTED_BUILD_FILES, (url) => !PRECACHE_URLS.has(url))
+  // lets the page that registered its first worker use the cache without a reload
   await self.clients.claim()
-  const cacheNames = await caches.keys()
-  return Promise.all(
-    cacheNames.map((cacheName) =>
-      cacheList.includes(cacheName) ? undefined : caches.delete(cacheName)
-    )
-  )
 }
 
-const isCacheable = (url: string) => {
-  if (!url.startsWith('http')) return false
-  // /assets/ requires auth & 307s to a (possibly presigned, possibly expiring) location.
-  // Handling it here would hand a redirected response to respondWith, which is a network error
-  // unless the request's redirect mode is 'follow'. Let the browser follow the redirect itself.
-  if (new URL(url).pathname.startsWith('/assets/')) return false
-  return !!url.match(/.(js|json|css|mjs|png|svg|gif|jpg|jpeg|ico|eot|ttf|wav|mp3|woff|woff2|otf)$/)
-}
-
-const onFetch = async (event: FetchEvent) => {
+const respondWithBuildFile = async (event: FetchEvent) => {
   const {request} = event
   const {url} = request
-  const cachedRes = await caches.match(request.url)
-  // all our assets are hashed, so if the hash matches, it's valid
-  // let's skip opaque responses because we don't know whether they're valid
-  if (cachedRes && cachedRes.type !== 'opaque' && cachedRes.ok) {
-    return cachedRes
+  const cached = await caches.match(url, {cacheName: BUILD_CACHE, ignoreVary: true})
+  if (cached) return cached
+  // A request that would work without this worker must work with it, even if the response cannot be cached
+  const response = await fetchReadable(url).catch(() => fetch(request))
+  if (response.status === 404) {
+    // The build this page belongs to is gone, so there is probably a newer one
+    self.registration.update().catch(() => {})
   }
+  event.waitUntil(store(BUILD_CACHE, url, response.clone()).catch(() => {}))
+  return response
+}
+
+const storeUpload = async (url: string, response: Response) => {
+  await store(UPLOAD_CACHE, url, response)
+  await trim(UPLOAD_CACHE, MAX_UPLOADS)
+}
+
+const respondWithUpload = async (event: FetchEvent) => {
+  const {request} = event
+  const {url} = request
+  const cached = await caches.match(url, {cacheName: UPLOAD_CACHE, ignoreVary: true})
+  if (cached) return cached
+  // Storage that does not allow CORS can still answer the request as the page made it
+  if (!isUploadStorageReadable) return fetch(request)
+  let response: Response
   try {
-    // request.mode could be 'no-cors'
-    // By fetching the URL without specifying the mode the response will not be opaque
-    const isParabolHosted = url.startsWith(PUBLIC_PATH) || url.startsWith(self.origin)
-    // if one of our assets is not in the service worker cache, then it's either fetched via network or served from the broswer cache.
-    // The browser cache most likely has incorrect CORS headers set, so we better always fetch from the network.
-    const req = isParabolHosted ? fetch(request.url, {cache: 'no-store'}) : fetch(request)
-    const networkRes = await req
-    const cache = await caches.open(DYNAMIC_CACHE)
-    if (isParabolHosted && networkRes.status === 404 && url.match(/.(js|json|mjs)/)) {
-      // If we encounter a 404 for a script file, we most likely have a stale dyanmic cache.
-      // We could clear the cache and the app probably will recover after a reload, however more likely the whole service worker is stale.
-      // Because failing to load a script file might prevent the code to refresh the service worker from loading, it's better to just harakiri.
-      console.error(`Parabol source file ${url} returned 404, updating service worker`)
-      self.registration.update().catch((error) => {
-        console.error('Failed to update service worker, unregistering it', error)
-        self.registration.unregister()
-      })
-      return networkRes
-    }
-    // cloning here because I'm not sure if we must clone before reading the body
-    cache.put(request.url, networkRes.clone()).catch(console.error)
-    return networkRes
-  } catch (e) {
-    // if we have an opaque cached response, it's better than nothing
-    if (cachedRes) return cachedRes
-    throw e
+    response = await fetchReadable(url)
+  } catch {
+    isUploadStorageReadable = false
+    return fetch(request)
   }
+  // The server redirects to where the picture is stored. Anything else is not the picture
+  if (response.redirected) {
+    event.waitUntil(storeUpload(url, response.clone()).catch(() => {}))
+  }
+  return response
 }
 
-const onMessage = async (event: MessageEvent) => {
-  if (event.data?.type === 'getVersion') {
-    const port = event.ports?.[0]
-    port?.postMessage({type: 'version', payload: `${__APP_VERSION__}`})
+self.addEventListener('install', (event) => {
+  event.waitUntil(install())
+})
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(activate())
+})
+
+self.addEventListener('fetch', (event) => {
+  const {request} = event
+  const {method, mode, headers, url} = request
+  // The HTML is tiny & names the files of the newest build, so it always comes from the server
+  // Safari cannot play media from a response that ignores the range it asked for
+  if (method !== 'GET' || mode === 'navigate' || headers.has('range')) return
+  const {origin, pathname} = new URL(url)
+  if (origin === self.location.origin && PUBLIC_UPLOAD.test(pathname)) {
+    event.respondWith(respondWithUpload(event))
+    return
+  }
+  const isBuildFile = url.startsWith(PUBLIC_PATH) && CONTENT_HASHED.test(pathname)
+  if (isBuildFile || PRECACHE_URLS.has(url)) {
+    event.respondWith(respondWithBuildFile(event))
+  }
+})
+
+self.addEventListener('message', (event) => {
+  const {type} = event.data ?? {}
+  if (type === 'getVersion') {
+    const [port] = event.ports
+    port?.postMessage({type: 'version', payload: __APP_VERSION__, commitHash: __COMMIT_HASH__})
     port?.close()
+  } else if (type === 'skipWaiting') {
+    event.waitUntil(self.skipWaiting())
   }
-}
-
-self.onmessage = onMessage
-self.oninstall = waitUntil(onInstall)
-self.onactivate = waitUntil(onActivate)
-self.onfetch = (e: FetchEvent) => {
-  if (!isCacheable(e.request.url)) return
-  e.respondWith(onFetch(e))
-}
-export {}
+})

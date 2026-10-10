@@ -150,7 +150,6 @@ const PhaseItemColumn = (props: Props) => {
 
   return (
     <div
-      data-cy={`reflection-column-${question}`}
       className={cn(
         'flex flex-1 flex-col items-center justify-start',
         isDesktop ? 'mx-2 mb-4' : 'min-h-full'
@@ -202,11 +201,10 @@ const PhaseItemColumn = (props: Props) => {
                 {description}
               </div>
             </div>
-            <div className='mb-3' data-cy={`editor-section-${question}`}>
-              <div data-cy={`editor-status-${question}`} className={cn(isComplete && 'invisible')}>
+            <div className='mb-3'>
+              <div className={cn(isComplete && 'invisible')}>
                 <PhaseItemEditor
                   cardsInFlightRef={cardsInFlightRef}
-                  dataCy={`phase-item-editor-${question}`}
                   phaseEditorRef={phaseEditorRef}
                   meetingId={meetingId}
                   nextSortOrder={nextSortOrder}
@@ -222,7 +220,6 @@ const PhaseItemColumn = (props: Props) => {
           </div>
           <div className='flex-1'>
             <ReflectionStack
-              dataCy={`reflection-stack-${question}`}
               reflectionStack={reflectionStack}
               idx={idx}
               phaseEditorRef={phaseEditorRef}

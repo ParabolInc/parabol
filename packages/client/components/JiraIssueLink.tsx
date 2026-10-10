@@ -4,7 +4,6 @@ import {cn} from '../ui/cn'
 
 interface Props {
   className?: string
-  dataCy?: string
   cloudName: string
   issueKey: string
   projectKey: string
@@ -12,7 +11,7 @@ interface Props {
 }
 
 const JiraIssueLink = (props: Props) => {
-  const {dataCy, className, cloudName, issueKey, projectKey, children} = props
+  const {className, cloudName, issueKey, projectKey, children} = props
   const href =
     cloudName === DemoIntegration.JIRA_CLOUD_NAME
       ? DemoIntegration.JIRA_ISSUE_URL
@@ -23,7 +22,6 @@ const JiraIssueLink = (props: Props) => {
         'block px-4 text-[14px] text-fg-primary leading-5 underline hover:underline focus:underline',
         className
       )}
-      data-cy={dataCy}
       href={href}
       rel='noopener noreferrer'
       target='_blank'

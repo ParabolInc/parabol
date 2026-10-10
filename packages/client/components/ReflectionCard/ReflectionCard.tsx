@@ -45,7 +45,6 @@ interface Props {
   groupSize?: number
   isExpanded?: boolean
   showReactji?: boolean
-  dataCy?: string
   showDragHintAnimation?: boolean
 }
 
@@ -79,7 +78,6 @@ const ReflectionCard = (props: Props) => {
     groupSize,
     isExpanded,
     showReactji,
-    dataCy,
     showDragHintAnimation
   } = props
   const reflection = useFragment(
@@ -345,7 +343,6 @@ const ReflectionCard = (props: Props) => {
 
   return (
     <ReflectionCardRoot
-      data-cy={`${dataCy}-root`}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
       showDragHintAnimation={showDragHintAnimation}

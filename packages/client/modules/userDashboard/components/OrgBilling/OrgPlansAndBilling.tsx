@@ -75,7 +75,7 @@ const OrgPlansAndBilling = (props: Props) => {
   useEffect(() => {
     if (billingTier === prevTierRef.current) return
     prevTierRef.current = billingTier
-    refetchInvoices({orgId, first: 3}, {fetchPolicy: 'network-only'})
+    refetchInvoices({orgId, first: 4}, {fetchPolicy: 'network-only'})
   }, [billingTier])
   if (billingTier === 'starter') {
     return (
