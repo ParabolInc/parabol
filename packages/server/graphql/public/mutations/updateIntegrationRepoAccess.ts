@@ -4,6 +4,7 @@ import invalidateRepoIntegrationsCache from '../../../integrations/invalidateRep
 import RepoAccess from '../../../integrations/platform/RepoAccess'
 import {getServerIntegration} from '../../../integrations/platform/registry'
 import type {ServerIntegrationDefinition} from '../../../integrations/platform/ServerIntegrationDefinition'
+import pruneUnsharedPrevUsedRepoIntegrations from '../../../integrations/pruneUnsharedPrevUsedRepoIntegrations'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -14,7 +15,7 @@ const MAX_SHARED_REPOS = 500
 
 const updateIntegrationRepoAccess: MutationResolvers['updateIntegrationRepoAccess'] = async (
   _source,
-  {teamId, service, integrationRepoIds},
+  {teamId, service, repoAccess: mode, integrationRepoIds},
   context,
   info
 ) => {
@@ -32,12 +33,15 @@ const updateIntegrationRepoAccess: MutationResolvers['updateIntegrationRepoAcces
   const ctx = {dataLoader, teamId, userId: viewerId, context, info}
   const auth = await definition.getAuthRow(ctx)
   if (!auth) throw new GraphQLError(`${definition.title} is not connected`)
-  if (integrationRepoIds && integrationRepoIds.length > MAX_SHARED_REPOS) {
+  if (integrationRepoIds.length > MAX_SHARED_REPOS) {
     throw new GraphQLError(`Share at most ${MAX_SHARED_REPOS} at a time, or share everything`)
+  }
+  if (mode === 'all' && integrationRepoIds.length > 0) {
+    throw new GraphQLError('integrationRepoIds must be empty when sharing everything')
   }
 
   const getAccess = async () => {
-    if (!integrationRepoIds) return new RepoAccess('all', [])
+    if (mode === 'all') return new RepoAccess('all', [])
     const wantedIds = new Set(integrationRepoIds.map((id) => id.toLowerCase()))
     if (wantedIds.size === 0) return new RepoAccess('selected', [])
     const availableRepos = await repoAccess.fetchAvailableRepos(ctx)
@@ -67,8 +71,9 @@ const updateIntegrationRepoAccess: MutationResolvers['updateIntegrationRepoAcces
     .set({meta: JSON.stringify(access.toMeta())})
     .where('id', '=', auth.id)
     .execute()
-  dataLoader.get('teamMemberIntegrationAuthsByServiceTeamAndUserId').clearAll()
-  await invalidateRepoIntegrationsCache(teamId, viewerId, definition.service, 'removed')
+  dataLoader.clearAll('teamMemberIntegrationAuths')
+  await invalidateRepoIntegrationsCache(teamId, viewerId, definition.service, 'added')
+  await pruneUnsharedPrevUsedRepoIntegrations(teamId, viewerId, definition.service, access)
 
   const data = {
     integrationService: makeIntegrationServiceSource(definition.service, teamId, viewerId)

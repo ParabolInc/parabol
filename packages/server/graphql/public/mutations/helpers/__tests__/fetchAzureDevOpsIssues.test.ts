@@ -1,8 +1,9 @@
+import type {GraphQLResolveInfo} from 'graphql'
 import buildAzureDevOpsWorkWiql from 'parabol-client/shared/integrations/buildAzureDevOpsWorkWiql'
 import getAzureDevOpsManager from '../../../../../integrations/azureDevOps/getAzureDevOpsManager'
 import type {AzureDevOpsWorkItem} from '../../../../../integrations/azureDevOps/mapAzureDevOpsWorkItem'
 import searchAzureDevOpsWorkItems from '../../../../../integrations/azureDevOps/searchAzureDevOpsWorkItems'
-import type {DataLoaderWorker} from '../../../../graphql'
+import type {GQLContext} from '../../../../graphql'
 import fetchAzureDevOpsIssues from '../fetchAzureDevOpsIssues'
 
 jest.mock('../../../../../integrations/azureDevOps/getAzureDevOpsManager', () => ({
@@ -25,7 +26,9 @@ const WEB_PROJECT_ID = 'a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d'
 const START_AT = '2026-10-01T00:00:00.000Z'
 const END_AT = '2026-10-07T23:59:59.999Z'
 
-const dataLoader = {} as DataLoaderWorker
+const dataLoader = {}
+const context = {dataLoader} as unknown as GQLContext
+const info = {} as GraphQLResolveInfo
 const listComments = jest.fn()
 
 const searchQuery = (overrides: Record<string, unknown> = {}) =>
@@ -58,7 +61,7 @@ const workItem = (
   ...overrides
 })
 
-const run = (query: string) => fetchAzureDevOpsIssues('team1', 'user1', query, dataLoader)
+const run = (query: string) => fetchAzureDevOpsIssues('team1', 'user1', query, context, info)
 
 describe('fetchAzureDevOpsIssues', () => {
   beforeEach(() => {
@@ -92,7 +95,7 @@ describe('fetchAzureDevOpsIssues', () => {
       searchQuery({kinds: ['created', 'reviewed'], projectIds: [projectId, 'Api', 7, null]})
     )
     expect(mockedSearch).toHaveBeenCalledWith(
-      {dataLoader, teamId: 'team1', userId: 'user1'},
+      {dataLoader, teamId: 'team1', userId: 'user1', context, info},
       {
         where: buildAzureDevOpsWorkWiql({kinds: ['created'], startAt: START_AT, endAt: END_AT}),
         projects: [projectId, 'Api'],

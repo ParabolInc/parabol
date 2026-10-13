@@ -4,12 +4,13 @@ import type {AzureDevOpsSharedProject} from './azureDevOpsSharedProjects'
 interface Props {
   organization: string
   projects: readonly AzureDevOpsSharedProject[]
+  inaccessibleIds: ReadonlySet<string>
   selectedIds: ReadonlySet<string>
   onToggle: (integrationRepoIds: string[], isSelected: boolean) => void
 }
 
 const AzureDevOpsOrganizationProjects = (props: Props) => {
-  const {organization, projects, selectedIds, onToggle} = props
+  const {organization, projects, inaccessibleIds, selectedIds, onToggle} = props
   const projectIds = projects.map(({integrationRepoId}) => integrationRepoId)
   const selectedCount = projectIds.filter((id) => selectedIds.has(id)).length
   const isAllSelected = selectedCount === projects.length
@@ -39,6 +40,9 @@ const AzureDevOpsOrganizationProjects = (props: Props) => {
             onCheckedChange={(checked) => onToggle([integrationRepoId], checked === true)}
           />
           <span className='truncate'>{name}</span>
+          {inaccessibleIds.has(integrationRepoId) && (
+            <span className='ml-auto shrink-0 text-fg-muted text-xs'>No longer accessible</span>
+          )}
         </label>
       ))}
     </div>

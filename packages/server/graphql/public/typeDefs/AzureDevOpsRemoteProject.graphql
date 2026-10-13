@@ -10,12 +10,12 @@ type AzureDevOpsRemoteProject implements RepoIntegration {
   service: IntegrationProviderServiceEnum!
 
   """
-  The parabol teamId this issue was fetched for
+  The parabol teamId this project was fetched for
   """
   teamId: ID!
 
   """
-  The parabol userId this issue was fetched for
+  The parabol userId this project was fetched for
   """
   userId: ID!
 

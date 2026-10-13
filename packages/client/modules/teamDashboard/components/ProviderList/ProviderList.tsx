@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect} from 'react'
+import {useEffect, useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {useLocation} from 'react-router'
 import type {ProviderListQuery} from '../../../../__generated__/ProviderListQuery.graphql'
@@ -80,6 +80,7 @@ const ProviderList = (props: Props) => {
     if (!hash) return
     document.getElementById(hash.slice(1))?.scrollIntoView({block: 'start'})
   }, [hash])
+  const [newlyConnectedService, setNewlyConnectedService] = useState<string>()
   const integrations = viewer.teamMember?.integrations
   const services = viewer.teamMember?.services ?? []
 
@@ -97,6 +98,8 @@ const ProviderList = (props: Props) => {
           key={integrationService.service}
           teamId={teamId}
           serviceRef={integrationService}
+          isNewlyConnected={newlyConnectedService === integrationService.service}
+          onConnected={() => setNewlyConnectedService(integrationService.service)}
         />
       )
     }))

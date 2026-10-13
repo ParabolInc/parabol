@@ -1,8 +1,9 @@
+import type {GraphQLResolveInfo} from 'graphql'
 import {parse} from 'node-html-parser'
 import buildAzureDevOpsWorkWiql, {
   type AzureDevOpsWorkKind
 } from 'parabol-client/shared/integrations/buildAzureDevOpsWorkWiql'
-import type {DataLoaderWorker} from '../../../../graphql/graphql'
+import type {GQLContext} from '../../../../graphql/graphql'
 import getAzureDevOpsManager from '../../../../integrations/azureDevOps/getAzureDevOpsManager'
 import searchAzureDevOpsWorkItems from '../../../../integrations/azureDevOps/searchAzureDevOpsWorkItems'
 import {Logger} from '../../../../utils/Logger'
@@ -47,8 +48,10 @@ const fetchAzureDevOpsIssues = async (
   teamId: string,
   userId: string,
   searchQuery: string,
-  dataLoader: DataLoaderWorker
+  context: GQLContext,
+  info: GraphQLResolveInfo
 ): Promise<InspirationIssue[]> => {
+  const {dataLoader} = context
   const params = parseSearchQuery(searchQuery)
   if (!params) {
     Logger.error('fetchAzureDevOpsIssues: could not parse searchQuery')
@@ -56,7 +59,7 @@ const fetchAzureDevOpsIssues = async (
   }
   const {kinds, startAt, endAt, projects} = params
   if (kinds.length === 0) return []
-  const ctx = {dataLoader, teamId, userId}
+  const ctx = {dataLoader, teamId, userId, context, info}
   const [manager, workItems] = await Promise.all([
     getAzureDevOpsManager(ctx),
     searchAzureDevOpsWorkItems(ctx, {

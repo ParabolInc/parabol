@@ -4,7 +4,10 @@ import {useFragment} from 'react-relay'
 import type {IntegrationServiceProviderRow_service$key} from '../../../../__generated__/IntegrationServiceProviderRow_service.graphql'
 import ProviderLogo from '../../../../components/ProviderLogo'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import useMutationProps from '../../../../hooks/useMutationProps'
+import useMutationProps, {
+  getOnCompletedError,
+  type MenuMutationProps
+} from '../../../../hooks/useMutationProps'
 import {getConnectErrorMessage} from '../../../../integrations/platform/getConnectErrorMessage'
 import {
   getProviderRowEntries,
@@ -25,10 +28,13 @@ import ProviderRowShell from './ProviderRowShell'
 interface Props {
   teamId: string
   serviceRef: IntegrationServiceProviderRow_service$key
+  /** Connecting moves the row to another section, which remounts it, so the list remembers what was just connected */
+  isNewlyConnected: boolean
+  onConnected: () => void
 }
 
 const IntegrationServiceProviderRow = (props: Props) => {
-  const {teamId, serviceRef} = props
+  const {teamId, serviceRef, isNewlyConnected, onConnected} = props
   const integrationService = useFragment(
     graphql`
       fragment IntegrationServiceProviderRow_service on IntegrationService {
@@ -37,7 +43,6 @@ const IntegrationServiceProviderRow = (props: Props) => {
         isAvailable
         isConnected
         grantedScopes
-        ...AzureDevOpsProjectAccessPanel_service
         auth {
           providerId
         }
@@ -66,6 +71,13 @@ const IntegrationServiceProviderRow = (props: Props) => {
   const atmosphere = useAtmosphere()
   const mutationProps = useMutationProps()
   const {submitting, error} = mutationProps
+  const connectMutationProps: MenuMutationProps = {
+    ...mutationProps,
+    onCompleted: (res, errors) => {
+      mutationProps.onCompleted(res, errors)
+      if (!getOnCompletedError(res, errors)) onConnected()
+    }
+  }
   const {
     service,
     title,
@@ -107,7 +119,7 @@ const IntegrationServiceProviderRow = (props: Props) => {
   const Panel = definition.capabilities.settings?.Panel
   const panel = isConnected && Panel && (
     <Suspense fallback={null}>
-      <Panel teamId={teamId} serviceRef={integrationService} />
+      <Panel teamId={teamId} isNewlyConnected={isNewlyConnected} />
     </Suspense>
   )
 
@@ -121,7 +133,7 @@ const IntegrationServiceProviderRow = (props: Props) => {
         onConnectClick={() =>
           definition.connect(atmosphere, {
             teamId,
-            mutationProps,
+            mutationProps: connectMutationProps,
             provider: entry.provider,
             heldScopes: grantedScopes
           })

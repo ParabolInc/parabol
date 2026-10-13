@@ -67,7 +67,7 @@ describe('AzureDevOpsIntegration.workItems', () => {
       first: 10
     })
     expect(mockedSearch).toHaveBeenCalledWith(
-      {dataLoader, teamId: 'team1', userId: 'user1'},
+      {dataLoader, teamId: 'team1', userId: 'user1', context, info},
       {
         where: "[System.State] = 'Active'",
         orderBy: 'ORDER BY [System.Id]',

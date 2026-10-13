@@ -35,11 +35,6 @@ type AzureDevOpsIntegration {
     first: Int = 100
 
     """
-    Unused: results are not paginated
-    """
-    after: DateTime
-
-    """
     A plain-text search string, or a WIQL WHERE clause if isWIQL is true. Null or empty returns
     the most recently changed open work items
     """

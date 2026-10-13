@@ -5,12 +5,13 @@ import type {AzureDevOpsSharedProject} from './azureDevOpsSharedProjects'
 
 interface Props {
   projects: readonly AzureDevOpsSharedProject[]
+  inaccessibleIds: ReadonlySet<string>
   selectedIds: ReadonlySet<string>
   onToggle: (integrationRepoIds: string[], isSelected: boolean) => void
 }
 
 const AzureDevOpsProjectAccessList = (props: Props) => {
-  const {projects, selectedIds, onToggle} = props
+  const {projects, inaccessibleIds, selectedIds, onToggle} = props
   const [filter, setFilter] = useState('')
   const needle = filter.trim().toLowerCase()
   const matches = projects.filter(({name, organization}) =>
@@ -40,6 +41,7 @@ const AzureDevOpsProjectAccessList = (props: Props) => {
             key={organization}
             organization={organization}
             projects={matches.filter((project) => project.organization === organization)}
+            inaccessibleIds={inaccessibleIds}
             selectedIds={selectedIds}
             onToggle={onToggle}
           />

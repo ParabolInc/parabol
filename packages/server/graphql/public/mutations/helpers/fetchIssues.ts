@@ -28,7 +28,7 @@ const fetchIssues = async (
     case 'gcal':
       return fetchGCalIssues(teamId, viewerId, searchQuery, dataLoader)
     case 'azureDevOps':
-      return fetchAzureDevOpsIssues(teamId, viewerId, searchQuery, dataLoader)
+      return fetchAzureDevOpsIssues(teamId, viewerId, searchQuery, context, info)
     case 'PARABOL':
       return fetchParabolIssues(teamId, viewerId, searchQuery)
     default:

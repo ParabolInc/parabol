@@ -22,13 +22,15 @@ const AzureDevOpsIntegration: AzureDevOpsIntegrationResolvers = {
   workItems: async (
     {teamId, userId},
     {first, queryString, projectKeyFilters, isWIQL},
-    {dataLoader}
+    context,
+    info
   ) => {
+    const {dataLoader} = context
     const limit = Math.min(Math.max(first ?? MAX_WORK_ITEMS, 1), MAX_WORK_ITEMS)
     const wiql = buildAzureDevOpsSearchWiql(queryString ?? null, isWIQL)
     if (wiql instanceof Error) return connectionFromTasks([], 0, wiql)
     const workItems = await searchAzureDevOpsWorkItems(
-      {dataLoader, teamId, userId},
+      {dataLoader, teamId, userId, context, info},
       {...wiql, projects: projectKeyFilters, limit}
     )
     if (workItems instanceof Error) return connectionFromTasks([], 0, workItems)

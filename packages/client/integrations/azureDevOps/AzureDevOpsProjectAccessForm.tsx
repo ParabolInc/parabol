@@ -54,12 +54,13 @@ const AzureDevOpsProjectAccessForm = (props: Props) => {
 
   // a shared project the live list no longer returns stays listed, so it can still be unshared
   const listedIds = new Set(availableProjects?.map((project) => project.integrationRepoId))
-  const projects = [
-    ...(availableProjects ?? []),
-    ...sharedProjects.filter(
-      (project) => !sharesEveryProject && !listedIds.has(project.integrationRepoId)
-    )
-  ]
+  const unlistedProjects = sharedProjects.filter(
+    (project) => !sharesEveryProject && !listedIds.has(project.integrationRepoId)
+  )
+  const projects = [...(availableProjects ?? []), ...unlistedProjects]
+  const inaccessibleIds = new Set(
+    availableProjects ? unlistedProjects.map((project) => project.integrationRepoId) : []
+  )
   const onToggle = (integrationRepoIds: string[], isSelected: boolean) => {
     setSelectedIds((prev) => {
       const next = new Set(prev)
@@ -73,7 +74,8 @@ const AzureDevOpsProjectAccessForm = (props: Props) => {
       variables: {
         teamId,
         service: 'azureDevOps',
-        integrationRepoIds: sharesAll ? null : [...selectedIds]
+        repoAccess: sharesAll ? 'all' : 'selected',
+        integrationRepoIds: sharesAll ? [] : [...selectedIds]
       },
       onError: (e) => setError(e.message),
       onCompleted: (_res, errors) => (errors ? setError(errors[0]?.message) : onClose())
@@ -108,6 +110,7 @@ const AzureDevOpsProjectAccessForm = (props: Props) => {
       {!sharesAll && (
         <AzureDevOpsProjectAccessList
           projects={projects}
+          inaccessibleIds={inaccessibleIds}
           selectedIds={selectedIds}
           onToggle={onToggle}
         />

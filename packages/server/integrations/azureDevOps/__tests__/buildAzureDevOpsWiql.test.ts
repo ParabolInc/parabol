@@ -162,27 +162,33 @@ describe('buildAzureDevOpsSearchWiql', () => {
 })
 
 describe('toWiqlQuery', () => {
-  it('pins a project-scoped query to its project', () => {
-    expect(toWiqlQuery("[System.State] = 'Active'", true)).toBe(
-      "SELECT [System.Id] FROM WorkItems WHERE ([System.State] = 'Active') AND [System.TeamProject] = @project ORDER BY [System.ChangedDate] DESC"
+  it('narrows the query to the projects it is given', () => {
+    expect(toWiqlQuery("[System.State] = 'Active'", ['Web', 'Api'])).toBe(
+      "SELECT [System.Id] FROM WorkItems WHERE ([System.State] = 'Active') AND [System.TeamProject] IN ('Web', 'Api') ORDER BY [System.ChangedDate] DESC"
     )
   })
 
-  it('leaves @project out of an organization-wide query', () => {
-    expect(toWiqlQuery("[System.State] = 'Active'", false)).toBe(
+  it('leaves the project filter out of an organization-wide query', () => {
+    expect(toWiqlQuery("[System.State] = 'Active'", null)).toBe(
       "SELECT [System.Id] FROM WorkItems WHERE ([System.State] = 'Active') ORDER BY [System.ChangedDate] DESC"
     )
   })
 
-  it('parenthesizes the clause so an OR cannot widen the project pin', () => {
-    expect(toWiqlQuery('[System.Id] = 1 OR [System.Id] = 2', true)).toContain(
-      'WHERE ([System.Id] = 1 OR [System.Id] = 2) AND [System.TeamProject] = @project'
+  it('parenthesizes the clause so an OR cannot widen the project filter', () => {
+    expect(toWiqlQuery('[System.Id] = 1 OR [System.Id] = 2', ['Web'])).toContain(
+      "WHERE ([System.Id] = 1 OR [System.Id] = 2) AND [System.TeamProject] IN ('Web')"
+    )
+  })
+
+  it('escapes a quote in a project name', () => {
+    expect(toWiqlQuery('[System.Id] = 1', ["Bob's"])).toContain(
+      "[System.TeamProject] IN ('Bob''s')"
     )
   })
 
   it('uses the ordering it is given', () => {
-    expect(toWiqlQuery('[System.Id] = 1', true, 'ORDER BY [System.Id] ASC')).toBe(
-      'SELECT [System.Id] FROM WorkItems WHERE ([System.Id] = 1) AND [System.TeamProject] = @project ORDER BY [System.Id] ASC'
+    expect(toWiqlQuery('[System.Id] = 1', ['Web'], 'ORDER BY [System.Id] ASC')).toBe(
+      "SELECT [System.Id] FROM WorkItems WHERE ([System.Id] = 1) AND [System.TeamProject] IN ('Web') ORDER BY [System.Id] ASC"
     )
   })
 })

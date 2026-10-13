@@ -81,7 +81,7 @@ describe('AzureDevOpsServerManager.getWorkItems', () => {
     )
 
     await expect(manager.getWorkItems(INSTANCE_ID, [1, 2, 3])).resolves.toEqual([
-      rawWorkItem(1, WEB_PROJECT_ID)
+      {...rawWorkItem(1, WEB_PROJECT_ID), project: {projectId: WEB_PROJECT_ID, projectName: ''}}
     ])
     const {url, method, headers, body} = readRequest(fetchMock)
     expect(url).toBe('https://dev.azure.com/acme/_apis/wit/workitemsbatch?api-version=7.1')
@@ -122,6 +122,28 @@ describe('AzureDevOpsServerManager.getWorkItems', () => {
     const ids = Array.from({length: 201}, (_, index) => index + 1)
     const res = await manager.getWorkItems(INSTANCE_ID, ids)
     expect(res).toHaveProperty('message', 'VS403474')
+  })
+})
+
+describe('AzureDevOpsServerManager.addScoreComment', () => {
+  it('escapes the text and the link it is given before posting them as HTML', async () => {
+    const {manager, fetchMock} = buildManager(sharesWeb)
+    fetchMock.mockResolvedValue(jsonResponse({url: 'https://dev.azure.com/acme/comment/9'}))
+    await manager.addScoreComment({
+      instanceId: INSTANCE_ID,
+      projectId: WEB_PROJECT_ID,
+      workItemId: '42',
+      dimensionName: 'Effort <script>',
+      finalScore: '5 & up',
+      meetingName: '<img src=x onerror=alert(1)>',
+      discussionURL: "https://parabol.example/meet/m1?a=1&b='><b>"
+    })
+    const {text} = readRequest(fetchMock).body
+    expect(text).toContain('<b>Effort &lt;script&gt;: 5 &amp; up</b>')
+    expect(text).toContain('in &lt;img src=x onerror=alert(1)&gt;</div>')
+    expect(text).toContain(
+      "<a href='https://parabol.example/meet/m1?a=1&amp;b=&#39;&gt;&lt;b&gt;'>discussion</a>"
+    )
   })
 })
 

@@ -1,5 +1,4 @@
 import type {ComponentType, LazyExoticComponent, ReactNode} from 'react'
-import type {IntegrationServiceProviderRow_service$data} from '../../__generated__/IntegrationServiceProviderRow_service.graphql'
 import type Atmosphere from '../../Atmosphere'
 import type {MenuMutationProps} from '../../hooks/useMutationProps'
 import type {IntegrationMeta} from '../../shared/integrations/IntegrationMeta'
@@ -76,7 +75,8 @@ export interface ScopingCapability extends SearchMetaCodec {
 
 export interface SettingsPanelProps {
   teamId: string
-  serviceRef: IntegrationServiceProviderRow_service$data
+  /** True once the viewer has connected the service from this row, so a panel can ask for what a new connection still needs */
+  isNewlyConnected: boolean
 }
 
 export interface SettingsCapability {

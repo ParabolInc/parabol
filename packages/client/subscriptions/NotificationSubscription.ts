@@ -179,7 +179,6 @@ const subscription = graphql`
 
       IntegrationService {
         ...TaskFooterIntegrateMenuServiceRepos_service @relay(mask: false)
-        ...AzureDevOpsProjectAccessPanel_service
         ...azureDevOpsSharedProjects_service
       }
 

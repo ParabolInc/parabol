@@ -86,9 +86,12 @@ describe('resolveAzureDevOpsWorkItemProject', () => {
         workItemIn(BILLING_PROJECT_ID, 'Billing')
       )
     ).toEqual({projectId: BILLING_PROJECT_ID, projectName: 'Billing'})
+  })
+
+  it('drops a work item without a GUID when sharing everything, rather than identify it by name', () => {
     expect(
       resolveAzureDevOpsWorkItemProject(sharesEverything, INSTANCE_ID, workItemIn(null, 'Billing'))
-    ).toEqual({projectId: 'Billing', projectName: 'Billing'})
+    ).toBeNull()
   })
 
   it('cannot place a work item with neither a GUID nor a name, even when sharing everything', () => {

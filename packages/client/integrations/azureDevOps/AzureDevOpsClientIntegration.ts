@@ -68,7 +68,7 @@ export class AzureDevOpsClientIntegration extends ClientIntegrationDefinition {
       Panel: lazy(
         () =>
           import(
-            /* webpackChunkName: 'AzureDevOpsProjectAccessPanel' */ './AzureDevOpsProjectAccessPanel'
+            /* webpackChunkName: 'AzureDevOpsProjectAccessPanelRoot' */ './AzureDevOpsProjectAccessPanelRoot'
           )
       )
     }

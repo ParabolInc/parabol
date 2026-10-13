@@ -8,6 +8,7 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../appOrigin'
 import type {TeamMemberIntegrationAuth} from '../../postgres/types'
 import type {IntegrationProviderAzureDevOps} from '../../postgres/types/IntegrationProvider'
+import {escapeHtml} from '../../utils/escapeHtml'
 import makeCreateAzureTaskComment from '../../utils/makeCreateAzureTaskComment'
 import {generateHTML} from '../../utils/tiptap/generateHTML'
 import {authorizeOAuth2} from '../helpers/authorizeOAuth2'
@@ -46,6 +47,11 @@ export interface AzureDevOpsRawWorkItem {
   url: string
   fields: Record<string, unknown>
   _links?: {html?: {href: string}}
+}
+
+export interface AzureDevOpsSharedWorkItem extends AzureDevOpsRawWorkItem {
+  /** The shared project the work item lives in, decided once as it is fetched */
+  project: {projectId: string; projectName: string}
 }
 
 export interface AzureDevOpsField {
@@ -264,9 +270,10 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
       if (res instanceof Error) return res
       workItems.push(...res.json.value.filter((workItem) => workItem !== null))
     }
-    return workItems.filter(
-      (workItem) => resolveAzureDevOpsWorkItemProject(this.access, instanceId, workItem) !== null
-    )
+    return workItems.flatMap((workItem): AzureDevOpsSharedWorkItem | never[] => {
+      const project = resolveAzureDevOpsWorkItemProject(this.access, instanceId, workItem)
+      return project ? {...workItem, project} : []
+    })
   }
 
   async listComments(instanceId: string, projectId: string, workItemId: string, top: number) {
@@ -433,9 +440,13 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
     meetingName: string
     discussionURL: string
   }) {
-    const {instanceId, projectId, workItemId, dimensionName, finalScore, meetingName} = params
+    const {instanceId, projectId, workItemId} = params
+    const dimensionName = escapeHtml(params.dimensionName)
+    const finalScore = escapeHtml(params.finalScore)
+    const meetingName = escapeHtml(params.meetingName)
+    const discussionURL = escapeHtml(params.discussionURL)
     const comment = `<div><b>${dimensionName}: ${finalScore}</b></div>
-    <div>See the <a href='${params.discussionURL}'>discussion</a> in ${meetingName}</div>
+    <div>See the <a href='${discussionURL}'>discussion</a> in ${meetingName}</div>
 
     <div>Powered by <a href='${ExternalLinks.GETTING_STARTED_SPRINT_POKER}'>Parabol</a></div>`
     return this.addComment(instanceId, projectId, workItemId, comment)

@@ -12,6 +12,7 @@ import type {TeamMemberIntegrationAuth} from '../postgres/types'
 import logError from '../utils/logError'
 import handleAuthRefreshFailure from './handleAuthRefreshFailure'
 import type RootDataLoader from './RootDataLoader'
+import type {RegisterDependsOn} from './RootDataLoader'
 import settleOrLogRejection from './settleOrLogRejection'
 
 type TeamUserKey = {
@@ -42,7 +43,8 @@ const getTokenExpiry = (accessToken: string | null) => {
   return decoded && typeof decoded === 'object' && typeof decoded.exp === 'number' ? decoded.exp : 0
 }
 
-export const freshAzureDevOpsAuth = (parent: RootDataLoader) => {
+export const freshAzureDevOpsAuth = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+  dependsOn('teamMemberIntegrationAuths')
   return new DataLoader<TeamUserKey, TeamMemberIntegrationAuth | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
@@ -110,9 +112,7 @@ export const azureDevOpsWorkItem = (parent: RootDataLoader) => {
             return
           }
           rawWorkItems.forEach((rawWorkItem) => {
-            const owner = {access: manager.access, instanceId, teamId, userId}
-            const workItem = mapAzureDevOpsWorkItem(rawWorkItem, owner)
-            if (!workItem) return
+            const workItem = mapAzureDevOpsWorkItem(rawWorkItem, {instanceId, teamId, userId})
             workItems.set(
               toWorkItemCacheKey({teamId, userId, instanceId, workItemId: workItem.id}),
               workItem

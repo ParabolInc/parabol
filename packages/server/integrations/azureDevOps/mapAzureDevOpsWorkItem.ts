@@ -1,6 +1,4 @@
-import type RepoAccess from '../platform/RepoAccess'
-import type {AzureDevOpsRawWorkItem} from './AzureDevOpsServerManager'
-import resolveAzureDevOpsWorkItemProject from './resolveAzureDevOpsWorkItemProject'
+import type {AzureDevOpsSharedWorkItem} from './AzureDevOpsServerManager'
 
 export interface AzureDevOpsWorkItem {
   service: 'azureDevOps'
@@ -21,7 +19,6 @@ export interface AzureDevOpsWorkItem {
 }
 
 interface Owner {
-  access: RepoAccess
   instanceId: string
   teamId: string
   userId: string
@@ -32,15 +29,12 @@ const readString = (fields: Record<string, unknown>, referenceName: string) => {
   return typeof value === 'string' ? value : ''
 }
 
-/** Null when the work item is outside the projects the connection shares */
 const mapAzureDevOpsWorkItem = (
-  workItem: AzureDevOpsRawWorkItem,
+  workItem: AzureDevOpsSharedWorkItem,
   owner: Owner
-): AzureDevOpsWorkItem | null => {
-  const {access, instanceId, teamId, userId} = owner
-  const project = resolveAzureDevOpsWorkItemProject(access, instanceId, workItem)
-  if (!project) return null
-  const {fields, id} = workItem
+): AzureDevOpsWorkItem => {
+  const {instanceId, teamId, userId} = owner
+  const {fields, id, project} = workItem
   const changedDate = new Date(readString(fields, 'System.ChangedDate'))
   return {
     service: 'azureDevOps',

@@ -9,9 +9,15 @@ const IS_WORK = AZURE_DEVOPS_IS_WORK
 const IS_OPEN = `[System.State] NOT IN (${CLOSED_STATES.map(quoteWiql).join(', ')})`
 const DEFAULT_ORDER = 'ORDER BY [System.ChangedDate] DESC'
 
-/** Wraps a WHERE clause in the query the wiql endpoint takes. A project-scoped call is pinned to its project; an organization-wide one cannot use @project */
-export const toWiqlQuery = (where: string, isProjectScoped: boolean, orderBy = DEFAULT_ORDER) => {
-  const scope = isProjectScoped ? ' AND [System.TeamProject] = @project' : ''
+/** Wraps a WHERE clause in the query the wiql endpoint takes, run against a whole organization. Naming projects narrows it to them, so the organization applies the ordering across all of them */
+export const toWiqlQuery = (
+  where: string,
+  projectNames: readonly string[] | null,
+  orderBy = DEFAULT_ORDER
+) => {
+  const scope = projectNames
+    ? ` AND [System.TeamProject] IN (${projectNames.map(quoteWiql).join(', ')})`
+    : ''
   return `SELECT [System.Id] FROM WorkItems WHERE (${where})${scope} ${orderBy}`
 }
 

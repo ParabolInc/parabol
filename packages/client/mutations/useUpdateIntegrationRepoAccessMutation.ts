@@ -6,16 +6,17 @@ const mutation = graphql`
   mutation useUpdateIntegrationRepoAccessMutation(
     $teamId: ID!
     $service: IntegrationProviderServiceEnum!
-    $integrationRepoIds: [ID!]
+    $repoAccess: IntegrationRepoAccessEnum!
+    $integrationRepoIds: [ID!]!
   ) {
     updateIntegrationRepoAccess(
       teamId: $teamId
       service: $service
+      repoAccess: $repoAccess
       integrationRepoIds: $integrationRepoIds
     ) {
       integrationService {
         id
-        ...AzureDevOpsProjectAccessPanel_service
         ...azureDevOpsSharedProjects_service
       }
     }

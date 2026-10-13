@@ -12,7 +12,8 @@ interface WorkItemLocation {
 
 /**
  * The project a fetched work item really lives in, or null when the connection does not share it.
- * A work item is fetched by id alone, so the project a client names for it proves nothing; this reads it off the response
+ * A work item is fetched by id alone, so the project a client names for it proves nothing; this reads it off the response.
+ * The project is always identified by its GUID: a response that carries only a name is matched to a shared project, or dropped
  */
 const resolveAzureDevOpsWorkItemProject = (
   access: RepoAccess,
@@ -27,7 +28,6 @@ const resolveAzureDevOpsWorkItemProject = (
     return isShared ? {projectId: urlProject, projectName} : null
   }
   if (!projectName) return null
-  if (access.mode === 'all') return {projectId: projectName, projectName}
   const grant = listGrantedAzureDevOpsProjects(access).find(
     (project) =>
       project.instanceId.toLowerCase() === instanceId.toLowerCase() &&

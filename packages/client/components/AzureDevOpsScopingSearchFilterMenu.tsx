@@ -3,10 +3,7 @@ import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {AzureDevOpsScopingSearchFilterMenuQuery} from '../__generated__/AzureDevOpsScopingSearchFilterMenuQuery.graphql'
 import useSetScopingSearchState from '../hooks/useSetScopingSearchState'
 import {getAzureDevOpsSharedProjects} from '../integrations/azureDevOps/azureDevOpsSharedProjects'
-import {
-  searchFiltersByKey,
-  toggleSearchFilter
-} from '../integrations/platform/IntegrationSearchFilter'
+import {searchFiltersByKey} from '../integrations/platform/IntegrationSearchFilter'
 import type {ScopingSearchState} from '../integrations/platform/ScopingSearchState'
 import {cn} from '../ui/cn'
 import {MenuItem} from '../ui/Menu/MenuItem'
@@ -38,7 +35,7 @@ const AzureDevOpsScopingSearchFilterMenu = (props: Props) => {
   )
   const {projects} = getAzureDevOpsSharedProjects(data.viewer.teamMember?.services)
   const {isAdvancedQuery, filters} = state
-  const projectNames = searchFiltersByKey(filters, 'project')
+  const projectFilters = searchFiltersByKey(filters, 'project')
   const setSearchState = useSetScopingSearchState(meetingId, 'azureDevOps')
   const toggleAdvancedQuery = () => {
     setSearchState({isAdvancedQuery: !isAdvancedQuery, filters: []})
@@ -56,10 +53,19 @@ const AzureDevOpsScopingSearchFilterMenu = (props: Props) => {
           : 'No projects shared. Choose projects in Team Settings › Integrations.'}
       </DropdownMenuLabel>
       {projects.map((project) => {
-        const {id: projectId, name} = project
-        const isSelected = projectNames.includes(name)
+        const {id: projectId, name, organization, integrationRepoId} = project
+        // a search saved before filters held ids names its projects instead
+        const isProjectFilter = (value: string) => value === integrationRepoId || value === name
+        const isSelected = projectFilters.some(isProjectFilter)
         const toggleProjectFilter = () => {
-          setSearchState({filters: toggleSearchFilter(filters, 'project', name)})
+          const otherFilters = filters.filter(
+            ({key, value}) => key !== 'project' || !isProjectFilter(value)
+          )
+          setSearchState({
+            filters: isSelected
+              ? otherFilters
+              : [...otherFilters, {key: 'project', value: integrationRepoId}]
+          })
         }
         return (
           <MenuItem
@@ -70,7 +76,7 @@ const AzureDevOpsScopingSearchFilterMenu = (props: Props) => {
             isDisabled={isAdvancedQuery}
           >
             <Checkbox className='-ml-2 mr-2' active={isSelected} disabled={isAdvancedQuery} />
-            {name}
+            {organization} / {name}
           </MenuItem>
         )
       })}

@@ -2203,10 +2203,16 @@ type Mutation {
     service: IntegrationProviderServiceEnum!
 
     """
-    The integrationRepoId of each repo/project to share. Null shares every one the viewer can see,
-    including ones created later
+    Whether to share every repo/project the viewer can see, including ones created later, or only
+    the ones in integrationRepoIds
     """
-    integrationRepoIds: [ID!]
+    repoAccess: IntegrationRepoAccessEnum!
+
+    """
+    The integrationRepoId of each repo/project to share when repoAccess is selected; empty shares
+    none. Must be empty when repoAccess is all
+    """
+    integrationRepoIds: [ID!]!
   ): UpdateIntegrationRepoAccessSuccess! @scope(name: TEAMS_WRITE)
 
   """

@@ -1,44 +1,52 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect, useState} from 'react'
-import {useFragment} from 'react-relay'
-import type {AzureDevOpsProjectAccessPanel_service$key} from '../../__generated__/AzureDevOpsProjectAccessPanel_service.graphql'
+import {useState} from 'react'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import type {AzureDevOpsProjectAccessPanelQuery} from '../../__generated__/AzureDevOpsProjectAccessPanelQuery.graphql'
 import {Button} from '../../ui/Button/Button'
 import {Info} from '../../ui/icons'
 import plural from '../../utils/plural'
 import type {SettingsPanelProps} from '../platform/ClientIntegrationDefinition'
 import AzureDevOpsProjectAccessDialog from './AzureDevOpsProjectAccessDialog'
-import {takeAzureDevOpsProjectChoice} from './azureDevOpsProjectChoice'
+import {getAzureDevOpsSharedProjects} from './azureDevOpsSharedProjects'
 
 const MAX_NAMES = 3
 
-const AzureDevOpsProjectAccessPanel = (props: SettingsPanelProps) => {
-  const {teamId} = props
-  const serviceRef: AzureDevOpsProjectAccessPanel_service$key = props.serviceRef
-  const service = useFragment(
+interface Props extends SettingsPanelProps {
+  queryRef: PreloadedQuery<AzureDevOpsProjectAccessPanelQuery>
+}
+
+const AzureDevOpsProjectAccessPanel = (props: Props) => {
+  const {teamId, isNewlyConnected, queryRef} = props
+  const data = usePreloadedQuery<AzureDevOpsProjectAccessPanelQuery>(
     graphql`
-      fragment AzureDevOpsProjectAccessPanel_service on AzureDevOpsIntegrationService {
-        repoAccess
-        repos {
-          id
-          name
+      query AzureDevOpsProjectAccessPanelQuery($teamId: ID!) {
+        viewer {
+          teamMember(teamId: $teamId) {
+            services {
+              service
+              ...azureDevOpsSharedProjects_service @relay(mask: false)
+            }
+          }
         }
       }
     `,
-    serviceRef
+    queryRef
   )
-  const {repoAccess, repos} = service
-  const projects = repos ?? []
-  const sharesNothing = repoAccess === 'selected' && projects.length === 0
+  const {sharesEveryProject, projects} = getAzureDevOpsSharedProjects(
+    data.viewer.teamMember?.services
+  )
+  const sharesNothing = !sharesEveryProject && projects.length === 0
   const [isOpen, setIsOpen] = useState(false)
-  useEffect(() => {
-    if (takeAzureDevOpsProjectChoice(teamId) && sharesNothing) setIsOpen(true)
-  }, [])
+  const [isChoiceOffered, setIsChoiceOffered] = useState(false)
+  if (isNewlyConnected && sharesNothing && !isChoiceOffered) {
+    setIsChoiceOffered(true)
+    setIsOpen(true)
+  }
   const names = projects.slice(0, MAX_NAMES).map(({name}) => name)
   const hiddenCount = projects.length - names.length
-  const summary =
-    repoAccess === 'all'
-      ? 'Every project you can see in Azure DevOps, including new ones'
-      : [...names, hiddenCount > 0 && `${hiddenCount} more`].filter(Boolean).join(', ')
+  const summary = sharesEveryProject
+    ? 'Every project you can see in Azure DevOps, including new ones'
+    : [...names, hiddenCount > 0 && `${hiddenCount} more`].filter(Boolean).join(', ')
 
   return (
     <div className='flex items-center justify-between gap-4 border-hairline border-t px-4 py-3 text-sm'>
@@ -53,7 +61,7 @@ const AzureDevOpsProjectAccessPanel = (props: SettingsPanelProps) => {
       ) : (
         <div className='flex min-w-0 flex-col'>
           <span className='font-semibold text-fg-primary'>
-            {repoAccess === 'all'
+            {sharesEveryProject
               ? 'Shared with this team: all projects'
               : `Shared with this team: ${projects.length} ${plural(projects.length, 'project')}`}
           </span>

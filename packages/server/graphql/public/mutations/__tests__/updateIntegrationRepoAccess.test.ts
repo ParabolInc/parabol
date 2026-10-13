@@ -1,6 +1,7 @@
 import type {GraphQLResolveInfo} from 'graphql'
 import type {AzureDevOpsProject} from '../../../../integrations/azureDevOps/fetchAvailableAzureDevOpsProjects'
 import invalidateRepoIntegrationsCache from '../../../../integrations/invalidateRepoIntegrationsCache'
+import pruneUnsharedPrevUsedRepoIntegrations from '../../../../integrations/pruneUnsharedPrevUsedRepoIntegrations'
 import publish from '../../../../utils/publish'
 import type {GQLContext} from '../../../graphql'
 import type {IntegrationProviderServiceEnum} from '../../resolverTypes'
@@ -38,6 +39,10 @@ jest.mock('../../../../integrations/invalidateRepoIntegrationsCache', () => ({
   __esModule: true,
   default: jest.fn()
 }))
+jest.mock('../../../../integrations/pruneUnsharedPrevUsedRepoIntegrations', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
 jest.mock('../../../../utils/publish', () => ({__esModule: true, default: jest.fn()}))
 
 const {
@@ -72,13 +77,10 @@ const availableProject = (projectId: string, name: string): AzureDevOpsProject =
 
 const clearAuthLoader = jest.fn()
 const buildContext = () => {
-  const loaders: Record<string, unknown> = {
-    teamMemberIntegrationAuthsByServiceTeamAndUserId: {clearAll: clearAuthLoader}
-  }
   return {
     authToken: {sub: viewerId},
     socketId: 'socket1',
-    dataLoader: {get: (name: string) => loaders[name], share: () => 'op'}
+    dataLoader: {clearAll: clearAuthLoader, share: () => 'op'}
   } as unknown as GQLContext
 }
 
@@ -87,9 +89,13 @@ const resolve = updateIntegrationRepoAccess
 if (typeof resolve !== 'function') throw new Error('resolver must be a function')
 
 const run = (
-  integrationRepoIds: string[] | null,
-  service: IntegrationProviderServiceEnum = 'azureDevOps'
-) => resolve({}, {teamId, service, integrationRepoIds}, buildContext(), info)
+  integrationRepoIds: string[],
+  service: IntegrationProviderServiceEnum = 'azureDevOps',
+  repoAccess: 'all' | 'selected' = 'selected'
+) => resolve({}, {teamId, service, repoAccess, integrationRepoIds}, buildContext(), info)
+
+const shareEverything = (integrationRepoIds: string[] = []) =>
+  run(integrationRepoIds, 'azureDevOps', 'all')
 
 const storedMeta = () => {
   expect(setColumns).toHaveBeenCalledTimes(1)
@@ -124,8 +130,8 @@ describe('updateIntegrationRepoAccess', () => {
     expect(updateTable).not.toHaveBeenCalled()
   })
 
-  it('stores {repoAccess: all} for null ids, without asking the service', async () => {
-    const res = await run(null)
+  it('stores {repoAccess: all} when sharing everything, without asking the service', async () => {
+    const res = await shareEverything()
 
     expect(storedMeta()).toEqual({repoAccess: 'all'})
     expect(updateTable).toHaveBeenCalledWith('TeamMemberIntegrationAuth')
@@ -140,6 +146,13 @@ describe('updateIntegrationRepoAccess', () => {
         userId: viewerId
       }
     })
+  })
+
+  it('throws when sharing everything is sent with ids, and writes nothing', async () => {
+    await expect(shareEverything([WEB_ID])).rejects.toThrow(
+      'integrationRepoIds must be empty when sharing everything'
+    )
+    expect(updateTable).not.toHaveBeenCalled()
   })
 
   it('stores an empty selection for no ids, without asking the service', async () => {
@@ -252,12 +265,18 @@ describe('updateIntegrationRepoAccess', () => {
 
   it('drops the cached auth row and repo list, then publishes the service to the viewer', async () => {
     await run([WEB_ID])
-    expect(clearAuthLoader).toHaveBeenCalledTimes(1)
+    expect(clearAuthLoader).toHaveBeenCalledWith('teamMemberIntegrationAuths')
     expect(invalidateRepoIntegrationsCache).toHaveBeenCalledWith(
       teamId,
       viewerId,
       'azureDevOps',
-      'removed'
+      'added'
+    )
+    expect(pruneUnsharedPrevUsedRepoIntegrations).toHaveBeenCalledWith(
+      teamId,
+      viewerId,
+      'azureDevOps',
+      expect.objectContaining({mode: 'selected', repos: [{id: WEB_ID, name: 'Web'}]})
     )
     expect(publish).toHaveBeenCalledWith(
       'notification',

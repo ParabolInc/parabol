@@ -1,6 +1,5 @@
 import type Atmosphere from '../Atmosphere'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
-import {expectAzureDevOpsProjectChoice} from '../integrations/azureDevOps/azureDevOpsProjectChoice'
 import AddTeamMemberIntegrationAuthMutation from '../mutations/AddTeamMemberIntegrationAuthMutation'
 import azureDevOpsOAuthScope from '../shared/integrations/azureDevOpsOAuthScope'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
@@ -78,7 +77,6 @@ class AzureDevOpsClientManager {
       const {code, state} = event.data
       if (state !== providerState || typeof code !== 'string') return
       submitMutation()
-      expectAzureDevOpsProjectChoice(teamId)
       AddTeamMemberIntegrationAuthMutation(
         atmosphere,
         {
