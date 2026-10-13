@@ -1,6 +1,6 @@
 import {Node} from '@tiptap/core'
 import {type JSONContent, mergeAttributes} from '@tiptap/react'
-import {resolveCuratedEmbed} from '../../shared/embed/curatedEmbedProviders'
+import {getLoomEmbedBlockAttrs} from '../../shared/embed/getLoomEmbedBlockAttrs'
 
 const LOOM_REGEX = /^(?:https?:\/\/)?(?:www\.)?loom\.com\/share\/[a-zA-Z0-9]+/g
 
@@ -42,25 +42,12 @@ const getLoomNodesForParagraph = (content: JSONContent) => {
     }
   })
 
-  return Object.values(distinctLoomLinks).map((link) => {
-    const curated = resolveCuratedEmbed(link)
-    return {
-      type: 'embedBlock',
-      attrs: {
-        url: link,
-        displayMode: 'embed',
-        align: 'center',
-        aspectRatio: curated?.aspectRatio ?? '16:9',
-        ...(curated && {embedSrc: curated.embedSrc, providerName: curated.providerName})
-      }
-    }
-  })
+  return Object.values(distinctLoomLinks).map((link) => ({
+    type: 'embedBlock',
+    attrs: getLoomEmbedBlockAttrs(link)
+  }))
 }
 
-/**
- * Deprecated. Kept registered so documents that still hold a `loom` node parse;
- * syncPageEmbeds rewrites them to embedBlock on load. Remove once none remain.
- */
 export const LoomExtension = Node.create({
   name: 'loom',
 

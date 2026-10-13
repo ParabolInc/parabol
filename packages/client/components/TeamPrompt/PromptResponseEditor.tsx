@@ -123,7 +123,7 @@ const PromptResponseEditor = (props: Props) => {
         StarterKit.configure({link: false}),
         CharacterCount.configure({limit: STANDUP_RESPONSE_CHARACTER_LIMIT}),
         LoomExtension,
-        EmbedBlock,
+        EmbedBlock.configure({pasteToEmbed: false}),
         Placeholder.configure({
           showOnlyWhenEditable: false,
           placeholder

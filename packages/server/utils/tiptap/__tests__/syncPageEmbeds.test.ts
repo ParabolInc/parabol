@@ -61,8 +61,6 @@ describe('syncPageEmbeds', () => {
   })
 
   it('stamps fetchedAt with now, not the cached resolve time', async () => {
-    // A cache hit returns the original fetchedAt. Writing that back would leave the
-    // node stale forever and re-resolve on every load.
     const {doc, nodes} = makeDoc([{url: 'https://a.example.com/1', fetchedAt: ancient()}])
     mockResolveEmbed.mockResolvedValue({
       metadata: {url: 'https://a.example.com/1', title: 'Cached', fetchedAt: ancient()},
@@ -89,8 +87,6 @@ describe('syncPageEmbeds', () => {
   })
 
   it('leaves content attributes untouched when a refresh returns identical metadata', async () => {
-    // Only the fetchedAt clock moves. Bumping it is what stops the node from being
-    // considered stale on every subsequent load.
     const {doc, nodes} = makeDoc([
       {url: 'https://a.example.com/1', fetchedAt: ancient(), title: 'Same', embedSrc: 'https://x/1'}
     ])
@@ -283,6 +279,80 @@ describe('syncPageEmbeds', () => {
     expect(mockResolveEmbed).toHaveBeenCalledTimes(1)
   })
 
+  it('drops a resolve whose url changed while it was in flight', async () => {
+    const staleAt = ancient()
+    const {doc, nodes} = makeDoc([{url: 'https://a.example.com/1', fetchedAt: staleAt}])
+    mockResolveEmbed.mockImplementation(async (url: string) => {
+      nodes[0]!.setAttribute('url', 'https://b.example.com/2')
+      return {metadata: {url, title: 'Old url title', fetchedAt: ancient()}, isFallback: false}
+    })
+
+    await syncPageEmbeds(doc)
+
+    expect(nodes[0]!.getAttribute('title')).toBeUndefined()
+    expect(nodes[0]!.getAttribute('fetchedAt')).toBe(staleAt)
+  })
+
+  it('writes nothing for an embed deleted while its resolve was in flight', async () => {
+    const {doc, frag} = makeDoc([{url: 'https://a.example.com/1', fetchedAt: ancient()}])
+    mockResolveEmbed.mockImplementation(async (url: string) => {
+      frag.delete(0, 1)
+      return {metadata: {url, title: 'x', fetchedAt: ancient()}, isFallback: false}
+    })
+    const updates: Uint8Array[] = []
+    doc.on('update', (update: Uint8Array) => updates.push(update))
+
+    await syncPageEmbeds(doc)
+
+    expect(updates).toHaveLength(1)
+  })
+
+  it('bumps fetchedAt without triggering a store when nothing else changed', async () => {
+    const {doc} = makeDoc([{url: 'https://a.example.com/1', fetchedAt: ancient(), title: 'Same'}])
+    mockResolveEmbed.mockResolvedValue({
+      metadata: {url: 'https://a.example.com/1', title: 'Same', fetchedAt: ancient()},
+      isFallback: false
+    })
+    const origins: unknown[] = []
+    doc.on('update', (_update: Uint8Array, origin: unknown) => origins.push(origin))
+
+    await syncPageEmbeds(doc)
+
+    expect(origins).toEqual([{source: 'local', skipStoreHooks: true}])
+  })
+
+  it('stores a refresh that changes provider metadata', async () => {
+    const {doc} = makeDoc([{url: 'https://a.example.com/1', fetchedAt: ancient(), title: 'Old'}])
+    mockResolveEmbed.mockResolvedValue({
+      metadata: {url: 'https://a.example.com/1', title: 'New', fetchedAt: ancient()},
+      isFallback: false
+    })
+    const origins: unknown[] = []
+    doc.on('update', (_update: Uint8Array, origin: unknown) => origins.push(origin))
+
+    await syncPageEmbeds(doc)
+
+    expect(origins).toEqual([null])
+  })
+
+  it('does not let embeds that never resolve starve the rest of the page', async () => {
+    const deadEmbeds = Array.from({length: MAX_REVALIDATIONS_PER_LOAD}, (_, i) => ({
+      url: `https://dead.example.com/${i}`,
+      fetchedAt: ancient()
+    }))
+    const {doc} = makeDoc([
+      ...deadEmbeds,
+      {url: 'https://alive.example.com/', fetchedAt: ancient()}
+    ])
+    mockResolveEmbed.mockResolvedValue(null)
+    const random = jest.spyOn(Math, 'random').mockReturnValue(0)
+
+    await syncPageEmbeds(doc)
+
+    random.mockRestore()
+    expect(mockResolveEmbed).toHaveBeenCalledWith('https://alive.example.com/')
+  })
+
   describe('loom migration', () => {
     it('rewrites a loom node into an embedBlock', async () => {
       const doc = new Y.Doc()
@@ -299,6 +369,28 @@ describe('syncPageEmbeds', () => {
       expect(children[0]!.getAttribute('url')).toBe('https://www.loom.com/share/abc123def456')
       expect(children[0]!.getAttribute('embedSrc')).toBe('https://www.loom.com/embed/abc123def456')
       expect(children[0]!.getAttribute('providerName')).toBe('Loom')
+      expect(children[0]!.getAttribute('displayMode')).toBe('embed')
+      expect(children[0]!.getAttribute('align')).toBe('center')
+      expect(children[0]!.getAttribute('aspectRatio')).toBe('16:9')
+      expect(children[0]!.getAttribute('fetchedAt')).toEqual(expect.any(String))
+      expect(mockResolveEmbed).not.toHaveBeenCalled()
+    })
+
+    it('rewrites a loom nested inside a list item', async () => {
+      const doc = new Y.Doc()
+      const frag = doc.getXmlFragment('default')
+      const list = new Y.XmlElement('bulletList')
+      const item = new Y.XmlElement('listItem')
+      const loom = new Y.XmlElement('loom')
+      loom.setAttribute('src', 'https://www.loom.com/share/abc123def456')
+      item.insert(0, [new Y.XmlElement('paragraph'), loom])
+      list.insert(0, [item])
+      frag.insert(0, [list])
+
+      await syncPageEmbeds(doc)
+
+      const names = (item.toArray() as Y.XmlElement[]).map((el) => el.nodeName)
+      expect(names).toEqual(['paragraph', 'embedBlock'])
     })
 
     it('preserves surrounding siblings and order', async () => {
