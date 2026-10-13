@@ -29,6 +29,7 @@ export const STANDUP_SLASH_COMMANDS: Record<CommandTitle, boolean> = {
   Details: true,
   Table: true,
   Divider: true,
+  Embed: false,
   'Link to page': false,
   'Create page': false,
   Database: false,
