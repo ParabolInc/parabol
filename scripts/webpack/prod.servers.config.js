@@ -124,6 +124,11 @@ module.exports = (config) => {
         contextRegExp: /pg\/lib/
       }),
       new webpack.IgnorePlugin({
+        // metascraper's url-regex-safe prefers the re2 native binding but falls back to RegExp
+        resourceRegExp: /^re2$/,
+        contextRegExp: /url-regex-safe/
+      }),
+      new webpack.IgnorePlugin({
         // sharp statically requires a prebuilt binary for every platform, we only ship ours
         resourceRegExp: new RegExp(`^@img/sharp-(?!${runtimePlatform}/)[^/]+/sharp\\.node$`)
       }),
