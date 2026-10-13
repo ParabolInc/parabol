@@ -1,5 +1,5 @@
 import type {RecordSourceProxy} from 'relay-runtime'
-import type {RegisteredClientIntegration} from '~/integrations/platform/registry'
+import type {TaskClientIntegration} from '~/integrations/platform/registry'
 import {
   EMPTY_SCOPING_SEARCH_STATE,
   type ScopingSearchState
@@ -10,7 +10,7 @@ import createProxyRecord from './createProxyRecord'
 const getOrCreateScopingSearchQuery = (
   store: RecordSourceProxy,
   meetingId: string,
-  service: RegisteredClientIntegration
+  service: TaskClientIntegration
 ) => {
   const queryId = SearchQueryId.join(service, meetingId)
   const existingQuery = store.get(queryId)
@@ -33,7 +33,7 @@ const getOrCreateScopingSearchQuery = (
 const setScopingSearchStateInRelayStore = (
   store: RecordSourceProxy,
   meetingId: string,
-  service: RegisteredClientIntegration,
+  service: TaskClientIntegration,
   patch: Partial<ScopingSearchState>
 ) => {
   const query = getOrCreateScopingSearchQuery(store, meetingId, service)

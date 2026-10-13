@@ -1,5 +1,5 @@
 """
-A task-integration service, whether it is usable on this team, and what it can do
+An integration service, whether it is usable on this team, and what it can do
 """
 interface IntegrationService {
   id: ID!

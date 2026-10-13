@@ -1,4 +1,3 @@
-import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
 import {azureDevOpsIntegrationMeta} from 'parabol-client/shared/integrations/azureDevOpsIntegrationMeta'
 import type {AzureDevOpsSearchQueryJson, TeamMemberIntegrationAuth} from '../../postgres/types'
@@ -12,7 +11,6 @@ import {
   type RepoListCapability,
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
-import {isAzureDevOpsInstanceId} from './AzureDevOpsServerManager'
 import buildAzureDevOpsSearchQuery from './buildAzureDevOpsSearchQuery'
 import describeAzureDevOpsDimensionField from './describeAzureDevOpsDimensionField'
 import fetchAvailableAzureDevOpsProjects, {
@@ -21,6 +19,7 @@ import fetchAvailableAzureDevOpsProjects, {
 import fetchAzureDevOpsProjects from './fetchAzureDevOpsProjects'
 import getAzureDevOpsManager from './getAzureDevOpsManager'
 import listAzureDevOpsDimensionFields from './listAzureDevOpsDimensionFields'
+import parseAzureDevOpsIntegrationHash from './parseAzureDevOpsIntegrationHash'
 import pushEstimateToAzureDevOps from './pushEstimateToAzureDevOps'
 import resolveAzureDevOpsDimensionFieldKey from './resolveAzureDevOpsDimensionFieldKey'
 import resolveAzureDevOpsTaskIntegration from './resolveAzureDevOpsTaskIntegration'
@@ -36,19 +35,6 @@ export class AzureDevOpsServerIntegration extends ServerIntegrationDefinition {
     return auth?.accessToken ? auth : null
   }
 
-  parseIntegrationHash(integrationHash: string) {
-    const {instanceId, projectKey, issueKey} = AzureDevOpsIssueId.split(integrationHash)
-    if (
-      !projectKey ||
-      !/^\d+$/.test(issueKey) ||
-      AzureDevOpsIssueId.join(instanceId, projectKey, issueKey) !== integrationHash ||
-      !isAzureDevOpsInstanceId(instanceId)
-    ) {
-      return null
-    }
-    return {service: 'azureDevOps' as const, instanceId, projectKey, issueKey}
-  }
-
   readonly capabilities: {
     issueCreate: IssueCreateCapability
     issueRead: IssueReadCapability
@@ -58,7 +44,10 @@ export class AzureDevOpsServerIntegration extends ServerIntegrationDefinition {
     estimatePush: EstimatePushCapability
   } = {
     issueCreate: {initManager: getAzureDevOpsManager},
-    issueRead: {getIssue: resolveAzureDevOpsTaskIntegration},
+    issueRead: {
+      getIssue: resolveAzureDevOpsTaskIntegration,
+      parseIntegrationHash: parseAzureDevOpsIntegrationHash
+    },
     issueSearch: {buildQuery: buildAzureDevOpsSearchQuery},
     repoList: {
       fetchRepos: fetchAzureDevOpsProjects,

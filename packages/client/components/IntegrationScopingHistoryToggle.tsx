@@ -4,7 +4,7 @@ import type {
   ScopingSavedQuery
 } from '../integrations/platform/ClientIntegrationDefinition'
 import type {IntegrationSearchFilter} from '../integrations/platform/IntegrationSearchFilter'
-import type {RegisteredClientIntegration} from '../integrations/platform/registry'
+import type {TaskClientIntegration} from '../integrations/platform/registry'
 import useRemoveIntegrationSearchQueryMutation from '../mutations/useRemoveIntegrationSearchQueryMutation'
 import ScopingSearchHistoryToggle from './ScopingSearchHistoryToggle'
 
@@ -18,7 +18,7 @@ const describeFilters = (
 
 interface Props {
   scoping: ScopingCapability
-  service: RegisteredClientIntegration
+  service: TaskClientIntegration
   meetingId: string
   teamId: string
   savedQueries: readonly ScopingSavedQuery[]

@@ -1,5 +1,4 @@
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
-import JiraServerIssueId from 'parabol-client/shared/gqlIds/JiraServerIssueId'
 import {jiraServerIntegrationMeta} from 'parabol-client/shared/integrations/jiraServerIntegrationMeta'
 import type {JiraServerProject} from '../../dataloader/jiraServerLoaders'
 import type {JiraSearchQueryJson} from '../../postgres/types'
@@ -16,6 +15,7 @@ import describeJiraServerDimensionField from './describeJiraServerDimensionField
 import fetchJiraServerProjects from './fetchJiraServerProjects'
 import JiraServerRestManager from './JiraServerRestManager'
 import listJiraServerDimensionFields from './listJiraServerDimensionFields'
+import parseJiraServerIntegrationHash from './parseJiraServerIntegrationHash'
 import pushEstimateToJiraServer from './pushEstimateToJiraServer'
 import resolveJiraServerDimensionFieldKey from './resolveJiraServerDimensionFieldKey'
 import resolveJiraServerTaskIntegration from './resolveJiraServerTaskIntegration'
@@ -24,19 +24,6 @@ export class JiraServerServerIntegration extends ServerIntegrationDefinition {
   readonly service = jiraServerIntegrationMeta.service
   readonly title = jiraServerIntegrationMeta.title
   readonly authStrategy = 'oauth1' as const
-
-  parseIntegrationHash(integrationHash: string) {
-    const {providerId, repositoryId, issueId} = JiraServerIssueId.split(integrationHash)
-    if (
-      Number.isNaN(providerId) ||
-      !repositoryId ||
-      !issueId ||
-      JiraServerIssueId.join(providerId, repositoryId, issueId) !== integrationHash
-    ) {
-      return null
-    }
-    return {service: 'jiraServer' as const, providerId, repositoryId, issueId}
-  }
 
   readonly capabilities: {
     issueCreate: IssueCreateCapability
@@ -56,7 +43,10 @@ export class JiraServerServerIntegration extends ServerIntegrationDefinition {
         return new JiraServerRestManager(auth, provider)
       }
     },
-    issueRead: {getIssue: resolveJiraServerTaskIntegration},
+    issueRead: {
+      getIssue: resolveJiraServerTaskIntegration,
+      parseIntegrationHash: parseJiraServerIntegrationHash
+    },
     issueSearch: {buildQuery: buildJiraSearchQuery},
     repoList: {
       fetchRepos: fetchJiraServerProjects,

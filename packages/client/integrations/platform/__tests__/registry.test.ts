@@ -22,20 +22,32 @@ jest.mock('../../../utils/LinearClientManager', () => ({
   __esModule: true,
   default: {openOAuth: jest.fn()}
 }))
+jest.mock('../../../utils/GcalClientManager', () => ({
+  __esModule: true,
+  default: {openOAuth: jest.fn()}
+}))
 
 import type {IntegrationProviderServiceEnum} from '../../../__generated__/CreateTaskIntegrationMutation.graphql'
 import type Atmosphere from '../../../Atmosphere'
 import type {MenuMutationProps} from '../../../hooks/useMutationProps'
 import AtlassianClientManager from '../../../utils/AtlassianClientManager'
+import GcalClientManager from '../../../utils/GcalClientManager'
 import GitLabClientManager from '../../../utils/GitLabClientManager'
 import JiraServerClientManager from '../../../utils/JiraServerClientManager'
 import LinearClientManager from '../../../utils/LinearClientManager'
-import {clientIntegrations, getClientIntegration, isRegisteredClientIntegration} from '../registry'
+import {
+  clientIntegrations,
+  clientIntegrationsByPopularity,
+  getClientIntegration,
+  isRegisteredClientIntegration,
+  isTaskClientIntegration
+} from '../registry'
 
 describe('clientIntegrations registry', () => {
-  it('registers exactly the six task services', () => {
+  it('registers the six task services and Google Calendar', () => {
     expect(Object.keys(clientIntegrations).sort()).toEqual([
       'azureDevOps',
+      'gcal',
       'github',
       'gitlab',
       'jira',
@@ -53,10 +65,16 @@ describe('clientIntegrations registry', () => {
     expect(def.description.length).toBeGreaterThan(0)
   })
 
-  it('every registered integration ships a scoping results component', () => {
-    Object.values(clientIntegrations).forEach((definition) => {
-      expect(definition.capabilities.scoping?.Results).toBeInstanceOf(Function)
-    })
+  it('every task integration ships a scoping results component', () => {
+    Object.values(clientIntegrations)
+      .filter(({service}) => isTaskClientIntegration(service))
+      .forEach((definition) => {
+        expect(definition.capabilities.scoping?.Results).toBeInstanceOf(Function)
+      })
+  })
+
+  it('Google Calendar has no scope tab', () => {
+    expect(clientIntegrations.gcal.capabilities.scoping).toBeUndefined()
   })
 
   it('looks up a definition by service', () => {
@@ -170,6 +188,27 @@ describe('connect with an interface-shaped provider ref', () => {
     expect(LinearClientManager.openOAuth).not.toHaveBeenCalled()
   })
 
+  it('gcal opens the Google popup with the provider id and client id', () => {
+    clientIntegrations.gcal.connect(atmosphere, {
+      teamId: 'team1',
+      mutationProps,
+      provider: {id: 'p7', clientId: 'google1', serverBaseUrl: null, tenantId: null}
+    })
+    clientIntegrations.gcal.connect(atmosphere, {
+      teamId: 'team1',
+      mutationProps,
+      provider: {id: 'p8', clientId: null, serverBaseUrl: null, tenantId: null}
+    })
+    expect(GcalClientManager.openOAuth).toHaveBeenCalledTimes(1)
+    expect(GcalClientManager.openOAuth).toHaveBeenCalledWith(
+      atmosphere,
+      'p7',
+      'google1',
+      'team1',
+      mutationProps
+    )
+  })
+
   it('jiraServer (OAuth1) connects with only the provider id', () => {
     clientIntegrations.jiraServer.connect(atmosphere, {
       teamId: 'team1',
@@ -186,7 +225,19 @@ describe('connect with an interface-shaped provider ref', () => {
 
   it('exposes a type guard over the registry keys', () => {
     expect(isRegisteredClientIntegration('linear')).toBe(true)
-    expect(isRegisteredClientIntegration('gcal')).toBe(false)
+    expect(isRegisteredClientIntegration('gcal')).toBe(true)
+    expect(isRegisteredClientIntegration('zoom')).toBe(false)
     expect(isRegisteredClientIntegration('toString' as IntegrationProviderServiceEnum)).toBe(false)
+  })
+
+  it('task surfaces see every service but Google Calendar', () => {
+    expect(clientIntegrationsByPopularity.filter(isTaskClientIntegration).sort()).toEqual([
+      'azureDevOps',
+      'github',
+      'gitlab',
+      'jira',
+      'jiraServer',
+      'linear'
+    ])
   })
 })

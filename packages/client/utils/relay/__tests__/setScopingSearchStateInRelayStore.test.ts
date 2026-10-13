@@ -1,6 +1,6 @@
 import {commitLocalUpdate, Environment, Network, RecordSource, Store} from 'relay-runtime'
 import type {HandleFieldPayload, RecordSourceProxy} from 'relay-runtime/store/RelayStoreTypes'
-import type {RegisteredClientIntegration} from '~/integrations/platform/registry'
+import type {TaskClientIntegration} from '~/integrations/platform/registry'
 import {
   EMPTY_SCOPING_SEARCH_STATE,
   type ScopingSearchState
@@ -34,7 +34,7 @@ const seedMeeting = (environment: Environment, meetingId: string) => {
 const readScopingSearchState = (
   environment: Environment,
   meetingId: string,
-  service: RegisteredClientIntegration
+  service: TaskClientIntegration
 ) => {
   const result: {state: ScopingSearchState | null} = {state: null}
   commitLocalUpdate(environment, (store) => {
