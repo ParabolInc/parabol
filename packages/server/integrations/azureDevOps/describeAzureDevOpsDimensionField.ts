@@ -3,17 +3,17 @@ import type {
   DimensionFieldKey,
   DimensionFieldTarget
 } from '../platform/ServerIntegrationDefinition'
-import {getAzureDevOpsDimensionFieldLabel} from './azureDevOpsDimensionFieldOptions'
+import listAzureDevOpsDimensionFields from './listAzureDevOpsDimensionFields'
 
 const describeAzureDevOpsDimensionField = async (
-  _ctx: DimensionFieldCtx,
+  ctx: DimensionFieldCtx,
   _key: DimensionFieldKey,
   fieldId: string
 ): Promise<DimensionFieldTarget | Error> => {
-  if (fieldId.trim().length === 0 || fieldId.length > 120) {
-    return new Error('Field name must be 1–120 characters')
-  }
-  return {fieldId, fieldName: getAzureDevOpsDimensionFieldLabel(fieldId), fieldType: 'string'}
+  const {options} = await listAzureDevOpsDimensionFields(ctx)
+  const field = options.find((option) => option.fieldId === fieldId)
+  if (!field) return new Error('That field is not on this work item type')
+  return {fieldId, fieldName: field.label, fieldType: field.type}
 }
 
 export default describeAzureDevOpsDimensionField

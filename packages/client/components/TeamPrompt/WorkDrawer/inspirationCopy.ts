@@ -9,6 +9,7 @@ const SERVICE_LABELS: Record<string, string> = {
   jira: 'Jira',
   jiraServer: 'Jira Data Center',
   linear: 'Linear',
+  azureDevOps: 'Azure DevOps',
   gcal: 'Google Calendar'
 }
 

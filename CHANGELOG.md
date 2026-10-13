@@ -5,6 +5,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.4.0](https://github.com/ParabolInc/parabol/compare/v15.3.0...v15.4.0) (2026-10-13)
+
+
+### Added
+
+* rebuild the Azure DevOps integration with per-project access ([#13618](https://github.com/ParabolInc/parabol/issues/13618)) ([c208d87](https://github.com/ParabolInc/parabol/commit/c208d87f3d9038efcc18739e29a6e98fd7d2eba3))
+
+
+### Fixed
+
+* give repo-list refresh pushes a dataloader ([#13652](https://github.com/ParabolInc/parabol/issues/13652)) ([2c690da](https://github.com/ParabolInc/parabol/commit/2c690da012636c1ffbae6142f6fb088b97161f8f))
+
+
+### Changed
+
+* Google Calendar joins the integration registry ([#13617](https://github.com/ParabolInc/parabol/issues/13617)) ([8d50ee4](https://github.com/ParabolInc/parabol/commit/8d50ee4573e137d423686130df1107873eb25a3f))
+
 ## [15.3.0](https://github.com/ParabolInc/parabol/compare/v15.2.5...v15.3.0) (2026-10-09)
 
 

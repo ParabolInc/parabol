@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect} from 'react'
+import {useEffect, useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {useLocation} from 'react-router'
 import type {ProviderListQuery} from '../../../../__generated__/ProviderListQuery.graphql'
@@ -11,7 +11,6 @@ import {
 import {Providers} from '../../../../types/constEnums'
 import {hasConfluenceScopes} from '../../../../utils/atlassianScopes'
 import ConfluenceProviderRow from '../ProviderRow/ConfluenceProviderRow'
-import GcalProviderRow from '../ProviderRow/GcalProviderRow'
 import IntegrationServiceProviderRow from '../ProviderRow/IntegrationServiceProviderRow'
 import MattermostProviderRow from '../ProviderRow/MattermostProviderRow'
 import MSTeamsProviderRow from '../ProviderRow/MSTeamsProviderRow'
@@ -29,7 +28,6 @@ const query = graphql`
       ...MattermostProviderRow_viewer
       ...SlackProviderRow_viewer
       ...MSTeamsProviderRow_viewer
-      ...GcalProviderRow_viewer
       teamMember(teamId: $teamId) {
         services {
           service
@@ -42,11 +40,6 @@ const query = graphql`
           atlassian {
             accessToken
             scope
-          }
-          gcal {
-            auth {
-              id
-            }
           }
           mattermost {
             auth {
@@ -80,6 +73,7 @@ const ProviderList = (props: Props) => {
     if (!hash) return
     document.getElementById(hash.slice(1))?.scrollIntoView({block: 'start'})
   }, [hash])
+  const [newlyConnectedService, setNewlyConnectedService] = useState<string>()
   const integrations = viewer.teamMember?.integrations
   const services = viewer.teamMember?.services ?? []
 
@@ -97,6 +91,8 @@ const ProviderList = (props: Props) => {
           key={integrationService.service}
           teamId={teamId}
           serviceRef={integrationService}
+          isNewlyConnected={newlyConnectedService === integrationService.service}
+          onConnected={() => setNewlyConnectedService(integrationService.service)}
         />
       )
     }))
@@ -124,11 +120,6 @@ const ProviderList = (props: Props) => {
       name: Providers.MSTEAMS_NAME,
       connected: !!integrations?.msTeams.auth,
       component: <MSTeamsProviderRow key='teams' teamId={teamId} viewerRef={viewer} />
-    },
-    {
-      name: Providers.GCAL_NAME,
-      connected: !!integrations?.gcal?.auth,
-      component: <GcalProviderRow key='gcal' viewerRef={viewer} teamId={teamId} />
     }
   ]
 

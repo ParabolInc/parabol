@@ -1,4 +1,10 @@
-export type InspirationSourceService = 'PARABOL' | 'github' | 'jira' | 'linear' | 'gcal'
+export type InspirationSourceService =
+  | 'PARABOL'
+  | 'github'
+  | 'jira'
+  | 'linear'
+  | 'azureDevOps'
+  | 'gcal'
 
 export interface InspirationSourceKind {
   key: string
@@ -19,6 +25,10 @@ export const INSPIRATION_SOURCE_KINDS: Record<InspirationSourceService, Inspirat
     {key: 'created', label: 'Issues you created'}
   ],
   linear: [{key: 'involved', label: 'Issues you’re involved in'}],
+  azureDevOps: [
+    {key: 'assigned', label: 'Work items assigned to you'},
+    {key: 'created', label: 'Work items you created'}
+  ],
   gcal: [{key: 'events', label: 'Meetings'}]
 }
 
@@ -27,6 +37,7 @@ export interface InspirationSourceSettings {
   githubRepos: string[]
   jiraProjectIds: string[]
   linearIds: string[]
+  azureDevOpsProjectIds: string[]
 }
 
 export const DEFAULT_INSPIRATION_SOURCE_SETTINGS: InspirationSourceSettings = {
@@ -35,11 +46,13 @@ export const DEFAULT_INSPIRATION_SOURCE_SETTINGS: InspirationSourceSettings = {
     github: ['pullRequest', 'issue'],
     jira: ['assigned'],
     linear: ['involved'],
+    azureDevOps: ['assigned'],
     gcal: ['events']
   },
   githubRepos: [],
   jiraProjectIds: [],
-  linearIds: []
+  linearIds: [],
+  azureDevOpsProjectIds: []
 }
 
 export const withInspirationSourceDefaults = (

@@ -1,4 +1,3 @@
-import GitHubIssueId from 'parabol-client/shared/gqlIds/GitHubIssueId'
 import {githubIntegrationMeta} from 'parabol-client/shared/integrations/githubIntegrationMeta'
 import {Providers} from 'parabol-client/types/constEnums'
 import fetchGitHubRepos from '../../graphql/queries/helpers/fetchGitHubRepos'
@@ -17,6 +16,7 @@ import buildGitHubSearchQuery from './buildGitHubSearchQuery'
 import describeGitHubDimensionField from './describeGitHubDimensionField'
 import GitHubServerManager from './GitHubServerManager'
 import listGitHubDimensionFields from './listGitHubDimensionFields'
+import parseGitHubIntegrationHash from './parseGitHubIntegrationHash'
 import pushEstimateToGitHub from './pushEstimateToGitHub'
 import resolveGitHubDimensionFieldKey from './resolveGitHubDimensionFieldKey'
 import resolveGitHubTaskIntegration from './resolveGitHubTaskIntegration'
@@ -44,12 +44,6 @@ export class GitHubServerIntegration extends ServerIntegrationDefinition {
     return requiredScopes.every((scope) => grantedScopes.has(scope)) ? auth : null
   }
 
-  parseIntegrationHash(integrationHash: string) {
-    const {nameWithOwner, issueNumber} = GitHubIssueId.split(integrationHash)
-    if (!nameWithOwner || !Number.isInteger(issueNumber) || issueNumber < 1) return null
-    return {service: 'github' as const, nameWithOwner, issueNumber}
-  }
-
   readonly capabilities: {
     issueCreate: IssueCreateCapability
     issueRead: IssueReadCapability
@@ -63,7 +57,10 @@ export class GitHubServerIntegration extends ServerIntegrationDefinition {
         return auth ? new GitHubServerManager(auth, context, info) : null
       }
     },
-    issueRead: {getIssue: resolveGitHubTaskIntegration},
+    issueRead: {
+      getIssue: resolveGitHubTaskIntegration,
+      parseIntegrationHash: parseGitHubIntegrationHash
+    },
     issueSearch: {buildQuery: buildGitHubSearchQuery},
     repoList: {
       fetchRepos: ({dataLoader, teamId, userId, context, info}) =>

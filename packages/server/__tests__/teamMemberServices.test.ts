@@ -118,5 +118,5 @@ test('the member themselves can read their own services', async () => {
     cookie: owner.cookie
   })
   expect(res.errors).toBeUndefined()
-  expect(res.data.viewer.teamMember.services).toHaveLength(6)
+  expect(res.data.viewer.teamMember.services).toHaveLength(7)
 })

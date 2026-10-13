@@ -36,6 +36,8 @@ export interface IssueReadCtx extends IntegrationCtx {
 export interface IssueReadCapability {
   /** The raw issue payload in the shape the service's TaskIntegration GraphQL type resolves — never re-wrapped, so __typename/discriminant keys survive */
   getIssue(ctx: IssueReadCtx): Promise<unknown>
+  /** The Task.integrationHash a client echoed, parsed into the issue parts the Task row stores. null when malformed */
+  parseIntegrationHash(integrationHash: string): IssueParts | null
 }
 
 export interface IssueSearchCapability<TQuery extends JsonObject = JsonObject> {
@@ -49,12 +51,21 @@ export type RepoFetchCtx = Omit<IntegrationCtx, 'dataLoader'> & {
 }
 
 export interface RepoListCapability<TRepo extends RemoteRepoIntegration = RemoteRepoIntegration> {
-  /** Every repo/project the viewer can create issues in, in the exact object shape the client and the prev-used Redis cache already store. An Error is the remote failure and must never be cached */
+  /** Every repo/project the viewer can create issues in, in the exact object shape the client and the prev-used Redis cache already store. A service with repoAccess returns only what the connection shares. An Error is the remote failure and must never be cached */
   fetchRepos(ctx: GqlIntegrationCtx): Promise<TRepo[] | Error>
   /** What createTaskIntegration takes for this repo; the caches dedupe on service + this */
   integrationRepoId(repo: TRepo): string
   /** The label the repo picker renders */
   name(repo: TRepo): string
+}
+
+/**
+ * The viewer limits which of their repos/projects a team reaches through their connection.
+ * The choice lives in TeamMemberIntegrationAuth.meta as a RepoAccessMeta, and every capability of the service must honor it
+ */
+export interface RepoAccessCapability<TRepo extends RemoteRepoIntegration = RemoteRepoIntegration> {
+  /** Every repo/project the viewer's account can see, shared or not. Only the access picker may show these */
+  fetchAvailableRepos(ctx: GqlIntegrationCtx): Promise<TRepo[] | Error>
 }
 
 export interface EstimatePushCtx extends GqlIntegrationCtx {
@@ -136,6 +147,7 @@ export interface ServerIntegrationCapabilities {
   issueSearch?: IssueSearchCapability
   issueList?: IssueListCapability
   repoList?: RepoListCapability
+  repoAccess?: RepoAccessCapability
   estimatePush?: EstimatePushCapability
 }
 
@@ -152,9 +164,6 @@ export abstract class ServerIntegrationDefinition {
     const auth = await dataLoader.get('freshAuth').load({service: this.service, teamId, userId})
     return auth?.accessToken ? auth : null
   }
-
-  /** The Task.integrationHash a client echoed, parsed into the issue parts the Task row stores. null when malformed */
-  abstract parseIntegrationHash(integrationHash: string): IssueParts | null
 
   /** A team, org, or global provider row exists. Services whose connect flow needs the global row override this */
   async isAvailable(ctx: IntegrationCtx) {

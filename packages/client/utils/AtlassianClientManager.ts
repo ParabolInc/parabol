@@ -40,7 +40,7 @@ class AtlassianClientManager extends AtlassianManager {
     const popup = window.open(
       uri,
       'OAuth',
-      getOAuthPopupFeatures({width: 500, height: 810, top: 56})
+      getOAuthPopupFeatures({width: 500, height: 830, top: 56})
     )
     if (!popup) {
       onError({

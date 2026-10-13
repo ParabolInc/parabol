@@ -5,7 +5,7 @@ import useSearchFilter from '~/hooks/useSearchFilter'
 import mergeRepoIntegrationItems from '~/utils/mergeRepoIntegrationItems'
 import type {TaskServiceEnum} from '../__generated__/CreateTaskMutation.graphql'
 import type {TaskFooterIntegrateMenuListLocalQuery} from '../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
-import {isRegisteredClientIntegration} from '../integrations/platform/registry'
+import {isTaskClientIntegration} from '../integrations/platform/registry'
 import {MenuSearch} from '../ui/Menu/MenuSearch'
 import {MenuSeparator} from '../ui/Menu/MenuSeparator'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
@@ -64,7 +64,11 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
     `,
     {teamId}
   )
-  const services = viewer?.teamMember?.services ?? []
+  const services = useMemo(
+    () =>
+      (viewer?.teamMember?.services ?? []).filter(({service}) => isTaskClientIntegration(service)),
+    [viewer?.teamMember?.services]
+  )
   const prevUsedItems = viewer?.teamMember?.prevUsedRepoIntegrations.items ?? []
   const items = useMemo(() => {
     const connectedServices = new Set(
@@ -107,7 +111,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
         null}
       {filteredIntegrations.slice(0, 10).map((repoIntegration) => {
         const {integrationRepoId, service, name} = repoIntegration
-        if (!isRegisteredClientIntegration(service)) return null
+        if (!isTaskClientIntegration(service)) return null
         return (
           <TaskIntegrationMenuItem
             key={`${service}:${integrationRepoId}`}

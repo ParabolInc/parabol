@@ -43,7 +43,7 @@ type TeamMember {
   integrations: TeamMemberIntegrations!
 
   """
-  All registered task-integration services and what the viewer can do with each on this team
+  All registered integration services and what the viewer can do with each on this team
   """
   services: [IntegrationService!]!
 
