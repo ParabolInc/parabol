@@ -1,4 +1,5 @@
 import type {GraphQLResolveInfo} from 'graphql'
+import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
 import type {GQLContext} from '../../graphql/graphql'
 import logError from '../../utils/logError'
 import publish from '../../utils/publish'
@@ -7,6 +8,7 @@ import loadServiceRepoIntegrations from '../loadServiceRepoIntegrations'
 import {getServerIntegration} from '../platform/registry'
 import type {GqlIntegrationCtx} from '../platform/ServerIntegrationDefinition'
 
+jest.mock('../../dataloader/getNewDataLoader', () => ({getNewDataLoader: jest.fn()}))
 jest.mock('../../utils/logError', () => ({__esModule: true, default: jest.fn()}))
 jest.mock('../../utils/publish', () => ({__esModule: true, default: jest.fn()}))
 jest.mock('../../utils/redisStoreAndNetwork', () => ({redisStoreAndNetwork: jest.fn()}))
@@ -16,6 +18,9 @@ const mockStoreAndNetwork = redisStoreAndNetwork as jest.MockedFunction<typeof r
 const mockGetServerIntegration = getServerIntegration as jest.MockedFunction<
   typeof getServerIntegration
 >
+
+const mockGetNewDataLoader = getNewDataLoader as jest.MockedFunction<typeof getNewDataLoader>
+const publishedDataLoader = {share: jest.fn(() => 'op1'), dispose: jest.fn()}
 
 const resolveAuth = jest.fn()
 const isConnected = jest.fn()
@@ -44,6 +49,9 @@ beforeEach(() => {
     resolveAuth,
     capabilities: {repoList: {fetchRepos}}
   } as unknown as ReturnType<typeof getServerIntegration>)
+  mockGetNewDataLoader.mockReturnValue(
+    publishedDataLoader as unknown as ReturnType<typeof getNewDataLoader>
+  )
   isConnected.mockResolvedValue(true)
   resolveAuth.mockResolvedValue({accessToken: 'tok'})
   mockStoreAndNetwork.mockImplementation(async (_key, thunk, transform) => {
@@ -114,7 +122,7 @@ test('a rejected fetch is treated like a returned error', async () => {
   })
 })
 
-test('a background refresh that changes the list pushes the service to the user', async () => {
+test('a background refresh that changes the list pushes the service to the user with a dataloader for its resolvers', async () => {
   mockStoreAndNetwork.mockResolvedValue([githubRepo])
   await loadServiceRepoIntegrations('github', ctx)
   const [, , , options] = mockStoreAndNetwork.mock.calls[0]!
@@ -124,6 +132,8 @@ test('a background refresh that changes the list pushes the service to the user'
     'notification',
     'u1',
     'IntegrationService',
-    expect.objectContaining({service: 'github', teamId: 't1', userId: 'u1'})
+    expect.objectContaining({service: 'github', teamId: 't1', userId: 'u1'}),
+    {operationId: 'op1'}
   )
+  expect(publishedDataLoader.dispose).toHaveBeenCalled()
 })
