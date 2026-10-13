@@ -1,5 +1,6 @@
 import ms from 'ms'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {getNewDataLoader} from '../dataloader/getNewDataLoader'
 import {makeIntegrationServiceSource} from '../graphql/public/types/IntegrationService'
 import getRepoIntegrationsRedisKey from '../utils/getRepoIntegrationsRedisKey'
 import logError from '../utils/logError'
@@ -43,12 +44,16 @@ const loadServiceRepoIntegrations = async (
       maxAge: REFRESH_AFTER,
       ttl: CACHE_TTL,
       onUpdate: () => {
+        const dataLoader = getNewDataLoader('loadServiceRepoIntegrations')
+        const operationId = dataLoader.share()
         publish(
           SubscriptionChannel.NOTIFICATION,
           userId,
           'IntegrationService',
-          makeIntegrationServiceSource(service, teamId, userId)
+          makeIntegrationServiceSource(service, teamId, userId),
+          {operationId}
         )
+        dataLoader.dispose()
       }
     }
   )
