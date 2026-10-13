@@ -67,7 +67,7 @@ export const buildAzureDevOpsSearchWiql = (
     const whereStart = isFullQuery ? (whereIndex === -1 ? query.length : whereIndex + 5) : 0
     const whereEnd = Math.max(whereStart, orderByIndex === -1 ? query.length : orderByIndex)
     const where = query.slice(whereStart, whereEnd).trim()
-    if (!isBalanced || !scanWiql(where).isBalanced) {
+    if (!isBalanced) {
       return new Error('That WIQL has unbalanced parentheses, brackets or quotes')
     }
     return {
