@@ -11,7 +11,6 @@ import {
 import {Providers} from '../../../../types/constEnums'
 import {hasConfluenceScopes} from '../../../../utils/atlassianScopes'
 import ConfluenceProviderRow from '../ProviderRow/ConfluenceProviderRow'
-import GcalProviderRow from '../ProviderRow/GcalProviderRow'
 import IntegrationServiceProviderRow from '../ProviderRow/IntegrationServiceProviderRow'
 import MattermostProviderRow from '../ProviderRow/MattermostProviderRow'
 import MSTeamsProviderRow from '../ProviderRow/MSTeamsProviderRow'
@@ -29,7 +28,6 @@ const query = graphql`
       ...MattermostProviderRow_viewer
       ...SlackProviderRow_viewer
       ...MSTeamsProviderRow_viewer
-      ...GcalProviderRow_viewer
       teamMember(teamId: $teamId) {
         services {
           service
@@ -42,11 +40,6 @@ const query = graphql`
           atlassian {
             accessToken
             scope
-          }
-          gcal {
-            auth {
-              id
-            }
           }
           mattermost {
             auth {
@@ -124,11 +117,6 @@ const ProviderList = (props: Props) => {
       name: Providers.MSTEAMS_NAME,
       connected: !!integrations?.msTeams.auth,
       component: <MSTeamsProviderRow key='teams' teamId={teamId} viewerRef={viewer} />
-    },
-    {
-      name: Providers.GCAL_NAME,
-      connected: !!integrations?.gcal?.auth,
-      component: <GcalProviderRow key='gcal' viewerRef={viewer} teamId={teamId} />
     }
   ]
 

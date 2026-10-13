@@ -7,7 +7,7 @@ import {Breakpoint} from '~/types/constEnums'
 import {
   compareClientIntegrationPopularity,
   getClientIntegration,
-  isRegisteredClientIntegration
+  isTaskClientIntegration
 } from '../integrations/platform/registry'
 import IntegrationScopingPanel from './IntegrationScopingPanel'
 import ParabolLogoSVG from './ParabolLogoSVG'
@@ -57,7 +57,7 @@ const ScopePhaseArea = (props: Props) => {
 
   const serviceTabs = services.flatMap((integrationService) => {
     const {service, isAvailable, isConnected} = integrationService
-    if (!isRegisteredClientIntegration(service)) return []
+    if (!isTaskClientIntegration(service)) return []
     const definition = getClientIntegration(service)
     const {scoping} = definition.capabilities
     if (!scoping) return []

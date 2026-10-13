@@ -1,6 +1,6 @@
 import {useMemo} from 'react'
 import useUnusedRecords from '../hooks/useUnusedRecords'
-import type {RegisteredClientIntegration} from '../integrations/platform/registry'
+import type {TaskClientIntegration} from '../integrations/platform/registry'
 import type {ScopingItem} from '../integrations/platform/ScopingSearchState'
 import useUpdatePokerScopeMutation from '../mutations/useUpdatePokerScopeMutation'
 import {Threshold} from '../types/constEnums'
@@ -11,7 +11,7 @@ interface Props {
   items: readonly ScopingItem[]
   usedServiceTaskIds: ReadonlySet<string>
   meetingId: string
-  service: RegisteredClientIntegration
+  service: TaskClientIntegration
   noun: string
   persistQuery?: () => void
 }
