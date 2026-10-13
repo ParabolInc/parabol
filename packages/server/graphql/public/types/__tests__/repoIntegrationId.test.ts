@@ -41,7 +41,14 @@ describe('RepoIntegration.integrationRepoId', () => {
       IntegrationRepoId.join(jiraServer)
     )
 
-    const azure = {id: 'abc123', url: 'https://dev.azure.com/acme/_apis/projects/abc123'}
+    const azure = {
+      service: 'azureDevOps' as const,
+      instanceId: 'dev.azure.com/acme',
+      projectId: 'abc123',
+      name: 'Acme',
+      teamId: 'team1',
+      userId: 'user1'
+    }
     expect(resolve(AzureDevOpsRemoteProject.integrationRepoId, azure)).toBe(
       IntegrationRepoId.join({
         service: 'azureDevOps',

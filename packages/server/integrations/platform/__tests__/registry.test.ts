@@ -14,6 +14,7 @@ const KNOWN_CAPABILITIES: IntegrationCapabilityKey[] = [
   'issueRead',
   'issueSearch',
   'repoList',
+  'repoAccess',
   'estimatePush',
   'issueList'
 ]

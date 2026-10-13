@@ -1,20 +1,23 @@
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
 import {azureDevOpsIntegrationMeta} from 'parabol-client/shared/integrations/azureDevOpsIntegrationMeta'
-import type {AzureAccountProject} from '../../dataloader/azureDevOpsLoaders'
 import type {AzureDevOpsSearchQueryJson, TeamMemberIntegrationAuth} from '../../postgres/types'
-import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
 import {
   type EstimatePushCapability,
   type IntegrationCtx,
   type IssueCreateCapability,
   type IssueReadCapability,
   type IssueSearchCapability,
+  type RepoAccessCapability,
   type RepoListCapability,
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
 import buildAzureDevOpsSearchQuery from './buildAzureDevOpsSearchQuery'
 import describeAzureDevOpsDimensionField from './describeAzureDevOpsDimensionField'
+import fetchAvailableAzureDevOpsProjects, {
+  type AzureDevOpsProject
+} from './fetchAvailableAzureDevOpsProjects'
 import fetchAzureDevOpsProjects from './fetchAzureDevOpsProjects'
+import getAzureDevOpsManager from './getAzureDevOpsManager'
 import listAzureDevOpsDimensionFields from './listAzureDevOpsDimensionFields'
 import parseAzureDevOpsIntegrationHash from './parseAzureDevOpsIntegrationHash'
 import pushEstimateToAzureDevOps from './pushEstimateToAzureDevOps'
@@ -36,20 +39,11 @@ export class AzureDevOpsServerIntegration extends ServerIntegrationDefinition {
     issueCreate: IssueCreateCapability
     issueRead: IssueReadCapability
     issueSearch: IssueSearchCapability<AzureDevOpsSearchQueryJson>
-    repoList: RepoListCapability<AzureAccountProject>
+    repoList: RepoListCapability<AzureDevOpsProject>
+    repoAccess: RepoAccessCapability<AzureDevOpsProject>
     estimatePush: EstimatePushCapability
   } = {
-    issueCreate: {
-      initManager: async (ctx) => {
-        const auth = await this.resolveAuth(ctx)
-        if (!auth) return null
-        const provider = await ctx.dataLoader
-          .get('integrationProviders')
-          .loadNonNull(auth.providerId)
-        if (provider.service !== 'azureDevOps') return null
-        return new AzureDevOpsServerManager(auth, provider)
-      }
-    },
+    issueCreate: {initManager: getAzureDevOpsManager},
     issueRead: {
       getIssue: resolveAzureDevOpsTaskIntegration,
       parseIntegrationHash: parseAzureDevOpsIntegrationHash
@@ -61,6 +55,7 @@ export class AzureDevOpsServerIntegration extends ServerIntegrationDefinition {
         IntegrationRepoId.join({service: 'azureDevOps', instanceId, projectId}),
       name: ({name}) => name
     },
+    repoAccess: {fetchAvailableRepos: fetchAvailableAzureDevOpsProjects},
     estimatePush: {
       targets: ['comment', 'field'],
       pushEstimate: pushEstimateToAzureDevOps,

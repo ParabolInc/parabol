@@ -132,6 +132,23 @@ describe('parseIntegrationHash returns only the issue parts', () => {
     expect(azure.parseIntegrationHash('evil.example.com/acme:Web:42')).toBeNull()
   })
 
+  it.each([
+    ['a non-numeric issue key', 'dev.azure.com/acme:Web:abc'],
+    ['a trailing segment after the issue key', 'dev.azure.com/acme:Web:42:7'],
+    ['a signed issue key', 'dev.azure.com/acme:Web:-42'],
+    ['an empty project', 'dev.azure.com/acme::42'],
+    ['a path below the organization', 'dev.azure.com/acme/extra:Web:42'],
+    ['a missing organization', 'dev.azure.com/:Web:42'],
+    ['a lookalike host', 'dev.azure.com.evil.example/acme:Web:42'],
+    ['userinfo in the organization', 'dev.azure.com/acme@evil.example:Web:42']
+  ])('azureDevOps rejects %s', (_label, integrationHash) => {
+    expect(
+      getServerIntegration('azureDevOps').capabilities.issueRead.parseIntegrationHash(
+        integrationHash
+      )
+    ).toBeNull()
+  })
+
   it('gcal links no issues', () => {
     expect(getServerIntegration('gcal').capabilities.issueRead).toBeUndefined()
   })

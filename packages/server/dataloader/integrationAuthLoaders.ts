@@ -91,7 +91,11 @@ export const sharedIntegrationProviders = (parent: RootDataLoader) => {
   )
 }
 
-export const teamMemberIntegrationAuthsByServiceTeamAndUserId = (parent: RootDataLoader) => {
+export const teamMemberIntegrationAuthsByServiceTeamAndUserId = (
+  parent: RootDataLoader,
+  dependsOn: RegisterDependsOn
+) => {
+  dependsOn('teamMemberIntegrationAuths')
   return new DataLoader<
     TeamMemberIntegrationAuthServiceTeamUserKey,
     TeamMemberIntegrationAuth | null,

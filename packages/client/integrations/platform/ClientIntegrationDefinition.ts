@@ -73,9 +73,17 @@ export interface ScopingCapability extends SearchMetaCodec {
   isDefaultQuery?(state: ScopingSearchState): boolean
 }
 
+export interface SettingsPanelProps {
+  teamId: string
+  /** True once the viewer has connected the service from this row, so a panel can ask for what a new connection still needs */
+  isNewlyConnected: boolean
+}
+
 export interface SettingsCapability {
   /** Second line under the Remove menu item for services whose grant covers more than themselves */
-  getDisconnectSubline(grantedScopes: readonly string[]): string | undefined
+  getDisconnectSubline?(grantedScopes: readonly string[]): string | undefined
+  /** Controls shown under the settings row while the service is connected */
+  Panel?: ComponentType<SettingsPanelProps>
 }
 
 /** Behavior a single surface owns; a service fact that several surfaces read stays flat on the definition */

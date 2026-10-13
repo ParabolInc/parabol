@@ -1,63 +1,41 @@
-import graphql from 'babel-plugin-relay/macro'
-import {useFragment} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
-import type {
-  NewAzureIssueMenu_AzureDevOpsRemoteProjects$data,
-  NewAzureIssueMenu_AzureDevOpsRemoteProjects$key
-} from '../__generated__/NewAzureIssueMenu_AzureDevOpsRemoteProjects.graphql'
+import type {AzureDevOpsSharedProject} from '../integrations/azureDevOps/azureDevOpsSharedProjects'
 import {MenuContent} from '../ui/Menu/MenuContent'
 import {MenuSearch} from '../ui/Menu/MenuSearch'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import TaskIntegrationMenuItem from './TaskIntegrationMenuItem'
 
 interface Props {
-  setSelectedProjectName: (key: string) => void
-  projectsRef: NewAzureIssueMenu_AzureDevOpsRemoteProjects$key
+  projects: readonly AzureDevOpsSharedProject[]
+  onSelectProject: (integrationRepoId: string) => void
 }
 
-const getValue = (project: NewAzureIssueMenu_AzureDevOpsRemoteProjects$data[0]) => project.name
+export const getAzureProjectLabel = ({organization, name}: AzureDevOpsSharedProject) =>
+  `${organization} / ${name}`
 
 const NewAzureIssueMenu = (props: Props) => {
-  const {setSelectedProjectName, projectsRef} = props
-
-  const projects = useFragment(
-    graphql`
-      fragment NewAzureIssueMenu_AzureDevOpsRemoteProjects on AzureDevOpsRemoteProject
-      @relay(plural: true) {
-        id
-        name
-      }
-    `,
-    projectsRef
-  )
+  const {projects, onSelectProject} = props
   const {
     query,
     filteredItems: filteredProjects,
     onQueryChange
-  } = useSearchFilter(projects ?? [], getValue)
+  } = useSearchFilter(projects, getAzureProjectLabel)
 
   return (
     <MenuContent align='start' className='min-w-[300px]'>
       <MenuSearch placeholder='Search Azure' onChange={onQueryChange} value={query} />
-      {query && projects.length === 0 && (
+      {filteredProjects.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>No projects found!</EmptyDropdownMenuItemLabel>
       )}
-
-      {filteredProjects.slice(0, 10).map((project) => {
-        const {id, name} = project
-        const onClick = () => {
-          setSelectedProjectName(name)
-        }
-        return (
-          <TaskIntegrationMenuItem
-            key={id}
-            query={query}
-            label={name}
-            onClick={onClick}
-            service='azureDevOps'
-          />
-        )
-      })}
+      {filteredProjects.slice(0, 10).map((project) => (
+        <TaskIntegrationMenuItem
+          key={project.integrationRepoId}
+          query={query}
+          label={getAzureProjectLabel(project)}
+          onClick={() => onSelectProject(project.integrationRepoId)}
+          service='azureDevOps'
+        />
+      ))}
     </MenuContent>
   )
 }

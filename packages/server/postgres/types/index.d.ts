@@ -1,5 +1,6 @@
 import {Selectable, SelectQueryBuilder} from 'kysely'
 import type {JobType} from '../../../embedder/custom'
+import type {RepoAccessMeta} from '../../integrations/platform/RepoAccess'
 import {
   type selectAgendaItems,
   type selectAtlassianAuth,
@@ -229,6 +230,7 @@ export type JiraAuthMeta = {cloudIds: string[]}
  * This map is the only place to extend when a new integration stores auth meta. */
 export type IntegrationAuthMetaByService = {
   jira: JiraAuthMeta
+  azureDevOps: RepoAccessMeta | null
 }
 
 export type AtlassianAuth = ExtractTypeFromQueryBuilderSelect<typeof selectAtlassianAuth>

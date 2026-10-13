@@ -1,4 +1,5 @@
 import gcalLogo from '../../../styles/theme/images/graphics/google-calendar.svg'
+import AzureDevOpsSVG from '../../AzureDevOpsSVG'
 import GitHubSVG from '../../GitHubSVG'
 import JiraSVG from '../../JiraSVG'
 import LinearSVG from '../../LinearSVG'
@@ -18,6 +19,8 @@ const InspirationSourceLogo = ({service}: Props) => {
       return <JiraSVG />
     case 'linear':
       return <LinearSVG className='dark:[&_path]:fill-white' />
+    case 'azureDevOps':
+      return <AzureDevOpsSVG />
     case 'gcal':
       return <img className='h-6 w-6' src={gcalLogo} alt='' />
     default:

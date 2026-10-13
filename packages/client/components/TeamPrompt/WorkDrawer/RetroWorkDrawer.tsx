@@ -4,18 +4,23 @@ import {useFragment} from 'react-relay'
 import type {RetroWorkDrawer_meeting$key} from '../../../__generated__/RetroWorkDrawer_meeting.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useSessionStorageState from '../../../hooks/useSessionStorageState'
-import {getConnectProvider} from '../../../integrations/platform/findIntegrationService'
+import {
+  getConnectProvider,
+  isServiceAvailable
+} from '../../../integrations/platform/findIntegrationService'
 import gcalLogo from '../../../styles/theme/images/graphics/google-calendar.svg'
 import {cn} from '../../../ui/cn'
 import dndNoise from '../../../utils/dndNoise'
 import getNextSortOrder from '../../../utils/getNextSortOrder'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
+import AzureDevOpsSVG from '../../AzureDevOpsSVG'
 import GitHubSVG from '../../GitHubSVG'
 import GitLabSVG from '../../GitLabSVG'
 import JiraServerSVG from '../../JiraServerSVG'
 import JiraSVG from '../../JiraSVG'
 import LinearSVG from '../../LinearSVG'
 import ParabolLogoSVG from '../../ParabolLogoSVG'
+import AzureDevOpsIntegrationPanel from './AzureDevOpsIntegrationPanel'
 import GCalIntegrationPanel from './GCalIntegrationPanel'
 import GitHubIntegrationPanel from './GitHubIntegrationPanel'
 import GitLabIntegrationPanel from './GitLabIntegrationPanel'
@@ -60,11 +65,13 @@ const RetroWorkDrawer = (props: Props) => {
         ...GCalIntegrationPanel_meeting
         ...JiraServerIntegrationPanel_meeting
         ...LinearIntegrationPanel_meeting
+        ...AzureDevOpsIntegrationPanel_meeting
         viewerMeetingMember {
           teamMember {
             teamId
             services {
               ...findIntegrationService_cloudProvider @relay(mask: false)
+              ...findIntegrationService_isAvailable @relay(mask: false)
             }
             integrations {
               jiraServer {
@@ -105,6 +112,7 @@ const RetroWorkDrawer = (props: Props) => {
   const services = meeting.viewerMeetingMember?.teamMember?.services ?? []
   const hasGitHub = !!getConnectProvider(services, 'github')
   const hasJira = !!getConnectProvider(services, 'jira')
+  const hasAzureDevOps = isServiceAvailable(services, 'azureDevOps')
 
   useEffect(() => {
     SendClientSideEvent(atmosphere, 'Inspiration Drawer Impression', {
@@ -190,6 +198,16 @@ const RetroWorkDrawer = (props: Props) => {
             service: 'linear',
             label: 'Linear',
             Component: LinearIntegrationPanel
+          }
+        ]
+      : []),
+    ...(hasAzureDevOps
+      ? [
+          {
+            icon: <AzureDevOpsSVG />,
+            service: 'azureDevOps',
+            label: 'Azure DevOps',
+            Component: AzureDevOpsIntegrationPanel
           }
         ]
       : []),

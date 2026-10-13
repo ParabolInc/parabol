@@ -71,11 +71,7 @@ const jiraServerRemoteProject = {
 }
 
 const azureDevOpsRemoteProject = {
-  id: 'project-guid',
   name: 'Parabol',
-  url: 'https://dev.azure.com/parabol/_apis/projects/project-guid',
-  state: 'wellFormed',
-  visibility: 'private',
   instanceId: 'dev.azure.com/parabol',
   projectId: 'project-guid',
   service: 'azureDevOps' as const,

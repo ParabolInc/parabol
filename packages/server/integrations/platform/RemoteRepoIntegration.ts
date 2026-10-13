@@ -1,9 +1,9 @@
 import type {JiraGQLProject} from '../../dataloader/atlassianLoaders'
-import type {AzureAccountProject} from '../../dataloader/azureDevOpsLoaders'
 import type {JiraServerProject} from '../../dataloader/jiraServerLoaders'
 import type {GetRepositoriesQuery} from '../../types/githubTypes'
 import type {GetProjectsQuery as GetGitLabProjectsQuery} from '../../types/gitlabTypes'
 import type {GetProjectsQuery, GetTeamsAndProjectsQuery} from '../../types/linearTypes'
+import type {AzureDevOpsProject} from '../azureDevOps/fetchAvailableAzureDevOpsProjects'
 
 type GitHubRepoNode = NonNullable<
   NonNullable<GetRepositoriesQuery['viewer']['repositories']['nodes']>[number]
@@ -39,5 +39,5 @@ export type RemoteRepoIntegration =
   | GitHubRepo
   | GitLabProject
   | JiraServerProject
-  | AzureAccountProject
+  | AzureDevOpsProject
   | LinearRepo

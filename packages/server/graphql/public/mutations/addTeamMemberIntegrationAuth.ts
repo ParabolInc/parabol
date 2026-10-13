@@ -1,6 +1,7 @@
 import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
+import AzureDevOpsServerManager from '../../../integrations/azureDevOps/AzureDevOpsServerManager'
 import invalidateRepoIntegrationsCache from '../../../integrations/invalidateRepoIntegrationsCache'
 import JiraServerOAuth1Manager, {
   type OAuth1Auth
@@ -10,9 +11,7 @@ import createOAuth2Manager from '../../../integrations/platform/createOAuth2Mana
 import toExpiresAt from '../../../integrations/platform/toExpiresAt'
 import getKysely from '../../../postgres/getKysely'
 import syncTeamMemberIntegrationAuthTokens from '../../../postgres/queries/syncTeamMemberIntegrationAuthTokens'
-import type {IntegrationProviderAzureDevOps} from '../../../postgres/types/IntegrationProvider'
 import type {JsonObject} from '../../../postgres/types/pg'
-import AzureDevOpsServerManager from '../../../utils/AzureDevOpsServerManager'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -78,7 +77,7 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
   let meta: JsonObject | null = null
   if (authStrategy === 'oauth2') {
     if (!oauthCodeOrPat) return {error: {message: 'Missing OAuth2 code'}}
-    if (providerService === 'azureDevOps') {
+    if (integrationProvider.service === 'azureDevOps') {
       if (!oauthVerifier) {
         return {
           error: {
@@ -86,10 +85,7 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
           }
         }
       }
-      const manager = new AzureDevOpsServerManager(
-        null,
-        integrationProvider as IntegrationProviderAzureDevOps
-      )
+      const manager = new AzureDevOpsServerManager(null, integrationProvider)
       const authRes = await manager.authorize(oauthCodeOrPat, oauthVerifier)
       if (authRes instanceof Error) return standardError(authRes, {userId: viewerId})
       const {providerUserId: authProviderUserId, meta: authMeta, ...tokens} = authRes
