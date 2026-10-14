@@ -17,8 +17,10 @@ import {
   selectNotifications,
   selectOAuthAPIProvider,
   selectOrganizations,
+  selectPageComments,
   selectPageExports,
   selectPages,
+  selectPageThreads,
   selectPersonalAccessToken,
   selectRetroReflections,
   selectSlackAuths,
@@ -236,4 +238,12 @@ export const personalAccessTokens = primaryKeyLoaderMaker((ids: readonly string[
 
 export const pageExports = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectPageExports().where('id', 'in', ids).execute()
+})
+
+export const pageThreads = primaryKeyLoaderMaker((ids: readonly number[]) => {
+  return selectPageThreads().where('id', 'in', ids).execute()
+})
+
+export const pageComments = primaryKeyLoaderMaker((ids: readonly number[]) => {
+  return selectPageComments().where('id', 'in', ids).execute()
 })

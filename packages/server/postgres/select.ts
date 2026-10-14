@@ -412,6 +412,9 @@ export const selectPages = (queryCreator: Kysely<DB> | QueryCreator<DB> = getKys
 
 export const selectPageAccess = () => getKysely().selectFrom('PageAccess').selectAll()
 export const selectPageUserSortOrder = () => getKysely().selectFrom('PageUserSortOrder').selectAll()
+export const selectPageThreads = () => getKysely().selectFrom('PageThread').selectAll()
+export const selectPageComments = () =>
+  getKysely().selectFrom('PageComment').selectAll().$narrowType<{content: JSONContent}>()
 
 export const selectPageExports = () => {
   const query = getKysely().selectFrom('PageExport').selectAll()
