@@ -122,6 +122,8 @@ const RetroWorkDrawer = (props: Props) => {
             <WorkDrawerConnect
               meetingId={meetingId}
               teamId={teamId}
+              definition={definition}
+              connectDescription={workDrawer.connectDescription}
               serviceRef={integrationService}
             />
           )
