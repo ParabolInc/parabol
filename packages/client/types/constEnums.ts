@@ -187,6 +187,7 @@ export enum InvitationTokenError {
 }
 export enum InvoiceItemType {
   ADD_USER = 'addUser',
+  // no longer written; kept for historical Stripe invoice item metadata
   PAUSE_USER = 'pauseUser',
   AUTO_PAUSE_USER = 'autoPauseUser',
   REMOVE_USER = 'removeUser',
