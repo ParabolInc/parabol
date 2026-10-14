@@ -1,61 +1,37 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {ScopePhaseAreaConnect_service$key} from '../__generated__/ScopePhaseAreaConnect_service.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
-import useMutationProps from '../hooks/useMutationProps'
-import {getConnectErrorMessage} from '../integrations/platform/getConnectErrorMessage'
-import {toConnectProviderRef} from '../integrations/platform/integrationServiceProviders'
-import {
-  getClientIntegration,
-  isRegisteredClientIntegration
-} from '../integrations/platform/registry'
+import useConnectIntegrationService from '../hooks/useConnectIntegrationService'
+import type {ClientIntegrationDefinition} from '../integrations/platform/ClientIntegrationDefinition'
 import {Button} from '../ui/Button/Button'
 import {SALES_EMAIL} from '../utils/constants'
 
 interface Props {
   teamId: string
   gotoParabol: () => void
+  definition: ClientIntegrationDefinition
   serviceRef: ScopePhaseAreaConnect_service$key
 }
 
 const ScopePhaseAreaConnect = (props: Props) => {
-  const {teamId, gotoParabol, serviceRef} = props
-  const atmosphere = useAtmosphere()
-  const mutationProps = useMutationProps()
-  const {error} = mutationProps
+  const {teamId, gotoParabol, definition, serviceRef} = props
   const integrationService = useFragment(
     graphql`
       fragment ScopePhaseAreaConnect_service on IntegrationService {
-        service
         title
         isAvailable
         grantedScopes
-        cloudProvider {
-          id
-          scope
-          ... on IntegrationProviderOAuth2 {
-            clientId
-            serverBaseUrl
-            tenantId
-          }
-        }
-        sharedProviders {
-          id
-          scope
-          ... on IntegrationProviderOAuth2 {
-            clientId
-            serverBaseUrl
-            tenantId
-          }
-        }
+        ...integrationServiceProviders_service @relay(mask: false)
       }
     `,
     serviceRef
   )
-  const {service, title, isAvailable, grantedScopes, cloudProvider, sharedProviders} =
-    integrationService
-  if (!isRegisteredClientIntegration(service)) return null
-  const definition = getClientIntegration(service)
+  const {title, isAvailable} = integrationService
+  const {connect, submitting, errorMessage} = useConnectIntegrationService(
+    definition,
+    integrationService,
+    teamId
+  )
 
   if (!isAvailable) {
     return (
@@ -79,20 +55,14 @@ const ScopePhaseAreaConnect = (props: Props) => {
     )
   }
 
-  const rawProvider = sharedProviders[0] ?? cloudProvider
-  const provider = rawProvider ? toConnectProviderRef(rawProvider) : undefined
-  const onConnect = () => {
-    definition.connect(atmosphere, {teamId, mutationProps, provider, heldScopes: grantedScopes})
-  }
-  const errorMessage = getConnectErrorMessage(error, definition)
-
   return (
     <div className='flex h-full flex-col items-center justify-center'>
       <Button
         variant='raised'
         size='md'
         className='select-none gap-2 whitespace-pre-wrap bg-surface-card text-fg-primary'
-        onClick={onConnect}
+        disabled={submitting}
+        onClick={connect}
       >
         <definition.Icon className={definition.iconClassName} />
         {`Import issues from ${title}`}

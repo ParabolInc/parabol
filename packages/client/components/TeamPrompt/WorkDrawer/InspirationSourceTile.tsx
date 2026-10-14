@@ -7,7 +7,7 @@ import {NestedModalContext} from '../../../ui/Modal/NestedModalContext'
 import Ellipsis from '../../Ellipsis/Ellipsis'
 import InspirationSourceLogo from './InspirationSourceLogo'
 import InspirationSourcePopover from './InspirationSourcePopover'
-import {serviceLabel} from './inspirationCopy'
+import inspirationServiceLabel from './inspirationServiceLabel'
 import type {InspirationSourceService, InspirationSourceSettings} from './inspirationSources'
 
 interface Props {
@@ -27,7 +27,7 @@ const InspirationSourceTile = (props: Props) => {
   const {service, isConnected, issueCount, isCounting, canDraft, settings, onClose} = props
   const [open, setOpen] = useState(false)
   const isIncluded = isConnected && settings.kinds[service].length > 0
-  const label = serviceLabel(service)
+  const label = inspirationServiceLabel(service)
   const status = !isConnected ? 'Connect' : isIncluded ? (issueCount ?? '–') : 'Off'
   const onOpenChange = (nextOpen: boolean) => {
     setOpen(nextOpen)

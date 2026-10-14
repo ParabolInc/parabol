@@ -1,7 +1,7 @@
 import {sql} from 'kysely'
+import {type InspirationIssue, MAX_ISSUES} from '../../../../integrations/platform/InspirationIssue'
 import getKysely from '../../../../postgres/getKysely'
 import {Logger} from '../../../../utils/Logger'
-import {type InspirationIssue, MAX_ISSUES} from './issuesForAI'
 
 type ParabolWorkKind = 'tasks' | 'standups'
 

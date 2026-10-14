@@ -1,13 +1,12 @@
-import type {GraphQLResolveInfo} from 'graphql'
 import {parse} from 'node-html-parser'
 import buildAzureDevOpsWorkWiql, {
   type AzureDevOpsWorkKind
 } from 'parabol-client/shared/integrations/buildAzureDevOpsWorkWiql'
-import type {GQLContext} from '../../../../graphql/graphql'
-import getAzureDevOpsManager from '../../../../integrations/azureDevOps/getAzureDevOpsManager'
-import searchAzureDevOpsWorkItems from '../../../../integrations/azureDevOps/searchAzureDevOpsWorkItems'
-import {Logger} from '../../../../utils/Logger'
-import {type InspirationIssue, MAX_ISSUE_COMMENTS, MAX_ISSUES} from './issuesForAI'
+import {Logger} from '../../utils/Logger'
+import {type InspirationIssue, MAX_ISSUE_COMMENTS, MAX_ISSUES} from '../platform/InspirationIssue'
+import type {GqlIntegrationCtx} from '../platform/ServerIntegrationDefinition'
+import getAzureDevOpsManager from './getAzureDevOpsManager'
+import searchAzureDevOpsWorkItems from './searchAzureDevOpsWorkItems'
 
 const KINDS: readonly AzureDevOpsWorkKind[] = ['assigned', 'created']
 
@@ -44,22 +43,17 @@ const parseSearchQuery = (searchQuery: string) => {
 // drawer's date window, from the projects their connection shares with this team. The client
 // serializes {startAt, endAt, kinds, projectIds} as JSON into searchQuery and lists with the same
 // WHERE clause, so the draft and the list match. Returns [] if there's nothing.
-const fetchAzureDevOpsIssues = async (
-  teamId: string,
-  userId: string,
-  searchQuery: string,
-  context: GQLContext,
-  info: GraphQLResolveInfo
+const listAzureDevOpsIssues = async (
+  ctx: GqlIntegrationCtx,
+  searchQuery: string
 ): Promise<InspirationIssue[]> => {
-  const {dataLoader} = context
   const params = parseSearchQuery(searchQuery)
   if (!params) {
-    Logger.error('fetchAzureDevOpsIssues: could not parse searchQuery')
+    Logger.error('listAzureDevOpsIssues: could not parse searchQuery')
     return []
   }
   const {kinds, startAt, endAt, projects} = params
   if (kinds.length === 0) return []
-  const ctx = {dataLoader, teamId, userId, context, info}
   const [manager, workItems] = await Promise.all([
     getAzureDevOpsManager(ctx),
     searchAzureDevOpsWorkItems(ctx, {
@@ -98,4 +92,4 @@ const fetchAzureDevOpsIssues = async (
   )
 }
 
-export default fetchAzureDevOpsIssues
+export default listAzureDevOpsIssues

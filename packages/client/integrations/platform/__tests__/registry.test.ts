@@ -73,6 +73,13 @@ describe('clientIntegrations registry', () => {
       })
   })
 
+  it('every service has a retro work drawer tab', () => {
+    const withDrawer = clientIntegrationsByPopularity.filter(
+      (service) => clientIntegrations[service].capabilities.workDrawer
+    )
+    expect(withDrawer).toEqual(clientIntegrationsByPopularity)
+  })
+
   it('Google Calendar has no scope tab', () => {
     expect(clientIntegrations.gcal.capabilities.scoping).toBeUndefined()
   })

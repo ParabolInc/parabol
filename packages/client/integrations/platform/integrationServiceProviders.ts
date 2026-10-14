@@ -1,7 +1,7 @@
 import type {
   IntegrationProviderScopeEnum,
-  IntegrationServiceProviderRow_service$data
-} from '../../__generated__/IntegrationServiceProviderRow_service.graphql'
+  integrationServiceProviders_service$data
+} from '../../__generated__/integrationServiceProviders_service.graphql'
 import type {ConnectProviderRef} from './ClientIntegrationDefinition'
 
 export interface ServiceProvider extends ConnectProviderRef {
@@ -10,7 +10,7 @@ export interface ServiceProvider extends ConnectProviderRef {
 
 /** A provider as a Relay fragment on the IntegrationProvider interface returns it; OAuth2 fields are absent on other strategies */
 export type RawServiceProvider = NonNullable<
-  IntegrationServiceProviderRow_service$data['cloudProvider']
+  integrationServiceProviders_service$data['cloudProvider']
 >
 
 export const toConnectProviderRef = (provider: RawServiceProvider): ServiceProvider => ({

@@ -16,7 +16,8 @@ import {
   ClientIntegrationDefinition,
   type ConnectParams,
   type ProviderLogoAsset,
-  type ScopingCapability
+  type ScopingCapability,
+  type WorkDrawerCapability
 } from '../platform/ClientIntegrationDefinition'
 import {searchFiltersByKey} from '../platform/IntegrationSearchFilter'
 import makeScopingResults from '../platform/makeScopingResults'
@@ -58,13 +59,23 @@ const scoping: ScopingCapability = {
   filterChipLabel: (filter) => IntegrationRepoId.split(filter.value).projectKey ?? filter.value
 }
 
+const workDrawer: WorkDrawerCapability = {
+  Panel: lazy(
+    () =>
+      import(
+        /* webpackChunkName: 'JiraServerIntegrationResultsRoot' */ '../../components/TeamPrompt/WorkDrawer/JiraServerIntegrationResultsRoot'
+      )
+  ),
+  connectDescription: 'issues'
+}
+
 export class JiraServerClientIntegration extends ClientIntegrationDefinition {
   readonly service = jiraServerIntegrationMeta.service
   readonly title = jiraServerIntegrationMeta.title
   readonly description = jiraServerIntegrationMeta.description
   readonly Icon = JiraServerSVG
   readonly logo: ProviderLogoAsset = {src: jiraServerLogo}
-  readonly capabilities: ClientIntegrationCapabilities = {scoping}
+  readonly capabilities: ClientIntegrationCapabilities = {scoping, workDrawer}
   readonly contactUs = {
     url: ExternalLinks.INTEGRATIONS_JIRASERVER,
     clickEvent: 'Clicked Jira Server Request Button'
