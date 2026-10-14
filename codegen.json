@@ -79,7 +79,6 @@
           }
         },
         "mappers": {
-          "_xGitLabProject": "../../integrations/platform/RemoteRepoIntegration#GitLabProject as _xGitLabProject",
           "AcceptRequestToJoinDomainSuccess": "./types/AcceptRequestToJoinDomainSuccess#AcceptRequestToJoinDomainSuccessSource",
           "AcceptTeamInvitationPayload": "./types/AcceptTeamInvitationPayload#AcceptTeamInvitationPayloadSource",
           "ActionMeeting": "../../postgres/types/Meeting#CheckInMeeting",

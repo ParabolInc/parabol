@@ -17,10 +17,6 @@ type GitLabIntegration {
   """
   sharedProviders: [IntegrationProviderOAuth2!]!
 
-  """
-  A list of projects accessible by this team member
-  """
-  projects: [_xGitLabProject!]! @deprecated(reason: "Use api { query { projects } }")
   projectsIssues(
     first: Int!
 

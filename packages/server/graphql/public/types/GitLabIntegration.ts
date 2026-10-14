@@ -1,7 +1,6 @@
 import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
 import type {GetProjectIssuesQuery, IssuableState, IssueSort} from '../../../types/gitlabTypes'
 import logError from '../../../utils/logError'
-import fetchGitLabProjects from '../../queries/helpers/fetchGitLabProjects'
 import type {GitLabIntegrationResolvers} from '../resolverTypes'
 
 export type GitLabIntegrationSource = {
@@ -40,15 +39,6 @@ const GitLabIntegration: GitLabIntegrationResolvers = {
       .get('sharedIntegrationProviders')
       .load({service: 'gitlab', orgIds: [orgId], teamIds: [teamId]})
     return sharedProviders.filter(({scope}) => scope !== 'global')
-  },
-
-  projects: async ({teamId, userId}, _args, context, info) => {
-    const projects = await fetchGitLabProjects(teamId, userId, context, info)
-    if (projects instanceof Error) {
-      logError(projects, {userId, tags: {teamId, service: 'gitlab'}})
-      return []
-    }
-    return projects
   },
 
   projectsIssues: async ({teamId, userId}, args, context, info) => {
