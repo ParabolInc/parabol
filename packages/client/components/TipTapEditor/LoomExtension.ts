@@ -1,6 +1,6 @@
 import {Node} from '@tiptap/core'
 import {type JSONContent, mergeAttributes} from '@tiptap/react'
-import {getLoomEmbedBlockAttrs} from '../../shared/embed/getLoomEmbedBlockAttrs'
+import {resolveCuratedEmbed} from '../../shared/embed/curatedEmbedProviders'
 
 const LOOM_REGEX = /^(?:https?:\/\/)?(?:www\.)?loom\.com\/share\/[a-zA-Z0-9]+/g
 
@@ -42,10 +42,19 @@ const getLoomNodesForParagraph = (content: JSONContent) => {
     }
   })
 
-  return Object.values(distinctLoomLinks).map((link) => ({
-    type: 'embedBlock',
-    attrs: getLoomEmbedBlockAttrs(link)
-  }))
+  return Object.values(distinctLoomLinks).map((link) => {
+    const curated = resolveCuratedEmbed(link)
+    return {
+      type: 'embedBlock',
+      attrs: {
+        url: link,
+        displayMode: 'embed',
+        align: 'center',
+        aspectRatio: curated?.aspectRatio ?? '16:9',
+        ...(curated && {embedSrc: curated.embedSrc, providerName: curated.providerName})
+      }
+    }
+  })
 }
 
 export const LoomExtension = Node.create({
