@@ -5,7 +5,6 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import useConnectIntegrationService from '../../../hooks/useConnectIntegrationService'
 import type {ClientIntegrationDefinition} from '../../../integrations/platform/ClientIntegrationDefinition'
 import {Button} from '../../../ui/Button/Button'
-import {cn} from '../../../ui/cn'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 
 interface Props {
@@ -46,8 +45,8 @@ const WorkDrawerConnect = (props: Props) => {
 
   return (
     <div className='flex flex-col items-center gap-2 pt-12'>
-      <div className='h-10 w-10'>
-        <definition.Icon className={cn('h-10 w-10', definition.iconClassName)} />
+      <div className='size-10 [&>*]:size-full'>
+        <definition.Icon className={definition.iconClassName} />
       </div>
       <b>Connect to {title}</b>
       <div className='w-1/2 text-center text-sm'>
@@ -55,7 +54,8 @@ const WorkDrawerConnect = (props: Props) => {
       </div>
       <Button
         variant='secondary'
-        className='mt-4 px-8 py-2'
+        size='md'
+        className='mt-4 px-8'
         disabled={submitting}
         onClick={onConnect}
       >

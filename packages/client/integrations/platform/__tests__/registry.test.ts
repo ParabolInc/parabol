@@ -73,11 +73,11 @@ describe('clientIntegrations registry', () => {
       })
   })
 
-  it('every service but Azure DevOps has a retro work drawer tab', () => {
+  it('every service has a retro work drawer tab', () => {
     const withDrawer = clientIntegrationsByPopularity.filter(
       (service) => clientIntegrations[service].capabilities.workDrawer
     )
-    expect(withDrawer).toEqual(['jira', 'jiraServer', 'github', 'linear', 'gitlab', 'gcal'])
+    expect(withDrawer).toEqual(clientIntegrationsByPopularity)
   })
 
   it('Google Calendar has no scope tab', () => {
