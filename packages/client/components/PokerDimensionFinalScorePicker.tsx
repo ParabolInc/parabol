@@ -29,15 +29,16 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
         ...EstimateFieldDropdown_stage
         task {
           integration {
-            service
+            __typename
           }
+          taskService
         }
       }
     `,
     stageRef
   )
 
-  const service = stage.task?.integration?.service
+  const service = stage.task?.integration ? stage.task.taskService : null
   const title =
     service && isRegisteredClientIntegration(service)
       ? getClientIntegration(service).title

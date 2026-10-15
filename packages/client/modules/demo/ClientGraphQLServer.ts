@@ -558,10 +558,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (integrationProviderService === 'github') {
         Object.assign(task, {
           updatedAt: now,
+          taskService: 'github',
           integration: {
             __typename: '_xGitHubIssue',
             id: `${taskId}:GitHub`,
-            service: 'github',
             title,
             bodyHTML,
             repository: {
@@ -582,10 +582,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         Object.assign(task, {
           updatedAt: now,
           integrationHash: integrationRepoId,
+          taskService: 'jira',
           integration: {
             __typename: 'JiraIssue',
             id: `jira:${taskId}`,
-            service: 'jira',
             issueKey,
             projectKey: key,
             cloudId,
@@ -612,10 +612,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         Object.assign(task, {
           updatedAt: now,
           integrationHash: integrationRepoId,
+          taskService: 'gitlab',
           integration: {
             __typename: '_xGitLabIssue',
             id: `gitlab:${taskId}`,
-            service: 'gitlab',
             iid,
             title,
             description: bodyHTML,
@@ -1416,6 +1416,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         editors: [],
         integrationHash: null,
         integration: null,
+        taskService: null,
         team: this.db.team,
         meetingId: RetroDemo.MEETING_ID,
         replies: [],

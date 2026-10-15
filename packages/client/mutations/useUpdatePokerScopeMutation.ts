@@ -157,7 +157,8 @@ const useUpdatePokerScopeMutation = () => {
               tags: ['#archived'],
               teamId,
               title,
-              integrationHash: service === 'PARABOL' ? null : serviceTaskId
+              integrationHash: service === 'PARABOL' ? null : serviceTaskId,
+              taskService: service === 'PARABOL' ? null : service
             })
             optimisticTask
               .setLinkedRecord(viewer, 'createdByUser')
