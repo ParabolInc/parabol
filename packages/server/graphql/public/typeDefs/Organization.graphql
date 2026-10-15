@@ -43,9 +43,22 @@ type Organization implements OrganizationPartial {
   name: String!
 
   """
-  Number of teams with 3+ meetings (>1 attendee) that met within last 30 days
+  The count of non-archived teams that have at least 2 members and, in the last 30 days,
+  started or ended a meeting that at least 2 people joined
   """
   activeTeamCount: Int!
+
+  """
+  The number of active members at each of the given times, in the same order. A member is active
+  at a time if they used Parabol in the 30 days before it, the same rule that marks members inactive
+  for billing. To chart monthly active users, pass the end of each month. Accepts up to 366 times.
+  """
+  activeUserCounts(
+    """
+    The times to count active members at
+    """
+    at: [DateTime!]!
+  ): [Int!]! @scope(name: USERS_READ)
 
   """
   Teams in the organization that the viewer has access to.

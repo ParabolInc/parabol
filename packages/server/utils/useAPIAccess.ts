@@ -7,8 +7,11 @@ import AuthToken from '../database/types/AuthToken'
 import type {DataLoaderWorker} from '../graphql/graphql'
 import {PAT_PREFIX} from '../graphql/public/applyScopeDirective'
 import {ResourceGrants} from '../graphql/public/ResourceGrants'
+import getKysely from '../postgres/getKysely'
 import {selectPersonalAccessToken} from '../postgres/select'
 import type {ServerContext} from '../yoga'
+import {Logger} from './Logger'
+import recordUserActivity from './recordUserActivity'
 
 const PREFIX_LENGTH = 8
 export const useAPIAccess = (): Plugin<ServerContext & {dataLoader: DataLoaderWorker}> => {
@@ -49,7 +52,21 @@ export const useAPIAccess = (): Plugin<ServerContext & {dataLoader: DataLoaderWo
         context.dataLoader
       )
 
-      const teamMembers = await context.dataLoader.get('teamMembersByUserId').load(token.userId)
+      const [teamMembers, user] = await Promise.all([
+        context.dataLoader.get('teamMembersByUserId').load(token.userId),
+        context.dataLoader.get('users').load(token.userId)
+      ])
+      if (user && !user.isRemoved) {
+        await recordUserActivity(user).catch(Logger.error)
+      }
+      if (!token.lastUsedAt || Date.now() - token.lastUsedAt.getTime() > ms('5m')) {
+        getKysely()
+          .updateTable('PersonalAccessToken')
+          .set({lastUsedAt: sql`CURRENT_TIMESTAMP`})
+          .where('id', '=', token.id)
+          .execute()
+          .catch(Logger.error)
+      }
       const tms = teamMembers.map(({teamId}: {teamId: string}) => teamId)
       const authToken = new AuthToken({
         sub: token.userId,
