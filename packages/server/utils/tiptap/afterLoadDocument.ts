@@ -7,6 +7,7 @@ import {Logger} from '../Logger'
 import {getUserIdFromTransaction} from './getUserIdFromTransaction'
 import {handleAddedPageLinks} from './handleAddedPageLinks'
 import {handleDeletedPageLinks} from './handleDeletedPageLinks'
+import {syncPageEmbeds} from './syncPageEmbeds'
 import {syncPageUserMentionNames} from './syncPageUserMentionNames'
 
 // Track observers per document so they can be cleaned up on unload
@@ -23,6 +24,7 @@ export const afterLoadDocument: Extension['afterLoadDocument'] = async ({
   // Guard against double-load without intervening unload
   if (documentObservers.has(documentName)) return
   syncPageUserMentionNames(document).catch(Logger.log)
+  syncPageEmbeds(document).catch(Logger.log)
   const [pageId] = CipherId.fromClient(documentName)
   const root = document.getXmlFragment('default')
   const rootObserver = (events: any[]) => {
