@@ -5,7 +5,11 @@ import {normalizeEmbedUrl} from '../../../shared/embed/normalizeEmbedUrl'
 import {EmbedBlockBase} from '../../../shared/tiptap/extensions/EmbedBlockBase'
 import {EmbedBlockView} from './EmbedBlockView'
 
-export const EmbedBlock = EmbedBlockBase.extend({
+export const EmbedBlock = EmbedBlockBase.extend<{pasteToEmbed: boolean}>({
+  addOptions() {
+    return {pasteToEmbed: true}
+  },
+
   addCommands() {
     return {
       setEmbedBlock:
@@ -55,6 +59,7 @@ export const EmbedBlock = EmbedBlockBase.extend({
   },
 
   addProseMirrorPlugins() {
+    if (!this.options.pasteToEmbed) return []
     return [
       new Plugin({
         key: new PluginKey('embedBlockPaste'),
