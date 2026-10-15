@@ -9,6 +9,7 @@ import {handleAddedPageLinks} from './handleAddedPageLinks'
 import {handleDeletedPageLinks} from './handleDeletedPageLinks'
 import {rehostExternalAssets} from './rehostExternalAssets'
 import {removeClientThinkingBlocks} from './removeClientThinkingBlocks'
+import {syncPageEmbeds} from './syncPageEmbeds'
 import {syncPageUserMentionNames} from './syncPageUserMentionNames'
 
 // Track observers per document so they can be cleaned up on unload
@@ -27,6 +28,7 @@ export const afterLoadDocument: Extension['afterLoadDocument'] = async ({
   const [pageId, , entity] = CipherId.fromClient(documentName)
   if (entity !== 'page') return
   syncPageUserMentionNames(document, pageId).catch(Logger.log)
+  syncPageEmbeds(document).catch(Logger.log)
   const root = document.getXmlFragment('default')
   const rootObserver = (events: any[]) => {
     // Ignore any transactions where the page link is "moved" (deleted, then inserted)
