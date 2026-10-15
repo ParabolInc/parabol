@@ -1,9 +1,13 @@
 import graphql from 'babel-plugin-relay/macro'
+import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import type {IntegrationServiceProviderRow_service$key} from '../../../../__generated__/IntegrationServiceProviderRow_service.graphql'
 import ProviderLogo from '../../../../components/ProviderLogo'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import useMutationProps from '../../../../hooks/useMutationProps'
+import useMutationProps, {
+  getOnCompletedError,
+  type MenuMutationProps
+} from '../../../../hooks/useMutationProps'
 import {getConnectErrorMessage} from '../../../../integrations/platform/getConnectErrorMessage'
 import {
   getProviderRowEntries,
@@ -24,10 +28,13 @@ import ProviderRowShell from './ProviderRowShell'
 interface Props {
   teamId: string
   serviceRef: IntegrationServiceProviderRow_service$key
+  /** Connecting moves the row to another section, which remounts it, so the list remembers what was just connected */
+  isNewlyConnected: boolean
+  onConnected: () => void
 }
 
 const IntegrationServiceProviderRow = (props: Props) => {
-  const {teamId, serviceRef} = props
+  const {teamId, serviceRef, isNewlyConnected, onConnected} = props
   const integrationService = useFragment(
     graphql`
       fragment IntegrationServiceProviderRow_service on IntegrationService {
@@ -64,6 +71,13 @@ const IntegrationServiceProviderRow = (props: Props) => {
   const atmosphere = useAtmosphere()
   const mutationProps = useMutationProps()
   const {submitting, error} = mutationProps
+  const connectMutationProps: MenuMutationProps = {
+    ...mutationProps,
+    onCompleted: (res, errors) => {
+      mutationProps.onCompleted(res, errors)
+      if (!getOnCompletedError(res, errors)) onConnected()
+    }
+  }
   const {
     service,
     title,
@@ -102,6 +116,12 @@ const IntegrationServiceProviderRow = (props: Props) => {
   const entries = getProviderRowEntries({title, description, isConnected, auth, providers})
   if (entries.length === 0) return null
   const errorMessage = getConnectErrorMessage(error, definition)
+  const Panel = definition.capabilities.settings?.Panel
+  const panel = isConnected && Panel && (
+    <Suspense fallback={null}>
+      <Panel teamId={teamId} isNewlyConnected={isNewlyConnected} />
+    </Suspense>
+  )
 
   const entryProps = (entry: ProviderRowEntryModel): ProviderRowEntryProps => ({
     name: entry.name,
@@ -113,7 +133,7 @@ const IntegrationServiceProviderRow = (props: Props) => {
         onConnectClick={() =>
           definition.connect(atmosphere, {
             teamId,
-            mutationProps,
+            mutationProps: connectMutationProps,
             provider: entry.provider,
             heldScopes: grantedScopes
           })
@@ -134,14 +154,18 @@ const IntegrationServiceProviderRow = (props: Props) => {
 
   if (entries.length === 1) {
     return (
-      <ProviderRowShell providerLogo={<ProviderLogo logo={logo} />}>
+      <ProviderRowShell providerLogo={<ProviderLogo logo={logo} />} panel={panel}>
         <ProviderRowEntry {...entryProps(entries[0]!)} />
       </ProviderRowShell>
     )
   }
 
   return (
-    <ProviderRowShell providerLogo={<ProviderLogo logo={logo} />} headerClassName='pb-0'>
+    <ProviderRowShell
+      providerLogo={<ProviderLogo logo={logo} />}
+      headerClassName='pb-0'
+      panel={panel}
+    >
       <div className='flex w-full flex-col'>
         {entries.map((entry) => (
           <div key={entry.provider.id} className='flex w-full flex-row pb-4'>

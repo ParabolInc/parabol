@@ -1,5 +1,5 @@
 """
-An optional capability a task-integration service may implement
+An optional capability an integration service may implement
 """
 enum IntegrationCapabilityEnum {
   """
@@ -26,6 +26,11 @@ enum IntegrationCapabilityEnum {
   List the repos/projects a task can be pushed to
   """
   repoList
+
+  """
+  Let the viewer choose which of their repos/projects the team can reach
+  """
+  repoAccess
 
   """
   Push a poker estimate back to the service (comment, field, or label)

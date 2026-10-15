@@ -80,7 +80,7 @@ const getHeaderFields = (integration: Integration | null): HeaderFields | null =
       const {
         title: azureDevOpsTitle,
         url: azureDevOpsUrl,
-        id: workItemId,
+        workItemKey: workItemId,
         descriptionHTML
       } = integration
       return {
@@ -123,6 +123,7 @@ graphql`
       ... on AzureDevOpsWorkItem {
         __typename
         id
+        workItemKey: issueKey
         title
         teamProject
         type

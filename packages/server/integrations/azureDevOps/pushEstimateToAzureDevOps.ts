@@ -1,9 +1,9 @@
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import type {EstimatePushResult} from '../../postgres/types/EstimatePushResult'
-import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
-import {fieldTypeToId} from '../../utils/azureDevOps/azureDevOpsFieldTypeToId'
 import loadDimensionField from '../platform/loadDimensionField'
 import type {EstimatePushCtx} from '../platform/ServerIntegrationDefinition'
+import {toAzureDevOpsFieldReferenceName} from './azureDevOpsEstimateFields'
+import getAzureDevOpsManager from './getAzureDevOpsManager'
 import resolveAzureDevOpsDimensionFieldKey from './resolveAzureDevOpsDimensionFieldKey'
 
 const pushEstimateToAzureDevOps = async ({
@@ -19,22 +19,19 @@ const pushEstimateToAzureDevOps = async ({
   const {integration, teamId} = task
   if (integration?.service !== 'azureDevOps') return new Error('Not an Azure DevOps task')
   const {dimensionName, value} = taskEstimate
-  const {accessUserId, instanceId, issueKey, projectKey} = integration
+  const {accessUserId, instanceId, issueKey} = integration
 
-  const [auth, azureDevOpsWorkItem] = await Promise.all([
-    dataLoader.get('freshAzureDevOpsAuth').load({teamId, userId: accessUserId}),
-    dataLoader.get('azureDevOpsWorkItem').load({
-      teamId,
-      userId: accessUserId,
-      instanceId,
-      projectId: projectKey,
-      viewerId: accessUserId,
-      workItemId: issueKey
-    })
+  const [manager, workItem] = await Promise.all([
+    getAzureDevOpsManager({dataLoader, teamId, userId: accessUserId}),
+    dataLoader
+      .get('azureDevOpsWorkItem')
+      .load({teamId, userId: accessUserId, instanceId, workItemId: issueKey})
   ])
-
-  if (!auth) {
-    return new Error('User no longer has access to Azure DevOps')
+  if (!manager) return new Error('User no longer has access to Azure DevOps')
+  if (!workItem) {
+    return new Error(
+      'Cannot find the work item. Its project may no longer be shared with this team'
+    )
   }
 
   const dimensionFieldLookup = await loadDimensionField(
@@ -43,46 +40,32 @@ const pushEstimateToAzureDevOps = async ({
     dimensionName
   )
   const dimensionField = dimensionFieldLookup?.field
-
   const fieldId = dimensionField?.fieldId ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
+  if (fieldId === SprintPokerDefaults.SERVICE_FIELD_NULL) return null
 
-  const fieldType = dimensionField ? dimensionField.fieldType : 'string'
-
-  if (!azureDevOpsWorkItem) {
-    return new Error('Cannot find the correct work item to push changes to.')
-  }
-
-  const manager = new AzureDevOpsServerManager(auth, null)
-
+  const projectId = workItem.teamProject
   if (fieldId === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
-    const res = await manager.addScoreComment(
+    const res = await manager.addScoreComment({
       instanceId,
+      projectId,
+      workItemId: issueKey,
       dimensionName,
-      value,
+      finalScore: value,
       meetingName,
-      discussionURL,
-      issueKey,
-      projectKey
-    )
-    if ('message' in res) {
-      return new Error(res.message)
-    }
-  } else if (fieldId !== SprintPokerDefaults.SERVICE_FIELD_NULL) {
-    const azureFieldId = fieldTypeToId[azureDevOpsWorkItem.type as keyof typeof fieldTypeToId]
-    try {
-      const updatedStoryPoints = fieldType === 'string' ? value : Number(value)
-      await manager.addScoreField(
-        instanceId,
-        azureFieldId,
-        updatedStoryPoints,
-        issueKey,
-        projectKey
-      )
-    } catch (e) {
-      return new Error(e instanceof Error ? e.message : 'Unable to updateStoryPoints')
-    }
+      discussionURL
+    })
+    return res instanceof Error ? res : null
   }
-  return null
+
+  const fieldValue = dimensionField?.fieldType === 'string' ? value : Number(value)
+  if (typeof fieldValue === 'number' && !Number.isFinite(fieldValue)) {
+    const fieldName = dimensionField?.fieldName ?? 'That Azure DevOps field'
+    return new Error(`${fieldName} only takes numbers, so "${value}" was not saved`)
+  }
+  const referenceName = toAzureDevOpsFieldReferenceName(fieldId)
+  const res = await manager.setField(instanceId, projectId, issueKey, referenceName, fieldValue)
+  if (res instanceof Error) return res
+  return {service: 'azureDevOps', target: 'field', targetId: referenceName}
 }
 
 export default pushEstimateToAzureDevOps

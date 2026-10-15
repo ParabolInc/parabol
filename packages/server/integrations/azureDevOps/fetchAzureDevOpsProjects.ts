@@ -1,28 +1,26 @@
-import type {AzureAccountProject} from '../../dataloader/azureDevOpsLoaders'
-import type {IntegrationProviderAzureDevOps} from '../../postgres/types/IntegrationProvider'
-import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
-import {getInstanceId} from '../../utils/azureDevOps/azureDevOpsFieldTypeToId'
+import RepoAccess from '../platform/RepoAccess'
 import type {RepoFetchCtx} from '../platform/ServerIntegrationDefinition'
+import fetchAvailableAzureDevOpsProjects, {
+  type AzureDevOpsProject
+} from './fetchAvailableAzureDevOpsProjects'
+import listGrantedAzureDevOpsProjects from './listGrantedAzureDevOpsProjects'
 
-/** Every Azure DevOps project across the user's organizations; an Error when the remote failed */
-const fetchAzureDevOpsProjects = async ({
-  dataLoader,
-  teamId,
-  userId
-}: RepoFetchCtx): Promise<AzureAccountProject[] | Error> => {
-  const auth = await dataLoader.get('freshAzureDevOpsAuth').load({teamId, userId})
+/** The projects the user's connection shares with this team. A connection limited to chosen projects answers from its own record, without calling Azure DevOps */
+const fetchAzureDevOpsProjects = async (
+  ctx: RepoFetchCtx
+): Promise<AzureDevOpsProject[] | Error> => {
+  const {dataLoader, teamId, userId} = ctx
+  const auth = await dataLoader
+    .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
+    .load({service: 'azureDevOps', teamId, userId})
   if (!auth) return []
-  const provider = await dataLoader.get('integrationProviders').loadNonNull(auth.providerId)
-  const manager = new AzureDevOpsServerManager(auth, provider as IntegrationProviderAzureDevOps)
-  const {error, projects} = await manager.getAllUserProjects()
-  if (error !== undefined) return error
-  return (projects ?? []).map((project) => ({
+  const access = RepoAccess.fromMeta(auth.meta)
+  if (access.mode === 'all') return fetchAvailableAzureDevOpsProjects(ctx)
+  return listGrantedAzureDevOpsProjects(access).map((project) => ({
     ...project,
-    instanceId: getInstanceId(project.url),
-    userId,
-    projectId: project.id,
+    service: 'azureDevOps' as const,
     teamId,
-    service: 'azureDevOps' as const
+    userId
   }))
 }
 

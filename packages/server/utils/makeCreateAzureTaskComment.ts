@@ -1,4 +1,5 @@
 import {ExternalLinks} from '../../client/types/constEnums'
+import {escapeHtml} from './escapeHtml'
 
 const makeCreateAzureTaskComment = (
   creator: string,
@@ -6,11 +7,11 @@ const makeCreateAzureTaskComment = (
   teamName: string,
   teamDashboardUrl: string
 ) => {
-  return `<div>Created by ${creator} for ${assignee}</div>
+  return `<div>Created by ${escapeHtml(creator)} for ${escapeHtml(assignee)}</div>
 
   <br>
 
-  <div>See the dashboard of <a href='${teamDashboardUrl}'>${teamName}</a></div>
+  <div>See the dashboard of <a href='${escapeHtml(teamDashboardUrl)}'>${escapeHtml(teamName)}</a></div>
 
   <br>
 

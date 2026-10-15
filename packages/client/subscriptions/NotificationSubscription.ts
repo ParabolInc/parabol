@@ -179,6 +179,7 @@ const subscription = graphql`
 
       IntegrationService {
         ...TaskFooterIntegrateMenuServiceRepos_service @relay(mask: false)
+        ...azureDevOpsSharedProjects_service
       }
 
       ToggleFeatureFlagSuccess {
