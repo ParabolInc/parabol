@@ -32,7 +32,6 @@ export const EmbedBlockView = (props: NodeViewProps) => {
 
   const [resolve, isResolving] = useResolveEmbedUrl()
   const [isReplacing, setIsReplacing] = useState(false)
-  const aspectRatioRef = useRef(16 / 9)
   const resolvedUrlRef = useRef<string | null>(null)
 
   const onClick = useCallback(() => {
@@ -92,6 +91,9 @@ export const EmbedBlockView = (props: NodeViewProps) => {
     [updateAttributes, resolve, applyResolvedMetadata]
   )
 
+  // A URL can arrive already on the node, from a paste or a collaborator, without
+  // ever passing through applyUrl. An unstamped fetchedAt is the signal it was
+  // never resolved.
   useEffect(() => {
     if (!url || fetchedAt) return
     if (!editor.isEditable) return
@@ -127,7 +129,6 @@ export const EmbedBlockView = (props: NodeViewProps) => {
     [applyUrl]
   )
 
-  // Reload only ever rewrites provider-derived attributes, never formatting choices
   const onReload = useCallback(async () => {
     if (!url) return
     const resolved = await resolve(url, true)
@@ -137,9 +138,7 @@ export const EmbedBlockView = (props: NodeViewProps) => {
   }, [url, resolve, updateAttributes])
 
   const {onPointerDown} = useBlockResizer(
-    width ?? EDITOR_WIDTH,
     (next) => updateAttributes({...next, isFullWidth: false}),
-    aspectRatioRef,
     editor.view.dom.getBoundingClientRect().width || EDITOR_WIDTH
   )
 
@@ -196,6 +195,7 @@ export const EmbedBlockView = (props: NodeViewProps) => {
                 editor={editor}
                 attrs={attrs}
                 canFrame={canFrame}
+                canEmbed={isAllowedEmbedHost(embedSrc)}
                 isOpen={selected}
                 isResolving={isResolving}
                 updateAttributes={updateAttributes}

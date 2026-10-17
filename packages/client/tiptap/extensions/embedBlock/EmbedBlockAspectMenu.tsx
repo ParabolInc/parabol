@@ -27,7 +27,10 @@ export const EmbedBlockAspectMenu = (props: Props) => {
         <div className='flex items-center'>
           <Tooltip>
             <TooltipTrigger asChild>
-              <button className='flex h-7 cursor-pointer items-center justify-center rounded-sm px-2 font-mono text-fg-primary text-xs transition-colors hover:bg-surface-hover'>
+              <button
+                aria-label='Aspect ratio'
+                className='flex h-7 cursor-pointer items-center justify-center rounded-sm px-2 font-mono text-fg-primary text-xs transition-colors hover:bg-surface-hover'
+              >
                 {current.short}
               </button>
             </TooltipTrigger>

@@ -30,10 +30,9 @@ export const ImageBlockView = (props: NodeViewProps) => {
 
   const aspectRatioRef = useRef(1)
   const {onPointerDown} = useBlockResizer(
-    width,
     (attrs) => updateAttributes({...attrs, isFullWidth: false}),
-    aspectRatioRef,
-    editor.view.dom.getBoundingClientRect().width || editor.storage.imageBlock.editorWidth
+    editor.view.dom.getBoundingClientRect().width || editor.storage.imageBlock.editorWidth,
+    aspectRatioRef
   )
   const onPointerDownLeft = onPointerDown('left')
   const onPointerDownRight = onPointerDown('right')

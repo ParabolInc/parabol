@@ -11,7 +11,7 @@ import {
   OpenInNew as OpenInNewIcon,
   Refresh as RefreshIcon
 } from '~/ui/icons'
-import type {EmbedAspectRatio, EmbedBlockAttrs} from '../../../shared/embed/embedTypes'
+import type {EmbedBlockAttrs} from '../../../shared/embed/embedTypes'
 import {toSafeHref} from '../../../shared/embed/normalizeEmbedUrl'
 import {BubbleMenuButton} from '../imageBlock/BubbleMenuButton'
 import {EmbedBlockAspectMenu} from './EmbedBlockAspectMenu'
@@ -20,6 +20,7 @@ interface Props {
   editor: Editor
   attrs: EmbedBlockAttrs
   canFrame: boolean
+  canEmbed: boolean
   isOpen: boolean
   isResolving: boolean
   updateAttributes: (attributes: Record<string, any>) => void
@@ -35,16 +36,25 @@ const alignButtons = [
 ]
 
 export const EmbedBlockBubbleMenu = (props: Props) => {
-  const {editor, attrs, canFrame, isOpen, isResolving, updateAttributes, onReload, onReplace} =
-    props
-  const {align, aspectRatio, isFullWidth, displayMode, url, embedSrc} = attrs
+  const {
+    editor,
+    attrs,
+    canFrame,
+    canEmbed,
+    isOpen,
+    isResolving,
+    updateAttributes,
+    onReload,
+    onReplace
+  } = props
+  const {align, aspectRatio, isFullWidth, displayMode, url} = attrs
 
   return (
     <Popover.Root open={isOpen}>
       <Popover.Anchor className='pointer-events-none absolute top-0 h-full w-full' />
       <Popover.Portal>
         <Popover.Content
-          className='fade-in zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 z-10 flex animate-in items-center rounded-sm border border-hairline border-solid bg-surface-card p-[3px] shadow-sm'
+          className='fade-in zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 z-10 flex animate-in items-center rounded-sm border border-hairline border-solid bg-surface-raised p-[3px] shadow-sm'
           sideOffset={8}
           side='top'
           onOpenAutoFocus={(e) => e.preventDefault()}
@@ -73,19 +83,20 @@ export const EmbedBlockBubbleMenu = (props: Props) => {
 
           <Divider />
 
-          {/* Card is always reachable; embed only when the provider allows framing */}
-          <BubbleMenuButton
-            onClick={() =>
-              updateAttributes({displayMode: displayMode === 'embed' ? 'card' : 'embed'})
-            }
-            isActive={displayMode === 'card'}
-            Icon={ArticleIcon}
-            title={displayMode === 'embed' ? 'Show as card' : 'Show as embed'}
-          />
+          {canEmbed && (
+            <BubbleMenuButton
+              onClick={() =>
+                updateAttributes({displayMode: displayMode === 'embed' ? 'card' : 'embed'})
+              }
+              isActive={displayMode === 'card'}
+              Icon={ArticleIcon}
+              title={displayMode === 'embed' ? 'Show as card' : 'Show as embed'}
+            />
+          )}
 
           {canFrame && (
             <EmbedBlockAspectMenu
-              aspectRatio={aspectRatio as EmbedAspectRatio}
+              aspectRatio={aspectRatio}
               onSelect={(next) => updateAttributes({aspectRatio: next})}
             />
           )}
@@ -107,11 +118,11 @@ export const EmbedBlockBubbleMenu = (props: Props) => {
           />
           <BubbleMenuButton onClick={onReplace} Icon={LinkIcon} title='Replace URL' />
           <BubbleMenuButton
-            onClick={() => editor.chain().deleteSelection().run()}
+            onClick={() => editor.chain().focus().deleteSelection().run()}
             Icon={DeleteIcon}
             title='Delete embed'
           />
-          {!embedSrc && <span className='sr-only'>This link cannot be embedded</span>}
+          {!canEmbed && <span className='sr-only'>This link cannot be embedded</span>}
         </Popover.Content>
       </Popover.Portal>
     </Popover.Root>

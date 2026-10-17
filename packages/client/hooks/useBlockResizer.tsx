@@ -5,15 +5,20 @@ import useEventCallback from './useEventCallback'
 const makeDrag = () => ({
   isDrag: false,
   startX: 0,
-  lastX: 0,
+  startWidth: 0,
+  width: 0,
   side: 'left'
 })
 export const useBlockResizer = (
-  width: number,
   updateAttributes: (attrs: Record<string, any>) => void,
-  aspectRatioRef: RefObject<number>,
-  maxWidth: number
+  maxWidth: number,
+  aspectRatioRef?: RefObject<number>
 ) => {
+  const withHeight = (nextWidth: number) =>
+    aspectRatioRef
+      ? {width: nextWidth, height: Math.round(nextWidth / aspectRatioRef.current!)}
+      : {width: nextWidth}
+
   const dragRef = useRef(makeDrag())
 
   const onPointerMove = useEventCallback((e: PointerEvent) => {
@@ -24,19 +29,14 @@ export const useBlockResizer = (
       if (!drag.isDrag) return
     }
     const sideCoefficient = drag.side === 'left' ? 1 : -1
-    const delta = (drag.lastX - clientX) * sideCoefficient
-    drag.lastX = clientX
-    const nextWidth = Math.min(maxWidth, Math.max(48, width + delta))
-    updateAttributes({
-      width: nextWidth,
-      height: Math.round(nextWidth / aspectRatioRef.current!)
-    })
+    const delta = (drag.startX - clientX) * sideCoefficient
+    drag.width = Math.min(maxWidth, Math.max(48, drag.startWidth + delta))
+    updateAttributes(withHeight(drag.width))
   })
 
   const endDrag = useEventCallback(() => {
     if (dragRef.current.isDrag) {
-      const aspectRatio = aspectRatioRef.current!
-      updateAttributes({width, height: Math.round(width / aspectRatio)})
+      updateAttributes(withHeight(dragRef.current.width))
     }
     dragRef.current = makeDrag()
   })
@@ -57,7 +57,8 @@ export const useBlockResizer = (
         },
         {once: true}
       )
-      dragRef.current = {isDrag: false, startX: e.clientX, lastX: e.clientX, side}
+      const startWidth = handle.parentElement!.getBoundingClientRect().width
+      dragRef.current = {isDrag: false, startX: e.clientX, startWidth, width: startWidth, side}
     }
   )
   return {onPointerDown}
