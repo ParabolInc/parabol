@@ -85,6 +85,7 @@ export const createDemoTask = (input: TaskInput): DemoTask => {
     isHighlighted: false,
     tags: [],
     integration: integration ?? null,
+    taskService: integration ? (integration.__typename === 'JiraIssue' ? 'jira' : 'github') : null,
     integrationHash: integration ? integrationHash(integration) : null,
     userId: assignee?.id ?? null,
     user: assignee ? toUser(assignee) : null,
