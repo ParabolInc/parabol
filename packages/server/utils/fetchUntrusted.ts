@@ -200,7 +200,7 @@ const agentOptions = {keepAlive: true, timeout: TIMEOUT_MS, lookup: safeLookup}
 const httpAgent = new GuardedHttpAgent(agentOptions)
 const httpsAgent = new GuardedHttpsAgent(agentOptions)
 
-const fetchOnce = (
+const fetchOnce = async (
   url: URL,
   options: {
     method?: 'GET' | 'POST'
@@ -208,8 +208,12 @@ const fetchOnce = (
     body?: string
     signal?: AbortSignal
   }
-) =>
-  fetch(url, {
+) => {
+  // Reject a bad destination before a request exists. Once one does, dd-trace marks its span as
+  // errored when the guard kills the connection, and Error Tracking files that as a bug.
+  // IP literals also need this: net.connect skips the lookup for them, leaving only verifyPeer.
+  await resolveSafeAddresses(getHostname(url))
+  return fetch(url, {
     method: options.method ?? 'GET',
     headers: {'User-Agent': USER_AGENT, ...options.headers},
     body: options.body,
@@ -219,6 +223,7 @@ const fetchOnce = (
     signal: options.signal ?? AbortSignal.timeout(TIMEOUT_MS),
     agent: url.protocol === 'https:' ? httpsAgent : httpAgent
   })
+}
 
 /**
  * Read a body with a hard size cap. Always settles the stream so keepAlive sockets are released
