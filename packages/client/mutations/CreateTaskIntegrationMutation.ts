@@ -190,6 +190,7 @@ const CreateTaskIntegrationMutation: StandardMutation<TCreateTaskIntegrationMuta
         [bodyField]: body
       })
       task.setLinkedRecord(integration, 'integration')
+      task.setValue(integrationProviderService, 'taskService')
     },
     onCompleted: (data, errors) => {
       if (onCompleted) {

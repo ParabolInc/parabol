@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {
   getUserId,
   isSuperUser,
@@ -9,7 +10,8 @@ import type {FeatureFlagName} from '../../../utils/featureFlags'
 import {getStripeManager} from '../../../utils/stripe'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import type {OrganizationResolvers} from '../resolverTypes'
-import getActiveTeamCountByOrgIds from './helpers/getActiveTeamCountByOrgIds'
+
+const MAX_ACTIVE_USER_COUNT_TIMES = 366
 
 const Organization: OrganizationResolvers = {
   approvedDomains: async ({id: orgId}, _args, {dataLoader}) => {
@@ -52,8 +54,18 @@ const Organization: OrganizationResolvers = {
     return isUserOrgAdmin(viewerId, orgId, dataLoader)
   },
 
-  activeTeamCount: async ({id: orgId}) => {
-    return getActiveTeamCountByOrgIds(orgId)
+  activeTeamCount: async ({id: orgId}, _args, {dataLoader}) => {
+    const activeTeams = await dataLoader.get('activeTeamsByOrgId').load(orgId)
+    return activeTeams.length
+  },
+
+  activeUserCounts: async ({id: orgId}, {at}, {dataLoader}) => {
+    if (at.length > MAX_ACTIVE_USER_COUNT_TIMES) {
+      throw new GraphQLError(
+        `Cannot count active users at more than ${MAX_ACTIVE_USER_COUNT_TIMES} times at once`
+      )
+    }
+    return dataLoader.get('activeUserCountsByOrgId').load({orgId, times: at})
   },
 
   teams: async ({id: orgId}, _args, {dataLoader, authToken}) => {

@@ -57,9 +57,7 @@ const NullableTask = (props: Props) => {
         createdByUser {
           preferredName
         }
-        integration {
-          __typename
-        }
+        taskService
         status
         teamId
         tags
@@ -68,8 +66,8 @@ const NullableTask = (props: Props) => {
     `,
     taskRef
   )
-  const {content, createdBy, createdByUser, integration, teamId, id: taskId, tags} = task
-  const isIntegration = !!integration?.__typename
+  const {content, createdBy, createdByUser, taskService, teamId, id: taskId, tags} = task
+  const isIntegration = !!taskService
   const {preferredName} = createdByUser
   const atmosphere = useAtmosphere()
   const isArchived = isTaskArchived(tags)

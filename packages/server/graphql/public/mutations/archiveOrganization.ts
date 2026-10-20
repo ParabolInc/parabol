@@ -1,8 +1,6 @@
-import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 import type Team from '../../../database/types/Team'
-import getKysely from '../../../postgres/getKysely'
 import type {User} from '../../../postgres/types'
 import safeArchiveTeam from '../../../safeMutations/safeArchiveTeam'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -10,6 +8,7 @@ import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import isValid from '../../isValid'
+import removeAllUsersFromOrg from '../../mutations/helpers/removeAllUsersFromOrg'
 import type {MutationResolvers} from '../resolverTypes'
 
 const archiveOrganization: MutationResolvers['archiveOrganization'] = async (
@@ -61,15 +60,7 @@ const archiveOrganization: MutationResolvers['archiveOrganization'] = async (
 
   const uniqueUserIds = Array.from(new Set(allUserIds))
 
-  await Promise.all([
-    getKysely()
-      .updateTable('OrganizationUser')
-      .set({removedAt: sql`CURRENT_TIMESTAMP`})
-      .where('orgId', '=', orgId)
-      .where('removedAt', 'is', null)
-      .execute(),
-    removeTeamsLimitObjects(orgId, dataLoader)
-  ])
+  await Promise.all([removeAllUsersFromOrg(orgId), removeTeamsLimitObjects(orgId, dataLoader)])
 
   const data = {
     orgId,

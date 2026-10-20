@@ -96,10 +96,11 @@ const deleteUser = async (orgIds: string[], user: User) => {
     .execute()
 }
 
+type AdjustableInvoiceItemType = Exclude<InvoiceItemType, InvoiceItemType.PAUSE_USER>
+
 const dbActionTypeLookup = {
   [InvoiceItemType.ADD_USER]: addUser,
   [InvoiceItemType.AUTO_PAUSE_USER]: changePause(true),
-  [InvoiceItemType.PAUSE_USER]: changePause(true),
   [InvoiceItemType.REMOVE_USER]: deleteUser,
   [InvoiceItemType.UNPAUSE_USER]: changePause(false)
 }
@@ -107,10 +108,9 @@ const dbActionTypeLookup = {
 const auditEventTypeLookup = {
   [InvoiceItemType.ADD_USER]: 'added',
   [InvoiceItemType.AUTO_PAUSE_USER]: 'inactivated',
-  [InvoiceItemType.PAUSE_USER]: 'inactivated',
   [InvoiceItemType.REMOVE_USER]: 'removed',
   [InvoiceItemType.UNPAUSE_USER]: 'activated'
-} as {[key in InvoiceItemType]: OrganizationUserAudit['eventType']}
+} as {[key in AdjustableInvoiceItemType]: OrganizationUserAudit['eventType']}
 
 /**
  * Also adds the organization user if not present.
@@ -120,7 +120,7 @@ const auditEventTypeLookup = {
 export default async function adjustUserCount(
   userId: string,
   orgInput: string | string[],
-  type: InvoiceItemType,
+  type: AdjustableInvoiceItemType,
   dataLoader: DataLoaderWorker
 ) {
   const pg = getKysely()
