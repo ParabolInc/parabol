@@ -5,6 +5,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.5.0](https://github.com/ParabolInc/parabol/compare/v15.4.0...v15.5.0) (2026-10-20)
+
+
+### Added
+
+* count active users over time & require attendance for active teams ([#13661](https://github.com/ParabolInc/parabol/issues/13661)) ([0d86f81](https://github.com/ParabolInc/parabol/commit/0d86f818a928f92d5a05aa909cd5372ffdd06fcf))
+
+
+### Fixed
+
+* keep blocked fetch destinations out of Datadog Error Tracking ([#13664](https://github.com/ParabolInc/parabol/issues/13664)) ([7f731d0](https://github.com/ParabolInc/parabol/commit/7f731d00d06a452acab50810b51c322c319d160f))
+* let a team's recurring series start on the same tick ([#13674](https://github.com/ParabolInc/parabol/issues/13674)) ([e668811](https://github.com/ParabolInc/parabol/commit/e668811b7ff8bca0afff6ed12fc7739371d87128))
+
+
+### Changed
+
+* remove the dead inactivateUser mutation ([#13659](https://github.com/ParabolInc/parabol/issues/13659)) ([a941477](https://github.com/ParabolInc/parabol/commit/a94147770cfac07ff3df32b2db3ea012a7fae58e))
+
 ## [15.4.0](https://github.com/ParabolInc/parabol/compare/v15.3.0...v15.4.0) (2026-10-13)
 
 

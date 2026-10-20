@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {Fragment} from 'react'
+import {Fragment, Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import type {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import {TaskJiraFieldsContent} from '~/components/TaskJiraFieldsContent'
@@ -36,16 +36,14 @@ const TaskFooter = (props: Props) => {
     graphql`
       fragment TaskFooter_task on Task {
         ...TaskTagContent_task
-        ...TaskJiraFieldsContent_task
+        ...TaskJiraFieldsContent_task @defer
         id
         error
         tags
         team {
           id
         }
-        integration {
-          __typename
-        }
+        taskService
         userId
         ...TaskFooterTeamAssignee_task
         ...TaskFooterUserAssignee_task
@@ -76,9 +74,9 @@ const TaskFooter = (props: Props) => {
   }
   const atmosphere = useAtmosphere()
   const showTeam = area === USER_DASH
-  const {id: taskId, error, integration, tags, userId} = task
+  const {id: taskId, error, taskService, tags, userId} = task
   const isArchived = isTaskArchived(tags)
-  const canAssignUser = !integration && !isArchived
+  const canAssignUser = !taskService && !isArchived
   const canAssignTeam = !isArchived
   return (
     <Fragment>
@@ -100,7 +98,7 @@ const TaskFooter = (props: Props) => {
           )}
         </div>
         <div className={cn('flex justify-end', cardIsActive ? 'opacity-100' : 'opacity-0')}>
-          {integration || isArchived || !userId ? (
+          {taskService || isArchived || !userId ? (
             <div className='inline-block h-6 w-6 align-middle' />
           ) : (
             <TaskFooterIntegrateToggle
@@ -116,7 +114,11 @@ const TaskFooter = (props: Props) => {
           ) : (
             <TaskMoreOptionsMenu
               jiraFieldsContent={
-                integration?.__typename === 'JiraIssue' && <TaskJiraFieldsContent taskRef={task} />
+                taskService === 'jira' && (
+                  <Suspense fallback={null}>
+                    <TaskJiraFieldsContent taskRef={task} />
+                  </Suspense>
+                )
               }
               tagContent={
                 <TaskTagContent

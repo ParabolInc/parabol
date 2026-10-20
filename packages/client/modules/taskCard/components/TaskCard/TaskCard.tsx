@@ -1,13 +1,11 @@
 import type {Editor} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
-import {memo, useEffect} from 'react'
+import {memo, Suspense, useEffect} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import type {TaskCard_task$key} from '~/__generated__/TaskCard_task.graphql'
 import type {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import EditingStatus from '~/components/EditingStatus/EditingStatus'
 import {cn} from '~/ui/cn'
-import IntegratedTaskContent from '../../../../components/IntegratedTaskContent'
-import TaskIntegrationLink from '../../../../components/TaskIntegrationLink'
 import TaskWatermark from '../../../../components/TaskWatermark'
 import {TipTapEditor} from '../../../../components/TipTapEditor/TipTapEditor'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
@@ -19,6 +17,7 @@ import isTaskPrivate from '../../../../utils/isTaskPrivate'
 import {taskStatusLabels} from '../../../../utils/taskStatus'
 import TaskFooter from '../TaskCardFooter/TaskFooter'
 import TaskCardStatusIndicator from '../TaskCardStatusIndicator/TaskCardStatusIndicator'
+import TaskCardIntegration from './TaskCardIntegration'
 
 interface Props {
   area: AreaEnum
@@ -51,17 +50,13 @@ const TaskCard = memo((props: Props) => {
   const task = useFragment(
     graphql`
       fragment TaskCard_task on Task @argumentDefinitions(meetingId: {type: "ID"}) {
-        ...IntegratedTaskContent_task
+        ...TaskCardIntegration_task @defer
         discussionId
         editors {
           userId
         }
         id
-        integration {
-          __typename
-          service
-          ...TaskIntegrationLink_integration
-        }
+        taskService
         status
         tags
         # grab userId to ensure sorting on connections works
@@ -98,12 +93,12 @@ const TaskCard = memo((props: Props) => {
     const nextContent = JSON.stringify(editor.getJSON())
     UpdateTaskMutation(atmosphere, {updatedTask: {id: taskId, content: nextContent}}, {})
   }
-  const {integration, status, id: taskId, isHighlighted, editors, discussionId} = task
+  const {taskService, status, id: taskId, isHighlighted, editors, discussionId} = task
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
+  const isIntegrated = !!taskService
   const otherEditors = editors.filter((editor) => editor.userId !== viewerId)
   const isEditing = editors.length > otherEditors.length
-  const service = integration?.service
   const statusTitle = `Card status: ${taskStatusLabels[status]}`
   const privateTitle = ', marked as #private'
   const archivedTitle = ', set as #archived'
@@ -125,6 +120,26 @@ const TaskCard = memo((props: Props) => {
     }
   }, [!!isDraggingOver, editor, handleCardUpdate])
 
+  const taskEditor = (
+    <div
+      className='cursor-text'
+      onBlur={() => {
+        removeTaskChild('root')
+        setTimeout(handleCardUpdate)
+      }}
+      onFocus={() => addTaskChild('root')}
+    >
+      <TipTapEditor
+        className='min-h-[44px] px-4'
+        editor={editor}
+        // biome-ignore lint/correctness/useHookAtTopLevel: legacy
+        useLinkEditor={() => useTaskChild('editor-link-changer')}
+        onBlur={onFocusChange(false)}
+        onFocus={onFocusChange(true)}
+      />
+    </div>
+  )
+
   return (
     <div
       className={cn(
@@ -142,7 +157,7 @@ const TaskCard = memo((props: Props) => {
         !isHighlighted && 'outline-none'
       )}
     >
-      <TaskWatermark service={service} />
+      <TaskWatermark service={taskService} />
       <div className='relative'>
         <EditingStatus
           isTaskHovered={isTaskHovered}
@@ -158,27 +173,15 @@ const TaskCard = memo((props: Props) => {
             {isArchived && <TaskCardStatusIndicator status='archived' />}
           </div>
         </EditingStatus>
-        <IntegratedTaskContent task={task} />
-        {!integration && (
-          <div
-            className='cursor-text'
-            onBlur={() => {
-              removeTaskChild('root')
-              setTimeout(handleCardUpdate)
-            }}
-            onFocus={() => addTaskChild('root')}
+        {isIntegrated ? (
+          <Suspense
+            fallback={<div className='mx-4 mb-1 h-5 animate-pulse rounded bg-surface-well' />}
           >
-            <TipTapEditor
-              className='min-h-[44px] px-4'
-              editor={editor}
-              // biome-ignore lint/correctness/useHookAtTopLevel: legacy
-              useLinkEditor={() => useTaskChild('editor-link-changer')}
-              onBlur={onFocusChange(false)}
-              onFocus={onFocusChange(true)}
-            />
-          </div>
+            <TaskCardIntegration task={task}>{taskEditor}</TaskCardIntegration>
+          </Suspense>
+        ) : (
+          taskEditor
         )}
-        <TaskIntegrationLink integration={integration || null} />
         <TaskFooter
           area={area}
           cardIsActive={isTaskFocused || isTaskHovered || isEditing}

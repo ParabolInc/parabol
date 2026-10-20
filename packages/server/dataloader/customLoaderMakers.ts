@@ -1,5 +1,6 @@
 import DataLoader from 'dataloader'
 import {type SqlBool, sql} from 'kysely'
+import {Threshold} from 'parabol-client/types/constEnums'
 import {PARABOL_AI_USER_ID} from '../../client/utils/constants'
 import {activeEmbeddingModelId} from '../../embedder/activeEmbeddingModel'
 import {getEmbeddingsTableName} from '../../embedder/getEmbeddingsTableName'
@@ -440,6 +441,113 @@ type MeetingStat = {
   id: string
   meetingType: MeetingTypeEnum
   createdAt: Date
+}
+
+export const activeUserCountsByOrgId = (parent: RootDataLoader) => {
+  return new DataLoader<{orgId: string; times: Date[]}, number[], string>(
+    async (keys) => {
+      const pg = getKysely()
+      return Promise.all(
+        keys.map(async ({orgId, times}) => {
+          if (times.length === 0) return []
+          // a member is active from an added/activated event until their next audit event
+          const rows = await pg
+            .with('AuditEvent', (qb) =>
+              qb
+                .selectFrom('OrganizationUserAudit')
+                .select(({fn}) => [
+                  'userId',
+                  'eventDate',
+                  'eventType',
+                  fn
+                    .agg<Date | null>('lead', ['eventDate'])
+                    .over((ob) => ob.partitionBy('userId').orderBy('eventDate').orderBy('id'))
+                    .as('nextEventDate')
+                ])
+                .where('orgId', '=', orgId)
+            )
+            .with('Time', (qb) =>
+              qb.selectNoFrom(sql<Date>`unnest(${times}::timestamptz[])`.as('at'))
+            )
+            .selectFrom('Time')
+            .leftJoin('AuditEvent', (join) =>
+              join
+                .on('AuditEvent.eventType', 'in', ['added', 'activated'])
+                .onRef('AuditEvent.eventDate', '<', 'Time.at')
+                .on(({eb, or, ref}) =>
+                  or([
+                    eb('AuditEvent.nextEventDate', 'is', null),
+                    eb('AuditEvent.nextEventDate', '>=', ref('Time.at'))
+                  ])
+                )
+            )
+            .select(({fn}) => [
+              'Time.at',
+              fn.count<string>('AuditEvent.userId').distinct().as('activeUserCount')
+            ])
+            .groupBy('Time.at')
+            .execute()
+          const countByTime = new Map(
+            rows.map(({at, activeUserCount}) => [at.getTime(), Number(activeUserCount)])
+          )
+          return times.map((time) => countByTime.get(time.getTime()) ?? 0)
+        })
+      )
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: ({orgId, times}) => `${orgId}:${times.map((time) => time.getTime()).join(',')}`
+    }
+  )
+}
+
+export const activeTeamsByOrgId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+  dependsOn('teams')
+  dependsOn('teamMembers')
+  dependsOn('newMeetings')
+  return new DataLoader<string, {id: string; orgId: string}[], string>(
+    async (orgIds) => {
+      const meetingWindowStart = new Date(Date.now() - Threshold.ACTIVE_TEAM_LAST_MEETING_TIMEFRAME)
+      const activeTeams = await getKysely()
+        .selectFrom('Team')
+        .select(['Team.id', 'Team.orgId'])
+        .where('Team.orgId', 'in', orgIds)
+        .where('Team.isArchived', '=', false)
+        .where(({eb, selectFrom}) =>
+          eb(
+            selectFrom('TeamMember')
+              .select(({fn}) => fn.countAll().as('memberCount'))
+              .whereRef('TeamMember.teamId', '=', 'Team.id')
+              .where('TeamMember.isNotRemoved', '=', true),
+            '>=',
+            Threshold.MIN_ACTIVE_TEAM_MEMBERS
+          )
+        )
+        .where(({exists, selectFrom}) =>
+          exists(
+            selectFrom('NewMeeting')
+              .innerJoin('MeetingMember', 'MeetingMember.meetingId', 'NewMeeting.id')
+              .select('NewMeeting.id')
+              .whereRef('NewMeeting.teamId', '=', 'Team.id')
+              .where(({eb, or}) =>
+                or([
+                  eb('NewMeeting.createdAt', '>', meetingWindowStart),
+                  eb('NewMeeting.endedAt', '>', meetingWindowStart)
+                ])
+              )
+              .groupBy('NewMeeting.id')
+              .having(({eb, fn}) =>
+                eb(fn.countAll(), '>=', Threshold.MIN_ACTIVE_TEAM_MEETING_ATTENDEES)
+              )
+          )
+        )
+        .execute()
+      return orgIds.map((orgId) => activeTeams.filter((team) => team.orgId === orgId))
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
 }
 
 export const meetingStatsByOrgId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {

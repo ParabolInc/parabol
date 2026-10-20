@@ -460,6 +460,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     )
   },
   Organization: {
+    activeUserCounts: or(isSuperUser, isViewerOnOrg<'Organization.activeUserCounts'>('source.id')),
     oauthAPIProvider: hasProviderAccess<'Organization.oauthAPIProvider'>('args.providerId'),
     saml: and(
       isViewerOnOrg<'Organization.saml'>('source.id'),

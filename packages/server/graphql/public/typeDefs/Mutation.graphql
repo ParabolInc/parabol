@@ -1520,16 +1520,6 @@ type Mutation {
   ): DeleteTeamHealthQuestionSuccess! @scope(name: TEMPLATES_WRITE)
 
   """
-  Deactivate a user's billing seat. The user can still log in and will be automatically reactivated when they do.
-  """
-  inactivateUser(
-    """
-    the user to pause
-    """
-    userId: ID!
-  ): InactivateUserPayload @scope(name: USERS_WRITE)
-
-  """
   Add the requesting user to multiple selected teams on the organization's domain
   """
   acceptRequestToJoinDomain(
