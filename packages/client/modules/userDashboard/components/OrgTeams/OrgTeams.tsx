@@ -111,14 +111,14 @@ const OrgTeams = (props: Props) => {
                   {sortBy === 'name' && (sortDirection === 'asc' ? ' ▲' : ' ▼')}
                 </th>
                 <th
-                  className='w-[20%] cursor-pointer p-3 text-left font-semibold'
+                  className='hidden w-[20%] cursor-pointer p-3 text-left font-semibold md:table-cell'
                   onClick={() => handleSort('memberCount')}
                 >
                   Member Count
                   {sortBy === 'memberCount' && (sortDirection === 'asc' ? ' ▲' : ' ▼')}
                 </th>
                 <th
-                  className='w-[20%] cursor-pointer p-3 text-left font-semibold'
+                  className='hidden w-[20%] cursor-pointer p-3 text-left font-semibold md:table-cell'
                   onClick={() => handleSort('lastMetAt')}
                 >
                   Last Met At
