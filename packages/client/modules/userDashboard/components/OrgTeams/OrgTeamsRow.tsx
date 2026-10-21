@@ -47,8 +47,8 @@ const OrgTeamsRow = (props: Props) => {
   )
   return (
     <tr className='border-hairline border-b hover:bg-surface-hover'>
-      <td className='flex items-center p-3'>
-        <td className='flex items-center p-3'>
+      <td className='p-3'>
+        <div className='flex items-center p-3'>
           {isLead || isMember || isOrgAdmin ? (
             <Link to={teamId} className='flex items-center font-bold text-fg-primary text-lg'>
               {teamNameAndTags}
@@ -59,7 +59,7 @@ const OrgTeamsRow = (props: Props) => {
               {teamNameAndTags}
             </div>
           )}
-        </td>
+        </div>
       </td>
       <td className='p-3 text-fg-secondary'>{teamMembersCount}</td>
       <td className='p-3 text-fg-secondary'>
