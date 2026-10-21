@@ -9,10 +9,16 @@ import {
   REPORT_VALUE_LABELS,
   type ReportCategoryDimension,
   type ReportDimension,
-  type ReportMeasure
+  type ReportMeasure,
+  type ReportTimeDimension
 } from '../../client/shared/reports/reportCatalog'
 import type {ReportStep} from './reportCalendar'
-import type {ReportMeasureFilter, ReportMeasureResult} from './reportMeasureTypes'
+import type {
+  ReportMeasureFilter,
+  ReportMeasureResult,
+  ReportQueryDimension
+} from './reportMeasureTypes'
+import {isLevelDimension, type ReportLevelDimension} from './teamStructure'
 
 export interface ReportRowKey {
   value: string
@@ -38,7 +44,7 @@ const STATIC_VALUES: Partial<Record<ReportCategoryDimension, string[]>> = {
 const MAX_CANDIDATE_ROWS = 50000
 
 interface Options {
-  breakdown: ReportDimension[]
+  breakdown: (ReportDimension | ReportLevelDimension)[]
   measures: ReportMeasure[]
   steps: ReportStep[] | null
   previousStepCount: number
@@ -46,7 +52,14 @@ interface Options {
   filters: ReportMeasureFilter[]
   current: ReportMeasureResult[]
   previous: ReportMeasureResult[] | null
+  // the values a team structure level takes among the counted teams, with their names
+  levelValuesOf: (dimension: ReportLevelDimension) => {value: string; label: string}[]
 }
+
+const isTimeDimension = (
+  dimension: ReportDimension | ReportLevelDimension
+): dimension is ReportTimeDimension =>
+  !isLevelDimension(dimension) && isReportTimeDimension(dimension)
 
 const rowKey = (stepIndex: number, keys: string[]) => JSON.stringify([stepIndex, ...keys])
 
@@ -70,24 +83,32 @@ const buildReportRows = ({
   teams,
   filters,
   current,
-  previous
+  previous,
+  levelValuesOf
 }: Options): ReportRow[] | string => {
   const categoryDimensions = breakdown.filter(
-    (dimension): dimension is ReportCategoryDimension => !isReportTimeDimension(dimension)
+    (dimension): dimension is ReportQueryDimension => !isTimeDimension(dimension)
   )
   const teamNames = new Map(teams.map(({id, name}) => [id, name]))
   const results = [...current, ...(previous ?? [])]
-  const labelOf = (dimension: ReportCategoryDimension, value: string) =>
-    (dimension === 'TEAM'
-      ? teamNames.get(value)
-      : (REPORT_VALUE_LABELS[dimension]?.[value] ??
-        REPORT_SPECIAL_VALUE_LABELS[dimension]?.[value] ??
-        results.find(({labels}) => labels[dimension]?.[value])?.labels[dimension]?.[value])) ??
-    value
+  const labelOf = (dimension: ReportQueryDimension, value: string) => {
+    if (isLevelDimension(dimension)) {
+      return levelValuesOf(dimension).find((level) => level.value === value)?.label ?? value
+    }
+    return (
+      (dimension === 'TEAM'
+        ? teamNames.get(value)
+        : (REPORT_VALUE_LABELS[dimension]?.[value] ??
+          REPORT_SPECIAL_VALUE_LABELS[dimension]?.[value] ??
+          results.find(({labels}) => labels[dimension]?.[value])?.labels[dimension]?.[value])) ??
+      value
+    )
+  }
   const valuesOf = categoryDimensions.map((dimension, position) => {
     const observed = results.flatMap(({rows}) => rows.map(({keys}) => keys[position] ?? ''))
-    const values =
-      dimension === 'TEAM'
+    const values = isLevelDimension(dimension)
+      ? levelValuesOf(dimension).map(({value}) => value)
+      : dimension === 'TEAM'
         ? teams.map(({id}) => id)
         : [...new Set([...(STATIC_VALUES[dimension] ?? []), ...observed])]
     const filter = filters.find((f) => f.dimension === dimension)
@@ -104,7 +125,7 @@ const buildReportRows = ({
     categoryCombinations.map((categoryValues) => {
       const key = rowKey(stepIndex, categoryValues)
       const keys = breakdown.map((dimension) => {
-        if (isReportTimeDimension(dimension)) {
+        if (isTimeDimension(dimension)) {
           const step = steps?.[stepIndex - 1]
           return {
             value: step?.start.toISOString() ?? '',

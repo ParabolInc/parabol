@@ -4,6 +4,7 @@ import {
   REPORT_DIMENSION_LABELS,
   REPORT_MEASURES,
   REPORT_SPECIAL_VALUE_LABELS,
+  REPORT_STRUCTURE_LABELS,
   REPORT_VALUE_LABELS,
   type ReportCompareTo,
   type ReportDimension,
@@ -62,6 +63,14 @@ export type ReportSpecChipEdit =
   | {kind: 'limit'}
   | {kind: 'view'}
 
+export interface ReportStructureLevel {
+  id: string
+  name: string
+  values: readonly {id: string; name: string}[]
+}
+
+type ReportLevelName = Pick<ReportStructureLevel, 'id' | 'name'>
+
 export interface ReportSpecChip {
   name: string
   value: string
@@ -73,14 +82,53 @@ interface ChipOptions {
   step: ReportStepLength | null | undefined
   // the names of the teams a report shows, which a team filter can name
   teamNames: Map<string, string>
+  levels: readonly ReportStructureLevel[]
 }
 
-export const formatReportDimension = (
+const formatReportDimension = (
   dimension: ReportDimension,
   step: ReportStepLength | null | undefined
 ) => {
   if (dimension !== 'TIME') return REPORT_DIMENSION_LABELS[dimension]
   return step ? STEP_LABELS[step] : 'Auto'
+}
+
+const findLevel = <Level extends ReportLevelName>(
+  levelId: string | undefined,
+  levels: readonly Level[]
+) => levels.find(({id}) => id === levelId)
+
+const formatSpecDimension = (
+  {dimension, levelId}: ReportSpec['breakdown'][number],
+  step: ReportStepLength | null | undefined,
+  levels: readonly ReportLevelName[]
+) =>
+  dimension === 'TEAM_LEVEL'
+    ? (findLevel(levelId, levels)?.name ?? REPORT_STRUCTURE_LABELS.removed)
+    : formatReportDimension(dimension, step)
+
+// A result lists teams in place of a removed team structure level, so it names its own breakdown
+export const formatReportBreakdown = (
+  {dimension, levelName}: {dimension: ReportDimension; levelName: string | null | undefined},
+  step: ReportStepLength | null | undefined
+) =>
+  dimension === 'TEAM_LEVEL'
+    ? (levelName ?? REPORT_STRUCTURE_LABELS.removed)
+    : formatReportDimension(dimension, step)
+
+const formatFilterValue = (
+  {dimension, levelId}: ReportSpec['filters'][number],
+  value: string,
+  {teamNames, levels}: ChipOptions
+) => {
+  if (dimension === 'TEAM') return teamNames.get(value)
+  if (isReportTimeDimension(dimension)) return value
+  const levelValue = findLevel(levelId, levels)?.values.find(({id}) => id === value)
+  return (
+    levelValue?.name ??
+    REPORT_VALUE_LABELS[dimension]?.[value] ??
+    REPORT_SPECIAL_VALUE_LABELS[dimension]?.[value]
+  )
 }
 
 const describeCondition = ({measure, operator, value}: ReportSpec['where'][number]) => {
@@ -107,7 +155,8 @@ const describeSort = (spec: ReportSpec) => {
   return isAscending ? 'Smallest first' : 'Largest first'
 }
 
-export const toReportSpecChips = (spec: ReportSpec, {step, teamNames}: ChipOptions) => {
+export const toReportSpecChips = (spec: ReportSpec, options: ChipOptions) => {
+  const {step, levels} = options
   const {measures, breakdown, filters, where, period, compareTo, showAs, limit} = spec
   const chips: ReportSpecChip[] = [
     {
@@ -116,26 +165,20 @@ export const toReportSpecChips = (spec: ReportSpec, {step, teamNames}: ChipOptio
       edit: {kind: 'measure'}
     }
   ]
-  filters.forEach(({dimension, values}, index) => {
-    const labels = values.map((value) =>
-      dimension === 'TEAM'
-        ? teamNames.get(value)
-        : isReportTimeDimension(dimension)
-          ? value
-          : (REPORT_VALUE_LABELS[dimension]?.[value] ??
-            REPORT_SPECIAL_VALUE_LABELS[dimension]?.[value])
-    )
+  filters.forEach((filter, index) => {
+    const {values} = filter
+    const labels = values.map((value) => formatFilterValue(filter, value, options))
     const isEveryLabelKnown = labels.every((label) => label !== undefined)
     chips.push({
-      name: REPORT_DIMENSION_LABELS[dimension],
+      name: formatSpecDimension(filter, step, levels),
       value: isEveryLabelKnown ? labels.join(', ') : `${values.length} picked`,
       edit: {kind: 'filter', index}
     })
   })
-  breakdown.forEach(({dimension}, position) => {
+  breakdown.forEach((item, position) => {
     chips.push({
       name: roleOf(showAs, position, breakdown.length),
-      value: formatReportDimension(dimension, step),
+      value: formatSpecDimension(item, step, levels),
       edit: {kind: 'breakdown', position}
     })
   })
@@ -173,10 +216,13 @@ export const hasReportTimeBreakdown = (spec: ReportSpec) =>
   spec.breakdown.some(({dimension}) => isReportTimeDimension(dimension))
 
 // A name for a report that arrives without one, like a link an agent made
-export const describeReportSpec = (spec: ReportSpec) => {
+export const describeReportSpec = (spec: ReportSpec, levels: readonly ReportLevelName[]) => {
   const measures = spec.measures.map((measure) => REPORT_MEASURES[measure].label).join(', ')
-  const dimensions = spec.breakdown.map(({dimension}) =>
-    REPORT_DIMENSION_LABELS[dimension].toLowerCase()
+  // a level keeps the name its organization gave it
+  const dimensions = spec.breakdown.map(({dimension, levelId}) =>
+    dimension === 'TEAM_LEVEL'
+      ? (findLevel(levelId, levels)?.name ?? REPORT_STRUCTURE_LABELS.removed.toLowerCase())
+      : REPORT_DIMENSION_LABELS[dimension].toLowerCase()
   )
   if (dimensions.length === 0) return measures
   const last = dimensions.pop()

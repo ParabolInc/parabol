@@ -4,6 +4,8 @@ import {
   REPORT_NO_PERSON,
   REPORT_NO_TEMPLATE,
   REPORT_OTHER_TEAM_TEMPLATE,
+  REPORT_STRUCTURE_NOT_SET,
+  REPORT_STRUCTURE_REMOVED,
   type ReportDimension
 } from '../../shared/reports/reportCatalog'
 
@@ -53,6 +55,10 @@ const KNOWN_COLORS: Partial<Record<ReportDimension, Record<string, ReportSeriesC
   },
   PERSON: {
     [REPORT_NO_PERSON]: NONE_COLOR
+  },
+  TEAM_LEVEL: {
+    [REPORT_STRUCTURE_NOT_SET]: NONE_COLOR,
+    [REPORT_STRUCTURE_REMOVED]: NONE_COLOR
   },
   TEMPLATE: {
     [REPORT_NO_TEMPLATE]: NONE_COLOR,

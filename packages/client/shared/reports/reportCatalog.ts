@@ -5,6 +5,7 @@ export type ReportTimeDimension = (typeof REPORT_TIME_DIMENSIONS)[number]
 
 export const REPORT_CATEGORY_DIMENSIONS = [
   'TEAM',
+  'TEAM_LEVEL',
   'PERSON',
   'MEETING_TYPE',
   'TEMPLATE',
@@ -92,8 +93,9 @@ export interface ReportPeriod {
 
 export interface ReportSpec {
   measures: ReportMeasure[]
-  breakdown: {dimension: ReportDimension}[]
-  filters: {dimension: ReportDimension; values: string[]}[]
+  // levelId names the team structure level a TEAM_LEVEL breakdown or filter uses
+  breakdown: {dimension: ReportDimension; levelId?: string}[]
+  filters: {dimension: ReportDimension; levelId?: string; values: string[]}[]
   where: {measure: ReportMeasure; operator: ReportConditionOperator; value: number}[]
   period: ReportPeriod
   compareTo?: ReportCompareTo | null
@@ -118,57 +120,57 @@ export const REPORT_MEASURES = {
     kind: 'reading',
     label: 'Active people',
     description: 'People who used Parabol in the 30 days before each point',
-    dimensions: [...OVER_TIME, 'TEAM']
+    dimensions: [...OVER_TIME, 'TEAM', 'TEAM_LEVEL']
   },
   MEMBERS: {
     kind: 'reading',
     label: 'Members',
     description: 'People on the teams, or in the organization, at the end of each step',
-    dimensions: [...OVER_TIME, 'TEAM']
+    dimensions: [...OVER_TIME, 'TEAM', 'TEAM_LEVEL']
   },
   ACTIVE_SHARE: {
     kind: 'share',
     label: 'Active share',
     description: 'The percentage of members who used Parabol in the 30 days before each point',
-    dimensions: [...OVER_TIME, 'TEAM']
+    dimensions: [...OVER_TIME, 'TEAM', 'TEAM_LEVEL']
   },
   LAST_SEEN: {
     kind: 'latest',
     label: 'Last seen',
     description: 'When each person last used Parabol, whatever the period',
-    dimensions: ['PERSON', 'TEAM']
+    dimensions: ['PERSON', 'TEAM', 'TEAM_LEVEL']
   },
   MEETINGS: {
     kind: 'count',
     label: 'Meetings',
     description:
       'Meetings that 2 or more people joined, by when they started. By person, the meetings each person joined',
-    dimensions: [...OVER_TIME, 'TEAM', 'PERSON', 'MEETING_TYPE', 'TEMPLATE'],
+    dimensions: [...OVER_TIME, 'TEAM', 'TEAM_LEVEL', 'PERSON', 'MEETING_TYPE', 'TEMPLATE'],
     countsInSeveral: ['PERSON']
   },
   TEAMS_THAT_MET: {
     kind: 'distinct',
     label: 'Teams that met',
     description: 'Teams of 2 or more that held a meeting 2 or more people joined',
-    dimensions: [...OVER_TIME, 'MEETING_TYPE']
+    dimensions: [...OVER_TIME, 'TEAM_LEVEL', 'MEETING_TYPE']
   },
   LAST_MEETING: {
     kind: 'latest',
     label: 'Last meeting',
     description: 'The date of the latest meeting in the period',
-    dimensions: ['TEAM', 'MEETING_TYPE', 'TEMPLATE']
+    dimensions: ['TEAM', 'TEAM_LEVEL', 'MEETING_TYPE', 'TEMPLATE']
   },
   DISCUSSIONS: {
     kind: 'count',
     label: 'Discussions',
     description: 'Topics discussed in meetings',
-    dimensions: [...OVER_TIME, 'TEAM', 'MEETING_TYPE', 'TEMPLATE', 'TOPIC']
+    dimensions: [...OVER_TIME, 'TEAM', 'TEAM_LEVEL', 'MEETING_TYPE', 'TEMPLATE', 'TOPIC']
   },
   DISCUSSIONS_WITH_A_TASK: {
     kind: 'count',
     label: 'Discussions with a task',
     description: 'Topics discussed in meetings that led to a task',
-    dimensions: [...OVER_TIME, 'TEAM', 'MEETING_TYPE', 'TEMPLATE', 'TOPIC']
+    dimensions: [...OVER_TIME, 'TEAM', 'TEAM_LEVEL', 'MEETING_TYPE', 'TEMPLATE', 'TOPIC']
   },
   NEW_TASKS: {
     kind: 'count',
@@ -177,6 +179,7 @@ export const REPORT_MEASURES = {
     dimensions: [
       ...OVER_TIME,
       'TEAM',
+      'TEAM_LEVEL',
       'PERSON',
       'MEETING_TYPE',
       'TEMPLATE',
@@ -190,7 +193,16 @@ export const REPORT_MEASURES = {
     kind: 'count',
     label: 'Done tasks',
     description: 'Tasks marked done, by when they were done',
-    dimensions: [...OVER_TIME, 'TEAM', 'PERSON', 'MEETING_TYPE', 'TEMPLATE', 'TOPIC', 'INTEGRATION']
+    dimensions: [
+      ...OVER_TIME,
+      'TEAM',
+      'TEAM_LEVEL',
+      'PERSON',
+      'MEETING_TYPE',
+      'TEMPLATE',
+      'TOPIC',
+      'INTEGRATION'
+    ]
   },
   OPEN_TASKS: {
     kind: 'reading',
@@ -199,6 +211,7 @@ export const REPORT_MEASURES = {
     dimensions: [
       ...OVER_TIME,
       'TEAM',
+      'TEAM_LEVEL',
       'PERSON',
       'MEETING_TYPE',
       'TEMPLATE',
@@ -213,33 +226,42 @@ export const REPORT_MEASURES = {
     label: 'Days to done',
     description:
       'Days from making a task to finishing it, the median of the tasks finished in each step',
-    dimensions: [...OVER_TIME, 'TEAM', 'PERSON', 'MEETING_TYPE', 'TEMPLATE', 'TOPIC', 'INTEGRATION']
+    dimensions: [
+      ...OVER_TIME,
+      'TEAM',
+      'TEAM_LEVEL',
+      'PERSON',
+      'MEETING_TYPE',
+      'TEMPLATE',
+      'TOPIC',
+      'INTEGRATION'
+    ]
   },
   USER_INTEGRATIONS: {
     kind: 'reading',
     label: 'User integrations',
     description: 'Integrations people connected, counting each person and service once',
-    dimensions: [...OVER_TIME, 'TEAM', 'INTEGRATION']
+    dimensions: [...OVER_TIME, 'TEAM', 'TEAM_LEVEL', 'INTEGRATION']
   },
   TASKS_PUSHED: {
     kind: 'count',
     label: 'Tasks pushed to integrations',
     description:
       'Tasks pushed to an integration, including Sprint Poker stories brought in from one',
-    dimensions: [...OVER_TIME, 'TEAM', 'MEETING_TYPE', 'INTEGRATION']
+    dimensions: [...OVER_TIME, 'TEAM', 'TEAM_LEVEL', 'MEETING_TYPE', 'INTEGRATION']
   },
   HEALTH_SCORE: {
     kind: 'score',
     label: 'Health score',
     description:
       'The average 1 to 5 answer in each team’s latest Team Health check, from the 90 days before each point or from the period. A check fewer than 3 people answered is hidden',
-    dimensions: [...OVER_TIME, 'TEAM', 'CATEGORY']
+    dimensions: [...OVER_TIME, 'TEAM', 'TEAM_LEVEL', 'CATEGORY']
   },
   HEALTH_ANSWERS: {
     kind: 'count',
     label: 'Health answers',
     description: 'Answers given in Team Health checks, by the day their results were revealed',
-    dimensions: [...OVER_TIME, 'TEAM', 'CATEGORY']
+    dimensions: [...OVER_TIME, 'TEAM', 'TEAM_LEVEL', 'CATEGORY']
   }
 } as const satisfies Record<ReportMeasure, ReportMeasureDefinition>
 
@@ -290,6 +312,16 @@ export const REPORT_TASK_AGES = {
   over180Days: 'Over 180 days'
 } as const
 export const REPORT_NO_PERSON = 'none'
+// a team no one has placed at a value of a team structure level yet, and the one group a removed level lists
+export const REPORT_STRUCTURE_NOT_SET = 'notSet'
+export const REPORT_STRUCTURE_REMOVED = 'removed'
+export const MAX_TEAM_STRUCTURE_LEVELS = 5
+export const MAX_TEAM_STRUCTURE_VALUES = 100
+export const MAX_TEAM_STRUCTURE_NAME_LENGTH = 100
+export const REPORT_STRUCTURE_LABELS = {
+  [REPORT_STRUCTURE_NOT_SET]: 'Not set',
+  [REPORT_STRUCTURE_REMOVED]: 'Removed level'
+}
 export const REPORT_NO_TEMPLATE = 'none'
 export const REPORT_OTHER_TEAM_TEMPLATE = 'otherTeamTemplate'
 export const REPORT_INTEGRATION_LABELS: Record<string, string> = {
@@ -323,6 +355,7 @@ export const REPORT_SPECIAL_VALUE_LABELS: Partial<
   Record<ReportCategoryDimension, Record<string, string>>
 > = {
   PERSON: {[REPORT_NO_PERSON]: 'No one'},
+  TEAM_LEVEL: REPORT_STRUCTURE_LABELS,
   TEMPLATE: {
     [REPORT_NO_TEMPLATE]: 'No template',
     [REPORT_OTHER_TEAM_TEMPLATE]: 'Another team’s template'
@@ -335,6 +368,7 @@ export const REPORT_DIMENSION_LABELS: Record<ReportDimension, string> = {
   WEEK: 'Week',
   MONTH: 'Month',
   TEAM: 'Team',
+  TEAM_LEVEL: 'Team structure',
   PERSON: 'Person',
   MEETING_TYPE: 'Meeting type',
   TEMPLATE: 'Template',

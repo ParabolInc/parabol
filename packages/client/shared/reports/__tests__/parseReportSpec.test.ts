@@ -29,6 +29,16 @@ test('fields Parabol does not know are dropped', () => {
   expect(spec?.breakdown).toEqual([{dimension: 'TEAM'}, {dimension: 'MONTH'}])
 })
 
+test('a team structure breakdown or filter keeps the level it names', () => {
+  const spec = parseReportSpec({
+    ...cadence,
+    breakdown: [{dimension: 'TEAM_LEVEL', levelId: 'level1'}, {dimension: 'MONTH'}],
+    filters: [{dimension: 'TEAM_LEVEL', levelId: 'level2', values: ['notSet']}]
+  })
+  expect(spec?.breakdown[0]).toEqual({dimension: 'TEAM_LEVEL', levelId: 'level1'})
+  expect(spec?.filters).toEqual([{dimension: 'TEAM_LEVEL', levelId: 'level2', values: ['notSet']}])
+})
+
 test.each([
   ['not an object', 'MEETINGS'],
   ['an unknown measure', {...cadence, measures: ['VELOCITY']}],

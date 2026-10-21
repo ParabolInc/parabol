@@ -3,6 +3,7 @@ import type {ReportSpec} from '../../client/shared/reports/reportCatalog'
 import {getNewDataLoader} from '../dataloader/getNewDataLoader'
 import getKysely from '../postgres/getKysely'
 import runReport from '../reports/runReport'
+import {toTeamStructureId} from '../reports/teamStructure'
 import {createPGTables, truncatePGTables} from './common'
 
 const TEST_DB = 'runReportTest'
@@ -24,7 +25,10 @@ const TABLES = [
   'AgendaItem',
   'TeamHealthCategory',
   'TeamHealthQuestion',
-  'TeamHealthResponse'
+  'TeamHealthResponse',
+  'TeamStructureLevel',
+  'TeamStructureValue',
+  'TeamStructurePlacement'
 ]
 
 const ORG_ID = 'reportOrg'
@@ -595,6 +599,43 @@ const seedHealthOrg = async () => {
   }
 }
 
+const BUSINESS_UNIT = 1
+const REGION = 2
+const PLATFORM = 1
+const CUSTODY = 2
+const AMERICAS = 3
+const REMOVED_LEVEL = 99
+const levelId = (rowId: number) => toTeamStructureId(rowId, 'TeamStructureLevel')
+const valueId = (rowId: number) => toTeamStructureId(rowId, 'TeamStructureValue')
+
+// Apollo and Borealis are Platform and Cygnus is Custody. Dorado isn't placed yet
+const seedStructure = async () => {
+  await pg
+    .insertInto('TeamStructureLevel')
+    .values([
+      {id: BUSINESS_UNIT, orgId: ORG_ID, name: 'Business unit', sortOrder: 0},
+      {id: REGION, orgId: ORG_ID, name: 'Region', sortOrder: 1}
+    ])
+    .execute()
+  await pg
+    .insertInto('TeamStructureValue')
+    .values([
+      {id: PLATFORM, levelId: BUSINESS_UNIT, name: 'Platform', sortOrder: 0},
+      {id: CUSTODY, levelId: BUSINESS_UNIT, name: 'Custody', sortOrder: 1},
+      {id: AMERICAS, levelId: REGION, name: 'Americas', sortOrder: 0}
+    ])
+    .execute()
+  await pg
+    .insertInto('TeamStructurePlacement')
+    .values([
+      {teamId: APOLLO, levelId: BUSINESS_UNIT, valueId: PLATFORM},
+      {teamId: BOREALIS, levelId: BUSINESS_UNIT, valueId: PLATFORM},
+      {teamId: CYGNUS, levelId: BUSINESS_UNIT, valueId: CUSTODY},
+      {teamId: APOLLO, levelId: REGION, valueId: AMERICAS}
+    ])
+    .execute()
+}
+
 const baseSpec: ReportSpec = {
   measures: ['MEETINGS'],
   breakdown: [],
@@ -643,6 +684,7 @@ beforeAll(async () => {
   await seedStarterOrg()
   await seedWorkOrg()
   await seedHealthOrg()
+  await seedStructure()
 })
 
 afterAll(async () => {
@@ -1076,5 +1118,71 @@ describe('team health', () => {
     await expect(
       report({measures: ['MEETINGS'], compareTo: 'PREVIOUS_CHECK'}, asLeader)
     ).rejects.toThrow('PREVIOUS_CHECK only compares HEALTH_SCORE')
+  })
+})
+
+describe('team structure', () => {
+  const byUnit: Partial<ReportSpec> = {
+    showAs: 'BARS',
+    breakdown: [{dimension: 'TEAM_LEVEL', levelId: levelId(BUSINESS_UNIT)}]
+  }
+
+  test('a level adds up its teams, and teams not placed yet are Not set', async () => {
+    const result = await report(byUnit)
+    expect(byLabel(result)).toEqual({Platform: 2, Custody: 0, 'Not set': 0})
+    expect(result.rows.map(({keys}) => keys[0]!.value)).toContain(valueId(PLATFORM))
+    expect(result.breakdown).toEqual([{dimension: 'TEAM_LEVEL', levelName: 'Business unit'}])
+  })
+
+  test('a person on two teams with the same value counts once', async () => {
+    expect(byLabel(await report({...byUnit, measures: ['ACTIVE_PEOPLE']}))).toEqual({
+      Platform: 2,
+      Custody: 2,
+      'Not set': 1
+    })
+  })
+
+  test('a filter by value counts only the teams placed there', async () => {
+    const custody = await report({
+      period: {preset: 'LAST_30_DAYS'},
+      filters: [
+        {dimension: 'TEAM_LEVEL', levelId: levelId(BUSINESS_UNIT), values: [valueId(CUSTODY)]}
+      ]
+    })
+    expect(valuesOf(custody)).toEqual([1])
+    expect(custody.teamCount).toBe(1)
+  })
+
+  test('a member only sees the values of the teams they’re on', async () => {
+    expect(byLabel(await report(byUnit, {viewerId: ALEX}))).toEqual({Platform: 2})
+  })
+
+  test('a breakdown on a removed level shows teams instead, and says so', async () => {
+    const result = await report({
+      showAs: 'BARS',
+      breakdown: [{dimension: 'TEAM_LEVEL', levelId: levelId(REMOVED_LEVEL)}]
+    })
+    expect(byLabel(result)).toEqual({Apollo: 1, Borealis: 1, Cygnus: 0, Dorado: 0})
+    expect(result.breakdown).toEqual([{dimension: 'TEAM', levelName: null}])
+    expect(result.notes).toEqual([{kind: 'STRUCTURE_LEVEL_REMOVED', count: 1}])
+    const withTeams = await report({
+      showAs: 'HEATMAP',
+      breakdown: [{dimension: 'TEAM_LEVEL', levelId: levelId(REMOVED_LEVEL)}, {dimension: 'TEAM'}]
+    })
+    expect(byLabel(withTeams)).toMatchObject({'Removed level / Apollo': 1})
+    expect(withTeams.breakdown).toEqual([
+      {dimension: 'TEAM_LEVEL', levelName: null},
+      {dimension: 'TEAM', levelName: null}
+    ])
+  })
+
+  test('a filter on a removed level stops the report rather than count every team', async () => {
+    const result = await report({
+      filters: [
+        {dimension: 'TEAM_LEVEL', levelId: levelId(REMOVED_LEVEL), values: [valueId(PLATFORM)]}
+      ]
+    })
+    expect(result.rows).toEqual([])
+    expect(result.notes).toEqual([{kind: 'FILTER_LEVEL_REMOVED', count: 1}])
   })
 })

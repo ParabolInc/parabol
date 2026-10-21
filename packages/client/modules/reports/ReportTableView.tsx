@@ -4,15 +4,16 @@ import {formatReportKey, PARTIAL_STEP_NOTE} from './formatReportKey'
 import {formatReportValue} from './formatReportValue'
 import ReportDelta from './ReportDelta'
 import {type ReportResultRow, sumReportValues} from './reportRows'
-import {formatReportDimension, type ReportStepLength} from './reportSpecLabels'
+import type {ReportStepLength} from './reportSpecLabels'
 
 interface Props {
   spec: ReportSpec
+  breakdownNames: readonly string[]
   step: ReportStepLength | null | undefined
   rows: readonly ReportResultRow[]
 }
 
-const ReportTableView = ({spec, step, rows}: Props) => {
+const ReportTableView = ({spec, breakdownNames, step, rows}: Props) => {
   const {measures, breakdown, compareTo} = spec
   const dimensions = breakdown.map(({dimension}) => dimension)
   const isCount = (measureIdx: number) => REPORT_MEASURES[measures[measureIdx]!].kind === 'count'
@@ -25,9 +26,9 @@ const ReportTableView = ({spec, step, rows}: Props) => {
       <table className='w-full border-collapse text-sm'>
         <thead>
           <tr className='border-hairline border-b text-fg-muted text-xs'>
-            {dimensions.map((dimension) => (
-              <th key={dimension} scope='col' className='py-2 pr-4 text-left font-semibold'>
-                {formatReportDimension(dimension, step)}
+            {breakdownNames.map((name, position) => (
+              <th key={position} scope='col' className='py-2 pr-4 text-left font-semibold'>
+                {name}
               </th>
             ))}
             {measures.map((measure) => (

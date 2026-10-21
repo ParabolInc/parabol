@@ -5,6 +5,7 @@ import getKysely from '../postgres/getKysely'
 import {hasEnoughAttendees} from '../postgres/teamActivityCriteria'
 import reportMeasures from '../reports/measures/reportMeasures'
 import type {ReportMeasureQuery, ReportMeasureResult} from '../reports/reportMeasureTypes'
+import type {TeamStructure} from '../reports/teamStructure'
 import type RootDataLoader from './RootDataLoader'
 
 const STARTER_TEAM_COUNT = 2
@@ -84,6 +85,60 @@ export const teamHealthChecksByTeamId = (parent: RootDataLoader) => {
           checkTeamId === teamId && endedAt ? [{id, teamId, endedAt}] : []
         )
       )
+    },
+    {...parent.dataLoaderOptions}
+  )
+}
+
+// Each org's team structure: its levels in order with their values, and where its teams sit
+export const teamStructureByOrgId = (parent: RootDataLoader) => {
+  return new DataLoader<string, TeamStructure, string>(
+    async (orgIds) => {
+      const pg = getKysely()
+      const levels = await pg
+        .selectFrom('TeamStructureLevel')
+        .selectAll()
+        .where('orgId', 'in', orgIds)
+        .orderBy('sortOrder')
+        .orderBy('id')
+        .execute()
+      const levelIds = levels.map(({id}) => id)
+      const [values, placements] =
+        levelIds.length === 0
+          ? [[], []]
+          : await Promise.all([
+              pg
+                .selectFrom('TeamStructureValue')
+                .selectAll()
+                .where('levelId', 'in', levelIds)
+                .orderBy('sortOrder')
+                .orderBy('id')
+                .execute(),
+              pg
+                .selectFrom('TeamStructurePlacement')
+                .selectAll()
+                .where('levelId', 'in', levelIds)
+                .execute()
+            ])
+      return orgIds.map((orgId) => {
+        const orgLevels = levels
+          .filter((level) => level.orgId === orgId)
+          .map(({id, name}) => ({
+            id,
+            orgId,
+            name,
+            values: values
+              .filter((value) => value.levelId === id)
+              .map((value) => ({id: value.id, orgId, levelId: id, name: value.name}))
+          }))
+        const orgLevelIds = new Set(orgLevels.map(({id}) => id))
+        return {
+          levels: orgLevels,
+          placements: placements
+            .filter(({levelId}) => orgLevelIds.has(levelId))
+            .map(({teamId, levelId, valueId}) => ({teamId, levelId, valueId}))
+        }
+      })
     },
     {...parent.dataLoaderOptions}
   )

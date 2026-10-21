@@ -10,16 +10,19 @@ import usePinReportMutation from '../../mutations/usePinReportMutation'
 import useUnpinReportMutation from '../../mutations/useUnpinReportMutation'
 import type {ReportSpec} from '../../shared/reports/reportCatalog'
 import {cn} from '../../ui/cn'
+import type {ReportPagePeriod} from './reportPeriodParam'
 import {parseReportSpecJSON} from './reportSpecParam'
 
 interface Props {
   organizationRef: ReportPinButton_organization$key
   spec: ReportSpec
   title: string
+  // the Reports page's period, which the new pin's card opens with
+  period: ReportPagePeriod
   reportQuestionId: string | null
 }
 
-const ReportPinButton = ({organizationRef, spec, title, reportQuestionId}: Props) => {
+const ReportPinButton = ({organizationRef, spec, title, period, reportQuestionId}: Props) => {
   const {
     id: orgId,
     isBillingLeader,
@@ -58,7 +61,11 @@ const ReportPinButton = ({organizationRef, spec, title, reportQuestionId}: Props
     if (pinned) {
       unpin({variables: {orgId, pinId: pinned.id}, ...callbacks})
     } else {
-      pin({variables: {orgId, spec, title, reportQuestionId}, ...callbacks})
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+      pin({
+        variables: {orgId, spec, title, reportQuestionId, timeZone, pagePeriod: period},
+        ...callbacks
+      })
     }
   }
   const Icon = pinned ? Bookmark : BookmarkBorder

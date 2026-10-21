@@ -17,6 +17,11 @@ type ReportResult {
   """
   step: ReportStepEnum
 
+  """
+  What each position of the breakdown lists, in order
+  """
+  breakdown: [ReportResultBreakdown!]!
+
   rows: [ReportRow!]!
 
   """

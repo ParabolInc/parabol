@@ -12,6 +12,7 @@ import {
 } from '../reportQueries'
 
 const dimensionExpressions: ReportDimensionExpressions = {
+  TEAM: sql<string>`m."teamId"`,
   MEETING_TYPE: sql<string>`m."meetingType"::text`
 }
 

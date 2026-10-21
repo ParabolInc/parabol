@@ -31,6 +31,15 @@ const ENUMERATED_FILTER_VALUES: Partial<Record<ReportDimension, readonly string[
 const describeCount = ([min, max]: readonly [number, number], noun: string) =>
   `${min === max ? min : `${min} to ${max}`} ${max === 1 ? noun : `${noun}s`}`
 
+// two levels of the team structure are different dimensions
+export const toReportDimensionKey = ({
+  dimension,
+  levelId
+}: {
+  dimension: ReportDimension
+  levelId?: string
+}) => (levelId ? `${dimension}:${levelId}` : dimension)
+
 const isMeasureDimension = (measure: ReportMeasure, dimension: ReportDimension) =>
   (REPORT_MEASURES[measure].dimensions as readonly ReportDimension[]).includes(dimension)
 
@@ -54,7 +63,16 @@ export const validateReportSpec = (spec: ReportSpec): string | null => {
   if (dimensions.length < minBreakdown || dimensions.length > maxBreakdown) {
     return `${showAs} takes ${describeCount(view.breakdown, 'breakdown')}`
   }
-  if (new Set(dimensions).size !== dimensions.length) return 'A breakdown can only be used once'
+  if (
+    [...breakdown, ...filters].some(
+      ({dimension, levelId}) => dimension === 'TEAM_LEVEL' && !levelId
+    )
+  ) {
+    return 'TEAM_LEVEL needs the levelId of a team structure level'
+  }
+  if (new Set(breakdown.map(toReportDimensionKey)).size !== breakdown.length) {
+    return 'A breakdown can only be used once'
+  }
   const timeDimensions = dimensions.filter(isReportTimeDimension)
   if (timeDimensions.length > 1) return 'A report can only break down by time once'
   if ('firstIsTime' in view && view.firstIsTime) {
@@ -70,8 +88,9 @@ export const validateReportSpec = (spec: ReportSpec): string | null => {
 
   for (const {dimension, values} of filters) {
     if (isReportTimeDimension(dimension)) return 'Use the period to filter by time'
-    // a team filter narrows which teams are counted, so every measure takes one
-    const measure = dimension !== 'TEAM' && measures.find((m) => !isMeasureDimension(m, dimension))
+    // a team or team structure filter narrows which teams are counted, so every measure takes one
+    const isTeamFilter = dimension === 'TEAM' || dimension === 'TEAM_LEVEL'
+    const measure = !isTeamFilter && measures.find((m) => !isMeasureDimension(m, dimension))
     if (measure) return `${measure} can't be filtered by ${dimension}`
     if (values.length === 0 || values.length > MAX_REPORT_FILTER_VALUES) {
       return `A filter takes 1 to ${MAX_REPORT_FILTER_VALUES} values`
@@ -83,7 +102,7 @@ export const validateReportSpec = (spec: ReportSpec): string | null => {
     const unknownValue = allowedValues && values.find((value) => !allowedValues.includes(value))
     if (unknownValue) return `${unknownValue} isn't a ${dimension} value`
   }
-  if (new Set(filters.map(({dimension}) => dimension)).size !== filters.length) {
+  if (new Set(filters.map(toReportDimensionKey)).size !== filters.length) {
     return 'A dimension can only be filtered once'
   }
 

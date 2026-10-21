@@ -30,11 +30,15 @@ const DIMENSIONS = [...REPORT_TIME_DIMENSIONS, ...REPORT_CATEGORY_DIMENSIONS]
 
 const SPEC_SCHEMA = strictObject({
   measures: {type: 'array', items: oneOf(MEASURES)},
-  breakdown: {type: 'array', items: strictObject({dimension: oneOf(DIMENSIONS)})},
+  breakdown: {
+    type: 'array',
+    items: strictObject({dimension: oneOf(DIMENSIONS), levelId: {type: ['string', 'null']}})
+  },
   filters: {
     type: 'array',
     items: strictObject({
       dimension: oneOf(DIMENSIONS),
+      levelId: {type: ['string', 'null']},
       values: {type: 'array', items: {type: 'string'}}
     })
   },

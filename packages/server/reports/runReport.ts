@@ -1,7 +1,6 @@
 import {GraphQLError} from 'graphql'
 import {
   isReportTimeDimension,
-  type ReportCategoryDimension,
   type ReportDimension,
   type ReportPeriod,
   type ReportSpec
@@ -22,13 +21,19 @@ import {
   shiftReportRange,
   toInstant
 } from './reportCalendar'
-import type {ReportMeasureFilter, ReportMeasureQuery} from './reportMeasureTypes'
+import type {
+  ReportMeasureFilter,
+  ReportMeasureQuery,
+  ReportQueryDimension
+} from './reportMeasureTypes'
+import resolveReportStructure, {toClientLevelKeys} from './resolveReportStructure'
 import {
   applyReportConditions,
   capReportSeries,
   limitReportRows,
   sortReportRows
 } from './shapeReportRows'
+import {isLevelDimension, type ReportLevelDimension} from './teamStructure'
 
 const MAX_ROWS = 5000
 
@@ -56,9 +61,10 @@ const runReport = async ({
   if (!isTimeZone(timeZone)) throw new GraphQLError(`${timeZone} isn't a time zone`)
 
   const now = new Date()
-  const [organization, scope] = await Promise.all([
+  const [organization, scope, teamStructure] = await Promise.all([
     dataLoader.get('organizations').loadNonNull(orgId),
-    getReportScope({orgId, viewerId, isSuperUser, dataLoader})
+    getReportScope({orgId, viewerId, isSuperUser, dataLoader}),
+    dataLoader.get('teamStructureByOrgId').load(orgId)
   ])
   const range = resolveReportPeriod(spec.period, pagePeriod, {
     timeZone,
@@ -67,8 +73,11 @@ const runReport = async ({
   })
   if (typeof range === 'string') throw new GraphQLError(range)
 
-  const breakdown = spec.breakdown.map(({dimension}) => dimension)
-  const timeDimension = breakdown.find(isReportTimeDimension)
+  const structure = resolveReportStructure(spec, teamStructure)
+  const {breakdown} = structure
+  const isTimeDimension = (dimension: ReportDimension | ReportQueryDimension) =>
+    !isLevelDimension(dimension) && isReportTimeDimension(dimension)
+  const timeDimension = spec.breakdown.map(({dimension}) => dimension).find(isReportTimeDimension)
   const stepLength: ReportStepLength | null = timeDimension
     ? chooseReportStepLength(timeDimension, range)
     : null
@@ -78,16 +87,36 @@ const runReport = async ({
     return steps
   }
 
-  const dimensions = breakdown.filter(
-    (dimension): dimension is ReportCategoryDimension => !isReportTimeDimension(dimension)
+  const resultBreakdown = breakdown.map((dimension) =>
+    isLevelDimension(dimension)
+      ? {dimension: 'TEAM_LEVEL' as const, levelName: structure.levelNameOf(dimension)}
+      : {dimension, levelName: null}
   )
-  const filters = spec.filters.filter(
-    (filter): filter is ReportMeasureFilter => !isReportTimeDimension(filter.dimension)
+  if (structure.removedFilterCount > 0) {
+    return {
+      from: toInstant(range.startDate, timeZone),
+      to: toInstant(range.endDate, timeZone),
+      step: stepLength,
+      breakdown: resultBreakdown,
+      rows: [],
+      rowTotals: [],
+      totalRowCount: 0,
+      teamCount: 0,
+      notes: [{kind: 'FILTER_LEVEL_REMOVED' as const, count: structure.removedFilterCount}]
+    }
+  }
+
+  const dimensions = breakdown.filter(
+    (dimension): dimension is ReportQueryDimension => !isTimeDimension(dimension)
+  )
+  // team and team structure filters pick which teams are counted
+  const filters = spec.filters.flatMap(({dimension, values}): ReportMeasureFilter[] =>
+    isReportTimeDimension(dimension) || dimension === 'TEAM_LEVEL' ? [] : [{dimension, values}]
   )
   const teamFilter = filters.find(({dimension}) => dimension === 'TEAM')
-  const filteredTeams = teamFilter
-    ? scope.teams.filter(({id}) => teamFilter.values.includes(id))
-    : scope.teams
+  const filteredTeams = scope.teams.filter(
+    ({id}) => (!teamFilter || teamFilter.values.includes(id)) && structure.isTeamFiltered(id)
+  )
   // topics are what teams talked about, so they only come from the teams the viewer is on
   const usesTopics = [...dimensions, ...filters.map(({dimension}) => dimension)].includes('TOPIC')
   const teams = usesTopics
@@ -95,12 +124,16 @@ const runReport = async ({
     : filteredTeams
   const measureFilters = filters.filter(({dimension}) => dimension !== 'TEAM')
   const isWholeOrg =
-    scope.canCountWholeOrg && !teamFilter && !usesTopics && !dimensions.includes('TEAM')
+    scope.canCountWholeOrg &&
+    !teamFilter &&
+    !structure.hasLevelFilters &&
+    !usesTopics &&
+    !dimensions.some((dimension) => dimension === 'TEAM' || isLevelDimension(dimension))
 
   const queryMeasures = (
     measureSteps: ReportStep[],
     check: ReportMeasureQuery['check'],
-    measureDimensions: ReportCategoryDimension[],
+    measureDimensions: ReportQueryDimension[],
     hasTimeSteps: boolean
   ) =>
     Promise.all(
@@ -119,14 +152,17 @@ const runReport = async ({
           dimensions: measureDimensions,
           filters: measureFilters
         }
-        return dataLoader.get('reportMeasureRows').load(query)
+        return dataLoader
+          .get('reportMeasureRows')
+          .load(query)
+          .then((result) => toClientLevelKeys(result, measureDimensions))
       })
     )
   const {compareTo} = spec
   // Every measure split by a breakdown, with its comparison. Each team's previous check is read over the
   // same steps; every other comparison shifts the period
-  const measureBy = async (measureBreakdown: ReportDimension[]) => {
-    const isOverTime = measureBreakdown.some(isReportTimeDimension)
+  const measureBy = async (measureBreakdown: (ReportDimension | ReportLevelDimension)[]) => {
+    const isOverTime = measureBreakdown.some(isTimeDimension)
     const toMeasureSteps = (localRange: ReportLocalRange) =>
       toSteps(localRange, isOverTime ? stepLength : null)
     const measureSteps = toMeasureSteps(range)
@@ -155,7 +191,12 @@ const runReport = async ({
       teams,
       filters: measureFilters,
       current,
-      previous
+      previous,
+      levelValuesOf: (dimension) =>
+        structure.valuesOf(
+          dimension,
+          teams.map(({id}) => id)
+        )
     })
     if (typeof measuredRows === 'string') throw new GraphQLError(measuredRows)
     return {rows: measuredRows, current}
@@ -179,6 +220,9 @@ const runReport = async ({
   if (filteredTeams.length > teams.length) {
     notes.push({kind: 'TOPICS_FROM_OWN_TEAMS', count: filteredTeams.length - teams.length})
   }
+  if (structure.removedBreakdownCount > 0) {
+    notes.push({kind: 'STRUCTURE_LEVEL_REMOVED', count: structure.removedBreakdownCount})
+  }
   const hiddenTeamIds = new Set(current.flatMap((result) => result.hiddenTeamIds))
   if (hiddenTeamIds.size > 0) notes.push({kind: 'HIDDEN_FOR_ANONYMITY', count: hiddenTeamIds.size})
   const estimatedCount = current.reduce((sum, result) => sum + result.estimatedCount, 0)
@@ -190,6 +234,7 @@ const runReport = async ({
     from: toInstant(range.startDate, timeZone),
     to: toInstant(range.endDate, timeZone),
     step: stepLength,
+    breakdown: resultBreakdown,
     rows: shapedRows.slice(0, MAX_ROWS),
     rowTotals: rowTotals?.rows ?? [],
     totalRowCount: matchingRows.length,

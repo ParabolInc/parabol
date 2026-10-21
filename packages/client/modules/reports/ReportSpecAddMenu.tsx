@@ -15,23 +15,25 @@ import {
   type ReportTeam,
   sortEdits
 } from './reportSpecEdits'
+import type {ReportStructureLevel} from './reportSpecLabels'
 
 interface Props {
   spec: ReportSpec
   teams: readonly ReportTeam[]
+  levels: readonly ReportStructureLevel[]
   onChange: (spec: ReportSpec) => void
 }
 
-const ReportSpecAddMenu = ({spec, teams, onChange}: Props) => {
+const ReportSpecAddMenu = ({spec, teams, levels, onChange}: Props) => {
   const unpicked = (options: ReportSpecEditOption[]) =>
     options.filter(({isSelected}) => !isSelected)
   const groups = [
-    {label: 'Breakdown', options: addBreakdownEdits(spec)},
+    {label: 'Breakdown', options: addBreakdownEdits(spec, levels)},
     {label: 'Compare to', options: spec.compareTo ? [] : unpicked(compareEdits(spec))},
     {label: 'Sort', options: spec.sort ? [] : unpicked(sortEdits(spec))},
     {label: 'Limit', options: spec.limit ? [] : unpicked(limitEdits(spec))}
   ].filter(({options}) => options.length > 0)
-  const filterGroups = addFilterEdits(spec, teams)
+  const filterGroups = addFilterEdits(spec, teams, levels)
   if (groups.length === 0 && filterGroups.length === 0) return null
   const toItems = (options: ReportSpecEditOption[]) =>
     options.map(({key, label, spec: nextSpec}) => (
@@ -56,8 +58,8 @@ const ReportSpecAddMenu = ({spec, teams, onChange}: Props) => {
           <DropdownMenu.Sub>
             <MenuSubTrigger>Filter</MenuSubTrigger>
             <MenuSubContent>
-              {filterGroups.map(({dimension, label, options}) => (
-                <DropdownMenu.Sub key={dimension}>
+              {filterGroups.map(({key, label, options}) => (
+                <DropdownMenu.Sub key={key}>
                   <MenuSubTrigger>{label}</MenuSubTrigger>
                   <MenuSubContent className='max-h-80'>{toItems(options)}</MenuSubContent>
                 </DropdownMenu.Sub>

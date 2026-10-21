@@ -3,4 +3,9 @@ One way to split a report's results. The order of breakdowns sets each one's rol
 """
 input ReportBreakdownInput {
   dimension: ReportDimensionEnum!
+
+  """
+  For TEAM_LEVEL, the team structure level
+  """
+  levelId: ID
 }

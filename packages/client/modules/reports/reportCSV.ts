@@ -1,7 +1,7 @@
 import {REPORT_MEASURES, type ReportSpec} from '../../shared/reports/reportCatalog'
 import {formatReportKey} from './formatReportKey'
 import type {ReportResultRow} from './reportRows'
-import {formatReportDimension, type ReportStepLength} from './reportSpecLabels'
+import type {ReportStepLength} from './reportSpecLabels'
 
 // a cell a spreadsheet would read as a formula gets a leading quote, so a team name can't run code
 const toCell = (cell: string | number | null | undefined) => {
@@ -13,11 +13,12 @@ const toCell = (cell: string | number | null | undefined) => {
 
 export const toReportCSV = (
   spec: ReportSpec,
+  breakdownNames: readonly string[],
   step: ReportStepLength | null | undefined,
   rows: readonly ReportResultRow[]
 ) => {
   const header = [
-    ...spec.breakdown.map(({dimension}) => formatReportDimension(dimension, step)),
+    ...breakdownNames,
     ...spec.measures.map((measure) => {
       const {label, kind} = REPORT_MEASURES[measure]
       return kind === 'share' ? `${label} (%)` : label

@@ -42,8 +42,8 @@ const ReportPageResult = ({organizationRef, orgId, spec}: Props) => {
     [lastHeldRows]
   )
   return (
-    <section className='rounded-md border border-hairline bg-surface-card shadow-xs'>
-      <div className='p-5'>
+    <>
+      <div className='border-hairline border-t p-5'>
         {report ? (
           <ReportView spec={spec} resultRef={report} lastHeldByTeamId={lastHeldByTeamId} />
         ) : (
@@ -51,7 +51,7 @@ const ReportPageResult = ({organizationRef, orgId, spec}: Props) => {
         )}
       </div>
       {report && <ReportNotes orgId={orgId} resultRef={report} />}
-    </section>
+    </>
   )
 }
 

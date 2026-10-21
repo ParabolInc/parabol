@@ -2597,7 +2597,7 @@ type Mutation {
   ): PinReportSuccess! @scope(name: REPORTS_WRITE)
 
   """
-  Take a report off the organization's Reports page. The person who pinned it, an org admin or a billing leader can
+  Take a report off the organization's Reports page. Org admins and billing leaders can
   """
   unpinReport(orgId: ID!, pinId: ID!): UnpinReportSuccess! @scope(name: REPORTS_WRITE)
 
@@ -2613,4 +2613,17 @@ type Mutation {
     """
     toIndex: Int!
   ): MoveReportPinSuccess! @scope(name: REPORTS_WRITE)
+
+  """
+  Set the levels an organization groups its teams by in Reports. Levels and values keep their ids and take the
+  order given; any left out are removed, and teams placed in them become not set. Org admins and billing leaders can
+  """
+  setTeamStructure(orgId: ID!, levels: [TeamStructureLevelInput!]!): SetTeamStructureSuccess!
+    @scope(name: ORGS_WRITE)
+
+  """
+  Place a team at a value of a team structure level, or leave it not set with no value. Org admins and billing
+  leaders can
+  """
+  placeTeam(teamId: ID!, levelId: ID!, valueId: ID): PlaceTeamSuccess! @scope(name: ORGS_WRITE)
 }

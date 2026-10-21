@@ -1,0 +1,12 @@
+"""
+One value of a team structure level, like Platform for business unit
+"""
+type TeamStructureValue {
+  id: ID!
+  name: String!
+
+  """
+  The teams placed at this value that the viewer can see
+  """
+  teamIds: [ID!]!
+}

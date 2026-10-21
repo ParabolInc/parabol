@@ -6,6 +6,7 @@ import {
   REPORT_VALUE_LABELS,
   type ReportDimension
 } from '../../client/shared/reports/reportCatalog'
+import type {ClientTeamStructureLevel} from './teamStructure'
 
 const DIMENSIONS: Record<ReportDimension, string> = {
   TIME: 'time, stepping by day up to a month, by week up to 6 months, then by month',
@@ -13,6 +14,7 @@ const DIMENSIONS: Record<ReportDimension, string> = {
   WEEK: 'each week, starting on Monday',
   MONTH: 'each month',
   TEAM: 'each team; its values are team ids',
+  TEAM_LEVEL: 'a level of the team structure below, like business unit, named by levelId',
   PERSON: 'each person: who owns a task, who joined a meeting, or each member for LAST_SEEN',
   MEETING_TYPE: 'the type of meeting something happened in',
   TEMPLATE: 'the template of the meeting something happened in',
@@ -39,12 +41,13 @@ const MAX_TEAMS = 200
 
 interface Options {
   teams: {id: string; name: string}[]
+  levels: ClientTeamStructureLevel[]
   // today's date where the viewer is, as YYYY-MM-DD
   today: string
   timeZone: string
 }
 
-const buildReportAskPrompt = ({teams, today, timeZone}: Options) => {
+const buildReportAskPrompt = ({teams, levels, today, timeZone}: Options) => {
   const measures = Object.entries(REPORT_MEASURES).map(
     ([key, {label, description, kind, dimensions}]) =>
       `- ${key} (${label}): ${description}. It ${KINDS[kind]}. Breakdowns and filters: ${dimensions.join(', ')}`
@@ -59,6 +62,10 @@ const buildReportAskPrompt = ({teams, today, timeZone}: Options) => {
         .join(', ')}`
   )
   const teamLines = teams.slice(0, MAX_TEAMS).map(({id, name}) => `- ${id}: ${name}`)
+  const levelLines = levels.map(
+    ({id, name, values}) =>
+      `- ${id}: ${name}. Values: ${values.map((value) => `${value.id} (${value.name})`).join(', ') || 'none yet'}`
+  )
   return `You turn a question about how an organization uses Parabol into a report spec. Parabol checks the spec, runs it and draws the report; you only choose its parameters.
 
 Today is ${today} in ${timeZone}.
@@ -85,6 +92,9 @@ PERSON, TEMPLATE and TOPIC can break a report down but not filter it, since thei
 
 Teams the person asking can see${teams.length > MAX_TEAMS ? `, the first ${MAX_TEAMS}` : ''}:
 ${teamLines.join('\n') || '- none'}
+
+Team structure levels the organization groups its teams by, widest first. A TEAM_LEVEL breakdown or filter sets levelId to one of these; its filter values are the level's value ids, or notSet for teams not placed yet. Every other breakdown and filter sets levelId to null:
+${levelLines.join('\n') || '- none, so TEAM_LEVEL can’t be used'}
 
 where keeps the rows whose value passes a test, after counting. AT_LEAST, AT_MOST and EQUALS test a number, like a count, a percentage or days. OLDER_THAN_DAYS and WITHIN_DAYS test a date, like LAST_MEETING; OLDER_THAN_DAYS also keeps rows with no date at all. A test's measure must be one of the spec's measures.
 

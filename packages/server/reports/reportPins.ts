@@ -14,8 +14,10 @@ const BUILT_IN_PIN_PREFIX = 'BuiltInReportPin'
 
 export interface ReportPinSource {
   orgId: string
-  // the pin's row once the org has pins of its own; until then the built-in ones are named by key
+  // the pin's row once the org has pins of its own
   rowId: number | null
+  // a built-in pin's popular question, which names it before and after the org's pins get rows, so a page
+  // showing it stays current
   key: string | null
   title: string
   description: string | null
@@ -25,7 +27,9 @@ export interface ReportPinSource {
 }
 
 export const toReportPinId = ({orgId, rowId, key}: ReportPinSource) =>
-  rowId === null ? `${BUILT_IN_PIN_PREFIX}:${orgId}:${key}` : CipherId.toClient(rowId, 'ReportPin')
+  key !== null || rowId === null
+    ? `${BUILT_IN_PIN_PREFIX}:${orgId}:${key}`
+    : CipherId.toClient(rowId, 'ReportPin')
 
 const toBuiltInPins = (popularQuestions: PopularReportQuestionRow[]) =>
   popularQuestions
@@ -36,15 +40,18 @@ const toBuiltInPins = (popularQuestions: PopularReportQuestionRow[]) =>
 
 // An org shows the built-in pins until someone pins, unpins or moves one; from then on it shows its own
 export const selectReportPins = async (orgId: string): Promise<ReportPinSource[]> => {
-  const rows = await getKysely()
-    .selectFrom('ReportPin')
-    .selectAll()
-    .where('orgId', '=', orgId)
-    .orderBy('sortOrder')
-    .orderBy('id')
-    .execute()
+  const [rows, popularQuestions] = await Promise.all([
+    getKysely()
+      .selectFrom('ReportPin')
+      .selectAll()
+      .where('orgId', '=', orgId)
+      .orderBy('sortOrder')
+      .orderBy('id')
+      .execute(),
+    selectPopularReportQuestions()
+  ])
   if (rows.length === 0) {
-    const builtIns = toBuiltInPins(await selectPopularReportQuestions())
+    const builtIns = toBuiltInPins(popularQuestions)
     return builtIns.map(({key, title, description, spec}) => ({
       orgId,
       rowId: null,
@@ -56,11 +63,14 @@ export const selectReportPins = async (orgId: string): Promise<ReportPinSource[]
       isBuiltIn: true
     }))
   }
+  const keyByPopularQuestionId = new Map(popularQuestions.map(({id, key}) => [id, key]))
   return rows.flatMap((row) => {
     const spec = parseReportSpec(row.spec)
     if (!spec || row.removedAt) return []
-    const {id, title, description, createdBy, isBuiltIn} = row
-    return [{orgId, rowId: id, key: null, title, description, spec, createdBy, isBuiltIn}]
+    const {id, title, description, createdBy, isBuiltIn, popularQuestionId} = row
+    const key =
+      (isBuiltIn && popularQuestionId && keyByPopularQuestionId.get(popularQuestionId)) || null
+    return [{orgId, rowId: id, key, title, description, spec, createdBy, isBuiltIn}]
   })
 }
 

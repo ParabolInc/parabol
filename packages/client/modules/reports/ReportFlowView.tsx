@@ -1,9 +1,5 @@
 import useResolvedTheme from '../../hooks/useResolvedTheme'
-import {
-  REPORT_DIMENSION_LABELS,
-  REPORT_MEASURES,
-  type ReportSpec
-} from '../../shared/reports/reportCatalog'
+import {REPORT_MEASURES, type ReportSpec} from '../../shared/reports/reportCatalog'
 import {cn} from '../../ui/cn'
 import {
   FLOW_NODE_WIDTH,
@@ -17,13 +13,14 @@ import {getReportFlowColor, REPORT_NONE_COLOR} from './reportSeriesColors'
 
 interface Props {
   spec: ReportSpec
+  breakdownNames: readonly string[]
   rows: readonly ReportResultRow[]
   isCompact: boolean
 }
 
 const LABEL_GAP = 8
 
-const ReportFlowView = ({spec, rows, isCompact}: Props) => {
+const ReportFlowView = ({spec, breakdownNames, rows, isCompact}: Props) => {
   const theme = useResolvedTheme()
   const dimensions = spec.breakdown.map(({dimension}) => dimension)
   const {stages, links, height, grandTotal} = layoutReportFlow(dimensions.length, rows)
@@ -37,7 +34,7 @@ const ReportFlowView = ({spec, rows, isCompact}: Props) => {
     `${grandTotal.toLocaleString()} ${REPORT_MEASURES[spec.measures[0]!].label.toLowerCase()}`,
     ...stages.map(
       (nodes, stage) =>
-        `${REPORT_DIMENSION_LABELS[dimensions[stage]!]}: ${nodes.map(({key, total}) => `${key.label} ${total}`).join(', ')}`
+        `${breakdownNames[stage]}: ${nodes.map(({key, total}) => `${key.label} ${total}`).join(', ')}`
     )
   ].join('. ')
   // on a narrow screen the page scrolls the flow sideways rather than shrink its labels past reading

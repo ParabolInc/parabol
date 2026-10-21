@@ -4,8 +4,7 @@ import type {ReportPageQuery} from '../../__generated__/ReportPageQuery.graphql'
 import useDocumentTitle from '../../hooks/useDocumentTitle'
 import type {ReportSpec} from '../../shared/reports/reportCatalog'
 import ReportPageHeader from './ReportPageHeader'
-import ReportPageResult from './ReportPageResult'
-import ReportSpecEditor from './ReportSpecEditor'
+import ReportPanel from './ReportPanel'
 import type {ReportPagePeriod} from './reportPeriodParam'
 import {describeReportSpec} from './reportSpecLabels'
 
@@ -17,7 +16,7 @@ interface Props {
   period: ReportPagePeriod
   reportQuestionId: string | null
   onPeriodChange: (period: ReportPagePeriod) => void
-  onSpecChange: (spec: ReportSpec) => void
+  onSpecChange: (spec: ReportSpec, title: string) => void
 }
 
 const query = graphql`
@@ -31,13 +30,12 @@ const query = graphql`
   ) {
     viewer {
       organization(orgId: $orgId) {
-        ...ReportPageHeader_organization
-        ...ReportSpecEditor_organization
-        ...ReportPageResult_organization
-        report(spec: $spec, timeZone: $timeZone, pagePeriod: $pagePeriod) {
-          step
-          ...ReportExportButton_result
+        teamStructure {
+          id
+          name
         }
+        ...ReportPageHeader_organization
+        ...ReportPanel_organization
       }
     }
   }
@@ -55,28 +53,28 @@ const ReportPage = ({
 }: Props) => {
   const {viewer} = usePreloadedQuery<ReportPageQuery>(query, queryRef)
   const {organization} = viewer
-  const report = organization?.report
-  const name = title ?? describeReportSpec(spec)
+  const levels = organization?.teamStructure ?? []
+  const name = title ?? describeReportSpec(spec, levels)
   useDocumentTitle(`${name} | Reports | Parabol`, 'Reports')
   return (
-    <div className='mx-auto flex w-full max-w-[1360px] flex-col gap-4 px-4 pt-4 pb-10 sm:px-8'>
+    <div className='mx-auto flex w-full max-w-[1360px] flex-col gap-3 px-4 pt-4 pb-10 sm:px-8'>
       <ReportPageHeader
         orgId={orgId}
         organizationRef={organization}
-        resultRef={report}
+        spec={spec}
+        period={period}
+        onPeriodChange={onPeriodChange}
+      />
+      <ReportPanel
+        organizationRef={organization}
+        orgId={orgId}
         spec={spec}
         name={name}
         period={period}
         reportQuestionId={reportQuestionId}
-        onPeriodChange={onPeriodChange}
+        isPageHeading
+        onSpecChange={(nextSpec) => onSpecChange(nextSpec, describeReportSpec(nextSpec, levels))}
       />
-      <ReportSpecEditor
-        organizationRef={organization}
-        spec={spec}
-        step={report?.step}
-        onChange={onSpecChange}
-      />
-      <ReportPageResult organizationRef={organization} orgId={orgId} spec={spec} />
     </div>
   )
 }

@@ -98,6 +98,11 @@ type Organization implements OrganizationPartial {
   recentReportQuestions: [ReportQuestion!]! @scope(name: REPORTS_READ)
 
   """
+  The levels the organization groups its teams by in Reports, widest first. Empty while Reports is off
+  """
+  teamStructure: [TeamStructureLevel!]! @scope(name: ORGS_READ)
+
+  """
   Teams in the organization that the viewer has access to.
   For billing leaders/org admins/super users: all teams in the org (viewer's teams first).
   For regular users: teams the viewer is on plus public teams.

@@ -5,7 +5,13 @@ input ReportFilterInput {
   dimension: ReportDimensionEnum!
 
   """
-  Team ids, meeting types, task statuses, done or open, or integration services
+  For TEAM_LEVEL, the team structure level
+  """
+  levelId: ID
+
+  """
+  Team ids, team structure value ids or notSet, meeting types, task statuses, done or open, or integration
+  services
   """
   values: [String!]!
 }

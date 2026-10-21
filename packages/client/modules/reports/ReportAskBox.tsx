@@ -9,7 +9,7 @@ import useStartReportQuestionMutation from '../../mutations/useStartReportQuesti
 import {Button} from '../../ui/Button/Button'
 import ReportAskMenu from './ReportAskMenu'
 import {type ReportAskOption, type ReportAskPopular, toReportAskOptions} from './reportAskOptions'
-import {toReportPagePath} from './reportPaths'
+import {toReportsHomePath} from './reportPaths'
 import type {ReportPagePeriod} from './reportPeriodParam'
 import {parseReportSpecJSON} from './reportSpecParam'
 
@@ -94,7 +94,9 @@ const ReportAskBox = ({organizationRef, period}: Props) => {
     reportQuestionId: string | null
   ) => {
     const spec = specJSON ? parseReportSpecJSON(specJSON) : null
-    if (spec) navigate(toReportPagePath(orgId, spec, title, period, reportQuestionId))
+    if (!spec) return
+    setIsOpen(false)
+    navigate(toReportsHomePath(orgId, period, {spec, title, reportQuestionId}))
   }
   const askAI = (question: string) => {
     setError(null)

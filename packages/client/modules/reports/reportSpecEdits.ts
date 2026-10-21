@@ -5,15 +5,22 @@ import {
   REPORT_DIMENSION_LABELS,
   REPORT_MEASURE_KEYS,
   REPORT_MEASURES,
+  REPORT_STRUCTURE_LABELS,
+  REPORT_STRUCTURE_NOT_SET,
   REPORT_TIME_DIMENSIONS,
   REPORT_VALUE_LABELS,
   REPORT_VIEW_KEYS,
   type ReportDimension,
   type ReportSpec
 } from '../../shared/reports/reportCatalog'
-import {validateReportSpec} from '../../shared/reports/validateReportSpec'
+import {toReportDimensionKey, validateReportSpec} from '../../shared/reports/validateReportSpec'
 import {REPORT_PAGE_PRESETS} from './reportPeriodParam'
-import {REPORT_COMPARE_LABELS, REPORT_PERIOD_LABELS, REPORT_VIEW_LABELS} from './reportSpecLabels'
+import {
+  REPORT_COMPARE_LABELS,
+  REPORT_PERIOD_LABELS,
+  REPORT_VIEW_LABELS,
+  type ReportStructureLevel
+} from './reportSpecLabels'
 
 export interface ReportSpecEditOption {
   key: string
@@ -77,6 +84,22 @@ const toRemoval = (spec: ReportSpec) => {
 const dimensionLabel = (dimension: ReportDimension) =>
   dimension === 'TIME' ? 'Auto' : REPORT_DIMENSION_LABELS[dimension]
 
+type ReportDimensionItem = ReportSpec['breakdown'][number]
+
+// the dimensions a breakdown or filter can pick, where team structure is one choice per level
+const toChoices = (
+  dimensions: readonly ReportDimension[],
+  levels: readonly ReportStructureLevel[]
+) =>
+  dimensions.flatMap((dimension) =>
+    dimension === 'TEAM_LEVEL'
+      ? levels.map(({id, name}) => {
+          const item: ReportDimensionItem = {dimension, levelId: id}
+          return {key: toReportDimensionKey(item), label: name, item}
+        })
+      : [{key: dimension, label: dimensionLabel(dimension), item: {dimension}}]
+  )
+
 export const measureEdits = (spec: ReportSpec) => {
   const isMulti = spec.showAs === 'TABLE'
   const options = REPORT_MEASURE_KEYS.map((measure) => {
@@ -91,16 +114,15 @@ export const measureEdits = (spec: ReportSpec) => {
   return {options, isMulti}
 }
 
-export const breakdownEdits = (spec: ReportSpec, position: number) => {
-  const current = spec.breakdown[position]!.dimension
-  const options = DIMENSIONS.map((dimension) => {
-    const breakdown = spec.breakdown.map((item, idx) => (idx === position ? {dimension} : item))
-    return toOption(
-      dimension,
-      dimensionLabel(dimension),
-      {...spec, breakdown},
-      dimension === current
-    )
+export const breakdownEdits = (
+  spec: ReportSpec,
+  position: number,
+  levels: readonly ReportStructureLevel[]
+) => {
+  const currentKey = toReportDimensionKey(spec.breakdown[position]!)
+  const options = toChoices(DIMENSIONS, levels).map(({key, label, item}) => {
+    const breakdown = spec.breakdown.map((current, idx) => (idx === position ? item : current))
+    return toOption(key, label, {...spec, breakdown}, key === currentKey)
   })
   const removal = toRemoval({
     ...spec,
@@ -109,36 +131,45 @@ export const breakdownEdits = (spec: ReportSpec, position: number) => {
   return {options, removal}
 }
 
-export const addBreakdownEdits = (spec: ReportSpec) =>
+export const addBreakdownEdits = (spec: ReportSpec, levels: readonly ReportStructureLevel[]) =>
   validOnly(
-    DIMENSIONS.filter(
-      (dimension) => !spec.breakdown.some((item) => item.dimension === dimension)
-    ).map((dimension) =>
-      toOption(
-        dimension,
-        dimensionLabel(dimension),
-        {
-          ...spec,
-          breakdown: [...spec.breakdown, {dimension}]
-        },
-        false
+    toChoices(DIMENSIONS, levels)
+      .filter(({key}) => !spec.breakdown.some((item) => toReportDimensionKey(item) === key))
+      .map(({key, label, item}) =>
+        toOption(key, label, {...spec, breakdown: [...spec.breakdown, item]}, false)
       )
-    )
   )
 
-const valuesOf = (dimension: ReportDimension, teams: readonly ReportTeam[]) => {
+const valuesOf = (
+  {dimension, levelId}: ReportDimensionItem,
+  teams: readonly ReportTeam[],
+  levels: readonly ReportStructureLevel[]
+) => {
   if (isReportTimeDimension(dimension)) return []
   if (dimension === 'TEAM') return teams.map(({id, name}) => ({value: id, label: name}))
+  if (dimension === 'TEAM_LEVEL') {
+    const level = levels.find(({id}) => id === levelId)
+    if (!level) return []
+    return [
+      ...level.values.map(({id, name}) => ({value: id, label: name})),
+      {value: REPORT_STRUCTURE_NOT_SET, label: REPORT_STRUCTURE_LABELS.notSet}
+    ]
+  }
   return Object.entries(REPORT_VALUE_LABELS[dimension] ?? {}).map(([value, label]) => ({
     value,
     label
   }))
 }
 
-export const filterEdits = (spec: ReportSpec, index: number, teams: readonly ReportTeam[]) => {
+export const filterEdits = (
+  spec: ReportSpec,
+  index: number,
+  teams: readonly ReportTeam[],
+  levels: readonly ReportStructureLevel[]
+) => {
   const filter = spec.filters[index]!
   const withoutFilter = spec.filters.filter((_, idx) => idx !== index)
-  const options = valuesOf(filter.dimension, teams).map(({value, label}) => {
+  const options = valuesOf(filter, teams, levels).map(({value, label}) => {
     const isSelected = filter.values.includes(value)
     const values = isSelected
       ? filter.values.filter((selected) => selected !== value)
@@ -152,19 +183,22 @@ export const filterEdits = (spec: ReportSpec, index: number, teams: readonly Rep
   return {options, removal: toRemoval({...spec, filters: withoutFilter})}
 }
 
-export const addFilterEdits = (spec: ReportSpec, teams: readonly ReportTeam[]) =>
-  REPORT_CATEGORY_DIMENSIONS.filter(
-    (dimension) => !spec.filters.some((filter) => filter.dimension === dimension)
-  )
-    .map((dimension) => ({
-      dimension,
-      label: REPORT_DIMENSION_LABELS[dimension],
+export const addFilterEdits = (
+  spec: ReportSpec,
+  teams: readonly ReportTeam[],
+  levels: readonly ReportStructureLevel[]
+) =>
+  toChoices(REPORT_CATEGORY_DIMENSIONS, levels)
+    .filter(({key}) => !spec.filters.some((filter) => toReportDimensionKey(filter) === key))
+    .map(({key, label, item}) => ({
+      key,
+      label,
       options: validOnly(
-        valuesOf(dimension, teams).map(({value, label}) =>
+        valuesOf(item, teams, levels).map((value) =>
           toOption(
-            value,
-            label,
-            {...spec, filters: [...spec.filters, {dimension, values: [value]}]},
+            value.value,
+            value.label,
+            {...spec, filters: [...spec.filters, {...item, values: [value.value]}]},
             false
           )
         )

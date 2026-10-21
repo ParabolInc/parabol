@@ -7,6 +7,7 @@ import recordReportQuestion from '../../../reports/recordReportQuestion'
 import {isTimeZone, toLocalDate} from '../../../reports/reportCalendar'
 import requestReportSpec from '../../../reports/requestReportSpec'
 import selectPopularReportQuestions from '../../../reports/selectPopularReportQuestions'
+import {toClientTeamStructureLevels} from '../../../reports/teamStructure'
 import {getUserId, isSuperUser} from '../../../utils/authorization'
 import hasUsedMonthlyAIQuota from '../../../utils/hasUsedMonthlyAIQuota'
 import logError from '../../../utils/logError'
@@ -42,15 +43,14 @@ const askReportQuestion: MutationResolvers['askReportQuestion'] = async (
   }
 
   // RESOLUTION
-  const {teams} = await getReportScope({
-    orgId,
-    viewerId,
-    isSuperUser: viewerIsSuperUser,
-    dataLoader
-  })
+  const [{teams}, {levels}] = await Promise.all([
+    getReportScope({orgId, viewerId, isSuperUser: viewerIsSuperUser, dataLoader}),
+    dataLoader.get('teamStructureByOrgId').load(orgId)
+  ])
   const answer = await requestReportSpec({
     question: trimmedQuestion,
     teams,
+    levels: toClientTeamStructureLevels(levels),
     today: toLocalDate(new Date(), timeZone),
     timeZone,
     complete: completeReportAskWithOpenAI(openAIApi)

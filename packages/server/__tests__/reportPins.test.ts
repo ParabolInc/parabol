@@ -109,15 +109,18 @@ const pinsOf = async (orgId: string, cookie: string) => {
 const pin = (orgId: string, cookie: string, variables: Record<string, unknown>) =>
   sendPublic({query: PIN_REPORT, variables: {orgId, ...variables}, cookie})
 
-test('pinning keeps the built-in pins and adds the new one last', async () => {
+test('a new pin goes first, and the built-in pins keep their ids once the org has pins of its own', async () => {
   const {orgId, cookie, userId} = await signUpWithReports()
-  expect((await pinsOf(orgId, cookie)).map(({title}) => title)).toEqual(BUILT_IN_TITLES)
+  const builtIns = await pinsOf(orgId, cookie)
+  expect(builtIns.map(({title}) => title)).toEqual(BUILT_IN_TITLES)
   const res = await pin(orgId, cookie, {spec: topTeams(5), title: 'Top 5 teams'})
   expect(res.errors).toBeUndefined()
+  await pin(orgId, cookie, {spec: topTeams(10), title: 'Top 10 teams'})
   const pins = await pinsOf(orgId, cookie)
-  expect(pins.map(({title}) => title)).toEqual([...BUILT_IN_TITLES, 'Top 5 teams'])
-  expect(pins.at(-1)?.pinnedBy?.id).toBe(userId)
-  expect(pins[0]?.pinnedBy).toBeNull()
+  expect(pins.map(({title}) => title)).toEqual(['Top 10 teams', 'Top 5 teams', ...BUILT_IN_TITLES])
+  expect(pins[0]?.pinnedBy?.id).toBe(userId)
+  expect(pins.at(-1)?.pinnedBy).toBeNull()
+  expect(pins.slice(2).map(({id}) => id)).toEqual(builtIns.map(({id}) => id))
 })
 
 test('pinning a report that is already pinned keeps the one pin', async () => {

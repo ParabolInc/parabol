@@ -75,6 +75,17 @@ test.each<[string, Partial<ReportSpec>]>([
       breakdown: [{dimension: 'TEAM'}, {dimension: 'CATEGORY'}],
       compareTo: 'PREVIOUS_CHECK'
     }
+  ],
+  [
+    'two team structure levels, filtered by a third',
+    {
+      showAs: 'HEATMAP',
+      breakdown: [
+        {dimension: 'TEAM_LEVEL', levelId: 'level1'},
+        {dimension: 'TEAM_LEVEL', levelId: 'level2'}
+      ],
+      filters: [{dimension: 'TEAM_LEVEL', levelId: 'level3', values: ['notSet']}]
+    }
   ]
 ])('accepts %s', (_name, overrides) => {
   expect(validateReportSpec(spec(overrides))).toBeNull()
@@ -107,6 +118,22 @@ test.each<[string, Partial<ReportSpec>, string]>([
     'a breakdown twice',
     {showAs: 'HEATMAP', breakdown: [{dimension: 'TEAM'}, {dimension: 'TEAM'}]},
     'A breakdown can only be used once'
+  ],
+  [
+    'a team structure level twice',
+    {
+      showAs: 'HEATMAP',
+      breakdown: [
+        {dimension: 'TEAM_LEVEL', levelId: 'level1'},
+        {dimension: 'TEAM_LEVEL', levelId: 'level1'}
+      ]
+    },
+    'A breakdown can only be used once'
+  ],
+  [
+    'team structure without a level',
+    {showAs: 'BARS', breakdown: [{dimension: 'TEAM_LEVEL'}]},
+    'TEAM_LEVEL needs the levelId of a team structure level'
   ],
   [
     'a breakdown the measure lacks',

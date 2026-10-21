@@ -2,6 +2,7 @@ import {readReportSpec} from '../../client/shared/reports/parseReportSpec'
 import type {ReportSpec} from '../../client/shared/reports/reportCatalog'
 import {validateReportSpec} from '../../client/shared/reports/validateReportSpec'
 import buildReportAskPrompt from './buildReportAskPrompt'
+import type {ClientTeamStructureLevel} from './teamStructure'
 
 export interface ReportAskMessage {
   role: 'system' | 'user' | 'assistant'
@@ -15,6 +16,7 @@ export type CompleteReportAsk = (
 interface Options {
   question: string
   teams: {id: string; name: string}[]
+  levels: ClientTeamStructureLevel[]
   today: string
   timeZone: string
   complete: CompleteReportAsk
@@ -36,9 +38,9 @@ const readAnswer = (content: string | null) => {
 }
 
 // AI only fills in the parameters. A spec that breaks a rule goes back once with the rule it broke
-const requestReportSpec = async ({question, teams, today, timeZone, complete}: Options) => {
+const requestReportSpec = async ({question, teams, levels, today, timeZone, complete}: Options) => {
   const messages: ReportAskMessage[] = [
-    {role: 'system', content: buildReportAskPrompt({teams, today, timeZone})},
+    {role: 'system', content: buildReportAskPrompt({teams, levels, today, timeZone})},
     {role: 'user', content: question}
   ]
   let tokenCost = 0

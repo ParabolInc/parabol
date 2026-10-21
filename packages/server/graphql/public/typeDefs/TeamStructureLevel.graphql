@@ -1,0 +1,12 @@
+"""
+A level an organization groups its teams by, like business unit
+"""
+type TeamStructureLevel {
+  id: ID!
+  name: String!
+
+  """
+  The level's values, in order
+  """
+  values: [TeamStructureValue!]!
+}

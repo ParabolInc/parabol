@@ -28,6 +28,14 @@ const ReportSpecEditor = ({organizationRef, spec, step, onChange}: Props) => {
   const organization = useFragment(
     graphql`
       fragment ReportSpecEditor_organization on Organization {
+        teamStructure {
+          id
+          name
+          values {
+            id
+            name
+          }
+        }
         reportTeams: report(
           spec: {
             measures: [MEMBERS]
@@ -51,14 +59,15 @@ const ReportSpecEditor = ({organizationRef, spec, step, onChange}: Props) => {
   const teams = (organization?.reportTeams.rows ?? []).flatMap(({keys}) =>
     keys[0] ? [{id: keys[0].value, name: keys[0].label}] : []
   )
+  const levels = organization?.teamStructure ?? []
   const editsOf = (edit: ReportSpecChipEdit) => {
     switch (edit.kind) {
       case 'measure':
         return {...measureEdits(spec), removal: null}
       case 'breakdown':
-        return {...breakdownEdits(spec, edit.position), isMulti: false}
+        return {...breakdownEdits(spec, edit.position, levels), isMulti: false}
       case 'filter':
-        return {...filterEdits(spec, edit.index, teams), isMulti: true}
+        return {...filterEdits(spec, edit.index, teams, levels), isMulti: true}
       case 'where':
         return {options: [], isMulti: false, removal: whereRemoval(spec, edit.index)}
       case 'period':
@@ -76,7 +85,7 @@ const ReportSpecEditor = ({organizationRef, spec, step, onChange}: Props) => {
   const teamNames = new Map(teams.map(({id, name}) => [id, name]))
   return (
     <div role='group' aria-label='Report settings' className='flex flex-wrap items-center gap-2'>
-      {toReportSpecChips(spec, {step, teamNames}).map((chip) => {
+      {toReportSpecChips(spec, {step, teamNames, levels}).map((chip) => {
         const {options, isMulti, removal} = editsOf(chip.edit)
         return (
           <ReportSpecChip
@@ -89,7 +98,7 @@ const ReportSpecEditor = ({organizationRef, spec, step, onChange}: Props) => {
           />
         )
       })}
-      <ReportSpecAddMenu spec={spec} teams={teams} onChange={onChange} />
+      <ReportSpecAddMenu spec={spec} teams={teams} levels={levels} onChange={onChange} />
     </div>
   )
 }

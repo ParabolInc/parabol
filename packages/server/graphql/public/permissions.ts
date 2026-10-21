@@ -55,6 +55,11 @@ const permissionMap: PermissionMap<Resolvers> = {
       or(isSuperUser, isViewerBillingLeader<'Mutation.unpinReport'>('args.orgId')),
       hasOrgFeatureFlag<'Mutation.unpinReport'>('args.orgId', 'Reports')
     ),
+    setTeamStructure: and(
+      or(isSuperUser, isViewerBillingLeader<'Mutation.setTeamStructure'>('args.orgId')),
+      hasOrgFeatureFlag<'Mutation.setTeamStructure'>('args.orgId', 'Reports')
+    ),
+    placeTeam: or(isSuperUser, isViewerBillingLeader<'Mutation.placeTeam'>('args.teamId', 'teams')),
     moveReportPin: and(
       or(isSuperUser, isViewerBillingLeader<'Mutation.moveReportPin'>('args.orgId')),
       hasOrgFeatureFlag<'Mutation.moveReportPin'>('args.orgId', 'Reports')

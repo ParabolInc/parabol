@@ -1,0 +1,8 @@
+"""
+A team structure level as it should be. A level without an id is new
+"""
+input TeamStructureLevelInput {
+  id: ID
+  name: String!
+  values: [TeamStructureValueInput!]!
+}

@@ -8,8 +8,14 @@ const mutation = graphql`
     $spec: ReportSpecInput!
     $title: String!
     $reportQuestionId: ID
+    $timeZone: String!
+    $pagePeriod: ReportPeriodInput!
   ) {
     pinReport(orgId: $orgId, spec: $spec, title: $title, reportQuestionId: $reportQuestionId) {
+      reportPin {
+        id
+        ...ReportCard_pin
+      }
       organization {
         id
         reportPins {

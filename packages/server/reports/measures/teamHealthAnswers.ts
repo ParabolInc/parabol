@@ -1,8 +1,13 @@
-import {MIN_REPORT_HEALTH_RESPONDENTS} from '../../../client/shared/reports/reportCatalog'
+import {
+  MIN_REPORT_HEALTH_RESPONDENTS,
+  REPORT_STRUCTURE_NOT_SET,
+  REPORT_STRUCTURE_REMOVED
+} from '../../../client/shared/reports/reportCatalog'
 import type RootDataLoader from '../../dataloader/RootDataLoader'
 import isValid from '../../graphql/isValid'
 import groupTeamHealthScores from '../../utils/groupTeamHealthScores'
-import type {ReportMeasureQuery} from '../reportMeasureTypes'
+import type {ReportMeasureQuery, ReportQueryDimension} from '../reportMeasureTypes'
+import {isLevelDimension, toLevelRowId} from '../teamStructure'
 
 export interface PickedTeamHealthCheck {
   stepIndex: number
@@ -40,13 +45,23 @@ const loadCheckAnswers = async (checkIds: string[], dataLoader: RootDataLoader) 
 // answered adds nothing, and its team is named as hidden
 export const groupTeamHealthAnswers = async (
   picks: PickedTeamHealthCheck[],
-  {dimensions, filters}: ReportMeasureQuery,
+  {orgId, dimensions, filters}: ReportMeasureQuery,
   dataLoader: RootDataLoader
 ) => {
-  const answers = await loadCheckAnswers(
-    [...new Set(picks.map(({checkId}) => checkId))],
-    dataLoader
-  )
+  const [answers, {placements}] = await Promise.all([
+    loadCheckAnswers([...new Set(picks.map(({checkId}) => checkId))], dataLoader),
+    dataLoader.get('teamStructureByOrgId').load(orgId)
+  ])
+  // a team structure level groups a team's answers under the value the team sits at
+  const keyOf = (dimension: ReportQueryDimension, teamId: string, category: string) => {
+    if (!isLevelDimension(dimension)) return dimension === 'TEAM' ? teamId : category
+    const levelRowId = toLevelRowId(dimension)
+    if (levelRowId === 0) return REPORT_STRUCTURE_REMOVED
+    const placement = placements.find(
+      (place) => place.teamId === teamId && place.levelId === levelRowId
+    )
+    return placement ? String(placement.valueId) : REPORT_STRUCTURE_NOT_SET
+  }
   const categoryFilter = filters.find(({dimension}) => dimension === 'CATEGORY')
   const hiddenTeamIds = new Set<string>()
   const groups = new Map<string, {stepIndex: number; keys: string[]; scores: number[]}>()
@@ -60,7 +75,7 @@ export const groupTeamHealthAnswers = async (
     for (const [categoryId, scores] of checkAnswers.scoresByCategoryId) {
       const category = String(categoryId)
       if (categoryFilter && !categoryFilter.values.includes(category)) continue
-      const keys = dimensions.map((dimension) => (dimension === 'TEAM' ? teamId : category))
+      const keys = dimensions.map((dimension) => keyOf(dimension, teamId, category))
       const groupKey = JSON.stringify([stepIndex, ...keys])
       const group = groups.get(groupKey) ?? {stepIndex, keys, scores: []}
       group.scores.push(...scores)

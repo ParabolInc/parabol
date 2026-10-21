@@ -2,12 +2,13 @@ import type {ReportDimension, ReportSpec} from '../../client/shared/reports/repo
 
 const PLACEHOLDERS: Partial<Record<ReportDimension, string>> = {
   TEAM: '<team>',
+  TEAM_LEVEL: '<level value>',
   PERSON: '<person>',
   TOPIC: '<topic>'
 }
 
-// The spec with team ids, people, topics and dates swapped for placeholders, so the same question from two
-// orgs matches and no one's name or discussion is kept for analysis
+// The spec with team ids, team structure, people, topics and dates swapped for placeholders, so the same
+// question from two orgs matches and no one's name or discussion is kept for analysis
 const toReportSpecShape = (spec: ReportSpec) => {
   const {measures, breakdown, filters, where, period, compareTo, showAs, sort, limit} = spec
   return [

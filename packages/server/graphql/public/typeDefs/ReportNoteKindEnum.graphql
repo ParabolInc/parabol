@@ -12,4 +12,8 @@ enum ReportNoteKindEnum {
   TOPICS_FROM_OWN_TEAMS
   "Some teams' Team Health checks were hidden because fewer than 3 people answered. The count is how many teams"
   HIDDEN_FOR_ANONYMITY
+  "A breakdown's team structure level was removed, so it shows teams instead. The count is how many breakdowns"
+  STRUCTURE_LEVEL_REMOVED
+  "A filter's team structure level was removed, so the report shows nothing until the filter changes. The count is how many filters"
+  FILTER_LEVEL_REMOVED
 }

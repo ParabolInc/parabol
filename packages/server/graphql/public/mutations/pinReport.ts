@@ -51,7 +51,7 @@ const pinReport: MutationResolvers['pinReport'] = async (
         title: pinTitle,
         spec: specJSON,
         shape: toReportSpecShape(spec),
-        sortOrder: Math.max(0, ...pins.map(({sortOrder}) => sortOrder)) + 1
+        sortOrder: Math.min(1, ...pins.map(({sortOrder}) => sortOrder)) - 1
       })
       .returning('id')
       .executeTakeFirstOrThrow()

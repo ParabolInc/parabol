@@ -1,12 +1,18 @@
 import {type RawBuilder, sql} from 'kysely'
-import type {ReportCategoryDimension} from '../../client/shared/reports/reportCatalog'
+import {
+  REPORT_STRUCTURE_NOT_SET,
+  REPORT_STRUCTURE_REMOVED,
+  type ReportCategoryDimension
+} from '../../client/shared/reports/reportCatalog'
 import getKysely from '../postgres/getKysely'
 import type {
   ReportDimensionLabels,
   ReportMeasureFilter,
   ReportMeasureQuery,
-  ReportMeasureResult
+  ReportMeasureResult,
+  ReportQueryDimension
 } from './reportMeasureTypes'
+import {isLevelDimension, toLevelRowId} from './teamStructure'
 
 const STATEMENT_TIMEOUT_MS = 15000
 
@@ -46,18 +52,30 @@ export const executeReportQuery = async (query: RawBuilder<ReportQueryRow>) =>
       return rows
     })
 
+// A team structure level splits by the value each row's team sits at
 const dimensionExpression = (
   expressions: ReportDimensionExpressions,
-  dimension: ReportCategoryDimension
+  dimension: ReportQueryDimension
 ) => {
-  const expression = expressions[dimension]
-  if (!expression) throw new Error(`This measure can't be split by ${dimension}`)
-  return expression
+  if (!isLevelDimension(dimension)) {
+    const expression = expressions[dimension]
+    if (!expression) throw new Error(`This measure can't be split by ${dimension}`)
+    return expression
+  }
+  const team = expressions.TEAM
+  if (!team) throw new Error(`This measure can't be split by ${dimension}`)
+  const levelRowId = toLevelRowId(dimension)
+  if (levelRowId === 0) return sql<string>`${REPORT_STRUCTURE_REMOVED}`
+  return sql<string>`COALESCE(
+    (SELECT p."valueId"::text FROM "TeamStructurePlacement" AS p
+      WHERE p."teamId" = ${team} AND p."levelId" = ${levelRowId}),
+    ${REPORT_STRUCTURE_NOT_SET}
+  )`
 }
 
 export const selectDimensions = (
   expressions: ReportDimensionExpressions,
-  dimensions: ReportCategoryDimension[]
+  dimensions: ReportQueryDimension[]
 ) =>
   dimensions.map(
     (dimension, idx) => sql`${dimensionExpression(expressions, dimension)} AS ${sql.ref(`d${idx}`)}`
@@ -67,10 +85,10 @@ export const selectDimensions = (
 // grouped columns, which are grouped by position
 export const selectDimensionLabels = (
   labels: ReportDimensionExpressions,
-  dimensions: ReportCategoryDimension[]
+  dimensions: ReportQueryDimension[]
 ) =>
   dimensions.flatMap((dimension, idx) => {
-    const label = labels[dimension]
+    const label = isLevelDimension(dimension) ? null : labels[dimension]
     return label ? [sql`mode() WITHIN GROUP (ORDER BY ${label}) AS ${sql.ref(`l${idx}`)}`] : []
   })
 
@@ -78,8 +96,8 @@ export const requiredConditions = (
   conditions: ReportDimensionConditions,
   {dimensions, filters}: Pick<ReportMeasureQuery, 'dimensions' | 'filters'>
 ) =>
-  [...new Set([...dimensions, ...filters.map(({dimension}) => dimension)])].flatMap(
-    (dimension) => conditions[dimension] ?? []
+  [...new Set([...dimensions, ...filters.map(({dimension}) => dimension)])].flatMap((dimension) =>
+    isLevelDimension(dimension) ? [] : (conditions[dimension] ?? [])
   )
 
 export const filterConditions = (
@@ -97,7 +115,7 @@ export const groupByStepAndDimensions = (dimensionCount: number) =>
 
 export const toMeasureResult = (
   rows: ReportQueryRow[],
-  dimensions: ReportCategoryDimension[]
+  dimensions: ReportQueryDimension[]
 ): ReportMeasureResult => {
   const labels: ReportDimensionLabels = {}
   rows.forEach((row) => {

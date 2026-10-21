@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {format} from 'date-fns'
+import type {ReactNode} from 'react'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router'
 import {ChevronRight} from '~/ui/icons'
@@ -8,10 +9,12 @@ import type {OrgTeamsRow_team$key} from '../../../../__generated__/OrgTeamsRow_t
 type Props = {
   teamRef: OrgTeamsRow_team$key
   isOrgAdmin?: boolean
+  // a cell for each team structure level
+  children?: ReactNode
 }
 
 const OrgTeamsRow = (props: Props) => {
-  const {teamRef, isOrgAdmin} = props
+  const {teamRef, isOrgAdmin, children} = props
   const team = useFragment(
     graphql`
       fragment OrgTeamsRow_team on Team {
@@ -65,6 +68,7 @@ const OrgTeamsRow = (props: Props) => {
       <td className='p-3 text-fg-secondary'>
         {lastMetAt ? format(new Date(lastMetAt), 'yyyy-MM-dd') : 'Never'}
       </td>
+      {children}
     </tr>
   )
 }

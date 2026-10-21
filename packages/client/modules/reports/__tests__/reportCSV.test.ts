@@ -20,7 +20,7 @@ const row = (label: string, values: (number | null)[]) => ({
 })
 
 test('a table becomes CSV with a header, dates as days and quotes where needed', () => {
-  const csv = toReportCSV(spec, null, [
+  const csv = toReportCSV(spec, ['Team'], null, [
     row('Core Infra', [6, Date.UTC(2026, 6, 17)]),
     row('Data, Platform', [3, null])
   ])
@@ -32,6 +32,6 @@ test('a table becomes CSV with a header, dates as days and quotes where needed',
 })
 
 test('a name a spreadsheet would run as a formula is quoted', () => {
-  const csv = toReportCSV(spec, null, [row('=HYPERLINK("x")', [1, null])])
+  const csv = toReportCSV(spec, ['Team'], null, [row('=HYPERLINK("x")', [1, null])])
   expect(csv.split('\r\n')[1]).toBe(`"'=HYPERLINK(""x"")",1,`)
 })

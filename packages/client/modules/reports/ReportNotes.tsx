@@ -24,7 +24,9 @@ const ReportNotes = ({orgId, resultRef}: Props) => {
     resultRef
   )
   const atmosphere = useAtmosphere()
-  if (notes.length === 0) return null
+  // the view says why a stopped report shows nothing
+  const shownNotes = notes.filter(({kind}) => kind !== 'FILTER_LEVEL_REMOVED')
+  if (shownNotes.length === 0) return null
   const onUpgradeClick = () => {
     SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
       upgradeCTALocation: 'reportsStarterLimit',
@@ -34,7 +36,7 @@ const ReportNotes = ({orgId, resultRef}: Props) => {
   }
   return (
     <ul className='m-0 flex list-none flex-col gap-1 border-hairline border-t px-5 py-3 text-fg-secondary text-sm'>
-      {notes.map(({kind, count}) => (
+      {shownNotes.map(({kind, count}) => (
         <li key={kind}>
           {kind === 'STARTER_LIMIT' && (
             <>
@@ -57,6 +59,8 @@ const ReportNotes = ({orgId, resultRef}: Props) => {
             `${count} ${count === 1 ? 'team’s Team Health check is' : 'teams’ Team Health checks are'} hidden because fewer than 3 people answered.`}
           {kind === 'TOPICS_FROM_OWN_TEAMS' &&
             `Topics only come from the teams you’re on, so ${count} ${plural(count, 'team')} ${count === 1 ? 'isn’t' : 'aren’t'} in this report.`}
+          {kind === 'STRUCTURE_LEVEL_REMOVED' &&
+            `${count === 1 ? 'A team structure level' : `${count} team structure levels`} this report breaks down by ${count === 1 ? 'was' : 'were'} removed, so it lists teams instead.`}
         </li>
       ))}
     </ul>

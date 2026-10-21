@@ -37,6 +37,7 @@ const ask = (complete: ReturnType<typeof fakeModel>['complete']) =>
   requestReportSpec({
     question: 'Are tasks from retros getting done?',
     teams: [{id: 'team1', name: 'Core Infra'}],
+    levels: [],
     today: '2026-10-21',
     timeZone: 'America/Los_Angeles',
     complete
@@ -97,14 +98,25 @@ test('a question Parabol has no data for says what is missing', async () => {
   })
 })
 
-test('the prompt names every measure, the teams and today', () => {
+test('the prompt names every measure, the teams, the team structure and today', () => {
   const prompt = buildReportAskPrompt({
     teams: [{id: 'team1', name: 'Core Infra'}],
+    levels: [
+      {
+        id: 'level1',
+        name: 'Business unit',
+        values: [
+          {id: 'value1', name: 'Platform'},
+          {id: 'value2', name: 'Custody'}
+        ]
+      }
+    ],
     today: '2026-10-21',
     timeZone: 'America/Los_Angeles'
   })
   expect(prompt).toContain('Today is 2026-10-21 in America/Los_Angeles')
   expect(prompt).toContain('- team1: Core Infra')
+  expect(prompt).toContain('- level1: Business unit. Values: value1 (Platform), value2 (Custody)')
   expect(prompt).toContain('- TASKS_PUSHED (Tasks pushed to integrations)')
   expect(prompt).toContain('retrospective (Retrospective)')
 })

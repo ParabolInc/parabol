@@ -9,6 +9,7 @@ import ReportLineView from './ReportLineView'
 import ReportNumberView from './ReportNumberView'
 import ReportTableSummary from './ReportTableSummary'
 import ReportTableView from './ReportTableView'
+import {formatReportBreakdown} from './reportSpecLabels'
 
 interface Props {
   spec: ReportSpec
@@ -23,6 +24,10 @@ const ReportView = ({spec, resultRef, isCompact = false, lastHeldByTeamId}: Prop
     graphql`
       fragment ReportView_result on ReportResult {
         step
+        breakdown {
+          dimension
+          levelName
+        }
         rows {
           keys {
             value
@@ -39,11 +44,23 @@ const ReportView = ({spec, resultRef, isCompact = false, lastHeldByTeamId}: Prop
           values
           previousValues
         }
+        notes {
+          kind
+        }
       }
     `,
     resultRef
   )
-  const {step, rows, rowTotals} = result
+  const {step, rows, rowTotals, notes} = result
+  const breakdownNames = result.breakdown.map((item) => formatReportBreakdown(item, step))
+  if (notes.some(({kind}) => kind === 'FILTER_LEVEL_REMOVED')) {
+    return (
+      <p className='m-0 py-6 text-center text-fg-secondary text-sm'>
+        A team structure level this report filters by was removed, so the report stops here rather
+        than count every team. Remove that filter to run it.
+      </p>
+    )
+  }
   if (rows.length === 0) {
     return <p className='m-0 py-6 text-center text-fg-muted text-sm'>Nothing to show</p>
   }
@@ -69,11 +86,18 @@ const ReportView = ({spec, resultRef, isCompact = false, lastHeldByTeamId}: Prop
     )
   }
   if (spec.showAs === 'FLOW')
-    return <ReportFlowView spec={spec} rows={rows} isCompact={isCompact} />
+    return (
+      <ReportFlowView
+        spec={spec}
+        breakdownNames={breakdownNames}
+        rows={rows}
+        isCompact={isCompact}
+      />
+    )
   return isCompact ? (
     <ReportTableSummary spec={spec} step={step} rows={rows} />
   ) : (
-    <ReportTableView spec={spec} step={step} rows={rows} />
+    <ReportTableView spec={spec} breakdownNames={breakdownNames} step={step} rows={rows} />
   )
 }
 

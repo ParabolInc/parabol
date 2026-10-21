@@ -3,6 +3,9 @@ import type {
   ReportMeasure
 } from '../../client/shared/reports/reportCatalog'
 import type RootDataLoader from '../dataloader/RootDataLoader'
+import type {ReportLevelDimension} from './teamStructure'
+
+export type ReportQueryDimension = ReportCategoryDimension | ReportLevelDimension
 
 export interface ReportMeasureFilter {
   dimension: ReportCategoryDimension
@@ -25,7 +28,7 @@ export interface ReportMeasureQuery {
   hasTimeSteps: boolean
   // which of each team's Team Health checks to read: its latest in the window, or the one before that
   check: 'latest' | 'previous'
-  dimensions: ReportCategoryDimension[]
+  dimensions: ReportQueryDimension[]
   filters: ReportMeasureFilter[]
 }
 
@@ -36,7 +39,7 @@ export interface ReportMeasureRow {
   value: number | null
 }
 
-export type ReportDimensionLabels = Partial<Record<ReportCategoryDimension, Record<string, string>>>
+export type ReportDimensionLabels = Partial<Record<ReportQueryDimension, Record<string, string>>>
 
 export interface ReportMeasureResult {
   rows: ReportMeasureRow[]

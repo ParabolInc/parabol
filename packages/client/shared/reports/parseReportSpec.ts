@@ -48,15 +48,21 @@ const parseList = <T>(value: unknown, parseItem: (item: unknown) => T | null): T
   return items.every((item): item is T => item !== null) ? items : null
 }
 
+// only a team structure level is named by a levelId, so one anywhere else is dropped
+const levelIdOf = (item: Record<string, unknown>) =>
+  item.dimension === 'TEAM_LEVEL' && isString(item.levelId) ? {levelId: item.levelId} : {}
+
 const parseBreakdown = (item: unknown) =>
-  isRecord(item) && isDimension(item.dimension) ? {dimension: item.dimension} : null
+  isRecord(item) && isDimension(item.dimension)
+    ? {dimension: item.dimension, ...levelIdOf(item)}
+    : null
 
 const parseFilter = (item: unknown) =>
   isRecord(item) &&
   isDimension(item.dimension) &&
   Array.isArray(item.values) &&
   item.values.every(isString)
-    ? {dimension: item.dimension, values: item.values}
+    ? {dimension: item.dimension, ...levelIdOf(item), values: item.values}
     : null
 
 const parseCondition = (item: unknown) =>

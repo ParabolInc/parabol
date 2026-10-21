@@ -1,4 +1,5 @@
 import type {ReportSpec} from '../../../shared/reports/reportCatalog'
+import {readReportAddress, toReportPagePath, toReportsHomePath} from '../reportPaths'
 import {parseReportPeriodParam, toReportPeriodParam} from '../reportPeriodParam'
 import {decodeReportSpec, encodeReportSpec} from '../reportSpecParam'
 
@@ -39,4 +40,23 @@ test('a link that was cut short or edited holds no spec', () => {
   expect(decodeReportSpec(param.slice(0, 20))).toBeNull()
   expect(decodeReportSpec('not a spec')).toBeNull()
   expect(decodeReportSpec(null)).toBeNull()
+})
+
+test('the answer to a question stays in the Reports page’s address, with the period', () => {
+  const answer = {spec: cadence, title: 'Retro cadence', reportQuestionId: 'ReportQuestion:1'}
+  const home = new URL(toReportsHomePath('org1', {preset: 'LAST_7_DAYS'}, answer), 'https://x')
+  expect(home.pathname).toBe('/reports/org1')
+  expect(home.searchParams.get('period')).toBe('7d')
+  expect(readReportAddress(home.searchParams)).toEqual(answer)
+  expect(toReportsHomePath('org1', {preset: 'LAST_3_MONTHS'})).toBe('/reports/org1')
+  const page = new URL(
+    toReportPagePath('org1', cadence, null, {preset: 'LAST_3_MONTHS'}),
+    'https://x'
+  )
+  expect(page.pathname).toBe('/reports/org1/report')
+  expect(readReportAddress(page.searchParams)).toEqual({
+    spec: cadence,
+    title: null,
+    reportQuestionId: null
+  })
 })

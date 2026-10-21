@@ -1,5 +1,10 @@
 import type {ReportSpec} from '../../../shared/reports/reportCatalog'
-import {describeReportSpec, toReportSpecChips} from '../reportSpecLabels'
+import {
+  describeReportSpec,
+  formatReportBreakdown,
+  type ReportStructureLevel,
+  toReportSpecChips
+} from '../reportSpecLabels'
 
 const spec = (overrides: Partial<ReportSpec>): ReportSpec => ({
   measures: ['MEETINGS'],
@@ -11,10 +16,16 @@ const spec = (overrides: Partial<ReportSpec>): ReportSpec => ({
   ...overrides
 })
 
+const LEVELS: ReportStructureLevel[] = [
+  {id: 'level1', name: 'Business unit', values: [{id: 'value1', name: 'Platform'}]}
+]
+
 const chipsOf = (reportSpec: ReportSpec, step: 'DAY' | 'WEEK' | 'MONTH' | null = null) =>
-  toReportSpecChips(reportSpec, {step, teamNames: new Map([['team1', 'Core Infra']])}).map(
-    ({name, value}) => `${name}: ${value}`
-  )
+  toReportSpecChips(reportSpec, {
+    step,
+    teamNames: new Map([['team1', 'Core Infra']]),
+    levels: LEVELS
+  }).map(({name, value}) => `${name}: ${value}`)
 
 test('each breakdown is named for its role in the view', () => {
   expect(
@@ -101,10 +112,44 @@ test('a team filter names the teams it knows', () => {
 })
 
 test('a report without a name gets one from its spec', () => {
-  expect(describeReportSpec(spec({}))).toBe('Meetings')
+  expect(describeReportSpec(spec({}), [])).toBe('Meetings')
   expect(
     describeReportSpec(
-      spec({showAs: 'HEATMAP', breakdown: [{dimension: 'TEAM'}, {dimension: 'MONTH'}]})
+      spec({showAs: 'HEATMAP', breakdown: [{dimension: 'TEAM'}, {dimension: 'MONTH'}]}),
+      []
     )
   ).toBe('Meetings by team and month')
+  expect(
+    describeReportSpec(
+      spec({showAs: 'BARS', breakdown: [{dimension: 'TEAM_LEVEL', levelId: 'level1'}]}),
+      LEVELS
+    )
+  ).toBe('Meetings by Business unit')
+  expect(
+    describeReportSpec(
+      spec({showAs: 'BARS', breakdown: [{dimension: 'TEAM_LEVEL', levelId: 'level9'}]}),
+      LEVELS
+    )
+  ).toBe('Meetings by removed level')
+})
+
+test('a team structure level goes by its own name, or as removed once it is gone', () => {
+  const byLevel = (levelId: string) =>
+    chipsOf(
+      spec({
+        showAs: 'BARS',
+        breakdown: [{dimension: 'TEAM_LEVEL', levelId}],
+        filters: [{dimension: 'TEAM_LEVEL', levelId, values: ['value1', 'notSet']}]
+      })
+    )
+  expect(byLevel('level1')).toEqual(
+    expect.arrayContaining(['Business unit: Platform, Not set', 'Bars: Business unit'])
+  )
+  expect(byLevel('level9')).toEqual(
+    expect.arrayContaining(['Removed level: 2 picked', 'Bars: Removed level'])
+  )
+  expect(formatReportBreakdown({dimension: 'TEAM_LEVEL', levelName: null}, null)).toBe(
+    'Removed level'
+  )
+  expect(formatReportBreakdown({dimension: 'TIME', levelName: null}, 'WEEK')).toBe('Week')
 })
