@@ -166,6 +166,11 @@ test.each<[string, Partial<ReportSpec>, string]>([
     },
     "LAST_MEETING can't be compared"
   ],
+  [
+    'a date as bars',
+    {measures: ['LAST_MEETING'], showAs: 'BARS', breakdown: [{dimension: 'TEAM'}]},
+    "LAST_MEETING can't be shown as BARS"
+  ],
   ['a time sort without time', {sort: {by: 'TIME'}}, 'Sorting by time needs a time breakdown'],
   [
     'a name sort without names',

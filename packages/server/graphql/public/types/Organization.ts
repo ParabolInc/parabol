@@ -1,4 +1,6 @@
 import {GraphQLError} from 'graphql'
+import {parseReportSpec} from '../../../../client/shared/reports/parseReportSpec'
+import getKysely from '../../../postgres/getKysely'
 import runReport from '../../../reports/runReport'
 import {
   getUserId,
@@ -79,6 +81,20 @@ const Organization: OrganizationResolvers = {
       viewerId: getUserId(authToken),
       isSuperUser: isSuperUser(authToken),
       dataLoader
+    })
+  },
+
+  reportPins: async ({id: orgId}) => {
+    const questions = await getKysely()
+      .selectFrom('PopularReportQuestion')
+      .select(['key', 'title', 'description', 'spec'])
+      .where('defaultPinSortOrder', 'is not', null)
+      .where('retiredAt', 'is', null)
+      .orderBy('defaultPinSortOrder')
+      .execute()
+    return questions.flatMap(({spec, ...question}) => {
+      const parsedSpec = parseReportSpec(spec)
+      return parsedSpec ? [{...question, orgId, spec: parsedSpec}] : []
     })
   },
 

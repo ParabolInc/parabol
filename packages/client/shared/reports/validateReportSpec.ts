@@ -103,8 +103,11 @@ export const validateReportSpec = (spec: ReportSpec): string | null => {
     if (endDate < startDate) return 'A custom period has to end after it starts'
   }
 
-  if (compareTo && measures.some((m) => REPORT_MEASURES[m].kind === 'latest')) {
-    return `${measures.find((m) => REPORT_MEASURES[m].kind === 'latest')} can't be compared`
+  const dateMeasure = measures.find((m) => REPORT_MEASURES[m].kind === 'latest')
+  if (dateMeasure && compareTo) return `${dateMeasure} can't be compared`
+  // a date has no height, so it can't be a line or a bar
+  if (dateMeasure && (showAs === 'LINE' || showAs === 'BARS')) {
+    return `${dateMeasure} can't be shown as ${showAs}`
   }
   if (sort?.by === 'TIME' && timeDimensions.length === 0)
     return 'Sorting by time needs a time breakdown'

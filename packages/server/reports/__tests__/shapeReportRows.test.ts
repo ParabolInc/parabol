@@ -1,7 +1,12 @@
 import ms from 'ms'
 import type {ReportSpec} from '../../../client/shared/reports/reportCatalog'
 import type {ReportRow} from '../buildReportRows'
-import {applyReportConditions, capReportSeries, limitReportRows} from '../shapeReportRows'
+import {
+  applyReportConditions,
+  capReportSeries,
+  limitReportRows,
+  sortReportRows
+} from '../shapeReportRows'
 
 const spec = (overrides: Partial<ReportSpec>): ReportSpec => ({
   measures: ['MEETINGS'],
@@ -58,5 +63,28 @@ test('older than counts a date that never happened', () => {
   expect(teamsIn(applyReportConditions(lastMeetings, olderThan30Days, now))).toEqual([
     'stale',
     'never'
+  ])
+})
+
+test('rows group by their first breakdown, the biggest group first', () => {
+  const twoRows = (team: string, retros: number, pokers: number) =>
+    ['retrospective', 'poker'].map((type, idx) => ({
+      keys: [
+        {value: team, label: team, isPartial: false},
+        {value: type, label: type, isPartial: false}
+      ],
+      values: [idx === 0 ? retros : pokers],
+      previousValues: null,
+      stepIndex: 1
+    }))
+  const sorted = sortReportRows(
+    [...twoRows('small', 4, 0), ...twoRows('big', 1, 5)],
+    spec({showAs: 'TABLE', breakdown: [{dimension: 'TEAM'}, {dimension: 'MEETING_TYPE'}]})
+  )
+  expect(sorted.map(({keys}) => keys.map(({value}) => value).join(' '))).toEqual([
+    'big poker',
+    'big retrospective',
+    'small poker',
+    'small retrospective'
   ])
 })

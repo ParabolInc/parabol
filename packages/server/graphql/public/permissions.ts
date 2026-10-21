@@ -468,6 +468,10 @@ const permissionMap: PermissionMap<Resolvers> = {
       hasOrgFeatureFlag<'Organization.report'>('source.id', 'Reports'),
       rateLimit({perMinute: 120, perHour: 3000})
     ),
+    reportPins: and(
+      or(isSuperUser, isViewerOnOrg<'Organization.reportPins'>('source.id')),
+      hasOrgFeatureFlag<'Organization.reportPins'>('source.id', 'Reports')
+    ),
     saml: and(
       isViewerOnOrg<'Organization.saml'>('source.id'),
       isOrgTier<'Organization.saml'>('source.id', 'enterprise')
@@ -476,6 +480,9 @@ const permissionMap: PermissionMap<Resolvers> = {
       isViewerOnOrg<'Organization.samls'>('source.id'),
       isOrgTier<'Organization.samls'>('source.id', 'enterprise')
     )
+  },
+  ReportPin: {
+    report: rateLimit({perMinute: 120, perHour: 3000})
   },
   RetroReflectionGroup: {
     smartTitle: isSuperUser,

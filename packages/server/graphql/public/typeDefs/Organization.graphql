@@ -83,6 +83,11 @@ type Organization implements OrganizationPartial {
   ): ReportResult! @scope(name: REPORTS_READ)
 
   """
+  The reports pinned to the Reports page, in order
+  """
+  reportPins: [ReportPin!]! @scope(name: REPORTS_READ)
+
+  """
   Teams in the organization that the viewer has access to.
   For billing leaders/org admins/super users: all teams in the org (viewer's teams first).
   For regular users: teams the viewer is on plus public teams.

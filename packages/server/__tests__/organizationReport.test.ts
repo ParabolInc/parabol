@@ -1,3 +1,4 @@
+import {parseReportSpec} from '../../client/shared/reports/parseReportSpec'
 import getKysely from '../postgres/getKysely'
 import {sendPublic, signUp} from './common'
 
@@ -14,6 +15,25 @@ const ORGANIZATION_REPORT = `
           }
           totalRowCount
           notes { kind count }
+        }
+      }
+    }
+  }
+`
+
+const REPORT_PINS = `
+  query ReportPins($orgId: ID!) {
+    viewer {
+      organization(orgId: $orgId) {
+        reportPins {
+          id
+          title
+          spec
+          report(timeZone: "America/New_York", pagePeriod: {preset: LAST_30_DAYS}) {
+            rows {
+              values
+            }
+          }
         }
       }
     }
@@ -126,4 +146,36 @@ test('a personal access token reaches only the organizations it was granted', as
   const denied = await requestReport(orgId, {bearerToken: grantedElsewhere})
   expect(denied.errors).toBeTruthy()
   expect(denied.data.viewer.organization).toBeNull()
+})
+
+test('every organization starts with the built-in pins, each with a spec that runs', async () => {
+  const {orgId, cookie} = await signUp()
+  const flagOff = await sendPublic({query: REPORT_PINS, variables: {orgId}, cookie})
+  expect(flagOff.errors?.[0]?.message).toBe("Reports isn't turned on for this organization")
+
+  await turnOnReports(orgId)
+  const res = await sendPublic({query: REPORT_PINS, variables: {orgId}, cookie})
+  expect(res.errors).toBeUndefined()
+  const {reportPins} = res.data.viewer.organization
+  expect(reportPins.map(({title}: {title: string}) => title)).toEqual([
+    'Active people over time',
+    'Meetings by type',
+    'Discussions and tasks by meeting type',
+    'Retrospective cadence'
+  ])
+  for (const pin of reportPins) {
+    expect(pin.id).toContain(orgId)
+    expect(parseReportSpec(JSON.parse(pin.spec))).toEqual(JSON.parse(pin.spec))
+    expect(pin.report.rows.length).toBeGreaterThan(0)
+  }
+})
+
+test('every popular question has a spec Parabol can run', async () => {
+  const questions = await getKysely()
+    .selectFrom('PopularReportQuestion')
+    .select(['key', 'spec'])
+    .execute()
+  expect(questions.length).toBeGreaterThan(0)
+  const unparsable = questions.filter(({spec}) => !parseReportSpec(spec)).map(({key}) => key)
+  expect(unparsable).toEqual([])
 })

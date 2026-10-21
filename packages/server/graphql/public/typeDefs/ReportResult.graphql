@@ -24,5 +24,10 @@ type ReportResult {
   """
   totalRowCount: Int!
 
+  """
+  How many teams the report counted
+  """
+  teamCount: Int!
+
   notes: [ReportNote!]!
 }

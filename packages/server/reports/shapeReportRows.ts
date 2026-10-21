@@ -45,27 +45,9 @@ const resolveSort = (spec: ReportSpec) => {
   return {by, direction: order === 'DESC' ? -1 : 1}
 }
 
-export const sortReportRows = (rows: ReportRow[], spec: ReportSpec) => {
-  const {by, direction} = resolveSort(spec)
-  const namePosition = firstCategoryPosition(spec)
-  const nameOf = (row: ReportRow) =>
-    namePosition === -1 ? '' : (row.keys[namePosition]?.label ?? '')
-  const byName = (a: ReportRow, b: ReportRow) => nameOf(a).localeCompare(nameOf(b))
-  const byTime = (a: ReportRow, b: ReportRow) => a.stepIndex - b.stepIndex
-  return [...rows].sort((a, b) => {
-    if (by === 'TIME') return direction * byTime(a, b) || byName(a, b)
-    if (by === 'NAME') return direction * byName(a, b) || byTime(a, b)
-    return (
-      compareValues(a.values[0] ?? null, b.values[0] ?? null, direction) ||
-      byName(a, b) ||
-      byTime(a, b)
-    )
-  })
-}
-
-// Keeps the rows whose value at a position is among the top few, ranked as the rows are sorted.
-// A time sort still ranks by the first measure, biggest first
-const keepTopValues = (rows: ReportRow[], spec: ReportSpec, position: number, count: number) => {
+// Each value at a breakdown position with its label and total, adding up the first measure. Dates
+// aren't added up, so the latest wins
+const totalsAt = (rows: ReportRow[], spec: ReportSpec, position: number) => {
   const isLatest = REPORT_MEASURES[spec.measures[0]!].kind === 'latest'
   const totals = new Map<string, {label: string; total: number | null}>()
   for (const row of rows) {
@@ -79,14 +61,47 @@ const keepTopValues = (rows: ReportRow[], spec: ReportSpec, position: number, co
     }
     totals.set(key.value, entry)
   }
+  return totals
+}
+
+// Time runs in order, unless the rows are sorted by value with nothing else to sort them by.
+// Everything else ranks by its total, or by name, so a group's rows stay together
+const rankValuesAt = (rows: ReportRow[], spec: ReportSpec, position: number) => {
   const {by, direction} = resolveSort(spec)
-  const ranked = [...totals.entries()].sort(([, a], [, b]) =>
-    by === 'NAME'
-      ? direction * a.label.localeCompare(b.label)
-      : compareValues(a.total, b.total, by === 'VALUE' ? direction : -1) ||
+  const entries = [...totalsAt(rows, spec, position).entries()]
+  const isTime = isReportTimeDimension(spec.breakdown[position]!.dimension)
+  if (isTime && (by !== 'VALUE' || firstCategoryPosition(spec) !== -1)) {
+    const timeDirection = by === 'TIME' ? direction : 1
+    entries.sort(([a], [b]) => timeDirection * a.localeCompare(b))
+  } else if (by === 'NAME') {
+    entries.sort(([, a], [, b]) => direction * a.label.localeCompare(b.label))
+  } else {
+    entries.sort(
+      ([, a], [, b]) =>
+        compareValues(a.total, b.total, by === 'VALUE' ? direction : -1) ||
         a.label.localeCompare(b.label)
+    )
+  }
+  return entries.map(([value]) => value)
+}
+
+export const sortReportRows = (rows: ReportRow[], spec: ReportSpec) => {
+  const ranks = spec.breakdown.map(
+    (_, position) => new Map(rankValuesAt(rows, spec, position).map((value, rank) => [value, rank]))
   )
-  const kept = new Set(ranked.slice(0, count).map(([value]) => value))
+  const rankOf = (row: ReportRow, position: number) =>
+    ranks[position]!.get(row.keys[position]?.value ?? '') ?? 0
+  return [...rows].sort((a, b) => {
+    for (let position = 0; position < ranks.length; position++) {
+      const difference = rankOf(a, position) - rankOf(b, position)
+      if (difference !== 0) return difference
+    }
+    return 0
+  })
+}
+
+const keepTopValues = (rows: ReportRow[], spec: ReportSpec, position: number, count: number) => {
+  const kept = new Set(rankValuesAt(rows, spec, position).slice(0, count))
   return rows.filter((row) => kept.has(row.keys[position]?.value ?? ''))
 }
 

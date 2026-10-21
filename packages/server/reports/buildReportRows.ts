@@ -1,12 +1,10 @@
 import {
   isReportTimeDimension,
   REPORT_DONE_OR_OPEN,
-  REPORT_INTEGRATION_LABELS,
   REPORT_MEASURES,
   REPORT_MEETING_TYPES,
-  REPORT_NO_INTEGRATION,
-  REPORT_NO_MEETING,
   REPORT_TASK_STATUSES,
+  REPORT_VALUE_LABELS,
   type ReportCategoryDimension,
   type ReportDimension,
   type ReportMeasure
@@ -26,17 +24,6 @@ export interface ReportRow {
   previousValues: (number | null)[] | null
   stepIndex: number
 }
-
-const MEETING_TYPE_LABELS = new Map<string, string>([
-  ...Object.entries(REPORT_MEETING_TYPES),
-  [REPORT_NO_MEETING, 'Outside meetings']
-])
-const TASK_STATUS_LABELS = new Map<string, string>(Object.entries(REPORT_TASK_STATUSES))
-const DONE_OR_OPEN_LABELS = new Map<string, string>(Object.entries(REPORT_DONE_OR_OPEN))
-const INTEGRATION_LABELS = new Map<string, string>([
-  ...Object.entries(REPORT_INTEGRATION_LABELS),
-  [REPORT_NO_INTEGRATION, 'None']
-])
 
 // Every value a dimension can take, so a combination with nothing in it still gets a row
 const STATIC_VALUES: Partial<Record<ReportCategoryDimension, string[]>> = {
@@ -86,13 +73,8 @@ const buildReportRows = ({
     (dimension): dimension is ReportCategoryDimension => !isReportTimeDimension(dimension)
   )
   const teamNames = new Map(teams.map(({id, name}) => [id, name]))
-  const labelOf = (dimension: ReportCategoryDimension, value: string) => {
-    if (dimension === 'TEAM') return teamNames.get(value) ?? value
-    if (dimension === 'MEETING_TYPE') return MEETING_TYPE_LABELS.get(value) ?? value
-    if (dimension === 'TASK_STATUS') return TASK_STATUS_LABELS.get(value) ?? value
-    if (dimension === 'DONE_OR_OPEN') return DONE_OR_OPEN_LABELS.get(value) ?? value
-    return INTEGRATION_LABELS.get(value) ?? value
-  }
+  const labelOf = (dimension: ReportCategoryDimension, value: string) =>
+    (dimension === 'TEAM' ? teamNames.get(value) : REPORT_VALUE_LABELS[dimension]?.[value]) ?? value
   const results = [...current, ...(previous ?? [])]
   const valuesOf = categoryDimensions.map((dimension, position) => {
     const observed = results.flatMap(({rows}) => rows.map(({keys}) => keys[position] ?? ''))

@@ -146,6 +146,7 @@ const runReport = async ({
     step: stepLength,
     rows: shapedRows.slice(0, MAX_ROWS),
     totalRowCount: matchingRows.length,
+    teamCount: teams.length,
     notes
   }
 }
