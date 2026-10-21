@@ -207,6 +207,10 @@ const Team: TeamResolvers = {
     })
     return teamMembersWithUserFields
   },
+  teamMembersCount: async ({id: teamId}, _args, {dataLoader}) => {
+    const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
+    return teamMembers.length
+  },
   tier: async ({orgId}, _args, {dataLoader}) => {
     const org = await dataLoader.get('organizations').loadNonNull(orgId)
     const {tier, trialStartDate} = org
