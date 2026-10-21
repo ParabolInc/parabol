@@ -1,4 +1,5 @@
 import {
+  isReportAdditiveMeasure,
   isReportTimeDimension,
   MAX_REPORT_CONDITION_DAYS,
   MAX_REPORT_FILTER_VALUES,
@@ -7,6 +8,7 @@ import {
   REPORT_MEASURES,
   REPORT_MEETING_TYPES,
   REPORT_NO_MEETING,
+  REPORT_TASK_AGES,
   REPORT_TASK_STATUSES,
   REPORT_VIEWS,
   type ReportDimension,
@@ -21,7 +23,8 @@ const MAX_FILTER_VALUE_LENGTH = 100
 const ENUMERATED_FILTER_VALUES: Partial<Record<ReportDimension, readonly string[]>> = {
   MEETING_TYPE: [...Object.keys(REPORT_MEETING_TYPES), REPORT_NO_MEETING],
   TASK_STATUS: Object.keys(REPORT_TASK_STATUSES),
-  DONE_OR_OPEN: Object.keys(REPORT_DONE_OR_OPEN)
+  DONE_OR_OPEN: Object.keys(REPORT_DONE_OR_OPEN),
+  TASK_AGE: Object.keys(REPORT_TASK_AGES)
 }
 
 const describeCount = ([min, max]: readonly [number, number], noun: string) =>
@@ -108,6 +111,11 @@ export const validateReportSpec = (spec: ReportSpec): string | null => {
   // a date has no height, so it can't be a line or a bar
   if (dateMeasure && (showAs === 'LINE' || showAs === 'BARS')) {
     return `${dateMeasure} can't be shown as ${showAs}`
+  }
+  // a stack adds up its parts, which a share or a median can't do
+  const unstackable = measures.find((m) => !isReportAdditiveMeasure(m))
+  if (unstackable && showAs === 'BARS' && dimensions.length === 2) {
+    return `${unstackable} can't be stacked, so show it as LINE or HEATMAP`
   }
   if (sort?.by === 'TIME' && timeDimensions.length === 0)
     return 'Sorting by time needs a time breakdown'

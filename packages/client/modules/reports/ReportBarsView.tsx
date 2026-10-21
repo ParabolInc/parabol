@@ -9,11 +9,13 @@ import {
 import {Bar} from 'react-chartjs-2'
 import useResolvedTheme from '../../hooks/useResolvedTheme'
 import {
+  isReportAdditiveMeasure,
   isReportTimeDimension,
   REPORT_MEASURES,
   type ReportSpec
 } from '../../shared/reports/reportCatalog'
 import {formatReportKey, PARTIAL_STEP_NOTE} from './formatReportKey'
+import {formatReportValue} from './formatReportValue'
 import ReportLegend from './ReportLegend'
 import {getReportChartFont, getReportChartTheme, PARTIAL_STEP_ALPHA} from './reportChartTheme'
 import {distinctKeysAt, type ReportResultRow, withValues} from './reportRows'
@@ -39,8 +41,10 @@ const ReportBarsView = ({spec, step, rows, isCompact}: Props) => {
   const [barDimension, stackDimension] = spec.breakdown.map(({dimension}) => dimension)
   const bars = distinctKeysAt(rows, 0)
   const isOverTime = isReportTimeDimension(barDimension!)
+  const emptyValue = isReportAdditiveMeasure(measure) ? 0 : null
+  const isShare = REPORT_MEASURES[measure].kind === 'share'
   const valueByKeys = new Map(
-    rows.map(({keys, values}) => [keys.map(({value}) => value).join('|'), values[0] ?? 0])
+    rows.map(({keys, values}) => [keys.map(({value}) => value).join('|'), values[0] ?? emptyValue])
   )
   const series = stackDimension
     ? withValues(distinctKeysAt(rows, 1), rows).map((key, rank) => ({
@@ -53,7 +57,9 @@ const ReportBarsView = ({spec, step, rows, isCompact}: Props) => {
     const hex = color[theme]
     return {
       label,
-      data: bars.map((bar) => valueByKeys.get(key ? `${bar.value}|${key.value}` : bar.value) ?? 0),
+      data: bars.map(
+        (bar) => valueByKeys.get(key ? `${bar.value}|${key.value}` : bar.value) ?? emptyValue
+      ),
       backgroundColor: bars.map((bar) => (bar.isPartial ? `${hex}${PARTIAL_STEP_ALPHA}` : hex)),
       maxBarThickness: 48
     }
@@ -61,9 +67,15 @@ const ReportBarsView = ({spec, step, rows, isCompact}: Props) => {
   const valueAxis = {
     stacked: true,
     beginAtZero: true,
+    max: isShare ? 100 : undefined,
     border: {display: false},
     grid: {color: chartTheme.grid},
-    ticks: {color: chartTheme.tick, font, precision: 0}
+    ticks: {
+      color: chartTheme.tick,
+      font,
+      precision: 0,
+      callback: isShare ? (tick: number | string) => `${tick}%` : undefined
+    }
   }
   const categoryAxis = {
     stacked: true,
@@ -102,7 +114,7 @@ const ReportBarsView = ({spec, step, rows, isCompact}: Props) => {
                     return bar.isPartial ? `${name}, ${PARTIAL_STEP_NOTE.toLowerCase()}` : name
                   },
                   label: (item: TooltipItem<'bar'>) =>
-                    `${item.dataset.label}: ${(isOverTime ? item.parsed.y : item.parsed.x)!.toLocaleString()}`
+                    `${item.dataset.label}: ${formatReportValue(measure, isOverTime ? item.parsed.y : item.parsed.x)}`
                 }
               }
             },

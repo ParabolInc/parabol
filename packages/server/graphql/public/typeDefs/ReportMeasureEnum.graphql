@@ -6,6 +6,10 @@ enum ReportMeasureEnum {
   ACTIVE_PEOPLE
   "People on the teams, or in the organization when every team is counted"
   MEMBERS
+  "The percentage of members who used Parabol in the 30 days before each reading, or null without members"
+  ACTIVE_SHARE
+  "When each member last used Parabol, in milliseconds since the epoch. The period doesn't change it"
+  LAST_SEEN
   "Meetings that at least 2 people joined"
   MEETINGS
   "Teams with at least 2 members that started or ended a meeting at least 2 people joined"
@@ -22,6 +26,8 @@ enum ReportMeasureEnum {
   DONE_TASKS
   "Tasks not yet done"
   OPEN_TASKS
+  "The median days from making a task to finishing it, for the tasks finished in each step"
+  DAYS_TO_DONE
   "Integrations people connected, counting each person once per service"
   USER_INTEGRATIONS
   "Tasks sent to an integration, including stories pulled into Sprint Poker"

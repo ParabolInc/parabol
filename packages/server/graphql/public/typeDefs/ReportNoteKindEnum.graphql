@@ -8,4 +8,6 @@ enum ReportNoteKindEnum {
   ESTIMATED_HISTORY
   "There were more rows than a report can return. The count is how many rows there were"
   ROWS_TRUNCATED
+  "Topics only come from the teams the viewer is on. The count is how many teams were left out"
+  TOPICS_FROM_OWN_TEAMS
 }

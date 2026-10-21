@@ -1,8 +1,10 @@
 import {
+  isReportAdditiveMeasure,
   isReportTimeDimension,
   REPORT_DONE_OR_OPEN,
-  REPORT_MEASURES,
   REPORT_MEETING_TYPES,
+  REPORT_SPECIAL_VALUE_LABELS,
+  REPORT_TASK_AGES,
   REPORT_TASK_STATUSES,
   REPORT_VALUE_LABELS,
   type ReportCategoryDimension,
@@ -29,7 +31,8 @@ export interface ReportRow {
 const STATIC_VALUES: Partial<Record<ReportCategoryDimension, string[]>> = {
   MEETING_TYPE: Object.keys(REPORT_MEETING_TYPES),
   TASK_STATUS: Object.keys(REPORT_TASK_STATUSES),
-  DONE_OR_OPEN: Object.keys(REPORT_DONE_OR_OPEN)
+  DONE_OR_OPEN: Object.keys(REPORT_DONE_OR_OPEN),
+  TASK_AGE: Object.keys(REPORT_TASK_AGES)
 }
 
 const MAX_CANDIDATE_ROWS = 50000
@@ -50,8 +53,8 @@ const rowKey = (stepIndex: number, keys: string[]) => JSON.stringify([stepIndex,
 const toValueMap = ({rows}: ReportMeasureResult) =>
   new Map(rows.map(({stepIndex, keys, value}) => [rowKey(stepIndex, keys), value]))
 
-const emptyValue = (measure: ReportMeasure) =>
-  REPORT_MEASURES[measure].kind === 'latest' ? null : 0
+// nothing to count is 0, but a date, share or median of nothing has no value at all
+const emptyValue = (measure: ReportMeasure) => (isReportAdditiveMeasure(measure) ? 0 : null)
 
 const combinations = (lists: string[][]) =>
   lists.reduce<string[][]>(
@@ -73,9 +76,14 @@ const buildReportRows = ({
     (dimension): dimension is ReportCategoryDimension => !isReportTimeDimension(dimension)
   )
   const teamNames = new Map(teams.map(({id, name}) => [id, name]))
-  const labelOf = (dimension: ReportCategoryDimension, value: string) =>
-    (dimension === 'TEAM' ? teamNames.get(value) : REPORT_VALUE_LABELS[dimension]?.[value]) ?? value
   const results = [...current, ...(previous ?? [])]
+  const labelOf = (dimension: ReportCategoryDimension, value: string) =>
+    (dimension === 'TEAM'
+      ? teamNames.get(value)
+      : (REPORT_VALUE_LABELS[dimension]?.[value] ??
+        REPORT_SPECIAL_VALUE_LABELS[dimension]?.[value] ??
+        results.find(({labels}) => labels[dimension]?.[value])?.labels[dimension]?.[value])) ??
+    value
   const valuesOf = categoryDimensions.map((dimension, position) => {
     const observed = results.flatMap(({rows}) => rows.map(({keys}) => keys[position] ?? ''))
     const values =

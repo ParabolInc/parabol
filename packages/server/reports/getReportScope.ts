@@ -4,6 +4,7 @@ import {isUserBillingLeader} from '../utils/authorization'
 
 export interface ReportScope {
   teams: {id: string; name: string}[]
+  ownTeamIds: string[]
   canCountWholeOrg: boolean
   leftOutTeamCount: number
 }
@@ -22,27 +23,27 @@ const getReportScope = async ({
   isSuperUser,
   dataLoader
 }: Options): Promise<ReportScope> => {
-  const [organization, orgTeams, isLeader] = await Promise.all([
+  const [organization, orgTeams, isLeader, memberships] = await Promise.all([
     dataLoader.get('organizations').loadNonNull(orgId),
     dataLoader.get('teamsByOrgIds').load(orgId),
-    isSuperUser || isUserBillingLeader(viewerId, orgId, dataLoader)
+    isSuperUser || isUserBillingLeader(viewerId, orgId, dataLoader),
+    dataLoader.get('teamMembersByUserId').load(viewerId)
   ])
-  let visibleTeams = orgTeams
-  if (!isLeader) {
-    const memberships = await dataLoader.get('teamMembersByUserId').load(viewerId)
-    const viewerTeamIds = new Set(memberships.map(({teamId}) => teamId))
-    visibleTeams = orgTeams.filter(({id}) => viewerTeamIds.has(id))
-  }
+  const viewerTeamIds = new Set(memberships.map(({teamId}) => teamId))
+  const visibleTeams = isLeader ? orgTeams : orgTeams.filter(({id}) => viewerTeamIds.has(id))
   const teams = visibleTeams
     .map(({id, name}) => ({id, name}))
     .sort((a, b) => a.name.localeCompare(b.name))
+  const ownTeamIdsOf = (scopeTeams: {id: string}[]) =>
+    scopeTeams.map(({id}) => id).filter((id) => viewerTeamIds.has(id))
   if (getFeatureTier(organization) !== 'starter') {
-    return {teams, canCountWholeOrg: isLeader, leftOutTeamCount: 0}
+    return {teams, ownTeamIds: ownTeamIdsOf(teams), canCountWholeOrg: isLeader, leftOutTeamCount: 0}
   }
   const starterTeamIds = await dataLoader.get('starterReportTeamIdsByOrgId').load(orgId)
   const starterTeams = teams.filter(({id}) => starterTeamIds.includes(id))
   return {
     teams: starterTeams,
+    ownTeamIds: ownTeamIdsOf(starterTeams),
     canCountWholeOrg: false,
     leftOutTeamCount: teams.length - starterTeams.length
   }

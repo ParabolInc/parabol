@@ -18,7 +18,10 @@ export const toReportCSV = (
 ) => {
   const header = [
     ...spec.breakdown.map(({dimension}) => formatReportDimension(dimension, step)),
-    ...spec.measures.map((measure) => REPORT_MEASURES[measure].label)
+    ...spec.measures.map((measure) => {
+      const {label, kind} = REPORT_MEASURES[measure]
+      return kind === 'share' ? `${label} (%)` : label
+    })
   ]
   const lines = rows.map(({keys, values}) => [
     ...keys.map((key, position) =>

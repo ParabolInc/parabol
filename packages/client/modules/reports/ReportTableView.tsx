@@ -72,7 +72,7 @@ const ReportTableView = ({spec, step, rows}: Props) => {
                       <span className='inline-flex flex-col items-end'>
                         {formatReportValue(measure, value)}
                         {compareTo && value !== null && previousValue !== null && (
-                          <ReportDelta change={value - previousValue} />
+                          <ReportDelta change={value - previousValue} measure={measure} />
                         )}
                       </span>
                     </td>

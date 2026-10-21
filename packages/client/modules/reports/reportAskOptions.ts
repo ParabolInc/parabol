@@ -63,8 +63,13 @@ export const highlightWords = (text: string, words: string[]): ReportAskTextPart
     .map((part) => ({text: part, isMatch: words.includes(part.toLowerCase())}))
 }
 
+const countMatches = (text: string, words: string[]) => {
+  const lowerText = text.toLowerCase()
+  return words.filter((word) => lowerText.includes(word)).length
+}
+
 const matchesAnyWord = (text: string, words: string[]) =>
-  words.length === 0 || words.some((word) => text.toLowerCase().includes(word))
+  words.length === 0 || countMatches(text, words) > 0
 
 const viewOf = (specJSON: string | null | undefined) => {
   const spec = specJSON ? parseReportSpecJSON(specJSON) : null
@@ -88,7 +93,8 @@ interface Options {
   canAsk: boolean
 }
 
-// Questions match on any word. Asking AI comes first, then recent questions, then popular ones by subject
+// Questions match on any word. Asking AI comes first, then recent questions, then popular ones: those that
+// match the most words first, or by subject before anything is typed
 export const toReportAskOptions = ({query, recents, populars, suggestions, canAsk}: Options) => {
   const words = toWords(query)
   const question = query.trim()
@@ -129,8 +135,13 @@ export const toReportAskOptions = ({query, recents, populars, suggestions, canAs
       })
     )
   populars
-    .filter((popular) => matchesAnyWord(`${popular.question} ${popular.title}`, words))
-    .forEach((popular) =>
+    .map((popular) => ({
+      popular,
+      matchCount: countMatches(`${popular.question} ${popular.title}`, words)
+    }))
+    .filter(({matchCount}) => words.length === 0 || matchCount > 0)
+    .sort((a, b) => b.matchCount - a.matchCount)
+    .forEach(({popular}) =>
       options.push(
         toPopularOption(
           popular,

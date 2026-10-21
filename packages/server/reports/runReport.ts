@@ -85,11 +85,17 @@ const runReport = async ({
     (filter): filter is ReportMeasureFilter => !isReportTimeDimension(filter.dimension)
   )
   const teamFilter = filters.find(({dimension}) => dimension === 'TEAM')
-  const teams = teamFilter
+  const filteredTeams = teamFilter
     ? scope.teams.filter(({id}) => teamFilter.values.includes(id))
     : scope.teams
+  // topics are what teams talked about, so they only come from the teams the viewer is on
+  const usesTopics = [...dimensions, ...filters.map(({dimension}) => dimension)].includes('TOPIC')
+  const teams = usesTopics
+    ? filteredTeams.filter(({id}) => scope.ownTeamIds.includes(id))
+    : filteredTeams
   const measureFilters = filters.filter(({dimension}) => dimension !== 'TEAM')
-  const isWholeOrg = scope.canCountWholeOrg && !teamFilter && !dimensions.includes('TEAM')
+  const isWholeOrg =
+    scope.canCountWholeOrg && !teamFilter && !usesTopics && !dimensions.includes('TEAM')
 
   const queryMeasures = (measureSteps: ReportStep[]) =>
     Promise.all(
@@ -98,6 +104,7 @@ const runReport = async ({
           measure,
           orgId,
           teamIds: teams.map(({id}) => id),
+          ownTeamIds: scope.ownTeamIds,
           isWholeOrg,
           stepStarts: measureSteps.map(({start}) => start),
           stepEnds: measureSteps.map(({end}) => end),
@@ -134,6 +141,9 @@ const runReport = async ({
   const notes: {kind: ReportNoteKindEnum; count: number}[] = []
   if (scope.leftOutTeamCount > 0) {
     notes.push({kind: 'STARTER_LIMIT', count: scope.leftOutTeamCount})
+  }
+  if (filteredTeams.length > teams.length) {
+    notes.push({kind: 'TOPICS_FROM_OWN_TEAMS', count: filteredTeams.length - teams.length})
   }
   const estimatedCount = current.reduce((sum, result) => sum + result.estimatedCount, 0)
   if (estimatedCount > 0) notes.push({kind: 'ESTIMATED_HISTORY', count: estimatedCount})

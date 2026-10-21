@@ -84,6 +84,23 @@ test('typing offers to ask AI first, keeps what matches any word, and marks the 
   expect(tasks?.kind !== 'ask' && tasks?.detail).toBe('New tasks, done or open · Bars')
 })
 
+test('the popular questions that match the most words come first', () => {
+  expect(
+    labelsOf(
+      toReportAskOptions({
+        query: 'retros monthly cadence',
+        recents: [],
+        populars,
+        suggestions: null,
+        canAsk: false
+      })
+    )
+  ).toEqual([
+    'Popular questions: Which teams keep up their monthly retros?',
+    'Popular questions: Are tasks from retros getting done?'
+  ])
+})
+
 test('with AI off, it only searches', () => {
   expect(
     labelsOf(

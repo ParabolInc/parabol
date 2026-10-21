@@ -17,7 +17,11 @@ const TABLES = [
   'Discussion',
   'Task',
   'TeamMemberIntegrationAuth',
-  'SlackAuth'
+  'SlackAuth',
+  'User',
+  'MeetingTemplate',
+  'RetroReflectionGroup',
+  'AgendaItem'
 ]
 
 const ORG_ID = 'reportOrg'
@@ -89,7 +93,8 @@ const addMeeting = async (
   teamId: string,
   meetingType: 'retrospective' | 'action' | 'poker',
   createdDaysAgo: number,
-  attendeeIds: string[]
+  attendeeIds: string[],
+  templateId: string | null = null
 ) => {
   const createdAt = daysAgo(createdDaysAgo)
   await pg
@@ -101,6 +106,7 @@ const addMeeting = async (
       createdAt,
       endedAt: new Date(createdAt.getTime() + ms('1h')),
       facilitatorStageId: 'stage1',
+      templateId,
       name: id,
       meetingCount: 1,
       meetingNumber: 1,
@@ -125,7 +131,8 @@ const addDiscussion = async (
   id: string,
   teamId: string,
   meetingId: string,
-  createdDaysAgo: number
+  createdDaysAgo: number,
+  discussionTopicType: 'reflectionGroup' | 'agendaItem' = 'reflectionGroup'
 ) => {
   await pg
     .insertInto('Discussion')
@@ -134,7 +141,7 @@ const addDiscussion = async (
       teamId,
       meetingId,
       discussionTopicId: id,
-      discussionTopicType: 'reflectionGroup',
+      discussionTopicType,
       createdAt: daysAgo(createdDaysAgo)
     })
     .execute()
@@ -151,6 +158,7 @@ interface TaskInput {
   discussionId?: string
   service?: string
   isArchived?: boolean
+  userId?: string
 }
 
 const addTasks = async (tasks: TaskInput[]) => {
@@ -164,6 +172,7 @@ const addTasks = async (tasks: TaskInput[]) => {
         content: JSON.stringify({}),
         plaintextContent: task.id,
         createdBy: LEADER,
+        userId: task.userId ?? null,
         createdAt: daysAgo(task.createdDaysAgo),
         updatedAt: daysAgo(task.doneDaysAgo ?? task.createdDaysAgo),
         meetingId: task.meetingId ?? null,
@@ -320,6 +329,161 @@ const seedStarterOrg = async () => {
   await addMeeting('secondRetro', 'second', 'retrospective', 4, ['s1', 's2'])
 }
 
+const WORK_ORG_ID = 'workOrg'
+const WREN = 'wren'
+const WENDY = 'wendy'
+const XAVIER = 'xavier'
+const YARA = 'yara'
+const WEB = 'web'
+const YARD = 'yard'
+
+// Wren leads the org from Web alone. Web: wren, wendy & xavier. Yard: xavier & yara, whose own retro
+// template and topic Wren mustn't see named. Wendy went inactive 10 days ago
+const seedWorkOrg = async () => {
+  const people = [
+    [WREN, 'Wren', 0],
+    [WENDY, 'Wendy', 45],
+    [XAVIER, 'Xavier', 2],
+    [YARA, 'Yara', 90]
+  ] as const
+  await pg
+    .insertInto('User')
+    .values(
+      people.map(([id, preferredName, lastSeenDaysAgo]) => ({
+        id,
+        preferredName,
+        email: `${id}@example.com`,
+        picture: '',
+        lastSeenAt: daysAgo(lastSeenDaysAgo)
+      }))
+    )
+    .execute()
+  await addOrg(WORK_ORG_ID, 'team')
+  await addOrgUsers(WORK_ORG_ID, [WREN, WENDY, XAVIER, YARA], WREN)
+  await pg
+    .insertInto('OrganizationUserAudit')
+    .values([
+      ...[WREN, WENDY, XAVIER, YARA].map((userId) => ({
+        orgId: WORK_ORG_ID,
+        userId,
+        eventDate: daysAgo(60),
+        eventType: 'added' as const
+      })),
+      {orgId: WORK_ORG_ID, userId: WENDY, eventDate: daysAgo(10), eventType: 'inactivated' as const}
+    ])
+    .execute()
+  await addTeam(WORK_ORG_ID, WEB, [WREN, WENDY, XAVIER])
+  await addTeam(WORK_ORG_ID, YARD, [XAVIER, YARA])
+  await pg
+    .insertInto('MeetingTemplate')
+    .values([
+      {
+        id: 'startStopContinue',
+        name: 'Start Stop Continue',
+        scope: 'PUBLIC',
+        orgId: 'aGhostOrg',
+        teamId: 'aGhostTeam',
+        type: 'retrospective',
+        illustrationUrl: '',
+        mainCategory: 'retrospective'
+      },
+      {
+        id: 'yardTemplate',
+        name: 'Yard retro',
+        scope: 'TEAM',
+        orgId: WORK_ORG_ID,
+        teamId: YARD,
+        type: 'retrospective',
+        illustrationUrl: '',
+        mainCategory: 'retrospective'
+      }
+    ])
+    .execute()
+  await addMeeting('webRetro', WEB, 'retrospective', 5, [WREN, WENDY], 'startStopContinue')
+  await addMeeting('oldWebRetro', WEB, 'retrospective', 40, [WREN, XAVIER], 'startStopContinue')
+  await addMeeting('webCheckIn', WEB, 'action', 4, [WREN, XAVIER])
+  await addMeeting('yardRetro', YARD, 'retrospective', 6, [XAVIER, YARA], 'yardTemplate')
+
+  await addDiscussion('techDebt', WEB, 'webRetro', 5)
+  await addDiscussion('techDebtAgain', WEB, 'webRetro', 5)
+  await addDiscussion('docs', WEB, 'webRetro', 5)
+  await addDiscussion('hiring', WEB, 'webCheckIn', 4, 'agendaItem')
+  await addDiscussion('yardTopic', YARD, 'yardRetro', 6)
+  await pg
+    .insertInto('RetroReflectionGroup')
+    .values([
+      {id: 'techDebt', meetingId: 'webRetro', promptId: 'prompt', title: 'Tech debt'},
+      {id: 'techDebtAgain', meetingId: 'webRetro', promptId: 'prompt', title: 'tech debt'},
+      {id: 'docs', meetingId: 'webRetro', promptId: 'prompt', smartTitle: 'Docs'},
+      {id: 'yardTopic', meetingId: 'yardRetro', promptId: 'prompt', title: 'Reorg'}
+    ])
+    .execute()
+  await pg
+    .insertInto('AgendaItem')
+    .values({
+      id: 'hiring',
+      content: 'Hiring plan ',
+      sortOrder: 'a',
+      teamId: WEB,
+      teamMemberId: `${WEB}::${WREN}`
+    })
+    .execute()
+
+  const webTask = (task: Omit<TaskInput, 'teamId'>): TaskInput => ({teamId: WEB, ...task})
+  await addTasks([
+    ...['debtTask', 'debtTaskToo'].map((id) =>
+      webTask({
+        id,
+        status: 'active',
+        createdDaysAgo: 5,
+        meetingId: 'webRetro',
+        discussionId: 'techDebt',
+        userId: WENDY
+      })
+    ),
+    webTask({
+      id: 'debtTaskDone',
+      status: 'done',
+      createdDaysAgo: 5,
+      doneDaysAgo: 4,
+      meetingId: 'webRetro',
+      discussionId: 'techDebtAgain',
+      userId: XAVIER
+    }),
+    webTask({
+      id: 'docsTask',
+      status: 'done',
+      createdDaysAgo: 5,
+      doneDaysAgo: 3,
+      meetingId: 'webRetro',
+      discussionId: 'docs',
+      userId: XAVIER
+    }),
+    webTask({
+      id: 'hiringTask',
+      status: 'active',
+      createdDaysAgo: 4,
+      meetingId: 'webCheckIn',
+      discussionId: 'hiring',
+      userId: WREN
+    }),
+    {
+      id: 'yardTask',
+      teamId: YARD,
+      status: 'active',
+      createdDaysAgo: 6,
+      meetingId: 'yardRetro',
+      discussionId: 'yardTopic',
+      userId: YARA
+    },
+    webTask({id: 'slowTask', status: 'done', createdDaysAgo: 30, doneDaysAgo: 2}),
+    webTask({id: 'task45Days', status: 'active', createdDaysAgo: 45, userId: WENDY}),
+    webTask({id: 'task100Days', status: 'stuck', createdDaysAgo: 100}),
+    webTask({id: 'task200Days', status: 'future', createdDaysAgo: 200}),
+    webTask({id: 'task300Days', status: 'future', createdDaysAgo: 300})
+  ])
+}
+
 const baseSpec: ReportSpec = {
   measures: ['MEETINGS'],
   breakdown: [],
@@ -366,6 +530,7 @@ beforeAll(async () => {
   await truncatePGTables(...TABLES)
   await seedOrg()
   await seedStarterOrg()
+  await seedWorkOrg()
 })
 
 afterAll(async () => {
@@ -593,5 +758,124 @@ describe('limits', () => {
       'NUMBER takes 0 breakdowns'
     )
     await expect(report({}, {timeZone: 'Mars/Olympus_Mons'})).rejects.toThrow("isn't a time zone")
+  })
+})
+
+describe('people and work', () => {
+  const asWren = {orgId: WORK_ORG_ID, viewerId: WREN}
+  const asXavier = {orgId: WORK_ORG_ID, viewerId: XAVIER}
+  const recently: Partial<ReportSpec> = {showAs: 'TABLE', period: {preset: 'LAST_30_DAYS'}}
+
+  test('active share is the percentage of members active at the reading', async () => {
+    expect(byLabel(await report({measures: ['ACTIVE_SHARE'], ...byTeam}, asWren))).toEqual({
+      Web: 66.7,
+      Yard: 100
+    })
+    expect(valuesOf(await report({measures: ['ACTIVE_SHARE']}, asWren))).toEqual([75])
+  })
+
+  test('last seen lists the members not seen lately, oldest first, whatever the period', async () => {
+    const notSeen: Partial<ReportSpec> = {
+      measures: ['LAST_SEEN'],
+      showAs: 'TABLE',
+      breakdown: [{dimension: 'PERSON'}],
+      where: [{measure: 'LAST_SEEN', operator: 'OLDER_THAN_DAYS', value: 30}],
+      sort: {by: 'VALUE', order: 'ASC'}
+    }
+    const labelsOf = (result: Awaited<ReturnType<typeof report>>) =>
+      result.rows.map(({keys}) => keys[0]!.label)
+    expect(labelsOf(await report(notSeen, asWren))).toEqual(['Yara', 'Wendy'])
+    expect(labelsOf(await report(notSeen, {orgId: WORK_ORG_ID, viewerId: WENDY}))).toEqual([
+      'Wendy'
+    ])
+  })
+
+  test('days to done is the median of the tasks finished in the period', async () => {
+    const daysToDone: Partial<ReportSpec> = {measures: ['DAYS_TO_DONE']}
+    expect(valuesOf(await report(daysToDone, asWren))).toEqual([2])
+    expect(
+      byLabel(
+        await report({...daysToDone, showAs: 'TABLE', breakdown: [{dimension: 'PERSON'}]}, asWren)
+      )
+    ).toEqual({Xavier: 1.5, 'No one': 28})
+    expect(byLabel(await report({...daysToDone, ...byTeam}, asWren))).toEqual({Web: 2, Yard: null})
+  })
+
+  test('open tasks by age keep the ages in order unless sorted', async () => {
+    const byAge: Partial<ReportSpec> = {
+      measures: ['OPEN_TASKS'],
+      showAs: 'BARS',
+      breakdown: [{dimension: 'TASK_AGE'}],
+      period: {preset: 'ALL_TIME'}
+    }
+    const inOrder = await report(byAge, asWren)
+    expect(inOrder.rows.map(({keys, values}) => `${keys[0]!.label} ${values[0]}`)).toEqual([
+      'Under 30 days 4',
+      '30 to 90 days 1',
+      '90 to 180 days 1',
+      'Over 180 days 2'
+    ])
+    const byValue = await report({...byAge, sort: {by: 'VALUE', order: 'DESC'}}, asWren)
+    expect(byValue.rows.map(({keys}) => keys[0]!.label)).toEqual([
+      'Under 30 days',
+      'Over 180 days',
+      '30 to 90 days',
+      '90 to 180 days'
+    ])
+  })
+
+  test('topics add up whatever their case, and only come from the teams the viewer is on', async () => {
+    const byTopic: Partial<ReportSpec> = {
+      ...recently,
+      measures: ['NEW_TASKS'],
+      breakdown: [{dimension: 'TOPIC'}]
+    }
+    const leader = await report(byTopic, asWren)
+    expect(byLabel(leader)).toEqual({'Tech debt': 3, Docs: 1, 'Hiring plan': 1})
+    expect(leader.notes).toEqual([{kind: 'TOPICS_FROM_OWN_TEAMS', count: 1}])
+    const member = await report(byTopic, asXavier)
+    expect(byLabel(member)).toEqual({'Tech debt': 3, Docs: 1, 'Hiring plan': 1, Reorg: 1})
+    expect(member.notes).toEqual([])
+  })
+
+  test('a team’s own template is named only for the people on that team', async () => {
+    const byTemplate: Partial<ReportSpec> = {...recently, breakdown: [{dimension: 'TEMPLATE'}]}
+    expect(byLabel(await report(byTemplate, asWren))).toEqual({
+      'Start Stop Continue': 1,
+      'No template': 1,
+      'Another team’s template': 1
+    })
+    expect(byLabel(await report(byTemplate, asXavier))).toEqual({
+      'Start Stop Continue': 1,
+      'No template': 1,
+      'Yard retro': 1
+    })
+  })
+
+  test('by person, a meeting counts for each person who joined it', async () => {
+    expect(
+      byLabel(await report({...recently, breakdown: [{dimension: 'PERSON'}]}, asWren))
+    ).toEqual({Wren: 2, Wendy: 1, Xavier: 2, Yara: 1})
+    expect(
+      valuesOf(
+        await report(
+          {...recently, showAs: 'NUMBER', filters: [{dimension: 'PERSON', values: [WREN, XAVIER]}]},
+          asWren
+        )
+      )
+    ).toEqual([3])
+  })
+
+  test('a share or median can’t stack', async () => {
+    await expect(
+      report(
+        {
+          measures: ['ACTIVE_SHARE'],
+          showAs: 'BARS',
+          breakdown: [{dimension: 'TIME'}, {dimension: 'TEAM'}]
+        },
+        asWren
+      )
+    ).rejects.toThrow("ACTIVE_SHARE can't be stacked")
   })
 })

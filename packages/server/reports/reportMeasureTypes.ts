@@ -12,6 +12,8 @@ export interface ReportMeasureQuery {
   measure: ReportMeasure
   orgId: string
   teamIds: string[]
+  // the teams the viewer is on, whose own templates they can see named
+  ownTeamIds: string[]
   // count everyone in the organization instead of the people on its teams
   isWholeOrg: boolean
   stepStarts: Date[]
@@ -29,8 +31,11 @@ export interface ReportMeasureRow {
   value: number | null
 }
 
+export type ReportDimensionLabels = Partial<Record<ReportCategoryDimension, Record<string, string>>>
+
 export interface ReportMeasureResult {
   rows: ReportMeasureRow[]
   // how many tasks were counted with an estimated done date
   estimatedCount: number
+  labels: ReportDimensionLabels
 }

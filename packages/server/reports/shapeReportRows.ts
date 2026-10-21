@@ -3,6 +3,9 @@ import {
   isReportTimeDimension,
   MAX_REPORT_SERIES,
   REPORT_MEASURES,
+  REPORT_TASK_AGES,
+  type ReportDimension,
+  type ReportMeasureKind,
   type ReportSpec
 } from '../../client/shared/reports/reportCatalog'
 import type {ReportRow} from './buildReportRows'
@@ -45,23 +48,37 @@ const resolveSort = (spec: ReportSpec) => {
   return {by, direction: order === 'DESC' ? -1 : 1}
 }
 
-// Each value at a breakdown position with its label and total, adding up the first measure. Dates
-// aren't added up, so the latest wins
+// values that run in their own order, which a report keeps unless it's sorted another way
+const ORDERED_VALUES: Partial<Record<ReportDimension, string[]>> = {
+  TASK_AGE: Object.keys(REPORT_TASK_AGES)
+}
+
+// Dates take the latest, and shares and medians, which don't add up, take their mean
+const combineValues = (kind: ReportMeasureKind, values: number[]) => {
+  if (values.length === 0) return null
+  if (kind === 'latest') return values.reduce((latest, value) => Math.max(latest, value))
+  const sum = values.reduce((total, value) => total + value, 0)
+  return kind === 'share' || kind === 'median' ? sum / values.length : sum
+}
+
+// Each value at a breakdown position with its label and the first measure's total
 const totalsAt = (rows: ReportRow[], spec: ReportSpec, position: number) => {
-  const isLatest = REPORT_MEASURES[spec.measures[0]!].kind === 'latest'
-  const totals = new Map<string, {label: string; total: number | null}>()
+  const {kind} = REPORT_MEASURES[spec.measures[0]!]
+  const entries = new Map<string, {label: string; values: number[]}>()
   for (const row of rows) {
     const key = row.keys[position]
     if (!key) continue
-    const value = row.values[0] ?? null
-    const entry = totals.get(key.value) ?? {label: key.label, total: null}
-    if (value !== null) {
-      entry.total =
-        entry.total === null ? value : isLatest ? Math.max(entry.total, value) : entry.total + value
-    }
-    totals.set(key.value, entry)
+    const entry = entries.get(key.value) ?? {label: key.label, values: []}
+    const value = row.values[0]
+    if (value != null) entry.values.push(value)
+    entries.set(key.value, entry)
   }
-  return totals
+  return new Map(
+    [...entries].map(([value, {label, values}]) => [
+      value,
+      {label, total: combineValues(kind, values)}
+    ])
+  )
 }
 
 // Time runs in order, unless the rows are sorted by value with nothing else to sort them by.
@@ -69,10 +86,14 @@ const totalsAt = (rows: ReportRow[], spec: ReportSpec, position: number) => {
 const rankValuesAt = (rows: ReportRow[], spec: ReportSpec, position: number) => {
   const {by, direction} = resolveSort(spec)
   const entries = [...totalsAt(rows, spec, position).entries()]
-  const isTime = isReportTimeDimension(spec.breakdown[position]!.dimension)
+  const {dimension} = spec.breakdown[position]!
+  const isTime = isReportTimeDimension(dimension)
+  const orderedValues = ORDERED_VALUES[dimension]
   if (isTime && (by !== 'VALUE' || firstCategoryPosition(spec) !== -1)) {
     const timeDirection = by === 'TIME' ? direction : 1
     entries.sort(([a], [b]) => timeDirection * a.localeCompare(b))
+  } else if (orderedValues && !spec.sort) {
+    entries.sort(([a], [b]) => orderedValues.indexOf(a) - orderedValues.indexOf(b))
   } else if (by === 'NAME') {
     entries.sort(([, a], [, b]) => direction * a.label.localeCompare(b.label))
   } else {

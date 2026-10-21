@@ -2,6 +2,7 @@ import {type RawBuilder, sql} from 'kysely'
 import type {ReportCategoryDimension} from '../../client/shared/reports/reportCatalog'
 import getKysely from '../postgres/getKysely'
 import type {
+  ReportDimensionLabels,
   ReportMeasureFilter,
   ReportMeasureQuery,
   ReportMeasureResult
@@ -13,10 +14,17 @@ export type ReportDimensionExpressions = Partial<
   Record<ReportCategoryDimension, RawBuilder<string>>
 >
 
+export type ReportDimensionConditions = Partial<
+  Record<ReportCategoryDimension, RawBuilder<boolean>>
+>
+
 interface ReportSource {
   from: RawBuilder<unknown>
   where: RawBuilder<boolean>[]
   dimensions: ReportDimensionExpressions
+  labels?: ReportDimensionExpressions
+  // what a row needs to count when the report splits or filters by a dimension, like a topic to be named by
+  requires?: ReportDimensionConditions
   value: RawBuilder<number>
   // how many of the counted rows rely on an estimated done date
   estimated?: RawBuilder<number>
@@ -55,6 +63,25 @@ export const selectDimensions = (
     (dimension, idx) => sql`${dimensionExpression(expressions, dimension)} AS ${sql.ref(`d${idx}`)}`
   )
 
+// The name most rows give a value, since a topic can be written more than one way. Labels come after the
+// grouped columns, which are grouped by position
+export const selectDimensionLabels = (
+  labels: ReportDimensionExpressions,
+  dimensions: ReportCategoryDimension[]
+) =>
+  dimensions.flatMap((dimension, idx) => {
+    const label = labels[dimension]
+    return label ? [sql`mode() WITHIN GROUP (ORDER BY ${label}) AS ${sql.ref(`l${idx}`)}`] : []
+  })
+
+export const requiredConditions = (
+  conditions: ReportDimensionConditions,
+  {dimensions, filters}: Pick<ReportMeasureQuery, 'dimensions' | 'filters'>
+) =>
+  [...new Set([...dimensions, ...filters.map(({dimension}) => dimension)])].flatMap(
+    (dimension) => conditions[dimension] ?? []
+  )
+
 export const filterConditions = (
   expressions: ReportDimensionExpressions,
   filters: ReportMeasureFilter[]
@@ -70,15 +97,28 @@ export const groupByStepAndDimensions = (dimensionCount: number) =>
 
 export const toMeasureResult = (
   rows: ReportQueryRow[],
-  dimensionCount: number
-): ReportMeasureResult => ({
-  rows: rows.map((row) => ({
-    stepIndex: row.stepIndex,
-    keys: Array.from({length: dimensionCount}, (_, idx) => String(row[`d${idx}`])),
-    value: row.value
-  })),
-  estimatedCount: rows.reduce((sum, row) => sum + row.estimated, 0)
-})
+  dimensions: ReportCategoryDimension[]
+): ReportMeasureResult => {
+  const labels: ReportDimensionLabels = {}
+  rows.forEach((row) => {
+    dimensions.forEach((dimension, idx) => {
+      const label = row[`l${idx}`]
+      if (typeof label !== 'string' || !label) return
+      const names = labels[dimension] ?? {}
+      names[String(row[`d${idx}`])] ??= label
+      labels[dimension] = names
+    })
+  })
+  return {
+    rows: rows.map((row) => ({
+      stepIndex: row.stepIndex,
+      keys: dimensions.map((_, idx) => String(row[`d${idx}`])),
+      value: row.value
+    })),
+    estimatedCount: rows.reduce((sum, row) => sum + row.estimated, 0),
+    labels
+  }
+}
 
 export const countReportRows = async (
   query: ReportMeasureQuery,
@@ -92,6 +132,7 @@ export const countReportRows = async (
     ...source.where,
     sql<boolean>`${source.timestamp} >= ${from}`,
     sql<boolean>`${source.timestamp} < ${to}`,
+    ...requiredConditions(source.requires ?? {}, query),
     ...filterConditions(source.dimensions, filters)
   ]
   const rows = await executeReportQuery(sql<ReportQueryRow>`
@@ -99,13 +140,14 @@ export const countReportRows = async (
       ${sql.join([
         ...selectDimensions(source.dimensions, dimensions),
         sql`${source.value} AS "value"`,
-        sql`${source.estimated ?? sql`0`}::int AS "estimated"`
+        sql`${source.estimated ?? sql`0`}::int AS "estimated"`,
+        ...selectDimensionLabels(source.labels ?? {}, dimensions)
       ])}
     FROM ${source.from}
     WHERE ${sql.join(conditions, sql` AND `)}
     GROUP BY ${groupByStepAndDimensions(dimensions.length)}
   `)
-  return toMeasureResult(rows, dimensions.length)
+  return toMeasureResult(rows, dimensions)
 }
 
 export const readReportRows = async (
@@ -116,6 +158,7 @@ export const readReportRows = async (
   const conditions = [
     ...source.where,
     source.isPresentAt(sql.ref<Date>('Step.readAt')),
+    ...requiredConditions(source.requires ?? {}, query),
     ...filterConditions(source.dimensions, filters)
   ]
   const rows = await executeReportQuery(sql<ReportQueryRow>`
@@ -123,14 +166,15 @@ export const readReportRows = async (
       ${sql.join([
         ...selectDimensions(source.dimensions, dimensions),
         sql`${source.value} AS "value"`,
-        sql`${source.estimated ?? sql`0`}::int AS "estimated"`
+        sql`${source.estimated ?? sql`0`}::int AS "estimated"`,
+        ...selectDimensionLabels(source.labels ?? {}, dimensions)
       ])}
     FROM unnest(${readAt}::timestamptz[]) WITH ORDINALITY AS "Step"("readAt", "index")
     CROSS JOIN ${source.from}
     WHERE ${sql.join(conditions, sql` AND `)}
     GROUP BY ${groupByStepAndDimensions(dimensions.length)}
   `)
-  return toMeasureResult(rows, dimensions.length)
+  return toMeasureResult(rows, dimensions)
 }
 
 // A person was on a team at a time if they had joined by then and hadn't been removed yet.

@@ -1,7 +1,9 @@
 import {
+  isReportAdditiveMeasure,
   isReportTimeDimension,
   REPORT_DIMENSION_LABELS,
   REPORT_MEASURES,
+  REPORT_SPECIAL_VALUE_LABELS,
   REPORT_VALUE_LABELS,
   type ReportCompareTo,
   type ReportDimension,
@@ -79,12 +81,15 @@ export const formatReportDimension = (
 }
 
 const describeCondition = ({measure, operator, value}: ReportSpec['where'][number]) => {
-  const {label} = REPORT_MEASURES[measure]
+  const {label, kind} = REPORT_MEASURES[measure]
   if (operator === 'OLDER_THAN_DAYS') return `${label} over ${value} days ago, or never`
   if (operator === 'WITHIN_DAYS') return `${label} in the last ${value} days`
-  if (operator === 'AT_LEAST') return `${label} ${value} or more`
-  if (operator === 'AT_MOST') return `${label} ${value} or fewer`
-  return `${label} is ${value}`
+  const amount = kind === 'share' ? `${value}%` : value
+  if (operator === 'AT_LEAST') return `${label} ${amount} or more`
+  if (operator === 'AT_MOST') {
+    return `${label} ${amount} or ${isReportAdditiveMeasure(measure) ? 'fewer' : 'less'}`
+  }
+  return `${label} is ${amount}`
 }
 
 const describeSort = (spec: ReportSpec) => {
@@ -114,7 +119,8 @@ export const toReportSpecChips = (spec: ReportSpec, {step, teamNames}: ChipOptio
         ? teamNames.get(value)
         : isReportTimeDimension(dimension)
           ? value
-          : REPORT_VALUE_LABELS[dimension]?.[value]
+          : (REPORT_VALUE_LABELS[dimension]?.[value] ??
+            REPORT_SPECIAL_VALUE_LABELS[dimension]?.[value])
     )
     const isEveryLabelKnown = labels.every((label) => label !== undefined)
     chips.push({

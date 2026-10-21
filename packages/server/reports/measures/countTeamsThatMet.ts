@@ -41,7 +41,7 @@ const countTeamsThatMet = async (query: ReportMeasureQuery) => {
     WHERE ${sql.join(conditions, sql` AND `)}
     GROUP BY ${groupByStepAndDimensions(dimensions.length)}
   `)
-  return toMeasureResult(rows, dimensions.length)
+  return toMeasureResult(rows, dimensions)
 }
 
 export default countTeamsThatMet

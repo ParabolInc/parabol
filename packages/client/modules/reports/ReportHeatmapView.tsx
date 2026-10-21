@@ -1,4 +1,5 @@
 import {
+  isReportAdditiveMeasure,
   isReportTimeDimension,
   REPORT_MEASURES,
   type ReportSpec
@@ -34,6 +35,11 @@ const ReportHeatmapView = ({spec, step, rows, isCompact}: Props) => {
   const columns = distinctKeysAt(rows, columnPosition)
   const isCount = REPORT_MEASURES[measure].kind === 'count'
   const isDate = REPORT_MEASURES[measure].kind === 'latest'
+  // an empty count is left blank, but a share or median of 0 says something
+  const formatCell = (value: number | null) => {
+    if (isReportAdditiveMeasure(measure)) return value || ''
+    return value === null && !isDate ? '' : formatReportValue(measure, value)
+  }
   const gridRows = new Map<string, {name: string; cells: Map<string, number | null>}>()
   rows.forEach(({keys, values}) => {
     const rowKeys = keys.slice(0, columnPosition)
@@ -96,7 +102,7 @@ const ReportHeatmapView = ({spec, step, rows, isCompact}: Props) => {
                           heatClassName(value, max)
                         )}
                       >
-                        {isDate ? formatReportValue(measure, value) : value || ''}
+                        {formatCell(value)}
                       </span>
                     </td>
                   )

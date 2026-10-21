@@ -5,9 +5,13 @@ export type ReportTimeDimension = (typeof REPORT_TIME_DIMENSIONS)[number]
 
 export const REPORT_CATEGORY_DIMENSIONS = [
   'TEAM',
+  'PERSON',
   'MEETING_TYPE',
+  'TEMPLATE',
   'TASK_STATUS',
   'DONE_OR_OPEN',
+  'TASK_AGE',
+  'TOPIC',
   'INTEGRATION'
 ] as const
 export type ReportCategoryDimension = (typeof REPORT_CATEGORY_DIMENSIONS)[number]
@@ -16,6 +20,8 @@ export type ReportDimension = ReportTimeDimension | ReportCategoryDimension
 export const REPORT_MEASURE_KEYS = [
   'ACTIVE_PEOPLE',
   'MEMBERS',
+  'ACTIVE_SHARE',
+  'LAST_SEEN',
   'MEETINGS',
   'TEAMS_THAT_MET',
   'LAST_MEETING',
@@ -24,6 +30,7 @@ export const REPORT_MEASURE_KEYS = [
   'NEW_TASKS',
   'DONE_TASKS',
   'OPEN_TASKS',
+  'DAYS_TO_DONE',
   'USER_INTEGRATIONS',
   'TASKS_PUSHED'
 ] as const
@@ -56,8 +63,10 @@ export type ReportSortBy = (typeof REPORT_SORT_BY)[number]
 export const REPORT_SORT_ORDERS = ['ASC', 'DESC'] as const
 export type ReportSortOrder = (typeof REPORT_SORT_ORDERS)[number]
 
-// count: adds up inside each step. distinct: each team once per step. reading: taken at the end of each step. latest: the most recent date
-export type ReportMeasureKind = 'count' | 'distinct' | 'reading' | 'latest'
+// count: adds up inside each step. distinct: each team once per step. reading: taken at the end of each step.
+// latest: the most recent date. share: a percentage taken at the end of each step. median: the middle value of
+// what finished in each step. Shares and medians never add up, so nothing totals or stacks them
+export type ReportMeasureKind = 'count' | 'distinct' | 'reading' | 'latest' | 'share' | 'median'
 
 export interface ReportPeriod {
   preset?: ReportPeriodPreset | null
@@ -99,11 +108,24 @@ export const REPORT_MEASURES = {
     description: 'People on the teams, or in the organization, at the end of each step',
     dimensions: [...OVER_TIME, 'TEAM']
   },
+  ACTIVE_SHARE: {
+    kind: 'share',
+    label: 'Active share',
+    description: 'The percentage of members who used Parabol in the 30 days before each point',
+    dimensions: [...OVER_TIME, 'TEAM']
+  },
+  LAST_SEEN: {
+    kind: 'latest',
+    label: 'Last seen',
+    description: 'When each person last used Parabol, whatever the period',
+    dimensions: ['PERSON', 'TEAM']
+  },
   MEETINGS: {
     kind: 'count',
     label: 'Meetings',
-    description: 'Meetings that 2 or more people joined, by when they started',
-    dimensions: [...OVER_TIME, 'TEAM', 'MEETING_TYPE']
+    description:
+      'Meetings that 2 or more people joined, by when they started. By person, the meetings each person joined',
+    dimensions: [...OVER_TIME, 'TEAM', 'PERSON', 'MEETING_TYPE', 'TEMPLATE']
   },
   TEAMS_THAT_MET: {
     kind: 'distinct',
@@ -115,37 +137,64 @@ export const REPORT_MEASURES = {
     kind: 'latest',
     label: 'Last meeting',
     description: 'The date of the latest meeting in the period',
-    dimensions: ['TEAM', 'MEETING_TYPE']
+    dimensions: ['TEAM', 'MEETING_TYPE', 'TEMPLATE']
   },
   DISCUSSIONS: {
     kind: 'count',
     label: 'Discussions',
     description: 'Topics discussed in meetings',
-    dimensions: [...OVER_TIME, 'TEAM', 'MEETING_TYPE']
+    dimensions: [...OVER_TIME, 'TEAM', 'MEETING_TYPE', 'TEMPLATE', 'TOPIC']
   },
   DISCUSSIONS_WITH_A_TASK: {
     kind: 'count',
     label: 'Discussions with a task',
     description: 'Topics discussed in meetings that led to a task',
-    dimensions: [...OVER_TIME, 'TEAM', 'MEETING_TYPE']
+    dimensions: [...OVER_TIME, 'TEAM', 'MEETING_TYPE', 'TEMPLATE', 'TOPIC']
   },
   NEW_TASKS: {
     kind: 'count',
     label: 'New tasks',
     description: 'Tasks created, leaving out Sprint Poker stories brought in from an integration',
-    dimensions: [...OVER_TIME, 'TEAM', 'MEETING_TYPE', 'TASK_STATUS', 'DONE_OR_OPEN', 'INTEGRATION']
+    dimensions: [
+      ...OVER_TIME,
+      'TEAM',
+      'PERSON',
+      'MEETING_TYPE',
+      'TEMPLATE',
+      'TASK_STATUS',
+      'DONE_OR_OPEN',
+      'TOPIC',
+      'INTEGRATION'
+    ]
   },
   DONE_TASKS: {
     kind: 'count',
     label: 'Done tasks',
     description: 'Tasks marked done, by when they were done',
-    dimensions: [...OVER_TIME, 'TEAM', 'MEETING_TYPE', 'INTEGRATION']
+    dimensions: [...OVER_TIME, 'TEAM', 'PERSON', 'MEETING_TYPE', 'TEMPLATE', 'TOPIC', 'INTEGRATION']
   },
   OPEN_TASKS: {
     kind: 'reading',
     label: 'Open tasks',
     description: 'Tasks not done at the end of each step',
-    dimensions: [...OVER_TIME, 'TEAM', 'MEETING_TYPE', 'TASK_STATUS', 'INTEGRATION']
+    dimensions: [
+      ...OVER_TIME,
+      'TEAM',
+      'PERSON',
+      'MEETING_TYPE',
+      'TEMPLATE',
+      'TASK_STATUS',
+      'TASK_AGE',
+      'TOPIC',
+      'INTEGRATION'
+    ]
+  },
+  DAYS_TO_DONE: {
+    kind: 'median',
+    label: 'Days to done',
+    description:
+      'Days from making a task to finishing it, the median of the tasks finished in each step',
+    dimensions: [...OVER_TIME, 'TEAM', 'PERSON', 'MEETING_TYPE', 'TEMPLATE', 'TOPIC', 'INTEGRATION']
   },
   USER_INTEGRATIONS: {
     kind: 'reading',
@@ -197,6 +246,16 @@ export const REPORT_TASK_STATUSES = {
   done: 'Done'
 } as const
 export const REPORT_DONE_OR_OPEN = {done: 'Done', open: 'Open'} as const
+// in age order, which a report keeps unless it's sorted another way
+export const REPORT_TASK_AGES = {
+  under30Days: 'Under 30 days',
+  from30To90Days: '30 to 90 days',
+  from90To180Days: '90 to 180 days',
+  over180Days: 'Over 180 days'
+} as const
+export const REPORT_NO_PERSON = 'none'
+export const REPORT_NO_TEMPLATE = 'none'
+export const REPORT_OTHER_TEAM_TEMPLATE = 'otherTeamTemplate'
 export const REPORT_INTEGRATION_LABELS: Record<string, string> = {
   jira: Providers.JIRA_CLOUD_NAME,
   jiraServer: Providers.JIRA_SERVER_NAME,
@@ -218,8 +277,21 @@ export const REPORT_VALUE_LABELS: Partial<Record<ReportCategoryDimension, Record
     MEETING_TYPE: {...REPORT_MEETING_TYPES, [REPORT_NO_MEETING]: 'Outside meetings'},
     TASK_STATUS: REPORT_TASK_STATUSES,
     DONE_OR_OPEN: REPORT_DONE_OR_OPEN,
+    TASK_AGE: REPORT_TASK_AGES,
     INTEGRATION: {...REPORT_INTEGRATION_LABELS, [REPORT_NO_INTEGRATION]: 'None'}
   }
+
+// Names for the fixed values of dimensions the report otherwise names, like people. They aren't every value, so
+// unlike REPORT_VALUE_LABELS they're never offered as filters
+export const REPORT_SPECIAL_VALUE_LABELS: Partial<
+  Record<ReportCategoryDimension, Record<string, string>>
+> = {
+  PERSON: {[REPORT_NO_PERSON]: 'No one'},
+  TEMPLATE: {
+    [REPORT_NO_TEMPLATE]: 'No template',
+    [REPORT_OTHER_TEAM_TEMPLATE]: 'Another team’s template'
+  }
+}
 
 export const REPORT_DIMENSION_LABELS: Record<ReportDimension, string> = {
   TIME: 'Time',
@@ -227,10 +299,21 @@ export const REPORT_DIMENSION_LABELS: Record<ReportDimension, string> = {
   WEEK: 'Week',
   MONTH: 'Month',
   TEAM: 'Team',
+  PERSON: 'Person',
   MEETING_TYPE: 'Meeting type',
+  TEMPLATE: 'Template',
   TASK_STATUS: 'Task status',
   DONE_OR_OPEN: 'Done or open',
+  TASK_AGE: 'Task age',
+  TOPIC: 'Topic',
   INTEGRATION: 'Integration'
+}
+
+export const REPORT_LOWER_IS_BETTER: readonly ReportMeasure[] = ['DAYS_TO_DONE']
+
+export const isReportAdditiveMeasure = (measure: ReportMeasure) => {
+  const {kind} = REPORT_MEASURES[measure]
+  return kind !== 'latest' && kind !== 'share' && kind !== 'median'
 }
 
 export const isReportTimeDimension = (

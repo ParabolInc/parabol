@@ -13,6 +13,7 @@ import {Line} from 'react-chartjs-2'
 import useResolvedTheme from '../../hooks/useResolvedTheme'
 import {REPORT_MEASURES, type ReportSpec} from '../../shared/reports/reportCatalog'
 import {formatReportKey, PARTIAL_STEP_NOTE} from './formatReportKey'
+import {formatReportValue} from './formatReportValue'
 import ReportLegend from './ReportLegend'
 import {getReportChartFont, getReportChartTheme} from './reportChartTheme'
 import {distinctKeysAt, type ReportResultRow, withValues} from './reportRows'
@@ -37,6 +38,7 @@ const ReportLineView = ({spec, step, rows, isCompact}: Props) => {
   const chartTheme = getReportChartTheme(theme)
   const font = getReportChartFont()
   const measure = spec.measures[0]!
+  const isShare = REPORT_MEASURES[measure].kind === 'share'
   const [overDimension, lineDimension] = spec.breakdown.map(({dimension}) => dimension)
   const steps = distinctKeysAt(rows, 0)
   const rowByKeys = new Map(rows.map((row) => [row.keys.map(({value}) => value).join('|'), row]))
@@ -109,7 +111,7 @@ const ReportLineView = ({spec, step, rows, isCompact}: Props) => {
                     return stepKey.isPartial ? `${name}, ${PARTIAL_STEP_NOTE.toLowerCase()}` : name
                   },
                   label: (item: TooltipItem<'line'>) =>
-                    `${item.dataset.label}: ${item.parsed.y?.toLocaleString() ?? '—'}`
+                    `${item.dataset.label}: ${formatReportValue(measure, item.parsed.y)}`
                 }
               }
             },
@@ -121,9 +123,15 @@ const ReportLineView = ({spec, step, rows, isCompact}: Props) => {
               },
               y: {
                 beginAtZero: true,
+                max: isShare ? 100 : undefined,
                 border: {display: false},
                 grid: {color: chartTheme.grid},
-                ticks: {color: chartTheme.tick, font, precision: 0}
+                ticks: {
+                  color: chartTheme.tick,
+                  font,
+                  precision: 0,
+                  callback: isShare ? (tick: number | string) => `${tick}%` : undefined
+                }
               }
             }
           }}

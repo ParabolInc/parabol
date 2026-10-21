@@ -23,6 +23,7 @@ const ReportNumberView = ({spec, rows, isCompact}: Props) => {
       {spec.compareTo && value !== null && previousValue !== null && (
         <ReportDelta
           change={value - previousValue}
+          measure={measure}
           comparison={formatComparison(spec.compareTo)}
           className={isCompact ? undefined : 'text-sm'}
         />

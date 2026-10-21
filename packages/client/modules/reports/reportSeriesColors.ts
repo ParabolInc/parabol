@@ -1,6 +1,9 @@
 import {
   REPORT_NO_INTEGRATION,
   REPORT_NO_MEETING,
+  REPORT_NO_PERSON,
+  REPORT_NO_TEMPLATE,
+  REPORT_OTHER_TEAM_TEMPLATE,
   type ReportDimension
 } from '../../shared/reports/reportCatalog'
 
@@ -39,6 +42,20 @@ const KNOWN_COLORS: Partial<Record<ReportDimension, Record<string, ReportSeriesC
     active: color('bg-jade-600 dark:bg-jade-400', '#2D9F5F', '#66BC8C'),
     stuck: color('bg-tomato-500', '#FD6157'),
     future: color('bg-aqua-600 dark:bg-aqua-400', '#2792AA', '#55C0CF')
+  },
+  // older tasks are darker in the light theme, and every age keeps its place in the stack
+  TASK_AGE: {
+    under30Days: color('bg-sky-500', '#329AE5'),
+    from30To90Days: color('bg-grape-500', '#A06BD6'),
+    from90To180Days: color('bg-gold-600 dark:bg-gold-400', '#A36200', '#FBB337'),
+    over180Days: color('bg-tomato-800 dark:bg-tomato-600', '#9F201E', '#F23B31')
+  },
+  PERSON: {
+    [REPORT_NO_PERSON]: NONE_COLOR
+  },
+  TEMPLATE: {
+    [REPORT_NO_TEMPLATE]: NONE_COLOR,
+    [REPORT_OTHER_TEAM_TEMPLATE]: NONE_COLOR
   },
   INTEGRATION: {
     [REPORT_NO_INTEGRATION]: NONE_COLOR

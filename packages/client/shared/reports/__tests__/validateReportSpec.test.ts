@@ -41,7 +41,24 @@ test.each<[string, Partial<ReportSpec>]>([
   ],
   ['a custom period', {period: {startDate: '2026-02-01', endDate: '2026-02-28'}}],
   ['a comparison', {compareTo: 'PREVIOUS_PERIOD'}],
-  ['a limit', {showAs: 'BARS', breakdown: [{dimension: 'TEAM'}], limit: 10}]
+  ['a limit', {showAs: 'BARS', breakdown: [{dimension: 'TEAM'}], limit: 10}],
+  [
+    'a line of each team’s active share',
+    {
+      measures: ['ACTIVE_SHARE'],
+      showAs: 'LINE',
+      breakdown: [{dimension: 'MONTH'}, {dimension: 'TEAM'}]
+    }
+  ],
+  [
+    'the oldest open tasks by owner',
+    {
+      measures: ['OPEN_TASKS'],
+      showAs: 'BARS',
+      breakdown: [{dimension: 'PERSON'}],
+      filters: [{dimension: 'TASK_AGE', values: ['over180Days']}]
+    }
+  ]
 ])('accepts %s', (_name, overrides) => {
   expect(validateReportSpec(spec(overrides))).toBeNull()
 })
@@ -98,6 +115,20 @@ test.each<[string, Partial<ReportSpec>, string]>([
     'an unknown filter value',
     {filters: [{dimension: 'MEETING_TYPE', values: ['standup']}]},
     "standup isn't a MEETING_TYPE value"
+  ],
+  [
+    'an unknown task age',
+    {measures: ['OPEN_TASKS'], filters: [{dimension: 'TASK_AGE', values: ['ancient']}]},
+    "ancient isn't a TASK_AGE value"
+  ],
+  [
+    'a stacked median',
+    {
+      measures: ['DAYS_TO_DONE'],
+      showAs: 'BARS',
+      breakdown: [{dimension: 'TEAM'}, {dimension: 'PERSON'}]
+    },
+    "DAYS_TO_DONE can't be stacked"
   ],
   [
     'a dimension filtered twice',
