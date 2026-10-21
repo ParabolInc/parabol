@@ -4,7 +4,7 @@ A row's value for one breakdown
 type ReportRowKey {
   """
   A team id, person id, meeting type, template id, task status, done or open, task age, topic in lower case,
-  integration service, or the start of a time step as an ISO date
+  integration service, Team Health category id, or the start of a time step as an ISO date
   """
   value: String!
 

@@ -74,6 +74,23 @@ test('a share is tested in percent, and a median or share is less rather than fe
   ).toContain('Only show: Active share 50% or less')
 })
 
+test('a flow names its breakdowns as stages', () => {
+  expect(
+    chipsOf(
+      spec({
+        measures: ['NEW_TASKS'],
+        showAs: 'FLOW',
+        breakdown: [{dimension: 'MEETING_TYPE'}, {dimension: 'TASK_STATUS'}]
+      })
+    )
+  ).toEqual([
+    'Measure: New tasks',
+    'Stage 1: Meeting type',
+    'Stage 2: Task status',
+    'Show as: Flow'
+  ])
+})
+
 test('a team filter names the teams it knows', () => {
   expect(chipsOf(spec({filters: [{dimension: 'TEAM', values: ['team1']}]}))).toContain(
     'Team: Core Infra'

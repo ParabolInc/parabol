@@ -19,8 +19,12 @@ import {formatReportValue} from './formatReportValue'
 import ReportLegend from './ReportLegend'
 import {getReportChartFont, getReportChartTheme, PARTIAL_STEP_ALPHA} from './reportChartTheme'
 import {distinctKeysAt, type ReportResultRow, withValues} from './reportRows'
-import {getReportSeriesColor, REPORT_SINGLE_SERIES_COLOR} from './reportSeriesColors'
-import type {ReportStepLength} from './reportSpecLabels'
+import {
+  getReportSeriesColor,
+  REPORT_NONE_COLOR,
+  REPORT_SINGLE_SERIES_COLOR
+} from './reportSeriesColors'
+import {REPORT_COMPARE_LABELS, type ReportStepLength} from './reportSpecLabels'
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip)
 
@@ -42,7 +46,9 @@ const ReportBarsView = ({spec, step, rows, isCompact}: Props) => {
   const bars = distinctKeysAt(rows, 0)
   const isOverTime = isReportTimeDimension(barDimension!)
   const emptyValue = isReportAdditiveMeasure(measure) ? 0 : null
-  const isShare = REPORT_MEASURES[measure].kind === 'share'
+  const {kind, label: measureLabel} = REPORT_MEASURES[measure]
+  const isShare = kind === 'share'
+  const isScore = kind === 'score'
   const valueByKeys = new Map(
     rows.map(({keys, values}) => [keys.map(({value}) => value).join('|'), values[0] ?? emptyValue])
   )
@@ -52,7 +58,20 @@ const ReportBarsView = ({spec, step, rows, isCompact}: Props) => {
         label: key.label,
         color: getReportSeriesColor(stackDimension, key.value, rank)
       }))
-    : [{key: null, label: REPORT_MEASURES[measure].label, color: REPORT_SINGLE_SERIES_COLOR}]
+    : [{key: null, label: measureLabel, color: REPORT_SINGLE_SERIES_COLOR}]
+  const previousByBar = new Map(
+    rows.map(({keys, previousValues}) => [keys[0]?.value, previousValues?.[0] ?? emptyValue])
+  )
+  // a comparison sits beside each bar, so it can't share a chart with stacks
+  const comparison =
+    spec.compareTo && !stackDimension
+      ? {
+          label: REPORT_COMPARE_LABELS[spec.compareTo],
+          data: bars.map((bar) => previousByBar.get(bar.value) ?? emptyValue),
+          backgroundColor: REPORT_NONE_COLOR[theme],
+          maxBarThickness: 48
+        }
+      : null
   const datasets = series.map(({key, label, color}) => {
     const hex = color[theme]
     return {
@@ -65,9 +84,10 @@ const ReportBarsView = ({spec, step, rows, isCompact}: Props) => {
     }
   })
   const valueAxis = {
-    stacked: true,
-    beginAtZero: true,
-    max: isShare ? 100 : undefined,
+    stacked: !comparison,
+    beginAtZero: !isScore,
+    min: isScore ? 1 : undefined,
+    max: isScore ? 5 : isShare ? 100 : undefined,
     border: {display: false},
     grid: {color: chartTheme.grid},
     ticks: {
@@ -78,7 +98,7 @@ const ReportBarsView = ({spec, step, rows, isCompact}: Props) => {
     }
   }
   const categoryAxis = {
-    stacked: true,
+    stacked: !comparison,
     grid: {display: false},
     border: {color: chartTheme.grid},
     ticks: {color: chartTheme.tick, font, maxRotation: 0, autoSkipPadding: 12}
@@ -91,9 +111,19 @@ const ReportBarsView = ({spec, step, rows, isCompact}: Props) => {
   return (
     <div className='flex flex-col gap-3'>
       {stackDimension && <ReportLegend measure={measure} series={series} rows={rows} />}
+      {comparison && (
+        <ReportLegend
+          measure={measure}
+          series={[...series, {key: null, label: comparison.label, color: REPORT_NONE_COLOR}]}
+          rows={rows}
+        />
+      )}
       <div style={{height: chartHeight}}>
         <Bar
-          data={{labels: bars.map((bar) => formatReportKey(bar, barDimension!, step)), datasets}}
+          data={{
+            labels: bars.map((bar) => formatReportKey(bar, barDimension!, step)),
+            datasets: comparison ? [...datasets, comparison] : datasets
+          }}
           options={{
             indexAxis: isOverTime ? 'x' : 'y',
             responsive: true,

@@ -2,6 +2,7 @@ import type {
   ReportCategoryDimension,
   ReportMeasure
 } from '../../client/shared/reports/reportCatalog'
+import type RootDataLoader from '../dataloader/RootDataLoader'
 
 export interface ReportMeasureFilter {
   dimension: ReportCategoryDimension
@@ -20,6 +21,10 @@ export interface ReportMeasureQuery {
   stepEnds: Date[]
   // readings are taken at the end of each step, or now for the step that hasn't ended
   readAt: Date[]
+  // each step reads Team Health from the 90 days before it, instead of from the whole period
+  hasTimeSteps: boolean
+  // which of each team's Team Health checks to read: its latest in the window, or the one before that
+  check: 'latest' | 'previous'
   dimensions: ReportCategoryDimension[]
   filters: ReportMeasureFilter[]
 }
@@ -38,4 +43,11 @@ export interface ReportMeasureResult {
   // how many tasks were counted with an estimated done date
   estimatedCount: number
   labels: ReportDimensionLabels
+  // teams whose check was hidden because too few people answered it
+  hiddenTeamIds: string[]
 }
+
+export type ReportMeasureFunction = (
+  query: ReportMeasureQuery,
+  dataLoader: RootDataLoader
+) => Promise<ReportMeasureResult>

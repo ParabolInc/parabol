@@ -32,4 +32,8 @@ enum ReportMeasureEnum {
   USER_INTEGRATIONS
   "Tasks sent to an integration, including stories pulled into Sprint Poker"
   TASKS_PUSHED
+  "The average 1 to 5 answer in each team's latest Team Health check, from the 90 days before each reading or from the period. A check fewer than 3 people answered is hidden"
+  HEALTH_SCORE
+  "Answers given in Team Health checks, by the day their results were revealed. A check fewer than 3 people answered is left out"
+  HEALTH_ANSWERS
 }

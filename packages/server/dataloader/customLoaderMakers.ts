@@ -50,6 +50,7 @@ import {
 } from '../utils/featureFlags'
 import getRedis from '../utils/getRedis'
 import getTeamHealthDisplayComment from '../utils/getTeamHealthDisplayComment'
+import groupTeamHealthScores from '../utils/groupTeamHealthScores'
 import isUserVerified from '../utils/isUserVerified'
 import {Logger} from '../utils/Logger'
 import NullableDataLoader from './NullableDataLoader'
@@ -1302,17 +1303,10 @@ export const priorTeamHealthCyclesByMeetingId = (
             questions.map((question) => [question.id, question.categoryId])
           )
           return answeredCycles.map(({meeting: priorMeeting, responses}) => {
-            const scoresByCategoryId = new Map<number, number[]>()
             const commentsByCategoryId = new Map<number, string[]>()
             for (const response of responses) {
-              const {questionId, score} = response
-              const categoryId = categoryIdByQuestionId.get(questionId)
+              const categoryId = categoryIdByQuestionId.get(response.questionId)
               if (categoryId === undefined) continue
-              if (score !== null) {
-                const scores = scoresByCategoryId.get(categoryId) ?? []
-                scores.push(score)
-                scoresByCategoryId.set(categoryId, scores)
-              }
               const comment = getTeamHealthDisplayComment(response)
               if (comment) {
                 const comments = commentsByCategoryId.get(categoryId) ?? []
@@ -1320,6 +1314,7 @@ export const priorTeamHealthCyclesByMeetingId = (
                 commentsByCategoryId.set(categoryId, comments)
               }
             }
+            const scoresByCategoryId = groupTeamHealthScores(responses, categoryIdByQuestionId)
             const scoreByCategoryId = new Map(
               [...scoresByCategoryId].flatMap(([categoryId, scores]) => {
                 const score = averageTeamHealthScore(scores)

@@ -14,14 +14,13 @@ const formatRange = (start: dayjs.Dayjs, end: dayjs.Dayjs, unit: 'day' | 'month'
   return `${start.format(startFormat)} – ${end.format(endFormat)}`
 }
 
-// The dates a preset covers today. Day presets end today; month presets end with last month
+// The dates a preset covers today. Every preset ends today, and a month preset starts on the 1st
 export const describeReportPreset = (preset: ReportPagePreset, orgCreatedAt: string) => {
   if (preset === 'ALL_TIME') return `Since ${dayjs(orgCreatedAt).format('MMM YYYY')}`
   const today = dayjs().startOf('day')
   const months = MONTHS[preset]
   if (months) {
-    const thisMonth = today.startOf('month')
-    return formatRange(thisMonth.subtract(months, 'month'), thisMonth.subtract(1, 'month'), 'month')
+    return formatRange(today.startOf('month').subtract(months - 1, 'month'), today, 'day')
   }
   return formatRange(today.subtract(preset === 'LAST_7_DAYS' ? 6 : 29, 'day'), today, 'day')
 }

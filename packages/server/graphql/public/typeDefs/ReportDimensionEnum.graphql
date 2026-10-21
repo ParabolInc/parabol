@@ -28,4 +28,6 @@ enum ReportDimensionEnum {
   TOPIC
   "Each integration service"
   INTEGRATION
+  "Each Team Health category"
+  CATEGORY
 }

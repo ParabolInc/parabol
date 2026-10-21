@@ -3,10 +3,9 @@ import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {ReportPageQuery} from '../../__generated__/ReportPageQuery.graphql'
 import useDocumentTitle from '../../hooks/useDocumentTitle'
 import type {ReportSpec} from '../../shared/reports/reportCatalog'
-import ReportNotes from './ReportNotes'
 import ReportPageHeader from './ReportPageHeader'
+import ReportPageResult from './ReportPageResult'
 import ReportSpecEditor from './ReportSpecEditor'
-import ReportView from './ReportView'
 import type {ReportPagePeriod} from './reportPeriodParam'
 import {describeReportSpec} from './reportSpecLabels'
 
@@ -27,15 +26,16 @@ const query = graphql`
     $spec: ReportSpecInput!
     $timeZone: String!
     $pagePeriod: ReportPeriodInput!
+    $lastHeldSpec: ReportSpecInput!
+    $hasLastHeld: Boolean!
   ) {
     viewer {
       organization(orgId: $orgId) {
         ...ReportPageHeader_organization
         ...ReportSpecEditor_organization
+        ...ReportPageResult_organization
         report(spec: $spec, timeZone: $timeZone, pagePeriod: $pagePeriod) {
           step
-          ...ReportView_result
-          ...ReportNotes_result
           ...ReportExportButton_result
         }
       }
@@ -76,16 +76,7 @@ const ReportPage = ({
         step={report?.step}
         onChange={onSpecChange}
       />
-      <section className='rounded-md border border-hairline bg-surface-card shadow-xs'>
-        <div className='p-5'>
-          {report ? (
-            <ReportView spec={spec} resultRef={report} />
-          ) : (
-            <p className='m-0 text-fg-secondary'>This report couldn’t run for this organization.</p>
-          )}
-        </div>
-        {report && <ReportNotes orgId={orgId} resultRef={report} />}
-      </section>
+      <ReportPageResult organizationRef={organization} orgId={orgId} spec={spec} />
     </div>
   )
 }

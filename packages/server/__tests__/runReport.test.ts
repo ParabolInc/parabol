@@ -21,7 +21,10 @@ const TABLES = [
   'User',
   'MeetingTemplate',
   'RetroReflectionGroup',
-  'AgendaItem'
+  'AgendaItem',
+  'TeamHealthCategory',
+  'TeamHealthQuestion',
+  'TeamHealthResponse'
 ]
 
 const ORG_ID = 'reportOrg'
@@ -91,7 +94,7 @@ const addTeam = async (orgId: string, id: string, userIds: string[], createdDays
 const addMeeting = async (
   id: string,
   teamId: string,
-  meetingType: 'retrospective' | 'action' | 'poker',
+  meetingType: 'retrospective' | 'action' | 'poker' | 'teamHealth',
   createdDaysAgo: number,
   attendeeIds: string[],
   templateId: string | null = null
@@ -113,6 +116,7 @@ const addMeeting = async (
       phases: JSON.stringify([])
     })
     .execute()
+  if (attendeeIds.length === 0) return
   await pg
     .insertInto('MeetingMember')
     .values(
@@ -484,6 +488,113 @@ const seedWorkOrg = async () => {
   ])
 }
 
+const HEALTH_ORG_ID = 'healthOrg'
+const HARBOR = 'harbor'
+const HILL = 'hill'
+const HEATH = 'heath'
+const HOLLOW = 'hollow'
+const SAFETY = 1
+const DEPENDABILITY = 2
+
+// Harbor checked 100, 50 and 5 days ago. Hill's check had 2 people, so it's hidden. Heath checked once, and
+// one person skipped a question. Hollow's only check is 100 and a half days old
+const seedHealthOrg = async () => {
+  await addOrg(HEALTH_ORG_ID, 'team')
+  await addOrgUsers(HEALTH_ORG_ID, ['healthLeader'], 'healthLeader')
+  await addTeam(HEALTH_ORG_ID, HARBOR, ['h1', 'h2', 'h3'])
+  await addTeam(HEALTH_ORG_ID, HILL, ['h4', 'h5'])
+  await addTeam(HEALTH_ORG_ID, HEATH, ['h6', 'h7', 'h8'])
+  await addTeam(HEALTH_ORG_ID, HOLLOW, ['h9', 'h10', 'h11'])
+  await pg
+    .insertInto('TeamHealthCategory')
+    .values([
+      {id: SAFETY, name: 'Psychological Safety', userId: 'aGhostUser', sortOrder: 1},
+      {id: DEPENDABILITY, name: 'Dependability', userId: 'aGhostUser', sortOrder: 2}
+    ])
+    .execute()
+  await pg
+    .insertInto('TeamHealthQuestion')
+    .values([
+      {id: SAFETY, categoryId: SAFETY, packId: 1, question: 'Can you take risks?'},
+      {id: DEPENDABILITY, categoryId: DEPENDABILITY, packId: 1, question: 'Can you count on them?'}
+    ])
+    .execute()
+  // each answer is [person, safety, dependability]
+  const checks = [
+    [
+      HARBOR,
+      'harborOld',
+      100,
+      [
+        ['h1', 5, 5],
+        ['h2', 5, 5],
+        ['h3', 5, 5]
+      ]
+    ],
+    [
+      HARBOR,
+      'harborBefore',
+      50,
+      [
+        ['h1', 2, 2],
+        ['h2', 3, 3],
+        ['h3', 4, 1]
+      ]
+    ],
+    [
+      HARBOR,
+      'harborLatest',
+      5,
+      [
+        ['h1', 4, 2],
+        ['h2', 5, 3],
+        ['h3', 3, 4]
+      ]
+    ],
+    [
+      HILL,
+      'hillCheck',
+      10,
+      [
+        ['h4', 1, 1],
+        ['h5', 2, 2]
+      ]
+    ],
+    [
+      HEATH,
+      'heathCheck',
+      20,
+      [
+        ['h6', 4, 4],
+        ['h7', 4, 5],
+        ['h8', 5, null]
+      ]
+    ],
+    [
+      HOLLOW,
+      'hollowCheck',
+      100.5,
+      [
+        ['h9', 3, 3],
+        ['h10', 3, 3],
+        ['h11', 3, 3]
+      ]
+    ]
+  ] as const
+  for (const [teamId, meetingId, endedDaysAgo, answers] of checks) {
+    await addMeeting(meetingId, teamId, 'teamHealth', endedDaysAgo + 1 / 24, [])
+    await pg
+      .insertInto('TeamHealthResponse')
+      .values(
+        answers.flatMap(([userId, safety, dependability]) => [
+          {meetingId, userId, questionId: SAFETY, score: safety},
+          {meetingId, userId, questionId: DEPENDABILITY, score: dependability}
+        ])
+      )
+      .execute()
+  }
+}
+
 const baseSpec: ReportSpec = {
   measures: ['MEETINGS'],
   breakdown: [],
@@ -531,6 +642,7 @@ beforeAll(async () => {
   await seedOrg()
   await seedStarterOrg()
   await seedWorkOrg()
+  await seedHealthOrg()
 })
 
 afterAll(async () => {
@@ -877,5 +989,92 @@ describe('people and work', () => {
         asWren
       )
     ).rejects.toThrow("ACTIVE_SHARE can't be stacked")
+  })
+})
+
+describe('team health', () => {
+  const asLeader = {orgId: HEALTH_ORG_ID, viewerId: 'healthLeader'}
+  const lastMonth: Partial<ReportSpec> = {
+    measures: ['HEALTH_SCORE'],
+    period: {preset: 'LAST_30_DAYS'}
+  }
+
+  test('each team’s latest check in the period is read, and a check fewer than 3 answered is hidden', async () => {
+    const result = await report({...lastMonth, ...byTeam}, asLeader)
+    expect(byLabel(result)).toEqual({Harbor: 3.5, Heath: 4.4, Hill: null, Hollow: null})
+    expect(result.notes).toEqual([{kind: 'HIDDEN_FOR_ANONYMITY', count: 1}])
+  })
+
+  test('a group score averages every answer, so bigger teams weigh more', async () => {
+    expect(valuesOf(await report(lastMonth, asLeader))).toEqual([3.9])
+  })
+
+  test('each team is compared with its own check before, category by category', async () => {
+    const result = await report(
+      {
+        ...lastMonth,
+        showAs: 'HEATMAP',
+        breakdown: [{dimension: 'TEAM'}, {dimension: 'CATEGORY'}],
+        compareTo: 'PREVIOUS_CHECK'
+      },
+      asLeader
+    )
+    const cells = Object.fromEntries(
+      result.rows.map(({keys, values, previousValues}) => [
+        keys.map(({label}) => label).join(' / '),
+        [values[0], previousValues?.[0]]
+      ])
+    )
+    expect(cells['Harbor / Psychological Safety']).toEqual([4, 3])
+    expect(cells['Harbor / Dependability']).toEqual([3, 2])
+    expect(cells['Heath / Dependability']).toEqual([4.5, null])
+    // a team's overall score averages every answer, not its categories
+    const overall = Object.fromEntries(
+      result.rowTotals.map(({keys, values, previousValues}) => [
+        keys[0]!.label,
+        [values[0], previousValues?.[0]]
+      ])
+    )
+    expect(overall).toMatchObject({Harbor: [3.5, 2.5], Heath: [4.4, null]})
+  })
+
+  test('over time, each step reads the latest check from the 90 days before it', async () => {
+    const harbor: Partial<ReportSpec> = {
+      ...lastMonth,
+      showAs: 'LINE',
+      breakdown: [{dimension: 'DAY'}],
+      filters: [{dimension: 'TEAM', values: [HARBOR]}],
+      period: {preset: 'LAST_7_DAYS'}
+    }
+    const days = valuesOf(await report(harbor, asLeader))
+    expect(days[0]).toBe(2.5)
+    expect(days.at(-1)).toBe(3.5)
+    const hollow = valuesOf(
+      await report(
+        {
+          ...harbor,
+          filters: [{dimension: 'TEAM', values: [HOLLOW]}],
+          period: {
+            startDate: daysAgo(12).toISOString().slice(0, 10),
+            endDate: daysAgo(8).toISOString().slice(0, 10)
+          }
+        },
+        asLeader
+      )
+    )
+    expect(hollow[0]).toBe(3)
+    expect(hollow.at(-1)).toBeNull()
+  })
+
+  test('answers count when results were revealed, leaving out hidden checks', async () => {
+    expect(
+      byLabel(await report({...lastMonth, measures: ['HEALTH_ANSWERS'], ...byTeam}, asLeader))
+    ).toEqual({Harbor: 6, Heath: 5, Hill: 0, Hollow: 0})
+  })
+
+  test('previous check only compares health scores, and not over time', async () => {
+    await expect(
+      report({measures: ['MEETINGS'], compareTo: 'PREVIOUS_CHECK'}, asLeader)
+    ).rejects.toThrow('PREVIOUS_CHECK only compares HEALTH_SCORE')
   })
 })

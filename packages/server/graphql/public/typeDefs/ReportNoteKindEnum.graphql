@@ -10,4 +10,6 @@ enum ReportNoteKindEnum {
   ROWS_TRUNCATED
   "Topics only come from the teams the viewer is on. The count is how many teams were left out"
   TOPICS_FROM_OWN_TEAMS
+  "Some teams' Team Health checks were hidden because fewer than 3 people answered. The count is how many teams"
+  HIDDEN_FOR_ANONYMITY
 }

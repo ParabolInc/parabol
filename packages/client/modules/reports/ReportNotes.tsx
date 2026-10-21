@@ -53,6 +53,8 @@ const ReportNotes = ({orgId, resultRef}: Props) => {
             `${count.toLocaleString()} done ${plural(count, 'task was', 'tasks were')} finished before Parabol kept done dates, so ${count === 1 ? 'its date is' : 'their dates are'} estimated.`}
           {kind === 'ROWS_TRUNCATED' &&
             `This report has ${count.toLocaleString()} rows, more than a report can show. Add a filter or a limit to see the rest.`}
+          {kind === 'HIDDEN_FOR_ANONYMITY' &&
+            `${count} ${count === 1 ? 'team’s Team Health check is' : 'teams’ Team Health checks are'} hidden because fewer than 3 people answered.`}
           {kind === 'TOPICS_FROM_OWN_TEAMS' &&
             `Topics only come from the teams you’re on, so ${count} ${plural(count, 'team')} ${count === 1 ? 'isn’t' : 'aren’t'} in this report.`}
         </li>

@@ -20,6 +20,13 @@ type ReportResult {
   rows: [ReportRow!]!
 
   """
+  For a heatmap, each row's own total, which the measure works out over the whole row: a count's sum, or the
+  share, median or Health score of everything in it. Matched to rows by every key but the last. Empty for
+  other views
+  """
+  rowTotals: [ReportRow!]!
+
+  """
   How many rows there were before the report's limit and the row cap
   """
   totalRowCount: Int!

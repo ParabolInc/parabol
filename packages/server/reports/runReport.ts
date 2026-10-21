@@ -2,6 +2,7 @@ import {GraphQLError} from 'graphql'
 import {
   isReportTimeDimension,
   type ReportCategoryDimension,
+  type ReportDimension,
   type ReportPeriod,
   type ReportSpec
 } from '../../client/shared/reports/reportCatalog'
@@ -71,12 +72,11 @@ const runReport = async ({
   const stepLength: ReportStepLength | null = timeDimension
     ? chooseReportStepLength(timeDimension, range)
     : null
-  const toSteps = (localRange: ReportLocalRange) => {
-    const steps = buildReportSteps(localRange, stepLength, timeZone)
+  const toSteps = (localRange: ReportLocalRange, length: ReportStepLength | null) => {
+    const steps = buildReportSteps(localRange, length, timeZone)
     if (typeof steps === 'string') throw new GraphQLError(steps)
     return steps
   }
-  const steps = toSteps(range)
 
   const dimensions = breakdown.filter(
     (dimension): dimension is ReportCategoryDimension => !isReportTimeDimension(dimension)
@@ -97,7 +97,12 @@ const runReport = async ({
   const isWholeOrg =
     scope.canCountWholeOrg && !teamFilter && !usesTopics && !dimensions.includes('TEAM')
 
-  const queryMeasures = (measureSteps: ReportStep[]) =>
+  const queryMeasures = (
+    measureSteps: ReportStep[],
+    check: ReportMeasureQuery['check'],
+    measureDimensions: ReportCategoryDimension[],
+    hasTimeSteps: boolean
+  ) =>
     Promise.all(
       spec.measures.map((measure) => {
         const query: ReportMeasureQuery = {
@@ -109,29 +114,58 @@ const runReport = async ({
           stepStarts: measureSteps.map(({start}) => start),
           stepEnds: measureSteps.map(({end}) => end),
           readAt: measureSteps.map(({end}) => (end < now ? end : now)),
-          dimensions,
+          hasTimeSteps,
+          check,
+          dimensions: measureDimensions,
           filters: measureFilters
         }
         return dataLoader.get('reportMeasureRows').load(query)
       })
     )
-  const previousSteps = spec.compareTo ? toSteps(shiftReportRange(range, spec.compareTo)) : null
-  const [current, previous] = await Promise.all([
-    queryMeasures(steps),
-    previousSteps ? queryMeasures(previousSteps) : null
+  const {compareTo} = spec
+  // Every measure split by a breakdown, with its comparison. Each team's previous check is read over the
+  // same steps; every other comparison shifts the period
+  const measureBy = async (measureBreakdown: ReportDimension[]) => {
+    const isOverTime = measureBreakdown.some(isReportTimeDimension)
+    const toMeasureSteps = (localRange: ReportLocalRange) =>
+      toSteps(localRange, isOverTime ? stepLength : null)
+    const measureSteps = toMeasureSteps(range)
+    const previousSteps = !compareTo
+      ? null
+      : compareTo === 'PREVIOUS_CHECK'
+        ? measureSteps
+        : toMeasureSteps(shiftReportRange(range, compareTo))
+    const measureDimensions = dimensions.filter((dimension) => measureBreakdown.includes(dimension))
+    const [current, previous] = await Promise.all([
+      queryMeasures(measureSteps, 'latest', measureDimensions, isOverTime),
+      previousSteps
+        ? queryMeasures(
+            previousSteps,
+            compareTo === 'PREVIOUS_CHECK' ? 'previous' : 'latest',
+            measureDimensions,
+            isOverTime
+          )
+        : null
+    ])
+    const measuredRows = buildReportRows({
+      breakdown: measureBreakdown,
+      measures: spec.measures,
+      steps: isOverTime ? measureSteps : null,
+      previousStepCount: previousSteps?.length ?? 0,
+      teams,
+      filters: measureFilters,
+      current,
+      previous
+    })
+    if (typeof measuredRows === 'string') throw new GraphQLError(measuredRows)
+    return {rows: measuredRows, current}
+  }
+  // A heatmap's last column is each row's own total, which the measure works out, since a share, median or
+  // score can't be added up from its cells
+  const [{rows, current}, rowTotals] = await Promise.all([
+    measureBy(breakdown),
+    spec.showAs === 'HEATMAP' ? measureBy(breakdown.slice(0, -1)) : null
   ])
-
-  const rows = buildReportRows({
-    breakdown,
-    measures: spec.measures,
-    steps: stepLength ? steps : null,
-    previousStepCount: previousSteps?.length ?? 0,
-    teams,
-    filters: measureFilters,
-    current,
-    previous
-  })
-  if (typeof rows === 'string') throw new GraphQLError(rows)
 
   const matchingRows = applyReportConditions(rows, spec, now)
   const shapedRows = capReportSeries(
@@ -145,6 +179,8 @@ const runReport = async ({
   if (filteredTeams.length > teams.length) {
     notes.push({kind: 'TOPICS_FROM_OWN_TEAMS', count: filteredTeams.length - teams.length})
   }
+  const hiddenTeamIds = new Set(current.flatMap((result) => result.hiddenTeamIds))
+  if (hiddenTeamIds.size > 0) notes.push({kind: 'HIDDEN_FOR_ANONYMITY', count: hiddenTeamIds.size})
   const estimatedCount = current.reduce((sum, result) => sum + result.estimatedCount, 0)
   if (estimatedCount > 0) notes.push({kind: 'ESTIMATED_HISTORY', count: estimatedCount})
   if (shapedRows.length > MAX_ROWS) {
@@ -155,6 +191,7 @@ const runReport = async ({
     to: toInstant(range.endDate, timeZone),
     step: stepLength,
     rows: shapedRows.slice(0, MAX_ROWS),
+    rowTotals: rowTotals?.rows ?? [],
     totalRowCount: matchingRows.length,
     teamCount: teams.length,
     notes

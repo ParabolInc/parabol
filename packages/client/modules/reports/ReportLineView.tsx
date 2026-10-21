@@ -38,7 +38,9 @@ const ReportLineView = ({spec, step, rows, isCompact}: Props) => {
   const chartTheme = getReportChartTheme(theme)
   const font = getReportChartFont()
   const measure = spec.measures[0]!
-  const isShare = REPORT_MEASURES[measure].kind === 'share'
+  const {kind} = REPORT_MEASURES[measure]
+  const isShare = kind === 'share'
+  const isScore = kind === 'score'
   const [overDimension, lineDimension] = spec.breakdown.map(({dimension}) => dimension)
   const steps = distinctKeysAt(rows, 0)
   const rowByKeys = new Map(rows.map((row) => [row.keys.map(({value}) => value).join('|'), row]))
@@ -122,8 +124,9 @@ const ReportLineView = ({spec, step, rows, isCompact}: Props) => {
                 ticks: {color: chartTheme.tick, font, maxRotation: 0, autoSkipPadding: 16}
               },
               y: {
-                beginAtZero: true,
-                max: isShare ? 100 : undefined,
+                beginAtZero: !isScore,
+                min: isScore ? 1 : undefined,
+                max: isScore ? 5 : isShare ? 100 : undefined,
                 border: {display: false},
                 grid: {color: chartTheme.grid},
                 ticks: {

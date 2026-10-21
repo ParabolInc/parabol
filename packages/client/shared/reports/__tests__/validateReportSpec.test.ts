@@ -58,6 +58,23 @@ test.each<[string, Partial<ReportSpec>]>([
       breakdown: [{dimension: 'PERSON'}],
       filters: [{dimension: 'TASK_AGE', values: ['over180Days']}]
     }
+  ],
+  [
+    'a flow of new tasks from meeting type to status',
+    {
+      measures: ['NEW_TASKS'],
+      showAs: 'FLOW',
+      breakdown: [{dimension: 'MEETING_TYPE'}, {dimension: 'TASK_STATUS'}]
+    }
+  ],
+  [
+    'each team’s health against its check before',
+    {
+      measures: ['HEALTH_SCORE'],
+      showAs: 'HEATMAP',
+      breakdown: [{dimension: 'TEAM'}, {dimension: 'CATEGORY'}],
+      compareTo: 'PREVIOUS_CHECK'
+    }
   ]
 ])('accepts %s', (_name, overrides) => {
   expect(validateReportSpec(spec(overrides))).toBeNull()
@@ -129,6 +146,48 @@ test.each<[string, Partial<ReportSpec>, string]>([
       breakdown: [{dimension: 'TEAM'}, {dimension: 'PERSON'}]
     },
     "DAYS_TO_DONE can't be stacked"
+  ],
+  [
+    'a flow of something that isn’t a count',
+    {
+      measures: ['HEALTH_SCORE'],
+      showAs: 'FLOW',
+      breakdown: [{dimension: 'TEAM'}, {dimension: 'CATEGORY'}]
+    },
+    'FLOW only shows counts'
+  ],
+  [
+    'a flow through time',
+    {
+      measures: ['NEW_TASKS'],
+      showAs: 'FLOW',
+      breakdown: [{dimension: 'MONTH'}, {dimension: 'TEAM'}]
+    },
+    "FLOW stages can't be time"
+  ],
+  [
+    'a flow that counts a meeting for each person',
+    {
+      measures: ['MEETINGS'],
+      showAs: 'FLOW',
+      breakdown: [{dimension: 'TEAM'}, {dimension: 'PERSON'}]
+    },
+    'MEETINGS counts toward more than one PERSON'
+  ],
+  [
+    'a previous check for something other than health',
+    {compareTo: 'PREVIOUS_CHECK'},
+    'PREVIOUS_CHECK only compares HEALTH_SCORE'
+  ],
+  [
+    'a previous check over time',
+    {
+      measures: ['HEALTH_SCORE'],
+      showAs: 'LINE',
+      breakdown: [{dimension: 'MONTH'}],
+      compareTo: 'PREVIOUS_CHECK'
+    },
+    "PREVIOUS_CHECK can't be used over time"
   ],
   [
     'a dimension filtered twice',

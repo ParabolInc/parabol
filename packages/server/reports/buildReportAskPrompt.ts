@@ -20,7 +20,8 @@ const DIMENSIONS: Record<ReportDimension, string> = {
   DONE_OR_OPEN: 'whether a task is done now',
   TASK_AGE: 'how old an open task is when it’s counted',
   TOPIC: 'the retro group or check-in agenda item a discussion was about',
-  INTEGRATION: 'the service a task was pushed to or a person connected'
+  INTEGRATION: 'the service a task was pushed to or a person connected',
+  CATEGORY: 'a Team Health category, like Psychological Safety'
 }
 
 const KINDS = {
@@ -29,7 +30,9 @@ const KINDS = {
   reading: 'is taken at the end of each step of time',
   latest: 'is a date, so it can only be shown as a number, table or heatmap, and never compared',
   share: 'is a percentage from 0 to 100 taken at the end of each step of time, so it never adds up',
-  median: 'is the median of what finished in each step of time, so it never adds up'
+  median: 'is the median of what finished in each step of time, so it never adds up',
+  score:
+    'is an average from 1 to 5 of each team’s latest Team Health check, from the 90 days before each step of time or from the period, so it never adds up'
 }
 
 const MAX_TEAMS = 200
@@ -72,6 +75,7 @@ Views (showAs), and what each makes of the breakdowns:
 - LINE: 1 measure and 1 or 2 breakdowns. The first is time; the second gives one line each.
 - BARS: 1 measure and 1 or 2 breakdowns. The first gives the bars; the second stacks inside them, which a measure that never adds up can't do.
 - HEATMAP: 1 measure and 2 or 3 breakdowns. The last gives the columns; the others give the rows.
+- FLOW: 1 count and 2 or 3 breakdowns, none of them time, flowing from stage to stage, like NEW_TASKS through MEETING_TYPE then TASK_STATUS. It's for "where do things end up" questions.
 - TABLE: 1 to 6 measures and 0 to 3 breakdowns.
 
 Filters keep only data with one of their values. Separate filters must all match. Filtering by time isn't allowed; use the period. The values are:
@@ -84,14 +88,14 @@ ${teamLines.join('\n') || '- none'}
 
 where keeps the rows whose value passes a test, after counting. AT_LEAST, AT_MOST and EQUALS test a number, like a count, a percentage or days. OLDER_THAN_DAYS and WITHIN_DAYS test a date, like LAST_MEETING; OLDER_THAN_DAYS also keeps rows with no date at all. A test's measure must be one of the spec's measures.
 
-period: use {"preset": "PAGE", "startDate": null, "endDate": null}, the period picked on the page, unless the question names one. LAST_7_DAYS and LAST_30_DAYS end today. LAST_3_MONTHS, LAST_6_MONTHS and LAST_12_MONTHS cover whole months, up to last month. ALL_TIME starts when the organization did. Any other period is a startDate and endDate as YYYY-MM-DD, with a null preset, ending today at the latest. Companies set their own fiscal quarters and years, so only turn "last quarter" or "this year" into dates when the question says which months.
+period: use {"preset": "PAGE", "startDate": null, "endDate": null}, the period picked on the page, unless the question names one. LAST_7_DAYS and LAST_30_DAYS end today. LAST_3_MONTHS, LAST_6_MONTHS and LAST_12_MONTHS are this month so far and the whole months before it, 3, 6 or 12 months in all. ALL_TIME starts when the organization did. Any other period is a startDate and endDate as YYYY-MM-DD, with a null preset, ending today at the latest. Companies set their own fiscal quarters and years, so only turn "last quarter" or "this year" into dates when the question says which months.
 
-compareTo: PREVIOUS_PERIOD, A_WEEK_EARLIER or A_YEAR_EARLIER, only when the question asks how something changed.
+compareTo: PREVIOUS_PERIOD, A_WEEK_EARLIER or A_YEAR_EARLIER, only when the question asks how something changed. PREVIOUS_CHECK compares HEALTH_SCORE with each team's check before, and can't be used over time.
 sort: by VALUE, NAME or TIME, ASC or DESC; null leaves the default order. limit: 1 to 50, or null; it keeps the top values of the first breakdown that isn't time.
 
 Parabol applies these rules itself, so don't add filters for them: a meeting counts when 2 or more people joined it, and a report counts only the teams the person asking can see.
 
-If the question needs data Parabol doesn't have, like story points, velocity, Jira or GitHub fields, sentiment or Team Health scores, set canAnswer to false, reason to one short sentence saying what's missing, and title and spec to null. Otherwise set canAnswer to true, reason to null, title to a short name for the report under 60 characters, like "Retro tasks by team, done or open", and spec to the spec.`
+If the question needs data Parabol doesn't have, like story points, velocity, Jira or GitHub fields or sentiment, set canAnswer to false, reason to one short sentence saying what's missing, and title and spec to null. Otherwise set canAnswer to true, reason to null, title to a short name for the report under 60 characters, like "Retro tasks by team, done or open", and spec to the spec.`
 }
 
 export default buildReportAskPrompt

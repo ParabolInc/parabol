@@ -48,17 +48,21 @@ const resolveSort = (spec: ReportSpec) => {
   return {by, direction: order === 'DESC' ? -1 : 1}
 }
 
-// values that run in their own order, which a report keeps unless it's sorted another way
-const ORDERED_VALUES: Partial<Record<ReportDimension, string[]>> = {
-  TASK_AGE: Object.keys(REPORT_TASK_AGES)
+const TASK_AGES: string[] = Object.keys(REPORT_TASK_AGES)
+
+// Values that run in their own order, which a report keeps unless it's sorted another way. Team Health
+// categories run in the order they were made, which puts the built-in ones in their usual order
+const NATURAL_ORDERS: Partial<Record<ReportDimension, (a: string, b: string) => number>> = {
+  TASK_AGE: (a, b) => TASK_AGES.indexOf(a) - TASK_AGES.indexOf(b),
+  CATEGORY: (a, b) => Number(a) - Number(b)
 }
 
-// Dates take the latest, and shares and medians, which don't add up, take their mean
+// Dates take the latest, and shares, medians and scores, which don't add up, take their mean
 const combineValues = (kind: ReportMeasureKind, values: number[]) => {
   if (values.length === 0) return null
   if (kind === 'latest') return values.reduce((latest, value) => Math.max(latest, value))
   const sum = values.reduce((total, value) => total + value, 0)
-  return kind === 'share' || kind === 'median' ? sum / values.length : sum
+  return kind === 'count' || kind === 'distinct' || kind === 'reading' ? sum : sum / values.length
 }
 
 // Each value at a breakdown position with its label and the first measure's total
@@ -88,12 +92,12 @@ const rankValuesAt = (rows: ReportRow[], spec: ReportSpec, position: number) => 
   const entries = [...totalsAt(rows, spec, position).entries()]
   const {dimension} = spec.breakdown[position]!
   const isTime = isReportTimeDimension(dimension)
-  const orderedValues = ORDERED_VALUES[dimension]
+  const naturalOrder = NATURAL_ORDERS[dimension]
   if (isTime && (by !== 'VALUE' || firstCategoryPosition(spec) !== -1)) {
     const timeDirection = by === 'TIME' ? direction : 1
     entries.sort(([a], [b]) => timeDirection * a.localeCompare(b))
-  } else if (orderedValues && !spec.sort) {
-    entries.sort(([a], [b]) => orderedValues.indexOf(a) - orderedValues.indexOf(b))
+  } else if (naturalOrder && !spec.sort) {
+    entries.sort(([a], [b]) => naturalOrder(a, b))
   } else if (by === 'NAME') {
     entries.sort(([, a], [, b]) => direction * a.label.localeCompare(b.label))
   } else {

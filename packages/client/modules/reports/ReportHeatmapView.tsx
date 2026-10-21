@@ -4,123 +4,102 @@ import {
   REPORT_MEASURES,
   type ReportSpec
 } from '../../shared/reports/reportCatalog'
-import {cn} from '../../ui/cn'
-import {formatReportKey, PARTIAL_STEP_NOTE} from './formatReportKey'
-import {formatReportValue} from './formatReportValue'
-import {distinctKeysAt, type ReportResultRow, sumReportValues} from './reportRows'
+import plural from '../../utils/plural'
+import ReportHeatmapHeader from './ReportHeatmapHeader'
+import ReportHeatmapLegend from './ReportHeatmapLegend'
+import ReportHeatmapRow from './ReportHeatmapRow'
+import ReportHeatmapTotals from './ReportHeatmapTotals'
+import {
+  hasNothing,
+  type ReportRowTotal,
+  toReportHeatmapGrid,
+  toTotalHeading
+} from './reportHeatmapGrid'
+import {type ReportResultRow, sumReportValues} from './reportRows'
 import type {ReportStepLength} from './reportSpecLabels'
 
 interface Props {
   spec: ReportSpec
   step: ReportStepLength | null | undefined
   rows: readonly ReportResultRow[]
+  rowTotals: readonly ReportRowTotal[]
   isCompact: boolean
+  lastHeldByTeamId?: ReadonlyMap<string, number | null>
 }
 
 const COMPACT_ROW_COUNT = 8
 
-// the share of the biggest value sets the shade, and the value is printed too so color never carries it alone
-const heatClassName = (value: number | null, max: number) => {
-  if (!value || max <= 0) return 'border border-hairline'
-  const share = value / max
-  if (share <= 1 / 3) return 'bg-grape-500/20'
-  if (share <= 2 / 3) return 'bg-grape-500/40 dark:bg-grape-500/35'
-  return 'bg-grape-500/70 dark:bg-grape-500/55'
-}
-
-const ReportHeatmapView = ({spec, step, rows, isCompact}: Props) => {
+const ReportHeatmapView = ({spec, step, rows, rowTotals, isCompact, lastHeldByTeamId}: Props) => {
   const measure = spec.measures[0]!
+  const {kind, label} = REPORT_MEASURES[measure]
   const dimensions = spec.breakdown.map(({dimension}) => dimension)
-  const columnPosition = dimensions.length - 1
-  const columns = distinctKeysAt(rows, columnPosition)
-  const isCount = REPORT_MEASURES[measure].kind === 'count'
-  const isDate = REPORT_MEASURES[measure].kind === 'latest'
-  // an empty count is left blank, but a share or median of 0 says something
-  const formatCell = (value: number | null) => {
-    if (isReportAdditiveMeasure(measure)) return value || ''
-    return value === null && !isDate ? '' : formatReportValue(measure, value)
-  }
-  const gridRows = new Map<string, {name: string; cells: Map<string, number | null>}>()
-  rows.forEach(({keys, values}) => {
-    const rowKeys = keys.slice(0, columnPosition)
-    const id = rowKeys.map(({value}) => value).join('|')
-    const name = rowKeys
-      .map((key, position) => formatReportKey(key, dimensions[position]!, step))
-      .join(' › ')
-    const gridRow = gridRows.get(id) ?? {name, cells: new Map()}
-    gridRow.cells.set(keys[columnPosition]!.value, values[0] ?? null)
-    gridRows.set(id, gridRow)
-  })
-  const max = isDate ? 0 : Math.max(0, ...rows.map(({values}) => values[0] ?? 0))
-  const allRows = [...gridRows.entries()]
-  const shownRows = isCompact ? allRows.slice(0, COMPACT_ROW_COUNT) : allRows
-  const hasYearRow = step === 'MONTH' && isReportTimeDimension(dimensions[columnPosition]!)
-  const yearOf = (columnIdx: number) => columns[columnIdx]?.label.slice(0, 4)
+  const columnDimension = dimensions[dimensions.length - 1]!
+  const isOverTime = isReportTimeDimension(columnDimension)
+  const {columns, rows: gridRows} = toReportHeatmapGrid(dimensions, step, rows, rowTotals)
+  // a page lists the teams with nothing below the table, instead of giving each an empty row
+  const isTeamRows = dimensions.length === 2 && dimensions[0] === 'TEAM'
+  const emptyRows =
+    !isCompact && isTeamRows
+      ? gridRows.filter((row) => hasNothing(row, isReportAdditiveMeasure(measure)))
+      : []
+  const listedRows = gridRows.filter((row) => !emptyRows.includes(row))
+  const shownRows = isCompact ? listedRows.slice(0, COMPACT_ROW_COUNT) : listedRows
+  const max = kind === 'latest' ? 0 : Math.max(0, ...rows.map(({values}) => values[0] ?? 0))
+  const hasTotals = !isCompact && rowTotals.length > 0
+  const isCount = kind === 'count'
   return (
-    <div className='flex flex-col gap-2'>
+    <div className='flex flex-col gap-3'>
+      {!isCompact && isCount && isTeamRows && (
+        <p className='m-0 text-fg-secondary text-sm'>
+          {sumReportValues(listedRows.map(({total}) => total?.value)).toLocaleString()}{' '}
+          {label.toLowerCase()} across {listedRows.length} of {gridRows.length}{' '}
+          {plural(gridRows.length, 'team')}
+        </p>
+      )}
       <div className='overflow-x-auto'>
         <table className='w-full min-w-max border-separate border-spacing-1 text-sm'>
-          <thead>
-            <tr className='text-fg-muted text-xs'>
-              <td />
-              {columns.map((column, columnIdx) => (
-                <th
-                  key={column.value}
-                  scope='col'
-                  title={column.isPartial ? PARTIAL_STEP_NOTE : undefined}
-                  className={cn('min-w-10 font-semibold', column.isPartial && 'opacity-60')}
-                >
-                  {hasYearRow && (
-                    <span
-                      className={cn(
-                        'block font-normal text-[11px]',
-                        yearOf(columnIdx) === yearOf(columnIdx - 1) && 'invisible'
-                      )}
-                    >
-                      {yearOf(columnIdx)}
-                    </span>
-                  )}
-                  {formatReportKey(column, dimensions[columnPosition]!, step)}
-                </th>
-              ))}
-              {isCount && !isCompact && <th className='min-w-12 pl-2 text-right'>Total</th>}
-            </tr>
-          </thead>
+          <ReportHeatmapHeader
+            columns={columns}
+            columnDimension={columnDimension}
+            step={step}
+            hasYearRow={step === 'MONTH' && isOverTime}
+            totalHeading={hasTotals ? toTotalHeading(measure, isOverTime) : null}
+            hasLastHeld={!!lastHeldByTeamId}
+          />
           <tbody>
-            {shownRows.map(([id, {name, cells}]) => (
-              <tr key={id}>
-                <th scope='row' className='max-w-60 truncate pr-2 text-left font-normal'>
-                  {name}
-                </th>
-                {columns.map((column) => {
-                  const value = cells.get(column.value) ?? null
-                  return (
-                    <td key={column.value} className={cn(column.isPartial && 'opacity-60')}>
-                      <span
-                        className={cn(
-                          'flex h-7 items-center justify-center rounded px-1 font-semibold text-xs tabular-nums',
-                          heatClassName(value, max)
-                        )}
-                      >
-                        {formatCell(value)}
-                      </span>
-                    </td>
-                  )
-                })}
-                {isCount && !isCompact && (
-                  <td className='pl-2 text-right font-semibold tabular-nums'>
-                    {sumReportValues([...cells.values()]).toLocaleString()}
-                  </td>
-                )}
-              </tr>
+            {shownRows.map((row) => (
+              <ReportHeatmapRow
+                key={row.id}
+                row={row}
+                columns={columns}
+                measure={measure}
+                max={max}
+                hasTotal={hasTotals}
+                lastHeld={lastHeldByTeamId ? (lastHeldByTeamId.get(row.id) ?? null) : undefined}
+              />
             ))}
           </tbody>
+          {!isCompact && isCount && listedRows.length > 1 && (
+            <ReportHeatmapTotals
+              columns={columns}
+              rows={listedRows}
+              hasRowTotals={hasTotals}
+              hasLastHeld={!!lastHeldByTeamId}
+            />
+          )}
         </table>
       </div>
-      {allRows.length > shownRows.length && (
+      {listedRows.length > shownRows.length && (
         <span className='text-fg-muted text-xs'>
-          {allRows.length - shownRows.length} more in the report
+          {listedRows.length - shownRows.length} more in the report
         </span>
+      )}
+      {!isCompact && (
+        <ReportHeatmapLegend
+          measure={measure}
+          max={max}
+          emptyTeamNames={emptyRows.map(({name}) => name)}
+        />
       )}
     </div>
   )

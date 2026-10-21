@@ -10,6 +10,8 @@ enum ReportViewEnum {
   BARS
   "Rows from every breakdown but the last, columns from the last"
   HEATMAP
+  "A count flowing through each breakdown in turn, as stages from left to right"
+  FLOW
   "Nested rows from each breakdown, a column for each measure"
   TABLE
 }

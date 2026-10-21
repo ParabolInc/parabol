@@ -1,7 +1,8 @@
 import type {ReportMeasure} from '../../../client/shared/reports/reportCatalog'
-import type {ReportMeasureQuery, ReportMeasureResult} from '../reportMeasureTypes'
+import type {ReportMeasureFunction} from '../reportMeasureTypes'
 import countDiscussions from './countDiscussions'
 import countDoneTasks from './countDoneTasks'
+import countHealthAnswers from './countHealthAnswers'
 import countMeetings from './countMeetings'
 import countNewTasks from './countNewTasks'
 import countTasksPushed from './countTasksPushed'
@@ -11,14 +12,12 @@ import findLastSeen from './findLastSeen'
 import medianDaysToDone from './medianDaysToDone'
 import readActivePeople from './readActivePeople'
 import readActiveShare from './readActiveShare'
+import readHealthScore from './readHealthScore'
 import readMembers from './readMembers'
 import readOpenTasks from './readOpenTasks'
 import readUserIntegrations from './readUserIntegrations'
 
-const reportMeasures: Record<
-  ReportMeasure,
-  (query: ReportMeasureQuery) => Promise<ReportMeasureResult>
-> = {
+const reportMeasures: Record<ReportMeasure, ReportMeasureFunction> = {
   ACTIVE_PEOPLE: readActivePeople,
   MEMBERS: readMembers,
   ACTIVE_SHARE: readActiveShare,
@@ -33,7 +32,9 @@ const reportMeasures: Record<
   OPEN_TASKS: readOpenTasks,
   DAYS_TO_DONE: medianDaysToDone,
   USER_INTEGRATIONS: readUserIntegrations,
-  TASKS_PUSHED: countTasksPushed
+  TASKS_PUSHED: countTasksPushed,
+  HEALTH_SCORE: readHealthScore,
+  HEALTH_ANSWERS: countHealthAnswers
 }
 
 export default reportMeasures

@@ -27,7 +27,8 @@ export const REPORT_PERIOD_LABELS: Record<ReportPeriodPreset, string> = {
 export const REPORT_COMPARE_LABELS: Record<ReportCompareTo, string> = {
   PREVIOUS_PERIOD: 'Previous period',
   A_WEEK_EARLIER: 'A week earlier',
-  A_YEAR_EARLIER: 'A year earlier'
+  A_YEAR_EARLIER: 'A year earlier',
+  PREVIOUS_CHECK: 'Previous check'
 }
 
 export const REPORT_VIEW_LABELS: Record<ReportView, string> = {
@@ -35,6 +36,7 @@ export const REPORT_VIEW_LABELS: Record<ReportView, string> = {
   LINE: 'Line',
   BARS: 'Bars',
   HEATMAP: 'Heatmap',
+  FLOW: 'Flow',
   TABLE: 'Table'
 }
 
@@ -44,6 +46,7 @@ const STEP_LABELS: Record<ReportStepLength, string> = {DAY: 'Day', WEEK: 'Week',
 const roleOf = (view: ReportView, position: number, count: number) => {
   if (view === 'LINE') return position === 0 ? 'Over' : 'Lines'
   if (view === 'BARS') return position === 0 ? 'Bars' : 'Stacks'
+  if (view === 'FLOW') return `Stage ${position + 1}`
   if (view === 'HEATMAP' && position === count - 1) return 'Columns'
   return 'Rows'
 }

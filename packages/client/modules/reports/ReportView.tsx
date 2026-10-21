@@ -3,6 +3,7 @@ import {useFragment} from 'react-relay'
 import type {ReportView_result$key} from '../../__generated__/ReportView_result.graphql'
 import type {ReportSpec} from '../../shared/reports/reportCatalog'
 import ReportBarsView from './ReportBarsView'
+import ReportFlowView from './ReportFlowView'
 import ReportHeatmapView from './ReportHeatmapView'
 import ReportLineView from './ReportLineView'
 import ReportNumberView from './ReportNumberView'
@@ -14,9 +15,10 @@ interface Props {
   resultRef: ReportView_result$key
   // a card on the Reports page, rather than the report's own page
   isCompact?: boolean
+  lastHeldByTeamId?: ReadonlyMap<string, number | null>
 }
 
-const ReportView = ({spec, resultRef, isCompact = false}: Props) => {
+const ReportView = ({spec, resultRef, isCompact = false, lastHeldByTeamId}: Props) => {
   const result = useFragment(
     graphql`
       fragment ReportView_result on ReportResult {
@@ -30,11 +32,18 @@ const ReportView = ({spec, resultRef, isCompact = false}: Props) => {
           values
           previousValues
         }
+        rowTotals {
+          keys {
+            value
+          }
+          values
+          previousValues
+        }
       }
     `,
     resultRef
   )
-  const {step, rows} = result
+  const {step, rows, rowTotals} = result
   if (rows.length === 0) {
     return <p className='m-0 py-6 text-center text-fg-muted text-sm'>Nothing to show</p>
   }
@@ -48,8 +57,19 @@ const ReportView = ({spec, resultRef, isCompact = false}: Props) => {
     return <ReportBarsView spec={spec} step={step} rows={rows} isCompact={isCompact} />
   }
   if (spec.showAs === 'HEATMAP') {
-    return <ReportHeatmapView spec={spec} step={step} rows={rows} isCompact={isCompact} />
+    return (
+      <ReportHeatmapView
+        spec={spec}
+        step={step}
+        rows={rows}
+        rowTotals={rowTotals}
+        isCompact={isCompact}
+        lastHeldByTeamId={lastHeldByTeamId}
+      />
+    )
   }
+  if (spec.showAs === 'FLOW')
+    return <ReportFlowView spec={spec} rows={rows} isCompact={isCompact} />
   return isCompact ? (
     <ReportTableSummary spec={spec} step={step} rows={rows} />
   ) : (

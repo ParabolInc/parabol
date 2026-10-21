@@ -23,6 +23,7 @@ const color = (className: string, light: string, dark = light): ReportSeriesColo
 
 // paletteV3, dark enough to stand 3:1 off the card in either theme
 const NONE_COLOR = color('bg-slate-600 dark:bg-slate-500', '#82809A', '#A7A3C2')
+export const REPORT_NONE_COLOR = NONE_COLOR
 
 const KNOWN_COLORS: Partial<Record<ReportDimension, Record<string, ReportSeriesColor>>> = {
   MEETING_TYPE: {
@@ -79,3 +80,16 @@ export const getReportSeriesColor = (
   value: string,
   rank: number
 ) => (dimension && KNOWN_COLORS[dimension]?.[value]) ?? SERIES_COLORS[rank % SERIES_COLORS.length]!
+
+// A flow colors the values that have colors of their own, like meeting types, and draws the rest in gray
+const FLOW_COLORED_DIMENSIONS: readonly ReportDimension[] = [
+  'MEETING_TYPE',
+  'TASK_STATUS',
+  'DONE_OR_OPEN',
+  'TASK_AGE'
+]
+
+export const getReportFlowColor = (dimension: ReportDimension, value: string, rank: number) =>
+  FLOW_COLORED_DIMENSIONS.includes(dimension)
+    ? getReportSeriesColor(dimension, value, rank)
+    : NONE_COLOR

@@ -3,7 +3,8 @@ import {useNavigate} from 'react-router'
 import reportPageQuery, {type ReportPageQuery} from '../../__generated__/ReportPageQuery.graphql'
 import useQueryLoaderNow from '../../hooks/useQueryLoaderNow'
 import useStartReportQuestionMutation from '../../mutations/useStartReportQuestionMutation'
-import type {ReportSpec} from '../../shared/reports/reportCatalog'
+import {isReportTimeDimension, type ReportSpec} from '../../shared/reports/reportCatalog'
+import {validateReportSpec} from '../../shared/reports/validateReportSpec'
 import ReportPage from './ReportPage'
 import {toReportPagePath} from './reportPaths'
 import type {ReportPagePeriod} from './reportPeriodParam'
@@ -17,13 +18,42 @@ interface Props {
   reportQuestionId: string | null
 }
 
+// A heatmap of meetings by team over time also says when each team last met, with the same filters
+const toLastHeldSpec = (spec: ReportSpec): ReportSpec | null => {
+  const [rows, columns] = spec.breakdown
+  if (spec.showAs !== 'HEATMAP' || spec.measures[0] !== 'MEETINGS' || spec.breakdown.length !== 2) {
+    return null
+  }
+  if (rows?.dimension !== 'TEAM' || !columns || !isReportTimeDimension(columns.dimension))
+    return null
+  const lastHeldSpec: ReportSpec = {
+    ...spec,
+    measures: ['LAST_MEETING'],
+    breakdown: [{dimension: 'TEAM'}],
+    where: [],
+    compareTo: null,
+    showAs: 'TABLE',
+    sort: null,
+    limit: null
+  }
+  return validateReportSpec(lastHeldSpec) === null ? lastHeldSpec : null
+}
+
 const ReportPageLoader = ({orgId, spec, title, period, reportQuestionId}: Props) => {
   const navigate = useNavigate()
   const [start] = useStartReportQuestionMutation()
   const timeZone = useMemo(() => Intl.DateTimeFormat().resolvedOptions().timeZone, [])
+  const lastHeldSpec = useMemo(() => toLastHeldSpec(spec), [spec])
   const queryRef = useQueryLoaderNow<ReportPageQuery>(
     reportPageQuery,
-    {orgId, spec, timeZone, pagePeriod: period},
+    {
+      orgId,
+      spec,
+      timeZone,
+      pagePeriod: period,
+      lastHeldSpec: lastHeldSpec ?? spec,
+      hasLastHeld: !!lastHeldSpec
+    },
     undefined,
     true
   )

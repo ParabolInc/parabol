@@ -116,7 +116,8 @@ export const toMeasureResult = (
       value: row.value
     })),
     estimatedCount: rows.reduce((sum, row) => sum + row.estimated, 0),
-    labels
+    labels,
+    hiddenTeamIds: []
   }
 }
 

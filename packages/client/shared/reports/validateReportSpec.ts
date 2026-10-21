@@ -1,5 +1,6 @@
 import {
   isReportAdditiveMeasure,
+  isReportCountedOnceBy,
   isReportTimeDimension,
   MAX_REPORT_CONDITION_DAYS,
   MAX_REPORT_FILTER_VALUES,
@@ -116,6 +117,21 @@ export const validateReportSpec = (spec: ReportSpec): string | null => {
   const unstackable = measures.find((m) => !isReportAdditiveMeasure(m))
   if (unstackable && showAs === 'BARS' && dimensions.length === 2) {
     return `${unstackable} can't be stacked, so show it as LINE or HEATMAP`
+  }
+  // every stage of a flow has to add up to the same total
+  if (showAs === 'FLOW') {
+    const measure = measures[0]!
+    if (REPORT_MEASURES[measure].kind !== 'count') return 'FLOW only shows counts'
+    if (timeDimensions.length > 0) return "FLOW stages can't be time"
+    const doubled = dimensions.find((dimension) => !isReportCountedOnceBy(measure, dimension))
+    if (doubled)
+      return `${measure} counts toward more than one ${doubled}, so it can't FLOW through it`
+  }
+  if (compareTo === 'PREVIOUS_CHECK') {
+    if (measures.some((measure) => measure !== 'HEALTH_SCORE')) {
+      return 'PREVIOUS_CHECK only compares HEALTH_SCORE'
+    }
+    if (timeDimensions.length > 0) return "PREVIOUS_CHECK can't be used over time"
   }
   if (sort?.by === 'TIME' && timeDimensions.length === 0)
     return 'Sorting by time needs a time breakdown'

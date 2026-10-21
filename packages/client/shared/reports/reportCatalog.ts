@@ -12,7 +12,8 @@ export const REPORT_CATEGORY_DIMENSIONS = [
   'DONE_OR_OPEN',
   'TASK_AGE',
   'TOPIC',
-  'INTEGRATION'
+  'INTEGRATION',
+  'CATEGORY'
 ] as const
 export type ReportCategoryDimension = (typeof REPORT_CATEGORY_DIMENSIONS)[number]
 export type ReportDimension = ReportTimeDimension | ReportCategoryDimension
@@ -32,11 +33,13 @@ export const REPORT_MEASURE_KEYS = [
   'OPEN_TASKS',
   'DAYS_TO_DONE',
   'USER_INTEGRATIONS',
-  'TASKS_PUSHED'
+  'TASKS_PUSHED',
+  'HEALTH_SCORE',
+  'HEALTH_ANSWERS'
 ] as const
 export type ReportMeasure = (typeof REPORT_MEASURE_KEYS)[number]
 
-export const REPORT_VIEW_KEYS = ['NUMBER', 'LINE', 'BARS', 'HEATMAP', 'TABLE'] as const
+export const REPORT_VIEW_KEYS = ['NUMBER', 'LINE', 'BARS', 'HEATMAP', 'FLOW', 'TABLE'] as const
 export type ReportView = (typeof REPORT_VIEW_KEYS)[number]
 export const REPORT_CONDITION_OPERATORS = [
   'AT_LEAST',
@@ -56,7 +59,12 @@ export const REPORT_PERIOD_PRESETS = [
   'ALL_TIME'
 ] as const
 export type ReportPeriodPreset = (typeof REPORT_PERIOD_PRESETS)[number]
-export const REPORT_COMPARE_TO = ['PREVIOUS_PERIOD', 'A_WEEK_EARLIER', 'A_YEAR_EARLIER'] as const
+export const REPORT_COMPARE_TO = [
+  'PREVIOUS_PERIOD',
+  'A_WEEK_EARLIER',
+  'A_YEAR_EARLIER',
+  'PREVIOUS_CHECK'
+] as const
 export type ReportCompareTo = (typeof REPORT_COMPARE_TO)[number]
 export const REPORT_SORT_BY = ['VALUE', 'NAME', 'TIME'] as const
 export type ReportSortBy = (typeof REPORT_SORT_BY)[number]
@@ -65,8 +73,16 @@ export type ReportSortOrder = (typeof REPORT_SORT_ORDERS)[number]
 
 // count: adds up inside each step. distinct: each team once per step. reading: taken at the end of each step.
 // latest: the most recent date. share: a percentage taken at the end of each step. median: the middle value of
-// what finished in each step. Shares and medians never add up, so nothing totals or stacks them
-export type ReportMeasureKind = 'count' | 'distinct' | 'reading' | 'latest' | 'share' | 'median'
+// what finished in each step. score: the average 1 to 5 answer in each team's latest Team Health check.
+// Shares, medians and scores never add up, so nothing totals or stacks them
+export type ReportMeasureKind =
+  | 'count'
+  | 'distinct'
+  | 'reading'
+  | 'latest'
+  | 'share'
+  | 'median'
+  | 'score'
 
 export interface ReportPeriod {
   preset?: ReportPeriodPreset | null
@@ -91,6 +107,8 @@ interface ReportMeasureDefinition {
   label: string
   description: string
   dimensions: readonly ReportDimension[]
+  // breakdowns where one thing counts toward several values, like a meeting toward each person who joined
+  countsInSeveral?: readonly ReportDimension[]
 }
 
 const OVER_TIME = REPORT_TIME_DIMENSIONS
@@ -125,7 +143,8 @@ export const REPORT_MEASURES = {
     label: 'Meetings',
     description:
       'Meetings that 2 or more people joined, by when they started. By person, the meetings each person joined',
-    dimensions: [...OVER_TIME, 'TEAM', 'PERSON', 'MEETING_TYPE', 'TEMPLATE']
+    dimensions: [...OVER_TIME, 'TEAM', 'PERSON', 'MEETING_TYPE', 'TEMPLATE'],
+    countsInSeveral: ['PERSON']
   },
   TEAMS_THAT_MET: {
     kind: 'distinct',
@@ -208,6 +227,19 @@ export const REPORT_MEASURES = {
     description:
       'Tasks pushed to an integration, including Sprint Poker stories brought in from one',
     dimensions: [...OVER_TIME, 'TEAM', 'MEETING_TYPE', 'INTEGRATION']
+  },
+  HEALTH_SCORE: {
+    kind: 'score',
+    label: 'Health score',
+    description:
+      'The average 1 to 5 answer in each team’s latest Team Health check, from the 90 days before each point or from the period. A check fewer than 3 people answered is hidden',
+    dimensions: [...OVER_TIME, 'TEAM', 'CATEGORY']
+  },
+  HEALTH_ANSWERS: {
+    kind: 'count',
+    label: 'Health answers',
+    description: 'Answers given in Team Health checks, by the day their results were revealed',
+    dimensions: [...OVER_TIME, 'TEAM', 'CATEGORY']
   }
 } as const satisfies Record<ReportMeasure, ReportMeasureDefinition>
 
@@ -222,6 +254,7 @@ export const REPORT_VIEWS = {
   LINE: {measures: [1, 1], breakdown: [1, 2], firstIsTime: true},
   BARS: {measures: [1, 1], breakdown: [1, 2]},
   HEATMAP: {measures: [1, 1], breakdown: [2, 3]},
+  FLOW: {measures: [1, 1], breakdown: [2, 3]},
   TABLE: {measures: [1, 6], breakdown: [0, 3]}
 } as const satisfies Record<ReportView, ReportViewRule>
 
@@ -229,6 +262,9 @@ export const MAX_REPORT_SERIES = 6
 export const MAX_REPORT_LIMIT = 50
 export const MAX_REPORT_FILTER_VALUES = 100
 export const MAX_REPORT_CONDITION_DAYS = 3650
+// Reports hide a team's check until 3 people answered it, so an average can't be pinned on one or two of
+// them. The meeting holds facts about single people, like the spread, to MIN_ANONYMOUS_RESPONDENTS
+export const MIN_REPORT_HEALTH_RESPONDENTS = 3
 
 export const REPORT_MEETING_TYPES = {
   retrospective: 'Retrospective',
@@ -306,14 +342,20 @@ export const REPORT_DIMENSION_LABELS: Record<ReportDimension, string> = {
   DONE_OR_OPEN: 'Done or open',
   TASK_AGE: 'Task age',
   TOPIC: 'Topic',
-  INTEGRATION: 'Integration'
+  INTEGRATION: 'Integration',
+  CATEGORY: 'Category'
 }
 
 export const REPORT_LOWER_IS_BETTER: readonly ReportMeasure[] = ['DAYS_TO_DONE']
 
 export const isReportAdditiveMeasure = (measure: ReportMeasure) => {
   const {kind} = REPORT_MEASURES[measure]
-  return kind !== 'latest' && kind !== 'share' && kind !== 'median'
+  return kind !== 'latest' && kind !== 'share' && kind !== 'median' && kind !== 'score'
+}
+
+export const isReportCountedOnceBy = (measure: ReportMeasure, dimension: ReportDimension) => {
+  const definition: ReportMeasureDefinition = REPORT_MEASURES[measure]
+  return !definition.countsInSeveral?.includes(dimension)
 }
 
 export const isReportTimeDimension = (

@@ -19,7 +19,8 @@ export type ReportStepLength = 'DAY' | 'WEEK' | 'MONTH'
 export interface ReportLocalRange {
   startDate: string
   endDate: string
-  isWholeMonths: boolean
+  // the calendar months a month preset covers, counting this one so far, which a comparison moves back by
+  monthCount: number | null
 }
 
 export interface ReportStep {
@@ -59,8 +60,6 @@ const startOfWeek = (localDate: string) =>
   dayjs.utc(localDate).startOf('isoWeek').format('YYYY-MM-DD')
 const daysBetween = (startDate: string, endDate: string) =>
   dayjs.utc(endDate).diff(dayjs.utc(startDate), 'day')
-const monthsBetween = (startDate: string, endDate: string) =>
-  dayjs.utc(endDate).diff(dayjs.utc(startDate), 'month')
 
 export const toLocalDate = (instant: Date, timeZone: string) =>
   dayjs(instant).tz(timeZone).format('YYYY-MM-DD')
@@ -91,25 +90,26 @@ export const resolveReportPeriod = (
     if (!startDate || !endDate) return 'A custom period needs a start and end date'
     if (endDate > today) return 'A custom period can end today at the latest'
     if (endDate < startDate) return 'A custom period has to end after it starts'
-    return {startDate, endDate: addDays(endDate, 1), isWholeMonths: false}
+    return {startDate, endDate: addDays(endDate, 1), monthCount: null}
   }
+  // the latest month runs to today, so a report shows what's happened so far and marks that month partial
   const months = MONTH_PRESETS[preset]
   if (months) {
-    const thisMonth = startOfMonth(today)
-    return {startDate: addMonths(thisMonth, -months), endDate: thisMonth, isWholeMonths: true}
+    const firstMonth = addMonths(startOfMonth(today), 1 - months)
+    return {startDate: firstMonth, endDate: tomorrow, monthCount: months}
   }
   if (preset === 'LAST_7_DAYS') {
-    return {startDate: addDays(today, -6), endDate: tomorrow, isWholeMonths: false}
+    return {startDate: addDays(today, -6), endDate: tomorrow, monthCount: null}
   }
   if (preset === 'LAST_30_DAYS') {
-    return {startDate: addDays(today, -29), endDate: tomorrow, isWholeMonths: false}
+    return {startDate: addDays(today, -29), endDate: tomorrow, monthCount: null}
   }
   if (preset === 'ALL_TIME') {
     const createdDate = toLocalDate(orgCreatedAt, timeZone)
     return {
       startDate: createdDate < today ? createdDate : today,
       endDate: tomorrow,
-      isWholeMonths: false
+      monthCount: null
     }
   }
   return `${preset} isn't a period`
@@ -176,22 +176,26 @@ export const buildReportSteps = (
 
 export const shiftReportRange = (
   range: ReportLocalRange,
-  compareTo: ReportCompareTo
+  compareTo: Exclude<ReportCompareTo, 'PREVIOUS_CHECK'>
 ): ReportLocalRange => {
-  const {startDate, endDate, isWholeMonths} = range
+  const {startDate, endDate, monthCount} = range
   if (compareTo === 'A_WEEK_EARLIER') {
-    return {startDate: addDays(startDate, -7), endDate: addDays(endDate, -7), isWholeMonths}
+    return {startDate: addDays(startDate, -7), endDate: addDays(endDate, -7), monthCount}
   }
   if (compareTo === 'A_YEAR_EARLIER') {
-    return {startDate: addMonths(startDate, -12), endDate: addMonths(endDate, -12), isWholeMonths}
+    return {startDate: addMonths(startDate, -12), endDate: addMonths(endDate, -12), monthCount}
   }
-  if (isWholeMonths) {
-    const months = monthsBetween(startDate, endDate)
-    return {startDate: addMonths(startDate, -months), endDate: startDate, isWholeMonths}
+  // a month preset moves back by its months, so this month so far lines up with the same days back then
+  if (monthCount) {
+    return {
+      startDate: addMonths(startDate, -monthCount),
+      endDate: addMonths(endDate, -monthCount),
+      monthCount
+    }
   }
   return {
     startDate: addDays(startDate, -daysBetween(startDate, endDate)),
     endDate: startDate,
-    isWholeMonths
+    monthCount
   }
 }

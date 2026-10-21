@@ -12,7 +12,8 @@ const STARTER_MEETING_WINDOW = ms('90d')
 
 export const reportMeasureRows = (parent: RootDataLoader) => {
   return new DataLoader<ReportMeasureQuery, ReportMeasureResult, string>(
-    async (queries) => Promise.all(queries.map((query) => reportMeasures[query.measure](query))),
+    async (queries) =>
+      Promise.all(queries.map((query) => reportMeasures[query.measure](query, parent))),
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (query) => JSON.stringify(query)
@@ -56,5 +57,34 @@ export const starterReportTeamIdsByOrgId = (parent: RootDataLoader) => {
     {
       ...parent.dataLoaderOptions
     }
+  )
+}
+
+export interface TeamHealthCheck {
+  id: string
+  teamId: string
+  // when the check's results were revealed, which puts it on the calendar
+  endedAt: Date
+}
+
+// Each team's Team Health checks with revealed results, newest first
+export const teamHealthChecksByTeamId = (parent: RootDataLoader) => {
+  return new DataLoader<string, TeamHealthCheck[], string>(
+    async (teamIds) => {
+      const meetings = await getKysely()
+        .selectFrom('NewMeeting')
+        .select(['id', 'teamId', 'endedAt'])
+        .where('teamId', 'in', teamIds)
+        .where('meetingType', '=', 'teamHealth')
+        .where('endedAt', 'is not', null)
+        .orderBy('endedAt', 'desc')
+        .execute()
+      return teamIds.map((teamId) =>
+        meetings.flatMap(({id, teamId: checkTeamId, endedAt}) =>
+          checkTeamId === teamId && endedAt ? [{id, teamId, endedAt}] : []
+        )
+      )
+    },
+    {...parent.dataLoaderOptions}
   )
 }
