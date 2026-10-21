@@ -1,0 +1,19 @@
+"""
+One combination of breakdown values and its measures
+"""
+type ReportRow {
+  """
+  One key for each breakdown, in order
+  """
+  keys: [ReportRowKey!]!
+
+  """
+  One value for each measure, in order. Null when there is nothing to measure
+  """
+  values: [Float]!
+
+  """
+  The values for the comparison period, when the report compares
+  """
+  previousValues: [Float]
+}

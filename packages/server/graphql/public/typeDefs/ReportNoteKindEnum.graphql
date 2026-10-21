@@ -1,0 +1,11 @@
+"""
+Something a report's reader should know about its numbers
+"""
+enum ReportNoteKindEnum {
+  "The Starter plan counts only the organization's 2 largest teams that met recently. The count is how many teams were left out"
+  STARTER_LIMIT
+  "Some done dates were estimated because they were recorded before Parabol saved them. The count is how many tasks"
+  ESTIMATED_HISTORY
+  "There were more rows than a report can return. The count is how many rows there were"
+  ROWS_TRUNCATED
+}

@@ -1,0 +1,14 @@
+"""
+A named period. Day periods end today; month periods cover whole months up to the last full one
+"""
+enum ReportPeriodPresetEnum {
+  "The period picked on the Reports page"
+  PAGE
+  LAST_7_DAYS
+  LAST_30_DAYS
+  LAST_3_MONTHS
+  LAST_6_MONTHS
+  LAST_12_MONTHS
+  "Since the organization was created"
+  ALL_TIME
+}

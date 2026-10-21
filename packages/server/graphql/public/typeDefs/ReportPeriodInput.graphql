@@ -1,0 +1,16 @@
+"""
+When a report's data comes from: a preset, or a start and end date
+"""
+input ReportPeriodInput {
+  preset: ReportPeriodPresetEnum
+
+  """
+  The first day, as YYYY-MM-DD in the report's time zone
+  """
+  startDate: String
+
+  """
+  The last day, as YYYY-MM-DD in the report's time zone
+  """
+  endDate: String
+}

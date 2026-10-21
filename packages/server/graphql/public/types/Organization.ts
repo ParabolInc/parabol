@@ -1,4 +1,5 @@
 import {GraphQLError} from 'graphql'
+import runReport from '../../../reports/runReport'
 import {
   getUserId,
   isSuperUser,
@@ -66,6 +67,19 @@ const Organization: OrganizationResolvers = {
       )
     }
     return dataLoader.get('activeUserCountsByOrgId').load({orgId, times: at})
+  },
+
+  report: async ({id: orgId}, {spec, timeZone, pagePeriod}, {authToken, dataLoader}) => {
+    const {breakdown = [], filters = [], where = [], ...rest} = spec
+    return runReport({
+      orgId,
+      spec: {...rest, breakdown, filters, where},
+      timeZone,
+      pagePeriod: pagePeriod ?? null,
+      viewerId: getUserId(authToken),
+      isSuperUser: isSuperUser(authToken),
+      dataLoader
+    })
   },
 
   teams: async ({id: orgId}, _args, {dataLoader, authToken}) => {

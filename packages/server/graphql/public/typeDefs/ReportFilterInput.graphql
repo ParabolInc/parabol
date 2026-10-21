@@ -1,0 +1,11 @@
+"""
+Keeps only data with one of the values. Separate filters must all match
+"""
+input ReportFilterInput {
+  dimension: ReportDimensionEnum!
+
+  """
+  Team ids, meeting types, task statuses, done or open, or integration services
+  """
+  values: [String!]!
+}

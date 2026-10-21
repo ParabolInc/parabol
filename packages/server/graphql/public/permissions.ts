@@ -1,6 +1,7 @@
 import {allow, and, not, or} from 'graphql-shield'
 import type {ShieldRule} from '../composeResolvers'
 import type {Resolvers} from './resolverTypes'
+import {hasOrgFeatureFlag} from './rules/hasOrgFeatureFlag'
 import {hasOrgRole} from './rules/hasOrgRole'
 import {hasPageAccess} from './rules/hasPageAccess'
 import {hasProviderAccess} from './rules/hasProviderAccess'
@@ -462,6 +463,11 @@ const permissionMap: PermissionMap<Resolvers> = {
   Organization: {
     activeUserCounts: or(isSuperUser, isViewerOnOrg<'Organization.activeUserCounts'>('source.id')),
     oauthAPIProvider: hasProviderAccess<'Organization.oauthAPIProvider'>('args.providerId'),
+    report: and(
+      or(isSuperUser, isViewerOnOrg<'Organization.report'>('source.id')),
+      hasOrgFeatureFlag<'Organization.report'>('source.id', 'Reports'),
+      rateLimit({perMinute: 120, perHour: 3000})
+    ),
     saml: and(
       isViewerOnOrg<'Organization.saml'>('source.id'),
       isOrgTier<'Organization.saml'>('source.id', 'enterprise')

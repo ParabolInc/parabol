@@ -1,0 +1,23 @@
+"""
+A way to split a report's results
+"""
+enum ReportDimensionEnum {
+  "Time, stepping by day, week or month depending on the length of the period"
+  TIME
+  "Each day"
+  DAY
+  "Each week, starting on Monday"
+  WEEK
+  "Each month"
+  MONTH
+  "Each team"
+  TEAM
+  "Each meeting type, or none for tasks made outside a meeting"
+  MEETING_TYPE
+  "Each task status: active, stuck, future or done"
+  TASK_STATUS
+  "Whether a task is done or still open"
+  DONE_OR_OPEN
+  "Each integration service"
+  INTEGRATION
+}

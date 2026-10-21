@@ -1,0 +1,28 @@
+"""
+The numbers behind one report
+"""
+type ReportResult {
+  """
+  The start of the period
+  """
+  from: DateTime!
+
+  """
+  The end of the period, exclusive
+  """
+  to: DateTime!
+
+  """
+  The step length when the report breaks down by time
+  """
+  step: ReportStepEnum
+
+  rows: [ReportRow!]!
+
+  """
+  How many rows there were before the report's limit and the row cap
+  """
+  totalRowCount: Int!
+
+  notes: [ReportNote!]!
+}

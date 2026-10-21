@@ -1,0 +1,29 @@
+"""
+What a report counts
+"""
+enum ReportMeasureEnum {
+  "People who used Parabol in the 30 days before each reading"
+  ACTIVE_PEOPLE
+  "People on the teams, or in the organization when every team is counted"
+  MEMBERS
+  "Meetings that at least 2 people joined"
+  MEETINGS
+  "Teams with at least 2 members that started or ended a meeting at least 2 people joined"
+  TEAMS_THAT_MET
+  "When the latest meeting that at least 2 people joined started, in milliseconds since the epoch"
+  LAST_MEETING
+  "Discussions in meetings that at least 2 people joined"
+  DISCUSSIONS
+  "Discussions in meetings that at least 2 people joined that led to at least 1 task"
+  DISCUSSIONS_WITH_A_TASK
+  "Tasks created, not counting stories pulled into Sprint Poker"
+  NEW_TASKS
+  "Tasks marked done"
+  DONE_TASKS
+  "Tasks not yet done"
+  OPEN_TASKS
+  "Integrations people connected, counting each person once per service"
+  USER_INTEGRATIONS
+  "Tasks sent to an integration, including stories pulled into Sprint Poker"
+  TASKS_PUSHED
+}

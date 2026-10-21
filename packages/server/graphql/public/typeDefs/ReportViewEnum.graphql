@@ -1,0 +1,15 @@
+"""
+How a report is shown
+"""
+enum ReportViewEnum {
+  "One value"
+  NUMBER
+  "A line over time, with a line for each value of a second breakdown"
+  LINE
+  "A bar for each value of the first breakdown, stacked by a second"
+  BARS
+  "Rows from every breakdown but the last, columns from the last"
+  HEATMAP
+  "Nested rows from each breakdown, a column for each measure"
+  TABLE
+}

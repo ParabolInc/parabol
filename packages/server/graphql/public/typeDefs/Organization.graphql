@@ -61,6 +61,28 @@ type Organization implements OrganizationPartial {
   ): [Int!]! @scope(name: USERS_READ)
 
   """
+  A report on the organization's people, meetings and tasks. Billing leaders and org admins get
+  every team; everyone else gets the teams they're on. Starter counts its 2 largest teams that met
+  in the last 90 days
+  """
+  report(
+    """
+    What to count, how to split it, and how to show it
+    """
+    spec: ReportSpecInput!
+
+    """
+    The IANA time zone that days, weeks and months start in
+    """
+    timeZone: String! = "UTC"
+
+    """
+    The period picked on the Reports page, used when the spec's period is PAGE
+    """
+    pagePeriod: ReportPeriodInput
+  ): ReportResult! @scope(name: REPORTS_READ)
+
+  """
   Teams in the organization that the viewer has access to.
   For billing leaders/org admins/super users: all teams in the org (viewer's teams first).
   For regular users: teams the viewer is on plus public teams.

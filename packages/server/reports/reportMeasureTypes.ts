@@ -1,0 +1,36 @@
+import type {
+  ReportCategoryDimension,
+  ReportMeasure
+} from '../../client/shared/reports/reportCatalog'
+
+export interface ReportMeasureFilter {
+  dimension: ReportCategoryDimension
+  values: string[]
+}
+
+export interface ReportMeasureQuery {
+  measure: ReportMeasure
+  orgId: string
+  teamIds: string[]
+  // count everyone in the organization instead of the people on its teams
+  isWholeOrg: boolean
+  stepStarts: Date[]
+  stepEnds: Date[]
+  // readings are taken at the end of each step, or now for the step that hasn't ended
+  readAt: Date[]
+  dimensions: ReportCategoryDimension[]
+  filters: ReportMeasureFilter[]
+}
+
+export interface ReportMeasureRow {
+  // 1-based, matching the step it falls in
+  stepIndex: number
+  keys: string[]
+  value: number | null
+}
+
+export interface ReportMeasureResult {
+  rows: ReportMeasureRow[]
+  // how many tasks were counted with an estimated done date
+  estimatedCount: number
+}

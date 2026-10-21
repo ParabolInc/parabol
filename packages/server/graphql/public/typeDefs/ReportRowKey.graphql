@@ -1,0 +1,19 @@
+"""
+A row's value for one breakdown
+"""
+type ReportRowKey {
+  """
+  A team id, meeting type, task status, done or open, integration service, or the start of a time step as an ISO date
+  """
+  value: String!
+
+  """
+  A name to show for the value
+  """
+  label: String!
+
+  """
+  true if the period cuts this time step short
+  """
+  isPartial: Boolean!
+}

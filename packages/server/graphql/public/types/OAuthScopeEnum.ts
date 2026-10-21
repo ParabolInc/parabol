@@ -17,7 +17,8 @@ const OAuthScopeEnum: Record<string, Oauthscopeenum> = {
   PAGES_READ: 'pages:read',
   PAGES_WRITE: 'pages:write',
   COMMENTS_READ: 'comments:read',
-  COMMENTS_WRITE: 'comments:write'
+  COMMENTS_WRITE: 'comments:write',
+  REPORTS_READ: 'reports:read'
 }
 
 export default OAuthScopeEnum

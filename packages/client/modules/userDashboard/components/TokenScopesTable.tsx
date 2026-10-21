@@ -1,16 +1,23 @@
 import type {OAuthScopeEnum} from '../../../__generated__/useCreatePersonalAccessTokenMutation.graphql'
 import {Checkbox} from '../../../ui/Checkbox/Checkbox'
 
-const SCOPE_GROUPS = [
+interface ScopeGroup {
+  resource: string
+  read: OAuthScopeEnum
+  write?: OAuthScopeEnum
+}
+
+const SCOPE_GROUPS: ScopeGroup[] = [
   {resource: 'Comments', read: 'COMMENTS_READ', write: 'COMMENTS_WRITE'},
   {resource: 'Meetings', read: 'MEETINGS_READ', write: 'MEETINGS_WRITE'},
   {resource: 'Organizations', read: 'ORGS_READ', write: 'ORGS_WRITE'},
   {resource: 'Pages', read: 'PAGES_READ', write: 'PAGES_WRITE'},
+  {resource: 'Reports', read: 'REPORTS_READ'},
   {resource: 'Tasks', read: 'TASKS_READ', write: 'TASKS_WRITE'},
   {resource: 'Teams', read: 'TEAMS_READ', write: 'TEAMS_WRITE'},
   {resource: 'Templates', read: 'TEMPLATES_READ', write: 'TEMPLATES_WRITE'},
   {resource: 'Users', read: 'USERS_READ', write: 'USERS_WRITE'}
-] as const
+]
 
 interface Props {
   selectedScopes: Set<OAuthScopeEnum>
@@ -37,22 +44,24 @@ export const TokenScopesTable = ({selectedScopes, toggleScope}: Props) => {
             </tr>
           </thead>
           <tbody>
-            {SCOPE_GROUPS.map((group) => (
-              <tr key={group.resource} className='border-hairline border-b last:border-0'>
-                <td className='py-2 pr-3 pl-3 text-fg-primary'>{group.resource}</td>
+            {SCOPE_GROUPS.map(({resource, read, write}) => (
+              <tr key={resource} className='border-hairline border-b last:border-0'>
+                <td className='py-2 pr-3 pl-3 text-fg-primary'>{resource}</td>
                 <td className='w-10 py-2'>
                   <Checkbox
-                    checked={selectedScopes.has(group.read)}
-                    onCheckedChange={() => toggleScope(group.read)}
+                    checked={selectedScopes.has(read)}
+                    onCheckedChange={() => toggleScope(read)}
                     className='mx-auto'
                   />
                 </td>
                 <td className='w-10 py-2'>
-                  <Checkbox
-                    checked={selectedScopes.has(group.write)}
-                    onCheckedChange={() => toggleScope(group.write, group.read)}
-                    className='mx-auto'
-                  />
+                  {write && (
+                    <Checkbox
+                      checked={selectedScopes.has(write)}
+                      onCheckedChange={() => toggleScope(write, read)}
+                      className='mx-auto'
+                    />
+                  )}
                 </td>
               </tr>
             ))}

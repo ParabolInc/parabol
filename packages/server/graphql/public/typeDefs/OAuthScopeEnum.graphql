@@ -81,4 +81,9 @@ enum OAuthScopeEnum {
   Create and update comments
   """
   COMMENTS_WRITE
+
+  """
+  Read reports on an organization's people, meetings and tasks
+  """
+  REPORTS_READ
 }
