@@ -1,0 +1,19 @@
+"""
+The report AI made for a question, or why it couldn't
+"""
+type AskReportQuestionSuccess {
+  """
+  The question, kept in the viewer's recent questions
+  """
+  reportQuestion: ReportQuestion!
+
+  """
+  Why there's no report, when there isn't one
+  """
+  reason: String
+
+  """
+  The popular questions nearest to it, when there's no report
+  """
+  suggestions: [PopularReportQuestion!]!
+}

@@ -41,6 +41,16 @@ const permissionMap: PermissionMap<Resolvers> = {
     '*': isAuthenticated,
     // don't check isAuthenticated for acceptTeamInvitation here because there are special cases handled in the resolver
     acceptTeamInvitation: rateLimit({perMinute: 50, perHour: 100}),
+    askReportQuestion: and(
+      or(isSuperUser, isViewerOnOrg<'Mutation.askReportQuestion'>('args.orgId')),
+      hasOrgFeatureFlag<'Mutation.askReportQuestion'>('args.orgId', 'Reports'),
+      rateLimit({perMinute: 10, perHour: 100})
+    ),
+    startReportQuestion: and(
+      or(isSuperUser, isViewerOnOrg<'Mutation.startReportQuestion'>('args.orgId')),
+      hasOrgFeatureFlag<'Mutation.startReportQuestion'>('args.orgId', 'Reports'),
+      rateLimit({perMinute: 60, perHour: 600})
+    ),
     addAgendaItem: isTeamMember<'Mutation.addAgendaItem'>('args.newAgendaItem.teamId'),
     addApprovedOrganizationDomains: or(
       isSuperUser,
@@ -471,6 +481,14 @@ const permissionMap: PermissionMap<Resolvers> = {
     reportPins: and(
       or(isSuperUser, isViewerOnOrg<'Organization.reportPins'>('source.id')),
       hasOrgFeatureFlag<'Organization.reportPins'>('source.id', 'Reports')
+    ),
+    popularReportQuestions: and(
+      or(isSuperUser, isViewerOnOrg<'Organization.popularReportQuestions'>('source.id')),
+      hasOrgFeatureFlag<'Organization.popularReportQuestions'>('source.id', 'Reports')
+    ),
+    recentReportQuestions: and(
+      or(isSuperUser, isViewerOnOrg<'Organization.recentReportQuestions'>('source.id')),
+      hasOrgFeatureFlag<'Organization.recentReportQuestions'>('source.id', 'Reports')
     ),
     saml: and(
       isViewerOnOrg<'Organization.saml'>('source.id'),

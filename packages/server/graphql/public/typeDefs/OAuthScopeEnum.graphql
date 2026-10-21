@@ -86,4 +86,9 @@ enum OAuthScopeEnum {
   Read reports on an organization's people, meetings and tasks
   """
   REPORTS_READ
+
+  """
+  Ask questions on the Reports page and keep them in your recent questions
+  """
+  REPORTS_WRITE
 }

@@ -3,24 +3,16 @@ import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router'
 import type {ReportCard_pin$key} from '../../__generated__/ReportCard_pin.graphql'
-import {parseReportSpec} from '../../shared/reports/parseReportSpec'
 import ReportView from './ReportView'
 import {toReportPagePath} from './reportPaths'
 import type {ReportPagePeriod} from './reportPeriodParam'
 import {REPORT_PERIOD_LABELS} from './reportSpecLabels'
+import {parseReportSpecJSON} from './reportSpecParam'
 
 interface Props {
   pinRef: ReportCard_pin$key
   orgId: string
   period: ReportPagePeriod
-}
-
-const parseSpecJSON = (json: string) => {
-  try {
-    return parseReportSpec(JSON.parse(json))
-  } catch {
-    return null
-  }
 }
 
 const ReportCard = ({pinRef, orgId, period}: Props) => {
@@ -38,7 +30,7 @@ const ReportCard = ({pinRef, orgId, period}: Props) => {
     pinRef
   )
   const {title, description, report} = pin
-  const spec = useMemo(() => parseSpecJSON(pin.spec), [pin.spec])
+  const spec = useMemo(() => parseReportSpecJSON(pin.spec), [pin.spec])
   const ownPeriod = spec?.period.preset && spec.period.preset !== 'PAGE' ? spec.period.preset : null
   return (
     <article className='flex min-w-0 flex-col gap-3 rounded-md border border-hairline bg-surface-card py-4 pr-3 pl-5 shadow-xs'>

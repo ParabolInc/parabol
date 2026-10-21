@@ -77,54 +77,84 @@ export interface ReportSpec {
 interface ReportMeasureDefinition {
   kind: ReportMeasureKind
   label: string
+  description: string
   dimensions: readonly ReportDimension[]
 }
 
 const OVER_TIME = REPORT_TIME_DIMENSIONS
 
 export const REPORT_MEASURES = {
-  ACTIVE_PEOPLE: {kind: 'reading', label: 'Active people', dimensions: [...OVER_TIME, 'TEAM']},
-  MEMBERS: {kind: 'reading', label: 'Members', dimensions: [...OVER_TIME, 'TEAM']},
-  MEETINGS: {kind: 'count', label: 'Meetings', dimensions: [...OVER_TIME, 'TEAM', 'MEETING_TYPE']},
+  ACTIVE_PEOPLE: {
+    kind: 'reading',
+    label: 'Active people',
+    description: 'People who used Parabol in the 30 days before each point',
+    dimensions: [...OVER_TIME, 'TEAM']
+  },
+  MEMBERS: {
+    kind: 'reading',
+    label: 'Members',
+    description: 'People on the teams, or in the organization, at the end of each step',
+    dimensions: [...OVER_TIME, 'TEAM']
+  },
+  MEETINGS: {
+    kind: 'count',
+    label: 'Meetings',
+    description: 'Meetings that 2 or more people joined, by when they started',
+    dimensions: [...OVER_TIME, 'TEAM', 'MEETING_TYPE']
+  },
   TEAMS_THAT_MET: {
     kind: 'distinct',
     label: 'Teams that met',
+    description: 'Teams of 2 or more that held a meeting 2 or more people joined',
     dimensions: [...OVER_TIME, 'MEETING_TYPE']
   },
-  LAST_MEETING: {kind: 'latest', label: 'Last meeting', dimensions: ['TEAM', 'MEETING_TYPE']},
+  LAST_MEETING: {
+    kind: 'latest',
+    label: 'Last meeting',
+    description: 'The date of the latest meeting in the period',
+    dimensions: ['TEAM', 'MEETING_TYPE']
+  },
   DISCUSSIONS: {
     kind: 'count',
     label: 'Discussions',
+    description: 'Topics discussed in meetings',
     dimensions: [...OVER_TIME, 'TEAM', 'MEETING_TYPE']
   },
   DISCUSSIONS_WITH_A_TASK: {
     kind: 'count',
     label: 'Discussions with a task',
+    description: 'Topics discussed in meetings that led to a task',
     dimensions: [...OVER_TIME, 'TEAM', 'MEETING_TYPE']
   },
   NEW_TASKS: {
     kind: 'count',
     label: 'New tasks',
+    description: 'Tasks created, leaving out Sprint Poker stories brought in from an integration',
     dimensions: [...OVER_TIME, 'TEAM', 'MEETING_TYPE', 'TASK_STATUS', 'DONE_OR_OPEN', 'INTEGRATION']
   },
   DONE_TASKS: {
     kind: 'count',
     label: 'Done tasks',
+    description: 'Tasks marked done, by when they were done',
     dimensions: [...OVER_TIME, 'TEAM', 'MEETING_TYPE', 'INTEGRATION']
   },
   OPEN_TASKS: {
     kind: 'reading',
     label: 'Open tasks',
+    description: 'Tasks not done at the end of each step',
     dimensions: [...OVER_TIME, 'TEAM', 'MEETING_TYPE', 'TASK_STATUS', 'INTEGRATION']
   },
   USER_INTEGRATIONS: {
     kind: 'reading',
     label: 'User integrations',
+    description: 'Integrations people connected, counting each person and service once',
     dimensions: [...OVER_TIME, 'TEAM', 'INTEGRATION']
   },
   TASKS_PUSHED: {
     kind: 'count',
     label: 'Tasks pushed to integrations',
+    description:
+      'Tasks pushed to an integration, including Sprint Poker stories brought in from one',
     dimensions: [...OVER_TIME, 'TEAM', 'MEETING_TYPE', 'INTEGRATION']
   }
 } as const satisfies Record<ReportMeasure, ReportMeasureDefinition>

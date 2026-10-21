@@ -28,7 +28,7 @@ export const REPORT_COMPARE_LABELS: Record<ReportCompareTo, string> = {
   A_YEAR_EARLIER: 'A year earlier'
 }
 
-const VIEW_LABELS: Record<ReportView, string> = {
+export const REPORT_VIEW_LABELS: Record<ReportView, string> = {
   NUMBER: 'Number',
   LINE: 'Line',
   BARS: 'Bars',
@@ -125,7 +125,7 @@ export const toReportSpecChips = (spec: ReportSpec, {step, teamNames}: ChipOptio
   const sortLabel = describeSort(spec)
   if (sortLabel) chips.push({name: 'Sort', value: sortLabel})
   if (limit) chips.push({name: 'Limit', value: String(limit)})
-  chips.push({name: 'Show as', value: VIEW_LABELS[showAs]})
+  chips.push({name: 'Show as', value: REPORT_VIEW_LABELS[showAs]})
   return chips
 }
 

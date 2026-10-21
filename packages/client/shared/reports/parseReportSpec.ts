@@ -84,8 +84,8 @@ const parseSort = (value: unknown) => {
 }
 
 // Untrusted JSON, like a link's spec or a stored one, becomes a spec with only the fields Parabol knows,
-// or null when it isn't one Parabol can run
-export const parseReportSpec = (value: unknown): ReportSpec | null => {
+// or null when it isn't shaped like one
+export const readReportSpec = (value: unknown): ReportSpec | null => {
   if (!isRecord(value)) return null
   const measures = parseList(value.measures, (item) => (isMeasure(item) ? item : null))
   const breakdown = parseList(value.breakdown, parseBreakdown)
@@ -98,7 +98,7 @@ export const parseReportSpec = (value: unknown): ReportSpec | null => {
   const parsedSort = isMissing(sort) ? null : parseSort(sort)
   if (!isMissing(sort) && !parsedSort) return null
   if (!isMissing(limit) && typeof limit !== 'number') return null
-  const spec: ReportSpec = {
+  return {
     measures,
     breakdown,
     filters,
@@ -109,5 +109,10 @@ export const parseReportSpec = (value: unknown): ReportSpec | null => {
     sort: parsedSort,
     limit: limit ?? null
   }
-  return validateReportSpec(spec) === null ? spec : null
+}
+
+// null when the value isn't a spec Parabol can run
+export const parseReportSpec = (value: unknown) => {
+  const spec = readReportSpec(value)
+  return spec && validateReportSpec(spec) === null ? spec : null
 }

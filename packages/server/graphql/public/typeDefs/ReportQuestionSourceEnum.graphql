@@ -1,0 +1,11 @@
+"""
+Where a recent report question came from
+"""
+enum ReportQuestionSourceEnum {
+  "Asked of AI in the viewer's own words"
+  ask
+  "Picked from the popular questions"
+  popular
+  "Built by hand"
+  builder
+}

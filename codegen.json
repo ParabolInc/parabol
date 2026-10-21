@@ -74,7 +74,8 @@
             "PAGES_WRITE": "pages:write",
             "COMMENTS_READ": "comments:read",
             "COMMENTS_WRITE": "comments:write",
-            "REPORTS_READ": "reports:read"
+            "REPORTS_READ": "reports:read",
+            "REPORTS_WRITE": "reports:write"
           }
         },
         "mappers": {
@@ -279,6 +280,10 @@
           "RepoContainer": "../../integrations/platform/RemoteRepoIntegration#VendorRepoIntegration",
           "RepoIntegration": "../../integrations/platform/RemoteRepoIntegration#RemoteRepoIntegration",
           "ReportPin": "./types/ReportPin#ReportPinSource",
+          "ReportQuestion": "./types/ReportQuestion#ReportQuestionSource",
+          "PopularReportQuestion": "./types/PopularReportQuestion#PopularReportQuestionSource",
+          "AskReportQuestionSuccess": "./types/AskReportQuestionSuccess#AskReportQuestionSuccessSource",
+          "StartReportQuestionSuccess": "./types/StartReportQuestionSuccess#StartReportQuestionSuccessSource",
           "RetroDiscussStage": "./types/RetroDiscussStage#DiscussStageSource",
           "RetroReflection": "../../postgres/types/index#RetroReflection as RetroReflectionDB",
           "RetroReflectionGroup": "./types/RetroReflectionGroup#RetroReflectionGroupSource",

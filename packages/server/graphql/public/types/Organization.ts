@@ -1,7 +1,7 @@
 import {GraphQLError} from 'graphql'
-import {parseReportSpec} from '../../../../client/shared/reports/parseReportSpec'
 import getKysely from '../../../postgres/getKysely'
 import runReport from '../../../reports/runReport'
+import selectPopularReportQuestions from '../../../reports/selectPopularReportQuestions'
 import {
   getUserId,
   isSuperUser,
@@ -85,17 +85,24 @@ const Organization: OrganizationResolvers = {
   },
 
   reportPins: async ({id: orgId}) => {
-    const questions = await getKysely()
-      .selectFrom('PopularReportQuestion')
-      .select(['key', 'title', 'description', 'spec'])
-      .where('defaultPinSortOrder', 'is not', null)
-      .where('retiredAt', 'is', null)
-      .orderBy('defaultPinSortOrder')
+    const questions = await selectPopularReportQuestions()
+    return questions
+      .flatMap(({defaultPinSortOrder, ...question}) =>
+        defaultPinSortOrder === null ? [] : [{...question, orgId, defaultPinSortOrder}]
+      )
+      .sort((a, b) => a.defaultPinSortOrder - b.defaultPinSortOrder)
+  },
+
+  popularReportQuestions: () => selectPopularReportQuestions(),
+
+  recentReportQuestions: async ({id: orgId}, _args, {authToken}) => {
+    return getKysely()
+      .selectFrom('ReportQuestion')
+      .selectAll()
+      .where('userId', '=', getUserId(authToken))
+      .where('orgId', '=', orgId)
+      .orderBy('lastUsedAt', 'desc')
       .execute()
-    return questions.flatMap(({spec, ...question}) => {
-      const parsedSpec = parseReportSpec(spec)
-      return parsedSpec ? [{...question, orgId, spec: parsedSpec}] : []
-    })
   },
 
   teams: async ({id: orgId}, _args, {dataLoader, authToken}) => {

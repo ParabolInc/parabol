@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {ReportsHomeQuery} from '../../__generated__/ReportsHomeQuery.graphql'
 import useDocumentTitle from '../../hooks/useDocumentTitle'
+import ReportAskBox from './ReportAskBox'
 import ReportPeriodMenu from './ReportPeriodMenu'
 import ReportPinGrid from './ReportPinGrid'
 import ReportsHeadline from './ReportsHeadline'
@@ -28,6 +29,7 @@ const query = graphql`
         createdAt
         ...ReportsStarterBanner_organization
         ...ReportsHeadline_organization
+        ...ReportAskBox_organization
         ...ReportPinGrid_organization
       }
     }
@@ -63,6 +65,7 @@ const ReportsHome = ({queryRef, orgId, period, onPeriodChange}: Props) => {
         <>
           <ReportsStarterBanner organizationRef={organization} />
           <ReportsHeadline organizationRef={organization} />
+          <ReportAskBox organizationRef={organization} period={period} />
           <ReportPinGrid organizationRef={organization} period={period} />
         </>
       )}

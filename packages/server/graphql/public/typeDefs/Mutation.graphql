@@ -2533,4 +2533,38 @@ type Mutation {
     """
     autoAssignFacilitator: Boolean
   ): UpdateFacilitatorRotationSuccess! @scope(name: MEETINGS_WRITE)
+
+  """
+  Ask AI to turn a question about the organization into a report
+  """
+  askReportQuestion(
+    orgId: ID!
+
+    """
+    The question, in the viewer's own words
+    """
+    question: String!
+
+    """
+    The IANA time zone that dates in the question are read in
+    """
+    timeZone: String!
+  ): AskReportQuestionSuccess! @scope(name: REPORTS_WRITE)
+
+  """
+  Keep a popular question the viewer picked, or a recent one they opened again, at the top of their recent questions
+  """
+  startReportQuestion(
+    orgId: ID!
+
+    """
+    The key of the popular question picked
+    """
+    popularQuestionKey: String
+
+    """
+    The id of the recent question opened again
+    """
+    reportQuestionId: ID
+  ): StartReportQuestionSuccess! @scope(name: REPORTS_WRITE)
 }

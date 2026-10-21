@@ -88,6 +88,16 @@ type Organization implements OrganizationPartial {
   reportPins: [ReportPin!]! @scope(name: REPORTS_READ)
 
   """
+  The questions the Ask box offers on the Reports page, in order
+  """
+  popularReportQuestions: [PopularReportQuestion!]! @scope(name: REPORTS_READ)
+
+  """
+  The viewer's recent questions on this organization's Reports page, newest first
+  """
+  recentReportQuestions: [ReportQuestion!]! @scope(name: REPORTS_READ)
+
+  """
   Teams in the organization that the viewer has access to.
   For billing leaders/org admins/super users: all teams in the org (viewer's teams first).
   For regular users: teams the viewer is on plus public teams.

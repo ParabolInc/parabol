@@ -22,3 +22,11 @@ export const decodeReportSpec = (param: string | null) => {
     return null
   }
 }
+
+export const parseReportSpecJSON = (json: string) => {
+  try {
+    return parseReportSpec(JSON.parse(json))
+  } catch {
+    return null
+  }
+}
