@@ -18,6 +18,7 @@ const OrgTeamsRow = (props: Props) => {
       fragment OrgTeamsRow_team on Team {
         id
         name
+        teamMembersCount
         teamMembers {
           isSelf
           isLead
@@ -27,8 +28,7 @@ const OrgTeamsRow = (props: Props) => {
     `,
     teamRef
   )
-  const {id: teamId, teamMembers, name, lastMetAt} = team
-  const teamMembersCount = teamMembers.length
+  const {id: teamId, teamMembers, teamMembersCount, name, lastMetAt} = team
   const viewerTeamMember = teamMembers.find((m) => m.isSelf)
   const isLead = viewerTeamMember?.isLead
   const isMember = !!viewerTeamMember && !isLead

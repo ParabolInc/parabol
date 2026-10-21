@@ -27,9 +27,7 @@ const OrgTeams = (props: Props) => {
           id
           name
           lastMetAt
-          teamMembers {
-            id
-          }
+          teamMembersCount
           isViewerOnTeam
           ...OrgTeamsRow_team
         }
@@ -65,7 +63,7 @@ const OrgTeams = (props: Props) => {
     if (sortBy === 'name') {
       return direction * a.name.localeCompare(b.name)
     } else if (sortBy === 'memberCount') {
-      return direction * (a.teamMembers.length - b.teamMembers.length)
+      return direction * (a.teamMembersCount - b.teamMembersCount)
     } else {
       // lastMetAt
       const aLastMet = a.lastMetAt
