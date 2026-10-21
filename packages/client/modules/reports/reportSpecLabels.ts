@@ -46,9 +46,21 @@ const roleOf = (view: ReportView, position: number, count: number) => {
   return 'Rows'
 }
 
+export type ReportSpecChipEdit =
+  | {kind: 'measure'}
+  | {kind: 'filter'; index: number}
+  | {kind: 'breakdown'; position: number}
+  | {kind: 'where'; index: number}
+  | {kind: 'period'}
+  | {kind: 'compareTo'}
+  | {kind: 'sort'}
+  | {kind: 'limit'}
+  | {kind: 'view'}
+
 export interface ReportSpecChip {
   name: string
   value: string
+  edit: ReportSpecChipEdit
 }
 
 interface ChipOptions {
@@ -92,10 +104,11 @@ export const toReportSpecChips = (spec: ReportSpec, {step, teamNames}: ChipOptio
   const chips: ReportSpecChip[] = [
     {
       name: measures.length === 1 ? 'Measure' : 'Measures',
-      value: measures.map((measure) => REPORT_MEASURES[measure].label).join(', ')
+      value: measures.map((measure) => REPORT_MEASURES[measure].label).join(', '),
+      edit: {kind: 'measure'}
     }
   ]
-  filters.forEach(({dimension, values}) => {
+  filters.forEach(({dimension, values}, index) => {
     const labels = values.map((value) =>
       dimension === 'TEAM'
         ? teamNames.get(value)
@@ -106,26 +119,44 @@ export const toReportSpecChips = (spec: ReportSpec, {step, teamNames}: ChipOptio
     const isEveryLabelKnown = labels.every((label) => label !== undefined)
     chips.push({
       name: REPORT_DIMENSION_LABELS[dimension],
-      value: isEveryLabelKnown ? labels.join(', ') : `${values.length} picked`
+      value: isEveryLabelKnown ? labels.join(', ') : `${values.length} picked`,
+      edit: {kind: 'filter', index}
     })
   })
-  const roles = new Map<string, string[]>()
   breakdown.forEach(({dimension}, position) => {
-    const role = roleOf(showAs, position, breakdown.length)
-    roles.set(role, [...(roles.get(role) ?? []), formatReportDimension(dimension, step)])
+    chips.push({
+      name: roleOf(showAs, position, breakdown.length),
+      value: formatReportDimension(dimension, step),
+      edit: {kind: 'breakdown', position}
+    })
   })
-  roles.forEach((labels, role) => chips.push({name: role, value: labels.join(' › ')}))
-  where.forEach((condition) => chips.push({name: 'Only show', value: describeCondition(condition)}))
+  where.forEach((condition, index) => {
+    chips.push({
+      name: 'Only show',
+      value: describeCondition(condition),
+      edit: {kind: 'where', index}
+    })
+  })
   if (period.preset && period.preset !== 'PAGE') {
-    chips.push({name: 'Period', value: REPORT_PERIOD_LABELS[period.preset]})
+    chips.push({name: 'Period', value: REPORT_PERIOD_LABELS[period.preset], edit: {kind: 'period'}})
   } else if (period.startDate && period.endDate) {
-    chips.push({name: 'Period', value: `${period.startDate} to ${period.endDate}`})
+    chips.push({
+      name: 'Period',
+      value: `${period.startDate} to ${period.endDate}`,
+      edit: {kind: 'period'}
+    })
   }
-  if (compareTo) chips.push({name: 'Compare to', value: REPORT_COMPARE_LABELS[compareTo]})
+  if (compareTo) {
+    chips.push({
+      name: 'Compare to',
+      value: REPORT_COMPARE_LABELS[compareTo],
+      edit: {kind: 'compareTo'}
+    })
+  }
   const sortLabel = describeSort(spec)
-  if (sortLabel) chips.push({name: 'Sort', value: sortLabel})
-  if (limit) chips.push({name: 'Limit', value: String(limit)})
-  chips.push({name: 'Show as', value: REPORT_VIEW_LABELS[showAs]})
+  if (sortLabel) chips.push({name: 'Sort', value: sortLabel, edit: {kind: 'sort'}})
+  if (limit) chips.push({name: 'Limit', value: String(limit), edit: {kind: 'limit'}})
+  chips.push({name: 'Show as', value: REPORT_VIEW_LABELS[showAs], edit: {kind: 'view'}})
   return chips
 }
 

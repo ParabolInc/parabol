@@ -1,5 +1,6 @@
 import {GraphQLError} from 'graphql'
 import getKysely from '../../../postgres/getKysely'
+import {selectReportPins} from '../../../reports/reportPins'
 import runReport from '../../../reports/runReport'
 import selectPopularReportQuestions from '../../../reports/selectPopularReportQuestions'
 import {
@@ -84,14 +85,7 @@ const Organization: OrganizationResolvers = {
     })
   },
 
-  reportPins: async ({id: orgId}) => {
-    const questions = await selectPopularReportQuestions()
-    return questions
-      .flatMap(({defaultPinSortOrder, ...question}) =>
-        defaultPinSortOrder === null ? [] : [{...question, orgId, defaultPinSortOrder}]
-      )
-      .sort((a, b) => a.defaultPinSortOrder - b.defaultPinSortOrder)
-  },
+  reportPins: ({id: orgId}) => selectReportPins(orgId),
 
   popularReportQuestions: () => selectPopularReportQuestions(),
 

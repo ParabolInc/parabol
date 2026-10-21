@@ -139,10 +139,12 @@ test('recent questions belong to the person who asked them', async () => {
   expect(taken.errors?.[0]?.message).toBe('That isn’t one of your recent questions')
 })
 
-test('a start names a popular question or a recent one, but not both', async () => {
+test('a start names a popular question, a recent one or a built report, and only one', async () => {
   const {orgId, cookie} = await signUpWithReports()
   const neither = await start(orgId, cookie, {})
-  expect(neither.errors?.[0]?.message).toBe('Pick a popular question or one of your recent ones')
+  expect(neither.errors?.[0]?.message).toBe(
+    'Pick a popular question, one of your recent ones, or a report you built'
+  )
   const unknown = await start(orgId, cookie, {popularQuestionKey: 'storyPointsBySprint'})
   expect(unknown.errors?.[0]?.message).toBe('That popular question isn’t available')
 })

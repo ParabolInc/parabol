@@ -10,9 +10,14 @@ type ReportPin {
   title: String!
 
   """
-  A line about what the report shows
+  A line about what a built-in report shows
   """
-  description: String!
+  description: String
+
+  """
+  The person who pinned it. Null for the built-in reports every organization starts with
+  """
+  pinnedBy: User
 
   """
   The report's spec as JSON, in the shape of ReportSpecInput

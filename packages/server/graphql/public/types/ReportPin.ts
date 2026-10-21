@@ -1,20 +1,15 @@
-import type {ReportSpec} from '../../../../client/shared/reports/reportCatalog'
+import {type ReportPinSource, toReportPinId} from '../../../reports/reportPins'
 import runReport from '../../../reports/runReport'
 import {getUserId, isSuperUser} from '../../../utils/authorization'
 import type {ReportPinResolvers} from '../resolverTypes'
 
-export interface ReportPinSource {
-  orgId: string
-  key: string
-  title: string
-  description: string
-  spec: ReportSpec
-}
+export type {ReportPinSource}
 
 const ReportPin: ReportPinResolvers = {
-  // a pin's numbers depend on its org, so the same built-in report gets an id per org
-  id: ({orgId, key}) => `ReportPin:${orgId}:${key}`,
+  id: toReportPinId,
   spec: ({spec}) => JSON.stringify(spec),
+  pinnedBy: async ({createdBy}, _args, {dataLoader}) =>
+    createdBy ? ((await dataLoader.get('users').load(createdBy)) ?? null) : null,
   report: ({orgId, spec}, {timeZone, pagePeriod}, {authToken, dataLoader}) =>
     runReport({
       orgId,

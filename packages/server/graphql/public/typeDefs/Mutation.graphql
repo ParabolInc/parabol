@@ -2566,5 +2566,51 @@ type Mutation {
     The id of the recent question opened again
     """
     reportQuestionId: ID
+
+    """
+    With reportQuestionId, the report as the viewer changed it. Without, a report they built
+    """
+    spec: ReportSpecInput
+
+    """
+    The name of a report the viewer built
+    """
+    title: String
   ): StartReportQuestionSuccess! @scope(name: REPORTS_WRITE)
+
+  """
+  Pin a report to the organization's Reports page, for everyone who can see Reports
+  """
+  pinReport(
+    orgId: ID!
+    spec: ReportSpecInput!
+
+    """
+    The name the pin shows
+    """
+    title: String!
+
+    """
+    The viewer's recent question the report came from, so the pin keeps what was asked
+    """
+    reportQuestionId: ID
+  ): PinReportSuccess! @scope(name: REPORTS_WRITE)
+
+  """
+  Take a report off the organization's Reports page. The person who pinned it, an org admin or a billing leader can
+  """
+  unpinReport(orgId: ID!, pinId: ID!): UnpinReportSuccess! @scope(name: REPORTS_WRITE)
+
+  """
+  Move a pin on the organization's Reports page. Org admins and billing leaders can
+  """
+  moveReportPin(
+    orgId: ID!
+    pinId: ID!
+
+    """
+    The pin's new place, counting from 0
+    """
+    toIndex: Int!
+  ): MoveReportPinSuccess! @scope(name: REPORTS_WRITE)
 }

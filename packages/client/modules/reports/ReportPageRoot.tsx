@@ -19,6 +19,7 @@ const ReportPageRoot = () => {
         spec={spec}
         title={searchParams.get('title')}
         period={period}
+        reportQuestionId={searchParams.get('question')}
       />
     )
   }

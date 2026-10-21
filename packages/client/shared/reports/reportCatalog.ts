@@ -13,21 +13,24 @@ export const REPORT_CATEGORY_DIMENSIONS = [
 export type ReportCategoryDimension = (typeof REPORT_CATEGORY_DIMENSIONS)[number]
 export type ReportDimension = ReportTimeDimension | ReportCategoryDimension
 
-export type ReportMeasure =
-  | 'ACTIVE_PEOPLE'
-  | 'MEMBERS'
-  | 'MEETINGS'
-  | 'TEAMS_THAT_MET'
-  | 'LAST_MEETING'
-  | 'DISCUSSIONS'
-  | 'DISCUSSIONS_WITH_A_TASK'
-  | 'NEW_TASKS'
-  | 'DONE_TASKS'
-  | 'OPEN_TASKS'
-  | 'USER_INTEGRATIONS'
-  | 'TASKS_PUSHED'
+export const REPORT_MEASURE_KEYS = [
+  'ACTIVE_PEOPLE',
+  'MEMBERS',
+  'MEETINGS',
+  'TEAMS_THAT_MET',
+  'LAST_MEETING',
+  'DISCUSSIONS',
+  'DISCUSSIONS_WITH_A_TASK',
+  'NEW_TASKS',
+  'DONE_TASKS',
+  'OPEN_TASKS',
+  'USER_INTEGRATIONS',
+  'TASKS_PUSHED'
+] as const
+export type ReportMeasure = (typeof REPORT_MEASURE_KEYS)[number]
 
-export type ReportView = 'NUMBER' | 'LINE' | 'BARS' | 'HEATMAP' | 'TABLE'
+export const REPORT_VIEW_KEYS = ['NUMBER', 'LINE', 'BARS', 'HEATMAP', 'TABLE'] as const
+export type ReportView = (typeof REPORT_VIEW_KEYS)[number]
 export const REPORT_CONDITION_OPERATORS = [
   'AT_LEAST',
   'AT_MOST',

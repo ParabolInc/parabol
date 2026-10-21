@@ -16,9 +16,11 @@ export const toReportPagePath = (
   orgId: string,
   spec: ReportSpec,
   title: string | null,
-  period: ReportPagePeriod
+  period: ReportPagePeriod,
+  reportQuestionId?: string | null
 ) => {
   const params = new URLSearchParams({spec: encodeReportSpec(spec)})
   if (title) params.set('title', title)
+  if (reportQuestionId) params.set('question', reportQuestionId)
   return `/reports/${orgId}/report${withPeriod(params, period)}`
 }

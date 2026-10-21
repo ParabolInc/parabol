@@ -88,9 +88,13 @@ const ReportAskBox = ({organizationRef, period}: Props) => {
     document.getElementById(`${listboxId}-${activeIndex}`)?.scrollIntoView({block: 'nearest'})
   }, [activeIndex, listboxId])
 
-  const openReport = (specJSON: string | null | undefined, title: string) => {
+  const openReport = (
+    specJSON: string | null | undefined,
+    title: string,
+    reportQuestionId: string | null
+  ) => {
     const spec = specJSON ? parseReportSpecJSON(specJSON) : null
-    if (spec) navigate(toReportPagePath(orgId, spec, title, period))
+    if (spec) navigate(toReportPagePath(orgId, spec, title, period, reportQuestionId))
   }
   const askAI = (question: string) => {
     setError(null)
@@ -104,7 +108,7 @@ const ReportAskBox = ({organizationRef, period}: Props) => {
         }
         const {reportQuestion, reason, suggestions} = payload
         if (reportQuestion.spec) {
-          openReport(reportQuestion.spec, reportQuestion.title)
+          openReport(reportQuestion.spec, reportQuestion.title, reportQuestion.id)
           return
         }
         setAnswer({reason: reason ?? 'Parabol doesn’t have the data for that report', suggestions})
@@ -118,11 +122,17 @@ const ReportAskBox = ({organizationRef, period}: Props) => {
     if (option.kind === 'ask') {
       askAI(option.question)
     } else if (option.kind === 'popular') {
-      start({variables: {orgId, popularQuestionKey: option.popular.key}})
-      openReport(option.popular.spec, option.popular.title)
+      const {key, spec, title} = option.popular
+      // the report opens once its recent question exists, so pinning it keeps what was picked
+      start({
+        variables: {orgId, popularQuestionKey: key},
+        onCompleted: (response) =>
+          openReport(spec, title, response.startReportQuestion?.reportQuestion.id ?? null),
+        onError: () => openReport(spec, title, null)
+      })
     } else if (option.recent.spec) {
       start({variables: {orgId, reportQuestionId: option.recent.id}})
-      openReport(option.recent.spec, option.recent.title)
+      openReport(option.recent.spec, option.recent.title, option.recent.id)
     } else {
       // a question AI couldn't answer goes back in the box to be reworded
       setQuery(option.recent.question ?? option.recent.title)

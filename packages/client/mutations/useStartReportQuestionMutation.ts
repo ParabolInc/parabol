@@ -8,13 +8,18 @@ const mutation = graphql`
     $orgId: ID!
     $popularQuestionKey: String
     $reportQuestionId: ID
+    $spec: ReportSpecInput
+    $title: String
   ) {
     startReportQuestion(
       orgId: $orgId
       popularQuestionKey: $popularQuestionKey
       reportQuestionId: $reportQuestionId
+      spec: $spec
+      title: $title
     ) {
       reportQuestion {
+        id
         ...ReportAskBox_recentQuestion
       }
     }
