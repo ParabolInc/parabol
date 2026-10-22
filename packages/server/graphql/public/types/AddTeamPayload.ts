@@ -1,4 +1,4 @@
-import {AddTeamPayloadResolvers} from '../resolverTypes'
+import type {AddTeamPayloadResolvers, TeamInvitee} from '../resolverTypes'
 
 export type AddTeamPayloadSource =
   | {
@@ -9,6 +9,7 @@ export type AddTeamPayloadSource =
       teamId: string
       teamMemberId: string
       removedSuggestedActionId?: string
+      invitees?: TeamInvitee[] | null
     }
 
 const AddTeamPayload: AddTeamPayloadResolvers = {

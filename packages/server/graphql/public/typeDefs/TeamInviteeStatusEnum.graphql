@@ -1,5 +1,5 @@
 """
-The outcome for one address passed to inviteToTeam
+The outcome for one address invited to a team
 """
 enum TeamInviteeStatusEnum {
   """
@@ -16,11 +16,6 @@ enum TeamInviteeStatusEnum {
   This team invited the address moments ago, so another email was not sent
   """
   alreadyInvited
-
-  """
-  The address is not a valid email address
-  """
-  invalid
 
   """
   The organization only accepts addresses on its approved domains

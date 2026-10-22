@@ -1,8 +1,11 @@
 import {useId, useRef, useState} from 'react'
 import {Error as ErrorIcon} from '~/ui/icons'
-import useTeamInviteeDrafts, {isDraftReady} from '../hooks/useTeamInviteeDrafts'
+import useTeamInviteeDrafts, {
+  isDraftReady,
+  type TeamInviteeResult
+} from '../hooks/useTeamInviteeDrafts'
 import useInviteToTeamMutation from '../mutations/useInviteToTeamMutation'
-import {MAX_TEAM_INVITEES} from '../shared/teamInviteeEmail'
+import {MAX_TEAM_INVITEES} from '../shared/teamInvitees'
 import {Button} from '../ui/Button/Button'
 import TeamInviteeInput from './TeamInviteeInput'
 import TeamInviteeMessages from './TeamInviteeMessages'
@@ -12,6 +15,7 @@ interface Props {
   meetingId: string | undefined
   teamId: string
   teamEmails: readonly string[]
+  initialResults?: readonly TeamInviteeResult[]
   onClose: () => void
 }
 
@@ -21,23 +25,18 @@ const NETWORK_ERROR_MESSAGE =
   'Your invitations didn’t go out because Parabol couldn’t be reached. Check your connection and try again.'
 
 const AddTeamMemberEmailInvites = (props: Props) => {
-  const {meetingId, teamId, teamEmails, onClose} = props
+  const {meetingId, teamId, teamEmails, initialResults, onClose} = props
   const headingId = useId()
   const hintId = useId()
   const messagesId = useId()
   const inputRef = useRef<HTMLInputElement>(null)
-  const invitees = useTeamInviteeDrafts(teamEmails)
+  const invitees = useTeamInviteeDrafts(teamEmails, initialResults)
   const {inputValue, setInputValue, drafts, notes, sentEmails, readyEmails} = invitees
   const [execute, submitting] = useInviteToTeamMutation()
   const [requestError, setRequestError] = useState<string | null>(null)
   const batchSize = Math.min(readyEmails.length, MAX_TEAM_INVITEES)
   const leftoverCount = readyEmails.length - batchSize
   const isDone = sentEmails.length > 0 && readyEmails.length === 0
-
-  const commit = (text: string) => {
-    invitees.addEmails(text)
-    setInputValue('')
-  }
 
   const edit = (email: string) => {
     invitees.editDraft(email)
@@ -93,10 +92,11 @@ const AddTeamMemberEmailInvites = (props: Props) => {
         drafts={drafts}
         inputValue={inputValue}
         onInputChange={setInputValue}
-        onCommit={commit}
+        onCommit={invitees.commitText}
         onRemove={invitees.removeDraft}
         onEdit={edit}
         onSubmit={send}
+        autoFocus
       />
       <TeamInviteeMessages
         id={messagesId}

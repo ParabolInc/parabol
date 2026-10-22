@@ -1,4 +1,4 @@
-import {normalizeInviteeEmail} from '../shared/teamInviteeEmail'
+import {normalizeEmail} from '../shared/emailAddress'
 
 // Pulls the addresses out of typed or pasted text: lists separated by commas, semicolons, spaces or
 // newlines, spreadsheet columns, and "Name <email>" entries copied from Gmail or Outlook
@@ -8,7 +8,7 @@ const splitEmailList = (text: string) => {
     .replace(/"[^"]*"/g, ' ')
     .split(/[\s,;<>]+/)
     .map((token) =>
-      normalizeInviteeEmail(token.replace(/^mailto:/i, '').replace(/^[([']+|[)\]'.:]+$/g, ''))
+      normalizeEmail(token.replace(/^mailto:/i, '').replace(/^[([']+|[)\]'.:]+$/g, ''))
     )
     .filter(Boolean)
   // Names next to addresses are noise, but a lone word without an @ is a typo worth flagging

@@ -1,6 +1,6 @@
 import {Error as ErrorIcon, Info} from '~/ui/icons'
 import type {InviteeDraft, InviteeNote} from '../hooks/useTeamInviteeDrafts'
-import {isValidInviteeEmail} from '../shared/teamInviteeEmail'
+import {isValidEmail} from '../shared/emailAddress'
 
 interface Props {
   id: string
@@ -15,7 +15,7 @@ const TeamInviteeMessages = (props: Props) => {
   const {id, drafts, notes, onEdit, onRetry, onReplace} = props
   const problems = drafts.flatMap(({email, rejection}) => {
     if (rejection) return {email, ...rejection}
-    if (isValidInviteeEmail(email)) return []
+    if (isValidEmail(email)) return []
     return {email, status: 'invalid', message: 'Not a valid email address.', suggestedEmail: null}
   })
   return (

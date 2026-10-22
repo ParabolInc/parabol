@@ -1,11 +1,11 @@
 """
-What happened to one address passed to inviteToTeam
+What happened to one address invited to a team
 """
 type TeamInvitee {
   """
-  The address as it was evaluated: trimmed and lowercased
+  The invited address
   """
-  email: String!
+  email: Email!
 
   """
   Whether an invitation went out, and if not, why
@@ -20,5 +20,5 @@ type TeamInvitee {
   """
   The address the inviter probably meant, when the given one looks like a typo
   """
-  suggestedEmail: String
+  suggestedEmail: Email
 }

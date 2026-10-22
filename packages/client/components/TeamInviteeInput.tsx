@@ -13,13 +13,14 @@ interface Props {
   onRemove: (email: string) => void
   onEdit: (email: string) => void
   onSubmit: () => void
+  autoFocus?: boolean
 }
 
 const SEPARATOR = /[\s,;<>]/
 
 const TeamInviteeInput = (props: Props) => {
   const {inputRef, labelledBy, describedBy, drafts, inputValue} = props
-  const {onInputChange, onCommit, onRemove, onEdit, onSubmit} = props
+  const {onInputChange, onCommit, onRemove, onEdit, onSubmit, autoFocus} = props
   const hasProblem = drafts.some((draft) => !isDraftReady(draft))
 
   // Mobile keyboards often skip keydown for characters, so separators are caught as they land in the value
@@ -77,7 +78,7 @@ const TeamInviteeInput = (props: Props) => {
         ref={inputRef}
         type='text'
         inputMode='email'
-        autoFocus
+        autoFocus={autoFocus}
         autoComplete='off'
         autoCapitalize='off'
         autoCorrect='off'

@@ -1,4 +1,4 @@
-import {isValidInviteeEmail} from '../../shared/teamInviteeEmail'
+import {isValidEmail} from '../../shared/emailAddress'
 import splitEmailList from '../splitEmailList'
 
 describe('splitEmailList', () => {
@@ -32,9 +32,9 @@ describe('splitEmailList', () => {
   })
 })
 
-describe('isValidInviteeEmail', () => {
+describe('isValidEmail', () => {
   it.each(['a@b.co', 'a.b+c@sub.example.co.uk', 'ü@bücher.de'])('accepts %s', (email) => {
-    expect(isValidInviteeEmail(email)).toBe(true)
+    expect(isValidEmail(email)).toBe(true)
   })
 
   it.each([
@@ -50,6 +50,6 @@ describe('isValidInviteeEmail', () => {
     '<a@b.com>',
     `${'a'.repeat(250)}@b.com`
   ])('rejects %s', (email) => {
-    expect(isValidInviteeEmail(email)).toBe(false)
+    expect(isValidEmail(email)).toBe(false)
   })
 })

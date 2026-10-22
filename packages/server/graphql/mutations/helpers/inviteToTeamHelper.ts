@@ -1,11 +1,9 @@
 import crypto from 'crypto'
-import type {GraphQLErrorExtensions} from 'graphql'
+import {GraphQLError, type GraphQLErrorExtensions} from 'graphql'
 import ms from 'ms'
 import util from 'util'
-import {
-  isValidInviteeEmail,
-  normalizeInviteeEmail
-} from '../../../../client/shared/teamInviteeEmail'
+import {isValidEmail, normalizeEmail} from '../../../../client/shared/emailAddress'
+import {MAX_TEAM_INVITEES} from '../../../../client/shared/teamInvitees'
 import {SubscriptionChannel, Threshold} from '../../../../client/types/constEnums'
 import {EMAIL_CORS_OPTIONS} from '../../../../client/types/cors'
 import makeAppURL from '../../../../client/utils/makeAppURL'
@@ -20,6 +18,7 @@ import removeSuggestedAction from '../../../safeMutations/removeSuggestedAction'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import getBestInvitationMeeting from '../../../utils/getBestInvitationMeeting'
+import logError from '../../../utils/logError'
 import publish from '../../../utils/publish'
 import type {GQLContext} from '../../graphql'
 import {isEmailOnApprovedList} from '../../public/mutations/helpers/getIsEmailApprovedByOrg'
@@ -40,6 +39,17 @@ export type InviteToTeamOutcome = {
 
 export type InviteToTeamRefusal = {
   refusal: {code: NonNullable<GraphQLErrorExtensions['code']>; message: string}
+}
+
+// Every caller checks before doing anything else, so creating a team never half-succeeds
+export const assertInviteeCount = (invitees: readonly string[]) => {
+  const inviteeCount = new Set(invitees.map(normalizeEmail)).size
+  if (inviteeCount <= MAX_TEAM_INVITEES) return
+  const excess = inviteeCount - MAX_TEAM_INVITEES
+  throw new GraphQLError(
+    `You can invite up to ${MAX_TEAM_INVITEES} people at a time. Remove ${excess} and try again.`,
+    {extensions: {code: 'TOO_MANY_INVITEES'}}
+  )
 }
 
 const getBlockedDomain = (email: string) => {
@@ -83,14 +93,10 @@ const inviteToTeamHelper = async (
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const now = Date.now()
-  const emails = Array.from(new Set(invitees.map(normalizeInviteeEmail)))
-  const validEmails = emails.filter(isValidInviteeEmail)
-  if (validEmails.length === 0) {
-    return {
-      invitees: emails.map((email) => refuse(email, 'invalid', 'Not a valid email address.')),
-      removedSuggestedActionId: undefined
-    }
-  }
+  const emails = Array.from(new Set(invitees.map(normalizeEmail)))
+  // The Email scalar already rejected anything else. This keeps a bad address out of a mail header if a caller skips it
+  if (!emails.every(isValidEmail)) throw new Error('inviteToTeamHelper received an invalid email')
+  if (emails.length === 0) return {invitees: [], removedSuggestedActionId: undefined}
 
   const [
     {team, organization, approvedDomains},
@@ -120,13 +126,13 @@ const inviteToTeamHelper = async (
       ])
       .where('teamId', '=', teamId)
       .executeTakeFirstOrThrow(),
-    getUsersByEmails(validEmails),
+    getUsersByEmails(emails),
     dataLoader.get('teamMembersByTeamId').load(teamId),
     pg
       .selectFrom('TeamInvitation')
       .select(({fn}) => ['email', fn.max('createdAt').as('lastInvitedAt')])
       .where('teamId', '=', teamId)
-      .where('email', 'in', validEmails)
+      .where('email', 'in', emails)
       .where('isMassInvite', '=', false)
       .where('acceptedAt', 'is', null)
       .where('createdAt', '>', new Date(now - REINVITE_COOLDOWN))
@@ -155,7 +161,6 @@ const inviteToTeamHelper = async (
   )
 
   const getRefusal = (email: string) => {
-    if (!isValidInviteeEmail(email)) return refuse(email, 'invalid', 'Not a valid email address.')
     const user = userByEmail.get(email)
     if (user && memberUserIds.has(user.id)) {
       return refuse(email, 'alreadyOnTeam', `Already on ${teamName}.`)
@@ -217,11 +222,9 @@ const inviteToTeamHelper = async (
   const deliverableEmails = candidates.filter((email, idx) => {
     const {result, didYouMean} = validations[idx]!
     if (result !== 'undeliverable') return true
-    const normalizedSuggestion = didYouMean ? normalizeInviteeEmail(didYouMean) : null
+    const normalizedSuggestion = didYouMean ? normalizeEmail(didYouMean) : null
     const suggestedEmail =
-      normalizedSuggestion &&
-      normalizedSuggestion !== email &&
-      isValidInviteeEmail(normalizedSuggestion)
+      normalizedSuggestion && normalizedSuggestion !== email && isValidEmail(normalizedSuggestion)
         ? normalizedSuggestion
         : null
     results.set(email, {
@@ -357,6 +360,24 @@ const inviteToTeamHelper = async (
     invitees: emails.map((email) => results.get(email)!),
     removedSuggestedActionId
   }
+}
+
+// A brand new team has no invitations, so the spam limit cannot refuse it. Should that change, the team still gets created
+export const inviteToNewTeam = async (
+  invitees: readonly string[] | null | undefined,
+  teamId: string,
+  context: GQLContext
+) => {
+  if (!invitees?.length) return null
+  const outcome = await inviteToTeamHelper([...invitees], teamId, undefined, context)
+  if ('refusal' in outcome) {
+    logError(new Error(outcome.refusal.message), {
+      userId: getUserId(context.authToken),
+      tags: {teamId}
+    })
+    return null
+  }
+  return outcome.invitees
 }
 
 export default inviteToTeamHelper

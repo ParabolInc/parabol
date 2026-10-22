@@ -101,10 +101,8 @@ test('Invite to team explains every address it skipped, in the order given', asy
 
   const res = await inviteToTeam(cookie, teamId, [
     viewerEmail,
-    'not-an-email',
     `  ${newcomerEmail.toUpperCase()} `,
-    newcomerEmail,
-    'two@example.com,three@example.com'
+    newcomerEmail
   ])
 
   expect(res.data.inviteToTeam.invitees).toEqual([
@@ -113,9 +111,7 @@ test('Invite to team explains every address it skipped, in the order given', asy
       status: 'alreadyOnTeam',
       message: expect.stringContaining('Already on')
     }),
-    expect.objectContaining({email: 'not-an-email', status: 'invalid'}),
-    sent(newcomerEmail),
-    expect.objectContaining({email: 'two@example.com,three@example.com', status: 'invalid'})
+    sent(newcomerEmail)
   ])
   const invitations = await getKysely()
     .selectFrom('TeamInvitation')
@@ -123,6 +119,30 @@ test('Invite to team explains every address it skipped, in the order given', asy
     .where('teamId', '=', teamId)
     .execute()
   expect(invitations).toEqual([{email: newcomerEmail}])
+})
+
+test.each([
+  'not-an-email',
+  'two@example.com,three@example.com',
+  'Jane <jane@example.com>',
+  '"jane"@example.com'
+])('Invite to team rejects %j before inviting anyone', async (malformed) => {
+  const {cookie, teamId} = await signUp()
+
+  const res = await inviteToTeam(cookie, teamId, [getTestEmail(), malformed])
+
+  expect(res.data).toBeUndefined()
+  expect(res.errors).toEqual([
+    expect.objectContaining({
+      message: expect.stringMatching(/invitees\[1\].*Not a valid email address$/)
+    })
+  ])
+  const invitations = await getKysely()
+    .selectFrom('TeamInvitation')
+    .select('id')
+    .where('teamId', '=', teamId)
+    .execute()
+  expect(invitations).toHaveLength(0)
 })
 
 test('Invite to team does not email the same address again within the cooldown', async () => {
@@ -281,6 +301,121 @@ test('Invite to team stops a team that never had an invitation accepted at 100',
       message: expect.stringContaining("can't send more invitations until someone accepts one"),
       extensions: expect.objectContaining({code: 'UNACCEPTED_INVITATION_LIMIT'})
     })
+  ])
+})
+
+const ADD_TEAM_MUTATION = `
+  mutation AddTeam($newTeam: NewTeamInput!, $invitees: [Email!]) {
+    addTeam(newTeam: $newTeam, invitees: $invitees) {
+      team {
+        id
+      }
+      invitees {
+        email
+        status
+        message
+        suggestedEmail
+      }
+    }
+  }
+`
+
+test('Creating a team reports what happened to each invitee', async () => {
+  const [user1, user2] = await Promise.all([signUp(), signUp()])
+  const {cookie, orgId, email: viewerEmail} = user1
+  const newcomerEmail = getTestEmail()
+
+  const res = await sendPublic({
+    query: ADD_TEAM_MUTATION,
+    variables: {
+      newTeam: {name: `Team ${generateUID()}`, orgId, isPublic: true},
+      invitees: [newcomerEmail, 'x@qq.com', viewerEmail, user2.email]
+    },
+    cookie
+  })
+
+  expect(res.data.addTeam.invitees).toEqual([
+    sent(newcomerEmail),
+    expect.objectContaining({email: 'x@qq.com', status: 'blockedDomain'}),
+    expect.objectContaining({email: viewerEmail, status: 'alreadyOnTeam'}),
+    sent(user2.email)
+  ])
+  const teamId = res.data.addTeam.team.id
+  const invitations = await getKysely()
+    .selectFrom('TeamInvitation')
+    .select('email')
+    .where('teamId', '=', teamId)
+    .orderBy('email')
+    .execute()
+  expect(invitations.map(({email}) => email)).toEqual([newcomerEmail, user2.email].sort())
+})
+
+test('Creating a team without invitees reports no invitations', async () => {
+  const {cookie, orgId} = await signUp()
+
+  const res = await sendPublic({
+    query: ADD_TEAM_MUTATION,
+    variables: {newTeam: {name: `Team ${generateUID()}`, orgId, isPublic: true}},
+    cookie
+  })
+
+  expect(res.data.addTeam).toEqual({team: {id: expect.any(String)}, invitees: null})
+})
+
+test('Creating a team with more than 50 invitees creates nothing', async () => {
+  const {cookie, orgId} = await signUp()
+  const name = `Team ${generateUID()}`
+
+  const res = await sendPublic({
+    query: ADD_TEAM_MUTATION,
+    variables: {
+      newTeam: {name, orgId, isPublic: true},
+      invitees: Array.from({length: 51}, () => getTestEmail())
+    },
+    cookie
+  })
+
+  expect(res.errors).toEqual([
+    expect.objectContaining({extensions: expect.objectContaining({code: 'TOO_MANY_INVITEES'})})
+  ])
+  const teams = await getKysely()
+    .selectFrom('Team')
+    .select('id')
+    .where('orgId', '=', orgId)
+    .where('name', '=', name)
+    .execute()
+  expect(teams).toHaveLength(0)
+})
+
+test('Creating an org reports what happened to each invitee', async () => {
+  const {cookie} = await signUp()
+  const newcomerEmail = getTestEmail()
+
+  const res = await sendPublic({
+    query: `
+      mutation AddOrg($newTeam: NewTeamInput!, $orgName: String!, $invitees: [Email!]) {
+        addOrg(newTeam: $newTeam, orgName: $orgName, invitees: $invitees) {
+          team {
+            id
+          }
+          invitees {
+            email
+            status
+          }
+        }
+      }
+    `,
+    variables: {
+      newTeam: {name: `Team ${generateUID()}`, orgId: '', isPublic: true},
+      orgName: `Org ${generateUID()}`,
+      invitees: [newcomerEmail, 'y@tempmail.cn']
+    },
+    cookie
+  })
+
+  expect(res.data.addOrg.invitees).toEqual([
+    {email: newcomerEmail, status: 'sent'},
+    {email: 'y@tempmail.cn', status: 'blockedDomain'}
   ])
 })
 

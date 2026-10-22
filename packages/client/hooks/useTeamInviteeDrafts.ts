@@ -1,33 +1,59 @@
 import {useState} from 'react'
 import type {useInviteToTeamMutation$data} from '../__generated__/useInviteToTeamMutation.graphql'
-import {isValidInviteeEmail} from '../shared/teamInviteeEmail'
+import {isValidEmail} from '../shared/emailAddress'
 import splitEmailList from '../utils/splitEmailList'
 
-type TeamInvitee = useInviteToTeamMutation$data['inviteToTeam']['invitees'][number]
+export type TeamInviteeResult = useInviteToTeamMutation$data['inviteToTeam']['invitees'][number]
 
 export type InviteeDraft = {
   email: string
-  rejection: {status: TeamInvitee['status']; message: string; suggestedEmail: string | null} | null
+  rejection: {
+    status: TeamInviteeResult['status']
+    message: string
+    suggestedEmail: string | null
+  } | null
 }
 
 // an address that needs no action, like someone already on the team
 export type InviteeNote = {email: string; message: string}
 
-export const isDraftReady = ({email, rejection}: InviteeDraft) =>
-  !rejection && isValidInviteeEmail(email)
+export const isDraftReady = ({email, rejection}: InviteeDraft) => !rejection && isValidEmail(email)
 
-const SETTLED_STATUSES: TeamInvitee['status'][] = ['sent', 'alreadyOnTeam', 'alreadyInvited']
+const NOTE_STATUSES: TeamInviteeResult['status'][] = ['alreadyOnTeam', 'alreadyInvited']
 
-const useTeamInviteeDrafts = (teamEmails: readonly string[]) => {
+export const isRejected = ({status}: TeamInviteeResult) =>
+  status !== 'sent' && !NOTE_STATUSES.includes(status)
+
+const toRejectedDraft = (result: TeamInviteeResult): InviteeDraft => ({
+  email: result.email,
+  rejection: {
+    status: result.status,
+    message: result.message ?? '',
+    suggestedEmail: result.suggestedEmail ?? null
+  }
+})
+
+const toNotes = (results: readonly TeamInviteeResult[]) =>
+  results
+    .filter(({status}) => NOTE_STATUSES.includes(status))
+    .map(({email, message}) => ({email, message: message ?? ''}))
+
+const toSentEmails = (results: readonly TeamInviteeResult[]) =>
+  results.filter(({status}) => status === 'sent').map(({email}) => email)
+
+const useTeamInviteeDrafts = (
+  teamEmails: readonly string[],
+  initialResults: readonly TeamInviteeResult[] = []
+) => {
   const [inputValue, setInputValue] = useState('')
-  const [drafts, setDrafts] = useState<InviteeDraft[]>([])
-  const [notes, setNotes] = useState<InviteeNote[]>([])
-  const [sentEmails, setSentEmails] = useState<string[]>([])
+  const [drafts, setDrafts] = useState(() => initialResults.filter(isRejected).map(toRejectedDraft))
+  const [notes, setNotes] = useState(() => toNotes(initialResults))
+  const [sentEmails, setSentEmails] = useState(() => toSentEmails(initialResults))
   const teamEmailSet = new Set(teamEmails)
   const draftEmailSet = new Set(drafts.map(({email}) => email))
   const isNewEmail = (email: string) => !draftEmailSet.has(email) && !teamEmailSet.has(email)
   const pendingEmails = splitEmailList(inputValue).filter(
-    (email) => isValidInviteeEmail(email) && isNewEmail(email)
+    (email) => isValidEmail(email) && isNewEmail(email)
   )
   const readyEmails = [...drafts.filter(isDraftReady).map(({email}) => email), ...pendingEmails]
 
@@ -50,14 +76,21 @@ const useTeamInviteeDrafts = (teamEmails: readonly string[]) => {
     return nextDrafts
   }
 
+  const commitText = (text: string) => {
+    addEmails(text)
+    setInputValue('')
+  }
+
   const commitInput = () => {
     setInputValue('')
     return inputValue.trim() ? addEmails(inputValue) : drafts
   }
 
-  const removeDraft = (email: string) => {
-    setDrafts((current) => current.filter((draft) => draft.email !== email))
+  const removeEmails = (emails: readonly string[]) => {
+    setDrafts((current) => current.filter((draft) => !emails.includes(draft.email)))
   }
+
+  const removeDraft = (email: string) => removeEmails([email])
 
   const editDraft = (email: string) => {
     const committedDrafts = inputValue.trim() ? addEmails(inputValue) : drafts
@@ -81,27 +114,17 @@ const useTeamInviteeDrafts = (teamEmails: readonly string[]) => {
     )
   }
 
-  const applyResults = (invitees: readonly TeamInvitee[]) => {
-    const resultByEmail = new Map(invitees.map((invitee) => [invitee.email, invitee]))
+  const applyResults = (results: readonly TeamInviteeResult[]) => {
+    const resultByEmail = new Map(results.map((result) => [result.email, result]))
     setDrafts((current) =>
       current.flatMap((draft) => {
         const result = resultByEmail.get(draft.email)
         if (!result) return [draft]
-        if (SETTLED_STATUSES.includes(result.status)) return []
-        const rejection = {
-          status: result.status,
-          message: result.message ?? '',
-          suggestedEmail: result.suggestedEmail ?? null
-        }
-        return [{email: draft.email, rejection}]
+        return isRejected(result) ? [toRejectedDraft(result)] : []
       })
     )
-    setNotes(
-      invitees
-        .filter(({status}) => status === 'alreadyOnTeam' || status === 'alreadyInvited')
-        .map(({email, message}) => ({email, message: message ?? ''}))
-    )
-    const newlySent = invitees.filter(({status}) => status === 'sent').map(({email}) => email)
+    setNotes(toNotes(results))
+    const newlySent = toSentEmails(results)
     setSentEmails((current) => [
       ...current,
       ...newlySent.filter((email) => !current.includes(email))
@@ -116,7 +139,9 @@ const useTeamInviteeDrafts = (teamEmails: readonly string[]) => {
     sentEmails,
     readyEmails,
     addEmails,
+    commitText,
     commitInput,
+    removeEmails,
     removeDraft,
     editDraft,
     retryDraft,

@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import type * as React from 'react'
 import {
   type ChangeEvent,
   type FormEvent,
@@ -7,15 +6,14 @@ import {
   type HTMLAttributes,
   type ReactNode,
   type Ref,
+  useRef,
   useState
 } from 'react'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {NewTeamForm_organizations$key} from '../../../../__generated__/NewTeamForm_organizations.graphql'
-import Checkbox from '../../../../components/Checkbox'
 import DashHeaderTitle from '../../../../components/DashHeaderTitle'
 import FieldLabel from '../../../../components/FieldLabel/FieldLabel'
-import BasicTextArea from '../../../../components/InputField/BasicTextArea'
 import Panel from '../../../../components/Panel/Panel'
 import Radio from '../../../../components/Radio/Radio'
 import StyledError from '../../../../components/StyledError'
@@ -23,8 +21,10 @@ import Toggle from '../../../../components/Toggle/Toggle'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useForm from '../../../../hooks/useForm'
 import useMutationProps from '../../../../hooks/useMutationProps'
+import useTeamInviteeDrafts, {isDraftReady} from '../../../../hooks/useTeamInviteeDrafts'
 import AddOrgMutation from '../../../../mutations/AddOrgMutation'
 import AddTeamMutation from '../../../../mutations/AddTeamMutation'
+import {MAX_TEAM_INVITEES} from '../../../../shared/teamInvitees'
 import {Threshold} from '../../../../types/constEnums'
 import {Button} from '../../../../ui/Button/Button'
 import {cn} from '../../../../ui/cn'
@@ -32,12 +32,13 @@ import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../../ui/Tooltip/TooltipTrigger'
 import linkify from '../../../../utils/linkify'
-import parseEmailAddressList from '../../../../utils/parseEmailAddressList'
+import plural from '../../../../utils/plural'
 import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 import Legitity from '../../../../validation/Legitity'
 import teamNameValidation from '../../../../validation/teamNameValidation'
 import NewTeamOrgPicker from '../../../team/components/NewTeamOrgPicker'
 import NewTeamFormBlock from './NewTeamFormBlock'
+import NewTeamFormInvitees from './NewTeamFormInvitees'
 import NewTeamFormOrgName from './NewTeamFormOrgName'
 import NewTeamFormTeamName from './NewTeamFormTeamName'
 
@@ -100,11 +101,9 @@ const NewTeamForm = (props: Props) => {
   const [isPublic, setIsPublic] = useState(true)
   const [isNewOrg, setIsNewOrg] = useState(isInitiallyNewOrg)
   const [orgId, setOrgId] = useState(defaultOrgId ?? '')
-  const [rawInvitees, setRawInvitees] = useState('')
-  const [invitees, setInvitees] = useState([] as string[])
-  const [isSubmitted, setIsSubmitted] = useState(false)
+  const invitees = useTeamInviteeDrafts([])
+  const formRef = useRef<HTMLFormElement>(null)
   const lockedSelectedOrg = organizations.find((org) => org.id === orgId && org.lockedAt)
-  const [inviteAll, setInviteAll] = useState(false)
   const disableFields = !!lockedSelectedOrg && !isNewOrg
   const selectedOrg = organizations.find((org) => org.id === orgId)
   const selectedOrgTeamMemberEmails = selectedOrg?.teams.flatMap(({teamMembers}) =>
@@ -158,30 +157,58 @@ const NewTeamForm = (props: Props) => {
     setIsNewOrg(isNewOrg)
   }
 
+  // returns the addresses to invite, or null after explaining why the team can't be created yet
+  const getInviteeEmails = () => {
+    const inviteeDrafts = invitees.commitInput()
+    const invalidCount = inviteeDrafts.filter((draft) => !isDraftReady(draft)).length
+    if (invalidCount > 0) {
+      const addresses = plural(invalidCount, 'invalid email address', 'invalid email addresses')
+      onError(new Error(`Fix or remove the ${addresses} above before creating the team`))
+      return null
+    }
+    const inviteeEmails = inviteeDrafts.map(({email}) => email)
+    const excess = inviteeEmails.length - MAX_TEAM_INVITEES
+    if (excess > 0) {
+      onError(
+        new Error(
+          `You can invite up to ${MAX_TEAM_INVITEES} people while creating a team. Remove ${excess}, then invite them from the team page`
+        )
+      )
+      return null
+    }
+    return inviteeEmails
+  }
+
   const onSubmit = (e: FormEvent) => {
     e.preventDefault()
     if (submitting) return
     const {error: teamErr, value: teamName} = validateField('teamName')
     if (teamErr) return
+    const newTeam = {
+      name: teamName,
+      orgId,
+      isPublic
+    }
     if (isNewOrg) {
       const {error: orgErr, value: orgName} = validateField('orgName')
       if (orgErr) return
-      const newTeam = {
-        name: teamName,
-        orgId,
-        isPublic
-      }
-      const variables = {newTeam, orgName, invitees}
+      const inviteeEmails = getInviteeEmails()
+      if (!inviteeEmails) return
       submitMutation()
-      AddOrgMutation(atmosphere, variables, {navigate, onError, onCompleted})
+      AddOrgMutation(
+        atmosphere,
+        {newTeam, orgName, invitees: inviteeEmails},
+        {navigate, onError, onCompleted}
+      )
     } else {
-      const newTeam = {
-        name: teamName,
-        orgId,
-        isPublic
-      }
+      const inviteeEmails = getInviteeEmails()
+      if (!inviteeEmails) return
       submitMutation()
-      AddTeamMutation(atmosphere, {newTeam, invitees}, {onError, onCompleted, navigate})
+      AddTeamMutation(
+        atmosphere,
+        {newTeam, invitees: inviteeEmails},
+        {onError, onCompleted, navigate}
+      )
     }
   }
 
@@ -194,60 +221,8 @@ const NewTeamForm = (props: Props) => {
     navigate(`/me/organizations/${orgId}`)
   }
 
-  const onInvitesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    if (isSubmitted) setIsSubmitted(false)
-    const nextValue = e.target.value
-    if (rawInvitees === nextValue) return
-    const {parsedInvitees, invalidEmailExists} = parseEmailAddressList(nextValue)
-    const allInvitees = parsedInvitees
-      ? (parsedInvitees.map((invitee: any) => invitee.address) as string[])
-      : []
-    const uniqueInvitees = Array.from(new Set(allInvitees))
-    if (invalidEmailExists) {
-      const lastValidEmail = uniqueInvitees[uniqueInvitees.length - 1]
-      lastValidEmail
-        ? onError(new Error(`Invalid email(s) after ${lastValidEmail}`))
-        : onError(new Error(`Invalid email(s)`))
-    } else {
-      onCompleted()
-    }
-    setRawInvitees(nextValue)
-    setInvitees(uniqueInvitees)
-  }
-
-  const handleToggleInviteAll = () => {
-    if (!inviteAll) {
-      const {parsedInvitees} = parseEmailAddressList(rawInvitees)
-      const currentInvitees = parsedInvitees
-        ? (parsedInvitees.map((invitee: any) => invitee.address) as string[])
-        : []
-      const emailsToAdd = uniqueEmailsFromSelectedOrg.filter(
-        (email) => !currentInvitees.includes(email)
-      )
-      const lastInvitee = currentInvitees[currentInvitees.length - 1]
-      const formattedCurrentInvitees =
-        currentInvitees.length && lastInvitee && !lastInvitee.endsWith(',')
-          ? `${currentInvitees.join(', ')}, `
-          : currentInvitees.join(', ')
-      setRawInvitees(`${formattedCurrentInvitees}${emailsToAdd.join(', ')}`)
-      setInvitees([...currentInvitees, ...emailsToAdd])
-    } else {
-      const {parsedInvitees} = parseEmailAddressList(rawInvitees)
-      const currentInvitees = parsedInvitees
-        ? (parsedInvitees as emailAddresses.ParsedMailbox[]).map((invitee) => invitee.address)
-        : []
-      const remainingInvitees = currentInvitees.filter(
-        (email) => !uniqueEmailsFromSelectedOrg.includes(email)
-      )
-      setRawInvitees(remainingInvitees.join(', '))
-      setInvitees(remainingInvitees)
-    }
-    onCompleted()
-    setInviteAll((inviteAll) => !inviteAll)
-  }
-
   return (
-    <form className='m-0 w-full max-w-[40rem] p-4' onSubmit={onSubmit}>
+    <form ref={formRef} className='m-0 w-full max-w-[40rem] p-4' onSubmit={onSubmit}>
       <div className='mb-4 flex h-6 w-full items-center'>
         <DashHeaderTitle className='m-0 w-full p-0'>{'Create a New Team'}</DashHeaderTitle>
       </div>
@@ -353,23 +328,12 @@ const NewTeamForm = (props: Props) => {
               </Tooltip>
             </div>
           </div>
-          <p className='mt-8 mb-3 text-xs leading-4'>
-            {'Invite others to your new team. Invites expire in 30 days.'}
-          </p>
-          <BasicTextArea
-            name='rawInvitees'
-            onChange={onInvitesChange}
-            placeholder='email@example.co, another@example.co'
-            value={rawInvitees}
+          <NewTeamFormInvitees
+            invitees={invitees}
+            orgName={showInviteAll ? selectedOrg.name : null}
+            orgTeammateEmails={uniqueEmailsFromSelectedOrg}
+            onSubmit={() => formRef.current?.requestSubmit()}
           />
-          {showInviteAll && (
-            <div className='flex cursor-pointer items-center pt-2' onClick={handleToggleInviteAll}>
-              <Checkbox active={inviteAll} />
-              <label htmlFor='checkbox' className='ml-2 cursor-pointer text-fg-primary'>
-                {`Invite team members from ${selectedOrg.name}`}
-              </label>
-            </div>
-          )}
           <Button
             variant='primary'
             className='mx-auto mt-6 mb-0 w-64'
