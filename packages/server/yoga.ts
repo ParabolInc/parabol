@@ -203,9 +203,12 @@ export const yoga = createYoga<ServerContext, UserContext>({
       } as ExcludedArgs,
       hooks: {
         execute: (span, args) => {
-          const userId = args.contextValue.authToken?.sub
-          if (userId) {
-            span.setTag('userId', userId)
+          const {authToken} = args.contextValue
+          if (authToken?.sub) {
+            span.setTag('userId', authToken.sub)
+          }
+          if (authToken?.aud) {
+            span.setTag('auth.aud', authToken.aud)
           }
         }
       },
