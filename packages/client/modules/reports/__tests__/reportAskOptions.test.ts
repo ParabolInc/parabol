@@ -15,7 +15,7 @@ const populars: ReportAskPopular[] = [
     key: 'activePeopleOverTime',
     subject: 'people',
     question: 'How many people are active?',
-    title: 'Active people over time',
+    title: 'Active users over time',
     spec: spec('NUMBER')
   },
   {

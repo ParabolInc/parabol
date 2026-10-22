@@ -65,7 +65,7 @@ const START_REPORT_QUESTION = `
 `
 
 const BUILT_IN_TITLES = [
-  'Active people over time',
+  'Active users over time',
   'Meetings by type',
   'Discussions and tasks by meeting type',
   'Retrospective cadence'
@@ -235,7 +235,7 @@ test('leaders move pins and members can’t', async () => {
     moved.data.moveReportPin.organization.reportPins.map(({title}: {title: string}) => title)
   ).toEqual([
     'Retrospective cadence',
-    'Active people over time',
+    'Active users over time',
     'Meetings by type',
     'Discussions and tasks by meeting type'
   ])

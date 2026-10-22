@@ -158,7 +158,7 @@ test('every organization starts with the built-in pins, each with a spec that ru
   expect(res.errors).toBeUndefined()
   const {reportPins} = res.data.viewer.organization
   expect(reportPins.map(({title}: {title: string}) => title)).toEqual([
-    'Active people over time',
+    'Active users over time',
     'Meetings by type',
     'Discussions and tasks by meeting type',
     'Retrospective cadence'

@@ -118,7 +118,7 @@ const OVER_TIME = REPORT_TIME_DIMENSIONS
 export const REPORT_MEASURES = {
   ACTIVE_PEOPLE: {
     kind: 'reading',
-    label: 'Active people',
+    label: 'Active users',
     description: 'People who used Parabol in the 30 days before each point',
     dimensions: [...OVER_TIME, 'TEAM', 'TEAM_LEVEL']
   },

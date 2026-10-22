@@ -106,7 +106,7 @@ const ReportsHeadline = ({organizationRef}: Props) => {
   return (
     <div className='grid grid-cols-[repeat(auto-fit,minmax(min(220px,100%),1fr))] gap-4'>
       <ReportHeadlineNumber
-        label='Active people, 30 days'
+        label='Active users, 30 days'
         value={activeCount}
         detail={
           memberCount > 0
