@@ -36,6 +36,7 @@ import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
 import getUserDetail from '../../../utils/getUserDetail'
 import {getUserSocketCount} from '../../../utils/getUserSocketCount'
 import logError from '../../../utils/logError'
+import {selectTopSimilar} from '../../../utils/selectTopSimilar'
 import standardError from '../../../utils/standardError'
 import errorFilter from '../../errorFilter'
 import type {DataLoaderWorker} from '../../graphql'
@@ -53,6 +54,8 @@ import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
 import type {ReqResolvers} from './ReqResolvers'
 
 const SIMILARITY_THRESHOLD = 0.5
+const TEMPLATE_SEARCH_LIMIT = 12
+const TEMPLATE_SEARCH_MAX_GAP = 0.1
 
 const getValidUserIds = async (
   userIds: null | string[] | undefined,
@@ -835,14 +838,26 @@ const User: ReqResolvers<'User'> = {
       .orderBy('similarity', 'desc')
       .execute()
 
-    const aiActivityIds = similarEmbeddings.map(({refId}) => refId)
+    const seenTemplateIds = new Set<string>()
+    const bestEmbeddingPerTemplate = similarEmbeddings.filter(({refId}) => {
+      if (seenTemplateIds.has(refId)) return false
+      seenTemplateIds.add(refId)
+      return true
+    })
+    const aiActivityIds = bestEmbeddingPerTemplate.map(({refId}) => refId)
 
     // TODO filter out seasonal templates
     const activities = await dataLoader.get('meetingTemplates').loadMany(aiActivityIds)
-    const accessibleActivities = activities.filter(isValid).filter((activity) => {
-      return activity.scope !== 'TEAM' || teamIds.includes(activity.teamId)
+    const accessibleMatches = bestEmbeddingPerTemplate.flatMap(({similarity}, idx) => {
+      const activity = activities[idx]
+      if (!isValid(activity)) return []
+      if (activity.scope === 'TEAM' && !teamIds.includes(activity.teamId)) return []
+      return [{activity, similarity}]
     })
-    return accessibleActivities
+    return selectTopSimilar(accessibleMatches, {
+      limit: TEMPLATE_SEARCH_LIMIT,
+      maxGapFromBest: TEMPLATE_SEARCH_MAX_GAP
+    }).map(({activity}) => activity)
   },
   parseSAMLMetadata: async (_source, {metadataURL, domain}) => {
     const metadata = await getSSOMetadataFromURL(metadataURL)
