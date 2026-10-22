@@ -27,9 +27,7 @@ const OrgTeams = (props: Props) => {
           id
           name
           lastMetAt
-          teamMembers {
-            id
-          }
+          teamMembersCount
           isViewerOnTeam
           ...OrgTeamsRow_team
         }
@@ -65,7 +63,7 @@ const OrgTeams = (props: Props) => {
     if (sortBy === 'name') {
       return direction * a.name.localeCompare(b.name)
     } else if (sortBy === 'memberCount') {
-      return direction * (a.teamMembers.length - b.teamMembers.length)
+      return direction * (a.teamMembersCount - b.teamMembersCount)
     } else {
       // lastMetAt
       const aLastMet = a.lastMetAt
@@ -111,14 +109,14 @@ const OrgTeams = (props: Props) => {
                   {sortBy === 'name' && (sortDirection === 'asc' ? ' ▲' : ' ▼')}
                 </th>
                 <th
-                  className='w-[20%] cursor-pointer p-3 text-left font-semibold'
+                  className='hidden w-[20%] cursor-pointer p-3 text-left font-semibold md:table-cell'
                   onClick={() => handleSort('memberCount')}
                 >
                   Member Count
                   {sortBy === 'memberCount' && (sortDirection === 'asc' ? ' ▲' : ' ▼')}
                 </th>
                 <th
-                  className='w-[20%] cursor-pointer p-3 text-left font-semibold'
+                  className='hidden w-[20%] cursor-pointer p-3 text-left font-semibold md:table-cell'
                   onClick={() => handleSort('lastMetAt')}
                 >
                   Last Met At

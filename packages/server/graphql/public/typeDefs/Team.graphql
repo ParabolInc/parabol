@@ -160,6 +160,12 @@ type Team implements Node & TeamPartial {
   ): [TeamMember!]!
 
   """
+  The number of team members actively associated with the team.
+  Readable by the team, its org's billing leaders and admins, and anyone on the org when the team is public
+  """
+  teamMembersCount: Int!
+
+  """
   true if the team has been archived
   """
   isArchived: Boolean
