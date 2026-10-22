@@ -37,9 +37,10 @@ graphql`
 interface Props {
   organizationRef: ReportAskBox_organization$key
   period: ReportPagePeriod
+  onAskingChange: (question: string | null) => void
 }
 
-const ReportAskBox = ({organizationRef, period}: Props) => {
+const ReportAskBox = ({organizationRef, period, onAskingChange}: Props) => {
   const {
     id: orgId,
     useAI,
@@ -100,12 +101,19 @@ const ReportAskBox = ({organizationRef, period}: Props) => {
   }
   const askAI = (question: string) => {
     setError(null)
+    setIsOpen(false)
+    onAskingChange(question)
+    const showError = (message: string) => {
+      setError(message)
+      setIsOpen(true)
+    }
     ask({
       variables: {orgId, question, timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone},
       onCompleted: (response, errors) => {
+        onAskingChange(null)
         const payload = response.askReportQuestion
         if (errors?.[0] || !payload) {
-          setError(errors?.[0]?.message ?? 'AI couldn’t answer just now. Try again in a moment')
+          showError(errors?.[0]?.message ?? 'AI couldn’t answer just now. Try again in a moment')
           return
         }
         const {reportQuestion, reason, suggestions} = payload
@@ -117,7 +125,10 @@ const ReportAskBox = ({organizationRef, period}: Props) => {
         setActiveIndex(0)
         setIsOpen(true)
       },
-      onError: (askError) => setError(askError.message)
+      onError: (askError) => {
+        onAskingChange(null)
+        showError(askError.message)
+      }
     })
   }
   const choose = (option: ReportAskOption) => {
@@ -155,11 +166,10 @@ const ReportAskBox = ({organizationRef, period}: Props) => {
       setIsOpen(false)
     }
   }
-  const notice = isAsking
-    ? 'Asking AI…'
-    : (error ??
-      (answer &&
-        `Parabol can’t make that report: ${answer.reason} These popular questions are nearest.`))
+  const notice =
+    error ??
+    (answer &&
+      `Parabol can’t make that report: ${answer.reason} These popular questions are nearest.`)
   const question = query.trim()
   return (
     <div className='relative'>

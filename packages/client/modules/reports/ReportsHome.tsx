@@ -1,10 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
+import {useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Link} from 'react-router'
 import {Groups} from '~/ui/icons'
 import type {ReportsHomeQuery} from '../../__generated__/ReportsHomeQuery.graphql'
 import useDocumentTitle from '../../hooks/useDocumentTitle'
 import ReportAskBox from './ReportAskBox'
+import ReportAskLoading from './ReportAskLoading'
 import ReportPeriodMenu from './ReportPeriodMenu'
 import ReportPinGrid from './ReportPinGrid'
 import ReportsAnswerLoader from './ReportsAnswerLoader'
@@ -48,6 +50,7 @@ const ReportsHome = ({queryRef, orgId, period, answer, onPeriodChange}: Props) =
   const {organization, organizations} = viewer
   useDocumentTitle('Reports | Parabol', 'Reports')
   const hasReports = organizations.some(({id, hasReports}) => id === orgId && hasReports)
+  const [askingQuestion, setAskingQuestion] = useState<string | null>(null)
   return (
     <div className='mx-auto flex w-full max-w-[1360px] flex-col gap-5 px-4 pt-4 pb-14 sm:px-8'>
       <div className='flex min-h-9 flex-wrap items-center gap-x-3 gap-y-2'>
@@ -81,8 +84,16 @@ const ReportsHome = ({queryRef, orgId, period, answer, onPeriodChange}: Props) =
         <>
           <ReportsStarterBanner organizationRef={organization} />
           <ReportsHeadline organizationRef={organization} />
-          <ReportAskBox organizationRef={organization} period={period} />
-          {answer && <ReportsAnswerLoader orgId={orgId} answer={answer} period={period} />}
+          <ReportAskBox
+            organizationRef={organization}
+            period={period}
+            onAskingChange={setAskingQuestion}
+          />
+          {askingQuestion ? (
+            <ReportAskLoading question={askingQuestion} />
+          ) : (
+            answer && <ReportsAnswerLoader orgId={orgId} answer={answer} period={period} />
+          )}
           <ReportPinGrid organizationRef={organization} period={period} />
         </>
       )}
