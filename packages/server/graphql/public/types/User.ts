@@ -55,7 +55,7 @@ import type {ReqResolvers} from './ReqResolvers'
 
 const SIMILARITY_THRESHOLD = 0.5
 const TEMPLATE_SEARCH_LIMIT = 12
-const TEMPLATE_SEARCH_MAX_GAP = 0.1
+const TEMPLATE_SEARCH_MAX_GAP = 0.05
 
 const getValidUserIds = async (
   userIds: null | string[] | undefined,
