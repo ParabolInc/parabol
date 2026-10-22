@@ -3,11 +3,12 @@ import os from 'os'
 import path from 'path'
 
 const mockCreate = jest.fn()
+const mockValidate = jest.fn()
 
 jest.mock('mailgun.js', () => ({
   __esModule: true,
   default: jest.fn().mockImplementation(() => ({
-    client: () => ({messages: {create: mockCreate}})
+    client: () => ({messages: {create: mockCreate}, validate: {get: mockValidate}})
   }))
 }))
 
@@ -142,5 +143,46 @@ describe('MailManagerMailgun', () => {
         'o:tag': ['type:resetPassword']
       })
     )
+  })
+
+  describe('validateEmail', () => {
+    beforeEach(() => {
+      mockValidate.mockReset()
+    })
+
+    it.each([
+      ['deliverable', 'deliverable'],
+      ['catch_all', 'deliverable'],
+      ['unknown', 'unknown'],
+      ['undeliverable', 'undeliverable'],
+      ['do_not_send', 'undeliverable']
+    ])('maps a Mailgun result of %s to %s', async (mailgunResult, result) => {
+      mockValidate.mockResolvedValue({address: 'jane@example.com', result: mailgunResult})
+      expect(await manager.validateEmail('jane@example.com')).toEqual({
+        result,
+        didYouMean: undefined
+      })
+    })
+
+    it('passes along the typo suggestion', async () => {
+      mockValidate.mockResolvedValue({
+        address: 'jane@gmial.com',
+        result: 'undeliverable',
+        did_you_mean: 'jane@gmail.com'
+      })
+      expect(await manager.validateEmail('jane@gmial.com')).toEqual({
+        result: 'undeliverable',
+        didYouMean: 'jane@gmail.com'
+      })
+    })
+
+    it('fails open and logs when the validation API is down', async () => {
+      mockValidate.mockRejectedValue(new Error('503 Service Unavailable'))
+      expect(await manager.validateEmail('jane@example.com')).toEqual({result: 'unknown'})
+      expect(logError).toHaveBeenCalledWith(
+        expect.any(Error),
+        expect.objectContaining({tags: expect.objectContaining({type: 'Mailgun error'})})
+      )
+    })
   })
 })

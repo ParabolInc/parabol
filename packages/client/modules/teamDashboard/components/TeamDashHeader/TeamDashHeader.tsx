@@ -1,4 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
+import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import {NavLink, useLocation, useNavigate} from 'react-router'
 import DashSectionHeader from '~/components/Dashboard/DashSectionHeader'
@@ -8,6 +9,7 @@ import Tab from '~/components/Tab/Tab'
 import Tabs from '~/components/Tabs/Tabs'
 import AgendaToggle from '~/modules/teamDashboard/components/AgendaToggle/AgendaToggle'
 import type {TeamDashHeader_team$key} from '../../../../__generated__/TeamDashHeader_team.graphql'
+import type {TeamInviteeResult} from '../../../../hooks/useTeamInviteeDrafts'
 
 const linkClassName =
   'mr-2 cursor-pointer font-semibold text-[12px] text-accent leading-3 outline-none hover:text-fg-primary focus:text-fg-primary active:text-fg-primary'
@@ -46,6 +48,13 @@ const TeamDashHeader = (props: Props) => {
   const {name: orgName, id: orgId} = organization
   const navigate = useNavigate()
   const location = useLocation()
+  const {inviteResults} = (location.state ?? {}) as {inviteResults?: TeamInviteeResult[]}
+
+  useEffect(() => {
+    if (!inviteResults) return
+    const {pathname, search, hash} = location
+    navigate({pathname, search, hash}, {replace: true, state: null})
+  }, [inviteResults])
 
   const tabs = [
     {label: 'Activity', path: 'activity'},
@@ -88,7 +97,11 @@ const TeamDashHeader = (props: Props) => {
         </div>
         <div className='flex items-start pt-3 sidebar-left:pt-0'>
           <DashboardAvatars team={team} />
-          <InviteTeamMemberAvatar teamId={teamId} teamMembers={teamMembers} />
+          <InviteTeamMemberAvatar
+            teamId={teamId}
+            teamMembers={teamMembers}
+            initialResults={inviteResults}
+          />
           <AgendaToggle teamId={teamId} />
         </div>
       </div>
