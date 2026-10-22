@@ -24,6 +24,7 @@ import IconLabel from '../IconLabel'
 import LoadingComponent from '../LoadingComponent/LoadingComponent'
 import ActivityGrid from './ActivityGrid'
 import ActivityLibraryEmptyState from './ActivityLibraryEmptyState'
+import ActivityLibrarySimilarTemplates from './ActivityLibrarySimilarTemplates'
 import {
   type AllCategoryID,
   CATEGORY_ID_TO_NAME,
@@ -32,6 +33,7 @@ import {
   CUSTOM_CATEGORY_ID,
   QUICK_START_CATEGORY_ID
 } from './Categories'
+import {getSimilarTemplates} from './getSimilarTemplates'
 import SearchBar from './SearchBar'
 
 graphql`
@@ -225,6 +227,7 @@ export const ActivityLibrary = (props: Props) => {
   const {availableTemplates} = viewer
 
   const [isSearching, setIsSearching] = useState(true)
+  const [similarTemplatesQuery, setSimilarTemplatesQuery] = useState('')
   const [templateSearch, refetchTemplateSearch] = useRefetchableFragment<
     ActivityLibraryTemplateSearchRefetchQuery,
     ActivityLibraryTemplateSearch_query$key
@@ -255,49 +258,37 @@ export const ActivityLibrary = (props: Props) => {
   const showLoading = dirty || isSearching
 
   useEffect(() => {
-    if (debouncedSearchQuery) {
-      setIsSearching(true)
-      // Avoid suspense while refreshing the search results, see
-      // https://relay.dev/docs/guided-tour/refetching/refetching-fragments-with-different-data/#if-you-need-to-avoid-suspense
-      fetchQuery(atmosphere, templateSearchQuery, {
-        search: debouncedSearchQuery
-      }).subscribe({
-        complete: () => {
-          refetchTemplateSearch({search: debouncedSearchQuery}, {fetchPolicy: 'store-only'})
-          setIsSearching(false)
-        },
-        error: () => {
-          setIsSearching(false)
-        }
-      })
-      SendClientSideEvent(atmosphere, 'Activity Library Searched', {
-        debouncedSearchQuery
-      })
-    } else {
+    if (!debouncedSearchQuery) {
       refetchTemplateSearch({search: ''}, {fetchPolicy: 'store-only'})
       setIsSearching(false)
+      return
     }
+    setIsSearching(true)
+    // Avoid suspense while refreshing the search results, see
+    // https://relay.dev/docs/guided-tour/refetching/refetching-fragments-with-different-data/#if-you-need-to-avoid-suspense
+    const subscription = fetchQuery(atmosphere, templateSearchQuery, {
+      search: debouncedSearchQuery
+    }).subscribe({
+      complete: () => {
+        refetchTemplateSearch({search: debouncedSearchQuery}, {fetchPolicy: 'store-only'})
+        setSimilarTemplatesQuery(debouncedSearchQuery)
+        setIsSearching(false)
+      },
+      error: () => {
+        setIsSearching(false)
+      }
+    })
+    SendClientSideEvent(atmosphere, 'Activity Library Searched', {
+      debouncedSearchQuery
+    })
+    return () => subscription.unsubscribe()
   }, [debouncedSearchQuery])
 
   const {categoryId} = useParams()
 
   const templatesToRender = useMemo(() => {
     if (searchQuery.length > 0) {
-      // If there's a search query, combine the filtered templates with the search results
-      const searchResults = templateSearch?.viewer?.templateSearch ?? []
-      const doubleMatches = searchResults.filter((searchResult) =>
-        filteredTemplates.find((template) => template.id === searchResult.id)
-      )
-
-      return [
-        ...doubleMatches,
-        ...filteredTemplates.filter(
-          (template) => !doubleMatches.find((doubleMatch) => doubleMatch.id === template.id)
-        ),
-        ...searchResults.filter(
-          (searchResult) => !doubleMatches.find((doubleMatch) => doubleMatch.id === searchResult.id)
-        )
-      ]
+      return filteredTemplates
     }
     if (categoryId === 'favorite') {
       return viewer.favoriteTemplates
@@ -310,16 +301,20 @@ export const ActivityLibrary = (props: Props) => {
           ? template.scope !== 'PUBLIC'
           : template.category === categoryId
     )
-  }, [searchQuery, filteredTemplates, templateSearch, categoryId])
+  }, [searchQuery, filteredTemplates, categoryId])
+
+  const similarTemplates = useMemo(
+    () =>
+      searchQuery.length > 0 && searchQuery === similarTemplatesQuery
+        ? getSimilarTemplates(templateSearch?.viewer?.templateSearch ?? [], filteredTemplates)
+        : [],
+    [searchQuery, similarTemplatesQuery, filteredTemplates, templateSearch]
+  )
 
   const sectionedTemplates = useMemo(() => {
     // Show the teams on search as well, because you can search by team name
     if (categoryId === CUSTOM_CATEGORY_ID || searchQuery.length > 0) {
       return mapTeamCategories(templatesToRender)
-    }
-
-    if (searchQuery.length > 0) {
-      return undefined
     }
 
     if (categoryId === 'retrospective') {
@@ -423,7 +418,7 @@ export const ActivityLibrary = (props: Props) => {
 
       <ScrollArea.Root className='h-full w-full overflow-hidden'>
         <ScrollArea.Viewport className='flex h-full flex-col lg:mx-[15%]'>
-          {templatesToRender.length === 0 && !showLoading ? (
+          {templatesToRender.length === 0 && similarTemplates.length === 0 && !showLoading ? (
             <ActivityLibraryEmptyState
               searchQuery={searchQuery}
               categoryId={categoryId as AllCategoryID}
@@ -466,6 +461,11 @@ export const ActivityLibrary = (props: Props) => {
               )}
             </>
           )}
+          <ActivityLibrarySimilarTemplates
+            templates={similarTemplates}
+            selectedCategory={categoryId}
+            viewerRef={viewer}
+          />
           {showLoading && <LoadingComponent />}
         </ScrollArea.Viewport>
         <ScrollArea.Scrollbar
