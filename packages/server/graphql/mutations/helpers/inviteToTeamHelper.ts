@@ -4,7 +4,7 @@ import ms from 'ms'
 import util from 'util'
 import {isValidEmail, normalizeEmail} from '../../../../client/shared/emailAddress'
 import {MAX_TEAM_INVITEES} from '../../../../client/shared/teamInvitees'
-import {SubscriptionChannel, Threshold} from '../../../../client/types/constEnums'
+import {Threshold} from '../../../../client/types/constEnums'
 import {EMAIL_CORS_OPTIONS} from '../../../../client/types/cors'
 import makeAppURL from '../../../../client/utils/makeAppURL'
 import plural from '../../../../client/utils/plural'
@@ -19,9 +19,9 @@ import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import getBestInvitationMeeting from '../../../utils/getBestInvitationMeeting'
 import logError from '../../../utils/logError'
-import publish from '../../../utils/publish'
 import type {GQLContext} from '../../graphql'
 import {isEmailOnApprovedList} from '../../public/mutations/helpers/getIsEmailApprovedByOrg'
+import publishNotification from '../../public/mutations/helpers/publishNotification'
 import type {TeamInvitee} from '../../public/resolverTypes'
 
 const randomBytes = util.promisify(crypto.randomBytes)
@@ -344,16 +344,9 @@ const inviteToTeamHelper = async (
     })
 
     const sentInvitationIds = new Set(sentInvitations.map(({id}) => id))
-    notifications.forEach(({id: teamInvitationNotificationId, invitationId, userId}) => {
-      if (!sentInvitationIds.has(invitationId)) return
-      publish(
-        SubscriptionChannel.NOTIFICATION,
-        userId,
-        'InviteToTeamPayload',
-        {teamInvitationNotificationId},
-        subOptions
-      )
-    })
+    notifications
+      .filter(({invitationId}) => sentInvitationIds.has(invitationId))
+      .forEach((notification) => publishNotification(notification, subOptions))
   }
 
   return {

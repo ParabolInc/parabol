@@ -1,9 +1,0 @@
-"""
-Sent to an existing Parabol user when a team invites them
-"""
-type InviteToTeamPayload {
-  """
-  The notification sent to the invitee
-  """
-  teamInvitationNotification: NotificationTeamInvitation
-}
