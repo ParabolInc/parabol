@@ -287,6 +287,8 @@ export const MAX_REPORT_CONDITION_DAYS = 3650
 // Reports hide a team's check until 3 people answered it, so an average can't be pinned on one or two of
 // them. The meeting holds facts about single people, like the spread, to MIN_ANONYMOUS_RESPONDENTS
 export const MIN_REPORT_HEALTH_RESPONDENTS = 3
+// the value of a cell those too few people answered, which the client shows as hidden
+export const REPORT_HIDDEN_VALUE = -1
 
 export const REPORT_MEETING_TYPES = {
   retrospective: 'Retrospective',

@@ -1,6 +1,6 @@
 import {REPORT_MEASURES, type ReportSpec} from '../../shared/reports/reportCatalog'
 import {formatReportKey} from './formatReportKey'
-import type {ReportResultRow} from './reportRows'
+import {isHiddenReportValue, type ReportResultRow} from './reportRows'
 import type {ReportStepLength} from './reportSpecLabels'
 
 // a cell a spreadsheet would read as a formula gets a leading quote, so a team name can't run code
@@ -30,6 +30,7 @@ export const toReportCSV = (
     ),
     ...spec.measures.map((measure, idx) => {
       const value = values[idx]
+      if (isHiddenReportValue(value)) return 'Hidden'
       if (value == null) return null
       return REPORT_MEASURES[measure].kind === 'latest'
         ? new Date(value).toISOString().slice(0, 10)

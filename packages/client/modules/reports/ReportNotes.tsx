@@ -3,6 +3,7 @@ import {useFragment} from 'react-relay'
 import {Link} from 'react-router'
 import type {ReportNotes_result$key} from '../../__generated__/ReportNotes_result.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
+import {MIN_REPORT_HEALTH_RESPONDENTS} from '../../shared/reports/reportCatalog'
 import plural from '../../utils/plural'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 
@@ -56,7 +57,7 @@ const ReportNotes = ({orgId, resultRef}: Props) => {
           {kind === 'ROWS_TRUNCATED' &&
             `This report has ${count.toLocaleString()} rows, more than a report can show. Add a filter or a limit to see the rest.`}
           {kind === 'HIDDEN_FOR_ANONYMITY' &&
-            `${count} ${count === 1 ? 'team’s Team Health check is' : 'teams’ Team Health checks are'} hidden because fewer than 3 people answered.`}
+            `${count} ${count === 1 ? 'team’s Team Health check is' : 'teams’ Team Health checks are'} hidden because fewer than ${MIN_REPORT_HEALTH_RESPONDENTS} people answered.`}
           {kind === 'TOPICS_FROM_OWN_TEAMS' &&
             `Topics only come from the teams you’re on, so ${count} ${plural(count, 'team')} ${count === 1 ? 'isn’t' : 'aren’t'} in this report.`}
           {kind === 'STRUCTURE_LEVEL_REMOVED' &&

@@ -1,4 +1,5 @@
 import ms from 'ms'
+import {REPORT_HIDDEN_VALUE} from '../../../client/shared/reports/reportCatalog'
 import averageTeamHealthScore from '../../utils/averageTeamHealthScore'
 import type {ReportMeasureFunction} from '../reportMeasureTypes'
 import {groupTeamHealthAnswers, type PickedTeamHealthCheck} from './teamHealthAnswers'
@@ -27,7 +28,7 @@ const readHealthScore: ReportMeasureFunction = async (query, dataLoader) => {
     rows: groups.map(({stepIndex, keys, scores}) => ({
       stepIndex,
       keys,
-      value: averageTeamHealthScore(scores)
+      value: scores ? averageTeamHealthScore(scores) : REPORT_HIDDEN_VALUE
     })),
     estimatedCount: 0,
     labels,

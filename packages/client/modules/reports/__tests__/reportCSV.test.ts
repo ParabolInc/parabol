@@ -1,4 +1,4 @@
-import type {ReportSpec} from '../../../shared/reports/reportCatalog'
+import {REPORT_HIDDEN_VALUE, type ReportSpec} from '../../../shared/reports/reportCatalog'
 import {toReportCSV} from '../reportCSV'
 
 const spec: ReportSpec = {
@@ -34,4 +34,9 @@ test('a table becomes CSV with a header, dates as days and quotes where needed',
 test('a name a spreadsheet would run as a formula is quoted', () => {
   const csv = toReportCSV(spec, ['Team'], null, [row('=HYPERLINK("x")', [1, null])])
   expect(csv.split('\r\n')[1]).toBe(`"'=HYPERLINK(""x"")",1,`)
+})
+
+test('a value held back for anonymity says so, unlike one with no data', () => {
+  const csv = toReportCSV(spec, ['Team'], null, [row('Design', [REPORT_HIDDEN_VALUE, null])])
+  expect(csv.split('\r\n')[1]).toBe('Design,Hidden,')
 })

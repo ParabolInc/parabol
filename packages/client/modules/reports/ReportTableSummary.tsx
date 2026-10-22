@@ -1,6 +1,6 @@
 import {REPORT_MEASURES, type ReportSpec} from '../../shared/reports/reportCatalog'
 import {formatReportKey} from './formatReportKey'
-import {formatReportValue} from './formatReportValue'
+import ReportValue from './ReportValue'
 import {type ReportResultRow, sumReportValues} from './reportRows'
 import type {ReportStepLength} from './reportSpecLabels'
 
@@ -29,7 +29,7 @@ const ReportTableSummary = ({spec, step, rows}: Props) => {
           return (
             <div key={measure} className='flex flex-col'>
               <span className='font-bold text-2xl tabular-nums'>
-                {formatReportValue(measure, value)}
+                <ReportValue measure={measure} value={value} />
               </span>
               <span className='text-fg-secondary text-sm'>{REPORT_MEASURES[measure].label}</span>
             </div>
@@ -52,7 +52,7 @@ const ReportTableSummary = ({spec, step, rows}: Props) => {
               .join(' › ')}
           </span>
           <span className='whitespace-nowrap text-fg-secondary tabular-nums'>
-            {formatReportValue(measures[0]!, row.values[0])}
+            <ReportValue measure={measures[0]!} value={row.values[0]} />
           </span>
         </div>
       ))}

@@ -9,6 +9,7 @@ import ReportLineView from './ReportLineView'
 import ReportNumberView from './ReportNumberView'
 import ReportTableSummary from './ReportTableSummary'
 import ReportTableView from './ReportTableView'
+import {withoutHiddenValues} from './reportRows'
 import {formatReportBreakdown} from './reportSpecLabels'
 
 interface Props {
@@ -65,13 +66,27 @@ const ReportView = ({spec, resultRef, isCompact = false, lastHeldByTeamId}: Prop
     return <p className='m-0 py-6 text-center text-fg-muted text-sm'>Nothing to show</p>
   }
   if (spec.showAs === 'NUMBER') {
-    return <ReportNumberView spec={spec} rows={rows} isCompact={isCompact} />
+    return <ReportNumberView spec={spec} rows={withoutHiddenValues(rows)} isCompact={isCompact} />
   }
   if (spec.showAs === 'LINE') {
-    return <ReportLineView spec={spec} step={step} rows={rows} isCompact={isCompact} />
+    return (
+      <ReportLineView
+        spec={spec}
+        step={step}
+        rows={withoutHiddenValues(rows)}
+        isCompact={isCompact}
+      />
+    )
   }
   if (spec.showAs === 'BARS') {
-    return <ReportBarsView spec={spec} step={step} rows={rows} isCompact={isCompact} />
+    return (
+      <ReportBarsView
+        spec={spec}
+        step={step}
+        rows={withoutHiddenValues(rows)}
+        isCompact={isCompact}
+      />
+    )
   }
   if (spec.showAs === 'HEATMAP') {
     return (
@@ -90,7 +105,7 @@ const ReportView = ({spec, resultRef, isCompact = false, lastHeldByTeamId}: Prop
       <ReportFlowView
         spec={spec}
         breakdownNames={breakdownNames}
-        rows={rows}
+        rows={withoutHiddenValues(rows)}
         isCompact={isCompact}
       />
     )

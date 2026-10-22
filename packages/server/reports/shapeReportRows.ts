@@ -2,6 +2,7 @@ import ms from 'ms'
 import {
   isReportTimeDimension,
   MAX_REPORT_SERIES,
+  REPORT_HIDDEN_VALUE,
   REPORT_MEASURES,
   REPORT_TASK_AGES,
   type ReportDimension,
@@ -17,7 +18,8 @@ export const applyReportConditions = (rows: ReportRow[], spec: ReportSpec, now: 
   if (where.length === 0) return rows
   return rows.filter((row) =>
     where.every(({measure, operator, value}) => {
-      const rowValue = row.values[measures.indexOf(measure)] ?? null
+      const measured = row.values[measures.indexOf(measure)] ?? null
+      const rowValue = measured === REPORT_HIDDEN_VALUE ? null : measured
       if (operator === 'OLDER_THAN_DAYS') {
         return rowValue === null || rowValue < now.getTime() - value * DAY_MS
       }
@@ -74,7 +76,7 @@ const totalsAt = (rows: ReportRow[], spec: ReportSpec, position: number) => {
     if (!key) continue
     const entry = entries.get(key.value) ?? {label: key.label, values: []}
     const value = row.values[0]
-    if (value != null) entry.values.push(value)
+    if (value != null && value !== REPORT_HIDDEN_VALUE) entry.values.push(value)
     entries.set(key.value, entry)
   }
   return new Map(

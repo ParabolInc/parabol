@@ -1,4 +1,5 @@
 import type {ReportView_result$data} from '../../__generated__/ReportView_result.graphql'
+import {REPORT_HIDDEN_VALUE} from '../../shared/reports/reportCatalog'
 
 export type ReportResultRow = ReportView_result$data['rows'][number]
 export type ReportResultKey = ReportResultRow['keys'][number]
@@ -13,8 +14,25 @@ export const distinctKeysAt = (rows: readonly ReportResultRow[], position: numbe
   return [...keys.values()]
 }
 
+export const isHiddenReportValue = (value: number | null | undefined) =>
+  value === REPORT_HIDDEN_VALUE
+
 export const sumReportValues = (values: readonly (number | null | undefined)[]) =>
-  values.reduce<number>((sum, value) => sum + (value ?? 0), 0)
+  values.reduce<number>(
+    (sum, value) => sum + (value == null || isHiddenReportValue(value) ? 0 : value),
+    0
+  )
+
+const toShownValue = (value: number | null | undefined) =>
+  isHiddenReportValue(value) ? null : value
+
+// Charts have no cell to mark, so a hidden value is drawn as nothing
+export const withoutHiddenValues = (rows: readonly ReportResultRow[]) =>
+  rows.map((row) => ({
+    ...row,
+    values: row.values.map(toShownValue),
+    previousValues: row.previousValues?.map(toShownValue)
+  }))
 
 // Drops the series with nothing in them, like a meeting type no one ran, unless that leaves none
 export const withValues = (series: ReportResultKey[], rows: readonly ReportResultRow[]) => {

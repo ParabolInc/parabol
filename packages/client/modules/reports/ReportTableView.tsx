@@ -3,7 +3,8 @@ import {cn} from '../../ui/cn'
 import {formatReportKey, PARTIAL_STEP_NOTE} from './formatReportKey'
 import {formatReportValue} from './formatReportValue'
 import ReportDelta from './ReportDelta'
-import {type ReportResultRow, sumReportValues} from './reportRows'
+import ReportValue from './ReportValue'
+import {isHiddenReportValue, type ReportResultRow, sumReportValues} from './reportRows'
 import type {ReportStepLength} from './reportSpecLabels'
 
 interface Props {
@@ -71,10 +72,14 @@ const ReportTableView = ({spec, breakdownNames, step, rows}: Props) => {
                   return (
                     <td key={measure} className='py-2 pl-4 text-right tabular-nums'>
                       <span className='inline-flex flex-col items-end'>
-                        {formatReportValue(measure, value)}
-                        {compareTo && value !== null && previousValue !== null && (
-                          <ReportDelta change={value - previousValue} measure={measure} />
-                        )}
+                        <ReportValue measure={measure} value={value} />
+                        {compareTo &&
+                          value !== null &&
+                          previousValue !== null &&
+                          !isHiddenReportValue(value) &&
+                          !isHiddenReportValue(previousValue) && (
+                            <ReportDelta change={value - previousValue} measure={measure} />
+                          )}
                       </span>
                     </td>
                   )

@@ -1,3 +1,4 @@
+import {REPORT_HIDDEN_VALUE} from '../../../client/shared/reports/reportCatalog'
 import type {ReportMeasureFunction} from '../reportMeasureTypes'
 import {groupTeamHealthAnswers, type PickedTeamHealthCheck} from './teamHealthAnswers'
 
@@ -17,7 +18,11 @@ const countHealthAnswers: ReportMeasureFunction = async (query, dataLoader) => {
   })
   const {groups, hiddenTeamIds, labels} = await groupTeamHealthAnswers(picks, query, dataLoader)
   return {
-    rows: groups.map(({stepIndex, keys, scores}) => ({stepIndex, keys, value: scores.length})),
+    rows: groups.map(({stepIndex, keys, scores}) => ({
+      stepIndex,
+      keys,
+      value: scores ? scores.length : REPORT_HIDDEN_VALUE
+    })),
     estimatedCount: 0,
     labels,
     hiddenTeamIds

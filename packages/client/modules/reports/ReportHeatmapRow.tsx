@@ -1,8 +1,9 @@
 import {REPORT_MEASURES, type ReportMeasure} from '../../shared/reports/reportCatalog'
 import {formatReportValue} from './formatReportValue'
 import ReportHeatmapCell from './ReportHeatmapCell'
+import ReportValue from './ReportValue'
 import type {ReportHeatmapRow as ReportHeatmapRowData} from './reportHeatmapGrid'
-import type {ReportResultKey} from './reportRows'
+import {isHiddenReportValue, type ReportResultKey} from './reportRows'
 
 interface Props {
   row: ReportHeatmapRowData
@@ -41,9 +42,11 @@ const ReportHeatmapRow = ({row, columns, measure, max, hasTotal, lastHeld}: Prop
           />
         ) : (
           <td className='pl-2 text-right font-semibold tabular-nums'>
-            {kind === 'count' || kind === 'distinct'
-              ? (total?.value ?? 0).toLocaleString()
-              : formatReportValue(measure, total?.value)}
+            {(kind === 'count' || kind === 'distinct') && !isHiddenReportValue(total?.value) ? (
+              (total?.value ?? 0).toLocaleString()
+            ) : (
+              <ReportValue measure={measure} value={total?.value} />
+            )}
           </td>
         ))}
       {lastHeld !== undefined && (

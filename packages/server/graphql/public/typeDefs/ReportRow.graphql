@@ -8,7 +8,8 @@ type ReportRow {
   keys: [ReportRowKey!]!
 
   """
-  One value for each measure, in order. Null when there is nothing to measure
+  One value for each measure, in order. Null when there is nothing to measure, and -1 when too few people
+  answered the Team Health checks behind it to show it
   """
   values: [Float]!
 

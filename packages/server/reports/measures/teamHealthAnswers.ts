@@ -42,7 +42,7 @@ const loadCheckAnswers = async (checkIds: string[], dataLoader: RootDataLoader) 
 }
 
 // The scored answers in the picked checks, split by step and the report's breakdown. A check too few people
-// answered adds nothing, and its team is named as hidden
+// answered adds nothing: its team is named as hidden, and so is any group only hidden checks fall in
 export const groupTeamHealthAnswers = async (
   picks: PickedTeamHealthCheck[],
   {orgId, dimensions, filters}: ReportMeasureQuery,
@@ -64,21 +64,19 @@ export const groupTeamHealthAnswers = async (
   }
   const categoryFilter = filters.find(({dimension}) => dimension === 'CATEGORY')
   const hiddenTeamIds = new Set<string>()
-  const groups = new Map<string, {stepIndex: number; keys: string[]; scores: number[]}>()
+  // a group's scores stay null while only hidden checks fall in it, so the answers of others still show
+  const groups = new Map<string, {stepIndex: number; keys: string[]; scores: number[] | null}>()
   for (const {stepIndex, teamId, checkId} of picks) {
     const checkAnswers = answers.get(checkId)
     if (!checkAnswers) continue
-    if (checkAnswers.isHidden) {
-      hiddenTeamIds.add(teamId)
-      continue
-    }
+    if (checkAnswers.isHidden) hiddenTeamIds.add(teamId)
     for (const [categoryId, scores] of checkAnswers.scoresByCategoryId) {
       const category = String(categoryId)
       if (categoryFilter && !categoryFilter.values.includes(category)) continue
       const keys = dimensions.map((dimension) => keyOf(dimension, teamId, category))
       const groupKey = JSON.stringify([stepIndex, ...keys])
-      const group = groups.get(groupKey) ?? {stepIndex, keys, scores: []}
-      group.scores.push(...scores)
+      const group = groups.get(groupKey) ?? {stepIndex, keys, scores: null}
+      if (!checkAnswers.isHidden) group.scores = [...(group.scores ?? []), ...scores]
       groups.set(groupKey, group)
     }
   }

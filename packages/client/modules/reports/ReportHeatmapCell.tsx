@@ -6,8 +6,10 @@ import {
 import {cn} from '../../ui/cn'
 import {formatReportValue} from './formatReportValue'
 import ReportDelta from './ReportDelta'
+import ReportValue from './ReportValue'
 import type {ReportHeatmapValue} from './reportHeatmapGrid'
 import {heatClassName} from './reportHeatmapShades'
+import {isHiddenReportValue} from './reportRows'
 
 interface Props {
   measure: ReportMeasure
@@ -18,8 +20,9 @@ interface Props {
 
 const ReportHeatmapCell = ({measure, cell, max, isPartial}: Props) => {
   const {kind} = REPORT_MEASURES[measure]
-  const value = cell?.value ?? null
-  const previous = cell?.previous ?? null
+  const isHidden = isHiddenReportValue(cell?.value)
+  const value = isHidden ? null : (cell?.value ?? null)
+  const previous = isHiddenReportValue(cell?.previous) ? null : (cell?.previous ?? null)
   // an empty count is left blank, but a share, median or score of 0 says something
   const text = isReportAdditiveMeasure(measure)
     ? value || ''
@@ -34,7 +37,7 @@ const ReportHeatmapCell = ({measure, cell, max, isPartial}: Props) => {
           heatClassName(kind, value, max)
         )}
       >
-        {text}
+        {isHidden ? <ReportValue measure={measure} value={cell?.value} /> : text}
         {value !== null && previous !== null && value !== previous && (
           <ReportDelta
             change={value - previous}
