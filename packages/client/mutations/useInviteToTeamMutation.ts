@@ -1,21 +1,17 @@
 import graphql from 'babel-plugin-relay/macro'
-import {commitMutation} from 'react-relay'
+import {commitMutation, type UseMutationConfig, useMutation} from 'react-relay'
 import {matchPath} from 'react-router'
-import type {InviteToTeamMutation as TInviteToTeamMutation} from '../__generated__/InviteToTeamMutation.graphql'
-import type {InviteToTeamMutation_notification$data} from '../__generated__/InviteToTeamMutation_notification.graphql'
-import type {
-  LocalHandlers,
-  OnNextHandler,
-  OnNextNavigateContext,
-  SharedUpdater,
-  StandardMutation
-} from '../types/relayMutations'
+import type {MutationConfig, SelectorStoreUpdater} from 'relay-runtime'
+import type {useInviteToTeamMutation as TInviteToTeamMutation} from '../__generated__/useInviteToTeamMutation.graphql'
+import type {useInviteToTeamMutation_notification$data} from '../__generated__/useInviteToTeamMutation_notification.graphql'
+import type Atmosphere from '../Atmosphere'
+import type {OnNextHandler, OnNextNavigateContext, SharedUpdater} from '../types/relayMutations'
 import AcceptTeamInvitationMutation from './AcceptTeamInvitationMutation'
 import handleAddNotifications from './handlers/handleAddNotifications'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 
 graphql`
-  fragment InviteToTeamMutation_notification on InviteToTeamPayload {
+  fragment useInviteToTeamMutation_notification on InviteToTeamPayload {
     teamInvitationNotification {
       ...TeamInvitationNotification_notification
       id
@@ -35,20 +31,21 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation InviteToTeamMutation($meetingId: ID, $teamId: ID!, $invitees: [Email!]!) {
-    inviteToTeam(meetingId: $meetingId, invitees: $invitees, teamId: $teamId) {
-      error {
+  mutation useInviteToTeamMutation($meetingId: ID, $teamId: ID!, $invitees: [Email!]!) {
+    inviteToTeam(meetingId: $meetingId, teamId: $teamId, invitees: $invitees) {
+      invitees {
+        email
+        status
         message
+        suggestedEmail
       }
-      invitees
       removedSuggestedActionId
-      ...InviteToTeamMutation_notification @relay(mask: false)
     }
   }
 `
 
 const popInvitationReceivedToast = (
-  notification: InviteToTeamMutation_notification$data['teamInvitationNotification'] | null,
+  notification: useInviteToTeamMutation_notification$data['teamInvitationNotification'] | null,
   {atmosphere, navigate}: OnNextNavigateContext
 ) => {
   if (!notification) return
@@ -74,14 +71,14 @@ const popInvitationReceivedToast = (
 }
 
 export const inviteToTeamNotificationUpdater: SharedUpdater<
-  InviteToTeamMutation_notification$data
+  useInviteToTeamMutation_notification$data
 > = (payload, {store}) => {
   const teamInvitationNotification = payload.getLinkedRecord('teamInvitationNotification')
   handleAddNotifications(teamInvitationNotification, store)
 }
 
 export const inviteToTeamNotificationOnNext: OnNextHandler<
-  InviteToTeamMutation_notification$data,
+  useInviteToTeamMutation_notification$data,
   OnNextNavigateContext
 > = (payload, {atmosphere, navigate}) => {
   const {teamInvitationNotification} = payload
@@ -105,27 +102,24 @@ export const inviteToTeamNotificationOnNext: OnNextHandler<
   }
 }
 
-const InviteToTeamMutation: StandardMutation<TInviteToTeamMutation, LocalHandlers> = (
-  atmosphere,
-  variables,
-  {onError, onCompleted}
-) => {
-  return commitMutation<TInviteToTeamMutation>(atmosphere, {
-    mutation,
-    variables,
-    updater: (store) => {
-      const payload = store.getRootField('inviteToTeam')
-      if (!payload) return
-      const removedSuggestedActionId = payload.getValue('removedSuggestedActionId')
-      handleRemoveSuggestedActions(removedSuggestedActionId, store)
-    },
-    onCompleted: (res, errors) => {
-      if (onCompleted) {
-        onCompleted(res, errors)
-      }
-    },
-    onError
-  })
+const updater: SelectorStoreUpdater<TInviteToTeamMutation['response']> = (store) => {
+  const payload = store.getRootField('inviteToTeam')
+  if (!payload) return
+  handleRemoveSuggestedActions(payload.getValue('removedSuggestedActionId'), store)
 }
 
-export default InviteToTeamMutation
+// For callers outside of React, like a snackbar action
+export const commitInviteToTeamMutation = (
+  atmosphere: Atmosphere,
+  config: Omit<MutationConfig<TInviteToTeamMutation>, 'mutation'>
+) => commitMutation<TInviteToTeamMutation>(atmosphere, {mutation, updater, ...config})
+
+const useInviteToTeamMutation = () => {
+  const [commit, submitting] = useMutation<TInviteToTeamMutation>(mutation)
+  const execute = (config: UseMutationConfig<TInviteToTeamMutation>) => {
+    return commit({updater, ...config})
+  }
+  return [execute, submitting] as const
+}
+
+export default useInviteToTeamMutation

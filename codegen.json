@@ -178,6 +178,7 @@
           "IntegrationProviderWebhook": "../../postgres/types/IntegrationProvider#TIntegrationProvider",
           "InspirationItem": "../../postgres/types/index#InspirationItem as InspirationItemDB",
           "InviteToTeamPayload": "./types/InviteToTeamPayload#InviteToTeamPayloadSource",
+          "InviteToTeamSuccess": "./types/InviteToTeamSuccess#InviteToTeamSuccessSource",
           "JiraIssue": "./types/JiraIssue#JiraIssueSource",
           "JiraRemoteAvatarUrls": "./types/JiraRemoteAvatarUrls#JiraRemoteAvatarUrlsSource",
           "JiraRemoteProject": "./types/JiraRemoteProject#JiraRemoteProjectSource",

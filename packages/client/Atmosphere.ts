@@ -26,7 +26,7 @@ import {
 } from 'relay-runtime'
 import type StrictEventEmitter from 'strict-event-emitter-types'
 import type {AtmosphereSignOutMutation} from './__generated__/AtmosphereSignOutMutation.graphql'
-import type {InviteToTeamMutation_notification$data} from './__generated__/InviteToTeamMutation_notification.graphql'
+import type {useInviteToTeamMutation_notification$data} from './__generated__/useInviteToTeamMutation_notification.graphql'
 import type {Snack, SnackbarRemoveFn} from './components/Snackbar'
 import {AuthToken} from './types/AuthToken'
 import type {NavigateFn} from './types/relayMutations'
@@ -102,7 +102,9 @@ export interface AtmosphereEvents {
   removeSnackbar: (filterFn: SnackbarRemoveFn) => void
   focusAgendaInput: () => void
   inviteToTeam: (
-    notification: NonNullable<InviteToTeamMutation_notification$data['teamInvitationNotification']>
+    notification: NonNullable<
+      useInviteToTeamMutation_notification$data['teamInvitationNotification']
+    >
   ) => void
   newSubscriptionClient: () => void
   removeGitHubRepo: () => void

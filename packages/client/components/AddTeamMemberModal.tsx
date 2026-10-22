@@ -1,24 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
-import type * as React from 'react'
-import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import useAtmosphere from '~/hooks/useAtmosphere'
-import useMutationProps from '~/hooks/useMutationProps'
-import {Error as ErrorIcon, Warning} from '~/ui/icons'
 import modalTeamInvitePng from '../../../static/images/illustrations/illus-modal-team-invite.png'
 import type {AddTeamMemberModal_teamMembers$key} from '../__generated__/AddTeamMemberModal_teamMembers.graphql'
-import type {InviteToTeamMutation as TInviteToTeamMutation} from '../__generated__/InviteToTeamMutation.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
-import InviteToTeamMutation from '../mutations/InviteToTeamMutation'
-import type {CompletedHandler} from '../types/relayMutations'
-import {Button} from '../ui/Button/Button'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
-import parseEmailAddressList from '../utils/parseEmailAddressList'
-import plural from '../utils/plural'
-import AddTeamMemberModalSuccess from './AddTeamMemberModalSuccess'
-import BasicTextArea from './InputField/BasicTextArea'
+import AddTeamMemberEmailInvites from './AddTeamMemberEmailInvites'
 import MassInvitationTokenLinkRoot from './MassInvitationTokenLinkRoot'
 
 interface Props {
@@ -44,168 +32,38 @@ const AddTeamMemberModal = (props: Props) => {
     `,
     teamMembersRef
   )
-  const [pendingSuccessfulInvitations, setPendingSuccessfulInvitations] = useState([] as string[])
-  const [successfulInvitations, setSuccessfulInvitations] = useState<string[] | null>(null)
-  const [isSubmitted, setIsSubmitted] = useState(false)
-  const [rawInvitees, setRawInvitees] = useState('')
-  const [invitees, setInvitees] = useState([] as string[])
-  const {error, onCompleted, onError, submitMutation, submitting} = useMutationProps()
-  const atmosphere = useAtmosphere()
   const showIllustration = useBreakpoint(INVITE_DIALOG_BREAKPOINT)
-
-  const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    if (isSubmitted) setIsSubmitted(false)
-    const nextValue = e.target.value
-    if (rawInvitees === nextValue) return
-    const {parsedInvitees, invalidEmailExists} = parseEmailAddressList(nextValue)
-    const allInvitees = parsedInvitees
-      ? (parsedInvitees.map((invitee: any) => invitee.address) as string[])
-      : []
-    const teamEmailSet = new Set(teamMembers.map(({user}) => user.email))
-    const uniqueInvitees = Array.from(new Set(allInvitees))
-    if (invalidEmailExists) {
-      const lastValidEmail = uniqueInvitees[uniqueInvitees.length - 1]
-      lastValidEmail
-        ? onError(new Error(`Invalid email(s) after ${lastValidEmail}`))
-        : onError(new Error(`Invalid email(s)`))
-    } else {
-      onCompleted()
-    }
-    const offTeamInvitees = uniqueInvitees.filter((email) => !teamEmailSet.has(email))
-    const alreadyInvitedEmails = uniqueInvitees.filter((email) => teamEmailSet.has(email))
-
-    setRawInvitees(nextValue)
-    setInvitees(offTeamInvitees)
-    if (!invalidEmailExists) {
-      if (alreadyInvitedEmails.length === 1) {
-        onError(new Error(`${alreadyInvitedEmails} is already on the team`))
-      } else if (alreadyInvitedEmails.length === 2) {
-        onError(
-          new Error(
-            `${alreadyInvitedEmails[0]} and ${alreadyInvitedEmails[1]} are already on the team`
-          )
-        )
-      } else if (alreadyInvitedEmails.length > 2) {
-        onError(
-          new Error(
-            `${alreadyInvitedEmails[0]} and ${
-              alreadyInvitedEmails.length - 1
-            } other emails are already on the team`
-          )
-        )
-      }
-    }
-  }
-
-  const sendInvitations = () => {
-    if (invitees.length === 0) return
-    submitMutation()
-    const handleCompleted: CompletedHandler<TInviteToTeamMutation['response']> = (res) => {
-      setIsSubmitted(true)
-      onCompleted()
-      if (res) {
-        const {inviteToTeam} = res
-        if (inviteToTeam.invitees?.length === invitees.length) {
-          setSuccessfulInvitations(pendingSuccessfulInvitations.concat(inviteToTeam.invitees))
-        } else {
-          const goodInvitees = invitees.filter((invitee) =>
-            inviteToTeam.invitees?.includes(invitee)
-          )
-          const badInvitees = invitees.filter(
-            (invitee) => !inviteToTeam.invitees?.includes(invitee)
-          )
-
-          onError(
-            new Error(
-              `Could not send an invitation to the above ${plural(
-                badInvitees.length,
-                'email'
-              )}. Try sharing the link`
-            )
-          )
-          setInvitees(badInvitees)
-          setRawInvitees(badInvitees.join(', '))
-          setPendingSuccessfulInvitations(pendingSuccessfulInvitations.concat(goodInvitees))
-        }
-      }
-    }
-    InviteToTeamMutation(
-      atmosphere,
-      {meetingId, teamId, invitees},
-      {onError, onCompleted: handleCompleted}
-    )
-  }
-
-  const title = invitees.length <= 1 ? 'Send Invitation' : `Send ${invitees.length} Invitations`
+  const teamEmails = teamMembers.map(({user}) => user.email)
   return (
     <Dialog isOpen={isOpen} onClose={onClose}>
       <DialogContent className={showIllustration ? 'md:w-[816px] md:max-w-[816px]' : ''}>
-        {successfulInvitations ? (
-          <AddTeamMemberModalSuccess
-            onClose={onClose}
-            successfulInvitations={successfulInvitations}
-          />
-        ) : (
-          <div className='flex flex-row gap-6'>
-            {showIllustration && (
-              <div
-                className='w-[339px] shrink-0 rounded-lg bg-center bg-lilac-100 bg-no-repeat'
-                style={{
-                  backgroundImage: `url(${modalTeamInvitePng})`,
-                  backgroundSize: '80%'
-                }}
-              />
-            )}
-            <div className='min-w-0 flex-1'>
-              <DialogTitle className='mb-2 text-2xl leading-8'>Invite to Team</DialogTitle>
-              <div className='flex items-center'>
-                <div className='w-full min-w-0'>
-                  <h3 className='m-0 flex items-center pb-[3px] font-semibold text-[15px] leading-[21px]'>
-                    Share this link
-                  </h3>
-                  <p className='m-0 pb-4 text-[13px] leading-4'>This link expires in 30 days.</p>
-                  <div className='mb-8'>
-                    <MassInvitationTokenLinkRoot meetingId={meetingId} teamId={teamId} />
-                  </div>
-
-                  <h3 className='m-0 flex items-center pb-[3px] font-semibold text-[15px] leading-[21px]'>
-                    Or, send invites by email
-                  </h3>
-                  <p className='m-0 pb-4 text-[13px] leading-4'>
-                    Email invitations expire in 30 days.
-                  </p>
-                  <BasicTextArea
-                    autoFocus
-                    name='rawInvitees'
-                    onChange={onChange}
-                    placeholder='email@example.co, another@example.co'
-                    value={rawInvitees}
-                  />
-                  {error && (
-                    <div
-                      className={`mt-2 flex items-center p-2 ${!isSubmitted ? 'text-gold-500' : 'text-fg-error'}`}
-                    >
-                      <div className='mr-2 h-6 w-6'>
-                        {isSubmitted ? <ErrorIcon /> : <Warning />}
-                      </div>
-                      <div className='font-semibold text-sm'>{error.message}</div>
-                    </div>
-                  )}
-                  <div className='mt-6 flex justify-start'>
-                    <Button
-                      variant='primary'
-                      size='md'
-                      onClick={sendInvitations}
-                      disabled={invitees.length === 0 || submitting}
-                    >
-                      {title}
-                    </Button>
-                  </div>
-                </div>
-              </div>
+        <div className='flex flex-row gap-6'>
+          {showIllustration && (
+            <div
+              className='w-[339px] shrink-0 rounded-lg bg-center bg-lilac-100 bg-no-repeat'
+              style={{
+                backgroundImage: `url(${modalTeamInvitePng})`,
+                backgroundSize: '80%'
+              }}
+            />
+          )}
+          <div className='min-w-0 flex-1'>
+            <DialogTitle className='mb-2 text-2xl leading-8'>Invite to Team</DialogTitle>
+            <h3 className='m-0 flex items-center pb-[3px] font-semibold text-[15px] leading-[21px]'>
+              Share this link
+            </h3>
+            <p className='m-0 pb-4 text-[13px] leading-4'>This link expires in 30 days.</p>
+            <div className='mb-8'>
+              <MassInvitationTokenLinkRoot meetingId={meetingId} teamId={teamId} />
             </div>
+            <AddTeamMemberEmailInvites
+              meetingId={meetingId}
+              teamId={teamId}
+              teamEmails={teamEmails}
+              onClose={onClose}
+            />
           </div>
-        )}
+        </div>
       </DialogContent>
     </Dialog>
   )

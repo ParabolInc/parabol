@@ -1,34 +1,9 @@
 """
-The result of inviting one or more users to join a team
+Sent to an existing Parabol user when a team invites them
 """
 type InviteToTeamPayload {
   """
-  Error information if the mutation failed
-  """
-  error: StandardMutationError
-
-  """
-  The team the inviter is inviting the invitee to
-  """
-  team: Team
-
-  """
-  A list of email addresses the invitations were sent to
-  """
-  invitees: [Email!]
-
-  """
-  the notification ID if this payload is sent to a subscriber, else null
-  """
-  teamInvitationNotificationId: ID
-
-  """
-  The notification sent to the invitee if they are a parabol user
+  The notification sent to the invitee
   """
   teamInvitationNotification: NotificationTeamInvitation
-
-  """
-  the `invite your team` suggested action that was removed, if any
-  """
-  removedSuggestedActionId: ID
 }

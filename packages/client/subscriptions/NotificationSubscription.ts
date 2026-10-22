@@ -19,10 +19,6 @@ import {
 } from '../mutations/CreateTaskMutation'
 import handleAddNotifications from '../mutations/handlers/handleAddNotifications'
 import {
-  inviteToTeamNotificationOnNext,
-  inviteToTeamNotificationUpdater
-} from '../mutations/InviteToTeamMutation'
-import {
   removeOrgUsersNotificationOnNext,
   removeOrgUsersNotificationUpdater
 } from '../mutations/RemoveOrgUsersMutation'
@@ -34,6 +30,10 @@ import {popNotificationToastOnNext} from '../mutations/toasts/popNotificationToa
 import {updateNotificationToastOnNext} from '../mutations/toasts/updateNotificationToast'
 import {handleArchivePage} from '../mutations/useArchivePageMutation'
 import {handleCreatePage} from '../mutations/useCreatePageMutation'
+import {
+  inviteToTeamNotificationOnNext,
+  inviteToTeamNotificationUpdater
+} from '../mutations/useInviteToTeamMutation'
 import {handleUpdatePage} from '../mutations/useUpdatePageMutation'
 import type {OnNextHandler, OnNextNavigateContext, SharedUpdater} from '../types/relayMutations'
 import {createSubscription} from './createSubscription'
@@ -119,7 +119,7 @@ const subscription = graphql`
         ...EndRetrospectiveMutation_notification @relay(mask: false)
       }
       InviteToTeamPayload {
-        ...InviteToTeamMutation_notification @relay(mask: false)
+        ...useInviteToTeamMutation_notification @relay(mask: false)
       }
       RemoveOrgUsersSuccess {
         ...RemoveOrgUsersMutation_notification @relay(mask: false)
