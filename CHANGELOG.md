@@ -5,6 +5,22 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.5.2](https://github.com/ParabolInc/parabol/compare/v15.5.1...v15.5.2) (2026-10-22)
+
+
+### Fixed
+
+* clearer approved-domain error and no personal org for invited SSO users ([#13728](https://github.com/ParabolInc/parabol/issues/13728)) ([a6f11b8](https://github.com/ParabolInc/parabol/commit/a6f11b867696531430ddb56571108712cfa800d6))
+
+## [15.5.1](https://github.com/ParabolInc/parabol/compare/v15.5.0...v15.5.1) (2026-10-21)
+
+
+### Fixed
+
+* fit the org Teams table on phones ([#13714](https://github.com/ParabolInc/parabol/issues/13714)) ([4972a73](https://github.com/ParabolInc/parabol/commit/4972a73cd19e895292ff8bebaaf88c676306f45b))
+* stop nesting a &lt;td&gt; inside a &lt;td&gt; in org team rows ([#13712](https://github.com/ParabolInc/parabol/issues/13712)) ([f471fbe](https://github.com/ParabolInc/parabol/commit/f471fbe5683607544f0e3aedeb035318ec45e2d7))
+* tag PAT requests in Datadog and test lastUsedAt ([#13680](https://github.com/ParabolInc/parabol/issues/13680)) ([f655d95](https://github.com/ParabolInc/parabol/commit/f655d9517a17267269a591e1b4fe96f3e81670af))
+
 ## [15.5.0](https://github.com/ParabolInc/parabol/compare/v15.4.0...v15.5.0) (2026-10-20)
 
 

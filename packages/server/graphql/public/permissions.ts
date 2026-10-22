@@ -14,6 +14,7 @@ import isSuperUser from './rules/isSuperUser'
 import {isTeamMember} from './rules/isTeamMember'
 import {isTeamMemberOfMeeting} from './rules/isTeamMemberOfMeeting'
 import {isTeamMemberOrOrgLeader} from './rules/isTeamMemberOrOrgLeader'
+import {isTrue} from './rules/isTrue'
 import {isUser} from './rules/isUser'
 import {isUserViewer} from './rules/isUserViewer'
 import {isViewerBillingLeader} from './rules/isViewerBillingLeader'
@@ -500,6 +501,16 @@ const permissionMap: PermissionMap<Resolvers> = {
     teamLead: or(
       isTeamMember<'Team.teamLead'>('source.id'),
       isViewerBillingLeader<'Team.teamLead'>('source.orgId')
+    ),
+    teamMembersCount: or(
+      isTeamMember<'Team.teamMembersCount'>('source.id'),
+      isViewerBillingLeader<'Team.teamMembersCount'>('source.orgId'),
+      isSuperUser,
+      // anyone on the org can join a public team and see who is on it
+      and(
+        isTrue<'Team.teamMembersCount'>('source.isPublic'),
+        isViewerOnOrg<'Team.teamMembersCount'>('source.orgId')
+      )
     )
   },
   TeamMember: {
