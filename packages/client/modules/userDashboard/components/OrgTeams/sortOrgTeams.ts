@@ -4,7 +4,7 @@ export type OrgTeamsSortDirection = 'asc' | 'desc'
 interface SortableTeam {
   name: string
   lastMetAt: string | null | undefined
-  teamMembers: readonly unknown[]
+  teamMembersCount: number
 }
 
 const sortOrgTeams = <Team extends SortableTeam>(
@@ -17,7 +17,7 @@ const sortOrgTeams = <Team extends SortableTeam>(
     if (sortBy === 'name') {
       return direction * a.name.localeCompare(b.name)
     } else if (sortBy === 'memberCount') {
-      return direction * (a.teamMembers.length - b.teamMembers.length)
+      return direction * (a.teamMembersCount - b.teamMembersCount)
     } else {
       // lastMetAt
       const aLastMet = a.lastMetAt

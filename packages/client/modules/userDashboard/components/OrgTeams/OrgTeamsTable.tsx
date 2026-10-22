@@ -37,9 +37,7 @@ const OrgTeamsTable = (props: Props) => {
           id
           name
           lastMetAt
-          teamMembers {
-            id
-          }
+          teamMembersCount
           isViewerOnTeam
           ...OrgTeamsRow_team
         }
