@@ -167,7 +167,10 @@ const permissionMap: PermissionMap<Resolvers> = {
       isTeamMemberOfMeeting<'Mutation.generateSuggestedGroups'>('args.meetingId'),
       rateLimit({perMinute: 10, perHour: 60})
     ),
-    inviteToTeam: rateLimit({perMinute: 10, perHour: 100}),
+    inviteToTeam: and(
+      or(isTeamMember<'Mutation.inviteToTeam'>('args.teamId'), isSuperUser),
+      rateLimit({perMinute: 10, perHour: 100})
+    ),
     joinMeeting: isTeamMemberOfMeeting<'Mutation.joinMeeting'>('args.meetingId'),
     joinTeam: isViewerOnOrg<'Mutation.joinTeam'>('args.teamId', 'teams'),
     linkMattermostChannel: isTeamMember<'Mutation.linkMattermostChannel'>('args.teamId'),

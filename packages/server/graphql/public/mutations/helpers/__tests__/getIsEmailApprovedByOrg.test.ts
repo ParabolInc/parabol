@@ -21,7 +21,13 @@ beforeAll(async () => {
     id: 'testOrgId',
     name: 'testOrgName'
   }
-  const approvedDomains = ['test.com', 'sub.subtest.com', '*.wildtest.com']
+  const approvedDomains = [
+    'test.com',
+    'sub.subtest.com',
+    '*.wildtest.com',
+    '*.multipart.co.uk',
+    'person@gmail.com'
+  ]
   await pg
     .with('User', (qc) => qc.insertInto('User').values(user))
     .with('Organization', (qc) => qc.insertInto('Organization').values(org))
@@ -48,18 +54,27 @@ test.each([
   'foo@abc-test.com',
   'test.com@other.com',
   'foo@other.subtest.com',
-  'foo@notwildtest.com'
+  'foo@notwildtest.com',
+  'foo@co.uk',
+  'foo@other.co.uk',
+  'other@gmail.com'
 ])('Unapproved email fails: %s', async (email) => {
   const dataloader = getNewDataLoader('test')
   const error = await getIsEmailApprovedByOrg(email, 'testOrgId', dataloader)
   expect(error).toBeInstanceOf(Error)
 })
 
-test.each(['foo@test.com', 'foo@sub.subtest.com', 'foo@wildtest.com', 'foo@sub.wildtest.com'])(
-  'Approved email passes: %s',
-  async (email) => {
-    const dataloader = getNewDataLoader('test')
-    const error = await getIsEmailApprovedByOrg(email, 'testOrgId', dataloader)
-    expect(error).toBe(undefined)
-  }
-)
+test.each([
+  'foo@test.com',
+  'Foo@Test.com',
+  'foo@sub.subtest.com',
+  'foo@wildtest.com',
+  'foo@sub.wildtest.com',
+  'foo@multipart.co.uk',
+  'foo@eng.multipart.co.uk',
+  'person@gmail.com'
+])('Approved email passes: %s', async (email) => {
+  const dataloader = getNewDataLoader('test')
+  const error = await getIsEmailApprovedByOrg(email, 'testOrgId', dataloader)
+  expect(error).toBe(undefined)
+})

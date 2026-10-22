@@ -13,6 +13,7 @@ import {
 } from '../components/AdhocTeamMultiSelect/AdhocTeamMultiSelect'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
+import {isRejected} from '../hooks/useTeamInviteeDrafts'
 import {Button} from '../ui/Button/Button'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogActions} from '../ui/Dialog/DialogActions'
@@ -22,6 +23,7 @@ import {Input} from '../ui/Input/Input'
 import {Tooltip} from '../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../ui/Tooltip/TooltipTrigger'
+import plural from '../utils/plural'
 import Toggle from './Toggle/Toggle'
 
 interface Props {
@@ -106,7 +108,21 @@ const AddTeamDialog = (props: Props) => {
           onCompleted(res, errors)
           const error = getGraphQLError(res, errors)
           if (!error) {
-            onTeamAdded(res.addTeam.team.id)
+            const {team, invitees} = res.addTeam
+            const unsentCount = invitees?.filter(isRejected).length ?? 0
+            if (unsentCount > 0) {
+              const unsent = `${unsentCount} ${plural(unsentCount, 'invitation')} ${unsentCount === 1 ? "wasn't" : "weren't"} sent`
+              atmosphere.eventEmitter.emit('addSnackbar', {
+                key: `addTeamInvitees:${team.id}`,
+                autoDismiss: 15,
+                message: `${team.name} was created, but ${unsent}`,
+                action: {
+                  label: 'Review',
+                  callback: () => navigate(`/team/${team.id}`, {state: {inviteResults: invitees}})
+                }
+              })
+            }
+            onTeamAdded(team.id)
           }
         },
         navigate,
