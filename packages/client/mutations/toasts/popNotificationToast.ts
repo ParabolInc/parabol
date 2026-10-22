@@ -17,6 +17,7 @@ graphql`
       ...mapPromptToJoinOrgToToast_notification @relay(mask: false) @alias
       ...mapRequestToJoinOrgToToast_notification @relay(mask: false) @alias
       ...mapTeamHealthResponseDueToToast_notification @relay(mask: false) @alias
+      ...mapTeamInvitationToToast_notification @relay(mask: false) @alias
     }
   }
 `

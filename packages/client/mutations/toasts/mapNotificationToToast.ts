@@ -5,6 +5,7 @@ import type {mapRequestToJoinOrgToToast_notification$data} from '../../__generat
 import type {mapResponseMentionedToToast_notification$data} from '../../__generated__/mapResponseMentionedToToast_notification.graphql'
 import type {mapResponseRepliedToToast_notification$data} from '../../__generated__/mapResponseRepliedToToast_notification.graphql'
 import type {mapTeamHealthResponseDueToToast_notification$data} from '../../__generated__/mapTeamHealthResponseDueToToast_notification.graphql'
+import type {mapTeamInvitationToToast_notification$data} from '../../__generated__/mapTeamInvitationToToast_notification.graphql'
 import type {mapTeamsLimitReminderToToast_notification$data} from '../../__generated__/mapTeamsLimitReminderToToast_notification.graphql'
 import type {Snack} from '../../components/Snackbar'
 import type {OnNextNavigateContext} from '../../types/relayMutations'
@@ -15,6 +16,7 @@ import mapRequestToJoinOrgToToast from './mapRequestToJoinOrgToToast'
 import mapResponseMentionedToToast from './mapResponseMentionedToToast'
 import mapResponseRepliedToToast from './mapResponseRepliedToToast'
 import mapTeamHealthResponseDueToToast from './mapTeamHealthResponseDueToToast'
+import mapTeamInvitationToToast from './mapTeamInvitationToToast'
 import mapTeamsLimitReminderToToast from './mapTeamsLimitReminderToToast'
 
 export type UnmaskedNotification<T> = Omit<T, ' $fragmentType'>
@@ -29,6 +31,7 @@ interface ToastableNotification {
   readonly mapResponseMentionedToToast_notification?: AliasedNotification<mapResponseMentionedToToast_notification$data>
   readonly mapResponseRepliedToToast_notification?: AliasedNotification<mapResponseRepliedToToast_notification$data>
   readonly mapTeamHealthResponseDueToToast_notification?: AliasedNotification<mapTeamHealthResponseDueToToast_notification$data>
+  readonly mapTeamInvitationToToast_notification?: AliasedNotification<mapTeamInvitationToToast_notification$data>
   readonly mapTeamsLimitReminderToToast_notification?: AliasedNotification<mapTeamsLimitReminderToToast_notification$data>
 }
 
@@ -44,6 +47,7 @@ const mapNotificationToToast = (
     mapResponseMentionedToToast_notification: responseMentioned,
     mapResponseRepliedToToast_notification: responseReplied,
     mapTeamHealthResponseDueToToast_notification: teamHealthResponseDue,
+    mapTeamInvitationToToast_notification: teamInvitation,
     mapTeamsLimitReminderToToast_notification: teamsLimitReminder
   } = notification
   if (discussionMentioned) return mapDiscussionMentionedToToast(discussionMentioned, context)
@@ -53,6 +57,7 @@ const mapNotificationToToast = (
   if (responseMentioned) return mapResponseMentionedToToast(responseMentioned, context)
   if (responseReplied) return mapResponseRepliedToToast(responseReplied, context)
   if (teamHealthResponseDue) return mapTeamHealthResponseDueToToast(teamHealthResponseDue, context)
+  if (teamInvitation) return mapTeamInvitationToToast(teamInvitation, context)
   if (teamsLimitReminder) return mapTeamsLimitReminderToToast(teamsLimitReminder, context)
   return null
 }

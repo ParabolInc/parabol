@@ -13,7 +13,6 @@ type NotificationSubscriptionPayload {
   EndCheckInSuccess: EndCheckInSuccess
   EndRetrospectiveSuccess: EndRetrospectiveSuccess
   InvalidateSessionsPayload: InvalidateSessionsPayload
-  InviteToTeamPayload: InviteToTeamPayload
   MeetingStageTimeLimitPayload: MeetingStageTimeLimitPayload
   RemoveOrgUsersSuccess: RemoveOrgUsersSuccess
   RemoveTeamMemberPayload: RemoveTeamMemberPayload

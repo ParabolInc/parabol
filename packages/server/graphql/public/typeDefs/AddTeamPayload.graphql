@@ -21,4 +21,9 @@ type AddTeamPayload {
   The ID of the 'createNewTeam' suggested action that was automatically dismissed because the user fulfilled it by creating a team. Null if no such suggestion existed. Use this to remove the suggestion from the client UI.
   """
   removedSuggestedActionId: ID
+
+  """
+  What happened to each address invited along with the team, in the order given. Null when no one was invited
+  """
+  invitees: [TeamInvitee!]
 }

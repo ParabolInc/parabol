@@ -19,10 +19,6 @@ import {
 } from '../mutations/CreateTaskMutation'
 import handleAddNotifications from '../mutations/handlers/handleAddNotifications'
 import {
-  inviteToTeamNotificationOnNext,
-  inviteToTeamNotificationUpdater
-} from '../mutations/InviteToTeamMutation'
-import {
   removeOrgUsersNotificationOnNext,
   removeOrgUsersNotificationUpdater
 } from '../mutations/RemoveOrgUsersMutation'
@@ -117,9 +113,6 @@ const subscription = graphql`
       }
       EndRetrospectiveSuccess {
         ...EndRetrospectiveMutation_notification @relay(mask: false)
-      }
-      InviteToTeamPayload {
-        ...InviteToTeamMutation_notification @relay(mask: false)
       }
       RemoveOrgUsersSuccess {
         ...RemoveOrgUsersMutation_notification @relay(mask: false)
@@ -345,7 +338,6 @@ const updateHandlers = {
   UpdatePageAccessPayload: updatePageAccessNotificationUpdater,
   EndCheckInSuccess: endCheckInNotificationUpdater,
   EndRetrospectiveSuccess: endRetrospectiveNotificationUpdater,
-  InviteToTeamPayload: inviteToTeamNotificationUpdater,
   MeetingStageTimeLimitPayload: meetingStageTimeLimitUpdater,
   RemoveOrgUsersSuccess: removeOrgUsersNotificationUpdater,
   RemoveTeamMemberPayload: removeTeamMemberNotificationUpdater,
@@ -356,7 +348,6 @@ const updateHandlers = {
 const onNextHandlers = {
   AuthTokenPayload: authTokenNotificationOnNext,
   CreateTaskPayload: createTaskNotificationOnNext,
-  InviteToTeamPayload: inviteToTeamNotificationOnNext,
   RemoveOrgUsersSuccess: removeOrgUsersNotificationOnNext,
   RemoveTeamMemberPayload: removeTeamMemberNotificationOnNext,
   StripeFailPaymentPayload: stripeFailPaymentNotificationOnNext,
