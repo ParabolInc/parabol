@@ -5,6 +5,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.7.0](https://github.com/ParabolInc/parabol/compare/v15.6.0...v15.7.0) (2026-10-23)
+
+
+### Added
+
+* AI summary and sentiment for each Team Health category ([#13738](https://github.com/ParabolInc/parabol/issues/13738)) ([dad789c](https://github.com/ParabolInc/parabol/commit/dad789c890ffa4952c988b8e691573af9de5441c))
+
+
+### Fixed
+
+* keep Activity Library keyword matches from being clobbered by semantic search ([#13746](https://github.com/ParabolInc/parabol/issues/13746)) ([d5a05db](https://github.com/ParabolInc/parabol/commit/d5a05db6c2418ef184e887142557d23eccbd17dd))
+* shorter placeholder ([#13735](https://github.com/ParabolInc/parabol/issues/13735)) ([ccc7750](https://github.com/ParabolInc/parabol/commit/ccc77505f65d3ed6166e1b5cdf5403a963e5c139))
+
+
+### Changed
+
+* **ci:** reuse a webpack cache between test runs ([#13739](https://github.com/ParabolInc/parabol/issues/13739)) ([6176dd0](https://github.com/ParabolInc/parabol/commit/6176dd05c19e0d7268d55d2547874b607f532acc))
+
 ## [15.6.0](https://github.com/ParabolInc/parabol/compare/v15.5.2...v15.6.0) (2026-10-22)
 
 
