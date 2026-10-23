@@ -9,7 +9,9 @@ import type {GcalVideoTypeEnum} from '../../../../__generated__/StartTeamPromptM
 import Checkbox from '../../../../components/Checkbox'
 import BasicTextArea from '../../../../components/InputField/BasicTextArea'
 import StyledError from '../../../../components/StyledError'
+import {isValidEmail, normalizeEmail} from '../../../../shared/emailAddress'
 import parseEmailAddressList from '../../../../utils/parseEmailAddressList'
+import plural from '../../../../utils/plural'
 import DateTimePickers from './DateTimePickers'
 import VideoConferencing from './VideoConferencing'
 
@@ -34,7 +36,8 @@ const GcalSettings = (props: Props) => {
   const [inviteError, setInviteError] = useState<null | string>(null)
 
   const setInvitees = (invitees: string[]) => {
-    onSettingsChanged({...settings, invitees})
+    const validInvitees = Array.from(new Set(invitees.map(normalizeEmail).filter(isValidEmail)))
+    onSettingsChanged({...settings, invitees: validInvitees})
   }
   const setVideoType = (videoType: GcalVideoTypeEnum | null) => {
     onSettingsChanged({...settings, videoType})
@@ -86,11 +89,17 @@ const GcalSettings = (props: Props) => {
       ? (parsedInvitees.map((invitee: any) => invitee.address) as string[])
       : []
     const uniqueInvitees = Array.from(new Set(allInvitees))
+    const unusableInvitees = uniqueInvitees.filter((email) => !isValidEmail(normalizeEmail(email)))
     if (invalidEmailExists) {
       const lastValidEmail = uniqueInvitees[uniqueInvitees.length - 1]
       lastValidEmail
         ? setInviteError(`Invalid email(s) after ${lastValidEmail}`)
         : setInviteError(`Invalid email(s)`)
+    } else if (unusableInvitees.length > 0) {
+      const count = unusableInvitees.length
+      setInviteError(
+        `${unusableInvitees.join(', ')} ${plural(count, "isn't a valid email address", "aren't valid email addresses")} and won't be invited`
+      )
     } else {
       setInviteError(null)
     }

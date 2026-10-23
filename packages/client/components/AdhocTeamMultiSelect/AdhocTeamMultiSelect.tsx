@@ -4,8 +4,8 @@ import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {Check as CheckIcon, Send as SendIcon} from '~/ui/icons'
 import type {AdhocTeamMultiSelect_viewer$key} from '../../__generated__/AdhocTeamMultiSelect_viewer.graphql'
+import {isValidEmail, normalizeEmail} from '../../shared/emailAddress'
 import {Chip} from '../../ui/Chip/Chip'
-import {emailRegex} from '../../validation/regex'
 
 export type Option = {
   id: string | null
@@ -129,9 +129,7 @@ export const AdhocTeamMultiSelect = (props: Props) => {
         typeof value === 'string' ? createCustomOption(value) : value
       )
 
-      const isValid =
-        !normalizedNewValue.length ||
-        normalizedNewValue.some((value) => emailRegex.test(value.email))
+      const isValid = normalizedNewValue.every((value) => isValidEmail(normalizeEmail(value.email)))
       if (!isValid) {
         setError('Please enter a valid email')
         return

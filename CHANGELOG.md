@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.6.0](https://github.com/ParabolInc/parabol/compare/v15.5.2...v15.6.0) (2026-10-22)
+
+
+### Added
+
+* per-address results for team email invitations ([#13733](https://github.com/ParabolInc/parabol/issues/13733)) ([29edf67](https://github.com/ParabolInc/parabol/commit/29edf677a0dacabc9ec2e0eed3d4541fb3a2b29b))
+
+
+### Fixed
+
+* document UWS_HTTP_MAX_HEADERS_SIZE and default it to 8KB ([#13732](https://github.com/ParabolInc/parabol/issues/13732)) ([574daaf](https://github.com/ParabolInc/parabol/commit/574daaf72e4fa28b3c30815b678657ed1a975076))
+
+## [15.5.2](https://github.com/ParabolInc/parabol/compare/v15.5.1...v15.5.2) (2026-10-22)
+
+
+### Fixed
+
+* clearer approved-domain error and no personal org for invited SSO users ([#13728](https://github.com/ParabolInc/parabol/issues/13728)) ([a6f11b8](https://github.com/ParabolInc/parabol/commit/a6f11b867696531430ddb56571108712cfa800d6))
+
 ## [15.5.1](https://github.com/ParabolInc/parabol/compare/v15.5.0...v15.5.1) (2026-10-21)
 
 

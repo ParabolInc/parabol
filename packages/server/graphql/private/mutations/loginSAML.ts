@@ -278,8 +278,8 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
     orgIds.push(orgId)
   }
 
-  const isOrganic = orgIds.length > 0 && !isInvited
-  const authToken = await bootstrapNewUser(tempUser, !isOrganic, dataLoader)
+  const isOrganic = orgIds.length === 0 && !isInvited
+  const authToken = await bootstrapNewUser(tempUser, isOrganic, dataLoader)
 
   await Promise.all(
     orgIds.map((orgId) => adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader))

@@ -2,12 +2,14 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import type {AddOrgMutation as TAddOrgMutation} from '../__generated__/AddOrgMutation.graphql'
 import type {AddOrgMutation_notification$data} from '../__generated__/AddOrgMutation_notification.graphql'
+import {isRejected} from '../hooks/useTeamInviteeDrafts'
 import type {
   NavigateLocalHandler,
-  OnNextHandler,
+  OnNextBaseContext,
   SharedUpdater,
   StandardMutation
 } from '../types/relayMutations'
+import plural from '../utils/plural'
 import getGraphQLError from '../utils/relay/getGraphQLError'
 import handleAddOrganization from './handlers/handleAddOrganization'
 import handleAddTeams from './handlers/handleAddTeams'
@@ -44,22 +46,32 @@ const mutation = graphql`
       error {
         message
       }
+      invitees {
+        email
+        status
+        message
+        suggestedEmail
+      }
       ...AddOrgMutation_notification @relay(mask: false)
     }
   }
 `
 
-const popOrganizationCreatedToast: OnNextHandler<AddOrgMutation_notification$data> = (
-  payload,
-  {atmosphere}
+const popOrganizationCreatedToast = (
+  addOrg: TAddOrgMutation['response']['addOrg'],
+  {atmosphere}: OnNextBaseContext
 ) => {
-  const {team} = payload
+  const {team, invitees} = addOrg
   if (!team) return
   const {name: teamName, id: teamId} = team
+  const sentCount = invitees?.filter(({status}) => status === 'sent').length ?? 0
+  const createdMessage = sentCount
+    ? `Organization created and ${sentCount} ${plural(sentCount, 'invitation')} sent!`
+    : 'Organization created!'
   atmosphere.eventEmitter.emit('addSnackbar', {
     autoDismiss: 5,
     key: `orgCreated:${teamId}`,
-    message: `Organization created! Here's your new team dashboard for ${teamName}`
+    message: `${createdMessage} Here's your new team dashboard for ${teamName}`
   })
 }
 
@@ -99,7 +111,8 @@ const AddOrgMutation: StandardMutation<TAddOrgMutation, NavigateLocalHandler> = 
       if (!error) {
         popOrganizationCreatedToast(addOrg, {atmosphere})
         const teamId = addOrg.team && addOrg.team.id
-        navigate(`/team/${teamId}`)
+        const inviteResults = addOrg.invitees?.some(isRejected) ? addOrg.invitees : undefined
+        navigate(`/team/${teamId}`, {state: inviteResults ? {inviteResults} : null})
       }
     },
     onError
