@@ -95,7 +95,9 @@ const createResultStage = (topic: DemoTopic, idx: number, endedAt: string): Demo
     id: `teamHealthDemoResponse:${topic.id}:${commentIdx}`,
     commentParaphrased: text,
     commentAuthor: author ? toUser(demoTeammateLookup[author]) : null
-  }))
+  })),
+  summary: topic.summary,
+  isLoadingSummary: false
 })
 
 const createMeetingMember = (teammate: DemoTeammate, connectedAt: string): DemoMeetingMember => ({
