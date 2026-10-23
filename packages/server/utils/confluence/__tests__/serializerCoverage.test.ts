@@ -52,7 +52,9 @@ const HANDLED_MARKS = new Set([
   'link',
   'textStyle',
   'highlight',
-  'searchResult'
+  'searchResult',
+  // a comment thread is not page content: the text it is anchored to is exported as is
+  'pageComment'
 ])
 
 describe('Confluence serializer coverage', () => {

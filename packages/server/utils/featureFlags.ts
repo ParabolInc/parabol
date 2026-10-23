@@ -44,6 +44,15 @@ export const FEATURE_FLAGS = {
     createdAt: new Date('2026-07-27T00:00:00+00:00'),
     updatedAt: new Date('2026-07-27T00:00:00+00:00'),
     isPublic: false
+  },
+  PageComments: {
+    featureName: 'PageComments',
+    scope: 'Organization',
+    description: 'Comment threads on text in Pages',
+    expiresAt: new Date('2027-04-01T00:00:00+00:00'),
+    createdAt: new Date('2026-10-08T00:00:00+00:00'),
+    updatedAt: new Date('2026-10-08T00:00:00+00:00'),
+    isPublic: false
   }
 } as const satisfies Record<string, FeatureFlag>
 

@@ -7,6 +7,7 @@ import type {PageLinkBlockAttrs} from '../../../client/shared/tiptap/extensions/
 import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import {hocuspocus} from '../../hocusPocus'
+import {markPageThread, unmarkPageThread} from './pageThreadMark'
 
 const withDoc = async (documentName: string, fn: (doc: Document) => void) => {
   const conn = await hocuspocus.openDirectConnection(documentName, {})
@@ -161,5 +162,24 @@ export const replacePageContent = async (documentName: string, payload: {content
       const tempDoc = TiptapTransformer.toYdoc(content, 'default', serverTipTapExtensions)
       applyUpdate(doc, encodeStateAsUpdate(tempDoc))
     })
+  })
+}
+
+export const addPageThreadMark = async (
+  documentName: string,
+  payload: {threadId: string; anchor: string; head: string}
+) => {
+  const {threadId, anchor, head} = payload
+  const marked: {quote: string | null} = {quote: null}
+  await withDoc(documentName, (doc) => {
+    marked.quote = markPageThread(doc, threadId, anchor, head)
+  })
+  return marked.quote
+}
+
+export const removePageThreadMark = async (documentName: string, payload: {threadId: string}) => {
+  const {threadId} = payload
+  await withDoc(documentName, (doc) => {
+    unmarkPageThread(doc, threadId)
   })
 }

@@ -28,8 +28,10 @@ import {
 } from '../mutations/RemoveTeamMemberMutation'
 import {popNotificationToastOnNext} from '../mutations/toasts/popNotificationToast'
 import {updateNotificationToastOnNext} from '../mutations/toasts/updateNotificationToast'
+import {handleAddPageComment} from '../mutations/useAddPageCommentMutation'
 import {handleArchivePage} from '../mutations/useArchivePageMutation'
 import {handleCreatePage} from '../mutations/useCreatePageMutation'
+import {handleDeletePageComment} from '../mutations/useDeletePageCommentMutation'
 import {handleUpdatePage} from '../mutations/useUpdatePageMutation'
 import type {OnNextHandler, OnNextNavigateContext, SharedUpdater} from '../types/relayMutations'
 import {createSubscription} from './createSubscription'
@@ -199,6 +201,18 @@ const subscription = graphql`
       ExportPagesToConfluenceSuccess {
         ...useExportPagesToConfluenceMutation_notification @relay(mask: false)
       }
+      AddPageCommentSuccess {
+        ...useAddPageCommentMutation_notification @relay(mask: false)
+      }
+      UpdatePageCommentSuccess {
+        ...useUpdatePageCommentMutation_notification @relay(mask: false)
+      }
+      DeletePageCommentSuccess {
+        ...useDeletePageCommentMutation_notification @relay(mask: false)
+      }
+      UpdatePageThreadSuccess {
+        ...useUpdatePageThreadMutation_notification @relay(mask: false)
+      }
     }
   }
 `
@@ -330,10 +344,12 @@ const updateHandlers = {
   AddNewFeaturePayload: addNewFeatureNotificationUpdater,
   AddOrgPayload: addOrgMutationNotificationUpdater,
   AddTeamPayload: addTeamMutationNotificationUpdater,
+  AddPageCommentSuccess: handleAddPageComment,
   AddedNotification: addedNotificationUpdater,
   ArchivePagePayload: archivePageNotificationUpdater,
   CreateTaskPayload: createTaskNotificationUpdater,
   CreatePagePayload: createPageNotificationUpdater,
+  DeletePageCommentSuccess: handleDeletePageComment,
   UpdatePagePayload: updatePageNotificationUpdater,
   UpdatePageAccessPayload: updatePageAccessNotificationUpdater,
   EndCheckInSuccess: endCheckInNotificationUpdater,
