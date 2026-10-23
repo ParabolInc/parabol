@@ -36,7 +36,6 @@ import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
 import getUserDetail from '../../../utils/getUserDetail'
 import {getUserSocketCount} from '../../../utils/getUserSocketCount'
 import logError from '../../../utils/logError'
-import {selectTopSimilar} from '../../../utils/selectTopSimilar'
 import standardError from '../../../utils/standardError'
 import errorFilter from '../../errorFilter'
 import type {DataLoaderWorker} from '../../graphql'
@@ -805,7 +804,7 @@ const User: ReqResolvers<'User'> = {
 
     const pg = getKysely()
     const tableName = getEmbeddingsTableName(activeEmbeddingModelId)
-    const similarEmbeddings = await pg
+    const similarTemplates = await pg
       .with('Model', (qc) =>
         qc
           .selectFrom(tableName)
@@ -833,31 +832,27 @@ const User: ReqResolvers<'User'> = {
           ])
       )
       .selectFrom('CosineSimilarity')
-      .select(['embeddingId', 'similarity', 'embeddingsMetadataId', 'refId'])
+      .select(({fn}) => ['refId', fn.max('similarity').as('similarity')])
       .where('similarity', '>=', SIMILARITY_THRESHOLD)
+      .groupBy('refId')
       .orderBy('similarity', 'desc')
       .execute()
 
-    const seenTemplateIds = new Set<string>()
-    const bestEmbeddingPerTemplate = similarEmbeddings.filter(({refId}) => {
-      if (seenTemplateIds.has(refId)) return false
-      seenTemplateIds.add(refId)
-      return true
-    })
-    const aiActivityIds = bestEmbeddingPerTemplate.map(({refId}) => refId)
-
     // TODO filter out seasonal templates
-    const activities = await dataLoader.get('meetingTemplates').loadMany(aiActivityIds)
-    const accessibleMatches = bestEmbeddingPerTemplate.flatMap(({similarity}, idx) => {
+    const activities = await dataLoader
+      .get('meetingTemplates')
+      .loadMany(similarTemplates.map(({refId}) => refId))
+    const accessibleMatches = similarTemplates.flatMap(({similarity}, idx) => {
       const activity = activities[idx]
       if (!isValid(activity)) return []
       if (activity.scope === 'TEAM' && !teamIds.includes(activity.teamId)) return []
       return [{activity, similarity}]
     })
-    return selectTopSimilar(accessibleMatches, {
-      limit: TEMPLATE_SEARCH_LIMIT,
-      maxGapFromBest: TEMPLATE_SEARCH_MAX_GAP
-    }).map(({activity}) => activity)
+    const floor = (accessibleMatches[0]?.similarity ?? 0) - TEMPLATE_SEARCH_MAX_GAP
+    return accessibleMatches
+      .filter(({similarity}) => similarity >= floor)
+      .slice(0, TEMPLATE_SEARCH_LIMIT)
+      .map(({activity}) => activity)
   },
   parseSAMLMetadata: async (_source, {metadataURL, domain}) => {
     const metadata = await getSSOMetadataFromURL(metadataURL)

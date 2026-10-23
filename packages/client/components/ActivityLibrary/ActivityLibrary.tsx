@@ -33,7 +33,6 @@ import {
   CUSTOM_CATEGORY_ID,
   QUICK_START_CATEGORY_ID
 } from './Categories'
-import {getSimilarTemplates} from './getSimilarTemplates'
 import SearchBar from './SearchBar'
 
 graphql`
@@ -274,13 +273,9 @@ export const ActivityLibrary = (props: Props) => {
         setSimilarTemplatesQuery(debouncedSearchQuery)
         setIsSearching(false)
       },
-      error: () => {
-        setIsSearching(false)
-      }
+      error: () => setIsSearching(false)
     })
-    SendClientSideEvent(atmosphere, 'Activity Library Searched', {
-      debouncedSearchQuery
-    })
+    SendClientSideEvent(atmosphere, 'Activity Library Searched', {debouncedSearchQuery})
     return () => subscription.unsubscribe()
   }, [debouncedSearchQuery])
 
@@ -303,13 +298,11 @@ export const ActivityLibrary = (props: Props) => {
     )
   }, [searchQuery, filteredTemplates, categoryId])
 
-  const similarTemplates = useMemo(
-    () =>
-      searchQuery.length > 0 && searchQuery === similarTemplatesQuery
-        ? getSimilarTemplates(templateSearch?.viewer?.templateSearch ?? [], filteredTemplates)
-        : [],
-    [searchQuery, similarTemplatesQuery, filteredTemplates, templateSearch]
-  )
+  const similarTemplates = useMemo(() => {
+    if (!searchQuery || searchQuery !== similarTemplatesQuery) return []
+    const keywordMatchIds = new Set(filteredTemplates.map(({id}) => id))
+    return (templateSearch?.viewer?.templateSearch ?? []).filter(({id}) => !keywordMatchIds.has(id))
+  }, [searchQuery, similarTemplatesQuery, filteredTemplates, templateSearch])
 
   const sectionedTemplates = useMemo(() => {
     // Show the teams on search as well, because you can search by team name
