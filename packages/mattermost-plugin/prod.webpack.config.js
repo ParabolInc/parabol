@@ -4,6 +4,7 @@ const path = require('path')
 const fs = require('fs')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const getProjectRoot = require('../../scripts/webpack/utils/getProjectRoot')
+const persistentCache = require('../../scripts/webpack/utils/persistentCache')
 
 const PROJECT_ROOT = getProjectRoot()
 const PLUGIN_ROOT = path.join(PROJECT_ROOT, 'packages', 'mattermost-plugin')
@@ -58,6 +59,7 @@ const clientTransformRules = () => {
 module.exports = (config) => {
   const minimize = config.minimize === 'true'
   return {
+    ...persistentCache(`mattermost-plugin-minimize-${minimize}`, __filename),
     entry: path.join(PLUGIN_ROOT, './index'),
     mode: 'development',
     devtool: 'source-map',
