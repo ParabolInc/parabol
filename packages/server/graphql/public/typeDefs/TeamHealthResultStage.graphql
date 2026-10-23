@@ -139,6 +139,26 @@ type TeamHealthResultStage implements NewMeetingStage & DiscussionThreadStage {
   responses: [TeamHealthResponse!]!
 
   """
+  An AI summary of how the team feels about this stage's category this cycle, read from its answers
+  and comments against the previous cycle's. Null until the results are revealed, while it is being
+  written, and when there is none: AI is off for the org, fewer than 3 people answered, or the
+  model failed
+  """
+  summary: String
+
+  """
+  true while the AI summary is being written after the reveal, else false
+  """
+  isLoadingSummary: Boolean!
+
+  """
+  How the team feels about this stage's category this cycle, judged by the AI from the answers and
+  comments together, from -1 (overwhelmingly negative) to 1 (overwhelmingly positive). Null
+  whenever summary is
+  """
+  sentimentScore: Float
+
+  """
   The ID to find the discussion that goes in the stage. One Discussion per question, shared by the
   question's response stage and its result stage, since both are about the same category
   """

@@ -17,7 +17,10 @@ const rateLimit = ({perMinute, perHour}: RateLimitOptions) =>
       const userId = getUserId(authToken) || ip
       const {lastMinute, lastHour} = rateLimiter.log(userId, fieldName, !!perHour)
       if (lastMinute > perMinute || (lastHour && lastHour > perHour)) {
-        const error = new GraphQLError('Too Many Requests. Contact support to increase rate limit')
+        const error = new GraphQLError(
+          'Too Many Requests. Contact support to increase rate limit',
+          {extensions: {code: 'TOO_MANY_REQUESTS'}}
+        )
         logError(error, {ip, userId})
         return error
       }

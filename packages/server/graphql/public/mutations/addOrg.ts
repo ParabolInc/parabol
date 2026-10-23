@@ -9,7 +9,7 @@ import standardError from '../../../utils/standardError'
 import addOrgValidation from '../../mutations/helpers/addOrgValidation'
 import createNewOrg from '../../mutations/helpers/createNewOrg'
 import createTeamAndLeader from '../../mutations/helpers/createTeamAndLeader'
-import inviteToTeamHelper from '../../mutations/helpers/inviteToTeamHelper'
+import {assertInviteeCount, inviteToNewTeam} from '../../mutations/helpers/inviteToTeamHelper'
 import {MutationResolvers} from '../resolverTypes'
 
 const addOrg: MutationResolvers['addOrg'] = async (_source, args, context) => {
@@ -22,6 +22,7 @@ const addOrg: MutationResolvers['addOrg'] = async (_source, args, context) => {
   const viewerId = getUserId(authToken)
 
   // VALIDATION
+  if (invitees) assertInviteeCount(invitees)
   const {
     data: {newTeam, orgName},
     errors
@@ -67,11 +68,8 @@ const addOrg: MutationResolvers['addOrg'] = async (_source, args, context) => {
   }
   publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AddOrgPayload', data, subOptions)
 
-  if (invitees?.length) {
-    await inviteToTeamHelper(invitees, teamId, undefined, context)
-  }
-
-  return data
+  const inviteResults = await inviteToNewTeam(invitees, teamId, context)
+  return {...data, invitees: inviteResults}
 }
 
 export default addOrg

@@ -16,6 +16,8 @@ type ParabolGraphQLErrorCodes =
   | 'INVALID_REDIRECT_URI'
   | 'MAX_TEAM_UPGRADE_REQUIRED'
   | 'MAX_TEAM_UPGRADE_SUGGESTED'
+  | 'TOO_MANY_INVITEES'
+  | 'UNACCEPTED_INVITATION_LIMIT'
 
 declare module 'graphql' {
   interface GraphQLErrorExtensions {

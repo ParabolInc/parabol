@@ -7,6 +7,7 @@ const webpack = require('webpack')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const {CleanWebpackPlugin} = require('clean-webpack-plugin')
 const getCommitHash = require('./utils/getCommitHash')
+const persistentCache = require('./utils/persistentCache')
 
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
@@ -30,6 +31,7 @@ const SHARP_LIBVIPS_ROOT = path.dirname(
 module.exports = (config) => {
   const noDeps = config.noDeps === 'true'
   return {
+    ...persistentCache(`servers-noDeps-${noDeps}`, __filename),
     mode: 'production',
     devtool: noDeps ? 'source-map' : undefined,
     node: {

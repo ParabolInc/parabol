@@ -529,11 +529,11 @@ type Mutation {
   invalidateSessions: InvalidateSessionsPayload! @scope(name: USERS_WRITE)
 
   """
-  Send a team invitation to an email address
+  Email team invitations. Each address gets its own result, so one bad address never blocks the rest
   """
   inviteToTeam(
     """
-    the specific meeting where the invite occurred, if any
+    the specific meeting where the invite occurred, if any. Must belong to the team
     """
     meetingId: ID
 
@@ -541,8 +541,12 @@ type Mutation {
     The id of the inviting team
     """
     teamId: ID!
+
+    """
+    Up to 50 addresses
+    """
     invitees: [Email!]!
-  ): InviteToTeamPayload! @scope(name: TEAMS_WRITE)
+  ): InviteToTeamSuccess! @scope(name: TEAMS_WRITE)
 
   """
   Generate AI inspiration items from a user's recent work in a Your Work integration

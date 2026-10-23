@@ -139,6 +139,12 @@ const subscription = graphql`
       StartDraggingReflectionPayload {
         ...StartDraggingReflectionMutation_meeting @relay(mask: false)
       }
+      TeamHealthCategorySummarySuccess {
+        stage {
+          id
+          ...TeamHealthResultCard_stage
+        }
+      }
       SetMeetingMusicSuccess {
         ...SetMeetingMusicMutation_meeting @relay(mask: false)
       }
