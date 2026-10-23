@@ -83,6 +83,43 @@ type Organization implements OrganizationPartial {
   ): ReportResult! @scope(name: REPORTS_READ)
 
   """
+  For a Health score heatmap with a row for each team and a column for each category, what its marks are worked
+  out from. Null for any other report
+  """
+  reportTeamHealth(
+    """
+    The report's spec
+    """
+    spec: ReportSpecInput!
+
+    """
+    The IANA time zone that days, weeks and months start in
+    """
+    timeZone: String! = "UTC"
+
+    """
+    The period picked on the Reports page, used when the spec's period is PAGE
+    """
+    pagePeriod: ReportPeriodInput
+  ): ReportTeamHealth @scope(name: REPORTS_READ)
+
+  """
+  One category of a Team Health check of a team the viewer can report on, for a report's side panel. Null when
+  too few people answered
+  """
+  reportTeamHealthCell(
+    """
+    The Team Health meeting
+    """
+    meetingId: ID!
+
+    """
+    The Team Health category, as the report's CATEGORY keys give it
+    """
+    categoryId: ID!
+  ): ReportTeamHealthCell @scope(name: REPORTS_READ)
+
+  """
   The reports pinned to the Reports page, in order
   """
   reportPins: [ReportPin!]! @scope(name: REPORTS_READ)

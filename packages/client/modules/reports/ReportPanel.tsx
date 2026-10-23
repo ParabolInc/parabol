@@ -15,6 +15,8 @@ interface Props {
   organizationRef: ReportPanel_organization$key | null | undefined
   orgId: string
   spec: ReportSpec
+  // the spec the shown results came from, which trails spec while a changed report loads
+  resultSpec: ReportSpec
   name: string
   period: ReportPagePeriod
   reportQuestionId: string | null
@@ -25,7 +27,8 @@ interface Props {
 }
 
 const ReportPanel = (props: Props) => {
-  const {organizationRef, orgId, spec, name, period, reportQuestionId, isPageHeading} = props
+  const {organizationRef, orgId, spec, resultSpec, name, period, reportQuestionId} = props
+  const {isPageHeading} = props
   const {onSpecChange, onClose} = props
   const organization = useFragment(
     graphql`
@@ -69,7 +72,7 @@ const ReportPanel = (props: Props) => {
               reportQuestionId={reportQuestionId}
             />
           )}
-          {report && <ReportExportButton resultRef={report} spec={spec} title={name} />}
+          {report && <ReportExportButton resultRef={report} spec={resultSpec} title={name} />}
           {onClose && (
             <button
               type='button'
@@ -90,7 +93,7 @@ const ReportPanel = (props: Props) => {
           onChange={onSpecChange}
         />
       </div>
-      <ReportPageResult organizationRef={organization} orgId={orgId} spec={spec} />
+      <ReportPageResult organizationRef={organization} orgId={orgId} spec={resultSpec} />
     </section>
   )
 }

@@ -25,6 +25,8 @@ interface Props {
   picture: string
   // why anonymity is unavailable, else null. See TeamHealthAnonymousToggle
   aiDisabledReason: string | null
+  // org leaders can read the team's comments in Reports, so the comment box says so
+  hasReports: boolean
   // set when the viewer is spectating: the question is visible but read-only until they opt in
   onShareResponses?: () => void
   onPrev: () => void
@@ -41,6 +43,7 @@ const TeamHealthResponseCard = (props: Props) => {
     preferredName,
     picture,
     aiDisabledReason,
+    hasReports,
     onShareResponses,
     onPrev,
     onNext
@@ -143,6 +146,7 @@ const TeamHealthResponseCard = (props: Props) => {
             preferredName={preferredName}
             picture={picture}
             aiDisabledReason={aiDisabledReason}
+            hasReports={hasReports}
             isVisible={!!comment}
             onToggle={onToggleAnonymous}
           />

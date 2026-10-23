@@ -1,4 +1,5 @@
 import {
+  isReportAdditiveMeasure,
   isReportTimeDimension,
   REPORT_CATEGORY_DIMENSIONS,
   REPORT_COMPARE_TO,
@@ -11,9 +12,16 @@ import {
   REPORT_VALUE_LABELS,
   REPORT_VIEW_KEYS,
   type ReportDimension,
+  type ReportMeasure,
   type ReportSpec
 } from '../../shared/reports/reportCatalog'
-import {toReportDimensionKey, validateReportSpec} from '../../shared/reports/validateReportSpec'
+import {toTeamHealthHeatmapSpec} from '../../shared/reports/teamHealthReportSpec'
+import {
+  isMeasureDimension,
+  toReportDimensionKey,
+  validateReportSpec
+} from '../../shared/reports/validateReportSpec'
+import fitReportSpec, {orderHeatmap} from './fitReportSpec'
 import {REPORT_PAGE_PRESETS} from './reportPeriodParam'
 import {
   REPORT_COMPARE_LABELS,
@@ -64,7 +72,7 @@ const toOption = (
   isSelected: boolean,
   shouldRepair = true
 ): ReportSpecEditOption => {
-  const nextSpec = shouldRepair ? repair(spec) : spec
+  const nextSpec = shouldRepair ? repair(fitReportSpec(spec)) : spec
   return {
     key,
     label,
@@ -100,16 +108,27 @@ const toChoices = (
       : [{key: dimension, label: dimensionLabel(dimension), item: {dimension}}]
   )
 
+// A new measure keeps the breakdowns it can split by. Health score opens the Team Health heatmap
+const withMeasure = (spec: ReportSpec, measure: ReportMeasure): ReportSpec => {
+  if (measure === 'HEALTH_SCORE' && spec.measures[0] !== 'HEALTH_SCORE') {
+    return toTeamHealthHeatmapSpec(spec)
+  }
+  return {
+    ...spec,
+    measures: [measure],
+    breakdown: spec.breakdown.filter(({dimension}) => isMeasureDimension(measure, dimension))
+  }
+}
+
 export const measureEdits = (spec: ReportSpec) => {
   const isMulti = spec.showAs === 'TABLE'
   const options = REPORT_MEASURE_KEYS.map((measure) => {
     const isSelected = spec.measures.includes(measure)
-    const measures = !isMulti
-      ? [measure]
-      : isSelected
-        ? spec.measures.filter((selected) => selected !== measure)
-        : [...spec.measures, measure]
-    return toOption(measure, REPORT_MEASURES[measure].label, {...spec, measures}, isSelected)
+    const measures = isSelected
+      ? spec.measures.filter((selected) => selected !== measure)
+      : [...spec.measures, measure]
+    const nextSpec = isMulti ? {...spec, measures} : withMeasure(spec, measure)
+    return toOption(measure, REPORT_MEASURES[measure].label, nextSpec, isSelected)
   })
   return {options, isMulti}
 }
@@ -131,12 +150,34 @@ export const breakdownEdits = (
   return {options, removal}
 }
 
+// A heatmap's new breakdown is another row, before its columns. Bars that can't stack a second breakdown become a
+// heatmap, with categories as the columns of a Health score
+const withBreakdownAdded = (spec: ReportSpec, item: ReportDimensionItem): ReportSpec => {
+  const {showAs, measures, breakdown} = spec
+  if (showAs === 'HEATMAP') {
+    return {...spec, breakdown: [...breakdown.slice(0, -1), item, ...breakdown.slice(-1)]}
+  }
+  const added = [...breakdown, item]
+  if (showAs !== 'BARS' || measures.every(isReportAdditiveMeasure)) {
+    return {...spec, breakdown: added}
+  }
+  const needsCategory =
+    measures[0] === 'HEALTH_SCORE' &&
+    added.length < 3 &&
+    !added.some(({dimension}) => dimension === 'CATEGORY')
+  return {
+    ...spec,
+    showAs: 'HEATMAP',
+    breakdown: needsCategory ? [...added, {dimension: 'CATEGORY'}] : added
+  }
+}
+
 export const addBreakdownEdits = (spec: ReportSpec, levels: readonly ReportStructureLevel[]) =>
   validOnly(
     toChoices(DIMENSIONS, levels)
       .filter(({key}) => !spec.breakdown.some((item) => toReportDimensionKey(item) === key))
       .map(({key, label, item}) =>
-        toOption(key, label, {...spec, breakdown: [...spec.breakdown, item]}, false)
+        toOption(key, label, orderHeatmap(withBreakdownAdded(spec, item)), false)
       )
   )
 
@@ -233,9 +274,11 @@ export const compareEdits = (spec: ReportSpec) =>
   )
 
 export const viewEdits = (spec: ReportSpec) =>
-  REPORT_VIEW_KEYS.map((showAs) =>
-    toOption(showAs, REPORT_VIEW_LABELS[showAs], {...spec, showAs}, spec.showAs === showAs)
-  )
+  REPORT_VIEW_KEYS.map((showAs) => {
+    const isSelected = spec.showAs === showAs
+    const viewSpec = isSelected ? spec : orderHeatmap(fitReportSpec({...spec, showAs}))
+    return toOption(showAs, REPORT_VIEW_LABELS[showAs], viewSpec, isSelected)
+  })
 
 export const sortEdits = (spec: ReportSpec) => {
   const isDate = REPORT_MEASURES[spec.measures[0]!].kind === 'latest'

@@ -177,7 +177,7 @@ const runReport = async ({
       previousSteps
         ? queryMeasures(
             previousSteps,
-            compareTo === 'PREVIOUS_CHECK' ? 'previous' : 'latest',
+            compareTo === 'PREVIOUS_CHECK' ? 'previous' : 'earlier',
             measureDimensions,
             isOverTime
           )
@@ -192,6 +192,7 @@ const runReport = async ({
       filters: measureFilters,
       current,
       previous,
+      teamValueOf: structure.teamValueOf,
       levelValuesOf: (dimension) =>
         structure.valuesOf(
           dimension,

@@ -1,8 +1,12 @@
 import {REPORT_MEASURES, type ReportMeasure} from '../../shared/reports/reportCatalog'
+import {cn} from '../../ui/cn'
 import {formatReportValue} from './formatReportValue'
 import ReportHeatmapCell from './ReportHeatmapCell'
 import ReportValue from './ReportValue'
-import type {ReportHeatmapRow as ReportHeatmapRowData} from './reportHeatmapGrid'
+import {
+  type ReportHeatmapRow as ReportHeatmapRowData,
+  toReportHeatmapRowName
+} from './reportHeatmapGrid'
 import {isHiddenReportValue, type ReportResultKey} from './reportRows'
 
 interface Props {
@@ -20,8 +24,14 @@ const ReportHeatmapRow = ({row, columns, measure, max, hasTotal, lastHeld}: Prop
   const {total} = row
   return (
     <tr>
-      <th scope='row' className='max-w-60 truncate pr-2 text-left font-normal'>
-        {row.name}
+      <th
+        scope='row'
+        className={cn(
+          'max-w-60 truncate pr-2 text-left font-normal',
+          row.keys.length > 1 && 'pl-3'
+        )}
+      >
+        {toReportHeatmapRowName(row)}
       </th>
       {columns.map((column) => (
         <ReportHeatmapCell

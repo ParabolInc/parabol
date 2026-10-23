@@ -1,7 +1,7 @@
 import {REPORT_MEASURES, type ReportMeasure} from '../../shared/reports/reportCatalog'
 import {cn} from '../../ui/cn'
 import plural from '../../utils/plural'
-import {countShadeRanges, HEALTH_SCORE_BANDS} from './reportHeatmapShades'
+import {countShadeRanges, HEALTH_SCORE_SHADES} from './reportHeatmapShades'
 
 interface Props {
   measure: ReportMeasure
@@ -13,7 +13,10 @@ const ReportHeatmapLegend = ({measure, max, emptyTeamNames}: Props) => {
   const {kind, label} = REPORT_MEASURES[measure]
   const shades =
     kind === 'score'
-      ? HEALTH_SCORE_BANDS.map(({label: bandLabel, className}) => ({label: bandLabel, className}))
+      ? HEALTH_SCORE_SHADES.map(({label: shadeLabel, className}) => ({
+          label: shadeLabel,
+          className
+        }))
       : kind === 'count'
         ? [{label: 'None', className: 'border border-hairline'}, ...countShadeRanges(max)]
         : []

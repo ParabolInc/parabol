@@ -7,6 +7,7 @@ import ReportPageHeader from './ReportPageHeader'
 import ReportPanel from './ReportPanel'
 import type {ReportPagePeriod} from './reportPeriodParam'
 import {describeReportSpec} from './reportSpecLabels'
+import useResultSpec from './useResultSpec'
 
 interface Props {
   queryRef: PreloadedQuery<ReportPageQuery>
@@ -52,6 +53,7 @@ const ReportPage = ({
   onSpecChange
 }: Props) => {
   const {viewer} = usePreloadedQuery<ReportPageQuery>(query, queryRef)
+  const resultSpec = useResultSpec(queryRef.variables.spec, spec)
   const {organization} = viewer
   const levels = organization?.teamStructure ?? []
   const name = title ?? describeReportSpec(spec, levels)
@@ -69,6 +71,7 @@ const ReportPage = ({
         organizationRef={organization}
         orgId={orgId}
         spec={spec}
+        resultSpec={resultSpec}
         name={name}
         period={period}
         reportQuestionId={reportQuestionId}

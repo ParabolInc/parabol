@@ -254,7 +254,7 @@ export const REPORT_MEASURES = {
     kind: 'score',
     label: 'Health score',
     description:
-      'The average 1 to 5 answer in each team’s latest Team Health check, from the 90 days before each point or from the period. A check fewer than 3 people answered is hidden',
+      'The average 1 to 5 answer in each team’s latest Team Health check, from the 90 days before each point or from the period. Compared with an earlier period, each team’s check comes from at least the 90 days before that period ended. A check fewer than 3 people answered is hidden',
     dimensions: [...OVER_TIME, 'TEAM', 'TEAM_LEVEL', 'CATEGORY']
   },
   HEALTH_ANSWERS: {

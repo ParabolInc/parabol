@@ -4,7 +4,7 @@ import {
   type ReportMeasure
 } from '../../shared/reports/reportCatalog'
 import {formatReportKey} from './formatReportKey'
-import {distinctKeysAt, type ReportResultRow} from './reportRows'
+import {distinctKeysAt, type ReportResultKey, type ReportResultRow} from './reportRows'
 import type {ReportStepLength} from './reportSpecLabels'
 
 export interface ReportHeatmapValue {
@@ -15,8 +15,18 @@ export interface ReportHeatmapValue {
 export interface ReportHeatmapRow {
   id: string
   name: string
+  keys: ReportResultKey[]
+  // each key's label, as the row shows it
+  labels: string[]
   cells: Map<string, ReportHeatmapValue>
   total: ReportHeatmapValue | null
+}
+
+export interface ReportHeatmapRowGroup {
+  id: string
+  // what the first breakdown labels the rows under it, when rows split twice
+  label: string | null
+  rows: ReportHeatmapRow[]
 }
 
 export interface ReportRowTotal {
@@ -47,11 +57,12 @@ export const toReportHeatmapGrid = (
     const rowKeys = row.keys.slice(0, columnPosition)
     const id = toReportHeatmapRowId(rowKeys)
     const total = totals.get(id)
+    const labels = rowKeys.map((key, position) => formatReportKey(key, dimensions[position]!, step))
     const gridRow = gridRows.get(id) ?? {
       id,
-      name: rowKeys
-        .map((key, position) => formatReportKey(key, dimensions[position]!, step))
-        .join(' › '),
+      name: labels.join(' › '),
+      keys: rowKeys,
+      labels,
       cells: new Map(),
       total: total ? toHeatmapValue(total) : null
     }
@@ -60,6 +71,24 @@ export const toReportHeatmapGrid = (
   })
   return {columns: distinctKeysAt(rows, columnPosition), rows: [...gridRows.values()]}
 }
+
+// When rows split twice, like by business unit then team, each value of the first labels the rows under it, which
+// alone get cells
+export const groupReportHeatmapRows = (rows: readonly ReportHeatmapRow[]) => {
+  const groups = new Map<string, ReportHeatmapRowGroup>()
+  rows.forEach((row) => {
+    const isGrouped = row.keys.length > 1
+    const id = isGrouped ? row.keys[0]!.value : ''
+    const group = groups.get(id) ?? {id, label: isGrouped ? row.labels[0]! : null, rows: []}
+    group.rows.push(row)
+    groups.set(id, group)
+  })
+  return [...groups.values()]
+}
+
+// a row under a label shows only its own name
+export const toReportHeatmapRowName = (row: ReportHeatmapRow) =>
+  row.keys.length > 1 ? row.labels[row.labels.length - 1]! : row.name
 
 // a count of 0 is nothing, but a share or score of 0 is a value
 export const hasNothing = ({cells, total}: ReportHeatmapRow, isAdditive: boolean) => {
