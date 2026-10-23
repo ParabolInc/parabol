@@ -42,6 +42,7 @@ type MeetingSubscriptionPayload {
   SetTeamHealthResponseSuccess: SetTeamHealthResponseSuccess
   SetTeamHealthSpectateSuccess: SetTeamHealthSpectateSuccess
   StartDraggingReflectionPayload: StartDraggingReflectionPayload
+  TeamHealthCategorySummarySuccess: TeamHealthCategorySummarySuccess
   UpdateCommentContentSuccess: UpdateCommentContentSuccess
   UpdateDragLocationPayload: UpdateDragLocationPayload
   UpdateNewCheckInQuestionPayload: UpdateNewCheckInQuestionPayload
