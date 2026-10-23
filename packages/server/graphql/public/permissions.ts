@@ -11,6 +11,7 @@ import {isMeetingFacilitator} from './rules/isMeetingFacilitator'
 import {isMeetingMember} from './rules/isMeetingMember'
 import {isNull} from './rules/isNull'
 import {isOrgTier} from './rules/isOrgTier'
+import {isReportTeamHealthCheck} from './rules/isReportTeamHealthCheck'
 import isSuperUser from './rules/isSuperUser'
 import {isTeamMember} from './rules/isTeamMember'
 import {isTeamMemberOfMeeting} from './rules/isTeamMemberOfMeeting'
@@ -498,6 +499,17 @@ const permissionMap: PermissionMap<Resolvers> = {
     report: and(
       or(isSuperUser, isViewerOnOrg<'Organization.report'>('source.id')),
       hasOrgFeatureFlag<'Organization.report'>('source.id', 'Reports'),
+      rateLimit({perMinute: 120, perHour: 3000})
+    ),
+    reportTeamHealth: and(
+      or(isSuperUser, isViewerOnOrg<'Organization.reportTeamHealth'>('source.id')),
+      hasOrgFeatureFlag<'Organization.reportTeamHealth'>('source.id', 'Reports'),
+      rateLimit({perMinute: 120, perHour: 3000})
+    ),
+    reportTeamHealthCell: and(
+      or(isSuperUser, isViewerOnOrg<'Organization.reportTeamHealthCell'>('source.id')),
+      hasOrgFeatureFlag<'Organization.reportTeamHealthCell'>('source.id', 'Reports'),
+      isReportTeamHealthCheck<'Organization.reportTeamHealthCell'>('source.id', 'args.meetingId'),
       rateLimit({perMinute: 120, perHour: 3000})
     ),
     reportPins: and(

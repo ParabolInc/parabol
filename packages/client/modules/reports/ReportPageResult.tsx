@@ -20,6 +20,9 @@ const ReportPageResult = ({organizationRef, orgId, spec}: Props) => {
           ...ReportView_result
           ...ReportNotes_result
         }
+        reportTeamHealth(spec: $spec, timeZone: $timeZone, pagePeriod: $pagePeriod) {
+          ...ReportTeamHealthView_teamHealth
+        }
         lastHeld: report(spec: $lastHeldSpec, timeZone: $timeZone, pagePeriod: $pagePeriod)
           @include(if: $hasLastHeld) {
           rows {
@@ -45,7 +48,13 @@ const ReportPageResult = ({organizationRef, orgId, spec}: Props) => {
     <>
       <div className='border-hairline border-t p-5'>
         {report ? (
-          <ReportView spec={spec} resultRef={report} lastHeldByTeamId={lastHeldByTeamId} />
+          <ReportView
+            spec={spec}
+            resultRef={report}
+            lastHeldByTeamId={lastHeldByTeamId}
+            orgId={orgId}
+            teamHealthRef={organization?.reportTeamHealth}
+          />
         ) : (
           <p className='m-0 text-fg-secondary'>This report couldn’t run for this organization.</p>
         )}

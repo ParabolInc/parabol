@@ -40,7 +40,7 @@ export const toReportDimensionKey = ({
   levelId?: string
 }) => (levelId ? `${dimension}:${levelId}` : dimension)
 
-const isMeasureDimension = (measure: ReportMeasure, dimension: ReportDimension) =>
+export const isMeasureDimension = (measure: ReportMeasure, dimension: ReportDimension) =>
   (REPORT_MEASURES[measure].dimensions as readonly ReportDimension[]).includes(dimension)
 
 const isRealDate = (date: string) => {

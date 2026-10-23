@@ -85,6 +85,8 @@ Views (showAs), and what each makes of the breakdowns:
 - FLOW: 1 count and 2 or 3 breakdowns, none of them time, flowing from stage to stage, like NEW_TASKS through MEETING_TYPE then TASK_STATUS. It's for "where do things end up" questions.
 - TABLE: 1 to 6 measures and 0 to 3 breakdowns.
 
+Team Health: when a question asks how teams feel, or about Team Health or health scores by team or by a team structure level like business unit, answer with a HEATMAP of HEALTH_SCORE with compareTo PREVIOUS_CHECK. Its rows are the TEAM_LEVEL the question names, if it names one, then TEAM, and its columns are CATEGORY. That heatmap marks the cells that need attention, so prefer it to bars or a table. Show HEALTH_SCORE over time as a LINE only when the question asks how health changed over time.
+
 Filters keep only data with one of their values. Separate filters must all match. Filtering by time isn't allowed; use the period. The values are:
 ${values.join('\n')}
 - TEAM: one of the team ids below

@@ -1,0 +1,41 @@
+"""
+One category of a team's Team Health check, with what its attention score is worked out from
+"""
+type ReportTeamHealthCategory {
+  """
+  The Team Health category, as the report's CATEGORY keys give it
+  """
+  categoryId: ID!
+
+  """
+  How many people scored the category
+  """
+  respondentCount: Int!
+
+  """
+  How many people left a comment on it that others may read
+  """
+  commenterCount: Int!
+
+  """
+  The standard deviation of the 1 to 5 scores. Null below 4 answers, since the spread could point at a person
+  """
+  deviation: Float
+
+  """
+  How the AI summary of the category reads, from -1 for very negative to 1 for very positive. Null without a
+  summary
+  """
+  sentimentScore: Float
+
+  """
+  true while the AI summary is being written
+  """
+  isLoadingSummary: Boolean!
+
+  """
+  The category's score in each of the 2 checks before this one, newest first. Null for a check that didn't score
+  it or that too few people answered
+  """
+  previousScores: [Float]!
+}

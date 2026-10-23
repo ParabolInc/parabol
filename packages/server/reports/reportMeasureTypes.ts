@@ -26,8 +26,9 @@ export interface ReportMeasureQuery {
   readAt: Date[]
   // each step reads Team Health from the 90 days before it, instead of from the whole period
   hasTimeSteps: boolean
-  // which of each team's Team Health checks to read: its latest in the window, or the one before that
-  check: 'latest' | 'previous'
+  // which of each team's Team Health checks to read: its latest in the window, the one before that, or, for an
+  // earlier period compared with, its latest in a window that reaches back at least 90 days
+  check: 'latest' | 'previous' | 'earlier'
   dimensions: ReportQueryDimension[]
   filters: ReportMeasureFilter[]
 }

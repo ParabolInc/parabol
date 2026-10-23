@@ -90,6 +90,13 @@ const resolveReportStructure = ({breakdown, filters}: ReportSpec, structure: Tea
       ? [...values, {value: REPORT_STRUCTURE_NOT_SET, label: REPORT_STRUCTURE_LABELS.notSet}]
       : values
   }
+  // the value a team sits at on a level, as a report's keys name it
+  const teamValueOf = (dimension: ReportLevelDimension, teamId: string) => {
+    const levelRowId = toLevelRowId(dimension)
+    if (!structure.levels.some(({id}) => id === levelRowId)) return REPORT_STRUCTURE_REMOVED
+    const valueRowId = valueIdOf(teamId, levelRowId)
+    return valueRowId === undefined ? REPORT_STRUCTURE_NOT_SET : toValueId(valueRowId)
+  }
   const levelNameOf = (dimension: ReportLevelDimension) =>
     structure.levels.find(({id}) => id === toLevelRowId(dimension))?.name ?? null
   return {
@@ -99,7 +106,8 @@ const resolveReportStructure = ({breakdown, filters}: ReportSpec, structure: Tea
     removedFilterCount: levelFilters.filter(({level}) => !level).length,
     hasLevelFilters: levelFilters.length > 0,
     isTeamFiltered,
-    valuesOf
+    valuesOf,
+    teamValueOf
   }
 }
 

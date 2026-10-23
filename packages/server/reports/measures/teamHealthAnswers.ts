@@ -15,6 +15,13 @@ export interface PickedTeamHealthCheck {
   checkId: string
 }
 
+// a team's checks come newest first, so this is its latest check revealed in the window
+export const findLatestTeamHealthCheck = (
+  checks: readonly {endedAt: Date}[],
+  at: Date,
+  windowStart: Date
+) => checks.findIndex(({endedAt}) => endedAt < at && endedAt >= windowStart)
+
 const loadCheckAnswers = async (checkIds: string[], dataLoader: RootDataLoader) => {
   const responsesByCheck = (
     await dataLoader.get('teamHealthResponsesByMeetingId').loadMany(checkIds)

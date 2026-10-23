@@ -1,0 +1,20 @@
+"""
+What a Team Health heatmap marks its cells from, and the teams in the report taken together
+"""
+type ReportTeamHealth {
+  """
+  The latest check in the period of every team the viewer can report on, whatever the report's filters, so
+  filtering never moves a mark
+  """
+  checks: [ReportTeamHealthCheck!]!
+
+  """
+  Every team in the report together, a row for each category
+  """
+  allTeams: [ReportRow!]!
+
+  """
+  Every team in the report together, over every category
+  """
+  allTeamsTotal: ReportRow
+}

@@ -5,14 +5,17 @@ import {
   type ReportSpec
 } from '../../shared/reports/reportCatalog'
 import plural from '../../utils/plural'
+import ReportHeatmapGroupLabel from './ReportHeatmapGroupLabel'
 import ReportHeatmapHeader from './ReportHeatmapHeader'
 import ReportHeatmapLegend from './ReportHeatmapLegend'
 import ReportHeatmapRow from './ReportHeatmapRow'
 import ReportHeatmapTotals from './ReportHeatmapTotals'
 import {
+  groupReportHeatmapRows,
   hasNothing,
   type ReportRowTotal,
   toReportHeatmapGrid,
+  toReportHeatmapRowName,
   toTotalHeading
 } from './reportHeatmapGrid'
 import {type ReportResultRow, sumReportValues} from './reportRows'
@@ -37,7 +40,10 @@ const ReportHeatmapView = ({spec, step, rows, rowTotals, isCompact, lastHeldByTe
   const isOverTime = isReportTimeDimension(columnDimension)
   const {columns, rows: gridRows} = toReportHeatmapGrid(dimensions, step, rows, rowTotals)
   // a page lists the teams with nothing below the table, instead of giving each an empty row
-  const isTeamRows = dimensions.length === 2 && dimensions[0] === 'TEAM'
+  const rowDimensions = dimensions.slice(0, -1)
+  const isTeamRows =
+    rowDimensions[rowDimensions.length - 1] === 'TEAM' &&
+    rowDimensions.every((dimension) => dimension === 'TEAM' || dimension === 'TEAM_LEVEL')
   const emptyRows =
     !isCompact && isTeamRows
       ? gridRows.filter((row) => hasNothing(row, isReportAdditiveMeasure(measure)))
@@ -66,19 +72,27 @@ const ReportHeatmapView = ({spec, step, rows, rowTotals, isCompact, lastHeldByTe
             totalHeading={hasTotals ? toTotalHeading(measure, isOverTime) : null}
             hasLastHeld={!!lastHeldByTeamId}
           />
-          <tbody>
-            {shownRows.map((row) => (
-              <ReportHeatmapRow
-                key={row.id}
-                row={row}
-                columns={columns}
-                measure={measure}
-                max={max}
-                hasTotal={hasTotals}
-                lastHeld={lastHeldByTeamId ? (lastHeldByTeamId.get(row.id) ?? null) : undefined}
-              />
-            ))}
-          </tbody>
+          {groupReportHeatmapRows(shownRows).map((group) => (
+            <tbody key={group.id}>
+              {group.label !== null && (
+                <ReportHeatmapGroupLabel
+                  label={group.label}
+                  colSpan={1 + columns.length + Number(hasTotals) + Number(!!lastHeldByTeamId)}
+                />
+              )}
+              {group.rows.map((row) => (
+                <ReportHeatmapRow
+                  key={row.id}
+                  row={row}
+                  columns={columns}
+                  measure={measure}
+                  max={max}
+                  hasTotal={hasTotals}
+                  lastHeld={lastHeldByTeamId ? (lastHeldByTeamId.get(row.id) ?? null) : undefined}
+                />
+              ))}
+            </tbody>
+          ))}
           {!isCompact && isCount && listedRows.length > 1 && (
             <ReportHeatmapTotals
               columns={columns}
@@ -98,7 +112,7 @@ const ReportHeatmapView = ({spec, step, rows, rowTotals, isCompact, lastHeldByTe
         <ReportHeatmapLegend
           measure={measure}
           max={max}
-          emptyTeamNames={emptyRows.map(({name}) => name)}
+          emptyTeamNames={emptyRows.map(toReportHeatmapRowName)}
         />
       )}
     </div>

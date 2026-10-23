@@ -6,6 +6,7 @@ import ReportPanel from './ReportPanel'
 import type {ReportAddress} from './reportPaths'
 import type {ReportPagePeriod} from './reportPeriodParam'
 import {describeReportSpec} from './reportSpecLabels'
+import useResultSpec from './useResultSpec'
 
 interface Props {
   queryRef: PreloadedQuery<ReportsAnswerQuery>
@@ -41,12 +42,14 @@ const ReportsAnswer = ({queryRef, orgId, answer, period, onSpecChange, onClose}:
   const {viewer} = usePreloadedQuery<ReportsAnswerQuery>(query, queryRef)
   const {organization} = viewer
   const {spec, title, reportQuestionId} = answer
+  const resultSpec = useResultSpec(queryRef.variables.spec, spec)
   const levels = organization?.teamStructure ?? []
   return (
     <ReportPanel
       organizationRef={organization}
       orgId={orgId}
       spec={spec}
+      resultSpec={resultSpec}
       name={title ?? describeReportSpec(spec, levels)}
       period={period}
       reportQuestionId={reportQuestionId}
