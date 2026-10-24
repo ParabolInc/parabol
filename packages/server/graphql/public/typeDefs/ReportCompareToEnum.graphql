@@ -1,0 +1,13 @@
+"""
+What to measure change against: a second period, or for Health score, each team's previous check
+"""
+enum ReportCompareToEnum {
+  "The period of the same length that ends where this one starts"
+  PREVIOUS_PERIOD
+  "This period moved back 7 days"
+  A_WEEK_EARLIER
+  "This period moved back a year"
+  A_YEAR_EARLIER
+  "Each team's check before the one the report reads. Only for Health score, and not over time"
+  PREVIOUS_CHECK
+}

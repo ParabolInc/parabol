@@ -1,6 +1,7 @@
 import {allow, and, not, or} from 'graphql-shield'
 import type {ShieldRule} from '../composeResolvers'
 import type {Resolvers} from './resolverTypes'
+import {hasOrgFeatureFlag} from './rules/hasOrgFeatureFlag'
 import {hasOrgRole} from './rules/hasOrgRole'
 import {hasPageAccess} from './rules/hasPageAccess'
 import {hasProviderAccess} from './rules/hasProviderAccess'
@@ -41,6 +42,34 @@ const permissionMap: PermissionMap<Resolvers> = {
     '*': isAuthenticated,
     // don't check isAuthenticated for acceptTeamInvitation here because there are special cases handled in the resolver
     acceptTeamInvitation: rateLimit({perMinute: 50, perHour: 100}),
+    askReportQuestion: and(
+      or(isSuperUser, isViewerOnOrg<'Mutation.askReportQuestion'>('args.orgId')),
+      hasOrgFeatureFlag<'Mutation.askReportQuestion'>('args.orgId', 'Reports'),
+      rateLimit({perMinute: 10, perHour: 100})
+    ),
+    pinReport: and(
+      or(isSuperUser, isViewerBillingLeader<'Mutation.pinReport'>('args.orgId')),
+      hasOrgFeatureFlag<'Mutation.pinReport'>('args.orgId', 'Reports'),
+      rateLimit({perMinute: 30, perHour: 300})
+    ),
+    unpinReport: and(
+      or(isSuperUser, isViewerBillingLeader<'Mutation.unpinReport'>('args.orgId')),
+      hasOrgFeatureFlag<'Mutation.unpinReport'>('args.orgId', 'Reports')
+    ),
+    setTeamStructure: and(
+      or(isSuperUser, isViewerBillingLeader<'Mutation.setTeamStructure'>('args.orgId')),
+      hasOrgFeatureFlag<'Mutation.setTeamStructure'>('args.orgId', 'Reports')
+    ),
+    placeTeam: or(isSuperUser, isViewerBillingLeader<'Mutation.placeTeam'>('args.teamId', 'teams')),
+    moveReportPin: and(
+      or(isSuperUser, isViewerBillingLeader<'Mutation.moveReportPin'>('args.orgId')),
+      hasOrgFeatureFlag<'Mutation.moveReportPin'>('args.orgId', 'Reports')
+    ),
+    startReportQuestion: and(
+      or(isSuperUser, isViewerOnOrg<'Mutation.startReportQuestion'>('args.orgId')),
+      hasOrgFeatureFlag<'Mutation.startReportQuestion'>('args.orgId', 'Reports'),
+      rateLimit({perMinute: 60, perHour: 600})
+    ),
     addAgendaItem: isTeamMember<'Mutation.addAgendaItem'>('args.newAgendaItem.teamId'),
     addApprovedOrganizationDomains: or(
       isSuperUser,
@@ -466,6 +495,23 @@ const permissionMap: PermissionMap<Resolvers> = {
   Organization: {
     activeUserCounts: or(isSuperUser, isViewerOnOrg<'Organization.activeUserCounts'>('source.id')),
     oauthAPIProvider: hasProviderAccess<'Organization.oauthAPIProvider'>('args.providerId'),
+    report: and(
+      or(isSuperUser, isViewerOnOrg<'Organization.report'>('source.id')),
+      hasOrgFeatureFlag<'Organization.report'>('source.id', 'Reports'),
+      rateLimit({perMinute: 120, perHour: 3000})
+    ),
+    reportPins: and(
+      or(isSuperUser, isViewerOnOrg<'Organization.reportPins'>('source.id')),
+      hasOrgFeatureFlag<'Organization.reportPins'>('source.id', 'Reports')
+    ),
+    popularReportQuestions: and(
+      or(isSuperUser, isViewerOnOrg<'Organization.popularReportQuestions'>('source.id')),
+      hasOrgFeatureFlag<'Organization.popularReportQuestions'>('source.id', 'Reports')
+    ),
+    recentReportQuestions: and(
+      or(isSuperUser, isViewerOnOrg<'Organization.recentReportQuestions'>('source.id')),
+      hasOrgFeatureFlag<'Organization.recentReportQuestions'>('source.id', 'Reports')
+    ),
     saml: and(
       isViewerOnOrg<'Organization.saml'>('source.id'),
       isOrgTier<'Organization.saml'>('source.id', 'enterprise')
@@ -474,6 +520,9 @@ const permissionMap: PermissionMap<Resolvers> = {
       isViewerOnOrg<'Organization.samls'>('source.id'),
       isOrgTier<'Organization.samls'>('source.id', 'enterprise')
     )
+  },
+  ReportPin: {
+    report: rateLimit({perMinute: 120, perHour: 3000})
   },
   RetroReflectionGroup: {
     smartTitle: isSuperUser,

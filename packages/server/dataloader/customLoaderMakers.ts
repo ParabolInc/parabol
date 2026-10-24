@@ -12,6 +12,9 @@ import groupTeamPromptResponsesByUser, {
 import type {ReactableEnum} from '../graphql/public/resolverTypes'
 import type {SAMLSource} from '../graphql/public/types/SAML'
 import getKysely from '../postgres/getKysely'
+import selectOrgUserActivitySpans, {
+  isOrgUserActiveAt
+} from '../postgres/queries/selectOrgUserActivitySpans'
 import {
   selectInspirationItems,
   selectMassInvitations,
@@ -23,6 +26,7 @@ import {
   selectTeamPromptResponses,
   selectTeams
 } from '../postgres/select'
+import {hasEnoughMembers, isCountedMeetingInWindow} from '../postgres/teamActivityCriteria'
 import type {
   InspirationItem,
   MassInvitation,
@@ -46,6 +50,7 @@ import {
 } from '../utils/featureFlags'
 import getRedis from '../utils/getRedis'
 import getTeamHealthDisplayComment from '../utils/getTeamHealthDisplayComment'
+import groupTeamHealthScores from '../utils/groupTeamHealthScores'
 import isUserVerified from '../utils/isUserVerified'
 import {Logger} from '../utils/Logger'
 import NullableDataLoader from './NullableDataLoader'
@@ -450,36 +455,23 @@ export const activeUserCountsByOrgId = (parent: RootDataLoader) => {
       return Promise.all(
         keys.map(async ({orgId, times}) => {
           if (times.length === 0) return []
-          // a member is active from an added/activated event until their next audit event
           const rows = await pg
-            .with('AuditEvent', (qb) =>
-              qb
-                .selectFrom('OrganizationUserAudit')
-                .select(({fn}) => [
-                  'userId',
-                  'eventDate',
-                  'eventType',
-                  fn
-                    .agg<Date | null>('lead', ['eventDate'])
-                    .over((ob) => ob.partitionBy('userId').orderBy('eventDate').orderBy('id'))
-                    .as('nextEventDate')
-                ])
-                .where('orgId', '=', orgId)
-            )
+            .with('AuditEvent', () => selectOrgUserActivitySpans(orgId))
             .with('Time', (qb) =>
               qb.selectNoFrom(sql<Date>`unnest(${times}::timestamptz[])`.as('at'))
             )
             .selectFrom('Time')
             .leftJoin('AuditEvent', (join) =>
-              join
-                .on('AuditEvent.eventType', 'in', ['added', 'activated'])
-                .onRef('AuditEvent.eventDate', '<', 'Time.at')
-                .on(({eb, or, ref}) =>
-                  or([
-                    eb('AuditEvent.nextEventDate', 'is', null),
-                    eb('AuditEvent.nextEventDate', '>=', ref('Time.at'))
-                  ])
+              join.on(
+                isOrgUserActiveAt(
+                  {
+                    eventType: sql.ref('AuditEvent.eventType'),
+                    eventDate: sql.ref('AuditEvent.eventDate'),
+                    nextEventDate: sql.ref('AuditEvent.nextEventDate')
+                  },
+                  sql.ref('Time.at')
                 )
+              )
             )
             .select(({fn}) => [
               'Time.at',
@@ -507,37 +499,31 @@ export const activeTeamsByOrgId = (parent: RootDataLoader, dependsOn: RegisterDe
   dependsOn('newMeetings')
   return new DataLoader<string, {id: string; orgId: string}[], string>(
     async (orgIds) => {
-      const meetingWindowStart = new Date(Date.now() - Threshold.ACTIVE_TEAM_LAST_MEETING_TIMEFRAME)
+      const now = new Date()
+      const meetingWindowStart = new Date(
+        now.getTime() - Threshold.ACTIVE_TEAM_LAST_MEETING_TIMEFRAME
+      )
       const activeTeams = await getKysely()
         .selectFrom('Team')
         .select(['Team.id', 'Team.orgId'])
         .where('Team.orgId', 'in', orgIds)
         .where('Team.isArchived', '=', false)
-        .where(({eb, selectFrom}) =>
-          eb(
-            selectFrom('TeamMember')
-              .select(({fn}) => fn.countAll().as('memberCount'))
-              .whereRef('TeamMember.teamId', '=', 'Team.id')
-              .where('TeamMember.isNotRemoved', '=', true),
-            '>=',
-            Threshold.MIN_ACTIVE_TEAM_MEMBERS
-          )
-        )
+        .where(hasEnoughMembers(sql.ref('Team.id')))
         .where(({exists, selectFrom}) =>
           exists(
             selectFrom('NewMeeting')
-              .innerJoin('MeetingMember', 'MeetingMember.meetingId', 'NewMeeting.id')
               .select('NewMeeting.id')
               .whereRef('NewMeeting.teamId', '=', 'Team.id')
-              .where(({eb, or}) =>
-                or([
-                  eb('NewMeeting.createdAt', '>', meetingWindowStart),
-                  eb('NewMeeting.endedAt', '>', meetingWindowStart)
-                ])
-              )
-              .groupBy('NewMeeting.id')
-              .having(({eb, fn}) =>
-                eb(fn.countAll(), '>=', Threshold.MIN_ACTIVE_TEAM_MEETING_ATTENDEES)
+              .where(
+                isCountedMeetingInWindow(
+                  {
+                    id: sql.ref('NewMeeting.id'),
+                    createdAt: sql.ref('NewMeeting.createdAt'),
+                    endedAt: sql.ref('NewMeeting.endedAt')
+                  },
+                  meetingWindowStart,
+                  now
+                )
               )
           )
         )
@@ -1316,21 +1302,17 @@ export const priorTeamHealthCyclesByMeetingId = (
             isValid
           )
           const questionById = new Map(questions.map((question) => [question.id, question]))
+          const categoryIdByQuestionId = new Map(
+            questions.map((question) => [question.id, question.categoryId])
+          )
           return answeredCycles.map(({meeting: priorMeeting, responses}) => {
-            const scoresByCategoryId = new Map<number, number[]>()
             const commentsByCategoryId = new Map<number, string[]>()
             const questionByCategoryId = new Map<number, string>()
             for (const response of responses) {
-              const {questionId, score} = response
-              const question = questionById.get(questionId)
+              const question = questionById.get(response.questionId)
               if (!question) continue
               const {categoryId} = question
               questionByCategoryId.set(categoryId, question.question)
-              if (score !== null) {
-                const scores = scoresByCategoryId.get(categoryId) ?? []
-                scores.push(score)
-                scoresByCategoryId.set(categoryId, scores)
-              }
               const comment = getTeamHealthDisplayComment(response)
               if (comment) {
                 const comments = commentsByCategoryId.get(categoryId) ?? []
@@ -1338,6 +1320,7 @@ export const priorTeamHealthCyclesByMeetingId = (
                 commentsByCategoryId.set(categoryId, comments)
               }
             }
+            const scoresByCategoryId = groupTeamHealthScores(responses, categoryIdByQuestionId)
             const scoreByCategoryId = new Map(
               [...scoresByCategoryId].flatMap(([categoryId, scores]) => {
                 const score = averageTeamHealthScore(scores)

@@ -1,0 +1,15 @@
+"""
+What one position of a report's breakdown lists
+"""
+type ReportResultBreakdown {
+  """
+  TEAM when the report lists teams in place of a removed team structure level
+  """
+  dimension: ReportDimensionEnum!
+
+  """
+  The name of the team structure level a TEAM_LEVEL breakdown lists. Null when the level was removed, which
+  lists one group
+  """
+  levelName: String
+}

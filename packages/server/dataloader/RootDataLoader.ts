@@ -14,6 +14,7 @@ import * as jiraServerLoaders from './jiraServerLoaders'
 import * as pageLoaderMakers from './pageLoaderMakers'
 import * as pollLoaders from './pollsLoaders'
 import * as primaryKeyLoaderMakers from './primaryKeyLoaderMakers'
+import * as reportLoaderMakers from './reportLoaderMakers'
 import * as teamLoaderMakers from './teamLoaderMakers'
 
 interface LoaderDict {
@@ -36,7 +37,8 @@ const loaderMakers = {
   ...integrationDimensionFieldMapLoaders,
   ...integrationSearchQueryLoaders,
   ...pollLoaders,
-  ...azureDevOpsLoaders
+  ...azureDevOpsLoaders,
+  ...reportLoaderMakers
 } as const
 
 export type LoaderTypes = typeof loaderMakers

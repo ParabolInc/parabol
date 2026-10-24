@@ -44,7 +44,15 @@ const ReviewRequestToJoinOrgRoot = lazy(
 )
 const NotFound = lazy(() => import(/* webpackChunkName: 'NotFound' */ './NotFound/NotFound'))
 
-const DASHBOARD_PREFIXES = ['/meetings', '/me', '/new-summary', '/newteam', '/team', '/pages']
+const DASHBOARD_PREFIXES = [
+  '/meetings',
+  '/me',
+  '/new-summary',
+  '/newteam',
+  '/team',
+  '/pages',
+  '/reports'
+]
 
 const DashboardOrNotFound = () => {
   const {pathname} = useLocation()

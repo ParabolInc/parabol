@@ -1,4 +1,9 @@
 import {GraphQLError} from 'graphql'
+import getKysely from '../../../postgres/getKysely'
+import readReportSpecInput from '../../../reports/readReportSpecInput'
+import {selectReportPins} from '../../../reports/reportPins'
+import runReport from '../../../reports/runReport'
+import selectPopularReportQuestions from '../../../reports/selectPopularReportQuestions'
 import {
   getUserId,
   isSuperUser,
@@ -66,6 +71,40 @@ const Organization: OrganizationResolvers = {
       )
     }
     return dataLoader.get('activeUserCountsByOrgId').load({orgId, times: at})
+  },
+
+  report: async ({id: orgId}, {spec, timeZone, pagePeriod}, {authToken, dataLoader}) => {
+    return runReport({
+      orgId,
+      spec: readReportSpecInput(spec),
+      timeZone,
+      pagePeriod: pagePeriod ?? null,
+      viewerId: getUserId(authToken),
+      isSuperUser: isSuperUser(authToken),
+      dataLoader
+    })
+  },
+
+  reportPins: ({id: orgId}) => selectReportPins(orgId),
+  teamStructure: async ({id: orgId}, _args, {dataLoader}) => {
+    const hasReports = await dataLoader
+      .get('featureFlagByOwnerId')
+      .load({ownerId: orgId, featureName: 'Reports'})
+    if (!hasReports) return []
+    const {levels} = await dataLoader.get('teamStructureByOrgId').load(orgId)
+    return levels
+  },
+
+  popularReportQuestions: () => selectPopularReportQuestions(),
+
+  recentReportQuestions: async ({id: orgId}, _args, {authToken}) => {
+    return getKysely()
+      .selectFrom('ReportQuestion')
+      .selectAll()
+      .where('userId', '=', getUserId(authToken))
+      .where('orgId', '=', orgId)
+      .orderBy('lastUsedAt', 'desc')
+      .execute()
   },
 
   teams: async ({id: orgId}, _args, {dataLoader, authToken}) => {

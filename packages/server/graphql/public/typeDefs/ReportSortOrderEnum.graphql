@@ -1,0 +1,7 @@
+"""
+Which way a report's rows are ordered
+"""
+enum ReportSortOrderEnum {
+  ASC
+  DESC
+}
