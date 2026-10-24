@@ -1,59 +1,43 @@
 import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
-import {useFragment} from 'react-relay'
+import {useFragment, usePreloadedQuery} from 'react-relay'
 import type {GCalIntegrationPanel_meeting$key} from '../../../__generated__/GCalIntegrationPanel_meeting.graphql'
-import useAtmosphere from '../../../hooks/useAtmosphere'
+import type {GCalIntegrationPanelQuery} from '../../../__generated__/GCalIntegrationPanelQuery.graphql'
 import useInspirationDrawer from '../../../hooks/useInspirationDrawer'
-import useMutationProps from '../../../hooks/useMutationProps'
-import gcalSVG from '../../../styles/theme/images/graphics/google-calendar.svg'
-import GcalClientManager from '../../../utils/GcalClientManager'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
+import type {WorkDrawerQueryPanelProps} from '../../../integrations/platform/ClientIntegrationDefinition'
 import GCalIntegrationResultsRoot from './GCalIntegrationResultsRoot'
 import InspirationItemsPanel from './InspirationItemsPanel'
 import {WorkDrawerDateFilter} from './WorkDrawerDateFilter'
 
 const TODAY_MIDNIGHT = new Date().setHours(0, 0, 0, 0)
 
-interface Props {
-  meetingRef: GCalIntegrationPanel_meeting$key
-}
+const query = graphql`
+  query GCalIntegrationPanelQuery($meetingId: ID!) {
+    viewer {
+      meeting(meetingId: $meetingId) @required(action: THROW) {
+        ...GCalIntegrationPanel_meeting
+      }
+    }
+  }
+`
 
-const GCalPanel = (props: Props) => {
-  const {meetingRef} = props
-  const meeting = useFragment(
+const GCalIntegrationPanel = (props: WorkDrawerQueryPanelProps<GCalIntegrationPanelQuery>) => {
+  const {queryRef, meetingId, teamId} = props
+  const {viewer} = usePreloadedQuery<GCalIntegrationPanelQuery>(query, queryRef)
+  const meeting = useFragment<GCalIntegrationPanel_meeting$key>(
     graphql`
       fragment GCalIntegrationPanel_meeting on NewMeeting {
         ...useInspirationDrawer_meeting
-        id
-        teamId
         gcalInspirationItems: inspirationItems(service: gcal) {
           id
           title
           content
           promptId
         }
-        viewerMeetingMember {
-          teamMember {
-            teamId
-            integrations {
-              gcal {
-                auth {
-                  providerId
-                }
-                cloudProvider {
-                  id
-                  clientId
-                }
-              }
-            }
-          }
-        }
       }
     `,
-    meetingRef
+    viewer.meeting
   )
-
-  const teamMember = meeting.viewerMeetingMember?.teamMember
 
   const {dateRange, setDateRange, onResultCount, getResultCount} = useInspirationDrawer(
     'gcal',
@@ -67,29 +51,6 @@ const GCalPanel = (props: Props) => {
   const order = new Date(endDate).getTime() <= Date.now() ? 'DESC' : 'ASC'
   const searchQuery = JSON.stringify({startDate, endDate})
 
-  const atmosphere = useAtmosphere()
-  const mutationProps = useMutationProps()
-  const {error, onError} = mutationProps
-
-  const gcal = teamMember?.integrations.gcal
-
-  const authGCal = () => {
-    if (!teamMember) {
-      return onError(new Error('Could not find team member'))
-    }
-    if (!gcal?.cloudProvider) {
-      return onError(new Error('Missing cloud provider for Google'))
-    }
-    const {clientId, id: providerId} = gcal.cloudProvider
-    GcalClientManager.openOAuth(atmosphere, providerId, clientId, teamMember.teamId, mutationProps)
-
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Integration Connected', {
-      teamId: meeting.teamId,
-      meetingId: meeting.id,
-      service: 'gcal'
-    })
-  }
-
   const filterBar = (
     <div className='mb-2 flex w-full px-2'>
       <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
@@ -98,48 +59,27 @@ const GCalPanel = (props: Props) => {
 
   return (
     <>
-      {teamMember?.integrations.gcal?.auth?.providerId ? (
-        <>
-          {filterBar}
-          <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
-            <InspirationItemsPanel
-              meetingId={meeting.id}
-              service='gcal'
-              searchQuery={searchQuery}
-              initialItems={meeting.gcalInspirationItems}
-              hideDraftPanel={!getResultCount(searchQuery)}
-            >
-              <GCalIntegrationResultsRoot
-                teamId={teamMember.teamId}
-                startDate={startDate}
-                endDate={endDate}
-                order={order}
-                searchQuery={searchQuery}
-                onResultCount={onResultCount}
-              />
-            </InspirationItemsPanel>
-          </div>
-        </>
-      ) : (
-        <div className='flex flex-col items-center gap-2 pt-12'>
-          <div className='h-10 w-10'>
-            <img className='h-10 w-10' src={gcalSVG} />
-          </div>
-          <b>Connect to Google Calendar</b>
-          <div className='w-1/2 text-center text-sm'>
-            Connect to Google Calendar to view your recent events.
-          </div>
-          <button
-            className='mt-4 cursor-pointer rounded-md bg-sky-500 px-8 py-2 font-semibold text-white hover:bg-sky-600'
-            onClick={authGCal}
-          >
-            Connect
-          </button>
-          {error && <div className='text-fg-error'>{error.message}</div>}
-        </div>
-      )}
+      {filterBar}
+      <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
+        <InspirationItemsPanel
+          meetingId={meetingId}
+          service='gcal'
+          searchQuery={searchQuery}
+          initialItems={meeting.gcalInspirationItems}
+          hideDraftPanel={!getResultCount(searchQuery)}
+        >
+          <GCalIntegrationResultsRoot
+            teamId={teamId}
+            startDate={startDate}
+            endDate={endDate}
+            order={order}
+            searchQuery={searchQuery}
+            onResultCount={onResultCount}
+          />
+        </InspirationItemsPanel>
+      </div>
     </>
   )
 }
 
-export default GCalPanel
+export default GCalIntegrationPanel

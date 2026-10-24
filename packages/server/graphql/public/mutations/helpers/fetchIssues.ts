@@ -1,13 +1,9 @@
 import type {GraphQLResolveInfo} from 'graphql'
 import {GraphQLError} from 'graphql'
+import type {InspirationIssue} from '../../../../integrations/platform/InspirationIssue'
+import {getServerIntegration} from '../../../../integrations/platform/registry'
 import type {GQLContext} from '../../../graphql'
-import fetchAzureDevOpsIssues from './fetchAzureDevOpsIssues'
-import fetchGCalIssues from './fetchGCalIssues'
-import fetchGitHubIssues from './fetchGitHubIssues'
-import fetchJiraIssues from './fetchJiraIssues'
-import fetchLinearIssues from './fetchLinearIssues'
 import fetchParabolIssues from './fetchParabolIssues'
-import type {InspirationIssue} from './issuesForAI'
 
 const fetchIssues = async (
   service: string,
@@ -17,23 +13,13 @@ const fetchIssues = async (
   context: GQLContext,
   info: GraphQLResolveInfo
 ): Promise<InspirationIssue[]> => {
-  const {dataLoader} = context
-  switch (service) {
-    case 'github':
-      return fetchGitHubIssues(teamId, viewerId, searchQuery, dataLoader, context, info)
-    case 'jira':
-      return fetchJiraIssues(teamId, viewerId, searchQuery, dataLoader)
-    case 'linear':
-      return fetchLinearIssues(teamId, viewerId, searchQuery, context, info)
-    case 'gcal':
-      return fetchGCalIssues(teamId, viewerId, searchQuery, dataLoader)
-    case 'azureDevOps':
-      return fetchAzureDevOpsIssues(teamId, viewerId, searchQuery, context, info)
-    case 'PARABOL':
-      return fetchParabolIssues(teamId, viewerId, searchQuery)
-    default:
-      throw new GraphQLError(`Inspiration items are not yet supported for ${service}`)
+  if (service === 'PARABOL') return fetchParabolIssues(teamId, viewerId, searchQuery)
+  const issueList = getServerIntegration(service)?.capabilities.issueList
+  if (!issueList) {
+    throw new GraphQLError(`Inspiration items are not yet supported for ${service}`)
   }
+  const {dataLoader} = context
+  return issueList.listIssues({dataLoader, teamId, userId: viewerId, context, info}, searchQuery)
 }
 
 export default fetchIssues

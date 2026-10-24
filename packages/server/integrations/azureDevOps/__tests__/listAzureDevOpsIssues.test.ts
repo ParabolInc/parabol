@@ -1,20 +1,20 @@
 import type {GraphQLResolveInfo} from 'graphql'
 import buildAzureDevOpsWorkWiql from 'parabol-client/shared/integrations/buildAzureDevOpsWorkWiql'
-import getAzureDevOpsManager from '../../../../../integrations/azureDevOps/getAzureDevOpsManager'
-import type {AzureDevOpsWorkItem} from '../../../../../integrations/azureDevOps/mapAzureDevOpsWorkItem'
-import searchAzureDevOpsWorkItems from '../../../../../integrations/azureDevOps/searchAzureDevOpsWorkItems'
-import type {GQLContext} from '../../../../graphql'
-import fetchAzureDevOpsIssues from '../fetchAzureDevOpsIssues'
+import type {DataLoaderWorker, GQLContext} from '../../../graphql/graphql'
+import getAzureDevOpsManager from '../getAzureDevOpsManager'
+import listAzureDevOpsIssues from '../listAzureDevOpsIssues'
+import type {AzureDevOpsWorkItem} from '../mapAzureDevOpsWorkItem'
+import searchAzureDevOpsWorkItems from '../searchAzureDevOpsWorkItems'
 
-jest.mock('../../../../../integrations/azureDevOps/getAzureDevOpsManager', () => ({
+jest.mock('../getAzureDevOpsManager', () => ({
   __esModule: true,
   default: jest.fn()
 }))
-jest.mock('../../../../../integrations/azureDevOps/searchAzureDevOpsWorkItems', () => ({
+jest.mock('../searchAzureDevOpsWorkItems', () => ({
   __esModule: true,
   default: jest.fn()
 }))
-jest.mock('../../../../../utils/Logger', () => ({
+jest.mock('../../../utils/Logger', () => ({
   Logger: {log: jest.fn(), error: jest.fn(), warn: jest.fn(), info: jest.fn(), debug: jest.fn()}
 }))
 
@@ -26,7 +26,7 @@ const WEB_PROJECT_ID = 'a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d'
 const START_AT = '2026-10-01T00:00:00.000Z'
 const END_AT = '2026-10-07T23:59:59.999Z'
 
-const dataLoader = {}
+const dataLoader = {} as DataLoaderWorker
 const context = {dataLoader} as unknown as GQLContext
 const info = {} as GraphQLResolveInfo
 const listComments = jest.fn()
@@ -61,9 +61,10 @@ const workItem = (
   ...overrides
 })
 
-const run = (query: string) => fetchAzureDevOpsIssues('team1', 'user1', query, context, info)
+const run = (query: string) =>
+  listAzureDevOpsIssues({dataLoader, teamId: 'team1', userId: 'user1', context, info}, query)
 
-describe('fetchAzureDevOpsIssues', () => {
+describe('listAzureDevOpsIssues', () => {
   beforeEach(() => {
     mockedGetManager.mockResolvedValue({listComments} as unknown as Awaited<
       ReturnType<typeof getAzureDevOpsManager>

@@ -1,4 +1,7 @@
 import {lazy} from 'react'
+import azureDevOpsIntegrationPanelQuery, {
+  type AzureDevOpsIntegrationPanelQuery
+} from '../../__generated__/AzureDevOpsIntegrationPanelQuery.graphql'
 import azureDevOpsScopingResultsQuery, {
   type AzureDevOpsScopingResultsAdapterQuery
 } from '../../__generated__/AzureDevOpsScopingResultsAdapterQuery.graphql'
@@ -13,10 +16,12 @@ import {
   ClientIntegrationDefinition,
   type ConnectParams,
   type ProviderLogoAsset,
-  type ScopingCapability
+  type ScopingCapability,
+  type WorkDrawerCapability
 } from '../platform/ClientIntegrationDefinition'
 import {searchFiltersByKey} from '../platform/IntegrationSearchFilter'
 import makeScopingResults from '../platform/makeScopingResults'
+import makeWorkDrawerPanel from '../platform/makeWorkDrawerPanel'
 import azureDevOpsSearchMeta from './azureDevOpsSearchMeta'
 
 const scoping: ScopingCapability = {
@@ -56,6 +61,19 @@ const scoping: ScopingCapability = {
   newRecordLabel: 'New Work Item'
 }
 
+const workDrawer: WorkDrawerCapability = {
+  Panel: makeWorkDrawerPanel<AzureDevOpsIntegrationPanelQuery>({
+    query: azureDevOpsIntegrationPanelQuery,
+    Panel: lazy(
+      () =>
+        import(
+          /* webpackChunkName: 'AzureDevOpsIntegrationPanel' */ '../../components/TeamPrompt/WorkDrawer/AzureDevOpsIntegrationPanel'
+        )
+    )
+  }),
+  connectDescription: 'work items'
+}
+
 export class AzureDevOpsClientIntegration extends ClientIntegrationDefinition {
   readonly service = azureDevOpsIntegrationMeta.service
   readonly title = azureDevOpsIntegrationMeta.title
@@ -71,7 +89,8 @@ export class AzureDevOpsClientIntegration extends ClientIntegrationDefinition {
             /* webpackChunkName: 'AzureDevOpsProjectAccessPanelRoot' */ './AzureDevOpsProjectAccessPanelRoot'
           )
       )
-    }
+    },
+    workDrawer
   }
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
     if (!provider?.clientId) return

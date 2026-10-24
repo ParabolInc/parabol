@@ -1,4 +1,7 @@
 import {lazy} from 'react'
+import linearIntegrationPanelQuery, {
+  type LinearIntegrationPanelQuery
+} from '../../__generated__/LinearIntegrationPanelQuery.graphql'
 import linearScopingResultsQuery, {
   type LinearScopingResultsAdapterQuery
 } from '../../__generated__/LinearScopingResultsAdapterQuery.graphql'
@@ -14,9 +17,11 @@ import {
   ClientIntegrationDefinition,
   type ConnectParams,
   type ProviderLogoAsset,
-  type ScopingCapability
+  type ScopingCapability,
+  type WorkDrawerCapability
 } from '../platform/ClientIntegrationDefinition'
 import makeScopingResults from '../platform/makeScopingResults'
+import makeWorkDrawerPanel from '../platform/makeWorkDrawerPanel'
 import linearSearchMeta from './linearSearchMeta'
 
 const scoping: ScopingCapability = {
@@ -50,6 +55,19 @@ const scoping: ScopingCapability = {
   selectAllNoun: 'issue'
 }
 
+const workDrawer: WorkDrawerCapability = {
+  Panel: makeWorkDrawerPanel<LinearIntegrationPanelQuery>({
+    query: linearIntegrationPanelQuery,
+    Panel: lazy(
+      () =>
+        import(
+          /* webpackChunkName: 'LinearIntegrationPanel' */ '../../components/TeamPrompt/WorkDrawer/LinearIntegrationPanel'
+        )
+    )
+  }),
+  connectDescription: 'issues'
+}
+
 export class LinearClientIntegration extends ClientIntegrationDefinition {
   readonly service = linearIntegrationMeta.service
   readonly title = linearIntegrationMeta.title
@@ -57,7 +75,7 @@ export class LinearClientIntegration extends ClientIntegrationDefinition {
   readonly Icon = LinearSVG
   readonly logo: ProviderLogoAsset = {src: linearLogo}
   readonly iconClassName = 'dark:[&_path]:fill-white'
-  readonly capabilities: ClientIntegrationCapabilities = {scoping}
+  readonly capabilities: ClientIntegrationCapabilities = {scoping, workDrawer}
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
     if (!provider?.clientId || !provider.serverBaseUrl) return
     void LinearClientManager.openOAuth(
