@@ -10,6 +10,7 @@ import {
 } from '@hocuspocus/server'
 import type RedisClient from 'ioredis'
 import {HocusPocusProxySocket} from '../../HocusPocusProxySocket'
+import {Logger} from '../Logger'
 
 export type SecondParam<T> = T extends (arg1: any, arg2: infer A, ...args: any[]) => any ? A : never
 export type RSAMessageProxy = {
@@ -99,17 +100,23 @@ interface Configuration<TCE> {
   deriveContext?: (serializedHTTPRequest: SerializedHTTPRequest) => Record<string, any>
 }
 
+// uWS decodes header bytes as UTF-8 (invalid bytes become U+FFFD), but Headers only accepts byte strings
+const toByteString = (value: string) => Buffer.from(value, 'utf8').toString('latin1')
+
 // Hocuspocus expects a web-standard Request, so rehydrate one from what crossed the wire
-const toWebRequest = (serializedHTTPRequest: SerializedHTTPRequest) => {
+export const toWebRequest = (serializedHTTPRequest: SerializedHTTPRequest) => {
   const {method, url, headers} = serializedHTTPRequest
   const webHeaders = new Headers()
   Object.entries(headers).forEach(([name, value]) => {
-    if (Array.isArray(value)) {
-      value.forEach((v) => {
-        webHeaders.append(name, v)
+    if (value === undefined) return
+    const values = Array.isArray(value) ? value : [value]
+    try {
+      values.forEach((v) => {
+        webHeaders.append(name, toByteString(v))
       })
-    } else if (value !== undefined) {
-      webHeaders.set(name, value)
+    } catch {
+      webHeaders.delete(name)
+      Logger.warn(`toWebRequest: dropped invalid header ${JSON.stringify(name)}`)
     }
   })
   return new Request(new URL(url, 'http://localhost'), {
@@ -230,7 +237,15 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
     return this.getOrClaimLock(documentName)
   }
 
-  private handleRedisMessage = async (_channel: Buffer, packedMessage: Buffer) => {
+  private handleRedisMessage = async (channel: Buffer, packedMessage: Buffer) => {
+    try {
+      await this.routeRedisMessage(packedMessage)
+    } catch (e) {
+      Logger.error(`RedisServerAffinity: failed to handle message on ${channel}`, e)
+    }
+  }
+
+  private async routeRedisMessage(packedMessage: Buffer) {
     const msg = this.unpack(packedMessage) as RSAMessage
     const {type} = msg
     if (type === 'proxy') {
