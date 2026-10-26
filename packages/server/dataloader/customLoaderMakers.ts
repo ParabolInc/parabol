@@ -1160,6 +1160,8 @@ export interface PriorTeamHealthCycle {
   // the comments the team could read that cycle for each category, keyed by categoryId. Anonymous
   // comments only ever appear here in their paraphrased form (see getTeamHealthDisplayComment)
   commentsByCategoryId: Map<number, string[]>
+  // the question each category was measured by that cycle, keyed by categoryId
+  questionByCategoryId: Map<number, string>
 }
 
 // A stand-up's prompts are frozen at meeting creation: it sees prompts active when the meeting
@@ -1313,16 +1315,17 @@ export const priorTeamHealthCyclesByMeetingId = (
           const questions = (await parent.get('teamHealthQuestions').loadMany(questionIds)).filter(
             isValid
           )
-          const categoryIdByQuestionId = new Map(
-            questions.map((question) => [question.id, question.categoryId])
-          )
+          const questionById = new Map(questions.map((question) => [question.id, question]))
           return answeredCycles.map(({meeting: priorMeeting, responses}) => {
             const scoresByCategoryId = new Map<number, number[]>()
             const commentsByCategoryId = new Map<number, string[]>()
+            const questionByCategoryId = new Map<number, string>()
             for (const response of responses) {
               const {questionId, score} = response
-              const categoryId = categoryIdByQuestionId.get(questionId)
-              if (categoryId === undefined) continue
+              const question = questionById.get(questionId)
+              if (!question) continue
+              const {categoryId} = question
+              questionByCategoryId.set(categoryId, question.question)
               if (score !== null) {
                 const scores = scoresByCategoryId.get(categoryId) ?? []
                 scores.push(score)
@@ -1345,7 +1348,8 @@ export const priorTeamHealthCyclesByMeetingId = (
               meetingId: priorMeeting.id,
               endedAt: priorMeeting.endedAt!,
               scoreByCategoryId,
-              commentsByCategoryId
+              commentsByCategoryId,
+              questionByCategoryId
             }
           })
         })

@@ -1,0 +1,11 @@
+"""
+Published on the meeting subscription when the AI summary of one category of a revealed Team Health
+check is written, or given up on
+"""
+type TeamHealthCategorySummarySuccess {
+  """
+  The result stage for the category, with its summary in its new state. It also brings any anonymous
+  comment whose rewording finished after the reveal, since the summary waits briefly for those
+  """
+  stage: TeamHealthResultStage!
+}
