@@ -164,6 +164,10 @@ export const selectTeamHealthResponses = () => {
   return getKysely().selectFrom('TeamHealthResponse').selectAll()
 }
 
+export const selectTeamHealthCategorySummaries = () => {
+  return getKysely().selectFrom('TeamHealthCategorySummary').selectAll()
+}
+
 export const selectSuggestedAction = () => {
   return getKysely()
     .selectFrom('SuggestedAction')

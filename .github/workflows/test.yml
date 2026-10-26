@@ -67,8 +67,26 @@ jobs:
           cp ${{ env.PARABOL_BUILD_ENV_PATH }} ./.env
           pnpm kysely migrate:latest
 
+      # master builds a fresh webpack cache for branches to restore, so stale modules never pile up in it
+      - name: Restore webpack cache
+        if: github.ref_name != 'master'
+        uses: actions/cache/restore@v4
+        with:
+          path: .webpackCache
+          key: webpack-${{ runner.arch }}-${{ env.NODE_VERSION }}-${{ github.sha }}
+          restore-keys: webpack-${{ runner.arch }}-${{ env.NODE_VERSION }}-
+
       - name: Build for testing
         run: pnpm build
+        env:
+          WEBPACK_PERSISTENT_CACHE: true
+
+      - name: Save webpack cache
+        if: github.ref_name == 'master'
+        uses: actions/cache/save@v4
+        with:
+          path: .webpackCache
+          key: webpack-${{ runner.arch }}-${{ env.NODE_VERSION }}-${{ github.sha }}
 
       - name: Verify source is clean
         run: git diff --quiet HEAD || (echo "Changes in generated files detected"; git diff; exit 1)

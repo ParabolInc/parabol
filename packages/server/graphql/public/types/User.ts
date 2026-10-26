@@ -53,6 +53,8 @@ import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
 import type {ReqResolvers} from './ReqResolvers'
 
 const SIMILARITY_THRESHOLD = 0.5
+const TEMPLATE_SEARCH_LIMIT = 12
+const TEMPLATE_SEARCH_MAX_GAP = 0.05
 
 const getValidUserIds = async (
   userIds: null | string[] | undefined,
@@ -802,7 +804,7 @@ const User: ReqResolvers<'User'> = {
 
     const pg = getKysely()
     const tableName = getEmbeddingsTableName(activeEmbeddingModelId)
-    const similarEmbeddings = await pg
+    const similarTemplates = await pg
       .with('Model', (qc) =>
         qc
           .selectFrom(tableName)
@@ -830,19 +832,27 @@ const User: ReqResolvers<'User'> = {
           ])
       )
       .selectFrom('CosineSimilarity')
-      .select(['embeddingId', 'similarity', 'embeddingsMetadataId', 'refId'])
+      .select(({fn}) => ['refId', fn.max('similarity').as('similarity')])
       .where('similarity', '>=', SIMILARITY_THRESHOLD)
+      .groupBy('refId')
       .orderBy('similarity', 'desc')
       .execute()
 
-    const aiActivityIds = similarEmbeddings.map(({refId}) => refId)
-
     // TODO filter out seasonal templates
-    const activities = await dataLoader.get('meetingTemplates').loadMany(aiActivityIds)
-    const accessibleActivities = activities.filter(isValid).filter((activity) => {
-      return activity.scope !== 'TEAM' || teamIds.includes(activity.teamId)
+    const activities = await dataLoader
+      .get('meetingTemplates')
+      .loadMany(similarTemplates.map(({refId}) => refId))
+    const accessibleMatches = similarTemplates.flatMap(({similarity}, idx) => {
+      const activity = activities[idx]
+      if (!isValid(activity)) return []
+      if (activity.scope === 'TEAM' && !teamIds.includes(activity.teamId)) return []
+      return [{activity, similarity}]
     })
-    return accessibleActivities
+    const floor = (accessibleMatches[0]?.similarity ?? 0) - TEMPLATE_SEARCH_MAX_GAP
+    return accessibleMatches
+      .filter(({similarity}) => similarity >= floor)
+      .slice(0, TEMPLATE_SEARCH_LIMIT)
+      .map(({activity}) => activity)
   },
   parseSAMLMetadata: async (_source, {metadataURL, domain}) => {
     const metadata = await getSSOMetadataFromURL(metadataURL)
