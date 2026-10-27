@@ -256,15 +256,19 @@ const RemoveOrgUsersMutation: StandardMutation<TRemoveOrgUsersMutation, Navigate
       if (onCompleted) {
         onCompleted(res, errors)
       }
-      const payload = res.removeOrgUsers
-      if (!payload || payload.error) return
+      const {
+        RemoveOrgUsersMutation_organization: organizationPayload,
+        RemoveOrgUsersMutation_team: teamPayload,
+        RemoveOrgUsersMutation_notification: notificationPayload
+      } = res.removeOrgUsers
+      if (!organizationPayload || !teamPayload || !notificationPayload) return
 
-      removeOrgUsersOrganizationOnNext(payload as any, {
+      removeOrgUsersOrganizationOnNext(organizationPayload, {
         navigate,
         atmosphere
       })
-      removeOrgUsersTeamOnNext(payload as any, {atmosphere})
-      removeOrgUsersNotificationOnNext(payload as any, {atmosphere, navigate})
+      removeOrgUsersTeamOnNext(teamPayload, {atmosphere})
+      removeOrgUsersNotificationOnNext(notificationPayload, {atmosphere, navigate})
     },
     onError
   })
