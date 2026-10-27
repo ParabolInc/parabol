@@ -117,7 +117,9 @@ const EndSprintPokerMutation: StandardMutation<
       if (onCompleted) {
         onCompleted(res, errors)
       }
-      endSprintPokerTeamOnNext(res.endSprintPoker as any, {
+      const payload = res.endSprintPoker.EndSprintPokerMutation_team
+      if (!payload) return
+      endSprintPokerTeamOnNext(payload, {
         atmosphere,
         navigate
       })
