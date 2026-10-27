@@ -266,7 +266,10 @@ export const useTipTapPageEditor = (
                 ?.getValue('viewer')
             })
             return typeof viewerAccess === 'string' ? viewerAccess : undefined
-          }
+          },
+          // Page.linkedPages stores each linked page as a PagePreview when the viewer can't open it
+          isPageLocked: (pageCode) =>
+            atmosphere.getStore().getSource().get(`page:${pageCode}`)?.__typename === 'PagePreview'
         }),
         TableOfContents,
         TaskBlock,

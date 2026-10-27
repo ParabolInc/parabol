@@ -37,11 +37,14 @@ export const Page = (props: Props) => {
     graphql`
       fragment Page_page on Page {
         ...PageHeader_page
-        ...PageLinkAccessProvider_page
         id
         title
         ancestorIds
         isDatabase
+        # loads each linked page into the store as Page or PagePreview, which PageLinkBlock reads for its lock
+        linkedPages {
+          id
+        }
       }
     `,
     pageRef
@@ -76,7 +79,7 @@ export const Page = (props: Props) => {
           (isDatabase ? (
             <DatabaseEditor viewerRef={viewer} provider={provider} />
           ) : (
-            <PageEditor viewerRef={viewer} provider={provider} pageRef={page} pageId={pageId} />
+            <PageEditor viewerRef={viewer} provider={provider} pageId={pageId} />
           ))}
       </div>
     </div>

@@ -1,6 +1,5 @@
 import {NodeSelection} from '@tiptap/pm/state'
 import {type NodeViewProps, NodeViewWrapper} from '@tiptap/react'
-import {useContext} from 'react'
 import {useClientQuery} from 'react-relay'
 import {Link} from 'react-router'
 import {
@@ -16,7 +15,6 @@ import pageDropTargetQuery, {
 } from '../../../__generated__/PageDropTargetQuery.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {PageDropTarget} from '../../../modules/pages/PageDropTarget'
-import {PageLinkAccessContext} from '../../../modules/pages/PageLinkAccessContext'
 import {PageNoAccessLock} from '../../../modules/pages/PageNoAccessLock'
 import {useArchivePageMutation} from '../../../mutations/useArchivePageMutation'
 import {hasMinPageRole} from '../../../shared/hasMinPageRole'
@@ -31,9 +29,10 @@ import {TooltipTrigger} from '../../../ui/Tooltip/TooltipTrigger'
 import {GQLID} from '../../../utils/GQLID'
 import {getPageEmoji, stripPageEmoji} from '../../../utils/getPageEmoji'
 import {getPageSlug} from '../../getPageSlug'
+import type {PageLinkBlockOptions} from './PageLinkBlock'
 
 export const PageLinkBlockView = (props: NodeViewProps) => {
-  const {node, getPos, view} = props
+  const {node, getPos, view, extension} = props
   const attrs = node.attrs as PageLinkBlockAttrs
   const {pageCode, title, canonical, database} = attrs
   const pageSlug = getPageSlug(pageCode, title)
@@ -52,7 +51,7 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
   const {draggingPageId, draggingPageViewerAccess} = viewer ?? {}
   const hasDragAccess = hasMinPageRole('editor', draggingPageViewerAccess)
   const isOptimistic = pageCode === -1
-  const isLocked = useContext(PageLinkAccessContext).get(pageCode) === false
+  const isLocked = (extension.options as PageLinkBlockOptions).isPageLocked(pageCode)
   const focusLink = () => {
     const pos = getPos()
     if (!pos) return
