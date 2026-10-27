@@ -51,6 +51,9 @@ export interface ServerContext {
   apiCost?: number
   // present if the request is from a Personal Access Token
   resourceGrants?: ResourceGrants
+  traceparent?: string
+  sessionId?: string
+  socketId?: string
 }
 
 export interface UserContext {

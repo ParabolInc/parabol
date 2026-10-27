@@ -23,7 +23,11 @@ const yoga = createYoga({
   logging: Logger
 })
 
-const execute = async (query: string, variables?: Record<string, unknown>) => {
+const execute = async (
+  query: string,
+  variables?: Record<string, unknown>,
+  serverContext?: Record<string, unknown>
+) => {
   const response = await yoga.fetch(
     'http://localhost/graphql',
     {
@@ -31,7 +35,7 @@ const execute = async (query: string, variables?: Record<string, unknown>) => {
       headers: {'content-type': 'application/json'},
       body: JSON.stringify({query, variables})
     },
-    {authToken: {sub: 'user1'}, ip: '203.0.113.7'}
+    {authToken: {sub: 'user1'}, ip: '203.0.113.7', ...serverContext}
   )
   return response.json()
 }
@@ -72,5 +76,20 @@ test('code running inside an operation sees its user, operation and variables', 
     operationName: 'LogContext',
     operationKind: 'query',
     variables: {teamId: 'team1'}
+  })
+})
+
+test('an operation joins the trace and the tab session its client sent', async () => {
+  const result = await execute('query LogContext { logContext }', undefined, {
+    traceparent: '00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01',
+    sessionId: 'tab-1',
+    socketId: 'socket-1'
+  })
+  expect(JSON.parse(result.data.logContext)).toMatchObject({
+    trace: '4bf92f3577b34da6a3ce929d0e0e4736',
+    traceSampled: true,
+    sessionId: 'tab-1',
+    socketId: 'socket-1',
+    component: 'graphql'
   })
 })
