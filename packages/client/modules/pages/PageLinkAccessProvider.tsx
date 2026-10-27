@@ -1,48 +1,38 @@
-import areEqual from 'fbjs/lib/areEqual'
-import {type ReactNode, useEffect, useState} from 'react'
-import type * as Y from 'yjs'
-import useAtmosphere from '../../hooks/useAtmosphere'
-import {getPageLinks} from '../../shared/tiptap/getPageLinks'
+import graphql from 'babel-plugin-relay/macro'
+import {type ReactNode, useMemo} from 'react'
+import {useFragment} from 'react-relay'
+import type {PageLinkAccessProvider_page$key} from '../../__generated__/PageLinkAccessProvider_page.graphql'
 import {PageLinkAccessContext} from './PageLinkAccessContext'
-import {PageLinkAccessRoot} from './PageLinkAccessRoot'
-
-const MAX_LINKED_PAGES = 500
 
 interface Props {
-  document: Y.Doc
+  pageRef: PageLinkAccessProvider_page$key
   children: ReactNode
 }
 
 export const PageLinkAccessProvider = (props: Props) => {
-  const {document, children} = props
-  const atmosphere = useAtmosphere()
-  const [pageIds, setPageIds] = useState<string[]>([])
-  const [canOpenByPageCode, setCanOpenByPageCode] = useState<ReadonlyMap<number, boolean>>(
-    new Map()
+  const {pageRef, children} = props
+  const page = useFragment(
+    graphql`
+      fragment PageLinkAccessProvider_page on Page {
+        linkedPages {
+          __typename
+          id
+        }
+      }
+    `,
+    pageRef
   )
-
-  useEffect(() => {
-    const frag = document.getXmlFragment('default')
-    const update = () => {
-      const pageCodes = new Set(getPageLinks(document).map((link) => link.getAttribute('pageCode')))
-      const nextPageIds = [...pageCodes]
-        .filter((pageCode): pageCode is number => typeof pageCode === 'number' && pageCode > 0)
-        .sort((a, b) => a - b)
-        .slice(0, MAX_LINKED_PAGES)
-        .map((pageCode) => `page:${pageCode}`)
-      setPageIds((prev) => (areEqual(prev, nextPageIds) ? prev : nextPageIds))
-    }
-    update()
-    frag.observeDeep(update)
-    return () => frag.unobserveDeep(update)
-  }, [document])
-
+  const {linkedPages} = page
+  const canOpenByPageCode = useMemo(
+    () =>
+      new Map(
+        linkedPages.map(({__typename, id}) => [Number(id.split(':')[1]), __typename === 'Page'])
+      ),
+    [linkedPages]
+  )
   return (
     <PageLinkAccessContext.Provider value={canOpenByPageCode}>
       {children}
-      {atmosphere.authObj && pageIds.length > 0 && (
-        <PageLinkAccessRoot pageIds={pageIds} onAccess={setCanOpenByPageCode} />
-      )}
     </PageLinkAccessContext.Provider>
   )
 }

@@ -11,8 +11,6 @@ import type {UserResolvers} from '../resolverTypes'
 
 type PageGrantCriteria = NonNullable<ReturnType<ResourceGrants['getPageGrantCriteria']>>
 
-const MAX_PAGE_IDS = 500
-
 const buildGrantFilter = (
   eb: ExpressionBuilder<DB, any>,
   pageIdRef: string,
@@ -65,7 +63,7 @@ const buildGrantFilter = (
 
 export const pages: NonNullable<UserResolvers['pages']> = async (
   _source,
-  {parentPageId, isPrivate, first, after, teamId, isArchived, textFilter, pageIds},
+  {parentPageId, isPrivate, first, after, teamId, isArchived, textFilter},
   {authToken, resourceGrants}
 ) => {
   if (parentPageId && teamId) {
@@ -74,48 +72,6 @@ export const pages: NonNullable<UserResolvers['pages']> = async (
 
   const viewerId = getUserId(authToken)
   const grantCriteria = resourceGrants?.getPageGrantCriteria() ?? null
-  if (pageIds) {
-    if (pageIds.length > MAX_PAGE_IDS) {
-      throw new GraphQLError(`pageIds may hold at most ${MAX_PAGE_IDS} ids`)
-    }
-    const dbPageIds = pageIds.map((pageId) => CipherId.fromClient(pageId)[0])
-    const openablePages =
-      dbPageIds.length === 0
-        ? []
-        : await selectPages()
-            .where('id', 'in', dbPageIds)
-            .where('deletedBy', 'is', null)
-            .where(({or, exists, selectFrom}) =>
-              or([
-                exists(
-                  selectFrom('PageAccess')
-                    .select('PageAccess.pageId')
-                    .whereRef('PageAccess.pageId', '=', 'Page.id')
-                    .where('PageAccess.userId', '=', viewerId)
-                ),
-                exists(
-                  selectFrom('PageExternalAccess')
-                    .select('PageExternalAccess.pageId')
-                    .whereRef('PageExternalAccess.pageId', '=', 'Page.id')
-                    .where('PageExternalAccess.email', '=', '*')
-                )
-              ])
-            )
-            .$if(!!grantCriteria, (qb) =>
-              qb.where((eb) => buildGrantFilter(eb, 'Page.id', grantCriteria!))
-            )
-            .limit(first)
-            .execute()
-    return {
-      pageInfo: {
-        hasNextPage: false,
-        hasPreviousPage: false,
-        startCursor: openablePages.at(0)?.sortOrder,
-        endCursor: openablePages.at(-1)?.sortOrder
-      },
-      edges: openablePages.map((page) => ({node: page, cursor: page.sortOrder}))
-    }
-  }
   const dbParentPageId = parentPageId
     ? CipherId.fromClient(parentPageId)[0]
     : parentPageId === null

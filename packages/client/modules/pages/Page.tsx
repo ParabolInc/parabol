@@ -37,6 +37,7 @@ export const Page = (props: Props) => {
     graphql`
       fragment Page_page on Page {
         ...PageHeader_page
+        ...PageLinkAccessProvider_page
         id
         title
         ancestorIds
@@ -75,7 +76,7 @@ export const Page = (props: Props) => {
           (isDatabase ? (
             <DatabaseEditor viewerRef={viewer} provider={provider} />
           ) : (
-            <PageEditor viewerRef={viewer} provider={provider} pageId={pageId} />
+            <PageEditor viewerRef={viewer} provider={provider} pageRef={page} pageId={pageId} />
           ))}
       </div>
     </div>
