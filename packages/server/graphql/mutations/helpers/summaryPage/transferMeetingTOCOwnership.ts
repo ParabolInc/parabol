@@ -1,7 +1,7 @@
 import getKysely from '../../../../postgres/getKysely'
 import {updatePageAccessTable} from '../../../../postgres/updatePageAccessTable'
 
-// The Meeting Summaries page has one owner, and it must be someone on the team
+// The Meeting Summaries page belongs to the team, so an owner who leaves hands it to the team lead
 export const transferMeetingTOCOwnership = async (
   teamId: string,
   fromUserId: string,

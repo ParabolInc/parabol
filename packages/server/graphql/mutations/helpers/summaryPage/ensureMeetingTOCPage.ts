@@ -10,9 +10,11 @@ export const ensureMeetingTOCPage = async (
 ) => {
   const team = await dataLoader.get('teams').loadNonNull(teamId)
   if (!team.meetingTOCpageId) {
+    const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
+    const teamLeadId = teamMembers.find(({isLead}) => isLead)?.userId ?? userId
     const tocPage = await createNewPage(
       {
-        userId,
+        userId: teamLeadId,
         content: {
           type: 'doc',
           content: [

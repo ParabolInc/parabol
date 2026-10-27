@@ -17,9 +17,10 @@ jest.mock('../../../../../utils/analytics/analytics', () => ({
 const pg = getKysely()
 const orgId = `tocOrg|${generateUID()}`
 const teamId = `tocTeam|${generateUID()}`
-const firstEnderId = `tocFirstEnder|${generateUID()}`
-const laterEnderId = `tocLaterEnder|${generateUID()}`
-const userIds = [firstEnderId, laterEnderId]
+const leadId = `tocLead|${generateUID()}`
+const enderId = `tocEnder|${generateUID()}`
+const memberId = `tocMember|${generateUID()}`
+const userIds = [leadId, enderId, memberId]
 const meetingId = `tocMeeting|${generateUID()}`
 
 const getRoles = async (pageId: number) => {
@@ -47,7 +48,14 @@ beforeAll(async () => {
   await pg.insertInto('Team').values({id: teamId, name: 'TOC Team', orgId}).execute()
   await pg
     .insertInto('TeamMember')
-    .values(userIds.map((userId) => ({id: `${teamId}::${userId}`, teamId, userId})))
+    .values(
+      userIds.map((userId) => ({
+        id: `${teamId}::${userId}`,
+        teamId,
+        userId,
+        isLead: userId === leadId
+      }))
+    )
     .execute()
   await pg
     .insertInto('NewMeeting')
@@ -55,7 +63,7 @@ beforeAll(async () => {
       id: meetingId,
       teamId,
       facilitatorStageId: 'stage1',
-      facilitatorUserId: laterEnderId,
+      facilitatorUserId: enderId,
       meetingType: 'retrospective',
       name: 'Retro 1',
       meetingCount: 1,
@@ -79,9 +87,28 @@ afterAll(async () => {
   await pg.destroy()
 })
 
-test('the Meeting Summaries page has one owner and each summary is owned by whoever ended the meeting', async () => {
+const leaveTeam = async (userId: string, nextLeadId: string) => {
+  await pg
+    .updateTable('TeamMember')
+    .set({isNotRemoved: false, isLead: false})
+    .where('teamId', '=', teamId)
+    .where('userId', '=', userId)
+    .execute()
+  await pg
+    .updateTable('TeamMember')
+    .set({isLead: true})
+    .where('teamId', '=', teamId)
+    .where('userId', '=', nextLeadId)
+    .execute()
+  await transferMeetingTOCOwnership(teamId, userId, nextLeadId)
+}
+
+let tocPageId: number
+let summaryPageId: number
+
+test('the team lead owns the Meeting Summaries page, not whoever ended the first meeting', async () => {
   const dataLoader = getNewDataLoader('ensureMeetingTOCPage.test')
-  const tocPageId = await ensureMeetingTOCPage(firstEnderId, teamId, dataLoader)
+  tocPageId = await ensureMeetingTOCPage(enderId, teamId, dataLoader)
   dataLoader.dispose()
 
   const tocPage = await pg
@@ -90,16 +117,36 @@ test('the Meeting Summaries page has one owner and each summary is owned by whoe
     .where('id', '=', tocPageId)
     .executeTakeFirstOrThrow()
   expect(tocPage.isMeetingTOC).toBe(true)
-  expect(await getRoles(tocPageId)).toEqual({[firstEnderId]: 'owner', [laterEnderId]: 'editor'})
+  expect(await getRoles(tocPageId)).toEqual({
+    [leadId]: 'owner',
+    [enderId]: 'editor',
+    [memberId]: 'editor'
+  })
+}, 30_000)
 
+test('a summary is owned by whoever ended the meeting, without copying the summaries page owner', async () => {
   const summary = await createNewPage({
     parentPageId: tocPageId,
-    userId: laterEnderId,
+    userId: enderId,
     summaryMeetingId: meetingId,
     content: {type: 'doc', content: [{type: 'heading', attrs: {level: 1}, content: []}]}
   })
-  expect(await getRoles(summary.id)).toEqual({[firstEnderId]: 'editor', [laterEnderId]: 'owner'})
+  summaryPageId = summary.id
+  expect(await getRoles(summaryPageId)).toEqual({
+    [leadId]: 'editor',
+    [enderId]: 'owner',
+    [memberId]: 'editor'
+  })
+}, 30_000)
 
-  await transferMeetingTOCOwnership(teamId, firstEnderId, laterEnderId)
-  expect(await getRoles(tocPageId)).toEqual({[firstEnderId]: 'editor', [laterEnderId]: 'owner'})
+test('an owner of the summaries page who leaves the team hands it to the new team lead', async () => {
+  await leaveTeam(leadId, memberId)
+  expect(await getRoles(tocPageId)).toEqual({[memberId]: 'owner', [enderId]: 'editor'})
+  expect(await getRoles(summaryPageId)).toEqual({[enderId]: 'owner', [memberId]: 'editor'})
+}, 30_000)
+
+test('leaving the team keeps ownership that was given directly', async () => {
+  await leaveTeam(enderId, memberId)
+  expect(await getRoles(summaryPageId)).toEqual({[enderId]: 'owner', [memberId]: 'editor'})
+  expect(await getRoles(tocPageId)).toEqual({[memberId]: 'owner'})
 }, 30_000)
