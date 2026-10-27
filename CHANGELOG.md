@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.7.2](https://github.com/ParabolInc/parabol/compare/v15.7.1...v15.7.2) (2026-10-27)
+
+
+### Fixed
+
+* keep the meeting task board up when adding a task ([#13769](https://github.com/ParabolInc/parabol/issues/13769)) ([d35312c](https://github.com/ParabolInc/parabol/commit/d35312cd9e8ca024d68174317f4ec7c93bbad51f))
+* redirect the facilitator to the summary page after ending a meeting ([#13768](https://github.com/ParabolInc/parabol/issues/13768)) ([4297846](https://github.com/ParabolInc/parabol/commit/42978469ecddd5e409c35d2f4609f4a74745f40d))
+
+
+### Changed
+
+* tune meeting template embedding text for search ([#13749](https://github.com/ParabolInc/parabol/issues/13749)) ([0491929](https://github.com/ParabolInc/parabol/commit/0491929ae1249a230337903e7684a94d48613bd0))
+
 ## [15.7.1](https://github.com/ParabolInc/parabol/compare/v15.7.0...v15.7.1) (2026-10-27)
 
 
