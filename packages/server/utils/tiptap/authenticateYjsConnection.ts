@@ -2,9 +2,9 @@ import type {onAuthenticatePayload} from '@hocuspocus/server'
 import ms from 'ms'
 import getKysely from '../../postgres/getKysely'
 import {CipherId} from '../CipherId'
-import getRedis from '../getRedis'
 import {Logger} from '../Logger'
 import logError from '../logError'
+import {redisStoreOrNetwork} from '../redisStoreOrNetwork'
 import {getPageConnectionAccess} from './getPageConnectionAccess'
 import {isYjsSessionLive} from './isYjsSessionLive'
 
@@ -20,22 +20,23 @@ export type YjsContext = {
 const rejectConnection = (message: string, reason: string) =>
   Object.assign(new Error(message), {reason})
 
-const getMeetingTeamId = async (meetingId: string) => {
-  // This is a top 15 query in terms of total time because of call frequency, so caching is necessary
-  const redis = getRedis()
-  const key = `meetingTeamId:${meetingId}`
-  const cachedTeamId = await redis.get(key)
-  if (cachedTeamId) return cachedTeamId
-  const meeting = await getKysely()
-    .selectFrom('NewMeeting')
-    .select('teamId')
-    .where('id', '=', meetingId)
-    .executeTakeFirst()
-  if (!meeting) return null
-  const {teamId} = meeting
-  redis.set(key, teamId, 'PX', ms('3h')).catch(() => {})
-  return teamId
-}
+// This is a top 15 query in terms of total time because of call frequency, so caching is necessary
+const getMeetingTeamId = (meetingId: string) =>
+  redisStoreOrNetwork(
+    `meetingTeamId:${meetingId}`,
+    async () => {
+      const meeting = await getKysely()
+        .selectFrom('NewMeeting')
+        .select('teamId')
+        .where('id', '=', meetingId)
+        .executeTakeFirst()
+      // throwing keeps a missing meeting out of the cache
+      if (!meeting) throw rejectConnection(`Meeting not found: ${meetingId}`, 'InvalidDocument')
+      return meeting.teamId
+    },
+    ms('3h')
+  )
+
 export const authenticateYjsConnection = async ({
   documentName,
   context,

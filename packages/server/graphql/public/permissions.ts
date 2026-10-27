@@ -10,6 +10,7 @@ import {isMeetingFacilitator} from './rules/isMeetingFacilitator'
 import {isMeetingMember} from './rules/isMeetingMember'
 import {isNull} from './rules/isNull'
 import {isOrgTier} from './rules/isOrgTier'
+import {isRestoringOwnTrashedPage} from './rules/isRestoringOwnTrashedPage'
 import isSuperUser from './rules/isSuperUser'
 import {isTeamMember} from './rules/isTeamMember'
 import {isTeamMemberOfMeeting} from './rules/isTeamMemberOfMeeting'
@@ -85,7 +86,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     archivePage: and(
       isAuthenticated,
-      hasPageAccess<'Mutation.archivePage'>('args.pageId', 'owner')
+      or(hasPageAccess<'Mutation.archivePage'>('args.pageId', 'owner'), isRestoringOwnTrashedPage)
     ),
     archiveTeam: or(
       isSuperUser,
@@ -560,7 +561,6 @@ const permissionMap: PermissionMap<Resolvers> = {
     freeCustomPokerTemplatesRemaining: isUserViewer<'User.id'>('source.id'),
     freeCustomStandupTemplatesRemaining: isUserViewer<'User.id'>('source.id'),
     meeting: isTeamMemberOfMeeting<'User.meeting'>('args.meetingId'),
-    pageRoles: isUserViewer<'User.pageRoles'>('source.id'),
     organization: or(isSuperUser, isViewerOnOrg<'User.organization'>('args.orgId')),
     organizationUser: or(isSuperUser, isViewerOnOrg<'User.organizationUser'>('args.orgId')),
     personalAccessTokens: isUserViewer<'User.id'>('source.id'),

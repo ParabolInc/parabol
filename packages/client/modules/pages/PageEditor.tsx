@@ -3,7 +3,7 @@ import type {useTipTapPageEditor_viewer$key} from '../../__generated__/useTipTap
 import {TipTapEditor} from '../../components/TipTapEditor/TipTapEditor'
 import {useTipTapPageEditor} from '../../hooks/useTipTapPageEditor'
 import {cn} from '../../ui/cn'
-import {PageLinkRolesProvider} from './PageLinkRolesProvider'
+import {PageLinkAccessProvider} from './PageLinkAccessProvider'
 import {StarterActions} from './StarterActions'
 import {useEditablePage} from './useEditablePage'
 
@@ -20,12 +20,12 @@ export const PageEditor = (props: Props) => {
   if (!editor) return <div>No editor</div>
   return (
     <div className='flex w-full flex-col'>
-      <PageLinkRolesProvider document={provider.document}>
+      <PageLinkAccessProvider document={provider.document}>
         <TipTapEditor
           editor={editor}
           className={cn('page-editor relative flex w-full px-6 delay-300')}
         />
-      </PageLinkRolesProvider>
+      </PageLinkAccessProvider>
       {isEditable && <StarterActions editor={editor} />}
     </div>
   )

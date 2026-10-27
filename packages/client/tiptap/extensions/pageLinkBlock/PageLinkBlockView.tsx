@@ -16,7 +16,7 @@ import pageDropTargetQuery, {
 } from '../../../__generated__/PageDropTargetQuery.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {PageDropTarget} from '../../../modules/pages/PageDropTarget'
-import {PageLinkRolesContext} from '../../../modules/pages/PageLinkRolesContext'
+import {PageLinkAccessContext} from '../../../modules/pages/PageLinkAccessContext'
 import {PageNoAccessLock} from '../../../modules/pages/PageNoAccessLock'
 import {useArchivePageMutation} from '../../../mutations/useArchivePageMutation'
 import {hasMinPageRole} from '../../../shared/hasMinPageRole'
@@ -52,7 +52,7 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
   const {draggingPageId, draggingPageViewerAccess} = viewer ?? {}
   const hasDragAccess = hasMinPageRole('editor', draggingPageViewerAccess)
   const isOptimistic = pageCode === -1
-  const isLocked = useContext(PageLinkRolesContext).get(pageCode) === null
+  const isLocked = useContext(PageLinkAccessContext).get(pageCode) === false
   const focusLink = () => {
     const pos = getPos()
     if (!pos) return

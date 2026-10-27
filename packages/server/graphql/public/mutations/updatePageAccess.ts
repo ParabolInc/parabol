@@ -111,14 +111,10 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
     const userRoles = await dataLoader.get('pageAccessByPageId').load(dbPageId)
     dataLoader.get('pageAccessByPageId').clear(dbPageId)
     const owner = userRoles.find(({role}) => role === 'owner')
-    // only an editor the page was shared with directly may claim it, not someone with the public link
-    const viewerAccess = userRoles.find(({userId}) => userId === viewerId)
+    // anyone the page was shared with may claim it, but not someone who only has the public link
+    const hasOwnAccess = userRoles.some(({userId}) => userId === viewerId)
     const isValidOwnerClaim =
-      !owner &&
-      viewerAccess?.role === 'editor' &&
-      subjectType === 'user' &&
-      subjectId === viewerId &&
-      role === 'owner'
+      !owner && hasOwnAccess && subjectType === 'user' && subjectId === viewerId && role === 'owner'
     if (!isValidOwnerClaim) {
       throw new GraphQLError(
         `Insufficient permission. User role: ${userRole}. Role required: 'owner'`
@@ -187,6 +183,9 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
   let unlinkFromParent = false
   const page = await dataLoader.get('pages').load(dbPageId)
   if (!page) throw new GraphQLError('Page not found')
+  if (page.deletedAt) {
+    throw new GraphQLError('Restore this page from the trash before changing who can access it')
+  }
   const {parentPageId, isParentLinked} = page
   if (parentPageId && isParentLinked) {
     // get the existing role for this

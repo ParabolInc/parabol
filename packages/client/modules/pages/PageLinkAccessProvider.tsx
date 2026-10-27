@@ -1,11 +1,10 @@
 import areEqual from 'fbjs/lib/areEqual'
 import {type ReactNode, useEffect, useState} from 'react'
 import type * as Y from 'yjs'
-import type {PageRoleEnum} from '../../__generated__/PageLinkRolesQuery.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {getPageLinks} from '../../shared/tiptap/getPageLinks'
-import {PageLinkRolesContext} from './PageLinkRolesContext'
-import {PageLinkRolesRoot} from './PageLinkRolesRoot'
+import {PageLinkAccessContext} from './PageLinkAccessContext'
+import {PageLinkAccessRoot} from './PageLinkAccessRoot'
 
 const MAX_LINKED_PAGES = 500
 
@@ -14,11 +13,13 @@ interface Props {
   children: ReactNode
 }
 
-export const PageLinkRolesProvider = (props: Props) => {
+export const PageLinkAccessProvider = (props: Props) => {
   const {document, children} = props
   const atmosphere = useAtmosphere()
   const [pageIds, setPageIds] = useState<string[]>([])
-  const [roles, setRoles] = useState<ReadonlyMap<number, PageRoleEnum | null>>(new Map())
+  const [canOpenByPageCode, setCanOpenByPageCode] = useState<ReadonlyMap<number, boolean>>(
+    new Map()
+  )
 
   useEffect(() => {
     const frag = document.getXmlFragment('default')
@@ -37,11 +38,11 @@ export const PageLinkRolesProvider = (props: Props) => {
   }, [document])
 
   return (
-    <PageLinkRolesContext.Provider value={roles}>
+    <PageLinkAccessContext.Provider value={canOpenByPageCode}>
       {children}
       {atmosphere.authObj && pageIds.length > 0 && (
-        <PageLinkRolesRoot pageIds={pageIds} onRoles={setRoles} />
+        <PageLinkAccessRoot pageIds={pageIds} onAccess={setCanOpenByPageCode} />
       )}
-    </PageLinkRolesContext.Provider>
+    </PageLinkAccessContext.Provider>
   )
 }

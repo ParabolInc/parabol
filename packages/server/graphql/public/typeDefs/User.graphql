@@ -574,16 +574,11 @@ type User implements UserPartial {
     A string of text to filter the results. If an empty string is provided, it returns top suggestions
     """
     textFilter: String
+    """
+    Only return the pages among these that the viewer can open, at most 500. Used to mark links to pages they cannot open
+    """
+    pageIds: [ID!]
   ): PageConnection! @scope(name: PAGES_READ)
-  """
-  The viewer's role on each page, in the order of pageIds. null when the viewer cannot open the page, including pages that do not exist
-  """
-  pageRoles(
-    """
-    The pages to look up, at most 500
-    """
-    pageIds: [ID!]!
-  ): [PageRoleEnum]! @scope(name: PAGES_READ)
   search(
     "The string to search for"
     query: String!
