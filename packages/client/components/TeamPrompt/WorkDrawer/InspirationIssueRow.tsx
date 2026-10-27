@@ -12,7 +12,9 @@ interface Props {
 
 const InspirationIssueRow = (props: Props) => {
   const {service, title, url, updatedAt, detail} = props
-  const date = updatedAt ? dayjs(updatedAt).format('MMM D') : null
+  const updatedDay = updatedAt ? dayjs(updatedAt) : null
+  const isOverAYearOld = !!updatedDay?.isBefore(dayjs().subtract(1, 'year'))
+  const date = updatedDay?.format(isOverAYearOld ? 'MMM D, YYYY' : 'MMM D')
   const meta = [date, detail].filter(Boolean).join(' · ')
   return (
     <li className='flex items-start gap-2 border-hairline border-b px-1 py-2 last:border-b-0'>
