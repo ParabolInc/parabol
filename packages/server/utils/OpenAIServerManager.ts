@@ -531,6 +531,7 @@ Rules:
 - Be terse and information-dense. No filler intro or outro.
 - Write in the first person ("I", "my"). NEVER refer to ${userName} in the third person.
 - Each work item lists a Status. Use the past tense for completed work and the present/continuous tense for ongoing work.
+- Each work item lists a Date: when it last changed, or when an event starts. Today is ${new Date().toISOString().slice(0, 10)}. Use these dates for any time span the instructions name, like "this week" or "since Monday".
 - List every work item you did NOT use in any answer under "unused", with its id and a reason of at most 8 words (e.g. "Routine meeting", "No progress in this range", "Dependency bump, per your instructions").${styleGuide}${customInstructions}
 
 Return JSON of the form: { "items": [{ "content": "<the drafted answer, as markdown>", "promptIndex": <question index> }], "unused": [{ "id": "<work item id, e.g. W3>", "reason": "<short reason>" }] }`
