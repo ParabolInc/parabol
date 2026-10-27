@@ -8,31 +8,46 @@ import {
 } from 'relay-runtime'
 import pageEntryQuery from '../__generated__/PageEntryQuery.graphql'
 import type {usePageViewerAccess_page$data} from '../__generated__/usePageViewerAccess_page.graphql'
+import {hasMinPageRole} from '../shared/hasMinPageRole'
 import useAtmosphere from './useAtmosphere'
 
-const fragment = getFragment(graphql`
+const pageFragment = getFragment(graphql`
   fragment usePageViewerAccess_page on Page {
-    __typename
     access {
       viewer
+      public
     }
+  }
+`)
+const pagePreviewFragment = getFragment(graphql`
+  fragment usePageViewerAccess_pagePreview on PagePreview {
+    id
   }
 `)
 // PageEntryQuery loads the open page's linked pages, so it owns their records
 const owner = createOperationDescriptor(pageEntryQuery, {pageId: ''}).request
-const getSelector = (pageCode: number) =>
-  createReaderSelector(fragment, `page:${pageCode}`, {}, owner)
+const getPageSelector = (pageCode: number) =>
+  createReaderSelector(pageFragment, `page:${pageCode}`, {}, owner)
+const getPagePreviewSelector = (pageCode: number) =>
+  createReaderSelector(pagePreviewFragment, `pagePreview:${pageCode}`, {}, owner)
 
-// The viewer's role on a page: null when they cannot open it, undefined when their access isn't loaded.
-// Relay never changes a stored record's __typename, so access.viewer wins over a stale PagePreview
+type PageAccess = NonNullable<usePageViewerAccess_page$data['access']>
+const getStrongestRole = ({viewer, public: publicRole}: PageAccess) => {
+  if (viewer && publicRole) return hasMinPageRole(publicRole, viewer) ? viewer : publicRole
+  if (viewer || publicRole) return viewer || publicRole
+  return viewer === null && publicRole === null ? null : undefined
+}
+
+// The viewer's strongest role on a page: null when they cannot open it, undefined when it isn't loaded.
+// A page they could not open loads as a separate pagePreview record, and sharing changes write the page record
 export const lookupPageViewerAccess = (environment: IEnvironment, pageCode: number) => {
-  const data = environment.lookup(getSelector(pageCode)).data as
+  const page = environment.lookup(getPageSelector(pageCode)).data as
     | usePageViewerAccess_page$data
     | null
     | undefined
-  if (!data) return undefined
-  if (data.access) return data.access.viewer
-  return (data.__typename as string) === 'PagePreview' ? null : undefined
+  const role = page?.access ? getStrongestRole(page.access) : undefined
+  if (role !== undefined) return role
+  return environment.lookup(getPagePreviewSelector(pageCode)).data ? null : undefined
 }
 
 export const subscribeToPageViewerAccess = (
@@ -40,8 +55,10 @@ export const subscribeToPageViewerAccess = (
   pageCode: number,
   onChange: () => void
 ) => {
-  const disposable = environment.subscribe(environment.lookup(getSelector(pageCode)), onChange)
-  return () => disposable.dispose()
+  const disposables = [getPageSelector(pageCode), getPagePreviewSelector(pageCode)].map(
+    (selector) => environment.subscribe(environment.lookup(selector), onChange)
+  )
+  return () => disposables.forEach((disposable) => disposable.dispose())
 }
 
 export const usePageViewerAccess = (pageCode: number) => {
