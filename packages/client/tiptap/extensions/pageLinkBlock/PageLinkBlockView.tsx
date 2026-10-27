@@ -1,5 +1,6 @@
 import {NodeSelection} from '@tiptap/pm/state'
 import {type NodeViewProps, NodeViewWrapper} from '@tiptap/react'
+import {useContext} from 'react'
 import {useClientQuery} from 'react-relay'
 import {Link} from 'react-router'
 import {
@@ -15,6 +16,8 @@ import pageDropTargetQuery, {
 } from '../../../__generated__/PageDropTargetQuery.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {PageDropTarget} from '../../../modules/pages/PageDropTarget'
+import {PageLinkRolesContext} from '../../../modules/pages/PageLinkRolesContext'
+import {PageNoAccessLock} from '../../../modules/pages/PageNoAccessLock'
 import {useArchivePageMutation} from '../../../mutations/useArchivePageMutation'
 import {hasMinPageRole} from '../../../shared/hasMinPageRole'
 import type {PageLinkBlockAttrs} from '../../../shared/tiptap/extensions/PageLinkBlockBase'
@@ -49,6 +52,7 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
   const {draggingPageId, draggingPageViewerAccess} = viewer ?? {}
   const hasDragAccess = hasMinPageRole('editor', draggingPageViewerAccess)
   const isOptimistic = pageCode === -1
+  const isLocked = useContext(PageLinkRolesContext).get(pageCode) === null
   const focusLink = () => {
     const pos = getPos()
     if (!pos) return
@@ -118,8 +122,9 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
           ) : (
             Icon && <Icon className='text-fg-secondary' />
           )}
-          <div className='flex-1 pl-1'>
+          <div className={cn('flex-1 pl-1', isLocked && 'text-fg-muted')}>
             {(emoji ? stripPageEmoji(title, emoji) : title) || '<Untitled>'}
+            {isLocked && <PageNoAccessLock className='ml-1 align-[-2px]' />}
           </div>
           <Menu
             onOpenChange={(open) => {

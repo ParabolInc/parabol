@@ -27,7 +27,9 @@ export const ensureMeetingTOCPage = async (
       },
       mutatorId
     )
-    await getKysely()
+    const pg = getKysely()
+    await pg.updateTable('Page').set({isMeetingTOC: true}).where('id', '=', tocPage.id).execute()
+    await pg
       .updateTable('Team')
       .set({meetingTOCpageId: tocPage.id})
       .where('id', '=', teamId)

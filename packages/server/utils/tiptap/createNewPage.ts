@@ -79,6 +79,8 @@ export const createNewPage = async (options: CreateNewPageOptions, mutatorId?: s
             .select((eb) => ['userId', eb.val(pageId).as('pageId'), 'role'])
             .where('pageId', '=', parentPageId)
             .where('userId', '!=', userId)
+            // a summary has one owner: whoever ended the meeting
+            .$if(!!summaryMeetingId, (qb) => qb.where('role', '!=', 'owner'))
         )
         .execute(),
       pg

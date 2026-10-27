@@ -19,6 +19,7 @@ const editPageContent: MutationResolvers['editPageContent'] = async (
 
   const page = await dataLoader.get('pages').load(dbPageId)
   if (!page) throw new GraphQLError('Invalid pageId')
+  if (page.isMeetingTOC) throw new GraphQLError('Meeting Summaries pages cannot be edited')
 
   const jsonContent =
     format === 'markdown'

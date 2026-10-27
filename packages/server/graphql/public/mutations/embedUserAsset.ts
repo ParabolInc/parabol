@@ -4,6 +4,8 @@ import {createHash} from 'crypto'
 import {GraphQLError} from 'graphql'
 import mime from 'mime-types'
 import {
+  MAX_FILE_SIZE_FREE,
+  MAX_FILE_SIZE_PAID,
   MAX_USER_UPLOAD_BYTES_FREE,
   MAX_USER_UPLOAD_BYTES_PAID
 } from '../../../../client/utils/constants'
@@ -54,21 +56,21 @@ const embedUserAsset: MutationResolvers['embedUserAsset'] = async (
     // if we host it, just make a copy of it in the new directory
     const manager = getFileStoreManager()
     const sourcePartialPath = parsedUrl.pathname.slice('/assets/'.length) as PartialPath
-    const [scope, sourceScopeCode, assetType, filename] = sourcePartialPath.split('/') as [
+    const [sourceScope, sourceScopeCode, assetType, filename] = sourcePartialPath.split('/') as [
       AssetScopeEnum,
       string,
       AssetType,
       string
     ]
     if (
-      !VALID_SCOPES.includes(scope) ||
+      !VALID_SCOPES.includes(sourceScope) ||
       !VALID_ASSET_TYPES.includes(assetType) ||
       !filename ||
       filename.includes('..')
     ) {
       return {error: {message: 'Invalid asset URL'}}
     }
-    const canAccessSource = await checkAccess(authToken, scope, sourceScopeCode, assetType)
+    const canAccessSource = await checkAccess(authToken, sourceScope, sourceScopeCode, assetType)
     if (!canAccessSource) {
       return {error: {message: 'Access denied to source asset'}}
     }
@@ -98,7 +100,8 @@ const embedUserAsset: MutationResolvers['embedUserAsset'] = async (
       throw new GraphQLError('Could not copy parabol asset')
     }
   }
-  const asset = await fetchUntrusted(url, maxSize)
+  const maxFileSize = viewerTier === 'starter' ? MAX_FILE_SIZE_FREE : MAX_FILE_SIZE_PAID
+  const asset = await fetchUntrusted(url, maxFileSize)
   if (!asset) {
     return {error: {message: 'Unable to fetch asset'}}
   }

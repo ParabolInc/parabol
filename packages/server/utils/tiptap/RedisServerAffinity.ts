@@ -72,6 +72,8 @@ export type SerializedHTTPRequest = {
   url: string
   headers: Omit<IncomingHttpHeaders, 'sec-websocket-key'> & {'sec-websocket-key': string}
   socket: {remoteAddress: string}
+  // set once at upgrade, so every server that handles the socket agrees on when it opened
+  connectedAt: number
 }
 export type Pack = (msg: RSAMessage) => string | Buffer<ArrayBufferLike>
 type Unpack = (packedMessage: Uint8Array | Buffer<ArrayBufferLike>) => RSAMessage

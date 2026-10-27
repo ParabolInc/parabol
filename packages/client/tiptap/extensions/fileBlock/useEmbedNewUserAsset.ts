@@ -5,6 +5,7 @@ import type {AssetScopeEnum} from '../../../__generated__/useEmbedUserAssetMutat
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {GQLID} from '../../../utils/GQLID'
 import {clearEmbedEntries, getEmbedStatus, requestEmbed, subscribe} from './embedManager'
+import {isLocalEmbedSource} from './localEmbedSources'
 
 const getRelativeSrc = (src: string) => {
   if (src.startsWith('/')) return src
@@ -50,10 +51,13 @@ export const useEmbedNewUserAsset = (
   useEffect(() => {
     // blob urls are local and are in the process of being uploaded at this point
     if (isReadOnly || isHosted || !src || src.startsWith('blob:') || src.startsWith('data:')) return
+    if (!isLocalEmbedSource(src)) return
     requestEmbed(src, assetScope, scopeKey, atmosphere, editor)
   }, [isHosted, src, isReadOnly])
 
-  const result = isHosted || isReadOnly || embedStatus === 'success'
+  // a collaborator's external asset is shown in place rather than re-hosted on this user's quota
+  const isCollaboratorAsset = !isLocalEmbedSource(src) && !src.startsWith('blob:')
+  const result = isHosted || isReadOnly || embedStatus === 'success' || isCollaboratorAsset
   const embedError = !isReadOnly && embedStatus === 'error'
   return {isHosted: result, embedError}
 }

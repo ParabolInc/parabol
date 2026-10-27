@@ -8,11 +8,13 @@ import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {selectTasks} from '../../../postgres/select'
 import archiveTasksForDB from '../../../safeMutations/archiveTasksForDB'
+import {revalidateYjsConnections} from '../../../utils/tiptap/revalidateYjsConnections'
 import errorFilter from '../../errorFilter'
 import type {DataLoaderWorker} from '../../graphql'
 import removeSlackAuths from './removeSlackAuths'
 import removeStagesFromMeetings from './removeStagesFromMeetings'
 import removeUserFromMeetingStages from './removeUserFromMeetingStages'
+import {transferMeetingTOCOwnership} from './summaryPage/transferMeetingTOCOwnership'
 
 interface Options {
   evictorUserId?: string
@@ -74,6 +76,10 @@ export const removeTeamMember = async (
     .set({isNotRemoved: false})
     .where('id', '=', teamMemberId)
     .execute()
+  if (!willArchive) {
+    await transferMeetingTOCOwnership(teamId, userId, nextTeamLead.userId)
+  }
+  await revalidateYjsConnections({userIds: [userId]})
   // assign active tasks to the team lead
   const integratedTasksToArchive = await selectTasks()
     .where('userId', '=', userId)

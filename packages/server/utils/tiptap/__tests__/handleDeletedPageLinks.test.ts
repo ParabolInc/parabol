@@ -32,7 +32,24 @@ const mockUpdatePage = () => {
 
 jest.mock('../../../postgres/getKysely', () => ({
   __esModule: true,
-  default: () => ({updateTable: () => mockUpdatePage()})
+  default: () => ({
+    updateTable: () => mockUpdatePage(),
+    selectFrom: () => {
+      let pageId: unknown
+      const builder = {
+        select: () => builder,
+        where: (_column: string, _operator: string, value: unknown) => {
+          pageId = value
+          return builder
+        },
+        executeTakeFirst: async () => {
+          const page = mockPages.find(({id}) => id === pageId)
+          return page && {...page, deletedAt: null, isDatabase: false}
+        }
+      }
+      return builder
+    }
+  })
 }))
 jest.mock('../../../dataloader/pageAccessByUserIdBatchFn', () => ({
   pageAccessByUserIdBatchFn: async (keys: {pageId: number; userId: string}[]) =>
@@ -105,4 +122,26 @@ test('does not archive the child when the server removes the link', async () => 
   frag.delete(0, 1)
   await flush()
   expect(mockArchivedPageIds).toEqual([])
+})
+
+test('puts the link back where it was when a user who does not own the child deletes it', async () => {
+  const {doc, frag} = makePage(PARENT_PAGE_ID)
+  doc.transact(() => {
+    frag.insert(0, [
+      new Y.XmlElement('paragraph'),
+      createPageLinkElement(CHILD_PAGE_ID, 'Linked page', false) as Y.XmlElement,
+      new Y.XmlElement('paragraph')
+    ])
+  }, asUser(OWNER_ID))
+  doc.transact(() => {
+    frag.delete(1, 1)
+  }, asUser(EDITOR_ID))
+  await flush()
+  expect(mockArchivedPageIds).toEqual([])
+  expect(frag.toArray().map((node) => (node as Y.XmlElement).nodeName)).toEqual([
+    'paragraph',
+    'pageLinkBlock',
+    'paragraph'
+  ])
+  expect((frag.get(1) as Y.XmlElement).getAttribute('pageCode')).toBe(CHILD_PAGE_ID)
 })

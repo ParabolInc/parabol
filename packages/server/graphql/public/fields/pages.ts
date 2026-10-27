@@ -83,6 +83,14 @@ export const pages: NonNullable<UserResolvers['pages']> = async (
     // and archived items use deletedAt for their cursor instead of a sortOrder
     const pagesPlusOne = await selectPages()
       .where('deletedBy', '=', viewerId)
+      .where(({exists, selectFrom}) =>
+        exists(
+          selectFrom('PageAccess')
+            .select('PageAccess.pageId')
+            .whereRef('PageAccess.pageId', '=', 'Page.id')
+            .where('PageAccess.userId', '=', viewerId)
+        )
+      )
       .$if(!!teamId, (qb) => qb.where('teamId', '=', teamId!))
       .$if(dbParentPageId === null, (qb) => qb.where('parentPageId', 'is', null))
       .$if(!!dbParentPageId, (qb) => qb.where('parentPageId', '=', dbParentPageId!))

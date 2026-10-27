@@ -47,6 +47,7 @@ import connectionFromTemplateArray from '../../queries/helpers/connectionFromTem
 import {aiPrompts} from '../fields/aiPrompts'
 import {invoices} from '../fields/invoices'
 import {pageInsights} from '../fields/pageInsights'
+import {pageRoles} from '../fields/pageRoles'
 import {pages} from '../fields/pages'
 import {search} from '../fields/search'
 import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
@@ -882,6 +883,7 @@ const User: ReqResolvers<'User'> = {
     return highestTier
   },
   pageInsights,
+  pageRoles,
   aiPrompts,
   pages,
   search,

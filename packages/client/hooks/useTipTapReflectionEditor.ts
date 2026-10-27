@@ -2,7 +2,6 @@ import {SearchAndReplace} from '@sereneinserenade/tiptap-search-and-replace'
 import Highlight from '@tiptap/extension-highlight'
 import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention from '@tiptap/extension-mention'
-import {TextStyleKit} from '@tiptap/extension-text-style'
 import {CharacterCount, Focus, Placeholder} from '@tiptap/extensions'
 import {Extension, generateText, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
@@ -12,6 +11,7 @@ import {LoomExtension} from '../components/TipTapEditor/LoomExtension'
 import {TiptapLinkExtension} from '../components/TipTapEditor/TiptapLinkExtension'
 import {useUploadUserAsset} from '../mutations/useUploadUserAsset'
 import {isEqualWhenSerialized} from '../shared/isEqualWhenSerialized'
+import {SafeTextStyleKit} from '../shared/tiptap/extensions/SafeTextStyleKit'
 import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {ClearOnSubmit} from '../tiptap/extensions/ClearOnSubmit'
 import {FileUpload} from '../tiptap/extensions/fileUpload/FileUpload'
@@ -102,7 +102,7 @@ export const useTipTapReflectionEditor = (
         TaskItem.configure({
           nested: true
         }),
-        TextStyleKit,
+        SafeTextStyleKit,
         Highlight,
         TiptapLinkExtension.configure({
           openOnClick: false

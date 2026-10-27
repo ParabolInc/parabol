@@ -575,6 +575,15 @@ type User implements UserPartial {
     """
     textFilter: String
   ): PageConnection! @scope(name: PAGES_READ)
+  """
+  The viewer's role on each page, in the order of pageIds. null when the viewer cannot open the page, including pages that do not exist
+  """
+  pageRoles(
+    """
+    The pages to look up, at most 500
+    """
+    pageIds: [ID!]!
+  ): [PageRoleEnum]! @scope(name: PAGES_READ)
   search(
     "The string to search for"
     query: String!

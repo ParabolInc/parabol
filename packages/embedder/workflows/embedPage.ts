@@ -70,13 +70,11 @@ export const embedPage: JobQueueStepRun<EmbedPageData> = async (context) => {
   }
   const chunker = new TipTapChunker({language})
   const chunks = chunker.chunk(content)
-  const updatedChunks = chunks.filter((chunk, idx) => {
-    const oldEmbeding = existingChunks[idx]
-    const isIdentical = oldEmbeding?.embedText === chunk.text
-    return !isIdentical
-  })
+  const updatedChunks = chunks
+    .map((chunk, chunkNumber) => ({chunk, chunkNumber}))
+    .filter(({chunk, chunkNumber}) => existingChunks[chunkNumber]?.embedText !== chunk.text)
   const errors = await Promise.all(
-    updatedChunks.map(async (chunk, chunkNumber) => {
+    updatedChunks.map(async ({chunk, chunkNumber}) => {
       const {text, globalTitle, headingPath, embeddingText} = chunk
       const embeddingVector = await embeddingModel.getEmbedding(embeddingText)
       if (embeddingVector instanceof Error) {

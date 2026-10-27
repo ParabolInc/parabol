@@ -1,20 +1,38 @@
+import {isTransactionOrigin} from '@hocuspocus/server'
 import * as Y from 'yjs'
-import type {PageLinkBlockAttrs} from '../../../client/shared/tiptap/extensions/PageLinkBlockBase'
 import {getPageLinks} from '../../../client/shared/tiptap/getPageLinks'
 import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
 import {CipherId} from '../CipherId'
 import {Logger} from '../Logger'
 import logError from '../logError'
+import {canSeePageTitle} from './canSeePageTitle'
 import {NEW_PAGE_SENTINEL_CODE} from './constants'
 import {createNewPage} from './createNewPage'
 import {getUserIdFromTransaction} from './getUserIdFromTransaction'
 import {movePageToNewParent} from './movePageToNewParent'
 import {updateBacklinks} from './updateBacklinks'
 
+// Backlinks push the linked page's title into this doc, so users may only link pages whose title they may see.
+// Server code writes links with no userId; a client connection without one is anonymous
+const addBacklink = async (
+  transaction: Y.Transaction,
+  userId: string | undefined,
+  parentPageId: number,
+  childPageId: number
+) => {
+  if (userId) {
+    if (!(await canSeePageTitle(userId, childPageId))) return
+  } else {
+    const {origin} = transaction
+    if (isTransactionOrigin(origin) && origin.source === 'connection') return
+  }
+  await updateBacklinks(parentPageId, childPageId)
+}
+
 export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => {
   const {changes, transaction} = e
   const {added} = changes
-  const userId = getUserIdFromTransaction(transaction)!
+  const userId = getUserIdFromTransaction(transaction)
   added.forEach(async (item) => {
     const [node] = item.content.getContent()
     if (!isPageLink(node)) return
@@ -23,40 +41,16 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
       if (childPageCode !== NEW_PAGE_SENTINEL_CODE) {
         // if a new PageLink was added to the doc, update the backlinks
         const childPageId = CipherId.decrypt(childPageCode)
-        updateBacklinks(parentPageId, childPageId).catch(Logger.log)
+        addBacklink(transaction, userId, parentPageId, childPageId).catch(Logger.log)
       }
       if (node.getAttribute('canonical') !== true) return
       if (childPageCode === NEW_PAGE_SENTINEL_CODE) {
         // mint a fresh page and assign it a real pageCode
-        const observer = async (e: Y.YXmlEvent) => {
-          // TODO: does observeAll also watch for this? is it redundant?
-          node.unobserve(observer)
-          // this only needs to get called on freshly minted PageLinks because after the pageCode is set
-          try {
-            for (const [key] of e.keys) {
-              if (key === 'pageCode') {
-                const newValue = (e.target as Y.XmlElement<PageLinkBlockAttrs>).getAttribute(
-                  'pageCode'
-                )
-                const addToPageId =
-                  newValue && newValue !== NEW_PAGE_SENTINEL_CODE
-                    ? CipherId.decrypt(newValue)
-                    : null
-                if (addToPageId) {
-                  await updateBacklinks(parentPageId, addToPageId)
-                }
-              }
-            }
-          } catch (error) {
-            logError(error as Error, {userId, extras: {parentPageId, childPageCode}})
-          }
-        }
-        node.observe(observer)
         const isDatabase = node.getAttribute('database') || false
         const title = node.getAttribute('title')
         const newPage = await createNewPage({
           parentPageId,
-          userId,
+          userId: userId!,
           isDatabase,
           content: {
             type: 'doc',
@@ -69,12 +63,9 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
             ]
           }
         }).catch(Logger.error)
-        if (!newPage) {
-          node.unobserve(observer)
-          return
-        }
-        const pageCode = CipherId.encrypt(newPage.id)
-        node.setAttribute('pageCode', pageCode)
+        if (!newPage) return
+        node.setAttribute('pageCode', CipherId.encrypt(newPage.id))
+        await updateBacklinks(parentPageId, newPage.id)
       } else {
         // check for duplicates on the same page
         const existingNode = getPageLinks(e.target.doc, true).find(
@@ -88,7 +79,7 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
           // in either case, move the page link from the old parent to new
           // it could also be a cut+paste, where they cut & deleted the page, and pasted in the same or a new page
           try {
-            await movePageToNewParent(userId, CipherId.decrypt(childPageCode), parentPageId)
+            await movePageToNewParent(userId!, CipherId.decrypt(childPageCode), parentPageId)
           } catch (e) {
             Logger.error(e)
             const parent = node.parent

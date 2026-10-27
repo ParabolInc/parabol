@@ -5,6 +5,7 @@ import {
   type FileUploadStorage,
   type FileUploadTargetType
 } from '../../../shared/tiptap/extensions/FileUploadBase'
+import {localEmbedSourcesPlugin} from '../fileBlock/localEmbedSources'
 import {FileUploadView} from './FileUploadView'
 import {onUploadTipTapFile} from './onUploadTipTapFile'
 
@@ -26,6 +27,10 @@ export const FileUpload = FileUploadBase.extend<FileUploadOptions, FileUploadSto
       scopeKey,
       onUpload
     }
+  },
+
+  addProseMirrorPlugins() {
+    return [localEmbedSourcesPlugin]
   },
 
   addKeyboardShortcuts(this) {

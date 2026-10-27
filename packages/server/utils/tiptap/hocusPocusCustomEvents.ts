@@ -162,12 +162,13 @@ export const replacePageContent = async (
   await withDoc(
     documentName,
     (doc) => {
+      // build first: invalid content throws here, before the page is emptied
+      const tempDoc = TiptapTransformer.toYdoc(content, 'default', serverTipTapExtensions)
       doc.transact(() => {
         const frag = doc.getXmlFragment('default')
         if (frag.length > 0) {
           frag.delete(0, frag.length)
         }
-        const tempDoc = TiptapTransformer.toYdoc(content, 'default', serverTipTapExtensions)
         applyUpdate(doc, encodeStateAsUpdate(tempDoc))
       })
     },
