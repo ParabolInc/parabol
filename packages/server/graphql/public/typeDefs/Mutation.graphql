@@ -394,6 +394,48 @@ type Mutation {
   ): EditCommentingPayload @scope(name: MEETINGS_WRITE)
 
   """
+  Comment on a page. Pass an anchor to start a new thread on a range of text, or a threadId
+  to reply to an existing thread.
+  """
+  addPageComment(
+    "The page to comment on"
+    pageId: ID!
+    "The comment body, a stringified TipTap JSONContent document"
+    content: String!
+    "The thread to reply to. Omit to start a new thread"
+    threadId: ID
+    "The range of text a new thread is anchored to. Required unless threadId is given"
+    anchor: PageThreadAnchorInput
+  ): AddPageCommentSuccess! @scope(name: PAGES_WRITE)
+
+  """
+  Edit the body of a page comment. Only its author may edit it
+  """
+  updatePageComment(
+    "The comment to edit"
+    commentId: ID!
+    "The new comment body, a stringified TipTap JSONContent document"
+    content: String!
+  ): UpdatePageCommentSuccess! @scope(name: PAGES_WRITE)
+
+  """
+  Delete a page comment. Deleting the first comment of a thread deletes the whole thread.
+  A comment can be deleted by its author or by an owner of the page
+  """
+  deletePageComment("The comment to delete" commentId: ID!): DeletePageCommentSuccess!
+    @scope(name: PAGES_WRITE)
+
+  """
+  Resolve or reopen a comment thread on a page
+  """
+  updatePageThread(
+    "The thread to update"
+    threadId: ID!
+    "true to resolve the thread, false to reopen it"
+    isResolved: Boolean!
+  ): UpdatePageThreadSuccess! @scope(name: PAGES_WRITE)
+
+  """
   Export a Parabol page (and optionally its sub-page tree, max 100 pages) to Confluence
   Cloud as native pages. Runs asynchronously — subscribe to notificationSubscription for
   per-page progress and completion.

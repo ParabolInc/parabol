@@ -1,0 +1,15 @@
+"""
+The range of page text a new thread is anchored to. Both ends are Yjs relative positions, so
+they still point at the same text if the page changed while the request was in flight.
+"""
+input PageThreadAnchorInput {
+  """
+  The start of the range, a base64 encoded Yjs relative position inside a text node
+  """
+  anchor: String!
+
+  """
+  The end of the range, a base64 encoded Yjs relative position inside a text node
+  """
+  head: String!
+}

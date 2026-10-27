@@ -7,6 +7,8 @@ import {
   selectNewMeetings,
   selectOAuthAPIProvider,
   selectOrganizations,
+  selectPageComments,
+  selectPageThreads,
   selectRetroReflections,
   selectSlackAuths,
   selectSlackNotifications,
@@ -418,5 +420,21 @@ export const oauthProvidersByOrgId = foreignKeyLoaderMaker(
       .where('orgId', 'in', orgIds)
       .orderBy('createdAt', 'desc')
       .execute()
+  }
+)
+
+export const pageThreadsByPageId = foreignKeyLoaderMaker(
+  'pageThreads',
+  'pageId',
+  async (pageIds) => {
+    return selectPageThreads().where('pageId', 'in', pageIds).orderBy('id').execute()
+  }
+)
+
+export const pageCommentsByThreadId = foreignKeyLoaderMaker(
+  'pageComments',
+  'threadId',
+  async (threadIds) => {
+    return selectPageComments().where('threadId', 'in', threadIds).orderBy('id').execute()
   }
 )

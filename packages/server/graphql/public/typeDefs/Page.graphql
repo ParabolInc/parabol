@@ -114,4 +114,10 @@ type Page implements PagePartial {
   true if this page serves as a table of contents for a meeting
   """
   isMeetingTOC: Boolean!
+
+  """
+  The comment threads on this page, oldest first, including resolved threads.
+  Null if the viewer's role is below commenter
+  """
+  threads: [PageThread!]
 }
