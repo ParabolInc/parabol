@@ -8,8 +8,12 @@ import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import {hocuspocus} from '../../hocusPocus'
 
-const withDoc = async (documentName: string, fn: (doc: Document) => void) => {
-  const conn = await hocuspocus.openDirectConnection(documentName, {})
+const withDoc = async (
+  documentName: string,
+  fn: (doc: Document) => void,
+  context: {userId?: string} = {}
+) => {
+  const conn = await hocuspocus.openDirectConnection(documentName, context)
   // Always disconnect: a DirectConnection has no idle-timeout safety net, so a skipped
   // disconnect() keeps directConnectionsCount > 0 and leaks the loaded document forever
   try {
@@ -150,16 +154,23 @@ export const updateUserMention = async (
   })
 }
 
-export const replacePageContent = async (documentName: string, payload: {content: JSONContent}) => {
-  const {content} = payload
-  await withDoc(documentName, (doc) => {
-    doc.transact(() => {
-      const frag = doc.getXmlFragment('default')
-      if (frag.length > 0) {
-        frag.delete(0, frag.length)
-      }
-      const tempDoc = TiptapTransformer.toYdoc(content, 'default', serverTipTapExtensions)
-      applyUpdate(doc, encodeStateAsUpdate(tempDoc))
-    })
-  })
+export const replacePageContent = async (
+  documentName: string,
+  payload: {content: JSONContent; userId: string}
+) => {
+  const {content, userId} = payload
+  await withDoc(
+    documentName,
+    (doc) => {
+      doc.transact(() => {
+        const frag = doc.getXmlFragment('default')
+        if (frag.length > 0) {
+          frag.delete(0, frag.length)
+        }
+        const tempDoc = TiptapTransformer.toYdoc(content, 'default', serverTipTapExtensions)
+        applyUpdate(doc, encodeStateAsUpdate(tempDoc))
+      })
+    },
+    {userId}
+  )
 }

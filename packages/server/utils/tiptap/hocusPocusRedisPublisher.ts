@@ -8,6 +8,7 @@ import {unpack} from 'msgpackr'
 import {SubscriptionChannel} from '../../../client/types/constEnums'
 import getKysely from '../../postgres/getKysely'
 import {CipherId} from '../CipherId'
+import {Logger} from '../Logger'
 import publish from '../publish'
 import type {PublicPageNotificationPayload} from '../publishPageNotification'
 import RedisInstance from '../RedisInstance'
@@ -21,61 +22,65 @@ export class RedisPublisher implements Extension {
 
   public constructor() {
     this.sub = new RedisInstance('publicPage_sub')
-    this.sub.on('messageBuffer', async (channel, message) => {
-      const document = this.documentConnections.get(channel.toString())
-      if (!document) {
-        return
-      }
+    this.sub.on('messageBuffer', (channel: Buffer, message: Buffer) => {
+      this.handleMessage(channel, message).catch(Logger.error)
+    })
+  }
 
-      const payload = unpack(message) as PublicPageNotificationPayload<'UpdatePageAccessPayload'>
-      const {data, subOptions, type, userIdsToIgnore} = payload
-      const connections = document.getConnections()
+  private async handleMessage(channel: Buffer, message: Buffer) {
+    const document = this.documentConnections.get(channel.toString())
+    if (!document) {
+      return
+    }
+
+    const payload = unpack(message) as PublicPageNotificationPayload<'UpdatePageAccessPayload'>
+    const {data, subOptions, type, userIdsToIgnore} = payload
+    const connections = document.getConnections()
+    connections.forEach((connection) => {
+      const userId = connection.context.userId as string | undefined
+      if (!userId || userIdsToIgnore.includes(userId)) return
+      publish(SubscriptionChannel.NOTIFICATION, userId, type, data, subOptions)
+    })
+
+    if (type === 'UpdatePageAccessPayload') {
+      const [dbId] = CipherId.fromClient(document.name)
+      const pg = getKysely()
+
+      const connectedUserIds = connections
+        .map((connection) => connection.context.userId as string | undefined)
+        .filter((userId): userId is string => !!userId)
+
+      const hasPublicUsers = connections.some((connection) => !connection.context.userId)
+
+      const [accessRecords, publicAccess] = await Promise.all([
+        connectedUserIds.length > 0
+          ? pg
+              .selectFrom('PageAccess')
+              .select(['userId', 'role'])
+              .where('pageId', '=', dbId)
+              .where('userId', 'in', connectedUserIds)
+              .execute()
+          : [],
+        hasPublicUsers
+          ? pg
+              .selectFrom('PageExternalAccess')
+              .select('role')
+              .where('pageId', '=', dbId)
+              .where('email', '=', '*')
+              .executeTakeFirst()
+          : undefined
+      ])
+
+      const roleByUserId = new Map(accessRecords.map(({userId, role}) => [userId, role]))
       connections.forEach((connection) => {
         const userId = connection.context.userId as string | undefined
-        if (!userId || userIdsToIgnore.includes(userId)) return
-        publish(SubscriptionChannel.NOTIFICATION, userId, type, data, subOptions)
+        const role = userId ? roleByUserId.get(userId) : publicAccess?.role
+        const newReadOnly = role === 'viewer' || role === 'commenter'
+        if (!role || connection.readOnly !== newReadOnly) {
+          connection.webSocket.close()
+        }
       })
-
-      if (type === 'UpdatePageAccessPayload') {
-        const [dbId] = CipherId.fromClient(document.name)
-        const pg = getKysely()
-
-        const connectedUserIds = connections
-          .map((connection) => connection.context.userId as string | undefined)
-          .filter((userId): userId is string => !!userId)
-
-        const hasPublicUsers = connections.some((connection) => !connection.context.userId)
-
-        const [accessRecords, publicAccess] = await Promise.all([
-          connectedUserIds.length > 0
-            ? pg
-                .selectFrom('PageAccess')
-                .select(['userId', 'role'])
-                .where('pageId', '=', dbId)
-                .where('userId', 'in', connectedUserIds)
-                .execute()
-            : [],
-          hasPublicUsers
-            ? pg
-                .selectFrom('PageExternalAccess')
-                .select('role')
-                .where('pageId', '=', dbId)
-                .where('email', '=', '*')
-                .executeTakeFirst()
-            : undefined
-        ])
-
-        const roleByUserId = new Map(accessRecords.map(({userId, role}) => [userId, role]))
-        connections.forEach((connection) => {
-          const userId = connection.context.userId as string | undefined
-          const role = userId ? roleByUserId.get(userId) : publicAccess?.role
-          const newReadOnly = role === 'viewer' || role === 'commenter'
-          if (!role || connection.readOnly !== newReadOnly) {
-            connection.webSocket.close()
-          }
-        })
-      }
-    })
+    }
   }
 
   private getChannelName(documentName: string) {
@@ -85,13 +90,13 @@ export class RedisPublisher implements Extension {
 
   async afterLoadDocument({documentName, document}: afterLoadDocumentPayload) {
     const channelName = this.getChannelName(documentName)
-    this.sub.subscribe(channelName)
+    this.sub.subscribe(channelName).catch(Logger.error)
     this.documentConnections.set(channelName, document)
   }
 
   async afterUnloadDocument({documentName}: afterUnloadDocumentPayload) {
     const channelName = this.getChannelName(documentName)
-    await this.sub.unsubscribe(channelName)
     this.documentConnections.delete(channelName)
+    await this.sub.unsubscribe(channelName)
   }
 }

@@ -272,7 +272,7 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
         replyId,
         payload: res
       }
-      this.pub.publish(`${replyTo}`, this.pack(reply))
+      this.pub.publish(`${replyTo}`, this.pack(reply)).catch(Logger.error)
       return
     }
     if (type === 'customEventComplete') {
@@ -302,7 +302,7 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
     // (e.g. both onLoadDocument and lockDocument call this for the same document)
     clearInterval(this.locks[documentName])
     this.locks[documentName] = setInterval(() => {
-      this.pub.set(this.getKey(documentName), this.serverId, 'PX', this.lockTTL)
+      this.pub.set(this.getKey(documentName), this.serverId, 'PX', this.lockTTL).catch(Logger.error)
     }, this.lockTTL / 2)
   }
 
@@ -357,7 +357,7 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
         type: 'customEventStart'
       }
       const msg = this.pack(proxyMessage)
-      this.pub.publish(`${this.msgChannel}:${proxyTo}`, msg)
+      this.pub.publish(`${this.msgChannel}:${proxyTo}`, msg).catch(Logger.error)
       const {promise, resolve, reject} = Promise.withResolvers()
       this.pendingReplies[replyId] = resolve
       setTimeout(() => {
@@ -419,7 +419,7 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
         type: 'proxy'
       }
       const msg = this.pack(proxyMessage)
-      this.pub.publish(`${this.msgChannel}:${proxyTo}`, msg)
+      this.pub.publish(`${this.msgChannel}:${proxyTo}`, msg).catch(Logger.error)
       return
     }
     // This server owns the document, but hocuspocus hasn't loaded it yet
@@ -451,10 +451,10 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
 
   async afterUnloadDocument(data: afterUnloadDocumentPayload) {
     const {documentName} = data
-    this.releaseLock(documentName)
+    this.releaseLock(documentName).catch(Logger.error)
     // Broadcast to cluster to immediately remove the cached redis value
     const msg: RSAMessageUnload = {type: 'unload', documentName}
-    this.pub.publish(this.msgChannel, this.pack(msg))
+    this.pub.publish(this.msgChannel, this.pack(msg)).catch(Logger.error)
   }
 
   async onDestroy() {

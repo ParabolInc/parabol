@@ -2,6 +2,7 @@ import {GraphQLError} from 'graphql'
 import {markdownToTipTap} from '../../../../client/shared/tiptap/markdownToTipTap'
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import {redisHocusPocus} from '../../../hocusPocus'
+import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
@@ -9,8 +10,9 @@ import type {MutationResolvers} from '../resolverTypes'
 const editPageContent: MutationResolvers['editPageContent'] = async (
   _source,
   {pageId, content, format},
-  {dataLoader, socketId: mutatorId}
+  {authToken, dataLoader, socketId: mutatorId}
 ) => {
+  const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const [dbPageId] = CipherId.fromClient(pageId)
@@ -30,7 +32,10 @@ const editPageContent: MutationResolvers['editPageContent'] = async (
         })()
 
   const documentName = CipherId.toClient(dbPageId, 'page')
-  await redisHocusPocus.handleEvent('replacePageContent', documentName, {content: jsonContent})
+  await redisHocusPocus.handleEvent('replacePageContent', documentName, {
+    content: jsonContent,
+    userId: viewerId
+  })
 
   dataLoader.get('pages').clearAll()
   const updatedPage = await dataLoader.get('pages').loadNonNull(dbPageId)

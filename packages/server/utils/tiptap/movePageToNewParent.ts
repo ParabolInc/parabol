@@ -7,6 +7,7 @@ import getKysely from '../../postgres/getKysely'
 import {selectDescendantPages} from '../../postgres/select'
 import {updatePageAccessTable} from '../../postgres/updatePageAccessTable'
 import {CipherId} from '../CipherId'
+import {Logger} from '../Logger'
 import {publishPageNotification} from '../publishPageNotification'
 import {validateParentPage} from './validateParentPage'
 
@@ -54,7 +55,9 @@ export const movePageToNewParent = async (
   if (childPage.parentPageId) {
     const documentName = CipherId.toClient(childPage.parentPageId, 'page')
     const pageCode = CipherId.encrypt(pageId)
-    redisHocusPocus.handleEvent('removeCanonicalPageLinkFromPage', documentName, {pageCode})
+    redisHocusPocus
+      .handleEvent('removeCanonicalPageLinkFromPage', documentName, {pageCode})
+      .catch(Logger.error)
   }
   const trx = await pg.startTransaction().execute()
 

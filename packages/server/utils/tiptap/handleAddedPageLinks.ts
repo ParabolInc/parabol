@@ -32,17 +32,23 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
           // TODO: does observeAll also watch for this? is it redundant?
           node.unobserve(observer)
           // this only needs to get called on freshly minted PageLinks because after the pageCode is set
-          for (const [key] of e.keys) {
-            if (key === 'pageCode') {
-              const newValue = (e.target as Y.XmlElement<PageLinkBlockAttrs>).getAttribute(
-                'pageCode'
-              )
-              const addToPageId =
-                newValue && newValue !== NEW_PAGE_SENTINEL_CODE ? CipherId.decrypt(newValue) : null
-              if (addToPageId) {
-                await updateBacklinks(parentPageId, addToPageId)
+          try {
+            for (const [key] of e.keys) {
+              if (key === 'pageCode') {
+                const newValue = (e.target as Y.XmlElement<PageLinkBlockAttrs>).getAttribute(
+                  'pageCode'
+                )
+                const addToPageId =
+                  newValue && newValue !== NEW_PAGE_SENTINEL_CODE
+                    ? CipherId.decrypt(newValue)
+                    : null
+                if (addToPageId) {
+                  await updateBacklinks(parentPageId, addToPageId)
+                }
               }
             }
+          } catch (error) {
+            logError(error as Error, {userId, extras: {parentPageId, childPageCode}})
           }
         }
         node.observe(observer)

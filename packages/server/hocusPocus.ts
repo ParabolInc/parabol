@@ -1,6 +1,5 @@
 import {Database} from '@hocuspocus/extension-database'
 import {Throttle} from '@hocuspocus/extension-throttle'
-import {Hocuspocus} from '@hocuspocus/server'
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import type {JSONContent} from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
@@ -24,6 +23,7 @@ import * as hocusPocusCustomEvents from './utils/tiptap/hocusPocusCustomEvents'
 import {updateAllBacklinkedPageLinkTitles} from './utils/tiptap/hocusPocusHub'
 import {RedisPublisher} from './utils/tiptap/hocusPocusRedisPublisher'
 import {RedisServerAffinity, type SerializedHTTPRequest} from './utils/tiptap/RedisServerAffinity'
+import {SafeHocuspocus} from './utils/tiptap/SafeHocuspocus'
 import {updatePageContent} from './utils/tiptap/updatePageContent'
 
 const SERVER_ID = process.env.SERVER_ID!
@@ -79,7 +79,7 @@ export const redisHocusPocus = new RedisServerAffinity({
   deriveContext
 })
 
-export const hocuspocus = new Hocuspocus<YjsContext>({
+export const hocuspocus = new SafeHocuspocus<YjsContext>({
   quiet: true,
   async onAuthenticate(data) {
     const {documentName, context, connectionConfig} = data

@@ -4,6 +4,7 @@ import {redisHocusPocus} from '../../../hocusPocus'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
+import {Logger} from '../../../utils/Logger'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
 import {getPageNextSortOrder} from './helpers/getPageNextSortOrder'
@@ -112,7 +113,9 @@ const updatePage: MutationResolvers['updatePage'] = async (
     // This may get called from the client for faster UI updates, but we call it here for posterity
     const {parentPageId: oldParentpageId} = page
     const documentName = CipherId.toClient(oldParentpageId, 'page')
-    redisHocusPocus.handleEvent('removeCanonicalPageLinkFromPage', documentName, {pageCode})
+    redisHocusPocus
+      .handleEvent('removeCanonicalPageLinkFromPage', documentName, {pageCode})
+      .catch(Logger.error)
   }
   const data = {pageId: dbPageId}
   const access = await dataLoader.get('pageAccessByPageId').load(dbPageId)
