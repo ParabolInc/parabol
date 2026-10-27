@@ -443,46 +443,6 @@ export const selectDescendantPages = (
       )
   )
 
-// Titles are public within an org: a page's title is visible to its readers and to everyone in the org of the space it
-// lives in, which is the team's org for team pages and the creator's orgs for private and shared pages
-export const selectPageTitleReaderIds = (pageId: number) =>
-  getKysely()
-    .withRecursive('lineage', (qc) =>
-      qc
-        .selectFrom('Page')
-        .select(['id', 'parentPageId', 'teamId', 'userId'])
-        .where('id', '=', pageId)
-        .union(
-          qc
-            .selectFrom('Page as p')
-            .innerJoin('lineage as l', 'l.parentPageId', 'p.id')
-            .select(['p.id', 'p.parentPageId', 'p.teamId', 'p.userId'])
-        )
-    )
-    .selectFrom('PageAccess')
-    .select('PageAccess.userId')
-    .where('PageAccess.pageId', '=', pageId)
-    .union((eb) =>
-      eb
-        .selectFrom('lineage')
-        .innerJoin('Team', 'Team.id', 'lineage.teamId')
-        .innerJoin('OrganizationUser', 'OrganizationUser.orgId', 'Team.orgId')
-        .select('OrganizationUser.userId')
-        .where('lineage.parentPageId', 'is', null)
-        .where('OrganizationUser.removedAt', 'is', null)
-    )
-    .union((eb) =>
-      eb
-        .selectFrom('lineage')
-        .innerJoin('OrganizationUser as spaceOwner', 'spaceOwner.userId', 'lineage.userId')
-        .innerJoin('OrganizationUser', 'OrganizationUser.orgId', 'spaceOwner.orgId')
-        .select('OrganizationUser.userId')
-        .where('lineage.parentPageId', 'is', null)
-        .where('lineage.teamId', 'is', null)
-        .where('spaceOwner.removedAt', 'is', null)
-        .where('OrganizationUser.removedAt', 'is', null)
-    )
-
 export const selectIntegrationDimensionFieldMap = () => {
   return getKysely().selectFrom('IntegrationDimensionFieldMap').selectAll()
 }

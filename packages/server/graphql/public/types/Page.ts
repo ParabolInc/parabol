@@ -1,7 +1,6 @@
 import {GraphQLError} from 'graphql'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
-import {canSeePageTitle} from '../../../utils/tiptap/canSeePageTitle'
 import isValid from '../../isValid'
 import type {ReqResolvers} from './ReqResolvers'
 
@@ -43,14 +42,13 @@ const Page: Omit<ReqResolvers<'Page'>, 'team'> = {
     if (validPages.length < pages.length) {
       throw new GraphQLError('Page not found')
     }
-    return Promise.all(
-      validPages.map(async (page, idx) => {
-        const access = accesses[idx] instanceof Error ? null : accesses[idx]
-        if (access) return {...page, __typename: 'Page'}
-        const canSeeTitle = await canSeePageTitle(authToken?.sub ?? '', page.id)
-        return {...page, title: canSeeTitle ? page.title : null, __typename: 'PagePreview'}
-      })
-    )
+    return validPages.map((page, idx) => {
+      const access = accesses[idx] instanceof Error ? null : accesses[idx]
+      return {
+        ...page,
+        __typename: access ? 'Page' : 'PagePreview'
+      }
+    })
   },
   deletedByUser: async ({deletedBy}, _args, {dataLoader}) => {
     if (!deletedBy) return null

@@ -5,17 +5,13 @@ import {NEW_PAGE_SENTINEL_CODE} from '../constants'
 import {handleAddedPageLinks} from '../handleAddedPageLinks'
 
 const mockBacklinks: [fromPageId: number, toPageId: number][] = []
-const mockRoleByPageAndUser = new Map<string, string>()
+const mockOwnerByPageId = new Map<number, string>()
 const mockMovedPageIds: number[] = []
 
 jest.mock('../updateBacklinks', () => ({
   updateBacklinks: async (fromPageId: number, addToPageId?: number | null) => {
     if (addToPageId) mockBacklinks.push([fromPageId, addToPageId])
   }
-}))
-jest.mock('../canSeePageTitle', () => ({
-  canSeePageTitle: async (userId: string, pageId: number) =>
-    mockRoleByPageAndUser.has(`${pageId}:${userId}`)
 }))
 jest.mock('../../CipherId', () => ({
   CipherId: {encrypt: (id: number) => id, decrypt: (code: number) => code}
@@ -26,7 +22,7 @@ jest.mock('../createNewPage', () => ({
 jest.mock('../movePageToNewParent', () => ({
   movePageToNewParent: async (userId: string, pageId: number) => {
     if (pageId === CHILD_PAGE_ID) return
-    if (mockRoleByPageAndUser.get(`${pageId}:${userId}`) !== 'owner') {
+    if (mockOwnerByPageId.get(pageId) !== userId) {
       throw new Error('Full Access required to move a Page to a new parent')
     }
     mockMovedPageIds.push(pageId)
@@ -34,14 +30,14 @@ jest.mock('../movePageToNewParent', () => ({
 }))
 
 const PARENT_PAGE_ID = 10
-const VISIBLE_PAGE_ID = 20
-const HIDDEN_PAGE_ID = 30
+const LINKED_PAGE_ID = 20
+const OTHER_PAGE_ID = 30
 const NEW_PAGE_ID = 40
 const CHILD_PAGE_ID = 50
 const EDITOR_ID = 'user-editor'
 
-const asUser = (userId?: string) => ({source: 'connection', connection: {context: {userId}}})
-const asServer = (userId?: string) => ({source: 'local', context: {userId}})
+const asUser = (userId: string) => ({source: 'connection', connection: {context: {userId}}})
+const asServer = () => ({source: 'local', context: {}})
 const flush = () => new Promise((resolve) => setTimeout(resolve, 0))
 
 const makePage = () => {
@@ -70,23 +66,12 @@ const insertLink = async (link: Y.XmlElement<PageLinkBlockAttrs>, origin: object
 beforeEach(() => {
   mockBacklinks.length = 0
   mockMovedPageIds.length = 0
-  mockRoleByPageAndUser.clear()
-  mockRoleByPageAndUser.set(`${VISIBLE_PAGE_ID}:${EDITOR_ID}`, 'viewer')
+  mockOwnerByPageId.clear()
 })
 
-test('records a backlink when a user links a page whose title they may see', async () => {
-  await insertLink(makeLink(VISIBLE_PAGE_ID, false), asUser(EDITOR_ID))
-  expect(mockBacklinks).toEqual([[PARENT_PAGE_ID, VISIBLE_PAGE_ID]])
-})
-
-test('does not record a backlink when a user links a page whose title they may not see', async () => {
-  await insertLink(makeLink(HIDDEN_PAGE_ID, false), asUser(EDITOR_ID))
-  expect(mockBacklinks).toEqual([])
-})
-
-test('does not record a backlink when an anonymous connection links a page', async () => {
-  await insertLink(makeLink(VISIBLE_PAGE_ID, false), asUser(undefined))
-  expect(mockBacklinks).toEqual([])
+test('records a backlink when a user links a page', async () => {
+  await insertLink(makeLink(LINKED_PAGE_ID, false), asUser(EDITOR_ID))
+  expect(mockBacklinks).toEqual([[PARENT_PAGE_ID, LINKED_PAGE_ID]])
 })
 
 test('records a backlink for a canonical link the server adds', async () => {
@@ -94,22 +79,11 @@ test('records a backlink for a canonical link the server adds', async () => {
   expect(mockBacklinks).toEqual([[PARENT_PAGE_ID, CHILD_PAGE_ID]])
 })
 
-test('does not record a backlink when server code writes content on behalf of a user who may not see the title', async () => {
-  await insertLink(makeLink(HIDDEN_PAGE_ID, false), asServer(EDITOR_ID))
-  expect(mockBacklinks).toEqual([])
-})
-
-test('records a backlink when an owner pastes a canonical link to move their page', async () => {
-  mockRoleByPageAndUser.set(`${VISIBLE_PAGE_ID}:${EDITOR_ID}`, 'owner')
-  await insertLink(makeLink(VISIBLE_PAGE_ID, true), asUser(EDITOR_ID))
-  expect(mockBacklinks).toEqual([[PARENT_PAGE_ID, VISIBLE_PAGE_ID]])
-  expect(mockMovedPageIds).toEqual([VISIBLE_PAGE_ID])
-})
-
-test('does not record a backlink when a forged canonical link fails to move a hidden page', async () => {
-  await insertLink(makeLink(HIDDEN_PAGE_ID, true), asUser(EDITOR_ID))
-  expect(mockBacklinks).toEqual([])
-  expect(mockMovedPageIds).toEqual([])
+test('moves the page when its owner pastes its canonical link', async () => {
+  mockOwnerByPageId.set(LINKED_PAGE_ID, EDITOR_ID)
+  await insertLink(makeLink(LINKED_PAGE_ID, true), asUser(EDITOR_ID))
+  expect(mockBacklinks).toEqual([[PARENT_PAGE_ID, LINKED_PAGE_ID]])
+  expect(mockMovedPageIds).toEqual([LINKED_PAGE_ID])
 })
 
 test('records a backlink only to the page minted for a new page link', async () => {
@@ -119,7 +93,7 @@ test('records a backlink only to the page minted for a new page link', async () 
     frag.insert(0, [link as Y.XmlElement])
   }, asUser(EDITOR_ID))
   doc.transact(() => {
-    link.setAttribute('pageCode', HIDDEN_PAGE_ID)
+    link.setAttribute('pageCode', OTHER_PAGE_ID)
   }, asUser(EDITOR_ID))
   await flush()
   expect(mockBacklinks).toEqual([[PARENT_PAGE_ID, NEW_PAGE_ID]])

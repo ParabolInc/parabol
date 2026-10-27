@@ -128,7 +128,7 @@ export const PageBreadCrumbs = (props: Props) => {
             {page.__typename === 'PagePreview' && (
               <PageNoAccessLock className='mr-1 align-[-2px]' />
             )}
-            {page.title ?? (page.__typename === 'PagePreview' ? 'Restricted page' : 'Untitled')}
+            {page.title}
           </Link>
         </PageDropTarget>
         <span className='px-1'>/</span>
