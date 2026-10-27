@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.7.1](https://github.com/ParabolInc/parabol/compare/v15.7.0...v15.7.1) (2026-10-27)
+
+
+### Fixed
+
+* keep old Azure DevOps work items out of the standup date window ([#13758](https://github.com/ParabolInc/parabol/issues/13758)) ([def562f](https://github.com/ParabolInc/parabol/commit/def562f72c0c99a337fe91781614f9ca35a9fc31))
+
 ## [15.7.0](https://github.com/ParabolInc/parabol/compare/v15.6.0...v15.7.0) (2026-10-26)
 
 
