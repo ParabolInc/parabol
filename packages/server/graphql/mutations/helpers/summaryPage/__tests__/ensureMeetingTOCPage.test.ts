@@ -5,7 +5,7 @@ import getPubSub from '../../../../../utils/getPubSub'
 import getRedis from '../../../../../utils/getRedis'
 import {createNewPage} from '../../../../../utils/tiptap/createNewPage'
 import {ensureMeetingTOCPage} from '../ensureMeetingTOCPage'
-import {transferMeetingTOCOwnership} from '../transferMeetingTOCOwnership'
+import {removeMeetingTOCAccess} from '../removeMeetingTOCAccess'
 
 jest.mock('../../../../../utils/publishPageNotification', () => ({
   publishPageNotification: async () => {}
@@ -100,11 +100,21 @@ const leaveTeam = async (userId: string, nextLeadId: string) => {
     .where('teamId', '=', teamId)
     .where('userId', '=', nextLeadId)
     .execute()
-  await transferMeetingTOCOwnership(teamId, userId, nextLeadId)
+  await removeMeetingTOCAccess(teamId, userId, nextLeadId)
 }
 
 let tocPageId: number
 let summaryPageId: number
+
+const createSummary = async () => {
+  const summary = await createNewPage({
+    parentPageId: tocPageId,
+    userId: enderId,
+    summaryMeetingId: meetingId,
+    content: {type: 'doc', content: [{type: 'heading', attrs: {level: 1}, content: []}]}
+  })
+  return summary.id
+}
 
 test('the team lead owns the Meeting Summaries page, not whoever ended the first meeting', async () => {
   const dataLoader = getNewDataLoader('ensureMeetingTOCPage.test')
@@ -124,29 +134,26 @@ test('the team lead owns the Meeting Summaries page, not whoever ended the first
   })
 }, 30_000)
 
-test('a summary is owned by whoever ended the meeting, without copying the summaries page owner', async () => {
-  const summary = await createNewPage({
-    parentPageId: tocPageId,
-    userId: enderId,
-    summaryMeetingId: meetingId,
-    content: {type: 'doc', content: [{type: 'heading', attrs: {level: 1}, content: []}]}
-  })
-  summaryPageId = summary.id
+test('a summary inherits the summaries page access and is also owned by whoever ended the meeting', async () => {
+  summaryPageId = await createSummary()
   expect(await getRoles(summaryPageId)).toEqual({
-    [leadId]: 'editor',
+    [leadId]: 'owner',
     [enderId]: 'owner',
     [memberId]: 'editor'
   })
 }, 30_000)
 
-test('an owner of the summaries page who leaves the team hands it to the new team lead', async () => {
+test('leaving the team removes direct access to the summaries page and hands its ownership to the new lead', async () => {
   await leaveTeam(leadId, memberId)
   expect(await getRoles(tocPageId)).toEqual({[memberId]: 'owner', [enderId]: 'editor'})
-  expect(await getRoles(summaryPageId)).toEqual({[enderId]: 'owner', [memberId]: 'editor'})
+  expect(await getRoles(summaryPageId)).toEqual({
+    [leadId]: 'owner',
+    [enderId]: 'owner',
+    [memberId]: 'editor'
+  })
 }, 30_000)
 
-test('leaving the team keeps ownership that was given directly', async () => {
-  await leaveTeam(enderId, memberId)
-  expect(await getRoles(summaryPageId)).toEqual({[enderId]: 'owner', [memberId]: 'editor'})
-  expect(await getRoles(tocPageId)).toEqual({[memberId]: 'owner'})
+test('summaries made after someone leaves do not inherit their access', async () => {
+  const laterSummaryPageId = await createSummary()
+  expect(await getRoles(laterSummaryPageId)).toEqual({[memberId]: 'owner', [enderId]: 'owner'})
 }, 30_000)

@@ -25,13 +25,12 @@ export const ensureMeetingTOCPage = async (
             }
           ]
         },
-        teamId
+        teamId,
+        isMeetingTOC: true
       },
       mutatorId
     )
-    const pg = getKysely()
-    await pg.updateTable('Page').set({isMeetingTOC: true}).where('id', '=', tocPage.id).execute()
-    await pg
+    await getKysely()
       .updateTable('Team')
       .set({meetingTOCpageId: tocPage.id})
       .where('id', '=', teamId)

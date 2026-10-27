@@ -14,7 +14,7 @@ import type {DataLoaderWorker} from '../../graphql'
 import removeSlackAuths from './removeSlackAuths'
 import removeStagesFromMeetings from './removeStagesFromMeetings'
 import removeUserFromMeetingStages from './removeUserFromMeetingStages'
-import {transferMeetingTOCOwnership} from './summaryPage/transferMeetingTOCOwnership'
+import {removeMeetingTOCAccess} from './summaryPage/removeMeetingTOCAccess'
 
 interface Options {
   evictorUserId?: string
@@ -77,7 +77,7 @@ export const removeTeamMember = async (
     .where('id', '=', teamMemberId)
     .execute()
   if (!willArchive) {
-    await transferMeetingTOCOwnership(teamId, userId, nextTeamLead.userId)
+    await removeMeetingTOCAccess(teamId, userId, nextTeamLead.userId)
   }
   await revalidateYjsConnections({userIds: [userId]})
   // assign active tasks to the team lead
