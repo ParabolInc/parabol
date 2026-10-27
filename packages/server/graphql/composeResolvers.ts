@@ -13,7 +13,7 @@ import {defaultFieldResolver, GraphQLError} from 'graphql'
 import type {IRules} from 'graphql-shield'
 import {allow} from 'graphql-shield'
 import hash from 'object-hash'
-import {Logger} from '../utils/Logger'
+import {Logger, markErrorAsLogged} from '../utils/Logger'
 import type {ResolverFn} from './private/resolverTypes'
 
 // hack to get ShieldRule since it's not exported from graphql-shield
@@ -47,19 +47,14 @@ const wrapResolve =
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err))
       Logger.error(`Permission rule threw on ${info.parentType.name}.${info.fieldName}`, error)
-      return new GraphQLError('Internal server error', {
+      const internalError = new GraphQLError('Internal server error', {
         extensions: {code: 'INTERNAL_SERVER_ERROR'}
       })
+      markErrorAsLogged(internalError)
+      return internalError
     }
     if (res === true) {
-      try {
-        return await resolve(source, args, context, info)
-      } catch (err) {
-        if (!(err instanceof GraphQLError)) {
-          Logger.log(err)
-        }
-        throw err
-      }
+      return resolve(source, args, context, info)
     }
     if (res === false) return new GraphQLError('Not authorized')
     if (typeof res === 'string') return new GraphQLError(res)

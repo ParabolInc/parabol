@@ -21,6 +21,7 @@ import selfHostedHandler from './selfHostedHandler'
 import {createStaticFileHandler} from './staticFileHandler'
 import getReqAuth from './utils/getReqAuth'
 import {Logger} from './utils/Logger'
+import registerFatalErrorHandlers from './utils/registerFatalErrorHandlers'
 import SAMLHandler from './utils/SAMLHandler'
 import uwsGetIP from './utils/uwsGetIP'
 import {wsHandler} from './wsHandler'
@@ -46,6 +47,8 @@ if (ENABLE_METRICS) {
 const ENABLE_STATIC_FILE_HANDLER = !__PRODUCTION__ || process.env.FILE_STORE_PROVIDER === 'local'
 const ENABLE_MATTERMOST_FILE_HANDLER =
   !__PRODUCTION__ || (process.env.MATTERMOST_SECRET && process.env.MATTERMOST_URL)
+
+registerFatalErrorHandlers()
 
 process.on('SIGTERM', async (signal) => {
   Logger.log(

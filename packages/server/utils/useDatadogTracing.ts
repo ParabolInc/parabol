@@ -11,7 +11,6 @@ import type {ExecutionResult} from 'graphql-ws'
 import type {Plugin} from 'graphql-yoga'
 import type {ServerContext} from '../yoga'
 import {extractErrorIntoSpanEvent} from './extractErrorIntoSpanEvent'
-import {Logger, markErrorAsLogged} from './Logger'
 
 const ddSymbol = Symbol('_dd')
 
@@ -140,21 +139,6 @@ export const useDatadogTracing = (config: Config): Plugin<PluginContext> => {
         onExecuteDone(options) {
           return handleStreamOrSingleExecutionResult(options, ({result}) => {
             config.hooks?.execute?.(rootSpan, options.args, result)
-            if (result.errors) {
-              for (const err of result.errors) {
-                // prefer originalError so Error Tracking groups by the thrown error, not the GraphQLError wrapper
-                Logger.error(err.originalError ?? err, {
-                  userId,
-                  extras: {
-                    operationName,
-                    variables,
-                    path: err.path?.join('.')
-                  }
-                })
-                // yoga's maskedErrors will pass the wrapper to Logger.error next; suppress that duplicate
-                markErrorAsLogged(err)
-              }
-            }
             markTopLevelError(rootSpan, result)
             rootSpan.finish()
           })
