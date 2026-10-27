@@ -110,6 +110,24 @@ export const updateBacklinkedPageLinkTitles = async (
   })
 }
 
+export const replaceAssetSrc = async (
+  documentName: string,
+  payload: {src: string; hostedSrc: string}
+) => {
+  const {src, hostedSrc} = payload
+  await withDoc(documentName, (doc) => {
+    const frag = doc.getXmlFragment('default')
+    const walker = frag.createTreeWalker((yxml) => {
+      if (!(yxml instanceof XmlElement)) return false
+      if (yxml.nodeName !== 'imageBlock' && yxml.nodeName !== 'fileBlock') return false
+      return yxml.getAttribute('src') === src
+    })
+    for (const node of Array.from(walker)) {
+      ;(node as XmlElement).setAttribute('src', hostedSrc)
+    }
+  })
+}
+
 export const fetchUserIdsInSameMeeting = async (documentName: string): Promise<string[]> => {
   const conn = await hocuspocus.openDirectConnection(documentName, {})
   // Always disconnect: a DirectConnection has no idle-timeout safety net, so a skipped

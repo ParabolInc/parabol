@@ -14,7 +14,7 @@ import {Markdown} from '@tiptap/markdown'
 import {useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
-import {useRef} from 'react'
+import {useEffect, useRef} from 'react'
 import {commitLocalUpdate, readInlineData} from 'relay-runtime'
 import AutoJoiner from 'tiptap-extension-auto-joiner'
 import type {useTipTapPageEditor_viewer$key} from '../__generated__/useTipTapPageEditor_viewer.graphql'
@@ -23,6 +23,7 @@ import {TiptapLinkExtension} from '../components/TipTapEditor/TiptapLinkExtensio
 import {useUploadUserAsset} from '../mutations/useUploadUserAsset'
 import {themeBackgroundColors} from '../shared/themeBackgroundColors'
 import {SafeTextStyleKit} from '../shared/tiptap/extensions/SafeTextStyleKit'
+import {handleServerEmbedMessage} from '../tiptap/extensions/fileBlock/embedManager'
 import FileBlock from '../tiptap/extensions/fileBlock/FileBlock'
 import {FileUpload} from '../tiptap/extensions/fileUpload/FileUpload'
 import {IndentHandler} from '../tiptap/extensions/IndentHandler'
@@ -347,6 +348,12 @@ export const useTipTapPageEditor = (
   )
 
   usePageLinkPlaceholder(editor!, placeholderRef)
+  useEffect(() => {
+    provider.on('stateless', handleServerEmbedMessage)
+    return () => {
+      provider.off('stateless', handleServerEmbedMessage)
+    }
+  }, [provider])
 
   return {editor}
 }

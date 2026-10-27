@@ -7,6 +7,7 @@ import {Logger} from '../Logger'
 import {getUserIdFromTransaction} from './getUserIdFromTransaction'
 import {handleAddedPageLinks} from './handleAddedPageLinks'
 import {handleDeletedPageLinks} from './handleDeletedPageLinks'
+import {rehostExternalAssets} from './rehostExternalAssets'
 import {removeClientThinkingBlocks} from './removeClientThinkingBlocks'
 import {syncPageUserMentionNames} from './syncPageUserMentionNames'
 
@@ -33,6 +34,7 @@ export const afterLoadDocument: Extension['afterLoadDocument'] = async ({
       removeClientThinkingBlocks(e)
       handleAddedPageLinks(e, pageId)
       handleDeletedPageLinks(e, pageId)
+      rehostExternalAssets(e, pageId)
     })
   }
   root.observeDeep(rootObserver)

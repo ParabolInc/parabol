@@ -92,3 +92,8 @@ export const broadcastUserMentionUpdate = async (
     redisHocusPocus.handleEvent('updateUserMention', documentName, payload, true).catch(Logger.log)
   })
 }
+
+export const replacePageAssetSrc = async (pageId: number, src: string, hostedSrc: string) => {
+  const documentName = CipherId.toClient(pageId, 'page')
+  await redisHocusPocus.handleEvent('replaceAssetSrc', documentName, {src, hostedSrc})
+}
