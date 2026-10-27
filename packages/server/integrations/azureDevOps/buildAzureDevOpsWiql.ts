@@ -1,12 +1,11 @@
 import {
+  AZURE_DEVOPS_IS_OPEN,
   AZURE_DEVOPS_IS_WORK,
   quoteWiql
 } from 'parabol-client/shared/integrations/buildAzureDevOpsWorkWiql'
 
-const CLOSED_STATES = ['Closed', 'Done', 'Removed']
-
 const IS_WORK = AZURE_DEVOPS_IS_WORK
-const IS_OPEN = `[System.State] NOT IN (${CLOSED_STATES.map(quoteWiql).join(', ')})`
+const IS_OPEN = AZURE_DEVOPS_IS_OPEN
 const DEFAULT_ORDER = 'ORDER BY [System.ChangedDate] DESC'
 
 /** Wraps a WHERE clause in the query the wiql endpoint takes, run against a whole organization. Naming projects narrows it to them, so the organization applies the ordering across all of them */
