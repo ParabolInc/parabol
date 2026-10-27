@@ -111,6 +111,11 @@ type Page implements PagePartial {
   ancestors: [PagePartial!]!
 
   """
+  The pages this page links to: a Page when the viewer can open it, else a PagePreview
+  """
+  linkedPages: [PagePartial!]!
+
+  """
   true if this page serves as a table of contents for a meeting
   """
   isMeetingTOC: Boolean!

@@ -1,4 +1,5 @@
 import {ReactNodeViewRenderer} from '@tiptap/react'
+import {isLoadableEmbedSrc} from '../fileBlock/isLoadableEmbedSrc'
 import {ImageBlockBase} from './ImageBlockBase'
 import {ImageBlockView} from './ImageBlockView'
 
@@ -9,15 +10,23 @@ export interface ImageBlockAttrs {
   align: 'left' | 'right' | 'center'
   isFullWidth: boolean
 }
+const getImageSrc = (element: HTMLElement) => {
+  const src = element.getAttribute('src')
+  return src && !src.startsWith('data:') ? src : element.getAttribute('data-src')
+}
+
 export const ImageBlock = ImageBlockBase.extend({
+  parseHTML() {
+    return [{tag: 'img[src]:not([src^="data:"])'}, {tag: 'img[data-src]:not([src])'}]
+  },
   addAttributes() {
     return {
       src: {
         default: '',
-        parseHTML: (element) => element.getAttribute('src'),
-        renderHTML: (attributes) => ({
-          src: attributes.src
-        })
+        parseHTML: getImageSrc,
+        // tiptap renders this HTML into the page when it tears down the node views, so an unloaded src stays inert
+        renderHTML: ({src}) =>
+          typeof src === 'string' && isLoadableEmbedSrc(src) ? {src} : {'data-src': src}
       },
       height: {
         default: undefined,

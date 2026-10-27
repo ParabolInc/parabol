@@ -41,6 +41,12 @@ export const Page = (props: Props) => {
         title
         ancestorIds
         isDatabase
+        # loads the viewer's access to each linked page for usePageViewerAccess
+        linkedPages {
+          id
+          ...usePageViewerAccess_page
+          ...usePageViewerAccess_pagePreview
+        }
       }
     `,
     pageRef

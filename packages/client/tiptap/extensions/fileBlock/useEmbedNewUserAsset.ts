@@ -5,21 +5,15 @@ import type {AssetScopeEnum} from '../../../__generated__/useEmbedUserAssetMutat
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {GQLID} from '../../../utils/GQLID'
 import {clearEmbedEntries, getEmbedStatus, requestEmbed, subscribe} from './embedManager'
+import {getParabolAssetPath} from './getParabolAssetPath'
+import {isLoadableEmbedSrc} from './isLoadableEmbedSrc'
+import {isLocalEmbedSource} from './localEmbedSources'
 
-const getRelativeSrc = (src: string) => {
-  if (src.startsWith('/')) return src
-  try {
-    const url = new URL(src)
-    return url.pathname
-  } catch {
-    return ''
-  }
-}
-const getIsHosted = (src: string, scopeKey: string, assetScope: AssetScopeEnum) => {
-  const relativeSrc = getRelativeSrc(src)
+const getIsHosted = (assetPath: string | null, scopeKey: string, assetScope: AssetScopeEnum) => {
+  if (!assetPath) return false
   const scopeCode = assetScope === 'Page' ? GQLID.fromKey(scopeKey)[0] : scopeKey
   const hostedPath = `/assets/${assetScope}/${scopeCode}`
-  return relativeSrc.startsWith(hostedPath)
+  return assetPath.startsWith(hostedPath)
 }
 
 export const useEmbedNewUserAsset = (
@@ -29,7 +23,8 @@ export const useEmbedNewUserAsset = (
   editor: Editor
 ) => {
   const atmosphere = useAtmosphere()
-  const isHosted = getIsHosted(src, scopeKey, assetScope)
+  const assetPath = getParabolAssetPath(src)
+  const isHosted = getIsHosted(assetPath, scopeKey, assetScope)
 
   // Subscribe to embed status changes so React re-renders when status updates
   // (e.g., when an embed transitions to 'error' after all retries fail).
@@ -46,14 +41,23 @@ export const useEmbedNewUserAsset = (
     }
   }, [scopeKey])
 
+  const isLocal = isLocalEmbedSource(src)
+  // blob urls are local and are in the process of being uploaded at this point
+  const isUploading = src.startsWith('blob:')
+  const isInline = src.startsWith('data:')
   const isReadOnly = !editor.isEditable
+  // the server re-hosts page assets as the user who added them
+  const isHostedByServer = assetScope === 'Page'
   useEffect(() => {
-    // blob urls are local and are in the process of being uploaded at this point
-    if (isReadOnly || isHosted || !src || src.startsWith('blob:') || src.startsWith('data:')) return
+    if (isHostedByServer || isReadOnly || isHosted || !src || isUploading || isInline) return
+    if (!isLocal) return
     requestEmbed(src, assetScope, scopeKey, atmosphere, editor)
   }, [isHosted, src, isReadOnly])
 
-  const result = isHosted || isReadOnly || embedStatus === 'success'
-  const embedError = !isReadOnly && embedStatus === 'error'
-  return {isHosted: result, embedError}
+  const isAdding = isLocal && !isHosted && !isUploading && !isInline
+  // the server never hosts for an anonymous editor or borrows anyone else's quota, so their additions stay external
+  const isSignInRequired = isHostedByServer && isAdding && !atmosphere.authObj
+  const embedError = isAdding && !isSignInRequired && embedStatus === 'error'
+  const isPending = (isAdding || isUploading) && !isSignInRequired && !embedError
+  return {isPending, embedError, isSignInRequired, isBlocked: !isLoadableEmbedSrc(src)}
 }
