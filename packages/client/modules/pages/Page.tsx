@@ -41,9 +41,10 @@ export const Page = (props: Props) => {
         title
         ancestorIds
         isDatabase
-        # loads each linked page into the store as Page or PagePreview, which PageLinkBlock reads for its lock
+        # loads the viewer's access to each linked page for usePageViewerAccess
         linkedPages {
           id
+          ...usePageViewerAccess_page
         }
       }
     `,

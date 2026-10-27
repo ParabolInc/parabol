@@ -42,7 +42,7 @@ export const keepUnownedPageLinksPlugin = (getViewerAccess: GetPageViewerAccess)
         const {pageCode} = node.attrs
         if (remainingCodes.has(pageCode)) return false
         const viewerAccess = getViewerAccess(pageCode)
-        return !!viewerAccess && viewerAccess !== 'owner'
+        return viewerAccess !== undefined && viewerAccess !== 'owner'
       })
       if (linksToKeep.length === 0) return null
       const mapping = new Mapping()

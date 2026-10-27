@@ -7,7 +7,7 @@ import {keepUnownedPageLinksPlugin} from '../keepUnownedPageLinksPlugin'
 const CHILD_PAGE_CODE = 7
 const schema = getSchema([StarterKit, PageLinkBlockBase])
 
-const deleteAcrossLink = (viewerAccess: string | undefined) => {
+const deleteAcrossLink = (viewerAccess: string | null | undefined) => {
   const state = EditorState.create({
     doc: schema.nodeFromJSON({
       type: 'doc',
@@ -37,6 +37,10 @@ test('keeps a sub-page link the user cannot trash when they delete a selection a
 
 test('deletes the link when the user owns the sub-page', () => {
   expect(deleteAcrossLink('owner')).toEqual({linkCodes: [], text: 'beer'})
+})
+
+test('keeps a sub-page link the user cannot open', () => {
+  expect(deleteAcrossLink(null)).toEqual({linkCodes: [CHILD_PAGE_CODE], text: 'beer'})
 })
 
 test('leaves the link to the server when the user access is not loaded', () => {

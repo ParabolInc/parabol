@@ -21,18 +21,16 @@ declare module '@tiptap/core' {
 interface PageLinkBlockStorage {
   yDoc: Y.Doc
 }
-export interface PageLinkBlockOptions {
+interface PageLinkBlockOptions {
   yDoc: Y.Doc
   getViewerAccess: GetPageViewerAccess
-  isPageLocked: (pageCode: number) => boolean
 }
 
 export const PageLinkBlock = PageLinkBlockBase.extend<PageLinkBlockOptions, PageLinkBlockStorage>({
   addOptions: () => ({
     // hack to enforce document
     yDoc: undefined as any,
-    getViewerAccess: () => undefined,
-    isPageLocked: () => false
+    getViewerAccess: () => undefined
   }),
   addStorage(this) {
     const {options} = this

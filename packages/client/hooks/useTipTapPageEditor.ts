@@ -15,7 +15,7 @@ import {useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef} from 'react'
-import {commitLocalUpdate, readInlineData} from 'relay-runtime'
+import {readInlineData} from 'relay-runtime'
 import AutoJoiner from 'tiptap-extension-auto-joiner'
 import type {useTipTapPageEditor_viewer$key} from '../__generated__/useTipTapPageEditor_viewer.graphql'
 import {LoomExtension} from '../components/TipTapEditor/LoomExtension'
@@ -46,6 +46,7 @@ import {MAX_FILE_SIZE_FREE} from '../utils/constants'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import useAtmosphere from './useAtmosphere'
 import {usePageLinkPlaceholder} from './usePageLinkPlaceholder'
+import {lookupPageViewerAccess} from './usePageViewerAccess'
 
 const getFileType = (file: File) => {
   if (file.type.startsWith('image/')) return 'image'
@@ -257,19 +258,7 @@ export const useTipTapPageEditor = (
         }),
         PageLinkBlock.configure({
           yDoc: provider.document,
-          getViewerAccess: (pageCode) => {
-            let viewerAccess: unknown
-            commitLocalUpdate(atmosphere, (store) => {
-              viewerAccess = store
-                .get(`page:${pageCode}`)
-                ?.getLinkedRecord('access')
-                ?.getValue('viewer')
-            })
-            return typeof viewerAccess === 'string' ? viewerAccess : undefined
-          },
-          // Page.linkedPages stores each linked page as a PagePreview when the viewer can't open it
-          isPageLocked: (pageCode) =>
-            atmosphere.getStore().getSource().get(`page:${pageCode}`)?.__typename === 'PagePreview'
+          getViewerAccess: (pageCode) => lookupPageViewerAccess(atmosphere, pageCode)
         }),
         TableOfContents,
         TaskBlock,

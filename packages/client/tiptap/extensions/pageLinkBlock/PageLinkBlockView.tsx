@@ -14,6 +14,7 @@ import pageDropTargetQuery, {
   type PageDropTargetQuery
 } from '../../../__generated__/PageDropTargetQuery.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
+import {usePageViewerAccess} from '../../../hooks/usePageViewerAccess'
 import {PageDropTarget} from '../../../modules/pages/PageDropTarget'
 import {PageNoAccessLock} from '../../../modules/pages/PageNoAccessLock'
 import {useArchivePageMutation} from '../../../mutations/useArchivePageMutation'
@@ -29,10 +30,9 @@ import {TooltipTrigger} from '../../../ui/Tooltip/TooltipTrigger'
 import {GQLID} from '../../../utils/GQLID'
 import {getPageEmoji, stripPageEmoji} from '../../../utils/getPageEmoji'
 import {getPageSlug} from '../../getPageSlug'
-import type {PageLinkBlockOptions} from './PageLinkBlock'
 
 export const PageLinkBlockView = (props: NodeViewProps) => {
-  const {node, getPos, view, extension} = props
+  const {node, getPos, view} = props
   const attrs = node.attrs as PageLinkBlockAttrs
   const {pageCode, title, canonical, database} = attrs
   const pageSlug = getPageSlug(pageCode, title)
@@ -51,7 +51,7 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
   const {draggingPageId, draggingPageViewerAccess} = viewer ?? {}
   const hasDragAccess = hasMinPageRole('editor', draggingPageViewerAccess)
   const isOptimistic = pageCode === -1
-  const isLocked = (extension.options as PageLinkBlockOptions).isPageLocked(pageCode)
+  const isLocked = usePageViewerAccess(pageCode) === null
   const focusLink = () => {
     const pos = getPos()
     if (!pos) return
