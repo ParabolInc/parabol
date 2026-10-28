@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.8.1](https://github.com/ParabolInc/parabol/compare/v15.8.0...v15.8.1) (2026-10-28)
+
+
+### Fixed
+
+* explain bad embed links and let Escape or Backspace drop an empty embed ([#13784](https://github.com/ParabolInc/parabol/issues/13784)) ([8d6a844](https://github.com/ParabolInc/parabol/commit/8d6a84488a8f0628afb23e9851c6e813e2a8ceb8))
+* show page link titles, not markdown, in search snippets ([#13783](https://github.com/ParabolInc/parabol/issues/13783)) ([75e627a](https://github.com/ParabolInc/parabol/commit/75e627a583f88230621bdefffd7885f4ee398d8f))
+
 ## [15.8.0](https://github.com/ParabolInc/parabol/compare/v15.7.4...v15.8.0) (2026-10-28)
 
 
