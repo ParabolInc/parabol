@@ -1,5 +1,6 @@
 import {Node} from '@tiptap/core'
 import {type JSONContent} from '@tiptap/react'
+import {resolveCuratedEmbed} from '../../shared/embed/curatedEmbedProviders'
 
 const LOOM_REGEX = /^(?:https?:\/\/)?(?:www\.)?loom\.com\/share\/[a-zA-Z0-9]+/g
 const LOOM_VIDEO_ID = /^(?:https?:\/\/)?(?:www\.)?loom\.com\/share\/([a-zA-Z0-9]+)/
@@ -43,10 +44,15 @@ const getLoomNodesForParagraph = (content: JSONContent) => {
   })
 
   return Object.values(distinctLoomLinks).map((link) => {
+    const curated = resolveCuratedEmbed(link)
     return {
-      type: 'loom',
+      type: 'embedBlock',
       attrs: {
-        src: link
+        url: link,
+        displayMode: 'embed',
+        align: 'center',
+        aspectRatio: curated?.aspectRatio ?? '16:9',
+        ...(curated && {embedSrc: curated.embedSrc, providerName: curated.providerName})
       }
     }
   })
