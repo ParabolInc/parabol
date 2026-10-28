@@ -3,7 +3,7 @@ A row's value for one breakdown
 """
 type ReportRowKey {
   """
-  A team id, team structure value id, notSet or removed, person id, meeting type, template id, task status,
+  A team id, org structure value id, notSet or removed, person id, meeting type, template id, task status,
   done or open, task age, topic in lower case, integration service, Team Health category id, or the start of a
   time step as an ISO date
   """

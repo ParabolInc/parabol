@@ -5,7 +5,7 @@ input ReportBreakdownInput {
   dimension: ReportDimensionEnum!
 
   """
-  For TEAM_LEVEL, the team structure level
+  For TEAM_LEVEL, the org structure level
   """
   levelId: ID
 }

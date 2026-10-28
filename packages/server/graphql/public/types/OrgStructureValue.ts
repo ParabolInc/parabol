@@ -1,16 +1,16 @@
-import {type TeamStructureValueSource, toTeamStructureId} from '../../../reports/teamStructure'
+import {type OrgStructureValueSource, toOrgStructureId} from '../../../reports/orgStructure'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../../utils/authorization'
-import type {TeamStructureValueResolvers} from '../resolverTypes'
+import type {OrgStructureValueResolvers} from '../resolverTypes'
 
-export type {TeamStructureValueSource}
+export type {OrgStructureValueSource}
 
-const TeamStructureValue: TeamStructureValueResolvers = {
-  id: ({id}) => toTeamStructureId(id, 'TeamStructureValue'),
+const OrgStructureValue: OrgStructureValueResolvers = {
+  id: ({id}) => toOrgStructureId(id, 'OrgStructureValue'),
   // the same teams the organization's team list shows the viewer
   teamIds: async ({id, orgId}, _args, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
     const [{placements}, teams, isLeader] = await Promise.all([
-      dataLoader.get('teamStructureByOrgId').load(orgId),
+      dataLoader.get('orgStructureByOrgId').load(orgId),
       dataLoader.get('teamsByOrgIds').load(orgId),
       isSuperUser(authToken) || isUserBillingLeader(viewerId, orgId, dataLoader)
     ])
@@ -25,4 +25,4 @@ const TeamStructureValue: TeamStructureValueResolvers = {
   }
 }
 
-export default TeamStructureValue
+export default OrgStructureValue

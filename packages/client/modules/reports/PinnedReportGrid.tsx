@@ -1,25 +1,25 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import type {ReportPinGrid_organization$key} from '../../__generated__/ReportPinGrid_organization.graphql'
+import type {PinnedReportGrid_organization$key} from '../../__generated__/PinnedReportGrid_organization.graphql'
 import ReportCard from './ReportCard'
 import type {ReportPagePeriod} from './reportPeriodParam'
 
 interface Props {
-  organizationRef: ReportPinGrid_organization$key
+  organizationRef: PinnedReportGrid_organization$key
   period: ReportPagePeriod
 }
 
-const ReportPinGrid = ({organizationRef, period}: Props) => {
+const PinnedReportGrid = ({organizationRef, period}: Props) => {
   const {
     id: orgId,
     isBillingLeader,
-    reportPins
+    pinnedReports
   } = useFragment(
     graphql`
-      fragment ReportPinGrid_organization on Organization {
+      fragment PinnedReportGrid_organization on Organization {
         id
         isBillingLeader
-        reportPins {
+        pinnedReports {
           id
           ...ReportCard_pin
         }
@@ -34,14 +34,14 @@ const ReportPinGrid = ({organizationRef, period}: Props) => {
         <span className='text-[13px] text-fg-muted'>Shared with everyone who can see Reports</span>
       </div>
       <div className='grid grid-cols-[repeat(auto-fit,minmax(min(440px,100%),1fr))] items-stretch gap-4'>
-        {reportPins.map((pin, index) => (
+        {pinnedReports.map((pin, index) => (
           <ReportCard
             key={pin.id}
             pinRef={pin}
             orgId={orgId}
             period={period}
             index={index}
-            pinCount={reportPins.length}
+            pinCount={pinnedReports.length}
             isLeader={isBillingLeader}
           />
         ))}
@@ -50,4 +50,4 @@ const ReportPinGrid = ({organizationRef, period}: Props) => {
   )
 }
 
-export default ReportPinGrid
+export default PinnedReportGrid

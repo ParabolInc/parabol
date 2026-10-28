@@ -3,7 +3,7 @@ import type {
   ReportMeasure
 } from '../../client/shared/reports/reportCatalog'
 import type RootDataLoader from '../dataloader/RootDataLoader'
-import type {ReportLevelDimension} from './teamStructure'
+import type {ReportLevelDimension} from './orgStructure'
 
 export type ReportQueryDimension = ReportCategoryDimension | ReportLevelDimension
 

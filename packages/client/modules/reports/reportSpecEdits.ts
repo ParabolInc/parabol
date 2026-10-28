@@ -86,7 +86,7 @@ const dimensionLabel = (dimension: ReportDimension) =>
 
 type ReportDimensionItem = ReportSpec['breakdown'][number]
 
-// the dimensions a breakdown or filter can pick, where team structure is one choice per level
+// the dimensions a breakdown or filter can pick, where org structure is one choice per level
 const toChoices = (
   dimensions: readonly ReportDimension[],
   levels: readonly ReportStructureLevel[]

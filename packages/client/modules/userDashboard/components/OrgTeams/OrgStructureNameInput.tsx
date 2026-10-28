@@ -1,5 +1,5 @@
 import {useRef, useState} from 'react'
-import {MAX_TEAM_STRUCTURE_NAME_LENGTH} from '../../../../shared/reports/reportCatalog'
+import {MAX_ORG_STRUCTURE_NAME_LENGTH} from '../../../../shared/reports/reportCatalog'
 import {cn} from '../../../../ui/cn'
 
 interface Props {
@@ -13,7 +13,7 @@ interface Props {
 }
 
 // Saves on Enter or when focus leaves, and Escape puts the name back
-const OrgTeamStructureNameInput = ({
+const OrgStructureNameInput = ({
   label,
   initialName = '',
   placeholder,
@@ -39,7 +39,7 @@ const OrgTeamStructureNameInput = ({
       aria-label={label}
       value={name}
       placeholder={placeholder}
-      maxLength={MAX_TEAM_STRUCTURE_NAME_LENGTH}
+      maxLength={MAX_ORG_STRUCTURE_NAME_LENGTH}
       autoFocus={autoFocus}
       onChange={(e) => setName(e.target.value)}
       onBlur={onBlur}
@@ -57,4 +57,4 @@ const OrgTeamStructureNameInput = ({
   )
 }
 
-export default OrgTeamStructureNameInput
+export default OrgStructureNameInput

@@ -1,14 +1,14 @@
 import {
   addValue,
   moveLevel,
+  type OrgStructureLevelData,
   removeValue,
   renameLevel,
-  type TeamStructureLevelData,
-  toTeamStructureInput
-} from '../teamStructureEdits'
-import {toTeamStructureRollup} from '../teamStructureRollup'
+  toOrgStructureInput
+} from '../orgStructureEdits'
+import {toOrgStructureRollup} from '../orgStructureRollup'
 
-const LEVELS: TeamStructureLevelData[] = [
+const LEVELS: OrgStructureLevelData[] = [
   {
     id: 'unit',
     name: 'Business unit',
@@ -25,8 +25,8 @@ const LEVELS: TeamStructureLevelData[] = [
 ]
 
 test('edits find levels and values by id, so they apply to whatever was saved last', () => {
-  const edit = (levels: TeamStructureLevelData[]) =>
-    renameLevel('unit', 'Division')(addValue('unit', 'Trading')(toTeamStructureInput(levels)))
+  const edit = (levels: OrgStructureLevelData[]) =>
+    renameLevel('unit', 'Division')(addValue('unit', 'Trading')(toOrgStructureInput(levels)))
   const [division] = edit([...LEVELS].reverse()).filter(({id}) => id === 'unit')
   expect(division).toEqual({
     id: 'unit',
@@ -37,17 +37,17 @@ test('edits find levels and values by id, so they apply to whatever was saved la
       {name: 'Trading'}
     ]
   })
-  expect(removeValue('unit', 'platform')(toTeamStructureInput(LEVELS))[0]?.values).toEqual([
+  expect(removeValue('unit', 'platform')(toOrgStructureInput(LEVELS))[0]?.values).toEqual([
     {id: 'custody', name: 'Custody'}
   ])
-  expect(moveLevel('region', 0)(toTeamStructureInput(LEVELS)).map(({id}) => id)).toEqual([
+  expect(moveLevel('region', 0)(toOrgStructureInput(LEVELS)).map(({id}) => id)).toEqual([
     'region',
     'unit'
   ])
 })
 
 test('the roll-up counts teams under the first two levels, with the rest not set', () => {
-  const rows = toTeamStructureRollup('Copper', LEVELS, ['apollo', 'borealis', 'cygnus', 'dorado'])
+  const rows = toOrgStructureRollup('Copper', LEVELS, ['apollo', 'borealis', 'cygnus', 'dorado'])
   expect(rows.map(({depth, name, teamCount}) => `${depth} ${name} ${teamCount}`)).toEqual([
     '0 Copper 4',
     '1 Platform 2',
@@ -57,5 +57,5 @@ test('the roll-up counts teams under the first two levels, with the rest not set
     '2 Not set 1',
     '1 Not set 1'
   ])
-  expect(toTeamStructureRollup('Copper', [], ['apollo'])).toEqual([])
+  expect(toOrgStructureRollup('Copper', [], ['apollo'])).toEqual([])
 })

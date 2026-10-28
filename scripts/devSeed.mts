@@ -790,14 +790,14 @@ const seedCopper = async (client: Client, viewerId: string, tier: 'starter' | 't
 
   for (const [levelIdx, [levelName, valueNames]] of LEVELS.entries()) {
     const {rows: levelRows} = await client.query<{id: number}>(
-      'INSERT INTO "TeamStructureLevel" ("orgId", name, "sortOrder") VALUES ($1, $2, $3) RETURNING id',
+      'INSERT INTO "OrgStructureLevel" ("orgId", name, "sortOrder") VALUES ($1, $2, $3) RETURNING id',
       [orgId, levelName, levelIdx]
     )
     const levelId = levelRows[0]!.id
     const valueIdByName = new Map<string, number>()
     for (const [valueIdx, valueName] of valueNames.entries()) {
       const {rows: valueRows} = await client.query<{id: number}>(
-        'INSERT INTO "TeamStructureValue" ("levelId", name, "sortOrder") VALUES ($1, $2, $3) RETURNING id',
+        'INSERT INTO "OrgStructureValue" ("levelId", name, "sortOrder") VALUES ($1, $2, $3) RETURNING id',
         [levelId, valueName, valueIdx]
       )
       valueIdByName.set(valueName, valueRows[0]!.id)
@@ -806,7 +806,7 @@ const seedCopper = async (client: Client, viewerId: string, tier: 'starter' | 't
       const valueId = valueIdByName.get(places[levelIdx] ?? '')
       return valueId ? [{teamId: id, levelId, valueId}] : []
     })
-    await insertRows(client, 'TeamStructurePlacement', placements)
+    await insertRows(client, 'OrgStructurePlacement', placements)
   }
   return {
     orgId,

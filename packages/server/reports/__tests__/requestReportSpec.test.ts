@@ -98,7 +98,7 @@ test('a question Parabol has no data for says what is missing', async () => {
   })
 })
 
-test('the prompt names every measure, the teams, the team structure and today', () => {
+test('the prompt names every measure, the teams, the org structure and today', () => {
   const prompt = buildReportAskPrompt({
     teams: [{id: 'team1', name: 'Core Infra'}],
     levels: [

@@ -3,7 +3,7 @@ import {Close, Edit} from '~/ui/icons'
 import {Menu} from '../../../../ui/Menu/Menu'
 import {MenuContent} from '../../../../ui/Menu/MenuContent'
 import {MENU_ITEM_ICON, MenuItem} from '../../../../ui/Menu/MenuItem'
-import OrgTeamStructureNameInput from './OrgTeamStructureNameInput'
+import OrgStructureNameInput from './OrgStructureNameInput'
 
 interface Props {
   name: string
@@ -12,13 +12,13 @@ interface Props {
   onRemove: () => void
 }
 
-const OrgTeamStructureValueChip = ({name, teamCount, onRename, onRemove}: Props) => {
+const OrgStructureValueChip = ({name, teamCount, onRename, onRemove}: Props) => {
   const [isRenaming, setIsRenaming] = useState(false)
   // the input takes focus once the menu has closed, or the menu would hand focus back to its button
   const isRenameChosen = useRef(false)
   if (isRenaming) {
     return (
-      <OrgTeamStructureNameInput
+      <OrgStructureNameInput
         label={`Rename ${name}`}
         initialName={name}
         className='w-36'
@@ -68,4 +68,4 @@ const OrgTeamStructureValueChip = ({name, teamCount, onRename, onRemove}: Props)
   )
 }
 
-export default OrgTeamStructureValueChip
+export default OrgStructureValueChip

@@ -15,7 +15,7 @@ const SORTABLE_COLUMNS = [
   {field: 'lastMetAt', label: 'Last Met At', width: 'w-[20%]', isHiddenOnPhones: true}
 ] as const
 
-// a column per team structure level leaves the table to size its columns
+// a column per org structure level leaves the table to size its columns
 const OrgTeamsTableHeader = ({levels, sortBy, sortDirection, onSort}: Props) => (
   <thead>
     <tr className='border-hairline border-b'>

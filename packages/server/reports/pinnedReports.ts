@@ -10,9 +10,9 @@ import selectPopularReportQuestions, {
 import toReportSpecShape from './toReportSpecShape'
 
 export const MAX_REPORT_PINS = 24
-const BUILT_IN_PIN_PREFIX = 'BuiltInReportPin'
+const BUILT_IN_PIN_PREFIX = 'BuiltInPinnedReport'
 
-export interface ReportPinSource {
+export interface PinnedReportSource {
   orgId: string
   // the pin's row once the org has pins of its own
   rowId: number | null
@@ -26,10 +26,10 @@ export interface ReportPinSource {
   isBuiltIn: boolean
 }
 
-export const toReportPinId = ({orgId, rowId, key}: ReportPinSource) =>
+export const toPinnedReportId = ({orgId, rowId, key}: PinnedReportSource) =>
   key !== null || rowId === null
     ? `${BUILT_IN_PIN_PREFIX}:${orgId}:${key}`
-    : CipherId.toClient(rowId, 'ReportPin')
+    : CipherId.toClient(rowId, 'PinnedReport')
 
 const toBuiltInPins = (popularQuestions: PopularReportQuestionRow[]) =>
   popularQuestions
@@ -39,10 +39,10 @@ const toBuiltInPins = (popularQuestions: PopularReportQuestionRow[]) =>
     .sort((a, b) => a.defaultPinSortOrder - b.defaultPinSortOrder)
 
 // An org shows the built-in pins until someone pins, unpins or moves one; from then on it shows its own
-export const selectReportPins = async (orgId: string): Promise<ReportPinSource[]> => {
+export const selectPinnedReports = async (orgId: string): Promise<PinnedReportSource[]> => {
   const [rows, popularQuestions] = await Promise.all([
     getKysely()
-      .selectFrom('ReportPin')
+      .selectFrom('PinnedReport')
       .selectAll()
       .where('orgId', '=', orgId)
       .orderBy('sortOrder')
@@ -75,9 +75,9 @@ export const selectReportPins = async (orgId: string): Promise<ReportPinSource[]
 }
 
 const copyBuiltInPins = async (trx: Transaction<DB>, orgId: string) => {
-  await sql`SELECT pg_advisory_xact_lock(hashtext(${`ReportPin:${orgId}`}))`.execute(trx)
+  await sql`SELECT pg_advisory_xact_lock(hashtext(${`PinnedReport:${orgId}`}))`.execute(trx)
   const existing = await trx
-    .selectFrom('ReportPin')
+    .selectFrom('PinnedReport')
     .select('id')
     .where('orgId', '=', orgId)
     .limit(1)
@@ -86,7 +86,7 @@ const copyBuiltInPins = async (trx: Transaction<DB>, orgId: string) => {
   const builtIns = toBuiltInPins(await selectPopularReportQuestions())
   if (builtIns.length === 0) return
   await trx
-    .insertInto('ReportPin')
+    .insertInto('PinnedReport')
     .values(
       builtIns.map(({id, title, description, spec}, idx) => ({
         orgId,
@@ -103,10 +103,10 @@ const copyBuiltInPins = async (trx: Transaction<DB>, orgId: string) => {
     .execute()
 }
 
-export const selectActiveReportPins = async (trx: Transaction<DB>, orgId: string) => {
+export const selectActivePinnedReports = async (trx: Transaction<DB>, orgId: string) => {
   await copyBuiltInPins(trx, orgId)
   return trx
-    .selectFrom('ReportPin')
+    .selectFrom('PinnedReport')
     .select(['id', 'spec', 'sortOrder', 'isBuiltIn', 'popularQuestionId'])
     .where('orgId', '=', orgId)
     .where('removedAt', 'is', null)
@@ -116,8 +116,8 @@ export const selectActiveReportPins = async (trx: Transaction<DB>, orgId: string
 }
 
 // The row a pin id names, copying the built-in pins first when the id is a built-in one
-export const findReportPinRowId = async (trx: Transaction<DB>, orgId: string, pinId: string) => {
-  const pins = await selectActiveReportPins(trx, orgId)
+export const findPinnedReportRowId = async (trx: Transaction<DB>, orgId: string, pinId: string) => {
+  const pins = await selectActivePinnedReports(trx, orgId)
   const [prefix, pinOrgId, key] = pinId.split(':')
   if (prefix === BUILT_IN_PIN_PREFIX) {
     if (pinOrgId !== orgId) return null

@@ -2,8 +2,8 @@ import ms from 'ms'
 import type {ReportSpec} from '../../client/shared/reports/reportCatalog'
 import {getNewDataLoader} from '../dataloader/getNewDataLoader'
 import getKysely from '../postgres/getKysely'
+import {toOrgStructureId} from '../reports/orgStructure'
 import runReport from '../reports/runReport'
-import {toTeamStructureId} from '../reports/teamStructure'
 import {createPGTables, truncatePGTables} from './common'
 
 const TEST_DB = 'runReportTest'
@@ -26,9 +26,9 @@ const TABLES = [
   'TeamHealthCategory',
   'TeamHealthQuestion',
   'TeamHealthResponse',
-  'TeamStructureLevel',
-  'TeamStructureValue',
-  'TeamStructurePlacement'
+  'OrgStructureLevel',
+  'OrgStructureValue',
+  'OrgStructurePlacement'
 ]
 
 const ORG_ID = 'reportOrg'
@@ -605,20 +605,20 @@ const PLATFORM = 1
 const CUSTODY = 2
 const AMERICAS = 3
 const REMOVED_LEVEL = 99
-const levelId = (rowId: number) => toTeamStructureId(rowId, 'TeamStructureLevel')
-const valueId = (rowId: number) => toTeamStructureId(rowId, 'TeamStructureValue')
+const levelId = (rowId: number) => toOrgStructureId(rowId, 'OrgStructureLevel')
+const valueId = (rowId: number) => toOrgStructureId(rowId, 'OrgStructureValue')
 
 // Apollo and Borealis are Platform and Cygnus is Custody. Dorado isn't placed yet
 const seedStructure = async () => {
   await pg
-    .insertInto('TeamStructureLevel')
+    .insertInto('OrgStructureLevel')
     .values([
       {id: BUSINESS_UNIT, orgId: ORG_ID, name: 'Business unit', sortOrder: 0},
       {id: REGION, orgId: ORG_ID, name: 'Region', sortOrder: 1}
     ])
     .execute()
   await pg
-    .insertInto('TeamStructureValue')
+    .insertInto('OrgStructureValue')
     .values([
       {id: PLATFORM, levelId: BUSINESS_UNIT, name: 'Platform', sortOrder: 0},
       {id: CUSTODY, levelId: BUSINESS_UNIT, name: 'Custody', sortOrder: 1},
@@ -626,7 +626,7 @@ const seedStructure = async () => {
     ])
     .execute()
   await pg
-    .insertInto('TeamStructurePlacement')
+    .insertInto('OrgStructurePlacement')
     .values([
       {teamId: APOLLO, levelId: BUSINESS_UNIT, valueId: PLATFORM},
       {teamId: BOREALIS, levelId: BUSINESS_UNIT, valueId: PLATFORM},
@@ -1121,7 +1121,7 @@ describe('team health', () => {
   })
 })
 
-describe('team structure', () => {
+describe('org structure', () => {
   const byUnit: Partial<ReportSpec> = {
     showAs: 'BARS',
     breakdown: [{dimension: 'TEAM_LEVEL', levelId: levelId(BUSINESS_UNIT)}]

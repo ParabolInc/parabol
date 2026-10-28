@@ -295,7 +295,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   // a rerun after a failed index build finds the tables already committed
   const {rows} = await sql<{
     hasTables: boolean
-  }>`SELECT to_regclass('"ReportPin"') IS NOT NULL AS "hasTables"`.execute(db)
+  }>`SELECT to_regclass('"PinnedReport"') IS NOT NULL AS "hasTables"`.execute(db)
   if (!rows[0]?.hasTables) await createReportTables(db)
   for (const index of INDEXES) await createIndexConcurrently(db, index)
   // the new index leads with teamId, so it serves every lookup the teamId index did
@@ -430,7 +430,7 @@ const createReportTables = async (db: Kysely<any>) => {
 
     // Unpinned reports keep their row, so what people ask for can be compared with what they keep
     await trx.schema
-      .createTable('ReportPin')
+      .createTable('PinnedReport')
       .ifNotExists()
       .addColumn('id', 'serial', (col) => col.primaryKey())
       .addColumn('orgId', 'varchar(100)', (col) =>
@@ -459,15 +459,15 @@ const createReportTables = async (db: Kysely<any>) => {
       )
       .execute()
     await trx.schema
-      .createIndex('idx_ReportPin_orgId')
+      .createIndex('idx_PinnedReport_orgId')
       .ifNotExists()
-      .on('ReportPin')
+      .on('PinnedReport')
       .column('orgId')
       .execute()
 
     // The levels an org groups its teams by, widest first, like business unit, then department
     await trx.schema
-      .createTable('TeamStructureLevel')
+      .createTable('OrgStructureLevel')
       .ifNotExists()
       .addColumn('id', 'serial', (col) => col.primaryKey())
       .addColumn('orgId', 'varchar(100)', (col) =>
@@ -480,17 +480,17 @@ const createReportTables = async (db: Kysely<any>) => {
       )
       .execute()
     await trx.schema
-      .createIndex('idx_TeamStructureLevel_orgId')
+      .createIndex('idx_OrgStructureLevel_orgId')
       .ifNotExists()
-      .on('TeamStructureLevel')
+      .on('OrgStructureLevel')
       .column('orgId')
       .execute()
     await trx.schema
-      .createTable('TeamStructureValue')
+      .createTable('OrgStructureValue')
       .ifNotExists()
       .addColumn('id', 'serial', (col) => col.primaryKey())
       .addColumn('levelId', 'integer', (col) =>
-        col.notNull().references('TeamStructureLevel.id').onDelete('cascade')
+        col.notNull().references('OrgStructureLevel.id').onDelete('cascade')
       )
       .addColumn('name', 'varchar(100)', (col) => col.notNull())
       .addColumn('sortOrder', 'integer', (col) => col.notNull())
@@ -499,30 +499,30 @@ const createReportTables = async (db: Kysely<any>) => {
       )
       .execute()
     await trx.schema
-      .createIndex('idx_TeamStructureValue_levelId')
+      .createIndex('idx_OrgStructureValue_levelId')
       .ifNotExists()
-      .on('TeamStructureValue')
+      .on('OrgStructureValue')
       .column('levelId')
       .execute()
     // a team sits at one value of each level, or at none until someone places it
     await trx.schema
-      .createTable('TeamStructurePlacement')
+      .createTable('OrgStructurePlacement')
       .ifNotExists()
       .addColumn('teamId', 'varchar(100)', (col) =>
         col.notNull().references('Team.id').onDelete('cascade')
       )
       .addColumn('levelId', 'integer', (col) =>
-        col.notNull().references('TeamStructureLevel.id').onDelete('cascade')
+        col.notNull().references('OrgStructureLevel.id').onDelete('cascade')
       )
       .addColumn('valueId', 'integer', (col) =>
-        col.notNull().references('TeamStructureValue.id').onDelete('cascade')
+        col.notNull().references('OrgStructureValue.id').onDelete('cascade')
       )
-      .addPrimaryKeyConstraint('TeamStructurePlacement_pkey', ['teamId', 'levelId'])
+      .addPrimaryKeyConstraint('OrgStructurePlacement_pkey', ['teamId', 'levelId'])
       .execute()
     await trx.schema
-      .createIndex('idx_TeamStructurePlacement_valueId')
+      .createIndex('idx_OrgStructurePlacement_valueId')
       .ifNotExists()
-      .on('TeamStructurePlacement')
+      .on('OrgStructurePlacement')
       .column('valueId')
       .execute()
   })
@@ -539,10 +539,10 @@ export async function down(db: Kysely<any>): Promise<void> {
   for (const {name} of INDEXES)
     await sql`DROP INDEX CONCURRENTLY IF EXISTS ${sql.id(name)}`.execute(db)
   await db.transaction().execute(async (trx) => {
-    await trx.schema.dropTable('TeamStructurePlacement').ifExists().execute()
-    await trx.schema.dropTable('TeamStructureValue').ifExists().execute()
-    await trx.schema.dropTable('TeamStructureLevel').ifExists().execute()
-    await trx.schema.dropTable('ReportPin').ifExists().execute()
+    await trx.schema.dropTable('OrgStructurePlacement').ifExists().execute()
+    await trx.schema.dropTable('OrgStructureValue').ifExists().execute()
+    await trx.schema.dropTable('OrgStructureLevel').ifExists().execute()
+    await trx.schema.dropTable('PinnedReport').ifExists().execute()
     await trx.schema.dropTable('ReportQuestion').ifExists().execute()
     await sql`DROP FUNCTION IF EXISTS "trimReportQuestions"()`.execute(trx)
     await trx.schema.dropType('ReportQuestionOutcomeEnum').ifExists().execute()

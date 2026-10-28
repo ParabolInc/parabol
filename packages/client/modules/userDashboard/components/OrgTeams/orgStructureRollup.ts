@@ -1,7 +1,7 @@
 import {REPORT_STRUCTURE_LABELS} from '../../../../shared/reports/reportCatalog'
-import type {TeamStructureLevelData} from './teamStructureEdits'
+import type {OrgStructureLevelData} from './orgStructureEdits'
 
-export interface TeamStructureRollupRow {
+export interface OrgStructureRollupRow {
   key: string
   depth: number
   name: string
@@ -9,7 +9,7 @@ export interface TeamStructureRollupRow {
   isNotSet: boolean
 }
 
-const groupTeams = (level: TeamStructureLevelData, teamIds: readonly string[]) => {
+const groupTeams = (level: OrgStructureLevelData, teamIds: readonly string[]) => {
   const groups = level.values.map(({id, name, teamIds: placedTeamIds}) => ({
     key: id,
     name,
@@ -34,11 +34,11 @@ const groupTeams = (level: TeamStructureLevelData, teamIds: readonly string[]) =
 
 // How reports split the teams by the first two levels: every value of the first, and the values of the
 // second that hold any of its teams
-export const toTeamStructureRollup = (
+export const toOrgStructureRollup = (
   orgName: string,
-  levels: readonly TeamStructureLevelData[],
+  levels: readonly OrgStructureLevelData[],
   teamIds: readonly string[]
-): TeamStructureRollupRow[] => {
+): OrgStructureRollupRow[] => {
   const [widest, next] = levels
   if (!widest) return []
   return [

@@ -85,7 +85,7 @@ type Organization implements OrganizationPartial {
   """
   The reports pinned to the Reports page, in order
   """
-  reportPins: [ReportPin!]! @scope(name: REPORTS_READ)
+  pinnedReports: [PinnedReport!]! @scope(name: REPORTS_READ)
 
   """
   The questions the Ask box offers on the Reports page, in order
@@ -100,7 +100,7 @@ type Organization implements OrganizationPartial {
   """
   The levels the organization groups its teams by in Reports, widest first. Empty while Reports is off
   """
-  teamStructure: [TeamStructureLevel!]! @scope(name: ORGS_READ)
+  structure: [OrgStructureLevel!]! @scope(name: ORGS_READ)
 
   """
   Teams in the organization that the viewer has access to.

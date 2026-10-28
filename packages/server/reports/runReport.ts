@@ -10,6 +10,7 @@ import type {DataLoaderWorker} from '../graphql/graphql'
 import type {ReportNoteKindEnum} from '../graphql/public/resolverTypes'
 import buildReportRows from './buildReportRows'
 import getReportScope from './getReportScope'
+import {isLevelDimension, type ReportLevelDimension} from './orgStructure'
 import {
   buildReportSteps,
   chooseReportStepLength,
@@ -33,7 +34,6 @@ import {
   limitReportRows,
   sortReportRows
 } from './shapeReportRows'
-import {isLevelDimension, type ReportLevelDimension} from './teamStructure'
 
 const MAX_ROWS = 5000
 
@@ -61,10 +61,10 @@ const runReport = async ({
   if (!isTimeZone(timeZone)) throw new GraphQLError(`${timeZone} isn't a time zone`)
 
   const now = new Date()
-  const [organization, scope, teamStructure] = await Promise.all([
+  const [organization, scope, orgStructure] = await Promise.all([
     dataLoader.get('organizations').loadNonNull(orgId),
     getReportScope({orgId, viewerId, isSuperUser, dataLoader}),
-    dataLoader.get('teamStructureByOrgId').load(orgId)
+    dataLoader.get('orgStructureByOrgId').load(orgId)
   ])
   const range = resolveReportPeriod(spec.period, pagePeriod, {
     timeZone,
@@ -73,7 +73,7 @@ const runReport = async ({
   })
   if (typeof range === 'string') throw new GraphQLError(range)
 
-  const structure = resolveReportStructure(spec, teamStructure)
+  const structure = resolveReportStructure(spec, orgStructure)
   const {breakdown} = structure
   const isTimeDimension = (dimension: ReportDimension | ReportQueryDimension) =>
     !isLevelDimension(dimension) && isReportTimeDimension(dimension)
@@ -109,7 +109,7 @@ const runReport = async ({
   const dimensions = breakdown.filter(
     (dimension): dimension is ReportQueryDimension => !isTimeDimension(dimension)
   )
-  // team and team structure filters pick which teams are counted
+  // team and org structure filters pick which teams are counted
   const filters = spec.filters.flatMap(({dimension, values}): ReportMeasureFilter[] =>
     isReportTimeDimension(dimension) || dimension === 'TEAM_LEVEL' ? [] : [{dimension, values}]
   )

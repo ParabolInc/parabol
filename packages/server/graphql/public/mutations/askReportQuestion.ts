@@ -2,12 +2,12 @@ import {GraphQLError} from 'graphql'
 import getKysely from '../../../postgres/getKysely'
 import completeReportAskWithOpenAI from '../../../reports/completeReportAskWithOpenAI'
 import getReportScope from '../../../reports/getReportScope'
+import {toClientOrgStructureLevels} from '../../../reports/orgStructure'
 import rankPopularReportQuestions from '../../../reports/rankPopularReportQuestions'
 import recordReportQuestion from '../../../reports/recordReportQuestion'
 import {isTimeZone, toLocalDate} from '../../../reports/reportCalendar'
 import requestReportSpec from '../../../reports/requestReportSpec'
 import selectPopularReportQuestions from '../../../reports/selectPopularReportQuestions'
-import {toClientTeamStructureLevels} from '../../../reports/teamStructure'
 import {getUserId, isSuperUser} from '../../../utils/authorization'
 import hasUsedMonthlyAIQuota from '../../../utils/hasUsedMonthlyAIQuota'
 import logError from '../../../utils/logError'
@@ -45,12 +45,12 @@ const askReportQuestion: MutationResolvers['askReportQuestion'] = async (
   // RESOLUTION
   const [{teams}, {levels}] = await Promise.all([
     getReportScope({orgId, viewerId, isSuperUser: viewerIsSuperUser, dataLoader}),
-    dataLoader.get('teamStructureByOrgId').load(orgId)
+    dataLoader.get('orgStructureByOrgId').load(orgId)
   ])
   const answer = await requestReportSpec({
     question: trimmedQuestion,
     teams,
-    levels: toClientTeamStructureLevels(levels),
+    levels: toClientOrgStructureLevels(levels),
     today: toLocalDate(new Date(), timeZone),
     timeZone,
     complete: completeReportAskWithOpenAI(openAIApi)

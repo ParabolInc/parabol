@@ -1,7 +1,7 @@
 """
 A report pinned to the Reports page
 """
-type ReportPin {
+type PinnedReport {
   id: ID!
 
   """

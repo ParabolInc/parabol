@@ -48,7 +48,7 @@ const parseList = <T>(value: unknown, parseItem: (item: unknown) => T | null): T
   return items.every((item): item is T => item !== null) ? items : null
 }
 
-// only a team structure level is named by a levelId, so one anywhere else is dropped
+// only an org structure level is named by a levelId, so one anywhere else is dropped
 const levelIdOf = (item: Record<string, unknown>) =>
   item.dimension === 'TEAM_LEVEL' && isString(item.levelId) ? {levelId: item.levelId} : {}
 

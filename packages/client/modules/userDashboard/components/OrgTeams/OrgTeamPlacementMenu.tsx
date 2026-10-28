@@ -10,12 +10,12 @@ import {cn} from '../../../../ui/cn'
 import {Menu} from '../../../../ui/Menu/Menu'
 import {MenuContent} from '../../../../ui/Menu/MenuContent'
 import {MenuRadioItem} from '../../../../ui/Menu/MenuRadioItem'
-import type {TeamStructureLevelData} from './teamStructureEdits'
+import type {OrgStructureLevelData} from './orgStructureEdits'
 
 interface Props {
   teamId: string
   teamName: string
-  level: TeamStructureLevelData
+  level: OrgStructureLevelData
   valueId: string | undefined
   canPlace: boolean
 }

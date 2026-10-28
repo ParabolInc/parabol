@@ -133,7 +133,7 @@ test('a report without a name gets one from its spec', () => {
   ).toBe('Meetings by removed level')
 })
 
-test('a team structure level goes by its own name, or as removed once it is gone', () => {
+test('an org structure level goes by its own name, or as removed once it is gone', () => {
   const byLevel = (levelId: string) =>
     chipsOf(
       spec({

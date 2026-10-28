@@ -107,7 +107,7 @@ const formatSpecDimension = (
     ? (findLevel(levelId, levels)?.name ?? REPORT_STRUCTURE_LABELS.removed)
     : formatReportDimension(dimension, step)
 
-// A result lists teams in place of a removed team structure level, so it names its own breakdown
+// A result lists teams in place of a removed org structure level, so it names its own breakdown
 export const formatReportBreakdown = (
   {dimension, levelName}: {dimension: ReportDimension; levelName: string | null | undefined},
   step: ReportStepLength | null | undefined

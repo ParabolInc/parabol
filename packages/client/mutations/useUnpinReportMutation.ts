@@ -7,7 +7,7 @@ const mutation = graphql`
     unpinReport(orgId: $orgId, pinId: $pinId) {
       organization {
         id
-        reportPins {
+        pinnedReports {
           id
         }
       }

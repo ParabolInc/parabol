@@ -7,7 +7,7 @@ const PLACEHOLDERS: Partial<Record<ReportDimension, string>> = {
   TOPIC: '<topic>'
 }
 
-// The spec with team ids, team structure, people, topics and dates swapped for placeholders, so the same
+// The spec with team ids, org structure, people, topics and dates swapped for placeholders, so the same
 // question from two orgs matches and no one's name or discussion is kept for analysis
 const toReportSpecShape = (spec: ReportSpec) => {
   const {measures, breakdown, filters, where, period, compareTo, showAs, sort, limit} = spec

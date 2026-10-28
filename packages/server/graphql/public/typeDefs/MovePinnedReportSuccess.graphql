@@ -1,4 +1,4 @@
-type MoveReportPinSuccess {
+type MovePinnedReportSuccess {
   """
   The organization, with its pins
   """

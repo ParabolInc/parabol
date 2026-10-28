@@ -6,8 +6,8 @@ import {
 import type RootDataLoader from '../../dataloader/RootDataLoader'
 import isValid from '../../graphql/isValid'
 import groupTeamHealthScores from '../../utils/groupTeamHealthScores'
+import {isLevelDimension, toLevelRowId} from '../orgStructure'
 import type {ReportMeasureQuery, ReportQueryDimension} from '../reportMeasureTypes'
-import {isLevelDimension, toLevelRowId} from '../teamStructure'
 
 export interface PickedTeamHealthCheck {
   stepIndex: number
@@ -50,9 +50,9 @@ export const groupTeamHealthAnswers = async (
 ) => {
   const [answers, {placements}] = await Promise.all([
     loadCheckAnswers([...new Set(picks.map(({checkId}) => checkId))], dataLoader),
-    dataLoader.get('teamStructureByOrgId').load(orgId)
+    dataLoader.get('orgStructureByOrgId').load(orgId)
   ])
-  // a team structure level groups a team's answers under the value the team sits at
+  // an org structure level groups a team's answers under the value the team sits at
   const keyOf = (dimension: ReportQueryDimension, teamId: string, category: string) => {
     if (!isLevelDimension(dimension)) return dimension === 'TEAM' ? teamId : category
     const levelRowId = toLevelRowId(dimension)

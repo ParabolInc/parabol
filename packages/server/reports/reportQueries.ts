@@ -5,6 +5,7 @@ import {
   type ReportCategoryDimension
 } from '../../client/shared/reports/reportCatalog'
 import getKysely from '../postgres/getKysely'
+import {isLevelDimension, toLevelRowId} from './orgStructure'
 import type {
   ReportDimensionLabels,
   ReportMeasureFilter,
@@ -12,7 +13,6 @@ import type {
   ReportMeasureResult,
   ReportQueryDimension
 } from './reportMeasureTypes'
-import {isLevelDimension, toLevelRowId} from './teamStructure'
 
 const STATEMENT_TIMEOUT_MS = 15000
 
@@ -52,7 +52,7 @@ export const executeReportQuery = async (query: RawBuilder<ReportQueryRow>) =>
       return rows
     })
 
-// A team structure level splits by the value each row's team sits at
+// An org structure level splits by the value each row's team sits at
 const dimensionExpression = (
   expressions: ReportDimensionExpressions,
   dimension: ReportQueryDimension
@@ -67,7 +67,7 @@ const dimensionExpression = (
   const levelRowId = toLevelRowId(dimension)
   if (levelRowId === 0) return sql<string>`${REPORT_STRUCTURE_REMOVED}`
   return sql<string>`COALESCE(
-    (SELECT p."valueId"::text FROM "TeamStructurePlacement" AS p
+    (SELECT p."valueId"::text FROM "OrgStructurePlacement" AS p
       WHERE p."teamId" = ${team} AND p."levelId" = ${levelRowId}),
     ${REPORT_STRUCTURE_NOT_SET}
   )`

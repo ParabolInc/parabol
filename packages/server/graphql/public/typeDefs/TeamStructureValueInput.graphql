@@ -1,7 +1,0 @@
-"""
-A team structure value as it should be. A value without an id is new
-"""
-input TeamStructureValueInput {
-  id: ID
-  name: String!
-}

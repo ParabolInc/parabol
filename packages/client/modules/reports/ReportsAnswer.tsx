@@ -27,7 +27,7 @@ const query = graphql`
   ) {
     viewer {
       organization(orgId: $orgId) {
-        teamStructure {
+        structure {
           id
           name
         }
@@ -41,7 +41,7 @@ const ReportsAnswer = ({queryRef, orgId, answer, period, onSpecChange, onClose}:
   const {viewer} = usePreloadedQuery<ReportsAnswerQuery>(query, queryRef)
   const {organization} = viewer
   const {spec, title, reportQuestionId} = answer
-  const levels = organization?.teamStructure ?? []
+  const levels = organization?.structure ?? []
   return (
     <ReportPanel
       organizationRef={organization}

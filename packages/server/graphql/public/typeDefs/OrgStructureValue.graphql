@@ -1,7 +1,7 @@
 """
-One value of a team structure level, like Platform for business unit
+One value of an org structure level, like Platform for business unit
 """
-type TeamStructureValue {
+type OrgStructureValue {
   id: ID!
   name: String!
 

@@ -1,12 +1,12 @@
-import {type ReportPinSource, toReportPinId} from '../../../reports/reportPins'
+import {type PinnedReportSource, toPinnedReportId} from '../../../reports/pinnedReports'
 import runReport from '../../../reports/runReport'
 import {getUserId, isSuperUser} from '../../../utils/authorization'
-import type {ReportPinResolvers} from '../resolverTypes'
+import type {PinnedReportResolvers} from '../resolverTypes'
 
-export type {ReportPinSource}
+export type {PinnedReportSource}
 
-const ReportPin: ReportPinResolvers = {
-  id: toReportPinId,
+const PinnedReport: PinnedReportResolvers = {
+  id: toPinnedReportId,
   spec: ({spec}) => JSON.stringify(spec),
   pinnedBy: async ({createdBy}, _args, {dataLoader}) =>
     createdBy ? ((await dataLoader.get('users').load(createdBy)) ?? null) : null,
@@ -22,4 +22,4 @@ const ReportPin: ReportPinResolvers = {
     })
 }
 
-export default ReportPin
+export default PinnedReport

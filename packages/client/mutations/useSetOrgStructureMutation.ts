@@ -1,14 +1,14 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {RecordProxy} from 'relay-runtime'
-import type {useSetTeamStructureMutation as TSetTeamStructureMutation} from '../__generated__/useSetTeamStructureMutation.graphql'
+import type {useSetOrgStructureMutation as TSetOrgStructureMutation} from '../__generated__/useSetOrgStructureMutation.graphql'
 
 const mutation = graphql`
-  mutation useSetTeamStructureMutation($orgId: ID!, $levels: [TeamStructureLevelInput!]!) {
-    setTeamStructure(orgId: $orgId, levels: $levels) {
+  mutation useSetOrgStructureMutation($orgId: ID!, $levels: [OrgStructureLevelInput!]!) {
+    setOrgStructure(orgId: $orgId, levels: $levels) {
       organization {
         id
-        teamStructure {
+        structure {
           id
           name
           values {
@@ -24,9 +24,9 @@ const mutation = graphql`
 
 const isRecord = (record: RecordProxy | null | undefined): record is RecordProxy => !!record
 
-const useSetTeamStructureMutation = () => {
-  const [commit, submitting] = useMutation<TSetTeamStructureMutation>(mutation)
-  const execute = (config: UseMutationConfig<TSetTeamStructureMutation>) => {
+const useSetOrgStructureMutation = () => {
+  const [commit, submitting] = useMutation<TSetOrgStructureMutation>(mutation)
+  const execute = (config: UseMutationConfig<TSetOrgStructureMutation>) => {
     const {orgId, levels} = config.variables
     return commit({
       // levels and values that already exist move, rename and go at once. New ones wait for their ids
@@ -44,7 +44,7 @@ const useSetTeamStructureMutation = () => {
             return levelRecord.setValue(level.name, 'name').setLinkedRecords(valueRecords, 'values')
           })
           .filter(isRecord)
-        store.get(orgId)?.setLinkedRecords(levelRecords, 'teamStructure')
+        store.get(orgId)?.setLinkedRecords(levelRecords, 'structure')
       },
       ...config
     })
@@ -52,4 +52,4 @@ const useSetTeamStructureMutation = () => {
   return [execute, submitting] as const
 }
 
-export default useSetTeamStructureMutation
+export default useSetOrgStructureMutation

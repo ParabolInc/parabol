@@ -1,38 +1,38 @@
 import type {DraggableProvided} from '@hello-pangea/dnd'
 import {useState} from 'react'
 import {Add, Delete, DragIndicator, MoreVert} from '~/ui/icons'
-import {MAX_TEAM_STRUCTURE_VALUES} from '../../../../shared/reports/reportCatalog'
+import {MAX_ORG_STRUCTURE_VALUES} from '../../../../shared/reports/reportCatalog'
 import {Menu} from '../../../../ui/Menu/Menu'
 import {MenuContent} from '../../../../ui/Menu/MenuContent'
 import {MENU_ITEM_ICON, MenuItem} from '../../../../ui/Menu/MenuItem'
-import OrgTeamStructureNameInput from './OrgTeamStructureNameInput'
-import OrgTeamStructureRemoveLevelDialog from './OrgTeamStructureRemoveLevelDialog'
-import OrgTeamStructureValueChip from './OrgTeamStructureValueChip'
+import OrgStructureNameInput from './OrgStructureNameInput'
+import OrgStructureRemoveLevelDialog from './OrgStructureRemoveLevelDialog'
+import OrgStructureValueChip from './OrgStructureValueChip'
 import {
   addValue,
+  type OrgStructureEdit,
+  type OrgStructureLevelData,
   removeLevel,
   removeValue,
   renameLevel,
-  renameValue,
-  type TeamStructureEdit,
-  type TeamStructureLevelData
-} from './teamStructureEdits'
+  renameValue
+} from './orgStructureEdits'
 
 interface Props {
-  level: TeamStructureLevelData
+  level: OrgStructureLevelData
   position: number
   dragProvided: DraggableProvided
   // changes after a failed save, which puts back the typed names
   failedSaveCount: number
-  onEdit: (edit: TeamStructureEdit) => void
+  onEdit: (edit: OrgStructureEdit) => void
 }
 
-const OrgTeamStructureLevelRow = (props: Props) => {
+const OrgStructureLevelRow = (props: Props) => {
   const {level, position, dragProvided, failedSaveCount, onEdit} = props
   const {id: levelId, name, values} = level
   const [isAddingValue, setIsAddingValue] = useState(false)
   const [isRemoving, setIsRemoving] = useState(false)
-  const canAddValue = values.length < MAX_TEAM_STRUCTURE_VALUES
+  const canAddValue = values.length < MAX_ORG_STRUCTURE_VALUES
   return (
     <li
       ref={dragProvided.innerRef}
@@ -49,7 +49,7 @@ const OrgTeamStructureLevelRow = (props: Props) => {
       <span className='w-4 shrink-0 font-semibold text-[13px] text-fg-muted tabular-nums'>
         {position + 1}
       </span>
-      <OrgTeamStructureNameInput
+      <OrgStructureNameInput
         key={`${name}:${failedSaveCount}`}
         label={`Name of level ${position + 1}`}
         initialName={name}
@@ -59,7 +59,7 @@ const OrgTeamStructureLevelRow = (props: Props) => {
       />
       <div className='flex min-w-0 flex-[1_1_240px] flex-wrap items-center gap-1.5'>
         {values.map((value) => (
-          <OrgTeamStructureValueChip
+          <OrgStructureValueChip
             key={value.id}
             name={value.name}
             teamCount={value.teamIds.length}
@@ -69,7 +69,7 @@ const OrgTeamStructureLevelRow = (props: Props) => {
         ))}
         {canAddValue &&
           (isAddingValue ? (
-            <OrgTeamStructureNameInput
+            <OrgStructureNameInput
               label={`New value of ${name}`}
               placeholder='Value name'
               className='w-36'
@@ -105,7 +105,7 @@ const OrgTeamStructureLevelRow = (props: Props) => {
           </MenuItem>
         </MenuContent>
       </Menu>
-      <OrgTeamStructureRemoveLevelDialog
+      <OrgStructureRemoveLevelDialog
         levelName={name}
         isOpen={isRemoving}
         onClose={() => setIsRemoving(false)}
@@ -118,4 +118,4 @@ const OrgTeamStructureLevelRow = (props: Props) => {
   )
 }
 
-export default OrgTeamStructureLevelRow
+export default OrgStructureLevelRow

@@ -77,7 +77,7 @@ test.each<[string, Partial<ReportSpec>]>([
     }
   ],
   [
-    'two team structure levels, filtered by a third',
+    'two org structure levels, filtered by a third',
     {
       showAs: 'HEATMAP',
       breakdown: [
@@ -120,7 +120,7 @@ test.each<[string, Partial<ReportSpec>, string]>([
     'A breakdown can only be used once'
   ],
   [
-    'a team structure level twice',
+    'an org structure level twice',
     {
       showAs: 'HEATMAP',
       breakdown: [
@@ -131,9 +131,9 @@ test.each<[string, Partial<ReportSpec>, string]>([
     'A breakdown can only be used once'
   ],
   [
-    'team structure without a level',
+    'org structure without a level',
     {showAs: 'BARS', breakdown: [{dimension: 'TEAM_LEVEL'}]},
-    'TEAM_LEVEL needs the levelId of a team structure level'
+    'TEAM_LEVEL needs the levelId of an org structure level'
   ],
   [
     'a breakdown the measure lacks',

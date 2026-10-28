@@ -1,8 +1,12 @@
 import {GraphQLError} from 'graphql'
 import {parseReportSpec} from '../../../../client/shared/reports/parseReportSpec'
 import getKysely from '../../../postgres/getKysely'
+import {
+  MAX_REPORT_PINS,
+  selectActivePinnedReports,
+  toReportRowId
+} from '../../../reports/pinnedReports'
 import readReportSpecInput from '../../../reports/readReportSpecInput'
-import {MAX_REPORT_PINS, selectActiveReportPins, toReportRowId} from '../../../reports/reportPins'
 import toReportSpecShape from '../../../reports/toReportSpecShape'
 import {getUserId} from '../../../utils/authorization'
 import type {MutationResolvers} from '../resolverTypes'
@@ -34,14 +38,14 @@ const pinReport: MutationResolvers['pinReport'] = async (
   // RESOLUTION
   const specJSON = JSON.stringify(spec)
   const pinRowId = await pg.transaction().execute(async (trx) => {
-    const pins = await selectActiveReportPins(trx, orgId)
+    const pins = await selectActivePinnedReports(trx, orgId)
     const samePin = pins.find((pin) => JSON.stringify(parseReportSpec(pin.spec)) === specJSON)
     if (samePin) return samePin.id
     if (pins.length >= MAX_REPORT_PINS) {
       throw new GraphQLError(`Reports holds ${MAX_REPORT_PINS} pins. Unpin one first`)
     }
     const {id} = await trx
-      .insertInto('ReportPin')
+      .insertInto('PinnedReport')
       .values({
         orgId,
         createdBy: viewerId,

@@ -5,10 +5,10 @@ import {Link} from 'react-router'
 import {Groups} from '~/ui/icons'
 import type {ReportsHomeQuery} from '../../__generated__/ReportsHomeQuery.graphql'
 import useDocumentTitle from '../../hooks/useDocumentTitle'
+import PinnedReportGrid from './PinnedReportGrid'
 import ReportAskBox from './ReportAskBox'
 import ReportAskLoading from './ReportAskLoading'
 import ReportPeriodMenu from './ReportPeriodMenu'
-import ReportPinGrid from './ReportPinGrid'
 import ReportsAnswerLoader from './ReportsAnswerLoader'
 import ReportsHeadline from './ReportsHeadline'
 import ReportsOrgPicker from './ReportsOrgPicker'
@@ -39,7 +39,7 @@ const query = graphql`
         ...ReportsStarterBanner_organization
         ...ReportsHeadline_organization
         ...ReportAskBox_organization
-        ...ReportPinGrid_organization
+        ...PinnedReportGrid_organization
       }
     }
   }
@@ -94,7 +94,7 @@ const ReportsHome = ({queryRef, orgId, period, answer, onPeriodChange}: Props) =
           ) : (
             answer && <ReportsAnswerLoader orgId={orgId} answer={answer} period={period} />
           )}
-          <ReportPinGrid organizationRef={organization} period={period} />
+          <PinnedReportGrid organizationRef={organization} period={period} />
         </>
       )}
     </div>

@@ -12,7 +12,7 @@ interface Props {
   onConfirm: () => void
 }
 
-const OrgTeamStructureRemoveLevelDialog = ({levelName, isOpen, onClose, onConfirm}: Props) => (
+const OrgStructureRemoveLevelDialog = ({levelName, isOpen, onClose, onConfirm}: Props) => (
   <Dialog isOpen={isOpen} onClose={onClose}>
     <DialogContent className='md:w-md md:max-w-md'>
       <DialogTitle>Remove {levelName}?</DialogTitle>
@@ -33,4 +33,4 @@ const OrgTeamStructureRemoveLevelDialog = ({levelName, isOpen, onClose, onConfir
   </Dialog>
 )
 
-export default OrgTeamStructureRemoveLevelDialog
+export default OrgStructureRemoveLevelDialog

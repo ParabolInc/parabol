@@ -5,8 +5,8 @@ import AddTeamDialogRoot from '../../../../components/AddTeamDialogRoot'
 import {Button} from '../../../../ui/Button/Button'
 import {cn} from '../../../../ui/cn'
 import {useDialogState} from '../../../../ui/Dialog/useDialogState'
+import OrgStructureLevels from './OrgStructureLevels'
 import OrgTeamRollup from './OrgTeamRollup'
-import OrgTeamStructureLevels from './OrgTeamStructureLevels'
 import OrgTeamsTable from './OrgTeamsTable'
 
 type Props = {
@@ -22,7 +22,7 @@ const OrgTeams = (props: Props) => {
         name
         isBillingLeader
         hasReports: featureFlag(featureName: "Reports")
-        teamStructure {
+        structure {
           id
           name
           values {
@@ -45,7 +45,7 @@ const OrgTeams = (props: Props) => {
     close: closeAddTeamDialog,
     isOpen: isAddTeamDialogOpened
   } = useDialogState()
-  const {id: orgId, name, isBillingLeader, hasReports, teamStructure: levels, teams} = organization
+  const {id: orgId, name, isBillingLeader, hasReports, structure: levels, teams} = organization
   const hasLevels = levels.length > 0
 
   return (
@@ -76,7 +76,7 @@ const OrgTeams = (props: Props) => {
         <div className='mt-4 mb-5 flex flex-wrap items-start gap-5'>
           {isBillingLeader && (
             <div className='min-w-0 flex-[3_1_560px]'>
-              <OrgTeamStructureLevels orgId={orgId} levels={levels} />
+              <OrgStructureLevels orgId={orgId} levels={levels} />
             </div>
           )}
           {hasLevels && (

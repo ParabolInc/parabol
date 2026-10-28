@@ -7,7 +7,7 @@ const mutation = graphql`
     placeTeam(teamId: $teamId, levelId: $levelId, valueId: $valueId) {
       organization {
         id
-        teamStructure {
+        structure {
           id
           values {
             id

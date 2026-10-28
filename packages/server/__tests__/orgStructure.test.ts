@@ -3,7 +3,7 @@ import getKysely from '../postgres/getKysely'
 import {sendPublic, signUp} from './common'
 
 const STRUCTURE = `
-  teamStructure {
+  structure {
     id
     name
     values {
@@ -14,8 +14,8 @@ const STRUCTURE = `
   }
 `
 
-const TEAM_STRUCTURE = `
-  query TeamStructure($orgId: ID!) {
+const ORG_STRUCTURE = `
+  query OrgStructure($orgId: ID!) {
     viewer {
       organization(orgId: $orgId) {
         ${STRUCTURE}
@@ -24,9 +24,9 @@ const TEAM_STRUCTURE = `
   }
 `
 
-const SET_TEAM_STRUCTURE = `
-  mutation SetTeamStructure($orgId: ID!, $levels: [TeamStructureLevelInput!]!) {
-    setTeamStructure(orgId: $orgId, levels: $levels) {
+const SET_ORG_STRUCTURE = `
+  mutation SetOrgStructure($orgId: ID!, $levels: [OrgStructureLevelInput!]!) {
+    setOrgStructure(orgId: $orgId, levels: $levels) {
       organization {
         ${STRUCTURE}
       }
@@ -71,14 +71,14 @@ const signUpWithReports = async () => {
 }
 
 const setStructure = (orgId: string, cookie: string, levels: LevelInput[]) =>
-  sendPublic({query: SET_TEAM_STRUCTURE, variables: {orgId, levels}, cookie})
+  sendPublic({query: SET_ORG_STRUCTURE, variables: {orgId, levels}, cookie})
 
 const levelsOf = (res: Awaited<ReturnType<typeof setStructure>>): Level[] =>
-  res.data.setTeamStructure.organization.teamStructure
+  res.data.setOrgStructure.organization.structure
 
 const structureOf = async (orgId: string, cookie: string): Promise<Level[]> => {
-  const res = await sendPublic({query: TEAM_STRUCTURE, variables: {orgId}, cookie})
-  return res.data.viewer.organization.teamStructure
+  const res = await sendPublic({query: ORG_STRUCTURE, variables: {orgId}, cookie})
+  return res.data.viewer.organization.structure
 }
 
 const toInput = ({id, name, values}: Level): LevelInput => ({
@@ -115,7 +115,7 @@ test('a team is placed at a value, and removing the value leaves it not set', as
     cookie
   })
   expect(placed.errors).toBeUndefined()
-  expect(placed.data.placeTeam.organization.teamStructure[0].values[0].teamIds).toEqual([teamId])
+  expect(placed.data.placeTeam.organization.structure[0].values[0].teamIds).toEqual([teamId])
   await setStructure(orgId, cookie, [{...toInput(unit!), values: [toInput(unit!).values[1]!]}])
   const [unitAfter] = await structureOf(orgId, cookie)
   expect(unitAfter!.values).toEqual([{id: custody!.id, name: 'Custody', teamIds: []}])
@@ -164,7 +164,7 @@ test('every level and value needs a name of its own', async () => {
   expect(valueTwice.errors?.[0]?.message).toBe('Each value of a level needs its own name')
 })
 
-test('an organization without Reports has no team structure', async () => {
+test('an organization without Reports has no org structure', async () => {
   const {orgId, cookie} = await signUp()
   expect(await structureOf(orgId, cookie)).toEqual([])
 })

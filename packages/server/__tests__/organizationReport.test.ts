@@ -22,10 +22,10 @@ const ORGANIZATION_REPORT = `
 `
 
 const REPORT_PINS = `
-  query ReportPins($orgId: ID!) {
+  query PinnedReports($orgId: ID!) {
     viewer {
       organization(orgId: $orgId) {
-        reportPins {
+        pinnedReports {
           id
           title
           spec
@@ -156,14 +156,14 @@ test('every organization starts with the built-in pins, each with a spec that ru
   await turnOnReports(orgId)
   const res = await sendPublic({query: REPORT_PINS, variables: {orgId}, cookie})
   expect(res.errors).toBeUndefined()
-  const {reportPins} = res.data.viewer.organization
-  expect(reportPins.map(({title}: {title: string}) => title)).toEqual([
+  const {pinnedReports} = res.data.viewer.organization
+  expect(pinnedReports.map(({title}: {title: string}) => title)).toEqual([
     'Active users over time',
     'Meetings by type',
     'Discussions and tasks by meeting type',
     'Retrospective cadence'
   ])
-  for (const pin of reportPins) {
+  for (const pin of pinnedReports) {
     expect(pin.id).toContain(orgId)
     expect(parseReportSpec(JSON.parse(pin.spec))).toEqual(JSON.parse(pin.spec))
     expect(pin.report.rows.length).toBeGreaterThan(0)

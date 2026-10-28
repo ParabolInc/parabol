@@ -3,10 +3,10 @@ import getKysely from '../postgres/getKysely'
 import {sendPublic, signUp} from './common'
 
 const REPORT_PINS = `
-  query ReportPins($orgId: ID!) {
+  query PinnedReports($orgId: ID!) {
     viewer {
       organization(orgId: $orgId) {
-        reportPins {
+        pinnedReports {
           id
           title
           pinnedBy {
@@ -21,7 +21,7 @@ const REPORT_PINS = `
 const PIN_REPORT = `
   mutation PinReport($orgId: ID!, $spec: ReportSpecInput!, $title: String!, $reportQuestionId: ID) {
     pinReport(orgId: $orgId, spec: $spec, title: $title, reportQuestionId: $reportQuestionId) {
-      reportPin {
+      pinnedReport {
         id
         title
       }
@@ -33,7 +33,7 @@ const UNPIN_REPORT = `
   mutation UnpinReport($orgId: ID!, $pinId: ID!) {
     unpinReport(orgId: $orgId, pinId: $pinId) {
       organization {
-        reportPins {
+        pinnedReports {
           title
         }
       }
@@ -42,10 +42,10 @@ const UNPIN_REPORT = `
 `
 
 const MOVE_REPORT_PIN = `
-  mutation MoveReportPin($orgId: ID!, $pinId: ID!, $toIndex: Int!) {
-    moveReportPin(orgId: $orgId, pinId: $pinId, toIndex: $toIndex) {
+  mutation MovePinnedReport($orgId: ID!, $pinId: ID!, $toIndex: Int!) {
+    movePinnedReport(orgId: $orgId, pinId: $pinId, toIndex: $toIndex) {
       organization {
-        reportPins {
+        pinnedReports {
           title
         }
       }
@@ -99,7 +99,7 @@ const addMember = async (orgId: string) => {
 
 const pinsOf = async (orgId: string, cookie: string) => {
   const res = await sendPublic({query: REPORT_PINS, variables: {orgId}, cookie})
-  return res.data.viewer.organization.reportPins as {
+  return res.data.viewer.organization.pinnedReports as {
     id: string
     title: string
     pinnedBy: {id: string} | null
@@ -127,7 +127,7 @@ test('pinning a report that is already pinned keeps the one pin', async () => {
   const {orgId, cookie} = await signUpWithReports()
   const first = await pin(orgId, cookie, {spec: topTeams(5), title: 'Top 5 teams'})
   const again = await pin(orgId, cookie, {spec: topTeams(5), title: 'Same report'})
-  expect(again.data.pinReport.reportPin).toEqual(first.data.pinReport.reportPin)
+  expect(again.data.pinReport.pinnedReport).toEqual(first.data.pinReport.pinnedReport)
   expect(await pinsOf(orgId, cookie)).toHaveLength(BUILT_IN_TITLES.length + 1)
 })
 
@@ -149,7 +149,7 @@ test('a pin keeps the question it came from, so asks can be compared with pins',
   }
   await pin(orgId, cookie, {spec, title: 'Teams by last meeting', reportQuestionId})
   const row = await getKysely()
-    .selectFrom('ReportPin')
+    .selectFrom('PinnedReport')
     .select(['source', 'question', 'shape', 'popularQuestionId'])
     .where('orgId', '=', orgId)
     .where('isBuiltIn', '=', false)
@@ -173,7 +173,7 @@ test('someone else’s question doesn’t travel with a pin', async () => {
     reportQuestionId: started.data.startReportQuestion.reportQuestion.id
   })
   const row = await getKysely()
-    .selectFrom('ReportPin')
+    .selectFrom('PinnedReport')
     .select(['source', 'question', 'createdBy'])
     .where('orgId', '=', owner.orgId)
     .where('isBuiltIn', '=', false)
@@ -184,14 +184,14 @@ test('someone else’s question doesn’t travel with a pin', async () => {
 test('an unpinned report is kept as history', async () => {
   const {orgId, cookie, userId} = await signUpWithReports()
   const pinned = await pin(orgId, cookie, {spec: topTeams(10), title: 'Top 10 teams'})
-  const pinId = pinned.data.pinReport.reportPin.id
+  const pinId = pinned.data.pinReport.pinnedReport.id
   const res = await sendPublic({query: UNPIN_REPORT, variables: {orgId, pinId}, cookie})
   expect(res.errors).toBeUndefined()
   expect(
-    res.data.unpinReport.organization.reportPins.map(({title}: {title: string}) => title)
+    res.data.unpinReport.organization.pinnedReports.map(({title}: {title: string}) => title)
   ).toEqual(BUILT_IN_TITLES)
   const row = await getKysely()
-    .selectFrom('ReportPin')
+    .selectFrom('PinnedReport')
     .select(['removedAt', 'removedBy'])
     .where('orgId', '=', orgId)
     .where('title', '=', 'Top 10 teams')
@@ -215,7 +215,7 @@ test('only org admins and billing leaders pin and unpin reports', async () => {
   expect((await unpinAs(member.cookie)).errors).toBeTruthy()
   const byLeader = await unpinAs(owner.cookie)
   expect(byLeader.errors).toBeUndefined()
-  expect(byLeader.data.unpinReport.organization.reportPins[0].title).toBe('Meetings by type')
+  expect(byLeader.data.unpinReport.organization.pinnedReports[0].title).toBe('Meetings by type')
 })
 
 test('leaders move pins and members can’t', async () => {
@@ -232,7 +232,7 @@ test('leaders move pins and members can’t', async () => {
   const moved = await moveAs(owner.cookie)
   expect(moved.errors).toBeUndefined()
   expect(
-    moved.data.moveReportPin.organization.reportPins.map(({title}: {title: string}) => title)
+    moved.data.movePinnedReport.organization.pinnedReports.map(({title}: {title: string}) => title)
   ).toEqual([
     'Retrospective cadence',
     'Active users over time',

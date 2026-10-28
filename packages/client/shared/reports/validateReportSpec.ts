@@ -31,7 +31,7 @@ const ENUMERATED_FILTER_VALUES: Partial<Record<ReportDimension, readonly string[
 const describeCount = ([min, max]: readonly [number, number], noun: string) =>
   `${min === max ? min : `${min} to ${max}`} ${max === 1 ? noun : `${noun}s`}`
 
-// two levels of the team structure are different dimensions
+// two levels of the org structure are different dimensions
 export const toReportDimensionKey = ({
   dimension,
   levelId
@@ -68,7 +68,7 @@ export const validateReportSpec = (spec: ReportSpec): string | null => {
       ({dimension, levelId}) => dimension === 'TEAM_LEVEL' && !levelId
     )
   ) {
-    return 'TEAM_LEVEL needs the levelId of a team structure level'
+    return 'TEAM_LEVEL needs the levelId of an org structure level'
   }
   if (new Set(breakdown.map(toReportDimensionKey)).size !== breakdown.length) {
     return 'A breakdown can only be used once'
@@ -88,7 +88,7 @@ export const validateReportSpec = (spec: ReportSpec): string | null => {
 
   for (const {dimension, values} of filters) {
     if (isReportTimeDimension(dimension)) return 'Use the period to filter by time'
-    // a team or team structure filter narrows which teams are counted, so every measure takes one
+    // a team or org structure filter narrows which teams are counted, so every measure takes one
     const isTeamFilter = dimension === 'TEAM' || dimension === 'TEAM_LEVEL'
     const measure = !isTeamFilter && measures.find((m) => !isMeasureDimension(m, dimension))
     if (measure) return `${measure} can't be filtered by ${dimension}`

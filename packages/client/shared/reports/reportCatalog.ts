@@ -93,7 +93,7 @@ export interface ReportPeriod {
 
 export interface ReportSpec {
   measures: ReportMeasure[]
-  // levelId names the team structure level a TEAM_LEVEL breakdown or filter uses
+  // levelId names the org structure level a TEAM_LEVEL breakdown or filter uses
   breakdown: {dimension: ReportDimension; levelId?: string}[]
   filters: {dimension: ReportDimension; levelId?: string; values: string[]}[]
   where: {measure: ReportMeasure; operator: ReportConditionOperator; value: number}[]
@@ -314,12 +314,12 @@ export const REPORT_TASK_AGES = {
   over180Days: 'Over 180 days'
 } as const
 export const REPORT_NO_PERSON = 'none'
-// a team no one has placed at a value of a team structure level yet, and the one group a removed level lists
+// a team no one has placed at a value of an org structure level yet, and the one group a removed level lists
 export const REPORT_STRUCTURE_NOT_SET = 'notSet'
 export const REPORT_STRUCTURE_REMOVED = 'removed'
-export const MAX_TEAM_STRUCTURE_LEVELS = 5
-export const MAX_TEAM_STRUCTURE_VALUES = 100
-export const MAX_TEAM_STRUCTURE_NAME_LENGTH = 100
+export const MAX_ORG_STRUCTURE_LEVELS = 5
+export const MAX_ORG_STRUCTURE_VALUES = 100
+export const MAX_ORG_STRUCTURE_NAME_LENGTH = 100
 export const REPORT_STRUCTURE_LABELS = {
   [REPORT_STRUCTURE_NOT_SET]: 'Not set',
   [REPORT_STRUCTURE_REMOVED]: 'Removed level'

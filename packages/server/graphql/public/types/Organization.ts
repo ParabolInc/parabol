@@ -1,7 +1,7 @@
 import {GraphQLError} from 'graphql'
 import getKysely from '../../../postgres/getKysely'
+import {selectPinnedReports} from '../../../reports/pinnedReports'
 import readReportSpecInput from '../../../reports/readReportSpecInput'
-import {selectReportPins} from '../../../reports/reportPins'
 import runReport from '../../../reports/runReport'
 import selectPopularReportQuestions from '../../../reports/selectPopularReportQuestions'
 import {
@@ -85,13 +85,13 @@ const Organization: OrganizationResolvers = {
     })
   },
 
-  reportPins: ({id: orgId}) => selectReportPins(orgId),
-  teamStructure: async ({id: orgId}, _args, {dataLoader}) => {
+  pinnedReports: ({id: orgId}) => selectPinnedReports(orgId),
+  structure: async ({id: orgId}, _args, {dataLoader}) => {
     const hasReports = await dataLoader
       .get('featureFlagByOwnerId')
       .load({ownerId: orgId, featureName: 'Reports'})
     if (!hasReports) return []
-    const {levels} = await dataLoader.get('teamStructureByOrgId').load(orgId)
+    const {levels} = await dataLoader.get('orgStructureByOrgId').load(orgId)
     return levels
   },
 

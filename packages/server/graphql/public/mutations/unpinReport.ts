@@ -1,7 +1,7 @@
 import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import getKysely from '../../../postgres/getKysely'
-import {findReportPinRowId} from '../../../reports/reportPins'
+import {findPinnedReportRowId} from '../../../reports/pinnedReports'
 import {getUserId} from '../../../utils/authorization'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -14,10 +14,10 @@ const unpinReport: MutationResolvers['unpinReport'] = async (
   await getKysely()
     .transaction()
     .execute(async (trx) => {
-      const rowId = await findReportPinRowId(trx, orgId, pinId)
+      const rowId = await findPinnedReportRowId(trx, orgId, pinId)
       if (!rowId) throw new GraphQLError('That report isn’t pinned here')
       await trx
-        .updateTable('ReportPin')
+        .updateTable('PinnedReport')
         .set({removedAt: sql`CURRENT_TIMESTAMP`, removedBy: viewerId})
         .where('id', '=', rowId)
         .execute()

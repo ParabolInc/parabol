@@ -2,7 +2,7 @@ import {readReportSpec} from '../../client/shared/reports/parseReportSpec'
 import type {ReportSpec} from '../../client/shared/reports/reportCatalog'
 import {validateReportSpec} from '../../client/shared/reports/validateReportSpec'
 import buildReportAskPrompt from './buildReportAskPrompt'
-import type {ClientTeamStructureLevel} from './teamStructure'
+import type {ClientOrgStructureLevel} from './orgStructure'
 
 export interface ReportAskMessage {
   role: 'system' | 'user' | 'assistant'
@@ -16,7 +16,7 @@ export type CompleteReportAsk = (
 interface Options {
   question: string
   teams: {id: string; name: string}[]
-  levels: ClientTeamStructureLevel[]
+  levels: ClientOrgStructureLevel[]
   today: string
   timeZone: string
   complete: CompleteReportAsk

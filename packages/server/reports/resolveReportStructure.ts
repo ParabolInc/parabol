@@ -5,19 +5,19 @@ import {
   type ReportDimension,
   type ReportSpec
 } from '../../client/shared/reports/reportCatalog'
-import type {ReportMeasureResult, ReportQueryDimension} from './reportMeasureTypes'
 import {
   isLevelDimension,
+  type OrgStructure,
   REMOVED_LEVEL_DIMENSION,
   type ReportLevelDimension,
-  type TeamStructure,
   toLevelDimension,
   toLevelRowId,
-  toTeamStructureId,
-  toTeamStructureRowId
-} from './teamStructure'
+  toOrgStructureId,
+  toOrgStructureRowId
+} from './orgStructure'
+import type {ReportMeasureResult, ReportQueryDimension} from './reportMeasureTypes'
 
-const toValueId = (valueRowId: number) => toTeamStructureId(valueRowId, 'TeamStructureValue')
+const toValueId = (valueRowId: number) => toOrgStructureId(valueRowId, 'OrgStructureValue')
 
 // SQL names a value by its row, which the API names by its id
 const toClientKey = (key: string) => (key in REPORT_STRUCTURE_LABELS ? key : toValueId(Number(key)))
@@ -38,12 +38,12 @@ export const toClientLevelKeys = (
       }
     : result
 
-// The team structure levels a report splits and filters by. A breakdown on a removed level shows teams
+// The org structure levels a report splits and filters by. A breakdown on a removed level shows teams
 // instead, or one group when the report already splits by team. A filter on a removed level stops the
 // report, so its results never widen
-const resolveReportStructure = ({breakdown, filters}: ReportSpec, structure: TeamStructure) => {
+const resolveReportStructure = ({breakdown, filters}: ReportSpec, structure: OrgStructure) => {
   const levelOf = (levelId: string | undefined) => {
-    const rowId = levelId ? toTeamStructureRowId(levelId, 'TeamStructureLevel') : null
+    const rowId = levelId ? toOrgStructureRowId(levelId, 'OrgStructureLevel') : null
     return structure.levels.find(({id}) => id === rowId) ?? null
   }
   let isTeamUsed = breakdown.some(({dimension}) => dimension === 'TEAM')

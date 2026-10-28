@@ -12,7 +12,7 @@ enum ReportDimensionEnum {
   MONTH
   "Each team"
   TEAM
-  "Each value of a team structure level, like each business unit, named by levelId. Teams not placed yet are notSet"
+  "Each value of an org structure level, like each business unit, named by levelId. Teams not placed yet are notSet"
   TEAM_LEVEL
   "Each person: who owns a task, who joined a meeting, or the member last seen"
   PERSON

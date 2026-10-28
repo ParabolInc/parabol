@@ -12,13 +12,13 @@ const mutation = graphql`
     $pagePeriod: ReportPeriodInput!
   ) {
     pinReport(orgId: $orgId, spec: $spec, title: $title, reportQuestionId: $reportQuestionId) {
-      reportPin {
+      pinnedReport {
         id
         ...ReportCard_pin
       }
       organization {
         id
-        reportPins {
+        pinnedReports {
           id
           title
           spec

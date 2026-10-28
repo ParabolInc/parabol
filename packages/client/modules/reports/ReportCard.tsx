@@ -22,7 +22,7 @@ interface Props {
 const ReportCard = ({pinRef, orgId, period, index, pinCount, isLeader}: Props) => {
   const pin = useFragment(
     graphql`
-      fragment ReportCard_pin on ReportPin {
+      fragment ReportCard_pin on PinnedReport {
         id
         title
         pinnedBy {

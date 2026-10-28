@@ -1,19 +1,19 @@
 import {useRef, useState} from 'react'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import useSetTeamStructureMutation from '../../../../mutations/useSetTeamStructureMutation'
+import useSetOrgStructureMutation from '../../../../mutations/useSetOrgStructureMutation'
 import {
-  type TeamStructureEdit,
-  type TeamStructureLevelData,
-  toTeamStructureInput
-} from './teamStructureEdits'
+  type OrgStructureEdit,
+  type OrgStructureLevelData,
+  toOrgStructureInput
+} from './orgStructureEdits'
 
 // Saves edits one at a time, each on top of the structure the last save returned, so a quick second edit
 // can't send a structure that's missing the first. A failed save bumps failedSaveCount, which puts back
 // the names typed into the inputs
-const useTeamStructureEdits = (orgId: string, levels: readonly TeamStructureLevelData[]) => {
+const useOrgStructureEdits = (orgId: string, levels: readonly OrgStructureLevelData[]) => {
   const atmosphere = useAtmosphere()
-  const [execute] = useSetTeamStructureMutation()
-  const queuedEdits = useRef<TeamStructureEdit[]>([])
+  const [execute] = useSetOrgStructureMutation()
+  const queuedEdits = useRef<OrgStructureEdit[]>([])
   const isSaving = useRef(false)
   const [failedSaveCount, setFailedSaveCount] = useState(0)
   const stopSaving = (message: string) => {
@@ -21,30 +21,30 @@ const useTeamStructureEdits = (orgId: string, levels: readonly TeamStructureLeve
     isSaving.current = false
     setFailedSaveCount((count) => count + 1)
     atmosphere.eventEmitter.emit('addSnackbar', {
-      key: 'teamStructureError',
+      key: 'orgStructureError',
       message,
       autoDismiss: 5
     })
   }
-  const saveNext = (savedLevels: readonly TeamStructureLevelData[]) => {
+  const saveNext = (savedLevels: readonly OrgStructureLevelData[]) => {
     const edit = queuedEdits.current.shift()
     isSaving.current = !!edit
     if (!edit) return
     execute({
-      variables: {orgId, levels: edit(toTeamStructureInput(savedLevels))},
+      variables: {orgId, levels: edit(toOrgStructureInput(savedLevels))},
       onCompleted: (response, errors) => {
         const [error] = errors ?? []
         if (error) stopSaving(error.message)
-        else saveNext(response.setTeamStructure.organization.teamStructure)
+        else saveNext(response.setOrgStructure.organization.structure)
       },
       onError: (error) => stopSaving(error.message)
     })
   }
-  const commit = (edit: TeamStructureEdit) => {
+  const commit = (edit: OrgStructureEdit) => {
     queuedEdits.current.push(edit)
     if (!isSaving.current) saveNext(levels)
   }
   return [commit, failedSaveCount] as const
 }
 
-export default useTeamStructureEdits
+export default useOrgStructureEdits

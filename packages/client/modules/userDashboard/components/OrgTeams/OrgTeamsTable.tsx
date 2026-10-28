@@ -7,9 +7,9 @@ import OrgTeamPlacementMenu from './OrgTeamPlacementMenu'
 import OrgTeamsRow from './OrgTeamsRow'
 import OrgTeamsTableHeader from './OrgTeamsTableHeader'
 import OrgTeamsUnplacedBanner from './OrgTeamsUnplacedBanner'
+import {toPlacedValueIds} from './orgStructureEdits'
 import sortOrgTeams, {type OrgTeamsSortDirection, type OrgTeamsSortField} from './sortOrgTeams'
 import TeaserOrgTeamsRow from './TeaserOrgTeamsRow'
-import {toPlacedValueIds} from './teamStructureEdits'
 
 type Props = {
   organizationRef: OrgTeamsTable_organization$key
@@ -24,7 +24,7 @@ const OrgTeamsTable = (props: Props) => {
         tier
         isOrgAdmin
         isBillingLeader
-        teamStructure {
+        structure {
           id
           name
           values {
@@ -50,14 +50,7 @@ const OrgTeamsTable = (props: Props) => {
   const [sortBy, setSortBy] = useState<OrgTeamsSortField>('lastMetAt')
   const [sortDirection, setSortDirection] = useState<OrgTeamsSortDirection>('desc')
   const [isShowingUnplaced, setIsShowingUnplaced] = useState(false)
-  const {
-    teams,
-    allTeamsCount,
-    tier,
-    isOrgAdmin,
-    isBillingLeader,
-    teamStructure: levels
-  } = organization
+  const {teams, allTeamsCount, tier, isOrgAdmin, isBillingLeader, structure: levels} = organization
   const placedValueIds = toPlacedValueIds(levels)
   const isUnplaced = (teamId: string) =>
     levels.some((level) => !placedValueIds.get(level.id)?.has(teamId))

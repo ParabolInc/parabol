@@ -28,7 +28,7 @@ const ReportSpecEditor = ({organizationRef, spec, step, onChange}: Props) => {
   const organization = useFragment(
     graphql`
       fragment ReportSpecEditor_organization on Organization {
-        teamStructure {
+        structure {
           id
           name
           values {
@@ -59,7 +59,7 @@ const ReportSpecEditor = ({organizationRef, spec, step, onChange}: Props) => {
   const teams = (organization?.reportTeams.rows ?? []).flatMap(({keys}) =>
     keys[0] ? [{id: keys[0].value, name: keys[0].label}] : []
   )
-  const levels = organization?.teamStructure ?? []
+  const levels = organization?.structure ?? []
   const editsOf = (edit: ReportSpecChipEdit) => {
     switch (edit.kind) {
       case 'measure':

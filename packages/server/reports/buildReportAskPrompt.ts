@@ -6,7 +6,7 @@ import {
   REPORT_VALUE_LABELS,
   type ReportDimension
 } from '../../client/shared/reports/reportCatalog'
-import type {ClientTeamStructureLevel} from './teamStructure'
+import type {ClientOrgStructureLevel} from './orgStructure'
 
 const DIMENSIONS: Record<ReportDimension, string> = {
   TIME: 'time, stepping by day up to a month, by week up to 6 months, then by month',
@@ -14,7 +14,7 @@ const DIMENSIONS: Record<ReportDimension, string> = {
   WEEK: 'each week, starting on Monday',
   MONTH: 'each month',
   TEAM: 'each team; its values are team ids',
-  TEAM_LEVEL: 'a level of the team structure below, like business unit, named by levelId',
+  TEAM_LEVEL: 'a level of the org structure below, like business unit, named by levelId',
   PERSON: 'each person: who owns a task, who joined a meeting, or each member for LAST_SEEN',
   MEETING_TYPE: 'the type of meeting something happened in',
   TEMPLATE: 'the template of the meeting something happened in',
@@ -41,7 +41,7 @@ const MAX_TEAMS = 200
 
 interface Options {
   teams: {id: string; name: string}[]
-  levels: ClientTeamStructureLevel[]
+  levels: ClientOrgStructureLevel[]
   // today's date where the viewer is, as YYYY-MM-DD
   today: string
   timeZone: string

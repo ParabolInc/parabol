@@ -1,26 +1,26 @@
 import {CipherId} from '../utils/CipherId'
 
-export interface TeamStructureValueSource {
+export interface OrgStructureValueSource {
   id: number
   orgId: string
   levelId: number
   name: string
 }
 
-export interface TeamStructureLevelSource {
+export interface OrgStructureLevelSource {
   id: number
   orgId: string
   name: string
-  values: TeamStructureValueSource[]
+  values: OrgStructureValueSource[]
 }
 
-export interface TeamStructure {
+export interface OrgStructure {
   // widest first
-  levels: TeamStructureLevelSource[]
+  levels: OrgStructureLevelSource[]
   placements: {teamId: string; levelId: number; valueId: number}[]
 }
 
-// A team structure level as the engine splits by it, keyed by the level's row. Level 0 is one that was removed
+// An org structure level as the engine splits by it, keyed by the level's row. Level 0 is one that was removed
 // while a report still splits by it, which puts every row in one group
 export type ReportLevelDimension = `level:${number}`
 export const REMOVED_LEVEL_DIMENSION: ReportLevelDimension = 'level:0'
@@ -34,26 +34,26 @@ export const isLevelDimension = <T extends string>(
 export const toLevelRowId = (dimension: ReportLevelDimension) =>
   Number(dimension.slice('level:'.length))
 
-type TeamStructureEntity = 'TeamStructureLevel' | 'TeamStructureValue'
+type OrgStructureEntity = 'OrgStructureLevel' | 'OrgStructureValue'
 
-export const toTeamStructureId = (rowId: number, entity: TeamStructureEntity) =>
+export const toOrgStructureId = (rowId: number, entity: OrgStructureEntity) =>
   CipherId.toClient(rowId, entity)
 
 // a level and its values with the ids the API uses, for anything outside the engine, like AI
-export const toClientTeamStructureLevels = (levels: TeamStructureLevelSource[]) =>
+export const toClientOrgStructureLevels = (levels: OrgStructureLevelSource[]) =>
   levels.map(({id, name, values}) => ({
-    id: toTeamStructureId(id, 'TeamStructureLevel'),
+    id: toOrgStructureId(id, 'OrgStructureLevel'),
     name,
     values: values.map((value) => ({
-      id: toTeamStructureId(value.id, 'TeamStructureValue'),
+      id: toOrgStructureId(value.id, 'OrgStructureValue'),
       name: value.name
     }))
   }))
 
-export type ClientTeamStructureLevel = ReturnType<typeof toClientTeamStructureLevels>[number]
+export type ClientOrgStructureLevel = ReturnType<typeof toClientOrgStructureLevels>[number]
 
 // null for an id that isn't one of these, so a mangled id is a missing level rather than a query error
-export const toTeamStructureRowId = (clientId: string, entity: TeamStructureEntity) => {
+export const toOrgStructureRowId = (clientId: string, entity: OrgStructureEntity) => {
   const [rowId, , idEntity] = CipherId.fromClient(clientId)
   return idEntity === entity && Number.isInteger(rowId) ? rowId : null
 }

@@ -56,14 +56,14 @@ const permissionMap: PermissionMap<Resolvers> = {
       or(isSuperUser, isViewerBillingLeader<'Mutation.unpinReport'>('args.orgId')),
       hasOrgFeatureFlag<'Mutation.unpinReport'>('args.orgId', 'Reports')
     ),
-    setTeamStructure: and(
-      or(isSuperUser, isViewerBillingLeader<'Mutation.setTeamStructure'>('args.orgId')),
-      hasOrgFeatureFlag<'Mutation.setTeamStructure'>('args.orgId', 'Reports')
+    setOrgStructure: and(
+      or(isSuperUser, isViewerBillingLeader<'Mutation.setOrgStructure'>('args.orgId')),
+      hasOrgFeatureFlag<'Mutation.setOrgStructure'>('args.orgId', 'Reports')
     ),
     placeTeam: or(isSuperUser, isViewerBillingLeader<'Mutation.placeTeam'>('args.teamId', 'teams')),
-    moveReportPin: and(
-      or(isSuperUser, isViewerBillingLeader<'Mutation.moveReportPin'>('args.orgId')),
-      hasOrgFeatureFlag<'Mutation.moveReportPin'>('args.orgId', 'Reports')
+    movePinnedReport: and(
+      or(isSuperUser, isViewerBillingLeader<'Mutation.movePinnedReport'>('args.orgId')),
+      hasOrgFeatureFlag<'Mutation.movePinnedReport'>('args.orgId', 'Reports')
     ),
     startReportQuestion: and(
       or(isSuperUser, isViewerOnOrg<'Mutation.startReportQuestion'>('args.orgId')),
@@ -500,9 +500,9 @@ const permissionMap: PermissionMap<Resolvers> = {
       hasOrgFeatureFlag<'Organization.report'>('source.id', 'Reports'),
       rateLimit({perMinute: 120, perHour: 3000})
     ),
-    reportPins: and(
-      or(isSuperUser, isViewerOnOrg<'Organization.reportPins'>('source.id')),
-      hasOrgFeatureFlag<'Organization.reportPins'>('source.id', 'Reports')
+    pinnedReports: and(
+      or(isSuperUser, isViewerOnOrg<'Organization.pinnedReports'>('source.id')),
+      hasOrgFeatureFlag<'Organization.pinnedReports'>('source.id', 'Reports')
     ),
     popularReportQuestions: and(
       or(isSuperUser, isViewerOnOrg<'Organization.popularReportQuestions'>('source.id')),
@@ -521,7 +521,7 @@ const permissionMap: PermissionMap<Resolvers> = {
       isOrgTier<'Organization.samls'>('source.id', 'enterprise')
     )
   },
-  ReportPin: {
+  PinnedReport: {
     report: rateLimit({perMinute: 120, perHour: 3000})
   },
   RetroReflectionGroup: {

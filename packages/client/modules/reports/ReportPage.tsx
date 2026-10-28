@@ -30,7 +30,7 @@ const query = graphql`
   ) {
     viewer {
       organization(orgId: $orgId) {
-        teamStructure {
+        structure {
           id
           name
         }
@@ -53,7 +53,7 @@ const ReportPage = ({
 }: Props) => {
   const {viewer} = usePreloadedQuery<ReportPageQuery>(query, queryRef)
   const {organization} = viewer
-  const levels = organization?.teamStructure ?? []
+  const levels = organization?.structure ?? []
   const name = title ?? describeReportSpec(spec, levels)
   useDocumentTitle(`${name} | Reports | Parabol`, 'Reports')
   return (
