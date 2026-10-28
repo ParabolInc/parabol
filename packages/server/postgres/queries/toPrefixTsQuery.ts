@@ -1,6 +1,6 @@
 const MAX_TOKENS = 8
 const MIN_TOKEN_LENGTH = 2
-const TURKISH_DOTTED_I = /i̇/g
+const TURKISH_DOTTED_I = /i\u0307/g
 
 export const toPrefixTsQuery = (query: string) => {
   const lowercased = query.toLowerCase().replace(TURKISH_DOTTED_I, 'i')
