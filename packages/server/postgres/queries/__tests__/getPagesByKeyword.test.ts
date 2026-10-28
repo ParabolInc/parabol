@@ -1,3 +1,5 @@
+import {sql} from 'kysely'
+import {pagePrefixTsQuery} from '../../expressions'
 import getKysely from '../../getKysely'
 import {getPagesByKeyword, type PageKeywordSearchParams} from '../getPagesByKeyword'
 
@@ -46,6 +48,7 @@ let firstTiedPageId: number
 let secondTiedPageId: number
 let earlierShortOffsiteId: number
 let laterLongOffsiteId: number
+let compoundWordsId: number
 
 beforeAll(async () => {
   await pg
@@ -99,7 +102,13 @@ beforeAll(async () => {
     plaintextContent: Array.from({length: 300}, (_, i) => `detail${i}`).join(' '),
     updatedAt: new Date('2026-10-15T12:00:00Z')
   })
+  compoundWordsId = await insertPage({
+    title: 'Release checklist',
+    plaintextContent:
+      'Email ops@parabol.co about the parabol.co status page before shipping v1.2.3 on 2026-10-26.'
+  })
   const viewerPageIds = [
+    compoundWordsId,
     standupNotesId,
     meetingSummariesId,
     onboardingChecklistId,
@@ -149,6 +158,59 @@ const keywordSearch = (query: string, overrides: Partial<PageKeywordSearchParams
 
 const ids = async (query: string, overrides?: Partial<PageKeywordSearchParams>) =>
   (await keywordSearch(query, overrides)).edges.map(({nodeId}) => nodeId)
+
+describe('turns the query into prefix terms', () => {
+  const terms = async (query: string) => {
+    const {rows} = await sql<{
+      terms: string | null
+    }>`select ${pagePrefixTsQuery(query)}::text as terms`.execute(pg)
+    return rows[0]!.terms
+  }
+
+  it.each([
+    ['retro notes', "'retro':* & 'notes':*"],
+    ['Retr', "'retr':*"],
+    ['retro retro', "'retro':*"],
+    [`'"); DROP & | !:*`, "'drop':*"],
+    ['会議 メモ', "'会議':* & 'メモ':*"],
+    [
+      'one two three four five six seven eight nine',
+      "'one':* & 'two':* & 'three':* & 'four':* & 'five':* & 'six':* & 'seven':* & 'eight':*"
+    ],
+    ['हिंदी', "'हिंदी':*"],
+    ['नमस्ते दुनिया', "'नमस्ते':* & 'दुनिया':*"],
+    ['ค้นหา', "'ค้นหา':*"],
+    ['İstanbul', "'istanbul':*"],
+    ['parabol.co', "'parabol.co':*"],
+    ['jordan@parabol.co', "'jordan@parabol.co':*"],
+    ['v1.2', "'v1.2':*"],
+    ['2026-10-26', "'2026':* & '-10':* & '-26':*"],
+    ['follow-up', "'follow-up':* & 'follow':* & 'up':*"],
+    ['C:\\temp\\notes.txt', null]
+  ])('turns %p into %p', async (query, expected) => {
+    if (expected === null) {
+      await expect(terms(query)).resolves.toEqual(expect.any(String))
+      return
+    }
+    await expect(terms(query)).resolves.toBe(expected)
+  })
+
+  it.each(['', '   ', 'a b', '𠮷'])('gives no terms for %p', async (query) =>
+    expect(await terms(query)).toBeNull()
+  )
+})
+
+it('matches compound words as typed', async () => {
+  expect(await ids('parabol')).toEqual([compoundWordsId])
+  expect(await ids('2026-10')).toEqual([compoundWordsId])
+  expect(await ids('v1.2')).toEqual([compoundWordsId])
+  expect(await ids('ops@parabol.co')).toEqual([compoundWordsId])
+})
+
+it("never returns another user's page", async () => expect(await ids('secret')).toEqual([]))
+
+it('never returns a trashed page, even one the viewer can open', async () =>
+  expect(await ids('deleted')).toEqual([]))
 
 it('puts title matches before body-only matches', async () =>
   expect(await ids('standup')).toEqual([standupNotesId, meetingSummariesId]))
@@ -249,3 +311,160 @@ it('accepts an open-ended date range', async () =>
       }
     })
   ).toEqual([laterWeeklySyncId]))
+
+describe('matches a plain reference query', () => {
+  const refSuffix = `pbk-ref-${Date.now()}`
+  const refViewerId = `ref-viewer-${refSuffix}`
+  const refOtherUserId = `ref-other-${refSuffix}`
+  const refOrgId = `ref-org-${refSuffix}`
+  const refTeamIds = [`ref-a-${refSuffix}`, `ref-b-${refSuffix}`, `ref-c-${refSuffix}`] as const
+  const vocabulary = [
+    'retro',
+    'retrospective',
+    'roadmap',
+    'standup',
+    'planning',
+    'plan',
+    'budget',
+    'launch',
+    'review',
+    'sync'
+  ]
+  const updatedAtChoices = [
+    new Date('2026-09-01T12:00:00Z'),
+    new Date('2026-09-15T12:00:00Z'),
+    new Date('2026-10-01T12:00:00Z')
+  ]
+
+  const seededRandom = (seed: number) => () => {
+    seed = (seed + 0x6d2b79f5) | 0
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed)
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
+  const random = seededRandom(13776)
+  const pick = <T>(items: readonly T[]) => items[Math.floor(random() * items.length)]!
+  const words = (min: number, max: number) =>
+    Array.from({length: min + Math.floor(random() * (max - min + 1))}, () => pick(vocabulary)).join(
+      ' '
+    )
+
+  beforeAll(async () => {
+    await pg
+      .insertInto('User')
+      .values([
+        makeUser(refViewerId, 'Reference Viewer'),
+        makeUser(refOtherUserId, 'Reference Other')
+      ])
+      .execute()
+    await pg.insertInto('Organization').values({id: refOrgId, name: 'Reference Org'}).execute()
+    await pg
+      .insertInto('Team')
+      .values(refTeamIds.map((id) => ({id, name: id, orgId: refOrgId})))
+      .execute()
+    const seeds = Array.from({length: 120}, () => ({
+      title: words(1, 3),
+      plaintextContent: random() < 0.2 ? '' : words(0, 40),
+      updatedAt: pick(updatedAtChoices),
+      deletedAt: random() < 0.1 ? new Date() : null,
+      userId: random() < 0.15 ? refOtherUserId : refViewerId
+    }))
+    const pages = await pg
+      .insertInto('Page')
+      .values(seeds.map((seed) => ({...seed, sortOrder: 'a0'})))
+      .returning(['id', 'userId'])
+      .execute()
+    await pg
+      .insertInto('PageAccess')
+      .values(pages.map(({id, userId}) => ({userId, pageId: id, role: 'owner' as const})))
+      .execute()
+    const teamShares = pages.flatMap(({id}) =>
+      refTeamIds
+        .filter(() => random() < 0.3)
+        .map((teamId) => ({pageId: id, teamId, role: 'editor' as const}))
+    )
+    await pg.insertInto('PageTeamAccess').values(teamShares).execute()
+  })
+
+  afterAll(async () => {
+    await pg.deleteFrom('Team').where('orgId', '=', refOrgId).execute()
+    await pg.deleteFrom('Organization').where('id', '=', refOrgId).execute()
+    await pg.deleteFrom('User').where('id', 'in', [refViewerId, refOtherUserId]).execute()
+  })
+
+  const referenceSearch = async ({
+    query,
+    first,
+    teamIds,
+    dateRange
+  }: Omit<PageKeywordSearchParams, 'viewerId'>) => {
+    const prefixQuery = query
+      .split(' ')
+      .map((word) => `${word}:*`)
+      .join(' & ')
+    const searchText = sql`setweight(to_tsvector('simple', coalesce(p.title, '')), 'A') || setweight(to_tsvector('simple', left(coalesce(p."plaintextContent", ''), 100000)), 'D')`
+    const teamFilter = teamIds
+      ? sql`exists (select 1 from "PageTeamAccess" t where t."pageId" = p.id and t."teamId" in (${sql.join(teamIds)}))`
+      : sql`true`
+    const dateFilter = dateRange
+      ? sql`p.${sql.ref(dateRange.dateField)} between ${dateRange.startAt} and ${dateRange.endAt}`
+      : sql`true`
+    const {rows} = await sql<{id: number; score: number}>`
+      select p.id, ts_rank_cd(${searchText}, q, 0)::float8 as score
+      from "Page" p, to_tsquery('simple', ${prefixQuery}) q
+      where exists (select 1 from "PageAccess" a where a."pageId" = p.id and a."userId" = ${refViewerId})
+        and p."deletedAt" is null
+        and (${searchText}) @@ q
+        and ${teamFilter}
+        and ${dateFilter}
+      order by to_tsvector('simple', coalesce(p.title, '')) @@ q desc, score desc, p."updatedAt" desc, p.id desc
+      limit ${first}
+    `.execute(pg)
+    return rows.map(({id, score}) => ({id, score}))
+  }
+
+  type SearchCase = Omit<PageKeywordSearchParams, 'viewerId'>
+  const unfiltered = (query: string, first = 100): SearchCase => ({
+    query,
+    first,
+    teamIds: undefined,
+    dateRange: null
+  })
+  const cases: [string, SearchCase][] = [
+    ...[...vocabulary, 'ret', 'pla', 'retro plan', 'standup review sync', 'budget launch'].map(
+      (query): [string, SearchCase] => [query, unfiltered(query)]
+    ),
+    ...['retro', 'plan', 'sync'].map((query): [string, SearchCase] => [
+      `${query}, first 5`,
+      unfiltered(query, 5)
+    ]),
+    ...['retro', 'roadmap'].map((query): [string, SearchCase] => [
+      `${query}, two teams`,
+      {...unfiltered(query), teamIds: [refTeamIds[0], refTeamIds[2]]}
+    ]),
+    ...(['updatedAt', 'createdAt'] as const).map((dateField): [string, SearchCase] => [
+      `review, ${dateField} range`,
+      {
+        ...unfiltered('review'),
+        dateRange: {
+          startAt: new Date('2026-09-10T00:00:00Z'),
+          endAt: new Date('2026-10-10T00:00:00Z'),
+          dateField
+        }
+      }
+    ])
+  ]
+
+  it.each(cases)('for %s', async (_label, searchCase) => {
+    const expected = await referenceSearch(searchCase)
+    const {edges} = await getPagesByKeyword({...searchCase, viewerId: refViewerId})
+    expect(edges.map(({nodeId, score}) => ({id: nodeId, score: score.keyword}))).toEqual(expected)
+    expect(edges.map(({score}) => score.keywordRank)).toEqual(expected.map((_, i) => i + 1))
+  })
+
+  it('covers non-trivial cases', async () => {
+    const results = await Promise.all(cases.map(([, searchCase]) => referenceSearch(searchCase)))
+    expect(results.filter((rows) => rows.length > 0).length).toBeGreaterThan(cases.length / 2)
+    expect(results.some((rows) => rows.length === 5)).toBe(true)
+  })
+})

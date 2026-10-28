@@ -1,8 +1,7 @@
 import {sql} from 'kysely'
 import type {SearchResultEdgeSource} from '../../graphql/public/types/SearchResultEdge'
-import {pageSearchTsv, pageTitleTsv, RRF_K} from '../expressions'
+import {pagePrefixTsQuery, pageSearchTsv, pageTitleTsv, RRF_K} from '../expressions'
 import getKysely from '../getKysely'
-import {toPrefixTsQuery} from './toPrefixTsQuery'
 
 export interface PageKeywordSearchParams {
   query: string
@@ -30,14 +29,17 @@ export const getPagesByKeyword = async ({
   dateRange
 }: PageKeywordSearchParams): Promise<PageSearchResults> => {
   const pageInfo = {hasNextPage: false, hasPreviousPage: false, startCursor: null, endCursor: null}
-  const prefixQuery = toPrefixTsQuery(query)
-  if (!prefixQuery) return {pageInfo, edges: []}
-  const tsQuery = sql<string>`to_tsquery('simple', ${prefixQuery})`
+  const tsQuery = sql.ref<string>('st.terms')
   const rows = await getKysely()
+    // search terms: the query split into words the same way page text is, each word a required prefix
+    .with('SearchTerms', (qb) => qb.selectNoFrom(pagePrefixTsQuery(query).as('terms')))
     .with('Matches', (qb) =>
       qb
+        // who can see what: a `PageAccess` join on `viewerId`, plus `deletedAt` is null
         .selectFrom('PageAccess as pa')
         .innerJoin('Page as p', 'p.id', 'pa.pageId')
+        .crossJoin('SearchTerms as st')
+        // search text: title (weight A) plus the first 100k characters of the body (weight D), built once per page
         .crossJoinLateral((eb) =>
           qb
             .selectNoFrom(
@@ -49,7 +51,9 @@ export const getPagesByKeyword = async ({
         )
         .where('pa.userId', '=', viewerId)
         .where('p.deletedAt', 'is', null)
+        // matching: the page's search text contains every term
         .where((eb) => eb('s.searchTsv', '@@', tsQuery))
+        // team filter: EXISTS so a page shared with several requested teams appears once
         .$if(!!teamIds, (qb) =>
           qb.where((eb) =>
             eb.exists(
@@ -61,6 +65,7 @@ export const getPagesByKeyword = async ({
             )
           )
         )
+        // date filter: createdAt or updatedAt within the requested range
         .$if(!!dateRange, (qb) =>
           qb.where((eb) =>
             eb.between(`p.${dateRange!.dateField}`, dateRange!.startAt, dateRange!.endAt)
@@ -74,14 +79,17 @@ export const getPagesByKeyword = async ({
             'keywordScore'
           )
         ])
+        // ordering: title matches first, then rank, then most recently updated, then id for stable ties
         .orderBy('titleMatch', 'desc')
         .orderBy('keywordScore', 'desc')
         .orderBy('p.updatedAt', 'desc')
         .orderBy('p.id', 'desc')
         .limit(first)
     )
+    // output: each page's position in that order, plus a highlighted snippet from the first 20k characters
     .selectFrom('Matches as m')
     .innerJoin('Page as p', 'p.id', 'm.id')
+    .crossJoin('SearchTerms as st')
     .select((eb) => [
       'm.id',
       'm.keywordScore',
@@ -94,6 +102,7 @@ export const getPagesByKeyword = async ({
     ])
     .orderBy('keywordRank')
     .execute()
+  // result shape: keyword-only scores in the same shape fused results use, on a single page
   return {
     pageInfo,
     edges: rows.map(({id, keywordScore, keywordRank, snippet}) => ({
