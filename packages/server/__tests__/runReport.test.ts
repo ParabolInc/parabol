@@ -1,5 +1,6 @@
 import ms from 'ms'
-import type {ReportSpec} from '../../client/shared/reports/reportCatalog'
+import {parseReportSpec} from '../../client/shared/reports/parseReportSpec'
+import {REPORT_HIDDEN_VALUE, type ReportSpec} from '../../client/shared/reports/reportCatalog'
 import {getNewDataLoader} from '../dataloader/getNewDataLoader'
 import getKysely from '../postgres/getKysely'
 import {toOrgStructureKey} from '../reports/orgStructure'
@@ -651,9 +652,12 @@ const report = async (
 ) => {
   const dataLoader = getNewDataLoader('runReportTest')
   try {
+    // the resolvers parse a spec before running it, so a spec that breaks a rule never gets here
+    const {spec, problem} = parseReportSpec({...baseSpec, ...overrides})
+    if (!spec) throw new Error(problem)
     return await runReport({
       orgId,
-      spec: {...baseSpec, ...overrides},
+      spec,
       timeZone,
       pagePeriod: null,
       viewerId,
@@ -1048,7 +1052,12 @@ describe('team health', () => {
 
   test('each team’s latest check in the period is read, and a check fewer than 3 answered is hidden', async () => {
     const result = await report({...lastMonth, ...byTeam}, asLeader)
-    expect(byLabel(result)).toEqual({Harbor: 3.5, Heath: 4.4, Hill: null, Hollow: null})
+    expect(byLabel(result)).toEqual({
+      Harbor: 3.5,
+      Heath: 4.4,
+      Hill: REPORT_HIDDEN_VALUE,
+      Hollow: null
+    })
     expect(result.notes).toEqual([{kind: 'HIDDEN_FOR_ANONYMITY', count: 1}])
   })
 
@@ -1118,7 +1127,7 @@ describe('team health', () => {
   test('answers count when results were revealed, leaving out hidden checks', async () => {
     expect(
       byLabel(await report({...lastMonth, measures: ['HEALTH_ANSWERS'], ...byTeam}, asLeader))
-    ).toEqual({Harbor: 6, Heath: 5, Hill: 0, Hollow: 0})
+    ).toEqual({Harbor: 6, Heath: 5, Hill: REPORT_HIDDEN_VALUE, Hollow: 0})
   })
 
   test('previous check only compares health scores, and not over time', async () => {

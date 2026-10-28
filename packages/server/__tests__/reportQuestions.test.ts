@@ -8,12 +8,6 @@ const REPORT_QUESTIONS = `
   query ReportQuestions($orgId: ID!) {
     viewer {
       organization(orgId: $orgId) {
-        popularReportQuestions {
-          key
-          subject
-          question
-          spec
-        }
         recentReportQuestions {
           id
           source
@@ -83,16 +77,11 @@ const recentTitles = async (orgId: string, cookie: string) => {
 const start = (orgId: string, cookie: string, variables: Record<string, string>) =>
   sendPublic({query: START_REPORT_QUESTION, variables: {orgId, ...variables}, cookie})
 
-test('the popular questions come in order, each with a spec', async () => {
+test('a new viewer has no recent questions', async () => {
   const {orgId, cookie} = await signUpWithReports()
   const res = await sendPublic({query: REPORT_QUESTIONS, variables: {orgId}, cookie})
   expect(res.errors).toBeUndefined()
-  const {popularReportQuestions, recentReportQuestions} = res.data.viewer.organization
-  expect(popularReportQuestions[0]).toMatchObject({key: 'activePeopleOverTime', subject: 'people'})
-  expect(popularReportQuestions.every(({spec}: {spec: string}) => JSON.parse(spec).showAs)).toBe(
-    true
-  )
-  expect(recentReportQuestions).toEqual([])
+  expect(res.data.viewer.organization.recentReportQuestions).toEqual([])
 })
 
 test('a picked popular question goes first in recent questions, and picking it again counts a use', async () => {

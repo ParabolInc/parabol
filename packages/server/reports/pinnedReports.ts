@@ -28,8 +28,14 @@ export const toPinnedReportKey = ({orgId, id, builtInKey}: PinnedReportSource) =
     ? `${BUILT_IN_PIN_PREFIX}:${orgId}:${builtInKey}`
     : CipherId.toClient(id, 'PinnedReport')
 
-const BUILT_IN_PINS = POPULAR_REPORT_QUESTIONS.flatMap(({defaultPinSortOrder, ...question}) =>
-  defaultPinSortOrder === undefined ? [] : [{...question, defaultPinSortOrder}]
+// parsed like a stored spec, so a built-in pin reads the same before and after the org copies it
+const BUILT_IN_PINS = POPULAR_REPORT_QUESTIONS.flatMap(
+  ({defaultPinSortOrder, spec, ...question}) => {
+    const parsedSpec = parseReportSpec(spec).spec
+    return defaultPinSortOrder === undefined || !parsedSpec
+      ? []
+      : [{...question, spec: parsedSpec, defaultPinSortOrder}]
+  }
 ).sort((a, b) => a.defaultPinSortOrder - b.defaultPinSortOrder)
 
 // An org shows the built-in pins until someone pins, unpins or moves one; from then on it shows its own
