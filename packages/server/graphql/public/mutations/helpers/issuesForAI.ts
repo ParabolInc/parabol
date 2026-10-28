@@ -57,6 +57,9 @@ export const formatIssuesForAI = (items: InspirationIssue[], ids?: string[]): st
       const lines = [`### ${id ? `[${id}] ` : ''}${item.kind}: ${item.title} (${item.reference})`]
       if (item.subtitle) lines.push(item.subtitle)
       if (item.status) lines.push(`Status: ${item.status}`)
+      if (item.updatedAt && !Number.isNaN(item.updatedAt.getTime())) {
+        lines.push(`Date: ${item.updatedAt.toISOString().slice(0, 10)}`)
+      }
       lines.push(item.url, body)
       if (thread) lines.push(`Thread:\n${thread}`)
       return lines.join('\n')

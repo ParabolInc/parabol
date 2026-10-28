@@ -86,6 +86,7 @@ export class TextEmbeddingsInference extends AbstractEmbeddingsModel {
     return data
   }
   public async getEmbedding(content: string, retries = 5): Promise<number[] | Error> {
+    if (!content.trim()) return new Error('Cannot embed blank text')
     const {data, error, response} = await this.client.POST('/embed', {
       body: {inputs: content}
     })

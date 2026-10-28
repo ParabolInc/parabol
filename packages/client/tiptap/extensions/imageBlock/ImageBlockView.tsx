@@ -1,12 +1,29 @@
 import {type NodeViewProps, NodeViewWrapper} from '@tiptap/react'
 import {useCallback, useRef, useState} from 'react'
-import {BrokenImage as BrokenImageIcon} from '~/ui/icons'
 import {useBlockResizer} from '../../../hooks/useBlockResizer'
+import {useSignInAndReturn} from '../../../hooks/useSignInAndReturn'
+import {Button} from '../../../ui/Button/Button'
 import {cn} from '../../../ui/cn'
 import {useEmbedNewUserAsset} from '../fileBlock/useEmbedNewUserAsset'
 import {BlockResizer} from './BlockResizer'
 import type {ImageBlockAttrs} from './ImageBlock'
 import {ImageBlockBubbleMenu} from './ImageBlockBubbleMenu'
+import {ImageBlockPlaceholder} from './ImageBlockPlaceholder'
+
+const NOTICES = {
+  signIn: {
+    title: 'Sign in to add images',
+    description: "Others won't see this image until a signed-in editor adds it."
+  },
+  embedError: {
+    title: "Image couldn't be embedded",
+    description: 'The source requires authentication or is behind a firewall.'
+  },
+  external: {
+    title: 'External image',
+    description: "Images from other sites aren't loaded automatically."
+  }
+}
 
 export const ImageBlockView = (props: NodeViewProps) => {
   const {editor, getPos, node, updateAttributes, selected} = props
@@ -16,7 +33,13 @@ export const ImageBlockView = (props: NodeViewProps) => {
   const alignClass =
     align === 'left' ? 'justify-start' : align === 'right' ? 'justify-end' : 'justify-center'
   const {scopeKey, assetScope} = editor.extensionStorage.fileUpload
-  const {isHosted, embedError} = useEmbedNewUserAsset(src, scopeKey, assetScope, editor)
+  const {isPending, embedError, isSignInRequired, isBlocked} = useEmbedNewUserAsset(
+    src,
+    scopeKey,
+    assetScope,
+    editor
+  )
+  const signIn = useSignInAndReturn()
   const onClick = useCallback(() => {
     const pos = getPos()
     if (!pos) return
@@ -29,59 +52,46 @@ export const ImageBlockView = (props: NodeViewProps) => {
   )
 
   const aspectRatioRef = useRef(1)
-  const {onMouseDown} = useBlockResizer(
-    width,
+  const {onPointerDown} = useBlockResizer(
     (attrs) => updateAttributes({...attrs, isFullWidth: false}),
-    aspectRatioRef,
-    editor.view.dom.getBoundingClientRect().width || editor.storage.imageBlock.editorWidth
+    editor.view.dom.getBoundingClientRect().width || editor.storage.imageBlock.editorWidth,
+    aspectRatioRef
   )
-  const onMouseDownLeft = onMouseDown('left')
-  const onMouseDownRight = onMouseDown('right')
+  const onPointerDownLeft = onPointerDown('left')
+  const onPointerDownRight = onPointerDown('right')
 
-  const isLoading = !isHosted && !embedError
-
-  if (embedError) {
-    let displayUrl = src
-    try {
-      const parsed = new URL(src)
-      displayUrl = parsed.hostname + parsed.pathname
-    } catch {
-      // keep raw src
-    }
-    const isSafeUrl = /^https?:\/\//i.test(src)
+  const notice = isSignInRequired
+    ? NOTICES.signIn
+    : embedError
+      ? NOTICES.embedError
+      : isBlocked
+        ? NOTICES.external
+        : null
+  if (notice) {
     return (
       <NodeViewWrapper>
         <div className={cn('flex', alignClass)}>
-          <div
-            contentEditable={false}
+          <ImageBlockPlaceholder
+            src={src}
             onClick={onClick}
-            className='w-full rounded-md border border-hairline bg-surface-raised px-4 py-3'
-          >
-            <div className='flex items-start gap-3'>
-              <div className='flex size-10 shrink-0 items-center justify-center rounded-md bg-surface-well'>
-                <BrokenImageIcon className='size-5 text-fg-muted' />
-              </div>
-              <div className='min-w-0 flex-1'>
-                <p className='font-medium text-fg-primary text-sm'>Image couldn't be embedded</p>
-                <p className='mt-0.5 text-fg-muted text-xs'>
-                  The source requires authentication or is behind a firewall.
-                </p>
-                {isSafeUrl ? (
-                  <a
-                    href={src}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='mt-1 block truncate text-accent text-xs underline decoration-accent/40 hover:text-sky-600'
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {displayUrl}
-                  </a>
-                ) : (
-                  <span className='mt-1 block truncate text-fg-muted text-xs'>{displayUrl}</span>
-                )}
-              </div>
-            </div>
-          </div>
+            title={notice.title}
+            description={notice.description}
+            action={
+              isSignInRequired && (
+                <Button
+                  variant='outline'
+                  size='sm'
+                  className='mt-2'
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    signIn()
+                  }}
+                >
+                  Sign in
+                </Button>
+              )
+            }
+          />
         </div>
       </NodeViewWrapper>
     )
@@ -97,7 +107,7 @@ export const ImageBlockView = (props: NodeViewProps) => {
         >
           <img
             draggable={false}
-            data-uploading={isLoading ? '' : undefined}
+            data-uploading={isPending ? '' : undefined}
             className='block data-uploading:animate-shimmer data-uploading:[mask:linear-gradient(-60deg,#000_30%,#0005,#000_70%)_right/350%_100%]'
             src={src}
             alt=''
@@ -119,8 +129,8 @@ export const ImageBlockView = (props: NodeViewProps) => {
             <>
               {!isFullWidth && (
                 <>
-                  <BlockResizer className='left-0' onMouseDown={onMouseDownLeft} />
-                  <BlockResizer className='right-0' onMouseDown={onMouseDownRight} />
+                  <BlockResizer className='left-0' onPointerDown={onPointerDownLeft} />
+                  <BlockResizer className='right-0' onPointerDown={onPointerDownRight} />
                 </>
               )}
               <ImageBlockBubbleMenu

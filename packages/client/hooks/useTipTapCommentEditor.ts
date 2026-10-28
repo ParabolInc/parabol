@@ -1,6 +1,5 @@
 import Highlight from '@tiptap/extension-highlight'
 import Mention from '@tiptap/extension-mention'
-import {TextStyleKit} from '@tiptap/extension-text-style'
 import {Placeholder} from '@tiptap/extensions'
 import {Extension, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
@@ -8,6 +7,7 @@ import {useRef} from 'react'
 import type Atmosphere from '../Atmosphere'
 import {LoomExtension} from '../components/TipTapEditor/LoomExtension'
 import {TiptapLinkExtension} from '../components/TipTapEditor/TiptapLinkExtension'
+import {SafeTextStyleKit} from '../shared/tiptap/extensions/SafeTextStyleKit'
 import {mentionConfig} from '../shared/tiptap/serverTipTapExtensions'
 import {ClearOnSubmit} from '../tiptap/extensions/ClearOnSubmit'
 import {PopoverMention} from '../tiptap/extensions/popoverMention/PopoverMention'
@@ -43,7 +43,7 @@ export const useTipTapCommentEditor = (
       extensions: [
         StarterKit.configure({link: false}),
         Highlight,
-        TextStyleKit,
+        SafeTextStyleKit,
         LoomExtension,
         Placeholder.configure({
           showOnlyWhenEditable: false,

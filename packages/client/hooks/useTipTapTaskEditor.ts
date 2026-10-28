@@ -1,7 +1,6 @@
 import Highlight from '@tiptap/extension-highlight'
 import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention from '@tiptap/extension-mention'
-import {TextStyleKit} from '@tiptap/extension-text-style'
 import {Placeholder} from '@tiptap/extensions'
 import {Extension, generateText, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
@@ -9,6 +8,7 @@ import {useUploadUserAsset} from '~/mutations/useUploadUserAsset'
 import type Atmosphere from '../Atmosphere'
 import {LoomExtension} from '../components/TipTapEditor/LoomExtension'
 import {TiptapLinkExtension} from '../components/TipTapEditor/TiptapLinkExtension'
+import {SafeTextStyleKit} from '../shared/tiptap/extensions/SafeTextStyleKit'
 import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {FileUpload} from '../tiptap/extensions/fileUpload/FileUpload'
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
@@ -41,7 +41,7 @@ export const useTipTapTaskEditor = (
       content: contentJSON,
       extensions: [
         StarterKit.configure({link: false}),
-        TextStyleKit,
+        SafeTextStyleKit,
         Highlight,
         FileUpload.configure({
           scopeKey: teamId,
