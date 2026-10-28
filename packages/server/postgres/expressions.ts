@@ -1,6 +1,8 @@
-import {type ExpressionBuilder, type StringReference, sql} from 'kysely'
+import {type Expression, type ExpressionBuilder, type StringReference, sql} from 'kysely'
 import {type TSVLanguage} from '../../embedder/getSupportedLanguages'
 import numberVectorToString from '../../embedder/indexing/numberVectorToString'
+
+export const RRF_K = 60
 
 export function RRF<DB, TB extends keyof DB>(
   eb: ExpressionBuilder<DB, TB>,
@@ -57,6 +59,30 @@ export const tsHeadline = <
     .join(', ')
   return sql<string>`ts_headline(${language}, ${eb.ref(embedTextColumn)}, ${eb.ref(webQuery)}, ${optionStr})`
 }
+
+export const pageTitleTsv = (title: Expression<string | null>) =>
+  sql<string>`to_tsvector('simple', coalesce(${title}, ''))`
+
+export const pageSearchTsv = (title: Expression<string | null>, body: Expression<string | null>) =>
+  sql<string>`(setweight(${pageTitleTsv(title)}, 'A') || setweight(to_tsvector('simple', left(coalesce(${body}, ''), 100000)), 'D'))`
+
+const MIN_QUERY_TERM_LENGTH = 2
+const MAX_QUERY_TERMS = 8
+
+// splits the query into words exactly as pageSearchTsv splits page text, then makes each word a required prefix term.
+// The terms are quoted and cast with ::tsquery, which reads them literally instead of parsing them again.
+// A query with no words of 2+ characters gives NULL, which matches nothing.
+export const pagePrefixTsQuery = (query: string) =>
+  sql<string | null>`(
+    select string_agg('''' || replace(replace(t.lexeme, '\\', '\\\\'), '''', '''''') || ''':*', ' & ' order by t.position)::tsquery
+    from (
+      select lexeme, positions[1] as position
+      from unnest(to_tsvector('simple', ${query}))
+      where char_length(lexeme) >= ${sql.lit(MIN_QUERY_TERM_LENGTH)}
+      order by positions[1]
+      limit ${sql.lit(MAX_QUERY_TERMS)}
+    ) t
+  )`
 
 export function rank<DB, TB extends keyof DB>(
   eb: ExpressionBuilder<DB, TB>,
