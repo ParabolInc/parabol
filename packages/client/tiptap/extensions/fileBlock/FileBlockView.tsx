@@ -57,9 +57,15 @@ export const FileBlockView = (props: NodeViewProps) => {
   const [isEditing, setIsEditing] = useState(false)
   const [fileName, setFileName] = useState(name)
   const inputRef = useRef<HTMLInputElement>(null)
+  const {scopeKey, assetScope} = editor.extensionStorage.fileUpload
+  const {isPending, isBlocked} = useEmbedNewUserAsset(src, scopeKey, assetScope, editor)
 
   const onClick = async () => {
     if (isEditing) return
+    if (isBlocked) {
+      if (/^https?:\/\//i.test(src)) window.open(src, '_blank', 'noopener,noreferrer')
+      return
+    }
     const res = await fetch(src)
     const blob = await res.blob()
     const blobUrl = window.URL.createObjectURL(blob)
@@ -96,16 +102,12 @@ export const FileBlockView = (props: NodeViewProps) => {
     setIsEditing(false)
   }
 
-  const {scopeKey, assetScope} = editor.extensionStorage.fileUpload
-  const {isHosted, embedError} = useEmbedNewUserAsset(src, scopeKey, assetScope, editor)
-  const isLoading = !isHosted && !embedError
-
   return (
     <NodeViewWrapper>
       <div
         contentEditable={false}
         onClick={onClick}
-        data-uploading={isLoading ? '' : undefined}
+        data-uploading={isPending ? '' : undefined}
         className='m-0 block p-0 data-uploading:animate-shimmer data-uploading:[mask:linear-gradient(-60deg,#000_30%,#0005,#000_70%)_right/350%_100%]'
       >
         <div className='group flex cursor-pointer items-center rounded-sm bg-surface-raised p-2 text-sm transition-colors hover:bg-surface-hover group-[.ProseMirror-selectednode]:bg-surface-hover'>

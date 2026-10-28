@@ -13,6 +13,7 @@ import {getPageSlug} from '../../tiptap/getPageSlug'
 import {Menu} from '../../ui/Menu/Menu'
 import {MenuItem} from '../../ui/Menu/MenuItem'
 import {PageDropTarget} from './PageDropTarget'
+import {PageNoAccessLock} from './PageNoAccessLock'
 
 interface Props {
   pageRef: PageBreadCrumbs_page$key
@@ -124,6 +125,9 @@ export const PageBreadCrumbs = (props: Props) => {
             to={`/pages/${getPageSlug(Number(page.id.split(':')[1]), page.title)}`}
             className='rounded-md px-1 hover:bg-surface-hover'
           >
+            {page.__typename === 'PagePreview' && (
+              <PageNoAccessLock className='mr-1 align-[-2px]' />
+            )}
             {page.title}
           </Link>
         </PageDropTarget>

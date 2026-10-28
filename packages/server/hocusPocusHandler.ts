@@ -29,7 +29,8 @@ export const hocusPocusHandler: WebSocketBehavior<HocusPocusSocketData> = {
       method: req.getMethod(),
       url: query ? `${pathname}?${query}` : pathname,
       headers,
-      socket: {remoteAddress: ip}
+      socket: {remoteAddress: ip},
+      connectedAt: Date.now()
     }
     res.upgrade<HocusPocusSocketData>(
       {

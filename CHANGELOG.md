@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.7.3](https://github.com/ParabolInc/parabol/compare/v15.7.2...v15.7.3) (2026-10-27)
+
+
+### Fixed
+
+* Pages and realtime editing security hardening ([#13760](https://github.com/ParabolInc/parabol/issues/13760)) ([dbf832c](https://github.com/ParabolInc/parabol/commit/dbf832c67df391efe9d7cffcc263160f007da469))
+
 ## [15.7.2](https://github.com/ParabolInc/parabol/compare/v15.7.1...v15.7.2) (2026-10-27)
 
 

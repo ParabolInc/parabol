@@ -10,6 +10,7 @@ import {isMeetingFacilitator} from './rules/isMeetingFacilitator'
 import {isMeetingMember} from './rules/isMeetingMember'
 import {isNull} from './rules/isNull'
 import {isOrgTier} from './rules/isOrgTier'
+import {isRestoringOwnTrashedPage} from './rules/isRestoringOwnTrashedPage'
 import isSuperUser from './rules/isSuperUser'
 import {isTeamMember} from './rules/isTeamMember'
 import {isTeamMemberOfMeeting} from './rules/isTeamMemberOfMeeting'
@@ -83,7 +84,10 @@ const permissionMap: PermissionMap<Resolvers> = {
       isSuperUser,
       isViewerBillingLeader<'Mutation.archiveOrganization'>('args.orgId')
     ),
-    archivePage: hasPageAccess<'Mutation.archivePage'>('args.pageId', 'owner'),
+    archivePage: and(
+      isAuthenticated,
+      or(hasPageAccess<'Mutation.archivePage'>('args.pageId', 'owner'), isRestoringOwnTrashedPage)
+    ),
     archiveTeam: or(
       isSuperUser,
       isViewerTeamLead<'Mutation.archiveTeam'>('args.teamId'),
@@ -99,9 +103,12 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     createPersonalAccessToken: rateLimit({perMinute: 10, perHour: 50}),
     updatePersonalAccessToken: rateLimit({perMinute: 10, perHour: 50}),
-    createPage: or(
-      isNull<'Mutation.createPage'>('args.teamId'),
-      isTeamMember<'Mutation.createPage'>('args.teamId')
+    createPage: and(
+      isAuthenticated,
+      or(
+        isNull<'Mutation.createPage'>('args.teamId'),
+        isTeamMember<'Mutation.createPage'>('args.teamId')
+      )
     ),
     createPoll: isTeamMember<'Mutation.createPoll'>('args.newPoll.discussionId', 'discussions'),
     createReflection: isTeamMemberOfMeeting<'Mutation.createReflection'>('args.input.meetingId'),
@@ -127,7 +134,10 @@ const permissionMap: PermissionMap<Resolvers> = {
       isTeamMemberOfMeeting<'Mutation.dragTeamHealthResultStage'>('args.meetingId'),
     dragEstimatingTask: isTeamMemberOfMeeting<'Mutation.dragEstimatingTask'>('args.meetingId'),
     editCommenting: isMeetingMember<'Mutation.editCommenting'>('args.discussionId', 'discussions'),
-    editPageContent: hasPageAccess<'Mutation.editPageContent'>('args.pageId', 'editor'),
+    editPageContent: and(
+      isAuthenticated,
+      hasPageAccess<'Mutation.editPageContent'>('args.pageId', 'editor')
+    ),
     editReflection: isTeamMemberOfMeeting<'Mutation.editReflection'>('args.meetingId'),
     editTask: isTeamMember<'Mutation.editTask'>('args.taskId', 'tasks'),
     editTeamHealthQuestion: isUserViewer<'Mutation.editTeamHealthQuestion'>(
@@ -382,16 +392,22 @@ const permissionMap: PermissionMap<Resolvers> = {
     updateOAuthAPIProvider: hasProviderAccess<'Mutation.updateOAuthAPIProvider'>('args.providerId'),
     updateOrg: isViewerBillingLeader<'Mutation.updateOrg'>('args.updatedOrg.id'),
     exportPagesToConfluence: and(
+      isAuthenticated,
       hasPageAccess<'Mutation.exportPagesToConfluence'>('args.pageId', 'viewer'),
       rateLimit({perMinute: 10, perHour: 100})
     ),
-    updatePage: hasPageAccess<'Mutation.updatePage'>('args.pageId', 'viewer'),
+    requestPageAccess: and(isAuthenticated, rateLimit({perMinute: 5, perHour: 20})),
+    updatePage: and(isAuthenticated, hasPageAccess<'Mutation.updatePage'>('args.pageId', 'viewer')),
     updatePageAccess: and(
+      isAuthenticated,
       hasPageAccess<'Mutation.updatePageAccess'>('args.pageId', 'viewer'),
       // limit looking up users by email
       rateLimit({perMinute: 50, perHour: 100})
     ),
-    updatePageParentLink: hasPageAccess<'Mutation.updatePageParentLink'>('args.pageId', 'owner'),
+    updatePageParentLink: and(
+      isAuthenticated,
+      hasPageAccess<'Mutation.updatePageParentLink'>('args.pageId', 'owner')
+    ),
     updatePokerScope: isTeamMember<'Mutation.updatePokerScope'>('args.meetingId', 'newMeetings'),
     updatePokerTemplateDimensionScale: isTeamMember<'Mutation.updatePokerTemplateDimensionScale'>(
       'args.dimensionId',

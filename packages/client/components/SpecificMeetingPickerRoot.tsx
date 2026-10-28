@@ -10,10 +10,11 @@ import {SpecificMeetingPicker} from './SpecificMeetingPicker'
 interface Props {
   updateAttributes: NodeViewProps['updateAttributes']
   attrs: InsightsBlockAttrs
+  onListedMeetingIds: (meetingIds: string[]) => void
 }
 
 export const SpecificMeetingPickerRoot = (props: Props) => {
-  const {attrs, updateAttributes} = props
+  const {attrs, updateAttributes, onListedMeetingIds} = props
   const {teamIds, meetingTypes, after, before} = attrs
   const queryRef = useQueryLoaderNow<SpecificMeetingPickerQuery>(query, {
     teamIds,
@@ -30,6 +31,7 @@ export const SpecificMeetingPickerRoot = (props: Props) => {
           queryRef={queryRef}
           attrs={attrs}
           updateAttributes={updateAttributes}
+          onListedMeetingIds={onListedMeetingIds}
         />
       )}
     </Suspense>

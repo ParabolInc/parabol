@@ -1,5 +1,6 @@
 import type {WebSocketLike} from '@hocuspocus/server'
 import type RedisClient from 'ioredis'
+import {Logger} from './utils/Logger'
 import type {Pack, RSAMessageClose, RSAMessageSend} from './utils/tiptap/RedisServerAffinity'
 
 // Stands in for the client WebSocket on the server that owns the document.
@@ -17,7 +18,7 @@ export class HocusPocusProxySocket implements WebSocketLike {
     this.pack = pack
   }
   private publish(msg: RSAMessageClose | RSAMessageSend) {
-    this.pub.publish(this.replyTo, this.pack(msg))
+    this.pub.publish(this.replyTo, this.pack(msg)).catch(Logger.error)
   }
   // The origin server already closed the real socket; stop relaying without echoing a close back
   markClosed() {

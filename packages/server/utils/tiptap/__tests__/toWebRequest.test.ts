@@ -5,7 +5,8 @@ const makeRequest = (headers: Record<string, string | string[]>) =>
     method: 'GET',
     url: '/yjs?token=abc',
     headers: {'sec-websocket-key': 'dGhlIHNhbXBsZSBub25jZQ==', ...headers},
-    socket: {remoteAddress: '127.0.0.1'}
+    socket: {remoteAddress: '127.0.0.1'},
+    connectedAt: 0
   }) as SerializedHTTPRequest
 
 test('keeps a header containing U+FFFD from invalid UTF-8 bytes instead of throwing', () => {
