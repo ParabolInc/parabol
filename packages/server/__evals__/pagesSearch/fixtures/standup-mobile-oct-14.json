@@ -1,0 +1,413 @@
+{
+  "type": "doc",
+  "content": [
+    {
+      "type": "heading",
+      "attrs": {"level": 1},
+      "content": [{"type": "text", "text": "Mobile Standup - Oct 14, 2026"}]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "text": "Foxglove Mobile",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://app.example.com/team/Fx2BkN6rTy",
+                "target": "_blank",
+                "rel": "noopener noreferrer nofollow",
+                "class": "link",
+                "title": null
+              }
+            },
+            {"type": "bold", "attrs": {}}
+          ]
+        },
+        {"type": "text", "text": " — Oct 14, 2026", "marks": [{"type": "bold", "attrs": {}}]}
+      ]
+    },
+    {"type": "paragraph", "content": [{"type": "text", "text": "4 Responses"}]},
+    {"type": "paragraph"},
+    {
+      "type": "insightsBlock",
+      "attrs": {
+        "id": "ed5b83c4-a2e3-4e43-87b2-21a265700de2",
+        "editing": false,
+        "teamIds": ["Fx2BkN6rTy"],
+        "meetingTypes": ["teamPrompt"],
+        "after": "2026-10-14T12:00:00.000Z",
+        "before": "2026-10-15T00:00:00.000Z",
+        "meetingIds": ["J05eIU74um"],
+        "title": "Top Topics",
+        "hash": "khzikksp",
+        "prompt": "You are an expert in agile retrospectives and project management.\nYour team has just completed a meeting and it is your job to generate insights from the data and report to senior management.\nSenior management wants to know where to best focus their time, so be concise and focus on next steps to take.\nIf there is not enough data to generate insightful findings, respond with \"Not enough data to generate insights\".\nIt should include at most 3 topics that are the most important highlights, takeaways, or areas that may need their attention.\n"
+      },
+      "content": [
+        {
+          "type": "bulletList",
+          "content": [
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {"type": "text", "text": "🥇 "},
+                    {
+                      "type": "text",
+                      "text": "App store review is the main blocker",
+                      "marks": [{"type": "bold", "attrs": {}}]
+                    },
+                    {
+                      "type": "text",
+                      "text": ": Build 3.8 has been in review for four days. Plan around the delay and prepare the expedited review request."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {"type": "text", "text": "🥈 "},
+                    {
+                      "type": "text",
+                      "text": "Android crash reproduction needs hardware",
+                      "marks": [{"type": "bold", "attrs": {}}]
+                    },
+                    {
+                      "type": "text",
+                      "text": ": Nobody has an older Android device. Borrow or buy one so the checkout crash can be reproduced."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {"type": "text", "text": "🥉 "},
+                    {
+                      "type": "text",
+                      "text": "Offline mode design is progressing",
+                      "marks": [{"type": "bold", "attrs": {}}]
+                    },
+                    {
+                      "type": "text",
+                      "text": ": The sync approach for queued edits is taking shape. Review it with the platform team this week."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "attrs": {"level": 2},
+      "content": [{"type": "text", "text": "4 Responses"}]
+    },
+    {
+      "type": "responseBlock",
+      "attrs": {
+        "id": "5188d2b5-fb33-41d8-a7bd-5fa00556e79d",
+        "preferredName": "Mei Zhou",
+        "avatar": "https://app.example.com/assets/User/local|NOl8WKt1Kg/picture/aOYo6Crrjv.png",
+        "content": "{\"type\":\"doc\",\"content\":[{\"type\":\"heading\",\"attrs\":{\"level\":3},\"content\":[{\"type\":\"text\",\"text\":\"What are you working on? What has been completed recently?\"}]},{\"type\":\"paragraph\",\"content\":[{\"text\":\"Offline mode: designing how queued edits sync when the connection returns.\",\"type\":\"text\"}]},{\"type\":\"heading\",\"attrs\":{\"level\":3},\"content\":[{\"type\":\"text\",\"text\":\"What are you stuck on, what's holding you back?\"}]},{\"type\":\"paragraph\",\"content\":[{\"text\":\"App store review is still pending on 3.8. Day four.\",\"type\":\"text\"}]}]}"
+      }
+    },
+    {
+      "type": "responseBlock",
+      "attrs": {
+        "id": "5188d2b5-fb33-41d8-a7bd-5fa00556e79d",
+        "preferredName": "Nikhil Varma",
+        "avatar": "https://app.example.com/assets/User/local|VMBjz309qg/picture/tLUmiQ2FPy.png",
+        "content": "{\"type\":\"doc\",\"content\":[{\"type\":\"heading\",\"attrs\":{\"level\":3},\"content\":[{\"type\":\"text\",\"text\":\"What are you working on? What has been completed recently?\"}]},{\"type\":\"paragraph\",\"content\":[{\"text\":\"Crash reporting for the checkout screen.\",\"type\":\"text\"}]},{\"type\":\"heading\",\"attrs\":{\"level\":3},\"content\":[{\"type\":\"text\",\"text\":\"What are you stuck on, what's holding you back?\"}]},{\"type\":\"paragraph\",\"content\":[{\"text\":\"I do not have an older Android device to reproduce the crash.\",\"type\":\"text\"}]}]}"
+      }
+    },
+    {
+      "type": "responseBlock",
+      "attrs": {
+        "id": "5188d2b5-fb33-41d8-a7bd-5fa00556e79d",
+        "preferredName": "Jamal Hartley",
+        "avatar": "https://app.example.com/assets/User/local|FAv3l3FDZx/picture/009SHKcgJr.png",
+        "content": "{\"type\":\"doc\",\"content\":[{\"type\":\"heading\",\"attrs\":{\"level\":3},\"content\":[{\"type\":\"text\",\"text\":\"What are you working on? What has been completed recently?\"}]},{\"type\":\"paragraph\",\"content\":[{\"text\":\"Biometric login on iOS. Face ID works, Touch ID is next.\",\"type\":\"text\"}]},{\"type\":\"heading\",\"attrs\":{\"level\":3},\"content\":[{\"type\":\"text\",\"text\":\"What are you stuck on, what's holding you back?\"}]},{\"type\":\"paragraph\",\"content\":[{\"text\":\"None.\",\"type\":\"text\"}]}]}"
+      }
+    },
+    {
+      "type": "responseBlock",
+      "attrs": {
+        "id": "5188d2b5-fb33-41d8-a7bd-5fa00556e79d",
+        "preferredName": "Elif Demir",
+        "avatar": "https://app.example.com/assets/User/local|767NHc8FSa/picture/M83nwMa1Sm.png",
+        "content": "{\"type\":\"doc\",\"content\":[{\"type\":\"heading\",\"attrs\":{\"level\":3},\"content\":[{\"type\":\"text\",\"text\":\"What are you working on? What has been completed recently?\"}]},{\"type\":\"paragraph\",\"content\":[{\"text\":\"Dark mode for the invoice list.\",\"type\":\"text\"}]},{\"type\":\"heading\",\"attrs\":{\"level\":3},\"content\":[{\"type\":\"text\",\"text\":\"What are you stuck on, what's holding you back?\"}]},{\"type\":\"paragraph\",\"content\":[{\"text\":\"Waiting for updated icons from design.\",\"type\":\"text\"}]}]}"
+      }
+    },
+    {"type": "paragraph"},
+    {
+      "type": "details",
+      "attrs": {"open": false},
+      "content": [
+        {"type": "detailsSummary", "content": [{"type": "text", "text": "Table View"}]},
+        {
+          "type": "detailsContent",
+          "content": [
+            {
+              "type": "table",
+              "content": [
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableHeader",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Author",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableHeader",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Created at",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableHeader",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Content",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Mei Zhou",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [{"type": "text", "text": "2026-10-14T13:09:12.000Z"}]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "What are you working on? What has been completed recently?\n\nOffline mode: designing how queued edits sync when the connection returns.\n\nWhat are you stuck on, what's holding you back?\n\nApp store review is still pending on 3.8. Day four."
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Nikhil Varma",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [{"type": "text", "text": "2026-10-14T13:21:40.000Z"}]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "What are you working on? What has been completed recently?\n\nCrash reporting for the checkout screen.\n\nWhat are you stuck on, what's holding you back?\n\nI do not have an older Android device to reproduce the crash."
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Jamal Hartley",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [{"type": "text", "text": "2026-10-14T13:48:03.000Z"}]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "What are you working on? What has been completed recently?\n\nBiometric login on iOS. Face ID works, Touch ID is next.\n\nWhat are you stuck on, what's holding you back?\n\nNone."
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Elif Demir",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [{"type": "text", "text": "2026-10-14T14:15:26.000Z"}]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "What are you working on? What has been completed recently?\n\nDark mode for the invoice list.\n\nWhat are you stuck on, what's holding you back?\n\nWaiting for updated icons from design."
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

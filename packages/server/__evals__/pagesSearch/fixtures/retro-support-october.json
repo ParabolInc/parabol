@@ -1,0 +1,1232 @@
+{
+  "type": "doc",
+  "content": [
+    {
+      "type": "heading",
+      "attrs": {"level": 1},
+      "content": [{"type": "text", "text": "Support Team Retro - Oct 2, 2026"}]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "text": "Copperline Support",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://app.example.com/team/Cp9XeL3sMa",
+                "target": "_blank",
+                "rel": "noopener noreferrer nofollow",
+                "class": "link",
+                "title": null
+              }
+            },
+            {"type": "bold", "attrs": {}}
+          ]
+        },
+        {"type": "text", "text": " — Oct 2, 2026", "marks": [{"type": "bold", "attrs": {}}]}
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {"type": "text", "text": "3 Topics - 3 New Tasks - 8 Reflections - 4 Participants"}
+      ]
+    },
+    {"type": "paragraph"},
+    {
+      "type": "insightsBlock",
+      "attrs": {
+        "id": "57c6b1f7-aeb3-4a7e-8b38-2f8c0dda38b4",
+        "editing": false,
+        "teamIds": ["Cp9XeL3sMa"],
+        "meetingTypes": ["retrospective"],
+        "after": "2026-10-02T17:00:00.000Z",
+        "before": "2026-10-02T19:47:00.000Z",
+        "meetingIds": ["Qdr6wvjayu"],
+        "title": "Top Topics",
+        "hash": "c3ly90l5",
+        "prompt": "You are an expert in agile retrospectives and project management.\nYour team has just completed a meeting and it is your job to generate insights from the data and report to senior management.\nSenior management wants to know where to best focus their time, so be concise and focus on next steps to take.\nIf there is not enough data to generate insightful findings, respond with \"Not enough data to generate insights\".\nIt should include at most 3 topics that are the most important highlights, takeaways, or areas that may need their attention.\n"
+      },
+      "content": [
+        {
+          "type": "bulletList",
+          "content": [
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {"type": "text", "text": "🥇 "},
+                    {
+                      "type": "text",
+                      "text": "The ticket backlog is the top concern",
+                      "marks": [{"type": "bold", "attrs": {}}]
+                    },
+                    {
+                      "type": "text",
+                      "text": ": It peaked at 210 tickets and customers waited up to three days. Auto-closing tickets that wait on customers would remove a large share quickly."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {"type": "text", "text": "🥈 "},
+                    {
+                      "type": "text",
+                      "text": "Weekend coverage leaves Mondays overloaded",
+                      "marks": [{"type": "bold", "attrs": {}}]
+                    },
+                    {
+                      "type": "text",
+                      "text": ": Nobody watches the inbox on weekends. A small pilot rota would show whether the pile shrinks."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {"type": "text", "text": "🥉 "},
+                    {
+                      "type": "text",
+                      "text": "Macro sprawl wastes time",
+                      "marks": [{"type": "bold", "attrs": {}}]
+                    },
+                    {
+                      "type": "text",
+                      "text": ": Duplicate macros cause inconsistent answers. Merge them and retire the old ones."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {"type": "heading", "attrs": {"level": 2}, "content": [{"type": "text", "text": "3 Tasks"}]},
+    {
+      "type": "taskBlock",
+      "attrs": {
+        "id": "9827fc2f-5e90-4d18-929b-f9cbf376f4c4",
+        "status": "active",
+        "preferredName": "Marcus Delgado",
+        "avatar": "https://app.example.com/assets/User/local|vpTM5cVkB8/picture/gyfupUPwtn.png",
+        "content": "{\"type\": \"doc\", \"content\": [{\"type\": \"paragraph\", \"content\": [{\"text\": \"Turn on auto-close for tickets waiting on customers for seven days\", \"type\": \"text\"}]}]}"
+      }
+    },
+    {"type": "paragraph"},
+    {
+      "type": "taskBlock",
+      "attrs": {
+        "id": "9827fc2f-5e90-4d18-929b-f9cbf376f4c4",
+        "status": "active",
+        "preferredName": "Marcus Delgado",
+        "avatar": "https://app.example.com/assets/User/local|vpTM5cVkB8/picture/gyfupUPwtn.png",
+        "content": "{\"type\": \"doc\", \"content\": [{\"type\": \"paragraph\", \"content\": [{\"text\": \"Draft a proposal for weekend support coverage\", \"type\": \"text\"}]}]}"
+      }
+    },
+    {"type": "paragraph"},
+    {
+      "type": "taskBlock",
+      "attrs": {
+        "id": "9827fc2f-5e90-4d18-929b-f9cbf376f4c4",
+        "status": "active",
+        "preferredName": "Sofia Marchetti",
+        "avatar": "https://app.example.com/assets/User/local|t8YOSh9U0k/picture/uEmpNpc9Qt.png",
+        "content": "{\"type\": \"doc\", \"content\": [{\"type\": \"paragraph\", \"content\": [{\"text\": \"Merge duplicate macros and delete the old ones\", \"type\": \"text\"}]}]}"
+      }
+    },
+    {
+      "type": "heading",
+      "attrs": {"level": 2},
+      "content": [{"type": "text", "text": "3 Voted Topics"}]
+    },
+    {
+      "type": "bulletList",
+      "content": [
+        {
+          "type": "listItem",
+          "content": [
+            {
+              "type": "paragraph",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Ticket backlog",
+                  "marks": [
+                    {
+                      "type": "link",
+                      "attrs": {
+                        "href": "https://app.example.com/meet/Qdr6wvjayu/discuss/6",
+                        "target": "_blank",
+                        "rel": "noopener noreferrer nofollow",
+                        "class": "link",
+                        "title": null
+                      }
+                    },
+                    {"type": "bold", "attrs": {}}
+                  ]
+                },
+                {"type": "hardBreak"},
+                {"type": "text", "text": "6 Votes, 1 Task, 1 Comment, 3 Reflections"}
+              ]
+            }
+          ]
+        },
+        {
+          "type": "listItem",
+          "content": [
+            {
+              "type": "paragraph",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Weekend coverage",
+                  "marks": [
+                    {
+                      "type": "link",
+                      "attrs": {
+                        "href": "https://app.example.com/meet/Qdr6wvjayu/discuss/7",
+                        "target": "_blank",
+                        "rel": "noopener noreferrer nofollow",
+                        "class": "link",
+                        "title": null
+                      }
+                    },
+                    {"type": "bold", "attrs": {}}
+                  ]
+                },
+                {"type": "hardBreak"},
+                {"type": "text", "text": "4 Votes, 1 Task, 0 Comments, 2 Reflections"}
+              ]
+            }
+          ]
+        },
+        {
+          "type": "listItem",
+          "content": [
+            {
+              "type": "paragraph",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Macros and templates",
+                  "marks": [
+                    {
+                      "type": "link",
+                      "attrs": {
+                        "href": "https://app.example.com/meet/Qdr6wvjayu/discuss/8",
+                        "target": "_blank",
+                        "rel": "noopener noreferrer nofollow",
+                        "class": "link",
+                        "title": null
+                      }
+                    },
+                    {"type": "bold", "attrs": {}}
+                  ]
+                },
+                {"type": "hardBreak"},
+                {"type": "text", "text": "4 Votes, 1 Task, 0 Comments, 2 Reflections"}
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "attrs": {"level": 2},
+      "content": [{"type": "text", "text": "4 Participants"}]
+    },
+    {
+      "type": "bulletList",
+      "content": [
+        {
+          "type": "listItem",
+          "content": [
+            {"type": "paragraph", "content": [{"type": "text", "text": "Marcus Delgado"}]}
+          ]
+        },
+        {
+          "type": "listItem",
+          "content": [
+            {"type": "paragraph", "content": [{"type": "text", "text": "Oluwaseun Adeyemi"}]}
+          ]
+        },
+        {
+          "type": "listItem",
+          "content": [
+            {"type": "paragraph", "content": [{"type": "text", "text": "Sofia Marchetti"}]}
+          ]
+        },
+        {
+          "type": "listItem",
+          "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Lee Whitfield"}]}]
+        }
+      ]
+    },
+    {"type": "paragraph"},
+    {
+      "type": "details",
+      "attrs": {"open": false},
+      "content": [
+        {"type": "detailsSummary", "content": [{"type": "text", "text": "Table View"}]},
+        {
+          "type": "detailsContent",
+          "content": [
+            {
+              "type": "table",
+              "content": [
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableHeader",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Reflection Group",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableHeader",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Votes",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableHeader",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Type",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableHeader",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Author",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableHeader",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Prompt",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableHeader",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Content",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableHeader",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Discussion Thread",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Ticket backlog",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "6"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Sad"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "The backlog hit 210 tickets and some customers waited three days for a reply"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Ticket backlog",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "6"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Mad"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Billing questions bounce between us and finance before anyone answers"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Ticket backlog",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "6"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Glad"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "The backlog is down to 140 after the clean-up push"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Ticket backlog",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "6"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Task"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [{"type": "text", "text": "Marcus Delgado"}]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Turn on auto-close for tickets waiting on customers for seven days"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Ticket backlog",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "6"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Comment"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [{"type": "text", "text": "Oluwaseun Adeyemi"}]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Most of the old tickets were waiting on customers. We should auto-close after seven days."
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Weekend coverage",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "4"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Sad"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Nobody is watching the inbox on weekends so Monday starts with a pile"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Weekend coverage",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "4"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Mad"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Weekend outage pages go to engineering with no support context"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Weekend coverage",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "4"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Task"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [{"type": "text", "text": "Marcus Delgado"}]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Draft a proposal for weekend support coverage"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Macros and templates",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "4"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Glad"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "The new refund macro saves about five minutes a ticket"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Macros and templates",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "4"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Sad"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Three different macros for the same password question"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Macros and templates",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "4"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Task"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [{"type": "text", "text": "Sofia Marchetti"}]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Merge duplicate macros and delete the old ones"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Tagging",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "0"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Mad"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Tags are applied differently by everyone so the reports are useless"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {"type": "paragraph"},
+    {
+      "type": "pageLinkBlock",
+      "attrs": {"pageCode": 2254094469, "title": "Transcript", "canonical": true}
+    }
+  ]
+}
