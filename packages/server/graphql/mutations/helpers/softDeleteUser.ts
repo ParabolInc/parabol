@@ -1,5 +1,6 @@
 import getKysely from '../../../postgres/getKysely'
 import getDeletedEmail from '../../../utils/getDeletedEmail'
+import {revalidateYjsConnections} from '../../../utils/tiptap/revalidateYjsConnections'
 import type {DataLoaderWorker} from '../../graphql'
 import removeFromOrg from './removeFromOrg'
 import removeSlackAuths from './removeSlackAuths'
@@ -48,6 +49,7 @@ const softDeleteUser = async (userIdToDelete: string, dataLoader: DataLoaderWork
     removeSlackAuths(userIdToDelete, teamIds, true),
     removePageAcces(userIdToDelete)
   ])
+  await revalidateYjsConnections({userIds: [userIdToDelete]})
 
   return getDeletedEmail(userIdToDelete)
 }

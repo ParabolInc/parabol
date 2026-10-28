@@ -1,4 +1,5 @@
 import {GraphQLError} from 'graphql'
+import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import isValid from '../../isValid'
@@ -48,6 +49,24 @@ const Page: Omit<ReqResolvers<'Page'>, 'team'> = {
         ...page,
         __typename: access ? 'Page' : 'PagePreview'
       }
+    })
+  },
+  linkedPages: async ({id}, _args, {authToken, dataLoader}) => {
+    const backlinks = await getKysely()
+      .selectFrom('PageBacklink')
+      .select('toPageId')
+      .where('fromPageId', '=', id)
+      .execute()
+    const linkedPageIds = backlinks.map(({toPageId}) => toPageId)
+    const accessKeys = linkedPageIds.map((pageId) => ({pageId, userId: authToken?.sub ?? ''}))
+    const [pages, accesses] = await Promise.all([
+      dataLoader.get('pages').loadMany(linkedPageIds),
+      dataLoader.get('pageAccessByPageIdUserId').loadMany(accessKeys)
+    ])
+    return pages.flatMap((page, idx) => {
+      if (!isValid(page) || page.deletedAt) return []
+      const access = accesses[idx] instanceof Error ? null : accesses[idx]
+      return [{...page, __typename: access ? 'Page' : 'PagePreview'}]
     })
   },
   deletedByUser: async ({deletedBy}, _args, {dataLoader}) => {

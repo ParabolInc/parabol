@@ -17,17 +17,23 @@ export const TipTapLinkPreview = (props: Props) => {
     setTimeout(() => setIsCopied(false), 2000)
   }
   const displayUrl = url.replace(/^(https?:\/\/|mailto:)/, '').replace(/\/$/, '')
+  // the href comes from the shared doc, so a javascript: link must not become clickable here
+  const isSafeUrl = /^(https?:|mailto:)/i.test(url)
   return (
     <div className='flex items-center rounded-md border border-hairline bg-surface-modal p-[3px] pl-2 text-sm shadow-[var(--shadow-card-raised)]'>
       <Public className='text-[18px] text-fg-secondary' />
-      <a
-        href={url}
-        target='_blank'
-        rel='noopener noreferrer'
-        className='max-w-56 truncate px-1.5 hover:underline'
-      >
-        {displayUrl}
-      </a>
+      {isSafeUrl ? (
+        <a
+          href={url}
+          target='_blank'
+          rel='noopener noreferrer'
+          className='max-w-56 truncate px-1.5 hover:underline'
+        >
+          {displayUrl}
+        </a>
+      ) : (
+        <span className='max-w-56 truncate px-1.5'>{displayUrl}</span>
+      )}
       <div className='mx-[3px] h-[18px] w-px bg-hairline' />
       <TipTapLinkPreviewButton label='Edit link' onClick={onEdit}>
         <Edit className='text-[1em]' />
