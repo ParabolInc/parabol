@@ -1,0 +1,208 @@
+{
+  "type": "doc",
+  "content": [
+    {
+      "type": "heading",
+      "attrs": {"level": 1},
+      "content": [{"type": "text", "text": "Backlog Refinement Poker - Oct 14, 2026"}]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "text": "Lantern Growth",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://app.example.com/team/Ln4ZtW8vPc",
+                "target": "_blank",
+                "rel": "noopener noreferrer nofollow",
+                "class": "link",
+                "title": null
+              }
+            },
+            {"type": "bold", "attrs": {}}
+          ]
+        },
+        {"type": "text", "text": " — Oct 14, 2026", "marks": [{"type": "bold", "attrs": {}}]}
+      ]
+    },
+    {"type": "paragraph", "content": [{"type": "text", "text": "4 Stories - 4 Participants"}]},
+    {"type": "paragraph"},
+    {
+      "type": "table",
+      "content": [
+        {
+          "type": "tableRow",
+          "content": [
+            {
+              "type": "tableHeader",
+              "attrs": {"colspan": 1, "rowspan": 1},
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {"type": "text", "text": "Story", "marks": [{"type": "bold", "attrs": {}}]}
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableHeader",
+              "attrs": {"colspan": 1, "rowspan": 1},
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Story Points",
+                      "marks": [{"type": "bold", "attrs": {}}]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "tableRow",
+          "content": [
+            {
+              "type": "tableCell",
+              "attrs": {"colspan": 1, "rowspan": 1},
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "A/B test framework for the pricing page",
+                      "marks": [{"type": "bold", "attrs": {}}]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableCell",
+              "attrs": {"colspan": 1, "rowspan": 1},
+              "content": [{"type": "paragraph", "content": [{"type": "text", "text": "8"}]}]
+            }
+          ]
+        },
+        {
+          "type": "tableRow",
+          "content": [
+            {
+              "type": "tableCell",
+              "attrs": {"colspan": 1, "rowspan": 1},
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Annual plan toggle on the pricing page",
+                      "marks": [{"type": "bold", "attrs": {}}]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableCell",
+              "attrs": {"colspan": 1, "rowspan": 1},
+              "content": [{"type": "paragraph", "content": [{"type": "text", "text": "3"}]}]
+            }
+          ]
+        },
+        {
+          "type": "tableRow",
+          "content": [
+            {
+              "type": "tableCell",
+              "attrs": {"colspan": 1, "rowspan": 1},
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Referral landing page",
+                      "marks": [{"type": "bold", "attrs": {}}]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableCell",
+              "attrs": {"colspan": 1, "rowspan": 1},
+              "content": [{"type": "paragraph", "content": [{"type": "text", "text": "N/A"}]}]
+            }
+          ]
+        },
+        {
+          "type": "tableRow",
+          "content": [
+            {
+              "type": "tableCell",
+              "attrs": {"colspan": 1, "rowspan": 1},
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Webinar sign-up form with a calendar invite",
+                      "marks": [{"type": "bold", "attrs": {}}]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableCell",
+              "attrs": {"colspan": 1, "rowspan": 1},
+              "content": [{"type": "paragraph", "content": [{"type": "text", "text": "2"}]}]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "attrs": {"level": 2},
+      "content": [{"type": "text", "text": "4 Participants"}]
+    },
+    {
+      "type": "bulletList",
+      "content": [
+        {
+          "type": "listItem",
+          "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Dana Okafor"}]}]
+        },
+        {
+          "type": "listItem",
+          "content": [
+            {"type": "paragraph", "content": [{"type": "text", "text": "Rafael Quintero"}]}
+          ]
+        },
+        {
+          "type": "listItem",
+          "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Hana Petrov"}]}]
+        },
+        {
+          "type": "listItem",
+          "content": [
+            {"type": "paragraph", "content": [{"type": "text", "text": "Beatrix Lindqvist"}]}
+          ]
+        }
+      ]
+    },
+    {"type": "paragraph"}
+  ]
+}
