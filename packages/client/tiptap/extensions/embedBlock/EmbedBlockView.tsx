@@ -129,6 +129,22 @@ export const EmbedBlockView = (props: NodeViewProps) => {
     [applyUrl]
   )
 
+  const onCancelUrl = useCallback(() => {
+    if (!editor.isEditable) return
+    const pos = getPos()
+    if (pos === undefined) return
+    if (url) {
+      setIsReplacing(false)
+      editor.chain().focus().setNodeSelection(pos).run()
+      return
+    }
+    editor
+      .chain()
+      .focus()
+      .deleteRange({from: pos, to: pos + node.nodeSize})
+      .run()
+  }, [getPos, url, editor, node.nodeSize])
+
   const onReload = useCallback(async () => {
     if (!url) return
     const resolved = await resolve(url, true)
@@ -149,7 +165,11 @@ export const EmbedBlockView = (props: NodeViewProps) => {
     return (
       <NodeViewWrapper>
         <div contentEditable={false}>
-          <EmbedBlockUrlInput isResolving={isResolving} onSubmit={onSubmitUrl} />
+          <EmbedBlockUrlInput
+            isResolving={isResolving}
+            onSubmit={onSubmitUrl}
+            onCancel={onCancelUrl}
+          />
         </div>
       </NodeViewWrapper>
     )
