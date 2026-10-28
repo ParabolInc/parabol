@@ -23,6 +23,7 @@ import {TiptapLinkExtension} from '../components/TipTapEditor/TiptapLinkExtensio
 import {useUploadUserAsset} from '../mutations/useUploadUserAsset'
 import {themeBackgroundColors} from '../shared/themeBackgroundColors'
 import {SafeTextStyleKit} from '../shared/tiptap/extensions/SafeTextStyleKit'
+import {EmbedBlock} from '../tiptap/extensions/embedBlock/EmbedBlock'
 import {handleServerEmbedMessage} from '../tiptap/extensions/fileBlock/embedManager'
 import FileBlock from '../tiptap/extensions/fileBlock/FileBlock'
 import {FileUpload} from '../tiptap/extensions/fileUpload/FileUpload'
@@ -128,6 +129,7 @@ export const useTipTapPageEditor = (
           commit,
           highestTier: user?.highestTier
         }),
+        EmbedBlock,
         ImageBlock.configure({
           editorWidth: 720,
           editorHeight: 400

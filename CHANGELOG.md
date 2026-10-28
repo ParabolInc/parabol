@@ -5,6 +5,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.8.1](https://github.com/ParabolInc/parabol/compare/v15.8.0...v15.8.1) (2026-10-28)
+
+
+### Fixed
+
+* explain bad embed links and let Escape or Backspace drop an empty embed ([#13784](https://github.com/ParabolInc/parabol/issues/13784)) ([8d6a844](https://github.com/ParabolInc/parabol/commit/8d6a84488a8f0628afb23e9851c6e813e2a8ceb8))
+* show page link titles, not markdown, in search snippets ([#13783](https://github.com/ParabolInc/parabol/issues/13783)) ([75e627a](https://github.com/ParabolInc/parabol/commit/75e627a583f88230621bdefffd7885f4ee398d8f))
+
+## [15.8.0](https://github.com/ParabolInc/parabol/compare/v15.7.4...v15.8.0) (2026-10-28)
+
+
+### Added
+
+* pages embed block ([#13779](https://github.com/ParabolInc/parabol/issues/13779)) ([c5e9532](https://github.com/ParabolInc/parabol/commit/c5e95325a15da3dcdb8759cbdfd3ff481c1baabc))
+
+
+### Fixed
+
+* keep page search working when embeddings are slow ([#13776](https://github.com/ParabolInc/parabol/issues/13776)) ([df5b3f3](https://github.com/ParabolInc/parabol/commit/df5b3f347378206b123caeff1f2fd6df42b1a828))
+
 ## [15.7.4](https://github.com/ParabolInc/parabol/compare/v15.7.3...v15.7.4) (2026-10-28)
 
 

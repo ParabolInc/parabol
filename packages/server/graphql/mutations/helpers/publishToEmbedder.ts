@@ -21,6 +21,7 @@ interface MessageToEmbedderUserQuery extends BaseMessageToEmbedder {
     query: string
     requestId: number
     channelName: string
+    expiresAt: number
   }
 }
 
@@ -56,12 +57,12 @@ const jobTypeToKind = {
   'embedPage:start': 'corpusUpdate'
 } satisfies Record<JobType, JobKind>
 
-let nextRequestId = 0
-export const getUserQueryJobData = (query: string) => {
+export const getUserQueryJobData = (query: string, timeoutMs = 10_000) => {
   return {
     query,
-    requestId: ++nextRequestId,
-    channelName: embeddingResponder.channelName
+    requestId: embeddingResponder.nextRequestId(),
+    channelName: embeddingResponder.channelName,
+    expiresAt: Date.now() + timeoutMs
   }
 }
 
@@ -70,12 +71,12 @@ export async function publishToEmbedder(
 ): Promise<undefined>
 export async function publishToEmbedder(
   payload: MessageToEmbedderUserQuery
-): Promise<Float32Array | Error>
+): Promise<Float32Array | Error | undefined>
 export async function publishToEmbedder(payload: MessageToEmbedderEmbedPage): Promise<undefined>
 export async function publishToEmbedder(payload: MessageToEmbedderEmbed): Promise<undefined>
 export async function publishToEmbedder(
   payload: MessageToEmbedderEmbedWithResponse
-): Promise<Float32Array | Error>
+): Promise<Float32Array | Error | undefined>
 export async function publishToEmbedder(
   payload:
     | MessageToEmbedderUserQuery
@@ -116,8 +117,13 @@ export async function publishToEmbedder(
   await getRedis().publish('embeddingsJobAdded', '')
   if (data && 'requestId' in data) {
     const {requestId} = data
+    const timeoutMs = 'expiresAt' in data ? Math.max(0, data.expiresAt - Date.now()) : undefined
     try {
-      return await embeddingResponder.waitForResponse(requestId)
+      const vector = await embeddingResponder.waitForResponse(requestId, timeoutMs)
+      if (vector.length === 0) {
+        return new Error(`Embedder returned an empty vector for request: ${requestId}`)
+      }
+      return vector
     } catch (e) {
       return e
     }

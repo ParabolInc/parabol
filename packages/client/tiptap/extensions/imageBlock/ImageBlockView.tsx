@@ -52,14 +52,13 @@ export const ImageBlockView = (props: NodeViewProps) => {
   )
 
   const aspectRatioRef = useRef(1)
-  const {onMouseDown} = useBlockResizer(
-    width,
+  const {onPointerDown} = useBlockResizer(
     (attrs) => updateAttributes({...attrs, isFullWidth: false}),
-    aspectRatioRef,
-    editor.view.dom.getBoundingClientRect().width || editor.storage.imageBlock.editorWidth
+    editor.view.dom.getBoundingClientRect().width || editor.storage.imageBlock.editorWidth,
+    aspectRatioRef
   )
-  const onMouseDownLeft = onMouseDown('left')
-  const onMouseDownRight = onMouseDown('right')
+  const onPointerDownLeft = onPointerDown('left')
+  const onPointerDownRight = onPointerDown('right')
 
   const notice = isSignInRequired
     ? NOTICES.signIn
@@ -130,8 +129,8 @@ export const ImageBlockView = (props: NodeViewProps) => {
             <>
               {!isFullWidth && (
                 <>
-                  <BlockResizer className='left-0' onMouseDown={onMouseDownLeft} />
-                  <BlockResizer className='right-0' onMouseDown={onMouseDownRight} />
+                  <BlockResizer className='left-0' onPointerDown={onPointerDownLeft} />
+                  <BlockResizer className='right-0' onPointerDown={onPointerDownRight} />
                 </>
               )}
               <ImageBlockBubbleMenu
