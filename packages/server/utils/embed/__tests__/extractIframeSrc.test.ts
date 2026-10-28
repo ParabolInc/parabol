@@ -23,6 +23,11 @@ describe('extractIframeSrc', () => {
     expect(extractIframeSrc(html)).toBe('https://open.spotify.com/embed/track/1?a=1&b=2')
   })
 
+  it('decodes each entity only once', () => {
+    const html = '<iframe src="https://www.loom.com/embed/abc?q=&amp;lt;b&amp;gt;"></iframe>'
+    expect(extractIframeSrc(html)).toBe('https://www.loom.com/embed/abc?q=&lt;b&gt;')
+  })
+
   it('returns null when there is no iframe', () => {
     const html =
       '<blockquote class="twitter-tweet"><p>hi</p></blockquote><script src="https://platform.twitter.com/widgets.js"></script>'

@@ -2,13 +2,17 @@ import {isAllowedEmbedHost} from '../../../client/shared/embed/curatedEmbedProvi
 
 const IFRAME_SRC = /<iframe\b[^>]*?\ssrc\s*=\s*("([^"]*)"|'([^']*)')/i
 
+const ENTITIES: Record<string, string> = {
+  '&amp;': '&',
+  '&lt;': '<',
+  '&gt;': '>',
+  '&quot;': '"',
+  '&#39;': "'",
+  '&#039;': "'"
+}
+
 const decodeEntities = (value: string) =>
-  value
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#0?39;/g, "'")
+  value.replace(/&(?:amp|lt|gt|quot|#0?39);/g, (entity) => ENTITIES[entity]!)
 
 /**
  * oEmbed responses hand back arbitrary provider HTML. We never inject it: many
