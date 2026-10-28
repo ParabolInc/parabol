@@ -39,7 +39,7 @@ test.each<[string, Partial<ReportSpec>]>([
     'teams that met, filtered to some teams',
     {measures: ['TEAMS_THAT_MET'], filters: [{dimension: 'TEAM', values: ['team1', 'team2']}]}
   ],
-  ['a custom period', {period: {startDate: '2026-02-01', endDate: '2026-02-28'}}],
+  ['a date range', {period: {range: {startAt: '2026-02-01', endAt: '2026-02-28'}}}],
   ['a comparison', {compareTo: 'PREVIOUS_PERIOD'}],
   ['a limit', {showAs: 'BARS', breakdown: [{dimension: 'TEAM'}], limit: 10}],
   [
@@ -55,7 +55,7 @@ test.each<[string, Partial<ReportSpec>]>([
     {
       measures: ['OPEN_TASKS'],
       showAs: 'BARS',
-      breakdown: [{dimension: 'PERSON'}],
+      breakdown: [{dimension: 'USER'}],
       filters: [{dimension: 'TASK_AGE', values: ['over180Days']}]
     }
   ],
@@ -170,7 +170,7 @@ test.each<[string, Partial<ReportSpec>, string]>([
     {
       measures: ['DAYS_TO_DONE'],
       showAs: 'BARS',
-      breakdown: [{dimension: 'TEAM'}, {dimension: 'PERSON'}]
+      breakdown: [{dimension: 'TEAM'}, {dimension: 'USER'}]
     },
     "DAYS_TO_DONE can't be stacked"
   ],
@@ -197,9 +197,9 @@ test.each<[string, Partial<ReportSpec>, string]>([
     {
       measures: ['MEETINGS'],
       showAs: 'FLOW',
-      breakdown: [{dimension: 'TEAM'}, {dimension: 'PERSON'}]
+      breakdown: [{dimension: 'TEAM'}, {dimension: 'USER'}]
     },
-    'MEETINGS counts toward more than one PERSON'
+    'MEETINGS counts toward more than one USER'
   ],
   [
     'a previous check for something other than health',
@@ -252,25 +252,18 @@ test.each<[string, Partial<ReportSpec>, string]>([
     'a number of 0 or more'
   ],
   [
-    'a preset and dates',
-    {period: {preset: 'LAST_7_DAYS', startDate: '2026-10-01', endDate: '2026-10-07'}},
-    'either a preset or a start and end date'
-  ],
-  ['no period', {period: {}}, 'either a preset or a start and end date'],
-  ['a start without an end', {period: {startDate: '2026-10-01'}}, 'needs a start and end date'],
-  [
     'a date that does not exist',
-    {period: {startDate: '2026-02-01', endDate: '2026-02-30'}},
-    'needs a start and end date'
+    {period: {range: {startAt: '2026-02-01', endAt: '2026-02-30'}}},
+    'needs a start and end day'
   ],
   [
     'a month that does not exist',
-    {period: {startDate: '2026-13-01', endDate: '2026-13-02'}},
-    'needs a start and end date'
+    {period: {range: {startAt: '2026-13-01', endAt: '2026-13-02'}}},
+    'needs a start and end day'
   ],
   [
     'an end before the start',
-    {period: {startDate: '2026-10-07', endDate: '2026-10-01'}},
+    {period: {range: {startAt: '2026-10-07', endAt: '2026-10-01'}}},
     'has to end after it starts'
   ],
   [

@@ -1,9 +1,0 @@
-"""
-What a popular report question is about, which groups it in the Ask box
-"""
-enum ReportSubjectEnum {
-  people
-  impact
-  teamHealth
-  teams
-}

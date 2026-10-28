@@ -62,7 +62,7 @@ const OrgStructureLevelRow = (props: Props) => {
           <OrgStructureValueChip
             key={value.id}
             name={value.name}
-            teamCount={value.teamIds.length}
+            teamCount={value.teams.length}
             onRename={(nextName) => onEdit(renameValue(levelId, value.id, nextName))}
             onRemove={() => onEdit(removeValue(levelId, value.id))}
           />

@@ -1,38 +1,42 @@
 import dayjs from 'dayjs'
-import {type ReportAskPopular, type ReportAskRecent, toReportAskOptions} from '../reportAskOptions'
+import type {PopularReportQuestion} from '../../../shared/reports/popularReportQuestions'
+import type {ReportDimension, ReportSpec, ReportView} from '../../../shared/reports/reportCatalog'
+import {type ReportAskRecent, toReportAskOptions} from '../reportAskOptions'
 
-const spec = (showAs: string, breakdown: string[] = []) =>
-  JSON.stringify({
-    measures: ['MEETINGS'],
-    breakdown: breakdown.map((dimension) => ({dimension})),
-    period: {preset: 'PAGE'},
-    showAs
-  })
+const toSpec = (showAs: ReportView, breakdown: ReportDimension[] = []): ReportSpec => ({
+  measures: ['MEETINGS'],
+  breakdown: breakdown.map((dimension) => ({dimension})),
+  filters: [],
+  where: [],
+  showAs
+})
+const spec = (showAs: ReportView, breakdown: ReportDimension[] = []) =>
+  JSON.stringify(toSpec(showAs, breakdown))
 
-const populars: ReportAskPopular[] = [
+const populars: PopularReportQuestion[] = [
   {
-    id: 'p1',
-    key: 'activePeopleOverTime',
-    subject: 'people',
+    key: 'activeUsersOverTime',
+    subject: 'users',
     question: 'How many people are active?',
     title: 'Active users over time',
-    spec: spec('NUMBER')
+    description: '',
+    spec: toSpec('NUMBER')
   },
   {
-    id: 'p2',
     key: 'retroTasksDoneOrOpen',
     subject: 'impact',
     question: 'Are tasks from retros getting done?',
     title: 'New tasks, done or open',
-    spec: spec('BARS', ['TEAM'])
+    description: '',
+    spec: toSpec('BARS', ['TEAM'])
   },
   {
-    id: 'p3',
     key: 'retroCadence',
     subject: 'teams',
     question: 'Which teams keep up their monthly retros?',
     title: 'Retrospective cadence',
-    spec: spec('HEATMAP', ['TEAM', 'MONTH'])
+    description: '',
+    spec: toSpec('HEATMAP', ['TEAM', 'MONTH'])
   }
 ]
 

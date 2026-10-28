@@ -1,25 +1,26 @@
+import stringify from 'fast-json-stable-stringify'
 import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import {parseReportSpec} from '../../../../client/shared/reports/parseReportSpec'
+import {POPULAR_REPORT_QUESTIONS} from '../../../../client/shared/reports/popularReportQuestions'
 import getKysely from '../../../postgres/getKysely'
-import {toReportRowId} from '../../../reports/pinnedReports'
+import {fromReportKey} from '../../../reports/pinnedReports'
 import readReportSpecInput from '../../../reports/readReportSpecInput'
 import recordReportQuestion from '../../../reports/recordReportQuestion'
-import selectPopularReportQuestions from '../../../reports/selectPopularReportQuestions'
 import toReportSpecShape from '../../../reports/toReportSpecShape'
 import {getUserId} from '../../../utils/authorization'
 import type {MutationResolvers} from '../resolverTypes'
 
-const startReportQuestion: MutationResolvers['startReportQuestion'] = async (
+const logReportQuestionUse: MutationResolvers['logReportQuestionUse'] = async (
   _source,
-  {orgId, popularQuestionKey, reportQuestionId, spec: specInput, title},
+  {orgId, popularQuestionKey, reportQuestionId: reportQuestionKey, spec: specInput, title},
   {authToken}
 ) => {
   const viewerId = getUserId(authToken)
 
   // VALIDATION
-  const isBuilt = !!specInput && !reportQuestionId
-  if ([!!popularQuestionKey, !!reportQuestionId, isBuilt].filter(Boolean).length !== 1) {
+  const isBuilt = !!specInput && !reportQuestionKey
+  if ([!!popularQuestionKey, !!reportQuestionKey, isBuilt].filter(Boolean).length !== 1) {
     throw new GraphQLError(
       'Pick a popular question, one of your recent ones, or a report you built'
     )
@@ -32,8 +33,7 @@ const startReportQuestion: MutationResolvers['startReportQuestion'] = async (
 
   // RESOLUTION
   if (popularQuestionKey) {
-    const popularQuestions = await selectPopularReportQuestions()
-    const popular = popularQuestions.find(({key}) => key === popularQuestionKey)
+    const popular = POPULAR_REPORT_QUESTIONS.find(({key}) => key === popularQuestionKey)
     if (!popular) throw new GraphQLError('That popular question isn’t available')
     const reportQuestion = await recordReportQuestion({
       userId: viewerId,
@@ -41,8 +41,7 @@ const startReportQuestion: MutationResolvers['startReportQuestion'] = async (
       source: 'popular',
       question: popular.question,
       title: popular.title,
-      spec: popular.spec,
-      popularQuestionId: popular.id
+      spec: popular.spec
     })
     return {reportQuestion}
   }
@@ -57,20 +56,21 @@ const startReportQuestion: MutationResolvers['startReportQuestion'] = async (
     })
     return {reportQuestion}
   }
-  const rowId = toReportRowId(reportQuestionId!)
+  const reportQuestionId = fromReportKey(reportQuestionKey!)
   const pg = getKysely()
-  const recent = rowId
+  const recent = reportQuestionId
     ? await pg
         .selectFrom('ReportQuestion')
         .select('spec')
-        .where('id', '=', rowId)
+        .where('id', '=', reportQuestionId)
         .where('userId', '=', viewerId)
         .where('orgId', '=', orgId)
         .executeTakeFirst()
     : undefined
-  if (!rowId || !recent) throw new GraphQLError('That isn’t one of your recent questions')
+  if (!reportQuestionId || !recent)
+    throw new GraphQLError('That isn’t one of your recent questions')
   // a changed spec is kept as the one used, which shows where the first one missed
-  const isChanged = !!spec && JSON.stringify(spec) !== JSON.stringify(parseReportSpec(recent.spec))
+  const isChanged = !!spec && stringify(spec) !== stringify(parseReportSpec(recent.spec).spec)
   const reportQuestion = await pg
     .updateTable('ReportQuestion')
     .set({
@@ -85,10 +85,10 @@ const startReportQuestion: MutationResolvers['startReportQuestion'] = async (
           }
         : {})
     })
-    .where('id', '=', rowId)
+    .where('id', '=', reportQuestionId)
     .returningAll()
     .executeTakeFirstOrThrow()
   return {reportQuestion}
 }
 
-export default startReportQuestion
+export default logReportQuestionUse

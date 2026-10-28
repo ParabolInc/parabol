@@ -11,7 +11,7 @@ const spec = (overrides: Partial<ReportSpec>): ReportSpec => ({
   breakdown: [],
   filters: [],
   where: [],
-  period: {preset: 'PAGE'},
+  period: null,
   showAs: 'NUMBER',
   ...overrides
 })

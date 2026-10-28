@@ -1,17 +1,17 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
-import type {useStartReportQuestionMutation as TStartReportQuestionMutation} from '../__generated__/useStartReportQuestionMutation.graphql'
+import type {useLogReportQuestionUseMutation as TLogReportQuestionUseMutation} from '../__generated__/useLogReportQuestionUseMutation.graphql'
 import handleRecentReportQuestion from './handlers/handleRecentReportQuestion'
 
 const mutation = graphql`
-  mutation useStartReportQuestionMutation(
+  mutation useLogReportQuestionUseMutation(
     $orgId: ID!
     $popularQuestionKey: String
     $reportQuestionId: ID
     $spec: ReportSpecInput
     $title: String
   ) {
-    startReportQuestion(
+    logReportQuestionUse(
       orgId: $orgId
       popularQuestionKey: $popularQuestionKey
       reportQuestionId: $reportQuestionId
@@ -26,14 +26,14 @@ const mutation = graphql`
   }
 `
 
-const useStartReportQuestionMutation = () => {
-  const [commit, submitting] = useMutation<TStartReportQuestionMutation>(mutation)
-  const execute = (config: UseMutationConfig<TStartReportQuestionMutation>) => {
+const useLogReportQuestionUseMutation = () => {
+  const [commit, submitting] = useMutation<TLogReportQuestionUseMutation>(mutation)
+  const execute = (config: UseMutationConfig<TLogReportQuestionUseMutation>) => {
     const {orgId} = config.variables
     return commit({
       updater: (store) => {
         const reportQuestion = store
-          .getRootField('startReportQuestion')
+          .getRootField('logReportQuestionUse')
           ?.getLinkedRecord('reportQuestion')
         if (reportQuestion) handleRecentReportQuestion(store, orgId, reportQuestion)
       },
@@ -43,4 +43,4 @@ const useStartReportQuestionMutation = () => {
   return [execute, submitting] as const
 }
 
-export default useStartReportQuestionMutation
+export default useLogReportQuestionUseMutation

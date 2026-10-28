@@ -13,9 +13,6 @@ const mutation = graphql`
         ...ReportAskBox_recentQuestion
       }
       reason
-      suggestions {
-        ...ReportAskBox_popularQuestion @relay(mask: false)
-      }
     }
   }
 `

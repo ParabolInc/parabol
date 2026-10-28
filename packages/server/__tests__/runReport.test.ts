@@ -2,7 +2,7 @@ import ms from 'ms'
 import type {ReportSpec} from '../../client/shared/reports/reportCatalog'
 import {getNewDataLoader} from '../dataloader/getNewDataLoader'
 import getKysely from '../postgres/getKysely'
-import {toOrgStructureId} from '../reports/orgStructure'
+import {toOrgStructureKey} from '../reports/orgStructure'
 import runReport from '../reports/runReport'
 import {createPGTables, truncatePGTables} from './common'
 
@@ -605,8 +605,8 @@ const PLATFORM = 1
 const CUSTODY = 2
 const AMERICAS = 3
 const REMOVED_LEVEL = 99
-const levelId = (rowId: number) => toOrgStructureId(rowId, 'OrgStructureLevel')
-const valueId = (rowId: number) => toOrgStructureId(rowId, 'OrgStructureValue')
+const levelId = (rowId: number) => toOrgStructureKey(rowId, 'OrgStructureLevel')
+const valueId = (rowId: number) => toOrgStructureKey(rowId, 'OrgStructureValue')
 
 // Apollo and Borealis are Platform and Cygnus is Custody. Dorado isn't placed yet
 const seedStructure = async () => {
@@ -870,13 +870,13 @@ describe('people', () => {
 
   test('a leader counts the whole organization', async () => {
     expect(valuesOf(await report({measures: ['MEMBERS']}))).toEqual([6])
-    expect(valuesOf(await report({...overDays, measures: ['ACTIVE_PEOPLE']}))).toEqual([
+    expect(valuesOf(await report({...overDays, measures: ['ACTIVE_USERS']}))).toEqual([
       6, 6, 6, 6, 5, 5, 5
     ])
   })
 
   test('a member counts the active people on their teams', async () => {
-    const result = await report({...overDays, measures: ['ACTIVE_PEOPLE']}, {viewerId: ALEX})
+    const result = await report({...overDays, measures: ['ACTIVE_USERS']}, {viewerId: ALEX})
     expect(valuesOf(result)).toEqual([4, 4, 4, 3, 2, 2, 2])
   })
 
@@ -899,8 +899,10 @@ describe('limits', () => {
       showAs: 'TABLE',
       breakdown: [{dimension: 'DAY'}, {dimension: 'TEAM'}, {dimension: 'MEETING_TYPE'}],
       period: {
-        startDate: daysAgo(400).toISOString().slice(0, 10),
-        endDate: daysAgo(36).toISOString().slice(0, 10)
+        range: {
+          startAt: daysAgo(400).toISOString().slice(0, 10),
+          endAt: daysAgo(36).toISOString().slice(0, 10)
+        }
       }
     })
     expect(result.rows).toHaveLength(5000)
@@ -932,7 +934,7 @@ describe('people and work', () => {
     const notSeen: Partial<ReportSpec> = {
       measures: ['LAST_SEEN'],
       showAs: 'TABLE',
-      breakdown: [{dimension: 'PERSON'}],
+      breakdown: [{dimension: 'USER'}],
       where: [{measure: 'LAST_SEEN', operator: 'OLDER_THAN_DAYS', value: 30}],
       sort: {by: 'VALUE', order: 'ASC'}
     }
@@ -949,7 +951,7 @@ describe('people and work', () => {
     expect(valuesOf(await report(daysToDone, asWren))).toEqual([2])
     expect(
       byLabel(
-        await report({...daysToDone, showAs: 'TABLE', breakdown: [{dimension: 'PERSON'}]}, asWren)
+        await report({...daysToDone, showAs: 'TABLE', breakdown: [{dimension: 'USER'}]}, asWren)
       )
     ).toEqual({Xavier: 1.5, 'No one': 28})
     expect(byLabel(await report({...daysToDone, ...byTeam}, asWren))).toEqual({Web: 2, Yard: null})
@@ -1007,13 +1009,16 @@ describe('people and work', () => {
   })
 
   test('by person, a meeting counts for each person who joined it', async () => {
-    expect(
-      byLabel(await report({...recently, breakdown: [{dimension: 'PERSON'}]}, asWren))
-    ).toEqual({Wren: 2, Wendy: 1, Xavier: 2, Yara: 1})
+    expect(byLabel(await report({...recently, breakdown: [{dimension: 'USER'}]}, asWren))).toEqual({
+      Wren: 2,
+      Wendy: 1,
+      Xavier: 2,
+      Yara: 1
+    })
     expect(
       valuesOf(
         await report(
-          {...recently, showAs: 'NUMBER', filters: [{dimension: 'PERSON', values: [WREN, XAVIER]}]},
+          {...recently, showAs: 'NUMBER', filters: [{dimension: 'USER', values: [WREN, XAVIER]}]},
           asWren
         )
       )
@@ -1097,8 +1102,10 @@ describe('team health', () => {
           ...harbor,
           filters: [{dimension: 'TEAM', values: [HOLLOW]}],
           period: {
-            startDate: daysAgo(12).toISOString().slice(0, 10),
-            endDate: daysAgo(8).toISOString().slice(0, 10)
+            range: {
+              startAt: daysAgo(12).toISOString().slice(0, 10),
+              endAt: daysAgo(8).toISOString().slice(0, 10)
+            }
           }
         },
         asLeader
@@ -1135,7 +1142,7 @@ describe('org structure', () => {
   })
 
   test('a person on two teams with the same value counts once', async () => {
-    expect(byLabel(await report({...byUnit, measures: ['ACTIVE_PEOPLE']}))).toEqual({
+    expect(byLabel(await report({...byUnit, measures: ['ACTIVE_USERS']}))).toEqual({
       Platform: 2,
       Custody: 2,
       'Not set': 1

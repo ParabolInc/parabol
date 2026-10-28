@@ -4,9 +4,10 @@ One value of an org structure level, like Platform for business unit
 type OrgStructureValue {
   id: ID!
   name: String!
+  level: OrgStructureLevel!
 
   """
   The teams placed at this value that the viewer can see
   """
-  teamIds: [ID!]!
+  teams: [Team!]!
 }

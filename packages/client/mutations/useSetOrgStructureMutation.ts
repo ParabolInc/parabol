@@ -14,7 +14,9 @@ const mutation = graphql`
           values {
             id
             name
-            teamIds
+            teams {
+              id
+            }
           }
         }
       }

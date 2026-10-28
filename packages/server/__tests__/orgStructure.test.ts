@@ -9,7 +9,9 @@ const STRUCTURE = `
     values {
       id
       name
-      teamIds
+      teams {
+        id
+      }
     }
   }
 `
@@ -47,7 +49,7 @@ const PLACE_TEAM = `
 interface Level {
   id: string
   name: string
-  values: {id: string; name: string; teamIds: string[]}[]
+  values: {id: string; name: string; teams: {id: string}[]}[]
 }
 
 interface LevelInput {
@@ -115,10 +117,10 @@ test('a team is placed at a value, and removing the value leaves it not set', as
     cookie
   })
   expect(placed.errors).toBeUndefined()
-  expect(placed.data.placeTeam.organization.structure[0].values[0].teamIds).toEqual([teamId])
+  expect(placed.data.placeTeam.organization.structure[0].values[0].teams).toEqual([{id: teamId}])
   await setStructure(orgId, cookie, [{...toInput(unit!), values: [toInput(unit!).values[1]!]}])
   const [unitAfter] = await structureOf(orgId, cookie)
-  expect(unitAfter!.values).toEqual([{id: custody!.id, name: 'Custody', teamIds: []}])
+  expect(unitAfter!.values).toEqual([{id: custody!.id, name: 'Custody', teams: []}])
 })
 
 test('only org admins and billing leaders change the structure, and members only see placements on teams they can see', async () => {
@@ -139,14 +141,14 @@ test('only org admins and billing leaders change the structure, and members only
   expect((await placeAs(owner.cookie)).errors).toBeUndefined()
   expect((await setStructure(owner.orgId, member.cookie, [])).errors).toBeTruthy()
   const [publicUnit] = await structureOf(owner.orgId, member.cookie)
-  expect(publicUnit!.values[0]!.teamIds).toEqual([owner.teamId])
+  expect(publicUnit!.values[0]!.teams).toEqual([{id: owner.teamId}])
   await getKysely()
     .updateTable('Team')
     .set({isPublic: false})
     .where('id', '=', owner.teamId)
     .execute()
   const [privateUnit] = await structureOf(owner.orgId, member.cookie)
-  expect(privateUnit!.values[0]!.teamIds).toEqual([])
+  expect(privateUnit!.values[0]!.teams).toEqual([])
 })
 
 test('every level and value needs a name of its own', async () => {

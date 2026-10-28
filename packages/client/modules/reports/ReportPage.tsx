@@ -24,7 +24,6 @@ const query = graphql`
     $orgId: ID!
     $spec: ReportSpecInput!
     $timeZone: String!
-    $pagePeriod: ReportPeriodInput!
     $lastHeldSpec: ReportSpecInput!
     $hasLastHeld: Boolean!
   ) {

@@ -1,4 +1,4 @@
-type StartReportQuestionSuccess {
+type LogReportQuestionUseSuccess {
   """
   The question, now first in the viewer's recent questions
   """

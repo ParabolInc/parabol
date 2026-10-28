@@ -4,7 +4,7 @@ export interface OrgStructureLevelData {
   readonly values: readonly {
     readonly id: string
     readonly name: string
-    readonly teamIds: readonly string[]
+    readonly teams: readonly {readonly id: string}[]
   }[]
 }
 
@@ -75,7 +75,9 @@ export const toPlacedValueIds = (levels: readonly OrgStructureLevelData[]) =>
     levels.map((level) => [
       level.id,
       new Map(
-        level.values.flatMap((value) => value.teamIds.map((teamId) => [teamId, value.id] as const))
+        level.values.flatMap((value) =>
+          value.teams.map(({id: teamId}) => [teamId, value.id] as const)
+        )
       )
     ])
   )

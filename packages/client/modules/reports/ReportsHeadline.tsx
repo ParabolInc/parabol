@@ -22,12 +22,12 @@ const changeOf = (rows: readonly HeadlineRow[]) =>
 
 // The four numbers at the top of the page always cover the last 30 days, whatever the page's period
 const ReportsHeadline = ({organizationRef}: Props) => {
-  const {activePeople, teamsThatMet, userIntegrations, tasksPushed} = useFragment(
+  const {activeUsers, teamsThatMet, userIntegrations, tasksPushed} = useFragment(
     graphql`
       fragment ReportsHeadline_organization on Organization {
-        activePeople: report(
+        activeUsers: report(
           spec: {
-            measures: [ACTIVE_PEOPLE, MEMBERS]
+            measures: [ACTIVE_USERS, MEMBERS]
             period: {preset: LAST_30_DAYS}
             compareTo: PREVIOUS_PERIOD
             showAs: TABLE
@@ -91,7 +91,7 @@ const ReportsHeadline = ({organizationRef}: Props) => {
     `,
     organizationRef
   )
-  const [active] = activePeople.rows
+  const [active] = activeUsers.rows
   const activeCount = active?.values[0] ?? 0
   const memberCount = active?.values[1] ?? 0
   const teamsThatMetCount = teamsThatMet.rows[0]?.values[0] ?? 0
@@ -113,7 +113,7 @@ const ReportsHeadline = ({organizationRef}: Props) => {
             ? `${Math.round((activeCount / memberCount) * 100)}% of members`
             : 'no members yet'
         }
-        change={changeOf(activePeople.rows)}
+        change={changeOf(activeUsers.rows)}
         comparison={PREVIOUS_30_DAYS}
       />
       <ReportHeadlineNumber

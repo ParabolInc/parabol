@@ -5,9 +5,9 @@ import {
   REPORT_MEASURES,
   REPORT_PERIOD_PRESETS,
   REPORT_SORT_BY,
-  REPORT_SORT_ORDERS,
   REPORT_TIME_DIMENSIONS,
-  REPORT_VIEWS
+  REPORT_VIEWS,
+  SORT_DIRECTIONS
 } from '../../client/shared/reports/reportCatalog'
 
 // OpenAI's strict structured output: every key is required, nothing extra is allowed, and a value
@@ -50,16 +50,20 @@ const SPEC_SCHEMA = strictObject({
       value: {type: 'number'}
     })
   },
-  period: strictObject({
-    preset: nullableOneOf(REPORT_PERIOD_PRESETS),
-    startDate: {type: ['string', 'null']},
-    endDate: {type: ['string', 'null']}
-  }),
+  period: {
+    anyOf: [
+      strictObject({preset: oneOf(REPORT_PERIOD_PRESETS)}),
+      strictObject({
+        range: strictObject({startAt: {type: 'string'}, endAt: {type: 'string'}})
+      }),
+      {type: 'null'}
+    ]
+  },
   compareTo: nullableOneOf(REPORT_COMPARE_TO),
   showAs: oneOf(Object.keys(REPORT_VIEWS)),
   sort: {
     anyOf: [
-      strictObject({by: oneOf(REPORT_SORT_BY), order: oneOf(REPORT_SORT_ORDERS)}),
+      strictObject({by: oneOf(REPORT_SORT_BY), order: oneOf(SORT_DIRECTIONS)}),
       {type: 'null'}
     ]
   },

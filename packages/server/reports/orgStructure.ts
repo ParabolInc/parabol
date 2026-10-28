@@ -31,29 +31,29 @@ export const isLevelDimension = <T extends string>(
   dimension: T | ReportLevelDimension
 ): dimension is ReportLevelDimension => dimension.startsWith('level:')
 
-export const toLevelRowId = (dimension: ReportLevelDimension) =>
+export const toLevelId = (dimension: ReportLevelDimension) =>
   Number(dimension.slice('level:'.length))
 
 type OrgStructureEntity = 'OrgStructureLevel' | 'OrgStructureValue'
 
-export const toOrgStructureId = (rowId: number, entity: OrgStructureEntity) =>
-  CipherId.toClient(rowId, entity)
+export const toOrgStructureKey = (id: number, entity: OrgStructureEntity) =>
+  CipherId.toClient(id, entity)
 
-// a level and its values with the ids the API uses, for anything outside the engine, like AI
+// a level and its values with the keys the API uses, for anything outside the engine, like AI
 export const toClientOrgStructureLevels = (levels: OrgStructureLevelSource[]) =>
   levels.map(({id, name, values}) => ({
-    id: toOrgStructureId(id, 'OrgStructureLevel'),
+    id: toOrgStructureKey(id, 'OrgStructureLevel'),
     name,
     values: values.map((value) => ({
-      id: toOrgStructureId(value.id, 'OrgStructureValue'),
+      id: toOrgStructureKey(value.id, 'OrgStructureValue'),
       name: value.name
     }))
   }))
 
 export type ClientOrgStructureLevel = ReturnType<typeof toClientOrgStructureLevels>[number]
 
-// null for an id that isn't one of these, so a mangled id is a missing level rather than a query error
-export const toOrgStructureRowId = (clientId: string, entity: OrgStructureEntity) => {
-  const [rowId, , idEntity] = CipherId.fromClient(clientId)
-  return idEntity === entity && Number.isInteger(rowId) ? rowId : null
+// null for a key that isn’t one of these, so a mangled key is a missing level rather than a query error
+export const fromOrgStructureKey = (key: string, entity: OrgStructureEntity) => {
+  const [id, , keyEntity] = CipherId.fromClient(key)
+  return keyEntity === entity && Number.isInteger(id) ? id : null
 }

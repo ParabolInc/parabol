@@ -1,39 +1,42 @@
-import {type RawBuilder, sql} from 'kysely'
+import {expressionBuilder, sql} from 'kysely'
 import type {REPORT_TASK_AGES} from '../../../client/shared/reports/reportCatalog'
 import type {ReportMeasureQuery} from '../reportMeasureTypes'
 import {readReportRows} from '../reportQueries'
-import {isTaskInTeams, taskDoneDate, taskSource} from './taskExpressions'
+import {selectTaskReadings, taskSource} from './taskExpressions'
 
 type ReportTaskAge = keyof typeof REPORT_TASK_AGES
 
-const YOUNGER_THAN: [ReportTaskAge, string][] = [
-  ['under30Days', '30 days'],
-  ['from30To90Days', '90 days'],
-  ['from90To180Days', '180 days']
-]
-const OLDEST: ReportTaskAge = 'over180Days'
-
-const taskAgeAt = (at: RawBuilder<Date>) =>
-  sql<string>`CASE
-    ${sql.join(
-      YOUNGER_THAN.map(
-        ([age, limit]) => sql`WHEN ${at} - t."createdAt" < ${limit}::interval THEN ${age}`
-      ),
-      sql` `
-    )}
-    ELSE ${OLDEST}
-  END`
-
 const readOpenTasks = (query: ReportMeasureQuery) => {
-  const source = taskSource(query)
-  return readReportRows(query, {
-    ...source,
-    dimensions: {...source.dimensions, TASK_AGE: taskAgeAt(sql.ref<Date>('Step.readAt'))},
-    where: [isTaskInTeams(query.teamIds), sql<boolean>`NOT 'archived' = ANY(t.tags)`],
+  const from = selectTaskReadings(query.readAt)
+  const eb = expressionBuilder(from)
+  const {isInTeams, doneDate, breakdown} = taskSource(query)
+  // postgres subtracts timestamps to an interval, which kysely has no type for
+  const age = eb(eb.ref('Step.readAt'), '-', eb.ref('t.createdAt')).$castTo<string>()
+  const isYoungerThan = (limit: string) =>
+    eb(age, '<', eb.cast<string>(eb.val(limit), sql`interval`))
+  const taskAge = eb
+    .case()
+    .when(isYoungerThan('30 days'))
+    .then<ReportTaskAge>('under30Days')
+    .when(isYoungerThan('90 days'))
+    .then<ReportTaskAge>('from30To90Days')
+    .when(isYoungerThan('180 days'))
+    .then<ReportTaskAge>('from90To180Days')
+    .else<ReportTaskAge>('over180Days')
+    .end()
+  return readReportRows(query, from, {
+    ...breakdown,
+    dimensions: {...breakdown.dimensions, TASK_AGE: taskAge},
+    where: [isInTeams, eb.not(eb(eb.val('archived'), '=', eb.fn.any('t.tags')))],
     isPresentAt: (at) =>
-      sql<boolean>`t."createdAt" <= ${at} AND NOT (t.status = 'done' AND ${taskDoneDate} <= ${at})`,
-    value: sql<number>`count(*)::int`,
-    estimated: sql<number>`count(*) FILTER (WHERE t.status = 'done' AND t."doneAt" IS NULL)`
+      eb.and([
+        eb('t.createdAt', '<=', at),
+        eb.not(eb.and([eb('t.status', '=', 'done'), eb(doneDate, '<=', at)]))
+      ]),
+    value: eb.cast<number>(eb.fn.countAll(), 'integer'),
+    estimated: eb.fn
+      .countAll<number>()
+      .filterWhere(eb.and([eb('t.status', '=', 'done'), eb('t.doneAt', 'is', null)]))
   })
 }
 

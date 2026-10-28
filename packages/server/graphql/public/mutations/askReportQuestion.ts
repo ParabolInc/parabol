@@ -3,11 +3,9 @@ import getKysely from '../../../postgres/getKysely'
 import completeReportAskWithOpenAI from '../../../reports/completeReportAskWithOpenAI'
 import getReportScope from '../../../reports/getReportScope'
 import {toClientOrgStructureLevels} from '../../../reports/orgStructure'
-import rankPopularReportQuestions from '../../../reports/rankPopularReportQuestions'
 import recordReportQuestion from '../../../reports/recordReportQuestion'
 import {isTimeZone, toLocalDate} from '../../../reports/reportCalendar'
 import requestReportSpec from '../../../reports/requestReportSpec'
-import selectPopularReportQuestions from '../../../reports/selectPopularReportQuestions'
 import {getUserId, isSuperUser} from '../../../utils/authorization'
 import hasUsedMonthlyAIQuota from '../../../utils/hasUsedMonthlyAIQuota'
 import logError from '../../../utils/logError'
@@ -72,25 +70,18 @@ const askReportQuestion: MutationResolvers['askReportQuestion'] = async (
       aiSpec: answer.aiSpec,
       spec: answer.spec
     })
-    return {reportQuestion, reason: null, suggestions: []}
+    return {reportQuestion, reason: null}
   }
-  const [reportQuestion, popularQuestions] = await Promise.all([
-    recordReportQuestion({
-      userId: viewerId,
-      orgId,
-      source: 'ask',
-      question: trimmedQuestion,
-      title: trimmedQuestion,
-      aiSpec: answer.aiSpec,
-      spec: null
-    }),
-    selectPopularReportQuestions()
-  ])
-  return {
-    reportQuestion,
-    reason: answer.reason,
-    suggestions: rankPopularReportQuestions(trimmedQuestion, popularQuestions)
-  }
+  const reportQuestion = await recordReportQuestion({
+    userId: viewerId,
+    orgId,
+    source: 'ask',
+    question: trimmedQuestion,
+    title: trimmedQuestion,
+    aiSpec: answer.aiSpec,
+    spec: null
+  })
+  return {reportQuestion, reason: answer.reason}
 }
 
 export default askReportQuestion

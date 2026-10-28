@@ -39,7 +39,7 @@ const ReportCard = ({pinRef, orgId, period, index, pinCount, isLeader}: Props) =
   )
   const {id: pinId, title, description, pinnedBy, report} = pin
   const spec = useMemo(() => parseReportSpecJSON(pin.spec), [pin.spec])
-  const ownPeriod = spec?.period.preset && spec.period.preset !== 'PAGE' ? spec.period.preset : null
+  const ownPeriod = spec?.period?.preset ?? null
   return (
     <article className='flex min-w-0 flex-col gap-3 rounded-md border border-hairline bg-surface-card py-4 pr-3 pl-5 shadow-xs'>
       <div className='flex items-start gap-2'>

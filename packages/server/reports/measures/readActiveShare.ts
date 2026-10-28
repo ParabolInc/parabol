@@ -1,42 +1,83 @@
-import {type RawBuilder, sql} from 'kysely'
+import {type Expression, expressionBuilder} from 'kysely'
+import getKysely from '../../postgres/getKysely'
 import selectOrgUserActivitySpans, {
   isOrgUserActiveAt
 } from '../../postgres/queries/selectOrgUserActivitySpans'
+import type {DB} from '../../postgres/types/pg'
 import type {ReportMeasureQuery} from '../reportMeasureTypes'
-import {isTeamMemberAt, readReportRows} from '../reportQueries'
+import {isAnyOf, isTeamMemberAt, readingSteps, readReportRows} from '../reportQueries'
 
-const span = {
-  eventType: sql.ref<string>('s.eventType'),
-  eventDate: sql.ref<Date>('s.eventDate'),
-  nextEventDate: sql.ref<Date | null>('s.nextEventDate')
-}
+const eb = expressionBuilder<DB>()
 
 // The members active at each reading as a percentage of all the members then, or null without members
-const percentActive = (memberId: RawBuilder<string>) =>
-  sql<number>`round(100.0 * count(DISTINCT s."userId") / NULLIF(count(DISTINCT ${memberId}), 0), 1)::float8`
+const percentActive = (activeId: Expression<string | null>, memberId: Expression<string>) =>
+  eb.cast<number>(
+    eb.fn('round', [
+      eb(
+        eb(eb.cast(eb.lit(100), 'numeric'), '*', eb.fn.count(activeId).distinct()),
+        '/',
+        eb.fn('nullif', [eb.fn.count(memberId).distinct(), eb.lit(0)])
+      ),
+      eb.lit(1)
+    ]),
+    'float8'
+  )
 
 const readActiveShare = (query: ReportMeasureQuery) => {
-  const joinActiveSpans = (memberId: RawBuilder<string>) =>
-    sql`LEFT JOIN (${selectOrgUserActivitySpans(query.orgId)}) AS s
-      ON s."userId" = ${memberId} AND ${isOrgUserActiveAt(span, sql.ref('Step.readAt'))}`
-  if (query.isWholeOrg) {
-    const memberId = sql.ref<string>('ou.userId')
-    return readReportRows(query, {
-      from: sql`"OrganizationUser" AS ou ${joinActiveSpans(memberId)}`,
-      where: [sql<boolean>`ou."orgId" = ${query.orgId}`],
+  const {orgId, readAt, isWholeOrg, teamIds} = query
+  const steps = getKysely().selectFrom(readingSteps(readAt))
+  const spans = selectOrgUserActivitySpans(orgId).as('s')
+  if (isWholeOrg) {
+    const from = steps.crossJoin('OrganizationUser as ou').leftJoin(spans, (join) =>
+      join.onRef('s.userId', '=', 'ou.userId').on(({ref}) =>
+        isOrgUserActiveAt(
+          {
+            eventType: ref('s.eventType'),
+            eventDate: ref('s.eventDate'),
+            nextEventDate: ref('s.nextEventDate')
+          },
+          ref('Step.readAt')
+        )
+      )
+    )
+    const {ref} = expressionBuilder(from)
+    return readReportRows(query, from, {
+      where: [eb(ref('ou.orgId'), '=', orgId)],
       isPresentAt: (at) =>
-        sql<boolean>`ou."joinedAt" <= ${at} AND (ou."removedAt" IS NULL OR ou."removedAt" > ${at})`,
+        eb.and([
+          eb(ref('ou.joinedAt'), '<=', at),
+          eb.or([eb(ref('ou.removedAt'), 'is', null), eb(ref('ou.removedAt'), '>', at)])
+        ]),
       dimensions: {},
-      value: percentActive(memberId)
+      value: percentActive(ref('s.userId'), ref('ou.userId'))
     })
   }
-  const memberId = sql.ref<string>('mem.userId')
-  return readReportRows(query, {
-    from: sql`"TeamMember" AS mem ${joinActiveSpans(memberId)}`,
-    where: [sql<boolean>`mem."teamId" = ANY(${query.teamIds}::text[])`],
-    isPresentAt: (at) => isTeamMemberAt('mem', at),
-    dimensions: {TEAM: sql<string>`mem."teamId"`},
-    value: percentActive(memberId)
+  const from = steps.crossJoin('TeamMember as mem').leftJoin(spans, (join) =>
+    join.onRef('s.userId', '=', 'mem.userId').on(({ref}) =>
+      isOrgUserActiveAt(
+        {
+          eventType: ref('s.eventType'),
+          eventDate: ref('s.eventDate'),
+          nextEventDate: ref('s.nextEventDate')
+        },
+        ref('Step.readAt')
+      )
+    )
+  )
+  const {ref} = expressionBuilder(from)
+  return readReportRows(query, from, {
+    where: [isAnyOf(ref('mem.teamId'), teamIds)],
+    isPresentAt: (at) =>
+      isTeamMemberAt(
+        {
+          createdAt: ref('mem.createdAt'),
+          isNotRemoved: ref('mem.isNotRemoved'),
+          updatedAt: ref('mem.updatedAt')
+        },
+        at
+      ),
+    dimensions: {TEAM: ref('mem.teamId')},
+    value: percentActive(ref('s.userId'), ref('mem.userId'))
   })
 }
 

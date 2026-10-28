@@ -9,6 +9,7 @@ import {type ReportAddress, toReportsHomePath} from './reportPaths'
 import type {ReportPagePeriod} from './reportPeriodParam'
 import toLastHeldReportSpec from './toLastHeldReportSpec'
 import useReportSpecChange from './useReportSpecChange'
+import withPagePeriod from './withPagePeriod'
 
 interface Props {
   orgId: string
@@ -27,10 +28,9 @@ const ReportsAnswerLoader = ({orgId, answer, period}: Props) => {
     reportsAnswerQuery,
     {
       orgId,
-      spec,
+      spec: withPagePeriod(spec, period),
       timeZone,
-      pagePeriod: period,
-      lastHeldSpec: lastHeldSpec ?? spec,
+      lastHeldSpec: withPagePeriod(lastHeldSpec ?? spec, period),
       hasLastHeld: !!lastHeldSpec
     },
     undefined,

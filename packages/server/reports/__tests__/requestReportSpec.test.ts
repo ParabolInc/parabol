@@ -7,7 +7,7 @@ const retroTasks = {
   breakdown: [{dimension: 'TEAM'}, {dimension: 'DONE_OR_OPEN'}],
   filters: [{dimension: 'MEETING_TYPE', values: ['retrospective']}],
   where: [],
-  period: {preset: 'PAGE', startDate: null, endDate: null},
+  period: null,
   compareTo: null,
   showAs: 'BARS',
   sort: null,

@@ -165,17 +165,7 @@ test('every organization starts with the built-in pins, each with a spec that ru
   ])
   for (const pin of pinnedReports) {
     expect(pin.id).toContain(orgId)
-    expect(parseReportSpec(JSON.parse(pin.spec))).toEqual(JSON.parse(pin.spec))
+    expect(parseReportSpec(JSON.parse(pin.spec)).spec).toEqual(JSON.parse(pin.spec))
     expect(pin.report.rows.length).toBeGreaterThan(0)
   }
-})
-
-test('every popular question has a spec Parabol can run', async () => {
-  const questions = await getKysely()
-    .selectFrom('PopularReportQuestion')
-    .select(['key', 'spec'])
-    .execute()
-  expect(questions.length).toBeGreaterThan(0)
-  const unparsable = questions.filter(({spec}) => !parseReportSpec(spec)).map(({key}) => key)
-  expect(unparsable).toEqual([])
 })

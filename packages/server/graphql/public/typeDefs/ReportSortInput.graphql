@@ -6,5 +6,5 @@ input ReportSortInput {
   """
   Defaults to high to low for values, A to Z for names, and oldest first for time
   """
-  order: ReportSortOrderEnum
+  order: SortDirectionEnum
 }

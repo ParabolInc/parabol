@@ -19,7 +19,10 @@ input ReportSpecInput {
   """
   where: [ReportConditionInput!]! = []
 
-  period: ReportPeriodInput!
+  """
+  When the data comes from. Null follows the period picked on the Reports page, or the last 3 months without one
+  """
+  period: ReportPeriodInput
 
   compareTo: ReportCompareToEnum
 

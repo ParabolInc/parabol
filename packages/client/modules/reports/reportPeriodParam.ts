@@ -1,4 +1,4 @@
-import type {ReportPeriodPreset} from '../../shared/reports/reportCatalog'
+import type {ReportDateRange, ReportPeriodPreset} from '../../shared/reports/reportCatalog'
 
 export const REPORT_PAGE_PRESETS = [
   'LAST_7_DAYS',
@@ -20,8 +20,8 @@ const PRESET_PARAMS: Record<ReportPagePreset, string> = {
 }
 
 export type ReportPagePeriod =
-  | {preset: ReportPagePreset; startDate?: null; endDate?: null}
-  | {preset?: null; startDate: string; endDate: string}
+  | {preset: ReportPagePreset; range?: never}
+  | {preset?: never; range: ReportDateRange}
 
 export const DEFAULT_REPORT_PAGE_PERIOD: ReportPagePeriod = {preset: 'LAST_3_MONTHS'}
 
@@ -31,12 +31,14 @@ export const parseReportPeriodParam = (param: string | null): ReportPagePeriod =
   const preset = REPORT_PAGE_PRESETS.find((key) => PRESET_PARAMS[key] === param)
   if (preset) return {preset}
   const range = param?.match(RANGE_PARAM)
-  if (range && range[1]! <= range[2]!) return {startDate: range[1]!, endDate: range[2]!}
+  if (range && range[1]! <= range[2]!) return {range: {startAt: range[1]!, endAt: range[2]!}}
   return DEFAULT_REPORT_PAGE_PERIOD
 }
 
 // null for the default, which keeps it out of the address
 export const toReportPeriodParam = (period: ReportPagePeriod) => {
   if (period.preset === DEFAULT_REPORT_PAGE_PERIOD.preset) return null
-  return period.preset ? PRESET_PARAMS[period.preset] : `${period.startDate}_${period.endDate}`
+  return period.preset
+    ? PRESET_PARAMS[period.preset]
+    : `${period.range.startAt}_${period.range.endAt}`
 }

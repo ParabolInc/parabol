@@ -10,15 +10,15 @@ import countTeamsThatMet from './countTeamsThatMet'
 import findLastMeeting from './findLastMeeting'
 import findLastSeen from './findLastSeen'
 import medianDaysToDone from './medianDaysToDone'
-import readActivePeople from './readActivePeople'
 import readActiveShare from './readActiveShare'
+import readActiveUsers from './readActiveUsers'
 import readHealthScore from './readHealthScore'
 import readMembers from './readMembers'
 import readOpenTasks from './readOpenTasks'
 import readUserIntegrations from './readUserIntegrations'
 
 const reportMeasures: Record<ReportMeasure, ReportMeasureFunction> = {
-  ACTIVE_PEOPLE: readActivePeople,
+  ACTIVE_USERS: readActiveUsers,
   MEMBERS: readMembers,
   ACTIVE_SHARE: readActiveShare,
   LAST_SEEN: findLastSeen,

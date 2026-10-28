@@ -116,14 +116,12 @@ export const validateReportSpec = (spec: ReportSpec): string | null => {
     if (isDateMeasure && value > MAX_REPORT_CONDITION_DAYS) return 'Only show looks back too far'
   }
 
-  const {preset, startDate, endDate} = period
-  const hasRange = !!startDate || !!endDate
-  if (!!preset === hasRange) return 'A period is either a preset or a start and end date'
-  if (hasRange) {
-    if (!startDate || !endDate || !isRealDate(startDate) || !isRealDate(endDate)) {
-      return 'A custom period needs a start and end date as YYYY-MM-DD'
+  const range = period?.range
+  if (range) {
+    if (!isRealDate(range.startAt) || !isRealDate(range.endAt)) {
+      return 'A date range needs a start and end day as YYYY-MM-DD'
     }
-    if (endDate < startDate) return 'A custom period has to end after it starts'
+    if (range.endAt < range.startAt) return 'A date range has to end after it starts'
   }
 
   const dateMeasure = measures.find((m) => REPORT_MEASURES[m].kind === 'latest')

@@ -1,4 +1,5 @@
-import {type PinnedReportSource, toPinnedReportId} from '../../../reports/pinnedReports'
+import {parseReportPeriod} from '../../../../client/shared/reports/parseReportSpec'
+import {type PinnedReportSource, toPinnedReportKey} from '../../../reports/pinnedReports'
 import runReport from '../../../reports/runReport'
 import {getUserId, isSuperUser} from '../../../utils/authorization'
 import type {PinnedReportResolvers} from '../resolverTypes'
@@ -6,7 +7,7 @@ import type {PinnedReportResolvers} from '../resolverTypes'
 export type {PinnedReportSource}
 
 const PinnedReport: PinnedReportResolvers = {
-  id: toPinnedReportId,
+  id: toPinnedReportKey,
   spec: ({spec}) => JSON.stringify(spec),
   pinnedBy: async ({createdBy}, _args, {dataLoader}) =>
     createdBy ? ((await dataLoader.get('users').load(createdBy)) ?? null) : null,
@@ -15,7 +16,7 @@ const PinnedReport: PinnedReportResolvers = {
       orgId,
       spec,
       timeZone,
-      pagePeriod: pagePeriod ?? null,
+      pagePeriod: pagePeriod ? parseReportPeriod(pagePeriod) : null,
       viewerId: getUserId(authToken),
       isSuperUser: isSuperUser(authToken),
       dataLoader

@@ -1,4 +1,8 @@
 import dayjs from 'dayjs'
+import type {
+  PopularReportQuestion,
+  PopularReportSubject
+} from '../../shared/reports/popularReportQuestions'
 import {REPORT_VIEW_LABELS} from './reportSpecLabels'
 import {parseReportSpecJSON} from './reportSpecParam'
 
@@ -8,15 +12,6 @@ export interface ReportAskRecent {
   title: string
   spec: string | null | undefined
   lastUsedAt: string
-}
-
-export interface ReportAskPopular {
-  id: string
-  key: string
-  subject: 'people' | 'impact' | 'teamHealth' | 'teams'
-  question: string
-  title: string
-  spec: string
 }
 
 export interface ReportAskTextPart {
@@ -35,10 +30,10 @@ interface ListedOption {
 export type ReportAskOption =
   | {kind: 'ask'; id: string; question: string}
   | (ListedOption & {kind: 'recent'; recent: ReportAskRecent})
-  | (ListedOption & {kind: 'popular'; popular: ReportAskPopular})
+  | (ListedOption & {kind: 'popular'; popular: PopularReportQuestion})
 
-const SUBJECT_LABELS: Record<ReportAskPopular['subject'], string> = {
-  people: 'People',
+const SUBJECT_LABELS: Record<PopularReportSubject, string> = {
+  users: 'People',
   impact: 'Impact',
   teamHealth: 'Team Health',
   teams: 'Teams'
@@ -87,9 +82,9 @@ const formatLastUsed = (lastUsedAt: string) => {
 interface Options {
   query: string
   recents: readonly ReportAskRecent[]
-  populars: readonly ReportAskPopular[]
+  populars: readonly PopularReportQuestion[]
   // the popular questions nearest to a question AI couldn't answer
-  suggestions: readonly ReportAskPopular[] | null
+  suggestions: readonly PopularReportQuestion[] | null
   canAsk: boolean
 }
 
@@ -101,7 +96,7 @@ export const toReportAskOptions = ({query, recents, populars, suggestions, canAs
   const options: ReportAskOption[] = []
   if (canAsk && question && !suggestions) options.push({kind: 'ask', id: 'ask', question})
   const toPopularOption = (
-    popular: ReportAskPopular,
+    popular: PopularReportQuestion,
     section: string,
     group: string | null,
     matchWords = words
@@ -111,7 +106,7 @@ export const toReportAskOptions = ({query, recents, populars, suggestions, canAs
     section,
     group,
     parts: highlightWords(popular.question, matchWords),
-    detail: `${popular.title} · ${viewOf(popular.spec)}`,
+    detail: `${popular.title} · ${REPORT_VIEW_LABELS[popular.spec.showAs]}`,
     popular
   })
   if (suggestions) {

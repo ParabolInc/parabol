@@ -1,5 +1,5 @@
 import type {ReportQuestionSource} from './ReportQuestion'
 
-export interface StartReportQuestionSuccessSource {
+export interface LogReportQuestionUseSuccessSource {
   reportQuestion: ReportQuestionSource
 }

@@ -3,7 +3,6 @@ import getKysely from '../../../postgres/getKysely'
 import {selectPinnedReports} from '../../../reports/pinnedReports'
 import readReportSpecInput from '../../../reports/readReportSpecInput'
 import runReport from '../../../reports/runReport'
-import selectPopularReportQuestions from '../../../reports/selectPopularReportQuestions'
 import {
   getUserId,
   isSuperUser,
@@ -73,12 +72,12 @@ const Organization: OrganizationResolvers = {
     return dataLoader.get('activeUserCountsByOrgId').load({orgId, times: at})
   },
 
-  report: async ({id: orgId}, {spec, timeZone, pagePeriod}, {authToken, dataLoader}) => {
+  report: async ({id: orgId}, {spec, timeZone}, {authToken, dataLoader}) => {
     return runReport({
       orgId,
       spec: readReportSpecInput(spec),
       timeZone,
-      pagePeriod: pagePeriod ?? null,
+      pagePeriod: null,
       viewerId: getUserId(authToken),
       isSuperUser: isSuperUser(authToken),
       dataLoader
@@ -94,8 +93,6 @@ const Organization: OrganizationResolvers = {
     const {levels} = await dataLoader.get('orgStructureByOrgId').load(orgId)
     return levels
   },
-
-  popularReportQuestions: () => selectPopularReportQuestions(),
 
   recentReportQuestions: async ({id: orgId}, _args, {authToken}) => {
     return getKysely()

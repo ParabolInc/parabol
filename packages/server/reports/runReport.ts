@@ -5,7 +5,6 @@ import {
   type ReportPeriod,
   type ReportSpec
 } from '../../client/shared/reports/reportCatalog'
-import {validateReportSpec} from '../../client/shared/reports/validateReportSpec'
 import type {DataLoaderWorker} from '../graphql/graphql'
 import type {ReportNoteKindEnum} from '../graphql/public/resolverTypes'
 import buildReportRows from './buildReportRows'
@@ -56,8 +55,6 @@ const runReport = async ({
   isSuperUser,
   dataLoader
 }: Options) => {
-  const specError = validateReportSpec(spec)
-  if (specError) throw new GraphQLError(specError)
   if (!isTimeZone(timeZone)) throw new GraphQLError(`${timeZone} isn't a time zone`)
 
   const now = new Date()

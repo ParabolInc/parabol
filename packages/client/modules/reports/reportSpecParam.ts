@@ -17,7 +17,7 @@ export const encodeReportSpec = (spec: ReportSpec) => toBase64Url(JSON.stringify
 export const decodeReportSpec = (param: string | null) => {
   if (!param) return null
   try {
-    return parseReportSpec(JSON.parse(fromBase64Url(param)))
+    return parseReportSpec(JSON.parse(fromBase64Url(param))).spec
   } catch {
     return null
   }
@@ -25,7 +25,7 @@ export const decodeReportSpec = (param: string | null) => {
 
 export const parseReportSpecJSON = (json: string) => {
   try {
-    return parseReportSpec(JSON.parse(json))
+    return parseReportSpec(JSON.parse(json)).spec
   } catch {
     return null
   }

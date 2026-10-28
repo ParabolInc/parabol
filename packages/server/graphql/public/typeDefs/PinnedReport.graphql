@@ -34,7 +34,7 @@ type PinnedReport {
     timeZone: String! = "UTC"
 
     """
-    The period picked on the Reports page, which a spec with the PAGE preset follows
+    The period picked on the Reports page, which a spec without a period follows
     """
     pagePeriod: ReportPeriodInput
   ): ReportResult!

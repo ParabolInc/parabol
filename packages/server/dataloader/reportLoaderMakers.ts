@@ -1,5 +1,4 @@
 import DataLoader from 'dataloader'
-import {sql} from 'kysely'
 import ms from 'ms'
 import getKysely from '../postgres/getKysely'
 import {hasEnoughAttendees} from '../postgres/teamActivityCriteria'
@@ -35,16 +34,22 @@ export const starterReportTeamIdsByOrgId = (parent: RootDataLoader) => {
             .where('Team.orgId', '=', orgId)
             .where('Team.isArchived', '=', false)
             .orderBy(
-              sql`EXISTS (
-                SELECT 1 FROM "NewMeeting" AS m
-                WHERE m."teamId" = "Team".id AND m."createdAt" >= ${since}
-                AND ${hasEnoughAttendees(sql.ref('m.id'))}
-              )`,
+              ({exists, selectFrom}) =>
+                exists(
+                  selectFrom('NewMeeting as m')
+                    .select(({lit}) => lit(1).as('met'))
+                    .whereRef('m.teamId', '=', 'Team.id')
+                    .where('m.createdAt', '>=', since)
+                    .where(({ref}) => hasEnoughAttendees(ref('m.id')))
+                ),
               'desc'
             )
             .orderBy(
-              sql`(SELECT count(*) FROM "TeamMember"
-                WHERE "TeamMember"."teamId" = "Team".id AND "TeamMember"."isNotRemoved" = true)`,
+              ({selectFrom}) =>
+                selectFrom('TeamMember')
+                  .select(({fn}) => fn.countAll().as('memberCount'))
+                  .whereRef('TeamMember.teamId', '=', 'Team.id')
+                  .where('TeamMember.isNotRemoved', '=', true),
               'desc'
             )
             .orderBy('Team.createdAt', 'asc')

@@ -1,19 +1,16 @@
-import {sql} from 'kysely'
 import type {ReportMeasureQuery} from '../reportMeasureTypes'
 import {countReportRows} from '../reportQueries'
-import {isPokerImport, isTaskInTeams, taskDoneDate, taskSource} from './taskExpressions'
+import {selectTasks, taskSource} from './taskExpressions'
 
-const countDoneTasks = (query: ReportMeasureQuery) =>
-  countReportRows(query, {
-    ...taskSource(query),
-    where: [
-      isTaskInTeams(query.teamIds),
-      sql<boolean>`t.status = 'done'`,
-      sql<boolean>`NOT ${isPokerImport}`
-    ],
-    timestamp: taskDoneDate,
-    value: sql<number>`count(*)::int`,
-    estimated: sql<number>`count(*) FILTER (WHERE t."doneAt" IS NULL)`
+const countDoneTasks = (query: ReportMeasureQuery) => {
+  const {eb, isInTeams, isPokerImport, doneDate, breakdown} = taskSource(query)
+  return countReportRows(query, selectTasks(), {
+    ...breakdown,
+    where: [isInTeams, eb('t.status', '=', 'done'), eb.not(isPokerImport)],
+    timestamp: doneDate,
+    value: eb.cast<number>(eb.fn.countAll(), 'integer'),
+    estimated: eb.fn.countAll<number>().filterWhere('t.doneAt', 'is', null)
   })
+}
 
 export default countDoneTasks

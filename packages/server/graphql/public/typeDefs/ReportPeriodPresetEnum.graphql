@@ -1,9 +1,7 @@
 """
-A named period. Day periods end today; month periods cover whole months up to the last full one
+A named period. Day periods end today; month periods are this month so far and the whole months before it
 """
 enum ReportPeriodPresetEnum {
-  "The period picked on the Reports page"
-  PAGE
   LAST_7_DAYS
   LAST_30_DAYS
   LAST_3_MONTHS

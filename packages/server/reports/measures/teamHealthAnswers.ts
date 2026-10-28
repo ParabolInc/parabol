@@ -6,7 +6,7 @@ import {
 import type RootDataLoader from '../../dataloader/RootDataLoader'
 import isValid from '../../graphql/isValid'
 import groupTeamHealthScores from '../../utils/groupTeamHealthScores'
-import {isLevelDimension, toLevelRowId} from '../orgStructure'
+import {isLevelDimension, toLevelId} from '../orgStructure'
 import type {ReportMeasureQuery, ReportQueryDimension} from '../reportMeasureTypes'
 
 export interface PickedTeamHealthCheck {
@@ -55,10 +55,10 @@ export const groupTeamHealthAnswers = async (
   // an org structure level groups a team's answers under the value the team sits at
   const keyOf = (dimension: ReportQueryDimension, teamId: string, category: string) => {
     if (!isLevelDimension(dimension)) return dimension === 'TEAM' ? teamId : category
-    const levelRowId = toLevelRowId(dimension)
-    if (levelRowId === 0) return REPORT_STRUCTURE_REMOVED
+    const levelId = toLevelId(dimension)
+    if (levelId === 0) return REPORT_STRUCTURE_REMOVED
     const placement = placements.find(
-      (place) => place.teamId === teamId && place.levelId === levelRowId
+      (place) => place.teamId === teamId && place.levelId === levelId
     )
     return placement ? String(placement.valueId) : REPORT_STRUCTURE_NOT_SET
   }

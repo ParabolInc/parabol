@@ -1,5 +1,8 @@
-import {type Expression, sql} from 'kysely'
+import {type Expression, expressionBuilder} from 'kysely'
 import getKysely from '../getKysely'
+import type {DB} from '../types/pg'
+
+const eb = expressionBuilder<DB>()
 
 const selectOrgUserActivitySpans = (orgId: string) =>
   getKysely()
@@ -24,10 +27,10 @@ export const isOrgUserActiveAt = (
   },
   at: Expression<Date>
 ) =>
-  sql<boolean>`(
-    ${span.eventType} IN ('added', 'activated')
-    AND ${span.eventDate} < ${at}
-    AND (${span.nextEventDate} IS NULL OR ${span.nextEventDate} >= ${at})
-  )`
+  eb.and([
+    eb(span.eventType, 'in', ['added', 'activated']),
+    eb(span.eventDate, '<', at),
+    eb.or([eb(span.nextEventDate, 'is', null), eb(span.nextEventDate, '>=', at)])
+  ])
 
 export default selectOrgUserActivitySpans

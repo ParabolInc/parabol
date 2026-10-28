@@ -1,24 +1,39 @@
-import {sql} from 'kysely'
+import {expressionBuilder} from 'kysely'
+import getKysely from '../../postgres/getKysely'
 import type {ReportMeasureQuery} from '../reportMeasureTypes'
-import {isTeamMemberAt, readReportRows} from '../reportQueries'
+import {isAnyOf, isTeamMemberAt, readingSteps, readReportRows} from '../reportQueries'
 
 const readMembers = (query: ReportMeasureQuery) => {
+  const steps = getKysely().selectFrom(readingSteps(query.readAt))
   if (query.isWholeOrg) {
-    return readReportRows(query, {
-      from: sql`"OrganizationUser" AS ou`,
-      where: [sql<boolean>`ou."orgId" = ${query.orgId}`],
+    const from = steps.crossJoin('OrganizationUser as ou')
+    const eb = expressionBuilder(from)
+    return readReportRows(query, from, {
+      where: [eb('ou.orgId', '=', query.orgId)],
       isPresentAt: (at) =>
-        sql<boolean>`ou."joinedAt" <= ${at} AND (ou."removedAt" IS NULL OR ou."removedAt" > ${at})`,
+        eb.and([
+          eb('ou.joinedAt', '<=', at),
+          eb.or([eb('ou.removedAt', 'is', null), eb('ou.removedAt', '>', at)])
+        ]),
       dimensions: {},
-      value: sql<number>`count(DISTINCT ou."userId")::int`
+      value: eb.cast<number>(eb.fn.count('ou.userId').distinct(), 'integer')
     })
   }
-  return readReportRows(query, {
-    from: sql`"TeamMember" AS mem`,
-    where: [sql<boolean>`mem."teamId" = ANY(${query.teamIds}::text[])`],
-    isPresentAt: (at) => isTeamMemberAt('mem', at),
-    dimensions: {TEAM: sql<string>`mem."teamId"`},
-    value: sql<number>`count(DISTINCT mem."userId")::int`
+  const from = steps.crossJoin('TeamMember as mem')
+  const eb = expressionBuilder(from)
+  return readReportRows(query, from, {
+    where: [isAnyOf(eb.ref('mem.teamId'), query.teamIds)],
+    isPresentAt: (at) =>
+      isTeamMemberAt(
+        {
+          createdAt: eb.ref('mem.createdAt'),
+          isNotRemoved: eb.ref('mem.isNotRemoved'),
+          updatedAt: eb.ref('mem.updatedAt')
+        },
+        at
+      ),
+    dimensions: {TEAM: eb.ref('mem.teamId')},
+    value: eb.cast<number>(eb.fn.count('mem.userId').distinct(), 'integer')
   })
 }
 

@@ -10,10 +10,10 @@ export interface OrgStructureRollupRow {
 }
 
 const groupTeams = (level: OrgStructureLevelData, teamIds: readonly string[]) => {
-  const groups = level.values.map(({id, name, teamIds: placedTeamIds}) => ({
+  const groups = level.values.map(({id, name, teams}) => ({
     key: id,
     name,
-    teamIds: teamIds.filter((teamId) => placedTeamIds.includes(teamId)),
+    teamIds: teamIds.filter((teamId) => teams.some((team) => team.id === teamId)),
     isNotSet: false
   }))
   const unplacedTeamIds = teamIds.filter(

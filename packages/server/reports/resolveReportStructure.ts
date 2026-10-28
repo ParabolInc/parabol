@@ -6,21 +6,22 @@ import {
   type ReportSpec
 } from '../../client/shared/reports/reportCatalog'
 import {
+  fromOrgStructureKey,
   isLevelDimension,
   type OrgStructure,
   REMOVED_LEVEL_DIMENSION,
   type ReportLevelDimension,
   toLevelDimension,
-  toLevelRowId,
-  toOrgStructureId,
-  toOrgStructureRowId
+  toLevelId,
+  toOrgStructureKey
 } from './orgStructure'
 import type {ReportMeasureResult, ReportQueryDimension} from './reportMeasureTypes'
 
-const toValueId = (valueRowId: number) => toOrgStructureId(valueRowId, 'OrgStructureValue')
+const toValueKey = (valueId: number) => toOrgStructureKey(valueId, 'OrgStructureValue')
 
-// SQL names a value by its row, which the API names by its id
-const toClientKey = (key: string) => (key in REPORT_STRUCTURE_LABELS ? key : toValueId(Number(key)))
+// SQL names a value by its id, which the API names by its key
+const toClientKey = (key: string) =>
+  key in REPORT_STRUCTURE_LABELS ? key : toValueKey(Number(key))
 
 export const toClientLevelKeys = (
   result: ReportMeasureResult,
@@ -42,9 +43,9 @@ export const toClientLevelKeys = (
 // instead, or one group when the report already splits by team. A filter on a removed level stops the
 // report, so its results never widen
 const resolveReportStructure = ({breakdown, filters}: ReportSpec, structure: OrgStructure) => {
-  const levelOf = (levelId: string | undefined) => {
-    const rowId = levelId ? toOrgStructureRowId(levelId, 'OrgStructureLevel') : null
-    return structure.levels.find(({id}) => id === rowId) ?? null
+  const levelOf = (levelKey: string | undefined) => {
+    const levelId = levelKey ? fromOrgStructureKey(levelKey, 'OrgStructureLevel') : null
+    return structure.levels.find(({id}) => id === levelId) ?? null
   }
   let isTeamUsed = breakdown.some(({dimension}) => dimension === 'TEAM')
   let removedBreakdownCount = 0
@@ -62,36 +63,34 @@ const resolveReportStructure = ({breakdown, filters}: ReportSpec, structure: Org
   const levelFilters = filters.flatMap(({dimension, levelId, values}) =>
     dimension === 'TEAM_LEVEL' ? [{level: levelOf(levelId), values}] : []
   )
-  const valueIdOf = (teamId: string, levelRowId: number) =>
+  const valueIdOf = (teamId: string, levelId: number) =>
     structure.placements.find(
-      (placement) => placement.teamId === teamId && placement.levelId === levelRowId
+      (placement) => placement.teamId === teamId && placement.levelId === levelId
     )?.valueId
   const isTeamFiltered = (teamId: string) =>
     levelFilters.every(({level, values}) => {
       if (!level) return false
-      const valueRowId = valueIdOf(teamId, level.id)
-      return values.includes(
-        valueRowId === undefined ? REPORT_STRUCTURE_NOT_SET : toValueId(valueRowId)
-      )
+      const valueId = valueIdOf(teamId, level.id)
+      return values.includes(valueId === undefined ? REPORT_STRUCTURE_NOT_SET : toValueKey(valueId))
     })
   // the values a level takes among the counted teams, in the level's order
   const valuesOf = (dimension: ReportLevelDimension, teamIds: string[]) => {
-    const levelRowId = toLevelRowId(dimension)
-    const level = structure.levels.find(({id}) => id === levelRowId)
+    const levelId = toLevelId(dimension)
+    const level = structure.levels.find(({id}) => id === levelId)
     if (!level) {
       return [{value: REPORT_STRUCTURE_REMOVED, label: REPORT_STRUCTURE_LABELS.removed}]
     }
     const placedValueIds = new Set(teamIds.flatMap((teamId) => valueIdOf(teamId, level.id) ?? []))
     const values = level.values
       .filter(({id}) => placedValueIds.has(id))
-      .map(({id, name}) => ({value: toValueId(id), label: name}))
+      .map(({id, name}) => ({value: toValueKey(id), label: name}))
     const hasUnplacedTeam = teamIds.some((teamId) => valueIdOf(teamId, level.id) === undefined)
     return hasUnplacedTeam
       ? [...values, {value: REPORT_STRUCTURE_NOT_SET, label: REPORT_STRUCTURE_LABELS.notSet}]
       : values
   }
   const levelNameOf = (dimension: ReportLevelDimension) =>
-    structure.levels.find(({id}) => id === toLevelRowId(dimension))?.name ?? null
+    structure.levels.find(({id}) => id === toLevelId(dimension))?.name ?? null
   return {
     breakdown: resolvedBreakdown,
     levelNameOf,

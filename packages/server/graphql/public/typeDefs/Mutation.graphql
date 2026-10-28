@@ -2558,7 +2558,7 @@ type Mutation {
   """
   Keep a popular question the viewer picked, or a recent one they opened again, at the top of their recent questions
   """
-  startReportQuestion(
+  logReportQuestionUse(
     orgId: ID!
 
     """
@@ -2580,7 +2580,7 @@ type Mutation {
     The name of a report the viewer built
     """
     title: String
-  ): StartReportQuestionSuccess! @scope(name: REPORTS_WRITE)
+  ): LogReportQuestionUseSuccess! @scope(name: REPORTS_WRITE)
 
   """
   Pin a report to the organization's Reports page, for everyone who can see Reports

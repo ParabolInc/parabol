@@ -4,23 +4,30 @@ const cadence = {
   measures: ['MEETINGS'],
   breakdown: [{dimension: 'TEAM'}, {dimension: 'MONTH'}],
   filters: [{dimension: 'MEETING_TYPE', values: ['retrospective']}],
-  period: {preset: 'PAGE'},
   showAs: 'HEATMAP',
   sort: {by: 'VALUE', order: 'DESC'}
 }
 
 test('a spec comes back with every field, and missing ones filled in', () => {
-  expect(parseReportSpec(cadence)).toEqual({
+  expect(parseReportSpec(cadence).spec).toEqual({
     ...cadence,
     where: [],
-    period: {preset: 'PAGE', startDate: null, endDate: null},
+    period: null,
     compareTo: null,
     limit: null
   })
 })
 
+test('a range read from DateTimes keeps only their days', () => {
+  const {spec} = parseReportSpec({
+    ...cadence,
+    period: {range: {startAt: new Date('2026-10-01'), endAt: new Date('2026-10-07')}}
+  })
+  expect(spec?.period).toEqual({range: {startAt: '2026-10-01', endAt: '2026-10-07'}})
+})
+
 test('fields Parabol does not know are dropped', () => {
-  const spec = parseReportSpec({
+  const {spec} = parseReportSpec({
     ...cadence,
     owner: 'someone',
     breakdown: [{dimension: 'TEAM', levelId: 'businessUnit'}, {dimension: 'MONTH'}]
@@ -30,7 +37,7 @@ test('fields Parabol does not know are dropped', () => {
 })
 
 test('an org structure breakdown or filter keeps the level it names', () => {
-  const spec = parseReportSpec({
+  const {spec} = parseReportSpec({
     ...cadence,
     breakdown: [{dimension: 'TEAM_LEVEL', levelId: 'level1'}, {dimension: 'MONTH'}],
     filters: [{dimension: 'TEAM_LEVEL', levelId: 'level2', values: ['notSet']}]
@@ -52,10 +59,19 @@ test.each([
     {...cadence, where: [{measure: 'MEETINGS', operator: 'AT_LEAST', value: '1'}]}
   ],
   ['an unknown period', {...cadence, period: {preset: 'THIS_QUARTER'}}],
+  [
+    'a preset and a range',
+    {
+      ...cadence,
+      period: {preset: 'LAST_7_DAYS', range: {startAt: '2026-10-01', endAt: '2026-10-07'}}
+    }
+  ],
+  ['a period with neither', {...cadence, period: {}}],
+  ['a range without an end', {...cadence, period: {range: {startAt: '2026-10-01'}}}],
   ['an unknown view', {...cadence, showAs: 'PIE'}],
   ['a sort without a direction it knows', {...cadence, sort: {by: 'VALUE', order: 'UP'}}],
   ['a limit that is not a number', {...cadence, limit: '8'}],
   ['a spec that breaks a rule', {...cadence, showAs: 'NUMBER'}]
 ])('%s is not a spec', (_name, value) => {
-  expect(parseReportSpec(value)).toBeNull()
+  expect(parseReportSpec(value).spec).toBeNull()
 })

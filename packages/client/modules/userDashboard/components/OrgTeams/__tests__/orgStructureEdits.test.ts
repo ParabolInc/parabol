@@ -13,14 +13,14 @@ const LEVELS: OrgStructureLevelData[] = [
     id: 'unit',
     name: 'Business unit',
     values: [
-      {id: 'platform', name: 'Platform', teamIds: ['apollo', 'borealis']},
-      {id: 'custody', name: 'Custody', teamIds: ['cygnus']}
+      {id: 'platform', name: 'Platform', teams: [{id: 'apollo'}, {id: 'borealis'}]},
+      {id: 'custody', name: 'Custody', teams: [{id: 'cygnus'}]}
     ]
   },
   {
     id: 'region',
     name: 'Region',
-    values: [{id: 'americas', name: 'Americas', teamIds: ['apollo']}]
+    values: [{id: 'americas', name: 'Americas', teams: [{id: 'apollo'}]}]
   }
 ]
 

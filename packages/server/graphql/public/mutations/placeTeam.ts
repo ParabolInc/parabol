@@ -1,21 +1,21 @@
 import {GraphQLError} from 'graphql'
 import getKysely from '../../../postgres/getKysely'
-import {toOrgStructureRowId} from '../../../reports/orgStructure'
+import {fromOrgStructureKey} from '../../../reports/orgStructure'
 import type {MutationResolvers} from '../resolverTypes'
 
 const placeTeam: MutationResolvers['placeTeam'] = async (
   _source,
-  {teamId, levelId: levelClientId, valueId: valueClientId},
+  {teamId, levelId: levelKey, valueId: valueKey},
   {dataLoader}
 ) => {
   // VALIDATION
   const {orgId} = await dataLoader.get('teams').loadNonNull(teamId)
   const {levels} = await dataLoader.get('orgStructureByOrgId').load(orgId)
-  const levelId = toOrgStructureRowId(levelClientId, 'OrgStructureLevel')
+  const levelId = fromOrgStructureKey(levelKey, 'OrgStructureLevel')
   const level = levels.find(({id}) => id === levelId)
   if (!level) throw new GraphQLError('That level isn’t part of this team’s organization')
-  const valueId = valueClientId ? toOrgStructureRowId(valueClientId, 'OrgStructureValue') : null
-  if (valueClientId && !level.values.some(({id}) => id === valueId)) {
+  const valueId = valueKey ? fromOrgStructureKey(valueKey, 'OrgStructureValue') : null
+  if (valueKey && !level.values.some(({id}) => id === valueId)) {
     throw new GraphQLError('That value isn’t part of the level')
   }
 

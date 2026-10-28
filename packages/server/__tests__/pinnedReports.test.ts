@@ -54,8 +54,8 @@ const MOVE_REPORT_PIN = `
 `
 
 const START_REPORT_QUESTION = `
-  mutation StartReportQuestion($orgId: ID!, $popularQuestionKey: String, $reportQuestionId: ID, $spec: ReportSpecInput, $title: String) {
-    startReportQuestion(orgId: $orgId, popularQuestionKey: $popularQuestionKey, reportQuestionId: $reportQuestionId, spec: $spec, title: $title) {
+  mutation LogReportQuestionUse($orgId: ID!, $popularQuestionKey: String, $reportQuestionId: ID, $spec: ReportSpecInput, $title: String) {
+    logReportQuestionUse(orgId: $orgId, popularQuestionKey: $popularQuestionKey, reportQuestionId: $reportQuestionId, spec: $spec, title: $title) {
       reportQuestion {
         id
         source
@@ -74,7 +74,6 @@ const BUILT_IN_TITLES = [
 const topTeams = (limit: number) => ({
   measures: ['MEETINGS'],
   breakdown: [{dimension: 'TEAM'}],
-  period: {preset: 'PAGE'},
   showAs: 'TABLE',
   limit
 })
@@ -138,7 +137,7 @@ test('a pin keeps the question it came from, so asks can be compared with pins',
     variables: {orgId, popularQuestionKey: 'teamsNotMet30Days'},
     cookie
   })
-  const reportQuestionId = started.data.startReportQuestion.reportQuestion.id
+  const reportQuestionId = started.data.logReportQuestionUse.reportQuestion.id
   const spec = {
     measures: ['LAST_MEETING'],
     breakdown: [{dimension: 'TEAM'}],
@@ -150,12 +149,11 @@ test('a pin keeps the question it came from, so asks can be compared with pins',
   await pin(orgId, cookie, {spec, title: 'Teams by last meeting', reportQuestionId})
   const row = await getKysely()
     .selectFrom('PinnedReport')
-    .select(['source', 'question', 'shape', 'popularQuestionId'])
+    .select(['source', 'question', 'shape'])
     .where('orgId', '=', orgId)
-    .where('isBuiltIn', '=', false)
+    .where('builtInKey', 'is', null)
     .executeTakeFirstOrThrow()
   expect(row).toMatchObject({source: 'popular', question: 'Which teams haven’t met in 30 days?'})
-  expect(row.popularQuestionId).not.toBeNull()
   expect(row.shape).toContain('LAST_MEETING | TEAM')
 })
 
@@ -170,13 +168,13 @@ test('someone else’s question doesn’t travel with a pin', async () => {
   await pin(owner.orgId, owner.cookie, {
     spec: topTeams(8),
     title: 'Top 8 teams',
-    reportQuestionId: started.data.startReportQuestion.reportQuestion.id
+    reportQuestionId: started.data.logReportQuestionUse.reportQuestion.id
   })
   const row = await getKysely()
     .selectFrom('PinnedReport')
     .select(['source', 'question', 'createdBy'])
     .where('orgId', '=', owner.orgId)
-    .where('isBuiltIn', '=', false)
+    .where('builtInKey', 'is', null)
     .executeTakeFirstOrThrow()
   expect(row).toEqual({source: null, question: null, createdBy: owner.userId})
 })
@@ -258,12 +256,11 @@ test('a changed report is kept as the spec used, and one built by hand as a buil
     variables: {orgId, popularQuestionKey: 'retroCadence'},
     cookie
   })
-  const reportQuestionId = started.data.startReportQuestion.reportQuestion.id
+  const reportQuestionId = started.data.logReportQuestionUse.reportQuestion.id
   const changed = {
     measures: ['MEETINGS'],
     breakdown: [{dimension: 'TEAM'}, {dimension: 'WEEK'}],
     filters: [{dimension: 'MEETING_TYPE', values: ['retrospective']}],
-    period: {preset: 'PAGE'},
     showAs: 'HEATMAP'
   }
   await sendPublic({
@@ -276,7 +273,7 @@ test('a changed report is kept as the spec used, and one built by hand as a buil
     variables: {orgId, spec: topTeams(5), title: 'Meetings by team'},
     cookie
   })
-  expect(built.data.startReportQuestion.reportQuestion.source).toBe('builder')
+  expect(built.data.logReportQuestionUse.reportQuestion.source).toBe('builder')
   const rows = await getKysely()
     .selectFrom('ReportQuestion')
     .select(['source', 'shape', 'editedAt'])

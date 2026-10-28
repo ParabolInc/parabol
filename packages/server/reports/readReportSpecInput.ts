@@ -1,12 +1,10 @@
 import {GraphQLError} from 'graphql'
-import {readReportSpec} from '../../client/shared/reports/parseReportSpec'
-import {validateReportSpec} from '../../client/shared/reports/validateReportSpec'
+import {parseReportSpec} from '../../client/shared/reports/parseReportSpec'
 import type {ReportSpecInput} from '../graphql/public/resolverTypes'
 
 const readReportSpecInput = (input: ReportSpecInput) => {
-  const spec = readReportSpec(input)
-  const problem = spec ? validateReportSpec(spec) : 'That isn’t a report spec'
-  if (!spec || problem) throw new GraphQLError(problem ?? 'That isn’t a report spec')
+  const {spec, problem} = parseReportSpec(input)
+  if (!spec) throw new GraphQLError(problem)
   return spec
 }
 

@@ -30,7 +30,7 @@ const ReportPanel = (props: Props) => {
   const organization = useFragment(
     graphql`
       fragment ReportPanel_organization on Organization {
-        report(spec: $spec, timeZone: $timeZone, pagePeriod: $pagePeriod) {
+        report(spec: $spec, timeZone: $timeZone) {
           step
           ...ReportExportButton_result
         }

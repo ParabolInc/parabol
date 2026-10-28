@@ -1,4 +1,4 @@
-import type {PopularReportQuestionRow} from './selectPopularReportQuestions'
+import {POPULAR_REPORT_QUESTIONS, type PopularReportQuestion} from './popularReportQuestions'
 
 // words every question has, which would otherwise outweigh the ones that say what it's about
 const FILLER_WORDS = new Set(
@@ -19,7 +19,7 @@ const toWords = (text: string) =>
 // The popular questions sharing the most words with a question, for when AI can't answer it
 const rankPopularReportQuestions = (
   question: string,
-  popularQuestions: PopularReportQuestionRow[],
+  popularQuestions: readonly PopularReportQuestion[] = POPULAR_REPORT_QUESTIONS,
   count = 3
 ) => {
   const words = toWords(question)

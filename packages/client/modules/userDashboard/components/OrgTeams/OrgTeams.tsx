@@ -28,7 +28,9 @@ const OrgTeams = (props: Props) => {
           values {
             id
             name
-            teamIds
+            teams {
+              id
+            }
           }
         }
         teams {

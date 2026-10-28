@@ -1,11 +1,20 @@
-import {type RawBuilder, sql} from 'kysely'
+import {
+  type AliasableExpression,
+  type Compilable,
+  type Expression,
+  expressionBuilder,
+  type SelectQueryBuilder,
+  type SqlBool,
+  sql
+} from 'kysely'
 import {
   REPORT_STRUCTURE_NOT_SET,
   REPORT_STRUCTURE_REMOVED,
   type ReportCategoryDimension
 } from '../../client/shared/reports/reportCatalog'
 import getKysely from '../postgres/getKysely'
-import {isLevelDimension, toLevelRowId} from './orgStructure'
+import type {DB} from '../postgres/types/pg'
+import {isLevelDimension, toLevelId} from './orgStructure'
 import type {
   ReportDimensionLabels,
   ReportMeasureFilter,
@@ -16,39 +25,55 @@ import type {
 
 const STATEMENT_TIMEOUT_MS = 15000
 
-export type ReportDimensionExpressions = Partial<
-  Record<ReportCategoryDimension, RawBuilder<string>>
+type ReportDimensionExpressions = Partial<
+  Record<ReportCategoryDimension, AliasableExpression<string | null>>
 >
 
-export type ReportDimensionConditions = Partial<
-  Record<ReportCategoryDimension, RawBuilder<boolean>>
->
+type ReportDimensionConditions = Partial<Record<ReportCategoryDimension, Expression<SqlBool>>>
 
 interface ReportSource {
-  from: RawBuilder<unknown>
-  where: RawBuilder<boolean>[]
+  where: Expression<SqlBool>[]
   dimensions: ReportDimensionExpressions
   labels?: ReportDimensionExpressions
   // what a row needs to count when the report splits or filters by a dimension, like a topic to be named by
   requires?: ReportDimensionConditions
-  value: RawBuilder<number>
+  value: AliasableExpression<number | null>
   // how many of the counted rows rely on an estimated done date
-  estimated?: RawBuilder<number>
+  estimated?: Expression<number>
 }
 
-export interface ReportQueryRow {
+interface ReportQueryRow {
   stepIndex: number
   value: number | null
   estimated: number
   [dimensionKey: string]: unknown
 }
 
-export const executeReportQuery = async (query: RawBuilder<ReportQueryRow>) =>
+interface ReadingStep {
+  readAt: Date
+  index: number
+}
+
+const eb = expressionBuilder<DB>()
+const readingStep = expressionBuilder<{Step: ReadingStep}, 'Step'>()
+
+const toTextArray = (values: string[]) => eb.cast<string[]>(eb.val(values), sql`text[]`)
+
+export const toTimestampArray = (dates: Date[]) =>
+  eb.cast<Date[]>(eb.val(dates), sql`timestamptz[]`)
+
+export const isAnyOf = (expression: Expression<string | null>, values: string[]) =>
+  eb(expression, '=', eb.fn.any(toTextArray(values)))
+
+export const toEpochMilliseconds = (time: Expression<Date | null>) =>
+  eb.cast<number>(eb(sql<number>`extract(epoch FROM ${time})`, '*', eb.lit(1000)), 'float8')
+
+const executeReportQuery = async (query: Compilable<ReportQueryRow>) =>
   getKysely()
     .transaction()
     .execute(async (trx) => {
       await sql.raw(`SET LOCAL statement_timeout = ${STATEMENT_TIMEOUT_MS}`).execute(trx)
-      const {rows} = await query.execute(trx)
+      const {rows} = await trx.executeQuery(query)
       return rows
     })
 
@@ -64,35 +89,36 @@ const dimensionExpression = (
   }
   const team = expressions.TEAM
   if (!team) throw new Error(`This measure can't be split by ${dimension}`)
-  const levelRowId = toLevelRowId(dimension)
-  if (levelRowId === 0) return sql<string>`${REPORT_STRUCTURE_REMOVED}`
-  return sql<string>`COALESCE(
-    (SELECT p."valueId"::text FROM "OrgStructurePlacement" AS p
-      WHERE p."teamId" = ${team} AND p."levelId" = ${levelRowId}),
-    ${REPORT_STRUCTURE_NOT_SET}
-  )`
+  const levelId = toLevelId(dimension)
+  if (levelId === 0) return eb.val<string>(REPORT_STRUCTURE_REMOVED)
+  return eb.fn.coalesce(
+    eb
+      .selectFrom('OrgStructurePlacement as p')
+      .select(({cast}) => cast<string>('p.valueId', 'text').as('valueId'))
+      .where('p.teamId', '=', team)
+      .where('p.levelId', '=', levelId)
+      .$asScalar(),
+    eb.val(REPORT_STRUCTURE_NOT_SET)
+  )
 }
 
-export const selectDimensions = (
+const selectDimensions = (
   expressions: ReportDimensionExpressions,
   dimensions: ReportQueryDimension[]
-) =>
-  dimensions.map(
-    (dimension, idx) => sql`${dimensionExpression(expressions, dimension)} AS ${sql.ref(`d${idx}`)}`
-  )
+) => dimensions.map((dimension, idx) => dimensionExpression(expressions, dimension).as(`d${idx}`))
 
 // The name most rows give a value, since a topic can be written more than one way. Labels come after the
 // grouped columns, which are grouped by position
-export const selectDimensionLabels = (
+const selectDimensionLabels = (
   labels: ReportDimensionExpressions,
   dimensions: ReportQueryDimension[]
 ) =>
   dimensions.flatMap((dimension, idx) => {
     const label = isLevelDimension(dimension) ? null : labels[dimension]
-    return label ? [sql`mode() WITHIN GROUP (ORDER BY ${label}) AS ${sql.ref(`l${idx}`)}`] : []
+    return label ? [eb.fn.agg<string>('mode', []).withinGroupOrderBy(label).as(`l${idx}`)] : []
   })
 
-export const requiredConditions = (
+const requiredConditions = (
   conditions: ReportDimensionConditions,
   {dimensions, filters}: Pick<ReportMeasureQuery, 'dimensions' | 'filters'>
 ) =>
@@ -100,20 +126,17 @@ export const requiredConditions = (
     isLevelDimension(dimension) ? [] : (conditions[dimension] ?? [])
   )
 
-export const filterConditions = (
+const filterConditions = (
   expressions: ReportDimensionExpressions,
   filters: ReportMeasureFilter[]
 ) =>
-  filters.map(
-    ({dimension, values}) =>
-      sql<boolean>`${dimensionExpression(expressions, dimension)} = ANY(${values}::text[])`
-  )
+  filters.map(({dimension, values}) => isAnyOf(dimensionExpression(expressions, dimension), values))
 
 // the step index is column 1 and the dimensions follow it
-export const groupByStepAndDimensions = (dimensionCount: number) =>
+const groupByStepAndDimensions = (dimensionCount: number) =>
   sql.raw(Array.from({length: dimensionCount + 1}, (_, idx) => idx + 1).join(', '))
 
-export const toMeasureResult = (
+const toMeasureResult = (
   rows: ReportQueryRow[],
   dimensions: ReportQueryDimension[]
 ): ReportMeasureResult => {
@@ -139,67 +162,79 @@ export const toMeasureResult = (
   }
 }
 
-export const countReportRows = async (
+export const groupReportRows = async <QueryDB, QueryTables extends keyof QueryDB>(
   query: ReportMeasureQuery,
-  source: ReportSource & {timestamp: RawBuilder<Date>}
+  from: SelectQueryBuilder<QueryDB, QueryTables, {}>,
+  source: ReportSource & {stepIndex: AliasableExpression<number>}
 ) => {
-  const {stepStarts, stepEnds, dimensions, filters} = query
-  const from = stepStarts[0]
-  const to = stepEnds[stepEnds.length - 1]
-  const thresholds = [...stepStarts, to]
+  const {dimensions, filters} = query
   const conditions = [
     ...source.where,
-    sql<boolean>`${source.timestamp} >= ${from}`,
-    sql<boolean>`${source.timestamp} < ${to}`,
     ...requiredConditions(source.requires ?? {}, query),
     ...filterConditions(source.dimensions, filters)
   ]
-  const rows = await executeReportQuery(sql<ReportQueryRow>`
-    SELECT width_bucket(${source.timestamp}, ${thresholds}::timestamptz[]) AS "stepIndex",
-      ${sql.join([
-        ...selectDimensions(source.dimensions, dimensions),
-        sql`${source.value} AS "value"`,
-        sql`${source.estimated ?? sql`0`}::int AS "estimated"`,
-        ...selectDimensionLabels(source.labels ?? {}, dimensions)
-      ])}
-    FROM ${source.from}
-    WHERE ${sql.join(conditions, sql` AND `)}
-    GROUP BY ${groupByStepAndDimensions(dimensions.length)}
-  `)
-  return toMeasureResult(rows, dimensions)
+  const reportQuery = conditions
+    .reduce((builder, condition) => builder.where(condition), from)
+    .select([
+      source.stepIndex.as('stepIndex'),
+      ...selectDimensions(source.dimensions, dimensions),
+      source.value.as('value'),
+      eb.cast<number>(source.estimated ?? eb.lit(0), 'integer').as('estimated'),
+      ...selectDimensionLabels(source.labels ?? {}, dimensions)
+    ])
+    .groupBy(groupByStepAndDimensions(dimensions.length))
+    .$castTo<ReportQueryRow>()
+  return toMeasureResult(await executeReportQuery(reportQuery), dimensions)
 }
 
-export const readReportRows = async (
+export const countReportRows = <QueryDB, QueryTables extends keyof QueryDB>(
   query: ReportMeasureQuery,
-  source: ReportSource & {isPresentAt: (at: RawBuilder<Date>) => RawBuilder<boolean>}
+  from: SelectQueryBuilder<QueryDB, QueryTables, {}>,
+  source: ReportSource & {timestamp: Expression<Date>}
 ) => {
-  const {readAt, dimensions, filters} = query
-  const conditions = [
-    ...source.where,
-    source.isPresentAt(sql.ref<Date>('Step.readAt')),
-    ...requiredConditions(source.requires ?? {}, query),
-    ...filterConditions(source.dimensions, filters)
-  ]
-  const rows = await executeReportQuery(sql<ReportQueryRow>`
-    SELECT "Step"."index"::int AS "stepIndex",
-      ${sql.join([
-        ...selectDimensions(source.dimensions, dimensions),
-        sql`${source.value} AS "value"`,
-        sql`${source.estimated ?? sql`0`}::int AS "estimated"`,
-        ...selectDimensionLabels(source.labels ?? {}, dimensions)
-      ])}
-    FROM unnest(${readAt}::timestamptz[]) WITH ORDINALITY AS "Step"("readAt", "index")
-    CROSS JOIN ${source.from}
-    WHERE ${sql.join(conditions, sql` AND `)}
-    GROUP BY ${groupByStepAndDimensions(dimensions.length)}
-  `)
-  return toMeasureResult(rows, dimensions)
+  const {stepStarts, stepEnds} = query
+  const start = stepStarts[0]!
+  const end = stepEnds[stepEnds.length - 1]!
+  return groupReportRows(query, from, {
+    ...source,
+    stepIndex: eb.fn<number>('width_bucket', [
+      source.timestamp,
+      toTimestampArray([...stepStarts, end])
+    ]),
+    where: [...source.where, eb(source.timestamp, '>=', start), eb(source.timestamp, '<', end)]
+  })
 }
+
+export const readingSteps = (readAt: Date[]) =>
+  sql<ReadingStep>`unnest(${toTimestampArray(readAt)}) WITH ORDINALITY`.as<'Step'>(
+    sql`${sql.id('Step')}(${sql.id('readAt')}, ${sql.id('index')})`
+  )
+
+export const readReportRows = <
+  QueryDB extends {Step: ReadingStep},
+  QueryTables extends keyof QueryDB
+>(
+  query: ReportMeasureQuery,
+  from: SelectQueryBuilder<QueryDB, QueryTables, {}>,
+  source: ReportSource & {isPresentAt: (at: Expression<Date>) => Expression<SqlBool>}
+) =>
+  groupReportRows(query, from, {
+    ...source,
+    stepIndex: readingStep.cast<number>('Step.index', 'integer'),
+    where: [...source.where, source.isPresentAt(readingStep.ref('Step.readAt'))]
+  })
 
 // A person was on a team at a time if they had joined by then and hadn't been removed yet.
 // Removing someone is the last write to their TeamMember row, so updatedAt is when they left
-export const isTeamMemberAt = (alias: string, at: RawBuilder<Date>) =>
-  sql<boolean>`(
-    ${sql.ref(`${alias}.createdAt`)} <= ${at}
-    AND (${sql.ref(`${alias}.isNotRemoved`)} OR ${sql.ref(`${alias}.updatedAt`)} > ${at})
-  )`
+export const isTeamMemberAt = (
+  member: {
+    createdAt: Expression<Date>
+    isNotRemoved: Expression<boolean>
+    updatedAt: Expression<Date>
+  },
+  at: Expression<Date>
+) =>
+  eb.and([
+    eb(member.createdAt, '<=', at),
+    eb.or([member.isNotRemoved, eb(member.updatedAt, '>', at)])
+  ])

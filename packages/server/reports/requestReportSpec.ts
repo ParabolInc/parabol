@@ -1,6 +1,5 @@
-import {readReportSpec} from '../../client/shared/reports/parseReportSpec'
+import {parseReportSpec} from '../../client/shared/reports/parseReportSpec'
 import type {ReportSpec} from '../../client/shared/reports/reportCatalog'
-import {validateReportSpec} from '../../client/shared/reports/validateReportSpec'
 import buildReportAskPrompt from './buildReportAskPrompt'
 import type {ClientOrgStructureLevel} from './orgStructure'
 
@@ -59,9 +58,8 @@ const requestReportSpec = async ({question, teams, levels, today, timeZone, comp
       } satisfies ReportAskAnswer
     }
     aiSpec = answer && 'spec' in answer ? answer.spec : null
-    const spec = readReportSpec(aiSpec)
-    const problem = spec ? validateReportSpec(spec) : 'The spec isn’t in the shape of the schema'
-    if (spec && !problem) {
+    const {spec, problem} = parseReportSpec(aiSpec)
+    if (spec) {
       const title =
         answer && 'title' in answer && typeof answer.title === 'string' ? answer.title : ''
       return {spec, title: title.trim() || question, aiSpec, tokenCost} satisfies ReportAskAnswer

@@ -65,9 +65,9 @@ const permissionMap: PermissionMap<Resolvers> = {
       or(isSuperUser, isViewerBillingLeader<'Mutation.movePinnedReport'>('args.orgId')),
       hasOrgFeatureFlag<'Mutation.movePinnedReport'>('args.orgId', 'Reports')
     ),
-    startReportQuestion: and(
-      or(isSuperUser, isViewerOnOrg<'Mutation.startReportQuestion'>('args.orgId')),
-      hasOrgFeatureFlag<'Mutation.startReportQuestion'>('args.orgId', 'Reports'),
+    logReportQuestionUse: and(
+      or(isSuperUser, isViewerOnOrg<'Mutation.logReportQuestionUse'>('args.orgId')),
+      hasOrgFeatureFlag<'Mutation.logReportQuestionUse'>('args.orgId', 'Reports'),
       rateLimit({perMinute: 60, perHour: 600})
     ),
     addAgendaItem: isTeamMember<'Mutation.addAgendaItem'>('args.newAgendaItem.teamId'),
@@ -503,10 +503,6 @@ const permissionMap: PermissionMap<Resolvers> = {
     pinnedReports: and(
       or(isSuperUser, isViewerOnOrg<'Organization.pinnedReports'>('source.id')),
       hasOrgFeatureFlag<'Organization.pinnedReports'>('source.id', 'Reports')
-    ),
-    popularReportQuestions: and(
-      or(isSuperUser, isViewerOnOrg<'Organization.popularReportQuestions'>('source.id')),
-      hasOrgFeatureFlag<'Organization.popularReportQuestions'>('source.id', 'Reports')
     ),
     recentReportQuestions: and(
       or(isSuperUser, isViewerOnOrg<'Organization.recentReportQuestions'>('source.id')),

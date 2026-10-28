@@ -1,36 +1,65 @@
-import {sql} from 'kysely'
+import {expressionBuilder} from 'kysely'
+import getKysely from '../../postgres/getKysely'
 import {hasEnoughAttendees} from '../../postgres/teamActivityCriteria'
 import type {ReportMeasureQuery} from '../reportMeasureTypes'
-import {countReportRows} from '../reportQueries'
+import {countReportRows, isAnyOf} from '../reportQueries'
 import {templateOf} from './templateExpressions'
-import {joinTopic, topicOf} from './topicExpressions'
+import {topicOf} from './topicExpressions'
 
-const topic = topicOf('rg', 'ai')
+const selectDiscussions = () =>
+  getKysely()
+    .selectFrom('Discussion as d')
+    .innerJoin('NewMeeting as m', 'm.id', 'd.meetingId')
+    .leftJoin('MeetingTemplate as tpl', 'tpl.id', 'm.templateId')
+    .leftJoin('RetroReflectionGroup as rg', (join) =>
+      join
+        .on('d.discussionTopicType', '=', 'reflectionGroup')
+        .onRef('rg.id', '=', 'd.discussionTopicId')
+    )
+    .leftJoin('AgendaItem as ai', (join) =>
+      join.on('d.discussionTopicType', '=', 'agendaItem').onRef('ai.id', '=', 'd.discussionTopicId')
+    )
 
 const countDiscussions = (query: ReportMeasureQuery, {withTask}: {withTask: boolean}) => {
-  const template = templateOf('m', 'tpl', query.ownTeamIds)
-  return countReportRows(query, {
-    from: sql`"Discussion" AS d
-      JOIN "NewMeeting" AS m ON m.id = d."meetingId"
-      LEFT JOIN "MeetingTemplate" AS tpl ON tpl.id = m."templateId"
-      ${joinTopic('d', 'rg', 'ai')}`,
+  const from = selectDiscussions()
+  const eb = expressionBuilder(from)
+  const template = templateOf(
+    {
+      templateId: eb.ref('m.templateId'),
+      teamId: eb.ref('m.teamId'),
+      scope: eb.ref('tpl.scope'),
+      name: eb.ref('tpl.name')
+    },
+    query.ownTeamIds
+  )
+  const topic = topicOf({
+    title: eb.ref('rg.title'),
+    smartTitle: eb.ref('rg.smartTitle'),
+    content: eb.ref('ai.content')
+  })
+  return countReportRows(query, from, {
     where: [
-      sql<boolean>`m."teamId" = ANY(${query.teamIds}::text[])`,
-      hasEnoughAttendees(sql.ref('m.id')),
+      isAnyOf(eb.ref('m.teamId'), query.teamIds),
+      hasEnoughAttendees(eb.ref('m.id')),
       withTask
-        ? sql<boolean>`EXISTS (SELECT 1 FROM "Task" WHERE "Task"."discussionId" = d.id)`
-        : sql<boolean>`true`
+        ? eb.exists(
+            eb
+              .selectFrom('Task')
+              .select(eb.lit(1).as('hasTask'))
+              .whereRef('Task.discussionId', '=', 'd.id')
+          )
+        : eb.lit(true)
     ],
-    timestamp: sql.ref<Date>('d.createdAt'),
+    timestamp: eb.ref('d.createdAt'),
     dimensions: {
-      TEAM: sql<string>`m."teamId"`,
-      MEETING_TYPE: sql<string>`m."meetingType"::text`,
+      TEAM: eb.ref('m.teamId'),
+      MEETING_TYPE: eb.cast<string>('m.meetingType', 'text'),
       TEMPLATE: template.key,
       TOPIC: topic.key
     },
     labels: {TEMPLATE: template.label, TOPIC: topic.label},
     requires: {TOPIC: topic.requires},
-    value: sql<number>`count(*)::int`
+    value: eb.cast<number>(eb.fn.countAll(), 'integer')
   })
 }
 
