@@ -15,8 +15,9 @@ import {
 
 export type ReportStepLength = 'DAY' | 'WEEK' | 'MONTH'
 
+export const PAGE_PERIOD_LABEL = 'The page’s period'
+
 export const REPORT_PERIOD_LABELS: Record<ReportPeriodPreset, string> = {
-  PAGE: 'The page’s period',
   LAST_7_DAYS: 'Last 7 days',
   LAST_30_DAYS: 'Last 30 days',
   LAST_3_MONTHS: 'Last 3 months',
@@ -107,7 +108,7 @@ const formatSpecDimension = (
     ? (findLevel(levelId, levels)?.name ?? REPORT_STRUCTURE_LABELS.removed)
     : formatReportDimension(dimension, step)
 
-// A result lists teams in place of a removed team structure level, so it names its own breakdown
+// A result lists teams in place of a removed org structure level, so it names its own breakdown
 export const formatReportBreakdown = (
   {dimension, levelName}: {dimension: ReportDimension; levelName: string | null | undefined},
   step: ReportStepLength | null | undefined
@@ -189,12 +190,12 @@ export const toReportSpecChips = (spec: ReportSpec, options: ChipOptions) => {
       edit: {kind: 'where', index}
     })
   })
-  if (period.preset && period.preset !== 'PAGE') {
+  if (period?.preset) {
     chips.push({name: 'Period', value: REPORT_PERIOD_LABELS[period.preset], edit: {kind: 'period'}})
-  } else if (period.startDate && period.endDate) {
+  } else if (period?.range) {
     chips.push({
       name: 'Period',
-      value: `${period.startDate} to ${period.endDate}`,
+      value: `${period.range.startAt} to ${period.range.endAt}`,
       edit: {kind: 'period'}
     })
   }

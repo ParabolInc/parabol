@@ -1,18 +1,18 @@
 import {cn} from '../../../../ui/cn'
 import plural from '../../../../utils/plural'
-import type {TeamStructureLevelData} from './teamStructureEdits'
-import {toTeamStructureRollup} from './teamStructureRollup'
+import type {OrgStructureLevelData} from './orgStructureEdits'
+import {toOrgStructureRollup} from './orgStructureRollup'
 
 interface Props {
   orgName: string
-  levels: readonly TeamStructureLevelData[]
+  levels: readonly OrgStructureLevelData[]
   teamIds: readonly string[]
 }
 
 const DEPTH_PADDING = ['pl-0', 'pl-5', 'pl-10']
 
 const OrgTeamRollup = ({orgName, levels, teamIds}: Props) => {
-  const rows = toTeamStructureRollup(orgName, levels, teamIds)
+  const rows = toOrgStructureRollup(orgName, levels, teamIds)
   return (
     <section className='flex flex-col gap-2.5 rounded-md border border-hairline bg-surface-card px-5 py-4 shadow-xs'>
       <div>

@@ -1,9 +1,10 @@
 import ms from 'ms'
-import type {ReportSpec} from '../../client/shared/reports/reportCatalog'
+import {parseReportSpec} from '../../client/shared/reports/parseReportSpec'
+import {REPORT_HIDDEN_VALUE, type ReportSpec} from '../../client/shared/reports/reportCatalog'
 import {getNewDataLoader} from '../dataloader/getNewDataLoader'
 import getKysely from '../postgres/getKysely'
+import {toOrgStructureKey} from '../reports/orgStructure'
 import runReport from '../reports/runReport'
-import {toTeamStructureId} from '../reports/teamStructure'
 import {createPGTables, truncatePGTables} from './common'
 
 const TEST_DB = 'runReportTest'
@@ -26,9 +27,9 @@ const TABLES = [
   'TeamHealthCategory',
   'TeamHealthQuestion',
   'TeamHealthResponse',
-  'TeamStructureLevel',
-  'TeamStructureValue',
-  'TeamStructurePlacement'
+  'OrgStructureLevel',
+  'OrgStructureValue',
+  'OrgStructurePlacement'
 ]
 
 const ORG_ID = 'reportOrg'
@@ -605,20 +606,20 @@ const PLATFORM = 1
 const CUSTODY = 2
 const AMERICAS = 3
 const REMOVED_LEVEL = 99
-const levelId = (rowId: number) => toTeamStructureId(rowId, 'TeamStructureLevel')
-const valueId = (rowId: number) => toTeamStructureId(rowId, 'TeamStructureValue')
+const levelId = (rowId: number) => toOrgStructureKey(rowId, 'OrgStructureLevel')
+const valueId = (rowId: number) => toOrgStructureKey(rowId, 'OrgStructureValue')
 
 // Apollo and Borealis are Platform and Cygnus is Custody. Dorado isn't placed yet
 const seedStructure = async () => {
   await pg
-    .insertInto('TeamStructureLevel')
+    .insertInto('OrgStructureLevel')
     .values([
       {id: BUSINESS_UNIT, orgId: ORG_ID, name: 'Business unit', sortOrder: 0},
       {id: REGION, orgId: ORG_ID, name: 'Region', sortOrder: 1}
     ])
     .execute()
   await pg
-    .insertInto('TeamStructureValue')
+    .insertInto('OrgStructureValue')
     .values([
       {id: PLATFORM, levelId: BUSINESS_UNIT, name: 'Platform', sortOrder: 0},
       {id: CUSTODY, levelId: BUSINESS_UNIT, name: 'Custody', sortOrder: 1},
@@ -626,7 +627,7 @@ const seedStructure = async () => {
     ])
     .execute()
   await pg
-    .insertInto('TeamStructurePlacement')
+    .insertInto('OrgStructurePlacement')
     .values([
       {teamId: APOLLO, levelId: BUSINESS_UNIT, valueId: PLATFORM},
       {teamId: BOREALIS, levelId: BUSINESS_UNIT, valueId: PLATFORM},
@@ -651,9 +652,12 @@ const report = async (
 ) => {
   const dataLoader = getNewDataLoader('runReportTest')
   try {
+    // the resolvers parse a spec before running it, so a spec that breaks a rule never gets here
+    const {spec, problem} = parseReportSpec({...baseSpec, ...overrides})
+    if (!spec) throw new Error(problem)
     return await runReport({
       orgId,
-      spec: {...baseSpec, ...overrides},
+      spec,
       timeZone,
       pagePeriod: null,
       viewerId,
@@ -870,13 +874,13 @@ describe('people', () => {
 
   test('a leader counts the whole organization', async () => {
     expect(valuesOf(await report({measures: ['MEMBERS']}))).toEqual([6])
-    expect(valuesOf(await report({...overDays, measures: ['ACTIVE_PEOPLE']}))).toEqual([
+    expect(valuesOf(await report({...overDays, measures: ['ACTIVE_USERS']}))).toEqual([
       6, 6, 6, 6, 5, 5, 5
     ])
   })
 
   test('a member counts the active people on their teams', async () => {
-    const result = await report({...overDays, measures: ['ACTIVE_PEOPLE']}, {viewerId: ALEX})
+    const result = await report({...overDays, measures: ['ACTIVE_USERS']}, {viewerId: ALEX})
     expect(valuesOf(result)).toEqual([4, 4, 4, 3, 2, 2, 2])
   })
 
@@ -899,8 +903,10 @@ describe('limits', () => {
       showAs: 'TABLE',
       breakdown: [{dimension: 'DAY'}, {dimension: 'TEAM'}, {dimension: 'MEETING_TYPE'}],
       period: {
-        startDate: daysAgo(400).toISOString().slice(0, 10),
-        endDate: daysAgo(36).toISOString().slice(0, 10)
+        range: {
+          startAt: daysAgo(400).toISOString().slice(0, 10),
+          endAt: daysAgo(36).toISOString().slice(0, 10)
+        }
       }
     })
     expect(result.rows).toHaveLength(5000)
@@ -932,7 +938,7 @@ describe('people and work', () => {
     const notSeen: Partial<ReportSpec> = {
       measures: ['LAST_SEEN'],
       showAs: 'TABLE',
-      breakdown: [{dimension: 'PERSON'}],
+      breakdown: [{dimension: 'USER'}],
       where: [{measure: 'LAST_SEEN', operator: 'OLDER_THAN_DAYS', value: 30}],
       sort: {by: 'VALUE', order: 'ASC'}
     }
@@ -949,7 +955,7 @@ describe('people and work', () => {
     expect(valuesOf(await report(daysToDone, asWren))).toEqual([2])
     expect(
       byLabel(
-        await report({...daysToDone, showAs: 'TABLE', breakdown: [{dimension: 'PERSON'}]}, asWren)
+        await report({...daysToDone, showAs: 'TABLE', breakdown: [{dimension: 'USER'}]}, asWren)
       )
     ).toEqual({Xavier: 1.5, 'No one': 28})
     expect(byLabel(await report({...daysToDone, ...byTeam}, asWren))).toEqual({Web: 2, Yard: null})
@@ -1007,13 +1013,16 @@ describe('people and work', () => {
   })
 
   test('by person, a meeting counts for each person who joined it', async () => {
-    expect(
-      byLabel(await report({...recently, breakdown: [{dimension: 'PERSON'}]}, asWren))
-    ).toEqual({Wren: 2, Wendy: 1, Xavier: 2, Yara: 1})
+    expect(byLabel(await report({...recently, breakdown: [{dimension: 'USER'}]}, asWren))).toEqual({
+      Wren: 2,
+      Wendy: 1,
+      Xavier: 2,
+      Yara: 1
+    })
     expect(
       valuesOf(
         await report(
-          {...recently, showAs: 'NUMBER', filters: [{dimension: 'PERSON', values: [WREN, XAVIER]}]},
+          {...recently, showAs: 'NUMBER', filters: [{dimension: 'USER', values: [WREN, XAVIER]}]},
           asWren
         )
       )
@@ -1043,7 +1052,12 @@ describe('team health', () => {
 
   test('each team’s latest check in the period is read, and a check fewer than 3 answered is hidden', async () => {
     const result = await report({...lastMonth, ...byTeam}, asLeader)
-    expect(byLabel(result)).toEqual({Harbor: 3.5, Heath: 4.4, Hill: null, Hollow: null})
+    expect(byLabel(result)).toEqual({
+      Harbor: 3.5,
+      Heath: 4.4,
+      Hill: REPORT_HIDDEN_VALUE,
+      Hollow: null
+    })
     expect(result.notes).toEqual([{kind: 'HIDDEN_FOR_ANONYMITY', count: 1}])
   })
 
@@ -1097,8 +1111,10 @@ describe('team health', () => {
           ...harbor,
           filters: [{dimension: 'TEAM', values: [HOLLOW]}],
           period: {
-            startDate: daysAgo(12).toISOString().slice(0, 10),
-            endDate: daysAgo(8).toISOString().slice(0, 10)
+            range: {
+              startAt: daysAgo(12).toISOString().slice(0, 10),
+              endAt: daysAgo(8).toISOString().slice(0, 10)
+            }
           }
         },
         asLeader
@@ -1111,7 +1127,7 @@ describe('team health', () => {
   test('answers count when results were revealed, leaving out hidden checks', async () => {
     expect(
       byLabel(await report({...lastMonth, measures: ['HEALTH_ANSWERS'], ...byTeam}, asLeader))
-    ).toEqual({Harbor: 6, Heath: 5, Hill: 0, Hollow: 0})
+    ).toEqual({Harbor: 6, Heath: 5, Hill: REPORT_HIDDEN_VALUE, Hollow: 0})
   })
 
   test('previous check only compares health scores, and not over time', async () => {
@@ -1121,7 +1137,7 @@ describe('team health', () => {
   })
 })
 
-describe('team structure', () => {
+describe('org structure', () => {
   const byUnit: Partial<ReportSpec> = {
     showAs: 'BARS',
     breakdown: [{dimension: 'TEAM_LEVEL', levelId: levelId(BUSINESS_UNIT)}]
@@ -1135,7 +1151,7 @@ describe('team structure', () => {
   })
 
   test('a person on two teams with the same value counts once', async () => {
-    expect(byLabel(await report({...byUnit, measures: ['ACTIVE_PEOPLE']}))).toEqual({
+    expect(byLabel(await report({...byUnit, measures: ['ACTIVE_USERS']}))).toEqual({
       Platform: 2,
       Custody: 2,
       'Not set': 1

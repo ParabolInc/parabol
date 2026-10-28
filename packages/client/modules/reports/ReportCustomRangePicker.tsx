@@ -22,8 +22,8 @@ const stepFor = (days: number) => (days <= 31 ? 'day' : days <= 186 ? 'week' : '
 const ReportCustomRangePicker = ({period, orgCreatedAt, onApply, onCancel}: Props) => {
   const isWide = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const [range, setRange] = useState<DateRange | undefined>(
-    period.startDate && period.endDate
-      ? {from: dayjs(period.startDate).toDate(), to: dayjs(period.endDate).toDate()}
+    period.range
+      ? {from: dayjs(period.range.startAt).toDate(), to: dayjs(period.range.endAt).toDate()}
       : undefined
   )
   const today = dayjs().startOf('day')
@@ -32,7 +32,7 @@ const ReportCustomRangePicker = ({period, orgCreatedAt, onApply, onCancel}: Prop
   const formatDay = (date: Date | undefined) => (date ? dayjs(date).format('MMM D, YYYY') : '—')
   const apply = () => {
     if (!from || !to) return
-    onApply({startDate: dayjs(from).format(LOCAL_DATE), endDate: dayjs(to).format(LOCAL_DATE)})
+    onApply({range: {startAt: dayjs(from).format(LOCAL_DATE), endAt: dayjs(to).format(LOCAL_DATE)}})
   }
   return (
     <div className='flex flex-col'>

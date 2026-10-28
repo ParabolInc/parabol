@@ -1,8 +1,8 @@
 import {
   REPORT_NO_INTEGRATION,
   REPORT_NO_MEETING,
-  REPORT_NO_PERSON,
   REPORT_NO_TEMPLATE,
+  REPORT_NO_USER,
   REPORT_OTHER_TEAM_TEMPLATE,
   REPORT_STRUCTURE_NOT_SET,
   REPORT_STRUCTURE_REMOVED,
@@ -53,8 +53,8 @@ const KNOWN_COLORS: Partial<Record<ReportDimension, Record<string, ReportSeriesC
     from90To180Days: color('bg-gold-600 dark:bg-gold-400', '#A36200', '#FBB337'),
     over180Days: color('bg-tomato-800 dark:bg-tomato-600', '#9F201E', '#F23B31')
   },
-  PERSON: {
-    [REPORT_NO_PERSON]: NONE_COLOR
+  USER: {
+    [REPORT_NO_USER]: NONE_COLOR
   },
   TEAM_LEVEL: {
     [REPORT_STRUCTURE_NOT_SET]: NONE_COLOR,

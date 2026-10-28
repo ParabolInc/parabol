@@ -19,7 +19,7 @@ interface SampleTeam {
   name: string
   // business unit, department and region, null where no one has placed the team yet
   places: [string | null, string | null, string | null]
-  // indexes into PEOPLE
+  // indexes into USERS
   members: number[]
   // each kind of meeting the team holds and the days between them
   meetings: [MeetingType, number][]
@@ -47,7 +47,7 @@ const require = createRequire(import.meta.url)
 const DAY = 24 * 60 * 60 * 1000
 const NOW = Date.now()
 
-const PEOPLE = [
+const USERS = [
   'Avery Chen',
   'Blake Okafor',
   'Casey Nair',
@@ -232,7 +232,7 @@ const LAPSES: Record<number, {lapsedDaysAgo: number; returnedDaysAgo?: number}> 
   25: {lapsedDaysAgo: 35},
   31: {lapsedDaysAgo: 15}
 }
-const QUIET_PEOPLE = [3, 15, 24, 29]
+const QUIET_USERS = [3, 15, 24, 29]
 
 // team, person, service, connected and disconnected days ago
 const INTEGRATIONS: [string, number, string, number, number | null][] = [
@@ -476,7 +476,7 @@ const readCatalog = async (client: Client) => {
 const seedCopper = async (client: Client, viewerId: string, tier: 'starter' | 'team') => {
   const catalog = await readCatalog(client)
   const orgId = toId()
-  const people = PEOPLE.map((name) => {
+  const users = USERS.map((name) => {
     const [first = '', last = ''] = name.toLowerCase().split(' ')
     return {id: `local|${toId()}`, name, email: `${first}.${last}+${orgId}@example.com`}
   })
@@ -491,7 +491,7 @@ const seedCopper = async (client: Client, viewerId: string, tier: 'starter' | 't
   const membershipsByTeamId = new Map<string, Membership[]>()
   const orgJoinedDaysAgo = new Map<string, number>([[viewerId, 400]])
   teams.forEach((team) => {
-    const memberships = team.members.map((personIdx, rank): Membership => {
+    const memberships = team.members.map((userIdx, rank): Membership => {
       const isFounder = rank < 2
       const joinedDaysAgo =
         isFounder || chance(0.8)
@@ -499,7 +499,7 @@ const seedCopper = async (client: Client, viewerId: string, tier: 'starter' | 't
           : between(30, team.firstMetDaysAgo)
       const leftDaysAgo =
         !isFounder && joinedDaysAgo > 60 && chance(0.12) ? between(20, joinedDaysAgo - 30) : null
-      const userId = people[personIdx]!.id
+      const userId = users[userIdx]!.id
       orgJoinedDaysAgo.set(userId, Math.max(orgJoinedDaysAgo.get(userId) ?? 0, joinedDaysAgo + 3))
       return {userId, joinedDaysAgo, leftDaysAgo, isLead: rank === 0 && team.viewer !== 'lead'}
     })
@@ -528,9 +528,9 @@ const seedCopper = async (client: Client, viewerId: string, tier: 'starter' | 't
     createdAt: daysAgo(405)
   })
   add('FeatureFlagOwner', {featureName: 'Reports', orgId})
-  people.forEach(({id, name, email}, personIdx) => {
-    const lapse = LAPSES[personIdx]
-    const isQuiet = QUIET_PEOPLE.includes(personIdx)
+  users.forEach(({id, name, email}, userIdx) => {
+    const lapse = LAPSES[userIdx]
+    const isQuiet = QUIET_USERS.includes(userIdx)
     const lastSeenDaysAgo =
       lapse && !lapse.returnedDaysAgo
         ? lapse.lapsedDaysAgo + between(0, 5)
@@ -876,12 +876,12 @@ const seedCopper = async (client: Client, viewerId: string, tier: 'starter' | 't
     }
   })
 
-  INTEGRATIONS.forEach(([teamName, personIdx, service, connectedDaysAgo, disconnectedDaysAgo]) => {
+  INTEGRATIONS.forEach(([teamName, userIdx, service, connectedDaysAgo, disconnectedDaysAgo]) => {
     const providerId = catalog.providerIdByService.get(service)
     if (!providerId) return
     add('TeamMemberIntegrationAuth', {
       teamId: teamIdByName.get(teamName)!,
-      userId: people[personIdx]!.id,
+      userId: users[userIdx]!.id,
       providerId,
       service,
       isActive: disconnectedDaysAgo === null,
@@ -889,18 +889,18 @@ const seedCopper = async (client: Client, viewerId: string, tier: 'starter' | 't
       updatedAt: daysAgo(disconnectedDaysAgo ?? connectedDaysAgo)
     })
   })
-  SLACK_CONNECTIONS.forEach(([teamName, personIdx, connectedDaysAgo]) => {
-    const person = people[personIdx]!
+  SLACK_CONNECTIONS.forEach(([teamName, userIdx, connectedDaysAgo]) => {
+    const user = users[userIdx]!
     add('SlackAuth', {
       id: toId(),
       teamId: teamIdByName.get(teamName)!,
-      userId: person.id,
+      userId: user.id,
       botUserId: `B${toId()}`,
       defaultTeamChannelId: `C${toId()}`,
       slackTeamId: `T${orgId}`,
       slackTeamName: 'Copper',
       slackUserId: `U${toId()}`,
-      slackUserName: person.name,
+      slackUserName: user.name,
       createdAt: daysAgo(connectedDaysAgo)
     })
   })
@@ -932,14 +932,14 @@ const seedCopper = async (client: Client, viewerId: string, tier: 'starter' | 't
 
   for (const [levelIdx, [levelName, valueNames]] of LEVELS.entries()) {
     const {rows: levelRows} = await client.query<{id: number}>(
-      'INSERT INTO "TeamStructureLevel" ("orgId", name, "sortOrder") VALUES ($1, $2, $3) RETURNING id',
+      'INSERT INTO "OrgStructureLevel" ("orgId", name, "sortOrder") VALUES ($1, $2, $3) RETURNING id',
       [orgId, levelName, levelIdx]
     )
     const levelId = levelRows[0]!.id
     const valueIdByName = new Map<string, number>()
     for (const [valueIdx, valueName] of valueNames.entries()) {
       const {rows: valueRows} = await client.query<{id: number}>(
-        'INSERT INTO "TeamStructureValue" ("levelId", name, "sortOrder") VALUES ($1, $2, $3) RETURNING id',
+        'INSERT INTO "OrgStructureValue" ("levelId", name, "sortOrder") VALUES ($1, $2, $3) RETURNING id',
         [levelId, valueName, valueIdx]
       )
       valueIdByName.set(valueName, valueRows[0]!.id)
@@ -948,7 +948,7 @@ const seedCopper = async (client: Client, viewerId: string, tier: 'starter' | 't
       const valueId = valueIdByName.get(places[levelIdx] ?? '')
       return valueId ? [{teamId: id, levelId, valueId}] : []
     })
-    await insertRows(client, 'TeamStructurePlacement', placements)
+    await insertRows(client, 'OrgStructurePlacement', placements)
   }
   return {
     orgId,

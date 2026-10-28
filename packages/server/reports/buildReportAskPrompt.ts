@@ -6,7 +6,7 @@ import {
   REPORT_VALUE_LABELS,
   type ReportDimension
 } from '../../client/shared/reports/reportCatalog'
-import type {ClientTeamStructureLevel} from './teamStructure'
+import type {ClientOrgStructureLevel} from './orgStructure'
 
 const DIMENSIONS: Record<ReportDimension, string> = {
   TIME: 'time, stepping by day up to a month, by week up to 6 months, then by month',
@@ -14,8 +14,8 @@ const DIMENSIONS: Record<ReportDimension, string> = {
   WEEK: 'each week, starting on Monday',
   MONTH: 'each month',
   TEAM: 'each team; its values are team ids',
-  TEAM_LEVEL: 'a level of the team structure below, like business unit, named by levelId',
-  PERSON: 'each person: who owns a task, who joined a meeting, or each member for LAST_SEEN',
+  TEAM_LEVEL: 'a level of the org structure below, like business unit, named by levelId',
+  USER: 'each person: who owns a task, who joined a meeting, or each member for LAST_SEEN',
   MEETING_TYPE: 'the type of meeting something happened in',
   TEMPLATE: 'the template of the meeting something happened in',
   TASK_STATUS: 'a task’s status now',
@@ -41,7 +41,7 @@ const MAX_TEAMS = 200
 
 interface Options {
   teams: {id: string; name: string}[]
-  levels: ClientTeamStructureLevel[]
+  levels: ClientOrgStructureLevel[]
   // today's date where the viewer is, as YYYY-MM-DD
   today: string
   timeZone: string
@@ -90,7 +90,7 @@ Team Health: when a question asks how teams feel, or about Team Health or health
 Filters keep only data with one of their values. Separate filters must all match. Filtering by time isn't allowed; use the period. The values are:
 ${values.join('\n')}
 - TEAM: one of the team ids below
-PERSON, TEMPLATE and TOPIC can break a report down but not filter it, since their values aren't listed here.
+USER, TEMPLATE and TOPIC can break a report down but not filter it, since their values aren't listed here.
 
 Teams the person asking can see${teams.length > MAX_TEAMS ? `, the first ${MAX_TEAMS}` : ''}:
 ${teamLines.join('\n') || '- none'}
@@ -100,7 +100,7 @@ ${levelLines.join('\n') || '- none, so TEAM_LEVEL can’t be used'}
 
 where keeps the rows whose value passes a test, after counting. AT_LEAST, AT_MOST and EQUALS test a number, like a count, a percentage or days. OLDER_THAN_DAYS and WITHIN_DAYS test a date, like LAST_MEETING; OLDER_THAN_DAYS also keeps rows with no date at all. A test's measure must be one of the spec's measures.
 
-period: use {"preset": "PAGE", "startDate": null, "endDate": null}, the period picked on the page, unless the question names one. LAST_7_DAYS and LAST_30_DAYS end today. LAST_3_MONTHS, LAST_6_MONTHS and LAST_12_MONTHS are this month so far and the whole months before it, 3, 6 or 12 months in all. ALL_TIME starts when the organization did. Any other period is a startDate and endDate as YYYY-MM-DD, with a null preset, ending today at the latest. Companies set their own fiscal quarters and years, so only turn "last quarter" or "this year" into dates when the question says which months.
+period: use null, which follows the period picked on the page, unless the question names one. Then it's {"preset": ...}: LAST_7_DAYS and LAST_30_DAYS end today. LAST_3_MONTHS, LAST_6_MONTHS and LAST_12_MONTHS are this month so far and the whole months before it, 3, 6 or 12 months in all. ALL_TIME starts when the organization did. Any other period is {"range": {"startAt": ..., "endAt": ...}}, its first and last day as YYYY-MM-DD, ending today at the latest. Companies set their own fiscal quarters and years, so only turn "last quarter" or "this year" into dates when the question says which months.
 
 compareTo: PREVIOUS_PERIOD, A_WEEK_EARLIER or A_YEAR_EARLIER, only when the question asks how something changed. PREVIOUS_CHECK compares HEALTH_SCORE with each team's check before, and can't be used over time.
 sort: by VALUE, NAME or TIME, ASC or DESC; null leaves the default order. limit: 1 to 50, or null; it keeps the top values of the first breakdown that isn't time.

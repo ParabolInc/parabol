@@ -5,6 +5,84 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.8.1](https://github.com/ParabolInc/parabol/compare/v15.8.0...v15.8.1) (2026-10-28)
+
+
+### Fixed
+
+* explain bad embed links and let Escape or Backspace drop an empty embed ([#13784](https://github.com/ParabolInc/parabol/issues/13784)) ([8d6a844](https://github.com/ParabolInc/parabol/commit/8d6a84488a8f0628afb23e9851c6e813e2a8ceb8))
+* show page link titles, not markdown, in search snippets ([#13783](https://github.com/ParabolInc/parabol/issues/13783)) ([75e627a](https://github.com/ParabolInc/parabol/commit/75e627a583f88230621bdefffd7885f4ee398d8f))
+
+## [15.8.0](https://github.com/ParabolInc/parabol/compare/v15.7.4...v15.8.0) (2026-10-28)
+
+
+### Added
+
+* pages embed block ([#13779](https://github.com/ParabolInc/parabol/issues/13779)) ([c5e9532](https://github.com/ParabolInc/parabol/commit/c5e95325a15da3dcdb8759cbdfd3ff481c1baabc))
+
+
+### Fixed
+
+* keep page search working when embeddings are slow ([#13776](https://github.com/ParabolInc/parabol/issues/13776)) ([df5b3f3](https://github.com/ParabolInc/parabol/commit/df5b3f347378206b123caeff1f2fd6df42b1a828))
+
+## [15.7.4](https://github.com/ParabolInc/parabol/compare/v15.7.3...v15.7.4) (2026-10-28)
+
+
+### Fixed
+
+* match Zoom transcripts to the host's meeting on any of their teams ([#13777](https://github.com/ParabolInc/parabol/issues/13777)) ([4f4d1ce](https://github.com/ParabolInc/parabol/commit/4f4d1cec54736a55cb463cbdec466c020f56b0d4))
+
+
+### Changed
+
+* add a page search eval harness ([#13774](https://github.com/ParabolInc/parabol/issues/13774)) ([50b3714](https://github.com/ParabolInc/parabol/commit/50b3714ad9819aa53011f4a580644ad1b423ee69))
+
+## [15.7.3](https://github.com/ParabolInc/parabol/compare/v15.7.2...v15.7.3) (2026-10-27)
+
+
+### Fixed
+
+* Pages and realtime editing security hardening ([#13760](https://github.com/ParabolInc/parabol/issues/13760)) ([dbf832c](https://github.com/ParabolInc/parabol/commit/dbf832c67df391efe9d7cffcc263160f007da469))
+
+## [15.7.2](https://github.com/ParabolInc/parabol/compare/v15.7.1...v15.7.2) (2026-10-27)
+
+
+### Fixed
+
+* keep the meeting task board up when adding a task ([#13769](https://github.com/ParabolInc/parabol/issues/13769)) ([d35312c](https://github.com/ParabolInc/parabol/commit/d35312cd9e8ca024d68174317f4ec7c93bbad51f))
+* redirect the facilitator to the summary page after ending a meeting ([#13768](https://github.com/ParabolInc/parabol/issues/13768)) ([4297846](https://github.com/ParabolInc/parabol/commit/42978469ecddd5e409c35d2f4609f4a74745f40d))
+
+
+### Changed
+
+* tune meeting template embedding text for search ([#13749](https://github.com/ParabolInc/parabol/issues/13749)) ([0491929](https://github.com/ParabolInc/parabol/commit/0491929ae1249a230337903e7684a94d48613bd0))
+
+## [15.7.1](https://github.com/ParabolInc/parabol/compare/v15.7.0...v15.7.1) (2026-10-27)
+
+
+### Fixed
+
+* keep old Azure DevOps work items out of the standup date window ([#13758](https://github.com/ParabolInc/parabol/issues/13758)) ([def562f](https://github.com/ParabolInc/parabol/commit/def562f72c0c99a337fe91781614f9ca35a9fc31))
+
+## [15.7.0](https://github.com/ParabolInc/parabol/compare/v15.6.0...v15.7.0) (2026-10-26)
+
+
+### Added
+
+* AI summary and sentiment for each Team Health category ([#13738](https://github.com/ParabolInc/parabol/issues/13738)) ([dad789c](https://github.com/ParabolInc/parabol/commit/dad789c890ffa4952c988b8e691573af9de5441c))
+
+
+### Fixed
+
+* keep Activity Library keyword matches from being clobbered by semantic search ([#13746](https://github.com/ParabolInc/parabol/issues/13746)) ([d5a05db](https://github.com/ParabolInc/parabol/commit/d5a05db6c2418ef184e887142557d23eccbd17dd))
+* keep non-latin1 WebSocket upgrade headers from crashing the server ([#13755](https://github.com/ParabolInc/parabol/issues/13755)) ([41f1159](https://github.com/ParabolInc/parabol/commit/41f11596c41f0cb73fed69285f131a035f14cd3d))
+* shorter placeholder ([#13735](https://github.com/ParabolInc/parabol/issues/13735)) ([ccc7750](https://github.com/ParabolInc/parabol/commit/ccc77505f65d3ed6166e1b5cdf5403a963e5c139))
+
+
+### Changed
+
+* **ci:** reuse a webpack cache between test runs ([#13739](https://github.com/ParabolInc/parabol/issues/13739)) ([6176dd0](https://github.com/ParabolInc/parabol/commit/6176dd05c19e0d7268d55d2547874b607f532acc))
+
 ## [15.6.0](https://github.com/ParabolInc/parabol/compare/v15.5.2...v15.6.0) (2026-10-22)
 
 

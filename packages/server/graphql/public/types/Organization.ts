@@ -1,10 +1,9 @@
 import {GraphQLError} from 'graphql'
 import getKysely from '../../../postgres/getKysely'
+import {selectPinnedReports} from '../../../reports/pinnedReports'
 import readReportSpecInput from '../../../reports/readReportSpecInput'
-import {selectReportPins} from '../../../reports/reportPins'
 import {readReportTeamHealth, readReportTeamHealthCell} from '../../../reports/reportTeamHealth'
 import runReport from '../../../reports/runReport'
-import selectPopularReportQuestions from '../../../reports/selectPopularReportQuestions'
 import {
   getUserId,
   isSuperUser,
@@ -74,24 +73,24 @@ const Organization: OrganizationResolvers = {
     return dataLoader.get('activeUserCountsByOrgId').load({orgId, times: at})
   },
 
-  report: async ({id: orgId}, {spec, timeZone, pagePeriod}, {authToken, dataLoader}) => {
+  report: async ({id: orgId}, {spec, timeZone}, {authToken, dataLoader}) => {
     return runReport({
       orgId,
       spec: readReportSpecInput(spec),
       timeZone,
-      pagePeriod: pagePeriod ?? null,
+      pagePeriod: null,
       viewerId: getUserId(authToken),
       isSuperUser: isSuperUser(authToken),
       dataLoader
     })
   },
 
-  reportTeamHealth: async ({id: orgId}, {spec, timeZone, pagePeriod}, {authToken, dataLoader}) => {
+  reportTeamHealth: async ({id: orgId}, {spec, timeZone}, {authToken, dataLoader}) => {
     return readReportTeamHealth({
       orgId,
       spec: readReportSpecInput(spec),
       timeZone,
-      pagePeriod: pagePeriod ?? null,
+      pagePeriod: null,
       viewerId: getUserId(authToken),
       isSuperUser: isSuperUser(authToken),
       dataLoader
@@ -102,17 +101,15 @@ const Organization: OrganizationResolvers = {
     return readReportTeamHealthCell(meetingId, categoryId, dataLoader)
   },
 
-  reportPins: ({id: orgId}) => selectReportPins(orgId),
-  teamStructure: async ({id: orgId}, _args, {dataLoader}) => {
+  pinnedReports: ({id: orgId}) => selectPinnedReports(orgId),
+  structure: async ({id: orgId}, _args, {dataLoader}) => {
     const hasReports = await dataLoader
       .get('featureFlagByOwnerId')
       .load({ownerId: orgId, featureName: 'Reports'})
     if (!hasReports) return []
-    const {levels} = await dataLoader.get('teamStructureByOrgId').load(orgId)
+    const {levels} = await dataLoader.get('orgStructureByOrgId').load(orgId)
     return levels
   },
-
-  popularReportQuestions: () => selectPopularReportQuestions(),
 
   recentReportQuestions: async ({id: orgId}, _args, {authToken}) => {
     return getKysely()

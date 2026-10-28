@@ -1,11 +1,10 @@
 import DataLoader from 'dataloader'
-import {sql} from 'kysely'
 import ms from 'ms'
 import getKysely from '../postgres/getKysely'
 import {hasEnoughAttendees} from '../postgres/teamActivityCriteria'
 import reportMeasures from '../reports/measures/reportMeasures'
+import type {OrgStructure} from '../reports/orgStructure'
 import type {ReportMeasureQuery, ReportMeasureResult} from '../reports/reportMeasureTypes'
-import type {TeamStructure} from '../reports/teamStructure'
 import type RootDataLoader from './RootDataLoader'
 
 const STARTER_TEAM_COUNT = 2
@@ -35,16 +34,22 @@ export const starterReportTeamIdsByOrgId = (parent: RootDataLoader) => {
             .where('Team.orgId', '=', orgId)
             .where('Team.isArchived', '=', false)
             .orderBy(
-              sql`EXISTS (
-                SELECT 1 FROM "NewMeeting" AS m
-                WHERE m."teamId" = "Team".id AND m."createdAt" >= ${since}
-                AND ${hasEnoughAttendees(sql.ref('m.id'))}
-              )`,
+              ({exists, selectFrom}) =>
+                exists(
+                  selectFrom('NewMeeting as m')
+                    .select(({lit}) => lit(1).as('met'))
+                    .whereRef('m.teamId', '=', 'Team.id')
+                    .where('m.createdAt', '>=', since)
+                    .where(({ref}) => hasEnoughAttendees(ref('m.id')))
+                ),
               'desc'
             )
             .orderBy(
-              sql`(SELECT count(*) FROM "TeamMember"
-                WHERE "TeamMember"."teamId" = "Team".id AND "TeamMember"."isNotRemoved" = true)`,
+              ({selectFrom}) =>
+                selectFrom('TeamMember')
+                  .select(({fn}) => fn.countAll().as('memberCount'))
+                  .whereRef('TeamMember.teamId', '=', 'Team.id')
+                  .where('TeamMember.isNotRemoved', '=', true),
               'desc'
             )
             .orderBy('Team.createdAt', 'asc')
@@ -90,13 +95,13 @@ export const teamHealthChecksByTeamId = (parent: RootDataLoader) => {
   )
 }
 
-// Each org's team structure: its levels in order with their values, and where its teams sit
-export const teamStructureByOrgId = (parent: RootDataLoader) => {
-  return new DataLoader<string, TeamStructure, string>(
+// Each org's org structure: its levels in order with their values, and where its teams sit
+export const orgStructureByOrgId = (parent: RootDataLoader) => {
+  return new DataLoader<string, OrgStructure, string>(
     async (orgIds) => {
       const pg = getKysely()
       const levels = await pg
-        .selectFrom('TeamStructureLevel')
+        .selectFrom('OrgStructureLevel')
         .selectAll()
         .where('orgId', 'in', orgIds)
         .orderBy('sortOrder')
@@ -108,14 +113,14 @@ export const teamStructureByOrgId = (parent: RootDataLoader) => {
           ? [[], []]
           : await Promise.all([
               pg
-                .selectFrom('TeamStructureValue')
+                .selectFrom('OrgStructureValue')
                 .selectAll()
                 .where('levelId', 'in', levelIds)
                 .orderBy('sortOrder')
                 .orderBy('id')
                 .execute(),
               pg
-                .selectFrom('TeamStructurePlacement')
+                .selectFrom('OrgStructurePlacement')
                 .selectAll()
                 .where('levelId', 'in', levelIds)
                 .execute()

@@ -2558,7 +2558,7 @@ type Mutation {
   """
   Keep a popular question the viewer picked, or a recent one they opened again, at the top of their recent questions
   """
-  startReportQuestion(
+  logReportQuestionUse(
     orgId: ID!
 
     """
@@ -2580,7 +2580,7 @@ type Mutation {
     The name of a report the viewer built
     """
     title: String
-  ): StartReportQuestionSuccess! @scope(name: REPORTS_WRITE)
+  ): LogReportQuestionUseSuccess! @scope(name: REPORTS_WRITE)
 
   """
   Pin a report to the organization's Reports page, for everyone who can see Reports
@@ -2608,7 +2608,7 @@ type Mutation {
   """
   Move a pin on the organization's Reports page. Org admins and billing leaders can
   """
-  moveReportPin(
+  movePinnedReport(
     orgId: ID!
     pinId: ID!
 
@@ -2616,17 +2616,17 @@ type Mutation {
     The pin's new place, counting from 0
     """
     toIndex: Int!
-  ): MoveReportPinSuccess! @scope(name: REPORTS_WRITE)
+  ): MovePinnedReportSuccess! @scope(name: REPORTS_WRITE)
 
   """
   Set the levels an organization groups its teams by in Reports. Levels and values keep their ids and take the
   order given; any left out are removed, and teams placed in them become not set. Org admins and billing leaders can
   """
-  setTeamStructure(orgId: ID!, levels: [TeamStructureLevelInput!]!): SetTeamStructureSuccess!
+  setOrgStructure(orgId: ID!, levels: [OrgStructureLevelInput!]!): SetOrgStructureSuccess!
     @scope(name: ORGS_WRITE)
 
   """
-  Place a team at a value of a team structure level, or leave it not set with no value. Org admins and billing
+  Place a team at a value of an org structure level, or leave it not set with no value. Org admins and billing
   leaders can
   """
   placeTeam(teamId: ID!, levelId: ID!, valueId: ID): PlaceTeamSuccess! @scope(name: ORGS_WRITE)

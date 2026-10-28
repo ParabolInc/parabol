@@ -61,17 +61,12 @@ describe('resolveReportPeriod', () => {
     expect(steps.map(({isPartial}) => isPartial)).toEqual([false, false, true])
   })
 
-  test('PAGE takes the page period, or 3 months without one', () => {
+  test('no period takes the page period, or 3 months without one', () => {
     const options = {timeZone: UTC, now, orgCreatedAt}
-    expect(resolveReportPeriod({preset: 'PAGE'}, {preset: 'LAST_7_DAYS'}, options)).toEqual(
+    expect(resolveReportPeriod(null, {preset: 'LAST_7_DAYS'}, options)).toEqual(
       resolve({preset: 'LAST_7_DAYS'})
     )
-    expect(resolveReportPeriod({preset: 'PAGE'}, null, options)).toEqual(
-      resolve({preset: 'LAST_3_MONTHS'})
-    )
-    expect(resolveReportPeriod({preset: 'PAGE'}, {preset: 'PAGE'}, options)).toEqual(
-      resolve({preset: 'LAST_3_MONTHS'})
-    )
+    expect(resolveReportPeriod(null, null, options)).toEqual(resolve({preset: 'LAST_3_MONTHS'}))
   })
 
   test('ALL_TIME starts the day the organization was created', () => {
@@ -82,20 +77,19 @@ describe('resolveReportPeriod', () => {
     })
   })
 
-  test('a custom period includes its end date and ends today at the latest', () => {
-    expect(resolve({startDate: '2026-09-01', endDate: '2026-09-30'})).toEqual({
+  test('a date range includes its end date and ends today at the latest', () => {
+    expect(resolve({range: {startAt: '2026-09-01', endAt: '2026-09-30'}})).toEqual({
       startDate: '2026-09-01',
       endDate: '2026-10-01',
       monthCount: null
     })
-    expect(resolve({startDate: '2026-10-01', endDate: '2026-10-20'})).toEqual({
+    expect(resolve({range: {startAt: '2026-10-01', endAt: '2026-10-20'}})).toEqual({
       startDate: '2026-10-01',
       endDate: '2026-10-21',
       monthCount: null
     })
-    expect(typeof resolve({startDate: '2026-10-01', endDate: '2026-10-21'})).toBe('string')
-    expect(typeof resolve({startDate: '2026-10-02', endDate: '2026-10-01'})).toBe('string')
-    expect(typeof resolve({startDate: '2026-10-01'})).toBe('string')
+    expect(typeof resolve({range: {startAt: '2026-10-01', endAt: '2026-10-21'}})).toBe('string')
+    expect(typeof resolve({range: {startAt: '2026-10-02', endAt: '2026-10-01'}})).toBe('string')
   })
 })
 

@@ -73,24 +73,18 @@ interface ResolveOptions {
 }
 
 export const resolveReportPeriod = (
-  period: ReportPeriod,
+  period: ReportPeriod | null | undefined,
   pagePeriod: ReportPeriod | null,
   {timeZone, now, orgCreatedAt}: ResolveOptions
 ): ReportLocalRange | string => {
-  const effectivePeriod =
-    period.preset === 'PAGE'
-      ? pagePeriod && pagePeriod.preset !== 'PAGE'
-        ? pagePeriod
-        : DEFAULT_PAGE_PERIOD
-      : period
   const today = toLocalDate(now, timeZone)
   const tomorrow = addDays(today, 1)
-  const {preset, startDate, endDate} = effectivePeriod
+  const {preset, range} = period ?? pagePeriod ?? DEFAULT_PAGE_PERIOD
   if (!preset) {
-    if (!startDate || !endDate) return 'A custom period needs a start and end date'
-    if (endDate > today) return 'A custom period can end today at the latest'
-    if (endDate < startDate) return 'A custom period has to end after it starts'
-    return {startDate, endDate: addDays(endDate, 1), monthCount: null}
+    if (!range) return 'A period needs a preset or a date range'
+    if (range.endAt > today) return 'A date range can end today at the latest'
+    if (range.endAt < range.startAt) return 'A date range has to end after it starts'
+    return {startDate: range.startAt, endDate: addDays(range.endAt, 1), monthCount: null}
   }
   // the latest month runs to today, so a report shows what's happened so far and marks that month partial
   const months = MONTH_PRESETS[preset]

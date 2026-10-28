@@ -7,5 +7,5 @@ type PinReportSuccess {
   """
   The new pin, or the one already showing the same report
   """
-  reportPin: ReportPin!
+  pinnedReport: PinnedReport!
 }

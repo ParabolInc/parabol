@@ -1,9 +1,11 @@
 import {GraphQLError} from 'graphql'
+import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import {redisHocusPocus} from '../../../hocusPocus'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
+import {Logger} from '../../../utils/Logger'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
 import {getPageNextSortOrder} from './helpers/getPageNextSortOrder'
@@ -26,24 +28,31 @@ const updatePage: MutationResolvers['updatePage'] = async (
   if (targetSection === 'team' && !teamId) {
     throw new GraphQLError('teamId must be non-null if targetSection is team')
   }
+  if (targetSection === 'team') {
+    const teamMember = await dataLoader.get('teamMembers').load(toTeamMemberId(teamId!, viewerId))
+    if (!teamMember?.isNotRemoved) throw new GraphQLError('You can only move pages into your teams')
+  }
   const page = await dataLoader.get('pages').load(dbPageId)
   dataLoader.get('pages').clearAll()
   if (!page) throw new GraphQLError('Invalid pageId')
 
   const isReorder =
     sourceSection === targetSection && ((!teamId && !page.teamId) || teamId === page.teamId)
+  const userRole = await dataLoader
+    .get('pageAccessByPageIdUserId')
+    .load({pageId: dbPageId, userId: viewerId})
+  dataLoader.get('pageAccessByPageIdUserId').clearAll()
   if (!isReorder) {
     if (page.isMeetingTOC) {
       throw new GraphQLError('Meeting Summaries pages cannot be moved')
     }
     // changing parents will change permissions.
-    const userRole = await dataLoader
-      .get('pageAccessByPageIdUserId')
-      .load({pageId: dbPageId, userId: viewerId})
-    dataLoader.get('pageAccessByPageIdUserId').clearAll()
     if (userRole !== 'owner') {
       throw new GraphQLError('You must be an owner to move the page to a different parent')
     }
+  } else if (targetSection !== 'shared' && userRole !== 'owner' && userRole !== 'editor') {
+    // outside the shared section the sort order is the same for everyone
+    throw new GraphQLError('You must be an editor to reorder this page')
   }
 
   // sortOrder is only used for pages without a parentPageId, or shared pages
@@ -112,7 +121,9 @@ const updatePage: MutationResolvers['updatePage'] = async (
     // This may get called from the client for faster UI updates, but we call it here for posterity
     const {parentPageId: oldParentpageId} = page
     const documentName = CipherId.toClient(oldParentpageId, 'page')
-    redisHocusPocus.handleEvent('removeCanonicalPageLinkFromPage', documentName, {pageCode})
+    redisHocusPocus
+      .handleEvent('removeCanonicalPageLinkFromPage', documentName, {pageCode})
+      .catch(Logger.error)
   }
   const data = {pageId: dbPageId}
   const access = await dataLoader.get('pageAccessByPageId').load(dbPageId)

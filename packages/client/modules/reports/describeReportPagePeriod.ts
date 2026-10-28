@@ -26,9 +26,7 @@ export const describeReportPreset = (preset: ReportPagePreset, orgCreatedAt: str
 }
 
 export const describeCustomRange = (period: ReportPagePeriod) =>
-  period.startDate && period.endDate
-    ? formatRange(dayjs(period.startDate), dayjs(period.endDate), 'day')
-    : null
+  period.range ? formatRange(dayjs(period.range.startAt), dayjs(period.range.endAt), 'day') : null
 
 export const describeReportPagePeriod = (period: ReportPagePeriod) =>
   period.preset ? REPORT_PERIOD_LABELS[period.preset] : describeCustomRange(period)

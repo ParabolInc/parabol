@@ -31,7 +31,7 @@ const ENUMERATED_FILTER_VALUES: Partial<Record<ReportDimension, readonly string[
 const describeCount = ([min, max]: readonly [number, number], noun: string) =>
   `${min === max ? min : `${min} to ${max}`} ${max === 1 ? noun : `${noun}s`}`
 
-// two levels of the team structure are different dimensions
+// two levels of the org structure are different dimensions
 export const toReportDimensionKey = ({
   dimension,
   levelId
@@ -68,7 +68,7 @@ export const validateReportSpec = (spec: ReportSpec): string | null => {
       ({dimension, levelId}) => dimension === 'TEAM_LEVEL' && !levelId
     )
   ) {
-    return 'TEAM_LEVEL needs the levelId of a team structure level'
+    return 'TEAM_LEVEL needs the levelId of an org structure level'
   }
   if (new Set(breakdown.map(toReportDimensionKey)).size !== breakdown.length) {
     return 'A breakdown can only be used once'
@@ -88,7 +88,7 @@ export const validateReportSpec = (spec: ReportSpec): string | null => {
 
   for (const {dimension, values} of filters) {
     if (isReportTimeDimension(dimension)) return 'Use the period to filter by time'
-    // a team or team structure filter narrows which teams are counted, so every measure takes one
+    // a team or org structure filter narrows which teams are counted, so every measure takes one
     const isTeamFilter = dimension === 'TEAM' || dimension === 'TEAM_LEVEL'
     const measure = !isTeamFilter && measures.find((m) => !isMeasureDimension(m, dimension))
     if (measure) return `${measure} can't be filtered by ${dimension}`
@@ -116,14 +116,12 @@ export const validateReportSpec = (spec: ReportSpec): string | null => {
     if (isDateMeasure && value > MAX_REPORT_CONDITION_DAYS) return 'Only show looks back too far'
   }
 
-  const {preset, startDate, endDate} = period
-  const hasRange = !!startDate || !!endDate
-  if (!!preset === hasRange) return 'A period is either a preset or a start and end date'
-  if (hasRange) {
-    if (!startDate || !endDate || !isRealDate(startDate) || !isRealDate(endDate)) {
-      return 'A custom period needs a start and end date as YYYY-MM-DD'
+  const range = period?.range
+  if (range) {
+    if (!isRealDate(range.startAt) || !isRealDate(range.endAt)) {
+      return 'A date range needs a start and end day as YYYY-MM-DD'
     }
-    if (endDate < startDate) return 'A custom period has to end after it starts'
+    if (range.endAt < range.startAt) return 'A date range has to end after it starts'
   }
 
   const dateMeasure = measures.find((m) => REPORT_MEASURES[m].kind === 'latest')

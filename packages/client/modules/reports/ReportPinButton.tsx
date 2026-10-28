@@ -26,13 +26,13 @@ const ReportPinButton = ({organizationRef, spec, title, period, reportQuestionId
   const {
     id: orgId,
     isBillingLeader,
-    reportPins
+    pinnedReports
   } = useFragment(
     graphql`
       fragment ReportPinButton_organization on Organization {
         id
         isBillingLeader
-        reportPins {
+        pinnedReports {
           id
           spec
         }
@@ -44,11 +44,11 @@ const ReportPinButton = ({organizationRef, spec, title, period, reportQuestionId
   const [pin, isPinning] = usePinReportMutation()
   const [unpin, isUnpinning] = useUnpinReportMutation()
   const specJSON = JSON.stringify(spec)
-  const pinned = reportPins.find(
-    (reportPin) => JSON.stringify(parseReportSpecJSON(reportPin.spec)) === specJSON
+  const pinned = pinnedReports.find(
+    (pinnedReport) => JSON.stringify(parseReportSpecJSON(pinnedReport.spec)) === specJSON
   )
   const showError = (message: string) => {
-    atmosphere.eventEmitter.emit('addSnackbar', {key: 'reportPinError', message, autoDismiss: 5})
+    atmosphere.eventEmitter.emit('addSnackbar', {key: 'pinnedReportError', message, autoDismiss: 5})
   }
   const onClick = () => {
     if (!isBillingLeader || isPinning || isUnpinning) return

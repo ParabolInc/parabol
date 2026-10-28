@@ -1,6 +1,0 @@
-type MoveReportPinSuccess {
-  """
-  The organization, with its pins
-  """
-  organization: Organization!
-}

@@ -16,14 +16,14 @@ const ReportPageResult = ({organizationRef, orgId, spec}: Props) => {
   const organization = useFragment(
     graphql`
       fragment ReportPageResult_organization on Organization {
-        report(spec: $spec, timeZone: $timeZone, pagePeriod: $pagePeriod) {
+        report(spec: $spec, timeZone: $timeZone) {
           ...ReportView_result
           ...ReportNotes_result
         }
-        reportTeamHealth(spec: $spec, timeZone: $timeZone, pagePeriod: $pagePeriod) {
+        reportTeamHealth(spec: $spec, timeZone: $timeZone) {
           ...ReportTeamHealthView_teamHealth
         }
-        lastHeld: report(spec: $lastHeldSpec, timeZone: $timeZone, pagePeriod: $pagePeriod)
+        lastHeld: report(spec: $lastHeldSpec, timeZone: $timeZone)
           @include(if: $hasLastHeld) {
           rows {
             keys {

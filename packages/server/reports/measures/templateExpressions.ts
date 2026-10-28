@@ -1,22 +1,38 @@
-import {sql} from 'kysely'
+import {type Expression, expressionBuilder} from 'kysely'
 import {
   REPORT_NO_TEMPLATE,
   REPORT_OTHER_TEAM_TEMPLATE
 } from '../../../client/shared/reports/reportCatalog'
+import type {DB} from '../../postgres/types/pg'
+import {isAnyOf} from '../reportQueries'
+
+const eb = expressionBuilder<DB>()
 
 // A team's own template is named only to the people on that team, the same people who can pick it
-export const templateOf = (meetingAlias: string, templateAlias: string, ownTeamIds: string[]) => {
-  const templateId = sql.ref<string | null>(`${meetingAlias}.templateId`)
-  const isNamed = sql<boolean>`(
-    ${sql.ref(`${templateAlias}.scope`)} IN ('PUBLIC', 'ORGANIZATION')
-    OR ${sql.ref(`${meetingAlias}.teamId`)} = ANY(${ownTeamIds}::text[])
-  )`
+export const templateOf = (
+  {
+    templateId,
+    teamId,
+    scope,
+    name
+  }: {
+    templateId: Expression<string | null>
+    teamId: Expression<string | null>
+    scope: Expression<string | null>
+    name: Expression<string | null>
+  },
+  ownTeamIds: string[]
+) => {
+  const isNamed = eb.or([eb(scope, 'in', ['PUBLIC', 'ORGANIZATION']), isAnyOf(teamId, ownTeamIds)])
   return {
-    key: sql<string>`CASE
-      WHEN ${templateId} IS NULL THEN ${REPORT_NO_TEMPLATE}
-      WHEN ${isNamed} THEN ${templateId}
-      ELSE ${REPORT_OTHER_TEAM_TEMPLATE}
-    END`,
-    label: sql<string>`CASE WHEN ${isNamed} THEN ${sql.ref(`${templateAlias}.name`)} END`
+    key: eb
+      .case()
+      .when(eb(templateId, 'is', null))
+      .then(REPORT_NO_TEMPLATE)
+      .when(isNamed)
+      .then(templateId)
+      .else(REPORT_OTHER_TEAM_TEMPLATE)
+      .end(),
+    label: eb.case().when(isNamed).then(name).end()
   }
 }

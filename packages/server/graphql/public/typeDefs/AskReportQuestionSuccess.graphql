@@ -11,9 +11,4 @@ type AskReportQuestionSuccess {
   Why there's no report, when there isn't one
   """
   reason: String
-
-  """
-  The popular questions nearest to it, when there's no report
-  """
-  suggestions: [PopularReportQuestion!]!
 }

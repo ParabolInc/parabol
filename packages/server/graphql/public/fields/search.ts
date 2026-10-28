@@ -1,11 +1,40 @@
 import {GraphQLError} from 'graphql'
+import {RRF_K} from '../../../postgres/expressions'
 import getKysely from '../../../postgres/getKysely'
 import {getEmbeddingsByRRF} from '../../../postgres/queries/getEmbeddingsByRRF'
+import {
+  getPagesByKeyword,
+  type PageSearchResults
+} from '../../../postgres/queries/getPagesByKeyword'
 import {getPagesByRRF} from '../../../postgres/queries/getPagesByRRF'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
+import {EmbeddingTimeoutError} from '../../../utils/EmbeddingTimeoutError'
+import {Logger} from '../../../utils/Logger'
 import {getUserQueryJobData, publishToEmbedder} from '../../mutations/helpers/publishToEmbedder'
 import type {SearchTypeEnum, UserResolvers} from '../resolverTypes'
+
+export const SEARCH_EMBEDDING_TIMEOUT_MS = 3000
+export const KEYWORD_FALLBACK_LOG_MESSAGE = 'Page search used keyword results'
+const EMBEDDING_TIMED_OUT = 'timed out'
+const EMPTY_PAGE_SEARCH_RESULTS: PageSearchResults = {
+  pageInfo: {hasNextPage: false, hasPreviousPage: false, startCursor: null, endCursor: null},
+  edges: []
+}
+
+const embedWithinBudget = async (embed: () => Promise<Float32Array | Error | undefined>) => {
+  let timer: ReturnType<typeof setTimeout> | undefined
+  const timedOut = new Promise<typeof EMBEDDING_TIMED_OUT>((resolve) => {
+    timer = setTimeout(() => resolve(EMBEDDING_TIMED_OUT), SEARCH_EMBEDDING_TIMEOUT_MS)
+  })
+  try {
+    return await Promise.race([embed(), timedOut])
+  } catch (error) {
+    return error instanceof Error ? error : new Error(String(error))
+  } finally {
+    clearTimeout(timer)
+  }
+}
 
 const decodeCursor = (after: string | null | undefined, type: SearchTypeEnum) => {
   if (!after) return null
@@ -18,11 +47,22 @@ const decodeCursor = (after: string | null | undefined, type: SearchTypeEnum) =>
 }
 export const search: NonNullable<UserResolvers['search']> = async (
   _source,
-  {query, after, alpha: inAlpha, dateField, endAt, first, startAt, teamIds: inTeamIds, type},
+  {
+    query: inQuery,
+    after,
+    alpha: inAlpha,
+    dateField,
+    endAt,
+    first,
+    startAt,
+    teamIds: inTeamIds,
+    type
+  },
   {authToken, dataLoader, resourceGrants}
 ) => {
   const viewerId = getUserId(authToken)
   const alpha = inAlpha ?? 0.75
+  const query = inQuery.trim()
 
   // VALIDATION
   if (alpha < 0 || alpha > 1) throw new GraphQLError('alpha must be between 0 and 1')
@@ -45,7 +85,7 @@ export const search: NonNullable<UserResolvers['search']> = async (
     startAt || endAt
       ? {
           startAt: startAt || new Date(0),
-          endAt: endAt || new Date(4000),
+          endAt: endAt || new Date('9999-12-31T23:59:59.999Z'),
           dateField: dateField || 'createdAt'
         }
       : null
@@ -131,39 +171,67 @@ export const search: NonNullable<UserResolvers['search']> = async (
         .slice(0, first)
     }
   }
+  if (type === 'page') {
+    const afterCursor = decodeCursor(after, type)
+    const getKeywordResults = () =>
+      after
+        ? EMPTY_PAGE_SEARCH_RESULTS
+        : getPagesByKeyword({query, first, viewerId, teamIds: pageTeamIds, dateRange})
+    if (alpha === 0) return getKeywordResults()
+    const fallBackToKeyword = (reason: string, error?: unknown) => {
+      Logger.warn(KEYWORD_FALLBACK_LOG_MESSAGE, {
+        userId: viewerId,
+        extras: {reason, errorMessage: error instanceof Error ? error.message : undefined}
+      })
+      return getKeywordResults()
+    }
+    const queryVector = await embedWithinBudget(() =>
+      publishToEmbedder({
+        jobType: 'userQuery:start',
+        dataLoader,
+        userId: viewerId,
+        data: getUserQueryJobData(query, SEARCH_EMBEDDING_TIMEOUT_MS)
+      })
+    )
+    if (queryVector === undefined) return getKeywordResults()
+    if (queryVector === EMBEDDING_TIMED_OUT || queryVector instanceof EmbeddingTimeoutError) {
+      return fallBackToKeyword('embedding timed out')
+    }
+    if (queryVector instanceof Error) return fallBackToKeyword('embedding failed', queryVector)
+    try {
+      return await getPagesByRRF({
+        query,
+        queryVector,
+        dateRange,
+        after: afterCursor,
+        alpha,
+        k: RRF_K,
+        first,
+        teamIds: pageTeamIds,
+        viewerId
+      })
+    } catch (error) {
+      return fallBackToKeyword('fused ranking failed', error)
+    }
+  }
   const queryVector = await publishToEmbedder({
     jobType: 'userQuery:start',
     dataLoader,
     userId: viewerId,
     data: getUserQueryJobData(query)
   })
-  if (queryVector instanceof Error) {
+  if (!queryVector || queryVector instanceof Error) {
     throw new GraphQLError('Error calling search')
   }
-  const k = 60 // RRF constant
-  if (type === 'page') {
-    return getPagesByRRF({
-      query,
-      queryVector,
-      dateRange,
-      after: decodeCursor(after, type),
-      alpha,
-      k,
-      first,
-      teamIds: pageTeamIds,
-      viewerId
-    })
-  } else {
-    return getEmbeddingsByRRF({
-      query,
-      queryVector,
-      dateRange,
-      after: decodeCursor(after, type),
-      alpha,
-      k,
-      first,
-      teamIds: metadataTeamIds,
-      type
-    })
-  }
+  return getEmbeddingsByRRF({
+    query,
+    queryVector,
+    dateRange,
+    after: decodeCursor(after, type),
+    alpha,
+    k: RRF_K,
+    first,
+    teamIds: metadataTeamIds,
+    type
+  })
 }

@@ -12,13 +12,13 @@ import {
   type ReportMeasure,
   type ReportTimeDimension
 } from '../../client/shared/reports/reportCatalog'
+import {isLevelDimension, type ReportLevelDimension} from './orgStructure'
 import type {ReportStep} from './reportCalendar'
 import type {
   ReportMeasureFilter,
   ReportMeasureResult,
   ReportQueryDimension
 } from './reportMeasureTypes'
-import {isLevelDimension, type ReportLevelDimension} from './teamStructure'
 
 export interface ReportRowKey {
   value: string
@@ -52,7 +52,7 @@ interface Options {
   filters: ReportMeasureFilter[]
   current: ReportMeasureResult[]
   previous: ReportMeasureResult[] | null
-  // the values a team structure level takes among the counted teams, with their names
+  // the values an org structure level takes among the counted teams, with their names
   levelValuesOf: (dimension: ReportLevelDimension) => {value: string; label: string}[]
   teamValueOf: (dimension: ReportLevelDimension, teamId: string) => string
 }

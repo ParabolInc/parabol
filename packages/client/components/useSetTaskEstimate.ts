@@ -46,7 +46,7 @@ const useSetTaskEstimate = () => {
       const {error} = setTaskEstimate
       if (!error) {
         // Check if exportCount exceeds limit (soft prompt)
-        const exportCount = (setTaskEstimate as any).exportCount ?? 0
+        const exportCount = setTaskEstimate.SetTaskEstimateMutation_meeting?.exportCount ?? 0
         if (
           exportCount > MAX_FREE_JIRA_EXPORTS &&
           !sessionStorage.getItem(JIRA_EXPORT_UPGRADE_MODAL_DISMISSED_KEY)

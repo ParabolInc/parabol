@@ -12,6 +12,7 @@ import {isMeetingMember} from './rules/isMeetingMember'
 import {isNull} from './rules/isNull'
 import {isOrgTier} from './rules/isOrgTier'
 import {isReportTeamHealthCheck} from './rules/isReportTeamHealthCheck'
+import {isRestoringOwnTrashedPage} from './rules/isRestoringOwnTrashedPage'
 import isSuperUser from './rules/isSuperUser'
 import {isTeamMember} from './rules/isTeamMember'
 import {isTeamMemberOfMeeting} from './rules/isTeamMemberOfMeeting'
@@ -57,18 +58,18 @@ const permissionMap: PermissionMap<Resolvers> = {
       or(isSuperUser, isViewerBillingLeader<'Mutation.unpinReport'>('args.orgId')),
       hasOrgFeatureFlag<'Mutation.unpinReport'>('args.orgId', 'Reports')
     ),
-    setTeamStructure: and(
-      or(isSuperUser, isViewerBillingLeader<'Mutation.setTeamStructure'>('args.orgId')),
-      hasOrgFeatureFlag<'Mutation.setTeamStructure'>('args.orgId', 'Reports')
+    setOrgStructure: and(
+      or(isSuperUser, isViewerBillingLeader<'Mutation.setOrgStructure'>('args.orgId')),
+      hasOrgFeatureFlag<'Mutation.setOrgStructure'>('args.orgId', 'Reports')
     ),
     placeTeam: or(isSuperUser, isViewerBillingLeader<'Mutation.placeTeam'>('args.teamId', 'teams')),
-    moveReportPin: and(
-      or(isSuperUser, isViewerBillingLeader<'Mutation.moveReportPin'>('args.orgId')),
-      hasOrgFeatureFlag<'Mutation.moveReportPin'>('args.orgId', 'Reports')
+    movePinnedReport: and(
+      or(isSuperUser, isViewerBillingLeader<'Mutation.movePinnedReport'>('args.orgId')),
+      hasOrgFeatureFlag<'Mutation.movePinnedReport'>('args.orgId', 'Reports')
     ),
-    startReportQuestion: and(
-      or(isSuperUser, isViewerOnOrg<'Mutation.startReportQuestion'>('args.orgId')),
-      hasOrgFeatureFlag<'Mutation.startReportQuestion'>('args.orgId', 'Reports'),
+    logReportQuestionUse: and(
+      or(isSuperUser, isViewerOnOrg<'Mutation.logReportQuestionUse'>('args.orgId')),
+      hasOrgFeatureFlag<'Mutation.logReportQuestionUse'>('args.orgId', 'Reports'),
       rateLimit({perMinute: 60, perHour: 600})
     ),
     addAgendaItem: isTeamMember<'Mutation.addAgendaItem'>('args.newAgendaItem.teamId'),
@@ -113,7 +114,10 @@ const permissionMap: PermissionMap<Resolvers> = {
       isSuperUser,
       isViewerBillingLeader<'Mutation.archiveOrganization'>('args.orgId')
     ),
-    archivePage: hasPageAccess<'Mutation.archivePage'>('args.pageId', 'owner'),
+    archivePage: and(
+      isAuthenticated,
+      or(hasPageAccess<'Mutation.archivePage'>('args.pageId', 'owner'), isRestoringOwnTrashedPage)
+    ),
     archiveTeam: or(
       isSuperUser,
       isViewerTeamLead<'Mutation.archiveTeam'>('args.teamId'),
@@ -129,9 +133,12 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     createPersonalAccessToken: rateLimit({perMinute: 10, perHour: 50}),
     updatePersonalAccessToken: rateLimit({perMinute: 10, perHour: 50}),
-    createPage: or(
-      isNull<'Mutation.createPage'>('args.teamId'),
-      isTeamMember<'Mutation.createPage'>('args.teamId')
+    createPage: and(
+      isAuthenticated,
+      or(
+        isNull<'Mutation.createPage'>('args.teamId'),
+        isTeamMember<'Mutation.createPage'>('args.teamId')
+      )
     ),
     createPoll: isTeamMember<'Mutation.createPoll'>('args.newPoll.discussionId', 'discussions'),
     createReflection: isTeamMemberOfMeeting<'Mutation.createReflection'>('args.input.meetingId'),
@@ -157,7 +164,10 @@ const permissionMap: PermissionMap<Resolvers> = {
       isTeamMemberOfMeeting<'Mutation.dragTeamHealthResultStage'>('args.meetingId'),
     dragEstimatingTask: isTeamMemberOfMeeting<'Mutation.dragEstimatingTask'>('args.meetingId'),
     editCommenting: isMeetingMember<'Mutation.editCommenting'>('args.discussionId', 'discussions'),
-    editPageContent: hasPageAccess<'Mutation.editPageContent'>('args.pageId', 'editor'),
+    editPageContent: and(
+      isAuthenticated,
+      hasPageAccess<'Mutation.editPageContent'>('args.pageId', 'editor')
+    ),
     editReflection: isTeamMemberOfMeeting<'Mutation.editReflection'>('args.meetingId'),
     editTask: isTeamMember<'Mutation.editTask'>('args.taskId', 'tasks'),
     editTeamHealthQuestion: isUserViewer<'Mutation.editTeamHealthQuestion'>(
@@ -412,16 +422,22 @@ const permissionMap: PermissionMap<Resolvers> = {
     updateOAuthAPIProvider: hasProviderAccess<'Mutation.updateOAuthAPIProvider'>('args.providerId'),
     updateOrg: isViewerBillingLeader<'Mutation.updateOrg'>('args.updatedOrg.id'),
     exportPagesToConfluence: and(
+      isAuthenticated,
       hasPageAccess<'Mutation.exportPagesToConfluence'>('args.pageId', 'viewer'),
       rateLimit({perMinute: 10, perHour: 100})
     ),
-    updatePage: hasPageAccess<'Mutation.updatePage'>('args.pageId', 'viewer'),
+    requestPageAccess: and(isAuthenticated, rateLimit({perMinute: 5, perHour: 20})),
+    updatePage: and(isAuthenticated, hasPageAccess<'Mutation.updatePage'>('args.pageId', 'viewer')),
     updatePageAccess: and(
+      isAuthenticated,
       hasPageAccess<'Mutation.updatePageAccess'>('args.pageId', 'viewer'),
       // limit looking up users by email
       rateLimit({perMinute: 50, perHour: 100})
     ),
-    updatePageParentLink: hasPageAccess<'Mutation.updatePageParentLink'>('args.pageId', 'owner'),
+    updatePageParentLink: and(
+      isAuthenticated,
+      hasPageAccess<'Mutation.updatePageParentLink'>('args.pageId', 'owner')
+    ),
     updatePokerScope: isTeamMember<'Mutation.updatePokerScope'>('args.meetingId', 'newMeetings'),
     updatePokerTemplateDimensionScale: isTeamMember<'Mutation.updatePokerTemplateDimensionScale'>(
       'args.dimensionId',
@@ -484,6 +500,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     getDemoGroupTitle: rateLimit({perMinute: 15, perHour: 150}),
     massInvitation: rateLimit({perMinute: 60, perHour: 1800}),
     public: rateLimit({perMinute: 20, perHour: 100}),
+    resolveEmbedUrl: and(isAuthenticated, rateLimit({perMinute: 30, perHour: 300})),
     SAMLIdP: rateLimit({perMinute: 120, perHour: 3600}),
     verifiedInvitation: rateLimit({perMinute: 60, perHour: 1800})
   },
@@ -512,13 +529,9 @@ const permissionMap: PermissionMap<Resolvers> = {
       isReportTeamHealthCheck<'Organization.reportTeamHealthCell'>('source.id', 'args.meetingId'),
       rateLimit({perMinute: 120, perHour: 3000})
     ),
-    reportPins: and(
-      or(isSuperUser, isViewerOnOrg<'Organization.reportPins'>('source.id')),
-      hasOrgFeatureFlag<'Organization.reportPins'>('source.id', 'Reports')
-    ),
-    popularReportQuestions: and(
-      or(isSuperUser, isViewerOnOrg<'Organization.popularReportQuestions'>('source.id')),
-      hasOrgFeatureFlag<'Organization.popularReportQuestions'>('source.id', 'Reports')
+    pinnedReports: and(
+      or(isSuperUser, isViewerOnOrg<'Organization.pinnedReports'>('source.id')),
+      hasOrgFeatureFlag<'Organization.pinnedReports'>('source.id', 'Reports')
     ),
     recentReportQuestions: and(
       or(isSuperUser, isViewerOnOrg<'Organization.recentReportQuestions'>('source.id')),
@@ -533,7 +546,7 @@ const permissionMap: PermissionMap<Resolvers> = {
       isOrgTier<'Organization.samls'>('source.id', 'enterprise')
     )
   },
-  ReportPin: {
+  PinnedReport: {
     report: rateLimit({perMinute: 120, perHour: 3000})
   },
   RetroReflectionGroup: {

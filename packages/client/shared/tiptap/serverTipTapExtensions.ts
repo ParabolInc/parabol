@@ -4,7 +4,6 @@ import Highlight from '@tiptap/extension-highlight'
 import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention, {type MentionNodeAttrs, type MentionOptions} from '@tiptap/extension-mention'
 import {Table, TableCell, TableHeader, TableRow} from '@tiptap/extension-table'
-import {TextStyleKit} from '@tiptap/extension-text-style'
 import {Markdown} from '@tiptap/markdown'
 import StarterKit from '@tiptap/starter-kit'
 import {LoomExtension} from '../../components/TipTapEditor/LoomExtension'
@@ -13,12 +12,14 @@ import {UniqueID} from '../../tiptap/extensions/docWithID/UniqueID'
 import {ImageBlockBase} from '../../tiptap/extensions/imageBlock/ImageBlockBase'
 import {PageUserMention} from '../../tiptap/extensions/pageUserMention/PageUserMention'
 import {MentionTaskTag} from '../../utils/MentionTaskTag'
+import {EmbedBlockBase} from './extensions/EmbedBlockBase'
 import {FileBlockBase} from './extensions/FileBlockBase'
 import {FileUploadBase} from './extensions/FileUploadBase'
 import {InsightsBlockBase} from './extensions/InsightsBlockBase'
 import {PageLinkBlockBase} from './extensions/PageLinkBlockBase'
 import {PopoverMentionBase} from './extensions/PopoverMentionBase'
 import {ResponseBlockBase} from './extensions/ResponseBlockBase'
+import {SafeTextStyleKit} from './extensions/SafeTextStyleKit'
 import {TableOfContentsBase} from './extensions/TableOfContentsBase'
 import {TaskBlockBase} from './extensions/TaskBlockBase'
 import {ThinkingBlockBase} from './extensions/ThinkingBlockBase'
@@ -59,12 +60,13 @@ export const serverTipTapExtensions: Extensions = [
   TableRow,
   TableHeader,
   TableCell,
-  TextStyleKit,
+  SafeTextStyleKit,
   Highlight,
   TaskList,
   TaskItem.configure({
     nested: true
   }),
+  EmbedBlockBase,
   FileBlockBase,
   FileUploadBase,
   ImageBlockBase,

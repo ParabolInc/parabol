@@ -458,18 +458,20 @@ export const activeUserCountsByOrgId = (parent: RootDataLoader) => {
           const rows = await pg
             .with('AuditEvent', () => selectOrgUserActivitySpans(orgId))
             .with('Time', (qb) =>
-              qb.selectNoFrom(sql<Date>`unnest(${times}::timestamptz[])`.as('at'))
+              qb.selectNoFrom(({eb, fn}) =>
+                fn<Date>('unnest', [eb.cast(eb.val(times), sql`timestamptz[]`)]).as('at')
+              )
             )
             .selectFrom('Time')
             .leftJoin('AuditEvent', (join) =>
-              join.on(
+              join.on(({ref}) =>
                 isOrgUserActiveAt(
                   {
-                    eventType: sql.ref('AuditEvent.eventType'),
-                    eventDate: sql.ref('AuditEvent.eventDate'),
-                    nextEventDate: sql.ref('AuditEvent.nextEventDate')
+                    eventType: ref('AuditEvent.eventType'),
+                    eventDate: ref('AuditEvent.eventDate'),
+                    nextEventDate: ref('AuditEvent.nextEventDate')
                   },
-                  sql.ref('Time.at')
+                  ref('Time.at')
                 )
               )
             )
@@ -508,18 +510,18 @@ export const activeTeamsByOrgId = (parent: RootDataLoader, dependsOn: RegisterDe
         .select(['Team.id', 'Team.orgId'])
         .where('Team.orgId', 'in', orgIds)
         .where('Team.isArchived', '=', false)
-        .where(hasEnoughMembers(sql.ref('Team.id')))
+        .where(({ref}) => hasEnoughMembers(ref('Team.id')))
         .where(({exists, selectFrom}) =>
           exists(
             selectFrom('NewMeeting')
               .select('NewMeeting.id')
               .whereRef('NewMeeting.teamId', '=', 'Team.id')
-              .where(
+              .where(({ref}) =>
                 isCountedMeetingInWindow(
                   {
-                    id: sql.ref('NewMeeting.id'),
-                    createdAt: sql.ref('NewMeeting.createdAt'),
-                    endedAt: sql.ref('NewMeeting.endedAt')
+                    id: ref('NewMeeting.id'),
+                    createdAt: ref('NewMeeting.createdAt'),
+                    endedAt: ref('NewMeeting.endedAt')
                   },
                   meetingWindowStart,
                   now

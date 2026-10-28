@@ -6,7 +6,7 @@ export type ReportTimeDimension = (typeof REPORT_TIME_DIMENSIONS)[number]
 export const REPORT_CATEGORY_DIMENSIONS = [
   'TEAM',
   'TEAM_LEVEL',
-  'PERSON',
+  'USER',
   'MEETING_TYPE',
   'TEMPLATE',
   'TASK_STATUS',
@@ -20,7 +20,7 @@ export type ReportCategoryDimension = (typeof REPORT_CATEGORY_DIMENSIONS)[number
 export type ReportDimension = ReportTimeDimension | ReportCategoryDimension
 
 export const REPORT_MEASURE_KEYS = [
-  'ACTIVE_PEOPLE',
+  'ACTIVE_USERS',
   'MEMBERS',
   'ACTIVE_SHARE',
   'LAST_SEEN',
@@ -51,7 +51,6 @@ export const REPORT_CONDITION_OPERATORS = [
 ] as const
 export type ReportConditionOperator = (typeof REPORT_CONDITION_OPERATORS)[number]
 export const REPORT_PERIOD_PRESETS = [
-  'PAGE',
   'LAST_7_DAYS',
   'LAST_30_DAYS',
   'LAST_3_MONTHS',
@@ -69,8 +68,8 @@ export const REPORT_COMPARE_TO = [
 export type ReportCompareTo = (typeof REPORT_COMPARE_TO)[number]
 export const REPORT_SORT_BY = ['VALUE', 'NAME', 'TIME'] as const
 export type ReportSortBy = (typeof REPORT_SORT_BY)[number]
-export const REPORT_SORT_ORDERS = ['ASC', 'DESC'] as const
-export type ReportSortOrder = (typeof REPORT_SORT_ORDERS)[number]
+export const SORT_DIRECTIONS = ['ASC', 'DESC'] as const
+export type SortDirection = (typeof SORT_DIRECTIONS)[number]
 
 // count: adds up inside each step. distinct: each team once per step. reading: taken at the end of each step.
 // latest: the most recent date. share: a percentage taken at the end of each step. median: the middle value of
@@ -85,22 +84,27 @@ export type ReportMeasureKind =
   | 'median'
   | 'score'
 
-export interface ReportPeriod {
-  preset?: ReportPeriodPreset | null
-  startDate?: string | null
-  endDate?: string | null
+// the first and last day, as YYYY-MM-DD in the report's time zone
+export interface ReportDateRange {
+  startAt: string
+  endAt: string
 }
+
+export type ReportPeriod =
+  | {preset: ReportPeriodPreset; range?: never}
+  | {preset?: never; range: ReportDateRange}
 
 export interface ReportSpec {
   measures: ReportMeasure[]
-  // levelId names the team structure level a TEAM_LEVEL breakdown or filter uses
+  // levelId names the org structure level a TEAM_LEVEL breakdown or filter uses
   breakdown: {dimension: ReportDimension; levelId?: string}[]
   filters: {dimension: ReportDimension; levelId?: string; values: string[]}[]
   where: {measure: ReportMeasure; operator: ReportConditionOperator; value: number}[]
-  period: ReportPeriod
+  // null follows the period picked on the Reports page
+  period?: ReportPeriod | null
   compareTo?: ReportCompareTo | null
   showAs: ReportView
-  sort?: {by: ReportSortBy; order?: ReportSortOrder | null} | null
+  sort?: {by: ReportSortBy; order?: SortDirection | null} | null
   limit?: number | null
 }
 
@@ -116,7 +120,7 @@ interface ReportMeasureDefinition {
 const OVER_TIME = REPORT_TIME_DIMENSIONS
 
 export const REPORT_MEASURES = {
-  ACTIVE_PEOPLE: {
+  ACTIVE_USERS: {
     kind: 'reading',
     label: 'Active users',
     description: 'People who used Parabol in the 30 days before each point',
@@ -138,15 +142,15 @@ export const REPORT_MEASURES = {
     kind: 'latest',
     label: 'Last seen',
     description: 'When each person last used Parabol, whatever the period',
-    dimensions: ['PERSON', 'TEAM', 'TEAM_LEVEL']
+    dimensions: ['USER', 'TEAM', 'TEAM_LEVEL']
   },
   MEETINGS: {
     kind: 'count',
     label: 'Meetings',
     description:
       'Meetings that 2 or more people joined, by when they started. By person, the meetings each person joined',
-    dimensions: [...OVER_TIME, 'TEAM', 'TEAM_LEVEL', 'PERSON', 'MEETING_TYPE', 'TEMPLATE'],
-    countsInSeveral: ['PERSON']
+    dimensions: [...OVER_TIME, 'TEAM', 'TEAM_LEVEL', 'USER', 'MEETING_TYPE', 'TEMPLATE'],
+    countsInSeveral: ['USER']
   },
   TEAMS_THAT_MET: {
     kind: 'distinct',
@@ -180,7 +184,7 @@ export const REPORT_MEASURES = {
       ...OVER_TIME,
       'TEAM',
       'TEAM_LEVEL',
-      'PERSON',
+      'USER',
       'MEETING_TYPE',
       'TEMPLATE',
       'TASK_STATUS',
@@ -197,7 +201,7 @@ export const REPORT_MEASURES = {
       ...OVER_TIME,
       'TEAM',
       'TEAM_LEVEL',
-      'PERSON',
+      'USER',
       'MEETING_TYPE',
       'TEMPLATE',
       'TOPIC',
@@ -212,7 +216,7 @@ export const REPORT_MEASURES = {
       ...OVER_TIME,
       'TEAM',
       'TEAM_LEVEL',
-      'PERSON',
+      'USER',
       'MEETING_TYPE',
       'TEMPLATE',
       'TASK_STATUS',
@@ -230,7 +234,7 @@ export const REPORT_MEASURES = {
       ...OVER_TIME,
       'TEAM',
       'TEAM_LEVEL',
-      'PERSON',
+      'USER',
       'MEETING_TYPE',
       'TEMPLATE',
       'TOPIC',
@@ -313,13 +317,13 @@ export const REPORT_TASK_AGES = {
   from90To180Days: '90 to 180 days',
   over180Days: 'Over 180 days'
 } as const
-export const REPORT_NO_PERSON = 'none'
-// a team no one has placed at a value of a team structure level yet, and the one group a removed level lists
+export const REPORT_NO_USER = 'none'
+// a team no one has placed at a value of an org structure level yet, and the one group a removed level lists
 export const REPORT_STRUCTURE_NOT_SET = 'notSet'
 export const REPORT_STRUCTURE_REMOVED = 'removed'
-export const MAX_TEAM_STRUCTURE_LEVELS = 5
-export const MAX_TEAM_STRUCTURE_VALUES = 100
-export const MAX_TEAM_STRUCTURE_NAME_LENGTH = 100
+export const MAX_ORG_STRUCTURE_LEVELS = 5
+export const MAX_ORG_STRUCTURE_VALUES = 100
+export const MAX_ORG_STRUCTURE_NAME_LENGTH = 100
 export const REPORT_STRUCTURE_LABELS = {
   [REPORT_STRUCTURE_NOT_SET]: 'Not set',
   [REPORT_STRUCTURE_REMOVED]: 'Removed level'
@@ -356,7 +360,7 @@ export const REPORT_VALUE_LABELS: Partial<Record<ReportCategoryDimension, Record
 export const REPORT_SPECIAL_VALUE_LABELS: Partial<
   Record<ReportCategoryDimension, Record<string, string>>
 > = {
-  PERSON: {[REPORT_NO_PERSON]: 'No one'},
+  USER: {[REPORT_NO_USER]: 'No one'},
   TEAM_LEVEL: REPORT_STRUCTURE_LABELS,
   TEMPLATE: {
     [REPORT_NO_TEMPLATE]: 'No template',
@@ -371,7 +375,7 @@ export const REPORT_DIMENSION_LABELS: Record<ReportDimension, string> = {
   MONTH: 'Month',
   TEAM: 'Team',
   TEAM_LEVEL: 'Team structure',
-  PERSON: 'Person',
+  USER: 'Person',
   MEETING_TYPE: 'Meeting type',
   TEMPLATE: 'Template',
   TASK_STATUS: 'Task status',

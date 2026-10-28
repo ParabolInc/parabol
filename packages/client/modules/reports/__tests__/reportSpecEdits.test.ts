@@ -14,7 +14,7 @@ const spec = (overrides: Partial<ReportSpec>): ReportSpec => ({
   breakdown: [],
   filters: [],
   where: [],
-  period: {preset: 'PAGE', startDate: null, endDate: null},
+  period: null,
   compareTo: null,
   showAs: 'NUMBER',
   sort: null,
@@ -87,7 +87,7 @@ test('a filter can only be added on a dimension the measure has, and not twice',
   expect(addFilterEdits(filtered, teams, []).map(({key}) => key)).toEqual(['MEETING_TYPE'])
 })
 
-test('each team structure level is a breakdown and a filter of its own', () => {
+test('each org structure level is a breakdown and a filter of its own', () => {
   const byUnit = spec({
     showAs: 'BARS',
     breakdown: [{dimension: 'TEAM_LEVEL', levelId: 'level1'}]
@@ -122,7 +122,7 @@ test('a view gets the breakdowns it needs', () => {
 
 test('Health score opens the Team Health heatmap, under the team structure level the report split by', () => {
   const activeByUnit = spec({
-    measures: ['ACTIVE_PEOPLE'],
+    measures: ['ACTIVE_USERS'],
     showAs: 'LINE',
     breakdown: [{dimension: 'TIME'}, {dimension: 'TEAM_LEVEL', levelId: 'level1'}]
   })

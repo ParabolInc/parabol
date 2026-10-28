@@ -3,11 +3,11 @@ import type {ReportDimension, ReportSpec} from '../../client/shared/reports/repo
 const PLACEHOLDERS: Partial<Record<ReportDimension, string>> = {
   TEAM: '<team>',
   TEAM_LEVEL: '<level value>',
-  PERSON: '<person>',
+  USER: '<user>',
   TOPIC: '<topic>'
 }
 
-// The spec with team ids, team structure, people, topics and dates swapped for placeholders, so the same
+// The spec with team ids, org structure, people, topics and dates swapped for placeholders, so the same
 // question from two orgs matches and no one's name or discussion is kept for analysis
 const toReportSpecShape = (spec: ReportSpec) => {
   const {measures, breakdown, filters, where, period, compareTo, showAs, sort, limit} = spec
@@ -18,7 +18,7 @@ const toReportSpecShape = (spec: ReportSpec) => {
       .map(({dimension, values}) => `${dimension}=${PLACEHOLDERS[dimension] ?? values.join('|')}`)
       .join(', '),
     where.map(({measure, operator, value}) => `${measure} ${operator} ${value}`).join(', '),
-    period.preset ?? '<dates>',
+    period ? (period.preset ?? '<dates>') : '<page>',
     compareTo ?? '',
     showAs,
     sort ? `${sort.by} ${sort.order ?? ''}`.trim() : '',

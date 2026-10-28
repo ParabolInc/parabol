@@ -5,10 +5,16 @@ import {useNavigate} from 'react-router'
 import {AutoAwesome} from '~/ui/icons'
 import type {ReportAskBox_organization$key} from '../../__generated__/ReportAskBox_organization.graphql'
 import useAskReportQuestionMutation from '../../mutations/useAskReportQuestionMutation'
-import useStartReportQuestionMutation from '../../mutations/useStartReportQuestionMutation'
+import useLogReportQuestionUseMutation from '../../mutations/useLogReportQuestionUseMutation'
+import {
+  POPULAR_REPORT_QUESTIONS,
+  type PopularReportQuestion
+} from '../../shared/reports/popularReportQuestions'
+import rankPopularReportQuestions from '../../shared/reports/rankPopularReportQuestions'
+import type {ReportSpec} from '../../shared/reports/reportCatalog'
 import {Button} from '../../ui/Button/Button'
 import ReportAskMenu from './ReportAskMenu'
-import {type ReportAskOption, type ReportAskPopular, toReportAskOptions} from './reportAskOptions'
+import {type ReportAskOption, toReportAskOptions} from './reportAskOptions'
 import {toReportsHomePath} from './reportPaths'
 import type {ReportPagePeriod} from './reportPeriodParam'
 import {parseReportSpecJSON} from './reportSpecParam'
@@ -23,17 +29,6 @@ graphql`
   }
 `
 
-graphql`
-  fragment ReportAskBox_popularQuestion on PopularReportQuestion {
-    id
-    key
-    subject
-    question
-    title
-    spec
-  }
-`
-
 interface Props {
   organizationRef: ReportAskBox_organization$key
   period: ReportPagePeriod
@@ -44,8 +39,7 @@ const ReportAskBox = ({organizationRef, period, onAskingChange}: Props) => {
   const {
     id: orgId,
     useAI,
-    recentReportQuestions,
-    popularReportQuestions
+    recentReportQuestions
   } = useFragment(
     graphql`
       fragment ReportAskBox_organization on Organization {
@@ -54,9 +48,6 @@ const ReportAskBox = ({organizationRef, period, onAskingChange}: Props) => {
         recentReportQuestions {
           ...ReportAskBox_recentQuestion @relay(mask: false)
         }
-        popularReportQuestions {
-          ...ReportAskBox_popularQuestion @relay(mask: false)
-        }
       }
     `,
     organizationRef
@@ -64,13 +55,13 @@ const ReportAskBox = ({organizationRef, period, onAskingChange}: Props) => {
   const navigate = useNavigate()
   const listboxId = useId()
   const [ask, isAsking] = useAskReportQuestionMutation()
-  const [start] = useStartReportQuestionMutation()
+  const [logUse] = useLogReportQuestionUseMutation()
   const [query, setQuery] = useState('')
   const [isOpen, setIsOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
   const [answer, setAnswer] = useState<{
     reason: string
-    suggestions: readonly ReportAskPopular[]
+    suggestions: readonly PopularReportQuestion[]
   } | null>(null)
   const [error, setError] = useState<string | null>(null)
   const canAsk = useAI && !!window.__ACTION__.hasOpenAI
@@ -79,22 +70,17 @@ const ReportAskBox = ({organizationRef, period, onAskingChange}: Props) => {
       toReportAskOptions({
         query,
         recents: recentReportQuestions,
-        populars: popularReportQuestions,
+        populars: POPULAR_REPORT_QUESTIONS,
         suggestions: answer?.suggestions ?? null,
         canAsk
       }),
-    [query, recentReportQuestions, popularReportQuestions, answer, canAsk]
+    [query, recentReportQuestions, answer, canAsk]
   )
   useEffect(() => {
     document.getElementById(`${listboxId}-${activeIndex}`)?.scrollIntoView({block: 'nearest'})
   }, [activeIndex, listboxId])
 
-  const openReport = (
-    specJSON: string | null | undefined,
-    title: string,
-    reportQuestionId: string | null
-  ) => {
-    const spec = specJSON ? parseReportSpecJSON(specJSON) : null
+  const openReport = (spec: ReportSpec | null, title: string, reportQuestionId: string | null) => {
     if (!spec) return
     setIsOpen(false)
     navigate(toReportsHomePath(orgId, period, {spec, title, reportQuestionId}))
@@ -116,12 +102,16 @@ const ReportAskBox = ({organizationRef, period, onAskingChange}: Props) => {
           showError(errors?.[0]?.message ?? 'AI couldn’t answer just now. Try again in a moment')
           return
         }
-        const {reportQuestion, reason, suggestions} = payload
-        if (reportQuestion.spec) {
-          openReport(reportQuestion.spec, reportQuestion.title, reportQuestion.id)
+        const {reportQuestion, reason} = payload
+        const spec = reportQuestion.spec ? parseReportSpecJSON(reportQuestion.spec) : null
+        if (spec) {
+          openReport(spec, reportQuestion.title, reportQuestion.id)
           return
         }
-        setAnswer({reason: reason ?? 'Parabol doesn’t have the data for that report', suggestions})
+        setAnswer({
+          reason: reason ?? 'Parabol doesn’t have the data for that report',
+          suggestions: rankPopularReportQuestions(question)
+        })
         setActiveIndex(0)
         setIsOpen(true)
       },
@@ -137,15 +127,15 @@ const ReportAskBox = ({organizationRef, period, onAskingChange}: Props) => {
     } else if (option.kind === 'popular') {
       const {key, spec, title} = option.popular
       // the report opens once its recent question exists, so pinning it keeps what was picked
-      start({
+      logUse({
         variables: {orgId, popularQuestionKey: key},
         onCompleted: (response) =>
-          openReport(spec, title, response.startReportQuestion?.reportQuestion.id ?? null),
+          openReport(spec, title, response.logReportQuestionUse?.reportQuestion.id ?? null),
         onError: () => openReport(spec, title, null)
       })
     } else if (option.recent.spec) {
-      start({variables: {orgId, reportQuestionId: option.recent.id}})
-      openReport(option.recent.spec, option.recent.title, option.recent.id)
+      logUse({variables: {orgId, reportQuestionId: option.recent.id}})
+      openReport(parseReportSpecJSON(option.recent.spec), option.recent.title, option.recent.id)
     } else {
       // a question AI couldn't answer goes back in the box to be reworded
       setQuery(option.recent.question ?? option.recent.title)

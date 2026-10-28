@@ -61,7 +61,7 @@ type Organization implements OrganizationPartial {
   ): [Int!]! @scope(name: USERS_READ)
 
   """
-  A report on the organization's people, meetings and tasks. Billing leaders and org admins get
+  A report on the organization's users, meetings and tasks. Billing leaders and org admins get
   every team; everyone else gets the teams they're on. Starter counts its 2 largest teams that met
   in the last 90 days
   """
@@ -75,11 +75,6 @@ type Organization implements OrganizationPartial {
     The IANA time zone that days, weeks and months start in
     """
     timeZone: String! = "UTC"
-
-    """
-    The period picked on the Reports page, used when the spec's period is PAGE
-    """
-    pagePeriod: ReportPeriodInput
   ): ReportResult! @scope(name: REPORTS_READ)
 
   """
@@ -96,11 +91,6 @@ type Organization implements OrganizationPartial {
     The IANA time zone that days, weeks and months start in
     """
     timeZone: String! = "UTC"
-
-    """
-    The period picked on the Reports page, used when the spec's period is PAGE
-    """
-    pagePeriod: ReportPeriodInput
   ): ReportTeamHealth @scope(name: REPORTS_READ)
 
   """
@@ -122,12 +112,7 @@ type Organization implements OrganizationPartial {
   """
   The reports pinned to the Reports page, in order
   """
-  reportPins: [ReportPin!]! @scope(name: REPORTS_READ)
-
-  """
-  The questions the Ask box offers on the Reports page, in order
-  """
-  popularReportQuestions: [PopularReportQuestion!]! @scope(name: REPORTS_READ)
+  pinnedReports: [PinnedReport!]! @scope(name: REPORTS_READ)
 
   """
   The viewer's recent questions on this organization's Reports page, newest first
@@ -137,7 +122,7 @@ type Organization implements OrganizationPartial {
   """
   The levels the organization groups its teams by in Reports, widest first. Empty while Reports is off
   """
-  teamStructure: [TeamStructureLevel!]! @scope(name: ORGS_READ)
+  structure: [OrgStructureLevel!]! @scope(name: ORGS_READ)
 
   """
   Teams in the organization that the viewer has access to.

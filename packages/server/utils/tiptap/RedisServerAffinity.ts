@@ -10,6 +10,7 @@ import {
 } from '@hocuspocus/server'
 import type RedisClient from 'ioredis'
 import {HocusPocusProxySocket} from '../../HocusPocusProxySocket'
+import {Logger} from '../Logger'
 
 export type SecondParam<T> = T extends (arg1: any, arg2: infer A, ...args: any[]) => any ? A : never
 export type RSAMessageProxy = {
@@ -71,6 +72,8 @@ export type SerializedHTTPRequest = {
   url: string
   headers: Omit<IncomingHttpHeaders, 'sec-websocket-key'> & {'sec-websocket-key': string}
   socket: {remoteAddress: string}
+  // set once at upgrade, so every server that handles the socket agrees on when it opened
+  connectedAt: number
 }
 export type Pack = (msg: RSAMessage) => string | Buffer<ArrayBufferLike>
 type Unpack = (packedMessage: Uint8Array | Buffer<ArrayBufferLike>) => RSAMessage
@@ -99,17 +102,23 @@ interface Configuration<TCE> {
   deriveContext?: (serializedHTTPRequest: SerializedHTTPRequest) => Record<string, any>
 }
 
+// uWS decodes header bytes as UTF-8 (invalid bytes become U+FFFD), but Headers only accepts byte strings
+const toByteString = (value: string) => Buffer.from(value, 'utf8').toString('latin1')
+
 // Hocuspocus expects a web-standard Request, so rehydrate one from what crossed the wire
-const toWebRequest = (serializedHTTPRequest: SerializedHTTPRequest) => {
+export const toWebRequest = (serializedHTTPRequest: SerializedHTTPRequest) => {
   const {method, url, headers} = serializedHTTPRequest
   const webHeaders = new Headers()
   Object.entries(headers).forEach(([name, value]) => {
-    if (Array.isArray(value)) {
-      value.forEach((v) => {
-        webHeaders.append(name, v)
+    if (value === undefined) return
+    const values = Array.isArray(value) ? value : [value]
+    try {
+      values.forEach((v) => {
+        webHeaders.append(name, toByteString(v))
       })
-    } else if (value !== undefined) {
-      webHeaders.set(name, value)
+    } catch {
+      webHeaders.delete(name)
+      Logger.warn(`toWebRequest: dropped invalid header ${JSON.stringify(name)}`)
     }
   })
   return new Request(new URL(url, 'http://localhost'), {
@@ -230,7 +239,15 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
     return this.getOrClaimLock(documentName)
   }
 
-  private handleRedisMessage = async (_channel: Buffer, packedMessage: Buffer) => {
+  private handleRedisMessage = async (channel: Buffer, packedMessage: Buffer) => {
+    try {
+      await this.routeRedisMessage(packedMessage)
+    } catch (e) {
+      Logger.error(`RedisServerAffinity: failed to handle message on ${channel}`, e)
+    }
+  }
+
+  private async routeRedisMessage(packedMessage: Buffer) {
     const msg = this.unpack(packedMessage) as RSAMessage
     const {type} = msg
     if (type === 'proxy') {
@@ -257,7 +274,7 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
         replyId,
         payload: res
       }
-      this.pub.publish(`${replyTo}`, this.pack(reply))
+      this.pub.publish(`${replyTo}`, this.pack(reply)).catch(Logger.error)
       return
     }
     if (type === 'customEventComplete') {
@@ -287,7 +304,7 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
     // (e.g. both onLoadDocument and lockDocument call this for the same document)
     clearInterval(this.locks[documentName])
     this.locks[documentName] = setInterval(() => {
-      this.pub.set(this.getKey(documentName), this.serverId, 'PX', this.lockTTL)
+      this.pub.set(this.getKey(documentName), this.serverId, 'PX', this.lockTTL).catch(Logger.error)
     }, this.lockTTL / 2)
   }
 
@@ -342,7 +359,7 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
         type: 'customEventStart'
       }
       const msg = this.pack(proxyMessage)
-      this.pub.publish(`${this.msgChannel}:${proxyTo}`, msg)
+      this.pub.publish(`${this.msgChannel}:${proxyTo}`, msg).catch(Logger.error)
       const {promise, resolve, reject} = Promise.withResolvers()
       this.pendingReplies[replyId] = resolve
       setTimeout(() => {
@@ -404,7 +421,7 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
         type: 'proxy'
       }
       const msg = this.pack(proxyMessage)
-      this.pub.publish(`${this.msgChannel}:${proxyTo}`, msg)
+      this.pub.publish(`${this.msgChannel}:${proxyTo}`, msg).catch(Logger.error)
       return
     }
     // This server owns the document, but hocuspocus hasn't loaded it yet
@@ -436,10 +453,10 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
 
   async afterUnloadDocument(data: afterUnloadDocumentPayload) {
     const {documentName} = data
-    this.releaseLock(documentName)
+    this.releaseLock(documentName).catch(Logger.error)
     // Broadcast to cluster to immediately remove the cached redis value
     const msg: RSAMessageUnload = {type: 'unload', documentName}
-    this.pub.publish(this.msgChannel, this.pack(msg))
+    this.pub.publish(this.msgChannel, this.pack(msg)).catch(Logger.error)
   }
 
   async onDestroy() {

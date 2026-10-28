@@ -6,7 +6,7 @@ const spec: ReportSpec = {
   breakdown: [{dimension: 'TEAM'}],
   filters: [],
   where: [],
-  period: {preset: 'PAGE', startDate: null, endDate: null},
+  period: null,
   compareTo: null,
   showAs: 'TABLE',
   sort: null,

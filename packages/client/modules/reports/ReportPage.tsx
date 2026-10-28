@@ -25,13 +25,12 @@ const query = graphql`
     $orgId: ID!
     $spec: ReportSpecInput!
     $timeZone: String!
-    $pagePeriod: ReportPeriodInput!
     $lastHeldSpec: ReportSpecInput!
     $hasLastHeld: Boolean!
   ) {
     viewer {
       organization(orgId: $orgId) {
-        teamStructure {
+        structure {
           id
           name
         }
@@ -55,7 +54,7 @@ const ReportPage = ({
   const {viewer} = usePreloadedQuery<ReportPageQuery>(query, queryRef)
   const resultSpec = useResultSpec(queryRef.variables.spec, spec)
   const {organization} = viewer
-  const levels = organization?.teamStructure ?? []
+  const levels = organization?.structure ?? []
   const name = title ?? describeReportSpec(spec, levels)
   useDocumentTitle(`${name} | Reports | Parabol`, 'Reports')
   return (

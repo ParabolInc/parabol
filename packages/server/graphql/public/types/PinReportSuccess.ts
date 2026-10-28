@@ -1,14 +1,14 @@
-import {selectReportPins} from '../../../reports/reportPins'
+import {selectPinnedReports} from '../../../reports/pinnedReports'
 import type {PinReportSuccessResolvers} from '../resolverTypes'
 
-export type PinReportSuccessSource = {orgId: string; pinRowId: number}
+export type PinReportSuccessSource = {orgId: string; pinnedReportId: number}
 
 const PinReportSuccess: PinReportSuccessResolvers = {
   organization: ({orgId}, _args, {dataLoader}) =>
     dataLoader.get('organizations').loadNonNull(orgId),
-  reportPin: async ({orgId, pinRowId}) => {
-    const pins = await selectReportPins(orgId)
-    return pins.find(({rowId}) => rowId === pinRowId)!
+  pinnedReport: async ({orgId, pinnedReportId}) => {
+    const pins = await selectPinnedReports(orgId)
+    return pins.find(({id}) => id === pinnedReportId)!
   }
 }
 

@@ -25,6 +25,7 @@ allowBuilds:
   msgpackr-extract: true
   nx: true
   protobufjs: true
+  re2: false
   sharp: true
   ssh2: true
   styled-components: true

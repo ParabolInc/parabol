@@ -7,20 +7,19 @@ const mutation = graphql`
     placeTeam(teamId: $teamId, levelId: $levelId, valueId: $valueId) {
       organization {
         id
-        teamStructure {
+        structure {
           id
           values {
             id
-            teamIds
+            teams {
+              id
+            }
           }
         }
       }
     }
   }
 `
-
-const isStringList = (value: unknown): value is string[] =>
-  Array.isArray(value) && value.every((item) => typeof item === 'string')
 
 const usePlaceTeamMutation = () => {
   const [commit, submitting] = useMutation<TPlaceTeamMutation>(mutation)
@@ -29,14 +28,16 @@ const usePlaceTeamMutation = () => {
     return commit({
       // the menu shows the new value as soon as it closes
       optimisticUpdater: (store) => {
+        const team = store.get(teamId)
         store
           .get(levelId)
           ?.getLinkedRecords('values')
           ?.forEach((value) => {
-            const teamIds = value.getValue('teamIds')
-            const otherTeamIds = isStringList(teamIds) ? teamIds.filter((id) => id !== teamId) : []
-            const isPlacedHere = value.getDataID() === valueId
-            value.setValue(isPlacedHere ? [...otherTeamIds, teamId] : otherTeamIds, 'teamIds')
+            const otherTeams = (value.getLinkedRecords('teams') ?? []).filter(
+              (placedTeam) => placedTeam.getDataID() !== teamId
+            )
+            const isPlacedHere = value.getDataID() === valueId && team
+            value.setLinkedRecords(isPlacedHere ? [...otherTeams, team] : otherTeams, 'teams')
           })
       },
       ...config

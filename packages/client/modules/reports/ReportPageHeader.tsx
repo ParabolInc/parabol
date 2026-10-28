@@ -36,7 +36,7 @@ const ReportPageHeader = ({orgId, organizationRef, spec, period, onPeriodChange}
         Reports
       </Link>
       <span className='flex-1' />
-      {organization && spec.period.preset === 'PAGE' && (
+      {organization && !spec.period && (
         <ReportPeriodMenu
           period={period}
           onChange={onPeriodChange}

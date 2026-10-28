@@ -1,6 +1,6 @@
 import {ArrowBack, ArrowForward, BookmarkBorder, MoreVert} from '~/ui/icons'
 import useAtmosphere from '../../hooks/useAtmosphere'
-import useMoveReportPinMutation from '../../mutations/useMoveReportPinMutation'
+import useMovePinnedReportMutation from '../../mutations/useMovePinnedReportMutation'
 import useUnpinReportMutation from '../../mutations/useUnpinReportMutation'
 import {Menu} from '../../ui/Menu/Menu'
 import {MenuContent} from '../../ui/Menu/MenuContent'
@@ -16,13 +16,13 @@ interface Props {
 
 const ReportCardMenu = ({orgId, pinId, title, index, pinCount}: Props) => {
   const atmosphere = useAtmosphere()
-  const [move] = useMoveReportPinMutation()
+  const [move] = useMovePinnedReportMutation()
   const [unpin] = useUnpinReportMutation()
   const callbacks = {
     onCompleted: (_response: unknown, errors?: readonly {message: string}[] | null) => {
       if (!errors?.[0]) return
       atmosphere.eventEmitter.emit('addSnackbar', {
-        key: 'reportPinError',
+        key: 'pinnedReportError',
         message: errors[0].message,
         autoDismiss: 5
       })

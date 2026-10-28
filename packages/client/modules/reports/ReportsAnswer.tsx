@@ -22,13 +22,12 @@ const query = graphql`
     $orgId: ID!
     $spec: ReportSpecInput!
     $timeZone: String!
-    $pagePeriod: ReportPeriodInput!
     $lastHeldSpec: ReportSpecInput!
     $hasLastHeld: Boolean!
   ) {
     viewer {
       organization(orgId: $orgId) {
-        teamStructure {
+        structure {
           id
           name
         }
@@ -43,7 +42,7 @@ const ReportsAnswer = ({queryRef, orgId, answer, period, onSpecChange, onClose}:
   const {organization} = viewer
   const {spec, title, reportQuestionId} = answer
   const resultSpec = useResultSpec(queryRef.variables.spec, spec)
-  const levels = organization?.teamStructure ?? []
+  const levels = organization?.structure ?? []
   return (
     <ReportPanel
       organizationRef={organization}

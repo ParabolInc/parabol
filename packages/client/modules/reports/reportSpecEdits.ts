@@ -24,6 +24,7 @@ import {
 import fitReportSpec, {orderHeatmap} from './fitReportSpec'
 import {REPORT_PAGE_PRESETS} from './reportPeriodParam'
 import {
+  PAGE_PERIOD_LABEL,
   REPORT_COMPARE_LABELS,
   REPORT_PERIOD_LABELS,
   REPORT_VIEW_LABELS,
@@ -94,7 +95,7 @@ const dimensionLabel = (dimension: ReportDimension) =>
 
 type ReportDimensionItem = ReportSpec['breakdown'][number]
 
-// the dimensions a breakdown or filter can pick, where team structure is one choice per level
+// the dimensions a breakdown or filter can pick, where org structure is one choice per level
 const toChoices = (
   dimensions: readonly ReportDimension[],
   levels: readonly ReportStructureLevel[]
@@ -250,15 +251,17 @@ export const addFilterEdits = (
 export const whereRemoval = (spec: ReportSpec, index: number) =>
   toRemoval({...spec, where: spec.where.filter((_, idx) => idx !== index)})
 
-export const periodEdits = (spec: ReportSpec) =>
-  (['PAGE', ...REPORT_PAGE_PRESETS] as const).map((preset) =>
+export const periodEdits = (spec: ReportSpec) => [
+  toOption('PAGE', PAGE_PERIOD_LABEL, {...spec, period: null}, !spec.period),
+  ...REPORT_PAGE_PRESETS.map((preset) =>
     toOption(
       preset,
       REPORT_PERIOD_LABELS[preset],
-      {...spec, period: {preset, startDate: null, endDate: null}},
-      spec.period.preset === preset
+      {...spec, period: {preset}},
+      spec.period?.preset === preset
     )
   )
+]
 
 export const compareEdits = (spec: ReportSpec) =>
   validOnly(

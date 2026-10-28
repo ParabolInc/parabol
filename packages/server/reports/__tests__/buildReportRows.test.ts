@@ -1,5 +1,5 @@
 import buildReportRows from '../buildReportRows'
-import type {ReportLevelDimension} from '../teamStructure'
+import type {ReportLevelDimension} from '../orgStructure'
 
 const BUSINESS_UNIT: ReportLevelDimension = 'level:1'
 const DEPARTMENT: ReportLevelDimension = 'level:2'

@@ -10,7 +10,7 @@ import type {OrgTeamsRow_team$key} from '../../../../__generated__/OrgTeamsRow_t
 type Props = {
   teamRef: OrgTeamsRow_team$key
   isOrgAdmin?: boolean
-  // a cell for each team structure level
+  // a cell for each org structure level
   children?: ReactNode
 }
 

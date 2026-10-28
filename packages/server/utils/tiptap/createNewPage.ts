@@ -15,6 +15,7 @@ import {validateParentPage} from './validateParentPage'
 type CreateNewPageOptions = {
   parentPageId?: number
   isDatabase?: boolean
+  isMeetingTOC?: boolean
   content: TipTapSerializedPageContent
   teamId?: string | null
   summaryMeetingId?: string | null
@@ -22,7 +23,8 @@ type CreateNewPageOptions = {
 }
 
 export const createNewPage = async (options: CreateNewPageOptions, mutatorId?: string | null) => {
-  const {content, parentPageId, isDatabase, teamId, summaryMeetingId, userId} = options
+  const {content, parentPageId, isDatabase, isMeetingTOC, teamId, summaryMeetingId, userId} =
+    options
 
   const pg = getKysely()
   const yDoc = Buffer.from(
@@ -54,6 +56,7 @@ export const createNewPage = async (options: CreateNewPageOptions, mutatorId?: s
       parentPageId,
       ancestorIds,
       isDatabase,
+      isMeetingTOC,
       summaryMeetingId,
       teamId
     })

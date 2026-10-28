@@ -3,7 +3,7 @@ What a report counts
 """
 enum ReportMeasureEnum {
   "People who used Parabol in the 30 days before each reading"
-  ACTIVE_PEOPLE
+  ACTIVE_USERS
   "People on the teams, or in the organization when every team is counted"
   MEMBERS
   "The percentage of members who used Parabol in the 30 days before each reading, or null without members"

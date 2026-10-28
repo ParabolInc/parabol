@@ -8,12 +8,6 @@ const REPORT_QUESTIONS = `
   query ReportQuestions($orgId: ID!) {
     viewer {
       organization(orgId: $orgId) {
-        popularReportQuestions {
-          key
-          subject
-          question
-          spec
-        }
         recentReportQuestions {
           id
           source
@@ -27,8 +21,8 @@ const REPORT_QUESTIONS = `
 `
 
 const START_REPORT_QUESTION = `
-  mutation StartReportQuestion($orgId: ID!, $popularQuestionKey: String, $reportQuestionId: ID) {
-    startReportQuestion(
+  mutation LogReportQuestionUse($orgId: ID!, $popularQuestionKey: String, $reportQuestionId: ID) {
+    logReportQuestionUse(
       orgId: $orgId
       popularQuestionKey: $popularQuestionKey
       reportQuestionId: $reportQuestionId
@@ -83,16 +77,11 @@ const recentTitles = async (orgId: string, cookie: string) => {
 const start = (orgId: string, cookie: string, variables: Record<string, string>) =>
   sendPublic({query: START_REPORT_QUESTION, variables: {orgId, ...variables}, cookie})
 
-test('the popular questions come in order, each with a spec', async () => {
+test('a new viewer has no recent questions', async () => {
   const {orgId, cookie} = await signUpWithReports()
   const res = await sendPublic({query: REPORT_QUESTIONS, variables: {orgId}, cookie})
   expect(res.errors).toBeUndefined()
-  const {popularReportQuestions, recentReportQuestions} = res.data.viewer.organization
-  expect(popularReportQuestions[0]).toMatchObject({key: 'activePeopleOverTime', subject: 'people'})
-  expect(popularReportQuestions.every(({spec}: {spec: string}) => JSON.parse(spec).showAs)).toBe(
-    true
-  )
-  expect(recentReportQuestions).toEqual([])
+  expect(res.data.viewer.organization.recentReportQuestions).toEqual([])
 })
 
 test('a picked popular question goes first in recent questions, and picking it again counts a use', async () => {
@@ -101,7 +90,7 @@ test('a picked popular question goes first in recent questions, and picking it a
   await start(orgId, cookie, {popularQuestionKey: 'meetingsByType'})
   expect(await recentTitles(orgId, cookie)).toEqual(['Meetings by type', 'Teams by last meeting'])
   const again = await start(orgId, cookie, {popularQuestionKey: 'teamsNotMet30Days'})
-  expect(again.data.startReportQuestion.reportQuestion).toMatchObject({source: 'popular'})
+  expect(again.data.logReportQuestionUse.reportQuestion).toMatchObject({source: 'popular'})
   expect(await recentTitles(orgId, cookie)).toEqual(['Teams by last meeting', 'Meetings by type'])
   const {uses} = await getKysely()
     .selectFrom('ReportQuestion')
@@ -116,7 +105,7 @@ test('opening a recent question again moves it to the top', async () => {
   const {orgId, cookie} = await signUpWithReports()
   const first = await start(orgId, cookie, {popularQuestionKey: 'retroCadence'})
   await start(orgId, cookie, {popularQuestionKey: 'meetingTypesByTeam'})
-  const reportQuestionId = first.data.startReportQuestion.reportQuestion.id
+  const reportQuestionId = first.data.logReportQuestionUse.reportQuestion.id
   const reopened = await start(orgId, cookie, {reportQuestionId})
   expect(reopened.errors).toBeUndefined()
   expect(await recentTitles(orgId, cookie)).toEqual([
@@ -134,7 +123,7 @@ test('recent questions belong to the person who asked them', async () => {
     .execute()
   const picked = await start(owner.orgId, owner.cookie, {popularQuestionKey: 'retroCadence'})
   expect(await recentTitles(owner.orgId, colleague.cookie)).toEqual([])
-  const reportQuestionId = picked.data.startReportQuestion.reportQuestion.id
+  const reportQuestionId = picked.data.logReportQuestionUse.reportQuestion.id
   const taken = await start(owner.orgId, colleague.cookie, {reportQuestionId})
   expect(taken.errors?.[0]?.message).toBe('That isn’t one of your recent questions')
 })
@@ -188,7 +177,7 @@ test('each person keeps their newest 20 questions in an organization', async () 
     breakdown: [{dimension: 'TEAM'}],
     filters: [],
     where: [],
-    period: {preset: 'PAGE', startDate: null, endDate: null},
+    period: null,
     compareTo: null,
     showAs: 'TABLE',
     sort: null,

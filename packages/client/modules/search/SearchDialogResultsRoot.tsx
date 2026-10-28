@@ -32,7 +32,7 @@ export const SearchDialogResultsRoot = (props: Props) => {
   const searchType = searchQuery === '' ? 'recent' : 'hybrid'
 
   return (
-    <ErrorBoundary fallback={() => <div>Error calling search</div>}>
+    <ErrorBoundary resetKey={queryRef?.fetchKey} fallback={() => <div>Error calling search</div>}>
       <Suspense fallback={<Loader />}>
         {queryRef && (
           <SearchDialogResults
