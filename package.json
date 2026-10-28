@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "15.8.1",
+  "version": "15.9.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -29,6 +29,7 @@
     "predev": "pkill -P 1 -f '(parabol/scripts/|/node scripts/|parabol/node_modules/.*relay)' || true",
     "dev": "node scripts/dev.mts",
     "dev:login": "node scripts/devLogin.mts",
+    "dev:seed": "node scripts/devSeed.mts",
     "dev:status": "node scripts/devStatus.mts",
     "biome": "pnpm exec biome check",
     "newMutation": "pnpm sucrase-node scripts/codeshift/newMutation.ts",

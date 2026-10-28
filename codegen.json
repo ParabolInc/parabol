@@ -73,7 +73,9 @@
             "PAGES_READ": "pages:read",
             "PAGES_WRITE": "pages:write",
             "COMMENTS_READ": "comments:read",
-            "COMMENTS_WRITE": "comments:write"
+            "COMMENTS_WRITE": "comments:write",
+            "REPORTS_READ": "reports:read",
+            "REPORTS_WRITE": "reports:write"
           }
         },
         "mappers": {
@@ -277,6 +279,17 @@
           "UpdatePersonalAccessTokenSuccess": "./types/UpdatePersonalAccessTokenSuccess#UpdatePersonalAccessTokenSuccessSource",
           "RepoContainer": "../../integrations/platform/RemoteRepoIntegration#VendorRepoIntegration",
           "RepoIntegration": "../../integrations/platform/RemoteRepoIntegration#RemoteRepoIntegration",
+          "PinnedReport": "./types/PinnedReport#PinnedReportSource",
+          "ReportQuestion": "./types/ReportQuestion#ReportQuestionSource",
+          "AskReportQuestionSuccess": "./types/AskReportQuestionSuccess#AskReportQuestionSuccessSource",
+          "LogReportQuestionUseSuccess": "./types/LogReportQuestionUseSuccess#LogReportQuestionUseSuccessSource",
+          "PinReportSuccess": "./types/PinReportSuccess#PinReportSuccessSource",
+          "UnpinReportSuccess": "./types/UnpinReportSuccess#UnpinReportSuccessSource",
+          "MovePinnedReportSuccess": "./types/MovePinnedReportSuccess#MovePinnedReportSuccessSource",
+          "OrgStructureLevel": "./types/OrgStructureLevel#OrgStructureLevelSource",
+          "OrgStructureValue": "./types/OrgStructureValue#OrgStructureValueSource",
+          "SetOrgStructureSuccess": "./types/SetOrgStructureSuccess#SetOrgStructureSuccessSource",
+          "PlaceTeamSuccess": "./types/PlaceTeamSuccess#PlaceTeamSuccessSource",
           "RetroDiscussStage": "./types/RetroDiscussStage#DiscussStageSource",
           "RetroReflection": "../../postgres/types/index#RetroReflection as RetroReflectionDB",
           "RetroReflectionGroup": "./types/RetroReflectionGroup#RetroReflectionGroupSource",

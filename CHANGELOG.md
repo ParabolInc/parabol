@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.9.0](https://github.com/ParabolInc/parabol/compare/v15.8.1...v15.9.0) (2026-10-28)
+
+
+### Added
+
+* Reports, behind the Reports flag ([#13713](https://github.com/ParabolInc/parabol/issues/13713)) ([8f965d2](https://github.com/ParabolInc/parabol/commit/8f965d2572e550bf212fb12f7b2abf51e98c5d22))
+
 ## [15.8.1](https://github.com/ParabolInc/parabol/compare/v15.8.0...v15.8.1) (2026-10-28)
 
 

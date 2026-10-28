@@ -1,0 +1,37 @@
+"""
+One report: what to count, how to split it, and how to show it
+"""
+input ReportSpecInput {
+  """
+  What to count. A chart takes one; a table takes up to six
+  """
+  measures: [ReportMeasureEnum!]!
+
+  """
+  How to split the results, in order. The view decides each one's role
+  """
+  breakdown: [ReportBreakdownInput!]! = []
+
+  filters: [ReportFilterInput!]! = []
+
+  """
+  Tests on each row's values, applied after counting
+  """
+  where: [ReportConditionInput!]! = []
+
+  """
+  When the data comes from. Null follows the period picked on the Reports page, or the last 3 months without one
+  """
+  period: ReportPeriodInput
+
+  compareTo: ReportCompareToEnum
+
+  showAs: ReportViewEnum!
+
+  sort: ReportSortInput
+
+  """
+  How many values of the first breakdown that isn't time to keep, from 1 to 50
+  """
+  limit: Int
+}

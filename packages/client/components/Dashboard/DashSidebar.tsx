@@ -11,6 +11,7 @@ import {
   Groups as GroupsIcon,
   Key as KeyIcon,
   PlaylistAddCheck as PlaylistAddCheckIcon,
+  PollOutlined as PollOutlinedIcon,
   Timeline as TimelineIcon,
   Work as WorkIcon
 } from '~/ui/icons'
@@ -53,6 +54,7 @@ const DashSidebar = (props: Props) => {
         organizations {
           id
           name
+          hasReports: featureFlag(featureName: "Reports")
         }
       }
     `,
@@ -61,6 +63,7 @@ const DashSidebar = (props: Props) => {
 
   if (!viewer) return null
   const {organizations} = viewer
+  const hasReports = organizations.some((org) => org.hasReports)
 
   if (match) {
     const orgIdFromParams = match.params.orgId!
@@ -132,6 +135,9 @@ const DashSidebar = (props: Props) => {
             <SearchDialog />
             <LeftDashNavItem Icon={TimelineIcon} href={'/me'} label={'History'} exact />
             <LeftDashNavItem Icon={PlaylistAddCheckIcon} href={'/me/tasks'} label={'Tasks'} />
+            {hasReports && (
+              <LeftDashNavItem Icon={PollOutlinedIcon} href={'/reports'} label={'Reports'} />
+            )}
             <LeftDashNavItem Icon={AddIcon} href={'/newteam'} label={'Add a Team'} />
           </div>
           <div className='overflow-y-auto'>

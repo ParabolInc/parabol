@@ -13,6 +13,7 @@ import {
   Groups as GroupsIcon,
   Key as KeyIcon,
   PlaylistAddCheck as PlaylistAddCheckIcon,
+  PollOutlined as PollOutlinedIcon,
   Timeline as TimelineIcon,
   Work as WorkIcon
 } from '~/ui/icons'
@@ -69,6 +70,7 @@ const MobileDashSidebar = (props: Props) => {
         organizations {
           id
           name
+          hasReports: featureFlag(featureName: "Reports")
         }
       }
     `,
@@ -76,6 +78,7 @@ const MobileDashSidebar = (props: Props) => {
   )
   if (!viewer) return null
   const {organizations} = viewer
+  const hasReports = organizations.some((org) => org.hasReports)
 
   if (match) {
     const orgIdFromParams = match.params.orgId!
@@ -205,6 +208,14 @@ const MobileDashSidebar = (props: Props) => {
               href={'/me/tasks'}
               label={'Tasks'}
             />
+            {hasReports && (
+              <LeftDashNavItem
+                onClick={handleMenuClick}
+                Icon={PollOutlinedIcon}
+                href={'/reports'}
+                label={'Reports'}
+              />
+            )}
             <LeftDashNavItem
               onClick={handleMenuClick}
               Icon={AddIcon}
