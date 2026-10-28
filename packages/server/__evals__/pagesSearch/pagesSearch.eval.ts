@@ -1,11 +1,17 @@
 import fs from 'fs'
 import type {GraphQLResolveInfo} from 'graphql'
 import path from 'path'
+import {getModelManager} from '../../../embedder/ai_models/ModelManager'
 import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
 import type {GQLContext} from '../../graphql/graphql'
-import {search} from '../../graphql/public/fields/search'
+import {
+  KEYWORD_FALLBACK_LOG_MESSAGE,
+  SEARCH_EMBEDDING_TIMEOUT_MS,
+  search
+} from '../../graphql/public/fields/search'
 import getKysely from '../../postgres/getKysely'
 import type {User} from '../../postgres/types'
+import {Logger} from '../../utils/Logger'
 import {
   type Grade,
   type Grades,
@@ -18,19 +24,47 @@ import {
 } from './metrics'
 import {EVAL_USER_ID, seedEvalPages} from './seedEvalPages'
 
+interface EmbeddingCall {
+  startedAt: number
+  durationMs?: number
+  error?: string
+}
+
+const mockEmbeddingCalls: EmbeddingCall[] = []
+const warnSpy = jest.spyOn(Logger, 'warn')
+const mockEmbedQueryText = (queryText: string) =>
+  getModelManager().getEmbedder().getEmbedding(queryText)
+
 jest.mock('../../graphql/mutations/helpers/publishToEmbedder', () => ({
   getUserQueryJobData: (query: string) => ({query}),
   publishToEmbedder: async ({data}: {data: {query: string}}) => {
-    const {getModelManager} = jest.requireActual<
-      typeof import('../../../embedder/ai_models/ModelManager')
-    >('../../../embedder/ai_models/ModelManager')
-    const embedding = await getModelManager().getEmbedder().getEmbedding(data.query)
-    return embedding instanceof Error ? embedding : Float32Array.from(embedding)
+    const call: EmbeddingCall = {startedAt: Date.now()}
+    mockEmbeddingCalls.push(call)
+    try {
+      const embedding = await mockEmbedQueryText(data.query)
+      if (embedding instanceof Error) {
+        call.error = embedding.message
+        return embedding
+      }
+      return Float32Array.from(embedding)
+    } catch (error) {
+      call.error = error instanceof Error ? error.message : String(error)
+      throw error
+    } finally {
+      call.durationMs = Date.now() - call.startedAt
+    }
   }
 }))
 
 type EvalSet = 'dev' | 'holdout'
 type Mode = 'fused' | 'quick'
+
+interface EmbeddingOutcome {
+  embeddingMs?: number
+  embeddingError?: string
+}
+
+type ScoredQuery = QueryResult & EmbeddingOutcome & {fallbackReason?: string}
 
 interface EvalQuery {
   query: string
@@ -84,6 +118,16 @@ const gradeQueries = (evalSet: EvalSet, pageIdByFixture: Map<string, number>): G
   })
 }
 
+const warmUpEmbeddings = async () => {
+  try {
+    const embedding = await mockEmbedQueryText('warm up')
+    if (embedding instanceof Error) throw embedding
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error)
+    throw new Error(`Could not warm up the embeddings service: ${reason}`)
+  }
+}
+
 const searchPages = async (query: string, mode: Mode) => {
   if (typeof search !== 'function') throw new Error('search must be a resolver function')
   const dataLoader = getNewDataLoader('pagesSearchEval')
@@ -106,11 +150,47 @@ const searchPages = async (query: string, mode: Mode) => {
   }
 }
 
+const toEmbeddingOutcome = (call: EmbeddingCall | undefined): EmbeddingOutcome => {
+  if (!call) return {}
+  if (call.durationMs === undefined) {
+    return {
+      embeddingMs: Date.now() - call.startedAt,
+      embeddingError: 'still running when the search returned'
+    }
+  }
+  return {embeddingMs: call.durationMs, embeddingError: call.error}
+}
+
+const toFallbackReason = (warnings: typeof warnSpy.mock.calls) => {
+  const fallbackWarning = warnings.find(([message]) => message === KEYWORD_FALLBACK_LOG_MESSAGE)
+  if (!fallbackWarning) return undefined
+  const reason = fallbackWarning[1]?.extras?.reason
+  return typeof reason === 'string' ? reason : 'unknown'
+}
+
+const describeEmbeddingProblem = ({embeddingMs, embeddingError}: EmbeddingOutcome) => {
+  if (embeddingMs === undefined) return 'no embedding call was made'
+  if (embeddingError !== undefined) return `embedding failed: ${embeddingError}`
+  if (embeddingMs > SEARCH_EMBEDDING_TIMEOUT_MS) {
+    return `embedding took ${embeddingMs} ms, over the ${SEARCH_EMBEDDING_TIMEOUT_MS} ms search budget`
+  }
+  return undefined
+}
+
+const describeFusedProblems = (result: ScoredQuery) =>
+  [
+    describeEmbeddingProblem(result),
+    result.fallbackReason !== undefined && `search used keyword results: ${result.fallbackReason}`
+  ]
+    .filter(Boolean)
+    .join('; ')
+
 const scoreQuery = async (
   {query, category, grades}: GradedQuery,
   mode: Mode,
   fixtureKeyByPageId: Map<number, string>
 ) => {
+  warnSpy.mockClear()
   const startedAt = Date.now()
   let resultIds: number[] = []
   let error: string | undefined
@@ -120,7 +200,8 @@ const scoreQuery = async (
     error = e instanceof Error ? e.message : String(e)
   }
   const latencyMs = Date.now() - startedAt
-  const result: QueryResult = {
+  const [embeddingCall] = mockEmbeddingCalls.splice(0)
+  const result: ScoredQuery = {
     query,
     category,
     answerable: grades.size > 0,
@@ -130,7 +211,9 @@ const scoreQuery = async (
     resultIds,
     resultKeys: resultIds.map((id) => fixtureKeyByPageId.get(id) ?? String(id)),
     latencyMs,
-    error
+    error,
+    ...toEmbeddingOutcome(embeddingCall),
+    fallbackReason: toFallbackReason(warnSpy.mock.calls)
   }
   return result
 }
@@ -173,7 +256,8 @@ test('pages search eval', async () => {
   fs.mkdirSync(RESULTS_DIR, {recursive: true})
   const failures: string[] = []
   for (const mode of modes) {
-    const perQuery: QueryResult[] = []
+    if (mode === 'fused') await warmUpEmbeddings()
+    const perQuery: ScoredQuery[] = []
     for (const gradedQuery of gradedQueries) {
       perQuery.push(await scoreQuery(gradedQuery, mode, fixtureKeyByPageId))
     }
@@ -196,6 +280,21 @@ test('pages search eval', async () => {
         `${failed.length} of ${perQuery.length} ${mode} queries failed. First, "${firstFailed.query}": ${firstFailed.error}`
       )
       failures.push(...failed.map(({query, error}) => `${mode} "${query}": ${error}`))
+    }
+    if (mode === 'fused') {
+      const keywordFallbacks = perQuery
+        .filter(({error}) => error === undefined)
+        .flatMap((result) => {
+          const problem = describeFusedProblems(result)
+          return problem ? [{query: result.query, problem}] : []
+        })
+      const [firstFallback] = keywordFallbacks
+      if (firstFallback) {
+        console.warn(
+          `${keywordFallbacks.length} of ${perQuery.length} fused queries were not answered by fused ranking. First, "${firstFallback.query}": ${firstFallback.problem}`
+        )
+        failures.push(...keywordFallbacks.map(({query, problem}) => `fused "${query}": ${problem}`))
+      }
     }
   }
   expect(failures).toEqual([])

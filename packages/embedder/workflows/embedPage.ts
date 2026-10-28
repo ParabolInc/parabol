@@ -19,6 +19,8 @@ export interface EmbedPageData {
   modelId: ModelId
 }
 
+const UNSTAMPED_PAGE_UPDATED_AT = new Date(0)
+
 function weightedTsvector(language: TSVLanguage, title: string, headings: string, body: string) {
   return sql`
     setweight(to_tsvector(${language}, ${title}), 'A') ||
@@ -53,10 +55,10 @@ export const embedPage: JobQueueStepRun<EmbedPageData> = async (context) => {
     return new JobQueueError(`pageId ${pageId} has no yDoc`)
   }
 
-  const firstExistingChunk = existingChunks[0]
-  if (firstExistingChunk && firstExistingChunk.pageUpdatedAt === page.updatedAt) {
-    return new JobQueueError(`pageId ${pageId} embedding is already current`)
-  }
+  const isCurrent =
+    existingChunks.length > 0 &&
+    existingChunks.every(({pageUpdatedAt}) => pageUpdatedAt.getTime() === page.updatedAt.getTime())
+  if (isCurrent) return false
 
   const yDoc = new Doc()
   applyUpdate(yDoc, page.yDoc)
@@ -70,56 +72,47 @@ export const embedPage: JobQueueStepRun<EmbedPageData> = async (context) => {
   }
   const chunker = new TipTapChunker({language})
   const chunks = chunker.chunk(content)
-  const updatedChunks = chunks
-    .map((chunk, chunkNumber) => ({chunk, chunkNumber}))
-    .filter(({chunk, chunkNumber}) => existingChunks[chunkNumber]?.embedText !== chunk.text)
-  const errors = await Promise.all(
-    updatedChunks.map(async ({chunk, chunkNumber}) => {
-      const {text, globalTitle, headingPath, embeddingText} = chunk
-      const embeddingVector = await embeddingModel.getEmbedding(embeddingText)
-      if (embeddingVector instanceof Error) {
-        return new JobQueueError(
-          `unable to get embeddings from ${modelId}: ${embeddingVector.message}`
+  for (const [chunkNumber, chunk] of chunks.entries()) {
+    if (existingChunks[chunkNumber]?.embedText === chunk.text) continue
+    const {text, globalTitle, headingPath, embeddingText} = chunk
+    const embeddingVector = await embeddingModel.getEmbedding(embeddingText)
+    if (embeddingVector instanceof Error) {
+      return new JobQueueError(
+        `unable to get embeddings from ${modelId}: ${embeddingVector.message}`
+      )
+    }
+    try {
+      await pg
+        .insertInto(embeddingModel.pagesTableName)
+        .columns(['embedText', 'tsv', 'embedding', 'pageId', 'chunkNumber', 'pageUpdatedAt'])
+        .expression((eb) =>
+          eb
+            // to avoid passing in chunk twice, we pass it in here, and reference it as val twice below
+            .selectFrom(sql`(SELECT ${text}::text as val)`.as('input'))
+            .select([
+              sql<string>`val`.as('val'),
+              weightedTsvector(tsvLanguage, globalTitle, headingPath.join(' '), text).as('tsv'),
+              sql<string>`${numberVectorToString(embeddingVector)}`.as('embedding'),
+              sql<number>`${pageId}`.as('pageId'),
+              sql<number>`${chunkNumber}`.as('chunkNumber'),
+              sql<Date>`${UNSTAMPED_PAGE_UPDATED_AT}`.as('pageUpdatedAt')
+            ])
         )
-      }
-      try {
-        await pg
-          .insertInto(embeddingModel.pagesTableName)
-          .columns(['embedText', 'tsv', 'embedding', 'pageId', 'chunkNumber', 'pageUpdatedAt'])
-          .expression((eb) =>
-            eb
-              // to avoid passing in chunk twice, we pass it in here, and reference it as val twice below
-              .selectFrom(sql`(SELECT ${text}::text as val)`.as('input'))
-              .select([
-                sql<string>`val`.as('val'),
-                weightedTsvector(tsvLanguage, globalTitle, headingPath.join(' '), text).as('tsv'),
-                sql<string>`${numberVectorToString(embeddingVector)}`.as('embedding'),
-                sql<number>`${pageId}`.as('pageId'),
-                sql<number>`${chunkNumber}`.as('chunkNumber'),
-                // This acts as a version # so we can make sure the embedding is for the most recent page
-                // In the future, if we want to do historical imports where we don't update the model, we can use this, too
-                // For now, updating the model will re-embed all pages, which suffices
-                sql<number>`${page.updatedAt}`.as('pageUpdatedAt')
-              ])
-          )
-          .onConflict((oc) =>
-            oc.columns(['pageId', 'chunkNumber']).doUpdateSet((eb) => ({
-              embedText: eb.ref('excluded.embedText'),
-              tsv: eb.ref('excluded.tsv'),
-              embedding: eb.ref('excluded.embedding'),
-              pageUpdatedAt: eb.ref('excluded.pageUpdatedAt')
-            }))
-          )
-          .execute()
-      } catch (e) {
-        return new JobQueueError(e as Error)
-      }
-      return undefined
-    })
-  )
-  const firstError = errors.find((error) => error instanceof JobQueueError)
+        .onConflict((oc) =>
+          oc.columns(['pageId', 'chunkNumber']).doUpdateSet((eb) => ({
+            embedText: eb.ref('excluded.embedText'),
+            tsv: eb.ref('excluded.tsv'),
+            embedding: eb.ref('excluded.embedding'),
+            pageUpdatedAt: eb.ref('excluded.pageUpdatedAt')
+          }))
+        )
+        .execute()
+    } catch (e) {
+      return new JobQueueError(e as Error)
+    }
+  }
   const existingChunkCount = existingChunks?.length ?? 0
-  const deleteOldChunks = chunks.length < existingChunkCount && !firstError
+  const deleteOldChunks = chunks.length < existingChunkCount
   if (deleteOldChunks) {
     await pg
       .deleteFrom(embeddingModel.pagesTableName)
@@ -127,5 +120,11 @@ export const embedPage: JobQueueStepRun<EmbedPageData> = async (context) => {
       .where('chunkNumber', '>', chunks.length - 1)
       .execute()
   }
-  return firstError || data
+  await pg
+    .updateTable(embeddingModel.pagesTableName)
+    .set({pageUpdatedAt: page.updatedAt})
+    .where('pageId', '=', pageId)
+    .where('pageUpdatedAt', '<>', page.updatedAt)
+    .execute()
+  return data
 }
