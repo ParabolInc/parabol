@@ -10,6 +10,7 @@ export interface EmbedQueryData {
   modelId: ModelId
   requestId: number
   channelName: `embedderResponse:${string}`
+  expiresAt?: number
 }
 
 const packr = new Packr({
@@ -17,7 +18,8 @@ const packr = new Packr({
 })
 export const embedQuery: JobQueueStepRun<EmbedQueryData> = async (context) => {
   const {data} = context
-  const {modelId, query, requestId, channelName} = data
+  const {modelId, query, requestId, channelName, expiresAt} = data
+  if (expiresAt !== undefined && Date.now() > expiresAt) return data
   const modelManager = getModelManager()
 
   const embeddingModel = modelManager.getEmbedder(modelId)

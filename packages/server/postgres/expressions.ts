@@ -1,6 +1,8 @@
-import {type ExpressionBuilder, type StringReference, sql} from 'kysely'
+import {type Expression, type ExpressionBuilder, type StringReference, sql} from 'kysely'
 import {type TSVLanguage} from '../../embedder/getSupportedLanguages'
 import numberVectorToString from '../../embedder/indexing/numberVectorToString'
+
+export const RRF_K = 60
 
 export function RRF<DB, TB extends keyof DB>(
   eb: ExpressionBuilder<DB, TB>,
@@ -57,6 +59,12 @@ export const tsHeadline = <
     .join(', ')
   return sql<string>`ts_headline(${language}, ${eb.ref(embedTextColumn)}, ${eb.ref(webQuery)}, ${optionStr})`
 }
+
+export const pageTitleTsv = (title: Expression<string | null>) =>
+  sql<string>`to_tsvector('simple', coalesce(${title}, ''))`
+
+export const pageSearchTsv = (title: Expression<string | null>, body: Expression<string | null>) =>
+  sql<string>`(setweight(${pageTitleTsv(title)}, 'A') || setweight(to_tsvector('simple', left(coalesce(${body}, ''), 100000)), 'D'))`
 
 export function rank<DB, TB extends keyof DB>(
   eb: ExpressionBuilder<DB, TB>,
