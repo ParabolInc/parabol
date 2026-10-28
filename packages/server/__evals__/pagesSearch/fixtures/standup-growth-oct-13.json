@@ -1,0 +1,298 @@
+{
+  "type": "doc",
+  "content": [
+    {
+      "type": "heading",
+      "attrs": {"level": 1},
+      "content": [{"type": "text", "text": "Growth Standup - Oct 13, 2026"}]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "text": "Lantern Growth",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://app.example.com/team/Ln4ZtW8vPc",
+                "target": "_blank",
+                "rel": "noopener noreferrer nofollow",
+                "class": "link",
+                "title": null
+              }
+            },
+            {"type": "bold", "attrs": {}}
+          ]
+        },
+        {"type": "text", "text": " — Oct 13, 2026", "marks": [{"type": "bold", "attrs": {}}]}
+      ]
+    },
+    {"type": "paragraph", "content": [{"type": "text", "text": "3 Responses"}]},
+    {"type": "paragraph"},
+    {
+      "type": "insightsBlock",
+      "attrs": {
+        "id": "0e03fffa-7054-48e8-9794-ec390db7b6ad",
+        "editing": false,
+        "teamIds": ["Ln4ZtW8vPc"],
+        "meetingTypes": ["teamPrompt"],
+        "after": "2026-10-13T15:00:00.000Z",
+        "before": "2026-10-14T00:00:00.000Z",
+        "meetingIds": ["h3OHHqDZcO"],
+        "title": "Top Topics",
+        "hash": "fkv33r4r",
+        "prompt": "You are an expert in agile retrospectives and project management.\nYour team has just completed a meeting and it is your job to generate insights from the data and report to senior management.\nSenior management wants to know where to best focus their time, so be concise and focus on next steps to take.\nIf there is not enough data to generate insightful findings, respond with \"Not enough data to generate insights\".\nIt should include at most 3 topics that are the most important highlights, takeaways, or areas that may need their attention.\n",
+        "error": "nodata"
+      },
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [{"type": "text", "text": "Not enough data to generate insights"}]
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "attrs": {"level": 2},
+      "content": [{"type": "text", "text": "3 Responses"}]
+    },
+    {
+      "type": "responseBlock",
+      "attrs": {
+        "id": "e18c1c19-746f-45ba-ae2c-a75d374fdf2d",
+        "preferredName": "Dana Okafor",
+        "avatar": "https://app.example.com/assets/User/local|kkX4B608TK/picture/OLMpeb9FgV.png",
+        "content": "{\"type\":\"doc\",\"content\":[{\"type\":\"heading\",\"attrs\":{\"level\":3},\"content\":[{\"type\":\"text\",\"text\":\"What are you working on? What has been completed recently?\"}]},{\"type\":\"paragraph\",\"content\":[{\"text\":\"Pricing page copy for the annual plan toggle.\",\"type\":\"text\"}]},{\"type\":\"heading\",\"attrs\":{\"level\":3},\"content\":[{\"type\":\"text\",\"text\":\"What are you stuck on, what's holding you back?\"}]},{\"type\":\"paragraph\",\"content\":[{\"text\":\"I need final numbers from finance on the annual discount.\",\"type\":\"text\"}]}]}"
+      }
+    },
+    {
+      "type": "responseBlock",
+      "attrs": {
+        "id": "e18c1c19-746f-45ba-ae2c-a75d374fdf2d",
+        "preferredName": "Rafael Quintero",
+        "avatar": "https://app.example.com/assets/User/local|WP45ftL4SQ/picture/iTqmYxquJA.png",
+        "content": "{\"type\":\"doc\",\"content\":[{\"type\":\"heading\",\"attrs\":{\"level\":3},\"content\":[{\"type\":\"text\",\"text\":\"What are you working on? What has been completed recently?\"}]},{\"type\":\"paragraph\",\"content\":[{\"text\":\"Setting up UTM naming rules and cleaning up last month's campaign tags.\",\"type\":\"text\"}]},{\"type\":\"heading\",\"attrs\":{\"level\":3},\"content\":[{\"type\":\"text\",\"text\":\"What are you stuck on, what's holding you back?\"}]},{\"type\":\"paragraph\",\"content\":[{\"text\":\"The analytics dashboard times out on date ranges longer than 30 days.\",\"type\":\"text\"}]}]}"
+      }
+    },
+    {
+      "type": "responseBlock",
+      "attrs": {
+        "id": "e18c1c19-746f-45ba-ae2c-a75d374fdf2d",
+        "preferredName": "Hana Petrov",
+        "avatar": "https://app.example.com/assets/User/local|ob18WpBaJG/picture/smfin5eZDJ.png",
+        "content": "{\"type\":\"doc\",\"content\":[{\"type\":\"heading\",\"attrs\":{\"level\":3},\"content\":[{\"type\":\"text\",\"text\":\"What are you working on? What has been completed recently?\"}]},{\"type\":\"paragraph\",\"content\":[{\"text\":\"Landing page mockups, second round.\",\"type\":\"text\"}]},{\"type\":\"heading\",\"attrs\":{\"level\":3},\"content\":[{\"type\":\"text\",\"text\":\"What are you stuck on, what's holding you back?\"}]},{\"type\":\"paragraph\",\"content\":[{\"text\":\"Waiting on the copy deck before I can finish the hero section.\",\"type\":\"text\"}]}]}"
+      }
+    },
+    {"type": "paragraph"},
+    {
+      "type": "details",
+      "attrs": {"open": false},
+      "content": [
+        {"type": "detailsSummary", "content": [{"type": "text", "text": "Table View"}]},
+        {
+          "type": "detailsContent",
+          "content": [
+            {
+              "type": "table",
+              "content": [
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableHeader",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Author",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableHeader",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Created at",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableHeader",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Content",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Dana Okafor",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [{"type": "text", "text": "2026-10-13T16:10:44.000Z"}]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "What are you working on? What has been completed recently?\n\nPricing page copy for the annual plan toggle.\n\nWhat are you stuck on, what's holding you back?\n\nI need final numbers from finance on the annual discount."
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Rafael Quintero",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [{"type": "text", "text": "2026-10-13T16:26:10.000Z"}]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "What are you working on? What has been completed recently?\n\nSetting up UTM naming rules and cleaning up last month's campaign tags.\n\nWhat are you stuck on, what's holding you back?\n\nThe analytics dashboard times out on date ranges longer than 30 days."
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Hana Petrov",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [{"type": "text", "text": "2026-10-13T17:01:37.000Z"}]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "What are you working on? What has been completed recently?\n\nLanding page mockups, second round.\n\nWhat are you stuck on, what's holding you back?\n\nWaiting on the copy deck before I can finish the hero section."
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

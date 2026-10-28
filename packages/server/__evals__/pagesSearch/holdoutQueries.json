@@ -1,0 +1,92 @@
+[
+  {"query": "offboard", "category": "prefix", "relevant": {"offboarding-checklist": 3}},
+  {
+    "query": "weekly sy",
+    "category": "prefix",
+    "relevant": {"weekly-sync-oct-13": 3, "weekly-sync-oct-6": 3}
+  },
+  {"query": "Q4 OKRs", "category": "title", "relevant": {"team-okrs": 3}},
+  {"query": "Design Crit Retro", "category": "title", "relevant": {"retro-design-crit": 3}},
+  {
+    "query": "Sprint 42 Retro",
+    "category": "title",
+    "relevant": {"retro-sprint-42-platform": 3, "retro-sprint-41-platform": 1}
+  },
+  {
+    "query": "disk encryption profile",
+    "category": "body",
+    "relevant": {"onboarding-checklist": 3, "engineering-handbook": 2}
+  },
+  {"query": "two-way doors", "category": "body", "relevant": {"team-charter": 3}},
+  {
+    "query": "friday deploy freeze",
+    "category": "body",
+    "relevant": {"engineering-handbook": 3, "weekly-sync-oct-6": 2, "retro-sprint-42-platform": 2}
+  },
+  {
+    "query": "who gets alerted when the first responder is unreachable",
+    "category": "paraphrase",
+    "relevant": {"on-call-rotation": 3, "engineering-handbook": 2}
+  },
+  {
+    "query": "automatic repeat billing for the same client",
+    "category": "paraphrase",
+    "relevant": {"product-spec": 3, "product-roadmap": 2, "team-okrs": 1}
+  },
+  {
+    "query": "what is the plan for covering support on Saturdays and Sundays",
+    "category": "paraphrase",
+    "relevant": {
+      "weekly-sync-oct-13": 3,
+      "retro-support-october": 2,
+      "standup-support-oct-15": 2,
+      "weekly-sync-oct-6": 2
+    }
+  },
+  {"query": "quillstrem pricing", "category": "typo", "relevant": {"vendor-comparison": 3}},
+  {
+    "query": "sequrity review checklist",
+    "category": "typo",
+    "relevant": {"security-review-checklist": 3}
+  },
+  {"query": "wifi pasword", "category": "typo", "relevant": {"note-wifi": 3}},
+  {
+    "query": "請求書エクスポートのリリース日",
+    "category": "nonEnglish",
+    "relevant": {"meeting-notes-ja": 3}
+  },
+  {
+    "query": "Wer ist für die Kundenkommunikation und Dokumentation zuständig?",
+    "category": "nonEnglish",
+    "relevant": {"project-plan-de": 3}
+  },
+  {
+    "query": "reuniones de planificación demasiado largas por falta de agenda",
+    "category": "nonEnglish",
+    "relevant": {"retro-notes-es": 3}
+  },
+  {"query": "marketing spend august", "category": "table", "relevant": {"q3-budget": 3}},
+  {"query": "which initiative is at risk", "category": "table", "relevant": {"product-roadmap": 3}},
+  {
+    "query": "who sends the customer newsletter",
+    "category": "table",
+    "relevant": {"release-checklist": 3}
+  },
+  {
+    "query": "shorter headlines beat long ones",
+    "category": "summary",
+    "relevant": {"retro-growth-q4-kickoff": 3}
+  },
+  {
+    "query": "too many pages on Mondays after the rotation change",
+    "category": "summary",
+    "relevant": {"team-health-platform-4": 3}
+  },
+  {
+    "query": "waiting for updated icons from design",
+    "category": "summary",
+    "relevant": {"standup-mobile-oct-14": 3}
+  },
+  {"query": "office parking permit", "category": "noAnswer", "relevant": {}},
+  {"query": "kubernetes upgrade runbook", "category": "noAnswer", "relevant": {}}
+]
