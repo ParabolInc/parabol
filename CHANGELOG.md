@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.7.4](https://github.com/ParabolInc/parabol/compare/v15.7.3...v15.7.4) (2026-10-28)
+
+
+### Fixed
+
+* match Zoom transcripts to the host's meeting on any of their teams ([#13777](https://github.com/ParabolInc/parabol/issues/13777)) ([4f4d1ce](https://github.com/ParabolInc/parabol/commit/4f4d1cec54736a55cb463cbdec466c020f56b0d4))
+
+
+### Changed
+
+* add a page search eval harness ([#13774](https://github.com/ParabolInc/parabol/issues/13774)) ([50b3714](https://github.com/ParabolInc/parabol/commit/50b3714ad9819aa53011f4a580644ad1b423ee69))
+
 ## [15.7.3](https://github.com/ParabolInc/parabol/compare/v15.7.2...v15.7.3) (2026-10-27)
 
 
