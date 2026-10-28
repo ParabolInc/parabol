@@ -9,9 +9,18 @@
 
   This file accepts resolvers and permissions and applies permissions as higher order functions to those resolvers
 */
-import {defaultFieldResolver, GraphQLError} from 'graphql'
+import {
+  defaultFieldResolver,
+  GraphQLError,
+  type GraphQLOutputType,
+  type GraphQLSchema,
+  isInterfaceType,
+  isListType,
+  isNonNullType,
+  isObjectType
+} from 'graphql'
 import type {IRules} from 'graphql-shield'
-import {allow} from 'graphql-shield'
+import {allow, and} from 'graphql-shield'
 import hash from 'object-hash'
 import {Logger} from '../utils/Logger'
 import type {ResolverFn} from './private/resolverTypes'
@@ -33,14 +42,36 @@ const options = {
   hashFunction: hash
 }
 
-const wrapResolve =
-  (resolve: Resolver, rule: ShieldRule): Resolver =>
-  async (source, args, context, info) => {
-    if (!context._shield) {
-      context._shield = {
-        cache: {}
-      }
-    }
+const redactingRules = new WeakSet<ShieldRule>()
+
+// When the rule denies, the field resolves to null (or [] for a non-null list) instead of an error.
+// A non-null scalar or object can't be redacted, so it still errors.
+export const redactUnless = (rule: ShieldRule) => {
+  const redactingRule = and(rule)
+  redactingRules.add(redactingRule)
+  return redactingRule
+}
+
+const getRedactedValue = (returnType: GraphQLOutputType) => {
+  if (!isNonNullType(returnType)) return null
+  if (isListType(returnType.ofType)) return []
+  return undefined
+}
+
+// Rule results are cached per (rule, key) so a rule on every field of a type runs once per object.
+// The cache lives as long as the viewer & the data it was computed from: a subscription event swaps
+// in the dataloader of the mutation that published it, and a login swaps the authToken.
+const ensurePermissionCache = (context: any) => {
+  const {authToken, dataLoader} = context
+  const current = context._shield
+  if (current?.authToken === authToken && current?.dataLoader === dataLoader) return
+  context._shield = {cache: {}, authToken, dataLoader}
+}
+
+const wrapResolve = (resolve: Resolver, rule: ShieldRule): Resolver => {
+  const isRedacting = redactingRules.has(rule)
+  return async (source, args, context, info) => {
+    ensurePermissionCache(context)
     let res: unknown
     try {
       res = await rule.resolve(source, args, context, info, options)
@@ -61,10 +92,15 @@ const wrapResolve =
         throw err
       }
     }
+    if (isRedacting) {
+      const redactedValue = getRedactedValue(info.returnType)
+      if (redactedValue !== undefined) return redactedValue
+    }
     if (res === false) return new GraphQLError('Not authorized')
     if (typeof res === 'string') return new GraphQLError(res)
     return res
   }
+}
 
 type ResolverMap = {
   // This type causes too much recursion, so I set it to any
@@ -78,7 +114,22 @@ interface PermissionMap {
   }
 }
 
-const composeResolvers = <T extends ResolverMap>(resolverMap: T, permissionMap: PermissionMap) => {
+const getFieldNames = (
+  typeName: string,
+  resolverFieldMap: Record<string, unknown>,
+  schema?: GraphQLSchema
+) => {
+  const type = schema?.getType(typeName)
+  if (isObjectType(type) || isInterfaceType(type)) return Object.keys(type.getFields())
+  return Object.keys(resolverFieldMap)
+}
+
+// Pass the schema so a '*' rule also covers fields served by the default resolver
+const composeResolvers = <T extends ResolverMap>(
+  resolverMap: T,
+  permissionMap: PermissionMap,
+  schema?: GraphQLSchema
+) => {
   // clone the resolver map to keep this fn pure
   const nextResolverMap = {...resolverMap}
   Object.entries(permissionMap).forEach((entry) => {
@@ -90,13 +141,11 @@ const composeResolvers = <T extends ResolverMap>(resolverMap: T, permissionMap: 
     if (!nextResolverFieldMap) throw new Error(`No resolver exists for type: ${String(typeName)}`)
     Object.entries(ruleFieldMap).forEach(([fieldName, rule]) => {
       if (fieldName === '*') {
-        // apply this rule to every member of the nextResolverFieldMap
-        // Note: Permissions don't get applied to fields that don't have custom resolvers!
-        // If this becomes a problem, we'll need to use the schema to get the typeMaps
-        Object.entries(nextResolverFieldMap).forEach(([resolverFieldName, resolve]) => {
+        getFieldNames(String(typeName), nextResolverFieldMap, schema).forEach((schemaFieldName) => {
           // the wildcard is just a default value. if the field has a specific rule, use that
-          if (ruleFieldMap[resolverFieldName]) return
-          nextResolverFieldMap[resolverFieldName] = wrapResolve(resolve as Resolver, rule)
+          if (ruleFieldMap[schemaFieldName]) return
+          const unwrappedResolver = nextResolverFieldMap[schemaFieldName] || defaultFieldResolver
+          nextResolverFieldMap[schemaFieldName] = wrapResolve(unwrappedResolver, rule)
         })
       } else {
         // use default if a resolver isn't provided, e.g. a field exists in the DB but only available to superusers via GQL

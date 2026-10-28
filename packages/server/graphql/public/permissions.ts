@@ -1,5 +1,5 @@
 import {allow, and, not, or} from 'graphql-shield'
-import type {ShieldRule} from '../composeResolvers'
+import {redactUnless, type ShieldRule} from '../composeResolvers'
 import type {Resolvers} from './resolverTypes'
 import {hasOrgRole} from './rules/hasOrgRole'
 import {hasPageAccess} from './rules/hasPageAccess'
@@ -35,6 +35,16 @@ type FieldMap<T> =
 export type PermissionMap<T> = {
   [P in keyof T]?: FieldMap<T[P]>
 }
+
+const isUserSelf = isUserViewer<'User.id'>('source.id')
+const isOnTeamOrg = redactUnless(
+  or(isSuperUser, isTeamMember<'Team.id'>('source.id'), isViewerOnOrg<'Team.orgId'>('source.orgId'))
+)
+const canAdministerTeam = or(
+  isSuperUser,
+  isTeamMember<'Team.id'>('source.id'),
+  isViewerBillingLeader<'Team.orgId'>('source.orgId')
+)
 
 const permissionMap: PermissionMap<Resolvers> = {
   Mutation: {
@@ -463,9 +473,17 @@ const permissionMap: PermissionMap<Resolvers> = {
       hasPageAccess<'User.page'>('args.pageId', 'viewer')
     )
   },
+  // A viewer outside the org (e.g. one who sees it in a page's access list) gets its identity
+  // plus their own viewer-relative fields
   Organization: {
+    '*': redactUnless(or(isSuperUser, isViewerOnOrg<'Organization.id'>('source.id'))),
     activeUserCounts: or(isSuperUser, isViewerOnOrg<'Organization.activeUserCounts'>('source.id')),
+    id: allow,
+    isBillingLeader: allow,
+    isOrgAdmin: allow,
+    name: allow,
     oauthAPIProvider: hasProviderAccess<'Organization.oauthAPIProvider'>('args.providerId'),
+    picture: allow,
     saml: and(
       isViewerOnOrg<'Organization.saml'>('source.id'),
       isOrgTier<'Organization.saml'>('source.id', 'enterprise')
@@ -473,38 +491,45 @@ const permissionMap: PermissionMap<Resolvers> = {
     samls: and(
       isViewerOnOrg<'Organization.samls'>('source.id'),
       isOrgTier<'Organization.samls'>('source.id', 'enterprise')
-    )
+    ),
+    viewerOrganizationUser: allow
   },
   RetroReflectionGroup: {
     smartTitle: isSuperUser,
     voterIds: isSuperUser
   },
-  // An org leader reaches a Team they are not on (e.g. Organization.teams, MeetingSeries.team).
-  // They get the identity & billing basics plus their own viewer-relative fields; everything that
-  // describes how the team works is for the team. Two sets stay out of the map: fields whose
-  // resolver already degrades to an empty value for a non-member (activeMeetings, agendaItems,
-  // tasks, ...), so a fragment shared with a member keeps rendering instead of erroring, and
-  // scale/scales, which the client fetches off MeetingTemplate.team for every org- & public-scoped
-  // template in the activity library, none of which is owned by the viewer's team.
+  // Anyone handed a Team gets its identity and their own viewer-relative fields. The rest of the org
+  // also gets the billing basics, and an org leader can administer its members. Everything that
+  // describes how the team works is for the team. scale/scales stay open because the activity
+  // library reads them off MeetingTemplate.team for org- & public-scoped templates.
   Team: {
-    autoAssignFacilitator: isTeamMember<'Team.autoAssignFacilitator'>('source.id'),
-    jiraDisplayFieldIds: isTeamMember<'Team.jiraDisplayFieldIds'>('source.id'),
-    lastMeetingType: isTeamMember<'Team.lastMeetingType'>('source.id'),
+    '*': redactUnless(or(isSuperUser, isTeamMember<'Team.id'>('source.id'))),
+    autoJoin: isOnTeamOrg,
+    billingTier: isOnTeamOrg,
+    createdAt: isOnTeamOrg,
+    id: allow,
+    isArchived: allow,
+    isOrgAdmin: allow,
+    isPublic: isOnTeamOrg,
+    isViewerLead: allow,
+    isViewerOnTeam: allow,
+    lastMetAt: isOnTeamOrg,
     massInvitation: or(
       // TODO or rules run in parallel, make it go in serial since org_admin check is rare
       isTeamMember<'Team.massInvitation'>('source.id'),
       hasOrgRole<'Team.massInvitation'>('source.orgId', 'ORG_ADMIN')
     ),
-    meetingSettings: isTeamMember<'Team.meetingSettings'>('source.id'),
+    name: allow,
+    orgId: allow,
     organization: isViewerOnOrg<'Team.organization'>('source.orgId'),
-    qualAIMeetingsCount: isTeamMember<'Team.qualAIMeetingsCount'>('source.id'),
-    retroMeetingsCount: isTeamMember<'Team.retroMeetingsCount'>('source.id'),
-    tags: isTeamMember<'Team.tags'>('source.id'),
-    // matches teamMembers, which an org leader may read to administer the team
+    scale: allow,
+    scales: allow,
+    tasks: canAdministerTeam,
     teamLead: or(
       isTeamMember<'Team.teamLead'>('source.id'),
       isViewerBillingLeader<'Team.teamLead'>('source.orgId')
     ),
+    teamMembers: redactUnless(canAdministerTeam),
     teamMembersCount: or(
       isTeamMember<'Team.teamMembersCount'>('source.id'),
       isViewerBillingLeader<'Team.teamMembersCount'>('source.orgId'),
@@ -514,7 +539,9 @@ const permissionMap: PermissionMap<Resolvers> = {
         isTrue<'Team.teamMembersCount'>('source.isPublic'),
         isViewerOnOrg<'Team.teamMembersCount'>('source.orgId')
       )
-    )
+    ),
+    tier: isOnTeamOrg,
+    viewerTeamMember: allow
   },
   TeamMember: {
     integrations: isUserViewer<'TeamMember.integrations'>('source.userId'),
@@ -534,30 +561,67 @@ const permissionMap: PermissionMap<Resolvers> = {
   AzureDevOpsIntegration: {
     workItems: isUserViewer<'AzureDevOpsIntegration.workItems'>('source.userId')
   },
+  // Another user's User object is a public profile; everything else is for the user themself
   User: {
-    archivedTasks: isTeamMember<'User.archivedTasks'>('args.teamId'),
-    invoices: isViewerBillingLeader<'User.invoices'>('args.orgId'),
-    archivedTasksCount: isTeamMember<'User.archivedTasksCount'>('args.teamId'),
+    '*': redactUnless(or(isSuperUser, isUserSelf)),
+    archivedTasks: and(isUserSelf, isTeamMember<'User.archivedTasks'>('args.teamId')),
+    invoices: and(isUserSelf, isViewerBillingLeader<'User.invoices'>('args.orgId')),
+    archivedTasksCount: and(isUserSelf, isTeamMember<'User.archivedTasksCount'>('args.teamId')),
     company: isSuperUser,
-    discussion: isTeamMember<'User.discussion'>('args.id', 'discussions'),
-    domains: or(isSuperUser, isUserViewer<'User.id'>('source.id')),
-    freeCustomRetroTemplatesRemaining: isUserViewer<'User.id'>('source.id'),
-    freeCustomPokerTemplatesRemaining: isUserViewer<'User.id'>('source.id'),
-    freeCustomStandupTemplatesRemaining: isUserViewer<'User.id'>('source.id'),
-    meeting: isTeamMemberOfMeeting<'User.meeting'>('args.meetingId'),
-    organization: or(isSuperUser, isViewerOnOrg<'User.organization'>('args.orgId')),
-    organizationUser: or(isSuperUser, isViewerOnOrg<'User.organizationUser'>('args.orgId')),
-    personalAccessTokens: isUserViewer<'User.id'>('source.id'),
-    meetingMember: isTeamMemberOfMeeting<'User.meetingMember'>('args.meetingId'),
+    discussion: and(isUserSelf, isTeamMember<'User.discussion'>('args.id', 'discussions')),
+    domains: or(isSuperUser, isUserSelf),
+    email: allow,
+    freeCustomRetroTemplatesRemaining: isUserSelf,
+    freeCustomPokerTemplatesRemaining: isUserSelf,
+    freeCustomStandupTemplatesRemaining: isUserSelf,
+    id: allow,
+    inactive: allow,
+    isConnected: allow,
+    lastSeenAt: allow,
+    meeting: and(isUserSelf, isTeamMemberOfMeeting<'User.meeting'>('args.meetingId')),
+    organization: or(
+      isSuperUser,
+      and(isUserSelf, isViewerOnOrg<'User.organization'>('args.orgId'))
+    ),
+    organizationUser: or(
+      isSuperUser,
+      and(isUserSelf, isViewerOnOrg<'User.organizationUser'>('args.orgId'))
+    ),
+    personalAccessTokens: isUserSelf,
+    picture: allow,
+    preferredName: allow,
+    rasterPicture: allow,
+    meetingMember: and(isUserSelf, isTeamMemberOfMeeting<'User.meetingMember'>('args.meetingId')),
     team: or(
       isSuperUser,
-      isTeamMember<'User.team'>('args.teamId'),
-      isViewerBillingLeader<'User.team'>('args.teamId', 'teams')
+      and(
+        isUserSelf,
+        or(
+          isTeamMember<'User.team'>('args.teamId'),
+          isViewerBillingLeader<'User.team'>('args.teamId', 'teams')
+        )
+      )
     ),
-    teamMember: isTeamMember<'User.teamMember'>('args.teamId')
+    teamMember: and(isUserSelf, isTeamMember<'User.teamMember'>('args.teamId'))
   },
+  // Anyone handed a Page (an ancestor in a breadcrumb, a notification) gets the fields to show and
+  // link to it, plus their own access to it
   Page: {
-    parentPage: hasPageAccess<'Page.parentPage'>('source.parentPageId', 'viewer')
+    '*': redactUnless(hasPageAccess<'Page.id'>('source.id', 'viewer')),
+    access: allow,
+    id: allow,
+    team: allow,
+    teamId: allow,
+    title: allow
+  },
+  PageAccess: {
+    guests: redactUnless(hasPageAccess<'PageAccess.guests'>('source.id', 'viewer')),
+    organizations: redactUnless(hasPageAccess<'PageAccess.organizations'>('source.id', 'viewer')),
+    pendingRequests: redactUnless(
+      hasPageAccess<'PageAccess.pendingRequests'>('source.id', 'owner')
+    ),
+    teams: redactUnless(hasPageAccess<'PageAccess.teams'>('source.id', 'viewer')),
+    users: redactUnless(hasPageAccess<'PageAccess.users'>('source.id', 'viewer'))
   }
 }
 

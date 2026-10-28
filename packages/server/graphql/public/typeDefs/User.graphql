@@ -3,7 +3,7 @@ directive @defer on FRAGMENT_SPREAD
 """
 The user account profile
 """
-type User implements UserPartial {
+type User {
   """
   The userId provided by us
   """

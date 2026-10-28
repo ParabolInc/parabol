@@ -67,20 +67,8 @@ const PageAccess: PageAccessResolvers = {
       .execute()
     return access
   },
-  pendingRequests: async ({id}, _args, {authToken}) => {
-    const viewerId = getUserId(authToken)
-
+  pendingRequests: async ({id}) => {
     const pg = getKysely()
-    const access = await pg
-      .selectFrom('PageAccess')
-      .select('role')
-      .where('pageId', '=', id)
-      .where('userId', '=', viewerId)
-      .executeTakeFirst()
-    if (access?.role !== 'owner') {
-      return []
-    }
-
     const requests = await pg
       .selectFrom('PageAccessRequest')
       .selectAll()

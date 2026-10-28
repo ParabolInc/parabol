@@ -120,12 +120,12 @@ test('Access propagates to linked children', async () => {
             users: expect.toIncludeSameMembers([
               {
                 user: {
-                  id: `preview:${user1.userId}`
+                  id: user1.userId
                 }
               },
               {
                 user: {
-                  id: `preview:${user2.userId}`
+                  id: user2.userId
                 }
               }
             ])
@@ -154,7 +154,7 @@ test('Access propagates to linked children', async () => {
             teams: [
               {
                 team: {
-                  id: `preview:${user1.teamId}`
+                  id: user1.teamId
                 }
               }
             ]
@@ -183,7 +183,7 @@ test('Access propagates to linked children', async () => {
             organizations: [
               {
                 organization: {
-                  id: `preview:${user1.orgId}`
+                  id: user1.orgId
                 }
               }
             ]
@@ -293,14 +293,14 @@ test('Access propagates to linked children', async () => {
             organizations: [
               {
                 organization: {
-                  id: `preview:${user1.orgId}`
+                  id: user1.orgId
                 }
               }
             ],
             teams: [
               {
                 team: {
-                  id: `preview:${user1.teamId}`
+                  id: user1.teamId
                 }
               }
             ]

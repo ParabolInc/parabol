@@ -31,7 +31,7 @@ const publicSchema = applyScopeDirective(
   resolveTypesForMutationPayloads(
     addResolversToSchema({
       schema: typeDefsWithGitHubGitLabLinear,
-      resolvers: composeResolvers(resolvers, permissions),
+      resolvers: composeResolvers(resolvers, permissions, typeDefsWithGitHubGitLabLinear),
       inheritResolversFromInterfaces: true
     })
   )
