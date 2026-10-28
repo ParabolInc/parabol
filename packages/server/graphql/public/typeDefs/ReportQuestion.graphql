@@ -1,0 +1,27 @@
+"""
+A report the viewer asked for, picked or built on the Reports page, which the Ask box lists as recent
+"""
+type ReportQuestion {
+  id: ID!
+
+  source: ReportQuestionSourceEnum!
+
+  """
+  The question as it was asked or picked. Null for a report built by hand
+  """
+  question: String
+
+  """
+  The report's name
+  """
+  title: String!
+
+  """
+  The report's spec as JSON, in the shape of ReportSpecInput. Null when it couldn't be built
+  """
+  spec: String
+
+  outcome: ReportQuestionOutcomeEnum!
+
+  lastUsedAt: DateTime!
+}

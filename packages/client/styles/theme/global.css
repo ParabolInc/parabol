@@ -351,6 +351,26 @@
   /* Indeterminate sweep for an element of unknown width (see SuggestedGroupsSubmitButton).
      Pair with bg-[length:200%_100%] and a gradient whose first and last stop match, so one
      tile of travel loops seamlessly. chit-shift cannot be reused: it is sized in px. */
+  --animate-report-ask-draw: report-ask-draw 3s cubic-bezier(0.3, 0, 0.3, 1) both;
+  @keyframes report-ask-draw {
+    from {
+      clip-path: inset(-10px 100% -10px -10px);
+    }
+    to {
+      clip-path: inset(-10px -10px -10px -10px);
+    }
+  }
+
+  --animate-report-ask-shimmer: report-ask-shimmer 2s linear infinite;
+  @keyframes report-ask-shimmer {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-600px);
+    }
+  }
+
   --animate-gradient-sweep: gradient-sweep 2000ms linear infinite;
   @keyframes gradient-sweep {
     from {

@@ -17,3 +17,4 @@ export type UpgradeCTALocationEnumType =
   | 'cloneTemplateAL'
   | 'meetingSettingsTeamHealth'
   | 'publicTeams'
+  | 'reportsStarterLimit'

@@ -1,0 +1,10 @@
+"""
+The order of a report's rows
+"""
+input ReportSortInput {
+  by: ReportSortByEnum!
+  """
+  Defaults to high to low for values, A to Z for names, and oldest first for time
+  """
+  order: SortDirectionEnum
+}
