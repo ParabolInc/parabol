@@ -1,7 +1,6 @@
 import {useRef} from 'react'
 import TeamPromptMobileSheet from '../../components/TeamPrompt/mobile/TeamPromptMobileSheet'
 import ReportTeamHealthAside from './ReportTeamHealthAside'
-import ReportTeamHealthAttention from './ReportTeamHealthAttention'
 import ReportTeamHealthCellRoot from './ReportTeamHealthCellRoot'
 import type {ReportTeamHealthSelection} from './reportTeamHealthCells'
 import {formatAnswered, formatCheckDate, toOrdinal} from './reportTeamHealthWords'
@@ -9,7 +8,6 @@ import {formatAnswered, formatCheckDate, toOrdinal} from './reportTeamHealthWord
 interface Props {
   orgId: string
   selection: ReportTeamHealthSelection | null
-  markedCount: number
   isSidePanel: boolean
   onClose: () => void
 }
@@ -17,7 +15,7 @@ interface Props {
 // The selected cell beside the table when there's room, or in a bottom sheet. The sheet keeps showing the cell it
 // had while it slides away
 const ReportTeamHealthDetails = (props: Props) => {
-  const {orgId, selection, markedCount, isSidePanel, onClose} = props
+  const {orgId, selection, isSidePanel, onClose} = props
   const lastSelectionRef = useRef(selection)
   if (selection) lastSelectionRef.current = selection
   const shownSelection = selection ?? lastSelectionRef.current
@@ -25,14 +23,11 @@ const ReportTeamHealthDetails = (props: Props) => {
   const {check} = shownSelection.cell
   const meta = `${toOrdinal(check.checkNumber)} check · ${formatCheckDate(check.endedAt)} · ${formatAnswered(check)} answered`
   const body = (
-    <div className='flex flex-col gap-4'>
-      <ReportTeamHealthAttention cell={shownSelection.cell} markedCount={markedCount} />
-      <ReportTeamHealthCellRoot
-        key={shownSelection.cell.key}
-        orgId={orgId}
-        selection={shownSelection}
-      />
-    </div>
+    <ReportTeamHealthCellRoot
+      key={shownSelection.cell.key}
+      orgId={orgId}
+      selection={shownSelection}
+    />
   )
   if (isSidePanel) {
     return (

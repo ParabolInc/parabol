@@ -1,8 +1,7 @@
 import dayjs from 'dayjs'
-import {
-  BRIGHT_SPOT_SENTIMENT,
-  type TeamHealthAttentionInput,
-  type TeamHealthMark
+import type {
+  TeamHealthAttentionInput,
+  TeamHealthMark
 } from '../../shared/reports/teamHealthAttention'
 import type {ReportTeamHealthCell, ReportTeamHealthCheck} from './reportTeamHealthCells'
 
@@ -39,14 +38,6 @@ export const formatAnsweredTogether = (checks: readonly ReportTeamHealthCheck[])
 export const formatSentiment = (sentimentScore: number) =>
   `${sentimentScore > 0 ? '+' : sentimentScore < 0 ? '−' : ''}${Math.abs(sentimentScore).toFixed(2)}`
 
-export const describeSentiment = (sentimentScore: number) => {
-  if (sentimentScore >= BRIGHT_SPOT_SENTIMENT) return 'Overwhelmingly positive'
-  if (sentimentScore >= 0.3) return 'Positive'
-  if (sentimentScore >= 0) return 'Neutral'
-  if (sentimentScore > -0.6) return 'Mixed'
-  return sentimentScore > -0.85 ? 'Negative' : 'Very negative'
-}
-
 // from the spread's input, which is 0 at a standard deviation of 0.6 or less and 1 at 1.4 or more
 export const describeSpread = (spread: number) =>
   spread >= 0.6
@@ -78,24 +69,4 @@ export const describeReasons = ({inputs, category}: ReportTeamHealthCell) => {
       : null
   ].filter(Boolean)
   return upperFirst(reasons.join(' · '))
-}
-
-export const describeReadings = ({inputs, category}: ReportTeamHealthCell) => {
-  const {sentimentScore, isLoadingSummary, commenterCount, respondentCount} = category
-  const spread = inputOf(inputs, 'spread')
-  const sentimentPart =
-    sentimentScore == null
-      ? isLoadingSummary
-        ? 'the summary is still being written'
-        : 'there’s no summary'
-      : `the summary reads ${describeSentiment(sentimentScore).toLowerCase()}`
-  const spreadPart =
-    spread === null
-      ? 'too few answered to read the spread'
-      : `the answers are ${describeSpread(spread).toLowerCase()}`
-  const commentedPart =
-    commenterCount === 0
-      ? 'nobody commented'
-      : `${commenterCount} of ${respondentCount} people commented`
-  return `${upperFirst(sentimentPart)}, ${spreadPart}, and ${commentedPart}.`
 }

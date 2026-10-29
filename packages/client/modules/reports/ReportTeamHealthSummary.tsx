@@ -48,7 +48,7 @@ const ReportTeamHealthSummary = ({shownCells, hasTeamRows}: Props) => {
       <strong className='font-semibold'>
         {attentionCount + brightCount} of {shownCells.length} cells marked: {parts}.
       </strong>{' '}
-      Select a cell for why.
+      Hover a marked cell for why.
     </p>
   )
 }

@@ -14,7 +14,7 @@ const ReportTeamHealthAside = ({selection, meta, onClose, children}: Props) => {
   return (
     <aside
       aria-labelledby={headingId}
-      className='sticky top-4 flex max-h-[calc(100dvh-6rem)] w-[360px] shrink-0 flex-col gap-3.5 overflow-y-auto border-hairline border-l pl-5'
+      className='sticky top-4 flex max-h-[calc(100dvh-6rem)] w-[360px] shrink-0 flex-col gap-3.5 overflow-y-auto border-hairline border-l pr-2 pl-5'
     >
       <div className='flex items-start gap-2'>
         <div className='min-w-0 flex-1'>

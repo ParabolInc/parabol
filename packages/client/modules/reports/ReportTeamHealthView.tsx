@@ -109,7 +109,6 @@ const ReportTeamHealthView = (props: Props) => {
       <ReportTeamHealthDetails
         orgId={orgId}
         selection={selection}
-        markedCount={shownCells.filter(({mark}) => mark).length}
         isSidePanel={viewWidth >= SIDE_PANEL_MIN_WIDTH}
         onClose={() => setSelectedKey(null)}
       />
