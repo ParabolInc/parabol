@@ -5,7 +5,6 @@ import {
   REPORT_MEASURES,
   type ReportSpec
 } from '../../shared/reports/reportCatalog'
-import plural from '../../utils/plural'
 import ReportHeatmapGroupLabel from './ReportHeatmapGroupLabel'
 import ReportHeatmapHeader from './ReportHeatmapHeader'
 import ReportHeatmapLegend from './ReportHeatmapLegend'
@@ -62,8 +61,7 @@ const ReportHeatmapView = ({spec, step, rows, rowTotals, isCompact, lastHeldByTe
       {!isCompact && isCount && isTeamRows && (
         <p className='m-0 text-fg-secondary text-sm'>
           {sumReportValues(listedRows.map(({total}) => total?.value)).toLocaleString()}{' '}
-          {label.toLowerCase()} across {listedRows.length} of {gridRows.length}{' '}
-          {plural(gridRows.length, 'team')}
+          {label.toLowerCase()}
         </p>
       )}
       <div ref={scrollRef} className='overflow-x-auto'>

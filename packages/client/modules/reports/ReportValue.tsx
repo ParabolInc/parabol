@@ -10,7 +10,7 @@ interface Props {
   value: number | null | undefined
 }
 
-const HIDDEN_EXPLANATION = `Hidden to keep answers anonymous: fewer than ${MIN_REPORT_HEALTH_RESPONDENTS} people answered`
+const HIDDEN_EXPLANATION = `Hidden for anonymity: fewer than ${MIN_REPORT_HEALTH_RESPONDENTS} people answered`
 
 const ReportValue = ({measure, value}: Props) => {
   if (!isHiddenReportValue(value)) return <>{formatReportValue(measure, value)}</>

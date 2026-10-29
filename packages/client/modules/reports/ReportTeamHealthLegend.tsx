@@ -35,7 +35,7 @@ const ReportTeamHealthLegend = (props: Props) => {
       <ReportLegendDisclosure>
         <div className='flex flex-wrap items-center gap-x-5 gap-y-2'>
           <span className='inline-flex flex-wrap items-center gap-x-3 gap-y-1.5'>
-            <span>Shaded by the answer each average rounds to:</span>
+            <span>Average answer:</span>
             {HEALTH_SCORE_SHADES.map(({label, className}) => (
               <span key={label} className='inline-flex items-center gap-1.5'>
                 <span
@@ -49,14 +49,13 @@ const ReportTeamHealthLegend = (props: Props) => {
             <span className='inline-flex items-center gap-1'>
               <ArrowUpward className='text-[14px]' />
               <ArrowDownward className='-ml-1.5 text-[14px]' />
-              Change {comparison}
-              {!isPreviousCheck && ', looking back at least 90 days for each team’s check'}
+              {isPreviousCheck ? 'Change since last check' : `Change ${comparison}`}
             </span>
           )}
           {isPreviousCheck && (
             <span className='inline-flex items-center gap-1'>
               <KeyboardDoubleArrowDown className='text-[14px] text-tomato-700 dark:text-tomato-300' />
-              Fell for a second check in a row
+              Fell twice in a row
             </span>
           )}
           <span className='inline-flex flex-wrap items-center gap-x-3 gap-y-1.5'>

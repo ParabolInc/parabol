@@ -156,10 +156,7 @@ const ReportAskBox = ({organizationRef, period, onAskingChange}: Props) => {
       setIsOpen(false)
     }
   }
-  const notice =
-    error ??
-    (answer &&
-      `Parabol can’t make that report: ${answer.reason} These popular questions are nearest.`)
+  const notice = error ?? answer?.reason
   const question = query.trim()
   return (
     <div className='relative'>

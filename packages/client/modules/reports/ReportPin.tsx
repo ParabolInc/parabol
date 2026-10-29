@@ -35,11 +35,7 @@ const ReportPin = ({queryRef, orgId, pinParam, period}: Props) => {
   const spec = useMemo(() => (pin ? parseReportSpecJSON(pin.spec) : null), [pin])
   if (!pin || !spec) {
     return (
-      <ReportLinkMissing
-        orgId={orgId}
-        period={period}
-        message='This report isn’t pinned any more, or it can’t be shown.'
-      />
+      <ReportLinkMissing orgId={orgId} period={period} message='This report isn’t pinned anymore' />
     )
   }
   return (

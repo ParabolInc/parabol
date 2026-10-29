@@ -41,27 +41,26 @@ const ReportNotes = ({orgId, resultRef}: Props) => {
         <li key={kind}>
           {kind === 'STARTER_LIMIT' && (
             <>
-              The Starter plan counts your organization’s 2 busiest teams, so {count}{' '}
-              {plural(count, 'team')} {count === 1 ? 'isn’t' : 'aren’t'} in this report.{' '}
+              {count} {plural(count, 'team')} left out on the Starter plan.{' '}
               <Link
                 to={`/me/organizations/${orgId}/billing`}
                 onClick={onUpgradeClick}
                 className='font-semibold text-sky-600 hover:underline dark:text-accent'
               >
-                Upgrade to count every team
+                Upgrade
               </Link>
             </>
           )}
           {kind === 'ESTIMATED_HISTORY' &&
-            `${count.toLocaleString()} done ${plural(count, 'task was', 'tasks were')} finished before Parabol kept done dates, so ${count === 1 ? 'its date is' : 'their dates are'} estimated.`}
+            `Done dates are estimated for ${count.toLocaleString()} older ${plural(count, 'task')}`}
           {kind === 'ROWS_TRUNCATED' &&
-            `This report has ${count.toLocaleString()} rows, more than a report can show. Add a filter or a limit to see the rest.`}
+            `Too many rows to show all ${count.toLocaleString()}. Add a filter or a limit`}
           {kind === 'HIDDEN_FOR_ANONYMITY' &&
-            `${count} ${count === 1 ? 'team’s Team Health check is' : 'teams’ Team Health checks are'} hidden because fewer than ${MIN_REPORT_HEALTH_RESPONDENTS} people answered.`}
+            `${count} ${plural(count, 'check')} hidden for anonymity: fewer than ${MIN_REPORT_HEALTH_RESPONDENTS} people answered`}
           {kind === 'TOPICS_FROM_OWN_TEAMS' &&
-            `Topics only come from the teams you’re on, so ${count} ${plural(count, 'team')} ${count === 1 ? 'isn’t' : 'aren’t'} in this report.`}
+            `${count} ${plural(count, 'team')} left out: topics only come from teams you’re on`}
           {kind === 'STRUCTURE_LEVEL_REMOVED' &&
-            `${count === 1 ? 'A team structure level' : `${count} team structure levels`} this report breaks down by ${count === 1 ? 'was' : 'were'} removed, so it lists teams instead.`}
+            `${count === 1 ? 'A structure level was' : `${count} structure levels were`} removed, so this lists teams instead`}
         </li>
       ))}
     </ul>

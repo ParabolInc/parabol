@@ -4,19 +4,17 @@ import {HEALTH_SCORE_SHADES, healthAnswerColorOf} from './reportHeatmapShades'
 
 interface Props {
   spreadScores: readonly number[] | null | undefined
-  respondentCount: number
 }
 
 const HEADING_CLASS_NAME = 'm-0 font-semibold text-fg-muted text-xs uppercase tracking-wide'
 
-const ReportTeamHealthSpread = ({spreadScores, respondentCount}: Props) => {
+const ReportTeamHealthSpread = ({spreadScores}: Props) => {
   if (!spreadScores) {
     return (
       <section className='flex flex-col gap-1'>
-        <h3 className={HEADING_CLASS_NAME}>How {respondentCount} people answered</h3>
+        <h3 className={HEADING_CLASS_NAME}>Answers</h3>
         <p className='m-0 text-fg-secondary text-sm'>
-          The spread shows once {MIN_RESPONDENTS_FOR_DETAILS} people answer, so no answer can be
-          matched to a person.
+          Hidden for anonymity until {MIN_RESPONDENTS_FOR_DETAILS} people answer
         </p>
       </section>
     )
@@ -32,7 +30,7 @@ const ReportTeamHealthSpread = ({spreadScores, respondentCount}: Props) => {
   return (
     <section className='flex flex-col gap-2'>
       <div className='flex items-baseline justify-between gap-2'>
-        <h3 className={HEADING_CLASS_NAME}>How {spreadScores.length} people answered</h3>
+        <h3 className={HEADING_CLASS_NAME}>Answers</h3>
         <span className='text-fg-muted text-xs'>
           {disagreeCount} disagree · {agreeCount} agree
         </span>

@@ -73,8 +73,7 @@ const ReportView = (props: Props) => {
   if (notes.some(({kind}) => kind === 'FILTER_LEVEL_REMOVED')) {
     return (
       <p className='m-0 py-6 text-center text-fg-secondary text-sm'>
-        A team structure level this report filters by was removed, so the report stops here rather
-        than count every team. Remove that filter to run it.
+        A structure level this report filters by was removed. Remove that filter to run it.
       </p>
     )
   }

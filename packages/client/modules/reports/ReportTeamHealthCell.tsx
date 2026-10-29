@@ -11,7 +11,7 @@ import {isHiddenReportValue} from './reportRows'
 import type {ReportTeamHealthCell as TeamHealthCell} from './reportTeamHealthCells'
 import {describeReasons, TEAM_HEALTH_MARK_NAMES} from './reportTeamHealthWords'
 
-const HIDDEN_EXPLANATION = `Hidden to keep answers anonymous: fewer than ${MIN_REPORT_HEALTH_RESPONDENTS} people answered`
+const HIDDEN_EXPLANATION = `Hidden for anonymity: fewer than ${MIN_REPORT_HEALTH_RESPONDENTS} people answered`
 
 interface Props {
   label: string
@@ -69,7 +69,7 @@ const ReportTeamHealthCell = (props: Props) => {
     <button
       type='button'
       aria-pressed={isSelected}
-      aria-label={`${label}: ${formatReportValue('HEALTH_SCORE', score)}${changeLabel}${isFellTwice ? ', fell for a second check in a row' : ''}${markLabel}`}
+      aria-label={`${label}: ${formatReportValue('HEALTH_SCORE', score)}${changeLabel}${isFellTwice ? ', fell twice in a row' : ''}${markLabel}`}
       onClick={onSelect}
       className={cn(
         boxClassName,
@@ -95,7 +95,7 @@ const ReportTeamHealthCell = (props: Props) => {
                 ? 'Bright spot'
                 : `Needs attention · ${TEAM_HEALTH_MARK_NAMES[mark]}`}
             </strong>
-            {mark === 'BRIGHT_SPOT' ? 'Overwhelmingly positive summary' : describeReasons(cell)}
+            {mark === 'BRIGHT_SPOT' ? 'Very positive summary' : describeReasons(cell)}
           </TooltipContent>
         </Tooltip>
       ) : (

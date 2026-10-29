@@ -47,7 +47,7 @@ const ReportCard = ({pinRef, orgId, period, index, pinCount, isLeader}: Props) =
           <h3 className='m-0 font-semibold text-base'>{title}</h3>
           <span className='text-fg-muted text-xs'>
             {pinnedBy ? `Pinned by ${pinnedBy.preferredName}` : `Built in · ${description}`}
-            {ownPeriod && ` · ${REPORT_PERIOD_LABELS[ownPeriod]}, whatever the page’s period`}
+            {ownPeriod && ` · Fixed to ${REPORT_PERIOD_LABELS[ownPeriod].toLowerCase()}`}
           </span>
         </div>
         {isLeader && (

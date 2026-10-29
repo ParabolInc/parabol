@@ -12,11 +12,7 @@ const ReportPageRoot = () => {
   const period = parseReportPeriodParam(searchParams.get('period'))
   if (!spec) {
     return (
-      <ReportLinkMissing
-        orgId={orgId!}
-        period={period}
-        message='This link doesn’t hold a report Parabol can show. It may have been cut short.'
-      />
+      <ReportLinkMissing orgId={orgId!} period={period} message='This link doesn’t open a report' />
     )
   }
   return (

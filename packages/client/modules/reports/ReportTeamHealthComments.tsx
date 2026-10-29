@@ -1,3 +1,4 @@
+import plural from '../../utils/plural'
 import ReportTeamHealthComment from './ReportTeamHealthComment'
 
 interface Props {
@@ -5,22 +6,19 @@ interface Props {
     text: string
     author: {preferredName: string; picture: string} | null | undefined
   }[]
-  respondentCount: number
 }
 
-const ReportTeamHealthComments = ({comments, respondentCount}: Props) => (
+const ReportTeamHealthComments = ({comments}: Props) => (
   <section className='flex flex-col gap-2'>
     <h3 className='m-0 font-semibold text-fg-muted text-xs uppercase tracking-wide'>
       {comments.length === 0
         ? 'No comments'
-        : `${comments.length} of ${Math.max(respondentCount, comments.length)} people commented`}
+        : `${comments.length} ${plural(comments.length, 'comment')}`}
     </h3>
     {comments.map(({text, author}, idx) => (
       <ReportTeamHealthComment key={idx} text={text} author={author ?? null} />
     ))}
-    <span className='text-fg-muted text-xs'>
-      Anonymous comments were reworded by AI and show no name.
-    </span>
+    <span className='text-fg-muted text-xs'>Anonymous comments are reworded by AI</span>
   </section>
 )
 

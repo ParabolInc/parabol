@@ -46,8 +46,7 @@ const ReportTeamHealthRow = (props: Props) => {
         <td colSpan={columns.length + 1} className='px-0.5 py-1'>
           <span className='flex min-h-10 items-center gap-2 rounded border border-hairline-strong border-dashed px-3 py-1 text-[13px] text-fg-secondary'>
             <Lock className='text-[18px]' />
-            Fewer than {MIN_REPORT_HEALTH_RESPONDENTS} people answered, so this check is hidden and
-            left out of every total.
+            Hidden for anonymity: fewer than {MIN_REPORT_HEALTH_RESPONDENTS} people answered
           </span>
         </td>
       ) : (

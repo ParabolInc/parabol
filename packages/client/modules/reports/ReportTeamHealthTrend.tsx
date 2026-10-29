@@ -37,7 +37,7 @@ const ReportTeamHealthTrend = ({scoreHistory, teamName, categoryName}: Props) =>
         </div>
         <span className='inline-flex items-center gap-0.5 whitespace-nowrap text-[13px] text-fg-secondary'>
           {!previous ? (
-            'The team’s first scored check'
+            'First check'
           ) : change === 0 ? (
             `No change since ${formatCheckDate(previous.endedAt)}`
           ) : (

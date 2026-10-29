@@ -42,7 +42,7 @@ const ReportTeamHealthCellDetails = ({queryRef, selection}: Props) => {
   const {viewer} = usePreloadedQuery<ReportTeamHealthCellDetailsQuery>(query, queryRef)
   const details = viewer.organization?.reportTeamHealthCell
   const {cell, teamName, categoryName} = selection
-  const {respondentCount, isLoadingSummary} = cell.category
+  const {isLoadingSummary} = cell.category
   if (!details) {
     return (
       <p className='m-0 text-fg-secondary text-sm'>The details of this check can’t be shown.</p>
@@ -52,7 +52,7 @@ const ReportTeamHealthCellDetails = ({queryRef, selection}: Props) => {
     <>
       <section className='flex flex-col gap-1'>
         <h3 className='m-0 font-semibold text-fg-muted text-xs uppercase tracking-wide'>
-          Asked in this check
+          Question
         </h3>
         <p className='m-0 text-[15px] leading-[22px]'>“{details.question}”</p>
       </section>
@@ -62,11 +62,8 @@ const ReportTeamHealthCellDetails = ({queryRef, selection}: Props) => {
         categoryName={categoryName}
       />
       <ReportTeamHealthCellSummary summary={details.summary} isLoadingSummary={isLoadingSummary} />
-      <ReportTeamHealthSpread
-        spreadScores={details.spreadScores}
-        respondentCount={respondentCount}
-      />
-      <ReportTeamHealthComments comments={details.comments} respondentCount={respondentCount} />
+      <ReportTeamHealthSpread spreadScores={details.spreadScores} />
+      <ReportTeamHealthComments comments={details.comments} />
     </>
   )
 }

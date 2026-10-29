@@ -11,15 +11,10 @@ interface Props {
 }
 
 const ReportsStarterBanner = ({organizationRef}: Props) => {
-  const {
-    id: orgId,
-    name,
-    countedTeams
-  } = useFragment(
+  const {id: orgId, countedTeams} = useFragment(
     graphql`
       fragment ReportsStarterBanner_organization on Organization {
         id
-        name
         countedTeams: report(
           spec: {
             measures: [MEMBERS]
@@ -61,8 +56,8 @@ const ReportsStarterBanner = ({organizationRef}: Props) => {
           You’re seeing {teamNames.length} of {teamNames.length + leftOutCount} teams
         </h2>
         <p className='m-0 text-fg-secondary text-sm'>
-          The Starter plan reports on your organization’s 2 busiest teams
-          {teamNames.length > 0 && `: ${teamNames.join(' and ')}`}. Upgrade to see all of {name}.
+          Starter shows your 2 busiest teams
+          {teamNames.length > 0 && `: ${teamNames.join(' and ')}`}
         </p>
       </div>
       <Button asChild variant='primary' size='md'>
