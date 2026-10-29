@@ -5,7 +5,7 @@ import type {
 } from '../../__generated__/SearchDialogResultsQuery.graphql'
 import query from '../../__generated__/SearchDialogResultsQuery.graphql'
 import ErrorBoundary from '../../components/ErrorBoundary'
-import useQueryLoaderNow from '../../hooks/useQueryLoaderNow'
+import {useQueryLoaderNowWithRetry} from '../../hooks/useQueryLoaderNow'
 import {Loader} from '../../utils/relay/renderLoader'
 import type {DateRange} from './DateRangeFilter'
 import type {ResultsListRefHandler} from './SearchDialogContent'
@@ -22,16 +22,18 @@ interface Props {
 
 export const SearchDialogResultsRoot = (props: Props) => {
   const {searchQuery, closeSearch, resultsListRef, dateField, dateRange, teamIds} = props
-  const hasQuery = searchQuery.trim() !== ''
-  const queryRef = useQueryLoaderNow<SearchDialogResultsQuery>(query, {
-    query: searchQuery,
-    hasQuery,
-    dateField: dateRange ? dateField : undefined,
-    startAt: dateRange?.startAt ? dateRange.startAt : undefined,
-    endAt: dateRange?.endAt ? dateRange.endAt : undefined,
-    teamIds
-  })
-  const searchType = hasQuery ? 'hybrid' : 'recent'
+  const {queryRef} = useQueryLoaderNowWithRetry<SearchDialogResultsQuery>(
+    query,
+    {
+      query: searchQuery,
+      hasQuery: searchQuery.trim() !== '',
+      dateField: dateRange ? dateField : undefined,
+      startAt: dateRange?.startAt ? dateRange.startAt : undefined,
+      endAt: dateRange?.endAt ? dateRange.endAt : undefined,
+      teamIds
+    },
+    {transition: true}
+  )
 
   return (
     <ErrorBoundary resetKey={queryRef?.fetchKey} fallback={() => <div>Error calling search</div>}>
@@ -40,9 +42,7 @@ export const SearchDialogResultsRoot = (props: Props) => {
           <SearchDialogResults
             resultsListRef={resultsListRef}
             queryRef={queryRef}
-            searchType={searchType}
             closeSearch={closeSearch}
-            query={searchQuery}
           />
         )}
       </Suspense>

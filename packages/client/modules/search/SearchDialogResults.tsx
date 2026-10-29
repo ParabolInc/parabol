@@ -28,21 +28,20 @@ graphql`
 `
 interface Props {
   queryRef: PreloadedQuery<SearchDialogResultsQuery>
-  searchType: 'recent' | 'hybrid'
   closeSearch: () => void
   resultsListRef: React.Ref<ResultsListRefHandler>
-  query: string
 }
 
 export const SearchDialogResults = (props: Props) => {
-  const {queryRef, searchType, closeSearch, resultsListRef, query} = props
+  const {queryRef, closeSearch, resultsListRef} = props
+  const {query, hasQuery} = queryRef.variables
   const data = usePreloadedQuery<SearchDialogResultsQuery>(gqlQuery, queryRef)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const {viewer} = data
   const {quick} = viewer
   const {edges} = quick
 
-  if (searchType === 'recent') {
+  if (!hasQuery) {
     return (
       <SearchDialogResultsRecent
         resultsListRef={resultsListRef}
@@ -55,6 +54,7 @@ export const SearchDialogResults = (props: Props) => {
   }
   return (
     <Suspense
+      key={queryRef.fetchKey}
       fallback={
         <SearchDialogResultsList
           resultsListRef={resultsListRef}
