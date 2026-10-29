@@ -20,7 +20,7 @@ Reseed with `EVAL_RESEED=1` after you change how pages are indexed (`embedPage`,
 
 | Variable | Default | Meaning |
 | --- | --- | --- |
-| `EVAL_SET` | `dev` | `dev` reads `queries.json`, `holdout` reads `holdoutQueries.json` |
+| `EVAL_SET` | `dev` | `dev` reads `queries.json` and `holdout` reads `holdoutQueries.json`, both on the fixture corpus. `heavy-dev` reads `heavyQueries.json` and `heavy-holdout` reads `heavyHoldoutQueries.json`, both on the heavy-account corpus (see Heavy account corpus) |
 | `EVAL_MODES` | `fused` | Comma-separated `fused`, `quick` and/or `sweep`. `quick` sends `alpha: 0`. `sweep` is described below |
 | `EVAL_ALPHAS` | `0.25,0.5,0.75` | `sweep` only: the alphas to rank with |
 | `EVAL_FLOORS` | `0.3,0.35,0.4,0.45,0.5` | `sweep` only: the vector similarity floors to rank with |
@@ -59,6 +59,84 @@ EVAL_LABEL=page-fusion EVAL_SET=dev EVAL_MODES=sweep pnpm eval:pagesSearch
 - **Queries.** The real resolver runs with the job queue replaced: the query is embedded by the same model call `embedQuery` makes. A failed search is recorded as zero results plus an `error`, and counted in `errors`; a result list that holds the same page twice is also an error. The resolver answers a `fused` query with keyword results when the query's embedding fails, comes back empty or takes longer than its 3 s budget, or when the fused ranking query throws, and those results would still score as fused. So each query records `embeddingMs` and `embeddingError` (an embedding still running when the search returned is an error), and `fallbackReason` when the resolver logged that it used keyword results. A `fused` run fails when any query has a `fallbackReason` or an `embeddingError`, when its embedding took longer than the budget, or when it made no embedding call; `quick` queries embed nothing and have none of these fields. The run writes its results and then fails: results recorded with errors are not a valid baseline, so run it again.
 - **Validity.** A run is a valid baseline only when it passes, so `errors` is 0 and no `fused` query fell back to keyword results, and `unindexed` lists exactly `meeting-notes-ja`, `stub-customer-interviews`, `stub-hiring-plan` and `stub-offsite-agenda`. Any other `unindexed` list means the run scored a different index, so run it again. On a slow or throttled host, for example a laptop on battery, `retro-q3-product` can time out while it is embedded. The symptom is five unindexed fixtures instead of four. Plug in and run again; the next run retries that page.
 - **Isolation.** `jest.eval.config.js` has no global setup, so a run never truncates tables or changes triggers. The metric unit tests in `__tests__/` run with the normal server suite.
+
+## Heavy account corpus
+
+The fixture corpus has 47 hand-written pages, like an account in production's top 1%. The heavy corpus is shaped like the 34 production accounts that can open 200 or more pages, which is where ranking has to pick a few pages out of many matches. The user `eval|pagesSearchHeavy` owns it, so seeding it never touches the fixture corpus, and the reverse.
+
+- **Generated.** `heavyCorpus/generateHeavyCorpus.ts` builds 244 TipTap docs with the real summary-page shapes from a seeded PRNG and `heavyCorpus/heavyCorpusData.ts`, so every machine gets the same pages. Nothing in it comes from customer data.
+- **What's in it.** Two teams (Atlas Platform with 10 members, Beacon Growth with 7) from Jun 1 to Oct 9, 2026:
+  - 190 standup summaries;
+  - 18 retros;
+  - 18 sprint poker sessions;
+  - one Meeting Summaries index page per team;
+  - 14 long docs, plus a one-line note and a title-only page.
+- **Planted facts.** About 30 dated facts (incidents, decisions, launches, vendors, customers, absences) sit in specific members' standup answers, and some reappear in retro topics, poker stories and docs. Each long doc holds a specific fact in its second half. Everything else is routine work that repeats across many pages, as in real standups.
+- **Read it.** `EVAL_DUMP=1 EVAL_SET=heavy-dev pnpm eval:pagesSearch` writes every page's plain text to `results/heavy-corpus/`. Use it to write or check labels.
+- **Changing it.** The `generateHeavyCorpus` unit test pins a digest of the generated pages. When it fails, recheck both heavy query files against a fresh dump, reseed with `EVAL_RESEED=1`, and then update the digest.
+
+**Calibration.** Production numbers are aggregates from the warehouse on 2026-10-29 over the pages each heavy user can open:
+
+| | Heavy accounts | Heavy corpus |
+| --- | ---: | ---: |
+| Standups / retros / poker / docs / index pages | 78.4% / 7.1% / 6.6% / 6.2% / 0.5% | 77.9% / 7.4% / 7.4% / 6.6% / 0.8% |
+| Median page length | 1,989 | 1,683 |
+| 90th percentile page length | 5,700 | 4,875 |
+| Pages over 1,500 characters | 55.9% | 55.7% |
+| Pages under 200 characters | 25.3% | 24.6% |
+| Median long doc | 7,545 | 5,276 |
+
+A quarter of a heavy account's pages are standups that nobody answered: a header, "Not enough data to generate insights" and an empty table, about 150 characters. Those near-empty pages are what A4's junk filter targets. Responses per standup follow production's spread (median 3 among answered standups, up to 10 here and 16 in production). Long docs are shorter than production's, so Group B sees fewer pages that split into many chunks.
+
+**Labels.** The grades follow the Queries section, with three conventions:
+- Routine mentions of ongoing work, like one of the many standups that say "load testing the new rate limiter", are not graded.
+- A title only listed under "Related documents" is not graded.
+- A team's Meeting Summaries page gets 1 for a title query that names one of its meetings.
+
+The holdout author also grades a title listed under "Related documents" as 1 for title, prefix and title-typo queries. Two queries the holdout author wrote independently matched dev queries, so the dev set was changed and the holdout kept as written.
+
+**The holdout runs only at gates.** `heavy-holdout` was written by an independent agent that saw only the corpus dump: no code, results or dev queries. Run it once for the candidate and once for master in a PR that changes ranking, report both, and never tune on it.
+
+**Validity.** A heavy run is a valid baseline when `errors` is 0, no `fused` query fell back to keyword results, and `unindexed` lists exactly `doc-q4-planning-draft`. That page has only a title, and the language gate reads the title as Javanese. The first seed embeds about 500,000 characters, which took 28 minutes on a laptop. Later runs take seconds.
+
+### Heavy corpus baseline (2026-10-29)
+
+`EVAL_LABEL=master EVAL_SET=heavy-dev EVAL_MODES=fused,quick` on master after instant results (A2). Both runs are valid: 52 answerable queries and 6 without an answer.
+
+| Mode | nDCG@10 | Recall@5 | MRR | Zero-result rate | `junkAt5` | `noAnswerResults` | p50 / p90 ms |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| fused | 0.584 | 0.604 | 0.598 | 0.000 | 0.823 | 14.2 | 93 / 114 |
+| quick | 0.537 | 0.545 | 0.552 | 0.365 | 0.207 | 0 | 38 / 40 |
+
+| | Queries | Fused nDCG@10 | Quick nDCG@10 | Fused Recall@5 | Quick Recall@5 | Quick zero-result rate |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| title | 8 | 0.724 | 0.721 | 0.750 | 0.750 | 0.000 |
+| prefix | 5 | 0.809 | 0.912 | 0.833 | 0.833 | 0.000 |
+| body | 10 | 0.871 | 0.888 | 0.900 | 0.900 | 0.100 |
+| paraphrase | 8 | 0.138 | 0.000 | 0.167 | 0.000 | 1.000 |
+| typo | 6 | 0.162 | 0.000 | 0.125 | 0.000 | 1.000 |
+| table | 4 | 0.637 | 0.479 | 0.750 | 0.500 | 0.250 |
+| longDoc | 6 | 0.717 | 0.667 | 0.667 | 0.667 | 0.333 |
+| person | 5 | 0.580 | 0.560 | 0.633 | 0.633 | 0.200 |
+
+- **Questions and typos barely work.** Every paraphrase and typo query gets no keyword results, and fused ranking scores 0.14 and 0.16. These are the targets of natural-language matching (A5) and typo-tolerant titles (A6).
+- **Fusion pushes some exact matches down.** Quick beats fused on prefix (0.912 against 0.809) and body queries (0.888 against 0.871), because vector-only pages outrank keyword matches.
+- **Near-empty pages fill the lists for unanswerable queries.** They return 14.2 results on average, and 64% of those results are pages under 200 characters. The one-line note `doc-ideas-backlog` ranks first for all six. This is what the junk filter (A4) targets.
+
+### Heavy corpus sweep
+
+`EVAL_LABEL=master EVAL_SET=heavy-dev EVAL_MODES=sweep`, best nDCG@10 first; the first six rows of 15:
+
+| Alpha | Floor | nDCG@10 | Recall@5 | MRR | Zero-result rate | `junkAt5` | `noAnswerResults` |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 0.25 | 0.4 | 0.584 | 0.604 | 0.598 | 0.000 | 0.823 | 14.17 |
+| 0.25 | 0.3 | 0.582 | 0.604 | 0.597 | 0.000 | 0.823 | 20 |
+| 0.25 | 0.35 | 0.581 | 0.604 | 0.595 | 0.000 | 0.823 | 20 |
+| 0.25 | 0.45 | 0.574 | 0.614 | 0.600 | 0.000 | 0.810 | 9.83 |
+| 0.5 | 0.3 | 0.573 | 0.604 | 0.590 | 0.000 | 0.823 | 20 |
+| 0.25 | 0.5 | 0.569 | 0.590 | 0.586 | 0.000 | 0.752 | 0.83 |
+
+The current defaults, alpha 0.25 and floor 0.4, score best here too. Alpha above 0.25 loses at every floor, down to 0.264 at alpha 0.75. Raising the floor to 0.5 cuts the results for unanswerable queries from 14 to under 1, at a cost of 0.015 nDCG@10. That trade is the junk filter's (A4) question, to be answered with this corpus and gated on `heavy-holdout`.
 
 ## Fixtures
 
