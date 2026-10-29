@@ -6,12 +6,11 @@ import {cosineSimilarity, pageSnippet, RRF} from '../expressions'
 import {
   type PageKeywordSearchParams,
   type PageSearchResults,
-  UNPAGINATED_PAGE_INFO,
   withPageKeywordRanking
 } from './getPagesByKeyword'
+import {getPageSearchPageInfo} from './pageSearchCursor'
 
 export const VECTOR_SIMILARITY_FLOOR = 0.4
-const ARM_CANDIDATE_LIMIT = 100
 
 export const getPagesByRRF = async ({
   query,
@@ -19,6 +18,7 @@ export const getPagesByRRF = async ({
   alpha,
   k,
   first,
+  offset,
   viewerId,
   teamIds,
   dateRange,
@@ -33,10 +33,7 @@ export const getPagesByRRF = async ({
   if (!tableName) {
     throw new GraphQLError('No embeddings pages table found')
   }
-  const rows = await withPageKeywordRanking(
-    {query, viewerId, teamIds, dateRange},
-    ARM_CANDIDATE_LIMIT
-  )
+  const rows = await withPageKeywordRanking({query, viewerId, teamIds, dateRange})
     .with('PageBestChunk', (qb) =>
       qb
         .selectFrom('ViewerPages as vp')
@@ -62,8 +59,6 @@ export const getPagesByRRF = async ({
             'vectorRank'
           )
         ])
-        .orderBy('vectorRank')
-        .limit(ARM_CANDIDATE_LIMIT)
     )
     .with('Fused', (qb) =>
       qb
@@ -81,7 +76,8 @@ export const getPagesByRRF = async ({
         .orderBy('combined', 'desc')
         .orderBy('updatedAt', 'desc')
         .orderBy('id', 'desc')
-        .limit(first)
+        .offset(offset)
+        .limit(first + 1)
     )
     .selectFrom('Fused as f')
     .innerJoin('Page as p', 'p.id', 'f.id')
@@ -99,9 +95,10 @@ export const getPagesByRRF = async ({
     .orderBy('f.updatedAt', 'desc')
     .orderBy('f.id', 'desc')
     .execute()
+  const pageRows = rows.slice(0, first)
   return {
-    pageInfo: UNPAGINATED_PAGE_INFO,
-    edges: rows.map(
+    pageInfo: getPageSearchPageInfo('fused', offset, pageRows.length, rows.length > first),
+    edges: pageRows.map(
       ({id, keywordScore, keywordRank, vectorScore, vectorRank, combined, snippet}) => ({
         nodeTypeName: 'page' as const,
         nodeId: id,

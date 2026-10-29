@@ -320,6 +320,7 @@ const scoreSweepQuery = async (
       alpha,
       k: RRF_K,
       first: RESULTS_REQUESTED,
+      offset: 0,
       viewerId: EVAL_USER_ID,
       teamIds: undefined,
       dateRange: null,

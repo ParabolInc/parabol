@@ -7,6 +7,10 @@ import {
   type PageSearchResults
 } from '../../../../postgres/queries/getPagesByKeyword'
 import {getPagesByRRF} from '../../../../postgres/queries/getPagesByRRF'
+import {
+  decodePageSearchCursor,
+  encodePageSearchCursor
+} from '../../../../postgres/queries/pageSearchCursor'
 import type {User} from '../../../../postgres/types'
 import {EmbeddingTimeoutError} from '../../../../utils/EmbeddingTimeoutError'
 import {Logger} from '../../../../utils/Logger'
@@ -22,11 +26,7 @@ jest.mock('../../../mutations/helpers/publishToEmbedder', () => ({
 jest.mock('../../../../postgres/queries/getEmbeddingsByRRF', () => ({
   getEmbeddingsByRRF: jest.fn()
 }))
-jest.mock('../../../../postgres/queries/getPagesByKeyword', () => ({
-  UNPAGINATED_PAGE_INFO: jest.requireActual('../../../../postgres/queries/getPagesByKeyword')
-    .UNPAGINATED_PAGE_INFO,
-  getPagesByKeyword: jest.fn()
-}))
+jest.mock('../../../../postgres/queries/getPagesByKeyword', () => ({getPagesByKeyword: jest.fn()}))
 jest.mock('../../../../postgres/queries/getPagesByRRF', () => ({getPagesByRRF: jest.fn()}))
 jest.mock('../../../../utils/Logger', () => ({Logger: {warn: jest.fn()}}))
 
@@ -47,7 +47,8 @@ const keywordResults: PageSearchResults = {
   ]
 }
 const fusedResults: Awaited<ReturnType<typeof getPagesByRRF>> = {pageInfo, edges: []}
-const pageCursor = btoa(JSON.stringify({codes: [1], maxScore: 0.5}))
+const fusedCursorAfterTwenty = encodePageSearchCursor('fused', 20)
+const keywordCursorAfterTwenty = encodePageSearchCursor('keyword', 20)
 
 const callSearch = (args: {
   query: string
@@ -91,6 +92,7 @@ it('searches for the trimmed query', async () => {
   expect(getPagesByKeyword).toHaveBeenCalledWith({
     query: 'retro',
     first: 20,
+    offset: 0,
     viewerId,
     teamIds: undefined,
     dateRange: null
@@ -175,6 +177,7 @@ it('returns fused results when the query embeds in time', async () => {
     alpha: 0.25,
     k: 60,
     first: 20,
+    offset: 0,
     viewerId,
     teamIds: undefined,
     dateRange: null
@@ -196,17 +199,72 @@ it('waits at most 3 seconds for the query embedding', async () => {
   expect(getUserQueryJobData).toHaveBeenCalledWith('retro', 3000)
 })
 
+it('continues keyword search from the cursor', async () => {
+  await callSearch({query: 'retro', alpha: 0, after: keywordCursorAfterTwenty})
+  expect(getPagesByKeyword).toHaveBeenCalledWith(expect.objectContaining({offset: 20}))
+})
+
+it('continues fused search from the cursor', async () => {
+  jest.mocked(publishToEmbedder).mockResolvedValue(new Float32Array(1024))
+  jest.mocked(getPagesByRRF).mockResolvedValue(fusedResults)
+  await callSearch({query: 'retro', after: fusedCursorAfterTwenty})
+  expect(getPagesByRRF).toHaveBeenCalledWith(expect.objectContaining({offset: 20}))
+})
+
+it('continues keyword results that replaced fused results as keyword results', async () => {
+  await callSearch({query: 'retro', after: keywordCursorAfterTwenty})
+  expect(getPagesByKeyword).toHaveBeenCalledWith(expect.objectContaining({offset: 20}))
+  expect(publishToEmbedder).not.toHaveBeenCalled()
+})
+
 it.each([
-  ['alpha 0 and a page cursor', 0, pageCursor],
-  ['alpha 0 and a malformed cursor', 0, 'not a cursor'],
-  ['the default alpha and a page cursor', undefined, pageCursor],
-  ['the default alpha and a malformed cursor', undefined, 'not a cursor']
-])('returns no results after the first page with %s', async (_label, alpha, after) => {
-  expect(await callSearch({query: 'retro', alpha, after})).toEqual({pageInfo, edges: []})
+  [
+    'the query embedding fails',
+    'embedding failed',
+    () => jest.mocked(publishToEmbedder).mockResolvedValue(new Error('embedder unavailable'))
+  ],
+  [
+    'the query embedding times out',
+    'embedding timed out',
+    () =>
+      jest
+        .mocked(publishToEmbedder)
+        .mockResolvedValue(new EmbeddingTimeoutError('Embedding timeout for request: 7'))
+  ],
+  [
+    'fused ranking throws',
+    'fused ranking failed',
+    () => {
+      jest.mocked(publishToEmbedder).mockResolvedValue(new Float32Array(1024))
+      jest.mocked(getPagesByRRF).mockRejectedValue(new Error('boom'))
+    }
+  ]
+])('asks for a retry on a later fused page when %s', async (_label, reason, arrange) => {
+  arrange()
+  await expect(callSearch({query: 'retro', after: fusedCursorAfterTwenty})).rejects.toThrow(
+    'Page search could not rank this page. Retry the request.'
+  )
+  expect(getPagesByKeyword).not.toHaveBeenCalled()
+  expect(Logger.warn).toHaveBeenCalledWith('Page search could not continue fused results', {
+    userId: viewerId,
+    extras: expect.objectContaining({reason})
+  })
+})
+
+it.each([
+  ['text', {after: 'not a cursor'}],
+  [
+    'a cursor from before paging worked',
+    {after: btoa(JSON.stringify({codes: [1], maxScore: 0.5}))}
+  ],
+  ['a recent-pages cursor', {after: encodePageSearchCursor('recent', 20)}],
+  ['a fused cursor with alpha 0', {after: fusedCursorAfterTwenty, alpha: 0}]
+])('rejects %s for a page search', async (_label, args) => {
+  await expect(callSearch({query: 'retro', ...args})).rejects.toThrow(
+    'after must be an endCursor from the same page search'
+  )
   expect(publishToEmbedder).not.toHaveBeenCalled()
   expect(getPagesByKeyword).not.toHaveBeenCalled()
-  expect(getPagesByRRF).not.toHaveBeenCalled()
-  expect(Logger.warn).not.toHaveBeenCalled()
 })
 
 it('treats a whitespace-only query like an empty one', async () => {
@@ -225,4 +283,111 @@ it.each([
   )
   expect(getUserQueryJobData).toHaveBeenCalledWith('retro')
   expect(getPagesByKeyword).not.toHaveBeenCalled()
+})
+
+describe('recent pages for an empty query', () => {
+  const recentSuffix = Date.now()
+  const recentViewerId = `user-search-recent-${recentSuffix}`
+  const recentOrgId = `org-search-recent-${recentSuffix}`
+  const recentTeamIds = [`team-recent-a-${recentSuffix}`, `team-recent-b-${recentSuffix}`]
+  const recentContext = {
+    authToken: {sub: recentViewerId, tms: recentTeamIds},
+    dataLoader
+  } as unknown as GQLContext
+  const recentPageIds: number[] = []
+
+  const recentPages = async (args: {after?: string; teamIds?: string[]} = {}) => {
+    if (typeof search !== 'function') throw new Error('search must be a resolver function')
+    const results = await search(
+      {} as User,
+      {query: '', first: 2, type: 'page', ...args},
+      recentContext,
+      {} as GraphQLResolveInfo
+    )
+    return results as PageSearchResults
+  }
+
+  beforeAll(async () => {
+    const pg = getKysely()
+    await pg
+      .insertInto('User')
+      .values({
+        id: recentViewerId,
+        email: `${recentViewerId}@example.com`,
+        picture: 'https://example.com/pic.png',
+        preferredName: 'Recent Pages Viewer'
+      })
+      .execute()
+    await pg
+      .insertInto('Organization')
+      .values({id: recentOrgId, name: 'Recent Pages Org'})
+      .execute()
+    await pg
+      .insertInto('Team')
+      .values(recentTeamIds.map((id) => ({id, name: id, orgId: recentOrgId})))
+      .execute()
+    for (const day of ['01', '02', '02']) {
+      const {id} = await pg
+        .insertInto('Page')
+        .values({
+          title: `Recent ${recentPageIds.length + 1}`,
+          plaintextContent: '',
+          userId: recentViewerId,
+          sortOrder: 'a0',
+          updatedAt: new Date(`2026-01-${day}T00:00:00Z`)
+        })
+        .returning('id')
+        .executeTakeFirstOrThrow()
+      recentPageIds.push(id)
+    }
+    await pg
+      .insertInto('PageAccess')
+      .values(
+        recentPageIds.map((pageId) => ({userId: recentViewerId, pageId, role: 'owner' as const}))
+      )
+      .execute()
+    await pg
+      .insertInto('PageTeamAccess')
+      .values(
+        recentTeamIds.map((teamId) => ({
+          pageId: recentPageIds[0]!,
+          teamId,
+          role: 'editor' as const
+        }))
+      )
+      .execute()
+  })
+
+  afterAll(async () => {
+    const pg = getKysely()
+    await pg.deleteFrom('Team').where('orgId', '=', recentOrgId).execute()
+    await pg.deleteFrom('Organization').where('id', '=', recentOrgId).execute()
+    await pg.deleteFrom('User').where('id', '=', recentViewerId).execute()
+  })
+
+  it('pages through recent pages from the cursor, newest first', async () => {
+    const firstPage = await recentPages()
+    expect(firstPage.edges.map(({nodeId}) => nodeId)).toEqual([recentPageIds[2], recentPageIds[1]])
+    expect(firstPage.pageInfo.hasNextPage).toBe(true)
+    const secondPage = await recentPages({after: firstPage.pageInfo.endCursor!})
+    expect(secondPage.edges.map(({nodeId}) => nodeId)).toEqual([recentPageIds[0]])
+    expect(secondPage.pageInfo.hasNextPage).toBe(false)
+    expect(decodePageSearchCursor(secondPage.pageInfo.endCursor!)).toEqual({
+      ranking: 'recent',
+      position: 3
+    })
+  })
+
+  it('lists a page shared with several requested teams once', async () => {
+    const {edges} = await recentPages({teamIds: recentTeamIds})
+    expect(edges.map(({nodeId}) => nodeId)).toEqual([recentPageIds[0]])
+  })
+
+  it.each(['fused', 'keyword'] as const)(
+    'rejects a %s cursor from a page search with a query',
+    async (ranking) =>
+      expect(recentPages({after: encodePageSearchCursor(ranking, 2)})).rejects.toThrow(
+        'after must be an endCursor from the same page search'
+      )
+  )
 })

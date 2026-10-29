@@ -2,10 +2,12 @@ import {sql} from 'kysely'
 import type {SearchResultEdgeSource} from '../../graphql/public/types/SearchResultEdge'
 import {pagePrefixTsQuery, pageSearchTsv, pageSnippet, pageTitleTsv, RRF_K} from '../expressions'
 import getKysely from '../getKysely'
+import {getPageSearchPageInfo} from './pageSearchCursor'
 
 export interface PageKeywordSearchParams {
   query: string
   first: number
+  offset: number
   viewerId: string
   teamIds: [string, ...string[]] | undefined
   dateRange: {startAt: Date; endAt: Date; dateField: 'createdAt' | 'updatedAt'} | null
@@ -21,16 +23,9 @@ export interface PageSearchResults {
   edges: SearchResultEdgeSource[]
 }
 
-export const UNPAGINATED_PAGE_INFO: PageSearchResults['pageInfo'] = {
-  hasNextPage: false,
-  hasPreviousPage: false,
-  startCursor: null,
-  endCursor: null
-}
-
 export const withPageKeywordRanking = (
-  {query, viewerId, teamIds, dateRange}: Omit<PageKeywordSearchParams, 'first'>,
-  limit: number
+  {query, viewerId, teamIds, dateRange}: Omit<PageKeywordSearchParams, 'first' | 'offset'>,
+  limit?: number
 ) => {
   const tsQuery = sql.ref<string>('st.terms')
   return (
@@ -96,7 +91,7 @@ export const withPageKeywordRanking = (
             ]
           })
           .orderBy('keywordRank')
-          .limit(limit)
+          .$if(limit !== undefined, (qb) => qb.limit(limit!))
       )
   )
 }
@@ -104,15 +99,20 @@ export const withPageKeywordRanking = (
 export const getPagesByKeyword = async ({
   query,
   first,
+  offset,
   viewerId,
   teamIds,
   dateRange
 }: PageKeywordSearchParams): Promise<PageSearchResults> => {
-  const rows = await withPageKeywordRanking({query, viewerId, teamIds, dateRange}, first)
+  const rows = await withPageKeywordRanking(
+    {query, viewerId, teamIds, dateRange},
+    offset + first + 1
+  )
     // output: each page's position in that order, plus a highlighted snippet from the first 20k characters
     .selectFrom('KeywordRanked as kr')
     .innerJoin('Page as p', 'p.id', 'kr.id')
     .crossJoin('SearchTerms as st')
+    .where('kr.keywordRank', '>', offset)
     .select((eb) => [
       'kr.id',
       'kr.keywordScore',
@@ -121,10 +121,11 @@ export const getPagesByKeyword = async ({
     ])
     .orderBy('kr.keywordRank')
     .execute()
-  // result shape: keyword-only scores in the same shape fused results use, on a single page
+  const pageRows = rows.slice(0, first)
+  // result shape: keyword-only scores in the same shape fused results use
   return {
-    pageInfo: UNPAGINATED_PAGE_INFO,
-    edges: rows.map(({id, keywordScore, keywordRank, snippet}) => ({
+    pageInfo: getPageSearchPageInfo('keyword', offset, pageRows.length, rows.length > first),
+    edges: pageRows.map(({id, keywordScore, keywordRank, snippet}) => ({
       nodeTypeName: 'page' as const,
       nodeId: id,
       score: {

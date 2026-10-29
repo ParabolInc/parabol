@@ -579,6 +579,7 @@ type User implements UserPartial {
     "The string to search for"
     query: String!
     first: Int!
+    "The pageInfo.endCursor of a previous request with the same query, type, filters and alpha"
     after: String
     type: SearchTypeEnum!
     teamIds: [ID!]

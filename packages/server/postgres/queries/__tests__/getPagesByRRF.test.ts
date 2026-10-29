@@ -4,11 +4,14 @@ import {getEmbeddingsPagesTableName} from '../../../../embedder/getEmbeddingsTab
 import numberVectorToString from '../../../../embedder/indexing/numberVectorToString'
 import getKysely from '../../getKysely'
 import {getPagesByRRF} from '../getPagesByRRF'
+import {decodePageSearchCursor} from '../pageSearchCursor'
 
 const pg = getKysely()
 const suffix = `pbr-${Date.now()}`
 const viewerId = `viewer-${suffix}`
 const otherUserId = `other-${suffix}`
+const bulkViewerId = `bulk-${suffix}`
+const BULK_PAGE_COUNT = 101
 const orgId = `org-${suffix}`
 const teamId = `team-${suffix}`
 const chunkTable = getEmbeddingsPagesTableName(activeEmbeddingModelId)!
@@ -81,7 +84,11 @@ beforeAll(async () => {
   expect(rows[0]!.chunkTable).not.toBeNull()
   await pg
     .insertInto('User')
-    .values([makeUser(viewerId, 'Fusion Viewer'), makeUser(otherUserId, 'Fusion Other')])
+    .values([
+      makeUser(viewerId, 'Fusion Viewer'),
+      makeUser(otherUserId, 'Fusion Other'),
+      makeUser(bulkViewerId, 'Fusion Bulk')
+    ])
     .execute()
   await pg.insertInto('Organization').values({id: orgId, name: 'Fusion Search Org'}).execute()
   await pg.insertInto('Team').values({id: teamId, name: 'Fusion Team', orgId}).execute()
@@ -129,18 +136,38 @@ beforeAll(async () => {
   await insertVectors(mixedChunksId, [zeroVector, vectorWithCosine(0.88)])
   await insertChunks(olderTwinId, [0.6])
   await insertChunks(newerTwinId, [0.6])
+  const bulkPages = await pg
+    .insertInto('Page')
+    .values(
+      Array.from({length: BULK_PAGE_COUNT}, (_, i) => ({
+        title: `Bulk note ${i + 1}`,
+        plaintextContent: '',
+        userId: bulkViewerId,
+        sortOrder: 'a0'
+      }))
+    )
+    .returning('id')
+    .execute()
+  await pg
+    .insertInto('PageAccess')
+    .values(bulkPages.map(({id}) => ({userId: bulkViewerId, pageId: id, role: 'owner' as const})))
+    .execute()
+  await Promise.all(bulkPages.map(({id}) => insertChunks(id, [0.5])))
 })
 
 afterAll(async () => {
   await pg
     .deleteFrom(chunkTable)
     .where('pageId', 'in', (qb) =>
-      qb.selectFrom('Page').select('id').where('userId', 'in', [viewerId, otherUserId])
+      qb
+        .selectFrom('Page')
+        .select('id')
+        .where('userId', 'in', [viewerId, otherUserId, bulkViewerId])
     )
     .execute()
   await pg.deleteFrom('Team').where('orgId', '=', orgId).execute()
   await pg.deleteFrom('Organization').where('id', '=', orgId).execute()
-  await pg.deleteFrom('User').where('id', 'in', [viewerId, otherUserId]).execute()
+  await pg.deleteFrom('User').where('id', 'in', [viewerId, otherUserId, bulkViewerId]).execute()
   await pg.destroy()
 })
 
@@ -151,6 +178,7 @@ const fused = (alpha: number, overrides: Partial<Parameters<typeof getPagesByRRF
     alpha,
     k: 60,
     first: 20,
+    offset: 0,
     viewerId,
     teamIds: undefined,
     dateRange: null,
@@ -237,9 +265,62 @@ it('returns plain numbers and no next page', async () => {
   const {edges, pageInfo} = await fused(0.5)
   expect(typeof edges[0]!.score.combined).toBe('number')
   expect(typeof edges[0]!.score.vector).toBe('number')
+  expect(pageInfo.hasNextPage).toBe(false)
+  expect(pageInfo.hasPreviousPage).toBe(false)
+  expect(decodePageSearchCursor(pageInfo.startCursor!)).toEqual({ranking: 'fused', position: 1})
+  expect(decodePageSearchCursor(pageInfo.endCursor!)).toEqual({
+    ranking: 'fused',
+    position: edges.length
+  })
+})
+
+it('pages through the fused ranking without gaps or repeats', async () => {
+  const fullRanking = (await fused(0.5)).edges.map((e) => e.nodeId)
+  const pagedRanking: typeof fullRanking = []
+  let offset = 0
+  let hasNextPage = true
+  let requests = 0
+  while (hasNextPage && requests < fullRanking.length + 1) {
+    const {edges, pageInfo} = await fused(0.5, {first: 1, offset})
+    requests++
+    pagedRanking.push(...edges.map((e) => e.nodeId))
+    hasNextPage = pageInfo.hasNextPage
+    offset = decodePageSearchCursor(pageInfo.endCursor ?? '')?.position ?? offset
+  }
+  expect(fullRanking.length).toBeGreaterThan(1)
+  expect(pagedRanking).toEqual(fullRanking)
+  expect(requests).toBe(fullRanking.length)
+})
+
+it('pages past the first 100 keyword matches', async () => {
+  const {edges, pageInfo} = await fused(0.5, {
+    query: 'bulk',
+    viewerId: bulkViewerId,
+    offset: BULK_PAGE_COUNT - 1
+  })
+  expect(edges).toHaveLength(1)
+  expect(edges[0]!.score.keywordRank).toBe(BULK_PAGE_COUNT)
+  expect(pageInfo.hasNextPage).toBe(false)
+})
+
+it('pages past the first 100 vector matches', async () => {
+  const {edges, pageInfo} = await fused(0.5, {
+    query: '!!',
+    viewerId: bulkViewerId,
+    offset: BULK_PAGE_COUNT - 1
+  })
+  expect(edges).toHaveLength(1)
+  expect(edges[0]!.score.vectorRank).toBe(BULK_PAGE_COUNT)
+  expect(pageInfo.hasNextPage).toBe(false)
+})
+
+it('returns an empty page past the end', async () => {
+  const resultCount = (await fused(0.5)).edges.length
+  const {edges, pageInfo} = await fused(0.5, {offset: resultCount})
+  expect(edges).toEqual([])
   expect(pageInfo).toEqual({
     hasNextPage: false,
-    hasPreviousPage: false,
+    hasPreviousPage: true,
     startCursor: null,
     endCursor: null
   })

@@ -2,14 +2,13 @@ import {GraphQLError} from 'graphql'
 import {RRF_K} from '../../../postgres/expressions'
 import getKysely from '../../../postgres/getKysely'
 import {getEmbeddingsByRRF} from '../../../postgres/queries/getEmbeddingsByRRF'
-import {
-  getPagesByKeyword,
-  type PageSearchResults,
-  UNPAGINATED_PAGE_INFO
-} from '../../../postgres/queries/getPagesByKeyword'
+import {getPagesByKeyword} from '../../../postgres/queries/getPagesByKeyword'
 import {getPagesByRRF} from '../../../postgres/queries/getPagesByRRF'
+import {
+  decodePageSearchCursor,
+  getPageSearchPageInfo
+} from '../../../postgres/queries/pageSearchCursor'
 import {getUserId} from '../../../utils/authorization'
-import {CipherId} from '../../../utils/CipherId'
 import {EmbeddingTimeoutError} from '../../../utils/EmbeddingTimeoutError'
 import {Logger} from '../../../utils/Logger'
 import {getUserQueryJobData, publishToEmbedder} from '../../mutations/helpers/publishToEmbedder'
@@ -18,7 +17,6 @@ import type {SearchTypeEnum, UserResolvers} from '../resolverTypes'
 export const SEARCH_EMBEDDING_TIMEOUT_MS = 3000
 export const KEYWORD_FALLBACK_LOG_MESSAGE = 'Page search used keyword results'
 const EMBEDDING_TIMED_OUT = 'timed out'
-const EMPTY_PAGE_SEARCH_RESULTS: PageSearchResults = {pageInfo: UNPAGINATED_PAGE_INFO, edges: []}
 
 const embedWithinBudget = async (embed: () => Promise<Float32Array | Error | undefined>) => {
   let timer: ReturnType<typeof setTimeout> | undefined
@@ -32,6 +30,15 @@ const embedWithinBudget = async (embed: () => Promise<Float32Array | Error | und
   } finally {
     clearTimeout(timer)
   }
+}
+
+const PAGE_SEARCH_CURSOR_ERROR = 'after must be an endCursor from the same page search'
+
+const getPageSearchCursor = (after: string | null | undefined) => {
+  if (!after) return null
+  const cursor = decodePageSearchCursor(after)
+  if (!cursor) throw new GraphQLError(PAGE_SEARCH_CURSOR_ERROR)
+  return cursor
 }
 
 const decodeCursor = (after: string | null | undefined) => {
@@ -71,6 +78,8 @@ export const search: NonNullable<UserResolvers['search']> = async (
       throw new GraphQLError('Viewer is not a member of all teamIds requested')
     }
   }
+  const pageCursor = type === 'page' ? getPageSearchCursor(after) : null
+  const pageOffset = pageCursor?.position ?? 0
   let teamIds = inTeamIds
   if (resourceGrants) {
     const baseTeamIds = teamIds ?? authToken.tms
@@ -106,6 +115,9 @@ export const search: NonNullable<UserResolvers['search']> = async (
     }
     // show most recent for that user
     if (type === 'page') {
+      if (pageCursor && pageCursor.ranking !== 'recent') {
+        throw new GraphQLError(PAGE_SEARCH_CURSOR_ERROR)
+      }
       const results = await pg
         .selectFrom('PageAccess')
         .innerJoin('Page', 'PageAccess.pageId', `Page.id`)
@@ -114,11 +126,19 @@ export const search: NonNullable<UserResolvers['search']> = async (
           qb.where((eb) => eb.between(dateRange!.dateField, dateRange!.startAt, dateRange!.endAt))
         )
         .$if(!!pageTeamIds, (qb) =>
-          qb
-            .innerJoin('PageTeamAccess', 'PageTeamAccess.pageId', `Page.id`)
-            .where('PageTeamAccess.teamId', 'in', pageTeamIds!)
+          qb.where((eb) =>
+            eb.exists(
+              eb
+                .selectFrom('PageTeamAccess')
+                .select('PageTeamAccess.pageId')
+                .whereRef('PageTeamAccess.pageId', '=', 'Page.id')
+                .where('PageTeamAccess.teamId', 'in', pageTeamIds!)
+            )
+          )
         )
         .orderBy('Page.updatedAt', 'desc')
+        .orderBy('Page.id', 'desc')
+        .offset(pageOffset)
         .limit(first + 1)
         .select('Page.id')
         .execute()
@@ -129,15 +149,8 @@ export const search: NonNullable<UserResolvers['search']> = async (
           nodeId: page.id
         }))
         .slice(0, first)
-      const lastEdge = edges.at(-1)
-      const endCursor = lastEdge ? CipherId.toClient(lastEdge.nodeId, 'page') : undefined
       return {
-        pageInfo: {
-          hasNextPage: results.length > first,
-          hasPreviousPage: false,
-          endCursor,
-          startCursor: null
-        },
+        pageInfo: getPageSearchPageInfo('recent', pageOffset, edges.length, results.length > first),
         edges
       }
     }
@@ -169,15 +182,26 @@ export const search: NonNullable<UserResolvers['search']> = async (
     }
   }
   if (type === 'page') {
-    if (after) return EMPTY_PAGE_SEARCH_RESULTS
+    if (pageCursor?.ranking === 'recent' || (alpha === 0 && pageCursor?.ranking === 'fused')) {
+      throw new GraphQLError(PAGE_SEARCH_CURSOR_ERROR)
+    }
     const getKeywordResults = () =>
-      getPagesByKeyword({query, first, viewerId, teamIds: pageTeamIds, dateRange})
-    if (alpha === 0) return getKeywordResults()
-    const fallBackToKeyword = (reason: string, error?: unknown) => {
-      Logger.warn(KEYWORD_FALLBACK_LOG_MESSAGE, {
-        userId: viewerId,
-        extras: {reason, errorMessage: error instanceof Error ? error.message : undefined}
+      getPagesByKeyword({
+        query,
+        first,
+        offset: pageOffset,
+        viewerId,
+        teamIds: pageTeamIds,
+        dateRange
       })
+    if (alpha === 0 || pageCursor?.ranking === 'keyword') return getKeywordResults()
+    const fallBackToKeyword = (reason: string, error?: unknown) => {
+      const extras = {reason, errorMessage: error instanceof Error ? error.message : undefined}
+      if (pageCursor) {
+        Logger.warn('Page search could not continue fused results', {userId: viewerId, extras})
+        throw new GraphQLError('Page search could not rank this page. Retry the request.')
+      }
+      Logger.warn(KEYWORD_FALLBACK_LOG_MESSAGE, {userId: viewerId, extras})
       return getKeywordResults()
     }
     const queryVector = await embedWithinBudget(() =>
@@ -201,6 +225,7 @@ export const search: NonNullable<UserResolvers['search']> = async (
         alpha,
         k: RRF_K,
         first,
+        offset: pageOffset,
         teamIds: pageTeamIds,
         viewerId
       })
