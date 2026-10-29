@@ -25,6 +25,9 @@ Reseed with `EVAL_RESEED=1` after you change how pages are indexed (`embedPage`,
 | `EVAL_ALPHAS` | `0.25,0.5,0.75` | `sweep` only: the alphas to rank with |
 | `EVAL_FLOORS` | `0.3,0.35,0.4,0.45,0.5` | `sweep` only: the vector similarity floors to rank with |
 | `EVAL_MIN_BYTES` | `200` | `sweep` only: whole numbers; the vector arm skips pages with fewer bytes of plain text |
+| `EVAL_STOP_WORDS` | each list's default | `sweep` only: `keep` and/or `drop`; `drop` takes English stop words out of the keyword terms |
+| `EVAL_ANY_WORD_FALLBACK_BELOW` | each list's default | `sweep` only: whole numbers; when fewer pages than this have every word, pages with some of them follow (0 turns this off) |
+| `EVAL_ANY_WORD_MIN_SHARES` | each list's default | `sweep` only: decimals between 0 and 1; the share of the words a page with some of them must contain (at least one) |
 | `EVAL_LABEL` | `local` | Names the results file |
 | `EVAL_RESEED` | unset | `1` deletes the eval user's pages and seeds them again |
 | `EVAL_DUMP` | unset | `1` writes the set's corpus to `results/<corpus>-corpus/` and skips seeding and ranking: one `<key>.md` per page (the title, a blank line, then the plain text that keyword search reads) plus `index.json` |
@@ -41,16 +44,16 @@ node __evals__/pagesSearch/compare.mjs \
 
 ## Sweep mode
 
-`EVAL_MODES=sweep` ranks every query with each combination of `EVAL_ALPHAS`, `EVAL_FLOORS` and `EVAL_MIN_BYTES`, to pick the default alpha, the vector similarity floor and the minimum page length. It combines with the other modes, for example `EVAL_MODES=fused,sweep`. `EVAL_ALPHAS` and `EVAL_FLOORS` are comma-separated decimals between 0 and 1, like `0.25`; `EVAL_MIN_BYTES` is comma-separated whole numbers. Each value may be listed once; anything else throws.
+`EVAL_MODES=sweep` ranks every query with each combination of `EVAL_ALPHAS`, `EVAL_FLOORS`, `EVAL_MIN_BYTES`, `EVAL_STOP_WORDS`, `EVAL_ANY_WORD_FALLBACK_BELOW` and `EVAL_ANY_WORD_MIN_SHARES`, to pick the default alpha, the vector similarity floor, the minimum page length and how keywords match. It combines with the other modes, for example `EVAL_MODES=fused,sweep`. `EVAL_ALPHAS`, `EVAL_FLOORS` and `EVAL_ANY_WORD_MIN_SHARES` are comma-separated decimals between 0 and 1, like `0.25`; `EVAL_MIN_BYTES` and `EVAL_ANY_WORD_FALLBACK_BELOW` are comma-separated whole numbers; `EVAL_STOP_WORDS` lists `keep` and/or `drop`. Each value may be listed once; anything else throws. An unset keyword variable takes the default of the list each row ranks: the quick list's for alpha 0, fused ranking's otherwise.
 
 ```bash
 EVAL_LABEL=page-fusion EVAL_SET=dev EVAL_MODES=sweep pnpm eval:pagesSearch
 ```
 
-- **Ranking.** Each query is embedded once, by the same model call as `fused`. Then `getPagesByRRF` runs once per configuration with `first: 20` and the configuration's alpha, `vectorFloor` and `vectorMinBytes`. It skips the resolver, so there is no embedding budget and no keyword fallback. Each list is scored with the same metrics as the other modes.
+- **Ranking.** Each query is embedded once, by the same model call as `fused`. Then `getPagesByRRF` runs once per configuration with `first: 20` and the configuration's alpha, `vectorFloor`, `vectorMinBytes` and keyword options. Alpha 0 ranks like the quick list instead, as in the resolver: `getPagesByKeyword` runs with the keyword options, the floor and minimum length don't apply, and an embedding failure doesn't affect the row. It skips the resolver, so there is no embedding budget and no keyword fallback. Each list is scored with the same metrics as the other modes.
 - **Errors.** A query whose embedding fails, a `getPagesByRRF` call that throws, and a list that holds the same page twice are errors in every affected configuration's results, and they fail the run after it writes its results.
 - **Latency.** `latencyMs` is the `getPagesByRRF` call alone, not the embedding. Results have no `embeddingMs`, `embeddingError` or `fallbackReason`.
-- **Output.** It prints one row per configuration: alpha, floor, minBytes, nDCG10, recall5, recall20, mrr, zeroResultRate, junkAt5 and noAnswerResults, sorted by nDCG10, best first. It writes `results/<label>-<set>-sweep.json` as `{label, set, mode: 'sweep', unindexed, configs: [{alpha, floor, minBytes, overall, byCategory, perQuery}]}`, with the configurations in grid order. `compare.mjs` doesn't read sweep files.
+- **Output.** It prints one row per configuration: alpha, floor, minBytes, stopWords, anyWordFallbackBelow, anyWordMinShare, nDCG10, recall5, recall20, mrr, zeroResultRate, junkAt5 and noAnswerResults, sorted by nDCG10, best first. It writes `results/<label>-<set>-sweep.json` as `{label, set, mode: 'sweep', unindexed, configs: [{alpha, floor, minBytes, stopWords, anyWordFallbackBelow, anyWordMinShare, overall, byCategory, perQuery}]}`, with the configurations in grid order. `compare.mjs` doesn't read sweep files.
 - **Validity.** The validity rule below holds for every configuration: `errors` is 0, and `unindexed` lists exactly the fixtures it names.
 
 ## How it works

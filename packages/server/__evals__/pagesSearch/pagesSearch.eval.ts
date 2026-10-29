@@ -11,7 +11,16 @@ import {
 } from '../../graphql/public/fields/search'
 import {RRF_K} from '../../postgres/expressions'
 import getKysely from '../../postgres/getKysely'
-import {getPagesByRRF, VECTOR_MIN_PAGE_BYTES} from '../../postgres/queries/getPagesByRRF'
+import {
+  getPagesByKeyword,
+  type KeywordMatching,
+  QUICK_KEYWORD_MATCHING
+} from '../../postgres/queries/getPagesByKeyword'
+import {
+  FUSED_KEYWORD_MATCHING,
+  getPagesByRRF,
+  VECTOR_MIN_PAGE_BYTES
+} from '../../postgres/queries/getPagesByRRF'
 import type {User} from '../../postgres/types'
 import {Logger} from '../../utils/Logger'
 import {HEAVY_CORPUS} from './heavyCorpus/generateHeavyCorpus'
@@ -28,6 +37,7 @@ import {
 } from './metrics'
 import parseCounts from './parseCounts'
 import parseFractions from './parseFractions'
+import parseStopWords, {type StopWords} from './parseStopWords'
 import {type EvalCorpus, FIXTURES_CORPUS, seedEvalPages} from './seedEvalPages'
 
 interface EmbeddingCall {
@@ -78,6 +88,9 @@ interface SweepConfig {
   alpha: number
   floor: number
   minBytes: number
+  stopWords: StopWords
+  anyWordFallbackBelow: number
+  anyWordMinShare: number
 }
 
 interface SweepResult extends SweepConfig {
@@ -139,6 +152,26 @@ const parseLabel = (value: string) => {
   throw new Error(`EVAL_LABEL may only hold letters, digits, dots, dashes and underscores`)
 }
 
+const parseKeywordMatchings = (defaults: KeywordMatching) => {
+  const stopWordsList = parseStopWords(
+    'EVAL_STOP_WORDS',
+    process.env.EVAL_STOP_WORDS ?? (defaults.dropStopWords ? 'drop' : 'keep')
+  )
+  const fallbackBelowList = parseCounts(
+    'EVAL_ANY_WORD_FALLBACK_BELOW',
+    process.env.EVAL_ANY_WORD_FALLBACK_BELOW ?? String(defaults.anyWordFallbackBelow)
+  )
+  const minShares = parseFractions(
+    'EVAL_ANY_WORD_MIN_SHARES',
+    process.env.EVAL_ANY_WORD_MIN_SHARES ?? String(defaults.anyWordMinShare)
+  )
+  return stopWordsList.flatMap((stopWords) =>
+    fallbackBelowList.flatMap((anyWordFallbackBelow) =>
+      minShares.map((anyWordMinShare) => ({stopWords, anyWordFallbackBelow, anyWordMinShare}))
+    )
+  )
+}
+
 const parseSweepConfigs = (): SweepConfig[] => {
   const alphas = parseFractions('EVAL_ALPHAS', process.env.EVAL_ALPHAS ?? DEFAULT_SWEEP_ALPHAS)
   const floors = parseFractions('EVAL_FLOORS', process.env.EVAL_FLOORS ?? DEFAULT_SWEEP_FLOORS)
@@ -146,9 +179,16 @@ const parseSweepConfigs = (): SweepConfig[] => {
     'EVAL_MIN_BYTES',
     process.env.EVAL_MIN_BYTES ?? String(VECTOR_MIN_PAGE_BYTES)
   )
-  return alphas.flatMap((alpha) =>
-    floors.flatMap((floor) => minBytesList.map((minBytes) => ({alpha, floor, minBytes})))
-  )
+  return alphas.flatMap((alpha) => {
+    const keywordMatchings = parseKeywordMatchings(
+      alpha === 0 ? QUICK_KEYWORD_MATCHING : FUSED_KEYWORD_MATCHING
+    )
+    return floors.flatMap((floor) =>
+      minBytesList.flatMap((minBytes) =>
+        keywordMatchings.map((keywordMatching) => ({alpha, floor, minBytes, ...keywordMatching}))
+      )
+    )
+  })
 }
 
 const gradeQueries = (evalSet: EvalSet, pageIdByFixture: Map<string, number>): GradedQuery[] => {
@@ -323,31 +363,40 @@ const embedQueryVector = async (query: string) => {
 const scoreSweepQuery = async (
   gradedQuery: GradedQuery,
   queryVector: Float32Array | Error,
-  {alpha, floor, minBytes}: SweepConfig,
+  {alpha, floor, minBytes, stopWords, anyWordFallbackBelow, anyWordMinShare}: SweepConfig,
   fixtureKeyByPageId: Map<number, string>,
   viewerId: string
 ) => {
-  if (queryVector instanceof Error) {
+  if (alpha > 0 && queryVector instanceof Error) {
     const error = `embedding failed: ${queryVector.message}`
     return toQueryResult(gradedQuery, [], fixtureKeyByPageId, 0, error)
   }
   const startedAt = Date.now()
   let resultIds: number[] = []
   let error: string | undefined
+  const pageSearch = {
+    query: gradedQuery.query,
+    first: RESULTS_REQUESTED,
+    offset: 0,
+    viewerId,
+    teamIds: undefined,
+    dateRange: null,
+    dropStopWords: stopWords === 'drop',
+    anyWordFallbackBelow,
+    anyWordMinShare
+  }
   try {
-    const {edges} = await getPagesByRRF({
-      query: gradedQuery.query,
-      queryVector,
-      alpha,
-      k: RRF_K,
-      first: RESULTS_REQUESTED,
-      offset: 0,
-      viewerId,
-      teamIds: undefined,
-      dateRange: null,
-      vectorFloor: floor,
-      vectorMinBytes: minBytes
-    })
+    const {edges} =
+      alpha > 0 && queryVector instanceof Float32Array
+        ? await getPagesByRRF({
+            ...pageSearch,
+            queryVector,
+            alpha,
+            k: RRF_K,
+            vectorFloor: floor,
+            vectorMinBytes: minBytes
+          })
+        : await getPagesByKeyword(pageSearch)
     resultIds = toResultIds(edges.map(({nodeId}) => nodeId))
   } catch (e) {
     error = e instanceof Error ? e.message : String(e)
@@ -373,10 +422,8 @@ const scoreSweep = async (
     }
   }
   return sweeps.map(
-    ({alpha, floor, minBytes, perQuery}): SweepResult => ({
-      alpha,
-      floor,
-      minBytes,
+    ({perQuery, ...config}): SweepResult => ({
+      ...config,
       overall: summarizeWithErrors(perQuery),
       byCategory: summarizeByCategory(perQuery),
       perQuery
@@ -384,10 +431,21 @@ const scoreSweep = async (
   )
 }
 
-const toSweepRow = ({alpha, floor, minBytes, overall}: SweepResult) => ({
+const toSweepRow = ({
   alpha,
   floor,
   minBytes,
+  stopWords,
+  anyWordFallbackBelow,
+  anyWordMinShare,
+  overall
+}: SweepResult) => ({
+  alpha,
+  floor,
+  minBytes,
+  stopWords,
+  anyWordFallbackBelow,
+  anyWordMinShare,
   ...Object.fromEntries(
     SWEEP_TABLE_METRICS.map((metric) => [metric, roundForTable(overall[metric])])
   )
@@ -422,14 +480,15 @@ const runSweep = async ({
       .sort((first, second) => second.overall.nDCG10 - first.overall.nDCG10)
       .map(toSweepRow)
   )
-  const failed = sweepResults.flatMap(({alpha, floor, minBytes, perQuery}) =>
-    perQuery
-      .filter(({error}) => error !== undefined)
-      .map(({query, error}) => ({
-        query,
-        config: `alpha ${alpha}, floor ${floor}, min bytes ${minBytes}`,
-        error
-      }))
+  const failed = sweepResults.flatMap(
+    ({alpha, floor, minBytes, stopWords, anyWordFallbackBelow, anyWordMinShare, perQuery}) =>
+      perQuery
+        .filter(({error}) => error !== undefined)
+        .map(({query, error}) => ({
+          query,
+          config: `alpha ${alpha}, floor ${floor}, min bytes ${minBytes}, stop words ${stopWords}, any words below ${anyWordFallbackBelow}, min share ${anyWordMinShare}`,
+          error
+        }))
   )
   const [firstFailed] = failed
   if (firstFailed) {
