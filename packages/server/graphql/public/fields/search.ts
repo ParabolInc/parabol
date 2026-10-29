@@ -122,6 +122,7 @@ export const search: NonNullable<UserResolvers['search']> = async (
         .selectFrom('PageAccess')
         .innerJoin('Page', 'PageAccess.pageId', `Page.id`)
         .where('PageAccess.userId', '=', viewerId)
+        .where('Page.deletedAt', 'is', null)
         .$if(!!dateRange, (qb) =>
           qb.where((eb) => eb.between(dateRange!.dateField, dateRange!.startAt, dateRange!.endAt))
         )
