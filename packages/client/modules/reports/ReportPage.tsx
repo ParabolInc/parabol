@@ -27,6 +27,9 @@ const query = graphql`
     $timeZone: String!
     $lastHeldSpec: ReportSpecInput!
     $hasLastHeld: Boolean!
+    $allTeamsSpec: ReportSpecInput!
+    $allTeamsTotalSpec: ReportSpecInput!
+    $hasAllTeams: Boolean!
   ) {
     viewer {
       organization(orgId: $orgId) {

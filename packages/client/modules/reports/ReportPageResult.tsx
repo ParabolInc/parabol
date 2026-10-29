@@ -19,9 +19,26 @@ const ReportPageResult = ({organizationRef, orgId, spec}: Props) => {
         report(spec: $spec, timeZone: $timeZone) {
           ...ReportView_result
           ...ReportNotes_result
+          teamHealth {
+            ...ReportTeamHealthView_teamHealth
+          }
         }
-        reportTeamHealth(spec: $spec, timeZone: $timeZone) {
-          ...ReportTeamHealthView_teamHealth
+        allTeams: report(spec: $allTeamsSpec, timeZone: $timeZone) @include(if: $hasAllTeams) {
+          rows {
+            keys {
+              value
+            }
+            values
+          }
+        }
+        allTeamsTotal: report(spec: $allTeamsTotalSpec, timeZone: $timeZone)
+          @include(if: $hasAllTeams) {
+          rows {
+            keys {
+              value
+            }
+            values
+          }
         }
         lastHeld: report(spec: $lastHeldSpec, timeZone: $timeZone)
           @include(if: $hasLastHeld) {
@@ -38,6 +55,15 @@ const ReportPageResult = ({organizationRef, orgId, spec}: Props) => {
   )
   const report = organization?.report
   const lastHeldRows = organization?.lastHeld?.rows
+  const allTeams = organization?.allTeams
+  const allTeamsTotal = organization?.allTeamsTotal
+  const allTeamsRows = useMemo(
+    () =>
+      allTeams && allTeamsTotal
+        ? {allTeams: allTeams.rows, allTeamsTotal: allTeamsTotal.rows[0] ?? null}
+        : null,
+    [allTeams, allTeamsTotal]
+  )
   const lastHeldByTeamId = useMemo(
     () =>
       lastHeldRows &&
@@ -53,7 +79,8 @@ const ReportPageResult = ({organizationRef, orgId, spec}: Props) => {
             resultRef={report}
             lastHeldByTeamId={lastHeldByTeamId}
             orgId={orgId}
-            teamHealthRef={organization?.reportTeamHealth}
+            teamHealthRef={report.teamHealth}
+            allTeamsRows={allTeamsRows}
           />
         ) : (
           <p className='m-0 text-fg-secondary'>This report couldn’t run for this organization.</p>

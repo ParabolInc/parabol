@@ -91,10 +91,10 @@ const resolveReportStructure = ({breakdown, filters}: ReportSpec, structure: Org
   }
   // the value a team sits at on a level, as a report's keys name it
   const teamValueOf = (dimension: ReportLevelDimension, teamId: string) => {
-    const levelRowId = toLevelRowId(dimension)
-    if (!structure.levels.some(({id}) => id === levelRowId)) return REPORT_STRUCTURE_REMOVED
-    const valueRowId = valueIdOf(teamId, levelRowId)
-    return valueRowId === undefined ? REPORT_STRUCTURE_NOT_SET : toValueId(valueRowId)
+    const levelId = toLevelId(dimension)
+    if (!structure.levels.some(({id}) => id === levelId)) return REPORT_STRUCTURE_REMOVED
+    const valueId = valueIdOf(teamId, levelId)
+    return valueId === undefined ? REPORT_STRUCTURE_NOT_SET : toValueKey(valueId)
   }
   const levelNameOf = (dimension: ReportLevelDimension) =>
     structure.levels.find(({id}) => id === toLevelId(dimension))?.name ?? null

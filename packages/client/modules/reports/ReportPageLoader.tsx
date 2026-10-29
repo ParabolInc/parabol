@@ -6,9 +6,8 @@ import type {ReportSpec} from '../../shared/reports/reportCatalog'
 import ReportPage from './ReportPage'
 import {toReportPagePath} from './reportPaths'
 import type {ReportPagePeriod} from './reportPeriodParam'
-import toLastHeldReportSpec from './toLastHeldReportSpec'
+import toReportPanelVariables from './toReportPanelVariables'
 import useReportSpecChange from './useReportSpecChange'
-import withPagePeriod from './withPagePeriod'
 
 interface Props {
   orgId: string
@@ -21,16 +20,10 @@ interface Props {
 const ReportPageLoader = ({orgId, spec, title, period, reportQuestionId}: Props) => {
   const navigate = useNavigate()
   const timeZone = useMemo(() => Intl.DateTimeFormat().resolvedOptions().timeZone, [])
-  const lastHeldSpec = useMemo(() => toLastHeldReportSpec(spec), [spec])
+  const panelVariables = useMemo(() => toReportPanelVariables(spec, period), [spec, period])
   const queryRef = useQueryLoaderNow<ReportPageQuery>(
     reportPageQuery,
-    {
-      orgId,
-      spec: withPagePeriod(spec, period),
-      timeZone,
-      lastHeldSpec: withPagePeriod(lastHeldSpec ?? spec, period),
-      hasLastHeld: !!lastHeldSpec
-    },
+    {orgId, timeZone, ...panelVariables},
     undefined,
     true
   )

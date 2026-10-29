@@ -12,7 +12,7 @@ import ReportTeamHealthTable from './ReportTeamHealthTable'
 import {type ReportRowTotal, toReportHeatmapGrid} from './reportHeatmapGrid'
 import type {ReportResultRow} from './reportRows'
 import {markReportTeamHealthCells, toTeamHealthCellKey} from './reportTeamHealthCells'
-import {toTeamHealthTable} from './reportTeamHealthRows'
+import {type ReportTeamHealthAllTeamsRows, toTeamHealthTable} from './reportTeamHealthRows'
 
 interface Props {
   orgId: string
@@ -21,13 +21,14 @@ interface Props {
   rows: readonly ReportResultRow[]
   rowTotals: readonly ReportRowTotal[]
   teamHealthRef: ReportTeamHealthView_teamHealth$key
+  allTeamsRows: ReportTeamHealthAllTeamsRows
 }
 
 // below this, the selected cell opens in a bottom sheet rather than beside the table
 const SIDE_PANEL_MIN_WIDTH = 1024
 
 const ReportTeamHealthView = (props: Props) => {
-  const {orgId, spec, rowHeading, rows, rowTotals, teamHealthRef} = props
+  const {orgId, spec, rowHeading, rows, rowTotals, teamHealthRef, allTeamsRows} = props
   const teamHealth = useFragment(
     graphql`
       fragment ReportTeamHealthView_teamHealth on ReportTeamHealth {
@@ -48,18 +49,6 @@ const ReportTeamHealthView = (props: Props) => {
             previousScores
           }
         }
-        allTeams {
-          keys {
-            value
-          }
-          values
-        }
-        allTeamsTotal {
-          keys {
-            value
-          }
-          values
-        }
       }
     `,
     teamHealthRef
@@ -79,7 +68,7 @@ const ReportTeamHealthView = (props: Props) => {
   const {groups, allTeams, emptyNames, isTeamRows} = toTeamHealthTable(
     dimensions.slice(0, -1),
     gridRows,
-    teamHealth,
+    allTeamsRows,
     checkByTeamId
   )
   const teamItems = groups.flatMap(({items}) =>

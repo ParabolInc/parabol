@@ -89,8 +89,11 @@ const runReport = async ({
       ? {dimension: 'TEAM_LEVEL' as const, levelName: structure.levelNameOf(dimension)}
       : {dimension, levelName: null}
   )
+  const reportableTeamIds = scope.teams.map(({id}) => id)
   if (structure.removedFilterCount > 0) {
     return {
+      spec,
+      reportableTeamIds,
       from: toInstant(range.startDate, timeZone),
       to: toInstant(range.endDate, timeZone),
       step: stepLength,
@@ -229,6 +232,8 @@ const runReport = async ({
     notes.push({kind: 'ROWS_TRUNCATED', count: shapedRows.length})
   }
   return {
+    spec,
+    reportableTeamIds,
     from: toInstant(range.startDate, timeZone),
     to: toInstant(range.endDate, timeZone),
     step: stepLength,
@@ -240,5 +245,7 @@ const runReport = async ({
     notes
   }
 }
+
+export type ReportResultSource = Awaited<ReturnType<typeof runReport>>
 
 export default runReport

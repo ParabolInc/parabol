@@ -2,7 +2,7 @@ import {GraphQLError} from 'graphql'
 import getKysely from '../../../postgres/getKysely'
 import {selectPinnedReports} from '../../../reports/pinnedReports'
 import readReportSpecInput from '../../../reports/readReportSpecInput'
-import {readReportTeamHealth, readReportTeamHealthCell} from '../../../reports/reportTeamHealth'
+import {readReportTeamHealthCell} from '../../../reports/reportTeamHealth'
 import runReport from '../../../reports/runReport'
 import {
   getUserId,
@@ -75,18 +75,6 @@ const Organization: OrganizationResolvers = {
 
   report: async ({id: orgId}, {spec, timeZone}, {authToken, dataLoader}) => {
     return runReport({
-      orgId,
-      spec: readReportSpecInput(spec),
-      timeZone,
-      pagePeriod: null,
-      viewerId: getUserId(authToken),
-      isSuperUser: isSuperUser(authToken),
-      dataLoader
-    })
-  },
-
-  reportTeamHealth: async ({id: orgId}, {spec, timeZone}, {authToken, dataLoader}) => {
-    return readReportTeamHealth({
       orgId,
       spec: readReportSpecInput(spec),
       timeZone,

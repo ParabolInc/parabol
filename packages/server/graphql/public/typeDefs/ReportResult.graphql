@@ -42,4 +42,10 @@ type ReportResult {
   teamCount: Int!
 
   notes: [ReportNote!]!
+
+  """
+  For a Health score heatmap with a row for each team and a column for each category, what its marks are worked
+  out from. Null for any other report
+  """
+  teamHealth: ReportTeamHealth
 }

@@ -13,6 +13,7 @@ import ReportTableView from './ReportTableView'
 import ReportTeamHealthView from './ReportTeamHealthView'
 import {withoutHiddenValues} from './reportRows'
 import {formatReportBreakdown} from './reportSpecLabels'
+import type {ReportTeamHealthAllTeamsRows} from './reportTeamHealthRows'
 
 interface Props {
   spec: ReportSpec
@@ -23,10 +24,19 @@ interface Props {
   // a Health score heatmap by team and category marks its cells, and a cell opens for its details
   orgId?: string
   teamHealthRef?: ReportTeamHealthView_teamHealth$key | null
+  allTeamsRows?: ReportTeamHealthAllTeamsRows | null
 }
 
 const ReportView = (props: Props) => {
-  const {spec, resultRef, isCompact = false, lastHeldByTeamId, orgId, teamHealthRef} = props
+  const {
+    spec,
+    resultRef,
+    isCompact = false,
+    lastHeldByTeamId,
+    orgId,
+    teamHealthRef,
+    allTeamsRows
+  } = props
   const result = useFragment(
     graphql`
       fragment ReportView_result on ReportResult {
@@ -94,7 +104,7 @@ const ReportView = (props: Props) => {
       />
     )
   }
-  if (spec.showAs === 'HEATMAP' && orgId && teamHealthRef) {
+  if (spec.showAs === 'HEATMAP' && orgId && teamHealthRef && allTeamsRows) {
     return (
       <ReportTeamHealthView
         orgId={orgId}
@@ -103,6 +113,7 @@ const ReportView = (props: Props) => {
         rows={rows}
         rowTotals={rowTotals}
         teamHealthRef={teamHealthRef}
+        allTeamsRows={allTeamsRows}
       />
     )
   }

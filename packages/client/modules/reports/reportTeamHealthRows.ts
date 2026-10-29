@@ -20,6 +20,11 @@ export interface ReportTeamHealthAllTeams {
   total: ReportHeatmapValue
 }
 
+export interface ReportTeamHealthAllTeamsRows {
+  readonly allTeams: readonly ReportTogetherRow[]
+  readonly allTeamsTotal: ReportTogetherRow | null | undefined
+}
+
 export interface ReportTeamHealthRowItem {
   kind: 'team' | 'level'
   id: string
@@ -48,10 +53,7 @@ const lastKeyOf = ({keys}: ReportHeatmapRow) => keys[keys.length - 1]
 export const toTeamHealthTable = (
   rowDimensions: readonly ReportDimension[],
   gridRows: readonly ReportHeatmapRow[],
-  allTeamsRows: {
-    readonly allTeams: readonly ReportTogetherRow[]
-    readonly allTeamsTotal: ReportTogetherRow | null | undefined
-  },
+  allTeamsRows: ReportTeamHealthAllTeamsRows,
   checkByTeamId: ReadonlyMap<string, ReportTeamHealthCheck>
 ) => {
   const isTeamRows = rowDimensions[rowDimensions.length - 1] === 'TEAM'

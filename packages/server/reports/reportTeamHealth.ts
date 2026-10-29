@@ -1,9 +1,4 @@
-import {GraphQLError} from 'graphql'
-import {
-  MIN_REPORT_HEALTH_RESPONDENTS,
-  type ReportPeriod,
-  type ReportSpec
-} from '../../client/shared/reports/reportCatalog'
+import {MIN_REPORT_HEALTH_RESPONDENTS} from '../../client/shared/reports/reportCatalog'
 import {toTeamHealthDeviation} from '../../client/shared/reports/teamHealthAttention'
 import {isTeamHealthHeatmapSpec} from '../../client/shared/reports/teamHealthReportSpec'
 import {canShowRespondentDetails} from '../../client/shared/utils/teamHealthAnonymity'
@@ -12,23 +7,11 @@ import isValid from '../graphql/isValid'
 import averageTeamHealthScore from '../utils/averageTeamHealthScore'
 import getTeamHealthDisplayComment from '../utils/getTeamHealthDisplayComment'
 import isTeamHealthSummaryLoading from '../utils/isTeamHealthSummaryLoading'
-import getReportScope from './getReportScope'
 import {findLatestTeamHealthCheck} from './measures/teamHealthAnswers'
-import {resolveReportPeriod, toInstant} from './reportCalendar'
-import runReport from './runReport'
+import type {ReportResultSource} from './runReport'
 
 // how many checks before a team's latest a cell looks back on, enough to tell a score that fell twice in a row
 const EARLIER_CHECK_COUNT = 2
-
-interface Options {
-  orgId: string
-  spec: ReportSpec
-  timeZone: string
-  pagePeriod: ReportPeriod | null
-  viewerId: string
-  isSuperUser: boolean
-  dataLoader: DataLoaderWorker
-}
 
 // A check's scores and the comments anyone may read, by category. Too few people answering hides the whole check
 const readCheckCategories = async (checkId: string, dataLoader: DataLoaderWorker) => {
@@ -67,45 +50,16 @@ type CheckCategories = Awaited<ReturnType<typeof readCheckCategories>>
 const averageOf = (check: CheckCategories, categoryId: number) =>
   check.isHidden ? null : averageTeamHealthScore(check.categories.get(categoryId)?.scores ?? [])
 
-// Every team in the report together, for each category and over them all, measured the way the report measures each
-// team. The row shows no change, so it isn't compared
-const readAllTeams = async (options: Options) => {
-  const allTeamsSpec: ReportSpec = {
-    ...options.spec,
-    breakdown: [{dimension: 'CATEGORY'}],
-    where: [],
-    compareTo: null,
-    showAs: 'TABLE',
-    sort: null,
-    limit: null
-  }
-  const [byCategory, overall] = await Promise.all([
-    runReport({...options, spec: allTeamsSpec}),
-    runReport({...options, spec: {...allTeamsSpec, breakdown: []}})
-  ])
-  return {rows: byCategory.rows, total: overall.rows[0] ?? null}
-}
-
 // What a Team Health heatmap marks its cells from: each team's latest check in the period. It takes every team the
 // viewer can report on, whatever the filters, so filtering never moves a mark
-export const readReportTeamHealth = async (options: Options) => {
-  const {orgId, spec, timeZone, pagePeriod, viewerId, isSuperUser, dataLoader} = options
+export const readReportTeamHealth = async (
+  report: Pick<ReportResultSource, 'spec' | 'from' | 'to' | 'reportableTeamIds'>,
+  dataLoader: DataLoaderWorker
+) => {
+  const {spec, from: windowStart, to: periodEnd, reportableTeamIds: teamIds} = report
   if (!isTeamHealthHeatmapSpec(spec)) return null
   const now = new Date()
-  const [organization, scope] = await Promise.all([
-    dataLoader.get('organizations').loadNonNull(orgId),
-    getReportScope({orgId, viewerId, isSuperUser, dataLoader})
-  ])
-  const range = resolveReportPeriod(spec.period, pagePeriod, {
-    timeZone,
-    now,
-    orgCreatedAt: organization.createdAt
-  })
-  if (typeof range === 'string') throw new GraphQLError(range)
-  const windowStart = toInstant(range.startDate, timeZone)
-  const periodEnd = toInstant(range.endDate, timeZone)
   const readAt = periodEnd < now ? periodEnd : now
-  const teamIds = scope.teams.map(({id}) => id)
   const checksByTeam = await Promise.all(
     teamIds.map((teamId) => dataLoader.get('teamHealthChecksByTeamId').load(teamId))
   )
@@ -127,15 +81,14 @@ export const readReportTeamHealth = async (options: Options) => {
   const checkIds = [
     ...new Set(picks.flatMap(({check, earlierCheckIds}) => [check.id, ...earlierCheckIds]))
   ]
-  const [checkCategories, summariesByCheck, membersByTeam, allTeams] = await Promise.all([
+  const [checkCategories, summariesByCheck, membersByTeam] = await Promise.all([
     Promise.all(checkIds.map((checkId) => readCheckCategories(checkId, dataLoader))),
     Promise.all(
       picks.map(({check}) =>
         dataLoader.get('teamHealthCategorySummariesByMeetingId').load(check.id)
       )
     ),
-    Promise.all(picks.map(({teamId}) => dataLoader.get('teamMembersByTeamId').load(teamId))),
-    readAllTeams(options)
+    Promise.all(picks.map(({teamId}) => dataLoader.get('teamMembersByTeamId').load(teamId)))
   ])
   const categoriesByCheckId = new Map(
     checkIds.map((checkId, idx) => [checkId, checkCategories[idx]!])
@@ -173,9 +126,7 @@ export const readReportTeamHealth = async (options: Options) => {
               ]
             })
       }
-    }),
-    allTeams: allTeams.rows,
-    allTeamsTotal: allTeams.total
+    })
   }
 }
 

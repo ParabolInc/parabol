@@ -518,11 +518,6 @@ const permissionMap: PermissionMap<Resolvers> = {
       hasOrgFeatureFlag<'Organization.report'>('source.id', 'Reports'),
       rateLimit({perMinute: 120, perHour: 3000})
     ),
-    reportTeamHealth: and(
-      or(isSuperUser, isViewerOnOrg<'Organization.reportTeamHealth'>('source.id')),
-      hasOrgFeatureFlag<'Organization.reportTeamHealth'>('source.id', 'Reports'),
-      rateLimit({perMinute: 120, perHour: 3000})
-    ),
     reportTeamHealthCell: and(
       or(isSuperUser, isViewerOnOrg<'Organization.reportTeamHealthCell'>('source.id')),
       hasOrgFeatureFlag<'Organization.reportTeamHealthCell'>('source.id', 'Reports'),
