@@ -295,6 +295,7 @@ describe('recent pages for an empty query', () => {
     dataLoader
   } as unknown as GQLContext
   const recentPageIds: number[] = []
+  let trashedPageId: number
 
   const recentPages = async (args: {after?: string; teamIds?: string[]} = {}) => {
     if (typeof search !== 'function') throw new Error('search must be a resolver function')
@@ -356,6 +357,23 @@ describe('recent pages for an empty query', () => {
         }))
       )
       .execute()
+    const trashedPage = await pg
+      .insertInto('Page')
+      .values({
+        title: 'Trashed',
+        plaintextContent: '',
+        userId: recentViewerId,
+        sortOrder: 'a0',
+        updatedAt: new Date('2026-01-03T00:00:00Z'),
+        deletedAt: new Date('2026-01-03T00:00:00Z')
+      })
+      .returning('id')
+      .executeTakeFirstOrThrow()
+    trashedPageId = trashedPage.id
+    await pg
+      .insertInto('PageAccess')
+      .values({userId: recentViewerId, pageId: trashedPageId, role: 'owner'})
+      .execute()
   })
 
   afterAll(async () => {
@@ -376,6 +394,12 @@ describe('recent pages for an empty query', () => {
       ranking: 'recent',
       position: 3
     })
+  })
+
+  it('leaves trashed pages out', async () => {
+    const {edges} = await recentPages()
+    expect(edges.map(({nodeId}) => nodeId)).toEqual([recentPageIds[2], recentPageIds[1]])
+    expect(edges.map(({nodeId}) => nodeId)).not.toContain(trashedPageId)
   })
 
   it('lists a page shared with several requested teams once', async () => {
