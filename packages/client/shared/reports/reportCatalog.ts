@@ -227,9 +227,9 @@ export const REPORT_MEASURES = {
   },
   DAYS_TO_DONE: {
     kind: 'median',
-    label: 'Days to done',
+    label: 'Days to finish a task',
     description:
-      'Days from making a task to finishing it, the median of the tasks finished in each step',
+      'The median days from making a task to marking it done, among the tasks finished in each step',
     dimensions: [
       ...OVER_TIME,
       'TEAM',

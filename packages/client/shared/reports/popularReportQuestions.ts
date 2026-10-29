@@ -143,7 +143,7 @@ export const POPULAR_REPORT_QUESTIONS: readonly PopularReportQuestion[] = [
   {
     key: 'retroDaysToDone',
     subject: 'impact',
-    title: 'Days to done for retro tasks',
+    title: 'Days to finish retro tasks',
     question: 'How long do retro tasks take to get done?',
     description: 'The median days from making a retro task to finishing it, by team',
     spec: {
