@@ -1,4 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
+import {useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {SearchDialogResultsQuery} from '../../__generated__/SearchDialogResultsQuery.graphql'
 import gqlQuery from '../../__generated__/SearchDialogResultsQuery.graphql'
@@ -34,6 +35,7 @@ interface Props {
 export const SearchDialogResults = (props: Props) => {
   const {queryRef, searchType, closeSearch, resultsListRef, query} = props
   const data = usePreloadedQuery<SearchDialogResultsQuery>(gqlQuery, queryRef)
+  const [selectedId, setSelectedId] = useState<string | null>(null)
   const {viewer} = data
   const {search} = viewer
   const {edges} = search
@@ -44,6 +46,8 @@ export const SearchDialogResults = (props: Props) => {
         resultsListRef={resultsListRef}
         edgesRef={edges}
         closeSearch={closeSearch}
+        selectedId={selectedId}
+        setSelectedId={setSelectedId}
       />
     )
   }
@@ -55,6 +59,8 @@ export const SearchDialogResults = (props: Props) => {
       title={title}
       closeSearch={closeSearch}
       query={query}
+      selectedId={selectedId}
+      setSelectedId={setSelectedId}
     />
   )
 }

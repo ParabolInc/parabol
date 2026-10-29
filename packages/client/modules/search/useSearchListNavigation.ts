@@ -1,7 +1,8 @@
-import {type Ref, useEffect, useImperativeHandle, useState} from 'react'
+import {type Ref, useImperativeHandle} from 'react'
 import {useNavigate} from 'react-router'
 import {getPageSlug} from '../../tiptap/getPageSlug'
 import {GQLID} from '../../utils/GQLID'
+import {getSelectedIndex} from './getSelectedIndex'
 import {ResultsListRefHandler} from './SearchDialogContent'
 
 export const useSearchListNavigation = (
@@ -12,15 +13,18 @@ export const useSearchListNavigation = (
       title?: string | null | undefined
     }
   }[],
-  closeSearch: () => void
+  closeSearch: () => void,
+  selectedId: string | null,
+  setSelectedId: (id: string | null) => void
 ) => {
-  const [selectedIndex, setSelectedIndex] = useState(-1)
   const navigate = useNavigate()
-
-  useEffect(() => {
-    if (selectedIndex === -1) return
-    setSelectedIndex(0)
-  }, [edges])
+  const selectedIndex = getSelectedIndex(
+    edges.map(({node}) => node.id),
+    selectedId
+  )
+  const setSelectedIndex = (index: number) => {
+    setSelectedId(edges[index]?.node.id ?? null)
+  }
 
   useImperativeHandle(resultsListRef, () => ({
     onKeyDown: (e: React.KeyboardEvent) => {
@@ -28,12 +32,12 @@ export const useSearchListNavigation = (
 
       if (e.key === 'ArrowUp') {
         e.preventDefault()
-        setSelectedIndex((prev) => Math.max(0, prev - 1))
+        setSelectedIndex(Math.max(0, selectedIndex - 1))
         return true
       }
       if (e.key === 'ArrowDown') {
         e.preventDefault()
-        setSelectedIndex((prev) => Math.min(edges.length - 1, prev + 1))
+        setSelectedIndex(Math.min(edges.length - 1, selectedIndex + 1))
         return true
       }
       if (e.key === 'Enter') {
