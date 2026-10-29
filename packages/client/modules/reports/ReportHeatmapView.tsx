@@ -1,3 +1,4 @@
+import {useRef} from 'react'
 import {
   isReportAdditiveMeasure,
   isReportTimeDimension,
@@ -20,6 +21,7 @@ import {
 } from './reportHeatmapGrid'
 import {type ReportResultRow, sumReportValues} from './reportRows'
 import type {ReportStepLength} from './reportSpecLabels'
+import useHideTotalWithoutRoom from './useHideTotalWithoutRoom'
 
 interface Props {
   spec: ReportSpec
@@ -51,7 +53,9 @@ const ReportHeatmapView = ({spec, step, rows, rowTotals, isCompact, lastHeldByTe
   const listedRows = gridRows.filter((row) => !emptyRows.includes(row))
   const shownRows = isCompact ? listedRows.slice(0, COMPACT_ROW_COUNT) : listedRows
   const max = kind === 'latest' ? 0 : Math.max(0, ...rows.map(({values}) => values[0] ?? 0))
-  const hasTotals = !isCompact && rowTotals.length > 0
+  const hasTotals = rowTotals.length > 0
+  const scrollRef = useRef<HTMLDivElement>(null)
+  useHideTotalWithoutRoom(scrollRef, isCompact && hasTotals)
   const isCount = kind === 'count'
   return (
     <div className='flex flex-col gap-3'>
@@ -62,8 +66,8 @@ const ReportHeatmapView = ({spec, step, rows, rowTotals, isCompact, lastHeldByTe
           {plural(gridRows.length, 'team')}
         </p>
       )}
-      <div className='overflow-x-auto'>
-        <table className='w-full min-w-max border-separate border-spacing-1 text-sm'>
+      <div ref={scrollRef} className='overflow-x-auto'>
+        <table className='w-max max-w-full border-separate border-spacing-1 text-sm data-[hide-total]:[&_[data-total]]:hidden'>
           <ReportHeatmapHeader
             columns={columns}
             columnDimension={columnDimension}
