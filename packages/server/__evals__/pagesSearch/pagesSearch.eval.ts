@@ -11,7 +11,11 @@ import {
 } from '../../graphql/public/fields/search'
 import {RRF_K} from '../../postgres/expressions'
 import getKysely from '../../postgres/getKysely'
-import {getPagesByRRF} from '../../postgres/queries/getPagesByRRF'
+import {
+  getPagesByRRF,
+  VECTOR_MIN_PAGE_CHARS,
+  VECTOR_ONLY_LIMIT
+} from '../../postgres/queries/getPagesByRRF'
 import type {User} from '../../postgres/types'
 import {Logger} from '../../utils/Logger'
 import {HEAVY_CORPUS} from './heavyCorpus/generateHeavyCorpus'
@@ -147,8 +151,14 @@ const parseLabel = (value: string) => {
 const parseSweepConfigs = (): SweepConfig[] => {
   const alphas = parseFractions('EVAL_ALPHAS', process.env.EVAL_ALPHAS ?? DEFAULT_SWEEP_ALPHAS)
   const floors = parseFractions('EVAL_FLOORS', process.env.EVAL_FLOORS ?? DEFAULT_SWEEP_FLOORS)
-  const minCharsList = parseCounts('EVAL_MIN_CHARS', process.env.EVAL_MIN_CHARS ?? '0')
-  const limiters = parseLimiters('EVAL_LIMITERS', process.env.EVAL_LIMITERS ?? 'off')
+  const minCharsList = parseCounts(
+    'EVAL_MIN_CHARS',
+    process.env.EVAL_MIN_CHARS ?? String(VECTOR_MIN_PAGE_CHARS)
+  )
+  const limiters = parseLimiters(
+    'EVAL_LIMITERS',
+    process.env.EVAL_LIMITERS ?? `cap:${VECTOR_ONLY_LIMIT}`
+  )
   return alphas.flatMap((alpha) =>
     floors.flatMap((floor) =>
       minCharsList.flatMap((minChars) =>
@@ -353,7 +363,6 @@ const scoreSweepQuery = async (
       dateRange: null,
       vectorFloor: floor,
       vectorMinChars: minChars,
-      vectorRelativeFloor: limiter.relativeFloor ?? null,
       vectorOnlyLimit: limiter.vectorOnlyLimit ?? null
     })
     resultIds = toResultIds(edges.map(({nodeId}) => nodeId))

@@ -339,11 +339,18 @@ it('pages past the first 100 keyword matches', async () => {
   expect(pageInfo.hasNextPage).toBe(false)
 })
 
-it('pages past the first 100 vector matches', async () => {
+it('keeps 10 vector-only pages by default', async () => {
+  const {edges, pageInfo} = await fused(0.5, {query: '!!', viewerId: bulkViewerId})
+  expect(edges).toHaveLength(10)
+  expect(pageInfo.hasNextPage).toBe(false)
+})
+
+it('pages past the first 100 vector matches without a vector-only limit', async () => {
   const {edges, pageInfo} = await fused(0.5, {
     query: '!!',
     viewerId: bulkViewerId,
-    offset: BULK_PAGE_COUNT - 1
+    offset: BULK_PAGE_COUNT - 1,
+    vectorOnlyLimit: null
   })
   expect(edges).toHaveLength(1)
   expect(edges[0]!.score.vectorRank).toBe(BULK_PAGE_COUNT)
@@ -368,27 +375,15 @@ const resultIds = ({edges}: Awaited<ReturnType<typeof getPagesByRRF>>) =>
   edges.map(({nodeId}) => nodeId)
 
 it('leaves near-empty pages out of the vector arm', async () => {
-  expect(resultIds(await junkSearch())).toContain(nearEmptyId)
-  expect(resultIds(await junkSearch({vectorMinChars: 100}))).not.toContain(nearEmptyId)
+  expect(resultIds(await junkSearch({vectorMinChars: 0}))).toContain(nearEmptyId)
+  expect(resultIds(await junkSearch())).not.toContain(nearEmptyId)
 })
 
 it('still finds a near-empty page by its keywords', async () => {
-  const {edges} = await junkSearch({vectorMinChars: 100})
+  const {edges} = await junkSearch()
   const edge = edges.find(({nodeId}) => nodeId === nearEmptyKeywordId)
   expect(edge?.score.keywordRank).toBe(1)
   expect(edge?.score.vectorRank).toBeNull()
-})
-
-it('keeps vector matches within the relative floor of the best', async () => {
-  const ids = resultIds(await junkSearch({vectorMinChars: 100, vectorRelativeFloor: 0.1}))
-  expect(ids).toEqual(expect.arrayContaining([strongId, closeId]))
-  expect(ids).not.toContain(weakId)
-})
-
-it('measures the relative floor after near-empty pages are removed', async () => {
-  const ids = resultIds(await junkSearch({vectorMinChars: 100, vectorRelativeFloor: 0.07}))
-  expect(ids).toEqual(expect.arrayContaining([strongId, closeId]))
-  expect(ids).not.toContain(weakId)
 })
 
 it('keeps at most the limit of vector-only pages', async () => {

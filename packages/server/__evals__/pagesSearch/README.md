@@ -24,8 +24,8 @@ Reseed with `EVAL_RESEED=1` after you change how pages are indexed (`embedPage`,
 | `EVAL_MODES` | `fused` | Comma-separated `fused`, `quick` and/or `sweep`. `quick` sends `alpha: 0`. `sweep` is described below |
 | `EVAL_ALPHAS` | `0.25,0.5,0.75` | `sweep` only: the alphas to rank with |
 | `EVAL_FLOORS` | `0.3,0.35,0.4,0.45,0.5` | `sweep` only: the vector similarity floors to rank with |
-| `EVAL_MIN_CHARS` | `0` | `sweep` only: whole numbers; the vector arm skips pages whose plain text is shorter |
-| `EVAL_LIMITERS` | `off` | `sweep` only: `off`, `relative:<decimal>` (keep vector matches within that much of the query's best similarity) or `cap:<n>` (keep at most n pages found only by the vector arm) |
+| `EVAL_MIN_CHARS` | `200` | `sweep` only: whole numbers; the vector arm skips pages whose plain text is shorter |
+| `EVAL_LIMITERS` | `cap:10` | `sweep` only: `off` or `cap:<n>`, which keeps at most n pages found only by the vector arm |
 | `EVAL_LABEL` | `local` | Names the results file |
 | `EVAL_RESEED` | unset | `1` deletes the eval user's pages and seeds them again |
 | `EVAL_DUMP` | unset | `1` writes the set's corpus to `results/<corpus>-corpus/` and skips seeding and ranking: one `<key>.md` per page (the title, a blank line, then the plain text that keyword search reads) plus `index.json` |

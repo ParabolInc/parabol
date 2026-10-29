@@ -11,6 +11,8 @@ import {
 import {getPageSearchPageInfo} from './pageSearchCursor'
 
 export const VECTOR_SIMILARITY_FLOOR = 0.4
+export const VECTOR_MIN_PAGE_CHARS = 200
+export const VECTOR_ONLY_LIMIT = 10
 
 export const getPagesByRRF = async ({
   query,
@@ -23,16 +25,14 @@ export const getPagesByRRF = async ({
   teamIds,
   dateRange,
   vectorFloor = VECTOR_SIMILARITY_FLOOR,
-  vectorMinChars = 0,
-  vectorRelativeFloor = null,
-  vectorOnlyLimit = null
+  vectorMinChars = VECTOR_MIN_PAGE_CHARS,
+  vectorOnlyLimit = VECTOR_ONLY_LIMIT
 }: PageKeywordSearchParams & {
   queryVector: Float32Array
   alpha: number
   k: number
   vectorFloor?: number
   vectorMinChars?: number
-  vectorRelativeFloor?: number | null
   vectorOnlyLimit?: number | null
 }): Promise<PageSearchResults> => {
   const tableName = getEmbeddingsPagesTableName(activeEmbeddingModelId)
@@ -65,13 +65,6 @@ export const getPagesByRRF = async ({
       qb
         .selectFrom('PageBestChunk')
         .where('vectorScore', '>=', vectorFloor)
-        .$if(vectorRelativeFloor !== null, (qb) =>
-          qb.where(
-            'vectorScore',
-            '>=',
-            sql<number>`(select max("vectorScore") from "PageBestChunk") - ${vectorRelativeFloor}`
-          )
-        )
         .select((eb) => [
           'id',
           'updatedAt',
