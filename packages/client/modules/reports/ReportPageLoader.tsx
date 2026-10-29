@@ -1,8 +1,9 @@
 import {Suspense, useMemo} from 'react'
 import {useNavigate} from 'react-router'
 import reportPageQuery, {type ReportPageQuery} from '../../__generated__/ReportPageQuery.graphql'
-import useQueryLoaderNow from '../../hooks/useQueryLoaderNow'
+import {useQueryLoaderNowWithRetry} from '../../hooks/useQueryLoaderNow'
 import type {ReportSpec} from '../../shared/reports/reportCatalog'
+import ReportLoadError from './ReportLoadError'
 import ReportPage from './ReportPage'
 import {toReportPagePath, toReportPinPath} from './reportPaths'
 import type {ReportPagePeriod} from './reportPeriodParam'
@@ -23,11 +24,10 @@ const ReportPageLoader = ({orgId, spec, title, pinId, period, reportQuestionId}:
   const navigate = useNavigate()
   const timeZone = useMemo(() => Intl.DateTimeFormat().resolvedOptions().timeZone, [])
   const panelVariables = useMemo(() => toReportPanelVariables(spec, period), [spec, period])
-  const queryRef = useQueryLoaderNow<ReportPageQuery>(
+  const {queryRef, retry, error} = useQueryLoaderNowWithRetry<ReportPageQuery>(
     reportPageQuery,
     {orgId, timeZone, ...panelVariables},
-    undefined,
-    true
+    {preventSuspense: true}
   )
   const onPeriodChange = (nextPeriod: ReportPagePeriod) => {
     navigate(
@@ -40,6 +40,13 @@ const ReportPageLoader = ({orgId, spec, title, pinId, period, reportQuestionId}:
   const onSpecChange = useReportSpecChange(orgId, reportQuestionId, (nextSpec, questionId) =>
     toReportPagePath(orgId, nextSpec, period, questionId)
   )
+  if (!queryRef && error) {
+    return (
+      <div className='px-4 pt-4 sm:px-8'>
+        <ReportLoadError onRetry={retry} />
+      </div>
+    )
+  }
   return (
     <Suspense fallback={''}>
       {queryRef && (
@@ -52,6 +59,7 @@ const ReportPageLoader = ({orgId, spec, title, pinId, period, reportQuestionId}:
           reportQuestionId={reportQuestionId}
           onPeriodChange={onPeriodChange}
           onSpecChange={onSpecChange}
+          onRetry={error ? retry : null}
         />
       )}
     </Suspense>

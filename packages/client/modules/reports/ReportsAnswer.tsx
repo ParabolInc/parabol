@@ -16,6 +16,7 @@ interface Props {
   period: ReportPagePeriod
   onSpecChange: (spec: ReportSpec, title: string) => void
   onClose: () => void
+  onRetry: (() => void) | null
 }
 
 const query = graphql`
@@ -46,11 +47,12 @@ const query = graphql`
   }
 `
 
-const ReportsAnswer = ({queryRef, orgId, answer, period, onSpecChange, onClose}: Props) => {
+const ReportsAnswer = (props: Props) => {
+  const {queryRef, orgId, answer, period, onSpecChange, onClose, onRetry} = props
   const {viewer} = usePreloadedQuery<ReportsAnswerQuery>(query, queryRef)
   const {organization} = viewer
   const {spec, reportQuestionId} = answer
-  const resultSpec = useResultSpec(queryRef.variables.spec, spec)
+  const {resultSpec, isUpdating} = useResultSpec(queryRef.variables.spec, spec, period)
   const levels = organization?.structure ?? []
   // the viewer's own question names its report, unless the report shown has changed from it
   const question = organization?.recentReportQuestions.find(({id}) => id === reportQuestionId)
@@ -65,6 +67,8 @@ const ReportsAnswer = ({queryRef, orgId, answer, period, onSpecChange, onClose}:
       orgId={orgId}
       spec={spec}
       resultSpec={resultSpec}
+      isUpdating={isUpdating}
+      onRetry={onRetry}
       name={title ?? describeReportSpec(spec, levels)}
       period={period}
       reportQuestionId={reportQuestionId}

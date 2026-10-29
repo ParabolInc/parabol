@@ -3,7 +3,8 @@ import {useNavigate} from 'react-router'
 import reportsAnswerQuery, {
   type ReportsAnswerQuery
 } from '../../__generated__/ReportsAnswerQuery.graphql'
-import useQueryLoaderNow from '../../hooks/useQueryLoaderNow'
+import {useQueryLoaderNowWithRetry} from '../../hooks/useQueryLoaderNow'
+import ReportLoadError from './ReportLoadError'
 import ReportsAnswer from './ReportsAnswer'
 import {type ReportAddress, toReportsHomePath} from './reportPaths'
 import type {ReportPagePeriod} from './reportPeriodParam'
@@ -23,11 +24,10 @@ const ReportsAnswerLoader = ({orgId, answer, period}: Props) => {
   const navigate = useNavigate()
   const timeZone = useMemo(() => Intl.DateTimeFormat().resolvedOptions().timeZone, [])
   const panelVariables = useMemo(() => toReportPanelVariables(spec, period), [spec, period])
-  const queryRef = useQueryLoaderNow<ReportsAnswerQuery>(
+  const {queryRef, retry, error} = useQueryLoaderNowWithRetry<ReportsAnswerQuery>(
     reportsAnswerQuery,
     {orgId, timeZone, ...panelVariables},
-    undefined,
-    true
+    {preventSuspense: true}
   )
   const onSpecChange = useReportSpecChange(orgId, reportQuestionId, (nextSpec, questionId) =>
     toReportsHomePath(orgId, period, {spec: nextSpec, reportQuestionId: questionId})
@@ -36,7 +36,11 @@ const ReportsAnswerLoader = ({orgId, answer, period}: Props) => {
   if (!queryRef) {
     return (
       <section className='rounded-md border border-hairline bg-surface-card px-5 py-4 shadow-xs'>
-        <p className='m-0 text-fg-secondary text-sm'>Running the report…</p>
+        {error ? (
+          <ReportLoadError onRetry={retry} />
+        ) : (
+          <p className='m-0 text-fg-secondary text-sm'>Running the report…</p>
+        )}
       </section>
     )
   }
@@ -49,6 +53,7 @@ const ReportsAnswerLoader = ({orgId, answer, period}: Props) => {
         period={period}
         onSpecChange={onSpecChange}
         onClose={onClose}
+        onRetry={error ? retry : null}
       />
     </Suspense>
   )

@@ -19,6 +19,7 @@ interface Props {
   reportQuestionId: string | null
   onPeriodChange: (period: ReportPagePeriod) => void
   onSpecChange: (spec: ReportSpec, title: string) => void
+  onRetry: (() => void) | null
 }
 
 const query = graphql`
@@ -53,10 +54,11 @@ const ReportPage = ({
   period,
   reportQuestionId,
   onPeriodChange,
-  onSpecChange
+  onSpecChange,
+  onRetry
 }: Props) => {
   const {viewer} = usePreloadedQuery<ReportPageQuery>(query, queryRef)
-  const resultSpec = useResultSpec(queryRef.variables.spec, spec)
+  const {resultSpec, isUpdating} = useResultSpec(queryRef.variables.spec, spec, period)
   const {organization} = viewer
   const levels = organization?.structure ?? []
   const name = title ?? describeReportSpec(spec, levels)
@@ -76,6 +78,8 @@ const ReportPage = ({
           orgId={orgId}
           spec={spec}
           resultSpec={resultSpec}
+          isUpdating={isUpdating}
+          onRetry={onRetry}
           name={name}
           period={period}
           reportQuestionId={reportQuestionId}
