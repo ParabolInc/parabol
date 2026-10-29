@@ -63,7 +63,7 @@ describe('generateHeavyCorpus', () => {
     const digest = createHash('sha256').update(JSON.stringify(pages)).digest('hex')
     if (digest !== PINNED_DIGEST) {
       throw new Error(
-        `The heavy corpus changed (digest ${digest}). Recheck the labels in heavyQueries.json and heavyHoldoutQueries.json against the EVAL_DUMP=1 output, reseed with EVAL_RESEED=1, then set PINNED_DIGEST to the new digest.`
+        `The heavy corpus changed (digest ${digest}). Recheck heavyQueries.json against a fresh EVAL_DUMP=1 output, and have someone who doesn't tune ranking recheck heavyHoldoutQueries.json the same way. Then reseed with EVAL_RESEED=1, record the heavy baseline again and set PINNED_DIGEST to the new digest.`
       )
     }
   })

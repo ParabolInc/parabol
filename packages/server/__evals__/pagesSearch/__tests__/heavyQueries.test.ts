@@ -1,12 +1,15 @@
 import fs from 'fs'
 import path from 'path'
 import generateHeavyCorpus from '../heavyCorpus/generateHeavyCorpus'
+import toFixture from '../toFixture'
 
 interface HeavyQuery {
   query: string
   category: string
   relevant: Record<string, number>
 }
+
+const QUERY_FILES = ['heavyQueries.json', 'heavyHoldoutQueries.json']
 
 const CATEGORIES = [
   'title',
@@ -20,45 +23,68 @@ const CATEGORIES = [
   'noAnswer'
 ]
 
-const pageKeys = new Set(generateHeavyCorpus().map(({key}) => key))
+const LONG_DOC_ANSWERS: Record<string, string> = {
+  'stale pgbouncer connections after failover':
+    'pgbouncer keeps stale connections for up to a minute',
+  'how long are rate limit rejections logged before enforcing':
+    'We log would-be rejections for two weeks',
+  'which accounts move to the new session store first':
+    'We switch reads team by team, starting with internal accounts',
+  'when are on-call handoff notes due': 'Write handoff notes on Monday morning',
+  'how long to publish both saml certificates':
+    'Publish both certificates in our metadata for a week',
+  'who splits time between growth and escalations':
+    'Owen splits his time between growth and customer escalations'
+}
+
+const pages = generateHeavyCorpus()
+const pageKeys = new Set(pages.map(({key}) => key))
 
 const readQueries = (fileName: string): HeavyQuery[] =>
   JSON.parse(fs.readFileSync(path.join(__dirname, '..', fileName), 'utf8'))
 
-const QUERY_FILES = ['heavyQueries.json', 'heavyHoldoutQueries.json']
-
-describe.each(QUERY_FILES)('%s', (fileName) => {
-  const queries = readQueries(fileName)
-
-  it('has non-blank, unique queries', () => {
-    expect(queries.filter(({query}) => !query.trim())).toEqual([])
-    expect(new Set(queries.map(({query}) => query)).size).toBe(queries.length)
+const findQueryProblems = (queries: HeavyQuery[]) => {
+  const seen = new Set<string>()
+  const problems = queries.flatMap(({query, category, relevant}, index) => {
+    const label = `query ${index + 1}`
+    const normalized = query.trim().toLowerCase()
+    const grades = Object.entries(relevant)
+    const isRepeat = seen.has(normalized)
+    seen.add(normalized)
+    return [
+      !normalized && `${label} is blank`,
+      isRepeat && `${label} repeats an earlier query`,
+      !CATEGORIES.includes(category) && `${label} has an unknown category`,
+      grades.some(([key]) => !pageKeys.has(key)) &&
+        `${label} grades a page that is not in the corpus`,
+      grades.some(([, grade]) => ![1, 2, 3].includes(grade)) &&
+        `${label} has a grade other than 1, 2 or 3`,
+      category === 'noAnswer' && grades.length > 0 && `${label} grades a page but has no answer`,
+      category !== 'noAnswer' &&
+        !grades.some(([, grade]) => grade === 3) &&
+        `${label} has no page graded 3`
+    ].filter((problem): problem is string => !!problem)
   })
+  const noAnswerCount = queries.filter(({category}) => category === 'noAnswer').length
+  return noAnswerCount < 4 ? [...problems, 'fewer than 4 queries have no answer'] : problems
+}
 
-  it('uses the heavy corpus categories', () => {
-    expect(queries.filter(({category}) => !CATEGORIES.includes(category))).toEqual([])
-  })
+it('describes problems without quoting queries or labels', () => {
+  const problems = findQueryProblems([
+    {query: 'quarterly secret', category: 'gossip', relevant: {'no-such-page': 5}}
+  ])
+  expect(problems).toEqual([
+    'query 1 has an unknown category',
+    'query 1 grades a page that is not in the corpus',
+    'query 1 has a grade other than 1, 2 or 3',
+    'query 1 has no page graded 3',
+    'fewer than 4 queries have no answer'
+  ])
+  expect(problems.join(' ')).not.toMatch(/quarterly|secret|gossip|no-such-page/)
+})
 
-  it('grades generated pages 1, 2 or 3', () => {
-    const badLabels = queries.flatMap(({query, relevant}) =>
-      Object.entries(relevant)
-        .filter(([key, grade]) => !pageKeys.has(key) || ![1, 2, 3].includes(grade))
-        .map(([key, grade]) => `${query}: ${key} ${grade}`)
-    )
-    expect(badLabels).toEqual([])
-  })
-
-  it('gives every answerable query the page the user wants', () => {
-    const misgraded = queries.filter(({category, relevant}) => {
-      const grades = Object.values(relevant)
-      return category === 'noAnswer' ? grades.length > 0 : !grades.includes(3)
-    })
-    expect(misgraded.map(({query}) => query)).toEqual([])
-  })
-
-  it('has queries without an answer', () => {
-    expect(queries.filter(({category}) => category === 'noAnswer').length).toBeGreaterThanOrEqual(4)
-  })
+it.each(QUERY_FILES)('%s has well-formed queries and labels', (fileName) => {
+  expect(findQueryProblems(readQueries(fileName))).toEqual([])
 })
 
 it('shares no query text between dev and holdout', () => {
@@ -66,5 +92,20 @@ it('shares no query text between dev and holdout', () => {
     readQueries(fileName).map(({query}) => query.trim().toLowerCase())
   )
   const holdout = new Set(holdoutQueries)
-  expect(devQueries!.filter((query) => holdout.has(query))).toEqual([])
+  expect(devQueries!.filter((query) => holdout.has(query)).length).toBe(0)
+})
+
+it('puts each dev longDoc answer in the second half of its doc', () => {
+  const plaintextByKey = new Map(
+    pages.map(({key, content}) => [key, toFixture(key, content).plaintextContent])
+  )
+  const shallow = readQueries('heavyQueries.json')
+    .filter(({category}) => category === 'longDoc')
+    .filter(({query, relevant}) => {
+      const [docKey] = Object.entries(relevant).find(([, grade]) => grade === 3) ?? []
+      const text = plaintextByKey.get(docKey ?? '') ?? ''
+      const answer = LONG_DOC_ANSWERS[query]
+      return !answer || !(text.indexOf(answer) > text.length / 2)
+    })
+  expect(shallow.map(({query}) => query)).toEqual([])
 })

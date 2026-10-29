@@ -12,12 +12,23 @@
   {
     "query": "postgres failover runbook",
     "category": "title",
-    "relevant": {"doc-postgres-failover-runbook": 3}
+    "relevant": {
+      "doc-postgres-failover-runbook": 3,
+      "doc-postgres-18-upgrade-plan": 1,
+      "doc-saml-certificate-runbook": 1,
+      "doc-session-store-rfc": 1
+    }
   },
   {
     "query": "pricing page experiment results",
     "category": "title",
-    "relevant": {"doc-pricing-experiment-results": 3, "beacon-standup-2026-08-13": 2}
+    "relevant": {
+      "doc-pricing-experiment-results": 3,
+      "beacon-standup-2026-08-13": 2,
+      "doc-acme-interview-notes": 1,
+      "doc-duplicate-trial-emails-postmortem": 1,
+      "doc-onboarding-email-sequence": 1
+    }
   },
   {
     "query": "Atlas Sprint Poker #4",
@@ -27,7 +38,13 @@
   {
     "query": "referral program spec",
     "category": "title",
-    "relevant": {"doc-referral-program-spec": 3, "beacon-standup-2026-09-03": 2}
+    "relevant": {
+      "doc-referral-program-spec": 3,
+      "beacon-standup-2026-09-03": 2,
+      "doc-acme-interview-notes": 1,
+      "doc-analytics-vendor-evaluation": 1,
+      "doc-duplicate-trial-emails-postmortem": 1
+    }
   },
   {
     "query": "Beacon Standup Aug 27",
@@ -39,11 +56,26 @@
     "category": "title",
     "relevant": {"atlas-retro-6": 3, "atlas-meeting-summaries": 1}
   },
-  {"query": "postg failo", "category": "prefix", "relevant": {"doc-postgres-failover-runbook": 3}},
+  {
+    "query": "postg failo",
+    "category": "prefix",
+    "relevant": {
+      "doc-postgres-failover-runbook": 3,
+      "doc-postgres-18-upgrade-plan": 1,
+      "doc-saml-certificate-runbook": 1,
+      "doc-session-store-rfc": 1
+    }
+  },
   {
     "query": "analyt vendor eval",
     "category": "prefix",
-    "relevant": {"doc-analytics-vendor-evaluation": 3, "beacon-standup-2026-08-05": 2}
+    "relevant": {
+      "doc-analytics-vendor-evaluation": 3,
+      "beacon-standup-2026-08-05": 2,
+      "doc-onboarding-email-sequence": 1,
+      "doc-pricing-experiment-results": 1,
+      "doc-referral-program-spec": 1
+    }
   },
   {
     "query": "dupl trial em",
@@ -51,18 +83,33 @@
     "relevant": {
       "doc-duplicate-trial-emails-postmortem": 3,
       "beacon-standup-2026-08-27": 2,
-      "beacon-retro-7": 2
+      "beacon-retro-7": 2,
+      "doc-analytics-vendor-evaluation": 1,
+      "doc-pricing-experiment-results": 1,
+      "doc-q3-growth-plan": 1
     }
   },
   {
     "query": "sess stor val",
     "category": "prefix",
-    "relevant": {"doc-session-store-rfc": 3, "atlas-standup-2026-09-21": 2}
+    "relevant": {
+      "doc-session-store-rfc": 3,
+      "atlas-standup-2026-09-21": 2,
+      "doc-on-call-handbook": 1,
+      "doc-postgres-failover-runbook": 1,
+      "doc-rate-limiting-rfc": 1
+    }
   },
   {
     "query": "acme interv",
     "category": "prefix",
-    "relevant": {"doc-acme-interview-notes": 3, "beacon-standup-2026-07-09": 1}
+    "relevant": {
+      "doc-acme-interview-notes": 3,
+      "beacon-standup-2026-07-09": 1,
+      "doc-pricing-experiment-results": 1,
+      "doc-q3-growth-plan": 1,
+      "doc-referral-program-spec": 1
+    }
   },
   {
     "query": "pgbouncer pool size",
@@ -126,7 +173,8 @@
     "relevant": {
       "beacon-standup-2026-08-05": 3,
       "doc-analytics-vendor-evaluation": 3,
-      "beacon-retro-5": 2
+      "beacon-retro-5": 2,
+      "beacon-standup-2026-09-14": 2
     }
   },
   {
@@ -177,7 +225,10 @@
     "relevant": {
       "doc-postgres-18-upgrade-plan": 3,
       "atlas-standup-2026-06-17": 1,
-      "atlas-standup-2026-08-03": 1
+      "atlas-standup-2026-08-03": 1,
+      "doc-cdn-purge-postmortem": 1,
+      "doc-rate-limiting-rfc": 1,
+      "doc-session-store-rfc": 1
     }
   },
   {
@@ -203,7 +254,13 @@
   {
     "query": "sesion store valky",
     "category": "typo",
-    "relevant": {"doc-session-store-rfc": 3, "atlas-standup-2026-09-21": 2}
+    "relevant": {
+      "doc-session-store-rfc": 3,
+      "atlas-standup-2026-09-21": 2,
+      "doc-on-call-handbook": 1,
+      "doc-postgres-failover-runbook": 1,
+      "doc-rate-limiting-rfc": 1
+    }
   },
   {
     "query": "cdn purge postmortm",
@@ -212,7 +269,10 @@
       "doc-cdn-purge-postmortem": 3,
       "atlas-standup-2026-07-15": 2,
       "atlas-standup-2026-07-14": 2,
-      "atlas-retro-4": 2
+      "atlas-retro-4": 2,
+      "doc-on-call-handbook": 1,
+      "doc-postgres-18-upgrade-plan": 1,
+      "doc-postgres-failover-runbook": 1
     }
   },
   {
@@ -228,7 +288,7 @@
   {
     "query": "when were the cdn assets restored",
     "category": "table",
-    "relevant": {"doc-cdn-purge-postmortem": 3}
+    "relevant": {"doc-cdn-purge-postmortem": 3, "atlas-standup-2026-07-14": 2, "atlas-retro-4": 1}
   },
   {
     "query": "day 7 onboarding email",
@@ -236,32 +296,39 @@
     "relevant": {"doc-onboarding-email-sequence": 3}
   },
   {
-    "query": "replication lag before failing over",
+    "query": "stale pgbouncer connections after failover",
     "category": "longDoc",
     "relevant": {"doc-postgres-failover-runbook": 3}
   },
   {
-    "query": "rate limit burst size",
+    "query": "how long are rate limit rejections logged before enforcing",
     "category": "longDoc",
     "relevant": {"doc-rate-limiting-rfc": 3}
   },
   {
-    "query": "session expiry inactivity",
+    "query": "which accounts move to the new session store first",
     "category": "longDoc",
     "relevant": {"doc-session-store-rfc": 3}
   },
   {
-    "query": "page escalates to secondary after how long",
+    "query": "when are on-call handoff notes due",
     "category": "longDoc",
-    "relevant": {"doc-on-call-handbook": 3}
+    "relevant": {
+      "doc-on-call-handbook": 3,
+      "atlas-retro-8": 1,
+      "atlas-retro-9": 1,
+      "beacon-retro-1": 1,
+      "beacon-retro-5": 1,
+      "beacon-retro-7": 1
+    }
   },
   {
-    "query": "when to email admins about the saml certificate",
+    "query": "how long to publish both saml certificates",
     "category": "longDoc",
     "relevant": {"doc-saml-certificate-runbook": 3}
   },
   {
-    "query": "activation target first week",
+    "query": "who splits time between growth and escalations",
     "category": "longDoc",
     "relevant": {"doc-q3-growth-plan": 3}
   },
@@ -287,7 +354,11 @@
   {
     "query": "Jonah duplicate emails cron",
     "category": "person",
-    "relevant": {"beacon-standup-2026-08-27": 3, "doc-duplicate-trial-emails-postmortem": 2}
+    "relevant": {
+      "beacon-standup-2026-08-27": 3,
+      "doc-duplicate-trial-emails-postmortem": 2,
+      "beacon-retro-7": 2
+    }
   },
   {
     "query": "Yuki churn analysis",
