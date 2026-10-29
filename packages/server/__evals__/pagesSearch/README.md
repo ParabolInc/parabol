@@ -397,3 +397,96 @@ On `heavy-dev`, by category:
 - **The gate passes.** On `heavy-holdout`, nDCG@10 rises by 0.020 and Recall@20 by 0.014.
 - **The fixture holdout drops.** Its Recall@20 falls by 0.043, about one page: the short-note cost above.
 - **What was read.** Only overall rows. The local holdout results were scrubbed down to those rows.
+
+## Natural-language matching (2026-10-29)
+
+Keyword search used to need every word of a query, stop words included. A question like "when were the cdn assets restored" matched only pages that also contained "when", "were" and "the", and the 8-word cap cut longer questions off before their last content words. Two rules in `withPageKeywordRanking` change that, for both the quick list and fused ranking:
+- **Stop words leave the query.** Words on Postgres's English stop list (`ts_lexize('english_stem', word)` is empty) leave before the 8-word cap. A query made only of stop words keeps them all, so "to do" still needs both words. Words in other languages all stay.
+- **Pages with some of the words follow.** When fewer pages than a threshold have every word, pages with some of them come next, ordered by:
+  1. the number of words, most first;
+  2. title matches;
+  3. `ts_rank_cd` against any of the words;
+  4. the most recently updated.
+
+  Snippets highlight whichever words a page contains.
+
+Each list has its own defaults: `QUICK_KEYWORD_MATCHING` in `getPagesByKeyword.ts` and `FUSED_KEYWORD_MATCHING` in `getPagesByRRF.ts`.
+- **Quick list:** when fewer than 20 pages have every word, pages with any of the words fill the list.
+- **Fused ranking:** only when no page has every word do pages with at least half of the words follow. At alpha 0.25, every page found by keywords outranks every page found only by the vector arm, so a wider fallback pushes good vector matches down. Falling back below 20 instead of 1, still requiring half the words, gives `heavy-dev` nDCG@10 0.657 instead of 0.715.
+
+The heavy corpus baseline above is from before this change.
+
+**How it was chosen.** The plan fixed a selection rule before any sweep ran:
+1. **Rows.** Each list's rows cross three settings:
+   - stop words, kept or dropped;
+   - the threshold: 0, 1, 5 or 20 pages;
+   - the minimum share of the words: any, or half.
+
+   Master keeps stop words and never falls back.
+2. **Eligibility.** A row is eligible when, on both `heavy-dev` and `dev`, nDCG@10 and Recall@20 are within 0.005 of master's. For fused ranking, `noAnswerResults` must also rise by at most 1.
+3. **Pick.** Each list takes its eligible row with the highest mean nDCG@10 over the two sets. Rows within 0.005 tie; ties go to higher mean Recall@20, then fewer changes, then the smaller threshold.
+4. **Stop words.** They are kept or dropped for both lists together, by the higher summed nDCG@10.
+5. **Gate.** On `heavy-holdout`, each changed list must keep nDCG@10 and Recall@20 within 0.01 of master's.
+
+Quick list (alpha 0):
+
+| Configuration | `heavy-dev` nDCG@10 | Recall@20 | Zero-result rate | `dev` nDCG@10 | Recall@20 | Zero-result rate |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| master | 0.525 | 0.574 | 0.385 | 0.552 | 0.544 | 0.386 |
+| drop stop words, no fallback | 0.559 | 0.603 | 0.327 | 0.648 | 0.632 | 0.277 |
+| keep stop words, fill below 20 | 0.738 | 0.853 | 0.019 | 0.797 | 0.916 | 0.048 |
+| **drop stop words, fill below 20** | 0.767 | 0.853 | 0.038 | 0.854 | 0.912 | 0.048 |
+| drop, fill below 5 (tied, lower Recall@20) | 0.766 | 0.846 | 0.038 | 0.854 | 0.912 | 0.048 |
+| drop, fill below 20, half the words | 0.739 | 0.822 | 0.077 | 0.843 | 0.884 | 0.072 |
+
+Fused ranking (alpha 0.25, floor 0.4, 200 bytes):
+
+| Configuration | `heavy-dev` nDCG@10 | Recall@20 | `noAnswerResults` | `dev` nDCG@10 | Recall@20 | `noAnswerResults` |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| master | 0.610 | 0.753 | 13.67 | 0.618 | 0.826 | 10.63 |
+| drop stop words, no fallback | 0.636 | 0.753 | 13.67 | 0.687 | 0.847 | 10.63 |
+| drop, fall back below 1, any word (not eligible) | 0.729 | 0.830 | 15.17 | 0.778 | 0.886 | 14.75 |
+| **drop, fall back below 1, half the words** | 0.715 | 0.830 | 13.67 | 0.788 | 0.880 | 11.63 |
+| drop, fall back below 20, any word | 0.634 | 0.872 | 15.17 | 0.694 | 0.940 | 14.75 |
+
+On `heavy-dev`, by category:
+
+| Category | Quick before | Quick after | Fused before | Fused after |
+| --- | ---: | ---: | ---: | ---: |
+| title | 0.73 | 0.75 | 0.74 | 0.74 |
+| prefix | 0.92 | 0.96 | 0.91 | 0.91 |
+| body | 0.89 | 0.93 | 0.87 | 0.87 |
+| paraphrase | 0.00 | 0.44 | 0.19 | 0.32 |
+| typo | 0.00 | 0.58 | 0.28 | 0.56 |
+| table | 0.48 | 0.72 | 0.60 | 0.79 |
+| longDoc | 0.50 | 1.00 | 0.65 | 0.99 |
+| person | 0.61 | 0.78 | 0.59 | 0.59 |
+
+On `dev`, the summary queries that fell in A1 recover: the quick list goes from 0.51 to 0.97 and fused ranking from 0.54 to 0.82. Table queries go from 0.44 to 0.95 (quick) and from 0.71 to 0.94 (fused). Typo queries gain because a misspelled word no longer stops the other words from matching.
+
+**What it costs.**
+- **Unanswerable queries fill the quick list.**
+  - On `heavy-dev` such a query now gets 5 quick results instead of none, and on `dev` 10.25. They are pages that share a word with the query.
+  - Fused results for these queries barely change: 13.67 before and after on `heavy-dev`, and 10.63 → 11.63 on `dev`. So the list a person ends up with is about as long as before.
+  - Requiring half the words would cut the quick list's count on `heavy-dev` from 5 to 0.5, at nDCG@10 0.739 instead of 0.767. The rule doesn't weigh unanswerable queries for the quick list.
+- **One dev query got worse:** the German "wer hat diese Woche Bereitschaftsdienst", in fused ranking, from 0.36 to 0.33. German stop words stay. No other answerable dev query got worse in either list: the quick list has 24 wins on `heavy-dev` and 42 on `dev`, and fused ranking has 10 and 24.
+- **Latency.** Locally, quick p50/p90 went from 40/43 ms to 42/45 ms on `heavy-dev`, and from 8/9 ms to 10/11 ms on `dev`.
+
+**The quick list now beats fused ranking**, on both dev sets and on `heavy-holdout`: on `heavy-dev`, 0.767 against 0.715, and on `dev`, 0.854 against 0.788. Even with the quick list's keyword settings, fused ranking scores only 0.634 on `heavy-dev`, because at alpha 0.25 the vector arm reorders good keyword matches. So the app shows the better list first, and fused results then replace it with a worse one, the reverse of what D7 intended. The next step is a sweep of lower alphas: the A1 sweep tried only 0.25, 0.5 and 0.75.
+
+**Gate.** Each list ran once as master and once as the pick, as single-row sweeps:
+
+| Holdout | List | Configuration | nDCG@10 | Recall@5 | Recall@20 | Zero-result rate | `noAnswerResults` |
+| --- | --- | --- | ---: | ---: | ---: | ---: | ---: |
+| `heavy-holdout` (72 answerable) | quick | master | 0.537 | 0.556 | 0.569 | 0.417 | 0.00 |
+| `heavy-holdout` | quick | A5 | 0.801 | 0.847 | 0.931 | 0.000 | 10.00 |
+| `heavy-holdout` | fused | master | 0.581 | 0.639 | 0.743 | 0.000 | 13.88 |
+| `heavy-holdout` | fused | A5 | 0.719 | 0.813 | 0.896 | 0.000 | 14.00 |
+| `holdout` (23 answerable, spent) | quick | master | 0.520 | 0.529 | 0.529 | 0.391 | 0.00 |
+| `holdout` | quick | A5 | 0.822 | 0.833 | 0.891 | 0.043 | 4.00 |
+| `holdout` | fused | master | 0.605 | 0.627 | 0.783 | 0.000 | 4.00 |
+| `holdout` | fused | A5 | 0.808 | 0.801 | 0.913 | 0.000 | 4.00 |
+
+- **The gate passes for both lists.** On `heavy-holdout`, the quick list gains 0.264 nDCG@10 and 0.361 Recall@20, and fused ranking gains 0.138 and 0.153.
+- **What was read.** Only overall rows. The local holdout results were scrubbed down to those rows.
+- **Gate runs so far.** `heavy-holdout` has had six: two for A4, and a master and a pick for each list here.
