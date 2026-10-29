@@ -3,7 +3,10 @@ import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import type {ReportPageResult_organization$key} from '../../__generated__/ReportPageResult_organization.graphql'
 import type {ReportSpec} from '../../shared/reports/reportCatalog'
+import isRetroCadenceSpec from './isRetroCadenceSpec'
 import ReportNotes from './ReportNotes'
+import ReportRetroCadenceEmpty from './ReportRetroCadenceEmpty'
+import ReportTeamHealthEmpty from './ReportTeamHealthEmpty'
 import ReportView from './ReportView'
 
 interface Props {
@@ -20,8 +23,10 @@ const ReportPageResult = ({organizationRef, orgId, spec}: Props) => {
           ...ReportView_result
           ...ReportNotes_result
           teamHealth {
+            latestCheckEndedAt
             ...ReportTeamHealthView_teamHealth
           }
+          latestRetroAt: latestMeetingAt(meetingType: retrospective)
         }
         allTeams: report(spec: $allTeamsSpec, timeZone: $timeZone) @include(if: $hasAllTeams) {
           rows {
@@ -73,7 +78,11 @@ const ReportPageResult = ({organizationRef, orgId, spec}: Props) => {
   return (
     <>
       <div className='border-hairline border-t p-5'>
-        {report ? (
+        {report?.teamHealth && !report.teamHealth.latestCheckEndedAt ? (
+          <ReportTeamHealthEmpty orgId={orgId} />
+        ) : report && !report.latestRetroAt && isRetroCadenceSpec(spec) ? (
+          <ReportRetroCadenceEmpty />
+        ) : report ? (
           <ReportView
             spec={spec}
             resultRef={report}

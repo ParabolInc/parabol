@@ -2,6 +2,7 @@ import DataLoader from 'dataloader'
 import ms from 'ms'
 import getKysely from '../postgres/getKysely'
 import {hasEnoughAttendees} from '../postgres/teamActivityCriteria'
+import type {Meetingtypeenum} from '../postgres/types/pg'
 import reportMeasures from '../reports/measures/reportMeasures'
 import type {OrgStructure} from '../reports/orgStructure'
 import type {ReportMeasureQuery, ReportMeasureResult} from '../reports/reportMeasureTypes'
@@ -63,6 +64,30 @@ export const starterReportTeamIdsByOrgId = (parent: RootDataLoader) => {
     {
       ...parent.dataLoaderOptions
     }
+  )
+}
+
+// When the latest meeting of a type that 2 or more people joined started on any of the teams, whatever the period.
+// Every pinned report asks for the same teams, so they share one lookup
+export const latestMeetingAtByTeamIds = (parent: RootDataLoader) => {
+  return new DataLoader<{teamIds: string[]; meetingType: Meetingtypeenum}, Date | null, string>(
+    async (keys) =>
+      Promise.all(
+        keys.map(async ({teamIds, meetingType}) => {
+          if (teamIds.length === 0) return null
+          const latest = await getKysely()
+            .selectFrom('NewMeeting as m')
+            .select('m.createdAt')
+            .where('m.teamId', 'in', teamIds)
+            .where('m.meetingType', '=', meetingType)
+            .where(({ref}) => hasEnoughAttendees(ref('m.id')))
+            .orderBy('m.createdAt', 'desc')
+            .limit(1)
+            .executeTakeFirst()
+          return latest?.createdAt ?? null
+        })
+      ),
+    {...parent.dataLoaderOptions, cacheKeyFn: (key) => JSON.stringify(key)}
   )
 }
 

@@ -4,7 +4,10 @@ import {REPORT_HIDDEN_VALUE, type ReportSpec} from '../../client/shared/reports/
 import {getNewDataLoader} from '../dataloader/getNewDataLoader'
 import getKysely from '../postgres/getKysely'
 import {toOrgStructureKey} from '../reports/orgStructure'
-import {readReportTeamHealth} from '../reports/reportTeamHealth'
+import {
+  readLatestTeamHealthCheckEndedAt,
+  readReportTeamHealthChecks
+} from '../reports/reportTeamHealth'
 import runReport from '../reports/runReport'
 import {createPGTables, truncatePGTables} from './common'
 
@@ -830,6 +833,32 @@ describe('meetings', () => {
     ).toEqual([1])
   })
 
+  test('the latest meeting of a type counts only meetings 2 or more people joined, whatever the period', async () => {
+    const dataLoader = getNewDataLoader('runReportTest')
+    try {
+      const latestOf = async (
+        orgId: string,
+        viewerId: string,
+        meetingType: 'retrospective' | 'action'
+      ) => {
+        const {reportableTeamIds} = await report(
+          {period: {preset: 'LAST_7_DAYS'}},
+          {orgId, viewerId}
+        )
+        return dataLoader
+          .get('latestMeetingAtByTeamIds')
+          .load({teamIds: reportableTeamIds, meetingType})
+      }
+      expect((await latestOf(ORG_ID, LEADER, 'retrospective'))?.getTime()).toBe(
+        daysAgo(2).getTime()
+      )
+      expect(await latestOf(ORG_ID, LEADER, 'action')).toBeNull()
+      expect(await latestOf(HEALTH_ORG_ID, 'healthLeader', 'retrospective')).toBeNull()
+    } finally {
+      dataLoader.dispose()
+    }
+  })
+
   test('discussions count in counted meetings', async () => {
     expect(valuesOf(await report({measures: ['DISCUSSIONS']}))).toEqual([3])
     expect(valuesOf(await report({measures: ['DISCUSSIONS_WITH_A_TASK']}))).toEqual([1])
@@ -1127,7 +1156,7 @@ describe('team health', () => {
     expect(byLabel(result)).toEqual({'Psychological Safety': 5, Dependability: 4})
     const dataLoader = getNewDataLoader('runReportTest')
     try {
-      const teamHealth = await readReportTeamHealth(
+      const checks = await readReportTeamHealthChecks(
         await report(
           {
             ...lastMonth,
@@ -1138,13 +1167,37 @@ describe('team health', () => {
         ),
         dataLoader
       )
-      const havenCells = teamHealth?.checks
+      const havenCells = checks
         .filter(({teamId}) => teamId === HAVEN)
         .map(({meetingId, categories}) => [meetingId, categories.map(({categoryId}) => categoryId)])
       expect(havenCells).toEqual([
         ['havenPulse', [String(SAFETY)]],
         ['havenFull', [String(DEPENDABILITY)]]
       ])
+    } finally {
+      dataLoader.dispose()
+    }
+  })
+
+  test('the heatmap says when its teams last checked, and that a team that never has hasn’t', async () => {
+    const heatmap: Partial<ReportSpec> = {
+      ...lastMonth,
+      showAs: 'HEATMAP',
+      breakdown: [{dimension: 'TEAM'}, {dimension: 'CATEGORY'}]
+    }
+    const dataLoader = getNewDataLoader('runReportTest')
+    try {
+      const checked = await report(heatmap, asLeader)
+      const checkedAt = await readLatestTeamHealthCheckEndedAt(
+        checked.reportableTeamIds,
+        dataLoader
+      )
+      expect(checkedAt?.getTime()).toBeCloseTo(daysAgo(3).getTime(), -5)
+      const neverChecked = await report(heatmap)
+      expect(
+        await readLatestTeamHealthCheckEndedAt(neverChecked.reportableTeamIds, dataLoader)
+      ).toBeNull()
+      expect(await readReportTeamHealthChecks(neverChecked, dataLoader)).toEqual([])
     } finally {
       dataLoader.dispose()
     }

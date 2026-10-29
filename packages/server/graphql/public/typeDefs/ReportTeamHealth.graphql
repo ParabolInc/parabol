@@ -7,4 +7,10 @@ type ReportTeamHealth {
   report's filters, so filtering never moves a mark. A team's latest check comes first
   """
   checks: [ReportTeamHealthCheck!]!
+
+  """
+  When the latest Team Health check of any team the viewer can report on revealed its results, whatever the period.
+  Null when none of those teams has run one
+  """
+  latestCheckEndedAt: DateTime
 }
