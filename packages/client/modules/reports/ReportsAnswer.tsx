@@ -6,6 +6,7 @@ import ReportPanel from './ReportPanel'
 import type {ReportAddress} from './reportPaths'
 import type {ReportPagePeriod} from './reportPeriodParam'
 import {describeReportSpec} from './reportSpecLabels'
+import {parseReportSpecJSON} from './reportSpecParam'
 import useResultSpec from './useResultSpec'
 
 interface Props {
@@ -34,6 +35,11 @@ const query = graphql`
           id
           name
         }
+        recentReportQuestions {
+          id
+          title
+          spec
+        }
         ...ReportPanel_organization
       }
     }
@@ -43,9 +49,16 @@ const query = graphql`
 const ReportsAnswer = ({queryRef, orgId, answer, period, onSpecChange, onClose}: Props) => {
   const {viewer} = usePreloadedQuery<ReportsAnswerQuery>(query, queryRef)
   const {organization} = viewer
-  const {spec, title, reportQuestionId} = answer
+  const {spec, reportQuestionId} = answer
   const resultSpec = useResultSpec(queryRef.variables.spec, spec)
   const levels = organization?.structure ?? []
+  // the viewer's own question names its report, unless the report shown has changed from it
+  const question = organization?.recentReportQuestions.find(({id}) => id === reportQuestionId)
+  const questionSpec = question?.spec ? parseReportSpecJSON(question.spec) : null
+  const title =
+    question && questionSpec && JSON.stringify(questionSpec) === JSON.stringify(spec)
+      ? question.title
+      : null
   return (
     <ReportPanel
       organizationRef={organization}

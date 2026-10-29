@@ -5,7 +5,7 @@ import {Link} from 'react-router'
 import type {ReportCard_pin$key} from '../../__generated__/ReportCard_pin.graphql'
 import ReportCardMenu from './ReportCardMenu'
 import ReportView from './ReportView'
-import {toReportPagePath} from './reportPaths'
+import {toReportPinPath} from './reportPaths'
 import type {ReportPagePeriod} from './reportPeriodParam'
 import {REPORT_PERIOD_LABELS} from './reportSpecLabels'
 import {parseReportSpecJSON} from './reportSpecParam'
@@ -69,7 +69,7 @@ const ReportCard = ({pinRef, orgId, period, index, pinCount, isLeader}: Props) =
       </div>
       {spec && (
         <Link
-          to={toReportPagePath(orgId, spec, title, period)}
+          to={toReportPinPath(orgId, pinId, period)}
           className='mt-auto self-start font-semibold text-[13px] text-sky-600 hover:underline dark:text-accent'
         >
           Open report

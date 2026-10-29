@@ -19,7 +19,7 @@ interface Props {
 // The report that answers a question, between the Ask box and the pins. It stays in the address, so
 // reloading or going back keeps it
 const ReportsAnswerLoader = ({orgId, answer, period}: Props) => {
-  const {spec, title, reportQuestionId} = answer
+  const {spec, reportQuestionId} = answer
   const navigate = useNavigate()
   const timeZone = useMemo(() => Intl.DateTimeFormat().resolvedOptions().timeZone, [])
   const panelVariables = useMemo(() => toReportPanelVariables(spec, period), [spec, period])
@@ -30,13 +30,12 @@ const ReportsAnswerLoader = ({orgId, answer, period}: Props) => {
     true
   )
   const onSpecChange = useReportSpecChange(orgId, reportQuestionId, (nextSpec, questionId) =>
-    toReportsHomePath(orgId, period, {spec: nextSpec, title: null, reportQuestionId: questionId})
+    toReportsHomePath(orgId, period, {spec: nextSpec, reportQuestionId: questionId})
   )
   const onClose = () => navigate(toReportsHomePath(orgId, period))
   if (!queryRef) {
     return (
       <section className='rounded-md border border-hairline bg-surface-card px-5 py-4 shadow-xs'>
-        {title && <h2 className='m-0 font-semibold text-lg'>{title}</h2>}
         <p className='m-0 text-fg-secondary text-sm'>Running the report…</p>
       </section>
     )
