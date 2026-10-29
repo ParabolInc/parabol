@@ -14,6 +14,7 @@ import getKysely from '../../postgres/getKysely'
 import {getPagesByRRF} from '../../postgres/queries/getPagesByRRF'
 import type {User} from '../../postgres/types'
 import {Logger} from '../../utils/Logger'
+import {HEAVY_CORPUS} from './heavyCorpus/generateHeavyCorpus'
 import {
   type Grade,
   type Grades,
@@ -26,7 +27,7 @@ import {
   summarize
 } from './metrics'
 import parseFractions from './parseFractions'
-import {EVAL_USER_ID, seedEvalPages} from './seedEvalPages'
+import {type EvalCorpus, FIXTURES_CORPUS, seedEvalPages} from './seedEvalPages'
 
 interface EmbeddingCall {
   startedAt: number
@@ -60,7 +61,6 @@ jest.mock('../../graphql/mutations/helpers/publishToEmbedder', () => ({
   }
 }))
 
-type EvalSet = 'dev' | 'holdout'
 type SearchMode = 'fused' | 'quick'
 type Mode = SearchMode | 'sweep'
 
@@ -96,7 +96,14 @@ interface GradedQuery {
   grades: Grades
 }
 
-const QUERY_FILES: Record<EvalSet, string> = {dev: 'queries.json', holdout: 'holdoutQueries.json'}
+const EVAL_SETS = {
+  dev: {queryFile: 'queries.json', corpus: FIXTURES_CORPUS},
+  holdout: {queryFile: 'holdoutQueries.json', corpus: FIXTURES_CORPUS},
+  'heavy-dev': {queryFile: 'heavyQueries.json', corpus: HEAVY_CORPUS},
+  'heavy-holdout': {queryFile: 'heavyHoldoutQueries.json', corpus: HEAVY_CORPUS}
+} satisfies Record<string, {queryFile: string; corpus: EvalCorpus}>
+
+type EvalSet = keyof typeof EVAL_SETS
 const RESULTS_DIR = path.join(__dirname, 'results')
 const RESULTS_REQUESTED = 20
 const DEFAULT_SWEEP_ALPHAS = '0.25,0.5,0.75'
@@ -110,9 +117,11 @@ const SWEEP_TABLE_METRICS = [
   'noAnswerResults'
 ] as const
 
+const isEvalSet = (value: string): value is EvalSet => Object.hasOwn(EVAL_SETS, value)
+
 const parseEvalSet = (value: string): EvalSet => {
-  if (value === 'dev' || value === 'holdout') return value
-  throw new Error(`EVAL_SET must be dev or holdout, got "${value}"`)
+  if (isEvalSet(value)) return value
+  throw new Error(`EVAL_SET must be one of ${Object.keys(EVAL_SETS).join(', ')}, got "${value}"`)
 }
 
 const parseModes = (value: string) =>
@@ -134,7 +143,7 @@ const parseSweepConfigs = (): SweepConfig[] => {
 }
 
 const gradeQueries = (evalSet: EvalSet, pageIdByFixture: Map<string, number>): GradedQuery[] => {
-  const fileName = QUERY_FILES[evalSet]
+  const fileName = EVAL_SETS[evalSet].queryFile
   const queries: EvalQuery[] = JSON.parse(fs.readFileSync(path.join(__dirname, fileName), 'utf8'))
   return queries.map(({query, category, relevant}) => {
     if (!query.trim()) throw new Error(`${fileName} has a blank query`)
@@ -171,10 +180,10 @@ const toResultIds = (nodeIds: (string | number)[]) => {
   return resultIds
 }
 
-const searchPages = async (query: string, mode: SearchMode) => {
+const searchPages = async (query: string, mode: SearchMode, viewerId: string) => {
   if (typeof search !== 'function') throw new Error('search must be a resolver function')
   const dataLoader = getNewDataLoader('pagesSearchEval')
-  const context = {authToken: {sub: EVAL_USER_ID, tms: []}, dataLoader} as unknown as GQLContext
+  const context = {authToken: {sub: viewerId, tms: []}, dataLoader} as unknown as GQLContext
   try {
     const connection = await search(
       {} as User,
@@ -247,14 +256,15 @@ const toQueryResult = (
 const scoreQuery = async (
   gradedQuery: GradedQuery,
   mode: SearchMode,
-  fixtureKeyByPageId: Map<number, string>
+  fixtureKeyByPageId: Map<number, string>,
+  viewerId: string
 ) => {
   warnSpy.mockClear()
   const startedAt = Date.now()
   let resultIds: number[] = []
   let error: string | undefined
   try {
-    resultIds = await searchPages(gradedQuery.query, mode)
+    resultIds = await searchPages(gradedQuery.query, mode, viewerId)
   } catch (e) {
     error = e instanceof Error ? e.message : String(e)
   }
@@ -304,7 +314,8 @@ const scoreSweepQuery = async (
   gradedQuery: GradedQuery,
   queryVector: Float32Array | Error,
   {alpha, floor}: SweepConfig,
-  fixtureKeyByPageId: Map<number, string>
+  fixtureKeyByPageId: Map<number, string>,
+  viewerId: string
 ) => {
   if (queryVector instanceof Error) {
     const error = `embedding failed: ${queryVector.message}`
@@ -321,7 +332,7 @@ const scoreSweepQuery = async (
       k: RRF_K,
       first: RESULTS_REQUESTED,
       offset: 0,
-      viewerId: EVAL_USER_ID,
+      viewerId,
       teamIds: undefined,
       dateRange: null,
       vectorFloor: floor
@@ -337,7 +348,8 @@ const scoreSweepQuery = async (
 const scoreSweep = async (
   gradedQueries: GradedQuery[],
   configs: SweepConfig[],
-  fixtureKeyByPageId: Map<number, string>
+  fixtureKeyByPageId: Map<number, string>,
+  viewerId: string
 ) => {
   await warmUpEmbeddings()
   const sweeps = configs.map((config) => ({...config, perQuery: [] as QueryResult[]}))
@@ -345,7 +357,7 @@ const scoreSweep = async (
     const queryVector = await embedQueryVector(gradedQuery.query)
     for (const sweep of sweeps) {
       sweep.perQuery.push(
-        await scoreSweepQuery(gradedQuery, queryVector, sweep, fixtureKeyByPageId)
+        await scoreSweepQuery(gradedQuery, queryVector, sweep, fixtureKeyByPageId, viewerId)
       )
     }
   }
@@ -375,6 +387,7 @@ interface SweepRun {
   gradedQueries: GradedQuery[]
   configs: SweepConfig[]
   fixtureKeyByPageId: Map<number, string>
+  viewerId: string
 }
 
 const runSweep = async ({
@@ -383,9 +396,10 @@ const runSweep = async ({
   unindexed,
   gradedQueries,
   configs,
-  fixtureKeyByPageId
+  fixtureKeyByPageId,
+  viewerId
 }: SweepRun) => {
-  const sweepResults = await scoreSweep(gradedQueries, configs, fixtureKeyByPageId)
+  const sweepResults = await scoreSweep(gradedQueries, configs, fixtureKeyByPageId, viewerId)
   const resultsPath = path.join(RESULTS_DIR, `${label}-${evalSet}-sweep.json`)
   const results = {label, set: evalSet, mode: 'sweep', unindexed, configs: sweepResults}
   fs.writeFileSync(resultsPath, `${JSON.stringify(results, null, 2)}\n`)
@@ -411,6 +425,24 @@ const runSweep = async ({
   )
 }
 
+const dumpCorpus = (corpus: EvalCorpus) => {
+  const dumpDir = path.join(RESULTS_DIR, `${corpus.name}-corpus`)
+  fs.rmSync(dumpDir, {recursive: true, force: true})
+  fs.mkdirSync(dumpDir, {recursive: true})
+  const fixtures = corpus.loadFixtures()
+  for (const {key, title, plaintextContent} of fixtures) {
+    fs.writeFileSync(path.join(dumpDir, `${key}.md`), `${title}\n\n${plaintextContent}\n`)
+  }
+  const index = fixtures.map(({key, title, plaintextContent, updatedAt}) => ({
+    key,
+    title,
+    chars: plaintextContent.length,
+    updatedAt: updatedAt?.toISOString()
+  }))
+  fs.writeFileSync(path.join(dumpDir, 'index.json'), `${JSON.stringify(index, null, 2)}\n`)
+  console.log(`Wrote ${fixtures.length} pages to ${dumpDir}`)
+}
+
 afterAll(async () => {
   await getKysely().destroy()
 })
@@ -420,7 +452,13 @@ test('pages search eval', async () => {
   const modes = parseModes(process.env.EVAL_MODES ?? 'fused')
   const label = parseLabel(process.env.EVAL_LABEL ?? 'local')
   const sweepConfigs = modes.includes('sweep') ? parseSweepConfigs() : []
+  const {corpus} = EVAL_SETS[evalSet]
+  if (process.env.EVAL_DUMP === '1') {
+    dumpCorpus(corpus)
+    return
+  }
   const {pageIdByFixture, unindexed} = await seedEvalPages({
+    corpus,
     reseed: process.env.EVAL_RESEED === '1'
   })
   const gradedQueries = gradeQueries(evalSet, pageIdByFixture)
@@ -437,7 +475,8 @@ test('pages search eval', async () => {
           unindexed,
           gradedQueries,
           configs: sweepConfigs,
-          fixtureKeyByPageId
+          fixtureKeyByPageId,
+          viewerId: corpus.userId
         }))
       )
       continue
@@ -445,7 +484,7 @@ test('pages search eval', async () => {
     if (mode === 'fused') await warmUpEmbeddings()
     const perQuery: ScoredQuery[] = []
     for (const gradedQuery of gradedQueries) {
-      perQuery.push(await scoreQuery(gradedQuery, mode, fixtureKeyByPageId))
+      perQuery.push(await scoreQuery(gradedQuery, mode, fixtureKeyByPageId, corpus.userId))
     }
     const overall = summarizeWithErrors(perQuery)
     const byCategory = summarizeByCategory(perQuery)
