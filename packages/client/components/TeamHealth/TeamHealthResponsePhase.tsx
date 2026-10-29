@@ -21,7 +21,6 @@ const TeamHealthResponsePhase = (props: Props) => {
         endedAt
         organization {
           useAI
-          hasReports: featureFlag(featureName: "Reports")
         }
         viewerMeetingMember {
           user {
@@ -135,7 +134,6 @@ const TeamHealthResponsePhase = (props: Props) => {
           preferredName={viewerMeetingMember?.user.preferredName ?? ''}
           picture={viewerMeetingMember?.user.picture ?? ''}
           aiDisabledReason={aiDisabledReason}
-          hasReports={organization.hasReports}
           onShareResponses={isSpectating ? onShareResponses : undefined}
           onPrev={onPrev}
           onNext={onNext}

@@ -185,7 +185,6 @@ export const createTeamHealthDemoMeetingResponse = (
       name: teamName,
       isPaid: true,
       useAI: false,
-      hasReports: false,
       viewerOrganizationUser: null
     },
     team: {

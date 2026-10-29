@@ -13,7 +13,6 @@ interface Props {
   // why anonymity is unavailable, else null. Rewording a comment takes AI, so without it the only
   // honest option is to send the comment as written
   aiDisabledReason: string | null
-  hasReports: boolean
   // false while the comment box is empty. The row still takes up its space, so the card doesn't
   // grow the moment the author starts typing
   isVisible: boolean
@@ -22,8 +21,7 @@ interface Props {
 
 // sits inside the comment box rather than under it, so it reads as part of the field
 const TeamHealthAnonymousToggle = (props: Props) => {
-  const {isAnonymous, preferredName, picture, aiDisabledReason, hasReports, isVisible, onToggle} =
-    props
+  const {isAnonymous, preferredName, picture, aiDisabledReason, isVisible, onToggle} = props
   return (
     <div
       className={cn('flex items-center justify-end gap-3 px-2 pb-2', !isVisible && 'invisible')}
@@ -52,11 +50,6 @@ const TeamHealthAnonymousToggle = (props: Props) => {
             (isAnonymous
               ? 'AI rewrites anonymous comments so nobody can pick you out by how you write'
               : 'Your comment goes to the team word for word, with your name on it')}
-          {hasReports && (
-            <span className='mt-1 block'>
-              Org admins and billing leaders can also read comments in Reports, never with a name
-            </span>
-          )}
         </TooltipContent>
       </Tooltip>
     </div>
