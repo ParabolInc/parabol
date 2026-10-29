@@ -1,0 +1,7 @@
+"""
+Something a report's reader should know about its numbers
+"""
+type ReportNote {
+  kind: ReportNoteKindEnum!
+  count: Int!
+}

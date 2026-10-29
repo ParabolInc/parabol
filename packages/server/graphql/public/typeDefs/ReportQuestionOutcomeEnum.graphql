@@ -1,0 +1,8 @@
+"""
+Whether a report question became a report
+"""
+enum ReportQuestionOutcomeEnum {
+  shown
+  "It needs data Parabol doesn't have, or AI couldn't make a report Parabol can run"
+  couldNotBuild
+}

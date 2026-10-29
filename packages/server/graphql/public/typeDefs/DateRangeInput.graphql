@@ -1,0 +1,7 @@
+"""
+A range of days. Only the date of each is used, in the time zone it's read in, and both days are included
+"""
+input DateRangeInput {
+  startAt: DateTime!
+  endAt: DateTime!
+}

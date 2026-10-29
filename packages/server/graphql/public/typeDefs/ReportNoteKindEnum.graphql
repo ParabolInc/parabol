@@ -1,0 +1,19 @@
+"""
+Something a report's reader should know about its numbers
+"""
+enum ReportNoteKindEnum {
+  "The Starter plan counts only the organization's 2 largest teams that met recently. The count is how many teams were left out"
+  STARTER_LIMIT
+  "Some done dates were estimated because they were recorded before Parabol saved them. The count is how many tasks"
+  ESTIMATED_HISTORY
+  "There were more rows than a report can return. The count is how many rows there were"
+  ROWS_TRUNCATED
+  "Topics only come from the teams the viewer is on. The count is how many teams were left out"
+  TOPICS_FROM_OWN_TEAMS
+  "Some teams' Team Health checks were hidden because fewer than 3 people answered. The count is how many teams"
+  HIDDEN_FOR_ANONYMITY
+  "A breakdown's org structure level was removed, so it shows teams instead. The count is how many breakdowns"
+  STRUCTURE_LEVEL_REMOVED
+  "A filter's org structure level was removed, so the report shows nothing until the filter changes. The count is how many filters"
+  FILTER_LEVEL_REMOVED
+}

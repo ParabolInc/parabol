@@ -1,0 +1,8 @@
+"""
+Keeps only rows whose value for the measure passes the test
+"""
+input ReportConditionInput {
+  measure: ReportMeasureEnum!
+  operator: ReportConditionOperatorEnum!
+  value: Float!
+}

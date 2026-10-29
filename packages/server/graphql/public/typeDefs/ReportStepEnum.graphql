@@ -1,0 +1,8 @@
+"""
+The length of each step in a report over time
+"""
+enum ReportStepEnum {
+  DAY
+  WEEK
+  MONTH
+}

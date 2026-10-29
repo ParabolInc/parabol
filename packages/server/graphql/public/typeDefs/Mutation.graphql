@@ -2537,4 +2537,97 @@ type Mutation {
     """
     autoAssignFacilitator: Boolean
   ): UpdateFacilitatorRotationSuccess! @scope(name: MEETINGS_WRITE)
+
+  """
+  Ask AI to turn a question about the organization into a report
+  """
+  askReportQuestion(
+    orgId: ID!
+
+    """
+    The question, in the viewer's own words
+    """
+    question: String!
+
+    """
+    The IANA time zone that dates in the question are read in
+    """
+    timeZone: String!
+  ): AskReportQuestionSuccess! @scope(name: REPORTS_WRITE)
+
+  """
+  Keep a popular question the viewer picked, or a recent one they opened again, at the top of their recent questions
+  """
+  logReportQuestionUse(
+    orgId: ID!
+
+    """
+    The key of the popular question picked
+    """
+    popularQuestionKey: String
+
+    """
+    The id of the recent question opened again
+    """
+    reportQuestionId: ID
+
+    """
+    With reportQuestionId, the report as the viewer changed it. Without, a report they built
+    """
+    spec: ReportSpecInput
+
+    """
+    The name of a report the viewer built
+    """
+    title: String
+  ): LogReportQuestionUseSuccess! @scope(name: REPORTS_WRITE)
+
+  """
+  Pin a report to the organization's Reports page, for everyone who can see Reports
+  """
+  pinReport(
+    orgId: ID!
+    spec: ReportSpecInput!
+
+    """
+    The name the pin shows
+    """
+    title: String!
+
+    """
+    The viewer's recent question the report came from, so the pin keeps what was asked
+    """
+    reportQuestionId: ID
+  ): PinReportSuccess! @scope(name: REPORTS_WRITE)
+
+  """
+  Take a report off the organization's Reports page. Org admins and billing leaders can
+  """
+  unpinReport(orgId: ID!, pinId: ID!): UnpinReportSuccess! @scope(name: REPORTS_WRITE)
+
+  """
+  Move a pin on the organization's Reports page. Org admins and billing leaders can
+  """
+  movePinnedReport(
+    orgId: ID!
+    pinId: ID!
+
+    """
+    The pin's new place, counting from 0
+    """
+    toIndex: Int!
+  ): MovePinnedReportSuccess! @scope(name: REPORTS_WRITE)
+
+  """
+  Set the levels an organization groups its teams by in Reports. Levels and values keep their ids and take the
+  order given; any left out are removed, and teams placed in them become not set. Org admins and billing leaders can
+  """
+  setOrgStructure(orgId: ID!, levels: [OrgStructureLevelInput!]!): SetOrgStructureSuccess!
+    @scope(name: ORGS_WRITE)
+
+  """
+  Place a team at a value of an org structure level, or leave it not set with no value. Org admins and billing
+  leaders can
+  """
+  placeTeam(teamId: ID!, levelId: ID!, valueId: ID): PlaceTeamSuccess! @scope(name: ORGS_WRITE)
 }
