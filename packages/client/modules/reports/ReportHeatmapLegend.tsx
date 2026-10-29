@@ -1,6 +1,7 @@
 import {REPORT_MEASURES, type ReportMeasure} from '../../shared/reports/reportCatalog'
 import {cn} from '../../ui/cn'
 import plural from '../../utils/plural'
+import ReportLegendDisclosure from './ReportLegendDisclosure'
 import {countShadeRanges, HEALTH_SCORE_SHADES} from './reportHeatmapShades'
 
 interface Props {
@@ -34,14 +35,18 @@ const ReportHeatmapLegend = ({measure, max, emptyTeamNames}: Props) => {
       ) : (
         <span />
       )}
-      <ul aria-label='Shades' className='m-0 flex list-none flex-wrap gap-x-3 gap-y-1 p-0'>
-        {shades.map(({label: shadeLabel, className}) => (
-          <li key={shadeLabel} className='flex items-center gap-1.5'>
-            <span className={cn('size-3 rounded-sm', className)} />
-            {shadeLabel}
-          </li>
-        ))}
-      </ul>
+      {shades.length > 0 && (
+        <ReportLegendDisclosure isEndAligned>
+          <ul aria-label='Shades' className='m-0 flex list-none flex-wrap gap-x-3 gap-y-1 p-0'>
+            {shades.map(({label: shadeLabel, className}) => (
+              <li key={shadeLabel} className='flex items-center gap-1.5'>
+                <span className={cn('size-3 rounded-sm', className)} />
+                {shadeLabel}
+              </li>
+            ))}
+          </ul>
+        </ReportLegendDisclosure>
+      )}
     </div>
   )
 }

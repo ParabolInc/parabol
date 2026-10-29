@@ -9,7 +9,7 @@ import type {ReportHeatmapValue} from './reportHeatmapGrid'
 import {healthScoreShadeOf} from './reportHeatmapShades'
 import {isHiddenReportValue} from './reportRows'
 import type {ReportTeamHealthCell as TeamHealthCell} from './reportTeamHealthCells'
-import {describeReasons, formatSentiment, TEAM_HEALTH_MARK_NAMES} from './reportTeamHealthWords'
+import {describeReasons, TEAM_HEALTH_MARK_NAMES} from './reportTeamHealthWords'
 
 const HIDDEN_EXPLANATION = `Hidden to keep answers anonymous: fewer than ${MIN_REPORT_HEALTH_RESPONDENTS} people answered`
 
@@ -92,8 +92,8 @@ const ReportTeamHealthCell = (props: Props) => {
           >
             <strong className='font-semibold'>
               {mark === 'BRIGHT_SPOT'
-                ? `Bright spot · ${formatSentiment(cell.category.sentimentScore ?? 0)}`
-                : `Needs attention · ${TEAM_HEALTH_MARK_NAMES[mark]} · ${cell.attention.toFixed(2)}`}
+                ? 'Bright spot'
+                : `Needs attention · ${TEAM_HEALTH_MARK_NAMES[mark]}`}
             </strong>
             {mark === 'BRIGHT_SPOT' ? 'Overwhelmingly positive summary' : describeReasons(cell)}
           </TooltipContent>

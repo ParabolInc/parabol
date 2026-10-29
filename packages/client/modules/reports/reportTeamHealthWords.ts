@@ -35,9 +35,6 @@ export const formatAnsweredTogether = (checks: readonly ReportTeamHealthCheck[])
   return `${respondentCount} of ${askedCount}`
 }
 
-export const formatSentiment = (sentimentScore: number) =>
-  `${sentimentScore > 0 ? '+' : sentimentScore < 0 ? '−' : ''}${Math.abs(sentimentScore).toFixed(2)}`
-
 // from the spread's input, which is 0 at a standard deviation of 0.6 or less and 1 at 1.4 or more
 export const describeSpread = (spread: number) =>
   spread >= 0.6
