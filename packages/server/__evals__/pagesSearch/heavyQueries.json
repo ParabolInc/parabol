@@ -34,7 +34,7 @@
     "category": "title",
     "relevant": {"beacon-standup-2026-08-27": 3, "beacon-meeting-summaries": 1}
   },
-  {"query": "on-call handbook", "category": "title", "relevant": {"doc-on-call-handbook": 3}},
+  {"query": "Atlas Retro #6", "category": "title", "relevant": {"atlas-retro-6": 3, "atlas-meeting-summaries": 1}},
   {"query": "postg failo", "category": "prefix", "relevant": {"doc-postgres-failover-runbook": 3}},
   {
     "query": "analyt vendor eval",
@@ -79,7 +79,7 @@
     "category": "body",
     "relevant": {"atlas-standup-2026-06-30": 3}
   },
-  {"query": "jury duty", "category": "body", "relevant": {"atlas-standup-2026-07-08": 3}},
+  {"query": "out for jury duty", "category": "body", "relevant": {"atlas-standup-2026-07-08": 3}},
   {
     "query": "northwind federation metadata",
     "category": "body",

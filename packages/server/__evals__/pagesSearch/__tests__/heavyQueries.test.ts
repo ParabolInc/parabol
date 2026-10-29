@@ -25,7 +25,9 @@ const pageKeys = new Set(generateHeavyCorpus().map(({key}) => key))
 const readQueries = (fileName: string): HeavyQuery[] =>
   JSON.parse(fs.readFileSync(path.join(__dirname, '..', fileName), 'utf8'))
 
-describe.each(['heavyQueries.json'])('%s', (fileName) => {
+const QUERY_FILES = ['heavyQueries.json', 'heavyHoldoutQueries.json']
+
+describe.each(QUERY_FILES)('%s', (fileName) => {
   const queries = readQueries(fileName)
 
   it('has non-blank, unique queries', () => {
@@ -57,4 +59,12 @@ describe.each(['heavyQueries.json'])('%s', (fileName) => {
   it('has queries without an answer', () => {
     expect(queries.filter(({category}) => category === 'noAnswer').length).toBeGreaterThanOrEqual(4)
   })
+})
+
+it('shares no query text between dev and holdout', () => {
+  const [devQueries, holdoutQueries] = QUERY_FILES.map((fileName) =>
+    readQueries(fileName).map(({query}) => query.trim().toLowerCase())
+  )
+  const holdout = new Set(holdoutQueries)
+  expect(devQueries!.filter((query) => holdout.has(query))).toEqual([])
 })
