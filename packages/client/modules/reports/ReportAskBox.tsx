@@ -189,6 +189,7 @@ const ReportAskBox = ({organizationRef, period, onAskingChange}: Props) => {
             setIsOpen(true)
           }}
           onFocus={() => setIsOpen(true)}
+          onClick={() => setIsOpen(true)}
           onBlur={() => setIsOpen(false)}
           onKeyDown={onKeyDown}
         />
