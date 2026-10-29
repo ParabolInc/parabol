@@ -41,6 +41,7 @@ let newerTwinId: number
 let nearEmptyId: number
 let nearEmptyKeywordId: number
 let shortJapaneseId: number
+let lateMatchId: number
 
 const makeUser = (id: string, preferredName: string) => ({
   id,
@@ -170,10 +171,14 @@ beforeAll(async () => {
     userId: junkViewerId,
     plaintextContent: '会議のメモ'.repeat(14)
   })
+  lateMatchId = await insertPage('Hiring plan', {
+    userId: junkViewerId,
+    plaintextContent: `${FILLER_TEXT}The zebra crossing moved.`
+  })
   await pg
     .insertInto('PageAccess')
     .values(
-      [nearEmptyId, nearEmptyKeywordId, shortJapaneseId].map((pageId) => ({
+      [nearEmptyId, nearEmptyKeywordId, shortJapaneseId, lateMatchId].map((pageId) => ({
         userId: junkViewerId,
         pageId,
         role: 'owner' as const
@@ -404,6 +409,12 @@ it('leaves near-empty pages out of the vector arm', async () => {
 
 it('measures the minimum length in bytes, so short Japanese notes keep their vector matches', async () => {
   expect(resultIds(await junkSearch())).toContain(shortJapaneseId)
+})
+
+it('highlights an any-word match past the start of the page', async () => {
+  const {edges} = await junkSearch({query: 'zebra unicorn', anyWordFallbackBelow: 1})
+  const snippet = edges.find(({nodeId}) => nodeId === lateMatchId)?.snippets[0]
+  expect(snippet).toContain('<b>zebra</b>')
 })
 
 it('still finds a near-empty page by its keywords', async () => {

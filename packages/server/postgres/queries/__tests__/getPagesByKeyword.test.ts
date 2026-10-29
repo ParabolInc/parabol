@@ -55,6 +55,7 @@ let earlierShortOffsiteId: number
 let laterLongOffsiteId: number
 let compoundWordsId: number
 let toDoId: number
+let lateMatchId: number
 
 beforeAll(async () => {
   await pg
@@ -114,8 +115,13 @@ beforeAll(async () => {
       'Email ops@parabol.co about the parabol.co status page before shipping v1.2.3 on 2026-10-26.'
   })
   toDoId = await insertPage({title: 'To do'})
+  lateMatchId = await insertPage({
+    title: 'Quarterly planning',
+    plaintextContent: `${'filler '.repeat(40)}Budget review moved on Friday.`
+  })
   const viewerPageIds = [
     toDoId,
+    lateMatchId,
     compoundWordsId,
     standupNotesId,
     meetingSummariesId,
@@ -286,6 +292,12 @@ it('highlights the words an any-word match contains', async () => {
   const {edges} = await keywordSearch('onboarding laptop budget', {anyWordFallbackBelow: 1})
   const snippet = edges.find(({nodeId}) => nodeId === onboardingChecklistId)?.snippets[0]
   expect(snippet).toContain('<b>Laptop</b>')
+})
+
+it('highlights an any-word match past the start of the page', async () => {
+  const {edges} = await keywordSearch('budget zebra', {anyWordFallbackBelow: 1})
+  const snippet = edges.find(({nodeId}) => nodeId === lateMatchId)?.snippets[0]
+  expect(snippet).toContain('<b>Budget</b>')
 })
 
 it('pages through any-word matches without gaps or repeats', async () => {

@@ -51,8 +51,8 @@ EVAL_LABEL=page-fusion EVAL_SET=dev EVAL_MODES=sweep pnpm eval:pagesSearch
 ```
 
 - **Ranking.** Each query is embedded once, by the same model call as `fused`. Then `getPagesByRRF` runs once per configuration with `first: 20` and the configuration's alpha, `vectorFloor`, `vectorMinBytes` and keyword options. Alpha 0 ranks like the quick list instead, as in the resolver: `getPagesByKeyword` runs with the keyword options, the floor and minimum length don't apply, and an embedding failure doesn't affect the row. It skips the resolver, so there is no embedding budget and no keyword fallback. Each list is scored with the same metrics as the other modes.
-- **Errors.** A query whose embedding fails, a `getPagesByRRF` call that throws, and a list that holds the same page twice are errors in every affected configuration's results, and they fail the run after it writes its results.
-- **Latency.** `latencyMs` is the `getPagesByRRF` call alone, not the embedding. Results have no `embeddingMs`, `embeddingError` or `fallbackReason`.
+- **Errors.** A query whose embedding fails (in rows with alpha above 0), a `getPagesByRRF` or `getPagesByKeyword` call that throws, and a list that holds the same page twice are errors in every affected configuration's results, and they fail the run after it writes its results.
+- **Latency.** `latencyMs` is the `getPagesByRRF` or `getPagesByKeyword` call alone, not the embedding. Results have no `embeddingMs`, `embeddingError` or `fallbackReason`.
 - **Output.** It prints one row per configuration: alpha, floor, minBytes, stopWords, anyWordFallbackBelow, anyWordMinShare, nDCG10, recall5, recall20, mrr, zeroResultRate, junkAt5 and noAnswerResults, sorted by nDCG10, best first. It writes `results/<label>-<set>-sweep.json` as `{label, set, mode: 'sweep', unindexed, configs: [{alpha, floor, minBytes, stopWords, anyWordFallbackBelow, anyWordMinShare, overall, byCategory, perQuery}]}`, with the configurations in grid order. `compare.mjs` doesn't read sweep files.
 - **Validity.** The validity rule below holds for every configuration: `errors` is 0, and `unindexed` lists exactly the fixtures it names.
 
@@ -401,18 +401,20 @@ On `heavy-dev`, by category:
 ## Natural-language matching (2026-10-29)
 
 Keyword search used to need every word of a query, stop words included. A question like "when were the cdn assets restored" matched only pages that also contained "when", "were" and "the", and the 8-word cap cut longer questions off before their last content words. Two rules in `withPageKeywordRanking` change that, for both the quick list and fused ranking:
-- **Stop words leave the query.** Words on Postgres's English stop list (`ts_lexize('english_stem', word)` is empty) leave before the 8-word cap. A query made only of stop words keeps them all, so "to do" still needs both words. Words in other languages all stay.
+- **Stop words leave the query.** Words on Postgres's English stop list (`ts_lexize('english_stem', word)` is empty) leave before the 8-word cap.
+  - A query made only of stop words keeps them all. Pages with both words of "to do" come first, and in the quick list pages with either word follow them.
+  - Other languages' stop words stay, except words that are also on the English list, such as Spanish "no" or German "will", "am" and "an".
 - **Pages with some of the words follow.** When fewer pages than a threshold have every word, pages with some of them come next, ordered by:
   1. the number of words, most first;
   2. title matches;
   3. `ts_rank_cd` against any of the words;
   4. the most recently updated.
 
-  Snippets highlight whichever words a page contains.
+  A page with every word gets its snippet from the all-words query. Other pages get it from the any-word query, so the snippet shows the words the page contains. `ts_headline` falls back to a page's first 15 words when no passage satisfies its query.
 
 Each list has its own defaults: `QUICK_KEYWORD_MATCHING` in `getPagesByKeyword.ts` and `FUSED_KEYWORD_MATCHING` in `getPagesByRRF.ts`.
 - **Quick list:** when fewer than 20 pages have every word, pages with any of the words fill the list.
-- **Fused ranking:** only when no page has every word do pages with at least half of the words follow. At alpha 0.25, every page found by keywords outranks every page found only by the vector arm, so a wider fallback pushes good vector matches down. Falling back below 20 instead of 1, still requiring half the words, gives `heavy-dev` nDCG@10 0.657 instead of 0.715.
+- **Fused ranking:** only when no page has every word do pages with at least half of the words follow. At alpha 0.25, each of the first 122 pages found by keywords outranks every page found only by the vector arm, so a wider fallback pushes good vector matches out of the visible 20. Falling back below 20 instead of 1, still requiring half the words, gives `heavy-dev` nDCG@10 0.657 instead of 0.715.
 
 The heavy corpus baseline above is from before this change.
 

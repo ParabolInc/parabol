@@ -96,6 +96,7 @@ export const getPagesByRRF = async ({
         .select((eb) => [
           eb.fn.coalesce('kr.id', 'vr.id').as('id'),
           eb.fn.coalesce('kr.updatedAt', 'vr.updatedAt').as('updatedAt'),
+          'kr.hasEveryWord',
           'kr.keywordScore',
           'kr.keywordRank',
           'vr.vectorScore',
@@ -118,7 +119,10 @@ export const getPagesByRRF = async ({
       'f.vectorScore',
       'f.vectorRank',
       'f.combined',
-      pageSnippet(eb.ref('p.plaintextContent'), eb.ref('st.terms')).as('snippet')
+      pageSnippet(
+        eb.ref('p.plaintextContent'),
+        sql<string>`case when ${eb.ref('f.hasEveryWord')} then ${eb.ref('st.terms')} else ${eb.ref('st.anyTerms')} end`
+      ).as('snippet')
     ])
     .orderBy('f.combined', 'desc')
     .orderBy('f.updatedAt', 'desc')

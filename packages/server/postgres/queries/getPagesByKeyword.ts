@@ -159,6 +159,7 @@ export const withPageKeywordRanking = (
           .select((eb) => [
             'km.id',
             'km.updatedAt',
+            'km.hasEveryWord',
             'km.keywordScore',
             // ordering: most words first, then title matches, then rank, then most recently updated, then id for stable ties
             sql<number>`row_number() over (order by ${eb.ref('km.matchedWords')} desc, ${eb.ref('km.titleMatch')} desc, ${eb.ref('km.keywordScore')} desc, ${eb.ref('km.updatedAt')} desc, ${eb.ref('km.id')} desc)::int`.as(
@@ -195,7 +196,10 @@ export const getPagesByKeyword = async ({
       'kr.id',
       'kr.keywordScore',
       'kr.keywordRank',
-      pageSnippet(eb.ref('p.plaintextContent'), eb.ref('st.terms')).as('snippet')
+      pageSnippet(
+        eb.ref('p.plaintextContent'),
+        sql<string>`case when ${eb.ref('kr.hasEveryWord')} then ${eb.ref('st.terms')} else ${eb.ref('st.anyTerms')} end`
+      ).as('snippet')
     ])
     .orderBy('kr.keywordRank')
     .execute()
