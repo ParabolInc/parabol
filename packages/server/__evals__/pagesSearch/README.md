@@ -24,6 +24,7 @@ Reseed with `EVAL_RESEED=1` after you change how pages are indexed (`embedPage`,
 | `EVAL_MODES` | `fused` | Comma-separated `fused`, `quick` and/or `sweep`. `quick` sends `alpha: 0`. `sweep` is described below |
 | `EVAL_ALPHAS` | `0.25,0.5,0.75` | `sweep` only: the alphas to rank with |
 | `EVAL_FLOORS` | `0.3,0.35,0.4,0.45,0.5` | `sweep` only: the vector similarity floors to rank with |
+| `EVAL_MIN_BYTES` | `200` | `sweep` only: whole numbers; the vector arm skips pages with fewer bytes of plain text |
 | `EVAL_LABEL` | `local` | Names the results file |
 | `EVAL_RESEED` | unset | `1` deletes the eval user's pages and seeds them again |
 | `EVAL_DUMP` | unset | `1` writes the set's corpus to `results/<corpus>-corpus/` and skips seeding and ranking: one `<key>.md` per page (the title, a blank line, then the plain text that keyword search reads) plus `index.json` |
@@ -40,17 +41,17 @@ node __evals__/pagesSearch/compare.mjs \
 
 ## Sweep mode
 
-`EVAL_MODES=sweep` ranks every query with each pair from `EVAL_ALPHAS` and `EVAL_FLOORS`, to pick the vector similarity floor and the default alpha. It combines with the other modes, for example `EVAL_MODES=fused,sweep`. Both variables are comma-separated decimals between 0 and 1, like `0.25`, each listed once; anything else throws.
+`EVAL_MODES=sweep` ranks every query with each combination of `EVAL_ALPHAS`, `EVAL_FLOORS` and `EVAL_MIN_BYTES`, to pick the default alpha, the vector similarity floor and the minimum page length. It combines with the other modes, for example `EVAL_MODES=fused,sweep`. `EVAL_ALPHAS` and `EVAL_FLOORS` are comma-separated decimals between 0 and 1, like `0.25`; `EVAL_MIN_BYTES` is comma-separated whole numbers. Each value may be listed once; anything else throws.
 
 ```bash
 EVAL_LABEL=page-fusion EVAL_SET=dev EVAL_MODES=sweep pnpm eval:pagesSearch
 ```
 
-- **Ranking.** Each query is embedded once, by the same model call as `fused`. Then `getPagesByRRF` runs once per pair with `first: 20`, the pair's alpha and the pair's floor as `vectorFloor`. It skips the resolver, so there is no embedding budget and no keyword fallback. Each list is scored with the same metrics as the other modes.
-- **Errors.** A query whose embedding fails, a `getPagesByRRF` call that throws, and a list that holds the same page twice are errors in every affected pair's results, and they fail the run after it writes its results.
+- **Ranking.** Each query is embedded once, by the same model call as `fused`. Then `getPagesByRRF` runs once per configuration with `first: 20` and the configuration's alpha, `vectorFloor` and `vectorMinBytes`. It skips the resolver, so there is no embedding budget and no keyword fallback. Each list is scored with the same metrics as the other modes.
+- **Errors.** A query whose embedding fails, a `getPagesByRRF` call that throws, and a list that holds the same page twice are errors in every affected configuration's results, and they fail the run after it writes its results.
 - **Latency.** `latencyMs` is the `getPagesByRRF` call alone, not the embedding. Results have no `embeddingMs`, `embeddingError` or `fallbackReason`.
-- **Output.** It prints one row per pair: alpha, floor, nDCG10, recall5, mrr, zeroResultRate, junkAt5 and noAnswerResults, sorted by nDCG10, best first. It writes `results/<label>-<set>-sweep.json` as `{label, set, mode: 'sweep', unindexed, configs: [{alpha, floor, overall, byCategory, perQuery}]}`, with the pairs in grid order. `compare.mjs` doesn't read sweep files.
-- **Validity.** The validity rule below holds for every pair: `errors` is 0, and `unindexed` lists exactly the fixtures it names.
+- **Output.** It prints one row per configuration: alpha, floor, minBytes, nDCG10, recall5, recall20, mrr, zeroResultRate, junkAt5 and noAnswerResults, sorted by nDCG10, best first. It writes `results/<label>-<set>-sweep.json` as `{label, set, mode: 'sweep', unindexed, configs: [{alpha, floor, minBytes, overall, byCategory, perQuery}]}`, with the configurations in grid order. `compare.mjs` doesn't read sweep files.
+- **Validity.** The validity rule below holds for every configuration: `errors` is 0, and `unindexed` lists exactly the fixtures it names.
 
 ## How it works
 
@@ -166,6 +167,7 @@ Pages are recreated when `EVAL_RESEED=1`, or when any fixture's title, text or `
 | --- | --- |
 | `nDCG10` | Gain `2^grade - 1`, discount `1 / log2(rank + 1)`, ideal ranking from all graded pages |
 | `recall5` | Pages graded 2 or 3 found in the top 5, over all pages graded 2 or 3 |
+| `recall20` | The same for the top 20, which is what the search dialog shows |
 | `mrr` | Mean of `1 / rank` of the first page graded 2 or 3 |
 | `zeroResultRate` | Share of answerable queries that returned nothing |
 | `junkAt5` | Share of the results shown, up to the first 5, that the query doesn't grade. An empty list scores 0, because `zeroResultRate` counts it |
@@ -231,7 +233,7 @@ The Baseline (2026-10-27) section above describes the ranking before this change
 - **What is left.**
   - **Natural-language queries.** Table and summary queries still lose to the old ranking, because the keyword arm requires every word, stop words included, and the vector arm alone doesn't reliably surface the right page. The query "which initiative is at risk" has no keyword match, and `product-roadmap` isn't in the top 20 by vector similarity. For "who sends the customer newsletter", the one keyword match, `product-spec`, outranks `release-checklist`. By vector similarity `release-checklist` is third, at 0.483, behind `note-ssl-renewal` at 0.550 and `vendor-comparison` at 0.488.
   - **The hub page persists.** The Baseline (2026-10-27) section describes `note-ssl-renewal`, a 3-line note that no query labels, as a hub that dominates result lists. Per-page ranking doesn't remove it: it still ranks first in 45 of 116 fused result lists (dev 35 of 91, holdout 10 of 25), the same count as `chunk-fusion`, and in 45 of the 51 queries where the keyword arm finds nothing (dev 35 of 40, holdout 10 of 11). It appears somewhere in every `page-fusion` list. Those lists average 16.4 results on dev and 15.4 on holdout, against 2 to 7 for `chunk-fusion`. Near-empty pages embed close to every query, which is why they act as hubs.
-  - **The floor barely filters on a large real account.** On the dev database's busiest user, with 238 indexed pages, the number of pages whose best chunk is at or above the 0.4 floor was 96 for a nonsense query (`xyzzy plugh`), 76 of them under 200 characters; 135 and 161 for two question-style queries; and 3 for an unrelated recipe query. So for a heavy user, a query the keyword arm misses can fill all 20 slots, led by near-empty pages, while a query far from every page, like the recipe one, is cut short. The 47-page eval corpus can't show this. Re-sweep the floor after any change that moves similarity scores: cleaner index text, the chunker, pooling or a query instruction. Likely remedies to evaluate with this harness: a query instruction prefix (which changes only query embeddings), a relative floor, and hub suppression.
+  - **The floor barely filters on a large real account.** On the dev database's busiest user, with 238 indexed pages, the number of pages whose best chunk is at or above the 0.4 floor was 96 for a nonsense query (`xyzzy plugh`), 76 of them under 200 characters; 135 and 161 for two question-style queries; and 3 for an unrelated recipe query. So for a heavy user, a query the keyword arm misses can fill all 20 slots, led by near-empty pages, while a query far from every page, like the recipe one, is cut short. The 47-page eval corpus can't show this. Re-sweep the floor after any change that moves similarity scores: cleaner index text, the chunker, pooling or a query instruction. Likely remedies to evaluate with this harness: a query instruction prefix (which changes only query embeddings), a relative floor, and hub suppression. The junk filter section below tried a relative floor; it lost.
 
 ### Dev sweep
 
@@ -328,3 +330,67 @@ Holdout set:
 | nonEnglish | 3 | 0.000 | 0.000 | 0.000 |
 | table | 3 | 1.000 | 0.477 | -0.523 |
 | summary | 3 | 1.000 | 1.000 | 0.000 |
+
+## Junk filter (2026-10-29)
+
+The vector arm of fused results (`getPagesByRRF`) now skips pages with fewer than 200 bytes of plain text (`VECTOR_MIN_PAGE_BYTES`). That is about 200 characters of English, and fewer of Japanese or Chinese, where each character carries more meaning. Such pages are still found by their words. Short pages embed close to every query; on the heavy corpus a quarter of the pages are like this, mostly standups that nobody answered. The length comes from the stored size, so the text is never decompressed. The heavy corpus baseline above is from before this change, and quick results don't change.
+
+**How it was chosen.** A selection rule was written in the plan before any sweep ran:
+1. A configuration is eligible when nDCG@10 is within 0.005 of master on both `heavy-dev` and `dev`, and it adds no zero-result queries.
+2. Among eligible configurations, pick the lowest `heavy-dev` `noAnswerResults`. Treat values within 0.5 as ties, and break them by `junkAt5`, then nDCG@10, then fewer rules.
+3. Ship only if `heavy-holdout` keeps nDCG@10 within 0.01 of master and lowers `noAnswerResults`.
+
+The sweep crossed three dimensions (126 configurations):
+- floors 0.4, 0.45 and 0.5;
+- minimum lengths of 0, 50, 100, 150, 200 and 300 characters;
+- a limiter: none, a relative floor (keep vector matches within 0.05, 0.1 or 0.15 of the query's best similarity), or a cap of 3, 5 or 10 pages found only by the vector arm.
+
+The rule picked 200 characters with a cap of 10, and the first `heavy-holdout` gate passed. Review then showed the rule couldn't see the cap's cost:
+- Pages found only by the vector arm rank after keyword matches. So a cap of 10 only ever removes results below position 10, where nDCG@10 and Recall@5 don't look.
+- The search dialog shows 20 results. Recall@20, added to the eval for this, shows the cap hiding answers: `dev` falls from 0.840 to 0.734.
+
+The cap was dropped, and the relative floor, which lost in the sweep, was removed. What ships is the minimum length alone. It moved from characters to bytes, which gives the same results on these corpora. It was gated again on `heavy-holdout`, with nDCG@10 and Recall@20 fixed as the criteria before the run.
+
+| Set | Configuration | nDCG@10 | Recall@5 | Recall@20 | `noAnswerResults` |
+| --- | --- | ---: | ---: | ---: | ---: |
+| `heavy-dev` | master | 0.571 | 0.587 | 0.713 | 14.17 |
+| `heavy-dev` | 150 bytes | 0.582 | 0.587 | 0.713 | 13.83 |
+| `heavy-dev` | **200 bytes** | 0.610 | 0.620 | 0.753 | 13.67 |
+| `heavy-dev` | 200 characters, cap 10 (dropped) | 0.610 | 0.620 | 0.718 | 7.00 |
+| `dev` | master | 0.606 | 0.613 | 0.840 | 13.00 |
+| `dev` | 150 bytes | 0.633 | 0.646 | 0.844 | 11.50 |
+| `dev` | **200 bytes** | 0.618 | 0.628 | 0.826 | 10.63 |
+| `dev` | 200 characters, cap 10 (dropped) | 0.618 | 0.628 | 0.734 | 8.38 |
+
+**Why 200, not 150.** 150 bytes does better on the fixture corpus, but on the heavy corpus it keeps most of the gain away: 0.582 against 0.610. Unanswered standups are 137–161 characters in production, so 150 leaves many of them in the vector arm.
+
+On `heavy-dev`, by category:
+
+| Category | Before | After |
+| --- | ---: | ---: |
+| prefix | 0.85 | 0.91 |
+| paraphrase | 0.13 | 0.19 |
+| typo | 0.15 | 0.28 |
+| longDoc | 0.55 | 0.65 |
+| table | 0.64 | 0.60 |
+| person | 0.61 | 0.59 |
+
+**What it costs.** A note with fewer than 200 bytes of text is no longer found by meaning or through a typo, only by its words.
+- In `dev`, `note-whiteboard` (154 characters) loses both its queries: "where are the pictures from the design brainstorm" falls from 1.0 to 0, and "whiteboad" from 0.5 to 0. They are dev's only losses, against 24 wins.
+- `heavy-dev` has 14 wins and 3 losses. One of those losses is the 65-character `doc-ideas-backlog` dropping out of "Sofia hackathon slack bot", where it was graded 1.
+- Length can't tell a short note from an empty standup summary, and short notes are hubs too: `doc-ideas-backlog` led every unanswerable list on the heavy corpus.
+
+**What it doesn't fix.** Unanswerable queries still return about 14 pages on `heavy-dev`. The only rule that halved that, the cap, did it by hiding answers. Filler for unanswerable queries is left for later sprints: natural-language matching (A5), the query instruction (A9) and the floor re-tune after re-embedding (B8).
+
+**Gate.** `heavy-holdout` has had two gate runs. The first compared master with 200 characters and a cap of 10. The second compared master with the shipped rule, 200 bytes and no cap:
+
+| Holdout | Configuration | nDCG@10 | Recall@5 | Recall@20 | `noAnswerResults` |
+| --- | --- | ---: | ---: | ---: | ---: |
+| `heavy-holdout` (72 answerable) | master | 0.560 | 0.632 | 0.729 | 15.00 |
+| `heavy-holdout` | 200 bytes | 0.581 | 0.639 | 0.743 | 13.88 |
+| `holdout` (23 answerable, spent) | master | 0.599 | 0.627 | 0.826 | 6.00 |
+| `holdout` | 200 bytes | 0.605 | 0.627 | 0.783 | 4.00 |
+
+- **The gate passes.** On `heavy-holdout`, nDCG@10 rises by 0.020 and Recall@20 by 0.014.
+- **The fixture holdout drops.** Its Recall@20 falls by 0.043, about one page: the short-note cost above.
+- **What was read.** Only overall rows. The local holdout results were scrubbed down to those rows.

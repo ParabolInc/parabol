@@ -11,7 +11,7 @@ import {
 } from '../../graphql/public/fields/search'
 import {RRF_K} from '../../postgres/expressions'
 import getKysely from '../../postgres/getKysely'
-import {getPagesByRRF} from '../../postgres/queries/getPagesByRRF'
+import {getPagesByRRF, VECTOR_MIN_PAGE_BYTES} from '../../postgres/queries/getPagesByRRF'
 import type {User} from '../../postgres/types'
 import {Logger} from '../../utils/Logger'
 import {HEAVY_CORPUS} from './heavyCorpus/generateHeavyCorpus'
@@ -26,6 +26,7 @@ import {
   reciprocalRank,
   summarize
 } from './metrics'
+import parseCounts from './parseCounts'
 import parseFractions from './parseFractions'
 import {type EvalCorpus, FIXTURES_CORPUS, seedEvalPages} from './seedEvalPages'
 
@@ -76,6 +77,7 @@ type SummarizedMetrics = ReturnType<typeof summarizeWithErrors>
 interface SweepConfig {
   alpha: number
   floor: number
+  minBytes: number
 }
 
 interface SweepResult extends SweepConfig {
@@ -111,6 +113,7 @@ const DEFAULT_SWEEP_FLOORS = '0.3,0.35,0.4,0.45,0.5'
 const SWEEP_TABLE_METRICS = [
   'nDCG10',
   'recall5',
+  'recall20',
   'mrr',
   'zeroResultRate',
   'junkAt5',
@@ -139,7 +142,13 @@ const parseLabel = (value: string) => {
 const parseSweepConfigs = (): SweepConfig[] => {
   const alphas = parseFractions('EVAL_ALPHAS', process.env.EVAL_ALPHAS ?? DEFAULT_SWEEP_ALPHAS)
   const floors = parseFractions('EVAL_FLOORS', process.env.EVAL_FLOORS ?? DEFAULT_SWEEP_FLOORS)
-  return alphas.flatMap((alpha) => floors.map((floor) => ({alpha, floor})))
+  const minBytesList = parseCounts(
+    'EVAL_MIN_BYTES',
+    process.env.EVAL_MIN_BYTES ?? String(VECTOR_MIN_PAGE_BYTES)
+  )
+  return alphas.flatMap((alpha) =>
+    floors.flatMap((floor) => minBytesList.map((minBytes) => ({alpha, floor, minBytes})))
+  )
 }
 
 const gradeQueries = (evalSet: EvalSet, pageIdByFixture: Map<string, number>): GradedQuery[] => {
@@ -245,6 +254,7 @@ const toQueryResult = (
   answerable: grades.size > 0,
   nDCG10: ndcgAt(10, resultIds, grades),
   recall5: recallAt(5, resultIds, grades),
+  recall20: recallAt(20, resultIds, grades),
   junkAt5: junkAt(5, resultIds, grades),
   reciprocalRank: reciprocalRank(resultIds, grades),
   resultIds,
@@ -313,7 +323,7 @@ const embedQueryVector = async (query: string) => {
 const scoreSweepQuery = async (
   gradedQuery: GradedQuery,
   queryVector: Float32Array | Error,
-  {alpha, floor}: SweepConfig,
+  {alpha, floor, minBytes}: SweepConfig,
   fixtureKeyByPageId: Map<number, string>,
   viewerId: string
 ) => {
@@ -335,7 +345,8 @@ const scoreSweepQuery = async (
       viewerId,
       teamIds: undefined,
       dateRange: null,
-      vectorFloor: floor
+      vectorFloor: floor,
+      vectorMinBytes: minBytes
     })
     resultIds = toResultIds(edges.map(({nodeId}) => nodeId))
   } catch (e) {
@@ -362,9 +373,10 @@ const scoreSweep = async (
     }
   }
   return sweeps.map(
-    ({alpha, floor, perQuery}): SweepResult => ({
+    ({alpha, floor, minBytes, perQuery}): SweepResult => ({
       alpha,
       floor,
+      minBytes,
       overall: summarizeWithErrors(perQuery),
       byCategory: summarizeByCategory(perQuery),
       perQuery
@@ -372,9 +384,10 @@ const scoreSweep = async (
   )
 }
 
-const toSweepRow = ({alpha, floor, overall}: SweepResult) => ({
+const toSweepRow = ({alpha, floor, minBytes, overall}: SweepResult) => ({
   alpha,
   floor,
+  minBytes,
   ...Object.fromEntries(
     SWEEP_TABLE_METRICS.map((metric) => [metric, roundForTable(overall[metric])])
   )
@@ -409,20 +422,22 @@ const runSweep = async ({
       .sort((first, second) => second.overall.nDCG10 - first.overall.nDCG10)
       .map(toSweepRow)
   )
-  const failed = sweepResults.flatMap(({alpha, floor, perQuery}) =>
+  const failed = sweepResults.flatMap(({alpha, floor, minBytes, perQuery}) =>
     perQuery
       .filter(({error}) => error !== undefined)
-      .map(({query, error}) => ({query, alpha, floor, error}))
+      .map(({query, error}) => ({
+        query,
+        config: `alpha ${alpha}, floor ${floor}, min bytes ${minBytes}`,
+        error
+      }))
   )
   const [firstFailed] = failed
   if (firstFailed) {
     console.warn(
-      `${failed.length} sweep result lists failed. First, "${firstFailed.query}" at alpha ${firstFailed.alpha}, floor ${firstFailed.floor}: ${firstFailed.error}`
+      `${failed.length} sweep result lists failed. First, "${firstFailed.query}" at ${firstFailed.config}: ${firstFailed.error}`
     )
   }
-  return failed.map(
-    ({query, alpha, floor, error}) => `sweep alpha ${alpha} floor ${floor} "${query}": ${error}`
-  )
+  return failed.map(({query, config, error}) => `sweep ${config} "${query}": ${error}`)
 }
 
 const dumpCorpus = (corpus: EvalCorpus) => {

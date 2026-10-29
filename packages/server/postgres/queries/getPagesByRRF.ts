@@ -11,6 +11,7 @@ import {
 import {getPageSearchPageInfo} from './pageSearchCursor'
 
 export const VECTOR_SIMILARITY_FLOOR = 0.4
+export const VECTOR_MIN_PAGE_BYTES = 200
 
 export const getPagesByRRF = async ({
   query,
@@ -22,12 +23,14 @@ export const getPagesByRRF = async ({
   viewerId,
   teamIds,
   dateRange,
-  vectorFloor = VECTOR_SIMILARITY_FLOOR
+  vectorFloor = VECTOR_SIMILARITY_FLOOR,
+  vectorMinBytes = VECTOR_MIN_PAGE_BYTES
 }: PageKeywordSearchParams & {
   queryVector: Float32Array
   alpha: number
   k: number
   vectorFloor?: number
+  vectorMinBytes?: number
 }): Promise<PageSearchResults> => {
   const tableName = getEmbeddingsPagesTableName(activeEmbeddingModelId)
   if (!tableName) {
@@ -38,6 +41,14 @@ export const getPagesByRRF = async ({
       qb
         .selectFrom('ViewerPages as vp')
         .innerJoin(`${tableName} as c`, 'c.pageId', 'vp.id')
+        .innerJoin('Page as p', 'p.id', 'vp.id')
+        .$if(vectorMinBytes > 0, (qb) =>
+          qb.where(
+            sql<number>`octet_length(${sql.ref('p.plaintextContent')})`,
+            '>=',
+            vectorMinBytes
+          )
+        )
         .select((eb) => [
           'vp.id',
           'vp.updatedAt',
