@@ -11,6 +11,7 @@ const suffix = `pbr-${Date.now()}`
 const viewerId = `viewer-${suffix}`
 const otherUserId = `other-${suffix}`
 const bulkViewerId = `bulk-${suffix}`
+const junkViewerId = `junk-${suffix}`
 const BULK_PAGE_COUNT = 101
 const orgId = `org-${suffix}`
 const teamId = `team-${suffix}`
@@ -24,6 +25,8 @@ const vectorWithCosine = (cosine: number) => [
   ...new Array<number>(EMBEDDING_DIMENSIONS - 2).fill(0)
 ]
 const zeroVector = new Array<number>(EMBEDDING_DIMENSIONS).fill(0)
+const FILLER_TEXT =
+  'Notes from the weekly sync about hiring, budgets and the offsite plan. '.repeat(5)
 
 let keywordOnlyId: number
 let vectorOnlyId: number
@@ -35,6 +38,11 @@ let zeroChunkOnlyId: number
 let mixedChunksId: number
 let olderTwinId: number
 let newerTwinId: number
+let nearEmptyId: number
+let nearEmptyKeywordId: number
+let strongId: number
+let closeId: number
+let weakId: number
 
 const makeUser = (id: string, preferredName: string) => ({
   id,
@@ -48,12 +56,13 @@ const insertPage = async (
   {
     userId = viewerId,
     updatedAt,
-    deletedAt
-  }: {userId?: string; updatedAt?: Date; deletedAt?: Date} = {}
+    deletedAt,
+    plaintextContent = FILLER_TEXT
+  }: {userId?: string; updatedAt?: Date; deletedAt?: Date; plaintextContent?: string} = {}
 ) => {
   const {id} = await pg
     .insertInto('Page')
-    .values({title, plaintextContent: '', userId, sortOrder: 'a0', updatedAt, deletedAt})
+    .values({title, plaintextContent, userId, sortOrder: 'a0', updatedAt, deletedAt})
     .returning('id')
     .executeTakeFirstOrThrow()
   return id
@@ -87,7 +96,8 @@ beforeAll(async () => {
     .values([
       makeUser(viewerId, 'Fusion Viewer'),
       makeUser(otherUserId, 'Fusion Other'),
-      makeUser(bulkViewerId, 'Fusion Bulk')
+      makeUser(bulkViewerId, 'Fusion Bulk'),
+      makeUser(junkViewerId, 'Fusion Junk')
     ])
     .execute()
   await pg.insertInto('Organization').values({id: orgId, name: 'Fusion Search Org'}).execute()
@@ -141,7 +151,7 @@ beforeAll(async () => {
     .values(
       Array.from({length: BULK_PAGE_COUNT}, (_, i) => ({
         title: `Bulk note ${i + 1}`,
-        plaintextContent: '',
+        plaintextContent: FILLER_TEXT,
         userId: bulkViewerId,
         sortOrder: 'a0'
       }))
@@ -153,6 +163,29 @@ beforeAll(async () => {
     .values(bulkPages.map(({id}) => ({userId: bulkViewerId, pageId: id, role: 'owner' as const})))
     .execute()
   await Promise.all(bulkPages.map(({id}) => insertChunks(id, [0.5])))
+  nearEmptyId = await insertPage('Sticky note', {
+    userId: junkViewerId,
+    plaintextContent: 'Remember the thing.'
+  })
+  nearEmptyKeywordId = await insertPage('Roadmap', {userId: junkViewerId, plaintextContent: 'tbd'})
+  strongId = await insertPage('Strong match', {userId: junkViewerId})
+  closeId = await insertPage('Close match', {userId: junkViewerId})
+  weakId = await insertPage('Weak match', {userId: junkViewerId})
+  await pg
+    .insertInto('PageAccess')
+    .values(
+      [nearEmptyId, nearEmptyKeywordId, strongId, closeId, weakId].map((pageId) => ({
+        userId: junkViewerId,
+        pageId,
+        role: 'owner' as const
+      }))
+    )
+    .execute()
+  await insertChunks(nearEmptyId, [0.95])
+  await insertChunks(nearEmptyKeywordId, [0.96])
+  await insertChunks(strongId, [0.9])
+  await insertChunks(closeId, [0.85])
+  await insertChunks(weakId, [0.7])
 })
 
 afterAll(async () => {
@@ -162,12 +195,15 @@ afterAll(async () => {
       qb
         .selectFrom('Page')
         .select('id')
-        .where('userId', 'in', [viewerId, otherUserId, bulkViewerId])
+        .where('userId', 'in', [viewerId, otherUserId, bulkViewerId, junkViewerId])
     )
     .execute()
   await pg.deleteFrom('Team').where('orgId', '=', orgId).execute()
   await pg.deleteFrom('Organization').where('id', '=', orgId).execute()
-  await pg.deleteFrom('User').where('id', 'in', [viewerId, otherUserId, bulkViewerId]).execute()
+  await pg
+    .deleteFrom('User')
+    .where('id', 'in', [viewerId, otherUserId, bulkViewerId, junkViewerId])
+    .execute()
   await pg.destroy()
 })
 
@@ -324,4 +360,50 @@ it('returns an empty page past the end', async () => {
     startCursor: null,
     endCursor: null
   })
+})
+
+const junkSearch = (overrides: Partial<Parameters<typeof getPagesByRRF>[0]> = {}) =>
+  fused(0.25, {viewerId: junkViewerId, ...overrides})
+const resultIds = ({edges}: Awaited<ReturnType<typeof getPagesByRRF>>) =>
+  edges.map(({nodeId}) => nodeId)
+
+it('leaves near-empty pages out of the vector arm', async () => {
+  expect(resultIds(await junkSearch())).toContain(nearEmptyId)
+  expect(resultIds(await junkSearch({vectorMinChars: 100}))).not.toContain(nearEmptyId)
+})
+
+it('still finds a near-empty page by its keywords', async () => {
+  const {edges} = await junkSearch({vectorMinChars: 100})
+  const edge = edges.find(({nodeId}) => nodeId === nearEmptyKeywordId)
+  expect(edge?.score.keywordRank).toBe(1)
+  expect(edge?.score.vectorRank).toBeNull()
+})
+
+it('keeps vector matches within the relative floor of the best', async () => {
+  const ids = resultIds(await junkSearch({vectorMinChars: 100, vectorRelativeFloor: 0.1}))
+  expect(ids).toEqual(expect.arrayContaining([strongId, closeId]))
+  expect(ids).not.toContain(weakId)
+})
+
+it('measures the relative floor after near-empty pages are removed', async () => {
+  const ids = resultIds(await junkSearch({vectorMinChars: 100, vectorRelativeFloor: 0.07}))
+  expect(ids).toEqual(expect.arrayContaining([strongId, closeId]))
+  expect(ids).not.toContain(weakId)
+})
+
+it('keeps at most the limit of vector-only pages', async () => {
+  const {edges} = await junkSearch({vectorOnlyLimit: 1})
+  expect(edges.map(({nodeId}) => nodeId)).toContain(nearEmptyKeywordId)
+  expect(edges.filter(({score}) => score.keywordRank === null)).toHaveLength(1)
+})
+
+it('pages through a vector-only limit without gaps or repeats', async () => {
+  const walked: (string | number)[] = []
+  for (let offset = 0; offset < 10; offset++) {
+    const {edges} = await junkSearch({vectorOnlyLimit: 2, first: 1, offset})
+    walked.push(...edges.map(({nodeId}) => nodeId))
+  }
+  const {edges: all} = await junkSearch({vectorOnlyLimit: 2})
+  expect(walked).toEqual(all.map(({nodeId}) => nodeId))
+  expect(all.filter(({score}) => score.keywordRank === null)).toHaveLength(2)
 })
