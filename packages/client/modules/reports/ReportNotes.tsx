@@ -10,9 +10,11 @@ import SendClientSideEvent from '../../utils/SendClientSideEvent'
 interface Props {
   orgId: string
   resultRef: ReportNotes_result$key
+  // a Team Health heatmap by team says on each hidden team's row why it's hidden
+  hasHiddenTeamRows: boolean
 }
 
-const ReportNotes = ({orgId, resultRef}: Props) => {
+const ReportNotes = ({orgId, resultRef, hasHiddenTeamRows}: Props) => {
   const {notes} = useFragment(
     graphql`
       fragment ReportNotes_result on ReportResult {
@@ -26,7 +28,10 @@ const ReportNotes = ({orgId, resultRef}: Props) => {
   )
   const atmosphere = useAtmosphere()
   // the view says why a stopped report shows nothing
-  const shownNotes = notes.filter(({kind}) => kind !== 'FILTER_LEVEL_REMOVED')
+  const shownNotes = notes.filter(
+    ({kind}) =>
+      kind !== 'FILTER_LEVEL_REMOVED' && !(kind === 'HIDDEN_FOR_ANONYMITY' && hasHiddenTeamRows)
+  )
   if (shownNotes.length === 0) return null
   const onUpgradeClick = () => {
     SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {

@@ -95,7 +95,15 @@ const ReportPageResult = ({organizationRef, orgId, spec}: Props) => {
           <p className='m-0 text-fg-secondary'>This report couldn’t run for this organization.</p>
         )}
       </div>
-      {report && <ReportNotes orgId={orgId} resultRef={report} />}
+      {report && (
+        <ReportNotes
+          orgId={orgId}
+          resultRef={report}
+          hasHiddenTeamRows={
+            !!report.teamHealth && spec.breakdown.some(({dimension}) => dimension === 'TEAM')
+          }
+        />
+      )}
     </>
   )
 }
