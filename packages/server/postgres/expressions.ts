@@ -12,7 +12,7 @@ export function RRF<DB, TB extends keyof DB>(
   k: number
 ) {
   return sql<number>`
-      (${1 - alpha} * coalesce(1.0 / (${k} + ${eb.ref(vRankCol)}), 0.0)) + (${alpha} * coalesce(1.0 / (${k} + ${eb.ref(kRankCol)}), 0.0))`
+      ((${alpha} * coalesce(1.0 / (${k} + ${eb.ref(vRankCol)}), 0.0)) + (${1 - alpha} * coalesce(1.0 / (${k} + ${eb.ref(kRankCol)}), 0.0)))::float8`
 }
 
 export function cosineSimilarity<DB, TB extends keyof DB>(
@@ -65,6 +65,14 @@ export const pageTitleTsv = (title: Expression<string | null>) =>
 
 export const pageSearchTsv = (title: Expression<string | null>, body: Expression<string | null>) =>
   sql<string>`(setweight(${pageTitleTsv(title)}, 'A') || setweight(to_tsvector('simple', left(coalesce(${body}, ''), 100000)), 'D'))`
+
+export const pageSnippet = (body: Expression<string | null>, tsQuery: Expression<string | null>) =>
+  sql<string | null>`ts_headline(
+    'simple',
+    left(coalesce(${body}, ''), 20000),
+    ${tsQuery},
+    'StartSel=<b>, StopSel=</b>, MaxWords=35, MinWords=15, MaxFragments=1'
+  )`
 
 const MIN_QUERY_TERM_LENGTH = 2
 const MAX_QUERY_TERMS = 8

@@ -36,14 +36,13 @@ const embedWithinBudget = async (embed: () => Promise<Float32Array | Error | und
   }
 }
 
-const decodeCursor = (after: string | null | undefined, type: SearchTypeEnum) => {
+const decodeCursor = (after: string | null | undefined) => {
   if (!after) return null
   const decodedAfter = JSON.parse(atob(after))
   if (!decodedAfter) return null
   const {codes, maxScore} = decodedAfter as {codes: (number | string)[]; maxScore: number}
   if (!Array.isArray(codes) || codes.length < 1 || !maxScore) return null
-  const afterIds = type === 'page' ? codes.map((code) => CipherId.decrypt(Number(code))) : codes
-  return {afterIds, maxScore}
+  return {afterIds: codes, maxScore}
 }
 export const search: NonNullable<UserResolvers['search']> = async (
   _source,
@@ -61,7 +60,7 @@ export const search: NonNullable<UserResolvers['search']> = async (
   {authToken, dataLoader, resourceGrants}
 ) => {
   const viewerId = getUserId(authToken)
-  const alpha = inAlpha ?? 0.75
+  const alpha = inAlpha ?? 0.25
   const query = inQuery.trim()
 
   // VALIDATION
@@ -172,11 +171,9 @@ export const search: NonNullable<UserResolvers['search']> = async (
     }
   }
   if (type === 'page') {
-    const afterCursor = decodeCursor(after, type)
+    if (after) return EMPTY_PAGE_SEARCH_RESULTS
     const getKeywordResults = () =>
-      after
-        ? EMPTY_PAGE_SEARCH_RESULTS
-        : getPagesByKeyword({query, first, viewerId, teamIds: pageTeamIds, dateRange})
+      getPagesByKeyword({query, first, viewerId, teamIds: pageTeamIds, dateRange})
     if (alpha === 0) return getKeywordResults()
     const fallBackToKeyword = (reason: string, error?: unknown) => {
       Logger.warn(KEYWORD_FALLBACK_LOG_MESSAGE, {
@@ -203,7 +200,6 @@ export const search: NonNullable<UserResolvers['search']> = async (
         query,
         queryVector,
         dateRange,
-        after: afterCursor,
         alpha,
         k: RRF_K,
         first,
@@ -227,7 +223,7 @@ export const search: NonNullable<UserResolvers['search']> = async (
     query,
     queryVector,
     dateRange,
-    after: decodeCursor(after, type),
+    after: decodeCursor(after),
     alpha,
     k: RRF_K,
     first,

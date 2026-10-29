@@ -7,10 +7,14 @@ const METRICS = [
   'recall5',
   'mrr',
   'zeroResultRate',
+  'junkAt5',
+  'noAnswerResults',
   'errors',
   'p50Ms',
   'p90Ms'
 ]
+const MIN_QUERY_DELTA = 0.001
+const TOP_KEYS_SHOWN = 3
 
 const [pathA, pathB] = process.argv.slice(2)
 if (!pathA || !pathB) {
@@ -60,7 +64,17 @@ const lines = [
     )
   ])
 ]
-const widths = lines[0].map((_, column) => Math.max(...lines.map((cells) => cells[column].length)))
+const printAligned = (rows) => {
+  const widths = rows[0].map((_, column) => Math.max(...rows.map((cells) => cells[column].length)))
+  for (const cells of rows) {
+    console.log(
+      cells
+        .map((cell, column) => cell.padEnd(widths[column]))
+        .join('  ')
+        .trimEnd()
+    )
+  }
+}
 
 console.log(`a: ${a.label} ${a.set} ${a.mode} (${pathA})`)
 console.log(`b: ${b.label} ${b.set} ${b.mode} (${pathB})`)
@@ -70,11 +84,54 @@ if (listUnindexed(a) !== listUnindexed(b)) {
   )
 }
 console.log('n = queries in the row, answerable or not. delta = b - a\n')
-for (const cells of lines) {
+printAligned(lines)
+
+const withoutFloatNoise = (value) => Math.round(value * 1e6) / 1e6
+
+const queriesOf = (results) => new Map(results.perQuery.map((result) => [result.query, result]))
+
+const countMissingFrom = (queries, otherQueries) =>
+  [...queries.keys()].filter((query) => !otherQueries.has(query)).length
+
+const formatSignedDelta = (delta) => `${delta > 0 ? '+' : ''}${delta.toFixed(3)}`
+
+const formatTopKeys = ({resultKeys}) =>
+  resultKeys === undefined ? 'n/a' : resultKeys.slice(0, TOP_KEYS_SHOWN).join(', ') || 'none'
+
+const queriesInA = queriesOf(a)
+const queriesInB = queriesOf(b)
+const unmatchedCount =
+  countMissingFrom(queriesInA, queriesInB) + countMissingFrom(queriesInB, queriesInA)
+const changes = [...queriesInA.values()].flatMap((before) => {
+  const after = queriesInB.get(before.query)
+  if (!after) return []
+  const delta = withoutFloatNoise(after.nDCG10 - before.nDCG10)
+  return Math.abs(delta) >= MIN_QUERY_DELTA ? [{before, after, delta}] : []
+})
+const wins = changes
+  .filter(({delta}) => delta > 0)
+  .sort((first, second) => second.delta - first.delta)
+const losses = changes
+  .filter(({delta}) => delta < 0)
+  .sort((first, second) => first.delta - second.delta)
+
+console.log()
+if (unmatchedCount > 0) {
+  console.log(`Warning: queries in only one of a and b are skipped. Count: ${unmatchedCount}.`)
+}
+if (changes.length === 0) {
+  console.log('No per-query nDCG@10 changes.')
+} else {
   console.log(
-    cells
-      .map((cell, column) => cell.padEnd(widths[column]))
-      .join('  ')
-      .trimEnd()
+    `Per-query nDCG@10 changes of ${MIN_QUERY_DELTA} or more, wins first, with the first ${TOP_KEYS_SHOWN} result keys of a and b.\n`
+  )
+  printAligned(
+    [...wins, ...losses].map(({before, after, delta}) => [
+      formatSignedDelta(delta),
+      before.category,
+      JSON.stringify(before.query),
+      `a: ${formatTopKeys(before)}`,
+      `b: ${formatTopKeys(after)}`
+    ])
   )
 }

@@ -38,10 +38,7 @@ const keywordResults: PageSearchResults = {
     }
   ]
 }
-const fusedResults: Awaited<ReturnType<typeof getPagesByRRF>> = {
-  pageInfo: {hasNextPage: false, hasPreviousPage: false, startCursor: '', endCursor: ''},
-  edges: []
-}
+const fusedResults: Awaited<ReturnType<typeof getPagesByRRF>> = {pageInfo, edges: []}
 const pageCursor = btoa(JSON.stringify({codes: [1], maxScore: 0.5}))
 
 const callSearch = (args: {
@@ -164,9 +161,16 @@ it('returns fused results when the query embeds in time', async () => {
   jest.mocked(publishToEmbedder).mockResolvedValue(queryVector)
   jest.mocked(getPagesByRRF).mockResolvedValue(fusedResults)
   expect(await callSearch({query: 'retro'})).toBe(fusedResults)
-  expect(getPagesByRRF).toHaveBeenCalledWith(
-    expect.objectContaining({query: 'retro', queryVector, viewerId})
-  )
+  expect(getPagesByRRF).toHaveBeenCalledWith({
+    query: 'retro',
+    queryVector,
+    alpha: 0.25,
+    k: 60,
+    first: 20,
+    viewerId,
+    teamIds: undefined,
+    dateRange: null
+  })
   expect(getPagesByKeyword).not.toHaveBeenCalled()
   expect(Logger.warn).not.toHaveBeenCalled()
 })
@@ -176,31 +180,17 @@ it('waits at most 3 seconds for the query embedding', async () => {
   expect(getUserQueryJobData).toHaveBeenCalledWith('retro', 3000)
 })
 
-it('rejects a malformed cursor before embedding the query', async () => {
-  await expect(callSearch({query: 'retro', after: 'not a cursor'})).rejects.toThrow()
+it.each([
+  ['alpha 0 and a page cursor', 0, pageCursor],
+  ['alpha 0 and a malformed cursor', 0, 'not a cursor'],
+  ['the default alpha and a page cursor', undefined, pageCursor],
+  ['the default alpha and a malformed cursor', undefined, 'not a cursor']
+])('returns no results after the first page with %s', async (_label, alpha, after) => {
+  expect(await callSearch({query: 'retro', alpha, after})).toEqual({pageInfo, edges: []})
   expect(publishToEmbedder).not.toHaveBeenCalled()
   expect(getPagesByKeyword).not.toHaveBeenCalled()
-})
-
-it('returns no keyword results after the first page when alpha is 0', async () => {
-  expect(await callSearch({query: 'retro', alpha: 0, after: pageCursor})).toEqual({
-    pageInfo,
-    edges: []
-  })
-  expect(getPagesByKeyword).not.toHaveBeenCalled()
-})
-
-it('returns no keyword results after the first page when the query embedding fails', async () => {
-  jest.mocked(publishToEmbedder).mockResolvedValue(new Error('embedder unavailable'))
-  expect(await callSearch({query: 'retro', after: pageCursor})).toEqual({pageInfo, edges: []})
-  expect(getPagesByKeyword).not.toHaveBeenCalled()
-  expectKeywordFallbackLogged({reason: 'embedding failed', errorMessage: 'embedder unavailable'})
-})
-
-it('returns no keyword results after the first page when the embedder is disabled', async () => {
-  jest.mocked(publishToEmbedder).mockResolvedValue(undefined)
-  expect(await callSearch({query: 'retro', after: pageCursor})).toEqual({pageInfo, edges: []})
-  expect(getPagesByKeyword).not.toHaveBeenCalled()
+  expect(getPagesByRRF).not.toHaveBeenCalled()
+  expect(Logger.warn).not.toHaveBeenCalled()
 })
 
 it('treats a whitespace-only query like an empty one', async () => {
