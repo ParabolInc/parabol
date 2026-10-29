@@ -3,6 +3,7 @@ import {Suspense, useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {SearchDialogResultsQuery} from '../../__generated__/SearchDialogResultsQuery.graphql'
 import gqlQuery from '../../__generated__/SearchDialogResultsQuery.graphql'
+import {Loader} from '../../utils/relay/renderLoader'
 import {SearchDialogBestResults} from './SearchDialogBestResults'
 import type {ResultsListRefHandler} from './SearchDialogContent'
 import {SearchDialogResultsList} from './SearchDialogResultsList'
@@ -56,15 +57,19 @@ export const SearchDialogResults = (props: Props) => {
     <Suspense
       key={queryRef.fetchKey}
       fallback={
-        <SearchDialogResultsList
-          resultsListRef={resultsListRef}
-          edgesRef={edges}
-          title='Quick matches'
-          closeSearch={closeSearch}
-          query={query}
-          selectedId={selectedId}
-          setSelectedId={setSelectedId}
-        />
+        edges.length === 0 ? (
+          <Loader />
+        ) : (
+          <SearchDialogResultsList
+            resultsListRef={resultsListRef}
+            edgesRef={edges}
+            title='Quick matches'
+            closeSearch={closeSearch}
+            query={query}
+            selectedId={selectedId}
+            setSelectedId={setSelectedId}
+          />
+        )
       }
     >
       <SearchDialogBestResults
