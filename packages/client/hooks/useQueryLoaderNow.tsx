@@ -1,5 +1,5 @@
 import areEqual from 'fbjs/lib/areEqual'
-import {useCallback, useEffect, useRef} from 'react'
+import {startTransition, useCallback, useEffect, useRef} from 'react'
 import {fetchQuery, type PreloadFetchPolicy, useQueryLoader} from 'react-relay'
 import type {ConcreteRequest, GraphQLTaggedNode, OperationType, VariablesOf} from 'relay-runtime'
 import useAtmosphere from './useAtmosphere'
@@ -7,6 +7,7 @@ import useAtmosphere from './useAtmosphere'
 type QueryLoaderOptions = {
   fetchPolicy?: PreloadFetchPolicy
   preventSuspense?: boolean
+  transition?: boolean
 }
 
 export const useQueryLoaderNowWithRetry = <TQuery extends OperationType>(
@@ -14,7 +15,7 @@ export const useQueryLoaderNowWithRetry = <TQuery extends OperationType>(
   variables: VariablesOf<TQuery> = {},
   options: QueryLoaderOptions = {}
 ) => {
-  const {fetchPolicy, preventSuspense} = options
+  const {fetchPolicy, preventSuspense, transition} = options
   const [queryRef, loadQuery] = useQueryLoader<TQuery>(preloadableRequest)
   const varRef = useRef(variables)
   const atmosphere = useAtmosphere()
@@ -41,9 +42,12 @@ export const useQueryLoaderNowWithRetry = <TQuery extends OperationType>(
   useEffect(() => {
     if (preventSuspense) refreshQuery()
     else {
-      loadQuery(variables || {}, {
-        fetchPolicy: fetchPolicy || 'store-or-network'
-      })
+      const load = () =>
+        loadQuery(variables || {}, {
+          fetchPolicy: fetchPolicy || 'store-or-network'
+        })
+      if (transition) startTransition(load)
+      else load()
     }
   }, [varRef.current])
 

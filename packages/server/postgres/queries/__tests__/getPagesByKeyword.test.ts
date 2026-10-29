@@ -2,6 +2,7 @@ import {sql} from 'kysely'
 import {pagePrefixTsQuery} from '../../expressions'
 import getKysely from '../../getKysely'
 import {getPagesByKeyword, type PageKeywordSearchParams} from '../getPagesByKeyword'
+import {decodePageSearchCursor} from '../pageSearchCursor'
 
 const pg = getKysely()
 const suffix = `pbk-${Date.now()}`
@@ -150,6 +151,7 @@ const keywordSearch = (query: string, overrides: Partial<PageKeywordSearchParams
   getPagesByKeyword({
     query,
     first: 20,
+    offset: 0,
     viewerId,
     teamIds: undefined,
     dateRange: null,
@@ -259,12 +261,40 @@ it('reports keyword scores in the fused score shape', async () => {
     vectorRank: null,
     combined: 1 / 62
   })
-  expect(pageInfo).toEqual({
-    hasNextPage: false,
-    hasPreviousPage: false,
-    startCursor: null,
-    endCursor: null
-  })
+  expect(pageInfo.hasNextPage).toBe(false)
+  expect(pageInfo.hasPreviousPage).toBe(false)
+  expect(decodePageSearchCursor(pageInfo.startCursor!)).toEqual({ranking: 'keyword', position: 1})
+  expect(decodePageSearchCursor(pageInfo.endCursor!)).toEqual({ranking: 'keyword', position: 2})
+})
+
+it('pages through the keyword ranking', async () => {
+  const firstPage = await keywordSearch('weekly sync', {first: 1})
+  expect(firstPage.edges.map(({nodeId}) => nodeId)).toEqual([laterWeeklySyncId])
+  expect(firstPage.pageInfo.hasNextPage).toBe(true)
+  const offset = decodePageSearchCursor(firstPage.pageInfo.endCursor!)!.position
+  const secondPage = await keywordSearch('weekly sync', {first: 1, offset})
+  expect(secondPage.edges.map(({nodeId}) => nodeId)).toEqual([earlierWeeklySyncId])
+  expect(secondPage.edges[0]!.score.keywordRank).toBe(2)
+  expect(secondPage.pageInfo.hasNextPage).toBe(false)
+  expect(secondPage.pageInfo.hasPreviousPage).toBe(true)
+})
+
+it('pages through a longer keyword ranking one page at a time', async () => {
+  const fullRanking = await ids('page')
+  const pagedRanking: typeof fullRanking = []
+  let offset = 0
+  let hasNextPage = true
+  let requests = 0
+  while (hasNextPage && requests < fullRanking.length + 1) {
+    const {edges, pageInfo} = await keywordSearch('page', {first: 1, offset})
+    requests++
+    pagedRanking.push(...edges.map(({nodeId}) => nodeId))
+    hasNextPage = pageInfo.hasNextPage
+    offset = decodePageSearchCursor(pageInfo.endCursor ?? '')?.position ?? offset
+  }
+  expect(fullRanking.length).toBeGreaterThan(2)
+  expect(pagedRanking).toEqual(fullRanking)
+  expect(requests).toBe(fullRanking.length)
 })
 
 it('breaks exact ties by page id so the order is stable', async () =>
@@ -427,6 +457,7 @@ describe('matches a plain reference query', () => {
   const unfiltered = (query: string, first = 100): SearchCase => ({
     query,
     first,
+    offset: 0,
     teamIds: undefined,
     dateRange: null
   })

@@ -9,12 +9,15 @@ import {
   SEARCH_EMBEDDING_TIMEOUT_MS,
   search
 } from '../../graphql/public/fields/search'
+import {RRF_K} from '../../postgres/expressions'
 import getKysely from '../../postgres/getKysely'
+import {getPagesByRRF} from '../../postgres/queries/getPagesByRRF'
 import type {User} from '../../postgres/types'
 import {Logger} from '../../utils/Logger'
 import {
   type Grade,
   type Grades,
+  junkAt,
   type Metrics,
   ndcgAt,
   type QueryResult,
@@ -22,6 +25,7 @@ import {
   reciprocalRank,
   summarize
 } from './metrics'
+import parseFractions from './parseFractions'
 import {EVAL_USER_ID, seedEvalPages} from './seedEvalPages'
 
 interface EmbeddingCall {
@@ -57,7 +61,8 @@ jest.mock('../../graphql/mutations/helpers/publishToEmbedder', () => ({
 }))
 
 type EvalSet = 'dev' | 'holdout'
-type Mode = 'fused' | 'quick'
+type SearchMode = 'fused' | 'quick'
+type Mode = SearchMode | 'sweep'
 
 interface EmbeddingOutcome {
   embeddingMs?: number
@@ -65,6 +70,19 @@ interface EmbeddingOutcome {
 }
 
 type ScoredQuery = QueryResult & EmbeddingOutcome & {fallbackReason?: string}
+
+type SummarizedMetrics = ReturnType<typeof summarizeWithErrors>
+
+interface SweepConfig {
+  alpha: number
+  floor: number
+}
+
+interface SweepResult extends SweepConfig {
+  overall: SummarizedMetrics
+  byCategory: Record<string, SummarizedMetrics>
+  perQuery: QueryResult[]
+}
 
 interface EvalQuery {
   query: string
@@ -80,6 +98,17 @@ interface GradedQuery {
 
 const QUERY_FILES: Record<EvalSet, string> = {dev: 'queries.json', holdout: 'holdoutQueries.json'}
 const RESULTS_DIR = path.join(__dirname, 'results')
+const RESULTS_REQUESTED = 20
+const DEFAULT_SWEEP_ALPHAS = '0.25,0.5,0.75'
+const DEFAULT_SWEEP_FLOORS = '0.3,0.35,0.4,0.45,0.5'
+const SWEEP_TABLE_METRICS = [
+  'nDCG10',
+  'recall5',
+  'mrr',
+  'zeroResultRate',
+  'junkAt5',
+  'noAnswerResults'
+] as const
 
 const parseEvalSet = (value: string): EvalSet => {
   if (value === 'dev' || value === 'holdout') return value
@@ -89,13 +118,19 @@ const parseEvalSet = (value: string): EvalSet => {
 const parseModes = (value: string) =>
   value.split(',').map((mode): Mode => {
     const trimmed = mode.trim()
-    if (trimmed === 'fused' || trimmed === 'quick') return trimmed
-    throw new Error(`EVAL_MODES must list fused and/or quick, got "${value}"`)
+    if (trimmed === 'fused' || trimmed === 'quick' || trimmed === 'sweep') return trimmed
+    throw new Error(`EVAL_MODES must list fused, quick and/or sweep, got "${value}"`)
   })
 
 const parseLabel = (value: string) => {
   if (/^[\w.-]+$/.test(value)) return value
   throw new Error(`EVAL_LABEL may only hold letters, digits, dots, dashes and underscores`)
+}
+
+const parseSweepConfigs = (): SweepConfig[] => {
+  const alphas = parseFractions('EVAL_ALPHAS', process.env.EVAL_ALPHAS ?? DEFAULT_SWEEP_ALPHAS)
+  const floors = parseFractions('EVAL_FLOORS', process.env.EVAL_FLOORS ?? DEFAULT_SWEEP_FLOORS)
+  return alphas.flatMap((alpha) => floors.map((floor) => ({alpha, floor})))
 }
 
 const gradeQueries = (evalSet: EvalSet, pageIdByFixture: Map<string, number>): GradedQuery[] => {
@@ -128,23 +163,27 @@ const warmUpEmbeddings = async () => {
   }
 }
 
-const searchPages = async (query: string, mode: Mode) => {
+const toResultIds = (nodeIds: (string | number)[]) => {
+  const resultIds = nodeIds.map(Number)
+  if (new Set(resultIds).size !== resultIds.length) {
+    throw new Error('Search returned the same page more than once')
+  }
+  return resultIds
+}
+
+const searchPages = async (query: string, mode: SearchMode) => {
   if (typeof search !== 'function') throw new Error('search must be a resolver function')
   const dataLoader = getNewDataLoader('pagesSearchEval')
   const context = {authToken: {sub: EVAL_USER_ID, tms: []}, dataLoader} as unknown as GQLContext
   try {
     const connection = await search(
       {} as User,
-      {query, first: 20, type: 'page', alpha: mode === 'quick' ? 0 : undefined},
+      {query, first: RESULTS_REQUESTED, type: 'page', alpha: mode === 'quick' ? 0 : undefined},
       context,
       {} as GraphQLResolveInfo
     )
     const edges = await Promise.all(connection.edges)
-    const resultIds = edges.map(({nodeId}) => Number(nodeId))
-    if (new Set(resultIds).size !== resultIds.length) {
-      throw new Error('Search returned the same page more than once')
-    }
-    return resultIds
+    return toResultIds(edges.map(({nodeId}) => nodeId))
   } finally {
     dataLoader.dispose()
   }
@@ -185,9 +224,29 @@ const describeFusedProblems = (result: ScoredQuery) =>
     .filter(Boolean)
     .join('; ')
 
-const scoreQuery = async (
+const toQueryResult = (
   {query, category, grades}: GradedQuery,
-  mode: Mode,
+  resultIds: number[],
+  fixtureKeyByPageId: Map<number, string>,
+  latencyMs: number,
+  error: string | undefined
+): QueryResult => ({
+  query,
+  category,
+  answerable: grades.size > 0,
+  nDCG10: ndcgAt(10, resultIds, grades),
+  recall5: recallAt(5, resultIds, grades),
+  junkAt5: junkAt(5, resultIds, grades),
+  reciprocalRank: reciprocalRank(resultIds, grades),
+  resultIds,
+  resultKeys: resultIds.map((id) => fixtureKeyByPageId.get(id) ?? String(id)),
+  latencyMs,
+  error
+})
+
+const scoreQuery = async (
+  gradedQuery: GradedQuery,
+  mode: SearchMode,
   fixtureKeyByPageId: Map<number, string>
 ) => {
   warnSpy.mockClear()
@@ -195,23 +254,14 @@ const scoreQuery = async (
   let resultIds: number[] = []
   let error: string | undefined
   try {
-    resultIds = await searchPages(query, mode)
+    resultIds = await searchPages(gradedQuery.query, mode)
   } catch (e) {
     error = e instanceof Error ? e.message : String(e)
   }
   const latencyMs = Date.now() - startedAt
   const [embeddingCall] = mockEmbeddingCalls.splice(0)
   const result: ScoredQuery = {
-    query,
-    category,
-    answerable: grades.size > 0,
-    nDCG10: ndcgAt(10, resultIds, grades),
-    recall5: recallAt(5, resultIds, grades),
-    reciprocalRank: reciprocalRank(resultIds, grades),
-    resultIds,
-    resultKeys: resultIds.map((id) => fixtureKeyByPageId.get(id) ?? String(id)),
-    latencyMs,
-    error,
+    ...toQueryResult(gradedQuery, resultIds, fixtureKeyByPageId, latencyMs, error),
     ...toEmbeddingOutcome(embeddingCall),
     fallbackReason: toFallbackReason(warnSpy.mock.calls)
   }
@@ -234,10 +284,132 @@ const summarizeByCategory = (perQuery: QueryResult[]) => {
   )
 }
 
+const roundForTable = (value: number) => Math.round(value * 1000) / 1000
+
 const toTableRow = (metrics: Metrics) =>
   Object.fromEntries(
-    Object.entries(metrics).map(([metric, value]) => [metric, Math.round(value * 1000) / 1000])
+    Object.entries(metrics).map(([metric, value]) => [metric, roundForTable(value)])
   )
+
+const embedQueryVector = async (query: string) => {
+  try {
+    const embedding = await mockEmbedQueryText(query)
+    return embedding instanceof Error ? embedding : Float32Array.from(embedding)
+  } catch (error) {
+    return error instanceof Error ? error : new Error(String(error))
+  }
+}
+
+const scoreSweepQuery = async (
+  gradedQuery: GradedQuery,
+  queryVector: Float32Array | Error,
+  {alpha, floor}: SweepConfig,
+  fixtureKeyByPageId: Map<number, string>
+) => {
+  if (queryVector instanceof Error) {
+    const error = `embedding failed: ${queryVector.message}`
+    return toQueryResult(gradedQuery, [], fixtureKeyByPageId, 0, error)
+  }
+  const startedAt = Date.now()
+  let resultIds: number[] = []
+  let error: string | undefined
+  try {
+    const {edges} = await getPagesByRRF({
+      query: gradedQuery.query,
+      queryVector,
+      alpha,
+      k: RRF_K,
+      first: RESULTS_REQUESTED,
+      offset: 0,
+      viewerId: EVAL_USER_ID,
+      teamIds: undefined,
+      dateRange: null,
+      vectorFloor: floor
+    })
+    resultIds = toResultIds(edges.map(({nodeId}) => nodeId))
+  } catch (e) {
+    error = e instanceof Error ? e.message : String(e)
+  }
+  const latencyMs = Date.now() - startedAt
+  return toQueryResult(gradedQuery, resultIds, fixtureKeyByPageId, latencyMs, error)
+}
+
+const scoreSweep = async (
+  gradedQueries: GradedQuery[],
+  configs: SweepConfig[],
+  fixtureKeyByPageId: Map<number, string>
+) => {
+  await warmUpEmbeddings()
+  const sweeps = configs.map((config) => ({...config, perQuery: [] as QueryResult[]}))
+  for (const gradedQuery of gradedQueries) {
+    const queryVector = await embedQueryVector(gradedQuery.query)
+    for (const sweep of sweeps) {
+      sweep.perQuery.push(
+        await scoreSweepQuery(gradedQuery, queryVector, sweep, fixtureKeyByPageId)
+      )
+    }
+  }
+  return sweeps.map(
+    ({alpha, floor, perQuery}): SweepResult => ({
+      alpha,
+      floor,
+      overall: summarizeWithErrors(perQuery),
+      byCategory: summarizeByCategory(perQuery),
+      perQuery
+    })
+  )
+}
+
+const toSweepRow = ({alpha, floor, overall}: SweepResult) => ({
+  alpha,
+  floor,
+  ...Object.fromEntries(
+    SWEEP_TABLE_METRICS.map((metric) => [metric, roundForTable(overall[metric])])
+  )
+})
+
+interface SweepRun {
+  label: string
+  evalSet: EvalSet
+  unindexed: string[]
+  gradedQueries: GradedQuery[]
+  configs: SweepConfig[]
+  fixtureKeyByPageId: Map<number, string>
+}
+
+const runSweep = async ({
+  label,
+  evalSet,
+  unindexed,
+  gradedQueries,
+  configs,
+  fixtureKeyByPageId
+}: SweepRun) => {
+  const sweepResults = await scoreSweep(gradedQueries, configs, fixtureKeyByPageId)
+  const resultsPath = path.join(RESULTS_DIR, `${label}-${evalSet}-sweep.json`)
+  const results = {label, set: evalSet, mode: 'sweep', unindexed, configs: sweepResults}
+  fs.writeFileSync(resultsPath, `${JSON.stringify(results, null, 2)}\n`)
+  console.log(`${label} ${evalSet} sweep: ${resultsPath}`)
+  console.table(
+    [...sweepResults]
+      .sort((first, second) => second.overall.nDCG10 - first.overall.nDCG10)
+      .map(toSweepRow)
+  )
+  const failed = sweepResults.flatMap(({alpha, floor, perQuery}) =>
+    perQuery
+      .filter(({error}) => error !== undefined)
+      .map(({query, error}) => ({query, alpha, floor, error}))
+  )
+  const [firstFailed] = failed
+  if (firstFailed) {
+    console.warn(
+      `${failed.length} sweep result lists failed. First, "${firstFailed.query}" at alpha ${firstFailed.alpha}, floor ${firstFailed.floor}: ${firstFailed.error}`
+    )
+  }
+  return failed.map(
+    ({query, alpha, floor, error}) => `sweep alpha ${alpha} floor ${floor} "${query}": ${error}`
+  )
+}
 
 afterAll(async () => {
   await getKysely().destroy()
@@ -247,6 +419,7 @@ test('pages search eval', async () => {
   const evalSet = parseEvalSet(process.env.EVAL_SET ?? 'dev')
   const modes = parseModes(process.env.EVAL_MODES ?? 'fused')
   const label = parseLabel(process.env.EVAL_LABEL ?? 'local')
+  const sweepConfigs = modes.includes('sweep') ? parseSweepConfigs() : []
   const {pageIdByFixture, unindexed} = await seedEvalPages({
     reseed: process.env.EVAL_RESEED === '1'
   })
@@ -256,6 +429,19 @@ test('pages search eval', async () => {
   fs.mkdirSync(RESULTS_DIR, {recursive: true})
   const failures: string[] = []
   for (const mode of modes) {
+    if (mode === 'sweep') {
+      failures.push(
+        ...(await runSweep({
+          label,
+          evalSet,
+          unindexed,
+          gradedQueries,
+          configs: sweepConfigs,
+          fixtureKeyByPageId
+        }))
+      )
+      continue
+    }
     if (mode === 'fused') await warmUpEmbeddings()
     const perQuery: ScoredQuery[] = []
     for (const gradedQuery of gradedQueries) {

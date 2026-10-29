@@ -13,10 +13,12 @@ interface Props {
   closeSearch: () => void
   resultsListRef: Ref<ResultsListRefHandler>
   query: string
+  selectedId: string | null
+  setSelectedId: (id: string | null) => void
 }
 
 export const SearchDialogResultsList = (props: Props) => {
-  const {edgesRef, title, closeSearch, resultsListRef, query} = props
+  const {edgesRef, title, closeSearch, resultsListRef, query, selectedId, setSelectedId} = props
   const edges = useFragment(
     graphql`
         fragment SearchDialogResultsList_edges on SearchResultEdge @relay(plural: true) {
@@ -34,7 +36,9 @@ export const SearchDialogResultsList = (props: Props) => {
   const {selectedIndex, setSelectedIndex} = useSearchListNavigation(
     resultsListRef,
     edges,
-    closeSearch
+    closeSearch,
+    selectedId,
+    setSelectedId
   )
   return (
     <>

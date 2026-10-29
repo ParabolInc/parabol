@@ -1,171 +1,116 @@
 import {GraphQLError} from 'graphql'
-import type {NotNull} from 'kysely'
 import {sql} from 'kysely'
 import {activeEmbeddingModelId} from '../../../embedder/activeEmbeddingModel'
 import {getEmbeddingsPagesTableName} from '../../../embedder/getEmbeddingsTableName'
-import {getTSV} from '../../../embedder/getSupportedLanguages'
-import {inferLanguage} from '../../../embedder/inferLanguage'
-import {CipherId} from '../../utils/CipherId'
-import {cosineSimilarity, RRF, rank, tsHeadline, tsvSimilarity} from '../expressions'
-import getKysely from '../getKysely'
+import {cosineSimilarity, pageSnippet, RRF} from '../expressions'
+import {
+  type PageKeywordSearchParams,
+  type PageSearchResults,
+  withPageKeywordRanking
+} from './getPagesByKeyword'
+import {getPageSearchPageInfo} from './pageSearchCursor'
 
-interface Params {
-  query: string
+export const VECTOR_SIMILARITY_FLOOR = 0.4
+
+export const getPagesByRRF = async ({
+  query,
+  queryVector,
+  alpha,
+  k,
+  first,
+  offset,
+  viewerId,
+  teamIds,
+  dateRange,
+  vectorFloor = VECTOR_SIMILARITY_FLOOR
+}: PageKeywordSearchParams & {
   queryVector: Float32Array
   alpha: number
   k: number
-  first: number
-  after: {
-    afterIds: (number | string)[]
-    maxScore: number
-  } | null
-  dateRange: {
-    startAt: Date
-    endAt: Date
-    dateField: 'createdAt' | 'updatedAt'
-  } | null
-  teamIds: [string, ...string[]] | undefined
-  viewerId: string
-}
-
-export const getPagesByRRF = async (params: Params) => {
-  const {query, queryVector, first, after, dateRange, teamIds, alpha, k, viewerId} = params
-  const pg = getKysely()
+  vectorFloor?: number
+}): Promise<PageSearchResults> => {
   const tableName = getEmbeddingsPagesTableName(activeEmbeddingModelId)
   if (!tableName) {
     throw new GraphQLError('No embeddings pages table found')
   }
-  const language = inferLanguage(query) || 'en'
-  const tsvLanguage = getTSV(language) || 'english'
-
-  const MIN_RRF_SCORE = 0.004
-
-  const results = await pg
-    .with('Model', (qb) =>
+  const rows = await withPageKeywordRanking({query, viewerId, teamIds, dateRange})
+    .with('PageBestChunk', (qb) =>
       qb
-        .selectFrom('PageAccess')
-        .where('PageAccess.userId', '=', viewerId)
-        .innerJoin('Page', 'Page.id', 'PageAccess.pageId')
-        .where('Page.deletedAt', 'is', null)
-        .innerJoin(tableName, 'PageAccess.pageId', `${tableName}.pageId`)
-        .$if(!!dateRange, (qb) =>
-          qb.where((eb) => eb.between(dateRange!.dateField, dateRange!.startAt, dateRange!.endAt))
-        )
-        .$if(!!teamIds, (qb) =>
-          qb
-            .innerJoin('PageTeamAccess', 'PageTeamAccess.pageId', `${tableName}.pageId`)
-            .where('PageTeamAccess.teamId', 'in', teamIds!)
-        )
-        .selectAll(tableName)
-        .select(sql<string>`websearch_to_tsquery(${tsvLanguage}, ${query})`.as('webQuery'))
+        .selectFrom('ViewerPages as vp')
+        .innerJoin(`${tableName} as c`, 'c.pageId', 'vp.id')
+        .select((eb) => [
+          'vp.id',
+          'vp.updatedAt',
+          sql<number>`max(nullif(${cosineSimilarity(eb, 'c.embedding', queryVector)}, 'NaN'))::float8`.as(
+            'vectorScore'
+          )
+        ])
+        .groupBy(['vp.id', 'vp.updatedAt'])
     )
-    .with('VectorSimilarity', (pg) =>
-      pg
-        .selectFrom('Model')
-        .selectAll('Model')
-        .select(({eb}) => cosineSimilarity(eb, 'embedding', queryVector).as('v_similarity'))
-        .$if(!!after, (qb) => qb.where('pageId', 'not in', after!.afterIds as number[]))
-        .orderBy('v_similarity', 'desc')
-        // technically, we need more than first + 1 since these are chunks & `first` refers to pages
-        // it's possible a chunk returns at position first + 1 in vector, and first + 2 in keyword, thus excluding & reducing the score
-        // That's why the after cursor doesn't remove a pageId until it gets a hit in both
-        // However,
-        .limit(first + 1)
-    )
-    .with('VectorRank', (qb) =>
+    .with('VectorRanked', (qb) =>
       qb
-        .selectFrom('VectorSimilarity')
-        .selectAll('VectorSimilarity')
-        .select(({eb}) => rank(eb, 'v_similarity').as('v_rank'))
-        .$if(!!after, (qb) => qb.where('v_similarity', '<', after!.maxScore))
-    )
-    .with('KeywordSimilarity', (qb) =>
-      qb
-        .selectFrom('Model')
-        .selectAll('Model')
-        .select((eb) => [tsvSimilarity(eb, 'tsv', 'Model.webQuery').as('k_similarity')])
-        // Always do a where match, since that can be completed in the GIN index
-        .whereRef('tsv', '@@', 'Model.webQuery')
-        .$if(!!after, (qb) => qb.where('pageId', 'not in', after!.afterIds as number[]))
-        .orderBy('k_similarity', 'desc')
-        .limit(first + 1)
-    )
-    .with('KeywordRank', (qb) =>
-      qb
-        .selectFrom('KeywordSimilarity')
-        .selectAll('KeywordSimilarity')
-        .select(({eb}) => rank(eb, 'k_similarity').as('k_rank'))
-        .$if(!!after, (qb) => qb.where('k_similarity', '<', after!.maxScore))
-    )
-    .with('RRF', (qb) =>
-      qb
-        .selectFrom('VectorRank')
-        .fullJoin('KeywordRank', 'VectorRank.id', 'KeywordRank.id')
-        .select(({eb, fn}) => [
-          fn.coalesce('VectorRank.id', 'KeywordRank.id').as('id'),
-          fn.coalesce('VectorRank.pageId', 'KeywordRank.pageId').as('pageId'),
-          fn.coalesce('VectorRank.chunkNumber', 'KeywordRank.chunkNumber').as('chunkNumber'),
-          'k_rank',
-          'v_rank',
-          'k_similarity',
-          'v_similarity',
-          'KeywordRank.embedText',
-          'KeywordRank.webQuery',
-          RRF(eb, 'v_rank', 'k_rank', alpha, k).as('score')
+        .selectFrom('PageBestChunk')
+        .where('vectorScore', '>=', vectorFloor)
+        .select((eb) => [
+          'id',
+          'updatedAt',
+          'vectorScore',
+          sql<number>`row_number() over (order by ${eb.ref('vectorScore')} desc, ${eb.ref('updatedAt')} desc, ${eb.ref('id')} desc)::int`.as(
+            'vectorRank'
+          )
         ])
     )
-    .with('ChunkMax', (qc) =>
-      qc
-        .selectFrom('RRF')
-        .selectAll()
-        .distinctOn('pageId')
-        .where('score', '>', MIN_RRF_SCORE)
-        .orderBy('pageId')
-        .limit(first)
+    .with('Fused', (qb) =>
+      qb
+        .selectFrom('KeywordRanked as kr')
+        .fullJoin('VectorRanked as vr', 'vr.id', 'kr.id')
+        .select((eb) => [
+          eb.fn.coalesce('kr.id', 'vr.id').as('id'),
+          eb.fn.coalesce('kr.updatedAt', 'vr.updatedAt').as('updatedAt'),
+          'kr.keywordScore',
+          'kr.keywordRank',
+          'vr.vectorScore',
+          'vr.vectorRank',
+          RRF(eb, 'vr.vectorRank', 'kr.keywordRank', alpha, k).as('combined')
+        ])
+        .orderBy('combined', 'desc')
+        .orderBy('updatedAt', 'desc')
+        .orderBy('id', 'desc')
+        .offset(offset)
+        .limit(first + 1)
     )
-    .selectFrom('ChunkMax')
-    .selectAll('ChunkMax')
-    .innerJoin('Page', 'Page.id', 'ChunkMax.pageId')
-    .$narrowType<{pageId: NotNull}>()
-    .select((eb) =>
-      tsHeadline(eb, tsvLanguage, 'Page.plaintextContent', 'webQuery', {
-        StartSel: '<b>',
-        StopSel: '</b>',
-        MaxWords: 35,
-        MaxFragments: 10,
-        FragmentDelimiter: '$!$'
-      }).as('snippet')
-    )
-    .orderBy('score', 'desc')
+    .selectFrom('Fused as f')
+    .innerJoin('Page as p', 'p.id', 'f.id')
+    .crossJoin('SearchTerms as st')
+    .select((eb) => [
+      'p.id',
+      'f.keywordScore',
+      'f.keywordRank',
+      'f.vectorScore',
+      'f.vectorRank',
+      'f.combined',
+      pageSnippet(eb.ref('p.plaintextContent'), eb.ref('st.terms')).as('snippet')
+    ])
+    .orderBy('f.combined', 'desc')
+    .orderBy('f.updatedAt', 'desc')
+    .orderBy('f.id', 'desc')
     .execute()
+  const pageRows = rows.slice(0, first)
   return {
-    pageInfo: {
-      // Our query is for chunks, but the request is for pages, so we can't safely guarantee there are no more results
-      // unless both Vector & Keyword searches were first * max number of chunks, which is a gross overfetch
-      hasNextPage: results.length > 0,
-      hasPreviousPage: false,
-      endCursor: btoa(
-        JSON.stringify({
-          codes: results
-            .filter((r) => r.k_similarity && r.v_similarity)
-            .map((r) => CipherId.encrypt(r.pageId))
-            .join(','),
-          maxScore: results.at(-1)?.score ?? 1
-        })
-      ),
-      startCursor: ''
-    },
-    edges: results.map((pr) => ({
-      nodeTypeName: 'page' as const,
-      nodeId: pr.pageId,
-      score: {
-        keyword: pr.k_similarity || 0,
-        vector: pr.v_similarity || 0,
-        vectorRank: pr.v_rank,
-        keywordRank: pr.k_rank,
-        combined: pr.score
-      },
-      snippets: pr.snippet?.split('$!$') ?? []
-    }))
+    pageInfo: getPageSearchPageInfo('fused', offset, pageRows.length, rows.length > first),
+    edges: pageRows.map(
+      ({id, keywordScore, keywordRank, vectorScore, vectorRank, combined, snippet}) => ({
+        nodeTypeName: 'page' as const,
+        nodeId: id,
+        score: {
+          keyword: keywordScore ?? 0,
+          vector: vectorScore ?? 0,
+          keywordRank: keywordRank ?? null,
+          vectorRank: vectorRank ?? null,
+          combined
+        },
+        snippets: snippet ? [snippet] : []
+      })
+    )
   }
 }
