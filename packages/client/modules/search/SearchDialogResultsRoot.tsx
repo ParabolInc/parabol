@@ -22,14 +22,16 @@ interface Props {
 
 export const SearchDialogResultsRoot = (props: Props) => {
   const {searchQuery, closeSearch, resultsListRef, dateField, dateRange, teamIds} = props
+  const hasQuery = searchQuery.trim() !== ''
   const queryRef = useQueryLoaderNow<SearchDialogResultsQuery>(query, {
     query: searchQuery,
+    hasQuery,
     dateField: dateRange ? dateField : undefined,
     startAt: dateRange?.startAt ? dateRange.startAt : undefined,
     endAt: dateRange?.endAt ? dateRange.endAt : undefined,
     teamIds
   })
-  const searchType = searchQuery === '' ? 'recent' : 'hybrid'
+  const searchType = hasQuery ? 'hybrid' : 'recent'
 
   return (
     <ErrorBoundary resetKey={queryRef?.fetchKey} fallback={() => <div>Error calling search</div>}>
