@@ -13,18 +13,10 @@ import {embedPage} from '../../../embedder/workflows/embedPage'
 import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
 import getKysely from '../../postgres/getKysely'
 import {updatePageAccessTable} from '../../postgres/updatePageAccessTable'
-import {getPlaintextFromTipTap} from '../../utils/tiptap/getPlaintextFromTipTap'
+import toFixture, {type Fixture} from './toFixture'
 
 const FIXTURES_DIR = path.join(__dirname, 'fixtures')
 const UPDATED_AT_FILE = 'updatedAt.json'
-
-export interface Fixture {
-  key: string
-  title: string
-  plaintextContent: string
-  content: JSONContent
-  updatedAt?: Date
-}
 
 export interface EvalCorpus {
   name: 'fixtures' | 'heavy'
@@ -39,11 +31,6 @@ interface LivePage {
   title: string | null
   plaintextContent: string | null
   updatedAt: Date
-}
-
-export const toFixture = (key: string, content: JSONContent, updatedAt?: Date): Fixture => {
-  const {title, plaintextContent} = getPlaintextFromTipTap(content)
-  return {key, title, plaintextContent, content, updatedAt}
 }
 
 const parseFixture = (fileName: string): Fixture => {

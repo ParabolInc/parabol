@@ -14,6 +14,7 @@ import getKysely from '../../postgres/getKysely'
 import {getPagesByRRF} from '../../postgres/queries/getPagesByRRF'
 import type {User} from '../../postgres/types'
 import {Logger} from '../../utils/Logger'
+import {HEAVY_CORPUS} from './heavyCorpus/generateHeavyCorpus'
 import {
   type Grade,
   type Grades,
@@ -97,7 +98,9 @@ interface GradedQuery {
 
 const EVAL_SETS = {
   dev: {queryFile: 'queries.json', corpus: FIXTURES_CORPUS},
-  holdout: {queryFile: 'holdoutQueries.json', corpus: FIXTURES_CORPUS}
+  holdout: {queryFile: 'holdoutQueries.json', corpus: FIXTURES_CORPUS},
+  'heavy-dev': {queryFile: 'heavyQueries.json', corpus: HEAVY_CORPUS},
+  'heavy-holdout': {queryFile: 'heavyHoldoutQueries.json', corpus: HEAVY_CORPUS}
 } satisfies Record<string, {queryFile: string; corpus: EvalCorpus}>
 
 type EvalSet = keyof typeof EVAL_SETS
