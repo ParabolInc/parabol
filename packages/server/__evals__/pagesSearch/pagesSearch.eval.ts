@@ -25,6 +25,7 @@ import {
   reciprocalRank,
   summarize
 } from './metrics'
+import parseFractions from './parseFractions'
 import {EVAL_USER_ID, seedEvalPages} from './seedEvalPages'
 
 interface EmbeddingCall {
@@ -125,16 +126,6 @@ const parseLabel = (value: string) => {
   if (/^[\w.-]+$/.test(value)) return value
   throw new Error(`EVAL_LABEL may only hold letters, digits, dots, dashes and underscores`)
 }
-
-const parseFractions = (name: string, value: string) =>
-  value.split(',').map((item) => {
-    const trimmed = item.trim()
-    const fraction = Number(trimmed)
-    if (trimmed === '' || Number.isNaN(fraction) || fraction < 0 || fraction > 1) {
-      throw new Error(`${name} must list comma-separated numbers between 0 and 1, got "${value}"`)
-    }
-    return fraction
-  })
 
 const parseSweepConfigs = (): SweepConfig[] => {
   const alphas = parseFractions('EVAL_ALPHAS', process.env.EVAL_ALPHAS ?? DEFAULT_SWEEP_ALPHAS)

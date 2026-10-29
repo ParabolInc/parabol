@@ -30,9 +30,11 @@ describe('pages search metrics', () => {
   it('divides by the results shown when there are fewer than k', () =>
     expect(junkAt(5, [1, 9], grades)).toBe(0.5))
 
+  it('counts a grade-1 result as relevant', () => expect(junkAt(5, [3, 9], grades)).toBe(0.5))
+
   it('scores an empty list as no junk', () => expect(junkAt(5, [], grades)).toBe(0))
 
-  it('summarizes answerable queries only', () => {
+  it('averages answerable queries and counts results for unanswerable ones', () => {
     const metrics = summarize([
       {
         query: 'a',

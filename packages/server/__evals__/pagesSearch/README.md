@@ -39,10 +39,10 @@ node __evals__/pagesSearch/compare.mjs \
 
 ## Sweep mode
 
-`EVAL_MODES=sweep` ranks every query with each pair from `EVAL_ALPHAS` and `EVAL_FLOORS`, to pick the vector similarity floor and the default alpha. It combines with the other modes, for example `EVAL_MODES=fused,sweep`. Both variables are comma-separated numbers between 0 and 1; anything else throws.
+`EVAL_MODES=sweep` ranks every query with each pair from `EVAL_ALPHAS` and `EVAL_FLOORS`, to pick the vector similarity floor and the default alpha. It combines with the other modes, for example `EVAL_MODES=fused,sweep`. Both variables are comma-separated decimals between 0 and 1, like `0.25`, each listed once; anything else throws.
 
 ```bash
-EVAL_LABEL=sprint2 EVAL_SET=dev EVAL_MODES=sweep pnpm eval:pagesSearch
+EVAL_LABEL=page-fusion EVAL_SET=dev EVAL_MODES=sweep pnpm eval:pagesSearch
 ```
 
 - **Ranking.** Each query is embedded once, by the same model call as `fused`. Then `getPagesByRRF` runs once per pair with `first: 20`, the pair's alpha and the pair's floor as `vectorFloor`. It skips the resolver, so there is no embedding budget and no keyword fallback. Each list is scored with the same metrics as the other modes.
@@ -132,23 +132,23 @@ Unindexed: `meeting-notes-ja`, `stub-customer-interviews`, `stub-hiring-plan`, `
 
 Unindexed: `meeting-notes-ja`, `stub-customer-interviews`, `stub-hiring-plan`, `stub-offsite-agenda`. The holdout query `請求書エクスポートのリリース日` targets `meeting-notes-ja`, so it can't be answered until indexing changes.
 
-## Sprint 2 (2026-10-28)
+## Per-page ranking (2026-10-28)
 
-The Baseline (2026-10-27) section above describes the ranking before Sprint 2. Sprint 2 fuses a keyword rank and a vector rank for each page (`getPagesByRRF`). The vector rank orders pages by the cosine similarity of their best chunk and only counts similarities at or above `VECTOR_SIMILARITY_FLOOR`. `s2base` is the ranking before Sprint 2, recorded again on 2026-10-28 with the junk metrics, and `sprint2` is the new ranking.
+The Baseline (2026-10-27) section above describes the ranking before this change. Per-page ranking fuses a keyword rank and a vector rank for each page (`getPagesByRRF`). The vector rank orders pages by the cosine similarity of their best chunk and only counts similarities at or above `VECTOR_SIMILARITY_FLOOR`. `chunk-fusion` is the earlier ranking, recorded again on 2026-10-28 with the junk metrics, and `page-fusion` is the new one.
 
 **Chosen: alpha 0.25 and floor 0.4.** Alpha is the resolver's default for every search type, and the floor is `VECTOR_SIMILARITY_FLOOR`.
 
-- **How it was chosen.** No configuration in the dev sweep kept both `junkAt5` and the zero-result rate at or below `s2base`'s, because the `s2base` result lists were only 2 to 7 long. So the first pick was the configuration with the lowest `junkAt5` among those with no more zero-result queries than `s2base` and an nDCG@10 within 0.01 of the best, which was floor 0.45. The floor was then set to 0.4, the highest floor whose dev nDCG@10 stays within 0.005 of the dev best (0.606 against 0.607). That second choice was informed by the holdout result, so the holdout numbers at 0.4 are not an independent check.
-- **The 0.45 alternative.** Floor 0.45 did not match `s2base` on holdout: fused nDCG@10 0.565 against 0.586. It returns fewer results for queries with no relevant page: `noAnswerResults` is 5 on dev and 1 on holdout, against 13 and 6 at 0.4.
+- **How it was chosen.** No configuration in the dev sweep kept both `junkAt5` and the zero-result rate at or below `chunk-fusion`'s, because the `chunk-fusion` result lists were only 2 to 7 long. So the first pick was the configuration with the lowest `junkAt5` among those with no more zero-result queries than `chunk-fusion` and an nDCG@10 within 0.01 of the best, which was floor 0.45. The floor was then set to 0.4, the highest floor whose dev nDCG@10 stays within 0.005 of the dev best (0.606 against 0.607). That second choice was informed by the holdout result, so the holdout numbers at 0.4 are not an independent check.
+- **The 0.45 alternative.** Floor 0.45 did not match `chunk-fusion` on holdout: fused nDCG@10 0.565 against 0.586. It returns fewer results for queries with no relevant page: `noAnswerResults` is 5 on dev and 1 on holdout, against 13 and 6 at 0.4.
 - **Alpha.** 0.25 with the corrected formula weights vectors exactly as the old, inverted formula did at its default of 0.75, so callers of the other search types that don't pass alpha keep their ranking. 0.25 is also the lowest alpha swept. On the dev sweep, nDCG@10 falls as alpha rises at every floor. On the holdout sweep it does too, except at floor 0.3, where alpha 0.5 scores 0.607 against 0.599 at alpha 0.25. Lower values weren't swept: at 0.25 or below every keyword-arm page already outranks every vector-only page (0.75/160 > 0.25/61), so going lower only changes how vector similarity reorders keyword matches.
 - **What is left.**
   - **Natural-language queries.** Table and summary queries still lose to the old ranking, because the keyword arm requires every word, stop words included, and the vector arm alone doesn't reliably surface the right page. The query "which initiative is at risk" has no keyword match, and `product-roadmap` isn't in the top 20 by vector similarity. For "who sends the customer newsletter", the one keyword match, `product-spec`, outranks `release-checklist`. By vector similarity `release-checklist` is third, at 0.483, behind `note-ssl-renewal` at 0.550 and `vendor-comparison` at 0.488.
-  - **The hub page persists.** The Baseline (2026-10-27) section describes `note-ssl-renewal`, a 3-line note that no query labels, as a hub that dominates result lists. Sprint 2 doesn't remove it: it still ranks first in 45 of 116 fused result lists (dev 35 of 91, holdout 10 of 25), the same count as `s2base`, and in 45 of the 51 queries where the keyword arm finds nothing (dev 35 of 40, holdout 10 of 11). It appears somewhere in every Sprint 2 fused list. Those lists average 16.4 results on dev and 15.4 on holdout, against 2 to 7 for `s2base`. Near-empty pages embed close to every query, which is why they act as hubs.
+  - **The hub page persists.** The Baseline (2026-10-27) section describes `note-ssl-renewal`, a 3-line note that no query labels, as a hub that dominates result lists. Per-page ranking doesn't remove it: it still ranks first in 45 of 116 fused result lists (dev 35 of 91, holdout 10 of 25), the same count as `chunk-fusion`, and in 45 of the 51 queries where the keyword arm finds nothing (dev 35 of 40, holdout 10 of 11). It appears somewhere in every `page-fusion` list. Those lists average 16.4 results on dev and 15.4 on holdout, against 2 to 7 for `chunk-fusion`. Near-empty pages embed close to every query, which is why they act as hubs.
   - **The floor barely filters on a large real account.** On the dev database's busiest user, with 238 indexed pages, the number of pages whose best chunk is at or above the 0.4 floor was 96 for a nonsense query (`xyzzy plugh`), 76 of them under 200 characters; 135 and 161 for two question-style queries; and 3 for an unrelated recipe query. So for a heavy user, a query the keyword arm misses can fill all 20 slots, led by near-empty pages, while a query far from every page, like the recipe one, is cut short. The 47-page eval corpus can't show this. Re-sweep the floor after any change that moves similarity scores: cleaner index text, the chunker, pooling or a query instruction. Likely remedies to evaluate with this harness: a query instruction prefix (which changes only query embeddings), a relative floor, and hub suppression.
 
 ### Dev sweep
 
-`EVAL_LABEL=sprint2 EVAL_SET=dev EVAL_MODES=sweep` with the default grid, best nDCG@10 first.
+`EVAL_LABEL=page-fusion EVAL_SET=dev EVAL_MODES=sweep` with the default grid, best nDCG@10 first.
 
 | Alpha | Floor | nDCG@10 | Recall@5 | MRR | Zero-result rate | `junkAt5` | `noAnswerResults` |
 | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -190,33 +190,33 @@ The same sweep on the holdout set. The selection rule reads the dev sweep only, 
 | 0.75 | 0.4 | 0.287 | 0.286 | 0.308 | 0.000 | 0.913 | 6 |
 | 0.75 | 0.45 | 0.239 | 0.286 | 0.220 | 0.000 | 0.896 | 1 |
 
-### s2base vs sprint2
+### Before and after
 
-At alpha 0.25 and floor 0.4, fused nDCG@10 and Recall@5 are above `s2base` on both sets, the zero-result rate is unchanged, and `quick` is identical to `s2base`. `junkAt5` and `noAnswerResults` are higher because the lists are longer. All runs are valid: `errors` is 0 and `unindexed` is the expected list.
+At alpha 0.25 and floor 0.4, fused nDCG@10 and Recall@5 are above `chunk-fusion` on both sets, the zero-result rate is unchanged, and `quick` is identical to `chunk-fusion`. `junkAt5` and `noAnswerResults` are higher because the lists are longer. All runs are valid: `errors` is 0 and `unindexed` is the expected list.
 
 Dev set (83 answerable queries, 8 without a relevant page):
 
 | Mode | Run | nDCG@10 | Recall@5 | MRR | Zero-result rate | `junkAt5` | `noAnswerResults` |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| fused | `s2base` | 0.532 | 0.540 | 0.594 | 0.000 | 0.720 | 2 |
-| fused | `sprint2` | 0.606 | 0.613 | 0.624 | 0.000 | 0.813 | 13 |
-| quick | `s2base` | 0.552 | 0.538 | 0.590 | 0.386 | 0.072 | 0 |
-| quick | `sprint2` | 0.552 | 0.538 | 0.590 | 0.386 | 0.072 | 0 |
+| fused | `chunk-fusion` | 0.532 | 0.540 | 0.594 | 0.000 | 0.720 | 2 |
+| fused | `page-fusion` | 0.606 | 0.613 | 0.624 | 0.000 | 0.813 | 13 |
+| quick | `chunk-fusion` | 0.552 | 0.538 | 0.590 | 0.386 | 0.072 | 0 |
+| quick | `page-fusion` | 0.552 | 0.538 | 0.590 | 0.386 | 0.072 | 0 |
 
 Holdout set (23 answerable queries, 2 without a relevant page):
 
 | Mode | Run | nDCG@10 | Recall@5 | MRR | Zero-result rate | `junkAt5` | `noAnswerResults` |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| fused | `s2base` | 0.586 | 0.594 | 0.630 | 0.000 | 0.762 | 2 |
-| fused | `sprint2` | 0.599 | 0.627 | 0.624 | 0.000 | 0.835 | 6 |
-| quick | `s2base` | 0.520 | 0.529 | 0.565 | 0.391 | 0.072 | 0 |
-| quick | `sprint2` | 0.520 | 0.529 | 0.565 | 0.391 | 0.072 | 0 |
+| fused | `chunk-fusion` | 0.586 | 0.594 | 0.630 | 0.000 | 0.762 | 2 |
+| fused | `page-fusion` | 0.599 | 0.627 | 0.624 | 0.000 | 0.835 | 6 |
+| quick | `chunk-fusion` | 0.520 | 0.529 | 0.565 | 0.391 | 0.072 | 0 |
+| quick | `page-fusion` | 0.520 | 0.529 | 0.565 | 0.391 | 0.072 | 0 |
 
 ### Fused nDCG@10 by category
 
 Dev set:
 
-| | Queries | `s2base` | `sprint2` | Change |
+| | Queries | `chunk-fusion` | `page-fusion` | Change |
 | --- | ---: | ---: | ---: | ---: |
 | overall | 83 | 0.532 | 0.606 | +0.074 |
 | prefix | 8 | 0.263 | 0.755 | +0.492 |
@@ -230,7 +230,7 @@ Dev set:
 
 Holdout set:
 
-| | Queries | `s2base` | `sprint2` | Change |
+| | Queries | `chunk-fusion` | `page-fusion` | Change |
 | --- | ---: | ---: | ---: | ---: |
 | overall | 23 | 0.586 | 0.599 | +0.013 |
 | prefix | 2 | 0.693 | 1.000 | +0.307 |

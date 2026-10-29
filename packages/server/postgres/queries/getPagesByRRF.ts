@@ -6,6 +6,7 @@ import {cosineSimilarity, pageSnippet, RRF} from '../expressions'
 import {
   type PageKeywordSearchParams,
   type PageSearchResults,
+  UNPAGINATED_PAGE_INFO,
   withPageKeywordRanking
 } from './getPagesByKeyword'
 
@@ -43,7 +44,7 @@ export const getPagesByRRF = async ({
         .select((eb) => [
           'vp.id',
           'vp.updatedAt',
-          sql<number>`max(${cosineSimilarity(eb, 'c.embedding', queryVector)})::float8`.as(
+          sql<number>`max(nullif(${cosineSimilarity(eb, 'c.embedding', queryVector)}, 'NaN'))::float8`.as(
             'vectorScore'
           )
         ])
@@ -99,7 +100,7 @@ export const getPagesByRRF = async ({
     .orderBy('f.id', 'desc')
     .execute()
   return {
-    pageInfo: {hasNextPage: false, hasPreviousPage: false, startCursor: null, endCursor: null},
+    pageInfo: UNPAGINATED_PAGE_INFO,
     edges: rows.map(
       ({id, keywordScore, keywordRank, vectorScore, vectorRank, combined, snippet}) => ({
         nodeTypeName: 'page' as const,

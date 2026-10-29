@@ -1,6 +1,7 @@
 import type {GraphQLResolveInfo} from 'graphql'
 import {getNewDataLoader} from '../../../../dataloader/getNewDataLoader'
 import getKysely from '../../../../postgres/getKysely'
+import {getEmbeddingsByRRF} from '../../../../postgres/queries/getEmbeddingsByRRF'
 import {
   getPagesByKeyword,
   type PageSearchResults
@@ -18,7 +19,14 @@ jest.mock('../../../mutations/helpers/publishToEmbedder', () => ({
   getUserQueryJobData: jest.fn(),
   publishToEmbedder: jest.fn()
 }))
-jest.mock('../../../../postgres/queries/getPagesByKeyword', () => ({getPagesByKeyword: jest.fn()}))
+jest.mock('../../../../postgres/queries/getEmbeddingsByRRF', () => ({
+  getEmbeddingsByRRF: jest.fn()
+}))
+jest.mock('../../../../postgres/queries/getPagesByKeyword', () => ({
+  UNPAGINATED_PAGE_INFO: jest.requireActual('../../../../postgres/queries/getPagesByKeyword')
+    .UNPAGINATED_PAGE_INFO,
+  getPagesByKeyword: jest.fn()
+}))
 jest.mock('../../../../postgres/queries/getPagesByRRF', () => ({getPagesByRRF: jest.fn()}))
 jest.mock('../../../../utils/Logger', () => ({Logger: {warn: jest.fn()}}))
 
@@ -173,6 +181,14 @@ it('returns fused results when the query embeds in time', async () => {
   })
   expect(getPagesByKeyword).not.toHaveBeenCalled()
   expect(Logger.warn).not.toHaveBeenCalled()
+})
+
+it('ranks other search types with the same default alpha', async () => {
+  jest.mocked(publishToEmbedder).mockResolvedValue(new Float32Array(1024))
+  await callSearch({query: 'retro', type: 'meetingTemplate'})
+  expect(getEmbeddingsByRRF).toHaveBeenCalledWith(
+    expect.objectContaining({alpha: 0.25, type: 'meetingTemplate'})
+  )
 })
 
 it('waits at most 3 seconds for the query embedding', async () => {

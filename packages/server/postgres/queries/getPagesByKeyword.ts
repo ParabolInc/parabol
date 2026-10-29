@@ -21,6 +21,13 @@ export interface PageSearchResults {
   edges: SearchResultEdgeSource[]
 }
 
+export const UNPAGINATED_PAGE_INFO: PageSearchResults['pageInfo'] = {
+  hasNextPage: false,
+  hasPreviousPage: false,
+  startCursor: null,
+  endCursor: null
+}
+
 export const withPageKeywordRanking = (
   {query, viewerId, teamIds, dateRange}: Omit<PageKeywordSearchParams, 'first'>,
   limit: number
@@ -101,7 +108,6 @@ export const getPagesByKeyword = async ({
   teamIds,
   dateRange
 }: PageKeywordSearchParams): Promise<PageSearchResults> => {
-  const pageInfo = {hasNextPage: false, hasPreviousPage: false, startCursor: null, endCursor: null}
   const rows = await withPageKeywordRanking({query, viewerId, teamIds, dateRange}, first)
     // output: each page's position in that order, plus a highlighted snippet from the first 20k characters
     .selectFrom('KeywordRanked as kr')
@@ -117,7 +123,7 @@ export const getPagesByKeyword = async ({
     .execute()
   // result shape: keyword-only scores in the same shape fused results use, on a single page
   return {
-    pageInfo,
+    pageInfo: UNPAGINATED_PAGE_INFO,
     edges: rows.map(({id, keywordScore, keywordRank, snippet}) => ({
       nodeTypeName: 'page' as const,
       nodeId: id,

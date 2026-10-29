@@ -20,12 +20,18 @@ const vectorWithCosine = (cosine: number) => [
   Math.sqrt(1 - cosine * cosine),
   ...new Array<number>(EMBEDDING_DIMENSIONS - 2).fill(0)
 ]
+const zeroVector = new Array<number>(EMBEDDING_DIMENSIONS).fill(0)
 
 let keywordOnlyId: number
 let vectorOnlyId: number
 let bothArmsId: number
 let belowFloorId: number
+let trashedId: number
 let otherUsersId: number
+let zeroChunkOnlyId: number
+let mixedChunksId: number
+let olderTwinId: number
+let newerTwinId: number
 
 const makeUser = (id: string, preferredName: string) => ({
   id,
@@ -34,29 +40,39 @@ const makeUser = (id: string, preferredName: string) => ({
   preferredName
 })
 
-const insertPage = async (title: string, userId = viewerId) => {
+const insertPage = async (
+  title: string,
+  {
+    userId = viewerId,
+    updatedAt,
+    deletedAt
+  }: {userId?: string; updatedAt?: Date; deletedAt?: Date} = {}
+) => {
   const {id} = await pg
     .insertInto('Page')
-    .values({title, plaintextContent: '', userId, sortOrder: 'a0'})
+    .values({title, plaintextContent: '', userId, sortOrder: 'a0', updatedAt, deletedAt})
     .returning('id')
     .executeTakeFirstOrThrow()
   return id
 }
 
-const insertChunks = (pageId: number, cosines: number[]) =>
+const insertVectors = (pageId: number, vectors: number[][]) =>
   pg
     .insertInto(chunkTable)
     .values(
-      cosines.map((cosine, chunkNumber) => ({
+      vectors.map((vector, chunkNumber) => ({
         pageId,
         chunkNumber,
-        embedding: numberVectorToString(vectorWithCosine(cosine)),
+        embedding: numberVectorToString(vector),
         embedText: '',
         tsv: sql<string>`to_tsvector('simple', '')`,
         pageUpdatedAt: new Date()
       }))
     )
     .execute()
+
+const insertChunks = (pageId: number, cosines: number[]) =>
+  insertVectors(pageId, cosines.map(vectorWithCosine))
 
 beforeAll(async () => {
   const {rows} = await sql<{
@@ -71,18 +87,33 @@ beforeAll(async () => {
   await pg.insertInto('Team').values({id: teamId, name: 'Fusion Team', orgId}).execute()
   keywordOnlyId = await insertPage('Quarterly roadmap')
   vectorOnlyId = await insertPage('Planning notes')
-  bothArmsId = await insertPage('Roadmap review')
+  bothArmsId = await insertPage('Roadmap review', {updatedAt: new Date('2026-01-01T00:00:00Z')})
   belowFloorId = await insertPage('Lunch menu')
-  otherUsersId = await insertPage('Roadmap secret', otherUserId)
+  trashedId = await insertPage('Trashed roadmap', {deletedAt: new Date()})
+  otherUsersId = await insertPage('Roadmap secret', {userId: otherUserId})
+  zeroChunkOnlyId = await insertPage('Blank chunk', {userId: otherUserId})
+  mixedChunksId = await insertPage('Mixed chunks', {userId: otherUserId})
+  newerTwinId = await insertPage('Newer twin', {
+    userId: otherUserId,
+    updatedAt: new Date('2026-01-02T00:00:00Z')
+  })
+  olderTwinId = await insertPage('Older twin', {
+    userId: otherUserId,
+    updatedAt: new Date('2026-01-01T00:00:00Z')
+  })
   await pg
     .insertInto('PageAccess')
     .values([
-      ...[keywordOnlyId, vectorOnlyId, bothArmsId, belowFloorId].map((pageId) => ({
+      ...[keywordOnlyId, vectorOnlyId, bothArmsId, belowFloorId, trashedId].map((pageId) => ({
         userId: viewerId,
         pageId,
         role: 'owner' as const
       })),
-      {userId: otherUserId, pageId: otherUsersId, role: 'owner'}
+      ...[otherUsersId, zeroChunkOnlyId, mixedChunksId, olderTwinId, newerTwinId].map((pageId) => ({
+        userId: otherUserId,
+        pageId,
+        role: 'owner' as const
+      }))
     ])
     .execute()
   await pg
@@ -92,7 +123,12 @@ beforeAll(async () => {
   await insertChunks(vectorOnlyId, [0.9])
   await insertChunks(bothArmsId, [0.5, 0.8])
   await insertChunks(belowFloorId, [0.2])
+  await insertChunks(trashedId, [0.99])
   await insertChunks(otherUsersId, [0.95])
+  await insertVectors(zeroChunkOnlyId, [zeroVector])
+  await insertVectors(mixedChunksId, [zeroVector, vectorWithCosine(0.88)])
+  await insertChunks(olderTwinId, [0.6])
+  await insertChunks(newerTwinId, [0.6])
 })
 
 afterAll(async () => {
@@ -149,6 +185,36 @@ it('ranks by keyword when alpha is 0', async () =>
 
 it("never returns pages outside the viewer's access", async () =>
   expect((await fused(1)).edges.map((e) => e.nodeId)).not.toContain(otherUsersId))
+
+it('never returns trashed pages', async () =>
+  expect((await fused(0.5)).edges.map((e) => e.nodeId)).not.toContain(trashedId))
+
+it('applies the date range to vector-only pages', async () => {
+  const {edges} = await fused(0.5, {
+    dateRange: {
+      startAt: new Date('2000-01-01T00:00:00Z'),
+      endAt: new Date('2000-12-31T00:00:00Z'),
+      dateField: 'createdAt'
+    }
+  })
+  expect(edges).toEqual([])
+})
+
+it('cuts the fused ranking to first, not each arm', async () =>
+  expect((await fused(0.5, {first: 1})).edges.map((e) => e.nodeId)).toEqual([bothArmsId]))
+
+it('ignores chunks whose similarity is not a number', async () => {
+  const {edges} = await fused(0.5, {viewerId: otherUserId})
+  expect(edges.map((e) => e.nodeId)).not.toContain(zeroChunkOnlyId)
+  expect(edges.find((e) => e.nodeId === mixedChunksId)!.score.vector).toBeCloseTo(0.88, 2)
+  expect(edges.every((e) => Number.isFinite(e.score.vector))).toBe(true)
+})
+
+it('breaks similarity ties by the most recent update', async () => {
+  const ids = (await fused(1, {viewerId: otherUserId})).edges.map((e) => e.nodeId)
+  expect(ids).toContain(olderTwinId)
+  expect(ids.indexOf(newerTwinId)).toBe(ids.indexOf(olderTwinId) - 1)
+})
 
 it('applies the team filter to vector-only pages', async () =>
   expect((await fused(0.5, {teamIds: [teamId]})).edges.map((e) => e.nodeId)).toEqual([bothArmsId]))

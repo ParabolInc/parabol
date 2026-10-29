@@ -4,7 +4,8 @@ import getKysely from '../../../postgres/getKysely'
 import {getEmbeddingsByRRF} from '../../../postgres/queries/getEmbeddingsByRRF'
 import {
   getPagesByKeyword,
-  type PageSearchResults
+  type PageSearchResults,
+  UNPAGINATED_PAGE_INFO
 } from '../../../postgres/queries/getPagesByKeyword'
 import {getPagesByRRF} from '../../../postgres/queries/getPagesByRRF'
 import {getUserId} from '../../../utils/authorization'
@@ -17,10 +18,7 @@ import type {SearchTypeEnum, UserResolvers} from '../resolverTypes'
 export const SEARCH_EMBEDDING_TIMEOUT_MS = 3000
 export const KEYWORD_FALLBACK_LOG_MESSAGE = 'Page search used keyword results'
 const EMBEDDING_TIMED_OUT = 'timed out'
-const EMPTY_PAGE_SEARCH_RESULTS: PageSearchResults = {
-  pageInfo: {hasNextPage: false, hasPreviousPage: false, startCursor: null, endCursor: null},
-  edges: []
-}
+const EMPTY_PAGE_SEARCH_RESULTS: PageSearchResults = {pageInfo: UNPAGINATED_PAGE_INFO, edges: []}
 
 const embedWithinBudget = async (embed: () => Promise<Float32Array | Error | undefined>) => {
   let timer: ReturnType<typeof setTimeout> | undefined

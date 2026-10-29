@@ -33,6 +33,10 @@ for (const field of ['set', 'mode']) {
     process.exit(1)
   }
 }
+if (a.mode === 'sweep') {
+  console.error('compare.mjs reads fused and quick runs; sweep results print their own table')
+  process.exit(1)
+}
 
 const formatDelta = (before, after) => {
   if (before === undefined || after === undefined) return 'n/a'
