@@ -394,6 +394,51 @@ const TEMPLATE_CHOICES: Record<MeetingType, string[]> = {
   teamHealth: ['googleProjectAristotleTemplate', 'atlassianTeamHealthMonitorTemplate']
 }
 
+// the settings every new team gets for each kind of meeting, as createTeamAndLeader makes them. A team without them
+// can't load its meeting settings, so pages like the activity library fail for its members
+const MEETING_SETTINGS = [
+  {
+    meetingType: 'retrospective',
+    phaseTypes: ['checkin', 'TEAM_HEALTH', 'updates', 'reflect', 'group', 'vote', 'discuss'],
+    selectedTemplateId: 'workingStuckTemplate',
+    disableAnonymity: false,
+    maxVotesPerGroup: 3,
+    totalVotes: 5
+  },
+  {
+    meetingType: 'action',
+    phaseTypes: ['checkin', 'updates', 'firstcall', 'agendaitems', 'lastcall'],
+    selectedTemplateId: null,
+    disableAnonymity: null,
+    maxVotesPerGroup: null,
+    totalVotes: null
+  },
+  {
+    meetingType: 'poker',
+    phaseTypes: ['checkin', 'SCOPE', 'ESTIMATE'],
+    selectedTemplateId: 'estimatedEffortTemplate',
+    disableAnonymity: null,
+    maxVotesPerGroup: null,
+    totalVotes: null
+  },
+  {
+    meetingType: 'teamHealth',
+    phaseTypes: ['TEAM_HEALTH_RESPONSE'],
+    selectedTemplateId: 'everythingBagelTemplate',
+    disableAnonymity: null,
+    maxVotesPerGroup: null,
+    totalVotes: null
+  },
+  {
+    meetingType: 'teamPrompt',
+    phaseTypes: ['RESPONSES'],
+    selectedTemplateId: 'enterpriseDailyStandupTemplate',
+    disableAnonymity: null,
+    maxVotesPerGroup: null,
+    totalVotes: null
+  }
+]
+
 // mulberry32 with a fixed seed, so every Copper looks the same
 const makeRandom = (seed: number) => {
   let state = seed
@@ -582,6 +627,9 @@ const seedCopper = async (client: Client, viewerId: string, tier: 'starter' | 't
       createdBy: viewerId,
       createdAt: daysAgo(team.firstMetDaysAgo + 35)
     })
+    MEETING_SETTINGS.forEach((settings) =>
+      add('MeetingSettings', {id: toId(), teamId: team.id, ...settings})
+    )
     membershipsByTeamId.get(team.id)?.forEach(({userId, joinedDaysAgo, leftDaysAgo, isLead}) => {
       add('TeamMember', {
         id: `${userId}::${team.id}`,
@@ -912,6 +960,7 @@ const seedCopper = async (client: Client, viewerId: string, tier: 'starter' | 't
     'OrganizationUser',
     'OrganizationUserAudit',
     'Team',
+    'MeetingSettings',
     'TeamMember',
     'MeetingTemplate',
     'TemplatePrompt',
