@@ -2,16 +2,19 @@ import {MIN_REPORT_HEALTH_RESPONDENTS} from '../../client/shared/reports/reportC
 import {toTeamHealthDeviation} from '../../client/shared/reports/teamHealthAttention'
 import {isTeamHealthHeatmapSpec} from '../../client/shared/reports/teamHealthReportSpec'
 import {canShowRespondentDetails} from '../../client/shared/utils/teamHealthAnonymity'
+import type {TeamHealthCheck} from '../dataloader/reportLoaderMakers'
 import type {DataLoaderWorker} from '../graphql/graphql'
 import isValid from '../graphql/isValid'
 import averageTeamHealthScore from '../utils/averageTeamHealthScore'
 import getTeamHealthDisplayComment from '../utils/getTeamHealthDisplayComment'
 import isTeamHealthSummaryLoading from '../utils/isTeamHealthSummaryLoading'
-import {findLatestTeamHealthCheck} from './measures/teamHealthAnswers'
+import {isInTeamHealthWindow, pickLatestCheckByCategory} from './measures/teamHealthAnswers'
 import type {ReportResultSource} from './runReport'
 
 // how many checks before a team's latest a cell looks back on, enough to tell a score that fell twice in a row
 const EARLIER_CHECK_COUNT = 2
+// how many checks back a cell searches for those, past checks that asked about other categories
+const EARLIER_CHECK_SEARCH = 8
 
 // A check's scores and the comments anyone may read, by category. Too few people answering hides the whole check
 const readCheckCategories = async (checkId: string, dataLoader: DataLoaderWorker) => {
@@ -54,8 +57,40 @@ type CheckCategories = Awaited<ReturnType<typeof readCheckCategories>>
 const averageOf = (check: CheckCategories, categoryId: number) =>
   check.isHidden ? null : averageTeamHealthScore(check.categories.get(categoryId)?.scores ?? [])
 
-// What a Team Health heatmap marks its cells from: each team's latest check in the period. It takes every team the
-// viewer can report on, whatever the filters, so filtering never moves a mark
+const scoredCategoryIdsOf = ({categories}: CheckCategories) =>
+  [...categories].flatMap(([categoryId, {scores}]) => (scores.length > 0 ? [categoryId] : []))
+
+// each check read once, however many cells look at it
+const toCheckCategoriesReader = (dataLoader: DataLoaderWorker) => {
+  const readings = new Map<string, Promise<CheckCategories>>()
+  return (checkId: string) => {
+    const reading = readings.get(checkId) ?? readCheckCategories(checkId, dataLoader)
+    readings.set(checkId, reading)
+    return reading
+  }
+}
+
+// The checks before one that scored a category, newest first, so a check that asked about other things doesn't stand
+// in for one that asked about this
+const findEarlierChecks = async (
+  checks: readonly TeamHealthCheck[],
+  checkIdx: number,
+  categoryId: number,
+  readCategories: (checkId: string) => Promise<CheckCategories>
+) => {
+  const searched = checks.slice(checkIdx + 1, checkIdx + 1 + EARLIER_CHECK_SEARCH)
+  const searchedCategories = await Promise.all(searched.map(({id}) => readCategories(id)))
+  return searched
+    .flatMap((check, idx) => {
+      const categories = searchedCategories[idx]!
+      return scoredCategoryIdsOf(categories).includes(categoryId) ? [{check, categories}] : []
+    })
+    .slice(0, EARLIER_CHECK_COUNT)
+}
+
+// What a Team Health heatmap marks its cells from: each team's latest check in the period of each category, the same
+// checks its scores come from. It takes every team the viewer can report on, whatever the filters, so filtering never
+// moves a mark
 export const readReportTeamHealth = async (
   report: Pick<ReportResultSource, 'spec' | 'from' | 'to' | 'reportableTeamIds'>,
   dataLoader: DataLoaderWorker
@@ -64,73 +99,86 @@ export const readReportTeamHealth = async (
   if (!isTeamHealthHeatmapSpec(spec)) return null
   const now = new Date()
   const readAt = periodEnd < now ? periodEnd : now
+  const readCategories = toCheckCategoriesReader(dataLoader)
   const checksByTeam = await Promise.all(
     teamIds.map((teamId) => dataLoader.get('teamHealthChecksByTeamId').load(teamId))
   )
-  const picks = teamIds.flatMap((teamId, idx) => {
-    const checks = checksByTeam[idx]!
-    const latestIdx = findLatestTeamHealthCheck(checks, readAt, windowStart)
-    if (latestIdx === -1) return []
-    return [
-      {
-        teamId,
-        check: checks[latestIdx]!,
-        checkNumber: checks.length - latestIdx,
-        earlierCheckIds: checks
-          .slice(latestIdx + 1, latestIdx + 1 + EARLIER_CHECK_COUNT)
-          .map(({id}) => id)
-      }
-    ]
-  })
-  const checkIds = [
-    ...new Set(picks.flatMap(({check, earlierCheckIds}) => [check.id, ...earlierCheckIds]))
-  ]
-  const [checkCategories, summariesByCheck, membersByTeam] = await Promise.all([
-    Promise.all(checkIds.map((checkId) => readCheckCategories(checkId, dataLoader))),
+  const windowChecks = checksByTeam
+    .flat()
+    .filter((check) => isInTeamHealthWindow(check, readAt, windowStart))
+  const categoriesByCheckId = new Map(
+    await Promise.all(windowChecks.map(async ({id}) => [id, await readCategories(id)] as const))
+  )
+  // a team's checks come newest first, so its latest check is the first one gathered
+  const picksByCheckId = new Map<
+    string,
+    {teamChecks: TeamHealthCheck[]; check: TeamHealthCheck; categoryIds: number[]}
+  >()
+  for (const teamChecks of checksByTeam) {
+    const picks = pickLatestCheckByCategory(
+      teamChecks,
+      (check) => scoredCategoryIdsOf(categoriesByCheckId.get(check.id)!),
+      readAt,
+      windowStart
+    )
+    for (const {check, categoryId} of picks) {
+      const pick = picksByCheckId.get(check.id) ?? {teamChecks, check, categoryIds: []}
+      pick.categoryIds.push(categoryId)
+      picksByCheckId.set(check.id, pick)
+    }
+  }
+  const picks = [...picksByCheckId.values()]
+  const [summariesByCheck, membersByCheck] = await Promise.all([
     Promise.all(
       picks.map(({check}) =>
         dataLoader.get('teamHealthCategorySummariesByMeetingId').load(check.id)
       )
     ),
-    Promise.all(picks.map(({teamId}) => dataLoader.get('teamMembersByTeamId').load(teamId)))
+    Promise.all(picks.map(({check}) => dataLoader.get('teamMembersByTeamId').load(check.teamId)))
   ])
-  const categoriesByCheckId = new Map(
-    checkIds.map((checkId, idx) => [checkId, checkCategories[idx]!])
-  )
   return {
-    checks: picks.map(({teamId, check, checkNumber, earlierCheckIds}, idx) => {
-      const {respondentCount, isHidden, categories} = categoriesByCheckId.get(check.id)!
-      const summaries = summariesByCheck[idx]!
-      return {
-        meetingId: check.id,
-        teamId,
-        endedAt: check.endedAt,
-        checkNumber,
-        respondentCount,
-        memberCount: membersByTeam[idx]!.length,
-        categories: isHidden
-          ? []
-          : [...categories].flatMap(([categoryId, {scores, comments}]) => {
-              if (scores.length === 0) return []
-              const summary = summaries.find((row) => row.categoryId === categoryId)
-              return [
-                {
-                  categoryId: String(categoryId),
-                  respondentCount: scores.length,
-                  commenterCount: comments.length,
-                  deviation: canShowRespondentDetails(scores.length)
-                    ? toTeamHealthDeviation(scores)
-                    : null,
-                  sentimentScore: summary?.sentimentScore ?? null,
-                  isLoadingSummary: !!summary && isTeamHealthSummaryLoading(summary),
-                  previousScores: earlierCheckIds.map((checkId) =>
-                    averageOf(categoriesByCheckId.get(checkId)!, categoryId)
+    checks: await Promise.all(
+      picks.map(async ({teamChecks, check, categoryIds}, idx) => {
+        const {respondentCount, isHidden, categories} = categoriesByCheckId.get(check.id)!
+        const summaries = summariesByCheck[idx]!
+        const checkIdx = teamChecks.indexOf(check)
+        return {
+          meetingId: check.id,
+          teamId: check.teamId,
+          endedAt: check.endedAt,
+          checkNumber: teamChecks.length - checkIdx,
+          respondentCount,
+          memberCount: membersByCheck[idx]!.length,
+          categories: isHidden
+            ? []
+            : await Promise.all(
+                categoryIds.map(async (categoryId) => {
+                  const {scores, comments} = categories.get(categoryId)!
+                  const summary = summaries.find((row) => row.categoryId === categoryId)
+                  const earlierChecks = await findEarlierChecks(
+                    teamChecks,
+                    checkIdx,
+                    categoryId,
+                    readCategories
                   )
-                }
-              ]
-            })
-      }
-    })
+                  return {
+                    categoryId: String(categoryId),
+                    respondentCount: scores.length,
+                    commenterCount: comments.length,
+                    deviation: canShowRespondentDetails(scores.length)
+                      ? toTeamHealthDeviation(scores)
+                      : null,
+                    sentimentScore: summary?.sentimentScore ?? null,
+                    isLoadingSummary: !!summary && isTeamHealthSummaryLoading(summary),
+                    previousScores: earlierChecks.map((earlier) =>
+                      averageOf(earlier.categories, categoryId)
+                    )
+                  }
+                })
+              )
+        }
+      })
+    )
   }
 }
 
@@ -146,12 +194,12 @@ export const readReportTeamHealthCell = async (
   const checks = await dataLoader.get('teamHealthChecksByTeamId').load(meeting.teamId)
   const checkIdx = checks.findIndex(({id}) => id === meetingId)
   if (checkIdx === -1) return null
-  const recentChecks = checks.slice(checkIdx, checkIdx + 1 + EARLIER_CHECK_COUNT)
-  const [recentCategories, summaries] = await Promise.all([
-    Promise.all(recentChecks.map(({id}) => readCheckCategories(id, dataLoader))),
+  const readCategories = toCheckCategoriesReader(dataLoader)
+  const [check, earlierChecks, summaries] = await Promise.all([
+    readCategories(meetingId),
+    findEarlierChecks(checks, checkIdx, categoryId, readCategories),
     dataLoader.get('teamHealthCategorySummariesByMeetingId').load(meetingId)
   ])
-  const check = recentCategories[0]!
   const category = check.categories.get(categoryId)
   if (check.isHidden || !category || category.scores.length === 0) return null
   const summary = summaries.find((row) => row.categoryId === categoryId)
@@ -170,9 +218,9 @@ export const readReportTeamHealthCell = async (
       ? [...category.scores].sort((a, b) => a - b)
       : null,
     comments,
-    scoreHistory: recentChecks
-      .flatMap(({endedAt}, idx) => {
-        const score = averageOf(recentCategories[idx]!, categoryId)
+    scoreHistory: [{check: checks[checkIdx]!, categories: check}, ...earlierChecks]
+      .flatMap(({check: {endedAt}, categories}) => {
+        const score = averageOf(categories, categoryId)
         return score === null ? [] : [{endedAt, score}]
       })
       .reverse()

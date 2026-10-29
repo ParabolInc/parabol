@@ -71,6 +71,9 @@ export interface TeamHealthCheck {
   teamId: string
   // when the check's results were revealed, which puts it on the calendar
   endedAt: Date
+  templateId: string | null
+  templateScope: string | null
+  templateName: string | null
 }
 
 // Each team's Team Health checks with revealed results, newest first
@@ -78,16 +81,24 @@ export const teamHealthChecksByTeamId = (parent: RootDataLoader) => {
   return new DataLoader<string, TeamHealthCheck[], string>(
     async (teamIds) => {
       const meetings = await getKysely()
-        .selectFrom('NewMeeting')
-        .select(['id', 'teamId', 'endedAt'])
-        .where('teamId', 'in', teamIds)
-        .where('meetingType', '=', 'teamHealth')
-        .where('endedAt', 'is not', null)
-        .orderBy('endedAt', 'desc')
+        .selectFrom('NewMeeting as m')
+        .leftJoin('MeetingTemplate as tpl', 'tpl.id', 'm.templateId')
+        .select([
+          'm.id',
+          'm.teamId',
+          'm.endedAt',
+          'm.templateId',
+          'tpl.scope as templateScope',
+          'tpl.name as templateName'
+        ])
+        .where('m.teamId', 'in', teamIds)
+        .where('m.meetingType', '=', 'teamHealth')
+        .where('m.endedAt', 'is not', null)
+        .orderBy('m.endedAt', 'desc')
         .execute()
       return teamIds.map((teamId) =>
-        meetings.flatMap(({id, teamId: checkTeamId, endedAt}) =>
-          checkTeamId === teamId && endedAt ? [{id, teamId, endedAt}] : []
+        meetings.flatMap(({endedAt, ...check}) =>
+          check.teamId === teamId && endedAt ? [{...check, endedAt}] : []
         )
       )
     },

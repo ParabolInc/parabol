@@ -34,8 +34,8 @@ type ReportTeamHealthCategory {
   isLoadingSummary: Boolean!
 
   """
-  The category's score in each of the 2 checks before this one, newest first. Null for a check that didn't score
-  it or that too few people answered
+  The category's score in each of the 2 checks before this one that scored it, newest first. Null for a check that
+  too few people answered
   """
   previousScores: [Float]!
 }

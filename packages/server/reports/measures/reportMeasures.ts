@@ -2,7 +2,6 @@ import type {ReportMeasure} from '../../../client/shared/reports/reportCatalog'
 import type {ReportMeasureFunction} from '../reportMeasureTypes'
 import countDiscussions from './countDiscussions'
 import countDoneTasks from './countDoneTasks'
-import countHealthAnswers from './countHealthAnswers'
 import countMeetings from './countMeetings'
 import countNewTasks from './countNewTasks'
 import countTasksPushed from './countTasksPushed'
@@ -33,8 +32,7 @@ const reportMeasures: Record<ReportMeasure, ReportMeasureFunction> = {
   DAYS_TO_DONE: medianDaysToDone,
   USER_INTEGRATIONS: readUserIntegrations,
   TASKS_PUSHED: countTasksPushed,
-  HEALTH_SCORE: readHealthScore,
-  HEALTH_ANSWERS: countHealthAnswers
+  HEALTH_SCORE: readHealthScore
 }
 
 export default reportMeasures

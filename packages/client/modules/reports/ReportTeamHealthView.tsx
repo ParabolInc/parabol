@@ -15,7 +15,11 @@ import ReportTeamHealthSummary from './ReportTeamHealthSummary'
 import ReportTeamHealthTable from './ReportTeamHealthTable'
 import {type ReportRowTotal, toReportHeatmapGrid} from './reportHeatmapGrid'
 import type {ReportResultRow} from './reportRows'
-import {markReportTeamHealthCells, toTeamHealthCellKey} from './reportTeamHealthCells'
+import {
+  markReportTeamHealthCells,
+  type ReportTeamHealthCheck,
+  toTeamHealthCellKey
+} from './reportTeamHealthCells'
 import {type ReportTeamHealthAllTeamsRows, toTeamHealthTable} from './reportTeamHealthRows'
 
 interface Props {
@@ -56,10 +60,13 @@ const ReportTeamHealthView = (props: Props) => {
   )
   const {checks} = teamHealth
   const cells = useMemo(() => markReportTeamHealthCells(checks), [checks])
-  const checkByTeamId = useMemo(
-    () => new Map(checks.map((check) => [check.teamId, check])),
-    [checks]
-  )
+  const checkByTeamId = useMemo(() => {
+    const latestByTeamId = new Map<string, ReportTeamHealthCheck>()
+    for (const check of checks) {
+      if (!latestByTeamId.has(check.teamId)) latestByTeamId.set(check.teamId, check)
+    }
+    return latestByTeamId
+  }, [checks])
   const [selectedKey, setSelectedKey] = useState<string | null>(null)
   const [cellQueryRef, loadCellQuery] = useQueryLoader<ReportTeamHealthCellDetailsQuery>(
     reportTeamHealthCellDetailsQuery
@@ -84,7 +91,6 @@ const ReportTeamHealthView = (props: Props) => {
   const categoryName = columns.find(({value}) => value === selectedCell?.category.categoryId)?.label
   const selection =
     selectedCell && teamName && categoryName ? {cell: selectedCell, teamName, categoryName} : null
-  const isPreviousCheck = spec.compareTo === 'PREVIOUS_CHECK'
   const onSelect = (key: string) => {
     const cell = shownCells.find((shownCell) => shownCell.key === key)
     if (key === selectedKey || !cell) {
@@ -108,13 +114,11 @@ const ReportTeamHealthView = (props: Props) => {
         groups={groups}
         checkByTeamId={checkByTeamId}
         cells={cells}
-        isPreviousCheck={isPreviousCheck}
         selectedKey={selection && selectedKey}
         onSelect={onSelect}
       />
       <ReportTeamHealthLegend
         comparison={spec.compareTo ? formatComparison(spec.compareTo) : null}
-        isPreviousCheck={isPreviousCheck}
         emptyNames={emptyNames}
         isTeamRows={isTeamRows}
       />

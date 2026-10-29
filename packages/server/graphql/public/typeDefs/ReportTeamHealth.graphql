@@ -3,8 +3,8 @@ What a Team Health heatmap marks its cells from
 """
 type ReportTeamHealth {
   """
-  The latest check in the period of every team the viewer can report on, whatever the report's filters, so
-  filtering never moves a mark
+  The latest check in the period of each category, for every team the viewer can report on, whatever the
+  report's filters, so filtering never moves a mark. A team's latest check comes first
   """
   checks: [ReportTeamHealthCheck!]!
 }

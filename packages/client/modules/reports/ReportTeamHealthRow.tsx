@@ -17,13 +17,12 @@ interface Props {
   columns: ReportResultKey[]
   check: ReportTeamHealthCheck | undefined
   cells: ReadonlyMap<string, TeamHealthCell>
-  isPreviousCheck: boolean
   selectedKey: string | null
   onSelect: (key: string) => void
 }
 
 const ReportTeamHealthRow = (props: Props) => {
-  const {item, columns, check, cells, isPreviousCheck, selectedKey, onSelect} = props
+  const {item, columns, check, cells, selectedKey, onSelect} = props
   const {name, row, teamId, isNested} = item
   const isHidden =
     !!teamId && [...row.cells.values()].every(({value}) => isHiddenReportValue(value))
@@ -61,10 +60,10 @@ const ReportTeamHealthRow = (props: Props) => {
                 label={`${name}, ${column.label}`}
                 value={value}
                 cell={cell}
-                isFellTwice={
-                  isPreviousCheck &&
-                  hasFallenTwice(value?.value ?? null, cell?.category.previousScores ?? [])
-                }
+                isFellTwice={hasFallenTwice(
+                  value?.value ?? null,
+                  cell?.category.previousScores ?? []
+                )}
                 isSelected={!!key && key === selectedKey}
                 onSelect={key ? () => onSelect(key) : undefined}
               />

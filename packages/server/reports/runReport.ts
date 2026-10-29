@@ -1,6 +1,7 @@
 import {GraphQLError} from 'graphql'
 import {
   isReportTimeDimension,
+  REPORT_HIDDEN_VALUE,
   type ReportDimension,
   type ReportPeriod,
   type ReportSpec
@@ -132,7 +133,7 @@ const runReport = async ({
 
   const queryMeasures = (
     measureSteps: ReportStep[],
-    check: ReportMeasureQuery['check'],
+    comparedSteps: ReportStep[] | null,
     measureDimensions: ReportQueryDimension[],
     hasTimeSteps: boolean
   ) =>
@@ -148,7 +149,10 @@ const runReport = async ({
           stepEnds: measureSteps.map(({end}) => end),
           readAt: measureSteps.map(({end}) => (end < now ? end : now)),
           hasTimeSteps,
-          check,
+          comparedWith: comparedSteps && {
+            stepStarts: comparedSteps.map(({start}) => start),
+            readAt: comparedSteps.map(({end}) => (end < now ? end : now))
+          },
           dimensions: measureDimensions,
           filters: measureFilters
         }
@@ -159,28 +163,18 @@ const runReport = async ({
       })
     )
   const {compareTo} = spec
-  // Every measure split by a breakdown, with its comparison. Each team's previous check is read over the
-  // same steps; every other comparison shifts the period
+  // Every measure split by a breakdown, with its comparison over the period shifted back
   const measureBy = async (measureBreakdown: (ReportDimension | ReportLevelDimension)[]) => {
     const isOverTime = measureBreakdown.some(isTimeDimension)
     const toMeasureSteps = (localRange: ReportLocalRange) =>
       toSteps(localRange, isOverTime ? stepLength : null)
     const measureSteps = toMeasureSteps(range)
-    const previousSteps = !compareTo
-      ? null
-      : compareTo === 'PREVIOUS_CHECK'
-        ? measureSteps
-        : toMeasureSteps(shiftReportRange(range, compareTo))
+    const previousSteps = compareTo ? toMeasureSteps(shiftReportRange(range, compareTo)) : null
     const measureDimensions = dimensions.filter((dimension) => measureBreakdown.includes(dimension))
     const [current, previous] = await Promise.all([
-      queryMeasures(measureSteps, 'latest', measureDimensions, isOverTime),
+      queryMeasures(measureSteps, null, measureDimensions, isOverTime),
       previousSteps
-        ? queryMeasures(
-            previousSteps,
-            compareTo === 'PREVIOUS_CHECK' ? 'previous' : 'earlier',
-            measureDimensions,
-            isOverTime
-          )
+        ? queryMeasures(previousSteps, measureSteps, measureDimensions, isOverTime)
         : null
     ])
     const measuredRows = buildReportRows({
@@ -230,6 +224,18 @@ const runReport = async ({
   if (estimatedCount > 0) notes.push({kind: 'ESTIMATED_HISTORY', count: estimatedCount})
   if (shapedRows.length > MAX_ROWS) {
     notes.push({kind: 'ROWS_TRUNCATED', count: shapedRows.length})
+  }
+  // a count of nothing is 0, so only a score, share or median can find nothing to compare with
+  if (compareTo) {
+    const pairs = shapedRows.flatMap(({values, previousValues}) =>
+      values.map((value, idx) => ({value, previousValue: previousValues?.[idx] ?? null}))
+    )
+    const shownCount = pairs.filter(
+      ({value}) => value !== null && value !== REPORT_HIDDEN_VALUE
+    ).length
+    if (shownCount > 0 && pairs.every(({previousValue}) => previousValue === null)) {
+      notes.push({kind: 'NOTHING_TO_COMPARE', count: shownCount})
+    }
   }
   return {
     spec,

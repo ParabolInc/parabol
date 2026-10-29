@@ -59,6 +59,8 @@ const ReportNotes = ({orgId, resultRef}: Props) => {
             `${count} ${plural(count, 'check')} hidden for anonymity: fewer than ${MIN_REPORT_HEALTH_RESPONDENTS} people answered`}
           {kind === 'TOPICS_FROM_OWN_TEAMS' &&
             `${count} ${plural(count, 'team')} left out: topics only come from teams you’re on`}
+          {kind === 'NOTHING_TO_COMPARE' &&
+            'Nothing to compare: nothing was recorded in the earlier period'}
           {kind === 'STRUCTURE_LEVEL_REMOVED' &&
             `${count === 1 ? 'A structure level was' : `${count} structure levels were`} removed, so this lists teams instead`}
         </li>

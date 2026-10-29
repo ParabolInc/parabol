@@ -15,7 +15,6 @@ interface Props {
   groups: ReportTeamHealthRowGroup[]
   checkByTeamId: ReadonlyMap<string, ReportTeamHealthCheck>
   cells: ReadonlyMap<string, ReportTeamHealthCell>
-  isPreviousCheck: boolean
   selectedKey: string | null
   onSelect: (key: string) => void
 }
@@ -24,7 +23,7 @@ const HEADING_CLASS_NAME = 'px-1 pt-1 pb-1.5 text-left align-bottom font-semibol
 
 const ReportTeamHealthTable = (props: Props) => {
   const {columns, rowHeading, hasAnsweredColumn, allTeams, groups, checkByTeamId, cells} = props
-  const {isPreviousCheck, selectedKey, onSelect} = props
+  const {selectedKey, onSelect} = props
   return (
     <div className='overflow-x-auto'>
       <table
@@ -83,7 +82,6 @@ const ReportTeamHealthTable = (props: Props) => {
                 columns={columns}
                 check={item.teamId ? checkByTeamId.get(item.teamId) : undefined}
                 cells={cells}
-                isPreviousCheck={isPreviousCheck}
                 selectedKey={selectedKey}
                 onSelect={onSelect}
               />

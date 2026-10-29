@@ -35,8 +35,7 @@ export const REPORT_MEASURE_KEYS = [
   'DAYS_TO_DONE',
   'USER_INTEGRATIONS',
   'TASKS_PUSHED',
-  'HEALTH_SCORE',
-  'HEALTH_ANSWERS'
+  'HEALTH_SCORE'
 ] as const
 export type ReportMeasure = (typeof REPORT_MEASURE_KEYS)[number]
 
@@ -59,12 +58,7 @@ export const REPORT_PERIOD_PRESETS = [
   'ALL_TIME'
 ] as const
 export type ReportPeriodPreset = (typeof REPORT_PERIOD_PRESETS)[number]
-export const REPORT_COMPARE_TO = [
-  'PREVIOUS_PERIOD',
-  'A_WEEK_EARLIER',
-  'A_YEAR_EARLIER',
-  'PREVIOUS_CHECK'
-] as const
+export const REPORT_COMPARE_TO = ['PREVIOUS_PERIOD', 'A_WEEK_EARLIER', 'A_YEAR_EARLIER'] as const
 export type ReportCompareTo = (typeof REPORT_COMPARE_TO)[number]
 export const REPORT_SORT_BY = ['VALUE', 'NAME', 'TIME'] as const
 export type ReportSortBy = (typeof REPORT_SORT_BY)[number]
@@ -73,7 +67,7 @@ export type SortDirection = (typeof SORT_DIRECTIONS)[number]
 
 // count: adds up inside each step. distinct: each team once per step. reading: taken at the end of each step.
 // latest: the most recent date. share: a percentage taken at the end of each step. median: the middle value of
-// what finished in each step. score: the average 1 to 5 answer in each team's latest Team Health check.
+// what finished in each step. score: the average 1 to 5 answer in each team's latest Team Health check of each category.
 // Shares, medians and scores never add up, so nothing totals or stacks them
 export type ReportMeasureKind =
   | 'count'
@@ -258,14 +252,8 @@ export const REPORT_MEASURES = {
     kind: 'score',
     label: 'Health score',
     description:
-      'The average 1 to 5 answer in each team’s latest Team Health check, from the 90 days before each point or from the period. Compared with an earlier period, each team’s check comes from at least the 90 days before that period ended. A check fewer than 3 people answered is hidden',
-    dimensions: [...OVER_TIME, 'TEAM', 'TEAM_LEVEL', 'CATEGORY']
-  },
-  HEALTH_ANSWERS: {
-    kind: 'count',
-    label: 'Health answers',
-    description: 'Answers given in Team Health checks, by the day their results were revealed',
-    dimensions: [...OVER_TIME, 'TEAM', 'TEAM_LEVEL', 'CATEGORY']
+      'The average 1 to 5 answer in each team’s latest Team Health check that asked about each category, from the 90 days before each point or from the period. Compared with an earlier period, each team’s check comes from at least the 90 days before that period ended, and only the teams and categories this period has count. A check fewer than 3 people answered is hidden',
+    dimensions: [...OVER_TIME, 'TEAM', 'TEAM_LEVEL', 'CATEGORY', 'TEMPLATE']
   }
 } as const satisfies Record<ReportMeasure, ReportMeasureDefinition>
 

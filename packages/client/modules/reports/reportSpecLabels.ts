@@ -29,8 +29,7 @@ export const REPORT_PERIOD_LABELS: Record<ReportPeriodPreset, string> = {
 export const REPORT_COMPARE_LABELS: Record<ReportCompareTo, string> = {
   PREVIOUS_PERIOD: 'Previous period',
   A_WEEK_EARLIER: 'A week earlier',
-  A_YEAR_EARLIER: 'A year earlier',
-  PREVIOUS_CHECK: 'Previous check'
+  A_YEAR_EARLIER: 'A year earlier'
 }
 
 export const REPORT_VIEW_LABELS: Record<ReportView, string> = {

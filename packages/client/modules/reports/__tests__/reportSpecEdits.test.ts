@@ -140,7 +140,7 @@ test('Health score opens the Team Health heatmap, under the team structure level
   expect(health?.isValid).toBe(true)
   expect(health?.spec).toMatchObject({
     showAs: 'HEATMAP',
-    compareTo: 'PREVIOUS_CHECK',
+    compareTo: 'PREVIOUS_PERIOD',
     breakdown: [
       {dimension: 'TEAM_LEVEL', levelId: 'level1'},
       {dimension: 'TEAM'},
@@ -184,7 +184,7 @@ test('a Health score heatmap adds rows before its categories, team structure lev
     measures: ['HEALTH_SCORE'],
     showAs: 'HEATMAP',
     breakdown: [{dimension: 'TEAM'}, {dimension: 'CATEGORY'}],
-    compareTo: 'PREVIOUS_CHECK'
+    compareTo: 'PREVIOUS_PERIOD'
   })
   const byUnit = addBreakdownEdits(healthByTeam, LEVELS).find(
     ({key}) => key === 'TEAM_LEVEL:level1'
@@ -196,7 +196,7 @@ test('a Health score heatmap adds rows before its categories, team structure lev
   ])
   const byMonth = breakdownEdits(healthByTeam, 1, LEVELS).options.find(({key}) => key === 'MONTH')
   expect(byMonth?.isValid).toBe(true)
-  expect(byMonth?.spec.compareTo).toBeNull()
+  expect(byMonth?.spec.compareTo).toBe('PREVIOUS_PERIOD')
 })
 
 test('a date sorts by age, and only sorts that fit are offered', () => {

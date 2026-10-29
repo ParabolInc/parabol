@@ -57,15 +57,7 @@ export const orderHeatmap = (spec: ReportSpec): ReportSpec => {
   return {...spec, breakdown: [...spec.breakdown].sort((a, b) => rankOf(a) - rankOf(b))}
 }
 
-// each team's check before only compares a Health score, and never over time
-const fitCompare = (spec: ReportSpec): ReportSpec => {
-  const isUnfit =
-    spec.compareTo === 'PREVIOUS_CHECK' &&
-    (spec.measures.some((measure) => measure !== 'HEALTH_SCORE') || spec.breakdown.some(isTimeItem))
-  return isUnfit ? {...spec, compareTo: null} : spec
-}
-
 // An edit that would leave a spec Parabol can't run changes what else it must for the edit to land
-const fitReportSpec = (spec: ReportSpec) => fitCompare(fitView(spec))
+const fitReportSpec = (spec: ReportSpec) => fitView(spec)
 
 export default fitReportSpec

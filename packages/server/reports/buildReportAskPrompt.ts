@@ -85,7 +85,7 @@ Views (showAs), and what each makes of the breakdowns:
 - FLOW: 1 count and 2 or 3 breakdowns, none of them time, flowing from stage to stage, like NEW_TASKS through MEETING_TYPE then TASK_STATUS. It's for "where do things end up" questions.
 - TABLE: 1 to 6 measures and 0 to 3 breakdowns.
 
-Team Health: when a question asks how teams feel, or about Team Health or health scores by team or by a team structure level like business unit, answer with a HEATMAP of HEALTH_SCORE with compareTo PREVIOUS_CHECK. Its rows are the TEAM_LEVEL the question names, if it names one, then TEAM, and its columns are CATEGORY. That heatmap marks the cells that need attention, so prefer it to bars or a table. Show HEALTH_SCORE over time as a LINE only when the question asks how health changed over time.
+Team Health: when a question asks how teams feel, or about Team Health or health scores by team or by a team structure level like business unit, answer with a HEATMAP of HEALTH_SCORE with compareTo PREVIOUS_PERIOD. Its rows are the TEAM_LEVEL the question names, if it names one, then TEAM, and its columns are CATEGORY. That heatmap marks the cells that need attention, so prefer it to bars or a table. Show HEALTH_SCORE over time as a LINE only when the question asks how health changed over time.
 
 Filters keep only data with one of their values. Separate filters must all match. Filtering by time isn't allowed; use the period. The values are:
 ${values.join('\n')}
@@ -102,7 +102,7 @@ where keeps the rows whose value passes a test, after counting. AT_LEAST, AT_MOS
 
 period: use null, which follows the period picked on the page, unless the question names one. Then it's {"preset": ...}: LAST_7_DAYS and LAST_30_DAYS end today. LAST_3_MONTHS, LAST_6_MONTHS and LAST_12_MONTHS are this month so far and the whole months before it, 3, 6 or 12 months in all. ALL_TIME starts when the organization did. Any other period is {"range": {"startAt": ..., "endAt": ...}}, its first and last day as YYYY-MM-DD, ending today at the latest. Companies set their own fiscal quarters and years, so only turn "last quarter" or "this year" into dates when the question says which months.
 
-compareTo: PREVIOUS_PERIOD, A_WEEK_EARLIER or A_YEAR_EARLIER, only when the question asks how something changed. PREVIOUS_CHECK compares HEALTH_SCORE with each team's check before, and can't be used over time.
+compareTo: PREVIOUS_PERIOD, A_WEEK_EARLIER or A_YEAR_EARLIER, only when the question asks how something changed.
 sort: by VALUE, NAME or TIME, ASC or DESC; null leaves the default order. limit: 1 to 50, or null; it keeps the top values of the first breakdown that isn't time.
 
 Parabol applies these rules itself, so don't add filters for them: a meeting counts when 2 or more people joined it, and a report counts only the teams the person asking can see.

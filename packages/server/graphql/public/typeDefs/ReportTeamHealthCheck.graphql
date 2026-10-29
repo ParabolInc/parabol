@@ -1,5 +1,5 @@
 """
-A team's latest Team Health check in a report's period
+A team's Team Health check that is its latest in a report's period for at least one category
 """
 type ReportTeamHealthCheck {
   """
@@ -30,7 +30,8 @@ type ReportTeamHealthCheck {
   memberCount: Int!
 
   """
-  Each category people scored. Empty when fewer than 3 people answered, since the check is hidden
+  Each category people scored that no later check in the period did. Empty when fewer than 3 people answered,
+  since the check is hidden
   """
   categories: [ReportTeamHealthCategory!]!
 }

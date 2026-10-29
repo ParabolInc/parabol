@@ -208,11 +208,11 @@ export const POPULAR_REPORT_QUESTIONS: readonly PopularReportQuestion[] = [
     subject: 'teamHealth',
     title: 'Health score by team',
     question: 'How is each team feeling?',
-    description: 'Each team’s latest Team Health check by category, against the check before it',
+    description: 'Each team’s latest Team Health check by category, against the period before',
     spec: {
       measures: ['HEALTH_SCORE'],
       breakdown: [{dimension: 'TEAM'}, {dimension: 'CATEGORY'}],
-      compareTo: 'PREVIOUS_CHECK',
+      compareTo: 'PREVIOUS_PERIOD',
       filters: [],
       where: [],
       showAs: 'HEATMAP'
@@ -223,11 +223,10 @@ export const POPULAR_REPORT_QUESTIONS: readonly PopularReportQuestion[] = [
     subject: 'teamHealth',
     title: 'Health score by category',
     question: 'Which categories are slipping?',
-    description: 'Every team’s latest check by category, against the year before',
+    description: 'Every team’s latest check by category, against the period before',
     spec: {
       measures: ['HEALTH_SCORE'],
       breakdown: [{dimension: 'CATEGORY'}],
-      period: {preset: 'LAST_12_MONTHS'},
       compareTo: 'PREVIOUS_PERIOD',
       filters: [],
       where: [],

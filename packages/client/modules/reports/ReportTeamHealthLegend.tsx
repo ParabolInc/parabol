@@ -9,7 +9,6 @@ import {TEAM_HEALTH_MARK_NAMES} from './reportTeamHealthWords'
 
 interface Props {
   comparison: string | null
-  isPreviousCheck: boolean
   // rows with no check in the period, which the table leaves out
   emptyNames: string[]
   isTeamRows: boolean
@@ -18,7 +17,7 @@ interface Props {
 const MARK_KEYS = ['LOW', 'MEDIUM', 'HIGH', 'BRIGHT_SPOT'] as const
 
 const ReportTeamHealthLegend = (props: Props) => {
-  const {comparison, isPreviousCheck, emptyNames, isTeamRows} = props
+  const {comparison, emptyNames, isTeamRows} = props
   const emptyCount = emptyNames.length
   return (
     <div className='flex flex-col gap-2 text-fg-secondary text-xs'>
@@ -49,15 +48,13 @@ const ReportTeamHealthLegend = (props: Props) => {
             <span className='inline-flex items-center gap-1'>
               <ArrowUpward className='text-[14px]' />
               <ArrowDownward className='-ml-1.5 text-[14px]' />
-              {isPreviousCheck ? 'Change since last check' : `Change ${comparison}`}
+              Change {comparison}
             </span>
           )}
-          {isPreviousCheck && (
-            <span className='inline-flex items-center gap-1'>
-              <KeyboardDoubleArrowDown className='text-[14px] text-tomato-700 dark:text-tomato-300' />
-              Fell twice in a row
-            </span>
-          )}
+          <span className='inline-flex items-center gap-1'>
+            <KeyboardDoubleArrowDown className='text-[14px] text-tomato-700 dark:text-tomato-300' />
+            Fell twice in a row
+          </span>
           <span className='inline-flex flex-wrap items-center gap-x-3 gap-y-1.5'>
             <span>Attention:</span>
             {MARK_KEYS.map((mark) => (
