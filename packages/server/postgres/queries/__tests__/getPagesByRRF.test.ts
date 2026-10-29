@@ -41,6 +41,7 @@ let newerTwinId: number
 let nearEmptyId: number
 let nearEmptyKeywordId: number
 let shortJapaneseId: number
+let lateMatchId: number
 
 const makeUser = (id: string, preferredName: string) => ({
   id,
@@ -170,10 +171,14 @@ beforeAll(async () => {
     userId: junkViewerId,
     plaintextContent: '会議のメモ'.repeat(14)
   })
+  lateMatchId = await insertPage('Hiring plan', {
+    userId: junkViewerId,
+    plaintextContent: `${FILLER_TEXT}The zebra crossing moved.`
+  })
   await pg
     .insertInto('PageAccess')
     .values(
-      [nearEmptyId, nearEmptyKeywordId, shortJapaneseId].map((pageId) => ({
+      [nearEmptyId, nearEmptyKeywordId, shortJapaneseId, lateMatchId].map((pageId) => ({
         userId: junkViewerId,
         pageId,
         role: 'owner' as const
@@ -240,6 +245,33 @@ it('ranks by vector similarity when alpha is 1', async () =>
     vectorOnlyId,
     bothArmsId
   ]))
+
+it('passes stop-word dropping to the keyword arm', async () => {
+  const query = 'what is the roadmap'
+  const everyWord = {anyWordFallbackBelow: 0}
+  const {edges} = await fused(0.5, {...everyWord, query, dropStopWords: true})
+  expect(edges.find(({nodeId}) => nodeId === keywordOnlyId)?.score.keywordRank).toEqual(
+    expect.any(Number)
+  )
+  const withStopWords = await fused(0.5, {...everyWord, query, dropStopWords: false})
+  expect(withStopWords.edges.every(({score}) => score.keywordRank === null)).toBe(true)
+})
+
+it('drops stop words and falls back when no page has every word by default', async () => {
+  const {edges} = await fused(0.5, {query: 'what is the roadmap planning'})
+  expect(edges.find(({nodeId}) => nodeId === vectorOnlyId)?.score.keywordRank).toEqual(
+    expect.any(Number)
+  )
+})
+
+it('gives pages with some of the words a keyword rank when the fallback applies', async () => {
+  const vectorOnlyKeywordRank = async (anyWordFallbackBelow: number) => {
+    const {edges} = await fused(0.5, {query: 'roadmap planning', anyWordFallbackBelow})
+    return edges.find(({nodeId}) => nodeId === vectorOnlyId)?.score.keywordRank
+  }
+  expect(await vectorOnlyKeywordRank(1)).toEqual(expect.any(Number))
+  expect(await vectorOnlyKeywordRank(0)).toBeNull()
+})
 
 it('ranks by keyword when alpha is 0', async () =>
   expect((await fused(0)).edges.at(-1)!.nodeId).toBe(vectorOnlyId))
@@ -377,6 +409,12 @@ it('leaves near-empty pages out of the vector arm', async () => {
 
 it('measures the minimum length in bytes, so short Japanese notes keep their vector matches', async () => {
   expect(resultIds(await junkSearch())).toContain(shortJapaneseId)
+})
+
+it('highlights an any-word match past the start of the page', async () => {
+  const {edges} = await junkSearch({query: 'zebra unicorn', anyWordFallbackBelow: 1})
+  const snippet = edges.find(({nodeId}) => nodeId === lateMatchId)?.snippets[0]
+  expect(snippet).toContain('<b>zebra</b>')
 })
 
 it('still finds a near-empty page by its keywords', async () => {

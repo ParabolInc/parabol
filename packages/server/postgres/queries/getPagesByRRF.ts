@@ -4,6 +4,7 @@ import {activeEmbeddingModelId} from '../../../embedder/activeEmbeddingModel'
 import {getEmbeddingsPagesTableName} from '../../../embedder/getEmbeddingsTableName'
 import {cosineSimilarity, pageSnippet, RRF} from '../expressions'
 import {
+  type KeywordMatching,
   type PageKeywordSearchParams,
   type PageSearchResults,
   withPageKeywordRanking
@@ -12,6 +13,11 @@ import {getPageSearchPageInfo} from './pageSearchCursor'
 
 export const VECTOR_SIMILARITY_FLOOR = 0.4
 export const VECTOR_MIN_PAGE_BYTES = 200
+export const FUSED_KEYWORD_MATCHING: KeywordMatching = {
+  dropStopWords: true,
+  anyWordFallbackBelow: 1,
+  anyWordMinShare: 0.5
+}
 
 export const getPagesByRRF = async ({
   query,
@@ -24,19 +30,31 @@ export const getPagesByRRF = async ({
   teamIds,
   dateRange,
   vectorFloor = VECTOR_SIMILARITY_FLOOR,
-  vectorMinBytes = VECTOR_MIN_PAGE_BYTES
-}: PageKeywordSearchParams & {
-  queryVector: Float32Array
-  alpha: number
-  k: number
-  vectorFloor?: number
-  vectorMinBytes?: number
-}): Promise<PageSearchResults> => {
+  vectorMinBytes = VECTOR_MIN_PAGE_BYTES,
+  dropStopWords = FUSED_KEYWORD_MATCHING.dropStopWords,
+  anyWordFallbackBelow = FUSED_KEYWORD_MATCHING.anyWordFallbackBelow,
+  anyWordMinShare = FUSED_KEYWORD_MATCHING.anyWordMinShare
+}: PageKeywordSearchParams &
+  Partial<KeywordMatching> & {
+    queryVector: Float32Array
+    alpha: number
+    k: number
+    vectorFloor?: number
+    vectorMinBytes?: number
+  }): Promise<PageSearchResults> => {
   const tableName = getEmbeddingsPagesTableName(activeEmbeddingModelId)
   if (!tableName) {
     throw new GraphQLError('No embeddings pages table found')
   }
-  const rows = await withPageKeywordRanking({query, viewerId, teamIds, dateRange})
+  const rows = await withPageKeywordRanking({
+    query,
+    viewerId,
+    teamIds,
+    dateRange,
+    dropStopWords,
+    anyWordFallbackBelow,
+    anyWordMinShare
+  })
     .with('PageBestChunk', (qb) =>
       qb
         .selectFrom('ViewerPages as vp')
@@ -78,6 +96,7 @@ export const getPagesByRRF = async ({
         .select((eb) => [
           eb.fn.coalesce('kr.id', 'vr.id').as('id'),
           eb.fn.coalesce('kr.updatedAt', 'vr.updatedAt').as('updatedAt'),
+          'kr.hasEveryWord',
           'kr.keywordScore',
           'kr.keywordRank',
           'vr.vectorScore',
@@ -100,7 +119,10 @@ export const getPagesByRRF = async ({
       'f.vectorScore',
       'f.vectorRank',
       'f.combined',
-      pageSnippet(eb.ref('p.plaintextContent'), eb.ref('st.terms')).as('snippet')
+      pageSnippet(
+        eb.ref('p.plaintextContent'),
+        sql<string>`case when ${eb.ref('f.hasEveryWord')} then ${eb.ref('st.terms')} else ${eb.ref('st.anyTerms')} end`
+      ).as('snippet')
     ])
     .orderBy('f.combined', 'desc')
     .orderBy('f.updatedAt', 'desc')
