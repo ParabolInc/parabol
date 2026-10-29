@@ -53,6 +53,16 @@ test('a table’s measures toggle', () => {
   ])
 })
 
+test('a table’s last measure can’t be unchecked', () => {
+  const {options} = measureEdits(spec({showAs: 'TABLE', measures: ['ACTIVE_USERS']}))
+  expect(options.find(({key}) => key === 'ACTIVE_USERS')).toMatchObject({
+    isSelected: true,
+    isValid: false
+  })
+  const withTwo = measureEdits(spec({showAs: 'TABLE', measures: ['ACTIVE_USERS', 'MEMBERS']}))
+  expect(validKeys(withTwo.options)).toEqual(expect.arrayContaining(['ACTIVE_USERS', 'MEMBERS']))
+})
+
 test('removing a breakdown drops the sort and limit it leaves without a purpose', () => {
   const byTeam = spec({
     showAs: 'TABLE',

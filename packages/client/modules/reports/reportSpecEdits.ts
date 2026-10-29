@@ -83,6 +83,12 @@ const toOption = (
   }
 }
 
+// clicking a checked checkbox unchecks it, so it's only valid when what it leaves is, like a table's last measure
+const toCheckboxOption = (key: string, label: string, spec: ReportSpec, isSelected: boolean) => {
+  const option = toOption(key, label, spec, isSelected)
+  return {...option, isValid: validateReportSpec(option.spec) === null}
+}
+
 const validOnly = (options: ReportSpecEditOption[]) => options.filter(({isValid}) => isValid)
 
 const toRemoval = (spec: ReportSpec) => {
@@ -128,8 +134,10 @@ export const measureEdits = (spec: ReportSpec) => {
     const measures = isSelected
       ? spec.measures.filter((selected) => selected !== measure)
       : [...spec.measures, measure]
-    const nextSpec = isMulti ? {...spec, measures} : withMeasure(spec, measure)
-    return toOption(measure, REPORT_MEASURES[measure].label, nextSpec, isSelected)
+    const {label} = REPORT_MEASURES[measure]
+    return isMulti
+      ? toCheckboxOption(measure, label, {...spec, measures}, isSelected)
+      : toOption(measure, label, withMeasure(spec, measure), isSelected)
   })
   return {options, isMulti}
 }
@@ -220,7 +228,7 @@ export const filterEdits = (
       values.length === 0
         ? withoutFilter
         : spec.filters.map((item, idx) => (idx === index ? {...item, values} : item))
-    return toOption(value, label, {...spec, filters}, isSelected)
+    return toCheckboxOption(value, label, {...spec, filters}, isSelected)
   })
   return {options, removal: toRemoval({...spec, filters: withoutFilter})}
 }
