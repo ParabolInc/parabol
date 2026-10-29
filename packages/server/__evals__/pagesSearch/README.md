@@ -339,9 +339,9 @@ Holdout set:
 The vector arm of fused results (`getPagesByRRF`) now skips pages with fewer than 200 bytes of plain text (`VECTOR_MIN_PAGE_BYTES`). That is about 200 characters of English, and fewer of Japanese or Chinese, where each character carries more meaning. Such pages are still found by their words. Short pages embed close to every query; on the heavy corpus a quarter of the pages are like this, mostly standups that nobody answered. The length comes from the stored size, so the text is never decompressed. The heavy corpus baseline above is from before this change, and quick results don't change.
 
 **How it was chosen.** A selection rule was written in the plan before any sweep ran:
-1. A configuration is eligible when nDCG@10 is within 0.005 of master on both `heavy-dev` and `dev`, and it adds no zero-result queries.
+1. A configuration is eligible when nDCG@10 is no more than 0.005 below master's on both `heavy-dev` and `dev`, and it adds no zero-result queries.
 2. Among eligible configurations, pick the lowest `heavy-dev` `noAnswerResults`. Treat values within 0.5 as ties, and break them by `junkAt5`, then nDCG@10, then fewer rules.
-3. Ship only if `heavy-holdout` keeps nDCG@10 within 0.01 of master and lowers `noAnswerResults`.
+3. Ship only if `heavy-holdout` keeps nDCG@10 no more than 0.01 below master's and lowers `noAnswerResults`.
 
 The sweep crossed three dimensions (126 configurations):
 - floors 0.4, 0.45 and 0.5;
@@ -425,10 +425,10 @@ The heavy corpus baseline above is from before this change.
    - the minimum share of the words: any, or half.
 
    Master keeps stop words and never falls back.
-2. **Eligibility.** A row is eligible when, on both `heavy-dev` and `dev`, nDCG@10 and Recall@20 are within 0.005 of master's. For fused ranking, `noAnswerResults` must also rise by at most 1.
+2. **Eligibility.** A row is eligible when, on both `heavy-dev` and `dev`, nDCG@10 and Recall@20 are no more than 0.005 below master's. For fused ranking, `noAnswerResults` must also rise by at most 1.
 3. **Pick.** Each list takes its eligible row with the highest mean nDCG@10 over the two sets. Rows within 0.005 tie; ties go to higher mean Recall@20, then fewer changes, then the smaller threshold.
 4. **Stop words.** They are kept or dropped for both lists together, by the higher summed nDCG@10.
-5. **Gate.** On `heavy-holdout`, each changed list must keep nDCG@10 and Recall@20 within 0.01 of master's.
+5. **Gate.** On `heavy-holdout`, each changed list must keep nDCG@10 and Recall@20 no more than 0.01 below master's.
 
 Quick list (alpha 0):
 
@@ -501,7 +501,7 @@ After natural-language matching, the quick list scored higher than fused ranking
 
 **How it was chosen.** The plan fixed a selection rule before the sweep ran:
 1. **Rows.** Alpha 0.01, 0.05, 0.1, 0.15 or 0.25, crossed with the fallback threshold (1, 5 or 20 pages) and the minimum share of the words (any, or half). Stop words are dropped, the floor is 0.4, and the minimum length is 200 bytes. Master is A5's setting: 0.25, below 1, half the words.
-2. **Eligibility.** On both `heavy-dev` and `dev`, nDCG@10 and Recall@20 must be within 0.005 of master's, and `noAnswerResults` may rise by at most 1.
+2. **Eligibility.** On both `heavy-dev` and `dev`, nDCG@10 and Recall@20 must be no more than 0.005 below master's, and `noAnswerResults` may rise by at most 1.
 3. **Pick.** The highest mean nDCG@10. Rows within 0.005 tie; ties go to higher mean Recall@20, then fewer changes, then the larger alpha.
 4. **Goal check.** Report whether the pick reaches the quick list. Gate on `heavy-holdout` as in A5.
 
@@ -534,7 +534,7 @@ On `heavy-dev`, by category, with the quick list for reference:
 
 On `dev`, prefix queries go from 0.76 to 1.00 and summary queries from 0.82 to 0.95.
 
-**The goal is half met.** Fused ranking now beats the quick list on `dev` (0.864 against 0.854), but still trails it on `heavy-dev` (0.757 against 0.767) and on `heavy-holdout` (0.791 against 0.801). The rows that beat it on both dev sets need only one of the words for the fallback. They add one to two filler pages to unanswerable queries, which the rule doesn't allow.
+**The goal is half met.** Fused ranking now beats the quick list on `dev` (0.864 against 0.854), but still trails it on `heavy-dev` (0.757 against 0.767) and on `heavy-holdout` (0.791 against 0.801). The rows that beat it on both dev sets need only one of the words for the fallback. They add filler pages to unanswerable queries, 1.5 more on `heavy-dev` and 3.1 more on `dev`, which the rule doesn't allow.
 
 **What it costs.**
 - **The vector arm no longer tells numbered pages apart.** "Beacon Retro #5" falls from 0.96 to 0.39, "Atlas Sprint Poker #4" from 0.62 to 0.36, and "day 7 onboarding email" from 0.50 to 0. Keyword search drops one-character words like "5", so only the vector arm saw the number. Searching for numbers is the next thing to fix.

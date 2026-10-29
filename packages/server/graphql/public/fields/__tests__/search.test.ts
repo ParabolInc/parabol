@@ -192,7 +192,7 @@ it('uses the alpha a page search gives', async () => {
   expect(getPagesByRRF).toHaveBeenCalledWith(expect.objectContaining({alpha: 0.5}))
 })
 
-it('ranks other search types with the same default alpha', async () => {
+it('keeps alpha 0.25 as the default for other search types', async () => {
   jest.mocked(publishToEmbedder).mockResolvedValue(new Float32Array(1024))
   await callSearch({query: 'retro', type: 'meetingTemplate'})
   expect(getEmbeddingsByRRF).toHaveBeenCalledWith(
