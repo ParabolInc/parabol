@@ -330,3 +330,62 @@ Holdout set:
 | nonEnglish | 3 | 0.000 | 0.000 | 0.000 |
 | table | 3 | 1.000 | 0.477 | -0.523 |
 | summary | 3 | 1.000 | 1.000 | 0.000 |
+
+## Junk filter (2026-10-29)
+
+Two rules now keep filler out of fused results (`getPagesByRRF`). The heavy corpus baseline above is from before them. Quick results don't change.
+
+- **Near-empty pages leave the vector arm.** A page whose plain text is shorter than 200 characters (`VECTOR_MIN_PAGE_CHARS`) is found only by its words. Short pages embed close to every query. On the heavy corpus a quarter of the pages are like this, mostly standups that nobody answered.
+- **At most 10 pages found only by vector similarity** (`VECTOR_ONLY_LIMIT`). They are counted over the whole ranking, best first, so paging never shows more than 10 of them.
+
+**How they were chosen.** The selection rule was written in the plan before any sweep ran:
+1. A configuration is eligible when nDCG@10 is within 0.005 of master on both `heavy-dev` and `dev`, and it adds no zero-result queries.
+2. Among eligible configurations, pick the lowest `heavy-dev` `noAnswerResults`. Treat values within 0.5 as ties, and break them by `junkAt5`, then nDCG@10, then fewer rules.
+3. Ship only if `heavy-holdout` keeps nDCG@10 within 0.01 of master and lowers `noAnswerResults`.
+
+The sweep crossed three dimensions, giving 126 configurations, of which 23 were eligible:
+- floors 0.4, 0.45 and 0.5;
+- minimum lengths of 0, 50, 100, 150, 200 and 300 characters;
+- `off`, a relative floor (keep vector matches within 0.05, 0.1 or 0.15 of the query's best similarity), or a cap of 3, 5 or 10.
+
+Minimum lengths 200 and 300 tied, and 200 is the less aggressive. The relative floor was removed: its best eligible configuration still returned about 9 results for unanswerable queries. Caps of 3 and 5 aren't eligible, because they cut answers to paraphrase queries, which only the vector arm finds.
+
+Fused, alpha 0.25, floor 0.4:
+
+| Set | Configuration | nDCG@10 | Recall@5 | MRR | `junkAt5` | `noAnswerResults` |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| `heavy-dev` | master | 0.571 | 0.587 | 0.580 | 0.738 | 14.17 |
+| `heavy-dev` | 200 characters, no cap | 0.610 | 0.620 | 0.653 | 0.731 | 13.67 |
+| `heavy-dev` | 200 characters, cap 5 | 0.587 | 0.620 | 0.639 | 0.731 | 3.67 |
+| `heavy-dev` | **200 characters, cap 10** | 0.610 | 0.620 | 0.650 | 0.731 | 7.00 |
+| `dev` | master | 0.606 | 0.613 | 0.624 | 0.813 | 13.00 |
+| `dev` | 200 characters, no cap | 0.618 | 0.628 | 0.636 | 0.795 | 10.63 |
+| `dev` | 200 characters, cap 5 | 0.586 | 0.628 | 0.616 | 0.795 | 4.38 |
+| `dev` | **200 characters, cap 10** | 0.618 | 0.628 | 0.630 | 0.795 | 8.38 |
+
+On `heavy-dev`, by category, several scores rise and two dip:
+
+| Category | Before | After |
+| --- | ---: | ---: |
+| prefix | 0.85 | 0.91 |
+| paraphrase | 0.13 | 0.19 |
+| typo | 0.15 | 0.28 |
+| longDoc | 0.55 | 0.65 |
+| table | 0.64 | 0.60 |
+| person | 0.61 | 0.59 |
+
+**What it costs.** A note shorter than 200 characters is no longer found by meaning or through a typo, only by its words.
+- In `dev`, `note-whiteboard` (154 characters) loses both its queries. "where are the pictures from the design brainstorm" falls from 1.0 to 0, and "whiteboad" from 0.5 to 0. They are dev's only losses, against 24 wins. `heavy-dev` has 14 wins and 3 losses.
+- Length can't tell a short note from an empty standup summary, which is 137–161 characters in production.
+- Short notes are hubs too: the 65-character `doc-ideas-backlog` led every unanswerable list on the heavy corpus.
+
+**Gate.** Each holdout ran once with master's configuration, as a sweep row, and once through the resolver with the new defaults. Only overall metrics were read.
+
+| Holdout | Configuration | nDCG@10 | Recall@5 | MRR | `noAnswerResults` |
+| --- | --- | ---: | ---: | ---: | ---: |
+| `heavy-holdout` (72 answerable) | master | 0.560 | 0.632 | 0.551 | 15.00 |
+| `heavy-holdout` | junk filter | 0.581 | 0.639 | 0.573 | 7.63 |
+| `holdout` (23 answerable, spent) | master | 0.599 | 0.627 | 0.624 | 6.00 |
+| `holdout` | junk filter | 0.605 | 0.627 | 0.652 | 4.00 |
+
+It passes: on `heavy-holdout`, nDCG@10 rises by 0.020 and results for unanswerable queries halve. Its first gate run used exactly these two configurations, and nobody who tunes ranking has read its queries.
