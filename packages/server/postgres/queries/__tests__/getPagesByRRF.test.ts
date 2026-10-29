@@ -241,6 +241,16 @@ it('ranks by vector similarity when alpha is 1', async () =>
     bothArmsId
   ]))
 
+it('passes stop-word dropping to the keyword arm', async () => {
+  const query = 'what is the roadmap'
+  const {edges} = await fused(0.5, {query, dropStopWords: true})
+  expect(edges.find(({nodeId}) => nodeId === keywordOnlyId)?.score.keywordRank).toEqual(
+    expect.any(Number)
+  )
+  const withStopWords = await fused(0.5, {query, dropStopWords: false})
+  expect(withStopWords.edges.every(({score}) => score.keywordRank === null)).toBe(true)
+})
+
 it('ranks by keyword when alpha is 0', async () =>
   expect((await fused(0)).edges.at(-1)!.nodeId).toBe(vectorOnlyId))
 

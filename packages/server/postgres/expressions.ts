@@ -77,20 +77,29 @@ export const pageSnippet = (body: Expression<string | null>, tsQuery: Expression
 const MIN_QUERY_TERM_LENGTH = 2
 const MAX_QUERY_TERMS = 8
 
-// splits the query into words exactly as pageSearchTsv splits page text, then makes each word a required prefix term.
-// The terms are quoted and cast with ::tsquery, which reads them literally instead of parsing them again.
+// splits the query into words exactly as pageSearchTsv splits page text, then quotes each word as a prefix term.
+// With dropStopWords, English stop words leave before the cap, unless every word is one.
 // A query with no words of 2+ characters gives NULL, which matches nothing.
-export const pagePrefixTsQuery = (query: string) =>
-  sql<string | null>`(
-    select string_agg('''' || replace(replace(t.lexeme, '\\', '\\\\'), '''', '''''') || ''':*', ' & ' order by t.position)::tsquery
+export const pagePrefixTerms = (query: string, dropStopWords: boolean) =>
+  sql<string[] | null>`(
+    select array_agg('''' || replace(replace(t.lexeme, '\\', '\\\\'), '''', '''''') || ''':*' order by t.position)
     from (
-      select lexeme, positions[1] as position
-      from unnest(to_tsvector('simple', ${query}))
-      where char_length(lexeme) >= ${sql.lit(MIN_QUERY_TERM_LENGTH)}
-      order by positions[1]
+      select lexeme, position
+      from (
+        select lexeme, positions[1] as position, s."isStopWord", bool_and(s."isStopWord") over () as "onlyStopWords"
+        from unnest(to_tsvector('simple', ${query}))
+          cross join lateral (select ts_lexize('english_stem', lexeme) = '{}' as "isStopWord") s
+        where char_length(lexeme) >= ${sql.lit(MIN_QUERY_TERM_LENGTH)}
+      ) w
+      where not (${sql.lit(dropStopWords)} and w."isStopWord" and not w."onlyStopWords")
+      order by position
       limit ${sql.lit(MAX_QUERY_TERMS)}
     ) t
   )`
+
+// The terms are cast with ::tsquery, which reads them literally instead of parsing them again.
+export const pagePrefixTsQuery = (terms: Expression<string[] | null>, operator: '&' | '|') =>
+  sql<string | null>`array_to_string(${terms}, ${sql.lit(` ${operator} `)})::tsquery`
 
 export function rank<DB, TB extends keyof DB>(
   eb: ExpressionBuilder<DB, TB>,

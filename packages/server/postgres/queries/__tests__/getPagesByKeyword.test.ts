@@ -1,5 +1,5 @@
 import {sql} from 'kysely'
-import {pagePrefixTsQuery} from '../../expressions'
+import {pagePrefixTerms, pagePrefixTsQuery} from '../../expressions'
 import getKysely from '../../getKysely'
 import {getPagesByKeyword, type PageKeywordSearchParams} from '../getPagesByKeyword'
 import {decodePageSearchCursor} from '../pageSearchCursor'
@@ -50,6 +50,7 @@ let secondTiedPageId: number
 let earlierShortOffsiteId: number
 let laterLongOffsiteId: number
 let compoundWordsId: number
+let toDoId: number
 
 beforeAll(async () => {
   await pg
@@ -108,7 +109,9 @@ beforeAll(async () => {
     plaintextContent:
       'Email ops@parabol.co about the parabol.co status page before shipping v1.2.3 on 2026-10-26.'
   })
+  toDoId = await insertPage({title: 'To do'})
   const viewerPageIds = [
+    toDoId,
     compoundWordsId,
     standupNotesId,
     meetingSummariesId,
@@ -147,7 +150,10 @@ afterAll(async () => {
   await pg.destroy()
 })
 
-const keywordSearch = (query: string, overrides: Partial<PageKeywordSearchParams> = {}) =>
+const keywordSearch = (
+  query: string,
+  overrides: Partial<Parameters<typeof getPagesByKeyword>[0]> = {}
+) =>
   getPagesByKeyword({
     query,
     first: 20,
@@ -158,14 +164,16 @@ const keywordSearch = (query: string, overrides: Partial<PageKeywordSearchParams
     ...overrides
   })
 
-const ids = async (query: string, overrides?: Partial<PageKeywordSearchParams>) =>
+const ids = async (query: string, overrides?: Partial<Parameters<typeof getPagesByKeyword>[0]>) =>
   (await keywordSearch(query, overrides)).edges.map(({nodeId}) => nodeId)
 
 describe('turns the query into prefix terms', () => {
-  const terms = async (query: string) => {
+  const terms = async (query: string, dropStopWords = false, operator: '&' | '|' = '&') => {
     const {rows} = await sql<{
       terms: string | null
-    }>`select ${pagePrefixTsQuery(query)}::text as terms`.execute(pg)
+    }>`select ${pagePrefixTsQuery(pagePrefixTerms(query, dropStopWords), operator)}::text as terms`.execute(
+      pg
+    )
     return rows[0]!.terms
   }
 
@@ -200,6 +208,22 @@ describe('turns the query into prefix terms', () => {
   it.each(['', '   ', 'a b', '𠮷'])('gives no terms for %p', async (query) =>
     expect(await terms(query)).toBeNull()
   )
+
+  it.each([
+    ['when were the cdn assets restored', "'cdn':* & 'assets':* & 'restored':*"],
+    ['to do', "'to':* & 'do':*"],
+    ['follow-up', "'follow-up':* & 'follow':*"],
+    ['de la reunión', "'de':* & 'la':* & 'reunión':*"],
+    [
+      'what is the one two three four five six seven eight nine',
+      "'one':* & 'two':* & 'three':* & 'four':* & 'five':* & 'six':* & 'seven':* & 'eight':*"
+    ]
+  ])('turns %p into %p without stop words', async (query, expected) =>
+    expect(await terms(query, true)).toBe(expected)
+  )
+
+  it('joins any-word terms with OR', async () =>
+    expect(await terms('retro notes', false, '|')).toBe("'retro':* | 'notes':*"))
 })
 
 it('matches compound words as typed', async () => {
@@ -221,6 +245,25 @@ it('matches every word as a prefix', async () =>
   expect(await ids('onboard check')).toEqual([onboardingChecklistId]))
 
 it('requires every word to match', async () => expect(await ids('onboarding budget')).toEqual([]))
+
+it('finds a question by its content words', async () => {
+  const question = 'what is on the onboarding checklist'
+  expect(await ids(question, {dropStopWords: true})).toEqual([onboardingChecklistId])
+  expect(await ids(question, {dropStopWords: false})).toEqual([])
+})
+
+it('keeps finding pages while a stop word is typed', async () =>
+  expect(await ids('onboarding the', {dropStopWords: true})).toEqual([onboardingChecklistId]))
+
+it('still requires every word of a query made only of stop words', async () =>
+  expect(await ids('to do', {dropStopWords: true})).toEqual([toDoId]))
+
+it('leaves stop words out of snippet highlights', async () => {
+  const {edges} = await keywordSearch('the platform team', {dropStopWords: true})
+  const snippet = edges.find(({nodeId}) => nodeId === standupNotesId)?.snippets[0]
+  expect(snippet).toContain('<b>platform</b>')
+  expect(snippet).not.toContain('<b>the</b>')
+})
 
 it('breaks ties by the most recent update', async () =>
   expect(await ids('weekly sync')).toEqual([laterWeeklySyncId, earlierWeeklySyncId]))

@@ -1,6 +1,13 @@
 import {sql} from 'kysely'
 import type {SearchResultEdgeSource} from '../../graphql/public/types/SearchResultEdge'
-import {pagePrefixTsQuery, pageSearchTsv, pageSnippet, pageTitleTsv, RRF_K} from '../expressions'
+import {
+  pagePrefixTerms,
+  pagePrefixTsQuery,
+  pageSearchTsv,
+  pageSnippet,
+  pageTitleTsv,
+  RRF_K
+} from '../expressions'
 import getKysely from '../getKysely'
 import {getPageSearchPageInfo} from './pageSearchCursor'
 
@@ -13,6 +20,12 @@ export interface PageKeywordSearchParams {
   dateRange: {startAt: Date; endAt: Date; dateField: 'createdAt' | 'updatedAt'} | null
 }
 
+export interface KeywordMatching {
+  dropStopWords: boolean
+}
+
+export const QUICK_KEYWORD_MATCHING: KeywordMatching = {dropStopWords: false}
+
 export interface PageSearchResults {
   pageInfo: {
     hasNextPage: boolean
@@ -24,14 +37,22 @@ export interface PageSearchResults {
 }
 
 export const withPageKeywordRanking = (
-  {query, viewerId, teamIds, dateRange}: Omit<PageKeywordSearchParams, 'first' | 'offset'>,
+  {
+    query,
+    viewerId,
+    teamIds,
+    dateRange,
+    dropStopWords
+  }: Omit<PageKeywordSearchParams, 'first' | 'offset'> & KeywordMatching,
   limit?: number
 ) => {
   const tsQuery = sql.ref<string>('st.terms')
   return (
     getKysely()
       // search terms: the query split into words the same way page text is, each word a required prefix
-      .with('SearchTerms', (qb) => qb.selectNoFrom(pagePrefixTsQuery(query).as('terms')))
+      .with('SearchTerms', (qb) =>
+        qb.selectNoFrom(pagePrefixTsQuery(pagePrefixTerms(query, dropStopWords), '&').as('terms'))
+      )
       .with('ViewerPages', (qb) =>
         qb
           // who can see what: a `PageAccess` join on `viewerId`, plus `deletedAt` is null
@@ -102,10 +123,11 @@ export const getPagesByKeyword = async ({
   offset,
   viewerId,
   teamIds,
-  dateRange
-}: PageKeywordSearchParams): Promise<PageSearchResults> => {
+  dateRange,
+  dropStopWords = QUICK_KEYWORD_MATCHING.dropStopWords
+}: PageKeywordSearchParams & Partial<KeywordMatching>): Promise<PageSearchResults> => {
   const rows = await withPageKeywordRanking(
-    {query, viewerId, teamIds, dateRange},
+    {query, viewerId, teamIds, dateRange, dropStopWords},
     offset + first + 1
   )
     // output: each page's position in that order, plus a highlighted snippet from the first 20k characters
