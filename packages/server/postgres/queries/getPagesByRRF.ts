@@ -13,7 +13,11 @@ import {getPageSearchPageInfo} from './pageSearchCursor'
 
 export const VECTOR_SIMILARITY_FLOOR = 0.4
 export const VECTOR_MIN_PAGE_BYTES = 200
-export const FUSED_KEYWORD_MATCHING: KeywordMatching = {dropStopWords: false}
+export const FUSED_KEYWORD_MATCHING: KeywordMatching = {
+  dropStopWords: false,
+  anyWordFallbackBelow: 0,
+  anyWordMinShare: 0
+}
 
 export const getPagesByRRF = async ({
   query,
@@ -27,7 +31,9 @@ export const getPagesByRRF = async ({
   dateRange,
   vectorFloor = VECTOR_SIMILARITY_FLOOR,
   vectorMinBytes = VECTOR_MIN_PAGE_BYTES,
-  dropStopWords = FUSED_KEYWORD_MATCHING.dropStopWords
+  dropStopWords = FUSED_KEYWORD_MATCHING.dropStopWords,
+  anyWordFallbackBelow = FUSED_KEYWORD_MATCHING.anyWordFallbackBelow,
+  anyWordMinShare = FUSED_KEYWORD_MATCHING.anyWordMinShare
 }: PageKeywordSearchParams &
   Partial<KeywordMatching> & {
     queryVector: Float32Array
@@ -40,7 +46,15 @@ export const getPagesByRRF = async ({
   if (!tableName) {
     throw new GraphQLError('No embeddings pages table found')
   }
-  const rows = await withPageKeywordRanking({query, viewerId, teamIds, dateRange, dropStopWords})
+  const rows = await withPageKeywordRanking({
+    query,
+    viewerId,
+    teamIds,
+    dateRange,
+    dropStopWords,
+    anyWordFallbackBelow,
+    anyWordMinShare
+  })
     .with('PageBestChunk', (qb) =>
       qb
         .selectFrom('ViewerPages as vp')

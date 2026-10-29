@@ -251,6 +251,15 @@ it('passes stop-word dropping to the keyword arm', async () => {
   expect(withStopWords.edges.every(({score}) => score.keywordRank === null)).toBe(true)
 })
 
+it('gives pages with some of the words a keyword rank when the fallback applies', async () => {
+  const vectorOnlyKeywordRank = async (anyWordFallbackBelow: number) => {
+    const {edges} = await fused(0.5, {query: 'roadmap planning', anyWordFallbackBelow})
+    return edges.find(({nodeId}) => nodeId === vectorOnlyId)?.score.keywordRank
+  }
+  expect(await vectorOnlyKeywordRank(1)).toEqual(expect.any(Number))
+  expect(await vectorOnlyKeywordRank(0)).toBeNull()
+})
+
 it('ranks by keyword when alpha is 0', async () =>
   expect((await fused(0)).edges.at(-1)!.nodeId).toBe(vectorOnlyId))
 

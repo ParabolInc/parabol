@@ -1,7 +1,11 @@
 import {sql} from 'kysely'
 import {pagePrefixTerms, pagePrefixTsQuery} from '../../expressions'
 import getKysely from '../../getKysely'
-import {getPagesByKeyword, type PageKeywordSearchParams} from '../getPagesByKeyword'
+import {
+  getPagesByKeyword,
+  type KeywordMatching,
+  type PageKeywordSearchParams
+} from '../getPagesByKeyword'
 import {decodePageSearchCursor} from '../pageSearchCursor'
 
 const pg = getKysely()
@@ -244,7 +248,52 @@ it('puts title matches before body-only matches', async () =>
 it('matches every word as a prefix', async () =>
   expect(await ids('onboard check')).toEqual([onboardingChecklistId]))
 
-it('requires every word to match', async () => expect(await ids('onboarding budget')).toEqual([]))
+it('requires every word to match', async () =>
+  expect(await ids('onboarding budget', {anyWordFallbackBelow: 0})).toEqual([]))
+
+it('falls back to pages with some of the words, most words first', async () =>
+  expect(await ids('weekly offsite agenda', {anyWordFallbackBelow: 1})).toEqual([
+    laterLongOffsiteId,
+    earlierShortOffsiteId,
+    laterWeeklySyncId,
+    earlierWeeklySyncId
+  ]))
+
+it('falls back only when fewer pages than the threshold have every word', async () => {
+  expect(await ids('standup notes', {anyWordFallbackBelow: 1})).toEqual([standupNotesId])
+  expect(await ids('standup notes', {anyWordFallbackBelow: 2})).toEqual([
+    standupNotesId,
+    meetingSummariesId
+  ])
+  const secondPage = await keywordSearch('standup notes', {anyWordFallbackBelow: 1, offset: 1})
+  expect(secondPage.edges).toEqual([])
+})
+
+it('requires the minimum share of words', async () =>
+  expect(
+    await ids('weekly offsite agenda', {anyWordFallbackBelow: 1, anyWordMinShare: 0.5})
+  ).toEqual([laterLongOffsiteId, earlierShortOffsiteId]))
+
+it('highlights the words an any-word match contains', async () => {
+  const {edges} = await keywordSearch('onboarding laptop budget', {anyWordFallbackBelow: 1})
+  const snippet = edges.find(({nodeId}) => nodeId === onboardingChecklistId)?.snippets[0]
+  expect(snippet).toContain('<b>Laptop</b>')
+})
+
+it('pages through any-word matches without gaps or repeats', async () => {
+  const pages = await Promise.all(
+    [0, 1, 2, 3, 4].map((offset) =>
+      keywordSearch('weekly offsite agenda', {anyWordFallbackBelow: 1, first: 1, offset})
+    )
+  )
+  expect(pages.flatMap(({edges}) => edges.map(({nodeId}) => nodeId))).toEqual([
+    laterLongOffsiteId,
+    earlierShortOffsiteId,
+    laterWeeklySyncId,
+    earlierWeeklySyncId
+  ])
+  expect(pages.map(({pageInfo}) => pageInfo.hasNextPage)).toEqual([true, true, true, false, false])
+})
 
 it('finds a question by its content words', async () => {
   const question = 'what is on the onboarding checklist'
@@ -469,12 +518,14 @@ describe('matches a plain reference query', () => {
     query,
     first,
     teamIds,
-    dateRange
-  }: Omit<PageKeywordSearchParams, 'viewerId'>) => {
-    const prefixQuery = query
-      .split(' ')
-      .map((word) => `${word}:*`)
-      .join(' & ')
+    dateRange,
+    anyWordFallbackBelow = 0,
+    anyWordMinShare = 0
+  }: SearchCase) => {
+    const words = query.split(' ')
+    const everyWordQuery = words.map((word) => `${word}:*`).join(' & ')
+    const anyWordQuery = words.map((word) => `${word}:*`).join(' | ')
+    const minAnyWords = Math.max(1, Math.ceil(anyWordMinShare * words.length))
     const searchText = sql`setweight(to_tsvector('simple', coalesce(p.title, '')), 'A') || setweight(to_tsvector('simple', left(coalesce(p."plaintextContent", ''), 100000)), 'D')`
     const teamFilter = teamIds
       ? sql`exists (select 1 from "PageTeamAccess" t where t."pageId" = p.id and t."teamId" in (${sql.join(teamIds)}))`
@@ -482,21 +533,35 @@ describe('matches a plain reference query', () => {
     const dateFilter = dateRange
       ? sql`p.${sql.ref(dateRange.dateField)} between ${dateRange.startAt} and ${dateRange.endAt}`
       : sql`true`
-    const {rows} = await sql<{id: number; score: number}>`
-      select p.id, ts_rank_cd(${searchText}, q, 0)::float8 as score
-      from "Page" p, to_tsquery('simple', ${prefixQuery}) q
-      where exists (select 1 from "PageAccess" a where a."pageId" = p.id and a."userId" = ${refViewerId})
-        and p."deletedAt" is null
-        and (${searchText}) @@ q
-        and ${teamFilter}
-        and ${dateFilter}
-      order by to_tsvector('simple', coalesce(p.title, '')) @@ q desc, score desc, p."updatedAt" desc, p.id desc
+    const {rows} = await sql<{id: number; score: number; matched: number}>`
+      select id, score, matched from (
+        select p.id, p."updatedAt", m.matched,
+          count(*) filter (where m.matched = ${words.length}) over () as "everyWordCount",
+          to_tsvector('simple', coalesce(p.title, '')) @@ q.match as "titleMatch",
+          ts_rank_cd(${searchText}, q.match, 0)::float8 as score
+        from "Page" p
+          cross join lateral (
+            select count(*)::int as matched from unnest(${words}::text[]) w
+            where (${searchText}) @@ to_tsquery('simple', w || ':*')
+          ) m
+          cross join lateral (
+            select to_tsquery('simple', case when m.matched = ${words.length} then ${everyWordQuery} else ${anyWordQuery} end) as match
+          ) q
+        where exists (select 1 from "PageAccess" a where a."pageId" = p.id and a."userId" = ${refViewerId})
+          and p."deletedAt" is null
+          and m.matched > 0
+          and ${teamFilter}
+          and ${dateFilter}
+      ) ranked
+      where matched = ${words.length} or ("everyWordCount" < ${anyWordFallbackBelow} and matched >= ${minAnyWords})
+      order by matched desc, "titleMatch" desc, score desc, "updatedAt" desc, id desc
       limit ${first}
     `.execute(pg)
-    return rows.map(({id, score}) => ({id, score}))
+    return rows.map(({id, score, matched}) => ({id, score, hasEveryWord: matched === words.length}))
   }
 
-  type SearchCase = Omit<PageKeywordSearchParams, 'viewerId'>
+  type SearchCase = Omit<PageKeywordSearchParams, 'viewerId'> &
+    Partial<Pick<KeywordMatching, 'anyWordFallbackBelow' | 'anyWordMinShare'>>
   const unfiltered = (query: string, first = 100): SearchCase => ({
     query,
     first,
@@ -526,13 +591,44 @@ describe('matches a plain reference query', () => {
           dateField
         }
       }
-    ])
+    ]),
+    ...['retro zebra', 'retro plan', 'standup review sync', 'budget launch roadmap sync'].flatMap(
+      (query): [string, SearchCase][] => [
+        [`${query}, any words below 5`, {...unfiltered(query), anyWordFallbackBelow: 5}],
+        [
+          `${query}, any words always, half of them`,
+          {...unfiltered(query), anyWordFallbackBelow: 1000, anyWordMinShare: 0.5}
+        ]
+      ]
+    ),
+    [
+      'retro plan, two teams, any words always',
+      {
+        ...unfiltered('retro plan'),
+        teamIds: [refTeamIds[0], refTeamIds[2]],
+        anyWordFallbackBelow: 1000
+      }
+    ],
+    [
+      'review sync, updatedAt range, any words always',
+      {
+        ...unfiltered('review sync'),
+        anyWordFallbackBelow: 1000,
+        dateRange: {
+          startAt: new Date('2026-09-10T00:00:00Z'),
+          endAt: new Date('2026-10-10T00:00:00Z'),
+          dateField: 'updatedAt'
+        }
+      }
+    ]
   ]
 
   it.each(cases)('for %s', async (_label, searchCase) => {
     const expected = await referenceSearch(searchCase)
     const {edges} = await getPagesByKeyword({...searchCase, viewerId: refViewerId})
-    expect(edges.map(({nodeId, score}) => ({id: nodeId, score: score.keyword}))).toEqual(expected)
+    expect(edges.map(({nodeId, score}) => ({id: nodeId, score: score.keyword}))).toEqual(
+      expected.map(({id, score}) => ({id, score}))
+    )
     expect(edges.map(({score}) => score.keywordRank)).toEqual(expected.map((_, i) => i + 1))
   })
 
@@ -540,5 +636,6 @@ describe('matches a plain reference query', () => {
     const results = await Promise.all(cases.map(([, searchCase]) => referenceSearch(searchCase)))
     expect(results.filter((rows) => rows.length > 0).length).toBeGreaterThan(cases.length / 2)
     expect(results.some((rows) => rows.length === 5)).toBe(true)
+    expect(results.some((rows) => rows.some(({hasEveryWord}) => !hasEveryWord))).toBe(true)
   })
 })
