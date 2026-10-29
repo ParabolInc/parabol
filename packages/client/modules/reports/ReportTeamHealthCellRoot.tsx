@@ -1,13 +1,11 @@
 import {Suspense} from 'react'
-import reportTeamHealthCellDetailsQuery, {
-  type ReportTeamHealthCellDetailsQuery
-} from '../../__generated__/ReportTeamHealthCellDetailsQuery.graphql'
-import useQueryLoaderNow from '../../hooks/useQueryLoaderNow'
+import type {PreloadedQuery} from 'react-relay'
+import type {ReportTeamHealthCellDetailsQuery} from '../../__generated__/ReportTeamHealthCellDetailsQuery.graphql'
 import ReportTeamHealthCellDetails from './ReportTeamHealthCellDetails'
 import type {ReportTeamHealthSelection} from './reportTeamHealthCells'
 
 interface Props {
-  orgId: string
+  queryRef: PreloadedQuery<ReportTeamHealthCellDetailsQuery> | null | undefined
   selection: ReportTeamHealthSelection
 }
 
@@ -19,12 +17,7 @@ const LOADING = (
   </div>
 )
 
-const ReportTeamHealthCellRoot = ({orgId, selection}: Props) => {
-  const {check, category} = selection.cell
-  const queryRef = useQueryLoaderNow<ReportTeamHealthCellDetailsQuery>(
-    reportTeamHealthCellDetailsQuery,
-    {orgId, meetingId: check.meetingId, categoryId: category.categoryId}
-  )
+const ReportTeamHealthCellRoot = ({queryRef, selection}: Props) => {
   return (
     <Suspense fallback={LOADING}>
       {queryRef ? (

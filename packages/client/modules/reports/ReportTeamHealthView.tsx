@@ -1,9 +1,13 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useMemo, useRef, useState} from 'react'
-import {useFragment} from 'react-relay'
+import {useMemo, useState} from 'react'
+import {useFragment, useQueryLoader} from 'react-relay'
+import reportTeamHealthCellDetailsQuery, {
+  type ReportTeamHealthCellDetailsQuery
+} from '../../__generated__/ReportTeamHealthCellDetailsQuery.graphql'
 import type {ReportTeamHealthView_teamHealth$key} from '../../__generated__/ReportTeamHealthView_teamHealth.graphql'
-import useResizeObserver from '../../hooks/useResizeObserver'
+import useBreakpoint from '../../hooks/useBreakpoint'
 import type {ReportSpec} from '../../shared/reports/reportCatalog'
+import {Breakpoint} from '../../types/constEnums'
 import formatComparison from './formatComparison'
 import ReportTeamHealthDetails from './ReportTeamHealthDetails'
 import ReportTeamHealthLegend from './ReportTeamHealthLegend'
@@ -23,9 +27,6 @@ interface Props {
   teamHealthRef: ReportTeamHealthView_teamHealth$key
   allTeamsRows: ReportTeamHealthAllTeamsRows
 }
-
-// below this, the selected cell opens in a bottom sheet rather than beside the table
-const SIDE_PANEL_MIN_WIDTH = 1024
 
 const ReportTeamHealthView = (props: Props) => {
   const {orgId, spec, rowHeading, rows, rowTotals, teamHealthRef, allTeamsRows} = props
@@ -60,9 +61,10 @@ const ReportTeamHealthView = (props: Props) => {
     [checks]
   )
   const [selectedKey, setSelectedKey] = useState<string | null>(null)
-  const viewRef = useRef<HTMLDivElement>(null)
-  const [viewWidth, setViewWidth] = useState(0)
-  useResizeObserver(([entry]) => setViewWidth(entry!.contentRect.width), viewRef)
+  const [cellQueryRef, loadCellQuery] = useQueryLoader<ReportTeamHealthCellDetailsQuery>(
+    reportTeamHealthCellDetailsQuery
+  )
+  const isDrawer = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const dimensions = spec.breakdown.map(({dimension}) => dimension)
   const {columns, rows: gridRows} = toReportHeatmapGrid(dimensions, null, rows, rowTotals)
   const {groups, allTeams, emptyNames, isTeamRows} = toTeamHealthTable(
@@ -83,33 +85,43 @@ const ReportTeamHealthView = (props: Props) => {
   const selection =
     selectedCell && teamName && categoryName ? {cell: selectedCell, teamName, categoryName} : null
   const isPreviousCheck = spec.compareTo === 'PREVIOUS_CHECK'
+  const onSelect = (key: string) => {
+    const cell = shownCells.find((shownCell) => shownCell.key === key)
+    if (key === selectedKey || !cell) {
+      setSelectedKey(null)
+      return
+    }
+    loadCellQuery(
+      {orgId, meetingId: cell.check.meetingId, categoryId: cell.category.categoryId},
+      {fetchPolicy: 'store-or-network'}
+    )
+    setSelectedKey(key)
+  }
   return (
-    <div ref={viewRef} className='flex items-start gap-5'>
-      <div className='@container flex min-w-0 flex-1 flex-col gap-3'>
-        <ReportTeamHealthSummary shownCells={shownCells} hasTeamRows={isTeamRows} />
-        <ReportTeamHealthTable
-          columns={columns}
-          rowHeading={rowHeading}
-          hasAnsweredColumn={isTeamRows}
-          allTeams={allTeams}
-          groups={groups}
-          checkByTeamId={checkByTeamId}
-          cells={cells}
-          isPreviousCheck={isPreviousCheck}
-          selectedKey={selection && selectedKey}
-          onSelect={(key) => setSelectedKey(key === selectedKey ? null : key)}
-        />
-        <ReportTeamHealthLegend
-          comparison={spec.compareTo ? formatComparison(spec.compareTo) : null}
-          isPreviousCheck={isPreviousCheck}
-          emptyNames={emptyNames}
-          isTeamRows={isTeamRows}
-        />
-      </div>
+    <div className='@container flex flex-col gap-3'>
+      <ReportTeamHealthSummary shownCells={shownCells} hasTeamRows={isTeamRows} />
+      <ReportTeamHealthTable
+        columns={columns}
+        rowHeading={rowHeading}
+        hasAnsweredColumn={isTeamRows}
+        allTeams={allTeams}
+        groups={groups}
+        checkByTeamId={checkByTeamId}
+        cells={cells}
+        isPreviousCheck={isPreviousCheck}
+        selectedKey={selection && selectedKey}
+        onSelect={onSelect}
+      />
+      <ReportTeamHealthLegend
+        comparison={spec.compareTo ? formatComparison(spec.compareTo) : null}
+        isPreviousCheck={isPreviousCheck}
+        emptyNames={emptyNames}
+        isTeamRows={isTeamRows}
+      />
       <ReportTeamHealthDetails
-        orgId={orgId}
         selection={selection}
-        isSidePanel={viewWidth >= SIDE_PANEL_MIN_WIDTH}
+        queryRef={cellQueryRef}
+        isDrawer={isDrawer}
         onClose={() => setSelectedKey(null)}
       />
     </div>

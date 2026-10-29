@@ -1,41 +1,62 @@
-import {useRef} from 'react'
+import {useContext, useRef} from 'react'
+import {createPortal} from 'react-dom'
+import type {PreloadedQuery} from 'react-relay'
+import type {ReportTeamHealthCellDetailsQuery} from '../../__generated__/ReportTeamHealthCellDetailsQuery.graphql'
+import ResponsiveDashSidebar from '../../components/ResponsiveDashSidebar'
 import TeamPromptMobileSheet from '../../components/TeamPrompt/mobile/TeamPromptMobileSheet'
+import ReportDrawerSlotContext from './ReportDrawerSlotContext'
 import ReportTeamHealthAside from './ReportTeamHealthAside'
 import ReportTeamHealthCellRoot from './ReportTeamHealthCellRoot'
 import type {ReportTeamHealthSelection} from './reportTeamHealthCells'
 import {formatAnswered, formatCheckDate, toOrdinal} from './reportTeamHealthWords'
 
 interface Props {
-  orgId: string
   selection: ReportTeamHealthSelection | null
-  isSidePanel: boolean
+  queryRef: PreloadedQuery<ReportTeamHealthCellDetailsQuery> | null | undefined
+  isDrawer: boolean
   onClose: () => void
 }
 
-// The selected cell beside the table when there's room, or in a bottom sheet. The sheet keeps showing the cell it
-// had while it slides away
+const DRAWER_WIDTH = 360
+
+// The selected cell in a right drawer that pushes the page over when there's room, or in a bottom sheet. Both keep
+// showing the cell they had while they slide away
 const ReportTeamHealthDetails = (props: Props) => {
-  const {orgId, selection, isSidePanel, onClose} = props
+  const {selection, queryRef, isDrawer, onClose} = props
+  const drawerSlot = useContext(ReportDrawerSlotContext)
   const lastSelectionRef = useRef(selection)
   if (selection) lastSelectionRef.current = selection
   const shownSelection = selection ?? lastSelectionRef.current
-  if (!shownSelection || (isSidePanel && !selection)) return null
-  const {check} = shownSelection.cell
-  const meta = `${toOrdinal(check.checkNumber)} check · ${formatCheckDate(check.endedAt)} · ${formatAnswered(check)} answered`
-  const body = (
+  const meta =
+    shownSelection &&
+    `${toOrdinal(shownSelection.cell.check.checkNumber)} check · ${formatCheckDate(shownSelection.cell.check.endedAt)} · ${formatAnswered(shownSelection.cell.check)} answered`
+  const body = shownSelection && (
     <ReportTeamHealthCellRoot
       key={shownSelection.cell.key}
-      orgId={orgId}
+      queryRef={queryRef}
       selection={shownSelection}
     />
   )
-  if (isSidePanel) {
-    return (
-      <ReportTeamHealthAside selection={shownSelection} meta={meta} onClose={onClose}>
-        {body}
-      </ReportTeamHealthAside>
+  if (isDrawer) {
+    if (!drawerSlot) return null
+    return createPortal(
+      <ResponsiveDashSidebar
+        isOpen={!!selection}
+        isRightDrawer
+        isDesktop
+        onToggle={onClose}
+        sidebarWidth={DRAWER_WIDTH}
+      >
+        {shownSelection && meta && (
+          <ReportTeamHealthAside selection={shownSelection} meta={meta} onClose={onClose}>
+            {body}
+          </ReportTeamHealthAside>
+        )}
+      </ResponsiveDashSidebar>,
+      drawerSlot
     )
   }
+  if (!shownSelection) return null
   return (
     <TeamPromptMobileSheet
       isOpen={!!selection}

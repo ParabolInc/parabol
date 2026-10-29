@@ -3,6 +3,7 @@ import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {ReportPageQuery} from '../../__generated__/ReportPageQuery.graphql'
 import useDocumentTitle from '../../hooks/useDocumentTitle'
 import type {ReportSpec} from '../../shared/reports/reportCatalog'
+import ReportDrawerLayout from './ReportDrawerLayout'
 import ReportPageHeader from './ReportPageHeader'
 import ReportPanel from './ReportPanel'
 import type {ReportPagePeriod} from './reportPeriodParam'
@@ -61,26 +62,28 @@ const ReportPage = ({
   const name = title ?? describeReportSpec(spec, levels)
   useDocumentTitle(`${name} | Reports | Parabol`, 'Reports')
   return (
-    <div className='mx-auto flex w-full max-w-[1360px] flex-col gap-3 px-4 pt-4 pb-10 sm:px-8'>
-      <ReportPageHeader
-        orgId={orgId}
-        organizationRef={organization}
-        spec={spec}
-        period={period}
-        onPeriodChange={onPeriodChange}
-      />
-      <ReportPanel
-        organizationRef={organization}
-        orgId={orgId}
-        spec={spec}
-        resultSpec={resultSpec}
-        name={name}
-        period={period}
-        reportQuestionId={reportQuestionId}
-        isPageHeading
-        onSpecChange={(nextSpec) => onSpecChange(nextSpec, describeReportSpec(nextSpec, levels))}
-      />
-    </div>
+    <ReportDrawerLayout>
+      <div className='mx-auto flex w-full max-w-[1360px] flex-col gap-3 px-4 pt-4 pb-10 sm:px-8'>
+        <ReportPageHeader
+          orgId={orgId}
+          organizationRef={organization}
+          spec={spec}
+          period={period}
+          onPeriodChange={onPeriodChange}
+        />
+        <ReportPanel
+          organizationRef={organization}
+          orgId={orgId}
+          spec={spec}
+          resultSpec={resultSpec}
+          name={name}
+          period={period}
+          reportQuestionId={reportQuestionId}
+          isPageHeading
+          onSpecChange={(nextSpec) => onSpecChange(nextSpec, describeReportSpec(nextSpec, levels))}
+        />
+      </div>
+    </ReportDrawerLayout>
   )
 }
 
