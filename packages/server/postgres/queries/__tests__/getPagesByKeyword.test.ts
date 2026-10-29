@@ -246,10 +246,18 @@ it('puts title matches before body-only matches', async () =>
   expect(await ids('standup')).toEqual([standupNotesId, meetingSummariesId]))
 
 it('matches every word as a prefix', async () =>
-  expect(await ids('onboard check')).toEqual([onboardingChecklistId]))
+  expect(await ids('onboard check', {anyWordFallbackBelow: 0})).toEqual([onboardingChecklistId]))
 
 it('requires every word to match', async () =>
   expect(await ids('onboarding budget', {anyWordFallbackBelow: 0})).toEqual([]))
+
+it('drops stop words and falls back to pages with some of the words by default', async () =>
+  expect(await ids('the weekly offsite agenda')).toEqual([
+    laterLongOffsiteId,
+    earlierShortOffsiteId,
+    laterWeeklySyncId,
+    earlierWeeklySyncId
+  ]))
 
 it('falls back to pages with some of the words, most words first', async () =>
   expect(await ids('weekly offsite agenda', {anyWordFallbackBelow: 1})).toEqual([
@@ -297,8 +305,9 @@ it('pages through any-word matches without gaps or repeats', async () => {
 
 it('finds a question by its content words', async () => {
   const question = 'what is on the onboarding checklist'
-  expect(await ids(question, {dropStopWords: true})).toEqual([onboardingChecklistId])
-  expect(await ids(question, {dropStopWords: false})).toEqual([])
+  const everyWord = {anyWordFallbackBelow: 0}
+  expect(await ids(question, {...everyWord, dropStopWords: true})).toEqual([onboardingChecklistId])
+  expect(await ids(question, {...everyWord, dropStopWords: false})).toEqual([])
 })
 
 it('keeps finding pages while a stop word is typed', async () =>
@@ -390,7 +399,10 @@ it('pages through a longer keyword ranking one page at a time', async () => {
 })
 
 it('breaks exact ties by page id so the order is stable', async () =>
-  expect(await ids('tied page')).toEqual([secondTiedPageId, firstTiedPageId]))
+  expect(await ids('tied page', {anyWordFallbackBelow: 0})).toEqual([
+    secondTiedPageId,
+    firstTiedPageId
+  ]))
 
 it('limits results to pages shared with the requested teams', async () =>
   expect(await ids('standup', {teamIds: [platformTeamId]})).toEqual([standupNotesId]))
@@ -567,7 +579,9 @@ describe('matches a plain reference query', () => {
     first,
     offset: 0,
     teamIds: undefined,
-    dateRange: null
+    dateRange: null,
+    anyWordFallbackBelow: 0,
+    anyWordMinShare: 0
   })
   const cases: [string, SearchCase][] = [
     ...[...vocabulary, 'ret', 'pla', 'retro plan', 'standup review sync', 'budget launch'].map(

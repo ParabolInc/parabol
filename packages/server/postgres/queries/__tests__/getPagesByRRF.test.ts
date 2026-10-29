@@ -243,12 +243,20 @@ it('ranks by vector similarity when alpha is 1', async () =>
 
 it('passes stop-word dropping to the keyword arm', async () => {
   const query = 'what is the roadmap'
-  const {edges} = await fused(0.5, {query, dropStopWords: true})
+  const everyWord = {anyWordFallbackBelow: 0}
+  const {edges} = await fused(0.5, {...everyWord, query, dropStopWords: true})
   expect(edges.find(({nodeId}) => nodeId === keywordOnlyId)?.score.keywordRank).toEqual(
     expect.any(Number)
   )
-  const withStopWords = await fused(0.5, {query, dropStopWords: false})
+  const withStopWords = await fused(0.5, {...everyWord, query, dropStopWords: false})
   expect(withStopWords.edges.every(({score}) => score.keywordRank === null)).toBe(true)
+})
+
+it('drops stop words and falls back when no page has every word by default', async () => {
+  const {edges} = await fused(0.5, {query: 'what is the roadmap planning'})
+  expect(edges.find(({nodeId}) => nodeId === vectorOnlyId)?.score.keywordRank).toEqual(
+    expect.any(Number)
+  )
 })
 
 it('gives pages with some of the words a keyword rank when the fallback applies', async () => {

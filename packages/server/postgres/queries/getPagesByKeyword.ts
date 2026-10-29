@@ -27,8 +27,8 @@ export interface KeywordMatching {
 }
 
 export const QUICK_KEYWORD_MATCHING: KeywordMatching = {
-  dropStopWords: false,
-  anyWordFallbackBelow: 0,
+  dropStopWords: true,
+  anyWordFallbackBelow: 20,
   anyWordMinShare: 0
 }
 
