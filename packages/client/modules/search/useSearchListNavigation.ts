@@ -1,8 +1,8 @@
-import {type Ref, useImperativeHandle} from 'react'
+import {type Ref, useImperativeHandle, useLayoutEffect} from 'react'
 import {useNavigate} from 'react-router'
 import {getPageSlug} from '../../tiptap/getPageSlug'
 import {GQLID} from '../../utils/GQLID'
-import {getSelectedIndex} from './getSelectedIndex'
+import {getSelection} from './getSelection'
 import {ResultsListRefHandler} from './SearchDialogContent'
 
 export const useSearchListNavigation = (
@@ -18,13 +18,17 @@ export const useSearchListNavigation = (
   setSelectedId: (id: string | null) => void
 ) => {
   const navigate = useNavigate()
-  const selectedIndex = getSelectedIndex(
+  const {index: selectedIndex, id: shownId} = getSelection(
     edges.map(({node}) => node.id),
     selectedId
   )
   const setSelectedIndex = (index: number) => {
     setSelectedId(edges[index]?.node.id ?? null)
   }
+
+  useLayoutEffect(() => {
+    if (shownId !== selectedId) setSelectedId(shownId)
+  }, [shownId, selectedId])
 
   useImperativeHandle(resultsListRef, () => ({
     onKeyDown: (e: React.KeyboardEvent) => {
