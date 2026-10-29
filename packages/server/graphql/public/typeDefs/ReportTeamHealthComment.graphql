@@ -1,0 +1,14 @@
+"""
+A comment left in a Team Health check, for a report's side panel
+"""
+type ReportTeamHealthComment {
+  """
+  The comment as the team reads it: an anonymous comment only as AI reworded it, a signed one as written
+  """
+  text: String!
+
+  """
+  Who wrote it. Null for an anonymous comment
+  """
+  author: User
+}

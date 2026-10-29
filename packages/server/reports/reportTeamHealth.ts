@@ -24,7 +24,10 @@ const readCheckCategories = async (checkId: string, dataLoader: DataLoaderWorker
   const respondentIds = new Set(
     responses.flatMap(({userId, score}) => (score === null ? [] : [userId]))
   )
-  const categories = new Map<number, {question: string; scores: number[]; comments: string[]}>()
+  const categories = new Map<
+    number,
+    {question: string; scores: number[]; comments: {text: string; authorId: string | null}[]}
+  >()
   for (const response of responses) {
     const question = questionById.get(response.questionId)
     if (!question) continue
@@ -34,8 +37,9 @@ const readCheckCategories = async (checkId: string, dataLoader: DataLoaderWorker
       comments: []
     }
     if (response.score !== null) category.scores.push(response.score)
-    const comment = getTeamHealthDisplayComment(response)
-    if (comment) category.comments.push(comment)
+    const text = getTeamHealthDisplayComment(response)
+    if (text)
+      category.comments.push({text, authorId: response.isAnonymous ? null : response.userId})
     categories.set(question.categoryId, category)
   }
   return {
@@ -131,7 +135,7 @@ export const readReportTeamHealth = async (
 }
 
 // One category of one check, for the report's side panel. Comments go longest first, so their order says nothing
-// about who answered when
+// about who answered when, and only a signed comment carries its author
 export const readReportTeamHealthCell = async (
   meetingId: string,
   categoryKey: string,
@@ -151,13 +155,21 @@ export const readReportTeamHealthCell = async (
   const category = check.categories.get(categoryId)
   if (check.isHidden || !category || category.scores.length === 0) return null
   const summary = summaries.find((row) => row.categoryId === categoryId)
+  const comments = await Promise.all(
+    [...category.comments]
+      .sort((a, b) => b.text.length - a.text.length)
+      .map(async ({text, authorId}) => ({
+        text,
+        author: authorId ? await dataLoader.get('users').loadNonNull(authorId) : null
+      }))
+  )
   return {
     question: category.question,
     summary: summary?.summary ?? null,
     spreadScores: canShowRespondentDetails(category.scores.length)
       ? [...category.scores].sort((a, b) => a - b)
       : null,
-    comments: [...category.comments].sort((a, b) => b.length - a.length),
+    comments,
     scoreHistory: recentChecks
       .flatMap(({endedAt}, idx) => {
         const score = averageOf(recentCategories[idx]!, categoryId)

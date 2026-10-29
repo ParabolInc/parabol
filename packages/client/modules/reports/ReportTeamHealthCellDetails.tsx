@@ -20,7 +20,14 @@ const query = graphql`
           question
           summary
           spreadScores
-          comments
+          comments {
+            text
+            author {
+              id
+              preferredName
+              picture
+            }
+          }
           scoreHistory {
             endedAt
             score

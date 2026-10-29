@@ -1,5 +1,10 @@
+import ReportTeamHealthComment from './ReportTeamHealthComment'
+
 interface Props {
-  comments: readonly string[]
+  comments: readonly {
+    text: string
+    author: {preferredName: string; picture: string} | null | undefined
+  }[]
   respondentCount: number
 }
 
@@ -10,13 +15,11 @@ const ReportTeamHealthComments = ({comments, respondentCount}: Props) => (
         ? 'No comments'
         : `${comments.length} of ${Math.max(respondentCount, comments.length)} people commented`}
     </h3>
-    {comments.map((comment, idx) => (
-      <blockquote key={idx} className='m-0 rounded-md bg-surface-raised px-3 py-2.5 text-sm'>
-        “{comment}”
-      </blockquote>
+    {comments.map(({text, author}, idx) => (
+      <ReportTeamHealthComment key={idx} text={text} author={author ?? null} />
     ))}
     <span className='text-fg-muted text-xs'>
-      Reports never show who wrote a comment. Anonymous comments were reworded by AI.
+      Anonymous comments were reworded by AI and show no name.
     </span>
   </section>
 )

@@ -18,10 +18,9 @@ type ReportTeamHealthCell {
   spreadScores: [Int!]
 
   """
-  The comments people left, longest first and never with a name. An anonymous comment only appears as AI
-  reworded it
+  The comments people left, longest first. A signed comment names its author
   """
-  comments: [String!]!
+  comments: [ReportTeamHealthComment!]!
 
   """
   The category's score in this check and up to 2 before it, oldest first, leaving out checks too few people
