@@ -11,11 +11,7 @@ import {
 } from '../../graphql/public/fields/search'
 import {RRF_K} from '../../postgres/expressions'
 import getKysely from '../../postgres/getKysely'
-import {
-  getPagesByRRF,
-  VECTOR_MIN_PAGE_CHARS,
-  VECTOR_ONLY_LIMIT
-} from '../../postgres/queries/getPagesByRRF'
+import {getPagesByRRF, VECTOR_MIN_PAGE_BYTES} from '../../postgres/queries/getPagesByRRF'
 import type {User} from '../../postgres/types'
 import {Logger} from '../../utils/Logger'
 import {HEAVY_CORPUS} from './heavyCorpus/generateHeavyCorpus'
@@ -32,7 +28,6 @@ import {
 } from './metrics'
 import parseCounts from './parseCounts'
 import parseFractions from './parseFractions'
-import parseLimiters, {type Limiter} from './parseLimiters'
 import {type EvalCorpus, FIXTURES_CORPUS, seedEvalPages} from './seedEvalPages'
 
 interface EmbeddingCall {
@@ -82,15 +77,10 @@ type SummarizedMetrics = ReturnType<typeof summarizeWithErrors>
 interface SweepConfig {
   alpha: number
   floor: number
-  minChars: number
-  limiter: Limiter
+  minBytes: number
 }
 
-interface SweepResult {
-  alpha: number
-  floor: number
-  minChars: number
-  limiter: string
+interface SweepResult extends SweepConfig {
   overall: SummarizedMetrics
   byCategory: Record<string, SummarizedMetrics>
   perQuery: QueryResult[]
@@ -123,6 +113,7 @@ const DEFAULT_SWEEP_FLOORS = '0.3,0.35,0.4,0.45,0.5'
 const SWEEP_TABLE_METRICS = [
   'nDCG10',
   'recall5',
+  'recall20',
   'mrr',
   'zeroResultRate',
   'junkAt5',
@@ -151,20 +142,12 @@ const parseLabel = (value: string) => {
 const parseSweepConfigs = (): SweepConfig[] => {
   const alphas = parseFractions('EVAL_ALPHAS', process.env.EVAL_ALPHAS ?? DEFAULT_SWEEP_ALPHAS)
   const floors = parseFractions('EVAL_FLOORS', process.env.EVAL_FLOORS ?? DEFAULT_SWEEP_FLOORS)
-  const minCharsList = parseCounts(
-    'EVAL_MIN_CHARS',
-    process.env.EVAL_MIN_CHARS ?? String(VECTOR_MIN_PAGE_CHARS)
-  )
-  const limiters = parseLimiters(
-    'EVAL_LIMITERS',
-    process.env.EVAL_LIMITERS ?? `cap:${VECTOR_ONLY_LIMIT}`
+  const minBytesList = parseCounts(
+    'EVAL_MIN_BYTES',
+    process.env.EVAL_MIN_BYTES ?? String(VECTOR_MIN_PAGE_BYTES)
   )
   return alphas.flatMap((alpha) =>
-    floors.flatMap((floor) =>
-      minCharsList.flatMap((minChars) =>
-        limiters.map((limiter) => ({alpha, floor, minChars, limiter}))
-      )
-    )
+    floors.flatMap((floor) => minBytesList.map((minBytes) => ({alpha, floor, minBytes})))
   )
 }
 
@@ -271,6 +254,7 @@ const toQueryResult = (
   answerable: grades.size > 0,
   nDCG10: ndcgAt(10, resultIds, grades),
   recall5: recallAt(5, resultIds, grades),
+  recall20: recallAt(20, resultIds, grades),
   junkAt5: junkAt(5, resultIds, grades),
   reciprocalRank: reciprocalRank(resultIds, grades),
   resultIds,
@@ -339,7 +323,7 @@ const embedQueryVector = async (query: string) => {
 const scoreSweepQuery = async (
   gradedQuery: GradedQuery,
   queryVector: Float32Array | Error,
-  {alpha, floor, minChars, limiter}: SweepConfig,
+  {alpha, floor, minBytes}: SweepConfig,
   fixtureKeyByPageId: Map<number, string>,
   viewerId: string
 ) => {
@@ -362,8 +346,7 @@ const scoreSweepQuery = async (
       teamIds: undefined,
       dateRange: null,
       vectorFloor: floor,
-      vectorMinChars: minChars,
-      vectorOnlyLimit: limiter.vectorOnlyLimit ?? null
+      vectorMinBytes: minBytes
     })
     resultIds = toResultIds(edges.map(({nodeId}) => nodeId))
   } catch (e) {
@@ -390,11 +373,10 @@ const scoreSweep = async (
     }
   }
   return sweeps.map(
-    ({alpha, floor, minChars, limiter, perQuery}): SweepResult => ({
+    ({alpha, floor, minBytes, perQuery}): SweepResult => ({
       alpha,
       floor,
-      minChars,
-      limiter: limiter.token,
+      minBytes,
       overall: summarizeWithErrors(perQuery),
       byCategory: summarizeByCategory(perQuery),
       perQuery
@@ -402,11 +384,10 @@ const scoreSweep = async (
   )
 }
 
-const toSweepRow = ({alpha, floor, minChars, limiter, overall}: SweepResult) => ({
+const toSweepRow = ({alpha, floor, minBytes, overall}: SweepResult) => ({
   alpha,
   floor,
-  minChars,
-  limiter,
+  minBytes,
   ...Object.fromEntries(
     SWEEP_TABLE_METRICS.map((metric) => [metric, roundForTable(overall[metric])])
   )
@@ -441,12 +422,12 @@ const runSweep = async ({
       .sort((first, second) => second.overall.nDCG10 - first.overall.nDCG10)
       .map(toSweepRow)
   )
-  const failed = sweepResults.flatMap(({alpha, floor, minChars, limiter, perQuery}) =>
+  const failed = sweepResults.flatMap(({alpha, floor, minBytes, perQuery}) =>
     perQuery
       .filter(({error}) => error !== undefined)
       .map(({query, error}) => ({
         query,
-        config: `alpha ${alpha}, floor ${floor}, min chars ${minChars}, limiter ${limiter}`,
+        config: `alpha ${alpha}, floor ${floor}, min bytes ${minBytes}`,
         error
       }))
   )

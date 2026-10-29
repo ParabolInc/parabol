@@ -40,9 +40,7 @@ let olderTwinId: number
 let newerTwinId: number
 let nearEmptyId: number
 let nearEmptyKeywordId: number
-let strongId: number
-let closeId: number
-let weakId: number
+let shortJapaneseId: number
 
 const makeUser = (id: string, preferredName: string) => ({
   id,
@@ -168,13 +166,14 @@ beforeAll(async () => {
     plaintextContent: 'Remember the thing.'
   })
   nearEmptyKeywordId = await insertPage('Roadmap', {userId: junkViewerId, plaintextContent: 'tbd'})
-  strongId = await insertPage('Strong match', {userId: junkViewerId})
-  closeId = await insertPage('Close match', {userId: junkViewerId})
-  weakId = await insertPage('Weak match', {userId: junkViewerId})
+  shortJapaneseId = await insertPage('会議のメモ', {
+    userId: junkViewerId,
+    plaintextContent: '会議のメモ'.repeat(14)
+  })
   await pg
     .insertInto('PageAccess')
     .values(
-      [nearEmptyId, nearEmptyKeywordId, strongId, closeId, weakId].map((pageId) => ({
+      [nearEmptyId, nearEmptyKeywordId, shortJapaneseId].map((pageId) => ({
         userId: junkViewerId,
         pageId,
         role: 'owner' as const
@@ -183,9 +182,7 @@ beforeAll(async () => {
     .execute()
   await insertChunks(nearEmptyId, [0.95])
   await insertChunks(nearEmptyKeywordId, [0.96])
-  await insertChunks(strongId, [0.9])
-  await insertChunks(closeId, [0.85])
-  await insertChunks(weakId, [0.7])
+  await insertChunks(shortJapaneseId, [0.8])
 })
 
 afterAll(async () => {
@@ -339,18 +336,17 @@ it('pages past the first 100 keyword matches', async () => {
   expect(pageInfo.hasNextPage).toBe(false)
 })
 
-it('keeps 10 vector-only pages by default', async () => {
+it('returns every vector match when no page matches the words', async () => {
   const {edges, pageInfo} = await fused(0.5, {query: '!!', viewerId: bulkViewerId})
-  expect(edges).toHaveLength(10)
-  expect(pageInfo.hasNextPage).toBe(false)
+  expect(edges).toHaveLength(20)
+  expect(pageInfo.hasNextPage).toBe(true)
 })
 
-it('pages past the first 100 vector matches without a vector-only limit', async () => {
+it('pages past the first 100 vector matches', async () => {
   const {edges, pageInfo} = await fused(0.5, {
     query: '!!',
     viewerId: bulkViewerId,
-    offset: BULK_PAGE_COUNT - 1,
-    vectorOnlyLimit: null
+    offset: BULK_PAGE_COUNT - 1
   })
   expect(edges).toHaveLength(1)
   expect(edges[0]!.score.vectorRank).toBe(BULK_PAGE_COUNT)
@@ -375,8 +371,12 @@ const resultIds = ({edges}: Awaited<ReturnType<typeof getPagesByRRF>>) =>
   edges.map(({nodeId}) => nodeId)
 
 it('leaves near-empty pages out of the vector arm', async () => {
-  expect(resultIds(await junkSearch({vectorMinChars: 0}))).toContain(nearEmptyId)
+  expect(resultIds(await junkSearch({vectorMinBytes: 0}))).toContain(nearEmptyId)
   expect(resultIds(await junkSearch())).not.toContain(nearEmptyId)
+})
+
+it('measures the minimum length in bytes, so short Japanese notes keep their vector matches', async () => {
+  expect(resultIds(await junkSearch())).toContain(shortJapaneseId)
 })
 
 it('still finds a near-empty page by its keywords', async () => {
@@ -384,21 +384,4 @@ it('still finds a near-empty page by its keywords', async () => {
   const edge = edges.find(({nodeId}) => nodeId === nearEmptyKeywordId)
   expect(edge?.score.keywordRank).toBe(1)
   expect(edge?.score.vectorRank).toBeNull()
-})
-
-it('keeps at most the limit of vector-only pages', async () => {
-  const {edges} = await junkSearch({vectorOnlyLimit: 1})
-  expect(edges.map(({nodeId}) => nodeId)).toContain(nearEmptyKeywordId)
-  expect(edges.filter(({score}) => score.keywordRank === null)).toHaveLength(1)
-})
-
-it('pages through a vector-only limit without gaps or repeats', async () => {
-  const walked: (string | number)[] = []
-  for (let offset = 0; offset < 10; offset++) {
-    const {edges} = await junkSearch({vectorOnlyLimit: 2, first: 1, offset})
-    walked.push(...edges.map(({nodeId}) => nodeId))
-  }
-  const {edges: all} = await junkSearch({vectorOnlyLimit: 2})
-  expect(walked).toEqual(all.map(({nodeId}) => nodeId))
-  expect(all.filter(({score}) => score.keywordRank === null)).toHaveLength(2)
 })

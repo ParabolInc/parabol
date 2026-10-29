@@ -11,8 +11,7 @@ import {
 import {getPageSearchPageInfo} from './pageSearchCursor'
 
 export const VECTOR_SIMILARITY_FLOOR = 0.4
-export const VECTOR_MIN_PAGE_CHARS = 200
-export const VECTOR_ONLY_LIMIT = 10
+export const VECTOR_MIN_PAGE_BYTES = 200
 
 export const getPagesByRRF = async ({
   query,
@@ -25,15 +24,13 @@ export const getPagesByRRF = async ({
   teamIds,
   dateRange,
   vectorFloor = VECTOR_SIMILARITY_FLOOR,
-  vectorMinChars = VECTOR_MIN_PAGE_CHARS,
-  vectorOnlyLimit = VECTOR_ONLY_LIMIT
+  vectorMinBytes = VECTOR_MIN_PAGE_BYTES
 }: PageKeywordSearchParams & {
   queryVector: Float32Array
   alpha: number
   k: number
   vectorFloor?: number
-  vectorMinChars?: number
-  vectorOnlyLimit?: number | null
+  vectorMinBytes?: number
 }): Promise<PageSearchResults> => {
   const tableName = getEmbeddingsPagesTableName(activeEmbeddingModelId)
   if (!tableName) {
@@ -45,11 +42,11 @@ export const getPagesByRRF = async ({
         .selectFrom('ViewerPages as vp')
         .innerJoin(`${tableName} as c`, 'c.pageId', 'vp.id')
         .innerJoin('Page as p', 'p.id', 'vp.id')
-        .$if(vectorMinChars > 0, (qb) =>
+        .$if(vectorMinBytes > 0, (qb) =>
           qb.where(
-            sql<number>`char_length(coalesce(${sql.ref('p.plaintextContent')}, ''))`,
+            sql<number>`octet_length(${sql.ref('p.plaintextContent')})`,
             '>=',
-            vectorMinChars
+            vectorMinBytes
           )
         )
         .select((eb) => [
@@ -74,7 +71,7 @@ export const getPagesByRRF = async ({
           )
         ])
     )
-    .with('FusedScores', (qb) =>
+    .with('Fused', (qb) =>
       qb
         .selectFrom('KeywordRanked as kr')
         .fullJoin('VectorRanked as vr', 'vr.id', 'kr.id')
@@ -87,34 +84,6 @@ export const getPagesByRRF = async ({
           'vr.vectorRank',
           RRF(eb, 'vr.vectorRank', 'kr.keywordRank', alpha, k).as('combined')
         ])
-    )
-    .with('FusedRanked', (qb) =>
-      qb
-        .selectFrom('FusedScores')
-        .selectAll()
-        .select((eb) =>
-          sql<number>`row_number() over (partition by ${eb.ref('keywordRank')} is null order by ${eb.ref('combined')} desc, ${eb.ref('updatedAt')} desc, ${eb.ref('id')} desc)::int`.as(
-            'armRank'
-          )
-        )
-    )
-    .with('Fused', (qb) =>
-      qb
-        .selectFrom('FusedRanked')
-        .select([
-          'id',
-          'updatedAt',
-          'keywordScore',
-          'keywordRank',
-          'vectorScore',
-          'vectorRank',
-          'combined'
-        ])
-        .$if(vectorOnlyLimit !== null, (qb) =>
-          qb.where((eb) =>
-            eb.or([eb('keywordRank', 'is not', null), eb('armRank', '<=', vectorOnlyLimit!)])
-          )
-        )
         .orderBy('combined', 'desc')
         .orderBy('updatedAt', 'desc')
         .orderBy('id', 'desc')
