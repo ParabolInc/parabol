@@ -34,7 +34,11 @@
     "category": "title",
     "relevant": {"beacon-standup-2026-08-27": 3, "beacon-meeting-summaries": 1}
   },
-  {"query": "Atlas Retro #6", "category": "title", "relevant": {"atlas-retro-6": 3, "atlas-meeting-summaries": 1}},
+  {
+    "query": "Atlas Retro #6",
+    "category": "title",
+    "relevant": {"atlas-retro-6": 3, "atlas-meeting-summaries": 1}
+  },
   {"query": "postg failo", "category": "prefix", "relevant": {"doc-postgres-failover-runbook": 3}},
   {
     "query": "analyt vendor eval",
