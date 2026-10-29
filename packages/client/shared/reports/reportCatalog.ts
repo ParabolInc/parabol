@@ -21,7 +21,7 @@ export type ReportDimension = ReportTimeDimension | ReportCategoryDimension
 
 export const REPORT_MEASURE_KEYS = [
   'ACTIVE_USERS',
-  'MEMBERS',
+  'USERS',
   'ACTIVE_SHARE',
   'LAST_SEEN',
   'MEETINGS',
@@ -120,16 +120,16 @@ export const REPORT_MEASURES = {
     description: 'People who used Parabol in the 30 days before each point',
     dimensions: [...OVER_TIME, 'TEAM', 'TEAM_LEVEL']
   },
-  MEMBERS: {
+  USERS: {
     kind: 'reading',
-    label: 'Members',
+    label: 'Users',
     description: 'People on the teams, or in the organization, at the end of each step',
     dimensions: [...OVER_TIME, 'TEAM', 'TEAM_LEVEL']
   },
   ACTIVE_SHARE: {
     kind: 'share',
     label: 'Active share',
-    description: 'The percentage of members who used Parabol in the 30 days before each point',
+    description: 'The percentage of users who used Parabol in the 30 days before each point',
     dimensions: [...OVER_TIME, 'TEAM', 'TEAM_LEVEL']
   },
   LAST_SEEN: {

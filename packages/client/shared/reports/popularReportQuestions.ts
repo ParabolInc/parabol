@@ -36,7 +36,7 @@ export const POPULAR_REPORT_QUESTIONS: readonly PopularReportQuestion[] = [
     key: 'activeUsersByTeam',
     subject: 'users',
     title: 'Active users by team',
-    question: 'Which teams have the most active members?',
+    question: 'Which teams have the most active users?',
     description: 'People active in the last 30 days, by team',
     spec: {
       measures: ['ACTIVE_USERS'],
@@ -54,7 +54,7 @@ export const POPULAR_REPORT_QUESTIONS: readonly PopularReportQuestion[] = [
     subject: 'users',
     title: 'Active share by team',
     question: 'Which teams have the lowest adoption?',
-    description: 'The percentage of each team’s members active in the last 30 days',
+    description: 'The percentage of each team’s users active in the last 30 days',
     spec: {
       measures: ['ACTIVE_SHARE'],
       breakdown: [{dimension: 'TEAM'}],
@@ -70,7 +70,7 @@ export const POPULAR_REPORT_QUESTIONS: readonly PopularReportQuestion[] = [
     subject: 'users',
     title: 'People by last seen',
     question: 'Who hasn’t been seen in 30 days?',
-    description: 'Members who haven’t used Parabol in 30 days',
+    description: 'Users who haven’t used Parabol in 30 days',
     spec: {
       measures: ['LAST_SEEN'],
       breakdown: [{dimension: 'USER'}],

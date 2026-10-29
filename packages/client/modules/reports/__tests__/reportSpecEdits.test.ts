@@ -37,7 +37,7 @@ test('a measure that can’t split the way the report does can’t be picked', (
   const {options, isMulti} = measureEdits(byType)
   expect(isMulti).toBe(false)
   expect(validKeys(options)).toContain('NEW_TASKS')
-  expect(validKeys(options)).not.toContain('MEMBERS')
+  expect(validKeys(options)).not.toContain('USERS')
 })
 
 test('a table’s measures toggle', () => {
@@ -59,8 +59,8 @@ test('a table’s last measure can’t be unchecked', () => {
     isSelected: true,
     isValid: false
   })
-  const withTwo = measureEdits(spec({showAs: 'TABLE', measures: ['ACTIVE_USERS', 'MEMBERS']}))
-  expect(validKeys(withTwo.options)).toEqual(expect.arrayContaining(['ACTIVE_USERS', 'MEMBERS']))
+  const withTwo = measureEdits(spec({showAs: 'TABLE', measures: ['ACTIVE_USERS', 'USERS']}))
+  expect(validKeys(withTwo.options)).toEqual(expect.arrayContaining(['ACTIVE_USERS', 'USERS']))
 })
 
 test('removing a breakdown drops the sort and limit it leaves without a purpose', () => {
@@ -91,8 +91,8 @@ test('clearing a filter’s last value removes the filter', () => {
 })
 
 test('a filter can only be added on a dimension the measure has, and not twice', () => {
-  const members = spec({measures: ['MEMBERS']})
-  expect(addFilterEdits(members, teams, []).map(({key}) => key)).toEqual(['TEAM'])
+  const users = spec({measures: ['USERS']})
+  expect(addFilterEdits(users, teams, []).map(({key}) => key)).toEqual(['TEAM'])
   const filtered = spec({filters: [{dimension: 'TEAM', values: ['team1']}]})
   expect(addFilterEdits(filtered, teams, []).map(({key}) => key)).toEqual(['MEETING_TYPE'])
 })

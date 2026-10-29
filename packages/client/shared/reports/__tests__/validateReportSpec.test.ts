@@ -145,8 +145,8 @@ test.each<[string, Partial<ReportSpec>, string]>([
   ],
   [
     'a breakdown the measure lacks',
-    {showAs: 'BARS', measures: ['MEMBERS'], breakdown: [{dimension: 'MEETING_TYPE'}]},
-    "MEMBERS can't be broken down by MEETING_TYPE"
+    {showAs: 'BARS', measures: ['USERS'], breakdown: [{dimension: 'MEETING_TYPE'}]},
+    "USERS can't be broken down by MEETING_TYPE"
   ],
   [
     'a time filter',

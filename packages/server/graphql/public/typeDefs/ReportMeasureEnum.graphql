@@ -5,10 +5,10 @@ enum ReportMeasureEnum {
   "People who used Parabol in the 30 days before each reading"
   ACTIVE_USERS
   "People on the teams, or in the organization when every team is counted"
-  MEMBERS
-  "The percentage of members who used Parabol in the 30 days before each reading, or null without members"
+  USERS
+  "The percentage of users who used Parabol in the 30 days before each reading, or null without users"
   ACTIVE_SHARE
-  "When each member last used Parabol, in milliseconds since the epoch. The period doesn't change it"
+  "When each user last used Parabol, in milliseconds since the epoch. The period doesn't change it"
   LAST_SEEN
   "Meetings that at least 2 people joined"
   MEETINGS

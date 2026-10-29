@@ -17,7 +17,7 @@ const ReportsStarterBanner = ({organizationRef}: Props) => {
         id
         countedTeams: report(
           spec: {
-            measures: [MEMBERS]
+            measures: [USERS]
             breakdown: [{dimension: TEAM}]
             period: {preset: LAST_7_DAYS}
             showAs: TABLE

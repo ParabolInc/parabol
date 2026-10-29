@@ -913,15 +913,15 @@ describe('tasks', () => {
 })
 
 describe('people', () => {
-  test('members by team read each team as it is now', async () => {
-    const result = await report({...byTeam, measures: ['MEMBERS']})
+  test('users by team read each team as it is now', async () => {
+    const result = await report({...byTeam, measures: ['USERS']})
     expect(byLabel(result)).toEqual({Apollo: 2, Borealis: 2, Cygnus: 2, Dorado: 1})
   })
 
   test('a member who left counts until the day they left', async () => {
     const result = await report({
       ...overDays,
-      measures: ['MEMBERS'],
+      measures: ['USERS'],
       filters: [{dimension: 'TEAM', values: [APOLLO]}]
     })
     expect(valuesOf(result)).toEqual([3, 3, 3, 2, 2, 2, 2])
@@ -936,7 +936,7 @@ describe('people', () => {
     try {
       const result = await report({
         ...overDays,
-        measures: ['MEMBERS'],
+        measures: ['USERS'],
         filters: [{dimension: 'TEAM', values: [APOLLO]}]
       })
       expect(valuesOf(result)).toEqual([3, 3, 3, 3, 3, 3, 3])
@@ -950,7 +950,7 @@ describe('people', () => {
   })
 
   test('a leader counts the whole organization', async () => {
-    expect(valuesOf(await report({measures: ['MEMBERS']}))).toEqual([6])
+    expect(valuesOf(await report({measures: ['USERS']}))).toEqual([6])
     expect(valuesOf(await report({...overDays, measures: ['ACTIVE_USERS']}))).toEqual([
       6, 6, 6, 6, 5, 5, 5
     ])
