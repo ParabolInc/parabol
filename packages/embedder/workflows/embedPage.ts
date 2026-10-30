@@ -5,6 +5,7 @@ import type {TipTapSerializedContent} from 'parabol-client/shared/tiptap/TipTapS
 import {applyUpdate, Doc} from 'yjs'
 import {serverTipTapExtensions} from '../../client/shared/tiptap/serverTipTapExtensions'
 import getKysely from '../../server/postgres/getKysely'
+import {Logger} from '../../server/utils/Logger'
 import getModelManager from '../ai_models/ModelManager'
 import type {ModelId} from '../ai_models/modelIdDefinitions'
 import type {JobQueueStepRun} from '../custom'
@@ -72,15 +73,19 @@ export const embedPage: JobQueueStepRun<EmbedPageData> = async (context) => {
   }
   const chunker = new TipTapChunker({language})
   const chunks = chunker.chunk(content)
+  const startedAt = Date.now()
+  let embeddedChunks = 0
+  let tokens = 0
   for (const [chunkNumber, chunk] of chunks.entries()) {
     if (existingChunks[chunkNumber]?.embedText === chunk.text) continue
     const {text, globalTitle, headingPath, embeddingText} = chunk
-    const embeddingVector = await embeddingModel.getEmbedding(embeddingText)
-    if (embeddingVector instanceof Error) {
-      return new JobQueueError(
-        `unable to get embeddings from ${modelId}: ${embeddingVector.message}`
-      )
+    const embedded = await embeddingModel.getEmbeddingWithTokens(embeddingText)
+    if (embedded instanceof Error) {
+      return new JobQueueError(`unable to get embeddings from ${modelId}: ${embedded.message}`)
     }
+    const embeddingVector = embedded.embedding
+    embeddedChunks++
+    tokens += embedded.tokens
     try {
       await pg
         .insertInto(embeddingModel.pagesTableName)
@@ -126,5 +131,8 @@ export const embedPage: JobQueueStepRun<EmbedPageData> = async (context) => {
     .where('pageId', '=', pageId)
     .where('pageUpdatedAt', '<>', page.updatedAt)
     .execute()
+  Logger.log(
+    `embedPage ${pageId}: embedded ${embeddedChunks} of ${chunks.length} chunks, ${tokens} tokens, ${Date.now() - startedAt} ms`
+  )
   return data
 }

@@ -10,6 +10,7 @@ import {embedPage} from '../../../embedder/workflows/embedPage'
 import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
 import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
+import {Logger} from '../../utils/Logger'
 
 jest.mock('../../../embedder/ai_models/ModelManager', () => ({
   __esModule: true,
@@ -26,13 +27,15 @@ let maxInFlight = 0
 const mockEmbedder = {
   pagesTableName: getEmbeddingsPagesTableName(activeEmbeddingModelId)!,
   languages: ['en'],
-  getEmbedding: jest.fn(async (): Promise<number[] | Error> => {
-    inFlight++
-    maxInFlight = Math.max(maxInFlight, inFlight)
-    await new Promise((resolve) => setTimeout(resolve, 5))
-    inFlight--
-    return unitVector
-  })
+  getEmbeddingWithTokens: jest.fn(
+    async (): Promise<{embedding: number[]; tokens: number} | Error> => {
+      inFlight++
+      maxInFlight = Math.max(maxInFlight, inFlight)
+      await new Promise((resolve) => setTimeout(resolve, 5))
+      inFlight--
+      return {embedding: unitVector, tokens: 7}
+    }
+  )
 }
 
 const sectionText = (name: string) =>
@@ -126,7 +129,7 @@ afterAll(async () => {
 
 it('embeds changed chunks one at a time', async () => {
   expect(await run()).not.toBeInstanceOf(JobQueueError)
-  expect(mockEmbedder.getEmbedding).toHaveBeenCalledTimes(3)
+  expect(mockEmbedder.getEmbeddingWithTokens).toHaveBeenCalledTimes(3)
   expect(maxInFlight).toBe(1)
   expect(await chunkTexts()).toEqual([
     expect.stringContaining('Alpha'),
@@ -140,33 +143,42 @@ it('writes an edited chunk to its own chunk number', async () => {
     .set({yDoc: toYDoc(doc('Delta'))})
     .where('id', '=', pageId)
     .execute()
-  mockEmbedder.getEmbedding.mockClear()
+  mockEmbedder.getEmbeddingWithTokens.mockClear()
   await run()
-  expect(mockEmbedder.getEmbedding).toHaveBeenCalledTimes(1)
+  expect(mockEmbedder.getEmbeddingWithTokens).toHaveBeenCalledTimes(1)
   expect(await chunkTexts()).toEqual([
     expect.stringContaining('Alpha'),
     expect.stringContaining('Beta'),
     expect.stringContaining('Delta')
   ])
 })
+it('logs the tokens a page took', async () => {
+  const loggedPageId = await insertPage('a2')
+  const log = jest.spyOn(Logger, 'log').mockImplementation(() => {})
+  await run(loggedPageId)
+  expect(log).toHaveBeenCalledWith(
+    expect.stringMatching(new RegExp(`^embedPage ${loggedPageId}: .*21 tokens`))
+  )
+  log.mockRestore()
+})
 it('skips a page whose embedding is current', async () => {
-  mockEmbedder.getEmbedding.mockClear()
+  mockEmbedder.getEmbeddingWithTokens.mockClear()
   expect(await run()).toBe(false)
-  expect(mockEmbedder.getEmbedding).not.toHaveBeenCalled()
+  expect(mockEmbedder.getEmbeddingWithTokens).not.toHaveBeenCalled()
 })
 it('re-embeds only what a failed run missed', async () => {
   const failedRunPageId = await insertPage('a1')
-  mockEmbedder.getEmbedding
-    .mockResolvedValueOnce(unitVector)
-    .mockResolvedValueOnce(unitVector)
+  mockEmbedder.getEmbeddingWithTokens
+    .mockResolvedValueOnce({embedding: unitVector, tokens: 7})
+    .mockResolvedValueOnce({embedding: unitVector, tokens: 7})
     .mockResolvedValueOnce(new Error('embeddings server timed out'))
   expect(await run(failedRunPageId)).toBeInstanceOf(JobQueueError)
-  expect(mockEmbedder.getEmbedding).toHaveBeenCalledTimes(3)
+  expect(mockEmbedder.getEmbeddingWithTokens).toHaveBeenCalledTimes(3)
   expect(await chunkStamps(failedRunPageId)).toEqual([0, 0])
 
-  mockEmbedder.getEmbedding.mockClear()
+  mockEmbedder.getEmbeddingWithTokens.mockClear()
   expect(await run(failedRunPageId)).not.toBeInstanceOf(JobQueueError)
-  expect(mockEmbedder.getEmbedding).toHaveBeenCalledTimes(1)
+  expect(mockEmbedder.getEmbeddingWithTokens).toHaveBeenCalledTimes(1)
   const pageUpdatedAt = await getPageUpdatedAt(failedRunPageId)
   expect(await chunkStamps(failedRunPageId)).toEqual([pageUpdatedAt, pageUpdatedAt, pageUpdatedAt])
   expect(await chunkTexts(failedRunPageId)).toEqual([

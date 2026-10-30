@@ -1,6 +1,7 @@
 import createClient, {type ClientMethod} from 'openapi-fetch'
 import sleep from 'parabol-client/utils/sleep'
 import {Logger} from '../../server/utils/Logger'
+import {embeddingUsage} from '../embeddingUsage'
 import type {paths} from '../textEmbeddingsnterface'
 import {AbstractEmbeddingsModel, type EmbeddingModelParams} from './AbstractEmbeddingsModel'
 import {type ModelId, modelIdDefinitions} from './modelIdDefinitions'
@@ -86,6 +87,14 @@ export class TextEmbeddingsInference extends AbstractEmbeddingsModel {
     return data
   }
   public async getEmbedding(content: string, retries = 5): Promise<number[] | Error> {
+    const result = await this.getEmbeddingWithTokens(content, retries)
+    return result instanceof Error ? result : result.embedding
+  }
+
+  public async getEmbeddingWithTokens(
+    content: string,
+    retries = 5
+  ): Promise<{embedding: number[]; tokens: number} | Error> {
     if (!content.trim()) return new Error('Cannot embed blank text')
     const {data, error, response} = await this.client.POST('/embed', {
       body: {inputs: content}
@@ -93,9 +102,11 @@ export class TextEmbeddingsInference extends AbstractEmbeddingsModel {
     if (error) {
       if (response?.status !== 429 || retries < 1) return new Error(error.error)
       await sleep(2000)
-      return this.getEmbedding(content, retries - 1)
+      return this.getEmbeddingWithTokens(content, retries - 1)
     }
-    return data[0]!
+    const tokens = Number(response.headers.get('x-compute-tokens')) || 0
+    embeddingUsage.tokens += tokens
+    return {embedding: data[0]!, tokens}
   }
 
   protected constructModelParams(modelId: ModelId): EmbeddingModelParams {
