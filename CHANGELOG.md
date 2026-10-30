@@ -5,6 +5,35 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.12.1](https://github.com/ParabolInc/parabol/compare/v15.12.0...v15.12.1) (2026-10-30)
+
+
+### Fixed
+
+* blank screen at / for signed-in users on React 19 ([#13833](https://github.com/ParabolInc/parabol/issues/13833)) ([164aa8a](https://github.com/ParabolInc/parabol/commit/164aa8ab9e2883f709091c48b9c971c84b88ed71))
+* **server:** stop trusting IdP metadata named in the SAML RelayState ([#13829](https://github.com/ParabolInc/parabol/issues/13829)) ([7b7d5c1](https://github.com/ParabolInc/parabol/commit/7b7d5c18c717c4390a37384ef7dcf3722ad80c78))
+
+## [15.12.0](https://github.com/ParabolInc/parabol/compare/v15.11.0...v15.12.0) (2026-10-30)
+
+
+### Added
+
+* connect client operations to server logs with trace and session ids ([#13762](https://github.com/ParabolInc/parabol/issues/13762)) ([d042baf](https://github.com/ParabolInc/parabol/commit/d042baf7ec2f5e4e1f9031e52a4fd289957216b0))
+* **server:** structured logger with request context and error fingerprints ([#13757](https://github.com/ParabolInc/parabol/issues/13757)) ([a00deb9](https://github.com/ParabolInc/parabol/commit/a00deb9e9eb9976e9c363e8b7cac2ce1b156844a))
+
+
+### Fixed
+
+* keep a comment in edit mode after choosing Edit Comment ([#13819](https://github.com/ParabolInc/parabol/issues/13819)) ([8cde373](https://github.com/ParabolInc/parabol/commit/8cde373f219cf880fe6d97fd7641c21adb22b4a0))
+* remove Partial and Preview GQL types ([#13788](https://github.com/ParabolInc/parabol/issues/13788)) ([d17946b](https://github.com/ParabolInc/parabol/commit/d17946bfedb57abf25c9383e9280ab9232640c51))
+* retro discussion thread in React 19 dev mode ([#13823](https://github.com/ParabolInc/parabol/issues/13823)) ([89bd2f0](https://github.com/ParabolInc/parabol/commit/89bd2f0380c4174c62fc67f021c72a343163260e))
+* **server:** type the page search eval's Logger.warn arguments ([#13818](https://github.com/ParabolInc/parabol/issues/13818)) ([f1e8796](https://github.com/ParabolInc/parabol/commit/f1e8796556c48f99f9bcac84f0ba0ed91481d6ed))
+
+
+### Changed
+
+* upgrade React to 19.3 ([#13804](https://github.com/ParabolInc/parabol/issues/13804)) ([b27164e](https://github.com/ParabolInc/parabol/commit/b27164e4525956e4c70a0b2059571f7022a7d8bf))
+
 ## [15.11.0](https://github.com/ParabolInc/parabol/compare/v15.10.0...v15.11.0) (2026-10-30)
 
 

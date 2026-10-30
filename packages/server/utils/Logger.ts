@@ -1,8 +1,13 @@
 import tracer from 'dd-trace'
 import formats from 'dd-trace/ext/formats'
+import {GraphQLError} from 'graphql'
 import util from 'util'
+import getErrorFingerprint from './getErrorFingerprint'
+import {maskCredentials} from './maskCredentials'
+import {getLogContext, type RequestLogContext} from './requestLogContext'
 
 const Levels = {
+  fatal: 0,
   error: 1,
   warn: 2,
   info: 3,
@@ -11,81 +16,232 @@ const Levels = {
 type LogLevel = keyof typeof Levels
 
 const LOG_LEVEL = Levels[(process.env.LOG_LEVEL || 'info') as LogLevel]
-if (!LOG_LEVEL) {
+if (LOG_LEVEL === undefined) {
   throw new Error(
     `Invalid LOG_LEVEL: ${process.env.LOG_LEVEL}, allowed values are: ${Object.keys(Levels).join(', ')}`
   )
 }
 
-const LogFun = {
-  error: console.error,
-  warn: console.warn,
-  info: console.info,
-  debug: console.debug
-} satisfies Record<LogLevel, Console[keyof Console]>
+const LogFormats = ['gcp', 'otel'] as const
+type LogFormat = (typeof LogFormats)[number]
 
-// An Error instance may reach the Logger from multiple layers (e.g. enriched in useDatadogTracing,
-// then again by yoga's maskedErrors). Only the first log wins; later ones are dropped.
+const LOG_FORMAT = (process.env.LOG_FORMAT || 'gcp') as LogFormat
+if (!LogFormats.includes(LOG_FORMAT)) {
+  throw new Error(
+    `Invalid LOG_FORMAT: ${process.env.LOG_FORMAT}, allowed values are: ${LogFormats.join(', ')}`
+  )
+}
+const isGoogleCloudFormat = LOG_FORMAT === 'gcp'
+
+const LogFun = {
+  fatal: (...args: unknown[]) => console.error(...args),
+  error: (...args: unknown[]) => console.error(...args),
+  warn: (...args: unknown[]) => console.warn(...args),
+  info: (...args: unknown[]) => console.info(...args),
+  debug: (...args: unknown[]) => console.debug(...args)
+} satisfies Record<LogLevel, (...args: unknown[]) => void>
+
+const Severity = {
+  fatal: 'CRITICAL',
+  error: 'ERROR',
+  warn: 'WARNING',
+  info: 'INFO',
+  debug: 'DEBUG'
+} satisfies Record<LogLevel, string>
+
+const DatadogStatus = {
+  fatal: 'critical',
+  error: 'error',
+  warn: 'warn',
+  info: 'info',
+  debug: 'debug'
+} satisfies Record<LogLevel, string>
+
+const APP_VERSION = typeof __APP_VERSION__ === 'string' ? __APP_VERSION__ : 'unknown'
+const COMMIT_HASH = typeof __COMMIT_HASH__ === 'string' ? __COMMIT_HASH__ : ''
+// kysely-ctl loads server modules from source, where the webpack constants don't exist
+const isProduction = () => typeof __PRODUCTION__ === 'boolean' && __PRODUCTION__
+
+const logIdentity = {
+  service: 'web',
+  env: process.env.DD_ENV || (isProduction() ? 'production' : 'development'),
+  version: COMMIT_HASH ? `${APP_VERSION}+${COMMIT_HASH.slice(0, 7)}` : APP_VERSION
+}
+
+export const setLogService = (service: string) => {
+  logIdentity.service = service
+}
+
+export const getLogIdentity = () => logIdentity
+
+// An Error instance may reach the Logger from multiple layers (e.g. useErrorLogging, then yoga's maskedErrors).
+// Only the first log wins; later ones are dropped.
 const loggedErrors = new WeakSet<Error>()
 export const markErrorAsLogged = (error: Error) => {
   loggedErrors.add(error)
 }
 
-function trace(level: LogLevel, message: any, ...optionalParameters: any[]) {
-  if (process.env.DD_LOGS_INJECTION !== 'true') {
-    return LogFun[level](message, ...optionalParameters)
-  }
+export interface LogOptions {
+  tags?: Record<string, unknown>
+  userId?: string | null
+  ip?: string
+  extras?: Record<string, unknown>
+}
 
-  const span = tracer.scope().active()
-  const time = new Date().toISOString()
-  const tags = optionalParameters
-    .map((param) => param.tags)
-    .filter((tags) => tags && typeof tags === 'object')
-    .reduce((acc, tags) => Object.assign(acc, tags), {} as Record<string, any>)
-  const userId = optionalParameters.find((param) => param.userId)?.userId
-  if (userId) {
-    tags['userId'] = userId
-  }
-  const ip = optionalParameters.find((param) => param.ip)?.ip
-  if (ip) {
-    tags['ip'] = ip
-  }
-  const extras = optionalParameters.find((param) => param?.extras)?.extras
-  const error =
-    message instanceof Error ? message : optionalParameters.find((param) => param instanceof Error)
-  if (error) {
-    if (loggedErrors.has(error)) return
-    loggedErrors.add(error)
-  }
+const LOG_OPTION_KEYS = new Set<string>(['tags', 'userId', 'ip', 'extras'])
+// Cloud Logging rejects entries over 256 KB
+const MAX_RECORD_LENGTH = 250_000
 
-  const record = {
-    time,
+const isLogOptions = (param: unknown): param is LogOptions =>
+  !!param &&
+  typeof param === 'object' &&
+  !(param instanceof Error) &&
+  Object.keys(param).every((key) => LOG_OPTION_KEYS.has(key))
+
+const findError = (message: unknown, params: unknown[]) =>
+  message instanceof Error
+    ? message
+    : params.find((param): param is Error => param instanceof Error)
+
+const isExpectedError = (error: Error): boolean =>
+  error instanceof GraphQLError && (!error.originalError || isExpectedError(error.originalError))
+
+const formatMessage = (message: unknown, params: unknown[], error: Error | undefined) => {
+  if (!error) return util.format(message, ...params)
+  return message instanceof Error ? error.message : `${util.format(message)}: ${error.message}`
+}
+
+export const makeLogRecord = (
+  level: LogLevel,
+  message: unknown,
+  params: unknown[],
+  context: RequestLogContext = {},
+  time = new Date()
+) => {
+  const options = params.filter(isLogOptions)
+  const error = findError(message, params)
+  const userId = options.find((option) => option.userId)?.userId ?? context.userId
+  const ip = options.find((option) => option.ip)?.ip ?? context.ip
+  const extras = options.find((option) => option.extras)?.extras
+  const tags: Record<string, unknown> = Object.assign(
+    {},
+    ...options.map((option) => option.tags ?? {}),
+    userId && {userId},
+    ip && {ip}
+  )
+  const isFailure = Levels[level] <= Levels.error
+  const messageParams = params.filter((param) => param !== error && !isLogOptions(param))
+  const {service, env, version} = logIdentity
+  return {
+    time: time.toISOString(),
+    severity: Severity[level],
+    status: DatadogStatus[level],
     level,
-    // `status` is what Datadog reads for the log level; Error Tracking requires it to be `error`
-    status: level,
-    message: error ? error.message : util.format(message, ...optionalParameters),
-    tags,
-    ...(extras && {extras}),
-    // Datadog standard user attribute, correlates with APM's usr.id
-    ...(userId && {usr: {id: userId}}),
-    // Datadog standard error attributes; error.stack is required for Error Tracking to ingest the log
+    message: formatMessage(message, messageParams, error),
+    service,
+    env,
+    version,
+    ...(context.component && {component: context.component}),
+    ...(context.traceId && {
+      trace_id: context.traceId,
+      span_id: context.spanId,
+      trace_flags: context.traceSampled ? '01' : '00'
+    }),
+    ...(isGoogleCloudFormat &&
+      context.traceId && {
+        'logging.googleapis.com/trace': context.traceId,
+        'logging.googleapis.com/spanId': context.spanId,
+        'logging.googleapis.com/trace_sampled': context.traceSampled
+      }),
+    ...(userId && {userId, usr: {id: userId}}),
+    ...(context.socketId && {socketId: context.socketId}),
+    ...(context.sessionId && {sessionId: context.sessionId}),
+    ...(context.operationName && {
+      operationName: context.operationName,
+      operationKind: context.operationKind
+    }),
+    ...(isFailure &&
+      context.variables !== undefined && {variables: maskCredentials(context.variables)}),
+    ...(Object.keys(tags).length > 0 && {tags}),
+    ...(extras && {extras: maskCredentials(extras)}),
     ...(error && {
       error: {
         kind: error.name,
         message: error.message,
-        stack: error.stack
+        stack: error.stack,
+        fingerprint: getErrorFingerprint(service, error),
+        expected: isExpectedError(error)
       }
+    }),
+    ...(isGoogleCloudFormat &&
+      error &&
+      isFailure && {
+        stack_trace: error.stack,
+        serviceContext: {service, version},
+        context: userId ? {user: userId} : {}
+      })
+  }
+}
+
+type LogRecord = ReturnType<typeof makeLogRecord>
+
+const stringify = (value: unknown) =>
+  JSON.stringify(value, (_key, item) => (typeof item === 'bigint' ? item.toString() : item))
+
+export const stringifyLogRecord = (record: LogRecord) => {
+  let json: string
+  try {
+    json = stringify(record)
+  } catch (e) {
+    const {time, severity, status, level, message, service, env, version} = record
+    return stringify({
+      time,
+      severity,
+      status,
+      level,
+      message,
+      service,
+      env,
+      version,
+      serializationError: String(e)
     })
   }
+  if (json.length <= MAX_RECORD_LENGTH) return json
+  const {variables, extras, ...rest} = record
+  return stringify({
+    ...rest,
+    omitted: {
+      variablesLength: variables === undefined ? 0 : stringify(variables).length,
+      extrasLength: extras === undefined ? 0 : stringify(extras).length
+    }
+  })
+}
 
-  if (span) {
-    tracer.inject(span.context(), formats.LOG, record)
-    if (tags && typeof tags === 'object') {
-      span.addTags(tags)
+function trace(level: LogLevel, message: unknown, ...params: unknown[]) {
+  const error = findError(message, params)
+  if (error && level !== 'fatal') {
+    if (loggedErrors.has(error)) return
+    loggedErrors.add(error)
+  }
+  if (!isProduction()) {
+    if (error && isExpectedError(error)) {
+      LogFun[level](formatMessage(message, [], error), ...params.filter((param) => param !== error))
+    } else {
+      LogFun[level](message, ...params)
+    }
+    return
+  }
+  const record = makeLogRecord(level, message, params, getLogContext())
+  if (process.env.DD_LOGS_INJECTION === 'true') {
+    const span = tracer.scope().active()
+    if (span) {
+      tracer.inject(span.context(), formats.LOG, record)
+      if (record.tags) {
+        span.addTags(record.tags)
+      }
     }
   }
-
-  LogFun[level](JSON.stringify(record))
+  LogFun[level](stringifyLogRecord(record))
 }
 
 const bindIfEnabled = (level: LogLevel) => {
@@ -97,6 +253,7 @@ const bindIfEnabled = (level: LogLevel) => {
 
 export const Logger = {
   log: bindIfEnabled('info'),
+  fatal: bindIfEnabled('fatal'),
   error: bindIfEnabled('error'),
   warn: bindIfEnabled('warn'),
   info: bindIfEnabled('info'),

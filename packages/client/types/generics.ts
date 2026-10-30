@@ -1,4 +1,4 @@
-import type {MutableRefObject} from 'react'
+import type {RefObject} from 'react'
 import type {RecordProxy} from 'relay-runtime'
 
 export type Omit<T, K> = Pick<T, Exclude<keyof T, K>>
@@ -70,7 +70,7 @@ export type ValueOf<T> = T[keyof T]
 export type FirstParam<T> = T extends (arg1: infer A, ...args: any[]) => any ? A : never
 export type SecondPlusParams<T> = T extends (node: any, ...args: infer A) => void ? A : never
 export type UnshiftToTuple<V, T extends any[]> = Parameters<(a: V, ...args: T) => void>
-export type Unref<T> = T extends MutableRefObject<infer U> ? U : T
+export type Unref<T> = T extends RefObject<infer U> ? U : T
 export type RefCallbackInstance<T extends HTMLElement = HTMLElement> = T | null
 export type Unarray<T> = T extends ArrayLike<infer U> ? U : T
 

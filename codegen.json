@@ -233,8 +233,6 @@
           "PageAccessRequest": "../../postgres/types/index#PageAccessRequest as PageAccessRequestDB",
           "PageAccessTeam": "../../postgres/types/index#PageAccessTeam as PageAccessTeamDB",
           "PageAccessUser": "../../postgres/types/index#PageAccessUser as PageAccessUserDB",
-          "PagePartial": "../../postgres/types/index#PagePartial as PagePartialDB",
-          "PagePreview": "../../postgres/types/index#PagePreview as PagePreviewDB",
           "PersistIntegrationSearchQuerySuccess": "./types/PersistIntegrationSearchQuerySuccess#PersistIntegrationSearchQuerySuccessSource",
           "PhaseCompletePayload": "./types/PhaseCompletePayload#PhaseCompletePayloadSource",
           "PokerAnnounceDeckHoverSuccess": "./types/PokerAnnounceDeckHoverSuccess#PokerAnnounceDeckHoverSuccessSource",

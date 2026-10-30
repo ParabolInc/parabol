@@ -43,5 +43,5 @@ type NotifyPageAccessGranted implements Notification {
   """
   The page that was granted access to
   """
-  page: PagePreview!
+  page: Page!
 }

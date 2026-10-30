@@ -14,6 +14,7 @@ import encodeAuthToken from '../../../utils/encodeAuthToken'
 import {isSingleTenantSSO} from '../../../utils/getSAMLURLFromEmail'
 import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
 import logError from '../../../utils/logError'
+import {consumeSAMLMetadataChangeRequest} from '../../../utils/samlMetadataChangeRequest'
 import {samlXMLValidator} from '../../../utils/samlXMLValidator'
 import standardError from '../../../utils/standardError'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
@@ -79,7 +80,17 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   const normalizedName = samlName.trim().toLowerCase()
   const body = querystring.parse(queryString)
   const relayState = getRelayState(body)
-  const {metadataURL: newMetadataURL, isInvited} = relayState
+  const {metadataChangeId, isInvited} = relayState
+  const metadataChange = metadataChangeId
+    ? await consumeSAMLMetadataChangeRequest(metadataChangeId)
+    : null
+  if (metadataChangeId && !metadataChange) {
+    return {error: {message: 'The metadata update request has expired. Please try again.'}}
+  }
+  if (metadataChange && metadataChange.samlId !== normalizedName) {
+    return {error: {message: 'The metadata update request is for a different SSO connection.'}}
+  }
+  const newMetadataURL = metadataChange?.metadataURL
   const doc = await dataLoader.get('saml').load(normalizedName)
   dataLoader.get('saml').clear(normalizedName)
 
@@ -195,13 +206,13 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   if (user instanceof Error) return standardError(user)
 
   if (newMetadata) {
-    // Only org admins may set a new SAML metadata URL.
-    // Refreshing an existing URL (auto or manual) is allowed on every login.
-    const isNewURL = newMetadataURL && newMetadataURL !== existingMetadataURL
-    if (isNewURL) {
-      // Verify before persisting — the email is already validated against the SAML domains above.
-      if (!orgId || !user) {
-        return standardError(new Error('Only org admins can update SAML metadata'))
+    // A metadata change is confirmed by the org admin who requested it signing in through the new IdP.
+    // Refreshing the stored URL (auto) is allowed on every login.
+    if (metadataChange) {
+      if (!orgId || !user || user.id !== metadataChange.requestedBy) {
+        return standardError(
+          new Error('Only the org admin who requested the metadata update can confirm it')
+        )
       }
       const organizationUser = await dataLoader
         .get('organizationUsersByUserIdOrgId')

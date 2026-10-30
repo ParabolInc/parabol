@@ -45,7 +45,6 @@ export const Page = (props: Props) => {
         linkedPages {
           id
           ...usePageViewerAccess_page
-          ...usePageViewerAccess_pagePreview
         }
       }
     `,

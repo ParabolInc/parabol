@@ -22,7 +22,7 @@ import {
   VECTOR_MIN_PAGE_BYTES
 } from '../../postgres/queries/getPagesByRRF'
 import type {User} from '../../postgres/types'
-import {Logger} from '../../utils/Logger'
+import {Logger, type LogOptions} from '../../utils/Logger'
 import {HEAVY_CORPUS} from './heavyCorpus/generateHeavyCorpus'
 import {
   type Grade,
@@ -262,7 +262,8 @@ const toEmbeddingOutcome = (call: EmbeddingCall | undefined): EmbeddingOutcome =
 const toFallbackReason = (warnings: typeof warnSpy.mock.calls) => {
   const fallbackWarning = warnings.find(([message]) => message === KEYWORD_FALLBACK_LOG_MESSAGE)
   if (!fallbackWarning) return undefined
-  const reason = fallbackWarning[1]?.extras?.reason
+  const options = fallbackWarning[1] as LogOptions | undefined
+  const reason = options?.extras?.reason
   return typeof reason === 'string' ? reason : 'unknown'
 }
 

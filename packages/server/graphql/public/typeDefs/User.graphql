@@ -3,7 +3,7 @@ directive @defer on FRAGMENT_SPREAD
 """
 The user account profile
 """
-type User implements UserPartial {
+type User {
   """
   The userId provided by us
   """
@@ -184,9 +184,10 @@ type User implements UserPartial {
   preferredName: String!
 
   """
-  The last day the user connected via websocket or navigated to a common area
+  The last day the user connected via websocket or navigated to a common area. Null unless the viewer is the
+  user or shares an organization with them, like inactive and isConnected
   """
-  lastSeenAt: DateTime!
+  lastSeenAt: DateTime
 
   """
   The meeting member associated with this user, if a meeting is currently in progress
@@ -482,21 +483,6 @@ type User implements UserPartial {
     """
     activityId: ID!
   ): MeetingTemplate @scope(name: TEMPLATES_READ)
-
-  """
-  A query to parse/validate SAML metadata for a given domain
-  """
-  parseSAMLMetadata(
-    """
-    URL of a blob of XML from the IdP describing how to handle authentication
-    """
-    metadataURL: String!
-
-    """
-    The name of the company, used as a slug in signon URLs
-    """
-    domain: String!
-  ): ParseSAMLMetadataPayload! @scope(name: ORGS_READ)
 
   """
   The number of free custom retro templates remaining
