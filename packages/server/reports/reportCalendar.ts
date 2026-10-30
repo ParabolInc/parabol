@@ -170,7 +170,7 @@ export const buildReportSteps = (
 
 export const shiftReportRange = (
   range: ReportLocalRange,
-  compareTo: Exclude<ReportCompareTo, 'PREVIOUS_CHECK'>
+  compareTo: ReportCompareTo
 ): ReportLocalRange => {
   const {startDate, endDate, monthCount} = range
   if (compareTo === 'A_WEEK_EARLIER') {

@@ -36,7 +36,7 @@ export const POPULAR_REPORT_QUESTIONS: readonly PopularReportQuestion[] = [
     key: 'activeUsersByTeam',
     subject: 'users',
     title: 'Active users by team',
-    question: 'Which teams have the most active members?',
+    question: 'Which teams have the most active users?',
     description: 'People active in the last 30 days, by team',
     spec: {
       measures: ['ACTIVE_USERS'],
@@ -54,7 +54,7 @@ export const POPULAR_REPORT_QUESTIONS: readonly PopularReportQuestion[] = [
     subject: 'users',
     title: 'Active share by team',
     question: 'Which teams have the lowest adoption?',
-    description: 'The percentage of each team’s members active in the last 30 days',
+    description: 'The percentage of each team’s users active in the last 30 days',
     spec: {
       measures: ['ACTIVE_SHARE'],
       breakdown: [{dimension: 'TEAM'}],
@@ -70,7 +70,7 @@ export const POPULAR_REPORT_QUESTIONS: readonly PopularReportQuestion[] = [
     subject: 'users',
     title: 'People by last seen',
     question: 'Who hasn’t been seen in 30 days?',
-    description: 'Members who haven’t used Parabol in 30 days',
+    description: 'Users who haven’t used Parabol in 30 days',
     spec: {
       measures: ['LAST_SEEN'],
       breakdown: [{dimension: 'USER'}],
@@ -94,7 +94,7 @@ export const POPULAR_REPORT_QUESTIONS: readonly PopularReportQuestion[] = [
       where: [],
       showAs: 'BARS'
     },
-    defaultPinSortOrder: 2
+    defaultPinSortOrder: 3
   },
   {
     key: 'meetingOutcomes',
@@ -108,8 +108,7 @@ export const POPULAR_REPORT_QUESTIONS: readonly PopularReportQuestion[] = [
       filters: [],
       where: [],
       showAs: 'TABLE'
-    },
-    defaultPinSortOrder: 3
+    }
   },
   {
     key: 'retroTasksDoneOrOpen',
@@ -138,12 +137,13 @@ export const POPULAR_REPORT_QUESTIONS: readonly PopularReportQuestion[] = [
       filters: [],
       where: [],
       showAs: 'FLOW'
-    }
+    },
+    defaultPinSortOrder: 4
   },
   {
     key: 'retroDaysToDone',
     subject: 'impact',
-    title: 'Days to done for retro tasks',
+    title: 'Days to finish retro tasks',
     question: 'How long do retro tasks take to get done?',
     description: 'The median days from making a retro task to finishing it, by team',
     spec: {
@@ -208,26 +208,26 @@ export const POPULAR_REPORT_QUESTIONS: readonly PopularReportQuestion[] = [
     subject: 'teamHealth',
     title: 'Health score by team',
     question: 'How is each team feeling?',
-    description: 'Each team’s latest Team Health check by category, against the check before it',
+    description: 'Each team’s latest Team Health check by category, against the period before',
     spec: {
       measures: ['HEALTH_SCORE'],
       breakdown: [{dimension: 'TEAM'}, {dimension: 'CATEGORY'}],
-      compareTo: 'PREVIOUS_CHECK',
+      compareTo: 'PREVIOUS_PERIOD',
       filters: [],
       where: [],
       showAs: 'HEATMAP'
-    }
+    },
+    defaultPinSortOrder: 2
   },
   {
     key: 'healthByCategory',
     subject: 'teamHealth',
     title: 'Health score by category',
     question: 'Which categories are slipping?',
-    description: 'Every team’s latest check by category, against the year before',
+    description: 'Every team’s latest check by category, against the period before',
     spec: {
       measures: ['HEALTH_SCORE'],
       breakdown: [{dimension: 'CATEGORY'}],
-      period: {preset: 'LAST_12_MONTHS'},
       compareTo: 'PREVIOUS_PERIOD',
       filters: [],
       where: [],
@@ -278,7 +278,6 @@ export const POPULAR_REPORT_QUESTIONS: readonly PopularReportQuestion[] = [
       where: [],
       showAs: 'HEATMAP',
       sort: {by: 'VALUE', order: 'DESC'}
-    },
-    defaultPinSortOrder: 4
+    }
   }
 ]

@@ -2577,7 +2577,7 @@ type Mutation {
     spec: ReportSpecInput
 
     """
-    The name of a report the viewer built
+    The name of a report the viewer built, or of a recent report as they changed it
     """
     title: String
   ): LogReportQuestionUseSuccess! @scope(name: REPORTS_WRITE)

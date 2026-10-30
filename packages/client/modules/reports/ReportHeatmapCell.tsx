@@ -16,9 +16,10 @@ interface Props {
   cell: ReportHeatmapValue | undefined
   max: number
   isPartial: boolean
+  isTotal?: boolean
 }
 
-const ReportHeatmapCell = ({measure, cell, max, isPartial}: Props) => {
+const ReportHeatmapCell = ({measure, cell, max, isPartial, isTotal}: Props) => {
   const {kind} = REPORT_MEASURES[measure]
   const isHidden = isHiddenReportValue(cell?.value)
   const value = isHidden ? null : (cell?.value ?? null)
@@ -30,7 +31,7 @@ const ReportHeatmapCell = ({measure, cell, max, isPartial}: Props) => {
       ? ''
       : formatReportValue(measure, value)
   return (
-    <td className={cn(isPartial && 'opacity-60')}>
+    <td data-total={isTotal || undefined} className={cn(isPartial && 'opacity-60')}>
       <span
         className={cn(
           'flex min-h-7 flex-col items-center justify-center rounded px-1 py-0.5 font-semibold text-xs tabular-nums',

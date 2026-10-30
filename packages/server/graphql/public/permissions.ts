@@ -11,6 +11,7 @@ import {isMeetingFacilitator} from './rules/isMeetingFacilitator'
 import {isMeetingMember} from './rules/isMeetingMember'
 import {isNull} from './rules/isNull'
 import {isOrgTier} from './rules/isOrgTier'
+import {isReportTeamHealthCheck} from './rules/isReportTeamHealthCheck'
 import {isRestoringOwnTrashedPage} from './rules/isRestoringOwnTrashedPage'
 import isSuperUser from './rules/isSuperUser'
 import {isTeamMember} from './rules/isTeamMember'
@@ -517,6 +518,12 @@ const permissionMap: PermissionMap<Resolvers> = {
       hasOrgFeatureFlag<'Organization.report'>('source.id', 'Reports'),
       rateLimit({perMinute: 120, perHour: 3000})
     ),
+    reportTeamHealthStage: and(
+      or(isSuperUser, isViewerOnOrg<'Organization.reportTeamHealthStage'>('source.id')),
+      hasOrgFeatureFlag<'Organization.reportTeamHealthStage'>('source.id', 'Reports'),
+      isReportTeamHealthCheck<'Organization.reportTeamHealthStage'>('source.id', 'args.meetingId'),
+      rateLimit({perMinute: 120, perHour: 3000})
+    ),
     pinnedReports: and(
       or(isSuperUser, isViewerOnOrg<'Organization.pinnedReports'>('source.id')),
       hasOrgFeatureFlag<'Organization.pinnedReports'>('source.id', 'Reports')
@@ -582,6 +589,14 @@ const permissionMap: PermissionMap<Resolvers> = {
     integrations: isUserViewer<'TeamMember.integrations'>('source.userId'),
     repoIntegrations: isUserViewer<'TeamMember.repoIntegrations'>('source.userId'),
     services: isUserViewer<'TeamMember.services'>('source.userId')
+  },
+  // Reports reach a result stage without going through its meeting, so the fields that lead into the
+  // meeting stay with the team: org leaders read the results, never the meeting or its discussion
+  TeamHealthResultStage: {
+    meeting: isTeamMemberOfMeeting<'TeamHealthResultStage.meeting'>('source.meetingId'),
+    phase: isTeamMemberOfMeeting<'TeamHealthResultStage.phase'>('source.meetingId'),
+    discussion: isTeamMemberOfMeeting<'TeamHealthResultStage.discussion'>('source.meetingId'),
+    readyUserIds: isTeamMemberOfMeeting<'TeamHealthResultStage.readyUserIds'>('source.meetingId')
   },
   IntegrationService: {
     auth: isUserViewer<'IntegrationService.auth'>('source.userId'),

@@ -1,7 +1,7 @@
 /*
   Seeds Copper, a sample organization to try Reports with: 32 people on 11 teams with a year of retrospectives,
-  check-ins, standups, Sprint Poker and Team Health checks, their discussions, tasks and integrations, a team
-  structure, and the Reports flag on. Every run adds another Copper
+  check-ins, standups, Sprint Poker and Team Health checks, their discussions, tasks and integrations, Team Health
+  comments and AI summaries, a team structure, and the Reports flag on. Every run adds another Copper
   `pnpm dev:seed someone@example.com` makes that person its billing leader, signing them up first if needed
   `--starter` puts it on the Starter plan, whose reports count its 2 busiest teams
 */
@@ -28,6 +28,10 @@ interface SampleTeam {
   pushesTo?: string
   viewer?: 'lead' | 'member'
   hasFewAnswersInLatestCheck?: boolean
+  // the AI summary of one category in its latest check is still being written
+  hasPendingSummaryInLatestCheck?: boolean
+  // the categories, by position, that people answer far apart from each other in its latest check
+  splitInLatestCheck?: number[]
   // how far its Team Health scores move over the year
   healthTrend?: number
 }
@@ -124,7 +128,8 @@ const TEAMS: SampleTeam[] = [
     ],
     firstMetDaysAgo: 360,
     lastMetDaysAgo: 3,
-    pushesTo: 'jira'
+    pushesTo: 'jira',
+    hasPendingSummaryInLatestCheck: true
   },
   {
     name: 'Data',
@@ -149,7 +154,8 @@ const TEAMS: SampleTeam[] = [
     ],
     firstMetDaysAgo: 360,
     lastMetDaysAgo: 6,
-    healthTrend: -1.2
+    healthTrend: -1.2,
+    splitInLatestCheck: [0, 2]
   },
   {
     name: 'Asset Servicing',
@@ -286,6 +292,88 @@ const STORY_TITLES = [
   'Rotate API keys',
   'Archive old trades'
 ]
+// what people say about a category, as written and as AI rewords it when they answer anonymously
+const HEALTH_COMMENTS: Record<'low' | 'mid' | 'high', [string, string][]> = {
+  low: [
+    [
+      'Work stalls at the on-call handoff and nobody owns picking it back up.',
+      'Work tends to stall at the on-call handoff, with no clear owner to restart it.'
+    ],
+    [
+      'We keep saying yes to interrupts, so sprint commitments slip every time.',
+      'Saying yes to interrupt requests keeps pushing sprint commitments back.'
+    ],
+    [
+      'I don’t feel safe raising problems in planning. It gets treated as negativity.',
+      'Raising problems in planning can be treated as negativity, so it feels risky.'
+    ],
+    [
+      'Priorities change mid-sprint and nobody explains why.',
+      'Priorities shift mid-sprint without an explanation.'
+    ],
+    [
+      'Reviews sit for days, so “on time” stops meaning much.',
+      'Code reviews wait for days, which makes delivering on time hard to judge.'
+    ],
+    [
+      'I can’t see how my work connects to anything customers notice.',
+      'It is hard to see how the work connects to anything customers notice.'
+    ]
+  ],
+  mid: [
+    [
+      'Mostly fine, but the roadmap is fuzzy past next month.',
+      'Mostly fine, though the roadmap is unclear beyond next month.'
+    ],
+    [
+      'Better than last quarter. Standups are shorter and more useful.',
+      'An improvement on last quarter, with shorter and more useful standups.'
+    ],
+    ['Depends on the week. Release weeks are rough.', 'It varies, and release weeks are hard.'],
+    [
+      'Good intentions, uneven follow-through on action items.',
+      'Intentions are good, but follow-through on action items is uneven.'
+    ]
+  ],
+  high: [
+    [
+      'The new triage rotation catches dropped tickets early. First thing that’s really helped.',
+      'The new triage rotation catches dropped tickets early, the first change that clearly helped.'
+    ],
+    [
+      'People ask for help early here and nobody judges it.',
+      'Asking for help early is normal and isn’t judged.'
+    ],
+    [
+      'Clear goals this quarter, and we all know who owns what.',
+      'Goals are clear this quarter and everyone knows who owns what.'
+    ],
+    [
+      'Shipping the settlement export felt great. Customers noticed within a day.',
+      'Shipping the settlement export was rewarding, and customers noticed quickly.'
+    ],
+    [
+      'I trust this team to catch my mistakes before they ship.',
+      'There is trust that teammates will catch mistakes before they ship.'
+    ]
+  ]
+}
+const toHealthSummary = (categoryName: string, sentimentScore: number) => {
+  if (sentimentScore <= -0.5) {
+    return `${categoryName} is a concern. People point to work stalling at handoffs and to interrupt requests that push planned work out, and several say nothing changed since the last check.`
+  }
+  if (sentimentScore < 0) {
+    return `${categoryName} is mixed and leaning negative. Some people describe progress, but uneven follow-through on action items keeps coming up.`
+  }
+  if (sentimentScore < 0.5) {
+    return `${categoryName} is steady. Most comments are neutral, with a few asks for clearer priorities past the next month.`
+  }
+  if (sentimentScore < 0.8) {
+    return `${categoryName} looks healthy. People describe clear ownership and quick help when something blocks them.`
+  }
+  return `${categoryName} is a real strength. People credit habits like asking for help early and reviewing each other’s work, and say it keeps getting better.`
+}
+
 const MEETING_NAMES: Record<MeetingType, string> = {
   retrospective: 'Retro',
   action: 'Check-in',
@@ -306,6 +394,51 @@ const TEMPLATE_CHOICES: Record<MeetingType, string[]> = {
   teamHealth: ['googleProjectAristotleTemplate', 'atlassianTeamHealthMonitorTemplate']
 }
 
+// the settings every new team gets for each kind of meeting, as createTeamAndLeader makes them. A team without them
+// can't load its meeting settings, so pages like the activity library fail for its members
+const MEETING_SETTINGS = [
+  {
+    meetingType: 'retrospective',
+    phaseTypes: ['checkin', 'TEAM_HEALTH', 'updates', 'reflect', 'group', 'vote', 'discuss'],
+    selectedTemplateId: 'workingStuckTemplate',
+    disableAnonymity: false,
+    maxVotesPerGroup: 3,
+    totalVotes: 5
+  },
+  {
+    meetingType: 'action',
+    phaseTypes: ['checkin', 'updates', 'firstcall', 'agendaitems', 'lastcall'],
+    selectedTemplateId: null,
+    disableAnonymity: null,
+    maxVotesPerGroup: null,
+    totalVotes: null
+  },
+  {
+    meetingType: 'poker',
+    phaseTypes: ['checkin', 'SCOPE', 'ESTIMATE'],
+    selectedTemplateId: 'estimatedEffortTemplate',
+    disableAnonymity: null,
+    maxVotesPerGroup: null,
+    totalVotes: null
+  },
+  {
+    meetingType: 'teamHealth',
+    phaseTypes: ['TEAM_HEALTH_RESPONSE'],
+    selectedTemplateId: 'everythingBagelTemplate',
+    disableAnonymity: null,
+    maxVotesPerGroup: null,
+    totalVotes: null
+  },
+  {
+    meetingType: 'teamPrompt',
+    phaseTypes: ['RESPONSES'],
+    selectedTemplateId: 'enterpriseDailyStandupTemplate',
+    disableAnonymity: null,
+    maxVotesPerGroup: null,
+    totalVotes: null
+  }
+]
+
 // mulberry32 with a fixed seed, so every Copper looks the same
 const makeRandom = (seed: number) => {
   let state = seed
@@ -317,6 +450,8 @@ const makeRandom = (seed: number) => {
   }
 }
 const random = makeRandom(20261021)
+// Team Health comments and summaries draw from their own stream, so adding them left the rest of Copper as it was
+const healthRandom = makeRandom(20261022)
 const between = (min: number, max: number) => min + Math.floor(random() * (max - min + 1))
 const chance = (probability: number) => random() < probability
 const pick = <T,>(items: readonly T[]) => items[Math.floor(random() * items.length)]!
@@ -325,6 +460,27 @@ const minutesAfter = (date: Date, minutes: number) => new Date(date.getTime() + 
 
 const ID_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
 const toId = () => Array.from(crypto.randomBytes(10), (byte) => ID_CHARS[byte % 62]).join('')
+
+// A Team Health check's results phase, one stage per category, which the meeting and Reports read its results from
+const toTeamHealthPhases = (questionIds: number[]) =>
+  JSON.stringify([
+    {
+      id: toId(),
+      phaseType: 'TEAM_HEALTH_RESULT',
+      stages: questionIds.map((questionId, sortOrder) => ({
+        id: toId(),
+        phaseType: 'TEAM_HEALTH_RESULT',
+        questionId,
+        sortOrder,
+        discussionId: toId(),
+        isComplete: true,
+        isNavigable: true,
+        isNavigableByFacilitator: true,
+        viewCount: 0,
+        readyToAdvance: []
+      }))
+    }
+  ])
 
 const toTaskContent = (text: string) =>
   JSON.stringify({type: 'doc', content: [{type: 'paragraph', content: [{type: 'text', text}]}]})
@@ -355,8 +511,10 @@ const readCatalog = async (client: Client) => {
     'SELECT id, "templateId" FROM "TemplatePrompt" WHERE "templateId" = ANY($1) AND "removedAt" IS NULL',
     [TEMPLATE_CHOICES.retrospective]
   )
-  const {rows: questions} = await client.query<{id: number}>(
-    'SELECT min(id) AS id FROM "TeamHealthQuestion" GROUP BY "categoryId" ORDER BY "categoryId"'
+  const {rows: questions} = await client.query<{id: number; categoryId: number; name: string}>(
+    `SELECT min(q.id) AS id, q."categoryId", c.name FROM "TeamHealthQuestion" q
+    JOIN "TeamHealthCategory" c ON c.id = q."categoryId"
+    GROUP BY q."categoryId", c.name ORDER BY q."categoryId"`
   )
   const {rows: providers} = await client.query<{id: number; service: string}>(
     `SELECT DISTINCT ON (service) id, service FROM "IntegrationProvider"
@@ -376,6 +534,7 @@ const readCatalog = async (client: Client) => {
     templatesOf,
     promptIdsByTemplateId,
     questionIds: questions.map(({id}) => id),
+    healthCategories: questions.map(({categoryId, name}) => ({id: categoryId, name})),
     providerIdByService: new Map(providers.map(({id, service}) => [service, id]))
   }
 }
@@ -489,6 +648,9 @@ const seedCopper = async (client: Client, viewerId: string, tier: 'starter' | 't
       createdBy: viewerId,
       createdAt: daysAgo(team.firstMetDaysAgo + 35)
     })
+    MEETING_SETTINGS.forEach((settings) =>
+      add('MeetingSettings', {id: toId(), teamId: team.id, ...settings})
+    )
     membershipsByTeamId.get(team.id)?.forEach(({userId, joinedDaysAgo, leftDaysAgo, isLead}) => {
       add('TeamMember', {
         id: `${userId}::${team.id}`,
@@ -604,6 +766,10 @@ const seedCopper = async (client: Client, viewerId: string, tier: 'starter' | 't
               : null
         meetingNumber++
         meetingCount++
+        const endedAt = minutesAfter(
+          createdAt,
+          meetingType === 'teamPrompt' ? 8 * 60 : between(30, 60)
+        )
         add('NewMeeting', {
           id: meetingId,
           name: `${MEETING_NAMES[meetingType]} ${meetingNumber}`,
@@ -614,10 +780,10 @@ const seedCopper = async (client: Client, viewerId: string, tier: 'starter' | 't
           facilitatorStageId: toId(),
           facilitatorUserId: facilitator,
           createdBy: facilitator,
-          phases: '[]',
+          phases: meetingType === 'teamHealth' ? toTeamHealthPhases(catalog.questionIds) : '[]',
           templateId,
           createdAt,
-          endedAt: minutesAfter(createdAt, meetingType === 'teamPrompt' ? 8 * 60 : between(30, 60))
+          endedAt
         })
         attendees.forEach((userId) => {
           add('MeetingMember', {
@@ -630,17 +796,61 @@ const seedCopper = async (client: Client, viewerId: string, tier: 'starter' | 't
         })
         if (meetingType === 'teamHealth') {
           const drift = ((team.firstMetDaysAgo - day) / 365) * (team.healthTrend ?? 0.6)
+          const scoresByCategory = catalog.questionIds.map((): number[] => [])
+          const usedCommentsByCategory = catalog.questionIds.map(() => new Set<string>())
+          const isSplit = (categoryIdx: number) =>
+            isLatestCheck && !!team.splitInLatestCheck?.includes(categoryIdx)
           attendees.forEach((userId) => {
             catalog.questionIds.forEach((questionId, categoryIdx) => {
-              const score = scoreBase[categoryIdx]! + drift + (random() - 0.5) * 1.6
+              const noise = isSplit(categoryIdx) ? 4.5 : 1.6
+              const rawScore = scoreBase[categoryIdx]! + drift + (random() - 0.5) * noise
+              const score = Math.min(5, Math.max(1, Math.round(rawScore)))
+              scoresByCategory[categoryIdx]!.push(score)
+              const tone = score <= 2 ? 'low' : score >= 4 ? 'high' : 'mid'
+              const usedComments = usedCommentsByCategory[categoryIdx]!
+              const unusedComments = HEALTH_COMMENTS[tone].filter(
+                ([text]) => !usedComments.has(text)
+              )
+              const comments = unusedComments.length > 0 ? unusedComments : HEALTH_COMMENTS[tone]
+              const [comment, reworded] =
+                healthRandom() < (isSplit(categoryIdx) ? 0.8 : tone === 'mid' ? 0.2 : 0.45)
+                  ? comments[Math.floor(healthRandom() * comments.length)]!
+                  : [null, null]
+              if (comment) usedComments.add(comment)
+              const isAnonymous = !!comment && healthRandom() < 0.5
               add('TeamHealthResponse', {
                 meetingId,
                 questionId,
                 userId,
-                score: Math.min(5, Math.max(1, Math.round(score)))
+                score,
+                comment,
+                isAnonymous,
+                commentParaphrased: isAnonymous ? reworded : null
               })
             })
           })
+          if (attendees.length >= 3) {
+            catalog.healthCategories.forEach(({id: categoryId, name}, categoryIdx) => {
+              const scores = scoresByCategory[categoryIdx]!
+              const average = scores.reduce((sum, score) => sum + score, 0) / scores.length
+              // a split check's summary dwells on the unhappy half
+              const sentiment = isSplit(categoryIdx)
+                ? -0.85 - healthRandom() * 0.15
+                : (average - 3) * 0.55 + (healthRandom() - 0.5) * 0.4
+              const sentimentScore = Math.round(Math.min(1, Math.max(-1, sentiment)) * 100) / 100
+              const isPending =
+                isLatestCheck &&
+                team.hasPendingSummaryInLatestCheck &&
+                categoryIdx === catalog.healthCategories.length - 1
+              add('TeamHealthCategorySummary', {
+                meetingId,
+                categoryId,
+                summary: isPending ? null : toHealthSummary(name, sentimentScore),
+                sentimentScore: isPending ? null : sentimentScore,
+                createdAt: isPending ? new Date() : endedAt
+              })
+            })
+          }
         }
         if (meetingType === 'poker') {
           const storyCount = between(3, 6)
@@ -771,12 +981,14 @@ const seedCopper = async (client: Client, viewerId: string, tier: 'starter' | 't
     'OrganizationUser',
     'OrganizationUserAudit',
     'Team',
+    'MeetingSettings',
     'TeamMember',
     'MeetingTemplate',
     'TemplatePrompt',
     'NewMeeting',
     'MeetingMember',
     'TeamHealthResponse',
+    'TeamHealthCategorySummary',
     'RetroReflectionGroup',
     'AgendaItem',
     'Discussion',

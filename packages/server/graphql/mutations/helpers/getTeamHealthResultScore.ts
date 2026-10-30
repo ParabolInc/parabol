@@ -1,11 +1,12 @@
+import {canShowTeamHealthScore} from '../../../../client/shared/utils/teamHealthAnonymity'
 import averageTeamHealthScore from '../../../utils/averageTeamHealthScore'
 import type {DataLoaderWorker} from '../../graphql'
 
 /**
  * This cycle's average Likert score for a question, alongside the scores its category earned in
  * every prior cycle. Both the reveal ordering and the results UI read from here so a category's
- * trend is computed one way only. A null score means nobody answered, not a zero; an empty history
- * means the team has never scored the category before.
+ * trend is computed one way only. A null score means too few people answered to show one, not a
+ * zero; an empty history means the team has never scored the category before.
  */
 const getTeamHealthResultScore = async (
   meetingId: string,
@@ -30,7 +31,7 @@ const getTeamHealthResultScore = async (
     })
     .reverse()
   return {
-    score: averageTeamHealthScore(scores),
+    score: canShowTeamHealthScore(scores.length) ? averageTeamHealthScore(scores) : null,
     scoreHistory
   }
 }

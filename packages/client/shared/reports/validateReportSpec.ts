@@ -40,7 +40,7 @@ export const toReportDimensionKey = ({
   levelId?: string
 }) => (levelId ? `${dimension}:${levelId}` : dimension)
 
-const isMeasureDimension = (measure: ReportMeasure, dimension: ReportDimension) =>
+export const isMeasureDimension = (measure: ReportMeasure, dimension: ReportDimension) =>
   (REPORT_MEASURES[measure].dimensions as readonly ReportDimension[]).includes(dimension)
 
 const isRealDate = (date: string) => {
@@ -143,12 +143,6 @@ export const validateReportSpec = (spec: ReportSpec): string | null => {
     const doubled = dimensions.find((dimension) => !isReportCountedOnceBy(measure, dimension))
     if (doubled)
       return `${measure} counts toward more than one ${doubled}, so it can't FLOW through it`
-  }
-  if (compareTo === 'PREVIOUS_CHECK') {
-    if (measures.some((measure) => measure !== 'HEALTH_SCORE')) {
-      return 'PREVIOUS_CHECK only compares HEALTH_SCORE'
-    }
-    if (timeDimensions.length > 0) return "PREVIOUS_CHECK can't be used over time"
   }
   if (sort?.by === 'TIME' && timeDimensions.length === 0)
     return 'Sorting by time needs a time breakdown'

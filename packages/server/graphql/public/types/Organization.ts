@@ -2,6 +2,7 @@ import {GraphQLError} from 'graphql'
 import getKysely from '../../../postgres/getKysely'
 import {selectPinnedReports} from '../../../reports/pinnedReports'
 import readReportSpecInput from '../../../reports/readReportSpecInput'
+import {readReportTeamHealthStage} from '../../../reports/reportTeamHealth'
 import runReport from '../../../reports/runReport'
 import {
   getUserId,
@@ -82,6 +83,10 @@ const Organization: OrganizationResolvers = {
       isSuperUser: isSuperUser(authToken),
       dataLoader
     })
+  },
+
+  reportTeamHealthStage: async (_source, {meetingId, categoryId}, {dataLoader}) => {
+    return readReportTeamHealthStage(meetingId, categoryId, dataLoader)
   },
 
   pinnedReports: ({id: orgId}) => selectPinnedReports(orgId),

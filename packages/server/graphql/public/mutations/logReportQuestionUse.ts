@@ -9,6 +9,7 @@ import readReportSpecInput from '../../../reports/readReportSpecInput'
 import recordReportQuestion from '../../../reports/recordReportQuestion'
 import toReportSpecShape from '../../../reports/toReportSpecShape'
 import {getUserId} from '../../../utils/authorization'
+import getHashAndJSON from '../../../utils/getHashAndJSON'
 import type {MutationResolvers} from '../resolverTypes'
 
 const logReportQuestionUse: MutationResolvers['logReportQuestionUse'] = async (
@@ -61,7 +62,7 @@ const logReportQuestionUse: MutationResolvers['logReportQuestionUse'] = async (
   const recent = reportQuestionId
     ? await pg
         .selectFrom('ReportQuestion')
-        .select('spec')
+        .select(['source', 'spec'])
         .where('id', '=', reportQuestionId)
         .where('userId', '=', viewerId)
         .where('orgId', '=', orgId)
@@ -69,23 +70,64 @@ const logReportQuestionUse: MutationResolvers['logReportQuestionUse'] = async (
     : undefined
   if (!reportQuestionId || !recent)
     throw new GraphQLError('That isn’t one of your recent questions')
-  // a changed spec is kept as the one used, which shows where the first one missed
   const isChanged = !!spec && stringify(spec) !== stringify(parseReportSpec(recent.spec).spec)
+  if (!isChanged || !spec) {
+    const reportQuestion = await pg
+      .updateTable('ReportQuestion')
+      .set({uses: sql`uses + 1`, lastUsedAt: sql`CURRENT_TIMESTAMP`})
+      .where('id', '=', reportQuestionId)
+      .returningAll()
+      .executeTakeFirstOrThrow()
+    return {reportQuestion}
+  }
+  if (!builtTitle || builtTitle.length > 255) {
+    throw new GraphQLError('A changed report needs a name of 1 to 255 characters')
+  }
+  // a changed question keeps its own spec, so asking it again gives the same answer. Marking it edited shows
+  // where it missed, and the change becomes a report the viewer built
+  if (recent.source !== 'builder') {
+    await pg
+      .updateTable('ReportQuestion')
+      .set({editedAt: sql`CURRENT_TIMESTAMP`})
+      .where('id', '=', reportQuestionId)
+      .execute()
+    const reportQuestion = await recordReportQuestion({
+      userId: viewerId,
+      orgId,
+      source: 'builder',
+      question: null,
+      title: builtTitle,
+      spec
+    })
+    return {reportQuestion}
+  }
+  // a built report changes in place, unless the change matches another of the viewer's reports
+  const {id: dedupeKey} = getHashAndJSON(spec)
+  const match = await pg
+    .selectFrom('ReportQuestion')
+    .select('id')
+    .where('userId', '=', viewerId)
+    .where('orgId', '=', orgId)
+    .where('dedupeKey', '=', dedupeKey)
+    .where('id', '!=', reportQuestionId)
+    .executeTakeFirst()
   const reportQuestion = await pg
     .updateTable('ReportQuestion')
     .set({
       uses: sql`uses + 1`,
       lastUsedAt: sql`CURRENT_TIMESTAMP`,
-      ...(isChanged && spec
-        ? {
+      ...(match
+        ? {}
+        : {
             spec: JSON.stringify(spec),
             shape: toReportSpecShape(spec),
+            title: builtTitle,
+            dedupeKey,
             outcome: 'shown' as const,
             editedAt: sql`CURRENT_TIMESTAMP`
-          }
-        : {})
+          })
     })
-    .where('id', '=', reportQuestionId)
+    .where('id', '=', match?.id ?? reportQuestionId)
     .returningAll()
     .executeTakeFirstOrThrow()
   return {reportQuestion}

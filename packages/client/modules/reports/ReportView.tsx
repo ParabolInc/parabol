@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import type {ReportTeamHealthView_teamHealth$key} from '../../__generated__/ReportTeamHealthView_teamHealth.graphql'
 import type {ReportView_result$key} from '../../__generated__/ReportView_result.graphql'
 import type {ReportSpec} from '../../shared/reports/reportCatalog'
 import ReportBarsView from './ReportBarsView'
@@ -9,8 +10,10 @@ import ReportLineView from './ReportLineView'
 import ReportNumberView from './ReportNumberView'
 import ReportTableSummary from './ReportTableSummary'
 import ReportTableView from './ReportTableView'
+import ReportTeamHealthView from './ReportTeamHealthView'
 import {withoutHiddenValues} from './reportRows'
 import {formatReportBreakdown} from './reportSpecLabels'
+import type {ReportTeamHealthAllTeamsRows} from './reportTeamHealthRows'
 
 interface Props {
   spec: ReportSpec
@@ -18,9 +21,22 @@ interface Props {
   // a card on the Reports page, rather than the report's own page
   isCompact?: boolean
   lastHeldByTeamId?: ReadonlyMap<string, number | null>
+  // a Health score heatmap by team and category marks its cells, and a cell opens for its details
+  orgId?: string
+  teamHealthRef?: ReportTeamHealthView_teamHealth$key | null
+  allTeamsRows?: ReportTeamHealthAllTeamsRows | null
 }
 
-const ReportView = ({spec, resultRef, isCompact = false, lastHeldByTeamId}: Props) => {
+const ReportView = (props: Props) => {
+  const {
+    spec,
+    resultRef,
+    isCompact = false,
+    lastHeldByTeamId,
+    orgId,
+    teamHealthRef,
+    allTeamsRows
+  } = props
   const result = useFragment(
     graphql`
       fragment ReportView_result on ReportResult {
@@ -57,8 +73,7 @@ const ReportView = ({spec, resultRef, isCompact = false, lastHeldByTeamId}: Prop
   if (notes.some(({kind}) => kind === 'FILTER_LEVEL_REMOVED')) {
     return (
       <p className='m-0 py-6 text-center text-fg-secondary text-sm'>
-        A team structure level this report filters by was removed, so the report stops here rather
-        than count every team. Remove that filter to run it.
+        A structure level this report filters by was removed. Remove that filter to run it.
       </p>
     )
   }
@@ -85,6 +100,19 @@ const ReportView = ({spec, resultRef, isCompact = false, lastHeldByTeamId}: Prop
         step={step}
         rows={withoutHiddenValues(rows)}
         isCompact={isCompact}
+      />
+    )
+  }
+  if (spec.showAs === 'HEATMAP' && orgId && teamHealthRef && allTeamsRows) {
+    return (
+      <ReportTeamHealthView
+        orgId={orgId}
+        spec={spec}
+        rowHeading={breakdownNames[breakdownNames.length - 2] ?? 'Team'}
+        rows={rows}
+        rowTotals={rowTotals}
+        teamHealthRef={teamHealthRef}
+        allTeamsRows={allTeamsRows}
       />
     )
   }
