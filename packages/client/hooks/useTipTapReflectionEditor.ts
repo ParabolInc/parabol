@@ -3,14 +3,13 @@ import Highlight from '@tiptap/extension-highlight'
 import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention from '@tiptap/extension-mention'
 import {CharacterCount, Focus, Placeholder} from '@tiptap/extensions'
-import {Extension, generateText, useEditor} from '@tiptap/react'
+import {Extension, generateText, type JSONContent, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import {useEffect, useRef, useState} from 'react'
+import {useMemo, useRef} from 'react'
 import type Atmosphere from '../Atmosphere'
 import {LoomExtension} from '../components/TipTapEditor/LoomExtension'
 import {TiptapLinkExtension} from '../components/TipTapEditor/TiptapLinkExtension'
 import {useUploadUserAsset} from '../mutations/useUploadUserAsset'
-import {isEqualWhenSerialized} from '../shared/isEqualWhenSerialized'
 import {SafeTextStyleKit} from '../shared/tiptap/extensions/SafeTextStyleKit'
 import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {ClearOnSubmit} from '../tiptap/extensions/ClearOnSubmit'
@@ -20,10 +19,13 @@ import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
 import {ElementWidth} from '../types/constEnums'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
+import {useTipTapEditorSync} from './useTipTapEditorSync'
 
 const isValid = <T>(obj: T | undefined | null | boolean): obj is T => {
   return !!obj
 }
+
+const emptyDoc: JSONContent = {type: 'doc', content: [{type: 'paragraph'}]}
 
 export const useTipTapReflectionEditor = (
   content: string,
@@ -37,7 +39,10 @@ export const useTipTapReflectionEditor = (
   }
 ) => {
   const {atmosphere, teamId, readOnly, placeholder, onModEnter, autoFocus} = options
-  const [contentJSON] = useState(() => (content ? JSON.parse(content) : undefined))
+  const contentJSON = useMemo(
+    () => (content ? (JSON.parse(content) as JSONContent) : emptyDoc),
+    [content]
+  )
   const placeholderRef = useRef(placeholder)
   const [commit] = useUploadUserAsset()
   placeholderRef.current = placeholder
@@ -115,18 +120,6 @@ export const useTipTapReflectionEditor = (
     },
     []
   )
-  useEffect(() => {
-    if (!editor || editor.isDestroyed) return
-    const oldDoc = editor.getJSON()
-    const newDoc = JSON.parse(content)
-    if (isEqualWhenSerialized(oldDoc, newDoc)) return
-    editor.commands.setContent(newDoc)
-  }, [content])
-
-  useEffect(() => {
-    if (!editor || editor.isDestroyed) return
-    editor.setEditable(!readOnly)
-  }, [readOnly])
-
+  useTipTapEditorSync(editor, contentJSON, !readOnly)
   return {editor}
 }
