@@ -115,7 +115,8 @@ const EVAL_SETS = {
   dev: {queryFile: 'queries.json', corpus: FIXTURES_CORPUS},
   holdout: {queryFile: 'holdoutQueries.json', corpus: FIXTURES_CORPUS},
   'heavy-dev': {queryFile: 'heavyQueries.json', corpus: HEAVY_CORPUS},
-  'heavy-holdout': {queryFile: 'heavyHoldoutQueries.json', corpus: HEAVY_CORPUS}
+  'heavy-holdout': {queryFile: 'heavyHoldoutQueries.json', corpus: HEAVY_CORPUS},
+  'heavy-final': {queryFile: 'heavyFinalQueries.json', corpus: HEAVY_CORPUS}
 } satisfies Record<string, {queryFile: string; corpus: EvalCorpus}>
 
 type EvalSet = keyof typeof EVAL_SETS
