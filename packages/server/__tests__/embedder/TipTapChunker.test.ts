@@ -162,7 +162,12 @@ it('splits a long paragraph into sentence groups without overlap or loss', () =>
 
 describe('on the heavy corpus', () => {
   const pages = generateHeavyCorpus()
-  const words = (text: string) => text.split(/\s+/).filter(Boolean)
+  const countWords = (text: string) => {
+    const counts = new Map<string, number>()
+    for (const word of text.split(/\s+/).filter(Boolean))
+      counts.set(word, (counts.get(word) ?? 0) + 1)
+    return counts
+  }
 
   it('keeps every chunk within 512 tokens', () => {
     for (const page of pages) {
@@ -176,19 +181,25 @@ describe('on the heavy corpus', () => {
 
   it('loses no words of any block', () => {
     for (const page of pages) {
-      const content = (page.content.content ?? []).filter(
-        ({type}) => type !== 'heading' && type !== 'details'
+      const blocks = page.content.content ?? []
+      const hasResponses = blocks.some(({type}) => type === 'responseBlock')
+      const expected = countWords(
+        blocks
+          .filter(({type}) => type !== 'heading')
+          .map(getSearchText)
+          .filter(
+            (text) => !(hasResponses && text.split('\n').includes('Author | Created at | Content'))
+          )
+          .join(' ')
       )
-      const expected = words(content.map(getSearchText).join(' '))
-      const chunked = new Set(
-        words(
-          new TipTapChunker({language: 'en'})
-            .chunk(page.content as TipTapSerializedContent)
-            .map(({text}) => text)
-            .join(' ')
-        )
+      const chunked = countWords(
+        new TipTapChunker({language: 'en'})
+          .chunk(page.content as TipTapSerializedContent)
+          .map(({text}) => text)
+          .join(' ')
       )
-      expect(expected.filter((word) => !chunked.has(word))).toEqual([])
+      const missing = [...expected].filter(([word, count]) => (chunked.get(word) ?? 0) < count)
+      expect(missing).toEqual([])
     }
   })
 })
@@ -205,4 +216,85 @@ it('chunks a table whose header row is longer than a chunk', () => {
   const chunks = chunk([heading(1, 'Wide table'), table(header, rows)])
   expect(chunks.length).toBeGreaterThan(0)
   expect(chunks.every(({embeddingText}) => estimateTokens(embeddingText) <= 512)).toBe(true)
+})
+
+const hasLoneSurrogate = (text: string) => /\p{Cs}/u.test(text)
+
+it('cuts a long heading without splitting a character', () => {
+  const chunks = chunk([heading(1, `${'a'.repeat(99)}🚀 launch plan`), paragraph('Launch notes.')])
+  expect(chunks).toHaveLength(1)
+  expect(hasLoneSurrogate(chunks[0]!.embeddingText)).toBe(false)
+})
+
+const longItem = `${Array.from({length: 300}, (_, index) => `word${index}`).join(' ')}. Done today.`
+const chunkWords = (chunks: {text: string}[]) => chunks.flatMap(({text}) => text.split(/\s+/))
+
+it('keeps the space where a long list item splits', () =>
+  expect(chunkWords(chunk([heading(1, 'Backlog'), bulletList([paragraph(longItem)])]))).toEqual(
+    expect.arrayContaining(['word299.', 'Done'])
+  ))
+
+it('keeps the space where a long table cell splits', () =>
+  expect(
+    chunkWords(
+      chunk([heading(1, 'Notes table'), table(['Topic', 'Notes'], [['Release', longItem]])])
+    )
+  ).toEqual(expect.arrayContaining(['word299.', 'Done'])))
+
+it('chunks a page without headings', () => {
+  expect(chunk([paragraph('Just a note about the release.')])).toEqual([
+    expect.objectContaining({globalTitle: '', embeddingText: 'Just a note about the release.'})
+  ])
+  const chunks = chunk([paragraph(prose('note', 60))])
+  expect(chunks.length).toBeGreaterThan(1)
+  expect(chunks.every(({embeddingText, text}) => embeddingText === text)).toBe(true)
+})
+
+it('makes the first heading the title even when it is an H3', () => {
+  const chunks = chunk([
+    heading(3, 'Weekly notes'),
+    paragraph(prose('notes', 30)),
+    heading(2, 'Actions'),
+    paragraph(prose('actions', 30))
+  ])
+  expect(new Set(chunks.map(({globalTitle}) => globalTitle))).toEqual(new Set(['Weekly notes']))
+  expect(chunks.at(-1)!.headingPath).toEqual(['Actions'])
+  expect(chunks.at(-1)!.embeddingText.startsWith('Weekly notes > Actions\n\n')).toBe(true)
+})
+
+it('writes a body H1 between the title and its H2', () => {
+  const chunks = chunk([
+    heading(1, 'Handbook'),
+    heading(1, 'Part one'),
+    heading(2, 'Setup'),
+    paragraph(prose('setup', 15)),
+    heading(2, 'Deploy'),
+    paragraph(prose('deploy', 15))
+  ])
+  expect(chunks[0]!.embeddingText.startsWith('Handbook > Part one > Setup\n\n')).toBe(true)
+})
+
+const chunkJapanese = (text: string) =>
+  new TipTapChunker({language: 'ja'}).chunk({
+    type: 'doc',
+    content: [heading(1, '会議メモ'), paragraph(text)]
+  } as TipTapSerializedContent)
+
+it('splits long Japanese text between sentences without losing any', () => {
+  const text = Array.from(
+    {length: 120},
+    (_, index) => `第${index}回の会議では、リリース計画とテストの進め方について話し合いました。`
+  ).join('')
+  const chunks = chunkJapanese(text)
+  expect(chunks.length).toBeGreaterThan(1)
+  expect(chunks.every(({embeddingText}) => estimateTokens(embeddingText) <= 512)).toBe(true)
+  expect(chunks.map(({text: chunkText}) => chunkText).join('')).toBe(text)
+})
+
+it('splits Japanese text without punctuation between words', () => {
+  const text = 'リリース計画とテストの進め方について話し合いました'.repeat(150)
+  const chunks = chunkJapanese(text)
+  expect(chunks.length).toBeGreaterThan(1)
+  expect(chunks.every(({embeddingText}) => estimateTokens(embeddingText) <= 512)).toBe(true)
+  expect(chunks.map(({text: chunkText}) => chunkText).join('')).toBe(text)
 })

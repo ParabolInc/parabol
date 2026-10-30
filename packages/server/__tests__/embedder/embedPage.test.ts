@@ -238,6 +238,26 @@ it('makes no chunks for a page without text', async () => {
   expect(await chunkTexts(titleOnlyPageId)).toEqual([])
 })
 
+it('deletes the chunks of a page whose text is removed', async () => {
+  const shrinkingPageId = await insertPageWithContent('a6', doc('Gamma'))
+  await run(shrinkingPageId)
+  expect(await chunkTexts(shrinkingPageId)).toHaveLength(3)
+  await pg
+    .updateTable('Page')
+    .set({
+      yDoc: toYDoc({
+        type: 'doc',
+        content: [
+          {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'Embed page test'}]}
+        ]
+      })
+    })
+    .where('id', '=', shrinkingPageId)
+    .execute()
+  expect(await run(shrinkingPageId)).not.toBeInstanceOf(JobQueueError)
+  expect(await chunkTexts(shrinkingPageId)).toEqual([])
+})
+
 it('embeds a page with one block whose stored content is broken', async () => {
   const brokenPageId = await insertPageWithContent('a5', {
     type: 'doc',

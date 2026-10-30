@@ -34,7 +34,9 @@ interface Section {
 const headerOf = (title: string, path: string[]) =>
   [
     ...new Set(
-      [title, ...path].filter(Boolean).map((heading) => heading.slice(0, MAX_HEADING_CHARS))
+      [title, ...path]
+        .filter(Boolean)
+        .map((heading) => Array.from(heading).slice(0, MAX_HEADING_CHARS).join(''))
     )
   ].join(' > ')
 
@@ -156,20 +158,22 @@ export class TipTapChunker {
     return this.group(this.segment(text, 'sentence'), maxTokens, '', splitSentence)
   }
 
+  private packLines(lines: string[], maxTokens: number) {
+    const pieces = lines.flatMap((line) =>
+      estimateTokens(line) > maxTokens ? this.splitText(line, maxTokens) : [line]
+    )
+    return pack(pieces, maxTokens).map((group) => group.trim())
+  }
+
   private split({kind, text}: Block, maxTokens: number) {
     if (kind === 'text') return this.splitText(text, maxTokens)
     const lines = text.split('\n')
-    if (kind === 'list') {
-      return this.group(lines, maxTokens, '\n', (line) => this.splitText(line, maxTokens))
-    }
     const [header = '', ...rows] = lines
-    if (estimateTokens(header) > maxTokens / 2) {
-      return this.group(lines, maxTokens, '\n', (line) => this.splitText(line, maxTokens))
+    if (kind === 'list' || estimateTokens(header) > maxTokens / 2) {
+      return this.packLines(lines, maxTokens)
     }
     const rowBudget = maxTokens - estimateTokens(`${header}\n`)
-    return this.group(rows, rowBudget, '\n', (row) => this.splitText(row, rowBudget)).map(
-      (rowGroup) => `${header}\n${rowGroup}`
-    )
+    return this.packLines(rows, rowBudget).map((rowGroup) => `${header}\n${rowGroup}`)
   }
 
   private toChunk(title: string, headingPath: string[], text: string) {

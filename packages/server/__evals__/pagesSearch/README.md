@@ -60,7 +60,7 @@ EVAL_LABEL=page-fusion EVAL_SET=dev EVAL_MODES=sweep pnpm eval:pagesSearch
 ## How it works
 
 - **Corpus.** The user `eval|pagesSearch` owns every fixture page, privately. Seeding only creates and deletes that user's own rows, so results don't depend on the rest of your dev data.
-- **Indexing.** On every run, each page that has no embeddings is embedded in-process with the real `embedPage`, one at a time. When `embedPage` fails for a page, its partial rows are deleted, so the next run tries that page again. A run that you kill while it is embedding a page can leave partial rows behind, so reseed after that. A fixture that still has no embeddings afterwards is listed under `unindexed` in the results. That happens when the page has nothing to chunk, because it has no text besides its title, or when the embeddings service fails or times out on one of the page's chunks. Only the first is deterministic. A page that failed for the third reason is retried on the next run.
+- **Indexing.** On every run, each page that has no embeddings is embedded in-process with the real `embedPage`, one at a time. When `embedPage` fails for a page, its partial rows are deleted, so the next run tries that page again. A run that you kill while it is embedding a page can leave partial rows behind, so reseed after that. A fixture that still has no embeddings afterwards is listed under `unindexed` in the results. That happens when the page has nothing to chunk, because it has no text besides its title, or when the embeddings service fails or times out on one of the page's chunks. Only the first is deterministic. A page that failed for the second reason is retried on the next run.
 - **Queries.** The real resolver runs with the job queue replaced: the query is embedded by the same model call `embedQuery` makes. A failed search is recorded as zero results plus an `error`, and counted in `errors`; a result list that holds the same page twice is also an error. The resolver answers a `fused` query with keyword results when the query's embedding fails, comes back empty or takes longer than its 3 s budget, or when the fused ranking query throws, and those results would still score as fused. So each query records `embeddingMs` and `embeddingError` (an embedding still running when the search returned is an error), and `fallbackReason` when the resolver logged that it used keyword results. A `fused` run fails when any query has a `fallbackReason` or an `embeddingError`, when its embedding took longer than the budget, or when it made no embedding call; `quick` queries embed nothing and have none of these fields. The run writes its results and then fails: results recorded with errors are not a valid baseline, so run it again.
 - **Validity.** A run is a valid baseline only when it passes, so `errors` is 0 and no `fused` query fell back to keyword results, and `unindexed` lists exactly `stub-customer-interviews`, `stub-hiring-plan` and `stub-offsite-agenda`. Before B2, it also listed `meeting-notes-ja`, which the language gate refused. Any other `unindexed` list means the run scored a different index, so run it again. On a slow or throttled host, for example a laptop on battery, `retro-q3-product` can time out while it is embedded. The symptom is four unindexed fixtures instead of three. Plug in and run again; the next run retries that page.
 - **Isolation.** `jest.eval.config.js` has no global setup, so a run never truncates tables or changes triggers. The metric unit tests in `__tests__/` run with the normal server suite.
@@ -686,7 +686,7 @@ The chunker used to group a page's sections into chunks of 768 to 1,024 estimate
 - A heading of level 1 or 2 starts a section. Smaller headings stay inside it.
 - A page that fits in 512 tokens is one chunk. Otherwise each section's blocks pack into chunks of about 384 tokens, never across sections and with no overlap.
 - A block too big for a chunk splits: a table into row groups that repeat its header row, a list into item groups, and text into sentences, then words.
-- Each chunk starts with its page title and section path, `Title > H1 > H2`, then a blank line. Headings are read in full and the path has no gaps. Each heading in that header is capped at 100 characters, so a very long heading can't push a chunk past its limit.
+- Each chunk starts with its page title and section path, `Title > H1 > H2`, then a blank line. Headings are read in full and the path has no gaps. Each heading in that header is capped at 100 characters, cut between characters, so a very long heading can't push a chunk past its limit.
 - Sections and pages without text make no chunks.
 - Tokens are estimated as one per CJK character and one per 3.7 other characters, calibrated with TEI's `/tokenize`.
 - Every language is embedded. The text-search config falls back to `simple` when Postgres has none for the page's language, and a block whose stored JSON is broken no longer stops the page.
@@ -699,7 +699,7 @@ The heavy corpus, counted with TEI's `/tokenize`:
 | Characters embedded | 341,294 | 323,263 |
 | Tokens | 88,338 | 81,587 (−8%) |
 
-The estimate runs above TEI's count: 7.4% on the heavy corpus, 13.1% on the fixtures and 13.7% on the Japanese page alone. Erring high keeps real chunks under the limit.
+The estimate runs above TEI's count: 7.4% on the heavy corpus, 13.1% on the fixtures and 13.7% on the Japanese page alone. On English and Japanese text, erring high keeps real chunks under the limit; other scripts weren't measured.
 
 Fused ranking at alpha 0.01, production's, with the eval pages reseeded. The quick list doesn't change:
 
@@ -709,7 +709,7 @@ Fused ranking at alpha 0.01, production's, with the eval pages reseeded. The qui
 | B2, floor 0.4 | 0.839 | 0.904 | 20.00 | 0.920 | 0.988 | 20.00 |
 | B2, floor 0.6 | 0.839 | 0.904 | 14.33 | 0.920 | 0.988 | 15.38 |
 
-The gains are paraphrase queries: 0.41 → 0.50 on `heavy-dev` and 0.55 → 0.61 on `dev`.
+Paraphrase queries gain the most: 0.41 → 0.50 on `heavy-dev` and 0.55 → 0.61 on `dev`. On `dev`, summary, non-English and body queries rise a little too, and typo queries dip 0.009 on `heavy-dev`.
 
 The vectors on their own (similarity alone: alpha 1, floor 0):
 
