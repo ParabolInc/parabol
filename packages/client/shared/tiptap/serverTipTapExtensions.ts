@@ -1,4 +1,4 @@
-import {type Extensions, mergeAttributes} from '@tiptap/core'
+import type {Extensions} from '@tiptap/core'
 import {Details, DetailsContent, DetailsSummary} from '@tiptap/extension-details'
 import Highlight from '@tiptap/extension-highlight'
 import {TaskItem, TaskList} from '@tiptap/extension-list'
@@ -23,6 +23,7 @@ import {SafeTextStyleKit} from './extensions/SafeTextStyleKit'
 import {TableOfContentsBase} from './extensions/TableOfContentsBase'
 import {TaskBlockBase} from './extensions/TaskBlockBase'
 import {ThinkingBlockBase} from './extensions/ThinkingBlockBase'
+import {isAllowedLinkHref} from './isAllowedLinkHref'
 export const mentionConfig: Partial<MentionOptions<any, MentionNodeAttrs>> = {
   renderText({node}) {
     return node.attrs.label
@@ -32,25 +33,11 @@ export const mentionConfig: Partial<MentionOptions<any, MentionNodeAttrs>> = {
   }
 }
 export const serverTipTapExtensions: Extensions = [
-  StarterKit.extend({
+  StarterKit.configure({
     link: {
-      parseHTML() {
-        return [
-          {
-            tag: 'a[href]:not([data-type="button"]):not([href *= "javascript:" i])'
-          }
-        ]
-      },
-
-      renderHTML({HTMLAttributes}: {HTMLAttributes: Record<string, any>}) {
-        return [
-          'a',
-          mergeAttributes((this as any).options.HTMLAttributes, HTMLAttributes, {class: 'link'}),
-          0
-        ]
-      }
+      isAllowedUri: isAllowedLinkHref
     }
-  } as any),
+  }),
   Details.configure({
     persist: true
   }),
