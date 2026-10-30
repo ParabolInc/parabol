@@ -2,7 +2,6 @@ import {sql} from 'kysely'
 import isValid from '../../server/graphql/isValid'
 import getKysely from '../../server/postgres/getKysely'
 import {Logger} from '../../server/utils/Logger'
-import {getEmbedderJobPriority} from '../getEmbedderJobPriority'
 import {
   type EmbeddingsPagesTable,
   type EmbeddingsTable,
@@ -14,11 +13,16 @@ import {URLRegex} from '../regex'
 import {AbstractModel} from './AbstractModel'
 import type {ModelId} from './modelIdDefinitions'
 
+export type PageChunkerName = 'markdown' | 'sections'
+
 export interface EmbeddingModelParams {
   embeddingDimensions: number
   precision: 32 | 16
   tableSuffix: string
   languages: readonly ISO6391[]
+  chunker: PageChunkerName
+  pageVectorFloor: number
+  pageAlpha: number
 }
 
 export abstract class AbstractEmbeddingsModel extends AbstractModel {
@@ -28,6 +32,7 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
   readonly tableName: EmbeddingsTable
   readonly pagesTableName: EmbeddingsPagesTable
   readonly languages: readonly ISO6391[]
+  readonly chunker: PageChunkerName
   readonly modelId: ModelId
   protected isReady = false
   constructor(modelId: ModelId, url: string, maxTokens: number) {
@@ -37,6 +42,7 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
     this.embeddingDimensions = modelParams.embeddingDimensions
     this.embeddingPrecision = modelParams.precision
     this.languages = modelParams.languages
+    this.chunker = modelParams.chunker
     this.maxInputTokens = maxTokens
     this.tableName = getEmbeddingsTableName(modelId)
     this.pagesTableName = getEmbeddingsPagesTableName(modelId)!
@@ -124,51 +130,6 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
     return chunks
   }
 
-  async createEmbeddingsForModel() {
-    Logger.log(`Queueing EmbeddingsMetadata, Pages into EmbeddingsJobQueueV2 for ${this.modelId}`)
-    const pg = getKysely()
-    const priority = await getEmbedderJobPriority('modelUpdate', null, 0)
-    await pg
-      .insertInto('EmbeddingsJobQueueV2')
-      .columns(['jobType', 'priority', 'embeddingsMetadataId', 'modelId'])
-      .expression(({selectFrom}) =>
-        selectFrom('EmbeddingsMetadata')
-          .select(({ref}) => [
-            sql.lit('embed:start').as('jobType'),
-            sql.lit(priority).as('priority'),
-            ref('id').as('embeddingsMetadataId'),
-            sql.lit(this.modelId).as('modelId')
-          ])
-          .where('language', 'in', this.languages)
-          .where(({eb, or}) =>
-            or([
-              // meetingTemplates are small & parabol-provided ones are older than a year
-              eb('objectType', '=', 'meetingTemplate'),
-              // for new models, we only grab a year's worth of data
-              eb('refUpdatedAt', '>', sql<Date>`NOW() - INTERVAL '1 year'`)
-            ])
-          )
-      )
-      .onConflict((oc) => oc.doNothing())
-      .execute()
-
-    // process pages first
-    const pagePriority = priority - 1_000
-    await pg
-      .insertInto('EmbeddingsJobQueueV2')
-      .columns(['jobType', 'priority', 'pageId', 'modelId'])
-      .expression(({selectFrom}) =>
-        selectFrom('Page').select(({ref}) => [
-          sql.lit('embedPage:start').as('jobType'),
-          sql.lit(pagePriority).as('priority'),
-          ref('id').as('pageId'),
-          sql.lit(this.modelId).as('modelId')
-        ])
-      )
-      .onConflict((oc) => oc.doNothing())
-      .execute()
-    Logger.log(`Metadata loaded into JobQueue for new model ${this.modelId}`)
-  }
   async createTable() {
     const pg = getKysely()
     const hasTable =
@@ -229,6 +190,5 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
         END
       $$;
       `.execute(pg)
-    await this.createEmbeddingsForModel()
   }
 }

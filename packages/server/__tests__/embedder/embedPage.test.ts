@@ -5,10 +5,12 @@ import {serverTipTapExtensions} from 'parabol-client/shared/tiptap/serverTipTapE
 import type {TipTapSerializedContent} from 'parabol-client/shared/tiptap/TipTapSerializedContent'
 import {encodeStateAsUpdate} from 'yjs'
 import {activeEmbeddingModelId} from '../../../embedder/activeEmbeddingModel'
+import type {PageChunkerName} from '../../../embedder/ai_models/AbstractEmbeddingsModel'
 import {getEmbeddingsPagesTableName} from '../../../embedder/getEmbeddingsTableName'
 import {primeSupportedLanguages} from '../../../embedder/getSupportedLanguages'
 import {numberVectorToString} from '../../../embedder/indexing/numberVectorToString'
 import {JobQueueError} from '../../../embedder/JobQueueError'
+import {MarkdownChunker} from '../../../embedder/MarkdownChunker'
 import {TipTapChunker} from '../../../embedder/TipTapChunker'
 import {embedPage} from '../../../embedder/workflows/embedPage'
 import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
@@ -30,6 +32,7 @@ let maxInFlight = 0
 
 const mockEmbedder = {
   pagesTableName: getEmbeddingsPagesTableName(activeEmbeddingModelId)!,
+  chunker: 'sections' as PageChunkerName,
   languages: ['en'],
   getEmbeddingWithTokens: jest.fn(
     async (): Promise<{embedding: number[]; tokens: number} | Error> => {
@@ -407,4 +410,24 @@ it('adds every chunk when a page grows past one chunk', async () => {
       .map(({embeddingText}) => embeddingText)
       .sort()
   )
+})
+
+it("chunks with the generation's chunker", async () => {
+  const content = pageDoc('Chunker test', ['Alpha', 'Beta'])
+  const markdownTexts = new MarkdownChunker({language: 'en'})
+    .chunk(content as TipTapSerializedContent)
+    .map(({embeddingText}) => embeddingText)
+  const sectionTexts = chunkPage(content).map(({embeddingText}) => embeddingText)
+  expect(markdownTexts).not.toEqual(sectionTexts)
+  const markdownPage = await insertPageWithContent('m', content)
+  const sectionsPage = await insertPageWithContent('s', content)
+  mockEmbedder.chunker = 'markdown'
+  try {
+    await run(markdownPage)
+  } finally {
+    mockEmbedder.chunker = 'sections'
+  }
+  await run(sectionsPage)
+  expect(await chunkTexts(markdownPage)).toEqual(markdownTexts)
+  expect(await chunkTexts(sectionsPage)).toEqual(sectionTexts)
 })

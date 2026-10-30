@@ -1,5 +1,5 @@
 import {sql} from 'kysely'
-import {activeEmbeddingModelId} from '../../../../embedder/activeEmbeddingModel'
+import {activeEmbeddingModelId, embeddingModelIds} from '../../../../embedder/activeEmbeddingModel'
 import type {JobType} from '../../../../embedder/custom'
 import {getEmbedderJobPriority, type JobKind} from '../../../../embedder/getEmbedderJobPriority'
 import getKysely from '../../../postgres/getKysely'
@@ -95,19 +95,24 @@ export async function publishToEmbedder(
   const priority = await getEmbedderJobPriority(jobKind, userId, 0, dataLoader)
   const pageId = (payload as MessageToEmbedderEmbedPage).pageId
   const embeddingsMetadataId = (payload as MessageToEmbedderEmbed).embeddingsMetadataId
+  const isCorpusUpdate = jobType === 'embedPage:start' || jobType === 'embed:start'
+  const modelIds = isCorpusUpdate ? embeddingModelIds : [activeEmbeddingModelId]
+  if (modelIds.length === 0) return
   await getKysely()
     .insertInto('EmbeddingsJobQueueV2')
-    .values({
-      jobType,
-      priority,
-      modelId: activeEmbeddingModelId,
-      pageId,
-      embeddingsMetadataId,
-      jobData: JSON.stringify(data || {}),
-      runAfter: pageId
-        ? sql`now() + ${sql.lit(PAGE_EMBED_IDLE_DELAY_SECONDS)} * interval '1 second'`
-        : undefined
-    })
+    .values(
+      modelIds.map((modelId) => ({
+        jobType,
+        priority,
+        modelId,
+        pageId,
+        embeddingsMetadataId,
+        jobData: JSON.stringify((modelId === activeEmbeddingModelId && data) || {}),
+        runAfter: pageId
+          ? sql<Date>`now() + ${sql.lit(PAGE_EMBED_IDLE_DELAY_SECONDS)} * interval '1 second'`
+          : undefined
+      }))
+    )
     .$if(!!pageId, (qb) =>
       qb.onConflict((oc) =>
         oc

@@ -93,13 +93,19 @@ export const modelIdDefinitions = {
     embeddingDimensions: 1024,
     precision: 32,
     tableSuffix: 'bge_l_en_1p5',
-    languages: ['en']
+    languages: ['en'],
+    chunker: 'markdown',
+    pageVectorFloor: 0.4,
+    pageAlpha: 0.01
   },
   'llmrails/ember-v1': {
     embeddingDimensions: 1024,
     precision: 32,
     tableSuffix: 'ember_1',
-    languages: ['en']
+    languages: ['en'],
+    chunker: 'markdown',
+    pageVectorFloor: 0.4,
+    pageAlpha: 0.01
   },
   'Svenni551/Qwen3-Embedding-0.6B-ONNX-INT8': {
     embeddingDimensions: 1024,
@@ -107,7 +113,19 @@ export const modelIdDefinitions = {
     // Actual max is 32768, but we half that because attention = seqlen**2, so RAM will go up 4x
     // Also, since we're using this for embeddings, we want chunks to have more meaning. No soup.
     tableSuffix: 'qwen3v2',
-    languages: qwen3Languages
+    languages: qwen3Languages,
+    chunker: 'markdown',
+    pageVectorFloor: 0.4,
+    pageAlpha: 0.01
+  },
+  'Svenni551/Qwen3-Embedding-0.6B-ONNX-INT8#v3': {
+    embeddingDimensions: 1024,
+    precision: 16,
+    tableSuffix: 'qwen3v3',
+    languages: qwen3Languages,
+    chunker: 'sections',
+    pageVectorFloor: 0.6,
+    pageAlpha: 0.01
   },
   'Qwen/Qwen3-Embedding-0.6B': {
     embeddingDimensions: 1024,
@@ -115,7 +133,10 @@ export const modelIdDefinitions = {
     // Actual max is 32768, but we half that because attention = seqlen**2, so RAM will go up 4x
     // Also, since we're using this for embeddings, we want chunks to have more meaning. No soup.
     tableSuffix: 'qwen3_600M',
-    languages: qwen3Languages
+    languages: qwen3Languages,
+    chunker: 'markdown',
+    pageVectorFloor: 0.4,
+    pageAlpha: 0.01
   }
 } satisfies Record<string, EmbeddingModelParams>
 
