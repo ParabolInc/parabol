@@ -16,6 +16,7 @@ import {EmbeddingTimeoutError} from '../../../../utils/EmbeddingTimeoutError'
 import {Logger} from '../../../../utils/Logger'
 import type {GQLContext} from '../../../graphql'
 import {getUserQueryJobData, publishToEmbedder} from '../../../mutations/helpers/publishToEmbedder'
+import {queueViewerPagesForEmbedding} from '../../../mutations/helpers/queueViewerPagesForEmbedding'
 import type {SearchTypeEnum} from '../../resolverTypes'
 import {search} from '../search'
 
@@ -28,6 +29,9 @@ jest.mock('../../../../postgres/queries/getEmbeddingsByRRF', () => ({
 }))
 jest.mock('../../../../postgres/queries/getPagesByKeyword', () => ({getPagesByKeyword: jest.fn()}))
 jest.mock('../../../../postgres/queries/getPagesByRRF', () => ({getPagesByRRF: jest.fn()}))
+jest.mock('../../../mutations/helpers/queueViewerPagesForEmbedding', () => ({
+  queueViewerPagesForEmbedding: jest.fn()
+}))
 jest.mock('../../../../utils/Logger', () => ({Logger: {warn: jest.fn()}}))
 const mockActiveDefinition: {pageAlpha?: number} = {}
 jest.mock('../../../../../embedder/activeEmbeddingModel', () => {
@@ -82,6 +86,7 @@ const expectKeywordFallbackLogged = (extras: Record<string, unknown>) =>
 beforeEach(() => {
   jest.resetAllMocks()
   jest.mocked(getPagesByKeyword).mockResolvedValue(keywordResults)
+  jest.mocked(queueViewerPagesForEmbedding).mockResolvedValue()
 })
 
 afterEach(() => {
@@ -443,4 +448,27 @@ describe('recent pages for an empty query', () => {
         'after must be an endCursor from the same page search'
       )
   )
+})
+
+it("queues the viewer's pages that lack vectors when they search pages", async () => {
+  await callSearch({query: 'retro', alpha: 0})
+  await callSearch({query: ''})
+  expect(queueViewerPagesForEmbedding).toHaveBeenCalledTimes(2)
+  expect(queueViewerPagesForEmbedding).toHaveBeenCalledWith(viewerId)
+})
+
+it('queues no pages for other search types', async () => {
+  jest.mocked(publishToEmbedder).mockResolvedValue(new Float32Array(1024))
+  await callSearch({query: 'retro', type: 'meetingTemplate'})
+  expect(queueViewerPagesForEmbedding).not.toHaveBeenCalled()
+})
+
+it('returns results when queueing pages fails', async () => {
+  jest.mocked(queueViewerPagesForEmbedding).mockRejectedValue(new Error('valkey down'))
+  expect(await callSearch({query: 'retro', alpha: 0})).toBe(keywordResults)
+  await new Promise((resolve) => setImmediate(resolve))
+  expect(Logger.warn).toHaveBeenCalledWith('Page search could not queue pages without vectors', {
+    userId: viewerId,
+    extras: {errorMessage: 'valkey down'}
+  })
 })
