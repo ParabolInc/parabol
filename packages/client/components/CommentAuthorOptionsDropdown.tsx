@@ -15,11 +15,7 @@ interface Props {
 const CommentAuthorOptionsDropdown = (props: Props) => {
   const {commentId, editComment, meetingId} = props
   const atmosphere = useAtmosphere()
-  const isEditingRef = useRef(false)
-  const startEditing = () => {
-    isEditingRef.current = true
-    editComment()
-  }
+  const isEditChosen = useRef(false)
   const deleteComment = () => {
     DeleteCommentMutation(atmosphere, {commentId, meetingId})
   }
@@ -27,10 +23,17 @@ const CommentAuthorOptionsDropdown = (props: Props) => {
     <MenuContent
       align='end'
       onCloseAutoFocus={(e) => {
-        if (isEditingRef.current) e.preventDefault()
+        if (!isEditChosen.current) return
+        isEditChosen.current = false
+        e.preventDefault()
+        editComment()
       }}
     >
-      <MenuItem onClick={startEditing}>
+      <MenuItem
+        onSelect={() => {
+          isEditChosen.current = true
+        }}
+      >
         <Edit className={MENU_ITEM_ICON} />
         Edit Comment
       </MenuItem>

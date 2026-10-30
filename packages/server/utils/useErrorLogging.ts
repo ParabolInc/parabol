@@ -6,20 +6,27 @@ import {
 import {GraphQLError, getOperationAST} from 'graphql'
 import type {Plugin} from 'graphql-yoga'
 import type {ServerContext} from '../yoga'
+import getTraceLogContext from './getTraceLogContext'
 import {Logger, markErrorAsLogged} from './Logger'
 import {type RequestLogContext, runWithLogContext} from './requestLogContext'
 
-type LoggableContext = Partial<Pick<ServerContext, 'authToken' | 'ip'>>
+type LoggableContext = Partial<
+  Pick<ServerContext, 'authToken' | 'ip' | 'traceparent' | 'sessionId' | 'socketId'>
+>
 
 const getOperationLogContext = (args: TypedExecutionArgs<LoggableContext>): RequestLogContext => {
   const operation = getOperationAST(args.document, args.operationName)
-  const {authToken, ip} = args.contextValue
+  const {authToken, ip, traceparent, sessionId, socketId} = args.contextValue
   return {
     userId: authToken?.sub,
     ip,
+    sessionId,
+    socketId,
+    component: 'graphql',
     operationName: operation?.name?.value ?? args.operationName ?? 'anonymous',
     operationKind: operation?.operation,
-    variables: args.variableValues ?? undefined
+    variables: args.variableValues ?? undefined,
+    ...getTraceLogContext(traceparent)
   }
 }
 

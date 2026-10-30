@@ -2,6 +2,7 @@ import {HocuspocusProvider, HocuspocusProviderWebsocket} from '@hocuspocus/provi
 import {IndexeddbPersistence} from 'y-indexeddb'
 import * as Y from 'yjs'
 import Atmosphere from '../Atmosphere'
+import getTabSessionId from '../utils/getTabSessionId'
 
 class ProviderManager {
   socket: HocuspocusProviderWebsocket | undefined = undefined
@@ -12,7 +13,7 @@ class ProviderManager {
   getSocket() {
     if (!this.socket) {
       const wsProtocol = window.location.protocol.replace('http', 'ws')
-      const url = `${wsProtocol}//${window.location.host}/yjs`
+      const url = `${wsProtocol}//${window.location.host}/yjs?sessionId=${getTabSessionId()}`
       this.socket = new HocuspocusProviderWebsocket({
         url
       })
