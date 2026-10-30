@@ -27,7 +27,7 @@ const ReportsHeadline = ({organizationRef}: Props) => {
       fragment ReportsHeadline_organization on Organization {
         activeUsers: report(
           spec: {
-            measures: [ACTIVE_USERS, MEMBERS]
+            measures: [ACTIVE_USERS, USERS]
             period: {preset: LAST_30_DAYS}
             compareTo: PREVIOUS_PERIOD
             showAs: TABLE
@@ -93,7 +93,7 @@ const ReportsHeadline = ({organizationRef}: Props) => {
   )
   const [active] = activeUsers.rows
   const activeCount = active?.values[0] ?? 0
-  const memberCount = active?.values[1] ?? 0
+  const userCount = active?.values[1] ?? 0
   const teamsThatMetCount = teamsThatMet.rows[0]?.values[0] ?? 0
   const integrationCount = sumReportValues(userIntegrations.rows.map(({values}) => values[0]))
   const serviceCount = userIntegrations.rows.filter(({values}) => (values[0] ?? 0) > 0).length
@@ -109,9 +109,9 @@ const ReportsHeadline = ({organizationRef}: Props) => {
         label='Active users, 30 days'
         value={activeCount}
         detail={
-          memberCount > 0
-            ? `${Math.round((activeCount / memberCount) * 100)}% of members`
-            : 'no members yet'
+          userCount > 0
+            ? `${Math.round((activeCount / userCount) * 100)}% of users`
+            : 'no users yet'
         }
         change={changeOf(activeUsers.rows)}
         comparison={PREVIOUS_30_DAYS}

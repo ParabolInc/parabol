@@ -54,6 +54,7 @@ interface Options {
   previous: ReportMeasureResult[] | null
   // the values an org structure level takes among the counted teams, with their names
   levelValuesOf: (dimension: ReportLevelDimension) => {value: string; label: string}[]
+  teamValueOf: (dimension: ReportLevelDimension, teamId: string) => string
 }
 
 const isTimeDimension = (
@@ -84,7 +85,8 @@ const buildReportRows = ({
   filters,
   current,
   previous,
-  levelValuesOf
+  levelValuesOf,
+  teamValueOf
 }: Options): ReportRow[] | string => {
   const categoryDimensions = breakdown.filter(
     (dimension): dimension is ReportQueryDimension => !isTimeDimension(dimension)
@@ -115,7 +117,24 @@ const buildReportRows = ({
     return filter ? values.filter((value) => filter.values.includes(value)) : values
   })
   const stepIndexes = steps ? steps.map((_, idx) => idx + 1) : [1]
-  const categoryCombinations = combinations(valuesOf)
+  // A team sits at one value of each team structure level, so when a report splits by teams and levels, or by two
+  // levels, only the combinations some counted team holds are rows
+  const teamPositions = categoryDimensions.flatMap((dimension, position) =>
+    dimension === 'TEAM' || isLevelDimension(dimension) ? [position] : []
+  )
+  const toTeamKey = (valueAt: (dimension: ReportQueryDimension, position: number) => string) =>
+    JSON.stringify(
+      teamPositions.map((position) => valueAt(categoryDimensions[position]!, position))
+    )
+  const heldTeamKeys = new Set(
+    teams.map(({id}) =>
+      toTeamKey((dimension) => (isLevelDimension(dimension) ? teamValueOf(dimension, id) : id))
+    )
+  )
+  const categoryCombinations = combinations(valuesOf).filter(
+    (values) =>
+      teamPositions.length < 2 || heldTeamKeys.has(toTeamKey((_, position) => values[position]!))
+  )
   if (stepIndexes.length * categoryCombinations.length > MAX_CANDIDATE_ROWS) {
     return 'This report would have too many rows. Add a filter or a limit'
   }

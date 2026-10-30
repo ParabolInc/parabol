@@ -7,6 +7,7 @@ export interface QueryResult {
   answerable: boolean
   nDCG10: number
   recall5: number
+  recall20: number
   junkAt5: number
   reciprocalRank: number
   resultIds: number[]
@@ -19,6 +20,7 @@ export interface Metrics {
   queries: number
   nDCG10: number
   recall5: number
+  recall20: number
   mrr: number
   zeroResultRate: number
   junkAt5: number
@@ -77,6 +79,7 @@ export const summarize = (perQuery: QueryResult[]): Metrics => {
     queries: answerable.length,
     nDCG10: mean(answerable.map((result) => result.nDCG10)),
     recall5: mean(answerable.map((result) => result.recall5)),
+    recall20: mean(answerable.map((result) => result.recall20)),
     mrr: mean(answerable.map((result) => result.reciprocalRank)),
     zeroResultRate: mean(answerable.map((result) => (result.resultIds.length === 0 ? 1 : 0))),
     junkAt5: mean(answerable.map((result) => result.junkAt5)),

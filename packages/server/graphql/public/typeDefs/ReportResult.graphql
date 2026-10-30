@@ -42,4 +42,22 @@ type ReportResult {
   teamCount: Int!
 
   notes: [ReportNote!]!
+
+  """
+  For a Health score heatmap with a row for each team and a column for each category, what its marks are worked
+  out from. Null for any other report
+  """
+  teamHealth: ReportTeamHealth
+
+  """
+  When the latest meeting of this type, or of any type without one, that 2 or more people joined started, on any team
+  the viewer can report on, whatever the report's period and filters. Null when none of those teams has held one
+  """
+  latestMeetingAt(meetingType: MeetingTypeEnum): DateTime
+
+  """
+  When the latest task was made on any team the viewer can report on, whatever the report's period and filters,
+  leaving out the stories Sprint Poker brings in. Null when none of those teams has made one
+  """
+  latestTaskAt: DateTime
 }

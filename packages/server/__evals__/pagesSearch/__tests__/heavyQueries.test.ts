@@ -9,7 +9,7 @@ interface HeavyQuery {
   relevant: Record<string, number>
 }
 
-const QUERY_FILES = ['heavyQueries.json', 'heavyHoldoutQueries.json']
+const QUERY_FILES = ['heavyQueries.json', 'heavyHoldoutQueries.json', 'heavyFinalQueries.json']
 
 const CATEGORIES = [
   'title',
@@ -87,12 +87,20 @@ it.each(QUERY_FILES)('%s has well-formed queries and labels', (fileName) => {
   expect(findQueryProblems(readQueries(fileName))).toEqual([])
 })
 
-it('shares no query text between dev and holdout', () => {
-  const [devQueries, holdoutQueries] = QUERY_FILES.map((fileName) =>
-    readQueries(fileName).map(({query}) => query.trim().toLowerCase())
-  )
-  const holdout = new Set(holdoutQueries)
-  expect(devQueries!.filter((query) => holdout.has(query)).length).toBe(0)
+it('shares no query text between heavy query files', () => {
+  const queriesByFile = QUERY_FILES.map((fileName) => ({
+    fileName,
+    queries: readQueries(fileName).map(({query}) => query.trim().toLowerCase())
+  }))
+  const repeats = queriesByFile.flatMap(({fileName, queries}) => {
+    const others = new Set(
+      queriesByFile.filter((other) => other.fileName !== fileName).flatMap((other) => other.queries)
+    )
+    return queries.flatMap((query, index) =>
+      others.has(query) ? [`${fileName} query ${index + 1} repeats a query in another file`] : []
+    )
+  })
+  expect(repeats).toEqual([])
 })
 
 it('puts each dev longDoc answer in the second half of its doc', () => {

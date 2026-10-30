@@ -3,7 +3,7 @@ import getKysely from '../../postgres/getKysely'
 import type {ReportMeasureQuery} from '../reportMeasureTypes'
 import {isAnyOf, isTeamMemberAt, readingSteps, readReportRows} from '../reportQueries'
 
-const readMembers = (query: ReportMeasureQuery) => {
+const readUsers = (query: ReportMeasureQuery) => {
   const steps = getKysely().selectFrom(readingSteps(query.readAt))
   if (query.isWholeOrg) {
     const from = steps.crossJoin('OrganizationUser as ou')
@@ -37,4 +37,4 @@ const readMembers = (query: ReportMeasureQuery) => {
   })
 }
 
-export default readMembers
+export default readUsers

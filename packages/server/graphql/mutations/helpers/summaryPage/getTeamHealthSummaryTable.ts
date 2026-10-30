@@ -1,3 +1,4 @@
+import {canShowTeamHealthScore} from '../../../../../client/shared/utils/teamHealthAnonymity'
 import type {DataLoaderInstance} from '../../../../dataloader/RootDataLoader'
 import getTeamHealthDisplayComment from '../../../../utils/getTeamHealthDisplayComment'
 import isValid from '../../../isValid'
@@ -31,7 +32,7 @@ const getRowData = async (meetingId: string, dataLoader: DataLoaderInstance) => 
   }
 
   return [...grouped.values()].map((entry) => {
-    const average = entry.scores.length
+    const average = canShowTeamHealthScore(entry.scores.length)
       ? (entry.scores.reduce((sum, score) => sum + score, 0) / entry.scores.length).toFixed(1)
       : ''
     return {

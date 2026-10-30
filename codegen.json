@@ -281,6 +281,8 @@
           "RepoIntegration": "../../integrations/platform/RemoteRepoIntegration#RemoteRepoIntegration",
           "PinnedReport": "./types/PinnedReport#PinnedReportSource",
           "ReportQuestion": "./types/ReportQuestion#ReportQuestionSource",
+          "ReportResult": "./types/ReportResult#ReportResultSource",
+          "ReportTeamHealth": "./types/ReportTeamHealth#ReportTeamHealthSource",
           "AskReportQuestionSuccess": "./types/AskReportQuestionSuccess#AskReportQuestionSuccessSource",
           "LogReportQuestionUseSuccess": "./types/LogReportQuestionUseSuccess#LogReportQuestionUseSuccessSource",
           "PinReportSuccess": "./types/PinReportSuccess#PinReportSuccessSource",

@@ -6,6 +6,7 @@ import type {ReportPanel_organization$key} from '../../__generated__/ReportPanel
 import type {ReportSpec} from '../../shared/reports/reportCatalog'
 import {cn} from '../../ui/cn'
 import ReportExportButton from './ReportExportButton'
+import ReportLoadError from './ReportLoadError'
 import ReportPageResult from './ReportPageResult'
 import ReportPinButton from './ReportPinButton'
 import ReportSpecEditor from './ReportSpecEditor'
@@ -15,6 +16,11 @@ interface Props {
   organizationRef: ReportPanel_organization$key | null | undefined
   orgId: string
   spec: ReportSpec
+  // the spec the shown results came from, which trails spec while a changed report loads
+  resultSpec: ReportSpec
+  isUpdating: boolean
+  // set when the latest results failed to load, while the last ones stay up
+  onRetry: (() => void) | null
   name: string
   period: ReportPagePeriod
   reportQuestionId: string | null
@@ -25,7 +31,8 @@ interface Props {
 }
 
 const ReportPanel = (props: Props) => {
-  const {organizationRef, orgId, spec, name, period, reportQuestionId, isPageHeading} = props
+  const {organizationRef, orgId, spec, resultSpec, name, period, reportQuestionId} = props
+  const {isUpdating, onRetry, isPageHeading} = props
   const {onSpecChange, onClose} = props
   const organization = useFragment(
     graphql`
@@ -69,7 +76,7 @@ const ReportPanel = (props: Props) => {
               reportQuestionId={reportQuestionId}
             />
           )}
-          {report && <ReportExportButton resultRef={report} spec={spec} title={name} />}
+          {report && <ReportExportButton resultRef={report} spec={resultSpec} title={name} />}
           {onClose && (
             <button
               type='button'
@@ -90,7 +97,14 @@ const ReportPanel = (props: Props) => {
           onChange={onSpecChange}
         />
       </div>
-      <ReportPageResult organizationRef={organization} orgId={orgId} spec={spec} />
+      {onRetry && (
+        <div className='px-5 pb-4'>
+          <ReportLoadError onRetry={onRetry} />
+        </div>
+      )}
+      <div aria-busy={isUpdating} className={cn('transition-opacity', isUpdating && 'opacity-50')}>
+        <ReportPageResult organizationRef={organization} orgId={orgId} spec={resultSpec} />
+      </div>
     </section>
   )
 }

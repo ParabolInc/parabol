@@ -31,7 +31,7 @@ const ReportHeatmapHeader = ({
             key={column.value}
             scope='col'
             title={column.isPartial ? PARTIAL_STEP_NOTE : undefined}
-            className={cn('min-w-10 font-semibold', column.isPartial && 'opacity-60')}
+            className={cn('w-24 min-w-10 font-semibold', column.isPartial && 'opacity-60')}
           >
             {hasYearRow && (
               <span
@@ -47,7 +47,7 @@ const ReportHeatmapHeader = ({
           </th>
         ))}
         {totalHeading && (
-          <th scope='col' className='min-w-12 pl-2 text-right'>
+          <th scope='col' data-total className='min-w-12 pl-2 text-right'>
             {totalHeading}
           </th>
         )}

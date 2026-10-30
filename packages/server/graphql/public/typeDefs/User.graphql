@@ -586,7 +586,7 @@ type User implements UserPartial {
     startAt: DateTime
     endAt: DateTime
     dateField: SearchDateTypeEnum
-    "Alpha controls the weight given to vector (semantic) search vs. keyword search. 1.0 = pure vector, 0.0 = pure keyword. Defaults to 0.25."
+    "Alpha controls the weight given to vector (semantic) search vs. keyword search. 1.0 = pure vector, 0.0 = pure keyword. Defaults to 0.01 for pages and 0.25 otherwise."
     alpha: Float
   ): SearchResultConnection!
   "The user's personal access tokens for API access"

@@ -56,7 +56,7 @@ const ReportCustomRangePicker = ({period, orgCreatedAt, onApply, onCancel}: Prop
         <span className='flex-1 text-fg-secondary text-sm'>
           {days === null
             ? 'Pick a start and end date'
-            : `${days} ${plural(days, 'day')} · charts over time step by ${stepFor(days)}`}
+            : `${days} ${plural(days, 'day')} · by ${stepFor(days)}`}
         </span>
         <Button variant='flat' size='md' onClick={onCancel}>
           Cancel

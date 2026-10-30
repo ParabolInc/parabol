@@ -80,9 +80,10 @@ const TeamHealthResultCard = (props: Props) => {
   const answerCount = respondentCount ?? 0
   const isSpreadHidden = !spreadScores
   const comments = responses.filter(({commentParaphrased}) => !!commentParaphrased)
+  const hasCurrentPoint = score != null && !!meeting.endedAt
   const trendPoints: TeamHealthTrendPoint[] = [
     ...scoreHistory,
-    ...(score == null || !meeting.endedAt ? [] : [{endedAt: meeting.endedAt, score}])
+    ...(hasCurrentPoint ? [{endedAt: meeting.endedAt!, score}] : [])
   ]
   const firstCycle = trendPoints[0]
   const lastCycle = trendPoints.at(-1)
@@ -120,6 +121,7 @@ const TeamHealthResultCard = (props: Props) => {
         <TeamHealthScoreDelta
           className='pb-1 text-sm'
           score={score}
+          respondentCount={respondentCount}
           previousScore={previousCycle?.score}
         />
         <span className='pb-1 text-fg-muted text-sm'>
@@ -140,7 +142,7 @@ const TeamHealthResultCard = (props: Props) => {
               Trend · last {trendPoints.length} checks
             </div>
             <div className='mt-2'>
-              <TeamHealthTrendChart points={trendPoints} />
+              <TeamHealthTrendChart points={trendPoints} hasCurrent={hasCurrentPoint} />
             </div>
             <div className='mt-1 text-fg-muted text-sm'>{trendCaption}</div>
           </div>

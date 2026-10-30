@@ -27,18 +27,21 @@ export const DEFAULT_REPORT_PAGE_PERIOD: ReportPagePeriod = {preset: 'LAST_3_MON
 
 const RANGE_PARAM = /^(\d{4}-\d{2}-\d{2})_(\d{4}-\d{2}-\d{2})$/
 
-export const parseReportPeriodParam = (param: string | null): ReportPagePeriod => {
+// null when the param doesn't name a period, like a link that was cut short
+export const readReportPeriod = (param: string | null): ReportPagePeriod | null => {
   const preset = REPORT_PAGE_PRESETS.find((key) => PRESET_PARAMS[key] === param)
   if (preset) return {preset}
   const range = param?.match(RANGE_PARAM)
   if (range && range[1]! <= range[2]!) return {range: {startAt: range[1]!, endAt: range[2]!}}
-  return DEFAULT_REPORT_PAGE_PERIOD
+  return null
 }
 
+export const formatReportPeriod = (period: ReportPagePeriod) =>
+  period.preset ? PRESET_PARAMS[period.preset] : `${period.range.startAt}_${period.range.endAt}`
+
+export const parseReportPeriodParam = (param: string | null): ReportPagePeriod =>
+  readReportPeriod(param) ?? DEFAULT_REPORT_PAGE_PERIOD
+
 // null for the default, which keeps it out of the address
-export const toReportPeriodParam = (period: ReportPagePeriod) => {
-  if (period.preset === DEFAULT_REPORT_PAGE_PERIOD.preset) return null
-  return period.preset
-    ? PRESET_PARAMS[period.preset]
-    : `${period.range.startAt}_${period.range.endAt}`
-}
+export const toReportPeriodParam = (period: ReportPagePeriod) =>
+  period.preset === DEFAULT_REPORT_PAGE_PERIOD.preset ? null : formatReportPeriod(period)
