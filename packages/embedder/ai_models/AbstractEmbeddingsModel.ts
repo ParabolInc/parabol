@@ -43,6 +43,10 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
   }
   protected abstract constructModelParams(modelId: ModelId): EmbeddingModelParams
   abstract getEmbedding(content: string, retries?: number): Promise<number[] | Error>
+  abstract getEmbeddingWithTokens(
+    content: string,
+    retries?: number
+  ): Promise<{embedding: number[]; tokens: number} | Error>
   abstract ready(): Promise<boolean>
 
   abstract getTokens(content: string): Promise<number[] | Error>

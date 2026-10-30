@@ -1,4 +1,5 @@
 import OpenAI from 'openai'
+import {embeddingUsage} from '../embeddingUsage'
 import {AbstractEmbeddingsModel, type EmbeddingModelParams} from './AbstractEmbeddingsModel'
 import {type ModelId, modelIdDefinitions} from './modelIdDefinitions'
 
@@ -35,11 +36,20 @@ export class OpenAIEmbedding extends AbstractEmbeddingsModel {
   }
 
   public async getEmbedding(content: string): Promise<number[] | Error> {
-    const {data} = await this.client.embeddings.create({
+    const result = await this.getEmbeddingWithTokens(content)
+    return result instanceof Error ? result : result.embedding
+  }
+
+  public async getEmbeddingWithTokens(
+    content: string
+  ): Promise<{embedding: number[]; tokens: number} | Error> {
+    const {data, usage} = await this.client.embeddings.create({
       input: content,
       model: this.modelId
     })
-    return data[0]?.embedding ?? []
+    const tokens = usage?.prompt_tokens ?? 0
+    embeddingUsage.tokens += tokens
+    return {embedding: data[0]?.embedding ?? [], tokens}
   }
 
   protected constructModelParams(modelId: ModelId): EmbeddingModelParams {
