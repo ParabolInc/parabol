@@ -1,9 +1,17 @@
 import {EmbeddingTimeoutError} from '../../../../utils/EmbeddingTimeoutError'
 
 const mockWaitForResponse = jest.fn()
+const mockInsertedValues: Record<string, unknown>[] = []
 
 jest.mock('../../../../postgres/getKysely', () => {
-  const insertQuery = {values: () => insertQuery, $if: () => insertQuery, execute: async () => []}
+  const insertQuery = {
+    values: (values: Record<string, unknown>) => {
+      mockInsertedValues.push(values)
+      return insertQuery
+    },
+    $if: () => insertQuery,
+    execute: async () => []
+  }
   return {__esModule: true, default: () => ({insertInto: () => insertQuery})}
 })
 jest.mock('../../../../utils/getRedis', () => ({
@@ -52,4 +60,31 @@ it('returns the timeout error when the embedder does not respond in time', async
   const timeout = new EmbeddingTimeoutError('Embedding timeout for request: 7')
   mockWaitForResponse.mockRejectedValue(timeout)
   expect(await publishUserQuery()).toBe(timeout)
+})
+
+it('delays only page jobs, so searches never wait', async () => {
+  jest.resetModules()
+  process.env.AI_EMBEDDER_WORKERS = '1'
+  const {publishToEmbedder} =
+    require('../publishToEmbedder') as typeof import('../publishToEmbedder')
+  mockWaitForResponse.mockResolvedValue(new Float32Array([0.5]))
+  mockInsertedValues.length = 0
+  await publishToEmbedder({
+    jobType: 'userQuery:start',
+    data: {
+      query: 'retro',
+      requestId: 7,
+      channelName: 'embedderResponse:1',
+      expiresAt: Date.now() + 3_000
+    }
+  })
+  await publishToEmbedder({jobType: 'embed:start', embeddingsMetadataId: 1})
+  await publishToEmbedder({jobType: 'embedPage:start', pageId: 1})
+  expect(
+    mockInsertedValues.map(({jobType, runAfter}) => [jobType, runAfter !== undefined])
+  ).toEqual([
+    ['userQuery:start', false],
+    ['embed:start', false],
+    ['embedPage:start', true]
+  ])
 })

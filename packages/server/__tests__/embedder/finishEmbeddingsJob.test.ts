@@ -5,7 +5,10 @@ import getKysely from '../../postgres/getKysely'
 const pg = getKysely()
 const pageId = -(Date.now() % 1_000_000_000) - 1_000_000_000
 
-const insertRunningJob = async (runAfter: RawBuilder<Date>) => {
+const insertRunningJob = async (
+  runAfter: RawBuilder<Date>,
+  startAt: RawBuilder<Date> | null = sql<Date>`now() - interval '10 seconds'`
+) => {
   const {id} = await pg
     .insertInto('EmbeddingsJobQueueV2')
     .values({
@@ -13,7 +16,7 @@ const insertRunningJob = async (runAfter: RawBuilder<Date>) => {
       priority: 0,
       pageId,
       state: 'running',
-      startAt: sql`now() - interval '10 seconds'`,
+      startAt,
       runAfter
     })
     .returning('id')
@@ -49,4 +52,15 @@ it('queues the page again when it was edited during the job', async () => {
     .where('id', '=', jobId)
     .executeTakeFirstOrThrow()
   expect(job).toEqual({state: 'queued', startAt: null})
+})
+
+it('queues a stalled job again rather than dropping an edit', async () => {
+  const jobId = await insertRunningJob(sql<Date>`now() + interval '50 seconds'`, null)
+  await finishEmbeddingsJob(jobId)
+  const job = await pg
+    .selectFrom('EmbeddingsJobQueueV2')
+    .select('state')
+    .where('id', '=', jobId)
+    .executeTakeFirst()
+  expect(job).toEqual({state: 'queued'})
 })
