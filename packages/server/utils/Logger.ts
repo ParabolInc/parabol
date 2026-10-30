@@ -81,7 +81,7 @@ export const markErrorAsLogged = (error: Error) => {
   loggedErrors.add(error)
 }
 
-interface LogOptions {
+export interface LogOptions {
   tags?: Record<string, unknown>
   userId?: string | null
   ip?: string
