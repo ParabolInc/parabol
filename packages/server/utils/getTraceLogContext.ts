@@ -1,5 +1,4 @@
 import {randomBytes} from 'node:crypto'
-import {getGcpProjectId} from './gcpProjectId'
 import type {RequestLogContext} from './requestLogContext'
 
 const TRACEPARENT = /^00-([0-9a-f]{32})-([0-9a-f]{16})-([0-9a-f]{2})$/
@@ -16,12 +15,10 @@ export const parseTraceparent = (traceparent: unknown) => {
 
 const getTraceLogContext = (
   traceparent: unknown
-): Pick<RequestLogContext, 'trace' | 'spanId' | 'traceSampled'> => {
+): Pick<RequestLogContext, 'traceId' | 'spanId' | 'traceSampled'> => {
   const parsedTraceparent = parseTraceparent(traceparent)
-  const traceId = parsedTraceparent?.traceId ?? randomBytes(16).toString('hex')
-  const projectId = getGcpProjectId()
   return {
-    trace: projectId ? `projects/${projectId}/traces/${traceId}` : traceId,
+    traceId: parsedTraceparent?.traceId ?? randomBytes(16).toString('hex'),
     spanId: randomBytes(8).toString('hex'),
     traceSampled: parsedTraceparent?.sampled ?? false
   }

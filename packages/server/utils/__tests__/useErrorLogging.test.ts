@@ -86,7 +86,7 @@ test('an operation joins the trace and the tab session its client sent', async (
     socketId: 'socket-1'
   })
   expect(JSON.parse(result.data.logContext)).toMatchObject({
-    trace: '4bf92f3577b34da6a3ce929d0e0e4736',
+    traceId: '4bf92f3577b34da6a3ce929d0e0e4736',
     traceSampled: true,
     sessionId: 'tab-1',
     socketId: 'socket-1',

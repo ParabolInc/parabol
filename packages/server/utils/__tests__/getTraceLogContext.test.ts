@@ -1,7 +1,4 @@
-import {getGcpProjectId} from '../gcpProjectId'
 import getTraceLogContext, {parseTraceparent} from '../getTraceLogContext'
-
-jest.mock('../gcpProjectId', () => ({getGcpProjectId: jest.fn(() => undefined)}))
 
 const TRACEPARENT = '00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01'
 
@@ -30,7 +27,7 @@ test('rejects missing, malformed and all-zero traceparents', () => {
 
 test('continues the browser trace with a new server span', () => {
   const traceLogContext = getTraceLogContext(TRACEPARENT)
-  expect(traceLogContext.trace).toBe('4bf92f3577b34da6a3ce929d0e0e4736')
+  expect(traceLogContext.traceId).toBe('4bf92f3577b34da6a3ce929d0e0e4736')
   expect(traceLogContext.spanId).toMatch(/^[0-9a-f]{16}$/)
   expect(traceLogContext.spanId).not.toBe('00f067aa0ba902b7')
   expect(traceLogContext.traceSampled).toBe(true)
@@ -38,13 +35,6 @@ test('continues the browser trace with a new server span', () => {
 
 test('starts a fresh trace when the request has none', () => {
   const traceLogContext = getTraceLogContext(undefined)
-  expect(traceLogContext.trace).toMatch(/^[0-9a-f]{32}$/)
+  expect(traceLogContext.traceId).toMatch(/^[0-9a-f]{32}$/)
   expect(traceLogContext.traceSampled).toBe(false)
-})
-
-test('uses the full Cloud Logging trace name once the project is known', () => {
-  jest.mocked(getGcpProjectId).mockReturnValueOnce('parabol-saas-production')
-  expect(getTraceLogContext(TRACEPARENT).trace).toBe(
-    'projects/parabol-saas-production/traces/4bf92f3577b34da6a3ce929d0e0e4736'
-  )
 })

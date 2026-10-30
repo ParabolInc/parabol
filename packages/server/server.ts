@@ -19,7 +19,6 @@ import {schemaProxyHandler} from './schemaProxyHandler'
 import {registerSCIMHandlers} from './scim/SCIMHandler'
 import selfHostedHandler from './selfHostedHandler'
 import {createStaticFileHandler} from './staticFileHandler'
-import {loadGcpProjectId} from './utils/gcpProjectId'
 import getReqAuth from './utils/getReqAuth'
 import {Logger} from './utils/Logger'
 import parseSessionId from './utils/parseSessionId'
@@ -51,7 +50,6 @@ const ENABLE_MATTERMOST_FILE_HANDLER =
   !__PRODUCTION__ || (process.env.MATTERMOST_SECRET && process.env.MATTERMOST_URL)
 
 registerFatalErrorHandlers()
-loadGcpProjectId().catch(Logger.log)
 
 process.on('SIGTERM', async (signal) => {
   Logger.log(
