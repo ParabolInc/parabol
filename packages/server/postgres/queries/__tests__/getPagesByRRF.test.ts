@@ -296,6 +296,13 @@ it('passes title typo matching to the keyword arm', async () => {
   expect(await keywordRank(0)).toBeNull()
 })
 
+it('matches misspelled title words by default', async () => {
+  const {edges} = await fused(0.5, {query: 'quartrly'})
+  expect(edges.find(({nodeId}) => nodeId === keywordOnlyId)?.score.keywordRank).toEqual(
+    expect.any(Number)
+  )
+})
+
 it('ranks by keyword when alpha is 0', async () =>
   expect((await fused(0)).edges.at(-1)!.nodeId).toBe(vectorOnlyId))
 
