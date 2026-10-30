@@ -649,30 +649,33 @@ A misspelled word used to match nothing, so "whiteboad" found no page.
 
 ## Search text for vectors (B1, 2026-10-30)
 
-The chunker used to embed each block's Markdown. That carried each standup response as raw TipTap JSON inside an attribute, plus avatar URLs, ids and insight attributes: the embedded text was 2.02× the page's plain text. It now embeds each block's search text (`getSearchText`), which is what `generateText` shows a reader, with three changes:
-- tables become one line per row (`cell | cell`);
-- embeds keep their titles and drop their URLs;
-- a block whose stored content can't be parsed gives nothing.
+The chunker used to embed each block's Markdown. That carried each standup response as raw TipTap JSON inside an attribute, plus avatar URLs, ids and insight attributes: the embedded text was 2.02× the page's plain text. It now embeds each block's search text (`getSearchText`), which is what `generateText` shows a reader, with these changes:
+- Tables become one line per row (`cell | cell`), keeping mentions and line breaks inside cells.
+- Images become their alt text, and embeds their titles.
+- Response and task content is serialized the same way.
+- A block that fails to serialize gives nothing.
+- A standup summary's table view, an exact copy of its responses, is left out. It's matched by its `Author | Created at | Content` header, on pages with response blocks. Retro, check-in and team health table views stay, because they hold content found nowhere else.
 
 The heavy corpus, counted with TEI's `/tokenize`:
 
 | | Before | After |
 | --- | ---: | ---: |
-| Chunks | 399 | 283 |
-| Characters embedded | 1,015,243 | 520,146 |
-| Tokens | 260,487 | 139,065 (−47%) |
+| Chunks | 399 | 257 |
+| Characters embedded | 1,015,243 | 341,294 |
+| Tokens | 260,487 | 88,338 (−66%) |
 
-Fused ranking, with the eval pages reseeded (the quick list doesn't change, because keyword search reads page text, not chunks):
+Fused ranking at production settings, with the eval pages reseeded. The quick list doesn't change, because keyword search reads page text, not chunks:
 
 | | `heavy-dev` nDCG@10 | Recall@20 | `noAnswerResults` | `dev` nDCG@10 | Recall@20 | `noAnswerResults` |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | Before | 0.826 | 0.881 | 13.67 | 0.905 | 0.960 | 11.63 |
-| After | 0.826 | 0.877 | 14.50 | 0.911 | 0.978 | 15.25 |
+| After | 0.826 | 0.872 | 14.33 | 0.908 | 0.978 | 16.25 |
 
-- **Similarity alone gets worse:** 0.234 → 0.163 on `heavy-dev`, and 0.238 → 0.227 on `dev` (alpha 1, floor 0).
-- **Hub pages dominate both versions.** With mean pooling, a few pages land in nearly every query's top 5.
-  - Before: `doc-analytics-vendor-evaluation` was in 55 of 58 `heavy-dev` lists, and `release-checklist` in 73 of 91 `dev` lists.
-  - After: `beacon-standup-2026-07-20` is in 57 of 58.
-- **Why the hubs moved.** Markup kept standup pages far from every query, which acted as an accidental junk filter. Clean standups are short and generic, with repeated prompts and a table view that repeats the responses, and the most generic of them now become hubs. The new hubs answer fewer queries than the old ones.
-- **The rule fixed before the run wasn't met.** It asked for better vectors, at most 1 more filler page on unanswerable queries, and half the tokens. The change stays, for its purpose (no markup, half the tokens), because fused ranking holds.
-- **What happens next.** The vector question moves to B2, which tracks hubs as their own number, and to a rerun of the pooling experiment on clean text. The rise in filler on `dev` comes from the 0.4 floor letting in more clean-text pages, which B8's floor sweep re-tunes.
+- **The rule fixed before the run wasn't met.** It asked for three things: better vectors by similarity alone, at most 1 more filler page per unanswerable query, and half the tokens. It also said not to start B2 unless the vectors improved.
+  - Tokens now fall by two thirds.
+  - Similarity alone (alpha 1, floor 0) falls from 0.234 to 0.178 on `heavy-dev`, and from 0.238 to 0.207 on `dev`.
+  - Recall@20 dips 0.009 on `heavy-dev`.
+  - `dev` gains 4.6 filler pages: the 0.4 floor lets more clean-text pages through, and B8 re-tunes it.
+- **Similarity alone tracks hub pages more than quality.** A few pages sit in almost every query's top 5. Before, `doc-analytics-vendor-evaluation` was in 55 of 58 `heavy-dev` lists and `release-checklist` in 73 of 91 `dev` lists. Every change to text or chunk size reshuffles them, and gains from separate changes don't add up. Hub share, the top-5 slots taken by the five most frequent pages, falls from 0.74 to 0.66 on `heavy-dev` and from 0.71 to 0.69 on `dev`.
+- **Why it goes ahead anyway.** B1's goals hold: no markup or ids in vectors, and two thirds fewer tokens for the re-embed. Fused ranking holds on nDCG@10.
+- **Not yet protected.** `embedPage` still converts the whole page to text before chunking, so a block whose stored JSON is broken stops the page there. B2 reworks that step.
