@@ -646,3 +646,33 @@ A misspelled word used to match nothing, so "whiteboad" found no page.
 - **The fixes cost most of the holdout gain.** Before them, the gain was 0.015 (quick) and 0.018 (fused), with Recall@20 up 0.007 in fused ranking. The fixes were chosen on dev evidence and committed before the second run was read, and nothing was re-tuned on it. The dev sets have no typos in words shorter than 5 letters, so they can't price the 5-character rule. Adding some to `heavy-dev` is the way to tune it.
 - **What was read.** Only overall rows. The local holdout results were scrubbed down to those rows.
 - **Gate runs so far.** `heavy-holdout` has had twelve; the two here each scored both lists at both thresholds.
+
+## Search text for vectors (B1, 2026-10-30)
+
+The chunker used to embed each block's Markdown. That carried each standup response as raw TipTap JSON inside an attribute, plus avatar URLs, ids and insight attributes: the embedded text was 2.02× the page's plain text. It now embeds each block's search text (`getSearchText`), which is what `generateText` shows a reader, with three changes:
+- tables become one line per row (`cell | cell`);
+- embeds keep their titles and drop their URLs;
+- a block whose stored content can't be parsed gives nothing.
+
+The heavy corpus, counted with TEI's `/tokenize`:
+
+| | Before | After |
+| --- | ---: | ---: |
+| Chunks | 399 | 283 |
+| Characters embedded | 1,015,243 | 520,146 |
+| Tokens | 260,487 | 139,065 (−47%) |
+
+Fused ranking, with the eval pages reseeded (the quick list doesn't change, because keyword search reads page text, not chunks):
+
+| | `heavy-dev` nDCG@10 | Recall@20 | `noAnswerResults` | `dev` nDCG@10 | Recall@20 | `noAnswerResults` |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Before | 0.826 | 0.881 | 13.67 | 0.905 | 0.960 | 11.63 |
+| After | 0.826 | 0.877 | 14.50 | 0.911 | 0.978 | 15.25 |
+
+- **Similarity alone gets worse:** 0.234 → 0.163 on `heavy-dev`, and 0.238 → 0.227 on `dev` (alpha 1, floor 0).
+- **Hub pages dominate both versions.** With mean pooling, a few pages land in nearly every query's top 5.
+  - Before: `doc-analytics-vendor-evaluation` was in 55 of 58 `heavy-dev` lists, and `release-checklist` in 73 of 91 `dev` lists.
+  - After: `beacon-standup-2026-07-20` is in 57 of 58.
+- **Why the hubs moved.** Markup kept standup pages far from every query, which acted as an accidental junk filter. Clean standups are short and generic, with repeated prompts and a table view that repeats the responses, and the most generic of them now become hubs. The new hubs answer fewer queries than the old ones.
+- **The rule fixed before the run wasn't met.** It asked for better vectors, at most 1 more filler page on unanswerable queries, and half the tokens. The change stays, for its purpose (no markup, half the tokens), because fused ranking holds.
+- **What happens next.** The vector question moves to B2, which tracks hubs as their own number, and to a rerun of the pooling experiment on clean text. The rise in filler on `dev` comes from the 0.4 floor letting in more clean-text pages, which B8's floor sweep re-tunes.
