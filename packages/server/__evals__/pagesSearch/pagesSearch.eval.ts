@@ -39,6 +39,7 @@ import parseCounts from './parseCounts'
 import parseFractions from './parseFractions'
 import parseStopWords, {type StopWords} from './parseStopWords'
 import {type EvalCorpus, FIXTURES_CORPUS, seedEvalPages} from './seedEvalPages'
+import withQueryInstruction from './withQueryInstruction'
 
 interface EmbeddingCall {
   startedAt: number
@@ -49,7 +50,9 @@ interface EmbeddingCall {
 const mockEmbeddingCalls: EmbeddingCall[] = []
 const warnSpy = jest.spyOn(Logger, 'warn')
 const mockEmbedQueryText = (queryText: string) =>
-  getModelManager().getEmbedder().getEmbedding(queryText)
+  getModelManager()
+    .getEmbedder()
+    .getEmbedding(withQueryInstruction(queryText, process.env.EVAL_QUERY_INSTRUCTION))
 
 jest.mock('../../graphql/mutations/helpers/publishToEmbedder', () => ({
   getUserQueryJobData: (query: string) => ({query}),
