@@ -1,7 +1,8 @@
 import tracer from 'dd-trace'
 import 'parabol-server/initLogging'
-import {Logger} from 'parabol-server/utils/Logger'
+import {Logger, setLogService} from 'parabol-server/utils/Logger'
 import RedisInstance from 'parabol-server/utils/RedisInstance'
+import registerFatalErrorHandlers from 'parabol-server/utils/registerFatalErrorHandlers'
 import type {Tuple} from '../client/types/generics'
 import {establishPrimaryServer} from '../server/establishPrimaryServer'
 import getModelManager from './ai_models/ModelManager'
@@ -21,6 +22,8 @@ tracer.init({
 })
 // The embedder queue is in PG & gets hits non-stop, which dirties up the logs. Ignore the polling query before enabling pg
 // tracer.use('pg')
+setLogService('embedder')
+registerFatalErrorHandlers()
 
 const run = async () => {
   const SERVER_ID = process.env.SERVER_ID

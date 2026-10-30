@@ -29,6 +29,7 @@ import {useAuditLogs} from './utils/useAuditLogs'
 import {useCheckBlacklist} from './utils/useCheckBlacklist'
 import {useDatadogTracing} from './utils/useDatadogTracing'
 import {useDisposeDataloader} from './utils/useDisposeDataloader'
+import {useErrorLogging} from './utils/useErrorLogging'
 import {usePrivateSchemaForSuperUser} from './utils/usePrivateSchemaForSuperUser'
 import {useRemoveDuplicateTransferEncoding} from './utils/useRemoveDuplicateTransferEncoding'
 import {useSchemaLink} from './utils/useSchemaLink'
@@ -193,6 +194,7 @@ export const yoga = createYoga<ServerContext, UserContext>({
         'verifyEmail'
       ] as ExcludedOps)
     }),
+    useErrorLogging(),
     useDatadogTracing({
       excludeArgs: {
         acceptTeamInvitation: ['invitationToken'],
@@ -239,7 +241,7 @@ export const yoga = createYoga<ServerContext, UserContext>({
       onValidationFailed: (params) => {
         const {operationName, variableValues, document} = params.args
         const query = print(document)
-        Logger.error(`Failed validation: ${operationName}`, {
+        Logger.warn(`Failed validation: ${operationName}`, {
           extras: {
             operationName,
             query,

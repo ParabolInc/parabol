@@ -22,7 +22,7 @@ import {
 import type {IRules} from 'graphql-shield'
 import {allow, and} from 'graphql-shield'
 import hash from 'object-hash'
-import {Logger} from '../utils/Logger'
+import {Logger, markErrorAsLogged} from '../utils/Logger'
 import type {ResolverFn} from './private/resolverTypes'
 
 // hack to get ShieldRule since it's not exported from graphql-shield
@@ -78,19 +78,14 @@ const wrapResolve = (resolve: Resolver, rule: ShieldRule): Resolver => {
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err))
       Logger.error(`Permission rule threw on ${info.parentType.name}.${info.fieldName}`, error)
-      return new GraphQLError('Internal server error', {
+      const internalError = new GraphQLError('Internal server error', {
         extensions: {code: 'INTERNAL_SERVER_ERROR'}
       })
+      markErrorAsLogged(internalError)
+      return internalError
     }
     if (res === true) {
-      try {
-        return await resolve(source, args, context, info)
-      } catch (err) {
-        if (!(err instanceof GraphQLError)) {
-          Logger.log(err)
-        }
-        throw err
-      }
+      return resolve(source, args, context, info)
     }
     if (isRedacting) {
       const redactedValue = getRedactedValue(info.returnType)
