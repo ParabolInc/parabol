@@ -17,7 +17,7 @@ export const createPersonalAccessToken: MutationResolvers['createPersonalAccessT
   if (scopes.length === 0) {
     throw new GraphQLError('Must pick at least one scope')
   }
-  if (authToken.aud === 'action-pat') {
+  if (authToken.aud !== 'action') {
     const callerScopes = authToken.scope ?? []
     const forbidden = scopes.filter((s) => !callerScopes.includes(s))
     if (forbidden.length > 0) {

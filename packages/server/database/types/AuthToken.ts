@@ -13,6 +13,7 @@ interface Input {
   scope?: string[]
   aud?: string
   jti?: string
+  client_id?: string
 }
 
 export default class AuthToken {
@@ -26,8 +27,9 @@ export default class AuthToken {
   exp: number
   aud: string
   jti: string
+  client_id?: string
   constructor(input: Input) {
-    const {bet, rol, sub, tms, lifespan_ms, scope, aud, jti} = input
+    const {bet, rol, sub, tms, lifespan_ms, scope, aud, jti, client_id} = input
     const now = new Date()
     this.sub = sub
     this.tms = tms
@@ -38,6 +40,7 @@ export default class AuthToken {
     this.rol = rol ?? null
     this.scope = scope
     this.jti = jti ?? randomUUID()
+    this.client_id = client_id
 
     if (bet) {
       this.bet = bet

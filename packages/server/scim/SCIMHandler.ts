@@ -90,7 +90,7 @@ const scimHandler = (handler: Handler) =>
       }
       // Verify the signature if it's not a bearer token
       if (saml.scimAuthenticationType === 'oauthClientCredentials') {
-        const authToken = getVerifiedAuthToken(token)
+        const authToken = getVerifiedAuthToken(token, true, 'action-scim')
         if (!authToken?.sub) {
           throw new SCIMMY.Types.Error(401, '', 'Unauthorized')
         }

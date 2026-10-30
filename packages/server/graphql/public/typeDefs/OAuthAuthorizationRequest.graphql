@@ -1,0 +1,21 @@
+"""
+An OAuth 2.0 application asking the viewer for access to their Parabol account
+"""
+type OAuthAuthorizationRequest {
+  """
+  The application name, set by the organization that registered it
+  """
+  name: String!
+  """
+  The organization that registered the application. Its access tokens only reach this organization's data
+  """
+  organization: Organization!
+  """
+  The scopes the application asks for
+  """
+  scopes: [OAuthScopeEnum!]!
+  """
+  Where the viewer's browser goes after they approve or deny the request
+  """
+  redirectUri: String!
+}

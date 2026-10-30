@@ -202,6 +202,12 @@ type Mutation {
   ): CreateOAuth1AuthorizationURLPayload @scope(name: TEAMS_WRITE)
 
   """
+  Approve an OAuth 2.0 authorization request, issuing the application a single-use authorization code
+  """
+  createOAuthAPICode(request: OAuthAuthorizationRequestInput!): CreateOAuthAPICodeSuccess!
+    @scope(name: USERS_WRITE)
+
+  """
   Create a new OAuth 2.0 Application
   """
   createOAuthAPIProvider(

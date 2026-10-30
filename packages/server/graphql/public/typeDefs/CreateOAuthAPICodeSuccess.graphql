@@ -1,0 +1,10 @@
+"""
+Returned when the viewer approves an OAuth 2.0 authorization request
+"""
+type CreateOAuthAPICodeSuccess {
+  """
+  The client's redirect URI with a single-use authorization code and the client's state appended.
+  The client exchanges the code for an access token at /oauth/token within 10 minutes
+  """
+  redirectUri: String!
+}

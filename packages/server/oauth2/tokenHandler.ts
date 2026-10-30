@@ -1,4 +1,5 @@
 import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
+import {createHash, timingSafeEqual} from 'crypto'
 import {sql} from 'kysely'
 import ms from 'ms'
 import AuthToken from '../database/types/AuthToken'
@@ -6,6 +7,13 @@ import uWSAsyncHandler from '../graphql/uWSAsyncHandler'
 import parseBody from '../parseBody'
 import getKysely from '../postgres/getKysely'
 import encodeAuthToken from '../utils/encodeAuthToken'
+
+const CODE_VERIFIER = /^[A-Za-z0-9\-._~]{43,128}$/
+
+const sha256 = (value: string) => createHash('sha256').update(value).digest()
+
+const isEqualSecret = (expected: string | null | undefined, actual: string) =>
+  !!expected && timingSafeEqual(sha256(expected), sha256(actual))
 
 const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest) => {
   const rawBody = await parseBody({
@@ -28,7 +36,7 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
     body[key] = value
   })
 
-  const {grant_type, code, redirect_uri, client_id, client_secret} = body
+  const {grant_type, code, redirect_uri, client_id, client_secret, code_verifier} = body
 
   // SCIM OAuth client credentials
   if (grant_type === 'client_credentials') {
@@ -52,7 +60,7 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
       .selectAll()
       .where('scimOAuthClientId', '=', client_id)
       .executeTakeFirst()
-    if (!saml || !saml.orgId || saml.scimOAuthClientSecret !== client_secret) {
+    if (!saml || !saml.orgId || !isEqualSecret(saml.scimOAuthClientSecret, client_secret)) {
       res.writeStatus('401 Unauthorized')
       res.writeHeader('Content-Type', 'application/json')
       res.end(JSON.stringify({error: 'invalid_client'}))
@@ -102,7 +110,7 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
     .selectAll()
     .where('clientId', '=', client_id)
     .executeTakeFirst()
-  if (!provider || provider.clientSecret !== client_secret) {
+  if (!provider || !isEqualSecret(provider.clientSecret, client_secret)) {
     res.writeStatus('401 Unauthorized')
     res.writeHeader('Content-Type', 'application/json')
     res.end(JSON.stringify({error: 'invalid_client'}))
@@ -112,11 +120,13 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
   const oauthCode = await pg
     .deleteFrom('OAuthAPICode')
     .where('id', '=', code)
+    .where('clientId', '=', provider.clientId)
     .returning([
       'id',
       'userId',
       'expiresAt',
       'redirectUri',
+      'codeChallenge',
       sql<string[]>`to_json(scopes)`.as('scopes')
     ])
     .executeTakeFirst()
@@ -148,13 +158,32 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
     return
   }
 
+  const {codeChallenge} = oauthCode
+  const isCodeVerifierValid = codeChallenge
+    ? !!code_verifier &&
+      CODE_VERIFIER.test(code_verifier) &&
+      isEqualSecret(codeChallenge, sha256(code_verifier).toString('base64url'))
+    : !code_verifier
+  if (!isCodeVerifierValid) {
+    res.writeStatus('400 Bad Request')
+    res.writeHeader('Content-Type', 'application/json')
+    res.end(
+      JSON.stringify({
+        error: 'invalid_grant',
+        error_description: 'Code verifier mismatch'
+      })
+    )
+    return
+  }
+
   const {scopes, userId} = oauthCode
   const authToken = new AuthToken({
     sub: userId,
     tms: [],
     scope: scopes,
     lifespan_ms: ms('30d'),
-    aud: 'action-oauth2'
+    aud: 'action-oauth2',
+    client_id: provider.clientId
   })
   const accessToken = encodeAuthToken(authToken)
 
