@@ -114,17 +114,38 @@ interface PermissionMap {
   }
 }
 
+const getFieldedType = (typeName: string, schema?: GraphQLSchema) => {
+  const type = schema?.getType(typeName)
+  return isObjectType(type) || isInterfaceType(type) ? type : undefined
+}
+
 const getFieldNames = (
   typeName: string,
   resolverFieldMap: Record<string, unknown>,
   schema?: GraphQLSchema
 ) => {
-  const type = schema?.getType(typeName)
-  if (isObjectType(type) || isInterfaceType(type)) return Object.keys(type.getFields())
-  return Object.keys(resolverFieldMap)
+  const type = getFieldedType(typeName, schema)
+  return Object.keys(type ? type.getFields() : resolverFieldMap)
 }
 
-// Pass the schema so a '*' rule also covers fields served by the default resolver
+// A type inherits its interfaces' resolvers after this runs (the last interface wins),
+// so a rule on a field the type doesn't resolve itself must wrap the interface's resolver
+const getUnwrappedResolver = (
+  resolverMap: ResolverMap,
+  typeName: string,
+  fieldName: string,
+  schema?: GraphQLSchema
+) => {
+  const ownResolver = resolverMap[typeName][fieldName]
+  if (ownResolver) return ownResolver
+  const interfaces = getFieldedType(typeName, schema)?.getInterfaces() ?? []
+  const inheritedResolver = interfaces
+    .map((interfaceType) => resolverMap[interfaceType.name]?.[fieldName])
+    .findLast(Boolean)
+  return inheritedResolver ?? defaultFieldResolver
+}
+
+// Pass the schema so a '*' rule also covers fields served by the default resolver or inherited from an interface
 const composeResolvers = <T extends ResolverMap>(
   resolverMap: T,
   permissionMap: PermissionMap,
@@ -132,7 +153,14 @@ const composeResolvers = <T extends ResolverMap>(
 ) => {
   // clone the resolver map to keep this fn pure
   const nextResolverMap = {...resolverMap}
-  Object.entries(permissionMap).forEach((entry) => {
+  // Compose interfaces before the types that inherit from them, so an interface's rule still applies under the type's.
+  // A type lists every interface its interfaces implement, so it lists more interfaces than any of them
+  const countInterfaces = (typeName: string) =>
+    getFieldedType(typeName, schema)?.getInterfaces().length ?? 0
+  const permissionEntries = Object.entries(permissionMap).sort(
+    ([typeNameA], [typeNameB]) => countInterfaces(typeNameA) - countInterfaces(typeNameB)
+  )
+  permissionEntries.forEach((entry) => {
     const typeName = entry[0] as keyof T
     const ruleFieldMap = entry[1]
     // only clone field maps that will be mutated by permissions
@@ -144,12 +172,22 @@ const composeResolvers = <T extends ResolverMap>(
         getFieldNames(String(typeName), nextResolverFieldMap, schema).forEach((schemaFieldName) => {
           // the wildcard is just a default value. if the field has a specific rule, use that
           if (ruleFieldMap[schemaFieldName]) return
-          const unwrappedResolver = nextResolverFieldMap[schemaFieldName] || defaultFieldResolver
+          const unwrappedResolver = getUnwrappedResolver(
+            nextResolverMap,
+            String(typeName),
+            schemaFieldName,
+            schema
+          )
           nextResolverFieldMap[schemaFieldName] = wrapResolve(unwrappedResolver, rule)
         })
       } else {
         // use default if a resolver isn't provided, e.g. a field exists in the DB but only available to superusers via GQL
-        const unwrappedResolver = nextResolverFieldMap[fieldName] || defaultFieldResolver
+        const unwrappedResolver = getUnwrappedResolver(
+          nextResolverMap,
+          String(typeName),
+          fieldName,
+          schema
+        )
         nextResolverFieldMap[fieldName] = wrapResolve(unwrappedResolver, rule)
       }
     })
