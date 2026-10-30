@@ -559,24 +559,39 @@ On `dev`, prefix queries go from 0.76 to 1.00 and summary queries from 0.82 to 0
 - **What was read.** Only overall rows. The local holdout results were scrubbed down to those rows.
 - **Gate runs so far.** `heavy-holdout` has had eight: two for A4, four for A5 and two here.
 
-## Pooling experiment (A9, 2026-10-30)
+## Pooling experiment (A9, 2026-10-29)
 
 Production's TEI averages every token's vector (mean pooling) and embeds queries as typed. Qwen3-Embedding is trained to use the last token's vector, with an instruction in front of each query. This experiment measured both, locally, to decide what Group B's new model generation (B5) should use. Nothing in production changed.
 
 - **Setup.** A second dev TEI with `POOLING=last-token` runs on port 3041 under the compose profile `last-token` (`docker compose --profile last-token up -d text-embeddings-inference-last-token`), so a plain `docker compose up` doesn't start it. The eval uses it when `AI_EMBEDDING_MODELS` points at port 3041, after a reseed. `EVAL_QUERY_INSTRUCTION` puts "Given a search in a team's workspace, retrieve the pages that answer it" in front of every query.
 - **Arms.** M is mean pooling with raw queries, as in production. MI adds the instruction. L is last-token pooling with raw queries, and LI adds the instruction to it.
-- **Rule, fixed before the runs.** Each arm swept fused ranking over alpha 0.01, 0.1, 0.25, 0.5 and 1, crossed with floors from 0.3 to 0.8. A row counted only if, on both dev sets, `noAnswerResults` stayed within 1 and `junkAt5` within 0.02 of production's setting. An arm's score is its best such row's mean nDCG@10 over `heavy-dev` and `dev`. Last-token pooling would win with a score at least 0.01 higher and Recall@20 at most 0.005 lower; the instruction would win with at least 0.005.
+- **Rule, fixed before the runs.** Each arm swept fused ranking over alpha 0.01, 0.1, 0.25, 0.5 and 1, crossed with floors from 0.3 to 0.8. A row counted only if, on both dev sets, it had no errors, its `noAnswerResults` were no more than 1 above production's setting and its `junkAt5` no more than 0.02 above. An arm's score is its best such row's mean nDCG@10 over `heavy-dev` and `dev`. Last-token pooling would win with a score at least 0.01 higher and Recall@20 at most 0.005 lower; the instruction would win with at least 0.005.
 
-| Arm | Best row (alpha, floor) | `heavy-dev` nDCG@10 | `dev` nDCG@10 | Mean | Mean Recall@20 | Similarity alone: `heavy-dev` / `dev` |
+| Arm | Best row (alpha, floor) | `heavy-dev` nDCG@10 | `dev` nDCG@10 | Mean | Mean Recall@20 | Similarity alone, nDCG@10: `heavy-dev` / `dev` |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
 | M (production) | 0.01, 0.4 | 0.757 | 0.864 | 0.810 | 0.895 | 0.234 / 0.238 |
 | MI | 0.01, 0.6 | 0.739 | 0.844 | 0.791 | 0.853 | 0.148 / 0.183 |
 | L | 0.01, 0.4 | 0.742 | 0.851 | 0.797 | 0.861 | 0.083 / 0.193 |
 | LI | 0.01, 0.3 | 0.740 | 0.852 | 0.796 | 0.861 | 0.099 / 0.217 |
 
-"Similarity alone" ranks every page by its vector (alpha 1, floor 0). It's a diagnostic outside the rule: at higher floors the vector arm returns nothing, and every arm falls back to the same keyword order.
+"Similarity alone" ranks every page by its vector (alpha 1, floor 0). It's a diagnostic outside the rule: at higher floors the vector arm returns nothing, and every arm falls back to the same recency order.
 
-- **Decision: mean pooling, no instruction.** Every arm does best at the smallest alpha, where vectors only fill in after keyword matches, and mean pooling fills in best. Ranked by similarity alone, mean pooling also beats last-token pooling on both sets, with or without the instruction.
-- **Templates disagree.** On the template search dev set (40 queries, measured with a local harness), last-token pooling with a template instruction scores 0.640 nDCG@10, against 0.512 for mean pooling with raw queries, and the instruction hurts mean pooling (0.135). Pages and templates share one generation today, so the choice is to keep mean pooling for both, or to give templates a generation of their own.
+- **Decision: mean pooling, no instruction.** Every arm does best at the smallest alpha, where vectors only fill in after keyword matches, and mean pooling fills in best. At that alpha, pooling changes only 2 of 58 `heavy-dev` lists and 6 of 91 `dev` lists, so similarity alone shows more about the vectors. There, mean pooling with raw queries scores highest on both sets: clearly on `heavy-dev`, narrowly on `dev`.
+- **Grid edge.** LI's best row sits at the lowest floor, 0.3, and lower floors weren't tried. LI would need 0.024 more to flip the decision, and by similarity alone it ranks below mean pooling on `heavy-dev`.
+- **Templates disagree.** On the template search dev set (40 queries, production's template text, measured with a local harness from fresh vectors), last-token pooling with a template instruction scores 0.673 nDCG@10, against 0.560 for mean pooling with raw queries. The instruction hurts mean pooling (0.121). Pages and templates share one generation today, so the choice is to keep mean pooling for both, or to give templates a generation of their own.
+- **Cost.** On the local CPU TEIs, a raw query takes 38–47 ms to embed with either pooling, an instructed query 128–142 ms, and a page chunk about 2 s.
 - **Caveat.** This measures today's chunks. B1 and B2 change what gets embedded, so run it again before B5; it takes one reseed per pooling.
+
+**Run it again.** From `packages/server`, with `.env` loaded and the last-token TEI started:
+
+```bash
+LT='[{"model": "text-embeddings-inference:Svenni551/Qwen3-Embedding-0.6B-ONNX-INT8", "url": "http://localhost:3041/", "maxTokens": 2048}]'
+EVAL_LABEL=a9-m EVAL_SET=heavy-dev EVAL_MODES=sweep EVAL_ALPHAS=0.01,0.1,0.25,0.5,1 EVAL_FLOORS=0.3,0.4,0.5,0.6,0.7,0.8 EVAL_MIN_BYTES=200 pnpm eval:pagesSearch
+EVAL_LABEL=a9-mi EVAL_SET=heavy-dev EVAL_QUERY_INSTRUCTION="Given a search in a team's workspace, retrieve the pages that answer it" EVAL_MODES=sweep EVAL_ALPHAS=0.01,0.1,0.25,0.5,1 EVAL_FLOORS=0.3,0.4,0.5,0.6,0.7,0.8 EVAL_MIN_BYTES=200 pnpm eval:pagesSearch
+AI_EMBEDDING_MODELS="$LT" EVAL_RESEED=1 EVAL_LABEL=a9-l EVAL_SET=heavy-dev EVAL_MODES=sweep EVAL_ALPHAS=0.01,0.1,0.25,0.5,1 EVAL_FLOORS=0.3,0.4,0.5,0.6,0.7,0.8 EVAL_MIN_BYTES=200 pnpm eval:pagesSearch
+AI_EMBEDDING_MODELS="$LT" EVAL_LABEL=a9-li EVAL_SET=heavy-dev EVAL_QUERY_INSTRUCTION="Given a search in a team's workspace, retrieve the pages that answer it" EVAL_MODES=sweep EVAL_ALPHAS=0.01,0.1,0.25,0.5,1 EVAL_FLOORS=0.3,0.4,0.5,0.6,0.7,0.8 EVAL_MIN_BYTES=200 pnpm eval:pagesSearch
+EVAL_RESEED=1 EVAL_LABEL=a9-back EVAL_SET=heavy-dev EVAL_MODES=fused pnpm eval:pagesSearch
+```
+
+Repeat each line for `dev`. The last line reseeds the eval pages back to mean pooling.
 - **The eval index is back on mean pooling**, and the last-token container is stopped.

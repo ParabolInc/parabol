@@ -39,7 +39,7 @@ import parseCounts from './parseCounts'
 import parseFractions from './parseFractions'
 import parseStopWords, {type StopWords} from './parseStopWords'
 import {type EvalCorpus, FIXTURES_CORPUS, seedEvalPages} from './seedEvalPages'
-import {withQueryInstruction} from './withQueryInstruction'
+import withQueryInstruction from './withQueryInstruction'
 
 interface EmbeddingCall {
   startedAt: number
