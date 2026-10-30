@@ -2,7 +2,6 @@ import {sql} from 'kysely'
 import isValid from '../../server/graphql/isValid'
 import getKysely from '../../server/postgres/getKysely'
 import {Logger} from '../../server/utils/Logger'
-import {getEmbedderJobPriority} from '../getEmbedderJobPriority'
 import {
   type EmbeddingsPagesTable,
   type EmbeddingsTable,
@@ -131,51 +130,6 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
     return chunks
   }
 
-  async createEmbeddingsForModel() {
-    Logger.log(`Queueing EmbeddingsMetadata, Pages into EmbeddingsJobQueueV2 for ${this.modelId}`)
-    const pg = getKysely()
-    const priority = await getEmbedderJobPriority('modelUpdate', null, 0)
-    await pg
-      .insertInto('EmbeddingsJobQueueV2')
-      .columns(['jobType', 'priority', 'embeddingsMetadataId', 'modelId'])
-      .expression(({selectFrom}) =>
-        selectFrom('EmbeddingsMetadata')
-          .select(({ref}) => [
-            sql.lit('embed:start').as('jobType'),
-            sql.lit(priority).as('priority'),
-            ref('id').as('embeddingsMetadataId'),
-            sql.lit(this.modelId).as('modelId')
-          ])
-          .where('language', 'in', this.languages)
-          .where(({eb, or}) =>
-            or([
-              // meetingTemplates are small & parabol-provided ones are older than a year
-              eb('objectType', '=', 'meetingTemplate'),
-              // for new models, we only grab a year's worth of data
-              eb('refUpdatedAt', '>', sql<Date>`NOW() - INTERVAL '1 year'`)
-            ])
-          )
-      )
-      .onConflict((oc) => oc.doNothing())
-      .execute()
-
-    // process pages first
-    const pagePriority = priority - 1_000
-    await pg
-      .insertInto('EmbeddingsJobQueueV2')
-      .columns(['jobType', 'priority', 'pageId', 'modelId'])
-      .expression(({selectFrom}) =>
-        selectFrom('Page').select(({ref}) => [
-          sql.lit('embedPage:start').as('jobType'),
-          sql.lit(pagePriority).as('priority'),
-          ref('id').as('pageId'),
-          sql.lit(this.modelId).as('modelId')
-        ])
-      )
-      .onConflict((oc) => oc.doNothing())
-      .execute()
-    Logger.log(`Metadata loaded into JobQueue for new model ${this.modelId}`)
-  }
   async createTable() {
     const pg = getKysely()
     const hasTable =
@@ -236,6 +190,5 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
         END
       $$;
       `.execute(pg)
-    await this.createEmbeddingsForModel()
   }
 }
