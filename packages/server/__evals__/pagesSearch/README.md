@@ -112,7 +112,7 @@ When a dev query matches a holdout query, the dev query changes. A unit test che
 
 **Running a gate blind.** Run each side as a sweep (`EVAL_MODES=sweep`) with one value in every sweep variable, except `EVAL_ALPHAS=0,<PAGE_SEARCH_ALPHA>` to score the quick list and fused ranking in the same run. Leave the keyword variables unset, so each row keeps its list's defaults: unlike fused and quick runs, a sweep prints no category rows and never falls back to keyword results. Send its output to a file and read only the overall row and the test summary, because a failed query is printed by its text. Afterwards, cut each results file down to its `overall` block and delete the logs. Never run `compare.mjs` on a holdout: it lists changed queries by text.
 
-**The final holdout waits for the re-embed.** `heavy-final` was written the same way after `heavy-holdout`'s eighth gate run, and its author never saw the other two query files either. It has 100 queries: title 13, prefix 9, body 16, paraphrase 14, typo 10, table 7, longDoc 10, person 11 and noAnswer 10, the mix `heavy-holdout`'s author was asked for, scaled by 1.25. The corpus has few one-off events, so the sets overlap in what they ask for, not in how they ask it. 69 of its 90 answerable queries want a page that a dev query also grades 3, but only 9 share half their words with such a query. Eight of its queries first matched another file word for word; they were reworded and kept their labels. Nothing runs it before Group B's final gate (B8). There, run it blind as above, once for master and once for the candidate, and never tune on it. Until then, ranking PRs gate on `heavy-holdout`.
+**The final holdout waits for the re-embed.** `heavy-final` was written the same way after `heavy-holdout`'s eighth gate run, and its author never saw the other two query files either. It has 100 queries: title 13, prefix 9, body 16, paraphrase 14, typo 10, table 7, longDoc 10, person 11 and noAnswer 10, the mix `heavy-holdout`'s author was asked for, scaled by 1.25. The corpus has few one-off events, so the sets overlap in what they ask for, not in how they ask it. 69 of its 90 answerable queries want a page that a dev query also grades 3, but only 9 share half their words with such a query. Eight of its queries first matched another file word for word; they were reworded and kept their labels. Nothing runs it before Group B's final gate (B8). There, run it once for master and once for the candidate, following the gate steps under "Re-tune and gate (B8)", and never tune on it. Until then, ranking PRs gate on `heavy-holdout`.
 
 **Validity.** A heavy run is a valid baseline when `errors` is 0, no `fused` query fell back to keyword results, and `unindexed` lists exactly `doc-q4-planning-draft`. That page has only a title. Before B2, the language gate also refused it, reading the title as Javanese. The first seed embeds about 500,000 characters, which took 28 minutes on a laptop. Later runs take seconds.
 
@@ -814,7 +814,7 @@ To measure a generation, list it first in `AI_EMBEDDING_MODELS` for the run. `in
 
 - **The chosen setting beats master on every measure on both sets.** Unanswerable queries return 3.67 pages instead of 13.67 on `heavy-dev`.
 - **Floors below 0.65 weren't eligible.** Unanswerable queries filled 14 to 20 slots there.
-- **Alpha.** 0.005 and 0.01 gave the same lists at every floor, and the rule took 0.005.
+- **Alpha.** 0.005 and 0.01 gave the same scores at every floor and the same lists at 0.65; at 0.7 and 0.75, three `heavy-dev` lists differ at ranks 19 and 20. The rule took 0.005.
 - **Pooling stays mean, with no instruction.** On B2's chunks, which the new generation embeds unchanged, fused page ranking favored mean pooling (0.879 against 0.872 for last-token with an instruction).
 
 **The gate.** It runs once, on `heavy-final`, when the stack's ranking code is reviewed. Whoever tunes ranking never reads `heavyFinalQueries.json` or a per-query result. The candidate ships only if, after grading, all four hold:
@@ -823,12 +823,37 @@ To measure a generation, list it first in `AI_EMBEDDING_MODELS` for the run. `in
 - `noAnswerResults` is at most master's plus 1;
 - `junkAt5` is at most master's plus 0.02.
 
-1. **Run both arms once on the same index, sending each run's output to a file nobody reads.** From `packages/server`, with `.env` loaded:
-   - Master (the live generation first in `AI_EMBEDDING_MODELS`): `EVAL_SET=heavy-final EVAL_MODES=sweep EVAL_ALPHAS=0.01 EVAL_FLOORS=0.4 EVAL_LABEL=gate-master pnpm eval:pagesSearch`.
-   - Candidate (`#v3` alone or first): `EVAL_SET=heavy-final EVAL_MODES=sweep EVAL_ALPHAS=0.005 EVAL_FLOORS=0.65 EVAL_LABEL=gate-candidate pnpm eval:pagesSearch`.
-2. **Grade.** A fresh agent that never tuned ranking reads `heavyFinalQueries.json`, both runs' `results/gate-*-heavy-final-sweep.json` and the corpus dump (`EVAL_DUMP=1 EVAL_SET=heavy-dev`).
-   - For every page in either arm's top 10 that the query doesn't label, it assigns a grade on the labels' scale: 3, 2, 1, or 0 for not relevant.
-   - It writes `results/gate-extra-grades.json` as `{"<query>": {"<page key>": <grade>}}`.
-   - It never changes a label, and it never sees either arm's scores.
-3. **Score.** Run `pnpm sucrase-node packages/server/__evals__/pagesSearch/rescore.ts <results file> packages/server/__evals__/pagesSearch/heavyFinalQueries.json <extra grades>` for each arm, from the repo root. It prints only the overall row. Labels win over extra grades, and unanswerable queries stay unanswerable.
-4. **Scrub.** Delete both results files, the extra grades and the logs, and keep the two overall rows.
+0. **Rehearse on `heavy-dev` first.**
+   - Run steps 1, 2 and 4 with `EVAL_SET=heavy-dev`, labels from `heavyQueries.json`, and a grades file that gives every pooled page 0.
+   - Each arm's `rescore` row must then equal its plain eval row, and its `modelId`, `alpha` and `floor` must name the arm.
+1. **Run both arms once on the same index.** From `packages/server`, with `.env` loaded and the live generation first in its `AI_EMBEDDING_MODELS`. Neither log is ever opened:
+
+   ```sh
+   EVAL_SET=heavy-final EVAL_MODES=sweep EVAL_ALPHAS=0.01 EVAL_FLOORS=0.4 EVAL_LABEL=gate-master pnpm eval:pagesSearch > "$TMPDIR/gate-master.log" 2>&1; echo "exit $?"
+   AI_EMBEDDING_MODELS='[{"model":"text-embeddings-inference:Svenni551/Qwen3-Embedding-0.6B-ONNX-INT8#v3","url":"http://localhost:3040/","maxTokens":2048}]' EVAL_SET=heavy-final EVAL_MODES=sweep EVAL_ALPHAS=0.005 EVAL_FLOORS=0.65 EVAL_LABEL=gate-candidate pnpm eval:pagesSearch > "$TMPDIR/gate-candidate.log" 2>&1; echo "exit $?"
+   ```
+
+   A nonzero exit means running that arm again, still without opening its log.
+2. **Pool.** From the repo root:
+
+   ```sh
+   pnpm sucrase-node packages/server/__evals__/pagesSearch/poolUnjudged.ts packages/server/__evals__/pagesSearch/heavyFinalQueries.json packages/server/__evals__/pagesSearch/results/gate-to-grade.json packages/server/__evals__/pagesSearch/results/gate-master-heavy-final-sweep.json packages/server/__evals__/pagesSearch/results/gate-candidate-heavy-final-sweep.json
+   ```
+
+   It prints only a count. `gate-to-grade.json` lists, for each answerable query, the pages either arm ranked in its top 10 that the query doesn't label. They're sorted, with no arm, rank or score.
+3. **Grade.** A fresh agent that never tuned ranking:
+   - reads `heavyFinalQueries.json`, `results/gate-to-grade.json`, the grading scale under Queries above and the corpus dump (`EVAL_DUMP=1 EVAL_SET=heavy-dev`);
+   - grades every pooled page 3, 2, 1, or 0 for not relevant;
+   - writes `results/gate-extra-grades.json` as `{"<query>": {"<page key>": <grade>}}`.
+
+   It never opens a results file, and it reports back only how many pages it graded.
+4. **Score.** From the repo root, for each arm's results file:
+
+   ```sh
+   pnpm sucrase-node packages/server/__evals__/pagesSearch/rescore.ts <results file> packages/server/__evals__/pagesSearch/heavyFinalQueries.json packages/server/__evals__/pagesSearch/results/gate-to-grade.json packages/server/__evals__/pagesSearch/results/gate-extra-grades.json
+   ```
+
+   - It refuses a run with errors, and grades that don't cover the pool exactly.
+   - It prints one row: the arm's model, alpha, floor and unindexed pages, then its scores.
+   - A valid arm names its own generation and setting, and lists only `doc-q4-planning-draft` as unindexed.
+5. **Scrub.** Delete both results files, the pool, the extra grades and the logs, and keep the two rows.

@@ -1,4 +1,4 @@
-import {type LabeledQuery, rescore} from '../rescore'
+import {checkExtraGrades, type ExtraGrades, type LabeledQuery, rescore} from '../rescore'
 
 const queries: LabeledQuery[] = [
   {query: 'alpha', relevant: {a: 3, b: 1}},
@@ -34,3 +34,16 @@ it('never overrides a label', () =>
 
 it('keeps unanswerable queries unanswerable', () =>
   expect(rescore(results, queries, {nothing: {y: 3}})).toEqual(rescore(results, queries)))
+
+it('keeps an unjudged page graded 0 as junk', () =>
+  expect(rescore(results, queries, {alpha: {x: 0}})).toEqual(rescore(results, queries)))
+
+it('accepts extra grades that cover the pool exactly', () =>
+  expect(checkExtraGrades({alpha: ['x', 'y']}, {alpha: {x: 0, y: 3}})).toBeNull())
+
+it('rejects missing, extra and malformed grades, by count only', () => {
+  const extraGrades: ExtraGrades = {alpha: {x: '2', z: 1}, beta: {w: 7}}
+  expect(checkExtraGrades({alpha: ['x', 'y']}, extraGrades)).toBe(
+    'Extra grades: 1 pooled pairs ungraded, 2 pairs outside the pool, 2 grades not 0, 1, 2 or 3'
+  )
+})
