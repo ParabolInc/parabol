@@ -124,8 +124,8 @@ export const modelIdDefinitions = {
     tableSuffix: 'qwen3v3',
     languages: qwen3Languages,
     chunker: 'sections',
-    pageVectorFloor: 0.6,
-    pageAlpha: 0.01
+    pageVectorFloor: 0.65,
+    pageAlpha: 0.005
   },
   'Qwen/Qwen3-Embedding-0.6B': {
     embeddingDimensions: 1024,
