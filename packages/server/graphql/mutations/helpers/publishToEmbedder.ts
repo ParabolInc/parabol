@@ -49,7 +49,7 @@ interface MessageToEmbedderRelatedDiscussions extends BaseMessageToEmbedder {
   data: RelatedDiscussionsJobData
 }
 
-const PAGE_EMBED_IDLE_DELAY_SECONDS = 15
+const PAGE_EMBED_IDLE_DELAY_SECONDS = 20
 const PAGE_EMBED_MAX_DELAY_SECONDS = 120
 
 const IS_EMBEDDER_ENALBED = !!parseInt(process.env.AI_EMBEDDER_WORKERS!)

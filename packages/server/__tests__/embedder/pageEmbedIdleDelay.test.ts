@@ -45,8 +45,8 @@ afterAll(async () => {
 it('waits for edits to settle before embedding a page', async () => {
   await publishPageEdit()
   const delay = await delayOf()
-  expect(delay).toBeGreaterThan(13)
-  expect(delay).toBeLessThan(17)
+  expect(delay).toBeGreaterThan(18)
+  expect(delay).toBeLessThan(22)
 })
 
 it('pushes the job back when the page is edited again', async () => {
@@ -58,7 +58,7 @@ it('pushes the job back when the page is edited again', async () => {
     .execute()
   expect(await delayOf()).toBeLessThan(6)
   await publishPageEdit()
-  expect(await delayOf()).toBeGreaterThan(13)
+  expect(await delayOf()).toBeGreaterThan(18)
 })
 
 it('embeds a page that keeps changing within 2 minutes of its first save', async () => {
