@@ -32,7 +32,7 @@ export const QUICK_KEYWORD_MATCHING: KeywordMatching = {
   dropStopWords: true,
   anyWordFallbackBelow: 20,
   anyWordMinShare: 0,
-  titleTypoSimilarity: 0
+  titleTypoSimilarity: 0.5
 }
 
 export interface PageSearchResults {

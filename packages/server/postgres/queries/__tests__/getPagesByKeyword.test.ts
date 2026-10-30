@@ -340,6 +340,9 @@ it('highlights a single digit', async () => {
 it('matches a misspelled title word', async () =>
   expect((await ids('vendor comparsion', {titleTypoSimilarity: 0.5}))[0]).toBe(vendorComparisonId))
 
+it('matches misspelled title words by default', async () =>
+  expect((await ids('vendor comparsion'))[0]).toBe(vendorComparisonId))
+
 it('ignores misspellings when the threshold is 0', async () =>
   expect(await ids('whiteboad', {titleTypoSimilarity: 0})).toEqual([]))
 

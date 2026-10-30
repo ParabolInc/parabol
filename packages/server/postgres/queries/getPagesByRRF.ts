@@ -17,7 +17,7 @@ export const FUSED_KEYWORD_MATCHING: KeywordMatching = {
   dropStopWords: true,
   anyWordFallbackBelow: 20,
   anyWordMinShare: 0.5,
-  titleTypoSimilarity: 0
+  titleTypoSimilarity: 0.5
 }
 
 export const getPagesByRRF = async ({
