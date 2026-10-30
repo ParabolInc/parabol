@@ -44,8 +44,10 @@ environment variables, here given with example configuration:
   the vector floor and alpha that page search uses while it is first in the
   list. Search uses the first entry. Page and metadata updates are queued for
   every entry, so a second entry fills up beside the first one. Adding an entry
-  creates its tables and queues nothing else; the background run fills it.
-  To cut over, move the new entry first; to roll back, move it back. A tag
+  creates its tables and queues nothing else.
+  To cut over, move the new entry first; to roll back, move it back.
+  Deploy the code that defines a generation before listing it: the embedder
+  stops on an id it doesn't know, and the web servers skip it. A tag
   after `#` in an id (`...ONNX-INT8#v3`) names a new generation of the same
   model. TEI never sends the id, but the vLLM client sends it as the model
   name, so a tagged generation needs TEI.

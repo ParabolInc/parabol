@@ -95,11 +95,11 @@ const CURRENT_GENERATION = 'Svenni551/Qwen3-Embedding-0.6B-ONNX-INT8'
 const NEXT_GENERATION = 'Svenni551/Qwen3-Embedding-0.6B-ONNX-INT8#v3'
 const configuredModels = process.env.AI_EMBEDDING_MODELS
 
-const withTwoGenerations = () => {
+const withGenerations = (modelIds: string[]) => {
   jest.resetModules()
   process.env.AI_EMBEDDER_WORKERS = '1'
   process.env.AI_EMBEDDING_MODELS = JSON.stringify(
-    [NEXT_GENERATION, CURRENT_GENERATION].map((modelId) => ({
+    modelIds.map((modelId) => ({
       model: `text-embeddings-inference:${modelId}`,
       url: 'http://localhost:3040/',
       maxTokens: 2048
@@ -116,7 +116,7 @@ describe('generations', () => {
   })
 
   it('queues a page edit for every generation', async () => {
-    const publishToEmbedder = withTwoGenerations()
+    const publishToEmbedder = withGenerations([NEXT_GENERATION, CURRENT_GENERATION])
     await publishToEmbedder({jobType: 'embedPage:start', pageId: 1})
     expect(
       mockInsertedValues.map(({modelId, runAfter}) => [modelId, runAfter !== undefined])
@@ -127,7 +127,7 @@ describe('generations', () => {
   })
 
   it('answers a metadata request from the active generation only', async () => {
-    const publishToEmbedder = withTwoGenerations()
+    const publishToEmbedder = withGenerations([NEXT_GENERATION, CURRENT_GENERATION])
     mockWaitForResponse.mockResolvedValue(new Float32Array([0.5]))
     await publishToEmbedder({
       jobType: 'embed:start',
@@ -139,6 +139,20 @@ describe('generations', () => {
     ).toEqual([
       [NEXT_GENERATION, {requestId: 7, channelName: 'embedderResponse:1'}],
       [CURRENT_GENERATION, {}]
+    ])
+  })
+
+  it('queues each known generation once', async () => {
+    const publishToEmbedder = withGenerations([
+      NEXT_GENERATION,
+      CURRENT_GENERATION,
+      NEXT_GENERATION,
+      'unknown/model'
+    ])
+    await publishToEmbedder({jobType: 'embedPage:start', pageId: 1})
+    expect(mockInsertedValues.map(({modelId}) => modelId)).toEqual([
+      NEXT_GENERATION,
+      CURRENT_GENERATION
     ])
   })
 
@@ -154,7 +168,7 @@ describe('generations', () => {
   })
 
   it('queues a search query for the active generation only', async () => {
-    const publishToEmbedder = withTwoGenerations()
+    const publishToEmbedder = withGenerations([NEXT_GENERATION, CURRENT_GENERATION])
     mockWaitForResponse.mockResolvedValue(new Float32Array([0.5]))
     await publishToEmbedder({
       jobType: 'userQuery:start',

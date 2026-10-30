@@ -4,6 +4,7 @@ import getPhase from 'parabol-server/utils/getPhase'
 import type {RelatedDiscussionsJobData} from '../../server/graphql/mutations/helpers/publishToEmbedder'
 import {activeEmbeddingModelId} from '../activeEmbeddingModel'
 import type {JobQueueStepRun, ParentJob} from '../custom'
+import {queueEmbedForOtherGenerations} from '../queueEmbedForOtherGenerations'
 import type {embedMetadata} from './embedMetadata'
 
 export const relatedDiscussionsStart: JobQueueStepRun<
@@ -45,6 +46,7 @@ export const relatedDiscussionsStart: JobQueueStepRun<
     )
     .returning('id')
     .execute()
+  await queueEmbedForOtherGenerations(inserts.map(({id}) => id))
 
   return inserts.map(({id}) => ({
     embeddingsMetadataId: id,

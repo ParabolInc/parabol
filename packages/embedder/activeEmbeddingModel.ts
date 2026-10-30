@@ -5,13 +5,14 @@ import {type EmbeddingsModelType, parseModelEnvVars} from './ai_models/parseMode
 // The goal here is to have a string constant of the table name available to the server
 // Without importing all the abstract model classes
 
-const getModelIds = () =>
-  parseModelEnvVars('AI_EMBEDDING_MODELS').map(({model}) => {
-    const [, modelId] = model.split(':') as [EmbeddingsModelType, ModelId]
-    return modelId
-  })
-export const embeddingModelIds = getModelIds()
-export const activeEmbeddingModelId = embeddingModelIds[0] ?? null
+const configuredModelIds = parseModelEnvVars('AI_EMBEDDING_MODELS').map(({model}) => {
+  const [, modelId] = model.split(':') as [EmbeddingsModelType, ModelId]
+  return modelId
+})
+export const activeEmbeddingModelId = configuredModelIds[0] ?? null
+export const embeddingModelIds = [...new Set(configuredModelIds)].filter(
+  (modelId) => modelId in modelIdDefinitions
+)
 export const activeEmbeddingDefinition: EmbeddingModelParams | undefined = activeEmbeddingModelId
   ? modelIdDefinitions[activeEmbeddingModelId]
   : undefined
