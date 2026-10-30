@@ -1,19 +1,17 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {OrgTeams_organization$key} from '../../../../__generated__/OrgTeams_organization.graphql'
 import AddTeamDialogRoot from '../../../../components/AddTeamDialogRoot'
 import {Button} from '../../../../ui/Button/Button'
+import {cn} from '../../../../ui/cn'
 import {useDialogState} from '../../../../ui/Dialog/useDialogState'
-import OrgTeamsRow from './OrgTeamsRow'
-import TeaserOrgTeamsRow from './TeaserOrgTeamsRow'
+import OrgStructureLevels from './OrgStructureLevels'
+import OrgTeamRollup from './OrgTeamRollup'
+import OrgTeamsTable from './OrgTeamsTable'
 
 type Props = {
   organizationRef: OrgTeams_organization$key
 }
-
-type SortField = 'name' | 'memberCount' | 'lastMetAt'
-type SortDirection = 'asc' | 'desc'
 
 const OrgTeams = (props: Props) => {
   const {organizationRef} = props
@@ -21,17 +19,24 @@ const OrgTeams = (props: Props) => {
     graphql`
       fragment OrgTeams_organization on Organization {
         id
-        tier
-        isOrgAdmin
-        teams {
+        name
+        isBillingLeader
+        hasReports: featureFlag(featureName: "Reports")
+        structure {
           id
           name
-          lastMetAt
-          teamMembersCount
-          isViewerOnTeam
-          ...OrgTeamsRow_team
+          values {
+            id
+            name
+            teams {
+              id
+            }
+          }
         }
-        allTeamsCount
+        teams {
+          id
+        }
+        ...OrgTeamsTable_organization
       }
     `,
     organizationRef
@@ -42,44 +47,25 @@ const OrgTeams = (props: Props) => {
     close: closeAddTeamDialog,
     isOpen: isAddTeamDialogOpened
   } = useDialogState()
-
-  const [sortBy, setSortBy] = useState<SortField>('lastMetAt')
-  const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
-  const {teams, allTeamsCount, tier, isOrgAdmin} = organization
-  const showingAllTeams = teams.length === allTeamsCount
-  const viewerTeamCount = teams.length
-
-  const handleSort = (field: SortField) => {
-    if (sortBy === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
-    } else {
-      setSortBy(field)
-      setSortDirection('desc')
-    }
-  }
-
-  const sortedTeams = [...teams].sort((a, b) => {
-    const direction = sortDirection === 'asc' ? 1 : -1
-    if (sortBy === 'name') {
-      return direction * a.name.localeCompare(b.name)
-    } else if (sortBy === 'memberCount') {
-      return direction * (a.teamMembersCount - b.teamMembersCount)
-    } else {
-      // lastMetAt
-      const aLastMet = a.lastMetAt
-      const bLastMet = b.lastMetAt
-      if (!aLastMet && !bLastMet) return 0
-      if (!aLastMet) return -direction
-      if (!bLastMet) return direction
-      return direction * (new Date(aLastMet).getTime() - new Date(bLastMet).getTime())
-    }
-  })
+  const {id: orgId, name, isBillingLeader, hasReports, structure: levels, teams} = organization
+  const hasLevels = levels.length > 0
 
   return (
-    <div className='max-w-4xl pb-4'>
-      <div className='flex items-center justify-center py-1'>
-        <div>
+    <div className={cn('pb-4', hasReports ? 'max-w-[1184px]' : 'max-w-4xl')}>
+      <div
+        className={cn(
+          'flex justify-center py-1',
+          hasReports ? 'flex-wrap items-start gap-x-3 gap-y-2' : 'items-center'
+        )}
+      >
+        <div className={cn(hasReports && 'min-w-0 flex-[1_1_420px]')}>
           <h1 className='font-semibold text-2xl leading-7'>Teams</h1>
+          {hasReports && (
+            <p className='mt-1 mb-0 max-w-160 text-fg-secondary'>
+              Every team in {name}, and where it sits in your structure. Reports roll up by these
+              levels.
+            </p>
+          )}
         </div>
         <div className='ml-auto'>
           <Button variant='secondary' className='w-32 py-2 text-base' onClick={openAddTeamDialog}>
@@ -88,63 +74,27 @@ const OrgTeams = (props: Props) => {
         </div>
       </div>
 
-      <div className='overflow-hidden rounded-md border border-hairline bg-surface-card shadow-xs'>
-        <div className='bg-surface-raised px-4 py-2'>
-          <div className='flex w-full justify-between'>
-            <div className='flex items-center font-bold'>
-              {allTeamsCount} {' total '}
-              {!showingAllTeams ? `(${allTeamsCount - viewerTeamCount} hidden)` : null}
+      {hasReports && (isBillingLeader || hasLevels) && (
+        <div className='mt-4 mb-5 flex flex-wrap items-start gap-5'>
+          {isBillingLeader && (
+            <div className='min-w-0 flex-[3_1_560px]'>
+              <OrgStructureLevels orgId={orgId} levels={levels} />
             </div>
-          </div>
+          )}
+          {hasLevels && (
+            <div className={cn('min-w-0 flex-[2_1_320px]', !isBillingLeader && 'max-w-xl')}>
+              <OrgTeamRollup orgName={name} levels={levels} teamIds={teams.map(({id}) => id)} />
+            </div>
+          )}
         </div>
-        <div className='w-full overflow-x-auto px-4'>
-          <table className='w-full table-fixed border-collapse md:table-auto'>
-            <thead>
-              <tr className='border-hairline border-b'>
-                <th
-                  className='w-[60%] cursor-pointer p-3 text-left font-semibold'
-                  onClick={() => handleSort('name')}
-                >
-                  Team
-                  {sortBy === 'name' && (sortDirection === 'asc' ? ' ▲' : ' ▼')}
-                </th>
-                <th
-                  className='hidden w-[20%] cursor-pointer p-3 text-left font-semibold md:table-cell'
-                  onClick={() => handleSort('memberCount')}
-                >
-                  Member Count
-                  {sortBy === 'memberCount' && (sortDirection === 'asc' ? ' ▲' : ' ▼')}
-                </th>
-                <th
-                  className='hidden w-[20%] cursor-pointer p-3 text-left font-semibold md:table-cell'
-                  onClick={() => handleSort('lastMetAt')}
-                >
-                  Last Met At
-                  {sortBy === 'lastMetAt' && (sortDirection === 'asc' ? ' ▲' : ' ▼')}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedTeams.map((team) => (
-                <OrgTeamsRow key={team.id} teamRef={team} isOrgAdmin={isOrgAdmin} />
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {tier !== 'enterprise' && allTeamsCount > viewerTeamCount && !showingAllTeams && (
-          <TeaserOrgTeamsRow
-            hiddenTeamCount={allTeamsCount - viewerTeamCount}
-            orgId={organization.id}
-          />
-        )}
-      </div>
+      )}
+      <OrgTeamsTable organizationRef={organization} />
 
       <AddTeamDialogRoot
         isOpen={isAddTeamDialogOpened}
         onTeamAdded={closeAddTeamDialog}
         onClose={closeAddTeamDialog}
-        orgId={organization.id}
+        orgId={orgId}
       />
     </div>
   )

@@ -1,13 +1,14 @@
 import type {JSONContent} from '@tiptap/core'
-import {createContext, type MutableRefObject, useContext, useMemo} from 'react'
+import {createContext, type RefObject, useContext, useMemo} from 'react'
 
 export interface TeamPromptComposerApi {
   insertAnswerBlocks: (promptId: string, blocks: JSONContent[]) => Promise<boolean>
   getAnswerText: (promptId: string) => string
 }
 
-const TeamPromptComposerApiContext =
-  createContext<MutableRefObject<TeamPromptComposerApi | null> | null>(null)
+const TeamPromptComposerApiContext = createContext<RefObject<TeamPromptComposerApi | null> | null>(
+  null
+)
 
 export const useTeamPromptComposerApi = (): TeamPromptComposerApi => {
   const apiRef = useContext(TeamPromptComposerApiContext)

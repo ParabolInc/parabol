@@ -6,8 +6,11 @@ import {redisHocusPocus} from '../../hocusPocus'
 import getKysely from '../../postgres/getKysely'
 import {selectDescendantPages} from '../../postgres/select'
 import {updatePageAccessTable} from '../../postgres/updatePageAccessTable'
+import {updatePageAncestorIds} from '../../postgres/updatePageAncestorIds'
 import {CipherId} from '../CipherId'
+import {Logger} from '../Logger'
 import {publishPageNotification} from '../publishPageNotification'
+import {revalidateYjsConnections} from './revalidateYjsConnections'
 import {validateParentPage} from './validateParentPage'
 
 export const movePageToNewParent = async (
@@ -54,89 +57,241 @@ export const movePageToNewParent = async (
   if (childPage.parentPageId) {
     const documentName = CipherId.toClient(childPage.parentPageId, 'page')
     const pageCode = CipherId.encrypt(pageId)
-    redisHocusPocus.handleEvent('removeCanonicalPageLinkFromPage', documentName, {pageCode})
+    redisHocusPocus
+      .handleEvent('removeCanonicalPageLinkFromPage', documentName, {pageCode})
+      .catch(Logger.error)
   }
-  const trx = await pg.startTransaction().execute()
+  await pg.transaction().execute(async (trx) => {
+    await selectDescendantPages(trx, pageId)
+      // Remove previous access for all descendants _that doesn't match the new parent's access_ (the exclusion means fewer writes)
+      // Copy parent access to all descendants (if new parent has a different role, adopt that)
+      .with('delUsers', (qc) =>
+        qc
+          .deleteFrom('PageUserAccess')
+          .where('pageId', 'in', (eb) => eb.selectFrom('descendants').select('id'))
+          .where('userId', '!=', viewerId)
+          .where(({eb, not, exists}) =>
+            not(
+              exists(
+                eb
+                  .selectFrom('PageUserAccess as parentAccess')
+                  .where('parentAccess.pageId', '=', parentPageId)
+                  .whereRef('parentAccess.userId', '=', 'PageUserAccess.userId')
+              )
+            )
+          )
+      )
+      .with('delTeams', (qc) =>
+        qc
+          .deleteFrom('PageTeamAccess')
+          .where('pageId', 'in', (eb) => eb.selectFrom('descendants').select('id'))
+          .where(({eb, not, exists}) =>
+            not(
+              exists(
+                eb
+                  .selectFrom('PageTeamAccess as parentAccess')
+                  .where('parentAccess.pageId', '=', parentPageId)
+                  .whereRef('parentAccess.teamId', '=', 'PageTeamAccess.teamId')
+              )
+            )
+          )
+      )
+      .with('delOrgs', (qc) =>
+        qc
+          .deleteFrom('PageOrganizationAccess')
+          .where('pageId', 'in', (eb) => eb.selectFrom('descendants').select('id'))
+          .where(({eb, not, exists}) =>
+            not(
+              exists(
+                eb
+                  .selectFrom('PageOrganizationAccess as parentAccess')
+                  .where('parentAccess.pageId', '=', parentPageId)
+                  .whereRef('parentAccess.orgId', '=', 'PageOrganizationAccess.orgId')
+              )
+            )
+          )
+      )
+      .with('delExts', (qc) =>
+        qc
+          .deleteFrom('PageExternalAccess')
+          .where('pageId', 'in', (eb) => eb.selectFrom('descendants').select('id'))
+          .where(({eb, not, exists}) =>
+            not(
+              exists(
+                eb
+                  .selectFrom('PageExternalAccess as parentAccess')
+                  .where('parentAccess.pageId', '=', parentPageId)
+                  .whereRef('parentAccess.email', '=', 'PageExternalAccess.email')
+              )
+            )
+          )
+      )
+      .with('upsertUsers', (qc) =>
+        qc
+          .insertInto('PageUserAccess')
+          .columns(['pageId', 'userId', 'role'])
+          .expression((eb) =>
+            eb
+              .selectFrom('descendants as d')
+              .crossJoin(
+                eb
+                  .selectFrom('PageUserAccess as pua')
+                  .select(['pua.userId', 'pua.role'])
+                  .where('pua.pageId', '=', parentPageId)
+                  .as('pua')
+              )
+              .select(['d.id as pageId', 'pua.userId', 'pua.role'])
+          )
+          .onConflict((oc) =>
+            oc
+              .columns(['pageId', 'userId'])
+              .doUpdateSet((eb) => ({
+                role: eb.ref('excluded.role')
+              }))
+              .whereRef('PageUserAccess.role', '!=', 'excluded.role')
+          )
+      )
+      .with('upsertTeams', (qc) =>
+        qc
+          .insertInto('PageTeamAccess')
+          .columns(['pageId', 'teamId', 'role'])
+          .expression((eb) =>
+            eb
+              .selectFrom('descendants as d')
+              .crossJoin(
+                eb
+                  .selectFrom('PageTeamAccess as pta')
+                  .select(['pta.teamId', 'pta.role'])
+                  .where('pta.pageId', '=', parentPageId)
+                  .as('pta')
+              )
+              .select(['d.id as pageId', 'pta.teamId', 'pta.role'])
+          )
+          .onConflict((oc) =>
+            oc
+              .columns(['pageId', 'teamId'])
+              .doUpdateSet((eb) => ({
+                role: eb.ref('excluded.role')
+              }))
+              .whereRef('PageTeamAccess.role', '!=', 'excluded.role')
+          )
+      )
+      .with('upsertOrganizations', (qc) =>
+        qc
+          .insertInto('PageOrganizationAccess')
+          .columns(['pageId', 'orgId', 'role'])
+          .expression((eb) =>
+            eb
+              .selectFrom('descendants as d')
+              .crossJoin(
+                eb
+                  .selectFrom('PageOrganizationAccess as poa')
+                  .select(['poa.orgId', 'poa.role'])
+                  .where('poa.pageId', '=', parentPageId)
+                  .as('poa')
+              )
+              .select(['d.id as pageId', 'poa.orgId', 'poa.role'])
+          )
+          .onConflict((oc) =>
+            oc
+              .columns(['pageId', 'orgId'])
+              .doUpdateSet((eb) => ({
+                role: eb.ref('excluded.role')
+              }))
+              .whereRef('PageOrganizationAccess.role', '!=', 'excluded.role')
+          )
+      )
+      .with('upsertExternals', (qc) =>
+        qc
+          .insertInto('PageExternalAccess')
+          .columns(['pageId', 'email', 'role', 'invitedBy'])
+          .expression((eb) =>
+            eb
+              .selectFrom('descendants as d')
+              .crossJoin(
+                eb
+                  .selectFrom('PageExternalAccess as pea')
+                  .select(['pea.email', 'pea.role', 'pea.invitedBy'])
+                  .where('pea.pageId', '=', parentPageId)
+                  .as('pea')
+              )
+              .select(['d.id as pageId', 'pea.email', 'pea.role', 'pea.invitedBy'])
+          )
+          .onConflict((oc) =>
+            oc
+              .columns(['pageId', 'email'])
+              .doUpdateSet((eb) => ({
+                role: eb.ref('excluded.role')
+              }))
+              .whereRef('PageExternalAccess.role', '!=', 'excluded.role')
+          )
+      )
+      .updateTable('Page')
+      .set({
+        teamId: null,
+        parentPageId,
+        isPrivate,
+        isParentLinked: true,
+        // sortOrder is only for top-level pages. Else, we get the order by the parent's canonical page link
+        sortOrder: ''
+      })
+      .where('id', '=', pageId)
+      .execute()
+    await updatePageAncestorIds(trx, pageId)
 
-  await selectDescendantPages(trx, pageId)
-    // Remove previous access for all descendants _that doesn't match the new parent's access_ (the exclusion means fewer writes)
-    // Copy parent access to all descendants (if new parent has a different role, adopt that)
-    .with('delUsers', (qc) =>
-      qc
-        .deleteFrom('PageUserAccess')
-        .where('pageId', 'in', (eb) => eb.selectFrom('descendants').select('id'))
-        .where('userId', '!=', viewerId)
-        .where(({eb, not, exists}) =>
-          not(
-            exists(
+    // upsert viewer as owner IIF nothing else is the owner
+    // nothing else is the owner if PageAccess(pageId) has no owner
+    await updatePageAccessTable(trx, pageId)
+    const strongestRole = await trx
+      .selectFrom('PageAccess')
+      .select(({fn}) => fn.min('role').as('role'))
+      // since all children will have identical access, no need to query descendants
+      .where('pageId', '=', pageId)
+      .where('userId', '=', viewerId)
+      .executeTakeFirst()
+    if (!strongestRole) {
+      throw new Error('Strongest role not found')
+    }
+
+    if (strongestRole.role !== 'owner') {
+      // make sure the viewer stays an owner no matter what so they can undo the action
+      await selectDescendantPages(trx, pageId)
+        .with('insertNew', (qc) =>
+          qc
+            .insertInto('PageAccess')
+            .columns(['userId', 'pageId', 'role'])
+            .expression((eb) =>
               eb
-                .selectFrom('PageUserAccess as parentAccess')
-                .where('parentAccess.pageId', '=', parentPageId)
-                .whereRef('parentAccess.userId', '=', 'PageUserAccess.userId')
+                .selectFrom('descendants')
+                .select((eb) => [
+                  eb.val(viewerId).as('userId'),
+                  eb.ref('descendants.id').as('pageId'),
+                  sql`'owner'::"PageRoleEnum"`.as('role')
+                ])
             )
-          )
-        )
-    )
-    .with('delTeams', (qc) =>
-      qc
-        .deleteFrom('PageTeamAccess')
-        .where('pageId', 'in', (eb) => eb.selectFrom('descendants').select('id'))
-        .where(({eb, not, exists}) =>
-          not(
-            exists(
-              eb
-                .selectFrom('PageTeamAccess as parentAccess')
-                .where('parentAccess.pageId', '=', parentPageId)
-                .whereRef('parentAccess.teamId', '=', 'PageTeamAccess.teamId')
+            .onConflict((oc) =>
+              oc
+
+                .columns(['userId', 'pageId'])
+                .doUpdateSet((eb) => ({
+                  role: eb.ref('excluded.role')
+                }))
+                .where(({eb, ref}) =>
+                  eb('PageAccess.role', 'is distinct from', ref('excluded.role'))
+                )
             )
-          )
         )
-    )
-    .with('delOrgs', (qc) =>
-      qc
-        .deleteFrom('PageOrganizationAccess')
-        .where('pageId', 'in', (eb) => eb.selectFrom('descendants').select('id'))
-        .where(({eb, not, exists}) =>
-          not(
-            exists(
-              eb
-                .selectFrom('PageOrganizationAccess as parentAccess')
-                .where('parentAccess.pageId', '=', parentPageId)
-                .whereRef('parentAccess.orgId', '=', 'PageOrganizationAccess.orgId')
-            )
-          )
-        )
-    )
-    .with('delExts', (qc) =>
-      qc
-        .deleteFrom('PageExternalAccess')
-        .where('pageId', 'in', (eb) => eb.selectFrom('descendants').select('id'))
-        .where(({eb, not, exists}) =>
-          not(
-            exists(
-              eb
-                .selectFrom('PageExternalAccess as parentAccess')
-                .where('parentAccess.pageId', '=', parentPageId)
-                .whereRef('parentAccess.email', '=', 'PageExternalAccess.email')
-            )
-          )
-        )
-    )
-    .with('upsertUsers', (qc) =>
-      qc
         .insertInto('PageUserAccess')
         .columns(['pageId', 'userId', 'role'])
         .expression((eb) =>
           eb
             .selectFrom('descendants as d')
-            .crossJoin(
-              eb
-                .selectFrom('PageUserAccess as pua')
-                .select(['pua.userId', 'pua.role'])
-                .where('pua.pageId', '=', parentPageId)
-                .as('pua')
-            )
-            .select(['d.id as pageId', 'pua.userId', 'pua.role'])
+            .select((eb) => [
+              eb.ref('d.id').as('pageId'),
+              eb.val(viewerId).as('userId'),
+              sql`'owner'::"PageRoleEnum"`.as('role')
+            ])
+            .distinct()
         )
         .onConflict((oc) =>
           oc
@@ -146,158 +301,10 @@ export const movePageToNewParent = async (
             }))
             .whereRef('PageUserAccess.role', '!=', 'excluded.role')
         )
-    )
-    .with('upsertTeams', (qc) =>
-      qc
-        .insertInto('PageTeamAccess')
-        .columns(['pageId', 'teamId', 'role'])
-        .expression((eb) =>
-          eb
-            .selectFrom('descendants as d')
-            .crossJoin(
-              eb
-                .selectFrom('PageTeamAccess as pta')
-                .select(['pta.teamId', 'pta.role'])
-                .where('pta.pageId', '=', parentPageId)
-                .as('pta')
-            )
-            .select(['d.id as pageId', 'pta.teamId', 'pta.role'])
-        )
-        .onConflict((oc) =>
-          oc
-            .columns(['pageId', 'teamId'])
-            .doUpdateSet((eb) => ({
-              role: eb.ref('excluded.role')
-            }))
-            .whereRef('PageTeamAccess.role', '!=', 'excluded.role')
-        )
-    )
-    .with('upsertOrganizations', (qc) =>
-      qc
-        .insertInto('PageOrganizationAccess')
-        .columns(['pageId', 'orgId', 'role'])
-        .expression((eb) =>
-          eb
-            .selectFrom('descendants as d')
-            .crossJoin(
-              eb
-                .selectFrom('PageOrganizationAccess as poa')
-                .select(['poa.orgId', 'poa.role'])
-                .where('poa.pageId', '=', parentPageId)
-                .as('poa')
-            )
-            .select(['d.id as pageId', 'poa.orgId', 'poa.role'])
-        )
-        .onConflict((oc) =>
-          oc
-            .columns(['pageId', 'orgId'])
-            .doUpdateSet((eb) => ({
-              role: eb.ref('excluded.role')
-            }))
-            .whereRef('PageOrganizationAccess.role', '!=', 'excluded.role')
-        )
-    )
-    .with('upsertExternals', (qc) =>
-      qc
-        .insertInto('PageExternalAccess')
-        .columns(['pageId', 'email', 'role', 'invitedBy'])
-        .expression((eb) =>
-          eb
-            .selectFrom('descendants as d')
-            .crossJoin(
-              eb
-                .selectFrom('PageExternalAccess as pea')
-                .select(['pea.email', 'pea.role', 'pea.invitedBy'])
-                .where('pea.pageId', '=', parentPageId)
-                .as('pea')
-            )
-            .select(['d.id as pageId', 'pea.email', 'pea.role', 'pea.invitedBy'])
-        )
-        .onConflict((oc) =>
-          oc
-            .columns(['pageId', 'email'])
-            .doUpdateSet((eb) => ({
-              role: eb.ref('excluded.role')
-            }))
-            .whereRef('PageExternalAccess.role', '!=', 'excluded.role')
-        )
-    )
-    .updateTable('Page')
-    .set({
-      teamId: null,
-      parentPageId,
-      isPrivate,
-      isParentLinked: true,
-      // sortOrder is only for top-level pages. Else, we get the order by the parent's canonical page link
-      sortOrder: '',
-      ancestorIds: ancestorIds.concat(parentPageId)
-    })
-    .where('id', '=', pageId)
-    .execute()
-
-  // upsert viewer as owner IIF nothing else is the owner
-  // nothing else is the owner if PageAccess(pageId) has no owner
-  await updatePageAccessTable(trx, pageId)
-  const strongestRole = await trx
-    .selectFrom('PageAccess')
-    .select(({fn}) => fn.min('role').as('role'))
-    // since all children will have identical access, no need to query descendants
-    .where('pageId', '=', pageId)
-    .where('userId', '=', viewerId)
-    .executeTakeFirst()
-  if (!strongestRole) {
-    throw new Error('Strongest role not found')
-  }
-
-  if (strongestRole.role !== 'owner') {
-    // make sure the viewer stays an owner no matter what so they can undo the action
-    await selectDescendantPages(trx, pageId)
-      .with('insertNew', (qc) =>
-        qc
-          .insertInto('PageAccess')
-          .columns(['userId', 'pageId', 'role'])
-          .expression((eb) =>
-            eb
-              .selectFrom('descendants')
-              .select((eb) => [
-                eb.val(viewerId).as('userId'),
-                eb.ref('descendants.id').as('pageId'),
-                sql`'owner'::"PageRoleEnum"`.as('role')
-              ])
-          )
-          .onConflict((oc) =>
-            oc
-
-              .columns(['userId', 'pageId'])
-              .doUpdateSet((eb) => ({
-                role: eb.ref('excluded.role')
-              }))
-              .where(({eb, ref}) => eb('PageAccess.role', 'is distinct from', ref('excluded.role')))
-          )
-      )
-      .insertInto('PageUserAccess')
-      .columns(['pageId', 'userId', 'role'])
-      .expression((eb) =>
-        eb
-          .selectFrom('descendants as d')
-          .select((eb) => [
-            eb.ref('d.id').as('pageId'),
-            eb.val(viewerId).as('userId'),
-            sql`'owner'::"PageRoleEnum"`.as('role')
-          ])
-          .distinct()
-      )
-      .onConflict((oc) =>
-        oc
-          .columns(['pageId', 'userId'])
-          .doUpdateSet((eb) => ({
-            role: eb.ref('excluded.role')
-          }))
-          .whereRef('PageUserAccess.role', '!=', 'excluded.role')
-      )
-      .execute()
-  }
-  await trx.commit().execute()
+        .execute()
+    }
+  })
+  await revalidateYjsConnections({pageTreeIds: [pageId]})
   const dataLoader = getNewDataLoader('movePageToNewParent')
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId: undefined}

@@ -44,10 +44,11 @@ interface Props {
   updateAttributes: NodeViewProps['updateAttributes']
   attrs: InsightsBlockAttrs
   queryRef: PreloadedQuery<SpecificMeetingPickerQuery>
+  onListedMeetingIds: (meetingIds: string[]) => void
 }
 
 export const SpecificMeetingPicker = (props: Props) => {
-  const {updateAttributes, attrs, queryRef} = props
+  const {updateAttributes, attrs, queryRef, onListedMeetingIds} = props
   const {meetingIds, after, before} = attrs
   const data = usePreloadedQuery<SpecificMeetingPickerQuery>(query, queryRef)
   const {viewer} = data
@@ -76,6 +77,7 @@ export const SpecificMeetingPicker = (props: Props) => {
   const columns = allColumns.filter((column) => !ignoredColumns.includes(column))
   const allChecked = meetingIds.length === edges.length
   useEffect(() => {
+    onListedMeetingIds(edges.map(({node}) => node.id))
     if (meetingIds.length === 0) {
       // if no meetings are selected, when the list changes, select them all
       updateAttributes({meetingIds: edges.map(({node}) => node.id)})

@@ -18,7 +18,7 @@ const refreshSession: MutationResolvers['refreshSession'] = async (_source, {}, 
   }
 
   if (jti && exp) {
-    await blacklistJWTSession(jti, exp)
+    await blacklistJWTSession(jti, exp, Date.now())
   }
 
   const tms = await dataLoader.get('teamIdsByUserId').load(sub)

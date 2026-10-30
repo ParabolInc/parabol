@@ -3,7 +3,7 @@ import {type InviteeDraft, isDraftReady} from '../hooks/useTeamInviteeDrafts'
 import TeamInviteeChip from './TeamInviteeChip'
 
 interface Props {
-  inputRef: React.RefObject<HTMLInputElement>
+  inputRef: React.RefObject<HTMLInputElement | null>
   labelledBy: string
   describedBy: string
   drafts: InviteeDraft[]

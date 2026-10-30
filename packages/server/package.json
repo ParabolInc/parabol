@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "15.7.2",
+  "version": "15.11.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -16,7 +16,8 @@
     "precommit": "lint-staged",
     "test": "jest --verbose",
     "postversion": "git push --follow-tags",
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "eval:pagesSearch": "jest -c jest.eval.config.js --runInBand __evals__/pagesSearch"
   },
   "devDependencies": {
     "@amplitude/analytics-types": "^1.3.2",
@@ -105,7 +106,7 @@
     "object-hash": "^3.0.0",
     "oy-vey": "^0.12.1",
     "parabol-client": "workspace:*",
-    "react-dom": "^18.3.1",
+    "react-dom": "^19.3.1",
     "rrule-rust": "^2.0.2",
     "samlify": "^2.13.0",
     "scimmy": "^1.3.5",

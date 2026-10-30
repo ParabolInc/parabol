@@ -56,6 +56,7 @@ const TeamHealthSidebarResultSection = (props: Props) => {
             ... on TeamHealthResultStage {
               sortOrder
               score
+              respondentCount
               scoreHistory {
                 score
               }
@@ -111,7 +112,14 @@ const TeamHealthSidebarResultSection = (props: Props) => {
           {(provided) => (
             <div className='overflow-auto pb-2' ref={provided.innerRef}>
               {stages.map((stage, idx) => {
-                const {id: stageId, isNavigable, score, scoreHistory, healthQuestion} = stage
+                const {
+                  id: stageId,
+                  isNavigable,
+                  score,
+                  respondentCount,
+                  scoreHistory,
+                  healthQuestion
+                } = stage
                 const previousScore = scoreHistory?.at(-1)?.score
                 const category = healthQuestion?.category
                 return (
@@ -129,7 +137,12 @@ const TeamHealthSidebarResultSection = (props: Props) => {
                           isDragging={dragSnapshot.isDragging}
                           isUnsyncedFacilitatorStage={false}
                           metaContent={
-                            <TeamHealthScoreDelta score={score} previousScore={previousScore} />
+                            <TeamHealthScoreDelta
+                              score={score}
+                              respondentCount={respondentCount}
+                              previousScore={previousScore}
+                              isCompact
+                            />
                           }
                           onClick={() => handleClick(stageId)}
                         >

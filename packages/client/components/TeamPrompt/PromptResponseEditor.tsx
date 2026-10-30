@@ -8,6 +8,7 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import {useUploadUserAsset} from '../../mutations/useUploadUserAsset'
 import {isEqualWhenSerialized} from '../../shared/isEqualWhenSerialized'
 import {STANDUP_RESPONSE_CHARACTER_LIMIT} from '../../shared/tiptap/standupResponseLength'
+import {EmbedBlock} from '../../tiptap/extensions/embedBlock/EmbedBlock'
 import {InsertedRangeHighlight} from '../../tiptap/extensions/insertedRangeHighlight/InsertedRangeHighlight'
 import {SlashCommand} from '../../tiptap/extensions/slashCommand/SlashCommand'
 import {Button} from '../../ui/Button/Button'
@@ -44,7 +45,7 @@ interface Props {
   enableSlashCommands?: boolean
   bubbleMenuPlacement?: 'top' | 'bottom'
   className?: string
-  editorRef?: React.MutableRefObject<Editor | null>
+  editorRef?: React.RefObject<Editor | null>
 }
 
 const PromptResponseEditor = (props: Props) => {
@@ -122,6 +123,7 @@ const PromptResponseEditor = (props: Props) => {
         StarterKit.configure({link: false}),
         CharacterCount.configure({limit: STANDUP_RESPONSE_CHARACTER_LIMIT}),
         LoomExtension,
+        EmbedBlock.configure({pasteToEmbed: false}),
         Placeholder.configure({
           showOnlyWhenEditable: false,
           placeholder

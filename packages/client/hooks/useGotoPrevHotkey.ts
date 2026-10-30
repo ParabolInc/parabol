@@ -6,7 +6,7 @@ import useHotkey from './useHotkey'
 
 const useGotoPrevHotkey = (meetingRef: any, gotoStageId: ReturnType<typeof useGotoStageId>) => {
   const gotoPrev = useGotoPrev(meetingRef, gotoStageId)
-  const latestHandler = useRef<typeof gotoPrev>()
+  const latestHandler = useRef<typeof gotoPrev>(undefined)
   useEffect(() => {
     latestHandler.current = gotoPrev
   }, [gotoPrev])

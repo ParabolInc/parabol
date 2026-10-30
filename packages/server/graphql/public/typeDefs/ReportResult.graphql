@@ -1,0 +1,63 @@
+"""
+The numbers behind one report
+"""
+type ReportResult {
+  """
+  The start of the period
+  """
+  from: DateTime!
+
+  """
+  The end of the period, exclusive
+  """
+  to: DateTime!
+
+  """
+  The step length when the report breaks down by time
+  """
+  step: ReportStepEnum
+
+  """
+  What each position of the breakdown lists, in order
+  """
+  breakdown: [ReportResultBreakdown!]!
+
+  rows: [ReportRow!]!
+
+  """
+  For a heatmap, each row's own total, which the measure works out over the whole row: a count's sum, or the
+  share, median or Health score of everything in it. Matched to rows by every key but the last. Empty for
+  other views
+  """
+  rowTotals: [ReportRow!]!
+
+  """
+  How many rows there were before the report's limit and the row cap
+  """
+  totalRowCount: Int!
+
+  """
+  How many teams the report counted
+  """
+  teamCount: Int!
+
+  notes: [ReportNote!]!
+
+  """
+  For a Health score heatmap with a row for each team and a column for each category, what its marks are worked
+  out from. Null for any other report
+  """
+  teamHealth: ReportTeamHealth
+
+  """
+  When the latest meeting of this type, or of any type without one, that 2 or more people joined started, on any team
+  the viewer can report on, whatever the report's period and filters. Null when none of those teams has held one
+  """
+  latestMeetingAt(meetingType: MeetingTypeEnum): DateTime
+
+  """
+  When the latest task was made on any team the viewer can report on, whatever the report's period and filters,
+  leaving out the stories Sprint Poker brings in. Null when none of those teams has made one
+  """
+  latestTaskAt: DateTime
+}

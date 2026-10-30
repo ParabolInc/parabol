@@ -1,4 +1,9 @@
 import {GraphQLError} from 'graphql'
+import getKysely from '../../../postgres/getKysely'
+import {selectPinnedReports} from '../../../reports/pinnedReports'
+import readReportSpecInput from '../../../reports/readReportSpecInput'
+import {readReportTeamHealthStage} from '../../../reports/reportTeamHealth'
+import runReport from '../../../reports/runReport'
 import {
   getUserId,
   isSuperUser,
@@ -66,6 +71,42 @@ const Organization: OrganizationResolvers = {
       )
     }
     return dataLoader.get('activeUserCountsByOrgId').load({orgId, times: at})
+  },
+
+  report: async ({id: orgId}, {spec, timeZone}, {authToken, dataLoader}) => {
+    return runReport({
+      orgId,
+      spec: readReportSpecInput(spec),
+      timeZone,
+      pagePeriod: null,
+      viewerId: getUserId(authToken),
+      isSuperUser: isSuperUser(authToken),
+      dataLoader
+    })
+  },
+
+  reportTeamHealthStage: async (_source, {meetingId, categoryId}, {dataLoader}) => {
+    return readReportTeamHealthStage(meetingId, categoryId, dataLoader)
+  },
+
+  pinnedReports: ({id: orgId}) => selectPinnedReports(orgId),
+  structure: async ({id: orgId}, _args, {dataLoader}) => {
+    const hasReports = await dataLoader
+      .get('featureFlagByOwnerId')
+      .load({ownerId: orgId, featureName: 'Reports'})
+    if (!hasReports) return []
+    const {levels} = await dataLoader.get('orgStructureByOrgId').load(orgId)
+    return levels
+  },
+
+  recentReportQuestions: async ({id: orgId}, _args, {authToken}) => {
+    return getKysely()
+      .selectFrom('ReportQuestion')
+      .selectAll()
+      .where('userId', '=', getUserId(authToken))
+      .where('orgId', '=', orgId)
+      .orderBy('lastUsedAt', 'desc')
+      .execute()
   },
 
   teams: async ({id: orgId}, _args, {dataLoader, authToken}) => {

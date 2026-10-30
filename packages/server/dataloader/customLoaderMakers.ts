@@ -1,6 +1,7 @@
 import DataLoader from 'dataloader'
 import {type SqlBool, sql} from 'kysely'
 import {Threshold} from 'parabol-client/types/constEnums'
+import {canShowTeamHealthScore} from '../../client/shared/utils/teamHealthAnonymity'
 import {PARABOL_AI_USER_ID} from '../../client/utils/constants'
 import {activeEmbeddingModelId} from '../../embedder/activeEmbeddingModel'
 import {getEmbeddingsTableName} from '../../embedder/getEmbeddingsTableName'
@@ -12,6 +13,9 @@ import groupTeamPromptResponsesByUser, {
 import type {ReactableEnum} from '../graphql/public/resolverTypes'
 import type {SAMLSource} from '../graphql/public/types/SAML'
 import getKysely from '../postgres/getKysely'
+import selectOrgUserActivitySpans, {
+  isOrgUserActiveAt
+} from '../postgres/queries/selectOrgUserActivitySpans'
 import {
   selectInspirationItems,
   selectMassInvitations,
@@ -23,6 +27,7 @@ import {
   selectTeamPromptResponses,
   selectTeams
 } from '../postgres/select'
+import {hasEnoughMembers, isCountedMeetingInWindow} from '../postgres/teamActivityCriteria'
 import type {
   InspirationItem,
   MassInvitation,
@@ -46,6 +51,7 @@ import {
 } from '../utils/featureFlags'
 import getRedis from '../utils/getRedis'
 import getTeamHealthDisplayComment from '../utils/getTeamHealthDisplayComment'
+import groupTeamHealthScores from '../utils/groupTeamHealthScores'
 import isUserVerified from '../utils/isUserVerified'
 import {Logger} from '../utils/Logger'
 import NullableDataLoader from './NullableDataLoader'
@@ -450,36 +456,25 @@ export const activeUserCountsByOrgId = (parent: RootDataLoader) => {
       return Promise.all(
         keys.map(async ({orgId, times}) => {
           if (times.length === 0) return []
-          // a member is active from an added/activated event until their next audit event
           const rows = await pg
-            .with('AuditEvent', (qb) =>
-              qb
-                .selectFrom('OrganizationUserAudit')
-                .select(({fn}) => [
-                  'userId',
-                  'eventDate',
-                  'eventType',
-                  fn
-                    .agg<Date | null>('lead', ['eventDate'])
-                    .over((ob) => ob.partitionBy('userId').orderBy('eventDate').orderBy('id'))
-                    .as('nextEventDate')
-                ])
-                .where('orgId', '=', orgId)
-            )
+            .with('AuditEvent', () => selectOrgUserActivitySpans(orgId))
             .with('Time', (qb) =>
-              qb.selectNoFrom(sql<Date>`unnest(${times}::timestamptz[])`.as('at'))
+              qb.selectNoFrom(({eb, fn}) =>
+                fn<Date>('unnest', [eb.cast(eb.val(times), sql`timestamptz[]`)]).as('at')
+              )
             )
             .selectFrom('Time')
             .leftJoin('AuditEvent', (join) =>
-              join
-                .on('AuditEvent.eventType', 'in', ['added', 'activated'])
-                .onRef('AuditEvent.eventDate', '<', 'Time.at')
-                .on(({eb, or, ref}) =>
-                  or([
-                    eb('AuditEvent.nextEventDate', 'is', null),
-                    eb('AuditEvent.nextEventDate', '>=', ref('Time.at'))
-                  ])
+              join.on(({ref}) =>
+                isOrgUserActiveAt(
+                  {
+                    eventType: ref('AuditEvent.eventType'),
+                    eventDate: ref('AuditEvent.eventDate'),
+                    nextEventDate: ref('AuditEvent.nextEventDate')
+                  },
+                  ref('Time.at')
                 )
+              )
             )
             .select(({fn}) => [
               'Time.at',
@@ -507,37 +502,31 @@ export const activeTeamsByOrgId = (parent: RootDataLoader, dependsOn: RegisterDe
   dependsOn('newMeetings')
   return new DataLoader<string, {id: string; orgId: string}[], string>(
     async (orgIds) => {
-      const meetingWindowStart = new Date(Date.now() - Threshold.ACTIVE_TEAM_LAST_MEETING_TIMEFRAME)
+      const now = new Date()
+      const meetingWindowStart = new Date(
+        now.getTime() - Threshold.ACTIVE_TEAM_LAST_MEETING_TIMEFRAME
+      )
       const activeTeams = await getKysely()
         .selectFrom('Team')
         .select(['Team.id', 'Team.orgId'])
         .where('Team.orgId', 'in', orgIds)
         .where('Team.isArchived', '=', false)
-        .where(({eb, selectFrom}) =>
-          eb(
-            selectFrom('TeamMember')
-              .select(({fn}) => fn.countAll().as('memberCount'))
-              .whereRef('TeamMember.teamId', '=', 'Team.id')
-              .where('TeamMember.isNotRemoved', '=', true),
-            '>=',
-            Threshold.MIN_ACTIVE_TEAM_MEMBERS
-          )
-        )
+        .where(({ref}) => hasEnoughMembers(ref('Team.id')))
         .where(({exists, selectFrom}) =>
           exists(
             selectFrom('NewMeeting')
-              .innerJoin('MeetingMember', 'MeetingMember.meetingId', 'NewMeeting.id')
               .select('NewMeeting.id')
               .whereRef('NewMeeting.teamId', '=', 'Team.id')
-              .where(({eb, or}) =>
-                or([
-                  eb('NewMeeting.createdAt', '>', meetingWindowStart),
-                  eb('NewMeeting.endedAt', '>', meetingWindowStart)
-                ])
-              )
-              .groupBy('NewMeeting.id')
-              .having(({eb, fn}) =>
-                eb(fn.countAll(), '>=', Threshold.MIN_ACTIVE_TEAM_MEETING_ATTENDEES)
+              .where(({ref}) =>
+                isCountedMeetingInWindow(
+                  {
+                    id: ref('NewMeeting.id'),
+                    createdAt: ref('NewMeeting.createdAt'),
+                    endedAt: ref('NewMeeting.endedAt')
+                  },
+                  meetingWindowStart,
+                  now
+                )
               )
           )
         )
@@ -1145,8 +1134,8 @@ export const retroSuggestedGroupingByMeetingId = (parent: RootDataLoader) => {
   )
 }
 
-// how many cycles back to look for prior team health scores. A cycle nobody answered is not a data
-// point, so it is skipped rather than treated as a reset, but the search still has to stop
+// how many checks back to look for prior team health scores. A check too few people answered is not a
+// data point, so it is skipped rather than treated as a reset, but the search still has to stop
 const MAX_TEAM_HEALTH_CYCLE_LOOKBACK = 15
 
 // how many answered prior cycles a category's trend is drawn from
@@ -1276,9 +1265,10 @@ export const teamPromptMemberResponsesByMeetingId = (
   )
 }
 
-// The last few answered cycles before this meeting, newest first, with each category's score and
-// readable comments. Empty if this is the team's first cycle. Categories are the unit of comparison
-// because the question asked within a category rotates from one cycle to the next
+// The last few checks the team revealed before this one, newest first, with each category's score and
+// readable comments. Every check of the team counts, whatever meeting series it was in, since a series
+// can end by accident. Empty if this is the team's first check. Categories are the unit of comparison
+// because the question asked within a category rotates from one check to the next
 export const priorTeamHealthCyclesByMeetingId = (
   parent: RootDataLoader,
   dependsOn: RegisterDependsOn
@@ -1289,23 +1279,23 @@ export const priorTeamHealthCyclesByMeetingId = (
       return Promise.all(
         meetingIds.map(async (meetingId) => {
           const meeting = await parent.get('newMeetings').load(meetingId)
-          if (meeting?.meetingType !== 'teamHealth' || !meeting.meetingSeriesId) return []
-          const priorMeetings = await selectNewMeetings()
-            .where('meetingSeriesId', '=', meeting.meetingSeriesId)
-            .where('meetingType', '=', 'teamHealth')
-            .where('createdAt', '<', meeting.createdAt)
-            .where('endedAt', 'is not', null)
-            .orderBy('createdAt', 'desc')
-            .limit(MAX_TEAM_HEALTH_CYCLE_LOOKBACK)
-            .execute()
+          if (meeting?.meetingType !== 'teamHealth') return []
+          const {endedAt} = meeting
+          const teamChecks = await parent.get('teamHealthChecksByTeamId').load(meeting.teamId)
+          const priorChecks = teamChecks
+            .filter((check) => check.id !== meetingId && (!endedAt || check.endedAt < endedAt))
+            .slice(0, MAX_TEAM_HEALTH_CYCLE_LOOKBACK)
           const priorResponses = await Promise.all(
-            priorMeetings.map((priorMeeting) =>
-              parent.get('teamHealthResponsesByMeetingId').load(priorMeeting.id)
-            )
+            priorChecks.map((check) => parent.get('teamHealthResponsesByMeetingId').load(check.id))
           )
-          const answeredCycles = priorMeetings
-            .map((priorMeeting, idx) => ({meeting: priorMeeting, responses: priorResponses[idx]!}))
-            .filter(({responses}) => responses.length > 0)
+          const answeredCycles = priorChecks
+            .map((check, idx) => ({check, responses: priorResponses[idx]!}))
+            .filter(({responses}) => {
+              const respondentIds = responses.flatMap(({userId, score}) =>
+                score === null ? [] : [userId]
+              )
+              return canShowTeamHealthScore(new Set(respondentIds).size)
+            })
             .slice(0, TEAM_HEALTH_HISTORY_LENGTH)
           const questionIds = [
             ...new Set(
@@ -1316,21 +1306,17 @@ export const priorTeamHealthCyclesByMeetingId = (
             isValid
           )
           const questionById = new Map(questions.map((question) => [question.id, question]))
-          return answeredCycles.map(({meeting: priorMeeting, responses}) => {
-            const scoresByCategoryId = new Map<number, number[]>()
+          const categoryIdByQuestionId = new Map(
+            questions.map((question) => [question.id, question.categoryId])
+          )
+          return answeredCycles.map(({check, responses}) => {
             const commentsByCategoryId = new Map<number, string[]>()
             const questionByCategoryId = new Map<number, string>()
             for (const response of responses) {
-              const {questionId, score} = response
-              const question = questionById.get(questionId)
+              const question = questionById.get(response.questionId)
               if (!question) continue
               const {categoryId} = question
               questionByCategoryId.set(categoryId, question.question)
-              if (score !== null) {
-                const scores = scoresByCategoryId.get(categoryId) ?? []
-                scores.push(score)
-                scoresByCategoryId.set(categoryId, scores)
-              }
               const comment = getTeamHealthDisplayComment(response)
               if (comment) {
                 const comments = commentsByCategoryId.get(categoryId) ?? []
@@ -1338,15 +1324,18 @@ export const priorTeamHealthCyclesByMeetingId = (
                 commentsByCategoryId.set(categoryId, comments)
               }
             }
+            const scoresByCategoryId = groupTeamHealthScores(responses, categoryIdByQuestionId)
             const scoreByCategoryId = new Map(
               [...scoresByCategoryId].flatMap(([categoryId, scores]) => {
                 const score = averageTeamHealthScore(scores)
-                return score === null ? [] : [[categoryId, score] as [number, number]]
+                return score === null || !canShowTeamHealthScore(scores.length)
+                  ? []
+                  : [[categoryId, score] as [number, number]]
               })
             )
             return {
-              meetingId: priorMeeting.id,
-              endedAt: priorMeeting.endedAt!,
+              meetingId: check.id,
+              endedAt: check.endedAt,
               scoreByCategoryId,
               commentsByCategoryId,
               questionByCategoryId

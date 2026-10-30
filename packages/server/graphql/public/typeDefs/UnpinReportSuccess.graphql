@@ -1,0 +1,6 @@
+type UnpinReportSuccess {
+  """
+  The organization, with its pins
+  """
+  organization: Organization!
+}

@@ -11,7 +11,7 @@ import type {
   StripeElementChangeEvent
 } from '@stripe/stripe-js'
 import type * as React from 'react'
-import {type MutableRefObject, useState} from 'react'
+import {type RefObject, useState} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
 import type {CreateStripeSubscriptionMutation$data} from '../../../../__generated__/CreateStripeSubscriptionMutation.graphql'
 import Ellipsis from '../../../../components/Ellipsis/Ellipsis'
@@ -43,7 +43,7 @@ const getCardElementOptions = (): StripeCardNumberElementOptions => {
 
 type Props = {
   orgId: string
-  cardNumberRef: MutableRefObject<StripeCardNumberElement | null>
+  cardNumberRef: RefObject<StripeCardNumberElement | null>
 }
 
 const BillingForm = (props: Props) => {

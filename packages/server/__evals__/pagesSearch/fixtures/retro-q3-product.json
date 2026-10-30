@@ -1,0 +1,4415 @@
+{
+  "type": "doc",
+  "content": [
+    {
+      "type": "heading",
+      "attrs": {"level": 1},
+      "content": [{"type": "text", "text": "Q3 Product Retro - Oct 26, 2026"}]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "text": "Quarry Product",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://app.example.com/team/Qr5VwD1sNh",
+                "target": "_blank",
+                "rel": "noopener noreferrer nofollow",
+                "class": "link",
+                "title": null
+              }
+            },
+            {"type": "bold", "attrs": {}}
+          ]
+        },
+        {"type": "text", "text": " — Oct 26, 2026", "marks": [{"type": "bold", "attrs": {}}]}
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {"type": "text", "text": "9 Topics - 5 New Tasks - 46 Reflections - 11 Participants"}
+      ]
+    },
+    {"type": "paragraph"},
+    {
+      "type": "insightsBlock",
+      "attrs": {
+        "id": "6c2d200d-aa12-4f07-8a42-9bc51d81f8f8",
+        "editing": false,
+        "teamIds": ["Qr5VwD1sNh"],
+        "meetingTypes": ["retrospective"],
+        "after": "2026-10-26T15:00:00.000Z",
+        "before": "2026-10-26T18:35:00.000Z",
+        "meetingIds": ["Rmvmb6ttww"],
+        "title": "Top Topics",
+        "hash": "kz999i5r",
+        "prompt": "You are an expert in agile retrospectives and project management.\nYour team has just completed a meeting and it is your job to generate insights from the data and report to senior management.\nSenior management wants to know where to best focus their time, so be concise and focus on next steps to take.\nIf there is not enough data to generate insightful findings, respond with \"Not enough data to generate insights\".\nIt should include at most 3 topics that are the most important highlights, takeaways, or areas that may need their attention.\n"
+      },
+      "content": [
+        {
+          "type": "bulletList",
+          "content": [
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {"type": "text", "text": "🥇 "},
+                    {
+                      "type": "text",
+                      "text": "Customer feedback needs a home",
+                      "marks": [{"type": "bold", "attrs": {}}]
+                    },
+                    {
+                      "type": "text",
+                      "text": ": The most voted topic asks for a shared inbox and regular listening sessions. Start the Friday review and invite more of the team to customer calls."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {"type": "text", "text": "🥈 "},
+                    {
+                      "type": "text",
+                      "text": "Dependencies surface too late",
+                      "marks": [{"type": "bold", "attrs": {}}]
+                    },
+                    {
+                      "type": "text",
+                      "text": ": Teams learn about cross-team needs late in the sprint. Add a short dependency check to sprint planning and name an owner on the other team."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {"type": "text", "text": "🥉 "},
+                    {
+                      "type": "text",
+                      "text": "Roadmap churn hurts focus",
+                      "marks": [{"type": "bold", "attrs": {}}]
+                    },
+                    {
+                      "type": "text",
+                      "text": ": Mid-quarter changes pause work without notice. Publish a short change policy and freeze the roadmap in week six."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {"type": "heading", "attrs": {"level": 2}, "content": [{"type": "text", "text": "5 Tasks"}]},
+    {
+      "type": "taskBlock",
+      "attrs": {
+        "id": "d3f0f1a2-61b3-46f8-a57d-99ad13dcad12",
+        "status": "active",
+        "preferredName": "Beatrix Lindqvist",
+        "avatar": "https://app.example.com/assets/User/local|fz5H39qRzA/picture/gMEyw2M8J2.png",
+        "content": "{\"type\": \"doc\", \"content\": [{\"type\": \"paragraph\", \"content\": [{\"text\": \"Set up a shared feedback inbox and review it every Friday\", \"type\": \"text\"}]}]}"
+      }
+    },
+    {"type": "paragraph"},
+    {
+      "type": "taskBlock",
+      "attrs": {
+        "id": "d3f0f1a2-61b3-46f8-a57d-99ad13dcad12",
+        "status": "active",
+        "preferredName": "Priya Raman",
+        "avatar": "https://app.example.com/assets/User/local|BIM1nBQZMc/picture/BuFelOsWRA.png",
+        "content": "{\"type\": \"doc\", \"content\": [{\"type\": \"paragraph\", \"content\": [{\"text\": \"Add a dependency section to the sprint planning template\", \"type\": \"text\"}]}]}"
+      }
+    },
+    {"type": "paragraph"},
+    {
+      "type": "taskBlock",
+      "attrs": {
+        "id": "d3f0f1a2-61b3-46f8-a57d-99ad13dcad12",
+        "status": "active",
+        "preferredName": "Beatrix Lindqvist",
+        "avatar": "https://app.example.com/assets/User/local|fz5H39qRzA/picture/gMEyw2M8J2.png",
+        "content": "{\"type\": \"doc\", \"content\": [{\"type\": \"paragraph\", \"content\": [{\"text\": \"Publish a one-page roadmap change policy\", \"type\": \"text\"}]}]}"
+      }
+    },
+    {"type": "paragraph"},
+    {
+      "type": "taskBlock",
+      "attrs": {
+        "id": "d3f0f1a2-61b3-46f8-a57d-99ad13dcad12",
+        "status": "active",
+        "preferredName": "Dana Okafor",
+        "avatar": "https://app.example.com/assets/User/local|FHKWUuMGif/picture/xUCYgF89ah.png",
+        "content": "{\"type\": \"doc\", \"content\": [{\"type\": \"paragraph\", \"content\": [{\"text\": \"Propose a four-week trial of no-meeting Wednesday afternoons\", \"type\": \"text\"}]}]}"
+      }
+    },
+    {"type": "paragraph"},
+    {
+      "type": "taskBlock",
+      "attrs": {
+        "id": "d3f0f1a2-61b3-46f8-a57d-99ad13dcad12",
+        "status": "active",
+        "preferredName": "Hana Petrov",
+        "avatar": "https://app.example.com/assets/User/local|2tW4hq00Zw/picture/mkc6B5mOuP.png",
+        "content": "{\"type\": \"doc\", \"content\": [{\"type\": \"paragraph\", \"content\": [{\"text\": \"Record the next demo and share it in the product channel\", \"type\": \"text\"}]}]}"
+      }
+    },
+    {
+      "type": "heading",
+      "attrs": {"level": 2},
+      "content": [{"type": "text", "text": "9 Voted Topics"}]
+    },
+    {
+      "type": "bulletList",
+      "content": [
+        {
+          "type": "listItem",
+          "content": [
+            {
+              "type": "paragraph",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Customer feedback loop",
+                  "marks": [
+                    {
+                      "type": "link",
+                      "attrs": {
+                        "href": "https://app.example.com/meet/Rmvmb6ttww/discuss/6",
+                        "target": "_blank",
+                        "rel": "noopener noreferrer nofollow",
+                        "class": "link",
+                        "title": null
+                      }
+                    },
+                    {"type": "bold", "attrs": {}}
+                  ]
+                },
+                {"type": "hardBreak"},
+                {"type": "text", "text": "11 Votes, 1 Task, 2 Comments, 7 Reflections"}
+              ]
+            }
+          ]
+        },
+        {
+          "type": "listItem",
+          "content": [
+            {
+              "type": "paragraph",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Cross-team dependencies",
+                  "marks": [
+                    {
+                      "type": "link",
+                      "attrs": {
+                        "href": "https://app.example.com/meet/Rmvmb6ttww/discuss/7",
+                        "target": "_blank",
+                        "rel": "noopener noreferrer nofollow",
+                        "class": "link",
+                        "title": null
+                      }
+                    },
+                    {"type": "bold", "attrs": {}}
+                  ]
+                },
+                {"type": "hardBreak"},
+                {"type": "text", "text": "9 Votes, 1 Task, 2 Comments, 6 Reflections"}
+              ]
+            }
+          ]
+        },
+        {
+          "type": "listItem",
+          "content": [
+            {
+              "type": "paragraph",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Mid-quarter roadmap changes",
+                  "marks": [
+                    {
+                      "type": "link",
+                      "attrs": {
+                        "href": "https://app.example.com/meet/Rmvmb6ttww/discuss/8",
+                        "target": "_blank",
+                        "rel": "noopener noreferrer nofollow",
+                        "class": "link",
+                        "title": null
+                      }
+                    },
+                    {"type": "bold", "attrs": {}}
+                  ]
+                },
+                {"type": "hardBreak"},
+                {"type": "text", "text": "8 Votes, 1 Task, 1 Comment, 6 Reflections"}
+              ]
+            }
+          ]
+        },
+        {
+          "type": "listItem",
+          "content": [
+            {
+              "type": "paragraph",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Meeting load",
+                  "marks": [
+                    {
+                      "type": "link",
+                      "attrs": {
+                        "href": "https://app.example.com/meet/Rmvmb6ttww/discuss/9",
+                        "target": "_blank",
+                        "rel": "noopener noreferrer nofollow",
+                        "class": "link",
+                        "title": null
+                      }
+                    },
+                    {"type": "bold", "attrs": {}}
+                  ]
+                },
+                {"type": "hardBreak"},
+                {"type": "text", "text": "6 Votes, 1 Task, 0 Comments, 5 Reflections"}
+              ]
+            }
+          ]
+        },
+        {
+          "type": "listItem",
+          "content": [
+            {
+              "type": "paragraph",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Demo days",
+                  "marks": [
+                    {
+                      "type": "link",
+                      "attrs": {
+                        "href": "https://app.example.com/meet/Rmvmb6ttww/discuss/10",
+                        "target": "_blank",
+                        "rel": "noopener noreferrer nofollow",
+                        "class": "link",
+                        "title": null
+                      }
+                    },
+                    {"type": "bold", "attrs": {}}
+                  ]
+                },
+                {"type": "hardBreak"},
+                {"type": "text", "text": "5 Votes, 1 Task, 0 Comments, 4 Reflections"}
+              ]
+            }
+          ]
+        },
+        {
+          "type": "listItem",
+          "content": [
+            {
+              "type": "paragraph",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Planning tools",
+                  "marks": [
+                    {
+                      "type": "link",
+                      "attrs": {
+                        "href": "https://app.example.com/meet/Rmvmb6ttww/discuss/11",
+                        "target": "_blank",
+                        "rel": "noopener noreferrer nofollow",
+                        "class": "link",
+                        "title": null
+                      }
+                    },
+                    {"type": "bold", "attrs": {}}
+                  ]
+                },
+                {"type": "hardBreak"},
+                {"type": "text", "text": "4 Votes, 0 Tasks, 0 Comments, 4 Reflections"}
+              ]
+            }
+          ]
+        },
+        {
+          "type": "listItem",
+          "content": [
+            {
+              "type": "paragraph",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Pricing experiments",
+                  "marks": [
+                    {
+                      "type": "link",
+                      "attrs": {
+                        "href": "https://app.example.com/meet/Rmvmb6ttww/discuss/12",
+                        "target": "_blank",
+                        "rel": "noopener noreferrer nofollow",
+                        "class": "link",
+                        "title": null
+                      }
+                    },
+                    {"type": "bold", "attrs": {}}
+                  ]
+                },
+                {"type": "hardBreak"},
+                {"type": "text", "text": "3 Votes, 0 Tasks, 0 Comments, 4 Reflections"}
+              ]
+            }
+          ]
+        },
+        {
+          "type": "listItem",
+          "content": [
+            {
+              "type": "paragraph",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Documentation debt",
+                  "marks": [
+                    {
+                      "type": "link",
+                      "attrs": {
+                        "href": "https://app.example.com/meet/Rmvmb6ttww/discuss/13",
+                        "target": "_blank",
+                        "rel": "noopener noreferrer nofollow",
+                        "class": "link",
+                        "title": null
+                      }
+                    },
+                    {"type": "bold", "attrs": {}}
+                  ]
+                },
+                {"type": "hardBreak"},
+                {"type": "text", "text": "2 Votes, 0 Tasks, 0 Comments, 3 Reflections"}
+              ]
+            }
+          ]
+        },
+        {
+          "type": "listItem",
+          "content": [
+            {
+              "type": "paragraph",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Analytics dashboards",
+                  "marks": [
+                    {
+                      "type": "link",
+                      "attrs": {
+                        "href": "https://app.example.com/meet/Rmvmb6ttww/discuss/14",
+                        "target": "_blank",
+                        "rel": "noopener noreferrer nofollow",
+                        "class": "link",
+                        "title": null
+                      }
+                    },
+                    {"type": "bold", "attrs": {}}
+                  ]
+                },
+                {"type": "hardBreak"},
+                {"type": "text", "text": "1 Vote, 0 Tasks, 0 Comments, 3 Reflections"}
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "attrs": {"level": 2},
+      "content": [{"type": "text", "text": "11 Participants"}]
+    },
+    {
+      "type": "bulletList",
+      "content": [
+        {
+          "type": "listItem",
+          "content": [
+            {"type": "paragraph", "content": [{"type": "text", "text": "Beatrix Lindqvist"}]}
+          ]
+        },
+        {
+          "type": "listItem",
+          "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Hana Petrov"}]}]
+        },
+        {
+          "type": "listItem",
+          "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Dana Okafor"}]}]
+        },
+        {
+          "type": "listItem",
+          "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Priya Raman"}]}]
+        },
+        {
+          "type": "listItem",
+          "content": [
+            {"type": "paragraph", "content": [{"type": "text", "text": "Marcus Delgado"}]}
+          ]
+        },
+        {
+          "type": "listItem",
+          "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Mei Zhou"}]}]
+        },
+        {
+          "type": "listItem",
+          "content": [
+            {"type": "paragraph", "content": [{"type": "text", "text": "Rafael Quintero"}]}
+          ]
+        },
+        {
+          "type": "listItem",
+          "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Wanjiru Kamau"}]}]
+        },
+        {
+          "type": "listItem",
+          "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Tomasz Brandt"}]}]
+        },
+        {
+          "type": "listItem",
+          "content": [
+            {"type": "paragraph", "content": [{"type": "text", "text": "Ingrid Solheim"}]}
+          ]
+        },
+        {
+          "type": "listItem",
+          "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Nikhil Varma"}]}]
+        }
+      ]
+    },
+    {"type": "paragraph"},
+    {
+      "type": "details",
+      "attrs": {"open": false},
+      "content": [
+        {"type": "detailsSummary", "content": [{"type": "text", "text": "Table View"}]},
+        {
+          "type": "detailsContent",
+          "content": [
+            {
+              "type": "table",
+              "content": [
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableHeader",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Reflection Group",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableHeader",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Votes",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableHeader",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Type",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableHeader",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Author",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableHeader",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Prompt",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableHeader",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Content",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableHeader",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Discussion Thread",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Customer feedback loop",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "11"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Start"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Share three customer quotes at the start of every planning meeting"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Customer feedback loop",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "11"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Start"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Tag every feature request with the customer problem it comes from"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Customer feedback loop",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "11"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Stop"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Hearing about customer pain third-hand in chat threads"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Customer feedback loop",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "11"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Stop"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {"type": "text", "text": "Treating one loud customer as a trend"}
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Customer feedback loop",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "11"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Continue"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "The monthly customer call where two people from the team listen in"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Customer feedback loop",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "11"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Continue"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Sending a thank-you note when a customer's request ships"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Customer feedback loop",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "11"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Start"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Run a quarterly survey and publish the raw results"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Customer feedback loop",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "11"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Task"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [{"type": "text", "text": "Beatrix Lindqvist"}]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Set up a shared feedback inbox and review it every Friday"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Customer feedback loop",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "11"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Comment"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Hana Petrov"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "The customer calls changed how I think about the dashboard redesign."
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Customer feedback loop",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "11"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reply"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [{"type": "text", "text": "Beatrix Lindqvist"}]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Same here. Let's invite two more designers next month."
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "The customer calls changed how I think about the dashboard redesign."
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Customer feedback loop",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "11"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Comment"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Dana Okafor"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Quotes work. Last quarter's launch deck used five of them."
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Cross-team dependencies",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "9"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Stop"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Finding out on Thursday that a feature needs a change from another team"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Cross-team dependencies",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "9"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Stop"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Dependencies that live only in someone's head"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Cross-team dependencies",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "9"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Start"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Write dependencies in the planning doc with a named owner on the other team"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Cross-team dependencies",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "9"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Start"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "A ten-minute dependency check at the start of each sprint"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Cross-team dependencies",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "9"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Continue"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Platform office hours. They unblocked three of us this quarter."
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Cross-team dependencies",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "9"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Continue"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [{"type": "text", "text": "Joint demos with the mobile team"}]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Cross-team dependencies",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "9"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Task"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Priya Raman"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Add a dependency section to the sprint planning template"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Cross-team dependencies",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "9"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Comment"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Mei Zhou"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "The mobile team waited eight days for an API change that was a one-line fix."
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Cross-team dependencies",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "9"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Comment"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [{"type": "text", "text": "Tomasz Brandt"}]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "I can reserve every second Tuesday for requests from other teams."
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Mid-quarter roadmap changes",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "8"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Stop"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Changing priorities without telling the people who just started the work"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Mid-quarter roadmap changes",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "8"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Stop"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Adding new initiatives without removing anything"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Mid-quarter roadmap changes",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "8"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Start"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Write down what we are dropping when we add something"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Mid-quarter roadmap changes",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "8"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Start"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Freeze the roadmap in week six and only change it for incidents"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Mid-quarter roadmap changes",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "8"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Continue"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {"type": "text", "text": "The short roadmap note in the Friday update"}
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Mid-quarter roadmap changes",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "8"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Continue"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {"type": "text", "text": "Explaining the why behind every change"}
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Mid-quarter roadmap changes",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "8"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Task"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [{"type": "text", "text": "Beatrix Lindqvist"}]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {"type": "text", "text": "Publish a one-page roadmap change policy"}
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Mid-quarter roadmap changes",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "8"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Comment"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [{"type": "text", "text": "Rafael Quintero"}]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Two of my experiments were paused after a week. I would have liked a heads up."
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Meeting load",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "6"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Stop"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Status meetings that repeat what the standup already covered"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Meeting load",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "6"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Stop"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {"type": "text", "text": "Back-to-back meetings with no break"}
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Meeting load",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "6"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Start"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [{"type": "text", "text": "No-meeting Wednesday afternoons"}]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Meeting load",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "6"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Start"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {"type": "text", "text": "Default new meetings to twenty-five minutes"}
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Meeting load",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "6"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Continue"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [{"type": "text", "text": "Writing the agenda in the invite"}]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Meeting load",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "6"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Task"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Dana Okafor"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Propose a four-week trial of no-meeting Wednesday afternoons"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Demo days",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "5"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Continue"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Friday demos. Seeing work in progress keeps everyone honest."
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Demo days",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "5"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Start"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {"type": "text", "text": "Let customers attend a demo once a quarter"}
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Demo days",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "5"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Start"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Record demos so people in other time zones can watch"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Demo days",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "5"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Stop"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {"type": "text", "text": "Demoing slides instead of the real product"}
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Demo days",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "5"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Task"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Hana Petrov"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Record the next demo and share it in the product channel"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Planning tools",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "4"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Stop"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Keeping the same plan in three different tools"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Planning tools",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "4"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Start"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {"type": "text", "text": "Pick one planning board and archive the rest"}
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Planning tools",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "4"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Start"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {"type": "text", "text": "Link every ticket to a roadmap initiative"}
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Planning tools",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "4"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Continue"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {"type": "text", "text": "The weekly cleanup of stale tickets"}
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Pricing experiments",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "3"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Start"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Define the success metric before an experiment starts"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Pricing experiments",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "3"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Stop"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {"type": "text", "text": "Running pricing tests during a launch week"}
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Pricing experiments",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "3"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Continue"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {"type": "text", "text": "Sharing test results with finance early"}
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Pricing experiments",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "3"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Start"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Keep a log of every pricing test and what we learned"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Documentation debt",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "2"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Start"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Update the help center in the same sprint as the feature"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Documentation debt",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "2"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Stop"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Writing docs from memory a month after launch"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Documentation debt",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "2"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Continue"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {"type": "text", "text": "Adding screenshots to every how-to article"}
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Analytics dashboards",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "1"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Start"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {"type": "text", "text": "One dashboard for activation instead of five"}
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Analytics dashboards",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "1"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Stop"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {"type": "text", "text": "Dashboards that nobody can explain"}
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Analytics dashboards",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "1"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Continue"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [{"type": "text", "text": "The weekly metrics review"}]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Office snacks",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "0"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Continue"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [{"type": "text", "text": "Fruit on Mondays"}]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Office snacks",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "0"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Start"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {"type": "text", "text": "More tea options for the afternoon"}
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Office days",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "0"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Start"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "A shared calendar showing who is in the office on which day"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Office days",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "0"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Stop"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {"type": "text", "text": "Booking meeting rooms that stay empty"}
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {"type": "paragraph"},
+    {
+      "type": "pageLinkBlock",
+      "attrs": {"pageCode": 1253335798, "title": "Transcript", "canonical": true}
+    }
+  ]
+}

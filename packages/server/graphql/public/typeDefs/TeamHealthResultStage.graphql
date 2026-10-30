@@ -133,6 +133,12 @@ type TeamHealthResultStage implements NewMeetingStage & DiscussionThreadStage {
   spreadScores: [Int!]
 
   """
+  How many answers to this stage's question carry a comment the team can read. 0 until the meeting
+  ends and the results are revealed
+  """
+  commentCount: Int!
+
+  """
   Every answer given to this stage's question. Empty until the meeting ends and the results are
   revealed, so raw answers can never be de-anonymized while it is in progress
   """

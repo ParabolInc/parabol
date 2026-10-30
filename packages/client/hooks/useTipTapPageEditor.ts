@@ -9,14 +9,12 @@ import Highlight from '@tiptap/extension-highlight'
 import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention from '@tiptap/extension-mention'
 import {TableRow} from '@tiptap/extension-table'
-import {TextStyleKit} from '@tiptap/extension-text-style'
 import {Focus, Placeholder} from '@tiptap/extensions'
 import {Markdown} from '@tiptap/markdown'
 import {useEditor} from '@tiptap/react'
-
 import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
-import {useRef} from 'react'
+import {useEffect, useRef} from 'react'
 import {readInlineData} from 'relay-runtime'
 import AutoJoiner from 'tiptap-extension-auto-joiner'
 import type {useTipTapPageEditor_viewer$key} from '../__generated__/useTipTapPageEditor_viewer.graphql'
@@ -24,6 +22,9 @@ import {LoomExtension} from '../components/TipTapEditor/LoomExtension'
 import {TiptapLinkExtension} from '../components/TipTapEditor/TiptapLinkExtension'
 import {useUploadUserAsset} from '../mutations/useUploadUserAsset'
 import {themeBackgroundColors} from '../shared/themeBackgroundColors'
+import {SafeTextStyleKit} from '../shared/tiptap/extensions/SafeTextStyleKit'
+import {EmbedBlock} from '../tiptap/extensions/embedBlock/EmbedBlock'
+import {handleServerEmbedMessage} from '../tiptap/extensions/fileBlock/embedManager'
 import FileBlock from '../tiptap/extensions/fileBlock/FileBlock'
 import {FileUpload} from '../tiptap/extensions/fileUpload/FileUpload'
 import {IndentHandler} from '../tiptap/extensions/IndentHandler'
@@ -46,6 +47,7 @@ import {MAX_FILE_SIZE_FREE} from '../utils/constants'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import useAtmosphere from './useAtmosphere'
 import {usePageLinkPlaceholder} from './usePageLinkPlaceholder'
+import {lookupPageViewerAccess} from './usePageViewerAccess'
 
 const getFileType = (file: File) => {
   if (file.type.startsWith('image/')) return 'image'
@@ -96,7 +98,7 @@ export const useTipTapPageEditor = (
             node: 'paragraph'
           }
         }),
-        TextStyleKit,
+        SafeTextStyleKit,
         Highlight,
         Details.configure({
           persist: true,
@@ -127,6 +129,7 @@ export const useTipTapPageEditor = (
           commit,
           highestTier: user?.highestTier
         }),
+        EmbedBlock,
         ImageBlock.configure({
           editorWidth: 720,
           editorHeight: 400
@@ -217,7 +220,9 @@ export const useTipTapPageEditor = (
               'hover:opacity-20',
               'print:hidden'
             )
-            cursor.setAttribute('style', `border-color: ${user.color}`)
+            // awareness comes from other clients, so only a hex color may reach the style attribute
+            const color = /^#[0-9a-f]{6}$/i.test(user.color) ? user.color : '#808080'
+            cursor.setAttribute('style', `border-color: ${color}`)
 
             const label = document.createElement('div')
             label.classList.add(
@@ -235,7 +240,7 @@ export const useTipTapPageEditor = (
               'text-white',
               'text-xs'
             )
-            label.setAttribute('style', `background-color: ${user.color}`)
+            label.setAttribute('style', `background-color: ${color}`)
             label.insertBefore(document.createTextNode(user.name), null)
             cursor.insertBefore(label, null)
 
@@ -253,7 +258,10 @@ export const useTipTapPageEditor = (
         PageLinkPicker.configure({
           atmosphere
         }),
-        PageLinkBlock.configure({yDoc: provider.document}),
+        PageLinkBlock.configure({
+          yDoc: provider.document,
+          getViewerAccess: (pageCode) => lookupPageViewerAccess(atmosphere, pageCode)
+        }),
         TableOfContents,
         TaskBlock,
         ThinkingBlock,
@@ -334,6 +342,12 @@ export const useTipTapPageEditor = (
   )
 
   usePageLinkPlaceholder(editor!, placeholderRef)
+  useEffect(() => {
+    provider.on('stateless', handleServerEmbedMessage)
+    return () => {
+      provider.off('stateless', handleServerEmbedMessage)
+    }
+  }, [provider])
 
   return {editor}
 }

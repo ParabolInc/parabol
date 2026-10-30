@@ -112,6 +112,11 @@ type Page {
   ancestors: [Page!]!
 
   """
+  The pages this page links to, including those the viewer cannot open
+  """
+  linkedPages: [Page!]!
+
+  """
   true if this page serves as a table of contents for a meeting
   """
   isMeetingTOC: Boolean

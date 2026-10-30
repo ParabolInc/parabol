@@ -61,6 +61,54 @@ type Organization {
   ): [Int!]! @scope(name: USERS_READ)
 
   """
+  A report on the organization's users, meetings and tasks. Billing leaders and org admins get
+  every team; everyone else gets the teams they're on. Starter counts its 2 largest teams that met
+  in the last 90 days
+  """
+  report(
+    """
+    What to count, how to split it, and how to show it
+    """
+    spec: ReportSpecInput!
+
+    """
+    The IANA time zone that days, weeks and months start in
+    """
+    timeZone: String! = "UTC"
+  ): ReportResult! @scope(name: REPORTS_READ)
+
+  """
+  The result stage of one category of a Team Health check of a team the viewer can report on, for a report's side
+  panel. Null when fewer than 3 people answered the check or scored the category
+  """
+  reportTeamHealthStage(
+    """
+    The Team Health meeting
+    """
+    meetingId: ID!
+
+    """
+    The Team Health category, as the report's CATEGORY keys give it
+    """
+    categoryId: ID!
+  ): TeamHealthResultStage @scope(name: REPORTS_READ)
+
+  """
+  The reports pinned to the Reports page, in order
+  """
+  pinnedReports: [PinnedReport!]! @scope(name: REPORTS_READ)
+
+  """
+  The viewer's recent questions on this organization's Reports page, newest first
+  """
+  recentReportQuestions: [ReportQuestion!]! @scope(name: REPORTS_READ)
+
+  """
+  The levels the organization groups its teams by in Reports, widest first. Empty while Reports is off
+  """
+  structure: [OrgStructureLevel!]! @scope(name: ORGS_READ)
+
+  """
   Teams in the organization that the viewer has access to.
   For billing leaders/org admins/super users: all teams in the org (viewer's teams first).
   For regular users: teams the viewer is on plus public teams.

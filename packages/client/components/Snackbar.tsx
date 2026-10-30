@@ -41,7 +41,7 @@ const Snackbar = memo(() => {
     location.pathname.startsWith('/meet/') || !!location.pathname.match(/\/meet\/.*\/responses/g)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const hoveredSnackRef = useRef<Snack | null>(null)
-  const dismissOnLeaveRef = useRef<Snack>()
+  const dismissOnLeaveRef = useRef<Snack>(undefined)
 
   const filterSnacks = useEventCallback((removeFn: SnackbarRemoveFn) => {
     const filterFn = (snack: Snack) => !removeFn(snack)

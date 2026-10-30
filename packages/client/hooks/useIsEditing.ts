@@ -10,7 +10,7 @@ const useIsEditing = (props: {
   const {editor, onStartEditing, onStopEditing} = props
 
   const [isEditing, setIsEditing] = useState(false)
-  const idleTimerIdRef = useRef<number>()
+  const idleTimerIdRef = useRef<number>(undefined)
   useEffect(() => {
     return () => {
       window.clearTimeout(idleTimerIdRef.current)

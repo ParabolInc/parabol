@@ -3,10 +3,10 @@ import {Details, DetailsContent, DetailsSummary} from '@tiptap/extension-details
 import Highlight from '@tiptap/extension-highlight'
 import {TaskItem, TaskList} from '@tiptap/extension-list'
 import {TableRow} from '@tiptap/extension-table'
-import {TextStyleKit} from '@tiptap/extension-text-style'
 import {Focus} from '@tiptap/extensions'
 import type Atmosphere from '../../Atmosphere'
 import type {useUploadUserAsset} from '../../mutations/useUploadUserAsset'
+import {SafeTextStyleKit} from '../../shared/tiptap/extensions/SafeTextStyleKit'
 import FileBlock from '../../tiptap/extensions/fileBlock/FileBlock'
 import {FileUpload} from '../../tiptap/extensions/fileUpload/FileUpload'
 import ImageBlock from '../../tiptap/extensions/imageBlock/ImageBlock'
@@ -29,6 +29,7 @@ export const STANDUP_SLASH_COMMANDS: Record<CommandTitle, boolean> = {
   Details: true,
   Table: true,
   Divider: true,
+  Embed: false,
   'Link to page': false,
   'Create page': false,
   Database: false,
@@ -52,7 +53,7 @@ export const standupBlockExtensions = ({
 }: BlockExtensionOptions): Extensions => [
   TaskList,
   TaskItem.configure({nested: true}),
-  TextStyleKit,
+  SafeTextStyleKit,
   Highlight,
   Details.configure({
     persist: true,

@@ -17,7 +17,7 @@ interface Props {
   reflectionGroup: ReflectionGroupHeader_reflectionGroup$key
   isExpanded?: boolean
   portalStatus: PortalStatus
-  titleInputRef: RefObject<HTMLInputElement>
+  titleInputRef: RefObject<HTMLInputElement | null>
 }
 
 const ReflectionGroupHeader = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {

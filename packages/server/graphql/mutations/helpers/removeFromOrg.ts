@@ -4,6 +4,7 @@ import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
 import {Logger} from '../../../utils/Logger'
+import {revalidateYjsConnections} from '../../../utils/tiptap/revalidateYjsConnections'
 import type {DataLoaderWorker} from '../../graphql'
 import reassignMeetingSeriesOwner from './reassignMeetingSeriesOwner'
 import removeTeamMember from './removeTeamMember'
@@ -72,6 +73,7 @@ const removeFromOrg = async (
       .executeTakeFirstOrThrow(),
     dataLoader.get('users').loadNonNull(userId)
   ])
+  await revalidateYjsConnections({userIds: [userId]})
 
   // Expire any pending invitations for this user across all teams in the org
   if (orgTeamIds.length > 0) {

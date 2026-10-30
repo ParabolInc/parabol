@@ -434,7 +434,7 @@ export const selectDescendantPages = (
       .selectFrom('Page')
       .select(['id', 'parentPageId'])
       .where('id', '=', pageId)
-      .unionAll(
+      .union(
         qc
           .selectFrom('Page as p')
           .innerJoin('descendants as d', 'd.id', 'p.parentPageId')

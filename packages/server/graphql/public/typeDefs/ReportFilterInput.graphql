@@ -1,0 +1,17 @@
+"""
+Keeps only data with one of the values. Separate filters must all match
+"""
+input ReportFilterInput {
+  dimension: ReportDimensionEnum!
+
+  """
+  For TEAM_LEVEL, the org structure level
+  """
+  levelId: ID
+
+  """
+  Team ids, org structure value ids or notSet, meeting types, task statuses, done or open, or integration
+  services
+  """
+  values: [String!]!
+}

@@ -1,0 +1,11 @@
+"""
+What a report's rows are ordered by
+"""
+enum ReportSortByEnum {
+  "The first measure's value"
+  VALUE
+  "The first breakdown that isn't time"
+  NAME
+  "The time breakdown"
+  TIME
+}

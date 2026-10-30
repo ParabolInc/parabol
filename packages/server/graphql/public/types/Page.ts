@@ -1,4 +1,5 @@
 import {GraphQLError} from 'graphql'
+import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import isValid from '../../isValid'
@@ -33,6 +34,16 @@ const Page: ReqResolvers<'Page'> = {
       throw new GraphQLError('Page not found')
     }
     return validPages
+  },
+  linkedPages: async ({id}, _args, {dataLoader}) => {
+    const backlinks = await getKysely()
+      .selectFrom('PageBacklink')
+      .select('toPageId')
+      .where('fromPageId', '=', id)
+      .execute()
+    const linkedPageIds = backlinks.map(({toPageId}) => toPageId)
+    const pages = await dataLoader.get('pages').loadMany(linkedPageIds)
+    return pages.flatMap((page) => (isValid(page) && !page.deletedAt ? [page] : []))
   },
   deletedByUser: async ({deletedBy}, _args, {dataLoader}) => {
     if (!deletedBy) return null

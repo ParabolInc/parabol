@@ -1,0 +1,41 @@
+"""
+A report pinned to the Reports page
+"""
+type PinnedReport {
+  id: ID!
+
+  """
+  The report's name
+  """
+  title: String!
+
+  """
+  A line about what a built-in report shows
+  """
+  description: String
+
+  """
+  The person who pinned it. Null for the built-in reports every organization starts with
+  """
+  pinnedBy: User
+
+  """
+  The report's spec as JSON, in the shape of ReportSpecInput
+  """
+  spec: String!
+
+  """
+  The report's numbers
+  """
+  report(
+    """
+    The IANA time zone that days, weeks and months start in
+    """
+    timeZone: String! = "UTC"
+
+    """
+    The period picked on the Reports page, which a spec without a period follows
+    """
+    pagePeriod: ReportPeriodInput
+  ): ReportResult!
+}

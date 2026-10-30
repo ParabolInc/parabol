@@ -7,6 +7,7 @@ import ErrorComponent from './ErrorComponent/ErrorComponent'
 interface Props {
   fallback?: (error: Error, eventId: string) => ReactNode
   children: ReactNode
+  resetKey?: string | number
 }
 
 interface State {
@@ -24,8 +25,17 @@ class ErrorBoundary extends Component<Props & {atmosphere: Atmosphere}, State> {
     isIgnoredError: false
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps: Props) {
     const {error, isIgnoredError} = this.state
+    if (error && prevProps.resetKey !== this.props.resetKey) {
+      this.setState({
+        error: undefined,
+        errorInfo: undefined,
+        eventId: undefined,
+        isIgnoredError: false
+      })
+      return
+    }
     if (!error || isIgnoredError) return
     const {atmosphere} = this.props
     // the analytics libraries stay out of the entry bundle. AnalyticsPage has already loaded them by now

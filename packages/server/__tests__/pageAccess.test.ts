@@ -220,7 +220,7 @@ test('Access propagates to linked children', async () => {
     }
   })
 
-  const pageUpdatesGlobal = await sendPublic({
+  const publicOwnerError = await sendPublic({
     query: UPDATE_PAGE_ACCESS,
     variables: {
       pageId: parentPageId,
@@ -231,12 +231,27 @@ test('Access propagates to linked children', async () => {
     cookie
   })
 
+  expect(publicOwnerError).toMatchObject({
+    errors: [{message: 'A public link cannot grant ownership'}]
+  })
+
+  const pageUpdatesGlobal = await sendPublic({
+    query: UPDATE_PAGE_ACCESS,
+    variables: {
+      pageId: parentPageId,
+      subjectType: 'external',
+      subjectId: '*',
+      role: 'editor'
+    },
+    cookie
+  })
+
   expect(pageUpdatesGlobal).toMatchObject({
     data: {
       updatePageAccess: {
         page: {
           access: {
-            public: 'owner'
+            public: 'editor'
           }
         }
       }
@@ -289,7 +304,7 @@ test('Access propagates to linked children', async () => {
                 email: 'foo@example.com'
               }
             ],
-            public: 'owner',
+            public: 'editor',
             organizations: [
               {
                 organization: {
@@ -352,7 +367,7 @@ test('Revoking access unlinks children', async () => {
       pageId: parentPageId,
       subjectType: 'external',
       subjectId: '*',
-      role: 'owner'
+      role: 'editor'
     },
     cookie
   })
@@ -363,7 +378,7 @@ test('Revoking access unlinks children', async () => {
       pageId: childPageId,
       subjectType: 'external',
       subjectId: '*',
-      role: 'editor'
+      role: 'commenter'
     },
     cookie
   })

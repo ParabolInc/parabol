@@ -17,6 +17,7 @@ type ZoomRecordingFile = {
   file_type: string
   file_extension: string
   download_url: string
+  recording_end: string
   status: string
 }
 
@@ -45,7 +46,10 @@ type ZoomSummaryCompletedPayload = {
       meeting_start_time: string
       meeting_end_time: string
       summary_title: string
-      summary_content: string
+      summary_content?: string
+      summary_overview?: string
+      summary_details?: {label: string; summary: string}[]
+      next_steps?: string[]
     }
   }
 }
@@ -119,135 +123,125 @@ const zoomWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRe
 })
 
 const dispatchZoomEvent = async (payload: ZoomWebhookPayload) => {
-  const pg = getKysely()
-
-  let hostId: string
-  let meetingUuid: string
-  let eventType: 'transcript' | 'summary'
-
   if (payload.event === 'recording.transcript_completed') {
-    hostId = payload.payload.object.host_id
-    meetingUuid = payload.payload.object.uuid
-    eventType = 'transcript'
+    await processTranscriptCompleted(payload)
   } else if (payload.event === 'meeting.summary_completed') {
-    hostId = payload.payload.object.meeting_host_id
-    meetingUuid = payload.payload.object.meeting_uuid
-    eventType = 'summary'
-  } else {
-    return
-  }
-
-  const authRow = await pg
-    .selectFrom('TeamMemberIntegrationAuth')
-    .selectAll()
-    .where('providerUserId', '=', hostId)
-    .where('service', '=', 'zoom')
-    .where('isActive', '=', true)
-    .orderBy('updatedAt', 'desc')
-    .executeTakeFirst()
-
-  if (!authRow) return
-  const {userId, teamId} = authRow
-
-  const externalId = `zoom:${eventType}:${meetingUuid}`
-  const insertResult = await pg
-    .insertInto('ExternalMeetingFile')
-    .values({id: externalId, teamId})
-    .onConflict((oc) => oc.column('id').doNothing())
-    .executeTakeFirst()
-  if (insertResult.numInsertedOrUpdatedRows === 0n) return
-  if (payload.event === 'recording.transcript_completed') {
-    await processTranscriptCompleted(payload, userId, teamId, externalId)
-  } else {
-    await processSummaryCompleted(payload, userId, teamId, externalId)
+    await processSummaryCompleted(payload)
   }
 }
 
-const processTranscriptCompleted = async (
-  payload: ZoomRecordingCompletedPayload,
-  userId: string,
-  teamId: string,
-  externalId: string
-) => {
+const claimHostMeeting = async (hostId: string, meetingEndedAt: Date, externalId: string) => {
+  const pg = getKysely()
+  const hostAuths = await pg
+    .selectFrom('TeamMemberIntegrationAuth')
+    .select(['userId', 'teamId'])
+    .where('providerUserId', '=', hostId)
+    .where('service', '=', 'zoom')
+    .where('isActive', '=', true)
+    .execute()
+  if (hostAuths.length === 0) {
+    Logger.log(`${externalId}: host ${hostId} has no active Zoom auth`)
+    return null
+  }
+  const meeting = await matchExternalMeetingToMeeting(meetingEndedAt, hostAuths)
+  if (!meeting) {
+    Logger.log(
+      `${externalId}: no meeting of host ${hostId} ended near ${meetingEndedAt.toISOString()}`
+    )
+    return null
+  }
+  const insertResult = await pg
+    .insertInto('ExternalMeetingFile')
+    .values({id: externalId, teamId: meeting.teamId})
+    .onConflict((oc) => oc.column('id').doNothing())
+    .executeTakeFirst()
+  if (insertResult.numInsertedOrUpdatedRows === 0n) return null
+  return meeting
+}
+
+const releaseClaimOnFailure = async (externalId: string, attach: () => Promise<void>) => {
+  try {
+    await attach()
+  } catch (e) {
+    await getKysely().deleteFrom('ExternalMeetingFile').where('id', '=', externalId).execute()
+    throw e
+  }
+}
+
+const processTranscriptCompleted = async (payload: ZoomRecordingCompletedPayload) => {
   const {download_token} = payload
-  const {start_time, duration, recording_files} = payload.payload.object
+  const {uuid, host_id, recording_files} = payload.payload.object
   const transcriptFile = recording_files.find(
     (f) => f.file_type === 'TRANSCRIPT' && f.file_extension === 'VTT' && f.status === 'completed'
   )
   if (!transcriptFile) return
 
-  const pg = getKysely()
+  const externalId = `zoom:transcript:${uuid}`
+  // the payload's duration is the scheduled length, so only the recording knows when the call ended
+  const endedAt = new Date(transcriptFile.recording_end)
+  const meeting = await claimHostMeeting(host_id, endedAt, externalId)
+  if (!meeting) return
 
-  // Meeting end time = start_time + duration (minutes)
-  const startMs = new Date(start_time).getTime()
-  const endedAt = new Date(startMs + duration * 60 * 1000)
-  const meeting = await matchExternalMeetingToMeeting(endedAt, teamId)
-  if (!meeting || !meeting.summaryPageId) {
-    await pg.deleteFrom('ExternalMeetingFile').where('id', '=', externalId).execute()
-    return
-  }
-
-  const vttRes = await fetch(transcriptFile.download_url, {
-    headers: {Authorization: `Bearer ${download_token}`}
+  await releaseClaimOnFailure(externalId, async () => {
+    const vttRes = await fetch(transcriptFile.download_url, {
+      headers: {Authorization: `Bearer ${download_token}`}
+    })
+    if (!vttRes.ok) {
+      throw new Error(`${externalId}: transcript download failed with ${vttRes.status}`)
+    }
+    const pageContent = processZoomTranscript(await vttRes.text())
+    if (!pageContent) throw new Error(`${externalId}: transcript has no cues`)
+    await attachTranscriptToSummaryPage(
+      meeting.summaryPageId,
+      [{title: `Zoom Transcript for ${meeting.name}`, content: pageContent}],
+      meeting.userId,
+      externalId
+    )
   })
-  if (!vttRes.ok) {
-    await pg.deleteFrom('ExternalMeetingFile').where('id', '=', externalId).execute()
-    return
-  }
-  const vtt = await vttRes.text()
-  if (!vtt.trim()) {
-    await pg.deleteFrom('ExternalMeetingFile').where('id', '=', externalId).execute()
-    return
-  }
-
-  const pageContent = processZoomTranscript(vtt)
-  if (!pageContent) {
-    await pg.deleteFrom('ExternalMeetingFile').where('id', '=', externalId).execute()
-    return
-  }
-
-  const {summaryPageId} = meeting
-  await attachTranscriptToSummaryPage(
-    summaryPageId,
-    [{title: `Zoom Transcript for ${meeting.name}`, content: pageContent}],
-    userId,
-    externalId
-  )
 }
 
-const processSummaryCompleted = async (
-  payload: ZoomSummaryCompletedPayload,
-  userId: string,
-  teamId: string,
-  externalId: string
-) => {
-  const {meeting_end_time, summary_content} = payload.payload.object
-  const trimmed = summary_content.trim()
-  if (!trimmed) return
+const toSummaryMarkdown = (zoomSummary: ZoomSummaryCompletedPayload['payload']['object']) => {
+  const {summary_content, summary_overview, summary_details = [], next_steps = []} = zoomSummary
+  if (summary_content?.trim()) return summary_content.trim()
+  // summary_content is optional, so fall back to the deprecated fields Zoom still sends
+  const sections = [
+    summary_overview,
+    ...summary_details.map(({label, summary}) => `## ${label}\n\n${summary}`),
+    next_steps.length > 0
+      ? `## Next steps\n\n${next_steps.map((step) => `- ${step}`).join('\n')}`
+      : undefined
+  ]
+  return sections.filter(Boolean).join('\n\n').trim()
+}
 
-  const pg = getKysely()
-  const endedAt = new Date(meeting_end_time)
-  const meeting = await matchExternalMeetingToMeeting(endedAt, teamId)
-  if (!meeting || !meeting.summaryPageId) {
-    await pg.deleteFrom('ExternalMeetingFile').where('id', '=', externalId).execute()
+const processSummaryCompleted = async (payload: ZoomSummaryCompletedPayload) => {
+  const summary = payload.payload.object
+  const externalId = `zoom:summary:${summary.meeting_uuid}`
+  const markdown = toSummaryMarkdown(summary)
+  if (!markdown) {
+    Logger.log(`${externalId}: summary has no content`)
     return
   }
 
-  const editor = new Editor({
-    element: undefined,
-    content: trimmed,
-    contentType: 'markdown',
-    extensions: serverTipTapExtensions
-  })
-  const content = editor.getJSON() as unknown as TipTapSerializedPageContent
+  const endedAt = new Date(summary.meeting_end_time)
+  const meeting = await claimHostMeeting(summary.meeting_host_id, endedAt, externalId)
+  if (!meeting) return
 
-  const {summaryPageId} = meeting
-  await attachTranscriptToSummaryPage(
-    summaryPageId,
-    [{title: `Zoom Summary for ${meeting.name}`, content}],
-    userId,
-    externalId
-  )
+  await releaseClaimOnFailure(externalId, async () => {
+    const editor = new Editor({
+      element: undefined,
+      content: markdown,
+      contentType: 'markdown',
+      extensions: serverTipTapExtensions
+    })
+    const content = editor.getJSON() as unknown as TipTapSerializedPageContent
+    await attachTranscriptToSummaryPage(
+      meeting.summaryPageId,
+      [{title: `Zoom Summary for ${meeting.name}`, content}],
+      meeting.userId,
+      externalId
+    )
+  })
 }
 
 export default zoomWebhookHandler

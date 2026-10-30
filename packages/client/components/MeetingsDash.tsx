@@ -30,7 +30,7 @@ type OwnSeries = MeetingsDash_viewer$data['teams'][number]['activeMeetingSeries'
 type DashSeries = Omit<OwnSeries, 'groupSeries'>
 
 interface Props {
-  meetingsDashRef: RefObject<HTMLDivElement>
+  meetingsDashRef: RefObject<HTMLDivElement | null>
   viewer: MeetingsDash_viewer$key | null
 }
 
