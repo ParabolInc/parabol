@@ -51,6 +51,9 @@ const warnSpy = jest.spyOn(Logger, 'warn')
 const mockEmbedQueryText = (queryText: string) =>
   getModelManager().getEmbedder().getEmbedding(queryText)
 
+jest.mock('../../graphql/mutations/helpers/queueViewerPagesForEmbedding', () => ({
+  queueViewerPagesForEmbedding: async () => {}
+}))
 jest.mock('../../graphql/mutations/helpers/publishToEmbedder', () => ({
   getUserQueryJobData: (query: string) => ({query}),
   publishToEmbedder: async ({data}: {data: {query: string}}) => {
