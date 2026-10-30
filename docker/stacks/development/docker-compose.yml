@@ -74,6 +74,24 @@ services:
       - text-embeddings-inference-data:/data
     networks:
       parabol-network:
+  text-embeddings-inference-last-token:
+    profiles: [last-token]
+    image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.8
+    environment:
+      - MODEL_ID=Svenni551/Qwen3-Embedding-0.6B-ONNX-INT8
+      - POOLING=last-token
+      - MAX_CLIENT_BATCH_SIZE=8
+      - MAX_BATCH_TOKENS=4096
+      - AUTO_TRUNCATE=true
+    platform: linux/x86_64
+    hostname: text-embeddings-inference-last-token
+    restart: unless-stopped
+    ports:
+      - "3041:80"
+    volumes:
+      - text-embeddings-inference-data:/data
+    networks:
+      parabol-network:
 networks:
   parabol-network:
 volumes:
