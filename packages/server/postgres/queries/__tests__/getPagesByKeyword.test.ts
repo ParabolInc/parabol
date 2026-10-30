@@ -1,5 +1,5 @@
 import {sql} from 'kysely'
-import {pagePrefixTerms, pagePrefixTsQuery} from '../../expressions'
+import {pagePrefixTerms, pagePrefixTsQuery, pageQueryWords} from '../../expressions'
 import getKysely from '../../getKysely'
 import {
   getPagesByKeyword,
@@ -195,6 +195,29 @@ const keywordSearch = (
 
 const ids = async (query: string, overrides?: Partial<Parameters<typeof getPagesByKeyword>[0]>) =>
   (await keywordSearch(query, overrides)).edges.map(({nodeId}) => nodeId)
+
+describe('splits the query into search words', () => {
+  const words = async (query: string, dropStopWords: boolean) => {
+    const {rows} = await sql<{
+      words: string[] | null
+    }>`select ${pageQueryWords(query, dropStopWords)} as words`.execute(pg)
+    return rows[0]!.words
+  }
+
+  it.each([
+    ['retro #5', false, ['retro', '5']],
+    ['the weekly offsite agenda', true, ['weekly', 'offsite', 'agenda']],
+    [
+      'one two three four five six seven eight nine',
+      false,
+      ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight']
+    ]
+  ])('splits %p (without stop words: %p) into %p', async (query, dropStopWords, expected) =>
+    expect(await words(query, dropStopWords)).toEqual(expected)
+  )
+
+  it('gives no words for single letters', async () => expect(await words('a b', false)).toBeNull())
+})
 
 describe('turns the query into prefix terms', () => {
   const terms = async (query: string, dropStopWords = false, operator: '&' | '|' = '&') => {

@@ -78,19 +78,12 @@ const MIN_QUERY_TERM_LENGTH = 2
 const MAX_QUERY_TERMS = 8
 const SINGLE_DIGIT = '^[0-9]$'
 
-// splits the query into words exactly as pageSearchTsv splits page text, then quotes each word as a prefix term.
-// A single digit matches a whole number, a decimal's whole part (3.12) or a hyphenated number (SEV-1), never a
-// prefix: as a prefix, "2" would match the year on every page.
+// splits the query into words exactly as pageSearchTsv splits page text: single digits and words of 2+ characters.
 // With dropStopWords, English stop words leave before the cap, unless every word is one.
-// A query with no single digits and no words of 2+ characters gives NULL, which matches nothing.
-export const pagePrefixTerms = (query: string, dropStopWords: boolean) =>
+// A query with no such words gives NULL, which matches nothing.
+export const pageQueryWords = (query: string, dropStopWords: boolean) =>
   sql<string[] | null>`(
-    select array_agg(
-      case when t.lexeme ~ ${sql.lit(SINGLE_DIGIT)}
-        then '(''' || t.lexeme || ''' | ''' || t.lexeme || '.'':* | ''-' || t.lexeme || ''')'
-        else '''' || replace(replace(t.lexeme, '\\', '\\\\'), '''', '''''') || ''':*'
-      end order by t.position
-    )
+    select array_agg(t.lexeme order by t.position)
     from (
       select lexeme, position
       from (
@@ -103,6 +96,20 @@ export const pagePrefixTerms = (query: string, dropStopWords: boolean) =>
       order by position
       limit ${sql.lit(MAX_QUERY_TERMS)}
     ) t
+  )`
+
+// quotes each search word as a prefix term.
+// A single digit matches a whole number, a decimal's whole part (3.12) or a hyphenated number (SEV-1), never a
+// prefix: as a prefix, "2" would match the year on every page.
+export const pagePrefixTerms = (query: string, dropStopWords: boolean) =>
+  sql<string[] | null>`(
+    select array_agg(
+      case when w.word ~ ${sql.lit(SINGLE_DIGIT)}
+        then '(''' || w.word || ''' | ''' || w.word || '.'':* | ''-' || w.word || ''')'
+        else '''' || replace(replace(w.word, '\\', '\\\\'), '''', '''''') || ''':*'
+      end order by w.n
+    )
+    from unnest(${pageQueryWords(query, dropStopWords)}) with ordinality as w(word, n)
   )`
 
 // The terms are cast with ::tsquery, which reads them literally instead of parsing them again.
