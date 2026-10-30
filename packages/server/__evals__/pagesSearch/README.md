@@ -28,7 +28,7 @@ Reseed with `EVAL_RESEED=1` after you change how pages are indexed (`embedPage`,
 | `EVAL_STOP_WORDS` | each list's default | `sweep` only: `keep` and/or `drop`; `drop` takes English stop words out of the keyword terms |
 | `EVAL_ANY_WORD_FALLBACK_BELOW` | each list's default | `sweep` only: whole numbers; when fewer pages than this have every word, pages with some of them follow (0 turns this off) |
 | `EVAL_ANY_WORD_MIN_SHARES` | each list's default | `sweep` only: decimals between 0 and 1; the share of the words a page with some of them must contain (at least one) |
-| `EVAL_TITLE_TYPO_SIMILARITIES` | each list's default | `sweep` only: decimals between 0 and 1; a word that doesn't match a page still counts when its `pg_trgm` word similarity to the page's title reaches this (0 turns this off) |
+| `EVAL_TITLE_TYPO_SIMILARITIES` | each list's default | `sweep` only: decimals between 0 and 1; a word that doesn't match a page still counts when its `pg_trgm` word similarity to the page's title reaches this (0 turns this off). It only acts when the any-word fallback is on (`EVAL_ANY_WORD_FALLBACK_BELOW` above 0) |
 | `EVAL_LABEL` | `local` | Names the results file |
 | `EVAL_RESEED` | unset | `1` deletes the eval user's pages and seeds them again |
 | `EVAL_DUMP` | unset | `1` writes the set's corpus to `results/<corpus>-corpus/` and skips seeding and ranking: one `<key>.md` per page (the title, a blank line, then the plain text that keyword search reads) plus `index.json` |
@@ -603,8 +603,10 @@ Keyword search used to drop every one-character word, so the "5" in "Beacon Retr
 
 A misspelled word used to match nothing, so "whiteboad" found no page.
 - **What changed.** A query word that matches no word of a page now still counts for that page when it's close to a word of the page's title. Close means a `pg_trgm` word similarity of at least 0.5 (`titleTypoSimilarity`, the same for both lists). The migration `addPgTrgm` installs the extension.
-- **Where those pages rank.** Such a page joins the pages with some of the words, ranked by how many words it matches. It never counts as having every word, so pages with every word as typed still come first.
+- **Which words.** Only words of at least 5 characters without digits match this way. Otherwise "2" would match the year in every summary title, and "plan" would match "Platform".
+- **Where those pages rank.** Such a page joins the pages with some of the words, ranked by how many words it matches. Among equals, the closer title comes first. It never counts as having every word, so pages with every word as typed still come first.
 - **Titles only.** A misspelled word that appears only in a page's text, like `rudderstak`, still matches nothing by keyword.
+- **The extension.** The migration needs a database role that can create extensions. `pg_trgm` ships with Postgres. On a self-hosted install, a DBA can create it ahead of time, and the migration then does nothing. It hasn't been tried on one.
 
 **How it was chosen.** The plan fixed a selection rule before the sweep ran:
 1. **Rows.** Thresholds 0 (off), 0.4, 0.45, 0.5, 0.55 and 0.6, for both lists with their other defaults.
@@ -620,24 +622,27 @@ A misspelled word used to match nothing, so "whiteboad" found no page.
 | 0.55 | 0.824 | 0.819 | 0.905 | 0.904 | 0.863 |
 | 0.6 | 0.824 | 0.819 | 0.905 | 0.904 | 0.863 |
 
+- **The sweep ran before the review fixes** that added the 5-character rule and closeness ordering. Those fixes change no dev nDCG@10 or Recall@20, so the table stands. They bring `dev`'s quick junk@5 back from 0.592 to A5c's 0.584.
 - **Every threshold was eligible.** 0.4, 0.45 and 0.5 tie on nDCG@10 and have the same Recall@20, so the rule takes the strictest, 0.5. At 0.45, "onbaording checklist" (similarity 0.47) would also have found its page.
 - **Recall@20.** On `dev` it goes from 0.916 to 0.964 (quick) and from 0.928 to 0.960 (fused). It is unchanged on `heavy-dev`, and so is `noAnswerResults`.
 - **Typo queries.** nDCG@10 rises from 0.68 to 0.74 (quick) and from 0.68 to 0.79 (fused) on `heavy-dev`, and from 0.55 and 0.64 to 0.90 on `dev`.
-- **Wins.** "whiteboad", "vendr comparsion" and "standpu" now find their pages. "atlss standup aug 3" puts Atlas's standup first instead of Beacon's, and fused ranking moves "sesion store valky" up by 0.25. The Japanese "リリース計画の会議メモ" now finds its page as well: Postgres reads the query as one unbroken word, while the title splits into two, and the language gate leaves that page without vectors.
+- **Wins.** "whiteboad", "vendr comparsion" and "standpu" now find their pages. "atlss standup aug 3" puts Atlas's standup first instead of Beacon's, and fused ranking moves "sesion store valky" up by 0.25. The Japanese "リリース計画の会議メモ" now finds its page as well: Postgres reads the query as one unbroken word, while the title splits into two, and the language gate leaves that page without vectors. One gain isn't a typo: "sprint poker estimates for webhook retries" (+0.071, fused) gets help from "retries" being close to "Retro".
 - **One loss.** On `heavy-dev`, "rate limiter load test results" drops by 0.018 in both lists. The rate limiting RFC now also matches "limiter" through its title, so it moves up past the standup that is graded 3.
-- **Latency.** The quick list on `heavy-dev` goes from 42/45 ms to 44/49 ms at p50/p90.
+- **Latency.** The quick list on `heavy-dev` goes from 42/45 ms to 45/49 ms at p50/p90. The worst case, 8 words that match nothing against 488 titles, costs about 15–22 ms.
+- **What it costs.** A long word that shares half its letters with a title word still matches: "stale" scores the same against "Standup" as "atlss" does against "Atlas", so a threshold can't tell them apart.
 
-**Gate.** One sweep per holdout scored four rows: both lists at threshold 0 (A5c's ranking) and at 0.5.
+**Gate.** Each run is one sweep per holdout, scoring four rows: both lists at threshold 0 (A5c's ranking) and at 0.5. It ran twice: before the review fixes, and on the final code. The table shows the final run.
 
 | Holdout | List | Threshold | nDCG@10 | Recall@5 | Recall@20 | `noAnswerResults` |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
 | `heavy-holdout` (72 answerable) | quick | 0 | 0.826 | 0.889 | 0.931 | 10.00 |
-| `heavy-holdout` | quick | 0.5 | 0.841 | 0.896 | 0.931 | 10.00 |
+| `heavy-holdout` | quick | 0.5 | 0.829 | 0.889 | 0.931 | 10.00 |
 | `heavy-holdout` | fused | 0 | 0.816 | 0.882 | 0.931 | 14.00 |
-| `heavy-holdout` | fused | 0.5 | 0.834 | 0.889 | 0.938 | 14.00 |
+| `heavy-holdout` | fused | 0.5 | 0.819 | 0.882 | 0.931 | 14.00 |
 | `holdout` (23 answerable, spent) | quick | 0 and 0.5 | 0.822 | 0.833 | 0.891 | 4.00 |
 | `holdout` | fused | 0 and 0.5 | 0.811 | 0.801 | 0.913 | 4.00 |
 
-- **The gate passes.** On `heavy-holdout`, nDCG@10 rises by 0.015 (quick) and 0.018 (fused), and Recall@20 holds or rises.
+- **The gate passes.** On `heavy-holdout`, nDCG@10 rises by 0.003 in both lists, and Recall@20 holds.
+- **The fixes cost most of the holdout gain.** Before them, the gain was 0.015 (quick) and 0.018 (fused), with Recall@20 up 0.007 in fused ranking. The fixes were chosen on dev evidence and committed before the second run was read, and nothing was re-tuned on it. The dev sets have no typos in words shorter than 5 letters, so they can't price the 5-character rule. Adding some to `heavy-dev` is the way to tune it.
 - **What was read.** Only overall rows. The local holdout results were scrubbed down to those rows.
-- **Gate runs so far.** `heavy-holdout` has had eleven. This one run scored both lists at both thresholds.
+- **Gate runs so far.** `heavy-holdout` has had twelve; the two here each scored both lists at both thresholds.
