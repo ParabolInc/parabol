@@ -1,7 +1,6 @@
 import fs from 'node:fs/promises'
+import {SourceMap} from 'node:module'
 import path from 'node:path'
-import {originalPositionFor, TraceMap} from '@jridgewell/trace-mapping'
-import ErrorStackParser from 'error-stack-parser'
 import getProjectRoot from '../../../scripts/webpack/utils/getProjectRoot'
 
 const BUILD_DIR = path.join(getProjectRoot(), 'build')
@@ -12,18 +11,44 @@ const CDN_BUILD_URL =
     ? `${CDN_BASE_URL.replace(/^\/{2,}/, 'https://')}/build/`
     : undefined
 const BUILD_FILE = /\/(?:build|static)\/([\w.-]+\.js)(?:\?[^/]*)?$/
+// Chrome: "    at fn (url:line:column)" or "    at url:line:column". Firefox and Safari: "fn@url:line:column"
+const V8_FRAME = /^\s*at (?:async )?(?:(.+?) \()?(.+?):(\d+):(\d+)\)?$/
+const GECKO_FRAME = /^(?:(.*?)@)?(.+?):(\d+):(\d+)$/
 const MAX_FRAMES = 50
 const MAX_CACHED_SOURCE_MAPS = 20
 const MAX_SOURCE_MAP_BYTES = 50 * 1024 * 1024
 const MISSING_SOURCE_MAP_RETRY_MS = 5 * 60 * 1000
 const CDN_TIMEOUT_MS = 5000
 
+interface StackFrame {
+  functionName?: string
+  fileName: string
+  lineNumber: number
+  columnNumber: number
+}
+
 interface SourceMapEntry {
-  sourceMap: Promise<TraceMap | null>
+  sourceMap: Promise<SourceMap | null>
   missingSince?: number
 }
 
 const sourceMapCache = new Map<string, SourceMapEntry>()
+
+const matchFrames = (lines: string[], pattern: RegExp) =>
+  lines.map((line) => line.match(pattern)).filter((match): match is RegExpMatchArray => !!match)
+
+// A Chrome stack starts with the error's message, which must not be mistaken for a frame
+const parseStackFrames = (stack: string): StackFrame[] => {
+  const lines = stack.split('\n')
+  const v8Frames = matchFrames(lines, V8_FRAME)
+  const frames = v8Frames.length > 0 ? v8Frames : matchFrames(lines, GECKO_FRAME)
+  return frames.map(([, functionName, fileName = '', lineNumber, columnNumber]) => ({
+    functionName: functionName || undefined,
+    fileName,
+    lineNumber: Number(lineNumber),
+    columnNumber: Number(columnNumber)
+  }))
+}
 
 const readCdnSourceMap = async (fileName: string) => {
   if (!CDN_BUILD_URL) return null
@@ -35,13 +60,14 @@ const readCdnSourceMap = async (fileName: string) => {
   return text && text.length <= MAX_SOURCE_MAP_BYTES ? text : null
 }
 
+// node:module's SourceMap is still marked experimental; symbolicateClientStack.test.ts pins what we rely on
 const loadSourceMap = async (fileName: string, buildDir: string) => {
   const text =
     (await fs.readFile(path.join(buildDir, `${fileName}.map`), 'utf8').catch(() => null)) ??
     (await readCdnSourceMap(fileName))
   if (!text) return null
   try {
-    return new TraceMap(text)
+    return new SourceMap(JSON.parse(text))
   } catch {
     return null
   }
@@ -77,20 +103,17 @@ const toSourcePath = (source: string) =>
 const formatFrame = (functionName: string | undefined, location: string) =>
   functionName ? `    at ${functionName} (${location})` : `    at ${location}`
 
-const symbolicateFrame = async (frame: ErrorStackParser.StackFrame, buildDir: string) => {
+const symbolicateFrame = async (frame: StackFrame, buildDir: string) => {
   const {functionName, fileName, lineNumber, columnNumber} = frame
-  const buildFileName = fileName?.match(BUILD_FILE)?.[1]
-  if (buildFileName && lineNumber && columnNumber) {
-    const sourceMap = await getSourceMap(buildFileName, buildDir)
-    const original =
-      sourceMap && originalPositionFor(sourceMap, {line: lineNumber, column: columnNumber - 1})
-    if (original?.source) {
-      const location = `${toSourcePath(original.source)}:${original.line}:${original.column + 1}`
-      return formatFrame(original.name ?? functionName, location)
-    }
+  const buildFileName = fileName.match(BUILD_FILE)?.[1]
+  const sourceMap = buildFileName ? await getSourceMap(buildFileName, buildDir) : null
+  // findOrigin takes and returns 1-based lines and columns, like the stack itself
+  const origin = sourceMap?.findOrigin(lineNumber, columnNumber)
+  if (origin && 'fileName' in origin) {
+    const location = `${toSourcePath(origin.fileName)}:${origin.lineNumber}:${origin.columnNumber}`
+    return formatFrame(origin.name || functionName, location)
   }
-  const location = [fileName, lineNumber, columnNumber].filter((part) => part !== undefined)
-  return formatFrame(functionName, location.join(':'))
+  return formatFrame(functionName, `${fileName}:${lineNumber}:${columnNumber}`)
 }
 
 // Returns a V8-format stack, which is what Error Reporting groups by and what the logger fingerprints
@@ -102,17 +125,7 @@ const symbolicateClientStack = async (
 ) => {
   const header = `${name}: ${message}`
   if (!stack) return header
-  const error = new Error(message)
-  error.name = name
-  error.stack = stack
-  let frames: ErrorStackParser.StackFrame[]
-  try {
-    frames = ErrorStackParser.parse(error)
-      .filter((frame) => frame.fileName)
-      .slice(0, MAX_FRAMES)
-  } catch {
-    return stack
-  }
+  const frames = parseStackFrames(stack).slice(0, MAX_FRAMES)
   if (frames.length === 0) return stack
   const lines = await Promise.all(frames.map((frame) => symbolicateFrame(frame, buildDir)))
   return [header, ...lines].join('\n')

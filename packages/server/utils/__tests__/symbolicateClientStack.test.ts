@@ -35,6 +35,23 @@ test('maps a Firefox or Safari stack the same way', async () => {
   ])
 })
 
+test('reads async, constructor and aliased frames without mistaking the message for one', async () => {
+  const message = 'bad input in app.js:1:2'
+  const chromeStack = [
+    `TypeError: ${message}`,
+    `    at async e (${BUNDLE_URL}:1:29)`,
+    `    at new Widget (${BUNDLE_URL}:1:93)`,
+    `    at Object.render [as render] (${BUNDLE_URL}:1:86)`
+  ].join('\n')
+  const stack = await symbolicateClientStack('TypeError', message, chromeStack, BUILD_DIR)
+  expect(stack.split('\n')).toEqual([
+    `TypeError: ${message}`,
+    '    at toUpperCase (packages/client/components/TeamList.tsx:2:20)',
+    '    at formatTeamName (packages/client/components/TeamList.tsx:6:30)',
+    '    at map (packages/client/components/TeamList.tsx:6:16)'
+  ])
+})
+
 test('leaves frames it has no map for as they are', async () => {
   const stack = [
     `TypeError: ${MESSAGE}`,
