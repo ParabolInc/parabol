@@ -28,6 +28,8 @@ export interface KeywordMatching {
   titleTypoSimilarity: number
 }
 
+const MIN_TYPO_WORD_LENGTH = 5
+
 export const QUICK_KEYWORD_MATCHING: KeywordMatching = {
   dropStopWords: true,
   anyWordFallbackBelow: 20,
@@ -124,31 +126,46 @@ export const withPageKeywordRanking = (
               .offset(0)
               .as('s')
           )
+          // word by word: whether the page's search text has the term, and how close the word is to the title.
+          // Only words of 5+ characters without digits are matched by title similarity
+          .crossJoinLateral((eb) => {
+            const similarity = matchesTitleTypos
+              ? sql<number>`case when char_length(t.word) >= ${sql.lit(MIN_TYPO_WORD_LENGTH)} and t.word !~ '[0-9]' then word_similarity(t.word, coalesce(${eb.ref('p.title')}, '')) else 0 end`
+              : sql<number>`0`
+            const isTitleTypo = matchesTitleTypos
+              ? sql<boolean>`(not w.exact and w.similarity >= ${titleTypoSimilarity}::float8)`
+              : sql<boolean>`false`
+            return qb
+              .selectFrom(
+                sql<{exact: boolean; similarity: number}>`(
+                  select ${eb.ref('s.searchTsv')} @@ t.term::tsquery as exact, ${similarity}::float8 as similarity
+                  from unnest(${eb.ref('st.termList')}, ${eb.ref('st.wordList')}) as t(term, word)
+                )`.as('w')
+              )
+              .select([
+                sql<number>`(count(*) filter (where w.exact or ${isTitleTypo}))::int`.as(
+                  'matchedWords'
+                ),
+                sql<number>`coalesce(sum(w.similarity) filter (where ${isTitleTypo}), 0)::float8`.as(
+                  'titleTypoScore'
+                )
+              ])
+              .as('m')
+          })
           // matching: the page's search text contains every term, or with the fallback, any of them,
           // or a word close to a word of the title
-          .where((eb) => {
-            if (!fallsBack) return eb('s.searchTsv', '@@', eb.ref('st.terms'))
-            const anyWord = eb('s.searchTsv', '@@', eb.ref('st.anyTerms'))
-            if (!matchesTitleTypos) return anyWord
-            return eb.or([
-              anyWord,
-              sql<boolean>`exists (select 1 from unnest(${eb.ref('st.wordList')}) as w(word) where word_similarity(w.word, coalesce(${eb.ref('p.title')}, '')) >= ${titleTypoSimilarity}::float8)`
-            ])
-          })
+          .where((eb) =>
+            fallsBack ? eb('m.matchedWords', '>', 0) : eb('s.searchTsv', '@@', eb.ref('st.terms'))
+          )
           .select((eb) => {
             const hasEveryWord = eb('s.searchTsv', '@@', eb.ref('st.terms'))
             const matchQuery = sql<string>`case when ${hasEveryWord} then ${eb.ref('st.terms')} else ${eb.ref('st.anyTerms')} end`
-            const matchesWord = matchesTitleTypos
-              ? sql<boolean>`${eb.ref('s.searchTsv')} @@ t.term::tsquery or word_similarity(t.word, coalesce(${eb.ref('p.title')}, '')) >= ${titleTypoSimilarity}::float8`
-              : sql<boolean>`${eb.ref('s.searchTsv')} @@ t.term::tsquery`
-            const matchedWords = fallsBack
-              ? sql<number>`(select count(*) from unnest(${eb.ref('st.termList')}, ${eb.ref('st.wordList')}) as t(term, word) where ${matchesWord})::int`
-              : sql<number>`cardinality(${eb.ref('st.termList')})`
             return [
               'vp.id',
               'vp.updatedAt',
               hasEveryWord.as('hasEveryWord'),
-              matchedWords.as('matchedWords'),
+              'm.matchedWords',
+              'm.titleTypoScore',
               eb(pageTitleTsv(eb.ref('p.title')), '@@', matchQuery).as('titleMatch'),
               sql<number>`ts_rank_cd(${eb.ref('s.searchTsv')}, ${matchQuery}, 0)::float8`.as(
                 'keywordScore'
@@ -178,9 +195,9 @@ export const withPageKeywordRanking = (
             'km.updatedAt',
             'km.hasEveryWord',
             'km.keywordScore',
-            // ordering: every word as typed first, then most words, then title matches, then rank, then most recently
-            // updated, then id for stable ties
-            sql<number>`row_number() over (order by ${eb.ref('km.hasEveryWord')} desc, ${eb.ref('km.matchedWords')} desc, ${eb.ref('km.titleMatch')} desc, ${eb.ref('km.keywordScore')} desc, ${eb.ref('km.updatedAt')} desc, ${eb.ref('km.id')} desc)::int`.as(
+            // ordering: every word as typed first, then most words, then title matches, then rank, then the closest
+            // misspelled title, then most recently updated, then id for stable ties
+            sql<number>`row_number() over (order by ${eb.ref('km.hasEveryWord')} desc, ${eb.ref('km.matchedWords')} desc, ${eb.ref('km.titleMatch')} desc, ${eb.ref('km.keywordScore')} desc, ${eb.ref('km.titleTypoScore')} desc, ${eb.ref('km.updatedAt')} desc, ${eb.ref('km.id')} desc)::int`.as(
               'keywordRank'
             )
           ])
