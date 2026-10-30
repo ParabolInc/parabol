@@ -94,7 +94,7 @@ export const POPULAR_REPORT_QUESTIONS: readonly PopularReportQuestion[] = [
       where: [],
       showAs: 'BARS'
     },
-    defaultPinSortOrder: 2
+    defaultPinSortOrder: 3
   },
   {
     key: 'meetingOutcomes',
@@ -108,8 +108,7 @@ export const POPULAR_REPORT_QUESTIONS: readonly PopularReportQuestion[] = [
       filters: [],
       where: [],
       showAs: 'TABLE'
-    },
-    defaultPinSortOrder: 3
+    }
   },
   {
     key: 'retroTasksDoneOrOpen',
@@ -138,7 +137,8 @@ export const POPULAR_REPORT_QUESTIONS: readonly PopularReportQuestion[] = [
       filters: [],
       where: [],
       showAs: 'FLOW'
-    }
+    },
+    defaultPinSortOrder: 4
   },
   {
     key: 'retroDaysToDone',
@@ -216,7 +216,8 @@ export const POPULAR_REPORT_QUESTIONS: readonly PopularReportQuestion[] = [
       filters: [],
       where: [],
       showAs: 'HEATMAP'
-    }
+    },
+    defaultPinSortOrder: 2
   },
   {
     key: 'healthByCategory',
@@ -277,7 +278,6 @@ export const POPULAR_REPORT_QUESTIONS: readonly PopularReportQuestion[] = [
       where: [],
       showAs: 'HEATMAP',
       sort: {by: 'VALUE', order: 'DESC'}
-    },
-    defaultPinSortOrder: 4
+    }
   }
 ]

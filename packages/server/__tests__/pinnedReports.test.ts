@@ -66,9 +66,9 @@ const START_REPORT_QUESTION = `
 
 const BUILT_IN_TITLES = [
   'Active users over time',
+  'Health score by team',
   'Meetings by type',
-  'Discussions and tasks by meeting type',
-  'Retrospective cadence'
+  'Where new tasks end up'
 ]
 
 const topTeams = (limit: number) => ({
@@ -213,7 +213,7 @@ test('only org admins and billing leaders pin and unpin reports', async () => {
   expect((await unpinAs(member.cookie)).errors).toBeTruthy()
   const byLeader = await unpinAs(owner.cookie)
   expect(byLeader.errors).toBeUndefined()
-  expect(byLeader.data.unpinReport.organization.pinnedReports[0].title).toBe('Meetings by type')
+  expect(byLeader.data.unpinReport.organization.pinnedReports[0].title).toBe('Health score by team')
 })
 
 test('leaders move pins and members can’t', async () => {
@@ -232,10 +232,10 @@ test('leaders move pins and members can’t', async () => {
   expect(
     moved.data.movePinnedReport.organization.pinnedReports.map(({title}: {title: string}) => title)
   ).toEqual([
-    'Retrospective cadence',
+    'Where new tasks end up',
     'Active users over time',
-    'Meetings by type',
-    'Discussions and tasks by meeting type'
+    'Health score by team',
+    'Meetings by type'
   ])
 })
 
