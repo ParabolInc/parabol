@@ -13,6 +13,7 @@ import {getUserId} from '../../../utils/authorization'
 import {EmbeddingTimeoutError} from '../../../utils/EmbeddingTimeoutError'
 import {Logger} from '../../../utils/Logger'
 import {getUserQueryJobData, publishToEmbedder} from '../../mutations/helpers/publishToEmbedder'
+import {queueViewerPagesForEmbedding} from '../../mutations/helpers/queueViewerPagesForEmbedding'
 import type {SearchTypeEnum, UserResolvers} from '../resolverTypes'
 
 export const SEARCH_EMBEDDING_TIMEOUT_MS = 3000
@@ -104,6 +105,15 @@ export const search: NonNullable<UserResolvers['search']> = async (
   const metadataTeamIds: [string, ...string[]] = resourceGrants
     ? ['aGhostTeam', ...(teamIds ?? [])]
     : (pageTeamIds ?? ['aGhostTeam', ...authToken.tms])
+
+  if (type === 'page') {
+    queueViewerPagesForEmbedding(viewerId).catch((error: unknown) => {
+      Logger.warn('Page search could not queue pages without vectors', {
+        userId: viewerId,
+        extras: {errorMessage: error instanceof Error ? error.message : String(error)}
+      })
+    })
+  }
 
   if (query.length === 0) {
     const noQueryEdge = {

@@ -94,6 +94,15 @@ restarts and deploys don't lose progress. `status` counts what is done from
 the tables. Cut over once the recent pages are done; the run then finishes the
 older pages, which also convert on their next edit or search.
 
+## Embed on search
+
+When someone searches pages, the pages they can open that have at least 200
+bytes of text and no vectors in the active generation are queued for it, and
+so are those missing from the generation a running background run is filling.
+They go newest first, at most 500 per generation, ahead of the background run
+and behind edits. That includes pages that were never embedded. It runs at most
+once an hour per person and never delays the search.
+
 ## Resources
 
 ### PG as a Job Queue
