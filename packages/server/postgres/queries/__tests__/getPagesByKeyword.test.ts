@@ -343,6 +343,24 @@ it('matches a misspelled title word', async () =>
 it('matches misspelled title words by default', async () =>
   expect((await ids('vendor comparsion'))[0]).toBe(vendorComparisonId))
 
+it('never matches a digit by title similarity', async () =>
+  expect(await ids('5')).not.toContain(zephyr50Id))
+
+it('never matches a short word by title similarity', async () =>
+  expect(await ids('vent')).not.toContain(vendorListId))
+
+it('puts closer misspelled title matches first', async () =>
+  expect(await ids('whiteboad', {first: 2})).toEqual([whiteboardIdeasId, whitebordIdeasId]))
+
+it('pages through misspelled title matches without gaps or repeats', async () => {
+  const all = await ids('whiteboad', {first: 2})
+  const walked = [
+    ...(await ids('whiteboad', {first: 1, offset: 0})),
+    ...(await ids('whiteboad', {first: 1, offset: 1}))
+  ]
+  expect(walked).toEqual(all)
+})
+
 it('ignores misspellings when the threshold is 0', async () =>
   expect(await ids('whiteboad', {titleTypoSimilarity: 0})).toEqual([]))
 
