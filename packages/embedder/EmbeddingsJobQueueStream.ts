@@ -1,9 +1,13 @@
 import sleep from 'parabol-client/utils/sleep'
 import 'parabol-server/initLogging'
+import getKysely from 'parabol-server/postgres/getKysely'
 import type {EmbeddingsJobQueueV2} from 'parabol-server/postgres/types'
 import RedisInstance from 'parabol-server/utils/RedisInstance'
 import {claimEmbeddingsJob} from './claimEmbeddingsJob'
+import {getNextJobDelay} from './getNextJobDelay'
 import type {WorkflowOrchestrator} from './WorkflowOrchestrator'
+
+const MIN_DROUGHT_WAIT_MS = 1000
 
 export class EmbeddingsJobQueueStream implements AsyncIterableIterator<EmbeddingsJobQueueV2> {
   [Symbol.asyncIterator]() {
@@ -45,14 +49,33 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<Embedding
             continue
           }
 
-          // Wait for a signal without recursing
+          // Wait without recursing for a signal, or until the next delayed job is due
+          const {nextRunAfter} = await getKysely()
+            .selectFrom('EmbeddingsJobQueueV2')
+            .select(({fn}) => fn.min('runAfter').as('nextRunAfter'))
+            .where('state', '=', 'queued')
+            .executeTakeFirstOrThrow()
+          const delay = getNextJobDelay(nextRunAfter, new Date())
           await new Promise<void>((resolve) => {
             if (this.droughtSignal) {
               this.droughtSignal = false
               resolve()
-            } else {
-              // the next time a job comes in, the onMessage handler will resolve this
-              this.resolveDrought = resolve
+              return
+            }
+            const timer =
+              delay === null
+                ? undefined
+                : setTimeout(
+                    () => {
+                      this.resolveDrought = undefined
+                      resolve()
+                    },
+                    Math.max(delay, MIN_DROUGHT_WAIT_MS)
+                  )
+            // the next time a job comes in, the onMessage handler will resolve this
+            this.resolveDrought = () => {
+              clearTimeout(timer)
+              resolve()
             }
           })
           continue
