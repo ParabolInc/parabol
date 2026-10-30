@@ -7,7 +7,6 @@ const writeAuditLog = (fields: Record<string, unknown>) => {
       severity: 'NOTICE',
       level: 'info',
       type: 'audit',
-      'logging.googleapis.com/labels': {log_type: 'audit'},
       ...getLogIdentity(),
       ...fields
     })

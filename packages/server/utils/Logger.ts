@@ -22,6 +22,17 @@ if (LOG_LEVEL === undefined) {
   )
 }
 
+const LogFormats = ['gcp', 'otel'] as const
+type LogFormat = (typeof LogFormats)[number]
+
+const LOG_FORMAT = (process.env.LOG_FORMAT || 'gcp') as LogFormat
+if (!LogFormats.includes(LOG_FORMAT)) {
+  throw new Error(
+    `Invalid LOG_FORMAT: ${process.env.LOG_FORMAT}, allowed values are: ${LogFormats.join(', ')}`
+  )
+}
+const isGoogleCloudFormat = LOG_FORMAT === 'gcp'
+
 const LogFun = {
   fatal: (...args: unknown[]) => console.error(...args),
   error: (...args: unknown[]) => console.error(...args),
@@ -131,11 +142,17 @@ export const makeLogRecord = (
     env,
     version,
     ...(context.component && {component: context.component}),
-    ...(context.trace && {
-      'logging.googleapis.com/trace': context.trace,
-      'logging.googleapis.com/spanId': context.spanId,
-      'logging.googleapis.com/trace_sampled': context.traceSampled
+    ...(context.traceId && {
+      trace_id: context.traceId,
+      span_id: context.spanId,
+      trace_flags: context.traceSampled ? '01' : '00'
     }),
+    ...(isGoogleCloudFormat &&
+      context.traceId && {
+        'logging.googleapis.com/trace': context.traceId,
+        'logging.googleapis.com/spanId': context.spanId,
+        'logging.googleapis.com/trace_sampled': context.traceSampled
+      }),
     ...(userId && {userId, usr: {id: userId}}),
     ...(context.socketId && {socketId: context.socketId}),
     ...(context.sessionId && {sessionId: context.sessionId}),
@@ -156,7 +173,8 @@ export const makeLogRecord = (
         expected: isExpectedError(error)
       }
     }),
-    ...(error &&
+    ...(isGoogleCloudFormat &&
+      error &&
       isFailure && {
         stack_trace: error.stack,
         serviceContext: {service, version},

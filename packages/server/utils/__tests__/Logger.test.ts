@@ -2,6 +2,26 @@ import {GraphQLError} from 'graphql'
 import {Logger, makeLogRecord, stringifyLogRecord} from '../Logger'
 
 const time = new Date('2026-10-27T00:00:00Z')
+const traceContext = {
+  traceId: '4bf92f3577b34da6a3ce929d0e0e4736',
+  spanId: '00f067aa0ba902b7',
+  traceSampled: true
+}
+
+// LOG_FORMAT is read when the module loads, so each format needs a fresh copy
+const loadLogger = (logFormat?: string) => {
+  jest.resetModules()
+  if (logFormat === undefined) {
+    delete process.env.LOG_FORMAT
+  } else {
+    process.env.LOG_FORMAT = logFormat
+  }
+  return require('../Logger') as typeof import('../Logger')
+}
+
+afterAll(() => {
+  delete process.env.LOG_FORMAT
+})
 
 test('an unexpected error carries Error Reporting and Datadog fields plus its request context', () => {
   const error = new TypeError("Cannot read properties of undefined (reading 'id')")
@@ -14,9 +34,7 @@ test('an unexpected error carries Error Reporting and Datadog fields plus its re
       operationName: 'TeamQuery',
       operationKind: 'query',
       variables: {teamId: 'team1', password: 'hunter2'},
-      trace: 'projects/parabol/traces/abc',
-      spanId: 'def',
-      traceSampled: true
+      ...traceContext
     },
     time
   )
@@ -32,8 +50,11 @@ test('an unexpected error carries Error Reporting and Datadog fields plus its re
     operationKind: 'query',
     variables: {teamId: 'team1', password: '******'},
     extras: {path: 'viewer.team'},
-    'logging.googleapis.com/trace': 'projects/parabol/traces/abc',
-    'logging.googleapis.com/spanId': 'def',
+    trace_id: '4bf92f3577b34da6a3ce929d0e0e4736',
+    span_id: '00f067aa0ba902b7',
+    trace_flags: '01',
+    'logging.googleapis.com/trace': '4bf92f3577b34da6a3ce929d0e0e4736',
+    'logging.googleapis.com/spanId': '00f067aa0ba902b7',
     'logging.googleapis.com/trace_sampled': true,
     stack_trace: error.stack,
     serviceContext: {service: 'web'},
@@ -41,6 +62,27 @@ test('an unexpected error carries Error Reporting and Datadog fields plus its re
     error: {kind: 'TypeError', expected: false}
   })
   expect(record.error?.fingerprint).toMatch(/^[0-9a-f]{16}$/)
+})
+
+test('outside GCP, a record keeps the OpenTelemetry trace fields and leaves out the Google ones', () => {
+  const record = loadLogger('otel').makeLogRecord('error', new Error('boom'), [], {
+    userId: 'user1',
+    ...traceContext
+  })
+  expect(record).toMatchObject({
+    trace_id: '4bf92f3577b34da6a3ce929d0e0e4736',
+    span_id: '00f067aa0ba902b7',
+    trace_flags: '01',
+    error: {kind: 'Error', message: 'boom'}
+  })
+  expect(Object.keys(record).filter((key) => key.startsWith('logging.googleapis.com/'))).toEqual([])
+  expect(record).not.toHaveProperty('stack_trace')
+  expect(record).not.toHaveProperty('serviceContext')
+  expect(record).not.toHaveProperty('context')
+})
+
+test('an unknown LOG_FORMAT fails at startup', () => {
+  expect(() => loadLogger('datadog')).toThrow('Invalid LOG_FORMAT: datadog')
 })
 
 test('an expected GraphQLError logged as a warning is flagged and leaves out variables and Error Reporting fields', () => {

@@ -9,7 +9,7 @@ export interface RequestLogContext {
   socketId?: string
   sessionId?: string
   component?: string
-  trace?: string
+  traceId?: string
   spanId?: string
   traceSampled?: boolean
 }
