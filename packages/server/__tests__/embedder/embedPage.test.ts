@@ -39,7 +39,7 @@ const mockEmbedder = {
 }
 
 const sectionText = (name: string) =>
-  `${name} notes cover planning, delivery and follow up for the team this week. `.repeat(40)
+  `${name} notes cover planning, delivery and follow up for the team this week. `.repeat(12)
 
 const doc = (third: string): JSONContent => ({
   type: 'doc',
