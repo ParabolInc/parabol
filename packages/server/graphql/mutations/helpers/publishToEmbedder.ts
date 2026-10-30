@@ -1,3 +1,4 @@
+import {sql} from 'kysely'
 import {activeEmbeddingModelId} from '../../../../embedder/activeEmbeddingModel'
 import type {JobType} from '../../../../embedder/custom'
 import {getEmbedderJobPriority, type JobKind} from '../../../../embedder/getEmbedderJobPriority'
@@ -47,6 +48,8 @@ interface MessageToEmbedderRelatedDiscussions extends BaseMessageToEmbedder {
   jobType: 'relatedDiscussions:start'
   data: RelatedDiscussionsJobData
 }
+
+const PAGE_EMBED_IDLE_DELAY_SECONDS = 60
 
 const IS_EMBEDDER_ENALBED = !!parseInt(process.env.AI_EMBEDDER_WORKERS!)
 
@@ -99,7 +102,10 @@ export async function publishToEmbedder(
       modelId: activeEmbeddingModelId,
       pageId,
       embeddingsMetadataId,
-      jobData: JSON.stringify(data || {})
+      jobData: JSON.stringify(data || {}),
+      runAfter: pageId
+        ? sql`now() + ${sql.lit(PAGE_EMBED_IDLE_DELAY_SECONDS)} * interval '1 second'`
+        : undefined
     })
     .$if(!!pageId, (qb) =>
       qb.onConflict((oc) =>
@@ -109,7 +115,8 @@ export async function publishToEmbedder(
           .where('pageId', 'is not', null)
           .doUpdateSet((eb) => ({
             // wait until they stop updating the document to process the embeddings
-            priority: eb.ref('excluded.priority')
+            priority: eb.ref('excluded.priority'),
+            runAfter: eb.ref('excluded.runAfter')
           }))
       )
     )
