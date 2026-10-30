@@ -50,10 +50,10 @@ type ReportResult {
   teamHealth: ReportTeamHealth
 
   """
-  When the latest meeting of this type that 2 or more people joined started, on any team the viewer can report on,
-  whatever the report's period and filters. Null when none of those teams has held one
+  When the latest meeting of this type, or of any type without one, that 2 or more people joined started, on any team
+  the viewer can report on, whatever the report's period and filters. Null when none of those teams has held one
   """
-  latestMeetingAt(meetingType: MeetingTypeEnum!): DateTime
+  latestMeetingAt(meetingType: MeetingTypeEnum): DateTime
 
   """
   When the latest task was made on any team the viewer can report on, whatever the report's period and filters,

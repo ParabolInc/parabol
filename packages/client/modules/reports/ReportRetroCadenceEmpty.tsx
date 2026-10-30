@@ -17,6 +17,7 @@ interface Props {
 // run one
 const ReportRetroCadenceEmpty = ({isCompact = false}: Props) => (
   <ReportSampleBehind
+    isCompact={isCompact}
     sample={
       <ReportHeatmapView
         spec={SAMPLE_RETRO_CADENCE_SPEC}
@@ -36,7 +37,7 @@ const ReportRetroCadenceEmpty = ({isCompact = false}: Props) => (
           : 'Hold a retrospective with your team, and this heatmap shows how often every team reflects, month by month. The teams behind this are a sample.'
       }
       actionLabel='Start a retro'
-      to={RETRO_DETAILS_URL}
+      action={{to: RETRO_DETAILS_URL}}
       isCompact={isCompact}
     />
   </ReportSampleBehind>

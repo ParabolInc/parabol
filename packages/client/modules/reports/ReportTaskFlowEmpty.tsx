@@ -15,6 +15,7 @@ interface Props {
 // Before any team has made a task, a sample flow shows what the report will look like behind the prompt to add one
 const ReportTaskFlowEmpty = ({isCompact = false}: Props) => (
   <ReportSampleBehind
+    isCompact={isCompact}
     sample={
       <ReportFlowView
         spec={SAMPLE_TASK_FLOW_SPEC}
@@ -32,7 +33,7 @@ const ReportTaskFlowEmpty = ({isCompact = false}: Props) => (
           : 'Add tasks in a retrospective, and this flow shows which meetings your tasks come from and whether they get done. The tasks behind this are a sample.'
       }
       actionLabel='Start a retro'
-      to={RETRO_DETAILS_URL}
+      action={{to: RETRO_DETAILS_URL}}
       isCompact={isCompact}
     />
   </ReportSampleBehind>

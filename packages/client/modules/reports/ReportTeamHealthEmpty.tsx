@@ -20,6 +20,7 @@ interface Props {
 // Before any team has run a check, a sample heatmap shows what the report will look like behind the prompt to run one
 const ReportTeamHealthEmpty = ({orgId, isCompact = false}: Props) => (
   <ReportSampleBehind
+    isCompact={isCompact}
     sample={
       isCompact ? (
         <ReportHeatmapView
@@ -50,7 +51,7 @@ const ReportTeamHealthEmpty = ({orgId, isCompact = false}: Props) => (
           : 'Run it across your organization, and this heatmap shows how every team feels in each category and marks what needs attention. The teams behind this are a sample.'
       }
       actionLabel='Start Team Health'
-      to={TEAM_HEALTH_DETAILS_URL}
+      action={{to: TEAM_HEALTH_DETAILS_URL}}
       isCompact={isCompact}
     />
   </ReportSampleBehind>

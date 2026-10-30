@@ -2,6 +2,7 @@ import dayjs from 'dayjs'
 import type {ReportSpec} from '../../shared/reports/reportCatalog'
 import type {ReportRowTotal} from './reportHeatmapGrid'
 import type {ReportResultRow} from './reportRows'
+import {SAMPLE_MONTHS} from './reportSampleMonths'
 
 // A made-up organization's retrospective cadence over the last 3 months, shown faded behind the prompt to run a first
 // retro: some teams keep a steady rhythm, some slip, one has stopped
@@ -14,12 +15,6 @@ const TEAMS = [
   {id: 'growth', name: 'Growth', retrosByMonth: [1, 0, 0], lastHeldDaysAgo: 71}
 ]
 
-// the month 2 months back, last month, and this month so far
-const MONTHS = [2, 1, 0].map((monthsAgo) => {
-  const start = dayjs().startOf('month').subtract(monthsAgo, 'month')
-  return {value: start.toISOString(), label: start.format('YYYY-MM-DD'), isPartial: monthsAgo === 0}
-})
-
 export const SAMPLE_RETRO_CADENCE_SPEC: ReportSpec = {
   measures: ['MEETINGS'],
   breakdown: [{dimension: 'TEAM'}, {dimension: 'MONTH'}],
@@ -30,7 +25,7 @@ export const SAMPLE_RETRO_CADENCE_SPEC: ReportSpec = {
 }
 
 export const SAMPLE_RETRO_CADENCE_ROWS: ReportResultRow[] = TEAMS.flatMap((team) =>
-  MONTHS.map((month, idx) => ({
+  SAMPLE_MONTHS.map((month, idx) => ({
     keys: [{value: team.id, label: team.name, isPartial: false}, month],
     values: [team.retrosByMonth[idx]!],
     previousValues: null

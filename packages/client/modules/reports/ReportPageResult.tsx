@@ -3,8 +3,12 @@ import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import type {ReportPageResult_organization$key} from '../../__generated__/ReportPageResult_organization.graphql'
 import type {ReportSpec} from '../../shared/reports/reportCatalog'
+import isLoneActiveUserReport from './isLoneActiveUserReport'
+import isMeetingsByTypeSpec from './isMeetingsByTypeSpec'
 import isRetroCadenceSpec from './isRetroCadenceSpec'
 import isTaskFlowSpec from './isTaskFlowSpec'
+import ReportActiveUsersEmpty from './ReportActiveUsersEmpty'
+import ReportMeetingsByTypeEmpty from './ReportMeetingsByTypeEmpty'
 import ReportNotes from './ReportNotes'
 import ReportRetroCadenceEmpty from './ReportRetroCadenceEmpty'
 import ReportTaskFlowEmpty from './ReportTaskFlowEmpty'
@@ -28,6 +32,10 @@ const ReportPageResult = ({organizationRef, orgId, spec}: Props) => {
             latestCheckEndedAt
             ...ReportTeamHealthView_teamHealth
           }
+          rows {
+            values
+          }
+          latestMeetingAt
           latestRetroAt: latestMeetingAt(meetingType: retrospective)
           latestTaskAt
         }
@@ -87,6 +95,10 @@ const ReportPageResult = ({organizationRef, orgId, spec}: Props) => {
           <ReportRetroCadenceEmpty />
         ) : report && !report.latestTaskAt && isTaskFlowSpec(spec) ? (
           <ReportTaskFlowEmpty />
+        ) : report && !report.latestMeetingAt && isMeetingsByTypeSpec(spec) ? (
+          <ReportMeetingsByTypeEmpty />
+        ) : report && isLoneActiveUserReport(spec, report.rows) ? (
+          <ReportActiveUsersEmpty orgId={orgId} />
         ) : report ? (
           <ReportView
             spec={spec}

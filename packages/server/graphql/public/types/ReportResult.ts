@@ -7,7 +7,9 @@ export type {ReportResultSource}
 const ReportResult: ReportResultResolvers = {
   teamHealth: (source) => (isTeamHealthHeatmapSpec(source.spec) ? source : null),
   latestMeetingAt: ({reportableTeamIds}, {meetingType}, {dataLoader}) =>
-    dataLoader.get('latestMeetingAtByTeamIds').load({teamIds: reportableTeamIds, meetingType}),
+    dataLoader
+      .get('latestMeetingAtByTeamIds')
+      .load({teamIds: reportableTeamIds, meetingType: meetingType ?? null}),
   latestTaskAt: ({reportableTeamIds}, _args, {dataLoader}) =>
     dataLoader.get('latestTaskAtByTeamIds').load(reportableTeamIds)
 }

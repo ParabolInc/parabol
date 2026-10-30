@@ -72,7 +72,11 @@ export const starterReportTeamIdsByOrgId = (parent: RootDataLoader) => {
 // When the latest meeting of a type that 2 or more people joined started on any of the teams, whatever the period.
 // Every pinned report asks for the same teams, so they share one lookup
 export const latestMeetingAtByTeamIds = (parent: RootDataLoader) => {
-  return new DataLoader<{teamIds: string[]; meetingType: Meetingtypeenum}, Date | null, string>(
+  return new DataLoader<
+    {teamIds: string[]; meetingType: Meetingtypeenum | null},
+    Date | null,
+    string
+  >(
     async (keys) =>
       Promise.all(
         keys.map(async ({teamIds, meetingType}) => {
@@ -81,7 +85,7 @@ export const latestMeetingAtByTeamIds = (parent: RootDataLoader) => {
             .selectFrom('NewMeeting as m')
             .select('m.createdAt')
             .where('m.teamId', 'in', teamIds)
-            .where('m.meetingType', '=', meetingType)
+            .where((eb) => (meetingType ? eb('m.meetingType', '=', meetingType) : eb.lit(true)))
             .where(({ref}) => hasEnoughAttendees(ref('m.id')))
             .orderBy('m.createdAt', 'desc')
             .limit(1)

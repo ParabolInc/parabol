@@ -833,13 +833,13 @@ describe('meetings', () => {
     ).toEqual([1])
   })
 
-  test('the latest meeting of a type counts only meetings 2 or more people joined, whatever the period', async () => {
+  test('the latest meeting of a type, or of any type, counts only meetings 2 or more people joined, whatever the period', async () => {
     const dataLoader = getNewDataLoader('runReportTest')
     try {
       const latestOf = async (
         orgId: string,
         viewerId: string,
-        meetingType: 'retrospective' | 'action'
+        meetingType: 'retrospective' | 'action' | null
       ) => {
         const {reportableTeamIds} = await report(
           {period: {preset: 'LAST_7_DAYS'}},
@@ -854,6 +854,10 @@ describe('meetings', () => {
       )
       expect(await latestOf(ORG_ID, LEADER, 'action')).toBeNull()
       expect(await latestOf(HEALTH_ORG_ID, 'healthLeader', 'retrospective')).toBeNull()
+      expect((await latestOf(WORK_ORG_ID, WREN, 'retrospective'))?.getTime()).toBe(
+        daysAgo(5).getTime()
+      )
+      expect((await latestOf(WORK_ORG_ID, WREN, null))?.getTime()).toBe(daysAgo(4).getTime())
     } finally {
       dataLoader.dispose()
     }
