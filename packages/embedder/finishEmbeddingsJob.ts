@@ -7,7 +7,7 @@ export const finishEmbeddingsJob = async (jobId: number, db: Kysely<DB> = getKys
   const {numDeletedRows} = await db
     .deleteFrom('EmbeddingsJobQueueV2')
     .where('id', '=', jobId)
-    .where((eb) => eb.or([eb('startAt', 'is', null), eb('runAfter', '<=', eb.ref('startAt'))]))
+    .where((eb) => eb('runAfter', '<=', eb.ref('startAt')))
     .executeTakeFirst()
   if (numDeletedRows > 0n) return
   await db

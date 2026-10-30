@@ -51,10 +51,10 @@ it('pushes the job back when the page is edited again', async () => {
   await publishPageEdit()
   await pg
     .updateTable('EmbeddingsJobQueueV2')
-    .set({runAfter: sql`now() - interval '1 minute'`})
+    .set({runAfter: sql`now() + interval '10 seconds'`})
     .where('pageId', '=', pageId)
     .execute()
-  expect(await delayOf()).toBeLessThan(0)
+  expect(await delayOf()).toBeLessThan(15)
   await publishPageEdit()
   expect(await delayOf()).toBeGreaterThan(55)
 })
