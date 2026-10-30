@@ -12,10 +12,10 @@ it('keeps a chunk that moved', () =>
 it('deletes chunks that disappeared', () =>
   expect(planChunkReuse(rows('A', 'B', 'C'), ['A', 'C'])).toEqual({deleteIds: [101], toEmbed: []}))
 
-it('gives new chunks the lowest free numbers', () =>
+it('gives new chunks numbers no existing row holds', () =>
   expect(planChunkReuse(rows('A', 'B', 'C'), ['A', 'X', 'C'])).toEqual({
     deleteIds: [101],
-    toEmbed: [{chunkIndex: 1, chunkNumber: 1}]
+    toEmbed: [{chunkIndex: 1, chunkNumber: 3}]
   }))
 
 it('keeps duplicate chunks apart', () =>
@@ -27,7 +27,7 @@ it('keeps duplicate chunks apart', () =>
 it('matches the whole embedded text', () =>
   expect(planChunkReuse(rows('Old\n\nbody'), ['New\n\nbody'])).toEqual({
     deleteIds: [100],
-    toEmbed: [{chunkIndex: 0, chunkNumber: 0}]
+    toEmbed: [{chunkIndex: 0, chunkNumber: 1}]
   }))
 
 it('embeds every chunk of a page without rows', () =>

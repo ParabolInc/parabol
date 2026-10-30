@@ -19,16 +19,14 @@ export const planChunkReuse = (
     if (rows) rows.push(row)
     else unclaimed.set(row.embedText, [row])
   }
-  const keptNumbers = new Set<number | null>()
+  const taken = new Set(existing.map(({chunkNumber}) => chunkNumber))
   const newIndexes: number[] = []
   embeddingTexts.forEach((text, chunkIndex) => {
-    const row = unclaimed.get(text)?.shift()
-    if (row) keptNumbers.add(row.chunkNumber)
-    else newIndexes.push(chunkIndex)
+    if (!unclaimed.get(text)?.shift()) newIndexes.push(chunkIndex)
   })
   let chunkNumber = 0
   const toEmbed = newIndexes.map((chunkIndex) => {
-    while (keptNumbers.has(chunkNumber)) chunkNumber++
+    while (taken.has(chunkNumber)) chunkNumber++
     return {chunkIndex, chunkNumber: chunkNumber++}
   })
   return {deleteIds: [...unclaimed.values()].flat().map(({id}) => id), toEmbed}

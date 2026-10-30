@@ -82,9 +82,6 @@ export const embedPage: JobQueueStepRun<EmbedPageData> = async (context) => {
     existingChunks,
     chunks.map(({embeddingText}) => embeddingText)
   )
-  if (deleteIds.length > 0) {
-    await pg.deleteFrom(embeddingModel.pagesTableName).where('id', 'in', deleteIds).execute()
-  }
   const startedAt = Date.now()
   let tokens = 0
   for (const {chunkIndex, chunkNumber} of toEmbed) {
@@ -101,7 +98,6 @@ export const embedPage: JobQueueStepRun<EmbedPageData> = async (context) => {
         .columns(['embedText', 'tsv', 'embedding', 'pageId', 'chunkNumber', 'pageUpdatedAt'])
         .expression((eb) =>
           eb
-            // to avoid passing in chunk twice, we pass it in here, and reference it as val twice below
             .selectFrom(sql`(SELECT ${embeddingText}::text as val)`.as('input'))
             .select([
               sql<string>`val`.as('val'),
@@ -124,6 +120,9 @@ export const embedPage: JobQueueStepRun<EmbedPageData> = async (context) => {
     } catch (e) {
       return new JobQueueError(e as Error)
     }
+  }
+  if (deleteIds.length > 0) {
+    await pg.deleteFrom(embeddingModel.pagesTableName).where('id', 'in', deleteIds).execute()
   }
   await pg
     .updateTable(embeddingModel.pagesTableName)

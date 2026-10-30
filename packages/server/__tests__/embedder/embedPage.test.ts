@@ -371,3 +371,40 @@ it('leaves no rows behind when a page shrinks to one chunk', async () => {
   await run(shrinkingPageId)
   expect(await chunkTexts(shrinkingPageId)).toEqual(['Embed page test\n\nShort now.'])
 })
+
+it('keeps the old rows when an embed fails', async () => {
+  const failingPageId = await insertPageWithContent('b1', doc('Gamma'))
+  await run(failingPageId)
+  const before = await chunkTexts(failingPageId)
+  const renamed = pageDoc('Renamed again', ['Alpha', 'Beta', 'Gamma'])
+  await setContent(failingPageId, renamed)
+  mockEmbedder.getEmbeddingWithTokens.mockClear()
+  mockEmbedder.getEmbeddingWithTokens.mockResolvedValueOnce(
+    new Error('embeddings server timed out')
+  )
+  expect(await run(failingPageId)).toBeInstanceOf(JobQueueError)
+  expect(await chunkTexts(failingPageId)).toEqual(before)
+  mockEmbedder.getEmbeddingWithTokens.mockClear()
+  expect(await run(failingPageId)).not.toBeInstanceOf(JobQueueError)
+  const fresh = chunkPage(renamed).map(({embeddingText}) => embeddingText)
+  expect(mockEmbedder.getEmbeddingWithTokens).toHaveBeenCalledTimes(fresh.length)
+  expect((await chunkTexts(failingPageId)).sort()).toEqual(fresh.sort())
+})
+
+it('adds every chunk when a page grows past one chunk', async () => {
+  const growingPageId = await insertPageWithContent('b2', {
+    type: 'doc',
+    content: [
+      {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'Embed page test'}]},
+      {type: 'paragraph', content: [{type: 'text', text: 'Short now.'}]}
+    ]
+  })
+  await run(growingPageId)
+  await setContent(growingPageId, doc('Gamma'))
+  await run(growingPageId)
+  expect((await chunkTexts(growingPageId)).sort()).toEqual(
+    chunkPage(doc('Gamma'))
+      .map(({embeddingText}) => embeddingText)
+      .sort()
+  )
+})
