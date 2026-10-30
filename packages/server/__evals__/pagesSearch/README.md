@@ -20,7 +20,7 @@ Reseed with `EVAL_RESEED=1` after you change how pages are indexed (`embedPage`,
 
 | Variable | Default | Meaning |
 | --- | --- | --- |
-| `EVAL_SET` | `dev` | `dev` reads `queries.json` and `holdout` reads `holdoutQueries.json`, both on the fixture corpus. `heavy-dev` reads `heavyQueries.json` and `heavy-holdout` reads `heavyHoldoutQueries.json`, both on the heavy-account corpus (see Heavy account corpus) |
+| `EVAL_SET` | `dev` | `dev` reads `queries.json` and `holdout` reads `holdoutQueries.json`, both on the fixture corpus. `heavy-dev` reads `heavyQueries.json`, `heavy-holdout` reads `heavyHoldoutQueries.json` and `heavy-final` reads `heavyFinalQueries.json`, all on the heavy-account corpus (see Heavy account corpus) |
 | `EVAL_MODES` | `fused` | Comma-separated `fused`, `quick` and/or `sweep`. `quick` sends `alpha: 0`. `sweep` is described below |
 | `EVAL_ALPHAS` | `0.25,0.5,0.75` | `sweep` only: the alphas to rank with |
 | `EVAL_FLOORS` | `0.3,0.35,0.4,0.45,0.5` | `sweep` only: the vector similarity floors to rank with |
@@ -79,7 +79,7 @@ The fixture corpus has 47 hand-written pages, like an account in production's to
 - **Read it.** `EVAL_DUMP=1 EVAL_SET=heavy-dev pnpm eval:pagesSearch` writes every page's plain text to `results/heavy-corpus/`. Use it to write or check labels.
 - **Changing it.** The `generateHeavyCorpus` unit test pins a digest of the generated pages. When it fails:
   1. Recheck `heavyQueries.json` against a fresh dump.
-  2. Have someone who doesn't tune ranking recheck `heavyHoldoutQueries.json` the same way, for example an agent that sees only the dump.
+  2. Have someone who doesn't tune ranking recheck `heavyHoldoutQueries.json` and `heavyFinalQueries.json` the same way, for example an agent that sees only the dump.
   3. Reseed with `EVAL_RESEED=1` and record the heavy baseline again.
   4. Update the digest.
 
@@ -100,14 +100,16 @@ A quarter of a heavy account's pages are standups that nobody answered: a header
 - `longDoc` asks for a detail in the second half of a doc longer than 4,000 characters. A unit test checks this for the dev set.
 - `person` names a team member and something they reported.
 
-Both query files follow three conventions:
+Every heavy query file follows three conventions:
 - Routine mentions of ongoing work, like the many standups that say "load testing the new rate limiter", are not graded. The exception is a mention of the same story, incident or blocker the query asks about.
 - A doc that only lists the target's title under "Related documents" gets 1 for title, prefix and title-typo queries, and nothing otherwise.
 - A team's Meeting Summaries page gets 1 for a title query that names one of its meetings.
 
-When a dev query matches a holdout query, the dev query changes. A unit test checks that the two files share no query text.
+When a dev query matches a holdout query, the dev query changes. A unit test checks that no two heavy query files share query text.
 
-**The holdout runs only at gates.** `heavy-holdout` was written by an independent agent that saw only the corpus dump: no code, results or dev queries. Run it once for the candidate and once for master in a PR that changes ranking, report both, and never tune on it. Whoever tunes ranking doesn't read `heavyHoldoutQueries.json`, so its unit test reports problems by query number, never by text.
+**The holdout runs only at gates.** `heavy-holdout` was written by an independent agent that saw only the corpus dump: no code, results or dev queries. Run it once for the candidate and once for master in a PR that changes ranking, report both, and never tune on it. Whoever tunes ranking doesn't read either holdout file, so their unit tests report problems by query number, never by text.
+
+**The final holdout waits for the re-embed.** `heavy-final` was written the same way after `heavy-holdout` had been run at eight gates, and its author never saw the other two query files either. It has 100 queries: title 13, prefix 9, body 16, paraphrase 14, typo 10, table 7, longDoc 10, person 11 and noAnswer 10, the mix `heavy-holdout`'s author was asked for, scaled by 1.25. Nothing runs it before Group B's final gate (B8). There, run it once for master and once for the candidate, read only the overall rows, and never tune on it. Until then, ranking PRs gate on `heavy-holdout`.
 
 **Validity.** A heavy run is a valid baseline when `errors` is 0, no `fused` query fell back to keyword results, and `unindexed` lists exactly `doc-q4-planning-draft`. That page has only a title, and the language gate reads the title as Javanese. The first seed embeds about 500,000 characters, which took 28 minutes on a laptop. Later runs take seconds.
 
