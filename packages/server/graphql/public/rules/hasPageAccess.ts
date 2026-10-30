@@ -8,31 +8,35 @@ import {cacheByDotPath, getResolverDotPath, type ResolverDotPath} from './getRes
 
 export const PAGE_ROLES = ['owner', 'editor', 'commenter', 'viewer'] as const
 
-export const hasPageAccess = <T>(dotPath: ResolverDotPath<T>, roleRequired: Pageroleenum) =>
-  rule(`hasPageAccess-${roleRequired}`, {cache: cacheByDotPath(dotPath)})(
-    async (source, args, context: GQLContext, info: GraphQLResolveInfo) => {
-      const pageId = getResolverDotPath(dotPath, source, args)
-      if (!pageId) {
-        // may access the page if it doesn't exist. e.g. a parentPage where parentPageId is null
-        return true
-      }
-      const {authToken, dataLoader} = context
-      const viewerId = getUserId(authToken)
-      const dbPageId = dotPath.startsWith('source') ? pageId : CipherId.fromClient(pageId)[0]
-      const userRole = await dataLoader
-        .get('pageAccessByPageIdUserId')
-        .load({pageId: dbPageId, userId: viewerId})
-      if (!userRole || PAGE_ROLES.indexOf(roleRequired) < PAGE_ROLES.indexOf(userRole)) {
-        return new GraphQLError(
-          `Insufficient permission. User role: ${userRole || 'None'} Role required: ${roleRequired}`
-        )
-      }
-      if (info.operation.operation === 'mutation') {
-        dataLoader.get('pageAccessByPageIdUserId').clearAll()
-      }
-      if (context.resourceGrants && !(await context.resourceGrants.hasPage(dbPageId))) {
-        return new GraphQLError(`PAT does not grant access to this page`)
-      }
+export const hasPageAccess = <T>(
+  dotPath: ResolverDotPath<T>,
+  roleRequired: Pageroleenum,
+  // ignore the public link, e.g. for what anyone with the link shouldn't see
+  {ignorePublicLink = false} = {}
+) =>
+  rule(`hasPageAccess-${roleRequired}${ignorePublicLink ? '-granted' : ''}`, {
+    cache: cacheByDotPath(dotPath)
+  })(async (source, args, context: GQLContext, info: GraphQLResolveInfo) => {
+    const pageId = getResolverDotPath(dotPath, source, args)
+    if (!pageId) {
+      // may access the page if it doesn't exist. e.g. a parentPage where parentPageId is null
       return true
     }
-  )
+    const {authToken, dataLoader} = context
+    const viewerId = getUserId(authToken)
+    const dbPageId = dotPath.startsWith('source') ? pageId : CipherId.fromClient(pageId)[0]
+    const loaderName = ignorePublicLink ? 'pageGrantByPageIdUserId' : 'pageAccessByPageIdUserId'
+    const userRole = await dataLoader.get(loaderName).load({pageId: dbPageId, userId: viewerId})
+    if (!userRole || PAGE_ROLES.indexOf(roleRequired) < PAGE_ROLES.indexOf(userRole)) {
+      return new GraphQLError(
+        `Insufficient permission. User role: ${userRole || 'None'} Role required: ${roleRequired}`
+      )
+    }
+    if (info.operation.operation === 'mutation') {
+      dataLoader.get(loaderName).clearAll()
+    }
+    if (context.resourceGrants && !(await context.resourceGrants.hasPage(dbPageId))) {
+      return new GraphQLError(`PAT does not grant access to this page`)
+    }
+    return true
+  })

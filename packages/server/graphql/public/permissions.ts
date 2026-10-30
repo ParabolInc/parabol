@@ -24,6 +24,7 @@ import {isViewerBillingLeader} from './rules/isViewerBillingLeader'
 import {isViewerOnOrg} from './rules/isViewerOnOrg'
 import {isViewerTeamLead} from './rules/isViewerTeamLead'
 import rateLimit from './rules/rateLimit'
+import {sharesOrgWithViewer} from './rules/sharesOrgWithViewer'
 
 type Wildcard = {
   '*': ShieldRule
@@ -40,6 +41,9 @@ export type PermissionMap<T> = {
 }
 
 const isUserSelf = isUserViewer<'User.id'>('source.id')
+const isOnUserOrg = redactUnless(
+  or(isSuperUser, isUserSelf, sharesOrgWithViewer<'User.id'>('source.id'))
+)
 const isOnTeamOrg = redactUnless(
   or(isSuperUser, isTeamMember<'Team.id'>('source.id'), isViewerOnOrg<'Team.orgId'>('source.orgId'))
 )
@@ -638,7 +642,8 @@ const permissionMap: PermissionMap<Resolvers> = {
   AzureDevOpsIntegration: {
     workItems: isUserViewer<'AzureDevOpsIntegration.workItems'>('source.userId')
   },
-  // Another user's User object is a public profile; everything else is for the user themself
+  // Another user's User object is a public profile, plus their presence for anyone in one of their orgs.
+  // Everything else is for the user themself
   User: {
     '*': redactUnless(or(isSuperUser, isUserSelf)),
     archivedTasks: and(isUserSelf, isTeamMember<'User.archivedTasks'>('args.teamId')),
@@ -652,9 +657,9 @@ const permissionMap: PermissionMap<Resolvers> = {
     freeCustomPokerTemplatesRemaining: isUserSelf,
     freeCustomStandupTemplatesRemaining: isUserSelf,
     id: allow,
-    inactive: allow,
-    isConnected: allow,
-    lastSeenAt: allow,
+    inactive: isOnUserOrg,
+    isConnected: isOnUserOrg,
+    lastSeenAt: isOnUserOrg,
     meeting: and(isUserSelf, isTeamMemberOfMeeting<'User.meeting'>('args.meetingId')),
     organization: or(
       isSuperUser,
@@ -691,14 +696,23 @@ const permissionMap: PermissionMap<Resolvers> = {
     teamId: allow,
     title: allow
   },
+  // Who has access is for those granted access. Anyone with a public link only sees what the link grants
   PageAccess: {
-    guests: redactUnless(hasPageAccess<'PageAccess.guests'>('source.id', 'viewer')),
-    organizations: redactUnless(hasPageAccess<'PageAccess.organizations'>('source.id', 'viewer')),
+    guests: redactUnless(
+      hasPageAccess<'PageAccess.guests'>('source.id', 'viewer', {ignorePublicLink: true})
+    ),
+    organizations: redactUnless(
+      hasPageAccess<'PageAccess.organizations'>('source.id', 'viewer', {ignorePublicLink: true})
+    ),
     pendingRequests: redactUnless(
       hasPageAccess<'PageAccess.pendingRequests'>('source.id', 'owner')
     ),
-    teams: redactUnless(hasPageAccess<'PageAccess.teams'>('source.id', 'viewer')),
-    users: redactUnless(hasPageAccess<'PageAccess.users'>('source.id', 'viewer'))
+    teams: redactUnless(
+      hasPageAccess<'PageAccess.teams'>('source.id', 'viewer', {ignorePublicLink: true})
+    ),
+    users: redactUnless(
+      hasPageAccess<'PageAccess.users'>('source.id', 'viewer', {ignorePublicLink: true})
+    )
   }
 }
 

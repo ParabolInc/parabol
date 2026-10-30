@@ -8,16 +8,9 @@ export type PageAccessSource = {
 }
 
 const PageAccess: PageAccessResolvers = {
-  viewer: async ({id}, _args, {authToken}) => {
+  viewer: ({id}, _args, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
-    const pg = getKysely()
-    const access = await pg
-      .selectFrom('PageAccess')
-      .select('role')
-      .where('pageId', '=', id)
-      .where('userId', '=', viewerId)
-      .executeTakeFirst()
-    return access?.role ?? null
+    return dataLoader.get('pageGrantByPageIdUserId').load({pageId: id, userId: viewerId})
   },
   public: async ({id}) => {
     const pg = getKysely()
