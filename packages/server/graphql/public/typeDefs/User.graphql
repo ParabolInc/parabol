@@ -485,21 +485,6 @@ type User {
   ): MeetingTemplate @scope(name: TEMPLATES_READ)
 
   """
-  A query to parse/validate SAML metadata for a given domain
-  """
-  parseSAMLMetadata(
-    """
-    URL of a blob of XML from the IdP describing how to handle authentication
-    """
-    metadataURL: String!
-
-    """
-    The name of the company, used as a slug in signon URLs
-    """
-    domain: String!
-  ): ParseSAMLMetadataPayload! @scope(name: ORGS_READ)
-
-  """
   The number of free custom retro templates remaining
   """
   freeCustomRetroTemplatesRemaining: Int!

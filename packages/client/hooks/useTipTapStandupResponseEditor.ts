@@ -1,6 +1,7 @@
 import Mention from '@tiptap/extension-mention'
-import {useEditor} from '@tiptap/react'
+import {type JSONContent, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
+import {useMemo} from 'react'
 import {standupBlockExtensions} from '../components/TeamPrompt/standupEditorExtensions'
 import {LoomExtension} from '../components/TipTapEditor/LoomExtension'
 import {TiptapLinkExtension} from '../components/TipTapEditor/TiptapLinkExtension'
@@ -10,14 +11,14 @@ import {MentionTaskTag} from '../utils/MentionTaskTag'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import {tiptapTagConfig} from '../utils/tiptapTagConfig'
 import useAtmosphere from './useAtmosphere'
-import {useTipTapEditorContent} from './useTipTapEditorContent'
+import {useTipTapEditorSync} from './useTipTapEditorSync'
 
 export const useTipTapStandupResponseEditor = (content: string, editorWidth: number) => {
   const atmosphere = useAtmosphere()
-  const [contentJSON, editorRef] = useTipTapEditorContent(content)
+  const contentJSON = useMemo(() => JSON.parse(content) as JSONContent, [content])
   const [commit] = useUploadUserAsset()
 
-  editorRef.current = useEditor(
+  const editor = useEditor(
     {
       content: contentJSON,
       extensions: [
@@ -31,7 +32,8 @@ export const useTipTapStandupResponseEditor = (content: string, editorWidth: num
       ],
       editable: false
     },
-    [contentJSON]
+    []
   )
-  return {editor: editorRef.current}
+  useTipTapEditorSync(editor, contentJSON, false)
+  return {editor}
 }

@@ -344,6 +344,11 @@ const permissionMap: PermissionMap<Resolvers> = {
       'args.promptId',
       'templatePrompts'
     ),
+    requestSAMLMetadataChange: hasOrgRole<'Mutation.requestSAMLMetadataChange'>(
+      'args.samlId',
+      'ORG_ADMIN',
+      'saml'
+    ),
     resetPassword: rateLimit({perMinute: 10, perHour: 100}),
     resetReflectionGroups:
       isTeamMemberOfMeeting<'Mutation.resetReflectionGroups'>('args.meetingId'),

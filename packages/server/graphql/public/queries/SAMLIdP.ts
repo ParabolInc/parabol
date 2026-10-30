@@ -3,7 +3,7 @@ import type {QueryResolvers} from '../resolverTypes'
 
 export interface SSORelayState {
   isInvited?: boolean
-  metadataURL?: string
+  metadataChangeId?: string
 }
 
 const SAMLIdP: QueryResolvers['SAMLIdP'] = async (_source, {email, isInvited}, {dataLoader}) => {

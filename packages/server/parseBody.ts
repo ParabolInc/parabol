@@ -14,20 +14,22 @@ const parseBody = <T = Json>({
 }) => {
   return new Promise<T | null>((resolve) => {
     let buffer: Buffer
-    let byteLength = 0
+    let isTooLarge = false
     res.onData((ab, isLast) => {
-      byteLength += ab.byteLength
-      if (byteLength > maxBytes) {
-        resolve(null)
-        return
+      if (!isTooLarge) {
+        const curBuf = Buffer.from(ab)
+        buffer = buffer
+          ? Buffer.concat([buffer, curBuf])
+          : isLast
+            ? curBuf
+            : Buffer.concat([curBuf])
+        isTooLarge = buffer.length > maxBytes
       }
-      const curBuf = Buffer.from(ab)
-      buffer = buffer
-        ? Buffer.concat([buffer as any, curBuf])
-        : isLast
-          ? curBuf
-          : Buffer.concat([curBuf as any])
       if (isLast) {
+        if (isTooLarge) {
+          resolve(null)
+          return
+        }
         try {
           resolve(parser(buffer))
         } catch {

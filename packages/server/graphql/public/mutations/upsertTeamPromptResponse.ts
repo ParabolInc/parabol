@@ -8,6 +8,7 @@ import {isStandupResponseTooLong} from '../../../../client/shared/tiptap/standup
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
+import {stripUnsafeLinks} from '../../../utils/stripUnsafeLinks'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import type {MutationResolvers} from '../resolverTypes'
 import publishNotification from './helpers/publishNotification'
@@ -39,7 +40,7 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
   let isEmpty: boolean
   let plaintextContent: string
   try {
-    doc = JSON.parse(content)
+    doc = stripUnsafeLinks(JSON.parse(content))
     isEmpty = isEmptyTipTapDoc(doc)
     plaintextContent = generateText(doc, serverTipTapExtensions).trim()
   } catch {
