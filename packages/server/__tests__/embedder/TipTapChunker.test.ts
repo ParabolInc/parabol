@@ -192,3 +192,17 @@ describe('on the heavy corpus', () => {
     }
   })
 })
+
+it('chunks a page whose title is longer than a chunk', () => {
+  const chunks = chunk([heading(1, 'Title '.repeat(600)), paragraph(prose('long title', 40))])
+  expect(chunks.length).toBeGreaterThan(0)
+  expect(chunks.every(({embeddingText}) => estimateTokens(embeddingText) <= 512)).toBe(true)
+})
+
+it('chunks a table whose header row is longer than a chunk', () => {
+  const header = ['Column '.repeat(400), 'Notes']
+  const rows = Array.from({length: 50}, (_, index) => [`Row ${index}`, prose('cell', 1)])
+  const chunks = chunk([heading(1, 'Wide table'), table(header, rows)])
+  expect(chunks.length).toBeGreaterThan(0)
+  expect(chunks.every(({embeddingText}) => estimateTokens(embeddingText) <= 512)).toBe(true)
+})

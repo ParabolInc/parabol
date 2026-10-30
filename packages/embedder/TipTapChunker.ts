@@ -7,6 +7,8 @@ import type {ISO6391} from './iso6393To1'
 const TARGET_TOKENS = 384
 const MAX_TOKENS = 512
 const CHARS_PER_TOKEN = 3.7
+const MAX_HEADING_CHARS = 100
+const MIN_BUDGET_TOKENS = 64
 const CJK_CHARACTER = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/gu
 const LIST_TYPES = new Set(['bulletList', 'orderedList', 'taskList'])
 // a standup summary's table view repeats its response blocks
@@ -28,6 +30,13 @@ interface Section {
   path: string[]
   blocks: Block[]
 }
+
+const headerOf = (title: string, path: string[]) =>
+  [
+    ...new Set(
+      [title, ...path].filter(Boolean).map((heading) => heading.slice(0, MAX_HEADING_CHARS))
+    )
+  ].join(' > ')
 
 const pack = (pieces: string[], target: number) => {
   const groups: string[] = []
@@ -119,7 +128,10 @@ export class TipTapChunker {
       if (estimateTokens(part) > maxTokens) {
         if (current.trim()) groups.push(current.trim())
         current = ''
-        groups.push(...this.group(splitPart(part), maxTokens, '', splitPart))
+        const smaller = splitPart(part)
+        groups.push(
+          ...(smaller.length > 1 ? this.group(smaller, maxTokens, '', splitPart) : [part])
+        )
         continue
       }
       const next = current ? `${current}${join}${part}` : part
@@ -151,6 +163,9 @@ export class TipTapChunker {
       return this.group(lines, maxTokens, '\n', (line) => this.splitText(line, maxTokens))
     }
     const [header = '', ...rows] = lines
+    if (estimateTokens(header) > maxTokens / 2) {
+      return this.group(lines, maxTokens, '\n', (line) => this.splitText(line, maxTokens))
+    }
     const rowBudget = maxTokens - estimateTokens(`${header}\n`)
     return this.group(rows, rowBudget, '\n', (row) => this.splitText(row, rowBudget)).map(
       (rowGroup) => `${header}\n${rowGroup}`
@@ -158,7 +173,7 @@ export class TipTapChunker {
   }
 
   private toChunk(title: string, headingPath: string[], text: string) {
-    const header = [...new Set([title, ...headingPath].filter(Boolean))].join(' > ')
+    const header = headerOf(title, headingPath)
     const embeddingText = header ? `${header}\n\n${text}` : text
     return {
       globalTitle: title,
@@ -181,8 +196,11 @@ export class TipTapChunker {
     const singleChunk = this.toChunk(title, [], pageText)
     if (singleChunk.tokenCount <= MAX_TOKENS) return [singleChunk]
     return sections.flatMap(({path, blocks}) => {
-      const header = [...new Set([title, ...path].filter(Boolean))].join(' > ')
-      const target = Math.min(TARGET_TOKENS, MAX_TOKENS - estimateTokens(`${header}\n\n`) - 1)
+      const header = headerOf(title, path)
+      const target = Math.max(
+        MIN_BUDGET_TOKENS,
+        Math.min(TARGET_TOKENS, MAX_TOKENS - estimateTokens(`${header}\n\n`) - 1)
+      )
       const pieces = blocks.flatMap((block) =>
         estimateTokens(block.text) <= target ? [block.text] : this.split(block, target)
       )
