@@ -7,9 +7,7 @@ import {
   SAMPLE_RETRO_CADENCE_ROWS,
   SAMPLE_RETRO_CADENCE_SPEC
 } from './reportRetroCadenceSample'
-
-// the retrospective a new team starts with
-const RETRO_DETAILS_URL = '/activity-library/details/workingStuckTemplate'
+import {RETRO_DETAILS_URL} from './retroDetailsUrl'
 
 interface Props {
   isCompact?: boolean

@@ -54,4 +54,10 @@ type ReportResult {
   whatever the report's period and filters. Null when none of those teams has held one
   """
   latestMeetingAt(meetingType: MeetingTypeEnum!): DateTime
+
+  """
+  When the latest task was made on any team the viewer can report on, whatever the report's period and filters,
+  leaving out the stories Sprint Poker brings in. Null when none of those teams has made one
+  """
+  latestTaskAt: DateTime
 }

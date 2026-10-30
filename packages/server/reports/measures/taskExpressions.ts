@@ -33,6 +33,19 @@ export const selectTasks = () =>
 
 export const selectTaskReadings = (readAt: Date[]) => selectTasks().crossJoin(readingSteps(readAt))
 
+// Sprint Poker pulls each story in as a task that's archived right away
+export const isPokerImportTask = () => {
+  const eb = expressionBuilder(selectTasks())
+  return eb.fn.coalesce(
+    eb.and([
+      eb('tm.meetingType', '=', 'poker'),
+      eb('t.integrationHash', 'is not', null),
+      eb(eb.val('archived'), '=', eb.fn.any('t.tags'))
+    ]),
+    eb.lit(false)
+  )
+}
+
 export const taskSource = ({teamIds, ownTeamIds}: ReportMeasureQuery) => {
   const eb = expressionBuilder(selectTasks())
   const template = templateOf(
@@ -52,15 +65,7 @@ export const taskSource = ({teamIds, ownTeamIds}: ReportMeasureQuery) => {
   return {
     eb,
     isInTeams: isAnyOf(eb.ref('t.teamId'), teamIds),
-    // Sprint Poker pulls each story in as a task that's archived right away
-    isPokerImport: eb.fn.coalesce(
-      eb.and([
-        eb('tm.meetingType', '=', 'poker'),
-        eb('t.integrationHash', 'is not', null),
-        eb(eb.val('archived'), '=', eb.fn.any('t.tags'))
-      ]),
-      eb.lit(false)
-    ),
+    isPokerImport: isPokerImportTask(),
     // doneAt only exists for tasks finished after it was added, so older ones fall back to the best date there is
     doneDate: eb.fn.coalesce('t.doneAt', 'dm.endedAt', 't.updatedAt'),
     breakdown: {

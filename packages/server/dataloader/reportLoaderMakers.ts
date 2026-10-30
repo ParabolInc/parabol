@@ -4,8 +4,10 @@ import getKysely from '../postgres/getKysely'
 import {hasEnoughAttendees} from '../postgres/teamActivityCriteria'
 import type {Meetingtypeenum} from '../postgres/types/pg'
 import reportMeasures from '../reports/measures/reportMeasures'
+import {isPokerImportTask, selectTasks} from '../reports/measures/taskExpressions'
 import type {OrgStructure} from '../reports/orgStructure'
 import type {ReportMeasureQuery, ReportMeasureResult} from '../reports/reportMeasureTypes'
+import {isAnyOf} from '../reports/reportQueries'
 import type RootDataLoader from './RootDataLoader'
 
 const STARTER_TEAM_COUNT = 2
@@ -83,6 +85,26 @@ export const latestMeetingAtByTeamIds = (parent: RootDataLoader) => {
             .where(({ref}) => hasEnoughAttendees(ref('m.id')))
             .orderBy('m.createdAt', 'desc')
             .limit(1)
+            .executeTakeFirst()
+          return latest?.createdAt ?? null
+        })
+      ),
+    {...parent.dataLoaderOptions, cacheKeyFn: (key) => JSON.stringify(key)}
+  )
+}
+
+// Leaves out the stories Sprint Poker brings in, which the task measures never count
+export const latestTaskAtByTeamIds = (parent: RootDataLoader) => {
+  return new DataLoader<string[], Date | null, string>(
+    async (keys) =>
+      Promise.all(
+        keys.map(async (teamIds) => {
+          if (teamIds.length === 0) return null
+          const latest = await selectTasks()
+            .select(({fn}) => fn.max('t.createdAt').as('createdAt'))
+            .where((eb) =>
+              eb.and([isAnyOf(eb.ref('t.teamId'), teamIds), eb.not(isPokerImportTask())])
+            )
             .executeTakeFirst()
           return latest?.createdAt ?? null
         })

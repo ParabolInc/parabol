@@ -4,8 +4,10 @@ import {useFragment} from 'react-relay'
 import {Link} from 'react-router'
 import type {ReportCard_pin$key} from '../../__generated__/ReportCard_pin.graphql'
 import isRetroCadenceSpec from './isRetroCadenceSpec'
+import isTaskFlowSpec from './isTaskFlowSpec'
 import ReportCardMenu from './ReportCardMenu'
 import ReportRetroCadenceEmpty from './ReportRetroCadenceEmpty'
+import ReportTaskFlowEmpty from './ReportTaskFlowEmpty'
 import ReportTeamHealthEmpty from './ReportTeamHealthEmpty'
 import ReportView from './ReportView'
 import {toReportPinPath} from './reportPaths'
@@ -39,6 +41,7 @@ const ReportCard = ({pinRef, orgId, period, index, pinCount, isLeader}: Props) =
             latestCheckEndedAt
           }
           latestRetroAt: latestMeetingAt(meetingType: retrospective)
+          latestTaskAt
         }
       }
     `,
@@ -72,6 +75,8 @@ const ReportCard = ({pinRef, orgId, period, index, pinCount, isLeader}: Props) =
           <ReportTeamHealthEmpty orgId={orgId} isCompact />
         ) : spec && !report.latestRetroAt && isRetroCadenceSpec(spec) ? (
           <ReportRetroCadenceEmpty isCompact />
+        ) : spec && !report.latestTaskAt && isTaskFlowSpec(spec) ? (
+          <ReportTaskFlowEmpty isCompact />
         ) : spec ? (
           <ReportView spec={spec} resultRef={report} isCompact />
         ) : (

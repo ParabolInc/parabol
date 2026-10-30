@@ -887,6 +887,23 @@ describe('tasks', () => {
     })
   })
 
+  test('the latest task is the newest on any team the viewer can report on, whatever the period', async () => {
+    const dataLoader = getNewDataLoader('runReportTest')
+    try {
+      const latestOf = async (orgId: string, viewerId: string) => {
+        const {reportableTeamIds} = await report(
+          {period: {preset: 'LAST_7_DAYS'}},
+          {orgId, viewerId}
+        )
+        return dataLoader.get('latestTaskAtByTeamIds').load(reportableTeamIds)
+      }
+      expect((await latestOf(ORG_ID, LEADER))?.getTime()).toBe(daysAgo(2).getTime())
+      expect(await latestOf(HEALTH_ORG_ID, 'healthLeader')).toBeNull()
+    } finally {
+      dataLoader.dispose()
+    }
+  })
+
   test('pushed tasks include Sprint Poker imports', async () => {
     const result = await report({
       measures: ['TASKS_PUSHED'],
