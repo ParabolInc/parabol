@@ -646,3 +646,36 @@ A misspelled word used to match nothing, so "whiteboad" found no page.
 - **The fixes cost most of the holdout gain.** Before them, the gain was 0.015 (quick) and 0.018 (fused), with Recall@20 up 0.007 in fused ranking. The fixes were chosen on dev evidence and committed before the second run was read, and nothing was re-tuned on it. The dev sets have no typos in words shorter than 5 letters, so they can't price the 5-character rule. Adding some to `heavy-dev` is the way to tune it.
 - **What was read.** Only overall rows. The local holdout results were scrubbed down to those rows.
 - **Gate runs so far.** `heavy-holdout` has had twelve; the two here each scored both lists at both thresholds.
+
+## Search text for vectors (B1, 2026-10-30)
+
+The chunker used to embed each block's Markdown. That carried each standup response as raw TipTap JSON inside an attribute, plus avatar URLs, ids and insight attributes: the embedded text was 2.02× the page's plain text. It now embeds each block's search text (`getSearchText`), which is what `generateText` shows a reader, with these changes:
+- Tables become one line per row (`cell | cell`), keeping mentions and line breaks inside cells.
+- Images become their alt text, and embeds their titles.
+- Response and task content is serialized the same way.
+- A block that fails to serialize gives nothing.
+- A standup summary's table view, an exact copy of its responses, is left out. It's matched by its `Author | Created at | Content` header, on pages with response blocks. Retro, check-in and team health table views stay, because they hold content found nowhere else.
+
+The heavy corpus, counted with TEI's `/tokenize`:
+
+| | Before | After |
+| --- | ---: | ---: |
+| Chunks | 399 | 257 |
+| Characters embedded | 1,015,243 | 341,294 |
+| Tokens | 260,487 | 88,338 (−66%) |
+
+Fused ranking at production settings, with the eval pages reseeded. The quick list doesn't change, because keyword search reads page text, not chunks:
+
+| | `heavy-dev` nDCG@10 | Recall@20 | `noAnswerResults` | `dev` nDCG@10 | Recall@20 | `noAnswerResults` |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Before | 0.826 | 0.881 | 13.67 | 0.905 | 0.960 | 11.63 |
+| After | 0.826 | 0.872 | 14.33 | 0.908 | 0.978 | 16.25 |
+
+- **The rule fixed before the run wasn't met.** It asked for three things: better vectors by similarity alone, at most 1 more filler page per unanswerable query, and half the tokens. It also said not to start B2 unless the vectors improved.
+  - Tokens now fall by two thirds.
+  - Similarity alone (alpha 1, floor 0) falls from 0.234 to 0.178 on `heavy-dev`, and from 0.238 to 0.207 on `dev`.
+  - Recall@20 dips 0.009 on `heavy-dev`.
+  - `dev` gains 4.6 filler pages: the 0.4 floor lets more clean-text pages through, and B8 re-tunes it.
+- **Similarity alone tracks hub pages more than quality.** A few pages sit in almost every query's top 5. Before, `doc-analytics-vendor-evaluation` was in 55 of 58 `heavy-dev` lists and `release-checklist` in 73 of 91 `dev` lists. Every change to text or chunk size reshuffles them, and gains from separate changes don't add up. Hub share, the top-5 slots taken by the five most frequent pages, falls from 0.74 to 0.66 on `heavy-dev` and from 0.71 to 0.69 on `dev`.
+- **Why it goes ahead anyway.** B1's goals hold: no markup or ids in vectors, and two thirds fewer tokens for the re-embed. Fused ranking holds on nDCG@10.
+- **Not yet protected.** `embedPage` still converts the whole page to text before chunking, so a block whose stored JSON is broken stops the page there. B2 reworks that step.

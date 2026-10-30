@@ -1,12 +1,10 @@
-import {Editor} from '@tiptap/core'
-import {MarkdownManager} from '@tiptap/markdown'
-import {serverTipTapExtensions} from 'parabol-client/shared/tiptap/serverTipTapExtensions'
-import {
-  type TipTapContentNode,
-  type TipTapSerializedContent,
-  type TipTapTableRowNode
-} from '../client/shared/tiptap/TipTapSerializedContent.d'
+import type {TipTapSerializedContent} from '../client/shared/tiptap/TipTapSerializedContent.d'
+import {teamPromptSummaryTableHeaders} from '../server/graphql/mutations/helpers/summaryPage/teamPromptSummaryTableHeaders'
+import {getSearchText} from './getSearchText'
 import type {ISO6391} from './iso6393To1'
+
+// a standup summary's table view repeats its response blocks
+const RESPONSE_TABLE_HEADER = teamPromptSummaryTableHeaders.join(' | ')
 
 interface ParagraphFragment {
   text: string
@@ -52,11 +50,6 @@ export class TipTapChunker {
   private maxTokenOverlap: number
   private language: ISO6391
   private globalTitle = ''
-  private editor = new Editor({
-    element: undefined,
-    content: {type: 'doc', content: []},
-    extensions: serverTipTapExtensions
-  })
   constructor(options?: Options) {
     this.modelMaxTokens = options?.modelMaxTokens ?? 32768
     this.maxTokens = options?.maxTokens ?? 1024
@@ -64,11 +57,6 @@ export class TipTapChunker {
     this.minTokenOverlap = options?.minTokenOverlap ?? this.maxTokens * 0.125
     this.maxTokenOverlap = options?.maxTokenOverlap ?? this.maxTokens * 0.5
     this.language = options?.language ?? 'en'
-  }
-
-  private nodeToMarkdown(node: TipTapContentNode | TipTapTableRowNode<any>): string {
-    const markdown = this.editor.markdown as MarkdownManager
-    return markdown.renderNodeToMarkdown(node)
   }
 
   private estimateTokens(text: string) {
@@ -176,6 +164,7 @@ export class TipTapChunker {
     const sections: HeadingSection[] = []
     let currentPath: string[] = []
     const {content} = doc
+    const hasResponses = content.some((node) => node.type === 'responseBlock')
     content.forEach((node) => {
       if (node.type === 'heading') {
         const headingText = node.content?.[0]?.text.trim().slice(0, 500)
@@ -188,11 +177,12 @@ export class TipTapChunker {
         currentPath = currentPath.slice(0, node.attrs.level)
         return
       }
-      const markdownText = this.nodeToMarkdown(node).slice(0, this.modelMaxTokens)
-      const tokenCount = this.estimateTokens(markdownText)
+      const searchText = getSearchText(node).slice(0, this.modelMaxTokens)
+      if (hasResponses && searchText.split('\n').includes(RESPONSE_TABLE_HEADER)) return
+      const tokenCount = this.estimateTokens(searchText)
       if (tokenCount > this.maxTokens && node.type !== 'table') {
         // Edge case: a single paragraph is too large. Break it up with a sliding window
-        const fragments = this.generateFragments(markdownText)
+        const fragments = this.generateFragments(searchText)
         fragments.forEach((fragment) => {
           sections.push({
             text: fragment.text,
@@ -205,7 +195,7 @@ export class TipTapChunker {
         // Large tables need the table header repeated in each chunk in order to provide context
         // This would be a lot of work, so instead we just put the whole table in 1 chunk max
         // This probably works out better anyways, since a table is homogenous data
-        sections.push({text: markdownText, tokenCount, headingPath: [...currentPath]})
+        sections.push({text: searchText, tokenCount, headingPath: [...currentPath]})
       }
     })
     return sections
