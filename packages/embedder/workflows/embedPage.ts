@@ -13,6 +13,7 @@ import {getTSV, type TSVLanguage} from '../getSupportedLanguages'
 import {numberVectorToString} from '../indexing/numberVectorToString'
 import {inferLanguage} from '../inferLanguage'
 import {JobQueueError} from '../JobQueueError'
+import {planChunkReuse} from '../planChunkReuse'
 import {TipTapChunker} from '../TipTapChunker'
 
 export interface EmbedPageData {
@@ -48,7 +49,7 @@ export const embedPage: JobQueueStepRun<EmbedPageData> = async (context) => {
     pg.selectFrom('Page').select(['yDoc', 'updatedAt']).where('id', '=', pageId).executeTakeFirst(),
     pg
       .selectFrom(embeddingModel.pagesTableName)
-      .select(['chunkNumber', 'embedText', 'pageUpdatedAt'])
+      .select(['id', 'chunkNumber', 'embedText', 'pageUpdatedAt'])
       .where('pageId', '=', pageId)
       .orderBy('chunkNumber', 'asc')
       .execute()
@@ -77,18 +78,19 @@ export const embedPage: JobQueueStepRun<EmbedPageData> = async (context) => {
   const tsvLanguage = getTSV(language) ?? 'simple'
   const chunker = new TipTapChunker({language})
   const chunks = chunker.chunk(content)
+  const {deleteIds, toEmbed} = planChunkReuse(
+    existingChunks,
+    chunks.map(({embeddingText}) => embeddingText)
+  )
   const startedAt = Date.now()
-  let embeddedChunks = 0
   let tokens = 0
-  for (const [chunkNumber, chunk] of chunks.entries()) {
-    if (existingChunks[chunkNumber]?.embedText === chunk.text) continue
-    const {text, globalTitle, headingPath, embeddingText} = chunk
+  for (const {chunkIndex, chunkNumber} of toEmbed) {
+    const {text, globalTitle, headingPath, embeddingText} = chunks[chunkIndex]!
     const embedded = await embeddingModel.getEmbeddingWithTokens(embeddingText)
     if (embedded instanceof Error) {
       return new JobQueueError(`unable to get embeddings from ${modelId}: ${embedded.message}`)
     }
     const embeddingVector = embedded.embedding
-    embeddedChunks++
     tokens += embedded.tokens
     try {
       await pg
@@ -96,8 +98,7 @@ export const embedPage: JobQueueStepRun<EmbedPageData> = async (context) => {
         .columns(['embedText', 'tsv', 'embedding', 'pageId', 'chunkNumber', 'pageUpdatedAt'])
         .expression((eb) =>
           eb
-            // to avoid passing in chunk twice, we pass it in here, and reference it as val twice below
-            .selectFrom(sql`(SELECT ${text}::text as val)`.as('input'))
+            .selectFrom(sql`(SELECT ${embeddingText}::text as val)`.as('input'))
             .select([
               sql<string>`val`.as('val'),
               weightedTsvector(tsvLanguage, globalTitle, headingPath.join(' '), text).as('tsv'),
@@ -120,14 +121,8 @@ export const embedPage: JobQueueStepRun<EmbedPageData> = async (context) => {
       return new JobQueueError(e as Error)
     }
   }
-  const existingChunkCount = existingChunks?.length ?? 0
-  const deleteOldChunks = chunks.length < existingChunkCount
-  if (deleteOldChunks) {
-    await pg
-      .deleteFrom(embeddingModel.pagesTableName)
-      .where('pageId', '=', pageId)
-      .where('chunkNumber', '>', chunks.length - 1)
-      .execute()
+  if (deleteIds.length > 0) {
+    await pg.deleteFrom(embeddingModel.pagesTableName).where('id', 'in', deleteIds).execute()
   }
   await pg
     .updateTable(embeddingModel.pagesTableName)
@@ -136,7 +131,7 @@ export const embedPage: JobQueueStepRun<EmbedPageData> = async (context) => {
     .where('pageUpdatedAt', '<>', page.updatedAt)
     .execute()
   Logger.log(
-    `embedPage ${pageId}: embedded ${embeddedChunks} of ${chunks.length} chunks, ${tokens} tokens, ${Date.now() - startedAt} ms`
+    `embedPage ${pageId}: embedded ${toEmbed.length} of ${chunks.length} chunks, ${tokens} tokens, ${Date.now() - startedAt} ms`
   )
   return data
 }

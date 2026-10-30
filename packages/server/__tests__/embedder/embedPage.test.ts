@@ -1,11 +1,15 @@
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import type {JSONContent} from '@tiptap/core'
+import {sql} from 'kysely'
 import {serverTipTapExtensions} from 'parabol-client/shared/tiptap/serverTipTapExtensions'
+import type {TipTapSerializedContent} from 'parabol-client/shared/tiptap/TipTapSerializedContent'
 import {encodeStateAsUpdate} from 'yjs'
 import {activeEmbeddingModelId} from '../../../embedder/activeEmbeddingModel'
 import {getEmbeddingsPagesTableName} from '../../../embedder/getEmbeddingsTableName'
 import {primeSupportedLanguages} from '../../../embedder/getSupportedLanguages'
+import {numberVectorToString} from '../../../embedder/indexing/numberVectorToString'
 import {JobQueueError} from '../../../embedder/JobQueueError'
+import {TipTapChunker} from '../../../embedder/TipTapChunker'
 import {embedPage} from '../../../embedder/workflows/embedPage'
 import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
 import generateUID from '../../generateUID'
@@ -41,16 +45,21 @@ const mockEmbedder = {
 const sectionText = (name: string) =>
   `${name} notes cover planning, delivery and follow up for the team this week. `.repeat(12)
 
-const doc = (third: string): JSONContent => ({
+const pageDoc = (title: string, sections: string[]): JSONContent => ({
   type: 'doc',
   content: [
-    {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'Embed page test'}]},
-    ...['Alpha', 'Beta', third].flatMap((name) => [
+    {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: title}]},
+    ...sections.flatMap((name) => [
       {type: 'heading', attrs: {level: 2}, content: [{type: 'text', text: name}]},
       {type: 'paragraph', content: [{type: 'text', text: sectionText(name)}]}
     ])
   ]
 })
+
+const doc = (third: string) => pageDoc('Embed page test', ['Alpha', 'Beta', third])
+
+const chunkPage = (content: JSONContent) =>
+  new TipTapChunker({language: 'en'}).chunk(content as TipTapSerializedContent)
 
 const toYDoc = (content: JSONContent) =>
   Buffer.from(
@@ -102,6 +111,21 @@ const chunkTexts = async (targetPageId = pageId) => {
     .execute()
   return rows.map(({embedText}) => embedText)
 }
+
+const chunkRows = (targetPageId: number) =>
+  pg
+    .selectFrom(mockEmbedder.pagesTableName)
+    .select(['id', 'embedText'])
+    .where('pageId', '=', targetPageId)
+    .orderBy('chunkNumber')
+    .execute()
+
+const setContent = (targetPageId: number, content: JSONContent) =>
+  pg
+    .updateTable('Page')
+    .set({yDoc: toYDoc(content)})
+    .where('id', '=', targetPageId)
+    .execute()
 
 const chunkStamps = async (targetPageId = pageId) => {
   const rows = await pg
@@ -272,4 +296,115 @@ it('embeds a page with one block whose stored content is broken', async () => {
   })
   expect(await run(brokenPageId)).not.toBeInstanceOf(JobQueueError)
   expect(await chunkTexts(brokenPageId)).toEqual([expect.stringContaining('Alpha notes')])
+})
+
+it('embeds only the section inserted at the top', async () => {
+  const editedPageId = await insertPageWithContent('a7', doc('Gamma'))
+  await run(editedPageId)
+  const before = await chunkRows(editedPageId)
+  const edited = pageDoc('Embed page test', ['Zeta', 'Alpha', 'Beta', 'Gamma'])
+  await setContent(editedPageId, edited)
+  mockEmbedder.getEmbeddingWithTokens.mockClear()
+  expect(await run(editedPageId)).not.toBeInstanceOf(JobQueueError)
+  expect(mockEmbedder.getEmbeddingWithTokens).toHaveBeenCalledTimes(1)
+  const after = await chunkRows(editedPageId)
+  expect(after.map(({embedText}) => embedText).sort()).toEqual(
+    chunkPage(edited)
+      .map(({embeddingText}) => embeddingText)
+      .sort()
+  )
+  expect(after.filter(({id}) => before.some((row) => row.id === id))).toHaveLength(3)
+})
+
+it('re-embeds the chunks of a renamed title', async () => {
+  const renamedPageId = await insertPageWithContent('a8', doc('Gamma'))
+  await run(renamedPageId)
+  await setContent(renamedPageId, pageDoc('Renamed page', ['Alpha', 'Beta', 'Gamma']))
+  mockEmbedder.getEmbeddingWithTokens.mockClear()
+  await run(renamedPageId)
+  expect(mockEmbedder.getEmbeddingWithTokens).toHaveBeenCalledTimes(3)
+  expect(await chunkTexts(renamedPageId)).toEqual([
+    expect.stringMatching(/^Renamed page > Alpha\n/),
+    expect.stringMatching(/^Renamed page > Beta\n/),
+    expect.stringMatching(/^Renamed page > Gamma\n/)
+  ])
+})
+
+it('re-embeds rows written before headers were stored, once', async () => {
+  const legacyPageId = await insertPageWithContent('a9', doc('Gamma'))
+  const legacyChunks = chunkPage(doc('Gamma'))
+  await pg
+    .insertInto(mockEmbedder.pagesTableName)
+    .values(
+      legacyChunks.map(({text}, chunkNumber) => ({
+        embedText: text,
+        tsv: sql<string>`to_tsvector('simple', ${text})`,
+        embedding: numberVectorToString(unitVector),
+        pageId: legacyPageId,
+        chunkNumber,
+        pageUpdatedAt: new Date(0)
+      }))
+    )
+    .execute()
+  mockEmbedder.getEmbeddingWithTokens.mockClear()
+  await run(legacyPageId)
+  expect(mockEmbedder.getEmbeddingWithTokens).toHaveBeenCalledTimes(3)
+  expect(await chunkTexts(legacyPageId)).toEqual(
+    legacyChunks.map(({embeddingText}) => embeddingText)
+  )
+  await setContent(legacyPageId, doc('Delta'))
+  mockEmbedder.getEmbeddingWithTokens.mockClear()
+  await run(legacyPageId)
+  expect(mockEmbedder.getEmbeddingWithTokens).toHaveBeenCalledTimes(1)
+})
+
+it('leaves no rows behind when a page shrinks to one chunk', async () => {
+  const shrinkingPageId = await insertPageWithContent('b0', doc('Gamma'))
+  await run(shrinkingPageId)
+  await setContent(shrinkingPageId, {
+    type: 'doc',
+    content: [
+      {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'Embed page test'}]},
+      {type: 'paragraph', content: [{type: 'text', text: 'Short now.'}]}
+    ]
+  })
+  await run(shrinkingPageId)
+  expect(await chunkTexts(shrinkingPageId)).toEqual(['Embed page test\n\nShort now.'])
+})
+
+it('keeps the old rows when an embed fails', async () => {
+  const failingPageId = await insertPageWithContent('b1', doc('Gamma'))
+  await run(failingPageId)
+  const before = await chunkTexts(failingPageId)
+  const renamed = pageDoc('Renamed again', ['Alpha', 'Beta', 'Gamma'])
+  await setContent(failingPageId, renamed)
+  mockEmbedder.getEmbeddingWithTokens.mockClear()
+  mockEmbedder.getEmbeddingWithTokens.mockResolvedValueOnce(
+    new Error('embeddings server timed out')
+  )
+  expect(await run(failingPageId)).toBeInstanceOf(JobQueueError)
+  expect(await chunkTexts(failingPageId)).toEqual(before)
+  mockEmbedder.getEmbeddingWithTokens.mockClear()
+  expect(await run(failingPageId)).not.toBeInstanceOf(JobQueueError)
+  const fresh = chunkPage(renamed).map(({embeddingText}) => embeddingText)
+  expect(mockEmbedder.getEmbeddingWithTokens).toHaveBeenCalledTimes(fresh.length)
+  expect((await chunkTexts(failingPageId)).sort()).toEqual(fresh.sort())
+})
+
+it('adds every chunk when a page grows past one chunk', async () => {
+  const growingPageId = await insertPageWithContent('b2', {
+    type: 'doc',
+    content: [
+      {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'Embed page test'}]},
+      {type: 'paragraph', content: [{type: 'text', text: 'Short now.'}]}
+    ]
+  })
+  await run(growingPageId)
+  await setContent(growingPageId, doc('Gamma'))
+  await run(growingPageId)
+  expect((await chunkTexts(growingPageId)).sort()).toEqual(
+    chunkPage(doc('Gamma'))
+      .map(({embeddingText}) => embeddingText)
+      .sort()
+  )
 })
