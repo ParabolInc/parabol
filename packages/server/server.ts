@@ -4,6 +4,7 @@ import {assetProxyHandler} from './assetProxyHandler'
 import stripeWebhookHandler from './billing/stripeWebhookHandler'
 import {buildProxyHandler} from './buildProxyHandler'
 import {stopChronos} from './chronos'
+import {clientErrorsHandler} from './clientErrorsHandler'
 import createSSR from './createSSR'
 import {disconnectAllSockets} from './disconnectAllSockets'
 import {setIsShuttingDown} from './getIsShuttingDown'
@@ -76,6 +77,7 @@ const app = uws
   .post('/stripe', stripeWebhookHandler)
   .post('/mattermost', mattermostWebhookHandler)
   .post('/zoom', zoomWebhookHandler)
+  .post('/client-errors', clientErrorsHandler)
   .post('/graphql', async (res, req) => {
     // uWS deletes the req before the first await, so we must read it now
     const ip = uwsGetIP(res, req)

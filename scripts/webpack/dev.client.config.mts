@@ -74,7 +74,8 @@ export const devServer: DevServerConfiguration = {
       'saml/',
       'scim',
       'oauth',
-      'zoom'
+      'zoom',
+      'client-errors'
     ].map((name) => ({
       context: [`/${name}`],
       target: `http://localhost:${SOCKET_PORT}`

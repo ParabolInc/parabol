@@ -131,7 +131,9 @@ export const makeLogRecord = (
   )
   const isFailure = Levels[level] <= Levels.error
   const messageParams = params.filter((param) => param !== error && !isLogOptions(param))
-  const {service, env, version} = logIdentity
+  const service = context.service ?? logIdentity.service
+  const version = context.version ?? logIdentity.version
+  const {env} = logIdentity
   return {
     time: time.toISOString(),
     severity: Severity[level],

@@ -2,6 +2,7 @@ import {Component, type ErrorInfo, type ReactNode} from 'react'
 import type Atmosphere from '~/Atmosphere'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {isIgnoredError, isNotSignedInError} from '../utils/errorFilters'
+import reportClientError from '../utils/reportClientError'
 import ErrorComponent from './ErrorComponent/ErrorComponent'
 
 interface Props {
@@ -62,6 +63,7 @@ class ErrorBoundary extends Component<Props & {atmosphere: Atmosphere}, State> {
     })
 
     const {componentStack} = errorInfo
+    reportClientError(error, {componentStack, eventId})
     import('@datadog/browser-logs')
       .then(({datadogLogs}) => {
         datadogLogs.logger.error(error.message, {viewerId, email, componentStack, eventId}, error)
