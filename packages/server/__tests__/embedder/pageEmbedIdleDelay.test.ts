@@ -1,4 +1,6 @@
 import {sql} from 'kysely'
+import {claimEmbeddingsJob} from '../../../embedder/claimEmbeddingsJob'
+import {finishEmbeddingsJob} from '../../../embedder/finishEmbeddingsJob'
 import getKysely from '../../postgres/getKysely'
 
 jest.mock('../../utils/getRedis', () => ({
@@ -43,18 +45,57 @@ afterAll(async () => {
 it('waits for edits to settle before embedding a page', async () => {
   await publishPageEdit()
   const delay = await delayOf()
-  expect(delay).toBeGreaterThan(55)
-  expect(delay).toBeLessThan(65)
+  expect(delay).toBeGreaterThan(13)
+  expect(delay).toBeLessThan(17)
 })
 
 it('pushes the job back when the page is edited again', async () => {
   await publishPageEdit()
   await pg
     .updateTable('EmbeddingsJobQueueV2')
-    .set({runAfter: sql`now() + interval '10 seconds'`})
+    .set({runAfter: sql`now() + interval '5 seconds'`})
     .where('pageId', '=', pageId)
     .execute()
-  expect(await delayOf()).toBeLessThan(15)
+  expect(await delayOf()).toBeLessThan(6)
   await publishPageEdit()
-  expect(await delayOf()).toBeGreaterThan(55)
+  expect(await delayOf()).toBeGreaterThan(13)
+})
+
+it('embeds a page that keeps changing within 2 minutes of its first save', async () => {
+  await publishPageEdit()
+  await pg
+    .updateTable('EmbeddingsJobQueueV2')
+    .set({updatedAt: sql`now() - interval '110 seconds'`})
+    .where('pageId', '=', pageId)
+    .execute()
+  await publishPageEdit()
+  await publishPageEdit()
+  const delay = await delayOf()
+  expect(delay).toBeGreaterThan(9)
+  expect(delay).toBeLessThan(11)
+})
+
+it('queues the page again when it is saved during an embed that started after the cap', async () => {
+  await publishPageEdit()
+  const job = await pg.transaction().execute(async (trx) => {
+    await trx
+      .updateTable('EmbeddingsJobQueueV2')
+      .set({
+        priority: -2_000_000_000,
+        runAfter: sql`now() - interval '1 second'`,
+        updatedAt: sql`now() - interval '200 seconds'`
+      })
+      .where('pageId', '=', pageId)
+      .execute()
+    return claimEmbeddingsJob(trx)
+  })
+  expect(job?.pageId).toBe(pageId)
+  await publishPageEdit()
+  await finishEmbeddingsJob(job!.id)
+  const queued = await pg
+    .selectFrom('EmbeddingsJobQueueV2')
+    .select('state')
+    .where('pageId', '=', pageId)
+    .executeTakeFirst()
+  expect(queued).toEqual({state: 'queued'})
 })

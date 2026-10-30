@@ -11,7 +11,7 @@ use cases. It does so by:
 5. New jobs to add metadata are sent via valkey streams from the GQL Executor
 6. If embedding fails, the application increments the `retryCount` and increases the `retryAfter` if a retry is desired
 7. If a job gets stalled, a process that runs every 5 minutes will look for jobs older than 5 minutes and reset them to `queued`
-8. A page job waits until 60 seconds after the page's last save (`runAfter`). Each save pushes it back, so a page is embedded once its edits settle. A save that lands while the page is being embedded queues the job again when it finishes. If that run fails instead, the page waits for its next save
+8. A page job waits until 15 seconds after the page's last save (`runAfter`). Each save pushes it back, so a page is embedded once its edits settle, but it becomes due no later than 2 minutes after the job was queued or last started, so a page someone keeps typing in is still embedded while they type. Jobs that are due still run in priority order. A save that lands while the page is being embedded queues the job again when it finishes. If that run fails instead, the page waits for its next save
 9. Each page job logs `embedPage <pageId>: embedded <n> of <m> chunks, <tokens> tokens, <ms> ms`, and the service logs `Tokens per second` next to `Jobs per second` whenever either rate changes (it checks every 10 seconds)
 
 ## Prerequisites

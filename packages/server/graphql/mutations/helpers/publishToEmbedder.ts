@@ -49,7 +49,8 @@ interface MessageToEmbedderRelatedDiscussions extends BaseMessageToEmbedder {
   data: RelatedDiscussionsJobData
 }
 
-const PAGE_EMBED_IDLE_DELAY_SECONDS = 60
+const PAGE_EMBED_IDLE_DELAY_SECONDS = 15
+const PAGE_EMBED_MAX_DELAY_SECONDS = 120
 
 const IS_EMBEDDER_ENALBED = !!parseInt(process.env.AI_EMBEDDER_WORKERS!)
 
@@ -114,9 +115,9 @@ export async function publishToEmbedder(
           // necessary to use the unique constraint idx we created
           .where('pageId', 'is not', null)
           .doUpdateSet((eb) => ({
-            // wait until they stop updating the document to process the embeddings
             priority: eb.ref('excluded.priority'),
-            runAfter: eb.ref('excluded.runAfter')
+            // each save pushes the job back, but no further than 2 minutes after it was queued or last claimed
+            runAfter: sql<Date>`least(${eb.ref('excluded.runAfter')}, ${eb.ref('EmbeddingsJobQueueV2.updatedAt')} + ${sql.lit(PAGE_EMBED_MAX_DELAY_SECONDS)} * interval '1 second')`
           }))
       )
     )
