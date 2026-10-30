@@ -29,6 +29,7 @@
     "@types/mousetrap": "^1.6.2",
     "@types/stripe-v2": "^2.0.1",
     "debug": "^4.1.1",
+    "happy-dom": "^20.8.9",
     "strict-event-emitter-types": "^2.0.0"
   },
   "dependencies": {
