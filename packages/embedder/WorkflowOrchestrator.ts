@@ -5,6 +5,7 @@ import {getNewDataLoader} from '../server/dataloader/getNewDataLoader'
 import type {ModelId} from './ai_models/modelIdDefinitions'
 import type {JobType, StepResult, Workflow} from './custom'
 import {EmbedderJobType} from './EmbedderJobType'
+import {finishEmbeddingsJob} from './finishEmbeddingsJob'
 import {FAILED_JOB_PENALTY} from './getEmbedderJobPriority'
 import {JobQueueError} from './JobQueueError'
 import {embedMetadata} from './workflows/embedMetadata'
@@ -101,8 +102,7 @@ export class WorkflowOrchestrator {
   }
 
   private finishJob = async (jobId: number) => {
-    const pg = getKysely()
-    await pg.deleteFrom('EmbeddingsJobQueueV2').where('id', '=', jobId).executeTakeFirstOrThrow()
+    await finishEmbeddingsJob(jobId)
   }
 
   private addNextJob = async (jobType: JobType, priority: number, data: StepResult) => {
