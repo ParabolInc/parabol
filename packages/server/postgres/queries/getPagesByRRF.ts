@@ -16,7 +16,8 @@ export const VECTOR_MIN_PAGE_BYTES = 200
 export const FUSED_KEYWORD_MATCHING: KeywordMatching = {
   dropStopWords: true,
   anyWordFallbackBelow: 20,
-  anyWordMinShare: 0.5
+  anyWordMinShare: 0.5,
+  titleTypoSimilarity: 0
 }
 
 export const getPagesByRRF = async ({
@@ -33,7 +34,8 @@ export const getPagesByRRF = async ({
   vectorMinBytes = VECTOR_MIN_PAGE_BYTES,
   dropStopWords = FUSED_KEYWORD_MATCHING.dropStopWords,
   anyWordFallbackBelow = FUSED_KEYWORD_MATCHING.anyWordFallbackBelow,
-  anyWordMinShare = FUSED_KEYWORD_MATCHING.anyWordMinShare
+  anyWordMinShare = FUSED_KEYWORD_MATCHING.anyWordMinShare,
+  titleTypoSimilarity = FUSED_KEYWORD_MATCHING.titleTypoSimilarity
 }: PageKeywordSearchParams &
   Partial<KeywordMatching> & {
     queryVector: Float32Array
@@ -53,7 +55,8 @@ export const getPagesByRRF = async ({
     dateRange,
     dropStopWords,
     anyWordFallbackBelow,
-    anyWordMinShare
+    anyWordMinShare,
+    titleTypoSimilarity
   })
     .with('PageBestChunk', (qb) =>
       qb
