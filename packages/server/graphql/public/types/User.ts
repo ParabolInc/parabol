@@ -1,4 +1,3 @@
-import base64url from 'base64url'
 import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import ms from 'ms'
@@ -32,7 +31,6 @@ import type {FeatureFlagName} from '../../../utils/featureFlags'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import getMonthlyStreak from '../../../utils/getMonthlyStreak'
 import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
-import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
 import getUserDetail from '../../../utils/getUserDetail'
 import {getUserSocketCount} from '../../../utils/getUserSocketCount'
 import logError from '../../../utils/logError'
@@ -49,7 +47,6 @@ import {invoices} from '../fields/invoices'
 import {pageInsights} from '../fields/pageInsights'
 import {pages} from '../fields/pages'
 import {search} from '../fields/search'
-import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
 import type {ReqResolvers} from './ReqResolvers'
 
 const SIMILARITY_THRESHOLD = 0.5
@@ -853,20 +850,6 @@ const User: ReqResolvers<'User'> = {
       .filter(({similarity}) => similarity >= floor)
       .slice(0, TEMPLATE_SEARCH_LIMIT)
       .map(({activity}) => activity)
-  },
-  parseSAMLMetadata: async (_source, {metadataURL, domain}) => {
-    const metadata = await getSSOMetadataFromURL(metadataURL)
-    if (metadata instanceof Error) return {error: {message: metadata.message}}
-    const baseUrl = getSignOnURL(metadata, domain)
-    if (baseUrl instanceof Error) {
-      return {error: {message: baseUrl.message}}
-    }
-    // append the new metadataURL to the RelayState
-    // The IdP will forward this to us and our SAMLHandler/loginSAML will use this instead of what's in the DB
-    const relayState = base64url.encode(JSON.stringify({metadataURL}))
-    const urlObj = new URL(baseUrl)
-    urlObj.searchParams.append('RelayState', relayState)
-    return {url: urlObj.toString()}
   },
   samlIdP: async ({email}, _args, {dataLoader}) => {
     return getSAMLURLFromEmail(email, dataLoader)
