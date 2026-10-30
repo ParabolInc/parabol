@@ -4,7 +4,7 @@ import type {AllPrimaryLoaders} from '../../../dataloader/RootDataLoader'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import type {GQLContext} from '../../graphql'
-import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
+import {cacheByDotPath, getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
 export const isUserViewer = <T>(
   dotPath: ResolverDotPath<T>,
@@ -12,7 +12,7 @@ export const isUserViewer = <T>(
   // the field on the loaded subject that holds the owning userId (e.g. 'createdBy' for authored rows)
   ownerField: 'userId' | 'createdBy' = 'userId'
 ) =>
-  rule(`isUserViewer-${dotPath}-${dataLoaderName ?? ''}-${ownerField}`, {cache: 'strict'})(
+  rule(`isUserViewer-${dataLoaderName ?? ''}-${ownerField}`, {cache: cacheByDotPath(dotPath)})(
     async (source, args, {authToken, dataLoader}: GQLContext) => {
       const argVar = getResolverDotPath(dotPath, source, args)
       let userId: string = argVar

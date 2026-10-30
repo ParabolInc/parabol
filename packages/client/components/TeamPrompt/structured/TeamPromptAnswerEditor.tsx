@@ -18,7 +18,7 @@ interface Props {
   onFocusChange?: (promptId: string, isFocused: boolean) => void
   bubbleMenuPlacement?: 'top' | 'bottom'
   editorClassName?: string
-  editorRef: React.MutableRefObject<Editor | null>
+  editorRef: React.RefObject<Editor | null>
 }
 
 const TeamPromptAnswerEditor = (props: Props) => {

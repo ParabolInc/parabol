@@ -110,10 +110,10 @@ export const handleUpdatePage = (
       id: string
       teamId: string | null | undefined
       parentPageId: string | null | undefined
-      sortOrder: string
-      userSortOrder: string
+      sortOrder: string | null | undefined
+      userSortOrder: string | null | undefined
     }
-    pageSection: PageSectionEnum
+    pageSection: PageSectionEnum | null | undefined
   }>,
   {store}: {store: RecordSourceSelectorProxy}
 ) => {
@@ -130,12 +130,13 @@ export const handleUpdatePage = (
     isPrivate: sourceIsPrivate
   } = oldRecord || {}
   const sourceConns = getSourceConns(connParent, sourceParentPageId, sourceTeamId, sourceIsPrivate)
-  const targetTeamId = page.getValue('teamId')
-  const targetParentPageId = page.getValue('parentPageId')
-  const targetConn = getTargetConn(connParent, section, targetParentPageId, targetTeamId)
   sourceConns.forEach((conn) => {
     safeRemoveNodeFromConn(pageId, conn)
   })
+  if (!section) return
+  const targetTeamId = page.getValue('teamId')
+  const targetParentPageId = page.getValue('parentPageId')
+  const targetConn = getTargetConn(connParent, section, targetParentPageId, targetTeamId)
   const sortOrder = section === 'shared' ? 'userSortOrder' : 'sortOrder'
   safePutNodeInConn(targetConn, page, store, sortOrder, true)
 }

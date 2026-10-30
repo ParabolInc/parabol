@@ -229,12 +229,26 @@ const initDemoTeamMember = (
       atlassian: {
         id: 'demoTeamAtlassianIntegration',
         isActive: true,
-        accessToken: '123'
+        accessToken: '123',
+        scope: []
       },
       github: {
         id: 'demoTeamGitHubIntegration',
         isActive: true,
-        accessToken: '123'
+        accessToken: '123',
+        api: null
+      },
+      gcal: null,
+      jiraServer: {
+        id: 'demoTeamJiraServerIntegration',
+        auth: null,
+        sharedProviders: []
+      },
+      linear: {
+        id: 'demoTeamLinearIntegration',
+        auth: null,
+        cloudProvider: null,
+        api: null
       },
       gitlab: {
         id: 'demoTeamGitLabIntegration',
@@ -265,7 +279,9 @@ const initDemoTeamMember = (
           isActive: true,
           provider: demoMattermostProvider
         },
-        sharedProviders: []
+        isActive: false,
+        sharedProviders: [],
+        teamNotificationSettings: null
       },
       msTeams: {
         id: 'demoMsTeamsIntegration',
@@ -273,7 +289,9 @@ const initDemoTeamMember = (
           id: 'demoMsTeamsAuth',
           isActive: true,
           provider: demoMsTeamsProvider
-        }
+        },
+        isActive: false,
+        teamNotificationSettings: null
       },
       slack: initSlackAuth(userId)
     },
@@ -324,8 +342,8 @@ const initDemoOrg = () => {
     hasSuggestGroupsFlag: false,
     hasZoomFlag: false,
     tierLimitExceededAt: null,
-    useAI: true
-    // viewerOrganizationUser
+    useAI: true,
+    viewerOrganizationUser: null
   } as const
 }
 
@@ -349,7 +367,12 @@ const initDemoTeam = (
     teamId: demoTeamId,
     organization,
     meetingSettings: initMeetingSettings(),
-    teamMembers
+    teamMembers,
+    tasks: {edges: [], pageInfo: {endCursor: null, hasNextPage: false}},
+    qualAIMeetingsCount: 0,
+    autoAssignFacilitator: false,
+    facilitatorRotation: [],
+    viewerTeamMember: null
   }
 }
 
@@ -541,7 +564,16 @@ const initNewMeeting = (
     name: 'Retro Meeting',
     organization,
     meetingMembers,
+    meetingSeries: null,
     nextAutoGroupThreshold: null,
+    prevMeeting: null,
+    scheduledEndTime: null,
+    parabolInspirationItems: [],
+    githubInspirationItems: [],
+    jiraInspirationItems: [],
+    gcalInspirationItems: [],
+    linearInspirationItems: [],
+    azureDevOpsInspirationItems: [],
     viewerMeetingMember,
     reflectionGroups: [] as any[],
     // The demo has no server to generate suggestions, so the hover outline & modal stay inert
@@ -549,6 +581,7 @@ const initNewMeeting = (
     votesRemaining: teamMembers.length * 5,
     phases: initPhases() as any[],
     summarySentAt: null,
+    summaryPageId: null,
     summary: `The team are feeling the strain of too many meetings and over-packed sprints, which is stifling creativity, especially for the interns and junior staff. Clarifying processes, reducing unproductive group chats, and giving everyone more space to share ideas should help.`,
     totalVotes: MeetingSettingsThreshold.RETROSPECTIVE_TOTAL_VOTES_DEFAULT,
     maxVotesPerGroup: MeetingSettingsThreshold.RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT,

@@ -45,7 +45,7 @@ interface Props {
   enableSlashCommands?: boolean
   bubbleMenuPlacement?: 'top' | 'bottom'
   className?: string
-  editorRef?: React.MutableRefObject<Editor | null>
+  editorRef?: React.RefObject<Editor | null>
 }
 
 const PromptResponseEditor = (props: Props) => {

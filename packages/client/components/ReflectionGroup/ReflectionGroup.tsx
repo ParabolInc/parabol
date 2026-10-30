@@ -28,7 +28,7 @@ export const getCardStackPadding = (count: number) => {
 }
 
 interface Props {
-  phaseRef: RefObject<HTMLDivElement>
+  phaseRef: RefObject<HTMLDivElement | null>
   meetingRef: ReflectionGroup_meeting$key
   onHoverReflection?: (reflectionId: string | null) => void
   /** Merges every currently-matched group (similarity === 1) into this one. See GroupingKanban. */

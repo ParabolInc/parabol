@@ -7,7 +7,7 @@ import {useRef, useState} from 'react'
  */
 const useTimedState = <T = string>(timeout = 5000) => {
   const [state, setState] = useState<T>()
-  const timer = useRef<ReturnType<typeof setTimeout>>()
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
   const setTimedState = (value: T | undefined = undefined) => {
     clearTimeout(timer.current)
     setState(value)

@@ -1,4 +1,4 @@
-import {type MutableRefObject, useCallback, useEffect, useMemo, useRef} from 'react'
+import {type RefObject, useCallback, useEffect, useMemo, useRef} from 'react'
 import {commitLocalUpdate} from 'react-relay'
 import type {GroupingKanban_meeting$data} from '~/__generated__/GroupingKanban_meeting.graphql'
 import {Times} from '~/types/constEnums'
@@ -8,10 +8,10 @@ import useAtmosphere from './useAtmosphere'
 
 const useSpotlightSimulatedDrag = (
   meeting: GroupingKanban_meeting$data,
-  dragIdRef: MutableRefObject<string | undefined>
+  dragIdRef: RefObject<string | undefined>
 ) => {
   const atmosphere = useAtmosphere()
-  const reflectionIdRef = useRef<string>()
+  const reflectionIdRef = useRef<string>(undefined)
   const timeoutRef = useRef(0)
   const {id: meetingId, spotlightGroup, reflectionGroups, spotlightSearchQuery} = meeting
   const reflectionsCount = useMemo(

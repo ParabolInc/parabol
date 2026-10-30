@@ -5,8 +5,6 @@ import isTeamHealthSummaryLoading from '../../../utils/isTeamHealthSummaryLoadin
 import type {DataLoaderWorker} from '../../graphql'
 import getTeamHealthResultScore from '../../mutations/helpers/getTeamHealthResultScore'
 import type {TeamHealthResultStageResolvers} from '../resolverTypes'
-import DiscussionThreadStage from './DiscussionThreadStage'
-import NewMeetingStage from './NewMeetingStage'
 
 export type TeamHealthResultStageSource = TeamHealthResultStageDB & {
   meetingId: string
@@ -35,12 +33,6 @@ const getCategorySummary = async (
 
 const TeamHealthResultStage: TeamHealthResultStageResolvers = {
   __isTypeOf: ({phaseType}) => phaseType === 'TEAM_HEALTH_RESULT',
-  // the interfaces' resolvers, named here so the team-only rules in permissions.ts wrap them. A rule on a field the
-  // type doesn't resolve itself wraps the default resolver before interface resolvers are inherited
-  meeting: NewMeetingStage.meeting,
-  phase: NewMeetingStage.phase,
-  readyUserIds: NewMeetingStage.readyUserIds,
-  discussion: DiscussionThreadStage.discussion,
   // the phases JSON snapshots the raw question id
   question: ({questionId}, _args, {dataLoader}) => {
     return dataLoader.get('teamHealthQuestions').loadNonNull(questionId)

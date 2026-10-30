@@ -3,7 +3,7 @@ directive @defer on FRAGMENT_SPREAD
 """
 The user account profile
 """
-type User implements UserPartial {
+type User {
   """
   The userId provided by us
   """
@@ -184,9 +184,10 @@ type User implements UserPartial {
   preferredName: String!
 
   """
-  The last day the user connected via websocket or navigated to a common area
+  The last day the user connected via websocket or navigated to a common area. Null unless the viewer is the
+  user or shares an organization with them, like inactive and isConnected
   """
-  lastSeenAt: DateTime!
+  lastSeenAt: DateTime
 
   """
   The meeting member associated with this user, if a meeting is currently in progress

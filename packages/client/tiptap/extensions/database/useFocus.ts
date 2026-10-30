@@ -248,7 +248,9 @@ export const useFocus = (props: Props) => {
   }, [ref.current])
 
   const focusProps = {
-    ref: <T extends HTMLElement>(r: T | null) => (ref.current = r),
+    ref: <T extends HTMLElement>(r: T | null) => {
+      ref.current = r
+    },
     onKeyDown,
     onFocus,
     tabIndex: isFocused ? 0 : -1

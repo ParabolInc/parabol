@@ -37,7 +37,7 @@ interface Props {
 
 const GenericAuthentication = (props: Props) => {
   const {goToPage, invitationToken, page, teamName} = props
-  const emailRef = useRef<{email: () => string}>()
+  const emailRef = useRef<{email: () => string}>(undefined)
   const location = useLocation()
   const params = new URLSearchParams(location.search)
   const email = params.get('email')
