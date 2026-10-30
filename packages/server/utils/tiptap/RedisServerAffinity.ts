@@ -11,6 +11,7 @@ import {
 import type RedisClient from 'ioredis'
 import {HocusPocusProxySocket} from '../../HocusPocusProxySocket'
 import {Logger} from '../Logger'
+import {runWithoutLogContext} from '../requestLogContext'
 
 export type SecondParam<T> = T extends (arg1: any, arg2: infer A, ...args: any[]) => any ? A : never
 export type RSAMessageProxy = {
@@ -303,9 +304,14 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
     // Clear any existing interval to prevent leaking it when called more than once
     // (e.g. both onLoadDocument and lockDocument call this for the same document)
     clearInterval(this.locks[documentName])
-    this.locks[documentName] = setInterval(() => {
-      this.pub.set(this.getKey(documentName), this.serverId, 'PX', this.lockTTL).catch(Logger.error)
-    }, this.lockTTL / 2)
+    // The lock outlives the socket or operation that loaded the document, so it must not keep their log context
+    this.locks[documentName] = runWithoutLogContext(() =>
+      setInterval(() => {
+        this.pub
+          .set(this.getKey(documentName), this.serverId, 'PX', this.lockTTL)
+          .catch(Logger.error)
+      }, this.lockTTL / 2)
+    )
   }
 
   async releaseLock(documentName: string) {

@@ -19,4 +19,6 @@ const requestLogStorage = new AsyncLocalStorage<RequestLogContext>()
 export const runWithLogContext = <T>(context: RequestLogContext, fn: () => T): T =>
   requestLogStorage.run({...requestLogStorage.getStore(), ...context}, fn)
 
+export const runWithoutLogContext = <T>(fn: () => T): T => requestLogStorage.exit(fn)
+
 export const getLogContext = () => requestLogStorage.getStore()
