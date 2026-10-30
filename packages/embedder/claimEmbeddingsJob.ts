@@ -11,7 +11,8 @@ const claimQuery: CompiledQuery<ClaimedJob> = getKysely()
   .set({
     state: 'running',
     // Use raw SQL for the DB-side timestamp so parameters stay empty/static
-    startAt: sql`CURRENT_TIMESTAMP`
+    startAt: sql`CURRENT_TIMESTAMP`,
+    updatedAt: sql`CURRENT_TIMESTAMP`
   })
   .where('id', '=', (eb) =>
     eb
