@@ -66,9 +66,9 @@ const START_REPORT_QUESTION = `
 
 const BUILT_IN_TITLES = [
   'Active users over time',
+  'Health score by team',
   'Meetings by type',
-  'Discussions and tasks by meeting type',
-  'Retrospective cadence'
+  'Where new tasks end up'
 ]
 
 const topTeams = (limit: number) => ({
@@ -213,7 +213,7 @@ test('only org admins and billing leaders pin and unpin reports', async () => {
   expect((await unpinAs(member.cookie)).errors).toBeTruthy()
   const byLeader = await unpinAs(owner.cookie)
   expect(byLeader.errors).toBeUndefined()
-  expect(byLeader.data.unpinReport.organization.pinnedReports[0].title).toBe('Meetings by type')
+  expect(byLeader.data.unpinReport.organization.pinnedReports[0].title).toBe('Health score by team')
 })
 
 test('leaders move pins and members can’t', async () => {
@@ -232,10 +232,10 @@ test('leaders move pins and members can’t', async () => {
   expect(
     moved.data.movePinnedReport.organization.pinnedReports.map(({title}: {title: string}) => title)
   ).toEqual([
-    'Retrospective cadence',
+    'Where new tasks end up',
     'Active users over time',
-    'Meetings by type',
-    'Discussions and tasks by meeting type'
+    'Health score by team',
+    'Meetings by type'
   ])
 })
 
@@ -249,7 +249,7 @@ test('the page holds 24 pins', async () => {
   expect(full.errors?.[0]?.message).toBe('Reports holds 24 pins. Unpin one first')
 })
 
-test('a changed report is kept as the spec used, and one built by hand as a builder question', async () => {
+test('a changed question keeps its own spec, and the change becomes a report the viewer built', async () => {
   const {orgId, cookie, userId} = await signUpWithReports()
   const started = await sendPublic({
     query: START_REPORT_QUESTION,
@@ -263,24 +263,32 @@ test('a changed report is kept as the spec used, and one built by hand as a buil
     filters: [{dimension: 'MEETING_TYPE', values: ['retrospective']}],
     showAs: 'HEATMAP'
   }
+  const edited = await sendPublic({
+    query: START_REPORT_QUESTION,
+    variables: {orgId, reportQuestionId, spec: changed, title: 'Meetings by team and week'},
+    cookie
+  })
+  const editedId = edited.data.logReportQuestionUse.reportQuestion.id
+  expect(editedId).not.toBe(reportQuestionId)
   await sendPublic({
     query: START_REPORT_QUESTION,
-    variables: {orgId, reportQuestionId, spec: changed},
+    variables: {orgId, reportQuestionId: editedId, spec: topTeams(5), title: 'Meetings by team'},
     cookie
   })
-  const built = await sendPublic({
+  const again = await sendPublic({
     query: START_REPORT_QUESTION,
-    variables: {orgId, spec: topTeams(5), title: 'Meetings by team'},
+    variables: {orgId, popularQuestionKey: 'retroCadence'},
     cookie
   })
-  expect(built.data.logReportQuestionUse.reportQuestion.source).toBe('builder')
+  expect(again.data.logReportQuestionUse.reportQuestion.id).toBe(reportQuestionId)
   const rows = await getKysely()
     .selectFrom('ReportQuestion')
-    .select(['source', 'shape', 'editedAt'])
+    .select(['source', 'title', 'shape', 'editedAt'])
     .where('userId', '=', userId)
     .orderBy('id')
     .execute()
-  expect(rows[0]).toMatchObject({source: 'popular', shape: expect.stringContaining('TEAM, WEEK')})
+  expect(rows).toHaveLength(2)
+  expect(rows[0]).toMatchObject({source: 'popular', shape: expect.not.stringContaining('WEEK')})
   expect(rows[0]!.editedAt).not.toBeNull()
-  expect(rows[1]).toMatchObject({source: 'builder', editedAt: null})
+  expect(rows[1]).toMatchObject({source: 'builder', title: 'Meetings by team'})
 })

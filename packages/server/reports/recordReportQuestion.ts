@@ -47,6 +47,8 @@ const recordReportQuestion = async ({
         question: eb.ref('excluded.question'),
         title: eb.ref('excluded.title'),
         aiSpec: eb.ref('excluded.aiSpec'),
+        spec: eb.ref('excluded.spec'),
+        shape: eb.ref('excluded.shape'),
         outcome: eb.ref('excluded.outcome'),
         uses: sql<number>`"ReportQuestion".uses + 1`,
         lastUsedAt: sql<Date>`CURRENT_TIMESTAMP`

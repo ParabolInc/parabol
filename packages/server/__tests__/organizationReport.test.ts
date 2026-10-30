@@ -33,6 +33,9 @@ const REPORT_PINS = `
             rows {
               values
             }
+            teamHealth {
+              latestCheckEndedAt
+            }
           }
         }
       }
@@ -159,13 +162,16 @@ test('every organization starts with the built-in pins, each with a spec that ru
   const {pinnedReports} = res.data.viewer.organization
   expect(pinnedReports.map(({title}: {title: string}) => title)).toEqual([
     'Active users over time',
+    'Health score by team',
     'Meetings by type',
-    'Discussions and tasks by meeting type',
-    'Retrospective cadence'
+    'Where new tasks end up'
   ])
   for (const pin of pinnedReports) {
     expect(pin.id).toContain(orgId)
     expect(parseReportSpec(JSON.parse(pin.spec)).spec).toEqual(JSON.parse(pin.spec))
-    expect(pin.report.rows.length).toBeGreaterThan(0)
+    // a Team Health heatmap has no rows until a team runs a check, and says none has
+    const {rows, teamHealth} = pin.report
+    if (teamHealth) expect(teamHealth.latestCheckEndedAt).toBeNull()
+    else expect(rows.length).toBeGreaterThan(0)
   }
 })

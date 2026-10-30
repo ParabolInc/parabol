@@ -13,19 +13,17 @@ import {embedPage} from '../../../embedder/workflows/embedPage'
 import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
 import getKysely from '../../postgres/getKysely'
 import {updatePageAccessTable} from '../../postgres/updatePageAccessTable'
-import {getPlaintextFromTipTap} from '../../utils/tiptap/getPlaintextFromTipTap'
-
-export const EVAL_USER_ID = 'eval|pagesSearch'
+import toFixture, {type Fixture} from './toFixture'
 
 const FIXTURES_DIR = path.join(__dirname, 'fixtures')
 const UPDATED_AT_FILE = 'updatedAt.json'
 
-interface Fixture {
-  key: string
-  title: string
-  plaintextContent: string
-  content: JSONContent
-  updatedAt?: Date
+export interface EvalCorpus {
+  name: 'fixtures' | 'heavy'
+  userId: string
+  email: string
+  preferredName: string
+  loadFixtures: () => Fixture[]
 }
 
 interface LivePage {
@@ -40,8 +38,7 @@ const parseFixture = (fileName: string): Fixture => {
   const text = fs.readFileSync(path.join(FIXTURES_DIR, fileName), 'utf8')
   const content: JSONContent =
     ext === '.md' ? {type: 'doc', content: markdownToTipTap(text)} : JSON.parse(text)
-  const {title, plaintextContent} = getPlaintextFromTipTap(content)
-  return {key, title, plaintextContent, content}
+  return toFixture(key, content)
 }
 
 const readUpdatedAtByKey = (fixtureKeys: Set<string>) => {
@@ -62,17 +59,12 @@ const readUpdatedAtByKey = (fixtureKeys: Set<string>) => {
   )
 }
 
-const loadFixtures = () => {
-  const fileNames = fs
-    .readdirSync(FIXTURES_DIR)
-    .filter((fileName) => /\.(md|json)$/.test(fileName) && fileName !== UPDATED_AT_FILE)
-    .sort()
-  const fixtures = fileNames.map(parseFixture)
-  if (fixtures.length === 0) throw new Error(`No fixtures found in ${FIXTURES_DIR}`)
+const checkFixtures = (fixtures: Fixture[]) => {
+  if (fixtures.length === 0) throw new Error('The corpus has no pages')
   const keys = new Set<string>()
   const keyByTitle = new Map<string, string>()
   for (const {key, title} of fixtures) {
-    if (keys.has(key)) throw new Error(`More than one fixture file is named ${key}`)
+    if (keys.has(key)) throw new Error(`More than one fixture is named ${key}`)
     if (!title) throw new Error(`Fixture ${key} has no title`)
     const keyWithSameTitle = keyByTitle.get(title)
     if (keyWithSameTitle) {
@@ -81,25 +73,37 @@ const loadFixtures = () => {
     keys.add(key)
     keyByTitle.set(title, key)
   }
-  const updatedAtByKey = readUpdatedAtByKey(keys)
+  return keys
+}
+
+const loadFileFixtures = () => {
+  const fileNames = fs
+    .readdirSync(FIXTURES_DIR)
+    .filter((fileName) => /\.(md|json)$/.test(fileName) && fileName !== UPDATED_AT_FILE)
+    .sort()
+  const fixtures = fileNames.map(parseFixture)
+  const updatedAtByKey = readUpdatedAtByKey(checkFixtures(fixtures))
   return fixtures.map((fixture) => ({...fixture, updatedAt: updatedAtByKey.get(fixture.key)}))
 }
 
-const ensureEvalUser = () =>
+export const FIXTURES_CORPUS: EvalCorpus = {
+  name: 'fixtures',
+  userId: 'eval|pagesSearch',
+  email: 'pages-search-eval@example.com',
+  preferredName: 'Pages Search Eval',
+  loadFixtures: loadFileFixtures
+}
+
+const ensureEvalUser = ({userId, email, preferredName}: EvalCorpus) =>
   getKysely()
     .insertInto('User')
-    .values({
-      id: EVAL_USER_ID,
-      email: 'pages-search-eval@example.com',
-      picture: 'https://example.com/pic.png',
-      preferredName: 'Pages Search Eval'
-    })
+    .values({id: userId, email, picture: 'https://example.com/pic.png', preferredName})
     .onConflict((oc) => oc.doNothing())
     .execute()
 
-const createPages = async (fixtures: Fixture[]) => {
+const createPages = async (userId: string, fixtures: Fixture[]) => {
   const pg = getKysely()
-  await pg.deleteFrom('Page').where('userId', '=', EVAL_USER_ID).execute()
+  await pg.deleteFrom('Page').where('userId', '=', userId).execute()
   const pageIdByFixture = new Map<string, number>()
   for (const [index, {key, title, plaintextContent, content, updatedAt}] of fixtures.entries()) {
     const yDoc = Buffer.from(
@@ -108,7 +112,7 @@ const createPages = async (fixtures: Fixture[]) => {
     const {id: pageId} = await pg
       .insertInto('Page')
       .values({
-        userId: EVAL_USER_ID,
+        userId,
         isPrivate: true,
         sortOrder: `a${index}`,
         yDoc,
@@ -118,10 +122,7 @@ const createPages = async (fixtures: Fixture[]) => {
       })
       .returning('id')
       .executeTakeFirstOrThrow()
-    await pg
-      .insertInto('PageUserAccess')
-      .values({userId: EVAL_USER_ID, pageId, role: 'owner'})
-      .execute()
+    await pg.insertInto('PageUserAccess').values({userId, pageId, role: 'owner'}).execute()
     await updatePageAccessTable(pg, pageId, {skipDeleteOld: true})
     pageIdByFixture.set(key, pageId)
   }
@@ -191,16 +192,17 @@ const getCurrentPageIds = (fixtures: Fixture[], livePages: LivePage[]) => {
   return pageIdByFixture
 }
 
-export const seedEvalPages = async ({reseed}: {reseed: boolean}) => {
-  const fixtures = loadFixtures()
-  await ensureEvalUser()
+export const seedEvalPages = async ({corpus, reseed}: {corpus: EvalCorpus; reseed: boolean}) => {
+  const fixtures = corpus.loadFixtures()
+  checkFixtures(fixtures)
+  await ensureEvalUser(corpus)
   const livePages = await getKysely()
     .selectFrom('Page')
     .select(['id', 'title', 'plaintextContent', 'updatedAt'])
-    .where('userId', '=', EVAL_USER_ID)
+    .where('userId', '=', corpus.userId)
     .where('deletedAt', 'is', null)
     .execute()
   const currentPageIds = reseed ? undefined : getCurrentPageIds(fixtures, livePages)
-  const pageIdByFixture = currentPageIds ?? (await createPages(fixtures))
+  const pageIdByFixture = currentPageIds ?? (await createPages(corpus.userId, fixtures))
   return {pageIdByFixture, unindexed: await indexPages(pageIdByFixture)}
 }

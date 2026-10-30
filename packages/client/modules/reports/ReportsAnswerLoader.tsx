@@ -3,13 +3,13 @@ import {useNavigate} from 'react-router'
 import reportsAnswerQuery, {
   type ReportsAnswerQuery
 } from '../../__generated__/ReportsAnswerQuery.graphql'
-import useQueryLoaderNow from '../../hooks/useQueryLoaderNow'
+import {useQueryLoaderNowWithRetry} from '../../hooks/useQueryLoaderNow'
+import ReportLoadError from './ReportLoadError'
 import ReportsAnswer from './ReportsAnswer'
 import {type ReportAddress, toReportsHomePath} from './reportPaths'
 import type {ReportPagePeriod} from './reportPeriodParam'
-import toLastHeldReportSpec from './toLastHeldReportSpec'
+import toReportPanelVariables from './toReportPanelVariables'
 import useReportSpecChange from './useReportSpecChange'
-import withPagePeriod from './withPagePeriod'
 
 interface Props {
   orgId: string
@@ -20,31 +20,27 @@ interface Props {
 // The report that answers a question, between the Ask box and the pins. It stays in the address, so
 // reloading or going back keeps it
 const ReportsAnswerLoader = ({orgId, answer, period}: Props) => {
-  const {spec, title, reportQuestionId} = answer
+  const {spec, reportQuestionId} = answer
   const navigate = useNavigate()
   const timeZone = useMemo(() => Intl.DateTimeFormat().resolvedOptions().timeZone, [])
-  const lastHeldSpec = useMemo(() => toLastHeldReportSpec(spec), [spec])
-  const queryRef = useQueryLoaderNow<ReportsAnswerQuery>(
+  const panelVariables = useMemo(() => toReportPanelVariables(spec, period), [spec, period])
+  const {queryRef, retry, error} = useQueryLoaderNowWithRetry<ReportsAnswerQuery>(
     reportsAnswerQuery,
-    {
-      orgId,
-      spec: withPagePeriod(spec, period),
-      timeZone,
-      lastHeldSpec: withPagePeriod(lastHeldSpec ?? spec, period),
-      hasLastHeld: !!lastHeldSpec
-    },
-    undefined,
-    true
+    {orgId, timeZone, ...panelVariables},
+    {preventSuspense: true}
   )
   const onSpecChange = useReportSpecChange(orgId, reportQuestionId, (nextSpec, questionId) =>
-    toReportsHomePath(orgId, period, {spec: nextSpec, title: null, reportQuestionId: questionId})
+    toReportsHomePath(orgId, period, {spec: nextSpec, reportQuestionId: questionId})
   )
   const onClose = () => navigate(toReportsHomePath(orgId, period))
   if (!queryRef) {
     return (
       <section className='rounded-md border border-hairline bg-surface-card px-5 py-4 shadow-xs'>
-        {title && <h2 className='m-0 font-semibold text-lg'>{title}</h2>}
-        <p className='m-0 text-fg-secondary text-sm'>Running the report…</p>
+        {error ? (
+          <ReportLoadError onRetry={retry} />
+        ) : (
+          <p className='m-0 text-fg-secondary text-sm'>Running the report…</p>
+        )}
       </section>
     )
   }
@@ -57,6 +53,7 @@ const ReportsAnswerLoader = ({orgId, answer, period}: Props) => {
         period={period}
         onSpecChange={onSpecChange}
         onClose={onClose}
+        onRetry={error ? retry : null}
       />
     </Suspense>
   )

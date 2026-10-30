@@ -38,7 +38,7 @@ const ReportSpecEditor = ({organizationRef, spec, step, onChange}: Props) => {
         }
         reportTeams: report(
           spec: {
-            measures: [MEMBERS]
+            measures: [USERS]
             breakdown: [{dimension: TEAM}]
             period: {preset: LAST_7_DAYS}
             showAs: TABLE

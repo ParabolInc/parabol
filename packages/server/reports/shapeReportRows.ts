@@ -10,6 +10,7 @@ import {
   type ReportSpec
 } from '../../client/shared/reports/reportCatalog'
 import type {ReportRow} from './buildReportRows'
+import {fromTeamHealthCategoryKey} from './measures/teamHealthAnswers'
 
 const DAY_MS = ms('1d')
 
@@ -56,7 +57,7 @@ const TASK_AGES: string[] = Object.keys(REPORT_TASK_AGES)
 // categories run in the order they were made, which puts the built-in ones in their usual order
 const NATURAL_ORDERS: Partial<Record<ReportDimension, (a: string, b: string) => number>> = {
   TASK_AGE: (a, b) => TASK_AGES.indexOf(a) - TASK_AGES.indexOf(b),
-  CATEGORY: (a, b) => Number(a) - Number(b)
+  CATEGORY: (a, b) => fromTeamHealthCategoryKey(a) - fromTeamHealthCategoryKey(b)
 }
 
 // Dates take the latest, and shares, medians and scores, which don't add up, take their mean

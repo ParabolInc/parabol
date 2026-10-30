@@ -2,9 +2,12 @@ import DataLoader from 'dataloader'
 import ms from 'ms'
 import getKysely from '../postgres/getKysely'
 import {hasEnoughAttendees} from '../postgres/teamActivityCriteria'
+import type {Meetingtypeenum} from '../postgres/types/pg'
 import reportMeasures from '../reports/measures/reportMeasures'
+import {isPokerImportTask, selectTasks} from '../reports/measures/taskExpressions'
 import type {OrgStructure} from '../reports/orgStructure'
 import type {ReportMeasureQuery, ReportMeasureResult} from '../reports/reportMeasureTypes'
+import {isAnyOf} from '../reports/reportQueries'
 import type RootDataLoader from './RootDataLoader'
 
 const STARTER_TEAM_COUNT = 2
@@ -66,11 +69,62 @@ export const starterReportTeamIdsByOrgId = (parent: RootDataLoader) => {
   )
 }
 
+// When the latest meeting of a type that 2 or more people joined started on any of the teams, whatever the period.
+// Every pinned report asks for the same teams, so they share one lookup
+export const latestMeetingAtByTeamIds = (parent: RootDataLoader) => {
+  return new DataLoader<
+    {teamIds: string[]; meetingType: Meetingtypeenum | null},
+    Date | null,
+    string
+  >(
+    async (keys) =>
+      Promise.all(
+        keys.map(async ({teamIds, meetingType}) => {
+          if (teamIds.length === 0) return null
+          const latest = await getKysely()
+            .selectFrom('NewMeeting as m')
+            .select('m.createdAt')
+            .where('m.teamId', 'in', teamIds)
+            .where((eb) => (meetingType ? eb('m.meetingType', '=', meetingType) : eb.lit(true)))
+            .where(({ref}) => hasEnoughAttendees(ref('m.id')))
+            .orderBy('m.createdAt', 'desc')
+            .limit(1)
+            .executeTakeFirst()
+          return latest?.createdAt ?? null
+        })
+      ),
+    {...parent.dataLoaderOptions, cacheKeyFn: (key) => JSON.stringify(key)}
+  )
+}
+
+// Leaves out the stories Sprint Poker brings in, which the task measures never count
+export const latestTaskAtByTeamIds = (parent: RootDataLoader) => {
+  return new DataLoader<string[], Date | null, string>(
+    async (keys) =>
+      Promise.all(
+        keys.map(async (teamIds) => {
+          if (teamIds.length === 0) return null
+          const latest = await selectTasks()
+            .select(({fn}) => fn.max('t.createdAt').as('createdAt'))
+            .where((eb) =>
+              eb.and([isAnyOf(eb.ref('t.teamId'), teamIds), eb.not(isPokerImportTask())])
+            )
+            .executeTakeFirst()
+          return latest?.createdAt ?? null
+        })
+      ),
+    {...parent.dataLoaderOptions, cacheKeyFn: (key) => JSON.stringify(key)}
+  )
+}
+
 export interface TeamHealthCheck {
   id: string
   teamId: string
   // when the check's results were revealed, which puts it on the calendar
   endedAt: Date
+  templateId: string | null
+  templateScope: string | null
+  templateName: string | null
 }
 
 // Each team's Team Health checks with revealed results, newest first
@@ -78,16 +132,24 @@ export const teamHealthChecksByTeamId = (parent: RootDataLoader) => {
   return new DataLoader<string, TeamHealthCheck[], string>(
     async (teamIds) => {
       const meetings = await getKysely()
-        .selectFrom('NewMeeting')
-        .select(['id', 'teamId', 'endedAt'])
-        .where('teamId', 'in', teamIds)
-        .where('meetingType', '=', 'teamHealth')
-        .where('endedAt', 'is not', null)
-        .orderBy('endedAt', 'desc')
+        .selectFrom('NewMeeting as m')
+        .leftJoin('MeetingTemplate as tpl', 'tpl.id', 'm.templateId')
+        .select([
+          'm.id',
+          'm.teamId',
+          'm.endedAt',
+          'm.templateId',
+          'tpl.scope as templateScope',
+          'tpl.name as templateName'
+        ])
+        .where('m.teamId', 'in', teamIds)
+        .where('m.meetingType', '=', 'teamHealth')
+        .where('m.endedAt', 'is not', null)
+        .orderBy('m.endedAt', 'desc')
         .execute()
       return teamIds.map((teamId) =>
-        meetings.flatMap(({id, teamId: checkTeamId, endedAt}) =>
-          checkTeamId === teamId && endedAt ? [{id, teamId, endedAt}] : []
+        meetings.flatMap(({endedAt, ...check}) =>
+          check.teamId === teamId && endedAt ? [{...check, endedAt}] : []
         )
       )
     },

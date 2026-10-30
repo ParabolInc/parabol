@@ -16,4 +16,6 @@ enum ReportNoteKindEnum {
   STRUCTURE_LEVEL_REMOVED
   "A filter's org structure level was removed, so the report shows nothing until the filter changes. The count is how many filters"
   FILTER_LEVEL_REMOVED
+  "Nothing in the period the report compares with has a value, so there's no change to show. The count is how many values have nothing to compare with"
+  NOTHING_TO_COMPARE
 }

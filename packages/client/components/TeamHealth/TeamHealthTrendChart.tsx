@@ -32,16 +32,18 @@ export interface TeamHealthTrendPoint {
 }
 
 interface Props {
-  // past cycles oldest first, then this cycle last
+  // past checks oldest first, then this check last when it has a score
   points: TeamHealthTrendPoint[]
+  // whether the last point is this check, which stands out from the past ones
+  hasCurrent: boolean
 }
 
 const TeamHealthTrendChart = (props: Props) => {
-  const {points} = props
+  const {points, hasCurrent} = props
   const theme = useResolvedTheme()
   const colors = LINE_COLORS[theme]
   const tooltipColors = TOOLTIP_COLORS[theme]
-  const lastIdx = points.length - 1
+  const currentIdx = hasCurrent ? points.length - 1 : -1
   const data = {
     labels: points.map(({endedAt}) => dayjs(endedAt).format('MMM D')),
     datasets: [
@@ -50,12 +52,14 @@ const TeamHealthTrendChart = (props: Props) => {
         borderColor: colors.line,
         borderWidth: 2,
         tension: 0.3,
-        pointRadius: points.map((_, idx) => (idx === lastIdx ? 5 : 3)),
+        pointRadius: points.map((_, idx) => (idx === currentIdx ? 5 : 3)),
         pointHoverRadius: 6,
         pointBackgroundColor: points.map((_, idx) =>
-          idx === lastIdx ? colors.current : colors.line
+          idx === currentIdx ? colors.current : colors.line
         ),
-        pointBorderColor: points.map((_, idx) => (idx === lastIdx ? colors.current : colors.line))
+        pointBorderColor: points.map((_, idx) =>
+          idx === currentIdx ? colors.current : colors.line
+        )
       }
     ]
   }

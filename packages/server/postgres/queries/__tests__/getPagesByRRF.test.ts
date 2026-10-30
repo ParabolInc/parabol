@@ -11,6 +11,7 @@ const suffix = `pbr-${Date.now()}`
 const viewerId = `viewer-${suffix}`
 const otherUserId = `other-${suffix}`
 const bulkViewerId = `bulk-${suffix}`
+const junkViewerId = `junk-${suffix}`
 const BULK_PAGE_COUNT = 101
 const orgId = `org-${suffix}`
 const teamId = `team-${suffix}`
@@ -24,6 +25,8 @@ const vectorWithCosine = (cosine: number) => [
   ...new Array<number>(EMBEDDING_DIMENSIONS - 2).fill(0)
 ]
 const zeroVector = new Array<number>(EMBEDDING_DIMENSIONS).fill(0)
+const FILLER_TEXT =
+  'Notes from the weekly sync about hiring, budgets and the offsite plan. '.repeat(5)
 
 let keywordOnlyId: number
 let vectorOnlyId: number
@@ -35,6 +38,12 @@ let zeroChunkOnlyId: number
 let mixedChunksId: number
 let olderTwinId: number
 let newerTwinId: number
+let nearEmptyId: number
+let nearEmptyKeywordId: number
+let shortJapaneseId: number
+let lateMatchId: number
+let olderCloseId: number
+let newerFarId: number
 
 const makeUser = (id: string, preferredName: string) => ({
   id,
@@ -48,12 +57,13 @@ const insertPage = async (
   {
     userId = viewerId,
     updatedAt,
-    deletedAt
-  }: {userId?: string; updatedAt?: Date; deletedAt?: Date} = {}
+    deletedAt,
+    plaintextContent = FILLER_TEXT
+  }: {userId?: string; updatedAt?: Date; deletedAt?: Date; plaintextContent?: string} = {}
 ) => {
   const {id} = await pg
     .insertInto('Page')
-    .values({title, plaintextContent: '', userId, sortOrder: 'a0', updatedAt, deletedAt})
+    .values({title, plaintextContent, userId, sortOrder: 'a0', updatedAt, deletedAt})
     .returning('id')
     .executeTakeFirstOrThrow()
   return id
@@ -87,7 +97,8 @@ beforeAll(async () => {
     .values([
       makeUser(viewerId, 'Fusion Viewer'),
       makeUser(otherUserId, 'Fusion Other'),
-      makeUser(bulkViewerId, 'Fusion Bulk')
+      makeUser(bulkViewerId, 'Fusion Bulk'),
+      makeUser(junkViewerId, 'Fusion Junk')
     ])
     .execute()
   await pg.insertInto('Organization').values({id: orgId, name: 'Fusion Search Org'}).execute()
@@ -141,7 +152,7 @@ beforeAll(async () => {
     .values(
       Array.from({length: BULK_PAGE_COUNT}, (_, i) => ({
         title: `Bulk note ${i + 1}`,
-        plaintextContent: '',
+        plaintextContent: FILLER_TEXT,
         userId: bulkViewerId,
         sortOrder: 'a0'
       }))
@@ -153,6 +164,44 @@ beforeAll(async () => {
     .values(bulkPages.map(({id}) => ({userId: bulkViewerId, pageId: id, role: 'owner' as const})))
     .execute()
   await Promise.all(bulkPages.map(({id}) => insertChunks(id, [0.5])))
+  nearEmptyId = await insertPage('Sticky note', {
+    userId: junkViewerId,
+    plaintextContent: 'Remember the thing.'
+  })
+  nearEmptyKeywordId = await insertPage('Roadmap', {userId: junkViewerId, plaintextContent: 'tbd'})
+  shortJapaneseId = await insertPage('会議のメモ', {
+    userId: junkViewerId,
+    plaintextContent: '会議のメモ'.repeat(14)
+  })
+  lateMatchId = await insertPage('Hiring plan', {
+    userId: junkViewerId,
+    plaintextContent: `${FILLER_TEXT}The zebra crossing moved.`
+  })
+  olderCloseId = await insertPage('Older close match', {
+    userId: junkViewerId,
+    updatedAt: new Date('2026-01-01T00:00:00Z')
+  })
+  newerFarId = await insertPage('Newer far match', {
+    userId: junkViewerId,
+    updatedAt: new Date('2026-10-01T00:00:00Z')
+  })
+  await pg
+    .insertInto('PageAccess')
+    .values(
+      [nearEmptyId, nearEmptyKeywordId, shortJapaneseId, lateMatchId, olderCloseId, newerFarId].map(
+        (pageId) => ({
+          userId: junkViewerId,
+          pageId,
+          role: 'owner' as const
+        })
+      )
+    )
+    .execute()
+  await insertChunks(nearEmptyId, [0.95])
+  await insertChunks(nearEmptyKeywordId, [0.96])
+  await insertChunks(shortJapaneseId, [0.8])
+  await insertChunks(olderCloseId, [0.9])
+  await insertChunks(newerFarId, [0.7])
 })
 
 afterAll(async () => {
@@ -162,12 +211,15 @@ afterAll(async () => {
       qb
         .selectFrom('Page')
         .select('id')
-        .where('userId', 'in', [viewerId, otherUserId, bulkViewerId])
+        .where('userId', 'in', [viewerId, otherUserId, bulkViewerId, junkViewerId])
     )
     .execute()
   await pg.deleteFrom('Team').where('orgId', '=', orgId).execute()
   await pg.deleteFrom('Organization').where('id', '=', orgId).execute()
-  await pg.deleteFrom('User').where('id', 'in', [viewerId, otherUserId, bulkViewerId]).execute()
+  await pg
+    .deleteFrom('User')
+    .where('id', 'in', [viewerId, otherUserId, bulkViewerId, junkViewerId])
+    .execute()
   await pg.destroy()
 })
 
@@ -207,6 +259,33 @@ it('ranks by vector similarity when alpha is 1', async () =>
     vectorOnlyId,
     bothArmsId
   ]))
+
+it('passes stop-word dropping to the keyword arm', async () => {
+  const query = 'what is the roadmap'
+  const everyWord = {anyWordFallbackBelow: 0}
+  const {edges} = await fused(0.5, {...everyWord, query, dropStopWords: true})
+  expect(edges.find(({nodeId}) => nodeId === keywordOnlyId)?.score.keywordRank).toEqual(
+    expect.any(Number)
+  )
+  const withStopWords = await fused(0.5, {...everyWord, query, dropStopWords: false})
+  expect(withStopWords.edges.every(({score}) => score.keywordRank === null)).toBe(true)
+})
+
+it('drops stop words and falls back when no page has every word by default', async () => {
+  const {edges} = await fused(0.5, {query: 'what is the roadmap planning'})
+  expect(edges.find(({nodeId}) => nodeId === vectorOnlyId)?.score.keywordRank).toEqual(
+    expect.any(Number)
+  )
+})
+
+it('gives pages with some of the words a keyword rank when the fallback applies', async () => {
+  const vectorOnlyKeywordRank = async (anyWordFallbackBelow: number) => {
+    const {edges} = await fused(0.5, {query: 'roadmap planning', anyWordFallbackBelow})
+    return edges.find(({nodeId}) => nodeId === vectorOnlyId)?.score.keywordRank
+  }
+  expect(await vectorOnlyKeywordRank(1)).toEqual(expect.any(Number))
+  expect(await vectorOnlyKeywordRank(0)).toBeNull()
+})
 
 it('ranks by keyword when alpha is 0', async () =>
   expect((await fused(0)).edges.at(-1)!.nodeId).toBe(vectorOnlyId))
@@ -303,6 +382,12 @@ it('pages past the first 100 keyword matches', async () => {
   expect(pageInfo.hasNextPage).toBe(false)
 })
 
+it('returns every vector match when no page matches the words', async () => {
+  const {edges, pageInfo} = await fused(0.5, {query: '!!', viewerId: bulkViewerId})
+  expect(edges).toHaveLength(20)
+  expect(pageInfo.hasNextPage).toBe(true)
+})
+
 it('pages past the first 100 vector matches', async () => {
   const {edges, pageInfo} = await fused(0.5, {
     query: '!!',
@@ -324,4 +409,46 @@ it('returns an empty page past the end', async () => {
     startCursor: null,
     endCursor: null
   })
+})
+
+const junkSearch = (overrides: Partial<Parameters<typeof getPagesByRRF>[0]> = {}) =>
+  fused(0.25, {viewerId: junkViewerId, ...overrides})
+const resultIds = ({edges}: Awaited<ReturnType<typeof getPagesByRRF>>) =>
+  edges.map(({nodeId}) => nodeId)
+
+it('leaves near-empty pages out of the vector arm', async () => {
+  expect(resultIds(await junkSearch({vectorMinBytes: 0}))).toContain(nearEmptyId)
+  expect(resultIds(await junkSearch())).not.toContain(nearEmptyId)
+})
+
+it('measures the minimum length in bytes, so short Japanese notes keep their vector matches', async () => {
+  expect(resultIds(await junkSearch())).toContain(shortJapaneseId)
+})
+
+it('ranks vector-only pages by similarity at a small alpha', async () => {
+  const {edges} = await junkSearch({alpha: 0.01})
+  const vectorOnlyIds = edges
+    .filter(({score}) => score.keywordRank === null)
+    .map(({nodeId}) => nodeId)
+  expect(vectorOnlyIds).toEqual([olderCloseId, shortJapaneseId, newerFarId])
+})
+
+it('falls back when fewer than 20 pages have every word by default', async () => {
+  const {edges} = await fused(0.5, {query: 'planning notes weekly'})
+  expect(edges.find(({nodeId}) => nodeId === keywordOnlyId)?.score.keywordRank).toEqual(
+    expect.any(Number)
+  )
+})
+
+it('highlights an any-word match past the start of the page', async () => {
+  const {edges} = await junkSearch({query: 'zebra unicorn', anyWordFallbackBelow: 1})
+  const snippet = edges.find(({nodeId}) => nodeId === lateMatchId)?.snippets[0]
+  expect(snippet).toContain('<b>zebra</b>')
+})
+
+it('still finds a near-empty page by its keywords', async () => {
+  const {edges} = await junkSearch()
+  const edge = edges.find(({nodeId}) => nodeId === nearEmptyKeywordId)
+  expect(edge?.score.keywordRank).toBe(1)
+  expect(edge?.score.vectorRank).toBeNull()
 })

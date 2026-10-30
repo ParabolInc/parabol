@@ -36,3 +36,18 @@ export const templateOf = (
     label: eb.case().when(isNamed).then(name).end()
   }
 }
+
+// The same naming for a template already read, like a Team Health check's
+export const toTemplateKey = (
+  {
+    templateId,
+    teamId,
+    scope,
+    name
+  }: {templateId: string | null; teamId: string; scope: string | null; name: string | null},
+  ownTeamIds: string[]
+) => {
+  if (templateId === null) return {key: REPORT_NO_TEMPLATE, label: null}
+  const isNamed = scope === 'PUBLIC' || scope === 'ORGANIZATION' || ownTeamIds.includes(teamId)
+  return isNamed ? {key: templateId, label: name} : {key: REPORT_OTHER_TEAM_TEMPLATE, label: null}
+}

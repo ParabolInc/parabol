@@ -5,6 +5,22 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.11.0](https://github.com/ParabolInc/parabol/compare/v15.10.0...v15.11.0) (2026-10-30)
+
+
+### Added
+
+* let page search match questions and pages with some of the words ([#13802](https://github.com/ParabolInc/parabol/issues/13802)) ([2134eb7](https://github.com/ParabolInc/parabol/commit/2134eb7c7b8c9c8c26d546d52a06ad9da4c2e1c3))
+* re-tune how page search blends keyword and meaning matches ([#13803](https://github.com/ParabolInc/parabol/issues/13803)) ([9d27104](https://github.com/ParabolInc/parabol/commit/9d271049112ef3b68d5b67abef5c0914c591402c))
+* skip near-empty pages in semantic page search ([#13801](https://github.com/ParabolInc/parabol/issues/13801)) ([fce4497](https://github.com/ParabolInc/parabol/commit/fce4497e0567f25464a71ef594c91fbb315f0afe))
+* Team Health attention marks in Reports ([#13748](https://github.com/ParabolInc/parabol/issues/13748)) ([903d9da](https://github.com/ParabolInc/parabol/commit/903d9da650e2f3e203120fcf9d31bef8a59f99e0))
+
+
+### Changed
+
+* add a heavy-account corpus to the pages search eval ([#13799](https://github.com/ParabolInc/parabol/issues/13799)) ([3fe98b3](https://github.com/ParabolInc/parabol/commit/3fe98b386fedaa43834f23b5ef9a76a8ec64eab8))
+* add a sealed holdout for the page search re-embed gate ([#13806](https://github.com/ParabolInc/parabol/issues/13806)) ([ba1395c](https://github.com/ParabolInc/parabol/commit/ba1395c7624e97ca4359bb1d000d3f8574675b41))
+
 ## [15.10.0](https://github.com/ParabolInc/parabol/compare/v15.9.0...v15.10.0) (2026-10-29)
 
 
