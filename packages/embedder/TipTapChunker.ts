@@ -1,6 +1,10 @@
 import type {TipTapSerializedContent} from '../client/shared/tiptap/TipTapSerializedContent.d'
+import {teamPromptSummaryTableHeaders} from '../server/graphql/mutations/helpers/summaryPage/teamPromptSummaryTableHeaders'
 import {getSearchText} from './getSearchText'
 import type {ISO6391} from './iso6393To1'
+
+// a standup summary's table view repeats its response blocks
+const RESPONSE_TABLE_HEADER = teamPromptSummaryTableHeaders.join(' | ')
 
 interface ParagraphFragment {
   text: string
@@ -160,6 +164,7 @@ export class TipTapChunker {
     const sections: HeadingSection[] = []
     let currentPath: string[] = []
     const {content} = doc
+    const hasResponses = content.some((node) => node.type === 'responseBlock')
     content.forEach((node) => {
       if (node.type === 'heading') {
         const headingText = node.content?.[0]?.text.trim().slice(0, 500)
@@ -173,6 +178,7 @@ export class TipTapChunker {
         return
       }
       const searchText = getSearchText(node).slice(0, this.modelMaxTokens)
+      if (hasResponses && searchText.split('\n').includes(RESPONSE_TABLE_HEADER)) return
       const tokenCount = this.estimateTokens(searchText)
       if (tokenCount > this.maxTokens && node.type !== 'table') {
         // Edge case: a single paragraph is too large. Break it up with a sliding window

@@ -61,3 +61,56 @@ it('skips a block whose stored content is not JSON', () =>
       attrs: {id: 'broken', preferredName: 'Lukas Becker', avatar, content: '{'}
     })
   ).toBe(''))
+
+const cell = (content: object[]) => ({
+  type: 'tableCell',
+  attrs: {colspan: 1, rowspan: 1},
+  content: [{type: 'paragraph', content}]
+})
+
+it('keeps mentions and line breaks inside table cells', () =>
+  expect(
+    getSearchText({
+      type: 'table',
+      content: [
+        {
+          type: 'tableRow',
+          content: [cell([{type: 'text', text: 'Owner'}]), cell([{type: 'text', text: 'Note'}])]
+        },
+        {
+          type: 'tableRow',
+          content: [
+            cell([
+              {type: 'mention', attrs: {id: 'u1', label: 'Lukas Becker'}},
+              {type: 'text', text: ' owns'}
+            ]),
+            cell([
+              {type: 'text', text: 'first line'},
+              {type: 'hardBreak'},
+              {type: 'text', text: 'second line'}
+            ])
+          ]
+        }
+      ]
+    })
+  ).toBe('Owner | Note\nLukas Becker owns | first line second line'))
+
+it('writes an image as its alt text', () =>
+  expect(
+    getSearchText({
+      type: 'imageBlock',
+      attrs: {src: 'https://app.example.com/assets/n4bQgYhM.webp', alt: 'Release plan'}
+    })
+  ).toBe('Release plan'))
+
+it('writes a table inside a response like any other table', () =>
+  expect(
+    getSearchText(
+      responseBlock({
+        id: 'r1',
+        preferredName: 'Lukas Becker',
+        avatar,
+        content: {type: 'doc', content: [table(['Step', 'Owner'], [['Deploy', 'Lukas']])]}
+      })
+    )
+  ).toBe('Lukas Becker: Step | Owner\nDeploy | Lukas'))
