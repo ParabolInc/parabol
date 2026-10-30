@@ -669,6 +669,10 @@ const permissionMap: PermissionMap<Resolvers> = {
       isSuperUser,
       and(isUserSelf, isViewerOnOrg<'User.organizationUser'>('args.orgId'))
     ),
+    parseSAMLMetadata: and(
+      isUserSelf,
+      hasOrgRole<'User.parseSAMLMetadata'>('args.domain', 'ORG_ADMIN', 'saml')
+    ),
     personalAccessTokens: isUserSelf,
     picture: allow,
     preferredName: allow,

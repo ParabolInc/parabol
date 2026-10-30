@@ -36,6 +36,7 @@ import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
 import getUserDetail from '../../../utils/getUserDetail'
 import {getUserSocketCount} from '../../../utils/getUserSocketCount'
 import logError from '../../../utils/logError'
+import {createSAMLMetadataChangeRequest} from '../../../utils/samlMetadataChangeRequest'
 import standardError from '../../../utils/standardError'
 import errorFilter from '../../errorFilter'
 import type {DataLoaderWorker} from '../../graphql'
@@ -50,6 +51,7 @@ import {pageInsights} from '../fields/pageInsights'
 import {pages} from '../fields/pages'
 import {search} from '../fields/search'
 import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
+import type {SSORelayState} from '../queries/SAMLIdP'
 import type {ReqResolvers} from './ReqResolvers'
 
 const SIMILARITY_THRESHOLD = 0.5
@@ -854,18 +856,22 @@ const User: ReqResolvers<'User'> = {
       .slice(0, TEMPLATE_SEARCH_LIMIT)
       .map(({activity}) => activity)
   },
-  parseSAMLMetadata: async (_source, {metadataURL, domain}) => {
+  parseSAMLMetadata: async (_source, {metadataURL, domain}, {authToken}) => {
     const metadata = await getSSOMetadataFromURL(metadataURL)
     if (metadata instanceof Error) return {error: {message: metadata.message}}
     const baseUrl = getSignOnURL(metadata, domain)
     if (baseUrl instanceof Error) {
       return {error: {message: baseUrl.message}}
     }
-    // append the new metadataURL to the RelayState
-    // The IdP will forward this to us and our SAMLHandler/loginSAML will use this instead of what's in the DB
-    const relayState = base64url.encode(JSON.stringify({metadataURL}))
+    // The IdP forwards the RelayState to loginSAML, which resolves the id back to this URL
+    const metadataChangeId = await createSAMLMetadataChangeRequest({
+      samlId: domain,
+      metadataURL,
+      requestedBy: getUserId(authToken)
+    })
+    const relayState: SSORelayState = {metadataChangeId}
     const urlObj = new URL(baseUrl)
-    urlObj.searchParams.append('RelayState', relayState)
+    urlObj.searchParams.append('RelayState', base64url.encode(JSON.stringify(relayState)))
     return {url: urlObj.toString()}
   },
   samlIdP: async ({email}, _args, {dataLoader}) => {

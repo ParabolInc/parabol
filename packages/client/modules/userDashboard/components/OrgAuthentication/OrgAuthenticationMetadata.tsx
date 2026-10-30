@@ -71,7 +71,7 @@ const OrgAuthenticationMetadata = (props: Props) => {
       getOAuthPopupFeatures({width: 385, height: 576, top: 64})
     )
 
-    // Get the Sign-on URL, which includes metadataURL in the RelayState
+    // Get the Sign-on URL, whose RelayState names the server-side metadata update request
     const res = await atmosphere.fetchQuery<OrgAuthenticationMetadataQuery>(
       orgAuthenticationMetadataQuery,
       {metadataURL, domain}
