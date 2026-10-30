@@ -60,7 +60,7 @@ const useTeamPromptComposer = (meetingRef: useTeamPromptComposer_meeting$key) =>
   const stage = meeting.phases[0]?.stages?.find((stage) => stage.teamMember.userId === viewerId)
   const isShared = !!getMemberSharedAt(stage?.responses ?? [])
   const [isExpanded, setIsExpanded] = useState(!isShared)
-  const editorRefs = useRef(new Map<string, React.MutableRefObject<Editor | null>>())
+  const editorRefs = useRef(new Map<string, React.RefObject<Editor | null>>())
   const {queueAnswer, seedDirty, share, submitting, dirtyPromptIds} = useTeamPromptAnswersAutosave({
     meetingId,
     teamId,

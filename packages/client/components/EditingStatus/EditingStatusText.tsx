@@ -17,7 +17,7 @@ const useTimeFrom = (timestamp: string) => {
     [timestamp]
   )
   const [timeFrom, setTimeFrom] = useState(makeTimeFrom)
-  const timeoutRef = useRef<number | undefined>()
+  const timeoutRef = useRef<number | undefined>(undefined)
   useEffect(() => {
     timeoutRef.current = window.setTimeout(() => {
       setTimeFrom(makeTimeFrom())

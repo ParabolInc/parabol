@@ -12,7 +12,7 @@ const makeDrag = () => ({
 export const useBlockResizer = (
   updateAttributes: (attrs: Record<string, any>) => void,
   maxWidth: number,
-  aspectRatioRef?: RefObject<number>
+  aspectRatioRef?: RefObject<number | null>
 ) => {
   const withHeight = (nextWidth: number) =>
     aspectRatioRef

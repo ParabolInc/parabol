@@ -3,7 +3,7 @@ import {requestIdleCallback} from '../utils/requestIdleCallback'
 import useInitialRender from './useInitialRender'
 
 const useScrollIntoView = (
-  ref: RefObject<HTMLElement>,
+  ref: RefObject<HTMLElement | null>,
   isNeeded: boolean,
   onlyIfNotFullyVisible?: boolean
 ) => {

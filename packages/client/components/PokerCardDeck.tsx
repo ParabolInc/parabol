@@ -19,7 +19,7 @@ import PokerCard from './PokerCard'
 
 interface Props {
   meeting: PokerCardDeck_meeting$key
-  estimateAreaRef: RefObject<HTMLDivElement>
+  estimateAreaRef: RefObject<HTMLDivElement | null>
 }
 
 const swipe = {

@@ -27,7 +27,7 @@ interface Props {
   idx: number
   isDesktop: boolean
   meeting: PhaseItemColumn_meeting$key
-  phaseRef: RefObject<HTMLDivElement>
+  phaseRef: RefObject<HTMLDivElement | null>
   prompt: PhaseItemColumn_prompt$key
   autoFocus: boolean
 }

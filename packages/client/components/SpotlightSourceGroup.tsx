@@ -6,9 +6,9 @@ import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 
 interface Props {
   meetingRef: SpotlightSourceGroup_meeting$key
-  sourceRef: RefObject<HTMLDivElement>
-  modalRef: RefObject<HTMLDivElement>
-  reflectionIdsToHideRef: RefObject<string[]>
+  sourceRef: RefObject<HTMLDivElement | null>
+  modalRef: RefObject<HTMLDivElement | null>
+  reflectionIdsToHideRef: RefObject<string[] | null>
 }
 
 const SpotlightSourceGroup = (props: Props) => {
