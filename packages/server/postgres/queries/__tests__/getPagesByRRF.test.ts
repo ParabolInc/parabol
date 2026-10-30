@@ -287,6 +287,22 @@ it('gives pages with some of the words a keyword rank when the fallback applies'
   expect(await vectorOnlyKeywordRank(0)).toBeNull()
 })
 
+it('passes title typo matching to the keyword arm', async () => {
+  const keywordRank = async (titleTypoSimilarity: number) => {
+    const {edges} = await fused(0.5, {query: 'quartrly', titleTypoSimilarity})
+    return edges.find(({nodeId}) => nodeId === keywordOnlyId)?.score.keywordRank ?? null
+  }
+  expect(await keywordRank(0.5)).toEqual(expect.any(Number))
+  expect(await keywordRank(0)).toBeNull()
+})
+
+it('matches misspelled title words by default', async () => {
+  const {edges} = await fused(0.5, {query: 'quartrly'})
+  expect(edges.find(({nodeId}) => nodeId === keywordOnlyId)?.score.keywordRank).toEqual(
+    expect.any(Number)
+  )
+})
+
 it('ranks by keyword when alpha is 0', async () =>
   expect((await fused(0)).edges.at(-1)!.nodeId).toBe(vectorOnlyId))
 

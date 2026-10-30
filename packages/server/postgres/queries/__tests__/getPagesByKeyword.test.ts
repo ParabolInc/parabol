@@ -1,5 +1,5 @@
 import {sql} from 'kysely'
-import {pagePrefixTerms, pagePrefixTsQuery} from '../../expressions'
+import {pagePrefixTerms, pagePrefixTsQuery, pageQueryWords} from '../../expressions'
 import getKysely from '../../getKysely'
 import {
   getPagesByKeyword,
@@ -61,6 +61,11 @@ let zephyr50Id: number
 let zephyrId: number
 let zephyrDecimalId: number
 let zephyrSevId: number
+let vendorComparisonId: number
+let vendorListId: number
+let whiteboardIdeasId: number
+let whitebordIdeasId: number
+let whiteboardBodyId: number
 
 beforeAll(async () => {
   await pg
@@ -133,12 +138,38 @@ beforeAll(async () => {
   zephyrId = await insertPage({title: 'Zephyr', updatedAt: new Date('2026-09-03T12:00:00Z')})
   zephyrDecimalId = await insertPage({title: 'Zephyr 3.12 upgrade'})
   zephyrSevId = await insertPage({title: 'Zephyr SEV-1 review'})
+  vendorComparisonId = await insertPage({
+    title: 'Vendor comparison',
+    updatedAt: new Date('2026-08-01T12:00:00Z')
+  })
+  vendorListId = await insertPage({
+    title: 'Vendor list',
+    updatedAt: new Date('2026-08-03T12:00:00Z')
+  })
+  whiteboardIdeasId = await insertPage({
+    title: 'Whiteboard ideas',
+    updatedAt: new Date('2026-08-01T12:00:00Z')
+  })
+  whitebordIdeasId = await insertPage({
+    title: 'Whitebord ideas',
+    plaintextContent: 'ideas '.repeat(20),
+    updatedAt: new Date('2026-08-02T12:00:00Z')
+  })
+  whiteboardBodyId = await insertPage({
+    title: 'Room booking',
+    plaintextContent: 'Whiteboard markers'
+  })
   const viewerPageIds = [
     zephyr5Id,
     zephyr50Id,
     zephyrId,
     zephyrDecimalId,
     zephyrSevId,
+    vendorComparisonId,
+    vendorListId,
+    whiteboardIdeasId,
+    whitebordIdeasId,
+    whiteboardBodyId,
     toDoId,
     lateMatchId,
     compoundWordsId,
@@ -195,6 +226,29 @@ const keywordSearch = (
 
 const ids = async (query: string, overrides?: Partial<Parameters<typeof getPagesByKeyword>[0]>) =>
   (await keywordSearch(query, overrides)).edges.map(({nodeId}) => nodeId)
+
+describe('splits the query into search words', () => {
+  const words = async (query: string, dropStopWords: boolean) => {
+    const {rows} = await sql<{
+      words: string[] | null
+    }>`select ${pageQueryWords(query, dropStopWords)} as words`.execute(pg)
+    return rows[0]!.words
+  }
+
+  it.each([
+    ['retro #5', false, ['retro', '5']],
+    ['the weekly offsite agenda', true, ['weekly', 'offsite', 'agenda']],
+    [
+      'one two three four five six seven eight nine',
+      false,
+      ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight']
+    ]
+  ])('splits %p (without stop words: %p) into %p', async (query, dropStopWords, expected) =>
+    expect(await words(query, dropStopWords)).toEqual(expected)
+  )
+
+  it('gives no words for single letters', async () => expect(await words('a b', false)).toBeNull())
+})
 
 describe('turns the query into prefix terms', () => {
   const terms = async (query: string, dropStopWords = false, operator: '&' | '|' = '&') => {
@@ -282,6 +336,45 @@ it('highlights a single digit', async () => {
   const {edges} = await keywordSearch('build 5')
   expect(edges[0]!.snippets[0]).toMatch(/<b>5<\/b>/)
 })
+
+it('matches a misspelled title word', async () =>
+  expect((await ids('vendor comparsion', {titleTypoSimilarity: 0.5}))[0]).toBe(vendorComparisonId))
+
+it('matches misspelled title words by default', async () =>
+  expect((await ids('vendor comparsion'))[0]).toBe(vendorComparisonId))
+
+it('never matches a digit by title similarity', async () =>
+  expect(await ids('5')).not.toContain(zephyr50Id))
+
+it('never matches a short word by title similarity', async () =>
+  expect(await ids('vent')).not.toContain(vendorListId))
+
+it('puts closer misspelled title matches first', async () =>
+  expect(await ids('whiteboad', {first: 2})).toEqual([whiteboardIdeasId, whitebordIdeasId]))
+
+it('pages through misspelled title matches without gaps or repeats', async () => {
+  const all = await ids('whiteboad', {first: 2})
+  const walked = [
+    ...(await ids('whiteboad', {first: 1, offset: 0})),
+    ...(await ids('whiteboad', {first: 1, offset: 1}))
+  ]
+  expect(walked).toEqual(all)
+})
+
+it('ignores misspellings when the threshold is 0', async () =>
+  expect(await ids('whiteboad', {titleTypoSimilarity: 0})).toEqual([]))
+
+it('matches misspellings only in titles', async () => {
+  const found = await ids('whiteboad', {titleTypoSimilarity: 0.5})
+  expect(found).toContain(whiteboardIdeasId)
+  expect(found).not.toContain(whiteboardBodyId)
+})
+
+it('puts exact matches before misspelled ones', async () =>
+  expect((await ids('whiteboard ideas', {titleTypoSimilarity: 0.5})).slice(0, 2)).toEqual([
+    whiteboardIdeasId,
+    whitebordIdeasId
+  ]))
 
 it("never returns another user's page", async () => expect(await ids('secret')).toEqual([]))
 
@@ -625,7 +718,9 @@ describe('matches a plain reference query', () => {
   }
 
   type SearchCase = Omit<PageKeywordSearchParams, 'viewerId'> &
-    Partial<Pick<KeywordMatching, 'anyWordFallbackBelow' | 'anyWordMinShare'>>
+    Partial<
+      Pick<KeywordMatching, 'anyWordFallbackBelow' | 'anyWordMinShare' | 'titleTypoSimilarity'>
+    >
   const unfiltered = (query: string, first = 100): SearchCase => ({
     query,
     first,
@@ -633,7 +728,8 @@ describe('matches a plain reference query', () => {
     teamIds: undefined,
     dateRange: null,
     anyWordFallbackBelow: 0,
-    anyWordMinShare: 0
+    anyWordMinShare: 0,
+    titleTypoSimilarity: 0
   })
   const cases: [string, SearchCase][] = [
     ...[...vocabulary, 'ret', 'pla', 'retro plan', 'standup review sync', 'budget launch'].map(

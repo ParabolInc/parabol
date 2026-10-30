@@ -3,6 +3,7 @@ import type {SearchResultEdgeSource} from '../../graphql/public/types/SearchResu
 import {
   pagePrefixTerms,
   pagePrefixTsQuery,
+  pageQueryWords,
   pageSearchTsv,
   pageSnippet,
   pageTitleTsv,
@@ -24,12 +25,16 @@ export interface KeywordMatching {
   dropStopWords: boolean
   anyWordFallbackBelow: number
   anyWordMinShare: number
+  titleTypoSimilarity: number
 }
+
+const MIN_TYPO_WORD_LENGTH = 5
 
 export const QUICK_KEYWORD_MATCHING: KeywordMatching = {
   dropStopWords: true,
   anyWordFallbackBelow: 20,
-  anyWordMinShare: 0
+  anyWordMinShare: 0,
+  titleTypoSimilarity: 0.5
 }
 
 export interface PageSearchResults {
@@ -50,22 +55,28 @@ export const withPageKeywordRanking = (
     dateRange,
     dropStopWords,
     anyWordFallbackBelow,
-    anyWordMinShare
+    anyWordMinShare,
+    titleTypoSimilarity
   }: Omit<PageKeywordSearchParams, 'first' | 'offset'> & KeywordMatching,
   limit?: number
 ) => {
   const fallsBack = anyWordFallbackBelow > 0
+  const matchesTitleTypos = titleTypoSimilarity > 0
   return (
     getKysely()
       // search terms: the query split into words the same way page text is, each word a prefix
       .with('SearchTermList', (qb) =>
-        qb.selectNoFrom(pagePrefixTerms(query, dropStopWords).as('termList'))
+        qb.selectNoFrom([
+          pagePrefixTerms(query, dropStopWords).as('termList'),
+          pageQueryWords(query, dropStopWords).as('wordList')
+        ])
       )
       .with('SearchTerms', (qb) =>
         qb
           .selectFrom('SearchTermList as stl')
           .select((eb) => [
             'stl.termList',
+            'stl.wordList',
             pagePrefixTsQuery(eb.ref('stl.termList'), '&').as('terms'),
             pagePrefixTsQuery(eb.ref('stl.termList'), '|').as('anyTerms'),
             sql<number>`greatest(1, ceil(${anyWordMinShare}::float8 * cardinality(${eb.ref('stl.termList')})))::int`.as(
@@ -115,23 +126,46 @@ export const withPageKeywordRanking = (
               .offset(0)
               .as('s')
           )
-          // matching: the page's search text contains every term, or with the fallback, any of them
+          // word by word: whether the page's search text has the term, and how close the word is to the title.
+          // Only words of 5+ characters without digits are matched by title similarity
+          .crossJoinLateral((eb) => {
+            const similarity = matchesTitleTypos
+              ? sql<number>`case when char_length(t.word) >= ${sql.lit(MIN_TYPO_WORD_LENGTH)} and t.word !~ '[0-9]' then word_similarity(t.word, coalesce(${eb.ref('p.title')}, '')) else 0 end`
+              : sql<number>`0`
+            const isTitleTypo = matchesTitleTypos
+              ? sql<boolean>`(not w.exact and w.similarity >= ${titleTypoSimilarity}::float8)`
+              : sql<boolean>`false`
+            return qb
+              .selectFrom(
+                sql<{exact: boolean; similarity: number}>`(
+                  select ${eb.ref('s.searchTsv')} @@ t.term::tsquery as exact, ${similarity}::float8 as similarity
+                  from unnest(${eb.ref('st.termList')}, ${eb.ref('st.wordList')}) as t(term, word)
+                )`.as('w')
+              )
+              .select([
+                sql<number>`(count(*) filter (where w.exact or ${isTitleTypo}))::int`.as(
+                  'matchedWords'
+                ),
+                sql<number>`coalesce(sum(w.similarity) filter (where ${isTitleTypo}), 0)::float8`.as(
+                  'titleTypoScore'
+                )
+              ])
+              .as('m')
+          })
+          // matching: the page's search text contains every term, or with the fallback, any of them,
+          // or a word close to a word of the title
           .where((eb) =>
-            fallsBack
-              ? eb('s.searchTsv', '@@', eb.ref('st.anyTerms'))
-              : eb('s.searchTsv', '@@', eb.ref('st.terms'))
+            fallsBack ? eb('m.matchedWords', '>', 0) : eb('s.searchTsv', '@@', eb.ref('st.terms'))
           )
           .select((eb) => {
             const hasEveryWord = eb('s.searchTsv', '@@', eb.ref('st.terms'))
             const matchQuery = sql<string>`case when ${hasEveryWord} then ${eb.ref('st.terms')} else ${eb.ref('st.anyTerms')} end`
-            const matchedWords = fallsBack
-              ? sql<number>`(select count(*) from unnest(${eb.ref('st.termList')}) as t(term) where ${eb.ref('s.searchTsv')} @@ t.term::tsquery)::int`
-              : sql<number>`cardinality(${eb.ref('st.termList')})`
             return [
               'vp.id',
               'vp.updatedAt',
               hasEveryWord.as('hasEveryWord'),
-              matchedWords.as('matchedWords'),
+              'm.matchedWords',
+              'm.titleTypoScore',
               eb(pageTitleTsv(eb.ref('p.title')), '@@', matchQuery).as('titleMatch'),
               sql<number>`ts_rank_cd(${eb.ref('s.searchTsv')}, ${matchQuery}, 0)::float8`.as(
                 'keywordScore'
@@ -161,8 +195,9 @@ export const withPageKeywordRanking = (
             'km.updatedAt',
             'km.hasEveryWord',
             'km.keywordScore',
-            // ordering: most words first, then title matches, then rank, then most recently updated, then id for stable ties
-            sql<number>`row_number() over (order by ${eb.ref('km.matchedWords')} desc, ${eb.ref('km.titleMatch')} desc, ${eb.ref('km.keywordScore')} desc, ${eb.ref('km.updatedAt')} desc, ${eb.ref('km.id')} desc)::int`.as(
+            // ordering: every word as typed first, then most words, then title matches, then rank, then the closest
+            // misspelled title, then most recently updated, then id for stable ties
+            sql<number>`row_number() over (order by ${eb.ref('km.hasEveryWord')} desc, ${eb.ref('km.matchedWords')} desc, ${eb.ref('km.titleMatch')} desc, ${eb.ref('km.keywordScore')} desc, ${eb.ref('km.titleTypoScore')} desc, ${eb.ref('km.updatedAt')} desc, ${eb.ref('km.id')} desc)::int`.as(
               'keywordRank'
             )
           ])
@@ -181,10 +216,20 @@ export const getPagesByKeyword = async ({
   dateRange,
   dropStopWords = QUICK_KEYWORD_MATCHING.dropStopWords,
   anyWordFallbackBelow = QUICK_KEYWORD_MATCHING.anyWordFallbackBelow,
-  anyWordMinShare = QUICK_KEYWORD_MATCHING.anyWordMinShare
+  anyWordMinShare = QUICK_KEYWORD_MATCHING.anyWordMinShare,
+  titleTypoSimilarity = QUICK_KEYWORD_MATCHING.titleTypoSimilarity
 }: PageKeywordSearchParams & Partial<KeywordMatching>): Promise<PageSearchResults> => {
   const rows = await withPageKeywordRanking(
-    {query, viewerId, teamIds, dateRange, dropStopWords, anyWordFallbackBelow, anyWordMinShare},
+    {
+      query,
+      viewerId,
+      teamIds,
+      dateRange,
+      dropStopWords,
+      anyWordFallbackBelow,
+      anyWordMinShare,
+      titleTypoSimilarity
+    },
     offset + first + 1
   )
     // output: each page's position in that order, plus a highlighted snippet from the first 20k characters
