@@ -2,7 +2,7 @@ import {sql} from 'kysely'
 import type {ModelId} from '../../../embedder/ai_models/modelIdDefinitions'
 import TextEmbeddingsInference from '../../../embedder/ai_models/TextEmbeddingsInference'
 import type {EmbeddingsRun} from '../../../embedder/embeddingsRun'
-import {feedEmbeddingsRun} from '../../../embedder/feedEmbeddingsRun'
+import {feedEmbeddingsRun, getEmbeddingsRunProgress} from '../../../embedder/feedEmbeddingsRun'
 import {
   getEmbeddingsPagesTableName,
   getEmbeddingsTableName
@@ -26,6 +26,11 @@ jest.mock('../../../embedder/ai_models/modelIdDefinitions', () => {
   }
 })
 
+jest.mock('../../../embedder/activeEmbeddingModel', () => ({
+  activeEmbeddingModelId: 'feedRunSource',
+  embeddingModelIds: ['feedRunSource', 'feedRunTarget']
+}))
+
 const pg = getKysely()
 const source = 'feedRunSource' as ModelId
 const target = 'feedRunTarget' as ModelId
@@ -40,9 +45,14 @@ const metadataIds: Record<string, number> = {}
 
 const run = (overrides: Partial<EmbeddingsRun> = {}): EmbeddingsRun => ({
   modelId: target,
+  sourceModelId: source,
   state: 'running',
   copyMetadata: true,
   queueSize: 10,
+  pageCursor: null,
+  metadataCursor: null,
+  metadataDone: false,
+  pagesDone: false,
   ...overrides
 })
 
@@ -158,14 +168,16 @@ afterAll(async () => {
   await pg.destroy()
 })
 
+const queuedPageIds = async () => (await queuedJobs()).map(({pageId}) => pageId)
+
 it('queues the newest embedded pages first, up to the queue size', async () => {
-  await feedEmbeddingsRun(run({queueSize: 2}), source)
-  expect((await queuedJobs()).map(({pageId}) => pageId)).toEqual([pageIds.newest, pageIds.second])
+  await feedEmbeddingsRun(run({queueSize: 2}))
+  expect(await queuedPageIds()).toEqual([pageIds.newest, pageIds.second])
 })
 
-it('skips pages that already have vectors in the target or none in the active generation', async () => {
-  await feedEmbeddingsRun(run(), source)
-  expect((await queuedJobs()).map(({pageId}) => pageId)).toEqual([
+it('skips pages that already have vectors in the target or none in the source', async () => {
+  await feedEmbeddingsRun(run())
+  expect(await queuedPageIds()).toEqual([
     pageIds.newest,
     pageIds.second,
     pageIds.third,
@@ -173,14 +185,26 @@ it('skips pages that already have vectors in the target or none in the active ge
   ])
 })
 
-it('queues nothing while paused, or once the target is the active generation', async () => {
-  expect(await feedEmbeddingsRun(run({state: 'paused'}), source)).toBeNull()
-  expect(await feedEmbeddingsRun(run(), target)).toBeNull()
+it('continues below its cursor, so pages that never get vectors are offered once', async () => {
+  const first = await feedEmbeddingsRun(run({queueSize: 2}))
+  await pg.deleteFrom('EmbeddingsJobQueueV2').where('modelId', '=', target).execute()
+  const second = await feedEmbeddingsRun(first!.run)
+  expect(await queuedPageIds()).toEqual([pageIds.third, pageIds.older])
+  await pg.deleteFrom('EmbeddingsJobQueueV2').where('modelId', '=', target).execute()
+  const third = await feedEmbeddingsRun(second!.run)
+  expect(await queuedPageIds()).toEqual([])
+  expect(third!.run.pagesDone).toBe(true)
+})
+
+it('queues nothing while paused or done, or once the source generation is gone', async () => {
+  expect(await feedEmbeddingsRun(run({state: 'paused'}))).toBeNull()
+  expect(await feedEmbeddingsRun(run({pagesDone: true, metadataDone: true}))).toBeNull()
+  expect(await feedEmbeddingsRun(run({sourceModelId: 'gone' as ModelId}))).toBeNull()
   expect(await queuedJobs()).toEqual([])
 })
 
-it('copies metadata vectors before queueing pages', async () => {
-  await feedEmbeddingsRun(run(), source)
+it('copies metadata vectors, then marks metadata done', async () => {
+  const first = await feedEmbeddingsRun(run())
   const copied = await pg
     .selectFrom(targetMetadata)
     .select(['chunkNumber', 'embedText'])
@@ -192,10 +216,12 @@ it('copies metadata vectors before queueing pages', async () => {
     {chunkNumber: 1, embedText: 'chunk 1'}
   ])
   expect((await queuedJobs()).every(({jobType}) => jobType === 'embedPage:start')).toBe(true)
+  const second = await feedEmbeddingsRun(first!.run)
+  expect(second!.run.metadataDone).toBe(true)
 })
 
 it('queues metadata embeds first when the space differs', async () => {
-  await feedEmbeddingsRun(run({copyMetadata: false, queueSize: 3}), source)
+  await feedEmbeddingsRun(run({copyMetadata: false, queueSize: 3}))
   expect(await queuedJobs()).toEqual([
     {jobType: 'embed:start', pageId: null, embeddingsMetadataId: metadataIds.missing},
     {jobType: 'embedPage:start', pageId: pageIds.newest, embeddingsMetadataId: null},
@@ -204,7 +230,8 @@ it('queues metadata embeds first when the space differs', async () => {
 })
 
 it('reports progress from the tables', async () => {
-  expect(await feedEmbeddingsRun(run({copyMetadata: false, queueSize: 3}), source)).toEqual({
+  await feedEmbeddingsRun(run({copyMetadata: false, queueSize: 3}))
+  expect(await getEmbeddingsRunProgress(target, source)).toEqual({
     recentPages: {done: 1, total: 4},
     olderPages: {done: 0, total: 1},
     metadata: {done: 1, total: 2},

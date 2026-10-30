@@ -3,7 +3,7 @@ Fills a new embedding generation in the background, a few jobs at a time
 """
 input BuildEmbeddingsInputRun {
   """
-  The generation to fill: its id in AI_EMBEDDING_MODELS. It can't be the first, active entry
+  The generation to fill: its id in AI_EMBEDDING_MODELS. A run starts only for a generation other than the first, active entry, and keeps filling it from that generation after a cutover
   """
   modelId: String!
   action: EmbeddingsRunActionEnum!
@@ -14,7 +14,7 @@ input BuildEmbeddingsInputRun {
   copyMetadata: Boolean
 
   """
-  How many of the run's jobs to keep queued. Defaults to 100
+  How many of the run's jobs to keep queued. Defaults to 1000
   """
   queueSize: Int
 }
