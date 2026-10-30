@@ -535,6 +535,9 @@ type Mutation {
   ): AssignSAMLIdToOrgPayload!
 
   pruneFailedEmbeddingJobs(before: DateTime!): Int
+  """
+  Queue embeddings, or start, pause or resume the background run that fills a new embedding generation. A run returns the pages it has left
+  """
   buildEmbeddings(input: BuildEmbeddingsInput!): Int
 
   """

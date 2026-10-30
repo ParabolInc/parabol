@@ -1,4 +1,5 @@
 input BuildEmbeddingsInput @oneOf {
   adhoc: BuildEmbeddingsInputAdhoc
   lastFailedAt: DateRangeInput
+  run: BuildEmbeddingsInputRun
 }

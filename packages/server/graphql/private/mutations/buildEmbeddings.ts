@@ -1,8 +1,17 @@
 import {GraphQLError} from 'graphql'
+import {activeEmbeddingModelId, embeddingModelIds} from '../../../../embedder/activeEmbeddingModel'
+import {
+  getEmbeddingsRun,
+  setEmbeddingsRunState,
+  startEmbeddingsRun
+} from '../../../../embedder/embeddingsRun'
+import {getEmbeddingsRunProgress} from '../../../../embedder/feedEmbeddingsRun'
 import getKysely from '../../../postgres/getKysely'
 import isValid from '../../isValid'
 import {publishToEmbedder} from '../../mutations/helpers/publishToEmbedder'
 import type {MutationResolvers} from '../resolverTypes'
+
+const DEFAULT_RUN_QUEUE_SIZE = 1000
 
 const buildEmbeddings: MutationResolvers['buildEmbeddings'] = async (
   _source,
@@ -10,7 +19,41 @@ const buildEmbeddings: MutationResolvers['buildEmbeddings'] = async (
   {dataLoader}
 ) => {
   const pg = getKysely()
-  const {adhoc, lastFailedAt} = input
+  const {adhoc, lastFailedAt, run} = input
+  if (run) {
+    const {modelId, action, copyMetadata, queueSize} = run
+    const targetModelId = embeddingModelIds.find((id) => id === modelId)
+    if (!targetModelId) {
+      throw new GraphQLError('modelId must be a configured embedding generation')
+    }
+    let sourceModelId = activeEmbeddingModelId
+    if (action === 'start') {
+      if (!sourceModelId || targetModelId === sourceModelId) {
+        throw new GraphQLError(
+          'modelId must be a configured embedding generation other than the active one'
+        )
+      }
+      const size = queueSize ?? DEFAULT_RUN_QUEUE_SIZE
+      if (size < 1) throw new GraphQLError('queueSize must be at least 1')
+      await startEmbeddingsRun({
+        modelId: targetModelId,
+        sourceModelId,
+        state: 'running',
+        copyMetadata: !!copyMetadata,
+        queueSize: size
+      })
+    } else {
+      const current = await getEmbeddingsRun()
+      if (current?.modelId !== targetModelId) {
+        throw new GraphQLError(`There is no run for ${modelId}`)
+      }
+      sourceModelId = current.sourceModelId
+      if (action !== 'status')
+        await setEmbeddingsRunState(action === 'pause' ? 'paused' : 'running')
+    }
+    const {recentPages, olderPages} = await getEmbeddingsRunProgress(targetModelId, sourceModelId)
+    return recentPages.total - recentPages.done + olderPages.total - olderPages.done
+  }
   if (lastFailedAt) {
     const {startAt, endAt} = lastFailedAt
     // This is the inverse of WorkflowOrchestrator.failJob

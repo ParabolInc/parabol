@@ -1,0 +1,10 @@
+"""
+What to do with the background run that fills a new embedding generation
+"""
+enum EmbeddingsRunActionEnum {
+  start
+  pause
+  resume
+  "Change nothing and return the pages left"
+  status
+}

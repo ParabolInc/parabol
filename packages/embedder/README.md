@@ -67,6 +67,33 @@ The Embedder service is stateless and takes no arguments. Multiple instances
 of the service may be started in order to match embedding load, or to
 catch up on history more quickly.
 
+## Background run
+
+A new generation fills in the background once an admin starts a run with the
+private `buildEmbeddings(input: {run: {modelId, action}})` mutation. The
+`action` is `start`, `pause`, `resume` or `status`, and every call returns the
+pages the run has left. A run copies from the generation that was active when
+it started, and keeps going after a cutover. Once a minute, one embedder:
+
+1. Copies meeting template and discussion vectors from that generation
+   (`copyMetadata: true`), or queues them to be embedded again. Copy only when
+   both generations use the same model and pooling, so the vectors would be
+   the same.
+2. Queues the next pages that have vectors in that generation and none in the
+   new one, newest first, until `queueSize` jobs (1000 by default) are waiting.
+   They sit at the lowest priority, behind searches and edits. A cursor moves
+   past every page it offers, so a page that never gets vectors (one with no
+   text to chunk, or one whose embed keeps failing) is offered once. Pages that
+   were never embedded stay out.
+3. Logs `Embeddings run <id>: queued <n> pages and <n> metadata rows, down to
+   pages updated <time>`, and `done` once it has offered every page.
+
+The run's settings are a Valkey hash, `embeddingsRun`, and its cursors are
+`embeddingsRunProgress:<id>`; everything else comes from the tables, so
+restarts and deploys don't lose progress. `status` counts what is done from
+the tables. Cut over once the recent pages are done; the run then finishes the
+older pages, which also convert on their next edit or search.
+
 ## Resources
 
 ### PG as a Job Queue
