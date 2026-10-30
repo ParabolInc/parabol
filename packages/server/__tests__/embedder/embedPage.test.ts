@@ -72,6 +72,21 @@ const insertPage = async (sortOrder: string) => {
   return id
 }
 
+const insertPageWithContent = async (sortOrder: string, content: JSONContent) => {
+  const {id} = await pg
+    .insertInto('Page')
+    .values({
+      userId,
+      sortOrder,
+      title: 'Embed page test',
+      plaintextContent: '',
+      yDoc: toYDoc(content)
+    })
+    .returning('id')
+    .executeTakeFirstOrThrow()
+  return id
+}
+
 const run = (targetPageId = pageId) =>
   embedPage({
     dataLoader: getNewDataLoader('embedPageTest'),
@@ -186,4 +201,55 @@ it('re-embeds only what a failed run missed', async () => {
     expect.stringContaining('Beta'),
     expect.stringContaining('Gamma')
   ])
+})
+
+it('embeds a page in a language Postgres has no config for', async () => {
+  const japanesePageId = await insertPageWithContent('a3', {
+    type: 'doc',
+    content: [
+      {
+        type: 'heading',
+        attrs: {level: 1},
+        content: [{type: 'text', text: '会議メモ: リリース計画'}]
+      },
+      {
+        type: 'paragraph',
+        content: [
+          {
+            type: 'text',
+            text: 'リリースは来週の火曜日です。テストは月曜日までに終わらせます。'.repeat(3)
+          }
+        ]
+      }
+    ]
+  })
+  expect(await run(japanesePageId)).not.toBeInstanceOf(JobQueueError)
+  expect((await chunkTexts(japanesePageId)).length).toBeGreaterThan(0)
+})
+
+it('makes no chunks for a page without text', async () => {
+  const titleOnlyPageId = await insertPageWithContent('a4', {
+    type: 'doc',
+    content: [
+      {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'Q4 planning (draft)'}]}
+    ]
+  })
+  expect(await run(titleOnlyPageId)).not.toBeInstanceOf(JobQueueError)
+  expect(await chunkTexts(titleOnlyPageId)).toEqual([])
+})
+
+it('embeds a page with one block whose stored content is broken', async () => {
+  const brokenPageId = await insertPageWithContent('a5', {
+    type: 'doc',
+    content: [
+      {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'Broken response page'}]},
+      {
+        type: 'responseBlock',
+        attrs: {id: 'broken', preferredName: 'Lukas Becker', avatar: '', content: '{'}
+      },
+      {type: 'paragraph', content: [{type: 'text', text: sectionText('Alpha')}]}
+    ]
+  })
+  expect(await run(brokenPageId)).not.toBeInstanceOf(JobQueueError)
+  expect(await chunkTexts(brokenPageId)).toEqual([expect.stringContaining('Alpha notes')])
 })
