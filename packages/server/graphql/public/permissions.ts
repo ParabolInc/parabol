@@ -23,6 +23,7 @@ import {isUserViewer} from './rules/isUserViewer'
 import {isViewerBillingLeader} from './rules/isViewerBillingLeader'
 import {isViewerOnOrg} from './rules/isViewerOnOrg'
 import {isViewerTeamLead} from './rules/isViewerTeamLead'
+import {isWithinCallerGrants} from './rules/isWithinCallerGrants'
 import rateLimit from './rules/rateLimit'
 import {sharesOrgWithViewer} from './rules/sharesOrgWithViewer'
 
@@ -145,8 +146,8 @@ const permissionMap: PermissionMap<Resolvers> = {
       'args.orgId',
       'ORG_ADMIN'
     ),
-    createPersonalAccessToken: rateLimit({perMinute: 10, perHour: 50}),
-    updatePersonalAccessToken: rateLimit({perMinute: 10, perHour: 50}),
+    createPersonalAccessToken: and(isWithinCallerGrants, rateLimit({perMinute: 10, perHour: 50})),
+    updatePersonalAccessToken: and(isWithinCallerGrants, rateLimit({perMinute: 10, perHour: 50})),
     createPage: and(
       isAuthenticated,
       or(
