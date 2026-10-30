@@ -21,6 +21,7 @@ import selfHostedHandler from './selfHostedHandler'
 import {createStaticFileHandler} from './staticFileHandler'
 import getReqAuth from './utils/getReqAuth'
 import {Logger} from './utils/Logger'
+import parseSessionId from './utils/parseSessionId'
 import registerFatalErrorHandlers from './utils/registerFatalErrorHandlers'
 import SAMLHandler from './utils/SAMLHandler'
 import uwsGetIP from './utils/uwsGetIP'
@@ -79,7 +80,9 @@ const app = uws
     // uWS deletes the req before the first await, so we must read it now
     const ip = uwsGetIP(res, req)
     const authToken = getReqAuth(req)
-    return yoga(res, req, {authToken, ip})
+    const traceparent = req.getHeader('traceparent') || undefined
+    const sessionId = parseSessionId(req.getHeader('x-parabol-session-id'))
+    return yoga(res, req, {authToken, ip, traceparent, sessionId})
   })
   .post('/saml/:domain', SAMLHandler)
   .get('/oauth/authorize', authorizeHandler)

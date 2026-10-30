@@ -23,6 +23,7 @@ import {getTeamMemberUserIds} from './utils/getTeamMemberUserIds'
 import {getUserSocketCount} from './utils/getUserSocketCount'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {Logger} from './utils/Logger'
+import parseSessionId from './utils/parseSessionId'
 import publish from './utils/publish'
 import {CLIENT_IP_POS} from './utils/uwsGetIP'
 import {extractPersistedOperationId, getPersistedOperation, type ServerContext, yoga} from './yoga'
@@ -43,6 +44,7 @@ declare module 'graphql-ws/use/uWebSockets' {
     ip: string
     authToken: AuthToken
     socketId: string
+    sessionId?: string
     resubscribe: Record<string, () => void>
     // not present for subscription IDs
     dataLoaders: Record<string, ReturnType<typeof getNewDataLoader>>
@@ -77,7 +79,7 @@ const dehydrateResult = (result: ExecutionResult) => {
 }
 
 const documentCache = new Map()
-export const wsHandler = makeBehavior<{token?: string; docId?: string}>({
+export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId?: string}>({
   onConnect: async (ctx) => {
     const {connectionParams, extra} = ctx
 
@@ -115,6 +117,7 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string}>({
       typeof forwarded === 'string' ? forwarded.split(',').at(CLIENT_IP_POS)?.trim() : ''
     extra.ip = clientIP || extra.socket.ip
     extra.socketId = extra.persistedRequest.headers['sec-websocket-key']!
+    extra.sessionId = parseSessionId(connectionParams?.sessionId)
     extra.resubscribe = {}
     extra.dataLoaders = {}
     activeClients.set(extra.socketId, extra.socket)
@@ -178,7 +181,7 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string}>({
   subscribe: (args) => (args as EnvelopedExecutionArgs).rootValue.subscribe(args),
   onSubscribe: async (ctx, id, params) => {
     const {extra} = ctx
-    const {ip, authToken, socketId, resubscribe} = extra
+    const {ip, authToken, socketId, sessionId, resubscribe} = extra
     const {schema, execute, subscribe, parse, contextFactory} = yoga.getEnveloped(ctx)
     const docId = extractPersistedOperationId(params as any)
     // armor requires a docId to know this isn't an adhoc query
@@ -229,6 +232,11 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string}>({
         ip,
         authToken,
         socketId,
+        sessionId,
+        traceparent:
+          typeof params.extensions?.traceparent === 'string'
+            ? params.extensions.traceparent
+            : undefined,
         _wsAuthTokenAtStart: authToken
       },
       rootValue: {
