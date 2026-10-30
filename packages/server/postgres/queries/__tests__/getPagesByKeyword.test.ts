@@ -61,6 +61,11 @@ let zephyr50Id: number
 let zephyrId: number
 let zephyrDecimalId: number
 let zephyrSevId: number
+let vendorComparisonId: number
+let vendorListId: number
+let whiteboardIdeasId: number
+let whitebordIdeasId: number
+let whiteboardBodyId: number
 
 beforeAll(async () => {
   await pg
@@ -133,12 +138,38 @@ beforeAll(async () => {
   zephyrId = await insertPage({title: 'Zephyr', updatedAt: new Date('2026-09-03T12:00:00Z')})
   zephyrDecimalId = await insertPage({title: 'Zephyr 3.12 upgrade'})
   zephyrSevId = await insertPage({title: 'Zephyr SEV-1 review'})
+  vendorComparisonId = await insertPage({
+    title: 'Vendor comparison',
+    updatedAt: new Date('2026-08-01T12:00:00Z')
+  })
+  vendorListId = await insertPage({
+    title: 'Vendor list',
+    updatedAt: new Date('2026-08-03T12:00:00Z')
+  })
+  whiteboardIdeasId = await insertPage({
+    title: 'Whiteboard ideas',
+    updatedAt: new Date('2026-08-01T12:00:00Z')
+  })
+  whitebordIdeasId = await insertPage({
+    title: 'Whitebord ideas',
+    plaintextContent: 'ideas '.repeat(20),
+    updatedAt: new Date('2026-08-02T12:00:00Z')
+  })
+  whiteboardBodyId = await insertPage({
+    title: 'Room booking',
+    plaintextContent: 'Whiteboard markers'
+  })
   const viewerPageIds = [
     zephyr5Id,
     zephyr50Id,
     zephyrId,
     zephyrDecimalId,
     zephyrSevId,
+    vendorComparisonId,
+    vendorListId,
+    whiteboardIdeasId,
+    whitebordIdeasId,
+    whiteboardBodyId,
     toDoId,
     lateMatchId,
     compoundWordsId,
@@ -305,6 +336,24 @@ it('highlights a single digit', async () => {
   const {edges} = await keywordSearch('build 5')
   expect(edges[0]!.snippets[0]).toMatch(/<b>5<\/b>/)
 })
+
+it('matches a misspelled title word', async () =>
+  expect((await ids('vendor comparsion', {titleTypoSimilarity: 0.5}))[0]).toBe(vendorComparisonId))
+
+it('ignores misspellings when the threshold is 0', async () =>
+  expect(await ids('whiteboad', {titleTypoSimilarity: 0})).toEqual([]))
+
+it('matches misspellings only in titles', async () => {
+  const found = await ids('whiteboad', {titleTypoSimilarity: 0.5})
+  expect(found).toContain(whiteboardIdeasId)
+  expect(found).not.toContain(whiteboardBodyId)
+})
+
+it('puts exact matches before misspelled ones', async () =>
+  expect((await ids('whiteboard ideas', {titleTypoSimilarity: 0.5})).slice(0, 2)).toEqual([
+    whiteboardIdeasId,
+    whitebordIdeasId
+  ]))
 
 it("never returns another user's page", async () => expect(await ids('secret')).toEqual([]))
 
@@ -648,7 +697,9 @@ describe('matches a plain reference query', () => {
   }
 
   type SearchCase = Omit<PageKeywordSearchParams, 'viewerId'> &
-    Partial<Pick<KeywordMatching, 'anyWordFallbackBelow' | 'anyWordMinShare'>>
+    Partial<
+      Pick<KeywordMatching, 'anyWordFallbackBelow' | 'anyWordMinShare' | 'titleTypoSimilarity'>
+    >
   const unfiltered = (query: string, first = 100): SearchCase => ({
     query,
     first,
@@ -656,7 +707,8 @@ describe('matches a plain reference query', () => {
     teamIds: undefined,
     dateRange: null,
     anyWordFallbackBelow: 0,
-    anyWordMinShare: 0
+    anyWordMinShare: 0,
+    titleTypoSimilarity: 0
   })
   const cases: [string, SearchCase][] = [
     ...[...vocabulary, 'ret', 'pla', 'retro plan', 'standup review sync', 'budget launch'].map(
