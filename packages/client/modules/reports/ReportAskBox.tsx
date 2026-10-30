@@ -80,10 +80,10 @@ const ReportAskBox = ({organizationRef, period, onAskingChange}: Props) => {
     document.getElementById(`${listboxId}-${activeIndex}`)?.scrollIntoView({block: 'nearest'})
   }, [activeIndex, listboxId])
 
-  const openReport = (spec: ReportSpec | null, title: string, reportQuestionId: string | null) => {
+  const openReport = (spec: ReportSpec | null, reportQuestionId: string | null) => {
     if (!spec) return
     setIsOpen(false)
-    navigate(toReportsHomePath(orgId, period, {spec, title, reportQuestionId}))
+    navigate(toReportsHomePath(orgId, period, {spec, reportQuestionId}))
   }
   const askAI = (question: string) => {
     setError(null)
@@ -105,7 +105,7 @@ const ReportAskBox = ({organizationRef, period, onAskingChange}: Props) => {
         const {reportQuestion, reason} = payload
         const spec = reportQuestion.spec ? parseReportSpecJSON(reportQuestion.spec) : null
         if (spec) {
-          openReport(spec, reportQuestion.title, reportQuestion.id)
+          openReport(spec, reportQuestion.id)
           return
         }
         setAnswer({
@@ -125,17 +125,17 @@ const ReportAskBox = ({organizationRef, period, onAskingChange}: Props) => {
     if (option.kind === 'ask') {
       askAI(option.question)
     } else if (option.kind === 'popular') {
-      const {key, spec, title} = option.popular
+      const {key, spec} = option.popular
       // the report opens once its recent question exists, so pinning it keeps what was picked
       logUse({
         variables: {orgId, popularQuestionKey: key},
         onCompleted: (response) =>
-          openReport(spec, title, response.logReportQuestionUse?.reportQuestion.id ?? null),
-        onError: () => openReport(spec, title, null)
+          openReport(spec, response.logReportQuestionUse?.reportQuestion.id ?? null),
+        onError: () => openReport(spec, null)
       })
     } else if (option.recent.spec) {
       logUse({variables: {orgId, reportQuestionId: option.recent.id}})
-      openReport(parseReportSpecJSON(option.recent.spec), option.recent.title, option.recent.id)
+      openReport(parseReportSpecJSON(option.recent.spec), option.recent.id)
     } else {
       // a question AI couldn't answer goes back in the box to be reworded
       setQuery(option.recent.question ?? option.recent.title)
@@ -156,10 +156,7 @@ const ReportAskBox = ({organizationRef, period, onAskingChange}: Props) => {
       setIsOpen(false)
     }
   }
-  const notice =
-    error ??
-    (answer &&
-      `Parabol can’t make that report: ${answer.reason} These popular questions are nearest.`)
+  const notice = error ?? answer?.reason
   const question = query.trim()
   return (
     <div className='relative'>
@@ -189,6 +186,7 @@ const ReportAskBox = ({organizationRef, period, onAskingChange}: Props) => {
             setIsOpen(true)
           }}
           onFocus={() => setIsOpen(true)}
+          onClick={() => setIsOpen(true)}
           onBlur={() => setIsOpen(false)}
           onKeyDown={onKeyDown}
         />

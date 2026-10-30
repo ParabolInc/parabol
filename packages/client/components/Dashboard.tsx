@@ -56,6 +56,9 @@ const ReportsHomeRoot = lazy(
 const ReportPageRoot = lazy(
   () => import(/* webpackChunkName: 'ReportPageRoot' */ '../modules/reports/ReportPageRoot')
 )
+const ReportPinRoot = lazy(
+  () => import(/* webpackChunkName: 'ReportPinRoot' */ '../modules/reports/ReportPinRoot')
+)
 
 const ShareTopicRouterRoot = lazy(
   () => import(/* webpackChunkName: 'ShareTopicRouterRoot' */ './ShareTopicRouterRoot')
@@ -157,6 +160,7 @@ const Dashboard = (props: Props) => {
               <Route path='/reports' element={<ReportsRoot />} />
               <Route path='/reports/:orgId' element={<ReportsHomeRoot />} />
               <Route path='/reports/:orgId/report' element={<ReportPageRoot />} />
+              <Route path='/reports/:orgId/pins/:pinParam' element={<ReportPinRoot />} />
               <Route
                 path='/new-summary/:meetingId/share/:stageId'
                 element={<ShareTopicRouterRoot />}

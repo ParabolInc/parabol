@@ -6,6 +6,8 @@ import ReportPanel from './ReportPanel'
 import type {ReportAddress} from './reportPaths'
 import type {ReportPagePeriod} from './reportPeriodParam'
 import {describeReportSpec} from './reportSpecLabels'
+import {parseReportSpecJSON} from './reportSpecParam'
+import useResultSpec from './useResultSpec'
 
 interface Props {
   queryRef: PreloadedQuery<ReportsAnswerQuery>
@@ -14,6 +16,7 @@ interface Props {
   period: ReportPagePeriod
   onSpecChange: (spec: ReportSpec, title: string) => void
   onClose: () => void
+  onRetry: (() => void) | null
 }
 
 const query = graphql`
@@ -23,6 +26,9 @@ const query = graphql`
     $timeZone: String!
     $lastHeldSpec: ReportSpecInput!
     $hasLastHeld: Boolean!
+    $allTeamsSpec: ReportSpecInput!
+    $allTeamsTotalSpec: ReportSpecInput!
+    $hasAllTeams: Boolean!
   ) {
     viewer {
       organization(orgId: $orgId) {
@@ -30,22 +36,39 @@ const query = graphql`
           id
           name
         }
+        recentReportQuestions {
+          id
+          title
+          spec
+        }
         ...ReportPanel_organization
       }
     }
   }
 `
 
-const ReportsAnswer = ({queryRef, orgId, answer, period, onSpecChange, onClose}: Props) => {
+const ReportsAnswer = (props: Props) => {
+  const {queryRef, orgId, answer, period, onSpecChange, onClose, onRetry} = props
   const {viewer} = usePreloadedQuery<ReportsAnswerQuery>(query, queryRef)
   const {organization} = viewer
-  const {spec, title, reportQuestionId} = answer
+  const {spec, reportQuestionId} = answer
+  const {resultSpec, isUpdating} = useResultSpec(queryRef.variables.spec, spec, period)
   const levels = organization?.structure ?? []
+  // the viewer's own question names its report, unless the report shown has changed from it
+  const question = organization?.recentReportQuestions.find(({id}) => id === reportQuestionId)
+  const questionSpec = question?.spec ? parseReportSpecJSON(question.spec) : null
+  const title =
+    question && questionSpec && JSON.stringify(questionSpec) === JSON.stringify(spec)
+      ? question.title
+      : null
   return (
     <ReportPanel
       organizationRef={organization}
       orgId={orgId}
       spec={spec}
+      resultSpec={resultSpec}
+      isUpdating={isUpdating}
+      onRetry={onRetry}
       name={title ?? describeReportSpec(spec, levels)}
       period={period}
       reportQuestionId={reportQuestionId}

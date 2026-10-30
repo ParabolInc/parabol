@@ -78,65 +78,52 @@ const MEETING = `
 const getStages = (meeting: any, phaseType: string) =>
   meeting.phases.find((phase: any) => phase.phaseType === phaseType).stages
 
-// Answers the prior cycle by cloning the meeting into the same series, ending it, and writing the
-// given scores. Recurrence isn't involved, so the series is assembled by hand.
-const seedPriorCycle = async (
-  meetingId: string,
-  teamId: string,
-  userId: string,
-  scores: (number | null)[]
-) => {
-  const pg = getKysely()
-  const priorMeetingId = `${meetingId}-prior`
-  const seriesId = await pg
-    .insertInto('MeetingSeries')
-    .values({
-      id: 900000 + Math.floor(Math.random() * 99999),
-      meetingType: 'teamHealth',
-      title: 'prior cycle',
-      recurrenceRule: 'DTSTART:20260101T000000Z\nRRULE:FREQ=WEEKLY',
-      duration: 60,
-      teamId,
-      facilitatorId: userId
-    })
-    .returning('id')
-    .executeTakeFirstOrThrow()
-    .then(({id}) => id)
-  await sql`
-    INSERT INTO "NewMeeting" (id, "createdAt", "endedAt", "meetingSeriesId", "isLegacy", "createdBy",
-      "facilitatorStageId", "facilitatorUserId", "meetingCount", "meetingNumber", "meetingType",
-      name, phases, "teamId", "templateId")
-    SELECT ${priorMeetingId}, '2026-01-01'::timestamptz, '2026-01-01'::timestamptz, ${seriesId},
-      "isLegacy", "createdBy", "facilitatorStageId", "facilitatorUserId", "meetingCount",
-      "meetingNumber", "meetingType", name, phases, "teamId", "templateId"
-    FROM "NewMeeting" WHERE id = ${meetingId}
-  `.execute(pg)
-  await pg
-    .updateTable('NewMeeting')
-    .set({meetingSeriesId: seriesId})
-    .where('id', '=', meetingId)
-    .execute()
+const readQuestionIds = async (meetingId: string) => {
   // the GraphQL question id is ciphered, so read the raw ids off the stored phases
-  const {phases} = await pg
+  const {phases} = await getKysely()
     .selectFrom('NewMeeting')
     .select('phases')
     .where('id', '=', meetingId)
     .executeTakeFirstOrThrow()
-  const questionIds = (phases as any[])
+  return (phases as any[])
     .find((phase) => phase.phaseType === 'TEAM_HEALTH_RESPONSE')
     .stages.map((stage: any) => stage.questionId as number)
+}
+
+const answer = async (meetingId: string, userId: string, scores: (number | null)[]) => {
+  const questionIds = await readQuestionIds(meetingId)
   for (const [idx, questionId] of questionIds.entries()) {
     const score = scores[idx]
     if (score === null || score === undefined) continue
-    await pg
+    await getKysely()
       .insertInto('TeamHealthResponse')
-      .values({meetingId: priorMeetingId, questionId, userId, score})
+      .values({meetingId, questionId, userId, score})
       .execute()
+  }
+}
+
+// The team's check before this one, cloned from it and ended long ago. History follows the team, so
+// no meeting series is needed
+const seedPriorCheck = async (meetingId: string, userIds: string[], scores: (number | null)[]) => {
+  const pg = getKysely()
+  const priorMeetingId = `${meetingId}-prior`
+  await sql`
+    INSERT INTO "NewMeeting" (id, "createdAt", "endedAt", "isLegacy", "createdBy",
+      "facilitatorStageId", "facilitatorUserId", "meetingCount", "meetingNumber", "meetingType",
+      name, phases, "teamId", "templateId")
+    SELECT ${priorMeetingId}, '2026-01-01'::timestamptz, '2026-01-01'::timestamptz,
+      "isLegacy", "createdBy", "facilitatorStageId", "facilitatorUserId", "meetingCount",
+      "meetingNumber", "meetingType", name, phases, "teamId", "templateId"
+    FROM "NewMeeting" WHERE id = ${meetingId}
+  `.execute(pg)
+  for (const userId of userIds) {
+    await answer(priorMeetingId, userId, scores)
   }
 }
 
 test('the result phase holds one stage per category, ordered by urgency once revealed', async () => {
   const {userId, teamId, cookie} = await signUp()
+  const [teammate, otherTeammate] = await Promise.all([signUp(), signUp()])
 
   const start = await sendPublic({
     query: START,
@@ -159,32 +146,40 @@ test('the result phase holds one stage per category, ordered by urgency once rev
 
   // the owner is a spectator by default, so opt in before answering
   await sendPublic({query: SPECTATE, variables: {meetingId, isSpectating: false}, cookie})
-  const thisCycle = [3, 1, 2, 5, 4]
+  const thisCheck = [3, 1, 2, 5, 4]
   for (const [idx, stage] of responseStages.entries()) {
     await sendPublic({
       query: RESPOND,
-      variables: {meetingId, stageId: stage.id, score: thisCycle[idx]},
+      variables: {meetingId, stageId: stage.id, score: thisCheck[idx]},
       cookie
     })
   }
-  // deltas of -4 for idx 1 and 0 for idx 3, leaving idx 0, 2 and 4 without a previous cycle
-  await seedPriorCycle(meetingId, teamId, userId, [null, 5, null, 5, null])
+  // two teammates answer the same, except that one skips idx 2, which leaves it too few answers to score
+  await answer(meetingId, teammate.userId, thisCheck)
+  await answer(meetingId, otherTeammate.userId, [3, 1, null, 5, 4])
+  // deltas of -4 for idx 1 and 0 for idx 3, leaving idx 0 and 4 without a previous check
+  await seedPriorCheck(
+    meetingId,
+    [userId, teammate.userId, otherTeammate.userId],
+    [null, 5, null, 5, null]
+  )
 
   await sendPublic({query: END, variables: {meetingId}, cookie})
   const revealed = await sendPublic({query: MEETING, variables: {meetingId}, cookie})
   const revealedStages = getStages(revealed.data.viewer.meeting, 'TEAM_HEALTH_RESULT')
 
-  // categories with no previous cycle lead, lowest score first, then the rest by steepest drop
+  // categories with no previous check lead, lowest score first, then the rest by steepest drop, then
+  // the category too few people scored
   expect(
     revealedStages.map(({score, scoreHistory}: any) => ({
       score,
       previousScore: scoreHistory.at(-1)?.score ?? null
     }))
   ).toEqual([
-    {score: 2, previousScore: null},
     {score: 3, previousScore: null},
     {score: 4, previousScore: null},
     {score: 1, previousScore: 5},
-    {score: 5, previousScore: 5}
+    {score: 5, previousScore: 5},
+    {score: null, previousScore: null}
   ])
 }, 60000)

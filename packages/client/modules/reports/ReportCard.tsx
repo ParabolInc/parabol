@@ -3,9 +3,18 @@ import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router'
 import type {ReportCard_pin$key} from '../../__generated__/ReportCard_pin.graphql'
+import isLoneActiveUserReport from './isLoneActiveUserReport'
+import isMeetingsByTypeSpec from './isMeetingsByTypeSpec'
+import isRetroCadenceSpec from './isRetroCadenceSpec'
+import isTaskFlowSpec from './isTaskFlowSpec'
+import ReportActiveUsersEmpty from './ReportActiveUsersEmpty'
 import ReportCardMenu from './ReportCardMenu'
+import ReportMeetingsByTypeEmpty from './ReportMeetingsByTypeEmpty'
+import ReportRetroCadenceEmpty from './ReportRetroCadenceEmpty'
+import ReportTaskFlowEmpty from './ReportTaskFlowEmpty'
+import ReportTeamHealthEmpty from './ReportTeamHealthEmpty'
 import ReportView from './ReportView'
-import {toReportPagePath} from './reportPaths'
+import {toReportPinPath} from './reportPaths'
 import type {ReportPagePeriod} from './reportPeriodParam'
 import {REPORT_PERIOD_LABELS} from './reportSpecLabels'
 import {parseReportSpecJSON} from './reportSpecParam'
@@ -32,6 +41,15 @@ const ReportCard = ({pinRef, orgId, period, index, pinCount, isLeader}: Props) =
         spec
         report(timeZone: $timeZone, pagePeriod: $pagePeriod) {
           ...ReportView_result
+          teamHealth {
+            latestCheckEndedAt
+          }
+          rows {
+            values
+          }
+          latestMeetingAt
+          latestRetroAt: latestMeetingAt(meetingType: retrospective)
+          latestTaskAt
         }
       }
     `,
@@ -41,13 +59,13 @@ const ReportCard = ({pinRef, orgId, period, index, pinCount, isLeader}: Props) =
   const spec = useMemo(() => parseReportSpecJSON(pin.spec), [pin.spec])
   const ownPeriod = spec?.period?.preset ?? null
   return (
-    <article className='flex min-w-0 flex-col gap-3 rounded-md border border-hairline bg-surface-card py-4 pr-3 pl-5 shadow-xs'>
+    <article className='relative flex min-w-0 flex-col gap-3 rounded-md border border-hairline bg-surface-card py-4 pr-3 pl-5 shadow-xs'>
       <div className='flex items-start gap-2'>
         <div className='flex min-w-0 flex-1 flex-col'>
           <h3 className='m-0 font-semibold text-base'>{title}</h3>
           <span className='text-fg-muted text-xs'>
             {pinnedBy ? `Pinned by ${pinnedBy.preferredName}` : `Built in · ${description}`}
-            {ownPeriod && ` · ${REPORT_PERIOD_LABELS[ownPeriod]}, whatever the page’s period`}
+            {ownPeriod && ` · Fixed to ${REPORT_PERIOD_LABELS[ownPeriod].toLowerCase()}`}
           </span>
         </div>
         {isLeader && (
@@ -61,7 +79,17 @@ const ReportCard = ({pinRef, orgId, period, index, pinCount, isLeader}: Props) =
         )}
       </div>
       <div className='pr-2'>
-        {spec ? (
+        {spec && report.teamHealth && !report.teamHealth.latestCheckEndedAt ? (
+          <ReportTeamHealthEmpty orgId={orgId} isCompact />
+        ) : spec && !report.latestRetroAt && isRetroCadenceSpec(spec) ? (
+          <ReportRetroCadenceEmpty isCompact />
+        ) : spec && !report.latestTaskAt && isTaskFlowSpec(spec) ? (
+          <ReportTaskFlowEmpty isCompact />
+        ) : spec && !report.latestMeetingAt && isMeetingsByTypeSpec(spec) ? (
+          <ReportMeetingsByTypeEmpty isCompact />
+        ) : spec && isLoneActiveUserReport(spec, report.rows) ? (
+          <ReportActiveUsersEmpty orgId={orgId} isCompact />
+        ) : spec ? (
           <ReportView spec={spec} resultRef={report} isCompact />
         ) : (
           <p className='m-0 text-fg-muted text-sm'>This report can’t be shown</p>
@@ -69,7 +97,7 @@ const ReportCard = ({pinRef, orgId, period, index, pinCount, isLeader}: Props) =
       </div>
       {spec && (
         <Link
-          to={toReportPagePath(orgId, spec, title, period)}
+          to={toReportPinPath(orgId, pinId, period)}
           className='mt-auto self-start font-semibold text-[13px] text-sky-600 hover:underline dark:text-accent'
         >
           Open report

@@ -1,6 +1,13 @@
 import {sql} from 'kysely'
 import type {SearchResultEdgeSource} from '../../graphql/public/types/SearchResultEdge'
-import {pagePrefixTsQuery, pageSearchTsv, pageSnippet, pageTitleTsv, RRF_K} from '../expressions'
+import {
+  pagePrefixTerms,
+  pagePrefixTsQuery,
+  pageSearchTsv,
+  pageSnippet,
+  pageTitleTsv,
+  RRF_K
+} from '../expressions'
 import getKysely from '../getKysely'
 import {getPageSearchPageInfo} from './pageSearchCursor'
 
@@ -11,6 +18,18 @@ export interface PageKeywordSearchParams {
   viewerId: string
   teamIds: [string, ...string[]] | undefined
   dateRange: {startAt: Date; endAt: Date; dateField: 'createdAt' | 'updatedAt'} | null
+}
+
+export interface KeywordMatching {
+  dropStopWords: boolean
+  anyWordFallbackBelow: number
+  anyWordMinShare: number
+}
+
+export const QUICK_KEYWORD_MATCHING: KeywordMatching = {
+  dropStopWords: true,
+  anyWordFallbackBelow: 20,
+  anyWordMinShare: 0
 }
 
 export interface PageSearchResults {
@@ -24,14 +43,36 @@ export interface PageSearchResults {
 }
 
 export const withPageKeywordRanking = (
-  {query, viewerId, teamIds, dateRange}: Omit<PageKeywordSearchParams, 'first' | 'offset'>,
+  {
+    query,
+    viewerId,
+    teamIds,
+    dateRange,
+    dropStopWords,
+    anyWordFallbackBelow,
+    anyWordMinShare
+  }: Omit<PageKeywordSearchParams, 'first' | 'offset'> & KeywordMatching,
   limit?: number
 ) => {
-  const tsQuery = sql.ref<string>('st.terms')
+  const fallsBack = anyWordFallbackBelow > 0
   return (
     getKysely()
-      // search terms: the query split into words the same way page text is, each word a required prefix
-      .with('SearchTerms', (qb) => qb.selectNoFrom(pagePrefixTsQuery(query).as('terms')))
+      // search terms: the query split into words the same way page text is, each word a prefix
+      .with('SearchTermList', (qb) =>
+        qb.selectNoFrom(pagePrefixTerms(query, dropStopWords).as('termList'))
+      )
+      .with('SearchTerms', (qb) =>
+        qb
+          .selectFrom('SearchTermList as stl')
+          .select((eb) => [
+            'stl.termList',
+            pagePrefixTsQuery(eb.ref('stl.termList'), '&').as('terms'),
+            pagePrefixTsQuery(eb.ref('stl.termList'), '|').as('anyTerms'),
+            sql<number>`greatest(1, ceil(${anyWordMinShare}::float8 * cardinality(${eb.ref('stl.termList')})))::int`.as(
+              'minAnyWords'
+            )
+          ])
+      )
       .with('ViewerPages', (qb) =>
         qb
           // who can see what: a `PageAccess` join on `viewerId`, plus `deletedAt` is null
@@ -59,7 +100,7 @@ export const withPageKeywordRanking = (
           )
           .select(['p.id', 'p.updatedAt'])
       )
-      .with('KeywordRanked', (qb) =>
+      .with('KeywordMatches', (qb) =>
         qb
           .selectFrom('ViewerPages as vp')
           .innerJoin('Page as p', 'p.id', 'vp.id')
@@ -74,22 +115,57 @@ export const withPageKeywordRanking = (
               .offset(0)
               .as('s')
           )
-          // matching: the page's search text contains every term
-          .where((eb) => eb('s.searchTsv', '@@', tsQuery))
+          // matching: the page's search text contains every term, or with the fallback, any of them
+          .where((eb) =>
+            fallsBack
+              ? eb('s.searchTsv', '@@', eb.ref('st.anyTerms'))
+              : eb('s.searchTsv', '@@', eb.ref('st.terms'))
+          )
           .select((eb) => {
-            const titleMatch = eb(pageTitleTsv(eb.ref('p.title')), '@@', tsQuery)
-            const keywordScore = sql<number>`ts_rank_cd(${eb.ref('s.searchTsv')}, ${tsQuery}, 0)::float8`
+            const hasEveryWord = eb('s.searchTsv', '@@', eb.ref('st.terms'))
+            const matchQuery = sql<string>`case when ${hasEveryWord} then ${eb.ref('st.terms')} else ${eb.ref('st.anyTerms')} end`
+            const matchedWords = fallsBack
+              ? sql<number>`(select count(*) from unnest(${eb.ref('st.termList')}) as t(term) where ${eb.ref('s.searchTsv')} @@ t.term::tsquery)::int`
+              : sql<number>`cardinality(${eb.ref('st.termList')})`
             return [
               'vp.id',
               'vp.updatedAt',
-              titleMatch.as('titleMatch'),
-              keywordScore.as('keywordScore'),
-              // ordering: title matches first, then rank, then most recently updated, then id for stable ties
-              sql<number>`row_number() over (order by ${titleMatch} desc, ${keywordScore} desc, ${eb.ref('vp.updatedAt')} desc, ${eb.ref('vp.id')} desc)::int`.as(
-                'keywordRank'
+              hasEveryWord.as('hasEveryWord'),
+              matchedWords.as('matchedWords'),
+              eb(pageTitleTsv(eb.ref('p.title')), '@@', matchQuery).as('titleMatch'),
+              sql<number>`ts_rank_cd(${eb.ref('s.searchTsv')}, ${matchQuery}, 0)::float8`.as(
+                'keywordScore'
+              ),
+              sql<number>`(count(*) filter (where ${hasEveryWord}) over ())::int`.as(
+                'everyWordCount'
               )
             ]
           })
+      )
+      .with('KeywordRanked', (qb) =>
+        qb
+          .selectFrom('KeywordMatches as km')
+          .crossJoin('SearchTerms as st')
+          // fallback: when fewer than anyWordFallbackBelow pages have every word, pages with enough of them follow
+          .where((eb) =>
+            eb.or([
+              eb('km.hasEveryWord', '=', true),
+              eb.and([
+                eb('km.everyWordCount', '<', anyWordFallbackBelow),
+                eb('km.matchedWords', '>=', eb.ref('st.minAnyWords'))
+              ])
+            ])
+          )
+          .select((eb) => [
+            'km.id',
+            'km.updatedAt',
+            'km.hasEveryWord',
+            'km.keywordScore',
+            // ordering: most words first, then title matches, then rank, then most recently updated, then id for stable ties
+            sql<number>`row_number() over (order by ${eb.ref('km.matchedWords')} desc, ${eb.ref('km.titleMatch')} desc, ${eb.ref('km.keywordScore')} desc, ${eb.ref('km.updatedAt')} desc, ${eb.ref('km.id')} desc)::int`.as(
+              'keywordRank'
+            )
+          ])
           .orderBy('keywordRank')
           .$if(limit !== undefined, (qb) => qb.limit(limit!))
       )
@@ -102,10 +178,13 @@ export const getPagesByKeyword = async ({
   offset,
   viewerId,
   teamIds,
-  dateRange
-}: PageKeywordSearchParams): Promise<PageSearchResults> => {
+  dateRange,
+  dropStopWords = QUICK_KEYWORD_MATCHING.dropStopWords,
+  anyWordFallbackBelow = QUICK_KEYWORD_MATCHING.anyWordFallbackBelow,
+  anyWordMinShare = QUICK_KEYWORD_MATCHING.anyWordMinShare
+}: PageKeywordSearchParams & Partial<KeywordMatching>): Promise<PageSearchResults> => {
   const rows = await withPageKeywordRanking(
-    {query, viewerId, teamIds, dateRange},
+    {query, viewerId, teamIds, dateRange, dropStopWords, anyWordFallbackBelow, anyWordMinShare},
     offset + first + 1
   )
     // output: each page's position in that order, plus a highlighted snippet from the first 20k characters
@@ -117,7 +196,10 @@ export const getPagesByKeyword = async ({
       'kr.id',
       'kr.keywordScore',
       'kr.keywordRank',
-      pageSnippet(eb.ref('p.plaintextContent'), eb.ref('st.terms')).as('snippet')
+      pageSnippet(
+        eb.ref('p.plaintextContent'),
+        sql<string>`case when ${eb.ref('kr.hasEveryWord')} then ${eb.ref('st.terms')} else ${eb.ref('st.anyTerms')} end`
+      ).as('snippet')
     ])
     .orderBy('kr.keywordRank')
     .execute()

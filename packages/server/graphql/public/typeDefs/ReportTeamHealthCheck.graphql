@@ -1,0 +1,37 @@
+"""
+A team's Team Health check that is its latest in a report's period for at least one category
+"""
+type ReportTeamHealthCheck {
+  """
+  The Team Health meeting
+  """
+  meetingId: ID!
+
+  teamId: ID!
+
+  """
+  When the check's results were revealed
+  """
+  endedAt: DateTime!
+
+  """
+  1 for the team's first check, 2 for its second, and so on
+  """
+  checkNumber: Int!
+
+  """
+  How many people scored at least one category
+  """
+  respondentCount: Int!
+
+  """
+  How many people are on the team now
+  """
+  memberCount: Int!
+
+  """
+  The result stage of each category people scored that no later check in the period did, leaving out a category
+  fewer than 3 people scored. Empty when fewer than 3 people answered, since the check is hidden
+  """
+  stages: [TeamHealthResultStage!]!
+}

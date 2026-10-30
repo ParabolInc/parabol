@@ -91,8 +91,8 @@ const ReportPinButton = ({organizationRef, spec, title, period, reportQuestionId
         {!isBillingLeader
           ? `Only org admins and billing leaders can ${action} reports`
           : pinned
-            ? 'Unpin it from the Reports page'
-            : 'Pin it to the Reports page for everyone who can see Reports'}
+            ? 'Unpin from Reports'
+            : 'Pin to Reports for everyone'}
       </TooltipContent>
     </Tooltip>
   )

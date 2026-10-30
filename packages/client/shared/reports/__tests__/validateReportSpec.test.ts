@@ -68,12 +68,20 @@ test.each<[string, Partial<ReportSpec>]>([
     }
   ],
   [
-    'each team’s health against its check before',
+    'each team’s health against the period before, over time',
     {
       measures: ['HEALTH_SCORE'],
       showAs: 'HEATMAP',
-      breakdown: [{dimension: 'TEAM'}, {dimension: 'CATEGORY'}],
-      compareTo: 'PREVIOUS_CHECK'
+      breakdown: [{dimension: 'TEAM'}, {dimension: 'MONTH'}],
+      compareTo: 'PREVIOUS_PERIOD'
+    }
+  ],
+  [
+    'health by the template each check used',
+    {
+      measures: ['HEALTH_SCORE'],
+      showAs: 'BARS',
+      breakdown: [{dimension: 'TEMPLATE'}]
     }
   ],
   [
@@ -137,8 +145,8 @@ test.each<[string, Partial<ReportSpec>, string]>([
   ],
   [
     'a breakdown the measure lacks',
-    {showAs: 'BARS', measures: ['MEMBERS'], breakdown: [{dimension: 'MEETING_TYPE'}]},
-    "MEMBERS can't be broken down by MEETING_TYPE"
+    {showAs: 'BARS', measures: ['USERS'], breakdown: [{dimension: 'MEETING_TYPE'}]},
+    "USERS can't be broken down by MEETING_TYPE"
   ],
   [
     'a time filter',
@@ -200,21 +208,6 @@ test.each<[string, Partial<ReportSpec>, string]>([
       breakdown: [{dimension: 'TEAM'}, {dimension: 'USER'}]
     },
     'MEETINGS counts toward more than one USER'
-  ],
-  [
-    'a previous check for something other than health',
-    {compareTo: 'PREVIOUS_CHECK'},
-    'PREVIOUS_CHECK only compares HEALTH_SCORE'
-  ],
-  [
-    'a previous check over time',
-    {
-      measures: ['HEALTH_SCORE'],
-      showAs: 'LINE',
-      breakdown: [{dimension: 'MONTH'}],
-      compareTo: 'PREVIOUS_CHECK'
-    },
-    "PREVIOUS_CHECK can't be used over time"
   ],
   [
     'a dimension filtered twice',

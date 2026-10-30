@@ -2,8 +2,7 @@ import {useNavigate} from 'react-router'
 import useLogReportQuestionUseMutation from '../../mutations/useLogReportQuestionUseMutation'
 import type {ReportSpec} from '../../shared/reports/reportCatalog'
 
-// An edit keeps the report's question and records the spec as used, or starts a builder question for a
-// report that had none
+// An edit records the changed report as one the viewer built, and moves to it once the server says which it is
 const useReportSpecChange = (
   orgId: string,
   reportQuestionId: string | null,
@@ -15,14 +14,12 @@ const useReportSpecChange = (
     const nextPath = toPath(nextSpec, reportQuestionId)
     navigate(nextPath, {replace: true})
     logUse({
-      variables: reportQuestionId
-        ? {orgId, reportQuestionId, spec: nextSpec}
-        : {orgId, spec: nextSpec, title: nextTitle},
+      variables: {orgId, reportQuestionId, spec: nextSpec, title: nextTitle},
       onCompleted: (response) => {
         const builtId = response.logReportQuestionUse?.reportQuestion.id
         // a reply that lands after another edit, or after leaving the report, must not navigate
         const isStillShown = `${window.location.pathname}${window.location.search}` === nextPath
-        if (!reportQuestionId && builtId && isStillShown) {
+        if (builtId && builtId !== reportQuestionId && isStillShown) {
           navigate(toPath(nextSpec, builtId), {replace: true})
         }
       }

@@ -3,7 +3,13 @@ import {parseReportSpec} from '../../client/shared/reports/parseReportSpec'
 import {REPORT_HIDDEN_VALUE, type ReportSpec} from '../../client/shared/reports/reportCatalog'
 import {getNewDataLoader} from '../dataloader/getNewDataLoader'
 import getKysely from '../postgres/getKysely'
+import {toTeamHealthCategoryKey} from '../reports/measures/teamHealthAnswers'
 import {toOrgStructureKey} from '../reports/orgStructure'
+import {
+  readLatestTeamHealthCheckEndedAt,
+  readReportTeamHealthChecks,
+  readReportTeamHealthStage
+} from '../reports/reportTeamHealth'
 import runReport from '../reports/runReport'
 import {createPGTables, truncatePGTables} from './common'
 
@@ -27,6 +33,7 @@ const TABLES = [
   'TeamHealthCategory',
   'TeamHealthQuestion',
   'TeamHealthResponse',
+  'TeamHealthCategorySummary',
   'OrgStructureLevel',
   'OrgStructureValue',
   'OrgStructurePlacement'
@@ -498,11 +505,44 @@ const HARBOR = 'harbor'
 const HILL = 'hill'
 const HEATH = 'heath'
 const HOLLOW = 'hollow'
+const HAVEN = 'haven'
 const SAFETY = 1
 const DEPENDABILITY = 2
 
+const addHealthCheck = async (
+  teamId: string,
+  meetingId: string,
+  endedDaysAgo: number,
+  answers: readonly (readonly [string, number, number | null])[],
+  templateId: string | null = null
+) => {
+  await addMeeting(meetingId, teamId, 'teamHealth', endedDaysAgo + 1 / 24, [], templateId)
+  const resultStages = [SAFETY, DEPENDABILITY].map((questionId, sortOrder) => ({
+    id: `${meetingId}:${questionId}`,
+    phaseType: 'TEAM_HEALTH_RESULT',
+    questionId,
+    sortOrder,
+    discussionId: `${meetingId}:${questionId}`
+  }))
+  await pg
+    .updateTable('NewMeeting')
+    .set({phases: JSON.stringify([{phaseType: 'TEAM_HEALTH_RESULT', stages: resultStages}])})
+    .where('id', '=', meetingId)
+    .execute()
+  await pg
+    .insertInto('TeamHealthResponse')
+    .values(
+      answers.flatMap(([userId, safety, dependability]) => [
+        {meetingId, userId, questionId: SAFETY, score: safety},
+        {meetingId, userId, questionId: DEPENDABILITY, score: dependability}
+      ])
+    )
+    .execute()
+}
+
 // Harbor checked 100, 50 and 5 days ago. Hill's check had 2 people, so it's hidden. Heath checked once, and
-// one person skipped a question. Hollow's only check is 100 and a half days old
+// one person skipped a question, which leaves too few answers to show Dependability. Hollow's only check is 100 and a half days old. Haven ran the org's full check 15 days
+// ago and its own pulse, which only asks about safety, 3 days ago
 const seedHealthOrg = async () => {
   await addOrg(HEALTH_ORG_ID, 'team')
   await addOrgUsers(HEALTH_ORG_ID, ['healthLeader'], 'healthLeader')
@@ -510,6 +550,7 @@ const seedHealthOrg = async () => {
   await addTeam(HEALTH_ORG_ID, HILL, ['h4', 'h5'])
   await addTeam(HEALTH_ORG_ID, HEATH, ['h6', 'h7', 'h8'])
   await addTeam(HEALTH_ORG_ID, HOLLOW, ['h9', 'h10', 'h11'])
+  await addTeam(HEALTH_ORG_ID, HAVEN, ['h12', 'h13', 'h14'])
   await pg
     .insertInto('TeamHealthCategory')
     .values([
@@ -587,17 +628,41 @@ const seedHealthOrg = async () => {
     ]
   ] as const
   for (const [teamId, meetingId, endedDaysAgo, answers] of checks) {
-    await addMeeting(meetingId, teamId, 'teamHealth', endedDaysAgo + 1 / 24, [])
-    await pg
-      .insertInto('TeamHealthResponse')
-      .values(
-        answers.flatMap(([userId, safety, dependability]) => [
-          {meetingId, userId, questionId: SAFETY, score: safety},
-          {meetingId, userId, questionId: DEPENDABILITY, score: dependability}
-        ])
-      )
-      .execute()
+    await addHealthCheck(teamId, meetingId, endedDaysAgo, answers)
   }
+  await pg
+    .insertInto('MeetingTemplate')
+    .values(
+      [
+        ['fullHealth', 'Full check'],
+        ['pulseHealth', 'Pulse']
+      ].map(([id, name]) => ({
+        id: id!,
+        name: name!,
+        scope: 'ORGANIZATION' as const,
+        orgId: HEALTH_ORG_ID,
+        teamId: HAVEN,
+        type: 'teamHealth' as const,
+        illustrationUrl: '',
+        mainCategory: 'teamHealth'
+      }))
+    )
+    .execute()
+  const haven = ['h12', 'h13', 'h14']
+  await addHealthCheck(
+    HAVEN,
+    'havenFull',
+    15,
+    haven.map((userId) => [userId, 2, 4] as const),
+    'fullHealth'
+  )
+  await addHealthCheck(
+    HAVEN,
+    'havenPulse',
+    3,
+    haven.map((userId) => [userId, 5, null] as const),
+    'pulseHealth'
+  )
 }
 
 const BUSINESS_UNIT = 1
@@ -782,6 +847,36 @@ describe('meetings', () => {
     ).toEqual([1])
   })
 
+  test('the latest meeting of a type, or of any type, counts only meetings 2 or more people joined, whatever the period', async () => {
+    const dataLoader = getNewDataLoader('runReportTest')
+    try {
+      const latestOf = async (
+        orgId: string,
+        viewerId: string,
+        meetingType: 'retrospective' | 'action' | null
+      ) => {
+        const {reportableTeamIds} = await report(
+          {period: {preset: 'LAST_7_DAYS'}},
+          {orgId, viewerId}
+        )
+        return dataLoader
+          .get('latestMeetingAtByTeamIds')
+          .load({teamIds: reportableTeamIds, meetingType})
+      }
+      expect((await latestOf(ORG_ID, LEADER, 'retrospective'))?.getTime()).toBe(
+        daysAgo(2).getTime()
+      )
+      expect(await latestOf(ORG_ID, LEADER, 'action')).toBeNull()
+      expect(await latestOf(HEALTH_ORG_ID, 'healthLeader', 'retrospective')).toBeNull()
+      expect((await latestOf(WORK_ORG_ID, WREN, 'retrospective'))?.getTime()).toBe(
+        daysAgo(5).getTime()
+      )
+      expect((await latestOf(WORK_ORG_ID, WREN, null))?.getTime()).toBe(daysAgo(4).getTime())
+    } finally {
+      dataLoader.dispose()
+    }
+  })
+
   test('discussions count in counted meetings', async () => {
     expect(valuesOf(await report({measures: ['DISCUSSIONS']}))).toEqual([3])
     expect(valuesOf(await report({measures: ['DISCUSSIONS_WITH_A_TASK']}))).toEqual([1])
@@ -810,6 +905,23 @@ describe('tasks', () => {
     })
   })
 
+  test('the latest task is the newest on any team the viewer can report on, whatever the period', async () => {
+    const dataLoader = getNewDataLoader('runReportTest')
+    try {
+      const latestOf = async (orgId: string, viewerId: string) => {
+        const {reportableTeamIds} = await report(
+          {period: {preset: 'LAST_7_DAYS'}},
+          {orgId, viewerId}
+        )
+        return dataLoader.get('latestTaskAtByTeamIds').load(reportableTeamIds)
+      }
+      expect((await latestOf(ORG_ID, LEADER))?.getTime()).toBe(daysAgo(2).getTime())
+      expect(await latestOf(HEALTH_ORG_ID, 'healthLeader')).toBeNull()
+    } finally {
+      dataLoader.dispose()
+    }
+  })
+
   test('pushed tasks include Sprint Poker imports', async () => {
     const result = await report({
       measures: ['TASKS_PUSHED'],
@@ -836,15 +948,15 @@ describe('tasks', () => {
 })
 
 describe('people', () => {
-  test('members by team read each team as it is now', async () => {
-    const result = await report({...byTeam, measures: ['MEMBERS']})
+  test('users by team read each team as it is now', async () => {
+    const result = await report({...byTeam, measures: ['USERS']})
     expect(byLabel(result)).toEqual({Apollo: 2, Borealis: 2, Cygnus: 2, Dorado: 1})
   })
 
   test('a member who left counts until the day they left', async () => {
     const result = await report({
       ...overDays,
-      measures: ['MEMBERS'],
+      measures: ['USERS'],
       filters: [{dimension: 'TEAM', values: [APOLLO]}]
     })
     expect(valuesOf(result)).toEqual([3, 3, 3, 2, 2, 2, 2])
@@ -859,7 +971,7 @@ describe('people', () => {
     try {
       const result = await report({
         ...overDays,
-        measures: ['MEMBERS'],
+        measures: ['USERS'],
         filters: [{dimension: 'TEAM', values: [APOLLO]}]
       })
       expect(valuesOf(result)).toEqual([3, 3, 3, 3, 3, 3, 3])
@@ -873,7 +985,7 @@ describe('people', () => {
   })
 
   test('a leader counts the whole organization', async () => {
-    expect(valuesOf(await report({measures: ['MEMBERS']}))).toEqual([6])
+    expect(valuesOf(await report({measures: ['USERS']}))).toEqual([6])
     expect(valuesOf(await report({...overDays, measures: ['ACTIVE_USERS']}))).toEqual([
       6, 6, 6, 6, 5, 5, 5
     ])
@@ -1054,24 +1166,149 @@ describe('team health', () => {
     const result = await report({...lastMonth, ...byTeam}, asLeader)
     expect(byLabel(result)).toEqual({
       Harbor: 3.5,
-      Heath: 4.4,
+      Heath: 4.3,
       Hill: REPORT_HIDDEN_VALUE,
-      Hollow: null
+      Hollow: null,
+      Haven: 4.5
     })
     expect(result.notes).toEqual([{kind: 'HIDDEN_FOR_ANONYMITY', count: 1}])
   })
 
   test('a group score averages every answer, so bigger teams weigh more', async () => {
-    expect(valuesOf(await report(lastMonth, asLeader))).toEqual([3.9])
+    expect(valuesOf(await report(lastMonth, asLeader))).toEqual([4.1])
   })
 
-  test('each team is compared with its own check before, category by category', async () => {
+  test('a check that asked about less leaves the other categories to the check before it', async () => {
+    const result = await report(
+      {
+        ...lastMonth,
+        showAs: 'BARS',
+        breakdown: [{dimension: 'CATEGORY'}],
+        filters: [{dimension: 'TEAM', values: [HAVEN]}]
+      },
+      asLeader
+    )
+    expect(byLabel(result)).toEqual({'Psychological Safety': 5, Dependability: 4})
+    const dataLoader = getNewDataLoader('runReportTest')
+    try {
+      const checks = await readReportTeamHealthChecks(
+        await report(
+          {
+            ...lastMonth,
+            showAs: 'HEATMAP',
+            breakdown: [{dimension: 'TEAM'}, {dimension: 'CATEGORY'}]
+          },
+          asLeader
+        ),
+        dataLoader
+      )
+      const havenCells = checks
+        .filter(({teamId}) => teamId === HAVEN)
+        .map(({meetingId, stages}) => [meetingId, stages.map(({questionId}) => questionId)])
+      expect(havenCells).toEqual([
+        ['havenPulse', [SAFETY]],
+        ['havenFull', [DEPENDABILITY]]
+      ])
+      // a category too few people scored has no stage to mark, and a hidden check has none at all
+      const stagesOf = (meetingId: string) =>
+        checks
+          .find((check) => check.meetingId === meetingId)
+          ?.stages.map(({questionId}) => questionId)
+      expect(stagesOf('heathCheck')).toEqual([SAFETY])
+      expect(stagesOf('hillCheck')).toEqual([])
+    } finally {
+      dataLoader.dispose()
+    }
+  })
+
+  test('a side panel opens a shown category’s result stage, and nothing for a hidden one', async () => {
+    const dataLoader = getNewDataLoader('runReportTest')
+    try {
+      const stageOf = (meetingId: string, categoryId: number) =>
+        readReportTeamHealthStage(meetingId, toTeamHealthCategoryKey(categoryId), dataLoader)
+      expect(await stageOf('harborLatest', SAFETY)).toMatchObject({
+        meetingId: 'harborLatest',
+        teamId: HARBOR,
+        questionId: SAFETY
+      })
+      expect(await stageOf('hillCheck', SAFETY)).toBeNull()
+      expect(await stageOf('heathCheck', DEPENDABILITY)).toBeNull()
+    } finally {
+      dataLoader.dispose()
+    }
+  })
+
+  test('history reads the team’s earlier checks, whatever their series', async () => {
+    const dataLoader = getNewDataLoader('runReportTest')
+    try {
+      const history = await dataLoader.get('priorTeamHealthCyclesByMeetingId').load('harborLatest')
+      expect(
+        history.map(({meetingId, scoreByCategoryId}) => [
+          meetingId,
+          Object.fromEntries(scoreByCategoryId)
+        ])
+      ).toEqual([
+        ['harborBefore', {[SAFETY]: 3, [DEPENDABILITY]: 2}],
+        ['harborOld', {[SAFETY]: 5, [DEPENDABILITY]: 5}]
+      ])
+    } finally {
+      dataLoader.dispose()
+    }
+  })
+
+  test('the heatmap says when its teams last checked, and that a team that never has hasn’t', async () => {
+    const heatmap: Partial<ReportSpec> = {
+      ...lastMonth,
+      showAs: 'HEATMAP',
+      breakdown: [{dimension: 'TEAM'}, {dimension: 'CATEGORY'}]
+    }
+    const dataLoader = getNewDataLoader('runReportTest')
+    try {
+      const checked = await report(heatmap, asLeader)
+      const checkedAt = await readLatestTeamHealthCheckEndedAt(
+        checked.reportableTeamIds,
+        dataLoader
+      )
+      expect(checkedAt?.getTime()).toBeCloseTo(daysAgo(3).getTime(), -5)
+      const neverChecked = await report(heatmap)
+      expect(
+        await readLatestTeamHealthCheckEndedAt(neverChecked.reportableTeamIds, dataLoader)
+      ).toBeNull()
+      expect(await readReportTeamHealthChecks(neverChecked, dataLoader)).toEqual([])
+    } finally {
+      dataLoader.dispose()
+    }
+  })
+
+  test('each template reads its own latest checks, and a template filter reads only its own', async () => {
+    const havenOnly = {...lastMonth, filters: [{dimension: 'TEAM' as const, values: [HAVEN]}]}
+    expect(
+      byLabel(
+        await report({...havenOnly, showAs: 'BARS', breakdown: [{dimension: 'TEMPLATE'}]}, asLeader)
+      )
+    ).toEqual({Pulse: 5, 'Full check': 3})
+    expect(
+      byLabel(
+        await report(
+          {
+            ...havenOnly,
+            showAs: 'BARS',
+            breakdown: [{dimension: 'CATEGORY'}],
+            filters: [...havenOnly.filters, {dimension: 'TEMPLATE', values: ['fullHealth']}]
+          },
+          asLeader
+        )
+      )
+    ).toEqual({'Psychological Safety': 2, Dependability: 4})
+  })
+
+  test('each team is compared with its check from the period before, category by category', async () => {
     const result = await report(
       {
         ...lastMonth,
         showAs: 'HEATMAP',
         breakdown: [{dimension: 'TEAM'}, {dimension: 'CATEGORY'}],
-        compareTo: 'PREVIOUS_CHECK'
+        compareTo: 'PREVIOUS_PERIOD'
       },
       asLeader
     )
@@ -1083,7 +1320,7 @@ describe('team health', () => {
     )
     expect(cells['Harbor / Psychological Safety']).toEqual([4, 3])
     expect(cells['Harbor / Dependability']).toEqual([3, 2])
-    expect(cells['Heath / Dependability']).toEqual([4.5, null])
+    expect(cells['Heath / Dependability']).toEqual([REPORT_HIDDEN_VALUE, null])
     // a team's overall score averages every answer, not its categories
     const overall = Object.fromEntries(
       result.rowTotals.map(({keys, values, previousValues}) => [
@@ -1091,7 +1328,20 @@ describe('team health', () => {
         [values[0], previousValues?.[0]]
       ])
     )
-    expect(overall).toMatchObject({Harbor: [3.5, 2.5], Heath: [4.4, null]})
+    expect(overall).toMatchObject({Harbor: [3.5, 2.5], Heath: [4.3, null]})
+  })
+
+  test('the period before counts only the teams this period has, so Hollow’s old check is left out', async () => {
+    const [row] = (await report({...lastMonth, compareTo: 'PREVIOUS_PERIOD'}, asLeader)).rows
+    expect([row?.values[0], row?.previousValues?.[0]]).toEqual([4.1, 2.5])
+  })
+
+  test('a comparison with nothing in the period before says so', async () => {
+    const result = await report(
+      {...lastMonth, filters: [{dimension: 'TEAM', values: [HEATH]}], compareTo: 'PREVIOUS_PERIOD'},
+      asLeader
+    )
+    expect(result.notes).toEqual([{kind: 'NOTHING_TO_COMPARE', count: 1}])
   })
 
   test('over time, each step reads the latest check from the 90 days before it', async () => {
@@ -1122,18 +1372,6 @@ describe('team health', () => {
     )
     expect(hollow[0]).toBe(3)
     expect(hollow.at(-1)).toBeNull()
-  })
-
-  test('answers count when results were revealed, leaving out hidden checks', async () => {
-    expect(
-      byLabel(await report({...lastMonth, measures: ['HEALTH_ANSWERS'], ...byTeam}, asLeader))
-    ).toEqual({Harbor: 6, Heath: 5, Hill: REPORT_HIDDEN_VALUE, Hollow: 0})
-  })
-
-  test('previous check only compares health scores, and not over time', async () => {
-    await expect(
-      report({measures: ['MEETINGS'], compareTo: 'PREVIOUS_CHECK'}, asLeader)
-    ).rejects.toThrow('PREVIOUS_CHECK only compares HEALTH_SCORE')
   })
 })
 

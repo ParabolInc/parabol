@@ -78,6 +78,22 @@ type Organization implements OrganizationPartial {
   ): ReportResult! @scope(name: REPORTS_READ)
 
   """
+  The result stage of one category of a Team Health check of a team the viewer can report on, for a report's side
+  panel. Null when fewer than 3 people answered the check or scored the category
+  """
+  reportTeamHealthStage(
+    """
+    The Team Health meeting
+    """
+    meetingId: ID!
+
+    """
+    The Team Health category, as the report's CATEGORY keys give it
+    """
+    categoryId: ID!
+  ): TeamHealthResultStage @scope(name: REPORTS_READ)
+
+  """
   The reports pinned to the Reports page, in order
   """
   pinnedReports: [PinnedReport!]! @scope(name: REPORTS_READ)

@@ -5,10 +5,10 @@ enum ReportMeasureEnum {
   "People who used Parabol in the 30 days before each reading"
   ACTIVE_USERS
   "People on the teams, or in the organization when every team is counted"
-  MEMBERS
-  "The percentage of members who used Parabol in the 30 days before each reading, or null without members"
+  USERS
+  "The percentage of users who used Parabol in the 30 days before each reading, or null without users"
   ACTIVE_SHARE
-  "When each member last used Parabol, in milliseconds since the epoch. The period doesn't change it"
+  "When each user last used Parabol, in milliseconds since the epoch. The period doesn't change it"
   LAST_SEEN
   "Meetings that at least 2 people joined"
   MEETINGS
@@ -32,8 +32,6 @@ enum ReportMeasureEnum {
   USER_INTEGRATIONS
   "Tasks sent to an integration, including stories pulled into Sprint Poker"
   TASKS_PUSHED
-  "The average 1 to 5 answer in each team's latest Team Health check, from the 90 days before each reading or from the period. A check fewer than 3 people answered is hidden"
+  "The average 1 to 5 answer in each team's latest Team Health check that asked about each category, from the 90 days before each reading or from the period. Compared with an earlier period, only the teams and categories this period has count. A check fewer than 3 people answered is hidden"
   HEALTH_SCORE
-  "Answers given in Team Health checks, by the day their results were revealed. A check fewer than 3 people answered is left out"
-  HEALTH_ANSWERS
 }

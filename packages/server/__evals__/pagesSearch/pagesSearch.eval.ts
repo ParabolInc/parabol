@@ -11,9 +11,19 @@ import {
 } from '../../graphql/public/fields/search'
 import {RRF_K} from '../../postgres/expressions'
 import getKysely from '../../postgres/getKysely'
-import {getPagesByRRF} from '../../postgres/queries/getPagesByRRF'
+import {
+  getPagesByKeyword,
+  type KeywordMatching,
+  QUICK_KEYWORD_MATCHING
+} from '../../postgres/queries/getPagesByKeyword'
+import {
+  FUSED_KEYWORD_MATCHING,
+  getPagesByRRF,
+  VECTOR_MIN_PAGE_BYTES
+} from '../../postgres/queries/getPagesByRRF'
 import type {User} from '../../postgres/types'
 import {Logger} from '../../utils/Logger'
+import {HEAVY_CORPUS} from './heavyCorpus/generateHeavyCorpus'
 import {
   type Grade,
   type Grades,
@@ -25,8 +35,10 @@ import {
   reciprocalRank,
   summarize
 } from './metrics'
+import parseCounts from './parseCounts'
 import parseFractions from './parseFractions'
-import {EVAL_USER_ID, seedEvalPages} from './seedEvalPages'
+import parseStopWords, {type StopWords} from './parseStopWords'
+import {type EvalCorpus, FIXTURES_CORPUS, seedEvalPages} from './seedEvalPages'
 
 interface EmbeddingCall {
   startedAt: number
@@ -60,7 +72,6 @@ jest.mock('../../graphql/mutations/helpers/publishToEmbedder', () => ({
   }
 }))
 
-type EvalSet = 'dev' | 'holdout'
 type SearchMode = 'fused' | 'quick'
 type Mode = SearchMode | 'sweep'
 
@@ -76,6 +87,10 @@ type SummarizedMetrics = ReturnType<typeof summarizeWithErrors>
 interface SweepConfig {
   alpha: number
   floor: number
+  minBytes: number
+  stopWords: StopWords
+  anyWordFallbackBelow: number
+  anyWordMinShare: number
 }
 
 interface SweepResult extends SweepConfig {
@@ -96,7 +111,15 @@ interface GradedQuery {
   grades: Grades
 }
 
-const QUERY_FILES: Record<EvalSet, string> = {dev: 'queries.json', holdout: 'holdoutQueries.json'}
+const EVAL_SETS = {
+  dev: {queryFile: 'queries.json', corpus: FIXTURES_CORPUS},
+  holdout: {queryFile: 'holdoutQueries.json', corpus: FIXTURES_CORPUS},
+  'heavy-dev': {queryFile: 'heavyQueries.json', corpus: HEAVY_CORPUS},
+  'heavy-holdout': {queryFile: 'heavyHoldoutQueries.json', corpus: HEAVY_CORPUS},
+  'heavy-final': {queryFile: 'heavyFinalQueries.json', corpus: HEAVY_CORPUS}
+} satisfies Record<string, {queryFile: string; corpus: EvalCorpus}>
+
+type EvalSet = keyof typeof EVAL_SETS
 const RESULTS_DIR = path.join(__dirname, 'results')
 const RESULTS_REQUESTED = 20
 const DEFAULT_SWEEP_ALPHAS = '0.25,0.5,0.75'
@@ -104,15 +127,18 @@ const DEFAULT_SWEEP_FLOORS = '0.3,0.35,0.4,0.45,0.5'
 const SWEEP_TABLE_METRICS = [
   'nDCG10',
   'recall5',
+  'recall20',
   'mrr',
   'zeroResultRate',
   'junkAt5',
   'noAnswerResults'
 ] as const
 
+const isEvalSet = (value: string): value is EvalSet => Object.hasOwn(EVAL_SETS, value)
+
 const parseEvalSet = (value: string): EvalSet => {
-  if (value === 'dev' || value === 'holdout') return value
-  throw new Error(`EVAL_SET must be dev or holdout, got "${value}"`)
+  if (isEvalSet(value)) return value
+  throw new Error(`EVAL_SET must be one of ${Object.keys(EVAL_SETS).join(', ')}, got "${value}"`)
 }
 
 const parseModes = (value: string) =>
@@ -127,14 +153,47 @@ const parseLabel = (value: string) => {
   throw new Error(`EVAL_LABEL may only hold letters, digits, dots, dashes and underscores`)
 }
 
+const parseKeywordMatchings = (defaults: KeywordMatching) => {
+  const stopWordsList = parseStopWords(
+    'EVAL_STOP_WORDS',
+    process.env.EVAL_STOP_WORDS ?? (defaults.dropStopWords ? 'drop' : 'keep')
+  )
+  const fallbackBelowList = parseCounts(
+    'EVAL_ANY_WORD_FALLBACK_BELOW',
+    process.env.EVAL_ANY_WORD_FALLBACK_BELOW ?? String(defaults.anyWordFallbackBelow)
+  )
+  const minShares = parseFractions(
+    'EVAL_ANY_WORD_MIN_SHARES',
+    process.env.EVAL_ANY_WORD_MIN_SHARES ?? String(defaults.anyWordMinShare)
+  )
+  return stopWordsList.flatMap((stopWords) =>
+    fallbackBelowList.flatMap((anyWordFallbackBelow) =>
+      minShares.map((anyWordMinShare) => ({stopWords, anyWordFallbackBelow, anyWordMinShare}))
+    )
+  )
+}
+
 const parseSweepConfigs = (): SweepConfig[] => {
   const alphas = parseFractions('EVAL_ALPHAS', process.env.EVAL_ALPHAS ?? DEFAULT_SWEEP_ALPHAS)
   const floors = parseFractions('EVAL_FLOORS', process.env.EVAL_FLOORS ?? DEFAULT_SWEEP_FLOORS)
-  return alphas.flatMap((alpha) => floors.map((floor) => ({alpha, floor})))
+  const minBytesList = parseCounts(
+    'EVAL_MIN_BYTES',
+    process.env.EVAL_MIN_BYTES ?? String(VECTOR_MIN_PAGE_BYTES)
+  )
+  return alphas.flatMap((alpha) => {
+    const keywordMatchings = parseKeywordMatchings(
+      alpha === 0 ? QUICK_KEYWORD_MATCHING : FUSED_KEYWORD_MATCHING
+    )
+    return floors.flatMap((floor) =>
+      minBytesList.flatMap((minBytes) =>
+        keywordMatchings.map((keywordMatching) => ({alpha, floor, minBytes, ...keywordMatching}))
+      )
+    )
+  })
 }
 
 const gradeQueries = (evalSet: EvalSet, pageIdByFixture: Map<string, number>): GradedQuery[] => {
-  const fileName = QUERY_FILES[evalSet]
+  const fileName = EVAL_SETS[evalSet].queryFile
   const queries: EvalQuery[] = JSON.parse(fs.readFileSync(path.join(__dirname, fileName), 'utf8'))
   return queries.map(({query, category, relevant}) => {
     if (!query.trim()) throw new Error(`${fileName} has a blank query`)
@@ -171,10 +230,10 @@ const toResultIds = (nodeIds: (string | number)[]) => {
   return resultIds
 }
 
-const searchPages = async (query: string, mode: SearchMode) => {
+const searchPages = async (query: string, mode: SearchMode, viewerId: string) => {
   if (typeof search !== 'function') throw new Error('search must be a resolver function')
   const dataLoader = getNewDataLoader('pagesSearchEval')
-  const context = {authToken: {sub: EVAL_USER_ID, tms: []}, dataLoader} as unknown as GQLContext
+  const context = {authToken: {sub: viewerId, tms: []}, dataLoader} as unknown as GQLContext
   try {
     const connection = await search(
       {} as User,
@@ -236,6 +295,7 @@ const toQueryResult = (
   answerable: grades.size > 0,
   nDCG10: ndcgAt(10, resultIds, grades),
   recall5: recallAt(5, resultIds, grades),
+  recall20: recallAt(20, resultIds, grades),
   junkAt5: junkAt(5, resultIds, grades),
   reciprocalRank: reciprocalRank(resultIds, grades),
   resultIds,
@@ -247,14 +307,15 @@ const toQueryResult = (
 const scoreQuery = async (
   gradedQuery: GradedQuery,
   mode: SearchMode,
-  fixtureKeyByPageId: Map<number, string>
+  fixtureKeyByPageId: Map<number, string>,
+  viewerId: string
 ) => {
   warnSpy.mockClear()
   const startedAt = Date.now()
   let resultIds: number[] = []
   let error: string | undefined
   try {
-    resultIds = await searchPages(gradedQuery.query, mode)
+    resultIds = await searchPages(gradedQuery.query, mode, viewerId)
   } catch (e) {
     error = e instanceof Error ? e.message : String(e)
   }
@@ -303,29 +364,40 @@ const embedQueryVector = async (query: string) => {
 const scoreSweepQuery = async (
   gradedQuery: GradedQuery,
   queryVector: Float32Array | Error,
-  {alpha, floor}: SweepConfig,
-  fixtureKeyByPageId: Map<number, string>
+  {alpha, floor, minBytes, stopWords, anyWordFallbackBelow, anyWordMinShare}: SweepConfig,
+  fixtureKeyByPageId: Map<number, string>,
+  viewerId: string
 ) => {
-  if (queryVector instanceof Error) {
+  if (alpha > 0 && queryVector instanceof Error) {
     const error = `embedding failed: ${queryVector.message}`
     return toQueryResult(gradedQuery, [], fixtureKeyByPageId, 0, error)
   }
   const startedAt = Date.now()
   let resultIds: number[] = []
   let error: string | undefined
+  const pageSearch = {
+    query: gradedQuery.query,
+    first: RESULTS_REQUESTED,
+    offset: 0,
+    viewerId,
+    teamIds: undefined,
+    dateRange: null,
+    dropStopWords: stopWords === 'drop',
+    anyWordFallbackBelow,
+    anyWordMinShare
+  }
   try {
-    const {edges} = await getPagesByRRF({
-      query: gradedQuery.query,
-      queryVector,
-      alpha,
-      k: RRF_K,
-      first: RESULTS_REQUESTED,
-      offset: 0,
-      viewerId: EVAL_USER_ID,
-      teamIds: undefined,
-      dateRange: null,
-      vectorFloor: floor
-    })
+    const {edges} =
+      alpha > 0 && queryVector instanceof Float32Array
+        ? await getPagesByRRF({
+            ...pageSearch,
+            queryVector,
+            alpha,
+            k: RRF_K,
+            vectorFloor: floor,
+            vectorMinBytes: minBytes
+          })
+        : await getPagesByKeyword(pageSearch)
     resultIds = toResultIds(edges.map(({nodeId}) => nodeId))
   } catch (e) {
     error = e instanceof Error ? e.message : String(e)
@@ -337,7 +409,8 @@ const scoreSweepQuery = async (
 const scoreSweep = async (
   gradedQueries: GradedQuery[],
   configs: SweepConfig[],
-  fixtureKeyByPageId: Map<number, string>
+  fixtureKeyByPageId: Map<number, string>,
+  viewerId: string
 ) => {
   await warmUpEmbeddings()
   const sweeps = configs.map((config) => ({...config, perQuery: [] as QueryResult[]}))
@@ -345,14 +418,13 @@ const scoreSweep = async (
     const queryVector = await embedQueryVector(gradedQuery.query)
     for (const sweep of sweeps) {
       sweep.perQuery.push(
-        await scoreSweepQuery(gradedQuery, queryVector, sweep, fixtureKeyByPageId)
+        await scoreSweepQuery(gradedQuery, queryVector, sweep, fixtureKeyByPageId, viewerId)
       )
     }
   }
   return sweeps.map(
-    ({alpha, floor, perQuery}): SweepResult => ({
-      alpha,
-      floor,
+    ({perQuery, ...config}): SweepResult => ({
+      ...config,
       overall: summarizeWithErrors(perQuery),
       byCategory: summarizeByCategory(perQuery),
       perQuery
@@ -360,9 +432,21 @@ const scoreSweep = async (
   )
 }
 
-const toSweepRow = ({alpha, floor, overall}: SweepResult) => ({
+const toSweepRow = ({
   alpha,
   floor,
+  minBytes,
+  stopWords,
+  anyWordFallbackBelow,
+  anyWordMinShare,
+  overall
+}: SweepResult) => ({
+  alpha,
+  floor,
+  minBytes,
+  stopWords,
+  anyWordFallbackBelow,
+  anyWordMinShare,
   ...Object.fromEntries(
     SWEEP_TABLE_METRICS.map((metric) => [metric, roundForTable(overall[metric])])
   )
@@ -375,6 +459,7 @@ interface SweepRun {
   gradedQueries: GradedQuery[]
   configs: SweepConfig[]
   fixtureKeyByPageId: Map<number, string>
+  viewerId: string
 }
 
 const runSweep = async ({
@@ -383,9 +468,10 @@ const runSweep = async ({
   unindexed,
   gradedQueries,
   configs,
-  fixtureKeyByPageId
+  fixtureKeyByPageId,
+  viewerId
 }: SweepRun) => {
-  const sweepResults = await scoreSweep(gradedQueries, configs, fixtureKeyByPageId)
+  const sweepResults = await scoreSweep(gradedQueries, configs, fixtureKeyByPageId, viewerId)
   const resultsPath = path.join(RESULTS_DIR, `${label}-${evalSet}-sweep.json`)
   const results = {label, set: evalSet, mode: 'sweep', unindexed, configs: sweepResults}
   fs.writeFileSync(resultsPath, `${JSON.stringify(results, null, 2)}\n`)
@@ -395,20 +481,41 @@ const runSweep = async ({
       .sort((first, second) => second.overall.nDCG10 - first.overall.nDCG10)
       .map(toSweepRow)
   )
-  const failed = sweepResults.flatMap(({alpha, floor, perQuery}) =>
-    perQuery
-      .filter(({error}) => error !== undefined)
-      .map(({query, error}) => ({query, alpha, floor, error}))
+  const failed = sweepResults.flatMap(
+    ({alpha, floor, minBytes, stopWords, anyWordFallbackBelow, anyWordMinShare, perQuery}) =>
+      perQuery
+        .filter(({error}) => error !== undefined)
+        .map(({query, error}) => ({
+          query,
+          config: `alpha ${alpha}, floor ${floor}, min bytes ${minBytes}, stop words ${stopWords}, any words below ${anyWordFallbackBelow}, min share ${anyWordMinShare}`,
+          error
+        }))
   )
   const [firstFailed] = failed
   if (firstFailed) {
     console.warn(
-      `${failed.length} sweep result lists failed. First, "${firstFailed.query}" at alpha ${firstFailed.alpha}, floor ${firstFailed.floor}: ${firstFailed.error}`
+      `${failed.length} sweep result lists failed. First, "${firstFailed.query}" at ${firstFailed.config}: ${firstFailed.error}`
     )
   }
-  return failed.map(
-    ({query, alpha, floor, error}) => `sweep alpha ${alpha} floor ${floor} "${query}": ${error}`
-  )
+  return failed.map(({query, config, error}) => `sweep ${config} "${query}": ${error}`)
+}
+
+const dumpCorpus = (corpus: EvalCorpus) => {
+  const dumpDir = path.join(RESULTS_DIR, `${corpus.name}-corpus`)
+  fs.rmSync(dumpDir, {recursive: true, force: true})
+  fs.mkdirSync(dumpDir, {recursive: true})
+  const fixtures = corpus.loadFixtures()
+  for (const {key, title, plaintextContent} of fixtures) {
+    fs.writeFileSync(path.join(dumpDir, `${key}.md`), `${title}\n\n${plaintextContent}\n`)
+  }
+  const index = fixtures.map(({key, title, plaintextContent, updatedAt}) => ({
+    key,
+    title,
+    chars: plaintextContent.length,
+    updatedAt: updatedAt?.toISOString()
+  }))
+  fs.writeFileSync(path.join(dumpDir, 'index.json'), `${JSON.stringify(index, null, 2)}\n`)
+  console.log(`Wrote ${fixtures.length} pages to ${dumpDir}`)
 }
 
 afterAll(async () => {
@@ -420,7 +527,13 @@ test('pages search eval', async () => {
   const modes = parseModes(process.env.EVAL_MODES ?? 'fused')
   const label = parseLabel(process.env.EVAL_LABEL ?? 'local')
   const sweepConfigs = modes.includes('sweep') ? parseSweepConfigs() : []
+  const {corpus} = EVAL_SETS[evalSet]
+  if (process.env.EVAL_DUMP === '1') {
+    dumpCorpus(corpus)
+    return
+  }
   const {pageIdByFixture, unindexed} = await seedEvalPages({
+    corpus,
     reseed: process.env.EVAL_RESEED === '1'
   })
   const gradedQueries = gradeQueries(evalSet, pageIdByFixture)
@@ -437,7 +550,8 @@ test('pages search eval', async () => {
           unindexed,
           gradedQueries,
           configs: sweepConfigs,
-          fixtureKeyByPageId
+          fixtureKeyByPageId,
+          viewerId: corpus.userId
         }))
       )
       continue
@@ -445,7 +559,7 @@ test('pages search eval', async () => {
     if (mode === 'fused') await warmUpEmbeddings()
     const perQuery: ScoredQuery[] = []
     for (const gradedQuery of gradedQueries) {
-      perQuery.push(await scoreQuery(gradedQuery, mode, fixtureKeyByPageId))
+      perQuery.push(await scoreQuery(gradedQuery, mode, fixtureKeyByPageId, corpus.userId))
     }
     const overall = summarizeWithErrors(perQuery)
     const byCategory = summarizeByCategory(perQuery)

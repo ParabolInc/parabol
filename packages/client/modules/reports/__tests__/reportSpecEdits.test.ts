@@ -37,7 +37,7 @@ test('a measure that can’t split the way the report does can’t be picked', (
   const {options, isMulti} = measureEdits(byType)
   expect(isMulti).toBe(false)
   expect(validKeys(options)).toContain('NEW_TASKS')
-  expect(validKeys(options)).not.toContain('MEMBERS')
+  expect(validKeys(options)).not.toContain('USERS')
 })
 
 test('a table’s measures toggle', () => {
@@ -51,6 +51,16 @@ test('a table’s measures toggle', () => {
     'DISCUSSIONS',
     'NEW_TASKS'
   ])
+})
+
+test('a table’s last measure can’t be unchecked', () => {
+  const {options} = measureEdits(spec({showAs: 'TABLE', measures: ['ACTIVE_USERS']}))
+  expect(options.find(({key}) => key === 'ACTIVE_USERS')).toMatchObject({
+    isSelected: true,
+    isValid: false
+  })
+  const withTwo = measureEdits(spec({showAs: 'TABLE', measures: ['ACTIVE_USERS', 'USERS']}))
+  expect(validKeys(withTwo.options)).toEqual(expect.arrayContaining(['ACTIVE_USERS', 'USERS']))
 })
 
 test('removing a breakdown drops the sort and limit it leaves without a purpose', () => {
@@ -81,8 +91,8 @@ test('clearing a filter’s last value removes the filter', () => {
 })
 
 test('a filter can only be added on a dimension the measure has, and not twice', () => {
-  const members = spec({measures: ['MEMBERS']})
-  expect(addFilterEdits(members, teams, []).map(({key}) => key)).toEqual(['TEAM'])
+  const users = spec({measures: ['USERS']})
+  expect(addFilterEdits(users, teams, []).map(({key}) => key)).toEqual(['TEAM'])
   const filtered = spec({filters: [{dimension: 'TEAM', values: ['team1']}]})
   expect(addFilterEdits(filtered, teams, []).map(({key}) => key)).toEqual(['MEETING_TYPE'])
 })
@@ -110,9 +120,83 @@ test('each org structure level is a breakdown and a filter of its own', () => {
   ])
 })
 
-test('a view that can’t show the breakdown is offered but can’t be picked', () => {
+test('a view gets the breakdowns it needs', () => {
   const byTeam = spec({showAs: 'BARS', breakdown: [{dimension: 'TEAM'}]})
-  expect(validKeys(viewEdits(byTeam))).toEqual(['BARS', 'TABLE'])
+  const views = viewEdits(byTeam)
+  const breakdownOf = (view: string) => views.find(({key}) => key === view)?.spec.breakdown
+  expect(validKeys(views)).toEqual(['NUMBER', 'LINE', 'BARS', 'HEATMAP', 'TABLE'])
+  expect(breakdownOf('NUMBER')).toEqual([])
+  expect(breakdownOf('LINE')).toEqual([{dimension: 'TIME'}, {dimension: 'TEAM'}])
+  expect(breakdownOf('HEATMAP')).toEqual([{dimension: 'TEAM'}, {dimension: 'TIME'}])
+})
+
+test('Health score opens the Team Health heatmap, under the team structure level the report split by', () => {
+  const activeByUnit = spec({
+    measures: ['ACTIVE_USERS'],
+    showAs: 'LINE',
+    breakdown: [{dimension: 'TIME'}, {dimension: 'TEAM_LEVEL', levelId: 'level1'}]
+  })
+  const health = measureEdits(activeByUnit).options.find(({key}) => key === 'HEALTH_SCORE')
+  expect(health?.isValid).toBe(true)
+  expect(health?.spec).toMatchObject({
+    showAs: 'HEATMAP',
+    compareTo: 'PREVIOUS_PERIOD',
+    breakdown: [
+      {dimension: 'TEAM_LEVEL', levelId: 'level1'},
+      {dimension: 'TEAM'},
+      {dimension: 'CATEGORY'}
+    ]
+  })
+})
+
+test('a line that becomes a heatmap keeps time as its columns', () => {
+  const healthOverTime = spec({
+    measures: ['HEALTH_SCORE'],
+    showAs: 'LINE',
+    breakdown: [{dimension: 'TIME'}, {dimension: 'TEAM'}]
+  })
+  expect(viewEdits(healthOverTime).find(({key}) => key === 'HEATMAP')?.spec.breakdown).toEqual([
+    {dimension: 'TEAM'},
+    {dimension: 'TIME'}
+  ])
+})
+
+test('Health score bars become a heatmap by category', () => {
+  const healthByUnit = spec({
+    measures: ['HEALTH_SCORE'],
+    showAs: 'BARS',
+    breakdown: [{dimension: 'TEAM_LEVEL', levelId: 'level1'}]
+  })
+  const unit = {dimension: 'TEAM_LEVEL', levelId: 'level1'}
+  expect(viewEdits(healthByUnit).find(({key}) => key === 'HEATMAP')?.spec.breakdown).toEqual([
+    unit,
+    {dimension: 'CATEGORY'}
+  ])
+  const added = addBreakdownEdits(healthByUnit, LEVELS)
+  expect(added.find(({key}) => key === 'TEAM')?.spec).toMatchObject({
+    showAs: 'HEATMAP',
+    breakdown: [unit, {dimension: 'TEAM'}, {dimension: 'CATEGORY'}]
+  })
+})
+
+test('a Health score heatmap adds rows before its categories, team structure levels before teams', () => {
+  const healthByTeam = spec({
+    measures: ['HEALTH_SCORE'],
+    showAs: 'HEATMAP',
+    breakdown: [{dimension: 'TEAM'}, {dimension: 'CATEGORY'}],
+    compareTo: 'PREVIOUS_PERIOD'
+  })
+  const byUnit = addBreakdownEdits(healthByTeam, LEVELS).find(
+    ({key}) => key === 'TEAM_LEVEL:level1'
+  )
+  expect(byUnit?.spec.breakdown).toEqual([
+    {dimension: 'TEAM_LEVEL', levelId: 'level1'},
+    {dimension: 'TEAM'},
+    {dimension: 'CATEGORY'}
+  ])
+  const byMonth = breakdownEdits(healthByTeam, 1, LEVELS).options.find(({key}) => key === 'MONTH')
+  expect(byMonth?.isValid).toBe(true)
+  expect(byMonth?.spec.compareTo).toBe('PREVIOUS_PERIOD')
 })
 
 test('a date sorts by age, and only sorts that fit are offered', () => {

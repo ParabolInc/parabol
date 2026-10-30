@@ -1,5 +1,5 @@
 import areEqual from 'fbjs/lib/areEqual'
-import {startTransition, useCallback, useEffect, useRef} from 'react'
+import {startTransition, useCallback, useEffect, useRef, useState} from 'react'
 import {fetchQuery, type PreloadFetchPolicy, useQueryLoader} from 'react-relay'
 import type {ConcreteRequest, GraphQLTaggedNode, OperationType, VariablesOf} from 'relay-runtime'
 import useAtmosphere from './useAtmosphere'
@@ -17,6 +17,7 @@ export const useQueryLoaderNowWithRetry = <TQuery extends OperationType>(
 ) => {
   const {fetchPolicy, preventSuspense, transition} = options
   const [queryRef, loadQuery] = useQueryLoader<TQuery>(preloadableRequest)
+  const [error, setError] = useState<Error | null>(null)
   const varRef = useRef(variables)
   const atmosphere = useAtmosphere()
   if (!areEqual(variables, varRef.current)) {
@@ -26,14 +27,22 @@ export const useQueryLoaderNowWithRetry = <TQuery extends OperationType>(
   const refreshQuery = useCallback(() => {
     // fetchQuery will fetch the query and write the data to the Relay store. This will
     // ensure that when we re-render, the data is already cached and we don't suspend
+    // a fetch for variables that have since changed would replace newer results with older ones
+    const isCurrent = () => areEqual(variables, varRef.current)
+    setError(null)
     fetchQuery(atmosphere, preloadableRequest as GraphQLTaggedNode, variables).subscribe({
       complete: () => {
         // *After* the query has been fetched, we call loadQuery again to re-render
         // with a new queryRef. At this point the data for the query should be
         // cached, so we use the 'store-only' fetchPolicy to avoid suspending.
+        if (!isCurrent()) return
         loadQuery(variables, {
           fetchPolicy: 'store-only' as PreloadFetchPolicy
         })
+      },
+      // the previous results stay up, so a failed fetch says so, or they'd pass for the results of these variables
+      error: (fetchError: Error) => {
+        if (isCurrent()) setError(fetchError)
       }
     })
   }, [varRef.current])
@@ -62,7 +71,7 @@ export const useQueryLoaderNowWithRetry = <TQuery extends OperationType>(
     }
   }, [])
 
-  return {queryRef, retry: refreshQuery}
+  return {queryRef, retry: refreshQuery, error}
 }
 
 const useQueryLoaderNow = <TQuery extends OperationType>(
