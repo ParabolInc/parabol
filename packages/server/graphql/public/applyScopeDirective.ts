@@ -6,8 +6,8 @@ export const PAT_PREFIX = 'pat_'
 
 /**
  * Wraps field resolvers that have @scope(name: OAuthScopeEnum!) applied.
- * For PAT bearer tokens, verifies the token exists (non-revoked) and has the required scope.
- * Regular JWT-authenticated requests pass through without scope checks.
+ * For access tokens (PATs and OAuth access tokens), verifies the token has the required scope.
+ * Session requests pass through without scope checks.
  */
 export const applyScopeDirective = (schema: GraphQLSchema): GraphQLSchema => {
   const scopeDirective = schema.getDirective('scope')
@@ -31,14 +31,14 @@ export const applyScopeDirective = (schema: GraphQLSchema): GraphQLSchema => {
       const originalResolver = field.resolve ?? defaultFieldResolver
 
       field.resolve = async (source, args, context, info) => {
-        if (context.authToken?.aud === 'action-pat') {
-          if (context.authToken.scope?.includes(requiredScope)) {
+        const {authToken} = context
+        if (authToken && authToken.aud !== 'action') {
+          if (authToken.scope?.includes(requiredScope)) {
             return originalResolver(source, args, context, info)
           }
-          throw new GraphQLError(
-            `Personal access token is missing required scope: ${requiredScope}`,
-            {extensions: {code: 'FORBIDDEN'}}
-          )
+          throw new GraphQLError(`Access token is missing required scope: ${requiredScope}`, {
+            extensions: {code: 'FORBIDDEN'}
+          })
         }
 
         return originalResolver(source, args, context, info)

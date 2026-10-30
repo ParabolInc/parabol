@@ -1,0 +1,29 @@
+"""
+The parameters an OAuth 2.0 client sent to GET /oauth/authorize, as the client sent them
+"""
+input OAuthAuthorizationRequestInput {
+  """
+  The client_id of the OAuth 2.0 application
+  """
+  clientId: ID!
+  """
+  The redirect_uri, which must exactly match one registered for the application
+  """
+  redirectUri: String!
+  """
+  The space-delimited scopes the application asks for
+  """
+  scope: String
+  """
+  The opaque state the application uses to tie the response to its request
+  """
+  state: String!
+  """
+  The PKCE code challenge, base64url(SHA-256(code_verifier))
+  """
+  codeChallenge: String
+  """
+  The PKCE code challenge method. Only S256 is supported
+  """
+  codeChallengeMethod: String
+}

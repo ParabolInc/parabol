@@ -5,6 +5,7 @@ import {hasOrgFeatureFlag} from './rules/hasOrgFeatureFlag'
 import {hasOrgRole} from './rules/hasOrgRole'
 import {hasPageAccess} from './rules/hasPageAccess'
 import {hasProviderAccess} from './rules/hasProviderAccess'
+import {hasTokenAudience} from './rules/hasTokenAudience'
 import isAuthenticated from './rules/isAuthenticated'
 import isEnvVarTrue from './rules/isEnvVarTrue'
 import {isMeetingFacilitator} from './rules/isMeetingFacilitator'
@@ -141,12 +142,19 @@ const permissionMap: PermissionMap<Resolvers> = {
     changeTaskTeam: isTeamMember<'Mutation.changeTaskTeam'>('args.teamId'),
     createImposterToken: isSuperUser,
     createOAuth1AuthorizeUrl: isTeamMember<'Mutation.createOAuth1AuthorizeUrl'>('args.teamId'),
+    createOAuthAPICode: and(isAuthenticated, hasTokenAudience(['action'])),
     createOAuthAPIProvider: hasOrgRole<'Mutation.createOAuthAPIProvider'>(
       'args.orgId',
       'ORG_ADMIN'
     ),
-    createPersonalAccessToken: rateLimit({perMinute: 10, perHour: 50}),
-    updatePersonalAccessToken: rateLimit({perMinute: 10, perHour: 50}),
+    createPersonalAccessToken: and(
+      hasTokenAudience(['action', 'action-pat']),
+      rateLimit({perMinute: 10, perHour: 50})
+    ),
+    updatePersonalAccessToken: and(
+      hasTokenAudience(['action', 'action-pat']),
+      rateLimit({perMinute: 10, perHour: 50})
+    ),
     createPage: and(
       isAuthenticated,
       or(
@@ -669,6 +677,7 @@ const permissionMap: PermissionMap<Resolvers> = {
       isSuperUser,
       and(isUserSelf, isViewerOnOrg<'User.organizationUser'>('args.orgId'))
     ),
+    oauthAuthorizationRequest: and(isUserSelf, hasTokenAudience(['action'])),
     personalAccessTokens: isUserSelf,
     picture: allow,
     preferredName: allow,

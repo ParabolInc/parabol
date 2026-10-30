@@ -20,6 +20,7 @@ import {activeEmbeddingModelId} from '../../../../embedder/activeEmbeddingModel'
 import {getEmbeddingsTableName} from '../../../../embedder/getEmbeddingsTableName'
 import {numberVectorToString} from '../../../../embedder/indexing/numberVectorToString'
 import type MeetingTemplate from '../../../database/types/MeetingTemplate'
+import {validateOAuthAuthorizationRequest} from '../../../oauth2/validateOAuthAuthorizationRequest'
 import getKysely from '../../../postgres/getKysely'
 import {
   selectNewMeetings,
@@ -889,6 +890,12 @@ const User: ReqResolvers<'User'> = {
     const viewerId = getUserId(authToken)
     const tokens = await selectPersonalAccessToken().where('userId', '=', viewerId).execute()
     return tokens
+  },
+  oauthAuthorizationRequest: async ({id: userId}, {request}, {dataLoader}) => {
+    const authorization = await validateOAuthAuthorizationRequest(request, userId, dataLoader)
+    if ('error' in authorization) return null
+    const {provider, scopes} = authorization
+    return {name: provider.name, orgId: provider.orgId, scopes, redirectUri: request.redirectUri}
   }
 }
 
