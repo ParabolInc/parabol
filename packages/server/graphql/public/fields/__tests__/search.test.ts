@@ -29,6 +29,18 @@ jest.mock('../../../../postgres/queries/getEmbeddingsByRRF', () => ({
 jest.mock('../../../../postgres/queries/getPagesByKeyword', () => ({getPagesByKeyword: jest.fn()}))
 jest.mock('../../../../postgres/queries/getPagesByRRF', () => ({getPagesByRRF: jest.fn()}))
 jest.mock('../../../../utils/Logger', () => ({Logger: {warn: jest.fn()}}))
+const mockActiveDefinition: {pageAlpha?: number} = {}
+jest.mock('../../../../../embedder/activeEmbeddingModel', () => {
+  const actual = jest.requireActual<typeof import('../../../../../embedder/activeEmbeddingModel')>(
+    '../../../../../embedder/activeEmbeddingModel'
+  )
+  return {
+    ...actual,
+    get activeEmbeddingDefinition() {
+      return {...actual.activeEmbeddingDefinition, ...mockActiveDefinition}
+    }
+  }
+})
 
 const viewerId = 'user-search-test'
 const dataLoader = getNewDataLoader('searchTest')
@@ -190,6 +202,17 @@ it('uses the alpha a page search gives', async () => {
   jest.mocked(publishToEmbedder).mockResolvedValue(new Float32Array(1024))
   await callSearch({query: 'retro', alpha: 0.5})
   expect(getPagesByRRF).toHaveBeenCalledWith(expect.objectContaining({alpha: 0.5}))
+})
+
+it("defaults page search to the active generation's alpha", async () => {
+  mockActiveDefinition.pageAlpha = 0.3
+  try {
+    jest.mocked(publishToEmbedder).mockResolvedValue(new Float32Array(1024))
+    await callSearch({query: 'retro'})
+    expect(getPagesByRRF).toHaveBeenCalledWith(expect.objectContaining({alpha: 0.3}))
+  } finally {
+    delete mockActiveDefinition.pageAlpha
+  }
 })
 
 it('keeps alpha 0.25 as the default for other search types', async () => {

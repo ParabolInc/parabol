@@ -1,4 +1,5 @@
 import {GraphQLError} from 'graphql'
+import {activeEmbeddingDefinition} from '../../../../embedder/activeEmbeddingModel'
 import {RRF_K} from '../../../postgres/expressions'
 import getKysely from '../../../postgres/getKysely'
 import {getEmbeddingsByRRF} from '../../../postgres/queries/getEmbeddingsByRRF'
@@ -66,7 +67,8 @@ export const search: NonNullable<UserResolvers['search']> = async (
   {authToken, dataLoader, resourceGrants}
 ) => {
   const viewerId = getUserId(authToken)
-  const alpha = inAlpha ?? (type === 'page' ? PAGE_SEARCH_ALPHA : 0.25)
+  const pageAlpha = activeEmbeddingDefinition?.pageAlpha ?? PAGE_SEARCH_ALPHA
+  const alpha = inAlpha ?? (type === 'page' ? pageAlpha : 0.25)
   const query = inQuery.trim()
 
   // VALIDATION

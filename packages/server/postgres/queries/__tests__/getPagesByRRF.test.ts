@@ -6,6 +6,19 @@ import getKysely from '../../getKysely'
 import {getPagesByRRF} from '../getPagesByRRF'
 import {decodePageSearchCursor} from '../pageSearchCursor'
 
+const mockActiveDefinition: {pageVectorFloor?: number} = {}
+jest.mock('../../../../embedder/activeEmbeddingModel', () => {
+  const actual = jest.requireActual<typeof import('../../../../embedder/activeEmbeddingModel')>(
+    '../../../../embedder/activeEmbeddingModel'
+  )
+  return {
+    ...actual,
+    get activeEmbeddingDefinition() {
+      return {...actual.activeEmbeddingDefinition, ...mockActiveDefinition}
+    }
+  }
+})
+
 const pg = getKysely()
 const suffix = `pbr-${Date.now()}`
 const viewerId = `viewer-${suffix}`
@@ -348,6 +361,16 @@ it('uses the given similarity floor', async () => {
     [keywordOnlyId, bothArmsId, vectorOnlyId].sort()
   )
   expect(edges.find((e) => e.nodeId === bothArmsId)!.score.vectorRank).toBeNull()
+})
+
+it("uses the active generation's floor by default", async () => {
+  mockActiveDefinition.pageVectorFloor = 0.85
+  try {
+    const {edges} = await fused(0.5)
+    expect(edges.find((e) => e.nodeId === bothArmsId)!.score.vectorRank).toBeNull()
+  } finally {
+    delete mockActiveDefinition.pageVectorFloor
+  }
 })
 
 it('ranks by vectors alone when the query has no keyword terms', async () => {
