@@ -343,9 +343,9 @@ Holdout set:
 The vector arm of fused results (`getPagesByRRF`) now skips pages with fewer than 200 bytes of plain text (`VECTOR_MIN_PAGE_BYTES`). That is about 200 characters of English, and fewer of Japanese or Chinese, where each character carries more meaning. Such pages are still found by their words. Short pages embed close to every query; on the heavy corpus a quarter of the pages are like this, mostly standups that nobody answered. The length comes from the stored size, so the text is never decompressed. The heavy corpus baseline above is from before this change, and quick results don't change.
 
 **How it was chosen.** A selection rule was written in the plan before any sweep ran:
-1. A configuration is eligible when nDCG@10 is within 0.005 of master on both `heavy-dev` and `dev`, and it adds no zero-result queries.
+1. A configuration is eligible when nDCG@10 is no more than 0.005 below master's on both `heavy-dev` and `dev`, and it adds no zero-result queries.
 2. Among eligible configurations, pick the lowest `heavy-dev` `noAnswerResults`. Treat values within 0.5 as ties, and break them by `junkAt5`, then nDCG@10, then fewer rules.
-3. Ship only if `heavy-holdout` keeps nDCG@10 within 0.01 of master and lowers `noAnswerResults`.
+3. Ship only if `heavy-holdout` keeps nDCG@10 no more than 0.01 below master's and lowers `noAnswerResults`.
 
 The sweep crossed three dimensions (126 configurations):
 - floors 0.4, 0.45 and 0.5;
@@ -429,10 +429,10 @@ The heavy corpus baseline above is from before this change.
    - the minimum share of the words: any, or half.
 
    Master keeps stop words and never falls back.
-2. **Eligibility.** A row is eligible when, on both `heavy-dev` and `dev`, nDCG@10 and Recall@20 are within 0.005 of master's. For fused ranking, `noAnswerResults` must also rise by at most 1.
+2. **Eligibility.** A row is eligible when, on both `heavy-dev` and `dev`, nDCG@10 and Recall@20 are no more than 0.005 below master's. For fused ranking, `noAnswerResults` must also rise by at most 1.
 3. **Pick.** Each list takes its eligible row with the highest mean nDCG@10 over the two sets. Rows within 0.005 tie; ties go to higher mean Recall@20, then fewer changes, then the smaller threshold.
 4. **Stop words.** They are kept or dropped for both lists together, by the higher summed nDCG@10.
-5. **Gate.** On `heavy-holdout`, each changed list must keep nDCG@10 and Recall@20 within 0.01 of master's.
+5. **Gate.** On `heavy-holdout`, each changed list must keep nDCG@10 and Recall@20 no more than 0.01 below master's.
 
 Quick list (alpha 0):
 
@@ -496,3 +496,64 @@ On `dev`, the summary queries that fell in A1 recover: the quick list goes from 
 - **The gate passes for both lists.** On `heavy-holdout`, the quick list gains 0.264 nDCG@10 and 0.361 Recall@20, and fused ranking gains 0.138 and 0.153.
 - **What was read.** Only overall rows. The local holdout results were scrubbed down to those rows.
 - **Gate runs so far.** `heavy-holdout` has had six: two for A4, and a master and a pick for each list here.
+
+## Blend re-tune (2026-10-29)
+
+After natural-language matching, the quick list scored higher than fused ranking, the list that replaces it. At alpha 0.25, the vector arm reordered good keyword matches. Two settings change for page search:
+- **Alpha.** The default is now 0.01 (`PAGE_SEARCH_ALPHA` in `search.ts`). Other search types keep 0.25, and an alpha the caller sends is used as given. At 0.01 the vector arm mostly fills in after the keyword matches, in order of similarity, and only reorders keyword matches far down the list. Alpha stays above 0, because at 0 the vector-only pages would be ordered by recency.
+- **Fallback.** Fused ranking's any-word fallback now applies below 20 pages, and still needs half the words (`FUSED_KEYWORD_MATCHING`).
+
+**How it was chosen.** The plan fixed a selection rule before the sweep ran:
+1. **Rows.** Alpha 0.01, 0.05, 0.1, 0.15 or 0.25, crossed with the fallback threshold (1, 5 or 20 pages) and the minimum share of the words (any, or half). Stop words are dropped, the floor is 0.4, and the minimum length is 200 bytes. Master is A5's setting: 0.25, below 1, half the words.
+2. **Eligibility.** On both `heavy-dev` and `dev`, nDCG@10 and Recall@20 must be no more than 0.005 below master's, and `noAnswerResults` may rise by at most 1.
+3. **Pick.** The highest mean nDCG@10. Rows within 0.005 tie; ties go to higher mean Recall@20, then fewer changes, then the larger alpha.
+4. **Goal check.** Report whether the pick reaches the quick list. Gate on `heavy-holdout` as in A5.
+
+| Alpha | Fallback | `heavy-dev` nDCG@10 | Recall@20 | `noAnswerResults` | `dev` nDCG@10 | Recall@20 | `noAnswerResults` |
+| ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 0.25 | below 1, half (master) | 0.715 | 0.830 | 13.67 | 0.788 | 0.880 | 11.63 |
+| 0.15 | below 1, half | 0.718 | 0.830 | 13.67 | 0.800 | 0.880 | 11.63 |
+| 0.1 | below 1, half | 0.722 | 0.830 | 13.67 | 0.814 | 0.880 | 11.63 |
+| 0.05 | below 1, half | 0.725 | 0.830 | 13.67 | 0.816 | 0.880 | 11.63 |
+| 0.01 | below 1, half | 0.739 | 0.830 | 13.67 | 0.826 | 0.880 | 11.63 |
+| **0.01** | **below 20, half** | 0.757 | 0.862 | 13.67 | 0.864 | 0.928 | 11.63 |
+| 0.01 | below 5, half (tied, lower Recall@20) | 0.755 | 0.856 | 13.67 | 0.864 | 0.928 | 11.63 |
+| 0.01 | below 20, any word (not eligible) | 0.777 | 0.862 | 15.17 | 0.863 | 0.940 | 14.75 |
+| quick list, for reference | below 20, any word | 0.767 | 0.853 | 5.00 | 0.854 | 0.912 | 10.25 |
+
+Lower alpha won at every fallback setting, down to the grid's smallest value.
+
+On `heavy-dev`, by category, with the quick list for reference:
+
+| Category | Fused before | Fused after | Quick list |
+| --- | ---: | ---: | ---: |
+| title | 0.74 | 0.75 | 0.75 |
+| prefix | 0.91 | 0.96 | 0.96 |
+| body | 0.87 | 0.93 | 0.93 |
+| paraphrase | 0.32 | 0.38 | 0.44 |
+| typo | 0.56 | 0.59 | 0.58 |
+| table | 0.79 | 0.72 | 0.72 |
+| longDoc | 0.99 | 1.00 | 1.00 |
+| person | 0.59 | 0.78 | 0.78 |
+
+On `dev`, prefix queries go from 0.76 to 1.00 and summary queries from 0.82 to 0.95.
+
+**The goal is half met.** Fused ranking now beats the quick list on `dev` (0.864 against 0.854), but still trails it on `heavy-dev` (0.757 against 0.767) and on `heavy-holdout` (0.791 against 0.801). The rows that beat it on both dev sets need only one of the words for the fallback. They add filler pages to unanswerable queries, 1.5 more on `heavy-dev` and 3.1 more on `dev`, which the rule doesn't allow.
+
+**What it costs.**
+- **The vector arm no longer tells numbered pages apart.** "Beacon Retro #5" falls from 0.96 to 0.39, "Atlas Sprint Poker #4" from 0.62 to 0.36, and "day 7 onboarding email" from 0.50 to 0. Keyword search drops one-character words like "5", so only the vector arm saw the number. Searching for numbers is the next thing to fix.
+- **Some dev queries lose ground too.** On `dev`: two paraphrase questions ("who do I page when the site is down" 0.83 → 0.52, "how many people need to approve a code change" 0.63 → 0.50), a typo ("onbaording checklist" 0.63 → 0.43) and a table query ("which stories were estimated at 8 points" 0.92 → 0.69).
+- **Totals.** Fused ranking has 20 wins and 3 losses on `heavy-dev`, and 32 wins and 5 losses on `dev`.
+
+**Gate.** Master and the pick each ran once, as single-row sweeps:
+
+| Holdout | Configuration | nDCG@10 | Recall@5 | Recall@20 | `noAnswerResults` |
+| --- | --- | ---: | ---: | ---: | ---: |
+| `heavy-holdout` (72 answerable) | master | 0.719 | 0.813 | 0.896 | 14.00 |
+| `heavy-holdout` | alpha 0.01, below 20 | 0.791 | 0.840 | 0.931 | 14.00 |
+| `holdout` (23 answerable, spent) | master | 0.808 | 0.801 | 0.913 | 4.00 |
+| `holdout` | alpha 0.01, below 20 | 0.811 | 0.801 | 0.913 | 4.00 |
+
+- **The gate passes.** On `heavy-holdout`, nDCG@10 rises by 0.072 and Recall@20 by 0.035.
+- **What was read.** Only overall rows. The local holdout results were scrubbed down to those rows.
+- **Gate runs so far.** `heavy-holdout` has had eight: two for A4, four for A5 and two here.

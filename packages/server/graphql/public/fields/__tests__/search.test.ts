@@ -174,7 +174,7 @@ it('returns fused results when the query embeds in time', async () => {
   expect(getPagesByRRF).toHaveBeenCalledWith({
     query: 'retro',
     queryVector,
-    alpha: 0.25,
+    alpha: 0.01,
     k: 60,
     first: 20,
     offset: 0,
@@ -186,7 +186,13 @@ it('returns fused results when the query embeds in time', async () => {
   expect(Logger.warn).not.toHaveBeenCalled()
 })
 
-it('ranks other search types with the same default alpha', async () => {
+it('uses the alpha a page search gives', async () => {
+  jest.mocked(publishToEmbedder).mockResolvedValue(new Float32Array(1024))
+  await callSearch({query: 'retro', alpha: 0.5})
+  expect(getPagesByRRF).toHaveBeenCalledWith(expect.objectContaining({alpha: 0.5}))
+})
+
+it('keeps alpha 0.25 as the default for other search types', async () => {
   jest.mocked(publishToEmbedder).mockResolvedValue(new Float32Array(1024))
   await callSearch({query: 'retro', type: 'meetingTemplate'})
   expect(getEmbeddingsByRRF).toHaveBeenCalledWith(

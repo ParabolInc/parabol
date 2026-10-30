@@ -42,6 +42,8 @@ let nearEmptyId: number
 let nearEmptyKeywordId: number
 let shortJapaneseId: number
 let lateMatchId: number
+let olderCloseId: number
+let newerFarId: number
 
 const makeUser = (id: string, preferredName: string) => ({
   id,
@@ -175,19 +177,31 @@ beforeAll(async () => {
     userId: junkViewerId,
     plaintextContent: `${FILLER_TEXT}The zebra crossing moved.`
   })
+  olderCloseId = await insertPage('Older close match', {
+    userId: junkViewerId,
+    updatedAt: new Date('2026-01-01T00:00:00Z')
+  })
+  newerFarId = await insertPage('Newer far match', {
+    userId: junkViewerId,
+    updatedAt: new Date('2026-10-01T00:00:00Z')
+  })
   await pg
     .insertInto('PageAccess')
     .values(
-      [nearEmptyId, nearEmptyKeywordId, shortJapaneseId, lateMatchId].map((pageId) => ({
-        userId: junkViewerId,
-        pageId,
-        role: 'owner' as const
-      }))
+      [nearEmptyId, nearEmptyKeywordId, shortJapaneseId, lateMatchId, olderCloseId, newerFarId].map(
+        (pageId) => ({
+          userId: junkViewerId,
+          pageId,
+          role: 'owner' as const
+        })
+      )
     )
     .execute()
   await insertChunks(nearEmptyId, [0.95])
   await insertChunks(nearEmptyKeywordId, [0.96])
   await insertChunks(shortJapaneseId, [0.8])
+  await insertChunks(olderCloseId, [0.9])
+  await insertChunks(newerFarId, [0.7])
 })
 
 afterAll(async () => {
@@ -409,6 +423,21 @@ it('leaves near-empty pages out of the vector arm', async () => {
 
 it('measures the minimum length in bytes, so short Japanese notes keep their vector matches', async () => {
   expect(resultIds(await junkSearch())).toContain(shortJapaneseId)
+})
+
+it('ranks vector-only pages by similarity at a small alpha', async () => {
+  const {edges} = await junkSearch({alpha: 0.01})
+  const vectorOnlyIds = edges
+    .filter(({score}) => score.keywordRank === null)
+    .map(({nodeId}) => nodeId)
+  expect(vectorOnlyIds).toEqual([olderCloseId, shortJapaneseId, newerFarId])
+})
+
+it('falls back when fewer than 20 pages have every word by default', async () => {
+  const {edges} = await fused(0.5, {query: 'planning notes weekly'})
+  expect(edges.find(({nodeId}) => nodeId === keywordOnlyId)?.score.keywordRank).toEqual(
+    expect.any(Number)
+  )
 })
 
 it('highlights an any-word match past the start of the page', async () => {

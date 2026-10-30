@@ -15,7 +15,7 @@ export const VECTOR_SIMILARITY_FLOOR = 0.4
 export const VECTOR_MIN_PAGE_BYTES = 200
 export const FUSED_KEYWORD_MATCHING: KeywordMatching = {
   dropStopWords: true,
-  anyWordFallbackBelow: 1,
+  anyWordFallbackBelow: 20,
   anyWordMinShare: 0.5
 }
 
