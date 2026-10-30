@@ -8,7 +8,8 @@ import {
   isInTeamHealthWindow,
   loadCheckAnswers,
   type PickedTeamHealthAnswers,
-  pickLatestCheckByCategory
+  pickLatestCheckByCategory,
+  toTeamHealthCategoryKey
 } from './teamHealthAnswers'
 import {toTemplateKey} from './templateExpressions'
 
@@ -73,7 +74,8 @@ const readHealthScore: ReportMeasureFunction = async (query, dataLoader) => {
   )
   const categoryIdsOf = (check: TeamHealthCheck) =>
     [...(answers.get(check.id)?.scoresByCategoryId.keys() ?? [])].filter(
-      (categoryId) => !categoryFilter || categoryFilter.values.includes(String(categoryId))
+      (categoryId) =>
+        !categoryFilter || categoryFilter.values.includes(toTeamHealthCategoryKey(categoryId))
     )
   const isByTemplate = dimensions.includes('TEMPLATE')
   const pickSteps = (stepWindows: {at: Date; start: Date}[]) =>

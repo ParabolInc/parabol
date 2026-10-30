@@ -61,7 +61,7 @@ const ReportTeamHealthHeatmap = (props: Props) => {
   )
   const selectedCell = shownCells.find(({key}) => key === selectedKey)
   const teamName = teamItems.find(({teamId}) => teamId === selectedCell?.check.teamId)?.name
-  const categoryName = columns.find(({value}) => value === selectedCell?.category.categoryId)?.label
+  const categoryName = columns.find(({value}) => value === selectedCell?.categoryId)?.label
   const selection =
     selectedCell && teamName && categoryName ? {cell: selectedCell, teamName, categoryName} : null
   const onSelect = (key: string) => {
@@ -71,7 +71,7 @@ const ReportTeamHealthHeatmap = (props: Props) => {
       return
     }
     loadCellQuery(
-      {orgId, meetingId: cell.check.meetingId, categoryId: cell.category.categoryId},
+      {orgId, meetingId: cell.check.meetingId, categoryId: cell.categoryId},
       {fetchPolicy: 'store-or-network'}
     )
     setSelectedKey(key)

@@ -104,17 +104,26 @@ const TEAMS: {
   }
 ]
 
-// the cells whose summaries and answers earn a mark: a high, a medium and a low, and a bright spot
+// the cells whose summaries and answers earn a mark: a high, a medium and a low, and a bright spot. Their answers
+// spread as far as the mark needs
 const READINGS: Record<
   string,
-  {sentimentScore: number; deviation: number; commenterCount: number}
+  {sentimentScore: number; spreadScores: number[]; commentCount: number}
 > = {
-  'support:safety': {sentimentScore: -0.9, deviation: 1.4, commenterCount: 5},
-  'data:clarity': {sentimentScore: -0.7, deviation: 1.3, commenterCount: 3},
-  'support:impact': {sentimentScore: -0.5, deviation: 1.1, commenterCount: 3},
-  'design:meaning': {sentimentScore: 0.9, deviation: 0.4, commenterCount: 3}
+  'support:safety': {sentimentScore: -0.9, spreadScores: [1, 2, 2, 4, 5, 5], commentCount: 5},
+  'data:clarity': {sentimentScore: -0.7, spreadScores: [1, 2, 3, 3, 5], commentCount: 3},
+  'support:impact': {sentimentScore: -0.5, spreadScores: [2, 2, 3, 3, 4, 5], commentCount: 3},
+  'design:meaning': {sentimentScore: 0.9, spreadScores: [4, 4, 5, 5], commentCount: 3}
 }
-const CALM_READING = {sentimentScore: 0.3, deviation: 0.6, commenterCount: 1}
+
+// answers split between neighbors, too close together to mark
+const toCalmReading = (respondentCount: number) => ({
+  sentimentScore: 0.3,
+  spreadScores: Array.from({length: respondentCount}, (_, idx) =>
+    idx < respondentCount / 2 ? 3 : 4
+  ),
+  commentCount: 1
+})
 
 const average = (scores: number[]) =>
   Math.round((scores.reduce((sum, score) => sum + score, 0) / scores.length) * 10) / 10
@@ -162,17 +171,18 @@ export const SAMPLE_TEAM_HEALTH_CHECKS: ReportTeamHealthCheck[] = TEAMS.map((tea
   checkNumber: team.checkNumber,
   respondentCount: team.respondentCount,
   memberCount: team.memberCount,
-  categories: CATEGORIES.map((category, idx) => {
+  stages: CATEGORIES.map((category, idx) => {
     const [, previous, beforeThat] = team.scores[idx]!
-    const reading = READINGS[`${team.id}:${category.id}`] ?? CALM_READING
+    const reading = READINGS[`${team.id}:${category.id}`] ?? toCalmReading(team.respondentCount)
     return {
-      categoryId: category.id,
-      respondentCount: team.respondentCount,
-      commenterCount: reading.commenterCount,
-      deviation: reading.deviation,
+      id: `sample:${team.id}:${category.id}`,
+      respondentCount: reading.spreadScores.length,
+      commentCount: reading.commentCount,
+      spreadScores: reading.spreadScores,
       sentimentScore: reading.sentimentScore,
       isLoadingSummary: false,
-      previousScores: [previous, beforeThat]
+      scoreHistory: [{score: beforeThat}, {score: previous}],
+      healthQuestion: {category: {id: category.id}}
     }
   })
 }))

@@ -29,14 +29,22 @@ const ReportTeamHealthView = (props: Props) => {
           checkNumber
           respondentCount
           memberCount
-          categories {
-            categoryId
+          stages {
+            id
             respondentCount
-            commenterCount
-            deviation
+            commentCount
+            spreadScores
             sentimentScore
             isLoadingSummary
-            previousScores
+            scoreHistory {
+              score
+            }
+            # aliased like the meeting's: NewMeetingStage.question is a String on the embedded TeamHealthStage
+            healthQuestion: question {
+              category {
+                id
+              }
+            }
           }
         }
       }

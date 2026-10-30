@@ -1,9 +1,12 @@
 import {canShowRespondentDetails} from '../../../../client/shared/utils/teamHealthAnonymity'
 import type {TeamHealthResultStage as TeamHealthResultStageDB} from '../../../postgres/types/NewMeetingPhase'
+import getTeamHealthDisplayComment from '../../../utils/getTeamHealthDisplayComment'
 import isTeamHealthSummaryLoading from '../../../utils/isTeamHealthSummaryLoading'
 import type {DataLoaderWorker} from '../../graphql'
 import getTeamHealthResultScore from '../../mutations/helpers/getTeamHealthResultScore'
 import type {TeamHealthResultStageResolvers} from '../resolverTypes'
+import DiscussionThreadStage from './DiscussionThreadStage'
+import NewMeetingStage from './NewMeetingStage'
 
 export type TeamHealthResultStageSource = TeamHealthResultStageDB & {
   meetingId: string
@@ -32,6 +35,12 @@ const getCategorySummary = async (
 
 const TeamHealthResultStage: TeamHealthResultStageResolvers = {
   __isTypeOf: ({phaseType}) => phaseType === 'TEAM_HEALTH_RESULT',
+  // the interfaces' resolvers, named here so the team-only rules in permissions.ts wrap them. A rule on a field the
+  // type doesn't resolve itself wraps the default resolver before interface resolvers are inherited
+  meeting: NewMeetingStage.meeting,
+  phase: NewMeetingStage.phase,
+  readyUserIds: NewMeetingStage.readyUserIds,
+  discussion: DiscussionThreadStage.discussion,
   // the phases JSON snapshots the raw question id
   question: ({questionId}, _args, {dataLoader}) => {
     return dataLoader.get('teamHealthQuestions').loadNonNull(questionId)
@@ -63,6 +72,13 @@ const TeamHealthResultStage: TeamHealthResultStageResolvers = {
     if (!(await isRevealed(meetingId, dataLoader))) return []
     const responses = await dataLoader.get('teamHealthResponsesByMeetingId').load(meetingId)
     return responses.filter((response) => response.questionId === questionId)
+  },
+  commentCount: async ({meetingId, questionId}, _args, {dataLoader}) => {
+    if (!(await isRevealed(meetingId, dataLoader))) return 0
+    const responses = await dataLoader.get('teamHealthResponsesByMeetingId').load(meetingId)
+    return responses.filter(
+      (response) => response.questionId === questionId && !!getTeamHealthDisplayComment(response)
+    ).length
   },
   summary: async ({meetingId, questionId}, _args, {dataLoader}) => {
     const categorySummary = await getCategorySummary(meetingId, questionId, dataLoader)

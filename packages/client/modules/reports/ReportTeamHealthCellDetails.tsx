@@ -16,13 +16,15 @@ const query = graphql`
   query ReportTeamHealthCellDetailsQuery($orgId: ID!, $meetingId: ID!, $categoryId: ID!) {
     viewer {
       organization(orgId: $orgId) {
-        reportTeamHealthCell(meetingId: $meetingId, categoryId: $categoryId) {
-          question
+        reportTeamHealthStage(meetingId: $meetingId, categoryId: $categoryId) {
+          score
           summary
+          isLoadingSummary
           spreadScores
-          comments {
-            text
-            author {
+          responses {
+            id
+            commentParaphrased
+            commentAuthor {
               id
               preferredName
               picture
@@ -32,6 +34,10 @@ const query = graphql`
             endedAt
             score
           }
+          # aliased like the meeting's: NewMeetingStage.question is a String on the embedded TeamHealthStage
+          healthQuestion: question {
+            question
+          }
         }
       }
     }
@@ -40,30 +46,41 @@ const query = graphql`
 
 const ReportTeamHealthCellDetails = ({queryRef, selection}: Props) => {
   const {viewer} = usePreloadedQuery<ReportTeamHealthCellDetailsQuery>(query, queryRef)
-  const details = viewer.organization?.reportTeamHealthCell
+  const details = viewer.organization?.reportTeamHealthStage
   const {cell, teamName, categoryName} = selection
-  const {isLoadingSummary} = cell.category
   if (!details) {
     return (
       <p className='m-0 text-fg-secondary text-sm'>The details of this check can’t be shown.</p>
     )
   }
+  const {score, summary, isLoadingSummary, spreadScores, responses, healthQuestion} = details
+  // this check and the 2 before it, oldest first
+  const scoreHistory = [
+    ...details.scoreHistory.slice(-2),
+    ...(score === null || score === undefined ? [] : [{endedAt: cell.check.endedAt, score}])
+  ]
+  // longest first, so the order says nothing about who answered when
+  const comments = responses
+    .flatMap(({commentParaphrased, commentAuthor}) =>
+      commentParaphrased ? [{text: commentParaphrased, author: commentAuthor}] : []
+    )
+    .sort((a, b) => b.text.length - a.text.length)
   return (
     <>
       <section className='flex flex-col gap-1'>
         <h3 className='m-0 font-semibold text-fg-muted text-xs uppercase tracking-wide'>
           Question
         </h3>
-        <p className='m-0 text-[15px] leading-[22px]'>“{details.question}”</p>
+        <p className='m-0 text-[15px] leading-[22px]'>“{healthQuestion.question}”</p>
       </section>
       <ReportTeamHealthTrend
-        scoreHistory={details.scoreHistory}
+        scoreHistory={scoreHistory}
         teamName={teamName}
         categoryName={categoryName}
       />
-      <ReportTeamHealthCellSummary summary={details.summary} isLoadingSummary={isLoadingSummary} />
-      <ReportTeamHealthSpread spreadScores={details.spreadScores} />
-      <ReportTeamHealthComments comments={details.comments} />
+      <ReportTeamHealthCellSummary summary={summary} isLoadingSummary={isLoadingSummary} />
+      <ReportTeamHealthSpread spreadScores={spreadScores} />
+      <ReportTeamHealthComments comments={comments} />
     </>
   )
 }

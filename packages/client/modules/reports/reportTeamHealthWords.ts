@@ -28,7 +28,7 @@ export const formatAnswered = (check: ReportTeamHealthCheck) =>
 
 // how many answered checks that show, out of how many people were asked
 export const formatAnsweredTogether = (checks: readonly ReportTeamHealthCheck[]) => {
-  const shownChecks = checks.filter(({categories}) => categories.length > 0)
+  const shownChecks = checks.filter(({stages}) => stages.length > 0)
   if (shownChecks.length === 0) return null
   const respondentCount = shownChecks.reduce((sum, check) => sum + check.respondentCount, 0)
   const askedCount = shownChecks.reduce((sum, check) => sum + toAskedCount(check), 0)
@@ -52,7 +52,7 @@ const inputOf = (
   key: TeamHealthAttentionInput['key']
 ) => inputs.find((input) => input.key === key)?.value ?? null
 
-export const describeReasons = ({inputs, category}: ReportTeamHealthCell) => {
+export const describeReasons = ({inputs, stage}: ReportTeamHealthCell) => {
   const sentiment = inputOf(inputs, 'sentiment')
   const spread = inputOf(inputs, 'spread')
   const commented = inputOf(inputs, 'commented')
@@ -62,7 +62,7 @@ export const describeReasons = ({inputs, category}: ReportTeamHealthCell) => {
       : null,
     spread !== null && spread >= 0.35 ? `answers ${describeSpread(spread).toLowerCase()}` : null,
     commented !== null && commented >= 0.35
-      ? `${category.commenterCount} of ${category.respondentCount} commented`
+      ? `${stage.commentCount} of ${stage.respondentCount ?? 0} commented`
       : null
   ].filter(Boolean)
   return upperFirst(reasons.join(' · '))

@@ -30,8 +30,8 @@ type ReportTeamHealthCheck {
   memberCount: Int!
 
   """
-  Each category people scored that no later check in the period did. Empty when fewer than 3 people answered,
-  since the check is hidden
+  The result stage of each category people scored that no later check in the period did, leaving out a category
+  fewer than 3 people scored. Empty when fewer than 3 people answered, since the check is hidden
   """
-  categories: [ReportTeamHealthCategory!]!
+  stages: [TeamHealthResultStage!]!
 }

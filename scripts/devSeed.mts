@@ -461,6 +461,27 @@ const minutesAfter = (date: Date, minutes: number) => new Date(date.getTime() + 
 const ID_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
 const toId = () => Array.from(crypto.randomBytes(10), (byte) => ID_CHARS[byte % 62]).join('')
 
+// A Team Health check's results phase, one stage per category, which the meeting and Reports read its results from
+const toTeamHealthPhases = (questionIds: number[]) =>
+  JSON.stringify([
+    {
+      id: toId(),
+      phaseType: 'TEAM_HEALTH_RESULT',
+      stages: questionIds.map((questionId, sortOrder) => ({
+        id: toId(),
+        phaseType: 'TEAM_HEALTH_RESULT',
+        questionId,
+        sortOrder,
+        discussionId: toId(),
+        isComplete: true,
+        isNavigable: true,
+        isNavigableByFacilitator: true,
+        viewCount: 0,
+        readyToAdvance: []
+      }))
+    }
+  ])
+
 const toTaskContent = (text: string) =>
   JSON.stringify({type: 'doc', content: [{type: 'paragraph', content: [{type: 'text', text}]}]})
 
@@ -759,7 +780,7 @@ const seedCopper = async (client: Client, viewerId: string, tier: 'starter' | 't
           facilitatorStageId: toId(),
           facilitatorUserId: facilitator,
           createdBy: facilitator,
-          phases: '[]',
+          phases: meetingType === 'teamHealth' ? toTeamHealthPhases(catalog.questionIds) : '[]',
           templateId,
           createdAt,
           endedAt

@@ -1,5 +1,5 @@
 import {Lock} from '~/ui/icons'
-import {MIN_REPORT_HEALTH_RESPONDENTS} from '../../shared/reports/reportCatalog'
+import {MIN_RESPONDENTS_FOR_SCORE} from '../../shared/utils/teamHealthAnonymity'
 import ReportTeamHealthCell from './ReportTeamHealthCell'
 import ReportTeamHealthRowHeader from './ReportTeamHealthRowHeader'
 import {isHiddenReportValue, type ReportResultKey} from './reportRows'
@@ -45,7 +45,7 @@ const ReportTeamHealthRow = (props: Props) => {
         <td colSpan={columns.length + 1} className='px-0.5 py-1'>
           <span className='flex min-h-10 items-center gap-2 rounded border border-hairline-strong border-dashed px-3 py-1 text-[13px] text-fg-secondary'>
             <Lock className='text-[18px]' />
-            Hidden for anonymity: fewer than {MIN_REPORT_HEALTH_RESPONDENTS} people answered
+            Hidden for anonymity: fewer than {MIN_RESPONDENTS_FOR_SCORE} people answered
           </span>
         </td>
       ) : (
@@ -60,10 +60,7 @@ const ReportTeamHealthRow = (props: Props) => {
                 label={`${name}, ${column.label}`}
                 value={value}
                 cell={cell}
-                isFellTwice={hasFallenTwice(
-                  value?.value ?? null,
-                  cell?.category.previousScores ?? []
-                )}
+                isFellTwice={hasFallenTwice(value?.value ?? null, cell?.previousScores ?? [])}
                 isSelected={!!key && key === selectedKey}
                 onSelect={key ? () => onSelect(key) : undefined}
               />

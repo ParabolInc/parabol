@@ -4,16 +4,20 @@ import {
   markTeamHealthCells,
   type TeamHealthAttentionInput,
   type TeamHealthMark,
-  toTeamHealthAttentionInputs
+  toTeamHealthAttentionInputs,
+  toTeamHealthDeviation
 } from '../../shared/reports/teamHealthAttention'
 
 export type ReportTeamHealthCheck = ReportTeamHealthView_teamHealth$data['checks'][number]
-type ReportTeamHealthCategory = ReportTeamHealthCheck['categories'][number]
+type ReportTeamHealthStage = ReportTeamHealthCheck['stages'][number]
 
 export interface ReportTeamHealthCell {
   key: string
   check: ReportTeamHealthCheck
-  category: ReportTeamHealthCategory
+  stage: ReportTeamHealthStage
+  categoryId: string
+  // the category's scores in the 2 checks before this one that showed it, newest first
+  previousScores: number[]
   inputs: TeamHealthAttentionInput[]
   rawAttention: number
   attention: number
@@ -31,18 +35,25 @@ export const toTeamHealthCellKey = (teamId: string, categoryId: string) => `${te
 // every category of every check is marked at once, since the cap counts them all
 export const markReportTeamHealthCells = (checks: readonly ReportTeamHealthCheck[]) => {
   const candidates = checks.flatMap((check) =>
-    check.categories.map((category) => {
-      const sentimentScore = category.sentimentScore ?? null
-      const commentedShare = category.commenterCount / category.respondentCount
+    check.stages.map((stage) => {
+      const categoryId = stage.healthQuestion.category.id
+      const sentimentScore = stage.sentimentScore ?? null
+      const respondentCount = stage.respondentCount ?? 0
+      const commentedShare = respondentCount > 0 ? stage.commentCount / respondentCount : 0
       const inputs = toTeamHealthAttentionInputs({
         sentimentScore,
-        deviation: category.deviation ?? null,
+        deviation: stage.spreadScores ? toTeamHealthDeviation(stage.spreadScores) : null,
         commentedShare
       })
       return {
-        key: toTeamHealthCellKey(check.teamId, category.categoryId),
+        key: toTeamHealthCellKey(check.teamId, categoryId),
         check,
-        category,
+        stage,
+        categoryId,
+        previousScores: stage.scoreHistory
+          .slice(-2)
+          .reverse()
+          .map(({score}) => score),
         inputs,
         sentimentScore,
         commentedShare,

@@ -3,10 +3,12 @@ import {parseReportSpec} from '../../client/shared/reports/parseReportSpec'
 import {REPORT_HIDDEN_VALUE, type ReportSpec} from '../../client/shared/reports/reportCatalog'
 import {getNewDataLoader} from '../dataloader/getNewDataLoader'
 import getKysely from '../postgres/getKysely'
+import {toTeamHealthCategoryKey} from '../reports/measures/teamHealthAnswers'
 import {toOrgStructureKey} from '../reports/orgStructure'
 import {
   readLatestTeamHealthCheckEndedAt,
-  readReportTeamHealthChecks
+  readReportTeamHealthChecks,
+  readReportTeamHealthStage
 } from '../reports/reportTeamHealth'
 import runReport from '../reports/runReport'
 import {createPGTables, truncatePGTables} from './common'
@@ -515,6 +517,18 @@ const addHealthCheck = async (
   templateId: string | null = null
 ) => {
   await addMeeting(meetingId, teamId, 'teamHealth', endedDaysAgo + 1 / 24, [], templateId)
+  const resultStages = [SAFETY, DEPENDABILITY].map((questionId, sortOrder) => ({
+    id: `${meetingId}:${questionId}`,
+    phaseType: 'TEAM_HEALTH_RESULT',
+    questionId,
+    sortOrder,
+    discussionId: `${meetingId}:${questionId}`
+  }))
+  await pg
+    .updateTable('NewMeeting')
+    .set({phases: JSON.stringify([{phaseType: 'TEAM_HEALTH_RESULT', stages: resultStages}])})
+    .where('id', '=', meetingId)
+    .execute()
   await pg
     .insertInto('TeamHealthResponse')
     .values(
@@ -527,7 +541,7 @@ const addHealthCheck = async (
 }
 
 // Harbor checked 100, 50 and 5 days ago. Hill's check had 2 people, so it's hidden. Heath checked once, and
-// one person skipped a question. Hollow's only check is 100 and a half days old. Haven ran the org's full check 15 days
+// one person skipped a question, which leaves too few answers to show Dependability. Hollow's only check is 100 and a half days old. Haven ran the org's full check 15 days
 // ago and its own pulse, which only asks about safety, 3 days ago
 const seedHealthOrg = async () => {
   await addOrg(HEALTH_ORG_ID, 'team')
@@ -1152,7 +1166,7 @@ describe('team health', () => {
     const result = await report({...lastMonth, ...byTeam}, asLeader)
     expect(byLabel(result)).toEqual({
       Harbor: 3.5,
-      Heath: 4.4,
+      Heath: 4.3,
       Hill: REPORT_HIDDEN_VALUE,
       Hollow: null,
       Haven: 4.5
@@ -1190,10 +1204,52 @@ describe('team health', () => {
       )
       const havenCells = checks
         .filter(({teamId}) => teamId === HAVEN)
-        .map(({meetingId, categories}) => [meetingId, categories.map(({categoryId}) => categoryId)])
+        .map(({meetingId, stages}) => [meetingId, stages.map(({questionId}) => questionId)])
       expect(havenCells).toEqual([
-        ['havenPulse', [String(SAFETY)]],
-        ['havenFull', [String(DEPENDABILITY)]]
+        ['havenPulse', [SAFETY]],
+        ['havenFull', [DEPENDABILITY]]
+      ])
+      // a category too few people scored has no stage to mark, and a hidden check has none at all
+      const stagesOf = (meetingId: string) =>
+        checks
+          .find((check) => check.meetingId === meetingId)
+          ?.stages.map(({questionId}) => questionId)
+      expect(stagesOf('heathCheck')).toEqual([SAFETY])
+      expect(stagesOf('hillCheck')).toEqual([])
+    } finally {
+      dataLoader.dispose()
+    }
+  })
+
+  test('a side panel opens a shown category’s result stage, and nothing for a hidden one', async () => {
+    const dataLoader = getNewDataLoader('runReportTest')
+    try {
+      const stageOf = (meetingId: string, categoryId: number) =>
+        readReportTeamHealthStage(meetingId, toTeamHealthCategoryKey(categoryId), dataLoader)
+      expect(await stageOf('harborLatest', SAFETY)).toMatchObject({
+        meetingId: 'harborLatest',
+        teamId: HARBOR,
+        questionId: SAFETY
+      })
+      expect(await stageOf('hillCheck', SAFETY)).toBeNull()
+      expect(await stageOf('heathCheck', DEPENDABILITY)).toBeNull()
+    } finally {
+      dataLoader.dispose()
+    }
+  })
+
+  test('history reads the team’s earlier checks, whatever their series', async () => {
+    const dataLoader = getNewDataLoader('runReportTest')
+    try {
+      const history = await dataLoader.get('priorTeamHealthCyclesByMeetingId').load('harborLatest')
+      expect(
+        history.map(({meetingId, scoreByCategoryId}) => [
+          meetingId,
+          Object.fromEntries(scoreByCategoryId)
+        ])
+      ).toEqual([
+        ['harborBefore', {[SAFETY]: 3, [DEPENDABILITY]: 2}],
+        ['harborOld', {[SAFETY]: 5, [DEPENDABILITY]: 5}]
       ])
     } finally {
       dataLoader.dispose()
@@ -1264,7 +1320,7 @@ describe('team health', () => {
     )
     expect(cells['Harbor / Psychological Safety']).toEqual([4, 3])
     expect(cells['Harbor / Dependability']).toEqual([3, 2])
-    expect(cells['Heath / Dependability']).toEqual([4.5, null])
+    expect(cells['Heath / Dependability']).toEqual([REPORT_HIDDEN_VALUE, null])
     // a team's overall score averages every answer, not its categories
     const overall = Object.fromEntries(
       result.rowTotals.map(({keys, values, previousValues}) => [
@@ -1272,7 +1328,7 @@ describe('team health', () => {
         [values[0], previousValues?.[0]]
       ])
     )
-    expect(overall).toMatchObject({Harbor: [3.5, 2.5], Heath: [4.4, null]})
+    expect(overall).toMatchObject({Harbor: [3.5, 2.5], Heath: [4.3, null]})
   })
 
   test('the period before counts only the teams this period has, so Hollow’s old check is left out', async () => {

@@ -1,10 +1,11 @@
 import {
-  MIN_REPORT_HEALTH_RESPONDENTS,
   REPORT_STRUCTURE_NOT_SET,
   REPORT_STRUCTURE_REMOVED
 } from '../../../client/shared/reports/reportCatalog'
+import {canShowTeamHealthScore} from '../../../client/shared/utils/teamHealthAnonymity'
 import type RootDataLoader from '../../dataloader/RootDataLoader'
 import isValid from '../../graphql/isValid'
+import {CipherId} from '../../utils/CipherId'
 import groupTeamHealthScores from '../../utils/groupTeamHealthScores'
 import {isLevelDimension, toLevelId} from '../orgStructure'
 import type {ReportMeasureQuery, ReportQueryDimension} from '../reportMeasureTypes'
@@ -19,8 +20,14 @@ export interface PickedTeamHealthAnswers {
 
 export type TeamHealthCheckAnswers = Map<
   string,
-  {scoresByCategoryId: Map<number, number[]>; isHidden: boolean}
+  {scoresByCategoryId: Map<number, number[]>; respondentCount: number; isHidden: boolean}
 >
+
+// a report's CATEGORY key, the id TeamHealthCategory gives the category
+export const toTeamHealthCategoryKey = (categoryId: number) =>
+  CipherId.toClient(categoryId, 'teamHealthCategory')
+
+export const fromTeamHealthCategoryKey = (key: string) => CipherId.fromClient(key)[0]
 
 export const isInTeamHealthWindow = ({endedAt}: {endedAt: Date}, at: Date, windowStart: Date) =>
   endedAt < at && endedAt >= windowStart
@@ -49,7 +56,7 @@ export const pickLatestCheckByCategory = <Check extends {endedAt: Date}>(
 
 export const loadCheckAnswers = async (
   checkIds: string[],
-  dataLoader: RootDataLoader
+  dataLoader: Pick<RootDataLoader, 'get'>
 ): Promise<TeamHealthCheckAnswers> => {
   const responsesByCheck = (
     await dataLoader.get('teamHealthResponsesByMeetingId').loadMany(checkIds)
@@ -69,15 +76,17 @@ export const loadCheckAnswers = async (
         checkId,
         {
           scoresByCategoryId: groupTeamHealthScores(responses, categoryIdByQuestionId),
-          isHidden: respondents.size < MIN_REPORT_HEALTH_RESPONDENTS
+          respondentCount: respondents.size,
+          isHidden: !canShowTeamHealthScore(respondents.size)
         }
       ]
     })
   )
 }
 
-// The scored answers picked, split by step and the report's breakdown. A check too few people answered adds nothing:
-// its team is named as hidden, and so is any group only hidden checks fall in
+// The scored answers picked, split by step and the report's breakdown. A check too few people answered adds nothing,
+// and its team is named as hidden. Nor does a category too few people scored, so every score shown averages enough
+// people's answers. A group with nothing added is hidden
 export const groupTeamHealthAnswers = async (
   picks: PickedTeamHealthAnswers[],
   answers: TeamHealthCheckAnswers,
@@ -92,7 +101,7 @@ export const groupTeamHealthAnswers = async (
   ) => {
     if (!isLevelDimension(dimension)) {
       if (dimension === 'TEAM') return teamId
-      return dimension === 'TEMPLATE' ? template.key : String(categoryId)
+      return dimension === 'TEMPLATE' ? template.key : toTeamHealthCategoryKey(categoryId)
     }
     const levelId = toLevelId(dimension)
     if (levelId === 0) return REPORT_STRUCTURE_REMOVED
@@ -103,7 +112,7 @@ export const groupTeamHealthAnswers = async (
   }
   const hiddenTeamIds = new Set<string>()
   const templateLabels: Record<string, string> = {}
-  // a group's scores stay null while only hidden checks fall in it, so the answers of others still show
+  // a group's scores stay null while only hidden answers fall in it, so the answers of others still show
   const groups = new Map<string, {stepIndex: number; keys: string[]; scores: number[] | null}>()
   for (const pick of picks) {
     const checkAnswers = answers.get(pick.checkId)
@@ -114,24 +123,34 @@ export const groupTeamHealthAnswers = async (
     const keys = dimensions.map((dimension) => keyOf(dimension, pick))
     const groupKey = JSON.stringify([pick.stepIndex, ...keys])
     const group = groups.get(groupKey) ?? {stepIndex: pick.stepIndex, keys, scores: null}
-    if (!checkAnswers.isHidden) group.scores = [...(group.scores ?? []), ...scores]
+    if (!checkAnswers.isHidden && canShowTeamHealthScore(scores.length)) {
+      group.scores = [...(group.scores ?? []), ...scores]
+    }
     groups.set(groupKey, group)
   }
   const categoryPosition = dimensions.indexOf('CATEGORY')
-  const categoryIds = [
-    ...new Set([...groups.values()].map(({keys}) => Number(keys[categoryPosition])))
-  ]
-  const categories =
+  const categoryIds =
     categoryPosition === -1
       ? []
-      : (await dataLoader.get('teamHealthCategories').loadMany(categoryIds)).filter(isValid)
+      : [
+          ...new Set(
+            [...groups.values()].map(({keys}) => fromTeamHealthCategoryKey(keys[categoryPosition]!))
+          )
+        ]
+  const categories = (await dataLoader.get('teamHealthCategories').loadMany(categoryIds)).filter(
+    isValid
+  )
   return {
     groups: [...groups.values()],
     hiddenTeamIds: [...hiddenTeamIds],
     labels: {
       ...(categoryPosition === -1
         ? {}
-        : {CATEGORY: Object.fromEntries(categories.map(({id, name}) => [String(id), name]))}),
+        : {
+            CATEGORY: Object.fromEntries(
+              categories.map(({id, name}) => [toTeamHealthCategoryKey(id), name])
+            )
+          }),
       ...(dimensions.includes('TEMPLATE') ? {TEMPLATE: templateLabels} : {})
     }
   }

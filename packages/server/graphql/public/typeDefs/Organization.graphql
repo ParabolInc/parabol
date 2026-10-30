@@ -78,10 +78,10 @@ type Organization implements OrganizationPartial {
   ): ReportResult! @scope(name: REPORTS_READ)
 
   """
-  One category of a Team Health check of a team the viewer can report on, for a report's side panel. Null when
-  too few people answered
+  The result stage of one category of a Team Health check of a team the viewer can report on, for a report's side
+  panel. Null when fewer than 3 people answered the check or scored the category
   """
-  reportTeamHealthCell(
+  reportTeamHealthStage(
     """
     The Team Health meeting
     """
@@ -91,7 +91,7 @@ type Organization implements OrganizationPartial {
     The Team Health category, as the report's CATEGORY keys give it
     """
     categoryId: ID!
-  ): ReportTeamHealthCell @scope(name: REPORTS_READ)
+  ): TeamHealthResultStage @scope(name: REPORTS_READ)
 
   """
   The reports pinned to the Reports page, in order

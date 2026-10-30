@@ -1,4 +1,4 @@
-import {MIN_REPORT_HEALTH_RESPONDENTS} from '../../shared/reports/reportCatalog'
+import {MIN_RESPONDENTS_FOR_SCORE} from '../../shared/utils/teamHealthAnonymity'
 import {cn} from '../../ui/cn'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
@@ -11,7 +11,7 @@ import {isHiddenReportValue} from './reportRows'
 import type {ReportTeamHealthCell as TeamHealthCell} from './reportTeamHealthCells'
 import {describeReasons, TEAM_HEALTH_MARK_NAMES} from './reportTeamHealthWords'
 
-const HIDDEN_EXPLANATION = `Hidden for anonymity: fewer than ${MIN_REPORT_HEALTH_RESPONDENTS} people answered`
+const HIDDEN_EXPLANATION = `Hidden for anonymity: fewer than ${MIN_RESPONDENTS_FOR_SCORE} people answered`
 
 interface Props {
   label: string

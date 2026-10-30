@@ -3,7 +3,7 @@ import {useFragment} from 'react-relay'
 import {Link} from 'react-router'
 import type {ReportNotes_result$key} from '../../__generated__/ReportNotes_result.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
-import {MIN_REPORT_HEALTH_RESPONDENTS} from '../../shared/reports/reportCatalog'
+import {MIN_RESPONDENTS_FOR_SCORE} from '../../shared/utils/teamHealthAnonymity'
 import plural from '../../utils/plural'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 
@@ -61,7 +61,7 @@ const ReportNotes = ({orgId, resultRef, hasHiddenTeamRows}: Props) => {
           {kind === 'ROWS_TRUNCATED' &&
             `Too many rows to show all ${count.toLocaleString()}. Add a filter or a limit`}
           {kind === 'HIDDEN_FOR_ANONYMITY' &&
-            `${count} ${plural(count, 'check')} hidden for anonymity: fewer than ${MIN_REPORT_HEALTH_RESPONDENTS} people answered`}
+            `${count} ${plural(count, 'check')} hidden for anonymity: fewer than ${MIN_RESPONDENTS_FOR_SCORE} people answered`}
           {kind === 'TOPICS_FROM_OWN_TEAMS' &&
             `${count} ${plural(count, 'team')} left out: topics only come from teams you’re on`}
           {kind === 'NOTHING_TO_COMPARE' &&

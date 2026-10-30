@@ -1,4 +1,5 @@
-import {MIN_REPORT_HEALTH_RESPONDENTS, type ReportMeasure} from '../../shared/reports/reportCatalog'
+import type {ReportMeasure} from '../../shared/reports/reportCatalog'
+import {MIN_RESPONDENTS_FOR_SCORE} from '../../shared/utils/teamHealthAnonymity'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
@@ -10,7 +11,7 @@ interface Props {
   value: number | null | undefined
 }
 
-const HIDDEN_EXPLANATION = `Hidden for anonymity: fewer than ${MIN_REPORT_HEALTH_RESPONDENTS} people answered`
+const HIDDEN_EXPLANATION = `Hidden for anonymity: fewer than ${MIN_RESPONDENTS_FOR_SCORE} people answered`
 
 const ReportValue = ({measure, value}: Props) => {
   if (!isHiddenReportValue(value)) return <>{formatReportValue(measure, value)}</>
