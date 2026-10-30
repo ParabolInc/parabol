@@ -6,6 +6,7 @@ import {encodeStateAsUpdate} from 'yjs'
 import {markdownToTipTap} from '../../../client/shared/tiptap/markdownToTipTap'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import {activeEmbeddingModelId} from '../../../embedder/activeEmbeddingModel'
+import getModelManager from '../../../embedder/ai_models/ModelManager'
 import {getEmbeddingsPagesTableName} from '../../../embedder/getEmbeddingsTableName'
 import {primeSupportedLanguages} from '../../../embedder/getSupportedLanguages'
 import {JobQueueError} from '../../../embedder/JobQueueError'
@@ -153,6 +154,7 @@ const indexPages = async (pageIdByFixture: Map<string, number>) => {
   const modelId = activeEmbeddingModelId
   if (!modelId) throw new Error('AI_EMBEDDING_MODELS must name an embedding model')
   const tableName = getActivePagesTableName()
+  await getModelManager().getEmbedder(modelId).createTable()
   await primeSupportedLanguages()
   const keysToIndex = new Set(await getKeysWithoutEmbeddings(pageIdByFixture))
   const dataLoader = getNewDataLoader('pagesSearchEval')

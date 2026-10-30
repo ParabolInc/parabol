@@ -778,3 +778,24 @@ The rule was fixed before the reseed. A new vector per page can shift similariti
 - **Likely why.** B2's section chunks already match questions about a whole long page (long documents score 0.959 by similarity alone), and the card mostly repeats the start of the page.
 - **What it would have cost.** 6% more tokens on the heavy corpus (81,587 → 86,343), and one more embed whenever a page's title, headings or opening change.
 - The card isn't in the code, and the eval index is back on B2's chunks.
+
+## Model generations (B5, 2026-10-30)
+
+Each `AI_EMBEDDING_MODELS` entry is now a generation. Its definition in `modelIdDefinitions` names its tables, the page chunker it embeds with, and the vector floor and alpha that page search uses while it is first. The live generation keeps master's Markdown chunker (`MarkdownChunker`, master's file with the class renamed), so B1–B3 change nothing it embeds. The new one, `Svenni551/Qwen3-Embedding-0.6B-ONNX-INT8#v3` (tables `qwen3v3`), embeds with B1–B3's chunker at floor 0.6, the provisional floor from B2; B8 re-tunes it. Adding a generation creates its tables and queues nothing, and page and metadata updates are queued for every generation.
+
+To measure a generation, list it first in `AI_EMBEDDING_MODELS` for the run. `indexPages` creates its tables if they are missing and embeds every page it has no rows for, so a second generation fills without a reseed.
+
+| Generation | Set | Compared with | Lists equal | nDCG@10 | Recall@20 | `noAnswerResults` |
+| --- | --- | --- | ---: | ---: | ---: | ---: |
+| Live (reseeded), fused | `heavy-dev` | `b-base` | 58 / 58 | 0.826 | 0.881 | 13.67 |
+| Live (reseeded), quick | `heavy-dev` | `b-base` | 58 / 58 | 0.832 | 0.872 | 5.00 |
+| Live (reseeded), fused | `dev` | `b-base` | 91 / 91 | 0.905 | 0.960 | 11.63 |
+| Live (reseeded), quick | `dev` | `b-base` | 91 / 91 | 0.905 | 0.964 | 10.25 |
+| `#v3`, floor 0.4 | `heavy-dev` | B3 (`b3-back`) | 58 / 58 | 0.839 | 0.904 | 20.00 |
+| `#v3`, floor 0.6 (its default) | `heavy-dev` | B2's 0.6 row | 58 / 58 | 0.839 | 0.904 | 14.33 |
+| `#v3`, floor 0.4 | `dev` | B3 (`b3-back`) | 91 / 91 | 0.920 | 0.988 | 20.00 |
+| `#v3`, floor 0.6 (its default) | `dev` | B2's 0.6 row | 91 / 91 | 0.920 | 0.988 | 15.38 |
+
+- **The live generation is master's.** Every ranked list matches the base measured before B1. A test also pins master's chunks on the heavy corpus by digest.
+- **One difference:** the live generation no longer refuses languages Postgres has no text search config for (B2 dropped that gate), so `meeting-notes-ja` now gets vectors. No list changed.
+- **The new generation is B3's**, at either floor.
