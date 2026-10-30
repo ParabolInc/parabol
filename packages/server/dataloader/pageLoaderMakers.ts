@@ -46,6 +46,34 @@ export const pageAccessByPageIdUserId = (parent: RootDataLoader, dependsOn: Regi
   )
 }
 
+// The role granted to the user directly, through a team or org, or as a guest. Unlike pageAccessByPageIdUserId,
+// it ignores the public link
+export const pageGrantByPageIdUserId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+  dependsOn('pages')
+  return new DataLoader<{pageId: number; userId: string}, Pageroleenum | null, string>(
+    async (keys) => {
+      const res = await selectPageAccess()
+        .where(({eb, refTuple, tuple}) =>
+          eb(
+            refTuple('pageId', 'userId'),
+            'in',
+            keys.map((key) => tuple(key.pageId, key.userId))
+          )
+        )
+        .execute()
+      return keys.map(
+        (key) =>
+          res.find(({pageId, userId}) => pageId === key.pageId && userId === key.userId)?.role ??
+          null
+      )
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.pageId}:${key.userId}`
+    }
+  )
+}
+
 export const pageAccessByUserId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
   dependsOn('pages')
   return new DataLoader<string, Selectable<PageAccess>[], string>(

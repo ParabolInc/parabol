@@ -4,6 +4,6 @@ Return value for updatePageAccess mutation
 type UpdatePageAccessPayload {
   "The page whose access was updated"
   page: Page!
-  "The section of the page that was updated"
-  pageSection: PageSectionEnum!
+  "The sidebar section the page belongs in for the viewer, null if the viewer can no longer access it"
+  pageSection: PageSectionEnum
 }

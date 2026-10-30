@@ -100,7 +100,7 @@ export const LeftNavPageLink = (props: Props) => {
   const parentSection = isTopLevelShared ? '' : parentPageId || teamId || ''
   const {onPointerDown, ref} = useDraggablePage(
     id,
-    isPrivate,
+    !!isPrivate,
     parentPageId || null,
     teamId,
     connectionKey,

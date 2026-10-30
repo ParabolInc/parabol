@@ -1,13 +1,7 @@
 import type {PageAccessTeamResolvers} from '../resolverTypes'
 
 const PageAccessTeam: PageAccessTeamResolvers = {
-  team: async ({teamId}, _args, {dataLoader}) => {
-    const team = await dataLoader.get('teams').loadNonNull(teamId)
-    return {
-      ...team,
-      id: `preview:${team.id}`
-    }
-  }
+  team: ({teamId}, _args, {dataLoader}) => dataLoader.get('teams').loadNonNull(teamId)
 }
 
 export default PageAccessTeam

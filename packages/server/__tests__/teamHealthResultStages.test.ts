@@ -67,6 +67,8 @@ const MEETING = `
               score
               scoreHistory { score }
               question { category { name } }
+              meeting { id }
+              phase { phaseType }
             }
           }
         }
@@ -167,6 +169,12 @@ test('the result phase holds one stage per category, ordered by urgency once rev
   await sendPublic({query: END, variables: {meetingId}, cookie})
   const revealed = await sendPublic({query: MEETING, variables: {meetingId}, cookie})
   const revealedStages = getStages(revealed.data.viewer.meeting, 'TEAM_HEALTH_RESULT')
+  // the stage inherits these from its interface, under its own team-only rules
+  expect(revealedStages).toEqual(
+    revealedStages.map(() =>
+      expect.objectContaining({meeting: {id: meetingId}, phase: {phaseType: 'TEAM_HEALTH_RESULT'}})
+    )
+  )
 
   // categories with no previous check lead, lowest score first, then the rest by steepest drop, then
   // the category too few people scored
