@@ -59,6 +59,8 @@ let lateMatchId: number
 let zephyr5Id: number
 let zephyr50Id: number
 let zephyrId: number
+let zephyrDecimalId: number
+let zephyrSevId: number
 
 beforeAll(async () => {
   await pg
@@ -129,10 +131,14 @@ beforeAll(async () => {
   })
   zephyr50Id = await insertPage({title: 'Zephyr 50', updatedAt: new Date('2026-09-02T12:00:00Z')})
   zephyrId = await insertPage({title: 'Zephyr', updatedAt: new Date('2026-09-03T12:00:00Z')})
+  zephyrDecimalId = await insertPage({title: 'Zephyr 3.12 upgrade'})
+  zephyrSevId = await insertPage({title: 'Zephyr SEV-1 review'})
   const viewerPageIds = [
     zephyr5Id,
     zephyr50Id,
     zephyrId,
+    zephyrDecimalId,
+    zephyrSevId,
     toDoId,
     lateMatchId,
     compoundWordsId,
@@ -218,9 +224,10 @@ describe('turns the query into prefix terms', () => {
     ['jordan@parabol.co', "'jordan@parabol.co':*"],
     ['v1.2', "'v1.2':*"],
     ['2026-10-26', "'2026':* & '-10':* & '-26':*"],
-    ['retro #5', "'retro':* & '5'"],
-    ['day 7 of 2026', "'day':* & '7' & 'of':* & '2026':*"],
-    ['5', "'5'"],
+    ['retro #5', "'retro':* & ( '5' | '5.':* | '-5' )"],
+    ['day 7 of 2026', "'day':* & ( '7' | '7.':* | '-7' ) & 'of':* & '2026':*"],
+    ['5', "'5' | '5.':* | '-5'"],
+    ['plan b 2', "'plan':* & ( '2' | '2.':* | '-2' )"],
     ['follow-up', "'follow-up':* & 'follow':* & 'up':*"],
     ['C:\\temp\\notes.txt', null]
   ])('turns %p into %p', async (query, expected) => {
@@ -261,6 +268,12 @@ it('matches compound words as typed', async () => {
 
 it('matches a single digit as a whole number', async () =>
   expect(await ids('zephyr #5', {anyWordFallbackBelow: 0})).toEqual([zephyr5Id]))
+
+it('matches a digit written as the whole part of a decimal', async () =>
+  expect(await ids('zephyr 3', {anyWordFallbackBelow: 0})).toEqual([zephyrDecimalId]))
+
+it('matches a digit written after a hyphen', async () =>
+  expect(await ids('zephyr sev 1', {anyWordFallbackBelow: 0})).toEqual([zephyrSevId]))
 
 it('puts the page with the number first by default', async () =>
   expect((await ids('zephyr 5'))[0]).toBe(zephyr5Id))
