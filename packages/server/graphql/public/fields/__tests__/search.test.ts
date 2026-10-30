@@ -472,3 +472,8 @@ it('returns results when queueing pages fails', async () => {
     extras: {errorMessage: 'valkey down'}
   })
 })
+
+it('returns results while queueing pages hangs', async () => {
+  jest.mocked(queueViewerPagesForEmbedding).mockReturnValue(new Promise<void>(() => {}))
+  expect(await callSearch({query: 'retro', alpha: 0})).toBe(keywordResults)
+})

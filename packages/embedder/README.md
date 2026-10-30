@@ -97,9 +97,10 @@ older pages, which also convert on their next edit or search.
 ## Embed on search
 
 When someone searches pages, the pages they can open that have at least 200
-bytes of text and no vectors in a configured generation are queued for that
-generation, newest first and at most 500, ahead of the background run and
-behind edits. That includes pages that were never embedded. It runs at most
+bytes of text and no vectors in the active generation are queued for it, and
+so are those missing from the generation a running background run is filling.
+They go newest first, at most 500 per generation, ahead of the background run
+and behind edits. That includes pages that were never embedded. It runs at most
 once an hour per person and never delays the search.
 
 ## Resources

@@ -9,6 +9,12 @@ import {updatePageAccessTable} from '../../../../postgres/updatePageAccessTable'
 import {queueViewerPagesForEmbedding} from '../queueViewerPagesForEmbedding'
 
 const mockQueuedThisHour = new Set<string>()
+const mockRun = new Map<string, string>()
+const mockSet = jest.fn(async (key: string) => {
+  if (mockQueuedThisHour.has(key)) return null
+  mockQueuedThisHour.add(key)
+  return 'OK'
+})
 
 jest.mock('../../../../../embedder/ai_models/modelIdDefinitions', () => {
   const actual = jest.requireActual<
@@ -31,11 +37,8 @@ jest.mock('../../../../../embedder/activeEmbeddingModel', () => ({
 jest.mock('../../../../utils/getRedis', () => ({
   __esModule: true,
   default: () => ({
-    set: async (key: string) => {
-      if (mockQueuedThisHour.has(key)) return null
-      mockQueuedThisHour.add(key)
-      return 'OK'
-    },
+    set: (...args: [string]) => mockSet(...args),
+    hgetall: async () => Object.fromEntries(mockRun),
     publish: async () => 1
   })
 }))
@@ -128,6 +131,8 @@ beforeAll(async () => {
 
 afterEach(async () => {
   mockQueuedThisHour.clear()
+  mockRun.clear()
+  mockSet.mockClear()
   await pg.deleteFrom('EmbeddingsJobQueueV2').where('modelId', 'in', [live, next]).execute()
 })
 
@@ -141,17 +146,39 @@ afterAll(async () => {
   await pg.destroy()
 })
 
-it("queues the viewer's pages that lack vectors in each generation, newest first", async () => {
+const startRun = (state: 'running' | 'paused') => {
+  mockRun.set('modelId', next)
+  mockRun.set('sourceModelId', live)
+  mockRun.set('state', state)
+  mockRun.set('copyMetadata', '1')
+  mockRun.set('queueSize', '100')
+}
+
+it('queues the pages the viewer can open that lack vectors in the active generation', async () => {
+  await queueViewerPagesForEmbedding(viewerId)
+  expect(await queuedPageIds(live)).toEqual([pageIds.neverEmbedded])
+  expect(await queuedPageIds(next)).toEqual([])
+})
+
+it('also queues them, newest first, for the generation a run is filling', async () => {
+  startRun('running')
   await queueViewerPagesForEmbedding(viewerId)
   expect(await queuedPageIds(live)).toEqual([pageIds.neverEmbedded])
   expect(await queuedPageIds(next)).toEqual([pageIds.liveOnly, pageIds.neverEmbedded])
+})
+
+it("leaves a paused run's generation alone", async () => {
+  startRun('paused')
+  await queueViewerPagesForEmbedding(viewerId)
+  expect(await queuedPageIds(next)).toEqual([])
 })
 
 it('runs at most once an hour for a viewer', async () => {
   await queueViewerPagesForEmbedding(viewerId)
   await pg.deleteFrom('EmbeddingsJobQueueV2').where('modelId', 'in', [live, next]).execute()
   await queueViewerPagesForEmbedding(viewerId)
-  expect(await queuedPageIds(next)).toEqual([])
+  expect(await queuedPageIds(live)).toEqual([])
+  expect(mockSet).toHaveBeenCalledWith(`embedOnSearch:${viewerId}`, '1', 'EX', 3600, 'NX')
   await queueViewerPagesForEmbedding(otherUserId)
-  expect(await queuedPageIds(next)).toEqual([pageIds.someoneElses])
+  expect(await queuedPageIds(live)).toEqual([pageIds.someoneElses])
 })

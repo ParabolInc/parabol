@@ -1,5 +1,6 @@
 import {sql} from 'kysely'
-import {embeddingModelIds} from '../../../../embedder/activeEmbeddingModel'
+import {activeEmbeddingModelId, embeddingModelIds} from '../../../../embedder/activeEmbeddingModel'
+import {getEmbeddingsRun} from '../../../../embedder/embeddingsRun'
 import {getEmbedderJobPriority} from '../../../../embedder/getEmbedderJobPriority'
 import {getEmbeddingsPagesTableName} from '../../../../embedder/getEmbeddingsTableName'
 import getKysely from '../../../postgres/getKysely'
@@ -10,7 +11,7 @@ const VIEWER_PAGE_LIMIT = 500
 const QUEUE_INTERVAL_SECONDS = 3600
 
 export const queueViewerPagesForEmbedding = async (viewerId: string) => {
-  if (!parseInt(process.env.AI_EMBEDDER_WORKERS!) || embeddingModelIds.length === 0) return
+  if (!parseInt(process.env.AI_EMBEDDER_WORKERS!) || !activeEmbeddingModelId) return
   const redis = getRedis()
   const isFirstThisHour = await redis.set(
     `embedOnSearch:${viewerId}`,
@@ -20,9 +21,17 @@ export const queueViewerPagesForEmbedding = async (viewerId: string) => {
     'NX'
   )
   if (!isFirstThisHour) return
+  const run = await getEmbeddingsRun()
+  const isFillingAnother =
+    run?.state === 'running' &&
+    run.modelId !== activeEmbeddingModelId &&
+    embeddingModelIds.includes(run.modelId)
+  const modelIds = isFillingAnother
+    ? [activeEmbeddingModelId, run.modelId]
+    : [activeEmbeddingModelId]
   const pg = getKysely()
   const priority = await getEmbedderJobPriority('historicalUpdate', null, 0)
-  for (const modelId of embeddingModelIds) {
+  for (const modelId of modelIds) {
     const pagesTable = sql.id(getEmbeddingsPagesTableName(modelId)!)
     await sql`
       INSERT INTO "EmbeddingsJobQueueV2" ("jobType", "priority", "pageId", "modelId")
