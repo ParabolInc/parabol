@@ -598,3 +598,46 @@ Keyword search used to drop every one-character word, so the "5" in "Beacon Retr
 - **The gate passes.** On `heavy-holdout`, both lists gain 0.025 nDCG@10, and Recall@20 holds.
 - **What was read.** Only overall rows. The local holdout results were scrubbed down to those rows.
 - **Gate runs so far.** `heavy-holdout` has had ten: two for A4, four for A5, two for A5b and two here. Each of the two here scored both lists.
+
+## Typo-tolerant titles (2026-10-29)
+
+A misspelled word used to match nothing, so "whiteboad" found no page.
+- **What changed.** A query word that matches no word of a page now still counts for that page when it's close to a word of the page's title. Close means a `pg_trgm` word similarity of at least 0.5 (`titleTypoSimilarity`, the same for both lists). The migration `addPgTrgm` installs the extension.
+- **Where those pages rank.** Such a page joins the pages with some of the words, ranked by how many words it matches. It never counts as having every word, so pages with every word as typed still come first.
+- **Titles only.** A misspelled word that appears only in a page's text, like `rudderstak`, still matches nothing by keyword.
+
+**How it was chosen.** The plan fixed a selection rule before the sweep ran:
+1. **Rows.** Thresholds 0 (off), 0.4, 0.45, 0.5, 0.55 and 0.6, for both lists with their other defaults.
+2. **Eligibility.** On `heavy-dev` and `dev`, for both lists, nDCG@10 and Recall@20 may be at most 0.005 below threshold 0, and `noAnswerResults` may rise by at most 1.
+3. **Pick.** The highest mean nDCG@10 over the four list-and-set cells. Thresholds within 0.005 tie, and ties go to higher mean Recall@20, then to the higher threshold.
+
+| Threshold | `heavy-dev` quick | `heavy-dev` fused | `dev` quick | `dev` fused | Mean nDCG@10 |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 0 (A5c) | 0.825 | 0.814 | 0.859 | 0.867 | 0.841 |
+| 0.4 | 0.831 | 0.825 | 0.911 | 0.912 | 0.870 |
+| 0.45 | 0.832 | 0.826 | 0.911 | 0.912 | 0.870 |
+| **0.5** | 0.832 | 0.826 | 0.905 | 0.905 | 0.867 |
+| 0.55 | 0.824 | 0.819 | 0.905 | 0.904 | 0.863 |
+| 0.6 | 0.824 | 0.819 | 0.905 | 0.904 | 0.863 |
+
+- **Every threshold was eligible.** 0.4, 0.45 and 0.5 tie on nDCG@10 and have the same Recall@20, so the rule takes the strictest, 0.5. At 0.45, "onbaording checklist" (similarity 0.47) would also have found its page.
+- **Recall@20.** On `dev` it goes from 0.916 to 0.964 (quick) and from 0.928 to 0.960 (fused). It is unchanged on `heavy-dev`, and so is `noAnswerResults`.
+- **Typo queries.** nDCG@10 rises from 0.68 to 0.74 (quick) and from 0.68 to 0.79 (fused) on `heavy-dev`, and from 0.55 and 0.64 to 0.90 on `dev`.
+- **Wins.** "whiteboad", "vendr comparsion" and "standpu" now find their pages. "atlss standup aug 3" puts Atlas's standup first instead of Beacon's, and fused ranking moves "sesion store valky" up by 0.25. The Japanese "リリース計画の会議メモ" now finds its page as well: Postgres reads the query as one unbroken word, while the title splits into two, and the language gate leaves that page without vectors.
+- **One loss.** On `heavy-dev`, "rate limiter load test results" drops by 0.018 in both lists. The rate limiting RFC now also matches "limiter" through its title, so it moves up past the standup that is graded 3.
+- **Latency.** The quick list on `heavy-dev` goes from 42/45 ms to 44/49 ms at p50/p90.
+
+**Gate.** One sweep per holdout scored four rows: both lists at threshold 0 (A5c's ranking) and at 0.5.
+
+| Holdout | List | Threshold | nDCG@10 | Recall@5 | Recall@20 | `noAnswerResults` |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| `heavy-holdout` (72 answerable) | quick | 0 | 0.826 | 0.889 | 0.931 | 10.00 |
+| `heavy-holdout` | quick | 0.5 | 0.841 | 0.896 | 0.931 | 10.00 |
+| `heavy-holdout` | fused | 0 | 0.816 | 0.882 | 0.931 | 14.00 |
+| `heavy-holdout` | fused | 0.5 | 0.834 | 0.889 | 0.938 | 14.00 |
+| `holdout` (23 answerable, spent) | quick | 0 and 0.5 | 0.822 | 0.833 | 0.891 | 4.00 |
+| `holdout` | fused | 0 and 0.5 | 0.811 | 0.801 | 0.913 | 4.00 |
+
+- **The gate passes.** On `heavy-holdout`, nDCG@10 rises by 0.015 (quick) and 0.018 (fused), and Recall@20 holds or rises.
+- **What was read.** Only overall rows. The local holdout results were scrubbed down to those rows.
+- **Gate runs so far.** `heavy-holdout` has had eleven. This one run scored both lists at both thresholds.
