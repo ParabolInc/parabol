@@ -258,6 +258,21 @@ type Mutation {
   ): DisconnectSAMLSuccess! @scope(name: ORGS_WRITE)
 
   """
+  Start replacing a SAML identity provider's metadata. Nothing is saved until the requesting org admin signs in through the returned URL
+  """
+  requestSAMLMetadataChange(
+    """
+    The SAML identity provider whose metadata will change
+    """
+    samlId: ID!
+
+    """
+    URL of a blob of XML from the IdP describing how to handle authentication
+    """
+    metadataURL: String!
+  ): RequestSAMLMetadataChangeSuccess! @scope(name: ORGS_WRITE)
+
+  """
   Create a new reflection
   """
   createReflection(input: CreateReflectionInput!): CreateReflectionPayload

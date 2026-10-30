@@ -1,4 +1,3 @@
-import base64url from 'base64url'
 import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import ms from 'ms'
@@ -32,11 +31,9 @@ import type {FeatureFlagName} from '../../../utils/featureFlags'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import getMonthlyStreak from '../../../utils/getMonthlyStreak'
 import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
-import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
 import getUserDetail from '../../../utils/getUserDetail'
 import {getUserSocketCount} from '../../../utils/getUserSocketCount'
 import logError from '../../../utils/logError'
-import {createSAMLMetadataChangeRequest} from '../../../utils/samlMetadataChangeRequest'
 import standardError from '../../../utils/standardError'
 import errorFilter from '../../errorFilter'
 import type {DataLoaderWorker} from '../../graphql'
@@ -50,8 +47,6 @@ import {invoices} from '../fields/invoices'
 import {pageInsights} from '../fields/pageInsights'
 import {pages} from '../fields/pages'
 import {search} from '../fields/search'
-import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
-import type {SSORelayState} from '../queries/SAMLIdP'
 import type {ReqResolvers} from './ReqResolvers'
 
 const SIMILARITY_THRESHOLD = 0.5
@@ -855,24 +850,6 @@ const User: ReqResolvers<'User'> = {
       .filter(({similarity}) => similarity >= floor)
       .slice(0, TEMPLATE_SEARCH_LIMIT)
       .map(({activity}) => activity)
-  },
-  parseSAMLMetadata: async (_source, {metadataURL, domain}, {authToken}) => {
-    const metadata = await getSSOMetadataFromURL(metadataURL)
-    if (metadata instanceof Error) return {error: {message: metadata.message}}
-    const baseUrl = getSignOnURL(metadata, domain)
-    if (baseUrl instanceof Error) {
-      return {error: {message: baseUrl.message}}
-    }
-    // The IdP forwards the RelayState to loginSAML, which resolves the id back to this URL
-    const metadataChangeId = await createSAMLMetadataChangeRequest({
-      samlId: domain,
-      metadataURL,
-      requestedBy: getUserId(authToken)
-    })
-    const relayState: SSORelayState = {metadataChangeId}
-    const urlObj = new URL(baseUrl)
-    urlObj.searchParams.append('RelayState', base64url.encode(JSON.stringify(relayState)))
-    return {url: urlObj.toString()}
   },
   samlIdP: async ({email}, _args, {dataLoader}) => {
     return getSAMLURLFromEmail(email, dataLoader)

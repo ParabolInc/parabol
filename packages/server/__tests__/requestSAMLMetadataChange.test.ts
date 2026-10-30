@@ -8,19 +8,10 @@ import {
   signUp
 } from './common'
 
-const PARSE_SAML_METADATA = `
-  query ParseSAMLMetadata($metadataURL: String!, $domain: String!) {
-    viewer {
-      parseSAMLMetadata(metadataURL: $metadataURL, domain: $domain) {
-        ... on ErrorPayload {
-          error {
-            message
-          }
-        }
-        ... on ParseSAMLMetadataSuccess {
-          url
-        }
-      }
+const REQUEST_SAML_METADATA_CHANGE = `
+  mutation RequestSAMLMetadataChange($samlId: ID!, $metadataURL: String!) {
+    requestSAMLMetadataChange(samlId: $samlId, metadataURL: $metadataURL) {
+      signOnURL
     }
   }
 `
@@ -56,7 +47,7 @@ const createSAMLForOrg = async (orgId: string, domain: string) => {
   return samlName
 }
 
-describe('parseSAMLMetadata', () => {
+describe('requestSAMLMetadataChange', () => {
   const domain = getTestDomain()
   let samlName: string
   let adminCookie: string
@@ -69,26 +60,19 @@ describe('parseSAMLMetadata', () => {
 
   test('lets an org admin of the SSO connection request a metadata change', async () => {
     const res = await sendPublic({
-      query: PARSE_SAML_METADATA,
-      variables: {metadataURL: UNREACHABLE_METADATA_URL, domain: samlName},
+      query: REQUEST_SAML_METADATA_CHANGE,
+      variables: {samlId: samlName, metadataURL: UNREACHABLE_METADATA_URL},
       cookie: adminCookie
     })
 
-    expect(res.errors).toBeUndefined()
-    expect(res).toMatchObject({
-      data: {
-        viewer: {
-          parseSAMLMetadata: {error: {message: 'Metadata URL could not be fetched'}}
-        }
-      }
-    })
+    expect(res.errors).toMatchObject([{message: 'Metadata URL could not be fetched'}])
   })
 
   test('refuses a user outside the organization', async () => {
     const outsider = await signUp()
     const res = await sendPublic({
-      query: PARSE_SAML_METADATA,
-      variables: {metadataURL: UNREACHABLE_METADATA_URL, domain: samlName},
+      query: REQUEST_SAML_METADATA_CHANGE,
+      variables: {samlId: samlName, metadataURL: UNREACHABLE_METADATA_URL},
       cookie: outsider.cookie
     })
 
