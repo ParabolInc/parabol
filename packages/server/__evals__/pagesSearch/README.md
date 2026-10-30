@@ -761,3 +761,20 @@ Simulated edits on the heavy corpus's 57 pages with more than one chunk, countin
 - **Why.** B2's sections absorb a small insert: the section's chunk changes and nothing after it moves, so the old rule already re-embedded only that chunk. Positions shift only when a chunk is added or removed ahead of others, as when a section is added or grows past a chunk.
 - **Kept anyway.** It never embeds more for a content edit, it costs 92% less when a section is added, and a renamed title or heading now updates every vector that carries it. Before, a renamed title embedded nothing and left the old title in every vector. All of the savings come from edits that add or remove a chunk ahead of others; the other edits cost what they did before, so these totals aren't an estimate of savings in production.
 - **Ranking doesn't change.** The chunker is untouched, so a fresh seed embeds the same text as B2 and the eval results are B2's.
+
+## Page card (B4, 2026-10-30): not kept
+
+Each page with more than one chunk got one more vector for what the whole page is about: its title, its section headings and the start of its first section, cut to 160 estimated tokens. A page then scored by its best chunk or its card.
+
+The rule was fixed before the reseed. A new vector per page can shift similarities again, so it compared at matched filler: among floors where unanswerable queries return at most B2's count at floor 0.6 plus one, the best had to beat B2's mean nDCG@10 at 0.6 (0.879) by 0.005.
+
+| | `heavy-dev` nDCG@10 | Recall@20 | `noAnswerResults` | `dev` nDCG@10 | Recall@20 | `noAnswerResults` |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| B2, floor 0.6 | 0.839 | 0.904 | 14.33 | 0.920 | 0.988 | 15.38 |
+| Card, floor 0.6 | 0.838 | 0.904 | 14.33 | 0.919 | 0.988 | 15.38 |
+| Card, floor 0.65 | 0.837 | 0.904 | 3.67 | 0.911 | 0.976 | 9.75 |
+
+- **Not kept.** Its best eligible floor, 0.6, scores 0.8785 against B2's 0.8793. By similarity alone, `heavy-dev` moves from 0.463 to 0.474 and `dev` from 0.505 to 0.504. Long documents stay at 0.959, and hub share doesn't change.
+- **Likely why.** B2's section chunks already match questions about a whole long page (long documents score 0.959 by similarity alone), and the card mostly repeats the start of the page.
+- **What it would have cost.** 6% more tokens on the heavy corpus (81,587 → 86,343), and one more embed whenever a page's title, headings or opening change.
+- The card isn't in the code, and the eval index is back on B2's chunks.
