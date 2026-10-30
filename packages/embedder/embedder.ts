@@ -11,6 +11,7 @@ import {importHistoricalMetadata} from './importHistoricalMetadata'
 import {logPerformance} from './logPerformance'
 import {mergeAsyncIterators} from './mergeAsyncIterators'
 import {resetStalledJobs} from './resetStalledJobs'
+import {runEmbeddingsFeeder} from './runEmbeddingsFeeder'
 import {WorkflowOrchestrator} from './WorkflowOrchestrator'
 
 tracer.init({
@@ -42,6 +43,7 @@ const run = async () => {
     await modelManager.maybeCreateTables()
     await importHistoricalMetadata()
     resetStalledJobs()
+    runEmbeddingsFeeder()
   }
   // TEI has a long warmup time. Better to wait now than to fail later
   await modelManager.getEmbedder().ready()

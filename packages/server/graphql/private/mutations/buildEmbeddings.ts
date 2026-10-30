@@ -1,8 +1,13 @@
 import {GraphQLError} from 'graphql'
+import {activeEmbeddingModelId, embeddingModelIds} from '../../../../embedder/activeEmbeddingModel'
+import {getEmbeddingsRun, setEmbeddingsRun} from '../../../../embedder/embeddingsRun'
+import {getEmbeddingsRunProgress} from '../../../../embedder/feedEmbeddingsRun'
 import getKysely from '../../../postgres/getKysely'
 import isValid from '../../isValid'
 import {publishToEmbedder} from '../../mutations/helpers/publishToEmbedder'
 import type {MutationResolvers} from '../resolverTypes'
+
+const DEFAULT_RUN_QUEUE_SIZE = 100
 
 const buildEmbeddings: MutationResolvers['buildEmbeddings'] = async (
   _source,
@@ -10,7 +15,39 @@ const buildEmbeddings: MutationResolvers['buildEmbeddings'] = async (
   {dataLoader}
 ) => {
   const pg = getKysely()
-  const {adhoc, lastFailedAt} = input
+  const {adhoc, lastFailedAt, run} = input
+  if (run) {
+    const {modelId, action, copyMetadata, queueSize} = run
+    const targetModelId = embeddingModelIds.find(
+      (id) => id === modelId && id !== activeEmbeddingModelId
+    )
+    if (!targetModelId || !activeEmbeddingModelId) {
+      throw new GraphQLError(
+        'modelId must be a configured embedding generation other than the active one'
+      )
+    }
+    if (action === 'start') {
+      const size = queueSize ?? DEFAULT_RUN_QUEUE_SIZE
+      if (size < 1) throw new GraphQLError('queueSize must be at least 1')
+      await setEmbeddingsRun({
+        modelId: targetModelId,
+        state: 'running',
+        copyMetadata: !!copyMetadata,
+        queueSize: size
+      })
+    } else if (action !== 'status') {
+      const current = await getEmbeddingsRun()
+      if (current?.modelId !== targetModelId) {
+        throw new GraphQLError(`There is no run for ${modelId} to ${action}`)
+      }
+      await setEmbeddingsRun({...current, state: action === 'pause' ? 'paused' : 'running'})
+    }
+    const {recentPages, olderPages} = await getEmbeddingsRunProgress(
+      targetModelId,
+      activeEmbeddingModelId
+    )
+    return recentPages.total - recentPages.done + olderPages.total - olderPages.done
+  }
   if (lastFailedAt) {
     const {startAt, endAt} = lastFailedAt
     // This is the inverse of WorkflowOrchestrator.failJob

@@ -1,0 +1,20 @@
+"""
+Fills a new embedding generation in the background, a few jobs at a time
+"""
+input BuildEmbeddingsInputRun {
+  """
+  The generation to fill: its id in AI_EMBEDDING_MODELS. It can't be the first, active entry
+  """
+  modelId: String!
+  action: EmbeddingsRunActionEnum!
+
+  """
+  Copy meeting template and discussion vectors from the active generation instead of embedding them again. Only when both generations use the same model and pooling
+  """
+  copyMetadata: Boolean
+
+  """
+  How many of the run's jobs to keep queued. Defaults to 100
+  """
+  queueSize: Int
+}
