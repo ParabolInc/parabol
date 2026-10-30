@@ -742,10 +742,10 @@ At 0.8 the floor shuts out almost every page, so both lists fall back to the sam
 
 ## Edit-only re-embeds (B3, 2026-10-30)
 
-When a page changed, `embedPage` re-embedded every chunk whose body differed from the old chunk at the same position. A chunk added near the top re-embedded every chunk after it. A renamed title or heading re-embedded nothing, so the vectors kept the old header. Now:
-- A chunk is matched by the whole text it embeds, `Title > H1 > H2` header included, wherever it sits on the page. A match keeps its vector, and only new text is embedded. Rows whose text is gone are deleted first.
+When a page changed, `embedPage` re-embedded every chunk whose body differed from the old chunk at the same position. A chunk added near the top re-embedded every chunk after it. A renamed title re-embedded nothing, and neither did a renamed heading on a page with more than one chunk, so the vectors kept the old header. Now:
+- A chunk is matched by the whole text it embeds, `Title > H1 > H2` header included, wherever it sits on the page. A match keeps its vector, and only new text is embedded. Rows whose text is gone are deleted once the new text is embedded, so a run that fails leaves the page's old vectors in place, as before.
 - `embedText` stores that whole text; it held only the body before. Rows written before this re-embed once, on the page's next change.
-- `chunkNumber` is now a slot, unique per page. Kept rows aren't renumbered, because moving a row rewrites it in every index, the vector index included. New chunks take the lowest free numbers. Nothing reads page chunk order.
+- `chunkNumber` is now a slot, unique per page. Kept rows aren't renumbered, because moving a row rewrites it in every index, the vector index included. New chunks take the lowest numbers no row holds. Nothing reads page chunk order.
 
 Simulated edits on the heavy corpus's 57 pages with more than one chunk, counting estimated tokens embedded:
 
@@ -759,5 +759,5 @@ Simulated edits on the heavy corpus's 57 pages with more than one chunk, countin
 
 - **The rule fixed before measuring missed on one count.** It asked for at least 50% fewer tokens when inserting after the title and when inserting a section, and never more on any page when appending or changing a word. Inserting a section costs 92% less, and no page costs more for the other edits. Inserting after the title costs the same as before.
 - **Why.** B2's sections absorb a small insert: the section's chunk changes and nothing after it moves, so the old rule already re-embedded only that chunk. Positions shift only when a chunk is added or removed ahead of others, as when a section is added or grows past a chunk.
-- **Kept anyway.** It never embeds more for a content edit, it costs 92% less when a section is added, and a renamed title or heading now updates every vector that carries it. Before, a rename embedded nothing and left the old title in every vector. Across the four content edits it embeds 58% fewer tokens (57,605 → 24,140).
+- **Kept anyway.** It never embeds more for a content edit, it costs 92% less when a section is added, and a renamed title or heading now updates every vector that carries it. Before, a renamed title embedded nothing and left the old title in every vector. All of the savings come from edits that add or remove a chunk ahead of others; the other edits cost what they did before, so these totals aren't an estimate of savings in production.
 - **Ranking doesn't change.** The chunker is untouched, so a fresh seed embeds the same text as B2 and the eval results are B2's.
