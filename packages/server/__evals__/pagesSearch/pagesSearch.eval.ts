@@ -1,6 +1,7 @@
 import fs from 'fs'
 import type {GraphQLResolveInfo} from 'graphql'
 import path from 'path'
+import {activeEmbeddingModelId} from '../../../embedder/activeEmbeddingModel'
 import {getModelManager} from '../../../embedder/ai_models/ModelManager'
 import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
 import type {GQLContext} from '../../graphql/graphql'
@@ -499,7 +500,14 @@ const runSweep = async ({
 }: SweepRun) => {
   const sweepResults = await scoreSweep(gradedQueries, configs, fixtureKeyByPageId, viewerId)
   const resultsPath = path.join(RESULTS_DIR, `${label}-${evalSet}-sweep.json`)
-  const results = {label, set: evalSet, mode: 'sweep', unindexed, configs: sweepResults}
+  const results = {
+    label,
+    set: evalSet,
+    mode: 'sweep',
+    modelId: activeEmbeddingModelId,
+    unindexed,
+    configs: sweepResults
+  }
   fs.writeFileSync(resultsPath, `${JSON.stringify(results, null, 2)}\n`)
   console.log(`${label} ${evalSet} sweep: ${resultsPath}`)
   console.table(
@@ -599,7 +607,16 @@ test('pages search eval', async () => {
     const overall = summarizeWithErrors(perQuery)
     const byCategory = summarizeByCategory(perQuery)
     const resultsPath = path.join(RESULTS_DIR, `${label}-${evalSet}-${mode}.json`)
-    const results = {label, set: evalSet, mode, overall, byCategory, perQuery, unindexed}
+    const results = {
+      label,
+      set: evalSet,
+      mode,
+      modelId: activeEmbeddingModelId,
+      overall,
+      byCategory,
+      perQuery,
+      unindexed
+    }
     fs.writeFileSync(resultsPath, `${JSON.stringify(results, null, 2)}\n`)
     console.log(`${label} ${evalSet} ${mode}: ${resultsPath}`)
     console.table({
