@@ -7,11 +7,15 @@ export const useTipTapEditorContent = (content: string) => {
   const contentJSONRef = useRef<JSONContent>(undefined)
   // When receiving new content, it's important to make sure it's different from the current value
   // Unnecessary re-renders mess up things like the coordinates of the link menu
+  // StrictMode calls this twice and keeps the 1st result, so the 2nd call must not swap in an equal copy
   const contentJSON = useMemo(() => {
     try {
       const newContentJSON = JSON.parse(content) as JSONContent
       const oldContentJSON = editorRef.current ? editorRef.current.getJSON() : {}
-      if (!isEqualWhenSerialized(newContentJSON, oldContentJSON)) {
+      if (
+        !isEqualWhenSerialized(newContentJSON, oldContentJSON) &&
+        !isEqualWhenSerialized(newContentJSON, contentJSONRef.current)
+      ) {
         contentJSONRef.current = newContentJSON
       }
     } catch (e) {
