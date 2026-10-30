@@ -25,7 +25,7 @@ import SpotlightModal from './SpotlightModal'
 
 interface Props {
   meeting: GroupingKanban_meeting$key
-  phaseRef: RefObject<HTMLDivElement>
+  phaseRef: RefObject<HTMLDivElement | null>
 }
 
 export type SwipeColumn = (offset: number) => void
@@ -192,7 +192,7 @@ const GroupingKanban = (props: Props) => {
   )
 
   useHideBodyScroll()
-  const dragIdRef = useRef<string>()
+  const dragIdRef = useRef<string>(undefined)
   const {onOpenSpotlight, onCloseSpotlight} = useSpotlightSimulatedDrag(meeting, dragIdRef)
 
   const isSpotlightOpen = !!spotlightGroup
@@ -214,7 +214,7 @@ const GroupingKanban = (props: Props) => {
     }
   }, [])
 
-  const openSpotlight = (reflectionId: string, reflectionRef: RefObject<HTMLDivElement>) => {
+  const openSpotlight = (reflectionId: string, reflectionRef: RefObject<HTMLDivElement | null>) => {
     sourceCloneRef.current = reflectionRef.current
     onOpenSpotlight(reflectionId)
   }

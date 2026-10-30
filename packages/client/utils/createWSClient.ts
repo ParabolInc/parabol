@@ -2,6 +2,7 @@ import {type Client, createClient} from 'graphql-ws'
 import ms from 'ms'
 import {commitLocalUpdate} from 'relay-runtime'
 import type Atmosphere from '../Atmosphere'
+import getTabSessionId from './getTabSessionId'
 import createProxyRecord from './relay/createProxyRecord'
 
 const setConnectedStatus = (atmosphere: Atmosphere, isConnected: boolean) => {
@@ -60,6 +61,7 @@ export function createWSClient(atmosphere: Atmosphere) {
     let timedOut: number
     const subscriptionClient = createClient({
       lazy: false,
+      connectionParams: () => ({sessionId: getTabSessionId()}),
       generateID: () => {
         return String(nextId++)
       },

@@ -5,24 +5,21 @@ import {CipherId} from '../../../utils/CipherId'
 import isValid from '../../isValid'
 import type {ReqResolvers} from './ReqResolvers'
 
-// team is captured in PagePartial so it's not needed here
-const Page: Omit<ReqResolvers<'Page'>, 'team'> = {
+const Page: ReqResolvers<'Page'> = {
+  id: ({id}) => CipherId.toClient(id, 'page'),
   access: ({id}) => ({id}),
-  parentPage: async ({parentPageId}, _args, {authToken, dataLoader}) => {
+  parentPage: async ({parentPageId}, _args, {dataLoader}) => {
     if (!parentPageId) return null
-    const [parentPage, access] = await Promise.all([
-      dataLoader.get('pages').load(parentPageId),
-      dataLoader
-        .get('pageAccessByPageIdUserId')
-        .load({userId: authToken?.sub ?? '', pageId: parentPageId})
-    ])
+    const parentPage = await dataLoader.get('pages').load(parentPageId)
     if (!parentPage) throw new GraphQLError('Parent page not found')
-    return {
-      ...parentPage,
-      __typename: access ? 'Page' : 'PagePreview'
-    }
+    return parentPage
   },
   parentPageId: ({parentPageId}) => (parentPageId ? CipherId.toClient(parentPageId, 'page') : null),
+  team: async ({teamId}, _args, {dataLoader}) => {
+    if (!teamId) return null
+    const team = await dataLoader.get('teams').load(teamId)
+    return team ?? null
+  },
   userSortOrder: async ({id: pageId, userSortOrder}, _args, {authToken, dataLoader}) => {
     if (userSortOrder) return userSortOrder
     const viewerId = getUserId(authToken)
@@ -30,44 +27,23 @@ const Page: Omit<ReqResolvers<'Page'>, 'team'> = {
     return sortOrder || '!'
   },
   ancestorIds: ({ancestorIds}) => ancestorIds.map((id) => CipherId.toClient(id, 'page')),
-  ancestors: async ({ancestorIds}, _args, {authToken, dataLoader}) => {
-    const accessKeys = ancestorIds.map((pageId) => ({
-      pageId,
-      userId: authToken?.sub ?? ''
-    }))
-    const [pages, accesses] = await Promise.all([
-      dataLoader.get('pages').loadMany(ancestorIds),
-      dataLoader.get('pageAccessByPageIdUserId').loadMany(accessKeys)
-    ])
+  ancestors: async ({ancestorIds}, _args, {dataLoader}) => {
+    const pages = await dataLoader.get('pages').loadMany(ancestorIds)
     const validPages = pages.filter(isValid)
     if (validPages.length < pages.length) {
       throw new GraphQLError('Page not found')
     }
-    return validPages.map((page, idx) => {
-      const access = accesses[idx] instanceof Error ? null : accesses[idx]
-      return {
-        ...page,
-        __typename: access ? 'Page' : 'PagePreview'
-      }
-    })
+    return validPages
   },
-  linkedPages: async ({id}, _args, {authToken, dataLoader}) => {
+  linkedPages: async ({id}, _args, {dataLoader}) => {
     const backlinks = await getKysely()
       .selectFrom('PageBacklink')
       .select('toPageId')
       .where('fromPageId', '=', id)
       .execute()
     const linkedPageIds = backlinks.map(({toPageId}) => toPageId)
-    const accessKeys = linkedPageIds.map((pageId) => ({pageId, userId: authToken?.sub ?? ''}))
-    const [pages, accesses] = await Promise.all([
-      dataLoader.get('pages').loadMany(linkedPageIds),
-      dataLoader.get('pageAccessByPageIdUserId').loadMany(accessKeys)
-    ])
-    return pages.flatMap((page, idx) => {
-      if (!isValid(page) || page.deletedAt) return []
-      const access = accesses[idx] instanceof Error ? null : accesses[idx]
-      return [{...page, __typename: access ? 'Page' : 'PagePreview'}]
-    })
+    const pages = await dataLoader.get('pages').loadMany(linkedPageIds)
+    return pages.flatMap((page) => (isValid(page) && !page.deletedAt ? [page] : []))
   },
   deletedByUser: async ({deletedBy}, _args, {dataLoader}) => {
     if (!deletedBy) return null

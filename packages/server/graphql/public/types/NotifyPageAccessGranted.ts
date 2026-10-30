@@ -12,13 +12,7 @@ const NotifyPageAccessGranted: NotifyPageAccessGrantedResolvers = {
     const owner = await dataLoader.get('users').load(ownerId)
     return owner?.picture ?? null
   },
-  page: async ({pageId}, _args, {dataLoader}) => {
-    const page = await dataLoader.get('pages').loadNonNull(pageId)
-    return {
-      __typename: 'PagePreview',
-      ...page
-    }
-  }
+  page: ({pageId}, _args, {dataLoader}) => dataLoader.get('pages').loadNonNull(pageId)
 }
 
 export default NotifyPageAccessGranted

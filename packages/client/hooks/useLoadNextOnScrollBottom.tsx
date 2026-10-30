@@ -28,7 +28,7 @@ const useLoadNextOnScrollBottom = (
       }
     }, options)
   })
-  const lastItemRef = useRef<HTMLDivElement>()
+  const lastItemRef = useRef<HTMLDivElement>(undefined)
   useEffect(() => {
     return () => {
       intersectionObserver.disconnect()

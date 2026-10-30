@@ -3,6 +3,7 @@ import {type Configuration, rspack} from '@rspack/core'
 import {createRequire} from 'module'
 import path from 'path'
 import externalizeNodeModules from './utils/externalizeNodeModules.mts'
+import getCommitHash from './utils/getCommitHash.js'
 import getProjectRoot from './utils/getProjectRoot.js'
 import transformRules from './utils/transformRules.js'
 
@@ -60,7 +61,8 @@ const devServersConfig: Configuration = {
   plugins: [
     new rspack.DefinePlugin({
       __PRODUCTION__: false,
-      __APP_VERSION__: JSON.stringify(process.env.npm_package_version)
+      __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
+      __COMMIT_HASH__: JSON.stringify(getCommitHash())
     })
   ],
   module: {

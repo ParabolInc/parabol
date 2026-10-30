@@ -32,6 +32,8 @@ import type {NavigateFn} from './types/relayMutations'
 import {getAuthCookie, onAuthCookieChange} from './utils/authCookie'
 import {createWSClient} from './utils/createWSClient'
 import deletePageDatabases from './utils/deletePageDatabases'
+import getTabSessionId from './utils/getTabSessionId'
+import makeTraceparent from './utils/makeTraceparent'
 import handlerProvider from './utils/relay/handlerProvider'
 import sleep from './utils/sleep'
 
@@ -193,6 +195,8 @@ export default class Atmosphere extends Environment {
         method: 'POST',
         headers: {
           accept: 'application/json;text/event-stream; charset=utf-8, multipart/mixed',
+          traceparent: makeTraceparent(),
+          'x-parabol-session-id': getTabSessionId(),
           ...(!uploadables && {['content-type']: 'application/json'})
         },
         body: uploadables
@@ -341,7 +345,8 @@ export default class Atmosphere extends Environment {
             operationName: operation.name,
             query: '',
             docId: operation.id,
-            variables
+            variables,
+            extensions: {traceparent: makeTraceparent()}
           } as any,
           sink as any
         )

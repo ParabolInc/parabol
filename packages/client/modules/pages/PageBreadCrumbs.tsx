@@ -48,18 +48,21 @@ export const PageBreadCrumbs = (props: Props) => {
         id
         title
         team {
-          __typename
           id
           name
+          isViewerOnTeam
         }
         ancestors {
-          __typename
           id
           title
+          access {
+            viewer
+            public
+          }
           team {
-            __typename
             id
             name
+            isViewerOnTeam
           }
         }
       }
@@ -85,9 +88,8 @@ export const PageBreadCrumbs = (props: Props) => {
     ] as const
     hiddenAncestors = ancestors.slice(1, -1) // All middle ancestors
   }
-  const renderTeamCrumb = (team: {id: string; name: string; __typename: string}) => {
-    const hasDropAccess = team.__typename === 'Team'
-    const canDropIn = draggingPageId && hasDragAccess && hasDropAccess
+  const renderTeamCrumb = (team: {id: string; name: string; isViewerOnTeam: boolean}) => {
+    const canDropIn = draggingPageId && hasDragAccess && team.isViewerOnTeam
     return (
       <>
         <PageDropTarget
@@ -110,9 +112,8 @@ export const PageBreadCrumbs = (props: Props) => {
   const isSourceDragParent = draggingPageId && nextPageAncestors.includes(draggingPageId)
   const renderBreadcrumbItem = (page: (typeof ancestors)[number]) => {
     const isSelf = page.id === draggingPageId
-    const hasDropAccess = page.__typename === 'Page'
-    const canDropIn =
-      draggingPageId && !isSourceDragParent && !isSelf && hasDropAccess && hasDragAccess
+    const canOpen = !!(page.access.viewer || page.access.public)
+    const canDropIn = draggingPageId && !isSourceDragParent && !isSelf && canOpen && hasDragAccess
     return (
       <React.Fragment key={page.id}>
         <PageDropTarget
@@ -125,9 +126,7 @@ export const PageBreadCrumbs = (props: Props) => {
             to={`/pages/${getPageSlug(Number(page.id.split(':')[1]), page.title)}`}
             className='rounded-md px-1 hover:bg-surface-hover'
           >
-            {page.__typename === 'PagePreview' && (
-              <PageNoAccessLock className='mr-1 align-[-2px]' />
-            )}
+            {!canOpen && <PageNoAccessLock className='mr-1 align-[-2px]' />}
             {page.title}
           </Link>
         </PageDropTarget>

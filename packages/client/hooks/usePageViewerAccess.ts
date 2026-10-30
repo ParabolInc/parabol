@@ -19,17 +19,10 @@ const pageFragment = getFragment(graphql`
     }
   }
 `)
-const pagePreviewFragment = getFragment(graphql`
-  fragment usePageViewerAccess_pagePreview on PagePreview {
-    id
-  }
-`)
 // PageEntryQuery loads the open page's linked pages, so it owns their records
 const owner = createOperationDescriptor(pageEntryQuery, {pageId: ''}).request
 const getPageSelector = (pageCode: number) =>
   createReaderSelector(pageFragment, `page:${pageCode}`, {}, owner)
-const getPagePreviewSelector = (pageCode: number) =>
-  createReaderSelector(pagePreviewFragment, `pagePreview:${pageCode}`, {}, owner)
 
 type PageAccess = NonNullable<usePageViewerAccess_page$data['access']>
 const getStrongestRole = ({viewer, public: publicRole}: PageAccess) => {
@@ -38,16 +31,13 @@ const getStrongestRole = ({viewer, public: publicRole}: PageAccess) => {
   return viewer === null && publicRole === null ? null : undefined
 }
 
-// The viewer's strongest role on a page: null when they cannot open it, undefined when it isn't loaded.
-// A page they could not open loads as a separate pagePreview record, and sharing changes write the page record
+// The viewer's strongest role on a page: null when they cannot open it, undefined when it isn't loaded
 export const lookupPageViewerAccess = (environment: IEnvironment, pageCode: number) => {
   const page = environment.lookup(getPageSelector(pageCode)).data as
     | usePageViewerAccess_page$data
     | null
     | undefined
-  const role = page?.access ? getStrongestRole(page.access) : undefined
-  if (role !== undefined) return role
-  return environment.lookup(getPagePreviewSelector(pageCode)).data ? null : undefined
+  return page?.access ? getStrongestRole(page.access) : undefined
 }
 
 export const subscribeToPageViewerAccess = (
@@ -55,10 +45,8 @@ export const subscribeToPageViewerAccess = (
   pageCode: number,
   onChange: () => void
 ) => {
-  const disposables = [getPageSelector(pageCode), getPagePreviewSelector(pageCode)].map(
-    (selector) => environment.subscribe(environment.lookup(selector), onChange)
-  )
-  return () => disposables.forEach((disposable) => disposable.dispose())
+  const disposable = environment.subscribe(environment.lookup(getPageSelector(pageCode)), onChange)
+  return () => disposable.dispose()
 }
 
 export const usePageViewerAccess = (pageCode: number) => {

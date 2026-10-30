@@ -1,4 +1,4 @@
-import {type MutableRefObject, useRef} from 'react'
+import {type RefObject, useRef} from 'react'
 import requestDoubleAnimationFrame from '../components/RetroReflectPhase/requestDoubleAnimationFrame'
 import type {Dims, Point} from '../types/animations'
 import {BezierCurve, ElementWidth, Times} from '../types/constEnums'
@@ -6,7 +6,7 @@ import {BezierCurve, ElementWidth, Times} from '../types/constEnums'
 interface Options<T> {
   isBackground?: boolean
   isGroup?: boolean
-  firstRef?: MutableRefObject<T | null>
+  firstRef?: RefObject<T | null>
   offsetLeft?: number
   offsetTop?: number
 }
@@ -32,7 +32,7 @@ const getTranslate = <T extends HTMLElement = HTMLDivElement>(
 const useFlip = <T extends HTMLElement = HTMLDivElement>(options: Options<T>) => {
   const {isBackground, firstRef, offsetLeft = 0, offsetTop = 0, isGroup} = options
   const isAnimatedRef = useRef(false)
-  const instanceRef = useRef<T>()
+  const instanceRef = useRef<T>(undefined)
   const lastRefCb = (instance: T) => {
     instanceRef.current = instance
     if (!instance || isAnimatedRef.current || !firstRef || !firstRef.current) {

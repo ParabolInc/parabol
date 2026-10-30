@@ -1,14 +1,8 @@
 import {commitLocalUpdate, Environment, Network, RecordSource, Store} from 'relay-runtime'
 import mockPageFragment from '../../__generated__/usePageViewerAccess_page.graphql'
-import mockPagePreviewFragment from '../../__generated__/usePageViewerAccess_pagePreview.graphql'
 import {lookupPageViewerAccess, subscribeToPageViewerAccess} from '../usePageViewerAccess'
 
-// the hook declares its page fragment first & its pagePreview fragment second
-jest.mock('babel-plugin-relay/macro', () => {
-  const fragments = [mockPageFragment, mockPagePreviewFragment]
-  let calls = 0
-  return {__esModule: true, default: () => fragments[calls++]}
-})
+jest.mock('babel-plugin-relay/macro', () => ({__esModule: true, default: () => mockPageFragment}))
 jest.mock('../useAtmosphere', () => ({__esModule: true, default: () => null}))
 
 const pageWithAccess = (pageCode: number, viewer: string | null, publicRole: string | null) => ({
@@ -32,7 +26,7 @@ const makeEnvironment = () =>
     store: new Store(
       new RecordSource({
         ...pageWithAccess(1, 'editor', null),
-        'pagePreview:2': {__id: 'pagePreview:2', __typename: 'PagePreview', id: 'pagePreview:2'},
+        ...pageWithAccess(2, null, null),
         'page:3': {__id: 'page:3', __typename: 'Page', id: 'page:3'},
         ...pageWithAccess(5, null, 'viewer'),
         ...pageWithAccess(6, 'commenter', 'editor')

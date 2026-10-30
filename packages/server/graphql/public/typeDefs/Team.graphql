@@ -5,7 +5,7 @@ interface Node {
 """
 A team
 """
-type Team implements Node & TeamPartial {
+type Team implements Node {
   """
   A shortid for the team
   """

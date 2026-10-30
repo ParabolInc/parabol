@@ -17,7 +17,7 @@ interface Props {
   reflectionGroup: ReflectionGroupTitleEditor_reflectionGroup$key
   readOnly: boolean
   meeting: ReflectionGroupTitleEditor_meeting$key
-  titleInputRef: RefObject<HTMLInputElement>
+  titleInputRef: RefObject<HTMLInputElement | null>
 }
 
 const getValidationError = (

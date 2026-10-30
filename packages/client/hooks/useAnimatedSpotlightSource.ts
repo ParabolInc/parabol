@@ -1,5 +1,5 @@
 import {Times} from 'parabol-client/types/constEnums'
-import {type MutableRefObject, useLayoutEffect, useRef} from 'react'
+import {type RefObject, useLayoutEffect, useRef} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import StartDraggingReflectionMutation from '~/mutations/StartDraggingReflectionMutation'
 import {Elevation} from '~/styles/elevation'
@@ -11,7 +11,7 @@ import SendClientSideEvent from '~/utils/SendClientSideEvent'
 const useAnimatedSpotlightSource = (
   isOpen: boolean,
   reflectionId: string | null | undefined,
-  dragIdRef: MutableRefObject<string | undefined>
+  dragIdRef: RefObject<string | undefined>
 ) => {
   const atmosphere = useAtmosphere()
   const sourceRef = useRef<HTMLDivElement | null>(null)

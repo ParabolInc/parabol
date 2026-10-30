@@ -8,6 +8,12 @@ export const getResolverDotPath = (
   return dotPath.split('.').reduce((val: any, key) => val?.[key], {source, args})
 }
 
+// keys a rule's cached result on the id it checks, so a rule on every field of a type runs once per object
+export const cacheByDotPath =
+  (dotPath: `${'source' | 'args'}.${string}`) =>
+  (source: Record<string, any>, args: Record<string, any>) =>
+    String(JSON.stringify(getResolverDotPath(dotPath, source, args)))
+
 type SecondParam<T> = T extends (arg1: any, arg2: infer A, ...args: any[]) => any ? A : never
 
 type ParseParent<T> = T extends `${infer Parent extends string}.${string}` ? Parent : never

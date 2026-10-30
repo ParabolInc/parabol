@@ -1,9 +1,9 @@
 import type {Editor, EditorEvents} from '@tiptap/core'
-import {type MutableRefObject, useEffect} from 'react'
+import {type RefObject, useEffect} from 'react'
 
 export const usePageLinkPlaceholder = (
   editor: Editor,
-  placeholderRef: MutableRefObject<string | undefined>
+  placeholderRef: RefObject<string | undefined>
 ) => {
   useEffect(() => {
     const setPageLinkPlaceholder = ({willOpen}: EditorEvents['pageLinkPicker']) => {
