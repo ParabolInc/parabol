@@ -799,3 +799,36 @@ To measure a generation, list it first in `AI_EMBEDDING_MODELS` for the run. `in
 - **The live generation is master's.** Every ranked list matches the base measured before B1. A test also pins master's chunks on the heavy corpus by digest.
 - **One difference:** the live generation no longer refuses languages Postgres has no text search config for (B2 dropped that gate), so `meeting-notes-ja` now gets vectors. No list changed.
 - **The new generation is B3's**, at either floor.
+
+## Re-tune and gate (B8, 2026-10-30)
+
+**Re-tune.** The new generation, `#v3`, was swept over alphas 0.005, 0.01, 0.02 and 0.05 and floors 0.5 to 0.8 on both dev sets. The rule was fixed before the sweep:
+- A setting is eligible when, on both sets, unanswerable queries return at most one page more than master's live generation, and `junkAt5` rises by at most 0.02.
+- The best mean nDCG@10 wins. A setting within 0.002 of it ties; ties go to the higher floor, then the lower alpha.
+
+| | `heavy-dev` nDCG@10 | Recall@20 | `junkAt5` | `noAnswerResults` | `dev` nDCG@10 | Recall@20 | `junkAt5` | `noAnswerResults` |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Master (live generation, floor 0.4, alpha 0.01) | 0.826 | 0.881 | 0.623 | 13.67 | 0.905 | 0.960 | 0.653 | 11.63 |
+| `#v3`, floor 0.6, alpha 0.01 (B2–B5) | 0.839 | 0.904 | 0.611 | 14.33 | 0.920 | 0.988 | 0.629 | 15.38 |
+| `#v3`, floor 0.65, alpha 0.005 (chosen) | 0.837 | 0.904 | 0.571 | 3.67 | 0.912 | 0.976 | 0.589 | 9.63 |
+
+- **The chosen setting beats master on every measure on both sets.** Unanswerable queries return 3.67 pages instead of 13.67 on `heavy-dev`.
+- **Floors below 0.65 weren't eligible.** Unanswerable queries filled 14 to 20 slots there.
+- **Alpha.** 0.005 and 0.01 gave the same lists at every floor, and the rule took 0.005.
+- **Pooling stays mean, with no instruction.** On B2's chunks, which the new generation embeds unchanged, fused page ranking favored mean pooling (0.879 against 0.872 for last-token with an instruction).
+
+**The gate.** It runs once, on `heavy-final`, when the stack's ranking code is reviewed. Whoever tunes ranking never reads `heavyFinalQueries.json` or a per-query result. The candidate ships only if, after grading, all four hold:
+- nDCG@10 is at least master's plus 0.01;
+- Recall@20 is at least master's minus 0.01;
+- `noAnswerResults` is at most master's plus 1;
+- `junkAt5` is at most master's plus 0.02.
+
+1. **Run both arms once on the same index, sending each run's output to a file nobody reads.** From `packages/server`, with `.env` loaded:
+   - Master (the live generation first in `AI_EMBEDDING_MODELS`): `EVAL_SET=heavy-final EVAL_MODES=sweep EVAL_ALPHAS=0.01 EVAL_FLOORS=0.4 EVAL_LABEL=gate-master pnpm eval:pagesSearch`.
+   - Candidate (`#v3` alone or first): `EVAL_SET=heavy-final EVAL_MODES=sweep EVAL_ALPHAS=0.005 EVAL_FLOORS=0.65 EVAL_LABEL=gate-candidate pnpm eval:pagesSearch`.
+2. **Grade.** A fresh agent that never tuned ranking reads `heavyFinalQueries.json`, both runs' `results/gate-*-heavy-final-sweep.json` and the corpus dump (`EVAL_DUMP=1 EVAL_SET=heavy-dev`).
+   - For every page in either arm's top 10 that the query doesn't label, it assigns a grade on the labels' scale: 3, 2, 1, or 0 for not relevant.
+   - It writes `results/gate-extra-grades.json` as `{"<query>": {"<page key>": <grade>}}`.
+   - It never changes a label, and it never sees either arm's scores.
+3. **Score.** Run `pnpm sucrase-node packages/server/__evals__/pagesSearch/rescore.ts <results file> packages/server/__evals__/pagesSearch/heavyFinalQueries.json <extra grades>` for each arm, from the repo root. It prints only the overall row. Labels win over extra grades, and unanswerable queries stay unanswerable.
+4. **Scrub.** Delete both results files, the extra grades and the logs, and keep the two overall rows.
