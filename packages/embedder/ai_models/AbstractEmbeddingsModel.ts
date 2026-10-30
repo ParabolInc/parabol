@@ -14,11 +14,16 @@ import {URLRegex} from '../regex'
 import {AbstractModel} from './AbstractModel'
 import type {ModelId} from './modelIdDefinitions'
 
+export type PageChunkerName = 'markdown' | 'sections'
+
 export interface EmbeddingModelParams {
   embeddingDimensions: number
   precision: 32 | 16
   tableSuffix: string
   languages: readonly ISO6391[]
+  chunker: PageChunkerName
+  pageVectorFloor: number
+  pageAlpha: number
 }
 
 export abstract class AbstractEmbeddingsModel extends AbstractModel {
@@ -28,6 +33,7 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
   readonly tableName: EmbeddingsTable
   readonly pagesTableName: EmbeddingsPagesTable
   readonly languages: readonly ISO6391[]
+  readonly chunker: PageChunkerName
   readonly modelId: ModelId
   protected isReady = false
   constructor(modelId: ModelId, url: string, maxTokens: number) {
@@ -37,6 +43,7 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
     this.embeddingDimensions = modelParams.embeddingDimensions
     this.embeddingPrecision = modelParams.precision
     this.languages = modelParams.languages
+    this.chunker = modelParams.chunker
     this.maxInputTokens = maxTokens
     this.tableName = getEmbeddingsTableName(modelId)
     this.pagesTableName = getEmbeddingsPagesTableName(modelId)!

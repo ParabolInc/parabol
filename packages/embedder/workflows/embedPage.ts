@@ -13,12 +13,20 @@ import {getTSV, type TSVLanguage} from '../getSupportedLanguages'
 import {numberVectorToString} from '../indexing/numberVectorToString'
 import {inferLanguage} from '../inferLanguage'
 import {JobQueueError} from '../JobQueueError'
+import {MarkdownChunker} from '../MarkdownChunker'
 import {planChunkReuse} from '../planChunkReuse'
 import {TipTapChunker} from '../TipTapChunker'
 
 export interface EmbedPageData {
   pageId: number
   modelId: ModelId
+}
+
+interface PageChunk {
+  text: string
+  globalTitle: string
+  headingPath: string[]
+  embeddingText: string
 }
 
 const UNSTAMPED_PAGE_UPDATED_AT = new Date(0)
@@ -76,8 +84,11 @@ export const embedPage: JobQueueStepRun<EmbedPageData> = async (context) => {
   } catch {}
   const language = inferLanguage(fullText, 5)
   const tsvLanguage = getTSV(language) ?? 'simple'
-  const chunker = new TipTapChunker({language})
-  const chunks = chunker.chunk(content)
+  const chunker =
+    embeddingModel.chunker === 'markdown'
+      ? new MarkdownChunker({language})
+      : new TipTapChunker({language})
+  const chunks: PageChunk[] = chunker.chunk(content)
   const {deleteIds, toEmbed} = planChunkReuse(
     existingChunks,
     chunks.map(({embeddingText}) => embeddingText)
