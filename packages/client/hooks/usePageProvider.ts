@@ -14,8 +14,8 @@ import useAtmosphere from './useAtmosphere'
 function observeFirstInnerXmlText(
   frag: Y.XmlFragment,
   onChange: (headerBlock: Y.XmlText) => void,
-  currentHeaderBlockRef: React.MutableRefObject<Y.XmlElement | null>,
-  headerBlockObserverRef: React.MutableRefObject<(() => void) | null>
+  currentHeaderBlockRef: React.RefObject<Y.XmlElement | null>,
+  headerBlockObserverRef: React.RefObject<(() => void) | null>
 ) {
   const newHeaderBlock = frag.firstChild as Y.XmlElement
   if (newHeaderBlock === currentHeaderBlockRef.current) return
@@ -68,7 +68,7 @@ export const usePageProvider = (pageId: string) => {
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
   const pageCode = Number(pageId.split(':')[1])
-  const prevPageIdRef = useRef<string | undefined>()
+  const prevPageIdRef = useRef<string | undefined>(undefined)
   const [syncedProvider, setSyncedProvider] = useState<HocuspocusProvider | null>(null)
   const headerBlockObserverRef = useRef<(() => void) | null>(null)
   const currentHeaderBlockRef = useRef<Y.XmlElement | null>(null)

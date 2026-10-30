@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
-import {type MutableRefObject, type RefObject, useEffect, useMemo, useState} from 'react'
+import {type RefObject, useEffect, useMemo, useState} from 'react'
 import {createPortal} from 'react-dom'
 import {useFragment} from 'react-relay'
 import useEventCallback from '~/hooks/useEventCallback'
@@ -28,13 +28,13 @@ const PLACEHOLDERS = ['Share your thoughts', 'Hit / for commands', `Press ${modE
 let initialPlaceHolderIndex = 0
 
 interface Props {
-  cardsInFlightRef: MutableRefObject<ReflectColumnCardInFlight[]>
+  cardsInFlightRef: RefObject<ReflectColumnCardInFlight[]>
   forceUpdateColumn: () => void
   meetingId: string
   nextSortOrder: () => number
-  phaseEditorRef: React.RefObject<HTMLDivElement>
+  phaseEditorRef: React.RefObject<HTMLDivElement | null>
   promptId: string
-  stackTopRef: RefObject<HTMLDivElement>
+  stackTopRef: RefObject<HTMLDivElement | null>
   readOnly?: boolean
   autoFocus: boolean
   meetingRef: PhaseItemEditor_meeting$key

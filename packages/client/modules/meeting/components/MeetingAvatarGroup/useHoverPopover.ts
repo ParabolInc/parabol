@@ -5,8 +5,8 @@ const CLOSE_DELAY_MS = 150
 
 export const useHoverPopover = () => {
   const [open, setOpen] = useState(false)
-  const openTimerRef = useRef<ReturnType<typeof setTimeout>>()
-  const closeTimerRef = useRef<ReturnType<typeof setTimeout>>()
+  const openTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined)
 
   useEffect(
     () => () => {

@@ -83,8 +83,7 @@ module.exports = (config) => {
     resolve: {
       alias: {
         '~': path.join(CLIENT_ROOT),
-        // this is for radix-ui, we import & transform ESM packages, but they can't find react/jsx-runtime
-        'react/jsx-runtime': require.resolve('react/jsx-runtime')
+        'react/jsx-runtime': path.join(PLUGIN_ROOT, 'hostJsxRuntime.ts')
       },
       extensions: ['.ts', '.tsx', '.js']
     },

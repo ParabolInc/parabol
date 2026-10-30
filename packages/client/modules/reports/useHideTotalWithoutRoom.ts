@@ -4,7 +4,10 @@ import useResizeObserver from '../../hooks/useResizeObserver'
 
 // Hides a heatmap's total column when the table can't fit it without scrolling sideways. The table is measured at
 // its narrowest with the column shown, before paint, so hiding it can't make it fit and show it again
-const useHideTotalWithoutRoom = (scrollRef: RefObject<HTMLDivElement>, isEnabled: boolean) => {
+const useHideTotalWithoutRoom = (
+  scrollRef: RefObject<HTMLDivElement | null>,
+  isEnabled: boolean
+) => {
   const fit = useEventCallback(() => {
     const scroller = scrollRef.current
     const table = scroller?.querySelector('table')

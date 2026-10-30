@@ -7,7 +7,7 @@ import DiscussionThread from './DiscussionThread'
 import type {DiscussionThreadables} from './DiscussionThreadList'
 
 interface Props {
-  meetingContentRef?: RefObject<HTMLDivElement>
+  meetingContentRef?: RefObject<HTMLDivElement | null>
   discussionId: string
   allowedThreadables: DiscussionThreadables[]
   width?: string
