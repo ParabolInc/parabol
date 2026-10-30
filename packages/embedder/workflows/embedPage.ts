@@ -22,7 +22,12 @@ export interface EmbedPageData {
 
 const UNSTAMPED_PAGE_UPDATED_AT = new Date(0)
 
-function weightedTsvector(language: TSVLanguage, title: string, headings: string, body: string) {
+function weightedTsvector(
+  language: TSVLanguage | 'simple',
+  title: string,
+  headings: string,
+  body: string
+) {
   return sql`
     setweight(to_tsvector(${language}, ${title}), 'A') ||
     setweight(to_tsvector(${language}, ${headings}), 'B') ||
@@ -64,13 +69,12 @@ export const embedPage: JobQueueStepRun<EmbedPageData> = async (context) => {
   const yDoc = new Doc()
   applyUpdate(yDoc, page.yDoc)
   const content = TiptapTransformer.fromYdoc(yDoc, 'default') as TipTapSerializedContent
-  const fullText = generateText(content, serverTipTapExtensions)
+  let fullText = ''
+  try {
+    fullText = generateText(content, serverTipTapExtensions)
+  } catch {}
   const language = inferLanguage(fullText, 5)
-  const tsvLanguage = getTSV(language)
-
-  if (!language || !tsvLanguage || !embeddingModel.languages.includes(language)) {
-    return new JobQueueError(`pageId ${pageId} is written in unsupported language: ${language}`)
-  }
+  const tsvLanguage = getTSV(language) ?? 'simple'
   const chunker = new TipTapChunker({language})
   const chunks = chunker.chunk(content)
   const startedAt = Date.now()

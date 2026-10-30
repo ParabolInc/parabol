@@ -60,9 +60,9 @@ EVAL_LABEL=page-fusion EVAL_SET=dev EVAL_MODES=sweep pnpm eval:pagesSearch
 ## How it works
 
 - **Corpus.** The user `eval|pagesSearch` owns every fixture page, privately. Seeding only creates and deletes that user's own rows, so results don't depend on the rest of your dev data.
-- **Indexing.** On every run, each page that has no embeddings is embedded in-process with the real `embedPage`, one at a time. When `embedPage` fails for a page, its partial rows are deleted, so the next run tries that page again. A run that you kill while it is embedding a page can leave partial rows behind, so reseed after that. A fixture that still has no embeddings afterwards is listed under `unindexed` in the results. That happens when `embedPage` refuses the page (for example, at the language gate), when the page has nothing to chunk because it is only a title, or when the embeddings service fails or times out on one of the page's chunks. Only the first two are deterministic. A page that failed for the third reason is retried on the next run.
+- **Indexing.** On every run, each page that has no embeddings is embedded in-process with the real `embedPage`, one at a time. When `embedPage` fails for a page, its partial rows are deleted, so the next run tries that page again. A run that you kill while it is embedding a page can leave partial rows behind, so reseed after that. A fixture that still has no embeddings afterwards is listed under `unindexed` in the results. That happens when the page has nothing to chunk, because it has no text besides its title, or when the embeddings service fails or times out on one of the page's chunks. Only the first is deterministic. A page that failed for the second reason is retried on the next run.
 - **Queries.** The real resolver runs with the job queue replaced: the query is embedded by the same model call `embedQuery` makes. A failed search is recorded as zero results plus an `error`, and counted in `errors`; a result list that holds the same page twice is also an error. The resolver answers a `fused` query with keyword results when the query's embedding fails, comes back empty or takes longer than its 3 s budget, or when the fused ranking query throws, and those results would still score as fused. So each query records `embeddingMs` and `embeddingError` (an embedding still running when the search returned is an error), and `fallbackReason` when the resolver logged that it used keyword results. A `fused` run fails when any query has a `fallbackReason` or an `embeddingError`, when its embedding took longer than the budget, or when it made no embedding call; `quick` queries embed nothing and have none of these fields. The run writes its results and then fails: results recorded with errors are not a valid baseline, so run it again.
-- **Validity.** A run is a valid baseline only when it passes, so `errors` is 0 and no `fused` query fell back to keyword results, and `unindexed` lists exactly `meeting-notes-ja`, `stub-customer-interviews`, `stub-hiring-plan` and `stub-offsite-agenda`. Any other `unindexed` list means the run scored a different index, so run it again. On a slow or throttled host, for example a laptop on battery, `retro-q3-product` can time out while it is embedded. The symptom is five unindexed fixtures instead of four. Plug in and run again; the next run retries that page.
+- **Validity.** A run is a valid baseline only when it passes, so `errors` is 0 and no `fused` query fell back to keyword results, and `unindexed` lists exactly `stub-customer-interviews`, `stub-hiring-plan` and `stub-offsite-agenda`. Before B2, it also listed `meeting-notes-ja`, which the language gate refused. Any other `unindexed` list means the run scored a different index, so run it again. On a slow or throttled host, for example a laptop on battery, `retro-q3-product` can time out while it is embedded. The symptom is four unindexed fixtures instead of three. Plug in and run again; the next run retries that page.
 - **Isolation.** `jest.eval.config.js` has no global setup, so a run never truncates tables or changes triggers. The metric unit tests in `__tests__/` run with the normal server suite.
 
 ## Heavy account corpus
@@ -114,7 +114,7 @@ When a dev query matches a holdout query, the dev query changes. A unit test che
 
 **The final holdout waits for the re-embed.** `heavy-final` was written the same way after `heavy-holdout`'s eighth gate run, and its author never saw the other two query files either. It has 100 queries: title 13, prefix 9, body 16, paraphrase 14, typo 10, table 7, longDoc 10, person 11 and noAnswer 10, the mix `heavy-holdout`'s author was asked for, scaled by 1.25. The corpus has few one-off events, so the sets overlap in what they ask for, not in how they ask it. 69 of its 90 answerable queries want a page that a dev query also grades 3, but only 9 share half their words with such a query. Eight of its queries first matched another file word for word; they were reworded and kept their labels. Nothing runs it before Group B's final gate (B8). There, run it blind as above, once for master and once for the candidate, and never tune on it. Until then, ranking PRs gate on `heavy-holdout`.
 
-**Validity.** A heavy run is a valid baseline when `errors` is 0, no `fused` query fell back to keyword results, and `unindexed` lists exactly `doc-q4-planning-draft`. That page has only a title, and the language gate reads the title as Javanese. The first seed embeds about 500,000 characters, which took 28 minutes on a laptop. Later runs take seconds.
+**Validity.** A heavy run is a valid baseline when `errors` is 0, no `fused` query fell back to keyword results, and `unindexed` lists exactly `doc-q4-planning-draft`. That page has only a title. Before B2, the language gate also refused it, reading the title as Javanese. The first seed embeds about 500,000 characters, which took 28 minutes on a laptop. Later runs take seconds.
 
 ### Heavy corpus baseline (2026-10-29)
 
@@ -679,3 +679,63 @@ Fused ranking at production settings, with the eval pages reseeded. The quick li
 - **Similarity alone tracks hub pages more than quality.** A few pages sit in almost every query's top 5. Before, `doc-analytics-vendor-evaluation` was in 55 of 58 `heavy-dev` lists and `release-checklist` in 73 of 91 `dev` lists. Every change to text or chunk size reshuffles them, and gains from separate changes don't add up. Hub share, the top-5 slots taken by the five most frequent pages, falls from 0.74 to 0.66 on `heavy-dev` and from 0.71 to 0.69 on `dev`.
 - **Why it goes ahead anyway.** B1's goals hold: no markup or ids in vectors, and two thirds fewer tokens for the re-embed. Fused ranking holds on nDCG@10.
 - **Not yet protected.** `embedPage` still converts the whole page to text before chunking, so a block whose stored JSON is broken stops the page there. B2 reworks that step.
+
+## Chunker v2 (B2, 2026-10-30)
+
+The chunker used to group a page's sections into chunks of 768 to 1,024 estimated tokens (a quarter of the characters), with a sliding overlap of up to half a chunk. A heading's text was its first text node, and the embedder refused pages in languages Postgres has no text-search config for. It now cuts pages by section:
+- A heading of level 1 or 2 starts a section. Smaller headings stay inside it.
+- A page that fits in 512 tokens is one chunk. Otherwise each section's blocks pack into chunks of about 384 tokens, never across sections and with no overlap.
+- A block too big for a chunk splits: a table into row groups that repeat its header row, a list into item groups, and text into sentences, then words.
+- Each chunk starts with its page title and section path, `Title > H1 > H2`, then a blank line. Headings are read in full and the path has no gaps. Each heading in that header is capped at 100 characters, cut between characters, so a very long heading can't push a chunk past its limit.
+- Sections and pages without text make no chunks.
+- Tokens are estimated as one per CJK character and one per 3.7 other characters, calibrated with TEI's `/tokenize`.
+- Every language is embedded. The text-search config falls back to `simple` when Postgres has none for the page's language, and a block whose stored JSON is broken no longer stops the page.
+
+The heavy corpus, counted with TEI's `/tokenize`:
+
+| | B1 | B2 |
+| --- | ---: | ---: |
+| Chunks | 257 | 498 |
+| Characters embedded | 341,294 | 323,263 |
+| Tokens | 88,338 | 81,587 (−8%) |
+
+The estimate runs above TEI's count: 7.4% on the heavy corpus, 13.1% on the fixtures and 13.7% on the Japanese page alone. On English and Japanese text, erring high keeps real chunks under the limit; other scripts weren't measured.
+
+Fused ranking at alpha 0.01, production's, with the eval pages reseeded. The quick list doesn't change:
+
+| | `heavy-dev` nDCG@10 | Recall@20 | `noAnswerResults` | `dev` nDCG@10 | Recall@20 | `noAnswerResults` |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| B1, floor 0.4 | 0.826 | 0.872 | 14.33 | 0.908 | 0.978 | 16.25 |
+| B2, floor 0.4 | 0.839 | 0.904 | 20.00 | 0.920 | 0.988 | 20.00 |
+| B2, floor 0.6 | 0.839 | 0.904 | 14.33 | 0.920 | 0.988 | 15.38 |
+
+Paraphrase queries gain the most: 0.41 → 0.50 on `heavy-dev` and 0.55 → 0.61 on `dev`. On `dev`, summary, non-English and body queries rise a little too, and typo queries dip 0.009 on `heavy-dev`.
+
+The vectors on their own (similarity alone: alpha 1, floor 0):
+
+| | Base | B1 | B2 |
+| --- | ---: | ---: | ---: |
+| `heavy-dev` nDCG@10 | 0.234 | 0.178 | 0.463 |
+| `dev` nDCG@10 | 0.238 | 0.207 | 0.505 |
+| `heavy-dev` long documents | 0.364 | 0.177 | 0.959 |
+| Hub share, `heavy-dev` / `dev` | 0.74 / 0.71 | 0.66 / 0.69 | 0.26 / 0.45 |
+
+- **The rule fixed before the run wasn't met on one count.** At production's floor, every unanswerable query returns 20 results, the cap, on both sets. The rule allowed B1's count plus 1. Ranking, hub share, tokens and calibration passed.
+- **Why: similarities rose about 0.2.** A short chunk about one section matches a query more closely than a long chunk spanning several, and that holds for unanswerable queries too. The sweep below shows the shift twice: B2's filler at floor 0.6 is B1's at 0.4, and B2's at 0.7 is about B1's at 0.5. Up to 0.6, B2's ranking doesn't change at all.
+- **Accepted at matched filler** (Jordan, 2026-10-30). At floor 0.6, B2's filler equals B1's at 0.4 and every other measure is equal or better. Production keeps 0.4: the new generation carries its own floor (D9), and B8 re-tunes it. Because filler is pinned at the cap at 0.4, later sprints also report fused ranking at floor 0.6, from sweep mode.
+- **Validity.** `meeting-notes-ja` is indexed now, so the dev rule expects three unindexed fixtures, not four. The heavy rule doesn't change: `doc-q4-planning-draft` has only a title.
+
+The floor sweep, at alpha 0.01 and 200 bytes. Each cell is `heavy-dev` / `dev`:
+
+| Floor | B1 nDCG@10 | B1 `noAnswerResults` | B2 nDCG@10 | B2 `noAnswerResults` |
+| ---: | ---: | ---: | ---: | ---: |
+| 0.4 | 0.826 / 0.908 | 14.33 / 16.25 | 0.839 / 0.920 | 20.00 / 20.00 |
+| 0.5 | 0.816 / 0.908 | 1.33 / 3.00 | 0.839 / 0.920 | 20.00 / 19.62 |
+| 0.55 | | | 0.839 / 0.920 | 16.83 / 17.88 |
+| 0.6 | 0.816 / 0.896 | 0.67 / 1.38 | 0.839 / 0.920 | 14.33 / 15.38 |
+| 0.65 | | | 0.837 / 0.912 | 3.67 / 9.62 |
+| 0.7 | 0.816 / 0.896 | 0.67 / 1.38 | 0.831 / 0.903 | 1.50 / 3.25 |
+| 0.75 | | | 0.827 / 0.902 | 0.67 / 1.50 |
+| 0.8 | 0.816 / 0.896 | 0.67 / 1.38 | 0.816 / 0.896 | 0.67 / 1.38 |
+
+At 0.8 the floor shuts out almost every page, so both lists fall back to the same keyword order.
