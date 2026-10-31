@@ -1,5 +1,6 @@
 import {GraphQLError} from 'graphql'
 import {createSchema, createYoga} from 'graphql-yoga'
+import {unexpectedGraphQLErrors} from '../../metricsHandler'
 import {Logger} from '../Logger'
 import {getLogContext} from '../requestLogContext'
 import {useErrorLogging} from '../useErrorLogging'
@@ -100,6 +101,18 @@ test('an intentional GraphQLError is logged once, as a warning', async () => {
   expect(result.errors[0].message).toBe('Not authorized')
   expect(warnSpy).toHaveBeenCalledTimes(1)
   expect(errorSpy).not.toHaveBeenCalled()
+})
+
+test('only a crash counts as an unexpected error, once per operation', async () => {
+  const countUnexpectedQueries = async () =>
+    (await unexpectedGraphQLErrors.get()).values.find(
+      ({labels}) => labels.operation_type === 'query'
+    )?.value ?? 0
+  const before = await countUnexpectedQueries()
+  await execute('query Denied { denied }')
+  expect(await countUnexpectedQueries()).toBe(before)
+  await execute('query TwoCrashes { crash again: crash }')
+  expect(await countUnexpectedQueries()).toBe(before + 1)
 })
 
 test('code running inside an operation sees its user, operation and variables', async () => {

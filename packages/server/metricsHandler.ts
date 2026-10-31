@@ -1,6 +1,6 @@
 import type {HttpResponse} from 'uWebSockets.js'
 import {createHistogram, usePrometheus} from '@graphql-yoga/plugin-prometheus'
-import {Counter, collectDefaultMetrics, Gauge, Registry} from 'prom-client'
+import {Counter, collectDefaultMetrics, Gauge, Histogram, Registry} from 'prom-client'
 import {activeClients} from './activeClients'
 import getKysely from './postgres/getKysely'
 import type {Embeddingsjobstateenum} from './postgres/types/pg'
@@ -144,6 +144,27 @@ export const wsErrors = new Counter({
 export const websocketConnects = new Counter({
   name: 'parabol_websocket_connects_total',
   help: 'Websocket connections accepted after authentication',
+  registers: [register]
+})
+
+export const websocketConnectAttempts = new Counter({
+  name: 'parabol_websocket_connect_attempts_total',
+  help: 'Websocket upgrades started, before authentication',
+  registers: [register]
+})
+
+export const websocketConnectDuration = new Histogram({
+  name: 'parabol_websocket_connect_duration_seconds',
+  help: 'Seconds from the websocket upgrade until the connection is accepted or its authentication rejected, by outcome',
+  labelNames: ['outcome'] as const,
+  buckets: [0.1, 0.25, 0.5, 1, 2.5, 5, 10],
+  registers: [register]
+})
+
+export const unexpectedGraphQLErrors = new Counter({
+  name: 'parabol_graphql_unexpected_errors_total',
+  help: 'Queries and mutations that returned an error the server did not mean to, by operation type',
+  labelNames: ['operation_type'] as const,
   registers: [register]
 })
 

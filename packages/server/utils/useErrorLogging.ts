@@ -6,6 +6,7 @@ import {
 } from '@envelop/core'
 import {GraphQLError, getOperationAST} from 'graphql'
 import type {Plugin} from 'graphql-yoga'
+import {unexpectedGraphQLErrors} from '../metricsHandler'
 import type {ServerContext} from '../yoga'
 import getTraceLogContext from './getTraceLogContext'
 import {Logger, markErrorAsLogged} from './Logger'
@@ -32,17 +33,20 @@ const getOperationLogContext = (args: TypedExecutionArgs<LoggableContext>): Requ
 }
 
 const logResultErrors = (errors: readonly GraphQLError[] | undefined) => {
+  let hasUnexpectedError = false
   errors?.forEach((error) => {
     const extras = error.path ? {path: error.path.join('.')} : undefined
     const loggableError = error.originalError ?? error
     if (isOriginalGraphQLError(error)) {
       Logger.warn(loggableError, {extras})
     } else {
+      hasUnexpectedError = true
       Logger.error(loggableError, {extras})
     }
     // yoga's maskedErrors passes the GraphQLError wrapper to Logger.error next; suppress that duplicate
     markErrorAsLogged(error)
   })
+  return hasUnexpectedError
 }
 
 // graphql-ws and yoga's SSE pull each event from their own loop, outside the operation's log context,
@@ -66,10 +70,18 @@ export const useErrorLogging = (): Plugin<LoggableContext> => ({
   onExecute({args, executeFn, setExecuteFn}) {
     const logContext = getOperationLogContext(args)
     setExecuteFn((executeArgs) => runWithLogContext(logContext, () => executeFn(executeArgs)))
+    // a deferred or streamed operation returns several results but is one request to the availability SLO
+    let isCountedAsFailed = false
     return {
       onExecuteDone(payload) {
         return handleStreamOrSingleExecutionResult(payload, ({result}) => {
-          runWithLogContext(logContext, () => logResultErrors(result.errors))
+          const hasUnexpectedError = runWithLogContext(logContext, () =>
+            logResultErrors(result.errors)
+          )
+          if (hasUnexpectedError && !isCountedAsFailed) {
+            isCountedAsFailed = true
+            unexpectedGraphQLErrors.inc({operation_type: logContext.operationKind ?? 'unknown'})
+          }
         })
       }
     }
