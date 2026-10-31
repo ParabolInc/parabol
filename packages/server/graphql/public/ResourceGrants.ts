@@ -47,34 +47,6 @@ export class ResourceGrants {
     return this.grantedOrgIds.includes(orgId)
   }
 
-  // True if a token with these grants reaches nothing this one can't (see hasOrg/hasTeam/hasPage).
-  // Teams are limited only while orgs & teams both are; other pages only come via org/team shares
-  async covers(grants: {
-    orgIds: string[] | null
-    teamIds: string[] | null
-    pageIds: string[] | null
-  }): Promise<boolean> {
-    const {grantedOrgIds, grantedTeamIds, grantedPageIds} = this
-    if (grantedOrgIds === null && grantedTeamIds === null && grantedPageIds === null) return true
-    const {orgIds, teamIds, pageIds} = grants
-    if (orgIds === null && teamIds === null && pageIds === null) return false
-    if (grantedOrgIds !== null) {
-      if (orgIds === null || orgIds.some((id) => !grantedOrgIds.includes(id))) return false
-      if (grantedTeamIds !== null) {
-        if (teamIds === null) return false
-        const unlistedTeamIds = teamIds.filter((id) => !grantedTeamIds.includes(id))
-        const unlistedTeams = await Promise.all(
-          unlistedTeamIds.map((id) => this.dataLoader.get('teams').load(id))
-        )
-        if (unlistedTeams.some((team) => !team || !grantedOrgIds.includes(team.orgId))) {
-          return false
-        }
-      }
-    }
-    if (pageIds === null) return true
-    return pageIds.every((id) => !!grantedPageIds?.has(CipherId.fromClient(id)[0]))
-  }
-
   getPageGrantCriteria(): null | {
     pageIds: Set<number> | null
     teamIds: string[] | null
