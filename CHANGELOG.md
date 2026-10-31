@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.14.1](https://github.com/ParabolInc/parabol/compare/v15.14.0...v15.14.1) (2026-10-31)
+
+
+### Changed
+
+* deploy production through Kargo instead of GitLab ([#13852](https://github.com/ParabolInc/parabol/issues/13852)) ([6550b5d](https://github.com/ParabolInc/parabol/commit/6550b5d87b80e158dc54f4b6e05c3b0228e852ca))
+
 ## [15.14.0](https://github.com/ParabolInc/parabol/compare/v15.13.0...v15.14.0) (2026-10-31)
 
 
