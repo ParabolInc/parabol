@@ -9,6 +9,7 @@ import TimelineEventCheckinComplete from '../../../database/types/TimelineEventC
 import type {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import {sendSummaryEmail} from '../../../email/sendSummaryEmail'
 import generateUID from '../../../generateUID'
+import {meetingsEnded} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import {selectTasks} from '../../../postgres/select'
 import type {AgendaItem, Task} from '../../../postgres/types'
@@ -227,6 +228,7 @@ const endCheckIn: MutationResolvers['endCheckIn'] = async (_source, {meetingId},
   publish(SubscriptionChannel.TEAM, teamId, 'EndCheckInSuccess', data, subOptions)
   sendSummaryEmail(meetingId, page.id, context, info).catch(Logger.log)
   IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId).catch(Logger.log)
+  meetingsEnded.inc({meeting_type: completedCheckIn.meetingType})
   analytics.checkInEnd(completedCheckIn, meetingMembers, dataLoader).catch(Logger.log)
   return data
 }
