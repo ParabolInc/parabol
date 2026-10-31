@@ -1,5 +1,6 @@
 import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import {Editor} from '@tiptap/core'
+import {fetch} from '@whatwg-node/fetch'
 import {createHmac, timingSafeEqual} from 'crypto'
 import ms from 'ms'
 import {serverTipTapExtensions} from 'parabol-client/shared/tiptap/serverTipTapExtensions'
@@ -10,7 +11,6 @@ import getKysely from '../../postgres/getKysely'
 import {Logger} from '../../utils/Logger'
 import {attachTranscriptToSummaryPage} from '../gmeet/attachTranscriptToSummaryPage'
 import {matchExternalMeetingToMeeting} from '../matchExternalMeetingToMeeting'
-import {fetchZoomTranscript} from './fetchZoomTranscript'
 import {processZoomTranscript} from './processZoomTranscript'
 
 const MAX_WEBHOOK_BODY_BYTES = 1_000_000
@@ -84,6 +84,15 @@ const verifyZoomSignature = (
 const isFreshTimestamp = (timestamp: string) => {
   const sentAt = Number(timestamp) * 1000
   return Number.isFinite(sentAt) && Math.abs(Date.now() - sentAt) <= MAX_TIMESTAMP_AGE
+}
+
+const isZoomUrl = (url: string) => {
+  try {
+    const {protocol, hostname} = new URL(url)
+    return protocol === 'https:' && (hostname === 'zoom.us' || hostname.endsWith('.zoom.us'))
+  } catch {
+    return false
+  }
 }
 
 const zoomWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
@@ -190,15 +199,23 @@ const processTranscriptCompleted = async (payload: ZoomRecordingCompletedPayload
   if (!transcriptFile) return
 
   const externalId = `zoom:transcript:${uuid}`
+  if (!isZoomUrl(transcriptFile.download_url)) {
+    Logger.warn(`${externalId}: download_url is not on zoom.us`)
+    return
+  }
   // the payload's duration is the scheduled length, so only the recording knows when the call ended
   const endedAt = new Date(transcriptFile.recording_end)
   const meeting = await claimHostMeeting(host_id, endedAt, externalId)
   if (!meeting) return
 
   await releaseClaimOnFailure(externalId, async () => {
-    const vtt = await fetchZoomTranscript(transcriptFile.download_url, download_token)
-    if (!vtt) throw new Error(`${externalId}: transcript download failed`)
-    const pageContent = processZoomTranscript(vtt)
+    const vttRes = await fetch(transcriptFile.download_url, {
+      headers: {Authorization: `Bearer ${download_token}`}
+    })
+    if (!vttRes.ok) {
+      throw new Error(`${externalId}: transcript download failed with ${vttRes.status}`)
+    }
+    const pageContent = processZoomTranscript(await vttRes.text())
     if (!pageContent) throw new Error(`${externalId}: transcript has no cues`)
     await attachTranscriptToSummaryPage(
       meeting.summaryPageId,
