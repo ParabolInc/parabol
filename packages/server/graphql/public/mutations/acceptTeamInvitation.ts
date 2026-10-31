@@ -117,7 +117,8 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   const nextAuthToken = new AuthToken({
     tms,
     sub: viewerId,
-    rol: authToken.rol
+    rol: authToken.rol,
+    act: authToken.act
   })
   // This is to triage https://github.com/ParabolInc/parabol/issues/11167. We know it worked if we don't see it again
   context.authToken = nextAuthToken

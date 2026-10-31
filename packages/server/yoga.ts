@@ -52,6 +52,7 @@ export interface ServerContext {
   apiCost?: number
   // present if the request is from a Personal Access Token
   resourceGrants?: ResourceGrants
+  personalAccessTokenId?: string
   traceparent?: string
   sessionId?: string
   socketId?: string
@@ -132,7 +133,7 @@ export const yoga = createYoga<ServerContext, UserContext>({
         uploadOrgImage: ['file'],
         uploadUserAsset: ['file'],
         uploadUserImage: ['file']
-      } as ExcludedArgs,
+      } satisfies ExcludedArgs,
       includeOps: new Set([
         'acceptRequestToJoinDomain',
         'acceptTeamInvitation',
@@ -140,16 +141,24 @@ export const yoga = createYoga<ServerContext, UserContext>({
         'addIntegrationProvider',
         'addSlackAuth',
         'addTeamMemberIntegrationAuth',
+        'archiveOrganization',
+        'archiveTeam',
         'assignSAMLIdToOrg',
+        'backupOrganization',
         'changeEmailDomain',
         'createImposterToken',
         'createOAuth1AuthorizeUrl',
         'createOAuthAPIProvider',
+        'createPersonalAccessToken',
+        'createStripeSubscription',
         'deleteOAuthAPIProvider',
         'deleteUser',
         'denyPushInvitation',
         'disconnectSAML',
+        'downgradeToStarter',
+        'dumpHeap',
         'emailPasswordReset',
+        'exportPagesToConfluence',
         'hardDeleteUser',
         'invalidateSessions',
         'inviteToTeam',
@@ -162,6 +171,7 @@ export const yoga = createYoga<ServerContext, UserContext>({
         'moveTeamToOrg',
         'promoteToTeamLead',
         'pushInvitation',
+        'regenerateOAuthAPIProviderSecret',
         'removeAllSlackAuths',
         'removeApprovedOrganizationDomains',
         'removeAuthIdentity',
@@ -171,9 +181,11 @@ export const yoga = createYoga<ServerContext, UserContext>({
         'removeSlackAuth',
         'removeTeamMember',
         'removeTeamMemberIntegrationAuth',
+        'requestSAMLMetadataChange',
         'resetPassword',
         'setOrgUserRole',
         'setOrganizationDomain',
+        'signOut',
         'signUpWithPassword',
         'stripeUpdateCreditCard',
         'toggleAIFeatures',
@@ -183,10 +195,11 @@ export const yoga = createYoga<ServerContext, UserContext>({
         'updateAutoJoin',
         'updateCreditCard',
         'updateEmail',
-        'updateFeatureFlag',
         'updateIntegrationProvider',
+        'updateIntegrationRepoAccess',
         'updateOAuthAPIProvider',
         'updatePageAccess',
+        'updatePersonalAccessToken',
         'updateSAML',
         'updateSCIM',
         'updateUserProfile',
@@ -196,7 +209,7 @@ export const yoga = createYoga<ServerContext, UserContext>({
         'uploadUserImage',
         'verifyDomain',
         'verifyEmail'
-      ] as ExcludedOps)
+      ] satisfies ExcludedOps)
     }),
     useErrorLogging(),
     ...(ENABLE_METRICS ? [graphqlPrometheusPlugin] : []),
