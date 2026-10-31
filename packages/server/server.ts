@@ -20,6 +20,7 @@ import {schemaProxyHandler} from './schemaProxyHandler'
 import {registerSCIMHandlers} from './scim/SCIMHandler'
 import selfHostedHandler from './selfHostedHandler'
 import {createStaticFileHandler} from './staticFileHandler'
+import {flushTracing} from './tracing/initTracing'
 import getReqAuth from './utils/getReqAuth'
 import {Logger} from './utils/Logger'
 import logProcessWarnings from './utils/logProcessWarnings'
@@ -61,6 +62,7 @@ process.on('SIGTERM', async (signal) => {
   setIsShuttingDown()
   stopChronos()
   await disconnectAllSockets()
+  await flushTracing()
   Logger.log(`Server ID: ${process.env.SERVER_ID}. Graceful shutdown complete, exiting.`)
   process.exit()
 })

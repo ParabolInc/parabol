@@ -7,6 +7,8 @@ import {
 import {GraphQLError, getOperationAST} from 'graphql'
 import type {Plugin} from 'graphql-yoga'
 import {unexpectedGraphQLErrors} from '../metricsHandler'
+import getOperationSpan from '../tracing/getOperationSpan'
+import getSpanLogContext from '../tracing/getSpanLogContext'
 import type {ServerContext} from '../yoga'
 import getTraceLogContext from './getTraceLogContext'
 import {Logger, markErrorAsLogged} from './Logger'
@@ -19,6 +21,7 @@ type LoggableContext = Partial<
 const getOperationLogContext = (args: TypedExecutionArgs<LoggableContext>): RequestLogContext => {
   const operation = getOperationAST(args.document, args.operationName)
   const {authToken, ip, traceparent, sessionId, socketId} = args.contextValue
+  const operationSpan = getOperationSpan(args)
   return {
     userId: authToken?.sub,
     ip,
@@ -28,7 +31,9 @@ const getOperationLogContext = (args: TypedExecutionArgs<LoggableContext>): Requ
     operationName: operation?.name?.value ?? args.operationName ?? 'anonymous',
     operationKind: operation?.operation,
     variables: args.variableValues ?? undefined,
-    ...getTraceLogContext(traceparent)
+    ...(operationSpan
+      ? getSpanLogContext(operationSpan.spanContext())
+      : getTraceLogContext(traceparent))
   }
 }
 

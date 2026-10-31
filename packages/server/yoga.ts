@@ -21,6 +21,8 @@ import type {ResourceGrants} from './graphql/public/ResourceGrants'
 import rootSchema from './graphql/public/rootSchema'
 import {ENABLE_METRICS, graphqlPrometheusPlugin} from './metricsHandler'
 import getKysely from './postgres/getKysely'
+import {TRACING_ENABLED} from './tracing/initTracing'
+import {useTracing} from './tracing/useTracing'
 import {getAuthTokenFromCookie} from './utils/authCookie'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {Logger} from './utils/Logger'
@@ -199,6 +201,7 @@ export const yoga = createYoga<ServerContext, UserContext>({
       ] as ExcludedOps)
     }),
     useErrorLogging(),
+    ...(TRACING_ENABLED ? [useTracing()] : []),
     ...(ENABLE_METRICS ? [graphqlPrometheusPlugin] : []),
     useDatadogTracing({
       excludeArgs: {

@@ -2,6 +2,7 @@ import tracer from 'dd-trace'
 import formats from 'dd-trace/ext/formats'
 import {GraphQLError} from 'graphql'
 import util from 'util'
+import getActiveSpanLogContext from '../tracing/getActiveSpanLogContext'
 import getErrorFingerprint from './getErrorFingerprint'
 import {maskCredentials} from './maskCredentials'
 import {getLogContext, type RequestLogContext} from './requestLogContext'
@@ -232,7 +233,10 @@ function trace(level: LogLevel, message: unknown, ...params: unknown[]) {
     }
     return
   }
-  const record = makeLogRecord(level, message, params, getLogContext())
+  const record = makeLogRecord(level, message, params, {
+    ...getLogContext(),
+    ...getActiveSpanLogContext()
+  })
   if (process.env.DD_LOGS_INJECTION === 'true') {
     const span = tracer.scope().active()
     if (span) {
