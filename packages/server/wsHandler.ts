@@ -1,6 +1,6 @@
 import type {ExecutionArgs, ExecutionResult} from 'graphql'
 import {type execute, GraphQLError, type subscribe} from 'graphql'
-import {handleProtocols} from 'graphql-ws'
+import {CloseCode, handleProtocols} from 'graphql-ws'
 import {makeBehavior, type UpgradeData} from 'graphql-ws/use/uWebSockets'
 import type http from 'http'
 import {decode} from 'jsonwebtoken'
@@ -16,7 +16,11 @@ import getRateLimiter from './graphql/getRateLimiter'
 import privateSchema from './graphql/private/rootSchema'
 import {handleFirstConnection} from './handleFirstConnection'
 import {logOperation} from './logOperation'
-import {websocketConnects} from './metricsHandler'
+import {
+  websocketConnectAttempts,
+  websocketConnectDuration,
+  websocketConnects
+} from './metricsHandler'
 import getKysely from './postgres/getKysely'
 import {createCookieHeaders, getAuthTokenFromCookie} from './utils/authCookie'
 import checkBlacklistJWT from './utils/checkBlacklistJWT'
@@ -32,6 +36,7 @@ import {extractPersistedOperationId, getPersistedOperation, type ServerContext, 
 declare module 'graphql-ws/use/uWebSockets' {
   interface UpgradeData {
     ip: string
+    upgradeStartedAt: number
     closed?: true
     authToken?: AuthToken
     user?: {
@@ -79,6 +84,9 @@ const dehydrateResult = (result: ExecutionResult) => {
   return {...rest, data: dehydratedData}
 }
 
+const secondsSinceUpgrade = ({upgradeStartedAt}: Pick<UpgradeData, 'upgradeStartedAt'>) =>
+  (performance.now() - upgradeStartedAt) / 1000
+
 const documentCache = new Map()
 export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId?: string}>({
   onConnect: async (ctx) => {
@@ -123,6 +131,7 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
     extra.dataLoaders = {}
     activeClients.set(extra.socketId, extra.socket)
     websocketConnects.inc()
+    websocketConnectDuration.observe({outcome: 'connected'}, secondsSinceUpgrade(extra.socket))
     logOperation(viewerId, extra.ip, 'connectSocket', {})
     if (socketCount === 0) {
       handleFirstConnection(user, teamIds).catch(Logger.log)
@@ -298,6 +307,12 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
         publish(SubscriptionChannel.NOTIFICATION, userId, 'DisconnectSocketPayload', data)
       })
     }
+  },
+  onClose: (ctx, code) => {
+    // graphql-ws closes as Forbidden, before acknowledging, when onConnect refuses a connection
+    if (code === CloseCode.Forbidden && !ctx.acknowledged) {
+      websocketConnectDuration.observe({outcome: 'rejected'}, secondsSinceUpgrade(ctx.extra.socket))
+    }
   }
 })
 
@@ -311,6 +326,8 @@ wsHandler.upgrade = async (res, req, context) => {
     res.end()
     return
   }
+  const upgradeStartedAt = performance.now()
+  websocketConnectAttempts.inc()
   const headers: http.IncomingHttpHeaders = {}
   req.forEach((key, value) => {
     if (headers[key]) {
@@ -323,6 +340,7 @@ wsHandler.upgrade = async (res, req, context) => {
     Buffer.from(res.getRemoteAddressAsText()).toString()
   const upgradeData: UpgradeData = {
     ip,
+    upgradeStartedAt,
     persistedRequest: {
       method: req.getMethod(),
       url: req.getUrl(),
