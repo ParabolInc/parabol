@@ -11,6 +11,7 @@ import {
 import type RedisClient from 'ioredis'
 import {HocusPocusProxySocket} from '../../HocusPocusProxySocket'
 import {Logger} from '../Logger'
+import logRedisErrors from '../logRedisErrors'
 import {runWithoutLogContext} from '../requestLogContext'
 
 export type SecondParam<T> = T extends (arg1: any, arg2: infer A, ...args: any[]) => any ? A : never
@@ -163,6 +164,8 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
     } = configuration
     this.pub = redis.duplicate()
     this.sub = redis.duplicate()
+    logRedisErrors(this.pub, 'redisServerAffinity_pub')
+    logRedisErrors(this.sub, 'redisServerAffinity_sub')
     this.pack = pack
     this.unpack = unpack
     this.serverId = serverId

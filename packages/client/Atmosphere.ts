@@ -30,11 +30,13 @@ import type {Snack, SnackbarRemoveFn} from './components/Snackbar'
 import {AuthToken} from './types/AuthToken'
 import type {NavigateFn} from './types/relayMutations'
 import {getAuthCookie, onAuthCookieChange} from './utils/authCookie'
+import {addBreadcrumb} from './utils/clientBreadcrumbs'
 import {createWSClient} from './utils/createWSClient'
 import deletePageDatabases from './utils/deletePageDatabases'
 import getTabSessionId from './utils/getTabSessionId'
 import makeTraceparent from './utils/makeTraceparent'
 import handlerProvider from './utils/relay/handlerProvider'
+import {reportClientWarning, reportUnexpectedGraphQLErrors} from './utils/reportClientError'
 import sleep from './utils/sleep'
 
 ;(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
@@ -191,11 +193,14 @@ export default class Atmosphere extends Environment {
       request.name === 'ReAuthWithPasswordMutation'
     const useHTTP = !!uploadables || !this.authObj || !this.subscriptionClient || isAuth
     if (useHTTP) {
+      const traceparent = makeTraceparent()
+      const traceId = traceparent.split('-')[1]
+      addBreadcrumb('operation', `${request.operationKind} ${request.name}`, traceId)
       const response = fetch('/graphql', {
         method: 'POST',
         headers: {
           accept: 'application/json;text/event-stream; charset=utf-8, multipart/mixed',
-          traceparent: makeTraceparent(),
+          traceparent,
           'x-parabol-session-id': getTabSessionId(),
           ...(!uploadables && {['content-type']: 'application/json'})
         },
@@ -210,6 +215,11 @@ export default class Atmosphere extends Environment {
         response
           .then(async (res) => {
             if (!res.ok) {
+              reportClientWarning(
+                'GraphQLHttpError',
+                `${request.name} got HTTP ${res.status}`,
+                traceId
+              )
               sink.error(new Error(`HTTP ${res.status}: ${res.statusText}`))
               return
             }
@@ -257,7 +267,9 @@ export default class Atmosphere extends Environment {
               sink.complete()
             } else {
               try {
-                sink.next(await res.json())
+                const result = await res.json()
+                reportUnexpectedGraphQLErrors(result.errors, request.name, traceId)
+                sink.next(result)
                 sink.complete()
               } catch (e) {
                 sink.error(e instanceof Error ? e : new Error('Invalid JSON response'))
@@ -277,6 +289,9 @@ export default class Atmosphere extends Environment {
     _cacheConfig: CacheConfig
   ) => {
     return Observable.create<GraphQLResponse>((sink) => {
+      const traceparent = makeTraceparent()
+      const traceId = traceparent.split('-')[1]
+      addBreadcrumb('operation', `${operation.operationKind} ${operation.name}`, traceId)
       const _next = sink.next
       const _error = sink.error
       sink.error = (error: Error | Error[] | CloseEvent | PayloadError) => {
@@ -287,6 +302,7 @@ export default class Atmosphere extends Environment {
           if (invalidSessionError) {
             this.invalidateSession(invalidSessionError.message)
           } else {
+            reportUnexpectedGraphQLErrors(error, operation.name, traceId)
             _error(new Error(error[0]?.message ?? 'Unknown Error'))
           }
         } else if (error instanceof CloseEvent) {
@@ -304,6 +320,7 @@ export default class Atmosphere extends Environment {
           return
         }
         const {data, errors} = value
+        reportUnexpectedGraphQLErrors(errors, operation.name, traceId)
         if (!data) {
           if (errors) {
             console.warn('GraphQL errors:', errors)
@@ -346,7 +363,7 @@ export default class Atmosphere extends Environment {
             query: '',
             docId: operation.id,
             variables,
-            extensions: {traceparent: makeTraceparent()}
+            extensions: {traceparent}
           } as any,
           sink as any
         )
