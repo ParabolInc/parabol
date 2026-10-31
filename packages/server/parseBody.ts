@@ -5,21 +5,31 @@ const defaultParser = <T>(buffer: Buffer): T => JSON.parse(buffer.toString())
 
 const parseBody = <T = Json>({
   res,
-  parser = defaultParser
+  parser = defaultParser,
+  maxBytes = Infinity
 }: {
   res: HttpResponse
   parser?: (buffer: Buffer) => T
+  maxBytes?: number
 }) => {
   return new Promise<T | null>((resolve) => {
     let buffer: Buffer
+    let isTooLarge = false
     res.onData((ab, isLast) => {
-      const curBuf = Buffer.from(ab)
-      buffer = buffer
-        ? Buffer.concat([buffer as any, curBuf])
-        : isLast
-          ? curBuf
-          : Buffer.concat([curBuf as any])
+      if (!isTooLarge) {
+        const curBuf = Buffer.from(ab)
+        buffer = buffer
+          ? Buffer.concat([buffer, curBuf])
+          : isLast
+            ? curBuf
+            : Buffer.concat([curBuf])
+        isTooLarge = buffer.length > maxBytes
+      }
       if (isLast) {
+        if (isTooLarge) {
+          resolve(null)
+          return
+        }
         try {
           resolve(parser(buffer))
         } catch {

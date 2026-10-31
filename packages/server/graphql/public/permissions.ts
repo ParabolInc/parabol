@@ -5,6 +5,7 @@ import {hasOrgFeatureFlag} from './rules/hasOrgFeatureFlag'
 import {hasOrgRole} from './rules/hasOrgRole'
 import {hasPageAccess} from './rules/hasPageAccess'
 import {hasProviderAccess} from './rules/hasProviderAccess'
+import {hasTokenAudience} from './rules/hasTokenAudience'
 import isAuthenticated from './rules/isAuthenticated'
 import isEnvVarTrue from './rules/isEnvVarTrue'
 import {isMeetingFacilitator} from './rules/isMeetingFacilitator'
@@ -145,8 +146,16 @@ const permissionMap: PermissionMap<Resolvers> = {
       'args.orgId',
       'ORG_ADMIN'
     ),
-    createPersonalAccessToken: rateLimit({perMinute: 10, perHour: 50}),
-    updatePersonalAccessToken: rateLimit({perMinute: 10, perHour: 50}),
+    createPersonalAccessToken: and(
+      isAuthenticated,
+      hasTokenAudience(['action']),
+      rateLimit({perMinute: 10, perHour: 50})
+    ),
+    updatePersonalAccessToken: and(
+      isAuthenticated,
+      hasTokenAudience(['action']),
+      rateLimit({perMinute: 10, perHour: 50})
+    ),
     createPage: and(
       isAuthenticated,
       or(

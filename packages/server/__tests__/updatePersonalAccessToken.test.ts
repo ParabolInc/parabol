@@ -45,13 +45,20 @@ const PERSONAL_ACCESS_TOKENS = `
   }
 `
 
-const createToken = async (cookie: string, scopes = ['USERS_WRITE']) => {
+const sendCreateToken = (
+  auth: {cookie: string} | {bearerToken: string},
+  scopes = ['USERS_WRITE']
+) => {
   const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
-  const created = await sendPublic({
+  return sendPublic({
     query: CREATE_PERSONAL_ACCESS_TOKEN,
     variables: {name: 'test token', scopes, expiresAt},
-    cookie
+    ...auth
   })
+}
+
+const createToken = async (cookie: string, scopes = ['USERS_WRITE']) => {
+  const created = await sendCreateToken({cookie}, scopes)
   expect(created).toMatchObject({
     data: {createPersonalAccessToken: {personalAccessToken: {id: expect.any(String)}}}
   })
@@ -130,4 +137,32 @@ test('records lastUsedAt when the token authenticates a request', async () => {
     lastUsedAt = await readLastUsedAt()
   }
   expect(lastUsedAt).toEqual(expect.any(String))
+})
+
+test('a personal access token cannot create a token', async () => {
+  const {cookie} = await signUp()
+  const {token} = await createToken(cookie)
+
+  const created = await sendCreateToken({bearerToken: token})
+
+  expect(created).toMatchObject({
+    data: null,
+    errors: [{message: 'This kind of access token cannot do this'}]
+  })
+})
+
+test('a personal access token cannot update a token, even itself', async () => {
+  const {cookie} = await signUp()
+  const {id: tokenId, token} = await createToken(cookie)
+
+  const updated = await sendPublic({
+    query: UPDATE_PERSONAL_ACCESS_TOKEN,
+    variables: {tokenId, name: 'renamed token'},
+    bearerToken: token
+  })
+
+  expect(updated).toMatchObject({
+    data: null,
+    errors: [{message: 'This kind of access token cannot do this'}]
+  })
 })

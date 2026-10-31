@@ -12,6 +12,8 @@ export interface RequestLogContext {
   traceId?: string
   spanId?: string
   traceSampled?: boolean
+  service?: string
+  version?: string
 }
 
 const requestLogStorage = new AsyncLocalStorage<RequestLogContext>()
