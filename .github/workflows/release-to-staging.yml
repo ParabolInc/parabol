@@ -34,8 +34,20 @@ jobs:
           gcloud container images add-tag -q \
           ${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.event.pull_request.head.sha}} \
           ${{ secrets.GCP_AR_PARABOL }}:v${{ env.ACTION_VERSION }}
+      - id: "iap"
+        name: "Get a token for the IAP in front of Kargo's webhooks"
+        uses: "google-github-actions/auth@v2"
+        with:
+          token_format: "access_token"
+          access_token_scopes: "openid,https://www.googleapis.com/auth/userinfo.email"
+          create_credentials_file: false
+          workload_identity_provider: ${{ secrets.GCP_WI_PROVIDER_NAME }}
+          service_account: ${{ secrets.GCP_SA_EMAIL }}
       - name: "Tell Kargo about the new image"
-        run: curl --fail-with-body --silent --show-error --max-time 30 --retry 3 --data '' --write-out '\n' "${{ secrets.KARGO_WEBHOOK_URL }}"
+        run: |-
+          curl --fail-with-body --silent --show-error --max-time 30 --retry 3 --data '' --write-out '\n' \
+          --header "Authorization: Bearer ${{ steps.iap.outputs.access_token }}" \
+          "${{ secrets.KARGO_WEBHOOK_URL }}"
 
       - name: Report Status
         if: failure()
