@@ -70,6 +70,9 @@ export const redisHocusPocus = new RedisServerAffinity({
 
 export const hocuspocus = new SafeHocuspocus<YjsContext>({
   quiet: true,
+  // A tab authenticates every doc on its socket at once when it reconnects; the default of 100 closes it and it loops.
+  // Each pending doc queues ~2 messages, so maxUnauthenticatedQueueMessages (1000) bounds this near 500 anyway
+  maxPendingDocuments: 500,
   onAuthenticate: authenticateYjsConnection,
   async beforeHandleAwareness({documentName, context, states}) {
     sanitizeAwarenessStates(documentName, context?.userId, states)
