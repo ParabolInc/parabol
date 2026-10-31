@@ -72,8 +72,16 @@ describe('serverIntegrations registry', () => {
     expect(typeof def.capabilities.estimatePush.describeDimensionField).toBe('function')
   })
 
-  it('gcal declares no task capabilities', () => {
-    expect(serverIntegrations.gcal.getCapabilityKeys()).toEqual([])
+  it('gcal only lists events for the drawers', () => {
+    expect(serverIntegrations.gcal.getCapabilityKeys()).toEqual(['issueList'])
+  })
+
+  it('the drawer sources are exactly the services that implement issueList', () => {
+    const listing = entries
+      .filter(([, def]) => def.getCapabilityKeys().includes('issueList'))
+      .map(([key]) => key)
+      .sort()
+    expect(listing).toEqual(['azureDevOps', 'gcal', 'github', 'jira', 'linear'])
   })
 
   it('getServerIntegration returns null for an unknown service', () => {

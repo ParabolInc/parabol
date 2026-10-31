@@ -1,11 +1,12 @@
 import {useState} from 'react'
 import {KeyboardArrowDown, KeyboardArrowRight} from '~/ui/icons'
+import type {ServiceEnum} from '../../../__generated__/useGenerateInspirationItemsMutation.graphql'
 import InspirationIssueRow from './InspirationIssueRow'
 import sortInspirationIssues from './sortInspirationIssues'
 
 interface Props {
   issues: readonly {
-    service: string
+    service: ServiceEnum
     title: string
     url?: string | null
     updatedAt?: string | null

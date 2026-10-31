@@ -46,24 +46,7 @@ const IntegrationServiceProviderRow = (props: Props) => {
         auth {
           providerId
         }
-        cloudProvider {
-          id
-          scope
-          ... on IntegrationProviderOAuth2 {
-            clientId
-            serverBaseUrl
-            tenantId
-          }
-        }
-        sharedProviders {
-          id
-          scope
-          ... on IntegrationProviderOAuth2 {
-            clientId
-            serverBaseUrl
-            tenantId
-          }
-        }
+        ...integrationServiceProviders_service @relay(mask: false)
       }
     `,
     serviceRef

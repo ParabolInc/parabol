@@ -4,21 +4,17 @@ import {GraphQLError} from 'graphql'
 import {markdownToTipTap} from '../../../../../client/shared/tiptap/markdownToTipTap'
 import tagIssueLinks from '../../../../../client/shared/tiptap/tagIssueLinks'
 import {tipTapToMarkdown} from '../../../../../client/shared/tiptap/tipTapToMarkdown'
+import type {InspirationIssue} from '../../../../integrations/platform/InspirationIssue'
+import {getServerIntegration} from '../../../../integrations/platform/registry'
 import getKysely from '../../../../postgres/getKysely'
 import OpenAIServerManager from '../../../../utils/OpenAIServerManager'
 import type {GQLContext} from '../../../graphql'
 import type {InspirationSourceInput, ServiceEnum} from '../../resolverTypes'
 import fetchIssues from './fetchIssues'
-import {formatIssuesForAI, type InspirationIssue} from './issuesForAI'
+import {formatIssuesForAI} from './issuesForAI'
 
-const SOURCE_LABELS: Partial<Record<ServiceEnum, string>> = {
-  PARABOL: 'Parabol',
-  github: 'GitHub',
-  jira: 'Jira',
-  linear: 'Linear',
-  azureDevOps: 'Azure DevOps',
-  gcal: 'Google Calendar'
-}
+const sourceLabel = (service: ServiceEnum) =>
+  service === 'PARABOL' ? 'Parabol' : (getServerIntegration(service)?.title ?? service)
 
 // A standup's draft combines every source, so its items share this key instead of a service
 const INSPIRATION_DRAFT_SERVICE = 'draft'
@@ -91,7 +87,7 @@ const draftStandupFromSources = async (options: Options) => {
       const ids = numberedIssues
         .filter((numberedIssue) => numberedIssue.service === service)
         .map(({id}) => id)
-      return `## ${SOURCE_LABELS[service] ?? service}\n\n${formatIssuesForAI(sourceIssues, ids)}`
+      return `## ${sourceLabel(service)}\n\n${formatIssuesForAI(sourceIssues, ids)}`
     })
     .join('\n\n')
 
