@@ -20,17 +20,9 @@ class ProviderManager {
     }
     return this.socket
   }
-  use(documentName: string) {
+  get(documentName: string) {
     const existing = this.providers[documentName]
-    if (existing) {
-      existing.count++
-      return existing.provider
-    }
-    return null
-  }
-  register(documentName: string) {
-    const existing = this.use(documentName)
-    if (existing) return existing
+    if (existing) return existing.provider
     const doc = new Y.Doc()
     // update the URL to match the title
     const provider = new HocuspocusProvider({
@@ -59,7 +51,11 @@ class ProviderManager {
       }
     })
     provider.attach()
-    this.providers[documentName] = {count: 1, provider}
+    this.providers[documentName] = {count: 0, provider}
+    // a render React throws away never registers, so collect the provider unless something does
+    setTimeout(() => {
+      this.destroy(documentName)
+    }, 10000)
     if (documentName.startsWith('page:')) {
       provider.on('authenticated', ({scope}: {scope: string}) => {
         const entry = this.providers[documentName]
@@ -72,6 +68,11 @@ class ProviderManager {
         }
       })
     }
+    return provider
+  }
+  register(documentName: string) {
+    const provider = this.get(documentName)
+    this.providers[documentName]!.count++
     return provider
   }
   unregister(documentName: string | undefined, delay = 10000) {
@@ -89,14 +90,28 @@ class ProviderManager {
     callbackFn: (provider: HocuspocusProvider) => void | Promise<void>
   ) {
     const provider = this.register(documentName)
+    const stopWaiting = () => {
+      provider.off('synced', callAndComplete)
+      provider.off('authenticationFailed', giveUp)
+    }
+    // synced fires again after every reconnect
     const callAndComplete = async () => {
-      await callbackFn(provider)
+      stopWaiting()
+      try {
+        await callbackFn(provider)
+      } finally {
+        this.unregister(documentName)
+      }
+    }
+    const giveUp = () => {
+      stopWaiting()
       this.unregister(documentName)
     }
     if (provider.synced) {
       callAndComplete()
     } else {
       provider.on('synced', callAndComplete)
+      provider.on('authenticationFailed', giveUp)
     }
   }
 

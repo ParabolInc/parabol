@@ -26,6 +26,7 @@ import logProcessWarnings from './utils/logProcessWarnings'
 import parseSessionId from './utils/parseSessionId'
 import registerFatalErrorHandlers from './utils/registerFatalErrorHandlers'
 import SAMLHandler from './utils/SAMLHandler'
+import logHocuspocusWarnings from './utils/tiptap/logHocuspocusWarnings'
 import uwsGetIP from './utils/uwsGetIP'
 import {wsHandler} from './wsHandler'
 import {yoga} from './yoga'
@@ -51,6 +52,7 @@ const ENABLE_MATTERMOST_FILE_HANDLER =
 
 registerFatalErrorHandlers()
 logProcessWarnings()
+logHocuspocusWarnings()
 
 process.on('SIGTERM', async (signal) => {
   Logger.log(

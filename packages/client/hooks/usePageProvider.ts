@@ -68,16 +68,16 @@ export const usePageProvider = (pageId: string) => {
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
   const pageCode = Number(pageId.split(':')[1])
-  const prevPageIdRef = useRef<string | undefined>(undefined)
   const [syncedProvider, setSyncedProvider] = useState<HocuspocusProvider | null>(null)
   const headerBlockObserverRef = useRef<(() => void) | null>(null)
   const currentHeaderBlockRef = useRef<Y.XmlElement | null>(null)
-  // Connect to your Collaboration server
-  const provider = useMemo(() => {
-    providerManager.unregister(prevPageIdRef.current)
-    prevPageIdRef.current = pageId
-    const existing = providerManager.use(pageId)
-    return existing ?? providerManager.register(pageId)
+  const provider = useMemo(() => providerManager.get(pageId), [pageId])
+  // registering in an effect keeps renders React throws away from holding the provider open
+  useEffect(() => {
+    providerManager.register(pageId)
+    return () => {
+      providerManager.unregister(pageId)
+    }
   }, [pageId])
 
   // Gate the editor on the provider's actual sync state, not on cache presence:
@@ -123,11 +123,5 @@ export const usePageProvider = (pageId: string) => {
       }
     }
   }, [provider])
-
-  useEffect(() => {
-    return () => {
-      providerManager.unregister(prevPageIdRef.current)
-    }
-  }, [])
   return {provider, synced: isSynced}
 }
