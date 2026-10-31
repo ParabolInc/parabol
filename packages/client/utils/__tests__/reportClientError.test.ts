@@ -3,7 +3,7 @@ const sendBeacon = jest.fn((_url: string, _body: Blob) => true)
 // the reporter reads the release and browser globals when it loads, so each test needs a fresh copy
 const loadReporter = () => {
   jest.resetModules()
-  Object.assign(globalThis, {__APP_VERSION__: '15.11.0', __COMMIT_HASH__: 'abc1234def'})
+  Object.assign(globalThis, {__APP_VERSION__: '15.11.0'})
   Object.defineProperty(globalThis, 'window', {
     value: {location: {pathname: '/reset-password/secret-token'}},
     configurable: true
@@ -44,7 +44,7 @@ test('reports wait a moment, then go out together in one beacon', async () => {
     level: 'error',
     name: 'TypeError',
     message: 'first',
-    release: '15.11.0+abc1234',
+    release: '15.11.0',
     route: '/reset-password/<token>',
     userAgent: 'Mozilla/5.0',
     count: 1

@@ -14,7 +14,7 @@ const report: ClientErrorReport = {
   eventId: '2f1c7a8e-5b3d-4c9a-8e6f-1a2b3c4d5e6f',
   traceId: '4bf92f3577b34da6a3ce929d0e0e4736',
   sessionId: 'tab-1',
-  release: '15.11.0+abc1234',
+  release: '15.11.0',
   route: '/team/abc',
   count: 1,
   breadcrumbs: [
@@ -47,13 +47,13 @@ test('a browser error is logged as parabol-client, joined to its trace, with the
   expect(record).toMatchObject({
     severity: 'ERROR',
     service: 'parabol-client',
-    version: '15.11.0+abc1234',
+    version: '15.11.0',
     component: 'browser',
     userId: 'user1',
     sessionId: 'tab-1',
     trace_id: '4bf92f3577b34da6a3ce929d0e0e4736',
     'logging.googleapis.com/trace': '4bf92f3577b34da6a3ce929d0e0e4736',
-    serviceContext: {service: 'parabol-client', version: '15.11.0+abc1234'},
+    serviceContext: {service: 'parabol-client', version: '15.11.0'},
     context: {user: 'user1'},
     error: {kind: 'TypeError', message: MESSAGE, expected: false},
     extras: {route: '/team/abc', eventId: report.eventId, count: 1}

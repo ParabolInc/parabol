@@ -37,7 +37,7 @@ const MAX_STACK_LENGTH = 6000
 const MAX_COMPONENT_STACK_LENGTH = 3000
 // yoga replaces the message of every error it masks with this one
 const MASKED_ERROR_MESSAGE = 'Unexpected error.'
-const RELEASE = `${__APP_VERSION__}+${__COMMIT_HASH__.slice(0, 7)}`
+const RELEASE = __APP_VERSION__
 
 let queue: ClientErrorReport[] = []
 let flushTimer: ReturnType<typeof setTimeout> | undefined
