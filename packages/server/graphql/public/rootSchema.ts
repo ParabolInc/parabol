@@ -18,7 +18,12 @@ import resolvers from './resolvers'
 
 // Merge old POJO definitions with SDL definitions
 const parabolTypeDefs = mergeSchemas({
-  typeDefs
+  typeDefs: [
+    ...typeDefs,
+    // useDeferStream builds a new copy of any schema that lacks @stream, each time a request sets it.
+    // It isn't in typeDefs, so it stays out of schema.graphql, which Relay compiles against
+    'directive @stream(if: Boolean! = true, label: String, initialCount: Int = 0) on FIELD'
+  ]
 })
 
 const {schema: typeDefsWithGitHub, githubRequest} = nestGitHub(parabolTypeDefs)
