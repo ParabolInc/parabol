@@ -8,7 +8,7 @@ const report = {
   eventId: '2f1c7a8e-5b3d-4c9a-8e6f-1a2b3c4d5e6f',
   traceId: '4bf92f3577b34da6a3ce929d0e0e4736',
   sessionId: 'tab-1',
-  release: '15.11.0+abc1234',
+  release: '15.11.0',
   route: '/meet/abc',
   userAgent: 'Mozilla/5.0',
   count: 2,

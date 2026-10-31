@@ -58,14 +58,13 @@ const DatadogStatus = {
 } satisfies Record<LogLevel, string>
 
 const APP_VERSION = typeof __APP_VERSION__ === 'string' ? __APP_VERSION__ : 'unknown'
-const COMMIT_HASH = typeof __COMMIT_HASH__ === 'string' ? __COMMIT_HASH__ : ''
 // kysely-ctl loads server modules from source, where the webpack constants don't exist
 const isProduction = () => typeof __PRODUCTION__ === 'boolean' && __PRODUCTION__
 
 const logIdentity = {
   service: 'web',
   env: process.env.DD_ENV || (isProduction() ? 'production' : 'development'),
-  version: COMMIT_HASH ? `${APP_VERSION}+${COMMIT_HASH.slice(0, 7)}` : APP_VERSION
+  version: APP_VERSION
 }
 
 export const setLogService = (service: string) => {
