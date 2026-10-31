@@ -1,6 +1,6 @@
 """
 Payload returned by the createImposterToken mutation. On success, the server sets an
-auth cookie scoped to the impersonated user (role: "impersonate", valid for 5 minutes),
+auth cookie scoped to the impersonated user (role: "impersonate", valid for 2 hours),
 allowing an admin to act as that user for troubleshooting without knowing their
 credentials. The token is delivered via cookie, not as a field on this type.
 """
