@@ -75,41 +75,12 @@ jobs:
             PROD_JOB_ID=$(echo $JOBS | jq '.[] | select(.name == "${{ env.PRODUCTION_JOB}}")' | jq .id)
             echo "JOB_ID=${JOB_ID}" >> $GITHUB_ENV
             echo "PROD_JOB_ID=${PROD_JOB_ID}" >> $GITHUB_ENV
-      - name: Push to staging
-        uses: nick-fields/retry@v2
-        with:
-          timeout_minutes: 5
-          max_attempts: 100
-          retry_wait_seconds: 5
-          # If the job isn't created yet, will return {"message":"400 Bad request - Unplayable Job"}
-          command: |
-            RES=$(curl "https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/jobs/${{ env.JOB_ID }}/play" \
-              --request POST \
-              --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_DEPLOYMENT_ACCESS_TOKEN }}')
-            echo $RES
-            JOB_ID_DONE=$(echo $RES | jq '.id // empty')
-            [ -z "$JOB_ID_DONE" ] && exit 1 || exit 0
-      - name: Poll Staging Release
-        timeout-minutes: 30
-        run: |
-          while true; do
-            STATUS=$(curl -s "https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/jobs/${{ env.JOB_ID }}" --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_DEPLOYMENT_ACCESS_TOKEN }}' | jq -r '.status')
-            echo "Current status: $STATUS"
-            if [ "$STATUS" == "success" ]; then
-              echo "Job completed successfully."
-              exit 0
-            elif [[ "$STATUS" == "failed" || "$STATUS" == "canceled" ]]; then
-              echo "Job failed or was canceled."
-              exit 1
-            fi
-            sleep 15
-          done
       - name: Open PR to Push to Prod
         env:
           GH_TOKEN: ${{ github.token }}
         # gh cli does not interpret \n, so we first write to a file
         run: |
-          BACKLINK="Production Job Id: $PROD_JOB_ID\nStaging Job Id: $JOB_ID"
+          BACKLINK="Production Job Id: $PROD_JOB_ID"
           TEMPLATE=$(tail -n +12 .github/ISSUE_TEMPLATE/release_test.md)
           CHANGES=$(perl -0777ne 'print "$1\n" and exit if m/\n##\s[^\n]*\n+(.*?\n)##?\s|$/gs;' CHANGELOG.md)
           echo -e "${BACKLINK}\n\n${TEMPLATE}\n\n\n${CHANGES}" > BODY

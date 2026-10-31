@@ -5,6 +5,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.14.0](https://github.com/ParabolInc/parabol/compare/v15.13.0...v15.14.0) (2026-10-31)
+
+
+### Added
+
+* **server:** serve Prometheus metrics by default with product heartbeat counters ([#13848](https://github.com/ParabolInc/parabol/issues/13848)) ([cf14fd7](https://github.com/ParabolInc/parabol/commit/cf14fd7b74b3185aaeb37b591ddfe57658f9f035))
+
+
+### Fixed
+
+* **server:** verify Zoom webhook signatures before answering url_validation ([#13834](https://github.com/ParabolInc/parabol/issues/13834)) ([e16d452](https://github.com/ParabolInc/parabol/commit/e16d452b471a2d62bc5564dbbc72fb138ccbe79d))
+* skip predeploy migrations when the database is ahead of the build ([#13844](https://github.com/ParabolInc/parabol/issues/13844)) ([692e242](https://github.com/ParabolInc/parabol/commit/692e2424f77bd942160734c9f3160864145b2da3))
+* stop Yjs tabs from leaking providers into a reconnect loop ([#13849](https://github.com/ParabolInc/parabol/issues/13849)) ([7904a8e](https://github.com/ParabolInc/parabol/commit/7904a8ef67153b93c3be623a56054680e7509f13))
+
+
+### Changed
+
+* log the release version without the commit hash ([#13846](https://github.com/ParabolInc/parabol/issues/13846)) ([ff183cf](https://github.com/ParabolInc/parabol/commit/ff183cf24c2ccd5aaff95436db2eeb8b036f4594))
+* stop deploying staging through GitLab ([#13847](https://github.com/ParabolInc/parabol/issues/13847)) ([503d957](https://github.com/ParabolInc/parabol/commit/503d9576b34cb9a49c05ec468cb6b6905c083e0f))
+
 ## [15.13.0](https://github.com/ParabolInc/parabol/compare/v15.12.1...v15.13.0) (2026-10-31)
 
 

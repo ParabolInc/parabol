@@ -16,6 +16,7 @@ import getRateLimiter from './graphql/getRateLimiter'
 import privateSchema from './graphql/private/rootSchema'
 import {handleFirstConnection} from './handleFirstConnection'
 import {logOperation} from './logOperation'
+import {websocketConnects} from './metricsHandler'
 import getKysely from './postgres/getKysely'
 import {createCookieHeaders, getAuthTokenFromCookie} from './utils/authCookie'
 import checkBlacklistJWT from './utils/checkBlacklistJWT'
@@ -121,6 +122,7 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
     extra.resubscribe = {}
     extra.dataLoaders = {}
     activeClients.set(extra.socketId, extra.socket)
+    websocketConnects.inc()
     logOperation(viewerId, extra.ip, 'connectSocket', {})
     if (socketCount === 0) {
       handleFirstConnection(user, teamIds).catch(Logger.log)

@@ -6,6 +6,7 @@ import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import TimelineEventRetroComplete from '../../../database/types/TimelineEventRetroComplete'
 import {sendSummaryEmail} from '../../../email/sendSummaryEmail'
+import {meetingsEnded} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import type {RetrospectiveMeeting} from '../../../postgres/types/Meeting'
 import archiveDoneTasksForMeeting from '../../../safeMutations/archiveDoneTasksForMeeting'
@@ -164,6 +165,7 @@ const safeEndRetrospective = async ({
   summarizeRetroMeeting(completedRetrospective, context).catch(Logger.log)
   // do not await sending the email
   if (page) sendSummaryEmail(meetingId, page.id, context, info).catch(Logger.log)
+  meetingsEnded.inc({meeting_type: completedRetrospective.meetingType})
   analytics
     .retrospectiveEnd(completedRetrospective, meetingMembers, template, dataLoader)
     .catch(Logger.log)

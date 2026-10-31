@@ -12,7 +12,7 @@ import {hocusPocusHandler} from './hocusPocusHandler'
 import mattermostWebhookHandler from './integrations/mattermost/mattermostWebhookHandler'
 import zoomWebhookHandler from './integrations/zoom/zoomWebhookHandler'
 import listenHandler from './listenHandler'
-import {metricsHandler} from './metricsHandler'
+import {ENABLE_METRICS, METRICS_PORT, metricsHandler} from './metricsHandler'
 import authorizeHandler from './oauth2/authorizeHandler'
 import tokenHandler from './oauth2/tokenHandler'
 import PWAHandler from './PWAHandler'
@@ -26,6 +26,7 @@ import logProcessWarnings from './utils/logProcessWarnings'
 import parseSessionId from './utils/parseSessionId'
 import registerFatalErrorHandlers from './utils/registerFatalErrorHandlers'
 import SAMLHandler from './utils/SAMLHandler'
+import logHocuspocusWarnings from './utils/tiptap/logHocuspocusWarnings'
 import uwsGetIP from './utils/uwsGetIP'
 import {wsHandler} from './wsHandler'
 import {yoga} from './yoga'
@@ -36,8 +37,6 @@ export const RECONNECT_WINDOW = process.env.WEB_SERVER_RECONNECT_WINDOW
 
 const PORT = Number(__PRODUCTION__ ? process.env.PORT : process.env.SOCKET_PORT)
 
-export const ENABLE_METRICS = process.env.ENABLE_METRICS === 'true'
-export const METRICS_PORT = process.env.METRICS_PORT ? parseInt(process.env.METRICS_PORT, 10) : NaN
 if (ENABLE_METRICS) {
   if (isNaN(METRICS_PORT)) {
     throw new Error('ENABLE_METRICS is true but METRICS_PORT is invalid')
@@ -53,6 +52,7 @@ const ENABLE_MATTERMOST_FILE_HANDLER =
 
 registerFatalErrorHandlers()
 logProcessWarnings()
+logHocuspocusWarnings()
 
 process.on('SIGTERM', async (signal) => {
   Logger.log(
@@ -121,10 +121,11 @@ if (ENABLE_METRICS) {
     })
     .listen(METRICS_PORT, (socket) => {
       if (socket) {
-        console.log(`Metrics server listening on port ${METRICS_PORT}`)
+        Logger.log(`Metrics server listening on port ${METRICS_PORT}`)
       } else {
-        console.error(`Failed to bind metrics server on port ${METRICS_PORT}`)
-        process.exit(1)
+        Logger.error(
+          `Failed to bind metrics server on port ${METRICS_PORT}; serving without metrics`
+        )
       }
     })
 }

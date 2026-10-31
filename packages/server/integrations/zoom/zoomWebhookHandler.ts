@@ -2,6 +2,7 @@ import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import {Editor} from '@tiptap/core'
 import {fetch} from '@whatwg-node/fetch'
 import {createHmac, timingSafeEqual} from 'crypto'
+import ms from 'ms'
 import {serverTipTapExtensions} from 'parabol-client/shared/tiptap/serverTipTapExtensions'
 import type {TipTapSerializedPageContent} from 'parabol-client/shared/tiptap/TipTapSerializedContent'
 import uWSAsyncHandler from '../../graphql/uWSAsyncHandler'
@@ -11,6 +12,9 @@ import {Logger} from '../../utils/Logger'
 import {attachTranscriptToSummaryPage} from '../gmeet/attachTranscriptToSummaryPage'
 import {matchExternalMeetingToMeeting} from '../matchExternalMeetingToMeeting'
 import {processZoomTranscript} from './processZoomTranscript'
+
+const MAX_WEBHOOK_BODY_BYTES = 1_000_000
+const MAX_TIMESTAMP_AGE = ms('5m')
 
 type ZoomRecordingFile = {
   id: string
@@ -77,6 +81,20 @@ const verifyZoomSignature = (
   return expectedBuf.length === actualBuf.length && timingSafeEqual(expectedBuf, actualBuf)
 }
 
+const isFreshTimestamp = (timestamp: string) => {
+  const sentAt = Number(timestamp) * 1000
+  return Number.isFinite(sentAt) && Math.abs(Date.now() - sentAt) <= MAX_TIMESTAMP_AGE
+}
+
+const isZoomUrl = (url: string) => {
+  try {
+    const {protocol, hostname} = new URL(url)
+    return protocol === 'https:' && (hostname === 'zoom.us' || hostname.endsWith('.zoom.us'))
+  } catch {
+    return false
+  }
+}
+
 const zoomWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
   const secret = process.env.ZOOM_WEBHOOK_SECRET_TOKEN
 
@@ -88,13 +106,23 @@ const zoomWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRe
   const timestamp = req.getHeader('x-zm-request-timestamp')
   const signature = req.getHeader('x-zm-signature')
 
-  const rawBody = await parseBody<string>({res, parser: (buf) => buf.toString()})
+  const rawBody = await parseBody<string>({
+    res,
+    parser: (buf) => buf.toString(),
+    maxBytes: MAX_WEBHOOK_BODY_BYTES
+  })
   if (!rawBody) {
     res.writeStatus('400').end()
     return
   }
 
-  // Handle Zoom's endpoint URL validation challenge
+  // The url_validation reply is an HMAC of a caller-chosen token under the signing key, so answering
+  // it unsigned would hand out signatures for arbitrary bodies
+  if (!isFreshTimestamp(timestamp) || !verifyZoomSignature(secret, timestamp, rawBody, signature)) {
+    res.writeStatus('401').end()
+    return
+  }
+
   let payload: ZoomWebhookPayload
   try {
     payload = JSON.parse(rawBody) as ZoomWebhookPayload
@@ -109,12 +137,6 @@ const zoomWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRe
       .writeStatus('200 OK')
       .writeHeader('Content-Type', 'application/json')
       .end(JSON.stringify({plainToken, encryptedToken}))
-    return
-  }
-
-  // All other events require signature verification
-  if (!timestamp || !signature || !verifyZoomSignature(secret, timestamp, rawBody, signature)) {
-    res.writeStatus('401').end()
     return
   }
 
@@ -177,6 +199,10 @@ const processTranscriptCompleted = async (payload: ZoomRecordingCompletedPayload
   if (!transcriptFile) return
 
   const externalId = `zoom:transcript:${uuid}`
+  if (!isZoomUrl(transcriptFile.download_url)) {
+    Logger.warn(`${externalId}: download_url is not on zoom.us`)
+    return
+  }
   // the payload's duration is the scheduled length, so only the recording knows when the call ended
   const endedAt = new Date(transcriptFile.recording_end)
   const meeting = await claimHostMeeting(host_id, endedAt, externalId)

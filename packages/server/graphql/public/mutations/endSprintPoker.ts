@@ -5,6 +5,7 @@ import findStageById from 'parabol-client/utils/meetings/findStageById'
 // TODO: TimelineEventPokerComplete is from the deprecated /database directory
 import TimelineEventPokerComplete from '../../../database/types/TimelineEventPokerComplete'
 import {sendSummaryEmail} from '../../../email/sendSummaryEmail'
+import {meetingsEnded} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
@@ -110,6 +111,7 @@ const endSprintPoker: MutationResolvers['endSprintPoker'] = async (
   publish(SubscriptionChannel.TEAM, teamId, 'EndSprintPokerSuccess', data, subOptions)
   sendSummaryEmail(meetingId, page.id, context, info).catch(Logger.log)
   IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId).catch(Logger.log)
+  meetingsEnded.inc({meeting_type: completedMeeting.meetingType})
   analytics.sprintPokerEnd(completedMeeting, meetingMembers, template, dataLoader).catch(Logger.log)
   return data
 }

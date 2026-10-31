@@ -1,7 +1,15 @@
 import type {HttpResponse} from 'uWebSockets.js'
-import {usePrometheus} from '@graphql-yoga/plugin-prometheus'
-import {collectDefaultMetrics, Gauge, Histogram, Registry} from 'prom-client'
+import {createHistogram, usePrometheus} from '@graphql-yoga/plugin-prometheus'
+import {Counter, collectDefaultMetrics, Gauge, Registry} from 'prom-client'
 import {activeClients} from './activeClients'
+import getKysely from './postgres/getKysely'
+import type {Embeddingsjobstateenum} from './postgres/types/pg'
+import {Logger} from './utils/Logger'
+
+export const ENABLE_METRICS = process.env.ENABLE_METRICS
+  ? process.env.ENABLE_METRICS === 'true'
+  : __PRODUCTION__
+export const METRICS_PORT = process.env.METRICS_PORT ? parseInt(process.env.METRICS_PORT, 10) : 9090
 
 const register = new Registry()
 
@@ -63,14 +71,6 @@ new Gauge({
       }, 0)
     })
   }
-})
-
-const nodeGcDuration = new Histogram({
-  name: 'node_gc_duration_seconds',
-  help: 'Duration of garbage collection in seconds',
-  labelNames: ['type'],
-  buckets: [0.001, 0.01, 0.1, 0.5, 1, 2, 5],
-  registers: [register]
 })
 
 new Gauge({
@@ -141,39 +141,98 @@ export const wsErrors = new Counter({
 })
 */
 
-// GraphQL Yoga Prometheus plugin configuration
-export const graphqlPrometheusPlugin = usePrometheus({
-  registry: register
+export const websocketConnects = new Counter({
+  name: 'parabol_websocket_connects_total',
+  help: 'Websocket connections accepted after authentication',
+  registers: [register]
 })
 
-const updateHistorgrams = () => {
-  const activeResources = process.getActiveResourcesInfo()
-  const gcCount = activeResources.reduce(
-    (count, resource) => (resource.includes('gc') ? count + 1 : count),
-    0
-  )
-  nodeGcDuration.observe({type: 'total'}, gcCount)
-}
+export const logins = new Counter({
+  name: 'parabol_logins_total',
+  help: 'Successful logins, including sign-ups through an identity provider, by method',
+  labelNames: ['method'] as const,
+  registers: [register]
+})
 
-if (process.env.ENABLE_METRICS === 'true') {
-  setInterval(() => {
-    updateHistorgrams()
-  }, 30000)
-}
+export const meetingsEnded = new Counter({
+  name: 'parabol_meetings_ended_total',
+  help: 'Meetings ended, whether completed or ended early, by meeting type',
+  labelNames: ['meeting_type'] as const,
+  registers: [register]
+})
+
+const EMBEDDER_JOB_STATES = [
+  'queued',
+  'running',
+  'failed'
+] as const satisfies readonly Embeddingsjobstateenum[]
+
+new Gauge({
+  name: 'parabol_embedder_jobs',
+  help: 'Jobs in the embedder queue by state. Every web server reports the same totals, so aggregate with max',
+  labelNames: ['state'] as const,
+  registers: [register],
+  async collect() {
+    try {
+      const jobCounts = await getKysely()
+        .selectFrom('EmbeddingsJobQueueV2')
+        .select(({fn}) => ['state', fn.countAll<string>().as('jobs')])
+        .groupBy('state')
+        .execute()
+      const jobsByState = new Map(jobCounts.map(({state, jobs}) => [state, Number(jobs)]))
+      EMBEDDER_JOB_STATES.forEach((state) => {
+        this.set({state}, jobsByState.get(state) ?? 0)
+      })
+    } catch (error) {
+      Logger.error('Could not count embedder jobs for metrics', error)
+    }
+  }
+})
+
+export const graphqlPrometheusPlugin = usePrometheus({
+  registry: register,
+  endpoint: false,
+  skipIntrospection: true,
+  labels: {
+    operationName: true,
+    operationType: true,
+    phase: true,
+    path: false,
+    fieldName: false,
+    typeName: false,
+    returnType: false
+  },
+  metrics: {
+    graphql_envelop_request: true,
+    graphql_envelop_error_result: true,
+    graphql_envelop_request_duration: createHistogram({
+      registry: register,
+      histogram: {
+        name: 'graphql_envelop_request_duration',
+        help: 'Time to execute or subscribe to a GraphQL operation, in seconds',
+        labelNames: ['operationType'] as const,
+        buckets: [0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10]
+      },
+      fillLabelsFn: ({operationType}) => ({operationType: operationType ?? 'unknown'})
+    }),
+    graphql_envelop_request_time_summary: false,
+    graphql_envelop_phase_parse: false,
+    graphql_envelop_phase_validate: false,
+    graphql_envelop_phase_context: false,
+    graphql_envelop_phase_execute: false,
+    graphql_envelop_phase_subscribe: false,
+    graphql_envelop_deprecated_field: false,
+    graphql_envelop_schema_change: false,
+    graphql_envelop_execute_resolver: false,
+    graphql_yoga_http_duration: false
+  }
+})
 
 export const metricsHandler = async (res: HttpResponse) => {
   let aborted = false
   res.onAborted(() => {
     aborted = true
   })
-
-  if (process.env.ENABLE_METRICS !== 'true') {
-    if (!aborted) {
-      res.writeStatus('404 Not Found')
-      res.end()
-    }
-    return
-  }
 
   try {
     const metrics = await register.metrics()
@@ -186,7 +245,7 @@ export const metricsHandler = async (res: HttpResponse) => {
       })
     }
   } catch (error) {
-    console.error('Error generating metrics:', error)
+    Logger.error('Could not generate metrics', error)
     if (!aborted) {
       res.cork(() => {
         res.writeStatus('500 Internal Server Error')
