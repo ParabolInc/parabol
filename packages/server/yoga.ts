@@ -19,6 +19,7 @@ import type {MutationResolvers, QueryResolvers, Resolver} from './graphql/privat
 import {PAT_PREFIX} from './graphql/public/applyScopeDirective'
 import type {ResourceGrants} from './graphql/public/ResourceGrants'
 import rootSchema from './graphql/public/rootSchema'
+import {ENABLE_METRICS, graphqlPrometheusPlugin} from './metricsHandler'
 import getKysely from './postgres/getKysely'
 import {getAuthTokenFromCookie} from './utils/authCookie'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
@@ -198,6 +199,7 @@ export const yoga = createYoga<ServerContext, UserContext>({
       ] as ExcludedOps)
     }),
     useErrorLogging(),
+    ...(ENABLE_METRICS ? [graphqlPrometheusPlugin] : []),
     useDatadogTracing({
       excludeArgs: {
         acceptTeamInvitation: ['invitationToken'],

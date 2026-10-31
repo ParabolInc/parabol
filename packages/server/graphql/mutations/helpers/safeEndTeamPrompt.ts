@@ -3,6 +3,7 @@ import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import TimelineEventTeamPromptComplete from '../../../database/types/TimelineEventTeamPromptComplete'
 import {sendSummaryEmail} from '../../../email/sendSummaryEmail'
+import {meetingsEnded} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import type {TeamPromptMeeting} from '../../../postgres/types/Meeting'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -85,6 +86,7 @@ const safeEndTeamPrompt = async ({
       })
   )
   await pg.insertInto('TimelineEvent').values(events).execute()
+  meetingsEnded.inc({meeting_type: completedTeamPrompt.meetingType})
   analytics.teamPromptEnd(completedTeamPrompt, meetingMembers, responses, dataLoader)
   const [page, summary] = await Promise.all([
     publishSummaryPage(meetingId, context, info).catch((e) => {

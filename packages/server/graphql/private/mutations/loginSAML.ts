@@ -7,6 +7,7 @@ import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import AuthToken from '../../../database/types/AuthToken'
 import User from '../../../database/types/User'
 import generateUID from '../../../generateUID'
+import {logins} from '../../../metricsHandler'
 import {USER_PREFERRED_NAME_LIMIT} from '../../../postgres/constants'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
@@ -239,6 +240,7 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
       await pg.updateTable('User').set({persistentNameId}).where('id', '=', user.id).execute()
     }
     const tms = await dataLoader.get('teamIdsByUserId').load(user.id)
+    logins.inc({method: 'saml'})
     return {
       userId: user.id,
       authToken: encodeAuthToken(new AuthToken({sub: user.id, tms, rol: user.rol})),
@@ -296,6 +298,7 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
     orgIds.map((orgId) => adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader))
   )
 
+  logins.inc({method: 'saml'})
   return {
     userId,
     authToken: encodeAuthToken(authToken),

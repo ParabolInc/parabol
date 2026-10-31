@@ -3,6 +3,7 @@ import AuthIdentityMicrosoft from '../../../database/types/AuthIdentityMicrosoft
 import AuthToken from '../../../database/types/AuthToken'
 import User from '../../../database/types/User'
 import generateUID from '../../../generateUID'
+import {logins} from '../../../metricsHandler'
 import {USER_PREFERRED_NAME_LIMIT} from '../../../postgres/constants'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import updateUser from '../../../postgres/queries/updateUser'
@@ -81,6 +82,7 @@ const loginWithMicrosoft: MutationResolvers['loginWithMicrosoft'] = async (
     const tms = await dataLoader.get('teamIdsByUserId').load(viewerId)
     context.authToken = new AuthToken({sub: viewerId, rol, tms})
     setAuthCookie(context, context.authToken)
+    logins.inc({method: 'microsoft'})
     return {
       userId: viewerId,
       role: context.authToken.rol,
@@ -107,6 +109,7 @@ const loginWithMicrosoft: MutationResolvers['loginWithMicrosoft'] = async (
   })
   context.authToken = await bootstrapNewUser(newUser, !invitationToken, dataLoader)
   setAuthCookie(context, context.authToken)
+  logins.inc({method: 'microsoft'})
   return {
     userId,
     role: context.authToken.rol,

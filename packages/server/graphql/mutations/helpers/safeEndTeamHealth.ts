@@ -3,6 +3,7 @@ import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import TimelineEventTeamHealthComplete from '../../../database/types/TimelineEventTeamHealthComplete'
 import {sendSummaryEmail} from '../../../email/sendSummaryEmail'
+import {meetingsEnded} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import type {TeamHealthMeeting} from '../../../postgres/types/Meeting'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -92,6 +93,7 @@ const safeEndTeamHealth = async ({
       })
   )
   await pg.insertInto('TimelineEvent').values(events).execute()
+  meetingsEnded.inc({meeting_type: completedTeamHealth.meetingType})
   analytics.teamHealthEnd(completedTeamHealth, meetingMembers, dataLoader)
   const page = await publishSummaryPage(meetingId, context, info).catch((e) => {
     logError(e instanceof Error ? e : new Error(`publishSummaryPage failed: ${e}`), {
