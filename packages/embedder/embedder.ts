@@ -1,6 +1,7 @@
 import tracer from 'dd-trace'
 import 'parabol-server/initLogging'
 import {Logger, setLogService} from 'parabol-server/utils/Logger'
+import logProcessWarnings from 'parabol-server/utils/logProcessWarnings'
 import RedisInstance from 'parabol-server/utils/RedisInstance'
 import registerFatalErrorHandlers from 'parabol-server/utils/registerFatalErrorHandlers'
 import type {Tuple} from '../client/types/generics'
@@ -24,6 +25,7 @@ tracer.init({
 // tracer.use('pg')
 setLogService('embedder')
 registerFatalErrorHandlers()
+logProcessWarnings()
 
 const run = async () => {
   const SERVER_ID = process.env.SERVER_ID

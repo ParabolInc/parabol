@@ -22,6 +22,7 @@ import selfHostedHandler from './selfHostedHandler'
 import {createStaticFileHandler} from './staticFileHandler'
 import getReqAuth from './utils/getReqAuth'
 import {Logger} from './utils/Logger'
+import logProcessWarnings from './utils/logProcessWarnings'
 import parseSessionId from './utils/parseSessionId'
 import registerFatalErrorHandlers from './utils/registerFatalErrorHandlers'
 import SAMLHandler from './utils/SAMLHandler'
@@ -51,6 +52,7 @@ const ENABLE_MATTERMOST_FILE_HANDLER =
   !__PRODUCTION__ || (process.env.MATTERMOST_SECRET && process.env.MATTERMOST_URL)
 
 registerFatalErrorHandlers()
+logProcessWarnings()
 
 process.on('SIGTERM', async (signal) => {
   Logger.log(
