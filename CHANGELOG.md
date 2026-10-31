@@ -5,6 +5,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.13.0](https://github.com/ParabolInc/parabol/compare/v15.12.1...v15.13.0) (2026-10-31)
+
+
+### Added
+
+* capture browser errors with breadcrumbs and log them as parabol-client ([#13828](https://github.com/ParabolInc/parabol/issues/13828)) ([939a61b](https://github.com/ParabolInc/parabol/commit/939a61bfba3be436546d560d3c66b8ce484c5734))
+
+
+### Fixed
+
+* only allow http, https and mailto links in stored TipTap content ([#13835](https://github.com/ParabolInc/parabol/issues/13835)) ([3a6286d](https://github.com/ParabolInc/parabol/commit/3a6286d91653d9c39741bceb3d22818e0c8c97bd))
+* **server:** give subscription events without an operationId their own dataloader ([#13841](https://github.com/ParabolInc/parabol/issues/13841)) ([4ae16b7](https://github.com/ParabolInc/parabol/commit/4ae16b7815e6525b72db689c09c15344ff185870))
+* **server:** log subscription events, process warnings and Redis errors with context ([#13842](https://github.com/ParabolInc/parabol/issues/13842)) ([e289c1e](https://github.com/ParabolInc/parabol/commit/e289c1eed6bd9a769c08a30e6b3bcf8db92cac69))
+* **server:** only a session can create or update personal access tokens ([#13840](https://github.com/ParabolInc/parabol/issues/13840)) ([6ef5e2e](https://github.com/ParabolInc/parabol/commit/6ef5e2e7128c5579322f2ab471d7300c55d9af45))
+
+
+### Changed
+
+* bump node to 26.13.0 ([#13831](https://github.com/ParabolInc/parabol/issues/13831)) ([5c5c16d](https://github.com/ParabolInc/parabol/commit/5c5c16deeade4e66aac79334dee711bf2b3a6d96))
+
 ## [15.12.1](https://github.com/ParabolInc/parabol/compare/v15.12.0...v15.12.1) (2026-10-30)
 
 
