@@ -1,5 +1,6 @@
 import {
   handleStreamOrSingleExecutionResult,
+  isAsyncIterable,
   isOriginalGraphQLError,
   type TypedExecutionArgs
 } from '@envelop/core'
@@ -44,6 +45,23 @@ const logResultErrors = (errors: readonly GraphQLError[] | undefined) => {
   })
 }
 
+// graphql-ws and yoga's SSE pull each event from their own loop, outside the operation's log context,
+// and the event's resolvers run inside that pull, so every pull re-enters the context
+const pullEventsInLogContext = <T>(
+  events: AsyncIterable<T>,
+  logContext: RequestLogContext
+): AsyncIterableIterator<T> => {
+  const iterator = events[Symbol.asyncIterator]()
+  return {
+    next: () => runWithLogContext(logContext, () => iterator.next()),
+    return: (value?: unknown) => iterator.return?.(value) ?? Promise.resolve({done: true, value}),
+    throw: (error?: unknown) => iterator.throw?.(error) ?? Promise.reject(error),
+    [Symbol.asyncIterator]() {
+      return this
+    }
+  }
+}
+
 export const useErrorLogging = (): Plugin<LoggableContext> => ({
   onExecute({args, executeFn, setExecuteFn}) {
     const logContext = getOperationLogContext(args)
@@ -58,9 +76,10 @@ export const useErrorLogging = (): Plugin<LoggableContext> => ({
   },
   onSubscribe({args, subscribeFn, setSubscribeFn}) {
     const logContext = getOperationLogContext(args)
-    setSubscribeFn((subscribeArgs) =>
-      runWithLogContext(logContext, () => subscribeFn(subscribeArgs))
-    )
+    setSubscribeFn(async (subscribeArgs) => {
+      const result = await runWithLogContext(logContext, () => subscribeFn(subscribeArgs))
+      return isAsyncIterable(result) ? pullEventsInLogContext(result, logContext) : result
+    })
     return {
       onSubscribeError({error}) {
         runWithLogContext(logContext, () => {

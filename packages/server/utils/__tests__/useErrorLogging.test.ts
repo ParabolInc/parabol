@@ -6,7 +6,8 @@ import {useErrorLogging} from '../useErrorLogging'
 
 const yoga = createYoga({
   schema: createSchema({
-    typeDefs: 'type Query { crash: String, denied: String, logContext(teamId: ID): String }',
+    typeDefs:
+      'type Query { crash: String, denied: String, logContext(teamId: ID): String } type Subscription { logContext: String }',
     resolvers: {
       Query: {
         crash: () => {
@@ -16,6 +17,16 @@ const yoga = createYoga({
           throw new GraphQLError('Not authorized')
         },
         logContext: () => JSON.stringify(getLogContext())
+      },
+      Subscription: {
+        logContext: {
+          // like a published message, the event arrives after the subscription starts
+          subscribe: async function* () {
+            await new Promise((resolve) => setTimeout(resolve, 0))
+            yield {}
+          },
+          resolve: () => JSON.stringify(getLogContext())
+        }
       }
     }
   }),
@@ -38,6 +49,31 @@ const execute = async (
     {authToken: {sub: 'user1'}, ip: '203.0.113.7', ...serverContext}
   )
   return response.json()
+}
+
+// reads the first event from yoga's server-sent event stream, which pulls events from its own loop as graphql-ws does
+const subscribe = async (query: string, serverContext?: Record<string, unknown>) => {
+  const response = await yoga.fetch(
+    'http://localhost/graphql',
+    {
+      method: 'POST',
+      headers: {'content-type': 'application/json', accept: 'text/event-stream'},
+      body: JSON.stringify({query})
+    },
+    {authToken: {sub: 'user1'}, ip: '203.0.113.7', ...serverContext}
+  )
+  const reader = response.body!.getReader()
+  const decoder = new TextDecoder()
+  let stream = ''
+  let event: RegExpMatchArray | null = null
+  while (!event) {
+    const {value, done} = await reader.read()
+    if (done) break
+    stream += decoder.decode(value)
+    event = stream.match(/^data: (\{.*\})$/m)
+  }
+  await reader.cancel()
+  return JSON.parse(event![1]!)
 }
 
 let errorSpy: jest.SpyInstance
@@ -91,5 +127,17 @@ test('an operation joins the trace and the tab session its client sent', async (
     sessionId: 'tab-1',
     socketId: 'socket-1',
     component: 'graphql'
+  })
+})
+
+test('a subscription event resolves inside the log context of its operation', async () => {
+  const event = await subscribe('subscription LogContext { logContext }', {
+    traceparent: '00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01'
+  })
+  expect(JSON.parse(event.data.logContext)).toMatchObject({
+    userId: 'user1',
+    operationName: 'LogContext',
+    operationKind: 'subscription',
+    traceId: '4bf92f3577b34da6a3ce929d0e0e4736'
   })
 })

@@ -1,5 +1,6 @@
 import Redis from 'ioredis'
 import {getRedisOptions} from './getRedisOptions'
+import logRedisErrors from './logRedisErrors'
 
 // options in outer scope to read from fs only once
 const options = getRedisOptions()
@@ -14,5 +15,6 @@ export default class RedisInstance extends Redis {
       // Since subscribers can't call INFO this would otherwise break, especially in dev on quick server restarts
       enableReadyCheck: !connectionName.endsWith('sub')
     })
+    logRedisErrors(this, connectionName)
   }
 }
