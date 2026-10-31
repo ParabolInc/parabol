@@ -31,7 +31,13 @@ const createImposterToken: MutationResolvers['createImposterToken'] = async (
   const tms = await dataLoader.get('teamIdsByUserId').load(user.id)
   setAuthCookie(
     context,
-    new AuthToken({sub: user.id, tms, rol: 'impersonate', lifespan_ms: ms('5m')})
+    new AuthToken({
+      sub: user.id,
+      tms,
+      rol: 'impersonate',
+      lifespan_ms: ms('5m'),
+      act: {sub: viewerId}
+    })
   )
   return {userId: user.id}
 }

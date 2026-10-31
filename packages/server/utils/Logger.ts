@@ -110,6 +110,20 @@ const formatMessage = (message: unknown, params: unknown[], error: Error | undef
   return message instanceof Error ? error.message : `${util.format(message)}: ${error.message}`
 }
 
+export const makeTraceFields = (context: RequestLogContext) => ({
+  ...(context.traceId && {
+    trace_id: context.traceId,
+    span_id: context.spanId,
+    trace_flags: context.traceSampled ? '01' : '00'
+  }),
+  ...(isGoogleCloudFormat &&
+    context.traceId && {
+      'logging.googleapis.com/trace': context.traceId,
+      'logging.googleapis.com/spanId': context.spanId,
+      'logging.googleapis.com/trace_sampled': context.traceSampled
+    })
+})
+
 export const makeLogRecord = (
   level: LogLevel,
   message: unknown,
@@ -143,17 +157,7 @@ export const makeLogRecord = (
     env,
     version,
     ...(context.component && {component: context.component}),
-    ...(context.traceId && {
-      trace_id: context.traceId,
-      span_id: context.spanId,
-      trace_flags: context.traceSampled ? '01' : '00'
-    }),
-    ...(isGoogleCloudFormat &&
-      context.traceId && {
-        'logging.googleapis.com/trace': context.traceId,
-        'logging.googleapis.com/spanId': context.spanId,
-        'logging.googleapis.com/trace_sampled': context.traceSampled
-      }),
+    ...makeTraceFields(context),
     ...(userId && {userId, usr: {id: userId}}),
     ...(context.socketId && {socketId: context.socketId}),
     ...(context.sessionId && {sessionId: context.sessionId}),

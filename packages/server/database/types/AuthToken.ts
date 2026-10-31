@@ -4,6 +4,11 @@ import makeAppURL from '../../../client/utils/makeAppURL'
 import appOrigin from '../../appOrigin'
 import {toEpochSeconds} from '../../utils/epochTime'
 
+// RFC 8693 actor claim: the staff member acting as `sub` during an impersonation
+interface Actor {
+  sub: string
+}
+
 interface Input {
   sub: string
   tms: string[]
@@ -13,6 +18,7 @@ interface Input {
   scope?: string[]
   aud?: string
   jti?: string
+  act?: Actor
 }
 
 export default class AuthToken {
@@ -26,8 +32,9 @@ export default class AuthToken {
   exp: number
   aud: string
   jti: string
+  act?: Actor
   constructor(input: Input) {
-    const {bet, rol, sub, tms, lifespan_ms, scope, aud, jti} = input
+    const {act, bet, rol, sub, tms, lifespan_ms, scope, aud, jti} = input
     const now = new Date()
     this.sub = sub
     this.tms = tms
@@ -41,6 +48,9 @@ export default class AuthToken {
 
     if (bet) {
       this.bet = bet
+    }
+    if (act) {
+      this.act = act
     }
   }
 }

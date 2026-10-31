@@ -1,17 +1,31 @@
+import type AuthToken from './database/types/AuthToken'
 import writeAuditLog from './utils/writeAuditLog'
 
-const AUDIT_LOGS = process.env.AUDIT_LOGS === 'true'
-export const logOperation = (
-  userId: string,
-  ip: string,
-  operation: string,
-  variables: Record<string, any>
-) => {
-  if (!AUDIT_LOGS) return
+interface AuditedOperation {
+  authToken: AuthToken | null
+  personalAccessTokenId?: string
+  ip: string
+  operation: string
+  variables: unknown
+  failureReason?: string
+}
+
+export const logOperation = ({
+  authToken,
+  personalAccessTokenId,
+  ip,
+  operation,
+  variables,
+  failureReason
+}: AuditedOperation) => {
   writeAuditLog({
-    userId,
+    userId: authToken?.sub ?? '',
+    ...(authToken?.act && {impersonatorId: authToken.act.sub}),
+    ...(personalAccessTokenId && {personalAccessTokenId}),
     ipAddress: ip,
     operation,
-    variables
+    variables,
+    outcome: failureReason === undefined ? 'success' : 'failure',
+    ...(failureReason !== undefined && {reason: failureReason})
   })
 }

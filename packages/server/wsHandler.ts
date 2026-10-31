@@ -132,7 +132,7 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
     activeClients.set(extra.socketId, extra.socket)
     websocketConnects.inc()
     websocketConnectDuration.observe({outcome: 'connected'}, secondsSinceUpgrade(extra.socket))
-    logOperation(viewerId, extra.ip, 'connectSocket', {})
+    logOperation({authToken, ip: extra.ip, operation: 'connectSocket', variables: {}})
     if (socketCount === 0) {
       handleFirstConnection(user, teamIds).catch(Logger.log)
     }
