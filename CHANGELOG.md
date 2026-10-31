@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.15.0](https://github.com/ParabolInc/parabol/compare/v15.14.1...v15.15.0) (2026-10-31)
+
+
+### Added
+
+* **server:** audit every root field with its outcome and actor ([#13856](https://github.com/ParabolInc/parabol/issues/13856)) ([481dc57](https://github.com/ParabolInc/parabol/commit/481dc5774bca4d171f05b730bb69afaee33e926c))
+* **server:** count unexpected GraphQL errors and websocket connect outcomes for SLOs ([#13854](https://github.com/ParabolInc/parabol/issues/13854)) ([f3bdb10](https://github.com/ParabolInc/parabol/commit/f3bdb1055122d242b00af1b04506fd11f60ab021))
+* **server:** trace GraphQL operations, resolvers, Postgres, Valkey and outbound HTTP with OpenTelemetry ([#13857](https://github.com/ParabolInc/parabol/issues/13857)) ([c66f565](https://github.com/ParabolInc/parabol/commit/c66f565dd06ab945b2b3d71f894ee95004080e1c))
+
+
+### Changed
+
+* tell Kargo about each new release image ([#13858](https://github.com/ParabolInc/parabol/issues/13858)) ([24f1f34](https://github.com/ParabolInc/parabol/commit/24f1f345c1c649a59867684a2c4bd0a08eed2ff5))
+
 ## [15.14.1](https://github.com/ParabolInc/parabol/compare/v15.14.0...v15.14.1) (2026-10-31)
 
 
