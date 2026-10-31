@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.15.0](https://github.com/ParabolInc/parabol/compare/v15.14.1...v15.15.0) (2026-10-31)
+
+
+### Added
+
+* **server:** count unexpected GraphQL errors and websocket connect outcomes for SLOs ([#13854](https://github.com/ParabolInc/parabol/issues/13854)) ([f3bdb10](https://github.com/ParabolInc/parabol/commit/f3bdb1055122d242b00af1b04506fd11f60ab021))
+
 ## [15.14.1](https://github.com/ParabolInc/parabol/compare/v15.14.0...v15.14.1) (2026-10-31)
 
 
