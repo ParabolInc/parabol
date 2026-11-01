@@ -29,6 +29,7 @@ const DEV_ROOT = path.join(PROJECT_ROOT, 'dev')
 const LOG_ROOT = path.join(DEV_ROOT, 'logs')
 const WORKER_MANIFEST_PATH = path.join(PROJECT_ROOT, 'build', 'workerManifest.js')
 const MATTERMOST_TASK = 'Mattermost Plugin Dev Server'
+const KYSELY = path.join(PROJECT_ROOT, 'node_modules', '.bin', 'kysely')
 // The same as `pnpm pg:generate`, except the database comes from the environment so it also works for an isolated stack
 const KYSELY_CODEGEN =
   './node_modules/.bin/kysely-codegen --out-file ./packages/server/postgres/types/pg.d.ts --dialect postgres --url "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB" && ./node_modules/.bin/biome check --write ./packages/server/postgres/types/pg.d.ts'
@@ -282,7 +283,8 @@ const migrate = async () => {
   if (!isIsolated && !isSelected(name)) return
   if (await hasPendingMigrations(PROJECT_ROOT)) {
     state.hasMigrated = true
-    await runOnce(name, 'pnpm', ['kysely', 'migrate:latest'], true)
+    // not `pnpm kysely`: pnpm installs whatever node_modules lacks before it runs a bin, under the bundles that are being built
+    await runOnce(name, KYSELY, ['migrate:latest'], true)
   } else {
     getLog(name).line('The database is up to date')
   }
@@ -319,6 +321,9 @@ const dev = async () => {
     Object.values(children).forEach((child) => child.killNow())
     relayDevServer?.killNow()
   })
+
+  // a pull or a branch switch can leave node_modules behind the lockfile, so it is synced before any task or bundle reads it
+  await runOnce('pnpm Install', 'pnpm', ['install', '--frozen-lockfile'], true)
 
   // an isolated stack starts from an empty database & shares its valkey server, so these are not optional for it
   const flush = runOnce('Flush Valkey', process.execPath, ['scripts/flushValkey.mts'], isIsolated)

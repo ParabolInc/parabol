@@ -4,6 +4,7 @@ To begin development, run `pnpm dev` (`node scripts/dev.mts`).
 It runs the whole stack as 1 foreground process, so ctrl+c stops everything.
 
 - A git worktree that has no `.env` yet gets a copy of the one in the main checkout
+- `pnpm install --frozen-lockfile` runs before any task starts, so `node_modules` catches up with a pull or a branch switch that changed dependencies
 - If `PORT` & `SOCKET_PORT` are taken, e.g. by the stack of another worktree, both move up by 10 until they are free
 - `pnpm dev --isolated` gives the checkout its own database (`<POSTGRES_DB>_<directory name>`), its own valkey db, local file storage & the debug mailer
 - `pnpm dev --mattermost` also runs the Mattermost plugin dev server
