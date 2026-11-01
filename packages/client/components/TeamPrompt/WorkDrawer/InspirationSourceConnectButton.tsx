@@ -2,20 +2,15 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {InspirationSourceConnectButton_teamMember$key} from '../../../__generated__/InspirationSourceConnectButton_teamMember.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import useMutationProps from '../../../hooks/useMutationProps'
-import connectAzureDevOps from '../../../integrations/azureDevOps/connectAzureDevOps'
-import {getConnectProvider} from '../../../integrations/platform/findIntegrationService'
+import useConnectIntegrationService from '../../../hooks/useConnectIntegrationService'
+import {getClientIntegration} from '../../../integrations/platform/registry'
 import {Button} from '../../../ui/Button/Button'
-import AtlassianClientManager from '../../../utils/AtlassianClientManager'
-import GcalClientManager from '../../../utils/GcalClientManager'
-import GitHubClientManager from '../../../utils/GitHubClientManager'
-import LinearClientManager from '../../../utils/LinearClientManager'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
-import {serviceLabel} from './inspirationCopy'
+import inspirationServiceLabel from './inspirationServiceLabel'
 import type {InspirationSourceService} from './inspirationSources'
 
 interface Props {
-  service: InspirationSourceService
+  service: Exclude<InspirationSourceService, 'PARABOL'>
   meetingId: string
   teamMemberRef: InspirationSourceConnectButton_teamMember$key
 }
@@ -27,65 +22,25 @@ const InspirationSourceConnectButton = (props: Props) => {
       fragment InspirationSourceConnectButton_teamMember on TeamMember {
         teamId
         services {
-          ...findIntegrationService_cloudProvider @relay(mask: false)
-          ...connectAzureDevOps_service @relay(mask: false)
-        }
-        integrations {
-          atlassian {
-            scope
-          }
-          linear {
-            cloudProvider {
-              id
-              clientId
-              serverBaseUrl
-            }
-          }
-          gcal {
-            cloudProvider {
-              id
-              clientId
-            }
-          }
+          service
+          grantedScopes
+          ...integrationServiceProviders_service @relay(mask: false)
         }
       }
     `,
     teamMemberRef
   )
   const atmosphere = useAtmosphere()
-  const mutationProps = useMutationProps()
-  const {error, onError, submitting} = mutationProps
-  const {teamId, services, integrations} = teamMember
+  const {teamId, services} = teamMember
+  const definition = getClientIntegration(service)
+  const {connect, submitting, errorMessage} = useConnectIntegrationService(
+    definition,
+    services.find((candidate) => candidate.service === service),
+    teamId
+  )
 
-  const connect = () => {
-    if (service === 'github' || service === 'jira') {
-      const provider = getConnectProvider(services, service)
-      if (!provider) return onError(new Error(`Could not find the ${serviceLabel(service)} app`))
-      if (service === 'github') {
-        GitHubClientManager.openOAuth(atmosphere, teamId, provider, mutationProps)
-      } else {
-        AtlassianClientManager.openOAuth(
-          atmosphere,
-          teamId,
-          provider,
-          mutationProps,
-          AtlassianClientManager.JIRA_SCOPE,
-          integrations.atlassian?.scope
-        )
-      }
-    } else if (service === 'linear') {
-      const provider = integrations.linear?.cloudProvider
-      if (!provider) return onError(new Error('Could not find the Linear app'))
-      LinearClientManager.openOAuth(atmosphere, teamId, provider, mutationProps)
-    } else if (service === 'azureDevOps') {
-      if (!connectAzureDevOps(atmosphere, teamId, services, mutationProps)) {
-        return onError(new Error('Could not find the Azure DevOps app'))
-      }
-    } else if (service === 'gcal') {
-      const provider = integrations.gcal?.cloudProvider
-      if (!provider) return onError(new Error('Could not find the Google Calendar app'))
-      GcalClientManager.openOAuth(atmosphere, provider.id, provider.clientId, teamId, mutationProps)
-    }
+  const onConnect = () => {
+    if (!connect()) return
     SendClientSideEvent(atmosphere, 'Inspiration Drawer Integration Connected', {
       teamId,
       meetingId,
@@ -96,12 +51,12 @@ const InspirationSourceConnectButton = (props: Props) => {
   return (
     <div className='flex flex-col gap-2'>
       <p className='m-0 text-fg-secondary text-sm'>
-        Connect {serviceLabel(service)} to draft from your work there.
+        Connect {inspirationServiceLabel(service)} to draft from your work there.
       </p>
-      <Button variant='secondary' size='md' disabled={submitting} onClick={connect}>
-        Connect {serviceLabel(service)}
+      <Button variant='secondary' size='md' disabled={submitting} onClick={onConnect}>
+        Connect {inspirationServiceLabel(service)}
       </Button>
-      {error && <div className='text-fg-error text-sm'>{error.message}</div>}
+      {errorMessage && <div className='text-fg-error text-sm'>{errorMessage}</div>}
     </div>
   )
 }

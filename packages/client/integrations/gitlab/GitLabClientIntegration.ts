@@ -13,7 +13,8 @@ import {
   ClientIntegrationDefinition,
   type ConnectParams,
   type ProviderLogoAsset,
-  type ScopingCapability
+  type ScopingCapability,
+  type WorkDrawerCapability
 } from '../platform/ClientIntegrationDefinition'
 import {searchFiltersByKey} from '../platform/IntegrationSearchFilter'
 import makeScopingResults from '../platform/makeScopingResults'
@@ -65,13 +66,23 @@ const scoping: ScopingCapability = {
   selectAllNoun: 'issue'
 }
 
+const workDrawer: WorkDrawerCapability = {
+  Panel: lazy(
+    () =>
+      import(
+        /* webpackChunkName: 'GitLabIntegrationResultsRoot' */ '../../components/TeamPrompt/WorkDrawer/GitLabIntegrationResultsRoot'
+      )
+  ),
+  connectDescription: 'issues'
+}
+
 export class GitLabClientIntegration extends ClientIntegrationDefinition {
   readonly service = gitlabIntegrationMeta.service
   readonly title = gitlabIntegrationMeta.title
   readonly description = gitlabIntegrationMeta.description
   readonly Icon = GitLabSVG
   readonly logo: ProviderLogoAsset = {src: gitlabLogo}
-  readonly capabilities: ClientIntegrationCapabilities = {scoping}
+  readonly capabilities: ClientIntegrationCapabilities = {scoping, workDrawer}
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
     if (!provider?.clientId || !provider.serverBaseUrl) return
     GitLabClientManager.openOAuth(

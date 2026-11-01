@@ -5,6 +5,7 @@ import {
   type EstimatePushCapability,
   type IntegrationCtx,
   type IssueCreateCapability,
+  type IssueListCapability,
   type IssueReadCapability,
   type IssueSearchCapability,
   type RepoAccessCapability,
@@ -19,6 +20,7 @@ import fetchAvailableAzureDevOpsProjects, {
 import fetchAzureDevOpsProjects from './fetchAzureDevOpsProjects'
 import getAzureDevOpsManager from './getAzureDevOpsManager'
 import listAzureDevOpsDimensionFields from './listAzureDevOpsDimensionFields'
+import listAzureDevOpsIssues from './listAzureDevOpsIssues'
 import parseAzureDevOpsIntegrationHash from './parseAzureDevOpsIntegrationHash'
 import pushEstimateToAzureDevOps from './pushEstimateToAzureDevOps'
 import resolveAzureDevOpsDimensionFieldKey from './resolveAzureDevOpsDimensionFieldKey'
@@ -37,6 +39,7 @@ export class AzureDevOpsServerIntegration extends ServerIntegrationDefinition {
 
   readonly capabilities: {
     issueCreate: IssueCreateCapability
+    issueList: IssueListCapability
     issueRead: IssueReadCapability
     issueSearch: IssueSearchCapability<AzureDevOpsSearchQueryJson>
     repoList: RepoListCapability<AzureDevOpsProject>
@@ -44,6 +47,7 @@ export class AzureDevOpsServerIntegration extends ServerIntegrationDefinition {
     estimatePush: EstimatePushCapability
   } = {
     issueCreate: {initManager: getAzureDevOpsManager},
+    issueList: {listIssues: listAzureDevOpsIssues},
     issueRead: {
       getIssue: resolveAzureDevOpsTaskIntegration,
       parseIntegrationHash: parseAzureDevOpsIntegrationHash

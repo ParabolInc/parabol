@@ -1,22 +1,18 @@
-import type {GraphQLResolveInfo} from 'graphql'
-import type {SearchIssuesQuery} from '../../../../types/githubTypes'
-import getGitHubRequest from '../../../../utils/getGitHubRequest'
-import searchIssues from '../../../../utils/githubQueries/searchIssues.graphql'
-import {Logger} from '../../../../utils/Logger'
-import type {DataLoaderWorker, GQLContext} from '../../../graphql'
-import {type InspirationIssue, MAX_ISSUE_COMMENTS, MAX_ISSUES} from './issuesForAI'
+import type {SearchIssuesQuery} from '../../types/githubTypes'
+import getGitHubRequest from '../../utils/getGitHubRequest'
+import searchIssues from '../../utils/githubQueries/searchIssues.graphql'
+import {Logger} from '../../utils/Logger'
+import {type InspirationIssue, MAX_ISSUE_COMMENTS, MAX_ISSUES} from '../platform/InspirationIssue'
+import type {GqlIntegrationCtx} from '../platform/ServerIntegrationDefinition'
 
 // Re-runs the GitHub search the user saw in the Your Work drawer, server-side, but fetches the
 // full body + discussion thread for each item so the AI has enough context to draft a response.
 // Returns the normalized issues, or [] if there's nothing to send.
-const fetchGitHubIssues = async (
-  teamId: string,
-  userId: string,
-  searchQuery: string,
-  dataLoader: DataLoaderWorker,
-  context: GQLContext,
-  info: GraphQLResolveInfo
+const listGitHubIssues = async (
+  ctx: GqlIntegrationCtx,
+  searchQuery: string
 ): Promise<InspirationIssue[]> => {
+  const {dataLoader, context, info, teamId, userId} = ctx
   const auth = await dataLoader.get('githubAuth').load({teamId, userId})
   if (!auth) return []
   const {accessToken} = auth
@@ -66,4 +62,4 @@ const fetchGitHubIssues = async (
   return items
 }
 
-export default fetchGitHubIssues
+export default listGitHubIssues

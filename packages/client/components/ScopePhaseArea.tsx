@@ -74,6 +74,7 @@ const ScopePhaseArea = (props: Props) => {
           ) : (
             <ScopePhaseAreaConnect
               teamId={teamId}
+              definition={definition}
               serviceRef={integrationService}
               gotoParabol={gotoParabol}
             />

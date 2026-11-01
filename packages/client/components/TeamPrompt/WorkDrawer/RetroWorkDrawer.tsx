@@ -1,34 +1,26 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect} from 'react'
+import {Suspense, useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import type {RetroWorkDrawer_meeting$key} from '../../../__generated__/RetroWorkDrawer_meeting.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useSessionStorageState from '../../../hooks/useSessionStorageState'
 import {
-  getConnectProvider,
-  isServiceAvailable
-} from '../../../integrations/platform/findIntegrationService'
-import gcalLogo from '../../../styles/theme/images/graphics/google-calendar.svg'
+  compareClientIntegrationPopularity,
+  getClientIntegration,
+  isRegisteredClientIntegration
+} from '../../../integrations/platform/registry'
 import {cn} from '../../../ui/cn'
 import dndNoise from '../../../utils/dndNoise'
 import getNextSortOrder from '../../../utils/getNextSortOrder'
+import {Loader} from '../../../utils/relay/renderLoader'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
-import AzureDevOpsSVG from '../../AzureDevOpsSVG'
-import GitHubSVG from '../../GitHubSVG'
-import GitLabSVG from '../../GitLabSVG'
-import JiraServerSVG from '../../JiraServerSVG'
-import JiraSVG from '../../JiraSVG'
-import LinearSVG from '../../LinearSVG'
+import ErrorBoundary from '../../ErrorBoundary'
 import ParabolLogoSVG from '../../ParabolLogoSVG'
-import AzureDevOpsIntegrationPanel from './AzureDevOpsIntegrationPanel'
-import GCalIntegrationPanel from './GCalIntegrationPanel'
-import GitHubIntegrationPanel from './GitHubIntegrationPanel'
-import GitLabIntegrationPanel from './GitLabIntegrationPanel'
-import JiraIntegrationPanel from './JiraIntegrationPanel'
-import JiraServerIntegrationPanel from './JiraServerIntegrationPanel'
-import LinearIntegrationPanel from './LinearIntegrationPanel'
 import ParabolTasksPanel from './ParabolTasksPanel'
+import WorkDrawerConnect from './WorkDrawerConnect'
 import WorkDrawerConsumeContext from './WorkDrawerConsumeContext'
+
+const PARABOL_TAB_KEY = 'PARABOL'
 
 interface Props {
   meetingRef: RetroWorkDrawer_meeting$key
@@ -59,41 +51,13 @@ const RetroWorkDrawer = (props: Props) => {
           }
         }
         ...ParabolTasksPanel_meeting
-        ...GitHubIntegrationPanel_meeting
-        ...GitLabIntegrationPanel_meeting
-        ...JiraIntegrationPanel_meeting
-        ...GCalIntegrationPanel_meeting
-        ...JiraServerIntegrationPanel_meeting
-        ...LinearIntegrationPanel_meeting
-        ...AzureDevOpsIntegrationPanel_meeting
         viewerMeetingMember {
           teamMember {
-            teamId
             services {
-              ...findIntegrationService_cloudProvider @relay(mask: false)
-              ...findIntegrationService_isAvailable @relay(mask: false)
-            }
-            integrations {
-              jiraServer {
-                sharedProviders {
-                  id
-                }
-              }
-              gcal {
-                cloudProvider {
-                  id
-                }
-              }
-              linear {
-                cloudProvider {
-                  id
-                }
-              }
-              gitlab {
-                cloudProvider {
-                  id
-                }
-              }
+              service
+              isAvailable
+              isConnected
+              ...WorkDrawerConnect_service
             }
           }
         }
@@ -102,22 +66,13 @@ const RetroWorkDrawer = (props: Props) => {
     meetingRef
   )
   const atmosphere = useAtmosphere()
-  const hasJiraServer =
-    !!meeting.viewerMeetingMember?.teamMember?.integrations.jiraServer?.sharedProviders?.length
-  const hasLinear =
-    !!meeting.viewerMeetingMember?.teamMember?.integrations.linear?.cloudProvider?.id
-  const hasGCal = !!meeting.viewerMeetingMember?.teamMember?.integrations.gcal?.cloudProvider?.id
-  const hasGitLab =
-    !!meeting.viewerMeetingMember?.teamMember?.integrations.gitlab?.cloudProvider?.id
+  const {id: meetingId, teamId} = meeting
   const services = meeting.viewerMeetingMember?.teamMember?.services ?? []
-  const hasGitHub = !!getConnectProvider(services, 'github')
-  const hasJira = !!getConnectProvider(services, 'jira')
-  const hasAzureDevOps = isServiceAvailable(services, 'azureDevOps')
 
   useEffect(() => {
     SendClientSideEvent(atmosphere, 'Inspiration Drawer Impression', {
-      teamId: meeting.teamId,
-      meetingId: meeting.id
+      teamId,
+      meetingId
     })
   }, [])
 
@@ -144,89 +99,52 @@ const RetroWorkDrawer = (props: Props) => {
     )
   }
 
+  const serviceTabs = services.flatMap((integrationService) => {
+    const {service, isAvailable, isConnected} = integrationService
+    if (!isAvailable || !isRegisteredClientIntegration(service)) return []
+    const definition = getClientIntegration(service)
+    const {workDrawer} = definition.capabilities
+    if (!workDrawer) return []
+    const {Panel} = workDrawer
+    return [
+      {
+        service,
+        icon: <definition.Icon className={definition.iconClassName} />,
+        label: definition.title,
+        renderPanel: () =>
+          isConnected ? (
+            <ErrorBoundary key={service}>
+              <Suspense fallback={<Loader />}>
+                <Panel meetingId={meetingId} teamId={teamId} />
+              </Suspense>
+            </ErrorBoundary>
+          ) : (
+            <WorkDrawerConnect
+              meetingId={meetingId}
+              teamId={teamId}
+              definition={definition}
+              connectDescription={workDrawer.connectDescription}
+              serviceRef={integrationService}
+            />
+          )
+      }
+    ]
+  })
   const baseTabs = [
     {
       icon: <ParabolLogoSVG />,
-      service: 'PARABOL',
+      service: PARABOL_TAB_KEY,
       label: 'Parabol',
-      Component: ParabolTasksPanel
+      renderPanel: () => <ParabolTasksPanel meetingRef={meeting} />
     },
-    ...(hasJiraServer
-      ? [
-          {
-            icon: <JiraServerSVG />,
-            service: 'jiraServer',
-            label: 'Jira Data Center',
-            Component: JiraServerIntegrationPanel
-          }
-        ]
-      : []),
-    ...(hasGitHub
-      ? [
-          {
-            icon: <GitHubSVG className='dark:[&_path]:fill-white' />,
-            service: 'github',
-            label: 'GitHub',
-            Component: GitHubIntegrationPanel
-          }
-        ]
-      : []),
-    ...(hasGitLab
-      ? [
-          {
-            icon: <GitLabSVG />,
-            service: 'gitlab',
-            label: 'GitLab',
-            Component: GitLabIntegrationPanel
-          }
-        ]
-      : []),
-    ...(hasJira
-      ? [
-          {
-            icon: <JiraSVG />,
-            service: 'jira',
-            label: 'Jira',
-            Component: JiraIntegrationPanel
-          }
-        ]
-      : []),
-    ...(hasLinear
-      ? [
-          {
-            icon: <LinearSVG className='dark:[&_path]:fill-white' />,
-            service: 'linear',
-            label: 'Linear',
-            Component: LinearIntegrationPanel
-          }
-        ]
-      : []),
-    ...(hasAzureDevOps
-      ? [
-          {
-            icon: <AzureDevOpsSVG />,
-            service: 'azureDevOps',
-            label: 'Azure DevOps',
-            Component: AzureDevOpsIntegrationPanel
-          }
-        ]
-      : []),
-    ...(hasGCal
-      ? [
-          {
-            icon: <img className='h-6 w-6' src={gcalLogo} />,
-            service: 'gcal',
-            label: 'Google Calendar',
-            Component: GCalIntegrationPanel
-          }
-        ]
-      : [])
-  ] as const
+    ...serviceTabs.sort((a, b) => compareClientIntegrationPopularity(a.service, b.service))
+  ]
 
   // Default to the first enabled non-Parabol integration, falling back to the Parabol section
-  const defaultService = baseTabs.find((tab) => tab.service !== 'PARABOL')?.service ?? 'PARABOL'
+  const defaultService =
+    baseTabs.find((tab) => tab.service !== PARABOL_TAB_KEY)?.service ?? PARABOL_TAB_KEY
   const [activeService, setActiveService] = useSessionStorageState<string>(
-    `Inspiration:tab:${meeting.id}`,
+    `Inspiration:tab:${meetingId}`,
     defaultService
   )
   const activeIdx = Math.max(
@@ -234,7 +152,7 @@ const RetroWorkDrawer = (props: Props) => {
     baseTabs.findIndex((tab) => tab.service === activeService)
   )
 
-  const {Component} = baseTabs[activeIdx]!
+  const {renderPanel} = baseTabs[activeIdx]!
 
   return (
     <WorkDrawerConsumeContext.Provider
@@ -249,8 +167,8 @@ const RetroWorkDrawer = (props: Props) => {
                 title={tab.label}
                 onClick={() => {
                   SendClientSideEvent(atmosphere, 'Your Work Integration Clicked', {
-                    teamId: meeting.teamId,
-                    meetingId: meeting.id,
+                    teamId,
+                    meetingId,
                     service: baseTabs[idx]?.service
                   })
                   setActiveService(tab.service)
@@ -268,7 +186,7 @@ const RetroWorkDrawer = (props: Props) => {
             ))}
           </div>
         </div>
-        <Component meetingRef={meeting} />
+        {renderPanel()}
       </div>
     </WorkDrawerConsumeContext.Provider>
   )

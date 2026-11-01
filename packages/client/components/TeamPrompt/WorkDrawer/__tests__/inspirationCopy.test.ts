@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import {dateRangeLabel, issueCountLabel, serviceLabel, usedLabel} from '../inspirationCopy'
+import {dateRangeLabel, issueCountLabel, usedLabel} from '../inspirationCopy'
 
 describe('dateRangeLabel', () => {
   const local = (time: string) => dayjs(time).toISOString()
@@ -37,17 +37,5 @@ describe('issueCountLabel', () => {
 
   it('says when a source has not been drafted from yet', () => {
     expect(issueCountLabel(undefined)).toBe('Not drafted yet')
-  })
-})
-
-describe('serviceLabel', () => {
-  it('maps known services to their display name', () => {
-    expect(serviceLabel('github')).toBe('GitHub')
-    expect(serviceLabel('jiraServer')).toBe('Jira Data Center')
-    expect(serviceLabel('PARABOL')).toBe('Parabol')
-  })
-
-  it('falls back to the raw service string for unknown services', () => {
-    expect(serviceLabel('slack')).toBe('slack')
   })
 })
