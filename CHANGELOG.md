@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.15.1](https://github.com/ParabolInc/parabol/compare/v15.15.0...v15.15.1) (2026-11-01)
+
+
+### Fixed
+
+* **server:** answer GET /stripe with a 405 ([#13872](https://github.com/ParabolInc/parabol/issues/13872)) ([8e39095](https://github.com/ParabolInc/parabol/commit/8e390958aae54d1d90a5815a795af3cb49c8b49c))
+* **server:** ignore schema extension attributes in SCIM PATCH requests ([#13869](https://github.com/ParabolInc/parabol/issues/13869)) ([5910316](https://github.com/ParabolInc/parabol/commit/5910316bcee40c2629d842b674acaa201019c5d5))
+
+
+### Changed
+
+* **gh-actions:** remove the docker-external workflow ([#13868](https://github.com/ParabolInc/parabol/issues/13868)) ([1ea011f](https://github.com/ParabolInc/parabol/commit/1ea011fd50eed97c86a8bd07e3d656a76f674210))
+
 ## [15.15.0](https://github.com/ParabolInc/parabol/compare/v15.14.1...v15.15.0) (2026-10-31)
 
 
