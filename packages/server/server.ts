@@ -79,6 +79,9 @@ const app = uws
   .get('/health', yoga)
   .get('/ready', yoga)
   .post('/stripe', stripeWebhookHandler)
+  .get('/stripe', (res) => {
+    res.writeStatus('405 Method Not Allowed').writeHeader('Allow', 'POST').end()
+  })
   .post('/mattermost', mattermostWebhookHandler)
   .post('/zoom', zoomWebhookHandler)
   .post('/client-errors', clientErrorsHandler)
