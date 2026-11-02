@@ -35,7 +35,7 @@ const createImposterToken: MutationResolvers['createImposterToken'] = async (
       sub: user.id,
       tms,
       rol: 'impersonate',
-      lifespan_ms: ms('5m'),
+      lifespan_ms: ms('2h'),
       act: {sub: viewerId}
     })
   )
