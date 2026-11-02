@@ -5,6 +5,22 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.15.1](https://github.com/ParabolInc/parabol/compare/v15.15.0...v15.15.1) (2026-11-02)
+
+
+### Fixed
+
+* **server:** answer GET /stripe with a 405 ([#13872](https://github.com/ParabolInc/parabol/issues/13872)) ([8e39095](https://github.com/ParabolInc/parabol/commit/8e390958aae54d1d90a5815a795af3cb49c8b49c))
+* **server:** attach Zoom summaries and transcripts that arrive before the meeting ends ([#13895](https://github.com/ParabolInc/parabol/issues/13895)) ([175bcc6](https://github.com/ParabolInc/parabol/commit/175bcc6f4ab865d88a73c7b09e9772ec14fa5fb4))
+* **server:** ignore schema extension attributes in SCIM PATCH requests ([#13869](https://github.com/ParabolInc/parabol/issues/13869)) ([5910316](https://github.com/ParabolInc/parabol/commit/5910316bcee40c2629d842b674acaa201019c5d5))
+* **server:** keep an impersonation token's expiry when it is re-issued ([#13861](https://github.com/ParabolInc/parabol/issues/13861)) ([5749752](https://github.com/ParabolInc/parabol/commit/5749752a58bc618a29c66f95e6f31cb8c06b9e33))
+
+
+### Changed
+
+* **gh-actions:** remove the docker-external workflow ([#13868](https://github.com/ParabolInc/parabol/issues/13868)) ([1ea011f](https://github.com/ParabolInc/parabol/commit/1ea011fd50eed97c86a8bd07e3d656a76f674210))
+* **gh-actions:** remove the ironbank workflow ([#13873](https://github.com/ParabolInc/parabol/issues/13873)) ([57dfb15](https://github.com/ParabolInc/parabol/commit/57dfb15e845036e9b8bc0f61bb38d8f21988b77d))
+
 ## [15.15.0](https://github.com/ParabolInc/parabol/compare/v15.14.1...v15.15.0) (2026-10-31)
 
 
