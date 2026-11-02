@@ -1,7 +1,7 @@
 import {sql} from 'kysely'
 import getKysely from '../postgres/getKysely'
 
-const MATCH_WINDOW_MS = 30 * 60 * 1000 // ±30 minutes
+export const MATCH_WINDOW_MS = 30 * 60 * 1000 // ±30 minutes
 
 type HostAuth = {
   userId: string

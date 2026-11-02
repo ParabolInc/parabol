@@ -3,16 +3,47 @@ jest.mock('../../../utils/getReqAuth', () => ({__esModule: true, default: () => 
 jest.mock('../../gmeet/attachTranscriptToSummaryPage', () => ({
   attachTranscriptToSummaryPage: jest.fn()
 }))
-jest.mock('../../matchExternalMeetingToMeeting', () => ({matchExternalMeetingToMeeting: jest.fn()}))
+jest.mock('../../matchExternalMeetingToMeeting', () => ({
+  ...jest.requireActual('../../matchExternalMeetingToMeeting'),
+  matchExternalMeetingToMeeting: jest.fn()
+}))
 jest.mock('@whatwg-node/fetch', () => ({fetch: jest.fn()}))
+jest.mock('../../../utils/getRedis', () => {
+  const pipeline = {
+    hset: (key: string, field: string, value: string) => {
+      mockRedisHash(key).set(field, value)
+      return pipeline
+    },
+    pexpire: () => pipeline,
+    exec: async () => []
+  }
+  const redis = {
+    multi: () => pipeline,
+    hdel: async (key: string, field: string) => Number(mockRedisHash(key).delete(field)),
+    hvals: async (key: string) => [...mockRedisHash(key).values()]
+  }
+  return {__esModule: true, default: () => redis}
+})
 
 import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import {fetch} from '@whatwg-node/fetch'
 import {createHmac} from 'crypto'
 import getKysely from '../../../postgres/getKysely'
-import zoomWebhookHandler from '../zoomWebhookHandler'
+import {attachTranscriptToSummaryPage} from '../../gmeet/attachTranscriptToSummaryPage'
+import {matchExternalMeetingToMeeting} from '../../matchExternalMeetingToMeeting'
+import zoomWebhookHandler, {attachHeldZoomEvents} from '../zoomWebhookHandler'
+
+const mockRedisHashes = new Map<string, Map<string, string>>()
+const mockRedisHash = (key: string) => {
+  const hash = mockRedisHashes.get(key) ?? new Map<string, string>()
+  mockRedisHashes.set(key, hash)
+  return hash
+}
 
 const mockedGetKysely = getKysely as jest.MockedFunction<typeof getKysely>
+const mockedMatch = matchExternalMeetingToMeeting as jest.MockedFunction<
+  typeof matchExternalMeetingToMeeting
+>
 
 const SECRET = 'zoom-webhook-test-secret'
 const urlValidation = JSON.stringify({
@@ -75,6 +106,21 @@ const transcriptCompleted = (downloadUrl: string) =>
       }
     }
   })
+
+const summaryCompleted = (meetingEndTime: Date) =>
+  JSON.stringify({
+    event: 'meeting.summary_completed',
+    payload: {
+      object: {
+        meeting_host_id: 'zoom-host-id',
+        meeting_uuid: 'zoom-meeting-uuid',
+        meeting_end_time: meetingEndTime.toISOString(),
+        summary_overview: 'We agreed to ship on Friday.'
+      }
+    }
+  })
+
+const minutesAgo = (minutes: number) => new Date(Date.now() - minutes * 60 * 1000)
 
 const waitForDispatch = () => new Promise((resolve) => setImmediate(resolve))
 
@@ -161,6 +207,92 @@ describe('zoomWebhookHandler', () => {
       await waitForDispatch()
       expect(reply.status).toBe('200 OK')
       expect(pg.selectFrom).toHaveBeenCalledWith('TeamMemberIntegrationAuth')
+    })
+  })
+
+  describe('a call reported before its Parabol meeting ends', () => {
+    const hostZoomAuths = [{userId: 'local|host', teamId: 'team-id'}]
+    const teamZoomHosts = [{providerUserId: 'zoom-host-id'}]
+    const pg = {
+      selectFrom: jest.fn().mockReturnThis(),
+      innerJoin: jest.fn().mockReturnThis(),
+      select: jest.fn().mockReturnThis(),
+      distinct: jest.fn().mockReturnThis(),
+      where: jest.fn().mockReturnThis(),
+      $narrowType: jest.fn().mockReturnThis(),
+      insertInto: jest.fn().mockReturnThis(),
+      values: jest.fn().mockReturnThis(),
+      onConflict: jest.fn().mockReturnThis(),
+      execute: jest.fn(),
+      executeTakeFirst: jest.fn()
+    }
+
+    const reportCall = async (meetingEndTime: Date) => {
+      pg.execute.mockResolvedValueOnce(hostZoomAuths)
+      mockedMatch.mockResolvedValueOnce(null)
+      const body = summaryCompleted(meetingEndTime)
+      await send(signedHeaders(body), [body])
+      await waitForDispatch()
+    }
+
+    beforeAll(() => {
+      mockedGetKysely.mockReturnValue(pg as unknown as ReturnType<typeof getKysely>)
+      jest.spyOn(console, 'info').mockImplementation(() => {})
+    })
+
+    afterEach(() => {
+      mockRedisHashes.clear()
+    })
+
+    afterAll(() => {
+      jest.restoreAllMocks()
+    })
+
+    it('attaches the summary once a meeting of the host ends', async () => {
+      await reportCall(minutesAgo(1))
+      expect(attachTranscriptToSummaryPage).not.toHaveBeenCalled()
+
+      pg.execute.mockResolvedValueOnce(teamZoomHosts).mockResolvedValueOnce(hostZoomAuths)
+      mockedMatch.mockResolvedValueOnce({
+        teamId: 'team-id',
+        name: 'Sprint Retro',
+        summaryPageId: 7,
+        userId: 'local|host'
+      })
+      pg.executeTakeFirst.mockResolvedValueOnce({numInsertedOrUpdatedRows: 1n})
+      await attachHeldZoomEvents('team-id')
+      expect(attachTranscriptToSummaryPage).toHaveBeenCalledWith(
+        7,
+        [{title: 'Zoom Summary for Sprint Retro', content: expect.anything()}],
+        'local|host',
+        'zoom:summary:zoom-meeting-uuid'
+      )
+
+      pg.execute.mockResolvedValueOnce(teamZoomHosts)
+      await attachHeldZoomEvents('team-id')
+      expect(mockedMatch).toHaveBeenCalledTimes(2)
+      expect(attachTranscriptToSummaryPage).toHaveBeenCalledTimes(1)
+    })
+
+    it('lets the call go once no meeting could end near it', async () => {
+      await reportCall(minutesAgo(1))
+      const dateNow = jest.spyOn(Date, 'now').mockReturnValue(Date.now() + 30 * 60 * 1000)
+      pg.execute.mockResolvedValueOnce(teamZoomHosts).mockResolvedValueOnce(hostZoomAuths)
+      mockedMatch.mockResolvedValueOnce(null)
+      await attachHeldZoomEvents('team-id')
+      dateNow.mockRestore()
+
+      pg.execute.mockResolvedValueOnce(teamZoomHosts)
+      await attachHeldZoomEvents('team-id')
+      expect(mockedMatch).toHaveBeenCalledTimes(2)
+      expect(attachTranscriptToSummaryPage).not.toHaveBeenCalled()
+    })
+
+    it('does not hold a call reported after its window closed', async () => {
+      await reportCall(minutesAgo(31))
+      pg.execute.mockResolvedValueOnce(teamZoomHosts)
+      await attachHeldZoomEvents('team-id')
+      expect(mockedMatch).toHaveBeenCalledTimes(1)
     })
   })
 })

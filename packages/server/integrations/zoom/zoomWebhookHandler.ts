@@ -8,13 +8,16 @@ import type {TipTapSerializedPageContent} from 'parabol-client/shared/tiptap/Tip
 import uWSAsyncHandler from '../../graphql/uWSAsyncHandler'
 import parseBody from '../../parseBody'
 import getKysely from '../../postgres/getKysely'
+import getRedis from '../../utils/getRedis'
 import {Logger} from '../../utils/Logger'
 import {attachTranscriptToSummaryPage} from '../gmeet/attachTranscriptToSummaryPage'
-import {matchExternalMeetingToMeeting} from '../matchExternalMeetingToMeeting'
+import {MATCH_WINDOW_MS, matchExternalMeetingToMeeting} from '../matchExternalMeetingToMeeting'
 import {processZoomTranscript} from './processZoomTranscript'
 
 const MAX_WEBHOOK_BODY_BYTES = 1_000_000
 const MAX_TIMESTAMP_AGE = ms('5m')
+
+const getHeldEventsKey = (hostId: string) => `zoomHeldEvents:${hostId}`
 
 type ZoomRecordingFile = {
   id: string
@@ -63,10 +66,9 @@ type ZoomUrlValidationPayload = {
   payload: {plainToken: string}
 }
 
-type ZoomWebhookPayload =
-  | ZoomRecordingCompletedPayload
-  | ZoomSummaryCompletedPayload
-  | ZoomUrlValidationPayload
+type ZoomFileEvent = ZoomRecordingCompletedPayload | ZoomSummaryCompletedPayload
+
+type ZoomWebhookPayload = ZoomFileEvent | ZoomUrlValidationPayload
 
 const verifyZoomSignature = (
   secret: string,
@@ -152,7 +154,12 @@ const dispatchZoomEvent = async (payload: ZoomWebhookPayload) => {
   }
 }
 
-const claimHostMeeting = async (hostId: string, meetingEndedAt: Date, externalId: string) => {
+const claimHostMeeting = async (
+  event: ZoomFileEvent,
+  hostId: string,
+  meetingEndedAt: Date,
+  externalId: string
+) => {
   const pg = getKysely()
   const hostAuths = await pg
     .selectFrom('TeamMemberIntegrationAuth')
@@ -166,12 +173,27 @@ const claimHostMeeting = async (hostId: string, meetingEndedAt: Date, externalId
     return null
   }
   const meeting = await matchExternalMeetingToMeeting(meetingEndedAt, hostAuths)
+  const heldEventsKey = getHeldEventsKey(hostId)
   if (!meeting) {
-    Logger.log(
-      `${externalId}: no meeting of host ${hostId} ended near ${meetingEndedAt.toISOString()}`
-    )
+    // Zoom often reports a call before anyone has ended its Parabol meeting, so wait for one to end
+    if (Date.now() < meetingEndedAt.getTime() + MATCH_WINDOW_MS) {
+      await getRedis()
+        .multi()
+        .hset(heldEventsKey, externalId, JSON.stringify(event))
+        .pexpire(heldEventsKey, MATCH_WINDOW_MS)
+        .exec()
+      Logger.log(
+        `${externalId}: holding until a meeting of host ${hostId} ends near ${meetingEndedAt.toISOString()}`
+      )
+    } else {
+      await getRedis().hdel(heldEventsKey, externalId)
+      Logger.log(
+        `${externalId}: no meeting of host ${hostId} ended near ${meetingEndedAt.toISOString()}`
+      )
+    }
     return null
   }
+  await getRedis().hdel(heldEventsKey, externalId)
   const insertResult = await pg
     .insertInto('ExternalMeetingFile')
     .values({id: externalId, teamId: meeting.teamId})
@@ -205,7 +227,7 @@ const processTranscriptCompleted = async (payload: ZoomRecordingCompletedPayload
   }
   // the payload's duration is the scheduled length, so only the recording knows when the call ended
   const endedAt = new Date(transcriptFile.recording_end)
-  const meeting = await claimHostMeeting(host_id, endedAt, externalId)
+  const meeting = await claimHostMeeting(payload, host_id, endedAt, externalId)
   if (!meeting) return
 
   await releaseClaimOnFailure(externalId, async () => {
@@ -250,7 +272,7 @@ const processSummaryCompleted = async (payload: ZoomSummaryCompletedPayload) => 
   }
 
   const endedAt = new Date(summary.meeting_end_time)
-  const meeting = await claimHostMeeting(summary.meeting_host_id, endedAt, externalId)
+  const meeting = await claimHostMeeting(payload, summary.meeting_host_id, endedAt, externalId)
   if (!meeting) return
 
   await releaseClaimOnFailure(externalId, async () => {
@@ -268,6 +290,27 @@ const processSummaryCompleted = async (payload: ZoomSummaryCompletedPayload) => 
       externalId
     )
   })
+}
+
+export const attachHeldZoomEvents = async (teamId: string) => {
+  const hosts = await getKysely()
+    .selectFrom('TeamMember')
+    .innerJoin('TeamMemberIntegrationAuth', 'TeamMemberIntegrationAuth.userId', 'TeamMember.userId')
+    .select('TeamMemberIntegrationAuth.providerUserId')
+    .distinct()
+    .where('TeamMember.teamId', '=', teamId)
+    .where('TeamMember.isNotRemoved', '=', true)
+    .where('TeamMemberIntegrationAuth.service', '=', 'zoom')
+    .where('TeamMemberIntegrationAuth.isActive', '=', true)
+    .where('TeamMemberIntegrationAuth.providerUserId', 'is not', null)
+    .$narrowType<{providerUserId: string}>()
+    .execute()
+  for (const {providerUserId} of hosts) {
+    const heldEvents = await getRedis().hvals(getHeldEventsKey(providerUserId))
+    for (const heldEvent of heldEvents) {
+      await dispatchZoomEvent(JSON.parse(heldEvent) as ZoomFileEvent).catch(Logger.log)
+    }
+  }
 }
 
 export default zoomWebhookHandler
