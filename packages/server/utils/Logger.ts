@@ -2,6 +2,7 @@ import tracer from 'dd-trace'
 import formats from 'dd-trace/ext/formats'
 import {GraphQLError} from 'graphql'
 import util from 'util'
+import getActiveSpanLogContext from '../tracing/getActiveSpanLogContext'
 import getErrorFingerprint from './getErrorFingerprint'
 import {maskCredentials} from './maskCredentials'
 import {getLogContext, type RequestLogContext} from './requestLogContext'
@@ -110,6 +111,20 @@ const formatMessage = (message: unknown, params: unknown[], error: Error | undef
   return message instanceof Error ? error.message : `${util.format(message)}: ${error.message}`
 }
 
+export const makeTraceFields = (context: RequestLogContext) => ({
+  ...(context.traceId && {
+    trace_id: context.traceId,
+    span_id: context.spanId,
+    trace_flags: context.traceSampled ? '01' : '00'
+  }),
+  ...(isGoogleCloudFormat &&
+    context.traceId && {
+      'logging.googleapis.com/trace': context.traceId,
+      'logging.googleapis.com/spanId': context.spanId,
+      'logging.googleapis.com/trace_sampled': context.traceSampled
+    })
+})
+
 export const makeLogRecord = (
   level: LogLevel,
   message: unknown,
@@ -143,17 +158,7 @@ export const makeLogRecord = (
     env,
     version,
     ...(context.component && {component: context.component}),
-    ...(context.traceId && {
-      trace_id: context.traceId,
-      span_id: context.spanId,
-      trace_flags: context.traceSampled ? '01' : '00'
-    }),
-    ...(isGoogleCloudFormat &&
-      context.traceId && {
-        'logging.googleapis.com/trace': context.traceId,
-        'logging.googleapis.com/spanId': context.spanId,
-        'logging.googleapis.com/trace_sampled': context.traceSampled
-      }),
+    ...makeTraceFields(context),
     ...(userId && {userId, usr: {id: userId}}),
     ...(context.socketId && {socketId: context.socketId}),
     ...(context.sessionId && {sessionId: context.sessionId}),
@@ -232,7 +237,10 @@ function trace(level: LogLevel, message: unknown, ...params: unknown[]) {
     }
     return
   }
-  const record = makeLogRecord(level, message, params, getLogContext())
+  const record = makeLogRecord(level, message, params, {
+    ...getLogContext(),
+    ...getActiveSpanLogContext()
+  })
   if (process.env.DD_LOGS_INJECTION === 'true') {
     const span = tracer.scope().active()
     if (span) {

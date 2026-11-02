@@ -1,6 +1,9 @@
 const CREDENTIAL_KEY =
   /password|passwd|secret|token|api[-_]?key|authorization|cookie|credential|private[-_]?key|^code$|^otp$/i
+// names a credential without holding it, e.g. tokenId
+const IDENTIFIER_KEY = /(?:Id|Ids|_id|_ids)$/
 const MASK = '******'
+const isCredentialKey = (key: string) => CREDENTIAL_KEY.test(key) && !IDENTIFIER_KEY.test(key)
 const DATA_URL = /^data:[\w/+.-]+;base64,/
 const MAX_INLINE_DATA_URL_LENGTH = 1024
 
@@ -25,7 +28,7 @@ const maskValue = (value: unknown, ancestors: Set<object>): unknown => {
     : Object.fromEntries(
         Object.entries(value).map(([key, item]) => [
           key,
-          CREDENTIAL_KEY.test(key) ? MASK : maskValue(item, ancestors)
+          isCredentialKey(key) ? MASK : maskValue(item, ancestors)
         ])
       )
   ancestors.delete(value)

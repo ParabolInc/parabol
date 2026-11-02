@@ -20,6 +20,7 @@ import {schemaProxyHandler} from './schemaProxyHandler'
 import {registerSCIMHandlers} from './scim/SCIMHandler'
 import selfHostedHandler from './selfHostedHandler'
 import {createStaticFileHandler} from './staticFileHandler'
+import {flushTracing} from './tracing/initTracing'
 import getReqAuth from './utils/getReqAuth'
 import {Logger} from './utils/Logger'
 import logProcessWarnings from './utils/logProcessWarnings'
@@ -61,6 +62,7 @@ process.on('SIGTERM', async (signal) => {
   setIsShuttingDown()
   stopChronos()
   await disconnectAllSockets()
+  await flushTracing()
   Logger.log(`Server ID: ${process.env.SERVER_ID}. Graceful shutdown complete, exiting.`)
   process.exit()
 })
@@ -77,6 +79,9 @@ const app = uws
   .get('/health', yoga)
   .get('/ready', yoga)
   .post('/stripe', stripeWebhookHandler)
+  .get('/stripe', (res) => {
+    res.writeStatus('405 Method Not Allowed').writeHeader('Allow', 'POST').end()
+  })
   .post('/mattermost', mattermostWebhookHandler)
   .post('/zoom', zoomWebhookHandler)
   .post('/client-errors', clientErrorsHandler)

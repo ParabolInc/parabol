@@ -1013,6 +1013,102 @@ describe('Microsoft Entra SCIM 2.0', () => {
     })
   })
 
+  describe('Update User with enterprise extension attributes', () => {
+    // see https://learn.microsoft.com/en-us/entra/identity/app-provisioning/application-provisioning-config-problem-scim-compatibility
+    const userName = faker.internet.userName().toLowerCase()
+    const testEmail = getTestEmail(domain)
+    const givenName = faker.name.firstName()
+    const displayName = `${givenName} ${faker.name.lastName()}`
+
+    let id: string
+    test('Create User for Update', async () => {
+      const res = await fetch(`${SCIM_URL}/Users`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/scim+json',
+          Authorization: `Bearer ${bearerToken}`
+        },
+        body: JSON.stringify({
+          schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+          userName,
+          active: true,
+          emails: [
+            {
+              primary: true,
+              type: 'work',
+              value: testEmail
+            }
+          ]
+        })
+      })
+      expect(res.status).toBe(201)
+      const data = await res.json()
+      id = data.id
+    })
+
+    test('PATCH /Users/{id} ignores employeeNumber and applies the other attributes', async () => {
+      const res = await fetch(`${SCIM_URL}/Users/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/scim+json',
+          Authorization: `Bearer ${bearerToken}`
+        },
+        body: JSON.stringify({
+          schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+          Operations: [
+            {
+              op: 'add',
+              value: {
+                displayName,
+                'name.givenName': givenName,
+                'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:employeeNumber': '1234'
+              }
+            }
+          ]
+        })
+      })
+      expect(res.status).toBe(200)
+      const data = await res.json()
+      expect(data).toMatchObject({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+        id,
+        userName,
+        displayName,
+        name: {
+          givenName
+        }
+      })
+    })
+
+    test('PATCH /Users/{id} ignores a manager sent as a bare id', async () => {
+      const res = await fetch(`${SCIM_URL}/Users/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/scim+json',
+          Authorization: `Bearer ${bearerToken}`
+        },
+        body: JSON.stringify({
+          schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+          Operations: [
+            {
+              op: 'Add',
+              path: 'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:manager',
+              value: faker.datatype.uuid()
+            }
+          ]
+        })
+      })
+      expect(res.status).toBe(200)
+      const data = await res.json()
+      expect(data).toMatchObject({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+        id,
+        userName,
+        displayName
+      })
+    })
+  })
+
   describe('Soft delete and re-provision user', () => {
     const userName = faker.internet.userName().toLowerCase()
     const lastName = faker.name.firstName()

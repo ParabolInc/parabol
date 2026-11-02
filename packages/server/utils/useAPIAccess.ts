@@ -75,7 +75,7 @@ export const useAPIAccess = (): Plugin<ServerContext & {dataLoader: DataLoaderWo
         lifespan_ms: ms('1h'),
         aud: 'action-pat'
       })
-      extendContext({resourceGrants, authToken})
+      extendContext({resourceGrants, authToken, personalAccessTokenId: `${PAT_PREFIX}${prefix}`})
     }
   }
 }

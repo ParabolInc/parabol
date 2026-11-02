@@ -17,6 +17,7 @@ import {decode} from 'jsonwebtoken'
 import makeAppURL from '../../client/utils/makeAppURL'
 import {Logger} from '../utils/Logger'
 import uwsGetIP from '../utils/uwsGetIP'
+import {omitUndeclaredExtensionPaths} from './omitUndeclaredExtensionPaths'
 
 SCIMMY.Config.set({
   //documentationUri: "https://example.com/docs/scim.html",
@@ -197,7 +198,17 @@ export const registerSCIMHandlers = (app: TemplatedApp, pathPrefix: string = '/s
         return
       }
       const resource = new Resource(id, query)
-      const updatedResource = await resource.patch(body as any, ctx)
+      const patchOp = new SCIMMY.Messages.PatchOp(
+        body as ConstructorParameters<typeof SCIMMY.Messages.PatchOp>[0]
+      )
+      const operations = omitUndeclaredExtensionPaths(
+        patchOp.Operations,
+        Resource.schema.definition
+      )
+      const updatedResource =
+        operations.length > 0
+          ? await resource.patch({schemas: patchOp.schemas, Operations: operations}, ctx)
+          : undefined
       if (updatedResource) {
         res
           .writeHeader('Content-Type', 'application/scim+json')

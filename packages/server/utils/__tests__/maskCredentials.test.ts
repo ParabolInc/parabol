@@ -17,6 +17,12 @@ test('masks credential-like keys at any depth and keeps everything else whole', 
   })
 })
 
+test('keeps ids that name a credential, but not tokens that name an id', () => {
+  expect(
+    maskCredentials({tokenId: 'pat_abc', secretIds: ['s1'], idToken: 'eyJ', id_token: 'eyJ'})
+  ).toEqual({tokenId: 'pat_abc', secretIds: ['s1'], idToken: '******', id_token: '******'})
+})
+
 test('replaces binary data with its size', () => {
   const inlineAvatar = `data:image/png;base64,${'A'.repeat(2000)}`
   expect(
