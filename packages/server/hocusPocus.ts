@@ -3,12 +3,12 @@ import {Throttle} from '@hocuspocus/extension-throttle'
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import type {JSONContent} from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
-import tracer from 'dd-trace'
 import {pack, unpack} from 'msgpackr'
 import {Doc, encodeStateAsUpdate} from 'yjs'
 import {getNewDataLoader} from './dataloader/getNewDataLoader'
 import {publishToEmbedder} from './graphql/mutations/helpers/publishToEmbedder'
 import getKysely from './postgres/getKysely'
+import traceAsync from './tracing/traceAsync'
 import {getAuthTokenFromCookie} from './utils/authCookie'
 import {CipherId} from './utils/CipherId'
 import getRedis from './utils/getRedis'
@@ -120,16 +120,14 @@ export const hocuspocus = new SafeHocuspocus<YjsContext>({
             // a document too deep to convert must still be saved
             logError(e instanceof Error ? e : new Error(String(e)), {tags: {documentName}})
           }
-          const {updatedTitle} = await tracer.trace(
+          const {updatedTitle} = await traceAsync(
             'hocusPocus.updatePageContent',
-            {
-              tags: {documentName}
-            },
+            {documentName},
             () => updatePageContent(dbId, content, state)
           )
           if (updatedTitle) {
             await Promise.all([
-              tracer.trace('hocusPocus.pushGQLTitleUpdates', {tags: {documentName}}, () =>
+              traceAsync('hocusPocus.pushGQLTitleUpdates', {documentName}, () =>
                 pushGQLTitleUpdates(dbId)
               ),
               updateAllBacklinkedPageLinkTitles({pageId: dbId, title: updatedTitle})

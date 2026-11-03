@@ -44,8 +44,6 @@ declare const __COMMIT_HASH__: string
 
 interface Window {
   __ACTION__: {
-    datadogClientToken: string | undefined
-    datadogService: string | undefined
     google: string
     googleAnalytics: string
     mattermostWebhookIntegrationDisabled: boolean | undefined

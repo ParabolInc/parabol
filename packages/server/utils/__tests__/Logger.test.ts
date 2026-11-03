@@ -41,11 +41,9 @@ test('an unexpected error carries Error Reporting and Datadog fields plus its re
   expect(record).toMatchObject({
     time: '2026-10-27T00:00:00.000Z',
     severity: 'ERROR',
-    status: 'error',
     message: "Cannot read properties of undefined (reading 'id')",
     service: 'web',
     userId: 'user1',
-    usr: {id: 'user1'},
     operationName: 'TeamQuery',
     operationKind: 'query',
     variables: {teamId: 'team1', password: '******'},

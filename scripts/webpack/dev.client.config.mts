@@ -152,8 +152,6 @@ const devClientConfig: Configuration = {
       filename: 'index.html',
       template: path.join(PROJECT_ROOT, 'devTemplate.html'),
       __ACTION__: JSON.stringify({
-        datadogClientToken: process.env.DD_CLIENTTOKEN,
-        datadogService: process.env.DD_SERVICE,
         google: process.env.GOOGLE_OAUTH_CLIENT_ID,
         googleAnalytics: process.env.GA_TRACKING_ID,
         mattermostWebhookIntegrationDisabled:

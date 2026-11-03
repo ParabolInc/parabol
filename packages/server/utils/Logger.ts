@@ -1,5 +1,3 @@
-import tracer from 'dd-trace'
-import formats from 'dd-trace/ext/formats'
 import {GraphQLError} from 'graphql'
 import util from 'util'
 import getActiveSpanLogContext from '../tracing/getActiveSpanLogContext'
@@ -50,21 +48,13 @@ const Severity = {
   debug: 'DEBUG'
 } satisfies Record<LogLevel, string>
 
-const DatadogStatus = {
-  fatal: 'critical',
-  error: 'error',
-  warn: 'warn',
-  info: 'info',
-  debug: 'debug'
-} satisfies Record<LogLevel, string>
-
 const APP_VERSION = typeof __APP_VERSION__ === 'string' ? __APP_VERSION__ : 'unknown'
 // kysely-ctl loads server modules from source, where the webpack constants don't exist
 const isProduction = () => typeof __PRODUCTION__ === 'boolean' && __PRODUCTION__
 
 const logIdentity = {
   service: 'web',
-  env: process.env.DD_ENV || (isProduction() ? 'production' : 'development'),
+  env: process.env.DEPLOYMENT_ENV || (isProduction() ? 'production' : 'development'),
   version: APP_VERSION
 }
 
@@ -151,7 +141,6 @@ export const makeLogRecord = (
   return {
     time: time.toISOString(),
     severity: Severity[level],
-    status: DatadogStatus[level],
     level,
     message: formatMessage(message, messageParams, error),
     service,
@@ -159,7 +148,7 @@ export const makeLogRecord = (
     version,
     ...(context.component && {component: context.component}),
     ...makeTraceFields(context),
-    ...(userId && {userId, usr: {id: userId}}),
+    ...(userId && {userId}),
     ...(context.socketId && {socketId: context.socketId}),
     ...(context.sessionId && {sessionId: context.sessionId}),
     ...(context.operationName && {
@@ -199,11 +188,10 @@ export const stringifyLogRecord = (record: LogRecord) => {
   try {
     json = stringify(record)
   } catch (e) {
-    const {time, severity, status, level, message, service, env, version} = record
+    const {time, severity, level, message, service, env, version} = record
     return stringify({
       time,
       severity,
-      status,
       level,
       message,
       service,
@@ -241,15 +229,6 @@ function trace(level: LogLevel, message: unknown, ...params: unknown[]) {
     ...getLogContext(),
     ...getActiveSpanLogContext()
   })
-  if (process.env.DD_LOGS_INJECTION === 'true') {
-    const span = tracer.scope().active()
-    if (span) {
-      tracer.inject(span.context(), formats.LOG, record)
-      if (record.tags) {
-        span.addTags(record.tags)
-      }
-    }
-  }
   LogFun[level](stringifyLogRecord(record))
 }
 

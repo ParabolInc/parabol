@@ -1,7 +1,6 @@
 import type {CompiledQuery} from 'kysely'
 import {sql} from 'kysely'
 import sleep from 'parabol-client/utils/sleep'
-import 'parabol-server/initLogging'
 import getKysely from 'parabol-server/postgres/getKysely'
 import type {EmbeddingsJobQueueV2} from 'parabol-server/postgres/types'
 import RedisInstance from 'parabol-server/utils/RedisInstance'

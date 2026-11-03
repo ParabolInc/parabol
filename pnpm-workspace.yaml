@@ -9,17 +9,12 @@ minimumReleaseAgeExclude:
   - fast-xml-parser
 
 allowBuilds:
-  '@datadog/native-appsec': true
-  '@datadog/native-iast-taint-tracking': true
-  '@datadog/native-metrics': true
-  '@datadog/pprof': true
   '@parcel/watcher': true
   '@scarf/scarf': true
   '@swc/core': true
   core-js: true
   core-js-pure: true
   cpu-features: true
-  dd-trace: true
   es5-ext: true
   esbuild: true
   msgpackr-extract: true

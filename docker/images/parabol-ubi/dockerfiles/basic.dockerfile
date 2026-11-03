@@ -1,15 +1,10 @@
 ARG _NODE_MAJOR=${_NODE_MAJOR}
 FROM gcr.io/distroless/nodejs${_NODE_MAJOR}-debian13
 
-ARG DD_GIT_REPOSITORY_URL
-ARG DD_GIT_COMMIT_SHA
-
 # node is only the entrypoint in distroless, add it to PATH so it also works as a command
 ENV HOME=/home/node \
     PATH=/nodejs/bin:${PATH} \
-    PORT=3000 \
-    DD_GIT_REPOSITORY_URL=${DD_GIT_REPOSITORY_URL} \
-    DD_GIT_COMMIT_SHA=${DD_GIT_COMMIT_SHA}
+    PORT=3000
 
 USER 1000:1000
 
