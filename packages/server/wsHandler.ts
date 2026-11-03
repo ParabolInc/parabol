@@ -193,9 +193,9 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
     const {extra} = ctx
     const {ip, authToken, socketId, sessionId, resubscribe} = extra
     const docId = extractPersistedOperationId(params as any)
-    // armor requires a docId to know this isn't an adhoc query
     const {schema, execute, subscribe, parse, contextFactory} = yoga.getEnveloped({
       ...ctx,
+      // armor requires a docId to know this isn't an adhoc query
       docId,
       authToken
     })

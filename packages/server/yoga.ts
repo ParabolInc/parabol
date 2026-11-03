@@ -2,11 +2,10 @@ import type uws from 'uWebSockets.js'
 import {readFileSync} from 'node:fs'
 import path from 'node:path'
 import {OneOfInputObjectsRule, useExtendedValidation} from '@envelop/extended-validation'
-import {GraphQLStreamDirective} from '@graphql-tools/utils'
 import {useDeferStream} from '@graphql-yoga/plugin-defer-stream'
 import {usePersistedOperations} from '@graphql-yoga/plugin-persisted-operations'
 import {useCookies} from '@whatwg-node/server-plugin-cookies'
-import {GraphQLSchema, print} from 'graphql'
+import {print} from 'graphql'
 import {createYoga, type GraphQLParams, useReadinessCheck} from 'graphql-yoga'
 import {sql} from 'kysely'
 import getProjectRoot from '../../scripts/webpack/utils/getProjectRoot'
@@ -113,15 +112,6 @@ export const getPersistedOperation = async (docId: string) => {
 
 // the largest upload plus the multipart boundaries and operations JSON that wrap it
 const MAX_REQUEST_BODY_SIZE = MAX_FILE_SIZE_PAID + 1_000_000
-
-// useDeferStream rebuilds any schema without @stream, which would happen on every request that sets its schema
-const withStreamDirective = (schema: GraphQLSchema) =>
-  new GraphQLSchema({
-    ...schema.toConfig(),
-    directives: [...schema.getDirectives(), GraphQLStreamDirective]
-  })
-const publicSchema = withStreamDirective(rootSchema)
-const superUserSchema = withStreamDirective(privateSchema)
 
 export const yoga = createYoga<ServerContext, UserContext>({
   graphqlEndpoint: '/graphql',
@@ -291,7 +281,7 @@ export const yoga = createYoga<ServerContext, UserContext>({
     }),
     useCookies()
   ],
-  schema: ({authToken}) => (authToken?.rol === 'su' ? superUserSchema : publicSchema),
+  schema: ({authToken}) => (authToken?.rol === 'su' ? privateSchema : rootSchema),
 
   context: () => {
     const rateLimiter = getRateLimiter()
