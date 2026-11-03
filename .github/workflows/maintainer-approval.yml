@@ -1,0 +1,65 @@
+name: Maintainer Approval
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize, ready_for_review]
+  pull_request_review:
+    types: [submitted, dismissed]
+  workflow_dispatch:
+
+permissions:
+  pull-requests: read
+  statuses: write
+
+jobs:
+  maintainer-approval:
+    name: Evaluate maintainer approval
+    if: github.event_name != 'pull_request_review' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const {owner, repo} = context.repo
+            const maintainers = ['mattkrick', 'jordanh']
+            const pullRequests = context.payload.pull_request
+              ? [context.payload.pull_request]
+              : await github.paginate(github.rest.pulls.list, {owner, repo, state: 'open', per_page: 100})
+
+            const getStatus = async (pullRequest) => {
+              if (maintainers.includes(pullRequest.user.login)) {
+                return {state: 'success', description: 'Opened by a maintainer'}
+              }
+              const reviews = await github.paginate(github.rest.pulls.listReviews, {
+                owner,
+                repo,
+                pull_number: pullRequest.number,
+                per_page: 100
+              })
+              const latestStateByMaintainer = new Map()
+              for (const review of reviews) {
+                if (!maintainers.includes(review.user?.login) || ['COMMENTED', 'PENDING'].includes(review.state)) continue
+                latestStateByMaintainer.set(review.user.login, review.state)
+              }
+              const maintainerStates = [...latestStateByMaintainer.values()]
+              if (maintainerStates.includes('CHANGES_REQUESTED')) {
+                return {state: 'failure', description: 'A maintainer requested changes'}
+              }
+              if (maintainerStates.includes('APPROVED')) {
+                return {state: 'success', description: 'Approved by a maintainer'}
+              }
+              return {state: 'pending', description: `Waiting for ${maintainers.join(' or ')} to approve`}
+            }
+
+            for (const pullRequest of pullRequests) {
+              const status = await getStatus(pullRequest)
+              await github.rest.repos.createCommitStatus({
+                owner,
+                repo,
+                sha: pullRequest.head.sha,
+                context: 'Maintainer approval',
+                target_url: `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`,
+                ...status
+              })
+              core.info(`#${pullRequest.number}: ${status.state} (${status.description})`)
+            }
