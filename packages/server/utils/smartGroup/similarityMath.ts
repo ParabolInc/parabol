@@ -22,7 +22,6 @@ export type SimilarityGroup = {
 export type SimilarityOptions = {
   /** Never compare groups that answer different reflect prompts */
   readonly sameColumnOnly?: boolean
-  /** Replaces SIMILARITY_THRESHOLD, for embedding models whose scores sit elsewhere */
   readonly threshold?: number
 }
 

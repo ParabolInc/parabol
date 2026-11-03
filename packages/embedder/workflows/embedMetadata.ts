@@ -2,6 +2,7 @@ import {sql} from 'kysely'
 import {pack} from 'msgpackr'
 import getKysely from '../../server/postgres/getKysely'
 import getRedis from '../../server/utils/getRedis'
+import {activeEmbeddingModelId} from '../activeEmbeddingModel'
 import getModelManager from '../ai_models/ModelManager'
 import type {ModelId} from '../ai_models/modelIdDefinitions'
 import type {JobQueueStepRun, ParentJob} from '../custom'
@@ -47,11 +48,13 @@ export const embedMetadata: JobQueueStepRun<
       })
       metadata.fullText = fullText
       metadata.language = language!
-      await pg
-        .updateTable('EmbeddingsMetadata')
-        .set({fullText, language})
-        .where('id', '=', embeddingsMetadataId)
-        .execute()
+      if (modelId === activeEmbeddingModelId) {
+        await pg
+          .updateTable('EmbeddingsMetadata')
+          .set({fullText, language})
+          .where('id', '=', embeddingsMetadataId)
+          .execute()
+      }
     } catch (e) {
       return new JobQueueError(e as Error, true, {
         forceBuildText: true
