@@ -3,7 +3,7 @@ import path from 'path'
 import type {Client} from 'pg'
 import connectToPostgres from './connectToPostgres.mts'
 
-// `pnpm kysely migrate:latest` takes over a second to find out that there is nothing to do
+// `kysely migrate:latest` takes over a second to find out that there is nothing to do
 // The server waits for the migrations, so the usual case of nothing pending is checked directly
 const hasPendingMigrations = async (projectRoot: string) => {
   const migrationRoot = path.join(projectRoot, 'packages/server/postgres/migrations')
