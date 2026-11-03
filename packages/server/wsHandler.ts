@@ -13,7 +13,6 @@ import {getFreshTokenIfNeeded} from './getFreshTokenIfNeeded'
 import {getIsBusy} from './getIsBusy'
 import {getIsShuttingDown} from './getIsShuttingDown'
 import getRateLimiter from './graphql/getRateLimiter'
-import privateSchema from './graphql/private/rootSchema'
 import {handleFirstConnection} from './handleFirstConnection'
 import {logOperation} from './logOperation'
 import {
@@ -193,10 +192,13 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
   onSubscribe: async (ctx, id, params) => {
     const {extra} = ctx
     const {ip, authToken, socketId, sessionId, resubscribe} = extra
-    const {schema, execute, subscribe, parse, contextFactory} = yoga.getEnveloped(ctx)
     const docId = extractPersistedOperationId(params as any)
-    // armor requires a docId to know this isn't an adhoc query
-    ;(ctx as any).docId = docId
+    const {schema, execute, subscribe, parse, contextFactory} = yoga.getEnveloped({
+      ...ctx,
+      // armor requires a docId to know this isn't an adhoc query
+      docId,
+      authToken
+    })
     let document = documentCache.get(docId!)
     if (!document) {
       const query = await getPersistedOperation(docId!)
@@ -231,7 +233,7 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
     }
     const envelopeContext = await contextFactory()
     const args: EnvelopedExecutionArgs = {
-      schema: authToken.rol === 'su' ? privateSchema : schema,
+      schema,
       operationName: params.operationName,
       document,
       variableValues: params.variables,

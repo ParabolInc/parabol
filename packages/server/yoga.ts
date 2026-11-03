@@ -16,6 +16,7 @@ import {getIsBusy} from './getIsBusy'
 import {getIsShuttingDown} from './getIsShuttingDown'
 import getRateLimiter from './graphql/getRateLimiter'
 import type {MutationResolvers, QueryResolvers, Resolver} from './graphql/private/resolverTypes'
+import privateSchema from './graphql/private/rootSchema'
 import {PAT_PREFIX} from './graphql/public/applyScopeDirective'
 import type {ResourceGrants} from './graphql/public/ResourceGrants'
 import rootSchema from './graphql/public/rootSchema'
@@ -33,7 +34,6 @@ import {useCheckBlacklist} from './utils/useCheckBlacklist'
 import {useDatadogTracing} from './utils/useDatadogTracing'
 import {useDisposeDataloader} from './utils/useDisposeDataloader'
 import {useErrorLogging} from './utils/useErrorLogging'
-import {usePrivateSchemaForSuperUser} from './utils/usePrivateSchemaForSuperUser'
 import {useRemoveDuplicateTransferEncoding} from './utils/useRemoveDuplicateTransferEncoding'
 import {useSchemaLink} from './utils/useSchemaLink'
 
@@ -256,7 +256,6 @@ export const yoga = createYoga<ServerContext, UserContext>({
       getPersistedOperation
     }),
     useCheckBlacklist(),
-    usePrivateSchemaForSuperUser,
     useExtendedValidation({
       rules: [OneOfInputObjectsRule],
       onValidationFailed: (params) => {
@@ -282,9 +281,7 @@ export const yoga = createYoga<ServerContext, UserContext>({
     }),
     useCookies()
   ],
-  // There is a bug in graphql-yoga where calling `yoga.getEnveloped` does not work from within graphql-ws when `schema` returns a function
-  // As a workaround, we set the schema via `usePrivateSchemaForSuperUser` using the `onEnveloped` hook
-  schema: rootSchema,
+  schema: ({authToken}) => (authToken?.rol === 'su' ? privateSchema : rootSchema),
 
   context: () => {
     const rateLimiter = getRateLimiter()
