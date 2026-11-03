@@ -39,6 +39,8 @@ class ProviderManager {
             entry.persistence?.destroy()
             entry.persistence = undefined
           }
+          // A denied meeting would retry on every reconnect, and Hocuspocus queues its awareness renewals until the socket resets
+          if (documentName.startsWith('meeting:')) provider.detach()
         }
         if (reason === 'InvalidDocument') {
           // The documentName they passed in cannot exist (DBID out of bounds)

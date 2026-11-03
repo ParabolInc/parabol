@@ -107,7 +107,8 @@ const MeetingCard = (props: Props) => {
     locked,
     isViewerComplete
   } = meeting
-  const connectedUsers = useMeetingMemberAvatars(meeting)
+  const [cardElement, setCardElement] = useState<HTMLDivElement | null>(null)
+  const connectedUsers = useMeetingMemberAvatars(meeting, cardElement)
   const {label: dateLabel, tooltip: readableNextMeetingDate} = useMeetingSeriesDate(meeting)
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const [isCopied, setIsCopied] = useState(false)
@@ -196,6 +197,7 @@ const MeetingCard = (props: Props) => {
 
   return (
     <motion.div
+      ref={setCardElement}
       className='relative m-3 max-w-full shrink-0 select-none'
       style={{width: maybeTabletPlus ? ElementWidth.MEETING_CARD : 'calc(100% - 24px)'}}
       initial={{opacity: 0}}
