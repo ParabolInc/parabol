@@ -2,10 +2,11 @@ import type uws from 'uWebSockets.js'
 import {readFileSync} from 'node:fs'
 import path from 'node:path'
 import {OneOfInputObjectsRule, useExtendedValidation} from '@envelop/extended-validation'
+import {GraphQLStreamDirective} from '@graphql-tools/utils'
 import {useDeferStream} from '@graphql-yoga/plugin-defer-stream'
 import {usePersistedOperations} from '@graphql-yoga/plugin-persisted-operations'
 import {useCookies} from '@whatwg-node/server-plugin-cookies'
-import {print} from 'graphql'
+import {GraphQLSchema, print} from 'graphql'
 import {createYoga, type GraphQLParams, useReadinessCheck} from 'graphql-yoga'
 import {sql} from 'kysely'
 import getProjectRoot from '../../scripts/webpack/utils/getProjectRoot'
@@ -16,6 +17,7 @@ import {getIsBusy} from './getIsBusy'
 import {getIsShuttingDown} from './getIsShuttingDown'
 import getRateLimiter from './graphql/getRateLimiter'
 import type {MutationResolvers, QueryResolvers, Resolver} from './graphql/private/resolverTypes'
+import privateSchema from './graphql/private/rootSchema'
 import {PAT_PREFIX} from './graphql/public/applyScopeDirective'
 import type {ResourceGrants} from './graphql/public/ResourceGrants'
 import rootSchema from './graphql/public/rootSchema'
@@ -33,7 +35,6 @@ import {useCheckBlacklist} from './utils/useCheckBlacklist'
 import {useDatadogTracing} from './utils/useDatadogTracing'
 import {useDisposeDataloader} from './utils/useDisposeDataloader'
 import {useErrorLogging} from './utils/useErrorLogging'
-import {usePrivateSchemaForSuperUser} from './utils/usePrivateSchemaForSuperUser'
 import {useRemoveDuplicateTransferEncoding} from './utils/useRemoveDuplicateTransferEncoding'
 import {useSchemaLink} from './utils/useSchemaLink'
 
@@ -112,6 +113,15 @@ export const getPersistedOperation = async (docId: string) => {
 
 // the largest upload plus the multipart boundaries and operations JSON that wrap it
 const MAX_REQUEST_BODY_SIZE = MAX_FILE_SIZE_PAID + 1_000_000
+
+// useDeferStream rebuilds any schema without @stream, which would happen on every request that sets its schema
+const withStreamDirective = (schema: GraphQLSchema) =>
+  new GraphQLSchema({
+    ...schema.toConfig(),
+    directives: [...schema.getDirectives(), GraphQLStreamDirective]
+  })
+const publicSchema = withStreamDirective(rootSchema)
+const superUserSchema = withStreamDirective(privateSchema)
 
 export const yoga = createYoga<ServerContext, UserContext>({
   graphqlEndpoint: '/graphql',
@@ -256,7 +266,6 @@ export const yoga = createYoga<ServerContext, UserContext>({
       getPersistedOperation
     }),
     useCheckBlacklist(),
-    usePrivateSchemaForSuperUser,
     useExtendedValidation({
       rules: [OneOfInputObjectsRule],
       onValidationFailed: (params) => {
@@ -282,9 +291,7 @@ export const yoga = createYoga<ServerContext, UserContext>({
     }),
     useCookies()
   ],
-  // There is a bug in graphql-yoga where calling `yoga.getEnveloped` does not work from within graphql-ws when `schema` returns a function
-  // As a workaround, we set the schema via `usePrivateSchemaForSuperUser` using the `onEnveloped` hook
-  schema: rootSchema,
+  schema: ({authToken}) => (authToken?.rol === 'su' ? superUserSchema : publicSchema),
 
   context: () => {
     const rateLimiter = getRateLimiter()
