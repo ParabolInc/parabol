@@ -1,7 +1,6 @@
 import type {Selectable} from 'kysely'
-import type {DB} from 'parabol-server/postgres/types/pg'
-
 import type {DataLoaderInstance} from '../../server/dataloader/RootDataLoader'
+import type {DB} from '../../server/postgres/types/pg'
 import {createTextFromMeetingTemplate} from './meetingTemplate'
 import {createTextFromRetroReflection} from './retroReflection'
 import {createTextFromRetrospectiveDiscussionTopic} from './retrospectiveDiscussionTopic'

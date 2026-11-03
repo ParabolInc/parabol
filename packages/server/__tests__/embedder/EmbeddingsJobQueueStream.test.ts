@@ -3,6 +3,7 @@ import {EmbeddingsJobQueueStream} from '../../../embedder/EmbeddingsJobQueueStre
 
 let nextRunAfter: Date | null = null
 let publish: () => void = () => {}
+let nextJobQueryIsLiveOnly = false
 
 jest.mock('../../../embedder/claimEmbeddingsJob', () => ({claimEmbeddingsJob: jest.fn()}))
 jest.mock('../../postgres/getKysely', () => ({
@@ -10,7 +11,12 @@ jest.mock('../../postgres/getKysely', () => ({
   default: () => ({
     selectFrom: () => ({
       select: () => ({
-        where: () => ({executeTakeFirstOrThrow: async () => ({nextRunAfter})})
+        where: () => ({
+          $if: (condition: boolean) => {
+            nextJobQueryIsLiveOnly = condition
+            return {executeTakeFirstOrThrow: async () => ({nextRunAfter})}
+          }
+        })
       })
     })
   })
@@ -75,4 +81,19 @@ it('claims only live work when told to', async () => {
   const stream = new EmbeddingsJobQueueStream({runStep}, {liveOnly: true})
   await stream.next()
   expect(claimEmbeddingsJob).toHaveBeenCalledWith(undefined, true)
+})
+
+it('wakes the live worker for live jobs only, so a fill never has it polling', async () => {
+  nextRunAfter = null
+  jest
+    .mocked(claimEmbeddingsJob)
+    .mockResolvedValueOnce(undefined)
+    .mockResolvedValueOnce(undefined)
+    .mockResolvedValue(job as Awaited<ReturnType<typeof claimEmbeddingsJob>>)
+  const stream = new EmbeddingsJobQueueStream({runStep}, {liveOnly: true})
+  const pending = stream.next()
+  await new Promise((resolve) => setTimeout(resolve, 50))
+  expect(nextJobQueryIsLiveOnly).toBe(true)
+  publish()
+  await pending
 })

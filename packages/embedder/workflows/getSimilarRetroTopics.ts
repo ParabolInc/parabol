@@ -1,4 +1,4 @@
-import getKysely from 'parabol-server/postgres/getKysely'
+import getKysely from '../../server/postgres/getKysely'
 import type {ModelId} from '../ai_models/modelIdDefinitions'
 import type {JobQueueStepRun, ParentJob} from '../custom'
 import {getEmbeddingsTableName} from '../getEmbeddingsTableName'

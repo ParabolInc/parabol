@@ -1,7 +1,10 @@
+import OpenAIEmbedding from '../../../embedder/ai_models/OpenAIEmbedding'
 import TextEmbeddingsInference from '../../../embedder/ai_models/TextEmbeddingsInference'
 import {embeddingUsage} from '../../../embedder/embeddingUsage'
 
 jest.mock('parabol-client/utils/sleep', () => ({__esModule: true, default: async () => {}}))
+
+const modelId = 'microsoft/harrier-oss-v1-270m'
 
 const makeTei = () =>
   new TextEmbeddingsInference(
@@ -82,36 +85,41 @@ it('sends a document as is, whatever the model', async () => {
   expect(post).toHaveBeenCalledWith('/embed', {body: {inputs: 'A page about retros'}})
 })
 
-describe('when TEI is unreachable', () => {
-  const unreachable = {error: {error: 'fetch failed'}} as never
-  const answering = {data: [[1]], response: new Response()} as never
-
-  it('waits for it to come back instead of failing the embed', async () => {
+describe('when a request gets no answer', () => {
+  const readyTei = async () => {
     const tei = makeTei()
-    jest
-      .spyOn(tei.client, 'POST')
-      .mockResolvedValueOnce(unreachable)
-      .mockResolvedValueOnce(unreachable)
-      .mockResolvedValueOnce(answering)
-      .mockResolvedValue({data: [[0.6, 0.8]], response: new Response()} as never)
-    expect(await tei.getEmbeddingWithTokens('rate limiter rollout')).toEqual({
-      embedding: [0.6, 0.8],
-      tokens: 0
-    })
+    const post = jest.spyOn(tei.client, 'POST')
+    post.mockResolvedValueOnce({data: [[{id: 1}]], response: new Response()} as never)
+    await tei.ready()
+    return {tei, post}
+  }
+
+  it('fails right away and notes that TEI is down', async () => {
+    const {tei, post} = await readyTei()
+    post.mockResolvedValue({error: {error: 'fetch failed'}} as never)
+    expect(await tei.getEmbeddingWithTokens('rate limiter rollout')).toEqual(
+      new Error('fetch failed')
+    )
+    expect(post).toHaveBeenCalledTimes(2)
+    expect(tei.isReady).toBe(false)
   })
 
-  it('waits for it to come back instead of failing the token count', async () => {
-    const tei = makeTei()
-    jest
-      .spyOn(tei.client, 'POST')
-      .mockResolvedValueOnce(unreachable)
-      .mockResolvedValueOnce(answering)
-      .mockResolvedValue({data: [[{id: 7}]], response: new Response()} as never)
-    expect(await tei.getTokens('rate limiter rollout')).toEqual([7])
+  it('notes that TEI is down when counting tokens', async () => {
+    const {tei, post} = await readyTei()
+    post.mockResolvedValue({error: {error: 'fetch failed'}} as never)
+    expect(await tei.getTokens('rate limiter rollout')).toEqual(new Error('fetch failed'))
+    expect(tei.isReady).toBe(false)
+  })
+
+  it('treats a timeout as busy, not down', async () => {
+    const {tei, post} = await readyTei()
+    post.mockResolvedValue({error: {error: 'Timeout'}} as never)
+    expect(await tei.getEmbeddingWithTokens('rate limiter rollout')).toEqual(new Error('Timeout'))
+    expect(tei.isReady).toBe(true)
   })
 })
 
-it('returns an error TEI answers with, without waiting', async () => {
+it('returns an error TEI answers with, and stays ready', async () => {
   const tei = makeTei()
   const post = jest.spyOn(tei.client, 'POST').mockResolvedValue({
     error: {error: 'too long'},
@@ -120,3 +128,6 @@ it('returns an error TEI answers with, without waiting', async () => {
   expect(await tei.getEmbeddingWithTokens('rate limiter rollout')).toEqual(new Error('too long'))
   expect(post).toHaveBeenCalledTimes(1)
 })
+
+it('counts a model with no server of its own as always ready', () =>
+  expect(new OpenAIEmbedding(modelId, 'http://localhost:1/', 512).isReady).toBe(true))

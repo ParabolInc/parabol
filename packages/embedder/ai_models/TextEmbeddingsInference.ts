@@ -6,13 +6,15 @@ import type {paths} from '../textEmbeddingsnterface'
 import {AbstractEmbeddingsModel, type EmbeddingModelParams} from './AbstractEmbeddingsModel'
 import {type ModelId, modelIdDefinitions} from './modelIdDefinitions'
 
+const TIMEOUT_MESSAGE = 'Timeout'
+
 const openAPIWithTimeout =
   (client: ClientMethod<any, any, any>, toError: (error: unknown) => any, timeout: number) =>
   async (...args: Parameters<ClientMethod<any, any, any>>) => {
     const controller = new AbortController()
     const {signal} = controller
     const timeoutId = setTimeout(() => {
-      controller.abort(new Error('Timeout'))
+      controller.abort(new Error(TIMEOUT_MESSAGE))
     }, timeout)
     const [route, requestInit] = args
     let response: any
@@ -53,11 +55,9 @@ export class TextEmbeddingsInference extends AbstractEmbeddingsModel {
     if (!this.readyPromise) {
       this.readyPromise = (async () => {
         while (!this.isReady) {
-          const {error} = await this.client.POST('/tokenize', {
-            body: {add_special_tokens: true, inputs: 'ready'}
-          })
+          const res = await this.getTokens('ready')
           const duration = Math.floor((Date.now() - start) / 1000)
-          if (error) {
+          if (res instanceof Error) {
             Logger.log(`TEI warming up for ${duration} seconds`)
             await sleep(5_000)
             continue
@@ -72,20 +72,18 @@ export class TextEmbeddingsInference extends AbstractEmbeddingsModel {
     }
     return this.readyPromise
   }
-  private async waitForTEI() {
-    this.isReady = false
-    await this.ready()
+  private noteIfUnreachable(message: string, response: Response | undefined) {
+    if (!response && message !== TIMEOUT_MESSAGE) this.isReady = false
   }
 
-  async getTokens(content: string, retries = 5): Promise<number[] | Error> {
+  async getTokens(content: string) {
     if (!content) return []
     const {data, error, response} = await this.client.POST('/tokenize', {
       body: {add_special_tokens: true, inputs: content}
     })
     if (error) {
-      if (response || retries < 1) return new Error(error.error)
-      await this.waitForTEI()
-      return this.getTokens(content, retries - 1)
+      this.noteIfUnreachable(error.error, response)
+      return new Error(error.error)
     }
     return data[0]!.map(({id}) => id)
   }
@@ -106,9 +104,9 @@ export class TextEmbeddingsInference extends AbstractEmbeddingsModel {
       body: {inputs: content}
     })
     if (error) {
-      if (retries < 1 || (response && response.status !== 429)) return new Error(error.error)
-      if (response) await sleep(2000)
-      else await this.waitForTEI()
+      this.noteIfUnreachable(error.error, response)
+      if (response?.status !== 429 || retries < 1) return new Error(error.error)
+      await sleep(2000)
       return this.getEmbeddingWithTokens(content, retries - 1)
     }
     const tokens = Number(response.headers.get('x-compute-tokens')) || 0

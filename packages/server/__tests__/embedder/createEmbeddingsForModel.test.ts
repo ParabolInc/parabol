@@ -5,6 +5,12 @@ import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
 import type {DB} from '../../postgres/types/pg'
 
+const mockPublish = jest.fn(async () => 0)
+jest.mock('../../utils/getRedis', () => ({
+  __esModule: true,
+  default: () => ({publish: mockPublish})
+}))
+
 const pg = getKysely()
 const modelId: ModelId = 'microsoft/harrier-oss-v1-270m'
 const userId = `fillOrderTest|${generateUID()}`
@@ -208,19 +214,55 @@ it('rebuilds metadata text and stays behind live work', async () => {
   })
 })
 
-it('creates nothing when the fill fails, so the next start tries again', async () => {
-  const model = Object.assign(new TextEmbeddingsInference(modelId, 'http://localhost:1/', 1024), {
-    tableName: 'Embeddings_fillThatFails',
-    pagesTableName: 'EmbeddingsPages_fillThatFails'
-  })
-  const hasTable = async () => {
-    const {rows} = await sql<{name: string | null}>`
-      select to_regclass(${`"${model.tableName}"`}) as name
-    `.execute(pg)
-    return rows[0]!.name !== null
+describe('creating the tables', () => {
+  const makeModel = (name: string) => {
+    const model = Object.assign(new TextEmbeddingsInference(modelId, 'http://localhost:1/', 1024), {
+      tableName: `Embeddings_${name}`,
+      pagesTableName: `EmbeddingsPages_${name}`
+    })
+    const steps: string[] = []
+    const fill = jest.spyOn(model, 'createEmbeddingsForModel').mockImplementation(async () => {
+      steps.push('fill')
+    })
+    const createTables = jest.spyOn(model, 'createVectorTables').mockImplementation(async () => {
+      steps.push('tables')
+    })
+    return {model, steps, fill, createTables}
   }
-  expect(await hasTable()).toBe(false)
-  jest.spyOn(model, 'createEmbeddingsForModel').mockRejectedValue(new Error('pod died'))
-  await expect(model.createTable()).rejects.toThrow('pod died')
-  expect(await hasTable()).toBe(false)
+
+  it('queues the fill first, so foreign key locks are only held at the end', async () => {
+    const {model, steps} = makeModel('fillOrder')
+    await model.createTable()
+    expect(steps).toEqual(['fill', 'tables'])
+  })
+
+  it('does both in one transaction, so a failure leaves nothing for the next start to skip', async () => {
+    const {model, fill, createTables} = makeModel('fillInOneTransaction')
+    await model.createTable()
+    const fillDb = fill.mock.calls[0]![0]
+    expect(fillDb?.isTransaction).toBe(true)
+    expect(createTables.mock.calls[0]![0]).toBe(fillDb)
+  })
+
+  it('creates no tables when the fill fails', async () => {
+    const {model, fill, createTables} = makeModel('fillThatFails')
+    fill.mockRejectedValue(new Error('pod died'))
+    await expect(model.createTable()).rejects.toThrow('pod died')
+    expect(createTables).not.toHaveBeenCalled()
+  })
+
+  it('wakes idle workers when the fill commits', async () => {
+    const {model} = makeModel('fillPublishes')
+    mockPublish.mockClear()
+    await model.createTable()
+    expect(mockPublish).toHaveBeenCalledWith('embeddingsJobAdded', '')
+  })
+
+  it('wakes nobody when the fill fails', async () => {
+    const {model, fill} = makeModel('fillThatFailsQuietly')
+    fill.mockRejectedValue(new Error('pod died'))
+    mockPublish.mockClear()
+    await expect(model.createTable()).rejects.toThrow('pod died')
+    expect(mockPublish).not.toHaveBeenCalled()
+  })
 })

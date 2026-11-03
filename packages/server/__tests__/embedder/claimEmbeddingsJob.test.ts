@@ -51,19 +51,19 @@ it('leaves a model fill to the other workers when it only takes live work', asyn
   const claimed = await pg
     .transaction()
     .execute(async (trx) => {
-      const {id: fillJobId} = await trx
+      await trx.deleteFrom('EmbeddingsJobQueueV2').where('state', '=', 'queued').execute()
+      await trx
         .insertInto('EmbeddingsJobQueueV2')
         .values({jobType: 'embedPage:start', priority: FIRST_FILL_PRIORITY, pageId: -3})
-        .returning('id')
-        .executeTakeFirstOrThrow()
+        .execute()
       const job = await claimEmbeddingsJob(trx, true)
-      throw Object.assign(rollback, {result: {job, fillJobId}})
+      throw Object.assign(rollback, {result: {job}})
     })
-    .catch((error: Error & {result?: {job: {id: number} | undefined; fillJobId: number}}) => {
+    .catch((error: Error & {result?: {job: {id: number} | undefined}}) => {
       if (error !== rollback) throw error
       return error.result!
     })
-  expect(claimed.job?.id).not.toBe(claimed.fillJobId)
+  expect(claimed.job).toBeUndefined()
 })
 
 it('takes live work when it only takes live work', async () => {

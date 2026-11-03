@@ -3,6 +3,7 @@ import isValid from '../../server/graphql/isValid'
 import getKysely from '../../server/postgres/getKysely'
 import {VECTOR_MIN_PAGE_BYTES} from '../../server/postgres/queries/getPagesByRRF'
 import type {DB} from '../../server/postgres/types/pg'
+import getRedis from '../../server/utils/getRedis'
 import {Logger} from '../../server/utils/Logger'
 import {getEmbedderJobPriority} from '../getEmbedderJobPriority'
 import {
@@ -44,7 +45,7 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
   readonly chunker: PageChunkerName
   readonly searchPrompt: string
   readonly modelId: ModelId
-  protected isReady = false
+  isReady = false
   constructor(modelId: ModelId, url: string, maxTokens: number) {
     super(url)
     this.modelId = modelId
@@ -214,16 +215,25 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
         )} = ${this.tableName}`.execute(pg)
       ).rows.length > 0
     if (hasTable) return
+    Logger.log(
+      `ModelManager: creating ${this.tableName}, ${this.pagesTableName} with ${this.embeddingDimensions} dimensions`
+    )
+    await pg.transaction().execute(async (trx) => {
+      // Creating the foreign keys locks Page and EmbeddingsMetadata against writes until commit,
+      // so the long insert goes first
+      await this.createEmbeddingsForModel(trx)
+      await this.createVectorTables(trx)
+    })
+    await getRedis().publish('embeddingsJobAdded', '')
+  }
+
+  async createVectorTables(db: Kysely<DB>) {
     const vectorDimensions = this.embeddingDimensions
     const precision = this.embeddingPrecision
     const vectorType = precision === 16 ? 'halfvec' : 'vector'
     const columnType = `${vectorType}(${vectorDimensions})`
     const indexType = `${vectorType}_cosine_ops`
-    Logger.log(
-      `ModelManager: creating ${this.tableName}, ${this.pagesTableName} with ${vectorDimensions} dimensions`
-    )
-    await pg.transaction().execute(async (trx) => {
-      await sql`
+    await sql`
       DO $$
         BEGIN
         CREATE TABLE IF NOT EXISTS ${sql.id(this.tableName)} (
@@ -265,8 +275,6 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
           USING GIN ("tsv");
         END
       $$;
-      `.execute(trx)
-      await this.createEmbeddingsForModel(trx)
-    })
+      `.execute(db)
   }
 }
