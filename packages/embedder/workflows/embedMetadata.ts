@@ -26,6 +26,10 @@ export const embedMetadata: JobQueueStepRun<
   const {embeddingsMetadataId, modelId, forceBuildText, requestId, channelName} = data
   const modelManager = getModelManager()
 
+  const embeddingModel = modelManager.getEmbedder(modelId)
+  if (!embeddingModel) {
+    return new JobQueueError(`embedding model ${modelId} not available`)
+  }
   const metadata = await dataLoader.get('embeddingsMetadata').load(embeddingsMetadataId)
 
   if (!metadata) return new JobQueueError(`Invalid embeddingsMetadataId: ${embeddingsMetadataId}`)
@@ -38,7 +42,9 @@ export const embedMetadata: JobQueueStepRun<
 
   if (updateFullText) {
     try {
-      const {body: fullText, language} = await createEmbeddingTextFrom(metadata, dataLoader)
+      const {body: fullText, language} = await createEmbeddingTextFrom(metadata, dataLoader, {
+        discussionText: embeddingModel.discussionText
+      })
       metadata.fullText = fullText
       metadata.language = language!
       await pg
@@ -54,10 +60,6 @@ export const embedMetadata: JobQueueStepRun<
   }
   const {fullText, language} = metadata
 
-  const embeddingModel = modelManager.getEmbedder(modelId)
-  if (!embeddingModel) {
-    return new JobQueueError(`embedding model ${modelId} not available`)
-  }
   // Exit successfully, we don't want to fail the job because the language is not supported
   const tsvLanguage = getTSV(language)
   if (!language || !tsvLanguage || !embeddingModel.languages.includes(language)) {

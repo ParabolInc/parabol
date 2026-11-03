@@ -14,6 +14,10 @@ import {JobQueueError} from './JobQueueError'
 import {embedMetadata} from './workflows/embedMetadata'
 import {embedPage} from './workflows/embedPage'
 import {embedQuery} from './workflows/embedQuery'
+import {
+  findRelatedDiscussions,
+  getStepAfterEmbeddingTopic
+} from './workflows/findRelatedDiscussions'
 import {getSimilarRetroTopics} from './workflows/getSimilarRetroTopics'
 import {relatedDiscussionsStart} from './workflows/relatedDiscussionsStart'
 import {rerankRetroTopics} from './workflows/rerankRetroTopics'
@@ -45,7 +49,11 @@ export class WorkflowOrchestrator {
       },
       embed: {
         run: embedMetadata,
-        getNextStep: () => 'getSimilarRetroTopics'
+        getNextStep: ({data}: {data: {modelId: ModelId}}) =>
+          getStepAfterEmbeddingTopic(data.modelId)
+      },
+      findRelatedDiscussions: {
+        run: findRelatedDiscussions
       },
       getSimilarRetroTopics: {
         run: getSimilarRetroTopics,
