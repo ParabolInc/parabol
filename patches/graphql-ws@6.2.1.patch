@@ -1,5 +1,5 @@
 diff --git a/dist/use/uWebSockets.cjs b/dist/use/uWebSockets.cjs
-index ff170d19d4ecf56de3b8283eb5027cfed35f17b1..048b4cd402afc726c5697db11c5db1b597b28875 100644
+index ff170d19d4ecf56de3b8283eb5027cfed35f17b1..19c50e07fe0ff635660fe31eb9625d9efb092ff2 100644
 --- a/dist/use/uWebSockets.cjs
 +++ b/dist/use/uWebSockets.cjs
 @@ -8,8 +8,6 @@ function makeBehavior(options, behavior = {}, keepAlive = 12e3) {
@@ -30,17 +30,20 @@ index ff170d19d4ecf56de3b8283eb5027cfed35f17b1..048b4cd402afc726c5697db11c5db1b5
            },
            close: (code, reason) => {
              setImmediate(() => {
-@@ -87,7 +88,8 @@ function makeBehavior(options, behavior = {}, keepAlive = 12e3) {
+@@ -87,7 +88,11 @@ function makeBehavior(options, behavior = {}, keepAlive = 12e3) {
      },
      drain(...args) {
        behavior.drain?.(...args);
 -      onDrain();
 +      const [socket] = args;
-+      clients.get(socket)?.drainWaiters.splice(0).forEach((resolve) => resolve());
++      const drainWaiters = clients.get(socket)?.drainWaiters.splice(0);
++      // resume once uWS returns from the drain callback. A large send that only partly writes from inside it leaves uWS
++      // no longer waiting for the socket to become writable, so the socket never drains again (uNetworking/uSockets#265)
++      if (drainWaiters?.length) setImmediate(() => drainWaiters.forEach((resolve) => resolve()));
      },
      async message(...args) {
        behavior.message?.(...args);
-@@ -119,6 +121,8 @@ function makeBehavior(options, behavior = {}, keepAlive = 12e3) {
+@@ -119,6 +124,8 @@ function makeBehavior(options, behavior = {}, keepAlive = 12e3) {
        if (client.pingInterval) clearTimeout(client.pingInterval);
        client.closed(code, Buffer.from(message).toString());
        clients.delete(socket);
@@ -50,7 +53,7 @@ index ff170d19d4ecf56de3b8283eb5027cfed35f17b1..048b4cd402afc726c5697db11c5db1b5
    };
  }
 diff --git a/dist/use/uWebSockets.js b/dist/use/uWebSockets.js
-index 06775d68d286d5f78cce99abd33c4a54bdbf4718..be5edc1b7cef219bc9050d4fbda2804713e65697 100644
+index 06775d68d286d5f78cce99abd33c4a54bdbf4718..f771e165d576cfeb15fe28bb137a0b84d2f49af6 100644
 --- a/dist/use/uWebSockets.js
 +++ b/dist/use/uWebSockets.js
 @@ -6,8 +6,6 @@ function makeBehavior(options, behavior = {}, keepAlive = 12e3) {
@@ -81,17 +84,20 @@ index 06775d68d286d5f78cce99abd33c4a54bdbf4718..be5edc1b7cef219bc9050d4fbda28047
            },
            close: (code, reason) => {
              setImmediate(() => {
-@@ -85,7 +86,8 @@ function makeBehavior(options, behavior = {}, keepAlive = 12e3) {
+@@ -85,7 +86,11 @@ function makeBehavior(options, behavior = {}, keepAlive = 12e3) {
      },
      drain(...args) {
        behavior.drain?.(...args);
 -      onDrain();
 +      const [socket] = args;
-+      clients.get(socket)?.drainWaiters.splice(0).forEach((resolve) => resolve());
++      const drainWaiters = clients.get(socket)?.drainWaiters.splice(0);
++      // resume once uWS returns from the drain callback. A large send that only partly writes from inside it leaves uWS
++      // no longer waiting for the socket to become writable, so the socket never drains again (uNetworking/uSockets#265)
++      if (drainWaiters?.length) setImmediate(() => drainWaiters.forEach((resolve) => resolve()));
      },
      async message(...args) {
        behavior.message?.(...args);
-@@ -117,6 +119,8 @@ function makeBehavior(options, behavior = {}, keepAlive = 12e3) {
+@@ -117,6 +122,8 @@ function makeBehavior(options, behavior = {}, keepAlive = 12e3) {
        if (client.pingInterval) clearTimeout(client.pingInterval);
        client.closed(code, Buffer.from(message).toString());
        clients.delete(socket);
