@@ -10,6 +10,7 @@ import {isYjsSessionLive} from './isYjsSessionLive'
 
 export type YjsContext = {
   userId?: string
+  ip?: string
   iat?: number
   exp?: number
   jti?: string

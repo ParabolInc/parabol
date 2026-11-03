@@ -1019,9 +1019,6 @@ importers:
       '@hocuspocus/extension-database':
         specifier: ^4.3.0
         version: 4.3.0(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
-      '@hocuspocus/extension-throttle':
-        specifier: ^4.3.0
-        version: 4.3.0(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
       '@hocuspocus/server':
         specifier: ^4.3.0
         version: 4.3.0(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
@@ -2826,9 +2823,6 @@ packages:
     resolution: {integrity: sha512-iiFU2l+/lxXVREXS9VUMDJQCOzM3LWOlFs0ezNkFIrXUf7u4LyagCR5v5y8zoBxMGNE5NwzMkP4xBiDX/Tc90A==}
     peerDependencies:
       yjs: ^13.6.8
-
-  '@hocuspocus/extension-throttle@4.3.0':
-    resolution: {integrity: sha512-4tgpuQWxvKQ1kbe/bqMQJwaUzRzUPvoniS/EqJ9lqTR3R3m8zPDT2x3k43G8xCUb0BFLrWmWBDU2/hL9qnOLQA==}
 
   '@hocuspocus/provider@4.1.0':
     resolution: {integrity: sha512-K80V2yX4AMdpqgjIkexJioyI2Oq8pu8hjdFqY0INXKSpH8TQv9NMaDzJmlrZMYmUeKyRO2t7VhGyFK9jZQPnNw==}
@@ -13026,14 +13020,6 @@ snapshots:
     transitivePeerDependencies:
       - srvx
       - y-protocols
-
-  '@hocuspocus/extension-throttle@4.3.0(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)':
-    dependencies:
-      '@hocuspocus/server': 4.3.0(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
-    transitivePeerDependencies:
-      - srvx
-      - y-protocols
-      - yjs
 
   '@hocuspocus/provider@4.1.0(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)':
     dependencies:
