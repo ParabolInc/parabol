@@ -142,7 +142,7 @@ const ReportAskBox = ({organizationRef, period, onAskingChange}: Props) => {
       setActiveIndex(0)
     }
   }
-  const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const onKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
       event.preventDefault()
       setIsOpen(true)
@@ -162,8 +162,11 @@ const ReportAskBox = ({organizationRef, period, onAskingChange}: Props) => {
     <div className='relative'>
       <div className='flex min-h-11 items-center gap-2.5 rounded-lg border border-hairline-field bg-surface-input pr-1.5 pl-3 focus-within:border-accent'>
         <AutoAwesome className='shrink-0 text-[18px] text-sky-600 dark:text-accent' />
-        <input
+        {/* a one-row textarea, because iOS Safari offers to AutoFill a contact into any input */}
+        <textarea
           role='combobox'
+          rows={1}
+          wrap='off'
           aria-label={
             canAsk ? 'Ask a question about your organization' : 'Search popular questions'
           }
@@ -177,9 +180,9 @@ const ReportAskBox = ({organizationRef, period, onAskingChange}: Props) => {
           placeholder={
             canAsk ? 'Ask a question, or pick a popular one' : 'Search popular questions'
           }
-          className='h-10 min-w-0 flex-1 bg-transparent text-base text-fg-primary outline-none placeholder:text-fg-muted'
+          className='mr-0.5 h-10 min-w-0 flex-1 resize-none overflow-hidden bg-transparent py-2 text-base text-fg-primary outline-none placeholder:text-fg-muted'
           onChange={(event) => {
-            setQuery(event.target.value)
+            setQuery(event.target.value.replace(/[\r\n]+/g, ' '))
             setAnswer(null)
             setError(null)
             setActiveIndex(0)
