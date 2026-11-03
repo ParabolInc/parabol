@@ -1,0 +1,78 @@
+name: Bot PR Approval
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize, ready_for_review]
+  pull_request_review:
+    types: [submitted, dismissed]
+  workflow_dispatch:
+
+permissions:
+  pull-requests: read
+  statuses: write
+
+jobs:
+  bot-pr-approval:
+    name: Evaluate bot PR approval
+    if: github.event_name != 'pull_request_review' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const {owner, repo} = context.repo
+            const trustedBots = ['parabol-release-bot[bot]']
+            const pullRequests = context.payload.pull_request
+              ? [context.payload.pull_request]
+              : await github.paginate(github.rest.pulls.list, {owner, repo, state: 'open', per_page: 100})
+
+            const canWriteByLogin = new Map()
+            const canWrite = async (login) => {
+              if (!canWriteByLogin.has(login)) {
+                const {data} = await github.rest.repos.getCollaboratorPermissionLevel({owner, repo, username: login})
+                canWriteByLogin.set(login, ['admin', 'write'].includes(data.permission))
+              }
+              return canWriteByLogin.get(login)
+            }
+
+            const getStatus = async (pullRequest) => {
+              const {user} = pullRequest
+              if (user.type !== 'Bot' || trustedBots.includes(user.login)) {
+                return {state: 'success', description: 'Not opened by a bot'}
+              }
+              const reviews = await github.paginate(github.rest.pulls.listReviews, {
+                owner,
+                repo,
+                pull_number: pullRequest.number,
+                per_page: 100
+              })
+              const latestStateByReviewer = new Map()
+              for (const review of reviews) {
+                if (review.user?.type !== 'User' || ['COMMENTED', 'PENDING'].includes(review.state)) continue
+                latestStateByReviewer.set(review.user.login, review.state)
+              }
+              const writerStates = []
+              for (const [login, state] of latestStateByReviewer) {
+                if (await canWrite(login)) writerStates.push(state)
+              }
+              if (writerStates.includes('CHANGES_REQUESTED')) {
+                return {state: 'failure', description: 'A maintainer requested changes'}
+              }
+              if (writerStates.includes('APPROVED')) {
+                return {state: 'success', description: 'Approved by a maintainer'}
+              }
+              return {state: 'pending', description: 'Waiting for a maintainer to approve'}
+            }
+
+            for (const pullRequest of pullRequests) {
+              const status = await getStatus(pullRequest)
+              await github.rest.repos.createCommitStatus({
+                owner,
+                repo,
+                sha: pullRequest.head.sha,
+                context: 'Bot PR approval',
+                target_url: `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`,
+                ...status
+              })
+              core.info(`#${pullRequest.number}: ${status.state} (${status.description})`)
+            }
