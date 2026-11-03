@@ -1,0 +1,102 @@
+diff --git a/dist/use/uWebSockets.cjs b/dist/use/uWebSockets.cjs
+index ff170d19d4ecf56de3b8283eb5027cfed35f17b1..048b4cd402afc726c5697db11c5db1b597b28875 100644
+--- a/dist/use/uWebSockets.cjs
++++ b/dist/use/uWebSockets.cjs
+@@ -8,8 +8,6 @@ function makeBehavior(options, behavior = {}, keepAlive = 12e3) {
+   const isProd = process.env.NODE_ENV === "production";
+   const server$1 = server.makeServer(options);
+   const clients = /* @__PURE__ */ new Map();
+-  let onDrain = () => {
+-  };
+   return {
+     ...behavior,
+     pong(...args) {
+@@ -51,6 +49,9 @@ function makeBehavior(options, behavior = {}, keepAlive = 12e3) {
+       const client = {
+         pingInterval: null,
+         pongWaitTimeout: null,
++        // each socket waits on its own drain. One resolver shared by every socket meant a second backpressured socket
++        // overwrote the first one's, so the first socket's operation stalled until that socket closed
++        drainWaiters: [],
+         handleMessage: () => {
+           throw new Error("Message received before handler was registered");
+         },
+@@ -66,7 +67,7 @@ function makeBehavior(options, behavior = {}, keepAlive = 12e3) {
+           send: async (message) => {
+             if (!clients.has(socket)) return;
+             if (!socket.send(message))
+-              await new Promise((resolve) => onDrain = resolve);
++              await new Promise((resolve) => client.drainWaiters.push(resolve));
+           },
+           close: (code, reason) => {
+             setImmediate(() => {
+@@ -87,7 +88,8 @@ function makeBehavior(options, behavior = {}, keepAlive = 12e3) {
+     },
+     drain(...args) {
+       behavior.drain?.(...args);
+-      onDrain();
++      const [socket] = args;
++      clients.get(socket)?.drainWaiters.splice(0).forEach((resolve) => resolve());
+     },
+     async message(...args) {
+       behavior.message?.(...args);
+@@ -119,6 +121,8 @@ function makeBehavior(options, behavior = {}, keepAlive = 12e3) {
+       if (client.pingInterval) clearTimeout(client.pingInterval);
+       client.closed(code, Buffer.from(message).toString());
+       clients.delete(socket);
++      // a closed socket never drains, so release its waiting sends and let their operations end
++      client.drainWaiters.splice(0).forEach((resolve) => resolve());
+     }
+   };
+ }
+diff --git a/dist/use/uWebSockets.js b/dist/use/uWebSockets.js
+index 06775d68d286d5f78cce99abd33c4a54bdbf4718..be5edc1b7cef219bc9050d4fbda2804713e65697 100644
+--- a/dist/use/uWebSockets.js
++++ b/dist/use/uWebSockets.js
+@@ -6,8 +6,6 @@ function makeBehavior(options, behavior = {}, keepAlive = 12e3) {
+   const isProd = process.env.NODE_ENV === "production";
+   const server = makeServer(options);
+   const clients = /* @__PURE__ */ new Map();
+-  let onDrain = () => {
+-  };
+   return {
+     ...behavior,
+     pong(...args) {
+@@ -49,6 +47,9 @@ function makeBehavior(options, behavior = {}, keepAlive = 12e3) {
+       const client = {
+         pingInterval: null,
+         pongWaitTimeout: null,
++        // each socket waits on its own drain. One resolver shared by every socket meant a second backpressured socket
++        // overwrote the first one's, so the first socket's operation stalled until that socket closed
++        drainWaiters: [],
+         handleMessage: () => {
+           throw new Error("Message received before handler was registered");
+         },
+@@ -64,7 +65,7 @@ function makeBehavior(options, behavior = {}, keepAlive = 12e3) {
+           send: async (message) => {
+             if (!clients.has(socket)) return;
+             if (!socket.send(message))
+-              await new Promise((resolve) => onDrain = resolve);
++              await new Promise((resolve) => client.drainWaiters.push(resolve));
+           },
+           close: (code, reason) => {
+             setImmediate(() => {
+@@ -85,7 +86,8 @@ function makeBehavior(options, behavior = {}, keepAlive = 12e3) {
+     },
+     drain(...args) {
+       behavior.drain?.(...args);
+-      onDrain();
++      const [socket] = args;
++      clients.get(socket)?.drainWaiters.splice(0).forEach((resolve) => resolve());
+     },
+     async message(...args) {
+       behavior.message?.(...args);
+@@ -117,6 +119,8 @@ function makeBehavior(options, behavior = {}, keepAlive = 12e3) {
+       if (client.pingInterval) clearTimeout(client.pingInterval);
+       client.closed(code, Buffer.from(message).toString());
+       clients.delete(socket);
++      // a closed socket never drains, so release its waiting sends and let their operations end
++      client.drainWaiters.splice(0).forEach((resolve) => resolve());
+     }
+   };
+ }

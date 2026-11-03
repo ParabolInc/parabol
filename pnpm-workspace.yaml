@@ -63,4 +63,5 @@ overrides:
 patchedDependencies:
   '@sereneinserenade/tiptap-search-and-replace@0.1.1': patches/@sereneinserenade__tiptap-search-and-replace@0.1.1.patch
   '@tiptap/core@3.31.2': patches/@tiptap__core@3.31.2.patch
+  graphql-ws@6.2.1: patches/graphql-ws@6.2.1.patch
   graphql-yoga@5.24.1: patches/graphql-yoga@5.24.1.patch
