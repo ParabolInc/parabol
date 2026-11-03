@@ -8,11 +8,9 @@ const TARGET_TOKENS = 384
 const MAX_TOKENS = 512
 const CHARS_PER_TOKEN = 3.7
 const MAX_HEADING_CHARS = 100
-const MIN_BUDGET_TOKENS = 64
 const CJK_CHARACTER = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/gu
 const LIST_TYPES = new Set(['bulletList', 'orderedList', 'taskList'])
-// a standup summary's table view repeats its response blocks
-const RESPONSE_TABLE_HEADER = teamPromptSummaryTableHeaders.join(' | ')
+const STANDUP_TABLE_HEADER = teamPromptSummaryTableHeaders.join(' | ')
 
 export const estimateTokens = (text: string) => {
   const cjk = text.match(CJK_CHARACTER)?.length ?? 0
@@ -40,11 +38,11 @@ const headerOf = (title: string, path: string[]) =>
     )
   ].join(' > ')
 
-const pack = (pieces: string[], target: number) => {
+const pack = (pieces: string[], target: number, separator = '\n') => {
   const groups: string[] = []
   let current = ''
   for (const piece of pieces) {
-    const next = current ? `${current}\n${piece}` : piece
+    const next = current ? `${current}${separator}${piece}` : piece
     if (current && estimateTokens(next) > target) {
       groups.push(current)
       current = piece
@@ -98,8 +96,7 @@ export class SectionChunker {
         continue
       }
       if (node.type === 'details') {
-        if (hasResponses && getSearchText(node).split('\n').includes(RESPONSE_TABLE_HEADER))
-          continue
+        if (hasResponses && getSearchText(node).split('\n').includes(STANDUP_TABLE_HEADER)) continue
         for (const part of node.content ?? []) {
           if (part.type === 'detailsSummary') add('text', getSearchText(part))
           else for (const child of part.content ?? []) add(kindOf(child.type), getSearchText(child))
@@ -118,44 +115,18 @@ export class SectionChunker {
     )
   }
 
-  private group(
-    parts: string[],
-    maxTokens: number,
-    join: string,
-    splitPart: (part: string) => string[]
-  ): string[] {
-    const groups: string[] = []
-    let current = ''
-    for (const part of parts) {
-      if (estimateTokens(part) > maxTokens) {
-        if (current.trim()) groups.push(current.trim())
-        current = ''
-        const smaller = splitPart(part)
-        groups.push(
-          ...(smaller.length > 1 ? this.group(smaller, maxTokens, '', splitPart) : [part])
-        )
-        continue
-      }
-      const next = current ? `${current}${join}${part}` : part
-      if (current && estimateTokens(next) > maxTokens) {
-        groups.push(current.trim())
-        current = part
-      } else {
-        current = next
-      }
-    }
-    if (current.trim()) groups.push(current.trim())
-    return groups
+  private fit(part: string, maxTokens: number): string[] {
+    if (estimateTokens(part) <= maxTokens) return [part]
+    const words = this.segment(part, 'word')
+    if (words.length > 1) return words.flatMap((word) => this.fit(word, maxTokens))
+    return part.match(new RegExp(`[\\s\\S]{1,${maxTokens}}`, 'gu')) ?? []
   }
 
-  private splitText(text: string, maxTokens: number): string[] {
-    const splitSentence = (sentence: string) => {
-      const words = this.segment(sentence, 'word')
-      if (words.length > 1) return words
-      const maxChars = Math.max(1, Math.floor(maxTokens))
-      return Array.from(sentence.match(new RegExp(`[\\s\\S]{1,${maxChars}}`, 'gu')) ?? [])
-    }
-    return this.group(this.segment(text, 'sentence'), maxTokens, '', splitSentence)
+  private splitText(text: string, maxTokens: number) {
+    const parts = this.segment(text, 'sentence').flatMap((part) => this.fit(part, maxTokens))
+    return pack(parts, maxTokens, '')
+      .map((group) => group.trim())
+      .filter(Boolean)
   }
 
   private packLines(lines: string[], maxTokens: number) {
@@ -201,10 +172,7 @@ export class SectionChunker {
     if (singleChunk.tokenCount <= MAX_TOKENS) return [singleChunk]
     return sections.flatMap(({path, blocks}) => {
       const header = headerOf(title, path)
-      const target = Math.max(
-        MIN_BUDGET_TOKENS,
-        Math.min(TARGET_TOKENS, MAX_TOKENS - estimateTokens(`${header}\n\n`) - 1)
-      )
+      const target = Math.min(TARGET_TOKENS, MAX_TOKENS - estimateTokens(`${header}\n\n`) - 1)
       const pieces = blocks.flatMap((block) =>
         estimateTokens(block.text) <= target ? [block.text] : this.split(block, target)
       )

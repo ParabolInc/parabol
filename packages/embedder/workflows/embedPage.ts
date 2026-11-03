@@ -1,5 +1,5 @@
 import {TiptapTransformer} from '@hocuspocus/transformer'
-import {generateText} from '@tiptap/core'
+import {generateText, type JSONContent} from '@tiptap/core'
 import {sql} from 'kysely'
 import type {TipTapSerializedContent} from 'parabol-client/shared/tiptap/TipTapSerializedContent'
 import {applyUpdate, Doc} from 'yjs'
@@ -9,6 +9,7 @@ import {Logger} from '../../server/utils/Logger'
 import getModelManager from '../ai_models/ModelManager'
 import type {ModelId} from '../ai_models/modelIdDefinitions'
 import type {JobQueueStepRun} from '../custom'
+import {getSearchText} from '../getSearchText'
 import {getTSV, type TSVLanguage} from '../getSupportedLanguages'
 import {numberVectorToString} from '../indexing/numberVectorToString'
 import {inferLanguage} from '../inferLanguage'
@@ -77,20 +78,22 @@ export const embedPage: JobQueueStepRun<EmbedPageData> = async (context) => {
   const yDoc = new Doc()
   applyUpdate(yDoc, page.yDoc)
   const content = TiptapTransformer.fromYdoc(yDoc, 'default') as TipTapSerializedContent
-  const hasSections = embeddingModel.chunker === 'sections'
-  let fullText = ''
-  try {
-    fullText = generateText(content, serverTipTapExtensions)
-  } catch (e) {
-    if (!hasSections) throw e
-  }
+  const usesSectionChunker = embeddingModel.chunker === 'sections'
+  const fullText = usesSectionChunker
+    ? (content.content as JSONContent[]).map(getSearchText).join('\n')
+    : generateText(content, serverTipTapExtensions)
   const language = inferLanguage(fullText, 5)
   const tsvLanguage = getTSV(language)
 
-  if (!hasSections && (!language || !tsvLanguage || !embeddingModel.languages.includes(language))) {
+  if (
+    !usesSectionChunker &&
+    (!language || !tsvLanguage || !embeddingModel.languages.includes(language))
+  ) {
     return new JobQueueError(`pageId ${pageId} is written in unsupported language: ${language}`)
   }
-  const chunker = hasSections ? new SectionChunker({language}) : new TipTapChunker({language})
+  const chunker = usesSectionChunker
+    ? new SectionChunker({language})
+    : new TipTapChunker({language})
   const chunks: PageChunk[] = chunker.chunk(content)
   const startedAt = Date.now()
   let embeddedChunks = 0

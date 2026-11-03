@@ -1,7 +1,8 @@
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import type {JSONContent} from '@tiptap/core'
+import {sql} from 'kysely'
 import {serverTipTapExtensions} from 'parabol-client/shared/tiptap/serverTipTapExtensions'
-import {encodeStateAsUpdate} from 'yjs'
+import {encodeStateAsUpdate, XmlElement} from 'yjs'
 import {activeEmbeddingModelId} from '../../../embedder/activeEmbeddingModel'
 import type {PageChunkerName} from '../../../embedder/ai_models/AbstractEmbeddingsModel'
 import {getEmbeddingsPagesTableName} from '../../../embedder/getEmbeddingsTableName'
@@ -290,6 +291,49 @@ describe('with the sections chunker', () => {
     expect(brokenPageChunks.length).toBeGreaterThan(0)
     expect(brokenPageChunks.join('\n')).toContain('Alpha notes')
     expect(brokenPageChunks.join('\n')).not.toContain('Lukas Becker')
+  })
+
+  it('keeps the language of a page holding a block type that no longer exists', async () => {
+    const yDoc = TiptapTransformer.toYdoc(
+      {
+        type: 'doc',
+        content: [
+          {
+            type: 'paragraph',
+            content: [
+              {
+                type: 'text',
+                text: "Nous travaillons sur la prochaine version avec toute l'équipe cette semaine. ".repeat(
+                  3
+                )
+              }
+            ]
+          }
+        ]
+      },
+      undefined,
+      serverTipTapExtensions
+    )
+    yDoc.getXmlFragment('default').push([new XmlElement('blockTypeThatNoLongerExists')])
+    const {id: frenchPageId} = await pg
+      .insertInto('Page')
+      .values({
+        userId,
+        sortOrder: 'a7',
+        title: 'Page with a removed block type',
+        plaintextContent: '',
+        yDoc: Buffer.from(encodeStateAsUpdate(yDoc))
+      })
+      .returning('id')
+      .executeTakeFirstOrThrow()
+    expect(await run(frenchPageId)).not.toBeInstanceOf(JobQueueError)
+    const {tsv} = await pg
+      .selectFrom(mockEmbedder.pagesTableName)
+      .select(sql<string>`tsv::text`.as('tsv'))
+      .where('pageId', '=', frenchPageId)
+      .executeTakeFirstOrThrow()
+    expect(tsv).toContain("'prochain'")
+    expect(tsv).not.toContain("'nous'")
   })
 
   it('writes readable text instead of markup', async () => {

@@ -169,7 +169,7 @@ describe('on the heavy corpus', () => {
     return counts
   }
 
-  it('keeps every chunk within 512 tokens', () => {
+  it('keeps every chunk within 512 estimated tokens', () => {
     for (const page of pages) {
       for (const {embeddingText} of new SectionChunker({language: 'en'}).chunk(
         page.content as TipTapSerializedContent
