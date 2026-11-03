@@ -5,6 +5,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.15.2](https://github.com/ParabolInc/parabol/compare/v15.15.1...v15.15.2) (2026-11-03)
+
+
+### Fixed
+
+* report client console errors to Google and trace the other HTTP routes ([#13908](https://github.com/ParabolInc/parabol/issues/13908)) ([c33c50e](https://github.com/ParabolInc/parabol/commit/c33c50e7741ed3a1a0a02788fd80b47cfcc54a43))
+* **server:** choose the superuser schema per request over HTTP and websockets ([#13898](https://github.com/ParabolInc/parabol/issues/13898)) ([05b8079](https://github.com/ParabolInc/parabol/commit/05b8079a19e2de658da9e98ba85f387070847db9))
+* **server:** record websocket connections the client abandons or onConnect fails ([#13899](https://github.com/ParabolInc/parabol/issues/13899)) ([cea6d3e](https://github.com/ParabolInc/parabol/commit/cea6d3e52f1e3cca5ef23017d5dbeed846cb3552))
+
+
+### Changed
+
+* **gh-actions:** make parabol-product the code owner of everything ([#13902](https://github.com/ParabolInc/parabol/issues/13902)) ([3917682](https://github.com/ParabolInc/parabol/commit/3917682c7e8dc9d15ba4d67ca73f212cd48e6686))
+* **gh-actions:** require mattkrick or jordanh to approve everyone else's pull requests ([#13907](https://github.com/ParabolInc/parabol/issues/13907)) ([4866c1b](https://github.com/ParabolInc/parabol/commit/4866c1b3c5a579262712b7b204f73a3e9dd13e6b))
+* **gh-actions:** stop granting id-token to Test and Style Check ([#13901](https://github.com/ParabolInc/parabol/issues/13901)) ([44d71b7](https://github.com/ParabolInc/parabol/commit/44d71b71b5b950b14d5507bb4125d5aeb9ed605d))
+* remove Datadog ([#13905](https://github.com/ParabolInc/parabol/issues/13905)) ([41d2814](https://github.com/ParabolInc/parabol/commit/41d2814db841629202ffb20d13cde395b9342e93))
+
 ## [15.15.1](https://github.com/ParabolInc/parabol/compare/v15.15.0...v15.15.1) (2026-11-02)
 
 
