@@ -176,10 +176,9 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
                 eb('objectType', '=', 'retrospectiveDiscussionTopic'),
                 eb('refUpdatedAt', '>', sql<Date>`NOW() - INTERVAL '1 year'`)
               ]),
-              // only a retro still under way reads these
               and([
                 eb('objectType', '=', 'retroReflection'),
-                eb('refUpdatedAt', '>', sql<Date>`NOW() - INTERVAL '2 days'`)
+                eb('refUpdatedAt', '>', sql<Date>`NOW() - INTERVAL '14 days'`)
               ])
             ])
           )
@@ -200,7 +199,6 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
             ref('id').as('pageId'),
             sql.lit(this.modelId).as('modelId')
           ])
-          .where('deletedAt', 'is', null)
           .where(sql<number>`octet_length("plaintextContent")`, '>=', VECTOR_MIN_PAGE_BYTES)
       )
       .onConflict((oc) => oc.doNothing())
@@ -224,7 +222,8 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
     Logger.log(
       `ModelManager: creating ${this.tableName}, ${this.pagesTableName} with ${vectorDimensions} dimensions`
     )
-    await sql`
+    await pg.transaction().execute(async (trx) => {
+      await sql`
       DO $$
         BEGIN
         CREATE TABLE IF NOT EXISTS ${sql.id(this.tableName)} (
@@ -266,7 +265,8 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
           USING GIN ("tsv");
         END
       $$;
-      `.execute(pg)
-    await this.createEmbeddingsForModel()
+      `.execute(trx)
+      await this.createEmbeddingsForModel(trx)
+    })
   }
 }

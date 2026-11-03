@@ -1,4 +1,5 @@
 import type {GraphQLResolveInfo} from 'graphql'
+import {activeEmbeddingDefinition} from '../../../../../embedder/activeEmbeddingModel'
 import {getNewDataLoader} from '../../../../dataloader/getNewDataLoader'
 import getKysely from '../../../../postgres/getKysely'
 import {getEmbeddingsByRRF} from '../../../../postgres/queries/getEmbeddingsByRRF'
@@ -186,7 +187,7 @@ it('returns fused results when the query embeds in time', async () => {
   expect(getPagesByRRF).toHaveBeenCalledWith({
     query: 'retro',
     queryVector,
-    alpha: 0.01,
+    alpha: activeEmbeddingDefinition!.pageAlpha,
     k: 60,
     first: 20,
     offset: 0,

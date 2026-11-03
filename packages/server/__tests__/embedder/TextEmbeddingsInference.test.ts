@@ -1,6 +1,8 @@
 import TextEmbeddingsInference from '../../../embedder/ai_models/TextEmbeddingsInference'
 import {embeddingUsage} from '../../../embedder/embeddingUsage'
 
+jest.mock('parabol-client/utils/sleep', () => ({__esModule: true, default: async () => {}}))
+
 const makeTei = () =>
   new TextEmbeddingsInference(
     'Svenni551/Qwen3-Embedding-0.6B-ONNX-INT8',
@@ -78,4 +80,43 @@ it('sends a document as is, whatever the model', async () => {
   const post = respondWith(tei, {})
   await tei.getEmbedding('A page about retros')
   expect(post).toHaveBeenCalledWith('/embed', {body: {inputs: 'A page about retros'}})
+})
+
+describe('when TEI is unreachable', () => {
+  const unreachable = {error: {error: 'fetch failed'}} as never
+  const answering = {data: [[1]], response: new Response()} as never
+
+  it('waits for it to come back instead of failing the embed', async () => {
+    const tei = makeTei()
+    jest
+      .spyOn(tei.client, 'POST')
+      .mockResolvedValueOnce(unreachable)
+      .mockResolvedValueOnce(unreachable)
+      .mockResolvedValueOnce(answering)
+      .mockResolvedValue({data: [[0.6, 0.8]], response: new Response()} as never)
+    expect(await tei.getEmbeddingWithTokens('rate limiter rollout')).toEqual({
+      embedding: [0.6, 0.8],
+      tokens: 0
+    })
+  })
+
+  it('waits for it to come back instead of failing the token count', async () => {
+    const tei = makeTei()
+    jest
+      .spyOn(tei.client, 'POST')
+      .mockResolvedValueOnce(unreachable)
+      .mockResolvedValueOnce(answering)
+      .mockResolvedValue({data: [[{id: 7}]], response: new Response()} as never)
+    expect(await tei.getTokens('rate limiter rollout')).toEqual([7])
+  })
+})
+
+it('returns an error TEI answers with, without waiting', async () => {
+  const tei = makeTei()
+  const post = jest.spyOn(tei.client, 'POST').mockResolvedValue({
+    error: {error: 'too long'},
+    response: new Response(null, {status: 413})
+  } as never)
+  expect(await tei.getEmbeddingWithTokens('rate limiter rollout')).toEqual(new Error('too long'))
+  expect(post).toHaveBeenCalledTimes(1)
 })

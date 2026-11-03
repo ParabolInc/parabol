@@ -14,7 +14,6 @@ import {
 } from './getPagesByKeyword'
 import {getPageSearchPageInfo} from './pageSearchCursor'
 
-export const VECTOR_SIMILARITY_FLOOR = 0.4
 export const VECTOR_MIN_PAGE_BYTES = 200
 export const FUSED_KEYWORD_MATCHING: KeywordMatching = {
   dropStopWords: true,
@@ -33,7 +32,7 @@ export const getPagesByRRF = async ({
   viewerId,
   teamIds,
   dateRange,
-  vectorFloor = activeEmbeddingDefinition?.pageVectorFloor ?? VECTOR_SIMILARITY_FLOOR,
+  vectorFloor = activeEmbeddingDefinition?.pageVectorFloor ?? 0,
   vectorMinBytes = VECTOR_MIN_PAGE_BYTES,
   dropStopWords = FUSED_KEYWORD_MATCHING.dropStopWords,
   anyWordFallbackBelow = FUSED_KEYWORD_MATCHING.anyWordFallbackBelow,

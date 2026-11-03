@@ -1,4 +1,4 @@
-import type {Transaction} from 'kysely'
+import {sql, type Transaction} from 'kysely'
 import type {ModelId} from '../../../embedder/ai_models/modelIdDefinitions'
 import TextEmbeddingsInference from '../../../embedder/ai_models/TextEmbeddingsInference'
 import generateUID from '../../generateUID'
@@ -58,6 +58,8 @@ const insertPage = async (
 }
 
 const fillJobs = async (trx: Transaction<DB>) => {
+  // The fill reads every row, so a parallel suite deleting one mid-statement would break its foreign key
+  await sql`LOCK TABLE "EmbeddingsMetadata" IN SHARE MODE`.execute(trx)
   await new TextEmbeddingsInference(
     modelId,
     'http://localhost:3040/',
@@ -71,8 +73,9 @@ const fillJobs = async (trx: Transaction<DB>) => {
 }
 
 const withRollback = async (run: (trx: Transaction<DB>) => Promise<void>) => {
-  await expect(
-    pg.transaction().execute(async (trx) => {
+  await pg
+    .transaction()
+    .execute(async (trx) => {
       await trx
         .insertInto('User')
         .values({
@@ -85,7 +88,9 @@ const withRollback = async (run: (trx: Transaction<DB>) => Promise<void>) => {
       await run(trx)
       throw new Rollback()
     })
-  ).rejects.toBeInstanceOf(Rollback)
+    .catch((error) => {
+      if (!(error instanceof Rollback)) throw error
+    })
 }
 
 afterAll(async () => {
@@ -129,7 +134,7 @@ it('queues public templates, team templates, discussions, then pages, newest fir
   })
 })
 
-it('puts reflections from retros still under way with the public templates', async () => {
+it('puts the last two weeks of reflections with the public templates', async () => {
   await withRollback(async (trx) => {
     const publicTemplate = await insertMetadata(trx, {
       objectType: 'meetingTemplate',
@@ -140,7 +145,7 @@ it('puts reflections from retros still under way with the public templates', asy
     const liveReflection = await insertMetadata(trx, {
       objectType: 'retroReflection',
       teamId,
-      days: 0
+      days: 10
     })
     const jobs = await fillJobs(trx)
     const priorityOf = (id: number) =>
@@ -168,7 +173,6 @@ it('leaves out what nothing reads', async () => {
       days: 3,
       language: null
     })
-    const trashedPage = await insertPage(trx, 'a0', {days: 1, deleted: true})
     const nearlyEmptyPage = await insertPage(trx, 'a1', {days: 1, text: 'Too short'})
     const jobs = await fillJobs(trx)
     const metadataIds = jobs.map(({embeddingsMetadataId}) => embeddingsMetadataId)
@@ -176,8 +180,15 @@ it('leaves out what nothing reads', async () => {
     expect(metadataIds).not.toContain(oldReflection)
     expect(metadataIds).not.toContain(oldDiscussion)
     expect(metadataIds).not.toContain(unsupported)
-    expect(pageIds).not.toContain(trashedPage)
     expect(pageIds).not.toContain(nearlyEmptyPage)
+  })
+})
+
+it('queues a trashed page, since restoring it queues nothing', async () => {
+  await withRollback(async (trx) => {
+    const trashedPage = await insertPage(trx, 'a0', {days: 1, deleted: true})
+    const jobs = await fillJobs(trx)
+    expect(jobs.map(({pageId}) => pageId)).toContain(trashedPage)
   })
 })
 
@@ -195,4 +206,21 @@ it('rebuilds metadata text and stays behind live work', async () => {
     expect(templateJob.priority).toBeGreaterThan(HISTORICAL_BAND_TOP)
     expect(pageJob.priority).toBeGreaterThan(templateJob.priority)
   })
+})
+
+it('creates nothing when the fill fails, so the next start tries again', async () => {
+  const model = Object.assign(new TextEmbeddingsInference(modelId, 'http://localhost:1/', 1024), {
+    tableName: 'Embeddings_fillThatFails',
+    pagesTableName: 'EmbeddingsPages_fillThatFails'
+  })
+  const hasTable = async () => {
+    const {rows} = await sql<{name: string | null}>`
+      select to_regclass(${`"${model.tableName}"`}) as name
+    `.execute(pg)
+    return rows[0]!.name !== null
+  }
+  expect(await hasTable()).toBe(false)
+  jest.spyOn(model, 'createEmbeddingsForModel').mockRejectedValue(new Error('pod died'))
+  await expect(model.createTable()).rejects.toThrow('pod died')
+  expect(await hasTable()).toBe(false)
 })

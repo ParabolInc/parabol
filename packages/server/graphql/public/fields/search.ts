@@ -17,7 +17,6 @@ import type {SearchTypeEnum, UserResolvers} from '../resolverTypes'
 
 export const SEARCH_EMBEDDING_TIMEOUT_MS = 3000
 export const KEYWORD_FALLBACK_LOG_MESSAGE = 'Page search used keyword results'
-const PAGE_SEARCH_ALPHA = 0.01
 const EMBEDDING_TIMED_OUT = 'timed out'
 
 const embedWithinBudget = async (embed: () => Promise<Float32Array | Error | undefined>) => {
@@ -67,8 +66,7 @@ export const search: NonNullable<UserResolvers['search']> = async (
   {authToken, dataLoader, resourceGrants}
 ) => {
   const viewerId = getUserId(authToken)
-  const pageAlpha = activeEmbeddingDefinition?.pageAlpha ?? PAGE_SEARCH_ALPHA
-  const alpha = inAlpha ?? (type === 'page' ? pageAlpha : 0.25)
+  const alpha = inAlpha ?? (type === 'page' ? (activeEmbeddingDefinition?.pageAlpha ?? 0) : 0.25)
   const query = inQuery.trim()
 
   // VALIDATION

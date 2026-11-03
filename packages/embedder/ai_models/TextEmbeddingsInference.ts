@@ -53,9 +53,11 @@ export class TextEmbeddingsInference extends AbstractEmbeddingsModel {
     if (!this.readyPromise) {
       this.readyPromise = (async () => {
         while (!this.isReady) {
-          const res = await this.getTokens('ready')
+          const {error} = await this.client.POST('/tokenize', {
+            body: {add_special_tokens: true, inputs: 'ready'}
+          })
           const duration = Math.floor((Date.now() - start) / 1000)
-          if (res instanceof Error) {
+          if (error) {
             Logger.log(`TEI warming up for ${duration} seconds`)
             await sleep(5_000)
             continue
@@ -70,12 +72,21 @@ export class TextEmbeddingsInference extends AbstractEmbeddingsModel {
     }
     return this.readyPromise
   }
-  async getTokens(content: string) {
+  private async waitForTEI() {
+    this.isReady = false
+    await this.ready()
+  }
+
+  async getTokens(content: string, retries = 5): Promise<number[] | Error> {
     if (!content) return []
-    const {data, error} = await this.client.POST('/tokenize', {
+    const {data, error, response} = await this.client.POST('/tokenize', {
       body: {add_special_tokens: true, inputs: content}
     })
-    if (error) return new Error(error.error)
+    if (error) {
+      if (response || retries < 1) return new Error(error.error)
+      await this.waitForTEI()
+      return this.getTokens(content, retries - 1)
+    }
     return data[0]!.map(({id}) => id)
   }
 
@@ -95,8 +106,9 @@ export class TextEmbeddingsInference extends AbstractEmbeddingsModel {
       body: {inputs: content}
     })
     if (error) {
-      if (response?.status !== 429 || retries < 1) return new Error(error.error)
-      await sleep(2000)
+      if (retries < 1 || (response && response.status !== 429)) return new Error(error.error)
+      if (response) await sleep(2000)
+      else await this.waitForTEI()
       return this.getEmbeddingWithTokens(content, retries - 1)
     }
     const tokens = Number(response.headers.get('x-compute-tokens')) || 0
