@@ -13,9 +13,12 @@ const schema = new GraphQLSchema({
 
 const makeSocket = () => {
   const messageTypes: string[] = []
+  const messageTypesSentInDrain: string[] = []
   const socket = {
     isBackpressured: false,
+    isInDrain: false,
     messageTypes,
+    messageTypesSentInDrain,
     persistedRequest: {
       method: 'GET',
       url: '/',
@@ -24,7 +27,9 @@ const makeSocket = () => {
     },
     // uWS returns 0 when the message is buffered behind backpressure that drains later
     send: (message: string) => {
-      messageTypes.push(JSON.parse(message).type)
+      const {type} = JSON.parse(message)
+      messageTypes.push(type)
+      if (socket.isInDrain) messageTypesSentInDrain.push(type)
       return socket.isBackpressured ? 0 : 1
     },
     ping: () => 1,
@@ -52,6 +57,18 @@ const makeTestBehavior = () => makeBehavior({schema, connectionInitWaitTimeout: 
 // graphql-ws handles a message with promises alone, so a macrotask lets it run as far as it can
 const settle = () => new Promise((resolve) => setImmediate(resolve))
 
+// uWS.js runs the microtasks that a callback queues before the callback returns, so they happen inside the drain
+const drain = (
+  behavior: ReturnType<typeof makeBehavior>,
+  socket: ReturnType<typeof makeSocket>
+) => {
+  socket.isInDrain = true
+  setImmediate(() => {
+    socket.isInDrain = false
+  })
+  behavior.drain!(socket)
+}
+
 test('a drain resumes the operations on the socket that drained', async () => {
   const behavior = makeTestBehavior()
   const sockets = [makeSocket(), makeSocket()]
@@ -71,6 +88,24 @@ test('a drain resumes the operations on the socket that drained', async () => {
   await settle()
   expect(first!.messageTypes).toEqual(['connection_ack', 'next', 'complete'])
   expect(second!.messageTypes).toEqual(['connection_ack', 'next'])
+})
+
+test('a drain resumes sending only after uWS returns from the drain callback', async () => {
+  // a large send that only partly writes from inside the drain callback leaves uWS no longer waiting for the socket to
+  // become writable, so the socket never drains again (uNetworking/uSockets#265)
+  const behavior = makeTestBehavior()
+  const socket = makeSocket()
+  behavior.open!(socket)
+  await receive(behavior, socket, {type: 'connection_init'})
+  socket.isBackpressured = true
+  void receive(behavior, socket, subscribe)
+  await settle()
+
+  socket.isBackpressured = false
+  drain(behavior, socket)
+  await settle()
+  expect(socket.messageTypes).toEqual(['connection_ack', 'next', 'complete'])
+  expect(socket.messageTypesSentInDrain).toEqual([])
 })
 
 test('closing a socket ends the operations waiting on its drain', async () => {
