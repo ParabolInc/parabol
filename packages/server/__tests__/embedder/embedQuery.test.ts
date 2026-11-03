@@ -15,7 +15,7 @@ jest.mock('../../utils/getRedis', () => ({
 const mockPublish = jest.fn(async () => 1)
 
 const mockEmbedder = {
-  getEmbedding: jest.fn(async (): Promise<number[] | Error> => [1, 0, 0])
+  getSearchEmbedding: jest.fn(async (): Promise<number[] | Error> => [1, 0, 0])
 }
 
 const data = (expiresAt: number) => ({
@@ -31,7 +31,7 @@ it('skips a query job whose requester stopped waiting', async () => {
   expect(await embedQuery({dataLoader: getNewDataLoader('embedQueryTest'), data: input})).toBe(
     input
   )
-  expect(mockEmbedder.getEmbedding).not.toHaveBeenCalled()
+  expect(mockEmbedder.getSearchEmbedding).not.toHaveBeenCalled()
   expect(mockPublish).not.toHaveBeenCalled()
 })
 
@@ -40,6 +40,6 @@ it('embeds and publishes a live query job', async () => {
     dataLoader: getNewDataLoader('embedQueryTest'),
     data: data(Date.now() + 5_000)
   })
-  expect(mockEmbedder.getEmbedding).toHaveBeenCalledWith('retro')
+  expect(mockEmbedder.getSearchEmbedding).toHaveBeenCalledWith('retro')
   expect(mockPublish).toHaveBeenCalledWith('embedderResponse:1', expect.any(Buffer))
 })

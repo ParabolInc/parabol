@@ -1,6 +1,9 @@
 import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
-import {activeEmbeddingModelId} from '../../../embedder/activeEmbeddingModel'
+import {
+  activeEmbeddingDefinition,
+  activeEmbeddingModelId
+} from '../../../embedder/activeEmbeddingModel'
 import {getEmbeddingsPagesTableName} from '../../../embedder/getEmbeddingsTableName'
 import {cosineSimilarity, pageSnippet, RRF} from '../expressions'
 import {
@@ -30,7 +33,7 @@ export const getPagesByRRF = async ({
   viewerId,
   teamIds,
   dateRange,
-  vectorFloor = VECTOR_SIMILARITY_FLOOR,
+  vectorFloor = activeEmbeddingDefinition?.pageVectorFloor ?? VECTOR_SIMILARITY_FLOOR,
   vectorMinBytes = VECTOR_MIN_PAGE_BYTES,
   dropStopWords = FUSED_KEYWORD_MATCHING.dropStopWords,
   anyWordFallbackBelow = FUSED_KEYWORD_MATCHING.anyWordFallbackBelow,

@@ -45,3 +45,37 @@ it('counts 0 tokens when TEI sends no count', async () => {
     tokens: 0
   })
 })
+
+it("prefixes a search with the model's prompt", async () => {
+  const tei = new TextEmbeddingsInference(
+    'microsoft/harrier-oss-v1-270m',
+    'http://localhost:1/',
+    512
+  )
+  const post = respondWith(tei, {})
+  await tei.getSearchEmbedding('retro')
+  expect(post).toHaveBeenCalledWith('/embed', {
+    body: {
+      inputs:
+        'Instruct: Given a web search query, retrieve relevant passages that answer the query\nQuery: retro'
+    }
+  })
+})
+
+it('sends a search as is when the model has no prompt', async () => {
+  const tei = makeTei()
+  const post = respondWith(tei, {})
+  await tei.getSearchEmbedding('retro')
+  expect(post).toHaveBeenCalledWith('/embed', {body: {inputs: 'retro'}})
+})
+
+it('sends a document as is, whatever the model', async () => {
+  const tei = new TextEmbeddingsInference(
+    'microsoft/harrier-oss-v1-270m',
+    'http://localhost:1/',
+    512
+  )
+  const post = respondWith(tei, {})
+  await tei.getEmbedding('A page about retros')
+  expect(post).toHaveBeenCalledWith('/embed', {body: {inputs: 'A page about retros'}})
+})
