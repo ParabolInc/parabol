@@ -58,10 +58,11 @@ const vectorAt = (cosine: number) =>
 
 const mockEmbedder = {
   tableName,
+  chunkText: jest.fn(async (text: string): Promise<string[] | Error> => [text]),
   getEmbedding: jest.fn(async (): Promise<number[] | Error> => vectorAt(1))
 }
 
-const insertTopic = async (fromTeamId: string, fromMeetingId: string, fullText: string) => {
+const insertTopic = async (fromTeamId: string, fromMeetingId: string, fullText: string | null) => {
   const discussionId = generateUID()
   await pg
     .insertInto('Discussion')
@@ -180,6 +181,28 @@ it('ignores its own meeting and other teams', async () => {
   expect(await run(topic)).toBe(false)
   const [, links] = jest.mocked(publishSimilarRetroTopics).mock.calls[0]!
   expect(links).toEqual([])
+})
+
+it('searches with the first chunk of a long topic', async () => {
+  const topic = await insertTopic(teamId, meetingId, 'A very long topic')
+  mockEmbedder.chunkText.mockResolvedValueOnce(['The first chunk', 'The second chunk'])
+  await run(topic)
+  expect(mockEmbedder.getEmbedding).toHaveBeenCalledWith(`${PROMPT}The first chunk`)
+})
+
+it('does nothing for a topic whose text was never stored', async () => {
+  const topic = await insertTopic(teamId, meetingId, null)
+  expect(await run(topic)).toBe(false)
+  expect(mockEmbedder.getEmbedding).not.toHaveBeenCalled()
+  expect(publishSimilarRetroTopics).not.toHaveBeenCalled()
+})
+
+it('retries when the topic cannot be chunked', async () => {
+  const topic = await insertTopic(teamId, meetingId, 'A topic')
+  mockEmbedder.chunkText.mockResolvedValueOnce(new Error('TEI is down'))
+  const result = await run(topic)
+  expect(result).toBeInstanceOf(JobQueueError)
+  expect((result as JobQueueError).retry).toBe(true)
 })
 
 it('retries when the embedding fails', async () => {

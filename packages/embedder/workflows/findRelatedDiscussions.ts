@@ -21,10 +21,16 @@ export const findRelatedDiscussions: JobQueueStepRun<{
   const {embeddingsMetadataId, modelId} = data
   const {relatedDiscussionPrompt, relatedDiscussionFloor} = modelIdDefinitions[modelId]
   const embeddingModel = getModelManager().getEmbedder(modelId)
+  if (!embeddingModel) return new JobQueueError(`embedding model ${modelId} not available`)
   const metadata = await dataLoader.get('embeddingsMetadata').loadNonNull(embeddingsMetadataId)
   const {teamId, refId: discussionId, fullText} = metadata
+  if (!fullText) return false
   const {meetingId} = await dataLoader.get('discussions').loadNonNull(discussionId)
-  const queryVector = await embeddingModel.getEmbedding(`${relatedDiscussionPrompt}${fullText}`)
+  const chunks = await embeddingModel.chunkText(fullText)
+  if (chunks instanceof Error) {
+    return new JobQueueError(`unable to get tokens: ${chunks.message}`, true)
+  }
+  const queryVector = await embeddingModel.getEmbedding(`${relatedDiscussionPrompt}${chunks[0]}`)
   if (queryVector instanceof Error) {
     return new JobQueueError(`unable to get embeddings: ${queryVector.message}`, true)
   }
