@@ -1,9 +1,11 @@
 import fs from 'fs'
 import {minify} from 'html-minifier-terser'
 import path from 'path'
+import appOrigin from '../../packages/server/appOrigin'
 import {makeOAuth2Redirect} from '../../packages/server/utils/makeOAuth2Redirect'
 import logo192 from '../../static/images/brand/mark-cropped-192.png'
 import logo512 from '../../static/images/brand/mark-cropped-512.png'
+import socialCard from '../../static/images/brand/social-card.jpg'
 import getProjectRoot from '../webpack/utils/getProjectRoot'
 
 const PROJECT_ROOT = getProjectRoot()
@@ -86,8 +88,17 @@ const rewriteIndexHTML = () => {
   const noindex =
     process.env.HOST === 'action.parabol.co' ? '' : `<meta name="robots" content="noindex"/>`
   const keys = `<script>window.__ACTION__=${JSON.stringify(clientKeys)}</script>`
+  // unfurlers need an absolute URL, but a PPMI with PROXY_CDN has a relative public path
+  const socialCardURL = new URL(socialCard, appOrigin).href
+  const socialImage = [
+    `<meta property="og:image" content="${socialCardURL}"/>`,
+    '<meta property="og:image:width" content="1200"/>',
+    '<meta property="og:image:height" content="630"/>',
+    '<meta property="og:image:alt" content="Parabol retrospective, Sprint Poker and check-in meetings"/>'
+  ].join('')
   const rawHTML = skeleton
     .replace('<head>', `<head>${noindex}${keys}`)
+    .replace('</head>', `${socialImage}</head>`)
     .replaceAll('__PUBLIC_PATH__', __webpack_public_path__.replace(/\/$/, ''))
   const minifiedHTML = minify(rawHTML, {
     collapseBooleanAttributes: true,
