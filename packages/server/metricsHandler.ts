@@ -161,6 +161,13 @@ export const websocketConnectDuration = new Histogram({
   registers: [register]
 })
 
+export const websocketMessagesDropped = new Counter({
+  name: 'parabol_websocket_messages_dropped_total',
+  help: 'Messages the server never sent because the socket already had more than maxBackpressure queued, by route',
+  labelNames: ['route'] as const,
+  registers: [register]
+})
+
 export const unexpectedGraphQLErrors = new Counter({
   name: 'parabol_graphql_unexpected_errors_total',
   help: 'Queries and mutations that returned an error the server did not mean to, by operation type',

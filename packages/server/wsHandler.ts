@@ -18,7 +18,8 @@ import {logOperation} from './logOperation'
 import {
   websocketConnectAttempts,
   websocketConnectDuration,
-  websocketConnects
+  websocketConnects,
+  websocketMessagesDropped
 } from './metricsHandler'
 import getKysely from './postgres/getKysely'
 import {createCookieHeaders, getAuthTokenFromCookie} from './utils/authCookie'
@@ -323,6 +324,15 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
     websocketConnectDuration.observe({outcome}, secondsSinceUpgrade(ctx.extra.socket))
   }
 })
+
+// uWS drops a send while the socket has more than maxBackpressure queued, and graphql-ws counts a dropped message as sent.
+// uWS calls drain before the queue is empty, so graphql-ws sends an operation's next message while most of the last one
+// is still queued. The 64 KiB default dropped the message after any larger result, like the @defer payloads that follow
+// a meeting query. graphql-ws holds each operation until a drain, so a queue only nears this limit for a slow client
+wsHandler.maxBackpressure = 4 * 1024 * 1024
+wsHandler.dropped = () => {
+  websocketMessagesDropped.inc({route: 'graphql'})
+}
 
 // Hack because graphql-ws doesn't support a way to extract the IP address, so we override the upgrade method
 wsHandler.upgrade = async (res, req, context) => {

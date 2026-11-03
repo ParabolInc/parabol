@@ -2,6 +2,7 @@ import './hocusPocus'
 import type {WebSocketBehavior} from 'uWebSockets.js'
 import {HocusPocusWebSocket} from './HocusPocusWebSocket'
 import {redisHocusPocus} from './hocusPocus'
+import {websocketMessagesDropped} from './metricsHandler'
 import {Logger} from './utils/Logger'
 import parseSessionId from './utils/parseSessionId'
 import {runWithLogContext} from './utils/requestLogContext'
@@ -77,6 +78,9 @@ export const hocusPocusHandler: WebSocketBehavior<HocusPocusSocketData> = {
         userData.socket.close(1011)
       }
     })
+  },
+  dropped() {
+    websocketMessagesDropped.inc({route: 'yjs'})
   },
   close(ws, code, reason) {
     const userData = ws.getUserData()
