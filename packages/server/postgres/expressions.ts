@@ -76,20 +76,28 @@ export const pageSnippet = (body: Expression<string | null>, tsQuery: Expression
 
 const MIN_QUERY_TERM_LENGTH = 2
 const MAX_QUERY_TERMS = 8
+const SINGLE_DIGIT = '^[0-9]$'
 
 // splits the query into words exactly as pageSearchTsv splits page text, then quotes each word as a prefix term.
+// A single digit matches a whole number, a decimal's whole part (3.12) or a hyphenated number (SEV-1), never a
+// prefix: as a prefix, "2" would match the year on every page.
 // With dropStopWords, English stop words leave before the cap, unless every word is one.
-// A query with no words of 2+ characters gives NULL, which matches nothing.
+// A query with no single digits and no words of 2+ characters gives NULL, which matches nothing.
 export const pagePrefixTerms = (query: string, dropStopWords: boolean) =>
   sql<string[] | null>`(
-    select array_agg('''' || replace(replace(t.lexeme, '\\', '\\\\'), '''', '''''') || ''':*' order by t.position)
+    select array_agg(
+      case when t.lexeme ~ ${sql.lit(SINGLE_DIGIT)}
+        then '(''' || t.lexeme || ''' | ''' || t.lexeme || '.'':* | ''-' || t.lexeme || ''')'
+        else '''' || replace(replace(t.lexeme, '\\', '\\\\'), '''', '''''') || ''':*'
+      end order by t.position
+    )
     from (
       select lexeme, position
       from (
         select lexeme, positions[1] as position, s."isStopWord", bool_and(s."isStopWord") over () as "onlyStopWords"
         from unnest(to_tsvector('simple', ${query}))
           cross join lateral (select ts_lexize('english_stem', lexeme) = '{}' as "isStopWord") s
-        where char_length(lexeme) >= ${sql.lit(MIN_QUERY_TERM_LENGTH)}
+        where char_length(lexeme) >= ${sql.lit(MIN_QUERY_TERM_LENGTH)} or lexeme ~ ${sql.lit(SINGLE_DIGIT)}
       ) w
       where not (${sql.lit(dropStopWords)} and w."isStopWord" and not w."onlyStopWords")
       order by position

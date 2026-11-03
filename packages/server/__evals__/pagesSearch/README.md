@@ -109,7 +109,7 @@ When a dev query matches a holdout query, the dev query changes. A unit test che
 
 **The holdout runs only at gates.** `heavy-holdout` was written by an independent agent that saw only the corpus dump: no code, results or dev queries. Run it once for the candidate and once for master in a PR that changes ranking, report both, and never tune on it. Whoever tunes ranking doesn't read either holdout file, so their unit tests report problems by query number, never by text, and `.gitattributes` keeps both files out of `git diff`, `git show` and `git log -p`.
 
-**Running a gate blind.** Run each side as a one-row sweep (`EVAL_MODES=sweep`, with one value in every sweep variable): unlike fused and quick runs, it prints no category rows and never falls back to keyword results. Send its output to a file and read only the overall row and the test summary, because a failed query is printed by its text. Afterwards, cut each results file down to its `overall` block and delete the logs. Never run `compare.mjs` on a holdout: it lists changed queries by text.
+**Running a gate blind.** Run each side as a sweep (`EVAL_MODES=sweep`) with one value in every sweep variable, except `EVAL_ALPHAS=0,<PAGE_SEARCH_ALPHA>` to score the quick list and fused ranking in the same run. Leave the keyword variables unset, so each row keeps its list's defaults: unlike fused and quick runs, a sweep prints no category rows and never falls back to keyword results. Send its output to a file and read only the overall row and the test summary, because a failed query is printed by its text. Afterwards, cut each results file down to its `overall` block and delete the logs. Never run `compare.mjs` on a holdout: it lists changed queries by text.
 
 **The final holdout waits for the re-embed.** `heavy-final` was written the same way after `heavy-holdout`'s eighth gate run, and its author never saw the other two query files either. It has 100 queries: title 13, prefix 9, body 16, paraphrase 14, typo 10, table 7, longDoc 10, person 11 and noAnswer 10, the mix `heavy-holdout`'s author was asked for, scaled by 1.25. The corpus has few one-off events, so the sets overlap in what they ask for, not in how they ask it. 69 of its 90 answerable queries want a page that a dev query also grades 3, but only 9 share half their words with such a query. Eight of its queries first matched another file word for word; they were reworded and kept their labels. Nothing runs it before Group B's final gate (B8). There, run it blind as above, once for master and once for the candidate, and never tune on it. Until then, ranking PRs gate on `heavy-holdout`.
 
@@ -557,3 +557,43 @@ On `dev`, prefix queries go from 0.76 to 1.00 and summary queries from 0.82 to 0
 - **The gate passes.** On `heavy-holdout`, nDCG@10 rises by 0.072 and Recall@20 by 0.035.
 - **What was read.** Only overall rows. The local holdout results were scrubbed down to those rows.
 - **Gate runs so far.** `heavy-holdout` has had eight: two for A4, four for A5 and two here.
+
+## Numbers in queries (2026-10-29)
+
+Keyword search used to drop every one-character word, so the "5" in "Beacon Retro #5" never became a term. Since A5b's alpha of 0.01, numbered titles depend on keyword terms, and these searches fell (see What it costs in Blend re-tune). Now a single digit stays in the query. It matches the number written on its own ("#5"), as the whole part of a decimal ("3.12") or after a hyphen ("SEV-1"): `( '5' | '5.':* | '-5' )`. It is never a prefix: as one, "2" would match the year on every page. Other words keep prefix matching, and single letters are still dropped.
+
+**How it was checked.** The plan fixed the rule before the runs:
+- On `heavy-dev` and `dev`, for both lists, nDCG@10 and Recall@20 may fall by at most 0.005, and `noAnswerResults` may rise by at most 1.
+- Report whether the three numbered queries A5b hurt get back to their A5 scores.
+- Gate on `heavy-holdout`, as before.
+
+| List | `heavy-dev` nDCG@10 | Recall@20 | `dev` nDCG@10 | Recall@20 |
+| --- | ---: | ---: | ---: | ---: |
+| Fused, before | 0.757 | 0.862 | 0.864 | 0.928 |
+| Fused, after | 0.814 | 0.881 | 0.867 | 0.928 |
+| Quick, before | 0.767 | 0.853 | 0.854 | 0.912 |
+| Quick, after | 0.825 | 0.872 | 0.859 | 0.916 |
+
+`noAnswerResults` doesn't change: 13.67 (fused) and 5 (quick) on `heavy-dev`, and 11.63 and 10.25 on `dev`.
+
+- **Numbered searches improve in both lists.** "Beacon Retro #5" goes from 0.39 to 1.00, "Atlas Sprint Poker #4" from 0.36 to 0.98 and "day 7 onboarding email" from 0 to 0.63. Fused ranking is back at or above its A5 scores of 0.96, 0.62 and 0.50. "Atlas Retro #6" goes from 0.43 to 0.98, and the typo "atlss standup aug 3" from 0 to 0.58. On `dev`, "which stories were estimated at 8 points" gains 0.31.
+- **Totals.** Each list has five wins and no losses on `heavy-dev`, and two wins and no losses on `dev`. An exact-only digit had cost "Team Health #3" 0.017, because "Team Health #4" writes its scores as 3.5 and 3.2; matching a decimal's whole part fixed that.
+- **What it costs.** A number glued to letters ("sev1", "v4", "9th", "2pm") is one word to Postgres, so a typed "1" can't match it. Such a page has one word fewer than pages that mention a standalone 1, so it drops below them, or out of the keyword list when 20 or more pages have every word. Neither corpus writes numbers this way, so the eval can't measure it.
+- **Fused ranking still trails the quick list on `heavy-dev`,** by about the same margin as before: 0.814 against 0.825.
+
+**Gate.** Master and this change each ran once, as a sweep of two rows: the quick list at alpha 0 and fused ranking at 0.01, each with its default keyword settings. The decimal and hyphen forms came after the gate. The heavy corpus has no words like "3.12" or "-1", so its results can't change (`heavy-dev` gives identical lists), and the fixture holdout ran again with the same results.
+
+| Holdout | List | Code | nDCG@10 | Recall@5 | Recall@20 | `noAnswerResults` |
+| --- | --- | --- | ---: | ---: | ---: | ---: |
+| `heavy-holdout` (72 answerable) | quick | master | 0.801 | 0.847 | 0.931 | 10.00 |
+| `heavy-holdout` | quick | numbers | 0.826 | 0.889 | 0.931 | 10.00 |
+| `heavy-holdout` | fused | master | 0.791 | 0.840 | 0.931 | 14.00 |
+| `heavy-holdout` | fused | numbers | 0.816 | 0.882 | 0.931 | 14.00 |
+| `holdout` (23 answerable, spent) | quick | master | 0.822 | 0.833 | 0.891 | 4.00 |
+| `holdout` | quick | numbers | 0.822 | 0.833 | 0.891 | 4.00 |
+| `holdout` | fused | master | 0.811 | 0.801 | 0.913 | 4.00 |
+| `holdout` | fused | numbers | 0.811 | 0.801 | 0.913 | 4.00 |
+
+- **The gate passes.** On `heavy-holdout`, both lists gain 0.025 nDCG@10, and Recall@20 holds.
+- **What was read.** Only overall rows. The local holdout results were scrubbed down to those rows.
+- **Gate runs so far.** `heavy-holdout` has had ten: two for A4, four for A5, two for A5b and two here. Each of the two here scored both lists.
