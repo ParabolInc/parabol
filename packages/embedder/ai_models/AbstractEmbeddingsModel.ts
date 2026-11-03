@@ -32,6 +32,10 @@ export interface EmbeddingModelParams {
   discussionText: DiscussionTextFormat
   relatedDiscussionPrompt: string | null
   relatedDiscussionFloor: number
+  reflectionPrompt: string
+  similarWordingThreshold: number
+  templateSearchFloor: number
+  templateSearchGap: number
 }
 
 const FILL_TIER_STEP = 10_000_000
@@ -49,6 +53,7 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
   readonly chunker: PageChunkerName
   readonly searchPrompt: string
   readonly discussionText: DiscussionTextFormat
+  readonly reflectionPrompt: string
   readonly modelId: ModelId
   isReady = false
   constructor(modelId: ModelId, url: string, maxTokens: number) {
@@ -61,6 +66,7 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
     this.chunker = modelParams.chunker
     this.searchPrompt = modelParams.searchPrompt
     this.discussionText = modelParams.discussionText
+    this.reflectionPrompt = modelParams.reflectionPrompt
     this.maxInputTokens = maxTokens
     this.tableName = getEmbeddingsTableName(modelId)
     this.pagesTableName = getEmbeddingsPagesTableName(modelId)!

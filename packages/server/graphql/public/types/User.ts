@@ -15,7 +15,10 @@ import {
   MAX_RESULT_GROUP_SIZE
 } from '../../../../client/utils/constants'
 import groupReflections from '../../../../client/utils/smartGroup/groupReflections'
-import {activeEmbeddingModelId} from '../../../../embedder/activeEmbeddingModel'
+import {
+  activeEmbeddingDefinition,
+  activeEmbeddingModelId
+} from '../../../../embedder/activeEmbeddingModel'
 import {getEmbeddingsTableName} from '../../../../embedder/getEmbeddingsTableName'
 import {numberVectorToString} from '../../../../embedder/indexing/numberVectorToString'
 import type MeetingTemplate from '../../../database/types/MeetingTemplate'
@@ -49,9 +52,7 @@ import {pages} from '../fields/pages'
 import {search} from '../fields/search'
 import type {ReqResolvers} from './ReqResolvers'
 
-const SIMILARITY_THRESHOLD = 0.5
 const TEMPLATE_SEARCH_LIMIT = 12
-const TEMPLATE_SEARCH_MAX_GAP = 0.05
 
 const getValidUserIds = async (
   userIds: null | string[] | undefined,
@@ -791,6 +792,8 @@ const User: ReqResolvers<'User'> = {
     // all team ids which could have accessible templates
     const allTeamIds = ['aGhostTeam', ...allOrgTeams.map(({id}) => id)]
 
+    if (!activeEmbeddingDefinition) return []
+    const {templateSearchFloor, templateSearchGap} = activeEmbeddingDefinition
     const vector = await publishToEmbedder({
       jobType: 'userQuery:start',
       data: getUserQueryJobData(search),
@@ -830,7 +833,7 @@ const User: ReqResolvers<'User'> = {
       )
       .selectFrom('CosineSimilarity')
       .select(({fn}) => ['refId', fn.max('similarity').as('similarity')])
-      .where('similarity', '>=', SIMILARITY_THRESHOLD)
+      .where('similarity', '>=', templateSearchFloor)
       .groupBy('refId')
       .orderBy('similarity', 'desc')
       .execute()
@@ -845,7 +848,7 @@ const User: ReqResolvers<'User'> = {
       if (activity.scope === 'TEAM' && !teamIds.includes(activity.teamId)) return []
       return [{activity, similarity}]
     })
-    const floor = (accessibleMatches[0]?.similarity ?? 0) - TEMPLATE_SEARCH_MAX_GAP
+    const floor = (accessibleMatches[0]?.similarity ?? 0) - templateSearchGap
     return accessibleMatches
       .filter(({similarity}) => similarity >= floor)
       .slice(0, TEMPLATE_SEARCH_LIMIT)

@@ -78,7 +78,11 @@ export const embedMetadata: JobQueueStepRun<
   let firstChunkVector: number[] | undefined
   const errors = await Promise.all(
     chunks.map(async (chunk, chunkNumber) => {
-      const embeddingVector = await embeddingModel.getEmbedding(chunk)
+      const embeddingVector = await embeddingModel.getEmbedding(
+        metadata.objectType === 'retroReflection'
+          ? `${embeddingModel.reflectionPrompt}${chunk}`
+          : chunk
+      )
       if (embeddingVector instanceof Error) {
         return new JobQueueError(`unable to get embeddings: ${embeddingVector.message}`, true, {
           forceBuildText: true

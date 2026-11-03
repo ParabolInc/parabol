@@ -22,11 +22,13 @@ export type SimilarityGroup = {
 export type SimilarityOptions = {
   /** Never compare groups that answer different reflect prompts */
   readonly sameColumnOnly?: boolean
+  /** Replaces SIMILARITY_THRESHOLD, for embedding models whose scores sit elsewhere */
+  readonly threshold?: number
 }
 
 /** The bigger the resulting group, the more similar its members must be to justify the merge */
-export const sizeAdjustedThreshold = (resultingSize: number) =>
-  SIMILARITY_THRESHOLD + Math.max(0, resultingSize - 3) * MARGINAL_CARD_PENALTY
+export const sizeAdjustedThreshold = (resultingSize: number, threshold = SIMILARITY_THRESHOLD) =>
+  threshold + Math.max(0, resultingSize - 3) * MARGINAL_CARD_PENALTY
 
 /** Mean of the vectors, renormalized to unit length. Null when there is nothing to average */
 export const centroid = (vectors: readonly (readonly number[])[]): readonly number[] | null => {

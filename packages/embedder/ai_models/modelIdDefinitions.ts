@@ -95,7 +95,11 @@ const legacySettings = {
   searchPrompt: '',
   discussionText: 'narrated',
   relatedDiscussionPrompt: null,
-  relatedDiscussionFloor: 0.67
+  relatedDiscussionFloor: 0.67,
+  reflectionPrompt: '',
+  similarWordingThreshold: 0.81,
+  templateSearchFloor: 0.5,
+  templateSearchGap: 0.05
 } as const
 
 export const modelIdDefinitions = {
@@ -135,7 +139,12 @@ export const modelIdDefinitions = {
     discussionText: 'plain',
     relatedDiscussionPrompt:
       'Instruct: Given a topic from a team retrospective, retrieve past topics about the same issue\nQuery: ',
-    relatedDiscussionFloor: 0.62
+    relatedDiscussionFloor: 0.62,
+    reflectionPrompt:
+      'Instruct: Given a note from a team retrospective, retrieve notes that make the same point\nQuery: ',
+    similarWordingThreshold: 0.79,
+    templateSearchFloor: 0.35,
+    templateSearchGap: 0.05
   },
   'Qwen/Qwen3-Embedding-0.6B': {
     embeddingDimensions: 1024,
