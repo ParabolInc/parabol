@@ -3,7 +3,7 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import path from 'path'
 import appOrigin from '../appOrigin'
 import {Logger} from '../utils/Logger'
-import FileStoreManager, {type PartialPath} from './FileStoreManager'
+import FileStoreManager, {type PartialPath, type PutFileOptions} from './FileStoreManager'
 
 export default class LocalFileStoreManager extends FileStoreManager {
   baseUrl = makeAppURL(appOrigin, 'self-hosted')
@@ -15,11 +15,7 @@ export default class LocalFileStoreManager extends FileStoreManager {
     }
   }
 
-  protected async putFile(
-    file: ArrayBufferLike,
-    fullPath: string,
-    _options?: {contentDisposition?: string}
-  ) {
+  protected async putFile(file: ArrayBufferLike, fullPath: string, _options?: PutFileOptions) {
     const fsAbsLocation = path.join(process.cwd(), fullPath)
     await fs.promises.mkdir(path.dirname(fsAbsLocation), {recursive: true})
     await fs.promises.writeFile(fsAbsLocation, Buffer.from(file) as any)
