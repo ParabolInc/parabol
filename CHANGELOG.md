@@ -5,6 +5,34 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.16.0](https://github.com/ParabolInc/parabol/compare/v15.15.2...v15.16.0) (2026-11-03)
+
+
+### Added
+
+* let page search match numbers like [#5](https://github.com/ParabolInc/parabol/issues/5) ([#13807](https://github.com/ParabolInc/parabol/issues/13807)) ([f034d85](https://github.com/ParabolInc/parabol/commit/f034d85a10a0c6b569705f428907a93fa619a58d))
+
+
+### Fixed
+
+* accept a team invitation once and let Back leave it ([#13922](https://github.com/ParabolInc/parabol/issues/13922)) ([0d0cc34](https://github.com/ParabolInc/parabol/commit/0d0cc340def65d4b7096b5e8a203811c6c5ad5cf))
+* **dev:** install dependencies before the dev stack starts its tasks ([#13915](https://github.com/ParabolInc/parabol/issues/13915)) ([7a7d191](https://github.com/ParabolInc/parabol/commit/7a7d19148c393a59d848eceb732336d4c4a324c8))
+* only track presence on the meeting cards that are on screen ([#13924](https://github.com/ParabolInc/parabol/issues/13924)) ([34958c1](https://github.com/ParabolInc/parabol/commit/34958c1b02ef4313cf7205a79a6c93415224149e))
+* **reports:** stop iOS offering AutoFill Contact on the ask box ([#13925](https://github.com/ParabolInc/parabol/issues/13925)) ([5edeaf8](https://github.com/ParabolInc/parabol/commit/5edeaf8b2e1596c5a092edb6d8b33cbbc5519a0c))
+* **server:** make each websocket wait on its own drain ([#13911](https://github.com/ParabolInc/parabol/issues/13911)) ([39fb8a0](https://github.com/ParabolInc/parabol/commit/39fb8a0e140a27c1a73bc5ceb1574afb8d29b3c6))
+* **server:** resume websocket sends after uWS returns from drain ([#13921](https://github.com/ParabolInc/parabol/issues/13921)) ([0b20c65](https://github.com/ParabolInc/parabol/commit/0b20c651bc147d2f57e50407dd5e1a9689c12cd3))
+* **server:** stop dropping websocket messages behind a large result ([#13917](https://github.com/ParabolInc/parabol/issues/13917)) ([2fda07a](https://github.com/ParabolInc/parabol/commit/2fda07a77cd816adb8c9816ec6bc1fa0012f92a6))
+* show an image when Slack and others unfurl app links ([#13920](https://github.com/ParabolInc/parabol/issues/13920)) ([b7d0d6d](https://github.com/ParabolInc/parabol/commit/b7d0d6d210d1ad2110a48bd40b7efcf1b9b89af4))
+* show invitees who have an account the sign-in form on the team invitation page ([#13923](https://github.com/ParabolInc/parabol/issues/13923)) ([cf4cb6d](https://github.com/ParabolInc/parabol/commit/cf4cb6de54607a1cf7f3be9ce61877adba757958))
+* show teammates a new task's text once it is submitted ([#13916](https://github.com/ParabolInc/parabol/issues/13916)) ([436d9ba](https://github.com/ParabolInc/parabol/commit/436d9ba4168c417b1a2b7b34d8255cb92cfa511f))
+* sign-in from a page returns to that page ([#13918](https://github.com/ParabolInc/parabol/issues/13918)) ([14eb479](https://github.com/ParabolInc/parabol/commit/14eb47957374dd4ba6891cb694e326b55ad54c57))
+* throttle refused Yjs documents per user instead of every document per IP header ([#13919](https://github.com/ParabolInc/parabol/issues/13919)) ([e4b8f88](https://github.com/ParabolInc/parabol/commit/e4b8f88e2fef39f8d19d6411dfe509517a011588))
+
+
+### Changed
+
+* **gh-actions:** remove the maintainer approval check ([#13909](https://github.com/ParabolInc/parabol/issues/13909)) ([19db634](https://github.com/ParabolInc/parabol/commit/19db63463f698f0fa01c152fceedd742215cc886))
+
 ## [15.15.2](https://github.com/ParabolInc/parabol/compare/v15.15.1...v15.15.2) (2026-11-03)
 
 
