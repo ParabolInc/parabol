@@ -50,7 +50,6 @@
     "@graphql-yoga/plugin-defer-stream": "^3.24.1",
     "@graphql-yoga/plugin-persisted-operations": "^3.24.1",
     "@hocuspocus/extension-database": "^4.3.0",
-    "@hocuspocus/extension-throttle": "^4.3.0",
     "@hocuspocus/server": "^4.3.0",
     "@mattkrick/sanitize-svg": "0.4.1",
     "@octokit/graphql-schema": "^10.36.0",
