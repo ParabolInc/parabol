@@ -62,6 +62,7 @@ let zephyrId: number
 let zephyrDecimalId: number
 let zephyrSevId: number
 let vendorComparisonId: number
+let julyRecapId: number
 let vendorListId: number
 let whiteboardIdeasId: number
 let whitebordIdeasId: number
@@ -138,6 +139,7 @@ beforeAll(async () => {
   zephyrId = await insertPage({title: 'Zephyr', updatedAt: new Date('2026-09-03T12:00:00Z')})
   zephyrDecimalId = await insertPage({title: 'Zephyr 3.12 upgrade'})
   zephyrSevId = await insertPage({title: 'Zephyr SEV-1 review'})
+  julyRecapId = await insertPage({title: 'Jul recap'})
   vendorComparisonId = await insertPage({
     title: 'Vendor comparison',
     updatedAt: new Date('2026-08-01T12:00:00Z')
@@ -176,6 +178,7 @@ beforeAll(async () => {
     standupNotesId,
     meetingSummariesId,
     onboardingChecklistId,
+    julyRecapId,
     earlierWeeklySyncId,
     laterWeeklySyncId,
     japaneseTitleId,
@@ -338,7 +341,7 @@ it('highlights a single digit', async () => {
 })
 
 it('matches a misspelled title word', async () =>
-  expect((await ids('vendor comparsion', {titleTypoSimilarity: 0.5}))[0]).toBe(vendorComparisonId))
+  expect((await ids('vendor comparsion', {titleTypoSimilarity: 0.45}))[0]).toBe(vendorComparisonId))
 
 it('matches misspelled title words by default', async () =>
   expect((await ids('vendor comparsion'))[0]).toBe(vendorComparisonId))
@@ -348,6 +351,12 @@ it('never matches a digit by title similarity', async () =>
 
 it('never matches a short word by title similarity', async () =>
   expect(await ids('vent')).not.toContain(vendorListId))
+
+it('never reads a name as the month in a title', async () =>
+  expect(await ids('julia')).not.toContain(julyRecapId))
+
+it('matches a misspelling whose letters are swapped', async () =>
+  expect(await ids('onbaording')).toContain(onboardingChecklistId))
 
 it('puts closer misspelled title matches first', async () =>
   expect(await ids('whiteboad', {first: 2})).toEqual([whiteboardIdeasId, whitebordIdeasId]))

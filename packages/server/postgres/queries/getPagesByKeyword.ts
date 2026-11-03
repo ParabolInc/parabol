@@ -34,7 +34,7 @@ export const QUICK_KEYWORD_MATCHING: KeywordMatching = {
   dropStopWords: true,
   anyWordFallbackBelow: 20,
   anyWordMinShare: 0,
-  titleTypoSimilarity: 0.5
+  titleTypoSimilarity: 0.45
 }
 
 export interface PageSearchResults {
@@ -126,11 +126,9 @@ export const withPageKeywordRanking = (
               .offset(0)
               .as('s')
           )
-          // word by word: whether the page's search text has the term, and how close the word is to the title.
-          // Only words of 5+ characters without digits are matched by title similarity
           .crossJoinLateral((eb) => {
             const similarity = matchesTitleTypos
-              ? sql<number>`case when char_length(t.word) >= ${sql.lit(MIN_TYPO_WORD_LENGTH)} and t.word !~ '[0-9]' then word_similarity(t.word, coalesce(${eb.ref('p.title')}, '')) else 0 end`
+              ? sql<number>`case when char_length(t.word) >= ${sql.lit(MIN_TYPO_WORD_LENGTH)} and t.word !~ '[0-9]' then strict_word_similarity(t.word, coalesce(${eb.ref('p.title')}, '')) else 0 end`
               : sql<number>`0`
             const isTitleTypo = matchesTitleTypos
               ? sql<boolean>`(not w.exact and w.similarity >= ${titleTypoSimilarity}::float8)`

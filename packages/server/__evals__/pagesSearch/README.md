@@ -28,7 +28,7 @@ Reseed with `EVAL_RESEED=1` after you change how pages are indexed (`embedPage`,
 | `EVAL_STOP_WORDS` | each list's default | `sweep` only: `keep` and/or `drop`; `drop` takes English stop words out of the keyword terms |
 | `EVAL_ANY_WORD_FALLBACK_BELOW` | each list's default | `sweep` only: whole numbers; when fewer pages than this have every word, pages with some of them follow (0 turns this off) |
 | `EVAL_ANY_WORD_MIN_SHARES` | each list's default | `sweep` only: decimals between 0 and 1; the share of the words a page with some of them must contain (at least one) |
-| `EVAL_TITLE_TYPO_SIMILARITIES` | each list's default | `sweep` only: decimals between 0 and 1; a word that doesn't match a page still counts when its `pg_trgm` word similarity to the page's title reaches this (0 turns this off). It only acts when the any-word fallback is on (`EVAL_ANY_WORD_FALLBACK_BELOW` above 0) |
+| `EVAL_TITLE_TYPO_SIMILARITIES` | each list's default | `sweep` only: decimals between 0 and 1; a word that doesn't match a page still counts when its `pg_trgm` strict word similarity to the page's title reaches this (0 turns this off). It only acts when the any-word fallback is on (`EVAL_ANY_WORD_FALLBACK_BELOW` above 0) |
 | `EVAL_LABEL` | `local` | Names the results file |
 | `EVAL_RESEED` | unset | `1` deletes the eval user's pages and seeds them again |
 | `EVAL_DUMP` | unset | `1` writes the set's corpus to `results/<corpus>-corpus/` and skips seeding and ranking: one `<key>.md` per page (the title, a blank line, then the plain text that keyword search reads) plus `index.json` |
@@ -602,7 +602,7 @@ Keyword search used to drop every one-character word, so the "5" in "Beacon Retr
 ## Typo-tolerant titles (2026-10-29)
 
 A misspelled word used to match nothing, so "whiteboad" found no page.
-- **What changed.** A query word that matches no word of a page now still counts for that page when it's close to a word of the page's title. Close means a `pg_trgm` word similarity of at least 0.5 (`titleTypoSimilarity`, the same for both lists). The migration `addPgTrgm` installs the extension.
+- **What changed.** A query word that matches no word of a page now still counts for that page when it's close to a word of the page's title. Close means a `pg_trgm` strict word similarity of at least 0.45 (`titleTypoSimilarity`, the same for both lists). The migration `addPgTrgm` installs the extension.
 - **Which words.** Only words of at least 5 characters without digits match this way. Otherwise "2" would match the year in every summary title, and "plan" would match "Platform".
 - **Where those pages rank.** Such a page joins the pages with some of the words, ranked by how many words it matches. Among equals, the closer title comes first. It never counts as having every word, so pages with every word as typed still come first.
 - **Titles only.** A misspelled word that appears only in a page's text, like `rudderstak`, still matches nothing by keyword.
@@ -646,3 +646,17 @@ A misspelled word used to match nothing, so "whiteboad" found no page.
 - **The fixes cost most of the holdout gain.** Before them, the gain was 0.015 (quick) and 0.018 (fused), with Recall@20 up 0.007 in fused ranking. The fixes were chosen on dev evidence and committed before the second run was read, and nothing was re-tuned on it. The dev sets have no typos in words shorter than 5 letters, so they can't price the 5-character rule. Adding some to `heavy-dev` is the way to tune it.
 - **What was read.** Only overall rows. The local holdout results were scrubbed down to those rows.
 - **Gate runs so far.** `heavy-holdout` has had twelve; the two here each scored both lists at both thresholds.
+
+**Strict matching (2026-11-03).** Plain word similarity ignores the rest of a title word, so "julia" and "janet" matched every title with "Jul" or "Jan" in it, and generated meeting titles are full of those. Meanwhile "onbaording" and "metting" scored too low to match. Strict word similarity compares whole words, which fixes both. It's swept under the same rule as above:
+
+| Threshold | Mean nDCG@10 | Mean Recall@20 |
+| ---: | ---: | ---: |
+| 0 (off) | 0.843 | 0.902 |
+| 0.4 | 0.867 | 0.919 |
+| 0.44 | 0.867 | 0.919 |
+| **0.45** | 0.867 | 0.919 |
+| 0.5 | 0.853 | 0.911 |
+
+Every threshold was eligible. 0.4, 0.44 and 0.45 tie, so the rule takes the strictest. It keeps the gain of plain matching at 0.5 (0.867). What it costs: "vendr" (0.444), "atlss" and "retor" no longer match.
+
+On `heavy-holdout`, nDCG@10 and Recall@20 are the same as plain matching at 0.5: quick 0.829 and 0.931, fused 0.819 and 0.931. `noAnswerResults` holds at 10.00 and 14.00. This was the thirteenth gate run, and only overall rows were read.

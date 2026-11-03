@@ -98,7 +98,6 @@ export const pageQueryWords = (query: string, dropStopWords: boolean) =>
     ) t
   )`
 
-// quotes each search word as a prefix term.
 // A single digit matches a whole number, a decimal's whole part (3.12) or a hyphenated number (SEV-1), never a
 // prefix: as a prefix, "2" would match the year on every page.
 export const pagePrefixTerms = (query: string, dropStopWords: boolean) =>
