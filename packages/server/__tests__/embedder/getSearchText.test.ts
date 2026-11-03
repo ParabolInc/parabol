@@ -114,3 +114,42 @@ it('writes a table inside a response like any other table', () =>
       })
     )
   ).toBe('Lukas Becker: Step | Owner\nDeploy | Lukas'))
+
+it('drops NUL characters, which Postgres text columns reject', () =>
+  expect(getSearchText(paragraph('before\u0000after'))).toBe('beforeafter'))
+
+it('skips table rows with nothing in them', () =>
+  expect(
+    getSearchText(
+      table(
+        ['Name', 'Votes'],
+        [
+          ['', ''],
+          ['CDN purge', '7']
+        ]
+      )
+    )
+  ).toBe('Name | Votes\nCDN purge | 7'))
+
+it('writes a page link as its title', () =>
+  expect(getSearchText({type: 'pageLinkBlock', attrs: {title: 'Roadmap'}})).toBe('Roadmap'))
+
+it('writes nothing for an untitled page link', () =>
+  expect(getSearchText({type: 'pageLinkBlock', attrs: {title: ''}})).toBe(''))
+
+it('writes nothing for a response with no text', () =>
+  expect(
+    getSearchText(
+      responseBlock({
+        id: '3a0bd260-c155-d10d-f844-c7eefdd9570b',
+        preferredName: 'Lukas Becker',
+        avatar,
+        content: {type: 'doc', content: [paragraph('')]}
+      })
+    )
+  ).toBe(''))
+
+it('writes nothing for a task with no text', () =>
+  expect(
+    getSearchText(taskBlock({id: '81aeafd0', preferredName: 'Arjun Mehta', avatar, text: ''}))
+  ).toBe(''))

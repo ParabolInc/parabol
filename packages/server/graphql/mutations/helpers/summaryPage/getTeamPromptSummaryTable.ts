@@ -1,7 +1,8 @@
 import {isNotNull} from '../../../../../client/utils/predicates'
 import type {DataLoaderInstance} from '../../../../dataloader/RootDataLoader'
 import {getSummaryTable} from './getSummaryTable'
-import {teamPromptSummaryTableHeaders as headers} from './teamPromptSummaryTableHeaders'
+
+const headers = ['Author', 'Created at', 'Content'] as const
 
 const getRowData = async (meetingId: string, dataLoader: DataLoaderInstance) => {
   const responses = await dataLoader.get('teamPromptMemberResponsesByMeetingId').load(meetingId)

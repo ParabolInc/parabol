@@ -13,10 +13,16 @@ const schema = getSchema(serverTipTapExtensions)
 
 const toSearchText = (node: ProseMirrorNode): string =>
   getText(node, {blockSeparator: '\n', textSerializers})
+    .replaceAll('\u0000', '')
     .replace(/\n{2,}/g, '\n')
     .trim()
 
 const storedDocText = (content: string) => toSearchText(schema.nodeFromJSON(JSON.parse(content)))
+
+const labeled = (label: string, content: string) => {
+  const text = storedDocText(content)
+  return text ? `${label}: ${text}` : ''
+}
 
 const cellText = (cell: ProseMirrorNode) =>
   getTextBetween(cell, {from: 0, to: cell.content.size}, {blockSeparator: ' ', textSerializers})
@@ -30,12 +36,13 @@ const textSerializers: Record<string, TextSerializer> = {
     node.forEach((cell) => {
       cells.push(cellText(cell))
     })
-    return cells.join(' | ')
+    return cells.some(Boolean) ? cells.join(' | ') : ''
   },
   embedBlock: ({node}) => node.attrs.title ?? '',
   imageBlock: ({node}) => node.attrs.alt ?? '',
-  responseBlock: ({node}) => `${node.attrs.preferredName}: ${storedDocText(node.attrs.content)}`,
-  taskBlock: ({node}) => `Task: ${storedDocText(node.attrs.content)}`
+  pageLinkBlock: ({node}) => node.attrs.title ?? '',
+  responseBlock: ({node}) => labeled(node.attrs.preferredName, node.attrs.content),
+  taskBlock: ({node}) => labeled('Task', node.attrs.content)
 }
 
 export const getSearchText = (block: JSONContent) => {
