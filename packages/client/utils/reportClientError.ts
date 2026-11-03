@@ -40,10 +40,11 @@ const MASKED_ERROR_MESSAGE = 'Unexpected error.'
 const RELEASE = __APP_VERSION__
 
 let queue: ClientErrorReport[] = []
+const reportedErrors = new WeakSet<Error>()
 let flushTimer: ReturnType<typeof setTimeout> | undefined
 const recentReportTimes: number[] = []
 
-const describeReason = (reason: unknown) => {
+export const describeReason = (reason: unknown) => {
   try {
     return JSON.stringify(reason) ?? String(reason)
   } catch {
@@ -77,9 +78,12 @@ export const flushClientErrors = () => {
   }
 }
 
+export const isReportedError = (error: Error) => reportedErrors.has(error)
+
 const reportClientError = (reason: unknown, options: ReportOptions = {}) => {
   const error = toError(reason)
   if (isExtensionError(error)) return
+  reportedErrors.add(error)
   const message = error.message.slice(0, MAX_MESSAGE_LENGTH)
   const stack = error.stack?.slice(0, MAX_STACK_LENGTH)
   const repeat = queue.find(

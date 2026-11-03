@@ -1,5 +1,6 @@
-import {SpanKind, SpanStatusCode, trace} from '@opentelemetry/api'
+import {SpanKind, trace} from '@opentelemetry/api'
 import type {LogEvent} from 'kysely'
+import recordSpanError from './recordSpanError'
 import tracer from './tracer'
 
 const MAX_QUERY_TEXT_LENGTH = 2000
@@ -28,9 +29,7 @@ const traceKyselyQuery = (event: LogEvent) => {
     }
   })
   if (event.level === 'error') {
-    const {error} = event
-    span.recordException(error instanceof Error ? error : String(error))
-    span.setStatus({code: SpanStatusCode.ERROR})
+    recordSpanError(span, event.error)
   }
   span.end(endTime)
 }

@@ -21,6 +21,7 @@ import {registerSCIMHandlers} from './scim/SCIMHandler'
 import selfHostedHandler from './selfHostedHandler'
 import {createStaticFileHandler} from './staticFileHandler'
 import {flushTracing} from './tracing/initTracing'
+import traceHttpRoute from './tracing/traceHttpRoute'
 import getReqAuth from './utils/getReqAuth'
 import {Logger} from './utils/Logger'
 import logProcessWarnings from './utils/logProcessWarnings'
@@ -73,18 +74,18 @@ const app = uws
   .get('/sw.js', PWAHandler)
   .get('/manifest.json', PWAHandler)
   .get('/self-hosted/*', selfHostedHandler)
-  .get('/assets/*', assetProxyHandler)
-  .get('/build/*', buildProxyHandler)
-  .get('/graphql/*', schemaProxyHandler)
+  .get('/assets/*', traceHttpRoute('/assets/*', assetProxyHandler))
+  .get('/build/*', traceHttpRoute('/build/*', buildProxyHandler))
+  .get('/graphql/*', traceHttpRoute('/graphql/*', schemaProxyHandler))
   .get('/health', yoga)
   .get('/ready', yoga)
-  .post('/stripe', stripeWebhookHandler)
+  .post('/stripe', traceHttpRoute('/stripe', stripeWebhookHandler))
   .get('/stripe', (res) => {
     res.writeStatus('405 Method Not Allowed').writeHeader('Allow', 'POST').end()
   })
-  .post('/mattermost', mattermostWebhookHandler)
-  .post('/zoom', zoomWebhookHandler)
-  .post('/client-errors', clientErrorsHandler)
+  .post('/mattermost', traceHttpRoute('/mattermost', mattermostWebhookHandler))
+  .post('/zoom', traceHttpRoute('/zoom', zoomWebhookHandler))
+  .post('/client-errors', traceHttpRoute('/client-errors', clientErrorsHandler))
   .post('/graphql', async (res, req) => {
     // uWS deletes the req before the first await, so we must read it now
     const ip = uwsGetIP(res, req)
@@ -93,9 +94,9 @@ const app = uws
     const sessionId = parseSessionId(req.getHeader('x-parabol-session-id'))
     return yoga(res, req, {authToken, ip, traceparent, sessionId})
   })
-  .post('/saml/:domain', SAMLHandler)
-  .get('/oauth/authorize', authorizeHandler)
-  .post('/oauth/token', tokenHandler)
+  .post('/saml/:domain', traceHttpRoute('/saml/:domain', SAMLHandler))
+  .get('/oauth/authorize', traceHttpRoute('/oauth/authorize', authorizeHandler))
+  .post('/oauth/token', traceHttpRoute('/oauth/token', tokenHandler))
   .ws('/yjs', hocusPocusHandler)
   .ws('/*', wsHandler)
 registerSCIMHandlers(app, '/scim')

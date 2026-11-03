@@ -1,5 +1,6 @@
 import {tracingChannel} from 'node:diagnostics_channel'
-import {type Span, SpanKind, SpanStatusCode, trace} from '@opentelemetry/api'
+import {type Span, SpanKind, trace} from '@opentelemetry/api'
+import recordSpanError from './recordSpanError'
 import tracer from './tracer'
 
 interface RedisCommand {
@@ -38,9 +39,7 @@ const traceRedisCommands = () => {
     error(redisCommand) {
       const span = commandSpans.get(redisCommand)
       if (!span) return
-      const {error} = redisCommand
-      span.recordException(error instanceof Error ? error : String(error))
-      span.setStatus({code: SpanStatusCode.ERROR})
+      recordSpanError(span, redisCommand.error)
     }
   })
 }
