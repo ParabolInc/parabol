@@ -31,7 +31,6 @@ import {useAPIAccess} from './utils/useAPIAccess'
 import {useArmor} from './utils/useArmor'
 import {useAuditLogs} from './utils/useAuditLogs'
 import {useCheckBlacklist} from './utils/useCheckBlacklist'
-import {useDatadogTracing} from './utils/useDatadogTracing'
 import {useDisposeDataloader} from './utils/useDisposeDataloader'
 import {useErrorLogging} from './utils/useErrorLogging'
 import {useRemoveDuplicateTransferEncoding} from './utils/useRemoveDuplicateTransferEncoding'
@@ -216,27 +215,6 @@ export const yoga = createYoga<ServerContext, UserContext>({
     useErrorLogging(),
     ...(TRACING_ENABLED ? [useTracing()] : []),
     ...(ENABLE_METRICS ? [graphqlPrometheusPlugin] : []),
-    useDatadogTracing({
-      excludeArgs: {
-        acceptTeamInvitation: ['invitationToken'],
-        loginWithPassword: ['password'],
-        resetPassword: ['token', 'newPassword'],
-        signUpWithPassword: ['password', 'invitationToken'],
-        verifyEmail: ['verificationToken']
-      } as ExcludedArgs,
-      hooks: {
-        execute: (span, args) => {
-          const {authToken} = args.contextValue
-          if (authToken?.sub) {
-            span.setTag('userId', authToken.sub)
-          }
-          if (authToken?.aud) {
-            span.setTag('auth.aud', authToken.aud)
-          }
-        }
-      },
-      collapse: true
-    }),
     useDeferStream(),
     usePersistedOperations({
       async allowArbitraryOperations(request) {

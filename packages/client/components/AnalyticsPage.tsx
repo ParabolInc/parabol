@@ -1,5 +1,4 @@
 import * as amplitude from '@amplitude/analytics-browser'
-import {datadogLogs} from '@datadog/browser-logs'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import ReactGA from 'react-ga4'
@@ -31,24 +30,7 @@ declare global {
   }
 }
 
-const {datadogClientToken, datadogService, googleAnalytics: gaMeasurementId} = window.__ACTION__
-const ignoreErrors = [
-  'Failed to update a ServiceWorker for scope',
-  'ResizeObserver loop limit exceeded'
-]
-
-const datadogEnabled = __PRODUCTION__ && datadogClientToken && datadogService
-if (datadogEnabled) {
-  datadogLogs.init({
-    beforeSend: (log) => !ignoreErrors.some((error) => log.message.includes(error)),
-    clientToken: datadogClientToken,
-    site: 'datadoghq.com',
-    service: datadogService,
-    version: __APP_VERSION__,
-    forwardErrorsToLogs: true,
-    sessionSampleRate: 100
-  })
-}
+const {googleAnalytics: gaMeasurementId} = window.__ACTION__
 
 if (window.__ACTION__.AMPLITUDE_WRITE_KEY) {
   amplitude.init(window.__ACTION__.AMPLITUDE_WRITE_KEY, {
@@ -166,21 +148,6 @@ const AnalyticsPage = () => {
       }
     }, TIME_TO_RENDER_TREE)
   }, [pathname, location.search, atmosphere.viewerId])
-
-  useEffect(() => {
-    if (!datadogEnabled) {
-      return
-    }
-
-    const {viewerId} = atmosphere
-    if (viewerId) {
-      datadogLogs.setUser({
-        id: atmosphere.viewerId
-      })
-    } else {
-      datadogLogs.clearUser()
-    }
-  }, [atmosphere, atmosphere.viewerId])
 
   return null
 }

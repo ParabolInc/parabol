@@ -50,9 +50,6 @@ class ErrorBoundary extends Component<Props & {atmosphere: Atmosphere}, State> {
     if (isNotSignedInError(error)) {
       atmosphere.invalidateSession('Not signed in')
     }
-    const {viewerId} = atmosphere
-    const store = atmosphere.getStore()
-    const email = (store?.getSource?.().get?.(viewerId) as any)?.email ?? ''
     const ignoredError = isIgnoredError(error)
     const eventId = crypto.randomUUID()
     this.setState({
@@ -64,11 +61,6 @@ class ErrorBoundary extends Component<Props & {atmosphere: Atmosphere}, State> {
 
     const {componentStack} = errorInfo
     reportClientError(error, {componentStack, eventId})
-    import('@datadog/browser-logs')
-      .then(({datadogLogs}) => {
-        datadogLogs.logger.error(error.message, {viewerId, email, componentStack, eventId}, error)
-      })
-      .catch(() => {})
   }
 
   render() {

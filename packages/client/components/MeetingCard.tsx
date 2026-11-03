@@ -1,4 +1,3 @@
-import {datadogLogs} from '@datadog/browser-logs'
 import graphql from 'babel-plugin-relay/macro'
 import {motion} from 'motion/react'
 import {useState} from 'react'
@@ -26,6 +25,7 @@ import {
   meetingTypeToLabelClass,
   phaseLabelLookup
 } from '../utils/meetings/lookups'
+import reportClientError from '../utils/reportClientError'
 import AvatarList from './AvatarList'
 import CardButton from './CardButton'
 import {EditMeetingSeriesModal} from './EditMeetingSeriesModal'
@@ -151,7 +151,7 @@ const MeetingCard = (props: Props) => {
 
   if (!team) {
     // 95% sure there's a bug in relay causing this
-    datadogLogs.logger.error('Missing Team on Meeting', {meetingId})
+    reportClientError(new Error(`Missing Team on Meeting ${meetingId}`))
     return null
   }
   const {id: teamId, name: teamName, orgId} = team
