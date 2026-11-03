@@ -86,11 +86,6 @@ export class TextEmbeddingsInference extends AbstractEmbeddingsModel {
     if (error) return new Error(error.error)
     return data
   }
-  public async getEmbedding(content: string, retries = 5): Promise<number[] | Error> {
-    const result = await this.getEmbeddingWithTokens(content, retries)
-    return result instanceof Error ? result : result.embedding
-  }
-
   public async getEmbeddingWithTokens(
     content: string,
     retries = 5

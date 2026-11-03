@@ -35,11 +35,6 @@ export class OpenAIEmbedding extends AbstractEmbeddingsModel {
     return tokens
   }
 
-  public async getEmbedding(content: string): Promise<number[] | Error> {
-    const result = await this.getEmbeddingWithTokens(content)
-    return result instanceof Error ? result : result.embedding
-  }
-
   public async getEmbeddingWithTokens(
     content: string
   ): Promise<{embedding: number[]; tokens: number} | Error> {

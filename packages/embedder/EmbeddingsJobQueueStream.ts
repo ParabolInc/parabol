@@ -1,26 +1,29 @@
 import sleep from 'parabol-client/utils/sleep'
-import getKysely from 'parabol-server/postgres/getKysely'
-import type {EmbeddingsJobQueueV2} from 'parabol-server/postgres/types'
-import RedisInstance from 'parabol-server/utils/RedisInstance'
+import getKysely from '../server/postgres/getKysely'
+import type {EmbeddingsJobQueueV2} from '../server/postgres/types'
+import RedisInstance from '../server/utils/RedisInstance'
 import {claimEmbeddingsJob} from './claimEmbeddingsJob'
 import {getNextJobDelay} from './getNextJobDelay'
-import type {WorkflowOrchestrator} from './WorkflowOrchestrator'
 
 const MIN_DROUGHT_WAIT_MS = 1000
+
+interface JobRunner {
+  runStep: (job: EmbeddingsJobQueueV2) => Promise<void>
+}
 
 export class EmbeddingsJobQueueStream implements AsyncIterableIterator<EmbeddingsJobQueueV2> {
   [Symbol.asyncIterator]() {
     return this
   }
 
-  orchestrator: WorkflowOrchestrator
+  orchestrator: JobRunner
   done: boolean
   redisSub: RedisInstance
   resolveDrought: PromiseWithResolvers<void>['resolve'] | undefined
   inDrought = false
   droughtSignal = false
 
-  constructor(orchestrator: WorkflowOrchestrator) {
+  constructor(orchestrator: JobRunner) {
     this.orchestrator = orchestrator
     this.done = false
     this.redisSub = new RedisInstance('EmbeddingsJobQueueStream_sub')

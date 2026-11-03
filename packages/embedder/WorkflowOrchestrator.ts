@@ -101,10 +101,6 @@ export class WorkflowOrchestrator {
       .execute()
   }
 
-  private finishJob = async (jobId: number) => {
-    await finishEmbeddingsJob(jobId)
-  }
-
   private addNextJob = async (jobType: JobType, priority: number, data: StepResult) => {
     const pg = getKysely()
     interface Datum {
@@ -160,7 +156,7 @@ export class WorkflowOrchestrator {
     }
     dataLoader.dispose()
     if (result instanceof JobQueueError) return this.failJob(jobId, result, stateMessage)
-    await this.finishJob(jobId)
+    await finishEmbeddingsJob(jobId)
     if (result === false) return
     const nextStepName = await getNextStep?.({
       dataLoader,
