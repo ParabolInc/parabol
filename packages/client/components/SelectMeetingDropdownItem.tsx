@@ -39,7 +39,7 @@ const SelectMeetingDropdownItem = (props: Props) => {
   const {name, team, id: meetingId, meetingType, phases, facilitatorStageId} = meeting
   if (!team) {
     // 95% sure there's a bug in relay causing this
-    reportClientError(new Error(`Missing Team on Meeting ${meetingId}`))
+    reportClientError(new Error('Missing Team on Meeting'))
     return null
   }
   const {name: teamName} = team
