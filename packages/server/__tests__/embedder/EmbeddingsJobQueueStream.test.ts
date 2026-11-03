@@ -66,3 +66,13 @@ it('waits for a publish when nothing is queued', async () => {
   const {value} = await pending
   expect(value).toBe(job)
 })
+
+it('claims only live work when told to', async () => {
+  nextRunAfter = null
+  jest
+    .mocked(claimEmbeddingsJob)
+    .mockResolvedValue(job as Awaited<ReturnType<typeof claimEmbeddingsJob>>)
+  const stream = new EmbeddingsJobQueueStream({runStep}, {liveOnly: true})
+  await stream.next()
+  expect(claimEmbeddingsJob).toHaveBeenCalledWith(undefined, true)
+})

@@ -17,14 +17,16 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<Embedding
   }
 
   orchestrator: JobRunner
+  liveOnly: boolean
   done: boolean
   redisSub: RedisInstance
   resolveDrought: PromiseWithResolvers<void>['resolve'] | undefined
   inDrought = false
   droughtSignal = false
 
-  constructor(orchestrator: JobRunner) {
+  constructor(orchestrator: JobRunner, {liveOnly = false}: {liveOnly?: boolean} = {}) {
     this.orchestrator = orchestrator
+    this.liveOnly = liveOnly
     this.done = false
     this.redisSub = new RedisInstance('EmbeddingsJobQueueStream_sub')
     this.redisSub.on('message', () => {
@@ -41,7 +43,7 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<Embedding
   async next(): Promise<IteratorResult<EmbeddingsJobQueueV2>> {
     while (!this.done) {
       try {
-        const job = await claimEmbeddingsJob()
+        const job = await claimEmbeddingsJob(undefined, this.liveOnly)
 
         if (!job) {
           if (!this.inDrought) {
