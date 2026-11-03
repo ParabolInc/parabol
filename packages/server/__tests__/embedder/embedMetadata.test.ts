@@ -1,4 +1,7 @@
-import {activeEmbeddingModelId} from '../../../embedder/activeEmbeddingModel'
+import {
+  activeEmbeddingDefinition,
+  activeEmbeddingModelId
+} from '../../../embedder/activeEmbeddingModel'
 import type {ModelId} from '../../../embedder/ai_models/modelIdDefinitions'
 import {getEmbeddingsTableName} from '../../../embedder/getEmbeddingsTableName'
 import {primeSupportedLanguages} from '../../../embedder/getSupportedLanguages'
@@ -16,7 +19,10 @@ jest.mock('../../../embedder/ai_models/ModelManager', () => ({
 const pg = getKysely()
 const teamId = `embedMetadataTeam${generateUID()}`
 const PROMPT = 'Instruct: Find the same point\nQuery: '
-const unitVector = Array.from({length: 1024}, (_, index) => (index === 0 ? 1 : 0))
+const unitVector = Array.from(
+  {length: activeEmbeddingDefinition!.embeddingDimensions},
+  (_, index) => (index === 0 ? 1 : 0)
+)
 
 const mockEmbedder = {
   tableName: getEmbeddingsTableName(activeEmbeddingModelId),

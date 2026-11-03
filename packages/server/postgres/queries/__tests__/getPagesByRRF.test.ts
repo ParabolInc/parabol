@@ -1,5 +1,8 @@
 import {sql} from 'kysely'
-import {activeEmbeddingModelId} from '../../../../embedder/activeEmbeddingModel'
+import {
+  activeEmbeddingDefinition,
+  activeEmbeddingModelId
+} from '../../../../embedder/activeEmbeddingModel'
 import {getEmbeddingsPagesTableName} from '../../../../embedder/getEmbeddingsTableName'
 import numberVectorToString from '../../../../embedder/indexing/numberVectorToString'
 import getKysely from '../../getKysely'
@@ -29,7 +32,7 @@ const BULK_PAGE_COUNT = 101
 const orgId = `org-${suffix}`
 const teamId = `team-${suffix}`
 const chunkTable = getEmbeddingsPagesTableName(activeEmbeddingModelId)!
-const EMBEDDING_DIMENSIONS = 1024
+const EMBEDDING_DIMENSIONS = activeEmbeddingDefinition!.embeddingDimensions
 
 const queryVector = Float32Array.from({length: EMBEDDING_DIMENSIONS}, (_, i) => (i === 0 ? 1 : 0))
 const vectorWithCosine = (cosine: number) => [

@@ -4,7 +4,10 @@ import {sql} from 'kysely'
 import {serverTipTapExtensions} from 'parabol-client/shared/tiptap/serverTipTapExtensions'
 import type {TipTapSerializedContent} from 'parabol-client/shared/tiptap/TipTapSerializedContent'
 import {encodeStateAsUpdate, XmlElement} from 'yjs'
-import {activeEmbeddingModelId} from '../../../embedder/activeEmbeddingModel'
+import {
+  activeEmbeddingDefinition,
+  activeEmbeddingModelId
+} from '../../../embedder/activeEmbeddingModel'
 import type {PageChunkerName} from '../../../embedder/ai_models/AbstractEmbeddingsModel'
 import {getEmbeddingsPagesTableName} from '../../../embedder/getEmbeddingsTableName'
 import {primeSupportedLanguages} from '../../../embedder/getSupportedLanguages'
@@ -23,7 +26,10 @@ jest.mock('../../../embedder/ai_models/ModelManager', () => ({
 
 const pg = getKysely()
 const userId = `embedPageTest|${generateUID()}`
-const unitVector = Array.from({length: 1024}, (_, index) => (index === 0 ? 1 : 0))
+const unitVector = Array.from(
+  {length: activeEmbeddingDefinition!.embeddingDimensions},
+  (_, index) => (index === 0 ? 1 : 0)
+)
 let pageId = 0
 let inFlight = 0
 let maxInFlight = 0

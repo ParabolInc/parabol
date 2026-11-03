@@ -14,6 +14,7 @@
 - **Valkey:** available on 6379 with the data mounted on a volume valkey-data.
 - **Redis Commander:** available on 8081.
 - **Text Embedding Inference:** toolkit to deploy and serve open source text embeddings and sequence classification models. Exposed on 3040. More information in [their Github](https://github.com/huggingface/text-embeddings-inference).
+- **Harrier Text Embedding Inference:** serves the Harrier model on 3041. It only starts with `COMPOSE_PROFILES=harrier pnpm db:start`.
 
 ### Configue PGAdmin
 
