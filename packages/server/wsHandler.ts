@@ -309,10 +309,16 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
     }
   },
   onClose: (ctx, code) => {
-    // graphql-ws closes as Forbidden, before acknowledging, when onConnect refuses a connection
-    if (code === CloseCode.Forbidden && !ctx.acknowledged) {
-      websocketConnectDuration.observe({outcome: 'rejected'}, secondsSinceUpgrade(ctx.extra.socket))
-    }
+    if (ctx.acknowledged) return
+    // graphql-ws closes as Forbidden when onConnect refuses a connection, and as InternalServerError when it throws.
+    // Any other close before the acknowledgement is the client going away
+    const outcome =
+      code === CloseCode.Forbidden
+        ? 'rejected'
+        : code === CloseCode.InternalServerError
+          ? 'failed'
+          : 'abandoned'
+    websocketConnectDuration.observe({outcome}, secondsSinceUpgrade(ctx.extra.socket))
   }
 })
 
@@ -391,6 +397,7 @@ wsHandler.upgrade = async (res, req, context) => {
         : ([true, null, []] as const)
 
     if (isAborted) {
+      websocketConnectDuration.observe({outcome: 'abandoned'}, secondsSinceUpgrade(upgradeData))
       return
     }
     if (!authToken || isBlacklistedJWT || !user) {

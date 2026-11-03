@@ -155,7 +155,7 @@ export const websocketConnectAttempts = new Counter({
 
 export const websocketConnectDuration = new Histogram({
   name: 'parabol_websocket_connect_duration_seconds',
-  help: 'Seconds from the websocket upgrade until the connection is accepted or its authentication rejected, by outcome',
+  help: 'Seconds from the websocket upgrade until the connection is accepted, rejected, fails or the client leaves, by outcome',
   labelNames: ['outcome'] as const,
   buckets: [0.1, 0.25, 0.5, 1, 2.5, 5, 10],
   registers: [register]
