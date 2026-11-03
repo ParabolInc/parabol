@@ -82,7 +82,7 @@ const RetroDiscussPhase = (props: Props) => {
 
   const reflections = reflectionGroup.reflections ?? []
   if (!reflectionGroup.reflections) {
-    reportClientError(new Error(`No reflections on reflectionGroup ${reflectionGroup.id}`))
+    reportClientError(new Error('The discussed reflectionGroup has no reflections'))
   }
 
   return (

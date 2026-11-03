@@ -229,9 +229,7 @@ const GroupingKanban = (props: Props) => {
       container[promptId] = container[promptId] ?? []
       container[promptId]!.push(group)
       if (!reflections) {
-        reportClientError(
-          new Error(`Invalid invariant: reflectionGroup ${group.id} reflections is null`)
-        )
+        reportClientError(new Error('Invalid invariant: reflectionGroup.reflections is null'))
       } else if (!isEditing && reflections.some((reflection) => reflection.isEditing)) {
         isEditing = true
       }

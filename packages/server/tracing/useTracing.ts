@@ -1,5 +1,5 @@
 import {isAsyncIterable, isOriginalGraphQLError} from '@envelop/core'
-import {context, type Span, SpanStatusCode, trace} from '@opentelemetry/api'
+import {context, type Span, trace} from '@opentelemetry/api'
 import {
   type ExecutionResult,
   GraphQLError,
@@ -12,6 +12,7 @@ import {
 } from 'graphql'
 import type {Plugin} from 'graphql-yoga'
 import getOperationSpan, {type TracedContext} from './getOperationSpan'
+import recordSpanError from './recordSpanError'
 import tracer from './tracer'
 
 const operationTracingKey = Symbol('operationTracing')
@@ -28,9 +29,7 @@ type TracedResolver = GraphQLFieldResolver<unknown, TracingContext> & {[tracedRe
 const recordError = (span: Span, error: unknown) => {
   // an intentional GraphQLError, like NOT_FOUND, is an answer rather than a failure
   if (isOriginalGraphQLError(error)) return
-  const exception = error instanceof GraphQLError ? (error.originalError ?? error) : error
-  span.recordException(exception instanceof Error ? exception : String(exception))
-  span.setStatus({code: SpanStatusCode.ERROR})
+  recordSpanError(span, error instanceof GraphQLError ? (error.originalError ?? error) : error)
 }
 
 const getFieldPath = (info: GraphQLResolveInfo) => {

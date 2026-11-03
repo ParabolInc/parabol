@@ -23,7 +23,7 @@ afterAll(() => {
   delete process.env.LOG_FORMAT
 })
 
-test('an unexpected error carries Error Reporting and Datadog fields plus its request context', () => {
+test('an unexpected error carries Error Reporting fields plus its request context', () => {
   const error = new TypeError("Cannot read properties of undefined (reading 'id')")
   const record = makeLogRecord(
     'error',

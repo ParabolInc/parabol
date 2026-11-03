@@ -5,6 +5,7 @@ import appOrigin from '../appOrigin'
 import {getNewDataLoader} from '../dataloader/getNewDataLoader'
 import uWSAsyncHandler from '../graphql/uWSAsyncHandler'
 import parseBody from '../parseBody'
+import traceHttpRoute from '../tracing/traceHttpRoute'
 import getVerifiedAuthToken from '../utils/getVerifiedAuthToken'
 import {SCIMContext} from './SCIMContext'
 import './UserEgress'
@@ -126,7 +127,8 @@ export const registerSCIMHandlers = (app: TemplatedApp, pathPrefix: string = '/s
     method: 'get' | 'post' | 'put' | 'patch' | 'del',
     handler: Handler
   ) => {
-    app[method](`${pathPrefix}${path}`, scimHandler(handler))
+    const pattern = `${pathPrefix}${path}`
+    app[method](pattern, traceHttpRoute(pattern, scimHandler(handler)))
   }
 
   addHandler('/ServiceProviderConfig', 'get', async (res, _, ctx) => {

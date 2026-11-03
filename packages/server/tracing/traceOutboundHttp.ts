@@ -2,6 +2,7 @@ import {subscribe} from 'node:diagnostics_channel'
 import type {ClientRequest, IncomingMessage} from 'node:http'
 import {context, type Span, SpanKind, SpanStatusCode, trace} from '@opentelemetry/api'
 import {isTracingSuppressed} from '@opentelemetry/core'
+import recordSpanError from './recordSpanError'
 import tracer from './tracer'
 
 interface UndiciRequest {
@@ -39,9 +40,8 @@ const endRequestSpan = (request: object, statusCode?: number, error?: unknown) =
     span.setAttribute('http.response.status_code', statusCode)
   }
   if (error) {
-    span.recordException(error instanceof Error ? error : String(error))
-  }
-  if (error || (statusCode && statusCode >= 500)) {
+    recordSpanError(span, error)
+  } else if (statusCode && statusCode >= 500) {
     span.setStatus({code: SpanStatusCode.ERROR})
   }
   span.end()

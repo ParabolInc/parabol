@@ -1001,7 +1001,7 @@ type Mutation {
     errorMessage: String!
     "What the user was doing when the error happened"
     content: String!
-    "Client-generated UUID correlating this feedback with Datadog RUM"
+    "Client-generated UUID correlating this feedback with the client error report that carries the same eventId"
     eventId: ID!
     "Contact email; only used when the submitter is not authenticated"
     email: String

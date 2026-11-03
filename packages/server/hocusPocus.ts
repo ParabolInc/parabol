@@ -8,7 +8,6 @@ import {Doc, encodeStateAsUpdate} from 'yjs'
 import {getNewDataLoader} from './dataloader/getNewDataLoader'
 import {publishToEmbedder} from './graphql/mutations/helpers/publishToEmbedder'
 import getKysely from './postgres/getKysely'
-import traceAsync from './tracing/traceAsync'
 import {getAuthTokenFromCookie} from './utils/authCookie'
 import {CipherId} from './utils/CipherId'
 import getRedis from './utils/getRedis'
@@ -120,16 +119,10 @@ export const hocuspocus = new SafeHocuspocus<YjsContext>({
             // a document too deep to convert must still be saved
             logError(e instanceof Error ? e : new Error(String(e)), {tags: {documentName}})
           }
-          const {updatedTitle} = await traceAsync(
-            'hocusPocus.updatePageContent',
-            {documentName},
-            () => updatePageContent(dbId, content, state)
-          )
+          const {updatedTitle} = await updatePageContent(dbId, content, state)
           if (updatedTitle) {
             await Promise.all([
-              traceAsync('hocusPocus.pushGQLTitleUpdates', {documentName}, () =>
-                pushGQLTitleUpdates(dbId)
-              ),
+              pushGQLTitleUpdates(dbId),
               updateAllBacklinkedPageLinkTitles({pageId: dbId, title: updatedTitle})
             ])
           }
