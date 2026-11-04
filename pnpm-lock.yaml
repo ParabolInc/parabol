@@ -198,6 +198,7 @@ overrides:
 patchedDependencies:
   '@sereneinserenade/tiptap-search-and-replace@0.1.1': 26cb9c1fd81d1b76f3ec04e395d579f47cc1cbdc428b137867f83d35c25189d5
   '@tiptap/core@3.31.2': e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3
+  '@tiptap/extension-details@3.31.2': 06f58fbf3d61ee9ddcc7f0d0f3db880e6361115780d1d27e442cc189cc2f153f
   graphql-ws@6.2.1: 6177d6a74c456b1acabaaf0d02587146ab54e0de33c3e77ecf3ba39f569d98bb
   graphql-yoga@5.24.1: 170c367f1d987ebdbddc3d27202508be49e7ced80daf2d7c28fd4194fe8dfb49
 
@@ -234,7 +235,7 @@ importers:
         version: 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/pm@3.31.2)(@tiptap/y-tiptap@3.0.9(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.3)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30))
       '@tiptap/extension-details':
         specifier: 3.31.2
-        version: 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/extension-text-style@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)))(@tiptap/pm@3.31.2)
+        version: 3.31.2(patch_hash=06f58fbf3d61ee9ddcc7f0d0f3db880e6361115780d1d27e442cc189cc2f153f)(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/extension-text-style@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)))(@tiptap/pm@3.31.2)
       '@tiptap/extension-document':
         specifier: 3.31.2
         version: 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))
@@ -14703,7 +14704,7 @@ snapshots:
       '@tiptap/y-tiptap': 3.0.9(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.3)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
       yjs: 13.6.30
 
-  '@tiptap/extension-details@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/extension-text-style@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)))(@tiptap/pm@3.31.2)':
+  '@tiptap/extension-details@3.31.2(patch_hash=06f58fbf3d61ee9ddcc7f0d0f3db880e6361115780d1d27e442cc189cc2f153f)(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))(@tiptap/extension-text-style@3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)))(@tiptap/pm@3.31.2)':
     dependencies:
       '@tiptap/core': 3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2)
       '@tiptap/extension-text-style': 3.31.2(@tiptap/core@3.31.2(patch_hash=e5409456472945954c9d5fbce77968cfc949524feb76d1a72e73df4bd47001e3)(@tiptap/pm@3.31.2))

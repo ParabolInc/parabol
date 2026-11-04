@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {ReportTeamHealthCellDetailsQuery} from '../../__generated__/ReportTeamHealthCellDetailsQuery.graphql'
+import ReportTeamHealthAttention from './ReportTeamHealthAttention'
 import ReportTeamHealthCellSummary from './ReportTeamHealthCellSummary'
 import ReportTeamHealthComments from './ReportTeamHealthComments'
 import ReportTeamHealthSpread from './ReportTeamHealthSpread'
@@ -81,6 +82,7 @@ const ReportTeamHealthCellDetails = ({queryRef, selection}: Props) => {
       <ReportTeamHealthCellSummary summary={summary} isLoadingSummary={isLoadingSummary} />
       <ReportTeamHealthSpread spreadScores={spreadScores} />
       <ReportTeamHealthComments comments={comments} />
+      <ReportTeamHealthAttention cell={cell} />
     </>
   )
 }

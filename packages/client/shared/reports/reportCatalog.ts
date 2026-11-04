@@ -24,7 +24,11 @@ export const REPORT_MEASURE_KEYS = [
   'USERS',
   'ACTIVE_SHARE',
   'LAST_SEEN',
+  'TEAMS_LED',
+  'INVITATIONS',
   'MEETINGS',
+  'MEETINGS_FACILITATED',
+  'STANDUP_RESPONSES',
   'TEAMS_THAT_MET',
   'LAST_MEETING',
   'DISCUSSIONS',
@@ -35,7 +39,9 @@ export const REPORT_MEASURE_KEYS = [
   'DAYS_TO_DONE',
   'USER_INTEGRATIONS',
   'TASKS_PUSHED',
-  'HEALTH_SCORE'
+  'NEW_PAGES',
+  'HEALTH_SCORE',
+  'SPEND'
 ] as const
 export type ReportMeasure = (typeof REPORT_MEASURE_KEYS)[number]
 
@@ -109,6 +115,9 @@ interface ReportMeasureDefinition {
   dimensions: readonly ReportDimension[]
   // breakdowns where one thing counts toward several values, like a meeting toward each person who joined
   countsInSeveral?: readonly ReportDimension[]
+  // only how things are now, with no history to compare with
+  isCurrent?: boolean
+  unit?: 'usd'
 }
 
 const OVER_TIME = REPORT_TIME_DIMENSIONS
@@ -138,6 +147,21 @@ export const REPORT_MEASURES = {
     description: 'When each person last used Parabol, whatever the period',
     dimensions: ['USER', 'TEAM', 'TEAM_LEVEL']
   },
+  TEAMS_LED: {
+    kind: 'count',
+    label: 'Teams led',
+    description:
+      'The teams each person leads now, whatever the period. Parabol doesn’t keep who led a team before',
+    dimensions: ['USER', 'TEAM', 'TEAM_LEVEL'],
+    isCurrent: true
+  },
+  INVITATIONS: {
+    kind: 'count',
+    label: 'Invitations',
+    description:
+      'People invited to a team, by when they were invited, counting each person once per team in each step. By person, who invited them. Someone who joins through an invite link counts when they join, as invited by whoever shared the link',
+    dimensions: [...OVER_TIME, 'TEAM', 'TEAM_LEVEL', 'USER']
+  },
   MEETINGS: {
     kind: 'count',
     label: 'Meetings',
@@ -145,6 +169,20 @@ export const REPORT_MEASURES = {
       'Meetings that 2 or more people joined, by when they started. By person, the meetings each person joined',
     dimensions: [...OVER_TIME, 'TEAM', 'TEAM_LEVEL', 'USER', 'MEETING_TYPE', 'TEMPLATE'],
     countsInSeveral: ['USER']
+  },
+  MEETINGS_FACILITATED: {
+    kind: 'count',
+    label: 'Meetings facilitated',
+    description:
+      'Meetings that 2 or more people joined, by when they started. By person, who facilitated each',
+    dimensions: [...OVER_TIME, 'TEAM', 'TEAM_LEVEL', 'USER', 'MEETING_TYPE', 'TEMPLATE']
+  },
+  STANDUP_RESPONSES: {
+    kind: 'count',
+    label: 'Standup responses',
+    description:
+      'Standups each person shared an answer in, by when the standup started. A standup counts once per person, however many of its prompts they answered',
+    dimensions: [...OVER_TIME, 'TEAM', 'TEAM_LEVEL', 'USER', 'TEMPLATE']
   },
   TEAMS_THAT_MET: {
     kind: 'distinct',
@@ -248,12 +286,27 @@ export const REPORT_MEASURES = {
       'Tasks pushed to an integration, including Sprint Poker stories brought in from one',
     dimensions: [...OVER_TIME, 'TEAM', 'TEAM_LEVEL', 'MEETING_TYPE', 'INTEGRATION']
   },
+  NEW_PAGES: {
+    kind: 'count',
+    label: 'New pages',
+    description:
+      'Team pages made, by when they were made. By person, who made each. Private pages and the pages Parabol writes for meetings don’t count',
+    dimensions: [...OVER_TIME, 'TEAM', 'TEAM_LEVEL', 'USER']
+  },
   HEALTH_SCORE: {
     kind: 'score',
     label: 'Health score',
     description:
       'The average 1 to 5 answer in each team’s latest Team Health check that asked about each category, from the 90 days before each point or from the period. Compared with an earlier period, each team’s check comes from at least the 90 days before that period ended, and only the teams and categories this period has count. A check fewer than 3 people answered is hidden',
     dimensions: [...OVER_TIME, 'TEAM', 'TEAM_LEVEL', 'CATEGORY', 'TEMPLATE']
+  },
+  SPEND: {
+    kind: 'count',
+    label: 'Spend',
+    description:
+      'What the organization paid for Parabol, in US dollars, by when each invoice was paid. Only billing leaders and org admins can see it',
+    dimensions: OVER_TIME,
+    unit: 'usd'
   }
 } as const satisfies Record<ReportMeasure, ReportMeasureDefinition>
 
@@ -376,6 +429,17 @@ export const REPORT_LOWER_IS_BETTER: readonly ReportMeasure[] = ['DAYS_TO_DONE']
 export const isReportAdditiveMeasure = (measure: ReportMeasure) => {
   const {kind} = REPORT_MEASURES[measure]
   return kind !== 'latest' && kind !== 'share' && kind !== 'median' && kind !== 'score'
+}
+
+// a date or how things are now has nothing earlier to compare with
+export const isReportComparable = (measure: ReportMeasure) => {
+  const definition: ReportMeasureDefinition = REPORT_MEASURES[measure]
+  return definition.kind !== 'latest' && !definition.isCurrent
+}
+
+export const reportMeasureUnitOf = (measure: ReportMeasure) => {
+  const definition: ReportMeasureDefinition = REPORT_MEASURES[measure]
+  return definition.unit ?? null
 }
 
 export const isReportCountedOnceBy = (measure: ReportMeasure, dimension: ReportDimension) => {

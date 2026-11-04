@@ -23,7 +23,7 @@ interface Options {
 
 export type ReportAskAnswer =
   | {spec: ReportSpec; title: string; aiSpec: unknown; tokenCost: number}
-  | {spec: null; reason: string; aiSpec: unknown; tokenCost: number}
+  | {spec: null; reason: string; suggestion: string | null; aiSpec: unknown; tokenCost: number}
 
 const ATTEMPTS = 2
 
@@ -50,9 +50,12 @@ const requestReportSpec = async ({question, teams, levels, today, timeZone, comp
     const answer = readAnswer(completion.content)
     if (answer && 'canAnswer' in answer && answer.canAnswer === false) {
       const reason = 'reason' in answer && typeof answer.reason === 'string' ? answer.reason : null
+      const suggestion =
+        'suggestion' in answer && typeof answer.suggestion === 'string' ? answer.suggestion : ''
       return {
         spec: null,
         reason: reason || 'Parabol doesn’t have the data for that report',
+        suggestion: suggestion.trim() || null,
         aiSpec,
         tokenCost
       } satisfies ReportAskAnswer
@@ -75,6 +78,7 @@ const requestReportSpec = async ({question, teams, levels, today, timeZone, comp
   return {
     spec: null,
     reason: 'AI couldn’t make a report Parabol can run for that question',
+    suggestion: null,
     aiSpec,
     tokenCost
   } satisfies ReportAskAnswer

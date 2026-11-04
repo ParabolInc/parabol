@@ -17,6 +17,8 @@ export class OpenAIEmbedding extends AbstractEmbeddingsModel {
     })
   }
 
+  isReady = true
+
   async ready() {
     return true
   }

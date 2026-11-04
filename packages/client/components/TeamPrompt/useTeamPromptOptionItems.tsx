@@ -44,6 +44,7 @@ const useTeamPromptOptionItems = (
         }
         template {
           id
+          isActive
           viewerLowestScope
         }
         meetingSeries {
@@ -108,7 +109,7 @@ const useTeamPromptOptionItems = (
     to: `/team/${team.id}/integrations#${getProviderAnchorId(Providers.SLACK_NAME)}`,
     isNewTab: true
   })
-  if (template?.viewerLowestScope === 'TEAM') {
+  if (template?.isActive && template.viewerLowestScope === 'TEAM') {
     items.push({
       key: 'template',
       label: 'Edit template',

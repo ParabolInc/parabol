@@ -38,6 +38,7 @@ import makeTraceparent from './utils/makeTraceparent'
 import handlerProvider from './utils/relay/handlerProvider'
 import {reportClientWarning, reportUnexpectedGraphQLErrors} from './utils/reportClientError'
 import sleep from './utils/sleep'
+import {rememberServerErrors} from './utils/staleClientNote'
 
 ;(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
 ;(RelayFeatureFlags as any).ENABLE_PRECISE_TYPE_REFINEMENT = true
@@ -269,6 +270,7 @@ export default class Atmosphere extends Environment {
               try {
                 const result = await res.json()
                 reportUnexpectedGraphQLErrors(result.errors, request.name, traceId)
+                rememberServerErrors(result.errors)
                 sink.next(result)
                 sink.complete()
               } catch (e) {
@@ -303,6 +305,7 @@ export default class Atmosphere extends Environment {
             this.invalidateSession(invalidSessionError.message)
           } else {
             reportUnexpectedGraphQLErrors(error, operation.name, traceId)
+            rememberServerErrors(error)
             _error(new Error(error[0]?.message ?? 'Unknown Error'))
           }
         } else if (error instanceof CloseEvent) {
@@ -321,6 +324,7 @@ export default class Atmosphere extends Environment {
         }
         const {data, errors} = value
         reportUnexpectedGraphQLErrors(errors, operation.name, traceId)
+        rememberServerErrors(errors)
         if (!data) {
           if (errors) {
             console.warn('GraphQL errors:', errors)

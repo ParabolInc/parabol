@@ -7,7 +7,8 @@ export type ReportQuestionSource = Selectable<ReportQuestionRow>
 
 const ReportQuestion: ReportQuestionResolvers = {
   id: ({id}) => CipherId.toClient(id, 'ReportQuestion'),
-  spec: ({spec}) => (spec === null ? null : JSON.stringify(spec))
+  spec: ({spec}) => (spec === null ? null : JSON.stringify(spec)),
+  rating: ({id}, _args, {dataLoader}) => dataLoader.get('reportQuestionRatings').load(id)
 }
 
 export default ReportQuestion

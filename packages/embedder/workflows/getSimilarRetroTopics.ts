@@ -1,5 +1,5 @@
-import getKysely from 'parabol-server/postgres/getKysely'
-import type {ModelId} from '../ai_models/modelIdDefinitions'
+import getKysely from '../../server/postgres/getKysely'
+import {type ModelId, modelIdDefinitions} from '../ai_models/modelIdDefinitions'
 import type {JobQueueStepRun, ParentJob} from '../custom'
 import {getEmbeddingsTableName} from '../getEmbeddingsTableName'
 import type {rerankRetroTopics} from './rerankRetroTopics'
@@ -14,7 +14,7 @@ export const getSimilarRetroTopics: JobQueueStepRun<
   const {data, dataLoader} = context
   const {embeddingsMetadataId, modelId} = data
   const MAX_CANDIDATES = 10
-  const SIMILARITY_THRESHOLD = 0.67
+  const {relatedDiscussionFloor} = modelIdDefinitions[modelId]
   const pg = getKysely()
   const metadata = await dataLoader.get('embeddingsMetadata').loadNonNull(embeddingsMetadataId)
   const {teamId, refId: discussionId} = metadata
@@ -61,7 +61,7 @@ export const getSimilarRetroTopics: JobQueueStepRun<
     )
     .selectFrom('CosineSimilarity')
     .select(['embeddingId', 'similarity', 'embeddingsMetadataId'])
-    .where('similarity', '>=', SIMILARITY_THRESHOLD)
+    .where('similarity', '>=', relatedDiscussionFloor)
     .orderBy('similarity', 'desc')
     .limit(MAX_CANDIDATES)
     .execute()

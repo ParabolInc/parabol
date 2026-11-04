@@ -3,6 +3,7 @@ import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {ReportsAnswerQuery} from '../../__generated__/ReportsAnswerQuery.graphql'
 import type {ReportSpec} from '../../shared/reports/reportCatalog'
 import ReportPanel from './ReportPanel'
+import ReportRating from './ReportRating'
 import type {ReportAddress} from './reportPaths'
 import type {ReportPagePeriod} from './reportPeriodParam'
 import {describeReportSpec} from './reportSpecLabels'
@@ -38,8 +39,10 @@ const query = graphql`
         }
         recentReportQuestions {
           id
+          source
           title
           spec
+          rating
         }
         ...ReportPanel_organization
       }
@@ -57,10 +60,9 @@ const ReportsAnswer = (props: Props) => {
   // the viewer's own question names its report, unless the report shown has changed from it
   const question = organization?.recentReportQuestions.find(({id}) => id === reportQuestionId)
   const questionSpec = question?.spec ? parseReportSpecJSON(question.spec) : null
-  const title =
-    question && questionSpec && JSON.stringify(questionSpec) === JSON.stringify(spec)
-      ? question.title
-      : null
+  const isQuestionShown =
+    !!question && !!questionSpec && JSON.stringify(questionSpec) === JSON.stringify(spec)
+  const title = isQuestionShown ? question.title : null
   return (
     <ReportPanel
       organizationRef={organization}
@@ -74,6 +76,12 @@ const ReportsAnswer = (props: Props) => {
       reportQuestionId={reportQuestionId}
       onSpecChange={(nextSpec) => onSpecChange(nextSpec, describeReportSpec(nextSpec, levels))}
       onClose={onClose}
+      footer={
+        isQuestionShown &&
+        question.source === 'ask' && (
+          <ReportRating orgId={orgId} reportQuestionId={question.id} rating={question.rating} />
+        )
+      }
     />
   )
 }

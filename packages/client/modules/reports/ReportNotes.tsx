@@ -27,7 +27,9 @@ const ReportNotes = ({orgId, resultRef, hasHiddenTeamRows}: Props) => {
   // the view says why a stopped report shows nothing
   const shownNotes = notes.filter(
     ({kind}) =>
-      kind !== 'FILTER_LEVEL_REMOVED' && !(kind === 'HIDDEN_FOR_ANONYMITY' && hasHiddenTeamRows)
+      kind !== 'FILTER_LEVEL_REMOVED' &&
+      kind !== 'SPEND_FOR_BILLING_LEADERS' &&
+      !(kind === 'HIDDEN_FOR_ANONYMITY' && hasHiddenTeamRows)
   )
   if (shownNotes.length === 0) return null
   return (

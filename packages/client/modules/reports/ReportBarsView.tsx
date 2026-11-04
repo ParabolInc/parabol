@@ -12,7 +12,8 @@ import {
   isReportAdditiveMeasure,
   isReportTimeDimension,
   REPORT_MEASURES,
-  type ReportSpec
+  type ReportSpec,
+  reportMeasureUnitOf
 } from '../../shared/reports/reportCatalog'
 import {formatReportKey, PARTIAL_STEP_NOTE} from './formatReportKey'
 import {formatReportValue} from './formatReportValue'
@@ -49,6 +50,7 @@ const ReportBarsView = ({spec, step, rows, isCompact}: Props) => {
   const {kind, label: measureLabel} = REPORT_MEASURES[measure]
   const isShare = kind === 'share'
   const isScore = kind === 'score'
+  const isDollars = reportMeasureUnitOf(measure) === 'usd'
   const valueByKeys = new Map(
     rows.map(({keys, values}) => [keys.map(({value}) => value).join('|'), values[0] ?? emptyValue])
   )
@@ -94,7 +96,11 @@ const ReportBarsView = ({spec, step, rows, isCompact}: Props) => {
       color: chartTheme.tick,
       font,
       precision: 0,
-      callback: isShare ? (tick: number | string) => `${tick}%` : undefined
+      callback: isShare
+        ? (tick: number | string) => `${tick}%`
+        : isDollars
+          ? (tick: number | string) => formatReportValue(measure, Number(tick))
+          : undefined
     }
   }
   const categoryAxis = {

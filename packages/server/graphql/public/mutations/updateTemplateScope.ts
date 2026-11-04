@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import type {SharingScopeEnum as ESharingScope} from '../../../database/types/MeetingTemplate'
 import PokerTemplate from '../../../database/types/PokerTemplate'
@@ -54,11 +55,24 @@ const updateTemplateScope: MutationResolvers['updateTemplateScope'] = async (
   if (scope === newScope) {
     return {error: {message: 'Template scope already set'}}
   }
+  const SCOPES: ESharingScope[] = ['TEAM', 'ORGANIZATION', 'PUBLIC']
+  const isDownscope = SCOPES.indexOf(newScope) < SCOPES.indexOf(scope)
+  if (isDownscope) {
+    const otherTeamSeries = await pg
+      .selectFrom('MeetingSeries')
+      .select('id')
+      .where('templateId', '=', templateId)
+      .where('teamId', '!=', teamId)
+      .where('cancelledAt', 'is', null)
+      .limit(1)
+      .executeTakeFirst()
+    if (otherTeamSeries) {
+      throw new GraphQLError("Another team's recurring meeting uses this template")
+    }
+  }
 
   // RESOLUTION
   template.scope = newScope // mutate the cached record
-  const SCOPES: ESharingScope[] = ['TEAM', 'ORGANIZATION', 'PUBLIC']
-  const isDownscope = SCOPES.indexOf(newScope) < SCOPES.indexOf(scope)
   const usedMeeting = isDownscope
     ? await pg
         .selectFrom('NewMeeting')
@@ -111,10 +125,24 @@ const updateTemplateScope: MutationResolvers['updateTemplateScope'] = async (
       .with('RemovePrompts', (qc) =>
         qc.updateTable('TemplatePrompt').set({removedAt: now}).where('id', 'in', promptIds)
       )
+      .with('RepointSeries', (qc) =>
+        qc
+          .updateTable('MeetingSeries')
+          .set({templateId: clonedTemplate.id})
+          .where('templateId', '=', templateId)
+          .where('teamId', '=', teamId)
+      )
+      .with('RepointSettings', (qc) =>
+        qc
+          .updateTable('MeetingSettings')
+          .set({selectedTemplateId: clonedTemplate.id})
+          .where('selectedTemplateId', '=', templateId)
+          .where('teamId', '=', teamId)
+      )
       .insertInto('TemplatePrompt')
       .values(clonedPrompts.map((p) => ({...p, sortOrder: String(p.sortOrder)})))
       .execute()
-    dataLoader.clearAll(['templatePrompts', 'meetingTemplates'])
+    dataLoader.clearAll(['templatePrompts', 'meetingTemplates', 'meetingSeries', 'meetingSettings'])
   }
 
   const clonePokerTemplate = async () => {

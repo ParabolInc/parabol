@@ -1,4 +1,5 @@
 import {GraphQLError} from 'graphql'
+import {activeEmbeddingDefinition} from '../../../../embedder/activeEmbeddingModel'
 import type {AutogroupReflectionGroupType} from '../../../postgres/types'
 import clusterBySimilarity from '../../../utils/smartGroup/clusterBySimilarity'
 import type {SimilarityGroup} from '../../../utils/smartGroup/similarityMath'
@@ -44,7 +45,10 @@ const computeSimilaritySuggestedGroups = async (
       .map(({id}) => ({id, embeddingVector: vectorByReflectionId.get(id)}))
   }))
 
-  const clusters = clusterBySimilarity(similarityGroups, {sameColumnOnly})
+  const clusters = clusterBySimilarity(similarityGroups, {
+    sameColumnOnly,
+    threshold: activeEmbeddingDefinition?.similarWordingThreshold
+  })
   // No title: addReflectionToGroup falls through to updateGroupTitle, which names the merged
   // group with an AI title, or a Jaccard title when the org has AI turned off
   return clusters.map(({reflectionIds}) => ({

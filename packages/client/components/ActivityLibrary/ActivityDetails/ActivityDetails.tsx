@@ -20,6 +20,7 @@ graphql`
     orgId
     teamId
     illustrationUrl
+    isActive
     viewerLowestScope
     ...TemplateDetails_activity
     ...ActivityDetailsBadges_template
@@ -69,7 +70,7 @@ const ActivityDetails = (props: Props) => {
   const location = useLocation() as {state?: {prevCategory?: string}}
   const [isEditing, setIsEditing] = useState(false)
 
-  if (!activity) {
+  if (!activity?.isActive) {
     return <Navigate to='/activity-library' replace />
   }
 

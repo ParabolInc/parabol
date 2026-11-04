@@ -1,4 +1,5 @@
 import type {GraphQLResolveInfo} from 'graphql'
+import {activeEmbeddingDefinition} from '../../../../../embedder/activeEmbeddingModel'
 import {getNewDataLoader} from '../../../../dataloader/getNewDataLoader'
 import getKysely from '../../../../postgres/getKysely'
 import {getEmbeddingsByRRF} from '../../../../postgres/queries/getEmbeddingsByRRF'
@@ -29,6 +30,18 @@ jest.mock('../../../../postgres/queries/getEmbeddingsByRRF', () => ({
 jest.mock('../../../../postgres/queries/getPagesByKeyword', () => ({getPagesByKeyword: jest.fn()}))
 jest.mock('../../../../postgres/queries/getPagesByRRF', () => ({getPagesByRRF: jest.fn()}))
 jest.mock('../../../../utils/Logger', () => ({Logger: {warn: jest.fn()}}))
+const mockActiveDefinition: {pageAlpha?: number} = {}
+jest.mock('../../../../../embedder/activeEmbeddingModel', () => {
+  const actual = jest.requireActual<typeof import('../../../../../embedder/activeEmbeddingModel')>(
+    '../../../../../embedder/activeEmbeddingModel'
+  )
+  return {
+    ...actual,
+    get activeEmbeddingDefinition() {
+      return {...actual.activeEmbeddingDefinition, ...mockActiveDefinition}
+    }
+  }
+})
 
 const viewerId = 'user-search-test'
 const dataLoader = getNewDataLoader('searchTest')
@@ -174,7 +187,7 @@ it('returns fused results when the query embeds in time', async () => {
   expect(getPagesByRRF).toHaveBeenCalledWith({
     query: 'retro',
     queryVector,
-    alpha: 0.01,
+    alpha: activeEmbeddingDefinition!.pageAlpha,
     k: 60,
     first: 20,
     offset: 0,
@@ -190,6 +203,17 @@ it('uses the alpha a page search gives', async () => {
   jest.mocked(publishToEmbedder).mockResolvedValue(new Float32Array(1024))
   await callSearch({query: 'retro', alpha: 0.5})
   expect(getPagesByRRF).toHaveBeenCalledWith(expect.objectContaining({alpha: 0.5}))
+})
+
+it("defaults page search to the active model's alpha", async () => {
+  mockActiveDefinition.pageAlpha = 0.3
+  try {
+    jest.mocked(publishToEmbedder).mockResolvedValue(new Float32Array(1024))
+    await callSearch({query: 'retro'})
+    expect(getPagesByRRF).toHaveBeenCalledWith(expect.objectContaining({alpha: 0.3}))
+  } finally {
+    delete mockActiveDefinition.pageAlpha
+  }
 })
 
 it('keeps alpha 0.25 as the default for other search types', async () => {

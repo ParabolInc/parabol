@@ -2,6 +2,7 @@
 
 import {useCallback, useEffect, useRef, useState} from 'react'
 import type {PayloadError} from 'relay-runtime'
+import {withStaleClientNote} from '../utils/staleClientNote'
 
 interface MutationServerError {
   message: string
@@ -35,6 +36,12 @@ export const getOnCompletedError = (
   return (errors && errors[0]) || undefined
 }
 
+const withStaleClientNoteOnError = (error: {message: string} | undefined) => {
+  if (!error?.message) return error
+  const message = withStaleClientNote(error.message)
+  return message === error.message ? error : {message}
+}
+
 const useMutationProps = () => {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<{message: string} | undefined>(undefined)
@@ -49,14 +56,14 @@ const useMutationProps = () => {
   const onCompleted = useCallback((res?: unknown, errors?: readonly PayloadError[] | null) => {
     if (isMountedRef.current) {
       setSubmitting(false)
-      setError(getOnCompletedError(res, errors))
+      setError(withStaleClientNoteOnError(getOnCompletedError(res, errors)))
     }
   }, [])
 
   const onError = useCallback((error: Error | MutationServerError | RelayMustFixError) => {
     setSubmitting(false)
     const sourceError = (error as any)?.source?.errors?.[0]
-    setError(sourceError || error)
+    setError(withStaleClientNoteOnError(sourceError || error))
   }, [])
 
   const submitMutation = useCallback(() => {

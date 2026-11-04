@@ -104,7 +104,7 @@ const ReportsHeadline = ({organizationRef}: Props) => {
   )
   const taskCount = pushedCount - storyCount
   return (
-    <div className='grid grid-cols-[repeat(auto-fit,minmax(min(220px,100%),1fr))] gap-4'>
+    <div className='grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fit,minmax(min(220px,100%),1fr))] sm:gap-4'>
       <ReportHeadlineNumber
         label='Active users, 30 days'
         value={activeCount}

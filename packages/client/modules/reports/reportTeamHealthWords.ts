@@ -1,7 +1,8 @@
 import dayjs from 'dayjs'
-import type {
-  TeamHealthAttentionInput,
-  TeamHealthMark
+import {
+  BRIGHT_SPOT_SENTIMENT,
+  type TeamHealthAttentionInput,
+  type TeamHealthMark
 } from '../../shared/reports/teamHealthAttention'
 import type {ReportTeamHealthCell, ReportTeamHealthCheck} from './reportTeamHealthCells'
 
@@ -35,6 +36,14 @@ export const formatAnsweredTogether = (checks: readonly ReportTeamHealthCheck[])
   return `${respondentCount} of ${askedCount}`
 }
 
+export const describeSentiment = (sentimentScore: number) => {
+  if (sentimentScore >= BRIGHT_SPOT_SENTIMENT) return 'Overwhelmingly positive'
+  if (sentimentScore >= 0.3) return 'Positive'
+  if (sentimentScore >= 0) return 'Neutral'
+  if (sentimentScore > -0.6) return 'Mixed'
+  return sentimentScore > -0.85 ? 'Negative' : 'Very negative'
+}
+
 // from the spread's input, which is 0 at a standard deviation of 0.6 or less and 1 at 1.4 or more
 export const describeSpread = (spread: number) =>
   spread >= 0.6
@@ -66,4 +75,24 @@ export const describeReasons = ({inputs, stage}: ReportTeamHealthCell) => {
       : null
   ].filter(Boolean)
   return upperFirst(reasons.join(' · '))
+}
+
+export const describeReadings = ({inputs, stage}: ReportTeamHealthCell) => {
+  const {sentimentScore, isLoadingSummary, commentCount, respondentCount} = stage
+  const spread = inputOf(inputs, 'spread')
+  const sentimentPart =
+    sentimentScore == null
+      ? isLoadingSummary
+        ? 'the summary is still being written'
+        : 'there’s no summary'
+      : `the summary reads ${describeSentiment(sentimentScore).toLowerCase()}`
+  const spreadPart =
+    spread === null
+      ? 'too few answered to read the spread'
+      : `the answers are ${describeSpread(spread).toLowerCase()}`
+  const commentedPart =
+    commentCount === 0
+      ? 'nobody commented'
+      : `${commentCount} of ${respondentCount ?? 0} people commented`
+  return `${upperFirst(sentimentPart)}, ${spreadPart}, and ${commentedPart}.`
 }

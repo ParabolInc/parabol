@@ -126,6 +126,22 @@ test('when AI couldn’t answer, only the nearest popular questions are offered'
   ])
 })
 
+test('a question AI offered in place of one it couldn’t answer comes first', () => {
+  const options = toReportAskOptions({
+    query: 'who gets thanked most',
+    recents,
+    populars,
+    suggestions: [populars[0]!],
+    suggestedQuestion: 'Who joined the most meetings?',
+    canAsk: true
+  })
+  expect(labelsOf(options)).toEqual([
+    'ask: Who joined the most meetings?',
+    'Nearest popular questions: How many people are active?'
+  ])
+  expect(options[0]?.kind === 'ask' && options[0].isSuggestion).toBe(true)
+})
+
 test('a recent question says how it was shown and when', () => {
   const [recent] = toReportAskOptions({
     query: '',

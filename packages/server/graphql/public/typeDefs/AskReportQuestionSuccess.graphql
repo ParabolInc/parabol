@@ -11,4 +11,9 @@ type AskReportQuestionSuccess {
   Why there's no report, when there isn't one
   """
   reason: String
+
+  """
+  A question about something close to it that Parabol can answer, when there's no report
+  """
+  suggestion: String
 }

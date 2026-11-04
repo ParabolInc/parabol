@@ -1,5 +1,6 @@
 import getErrorFingerprint, {
   getTopAppFrameFunction,
+  isLetterOnlyId,
   normalizeErrorMessage
 } from '../getErrorFingerprint'
 
@@ -49,4 +50,45 @@ test('the top app frame skips the logger, dependencies and node internals', () =
     '    at async updateMeeting (/app/packages/server/graphql/mutations/updateMeeting.ts:42:7)'
   ].join('\n')
   expect(getTopAppFrameFunction(stack)).toBe('updateMeeting')
+})
+
+test('replaces generated ids that have no digit and keeps identifiers', () => {
+  expect(normalizeErrorMessage('No base meeting object found in Relay UZoObZMXvy')).toBe(
+    'No base meeting object found in Relay <id>'
+  )
+  expect(
+    normalizeErrorMessage(
+      'Notification Subscription Payload received without field: DragEstimatingTaskSuccess'
+    )
+  ).toBe('Notification Subscription Payload received without field: DragEstimatingTaskSuccess')
+  expect(normalizeErrorMessage('getElementById failed on innerHTML of existingIDs')).toBe(
+    'getElementById failed on innerHTML of existingIDs'
+  )
+})
+
+test.each([
+  ['UZoObZMXvy', true],
+  ['RJGnNXvvShY', true],
+  ['FPoKiGQzbSQ', true],
+  ['DragEstimatingTaskSuccess', false],
+  ['getElementById', false],
+  ['toAssigneeId', false],
+  ['GraphQLHttpError', false],
+  ['XMLHttpRequest', false],
+  ['PostgreSQL', false],
+  ['existingIDs', false],
+  ['retrospective', false],
+  ['UNAUTHORIZED', false]
+])('isLetterOnlyId(%s) is %s', (token, expected) => {
+  expect(isLetterOnlyId(token)).toBe(expected)
+})
+
+test('a meeting id with no digit no longer splits an error into one fingerprint per meeting', () => {
+  const frame =
+    '    at navigateMeeting (/app/packages/client/mutations/NavigateMeetingMutation.ts:1:1)'
+  const first = makeError('No base meeting object found in Relay UZoObZMXvy', [frame])
+  const second = makeError('No base meeting object found in Relay 3xQ9kLmN0p', [frame])
+  expect(getErrorFingerprint('parabol-client', first)).toBe(
+    getErrorFingerprint('parabol-client', second)
+  )
 })

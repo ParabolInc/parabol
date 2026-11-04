@@ -1,12 +1,15 @@
 import {
+  isReportComparable,
   REPORT_CATEGORY_DIMENSIONS,
   REPORT_DIMENSION_LABELS,
+  REPORT_MEASURE_KEYS,
   REPORT_MEASURES,
   REPORT_TIME_DIMENSIONS,
   REPORT_VALUE_LABELS,
   type ReportDimension
 } from '../../client/shared/reports/reportCatalog'
 import type {ClientOrgStructureLevel} from './orgStructure'
+import {REPORT_UNSUPPORTED_SUBJECTS} from './reportUnsupportedSubjects'
 
 const DIMENSIONS: Record<ReportDimension, string> = {
   TIME: 'time, stepping by day up to a month, by week up to 6 months, then by month',
@@ -21,7 +24,8 @@ const DIMENSIONS: Record<ReportDimension, string> = {
   TASK_STATUS: 'a task’s status now',
   DONE_OR_OPEN: 'whether a task is done now',
   TASK_AGE: 'how old an open task is when it’s counted',
-  TOPIC: 'the retro group or check-in agenda item a discussion was about',
+  TOPIC:
+    'the retro group or check-in agenda item a discussion was about, never an icebreaker question',
   INTEGRATION: 'the service a task was pushed to or a person connected',
   CATEGORY: 'a Team Health category, like Psychological Safety'
 }
@@ -48,10 +52,11 @@ interface Options {
 }
 
 const buildReportAskPrompt = ({teams, levels, today, timeZone}: Options) => {
-  const measures = Object.entries(REPORT_MEASURES).map(
-    ([key, {label, description, kind, dimensions}]) =>
-      `- ${key} (${label}): ${description}. It ${KINDS[kind]}. Breakdowns and filters: ${dimensions.join(', ')}`
-  )
+  const measures = REPORT_MEASURE_KEYS.map((key) => {
+    const {label, description, kind, dimensions} = REPORT_MEASURES[key]
+    const isNowOnly = kind !== 'latest' && !isReportComparable(key)
+    return `- ${key} (${label}): ${description}. It ${KINDS[kind]}${isNowOnly ? ', and it’s how things are now, so it’s never compared' : ''}. Breakdowns and filters: ${dimensions.join(', ')}`
+  })
   const dimensions = [...REPORT_TIME_DIMENSIONS, ...REPORT_CATEGORY_DIMENSIONS].map(
     (key) => `- ${key} (${REPORT_DIMENSION_LABELS[key]}): ${DIMENSIONS[key]}`
   )
@@ -103,11 +108,14 @@ where keeps the rows whose value passes a test, after counting. AT_LEAST, AT_MOS
 period: use null, which follows the period picked on the page, unless the question names one. Then it's {"preset": ...}: LAST_7_DAYS and LAST_30_DAYS end today. LAST_3_MONTHS, LAST_6_MONTHS and LAST_12_MONTHS are this month so far and the whole months before it, 3, 6 or 12 months in all. ALL_TIME starts when the organization did. Any other period is {"range": {"startAt": ..., "endAt": ...}}, its first and last day as YYYY-MM-DD, ending today at the latest. Companies set their own fiscal quarters and years, so only turn "last quarter" or "this year" into dates when the question says which months.
 
 compareTo: PREVIOUS_PERIOD, A_WEEK_EARLIER or A_YEAR_EARLIER, only when the question asks how something changed.
-sort: by VALUE, NAME or TIME, ASC or DESC; null leaves the default order. limit: 1 to 50, or null; it keeps the top values of the first breakdown that isn't time.
+sort: by VALUE, NAME or TIME, ASC or DESC; null leaves the default order. limit: 1 to 50, or null; it keeps the top values of the first breakdown that isn't time. For who or which has the most or least of something, sort by VALUE with a limit of 10, so the answer shows beside the ones closest to it.
 
 Parabol applies these rules itself, so don't add filters for them: a meeting counts when 2 or more people joined it, and a report counts only the teams the person asking can see.
 
-If the question needs data Parabol doesn't have, like story points, velocity, Jira or GitHub fields or sentiment, set canAnswer to false, reason to one short sentence saying what's missing, and title and spec to null. Otherwise set canAnswer to true, reason to null, title to a short name for the report under 60 characters, like "Retro tasks by team, done or open", and spec to the spec.`
+No measure counts these:
+${REPORT_UNSUPPORTED_SUBJECTS.map((subject) => `- ${subject}`).join('\n')}
+
+Answer only with a measure that counts what the question asks about. A report on something near it, like Discussions by topic for icebreaker questions, Last seen for who gets thanked, or New tasks for comments, reads as a wrong answer, which is worse than none. If the question is about one of the things above, or anything else no measure counts, set canAnswer to false, reason to one short sentence saying what Parabol doesn't measure, suggestion to a question about something close to it that a measure does count, about the same people, teams or time as the question, or null when nothing is close, and title and spec to null. Otherwise set canAnswer to true, reason and suggestion to null, title to a short name for the report under 60 characters, like "Retro tasks by team, done or open", and spec to the spec.`
 }
 
 export default buildReportAskPrompt

@@ -2,6 +2,7 @@ import {lazy, memo, Suspense} from 'react'
 import 'react-day-picker/dist/style.css'
 import {Route, Routes} from 'react-router'
 import useNavigationBreadcrumbs from '../../hooks/useNavigationBreadcrumbs'
+import useQuietUpdate from '../../hooks/useQuietUpdate'
 import useServiceWorkerUpdater from '../../hooks/useServiceWorkerUpdater'
 import {LoaderSize} from '../../types/constEnums'
 import {cn} from '../../ui/cn'
@@ -45,6 +46,7 @@ const TipTapLayout = lazy(() => import(/* webpackChunkName: 'TipTapLayout' */ '.
 
 const Action = memo(() => {
   useServiceWorkerUpdater()
+  useQuietUpdate()
   useNavigationBreadcrumbs()
   const isInternalAuthEnabled = window.__ACTION__.AUTH_INTERNAL_ENABLED
   // Global Banner

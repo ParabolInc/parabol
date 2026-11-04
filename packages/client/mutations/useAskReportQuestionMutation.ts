@@ -13,6 +13,7 @@ const mutation = graphql`
         ...ReportAskBox_recentQuestion
       }
       reason
+      suggestion
     }
   }
 `

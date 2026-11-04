@@ -53,6 +53,7 @@ export const taskSource = ({teamIds, ownTeamIds}: ReportMeasureQuery) => {
       templateId: eb.ref('tm.templateId'),
       teamId: eb.ref('tm.teamId'),
       scope: eb.ref('ttpl.scope'),
+      type: eb.ref('ttpl.type'),
       name: eb.ref('ttpl.name')
     },
     ownTeamIds
