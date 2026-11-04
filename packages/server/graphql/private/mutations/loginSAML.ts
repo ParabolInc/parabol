@@ -15,6 +15,7 @@ import encodeAuthToken from '../../../utils/encodeAuthToken'
 import {isSingleTenantSSO} from '../../../utils/getSAMLURLFromEmail'
 import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
 import logError from '../../../utils/logError'
+import {annotateLogContext} from '../../../utils/requestLogContext'
 import {consumeSAMLMetadataChangeRequest} from '../../../utils/samlMetadataChangeRequest'
 import {samlXMLValidator} from '../../../utils/samlXMLValidator'
 import standardError from '../../../utils/standardError'
@@ -118,6 +119,9 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
     orgId,
     samlOrgAttribute
   } = doc
+  if (orgId) {
+    annotateLogContext({orgId})
+  }
 
   const shouldRefresh = shouldRefreshMetadata(doc)
   const fetchMetadataUrl = newMetadataURL || (shouldRefresh ? existingMetadataURL : null)

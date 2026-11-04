@@ -5,6 +5,7 @@ import {OTLPTraceExporter} from '@opentelemetry/exporter-trace-otlp-http'
 import {detectResources, envDetector, resourceFromAttributes} from '@opentelemetry/resources'
 import {
   BatchSpanProcessor,
+  createAlwaysRecordSampler,
   ParentBasedSampler,
   TraceIdRatioBasedSampler,
   TracerProvider
@@ -12,6 +13,8 @@ import {
 import {GoogleAuth} from 'google-auth-library'
 import {getLogIdentity, Logger} from '../utils/Logger'
 import {runWithoutLogContext} from '../utils/requestLogContext'
+import FailedTraceSpanProcessor from './FailedTraceSpanProcessor'
+import {setFailedTraceKeeper} from './failedTraces'
 import traceOutboundHttp from './traceOutboundHttp'
 import traceRedisCommands from './traceRedisCommands'
 
@@ -48,22 +51,27 @@ const startTracing = (url: string) => {
     ...(googleAuth && {'gcp.project_id': googleAuth.getProjectId()})
   }).merge(detectResources({detectors: [envDetector]}))
   const ratioSampler = new TraceIdRatioBasedSampler(SAMPLE_RATIO)
+  const failedTraceProcessor = new FailedTraceSpanProcessor(
+    new BatchSpanProcessor({
+      exporter: new OTLPTraceExporter({
+        url,
+        headers: googleAuth && (() => getGoogleAuthHeaders(googleAuth))
+      })
+    })
+  )
+  setFailedTraceKeeper((traceId) => failedTraceProcessor.keepTrace(traceId))
   const provider = new TracerProvider({
     resource,
-    // the client marks every operation sampled, so the server makes the decision for remote parents too
-    sampler: new ParentBasedSampler({
-      root: ratioSampler,
-      remoteParentSampled: ratioSampler,
-      remoteParentNotSampled: ratioSampler
-    }),
-    spanProcessors: [
-      new BatchSpanProcessor({
-        exporter: new OTLPTraceExporter({
-          url,
-          headers: googleAuth && (() => getGoogleAuthHeaders(googleAuth))
-        })
+    // the client marks every operation sampled, so the server makes the decision for remote parents too.
+    // Requests left unsampled are still recorded, so one that fails can be exported after all
+    sampler: createAlwaysRecordSampler(
+      new ParentBasedSampler({
+        root: ratioSampler,
+        remoteParentSampled: ratioSampler,
+        remoteParentNotSampled: ratioSampler
       })
-    ]
+    ),
+    spanProcessors: [failedTraceProcessor]
   })
   diag.setLogger(
     {

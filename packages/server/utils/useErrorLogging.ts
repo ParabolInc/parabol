@@ -4,15 +4,24 @@ import {
   isOriginalGraphQLError,
   type TypedExecutionArgs
 } from '@envelop/core'
-import {GraphQLError, getOperationAST} from 'graphql'
+import {
+  BREAK,
+  type DocumentNode,
+  GraphQLError,
+  type GraphQLSchema,
+  getOperationAST,
+  TypeInfo,
+  visit,
+  visitWithTypeInfo
+} from 'graphql'
 import type {Plugin} from 'graphql-yoga'
 import {unexpectedGraphQLErrors} from '../metricsHandler'
 import getOperationSpan from '../tracing/getOperationSpan'
 import getSpanLogContext from '../tracing/getSpanLogContext'
 import type {ServerContext} from '../yoga'
 import getTraceLogContext from './getTraceLogContext'
-import {Logger, markErrorAsLogged} from './Logger'
-import {type RequestLogContext, runWithLogContext} from './requestLogContext'
+import {type GraphQLLogContext, Logger, markErrorAsLogged} from './Logger'
+import {createLogContext, enterLogContext, type RequestLogContext} from './requestLogContext'
 
 type LoggableContext = Partial<
   Pick<ServerContext, 'authToken' | 'ip' | 'traceparent' | 'sessionId' | 'socketId'>
@@ -22,7 +31,7 @@ const getOperationLogContext = (args: TypedExecutionArgs<LoggableContext>): Requ
   const operation = getOperationAST(args.document, args.operationName)
   const {authToken, ip, traceparent, sessionId, socketId} = args.contextValue
   const operationSpan = getOperationSpan(args)
-  return {
+  return createLogContext({
     userId: authToken?.sub,
     ip,
     sessionId,
@@ -34,19 +43,56 @@ const getOperationLogContext = (args: TypedExecutionArgs<LoggableContext>): Requ
     ...(operationSpan
       ? getSpanLogContext(operationSpan.spanContext())
       : getTraceLogContext(traceparent))
-  }
+  })
 }
 
-const logResultErrors = (errors: readonly GraphQLError[] | undefined) => {
+interface ExecutedDocument {
+  schema: GraphQLSchema
+  document: DocumentNode
+}
+
+// the parent type and field of the selection that failed, e.g. Team.teamLead for the path viewer.team.teamLead
+const getFailedField = ({schema, document}: ExecutedDocument, error: GraphQLError) => {
+  const failedNode = error.nodes?.[0]
+  if (!failedNode) return undefined
+  const typeInfo = new TypeInfo(schema)
+  let failedField: string | undefined
+  visit(
+    document,
+    visitWithTypeInfo(typeInfo, {
+      Field(node) {
+        if (node !== failedNode) return undefined
+        const parentType = typeInfo.getParentType()
+        failedField = parentType ? `${parentType.name}.${node.name.value}` : undefined
+        return BREAK
+      }
+    })
+  )
+  return failedField
+}
+
+const getGraphQLLogContext = (
+  executedDocument: ExecutedDocument,
+  error: GraphQLError
+): GraphQLLogContext | undefined => {
+  if (!error.path) return undefined
+  const field = getFailedField(executedDocument, error)
+  return {path: error.path.join('.'), ...(field && {field})}
+}
+
+const logResultErrors = (
+  executedDocument: ExecutedDocument,
+  errors: readonly GraphQLError[] | undefined
+) => {
   let hasUnexpectedError = false
   errors?.forEach((error) => {
-    const extras = error.path ? {path: error.path.join('.')} : undefined
+    const graphql = getGraphQLLogContext(executedDocument, error)
     const loggableError = error.originalError ?? error
     if (isOriginalGraphQLError(error)) {
-      Logger.warn(loggableError, {extras})
+      Logger.warn(loggableError, {graphql})
     } else {
       hasUnexpectedError = true
-      Logger.error(loggableError, {extras})
+      Logger.error(loggableError, {graphql})
     }
     // yoga's maskedErrors passes the GraphQLError wrapper to Logger.error next; suppress that duplicate
     markErrorAsLogged(error)
@@ -62,7 +108,7 @@ const pullEventsInLogContext = <T>(
 ): AsyncIterableIterator<T> => {
   const iterator = events[Symbol.asyncIterator]()
   return {
-    next: () => runWithLogContext(logContext, () => iterator.next()),
+    next: () => enterLogContext(logContext, () => iterator.next()),
     return: (value?: unknown) => iterator.return?.(value) ?? Promise.resolve({done: true, value}),
     throw: (error?: unknown) => iterator.throw?.(error) ?? Promise.reject(error),
     [Symbol.asyncIterator]() {
@@ -74,14 +120,14 @@ const pullEventsInLogContext = <T>(
 export const useErrorLogging = (): Plugin<LoggableContext> => ({
   onExecute({args, executeFn, setExecuteFn}) {
     const logContext = getOperationLogContext(args)
-    setExecuteFn((executeArgs) => runWithLogContext(logContext, () => executeFn(executeArgs)))
+    setExecuteFn((executeArgs) => enterLogContext(logContext, () => executeFn(executeArgs)))
     // a deferred or streamed operation returns several results but is one request to the availability SLO
     let isCountedAsFailed = false
     return {
       onExecuteDone(payload) {
         return handleStreamOrSingleExecutionResult(payload, ({result}) => {
-          const hasUnexpectedError = runWithLogContext(logContext, () =>
-            logResultErrors(result.errors)
+          const hasUnexpectedError = enterLogContext(logContext, () =>
+            logResultErrors(args, result.errors)
           )
           if (hasUnexpectedError && !isCountedAsFailed) {
             isCountedAsFailed = true
@@ -94,14 +140,14 @@ export const useErrorLogging = (): Plugin<LoggableContext> => ({
   onSubscribe({args, subscribeFn, setSubscribeFn}) {
     const logContext = getOperationLogContext(args)
     setSubscribeFn(async (subscribeArgs) => {
-      const result = await runWithLogContext(logContext, () => subscribeFn(subscribeArgs))
+      const result = await enterLogContext(logContext, () => subscribeFn(subscribeArgs))
       return isAsyncIterable(result) ? pullEventsInLogContext(result, logContext) : result
     })
     return {
       onSubscribeError({error}) {
-        runWithLogContext(logContext, () => {
+        enterLogContext(logContext, () => {
           if (error instanceof GraphQLError) {
-            logResultErrors([error])
+            logResultErrors(args, [error])
           } else {
             Logger.error(error instanceof Error ? error : new Error(String(error)))
           }
@@ -110,7 +156,7 @@ export const useErrorLogging = (): Plugin<LoggableContext> => ({
       onSubscribeResult() {
         return {
           onNext({result}) {
-            runWithLogContext(logContext, () => logResultErrors(result.errors))
+            enterLogContext(logContext, () => logResultErrors(args, result.errors))
           }
         }
       }

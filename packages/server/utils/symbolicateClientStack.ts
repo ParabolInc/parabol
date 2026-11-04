@@ -131,4 +131,12 @@ const symbolicateClientStack = async (
   return [header, ...lines].join('\n')
 }
 
+// React's component stack has frames and no header, one per component from the one that threw up to the root
+export const symbolicateComponentStack = async (componentStack: string, buildDir = BUILD_DIR) => {
+  const frames = parseStackFrames(componentStack).slice(0, MAX_FRAMES)
+  if (frames.length === 0) return componentStack
+  const lines = await Promise.all(frames.map((frame) => symbolicateFrame(frame, buildDir)))
+  return lines.join('\n')
+}
+
 export default symbolicateClientStack

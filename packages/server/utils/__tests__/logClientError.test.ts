@@ -15,7 +15,9 @@ const report: ClientErrorReport = {
   traceId: '4bf92f3577b34da6a3ce929d0e0e4736',
   sessionId: 'tab-1',
   release: '15.11.0',
-  route: '/team/abc',
+  route: '/team/UZoObZMXvy',
+  userAgent:
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36',
   count: 1,
   breadcrumbs: [
     {
@@ -23,6 +25,13 @@ const report: ClientErrorReport = {
       type: 'operation',
       message: 'query TeamQuery',
       traceId: '4bf92f3577b34da6a3ce929d0e0e4736'
+    },
+    {time: '2026-10-30T00:00:01.000Z', type: 'navigation', message: '/meet/UZoObZMXvy/discuss/1'},
+    {time: '2026-10-30T00:00:02.000Z', type: 'websocket', message: 'connected'},
+    {
+      time: '2026-10-30T00:00:03.000Z',
+      type: 'error',
+      message: 'Error: No base meeting object found in Relay UZoObZMXvy for jane@example.com'
     }
   ]
 }
@@ -56,12 +65,43 @@ test('a browser error is logged as parabol-client, joined to its trace, with the
     serviceContext: {service: 'parabol-client', version: '15.11.0'},
     context: {user: 'user1'},
     error: {kind: 'TypeError', message: MESSAGE, expected: false},
-    extras: {route: '/team/abc', eventId: report.eventId, count: 1}
+    client: {
+      route: '/team/:id',
+      rawRoute: '/team/UZoObZMXvy',
+      browser: 'Chrome 141',
+      os: 'macOS',
+      userAgent: report.userAgent,
+      eventId: report.eventId,
+      count: 1
+    }
   })
+  expect(record).not.toHaveProperty('extras')
   expect(record.stack_trace).toBe(
     `TypeError: ${MESSAGE}\n    at toUpperCase (packages/client/components/TeamList.tsx:2:20)`
   )
-  expect(record.extras.breadcrumbs).toEqual(report.breadcrumbs)
+})
+
+test('the breadcrumb trail keeps names and loses ids and free text', async () => {
+  await logClientError(report, {userId: 'user1', ip: '203.0.113.7'}, BUILD_DIR)
+  const record = JSON.parse(errorSpy.mock.calls[0][0])
+  expect(record.client.breadcrumbs.map(({message}: {message: string}) => message)).toEqual([
+    'query TeamQuery',
+    '/meet/:id/discuss/1',
+    'connected',
+    'Error: No base meeting object found in Relay <id> for <email>'
+  ])
+})
+
+test("a render error's component stack is mapped to source like its stack", async () => {
+  await logClientError(
+    {...report, componentStack: `\n    at e (${BUNDLE_URL}:1:29)\n    at div`},
+    {userId: 'user1', ip: '203.0.113.7'},
+    BUILD_DIR
+  )
+  const record = JSON.parse(errorSpy.mock.calls[0][0])
+  expect(record.client.componentStack).toBe(
+    '    at toUpperCase (packages/client/components/TeamList.tsx:2:20)'
+  )
 })
 
 test('a browser warning stays out of Error Reporting', async () => {

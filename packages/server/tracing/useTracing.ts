@@ -1,5 +1,5 @@
 import {isAsyncIterable, isOriginalGraphQLError} from '@envelop/core'
-import {context, type Span, trace} from '@opentelemetry/api'
+import {context, type Span, TraceFlags, trace} from '@opentelemetry/api'
 import {
   type ExecutionResult,
   GraphQLError,
@@ -32,6 +32,9 @@ const recordError = (span: Span, error: unknown) => {
   recordSpanError(span, error instanceof GraphQLError ? (error.originalError ?? error) : error)
 }
 
+const isSampled = (span: Span) =>
+  span.isRecording() && (span.spanContext().traceFlags & TraceFlags.SAMPLED) === TraceFlags.SAMPLED
+
 const getFieldPath = (info: GraphQLResolveInfo) => {
   const fieldPath: string[] = []
   for (let path: GraphQLResolveInfo['path'] | undefined = info.path; path; path = path.prev) {
@@ -54,7 +57,8 @@ const traceResolver = (
   resolve: () => unknown
 ) => {
   const operationTracing = contextValue[operationTracingKey]
-  if (!operationTracing?.operationSpan.isRecording()) return resolve()
+  // an unsampled operation is recorded in case it fails, but its resolvers are too many to record for every request
+  if (!operationTracing || !isSampled(operationTracing.operationSpan)) return resolve()
   const fieldPath = getFieldPath(info)
   const fieldPathKey = fieldPath.join('.')
   if (operationTracing.fieldSpans.has(fieldPathKey)) return resolve()

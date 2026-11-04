@@ -2,22 +2,32 @@ import {GraphQLError} from 'graphql'
 import {createSchema, createYoga} from 'graphql-yoga'
 import {unexpectedGraphQLErrors} from '../../metricsHandler'
 import {Logger} from '../Logger'
-import {getLogContext} from '../requestLogContext'
+import {annotateLogContext, getLogContext} from '../requestLogContext'
 import {useErrorLogging} from '../useErrorLogging'
 
 const yoga = createYoga({
   schema: createSchema({
     typeDefs:
-      'type Query { crash: String, denied: String, logContext(teamId: ID): String } type Subscription { logContext: String }',
+      'type Query { crash: String, denied: String, logContext(teamId: ID): String, team: Team, tenantCrash: String } type Team { teamLead: String } type Subscription { logContext: String }',
     resolvers: {
       Query: {
         crash: () => {
+          throw new TypeError('boom')
+        },
+        team: () => ({}),
+        tenantCrash: () => {
+          annotateLogContext({orgId: 'org1'})
           throw new TypeError('boom')
         },
         denied: () => {
           throw new GraphQLError('Not authorized')
         },
         logContext: () => JSON.stringify(getLogContext())
+      },
+      Team: {
+        teamLead: () => {
+          throw new TypeError('no lead')
+        }
       },
       Subscription: {
         logContext: {
@@ -152,5 +162,35 @@ test('a subscription event resolves inside the log context of its operation', as
     operationName: 'LogContext',
     operationKind: 'subscription',
     traceId: '4bf92f3577b34da6a3ce929d0e0e4736'
+  })
+})
+
+test('a resolver error names its response path and the field that failed', async () => {
+  await execute('query TeamLead { team { teamLead } }')
+  expect(errorSpy.mock.calls[0][1]).toEqual({
+    graphql: {path: 'team.teamLead', field: 'Team.teamLead'}
+  })
+})
+
+test('the failed field is found through aliases and fragments', async () => {
+  await execute(
+    'query TeamLead { myTeam: team { ...TeamFields } } fragment TeamFields on Team { lead: teamLead }'
+  )
+  expect(errorSpy.mock.calls[0][1]).toEqual({
+    graphql: {path: 'myTeam.lead', field: 'Team.teamLead'}
+  })
+})
+
+test('what a resolver adds to the log context reaches the error logged after it', async () => {
+  Reflect.set(globalThis, '__PRODUCTION__', true)
+  try {
+    await execute('query TenantCrash { tenantCrash }')
+  } finally {
+    Reflect.set(globalThis, '__PRODUCTION__', false)
+  }
+  expect(JSON.parse(errorSpy.mock.calls[0][0])).toMatchObject({
+    orgId: 'org1',
+    operationName: 'TenantCrash',
+    graphql: {path: 'tenantCrash', field: 'Query.tenantCrash'}
   })
 })

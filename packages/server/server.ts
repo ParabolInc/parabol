@@ -23,7 +23,8 @@ import {createStaticFileHandler} from './staticFileHandler'
 import {flushTracing} from './tracing/initTracing'
 import traceHttpRoute from './tracing/traceHttpRoute'
 import getReqAuth from './utils/getReqAuth'
-import {Logger} from './utils/Logger'
+import {Logger, setAccountLogContextLoader} from './utils/Logger'
+import loadAccountLogContext from './utils/loadAccountLogContext'
 import logProcessWarnings from './utils/logProcessWarnings'
 import parseSessionId from './utils/parseSessionId'
 import registerFatalErrorHandlers from './utils/registerFatalErrorHandlers'
@@ -53,6 +54,7 @@ const ENABLE_MATTERMOST_FILE_HANDLER =
   !__PRODUCTION__ || (process.env.MATTERMOST_SECRET && process.env.MATTERMOST_URL)
 
 registerFatalErrorHandlers()
+setAccountLogContextLoader(loadAccountLogContext)
 logProcessWarnings()
 logHocuspocusWarnings()
 
