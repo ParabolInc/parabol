@@ -77,6 +77,13 @@ const ReportView = (props: Props) => {
       </p>
     )
   }
+  if (notes.some(({kind}) => kind === 'SPEND_FOR_BILLING_LEADERS')) {
+    return (
+      <p className='m-0 py-6 text-center text-fg-secondary text-sm'>
+        Only billing leaders and org admins can see what the organization spends on Parabol.
+      </p>
+    )
+  }
   if (rows.length === 0) {
     return <p className='m-0 py-6 text-center text-fg-muted text-sm'>Nothing to show</p>
   }

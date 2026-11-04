@@ -1,5 +1,6 @@
 import {
   isReportAdditiveMeasure,
+  isReportComparable,
   isReportTimeDimension,
   REPORT_CATEGORY_DIMENSIONS,
   REPORT_COMPARE_TO,
@@ -52,14 +53,14 @@ const LIMITS = [5, 8, 10, 20, 50]
 const repair = (spec: ReportSpec): ReportSpec => {
   const hasTime = spec.breakdown.some(({dimension}) => isReportTimeDimension(dimension))
   const hasCategory = spec.breakdown.some(({dimension}) => !isReportTimeDimension(dimension))
-  const hasDate = spec.measures.some((measure) => REPORT_MEASURES[measure].kind === 'latest')
+  const isComparable = spec.measures.every(isReportComparable)
   const {sort} = spec
   const isSortUsable =
     !!sort && !(sort.by === 'TIME' && !hasTime) && !(sort.by === 'NAME' && !hasCategory)
   return {
     ...spec,
     where: spec.where.filter(({measure}) => spec.measures.includes(measure)),
-    compareTo: hasDate ? null : (spec.compareTo ?? null),
+    compareTo: isComparable ? (spec.compareTo ?? null) : null,
     sort: isSortUsable ? sort : null,
     limit: hasCategory ? (spec.limit ?? null) : null
   }

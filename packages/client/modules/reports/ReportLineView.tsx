@@ -11,7 +11,11 @@ import {
 } from 'chart.js'
 import {Line} from 'react-chartjs-2'
 import useResolvedTheme from '../../hooks/useResolvedTheme'
-import {REPORT_MEASURES, type ReportSpec} from '../../shared/reports/reportCatalog'
+import {
+  REPORT_MEASURES,
+  type ReportSpec,
+  reportMeasureUnitOf
+} from '../../shared/reports/reportCatalog'
 import {formatReportKey, PARTIAL_STEP_NOTE} from './formatReportKey'
 import {formatReportValue} from './formatReportValue'
 import ReportLegend from './ReportLegend'
@@ -41,6 +45,7 @@ const ReportLineView = ({spec, step, rows, isCompact}: Props) => {
   const {kind} = REPORT_MEASURES[measure]
   const isShare = kind === 'share'
   const isScore = kind === 'score'
+  const isDollars = reportMeasureUnitOf(measure) === 'usd'
   const [overDimension, lineDimension] = spec.breakdown.map(({dimension}) => dimension)
   const steps = distinctKeysAt(rows, 0)
   const rowByKeys = new Map(rows.map((row) => [row.keys.map(({value}) => value).join('|'), row]))
@@ -133,7 +138,11 @@ const ReportLineView = ({spec, step, rows, isCompact}: Props) => {
                   color: chartTheme.tick,
                   font,
                   precision: 0,
-                  callback: isShare ? (tick: number | string) => `${tick}%` : undefined
+                  callback: isShare
+                    ? (tick: number | string) => `${tick}%`
+                    : isDollars
+                      ? (tick: number | string) => formatReportValue(measure, Number(tick))
+                      : undefined
                 }
               }
             }

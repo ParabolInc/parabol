@@ -36,7 +36,10 @@ const TABLES = [
   'TeamHealthCategorySummary',
   'OrgStructureLevel',
   'OrgStructureValue',
-  'OrgStructurePlacement'
+  'OrgStructurePlacement',
+  'TeamPromptResponse',
+  'TeamInvitation',
+  'Page'
 ]
 
 const ORG_ID = 'reportOrg'
@@ -106,7 +109,7 @@ const addTeam = async (orgId: string, id: string, userIds: string[], createdDays
 const addMeeting = async (
   id: string,
   teamId: string,
-  meetingType: 'retrospective' | 'action' | 'poker' | 'teamHealth',
+  meetingType: 'retrospective' | 'action' | 'poker' | 'teamHealth' | 'teamPrompt',
   createdDaysAgo: number,
   attendeeIds: string[],
   templateId: string | null = null
@@ -1199,6 +1202,183 @@ describe('people and work', () => {
         asWren
       )
     ).rejects.toThrow("ACTIVE_SHARE can't be stacked")
+  })
+})
+
+describe('people, invitations and pages', () => {
+  const asWren = {orgId: WORK_ORG_ID, viewerId: WREN}
+  const asXavier = {orgId: WORK_ORG_ID, viewerId: XAVIER}
+  const recently: Partial<ReportSpec> = {
+    showAs: 'BARS',
+    period: {preset: 'LAST_30_DAYS'},
+    breakdown: [{dimension: 'USER'}]
+  }
+  const recentlyByTeam: Partial<ReportSpec> = {...recently, breakdown: [{dimension: 'TEAM'}]}
+
+  beforeAll(async () => {
+    const facilitators = [
+      ['webRetro', WREN],
+      ['oldWebRetro', WREN],
+      ['webCheckIn', XAVIER],
+      ['yardRetro', XAVIER]
+    ] as const
+    for (const [meetingId, userId] of facilitators) {
+      await pg
+        .updateTable('NewMeeting')
+        .set({facilitatorUserId: userId})
+        .where('id', '=', meetingId)
+        .execute()
+    }
+    await pg
+      .insertInto('MeetingTemplate')
+      .values({
+        id: 'dailyStandup',
+        name: 'Daily standup',
+        scope: 'PUBLIC',
+        orgId: 'aGhostOrg',
+        teamId: 'aGhostTeam',
+        type: 'teamPrompt',
+        illustrationUrl: '',
+        mainCategory: 'standup'
+      })
+      .execute()
+    await addMeeting('webStandup', WEB, 'teamPrompt', 3, [], 'dailyStandup')
+    const standupResponse = (userId: string, promptId: string, isShared: boolean) => ({
+      meetingId: 'webStandup',
+      userId,
+      promptId,
+      content: JSON.stringify({}),
+      plaintextContent: 'Shipping the export',
+      sortOrder: 0,
+      sharedAt: isShared ? daysAgo(3) : null
+    })
+    await pg
+      .insertInto('TeamPromptResponse')
+      .values([
+        standupResponse(WREN, 'yesterday', true),
+        standupResponse(WREN, 'today', true),
+        standupResponse(WENDY, 'yesterday', false),
+        standupResponse(XAVIER, 'yesterday', true)
+      ])
+      .execute()
+    const invitation = (
+      id: string,
+      teamId: string,
+      invitedBy: string,
+      email: string,
+      createdDaysAgo: number,
+      isMassInvite = false
+    ) => ({
+      id,
+      teamId,
+      invitedBy,
+      email,
+      isMassInvite,
+      token: id,
+      createdAt: daysAgo(createdDaysAgo),
+      expiresAt: daysAgo(createdDaysAgo - 30)
+    })
+    await pg
+      .insertInto('TeamInvitation')
+      .values([
+        invitation('ada', WEB, WREN, 'ada@example.com', 3),
+        invitation('adaAgain', WEB, WREN, 'Ada@example.com', 2),
+        invitation('ben', WEB, WREN, 'ben@example.com', 2),
+        invitation('cy', YARD, XAVIER, 'cy@example.com', 1, true),
+        invitation('dee', WEB, WREN, 'dee@example.com', 60)
+      ])
+      .execute()
+    const page = (
+      id: number,
+      userId: string,
+      fields: {teamId?: string; ancestorIds?: number[]; isPrivate?: boolean} & Record<
+        string,
+        unknown
+      >
+    ) => ({
+      id,
+      userId,
+      sortOrder: 'a',
+      createdAt: daysAgo(3),
+      isPrivate: false,
+      ancestorIds: [],
+      ...fields
+    })
+    await pg
+      .insertInto('Page')
+      .values([
+        page(9001, WENDY, {teamId: WEB}),
+        page(9002, XAVIER, {ancestorIds: [9001], parentPageId: 9001}),
+        page(9003, WREN, {isPrivate: true}),
+        page(9004, WREN, {teamId: WEB, summaryMeetingId: 'webRetro'}),
+        page(9005, WENDY, {teamId: WEB, deletedAt: daysAgo(1)}),
+        page(9006, YARA, {teamId: YARD})
+      ])
+      .execute()
+    await pg
+      .updateTable('TeamMember')
+      .set({isLead: true})
+      .where('id', 'in', [`${WEB}::${WREN}`, `${YARD}::${XAVIER}`])
+      .execute()
+  })
+
+  test('meetings facilitated are split by who facilitated each', async () => {
+    expect(
+      byLabel(await report({...recently, measures: ['MEETINGS_FACILITATED']}, asWren))
+    ).toEqual({Wren: 1, Xavier: 2})
+  })
+
+  test('a standup counts once per person who shared an answer, and a draft doesn’t count', async () => {
+    expect(byLabel(await report({...recently, measures: ['STANDUP_RESPONSES']}, asWren))).toEqual({
+      Wren: 1,
+      Xavier: 1
+    })
+  })
+
+  test('each person invited counts once per team, and a link join counts for whoever made the link', async () => {
+    expect(byLabel(await report({...recently, measures: ['INVITATIONS']}, asWren))).toEqual({
+      Wren: 2,
+      Xavier: 1
+    })
+    expect(byLabel(await report({...recentlyByTeam, measures: ['INVITATIONS']}, asWren))).toEqual({
+      Web: 2,
+      Yard: 1
+    })
+  })
+
+  test('new pages count team pages by their top-level page’s team, not private, deleted or meeting pages', async () => {
+    expect(byLabel(await report({...recently, measures: ['NEW_PAGES']}, asWren))).toEqual({
+      Wendy: 1,
+      Xavier: 1,
+      Yara: 1
+    })
+    expect(byLabel(await report({...recentlyByTeam, measures: ['NEW_PAGES']}, asWren))).toEqual({
+      Web: 2,
+      Yard: 1
+    })
+  })
+
+  test('teams led are who leads each team now, which can’t be compared', async () => {
+    const teamsLed: Partial<ReportSpec> = {...recently, measures: ['TEAMS_LED']}
+    expect(byLabel(await report(teamsLed, asWren))).toEqual({Wren: 1, Xavier: 1})
+    await expect(report({...teamsLed, compareTo: 'PREVIOUS_PERIOD'}, asWren)).rejects.toThrow(
+      "TEAMS_LED can't be compared"
+    )
+  })
+
+  test('only someone who sees the whole organization sees what it spends', async () => {
+    const spend: Partial<ReportSpec> = {
+      measures: ['SPEND'],
+      showAs: 'LINE',
+      period: {preset: 'LAST_3_MONTHS'},
+      breakdown: [{dimension: 'MONTH'}]
+    }
+    const member = await report(spend, asXavier)
+    expect(member.rows).toEqual([])
+    expect(member.notes).toEqual([{kind: 'SPEND_FOR_BILLING_LEADERS', count: 1}])
+    const leader = await report(spend, asWren)
+    expect(leader.notes).toEqual([])
+    expect(valuesOf(leader)).toEqual([0, 0, 0])
   })
 })
 

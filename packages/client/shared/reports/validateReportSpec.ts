@@ -1,5 +1,6 @@
 import {
   isReportAdditiveMeasure,
+  isReportComparable,
   isReportCountedOnceBy,
   isReportTimeDimension,
   MAX_REPORT_CONDITION_DAYS,
@@ -124,8 +125,9 @@ export const validateReportSpec = (spec: ReportSpec): string | null => {
     if (range.endAt < range.startAt) return 'A date range has to end after it starts'
   }
 
+  const uncomparable = measures.find((m) => !isReportComparable(m))
+  if (uncomparable && compareTo) return `${uncomparable} can't be compared`
   const dateMeasure = measures.find((m) => REPORT_MEASURES[m].kind === 'latest')
-  if (dateMeasure && compareTo) return `${dateMeasure} can't be compared`
   // a date has no height, so it can't be a line or a bar
   if (dateMeasure && (showAs === 'LINE' || showAs === 'BARS')) {
     return `${dateMeasure} can't be shown as ${showAs}`
