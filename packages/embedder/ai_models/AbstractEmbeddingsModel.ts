@@ -42,7 +42,14 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
     this.pagesTableName = getEmbeddingsPagesTableName(modelId)!
   }
   protected abstract constructModelParams(modelId: ModelId): EmbeddingModelParams
-  abstract getEmbedding(content: string, retries?: number): Promise<number[] | Error>
+  async getEmbedding(content: string, retries?: number): Promise<number[] | Error> {
+    const result = await this.getEmbeddingWithTokens(content, retries)
+    return result instanceof Error ? result : result.embedding
+  }
+  abstract getEmbeddingWithTokens(
+    content: string,
+    retries?: number
+  ): Promise<{embedding: number[]; tokens: number} | Error>
   abstract ready(): Promise<boolean>
 
   abstract getTokens(content: string): Promise<number[] | Error>
