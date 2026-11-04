@@ -91,7 +91,14 @@ const runReport = async ({
       : {dimension, levelName: null}
   )
   const reportableTeamIds = scope.teams.map(({id}) => id)
-  if (structure.removedFilterCount > 0) {
+  // a report that can't run says why instead of showing nothing
+  const stoppedNote =
+    structure.removedFilterCount > 0
+      ? {kind: 'FILTER_LEVEL_REMOVED' as const, count: structure.removedFilterCount}
+      : spec.measures.includes('SPEND') && !scope.canCountWholeOrg
+        ? {kind: 'SPEND_FOR_BILLING_LEADERS' as const, count: 1}
+        : null
+  if (stoppedNote) {
     return {
       spec,
       reportableTeamIds,
@@ -103,7 +110,7 @@ const runReport = async ({
       rowTotals: [],
       totalRowCount: 0,
       teamCount: 0,
-      notes: [{kind: 'FILTER_LEVEL_REMOVED' as const, count: structure.removedFilterCount}]
+      notes: [stoppedNote]
     }
   }
 
