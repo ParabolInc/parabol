@@ -37,7 +37,7 @@ const clusterBySimilarity = (
   groups: readonly SimilarityGroup[],
   options: SimilarityOptions = {}
 ): SimilarityCluster[] => {
-  const {sameColumnOnly} = options
+  const {sameColumnOnly, threshold} = options
   const clusters = [...groups]
     .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
     .flatMap<Cluster>((group) => {
@@ -86,7 +86,7 @@ const clusterBySimilarity = (
         const score = scores[i]![j]!
         // Strict > keeps the lowest-ordered pair on a tie, which is what makes this deterministic
         if (score <= bestScore) continue
-        if (score < sizeAdjustedThreshold(a.size + b.size)) continue
+        if (score < sizeAdjustedThreshold(a.size + b.size, threshold)) continue
         bestScore = score
         bestI = i
         bestJ = j

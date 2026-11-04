@@ -26,6 +26,14 @@ describe('clusterBySimilarity', () => {
     expect(clusterIds(groups)).toEqual([['a', 'b']])
   })
 
+  it('uses the threshold it is given', () => {
+    const groups = [makeGroup('a', 'c1', unit(0)), makeGroup('b', 'c1', unit(45))]
+    expect(clusterBySimilarity(groups)).toEqual([])
+    expect(clusterBySimilarity(groups, {threshold: 0.7}).map(({groupIds}) => groupIds)).toEqual([
+      ['a', 'b']
+    ])
+  })
+
   it('leaves unrelated groups alone', () => {
     const groups = [makeGroup('a', 'c1', unit(0)), makeGroup('b', 'c1', unit(80))]
     expect(clusterIds(groups)).toEqual([])
