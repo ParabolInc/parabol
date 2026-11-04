@@ -117,7 +117,7 @@ export const UnstyledTemplateSharing = (props: Props) => {
       }
     >
       <Suspense fallback={null}>
-        <SelectSharingScopeDropdown template={template} />
+        <SelectSharingScopeDropdown template={template} isEditing={!readOnly} />
       </Suspense>
     </Menu>
   )
