@@ -23,5 +23,10 @@ type ReportQuestion {
 
   outcome: ReportQuestionOutcomeEnum!
 
+  """
+  How the viewer rated the report AI made, if they did
+  """
+  rating: ReportQuestionRatingEnum
+
   lastUsedAt: DateTime!
 }

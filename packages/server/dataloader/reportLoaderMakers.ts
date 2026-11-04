@@ -124,6 +124,7 @@ export interface TeamHealthCheck {
   endedAt: Date
   templateId: string | null
   templateScope: string | null
+  templateType: string | null
   templateName: string | null
 }
 
@@ -140,6 +141,7 @@ export const teamHealthChecksByTeamId = (parent: RootDataLoader) => {
           'm.endedAt',
           'm.templateId',
           'tpl.scope as templateScope',
+          'tpl.type as templateType',
           'tpl.name as templateName'
         ])
         .where('m.teamId', 'in', teamIds)

@@ -17,6 +17,8 @@ import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import type {OrganizationResolvers} from '../resolverTypes'
 
 const MAX_ACTIVE_USER_COUNT_TIMES = 366
+// rated questions outlive the recent list, so it keeps only the newest
+const RECENT_REPORT_QUESTION_LIMIT = 20
 
 const Organization: OrganizationResolvers = {
   approvedDomains: async ({id: orgId}, _args, {dataLoader}) => {
@@ -106,6 +108,7 @@ const Organization: OrganizationResolvers = {
       .where('userId', '=', getUserId(authToken))
       .where('orgId', '=', orgId)
       .orderBy('lastUsedAt', 'desc')
+      .limit(RECENT_REPORT_QUESTION_LIMIT)
       .execute()
   },
 

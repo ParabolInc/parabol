@@ -37,6 +37,7 @@ const ReportTeamHealthSummary = ({shownCells, hasTeamRows}: Props) => {
       {attentionCount > 0
         ? `${attentionCount} ${plural(attentionCount, 'cell')} ${attentionCount === 1 ? 'needs' : 'need'} attention`
         : `${brightCount} ${plural(brightCount, 'bright spot')}`}
+      <span className='font-normal text-fg-secondary'>. Select a marked cell for why</span>
     </p>
   )
 }

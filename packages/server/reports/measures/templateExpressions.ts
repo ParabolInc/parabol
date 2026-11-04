@@ -1,4 +1,4 @@
-import {type Expression, expressionBuilder} from 'kysely'
+import {type Expression, expressionBuilder, sql} from 'kysely'
 import {
   REPORT_NO_TEMPLATE,
   REPORT_OTHER_TEAM_TEMPLATE
@@ -8,19 +8,18 @@ import {isAnyOf} from '../reportQueries'
 
 const eb = expressionBuilder<DB>()
 
-// A team's own template is named only to the people on that team, the same people who can pick it
+interface TemplateColumns<Value> {
+  templateId: Value
+  teamId: Value
+  scope: Value
+  type: Value
+  name: Value
+}
+
+// Templates of one type that share a name are one template, like the copies teams make of a public one. A team's
+// own template is named only to the people on that team, the same people who can pick it
 export const templateOf = (
-  {
-    templateId,
-    teamId,
-    scope,
-    name
-  }: {
-    templateId: Expression<string | null>
-    teamId: Expression<string | null>
-    scope: Expression<string | null>
-    name: Expression<string | null>
-  },
+  {templateId, teamId, scope, type, name}: TemplateColumns<Expression<string | null>>,
   ownTeamIds: string[]
 ) => {
   const isNamed = eb.or([eb(scope, 'in', ['PUBLIC', 'ORGANIZATION']), isAnyOf(teamId, ownTeamIds)])
@@ -30,24 +29,23 @@ export const templateOf = (
       .when(eb(templateId, 'is', null))
       .then(REPORT_NO_TEMPLATE)
       .when(isNamed)
-      .then(templateId)
+      .then(sql<string>`${type} || ':' || lower(btrim(${name}))`)
       .else(REPORT_OTHER_TEAM_TEMPLATE)
       .end(),
-    label: eb.case().when(isNamed).then(name).end()
+    label: eb.case().when(isNamed).then(sql<string>`btrim(${name})`).end()
   }
 }
 
 // The same naming for a template already read, like a Team Health check's
 export const toTemplateKey = (
-  {
-    templateId,
-    teamId,
-    scope,
-    name
-  }: {templateId: string | null; teamId: string; scope: string | null; name: string | null},
+  {templateId, teamId, scope, type, name}: TemplateColumns<string | null>,
   ownTeamIds: string[]
 ) => {
   if (templateId === null) return {key: REPORT_NO_TEMPLATE, label: null}
-  const isNamed = scope === 'PUBLIC' || scope === 'ORGANIZATION' || ownTeamIds.includes(teamId)
-  return isNamed ? {key: templateId, label: name} : {key: REPORT_OTHER_TEAM_TEMPLATE, label: null}
+  const trimmedName = name?.replace(/^ +| +$/g, '') ?? null
+  const isNamed =
+    scope === 'PUBLIC' || scope === 'ORGANIZATION' || (!!teamId && ownTeamIds.includes(teamId))
+  return isNamed
+    ? {key: `${type}:${trimmedName?.toLowerCase()}`, label: trimmedName}
+    : {key: REPORT_OTHER_TEAM_TEMPLATE, label: null}
 }

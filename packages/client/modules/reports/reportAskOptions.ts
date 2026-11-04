@@ -28,7 +28,7 @@ interface ListedOption {
 }
 
 export type ReportAskOption =
-  | {kind: 'ask'; id: string; question: string}
+  | {kind: 'ask'; id: string; question: string; isSuggestion: boolean}
   | (ListedOption & {kind: 'recent'; recent: ReportAskRecent})
   | (ListedOption & {kind: 'popular'; popular: PopularReportQuestion})
 
@@ -85,16 +85,27 @@ interface Options {
   populars: readonly PopularReportQuestion[]
   // the popular questions nearest to a question AI couldn't answer
   suggestions: readonly PopularReportQuestion[] | null
+  // a question AI offered in place of one it couldn't answer
+  suggestedQuestion?: string | null
   canAsk: boolean
 }
 
 // Questions match on any word. Asking AI comes first, then recent questions, then popular ones: those that
 // match the most words first, or by subject before anything is typed
-export const toReportAskOptions = ({query, recents, populars, suggestions, canAsk}: Options) => {
+export const toReportAskOptions = ({
+  query,
+  recents,
+  populars,
+  suggestions,
+  suggestedQuestion,
+  canAsk
+}: Options) => {
   const words = toWords(query)
   const question = query.trim()
   const options: ReportAskOption[] = []
-  if (canAsk && question && !suggestions) options.push({kind: 'ask', id: 'ask', question})
+  if (canAsk && question && !suggestions) {
+    options.push({kind: 'ask', id: 'ask', question, isSuggestion: false})
+  }
   const toPopularOption = (
     popular: PopularReportQuestion,
     section: string,
@@ -110,6 +121,9 @@ export const toReportAskOptions = ({query, recents, populars, suggestions, canAs
     popular
   })
   if (suggestions) {
+    if (canAsk && suggestedQuestion) {
+      options.push({kind: 'ask', id: 'suggestion', question: suggestedQuestion, isSuggestion: true})
+    }
     suggestions.forEach((popular) =>
       options.push(toPopularOption(popular, 'Nearest popular questions', null, []))
     )

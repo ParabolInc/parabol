@@ -70,7 +70,7 @@ const askReportQuestion: MutationResolvers['askReportQuestion'] = async (
       aiSpec: answer.aiSpec,
       spec: answer.spec
     })
-    return {reportQuestion, reason: null}
+    return {reportQuestion, reason: null, suggestion: null}
   }
   const reportQuestion = await recordReportQuestion({
     userId: viewerId,
@@ -81,7 +81,7 @@ const askReportQuestion: MutationResolvers['askReportQuestion'] = async (
     aiSpec: answer.aiSpec,
     spec: null
   })
-  return {reportQuestion, reason: answer.reason}
+  return {reportQuestion, reason: answer.reason, suggestion: answer.suggestion}
 }
 
 export default askReportQuestion

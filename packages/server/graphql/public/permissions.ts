@@ -87,6 +87,11 @@ const permissionMap: PermissionMap<Resolvers> = {
       hasOrgFeatureFlag<'Mutation.logReportQuestionUse'>('args.orgId', 'Reports'),
       rateLimit({perMinute: 60, perHour: 600})
     ),
+    rateReportQuestion: and(
+      or(isSuperUser, isViewerOnOrg<'Mutation.rateReportQuestion'>('args.orgId')),
+      hasOrgFeatureFlag<'Mutation.rateReportQuestion'>('args.orgId', 'Reports'),
+      rateLimit({perMinute: 60, perHour: 600})
+    ),
     addAgendaItem: isTeamMember<'Mutation.addAgendaItem'>('args.newAgendaItem.teamId'),
     addApprovedOrganizationDomains: or(
       isSuperUser,

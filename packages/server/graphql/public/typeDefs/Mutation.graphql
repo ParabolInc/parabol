@@ -2598,6 +2598,19 @@ type Mutation {
   ): LogReportQuestionUseSuccess! @scope(name: REPORTS_WRITE)
 
   """
+  Say whether the report AI made for one of the viewer's questions answered it
+  """
+  rateReportQuestion(
+    orgId: ID!
+    reportQuestionId: ID!
+
+    """
+    Null clears the rating
+    """
+    rating: ReportQuestionRatingEnum
+  ): RateReportQuestionSuccess! @scope(name: REPORTS_WRITE)
+
+  """
   Pin a report to the organization's Reports page, for everyone who can see Reports
   """
   pinReport(

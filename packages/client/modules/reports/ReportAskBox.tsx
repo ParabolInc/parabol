@@ -61,6 +61,7 @@ const ReportAskBox = ({organizationRef, period, onAskingChange}: Props) => {
   const [activeIndex, setActiveIndex] = useState(0)
   const [answer, setAnswer] = useState<{
     reason: string
+    suggestedQuestion: string | null
     suggestions: readonly PopularReportQuestion[]
   } | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -72,6 +73,7 @@ const ReportAskBox = ({organizationRef, period, onAskingChange}: Props) => {
         recents: recentReportQuestions,
         populars: POPULAR_REPORT_QUESTIONS,
         suggestions: answer?.suggestions ?? null,
+        suggestedQuestion: answer?.suggestedQuestion,
         canAsk
       }),
     [query, recentReportQuestions, answer, canAsk]
@@ -102,7 +104,7 @@ const ReportAskBox = ({organizationRef, period, onAskingChange}: Props) => {
           showError(errors?.[0]?.message ?? 'AI couldn’t answer just now. Try again in a moment')
           return
         }
-        const {reportQuestion, reason} = payload
+        const {reportQuestion, reason, suggestion} = payload
         const spec = reportQuestion.spec ? parseReportSpecJSON(reportQuestion.spec) : null
         if (spec) {
           openReport(spec, reportQuestion.id)
@@ -110,6 +112,7 @@ const ReportAskBox = ({organizationRef, period, onAskingChange}: Props) => {
         }
         setAnswer({
           reason: reason ?? 'Parabol doesn’t have the data for that report',
+          suggestedQuestion: suggestion ?? null,
           suggestions: rankPopularReportQuestions(question)
         })
         setActiveIndex(0)
@@ -123,6 +126,10 @@ const ReportAskBox = ({organizationRef, period, onAskingChange}: Props) => {
   }
   const choose = (option: ReportAskOption) => {
     if (option.kind === 'ask') {
+      if (option.isSuggestion) {
+        setQuery(option.question)
+        setAnswer(null)
+      }
       askAI(option.question)
     } else if (option.kind === 'popular') {
       const {key, spec} = option.popular

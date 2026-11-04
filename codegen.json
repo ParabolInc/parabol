@@ -283,6 +283,7 @@
           "ReportTeamHealth": "./types/ReportTeamHealth#ReportTeamHealthSource",
           "AskReportQuestionSuccess": "./types/AskReportQuestionSuccess#AskReportQuestionSuccessSource",
           "LogReportQuestionUseSuccess": "./types/LogReportQuestionUseSuccess#LogReportQuestionUseSuccessSource",
+          "RateReportQuestionSuccess": "./types/RateReportQuestionSuccess#RateReportQuestionSuccessSource",
           "PinReportSuccess": "./types/PinReportSuccess#PinReportSuccessSource",
           "UnpinReportSuccess": "./types/UnpinReportSuccess#UnpinReportSuccessSource",
           "MovePinnedReportSuccess": "./types/MovePinnedReportSuccess#MovePinnedReportSuccessSource",
