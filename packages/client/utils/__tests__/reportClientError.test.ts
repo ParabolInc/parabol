@@ -113,3 +113,15 @@ test('a masked GraphQL error becomes a warning carrying its operation’s trace 
   ])
   expect(reports[0]).not.toHaveProperty('stack')
 })
+
+test('a report names the server version its socket connected to, so deploy skew shows', async () => {
+  const {default: reportClientError, flushClientErrors} = await loadReporter()
+  const {setConnectedServerVersion} = await import('../connectedServerVersion')
+  reportClientError(new Error('before the socket connected'))
+  setConnectedServerVersion('15.12.0')
+  reportClientError(new Error('after the socket connected'))
+  flushClientErrors()
+  const reports = await readSentReports()
+  expect(reports[0].serverVersion).toBeUndefined()
+  expect(reports[1]).toMatchObject({release: '15.11.0', serverVersion: '15.12.0'})
+})

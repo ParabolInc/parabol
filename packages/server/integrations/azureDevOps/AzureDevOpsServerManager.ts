@@ -10,6 +10,7 @@ import type {TeamMemberIntegrationAuth} from '../../postgres/types'
 import type {IntegrationProviderAzureDevOps} from '../../postgres/types/IntegrationProvider'
 import {escapeHtml} from '../../utils/escapeHtml'
 import makeCreateAzureTaskComment from '../../utils/makeCreateAzureTaskComment'
+import {readThirdPartyResponse, ThirdPartyResponseError} from '../../utils/ThirdPartyResponseError'
 import {generateHTML} from '../../utils/tiptap/generateHTML'
 import {authorizeOAuth2} from '../helpers/authorizeOAuth2'
 import type {
@@ -167,12 +168,16 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
       })
       const isJson = (res.headers.get('content-type') ?? '').includes('application/json')
       if (!isJson) {
-        await res.body?.cancel()
         // a rejected token is answered with a 203 and the HTML sign-in page instead of a 401
         if (res.status === 203 || res.status === 401) {
+          await res.body?.cancel()
           return new Error('Azure DevOps rejected the access token. Reconnect Azure DevOps.')
         }
-        return new Error(`Azure DevOps returned an unexpected response (${res.status})`)
+        const response = await readThirdPartyResponse('azureDevOps', res, {method, url})
+        return new ThirdPartyResponseError(
+          `Azure DevOps returned an unexpected response (${res.status})`,
+          response
+        )
       }
       const json = (await res.json()) as T | {message?: string}
       if (!res.ok) {

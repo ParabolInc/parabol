@@ -1,4 +1,5 @@
 import {addBreadcrumb, type Breadcrumb, getBreadcrumbs, getLastTraceId} from './clientBreadcrumbs'
+import {getConnectedServerVersion} from './connectedServerVersion'
 import {isExtensionError, isIgnoredError} from './errorFilters'
 import getReportedRoute from './getReportedRoute'
 import getTabSessionId from './getTabSessionId'
@@ -22,6 +23,7 @@ interface ClientErrorReport {
   traceId?: string
   sessionId: string
   release: string
+  serverVersion?: string
   route: string
   userAgent: string
   breadcrumbs: Breadcrumb[]
@@ -105,6 +107,7 @@ const reportClientError = (reason: unknown, options: ReportOptions = {}) => {
     traceId: options.traceId ?? getLastTraceId(),
     sessionId: getTabSessionId(),
     release: RELEASE,
+    serverVersion: getConnectedServerVersion(),
     route: getReportedRoute(window.location.pathname),
     userAgent: navigator.userAgent,
     breadcrumbs: getBreadcrumbs(),

@@ -28,6 +28,7 @@ import {getTeamMemberUserIds} from './utils/getTeamMemberUserIds'
 import {getUserSocketCount} from './utils/getUserSocketCount'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {Logger} from './utils/Logger'
+import parseClientVersion from './utils/parseClientVersion'
 import parseSessionId from './utils/parseSessionId'
 import publish from './utils/publish'
 import {CLIENT_IP_POS} from './utils/uwsGetIP'
@@ -51,6 +52,7 @@ declare module 'graphql-ws/use/uWebSockets' {
     authToken: AuthToken
     socketId: string
     sessionId?: string
+    clientVersion?: string
     resubscribe: Record<string, () => void>
     // not present for subscription IDs
     dataLoaders: Record<string, ReturnType<typeof getNewDataLoader>>
@@ -88,7 +90,12 @@ const secondsSinceUpgrade = ({upgradeStartedAt}: Pick<UpgradeData, 'upgradeStart
   (performance.now() - upgradeStartedAt) / 1000
 
 const documentCache = new Map()
-export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId?: string}>({
+export const wsHandler = makeBehavior<{
+  token?: string
+  docId?: string
+  sessionId?: string
+  clientVersion?: string
+}>({
   onConnect: async (ctx) => {
     const {connectionParams, extra} = ctx
 
@@ -127,6 +134,7 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
     extra.ip = clientIP || extra.socket.ip
     extra.socketId = extra.persistedRequest.headers['sec-websocket-key']!
     extra.sessionId = parseSessionId(connectionParams?.sessionId)
+    extra.clientVersion = parseClientVersion(connectionParams?.clientVersion)
     extra.resubscribe = {}
     extra.dataLoaders = {}
     activeClients.set(extra.socketId, extra.socket)
@@ -192,7 +200,7 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
   subscribe: (args) => (args as EnvelopedExecutionArgs).rootValue.subscribe(args),
   onSubscribe: async (ctx, id, params) => {
     const {extra} = ctx
-    const {ip, authToken, socketId, sessionId, resubscribe} = extra
+    const {ip, authToken, socketId, sessionId, clientVersion, resubscribe} = extra
     const docId = extractPersistedOperationId(params as any)
     const {schema, execute, subscribe, parse, contextFactory} = yoga.getEnveloped({
       ...ctx,
@@ -247,6 +255,7 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
         authToken,
         socketId,
         sessionId,
+        clientVersion,
         traceparent:
           typeof params.extensions?.traceparent === 'string'
             ? params.extensions.traceparent

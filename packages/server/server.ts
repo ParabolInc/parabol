@@ -23,8 +23,10 @@ import {createStaticFileHandler} from './staticFileHandler'
 import {flushTracing} from './tracing/initTracing'
 import traceHttpRoute from './tracing/traceHttpRoute'
 import getReqAuth from './utils/getReqAuth'
-import {Logger} from './utils/Logger'
+import {Logger, setAccountLogContextLoader} from './utils/Logger'
+import loadAccountLogContext from './utils/loadAccountLogContext'
 import logProcessWarnings from './utils/logProcessWarnings'
+import parseClientVersion from './utils/parseClientVersion'
 import parseSessionId from './utils/parseSessionId'
 import registerFatalErrorHandlers from './utils/registerFatalErrorHandlers'
 import SAMLHandler from './utils/SAMLHandler'
@@ -53,6 +55,7 @@ const ENABLE_MATTERMOST_FILE_HANDLER =
   !__PRODUCTION__ || (process.env.MATTERMOST_SECRET && process.env.MATTERMOST_URL)
 
 registerFatalErrorHandlers()
+setAccountLogContextLoader(loadAccountLogContext)
 logProcessWarnings()
 logHocuspocusWarnings()
 
@@ -92,7 +95,8 @@ const app = uws
     const authToken = getReqAuth(req)
     const traceparent = req.getHeader('traceparent') || undefined
     const sessionId = parseSessionId(req.getHeader('x-parabol-session-id'))
-    return yoga(res, req, {authToken, ip, traceparent, sessionId})
+    const clientVersion = parseClientVersion(req.getHeader('x-parabol-client-version'))
+    return yoga(res, req, {authToken, ip, traceparent, sessionId, clientVersion})
   })
   .post('/saml/:domain', traceHttpRoute('/saml/:domain', SAMLHandler))
   .get('/oauth/authorize', traceHttpRoute('/oauth/authorize', authorizeHandler))

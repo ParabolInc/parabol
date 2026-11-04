@@ -17,6 +17,7 @@ import './GroupDegress'
 import {decode} from 'jsonwebtoken'
 import makeAppURL from '../../client/utils/makeAppURL'
 import {Logger} from '../utils/Logger'
+import {annotateLogContext} from '../utils/requestLogContext'
 import uwsGetIP from '../utils/uwsGetIP'
 import {omitUndeclaredExtensionPaths} from './omitUndeclaredExtensionPaths'
 
@@ -98,16 +99,18 @@ const scimHandler = (handler: Handler) =>
         }
       }
 
+      if (saml.orgId) {
+        annotateLogContext({orgId: saml.orgId})
+      }
       await handler(res, {query, id, body}, {ip, authToken: unverifiedToken, dataLoader})
     } catch (err) {
       const response = new SCIMMY.Messages.Error(err as any)
+      // written first, so the error record carries the status the IdP gets
+      res.writeStatus(`${response.status}`).writeHeader('Content-Type', 'application/scim+json')
       if (response.status >= 400) {
         Logger.error(err)
       }
-      res
-        .writeStatus(`${response.status}`)
-        .writeHeader('Content-Type', 'application/scim+json')
-        .end(JSON.stringify(response))
+      res.end(JSON.stringify(response))
     } finally {
       dataLoader.dispose()
     }

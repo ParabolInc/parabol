@@ -1,3 +1,4 @@
+import parseClientVersion from './parseClientVersion'
 import parseSessionId from './parseSessionId'
 
 export const MAX_CLIENT_ERROR_REPORTS = 10
@@ -5,7 +6,6 @@ const MAX_BREADCRUMBS = 30
 const MAX_REPEAT_COUNT = 1000
 const TRACE_ID = /^[0-9a-f]{32}$/
 const EVENT_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
-const RELEASE = /^[\w.+-]{1,64}$/
 const BREADCRUMB_TYPES = new Set(['operation', 'navigation', 'websocket', 'error'])
 
 export interface ClientErrorBreadcrumb {
@@ -25,6 +25,7 @@ export interface ClientErrorReport {
   traceId?: string
   sessionId?: string
   release?: string
+  serverVersion?: string
   route?: string
   userAgent?: string
   count: number
@@ -69,7 +70,8 @@ const parseReport = (value: unknown): ClientErrorReport | undefined => {
     eventId: readMatch(value.eventId, EVENT_ID),
     traceId: readMatch(value.traceId, TRACE_ID),
     sessionId: parseSessionId(value.sessionId),
-    release: readMatch(value.release, RELEASE),
+    release: parseClientVersion(value.release),
+    serverVersion: parseClientVersion(value.serverVersion),
     route: readString(value.route, 300),
     userAgent: readString(value.userAgent, 300),
     count: readCount(value.count),
