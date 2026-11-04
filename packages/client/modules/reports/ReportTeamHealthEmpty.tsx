@@ -47,8 +47,8 @@ const ReportTeamHealthEmpty = ({orgId, isCompact = false}: Props) => (
       title='Run your first Team Health check'
       description={
         isCompact
-          ? 'Run it across your organization to see how every team feels.'
-          : 'Run it across your organization, and this heatmap shows how every team feels in each category and marks what needs attention. The teams behind this are a sample.'
+          ? 'Teams that run one show up here with a score for each category.'
+          : 'Teams that run one show up here with a score for each category, and the cells that need attention get marked. The teams behind this are a sample.'
       }
       actionLabel='Start Team Health'
       action={{to: TEAM_HEALTH_DETAILS_URL}}
