@@ -2,7 +2,7 @@ import DataLoader from 'dataloader'
 import ms from 'ms'
 import getKysely from '../postgres/getKysely'
 import {hasEnoughAttendees} from '../postgres/teamActivityCriteria'
-import type {Meetingtypeenum} from '../postgres/types/pg'
+import type {Meetingtypeenum, Reportquestionratingenum} from '../postgres/types/pg'
 import reportMeasures from '../reports/measures/reportMeasures'
 import {isPokerImportTask, selectTasks} from '../reports/measures/taskExpressions'
 import type {OrgStructure} from '../reports/orgStructure'
@@ -208,6 +208,28 @@ export const orgStructureByOrgId = (parent: RootDataLoader) => {
             .map(({teamId, levelId, valueId}) => ({teamId, levelId, valueId}))
         }
       })
+    },
+    {...parent.dataLoaderOptions}
+  )
+}
+
+// The latest rating each question got, or null when it was taken back or never given
+export const reportQuestionRatings = (parent: RootDataLoader) => {
+  return new DataLoader<number, Reportquestionratingenum | null, number>(
+    async (reportQuestionIds) => {
+      const ratings = await getKysely()
+        .selectFrom('ReportQuestionRating')
+        .distinctOn('reportQuestionId')
+        .select(['reportQuestionId', 'rating'])
+        .where('reportQuestionId', 'in', reportQuestionIds)
+        .orderBy('reportQuestionId')
+        .orderBy('createdAt', 'desc')
+        .orderBy('id', 'desc')
+        .execute()
+      const ratingById = new Map(
+        ratings.map(({reportQuestionId, rating}) => [reportQuestionId, rating])
+      )
+      return reportQuestionIds.map((id) => ratingById.get(id) ?? null)
     },
     {...parent.dataLoaderOptions}
   )

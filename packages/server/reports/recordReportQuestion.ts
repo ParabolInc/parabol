@@ -24,14 +24,9 @@ const recordReportQuestion = async ({
   aiSpec = null,
   spec
 }: Options) => {
-  const normalQuestion = question?.trim().toLowerCase() ?? null
-  // an asked question keeps a row of its own, so its rating stays with it
-  const dedupeSource = !spec
-    ? {source, question: normalQuestion}
-    : source === 'ask'
-      ? {spec, question: normalQuestion}
-      : spec
-  const {id: dedupeKey} = getHashAndJSON(dedupeSource)
+  const {id: dedupeKey} = getHashAndJSON(
+    spec ?? {source, question: question?.trim().toLowerCase() ?? null}
+  )
   return getKysely()
     .insertInto('ReportQuestion')
     .values({

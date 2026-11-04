@@ -241,12 +241,16 @@ test('a person rates the report AI made for their question, and can take the rat
   })
   const cleared = await rate(orgId, cookie, reportQuestionId, null)
   expect(cleared.data.rateReportQuestion.reportQuestion.rating).toBeNull()
-  const {ratedAt} = await getKysely()
-    .selectFrom('ReportQuestion')
-    .select('ratedAt')
-    .where('id', '=', asked.id)
-    .executeTakeFirstOrThrow()
-  expect(ratedAt).toBeNull()
+  const ratings = await getKysely()
+    .selectFrom('ReportQuestionRating')
+    .select(['question', 'rating'])
+    .where('reportQuestionId', '=', asked.id)
+    .orderBy('id')
+    .execute()
+  expect(ratings).toEqual([
+    {question: 'Which teams meet most?', rating: 'bad'},
+    {question: 'Which teams meet most?', rating: null}
+  ])
 })
 
 test('only the person who asked can rate, and only a report AI made', async () => {
@@ -281,12 +285,11 @@ test('only the person who asked can rate, and only a report AI made', async () =
   expect(res.errors?.[0]?.message).toBe('That isn’t a report AI made for one of your questions')
 })
 
-test('two questions that got the same report keep their own rows, and a rated one outlives the recent list', async () => {
+test('a rating keeps its question and report after the question leaves the recent list', async () => {
   const {orgId, userId, cookie} = await signUpWithReports()
   const asked = await askedQuestion(userId, orgId, 'Which teams meet most?')
-  await askedQuestion(userId, orgId, 'Who holds the most meetings?')
   await rate(orgId, cookie, CipherId.toClient(asked.id, 'ReportQuestion'), 'good')
-  for (let limit = 1; limit <= 20; limit++) {
+  for (let limit = 11; limit <= 30; limit++) {
     await recordReportQuestion({
       userId,
       orgId,
@@ -296,14 +299,18 @@ test('two questions that got the same report keep their own rows, and a rated on
       spec: tableOfTeams(limit)
     })
   }
-  const kept = await getKysely()
-    .selectFrom('ReportQuestion')
-    .select(['title', 'rating'])
+  expect(await recentTitles(orgId, cookie)).not.toContain('Which teams meet most?')
+  const rating = await getKysely()
+    .selectFrom('ReportQuestionRating')
+    .select(['reportQuestionId', 'question', 'title', 'spec', 'rating'])
     .where('userId', '=', userId)
     .where('orgId', '=', orgId)
-    .execute()
-  expect(kept).toHaveLength(21)
-  expect(kept).toContainEqual({title: 'Which teams meet most?', rating: 'good'})
-  expect(kept.map(({title}) => title)).not.toContain('Who holds the most meetings?')
-  expect(await recentTitles(orgId, cookie)).toHaveLength(20)
+    .executeTakeFirstOrThrow()
+  expect(rating).toEqual({
+    reportQuestionId: null,
+    question: 'Which teams meet most?',
+    title: 'Which teams meet most?',
+    spec: tableOfTeams(5),
+    rating: 'good'
+  })
 })
