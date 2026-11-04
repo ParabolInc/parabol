@@ -1,7 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {positionAfter} from '../../../../client/shared/sortOrder'
 import generateUID from '../../../generateUID'
-import {agendaItemsAdded} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import publish from '../../../utils/publish'
 import addAgendaItemToActiveActionMeeting from '../../mutations/helpers/addAgendaItemToActiveActionMeeting'
@@ -37,7 +36,6 @@ const addAgendaItem: MutationResolvers['addAgendaItem'] = async (
     })
     .execute()
   const meetingId = await addAgendaItemToActiveActionMeeting(agendaItemId, teamId, dataLoader)
-  agendaItemsAdded.inc({in_meeting: String(!!meetingId)})
   const data = {agendaItemId, meetingId}
   publish(SubscriptionChannel.TEAM, teamId, 'AddAgendaItemPayload', data, subOptions)
   return data

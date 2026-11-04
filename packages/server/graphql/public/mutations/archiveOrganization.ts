@@ -1,7 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 import type Team from '../../../database/types/Team'
-import {orgsArchived} from '../../../metricsHandler'
 import type {User} from '../../../postgres/types'
 import safeArchiveTeam from '../../../safeMutations/safeArchiveTeam'
 import {getUserId} from '../../../utils/authorization'
@@ -29,7 +28,6 @@ const archiveOrganization: MutationResolvers['archiveOrganization'] = async (
   }
 
   // RESOLUTION
-  orgsArchived.inc()
   const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
   const teamIds = teams.map(({id}) => id)
   const teamArchiveResults = (await Promise.all(

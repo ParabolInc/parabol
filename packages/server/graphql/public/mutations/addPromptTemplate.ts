@@ -3,7 +3,6 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {positionAfter} from '../../../../client/shared/sortOrder'
 import {PALETTE} from '../../../../client/styles/paletteV3'
 import generateUID from '../../../generateUID'
-import {templatesCreated} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import decrementFreeTemplatesRemaining from '../../../postgres/queries/decrementFreeTemplatesRemaining'
 import {getUserId, isTeamMember, isUserInOrg} from '../../../utils/authorization'
@@ -111,7 +110,6 @@ const addPromptTemplate: MutationResolvers['addPromptTemplate'] = async (
     decrementFreeTemplatesRemaining(viewerId, promptTemplateRules[type].freeTemplatesColumn)
   ])
   dataLoader.clearAll(['meetingTemplates', 'userDetails'])
-  templatesCreated.inc({meeting_type: newTemplate.type, origin: parentTemplate ? 'clone' : 'blank'})
 
   const data = {templateId: newTemplate.id}
   publish(SubscriptionChannel.TEAM, teamId, 'AddPromptTemplateSuccess', data, subOptions)

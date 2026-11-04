@@ -4,7 +4,6 @@ import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {getAllNodesAttributesByType} from '../../../../client/shared/tiptap/getAllNodesAttributesByType'
 import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
 import generateUID from '../../../generateUID'
-import {commentsAdded} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import type {Discussion} from '../../../postgres/types'
 import {getUserId} from '../../../utils/authorization'
@@ -60,8 +59,6 @@ const addComment: MutationResolvers['addComment'] = async (
       error: {message: 'Discussion does not take place in a meeting'}
     }
   }
-  const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
-
   // VALIDATION
   const content = convertToTipTap(comment.content)
   const plaintextContent = generateText(content, serverTipTapExtensions)
@@ -118,7 +115,6 @@ const addComment: MutationResolvers['addComment'] = async (
   }
 
   const data = {commentId, meetingId}
-  commentsAdded.inc({meeting_type: meeting.meetingType})
   publish(SubscriptionChannel.MEETING, meetingId, 'AddCommentSuccess', data, subOptions)
   return data
 }

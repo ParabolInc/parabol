@@ -2,7 +2,6 @@ import dayjs from 'dayjs'
 import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {DateTime, RRuleSet} from 'rrule-rust'
-import {meetingSeriesChanges} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import type {MeetingSeries} from '../../../postgres/types'
 import type {MeetingTypeEnum} from '../../../postgres/types/Meeting'
@@ -177,7 +176,6 @@ export const applySeriesRecurrence = async (
 
   if (!rrule) {
     await stopMeetingSeriesGroup(meetingSeries)
-    meetingSeriesChanges.inc({meeting_type: meetingSeries.meetingType, change: 'stopped'})
   } else if (cancelledAt) {
     // Restart a cancelled series: clear cancelledAt and update recurrenceRule atomically
     await pg
@@ -185,7 +183,6 @@ export const applySeriesRecurrence = async (
       .set({cancelledAt: null, recurrenceRule: rrule.toString()})
       .where('id', 'in', seriesIds)
       .execute()
-    meetingSeriesChanges.inc({meeting_type: meetingSeries.meetingType, change: 'started'})
   } else {
     await pg
       .updateTable('MeetingSeries')
@@ -300,10 +297,9 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
       )
     }
 
-    const newMeetingSeries = await startNewMeetingSeries(meeting, rrule, name, {
+    await startNewMeetingSeries(meeting, rrule, name, {
       templateId: meeting.templateId
     })
-    meetingSeriesChanges.inc({meeting_type: newMeetingSeries.meetingType, change: 'started'})
   }
 
   dataLoader.clearAll(['newMeetings', 'meetingSeries'])

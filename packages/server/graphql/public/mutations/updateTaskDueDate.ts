@@ -1,6 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isValidDate from 'parabol-client/utils/isValidDate'
-import {taskDueDatesSet} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -42,7 +41,6 @@ const updateTaskDueDate: MutationResolvers['updateTaskDueDate'] = async (
       publish(SubscriptionChannel.TASK, userId, 'UpdateTaskDueDatePayload', data, subOptions)
     })
   }
-  taskDueDatesSet.inc()
   return data
 }
 

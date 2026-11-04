@@ -1,7 +1,6 @@
 import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
-import {pokerRevotes} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
@@ -62,8 +61,6 @@ const pokerResetDimension: MutationResolvers['pokerResetDimension'] = async (
       .execute()
   ])
   dataLoader.clearAll('newMeetings')
-
-  pokerRevotes.inc()
 
   const data = {meetingId, stageId}
   publish(SubscriptionChannel.MEETING, meetingId, 'PokerResetDimensionSuccess', data, subOptions)

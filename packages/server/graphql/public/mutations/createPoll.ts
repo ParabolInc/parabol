@@ -1,6 +1,5 @@
 import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
 import {Polls, SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {pollsCreated} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -99,7 +98,6 @@ const createPoll: MutationResolvers['createPoll'] = async (
   const {pollId} = insertPollResult[0]!
 
   const data = {pollId}
-  pollsCreated.inc()
   publish(SubscriptionChannel.MEETING, meetingId, 'CreatePollSuccess', data, subOptions)
   return data
 }

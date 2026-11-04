@@ -1,5 +1,4 @@
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
-import {orgTierChanges} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import type {User} from '../../../postgres/types'
@@ -140,7 +139,6 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
     removeTeamsLimitObjects(orgId, dataLoader)
   ])
 
-  orgTierChanges.inc({from_tier: tier, to_tier: 'enterprise'})
   dataLoader.get('organizations').clear(orgId)
   return {orgId}
 }

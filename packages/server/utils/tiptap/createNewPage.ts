@@ -5,7 +5,6 @@ import {__START__} from '../../../client/shared/sortOrder'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
 import {getPageNextSortOrder} from '../../graphql/public/mutations/helpers/getPageNextSortOrder'
-import {pagesCreated} from '../../metricsHandler'
 import getKysely from '../../postgres/getKysely'
 import {updatePageAccessTable} from '../../postgres/updatePageAccessTable'
 import {publishPageNotification} from '../publishPageNotification'
@@ -125,7 +124,6 @@ export const createNewPage = async (options: CreateNewPageOptions, mutatorId?: s
   await Promise.all(accessInserts)
 
   await updatePageAccessTable(pg, pageId, {skipDeleteOld: true})
-  pagesCreated.inc()
 
   const subOptions = {mutatorId: mutatorId ?? undefined, operationId}
   const data = {page}

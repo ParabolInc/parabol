@@ -1,5 +1,4 @@
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
-import {reflectionGroupResets} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -75,7 +74,6 @@ const resetReflectionGroups: MutationResolvers['resetReflectionGroups'] = async 
     .where('id', '=', meetingId)
     .execute()
   meeting.resetReflectionGroups = null
-  reflectionGroupResets.inc()
   const data = {meetingId}
   publish(SubscriptionChannel.MEETING, meetingId, 'ResetReflectionGroupsSuccess', data, subOptions)
   return data

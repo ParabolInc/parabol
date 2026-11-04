@@ -1,4 +1,3 @@
-import {emailSubscriptionChanges} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
 import {getUserId} from '../../../utils/authorization'
@@ -22,10 +21,6 @@ const togglePageInvitationEmail: MutationResolvers['togglePageInvitationEmail'] 
     .set({sendPageInvitationEmail: !sendPageInvitationEmail})
     .where('id', '=', viewerId)
     .execute()
-  emailSubscriptionChanges.inc({
-    email: 'page_invitation',
-    change: sendPageInvitationEmail ? 'unsubscribed' : 'subscribed'
-  })
 
   return true
 }

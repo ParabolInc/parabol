@@ -1,6 +1,5 @@
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
-import {teamJoins} from '../../../metricsHandler'
 import acceptTeamInvitationSafe from '../../../safeMutations/acceptTeamInvitation'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -45,8 +44,6 @@ const joinTeam: MutationResolvers['joinTeam'] = async (
 
   // Tell the rest of the team about the new team member
   publish(SubscriptionChannel.TEAM, teamId, 'JoinTeamSuccess', data, subOptions)
-
-  teamJoins.inc({method: 'public_team'})
 
   return {
     teamId,

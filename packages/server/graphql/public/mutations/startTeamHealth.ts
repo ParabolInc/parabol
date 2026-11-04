@@ -4,7 +4,7 @@ import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RRuleSet} from 'rrule-rust'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
-import {meetingSeriesChanges, meetingsStarted} from '../../../metricsHandler'
+import {meetingsStarted} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
@@ -51,7 +51,6 @@ type StartForTeamParams = {
 type StartForTeamResult = {
   teamId: string
   meetingId: string | null
-  meetingSeriesId: number | null
 }
 
 // Schedules or starts a single team's health meeting. Returns the started meetingId, or null when
@@ -118,7 +117,7 @@ const startTeamHealthForTeam = async (
         .where('id', '=', meetingSeries.id)
         .execute()
     }
-    return {teamId, meetingId: null, meetingSeriesId: meetingSeries.id}
+    return {teamId, meetingId: null}
   }
 
   const meeting = await safeCreateTeamHealth(
@@ -174,7 +173,7 @@ const startTeamHealthForTeam = async (
       .execute()
   }
 
-  return {teamId, meetingId, meetingSeriesId: meetingSeries ? meetingSeries.id : null}
+  return {teamId, meetingId}
 }
 
 const startTeamHealth: MutationResolvers['startTeamHealth'] = async (
@@ -287,15 +286,6 @@ const startTeamHealth: MutationResolvers['startTeamHealth'] = async (
   }
   const startedTeamIds = started.map(({teamId}) => teamId)
   const meetingIds = started.flatMap(({meetingId}) => (meetingId ? [meetingId] : []))
-  const seriesIds = started.flatMap(({meetingSeriesId}) =>
-    meetingSeriesId ? [meetingSeriesId] : []
-  )
-
-  const [firstSeriesId] = seriesIds
-  if (firstSeriesId) {
-    // one group, one recurrence event, however many teams it covers
-    meetingSeriesChanges.inc({meeting_type: 'teamHealth', change: 'started'})
-  }
 
   dataLoader.clearAll('meetingSeries')
 

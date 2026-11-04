@@ -1,6 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RRuleSet} from 'rrule-rust'
-import {meetingSeriesChanges, meetingsStarted} from '../../../metricsHandler'
+import {meetingsStarted} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
 import {getUserId} from '../../../utils/authorization'
@@ -59,7 +59,6 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
       facilitatorId: viewerId,
       templateId
     })
-    meetingSeriesChanges.inc({meeting_type: meetingSeries.meetingType, change: 'started'})
     const {error: gcalError, gcalSeriesId} = await createGcalEvent({
       name: eventName,
       gcalInput,
@@ -109,7 +108,6 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   if (meetingSeries) {
     // meeting was modified if a new meeting series was created
     dataLoader.get('newMeetings').clear(meetingId)
-    meetingSeriesChanges.inc({meeting_type: meetingSeries.meetingType, change: 'started'})
   }
   IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
   meetingsStarted.inc({meeting_type: meeting.meetingType})

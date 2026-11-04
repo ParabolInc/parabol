@@ -6,7 +6,6 @@ import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import CheckInStage from '../../../database/types/CheckInStage'
 import TeamPromptResponseStage from '../../../database/types/TeamPromptResponseStage'
 import UpdatesStage from '../../../database/types/UpdatesStage'
-import {meetingJoins} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import type {TeamMember} from '../../../postgres/types'
 import type {AnyMeeting} from '../../../postgres/types/Meeting'
@@ -140,7 +139,6 @@ const joinMeeting: MutationResolvers['joinMeeting'] = async (
 
   const data = {meetingId}
   publish(SubscriptionChannel.MEETING, meetingId, 'JoinMeetingSuccess', data, subOptions)
-  meetingJoins.inc({meeting_type: meeting.meetingType})
   return data
 }
 

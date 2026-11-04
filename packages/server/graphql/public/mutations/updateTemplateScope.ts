@@ -2,7 +2,6 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import type {SharingScopeEnum as ESharingScope} from '../../../database/types/MeetingTemplate'
 import PokerTemplate from '../../../database/types/PokerTemplate'
 import generateUID from '../../../generateUID'
-import {templatesShared} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import type {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import {getUserId, isTeamMember, isUserOrgAdmin} from '../../../utils/authorization'
@@ -170,7 +169,6 @@ const updateTemplateScope: MutationResolvers['updateTemplateScope'] = async (
   }
   const data = {templateId, teamId, clonedTemplateId, meetingType: template.type as MeetingTypeEnum}
 
-  templatesShared.inc({meeting_type: template.type, scope: newScope})
   // technically, this affects every connected client (public), or every team in the org (organization), but those are edge cases
   publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpdateTemplateScopeSuccess', data, subOptions)
   return data

@@ -1,6 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import generateUID from '../../../generateUID'
-import {teamsArchived} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import removeMeetingTemplatesForTeam from '../../../postgres/queries/removeMeetingTemplatesForTeam'
 import safeArchiveTeam from '../../../safeMutations/safeArchiveTeam'
@@ -29,7 +28,6 @@ const archiveTeam: MutationResolvers['archiveTeam'] = async (
       userId: viewerId
     })
   }
-  teamsArchived.inc()
 
   const teamTemplates = await dataLoader.get('meetingTemplatesByTeamId').load(teamId)
   const teamTemplateIds = teamTemplates.map(({id}) => id)

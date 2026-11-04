@@ -1,5 +1,4 @@
 import invalidateRepoIntegrationsCache from '../../../integrations/invalidateRepoIntegrationsCache'
-import {integrationChanges} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import type {Integrationproviderserviceenum} from '../../../postgres/types/pg'
 import {getUserId} from '../../../utils/authorization'
@@ -21,7 +20,6 @@ const removeTeamMemberIntegrationAuth: MutationResolvers['removeTeamMemberIntegr
       .where('isActive', '=', true)
       .execute()
     await invalidateRepoIntegrationsCache(teamId, viewerId, service, 'removed')
-    integrationChanges.inc({service, change: 'removed'})
 
     const data = {userId: viewerId, teamId, service}
     return data

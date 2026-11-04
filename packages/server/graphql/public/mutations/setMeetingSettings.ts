@@ -1,6 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {isNotNull} from 'parabol-client/utils/predicates'
-import {meetingSettingsChanges} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import type {MeetingSettings} from '../../../postgres/types'
 import {getUserId} from '../../../utils/authorization'
@@ -73,7 +72,6 @@ const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
   dataLoader.clearAll('meetingSettings')
 
   const data = {settingsId}
-  meetingSettingsChanges.inc({meeting_type: meetingType})
   publish(SubscriptionChannel.TEAM, teamId, 'SetMeetingSettingsPayload', data, subOptions)
   return data
 }

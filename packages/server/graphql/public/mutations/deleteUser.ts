@@ -1,5 +1,4 @@
 import {Threshold} from 'parabol-client/types/constEnums'
-import {accountsRemoved} from '../../../metricsHandler'
 import {USER_REASON_REMOVED_LIMIT} from '../../../postgres/constants'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
@@ -67,8 +66,6 @@ const deleteUser: MutationResolvers['deleteUser'] = async (
   await markUserSoftDeleted(userIdToDelete, deletedUserEmail, validReason)
 
   await broadcastUserMentionUpdate(userIdToDelete, 'Deactivated User', dataLoader, pageIds)
-
-  accountsRemoved.inc({method: 'delete_user'})
 
   await blacklistJWT(userIdToDelete, toEpochSeconds(new Date()) + 1)
 

@@ -1,7 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import ScheduledJobMeetingStageTimeLimit from '../../../database/types/ScheduledJobMetingStageTimeLimit'
-import {stageTimerChanges} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -74,10 +73,6 @@ const setStageTimer: MutationResolvers['setStageTimer'] = async (
     .execute()
   const data = {meetingId, stageId: facilitatorStageId}
   publish(SubscriptionChannel.MEETING, meetingId, 'SetStageTimerPayload', data, subOptions)
-  const stoppedOrStarted = newScheduledEndTime ? 'started' : 'stopped'
-  stageTimerChanges.inc({
-    change: scheduledEndTime && newScheduledEndTime ? 'updated' : stoppedOrStarted
-  })
   return data
 }
 

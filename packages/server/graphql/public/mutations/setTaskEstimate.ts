@@ -6,7 +6,6 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../../appOrigin'
 import {estimatePushColumns} from '../../../integrations/platform/estimatePushColumns'
 import {getServerIntegration} from '../../../integrations/platform/registry'
-import {taskEstimates} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import type {EstimatePushResult} from '../../../postgres/types/EstimatePushResult'
 import {getUserId} from '../../../utils/authorization'
@@ -71,7 +70,6 @@ const setTaskEstimate: MutationResolvers['setTaskEstimate'] = async (
 
   // RESOLUTION
   const {integration} = task
-  const service = integration?.service
   const stageIdx = stages.findIndex((stage) => stage.id === stageId)
   const discussionURL = makeAppURL(appOrigin, `meet/${meetingId}/estimate/${stageIdx + 1}`)
 
@@ -140,7 +138,6 @@ const setTaskEstimate: MutationResolvers['setTaskEstimate'] = async (
       })
   const success = !(pushResult instanceof Error)
   const errorMessage = pushResult instanceof Error ? pushResult.message : undefined
-  taskEstimates.inc({service: service ?? 'parabol', outcome: success ? 'success' : 'failure'})
 
   if (success) {
     await getKysely()

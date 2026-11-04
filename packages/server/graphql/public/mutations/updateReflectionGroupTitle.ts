@@ -1,7 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
-import stringScore from 'string-score'
-import {suggestedTitleEditSimilarity} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -23,7 +21,7 @@ const updateReflectionGroupTitle: MutationResolvers['updateReflectionGroupTitle'
   if (!reflectionGroup) {
     return standardError(new Error('Reflection group not found'), {userId: viewerId})
   }
-  const {meetingId, smartTitle, title: oldTitle} = reflectionGroup
+  const {meetingId, title: oldTitle} = reflectionGroup
   if (oldTitle === title) return {error: {message: 'Group already renamed'}}
   const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
   const {endedAt, phases} = meeting
@@ -52,10 +50,6 @@ const updateReflectionGroupTitle: MutationResolvers['updateReflectionGroupTitle'
     .set({title: normalizedTitle})
     .where('id', '=', reflectionGroupId)
     .execute()
-
-  if (smartTitle && smartTitle === oldTitle) {
-    suggestedTitleEditSimilarity.observe(stringScore(smartTitle, normalizedTitle))
-  }
 
   const data = {meetingId, reflectionGroupId}
   publish(

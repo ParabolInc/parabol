@@ -2,7 +2,6 @@ import {GraphQLError} from 'graphql'
 import yaml from 'js-yaml'
 import {sql} from 'kysely'
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
-import {pageInsightsGenerated} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import {AI_MODEL} from '../../../utils/aiModel'
 import {getUserId, isSuperUser} from '../../../utils/authorization'
@@ -152,7 +151,6 @@ If not, respond with "Invalid prompt"`
             yield content
           } else if (chunk.usage) {
             const tokenCost = chunk.usage?.total_tokens ?? 10_000
-            pageInsightsGenerated.inc()
             await pg.insertInto('AIRequest').values({userId: viewerId, tokenCost}).execute()
           }
         }

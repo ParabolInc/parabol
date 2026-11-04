@@ -1,6 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import generateUID from '../../../generateUID'
-import {billingLeaderChanges} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId, isSuperUser} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -81,9 +80,6 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
     .where('id', '=', organizationUserId)
     .execute()
   organizationUser.role = roleToSet || null
-  if (roleToSet !== 'ORG_ADMIN') {
-    billingLeaderChanges.inc({change: roleToSet === 'BILLING_LEADER' ? 'added' : 'removed'})
-  }
 
   // Don't add notification when promoting to org admin.
   const notificationIdsAdded =

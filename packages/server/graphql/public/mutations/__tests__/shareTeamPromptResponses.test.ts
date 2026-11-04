@@ -1,5 +1,4 @@
 import type {GraphQLResolveInfo} from 'graphql'
-import {teamPromptResponsesShared} from '../../../../metricsHandler'
 import type {GQLContext} from '../../../graphql'
 import {IntegrationNotifier} from '../../../mutations/helpers/notifications/IntegrationNotifier'
 import publishNotification from '../helpers/publishNotification'
@@ -50,8 +49,6 @@ const {updatedIdBatches, updateResult} = jest.requireMock('../../../../postgres/
   updatedIdBatches: number[][]
   updateResult: {rows: {id: number}[]}
 }
-const sharedResponseCount = async () =>
-  (await teamPromptResponsesShared.get()).values[0]?.value ?? 0
 const standupResponseSubmitted = jest.mocked(IntegrationNotifier.standupResponseSubmitted)
 const publishMention = jest.mocked(publishNotification)
 const createMentions = jest.mocked(createTeamPromptMentionNotifications)
@@ -111,10 +108,9 @@ describe('shareTeamPromptResponses', () => {
     updatedIdBatches.splice(0, updatedIdBatches.length)
     updateResult.rows = []
     createMentions.mockResolvedValue([])
-    teamPromptResponsesShared.reset()
   })
 
-  it('shares every draft, notifies Slack once and tracks each shared answer', async () => {
+  it('shares every draft and notifies Slack once', async () => {
     updateResult.rows = [{id: 1}, {id: 2}]
     createMentions.mockResolvedValueOnce([
       {
@@ -139,7 +135,6 @@ describe('shareTeamPromptResponses', () => {
       'team1',
       viewerId
     )
-    expect(await sharedResponseCount()).toBe(2)
     expect(res).toEqual({meetingId, userId: viewerId})
   })
 
@@ -151,7 +146,6 @@ describe('shareTeamPromptResponses', () => {
     expect(updatedIdBatches).toEqual([])
     expect(createMentions).not.toHaveBeenCalled()
     expect(standupResponseSubmitted).not.toHaveBeenCalled()
-    expect(await sharedResponseCount()).toBe(0)
     expect(res).toEqual({meetingId, userId: viewerId})
   })
 
@@ -165,7 +159,6 @@ describe('shareTeamPromptResponses', () => {
     expect(createMentions).not.toHaveBeenCalled()
     expect(publishMention).not.toHaveBeenCalled()
     expect(standupResponseSubmitted).not.toHaveBeenCalled()
-    expect(await sharedResponseCount()).toBe(0)
     expect(res).toEqual({meetingId, userId: viewerId})
   })
 

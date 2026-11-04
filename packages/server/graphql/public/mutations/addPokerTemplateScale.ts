@@ -2,7 +2,6 @@ import {PokerCards, SubscriptionChannel, Threshold} from 'parabol-client/types/c
 import {positionAfter} from '../../../../client/shared/sortOrder'
 import {PALETTE} from '../../../../client/styles/paletteV3'
 import generateUID from '../../../generateUID'
-import {pokerScalesCreated} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -111,7 +110,6 @@ export const addPokerTemplateScale: MutationResolvers['addPokerTemplateScale'] =
   }
   dataLoader.clearAll('templateScales')
   const data = {scaleId: newScaleId}
-  pokerScalesCreated.inc({origin: parentScaleId ? 'clone' : 'blank'})
   publish(SubscriptionChannel.TEAM, teamId, 'AddPokerTemplateScalePayload', data, subOptions)
   return data
 }

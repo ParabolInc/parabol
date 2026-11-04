@@ -1,4 +1,3 @@
-import {accountsRemoved} from '../../../metricsHandler'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
 import type {MutationResolvers} from '../resolverTypes'
@@ -23,7 +22,6 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
   }
 
   await hardDeleteUserHelper(user, dataLoader)
-  accountsRemoved.inc({method: 'hard_delete_user'})
   return {}
 }
 

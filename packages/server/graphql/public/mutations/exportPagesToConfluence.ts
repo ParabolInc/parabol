@@ -1,7 +1,6 @@
 import {GraphQLError} from 'graphql'
 import {applyUpdate, Doc, XmlElement} from 'yjs'
 import {getNewDataLoader} from '../../../dataloader/getNewDataLoader'
-import {confluenceExportsStarted} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
@@ -84,8 +83,6 @@ const exportPagesToConfluence: MutationResolvers['exportPagesToConfluence'] = as
     })
     .returning('id')
     .executeTakeFirstOrThrow()
-
-  confluenceExportsStarted.inc()
 
   const jobDataLoader = getNewDataLoader('runConfluenceExport')
   runConfluenceExport(pageExport.id, jobDataLoader)

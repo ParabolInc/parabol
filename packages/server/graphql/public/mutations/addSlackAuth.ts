@@ -1,6 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import generateUID from '../../../generateUID'
-import {integrationChanges} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -108,7 +107,6 @@ const addSlackAuth: MutationResolvers['addSlackAuth'] = async (
     upsertNotifications(viewerId, teamId, teamChannelId, defaultChannelId),
     upsertAuth(viewerId, teamId, teamChannelId, userInfoRes.user.profile.display_name, response)
   ])
-  integrationChanges.inc({service: 'slack', change: 'added'})
   const data = {slackAuthId, userId: viewerId}
   publish(SubscriptionChannel.TEAM, teamId, 'AddSlackAuthPayload', data, subOptions)
   return data

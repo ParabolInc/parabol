@@ -1,7 +1,6 @@
 import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import MeetingTemplate from '../../../database/types/MeetingTemplate'
-import {templatesCreated} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId, isTeamMember, isUserInOrg} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -35,7 +34,6 @@ const addTeamHealthTemplate: MutationResolvers['addTeamHealthTemplate'] = async 
       illustrationUrl: '/assets/Organization/aGhostOrg/template/teamHealth.png'
     })
     await pg.insertInto('MeetingTemplate').values(newTemplate).execute()
-    templatesCreated.inc({meeting_type: newTemplate.type, origin: 'blank'})
     const data = {templateId: newTemplate.id}
     publish(SubscriptionChannel.TEAM, teamId, 'AddTeamHealthTemplateSuccess', data, subOptions)
     return data
@@ -90,8 +88,6 @@ const addTeamHealthTemplate: MutationResolvers['addTeamHealthTemplate'] = async 
   } else {
     await pg.insertInto('MeetingTemplate').values(newTemplate).execute()
   }
-
-  templatesCreated.inc({meeting_type: newTemplate.type, origin: 'clone'})
 
   const data = {templateId: newTemplate.id}
   publish(SubscriptionChannel.TEAM, teamId, 'AddTeamHealthTemplateSuccess', data, subOptions)

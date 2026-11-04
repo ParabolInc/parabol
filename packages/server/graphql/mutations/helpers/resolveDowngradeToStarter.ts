@@ -1,5 +1,4 @@
 import type {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
-import {orgTierChanges} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import {Logger} from '../../../utils/Logger'
 import {getStripeManager} from '../../../utils/stripe'
@@ -33,7 +32,6 @@ const resolveDowngradeToStarter = async (
     clearSAMLConnection('orgId', orgId, user.id)
   ])
   dataLoader.get('organizations').clear(orgId)
-  orgTierChanges.inc({from_tier: 'team', to_tier: 'starter'})
 }
 
 export default resolveDowngradeToStarter

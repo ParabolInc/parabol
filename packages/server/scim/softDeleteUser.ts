@@ -1,7 +1,6 @@
 import SCIMMY from 'scimmy'
 import removeFromOrg from '../graphql/mutations/helpers/removeFromOrg'
 import softDeleteUserHelper from '../graphql/mutations/helpers/softDeleteUser'
-import {accountsRemoved} from '../metricsHandler'
 import getKysely from '../postgres/getKysely'
 import {blacklistJWT} from '../utils/blacklistJWT'
 import {toEpochSeconds} from '../utils/epochTime'
@@ -54,8 +53,6 @@ export const softDeleteUser = async ({
         .executeTakeFirst(),
       blacklistJWT(userId, toEpochSeconds(new Date()) + 1)
     ])
-
-    accountsRemoved.inc({method: 'scim_soft_delete'})
 
     return deletedUser
   }

@@ -1,5 +1,4 @@
 import type Stripe from 'stripe'
-import {orgUpgradeAttempts} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
@@ -59,7 +58,6 @@ const createStripeSubscription: MutationResolvers['createStripeSubscription'] = 
   const paymentIntent = latestInvoice.payment_intent as Stripe.PaymentIntent
   const clientSecret = paymentIntent.client_secret!
 
-  orgUpgradeAttempts.inc()
   const data = {stripeSubscriptionClientSecret: clientSecret}
   return data
 }

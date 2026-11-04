@@ -3,7 +3,6 @@ import TeamPromptResponseId from 'parabol-client/shared/gqlIds/TeamPromptRespons
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import type {ValueOf} from '../../../../client/types/generics'
 import type {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
-import {reactjiChanges} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import emojiIds from '../../../utils/emojiIds'
@@ -102,7 +101,6 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
 
   const data = {reactableId: reactableDBId as any, reactableType}
 
-  reactjiChanges.inc({reactable_type: reactableType, change: isRemove ? 'removed' : 'added'})
   if (meetingId) {
     publish(
       SubscriptionChannel.MEETING,

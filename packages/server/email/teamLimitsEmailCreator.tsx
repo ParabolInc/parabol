@@ -7,7 +7,6 @@ import {Threshold} from '../../client/types/constEnums'
 import makeAppURL from '../../client/utils/makeAppURL'
 import appOrigin from '../appOrigin'
 import type {TeamLimitsEmailType} from '../billing/helpers/sendTeamsLimitEmail'
-import {teamLimitEmailsSent} from '../metricsHandler'
 import emailTemplate from './emailTemplate'
 
 const textOnlySummary = (props: Props) => {
@@ -92,8 +91,6 @@ const teamLimitsEmailCreator = (props: Props) => {
     previewText: subject,
     bgColor: PALETTE.SLATE_200
   })
-
-  teamLimitEmailsSent.inc({type: emailType})
 
   return {
     subject,

@@ -1,5 +1,4 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {icebreakerRewrites} from '../../../metricsHandler'
 import {getUserId} from '../../../utils/authorization'
 
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
@@ -32,11 +31,6 @@ const modifyCheckInQuestion: MutationResolvers['modifyCheckInQuestion'] = async 
 
   const openai = new OpenAIServerManager()
   const modifiedCheckInQuestion = await openai.modifyCheckInQuestion(checkInQuestion, modifyType)
-
-  icebreakerRewrites.inc({
-    tone: modifyType,
-    outcome: modifiedCheckInQuestion === null ? 'failure' : 'success'
-  })
 
   // RESOLUTION
   const data = {modifiedCheckInQuestion}

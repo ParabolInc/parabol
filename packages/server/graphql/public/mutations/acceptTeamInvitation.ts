@@ -5,7 +5,6 @@ import {
   SubscriptionChannel
 } from '../../../../client/types/constEnums'
 import AuthToken from '../../../database/types/AuthToken'
-import {lockedOrgJoinAttempts, teamJoins} from '../../../metricsHandler'
 import acceptTeamInvitationSafe from '../../../safeMutations/acceptTeamInvitation'
 import {setAuthCookie} from '../../../utils/authCookie'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
@@ -80,7 +79,6 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
     return {error: {message: approvalError.message}}
   }
   if (isAnyViewerOrgLocked) {
-    lockedOrgJoinAttempts.inc()
     return {
       error: {
         message: LOCKED_MESSAGE.TEAM_INVITE
@@ -162,7 +160,6 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
       subOptions
     )
   }
-  teamJoins.inc({method: meetingId ? 'meeting_invitation' : 'team_invitation'})
   return data
 }
 

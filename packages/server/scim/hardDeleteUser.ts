@@ -1,7 +1,6 @@
 import SCIMMY from 'scimmy'
 import removeFromOrg from '../graphql/mutations/helpers/removeFromOrg'
 import {hardDeleteUser as hardDeleteUserHelper} from '../graphql/private/mutations/helpers/hardDeleteUser'
-import {accountsRemoved} from '../metricsHandler'
 import {Logger} from '../utils/Logger'
 import {SCIMContext} from './SCIMContext'
 import {getUserCategory} from './UserCategory'
@@ -30,7 +29,6 @@ export const hardDeleteUser = async ({
   try {
     if (category === 'managed') {
       await hardDeleteUserHelper(user, dataLoader)
-      accountsRemoved.inc({method: 'scim_hard_delete'})
       return
     }
 

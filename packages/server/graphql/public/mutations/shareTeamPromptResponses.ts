@@ -2,7 +2,6 @@ import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isEmptyTipTapDoc from '../../../../client/shared/tiptap/isEmptyTipTapDoc'
-import {teamPromptResponsesShared} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -70,7 +69,6 @@ const shareTeamPromptResponses: MutationResolvers['shareTeamPromptResponses'] = 
           viewerId
         )
       }
-      teamPromptResponsesShared.inc(shared.length)
     }
   }
 

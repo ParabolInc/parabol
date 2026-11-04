@@ -2,7 +2,6 @@ import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/con
 import {positionAfter} from '../../../../client/shared/sortOrder'
 import PokerTemplate from '../../../database/types/PokerTemplate'
 import generateUID from '../../../generateUID'
-import {templatesCreated} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import decrementFreeTemplatesRemaining from '../../../postgres/queries/decrementFreeTemplatesRemaining'
 import {getUserId, isTeamMember, isUserInOrg} from '../../../utils/authorization'
@@ -98,7 +97,6 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
       decrementFreeTemplatesRemaining(viewerId, 'freeCustomPokerTemplatesRemaining')
     ])
     dataLoader.clearAll(['users', 'userDetails', 'meetingTemplates', 'templateDimensions'])
-    templatesCreated.inc({meeting_type: newTemplate.type, origin: 'clone'})
     data = {templateId: newTemplate.id}
   } else {
     const {orgId} = viewerTeam
@@ -130,7 +128,6 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
       decrementFreeTemplatesRemaining(viewerId, 'freeCustomPokerTemplatesRemaining')
     ])
     dataLoader.clearAll(['users', 'userDetails', 'meetingTemplates', 'templateDimensions'])
-    templatesCreated.inc({meeting_type: newTemplate.type, origin: 'blank'})
     data = {templateId}
   }
   publish(SubscriptionChannel.TEAM, teamId, 'AddPokerTemplateSuccess', data, subOptions)

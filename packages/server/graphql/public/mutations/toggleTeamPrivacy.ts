@@ -1,4 +1,3 @@
-import {teamPrivacyChanges} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
@@ -28,7 +27,6 @@ const toggleTeamPrivacy: MutationResolvers['toggleTeamPrivacy'] = async (
   team.isPublic = !team.isPublic
 
   const data = {teamId}
-  teamPrivacyChanges.inc({visibility: team.isPublic ? 'public' : 'private'})
   return data
 }
 

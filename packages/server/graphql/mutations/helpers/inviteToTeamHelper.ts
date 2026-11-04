@@ -12,7 +12,6 @@ import appOrigin from '../../../appOrigin'
 import getMailManager from '../../../email/getMailManager'
 import teamInviteEmailCreator from '../../../email/teamInviteEmailCreator'
 import generateUID from '../../../generateUID'
-import {inviteEmails} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
 import removeSuggestedAction from '../../../safeMutations/removeSuggestedAction'
@@ -318,10 +317,8 @@ const inviteToTeamHelper = async (
     ])
     removedSuggestedActionId = suggestedActionId
 
-    const inviteTo = meetingId ? 'meeting' : 'team'
     invitations.forEach((invitation, idx) => {
       const success = sendResults[idx]!
-      inviteEmails.inc({invite_to: inviteTo, outcome: success ? 'sent' : 'failed'})
       results.set(
         invitation.email,
         success

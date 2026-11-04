@@ -1,6 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
-import {orgTierChanges} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import {toCreditCard} from '../../../postgres/helpers/toCreditCard'
 import publish from '../../../utils/publish'
@@ -90,7 +89,6 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
 
   const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
   const teamIds = teams.map(({id}) => id)
-  orgTierChanges.inc({from_tier: oldTier, to_tier: 'team'})
   const data = {orgId, teamIds}
   publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpgradeToTeamTierSuccess', data, subOptions)
 

@@ -1,6 +1,5 @@
 import {getAllNodesAttributesByType} from '../../../../client/shared/tiptap/getAllNodesAttributesByType'
 import generateUID from '../../../generateUID'
-import {taskMentions} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import type {Task} from '../../../postgres/types'
 import type {TaskInvolvesNotification} from '../../../postgres/types/Notification'
@@ -47,7 +46,6 @@ const publishChangeNotifications = async (
       teamId: task.teamId
     }))
 
-  taskMentions.inc(mentions.length)
   // add in the assignee changes
   if (oldTask.userId && oldTask.userId !== task.userId) {
     if (task.userId && task.userId !== changeUser.id && !usersToIgnore.includes(task.userId)) {

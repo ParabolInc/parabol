@@ -1,7 +1,6 @@
 import AuthToken from '../../../database/types/AuthToken'
 import TimelineEventJoinedParabol from '../../../database/types/TimelineEventJoinedParabol'
 import generateUID from '../../../generateUID'
-import {accountsCreated, orgsCreated, teamJoins} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
 import type {User} from '../../../postgres/types'
@@ -106,7 +105,6 @@ const bootstrapNewUser = async (
         ])
       })
     )
-    teamJoins.inc({method: 'auto_join'}, teamsWithAutoJoin.length)
   } else if (isOrganic) {
     const orgId = generateUID()
     const teamId = generateUID()
@@ -122,10 +120,7 @@ const bootstrapNewUser = async (
     await createNewOrg(orgId, orgName, userId, email, dataLoader)
     await createTeamAndLeader(newUser, validNewTeam, dataLoader)
     await Promise.all([addSeedTasks(userId, teamId), sendPromptToJoinOrg(newUser, dataLoader)])
-    orgsCreated.inc({source: 'signup'})
   }
-
-  accountsCreated.inc({source: isOrganic ? 'organic' : 'invited'})
 
   return new AuthToken({sub: userId, tms})
 }

@@ -1,7 +1,7 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RRuleSet} from 'rrule-rust'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
-import {meetingSeriesChanges, meetingsStarted} from '../../../metricsHandler'
+import {meetingsStarted} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
 import {getUserId} from '../../../utils/authorization'
@@ -66,7 +66,6 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
       teamId,
       facilitatorId: viewerId
     })
-    meetingSeriesChanges.inc({meeting_type: meetingSeries.meetingType, change: 'started'})
     const {error: gcalError, gcalSeriesId} = await createGcalEvent({
       name: meetingSeriesName,
       gcalInput,
@@ -140,7 +139,6 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     // meeting was modified if a new meeting series was created
     dataLoader.get('newMeetings').clear(meetingId)
     dataLoader.get('activeMeetingsByTeamId').clear(teamId)
-    meetingSeriesChanges.inc({meeting_type: meetingSeries.meetingType, change: 'started'})
   }
   IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
   meetingsStarted.inc({meeting_type: meeting.meetingType})

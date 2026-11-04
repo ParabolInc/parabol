@@ -9,7 +9,6 @@ import dndNoise from 'parabol-client/utils/dndNoise'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import generateUID from '../../../generateUID'
 import updatePrevUsedRepoIntegrationsCache from '../../../integrations/updatePrevUsedRepoIntegrationsCache'
-import {tasksCreated} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import type {Task} from '../../../postgres/types/index.d'
 import type {Notification} from '../../../postgres/types/pg'
@@ -220,12 +219,6 @@ const createTask: MutationResolvers['createTask'] = async (
       mutatorId
     }
   ).catch(() => [] as string[])
-
-  const meeting = meetingId ? await dataLoader.get('newMeetings').load(meetingId) : undefined
-  tasksCreated.inc({
-    meeting_type: meeting?.meetingType ?? 'none',
-    service: integration?.service ?? 'parabol'
-  })
 
   return {taskId, notificationIds}
 }

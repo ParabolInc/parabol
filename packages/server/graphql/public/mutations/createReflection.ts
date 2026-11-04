@@ -6,7 +6,6 @@ import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhase'
 import ReflectionGroup from '../../../database/types/ReflectionGroup'
 import generateUID from '../../../generateUID'
-import {reflectionsAdded} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import {convertToTipTap} from '../../../utils/convertToTipTap'
@@ -108,7 +107,6 @@ const createReflection: MutationResolvers['createReflection'] = async (
       .execute()
     dataLoader.clearAll('newMeetings')
   }
-  reflectionsAdded.inc()
 
   const data = {
     meetingId,

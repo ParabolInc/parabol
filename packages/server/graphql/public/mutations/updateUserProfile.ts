@@ -1,6 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import linkify from 'parabol-client/utils/linkify'
-import {accountRenames} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -51,8 +50,6 @@ const updateUserProfile: MutationResolvers['updateUserProfile'] = async (
 
   const teamMembers = await dataLoader.get('teamMembersByUserId').load(userId)
   if (normalizedPreferredName) {
-    accountRenames.inc()
-
     await broadcastUserMentionUpdate(userId, normalizedPreferredName, dataLoader)
   }
 
