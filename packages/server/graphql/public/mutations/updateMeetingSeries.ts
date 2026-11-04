@@ -23,10 +23,7 @@ const updateMeetingSeries: MutationResolvers['updateMeetingSeries'] = async (
   if (!Number.isFinite(numericId)) {
     return standardError(new Error('Invalid meeting series id'), {userId: viewerId})
   }
-  const [meetingSeries, viewer] = await Promise.all([
-    dataLoader.get('meetingSeries').load(numericId),
-    dataLoader.get('users').loadNonNull(viewerId)
-  ])
+  const meetingSeries = await dataLoader.get('meetingSeries').load(numericId)
   if (!meetingSeries) {
     return standardError(new Error('Meeting series not found'), {userId: viewerId})
   }
@@ -36,7 +33,7 @@ const updateMeetingSeries: MutationResolvers['updateMeetingSeries'] = async (
     })
   }
 
-  const {seriesIds} = await applySeriesRecurrence(meetingSeries, {rrule, name}, viewer, dataLoader)
+  const {seriesIds} = await applySeriesRecurrence(meetingSeries, {rrule, name}, dataLoader)
   // read the teams before clearing the cache, so the subscription reaches every team on the group
   const seriesTeamIds = new Set(
     (await dataLoader.get('meetingSeries').loadMany(seriesIds))

@@ -5,7 +5,6 @@ import PokerTemplate from '../../../database/types/PokerTemplate'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import type {MeetingTypeEnum} from '../../../postgres/types/Meeting'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember, isUserOrgAdmin} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -24,10 +23,7 @@ const updateTemplateScope: MutationResolvers['updateTemplateScope'] = async (
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
   //AUTH
-  const [template, viewer] = await Promise.all([
-    dataLoader.get('meetingTemplates').load(templateId),
-    dataLoader.get('users').loadNonNull(viewerId)
-  ])
+  const template = await dataLoader.get('meetingTemplates').load(templateId)
   if (!template || !template.isActive) {
     return {error: {message: `Template not found`}}
   }
@@ -201,7 +197,6 @@ const updateTemplateScope: MutationResolvers['updateTemplateScope'] = async (
   }
   const data = {templateId, teamId, clonedTemplateId, meetingType: template.type as MeetingTypeEnum}
 
-  analytics.templateMetrics(viewer, {...template, scope: newScope}, 'Template Shared')
   // technically, this affects every connected client (public), or every team in the org (organization), but those are edge cases
   publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpdateTemplateScopeSuccess', data, subOptions)
   return data

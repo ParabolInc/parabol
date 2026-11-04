@@ -1,5 +1,4 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
@@ -17,10 +16,7 @@ const modifyCheckInQuestion: MutationResolvers['modifyCheckInQuestion'] = async 
   const viewerId = getUserId(authToken)
 
   // AUTH
-  const [meeting, viewer] = await Promise.all([
-    dataLoader.get('newMeetings').load(meetingId),
-    dataLoader.get('users').loadNonNull(viewerId)
-  ])
+  const meeting = await dataLoader.get('newMeetings').load(meetingId)
   if (!meeting)
     return standardError(new Error('Meeting not found'), {
       userId: viewerId
@@ -35,8 +31,6 @@ const modifyCheckInQuestion: MutationResolvers['modifyCheckInQuestion'] = async 
 
   const openai = new OpenAIServerManager()
   const modifiedCheckInQuestion = await openai.modifyCheckInQuestion(checkInQuestion, modifyType)
-
-  analytics.icebreakerModified(viewer, meetingId, modifyType, modifiedCheckInQuestion !== null)
 
   // RESOLUTION
   const data = {modifiedCheckInQuestion}

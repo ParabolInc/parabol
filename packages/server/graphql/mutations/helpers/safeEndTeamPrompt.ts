@@ -6,7 +6,6 @@ import {sendSummaryEmail} from '../../../email/sendSummaryEmail'
 import {meetingsEnded} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import type {TeamPromptMeeting} from '../../../postgres/types/Meeting'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import {Logger} from '../../../utils/Logger'
 import logError from '../../../utils/logError'
@@ -68,12 +67,10 @@ const safeEndTeamPrompt = async ({
     .execute()
   dataLoader.clearAll('newMeetings')
 
-  const [completedTeamPrompt, meetingMembers, team, teamMembers, responses] = await Promise.all([
+  const [completedTeamPrompt, team, teamMembers] = await Promise.all([
     dataLoader.get('newMeetings').loadNonNull(meetingId) as Promise<TeamPromptMeeting>,
-    dataLoader.get('meetingMembersByMeetingId').load(meetingId),
     dataLoader.get('teams').loadNonNull(teamId),
-    dataLoader.get('teamMembersByTeamId').load(teamId),
-    dataLoader.get('teamPromptMemberResponsesByMeetingId').load(meetingId)
+    dataLoader.get('teamMembersByTeamId').load(teamId)
   ])
 
   const events = teamMembers.map(
@@ -87,7 +84,6 @@ const safeEndTeamPrompt = async ({
   )
   await pg.insertInto('TimelineEvent').values(events).execute()
   meetingsEnded.inc({meeting_type: completedTeamPrompt.meetingType})
-  analytics.teamPromptEnd(completedTeamPrompt, meetingMembers, responses, dataLoader)
   const [page, summary] = await Promise.all([
     publishSummaryPage(meetingId, context, info).catch((e) => {
       logError(e instanceof Error ? e : new Error(`publishSummaryPage failed: ${e}`), {

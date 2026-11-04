@@ -4,7 +4,6 @@ import PokerTemplate from '../../../database/types/PokerTemplate'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import decrementFreeTemplatesRemaining from '../../../postgres/queries/decrementFreeTemplatesRemaining'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember, isUserInOrg} from '../../../utils/authorization'
 import getUserDetail from '../../../utils/getUserDetail'
 import publish from '../../../utils/publish'
@@ -22,10 +21,9 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
   const viewerId = getUserId(authToken)
 
   // VALIDATION
-  const [allTemplates, viewerTeam, viewer] = await Promise.all([
+  const [allTemplates, viewerTeam] = await Promise.all([
     dataLoader.get('meetingTemplatesByType').load({meetingType: 'poker', teamId}),
-    dataLoader.get('teams').load(teamId),
-    dataLoader.get('users').loadNonNull(viewerId)
+    dataLoader.get('teams').load(teamId)
   ])
 
   if (!viewerTeam) {
@@ -99,7 +97,6 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
       decrementFreeTemplatesRemaining(viewerId, 'freeCustomPokerTemplatesRemaining')
     ])
     dataLoader.clearAll(['users', 'userDetails', 'meetingTemplates', 'templateDimensions'])
-    analytics.templateMetrics(viewer, newTemplate, 'Template Cloned')
     data = {templateId: newTemplate.id}
   } else {
     const {orgId} = viewerTeam
@@ -131,7 +128,6 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
       decrementFreeTemplatesRemaining(viewerId, 'freeCustomPokerTemplatesRemaining')
     ])
     dataLoader.clearAll(['users', 'userDetails', 'meetingTemplates', 'templateDimensions'])
-    analytics.templateMetrics(viewer, newTemplate, 'Template Created')
     data = {templateId}
   }
   publish(SubscriptionChannel.TEAM, teamId, 'AddPokerTemplateSuccess', data, subOptions)

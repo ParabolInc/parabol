@@ -1,7 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import SlackServerManager from '../../../utils/SlackServerManager'
@@ -93,10 +92,9 @@ const addSlackAuth: MutationResolvers['addSlackAuth'] = async (
   const {response} = manager
   const slackUserId = response.authed_user.id
   const defaultChannelId = response.incoming_webhook.channel_id
-  const [joinRes, userInfoRes, viewer] = await Promise.all([
+  const [joinRes, userInfoRes] = await Promise.all([
     joinSlackChannel(manager, defaultChannelId),
-    manager.getUserInfo(slackUserId),
-    dataLoader.get('users').loadNonNull(viewerId)
+    manager.getUserInfo(slackUserId)
   ])
   if (!userInfoRes.ok) {
     return standardError(new Error(userInfoRes.error), {userId: viewerId})
@@ -109,7 +107,6 @@ const addSlackAuth: MutationResolvers['addSlackAuth'] = async (
     upsertNotifications(viewerId, teamId, teamChannelId, defaultChannelId),
     upsertAuth(viewerId, teamId, teamChannelId, userInfoRes.user.profile.display_name, response)
   ])
-  analytics.integrationAdded(viewer, teamId, 'slack')
   const data = {slackAuthId, userId: viewerId}
   publish(SubscriptionChannel.TEAM, teamId, 'AddSlackAuthPayload', data, subOptions)
   return data

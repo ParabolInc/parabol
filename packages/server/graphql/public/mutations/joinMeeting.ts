@@ -17,7 +17,6 @@ import type {
   UpdatesStage as UpdatesStageDB
 } from '../../../postgres/types/NewMeetingPhase'
 import type {MeetingMember} from '../../../postgres/types/pg'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
@@ -55,10 +54,7 @@ const joinMeeting: MutationResolvers['joinMeeting'] = async (
   const subOptions = {mutatorId, operationId}
 
   // AUTH
-  const [meeting, viewer] = await Promise.all([
-    dataLoader.get('newMeetings').load(meetingId),
-    dataLoader.get('users').loadNonNull(viewerId)
-  ])
+  const meeting = await dataLoader.get('newMeetings').load(meetingId)
   if (!meeting) return {error: {message: 'Invalid meeting ID'}}
   const {endedAt, teamId, phases} = meeting
   if (endedAt) return {error: {message: 'Meeting has already ended'}}
@@ -143,7 +139,6 @@ const joinMeeting: MutationResolvers['joinMeeting'] = async (
 
   const data = {meetingId}
   publish(SubscriptionChannel.MEETING, meetingId, 'JoinMeetingSuccess', data, subOptions)
-  analytics.meetingJoined(viewer, meeting)
   return data
 }
 

@@ -7,7 +7,7 @@ import type {MutationResolvers} from '../resolverTypes'
 
 const downgradeToStarter: MutationResolvers['downgradeToStarter'] = async (
   _source,
-  {orgId, reasonsForLeaving, otherTool},
+  {orgId, otherTool},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const operationId = dataLoader.share()
@@ -29,14 +29,7 @@ const downgradeToStarter: MutationResolvers['downgradeToStarter'] = async (
   }
 
   // RESOLUTION
-  await resolveDowngradeToStarter(
-    orgId,
-    stripeSubscriptionId!,
-    viewer,
-    dataLoader,
-    reasonsForLeaving ?? undefined,
-    otherTool ?? undefined
-  )
+  await resolveDowngradeToStarter(orgId, stripeSubscriptionId!, viewer, dataLoader)
   const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
   const teamIds = teams.map(({id}) => id)
   const data = {orgId, teamIds}

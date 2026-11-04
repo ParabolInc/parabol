@@ -1,5 +1,4 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import removeSlackAuths from '../../mutations/helpers/removeSlackAuths'
@@ -15,16 +14,12 @@ const removeSlackAuth: MutationResolvers['removeSlackAuth'] = async (
   const viewerId = getUserId(authToken)
 
   // RESOLUTION
-  const [res, viewer] = await Promise.all([
-    removeSlackAuths(viewerId, teamId, true),
-    dataLoader.get('users').loadNonNull(viewerId)
-  ])
+  const res = await removeSlackAuths(viewerId, teamId, true)
   if (!res.authIds) {
     return {error: {message: res.error ?? 'Failed to remove Slack auth'}}
   }
   const authId = res.authIds[0]
 
-  analytics.integrationRemoved(viewer, teamId, 'slack')
   const data = {authId, teamId, userId: viewerId}
   publish(SubscriptionChannel.TEAM, teamId, 'RemoveSlackAuthPayload', data, subOptions)
   return data

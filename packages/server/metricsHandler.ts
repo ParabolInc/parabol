@@ -189,6 +189,42 @@ export const meetingsEnded = new Counter({
   registers: [register]
 })
 
+export const meetingsStarted = new Counter({
+  name: 'parabol_meetings_started_total',
+  help: 'Meetings started, by a person or by a meeting series, by meeting type',
+  labelNames: ['meeting_type'] as const,
+  registers: [register]
+})
+
+export const suggestedGroupsDuration = new Histogram({
+  name: 'parabol_suggested_groups_duration_seconds',
+  help: 'Seconds to suggest reflection groups, by mode and whether a stored result was reused',
+  labelNames: ['mode', 'cache'] as const,
+  buckets: [0.1, 0.5, 1, 2.5, 5, 10, 20, 40, 60],
+  registers: [register]
+})
+
+export const legacyAutogroups = new Counter({
+  name: 'parabol_legacy_autogroups_total',
+  help: 'Boards rearranged by the deprecated autogroup mutation, which only clients older than suggested groups call',
+  registers: [register]
+})
+
+export const confluenceExportDuration = new Histogram({
+  name: 'parabol_confluence_export_duration_seconds',
+  help: 'Seconds to export pages to Confluence, by whether every, some or no page made it',
+  labelNames: ['status'] as const,
+  buckets: [1, 5, 15, 30, 60, 120, 300, 600, 1800],
+  registers: [register]
+})
+
+export const chatNotificationsSent = new Counter({
+  name: 'parabol_chat_notifications_sent_total',
+  help: 'Notifications delivered to Slack, Mattermost or Microsoft Teams, by service and event',
+  labelNames: ['service', 'event'] as const,
+  registers: [register]
+})
+
 const EMBEDDER_JOB_STATES = [
   'queued',
   'running',

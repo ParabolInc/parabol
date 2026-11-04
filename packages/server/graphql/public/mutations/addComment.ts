@@ -3,13 +3,9 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {getAllNodesAttributesByType} from '../../../../client/shared/tiptap/getAllNodesAttributesByType'
 import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
-import type GenericMeetingPhase from '../../../database/types/GenericMeetingPhase'
-import type GenericMeetingStage from '../../../database/types/GenericMeetingStage'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import type {Discussion} from '../../../postgres/types'
-import type {Newmeetingphasetypeenum} from '../../../postgres/types/pg'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import {convertToTipTap} from '../../../utils/convertToTipTap'
 import publish from '../../../utils/publish'
@@ -63,11 +59,6 @@ const addComment: MutationResolvers['addComment'] = async (
       error: {message: 'Discussion does not take place in a meeting'}
     }
   }
-  const [meeting, viewer] = await Promise.all([
-    dataLoader.get('newMeetings').loadNonNull(meetingId),
-    dataLoader.get('users').loadNonNull(viewerId)
-  ])
-
   // VALIDATION
   const content = convertToTipTap(comment.content)
   const plaintextContent = generateText(content, serverTipTapExtensions)
@@ -124,21 +115,6 @@ const addComment: MutationResolvers['addComment'] = async (
   }
 
   const data = {commentId, meetingId}
-  const {phases} = meeting!
-  const threadablePhases = [
-    'discuss',
-    'agendaitems',
-    'ESTIMATE',
-    'RESPONSES',
-    'TEAM_HEALTH_RESPONSE',
-    'TEAM_HEALTH_RESULT'
-  ] as Newmeetingphasetypeenum[]
-  const containsThreadablePhase = phases.find(({phaseType}: GenericMeetingPhase) =>
-    threadablePhases.includes(phaseType)
-  )!
-  const {stages} = containsThreadablePhase
-  const isAsync = stages.some((stage: GenericMeetingStage) => stage.isAsync)
-  analytics.commentAdded(viewer, meeting, !!isAnonymous, isAsync, !!threadParentId)
   publish(SubscriptionChannel.MEETING, meetingId, 'AddCommentSuccess', data, subOptions)
   return data
 }

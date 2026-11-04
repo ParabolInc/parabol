@@ -6,7 +6,6 @@ import {
 } from '../../../../client/types/constEnums'
 import AuthToken from '../../../database/types/AuthToken'
 import acceptTeamInvitationSafe from '../../../safeMutations/acceptTeamInvitation'
-import {analytics} from '../../../utils/analytics/analytics'
 import {setAuthCookie} from '../../../utils/authCookie'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -32,8 +31,6 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   if (!viewerId) {
     return {error: {message: InvitationTokenError.NOT_SIGNED_IN}}
   }
-
-  const viewer = await dataLoader.get('users').loadNonNull(viewerId)
   const invitationRes = await handleInvitationToken(
     invitationToken,
     viewerId,
@@ -59,12 +56,8 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   }
 
   const {invitation} = invitationRes
-  const {meetingId, teamId, invitedBy: inviterId} = invitation
-  const acceptAt = invitation.meetingId ? 'meeting' : 'team'
-  const [team, inviter] = await Promise.all([
-    dataLoader.get('teams').loadNonNull(teamId),
-    dataLoader.get('users').loadNonNull(inviterId)
-  ])
+  const {meetingId, teamId} = invitation
+  const team = await dataLoader.get('teams').loadNonNull(teamId)
   const {orgId} = team
 
   // make sure that same invite can't be accepted at the same moment
@@ -86,7 +79,6 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
     return {error: {message: approvalError.message}}
   }
   if (isAnyViewerOrgLocked) {
-    analytics.lockedUserAttemptToJoinTeam(viewer, orgId)
     return {
       error: {
         message: LOCKED_MESSAGE.TEAM_INVITE
@@ -168,8 +160,6 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
       subOptions
     )
   }
-  const isNewUser = viewer.createdAt.getDate() === viewer.lastSeenAt.getDate()
-  analytics.inviteAccepted(viewer, inviter, teamId, isNewUser, acceptAt)
   return data
 }
 

@@ -7,7 +7,6 @@ import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhas
 import ReflectionGroup from '../../../database/types/ReflectionGroup'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import {convertToTipTap} from '../../../utils/convertToTipTap'
 import publish from '../../../utils/publish'
@@ -26,10 +25,9 @@ const createReflection: MutationResolvers['createReflection'] = async (
   const {content, sortOrder, meetingId, promptId} = input
   // AUTH
   const viewerId = getUserId(authToken)
-  const [reflectPrompt, meeting, viewer] = await Promise.all([
+  const [reflectPrompt, meeting] = await Promise.all([
     dataLoader.get('templatePrompts').load(promptId),
-    dataLoader.get('newMeetings').load(meetingId),
-    dataLoader.get('users').loadNonNull(viewerId)
+    dataLoader.get('newMeetings').load(meetingId)
   ])
   if (!reflectPrompt) {
     return {error: {message: 'Category not found'}}
@@ -109,7 +107,6 @@ const createReflection: MutationResolvers['createReflection'] = async (
       .execute()
     dataLoader.clearAll('newMeetings')
   }
-  analytics.reflectionAdded(viewer, teamId, meetingId)
 
   const data = {
     meetingId,

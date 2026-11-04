@@ -1,5 +1,4 @@
 import getKysely from '../../../postgres/getKysely'
-import {identifyHighestUserTierForOrgId} from '../../../utils/identifyHighestUserTierForOrgId'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -20,8 +19,6 @@ const endTrial: MutationResolvers['endTrial'] = async (_source, {orgId}, {dataLo
 
   const initialTrialStartDate = organization.trialStartDate
   organization.trialStartDate = null
-
-  await identifyHighestUserTierForOrgId(orgId, dataLoader)
 
   return {orgId, trialStartDate: initialTrialStartDate}
 }

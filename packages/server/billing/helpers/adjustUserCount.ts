@@ -7,11 +7,9 @@ import getKysely from '../../postgres/getKysely'
 import {getUserById} from '../../postgres/queries/getUsersByIds'
 import type {User} from '../../postgres/types'
 import type {OrganizationUserAudit} from '../../postgres/types/pg'
-import {analytics} from '../../utils/analytics/analytics'
 import getActiveDomainForOrgId from '../../utils/getActiveDomainForOrgId'
 import getDomainFromEmail from '../../utils/getDomainFromEmail'
 import {Logger} from '../../utils/Logger'
-import handleEnterpriseOrgQuantityChanges from './handleEnterpriseOrgQuantityChanges'
 import handleTeamOrgQuantityChanges from './handleTeamOrgQuantityChanges'
 
 const maybeUpdateOrganizationActiveDomain = async (
@@ -42,13 +40,7 @@ const maybeUpdateOrganizationActiveDomain = async (
 
 const changePause = (inactive: boolean) => async (_orgIds: string[], user: User) => {
   const pg = getKysely()
-  const {id: userId, email} = user
-  inactive ? analytics.accountPaused(user) : analytics.accountUnpaused(user)
-  analytics.identify({
-    userId,
-    email,
-    isActive: !inactive
-  })
+  const {id: userId} = user
   await pg.updateTable('User').set({inactive}).where('id', '=', userId).execute()
 }
 
@@ -87,7 +79,6 @@ const addUser = async (orgIds: string[], user: User, dataLoader: DataLoaderWorke
 }
 
 const deleteUser = async (orgIds: string[], user: User) => {
-  orgIds.forEach((orgId) => analytics.userRemovedFromOrg(user, orgId))
   await getKysely()
     .updateTable('OrganizationUser')
     .set({removedAt: sql`CURRENT_TIMESTAMP`})
@@ -153,8 +144,5 @@ export default async function adjustUserCount(
   const organizations = await dataLoader.get('organizations').loadMany(orgIds)
   const paidOrgs = organizations.filter(isValid).filter((org) => org.stripeSubscriptionId)
 
-  handleEnterpriseOrgQuantityChanges(paidOrgs, dataLoader).catch(() => {
-    /*ignore*/
-  })
   handleTeamOrgQuantityChanges(paidOrgs).catch(Logger.error)
 }

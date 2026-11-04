@@ -2,11 +2,11 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import MeetingPoker from '../../../database/types/MeetingPoker'
 import generateUID from '../../../generateUID'
+import {meetingsStarted} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
 import type {MeetingTypeEnum, PokerMeeting} from '../../../postgres/types/Meeting'
 import type {PokerMeetingPhase} from '../../../postgres/types/NewMeetingPhase'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import getHashAndJSON from '../../../utils/getHashAndJSON'
 import publish from '../../../utils/publish'
@@ -83,10 +83,7 @@ const startSprintPoker: MutationResolvers['startSprintPoker'] = async (
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
 
-  const [unpaidError, viewer] = await Promise.all([
-    isStartMeetingLocked(teamId, dataLoader),
-    dataLoader.get('users').loadNonNull(viewerId)
-  ])
+  const unpaidError = await isStartMeetingLocked(teamId, dataLoader)
   if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
 
   const meetingType: MeetingTypeEnum = 'poker'
@@ -124,7 +121,6 @@ const startSprintPoker: MutationResolvers['startSprintPoker'] = async (
     templateRefId
   }) as PokerMeeting
 
-  const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
   const [newMeetingRes] = await Promise.allSettled([
     pg.transaction().execute(async (pg) => {
       await pg
@@ -154,7 +150,7 @@ const startSprintPoker: MutationResolvers['startSprintPoker'] = async (
     .where('id', '=', teamId)
     .execute()
   IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
-  analytics.meetingStarted(viewer, meeting, template)
+  meetingsStarted.inc({meeting_type: meeting.meetingType})
   const {error} = await createGcalEvent({
     name: meeting.name,
     gcalInput,

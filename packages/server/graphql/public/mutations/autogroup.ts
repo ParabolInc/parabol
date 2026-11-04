@@ -1,5 +1,5 @@
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
-import {analytics} from '../../../utils/analytics/analytics'
+import {legacyAutogroups} from '../../../metricsHandler'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -21,10 +21,7 @@ const autogroup: MutationResolvers['autogroup'] = async (
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
-  const [meeting, viewer] = await Promise.all([
-    dataLoader.get('newMeetings').load(meetingId),
-    dataLoader.get('users').loadNonNull(viewerId)
-  ])
+  const meeting = await dataLoader.get('newMeetings').load(meetingId)
 
   if (!meeting) {
     return standardError(new Error('Meeting not found'), {userId: viewerId})
@@ -36,7 +33,7 @@ const autogroup: MutationResolvers['autogroup'] = async (
     })
   }
 
-  const {autogroupReflectionGroups, teamId} = meeting
+  const {autogroupReflectionGroups} = meeting
   if (!autogroupReflectionGroups) {
     return standardError(new Error('No autogroup reflection groups found'), {
       userId: viewerId
@@ -48,12 +45,7 @@ const autogroup: MutationResolvers['autogroup'] = async (
     autogroupReflectionGroups,
     context
   )
-  analytics.suggestGroupsClicked(viewer, meetingId, teamId, {
-    mode: 'ai',
-    source: 'legacyAutogroup',
-    sameColumnOnly: false,
-    suggestedGroupCount: autogroupReflectionGroups.length
-  })
+  legacyAutogroups.inc()
   const data = {meetingId}
   publish(SubscriptionChannel.MEETING, meetingId, 'AutogroupSuccess', data, subOptions)
   return data

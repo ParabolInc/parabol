@@ -3,10 +3,10 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
 import appOrigin from '../../../../appOrigin'
+import {chatNotificationsSent} from '../../../../metricsHandler'
 import type {SlackNotification, Team, User} from '../../../../postgres/types'
 import type {IntegrationProviderMSTeams as IIntegrationProviderMSTeams} from '../../../../postgres/types/IntegrationProvider'
 import type {AnyMeeting, MeetingTypeEnum} from '../../../../postgres/types/Meeting'
-import {analytics} from '../../../../utils/analytics/analytics'
 import logError from '../../../../utils/logError'
 import MSTeamsServerManager from '../../../../utils/MSTeamsServerManager'
 import type {DataLoaderWorker} from '../../../graphql'
@@ -34,7 +34,7 @@ const notifyMSTeams = async (
       error: result
     }
   }
-  analytics.teamsNotificationSent(user, teamId, event)
+  chatNotificationsSent.inc({service: 'msteams', event})
 
   return 'success'
 }

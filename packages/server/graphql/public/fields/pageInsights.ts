@@ -4,7 +4,6 @@ import {sql} from 'kysely'
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import getKysely from '../../../postgres/getKysely'
 import {AI_MODEL} from '../../../utils/aiModel'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isSuperUser} from '../../../utils/authorization'
 import hasUsedMonthlyAIQuota from '../../../utils/hasUsedMonthlyAIQuota'
 import {makeMeetingInsightInput} from '../../../utils/makeMeetingInsightInput'
@@ -18,7 +17,6 @@ export const pageInsights: NonNullable<UserResolvers['pageInsights']> = async (
   {authToken, dataLoader}
 ) => {
   const viewerId = getUserId(authToken)
-  const viewer = await dataLoader.get('users').loadNonNull(viewerId)
   if (meetingIds.length > 500) {
     throw new GraphQLError('Too many meetings to summarize. Max 500')
   }
@@ -153,7 +151,6 @@ If not, respond with "Invalid prompt"`
             yield content
           } else if (chunk.usage) {
             const tokenCost = chunk.usage?.total_tokens ?? 10_000
-            analytics.pageInsightsGenerated(viewer)
             await pg.insertInto('AIRequest').values({userId: viewerId, tokenCost}).execute()
           }
         }

@@ -16,7 +16,6 @@ import type {AgendaItem, Task} from '../../../postgres/types'
 import type {CheckInMeeting} from '../../../postgres/types/Meeting'
 import archiveDoneTasksForMeeting from '../../../safeMutations/archiveDoneTasksForMeeting'
 import removeSuggestedAction from '../../../safeMutations/removeSuggestedAction'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import {Logger} from '../../../utils/Logger'
@@ -179,8 +178,7 @@ const endCheckIn: MutationResolvers['endCheckIn'] = async (_source, {meetingId},
       userId: viewerId
     })
   }
-  const [meetingMembers, team, teamMembers, removedTaskIds] = await Promise.all([
-    dataLoader.get('meetingMembersByMeetingId').load(meetingId),
+  const [team, teamMembers, removedTaskIds] = await Promise.all([
     dataLoader.get('teams').loadNonNull(teamId),
     dataLoader.get('teamMembersByTeamId').load(teamId),
     removeEmptyTasks(meetingId)
@@ -229,7 +227,6 @@ const endCheckIn: MutationResolvers['endCheckIn'] = async (_source, {meetingId},
   sendSummaryEmail(meetingId, page.id, context, info).catch(Logger.log)
   IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId).catch(Logger.log)
   meetingsEnded.inc({meeting_type: completedCheckIn.meetingType})
-  analytics.checkInEnd(completedCheckIn, meetingMembers, dataLoader).catch(Logger.log)
   return data
 }
 

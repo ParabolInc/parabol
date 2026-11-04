@@ -1,6 +1,6 @@
 import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
-import {analytics} from '../../../utils/analytics/analytics'
+import {suggestedGroupsDuration} from '../../../metricsHandler'
 import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import getRedis from '../../../utils/getRedis'
@@ -71,29 +71,21 @@ const generateSuggestedGroups: MutationResolvers['generateSuggestedGroups'] = as
     const config = {mode, userPrompt, sameColumnOnly}
     // Throws a GraphQLError the client shows in a snackbar. Nothing is stored for a failed run, so
     // the previous suggestions stay on the board rather than being replaced by an empty set.
-    const {groups, inputHash, cacheHit, reflectionCount, promptCount} =
-      await computeSuggestedGroups(meetingId, config, dataLoader)
+    const {groups, inputHash, cacheHit} = await computeSuggestedGroups(
+      meetingId,
+      config,
+      dataLoader
+    )
 
     await upsertSuggestedGrouping(
       {...config, meetingId, createdByUserId: viewerId, inputHash, groups},
       dataLoader
     )
 
-    const viewer = await dataLoader.get('users').loadNonNull(viewerId)
-    const mergedReflectionCount = groups
-      .filter(({reflectionIds}) => reflectionIds.length > 1)
-      .reduce((sum, {reflectionIds}) => sum + reflectionIds.length, 0)
-    analytics.suggestedGroupsGenerated(viewer, meetingId, teamId, {
-      mode,
-      hasUserPrompt: !!userPrompt,
-      sameColumnOnly,
-      cacheHit,
-      reflectionCount,
-      promptCount,
-      suggestedGroupCount: groups.length,
-      mergedReflectionCount,
-      durationMs: Date.now() - startedAt
-    })
+    suggestedGroupsDuration.observe(
+      {mode, cache: cacheHit ? 'hit' : 'miss'},
+      (Date.now() - startedAt) / 1000
+    )
 
     const operationId = dataLoader.share()
     const data = {meetingId, isUserInitiated: true}
