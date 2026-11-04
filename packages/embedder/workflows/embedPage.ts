@@ -1,5 +1,5 @@
 import {TiptapTransformer} from '@hocuspocus/transformer'
-import {generateText} from '@tiptap/core'
+import {generateText, type JSONContent} from '@tiptap/core'
 import {sql} from 'kysely'
 import type {TipTapSerializedContent} from 'parabol-client/shared/tiptap/TipTapSerializedContent'
 import {applyUpdate, Doc} from 'yjs'
@@ -9,10 +9,12 @@ import {Logger} from '../../server/utils/Logger'
 import getModelManager from '../ai_models/ModelManager'
 import type {ModelId} from '../ai_models/modelIdDefinitions'
 import type {JobQueueStepRun} from '../custom'
+import {getSearchText} from '../getSearchText'
 import {getTSV, type TSVLanguage} from '../getSupportedLanguages'
 import {numberVectorToString} from '../indexing/numberVectorToString'
 import {inferLanguage} from '../inferLanguage'
 import {JobQueueError} from '../JobQueueError'
+import {SectionChunker} from '../SectionChunker'
 import {TipTapChunker} from '../TipTapChunker'
 
 export interface EmbedPageData {
@@ -20,9 +22,21 @@ export interface EmbedPageData {
   modelId: ModelId
 }
 
+interface PageChunk {
+  text: string
+  globalTitle: string
+  headingPath: string[]
+  embeddingText: string
+}
+
 const UNSTAMPED_PAGE_UPDATED_AT = new Date(0)
 
-function weightedTsvector(language: TSVLanguage, title: string, headings: string, body: string) {
+function weightedTsvector(
+  language: TSVLanguage | 'simple',
+  title: string,
+  headings: string,
+  body: string
+) {
   return sql`
     setweight(to_tsvector(${language}, ${title}), 'A') ||
     setweight(to_tsvector(${language}, ${headings}), 'B') ||
@@ -64,15 +78,23 @@ export const embedPage: JobQueueStepRun<EmbedPageData> = async (context) => {
   const yDoc = new Doc()
   applyUpdate(yDoc, page.yDoc)
   const content = TiptapTransformer.fromYdoc(yDoc, 'default') as TipTapSerializedContent
-  const fullText = generateText(content, serverTipTapExtensions)
+  const usesSectionChunker = embeddingModel.chunker === 'sections'
+  const fullText = usesSectionChunker
+    ? (content.content as JSONContent[]).map(getSearchText).join('\n')
+    : generateText(content, serverTipTapExtensions)
   const language = inferLanguage(fullText, 5)
   const tsvLanguage = getTSV(language)
 
-  if (!language || !tsvLanguage || !embeddingModel.languages.includes(language)) {
+  if (
+    !usesSectionChunker &&
+    (!language || !tsvLanguage || !embeddingModel.languages.includes(language))
+  ) {
     return new JobQueueError(`pageId ${pageId} is written in unsupported language: ${language}`)
   }
-  const chunker = new TipTapChunker({language})
-  const chunks = chunker.chunk(content)
+  const chunker = usesSectionChunker
+    ? new SectionChunker({language})
+    : new TipTapChunker({language})
+  const chunks: PageChunk[] = chunker.chunk(content)
   const startedAt = Date.now()
   let embeddedChunks = 0
   let tokens = 0
@@ -96,7 +118,12 @@ export const embedPage: JobQueueStepRun<EmbedPageData> = async (context) => {
             .selectFrom(sql`(SELECT ${text}::text as val)`.as('input'))
             .select([
               sql<string>`val`.as('val'),
-              weightedTsvector(tsvLanguage, globalTitle, headingPath.join(' '), text).as('tsv'),
+              weightedTsvector(
+                tsvLanguage ?? 'simple',
+                globalTitle,
+                headingPath.join(' '),
+                text
+              ).as('tsv'),
               sql<string>`${numberVectorToString(embeddingVector)}`.as('embedding'),
               sql<number>`${pageId}`.as('pageId'),
               sql<number>`${chunkNumber}`.as('chunkNumber'),
