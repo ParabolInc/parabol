@@ -4,7 +4,6 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import useShareTeamPromptResponsesMutation from '../../../mutations/useShareTeamPromptResponsesMutation'
 import useUpsertTeamPromptResponseMutation from '../../../mutations/useUpsertTeamPromptResponseMutation'
 import replaceFileUploadPlaceholders from '../../../shared/tiptap/replaceFileUploadPlaceholders'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import {clearDraftAnswers, writeDraftAnswer} from './teamPromptDraftStorage'
 
 const AUTOSAVE_DEBOUNCE_MS = 800
@@ -18,13 +17,12 @@ export interface DirtyAnswer {
 
 interface Options {
   meetingId: string
-  teamId: string
   stageId: string
   isShared: boolean
 }
 
 const useTeamPromptAnswersAutosave = (options: Options) => {
-  const {meetingId, teamId, stageId, isShared} = options
+  const {meetingId, stageId, isShared} = options
   const atmosphere = useAtmosphere()
   const [upsertResponse] = useUpsertTeamPromptResponseMutation()
   const [shareResponses] = useShareTeamPromptResponsesMutation()
@@ -146,24 +144,18 @@ const useTeamPromptAnswersAutosave = (options: Options) => {
           setIsSharing(false)
           reportError(TRANSPORT_ERROR)
         },
-        onCompleted: (res, errors) => {
+        onCompleted: (_res, errors) => {
           setIsSharing(false)
           const message = errors?.[0]?.message
           if (message) {
             reportError(message)
             return
           }
-          SendClientSideEvent(atmosphere, 'Standup Response Shared', {
-            teamId,
-            meetingId,
-            answerCount: res.shareTeamPromptResponses.responses.filter(({sharedAt}) => !!sharedAt)
-              .length
-          })
           onShared?.()
         }
       })
     },
-    [flush, shareResponses, meetingId, teamId, atmosphere, reportError]
+    [flush, shareResponses, meetingId, reportError]
   )
 
   useEffect(

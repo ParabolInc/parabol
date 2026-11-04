@@ -3,7 +3,6 @@ import {useContext, useEffect, useRef, useState} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
 import type {DraggableReflectionCard_meeting$data} from '~/__generated__/DraggableReflectionCard_meeting.graphql'
 import type {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
-import SendClientSideEvent from '~/utils/SendClientSideEvent'
 import type {DraggableReflectionCard_reflection$data} from '../__generated__/DraggableReflectionCard_reflection.graphql'
 import {PortalContext, type SetPortal} from '../components/AtmosphereProvider/PortalProvider'
 import type {SwipeColumn} from '../components/GroupingKanban'
@@ -239,7 +238,7 @@ const useDragAndDrop = (
   swipeColumn?: SwipeColumn
 ) => {
   const atmosphere = useAtmosphere()
-  const {id: meetingId, spotlightGroup, spotlightSearchQuery} = meeting
+  const {id: meetingId} = meeting
   const spotlightResultGroups = useSpotlightResults(meeting)
   const {id: reflectionId, reflectionGroupId, isDropping, isEditing} = reflection
 
@@ -265,16 +264,6 @@ const useDragAndDrop = (
           ? 'REFLECTION_GRID'
           : null
     handleDrop(atmosphere, reflectionId, drag, targetType, targetGroupId)
-    if (spotlightGroup?.id) {
-      const event = isReflectionInSpotlightResults
-        ? `Spotlight result to ${targetType === 'REFLECTION_GROUP' ? 'source' : 'result'}`
-        : `Spotlight source to ${targetType === 'REFLECTION_GROUP' ? 'result' : 'grid'}`
-      SendClientSideEvent(atmosphere, event, {
-        reflectionId,
-        meetingId,
-        spotlightSearchQuery
-      })
-    }
   })
 
   const announceDragUpdate = (cursorX: number, cursorY: number) => {

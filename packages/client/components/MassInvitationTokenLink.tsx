@@ -1,13 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {MassInvitationTokenLinkQuery} from '../__generated__/MassInvitationTokenLinkQuery.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
 import CopyShortLink from '../modules/meeting/components/CopyShortLink/CopyShortLink'
 import getMassInvitationUrl from '../utils/getMassInvitationUrl'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 
 interface Props {
-  meetingId: string | undefined
   queryRef: PreloadedQuery<MassInvitationTokenLinkQuery>
 }
 
@@ -26,19 +23,12 @@ const query = graphql`
 `
 
 const MassInvitationTokenLink = (props: Props) => {
-  const {meetingId, queryRef} = props
+  const {queryRef} = props
   const data = usePreloadedQuery<MassInvitationTokenLinkQuery>(query, queryRef)
   const {viewer} = data
   const {team} = viewer
-  const {id: teamId, massInvitation} = team!
-  const atmosphere = useAtmosphere()
+  const {massInvitation} = team!
   const {id: token} = massInvitation!
-  const onCopy = () => {
-    SendClientSideEvent(atmosphere, 'Copied Invite Link', {
-      teamId: teamId,
-      meetingId: meetingId
-    })
-  }
   const url = getMassInvitationUrl(token)
   const linkLabel = url.replace(/https?:\/\//, '')
   return (
@@ -49,7 +39,6 @@ const MassInvitationTokenLink = (props: Props) => {
       label={linkLabel}
       title={'Copy invite link'}
       tooltip={'Copied! Valid for 30 days'}
-      onCopy={onCopy}
     />
   )
 }

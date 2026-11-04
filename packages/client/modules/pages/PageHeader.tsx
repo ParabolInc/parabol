@@ -15,14 +15,12 @@ import {
   showConfluenceBadge
 } from '../../components/ExportToConfluence/ConfluenceNewBadge'
 import {ExportToConfluenceRoot} from '../../components/ExportToConfluence/ExportToConfluenceRoot'
-import useAtmosphere from '../../hooks/useAtmosphere'
 import {Menu} from '../../ui/Menu/Menu'
 import {MenuContent} from '../../ui/Menu/MenuContent'
 import {MenuItem} from '../../ui/Menu/MenuItem'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
-import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import {PageBreadCrumbs} from './PageBreadCrumbs'
 import {PageDeletedHeader} from './PageDeletedHeader'
 import {PageSharingRoot} from './PageSharingRoot'
@@ -55,12 +53,10 @@ export const PageHeader = (props: Props) => {
   const [exportOpen, setExportOpen] = useState(false)
 
   const {id: pageId, deletedBy} = page
-  const atmosphere = useAtmosphere()
   const pageInTrash = !!deletedBy
   const isExportDisabled = isPageGenerating || pageInTrash
   const showBadge = showConfluenceExport && showConfluenceBadge()
   const openExportDialog = () => {
-    SendClientSideEvent(atmosphere, 'Confluence Export CTA Clicked', {entryPoint: 'pageKebab'})
     setExportOpen(true)
   }
   // keyed on location.key so a same-route navigation (e.g. the completion toast's
@@ -68,7 +64,6 @@ export const PageHeader = (props: Props) => {
   useEffect(() => {
     if (exportDeepLinked && showConfluenceExport) {
       setExportOpen(true)
-      SendClientSideEvent(atmosphere, 'Confluence Export CTA Clicked', {entryPoint: 'deepLink'})
     }
   }, [location.key])
   return (

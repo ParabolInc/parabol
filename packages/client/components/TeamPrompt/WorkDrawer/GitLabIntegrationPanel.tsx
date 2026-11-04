@@ -4,7 +4,6 @@ import type {GitLabIntegrationPanel_meeting$key} from '../../../__generated__/Gi
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import GitLabClientManager from '../../../utils/GitLabClientManager'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import GitLabSVG from '../../GitLabSVG'
 import GitLabIntegrationResultsRoot from './GitLabIntegrationResultsRoot'
 
@@ -17,8 +16,6 @@ const GitLabIntegrationPanel = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment GitLabIntegrationPanel_meeting on NewMeeting {
-        id
-        teamId
         viewerMeetingMember {
           teamMember {
             teamId
@@ -66,12 +63,6 @@ const GitLabIntegrationPanel = (props: Props) => {
       teamMember.teamId,
       mutationProps
     )
-
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Integration Connected', {
-      teamId: meeting.teamId,
-      meetingId: meeting.id,
-      service: 'gitlab'
-    })
   }
 
   return (

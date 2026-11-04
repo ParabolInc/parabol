@@ -2,7 +2,6 @@ import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {useAcceptRequestToJoinDomainMutation as TAcceptRequestToJoinDomainMutation} from '../__generated__/useAcceptRequestToJoinDomainMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 
 graphql`
   fragment useAcceptRequestToJoinDomainMutation_success on AcceptRequestToJoinDomainSuccess
@@ -36,7 +35,6 @@ const useAcceptRequestToJoinDomainMutation = () => {
     config: UseMutationConfig<TAcceptRequestToJoinDomainMutation>,
     handlers?: Handlers
   ) => {
-    const {variables} = config
     return commit({
       onCompleted: (res) => {
         const error = res.acceptRequestToJoinDomain.error
@@ -46,10 +44,6 @@ const useAcceptRequestToJoinDomainMutation = () => {
             message: '🎉 Success! User added',
             autoDismiss: 5,
             key: 'acceptRequestToJoinDomainSuccess'
-          })
-          SendClientSideEvent(atmosphere, 'Join Request Reviewed', {
-            action: 'accept',
-            teamIds: variables.teamIds
           })
           handlers?.onSuccess && handlers.onSuccess()
         } else {

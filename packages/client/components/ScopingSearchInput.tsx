@@ -1,23 +1,17 @@
 import type * as React from 'react'
 import {useEffect, useRef} from 'react'
 import {Close} from '~/ui/icons'
-import type {TaskServiceEnum} from '../__generated__/CreateTaskMutation.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
 import {cn} from '../ui/cn'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 
 interface Props {
   placeholder: string
   queryString: string
-  meetingId: string
-  service: TaskServiceEnum
   defaultInput?: string
   onQueryStringChange(queryString: string): void
 }
 
 const ScopingSearchInput = (props: Props) => {
-  const {placeholder, queryString, meetingId, defaultInput, service, onQueryStringChange} = props
-  const atmosphere = useAtmosphere()
+  const {placeholder, queryString, defaultInput, onQueryStringChange} = props
   const inputRef = useRef<HTMLInputElement>(null)
   const isEmpty = !queryString
 
@@ -27,24 +21,13 @@ const ScopingSearchInput = (props: Props) => {
     }
   }, [])
 
-  const trackEvent = (eventTitle: string) => {
-    SendClientSideEvent(atmosphere, eventTitle, {
-      meetingId,
-      service
-    })
-  }
-
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target
     onQueryStringChange(value)
-    if (isEmpty) {
-      trackEvent('Started Poker Scope Search')
-    }
   }
   const clearSearch = () => {
     onQueryStringChange('')
     inputRef.current?.focus()
-    trackEvent('Cleared Poker Scope Search')
   }
 
   return (

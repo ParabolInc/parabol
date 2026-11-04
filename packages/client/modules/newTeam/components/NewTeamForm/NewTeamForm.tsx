@@ -33,7 +33,6 @@ import {TooltipContent} from '../../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../../ui/Tooltip/TooltipTrigger'
 import linkify from '../../../../utils/linkify'
 import plural from '../../../../utils/plural'
-import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 import Legitity from '../../../../validation/Legitity'
 import teamNameValidation from '../../../../validation/teamNameValidation'
 import NewTeamOrgPicker from '../../../team/components/NewTeamOrgPicker'
@@ -212,12 +211,7 @@ const NewTeamForm = (props: Props) => {
     }
   }
 
-  const goToBilling = (ctaLocation: 'publicTeams' | 'createTeam') => {
-    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
-      upgradeCTALocation: ctaLocation,
-      orgId,
-      upgradeTier: 'team'
-    })
+  const goToBilling = () => {
     navigate(`/me/organizations/${orgId}`)
   }
 
@@ -270,7 +264,7 @@ const NewTeamForm = (props: Props) => {
               <span className='font-semibold'>
                 {`${Threshold.MAX_STARTER_TIER_TEAMS} free teams.`}{' '}
               </span>
-              <StyledLink onClick={() => goToBilling('publicTeams')}>Upgrade</StyledLink>
+              <StyledLink onClick={goToBilling}>Upgrade</StyledLink>
               {' to create more teams.'}
             </div>
           )}
@@ -296,10 +290,8 @@ const NewTeamForm = (props: Props) => {
                             </>
                           ) : (
                             <>
-                              <StyledLink onClick={() => goToBilling('createTeam')}>
-                                Upgrade
-                              </StyledLink>{' '}
-                              to make it private.
+                              <StyledLink onClick={goToBilling}>Upgrade</StyledLink> to make it
+                              private.
                             </>
                           )}
                         </div>

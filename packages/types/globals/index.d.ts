@@ -58,7 +58,6 @@ interface Window {
     AUTH_GOOGLE_ENABLED: boolean
     AUTH_MICROSOFT_ENABLED: boolean
     AUTH_SSO_ENABLED: boolean
-    AMPLITUDE_WRITE_KEY: string
     microsoftTenantId: string
     microsoft: string
     GLOBAL_BANNER_ENABLED: boolean

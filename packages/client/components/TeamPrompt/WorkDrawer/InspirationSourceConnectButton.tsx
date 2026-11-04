@@ -10,18 +10,16 @@ import AtlassianClientManager from '../../../utils/AtlassianClientManager'
 import GcalClientManager from '../../../utils/GcalClientManager'
 import GitHubClientManager from '../../../utils/GitHubClientManager'
 import LinearClientManager from '../../../utils/LinearClientManager'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import {serviceLabel} from './inspirationCopy'
 import type {InspirationSourceService} from './inspirationSources'
 
 interface Props {
   service: InspirationSourceService
-  meetingId: string
   teamMemberRef: InspirationSourceConnectButton_teamMember$key
 }
 
 const InspirationSourceConnectButton = (props: Props) => {
-  const {service, meetingId, teamMemberRef} = props
+  const {service, teamMemberRef} = props
   const teamMember = useFragment(
     graphql`
       fragment InspirationSourceConnectButton_teamMember on TeamMember {
@@ -86,11 +84,6 @@ const InspirationSourceConnectButton = (props: Props) => {
       if (!provider) return onError(new Error('Could not find the Google Calendar app'))
       GcalClientManager.openOAuth(atmosphere, provider.id, provider.clientId, teamId, mutationProps)
     }
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Integration Connected', {
-      teamId,
-      meetingId,
-      service
-    })
   }
 
   return (

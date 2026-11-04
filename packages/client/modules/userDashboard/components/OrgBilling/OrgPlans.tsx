@@ -2,13 +2,10 @@ import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {Info} from '~/ui/icons'
-import type {TierEnum} from '../../../../__generated__/OrganizationSubscription.graphql'
 import type {OrgPlans_organization$key} from '../../../../__generated__/OrgPlans_organization.graphql'
 import Panel from '../../../../components/Panel/Panel'
-import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MONTHLY_PRICE} from '../../../../utils/constants'
 import plural from '../../../../utils/plural'
-import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 import DowngradeModal from './DowngradeModal'
 import type {PlanAction} from './getPlanAction'
 import OrgPlan from './OrgPlan'
@@ -39,20 +36,17 @@ const OrgPlans = (props: Props) => {
     organizationRef
   )
   const [isDowngradeOpen, setIsDowngradeOpen] = useState(false)
-  const atmosphere = useAtmosphere()
-  const {id: orgId, billingTier, isBillingLeader, orgUserCount} = organization
+  const {billingTier, isBillingLeader, orgUserCount} = organization
   const {activeUserCount} = orgUserCount
   const teamPlanNote = `About $${activeUserCount * MONTHLY_PRICE} a month for ${activeUserCount} active ${plural(activeUserCount, 'user')}`
 
-  const handleAction = (action: PlanAction, tier: TierEnum) => {
-    SendClientSideEvent(atmosphere, 'Plan Tier Selected', {orgId, tier})
+  const handleAction = (action: PlanAction) => {
     if (action === 'contact') {
       window.open('mailto:love@parabol.co', '_blank')
     } else if (action === 'upgrade') {
       handleSelectTeamPlan()
     } else if (action === 'downgrade') {
       setIsDowngradeOpen(true)
-      SendClientSideEvent(atmosphere, 'Downgrade Clicked', {orgId, tier})
     }
   }
 

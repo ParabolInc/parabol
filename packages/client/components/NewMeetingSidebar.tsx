@@ -105,11 +105,7 @@ const NewMeetingSidebar = (props: Props) => {
       {!hideFacilitator && <Facilitator meetingRef={meeting} />}
       {children}
       {tierLimitExceededAt && (
-        <NewMeetingSidebarUpgradeBlock
-          onClick={handleMenuClick}
-          orgId={orgId}
-          meetingId={meetingId}
-        />
+        <NewMeetingSidebarUpgradeBlock onClick={handleMenuClick} orgId={orgId} />
       )}
       <LogoBlock onClick={handleMenuClick} />
     </div>

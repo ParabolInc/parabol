@@ -1,8 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import SendClientSideEvent from '~/utils/SendClientSideEvent'
 import type {LinearScopingSearchFilterMenuQuery} from '../__generated__/LinearScopingSearchFilterMenuQuery.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
 import useLinearProjectsAndTeams from '../hooks/useLinearProjectsAndTeams'
 import useSetScopingSearchState from '../hooks/useSetScopingSearchState'
 import {
@@ -33,7 +31,6 @@ const LinearScopingSearchFilterMenu = (props: Props) => {
     queryRef
   )
   const teamMember = data.viewer.teamMember ?? null
-  const atmosphere = useAtmosphere()
   const setSearchState = useSetScopingSearchState(meetingId, 'linear')
   const {searchQuery, setSearchQuery, filteredProjectsAndTeams} =
     useLinearProjectsAndTeams(teamMember)
@@ -53,11 +50,6 @@ const LinearScopingSearchFilterMenu = (props: Props) => {
       onSelectItem={(item) => {
         const key = item.__typename === '_xLinearProject' ? 'project' : 'team'
         setSearchState({filters: toggleSearchFilter(filters, key, item.id)})
-        SendClientSideEvent(atmosphere, 'Selected Poker Scope Project Filter', {
-          meetingId,
-          selectionValue: item.id,
-          service: 'linear'
-        })
       }}
       searchQuery={searchQuery}
       onSearchQueryChange={setSearchQuery}

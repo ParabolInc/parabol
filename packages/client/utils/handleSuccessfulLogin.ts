@@ -4,7 +4,6 @@ import {commitLocalUpdate} from 'relay-runtime'
 import {LocalStorageKey} from '~/types/constEnums'
 import type {handleSuccessfulLogin_UserLogInPayload$data} from '../__generated__/handleSuccessfulLogin_UserLogInPayload.graphql'
 import type Atmosphere from '../Atmosphere'
-import safeIdentify from './safeIdentify'
 
 graphql`
   fragment handleSuccessfulLogin_UserLogInPayload on UserLogInPayload {
@@ -45,7 +44,6 @@ export const handleSuccessfulLogin = (atmosphere: Atmosphere, payload: Payload) 
   const userId = payload?.user?.id
   if (!email || !userId) return
   window.localStorage.setItem(LocalStorageKey.EMAIL, email)
-  safeIdentify(userId, email)
   const isNewUser = payload?.isNewUser ?? false
   commitLocalUpdate(atmosphere, (store) => {
     const root = store.getRoot()

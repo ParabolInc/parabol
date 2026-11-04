@@ -15,15 +15,14 @@ const draftItem = (id: string, promptId: string, text: string): InspirationDraft
 
 const createDeps = () => ({
   insertAnswerBlocks: jest.fn<Promise<boolean>, [string, unknown[]]>(),
-  sendEvent: jest.fn<void, [string, Record<string, unknown>]>(),
   onAdded: jest.fn<void, [string[]]>()
 })
 
 const run = (items: InspirationDraftItem[], deps: ReturnType<typeof createDeps>) =>
-  runInspirationInsert({items, meetingId: 'meeting1', teamId: 'team1', ...deps})
+  runInspirationInsert({items, ...deps})
 
 describe('runInspirationInsert', () => {
-  it('inserts every item and reports both analytics events', async () => {
+  it('inserts every item and reports them all as added', async () => {
     const deps = createDeps()
     deps.insertAnswerBlocks.mockResolvedValue(true)
     const items = [
@@ -35,15 +34,6 @@ describe('runInspirationInsert', () => {
     await run(items, deps)
 
     expect(deps.insertAnswerBlocks).toHaveBeenCalledTimes(3)
-    const itemAddedEvents = deps.sendEvent.mock.calls.filter(
-      ([event]) => event === 'Inspiration Item Added'
-    )
-    expect(itemAddedEvents).toHaveLength(3)
-    expect(deps.sendEvent).toHaveBeenCalledWith('Inspiration Add Remaining', {
-      count: 3,
-      meetingId: 'meeting1',
-      teamId: 'team1'
-    })
     expect(deps.onAdded).toHaveBeenCalledWith(['i1', 'i2', 'i3'])
   })
 
@@ -57,25 +47,21 @@ describe('runInspirationInsert', () => {
 
     await run(items, deps)
 
+    expect(deps.insertAnswerBlocks).toHaveBeenCalledTimes(2)
     expect(deps.onAdded).toHaveBeenCalledWith(['j1'])
-    expect(deps.sendEvent).toHaveBeenCalledWith('Inspiration Add Remaining', {
-      count: 1,
-      meetingId: 'meeting1',
-      teamId: 'team1'
-    })
   })
 
-  it('does not report a single-item add as "remaining"', async () => {
+  it('reports a single-item add', async () => {
     const deps = createDeps()
     deps.insertAnswerBlocks.mockResolvedValue(true)
 
     await run([draftItem('i1', 'promptA', 'Shipped the migration')], deps)
 
+    expect(deps.insertAnswerBlocks).toHaveBeenCalledTimes(1)
     expect(deps.onAdded).toHaveBeenCalledWith(['i1'])
-    expect(deps.sendEvent).not.toHaveBeenCalledWith('Inspiration Add Remaining', expect.anything())
   })
 
-  it('emits nothing when every insert fails', async () => {
+  it('reports nothing when every insert fails', async () => {
     const deps = createDeps()
     deps.insertAnswerBlocks.mockResolvedValue(false)
     const items = [
@@ -85,11 +71,11 @@ describe('runInspirationInsert', () => {
 
     await run(items, deps)
 
+    expect(deps.insertAnswerBlocks).toHaveBeenCalledTimes(2)
     expect(deps.onAdded).not.toHaveBeenCalled()
-    expect(deps.sendEvent).not.toHaveBeenCalled()
   })
 
-  it('skips an item the reader emptied, with no insert or analytics for it', async () => {
+  it('skips an item the reader emptied, with no insert for it', async () => {
     const deps = createDeps()
     deps.insertAnswerBlocks.mockResolvedValue(true)
     const items = [
@@ -104,13 +90,12 @@ describe('runInspirationInsert', () => {
     expect(deps.onAdded).toHaveBeenCalledWith(['i2'])
   })
 
-  it('emits nothing when every item is empty', async () => {
+  it('reports nothing when every item is empty', async () => {
     const deps = createDeps()
 
     await run([{...draftItem('i1', 'promptA', ''), blocks: [], text: ''}], deps)
 
     expect(deps.insertAnswerBlocks).not.toHaveBeenCalled()
-    expect(deps.sendEvent).not.toHaveBeenCalled()
     expect(deps.onAdded).not.toHaveBeenCalled()
   })
 })

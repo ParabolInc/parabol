@@ -1,10 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {TimelineEventPokerComplete_timelineEvent$key} from '../__generated__/TimelineEventPokerComplete_timelineEvent.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
 import {GQLID} from '../utils/GQLID'
 import plural from '../utils/plural'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 import CardsSVG from './CardsSVG'
 import StyledLink from './StyledLink'
 import TimelineEventTitle from './TImelineEventTitle'
@@ -67,14 +65,6 @@ const TimelineEventPokerComplete = (props: Props) => {
   const {id: orgId, viewerOrganizationUser} = organization
   const canUpgrade = !!viewerOrganizationUser
 
-  const atmosphere = useAtmosphere()
-  const onUpgrade = () => {
-    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
-      upgradeCTALocation: 'timelineHistoryLock',
-      upgradeTier: 'team',
-      meetingId
-    })
-  }
   const summaryURL = summaryPageId
     ? `/pages/${GQLID.fromKey(summaryPageId)[0]}`
     : `/new-summary/${meetingId}`
@@ -99,11 +89,7 @@ const TimelineEventPokerComplete = (props: Props) => {
         {locked ? (
           canUpgrade && (
             <>
-              <StyledLink
-                className='font-semibold'
-                to={`/me/organizations/${orgId}`}
-                onClick={onUpgrade}
-              >
+              <StyledLink className='font-semibold' to={`/me/organizations/${orgId}`}>
                 Upgrade now
               </StyledLink>{' '}
               to get access to the estimates and summary

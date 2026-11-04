@@ -10,7 +10,6 @@ import {getConnectProvider} from '../../../integrations/platform/findIntegration
 import {Button} from '../../../ui/Button/Button'
 import {cn} from '../../../ui/cn'
 import GitHubClientManager from '../../../utils/GitHubClientManager'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import GitHubSVG from '../../GitHubSVG'
 import GitHubIntegrationResultsRoot from './GitHubIntegrationResultsRoot'
 import GitHubRepoFilterBar from './GitHubRepoFilterBar'
@@ -43,7 +42,6 @@ const GitHubIntegrationPanel = (props: Props) => {
     graphql`
       fragment GitHubIntegrationPanel_meeting on NewMeeting {
         ...useInspirationDrawer_meeting
-        teamId
         id
         githubInspirationItems: inspirationItems(service: github) {
           id
@@ -104,19 +102,6 @@ const GitHubIntegrationPanel = (props: Props) => {
       return onError(new Error('Could not find team member'))
     }
     GitHubClientManager.openOAuth(atmosphere, teamMember.teamId, provider, mutationProps)
-
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Integration Connected', {
-      teamId: meeting.teamId,
-      meetingId: meeting.id,
-      service: 'github'
-    })
-  }
-
-  const trackTabNavigated = (label: string) => {
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Tag Navigated', {
-      service: 'github',
-      buttonLabel: label
-    })
   }
 
   const filterBar = teamMember ? (
@@ -124,14 +109,7 @@ const GitHubIntegrationPanel = (props: Props) => {
       <GitHubRepoFilterBar
         teamMemberRef={teamMember}
         selectedRepos={selectedRepos}
-        setSelectedRepos={(repos) => {
-          SendClientSideEvent(atmosphere, 'Your Work Filter Changed', {
-            teamId: meeting.teamId,
-            meetingId: meeting.id,
-            service: 'github'
-          })
-          setSelectedRepos(repos)
-        }}
+        setSelectedRepos={setSelectedRepos}
       />
       <div className='mb-2 flex w-full gap-2 px-4'>
         {GITHUB_QUERY_TABS.map((tab) => (
@@ -145,10 +123,7 @@ const GitHubIntegrationPanel = (props: Props) => {
                 ? 'bg-surface-selected font-semibold text-fg-selected hover:bg-surface-selected focus:text-fg-selected'
                 : 'border border-hairline-strong bg-transparent hover:bg-surface-hover'
             )}
-            onClick={() => {
-              trackTabNavigated(tab.label)
-              setGithubType(tab.key)
-            }}
+            onClick={() => setGithubType(tab.key)}
           >
             {tab.label}
           </Button>

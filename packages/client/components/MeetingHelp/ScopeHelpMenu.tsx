@@ -1,4 +1,3 @@
-import useClientSideTrack from '../../hooks/useClientSideTrack'
 import {ExternalLinks} from '../../types/constEnums'
 import {phaseLabelLookup} from '../../utils/meetings/lookups'
 import HelpMenuContent from './HelpMenuContent'
@@ -12,7 +11,6 @@ interface Props {
 
 const ScopeHelpMenu = (props: Props) => {
   const {onClose} = props
-  useClientSideTrack('Help Menu Open', {phase: 'lobby'})
   return (
     <HelpMenuContent onClose={onClose}>
       <HelpMenuHeader>{phaseLabelLookup.SCOPE}</HelpMenuHeader>

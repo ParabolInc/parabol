@@ -167,7 +167,6 @@ const devClientConfig: Configuration = {
         AUTH_GOOGLE_ENABLED: process.env.AUTH_GOOGLE_DISABLED !== 'true',
         AUTH_MICROSOFT_ENABLED: process.env.AUTH_MICROSOFT_DISABLED !== 'true',
         AUTH_SSO_ENABLED: process.env.AUTH_SSO_DISABLED !== 'true',
-        AMPLITUDE_WRITE_KEY: process.env.AMPLITUDE_WRITE_KEY,
         microsoftTenantId: process.env.MICROSOFT_TENANT_ID,
         microsoft: process.env.MICROSOFT_CLIENT_ID,
         GLOBAL_BANNER_ENABLED: process.env.GLOBAL_BANNER_ENABLED === 'true',

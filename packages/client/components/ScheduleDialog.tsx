@@ -23,7 +23,6 @@ import {DialogTitle} from '../ui/Dialog/DialogTitle'
 import GcalClientManager from '../utils/GcalClientManager'
 import {toHumanReadable} from '../utils/humanReadableRecurrenceRule'
 import plural from '../utils/plural'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 import Legitity from '../validation/Legitity'
 import {RecurrenceSettings} from './Recurrence/RecurrenceSettings'
 import StyledError from './StyledError'
@@ -124,11 +123,6 @@ export const ScheduleDialog = (props: Props) => {
     if (!gcal?.auth) {
       const {clientId, id: providerId} = gcal.cloudProvider
       GcalClientManager.openOAuth(atmosphere, providerId, clientId, teamId, mutationProps)
-
-      SendClientSideEvent(atmosphere, 'Schedule meeting add gcal clicked', {
-        teamId: teamId,
-        service: 'gcal'
-      })
       setAddedInvite(true)
     } else {
       setAddedInvite(true)

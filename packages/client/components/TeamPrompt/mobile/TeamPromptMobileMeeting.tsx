@@ -25,7 +25,6 @@ const TeamPromptMobileMeeting = ({meetingRef}: Props) => {
         ...TeamPromptMobileComposer_meeting
         ...TeamPromptMeetingStatus_meeting
         id
-        teamId
         endedAt
         scheduledEndTime
         prompts {
@@ -61,7 +60,7 @@ const TeamPromptMobileMeeting = ({meetingRef}: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {id: meetingId, teamId, endedAt, scheduledEndTime, prompts} = meeting
+  const {id: meetingId, endedAt, scheduledEndTime, prompts} = meeting
   const stages = meeting.phases[0]?.stages ?? []
   const viewerStage = stages.find((stage) => stage.teamMember.userId === viewerId)
   const hasViewerShared = !!getMemberSharedAt(viewerStage?.responses ?? [])
@@ -71,7 +70,7 @@ const TeamPromptMobileMeeting = ({meetingRef}: Props) => {
   const [activeTab, setActiveTab] = useState<TeamPromptMobileTab>(
     hasViewerShared || !!endedAt || hasResponseLink || !viewerStage ? 'team' : 'mine'
   )
-  const [layout, setLayout] = useTeamLayoutPreference(meetingId, teamId)
+  const [layout, setLayout] = useTeamLayoutPreference()
   const onReply = useOpenResponseDiscussion(meetingId, null, null)
   const onOpenInspiration = () => {
     commitLocalUpdate(atmosphere, (store) => {

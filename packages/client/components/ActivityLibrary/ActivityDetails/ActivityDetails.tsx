@@ -1,12 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect, useState} from 'react'
+import {useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Link, Navigate, useLocation} from 'react-router'
 import type {ActivityDetailsQuery} from '~/__generated__/ActivityDetailsQuery.graphql'
-import useAtmosphere from '../../../hooks/useAtmosphere'
 import EditableTemplateName from '../../../modules/meeting/components/EditableTemplateName'
 import {cn} from '../../../ui/cn'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import IconLabel from '../../IconLabel'
 import {ActivityCard, ActivityCardImage} from '../ActivityCard'
 import ActivityDetailsSidebarSwitch from '../ActivityDetailsSidebarSwitch'
@@ -22,7 +20,6 @@ graphql`
     orgId
     teamId
     illustrationUrl
-    scope
     viewerLowestScope
     ...TemplateDetails_activity
     ...ActivityDetailsBadges_template
@@ -34,7 +31,6 @@ graphql`
 export const query = graphql`
   query ActivityDetailsQuery($activityId: ID!) {
     viewer {
-      activityLibrarySearch
       preferredTeamId
       activity(activityId: $activityId) {
         ...ActivityDetails_template @relay(mask: false)
@@ -66,26 +62,16 @@ interface Props {
 }
 
 const ActivityDetails = (props: Props) => {
-  const atmosphere = useAtmosphere()
   const {queryRef} = props
   const data = usePreloadedQuery<ActivityDetailsQuery>(query, queryRef)
   const {viewer} = data
-  const {activity, activityLibrarySearch, preferredTeamId, teams} = viewer
+  const {activity, preferredTeamId, teams} = viewer
   const location = useLocation() as {state?: {prevCategory?: string}}
   const [isEditing, setIsEditing] = useState(false)
 
   if (!activity) {
     return <Navigate to='/activity-library' replace />
   }
-  // biome-ignore lint/correctness/useHookAtTopLevel: legacy
-  useEffect(() => {
-    SendClientSideEvent(atmosphere, 'Viewed Template', {
-      meetingType: activity.type,
-      scope: activity.scope,
-      templateName: activity.name,
-      queryString: activityLibrarySearch
-    })
-  }, [])
 
   const {category, illustrationUrl, viewerLowestScope, type} = activity
   // Organization.teams also returns public teams to a regular member, but only an org leader may

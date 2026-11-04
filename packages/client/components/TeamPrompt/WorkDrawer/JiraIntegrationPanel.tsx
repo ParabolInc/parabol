@@ -8,7 +8,6 @@ import useMutationProps from '../../../hooks/useMutationProps'
 import {getConnectProvider} from '../../../integrations/platform/findIntegrationService'
 import AtlassianClientManager from '../../../utils/AtlassianClientManager'
 import {hasJiraScopes} from '../../../utils/atlassianScopes'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import InspirationItemsPanel from './InspirationItemsPanel'
 import JiraIntegrationResultsRoot from './JiraIntegrationResultsRoot'
 import {WorkDrawerDateFilter} from './WorkDrawerDateFilter'
@@ -24,7 +23,6 @@ const JiraIntegrationPanel = (props: Props) => {
       fragment JiraIntegrationPanel_meeting on NewMeeting {
         ...useInspirationDrawer_meeting
         id
-        teamId
         jiraInspirationItems: inspirationItems(service: jira) {
           id
           title
@@ -82,12 +80,6 @@ const JiraIntegrationPanel = (props: Props) => {
       AtlassianClientManager.JIRA_SCOPE,
       teamMember.integrations.atlassian?.scope
     )
-
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Integration Connected', {
-      teamId: meeting.teamId,
-      meetingId: meeting.id,
-      service: 'jira'
-    })
   }
 
   const filterBar = (

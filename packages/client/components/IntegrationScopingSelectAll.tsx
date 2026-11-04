@@ -34,7 +34,7 @@ const IntegrationScopingSelectAll = (props: Props) => {
       ({serviceTaskId}) =>
         items.find((item) => item.serviceTaskId === serviceTaskId)?.summary ?? 'Unknown Story'
     )
-    updatePokerScope({variables: {meetingId, updates}, contents, selectedAll: true})
+    updatePokerScope({variables: {meetingId, updates}, contents})
     if (action === 'ADD') {
       persistQuery?.()
     }

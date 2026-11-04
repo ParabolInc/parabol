@@ -33,7 +33,6 @@
     "strict-event-emitter-types": "^2.0.0"
   },
   "dependencies": {
-    "@amplitude/analytics-browser": "2.2.3",
     "@emoji-mart/data": "^1.2.1",
     "@emoji-mart/react": "^1.1.1",
     "@floating-ui/dom": "^1.6.13",

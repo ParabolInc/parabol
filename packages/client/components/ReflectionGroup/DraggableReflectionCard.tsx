@@ -130,7 +130,6 @@ const DraggableReflectionCard = (props: Props) => {
           id
         }
         spotlightReflectionId
-        spotlightSearchQuery
       }
     `,
     meetingRef

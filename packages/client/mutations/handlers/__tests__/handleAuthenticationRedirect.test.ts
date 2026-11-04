@@ -1,8 +1,6 @@
 import type Atmosphere from '../../../Atmosphere'
 import handleAuthenticationRedirect from '../handleAuthenticationRedirect'
 
-jest.mock('../../../utils/SendClientSideEvent', () => ({__esModule: true, default: () => {}}))
-
 const acceptedInvitation = {
   error: null,
   meetingId: null,

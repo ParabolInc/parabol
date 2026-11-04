@@ -4,9 +4,7 @@ import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {MeetingLockedOverlay_meeting$key} from '~/__generated__/MeetingLockedOverlay_meeting.graphql'
 import {Lock} from '~/ui/icons'
-import useAtmosphere from '../hooks/useAtmosphere'
 import {Button} from '../ui/Button/Button'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 
 const UnpaidTeamModalRoot = lazy(
   () =>
@@ -39,20 +37,9 @@ const MeetingLockedOverlay = (props: Props) => {
     `,
     meetingRef
   )
-  const {id: meetingId, teamId, locked, organization} = meeting
+  const {teamId, locked, organization} = meeting
 
-  const atmosphere = useAtmosphere()
   const navigate = useNavigate()
-  useEffect(() => {
-    if (locked) {
-      SendClientSideEvent(atmosphere, 'Upgrade CTA Viewed', {
-        upgradeCTALocation: 'directMeetingLinkLock',
-        upgradeTier: 'team',
-        meetingId
-      })
-    }
-  }, [locked])
-
   useEffect(() => {
     if (locked) {
       // lock scrolling of the background, not super critical but looks nicer without scroll bar
@@ -73,11 +60,6 @@ const MeetingLockedOverlay = (props: Props) => {
   const canUpgrade = !!viewerOrganizationUser
 
   const onClick = () => {
-    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
-      upgradeCTALocation: 'directMeetingLinkLock',
-      upgradeTier: 'team',
-      meetingId
-    })
     navigate(`/me/organizations/${orgId}`)
   }
 

@@ -16,7 +16,6 @@ interface Props {
   issueCount: number | undefined
   isCounting: boolean
   canDraft: boolean
-  meetingId: string
   settings: InspirationSourceSettings
   setSettings: (update: (prev: InspirationSourceSettings) => InspirationSourceSettings) => void
   onClose: () => void
