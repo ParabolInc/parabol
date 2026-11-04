@@ -26,7 +26,6 @@ import getReqAuth from './utils/getReqAuth'
 import {Logger, setAccountLogContextLoader} from './utils/Logger'
 import loadAccountLogContext from './utils/loadAccountLogContext'
 import logProcessWarnings from './utils/logProcessWarnings'
-import parseClientVersion from './utils/parseClientVersion'
 import parseSessionId from './utils/parseSessionId'
 import registerFatalErrorHandlers from './utils/registerFatalErrorHandlers'
 import SAMLHandler from './utils/SAMLHandler'
@@ -95,8 +94,7 @@ const app = uws
     const authToken = getReqAuth(req)
     const traceparent = req.getHeader('traceparent') || undefined
     const sessionId = parseSessionId(req.getHeader('x-parabol-session-id'))
-    const clientVersion = parseClientVersion(req.getHeader('x-parabol-client-version'))
-    return yoga(res, req, {authToken, ip, traceparent, sessionId, clientVersion})
+    return yoga(res, req, {authToken, ip, traceparent, sessionId})
   })
   .post('/saml/:domain', traceHttpRoute('/saml/:domain', SAMLHandler))
   .get('/oauth/authorize', traceHttpRoute('/oauth/authorize', authorizeHandler))

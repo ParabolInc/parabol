@@ -20,9 +20,6 @@ export interface RequestLogContext {
   variables?: unknown
   socketId?: string
   sessionId?: string
-  // the web client's bundle, on a server record, and the server's, on a browser record. version is always the code that logged
-  clientVersion?: string
-  serverVersion?: string
   component?: string
   traceId?: string
   spanId?: string

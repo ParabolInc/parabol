@@ -202,7 +202,6 @@ export default class Atmosphere extends Environment {
           accept: 'application/json;text/event-stream; charset=utf-8, multipart/mixed',
           traceparent,
           'x-parabol-session-id': getTabSessionId(),
-          'x-parabol-client-version': __APP_VERSION__,
           ...(!uploadables && {['content-type']: 'application/json'})
         },
         body: uploadables

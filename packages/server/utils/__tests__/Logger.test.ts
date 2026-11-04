@@ -197,19 +197,6 @@ test('a third-party failure carries what the service answered', () => {
   expect(wrapped.error?.cause?.[0]).toMatchObject({response})
 })
 
-test('a record shows which client and server versions met', () => {
-  expect(makeLogRecord('error', new Error('boom'), [], {clientVersion: '15.11.0'})).toMatchObject({
-    clientVersion: '15.11.0'
-  })
-  expect(
-    makeLogRecord('error', new Error('boom'), [], {
-      service: 'parabol-client',
-      version: '15.11.0',
-      serverVersion: '15.12.0'
-    })
-  ).toMatchObject({version: '15.11.0', serverVersion: '15.12.0'})
-})
-
 test('a record too large for Cloud Logging also drops the request body, breadcrumbs and cause stacks', () => {
   const large = 'x'.repeat(130_000)
   const error = new Error('boom', {cause: Object.assign(new Error('inner'), {stack: large})})

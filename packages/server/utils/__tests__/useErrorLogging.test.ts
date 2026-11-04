@@ -181,13 +181,6 @@ test('the failed field is found through aliases and fragments', async () => {
   })
 })
 
-test("an operation carries the version of the client's bundle", async () => {
-  const result = await execute('query LogContext { logContext }', undefined, {
-    clientVersion: '15.11.0'
-  })
-  expect(JSON.parse(result.data.logContext)).toMatchObject({clientVersion: '15.11.0'})
-})
-
 test('what a resolver adds to the log context reaches the error logged after it', async () => {
   Reflect.set(globalThis, '__PRODUCTION__', true)
   try {

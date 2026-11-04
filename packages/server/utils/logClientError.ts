@@ -1,6 +1,6 @@
 import describeUserAgent from './describeUserAgent'
 import {normalizeErrorMessage} from './getErrorFingerprint'
-import {getLogIdentity, Logger} from './Logger'
+import {Logger} from './Logger'
 import normalizeUrlPath from './normalizeUrlPath'
 import type {ClientErrorBreadcrumb, ClientErrorReport} from './parseClientErrorBatch'
 import {runWithLogContext} from './requestLogContext'
@@ -30,7 +30,6 @@ const logClientError = async (
     traceId,
     sessionId,
     release,
-    serverVersion,
     route,
     userAgent,
     breadcrumbs,
@@ -52,8 +51,7 @@ const logClientError = async (
       traceId,
       component: 'browser',
       service: CLIENT_LOG_SERVICE,
-      version: release ?? 'unknown',
-      serverVersion: serverVersion ?? getLogIdentity().version
+      version: release ?? 'unknown'
     },
     () => {
       Logger[level](error, {

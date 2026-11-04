@@ -9,7 +9,6 @@ const report = {
   traceId: '4bf92f3577b34da6a3ce929d0e0e4736',
   sessionId: 'tab-1',
   release: '15.11.0',
-  serverVersion: '15.12.0',
   route: '/meet/abc',
   userAgent: 'Mozilla/5.0',
   count: 2,
@@ -52,7 +51,6 @@ test('clips long text, drops malformed ids and keeps the last 30 breadcrumbs', (
         traceId: 'TRACE',
         sessionId: 'tab 1',
         release: 'v1 <script>',
-        serverVersion: {version: '15.12.0'},
         count: 1e9,
         breadcrumbs: [...breadcrumbs, {type: 'click', message: 'Save', time: 'now'}]
       }
@@ -64,7 +62,6 @@ test('clips long text, drops malformed ids and keeps the last 30 breadcrumbs', (
   expect(parsedReport!.traceId).toBeUndefined()
   expect(parsedReport!.sessionId).toBeUndefined()
   expect(parsedReport!.release).toBeUndefined()
-  expect(parsedReport!.serverVersion).toBeUndefined()
   expect(parsedReport!.breadcrumbs).toHaveLength(29)
   expect(parsedReport!.breadcrumbs[0]!.message).toBe('query Query11')
   expect(parsedReport!.breadcrumbs[0]).not.toHaveProperty('traceId')

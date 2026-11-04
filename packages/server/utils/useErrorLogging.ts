@@ -24,22 +24,18 @@ import {type GraphQLLogContext, Logger, markErrorAsLogged} from './Logger'
 import {createLogContext, enterLogContext, type RequestLogContext} from './requestLogContext'
 
 type LoggableContext = Partial<
-  Pick<
-    ServerContext,
-    'authToken' | 'ip' | 'traceparent' | 'sessionId' | 'socketId' | 'clientVersion'
-  >
+  Pick<ServerContext, 'authToken' | 'ip' | 'traceparent' | 'sessionId' | 'socketId'>
 >
 
 const getOperationLogContext = (args: TypedExecutionArgs<LoggableContext>): RequestLogContext => {
   const operation = getOperationAST(args.document, args.operationName)
-  const {authToken, ip, traceparent, sessionId, socketId, clientVersion} = args.contextValue
+  const {authToken, ip, traceparent, sessionId, socketId} = args.contextValue
   const operationSpan = getOperationSpan(args)
   return createLogContext({
     userId: authToken?.sub,
     ip,
     sessionId,
     socketId,
-    clientVersion,
     component: 'graphql',
     operationName: operation?.name?.value ?? args.operationName ?? 'anonymous',
     operationKind: operation?.operation,

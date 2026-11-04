@@ -3,7 +3,6 @@ import ms from 'ms'
 import {commitLocalUpdate} from 'relay-runtime'
 import type Atmosphere from '../Atmosphere'
 import {addBreadcrumb} from './clientBreadcrumbs'
-import {setConnectedServerVersion} from './connectedServerVersion'
 import getTabSessionId from './getTabSessionId'
 import createProxyRecord from './relay/createProxyRecord'
 import {reportClientWarning} from './reportClientError'
@@ -76,7 +75,7 @@ export function createWSClient(atmosphere: Atmosphere) {
     let timedOut: number
     const subscriptionClient = createClient({
       lazy: false,
-      connectionParams: () => ({sessionId: getTabSessionId(), clientVersion: __APP_VERSION__}),
+      connectionParams: () => ({sessionId: getTabSessionId()}),
       generateID: () => {
         return String(nextId++)
       },
@@ -100,11 +99,10 @@ export function createWSClient(atmosphere: Atmosphere) {
           }
         },
         connected: async (_socket, payload, _wasRetry) => {
+          addBreadcrumb('websocket', 'connected')
           const {version} = payload as {
             version: string
           }
-          setConnectedServerVersion(version)
-          addBreadcrumb('websocket', `connected to ${version}`)
           const isNewVersion = version !== __APP_VERSION__
           if (isNewVersion) {
             // Safari is not ready immediately after a refresh and getRegistration() will return null, so wait till ready for the update

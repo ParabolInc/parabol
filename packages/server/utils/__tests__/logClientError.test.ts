@@ -15,7 +15,6 @@ const report: ClientErrorReport = {
   traceId: '4bf92f3577b34da6a3ce929d0e0e4736',
   sessionId: 'tab-1',
   release: '15.11.0',
-  serverVersion: '15.12.0',
   route: '/team/UZoObZMXvy',
   userAgent:
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36',
@@ -28,7 +27,7 @@ const report: ClientErrorReport = {
       traceId: '4bf92f3577b34da6a3ce929d0e0e4736'
     },
     {time: '2026-10-30T00:00:01.000Z', type: 'navigation', message: '/meet/UZoObZMXvy/discuss/1'},
-    {time: '2026-10-30T00:00:02.000Z', type: 'websocket', message: 'connected to 15.12.0'},
+    {time: '2026-10-30T00:00:02.000Z', type: 'websocket', message: 'connected'},
     {
       time: '2026-10-30T00:00:03.000Z',
       type: 'error',
@@ -58,7 +57,6 @@ test('a browser error is logged as parabol-client, joined to its trace, with the
     severity: 'ERROR',
     service: 'parabol-client',
     version: '15.11.0',
-    serverVersion: '15.12.0',
     component: 'browser',
     userId: 'user1',
     sessionId: 'tab-1',
@@ -89,7 +87,7 @@ test('the breadcrumb trail keeps names and loses ids and free text', async () =>
   expect(record.client.breadcrumbs.map(({message}: {message: string}) => message)).toEqual([
     'query TeamQuery',
     '/meet/:id/discuss/1',
-    'connected to 15.12.0',
+    'connected',
     'Error: No base meeting object found in Relay <id> for <email>'
   ])
 })
@@ -104,12 +102,6 @@ test("a render error's component stack is mapped to source like its stack", asyn
   expect(record.client.componentStack).toBe(
     '    at toUpperCase (packages/client/components/TeamList.tsx:2:20)'
   )
-})
-
-test('a client that has not connected its socket yet is matched to the server that logged its error', async () => {
-  await logClientError({...report, serverVersion: undefined}, {ip: '203.0.113.7'}, BUILD_DIR)
-  const record = JSON.parse(errorSpy.mock.calls[0][0])
-  expect(record.serverVersion).toBe('unknown')
 })
 
 test('a browser warning stays out of Error Reporting', async () => {

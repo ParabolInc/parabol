@@ -229,8 +229,6 @@ export const makeLogRecord = (
     service,
     env,
     version,
-    ...(context.serverVersion && {serverVersion: context.serverVersion}),
-    ...(context.clientVersion && {clientVersion: context.clientVersion}),
     ...(context.component && {component: context.component}),
     ...makeTraceFields(context),
     ...(userId && {userId}),

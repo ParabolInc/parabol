@@ -56,7 +56,6 @@ export interface ServerContext {
   personalAccessTokenId?: string
   traceparent?: string
   sessionId?: string
-  clientVersion?: string
   socketId?: string
 }
 
