@@ -12,7 +12,7 @@ const FormatH1 = ({className, ...props}: SVGProps<SVGSVGElement>) => (
       className
     )}
   >
-    <path d='M200-280v-400h80v160h160v-160h80v400h-80v-160H280v160h-80Zm480 0v-320h-80v-80h160v400h-80Z' />
+    <path d='M120-280v-400h80v160h160v-160h80v400h-80v-160H200v160h-80Zm400 0v-80h120v-240H520v-80h200v320h120v80H520Z' />
   </svg>
 )
 

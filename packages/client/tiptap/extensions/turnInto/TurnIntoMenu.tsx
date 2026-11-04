@@ -49,8 +49,7 @@ export const TurnIntoMenu = (props: Props) => {
     // New node views start out short, and a page scrolled to its end would clamp to that height
     dom.style.minHeight = `${dom.offsetHeight}px`
     editor.view.dispatch(tr)
-    // A new Details opens on a 0ms timer, and a focus landing before it makes that timer close the
-    // block. Its selection plugin can also move the caret, judging by the DOM from before this change.
+    // Focusing before new node views render makes WebKit jump near the end of the page
     setTimeout(() => {
       dom.style.minHeight = ''
       // WebKit scrolls to the caret when the editor takes focus, whatever preventScroll says
