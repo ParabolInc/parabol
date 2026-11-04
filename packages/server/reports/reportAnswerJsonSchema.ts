@@ -73,6 +73,7 @@ const SPEC_SCHEMA = strictObject({
 export const REPORT_ANSWER_JSON_SCHEMA = strictObject({
   canAnswer: {type: 'boolean'},
   reason: {type: ['string', 'null']},
+  suggestion: {type: ['string', 'null']},
   title: {type: ['string', 'null']},
   spec: {anyOf: [SPEC_SCHEMA, {type: 'null'}]}
 })

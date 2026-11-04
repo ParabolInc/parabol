@@ -1124,6 +1124,53 @@ describe('people and work', () => {
     })
   })
 
+  test('a team’s copy of a template, named the same, counts as that template', async () => {
+    await pg
+      .insertInto('MeetingTemplate')
+      .values({
+        id: 'webStartStopContinue',
+        name: ' Start Stop Continue ',
+        scope: 'TEAM',
+        orgId: WORK_ORG_ID,
+        teamId: WEB,
+        type: 'retrospective',
+        illustrationUrl: '',
+        mainCategory: 'retrospective'
+      })
+      .execute()
+    await addMeeting('webRetroCopy', WEB, 'retrospective', 3, [WREN, WENDY], 'webStartStopContinue')
+    try {
+      const byTemplate: Partial<ReportSpec> = {...recently, breakdown: [{dimension: 'TEMPLATE'}]}
+      expect(byLabel(await report(byTemplate, asWren))).toEqual({
+        'Start Stop Continue': 2,
+        'No template': 1,
+        'Another team’s template': 1
+      })
+      expect(byLabel(await report(byTemplate, asXavier))).toEqual({
+        'Start Stop Continue': 2,
+        'No template': 1,
+        'Yard retro': 1
+      })
+      await pg
+        .updateTable('MeetingTemplate')
+        .set({name: 'START STOP CONTINUE'})
+        .where('id', '=', 'webStartStopContinue')
+        .execute()
+      const byLowerLabel = Object.entries(byLabel(await report(byTemplate, asWren))).map(
+        ([label, value]) => [label.toLowerCase(), value]
+      )
+      expect(Object.fromEntries(byLowerLabel)).toEqual({
+        'start stop continue': 2,
+        'no template': 1,
+        'another team’s template': 1
+      })
+    } finally {
+      await pg.deleteFrom('MeetingMember').where('meetingId', '=', 'webRetroCopy').execute()
+      await pg.deleteFrom('NewMeeting').where('id', '=', 'webRetroCopy').execute()
+      await pg.deleteFrom('MeetingTemplate').where('id', '=', 'webStartStopContinue').execute()
+    }
+  })
+
   test('by person, a meeting counts for each person who joined it', async () => {
     expect(byLabel(await report({...recently, breakdown: [{dimension: 'USER'}]}, asWren))).toEqual({
       Wren: 2,
@@ -1294,7 +1341,10 @@ describe('team health', () => {
             ...havenOnly,
             showAs: 'BARS',
             breakdown: [{dimension: 'CATEGORY'}],
-            filters: [...havenOnly.filters, {dimension: 'TEMPLATE', values: ['fullHealth']}]
+            filters: [
+              ...havenOnly.filters,
+              {dimension: 'TEMPLATE', values: ['teamHealth:full check']}
+            ]
           },
           asLeader
         )

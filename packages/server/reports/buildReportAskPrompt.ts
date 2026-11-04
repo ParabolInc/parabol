@@ -7,6 +7,7 @@ import {
   type ReportDimension
 } from '../../client/shared/reports/reportCatalog'
 import type {ClientOrgStructureLevel} from './orgStructure'
+import {REPORT_UNSUPPORTED_SUBJECTS} from './reportUnsupportedSubjects'
 
 const DIMENSIONS: Record<ReportDimension, string> = {
   TIME: 'time, stepping by day up to a month, by week up to 6 months, then by month',
@@ -21,7 +22,8 @@ const DIMENSIONS: Record<ReportDimension, string> = {
   TASK_STATUS: 'a task’s status now',
   DONE_OR_OPEN: 'whether a task is done now',
   TASK_AGE: 'how old an open task is when it’s counted',
-  TOPIC: 'the retro group or check-in agenda item a discussion was about',
+  TOPIC:
+    'the retro group or check-in agenda item a discussion was about, never an icebreaker question',
   INTEGRATION: 'the service a task was pushed to or a person connected',
   CATEGORY: 'a Team Health category, like Psychological Safety'
 }
@@ -107,7 +109,10 @@ sort: by VALUE, NAME or TIME, ASC or DESC; null leaves the default order. limit:
 
 Parabol applies these rules itself, so don't add filters for them: a meeting counts when 2 or more people joined it, and a report counts only the teams the person asking can see.
 
-If the question needs data Parabol doesn't have, like story points, velocity, Jira or GitHub fields or sentiment, set canAnswer to false, reason to one short sentence saying what's missing, and title and spec to null. Otherwise set canAnswer to true, reason to null, title to a short name for the report under 60 characters, like "Retro tasks by team, done or open", and spec to the spec.`
+No measure counts these:
+${REPORT_UNSUPPORTED_SUBJECTS.map((subject) => `- ${subject}`).join('\n')}
+
+Answer only with a measure that counts what the question asks about. A report on something near it, like Discussions by topic for icebreaker questions, Last seen for who gets thanked, or Meetings by person for who facilitated, reads as a wrong answer, which is worse than none. If the question is about one of the things above, or anything else no measure counts, set canAnswer to false, reason to one short sentence saying what Parabol doesn't measure, suggestion to a question about something close to it that a measure does count, about the same people, teams or time as the question, or null when nothing is close, and title and spec to null. Otherwise set canAnswer to true, reason and suggestion to null, title to a short name for the report under 60 characters, like "Retro tasks by team, done or open", and spec to the spec.`
 }
 
 export default buildReportAskPrompt
