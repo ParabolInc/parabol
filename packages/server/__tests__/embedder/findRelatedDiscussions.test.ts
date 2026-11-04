@@ -1,4 +1,7 @@
-import {activeEmbeddingModelId} from '../../../embedder/activeEmbeddingModel'
+import {
+  activeEmbeddingDefinition,
+  activeEmbeddingModelId
+} from '../../../embedder/activeEmbeddingModel'
 import type {ModelId} from '../../../embedder/ai_models/modelIdDefinitions'
 import {getEmbeddingsTableName} from '../../../embedder/getEmbeddingsTableName'
 import numberVectorToString from '../../../embedder/indexing/numberVectorToString'
@@ -52,7 +55,7 @@ const insertMeeting = (id: string, meetingTeamId: string) =>
     .execute()
 
 const vectorAt = (cosine: number) =>
-  Array.from({length: 1024}, (_, index) =>
+  Array.from({length: activeEmbeddingDefinition!.embeddingDimensions}, (_, index) =>
     index === 0 ? cosine : index === 1 ? Math.sqrt(1 - cosine * cosine) : 0
   )
 

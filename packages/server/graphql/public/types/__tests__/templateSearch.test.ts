@@ -1,5 +1,8 @@
 import type {GraphQLResolveInfo} from 'graphql'
-import {activeEmbeddingModelId} from '../../../../../embedder/activeEmbeddingModel'
+import {
+  activeEmbeddingDefinition,
+  activeEmbeddingModelId
+} from '../../../../../embedder/activeEmbeddingModel'
 import {getEmbeddingsTableName} from '../../../../../embedder/getEmbeddingsTableName'
 import numberVectorToString from '../../../../../embedder/indexing/numberVectorToString'
 import {getNewDataLoader} from '../../../../dataloader/getNewDataLoader'
@@ -37,7 +40,7 @@ const userId = `templateSearchUser${suffix}`
 const search = `templateSearch ${suffix}`
 
 const vectorAt = (cosine: number) =>
-  Array.from({length: 1024}, (_, index) =>
+  Array.from({length: activeEmbeddingDefinition!.embeddingDimensions}, (_, index) =>
     index === 0 ? cosine : index === 1 ? Math.sqrt(1 - cosine * cosine) : 0
   )
 
