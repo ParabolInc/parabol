@@ -91,6 +91,7 @@ interface SweepConfig {
   stopWords: StopWords
   anyWordFallbackBelow: number
   anyWordMinShare: number
+  titleTypoSimilarity: number
 }
 
 interface SweepResult extends SweepConfig {
@@ -166,9 +167,20 @@ const parseKeywordMatchings = (defaults: KeywordMatching) => {
     'EVAL_ANY_WORD_MIN_SHARES',
     process.env.EVAL_ANY_WORD_MIN_SHARES ?? String(defaults.anyWordMinShare)
   )
+  const titleTypoSimilarities = parseFractions(
+    'EVAL_TITLE_TYPO_SIMILARITIES',
+    process.env.EVAL_TITLE_TYPO_SIMILARITIES ?? String(defaults.titleTypoSimilarity)
+  )
   return stopWordsList.flatMap((stopWords) =>
     fallbackBelowList.flatMap((anyWordFallbackBelow) =>
-      minShares.map((anyWordMinShare) => ({stopWords, anyWordFallbackBelow, anyWordMinShare}))
+      minShares.flatMap((anyWordMinShare) =>
+        titleTypoSimilarities.map((titleTypoSimilarity) => ({
+          stopWords,
+          anyWordFallbackBelow,
+          anyWordMinShare,
+          titleTypoSimilarity
+        }))
+      )
     )
   )
 }
@@ -365,7 +377,15 @@ const embedQueryVector = async (query: string) => {
 const scoreSweepQuery = async (
   gradedQuery: GradedQuery,
   queryVector: Float32Array | Error,
-  {alpha, floor, minBytes, stopWords, anyWordFallbackBelow, anyWordMinShare}: SweepConfig,
+  {
+    alpha,
+    floor,
+    minBytes,
+    stopWords,
+    anyWordFallbackBelow,
+    anyWordMinShare,
+    titleTypoSimilarity
+  }: SweepConfig,
   fixtureKeyByPageId: Map<number, string>,
   viewerId: string
 ) => {
@@ -385,7 +405,8 @@ const scoreSweepQuery = async (
     dateRange: null,
     dropStopWords: stopWords === 'drop',
     anyWordFallbackBelow,
-    anyWordMinShare
+    anyWordMinShare,
+    titleTypoSimilarity
   }
   try {
     const {edges} =
@@ -440,6 +461,7 @@ const toSweepRow = ({
   stopWords,
   anyWordFallbackBelow,
   anyWordMinShare,
+  titleTypoSimilarity,
   overall
 }: SweepResult) => ({
   alpha,
@@ -448,6 +470,7 @@ const toSweepRow = ({
   stopWords,
   anyWordFallbackBelow,
   anyWordMinShare,
+  titleTypoSimilarity,
   ...Object.fromEntries(
     SWEEP_TABLE_METRICS.map((metric) => [metric, roundForTable(overall[metric])])
   )
@@ -483,12 +506,21 @@ const runSweep = async ({
       .map(toSweepRow)
   )
   const failed = sweepResults.flatMap(
-    ({alpha, floor, minBytes, stopWords, anyWordFallbackBelow, anyWordMinShare, perQuery}) =>
+    ({
+      alpha,
+      floor,
+      minBytes,
+      stopWords,
+      anyWordFallbackBelow,
+      anyWordMinShare,
+      titleTypoSimilarity,
+      perQuery
+    }) =>
       perQuery
         .filter(({error}) => error !== undefined)
         .map(({query, error}) => ({
           query,
-          config: `alpha ${alpha}, floor ${floor}, min bytes ${minBytes}, stop words ${stopWords}, any words below ${anyWordFallbackBelow}, min share ${anyWordMinShare}`,
+          config: `alpha ${alpha}, floor ${floor}, min bytes ${minBytes}, stop words ${stopWords}, any words below ${anyWordFallbackBelow}, min share ${anyWordMinShare}, title typo similarity ${titleTypoSimilarity}`,
           error
         }))
   )
