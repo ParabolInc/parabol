@@ -22,6 +22,7 @@ graphql`
     orgId
     teamId
     illustrationUrl
+    isActive
     scope
     viewerLowestScope
     ...TemplateDetails_activity
@@ -74,11 +75,8 @@ const ActivityDetails = (props: Props) => {
   const location = useLocation() as {state?: {prevCategory?: string}}
   const [isEditing, setIsEditing] = useState(false)
 
-  if (!activity) {
-    return <Navigate to='/activity-library' replace />
-  }
-  // biome-ignore lint/correctness/useHookAtTopLevel: legacy
   useEffect(() => {
+    if (!activity?.isActive) return
     SendClientSideEvent(atmosphere, 'Viewed Template', {
       meetingType: activity.type,
       scope: activity.scope,
@@ -86,6 +84,10 @@ const ActivityDetails = (props: Props) => {
       queryString: activityLibrarySearch
     })
   }, [])
+
+  if (!activity?.isActive) {
+    return <Navigate to='/activity-library' replace />
+  }
 
   const {category, illustrationUrl, viewerLowestScope, type} = activity
   // Organization.teams also returns public teams to a regular member, but only an org leader may
