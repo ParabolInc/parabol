@@ -40,6 +40,9 @@ export const SearchDialogResultsList = (props: Props) => {
     selectedId,
     setSelectedId
   )
+  if (edges.length === 0) {
+    return <div className='px-2 py-6 text-center text-fg-muted text-sm'>{'No pages found'}</div>
+  }
   return (
     <>
       <SearchResultSectionHeader title={title} />
