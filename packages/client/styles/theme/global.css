@@ -787,7 +787,7 @@
     margin-left: 0;
     padding: 0;
 
-    li {
+    > li {
       align-items: flex-start;
       display: flex;
 

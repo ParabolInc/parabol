@@ -1,0 +1,29 @@
+import type {IconComponent} from '~/ui/icons'
+import {
+  ArrowRight,
+  Checklist,
+  Code,
+  FormatH1,
+  FormatH2,
+  FormatH3,
+  FormatListBulleted,
+  FormatListNumbered,
+  FormatQuote,
+  NoteAdd,
+  TextFields
+} from '~/ui/icons'
+import type {TurnIntoTarget} from './turnBlockInto'
+
+export const turnIntoRows: {title: string; icon: IconComponent; target: TurnIntoTarget}[] = [
+  {title: 'Text', icon: TextFields, target: {type: 'paragraph'}},
+  {title: 'Heading 1', icon: FormatH1, target: {type: 'heading', level: 1}},
+  {title: 'Heading 2', icon: FormatH2, target: {type: 'heading', level: 2}},
+  {title: 'Heading 3', icon: FormatH3, target: {type: 'heading', level: 3}},
+  {title: 'Page', icon: NoteAdd, target: {type: 'pageLinkBlock'}},
+  {title: 'Bullet list', icon: FormatListBulleted, target: {type: 'bulletList'}},
+  {title: 'Numbered list', icon: FormatListNumbered, target: {type: 'orderedList'}},
+  {title: 'To-do list', icon: Checklist, target: {type: 'taskList'}},
+  {title: 'Details', icon: ArrowRight, target: {type: 'details'}},
+  {title: 'Code', icon: Code, target: {type: 'codeBlock'}},
+  {title: 'Quote', icon: FormatQuote, target: {type: 'blockquote'}}
+]

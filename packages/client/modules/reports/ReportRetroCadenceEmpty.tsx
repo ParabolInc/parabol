@@ -33,8 +33,8 @@ const ReportRetroCadenceEmpty = ({isCompact = false}: Props) => (
       title='Run your first retro'
       description={
         isCompact
-          ? 'Hold a retrospective to see how often every team reflects.'
-          : 'Hold a retrospective with your team, and this heatmap shows how often every team reflects, month by month. The teams behind this are a sample.'
+          ? 'This heatmap shows how often every team holds a retro.'
+          : 'This heatmap shows how often every team holds a retro, month by month. The teams behind this are a sample.'
       }
       actionLabel='Start a retro'
       action={{to: RETRO_DETAILS_URL}}

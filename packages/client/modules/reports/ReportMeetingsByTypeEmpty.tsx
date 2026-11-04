@@ -27,8 +27,8 @@ const ReportMeetingsByTypeEmpty = ({isCompact = false}: Props) => (
       title='Run your first meeting'
       description={
         isCompact
-          ? 'Hold a meeting to see what your teams run each month.'
-          : 'Hold a meeting with your team, and this chart shows how many meetings of each type your teams run, month by month. The meetings behind this are a sample.'
+          ? 'Each month gets a bar of your teams’ meetings, split by type.'
+          : 'Each month gets a bar of your teams’ meetings, split by type. The meetings behind this are a sample.'
       }
       actionLabel='Start a meeting'
       action={{to: '/activity-library'}}

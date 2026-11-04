@@ -27,8 +27,8 @@ const ReportActiveUsersEmpty = ({orgId, isCompact = false}: Props) => (
       title='Invite your team'
       description={
         isCompact
-          ? 'Invite teammates to see how many people use Parabol.'
-          : 'Invite your teammates, and this chart shows how many people use Parabol as your organization grows. The people behind this are a sample.'
+          ? 'This chart shows how many people use Parabol as your organization grows.'
+          : 'This chart shows how many people use Parabol as your organization grows. The people behind this are a sample.'
       }
       isCompact={isCompact}
     />

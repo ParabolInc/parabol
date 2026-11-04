@@ -32,7 +32,7 @@ const MATTERMOST_TASK = 'Mattermost Plugin Dev Server'
 const KYSELY = path.join(PROJECT_ROOT, 'node_modules', '.bin', 'kysely')
 // The same as `pnpm pg:generate`, except the database comes from the environment so it also works for an isolated stack
 const KYSELY_CODEGEN =
-  './node_modules/.bin/kysely-codegen --out-file ./packages/server/postgres/types/pg.d.ts --dialect postgres --url "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB" && ./node_modules/.bin/biome check --write ./packages/server/postgres/types/pg.d.ts'
+  './node_modules/.bin/kysely-codegen --out-file ./packages/server/postgres/types/pg.d.ts --dialect postgres --url "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB" --exclude-pattern "public.Embeddings*_harrier*" && ./node_modules/.bin/biome check --write ./packages/server/postgres/types/pg.d.ts'
 
 const flags = process.argv.slice(2)
 const isIsolated = flags.includes('--isolated') || process.env.DEV_ISOLATED === 'true'

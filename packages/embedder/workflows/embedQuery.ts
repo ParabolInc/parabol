@@ -26,7 +26,7 @@ export const embedQuery: JobQueueStepRun<EmbedQueryData> = async (context) => {
   if (!embeddingModel) {
     return new JobQueueError(`embedding model ${modelId} not available`)
   }
-  const embeddingVector = await embeddingModel.getEmbedding(query)
+  const embeddingVector = await embeddingModel.getSearchEmbedding(query)
   const vector = embeddingVector instanceof Error ? [] : embeddingVector
   // Float16Array isn't available as of NodeJs v22.21.1
   // It also isn't part of the msgpack spec yet
