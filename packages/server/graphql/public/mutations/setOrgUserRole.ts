@@ -1,7 +1,7 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import generateUID from '../../../generateUID'
+import {billingLeaderChanges} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isSuperUser} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -33,10 +33,7 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
 
   const viewerId = getUserId(authToken)
 
-  const [orgUsers, viewer] = await Promise.all([
-    dataLoader.get('organizationUsersByOrgId').load(orgId),
-    dataLoader.get('users').loadNonNull(viewerId)
-  ])
+  const orgUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
   const organizationUser = orgUsers.find((orgUser) => orgUser.userId === userId)
   const viewerOrgUser = orgUsers.find((orgUser) => orgUser.userId === viewerId)
   if (!organizationUser) {
@@ -85,8 +82,7 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
     .execute()
   organizationUser.role = roleToSet || null
   if (roleToSet !== 'ORG_ADMIN') {
-    const modificationType = roleToSet === 'BILLING_LEADER' ? 'add' : 'remove'
-    analytics.billingLeaderModified(viewer, userId, orgId, modificationType)
+    billingLeaderChanges.inc({change: roleToSet === 'BILLING_LEADER' ? 'added' : 'removed'})
   }
 
   // Don't add notification when promoting to org admin.

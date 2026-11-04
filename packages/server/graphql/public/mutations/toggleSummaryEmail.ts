@@ -1,6 +1,6 @@
+import {emailSubscriptionChanges} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
@@ -22,7 +22,10 @@ const toggleSummaryEmail: MutationResolvers['toggleSummaryEmail'] = async (
     .set({sendSummaryEmail: !sendSummaryEmail})
     .where('id', '=', viewerId)
     .execute()
-  analytics.toggleSubToSummaryEmail(viewer, !sendSummaryEmail)
+  emailSubscriptionChanges.inc({
+    email: 'summary',
+    change: sendSummaryEmail ? 'unsubscribed' : 'subscribed'
+  })
 
   return true
 }

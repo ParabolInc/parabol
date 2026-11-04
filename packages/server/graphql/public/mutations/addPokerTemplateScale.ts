@@ -2,8 +2,8 @@ import {PokerCards, SubscriptionChannel, Threshold} from 'parabol-client/types/c
 import {positionAfter} from '../../../../client/shared/sortOrder'
 import {PALETTE} from '../../../../client/styles/paletteV3'
 import generateUID from '../../../generateUID'
+import {pokerScalesCreated} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -20,10 +20,7 @@ export const addPokerTemplateScale: MutationResolvers['addPokerTemplateScale'] =
   const viewerId = getUserId(authToken)
 
   // VALIDATION
-  const [activeScales, viewer] = await Promise.all([
-    dataLoader.get('scalesByTeamId').load(teamId),
-    dataLoader.get('users').loadNonNull(viewerId)
-  ])
+  const activeScales = await dataLoader.get('scalesByTeamId').load(teamId)
   if (activeScales.length >= Threshold.MAX_POKER_TEMPLATE_SCALES) {
     return standardError(new Error('Too many scales'), {userId: viewerId})
   }
@@ -114,11 +111,7 @@ export const addPokerTemplateScale: MutationResolvers['addPokerTemplateScale'] =
   }
   dataLoader.clearAll('templateScales')
   const data = {scaleId: newScaleId}
-  analytics.scaleMetrics(
-    viewer,
-    {id: newScaleId, name: newScaleName, teamId},
-    parentScaleId ? 'Scale Cloned' : 'Scale Created'
-  )
+  pokerScalesCreated.inc({origin: parentScaleId ? 'clone' : 'blank'})
   publish(SubscriptionChannel.TEAM, teamId, 'AddPokerTemplateScalePayload', data, subOptions)
   return data
 }

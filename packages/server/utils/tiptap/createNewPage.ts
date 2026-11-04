@@ -5,9 +5,9 @@ import {__START__} from '../../../client/shared/sortOrder'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
 import {getPageNextSortOrder} from '../../graphql/public/mutations/helpers/getPageNextSortOrder'
+import {pagesCreated} from '../../metricsHandler'
 import getKysely from '../../postgres/getKysely'
 import {updatePageAccessTable} from '../../postgres/updatePageAccessTable'
-import {analytics} from '../../utils/analytics/analytics'
 import {publishPageNotification} from '../publishPageNotification'
 import {getPlaintextFromTipTap} from './getPlaintextFromTipTap'
 import {validateParentPage} from './validateParentPage'
@@ -122,13 +122,10 @@ export const createNewPage = async (options: CreateNewPageOptions, mutatorId?: s
   }
   const dataLoader = getNewDataLoader('createNewPage')
   const operationId = dataLoader.share()
-  const [viewer] = await Promise.all([
-    dataLoader.get('users').loadNonNull(userId),
-    ...accessInserts
-  ])
+  await Promise.all(accessInserts)
 
   await updatePageAccessTable(pg, pageId, {skipDeleteOld: true})
-  analytics.pageCreated(viewer, pageId)
+  pagesCreated.inc()
 
   const subOptions = {mutatorId: mutatorId ?? undefined, operationId}
   const data = {page}

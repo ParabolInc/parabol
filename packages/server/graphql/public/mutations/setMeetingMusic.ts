@@ -1,17 +1,15 @@
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
-import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId} from '../../../utils/authorization'
+import {meetingMusicChanges} from '../../../metricsHandler'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
 
 const setMeetingMusic: MutationResolvers['setMeetingMusic'] = async (
   _source,
   {meetingId, trackSrc, isPlaying},
-  {dataLoader, authToken, socketId: mutatorId}
+  {dataLoader, socketId: mutatorId}
 ) => {
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
-  const viewerId = getUserId(authToken)
 
   const data = {
     meetingId,
@@ -21,20 +19,7 @@ const setMeetingMusic: MutationResolvers['setMeetingMusic'] = async (
 
   const track = trackSrc ? trackSrc.split('/').pop()?.replace('.mp3', '') : null
   if (track) {
-    const user = await dataLoader.get('users').loadNonNull(viewerId)
-    if (isPlaying) {
-      analytics.musicPlayed(user, {
-        meetingId,
-        trackName: track,
-        isFacilitator: true
-      })
-    } else {
-      analytics.musicStopped(user, {
-        meetingId,
-        trackName: track,
-        isFacilitator: true
-      })
-    }
+    meetingMusicChanges.inc({change: isPlaying ? 'played' : 'stopped'})
   }
 
   publish(SubscriptionChannel.MEETING, meetingId, 'SetMeetingMusicSuccess', data, subOptions)

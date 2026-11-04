@@ -10,9 +10,6 @@ import {removeMeetingTOCAccess} from '../removeMeetingTOCAccess'
 jest.mock('../../../../../utils/publishPageNotification', () => ({
   publishPageNotification: async () => {}
 }))
-jest.mock('../../../../../utils/analytics/analytics', () => ({
-  analytics: {pageCreated: () => {}}
-}))
 
 const pg = getKysely()
 const orgId = `tocOrg|${generateUID()}`

@@ -1,8 +1,8 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {isNotNull} from 'parabol-client/utils/predicates'
+import {meetingSettingsChanges} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import type {MeetingSettings} from '../../../postgres/types'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -37,7 +37,6 @@ const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
 
   // RESOLUTION
   const {teamId, meetingType, phaseTypes} = settings
-  const viewer = await dataLoader.get('users').loadNonNull(viewerId)
 
   const isRetro = meetingType === 'retrospective'
 
@@ -74,12 +73,7 @@ const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
   dataLoader.clearAll('meetingSettings')
 
   const data = {settingsId}
-  analytics.meetingSettingsChanged(viewer, teamId, meetingType, {
-    disableAnonymity: nextSettings.disableAnonymity,
-    hasIcebreaker: nextSettings.phaseTypes.includes('checkin'),
-    hasTeamHealth: nextSettings.phaseTypes.includes('TEAM_HEALTH'),
-    hasReviewPastTasks: isRetro && nextSettings.phaseTypes.includes('updates')
-  })
+  meetingSettingsChanges.inc({meeting_type: meetingType})
   publish(SubscriptionChannel.TEAM, teamId, 'SetMeetingSettingsPayload', data, subOptions)
   return data
 }

@@ -1,7 +1,7 @@
 import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {confluenceExportDuration} from '../../../../../metricsHandler'
 import getKysely from '../../../../../postgres/getKysely'
-import {analytics} from '../../../../../utils/analytics/analytics'
 import type {DegradedItem, PageExportPageState} from '../../../../../utils/confluence/types'
 import publish from '../../../../../utils/publish'
 import type {DataLoaderWorker} from '../../../../graphql'
@@ -54,7 +54,7 @@ export const createPageExportPersistence = (input: {
     await persistAndPublish()
   }
 
-  const finalize = async (attachmentCount: number) => {
+  const finalize = async () => {
     const statuses = pagesJson.map(({status}) => status)
     const status = statuses.every((s) => s === 'success')
       ? 'success'
@@ -76,21 +76,7 @@ export const createPageExportPersistence = (input: {
       .execute()
     publishProgress()
 
-    const viewer = await dataLoader.get('users').loadNonNull(userId)
-    const properties = {
-      pageExportId,
-      pageCount: pagesJson.length,
-      successCount: statuses.filter((s) => s === 'success').length,
-      attachmentCount,
-      durationMs: Date.now() - startedAt,
-      status,
-      degradedCensus: degraded.map(({blockType, count}) => `${blockType}:${count}`).join(',')
-    }
-    if (status === 'failed') {
-      analytics.confluenceExportFailed(viewer, properties)
-    } else {
-      analytics.confluenceExportCompleted(viewer, properties)
-    }
+    confluenceExportDuration.observe({status}, (Date.now() - startedAt) / 1000)
   }
 
   return {persistAndPublish, failAllPending, finalize}

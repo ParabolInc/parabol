@@ -4,10 +4,10 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
 import appOrigin from '../../../../appOrigin'
+import {chatNotificationsSent} from '../../../../metricsHandler'
 import type {SlackNotification, Team, User} from '../../../../postgres/types'
 import type {IntegrationProviderMattermost} from '../../../../postgres/types/IntegrationProvider'
 import type {AnyMeeting, MeetingTypeEnum} from '../../../../postgres/types/Meeting'
-import {analytics} from '../../../../utils/analytics/analytics'
 import {toEpochSeconds} from '../../../../utils/epochTime'
 import logError from '../../../../utils/logError'
 import MattermostServerManager from '../../../../utils/MattermostServerManager'
@@ -55,7 +55,7 @@ const notifyMattermost = async (
       error: result
     }
   }
-  analytics.mattermostNotificationSent(user, teamId, event)
+  chatNotificationsSent.inc({service: 'mattermost', event})
 
   return 'success'
 }

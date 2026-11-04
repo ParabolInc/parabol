@@ -1,8 +1,8 @@
 import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import MeetingTemplate from '../../../database/types/MeetingTemplate'
+import {templatesCreated} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember, isUserInOrg} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
@@ -18,10 +18,9 @@ const addTeamHealthTemplate: MutationResolvers['addTeamHealthTemplate'] = async 
   const viewerId = getUserId(authToken)
 
   // VALIDATION
-  const [allTemplates, viewerTeam, viewer] = await Promise.all([
+  const [allTemplates, viewerTeam] = await Promise.all([
     dataLoader.get('meetingTemplatesByType').load({meetingType: 'teamHealth', teamId}),
-    dataLoader.get('teams').load(teamId),
-    dataLoader.get('users').loadNonNull(viewerId)
+    dataLoader.get('teams').load(teamId)
   ])
   if (!viewerTeam) {
     throw new GraphQLError('Team not found')
@@ -36,7 +35,7 @@ const addTeamHealthTemplate: MutationResolvers['addTeamHealthTemplate'] = async 
       illustrationUrl: '/assets/Organization/aGhostOrg/template/teamHealth.png'
     })
     await pg.insertInto('MeetingTemplate').values(newTemplate).execute()
-    analytics.templateMetrics(viewer, newTemplate, 'Template Created')
+    templatesCreated.inc({meeting_type: newTemplate.type, origin: 'blank'})
     const data = {templateId: newTemplate.id}
     publish(SubscriptionChannel.TEAM, teamId, 'AddTeamHealthTemplateSuccess', data, subOptions)
     return data
@@ -92,7 +91,7 @@ const addTeamHealthTemplate: MutationResolvers['addTeamHealthTemplate'] = async 
     await pg.insertInto('MeetingTemplate').values(newTemplate).execute()
   }
 
-  analytics.templateMetrics(viewer, newTemplate, 'Template Cloned')
+  templatesCreated.inc({meeting_type: newTemplate.type, origin: 'clone'})
 
   const data = {templateId: newTemplate.id}
   publish(SubscriptionChannel.TEAM, teamId, 'AddTeamHealthTemplateSuccess', data, subOptions)

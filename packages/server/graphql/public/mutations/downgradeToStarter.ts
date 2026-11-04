@@ -1,4 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {downgradeReasons} from '../../../metricsHandler'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -29,14 +30,8 @@ const downgradeToStarter: MutationResolvers['downgradeToStarter'] = async (
   }
 
   // RESOLUTION
-  await resolveDowngradeToStarter(
-    orgId,
-    stripeSubscriptionId!,
-    viewer,
-    dataLoader,
-    reasonsForLeaving ?? undefined,
-    otherTool ?? undefined
-  )
+  await resolveDowngradeToStarter(orgId, stripeSubscriptionId!, viewer, dataLoader)
+  reasonsForLeaving?.forEach((reason) => downgradeReasons.inc({reason}))
   const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
   const teamIds = teams.map(({id}) => id)
   const data = {orgId, teamIds}

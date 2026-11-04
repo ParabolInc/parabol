@@ -4,9 +4,9 @@ import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RRuleSet} from 'rrule-rust'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
+import {meetingSeriesChanges, meetingsStarted} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
-import {type AnalyticsUser, analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import {isImmediateOccurrence} from '../../../utils/isImmediateOccurrence'
 import publish from '../../../utils/publish'
@@ -38,7 +38,6 @@ type StartForTeamParams = {
   teamId: string
   facilitatorId: string
   viewerId: string
-  viewer: AnalyticsUser
   templateId: string
   name?: string | null
   rrule: RRuleSet | null
@@ -154,7 +153,7 @@ const startTeamHealthForTeam = async (
   dataLoader.get('activeMeetingsByTeamId').clear(teamId)
 
   IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
-  analytics.meetingStarted(params.viewer, meeting)
+  meetingsStarted.inc({meeting_type: meeting.meetingType})
 
   // this team's own invite, so the link in it names this team's series & not a sibling's
   const {gcalSeriesId} = await createGcalEvent({
@@ -194,10 +193,7 @@ const startTeamHealth: MutationResolvers['startTeamHealth'] = async (
     throw new GraphQLError('No teams selected')
   }
 
-  const [viewer, teams] = await Promise.all([
-    dataLoader.get('users').loadNonNull(viewerId),
-    dataLoader.get('teams').loadMany(uniqueTeamIds)
-  ])
+  const teams = await dataLoader.get('teams').loadMany(uniqueTeamIds)
   const validTeams = teams.filter(isValid)
   if (rrule && new Set(validTeams.map(({orgId}) => orgId)).size > 1) {
     // a series group is owned by one org: succession, the paid-tier gate, and tenancy are all
@@ -272,7 +268,6 @@ const startTeamHealth: MutationResolvers['startTeamHealth'] = async (
         teamId,
         facilitatorId,
         viewerId,
-        viewer,
         templateId,
         name,
         rrule,
@@ -299,8 +294,7 @@ const startTeamHealth: MutationResolvers['startTeamHealth'] = async (
   const [firstSeriesId] = seriesIds
   if (firstSeriesId) {
     // one group, one recurrence event, however many teams it covers
-    const meetingSeries = await dataLoader.get('meetingSeries').loadNonNull(firstSeriesId)
-    analytics.recurrenceStarted(viewer, meetingSeries)
+    meetingSeriesChanges.inc({meeting_type: 'teamHealth', change: 'started'})
   }
 
   dataLoader.clearAll('meetingSeries')

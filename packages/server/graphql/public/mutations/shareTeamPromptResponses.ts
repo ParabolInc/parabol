@@ -2,8 +2,8 @@ import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isEmptyTipTapDoc from '../../../../client/shared/tiptap/isEmptyTipTapDoc'
+import {teamPromptResponsesShared} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
@@ -19,9 +19,8 @@ const shareTeamPromptResponses: MutationResolvers['shareTeamPromptResponses'] = 
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
-  const [meeting, viewer, viewerResponses] = await Promise.all([
+  const [meeting, viewerResponses] = await Promise.all([
     dataLoader.get('newMeetings').load(meetingId),
-    dataLoader.get('users').loadNonNull(viewerId),
     dataLoader.get('teamPromptResponsesByMeetingIdAndUserId').load({meetingId, userId: viewerId})
   ])
   if (!meeting || meeting.meetingType !== 'teamPrompt') throw new GraphQLError('Meeting not found')
@@ -71,7 +70,7 @@ const shareTeamPromptResponses: MutationResolvers['shareTeamPromptResponses'] = 
           viewerId
         )
       }
-      shared.forEach(({id}) => analytics.responseAdded(viewer, meetingId, id, !isFirstShare))
+      teamPromptResponsesShared.inc(shared.length)
     }
   }
 

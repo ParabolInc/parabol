@@ -7,7 +7,6 @@ import TimelineEventPokerComplete from '../../../database/types/TimelineEventPok
 import {sendSummaryEmail} from '../../../email/sendSummaryEmail'
 import {meetingsEnded} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import getRedis from '../../../utils/getRedis'
@@ -85,13 +84,10 @@ const endSprintPoker: MutationResolvers['endSprintPoker'] = async (
   if (completedMeeting.meetingType !== 'poker') {
     return standardError(new Error('Meeting is not a poker meeting'), {userId: viewerId})
   }
-  const {templateId} = completedMeeting
-  const [meetingMembers, team, teamMembers, removedTaskIds, template] = await Promise.all([
-    dataLoader.get('meetingMembersByMeetingId').load(meetingId),
+  const [team, teamMembers, removedTaskIds] = await Promise.all([
     dataLoader.get('teams').loadNonNull(teamId),
     dataLoader.get('teamMembersByTeamId').load(teamId),
-    removeEmptyTasks(meetingId),
-    dataLoader.get('meetingTemplates').loadNonNull(templateId)
+    removeEmptyTasks(meetingId)
   ])
   const isKill = !!(phase && phase.phaseType !== 'ESTIMATE')
   const events = teamMembers.map(
@@ -112,7 +108,6 @@ const endSprintPoker: MutationResolvers['endSprintPoker'] = async (
   sendSummaryEmail(meetingId, page.id, context, info).catch(Logger.log)
   IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId).catch(Logger.log)
   meetingsEnded.inc({meeting_type: completedMeeting.meetingType})
-  analytics.sprintPokerEnd(completedMeeting, meetingMembers, template, dataLoader).catch(Logger.log)
   return data
 }
 

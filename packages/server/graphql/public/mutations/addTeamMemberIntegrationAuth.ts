@@ -9,10 +9,10 @@ import JiraServerOAuth1Manager, {
 import type {OAuth2TokenResponse} from '../../../integrations/OAuth2Manager'
 import createOAuth2Manager from '../../../integrations/platform/createOAuth2Manager'
 import toExpiresAt from '../../../integrations/platform/toExpiresAt'
+import {integrationChanges} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import syncTeamMemberIntegrationAuthTokens from '../../../postgres/queries/syncTeamMemberIntegrationAuthTokens'
 import type {JsonObject} from '../../../postgres/types/pg'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -48,10 +48,7 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
       userId: viewerId
     })
   }
-  const [integrationProvider, viewer] = await Promise.all([
-    dataLoader.get('integrationProviders').load(providerDbId),
-    dataLoader.get('users').loadNonNull(viewerId)
-  ])
+  const integrationProvider = await dataLoader.get('integrationProviders').load(providerDbId)
   if (!integrationProvider) {
     return standardError(
       new Error(`Unable to find appropriate integration provider for ${providerId}`),
@@ -178,7 +175,7 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
 
   await invalidateRepoIntegrationsCache(teamId, viewerId, providerService, 'added')
 
-  analytics.integrationAdded(viewer, teamId, providerService)
+  integrationChanges.inc({service: providerService, change: 'added'})
 
   const data = {userId: viewerId, teamId, service: providerService}
   publish(

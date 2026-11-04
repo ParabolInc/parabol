@@ -6,7 +6,6 @@ import {sendSummaryEmail} from '../../../email/sendSummaryEmail'
 import {meetingsEnded} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import type {TeamHealthMeeting} from '../../../postgres/types/Meeting'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import {Logger} from '../../../utils/Logger'
 import logError from '../../../utils/logError'
@@ -76,9 +75,8 @@ const safeEndTeamHealth = async ({
   })
   summarizeTeamHealthCategories(meetingId).catch(Logger.log)
 
-  const [completedTeamHealth, meetingMembers, team, teamMembers] = await Promise.all([
+  const [completedTeamHealth, team, teamMembers] = await Promise.all([
     dataLoader.get('newMeetings').loadNonNull(meetingId) as Promise<TeamHealthMeeting>,
-    dataLoader.get('meetingMembersByMeetingId').load(meetingId),
     dataLoader.get('teams').loadNonNull(teamId),
     dataLoader.get('teamMembersByTeamId').load(teamId)
   ])
@@ -94,7 +92,6 @@ const safeEndTeamHealth = async ({
   )
   await pg.insertInto('TimelineEvent').values(events).execute()
   meetingsEnded.inc({meeting_type: completedTeamHealth.meetingType})
-  analytics.teamHealthEnd(completedTeamHealth, meetingMembers, dataLoader)
   const page = await publishSummaryPage(meetingId, context, info).catch((e) => {
     logError(e instanceof Error ? e : new Error(`publishSummaryPage failed: ${e}`), {
       tags: {meetingId, op: 'publishSummaryPage'}

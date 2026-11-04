@@ -1,6 +1,5 @@
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 import getKysely from '../../../postgres/getKysely'
-import {identifyHighestUserTierForOrgId} from '../../../utils/identifyHighestUserTierForOrgId'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -36,8 +35,6 @@ const startTrial: MutationResolvers['startTrial'] = async (_source, {orgId}, {da
     removeTeamsLimitObjects(orgId, dataLoader)
   ])
   organization.trialStartDate = now
-
-  await identifyHighestUserTierForOrgId(orgId, dataLoader)
 
   return {orgId}
 }

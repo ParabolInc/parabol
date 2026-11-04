@@ -1,11 +1,11 @@
 import AuthToken from '../../../database/types/AuthToken'
 import TimelineEventJoinedParabol from '../../../database/types/TimelineEventJoinedParabol'
 import generateUID from '../../../generateUID'
+import {accountsCreated, orgsCreated, teamJoins} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
 import type {User} from '../../../postgres/types'
 import acceptTeamInvitation from '../../../safeMutations/acceptTeamInvitation'
-import {analytics} from '../../../utils/analytics/analytics'
 import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
 import sendPromptToJoinOrg from '../../../utils/sendPromptToJoinOrg'
 import type {DataLoaderWorker} from '../../graphql'
@@ -24,7 +24,7 @@ const bootstrapNewUser = async (
   isOrganic: boolean,
   dataLoader: DataLoaderWorker
 ) => {
-  const {id: userId, createdAt, preferredName, email, pseudoId, identities} = newUser
+  const {id: userId, preferredName, email, identities} = newUser
   // email is checked by the caller
   const domain = email.split('@')[1]!
   const [isCompanyDomain, organizations] = await Promise.all([
@@ -60,27 +60,6 @@ const bootstrapNewUser = async (
   ])
 
   const teamsWithAutoJoin = teamsWithAutoJoinRes.flat().filter(isValid)
-  const highestTier = organizations.reduce((highestTier, {id, tier}) => {
-    if (!teamsWithAutoJoin.some((team) => team.orgId === id)) return highestTier
-
-    if (tier === 'enterprise') return tier
-    if (highestTier === 'enterprise') return highestTier
-    if (tier === 'team') return tier
-    return highestTier
-  }, 'starter')
-
-  // Identify the user so user properties are set before any events are sent
-  analytics.identify({
-    userId,
-    createdAt,
-    email,
-    name: preferredName,
-    isActive: true,
-    highestTier,
-    isPatient0,
-    anonymousId: pseudoId
-  })
-
   const tms = [] as string[]
   if (!isOrganic) {
     const nonOrganicActions = [
@@ -123,11 +102,11 @@ const bootstrapNewUser = async (
               .insertInto('SuggestedAction')
               .values(inviteYourTeam)
               .onConflict((oc) => oc.columns(['userId', 'type']).doNothing())
-              .execute(),
-          analytics.autoJoined(newUser, teamId)
+              .execute()
         ])
       })
     )
+    teamJoins.inc({method: 'auto_join'}, teamsWithAutoJoin.length)
   } else if (isOrganic) {
     const orgId = generateUID()
     const teamId = generateUID()
@@ -143,10 +122,10 @@ const bootstrapNewUser = async (
     await createNewOrg(orgId, orgName, userId, email, dataLoader)
     await createTeamAndLeader(newUser, validNewTeam, dataLoader)
     await Promise.all([addSeedTasks(userId, teamId), sendPromptToJoinOrg(newUser, dataLoader)])
-    analytics.newOrg(newUser, orgId, teamId, true)
+    orgsCreated.inc({source: 'signup'})
   }
 
-  analytics.accountCreated(newUser, !isOrganic, isPatient0)
+  accountsCreated.inc({source: isOrganic ? 'organic' : 'invited'})
 
   return new AuthToken({sub: userId, tms})
 }

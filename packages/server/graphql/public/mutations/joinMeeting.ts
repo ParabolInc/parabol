@@ -6,6 +6,7 @@ import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import CheckInStage from '../../../database/types/CheckInStage'
 import TeamPromptResponseStage from '../../../database/types/TeamPromptResponseStage'
 import UpdatesStage from '../../../database/types/UpdatesStage'
+import {meetingJoins} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import type {TeamMember} from '../../../postgres/types'
 import type {AnyMeeting} from '../../../postgres/types/Meeting'
@@ -17,7 +18,6 @@ import type {
   UpdatesStage as UpdatesStageDB
 } from '../../../postgres/types/NewMeetingPhase'
 import type {MeetingMember} from '../../../postgres/types/pg'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
@@ -55,10 +55,7 @@ const joinMeeting: MutationResolvers['joinMeeting'] = async (
   const subOptions = {mutatorId, operationId}
 
   // AUTH
-  const [meeting, viewer] = await Promise.all([
-    dataLoader.get('newMeetings').load(meetingId),
-    dataLoader.get('users').loadNonNull(viewerId)
-  ])
+  const meeting = await dataLoader.get('newMeetings').load(meetingId)
   if (!meeting) return {error: {message: 'Invalid meeting ID'}}
   const {endedAt, teamId, phases} = meeting
   if (endedAt) return {error: {message: 'Meeting has already ended'}}
@@ -143,7 +140,7 @@ const joinMeeting: MutationResolvers['joinMeeting'] = async (
 
   const data = {meetingId}
   publish(SubscriptionChannel.MEETING, meetingId, 'JoinMeetingSuccess', data, subOptions)
-  analytics.meetingJoined(viewer, meeting)
+  meetingJoins.inc({meeting_type: meeting.meetingType})
   return data
 }
 

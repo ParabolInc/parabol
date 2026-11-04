@@ -12,10 +12,10 @@ import appOrigin from '../../../appOrigin'
 import getMailManager from '../../../email/getMailManager'
 import teamInviteEmailCreator from '../../../email/teamInviteEmailCreator'
 import generateUID from '../../../generateUID'
+import {inviteEmails} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
 import removeSuggestedAction from '../../../safeMutations/removeSuggestedAction'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import getBestInvitationMeeting from '../../../utils/getBestInvitationMeeting'
 import logError from '../../../utils/logError'
@@ -140,7 +140,7 @@ const inviteToTeamHelper = async (
       .execute(),
     getBestInvitationMeeting(teamId, meetingId, dataLoader)
   ])
-  const {orgId, name: teamName, isOnboardTeam, createdAt: teamCreatedAt} = team
+  const {orgId, name: teamName, isOnboardTeam} = team
   const {tier, name: orgName} = organization
   const userByEmail = new Map(users.map((user) => [user.email.toLowerCase(), user]))
   const memberUserIds = new Set(teamMembers.map(({userId}) => userId))
@@ -319,18 +319,9 @@ const inviteToTeamHelper = async (
     removedSuggestedActionId = suggestedActionId
 
     const inviteTo = meetingId ? 'meeting' : 'team'
-    const isInvitedOnCreation = teamCreatedAt.getTime() > now - ms('10s')
     invitations.forEach((invitation, idx) => {
       const success = sendResults[idx]!
-      analytics.inviteEmailSent(
-        inviter,
-        teamId,
-        invitation.email,
-        userByEmail.has(invitation.email),
-        inviteTo,
-        success,
-        isInvitedOnCreation
-      )
+      inviteEmails.inc({invite_to: inviteTo, outcome: success ? 'sent' : 'failed'})
       results.set(
         invitation.email,
         success

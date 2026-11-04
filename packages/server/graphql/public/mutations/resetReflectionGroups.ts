@@ -1,6 +1,6 @@
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
+import {reflectionGroupResets} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -26,10 +26,7 @@ const resetReflectionGroups: MutationResolvers['resetReflectionGroups'] = async 
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
   const viewerId = getUserId(authToken)
-  const [meeting, viewer] = await Promise.all([
-    dataLoader.get('newMeetings').load(meetingId),
-    dataLoader.get('users').loadNonNull(viewerId)
-  ])
+  const meeting = await dataLoader.get('newMeetings').load(meetingId)
 
   if (!meeting) {
     return standardError(new Error('Meeting not found'), {
@@ -43,7 +40,7 @@ const resetReflectionGroups: MutationResolvers['resetReflectionGroups'] = async 
     })
   }
 
-  const {resetReflectionGroups, teamId} = meeting
+  const {resetReflectionGroups} = meeting
   if (!resetReflectionGroups) {
     return standardError(new Error('No reset reflection groups found'), {
       userId: viewerId
@@ -78,7 +75,7 @@ const resetReflectionGroups: MutationResolvers['resetReflectionGroups'] = async 
     .where('id', '=', meetingId)
     .execute()
   meeting.resetReflectionGroups = null
-  analytics.resetGroupsClicked(viewer, meetingId, teamId)
+  reflectionGroupResets.inc()
   const data = {meetingId}
   publish(SubscriptionChannel.MEETING, meetingId, 'ResetReflectionGroupsSuccess', data, subOptions)
   return data

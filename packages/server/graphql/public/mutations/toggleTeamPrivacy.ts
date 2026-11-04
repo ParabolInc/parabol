@@ -1,16 +1,13 @@
+import {teamPrivacyChanges} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
-import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const toggleTeamPrivacy: MutationResolvers['toggleTeamPrivacy'] = async (
   _source,
   {teamId},
-  {authToken, dataLoader}
+  {dataLoader}
 ) => {
-  const viewerId = getUserId(authToken)
-  const viewer = await dataLoader.get('users').loadNonNull(viewerId)
   const pg = getKysely()
 
   const team = await dataLoader.get('teams').loadNonNull(teamId)
@@ -31,7 +28,7 @@ const toggleTeamPrivacy: MutationResolvers['toggleTeamPrivacy'] = async (
   team.isPublic = !team.isPublic
 
   const data = {teamId}
-  analytics.teamPrivacyChanged(viewer, teamId, team.isPublic)
+  teamPrivacyChanges.inc({visibility: team.isPublic ? 'public' : 'private'})
   return data
 }
 

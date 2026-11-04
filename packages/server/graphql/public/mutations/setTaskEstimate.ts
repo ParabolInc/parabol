@@ -6,9 +6,9 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../../appOrigin'
 import {estimatePushColumns} from '../../../integrations/platform/estimatePushColumns'
 import {getServerIntegration} from '../../../integrations/platform/registry'
+import {taskEstimates} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import type {EstimatePushResult} from '../../../postgres/types/EstimatePushResult'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
@@ -27,10 +27,9 @@ const setTaskEstimate: MutationResolvers['setTaskEstimate'] = async (
   const {taskId, value, dimensionName, meetingId} = taskEstimate
 
   //AUTH
-  const [task, meeting, viewer] = await Promise.all([
+  const [task, meeting] = await Promise.all([
     dataLoader.get('tasks').load(taskId),
-    dataLoader.get('newMeetings').load(meetingId),
-    dataLoader.get('users').loadNonNull(viewerId)
+    dataLoader.get('newMeetings').load(meetingId)
   ])
   if (!meeting) {
     return {error: {message: 'Meeting not found'}}
@@ -141,15 +140,7 @@ const setTaskEstimate: MutationResolvers['setTaskEstimate'] = async (
       })
   const success = !(pushResult instanceof Error)
   const errorMessage = pushResult instanceof Error ? pushResult.message : undefined
-
-  analytics.taskEstimateSet(viewer, {
-    taskId,
-    meetingId,
-    dimensionName,
-    service,
-    success,
-    errorMessage
-  })
+  taskEstimates.inc({service: service ?? 'parabol', outcome: success ? 'success' : 'failure'})
 
   if (success) {
     await getKysely()

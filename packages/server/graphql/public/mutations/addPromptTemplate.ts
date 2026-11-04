@@ -3,9 +3,9 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {positionAfter} from '../../../../client/shared/sortOrder'
 import {PALETTE} from '../../../../client/styles/paletteV3'
 import generateUID from '../../../generateUID'
+import {templatesCreated} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import decrementFreeTemplatesRemaining from '../../../postgres/queries/decrementFreeTemplatesRemaining'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember, isUserInOrg} from '../../../utils/authorization'
 import getUserDetail from '../../../utils/getUserDetail'
 import publish from '../../../utils/publish'
@@ -23,10 +23,9 @@ const addPromptTemplate: MutationResolvers['addPromptTemplate'] = async (
   const subOptions = {operationId, mutatorId}
   const viewerId = getUserId(authToken)
 
-  const [teamTemplates, viewerTeam, viewer, freeTemplatesRemaining] = await Promise.all([
+  const [teamTemplates, viewerTeam, freeTemplatesRemaining] = await Promise.all([
     dataLoader.get('meetingTemplatesByType').load({meetingType: type, teamId}),
     dataLoader.get('teams').loadNonNull(teamId),
-    dataLoader.get('users').loadNonNull(viewerId),
     getUserDetail(viewerId, promptTemplateRules[type].freeTemplatesColumn, dataLoader)
   ])
   const org = await dataLoader.get('organizations').loadNonNull(viewerTeam.orgId)
@@ -112,11 +111,7 @@ const addPromptTemplate: MutationResolvers['addPromptTemplate'] = async (
     decrementFreeTemplatesRemaining(viewerId, promptTemplateRules[type].freeTemplatesColumn)
   ])
   dataLoader.clearAll(['meetingTemplates', 'userDetails'])
-  analytics.templateMetrics(
-    viewer,
-    newTemplate,
-    parentTemplate ? 'Template Cloned' : 'Template Created'
-  )
+  templatesCreated.inc({meeting_type: newTemplate.type, origin: parentTemplate ? 'clone' : 'blank'})
 
   const data = {templateId: newTemplate.id}
   publish(SubscriptionChannel.TEAM, teamId, 'AddPromptTemplateSuccess', data, subOptions)

@@ -1,7 +1,7 @@
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
+import {teamJoins} from '../../../metricsHandler'
 import acceptTeamInvitationSafe from '../../../safeMutations/acceptTeamInvitation'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -20,10 +20,7 @@ const joinTeam: MutationResolvers['joinTeam'] = async (
     return standardError(new Error('You are already a member of this team'))
   }
 
-  const [team, viewer] = await Promise.all([
-    dataLoader.get('teams').loadNonNull(teamId),
-    dataLoader.get('users').loadNonNull(viewerId)
-  ])
+  const team = await dataLoader.get('teams').loadNonNull(teamId)
 
   if (!team.isPublic) {
     return standardError(new Error('This team is not public'))
@@ -49,7 +46,7 @@ const joinTeam: MutationResolvers['joinTeam'] = async (
   // Tell the rest of the team about the new team member
   publish(SubscriptionChannel.TEAM, teamId, 'JoinTeamSuccess', data, subOptions)
 
-  analytics.joinedTeam(viewer, teamId)
+  teamJoins.inc({method: 'public_team'})
 
   return {
     teamId,

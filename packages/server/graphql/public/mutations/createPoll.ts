@@ -1,7 +1,7 @@
 import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
 import {Polls, SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {pollsCreated} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
@@ -60,10 +60,7 @@ const createPoll: MutationResolvers['createPoll'] = async (
     return {error: {message: 'Meeting not found'}}
   }
   const meetingMemberId = MeetingMemberId.join(meetingId, viewerId)
-  const [viewerMeetingMember, viewer] = await Promise.all([
-    dataLoader.get('meetingMembers').load(meetingMemberId),
-    dataLoader.get('users').loadNonNull(viewerId)
-  ])
+  const viewerMeetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
   if (!viewerMeetingMember) {
     return {error: {message: 'Not a member of the meeting'}}
   }
@@ -102,7 +99,7 @@ const createPoll: MutationResolvers['createPoll'] = async (
   const {pollId} = insertPollResult[0]!
 
   const data = {pollId}
-  analytics.pollAdded(viewer, teamId, meetingId)
+  pollsCreated.inc()
   publish(SubscriptionChannel.MEETING, meetingId, 'CreatePollSuccess', data, subOptions)
   return data
 }

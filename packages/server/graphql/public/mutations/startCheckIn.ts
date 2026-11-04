@@ -2,10 +2,10 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import MeetingAction from '../../../database/types/MeetingAction'
 import generateUID from '../../../generateUID'
+import {meetingsStarted} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import type {CheckInMeeting, MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import type {CheckInPhase} from '../../../postgres/types/NewMeetingPhase'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -29,10 +29,7 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
   const subOptions = {mutatorId, operationId}
   // AUTH
   const viewerId = getUserId(authToken)
-  const [unpaidError, viewer] = await Promise.all([
-    isStartMeetingLocked(teamId, dataLoader),
-    dataLoader.get('users').loadNonNull(viewerId)
-  ])
+  const unpaidError = await isStartMeetingLocked(teamId, dataLoader)
   if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
 
   const meetingType: MeetingTypeEnum = 'action'
@@ -90,7 +87,7 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
       pg.updateTable('AgendaItem').set({meetingId}).where('id', 'in', agendaItemIds).execute()
   ])
   IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
-  analytics.meetingStarted(viewer, meeting)
+  meetingsStarted.inc({meeting_type: meeting.meetingType})
   const {error} = await createGcalEvent({
     name: meeting.name,
     gcalInput,

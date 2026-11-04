@@ -1,7 +1,7 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import linkify from 'parabol-client/utils/linkify'
+import {accountRenames} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import {broadcastUserMentionUpdate} from '../../../utils/tiptap/hocusPocusHub'
@@ -49,17 +49,9 @@ const updateUserProfile: MutationResolvers['updateUserProfile'] = async (
     .execute()
   dataLoader.clearAll(['users', 'teamMembers'])
 
-  const [user, teamMembers] = await Promise.all([
-    dataLoader.get('users').loadNonNull(userId),
-    dataLoader.get('teamMembersByUserId').load(userId)
-  ])
+  const teamMembers = await dataLoader.get('teamMembersByUserId').load(userId)
   if (normalizedPreferredName) {
-    analytics.accountNameChanged(user, normalizedPreferredName)
-    analytics.identify({
-      userId,
-      email: user.email,
-      name: normalizedPreferredName
-    })
+    accountRenames.inc()
 
     await broadcastUserMentionUpdate(userId, normalizedPreferredName, dataLoader)
   }

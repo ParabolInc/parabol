@@ -1,9 +1,9 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RRuleSet} from 'rrule-rust'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
+import {meetingSeriesChanges, meetingsStarted} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import {isImmediateOccurrence} from '../../../utils/isImmediateOccurrence'
 import publish from '../../../utils/publish'
@@ -33,9 +33,8 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
 
   // RESOLUTION
   const meetingType = 'retrospective' as const
-  const [unpaidError, viewer, meetingSettings, meetingCount] = await Promise.all([
+  const [unpaidError, meetingSettings, meetingCount] = await Promise.all([
     isStartMeetingLocked(teamId, dataLoader),
-    dataLoader.get('users').loadNonNull(viewerId),
     dataLoader.get('meetingSettingsByType').loadNonNull({teamId, meetingType}),
     dataLoader.get('meetingCount').load({teamId, meetingType})
   ])
@@ -67,7 +66,7 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
       teamId,
       facilitatorId: viewerId
     })
-    analytics.recurrenceStarted(viewer, meetingSeries)
+    meetingSeriesChanges.inc({meeting_type: meetingSeries.meetingType, change: 'started'})
     const {error: gcalError, gcalSeriesId} = await createGcalEvent({
       name: meetingSeriesName,
       gcalInput,
@@ -114,7 +113,6 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   }
   const meetingId = meeting.id
   if (rotation) await setFacilitatorRotation(teamId, rotation, dataLoader)
-  const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
   await updateMeetingTemplateLastUsedAt(selectedTemplateId, teamId)
 
   const teamMember = await dataLoader
@@ -142,10 +140,10 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     // meeting was modified if a new meeting series was created
     dataLoader.get('newMeetings').clear(meetingId)
     dataLoader.get('activeMeetingsByTeamId').clear(teamId)
-    analytics.recurrenceStarted(viewer, meetingSeries)
+    meetingSeriesChanges.inc({meeting_type: meetingSeries.meetingType, change: 'started'})
   }
   IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
-  analytics.meetingStarted(viewer, meeting, template)
+  meetingsStarted.inc({meeting_type: meeting.meetingType})
   const {error, gcalSeriesId} = await createGcalEvent({
     name: meetingSeriesName,
     gcalInput,

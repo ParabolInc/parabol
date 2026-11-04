@@ -1,4 +1,5 @@
 import type {GraphQLResolveInfo} from 'graphql'
+import {teamPromptResponsesShared} from '../../../../metricsHandler'
 import type {GQLContext} from '../../../graphql'
 import {IntegrationNotifier} from '../../../mutations/helpers/notifications/IntegrationNotifier'
 import publishNotification from '../helpers/publishNotification'
@@ -38,10 +39,6 @@ jest.mock('../../../mutations/helpers/notifications/IntegrationNotifier', () => 
     sendNotificationToUser: jest.fn()
   }
 }))
-jest.mock('../../../../utils/analytics/analytics', () => ({
-  __esModule: true,
-  analytics: {responseAdded: jest.fn()}
-}))
 jest.mock('../../../../utils/publish', () => ({__esModule: true, default: jest.fn()}))
 jest.mock('../helpers/publishNotification', () => ({__esModule: true, default: jest.fn()}))
 jest.mock('../helpers/publishTeamPromptMentions', () => ({
@@ -53,9 +50,8 @@ const {updatedIdBatches, updateResult} = jest.requireMock('../../../../postgres/
   updatedIdBatches: number[][]
   updateResult: {rows: {id: number}[]}
 }
-const {analytics} = jest.requireMock('../../../../utils/analytics/analytics') as {
-  analytics: {responseAdded: jest.Mock}
-}
+const sharedResponseCount = async () =>
+  (await teamPromptResponsesShared.get()).values[0]?.value ?? 0
 const standupResponseSubmitted = jest.mocked(IntegrationNotifier.standupResponseSubmitted)
 const publishMention = jest.mocked(publishNotification)
 const createMentions = jest.mocked(createTeamPromptMentionNotifications)
@@ -115,6 +111,7 @@ describe('shareTeamPromptResponses', () => {
     updatedIdBatches.splice(0, updatedIdBatches.length)
     updateResult.rows = []
     createMentions.mockResolvedValue([])
+    teamPromptResponsesShared.reset()
   })
 
   it('shares every draft, notifies Slack once and tracks each shared answer', async () => {
@@ -142,7 +139,7 @@ describe('shareTeamPromptResponses', () => {
       'team1',
       viewerId
     )
-    expect(analytics.responseAdded).toHaveBeenCalledTimes(2)
+    expect(await sharedResponseCount()).toBe(2)
     expect(res).toEqual({meetingId, userId: viewerId})
   })
 
@@ -154,7 +151,7 @@ describe('shareTeamPromptResponses', () => {
     expect(updatedIdBatches).toEqual([])
     expect(createMentions).not.toHaveBeenCalled()
     expect(standupResponseSubmitted).not.toHaveBeenCalled()
-    expect(analytics.responseAdded).not.toHaveBeenCalled()
+    expect(await sharedResponseCount()).toBe(0)
     expect(res).toEqual({meetingId, userId: viewerId})
   })
 
@@ -168,7 +165,7 @@ describe('shareTeamPromptResponses', () => {
     expect(createMentions).not.toHaveBeenCalled()
     expect(publishMention).not.toHaveBeenCalled()
     expect(standupResponseSubmitted).not.toHaveBeenCalled()
-    expect(analytics.responseAdded).not.toHaveBeenCalled()
+    expect(await sharedResponseCount()).toBe(0)
     expect(res).toEqual({meetingId, userId: viewerId})
   })
 
