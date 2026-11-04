@@ -31,14 +31,23 @@ const getStrongestRole = ({viewer, public: publicRole}: PageAccess) => {
   return viewer === null && publicRole === null ? null : undefined
 }
 
-// The viewer's strongest role on a page: null when they cannot open it, undefined when it isn't loaded
-export const lookupPageViewerAccess = (environment: IEnvironment, pageCode: number) => {
+const lookupPageAccess = (environment: IEnvironment, pageCode: number) => {
   const page = environment.lookup(getPageSelector(pageCode)).data as
     | usePageViewerAccess_page$data
     | null
     | undefined
-  return page?.access ? getStrongestRole(page.access) : undefined
+  return page?.access
 }
+
+// The viewer's strongest role on a page: null when they cannot open it, undefined when it isn't loaded
+export const lookupPageViewerAccess = (environment: IEnvironment, pageCode: number) => {
+  const access = lookupPageAccess(environment, pageCode)
+  return access ? getStrongestRole(access) : undefined
+}
+
+// The role granted to the viewer themselves, ignoring the page's public link
+export const lookupPageViewerGrant = (environment: IEnvironment, pageCode: number) =>
+  lookupPageAccess(environment, pageCode)?.viewer
 
 export const subscribeToPageViewerAccess = (
   environment: IEnvironment,
