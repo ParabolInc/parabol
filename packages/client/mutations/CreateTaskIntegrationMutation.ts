@@ -9,10 +9,8 @@ import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {splitTipTapContent} from '../shared/tiptap/splitTipTapContent'
 import {tipTapToMarkdown} from '../shared/tiptap/tipTapToMarkdown'
 import type {StandardMutation} from '../types/relayMutations'
-import getMeetingPathParams from '../utils/meetings/getMeetingPathParams'
 import clientTempId from '../utils/relay/clientTempId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 
 interface OptimisticIntegrationFields {
   typename: string
@@ -195,21 +193,6 @@ const CreateTaskIntegrationMutation: StandardMutation<TCreateTaskIntegrationMuta
     onCompleted: (data, errors) => {
       if (onCompleted) {
         onCompleted(data, errors)
-      }
-      const {meetingId} = getMeetingPathParams()
-      const store = atmosphere.getStore()
-      const meetingType = meetingId
-        ? (store.getSource().get(meetingId) as any)?.meetingType
-        : undefined
-      if (data.createTaskIntegration && !data?.createTaskIntegration?.error) {
-        SendClientSideEvent(atmosphere, 'Task Published', {
-          taskId: data.createTaskIntegration.task?.id,
-          teamId: data.createTaskIntegration.task?.teamId,
-          inMeeting: !!meetingId,
-          meetingId,
-          meetingType,
-          service: data.createTaskIntegration.task?.taskService
-        })
       }
     },
     onError

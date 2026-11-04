@@ -3,7 +3,6 @@ import type * as React from 'react'
 import {useRef} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {Search as SearchIcon} from '~/ui/icons'
-import SendClientSideEvent from '~/utils/SendClientSideEvent'
 import type {SpotlightSearchBar_meeting$key} from '../__generated__/SpotlightSearchBar_meeting.graphql'
 import type Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -24,29 +23,20 @@ interface Props {
 
 const SpotlightSearchBar = (props: Props) => {
   const {meetingRef} = props
-  const hasSearchedRef = useRef(false)
   const meeting = useFragment(
     graphql`
       fragment SpotlightSearchBar_meeting on RetrospectiveMeeting {
         id
         spotlightSearchQuery
-        spotlightReflectionId
       }
     `,
     meetingRef
   )
-  const {id: meetingId, spotlightSearchQuery, spotlightReflectionId} = meeting
+  const {id: meetingId, spotlightSearchQuery} = meeting
   const atmosphere = useAtmosphere()
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSpotlightSearch(atmosphere, meetingId, e.currentTarget.value)
-    if (!hasSearchedRef.current) {
-      SendClientSideEvent(atmosphere, 'Searched in Spotlight', {
-        reflectionId: spotlightReflectionId,
-        meetingId
-      })
-      hasSearchedRef.current = true
-    }
   }
 
   const inputRef = useRef<HTMLInputElement>(null)

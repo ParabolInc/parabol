@@ -27,7 +27,7 @@ class ErrorBoundary extends Component<Props & {atmosphere: Atmosphere}, State> {
   }
 
   componentDidUpdate(prevProps: Props) {
-    const {error, isIgnoredError} = this.state
+    const {error} = this.state
     if (error && prevProps.resetKey !== this.props.resetKey) {
       this.setState({
         error: undefined,
@@ -35,14 +35,7 @@ class ErrorBoundary extends Component<Props & {atmosphere: Atmosphere}, State> {
         eventId: undefined,
         isIgnoredError: false
       })
-      return
     }
-    if (!error || isIgnoredError) return
-    const {atmosphere} = this.props
-    // the analytics libraries stay out of the entry bundle. AnalyticsPage has already loaded them by now
-    import('~/utils/SendClientSideEvent')
-      .then(({default: SendClientSideEvent}) => SendClientSideEvent(atmosphere, 'Fatal Error'))
-      .catch(() => {})
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {

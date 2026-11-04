@@ -2,10 +2,8 @@ import {useCallback, useState} from 'react'
 import pokerTutorialThumb from '../../../static/images/illustrations/pokerTutorialThumb.jpg'
 import retroTutorialThumb from '../../../static/images/illustrations/retroTutorialThumb.png'
 import standupTutorialThumb from '../../../static/images/illustrations/standupTutorialThumb.jpg'
-import useAtmosphere from '../hooks/useAtmosphere'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogContent} from '../ui/Dialog/DialogContent'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 import MeetingsDashTutorialModal from './MeetingsDashTutorialModal'
 
 interface Props {
@@ -31,19 +29,16 @@ const TUTORIAL_MAP = {
 }
 
 const TutorialMeetingCard = (props: Props) => {
-  const atmosphere = useAtmosphere()
   const config = TUTORIAL_MAP[props.type]
   const [isOpen, setIsOpen] = useState(false)
 
   const onOpen = useCallback(() => {
-    SendClientSideEvent(atmosphere, 'Tutorial Meeting Card Opened')
     setIsOpen(true)
-  }, [atmosphere])
+  }, [])
 
   const onClose = useCallback(() => {
-    SendClientSideEvent(atmosphere, 'Tutorial Meeting Card Closed')
     setIsOpen(false)
-  }, [atmosphere])
+  }, [])
 
   return (
     <>

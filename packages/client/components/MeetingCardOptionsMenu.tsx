@@ -15,7 +15,6 @@ import type {MeetingCardOptionsMenuQuery} from '../__generated__/MeetingCardOpti
 import {MENU_ITEM_ICON, MenuItem} from '../ui/Menu/MenuItem'
 import getMassInvitationUrl from '../utils/getMassInvitationUrl'
 import makeAppURL from '../utils/makeAppURL'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 import {EndMeetingMutationLookup} from './Recurrence/EndRecurringMeetingModal'
 
 interface Props {
@@ -97,11 +96,6 @@ const MeetingCardOptionsMenu = (props: Props) => {
               `meeting-series/${meetingSeries.urlSlug}`
             )
             await navigator.clipboard.writeText(copyUrl)
-
-            SendClientSideEvent(atmosphere, 'Copied Meeting Series Link', {
-              teamId: team?.id,
-              meetingId: meetingId
-            })
           }}
         >
           <Link className={MENU_ITEM_ICON} />
@@ -113,11 +107,6 @@ const MeetingCardOptionsMenu = (props: Props) => {
           popTooltip()
           const copyUrl = getMassInvitationUrl(token)
           await navigator.clipboard.writeText(copyUrl)
-
-          SendClientSideEvent(atmosphere, 'Copied Invite Link', {
-            teamId: team?.id,
-            meetingId: meetingId
-          })
         }}
       >
         <PersonAddIcon className={MENU_ITEM_ICON} />

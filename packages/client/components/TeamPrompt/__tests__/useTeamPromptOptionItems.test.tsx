@@ -21,7 +21,6 @@ jest.mock('../../../mutations/EndTeamPromptMutation', () => ({
 jest.mock('../../../modules/teamDashboard/components/ProviderRow/ProviderRowEntry', () => ({
   getProviderAnchorId: () => 'slack'
 }))
-jest.mock('../../../utils/SendClientSideEvent', () => ({__esModule: true, default: jest.fn()}))
 jest.mock('../../SlackSVG', () => ({__esModule: true, default: () => null}))
 
 const happyWindow = new Window({url: 'https://parabol.test/'})

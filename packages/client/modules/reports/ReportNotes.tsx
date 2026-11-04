@@ -2,10 +2,8 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router'
 import type {ReportNotes_result$key} from '../../__generated__/ReportNotes_result.graphql'
-import useAtmosphere from '../../hooks/useAtmosphere'
 import {MIN_RESPONDENTS_FOR_SCORE} from '../../shared/utils/teamHealthAnonymity'
 import plural from '../../utils/plural'
-import SendClientSideEvent from '../../utils/SendClientSideEvent'
 
 interface Props {
   orgId: string
@@ -26,7 +24,6 @@ const ReportNotes = ({orgId, resultRef, hasHiddenTeamRows}: Props) => {
     `,
     resultRef
   )
-  const atmosphere = useAtmosphere()
   // the view says why a stopped report shows nothing
   const shownNotes = notes.filter(
     ({kind}) =>
@@ -35,13 +32,6 @@ const ReportNotes = ({orgId, resultRef, hasHiddenTeamRows}: Props) => {
       !(kind === 'HIDDEN_FOR_ANONYMITY' && hasHiddenTeamRows)
   )
   if (shownNotes.length === 0) return null
-  const onUpgradeClick = () => {
-    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
-      upgradeCTALocation: 'reportsStarterLimit',
-      upgradeTier: 'team',
-      orgId
-    })
-  }
   return (
     <ul className='m-0 flex list-none flex-col gap-1 border-hairline border-t px-5 py-3 text-fg-secondary text-sm'>
       {shownNotes.map(({kind, count}) => (
@@ -51,7 +41,6 @@ const ReportNotes = ({orgId, resultRef, hasHiddenTeamRows}: Props) => {
               {count} {plural(count, 'team')} left out on the Starter plan.{' '}
               <Link
                 to={`/me/organizations/${orgId}/billing`}
-                onClick={onUpgradeClick}
                 className='font-semibold text-sky-600 hover:underline dark:text-accent'
               >
                 Upgrade

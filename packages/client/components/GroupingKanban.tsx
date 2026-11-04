@@ -85,7 +85,6 @@ const GroupingKanban = (props: Props) => {
             id
           }
         }
-        spotlightSearchQuery
       }
     `,
     meetingRef

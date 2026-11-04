@@ -18,7 +18,6 @@ import {cn} from '../../../../../ui/cn'
 import {Menu} from '../../../../../ui/Menu/Menu'
 import {MenuContent} from '../../../../../ui/Menu/MenuContent'
 import lazyPreload from '../../../../../utils/lazyPreload'
-import SendClientSideEvent from '../../../../../utils/SendClientSideEvent'
 
 const ExportAllTasksMenuRoot = lazyPreload(
   () => import(/* webpackChunkName: 'ExportAllTasksMenuRoot' */ './ExportAllTasksMenuRoot')
@@ -60,8 +59,6 @@ const ExportAllTasks = (props: Props) => {
     graphql`
       fragment ExportAllTasks_meeting on NewMeeting {
         id
-        meetingType
-        teamId
         ...ExportAllTasksMenuRoot_meeting
         ... on RetrospectiveMeeting {
           tasks {
@@ -86,7 +83,7 @@ const ExportAllTasks = (props: Props) => {
   // :TODO: (jmtaber129): Get this information from the tasks integration.
   const [pushedIntegrationLabel, setPushedIntegrationLabel] = useState<string | null>(null)
 
-  const {id: meetingId, meetingType, tasks, teamId} = meeting
+  const {tasks} = meeting
   if (!tasks) {
     return null
   }
@@ -138,12 +135,6 @@ const ExportAllTasks = (props: Props) => {
       })
       onError(errors[0]!.reason)
     } else {
-      SendClientSideEvent(atmosphere, 'Bulk Tasks Published', {
-        teamId,
-        meetingId,
-        meetingType,
-        service: integrationProviderService
-      })
       integrationLabel && setPushedIntegrationLabel(integrationLabel)
       onCompleted()
     }

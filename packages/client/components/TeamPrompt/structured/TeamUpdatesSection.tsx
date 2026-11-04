@@ -23,7 +23,6 @@ const TeamUpdatesSection = (props: Props) => {
     graphql`
       fragment TeamUpdatesSection_meeting on TeamPromptMeeting {
         id
-        teamId
         endedAt
         localStageId
         rightDrawerOpen
@@ -60,11 +59,11 @@ const TeamUpdatesSection = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {id: meetingId, teamId, endedAt, prompts} = meeting
+  const {id: meetingId, endedAt, prompts} = meeting
   const localStageId = meeting.localStageId ?? null
   const rightDrawerOpen = meeting.rightDrawerOpen ?? null
   const stages = meeting.phases[0]?.stages ?? []
-  const [layout, setLayout] = useTeamLayoutPreference(meetingId, teamId)
+  const [layout, setLayout] = useTeamLayoutPreference()
   const headerRef = useRef<HTMLDivElement>(null)
   const gridRef = useRef<HTMLDivElement>(null)
   const sectionRef = useRef<HTMLDivElement>(null)

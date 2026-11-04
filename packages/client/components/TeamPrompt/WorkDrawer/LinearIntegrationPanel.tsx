@@ -7,7 +7,6 @@ import useMutationProps from '../../../hooks/useMutationProps'
 import useSessionStorageState from '../../../hooks/useSessionStorageState'
 import LinearClientManager from '../../../utils/LinearClientManager'
 import {makeLinearWorkFilter} from '../../../utils/makeLinearWorkFilter'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import LinearSVG from '../../LinearSVG'
 import InspirationItemsPanel from './InspirationItemsPanel'
 import LinearIntegrationResultsRoot from './LinearIntegrationResultsRoot'
@@ -24,7 +23,6 @@ const LinearIntegrationPanel = (props: Props) => {
     graphql`
       fragment LinearIntegrationPanel_meeting on NewMeeting {
         ...useInspirationDrawer_meeting
-        teamId
         id
         linearInspirationItems: inspirationItems(service: linear) {
           id
@@ -85,12 +83,6 @@ const LinearIntegrationPanel = (props: Props) => {
       return onError(new Error('Could not find Linear provider'))
     }
     LinearClientManager.openOAuth(atmosphere, teamMember.teamId, provider, mutationProps)
-
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Integration Connected', {
-      teamId: meeting.teamId,
-      meetingId: meeting.id,
-      service: 'linear'
-    })
   }
 
   const filterBar = teamMember ? (
@@ -98,14 +90,7 @@ const LinearIntegrationPanel = (props: Props) => {
       <LinearProjectFilterBar
         teamMemberRef={teamMember}
         selectedLinearIds={selectedLinearIds}
-        setSelectedLinearIds={(ids) => {
-          SendClientSideEvent(atmosphere, 'Your Work Filter Changed', {
-            teamId: meeting.teamId,
-            meetingId: meeting.id,
-            service: 'linear'
-          })
-          setSelectedLinearIds(ids)
-        }}
+        setSelectedLinearIds={setSelectedLinearIds}
       />
       <div className='mb-2 flex w-full px-2'>
         <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />

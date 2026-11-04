@@ -1,13 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {AzureDevOpsIntegrationPanel_meeting$key} from '../../../__generated__/AzureDevOpsIntegrationPanel_meeting.graphql'
-import useAtmosphere from '../../../hooks/useAtmosphere'
 import useInspirationDrawer from '../../../hooks/useInspirationDrawer'
 import useSessionStorageState from '../../../hooks/useSessionStorageState'
 import {getAzureDevOpsSharedProjects} from '../../../integrations/azureDevOps/azureDevOpsSharedProjects'
 import findIntegrationService from '../../../integrations/platform/findIntegrationService'
 import buildAzureDevOpsWorkWiql from '../../../shared/integrations/buildAzureDevOpsWorkWiql'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import AzureDevOpsConnectPrompt from './AzureDevOpsConnectPrompt'
 import AzureDevOpsIntegrationResultsRoot from './AzureDevOpsIntegrationResultsRoot'
 import AzureDevOpsProjectFilterBar from './AzureDevOpsProjectFilterBar'
@@ -50,7 +48,6 @@ const AzureDevOpsIntegrationPanel = (props: Props) => {
     `,
     meetingRef
   )
-  const atmosphere = useAtmosphere()
   const {id: meetingId, teamId} = meeting
   const teamMember = meeting.viewerMeetingMember?.teamMember
   const services = teamMember?.services ?? []
@@ -66,7 +63,7 @@ const AzureDevOpsIntegrationPanel = (props: Props) => {
   )
 
   if (!isConnected || !teamMember) {
-    return <AzureDevOpsConnectPrompt teamId={teamId} meetingId={meetingId} services={services} />
+    return <AzureDevOpsConnectPrompt teamId={teamId} services={services} />
   }
 
   const {startAt, endAt} = dateRange ?? {}
@@ -83,14 +80,7 @@ const AzureDevOpsIntegrationPanel = (props: Props) => {
         <AzureDevOpsProjectFilterBar
           teamMemberRef={teamMember}
           selectedProjectIds={selectedProjectIds}
-          setSelectedProjectIds={(projectIds) => {
-            SendClientSideEvent(atmosphere, 'Your Work Filter Changed', {
-              teamId,
-              meetingId,
-              service: 'azureDevOps'
-            })
-            setSelectedProjectIds(projectIds)
-          }}
+          setSelectedProjectIds={setSelectedProjectIds}
         />
       </div>
       {!sharesNothing && (

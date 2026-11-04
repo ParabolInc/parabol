@@ -274,8 +274,8 @@ export default class TeamHealthDemoDb {
       return {createTask: {error: {message: 'Discussion not found'}, task: null}}
     }
     const assignee = demoTeammates.find(({id}) => id === userId) ?? null
-    const resultStage = discussion.discussionTopicId.replace(
-      'teamHealthDemoQuestion:',
+    const resultStage = discussionId.replace(
+      'teamHealthDemoDiscussion_',
       'teamHealthDemoResultStage:'
     )
     const taskContent = content ?? toTaskContent('')

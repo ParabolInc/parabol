@@ -5,7 +5,6 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import jiraServerSVG from '../../../styles/theme/images/graphics/jira-software-blue.svg'
 import JiraServerClientManager from '../../../utils/JiraServerClientManager'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import JiraServerIntegrationResultsRoot from './JiraServerIntegrationResultsRoot'
 
 interface Props {
@@ -17,8 +16,6 @@ const JiraServerIntegrationPanel = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment JiraServerIntegrationPanel_meeting on NewMeeting {
-        id
-        teamId
         viewerMeetingMember {
           teamMember {
             teamId
@@ -54,12 +51,6 @@ const JiraServerIntegrationPanel = (props: Props) => {
       return onError(new Error('Could not find integration provider'))
     }
     JiraServerClientManager.openOAuth(atmosphere, providerId, teamMember.teamId, mutationProps)
-
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Integration Connected', {
-      teamId: meeting.teamId,
-      meetingId: meeting.id,
-      service: 'jira server'
-    })
   }
   if (!teamMember || !teamMember) {
     return null

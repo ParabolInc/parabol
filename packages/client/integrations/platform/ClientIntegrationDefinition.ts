@@ -111,8 +111,8 @@ export abstract class ClientIntegrationDefinition {
   readonly authorizationHelpUrl?: string
   /**
    * Advertises the service on the settings row and the scope tab even when the team cannot use it,
-   * and points the Contact Us button at url; clickEvent is the client analytics event name
+   * and points the Contact Us button at url
    */
-  readonly contactUs?: {url: string; clickEvent: string}
+  readonly contactUs?: {url: string}
   abstract connect(atmosphere: Atmosphere, params: ConnectParams): void
 }

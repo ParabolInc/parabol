@@ -9,7 +9,6 @@ import type {MeetingTypeEnum} from '~/__generated__/TemplateDetails_activity.gra
 import type {useAddPokerTemplateMutation$data} from '../../__generated__/useAddPokerTemplateMutation.graphql'
 import type {useAddPromptTemplateMutation$data} from '../../__generated__/useAddPromptTemplateMutation.graphql'
 import type {useAddTeamHealthTemplateMutation$data} from '../../__generated__/useAddTeamHealthTemplateMutation.graphql'
-import useAtmosphere from '../../hooks/useAtmosphere'
 import useAddPokerTemplateMutation from '../../mutations/useAddPokerTemplateMutation'
 import useAddPromptTemplateMutation from '../../mutations/useAddPromptTemplateMutation'
 import useAddTeamHealthTemplateMutation from '../../mutations/useAddTeamHealthTemplateMutation'
@@ -17,7 +16,6 @@ import {cn} from '../../ui/cn'
 import {Dialog} from '../../ui/Dialog/Dialog'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
-import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import sortByTier from '../../utils/sortByTier'
 import TeamPicker from '../TeamPicker/TeamPicker'
 
@@ -53,7 +51,6 @@ const TeamPickerModal = (props: Props) => {
     teams.find((team) => team.id === preferredTeamId) ?? sortByTier(teams)[0]
   )
 
-  const atmosphere = useAtmosphere()
   const [error, setError] = useState<string | null>(null)
   const [executeAddPromptTemplate, promptSubmitting] = useAddPromptTemplateMutation()
   const [executeAddPokerTemplate, pokerSubmitting] = useAddPokerTemplateMutation()
@@ -132,10 +129,6 @@ const TeamPickerModal = (props: Props) => {
   }
 
   const handleUpgrade = () => {
-    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
-      upgradeCTALocation: 'cloneTemplateAL',
-      meetingType: type
-    })
     navigate(`/me/organizations/${selectedTeam.orgId}/billing`)
   }
 

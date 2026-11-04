@@ -7,7 +7,6 @@ import useInspirationDrawer from '../../../hooks/useInspirationDrawer'
 import useMutationProps from '../../../hooks/useMutationProps'
 import gcalSVG from '../../../styles/theme/images/graphics/google-calendar.svg'
 import GcalClientManager from '../../../utils/GcalClientManager'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import GCalIntegrationResultsRoot from './GCalIntegrationResultsRoot'
 import InspirationItemsPanel from './InspirationItemsPanel'
 import {WorkDrawerDateFilter} from './WorkDrawerDateFilter'
@@ -25,7 +24,6 @@ const GCalPanel = (props: Props) => {
       fragment GCalIntegrationPanel_meeting on NewMeeting {
         ...useInspirationDrawer_meeting
         id
-        teamId
         gcalInspirationItems: inspirationItems(service: gcal) {
           id
           title
@@ -82,12 +80,6 @@ const GCalPanel = (props: Props) => {
     }
     const {clientId, id: providerId} = gcal.cloudProvider
     GcalClientManager.openOAuth(atmosphere, providerId, clientId, teamMember.teamId, mutationProps)
-
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Integration Connected', {
-      teamId: meeting.teamId,
-      meetingId: meeting.id,
-      service: 'gcal'
-    })
   }
 
   const filterBar = (

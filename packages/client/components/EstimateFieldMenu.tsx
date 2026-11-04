@@ -3,13 +3,11 @@ import type {ReactNode} from 'react'
 import {useFragment} from 'react-relay'
 import {OpenInNew} from '~/ui/icons'
 import type {EstimateFieldMenu_stage$key} from '../__generated__/EstimateFieldMenu_stage.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
 import useUpdateIntegrationDimensionFieldMutation from '../mutations/useUpdateIntegrationDimensionFieldMutation'
 import {SprintPokerDefaults} from '../types/constEnums'
 import {Menu} from '../ui/Menu/Menu'
 import {MenuContent} from '../ui/Menu/MenuContent'
 import {MenuItem} from '../ui/Menu/MenuItem'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 import EstimateFieldLabelTemplateItem from './EstimateFieldLabelTemplateItem'
 import EstimateFieldSelect from './EstimateFieldSelect'
 import {isLabelTemplate} from './serviceFieldLabel'
@@ -30,7 +28,6 @@ interface Props {
 
 const EstimateFieldMenu = (props: Props) => {
   const {onOpenEditModal, onOpenChange, stageRef, submitScore, trigger} = props
-  const atmosphere = useAtmosphere()
   const [updateIntegrationDimensionField] = useUpdateIntegrationDimensionFieldMutation()
   const stage = useFragment(
     graphql`
@@ -53,7 +50,6 @@ const EstimateFieldMenu = (props: Props) => {
         }
         task {
           id
-          teamId
           integration {
             service
           }
@@ -64,7 +60,7 @@ const EstimateFieldMenu = (props: Props) => {
   )
   const {meetingId, dimensionRef, serviceField, serviceFieldListing, task} = stage
   if (!task?.integration) return null
-  const {id: taskId, teamId, integration} = task
+  const {id: taskId} = task
   const {name: dimensionName} = dimensionRef
   const {targets, options, helpUrl} = serviceFieldListing
   const acceptsFields = targets.includes('field')
@@ -91,13 +87,6 @@ const EstimateFieldMenu = (props: Props) => {
   const openHelp = () => {
     if (!helpUrl) return
     window.open(helpUrl, '_blank', 'noreferrer')
-    SendClientSideEvent(atmosphere, 'Missing Estimate Field Doc Link Clicked', {
-      meetingId,
-      teamId,
-      taskId,
-      service: integration.service,
-      helpUrl
-    })
   }
 
   if (!acceptsLabel) {

@@ -63,7 +63,6 @@ const useTeamPromptComposer = (meetingRef: useTeamPromptComposer_meeting$key) =>
   const editorRefs = useRef(new Map<string, React.RefObject<Editor | null>>())
   const {queueAnswer, seedDirty, share, submitting, dirtyPromptIds} = useTeamPromptAnswersAutosave({
     meetingId,
-    teamId,
     stageId: stage?.id ?? '',
     isShared
   })

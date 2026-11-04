@@ -9,10 +9,7 @@ export interface InspirationDraftItem {
 
 export interface RunInspirationInsertParams {
   items: readonly InspirationDraftItem[]
-  meetingId: string
-  teamId: string
   insertAnswerBlocks: (promptId: string, blocks: JSONContent[]) => Promise<boolean>
-  sendEvent: (event: string, options: Record<string, unknown>) => void
   onAdded: (itemIds: string[]) => void
 }
 
@@ -36,7 +33,7 @@ export const isItemTextInAnswer = (answerText: string, itemText: string): boolea
 }
 
 export const runInspirationInsert = async (params: RunInspirationInsertParams): Promise<void> => {
-  const {items, meetingId, teamId, insertAnswerBlocks, sendEvent, onAdded} = params
+  const {items, insertAnswerBlocks, onAdded} = params
 
   const insertedIds: string[] = []
   for (const item of items) {
@@ -44,12 +41,8 @@ export const runInspirationInsert = async (params: RunInspirationInsertParams): 
     const inserted = await insertAnswerBlocks(item.promptId, item.blocks)
     if (!inserted) continue
     insertedIds.push(item.id)
-    sendEvent('Inspiration Item Added', {promptId: item.promptId, meetingId, teamId})
   }
 
   if (insertedIds.length === 0) return
-  if (items.length > 1) {
-    sendEvent('Inspiration Add Remaining', {count: insertedIds.length, meetingId, teamId})
-  }
   onAdded(insertedIds)
 }

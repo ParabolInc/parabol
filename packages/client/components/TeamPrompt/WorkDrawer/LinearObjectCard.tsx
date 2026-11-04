@@ -7,9 +7,7 @@ import {Tooltip} from '~/ui/Tooltip/Tooltip'
 import {TooltipContent} from '~/ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '~/ui/Tooltip/TooltipTrigger'
 import type {LinearObjectCard_issue$key} from '../../../__generated__/LinearObjectCard_issue.graphql'
-import useAtmosphere from '../../../hooks/useAtmosphere'
 import {getLinearRepoName} from '../../../utils/getLinearRepoName'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import LinearSVG from '../../LinearSVG'
 
 interface Props {
@@ -41,26 +39,11 @@ const LinearObjectCard = memo((props: Props) => {
     issueRef
   )
 
-  const atmosphere = useAtmosphere()
-
   const [isHovered, setIsHovered] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
 
-  const trackLinkClick = () => {
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Card Link Clicked', {
-      service: 'linear'
-    })
-  }
-
-  const trackCopy = () => {
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Card Copied', {
-      service: 'linear'
-    })
-  }
-
   const handleCopy = () => {
     setIsCopied(true)
-    trackCopy()
     setTimeout(() => {
       setIsCopied(false)
     }, 2000)
@@ -89,13 +72,7 @@ const LinearObjectCard = memo((props: Props) => {
         <span>{state.name}</span>
       </div>
       <div className='my-2 text-sm'>
-        <a
-          href={url}
-          target='_blank'
-          className='hover:underline'
-          rel='noreferrer'
-          onClick={trackLinkClick}
-        >
+        <a href={url} target='_blank' className='hover:underline' rel='noreferrer'>
           {title}
         </a>
       </div>
@@ -110,7 +87,6 @@ const LinearObjectCard = memo((props: Props) => {
               target='_blank'
               className='flex items-center text-fg-secondary text-xs hover:underline'
               rel='noreferrer'
-              onClick={trackLinkClick}
             >
               <span className='leading-none'>{repoStr}</span>
             </a>

@@ -7,11 +7,9 @@ import {useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router'
 import {PictureAsPdf, TableChart} from '~/ui/icons'
-import useAtmosphere from '../../../../../hooks/useAtmosphere'
 import {PALETTE} from '../../../../../styles/paletteV3'
 import type {CorsOptions} from '../../../../../types/cors'
 import lazyPreload from '../../../../../utils/lazyPreload'
-import SendClientSideEvent from '../../../../../utils/SendClientSideEvent'
 import ExportToCSV from '../ExportToCSV'
 import EmailBorderBottom from '../MeetingSummaryEmail/EmailBorderBottom'
 import ContactUsFooter from './ContactUsFooter'
@@ -59,7 +57,6 @@ const SummarySheet = (props: Props) => {
     appOrigin,
     corsOptions
   } = props
-  const atmosphere = useAtmosphere()
   const meeting = useFragment(
     graphql`
       fragment SummarySheet_meeting on NewMeeting {
@@ -94,8 +91,6 @@ const SummarySheet = (props: Props) => {
   const sheetRef = useRef<HTMLTableElement | null>(null)
 
   const downloadPDF = () => {
-    SendClientSideEvent(atmosphere, 'Download PDF Clicked', {meetingId})
-
     const printStyles = `
       <style>
         @media print {

@@ -4,7 +4,6 @@ import type {Snack} from '../../components/Snackbar'
 import {Threshold} from '../../types/constEnums'
 import type {OnNextNavigateContext} from '../../types/relayMutations'
 import makeDateString from '../../utils/makeDateString'
-import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import makeNotificationToastKey from './makeNotificationToastKey'
 import type {UnmaskedNotification} from './mapNotificationToToast'
 
@@ -19,7 +18,7 @@ graphql`
 
 const mapTeamsLimitReminderToToast = (
   notification: UnmaskedNotification<mapTeamsLimitReminderToToast_notification$data>,
-  {navigate, atmosphere}: OnNextNavigateContext
+  {navigate}: OnNextNavigateContext
 ): Snack => {
   const {id: notificationId, scheduledLockAt, orgId, orgName} = notification
 
@@ -30,23 +29,9 @@ const mapTeamsLimitReminderToToast = (
     message: `"${orgName}" is over the limit of ${
       Threshold.MAX_STARTER_TIER_TEAMS
     } free teams. Your free access will end on ${makeDateString(scheduledLockAt)}`,
-    onShow: () => {
-      SendClientSideEvent(atmosphere, 'Upgrade CTA Viewed', {
-        upgradeCTALocation: 'teamsLimitReminderSnackbar',
-        orgId
-      })
-    },
-    onManualDismiss: () => {
-      SendClientSideEvent(atmosphere, 'Snackbar Clicked', {
-        snackbarType: 'teamsLimitReminder'
-      })
-    },
     action: {
       label: 'Upgrade',
       callback: () => {
-        SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
-          upgradeCTALocation: 'teamsLimitReminderSnackbar'
-        })
         navigate(`/me/organizations/${orgId}`)
       }
     }

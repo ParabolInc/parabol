@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {UnpaidTeamModalQuery} from '../../../../__generated__/UnpaidTeamModalQuery.graphql'
@@ -8,10 +7,8 @@ import DialogContent from '../../../../components/DialogContent'
 import DialogTitle from '../../../../components/DialogTitle'
 import IconLabel from '../../../../components/IconLabel'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import type {UpgradeCTALocationEnumType} from '../../../../shared/UpgradeCTALocationEnumType'
 import {ExternalLinks, Threshold} from '../../../../types/constEnums'
 import {Button} from '../../../../ui/Button/Button'
-import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 
 interface Props {
   queryRef: PreloadedQuery<UnpaidTeamModalQuery>
@@ -53,15 +50,6 @@ const UnpaidTeamModal = (props: Props) => {
   const {viewerId} = atmosphere
   const {team} = viewer
 
-  useEffect(() => {
-    if (team?.organization.lockedAt) {
-      SendClientSideEvent(atmosphere, 'Upgrade CTA Viewed', {
-        upgradeCTALocation: 'organizationLockedModal',
-        orgId: team.organization.id
-      })
-    }
-  }, [])
-
   if (!team) return null
   const {name: teamName, organization} = team
 
@@ -74,10 +62,7 @@ const UnpaidTeamModal = (props: Props) => {
   const email = firstBillingLeaderUser?.email ?? 'Unknown'
   const isALeader = billingLeaders.findIndex((leader) => leader.user.id === viewerId) !== -1
 
-  const goToBilling = (upgradeCTALocation: UpgradeCTALocationEnumType) => {
-    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
-      upgradeCTALocation
-    })
+  const goToBilling = () => {
     navigate(`/me/organizations/${orgId}`)
   }
 
@@ -108,7 +93,7 @@ const UnpaidTeamModal = (props: Props) => {
                 variant='primary'
                 size='md'
                 className='mx-auto mt-6 mb-0'
-                onClick={() => goToBilling('organizationLockedModal')}
+                onClick={goToBilling}
               >
                 <IconLabel icon='arrow_forward' iconAfter label='Upgrade' />
               </Button>
@@ -141,12 +126,7 @@ const UnpaidTeamModal = (props: Props) => {
         <br />
         {solution}
         {isALeader && (
-          <Button
-            variant='primary'
-            size='md'
-            className='mx-auto mt-6 mb-0'
-            onClick={() => goToBilling('unpaidTeamModal')}
-          >
+          <Button variant='primary' size='md' className='mx-auto mt-6 mb-0' onClick={goToBilling}>
             <IconLabel icon='arrow_forward' iconAfter label='Take me there' />
           </Button>
         )}

@@ -7,7 +7,6 @@ import {Tooltip} from '~/ui/Tooltip/Tooltip'
 import {TooltipContent} from '~/ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '~/ui/Tooltip/TooltipTrigger'
 import type {GitHubObjectCard_result$key} from '../../../__generated__/GitHubObjectCard_result.graphql'
-import useAtmosphere from '../../../hooks/useAtmosphere'
 import githubIssueClosed from '../../../styles/theme/images/graphics/github-issue-closed.svg'
 import githubIssueOpen from '../../../styles/theme/images/graphics/github-issue-open.svg'
 import gitHubMerged from '../../../styles/theme/images/graphics/github-merged.svg'
@@ -15,7 +14,6 @@ import githubPRClosed from '../../../styles/theme/images/graphics/github-pr-clos
 import githubPRDraft from '../../../styles/theme/images/graphics/github-pr-draft.svg'
 import githubPROpen from '../../../styles/theme/images/graphics/github-pr-open.svg'
 import relativeDate from '../../../utils/date/relativeDate'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import GitHubSVG from '../../GitHubSVG'
 
 const ISSUE_STATUS_MAP: Record<string, any> = {
@@ -75,26 +73,11 @@ const GitHubObjectCard = (props: Props) => {
     resultRef
   )
 
-  const atmosphere = useAtmosphere()
-
   const [isHovered, setIsHovered] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
 
-  const trackLinkClick = () => {
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Card Link Clicked', {
-      service: 'github'
-    })
-  }
-
-  const trackCopy = () => {
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Card Copied', {
-      service: 'github'
-    })
-  }
-
   const handleCopy = () => {
     setIsCopied(true)
-    trackCopy()
     setTimeout(() => {
       setIsCopied(false)
     }, 2000)
@@ -121,25 +104,13 @@ const GitHubObjectCard = (props: Props) => {
     <div className='rounded-sm border border-hairline border-solid p-4 hover:border-hairline-strong'>
       <div className='flex gap-2 text-fg-secondary text-xs'>
         {statusImg && <img src={statusImg} />}
-        <a
-          href={url}
-          target='_blank'
-          className='font-medium hover:underline'
-          rel='noreferrer'
-          onClick={trackLinkClick}
-        >
+        <a href={url} target='_blank' className='font-medium hover:underline' rel='noreferrer'>
           #{number}
         </a>
         <div>Updated {relativeDate(updatedAt)}</div>
       </div>
       <div className='my-2 text-sm'>
-        <a
-          href={url}
-          target='_blank'
-          className='hover:underline'
-          rel='noreferrer'
-          onClick={trackLinkClick}
-        >
+        <a href={url} target='_blank' className='hover:underline' rel='noreferrer'>
           {title}
         </a>
       </div>
@@ -153,7 +124,6 @@ const GitHubObjectCard = (props: Props) => {
             target='_blank'
             className='text-fg-secondary text-xs hover:underline'
             rel='noreferrer'
-            onClick={trackLinkClick}
           >
             {repoName}
           </a>

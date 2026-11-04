@@ -12,7 +12,6 @@ import {Dialog} from '../../../../ui/Dialog/Dialog'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
 import {readableReasonsToDowngrade, reasonsToDowngradeLookup} from '../../../../utils/constants'
-import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 import getPlanBenefitLabel from './getPlanBenefitLabel'
 import orgPlanDetails from './orgPlanDetails'
 
@@ -46,7 +45,6 @@ const DowngradeModal = (props: Props) => {
 
   const handleConfirm = () => {
     setHasConfirmedDowngrade(true)
-    SendClientSideEvent(atmosphere, 'Downgrade Continue Clicked', {orgId})
   }
 
   const handleCheck = (reason: ReadableReasonToDowngradeEnum) => {

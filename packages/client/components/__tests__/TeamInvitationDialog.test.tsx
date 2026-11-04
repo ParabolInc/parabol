@@ -27,7 +27,6 @@ jest.mock('react-relay', () => ({
   useFragment: (_fragment: unknown, fragmentRef: unknown) => fragmentRef
 }))
 jest.mock('../../hooks/useAtmosphere', () => ({__esModule: true, default: () => mockAtmosphere}))
-jest.mock('../../utils/SendClientSideEvent', () => ({__esModule: true, default: () => {}}))
 jest.mock('../../mutations/AcceptTeamInvitationMutation', () => ({
   __esModule: true,
   default: (...args: Parameters<typeof AcceptTeamInvitationMutation>) =>

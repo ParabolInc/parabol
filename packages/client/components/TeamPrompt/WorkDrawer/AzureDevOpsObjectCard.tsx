@@ -7,9 +7,7 @@ import {Tooltip} from '~/ui/Tooltip/Tooltip'
 import {TooltipContent} from '~/ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '~/ui/Tooltip/TooltipTrigger'
 import type {AzureDevOpsObjectCard_workItem$key} from '../../../__generated__/AzureDevOpsObjectCard_workItem.graphql'
-import useAtmosphere from '../../../hooks/useAtmosphere'
 import relativeDate from '../../../utils/date/relativeDate'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import AzureDevOpsSVG from '../../AzureDevOpsSVG'
 
 interface Props {
@@ -34,19 +32,12 @@ const AzureDevOpsObjectCard = (props: Props) => {
     `,
     workItemRef
   )
-  const atmosphere = useAtmosphere()
   const [isHovered, setIsHovered] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
   const {title, url, issueKey, type, state, updatedAt, project} = workItem
 
-  const trackLinkClick = () => {
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Card Link Clicked', {
-      service: 'azureDevOps'
-    })
-  }
   const handleCopy = () => {
     setIsCopied(true)
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Card Copied', {service: 'azureDevOps'})
     setTimeout(() => {
       setIsCopied(false)
     }, 2000)
@@ -60,7 +51,6 @@ const AzureDevOpsObjectCard = (props: Props) => {
           target='_blank'
           className='font-semibold text-fg-secondary hover:underline'
           rel='noreferrer'
-          onClick={trackLinkClick}
         >
           {type} #{issueKey}
         </a>
@@ -68,13 +58,7 @@ const AzureDevOpsObjectCard = (props: Props) => {
         <div>Updated {relativeDate(updatedAt)}</div>
       </div>
       <div className='my-2 text-sm'>
-        <a
-          href={url}
-          target='_blank'
-          className='hover:underline'
-          rel='noreferrer'
-          onClick={trackLinkClick}
-        >
+        <a href={url} target='_blank' className='hover:underline' rel='noreferrer'>
           {title}
         </a>
       </div>

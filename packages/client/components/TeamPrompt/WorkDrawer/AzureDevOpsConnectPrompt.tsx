@@ -2,17 +2,15 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import connectAzureDevOps from '../../../integrations/azureDevOps/connectAzureDevOps'
 import {Button} from '../../../ui/Button/Button'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import AzureDevOpsSVG from '../../AzureDevOpsSVG'
 
 interface Props {
   teamId: string
-  meetingId: string
   services: Parameters<typeof connectAzureDevOps>[2]
 }
 
 const AzureDevOpsConnectPrompt = (props: Props) => {
-  const {teamId, meetingId, services} = props
+  const {teamId, services} = props
   const atmosphere = useAtmosphere()
   const mutationProps = useMutationProps()
   const {error, onError, submitting} = mutationProps
@@ -20,11 +18,6 @@ const AzureDevOpsConnectPrompt = (props: Props) => {
     if (!connectAzureDevOps(atmosphere, teamId, services, mutationProps)) {
       return onError(new Error('Could not find the Azure DevOps app'))
     }
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Integration Connected', {
-      teamId,
-      meetingId,
-      service: 'azureDevOps'
-    })
   }
   return (
     <div className='flex flex-col items-center gap-2 pt-12'>

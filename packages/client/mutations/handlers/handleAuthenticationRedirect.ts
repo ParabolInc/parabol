@@ -1,7 +1,6 @@
 import type {AcceptTeamInvitationMutationReply$data} from '~/__generated__/AcceptTeamInvitationMutationReply.graphql'
 import type {OnNextHandler, OnNextNavigateContext} from '../../types/relayMutations'
 import getValidRedirectParam from '../../utils/getValidRedirectParam'
-import SendClientSideEvent from '../../utils/SendClientSideEvent'
 
 interface OnNextMeetingId extends OnNextNavigateContext {
   meetingId?: string | null
@@ -13,9 +12,8 @@ const handleAuthenticationRedirect: OnNextHandler<
   OnNextMeetingId
 > = (
   acceptTeamInvitation,
-  {meetingId: locallyRequestedMeetingId, navigate, atmosphere, redirectPath = '/meetings'}
+  {meetingId: locallyRequestedMeetingId, navigate, redirectPath = '/meetings'}
 ) => {
-  SendClientSideEvent(atmosphere, 'User Login')
   // replace a used invitation page, or Back lands on it and it redirects again
   const isOnInvitationPage = /^\/(team-invitation|invitation-link)\//.test(window.location.pathname)
   const redirectTo = getValidRedirectParam()

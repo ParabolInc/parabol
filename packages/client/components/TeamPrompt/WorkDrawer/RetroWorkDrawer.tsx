@@ -1,8 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import type {RetroWorkDrawer_meeting$key} from '../../../__generated__/RetroWorkDrawer_meeting.graphql'
-import useAtmosphere from '../../../hooks/useAtmosphere'
 import useSessionStorageState from '../../../hooks/useSessionStorageState'
 import {
   getConnectProvider,
@@ -12,7 +10,6 @@ import gcalLogo from '../../../styles/theme/images/graphics/google-calendar.svg'
 import {cn} from '../../../ui/cn'
 import dndNoise from '../../../utils/dndNoise'
 import getNextSortOrder from '../../../utils/getNextSortOrder'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import AzureDevOpsSVG from '../../AzureDevOpsSVG'
 import GitHubSVG from '../../GitHubSVG'
 import GitLabSVG from '../../GitLabSVG'
@@ -40,7 +37,6 @@ const RetroWorkDrawer = (props: Props) => {
     graphql`
       fragment RetroWorkDrawer_meeting on RetrospectiveMeeting {
         id
-        teamId
         reflectionGroups {
           promptId
           sortOrder
@@ -101,7 +97,6 @@ const RetroWorkDrawer = (props: Props) => {
     `,
     meetingRef
   )
-  const atmosphere = useAtmosphere()
   const hasJiraServer =
     !!meeting.viewerMeetingMember?.teamMember?.integrations.jiraServer?.sharedProviders?.length
   const hasLinear =
@@ -113,13 +108,6 @@ const RetroWorkDrawer = (props: Props) => {
   const hasGitHub = !!getConnectProvider(services, 'github')
   const hasJira = !!getConnectProvider(services, 'jira')
   const hasAzureDevOps = isServiceAvailable(services, 'azureDevOps')
-
-  useEffect(() => {
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Impression', {
-      teamId: meeting.teamId,
-      meetingId: meeting.id
-    })
-  }, [])
 
   // Reflect phase stacks reflections descending by sortOrder, so the highest sortOrder is on top.
   const getNextReflectionSortOrder = (promptId: string | null) => {
@@ -247,14 +235,7 @@ const RetroWorkDrawer = (props: Props) => {
               <button
                 key={tab.label}
                 title={tab.label}
-                onClick={() => {
-                  SendClientSideEvent(atmosphere, 'Your Work Integration Clicked', {
-                    teamId: meeting.teamId,
-                    meetingId: meeting.id,
-                    service: baseTabs[idx]?.service
-                  })
-                  setActiveService(tab.service)
-                }}
+                onClick={() => setActiveService(tab.service)}
                 className={cn(
                   'flex h-10 w-10 select-none appearance-none items-center justify-center rounded-md transition-colors',
                   idx === activeIdx

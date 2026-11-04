@@ -19,7 +19,6 @@ jest.mock('../../hooks/useAtmosphere', () => ({
   __esModule: true,
   default: () => mockAtmosphere
 }))
-jest.mock('../../utils/SendClientSideEvent', () => ({__esModule: true, default: () => {}}))
 jest.mock('../GenericAuthentication', () => ({__esModule: true, default: () => null}))
 jest.mock('../TeamInvitationWrapper', () => ({__esModule: true, default: () => null}))
 

@@ -10,7 +10,6 @@ import {Edit, Flag, Link as MuiLink, Replay} from '~/ui/icons'
 import {getProviderAnchorId} from '../../modules/teamDashboard/components/ProviderRow/ProviderRowEntry'
 import {Providers} from '../../types/constEnums'
 import makeAppURL from '../../utils/makeAppURL'
-import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import SlackSVG from '../SlackSVG'
 import countUnsharedDrafts from './structured/countUnsharedDrafts'
 
@@ -93,10 +92,6 @@ const useTeamPromptOptionItems = (
         onCopied()
         const copyUrl = makeAppURL(window.location.origin, `meeting-series/${meetingId}`)
         await navigator.clipboard.writeText(copyUrl)
-        SendClientSideEvent(atmosphere, 'Copied Meeting Series Link', {
-          teamId: team?.id,
-          meetingId: meetingId
-        })
       }
     })
   }
@@ -112,13 +107,7 @@ const useTeamPromptOptionItems = (
     label: 'Configure Slack',
     icon: <SlackSVG />,
     to: `/team/${team.id}/integrations#${getProviderAnchorId(Providers.SLACK_NAME)}`,
-    isNewTab: true,
-    onClick: () => {
-      SendClientSideEvent(atmosphere, 'Configure Slack Standup Clicked', {
-        teamId: team?.id,
-        meetingId: meetingId
-      })
-    }
+    isNewTab: true
   })
   if (template?.isActive && template.viewerLowestScope === 'TEAM') {
     items.push({

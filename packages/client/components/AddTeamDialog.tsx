@@ -4,7 +4,6 @@ import {type PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import {useNavigate} from 'react-router'
 import AddTeamMutation from '~/mutations/AddTeamMutation'
 import getGraphQLError from '~/utils/relay/getGraphQLError'
-import SendClientSideEvent from '~/utils/SendClientSideEvent'
 import type {AddTeamDialog_viewer$key} from '../__generated__/AddTeamDialog_viewer.graphql'
 import type {AddTeamDialogQuery} from '../__generated__/AddTeamDialogQuery.graphql'
 import {
@@ -72,23 +71,7 @@ const AddTeamDialog = (props: Props) => {
   const disablePrivacyToggle = isStarterTier
 
   const goToBilling = () => {
-    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
-      upgradeCTALocation: 'createTeam',
-      orgId: organization.id,
-      upgradeTier: 'team'
-    })
     navigate(`/me/organizations/${organization.id}`)
-  }
-
-  const onSelectedUsersChange = (newUsers: Option[]) => {
-    const prevLength = selectedUsers.length
-    setSelectedUsers(newUsers)
-
-    if (newUsers.length && newUsers.length > prevLength) {
-      SendClientSideEvent(atmosphere, 'Teammate Selected', {
-        selectionLocation: 'addTeamUserPicker'
-      })
-    }
   }
 
   const handleAddTeam = () => {
@@ -147,7 +130,7 @@ const AddTeamDialog = (props: Props) => {
           <AdhocTeamMultiSelect
             viewerRef={viewer}
             value={selectedUsers}
-            onChange={onSelectedUsersChange}
+            onChange={setSelectedUsers}
           />
 
           {selectedUsers.some((user: Option) => !user.id) && (
