@@ -3,6 +3,7 @@ import ms from 'ms'
 import {commitLocalUpdate} from 'relay-runtime'
 import type Atmosphere from '../Atmosphere'
 import {addBreadcrumb} from './clientBreadcrumbs'
+import {isClientOutdated, setConnectedServerVersion} from './connectedServerVersion'
 import getTabSessionId from './getTabSessionId'
 import createProxyRecord from './relay/createProxyRecord'
 import {reportClientWarning} from './reportClientError'
@@ -104,18 +105,15 @@ export function createWSClient(atmosphere: Atmosphere) {
             version: string
           }
           const isNewVersion = version !== __APP_VERSION__
-          if (isNewVersion) {
+          setConnectedServerVersion(version)
+          if (isClientOutdated() && 'serviceWorker' in navigator) {
             // Safari is not ready immediately after a refresh and getRegistration() will return null, so wait till ready for the update
             // ready will wait indefinitely if the service worker is not registered, so do not await
+            // The new worker caches the new build, so the quiet reload is quick
             navigator.serviceWorker.ready.then((registration) => {
-              registration
-                ?.update()
-                .then(() => {
-                  console.log(`Service worker updated from ${__APP_VERSION__} to ${version}`)
-                })
-                .catch((error) => {
-                  console.error('Error updating service worker:', error)
-                })
+              registration.update().catch((error) => {
+                console.error('Error updating service worker:', error)
+              })
             })
           }
           if (abruptlyClosed) {

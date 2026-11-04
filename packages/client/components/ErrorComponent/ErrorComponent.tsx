@@ -2,12 +2,14 @@ import {useState} from 'react'
 import ReportErrorFeedback from '~/components/ReportErrorFeedback'
 import {Button} from '~/ui/Button/Button'
 import {twStyled} from '../../ui/twStyled'
+import {isClientOutdated} from '../../utils/connectedServerVersion'
 import {
   isExtensionError,
   isIgnoredError,
   isNetworkError,
   isOldBrowserError
 } from '../../utils/errorFilters'
+import {STALE_CLIENT_NOTE} from '../../utils/staleClientNote'
 
 const ErrorBlock = twStyled('div')(
   'flex h-full w-full flex-col items-center justify-center text-center'
@@ -24,6 +26,13 @@ const ErrorComponent = (props: Props) => {
     console.error(error)
   }
   const [isOpen, setIsOpen] = useState(false)
+  const isOutdated = isClientOutdated()
+  const staleClientNote = isOutdated && <div>{STALE_CLIENT_NOTE}</div>
+  const refreshButton = (
+    <Button variant='primary' size='sm' className='mt-2' onClick={() => window.location.reload()}>
+      Refresh the page
+    </Button>
+  )
 
   if (isExtensionError(error)) {
     return (
@@ -33,14 +42,8 @@ const ErrorComponent = (props: Props) => {
           it that can crash apps like ours.
         </div>
         <div>If this continues, please disable the extension</div>
-        <Button
-          variant='primary'
-          size='sm'
-          className='mt-2'
-          onClick={() => window.location.reload()}
-        >
-          Refresh the page
-        </Button>
+        {staleClientNote}
+        {refreshButton}
       </ErrorBlock>
     )
   }
@@ -63,25 +66,35 @@ const ErrorComponent = (props: Props) => {
     return (
       <ErrorBlock>
         There was a network issue. Please check your connection and try again.
-        <Button
-          variant='primary'
-          size='sm'
-          className='mt-2'
-          onClick={() => window.location.reload()}
-        >
-          Refresh the page
-        </Button>
+        {staleClientNote}
+        {refreshButton}
       </ErrorBlock>
     )
   }
 
+  const reportButton = eventId && (
+    <Button
+      variant={isOutdated ? 'outline' : 'primary'}
+      size='sm'
+      className='mt-2'
+      onClick={() => setIsOpen(true)}
+    >
+      Report Feedback
+    </Button>
+  )
   return (
     <ErrorBlock>
-      {'An error has occurred! We’ve alerted the developers. Try refreshing the page'}
-      {eventId && (
-        <Button variant='primary' size='sm' className='mt-2' onClick={() => setIsOpen(true)}>
-          Report Feedback
-        </Button>
+      {isOutdated
+        ? 'An error has occurred! We’ve alerted the developers.'
+        : 'An error has occurred! We’ve alerted the developers. Try refreshing the page'}
+      {staleClientNote}
+      {isOutdated ? (
+        <div className='flex gap-2'>
+          {refreshButton}
+          {reportButton}
+        </div>
+      ) : (
+        reportButton
       )}
       <ReportErrorFeedback
         isOpen={isOpen}

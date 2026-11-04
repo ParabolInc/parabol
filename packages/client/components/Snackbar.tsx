@@ -7,9 +7,17 @@ import useBreakpoint from '../hooks/useBreakpoint'
 import useEventCallback from '../hooks/useEventCallback'
 import {Breakpoint, NavSidebar, ZIndex} from '../types/constEnums'
 import clientTempId from '../utils/relay/clientTempId'
+import {withStaleClientNote} from '../utils/staleClientNote'
 import SnackbarMessage from './SnackbarMessage'
 
 const MAX_SNACKS = 1
+
+const reloadAction = {label: 'Reload', callback: () => window.location.reload()}
+
+const withReloadAction = (snack: Snack): Snack =>
+  snack.action
+    ? {...snack, secondaryAction: snack.secondaryAction ?? reloadAction}
+    : {...snack, action: reloadAction}
 
 export type SnackbarRemoveFn = (snack: Snack) => boolean
 
@@ -100,7 +108,9 @@ const Snackbar = memo(() => {
         return
       }
     }
-    const keyedSnack = {key: clientTempId(), ...snack}
+    const message = withStaleClientNote(snack.message)
+    const notedSnack = message === snack.message ? snack : withReloadAction({...snack, message})
+    const keyedSnack = {key: clientTempId(), ...notedSnack}
     if (activeSnacks.length < MAX_SNACKS) {
       showSnack(keyedSnack)
     } else {
