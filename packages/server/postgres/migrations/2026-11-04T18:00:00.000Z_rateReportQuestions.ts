@@ -1,39 +1,42 @@
 import {type Kysely, sql} from 'kysely'
 
-const RECENT_QUESTION_LIMIT = 20
-
-const replaceTrimFunction = async (db: Kysely<any>, isRatedKept: boolean) => {
-  await sql`
-    CREATE OR REPLACE FUNCTION "trimReportQuestions"()
-    RETURNS TRIGGER AS $$
-    BEGIN
-      DELETE FROM "ReportQuestion"
-      WHERE "userId" = NEW."userId" AND "orgId" = NEW."orgId" ${isRatedKept ? sql`AND "rating" IS NULL` : sql``} AND id NOT IN (
-        SELECT id FROM "ReportQuestion"
-        WHERE "userId" = NEW."userId" AND "orgId" = NEW."orgId"
-        ORDER BY "lastUsedAt" DESC, id DESC
-        LIMIT ${sql.lit(RECENT_QUESTION_LIMIT)}
-      );
-      RETURN NULL;
-    END;
-    $$ LANGUAGE plpgsql;
-  `.execute(db)
-}
-
 // `any` is required here since migrations should be frozen in time. alternatively, keep a "snapshot" db interface.
 export async function up(db: Kysely<any>): Promise<void> {
   await db.schema.createType('ReportQuestionRatingEnum').asEnum(['good', 'bad']).execute()
+  // Each rating keeps the question and the report it rated, since a person's recent questions are trimmed and
+  // asking again rewrites them. A null rating is one taken back
   await db.schema
-    .alterTable('ReportQuestion')
+    .createTable('ReportQuestionRating')
+    .addColumn('id', 'serial', (col) => col.primaryKey())
+    .addColumn('reportQuestionId', 'integer', (col) =>
+      col.references('ReportQuestion.id').onDelete('set null')
+    )
+    .addColumn('userId', 'varchar(100)', (col) =>
+      col.notNull().references('User.id').onDelete('cascade')
+    )
+    .addColumn('orgId', 'varchar(100)', (col) =>
+      col.notNull().references('Organization.id').onDelete('cascade')
+    )
+    .addColumn('question', 'varchar(500)', (col) => col.notNull())
+    .addColumn('title', 'varchar(255)', (col) => col.notNull())
+    .addColumn('aiSpec', 'jsonb')
+    .addColumn('spec', 'jsonb', (col) => col.notNull())
     .addColumn('rating', sql`"ReportQuestionRatingEnum"`)
-    .addColumn('ratedAt', 'timestamptz')
+    .addColumn('createdAt', 'timestamptz', (col) => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
     .execute()
-  // a rating says how well AI answered, so it outlives the question leaving the recent list
-  await replaceTrimFunction(db, true)
+  await db.schema
+    .createIndex('idx_ReportQuestionRating_reportQuestionId_createdAt')
+    .on('ReportQuestionRating')
+    .columns(['reportQuestionId', 'createdAt'])
+    .execute()
+  await db.schema
+    .createIndex('idx_ReportQuestionRating_userId')
+    .on('ReportQuestionRating')
+    .column('userId')
+    .execute()
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
-  await replaceTrimFunction(db, false)
-  await db.schema.alterTable('ReportQuestion').dropColumn('rating').dropColumn('ratedAt').execute()
-  await db.schema.dropType('ReportQuestionRatingEnum').execute()
+  await db.schema.dropTable('ReportQuestionRating').ifExists().execute()
+  await db.schema.dropType('ReportQuestionRatingEnum').ifExists().execute()
 }
