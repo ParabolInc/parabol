@@ -660,3 +660,70 @@ A misspelled word used to match nothing, so "whiteboad" found no page.
 Every threshold was eligible. 0.4, 0.44 and 0.45 tie, so the rule takes the strictest. It keeps the gain of plain matching at 0.5 (0.867). What it costs: "vendr" (0.444), "atlss" and "retor" no longer match.
 
 On `heavy-holdout`, nDCG@10 and Recall@20 are the same as plain matching at 0.5: quick 0.829 and 0.931, fused 0.819 and 0.931. `noAnswerResults` holds at 10.00 and 14.00. This was the thirteenth gate run, and only overall rows were read.
+
+## Harrier (2026-11-03)
+
+Page vectors move to `microsoft/harrier-oss-v1-270m`, with the section chunker, `getSearchText` and a web search prompt on the query. Harrier is there for ranking by meaning, template search, Related Discussions and speed, so page ranking only has to hold.
+
+| | `heavy-dev` nDCG@10 | Recall@20 | `junkAt5` | `noAnswerResults` | `dev` nDCG@10 | Recall@20 | `junkAt5` | `noAnswerResults` |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Qwen3 (floor 0.4, alpha 0.01) | 0.819 | 0.881 | 0.623 | 13.67 | 0.911 | 0.960 | 0.655 | 11.62 |
+| Harrier (floor 0.4, alpha 0.005) | 0.833 | 0.893 | 0.512 | 3.50 | 0.917 | 0.976 | 0.582 | 4.50 |
+
+- **Harrier beats Qwen3 on every measure on both sets.** The biggest change is on searches with no answer: they return 3.5 pages instead of 13.7 on `heavy-dev`.
+- **Ranking by meaning alone** goes from 0.484 to 0.731, as the mean nDCG@10 over both sets.
+- **The blend is still led by keywords.** At this alpha meaning only adds pages after keyword hits, so the ceiling for any model is about 0.88.
+- **Serving.** On x86 with TEI's 3 CPU limit, Harrier embeds 369 tokens per second against Qwen3's 103. A query behind page edits takes 0.9 s at the 90th percentile, against 2.7 s, and it uses half the memory.
+
+| `heavy-holdout` (72 answerable) | nDCG@10 | Recall@5 | Recall@20 | `junkAt5` | `noAnswerResults` |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Quick list, either model | 0.829 | 0.889 | 0.931 | 0.616 | 10.00 |
+| Qwen3, fused | 0.819 | 0.882 | 0.931 | 0.656 | 14.00 |
+| Harrier, fused | 0.842 | 0.903 | 0.944 | 0.605 | 5.38 |
+
+- **It passes the rule below.** Ungraded pages count as not relevant here, which can only count against Harrier.
+- **What was read.** Only overall rows. The local results were deleted.
+- **Gate runs so far.** `heavy-holdout` has had thirteen.
+
+**Settings.** The rule was fixed before the sweep: a change to chunks or text has to beat the base by 0.02 on mean nDCG@10 for ranking by meaning alone, because it can't be undone after a fill.
+
+| Chunks | Meaning alone | Blended |
+| --- | ---: | ---: |
+| **384/512 tokens, with `Title > H1 > H2`** | 0.731 | 0.879 |
+| 256/384 | 0.741 | 0.881 |
+| 512/768 | 0.738 | 0.882 |
+| No header | 0.621 | 0.883 |
+
+Nothing clears 0.02, so the base stays. The floor stays 0.40: 0.39 ties with twice the junk. Alpha 0.005 and 0.01 give the same lists.
+
+**The gate.** It runs once on `heavy-final`, when the stack's ranking code is reviewed. Whoever tunes ranking never reads `heavyFinalQueries.json` or a per-query result. Harrier ships only if, after grading, all four hold against Qwen3 on the same code:
+- nDCG@10 is at least Qwen3's minus 0.01;
+- Recall@20 is at least Qwen3's minus 0.01;
+- `noAnswerResults` is at most Qwen3's plus 1;
+- `junkAt5` is at most Qwen3's plus 0.02.
+
+0. **Prepare.** Start Harrier's service with `COMPOSE_PROFILES=harrier pnpm db:start`, and start the embedder once with both models listed, so both have tables.
+1. **Run both arms once on the same database.** From `packages/server`, with `.env` loaded. Neither log is ever opened:
+
+   ```sh
+   EVAL_SET=heavy-final EVAL_MODES=sweep EVAL_ALPHAS=0.01 EVAL_FLOORS=0.4 EVAL_LABEL=gate-qwen3 AI_EMBEDDING_MODELS='[{"model":"text-embeddings-inference:Svenni551/Qwen3-Embedding-0.6B-ONNX-INT8","url":"http://localhost:3040/","maxTokens":2048}]' pnpm eval:pagesSearch > "$TMPDIR/gate-qwen3.log" 2>&1; echo "exit $?"
+   EVAL_SET=heavy-final EVAL_MODES=sweep EVAL_ALPHAS=0.005 EVAL_FLOORS=0.4 EVAL_LABEL=gate-harrier AI_EMBEDDING_MODELS='[{"model":"text-embeddings-inference:microsoft/harrier-oss-v1-270m","url":"http://localhost:3041/","maxTokens":1024}]' pnpm eval:pagesSearch > "$TMPDIR/gate-harrier.log" 2>&1; echo "exit $?"
+   ```
+
+   A nonzero exit means running that arm again, still without opening its log.
+2. **Pool.** From the repo root:
+
+   ```sh
+   pnpm sucrase-node packages/server/__evals__/pagesSearch/poolUnjudged.ts packages/server/__evals__/pagesSearch/heavyFinalQueries.json packages/server/__evals__/pagesSearch/results/gate-to-grade.json packages/server/__evals__/pagesSearch/results/gate-qwen3-heavy-final-sweep.json packages/server/__evals__/pagesSearch/results/gate-harrier-heavy-final-sweep.json
+   ```
+
+   It prints only a count. `gate-to-grade.json` lists, for each answerable query, the pages either arm ranked in its top 10 that the query doesn't label. They're sorted, with no arm, rank or score.
+3. **Grade.** A fresh agent that never tuned ranking reads `heavyFinalQueries.json`, `results/gate-to-grade.json`, the grading scale under Queries above and the corpus dump (`EVAL_DUMP=1 EVAL_SET=heavy-dev`). It grades every pooled page 3, 2, 1, or 0 for not relevant, and writes `results/gate-extra-grades.json` as `{"<query>": {"<page key>": <grade>}}`. It never opens a results file, and it reports back only how many pages it graded.
+4. **Score.** From the repo root, for each arm's results file:
+
+   ```sh
+   pnpm sucrase-node packages/server/__evals__/pagesSearch/rescore.ts <results file> packages/server/__evals__/pagesSearch/heavyFinalQueries.json packages/server/__evals__/pagesSearch/results/gate-to-grade.json packages/server/__evals__/pagesSearch/results/gate-extra-grades.json
+   ```
+
+   It refuses a run with errors, and grades that don't cover the pool exactly. It prints one row: the arm's model, alpha, floor and unindexed pages, then its scores. A valid arm names its own model and setting, and lists only `doc-q4-planning-draft` as unindexed.
+5. **Scrub.** Delete both results files, the pool, the extra grades and the logs, and keep the two rows.
