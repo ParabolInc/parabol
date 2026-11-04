@@ -18,6 +18,7 @@ import {AbstractModel} from './AbstractModel'
 import type {ModelId} from './modelIdDefinitions'
 
 export type PageChunkerName = 'markdown' | 'sections'
+export type DiscussionTextFormat = 'narrated' | 'plain'
 
 export interface EmbeddingModelParams {
   embeddingDimensions: number
@@ -28,6 +29,9 @@ export interface EmbeddingModelParams {
   pageVectorFloor: number
   pageAlpha: number
   searchPrompt: string
+  discussionText: DiscussionTextFormat
+  relatedDiscussionPrompt: string | null
+  relatedDiscussionFloor: number
 }
 
 const FILL_TIER_STEP = 10_000_000
@@ -44,6 +48,7 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
   readonly languages: readonly ISO6391[]
   readonly chunker: PageChunkerName
   readonly searchPrompt: string
+  readonly discussionText: DiscussionTextFormat
   readonly modelId: ModelId
   isReady = false
   constructor(modelId: ModelId, url: string, maxTokens: number) {
@@ -55,6 +60,7 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
     this.languages = modelParams.languages
     this.chunker = modelParams.chunker
     this.searchPrompt = modelParams.searchPrompt
+    this.discussionText = modelParams.discussionText
     this.maxInputTokens = maxTokens
     this.tableName = getEmbeddingsTableName(modelId)
     this.pagesTableName = getEmbeddingsPagesTableName(modelId)!

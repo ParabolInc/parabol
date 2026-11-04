@@ -92,7 +92,10 @@ const legacySettings = {
   chunker: 'markdown',
   pageVectorFloor: 0.4,
   pageAlpha: 0.01,
-  searchPrompt: ''
+  searchPrompt: '',
+  discussionText: 'narrated',
+  relatedDiscussionPrompt: null,
+  relatedDiscussionFloor: 0.67
 } as const
 
 export const modelIdDefinitions = {
@@ -128,7 +131,11 @@ export const modelIdDefinitions = {
     pageVectorFloor: 0.4,
     pageAlpha: 0.005,
     searchPrompt:
-      'Instruct: Given a web search query, retrieve relevant passages that answer the query\nQuery: '
+      'Instruct: Given a web search query, retrieve relevant passages that answer the query\nQuery: ',
+    discussionText: 'plain',
+    relatedDiscussionPrompt:
+      'Instruct: Given a topic from a team retrospective, retrieve past topics about the same issue\nQuery: ',
+    relatedDiscussionFloor: 0.62
   },
   'Qwen/Qwen3-Embedding-0.6B': {
     embeddingDimensions: 1024,
