@@ -1,6 +1,9 @@
 import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
-import {activeEmbeddingModelId} from '../../../embedder/activeEmbeddingModel'
+import {
+  activeEmbeddingDefinition,
+  activeEmbeddingModelId
+} from '../../../embedder/activeEmbeddingModel'
 import {getEmbeddingsPagesTableName} from '../../../embedder/getEmbeddingsTableName'
 import {cosineSimilarity, pageSnippet, RRF} from '../expressions'
 import {
@@ -11,7 +14,6 @@ import {
 } from './getPagesByKeyword'
 import {getPageSearchPageInfo} from './pageSearchCursor'
 
-export const VECTOR_SIMILARITY_FLOOR = 0.4
 export const VECTOR_MIN_PAGE_BYTES = 200
 export const FUSED_KEYWORD_MATCHING: KeywordMatching = {
   dropStopWords: true,
@@ -30,7 +32,7 @@ export const getPagesByRRF = async ({
   viewerId,
   teamIds,
   dateRange,
-  vectorFloor = VECTOR_SIMILARITY_FLOOR,
+  vectorFloor = activeEmbeddingDefinition?.pageVectorFloor ?? 0,
   vectorMinBytes = VECTOR_MIN_PAGE_BYTES,
   dropStopWords = FUSED_KEYWORD_MATCHING.dropStopWords,
   anyWordFallbackBelow = FUSED_KEYWORD_MATCHING.anyWordFallbackBelow,

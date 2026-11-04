@@ -1,6 +1,9 @@
-import {sql} from 'kysely'
+import {type Kysely, sql} from 'kysely'
 import isValid from '../../server/graphql/isValid'
 import getKysely from '../../server/postgres/getKysely'
+import {VECTOR_MIN_PAGE_BYTES} from '../../server/postgres/queries/getPagesByRRF'
+import type {DB} from '../../server/postgres/types/pg'
+import getRedis from '../../server/utils/getRedis'
 import {Logger} from '../../server/utils/Logger'
 import {getEmbedderJobPriority} from '../getEmbedderJobPriority'
 import {
@@ -22,7 +25,15 @@ export interface EmbeddingModelParams {
   tableSuffix: string
   languages: readonly ISO6391[]
   chunker: PageChunkerName
+  pageVectorFloor: number
+  pageAlpha: number
+  searchPrompt: string
 }
+
+const FILL_TIER_STEP = 10_000_000
+
+const daysSince = (column: string) =>
+  sql<number>`floor(extract(epoch from now() - ${sql.ref(column)}) / 86400)::int`
 
 export abstract class AbstractEmbeddingsModel extends AbstractModel {
   readonly embeddingDimensions: number
@@ -32,8 +43,9 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
   readonly pagesTableName: EmbeddingsPagesTable
   readonly languages: readonly ISO6391[]
   readonly chunker: PageChunkerName
+  readonly searchPrompt: string
   readonly modelId: ModelId
-  protected isReady = false
+  isReady = false
   constructor(modelId: ModelId, url: string, maxTokens: number) {
     super(url)
     this.modelId = modelId
@@ -42,6 +54,7 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
     this.embeddingPrecision = modelParams.precision
     this.languages = modelParams.languages
     this.chunker = modelParams.chunker
+    this.searchPrompt = modelParams.searchPrompt
     this.maxInputTokens = maxTokens
     this.tableName = getEmbeddingsTableName(modelId)
     this.pagesTableName = getEmbeddingsPagesTableName(modelId)!
@@ -55,6 +68,9 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
     content: string,
     retries?: number
   ): Promise<{embedding: number[]; tokens: number} | Error>
+  getSearchEmbedding(query: string) {
+    return this.getEmbedding(`${this.searchPrompt}${query}`)
+  }
   abstract ready(): Promise<boolean>
 
   abstract getTokens(content: string): Promise<number[] | Error>
@@ -132,46 +148,59 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
     return chunks
   }
 
-  async createEmbeddingsForModel() {
+  async createEmbeddingsForModel(db: Kysely<DB> = getKysely()) {
     Logger.log(`Queueing EmbeddingsMetadata, Pages into EmbeddingsJobQueueV2 for ${this.modelId}`)
-    const pg = getKysely()
-    const priority = await getEmbedderJobPriority('modelUpdate', null, 0)
-    await pg
+    const basePriority = await getEmbedderJobPriority('modelUpdate', null, 0)
+    await db
       .insertInto('EmbeddingsJobQueueV2')
-      .columns(['jobType', 'priority', 'embeddingsMetadataId', 'modelId'])
+      .columns(['jobType', 'priority', 'embeddingsMetadataId', 'modelId', 'jobData'])
       .expression(({selectFrom}) =>
         selectFrom('EmbeddingsMetadata')
           .select(({ref}) => [
             sql.lit('embed:start').as('jobType'),
-            sql.lit(priority).as('priority'),
+            sql<number>`${sql.lit(basePriority)} + CASE
+              WHEN "teamId" = 'aGhostTeam' OR "objectType" = 'retroReflection' THEN 0
+              WHEN "objectType" = 'meetingTemplate' THEN ${sql.lit(FILL_TIER_STEP)}
+              ELSE ${sql.lit(2 * FILL_TIER_STEP)} + ${daysSince('refUpdatedAt')}
+            END`.as('priority'),
             ref('id').as('embeddingsMetadataId'),
-            sql.lit(this.modelId).as('modelId')
+            sql.lit(this.modelId).as('modelId'),
+            sql<string>`'{"forceBuildText": true}'::jsonb`.as('jobData')
           ])
           .where('language', 'in', this.languages)
-          .where(({eb, or}) =>
+          .where(({eb, or, and}) =>
             or([
               // meetingTemplates are small & parabol-provided ones are older than a year
               eb('objectType', '=', 'meetingTemplate'),
               // for new models, we only grab a year's worth of data
-              eb('refUpdatedAt', '>', sql<Date>`NOW() - INTERVAL '1 year'`)
+              and([
+                eb('objectType', '=', 'retrospectiveDiscussionTopic'),
+                eb('refUpdatedAt', '>', sql<Date>`NOW() - INTERVAL '1 year'`)
+              ]),
+              and([
+                eb('objectType', '=', 'retroReflection'),
+                eb('refUpdatedAt', '>', sql<Date>`NOW() - INTERVAL '14 days'`)
+              ])
             ])
           )
       )
       .onConflict((oc) => oc.doNothing())
       .execute()
 
-    // process pages first
-    const pagePriority = priority - 1_000
-    await pg
+    await db
       .insertInto('EmbeddingsJobQueueV2')
       .columns(['jobType', 'priority', 'pageId', 'modelId'])
       .expression(({selectFrom}) =>
-        selectFrom('Page').select(({ref}) => [
-          sql.lit('embedPage:start').as('jobType'),
-          sql.lit(pagePriority).as('priority'),
-          ref('id').as('pageId'),
-          sql.lit(this.modelId).as('modelId')
-        ])
+        selectFrom('Page')
+          .select(({ref}) => [
+            sql.lit('embedPage:start').as('jobType'),
+            sql<number>`${sql.lit(basePriority + 3 * FILL_TIER_STEP)} + ${daysSince('updatedAt')}`.as(
+              'priority'
+            ),
+            ref('id').as('pageId'),
+            sql.lit(this.modelId).as('modelId')
+          ])
+          .where(sql<number>`octet_length("plaintextContent")`, '>=', VECTOR_MIN_PAGE_BYTES)
       )
       .onConflict((oc) => oc.doNothing())
       .execute()
@@ -186,14 +215,24 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
         )} = ${this.tableName}`.execute(pg)
       ).rows.length > 0
     if (hasTable) return
+    Logger.log(
+      `ModelManager: creating ${this.tableName}, ${this.pagesTableName} with ${this.embeddingDimensions} dimensions`
+    )
+    await pg.transaction().execute(async (trx) => {
+      // Creating the foreign keys locks Page and EmbeddingsMetadata against writes until commit,
+      // so the long insert goes first
+      await this.createEmbeddingsForModel(trx)
+      await this.createVectorTables(trx)
+    })
+    await getRedis().publish('embeddingsJobAdded', '')
+  }
+
+  async createVectorTables(db: Kysely<DB>) {
     const vectorDimensions = this.embeddingDimensions
     const precision = this.embeddingPrecision
     const vectorType = precision === 16 ? 'halfvec' : 'vector'
     const columnType = `${vectorType}(${vectorDimensions})`
     const indexType = `${vectorType}_cosine_ops`
-    Logger.log(
-      `ModelManager: creating ${this.tableName}, ${this.pagesTableName} with ${vectorDimensions} dimensions`
-    )
     await sql`
       DO $$
         BEGIN
@@ -236,7 +275,6 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
           USING GIN ("tsv");
         END
       $$;
-      `.execute(pg)
-    await this.createEmbeddingsForModel()
+      `.execute(db)
   }
 }

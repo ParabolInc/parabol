@@ -49,7 +49,7 @@ interface EmbeddingCall {
 const mockEmbeddingCalls: EmbeddingCall[] = []
 const warnSpy = jest.spyOn(Logger, 'warn')
 const mockEmbedQueryText = (queryText: string) =>
-  getModelManager().getEmbedder().getEmbedding(queryText)
+  getModelManager().getEmbedder().getSearchEmbedding(queryText)
 
 jest.mock('../../graphql/mutations/helpers/publishToEmbedder', () => ({
   getUserQueryJobData: (query: string) => ({query}),

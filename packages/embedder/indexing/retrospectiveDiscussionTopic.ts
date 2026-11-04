@@ -1,4 +1,4 @@
-import type {DataLoaderInstance} from 'parabol-server/dataloader/RootDataLoader'
+import type {DataLoaderInstance} from '../../server/dataloader/RootDataLoader'
 import type {Comment} from '../../server/postgres/types'
 import {inferLanguage} from '../inferLanguage'
 import type {ISO6391} from '../iso6393To1'

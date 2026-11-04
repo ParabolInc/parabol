@@ -3,6 +3,7 @@ import getKysely from '../server/postgres/getKysely'
 import type {EmbeddingsJobQueueV2} from '../server/postgres/types'
 import RedisInstance from '../server/utils/RedisInstance'
 import {claimEmbeddingsJob} from './claimEmbeddingsJob'
+import {FIRST_FILL_PRIORITY} from './getEmbedderJobPriority'
 import {getNextJobDelay} from './getNextJobDelay'
 
 const MIN_DROUGHT_WAIT_MS = 1000
@@ -17,14 +18,16 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<Embedding
   }
 
   orchestrator: JobRunner
+  liveOnly: boolean
   done: boolean
   redisSub: RedisInstance
   resolveDrought: PromiseWithResolvers<void>['resolve'] | undefined
   inDrought = false
   droughtSignal = false
 
-  constructor(orchestrator: JobRunner) {
+  constructor(orchestrator: JobRunner, {liveOnly = false}: {liveOnly?: boolean} = {}) {
     this.orchestrator = orchestrator
+    this.liveOnly = liveOnly
     this.done = false
     this.redisSub = new RedisInstance('EmbeddingsJobQueueStream_sub')
     this.redisSub.on('message', () => {
@@ -41,7 +44,7 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<Embedding
   async next(): Promise<IteratorResult<EmbeddingsJobQueueV2>> {
     while (!this.done) {
       try {
-        const job = await claimEmbeddingsJob()
+        const job = await claimEmbeddingsJob(undefined, this.liveOnly)
 
         if (!job) {
           if (!this.inDrought) {
@@ -56,6 +59,7 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<Embedding
             .selectFrom('EmbeddingsJobQueueV2')
             .select(({fn}) => fn.min('runAfter').as('nextRunAfter'))
             .where('state', '=', 'queued')
+            .$if(this.liveOnly, (qb) => qb.where('priority', '<', FIRST_FILL_PRIORITY))
             .executeTakeFirstOrThrow()
           const delay = getNextJobDelay(nextRunAfter, new Date())
           await new Promise<void>((resolve) => {

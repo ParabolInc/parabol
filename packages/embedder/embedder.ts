@@ -45,7 +45,7 @@ const run = async () => {
   // Assume 3 workers for type safety, but it doesn't really matter at runtime
   const jobQueueStreams = Array.from(
     {length: NUM_WORKERS},
-    () => new EmbeddingsJobQueueStream(orchestrator)
+    (_, idx) => new EmbeddingsJobQueueStream(orchestrator, {liveOnly: NUM_WORKERS > 1 && idx === 0})
   ) as Tuple<EmbeddingsJobQueueStream, 3>
   const streams = mergeAsyncIterators(jobQueueStreams)
 
