@@ -47,6 +47,11 @@ const getMode = (tls: ReturnType<typeof getRedisTLS>, password: string | undefin
   return 'Unsecure'
 }
 
+// During a failover, Memorystore fails the commands in flight with "ERR role change occurred", and a demoted
+// primary refuses writes with READONLY. Returning 2 reconnects, which reaches the new primary, and resends the command
+const reconnectOnFailover = (error: Error) =>
+  error.message.startsWith('READONLY') || error.message.includes('role change occurred') ? 2 : false
+
 export const getRedisOptions = () => {
   const {REDIS_PASSWORD, REDIS_URL} = process.env
   if (!REDIS_URL) throw new Error('Env Var REDIS_URL is not defined')
@@ -57,5 +62,5 @@ export const getRedisOptions = () => {
   if (mode !== 'Unsecure') {
     Logger.log(`Redis mode: ${mode}`)
   }
-  return {tls, password}
+  return {tls, password, reconnectOnError: reconnectOnFailover}
 }
