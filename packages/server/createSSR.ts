@@ -1,13 +1,10 @@
 import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
-import fs from 'fs'
-import path from 'path'
 import {brotliCompressSync} from 'zlib'
 import acceptsBrotli from './acceptsBrotli'
+import {applyEnvVarsToClientAssets} from './utils/applyEnvVarsToClientAssets'
 
 // In dev mode we don't use this, we proxy to the in-memory Dev Server
-const minifiedHTML = __PRODUCTION__
-  ? fs.readFileSync(path.join(__dirname, '../build', 'index.html'), 'utf8')
-  : ''
+const minifiedHTML = __PRODUCTION__ ? applyEnvVarsToClientAssets()['index.html'] : ''
 const brotliHTML = brotliCompressSync(minifiedHTML)
 
 const createSSR = (res: HttpResponse, req: HttpRequest) => {
@@ -23,6 +20,8 @@ const createSSR = (res: HttpResponse, req: HttpRequest) => {
     res.writeHeader('Link', `<https://${process.env.HOST}/${demoMatch[1]}>; rel="canonical"`)
   }
   res.writeHeader('content-type', 'text/html; charset=utf-8')
+  // a shared cache must not send brotli to a client that didn't ask for it
+  res.writeHeader('vary', 'Accept-Encoding')
   // no need for eTag since file is < 1 MTU
   if (acceptsBrotli(req)) {
     res.writeHeader('content-encoding', 'br').end(brotliHTML)

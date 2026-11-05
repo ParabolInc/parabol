@@ -1,7 +1,7 @@
 import type {InspirationSourcePopover_teamMember$key} from '../../../__generated__/InspirationSourcePopover_teamMember.graphql'
 import InspirationSourceTile from './InspirationSourceTile'
 import type {InspirationSourceSettings} from './inspirationSources'
-import type {InspirationSourceAvailability} from './useInspirationSourceAvailability'
+import type {InspirationSourceAvailability} from './listInspirationSources'
 
 interface Props {
   sources: InspirationSourceAvailability[]

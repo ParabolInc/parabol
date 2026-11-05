@@ -1,8 +1,8 @@
-import path from 'path'
 import makeAppURL from '../../client/utils/makeAppURL'
 import appOrigin from '../appOrigin'
 import generateUID from '../generateUID'
 import type {AssetScopeEnum} from '../graphql/public/resolverTypes'
+import isContentHashed from '../utils/isContentHashed'
 
 export type FileAssetDir = 'store' | 'build'
 
@@ -26,11 +26,8 @@ export default abstract class FileStoreManager {
     fullPath: string,
     options?: PutFileOptions
   ): Promise<void>
-  // A build file named with webpack's content hash never changes; index.html, sw.js and the like do
   protected getBuildFileCacheControl(partialPath: string) {
-    return /(^|_)[0-9a-f]{20,}\./.test(path.basename(partialPath))
-      ? 'public, max-age=31536000, immutable'
-      : undefined
+    return isContentHashed(partialPath) ? 'public, max-age=31536000, immutable' : undefined
   }
   abstract putBuildFile(
     file: ArrayBufferLike | Buffer<ArrayBufferLike>,

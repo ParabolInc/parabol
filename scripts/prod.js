@@ -3,6 +3,7 @@ const cp = require('child_process')
 const fs = require('fs')
 const path = require('path')
 const {Logger} = require('../packages/server/utils/Logger')
+const precompressBuild = require('./webpack/utils/precompressBuild')
 
 const BUILD_PATH = path.join(__dirname, '../build')
 
@@ -62,6 +63,11 @@ const prod = async (isDeploy, noDeps) => {
   })
   try {
     await Promise.all([types, webworkers, bundles])
+    if (isShipped) {
+      const start = Date.now()
+      const count = await precompressBuild([BUILD_PATH, path.join(__dirname, '../dist/images')])
+      Logger.log(`compressed ${count} files with brotli in ${Date.now() - start}ms`)
+    }
   } catch (e) {
     Logger.log('error building', e)
     process.exit(1)

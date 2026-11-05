@@ -1,16 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import dayjs from 'dayjs'
-import {useFragment} from 'react-relay'
-import type {GitHubIntegrationPanel_meeting$key} from '../../../__generated__/GitHubIntegrationPanel_meeting.graphql'
-import useAtmosphere from '../../../hooks/useAtmosphere'
+import {usePreloadedQuery} from 'react-relay'
+import type {GitHubIntegrationPanelQuery} from '../../../__generated__/GitHubIntegrationPanelQuery.graphql'
 import useInspirationDrawer from '../../../hooks/useInspirationDrawer'
-import useMutationProps from '../../../hooks/useMutationProps'
 import useSessionStorageState from '../../../hooks/useSessionStorageState'
-import {getConnectProvider} from '../../../integrations/platform/findIntegrationService'
+import type {WorkDrawerQueryPanelProps} from '../../../integrations/platform/ClientIntegrationDefinition'
 import {Button} from '../../../ui/Button/Button'
 import {cn} from '../../../ui/cn'
-import GitHubClientManager from '../../../utils/GitHubClientManager'
-import GitHubSVG from '../../GitHubSVG'
 import GitHubIntegrationResultsRoot from './GitHubIntegrationResultsRoot'
 import GitHubRepoFilterBar from './GitHubRepoFilterBar'
 import InspirationItemsPanel from './InspirationItemsPanel'
@@ -32,17 +28,11 @@ const GITHUB_QUERY_MAPPING = {
   pullRequest: 'is:pr sort:updated involves:@me'
 }
 
-interface Props {
-  meetingRef: GitHubIntegrationPanel_meeting$key
-}
-
-const GitHubIntegrationPanel = (props: Props) => {
-  const {meetingRef} = props
-  const meeting = useFragment(
-    graphql`
-      fragment GitHubIntegrationPanel_meeting on NewMeeting {
+const query = graphql`
+  query GitHubIntegrationPanelQuery($meetingId: ID!) {
+    viewer {
+      meeting(meetingId: $meetingId) @required(action: THROW) {
         ...useInspirationDrawer_meeting
-        id
         githubInspirationItems: inspirationItems(service: github) {
           id
           title
@@ -51,24 +41,19 @@ const GitHubIntegrationPanel = (props: Props) => {
         }
         viewerMeetingMember {
           teamMember {
-            teamId
-            services {
-              ...findIntegrationService_cloudProvider @relay(mask: false)
-            }
-            integrations {
-              github {
-                isActive
-              }
-            }
             ...GitHubRepoFilterBar_teamMember
           }
         }
       }
-    `,
-    meetingRef
-  )
+    }
+  }
+`
 
-  const atmosphere = useAtmosphere()
+const GitHubIntegrationPanel = (props: WorkDrawerQueryPanelProps<GitHubIntegrationPanelQuery>) => {
+  const {queryRef, meetingId, teamId} = props
+  const {viewer} = usePreloadedQuery<GitHubIntegrationPanelQuery>(query, queryRef)
+  const {meeting} = viewer
+
   const teamMember = meeting.viewerMeetingMember?.teamMember
 
   const {dateRange, setDateRange, onResultCount, getResultCount} = useInspirationDrawer(
@@ -77,11 +62,11 @@ const GitHubIntegrationPanel = (props: Props) => {
   )
 
   const [githubType, setGithubType] = useSessionStorageState<'issue' | 'pullRequest'>(
-    `Inspiration:github:type:${meeting.id}`,
+    `Inspiration:github:type:${meetingId}`,
     'pullRequest'
   )
   const [selectedRepos, setSelectedRepos] = useSessionStorageState<string[]>(
-    `Inspiration:github:repos:${meeting.id}`,
+    `Inspiration:github:repos:${meetingId}`,
     []
   )
 
@@ -92,17 +77,6 @@ const GitHubIntegrationPanel = (props: Props) => {
   const searchQuery = [GITHUB_QUERY_MAPPING[githubType], repoQueryString, dateQueryString]
     .filter(Boolean)
     .join(' ')
-
-  const mutationProps = useMutationProps()
-  const {error, onError} = mutationProps
-
-  const authGitHub = () => {
-    const provider = teamMember && getConnectProvider(teamMember.services, 'github')
-    if (!teamMember || !provider) {
-      return onError(new Error('Could not find team member'))
-    }
-    GitHubClientManager.openOAuth(atmosphere, teamMember.teamId, provider, mutationProps)
-  }
 
   const filterBar = teamMember ? (
     <>
@@ -137,44 +111,23 @@ const GitHubIntegrationPanel = (props: Props) => {
 
   return (
     <>
-      {teamMember?.integrations.github?.isActive ? (
-        <>
-          {filterBar}
-          <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
-            <InspirationItemsPanel
-              meetingId={meeting.id}
-              service='github'
-              searchQuery={searchQuery}
-              initialItems={meeting.githubInspirationItems}
-              hideDraftPanel={!getResultCount(searchQuery)}
-            >
-              <GitHubIntegrationResultsRoot
-                teamId={teamMember.teamId}
-                queryType={githubType}
-                searchQuery={searchQuery}
-                onResultCount={onResultCount}
-              />
-            </InspirationItemsPanel>
-          </div>
-        </>
-      ) : (
-        <div className='flex flex-col items-center gap-2 pt-12'>
-          <div className='h-10 w-10'>
-            <GitHubSVG className='h-10 w-10 dark:[&_path]:fill-white' />
-          </div>
-          <b>Connect to GitHub</b>
-          <div className='w-1/2 text-center text-sm'>
-            Connect to GitHub to view your issues and PRs.
-          </div>
-          <button
-            className='mt-4 cursor-pointer rounded-md bg-sky-500 px-8 py-2 font-semibold text-white hover:bg-sky-600'
-            onClick={authGitHub}
-          >
-            Connect
-          </button>
-          {error && <div className='text-fg-error'>Error: {error.message}</div>}
-        </div>
-      )}
+      {filterBar}
+      <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
+        <InspirationItemsPanel
+          meetingId={meetingId}
+          service='github'
+          searchQuery={searchQuery}
+          initialItems={meeting.githubInspirationItems}
+          hideDraftPanel={!getResultCount(searchQuery)}
+        >
+          <GitHubIntegrationResultsRoot
+            teamId={teamId}
+            queryType={githubType}
+            searchQuery={searchQuery}
+            onResultCount={onResultCount}
+          />
+        </InspirationItemsPanel>
+      </div>
     </>
   )
 }

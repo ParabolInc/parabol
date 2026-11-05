@@ -11,6 +11,7 @@ import {
   type EstimatePushCapability,
   type IntegrationCtx,
   type IssueCreateCapability,
+  type IssueListCapability,
   type IssueReadCapability,
   type IssueSearchCapability,
   type RepoListCapability,
@@ -21,6 +22,7 @@ import describeJiraDimensionField from './describeJiraDimensionField'
 import fetchJiraProjects from './fetchJiraProjects'
 import JiraIntegrationManager from './JiraIntegrationManager'
 import listJiraDimensionFields from './listJiraDimensionFields'
+import listJiraIssues from './listJiraIssues'
 import parseJiraIntegrationHash from './parseJiraIntegrationHash'
 import pushEstimateToJira from './pushEstimateToJira'
 import resolveJiraDimensionFieldKey from './resolveJiraDimensionFieldKey'
@@ -53,6 +55,7 @@ export class JiraServerIntegration extends ServerIntegrationDefinition {
     issueSearch: IssueSearchCapability<JiraSearchQueryJson>
     repoList: RepoListCapability<JiraGQLProject>
     estimatePush: EstimatePushCapability
+    issueList: IssueListCapability
   } = {
     issueCreate: {
       initManager: async (ctx) => {
@@ -77,6 +80,7 @@ export class JiraServerIntegration extends ServerIntegrationDefinition {
       resolveDimensionFieldKey: resolveJiraDimensionFieldKey,
       describeDimensionField: describeJiraDimensionField,
       listDimensionFields: listJiraDimensionFields
-    }
+    },
+    issueList: {listIssues: listJiraIssues}
   }
 }

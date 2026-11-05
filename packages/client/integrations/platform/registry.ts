@@ -39,19 +39,29 @@ export const clientIntegrationsByPopularity = Object.keys(
   clientIntegrations
 ) as RegisteredClientIntegration[]
 
-export const compareClientIntegrationPopularity = (
-  a: RegisteredClientIntegration,
-  b: RegisteredClientIntegration
-) => clientIntegrationsByPopularity.indexOf(a) - clientIntegrationsByPopularity.indexOf(b)
-
 export const isRegisteredClientIntegration = (
-  service: IntegrationProviderServiceEnum | TaskServiceEnum
+  service: string
 ): service is RegisteredClientIntegration => Object.hasOwn(clientIntegrations, service)
 
 export const isTaskClientIntegration = (
   service: IntegrationProviderServiceEnum | TaskServiceEnum
 ): service is TaskClientIntegration => Object.hasOwn(taskIntegrations, service)
 
-export const getClientIntegration = <N extends RegisteredClientIntegration>(
+export function getClientIntegration<N extends RegisteredClientIntegration>(
   service: N
-): ClientIntegrations[N] => clientIntegrations[service]
+): ClientIntegrations[N]
+export function getClientIntegration(service: string): ClientIntegrationDefinition | null
+export function getClientIntegration(service: string) {
+  return isRegisteredClientIntegration(service) ? clientIntegrations[service] : null
+}
+
+/** The registered services among these, in popularity order, each with its definition */
+export const listClientIntegrationServices = <T extends {service: string}>(
+  services: readonly T[]
+) =>
+  clientIntegrationsByPopularity.flatMap((service) => {
+    const integrationService = services.find((candidate) => candidate.service === service)
+    return integrationService
+      ? [{integrationService, definition: getClientIntegration(service)}]
+      : []
+  })

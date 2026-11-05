@@ -1,20 +1,18 @@
-import * as google from 'googleapis/build/src/apis/calendar'
-import appOrigin from '../../../../appOrigin'
-import {Logger} from '../../../../utils/Logger'
-import type {DataLoaderWorker} from '../../../graphql'
-import {type InspirationIssue, MAX_ISSUES} from './issuesForAI'
+import {Logger} from '../../utils/Logger'
+import {type InspirationIssue, MAX_ISSUES} from '../platform/InspirationIssue'
+import type {GqlIntegrationCtx} from '../platform/ServerIntegrationDefinition'
+import makeGcalCalendar from './makeGcalCalendar'
 
 // Re-runs the Google Calendar search the user saw in the Your Work drawer, server-side, fetching
 // each event's full description, location, and attendees so the AI has enough context to draft a
 // response. The client serializes the tab's {startDate, endDate} window as JSON into searchQuery;
 // we parse it back and re-run the same events.list query. Returns the normalized issues,
 // or [] if there's nothing.
-const fetchGCalIssues = async (
-  teamId: string,
-  userId: string,
-  searchQuery: string,
-  dataLoader: DataLoaderWorker
+const listGcalIssues = async (
+  ctx: GqlIntegrationCtx,
+  searchQuery: string
 ): Promise<InspirationIssue[]> => {
+  const {dataLoader, teamId, userId} = ctx
   const gcalAuth = await dataLoader.get('freshAuth').load({service: 'gcal', teamId, userId})
   if (!gcalAuth) return []
 
@@ -22,21 +20,13 @@ const fetchGCalIssues = async (
   try {
     range = searchQuery ? JSON.parse(searchQuery) : {}
   } catch {
-    Logger.error('fetchGCalIssues: could not parse searchQuery as a date range')
+    Logger.error('listGcalIssues: could not parse searchQuery as a date range')
     return []
   }
   const {startDate, endDate} = range
   if (!startDate || !endDate) return []
 
-  const {accessToken: access_token, refreshToken: refresh_token, expiresAt} = gcalAuth
-  const CLIENT_ID = process.env.GOOGLE_OAUTH_CLIENT_ID
-  const CLIENT_SECRET = process.env.GOOGLE_OAUTH_CLIENT_SECRET
-  const REDIRECT_URI = appOrigin
-  const expiry_date = expiresAt ? expiresAt.getTime() : undefined
-
-  const oauth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
-  oauth2Client.setCredentials({access_token, refresh_token, expiry_date})
-  const calendar = google.calendar({version: 'v3', auth: oauth2Client})
+  const calendar = makeGcalCalendar(gcalAuth)
 
   const now = Date.now()
   try {
@@ -91,4 +81,4 @@ const fetchGCalIssues = async (
   }
 }
 
-export default fetchGCalIssues
+export default listGcalIssues

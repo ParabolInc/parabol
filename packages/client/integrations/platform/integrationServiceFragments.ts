@@ -24,8 +24,24 @@ graphql`
 `
 
 graphql`
-  fragment findIntegrationService_isAvailable on IntegrationService {
-    service
-    isAvailable
+  fragment integrationServiceProviders_service on IntegrationService {
+    cloudProvider {
+      id
+      scope
+      ... on IntegrationProviderOAuth2 {
+        clientId
+        serverBaseUrl
+        tenantId
+      }
+    }
+    sharedProviders {
+      id
+      scope
+      ... on IntegrationProviderOAuth2 {
+        clientId
+        serverBaseUrl
+        tenantId
+      }
+    }
   }
 `
