@@ -11,6 +11,13 @@ import {makeOAuth2Redirect} from './makeOAuth2Redirect'
 const PROJECT_ROOT = getProjectRoot()
 const clientDir = path.join(PROJECT_ROOT, 'build')
 
+// the build's templates for the files below, which are never sent themselves
+export const CLIENT_ASSET_SKELETONS = new Set([
+  'swSkeleton.js',
+  'skeleton.html',
+  'mattermost-plugin_envSkeleton.js'
+])
+
 const rewriteServiceWorker = () => {
   const skeleton = fs.readFileSync(path.join(clientDir, 'swSkeleton.js'), 'utf-8')
   return skeleton.replaceAll('__PUBLIC_PATH__', __webpack_public_path__)
