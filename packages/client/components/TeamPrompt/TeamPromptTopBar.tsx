@@ -122,7 +122,7 @@ const TeamPromptTopBar = (props: Props) => {
   }
 
   const buttons = (
-    <div className='ml-4 flex items-center justify-center xl:ml-[10px] xl:h-12 min-[1600px]:h-14'>
+    <div className='ml-4 flex items-center justify-center min-[1280px]:ml-[10px] min-[1280px]:h-12 min-[1600px]:h-14'>
       <button
         className='group flex h-max w-max cursor-pointer flex-col items-center bg-transparent px-2 font-semibold text-accent text-sm'
         onClick={onOpenWorkSidebar}

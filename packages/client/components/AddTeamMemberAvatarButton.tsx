@@ -45,7 +45,7 @@ const AddTeamMemberAvatarButton = (props: Props) => {
             className={cn(
               'flex cursor-pointer items-center justify-center rounded-full border-2 border-current bg-transparent p-0 text-sky-500 hover:text-sky-600 focus:text-sky-600 active:text-sky-600',
               isMeeting
-                ? 'h-8 w-8 text-lg xl:h-12 xl:w-12 xl:text-2xl min-[1600px]:h-14 min-[1600px]:w-14 min-[1600px]:text-[36px]'
+                ? 'h-8 w-8 text-lg min-[1280px]:h-12 min-[1600px]:h-14 min-[1280px]:w-12 min-[1600px]:w-14 min-[1280px]:text-2xl min-[1600px]:text-[36px]'
                 : 'h-8 w-8 text-lg'
             )}
           >

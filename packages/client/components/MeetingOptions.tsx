@@ -87,9 +87,9 @@ const MeetingOptions = (props: Props) => {
     <Menu
       onOpenChange={handleOpenMenu}
       trigger={
-        <OptionsButton>
+        <OptionsButton aria-label='Options'>
           <IconLabel icon='tune' iconLarge />
-          <div className='text-fg-primary'>Options</div>
+          <div className='hidden text-fg-primary min-[600px]:block'>Options</div>
         </OptionsButton>
       }
     >

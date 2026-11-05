@@ -34,7 +34,7 @@ const NewMeetingAvatar = (props: Props) => {
       <Popover.Root open={open} onOpenChange={onOpenChange}>
         <Popover.Trigger asChild>
           <div
-            className='relative h-8 w-8 max-w-8 cursor-pointer rounded-full xl:h-12 xl:w-12 xl:max-w-12 min-[1600px]:h-14 min-[1600px]:w-14 min-[1600px]:max-w-14'
+            className='relative h-8 w-8 max-w-8 cursor-pointer rounded-full min-[1280px]:h-12 min-[1600px]:h-14 min-[1280px]:w-12 min-[1600px]:w-14 min-[1280px]:max-w-12 min-[1600px]:max-w-14'
             {...hoverTriggerProps}
           >
             <Avatar picture={picture} alt={preferredName} className='h-full w-full' />
