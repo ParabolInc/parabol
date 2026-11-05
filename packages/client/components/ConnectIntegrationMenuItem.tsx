@@ -1,7 +1,7 @@
 import {forwardRef} from 'react'
 import useAtmosphere from '../hooks/useAtmosphere'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
-import type {ConnectProvider} from '../integrations/platform/ClientIntegrationDefinition'
+import type {ConnectProviderRef} from '../integrations/platform/ClientIntegrationDefinition'
 import {
   getClientIntegration,
   type RegisteredClientIntegration
@@ -14,7 +14,7 @@ interface Props {
   mutationProps: MenuMutationProps
   service: RegisteredClientIntegration
   title: string
-  provider: ConnectProvider
+  provider: ConnectProviderRef
   heldScopes: readonly string[]
 }
 

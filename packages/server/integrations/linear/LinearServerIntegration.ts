@@ -10,6 +10,7 @@ import type {LinearRepo} from '../platform/RemoteRepoIntegration'
 import {
   type EstimatePushCapability,
   type IssueCreateCapability,
+  type IssueListCapability,
   type IssueReadCapability,
   type IssueSearchCapability,
   type RepoListCapability,
@@ -20,6 +21,7 @@ import describeLinearDimensionField from './describeLinearDimensionField'
 import isLinearTeam from './isLinearTeam'
 import LinearServerManager from './LinearServerManager'
 import listLinearDimensionFields from './listLinearDimensionFields'
+import listLinearIssues from './listLinearIssues'
 import parseLinearIntegrationHash from './parseLinearIntegrationHash'
 import pushEstimateToLinear from './pushEstimateToLinear'
 import resolveLinearDimensionFieldKey from './resolveLinearDimensionFieldKey'
@@ -36,6 +38,7 @@ export class LinearServerIntegration extends ServerIntegrationDefinition {
     issueSearch: IssueSearchCapability<LinearSearchQueryJson>
     repoList: RepoListCapability<LinearRepo>
     estimatePush: EstimatePushCapability
+    issueList: IssueListCapability
   } = {
     issueCreate: {
       initManager: async (ctx) => {
@@ -71,6 +74,7 @@ export class LinearServerIntegration extends ServerIntegrationDefinition {
       resolveDimensionFieldKey: resolveLinearDimensionFieldKey,
       describeDimensionField: describeLinearDimensionField,
       listDimensionFields: listLinearDimensionFields
-    }
+    },
+    issueList: {listIssues: listLinearIssues}
   }
 }

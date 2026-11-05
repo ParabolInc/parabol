@@ -1,4 +1,7 @@
 import {lazy} from 'react'
+import gitHubIntegrationPanelQuery, {
+  type GitHubIntegrationPanelQuery
+} from '../../__generated__/GitHubIntegrationPanelQuery.graphql'
 import gitHubScopingResultsQuery, {
   type GitHubScopingResultsAdapterQuery
 } from '../../__generated__/GitHubScopingResultsAdapterQuery.graphql'
@@ -15,9 +18,11 @@ import {
   ClientIntegrationDefinition,
   type ConnectParams,
   type ProviderLogoAsset,
-  type ScopingCapability
+  type ScopingCapability,
+  type WorkDrawerCapability
 } from '../platform/ClientIntegrationDefinition'
 import makeScopingResults from '../platform/makeScopingResults'
+import makeWorkDrawerPanel from '../platform/makeWorkDrawerPanel'
 
 const GITHUB_DEFAULT_QUERY = 'is:issue is:open sort:updated involves:@me'
 
@@ -55,6 +60,19 @@ const scoping: ScopingCapability = {
   isDefaultQuery: (state) => state.queryString.toLowerCase().trim() === GITHUB_DEFAULT_QUERY
 }
 
+const workDrawer: WorkDrawerCapability = {
+  Panel: makeWorkDrawerPanel<GitHubIntegrationPanelQuery>({
+    query: gitHubIntegrationPanelQuery,
+    Panel: lazy(
+      () =>
+        import(
+          /* webpackChunkName: 'GitHubIntegrationPanel' */ '../../components/TeamPrompt/WorkDrawer/GitHubIntegrationPanel'
+        )
+    )
+  }),
+  connectDescription: 'issues and PRs'
+}
+
 export class GitHubClientIntegration extends ClientIntegrationDefinition {
   readonly service = githubIntegrationMeta.service
   readonly title = githubIntegrationMeta.title
@@ -62,14 +80,15 @@ export class GitHubClientIntegration extends ClientIntegrationDefinition {
   readonly Icon = GitHubSVG
   readonly logo: ProviderLogoAsset = {src: githubLogo, darkSrc: githubLogoWhite}
   readonly iconClassName = 'dark:[&_path]:fill-white'
-  readonly capabilities: ClientIntegrationCapabilities = {scoping}
+  readonly capabilities: ClientIntegrationCapabilities = {scoping, workDrawer}
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
-    if (!provider?.clientId) return
+    if (!provider?.clientId) return false
     GitHubClientManager.openOAuth(
       atmosphere,
       teamId,
       {id: provider.id, clientId: provider.clientId},
       mutationProps
     )
+    return true
   }
 }

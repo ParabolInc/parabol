@@ -2,19 +2,6 @@ import type {JSONContent} from '@tiptap/core'
 import dayjs from 'dayjs'
 import type {WorkDrawerDateRange} from './WorkDrawerDateFilter'
 
-const SERVICE_LABELS: Record<string, string> = {
-  PARABOL: 'Parabol',
-  github: 'GitHub',
-  gitlab: 'GitLab',
-  jira: 'Jira',
-  jiraServer: 'Jira Data Center',
-  linear: 'Linear',
-  azureDevOps: 'Azure DevOps',
-  gcal: 'Google Calendar'
-}
-
-export const serviceLabel = (service: string) => SERVICE_LABELS[service] ?? service
-
 export const NO_WORK_LINE =
   'No work was found. Try turning on more sources or widening the date range.'
 

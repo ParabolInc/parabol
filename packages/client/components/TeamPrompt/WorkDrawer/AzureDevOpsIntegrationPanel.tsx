@@ -1,31 +1,21 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useFragment} from 'react-relay'
-import type {AzureDevOpsIntegrationPanel_meeting$key} from '../../../__generated__/AzureDevOpsIntegrationPanel_meeting.graphql'
+import {usePreloadedQuery} from 'react-relay'
+import type {AzureDevOpsIntegrationPanelQuery} from '../../../__generated__/AzureDevOpsIntegrationPanelQuery.graphql'
 import useInspirationDrawer from '../../../hooks/useInspirationDrawer'
 import useSessionStorageState from '../../../hooks/useSessionStorageState'
 import {getAzureDevOpsSharedProjects} from '../../../integrations/azureDevOps/azureDevOpsSharedProjects'
-import findIntegrationService from '../../../integrations/platform/findIntegrationService'
+import type {WorkDrawerQueryPanelProps} from '../../../integrations/platform/ClientIntegrationDefinition'
 import buildAzureDevOpsWorkWiql from '../../../shared/integrations/buildAzureDevOpsWorkWiql'
-import AzureDevOpsConnectPrompt from './AzureDevOpsConnectPrompt'
 import AzureDevOpsIntegrationResultsRoot from './AzureDevOpsIntegrationResultsRoot'
 import AzureDevOpsProjectFilterBar from './AzureDevOpsProjectFilterBar'
 import InspirationItemsPanel from './InspirationItemsPanel'
 import {WorkDrawerDateFilter} from './WorkDrawerDateFilter'
 
-interface Props {
-  meetingRef: AzureDevOpsIntegrationPanel_meeting$key
-}
-
-const KINDS = ['assigned'] as const
-
-const AzureDevOpsIntegrationPanel = (props: Props) => {
-  const {meetingRef} = props
-  const meeting = useFragment(
-    graphql`
-      fragment AzureDevOpsIntegrationPanel_meeting on NewMeeting {
+const query = graphql`
+  query AzureDevOpsIntegrationPanelQuery($meetingId: ID!) {
+    viewer {
+      meeting(meetingId: $meetingId) @required(action: THROW) {
         ...useInspirationDrawer_meeting
-        teamId
-        id
         azureDevOpsInspirationItems: inspirationItems(service: azureDevOps) {
           id
           title
@@ -34,25 +24,28 @@ const AzureDevOpsIntegrationPanel = (props: Props) => {
         }
         viewerMeetingMember {
           teamMember {
-            teamId
             services {
               service
-              isConnected
-              ...connectAzureDevOps_service @relay(mask: false)
               ...azureDevOpsSharedProjects_service @relay(mask: false)
             }
             ...AzureDevOpsProjectFilterBar_teamMember
           }
         }
       }
-    `,
-    meetingRef
-  )
-  const {id: meetingId, teamId} = meeting
+    }
+  }
+`
+
+const KINDS = ['assigned'] as const
+
+const AzureDevOpsIntegrationPanel = (
+  props: WorkDrawerQueryPanelProps<AzureDevOpsIntegrationPanelQuery>
+) => {
+  const {queryRef, meetingId, teamId} = props
+  const {viewer} = usePreloadedQuery<AzureDevOpsIntegrationPanelQuery>(query, queryRef)
+  const {meeting} = viewer
   const teamMember = meeting.viewerMeetingMember?.teamMember
-  const services = teamMember?.services ?? []
-  const isConnected = !!findIntegrationService(services, 'azureDevOps')?.isConnected
-  const {projects: sharedProjects, isListed} = getAzureDevOpsSharedProjects(services)
+  const {projects: sharedProjects, isListed} = getAzureDevOpsSharedProjects(teamMember?.services)
   const {dateRange, setDateRange, onResultCount, getResultCount} = useInspirationDrawer(
     'azureDevOps',
     meeting
@@ -62,9 +55,7 @@ const AzureDevOpsIntegrationPanel = (props: Props) => {
     []
   )
 
-  if (!isConnected || !teamMember) {
-    return <AzureDevOpsConnectPrompt teamId={teamId} services={services} />
-  }
+  if (!teamMember) return null
 
   const {startAt, endAt} = dateRange ?? {}
   // The same filter is listed here and re-run server-side when drafting, so the work the viewer

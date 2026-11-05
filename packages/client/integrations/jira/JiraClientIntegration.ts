@@ -1,4 +1,7 @@
 import {createElement, lazy} from 'react'
+import jiraIntegrationPanelQuery, {
+  type JiraIntegrationPanelQuery
+} from '../../__generated__/JiraIntegrationPanelQuery.graphql'
 import jiraScopingResultsQuery, {
   type JiraScopingResultsAdapterQuery
 } from '../../__generated__/JiraScopingResultsAdapterQuery.graphql'
@@ -16,10 +19,12 @@ import {
   ClientIntegrationDefinition,
   type ConnectParams,
   type ProviderLogoAsset,
-  type ScopingCapability
+  type ScopingCapability,
+  type WorkDrawerCapability
 } from '../platform/ClientIntegrationDefinition'
 import {searchFiltersByKey} from '../platform/IntegrationSearchFilter'
 import makeScopingResults from '../platform/makeScopingResults'
+import makeWorkDrawerPanel from '../platform/makeWorkDrawerPanel'
 import jiraSearchMeta from './jiraSearchMeta'
 
 const JiraScopingCurrentFiltersRoot = lazy(
@@ -65,6 +70,19 @@ const scoping: ScopingCapability = {
   selectAllNoun: 'issue'
 }
 
+const workDrawer: WorkDrawerCapability = {
+  Panel: makeWorkDrawerPanel<JiraIntegrationPanelQuery>({
+    query: jiraIntegrationPanelQuery,
+    Panel: lazy(
+      () =>
+        import(
+          /* webpackChunkName: 'JiraIntegrationPanel' */ '../../components/TeamPrompt/WorkDrawer/JiraIntegrationPanel'
+        )
+    )
+  }),
+  connectDescription: 'issues'
+}
+
 export class JiraClientIntegration extends ClientIntegrationDefinition {
   readonly service = jiraIntegrationMeta.service
   readonly title = jiraIntegrationMeta.title
@@ -73,13 +91,14 @@ export class JiraClientIntegration extends ClientIntegrationDefinition {
   readonly logo: ProviderLogoAsset = {src: atlassianLogo}
   readonly capabilities: ClientIntegrationCapabilities = {
     scoping,
+    workDrawer,
     settings: {
       getDisconnectSubline: describeAtlassianDisconnect
     }
   }
   readonly authorizationHelpUrl = ExternalLinks.INTEGRATIONS_SUPPORT_JIRA_AUTHORIZATION
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider, heldScopes}: ConnectParams) {
-    if (!provider?.clientId) return
+    if (!provider?.clientId) return false
     AtlassianClientManager.openOAuth(
       atmosphere,
       teamId,
@@ -88,5 +107,6 @@ export class JiraClientIntegration extends ClientIntegrationDefinition {
       AtlassianClientManager.JIRA_SCOPE,
       heldScopes
     )
+    return true
   }
 }

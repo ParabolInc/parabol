@@ -1,12 +1,8 @@
 import type {IntegrationProviderServiceEnum} from '../../../__generated__/CreateTaskIntegrationMutation.graphql'
-import findIntegrationService, {
-  getConnectProvider,
-  isServiceAvailable
-} from '../findIntegrationService'
+import findIntegrationService, {getConnectProvider} from '../findIntegrationService'
 
 const services: readonly {
   service: IntegrationProviderServiceEnum
-  isAvailable: boolean
   cloudProvider: {
     id: string
     clientId: string
@@ -16,7 +12,6 @@ const services: readonly {
 }[] = [
   {
     service: 'jira',
-    isAvailable: true,
     cloudProvider: {
       id: 'p1',
       clientId: 'c1',
@@ -24,8 +19,7 @@ const services: readonly {
       tenantId: null
     }
   },
-  {service: 'jiraServer', isAvailable: true, cloudProvider: null},
-  {service: 'linear', isAvailable: false, cloudProvider: null}
+  {service: 'jiraServer', cloudProvider: null}
 ]
 
 describe('findIntegrationService helpers', () => {
@@ -37,11 +31,5 @@ describe('findIntegrationService helpers', () => {
   it('getConnectProvider requires an OAuth2 cloud provider', () => {
     expect(getConnectProvider(services, 'jira')?.id).toBe('p1')
     expect(getConnectProvider(services, 'jiraServer')).toBeNull()
-  })
-
-  it('isServiceAvailable reads the server flag and is false for unknown services', () => {
-    expect(isServiceAvailable(services, 'jira')).toBe(true)
-    expect(isServiceAvailable(services, 'linear')).toBe(false)
-    expect(isServiceAvailable(services, 'github')).toBe(false)
   })
 })

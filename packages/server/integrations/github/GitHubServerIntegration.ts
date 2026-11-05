@@ -7,6 +7,7 @@ import {
   type EstimatePushCapability,
   type IntegrationCtx,
   type IssueCreateCapability,
+  type IssueListCapability,
   type IssueReadCapability,
   type IssueSearchCapability,
   type RepoListCapability,
@@ -16,6 +17,7 @@ import buildGitHubSearchQuery from './buildGitHubSearchQuery'
 import describeGitHubDimensionField from './describeGitHubDimensionField'
 import GitHubServerManager from './GitHubServerManager'
 import listGitHubDimensionFields from './listGitHubDimensionFields'
+import listGitHubIssues from './listGitHubIssues'
 import parseGitHubIntegrationHash from './parseGitHubIntegrationHash'
 import pushEstimateToGitHub from './pushEstimateToGitHub'
 import resolveGitHubDimensionFieldKey from './resolveGitHubDimensionFieldKey'
@@ -50,6 +52,7 @@ export class GitHubServerIntegration extends ServerIntegrationDefinition {
     issueSearch: IssueSearchCapability<GitHubSearchQueryJson>
     repoList: RepoListCapability<GitHubRepo>
     estimatePush: EstimatePushCapability
+    issueList: IssueListCapability
   } = {
     issueCreate: {
       initManager: async ({dataLoader, teamId, userId, context, info}) => {
@@ -74,6 +77,7 @@ export class GitHubServerIntegration extends ServerIntegrationDefinition {
       resolveDimensionFieldKey: resolveGitHubDimensionFieldKey,
       describeDimensionField: describeGitHubDimensionField,
       listDimensionFields: listGitHubDimensionFields
-    }
+    },
+    issueList: {listIssues: listGitHubIssues}
   }
 }

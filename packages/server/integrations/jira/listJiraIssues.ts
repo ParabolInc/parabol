@@ -1,10 +1,10 @@
 import {generateText} from '@tiptap/core'
 import convertADFToTipTap, {type AdfNode} from 'parabol-client/shared/tiptap/convertADFToTipTap'
-import {serverTipTapExtensions} from '../../../../../client/shared/tiptap/serverTipTapExtensions'
-import AtlassianServerManager from '../../../../utils/AtlassianServerManager'
-import {Logger} from '../../../../utils/Logger'
-import type {DataLoaderWorker} from '../../../graphql'
-import {type InspirationIssue, MAX_ISSUES} from './issuesForAI'
+import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
+import AtlassianServerManager from '../../utils/AtlassianServerManager'
+import {Logger} from '../../utils/Logger'
+import {type InspirationIssue, MAX_ISSUES} from '../platform/InspirationIssue'
+import type {GqlIntegrationCtx} from '../platform/ServerIntegrationDefinition'
 
 // Flatten a Jira ADF description into plaintext for the AI prompt. getIssues types description as
 // a string, but the search API returns it as an ADF document, so guard on the runtime shape.
@@ -17,12 +17,11 @@ const adfToPlaintext = (description: unknown) => {
 // Re-runs the Jira search the user saw in the Your Work drawer, server-side, fetching the full
 // description for each issue so the AI has enough context to draft a response. Returns the
 // normalized issues, or [] if there's nothing to send.
-const fetchJiraIssues = async (
-  teamId: string,
-  userId: string,
-  searchQuery: string,
-  dataLoader: DataLoaderWorker
+const listJiraIssues = async (
+  ctx: GqlIntegrationCtx,
+  searchQuery: string
 ): Promise<InspirationIssue[]> => {
+  const {dataLoader, teamId, userId} = ctx
   const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId})
   if (!auth) return []
   const cloudNameLookup = await dataLoader.get('atlassianCloudNameLookup').load({teamId, userId})
@@ -52,4 +51,4 @@ const fetchJiraIssues = async (
   return cloudResults.flat().slice(0, MAX_ISSUES)
 }
 
-export default fetchJiraIssues
+export default listJiraIssues

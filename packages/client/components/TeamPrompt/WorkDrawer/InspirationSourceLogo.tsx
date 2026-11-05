@@ -1,31 +1,16 @@
-import gcalLogo from '../../../styles/theme/images/graphics/google-calendar.svg'
-import AzureDevOpsSVG from '../../AzureDevOpsSVG'
-import GitHubSVG from '../../GitHubSVG'
-import JiraSVG from '../../JiraSVG'
-import LinearSVG from '../../LinearSVG'
+import type {ServiceEnum} from '../../../__generated__/useGenerateInspirationItemsMutation.graphql'
+import {getClientIntegration} from '../../../integrations/platform/registry'
 import ParabolLogoSVG from '../../ParabolLogoSVG'
 
 interface Props {
-  service: string
+  service: ServiceEnum
 }
 
 const InspirationSourceLogo = ({service}: Props) => {
-  switch (service) {
-    case 'PARABOL':
-      return <ParabolLogoSVG />
-    case 'github':
-      return <GitHubSVG className='dark:[&_path]:fill-white' />
-    case 'jira':
-      return <JiraSVG />
-    case 'linear':
-      return <LinearSVG className='dark:[&_path]:fill-white' />
-    case 'azureDevOps':
-      return <AzureDevOpsSVG />
-    case 'gcal':
-      return <img className='h-6 w-6' src={gcalLogo} alt='' />
-    default:
-      return null
-  }
+  if (service === 'PARABOL') return <ParabolLogoSVG />
+  const definition = getClientIntegration(service)
+  if (!definition) return null
+  return <definition.Icon className={definition.iconClassName} />
 }
 
 export default InspirationSourceLogo

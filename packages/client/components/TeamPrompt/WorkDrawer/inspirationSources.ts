@@ -1,3 +1,5 @@
+import type {IntegrationProviderServiceEnum} from '../../../__generated__/CreateTaskIntegrationMutation.graphql'
+
 export type InspirationSourceService =
   | 'PARABOL'
   | 'github'
@@ -39,6 +41,11 @@ export interface InspirationSourceSettings {
   linearIds: string[]
   azureDevOpsProjectIds: string[]
 }
+
+export const isInspirationIntegration = (
+  service: IntegrationProviderServiceEnum
+): service is Exclude<InspirationSourceService, 'PARABOL'> =>
+  Object.hasOwn(INSPIRATION_SOURCE_KINDS, service)
 
 export const DEFAULT_INSPIRATION_SOURCE_SETTINGS: InspirationSourceSettings = {
   kinds: {
