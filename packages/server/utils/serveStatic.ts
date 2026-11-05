@@ -1,48 +1,38 @@
-import type {HttpResponse} from 'uWebSockets.js'
-import fs from 'fs'
+import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import path from 'path'
-import pipeStreamOverResponse from '../pipeStreamOverResponse'
-import {applyEnvVarsToClientAssets} from './applyEnvVarsToClientAssets'
-import StaticServer from './StaticServer'
-
-// __dirname should be /dev, but during HMR it becomes its true path
-// so, anytime HMR reloads this file, we want to double check we're in the right place
-const getProjectRoot = () => {
-  let cd = __dirname
-  while (cd !== '/') {
-    if (fs.existsSync(path.join(cd, 'pnpm-lock.yaml'))) return cd
-    cd = path.join(cd, '..')
-  }
-  return cd
-}
+import getProjectRoot from '../../../scripts/webpack/utils/getProjectRoot'
+import {applyEnvVarsToClientAssets, CLIENT_ASSET_SKELETONS} from './applyEnvVarsToClientAssets'
+import StaticServer, {readStaticRequest, sendStaticFile} from './StaticServer'
 
 const PROJECT_ROOT = getProjectRoot()
-const staticPaths = {
-  [path.join(PROJECT_ROOT, 'build')]: true,
-  // publish server assets at /static
-  [path.join(PROJECT_ROOT, 'dist')]: __PRODUCTION__,
-  [path.join(PROJECT_ROOT, 'dev')]: !__PRODUCTION__
-}
-// sw.js, manifest.json & the like are made in memory. In dev, the dev server makes its own
-const files = __PRODUCTION__ ? applyEnvVarsToClientAssets() : {}
-const staticServer = new StaticServer({staticPaths, files})
 
-const serveStatic = (res: HttpResponse, fileName: string, sendCompressed?: boolean) => {
-  const meta = staticServer.getMeta(fileName)
-  if (!meta) return false
-  const {size, pathname, brotliFile, file, type} = meta
-  if (file) {
-    res.writeHeader('content-type', type)
-    if (__PRODUCTION__ && sendCompressed && brotliFile) {
-      res.writeHeader('content-encoding', 'br').end(brotliFile)
-    } else {
-      res.end(file)
-    }
-    return true
-  }
-  res.writeHeader('content-type', type)
-  const readStream = fs.createReadStream(pathname)
-  pipeStreamOverResponse(res, readStream, size)
+const staticServer = new StaticServer(
+  __PRODUCTION__
+    ? {
+        roots: [
+          {
+            dirname: path.join(PROJECT_ROOT, 'build'),
+            exclude: (name) => CLIENT_ASSET_SKELETONS.has(name)
+          },
+          // the server's own assets, e.g. template illustrations. The rest of /dist is the server itself
+          {dirname: path.join(PROJECT_ROOT, 'dist', 'images'), prefix: 'images/'}
+        ],
+        // sw.js, manifest.json & the like are made in memory from the env vars
+        files: applyEnvVarsToClientAssets()
+      }
+    : // the dev server makes its own sw.js & the like, & the server's assets are at the root of /dev
+      {
+        roots: [
+          {dirname: path.join(PROJECT_ROOT, 'build')},
+          {dirname: path.join(PROJECT_ROOT, 'dev')}
+        ]
+      }
+)
+
+const serveStatic = (res: HttpResponse, req: HttpRequest, fileName: string) => {
+  const file = staticServer.get(fileName)
+  if (!file) return false
+  sendStaticFile(res, readStaticRequest(req), file)
   return true
 }
 

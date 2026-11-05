@@ -10,6 +10,9 @@ const PROJECT_ROOT = getProjectRoot()
 const chunk = (arr: any[], size: number) =>
   Array.from({length: Math.ceil(arr.length / size)}, (_, i) => arr.slice(i * size, i * size + size))
 
+// the web server sends these to clients that accept brotli. A bucket can't, so they stay out of it
+const isPrecompressed = (name: string) => name.endsWith('.br')
+
 const pushClientAssetsToCDN = async () => {
   const fileStoreManager = getFileStoreManager()
   const localClientAssetsDir = path.join(PROJECT_ROOT, 'build')
@@ -23,10 +26,12 @@ const pushClientAssetsToCDN = async () => {
   })
   // index.html, sw.js & the like are made in memory from the env vars, they are not in the build dir
   const madeFiles = new Map(Object.entries(applyEnvVarsToClientAssets()))
-  const builtNames = dirEnts.map((dirent) => {
-    if (!dirent.isFile()) throw new Error(`⛅️ Expected ${dirent.name} to be a file`)
-    return dirent.name
-  })
+  const builtNames = dirEnts
+    .map((dirent) => {
+      if (!dirent.isFile()) throw new Error(`⛅️ Expected ${dirent.name} to be a file`)
+      return dirent.name
+    })
+    .filter((name) => !isPrecompressed(name))
   const names = [...new Set([...builtNames, ...madeFiles.keys()])]
   const chunks = chunk(names, 50)
   for (let i = 0; i < chunks.length; i++) {
@@ -86,9 +91,11 @@ const pushServerAssetsToCDN = async () => {
     return true
   }
 
-  const dirEnts = await fs.promises.readdir(localServerAssetsDir, {
-    withFileTypes: true
-  })
+  const dirEnts = (
+    await fs.promises.readdir(localServerAssetsDir, {
+      withFileTypes: true
+    })
+  ).filter((dirent) => !isPrecompressed(dirent.name))
 
   // @smithy/node-http-handler has a default value of 50 maxSockets
   // https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/node-configuring-maxsockets.html
