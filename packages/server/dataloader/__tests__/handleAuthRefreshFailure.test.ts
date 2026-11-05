@@ -55,10 +55,10 @@ describe('handleAuthRefreshFailure', () => {
     expect(logError).not.toHaveBeenCalled()
   })
 
-  it('logs with user and team/service tags and disconnects on any refresh failure', async () => {
+  it('logs with user and team/service tags and disconnects when the provider rejects the grant', async () => {
     const chain = mockUpdateChain()
     mockSelect({...auth})
-    const error = new Error('fetch failed')
+    const error = new Error('Token was globally revoked')
     await expect(handleAuthRefreshFailure(error, auth)).resolves.toBeNull()
     expect(logError).toHaveBeenCalledWith(error, {
       userId: 'user1',
