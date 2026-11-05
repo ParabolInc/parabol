@@ -13,8 +13,7 @@ export type RefreshFailedAuth = Pick<
  * A refresh that failed either lost a race to another request that already rotated the tokens
  * (that row is returned, still usable) or means the grant is dead, in which case every row sharing
  * the token family is disconnected so the user is prompted to reconnect instead of silently failing.
- * A token endpoint that answers with something other than OAuth2 JSON (a rate limit or an outage page)
- * has said nothing about the grant, so the rows stay connected for the next refresh to retry
+ * A non-OAuth2 response (e.g. an HTML error page during an outage) says nothing about the grant, so it is kept
  */
 const handleAuthRefreshFailure = async (
   error: Error,

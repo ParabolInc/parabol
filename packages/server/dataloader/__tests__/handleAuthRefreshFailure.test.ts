@@ -72,17 +72,17 @@ describe('handleAuthRefreshFailure', () => {
     expect(chain.execute).toHaveBeenCalledTimes(1)
   })
 
-  it('logs but keeps the grant when the token endpoint answers with a rate-limit page', async () => {
+  it('keeps the grant when the provider answered with something other than an OAuth2 verdict', async () => {
     const chain = mockUpdateChain()
     mockSelect({...auth})
     const error = new ThirdPartyResponseError('Received non-JSON OAuth2 Response', {
       integration: 'oauth2',
       method: 'POST',
-      endpoint: 'auth.atlassian.com/oauth/token',
+      endpoint: 'auth.example.com/oauth/token',
       path: '/oauth/token',
-      status: 429,
+      status: 503,
       contentType: 'text/html',
-      body: '<html><title>429 Too Many Requests</title></html>'
+      body: '<html>Service Unavailable</html>'
     })
     await expect(handleAuthRefreshFailure(error, auth)).resolves.toBeNull()
     expect(logError).toHaveBeenCalledWith(error, {
