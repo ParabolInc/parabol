@@ -2,6 +2,7 @@ import getKysely from '../postgres/getKysely'
 import {selectTeamMemberIntegrationAuth} from '../postgres/select'
 import type {TeamMemberIntegrationAuth} from '../postgres/types'
 import logError from '../utils/logError'
+import {ThirdPartyResponseError} from '../utils/ThirdPartyResponseError'
 
 export type RefreshFailedAuth = Pick<
   TeamMemberIntegrationAuth,
@@ -11,7 +12,9 @@ export type RefreshFailedAuth = Pick<
 /**
  * A refresh that failed either lost a race to another request that already rotated the tokens
  * (that row is returned, still usable) or means the grant is dead, in which case every row sharing
- * the token family is disconnected so the user is prompted to reconnect instead of silently failing
+ * the token family is disconnected so the user is prompted to reconnect instead of silently failing.
+ * A token endpoint that answers with something other than OAuth2 JSON (a rate limit or an outage page)
+ * has said nothing about the grant, so the rows stay connected for the next refresh to retry
  */
 const handleAuthRefreshFailure = async (
   error: Error,
@@ -24,6 +27,7 @@ const handleAuthRefreshFailure = async (
     .executeTakeFirst()
   if (current && current.accessToken !== accessToken) return current
   logError(error, {userId, tags: {teamId, service}})
+  if (error instanceof ThirdPartyResponseError) return null
   await getKysely()
     .updateTable('TeamMemberIntegrationAuth')
     .set({isActive: false})

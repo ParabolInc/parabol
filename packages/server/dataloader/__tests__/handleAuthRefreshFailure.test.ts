@@ -1,6 +1,7 @@
 import getKysely from '../../postgres/getKysely'
 import {selectTeamMemberIntegrationAuth} from '../../postgres/select'
 import logError from '../../utils/logError'
+import {ThirdPartyResponseError} from '../../utils/ThirdPartyResponseError'
 import handleAuthRefreshFailure from '../handleAuthRefreshFailure'
 
 jest.mock('../../postgres/getKysely')
@@ -54,10 +55,10 @@ describe('handleAuthRefreshFailure', () => {
     expect(logError).not.toHaveBeenCalled()
   })
 
-  it('logs with user and team/service tags and disconnects on any refresh failure', async () => {
+  it('logs with user and team/service tags and disconnects when the provider rejects the grant', async () => {
     const chain = mockUpdateChain()
     mockSelect({...auth})
-    const error = new Error('fetch failed')
+    const error = new Error('Token was globally revoked')
     await expect(handleAuthRefreshFailure(error, auth)).resolves.toBeNull()
     expect(logError).toHaveBeenCalledWith(error, {
       userId: 'user1',
@@ -69,6 +70,26 @@ describe('handleAuthRefreshFailure', () => {
     expect(chain.where).toHaveBeenCalledWith('providerId', '=', 7)
     expect(chain.where).toHaveBeenCalledWith('teamId', '=', 'team1')
     expect(chain.execute).toHaveBeenCalledTimes(1)
+  })
+
+  it('logs but keeps the grant when the token endpoint answers with a rate-limit page', async () => {
+    const chain = mockUpdateChain()
+    mockSelect({...auth})
+    const error = new ThirdPartyResponseError('Received non-JSON OAuth2 Response', {
+      integration: 'oauth2',
+      method: 'POST',
+      endpoint: 'auth.atlassian.com/oauth/token',
+      path: '/oauth/token',
+      status: 429,
+      contentType: 'text/html',
+      body: '<html><title>429 Too Many Requests</title></html>'
+    })
+    await expect(handleAuthRefreshFailure(error, auth)).resolves.toBeNull()
+    expect(logError).toHaveBeenCalledWith(error, {
+      userId: 'user1',
+      tags: {teamId: 'team1', service: 'gcal'}
+    })
+    expect(chain.updateTable).not.toHaveBeenCalled()
   })
 
   it('disconnects every team row of the same provider account when the account is known', async () => {
