@@ -2608,6 +2608,69 @@ describe('Groups', () => {
       })
     })
   })
+
+  describe('Groups with more than 100 members', () => {
+    let groupId: string
+    let memberIds: string[]
+
+    const scimFetch = (path: string, method: string, body: object) =>
+      fetch(`${SCIM_URL}${path}`, {
+        method,
+        headers: {
+          'Content-Type': 'application/scim+json',
+          Authorization: `Bearer ${bearerToken}`
+        },
+        body: JSON.stringify(body)
+      })
+
+    const addMembers = (userIds: string[]) =>
+      scimFetch(`/Groups/${groupId}`, 'PATCH', {
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+        Operations: [{op: 'add', path: 'members', value: userIds.map((value) => ({value}))}]
+      })
+
+    test('Create group and 101 users', async () => {
+      const groupRes = await scimFetch('/Groups', 'POST', {
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
+        displayName: faker.internet.userName()
+      })
+      expect(groupRes.status).toBe(201)
+      groupId = (await groupRes.json()).id
+
+      memberIds = await Promise.all(
+        Array.from({length: 101}, async () => {
+          const email = getTestEmail()
+          const res = await scimFetch('/Users', 'POST', {
+            schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+            userName: email,
+            active: true,
+            emails: [{type: 'work', value: email}]
+          })
+          expect(res.status).toBe(201)
+          return (await res.json()).id as string
+        })
+      )
+    }, 60_000)
+
+    test('Add a member to a group of 100, as Entra ID does', async () => {
+      const firstRes = await addMembers(memberIds.slice(0, 100))
+      expect(firstRes.status).toBe(200)
+
+      const res = await addMembers(memberIds.slice(100))
+      expect(res.status).toBe(200)
+      const data = await res.json()
+      expect(data.members).toHaveLength(101)
+    }, 60_000)
+
+    test('A group over the limit gets a 400 that says why', async () => {
+      const res = await addMembers(Array.from({length: 1000}, (_, i) => `sso|not-a-user-${i}`))
+      expect(res.status).toBe(400)
+      expect(await res.json()).toMatchObject({
+        scimType: 'invalidValue',
+        detail: expect.stringContaining('Too many members')
+      })
+    })
+  })
 })
 
 describe('Pagination', () => {
