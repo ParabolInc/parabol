@@ -21,7 +21,6 @@ module.exports = {
   },
   entry: {
     assignSURole: [DOTENV, path.join(TOOLBOX_SRC, 'assignSURole.ts')],
-    pgRestore: [DOTENV, path.join(TOOLBOX_SRC, 'pgRestore.ts')],
     setIsEnterprise: [DOTENV, path.join(TOOLBOX_SRC, 'setIsEnterprise.ts')],
     updateSchema: [DOTENV, path.join(SERVER_ROOT, 'utils', 'updateGQLSchema.ts')]
   },

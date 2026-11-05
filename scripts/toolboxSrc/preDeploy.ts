@@ -5,7 +5,6 @@ import getKysely from '../../packages/server/postgres/getKysely'
 import {Logger} from '../../packages/server/utils/Logger'
 import queryMap from '../../queryMap.json'
 import getProjectRoot from '../webpack/utils/getProjectRoot'
-import {applyEnvVarsToClientAssets} from './applyEnvVarsToClientAssets'
 import primeIntegrations from './primeIntegrations'
 import pushToCDN from './pushToCDN'
 import standaloneMigrations from './standaloneMigrations'
@@ -40,10 +39,10 @@ const preDeploy = async () => {
   dotenvExpand(myEnv)
   Logger.log(`🚀 Predeploy Started v${__APP_VERSION__} sha:${__COMMIT_HASH__}`)
   await waitForServices()
-  // first we migrate DBs & add env vars to client assets
-  await Promise.all([standaloneMigrations(), applyEnvVarsToClientAssets()])
+  // first we migrate DBs
+  await standaloneMigrations()
 
-  // The we can prime the DB & CDN
+  // Then we can prime the DB & CDN. pushToCDN adds the env vars to the client assets
   await Promise.all([storePersistedQueries(), primeIntegrations(), pushToCDN()])
   await getKysely().destroy()
   Logger.log(`🚀 Predeploy Complete`)

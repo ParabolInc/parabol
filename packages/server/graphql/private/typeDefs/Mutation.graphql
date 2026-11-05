@@ -67,11 +67,6 @@ type Mutation {
   autopauseUsers: Int
 
   """
-  CURRENTLY BROKEN. copies all the records from PG for a list of organizations
-  """
-  backupOrganization(orgIds: [ID!]!): String!
-
-  """
   profile the CPU
   """
   profileCPU: String
