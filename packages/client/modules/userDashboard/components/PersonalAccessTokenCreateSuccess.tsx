@@ -24,33 +24,35 @@ export const PersonalAccessTokenCreateSuccess = ({token, onClose}: Props) => {
 
   return (
     <Dialog isOpen onClose={onClose}>
-      <DialogContent className='flex flex-col gap-4'>
-        <DialogTitle>Token Created</DialogTitle>
-        <p className='text-fg-secondary text-sm'>
-          Copy your new token now — it won't be shown again.
-        </p>
-        <div className='flex items-center gap-2 rounded-md border border-hairline bg-surface-raised p-3'>
-          <code className='flex-1 break-all font-mono text-fg-primary text-sm'>{token}</code>
-          <Tooltip open={isOpen}>
-            <TooltipTrigger asChild>
-              <button
-                onClick={onCopy}
-                className='flex shrink-0 cursor-pointer rounded p-1 text-fg-muted hover:bg-surface-hover hover:text-fg-primary'
-                title='Copy to clipboard'
-              >
-                <ContentCopyIcon className='text-[20px]' />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent>{'Copied!'}</TooltipContent>
-          </Tooltip>
-        </div>
-        <div className='flex justify-end'>
-          <button
-            onClick={onClose}
-            className='cursor-pointer rounded-md bg-sky-500 px-4 py-2 text-sm text-white hover:bg-sky-600'
-          >
-            Done
-          </button>
+      <DialogContent>
+        <div className='flex flex-col gap-4'>
+          <DialogTitle>Token Created</DialogTitle>
+          <p className='text-fg-secondary text-sm'>
+            Copy your new token now — it won't be shown again.
+          </p>
+          <div className='flex items-center gap-2 rounded-md border border-hairline bg-surface-raised p-3'>
+            <code className='flex-1 break-all font-mono text-fg-primary text-sm'>{token}</code>
+            <Tooltip open={isOpen}>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={onCopy}
+                  className='flex shrink-0 cursor-pointer rounded p-1 text-fg-muted hover:bg-surface-hover hover:text-fg-primary'
+                  title='Copy to clipboard'
+                >
+                  <ContentCopyIcon className='text-[20px]' />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>{'Copied!'}</TooltipContent>
+            </Tooltip>
+          </div>
+          <div className='flex justify-end'>
+            <button
+              onClick={onClose}
+              className='cursor-pointer rounded-md bg-sky-500 px-4 py-2 text-sm text-white hover:bg-sky-600'
+            >
+              Done
+            </button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
