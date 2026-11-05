@@ -1,13 +1,15 @@
 import type {HttpResponse} from 'uWebSockets.js'
 import {createSchema, createYoga} from 'graphql-yoga'
+import {FIRST_FILL_PRIORITY} from '../../embedder/getEmbedderJobPriority'
 import {graphqlPrometheusPlugin, logins, metricsHandler} from '../metricsHandler'
 import {Logger} from '../utils/Logger'
 
 const mockCountJobsByState = jest.fn()
+const mockFilterJobs = jest.fn(() => ({groupBy: () => ({execute: mockCountJobsByState})}))
 jest.mock('../postgres/getKysely', () => ({
   __esModule: true,
   default: () => ({
-    selectFrom: () => ({select: () => ({groupBy: () => ({execute: mockCountJobsByState})})})
+    selectFrom: () => ({select: () => ({where: mockFilterJobs})})
   })
 }))
 
@@ -40,6 +42,12 @@ test('reports every embedder job state, including empty ones', async () => {
   expect(body).toContain('parabol_embedder_jobs{state="queued"} 3')
   expect(body).toContain('parabol_embedder_jobs{state="running"} 0')
   expect(body).toContain('parabol_embedder_jobs{state="failed"} 0')
+})
+
+test("leaves a new model's fill out of the embedder job counts", async () => {
+  mockCountJobsByState.mockResolvedValue([])
+  await scrape()
+  expect(mockFilterJobs).toHaveBeenCalledWith('priority', '<', FIRST_FILL_PRIORITY)
 })
 
 test('serves the other metrics when the embedder queue cannot be counted', async () => {
