@@ -301,6 +301,10 @@ interface JiraPageBean<T> {
 
 export type JiraScreensResponse = JiraPageBean<JiraScreen>
 
+export class JiraNoAccessResponseError extends Error {
+  name = 'JiraNoAccessResponseError'
+}
+
 class AtlassianServerManager extends AtlassianManager {
   fetch = fetch
 
@@ -325,7 +329,7 @@ class AtlassianServerManager extends AtlassianManager {
         return new Error(json.message)
       }
       if (isJiraNoAccessError(json)) {
-        return new Error(json.errorMessages[0])
+        return new JiraNoAccessResponseError(json.errorMessages[0])
       }
       return json as T
     } catch (error) {
