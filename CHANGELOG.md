@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.17.1](https://github.com/ParabolInc/parabol/compare/v15.17.0...v15.17.1) (2026-11-05)
+
+
+### Fixed
+
+* **client:** stop reporting a failed initial WebSocket connect as a console error ([#13968](https://github.com/ParabolInc/parabol/issues/13968)) ([ca26ad7](https://github.com/ParabolInc/parabol/commit/ca26ad78645462204bb0f2827428a7ef445f817f))
+* **client:** stop reporting an error when a navigate-meeting update arrives for a meeting the viewer has not loaded ([#13960](https://github.com/ParabolInc/parabol/issues/13960)) ([1623f91](https://github.com/ParabolInc/parabol/commit/1623f91eabde80ce65fbd6752bc55402d3f293f3))
+* **embedder:** leave a new model's fill out of the backlog metric ([#13972](https://github.com/ParabolInc/parabol/issues/13972)) ([1fea2e4](https://github.com/ParabolInc/parabol/commit/1fea2e4b31c96fef5b86ee0099508f0432d640ce))
+* **server:** don't log Jira issues the user can't access as errors ([#13962](https://github.com/ParabolInc/parabol/issues/13962)) ([94b630a](https://github.com/ParabolInc/parabol/commit/94b630a02f668532e198687c82675c624c57f704))
+* **server:** keep integration auth when token refresh gets a non-JSON response ([#13964](https://github.com/ParabolInc/parabol/issues/13964)) ([185f847](https://github.com/ParabolInc/parabol/commit/185f84780f30be8ba0232dbb303ea6b1cc698fd5))
+* **server:** use current facilitator stage when removing consecutive poker stages ([#13961](https://github.com/ParabolInc/parabol/issues/13961)) ([b48a1f3](https://github.com/ParabolInc/parabol/commit/b48a1f3a210e3872ae02c7d1f924816ee985d93f))
+
 ## [15.17.0](https://github.com/ParabolInc/parabol/compare/v15.16.0...v15.17.0) (2026-11-05)
 
 
