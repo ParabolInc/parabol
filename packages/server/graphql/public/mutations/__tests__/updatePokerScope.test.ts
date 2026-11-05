@@ -150,6 +150,27 @@ describe('updatePokerScope', () => {
     expect(res).toEqual({meetingId, newStageIds: []})
   })
 
+  it('moves the facilitator to a surviving stage when consecutive stages are removed', async () => {
+    const meeting = buildMeeting()
+    meeting.facilitatorStageId = 'stageJira'
+    meeting.phases[0]!.stages.push({
+      id: 'stageLast',
+      taskId: 'taskLast',
+      serviceTaskId: 'taskLast',
+      sortOrder: 3,
+      dimensionRefIdx: 0
+    })
+    await run(
+      [
+        {service: 'jira', serviceTaskId: 'cloud1:WEB-12', action: 'DELETE'},
+        {service: 'PARABOL', serviceTaskId: 'taskParabol', action: 'DELETE'}
+      ],
+      meeting
+    )
+    expect(writtenStages().map(({id}) => id)).toEqual(['stageLast'])
+    expect(setPayloads.at(-1)!.facilitatorStageId).toBe('stageLast')
+  })
+
   it('dedupes an add whose hash is already in scope', async () => {
     const res = await run([{service: 'jira', serviceTaskId: 'cloud1:WEB-12', action: 'ADD'}])
     expect(writtenStages().map(({id}) => id)).toEqual(['stageJira', 'stageParabol'])
