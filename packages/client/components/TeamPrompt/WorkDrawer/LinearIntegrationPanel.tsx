@@ -1,6 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useFragment, usePreloadedQuery} from 'react-relay'
-import type {LinearIntegrationPanel_meeting$key} from '../../../__generated__/LinearIntegrationPanel_meeting.graphql'
+import {usePreloadedQuery} from 'react-relay'
 import type {LinearIntegrationPanelQuery} from '../../../__generated__/LinearIntegrationPanelQuery.graphql'
 import useInspirationDrawer from '../../../hooks/useInspirationDrawer'
 import useSessionStorageState from '../../../hooks/useSessionStorageState'
@@ -15,18 +14,6 @@ const query = graphql`
   query LinearIntegrationPanelQuery($meetingId: ID!) {
     viewer {
       meeting(meetingId: $meetingId) @required(action: THROW) {
-        ...LinearIntegrationPanel_meeting
-      }
-    }
-  }
-`
-
-const LinearIntegrationPanel = (props: WorkDrawerQueryPanelProps<LinearIntegrationPanelQuery>) => {
-  const {queryRef, meetingId, teamId} = props
-  const {viewer} = usePreloadedQuery<LinearIntegrationPanelQuery>(query, queryRef)
-  const meeting = useFragment<LinearIntegrationPanel_meeting$key>(
-    graphql`
-      fragment LinearIntegrationPanel_meeting on NewMeeting {
         ...useInspirationDrawer_meeting
         linearInspirationItems: inspirationItems(service: linear) {
           id
@@ -40,9 +27,14 @@ const LinearIntegrationPanel = (props: WorkDrawerQueryPanelProps<LinearIntegrati
           }
         }
       }
-    `,
-    viewer.meeting
-  )
+    }
+  }
+`
+
+const LinearIntegrationPanel = (props: WorkDrawerQueryPanelProps<LinearIntegrationPanelQuery>) => {
+  const {queryRef, meetingId, teamId} = props
+  const {viewer} = usePreloadedQuery<LinearIntegrationPanelQuery>(query, queryRef)
+  const {meeting} = viewer
 
   const teamMember = meeting.viewerMeetingMember?.teamMember
 

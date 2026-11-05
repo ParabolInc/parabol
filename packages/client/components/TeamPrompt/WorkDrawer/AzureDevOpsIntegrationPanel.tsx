@@ -1,6 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useFragment, usePreloadedQuery} from 'react-relay'
-import type {AzureDevOpsIntegrationPanel_meeting$key} from '../../../__generated__/AzureDevOpsIntegrationPanel_meeting.graphql'
+import {usePreloadedQuery} from 'react-relay'
 import type {AzureDevOpsIntegrationPanelQuery} from '../../../__generated__/AzureDevOpsIntegrationPanelQuery.graphql'
 import useInspirationDrawer from '../../../hooks/useInspirationDrawer'
 import useSessionStorageState from '../../../hooks/useSessionStorageState'
@@ -16,22 +15,6 @@ const query = graphql`
   query AzureDevOpsIntegrationPanelQuery($meetingId: ID!) {
     viewer {
       meeting(meetingId: $meetingId) @required(action: THROW) {
-        ...AzureDevOpsIntegrationPanel_meeting
-      }
-    }
-  }
-`
-
-const KINDS = ['assigned'] as const
-
-const AzureDevOpsIntegrationPanel = (
-  props: WorkDrawerQueryPanelProps<AzureDevOpsIntegrationPanelQuery>
-) => {
-  const {queryRef, meetingId, teamId} = props
-  const {viewer} = usePreloadedQuery<AzureDevOpsIntegrationPanelQuery>(query, queryRef)
-  const meeting = useFragment<AzureDevOpsIntegrationPanel_meeting$key>(
-    graphql`
-      fragment AzureDevOpsIntegrationPanel_meeting on NewMeeting {
         ...useInspirationDrawer_meeting
         azureDevOpsInspirationItems: inspirationItems(service: azureDevOps) {
           id
@@ -49,9 +32,18 @@ const AzureDevOpsIntegrationPanel = (
           }
         }
       }
-    `,
-    viewer.meeting
-  )
+    }
+  }
+`
+
+const KINDS = ['assigned'] as const
+
+const AzureDevOpsIntegrationPanel = (
+  props: WorkDrawerQueryPanelProps<AzureDevOpsIntegrationPanelQuery>
+) => {
+  const {queryRef, meetingId, teamId} = props
+  const {viewer} = usePreloadedQuery<AzureDevOpsIntegrationPanelQuery>(query, queryRef)
+  const {meeting} = viewer
   const teamMember = meeting.viewerMeetingMember?.teamMember
   const {projects: sharedProjects, isListed} = getAzureDevOpsSharedProjects(teamMember?.services)
   const {dateRange, setDateRange, onResultCount, getResultCount} = useInspirationDrawer(

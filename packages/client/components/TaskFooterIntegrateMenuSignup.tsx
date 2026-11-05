@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {TaskFooterIntegrateMenuSignup_teamMember$key} from '~/__generated__/TaskFooterIntegrateMenuSignup_teamMember.graphql'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
-import {getConnectProvider} from '../integrations/platform/findIntegrationService'
+import {listServiceProviders} from '../integrations/platform/integrationServiceProviders'
 import {isTaskClientIntegration} from '../integrations/platform/registry'
 import {MenuSeparator} from '../ui/Menu/MenuSeparator'
 import ConnectIntegrationMenuItem from './ConnectIntegrationMenuItem'
@@ -22,10 +22,11 @@ const TaskFooterIntegrateMenuSignup = (props: Props) => {
     graphql`
       fragment TaskFooterIntegrateMenuSignup_teamMember on TeamMember {
         services {
+          service
           title
           isConnected
           grantedScopes
-          ...findIntegrationService_cloudProvider @relay(mask: false)
+          ...integrationServiceProviders_service @relay(mask: false)
         }
       }
     `,
@@ -42,9 +43,10 @@ const TaskFooterIntegrateMenuSignup = (props: Props) => {
           <MenuSeparator />
         </>
       )}
-      {services.map(({service, title, isConnected, grantedScopes}) => {
+      {services.map((integrationService) => {
+        const {service, title, isConnected, grantedScopes} = integrationService
         if (isConnected || !isTaskClientIntegration(service)) return null
-        const provider = getConnectProvider(services, service)
+        const [provider] = listServiceProviders(integrationService)
         if (!provider) return null
         return (
           <ConnectIntegrationMenuItem

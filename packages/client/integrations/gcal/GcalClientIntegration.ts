@@ -37,7 +37,8 @@ export class GcalClientIntegration extends ClientIntegrationDefinition {
   readonly logo: ProviderLogoAsset = {src: googleCalendarLogo}
   readonly capabilities: ClientIntegrationCapabilities = {workDrawer}
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
-    if (!provider?.clientId) return
+    if (!provider?.clientId) return false
     GcalClientManager.openOAuth(atmosphere, provider.id, provider.clientId, teamId, mutationProps)
+    return true
   }
 }

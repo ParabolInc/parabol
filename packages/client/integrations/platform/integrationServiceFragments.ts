@@ -24,13 +24,6 @@ graphql`
 `
 
 graphql`
-  fragment findIntegrationService_isAvailable on IntegrationService {
-    service
-    isAvailable
-  }
-`
-
-graphql`
   fragment integrationServiceProviders_service on IntegrationService {
     cloudProvider {
       id

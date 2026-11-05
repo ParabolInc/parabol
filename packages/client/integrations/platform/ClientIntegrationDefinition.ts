@@ -93,7 +93,7 @@ export interface WorkDrawerQueryPanelProps<TQuery extends OperationType>
 
 /** The retro work drawer tab for a service the team can use */
 export interface WorkDrawerCapability {
-  /** The tab body once the viewer is connected; build it with makeWorkDrawerPanel when it needs the meeting */
+  /** The tab body once the viewer is connected; build it with makeWorkDrawerPanel, or makeQueryRoot when it only needs the team */
   Panel: ComponentType<WorkDrawerPanelProps>
   /** Ends the connect prompt: "Connect to {title} to view your {connectDescription}." */
   connectDescription: string
@@ -135,5 +135,6 @@ export abstract class ClientIntegrationDefinition {
    * and points the Contact Us button at url
    */
   readonly contactUs?: {url: string}
-  abstract connect(atmosphere: Atmosphere, params: ConnectParams): void
+  /** Opens the service's sign-in; false when the provider lacks what that sign-in needs */
+  abstract connect(atmosphere: Atmosphere, params: ConnectParams): boolean
 }

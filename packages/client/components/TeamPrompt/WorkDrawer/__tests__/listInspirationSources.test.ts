@@ -1,8 +1,11 @@
 jest.mock('../../../../integrations/platform/registry', () => {
   const popularity = ['jira', 'jiraServer', 'github', 'linear', 'gitlab', 'azureDevOps', 'gcal']
   return {
-    compareClientIntegrationPopularity: (a: string, b: string) =>
-      popularity.indexOf(a) - popularity.indexOf(b)
+    listClientIntegrationServices: (services: {service: string}[]) =>
+      popularity.flatMap((service) => {
+        const integrationService = services.find((candidate) => candidate.service === service)
+        return integrationService ? [{integrationService}] : []
+      })
   }
 })
 
@@ -15,16 +18,11 @@ describe('listInspirationSources', () => {
 
   it('offers available services that list issues, in popularity order', () => {
     const sources = listInspirationSources([
-      {service: 'gcal', isAvailable: true, isConnected: false, capabilities: ['issueList']},
-      {
-        service: 'github',
-        isAvailable: true,
-        isConnected: true,
-        capabilities: ['issueCreate', 'issueList']
-      },
-      {service: 'linear', isAvailable: false, isConnected: false, capabilities: ['issueList']},
-      {service: 'gitlab', isAvailable: true, isConnected: true, capabilities: ['issueCreate']},
-      {service: 'jira', isAvailable: true, isConnected: false, capabilities: ['issueList']}
+      {service: 'gcal', isAvailable: true, isConnected: false},
+      {service: 'github', isAvailable: true, isConnected: true},
+      {service: 'linear', isAvailable: false, isConnected: false},
+      {service: 'gitlab', isAvailable: true, isConnected: true},
+      {service: 'jira', isAvailable: true, isConnected: false}
     ])
     expect(sources).toEqual([
       {service: 'PARABOL', isConnected: true},

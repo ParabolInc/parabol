@@ -29,9 +29,4 @@ export const getConnectProvider = (
   return {id, clientId, serverBaseUrl, tenantId: tenantId ?? null}
 }
 
-export const isServiceAvailable = (
-  services: readonly {service: IntegrationProviderServiceEnum; isAvailable: boolean}[],
-  service: IntegrationProviderServiceEnum
-) => findIntegrationService(services, service)?.isAvailable ?? false
-
 export default findIntegrationService

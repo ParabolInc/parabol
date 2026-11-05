@@ -77,12 +77,13 @@ export class LinearClientIntegration extends ClientIntegrationDefinition {
   readonly iconClassName = 'dark:[&_path]:fill-white'
   readonly capabilities: ClientIntegrationCapabilities = {scoping, workDrawer}
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
-    if (!provider?.clientId || !provider.serverBaseUrl) return
+    if (!provider?.clientId || !provider.serverBaseUrl) return false
     void LinearClientManager.openOAuth(
       atmosphere,
       teamId,
       {id: provider.id, clientId: provider.clientId, serverBaseUrl: provider.serverBaseUrl},
       mutationProps
     )
+    return true
   }
 }

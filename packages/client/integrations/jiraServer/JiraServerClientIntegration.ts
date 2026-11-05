@@ -1,4 +1,7 @@
 import {createElement, lazy} from 'react'
+import jiraServerIntegrationResultsQuery, {
+  type JiraServerIntegrationResultsQuery
+} from '../../__generated__/JiraServerIntegrationResultsQuery.graphql'
 import jiraServerScopingResultsQuery, {
   type JiraServerScopingResultsAdapterQuery
 } from '../../__generated__/JiraServerScopingResultsAdapterQuery.graphql'
@@ -17,9 +20,11 @@ import {
   type ConnectParams,
   type ProviderLogoAsset,
   type ScopingCapability,
-  type WorkDrawerCapability
+  type WorkDrawerCapability,
+  type WorkDrawerPanelProps
 } from '../platform/ClientIntegrationDefinition'
 import {searchFiltersByKey} from '../platform/IntegrationSearchFilter'
+import makeQueryRoot from '../platform/makeQueryRoot'
 import makeScopingResults from '../platform/makeScopingResults'
 
 const JiraServerScopingCurrentFiltersRoot = lazy(
@@ -60,12 +65,16 @@ const scoping: ScopingCapability = {
 }
 
 const workDrawer: WorkDrawerCapability = {
-  Panel: lazy(
-    () =>
-      import(
-        /* webpackChunkName: 'JiraServerIntegrationResultsRoot' */ '../../components/TeamPrompt/WorkDrawer/JiraServerIntegrationResultsRoot'
-      )
-  ),
+  Panel: makeQueryRoot<WorkDrawerPanelProps, JiraServerIntegrationResultsQuery>({
+    query: jiraServerIntegrationResultsQuery,
+    getVariables: ({teamId}) => ({teamId}),
+    Component: lazy(
+      () =>
+        import(
+          /* webpackChunkName: 'JiraServerIntegrationResults' */ '../../components/TeamPrompt/WorkDrawer/JiraServerIntegrationResults'
+        )
+    )
+  }),
   connectDescription: 'issues'
 }
 
@@ -78,7 +87,8 @@ export class JiraServerClientIntegration extends ClientIntegrationDefinition {
   readonly capabilities: ClientIntegrationCapabilities = {scoping, workDrawer}
   readonly contactUs = {url: ExternalLinks.INTEGRATIONS_JIRASERVER}
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
-    if (!provider) return
+    if (!provider) return false
     JiraServerClientManager.openOAuth(atmosphere, provider.id, teamId, mutationProps)
+    return true
   }
 }

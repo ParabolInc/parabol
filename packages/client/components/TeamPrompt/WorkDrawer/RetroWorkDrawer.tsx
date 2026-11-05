@@ -1,13 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
-import {Suspense} from 'react'
+import {Fragment, Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import type {RetroWorkDrawer_meeting$key} from '../../../__generated__/RetroWorkDrawer_meeting.graphql'
 import useSessionStorageState from '../../../hooks/useSessionStorageState'
-import {
-  compareClientIntegrationPopularity,
-  getClientIntegration,
-  isRegisteredClientIntegration
-} from '../../../integrations/platform/registry'
+import {listClientIntegrationServices} from '../../../integrations/platform/registry'
 import {cn} from '../../../ui/cn'
 import dndNoise from '../../../utils/dndNoise'
 import getNextSortOrder from '../../../utils/getNextSortOrder'
@@ -55,7 +51,7 @@ const RetroWorkDrawer = (props: Props) => {
               service
               isAvailable
               isConnected
-              ...WorkDrawerConnect_service
+              ...useConnectIntegrationService_service
             }
           }
         }
@@ -89,36 +85,34 @@ const RetroWorkDrawer = (props: Props) => {
     )
   }
 
-  const serviceTabs = services.flatMap((integrationService) => {
-    const {service, isAvailable, isConnected} = integrationService
-    if (!isAvailable || !isRegisteredClientIntegration(service)) return []
-    const definition = getClientIntegration(service)
-    const {workDrawer} = definition.capabilities
-    if (!workDrawer) return []
-    const {Panel} = workDrawer
-    return [
-      {
-        service,
-        icon: <definition.Icon className={definition.iconClassName} />,
-        label: definition.title,
-        renderPanel: () =>
-          isConnected ? (
-            <ErrorBoundary key={service}>
-              <Suspense fallback={<Loader />}>
-                <Panel meetingId={meetingId} teamId={teamId} />
-              </Suspense>
-            </ErrorBoundary>
-          ) : (
-            <WorkDrawerConnect
-              teamId={teamId}
-              definition={definition}
-              connectDescription={workDrawer.connectDescription}
-              serviceRef={integrationService}
-            />
-          )
-      }
-    ]
-  })
+  const serviceTabs = listClientIntegrationServices(services).flatMap(
+    ({integrationService, definition}) => {
+      const {workDrawer} = definition.capabilities
+      if (!integrationService.isAvailable || !workDrawer) return []
+      const {Panel} = workDrawer
+      return [
+        {
+          service: definition.service,
+          icon: <definition.Icon className={definition.iconClassName} />,
+          label: definition.title,
+          renderPanel: () =>
+            integrationService.isConnected ? (
+              <ErrorBoundary>
+                <Suspense fallback={<Loader />}>
+                  <Panel meetingId={meetingId} teamId={teamId} />
+                </Suspense>
+              </ErrorBoundary>
+            ) : (
+              <WorkDrawerConnect
+                teamId={teamId}
+                definition={definition}
+                serviceRef={integrationService}
+              />
+            )
+        }
+      ]
+    }
+  )
   const baseTabs = [
     {
       icon: <ParabolLogoSVG />,
@@ -126,7 +120,7 @@ const RetroWorkDrawer = (props: Props) => {
       label: 'Parabol',
       renderPanel: () => <ParabolTasksPanel meetingRef={meeting} />
     },
-    ...serviceTabs.sort((a, b) => compareClientIntegrationPopularity(a.service, b.service))
+    ...serviceTabs
   ]
 
   // Default to the first enabled non-Parabol integration, falling back to the Parabol section
@@ -141,7 +135,7 @@ const RetroWorkDrawer = (props: Props) => {
     baseTabs.findIndex((tab) => tab.service === activeService)
   )
 
-  const {renderPanel} = baseTabs[activeIdx]!
+  const activeTab = baseTabs[activeIdx]!
 
   return (
     <WorkDrawerConsumeContext.Provider
@@ -168,7 +162,7 @@ const RetroWorkDrawer = (props: Props) => {
             ))}
           </div>
         </div>
-        {renderPanel()}
+        <Fragment key={activeTab.service}>{activeTab.renderPanel()}</Fragment>
       </div>
     </WorkDrawerConsumeContext.Provider>
   )

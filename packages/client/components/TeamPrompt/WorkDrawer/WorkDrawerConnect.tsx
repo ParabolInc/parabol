@@ -1,6 +1,4 @@
-import graphql from 'babel-plugin-relay/macro'
-import {useFragment} from 'react-relay'
-import type {WorkDrawerConnect_service$key} from '../../../__generated__/WorkDrawerConnect_service.graphql'
+import type {useConnectIntegrationService_service$key} from '../../../__generated__/useConnectIntegrationService_service.graphql'
 import useConnectIntegrationService from '../../../hooks/useConnectIntegrationService'
 import type {ClientIntegrationDefinition} from '../../../integrations/platform/ClientIntegrationDefinition'
 import {Button} from '../../../ui/Button/Button'
@@ -8,27 +6,18 @@ import {Button} from '../../../ui/Button/Button'
 interface Props {
   teamId: string
   definition: ClientIntegrationDefinition
-  connectDescription: string
-  serviceRef: WorkDrawerConnect_service$key
+  serviceRef: useConnectIntegrationService_service$key
 }
 
 const WorkDrawerConnect = (props: Props) => {
-  const {teamId, definition, connectDescription, serviceRef} = props
-  const integrationService = useFragment(
-    graphql`
-      fragment WorkDrawerConnect_service on IntegrationService {
-        grantedScopes
-        ...integrationServiceProviders_service @relay(mask: false)
-      }
-    `,
-    serviceRef
-  )
+  const {teamId, definition, serviceRef} = props
   const {connect, submitting, errorMessage} = useConnectIntegrationService(
     definition,
-    integrationService,
+    serviceRef,
     teamId
   )
-  const {title} = definition
+  const {title, capabilities} = definition
+  const connectDescription = capabilities.workDrawer?.connectDescription
 
   return (
     <div className='flex flex-col items-center gap-2 pt-12'>
@@ -36,9 +25,11 @@ const WorkDrawerConnect = (props: Props) => {
         <definition.Icon className={definition.iconClassName} />
       </div>
       <b>Connect to {title}</b>
-      <div className='w-1/2 text-center text-sm'>
-        Connect to {title} to view your {connectDescription}.
-      </div>
+      {connectDescription && (
+        <div className='w-1/2 text-center text-sm'>
+          Connect to {title} to view your {connectDescription}.
+        </div>
+      )}
       <Button
         variant='secondary'
         size='md'

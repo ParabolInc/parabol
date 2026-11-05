@@ -5,9 +5,8 @@ import type {ScopePhaseArea_meeting$key} from '~/__generated__/ScopePhaseArea_me
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
 import {
-  compareClientIntegrationPopularity,
-  getClientIntegration,
-  isTaskClientIntegration
+  isTaskClientIntegration,
+  listClientIntegrationServices
 } from '../integrations/platform/registry'
 import IntegrationScopingPanel from './IntegrationScopingPanel'
 import ParabolLogoSVG from './ParabolLogoSVG'
@@ -55,35 +54,34 @@ const ScopePhaseArea = (props: Props) => {
   )
   const gotoParabol = () => setActiveKey(PARABOL_TAB_KEY)
 
-  const serviceTabs = services.flatMap((integrationService) => {
-    const {service, isAvailable, isConnected} = integrationService
-    if (!isTaskClientIntegration(service)) return []
-    const definition = getClientIntegration(service)
-    const {scoping} = definition.capabilities
-    if (!scoping) return []
-    if (!isAvailable && !definition.contactUs) return []
-    return [
-      {
-        key: service,
-        service,
-        icon: <definition.Icon className={definition.iconClassName} />,
-        label: definition.title,
-        renderPanel: () =>
-          isConnected ? (
-            <IntegrationScopingPanel service={service} meetingRef={meeting} />
-          ) : (
-            <ScopePhaseAreaConnect
-              teamId={teamId}
-              definition={definition}
-              serviceRef={integrationService}
-              gotoParabol={gotoParabol}
-            />
-          )
-      }
-    ]
-  })
+  const serviceTabs = listClientIntegrationServices(services).flatMap(
+    ({integrationService, definition}) => {
+      const {service} = integrationService
+      const {scoping} = definition.capabilities
+      if (!isTaskClientIntegration(service) || !scoping) return []
+      if (!integrationService.isAvailable && !definition.contactUs) return []
+      return [
+        {
+          key: service,
+          icon: <definition.Icon className={definition.iconClassName} />,
+          label: definition.title,
+          renderPanel: () =>
+            integrationService.isConnected ? (
+              <IntegrationScopingPanel service={service} meetingRef={meeting} />
+            ) : (
+              <ScopePhaseAreaConnect
+                teamId={teamId}
+                definition={definition}
+                serviceRef={integrationService}
+                gotoParabol={gotoParabol}
+              />
+            )
+        }
+      ]
+    }
+  )
   const tabs = [
-    ...serviceTabs.sort((a, b) => compareClientIntegrationPopularity(a.service, b.service)),
+    ...serviceTabs,
     {
       key: PARABOL_TAB_KEY,
       icon: <ParabolLogoSVG />,

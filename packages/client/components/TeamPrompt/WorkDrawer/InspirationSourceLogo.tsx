@@ -1,8 +1,5 @@
 import type {ServiceEnum} from '../../../__generated__/useGenerateInspirationItemsMutation.graphql'
-import {
-  getClientIntegration,
-  isRegisteredClientIntegration
-} from '../../../integrations/platform/registry'
+import {getClientIntegration} from '../../../integrations/platform/registry'
 import ParabolLogoSVG from '../../ParabolLogoSVG'
 
 interface Props {
@@ -11,9 +8,9 @@ interface Props {
 
 const InspirationSourceLogo = ({service}: Props) => {
   if (service === 'PARABOL') return <ParabolLogoSVG />
-  if (!isRegisteredClientIntegration(service)) return null
-  const {Icon, iconClassName} = getClientIntegration(service)
-  return <Icon className={iconClassName} />
+  const definition = getClientIntegration(service)
+  if (!definition) return null
+  return <definition.Icon className={definition.iconClassName} />
 }
 
 export default InspirationSourceLogo

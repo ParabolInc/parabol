@@ -1,6 +1,6 @@
 import type {ComponentType, LazyExoticComponent} from 'react'
 import type {ConcreteRequest, OperationType, VariablesOf} from 'relay-runtime'
-import useQueryLoaderNow from '../../hooks/useQueryLoaderNow'
+import makeQueryRoot from './makeQueryRoot'
 import type {
   ResultsAdapterProps,
   ScopingResultsProps,
@@ -16,19 +16,11 @@ interface ScopingResultsSource<TQuery extends OperationType> {
   ResultsAdapter: LazyExoticComponent<ComponentType<ResultsAdapterProps<TQuery>>>
 }
 
-const makeScopingResults = <TQuery extends OperationType>(source: ScopingResultsSource<TQuery>) => {
-  const {query, searchArgs, ResultsAdapter} = source
-  const ScopingResults = (props: ScopingResultsProps) => {
-    const {state, context, children} = props
-    const queryRef = useQueryLoaderNow<TQuery>(query, searchArgs(state, context))
-    if (!queryRef) return null
-    return (
-      <ResultsAdapter queryRef={queryRef} context={context}>
-        {children}
-      </ResultsAdapter>
-    )
-  }
-  return ScopingResults
-}
+const makeScopingResults = <TQuery extends OperationType>(source: ScopingResultsSource<TQuery>) =>
+  makeQueryRoot<ScopingResultsProps, TQuery>({
+    query: source.query,
+    getVariables: ({state, context}) => source.searchArgs(state, context),
+    Component: source.ResultsAdapter
+  })
 
 export default makeScopingResults

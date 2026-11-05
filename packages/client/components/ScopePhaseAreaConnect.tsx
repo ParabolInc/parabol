@@ -20,8 +20,7 @@ const ScopePhaseAreaConnect = (props: Props) => {
       fragment ScopePhaseAreaConnect_service on IntegrationService {
         title
         isAvailable
-        grantedScopes
-        ...integrationServiceProviders_service @relay(mask: false)
+        ...useConnectIntegrationService_service
       }
     `,
     serviceRef

@@ -98,7 +98,7 @@ export class JiraClientIntegration extends ClientIntegrationDefinition {
   }
   readonly authorizationHelpUrl = ExternalLinks.INTEGRATIONS_SUPPORT_JIRA_AUTHORIZATION
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider, heldScopes}: ConnectParams) {
-    if (!provider?.clientId) return
+    if (!provider?.clientId) return false
     AtlassianClientManager.openOAuth(
       atmosphere,
       teamId,
@@ -107,5 +107,6 @@ export class JiraClientIntegration extends ClientIntegrationDefinition {
       AtlassianClientManager.JIRA_SCOPE,
       heldScopes
     )
+    return true
   }
 }

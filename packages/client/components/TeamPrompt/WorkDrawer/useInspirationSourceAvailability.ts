@@ -13,7 +13,6 @@ const useInspirationSourceAvailability = (
           service
           isAvailable
           isConnected
-          capabilities
         }
       }
     `,

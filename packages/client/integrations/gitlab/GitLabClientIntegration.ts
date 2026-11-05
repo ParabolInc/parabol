@@ -1,4 +1,7 @@
 import {createElement, lazy} from 'react'
+import gitLabIntegrationResultsQuery, {
+  type GitLabIntegrationResultsQuery
+} from '../../__generated__/GitLabIntegrationResultsQuery.graphql'
 import gitLabScopingResultsQuery, {
   type GitLabScopingResultsAdapterQuery
 } from '../../__generated__/GitLabScopingResultsAdapterQuery.graphql'
@@ -14,9 +17,11 @@ import {
   type ConnectParams,
   type ProviderLogoAsset,
   type ScopingCapability,
-  type WorkDrawerCapability
+  type WorkDrawerCapability,
+  type WorkDrawerPanelProps
 } from '../platform/ClientIntegrationDefinition'
 import {searchFiltersByKey} from '../platform/IntegrationSearchFilter'
+import makeQueryRoot from '../platform/makeQueryRoot'
 import makeScopingResults from '../platform/makeScopingResults'
 import {gitLabIssueArgs} from './gitLabIssueArgs'
 import gitLabSearchMeta from './gitLabSearchMeta'
@@ -67,12 +72,16 @@ const scoping: ScopingCapability = {
 }
 
 const workDrawer: WorkDrawerCapability = {
-  Panel: lazy(
-    () =>
-      import(
-        /* webpackChunkName: 'GitLabIntegrationResultsRoot' */ '../../components/TeamPrompt/WorkDrawer/GitLabIntegrationResultsRoot'
-      )
-  ),
+  Panel: makeQueryRoot<WorkDrawerPanelProps, GitLabIntegrationResultsQuery>({
+    query: gitLabIntegrationResultsQuery,
+    getVariables: ({teamId}) => ({teamId}),
+    Component: lazy(
+      () =>
+        import(
+          /* webpackChunkName: 'GitLabIntegrationResults' */ '../../components/TeamPrompt/WorkDrawer/GitLabIntegrationResults'
+        )
+    )
+  }),
   connectDescription: 'issues'
 }
 
@@ -84,7 +93,7 @@ export class GitLabClientIntegration extends ClientIntegrationDefinition {
   readonly logo: ProviderLogoAsset = {src: gitlabLogo}
   readonly capabilities: ClientIntegrationCapabilities = {scoping, workDrawer}
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
-    if (!provider?.clientId || !provider.serverBaseUrl) return
+    if (!provider?.clientId || !provider.serverBaseUrl) return false
     GitLabClientManager.openOAuth(
       atmosphere,
       provider.id,
@@ -93,5 +102,6 @@ export class GitLabClientIntegration extends ClientIntegrationDefinition {
       teamId,
       mutationProps
     )
+    return true
   }
 }

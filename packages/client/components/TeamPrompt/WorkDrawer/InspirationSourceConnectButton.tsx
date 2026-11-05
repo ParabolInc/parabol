@@ -20,8 +20,7 @@ const InspirationSourceConnectButton = (props: Props) => {
         teamId
         services {
           service
-          grantedScopes
-          ...integrationServiceProviders_service @relay(mask: false)
+          ...useConnectIntegrationService_service
         }
       }
     `,

@@ -1,7 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import dayjs from 'dayjs'
-import {useFragment, usePreloadedQuery} from 'react-relay'
-import type {JiraIntegrationPanel_meeting$key} from '../../../__generated__/JiraIntegrationPanel_meeting.graphql'
+import {usePreloadedQuery} from 'react-relay'
 import type {JiraIntegrationPanelQuery} from '../../../__generated__/JiraIntegrationPanelQuery.graphql'
 import useInspirationDrawer from '../../../hooks/useInspirationDrawer'
 import type {WorkDrawerQueryPanelProps} from '../../../integrations/platform/ClientIntegrationDefinition'
@@ -13,18 +12,6 @@ const query = graphql`
   query JiraIntegrationPanelQuery($meetingId: ID!) {
     viewer {
       meeting(meetingId: $meetingId) @required(action: THROW) {
-        ...JiraIntegrationPanel_meeting
-      }
-    }
-  }
-`
-
-const JiraIntegrationPanel = (props: WorkDrawerQueryPanelProps<JiraIntegrationPanelQuery>) => {
-  const {queryRef, meetingId, teamId} = props
-  const {viewer} = usePreloadedQuery<JiraIntegrationPanelQuery>(query, queryRef)
-  const meeting = useFragment<JiraIntegrationPanel_meeting$key>(
-    graphql`
-      fragment JiraIntegrationPanel_meeting on NewMeeting {
         ...useInspirationDrawer_meeting
         jiraInspirationItems: inspirationItems(service: jira) {
           id
@@ -33,9 +20,14 @@ const JiraIntegrationPanel = (props: WorkDrawerQueryPanelProps<JiraIntegrationPa
           promptId
         }
       }
-    `,
-    viewer.meeting
-  )
+    }
+  }
+`
+
+const JiraIntegrationPanel = (props: WorkDrawerQueryPanelProps<JiraIntegrationPanelQuery>) => {
+  const {queryRef, meetingId, teamId} = props
+  const {viewer} = usePreloadedQuery<JiraIntegrationPanelQuery>(query, queryRef)
+  const {meeting} = viewer
 
   const {dateRange, setDateRange, onResultCount, getResultCount} = useInspirationDrawer(
     'jira',

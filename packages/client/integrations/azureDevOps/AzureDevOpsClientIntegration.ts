@@ -93,12 +93,13 @@ export class AzureDevOpsClientIntegration extends ClientIntegrationDefinition {
     workDrawer
   }
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
-    if (!provider?.clientId) return
+    if (!provider?.clientId) return false
     void AzureDevOpsClientManager.openOAuth(
       atmosphere,
       teamId,
       {id: provider.id, tenantId: provider.tenantId, clientId: provider.clientId},
       mutationProps
     )
+    return true
   }
 }

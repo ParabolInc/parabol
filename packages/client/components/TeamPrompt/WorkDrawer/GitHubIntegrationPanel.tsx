@@ -1,7 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import dayjs from 'dayjs'
-import {useFragment, usePreloadedQuery} from 'react-relay'
-import type {GitHubIntegrationPanel_meeting$key} from '../../../__generated__/GitHubIntegrationPanel_meeting.graphql'
+import {usePreloadedQuery} from 'react-relay'
 import type {GitHubIntegrationPanelQuery} from '../../../__generated__/GitHubIntegrationPanelQuery.graphql'
 import useInspirationDrawer from '../../../hooks/useInspirationDrawer'
 import useSessionStorageState from '../../../hooks/useSessionStorageState'
@@ -33,18 +32,6 @@ const query = graphql`
   query GitHubIntegrationPanelQuery($meetingId: ID!) {
     viewer {
       meeting(meetingId: $meetingId) @required(action: THROW) {
-        ...GitHubIntegrationPanel_meeting
-      }
-    }
-  }
-`
-
-const GitHubIntegrationPanel = (props: WorkDrawerQueryPanelProps<GitHubIntegrationPanelQuery>) => {
-  const {queryRef, meetingId, teamId} = props
-  const {viewer} = usePreloadedQuery<GitHubIntegrationPanelQuery>(query, queryRef)
-  const meeting = useFragment<GitHubIntegrationPanel_meeting$key>(
-    graphql`
-      fragment GitHubIntegrationPanel_meeting on NewMeeting {
         ...useInspirationDrawer_meeting
         githubInspirationItems: inspirationItems(service: github) {
           id
@@ -58,9 +45,14 @@ const GitHubIntegrationPanel = (props: WorkDrawerQueryPanelProps<GitHubIntegrati
           }
         }
       }
-    `,
-    viewer.meeting
-  )
+    }
+  }
+`
+
+const GitHubIntegrationPanel = (props: WorkDrawerQueryPanelProps<GitHubIntegrationPanelQuery>) => {
+  const {queryRef, meetingId, teamId} = props
+  const {viewer} = usePreloadedQuery<GitHubIntegrationPanelQuery>(query, queryRef)
+  const {meeting} = viewer
 
   const teamMember = meeting.viewerMeetingMember?.teamMember
 

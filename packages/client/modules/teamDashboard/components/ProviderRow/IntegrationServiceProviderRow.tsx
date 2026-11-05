@@ -14,10 +14,7 @@ import {
   listServiceProviders,
   type ProviderRowEntryModel
 } from '../../../../integrations/platform/integrationServiceProviders'
-import {
-  getClientIntegration,
-  isRegisteredClientIntegration
-} from '../../../../integrations/platform/registry'
+import {getClientIntegration} from '../../../../integrations/platform/registry'
 import ConnectButton from './ConnectButton'
 import ContactUsButton from './ContactUsButton'
 import IntegrationServiceConfigMenu from './IntegrationServiceConfigMenu'
@@ -70,8 +67,8 @@ const IntegrationServiceProviderRow = (props: Props) => {
     cloudProvider,
     sharedProviders
   } = integrationService
-  if (!isRegisteredClientIntegration(service)) return null
   const definition = getClientIntegration(service)
+  if (!definition) return null
   const {description, contactUs, logo} = definition
 
   if (!isAvailable) {

@@ -1,7 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
-import {useFragment, usePreloadedQuery} from 'react-relay'
-import type {GCalIntegrationPanel_meeting$key} from '../../../__generated__/GCalIntegrationPanel_meeting.graphql'
+import {usePreloadedQuery} from 'react-relay'
 import type {GCalIntegrationPanelQuery} from '../../../__generated__/GCalIntegrationPanelQuery.graphql'
 import useInspirationDrawer from '../../../hooks/useInspirationDrawer'
 import type {WorkDrawerQueryPanelProps} from '../../../integrations/platform/ClientIntegrationDefinition'
@@ -15,18 +14,6 @@ const query = graphql`
   query GCalIntegrationPanelQuery($meetingId: ID!) {
     viewer {
       meeting(meetingId: $meetingId) @required(action: THROW) {
-        ...GCalIntegrationPanel_meeting
-      }
-    }
-  }
-`
-
-const GCalIntegrationPanel = (props: WorkDrawerQueryPanelProps<GCalIntegrationPanelQuery>) => {
-  const {queryRef, meetingId, teamId} = props
-  const {viewer} = usePreloadedQuery<GCalIntegrationPanelQuery>(query, queryRef)
-  const meeting = useFragment<GCalIntegrationPanel_meeting$key>(
-    graphql`
-      fragment GCalIntegrationPanel_meeting on NewMeeting {
         ...useInspirationDrawer_meeting
         gcalInspirationItems: inspirationItems(service: gcal) {
           id
@@ -35,9 +22,14 @@ const GCalIntegrationPanel = (props: WorkDrawerQueryPanelProps<GCalIntegrationPa
           promptId
         }
       }
-    `,
-    viewer.meeting
-  )
+    }
+  }
+`
+
+const GCalIntegrationPanel = (props: WorkDrawerQueryPanelProps<GCalIntegrationPanelQuery>) => {
+  const {queryRef, meetingId, teamId} = props
+  const {viewer} = usePreloadedQuery<GCalIntegrationPanelQuery>(query, queryRef)
+  const {meeting} = viewer
 
   const {dateRange, setDateRange, onResultCount, getResultCount} = useInspirationDrawer(
     'gcal',

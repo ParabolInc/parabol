@@ -82,12 +82,13 @@ export class GitHubClientIntegration extends ClientIntegrationDefinition {
   readonly iconClassName = 'dark:[&_path]:fill-white'
   readonly capabilities: ClientIntegrationCapabilities = {scoping, workDrawer}
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
-    if (!provider?.clientId) return
+    if (!provider?.clientId) return false
     GitHubClientManager.openOAuth(
       atmosphere,
       teamId,
       {id: provider.id, clientId: provider.clientId},
       mutationProps
     )
+    return true
   }
 }
