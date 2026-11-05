@@ -6,6 +6,9 @@ import {
   Code as CodeIcon,
   ArrowRight as DetailsIcon,
   FileOpen as FileOpenIcon,
+  FormatH1 as FormatH1Icon,
+  FormatH2 as FormatH2Icon,
+  FormatH3 as FormatH3Icon,
   FormatListBulleted as FormatListBulletedIcon,
   FormatListNumbered as FormatListNumberedIcon,
   FormatQuote as FormatQuoteIcon,
@@ -15,8 +18,8 @@ import {
   NoteAdd as NoteAddIcon,
   GridOn as TableIcon,
   TextFields as TextFieldsIcon,
-  Title as TitleIcon,
-  Toc as TocIcon
+  Toc as TocIcon,
+  WebAsset as WebAssetIcon
 } from '~/ui/icons'
 
 declare module '@tiptap/core' {
@@ -65,7 +68,7 @@ export const slashCommands = [
         title: 'Heading 1',
         description: 'Big section heading',
         searchTerms: ['title', 'big', 'large', 'heading', 'h1'],
-        icon: TitleIcon,
+        icon: FormatH1Icon,
         action: (editor: Editor) => {
           editor.chain().focus().setNode('heading', {level: 1}).run()
         }
@@ -74,7 +77,7 @@ export const slashCommands = [
         title: 'Heading 2',
         description: 'Medium section heading',
         searchTerms: ['subtitle', 'medium', 'heading', 'h2'],
-        icon: TitleIcon,
+        icon: FormatH2Icon,
         action: (editor: Editor) => {
           editor.chain().focus().setNode('heading', {level: 2}).run()
         }
@@ -83,7 +86,7 @@ export const slashCommands = [
         title: 'Heading 3',
         description: 'Small section heading',
         searchTerms: ['subtitle', 'small', 'heading', 'h3'],
-        icon: TitleIcon,
+        icon: FormatH3Icon,
         action: (editor: Editor) => {
           editor.chain().focus().setNode('heading', {level: 3}).run()
         }
@@ -233,6 +236,37 @@ export const slashCommands = [
   {
     group: 'Media',
     commands: [
+      {
+        title: 'Embed',
+        description: 'Embed a video, doc, or link',
+        searchTerms: [
+          'embed',
+          'video',
+          'youtube',
+          'loom',
+          'vimeo',
+          'google docs',
+          'figma',
+          'miro',
+          'bookmark',
+          'link',
+          'url'
+        ],
+        icon: WebAssetIcon,
+        action: (editor: Editor) => {
+          const {to} = editor.state.selection
+          const size = editor.state.doc.content.size
+          let command = editor
+            .chain()
+            .focus()
+            .setEmbedBlock()
+            .setTextSelection(to + 1)
+          if (size - to <= 1) {
+            command = command.insertContent('<p></p>').setTextSelection(to + 1)
+          }
+          return command.scrollIntoView().run()
+        }
+      },
       {
         title: 'Image',
         description: 'Upload any image from your device',

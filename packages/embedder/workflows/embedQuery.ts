@@ -10,6 +10,7 @@ export interface EmbedQueryData {
   modelId: ModelId
   requestId: number
   channelName: `embedderResponse:${string}`
+  expiresAt?: number
 }
 
 const packr = new Packr({
@@ -17,14 +18,15 @@ const packr = new Packr({
 })
 export const embedQuery: JobQueueStepRun<EmbedQueryData> = async (context) => {
   const {data} = context
-  const {modelId, query, requestId, channelName} = data
+  const {modelId, query, requestId, channelName, expiresAt} = data
+  if (expiresAt !== undefined && Date.now() > expiresAt) return data
   const modelManager = getModelManager()
 
   const embeddingModel = modelManager.getEmbedder(modelId)
   if (!embeddingModel) {
     return new JobQueueError(`embedding model ${modelId} not available`)
   }
-  const embeddingVector = await embeddingModel.getEmbedding(query)
+  const embeddingVector = await embeddingModel.getSearchEmbedding(query)
   const vector = embeddingVector instanceof Error ? [] : embeddingVector
   // Float16Array isn't available as of NodeJs v22.21.1
   // It also isn't part of the msgpack spec yet

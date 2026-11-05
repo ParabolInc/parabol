@@ -8,7 +8,6 @@ interface Props {
   issueCounts: Partial<Record<string, number>>
   countingServices: string[]
   canDraft: boolean
-  meetingId: string
   settings: InspirationSourceSettings
   setSettings: (update: (prev: InspirationSourceSettings) => InspirationSourceSettings) => void
   onPopoverClose: () => void

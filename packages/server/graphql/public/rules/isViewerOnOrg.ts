@@ -3,13 +3,13 @@ import {rule} from 'graphql-shield'
 import type {AllPrimaryLoaders} from '../../../dataloader/RootDataLoader'
 import {getUserId} from '../../../utils/authorization'
 import type {GQLContext} from '../../graphql'
-import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
+import {cacheByDotPath, getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
 export const isViewerOnOrg = <T>(
   orgIdDotPath: ResolverDotPath<T>,
   dataLoaderName?: AllPrimaryLoaders
 ) =>
-  rule(`isViewerOnOrg-${orgIdDotPath}`, {cache: 'strict'})(
+  rule(`isViewerOnOrg-${dataLoaderName ?? ''}`, {cache: cacheByDotPath(orgIdDotPath)})(
     async (source, args, context: GQLContext, info: GraphQLResolveInfo) => {
       const {authToken, dataLoader} = context
       const argVar = getResolverDotPath(orgIdDotPath, source, args)

@@ -5,6 +5,364 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.17.1](https://github.com/ParabolInc/parabol/compare/v15.17.0...v15.17.1) (2026-11-05)
+
+
+### Fixed
+
+* **client:** stop reporting a failed initial WebSocket connect as a console error ([#13968](https://github.com/ParabolInc/parabol/issues/13968)) ([ca26ad7](https://github.com/ParabolInc/parabol/commit/ca26ad78645462204bb0f2827428a7ef445f817f))
+* **client:** stop reporting an error when a navigate-meeting update arrives for a meeting the viewer has not loaded ([#13960](https://github.com/ParabolInc/parabol/issues/13960)) ([1623f91](https://github.com/ParabolInc/parabol/commit/1623f91eabde80ce65fbd6752bc55402d3f293f3))
+* **embedder:** leave a new model's fill out of the backlog metric ([#13972](https://github.com/ParabolInc/parabol/issues/13972)) ([1fea2e4](https://github.com/ParabolInc/parabol/commit/1fea2e4b31c96fef5b86ee0099508f0432d640ce))
+* **server:** don't log Jira issues the user can't access as errors ([#13962](https://github.com/ParabolInc/parabol/issues/13962)) ([94b630a](https://github.com/ParabolInc/parabol/commit/94b630a02f668532e198687c82675c624c57f704))
+* **server:** keep integration auth when token refresh gets a non-JSON response ([#13964](https://github.com/ParabolInc/parabol/issues/13964)) ([185f847](https://github.com/ParabolInc/parabol/commit/185f84780f30be8ba0232dbb303ea6b1cc698fd5))
+* **server:** use current facilitator stage when removing consecutive poker stages ([#13961](https://github.com/ParabolInc/parabol/issues/13961)) ([b48a1f3](https://github.com/ParabolInc/parabol/commit/b48a1f3a210e3872ae02c7d1f924816ee985d93f))
+
+## [15.17.0](https://github.com/ParabolInc/parabol/compare/v15.16.0...v15.17.0) (2026-11-05)
+
+
+### Added
+
+* add a search text serializer for page blocks ([#13932](https://github.com/ParabolInc/parabol/issues/13932)) ([335e103](https://github.com/ParabolInc/parabol/commit/335e103997c6662ea05758cea242b6db7416afbe))
+* add Harrier as an embedding model and fill its tables in priority order ([#13935](https://github.com/ParabolInc/parabol/issues/13935)) ([c281b1e](https://github.com/ParabolInc/parabol/commit/c281b1ecdaf2d520ff1e2d115faf59b13c5d3d2d))
+* answer Reports questions about facilitators, standups, invitations, pages, team leads and spend ([#13950](https://github.com/ParabolInc/parabol/issues/13950)) ([d123efe](https://github.com/ParabolInc/parabol/commit/d123efe456532e653a2f186cb3dd8830164ddcc2))
+* find related discussions from plain topic text on Harrier ([#13936](https://github.com/ParabolInc/parabol/issues/13936)) ([ff0aa02](https://github.com/ParabolInc/parabol/commit/ff0aa02ed6472fbfab63acbcd9b8097b07a8d8b8))
+* let each embedding model choose its page chunker ([#13933](https://github.com/ParabolInc/parabol/issues/13933)) ([973868f](https://github.com/ParabolInc/parabol/commit/973868f2105c318830c6d2c53582aafabe5074ea))
+* log the context needed to reproduce production errors ([#13946](https://github.com/ParabolInc/parabol/issues/13946)) ([610706f](https://github.com/ParabolInc/parabol/commit/610706f6ce3f0ca13c475274a8e9db11ea257c03))
+* match misspelled words against page titles ([#13930](https://github.com/ParabolInc/parabol/issues/13930)) ([5ada975](https://github.com/ParabolInc/parabol/commit/5ada9750f1c720ccb5e1a3de8b78f99d2c6c9bf4))
+* re-embed only the page chunks an edit changed ([#13934](https://github.com/ParabolInc/parabol/issues/13934)) ([4410114](https://github.com/ParabolInc/parabol/commit/4410114cbf958ac0385e3e4cec7c8755867e93c4))
+* set template search and Similar Wording cut-offs per embedding model ([#13937](https://github.com/ParabolInc/parabol/issues/13937)) ([6094b9f](https://github.com/ParabolInc/parabol/commit/6094b9f8784e4062683a5cffd906d985d82cf747))
+* turn a page block into another type from its menu ([#13941](https://github.com/ParabolInc/parabol/issues/13941)) ([9fbf056](https://github.com/ParabolInc/parabol/commit/9fbf0566567d01680f6d5e2a3c2bacd3947b6010))
+* update the web client quietly and tell a stale client why it errored ([#13957](https://github.com/ParabolInc/parabol/issues/13957)) ([a31ab7f](https://github.com/ParabolInc/parabol/commit/a31ab7f85d262e62fb2327a50b8c19d363cb1d6a))
+* wait for page edits to settle before embedding ([#13931](https://github.com/ParabolInc/parabol/issues/13931)) ([b8d0829](https://github.com/ParabolInc/parabol/commit/b8d08294a7acabe4e6e531f1d2974e1ddd825da1))
+
+
+### Fixed
+
+* [web] Error: [convertADFToTipTap] Unsupported ADF node type: &lt;str&gt; ([#13959](https://github.com/ParabolInc/parabol/issues/13959)) ([6937a5c](https://github.com/ParabolInc/parabol/commit/6937a5ca711539d9786828bc40f63b23cc4554fa))
+* **deps:** upgrade packages with security advisories ([#13926](https://github.com/ParabolInc/parabol/issues/13926)) ([674d0a0](https://github.com/ParabolInc/parabol/commit/674d0a0ddfab8a74c59f84071b77af30044b33a6))
+* embed every meeting template, including ones added after the first import ([#13928](https://github.com/ParabolInc/parabol/issues/13928)) ([f502150](https://github.com/ParabolInc/parabol/commit/f50215072274cf42a92169dd590797c07fa49539))
+* keep a new open Details open when something updates it first ([#13944](https://github.com/ParabolInc/parabol/issues/13944)) ([54906ee](https://github.com/ParabolInc/parabol/commit/54906eed1986efa049aadbf0487e8000e6ade29c))
+* keep recurring stand-ups on their template when its scope narrows ([#13956](https://github.com/ParabolInc/parabol/issues/13956)) ([f8e559f](https://github.com/ParabolInc/parabol/commit/f8e559f1d04eaad72ac270d7aedf92006f845fa0))
+* keep Reports' AI from answering a different question, and let people rate its reports ([#13949](https://github.com/ParabolInc/parabol/issues/13949)) ([459f20c](https://github.com/ParabolInc/parabol/commit/459f20cd868e9148db605b1a4e29f4e820fccf46))
+* **reports:** say each empty-state action once ([#13943](https://github.com/ParabolInc/parabol/issues/13943)) ([49aa641](https://github.com/ParabolInc/parabol/commit/49aa641833fc499bc9e74348e300540b153fe445))
+* **server:** resend Redis commands a Valkey failover fails instead of crashing ([#13940](https://github.com/ParabolInc/parabol/issues/13940)) ([b4d756d](https://github.com/ParabolInc/parabol/commit/b4d756d591d88008773140a7edb00f7fb87bc766))
+* stop Add another prompt crashing the template page ([#13955](https://github.com/ParabolInc/parabol/issues/13955)) ([0df4867](https://github.com/ParabolInc/parabol/commit/0df4867c09c873bbbe3ee698185cadf691418bfe))
+* tell people when page search finds nothing ([#13929](https://github.com/ParabolInc/parabol/issues/13929)) ([2880d8f](https://github.com/ParabolInc/parabol/commit/2880d8f755464408554db2de385ec4fd9425803d))
+
+
+### Changed
+
+* add a dev service for Harrier and write up moving to a new model ([#13938](https://github.com/ParabolInc/parabol/issues/13938)) ([96d1b6a](https://github.com/ParabolInc/parabol/commit/96d1b6a76c6109cf443532ea2d92568050c46cc3))
+* add the final page search gate ([#13939](https://github.com/ParabolInc/parabol/issues/13939)) ([550bb8b](https://github.com/ParabolInc/parabol/commit/550bb8b72723f57281494c70171ebc8f0f58dad0))
+* remove Amplitude from the web client ([#13958](https://github.com/ParabolInc/parabol/issues/13958)) ([3948469](https://github.com/ParabolInc/parabol/commit/39484695f2fd53ecdcdf32ae5b6601f604f80722))
+* remove server-side Amplitude ([#13945](https://github.com/ParabolInc/parabol/issues/13945)) ([6180768](https://github.com/ParabolInc/parabol/commit/6180768001025bd49445ada9e322ddcd1d0a27bb))
+
+## [15.16.0](https://github.com/ParabolInc/parabol/compare/v15.15.2...v15.16.0) (2026-11-03)
+
+
+### Added
+
+* let page search match numbers like [#5](https://github.com/ParabolInc/parabol/issues/5) ([#13807](https://github.com/ParabolInc/parabol/issues/13807)) ([f034d85](https://github.com/ParabolInc/parabol/commit/f034d85a10a0c6b569705f428907a93fa619a58d))
+
+
+### Fixed
+
+* accept a team invitation once and let Back leave it ([#13922](https://github.com/ParabolInc/parabol/issues/13922)) ([0d0cc34](https://github.com/ParabolInc/parabol/commit/0d0cc340def65d4b7096b5e8a203811c6c5ad5cf))
+* **dev:** install dependencies before the dev stack starts its tasks ([#13915](https://github.com/ParabolInc/parabol/issues/13915)) ([7a7d191](https://github.com/ParabolInc/parabol/commit/7a7d19148c393a59d848eceb732336d4c4a324c8))
+* only track presence on the meeting cards that are on screen ([#13924](https://github.com/ParabolInc/parabol/issues/13924)) ([34958c1](https://github.com/ParabolInc/parabol/commit/34958c1b02ef4313cf7205a79a6c93415224149e))
+* **reports:** stop iOS offering AutoFill Contact on the ask box ([#13925](https://github.com/ParabolInc/parabol/issues/13925)) ([5edeaf8](https://github.com/ParabolInc/parabol/commit/5edeaf8b2e1596c5a092edb6d8b33cbbc5519a0c))
+* **server:** make each websocket wait on its own drain ([#13911](https://github.com/ParabolInc/parabol/issues/13911)) ([39fb8a0](https://github.com/ParabolInc/parabol/commit/39fb8a0e140a27c1a73bc5ceb1574afb8d29b3c6))
+* **server:** resume websocket sends after uWS returns from drain ([#13921](https://github.com/ParabolInc/parabol/issues/13921)) ([0b20c65](https://github.com/ParabolInc/parabol/commit/0b20c651bc147d2f57e50407dd5e1a9689c12cd3))
+* **server:** stop dropping websocket messages behind a large result ([#13917](https://github.com/ParabolInc/parabol/issues/13917)) ([2fda07a](https://github.com/ParabolInc/parabol/commit/2fda07a77cd816adb8c9816ec6bc1fa0012f92a6))
+* show an image when Slack and others unfurl app links ([#13920](https://github.com/ParabolInc/parabol/issues/13920)) ([b7d0d6d](https://github.com/ParabolInc/parabol/commit/b7d0d6d210d1ad2110a48bd40b7efcf1b9b89af4))
+* show invitees who have an account the sign-in form on the team invitation page ([#13923](https://github.com/ParabolInc/parabol/issues/13923)) ([cf4cb6d](https://github.com/ParabolInc/parabol/commit/cf4cb6de54607a1cf7f3be9ce61877adba757958))
+* show teammates a new task's text once it is submitted ([#13916](https://github.com/ParabolInc/parabol/issues/13916)) ([436d9ba](https://github.com/ParabolInc/parabol/commit/436d9ba4168c417b1a2b7b34d8255cb92cfa511f))
+* sign-in from a page returns to that page ([#13918](https://github.com/ParabolInc/parabol/issues/13918)) ([14eb479](https://github.com/ParabolInc/parabol/commit/14eb47957374dd4ba6891cb694e326b55ad54c57))
+* throttle refused Yjs documents per user instead of every document per IP header ([#13919](https://github.com/ParabolInc/parabol/issues/13919)) ([e4b8f88](https://github.com/ParabolInc/parabol/commit/e4b8f88e2fef39f8d19d6411dfe509517a011588))
+
+
+### Changed
+
+* **gh-actions:** remove the maintainer approval check ([#13909](https://github.com/ParabolInc/parabol/issues/13909)) ([19db634](https://github.com/ParabolInc/parabol/commit/19db63463f698f0fa01c152fceedd742215cc886))
+
+## [15.15.2](https://github.com/ParabolInc/parabol/compare/v15.15.1...v15.15.2) (2026-11-03)
+
+
+### Fixed
+
+* report client console errors to Google and trace the other HTTP routes ([#13908](https://github.com/ParabolInc/parabol/issues/13908)) ([c33c50e](https://github.com/ParabolInc/parabol/commit/c33c50e7741ed3a1a0a02788fd80b47cfcc54a43))
+* **server:** choose the superuser schema per request over HTTP and websockets ([#13898](https://github.com/ParabolInc/parabol/issues/13898)) ([05b8079](https://github.com/ParabolInc/parabol/commit/05b8079a19e2de658da9e98ba85f387070847db9))
+* **server:** record websocket connections the client abandons or onConnect fails ([#13899](https://github.com/ParabolInc/parabol/issues/13899)) ([cea6d3e](https://github.com/ParabolInc/parabol/commit/cea6d3e52f1e3cca5ef23017d5dbeed846cb3552))
+
+
+### Changed
+
+* **gh-actions:** make parabol-product the code owner of everything ([#13902](https://github.com/ParabolInc/parabol/issues/13902)) ([3917682](https://github.com/ParabolInc/parabol/commit/3917682c7e8dc9d15ba4d67ca73f212cd48e6686))
+* **gh-actions:** require mattkrick or jordanh to approve everyone else's pull requests ([#13907](https://github.com/ParabolInc/parabol/issues/13907)) ([4866c1b](https://github.com/ParabolInc/parabol/commit/4866c1b3c5a579262712b7b204f73a3e9dd13e6b))
+* **gh-actions:** stop granting id-token to Test and Style Check ([#13901](https://github.com/ParabolInc/parabol/issues/13901)) ([44d71b7](https://github.com/ParabolInc/parabol/commit/44d71b71b5b950b14d5507bb4125d5aeb9ed605d))
+* remove Datadog ([#13905](https://github.com/ParabolInc/parabol/issues/13905)) ([41d2814](https://github.com/ParabolInc/parabol/commit/41d2814db841629202ffb20d13cde395b9342e93))
+
+## [15.15.1](https://github.com/ParabolInc/parabol/compare/v15.15.0...v15.15.1) (2026-11-02)
+
+
+### Fixed
+
+* **server:** answer GET /stripe with a 405 ([#13872](https://github.com/ParabolInc/parabol/issues/13872)) ([8e39095](https://github.com/ParabolInc/parabol/commit/8e390958aae54d1d90a5815a795af3cb49c8b49c))
+* **server:** attach Zoom summaries and transcripts that arrive before the meeting ends ([#13895](https://github.com/ParabolInc/parabol/issues/13895)) ([175bcc6](https://github.com/ParabolInc/parabol/commit/175bcc6f4ab865d88a73c7b09e9772ec14fa5fb4))
+* **server:** ignore schema extension attributes in SCIM PATCH requests ([#13869](https://github.com/ParabolInc/parabol/issues/13869)) ([5910316](https://github.com/ParabolInc/parabol/commit/5910316bcee40c2629d842b674acaa201019c5d5))
+* **server:** keep an impersonation token's expiry when it is re-issued ([#13861](https://github.com/ParabolInc/parabol/issues/13861)) ([5749752](https://github.com/ParabolInc/parabol/commit/5749752a58bc618a29c66f95e6f31cb8c06b9e33))
+
+
+### Changed
+
+* **gh-actions:** remove the docker-external workflow ([#13868](https://github.com/ParabolInc/parabol/issues/13868)) ([1ea011f](https://github.com/ParabolInc/parabol/commit/1ea011fd50eed97c86a8bd07e3d656a76f674210))
+* **gh-actions:** remove the ironbank workflow ([#13873](https://github.com/ParabolInc/parabol/issues/13873)) ([57dfb15](https://github.com/ParabolInc/parabol/commit/57dfb15e845036e9b8bc0f61bb38d8f21988b77d))
+
+## [15.15.0](https://github.com/ParabolInc/parabol/compare/v15.14.1...v15.15.0) (2026-10-31)
+
+
+### Added
+
+* **server:** audit every root field with its outcome and actor ([#13856](https://github.com/ParabolInc/parabol/issues/13856)) ([481dc57](https://github.com/ParabolInc/parabol/commit/481dc5774bca4d171f05b730bb69afaee33e926c))
+* **server:** count unexpected GraphQL errors and websocket connect outcomes for SLOs ([#13854](https://github.com/ParabolInc/parabol/issues/13854)) ([f3bdb10](https://github.com/ParabolInc/parabol/commit/f3bdb1055122d242b00af1b04506fd11f60ab021))
+* **server:** trace GraphQL operations, resolvers, Postgres, Valkey and outbound HTTP with OpenTelemetry ([#13857](https://github.com/ParabolInc/parabol/issues/13857)) ([c66f565](https://github.com/ParabolInc/parabol/commit/c66f565dd06ab945b2b3d71f894ee95004080e1c))
+
+
+### Changed
+
+* tell Kargo about each new release image ([#13858](https://github.com/ParabolInc/parabol/issues/13858)) ([24f1f34](https://github.com/ParabolInc/parabol/commit/24f1f345c1c649a59867684a2c4bd0a08eed2ff5))
+
+## [15.14.1](https://github.com/ParabolInc/parabol/compare/v15.14.0...v15.14.1) (2026-10-31)
+
+
+### Changed
+
+* deploy production through Kargo instead of GitLab ([#13852](https://github.com/ParabolInc/parabol/issues/13852)) ([6550b5d](https://github.com/ParabolInc/parabol/commit/6550b5d87b80e158dc54f4b6e05c3b0228e852ca))
+
+## [15.14.0](https://github.com/ParabolInc/parabol/compare/v15.13.0...v15.14.0) (2026-10-31)
+
+
+### Added
+
+* **server:** serve Prometheus metrics by default with product heartbeat counters ([#13848](https://github.com/ParabolInc/parabol/issues/13848)) ([cf14fd7](https://github.com/ParabolInc/parabol/commit/cf14fd7b74b3185aaeb37b591ddfe57658f9f035))
+
+
+### Fixed
+
+* **server:** verify Zoom webhook signatures before answering url_validation ([#13834](https://github.com/ParabolInc/parabol/issues/13834)) ([e16d452](https://github.com/ParabolInc/parabol/commit/e16d452b471a2d62bc5564dbbc72fb138ccbe79d))
+* skip predeploy migrations when the database is ahead of the build ([#13844](https://github.com/ParabolInc/parabol/issues/13844)) ([692e242](https://github.com/ParabolInc/parabol/commit/692e2424f77bd942160734c9f3160864145b2da3))
+* stop Yjs tabs from leaking providers into a reconnect loop ([#13849](https://github.com/ParabolInc/parabol/issues/13849)) ([7904a8e](https://github.com/ParabolInc/parabol/commit/7904a8ef67153b93c3be623a56054680e7509f13))
+
+
+### Changed
+
+* log the release version without the commit hash ([#13846](https://github.com/ParabolInc/parabol/issues/13846)) ([ff183cf](https://github.com/ParabolInc/parabol/commit/ff183cf24c2ccd5aaff95436db2eeb8b036f4594))
+* stop deploying staging through GitLab ([#13847](https://github.com/ParabolInc/parabol/issues/13847)) ([503d957](https://github.com/ParabolInc/parabol/commit/503d9576b34cb9a49c05ec468cb6b6905c083e0f))
+
+## [15.13.0](https://github.com/ParabolInc/parabol/compare/v15.12.1...v15.13.0) (2026-10-31)
+
+
+### Added
+
+* capture browser errors with breadcrumbs and log them as parabol-client ([#13828](https://github.com/ParabolInc/parabol/issues/13828)) ([939a61b](https://github.com/ParabolInc/parabol/commit/939a61bfba3be436546d560d3c66b8ce484c5734))
+
+
+### Fixed
+
+* only allow http, https and mailto links in stored TipTap content ([#13835](https://github.com/ParabolInc/parabol/issues/13835)) ([3a6286d](https://github.com/ParabolInc/parabol/commit/3a6286d91653d9c39741bceb3d22818e0c8c97bd))
+* **server:** give subscription events without an operationId their own dataloader ([#13841](https://github.com/ParabolInc/parabol/issues/13841)) ([4ae16b7](https://github.com/ParabolInc/parabol/commit/4ae16b7815e6525b72db689c09c15344ff185870))
+* **server:** log subscription events, process warnings and Redis errors with context ([#13842](https://github.com/ParabolInc/parabol/issues/13842)) ([e289c1e](https://github.com/ParabolInc/parabol/commit/e289c1eed6bd9a769c08a30e6b3bcf8db92cac69))
+* **server:** only a session can create or update personal access tokens ([#13840](https://github.com/ParabolInc/parabol/issues/13840)) ([6ef5e2e](https://github.com/ParabolInc/parabol/commit/6ef5e2e7128c5579322f2ab471d7300c55d9af45))
+
+
+### Changed
+
+* bump node to 26.13.0 ([#13831](https://github.com/ParabolInc/parabol/issues/13831)) ([5c5c16d](https://github.com/ParabolInc/parabol/commit/5c5c16deeade4e66aac79334dee711bf2b3a6d96))
+
+## [15.12.1](https://github.com/ParabolInc/parabol/compare/v15.12.0...v15.12.1) (2026-10-30)
+
+
+### Fixed
+
+* blank screen at / for signed-in users on React 19 ([#13833](https://github.com/ParabolInc/parabol/issues/13833)) ([164aa8a](https://github.com/ParabolInc/parabol/commit/164aa8ab9e2883f709091c48b9c971c84b88ed71))
+* **server:** stop trusting IdP metadata named in the SAML RelayState ([#13829](https://github.com/ParabolInc/parabol/issues/13829)) ([7b7d5c1](https://github.com/ParabolInc/parabol/commit/7b7d5c18c717c4390a37384ef7dcf3722ad80c78))
+
+## [15.12.0](https://github.com/ParabolInc/parabol/compare/v15.11.0...v15.12.0) (2026-10-30)
+
+
+### Added
+
+* connect client operations to server logs with trace and session ids ([#13762](https://github.com/ParabolInc/parabol/issues/13762)) ([d042baf](https://github.com/ParabolInc/parabol/commit/d042baf7ec2f5e4e1f9031e52a4fd289957216b0))
+* **server:** structured logger with request context and error fingerprints ([#13757](https://github.com/ParabolInc/parabol/issues/13757)) ([a00deb9](https://github.com/ParabolInc/parabol/commit/a00deb9e9eb9976e9c363e8b7cac2ce1b156844a))
+
+
+### Fixed
+
+* keep a comment in edit mode after choosing Edit Comment ([#13819](https://github.com/ParabolInc/parabol/issues/13819)) ([8cde373](https://github.com/ParabolInc/parabol/commit/8cde373f219cf880fe6d97fd7641c21adb22b4a0))
+* remove Partial and Preview GQL types ([#13788](https://github.com/ParabolInc/parabol/issues/13788)) ([d17946b](https://github.com/ParabolInc/parabol/commit/d17946bfedb57abf25c9383e9280ab9232640c51))
+* retro discussion thread in React 19 dev mode ([#13823](https://github.com/ParabolInc/parabol/issues/13823)) ([89bd2f0](https://github.com/ParabolInc/parabol/commit/89bd2f0380c4174c62fc67f021c72a343163260e))
+* **server:** type the page search eval's Logger.warn arguments ([#13818](https://github.com/ParabolInc/parabol/issues/13818)) ([f1e8796](https://github.com/ParabolInc/parabol/commit/f1e8796556c48f99f9bcac84f0ba0ed91481d6ed))
+
+
+### Changed
+
+* upgrade React to 19.3 ([#13804](https://github.com/ParabolInc/parabol/issues/13804)) ([b27164e](https://github.com/ParabolInc/parabol/commit/b27164e4525956e4c70a0b2059571f7022a7d8bf))
+
+## [15.11.0](https://github.com/ParabolInc/parabol/compare/v15.10.0...v15.11.0) (2026-10-30)
+
+
+### Added
+
+* let page search match questions and pages with some of the words ([#13802](https://github.com/ParabolInc/parabol/issues/13802)) ([2134eb7](https://github.com/ParabolInc/parabol/commit/2134eb7c7b8c9c8c26d546d52a06ad9da4c2e1c3))
+* re-tune how page search blends keyword and meaning matches ([#13803](https://github.com/ParabolInc/parabol/issues/13803)) ([9d27104](https://github.com/ParabolInc/parabol/commit/9d271049112ef3b68d5b67abef5c0914c591402c))
+* skip near-empty pages in semantic page search ([#13801](https://github.com/ParabolInc/parabol/issues/13801)) ([fce4497](https://github.com/ParabolInc/parabol/commit/fce4497e0567f25464a71ef594c91fbb315f0afe))
+* Team Health attention marks in Reports ([#13748](https://github.com/ParabolInc/parabol/issues/13748)) ([903d9da](https://github.com/ParabolInc/parabol/commit/903d9da650e2f3e203120fcf9d31bef8a59f99e0))
+
+
+### Changed
+
+* add a heavy-account corpus to the pages search eval ([#13799](https://github.com/ParabolInc/parabol/issues/13799)) ([3fe98b3](https://github.com/ParabolInc/parabol/commit/3fe98b386fedaa43834f23b5ef9a76a8ec64eab8))
+* add a sealed holdout for the page search re-embed gate ([#13806](https://github.com/ParabolInc/parabol/issues/13806)) ([ba1395c](https://github.com/ParabolInc/parabol/commit/ba1395c7624e97ca4359bb1d000d3f8574675b41))
+
+## [15.10.0](https://github.com/ParabolInc/parabol/compare/v15.9.0...v15.10.0) (2026-10-29)
+
+
+### Added
+
+* rank page search results per page ([#13793](https://github.com/ParabolInc/parabol/issues/13793)) ([bd35d14](https://github.com/ParabolInc/parabol/commit/bd35d14baabb37598875d7cf209d9b07e4b1029f))
+* show keyword page search results while the best results load ([#13796](https://github.com/ParabolInc/parabol/issues/13796)) ([e7422c4](https://github.com/ParabolInc/parabol/commit/e7422c4c12abe6684a10962d5fa97d4ea10d3aab))
+
+## [15.9.0](https://github.com/ParabolInc/parabol/compare/v15.8.1...v15.9.0) (2026-10-28)
+
+
+### Added
+
+* Reports, behind the Reports flag ([#13713](https://github.com/ParabolInc/parabol/issues/13713)) ([8f965d2](https://github.com/ParabolInc/parabol/commit/8f965d2572e550bf212fb12f7b2abf51e98c5d22))
+
+## [15.8.1](https://github.com/ParabolInc/parabol/compare/v15.8.0...v15.8.1) (2026-10-28)
+
+
+### Fixed
+
+* explain bad embed links and let Escape or Backspace drop an empty embed ([#13784](https://github.com/ParabolInc/parabol/issues/13784)) ([8d6a844](https://github.com/ParabolInc/parabol/commit/8d6a84488a8f0628afb23e9851c6e813e2a8ceb8))
+* show page link titles, not markdown, in search snippets ([#13783](https://github.com/ParabolInc/parabol/issues/13783)) ([75e627a](https://github.com/ParabolInc/parabol/commit/75e627a583f88230621bdefffd7885f4ee398d8f))
+
+## [15.8.0](https://github.com/ParabolInc/parabol/compare/v15.7.4...v15.8.0) (2026-10-28)
+
+
+### Added
+
+* pages embed block ([#13779](https://github.com/ParabolInc/parabol/issues/13779)) ([c5e9532](https://github.com/ParabolInc/parabol/commit/c5e95325a15da3dcdb8759cbdfd3ff481c1baabc))
+
+
+### Fixed
+
+* keep page search working when embeddings are slow ([#13776](https://github.com/ParabolInc/parabol/issues/13776)) ([df5b3f3](https://github.com/ParabolInc/parabol/commit/df5b3f347378206b123caeff1f2fd6df42b1a828))
+
+## [15.7.4](https://github.com/ParabolInc/parabol/compare/v15.7.3...v15.7.4) (2026-10-28)
+
+
+### Fixed
+
+* match Zoom transcripts to the host's meeting on any of their teams ([#13777](https://github.com/ParabolInc/parabol/issues/13777)) ([4f4d1ce](https://github.com/ParabolInc/parabol/commit/4f4d1cec54736a55cb463cbdec466c020f56b0d4))
+
+
+### Changed
+
+* add a page search eval harness ([#13774](https://github.com/ParabolInc/parabol/issues/13774)) ([50b3714](https://github.com/ParabolInc/parabol/commit/50b3714ad9819aa53011f4a580644ad1b423ee69))
+
+## [15.7.3](https://github.com/ParabolInc/parabol/compare/v15.7.2...v15.7.3) (2026-10-27)
+
+
+### Fixed
+
+* Pages and realtime editing security hardening ([#13760](https://github.com/ParabolInc/parabol/issues/13760)) ([dbf832c](https://github.com/ParabolInc/parabol/commit/dbf832c67df391efe9d7cffcc263160f007da469))
+
+## [15.7.2](https://github.com/ParabolInc/parabol/compare/v15.7.1...v15.7.2) (2026-10-27)
+
+
+### Fixed
+
+* keep the meeting task board up when adding a task ([#13769](https://github.com/ParabolInc/parabol/issues/13769)) ([d35312c](https://github.com/ParabolInc/parabol/commit/d35312cd9e8ca024d68174317f4ec7c93bbad51f))
+* redirect the facilitator to the summary page after ending a meeting ([#13768](https://github.com/ParabolInc/parabol/issues/13768)) ([4297846](https://github.com/ParabolInc/parabol/commit/42978469ecddd5e409c35d2f4609f4a74745f40d))
+
+
+### Changed
+
+* tune meeting template embedding text for search ([#13749](https://github.com/ParabolInc/parabol/issues/13749)) ([0491929](https://github.com/ParabolInc/parabol/commit/0491929ae1249a230337903e7684a94d48613bd0))
+
+## [15.7.1](https://github.com/ParabolInc/parabol/compare/v15.7.0...v15.7.1) (2026-10-27)
+
+
+### Fixed
+
+* keep old Azure DevOps work items out of the standup date window ([#13758](https://github.com/ParabolInc/parabol/issues/13758)) ([def562f](https://github.com/ParabolInc/parabol/commit/def562f72c0c99a337fe91781614f9ca35a9fc31))
+
+## [15.7.0](https://github.com/ParabolInc/parabol/compare/v15.6.0...v15.7.0) (2026-10-26)
+
+
+### Added
+
+* AI summary and sentiment for each Team Health category ([#13738](https://github.com/ParabolInc/parabol/issues/13738)) ([dad789c](https://github.com/ParabolInc/parabol/commit/dad789c890ffa4952c988b8e691573af9de5441c))
+
+
+### Fixed
+
+* keep Activity Library keyword matches from being clobbered by semantic search ([#13746](https://github.com/ParabolInc/parabol/issues/13746)) ([d5a05db](https://github.com/ParabolInc/parabol/commit/d5a05db6c2418ef184e887142557d23eccbd17dd))
+* keep non-latin1 WebSocket upgrade headers from crashing the server ([#13755](https://github.com/ParabolInc/parabol/issues/13755)) ([41f1159](https://github.com/ParabolInc/parabol/commit/41f11596c41f0cb73fed69285f131a035f14cd3d))
+* shorter placeholder ([#13735](https://github.com/ParabolInc/parabol/issues/13735)) ([ccc7750](https://github.com/ParabolInc/parabol/commit/ccc77505f65d3ed6166e1b5cdf5403a963e5c139))
+
+
+### Changed
+
+* **ci:** reuse a webpack cache between test runs ([#13739](https://github.com/ParabolInc/parabol/issues/13739)) ([6176dd0](https://github.com/ParabolInc/parabol/commit/6176dd05c19e0d7268d55d2547874b607f532acc))
+
+## [15.6.0](https://github.com/ParabolInc/parabol/compare/v15.5.2...v15.6.0) (2026-10-22)
+
+
+### Added
+
+* per-address results for team email invitations ([#13733](https://github.com/ParabolInc/parabol/issues/13733)) ([29edf67](https://github.com/ParabolInc/parabol/commit/29edf677a0dacabc9ec2e0eed3d4541fb3a2b29b))
+
+
+### Fixed
+
+* document UWS_HTTP_MAX_HEADERS_SIZE and default it to 8KB ([#13732](https://github.com/ParabolInc/parabol/issues/13732)) ([574daaf](https://github.com/ParabolInc/parabol/commit/574daaf72e4fa28b3c30815b678657ed1a975076))
+
+## [15.5.2](https://github.com/ParabolInc/parabol/compare/v15.5.1...v15.5.2) (2026-10-22)
+
+
+### Fixed
+
+* clearer approved-domain error and no personal org for invited SSO users ([#13728](https://github.com/ParabolInc/parabol/issues/13728)) ([a6f11b8](https://github.com/ParabolInc/parabol/commit/a6f11b867696531430ddb56571108712cfa800d6))
+
+## [15.5.1](https://github.com/ParabolInc/parabol/compare/v15.5.0...v15.5.1) (2026-10-21)
+
+
+### Fixed
+
+* fit the org Teams table on phones ([#13714](https://github.com/ParabolInc/parabol/issues/13714)) ([4972a73](https://github.com/ParabolInc/parabol/commit/4972a73cd19e895292ff8bebaaf88c676306f45b))
+* stop nesting a &lt;td&gt; inside a &lt;td&gt; in org team rows ([#13712](https://github.com/ParabolInc/parabol/issues/13712)) ([f471fbe](https://github.com/ParabolInc/parabol/commit/f471fbe5683607544f0e3aedeb035318ec45e2d7))
+* tag PAT requests in Datadog and test lastUsedAt ([#13680](https://github.com/ParabolInc/parabol/issues/13680)) ([f655d95](https://github.com/ParabolInc/parabol/commit/f655d9517a17267269a591e1b4fe96f3e81670af))
+
+## [15.5.0](https://github.com/ParabolInc/parabol/compare/v15.4.0...v15.5.0) (2026-10-20)
+
+
+### Added
+
+* count active users over time & require attendance for active teams ([#13661](https://github.com/ParabolInc/parabol/issues/13661)) ([0d86f81](https://github.com/ParabolInc/parabol/commit/0d86f818a928f92d5a05aa909cd5372ffdd06fcf))
+
+
+### Fixed
+
+* keep blocked fetch destinations out of Datadog Error Tracking ([#13664](https://github.com/ParabolInc/parabol/issues/13664)) ([7f731d0](https://github.com/ParabolInc/parabol/commit/7f731d00d06a452acab50810b51c322c319d160f))
+* let a team's recurring series start on the same tick ([#13674](https://github.com/ParabolInc/parabol/issues/13674)) ([e668811](https://github.com/ParabolInc/parabol/commit/e668811b7ff8bca0afff6ed12fc7739371d87128))
+
+
+### Changed
+
+* remove the dead inactivateUser mutation ([#13659](https://github.com/ParabolInc/parabol/issues/13659)) ([a941477](https://github.com/ParabolInc/parabol/commit/a94147770cfac07ff3df32b2db3ea012a7fae58e))
+
 ## [15.4.0](https://github.com/ParabolInc/parabol/compare/v15.3.0...v15.4.0) (2026-10-13)
 
 

@@ -13,7 +13,7 @@ const TeamInvitationAccept = (props: Props) => {
   const atmosphere = useAtmosphere()
   useEffect(() => {
     AcceptTeamInvitationMutation(atmosphere, {invitationToken}, {navigate})
-  })
+  }, [invitationToken])
   return null
 }
 

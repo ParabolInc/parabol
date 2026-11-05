@@ -1,4 +1,5 @@
 import {Kysely, PostgresDialect} from 'kysely'
+import traceKyselyQuery from '../tracing/traceKyselyQuery'
 import getPg from './getPg'
 import type {DB} from './types/pg'
 
@@ -10,13 +11,8 @@ const makeKysely = (schema?: string) => {
   return new Kysely<DB>({
     dialect: new PostgresDialect({
       pool: nextPg
-    })
-    // ,log(event) {
-    //   if (event.level === 'query') {
-    //     console.log(event.query.sql)
-    //     console.log(event.query.parameters)
-    //   }
-    // }
+    }),
+    log: traceKyselyQuery
   })
 }
 

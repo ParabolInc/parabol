@@ -7,9 +7,7 @@ import {Tooltip} from '~/ui/Tooltip/Tooltip'
 import {TooltipContent} from '~/ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '~/ui/Tooltip/TooltipTrigger'
 import type {JiraObjectCard_result$key} from '../../../__generated__/JiraObjectCard_result.graphql'
-import useAtmosphere from '../../../hooks/useAtmosphere'
 import relativeDate from '../../../utils/date/relativeDate'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import JiraSVG from '../../JiraSVG'
 
 interface Props {
@@ -38,26 +36,11 @@ const JiraObjectCard = (props: Props) => {
     resultRef
   )
 
-  const atmosphere = useAtmosphere()
-
   const [isHovered, setIsHovered] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
 
-  const trackLinkClick = () => {
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Card Link Clicked', {
-      service: 'jira'
-    })
-  }
-
-  const trackCopy = () => {
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Card Copied', {
-      service: 'jira'
-    })
-  }
-
   const handleCopy = () => {
     setIsCopied(true)
-    trackCopy()
     setTimeout(() => {
       setIsCopied(false)
     }, 2000)
@@ -74,20 +57,13 @@ const JiraObjectCard = (props: Props) => {
           target='_blank'
           className='font-semibold text-fg-secondary hover:underline'
           rel='noreferrer'
-          onClick={trackLinkClick}
         >
           {issueKey}
         </a>
         <div>Updated {relativeDate(lastUpdated)}</div>
       </div>
       <div className='my-2 text-sm'>
-        <a
-          href={url}
-          target='_blank'
-          className='hover:underline'
-          rel='noreferrer'
-          onClick={trackLinkClick}
-        >
+        <a href={url} target='_blank' className='hover:underline' rel='noreferrer'>
           {summary}
         </a>
       </div>
@@ -100,7 +76,6 @@ const JiraObjectCard = (props: Props) => {
               target='_blank'
               className='text-fg-secondary text-xs hover:underline'
               rel='noreferrer'
-              onClick={trackLinkClick}
             >
               {project.name}
             </a>

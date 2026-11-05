@@ -1,5 +1,5 @@
 import type {Editor, JSONContent} from '@tiptap/core'
-import {type MutableRefObject, useContext, useEffect, useRef} from 'react'
+import {type RefObject, useContext, useEffect, useRef} from 'react'
 import {getInsertedRanges} from '../../../tiptap/extensions/insertedRangeHighlight/InsertedRangeHighlight'
 import {
   type StreamHandle,
@@ -12,7 +12,7 @@ const STREAM_WORD_DELAY_MS = 3
 const EDITOR_MOUNT_POLL_MS = 16
 const EDITOR_MOUNT_TIMEOUT_MS = 4000
 
-type EditorRefs = MutableRefObject<Map<string, MutableRefObject<Editor | null>>>
+type EditorRefs = RefObject<Map<string, RefObject<Editor | null>>>
 type Timers = Map<ReturnType<typeof setTimeout>, () => void>
 
 interface Options {

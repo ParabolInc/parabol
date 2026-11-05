@@ -1,5 +1,6 @@
 import type {Editor} from '@tiptap/core'
 import {TiptapLinkExtension} from '../components/TipTapEditor/TiptapLinkExtension'
+import {EmbedBlock} from './extensions/embedBlock/EmbedBlock'
 import FileBlock from './extensions/fileBlock/FileBlock'
 import {FileUpload} from './extensions/fileUpload/FileUpload'
 import {ImageBlock} from './extensions/imageBlock/ImageBlock'
@@ -16,6 +17,7 @@ const customNodes = [
   FileBlock.name,
   ResponseBlock.name,
   InsightsBlock.name,
+  EmbedBlock.name,
   ImageBlock.name,
   TaskBlock.name,
   TableOfContents.name

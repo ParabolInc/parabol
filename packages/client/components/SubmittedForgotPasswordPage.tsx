@@ -1,3 +1,4 @@
+import type {JSX} from 'react'
 import {useLocation, useParams} from 'react-router'
 import {ForgotPasswordResType} from '../mutations/EmailPasswordResetMutation'
 import {Button} from '../ui/Button/Button'

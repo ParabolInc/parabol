@@ -6,8 +6,6 @@ import refreshSuggestedGroups from './refreshSuggestedGroups'
 
 const IS_EMBEDDER_ENABLED = !!parseInt(process.env.AI_EMBEDDER_WORKERS!)
 
-let nextRequestId = 0
-
 export const embedRetroReflection = async (
   reflectionId: string,
   meetingId: string,
@@ -32,7 +30,7 @@ export const embedRetroReflection = async (
     .returning('id')
     .executeTakeFirstOrThrow()
 
-  const requestId = ++nextRequestId
+  const requestId = embeddingResponder.nextRequestId()
   // Resolves once the embedder has written the vector, so everything below reads it back
   const embedding = await publishToEmbedder({
     jobType: 'embed:start',

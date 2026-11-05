@@ -5,35 +5,15 @@ import {commitLocalUpdate, useFragment} from 'react-relay'
 import {Link} from 'react-router'
 import {UploadFile as UploadFileIcon} from '~/ui/icons'
 import type {OrgAuthenticationMetadata_saml$key} from '../../../../__generated__/OrgAuthenticationMetadata_saml.graphql'
-import orgAuthenticationMetadataQuery, {
-  type OrgAuthenticationMetadataQuery
-} from '../../../../__generated__/OrgAuthenticationMetadataQuery.graphql'
 import BasicInput from '../../../../components/InputField/BasicInput'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import useMutationProps from '../../../../hooks/useMutationProps'
 import {snackOnError} from '../../../../mutations/handlers/snackOnError'
+import useRequestSAMLMetadataChangeMutation from '../../../../mutations/useRequestSAMLMetadataChangeMutation'
 import {useUploadIdPMetadata} from '../../../../mutations/useUploadIdPMetadataMutation'
 import {Button} from '../../../../ui/Button/Button'
 import getOAuthPopupFeatures from '../../../../utils/getOAuthPopupFeatures'
 import loginSSO from '../../../../utils/loginSSO'
 import OrgAuthenticationDisconnectIdP from './OrgAuthenticationDisconnectIdP'
-
-graphql`
-  query OrgAuthenticationMetadataQuery($metadataURL: String!, $domain: String!) {
-    viewer {
-      parseSAMLMetadata(metadataURL: $metadataURL, domain: $domain) {
-        ... on ErrorPayload {
-          error {
-            message
-          }
-        }
-        ... on ParseSAMLMetadataSuccess {
-          url
-        }
-      }
-    }
-  }
-`
 
 interface Props {
   samlRef: OrgAuthenticationMetadata_saml$key
@@ -58,46 +38,19 @@ const OrgAuthenticationMetadata = (props: Props) => {
   const {orgId, domains} = saml
   const [metadataURL, setMetadataURL] = useState(saml.metadataURL ?? '')
   const isMetadataURLSaved = saml.metadataURL === metadataURL
-  const {error, onCompleted, onError, submitMutation, submitting} = useMutationProps()
-  const submitMetadataURL = async () => {
-    if (submitting || !metadataURL) return
-    submitMutation()
-    const domain = saml.id
+  const [requestSAMLMetadataChange, isRequestingChange] = useRequestSAMLMetadataChangeMutation()
+  const [isTestingSignIn, setIsTestingSignIn] = useState(false)
+  const [error, setError] = useState('')
+  const submitting = isRequestingChange || isTestingSignIn
 
-    // Open popup before the first async call to prevent popup blockers
-    const optimisticPopup = window.open(
-      '',
-      'SSO',
-      getOAuthPopupFeatures({width: 385, height: 576, top: 64})
-    )
-
-    // Get the Sign-on URL, which includes metadataURL in the RelayState
-    const res = await atmosphere.fetchQuery<OrgAuthenticationMetadataQuery>(
-      orgAuthenticationMetadataQuery,
-      {metadataURL, domain}
-    )
-    if (!res || res instanceof Error) {
-      onError(new Error('Could not reach server. Please try again'))
-      optimisticPopup?.close()
-      return
-    }
-    const {viewer} = res
-    const {parseSAMLMetadata} = viewer
-    const {error} = parseSAMLMetadata
-    if (error) {
-      onError(new Error(error.message))
-      optimisticPopup?.close()
-      return
-    }
-    const url = parseSAMLMetadata.url!
-
-    // Attempt logging in to test for errors
-    const response = await loginSSO(url)
+  const testSignIn = async (signOnURL: string) => {
+    setIsTestingSignIn(true)
+    const response = await loginSSO(signOnURL)
+    setIsTestingSignIn(false)
     if ('error' in response) {
-      onError(new Error(response.error || 'Error logging in'))
+      setError(response.error || 'Error logging in')
       return
     }
-    onCompleted()
     commitLocalUpdate(atmosphere, (store) => {
       store.get(saml.id)?.setValue(metadataURL, 'metadataURL')
     })
@@ -105,6 +58,34 @@ const OrgAuthenticationMetadata = (props: Props) => {
       message: 'SSO Configured Successfully',
       autoDismiss: 5,
       key: 'submitMetadata'
+    })
+  }
+
+  const submitMetadataURL = () => {
+    if (submitting || !metadataURL) return
+    setError('')
+
+    // Open popup before the first async call to prevent popup blockers
+    const optimisticPopup = window.open(
+      '',
+      'SSO',
+      getOAuthPopupFeatures({width: 385, height: 576, top: 64})
+    )
+    const failRequest = (message: string) => {
+      setError(message)
+      optimisticPopup?.close()
+    }
+    requestSAMLMetadataChange({
+      variables: {samlId: saml.id, metadataURL},
+      onCompleted: (res, errors) => {
+        const firstError = errors?.[0]
+        if (firstError) {
+          failRequest(firstError.message)
+          return
+        }
+        testSignIn(res.requestSAMLMetadataChange.signOnURL)
+      },
+      onError: (err) => failRequest(err.message)
     })
   }
 
@@ -178,7 +159,7 @@ const OrgAuthenticationMetadata = (props: Props) => {
             ref={uploadInputRef}
           />
         </div>
-        <div className={'px-6 text-fg-error empty:hidden'}>{error?.message}</div>
+        <div className={'px-6 text-fg-error empty:hidden'}>{error}</div>
         <div className='flex items-center justify-between gap-4 px-6 pb-8'>
           {saml.metadataURL ? (
             <OrgAuthenticationDisconnectIdP samlRef={saml} disabled={!isOrgAdmin} />

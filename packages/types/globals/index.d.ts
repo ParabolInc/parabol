@@ -44,8 +44,6 @@ declare const __COMMIT_HASH__: string
 
 interface Window {
   __ACTION__: {
-    datadogClientToken: string | undefined
-    datadogService: string | undefined
     google: string
     googleAnalytics: string
     mattermostWebhookIntegrationDisabled: boolean | undefined
@@ -60,7 +58,6 @@ interface Window {
     AUTH_GOOGLE_ENABLED: boolean
     AUTH_MICROSOFT_ENABLED: boolean
     AUTH_SSO_ENABLED: boolean
-    AMPLITUDE_WRITE_KEY: string
     microsoftTenantId: string
     microsoft: string
     GLOBAL_BANNER_ENABLED: boolean

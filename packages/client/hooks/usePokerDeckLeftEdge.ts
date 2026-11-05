@@ -1,7 +1,10 @@
 import {type RefObject, useEffect, useLayoutEffect, useState} from 'react'
 import useResizeObserver from './useResizeObserver'
 
-const usePokerDeckLeftEdge = (estimateAreaRef: RefObject<HTMLDivElement>, isVoting: boolean) => {
+const usePokerDeckLeftEdge = (
+  estimateAreaRef: RefObject<HTMLDivElement | null>,
+  isVoting: boolean
+) => {
   const [estimateAreaWidth, setEstimateAreaWidth] = useState(0)
   const adjustLeft = () => {
     const el = estimateAreaRef.current

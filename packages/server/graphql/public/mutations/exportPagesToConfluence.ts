@@ -2,7 +2,6 @@ import {GraphQLError} from 'graphql'
 import {applyUpdate, Doc, XmlElement} from 'yjs'
 import {getNewDataLoader} from '../../../dataloader/getNewDataLoader'
 import getKysely from '../../../postgres/getKysely'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import {MAX_CONFLUENCE_EXPORT_PAGES} from '../../../utils/confluence/types'
@@ -84,12 +83,6 @@ const exportPagesToConfluence: MutationResolvers['exportPagesToConfluence'] = as
     })
     .returning('id')
     .executeTakeFirstOrThrow()
-
-  const viewer = await dataLoader.get('users').loadNonNull(viewerId)
-  analytics.confluenceExportStarted(viewer, {
-    pageExportId: pageExport.id,
-    pageCount: tree.length
-  })
 
   const jobDataLoader = getNewDataLoader('runConfluenceExport')
   runConfluenceExport(pageExport.id, jobDataLoader)

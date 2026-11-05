@@ -152,6 +152,32 @@ test.describe('retrospective-demo / discuss page', () => {
     })
   }
 
+  test('lets the viewer edit their own comment', async ({page}) => {
+    await skipToDiscussPhase(page)
+
+    const commentInput = page
+      .getByRole('textbox')
+      .filter({has: page.locator('[data-placeholder="Comment publicly"]')})
+    await commentInput.click()
+    await page.keyboard.type('Async standups could work')
+    await page.keyboard.press('Enter')
+
+    const comment = page.getByRole('textbox').filter({hasText: 'Async standups could work'})
+    await expect(comment).toHaveAttribute('contenteditable', 'false')
+
+    await page.getByRole('button', {name: 'Comment options'}).click()
+    await page.getByRole('menuitem', {name: 'Edit Comment'}).click()
+    await expect(comment).toBeFocused()
+    await page.keyboard.press('ControlOrMeta+a')
+    await page.keyboard.type('Async standups on Fridays')
+    await page.keyboard.press('Enter')
+
+    const editedComment = page.getByRole('textbox').filter({hasText: 'Async standups on Fridays'})
+    await expect(editedComment).toHaveText('Async standups on Fridays')
+    await expect(editedComment).toHaveAttribute('contenteditable', 'false')
+    await expect(comment).toHaveCount(0)
+  })
+
   test('it shows the summary window when ending the demo', async ({page}) => {
     await skipToDiscussPhase(page)
 

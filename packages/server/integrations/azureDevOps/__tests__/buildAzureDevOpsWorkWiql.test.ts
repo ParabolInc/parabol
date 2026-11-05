@@ -1,4 +1,5 @@
 import buildAzureDevOpsWorkWiql, {
+  AZURE_DEVOPS_IS_OPEN,
   AZURE_DEVOPS_IS_WORK,
   type AzureDevOpsWorkKind,
   quoteWiql
@@ -9,6 +10,7 @@ const START_AT = '2026-10-01T07:30:00.000Z'
 const END_AT = '2026-10-07T23:59:59.999Z'
 const CHANGED_SINCE = `[System.ChangedDate] >= '${START_AT}'`
 const CHANGED_UNTIL = `[System.ChangedDate] <= '${END_AT}'`
+const NOT_FINISHED_BEFORE = `(${AZURE_DEVOPS_IS_OPEN} OR [Microsoft.VSTS.Common.StateChangeDate] >= '${START_AT}')`
 const ASSIGNED_OR_CREATED = '([System.AssignedTo] = @Me OR [System.CreatedBy] = @Me)'
 const BOTH_KINDS: AzureDevOpsWorkKind[] = ['assigned', 'created']
 
@@ -31,6 +33,12 @@ describe('AZURE_DEVOPS_IS_WORK', () => {
   })
 })
 
+describe('AZURE_DEVOPS_IS_OPEN', () => {
+  it('leaves out closed, done and removed work items', () => {
+    expect(AZURE_DEVOPS_IS_OPEN).toBe("[System.State] NOT IN ('Closed', 'Done', 'Removed')")
+  })
+})
+
 describe('buildAzureDevOpsWorkWiql', () => {
   const kindCases: [string, AzureDevOpsWorkKind[], string][] = [
     ['assigned work', ['assigned'], '([System.AssignedTo] = @Me)'],
@@ -40,13 +48,19 @@ describe('buildAzureDevOpsWorkWiql', () => {
 
   it.each(kindCases)('finds %s changed inside the date window', (_label, kinds, people) => {
     expect(buildAzureDevOpsWorkWiql({kinds, startAt: START_AT, endAt: END_AT})).toBe(
-      `${people} AND ${AZURE_DEVOPS_IS_WORK} AND ${CHANGED_SINCE} AND ${CHANGED_UNTIL}`
+      `${people} AND ${AZURE_DEVOPS_IS_WORK} AND ${CHANGED_SINCE} AND ${NOT_FINISHED_BEFORE} AND ${CHANGED_UNTIL}`
+    )
+  })
+
+  it('leaves out work finished before the window, even when something touched it inside', () => {
+    expect(buildAzureDevOpsWorkWiql({kinds: ['assigned'], startAt: START_AT})).toContain(
+      `AND ${NOT_FINISHED_BEFORE}`
     )
   })
 
   it('leaves the window open at the end when there is no endAt', () => {
     expect(buildAzureDevOpsWorkWiql({kinds: BOTH_KINDS, startAt: START_AT})).toBe(
-      `${ASSIGNED_OR_CREATED} AND ${AZURE_DEVOPS_IS_WORK} AND ${CHANGED_SINCE}`
+      `${ASSIGNED_OR_CREATED} AND ${AZURE_DEVOPS_IS_WORK} AND ${CHANGED_SINCE} AND ${NOT_FINISHED_BEFORE}`
     )
   })
 
@@ -64,7 +78,7 @@ describe('buildAzureDevOpsWorkWiql', () => {
 
   it('has no people clause when no kind is given', () => {
     expect(buildAzureDevOpsWorkWiql({kinds: [], startAt: START_AT, endAt: END_AT})).toBe(
-      `${AZURE_DEVOPS_IS_WORK} AND ${CHANGED_SINCE} AND ${CHANGED_UNTIL}`
+      `${AZURE_DEVOPS_IS_WORK} AND ${CHANGED_SINCE} AND ${NOT_FINISHED_BEFORE} AND ${CHANGED_UNTIL}`
     )
     expect(buildAzureDevOpsWorkWiql({kinds: []})).toBe(AZURE_DEVOPS_IS_WORK)
   })
@@ -76,7 +90,7 @@ describe('buildAzureDevOpsWorkWiql', () => {
         startAt: "2026-10-01' OR [System.Id] > 0 OR '"
       })
     ).toBe(
-      `([System.AssignedTo] = @Me) AND ${AZURE_DEVOPS_IS_WORK} AND [System.ChangedDate] >= '2026-10-01'' OR [System.Id] > 0 OR '''`
+      `([System.AssignedTo] = @Me) AND ${AZURE_DEVOPS_IS_WORK} AND [System.ChangedDate] >= '2026-10-01'' OR [System.Id] > 0 OR ''' AND (${AZURE_DEVOPS_IS_OPEN} OR [Microsoft.VSTS.Common.StateChangeDate] >= '2026-10-01'' OR [System.Id] > 0 OR ''')`
     )
   })
 

@@ -20,11 +20,11 @@ import ScrollEdgeIndicator from './ScrollEdgeIndicator'
 
 export type OpenSpotlight = (
   reflectionGroupId: string,
-  reflectionRef: RefObject<HTMLDivElement>
+  reflectionRef: RefObject<HTMLDivElement | null>
 ) => void
 
 interface Props {
-  columnsRef: RefObject<HTMLDivElement>
+  columnsRef: RefObject<HTMLDivElement | null>
   isAnyEditing: boolean
   isDesktop: boolean
   meeting: GroupingKanbanColumn_meeting$key
@@ -36,7 +36,7 @@ interface Props {
   /** Groups a suggestion would still merge, so each one can hint at it before being hovered */
   suggestedGroupIds: ReadonlySet<string>
   openSpotlight: OpenSpotlight
-  phaseRef: RefObject<HTMLDivElement>
+  phaseRef: RefObject<HTMLDivElement | null>
   prompt: GroupingKanbanColumn_prompt$key
   reflectionGroups: GroupingKanbanColumn_reflectionGroups$key
   reflectPromptsCount: number

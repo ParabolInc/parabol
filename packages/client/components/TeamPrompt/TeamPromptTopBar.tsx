@@ -11,7 +11,6 @@ import NewMeetingAvatarGroup from '~/modules/meeting/components/MeetingAvatarGro
 import {KeyboardArrowLeft, KeyboardArrowRight} from '~/ui/icons'
 import {cn} from '../../ui/cn'
 import {toHumanReadable} from '../../utils/humanReadableRecurrenceRule'
-import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import EditableText from '../EditableText'
 import {EditMeetingSeriesModal} from '../EditMeetingSeriesModal'
 import IconLabel from '../IconLabel'
@@ -53,7 +52,6 @@ const TeamPromptTopBar = (props: Props) => {
       fragment TeamPromptTopBar_meeting on TeamPromptMeeting {
         id
         name
-        teamId
         rightDrawerOpen
         facilitatorUserId
         localStageId
@@ -112,12 +110,6 @@ const TeamPromptTopBar = (props: Props) => {
         const meetingProxy = store.get(meetingId)
         if (!meetingProxy) return
         meetingProxy.setValue(null, 'rightDrawerOpen')
-
-        SendClientSideEvent(atmosphere, 'Inspiration Drawer Closed', {
-          teamId: meeting.teamId,
-          meetingId: meeting.id,
-          source: 'top bar'
-        })
       })
     } else {
       commitLocalUpdate(atmosphere, (store) => {
@@ -125,12 +117,6 @@ const TeamPromptTopBar = (props: Props) => {
         if (!meetingProxy) return
         meetingProxy.setValue(null, 'localStageId')
         meetingProxy.setValue('inspiration', 'rightDrawerOpen')
-
-        SendClientSideEvent(atmosphere, 'Inspiration Drawer Opened', {
-          teamId: meeting.teamId,
-          meetingId: meeting.id,
-          source: 'top bar'
-        })
       })
     }
   }

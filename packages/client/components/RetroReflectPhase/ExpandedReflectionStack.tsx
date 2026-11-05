@@ -9,7 +9,7 @@ import getBBox from './getBBox'
 interface Props {
   closePortal: () => void
   header?: ReactNode
-  phaseRef: RefObject<HTMLDivElement>
+  phaseRef: RefObject<HTMLDivElement | null>
   staticReflections: readonly any[]
   reflections: readonly any[]
   meeting: any

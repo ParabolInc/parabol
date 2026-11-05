@@ -56,7 +56,6 @@ const UserTasksHeader = (props: Props) => {
             user {
               id
               preferredName
-              tms
             }
           }
         }
@@ -86,7 +85,6 @@ const UserTasksHeader = (props: Props) => {
     const dedupedUsers = [] as {
       id: string
       preferredName: string
-      tms: ReadonlyArray<string>
     }[]
     users.forEach((user) => {
       const userKey = user.id
@@ -99,11 +97,11 @@ const UserTasksHeader = (props: Props) => {
       ? dedupedUsers.find(({id: userId}) => userIds.includes(userId))
       : undefined
     return teamFilter && teamMemberFilter
-      ? teamMemberFilter.tms.includes(teamFilter.id)
+      ? teamFilter.teamMembers.some(({user}) => user.id === teamMemberFilter.id)
         ? teamMemberFilter.preferredName
         : FilterLabels.ALL_TEAM_MEMBERS
       : (teamMemberFilter?.preferredName ?? FilterLabels.ALL_TEAM_MEMBERS)
-  }, [teamIds, userIds, teams])
+  }, [teamFilter, userIds, teams])
 
   return (
     <DashSectionHeader>

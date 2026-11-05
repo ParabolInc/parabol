@@ -1,4 +1,5 @@
-import {useNavigate} from 'react-router'
+import {useRef} from 'react'
+import {Navigate, useNavigate} from 'react-router'
 import useCanonical from '~/hooks/useCanonical'
 import useAtmosphere from '../hooks/useAtmosphere'
 import getValidRedirectParam from '../utils/getValidRedirectParam'
@@ -13,12 +14,13 @@ const AuthenticationPage = (props: Props) => {
   const navigate = useNavigate()
   const {page} = props
   const {authObj} = useAtmosphere()
+  // if they sign in here, the login mutation redirects them, so following the auth cookie would navigate twice
+  const isInitiallySignedInRef = useRef(!!authObj)
   useCanonical(page)
-  if (authObj) {
+  if (isInitiallySignedInRef.current) {
     const nextUrl = getValidRedirectParam() || '/meetings'
     // always replace otherwise they could get stuck in a back-button loop
-    setTimeout(() => navigate(nextUrl, {replace: true}))
-    return null
+    return <Navigate to={nextUrl} replace />
   }
   const goToPage: GotoAuthPage = (page, search?) => {
     const url = search ? `/${page}${search}` : `/${page}`

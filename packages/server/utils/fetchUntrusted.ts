@@ -200,7 +200,7 @@ const agentOptions = {keepAlive: true, timeout: TIMEOUT_MS, lookup: safeLookup}
 const httpAgent = new GuardedHttpAgent(agentOptions)
 const httpsAgent = new GuardedHttpsAgent(agentOptions)
 
-const fetchOnce = (
+const fetchOnce = async (
   url: URL,
   options: {
     method?: 'GET' | 'POST'
@@ -208,8 +208,11 @@ const fetchOnce = (
     body?: string
     signal?: AbortSignal
   }
-) =>
-  fetch(url, {
+) => {
+  // Reject a bad destination before a request exists, so the guard never has to kill a connection.
+  // IP literals also need this: net.connect skips the lookup for them, leaving only verifyPeer.
+  await resolveSafeAddresses(getHostname(url))
+  return fetch(url, {
     method: options.method ?? 'GET',
     headers: {'User-Agent': USER_AGENT, ...options.headers},
     body: options.body,
@@ -219,6 +222,7 @@ const fetchOnce = (
     signal: options.signal ?? AbortSignal.timeout(TIMEOUT_MS),
     agent: url.protocol === 'https:' ? httpsAgent : httpAgent
   })
+}
 
 /**
  * Read a body with a hard size cap. Always settles the stream so keepAlive sockets are released
@@ -240,6 +244,7 @@ const readBodyCapped = async (
       total += value.byteLength
       if (total > maxSize) {
         if (onOverflow === 'throw') throw new Error('File exceeds max size')
+        chunks.push(value.subarray(0, value.byteLength - (total - maxSize)))
         break
       }
       chunks.push(value)
@@ -253,12 +258,17 @@ const readBodyCapped = async (
 export const fetchUntrusted = async (
   input: string,
   maxSize: number,
-  options?: {headers?: Record<string, string>; maxRedirects?: number}
+  options?: {
+    headers?: Record<string, string>
+    maxRedirects?: number
+    onOverflow?: 'throw' | 'truncate'
+  }
 ) => {
   try {
     let currentUrl = parseHttpUrl(input)
     let currentHeaders = options?.headers
     let redirectsLeft = options?.maxRedirects ?? 0
+    const onOverflow = options?.onOverflow ?? 'throw'
 
     while (true) {
       // Serialize per-domain: same-host requests queue, different hosts run concurrently.
@@ -294,13 +304,17 @@ export const fetchUntrusted = async (
         // Pre-check the declared size before streaming. The cap below is the real enforcement,
         // since content-length is both optional and pre-decompression.
         const declaredSize = Number(response.headers.get('content-length'))
-        if (declaredSize > maxSize) {
+        if (onOverflow === 'throw' && declaredSize > maxSize) {
           await response.body?.cancel()
           throw new Error('File too large')
         }
 
         // widened so callers can pass it alongside other Buffers (e.g. compressImage output)
-        const buffer: Buffer<ArrayBufferLike> = await readBodyCapped(response.body, maxSize)
+        const buffer: Buffer<ArrayBufferLike> = await readBodyCapped(
+          response.body,
+          maxSize,
+          onOverflow
+        )
         return {
           buffer,
           contentType: contentType.split(';')[0]!.trim().toLowerCase(),

@@ -74,16 +74,14 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
         team {
           id
         }
-        integration {
-          __typename
-        }
+        taskService
       }
     `,
     taskRef
   )
-  const {team, id: taskId, integration} = task
-  const isGitHubTask = integration?.__typename === '_xGitHubIssue'
-  const isJiraTask = integration?.__typename === 'JiraIssue'
+  const {team, id: taskId, taskService} = task
+  const isGitHubTask = taskService === 'github'
+  const isJiraTask = taskService === 'jira'
 
   const {id: teamId} = team
   const {teams} = viewer

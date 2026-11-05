@@ -1,0 +1,452 @@
+{
+  "type": "doc",
+  "content": [
+    {
+      "type": "heading",
+      "attrs": {"level": 1},
+      "content": [{"type": "text", "text": "Team Health #3 - Oct 8, 2026"}]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "text": "Harbor Platform",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://app.example.com/team/Hb7QmR2xKd",
+                "target": "_blank",
+                "rel": "noopener noreferrer nofollow",
+                "class": "link",
+                "title": null
+              }
+            },
+            {"type": "bold", "attrs": {}}
+          ]
+        },
+        {"type": "text", "text": " — Oct 8, 2026", "marks": [{"type": "bold", "attrs": {}}]}
+      ]
+    },
+    {"type": "paragraph", "content": [{"type": "text", "text": "5 Respondents"}]},
+    {"type": "paragraph"},
+    {
+      "type": "insightsBlock",
+      "attrs": {
+        "id": "42716834-e0af-4758-9c49-ae5711ccfaf1",
+        "editing": false,
+        "teamIds": ["Hb7QmR2xKd"],
+        "meetingTypes": ["teamHealth"],
+        "after": "2026-10-08T15:00:00.000Z",
+        "before": "2026-10-08T17:30:00.000Z",
+        "meetingIds": ["pp4vDgRu6H"],
+        "title": "Top Topics",
+        "hash": "dt5axhxl",
+        "prompt": "You are an expert in agile retrospectives and project management.\nYour team has just completed a meeting and it is your job to generate insights from the data and report to senior management.\nSenior management wants to know where to best focus their time, so be concise and focus on next steps to take.\nIf there is not enough data to generate insightful findings, respond with \"Not enough data to generate insights\".\nIt should include at most 3 topics that are the most important highlights, takeaways, or areas that may need their attention.\n"
+      },
+      "content": [
+        {
+          "type": "bulletList",
+          "content": [
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {"type": "text", "text": "🥇 "},
+                    {
+                      "type": "text",
+                      "text": "Workload is the lowest scoring area at 2.8",
+                      "marks": [{"type": "bold", "attrs": {}}]
+                    },
+                    {
+                      "type": "text",
+                      "text": ": Comments point to recent incidents and uneven on-call coverage. Review the rotation and protect focus time next sprint."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {"type": "text", "text": "🥈 "},
+                    {
+                      "type": "text",
+                      "text": "Learning from mistakes scores highest at 4.6",
+                      "marks": [{"type": "bold", "attrs": {}}]
+                    },
+                    {
+                      "type": "text",
+                      "text": ": The team credits the postmortem for the email incident. Keep that blameless format."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {"type": "text", "text": "🥉 "},
+                    {
+                      "type": "text",
+                      "text": "Meetings are middling at 3.2",
+                      "marks": [{"type": "bold", "attrs": {}}]
+                    },
+                    {
+                      "type": "text",
+                      "text": ": Consider shortening or cancelling the recurring syncs that overlap with standup."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {"type": "paragraph"},
+    {
+      "type": "details",
+      "attrs": {"open": false},
+      "content": [
+        {"type": "detailsSummary", "content": [{"type": "text", "text": "Table View"}]},
+        {
+          "type": "detailsContent",
+          "content": [
+            {
+              "type": "table",
+              "content": [
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableHeader",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Question",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableHeader",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Average",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableHeader",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Responses",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableHeader",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Comments",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "I feel safe to speak up when I disagree with a decision.",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "4.4"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "5"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Our workload is manageable.",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "2.8"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "5"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Two incidents in one sprint left me exhausted.\nI am covering a teammate's on-call shift next week."
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "I understand how my work connects to our company goals.",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "4.0"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "5"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "We learn from mistakes without blaming people.",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "4.6"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "5"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "The postmortem for the email incident was a good example."
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "I get feedback often enough to grow.",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "3.6"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "5"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Our meetings are a good use of my time.",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "3.2"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "5"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -5,7 +5,6 @@ import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getKysely from '../../../postgres/getKysely'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import RedisLock from '../../../utils/RedisLock'
@@ -105,12 +104,6 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
       // join the org before the team, otherwise a failure here leaves a TeamMember who passes
       // isTeamMember but fails isViewerOnOrg on every org-scoped field. See acceptTeamInvitation
       await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
-      const highestTier = await dataLoader.get('highestTierForUserId').load(userId)
-      analytics.identify({
-        userId,
-        email: user.email,
-        highestTier
-      })
     }
 
     await pg

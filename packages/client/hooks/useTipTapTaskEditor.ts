@@ -1,14 +1,15 @@
 import Highlight from '@tiptap/extension-highlight'
 import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention from '@tiptap/extension-mention'
-import {TextStyleKit} from '@tiptap/extension-text-style'
 import {Placeholder} from '@tiptap/extensions'
-import {Extension, generateText, useEditor} from '@tiptap/react'
+import {Extension, generateText, type JSONContent, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
+import {useMemo} from 'react'
 import {useUploadUserAsset} from '~/mutations/useUploadUserAsset'
 import type Atmosphere from '../Atmosphere'
 import {LoomExtension} from '../components/TipTapEditor/LoomExtension'
 import {TiptapLinkExtension} from '../components/TipTapEditor/TiptapLinkExtension'
+import {SafeTextStyleKit} from '../shared/tiptap/extensions/SafeTextStyleKit'
 import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {FileUpload} from '../tiptap/extensions/fileUpload/FileUpload'
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
@@ -18,7 +19,7 @@ import {MentionTaskTag} from '../utils/MentionTaskTag'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
 import {tiptapTagConfig} from '../utils/tiptapTagConfig'
-import {useTipTapEditorContent} from './useTipTapEditorContent'
+import {useTipTapEditorSync} from './useTipTapEditorSync'
 
 export const useTipTapTaskEditor = (
   content: string,
@@ -33,15 +34,15 @@ export const useTipTapTaskEditor = (
   }
 ) => {
   const {atmosphere, teamId, readOnly, onBlur, onModEnter} = options
-  const [contentJSON, editorRef] = useTipTapEditorContent(content)
+  const contentJSON = useMemo(() => JSON.parse(content) as JSONContent, [content])
   const [commit] = useUploadUserAsset()
 
-  editorRef.current = useEditor(
+  const editor = useEditor(
     {
       content: contentJSON,
       extensions: [
         StarterKit.configure({link: false}),
-        TextStyleKit,
+        SafeTextStyleKit,
         Highlight,
         FileUpload.configure({
           scopeKey: teamId,
@@ -99,7 +100,8 @@ export const useTipTapTaskEditor = (
       onBlur,
       autofocus: generateText(contentJSON, serverTipTapExtensions).length === 0
     },
-    [contentJSON, readOnly, onBlur]
+    []
   )
-  return {editor: editorRef.current}
+  useTipTapEditorSync(editor, contentJSON, !readOnly)
+  return {editor}
 }

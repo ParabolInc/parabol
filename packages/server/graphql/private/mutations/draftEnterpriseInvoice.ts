@@ -2,9 +2,7 @@ import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitOb
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import type {User} from '../../../postgres/types'
-import {analytics} from '../../../utils/analytics/analytics'
 import {fromEpochSeconds} from '../../../utils/epochTime'
-import {identifyHighestUserTierForOrgId} from '../../../utils/identifyHighestUserTierForOrgId'
 import {getStripeManager} from '../../../utils/stripe'
 import type {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
@@ -141,16 +139,6 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
     removeTeamsLimitObjects(orgId, dataLoader)
   ])
 
-  await identifyHighestUserTierForOrgId(orgId, dataLoader)
-  analytics.organizationUpgraded(user, {
-    orgId,
-    domain: org.activeDomain || undefined,
-    orgName: org.name,
-    isTrial: !!org.trialStartDate,
-    oldTier: 'starter',
-    newTier: 'enterprise',
-    billingLeaderEmail: user.email
-  })
   dataLoader.get('organizations').clear(orgId)
   return {orgId}
 }

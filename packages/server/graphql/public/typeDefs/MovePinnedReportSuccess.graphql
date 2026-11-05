@@ -1,0 +1,6 @@
+type MovePinnedReportSuccess {
+  """
+  The organization, with its pins
+  """
+  organization: Organization!
+}

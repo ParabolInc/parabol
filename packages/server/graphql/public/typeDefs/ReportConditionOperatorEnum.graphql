@@ -1,0 +1,15 @@
+"""
+How Only show tests a row's value
+"""
+enum ReportConditionOperatorEnum {
+  "The value is at least the number"
+  AT_LEAST
+  "The value is at most the number"
+  AT_MOST
+  "The value equals the number"
+  EQUALS
+  "The date is more than the number of days ago, or there is none"
+  OLDER_THAN_DAYS
+  "The date is within the number of days"
+  WITHIN_DAYS
+}

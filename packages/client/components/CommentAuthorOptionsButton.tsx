@@ -21,6 +21,7 @@ const CommentAuthorOptionsButton = (props: Props) => {
     <Menu
       trigger={
         <PlainButton
+          aria-label='Comment options'
           className='hover:text-fg-primary focus:text-fg-primary active:text-fg-primary'
           onMouseEnter={CommentAuthorOptionsDropdown.preload}
         >

@@ -75,12 +75,13 @@ const buildIdpMetadata = (certBody: string) => `<?xml version="1.0" encoding="UT
   </IDPSSODescriptor>
 </EntityDescriptor>`
 
-test('SAML', async () => {
+const DOMAIN = 'example.com'
+const TEST_EMAIL = `test@${DOMAIN}`
+
+const createSAMLRecord = async (idpMetadata: string) => {
   const companyName = faker.company.companyName()
   const samlName = faker.helpers.slugify(companyName).toLowerCase()
   const orgId = `${samlName}-orgId`
-  const domain = 'example.com'
-  const testEmail = `test@${domain}`
 
   const verifyDomain = await sendIntranet({
     query: `
@@ -101,7 +102,7 @@ test('SAML', async () => {
     `,
     variables: {
       slug: samlName,
-      addDomains: [domain],
+      addDomains: [DOMAIN],
       orgId
     }
   })
@@ -117,16 +118,17 @@ test('SAML', async () => {
   })
 
   // Store metadata directly in DB so loginSAML uses it without fetching from a URL
-  const idpMetadata = buildIdpMetadata(TEST_CERT_BODY)
-  const pg = getKysely()
   // Clear orgId so loginSAML doesn't try to add user to a non-existent org
-  await pg
+  await getKysely()
     .updateTable('SAML')
     .set({metadata: idpMetadata, metadataURL: null, orgId: null})
     .where('id', '=', samlName)
     .execute()
+  return samlName
+}
 
-  // Build a signed SAML response dynamically with fresh timestamps
+// Build a signed SAML response dynamically with fresh timestamps
+const buildSignedResponse = async (idpMetadata: string) => {
   samlify.setSchemaValidator(samlXMLValidator)
   const idp = samlify.IdentityProvider({
     metadata: idpMetadata,
@@ -152,7 +154,7 @@ test('SAML', async () => {
     sp,
     {} as unknown as RequestInfo,
     'post',
-    {email: testEmail},
+    {email: TEST_EMAIL},
     (template: string) => ({
       id,
       context: samlify.SamlLib.replaceTagsByValue(template, {
@@ -170,19 +172,21 @@ test('SAML', async () => {
         ConditionsNotOnOrAfter: fiveMinutesLater,
         SubjectConfirmationDataNotOnOrAfter: fiveMinutesLater,
         NameIDFormat: 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
-        NameID: testEmail,
+        NameID: TEST_EMAIL,
         InResponseTo: '',
         AuthnStatement: '',
-        attrEmail: testEmail
+        attrEmail: TEST_EMAIL
       })
     })
   )
 
   // samlify returns standard base64; convert to base64url to avoid URL encoding issues
-  const samlResponse = Buffer.from(samlResponseBase64, 'base64').toString('base64url')
-  const relayState = base64url.encode(JSON.stringify({}))
+  return Buffer.from(samlResponseBase64, 'base64').toString('base64url')
+}
 
-  const saml = await sendIntranet({
+const loginSAML = (samlName: string, samlResponse: string, relayState: object) => {
+  const encodedRelayState = base64url.encode(JSON.stringify(relayState))
+  return sendIntranet({
     query: `
       mutation loginSAML($queryString: String!, $samlName: ID!) {
         loginSAML(queryString: $queryString, samlName: $samlName) {
@@ -195,17 +199,69 @@ test('SAML', async () => {
       }
     `,
     variables: {
-      queryString: `SAMLResponse=${samlResponse}&RelayState=${relayState}`,
+      queryString: `SAMLResponse=${samlResponse}&RelayState=${encodedRelayState}`,
       samlName
     }
   })
+}
 
-  expect(saml).toMatchObject({
-    data: {
-      loginSAML: {
-        error: null,
-        authToken: expect.anything()
+describe('loginSAML', () => {
+  const idpMetadata = buildIdpMetadata(TEST_CERT_BODY)
+  let samlName: string
+
+  beforeAll(async () => {
+    samlName = await createSAMLRecord(idpMetadata)
+  })
+
+  test('signs in with a response signed by the stored IdP', async () => {
+    const samlResponse = await buildSignedResponse(idpMetadata)
+    const saml = await loginSAML(samlName, samlResponse, {})
+
+    expect(saml).toMatchObject({
+      data: {
+        loginSAML: {
+          error: null,
+          authToken: expect.anything()
+        }
       }
-    }
+    })
+  })
+
+  test('ignores a metadataURL placed in the RelayState', async () => {
+    const samlResponse = await buildSignedResponse(idpMetadata)
+    const saml = await loginSAML(samlName, samlResponse, {
+      metadataURL: 'https://attacker.example/metadata'
+    })
+
+    expect(saml).toMatchObject({
+      data: {
+        loginSAML: {
+          error: null,
+          authToken: expect.anything()
+        }
+      }
+    })
+    const stored = await getKysely()
+      .selectFrom('SAML')
+      .select(['metadata', 'metadataURL'])
+      .where('id', '=', samlName)
+      .executeTakeFirstOrThrow()
+    expect(stored).toEqual({metadata: idpMetadata, metadataURL: null})
+  })
+
+  test('rejects a metadata change request the server did not issue', async () => {
+    const samlResponse = await buildSignedResponse(idpMetadata)
+    const saml = await loginSAML(samlName, samlResponse, {
+      metadataChangeId: 'not-issued-by-the-server'
+    })
+
+    expect(saml).toMatchObject({
+      data: {
+        loginSAML: {
+          error: {message: expect.stringContaining('expired')},
+          authToken: null
+        }
+      }
+    })
   })
 })

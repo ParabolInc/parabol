@@ -25,6 +25,7 @@
       "!**/packages/server/graphql/private/schema.graphql",
       "!**/packages/server/graphql/public/schema.graphql",
       "!**/queryMap.json",
+      "!**/packages/server/__evals__/**/results/**",
       "!devTemplate.html",
       "!template.html"
     ]
@@ -241,7 +242,7 @@
       }
     },
     {
-      "includes": ["**/__tests__/**"],
+      "includes": ["**/__tests__/**", "**/*.eval.ts"],
       "linter": {
         "domains": {
           "test": "all"

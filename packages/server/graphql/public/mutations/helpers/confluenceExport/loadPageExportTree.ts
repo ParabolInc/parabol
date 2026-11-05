@@ -30,11 +30,13 @@ export const loadPageExportTree = async (
     if (result.length > MAX_CONFLUENCE_EXPORT_PAGES) return
     const page = await pg
       .selectFrom('Page')
-      .select(['id', 'title', 'yDoc', 'deletedAt', 'isParentLinked', 'isDatabase'])
+      .select(['id', 'title', 'yDoc', 'deletedAt', 'isParentLinked', 'isDatabase', 'parentPageId'])
       .where('id', '=', pageId)
       .executeTakeFirst()
     if (!page || page.deletedAt) return
     if (depth > 0 && !page.isParentLinked) return
+    // any editor can write a canonical link into a doc, so only follow it to a page that lives here
+    if (depth > 0 && page.parentPageId !== parentPageId) return
     const [role] = await pageAccessByUserIdBatchFn([{pageId, userId: viewerId}])
     if (!role) return
     result.push({

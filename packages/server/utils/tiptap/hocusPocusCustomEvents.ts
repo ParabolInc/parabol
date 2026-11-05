@@ -8,8 +8,12 @@ import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import {hocuspocus} from '../../hocusPocus'
 
-const withDoc = async (documentName: string, fn: (doc: Document) => void) => {
-  const conn = await hocuspocus.openDirectConnection(documentName, {})
+const withDoc = async (
+  documentName: string,
+  fn: (doc: Document) => void,
+  context: {userId?: string} = {}
+) => {
+  const conn = await hocuspocus.openDirectConnection(documentName, context)
   // Always disconnect: a DirectConnection has no idle-timeout safety net, so a skipped
   // disconnect() keeps directConnectionsCount > 0 and leaks the loaded document forever
   try {
@@ -106,6 +110,24 @@ export const updateBacklinkedPageLinkTitles = async (
   })
 }
 
+export const replaceAssetSrc = async (
+  documentName: string,
+  payload: {src: string; hostedSrc: string}
+) => {
+  const {src, hostedSrc} = payload
+  await withDoc(documentName, (doc) => {
+    const frag = doc.getXmlFragment('default')
+    const walker = frag.createTreeWalker((yxml) => {
+      if (!(yxml instanceof XmlElement)) return false
+      if (yxml.nodeName !== 'imageBlock' && yxml.nodeName !== 'fileBlock') return false
+      return yxml.getAttribute('src') === src
+    })
+    for (const node of Array.from(walker)) {
+      ;(node as XmlElement).setAttribute('src', hostedSrc)
+    }
+  })
+}
+
 export const fetchUserIdsInSameMeeting = async (documentName: string): Promise<string[]> => {
   const conn = await hocuspocus.openDirectConnection(documentName, {})
   // Always disconnect: a DirectConnection has no idle-timeout safety net, so a skipped
@@ -150,16 +172,24 @@ export const updateUserMention = async (
   })
 }
 
-export const replacePageContent = async (documentName: string, payload: {content: JSONContent}) => {
-  const {content} = payload
-  await withDoc(documentName, (doc) => {
-    doc.transact(() => {
-      const frag = doc.getXmlFragment('default')
-      if (frag.length > 0) {
-        frag.delete(0, frag.length)
-      }
+export const replacePageContent = async (
+  documentName: string,
+  payload: {content: JSONContent; userId: string}
+) => {
+  const {content, userId} = payload
+  await withDoc(
+    documentName,
+    (doc) => {
+      // build first: invalid content throws here, before the page is emptied
       const tempDoc = TiptapTransformer.toYdoc(content, 'default', serverTipTapExtensions)
-      applyUpdate(doc, encodeStateAsUpdate(tempDoc))
-    })
-  })
+      doc.transact(() => {
+        const frag = doc.getXmlFragment('default')
+        if (frag.length > 0) {
+          frag.delete(0, frag.length)
+        }
+        applyUpdate(doc, encodeStateAsUpdate(tempDoc))
+      })
+    },
+    {userId}
+  )
 }

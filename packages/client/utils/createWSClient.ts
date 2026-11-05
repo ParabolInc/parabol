@@ -1,8 +1,24 @@
-import {type Client, createClient} from 'graphql-ws'
+import {type Client, CloseCode, createClient} from 'graphql-ws'
 import ms from 'ms'
 import {commitLocalUpdate} from 'relay-runtime'
 import type Atmosphere from '../Atmosphere'
+import {addBreadcrumb} from './clientBreadcrumbs'
+import {isClientOutdated, setConnectedServerVersion} from './connectedServerVersion'
+import getTabSessionId from './getTabSessionId'
 import createProxyRecord from './relay/createProxyRecord'
+import {reportClientWarning} from './reportClientError'
+
+// a server or protocol failure, unlike a dropped network, a page leaving or a rejected session
+const FAILURE_CLOSE_CODES = new Set<number>([
+  1011,
+  CloseCode.InternalServerError,
+  CloseCode.InternalClientError,
+  CloseCode.BadRequest,
+  CloseCode.BadResponse,
+  CloseCode.ConnectionAcknowledgementTimeout,
+  CloseCode.SubscriberAlreadyExists,
+  CloseCode.TooManyInitialisationRequests
+])
 
 const setConnectedStatus = (atmosphere: Atmosphere, isConnected: boolean) => {
   commitLocalUpdate(atmosphere, (store) => {
@@ -60,6 +76,7 @@ export function createWSClient(atmosphere: Atmosphere) {
     let timedOut: number
     const subscriptionClient = createClient({
       lazy: false,
+      connectionParams: () => ({sessionId: getTabSessionId()}),
       generateID: () => {
         return String(nextId++)
       },
@@ -83,22 +100,20 @@ export function createWSClient(atmosphere: Atmosphere) {
           }
         },
         connected: async (_socket, payload, _wasRetry) => {
+          addBreadcrumb('websocket', 'connected')
           const {version} = payload as {
             version: string
           }
           const isNewVersion = version !== __APP_VERSION__
-          if (isNewVersion) {
+          setConnectedServerVersion(version)
+          if (isClientOutdated() && 'serviceWorker' in navigator) {
             // Safari is not ready immediately after a refresh and getRegistration() will return null, so wait till ready for the update
             // ready will wait indefinitely if the service worker is not registered, so do not await
+            // The new worker caches the new build, so the quiet reload is quick
             navigator.serviceWorker.ready.then((registration) => {
-              registration
-                ?.update()
-                .then(() => {
-                  console.log(`Service worker updated from ${__APP_VERSION__} to ${version}`)
-                })
-                .catch((error) => {
-                  console.error('Error updating service worker:', error)
-                })
+              registration.update().catch((error) => {
+                console.error('Error updating service worker:', error)
+              })
             })
           }
           if (abruptlyClosed) {
@@ -119,12 +134,17 @@ export function createWSClient(atmosphere: Atmosphere) {
         },
         closed: (event) => {
           const {code, reason} = event as CloseEvent
+          const closedMessage = `closed ${code} ${reason}`.trim()
+          addBreadcrumb('websocket', closedMessage)
+          if (FAILURE_CLOSE_CODES.has(code)) {
+            reportClientWarning('WebSocketCloseError', closedMessage)
+          }
           // This code is sent from wsHandler.onConnect on the server
           if (code === 4403) {
             atmosphere.invalidateSession(reason)
           }
           if (!hasConnected) {
-            console.error('Could not connect via WebSocket', event)
+            console.warn('Could not connect via WebSocket', event)
             reject(event)
           }
           // non-1000 close codes are abrupt closes

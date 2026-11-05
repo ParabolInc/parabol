@@ -1,0 +1,60 @@
+import reportClientError, {
+  describeReason,
+  flushClientErrors,
+  isReportedError
+} from './reportClientError'
+
+// browsers report the first two with no error object to look into, and a failed service worker update retries on its own
+const IGNORED_MESSAGES = ['ResizeObserver loop', 'Script error', 'Failed to update a ServiceWorker']
+
+const isIgnoredMessage = (message: string | undefined) =>
+  IGNORED_MESSAGES.some((ignored) => message?.includes(ignored))
+
+const describeConsoleArg = (arg: unknown) => {
+  if (arg instanceof Error) return arg.message
+  return typeof arg === 'string' ? arg : describeReason(arg)
+}
+
+const reportConsoleError = (args: unknown[]) => {
+  const message = args.map(describeConsoleArg).join(' ')
+  if (isIgnoredMessage(message)) return
+  const cause = args.find((arg): arg is Error => arg instanceof Error)
+  // React logs an error a boundary caught before the boundary reports it with its component stack
+  queueMicrotask(() => {
+    if (cause && isReportedError(cause)) return
+    if (cause && args.length === 1) {
+      reportClientError(cause)
+      return
+    }
+    const error = new Error(message)
+    error.name = cause?.name ?? 'ConsoleError'
+    if (cause) {
+      error.stack = cause.stack
+    }
+    reportClientError(error)
+  })
+}
+
+const registerClientErrorHandlers = () => {
+  window.addEventListener('error', (event) => {
+    if (isIgnoredMessage(event.message)) return
+    reportClientError(event.error ?? event.message)
+  })
+  window.addEventListener('unhandledrejection', (event) => {
+    reportClientError(event.reason)
+  })
+  window.addEventListener('pagehide', flushClientErrors)
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') flushClientErrors()
+  })
+  // development logs React's warnings with console.error
+  if (__PRODUCTION__) {
+    const consoleError = console.error
+    console.error = (...args: unknown[]) => {
+      consoleError(...args)
+      reportConsoleError(args)
+    }
+  }
+}
+
+export default registerClientErrorHandlers

@@ -15,6 +15,7 @@ import {MAX_REQUEST_TIME} from 'parabol-client/utils/constants'
 import fetchWithRetry from './fetchWithRetry'
 import {generateJiraExtraFields} from './generateJiraExtraFields'
 import {Logger} from './Logger'
+import {readThirdPartyResponse, ThirdPartyResponseError} from './ThirdPartyResponseError'
 
 export interface JiraUser {
   self: string
@@ -300,6 +301,10 @@ interface JiraPageBean<T> {
 
 export type JiraScreensResponse = JiraPageBean<JiraScreen>
 
+export class JiraNoAccessResponseError extends Error {
+  name = 'JiraNoAccessResponseError'
+}
+
 class AtlassianServerManager extends AtlassianManager {
   fetch = fetch
 
@@ -313,8 +318,8 @@ class AtlassianServerManager extends AtlassianManager {
       const {headers} = res
       const contentType = headers.get('content-type') || ''
       if (!contentType.includes('application/json')) {
-        await res.body?.cancel()
-        return new Error('Received non-JSON Atlassian Response')
+        const response = await readThirdPartyResponse('jira', res, {url})
+        return new ThirdPartyResponseError('Received non-JSON Atlassian Response', response)
       }
       const json = (await res.json()) as AtlassianError | JiraNoAccessError | JiraGetError | T
       if ('message' in json) {
@@ -324,7 +329,7 @@ class AtlassianServerManager extends AtlassianManager {
         return new Error(json.message)
       }
       if (isJiraNoAccessError(json)) {
-        return new Error(json.errorMessages[0])
+        return new JiraNoAccessResponseError(json.errorMessages[0])
       }
       return json as T
     } catch (error) {
@@ -342,6 +347,10 @@ class AtlassianServerManager extends AtlassianManager {
         body: JSON.stringify(payload),
         deadline
       })
+      if (!(res.headers.get('content-type') || '').includes('application/json')) {
+        const response = await readThirdPartyResponse('jira', res, {method: 'POST', url})
+        return new ThirdPartyResponseError('Received non-JSON Atlassian Response', response)
+      }
       const json = (await res.json()) as
         | AtlassianError
         | JiraNoAccessError

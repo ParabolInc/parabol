@@ -120,12 +120,12 @@ test('Access propagates to linked children', async () => {
             users: expect.toIncludeSameMembers([
               {
                 user: {
-                  id: `preview:${user1.userId}`
+                  id: user1.userId
                 }
               },
               {
                 user: {
-                  id: `preview:${user2.userId}`
+                  id: user2.userId
                 }
               }
             ])
@@ -154,7 +154,7 @@ test('Access propagates to linked children', async () => {
             teams: [
               {
                 team: {
-                  id: `preview:${user1.teamId}`
+                  id: user1.teamId
                 }
               }
             ]
@@ -183,7 +183,7 @@ test('Access propagates to linked children', async () => {
             organizations: [
               {
                 organization: {
-                  id: `preview:${user1.orgId}`
+                  id: user1.orgId
                 }
               }
             ]
@@ -220,7 +220,7 @@ test('Access propagates to linked children', async () => {
     }
   })
 
-  const pageUpdatesGlobal = await sendPublic({
+  const publicOwnerError = await sendPublic({
     query: UPDATE_PAGE_ACCESS,
     variables: {
       pageId: parentPageId,
@@ -231,12 +231,27 @@ test('Access propagates to linked children', async () => {
     cookie
   })
 
+  expect(publicOwnerError).toMatchObject({
+    errors: [{message: 'A public link cannot grant ownership'}]
+  })
+
+  const pageUpdatesGlobal = await sendPublic({
+    query: UPDATE_PAGE_ACCESS,
+    variables: {
+      pageId: parentPageId,
+      subjectType: 'external',
+      subjectId: '*',
+      role: 'editor'
+    },
+    cookie
+  })
+
   expect(pageUpdatesGlobal).toMatchObject({
     data: {
       updatePageAccess: {
         page: {
           access: {
-            public: 'owner'
+            public: 'editor'
           }
         }
       }
@@ -289,18 +304,18 @@ test('Access propagates to linked children', async () => {
                 email: 'foo@example.com'
               }
             ],
-            public: 'owner',
+            public: 'editor',
             organizations: [
               {
                 organization: {
-                  id: `preview:${user1.orgId}`
+                  id: user1.orgId
                 }
               }
             ],
             teams: [
               {
                 team: {
-                  id: `preview:${user1.teamId}`
+                  id: user1.teamId
                 }
               }
             ]
@@ -352,7 +367,7 @@ test('Revoking access unlinks children', async () => {
       pageId: parentPageId,
       subjectType: 'external',
       subjectId: '*',
-      role: 'owner'
+      role: 'editor'
     },
     cookie
   })
@@ -363,7 +378,7 @@ test('Revoking access unlinks children', async () => {
       pageId: childPageId,
       subjectType: 'external',
       subjectId: '*',
-      role: 'editor'
+      role: 'commenter'
     },
     cookie
   })

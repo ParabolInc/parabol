@@ -6,7 +6,6 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
 import JoinTeamMutation from '../../mutations/JoinTeamMutation'
 import {Button} from '../../ui/Button/Button'
-import SendClientSideEvent from '../../utils/SendClientSideEvent'
 
 type Props = {
   teamRef: PublicTeamItem_team$key
@@ -30,7 +29,6 @@ const PublicTeamItem = (props: Props) => {
 
   const handleJoinTeam = (teamId: string) => {
     if (!teamId) return
-    SendClientSideEvent(atmosphere, 'Joined public team', {teamId})
     JoinTeamMutation(
       atmosphere,
       {teamId},

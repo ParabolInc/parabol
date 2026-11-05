@@ -34,7 +34,7 @@ const cardValueClassName =
 
 interface Props {
   scaleValue: PokerCard_scaleValue$key
-  deckRef: RefObject<HTMLDivElement>
+  deckRef: RefObject<HTMLDivElement | null>
   idx: number
   isCollapsed: boolean
   isSelected: boolean

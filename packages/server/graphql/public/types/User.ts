@@ -1,4 +1,3 @@
-import base64url from 'base64url'
 import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import ms from 'ms'
@@ -16,7 +15,10 @@ import {
   MAX_RESULT_GROUP_SIZE
 } from '../../../../client/utils/constants'
 import groupReflections from '../../../../client/utils/smartGroup/groupReflections'
-import {activeEmbeddingModelId} from '../../../../embedder/activeEmbeddingModel'
+import {
+  activeEmbeddingDefinition,
+  activeEmbeddingModelId
+} from '../../../../embedder/activeEmbeddingModel'
 import {getEmbeddingsTableName} from '../../../../embedder/getEmbeddingsTableName'
 import {numberVectorToString} from '../../../../embedder/indexing/numberVectorToString'
 import type MeetingTemplate from '../../../database/types/MeetingTemplate'
@@ -32,7 +34,6 @@ import type {FeatureFlagName} from '../../../utils/featureFlags'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import getMonthlyStreak from '../../../utils/getMonthlyStreak'
 import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
-import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
 import getUserDetail from '../../../utils/getUserDetail'
 import {getUserSocketCount} from '../../../utils/getUserSocketCount'
 import logError from '../../../utils/logError'
@@ -49,10 +50,9 @@ import {invoices} from '../fields/invoices'
 import {pageInsights} from '../fields/pageInsights'
 import {pages} from '../fields/pages'
 import {search} from '../fields/search'
-import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
 import type {ReqResolvers} from './ReqResolvers'
 
-const SIMILARITY_THRESHOLD = 0.5
+const TEMPLATE_SEARCH_LIMIT = 12
 
 const getValidUserIds = async (
   userIds: null | string[] | undefined,
@@ -792,6 +792,8 @@ const User: ReqResolvers<'User'> = {
     // all team ids which could have accessible templates
     const allTeamIds = ['aGhostTeam', ...allOrgTeams.map(({id}) => id)]
 
+    if (!activeEmbeddingDefinition) return []
+    const {templateSearchFloor, templateSearchGap} = activeEmbeddingDefinition
     const vector = await publishToEmbedder({
       jobType: 'userQuery:start',
       data: getUserQueryJobData(search),
@@ -802,7 +804,7 @@ const User: ReqResolvers<'User'> = {
 
     const pg = getKysely()
     const tableName = getEmbeddingsTableName(activeEmbeddingModelId)
-    const similarEmbeddings = await pg
+    const similarTemplates = await pg
       .with('Model', (qc) =>
         qc
           .selectFrom(tableName)
@@ -830,33 +832,27 @@ const User: ReqResolvers<'User'> = {
           ])
       )
       .selectFrom('CosineSimilarity')
-      .select(['embeddingId', 'similarity', 'embeddingsMetadataId', 'refId'])
-      .where('similarity', '>=', SIMILARITY_THRESHOLD)
+      .select(({fn}) => ['refId', fn.max('similarity').as('similarity')])
+      .where('similarity', '>=', templateSearchFloor)
+      .groupBy('refId')
       .orderBy('similarity', 'desc')
       .execute()
 
-    const aiActivityIds = similarEmbeddings.map(({refId}) => refId)
-
     // TODO filter out seasonal templates
-    const activities = await dataLoader.get('meetingTemplates').loadMany(aiActivityIds)
-    const accessibleActivities = activities.filter(isValid).filter((activity) => {
-      return activity.scope !== 'TEAM' || teamIds.includes(activity.teamId)
+    const activities = await dataLoader
+      .get('meetingTemplates')
+      .loadMany(similarTemplates.map(({refId}) => refId))
+    const accessibleMatches = similarTemplates.flatMap(({similarity}, idx) => {
+      const activity = activities[idx]
+      if (!isValid(activity)) return []
+      if (activity.scope === 'TEAM' && !teamIds.includes(activity.teamId)) return []
+      return [{activity, similarity}]
     })
-    return accessibleActivities
-  },
-  parseSAMLMetadata: async (_source, {metadataURL, domain}) => {
-    const metadata = await getSSOMetadataFromURL(metadataURL)
-    if (metadata instanceof Error) return {error: {message: metadata.message}}
-    const baseUrl = getSignOnURL(metadata, domain)
-    if (baseUrl instanceof Error) {
-      return {error: {message: baseUrl.message}}
-    }
-    // append the new metadataURL to the RelayState
-    // The IdP will forward this to us and our SAMLHandler/loginSAML will use this instead of what's in the DB
-    const relayState = base64url.encode(JSON.stringify({metadataURL}))
-    const urlObj = new URL(baseUrl)
-    urlObj.searchParams.append('RelayState', relayState)
-    return {url: urlObj.toString()}
+    const floor = (accessibleMatches[0]?.similarity ?? 0) - templateSearchGap
+    return accessibleMatches
+      .filter(({similarity}) => similarity >= floor)
+      .slice(0, TEMPLATE_SEARCH_LIMIT)
+      .map(({activity}) => activity)
   },
   samlIdP: async ({email}, _args, {dataLoader}) => {
     return getSAMLURLFromEmail(email, dataLoader)

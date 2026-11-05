@@ -15,8 +15,8 @@ const StartMeetingFAB = (props: Props) => {
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const navigate = useNavigate()
   const [isExpanded, setIsExpanded] = useState(true)
-  const hoverTimerId = useRef<number | undefined>()
-  const initTimerId = useRef<number | undefined>()
+  const hoverTimerId = useRef<number | undefined>(undefined)
+  const initTimerId = useRef<number | undefined>(undefined)
 
   useEffect(() => {
     if (!isDesktop) {

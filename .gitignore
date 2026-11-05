@@ -41,3 +41,4 @@ webpack-assets.json
 backups/
 tsconfig.tsbuildinfo
 .playwright-mcp/
+.webpackCache/

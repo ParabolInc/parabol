@@ -1,5 +1,5 @@
 import ms from 'ms'
-import {isAnonymousRespondentCount} from '../../../../client/shared/utils/teamHealthAnonymity'
+import {canShowRespondentDetails} from '../../../../client/shared/utils/teamHealthAnonymity'
 import {isNotNull} from '../../../../client/utils/predicates'
 import {getNewDataLoader} from '../../../dataloader/getNewDataLoader'
 import generateUID from '../../../generateUID'
@@ -89,7 +89,7 @@ const remindTeamHealthResponders = async (mutatorId?: string) => {
         )
       })
       const userById = new Map(users.map((user, idx) => [teamMembers[idx]!.userId, user]))
-      const stragglerNames = isAnonymousRespondentCount(respondentCount)
+      const stragglerNames = canShowRespondentDetails(respondentCount)
         ? stragglerUserIds.map((userId) => userById.get(userId)?.preferredName).filter(isNotNull)
         : []
       IntegrationNotifier.teamHealthResponseReminder(dataLoader, meetingId, teamId, {

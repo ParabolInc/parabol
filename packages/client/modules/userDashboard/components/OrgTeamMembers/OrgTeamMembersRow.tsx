@@ -61,7 +61,7 @@ export const OrgTeamMembersRow = (props: Props) => {
         <div className='inline-flex items-center gap-x-2 font-bold text-fg-primary text-lg'>
           {preferredName}{' '}
           {teamMember.isLead ? (
-            <span className='rounded-full bg-primary px-2 py-0.5 text-white text-xs'>
+            <span className='rounded-full bg-primary px-2 py-0.5 text-white text-xs dark:bg-grape-600'>
               Team Lead
             </span>
           ) : null}

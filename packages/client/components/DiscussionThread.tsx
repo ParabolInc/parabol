@@ -11,7 +11,7 @@ import DiscussionThreadList, {type DiscussionThreadables} from './DiscussionThre
 import {isLocalPoll} from './Poll/local/newPoll'
 
 interface Props {
-  meetingContentRef?: RefObject<HTMLDivElement>
+  meetingContentRef?: RefObject<HTMLDivElement | null>
   allowedThreadables: DiscussionThreadables[]
   width?: string
   queryRef: PreloadedQuery<DiscussionThreadQuery>

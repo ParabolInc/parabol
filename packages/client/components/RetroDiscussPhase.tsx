@@ -1,4 +1,3 @@
-import {datadogLogs} from '@datadog/browser-logs'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {RetroDiscussPhase_meeting$key} from '~/__generated__/RetroDiscussPhase_meeting.graphql'
@@ -10,6 +9,7 @@ import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/Edi
 import {Breakpoint, DiscussionThreadEnum} from '../types/constEnums'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import plural from '../utils/plural'
+import reportClientError from '../utils/reportClientError'
 import DiscussionDrawer from './DiscussionDrawer'
 import type {DiscussionThreadables} from './DiscussionThreadList'
 import DiscussPhaseReflectionGrid from './DiscussPhaseReflectionGrid'
@@ -82,7 +82,7 @@ const RetroDiscussPhase = (props: Props) => {
 
   const reflections = reflectionGroup.reflections ?? []
   if (!reflectionGroup.reflections) {
-    datadogLogs.logger.error('NO REFLECTIONS', {reflectionGroupId: reflectionGroup.id})
+    reportClientError(new Error('The discussed reflectionGroup has no reflections'))
   }
 
   return (

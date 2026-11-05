@@ -1,5 +1,4 @@
 import type {MeetingTypeEnum} from '~/__generated__/MeetingSelectorQuery.graphql'
-import useClientSideTrack from '../../hooks/useClientSideTrack'
 import {ExternalLinks} from '../../types/constEnums'
 import {phaseLabelLookup} from '../../utils/meetings/lookups'
 import HelpMenuContent from './HelpMenuContent'
@@ -21,7 +20,6 @@ interface Props {
 const CheckInHelpMenu = (props: Props) => {
   const {onClose} = props
   const {meetingType} = props
-  useClientSideTrack('Help Menu Open', {phase: 'checkin'})
   return (
     <HelpMenuContent onClose={onClose}>
       <HelpMenuHeader>{phaseLabelLookup.checkin}</HelpMenuHeader>

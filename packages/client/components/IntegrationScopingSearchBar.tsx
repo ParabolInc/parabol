@@ -43,8 +43,6 @@ const IntegrationScopingSearchBar = (props: Props) => {
       <ScopingSearchInput
         placeholder={scoping.placeholder(state)}
         queryString={state.queryString}
-        meetingId={meetingId}
-        service={service}
         defaultInput={scoping.defaultQueryString?.(savedQueries)}
         onQueryStringChange={(queryString) => setSearchState({queryString})}
       />

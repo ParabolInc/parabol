@@ -135,7 +135,9 @@ const EndCheckInMutation: StandardMutation<TEndCheckInMutation, NavigateMaybeLoc
       if (onCompleted) {
         onCompleted(res, errors)
       }
-      endCheckInTeamOnNext(res.endCheckIn as any, {atmosphere, navigate})
+      const payload = res.endCheckIn.EndCheckInMutation_team
+      if (!payload) return
+      endCheckInTeamOnNext(payload, {atmosphere, navigate})
     },
     onError
   })

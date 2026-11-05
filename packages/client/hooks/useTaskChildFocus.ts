@@ -18,7 +18,7 @@ const useTaskChildFocus = (taskId: string) => {
   const atmosphere = useAtmosphere()
   const [editingChildNameRef, setEditingChildName] = useRefState('')
   const lastIsEditingRef = useRef(false)
-  const queueTimerRef = useRef<number | undefined>()
+  const queueTimerRef = useRef<number | undefined>(undefined)
   useEffect(() => {
     return () => {
       window.clearTimeout(queueTimerRef.current)

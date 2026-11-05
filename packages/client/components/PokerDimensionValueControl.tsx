@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
-import {type Dispatch, type MutableRefObject, type SetStateAction, useRef} from 'react'
+import {type Dispatch, type RefObject, type SetStateAction, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
@@ -24,7 +24,7 @@ interface Props {
   onError: (error: Error) => void
   onSubmitScore: () => void
   isStale: boolean
-  isLocallyValidatedRef: MutableRefObject<boolean>
+  isLocallyValidatedRef: RefObject<boolean>
   setCardScore: Dispatch<SetStateAction<string>>
   cardScore: string
 }

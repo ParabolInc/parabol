@@ -265,11 +265,22 @@ function transformNode(node: AdfNode): TipTapContentNode | TipTapContentNode[] |
 
     case 'hardBreak':
       return null // only meaningful inside inline content; drop at block level
+    // Attachments have no text to keep and can't be rendered here — drop them.
     case 'mediaSingle':
     case 'media':
     case 'mediaGroup':
+      return null
+
     case 'blockCard':
-    case 'embedCard':
+    case 'embedCard': {
+      const url = node.attrs?.url
+      if (typeof url !== 'string' || !url) return null
+      return {
+        type: 'paragraph',
+        content: [{type: 'text', text: url, marks: [{type: 'link', attrs: {href: url}}]}]
+      }
+    }
+
     default:
       throw new Error(`[convertADFToTipTap] Unsupported ADF node type: "${node.type}"`)
   }

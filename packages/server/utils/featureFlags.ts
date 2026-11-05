@@ -44,6 +44,15 @@ export const FEATURE_FLAGS = {
     createdAt: new Date('2026-07-27T00:00:00+00:00'),
     updatedAt: new Date('2026-07-27T00:00:00+00:00'),
     isPublic: false
+  },
+  Reports: {
+    featureName: 'Reports',
+    scope: 'Organization',
+    description: 'Org-wide reports on people, meetings and tasks',
+    expiresAt: new Date('2027-10-20T00:00:00+00:00'),
+    createdAt: new Date('2026-10-20T00:00:00+00:00'),
+    updatedAt: new Date('2026-10-20T00:00:00+00:00'),
+    isPublic: false
   }
 } as const satisfies Record<string, FeatureFlag>
 

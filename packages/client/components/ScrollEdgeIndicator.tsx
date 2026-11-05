@@ -4,7 +4,7 @@ import {DragAttribute} from '../types/constEnums'
 import {cn} from '../ui/cn'
 
 interface Props {
-  scrollRef: RefObject<HTMLElement>
+  scrollRef: RefObject<HTMLElement | null>
   similarGroupIds: ReadonlySet<string>
 }
 

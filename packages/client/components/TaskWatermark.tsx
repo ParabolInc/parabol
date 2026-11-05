@@ -1,5 +1,5 @@
 import type React from 'react'
-import type {IntegrationProviderServiceEnum} from '../__generated__/CreateTaskIntegrationMutation.graphql'
+import type {TaskServiceEnum} from '../__generated__/CreateTaskMutation.graphql'
 import {
   getClientIntegration,
   isRegisteredClientIntegration
@@ -18,7 +18,7 @@ const WatermarkSVG = ({Icon, className}: WatermarkSVGProps) => (
 )
 
 interface Props {
-  service: IntegrationProviderServiceEnum | null | undefined
+  service: TaskServiceEnum | null | undefined
 }
 
 const TaskWatermark = (props: Props) => {

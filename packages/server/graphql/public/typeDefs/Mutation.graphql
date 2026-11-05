@@ -258,6 +258,21 @@ type Mutation {
   ): DisconnectSAMLSuccess! @scope(name: ORGS_WRITE)
 
   """
+  Start replacing a SAML identity provider's metadata. Nothing is saved until the requesting org admin signs in through the returned URL
+  """
+  requestSAMLMetadataChange(
+    """
+    The SAML identity provider whose metadata will change
+    """
+    samlId: ID!
+
+    """
+    URL of a blob of XML from the IdP describing how to handle authentication
+    """
+    metadataURL: String!
+  ): RequestSAMLMetadataChangeSuccess! @scope(name: ORGS_WRITE)
+
+  """
   Create a new reflection
   """
   createReflection(input: CreateReflectionInput!): CreateReflectionPayload
@@ -529,11 +544,11 @@ type Mutation {
   invalidateSessions: InvalidateSessionsPayload! @scope(name: USERS_WRITE)
 
   """
-  Send a team invitation to an email address
+  Email team invitations. Each address gets its own result, so one bad address never blocks the rest
   """
   inviteToTeam(
     """
-    the specific meeting where the invite occurred, if any
+    the specific meeting where the invite occurred, if any. Must belong to the team
     """
     meetingId: ID
 
@@ -541,8 +556,12 @@ type Mutation {
     The id of the inviting team
     """
     teamId: ID!
+
+    """
+    Up to 50 addresses
+    """
     invitees: [Email!]!
-  ): InviteToTeamPayload! @scope(name: TEAMS_WRITE)
+  ): InviteToTeamSuccess! @scope(name: TEAMS_WRITE)
 
   """
   Generate AI inspiration items from a user's recent work in a Your Work integration
@@ -982,7 +1001,7 @@ type Mutation {
     errorMessage: String!
     "What the user was doing when the error happened"
     content: String!
-    "Client-generated UUID correlating this feedback with Datadog RUM"
+    "Client-generated UUID correlating this feedback with the client error report that carries the same eventId"
     eventId: ID!
     "Contact email; only used when the submitter is not authenticated"
     email: String
@@ -1518,16 +1537,6 @@ type Mutation {
     """
     questionId: ID!
   ): DeleteTeamHealthQuestionSuccess! @scope(name: TEMPLATES_WRITE)
-
-  """
-  Deactivate a user's billing seat. The user can still log in and will be automatically reactivated when they do.
-  """
-  inactivateUser(
-    """
-    the user to pause
-    """
-    userId: ID!
-  ): InactivateUserPayload @scope(name: USERS_WRITE)
 
   """
   Add the requesting user to multiple selected teams on the organization's domain
@@ -2543,4 +2552,110 @@ type Mutation {
     """
     autoAssignFacilitator: Boolean
   ): UpdateFacilitatorRotationSuccess! @scope(name: MEETINGS_WRITE)
+
+  """
+  Ask AI to turn a question about the organization into a report
+  """
+  askReportQuestion(
+    orgId: ID!
+
+    """
+    The question, in the viewer's own words
+    """
+    question: String!
+
+    """
+    The IANA time zone that dates in the question are read in
+    """
+    timeZone: String!
+  ): AskReportQuestionSuccess! @scope(name: REPORTS_WRITE)
+
+  """
+  Keep a popular question the viewer picked, or a recent one they opened again, at the top of their recent questions
+  """
+  logReportQuestionUse(
+    orgId: ID!
+
+    """
+    The key of the popular question picked
+    """
+    popularQuestionKey: String
+
+    """
+    The id of the recent question opened again
+    """
+    reportQuestionId: ID
+
+    """
+    With reportQuestionId, the report as the viewer changed it. Without, a report they built
+    """
+    spec: ReportSpecInput
+
+    """
+    The name of a report the viewer built, or of a recent report as they changed it
+    """
+    title: String
+  ): LogReportQuestionUseSuccess! @scope(name: REPORTS_WRITE)
+
+  """
+  Say whether the report AI made for one of the viewer's questions answered it
+  """
+  rateReportQuestion(
+    orgId: ID!
+    reportQuestionId: ID!
+
+    """
+    Null clears the rating
+    """
+    rating: ReportQuestionRatingEnum
+  ): RateReportQuestionSuccess! @scope(name: REPORTS_WRITE)
+
+  """
+  Pin a report to the organization's Reports page, for everyone who can see Reports
+  """
+  pinReport(
+    orgId: ID!
+    spec: ReportSpecInput!
+
+    """
+    The name the pin shows
+    """
+    title: String!
+
+    """
+    The viewer's recent question the report came from, so the pin keeps what was asked
+    """
+    reportQuestionId: ID
+  ): PinReportSuccess! @scope(name: REPORTS_WRITE)
+
+  """
+  Take a report off the organization's Reports page. Org admins and billing leaders can
+  """
+  unpinReport(orgId: ID!, pinId: ID!): UnpinReportSuccess! @scope(name: REPORTS_WRITE)
+
+  """
+  Move a pin on the organization's Reports page. Org admins and billing leaders can
+  """
+  movePinnedReport(
+    orgId: ID!
+    pinId: ID!
+
+    """
+    The pin's new place, counting from 0
+    """
+    toIndex: Int!
+  ): MovePinnedReportSuccess! @scope(name: REPORTS_WRITE)
+
+  """
+  Set the levels an organization groups its teams by in Reports. Levels and values keep their ids and take the
+  order given; any left out are removed, and teams placed in them become not set. Org admins and billing leaders can
+  """
+  setOrgStructure(orgId: ID!, levels: [OrgStructureLevelInput!]!): SetOrgStructureSuccess!
+    @scope(name: ORGS_WRITE)
+
+  """
+  Place a team at a value of an org structure level, or leave it not set with no value. Org admins and billing
+  leaders can
+  """
+  placeTeam(teamId: ID!, levelId: ID!, valueId: ID): PlaceTeamSuccess! @scope(name: ORGS_WRITE)
 }

@@ -4,7 +4,6 @@ import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import getKysely from '../../../postgres/getKysely'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
-import sendPokerMeetingRevoteEvent from '../../mutations/helpers/sendPokerMeetingRevoteEvent'
 import type {MutationResolvers} from '../resolverTypes'
 
 const pokerResetDimension: MutationResolvers['pokerResetDimension'] = async (
@@ -24,7 +23,7 @@ const pokerResetDimension: MutationResolvers['pokerResetDimension'] = async (
   if (meeting.meetingType !== 'poker') {
     return {error: {message: 'Not a poker meeting'}}
   }
-  const {endedAt, phases, teamId} = meeting
+  const {endedAt, phases} = meeting
   if (endedAt) {
     return {error: {message: 'Meeting has ended'}}
   }
@@ -44,9 +43,7 @@ const pokerResetDimension: MutationResolvers['pokerResetDimension'] = async (
 
   // RESOLUTION
   Object.assign(stage, {isVoting: true, scores: []})
-  const [meetingMembers, teamMembers] = await Promise.all([
-    dataLoader.get('meetingMembersByMeetingId').load(meetingId),
-    dataLoader.get('teamMembersByTeamId').load(teamId),
+  await Promise.all([
     pg
       .updateTable('NewMeeting')
       .set({
@@ -64,8 +61,6 @@ const pokerResetDimension: MutationResolvers['pokerResetDimension'] = async (
       .execute()
   ])
   dataLoader.clearAll('newMeetings')
-
-  sendPokerMeetingRevoteEvent(meeting, teamMembers, meetingMembers, dataLoader)
 
   const data = {meetingId, stageId}
   publish(SubscriptionChannel.MEETING, meetingId, 'PokerResetDimensionSuccess', data, subOptions)

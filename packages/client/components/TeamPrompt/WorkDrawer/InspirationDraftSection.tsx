@@ -10,8 +10,6 @@ import type {WorkDrawerPrompt} from './WorkDrawerConsumeContext'
 
 interface Props {
   draft: InspirationDraft | null
-  meetingId: string
-  teamId: string
   prompts: readonly WorkDrawerPrompt[]
   composer: TeamPromptComposerApi
   drafting: boolean
@@ -28,7 +26,7 @@ const parseContent = (raw: string): JSONContent => {
 }
 
 const InspirationDraftSection = (props: Props) => {
-  const {draft, meetingId, teamId, prompts, composer, drafting, error} = props
+  const {draft, prompts, composer, drafting, error} = props
   const shownDraft = drafting ? null : draft
   const items = (shownDraft?.items ?? []).map(({id, content, promptId}) => ({
     id,
@@ -71,13 +69,7 @@ const InspirationDraftSection = (props: Props) => {
           </p>
         )}
         {items.length > 0 && (
-          <InspirationDraftList
-            items={items}
-            prompts={prompts}
-            meetingId={meetingId}
-            teamId={teamId}
-            composer={composer}
-          />
+          <InspirationDraftList items={items} prompts={prompts} composer={composer} />
         )}
         <InspirationUnusedIssues issues={unusedIssues} />
       </div>

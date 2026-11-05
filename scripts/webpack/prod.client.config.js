@@ -9,6 +9,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const getCommitHash = require('./utils/getCommitHash')
 const getProjectRoot = require('./utils/getProjectRoot')
 const IncrementalMinChunkSizePlugin = require('./utils/IncrementalMinChunkSizePlugin')
+const persistentCache = require('./utils/persistentCache')
 const ServiceWorkerPlugin = require('./utils/ServiceWorkerPlugin')
 const swcLoader = require('./utils/swcLoader')
 
@@ -31,6 +32,7 @@ module.exports = (config) => {
     __COMMIT_HASH__: JSON.stringify(getCommitHash())
   }
   return {
+    ...persistentCache(`client-minimize-${minimize}-sourceMaps-${sourceMaps}`, __filename),
     stats: {
       assets: false
     },

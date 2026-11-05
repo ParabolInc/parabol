@@ -1,7 +1,11 @@
 import {createRoot} from 'react-dom/client'
 import Root from './Root'
 import './scrollIntoViewIfNeeded'
+import registerClientErrorHandlers from './utils/registerClientErrorHandlers'
+import retryChunkLoadErrorOnce from './utils/retryChunkLoadErrorOnce'
 
+registerClientErrorHandlers()
+retryChunkLoadErrorOnce()
 const container = document.getElementById('root')!
 createRoot(container).render(<Root />)
 // Browsers refuse a service worker from a self-signed certificate & log an error on every page load,

@@ -28,7 +28,7 @@ export const hardDeleteUser = async ({
 
   try {
     if (category === 'managed') {
-      await hardDeleteUserHelper(user, 'Deleted via SCIM', dataLoader)
+      await hardDeleteUserHelper(user, dataLoader)
       return
     }
 

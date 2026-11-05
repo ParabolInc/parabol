@@ -25,7 +25,6 @@ interface Props {
   issueCount: number | undefined
   isCounting: boolean
   canDraft: boolean
-  meetingId: string
   settings: InspirationSourceSettings
   setSettings: (update: (prev: InspirationSourceSettings) => InspirationSourceSettings) => void
   teamMemberRef: InspirationSourcePopover_teamMember$key
@@ -38,7 +37,6 @@ const InspirationSourcePopover = (props: Props) => {
     issueCount,
     isCounting,
     canDraft,
-    meetingId,
     settings,
     setSettings,
     teamMemberRef
@@ -144,11 +142,7 @@ const InspirationSourcePopover = (props: Props) => {
         </>
       ) : (
         service !== 'PARABOL' && (
-          <InspirationSourceConnectButton
-            service={service}
-            meetingId={meetingId}
-            teamMemberRef={teamMember}
-          />
+          <InspirationSourceConnectButton service={service} teamMemberRef={teamMember} />
         )
       )}
     </div>

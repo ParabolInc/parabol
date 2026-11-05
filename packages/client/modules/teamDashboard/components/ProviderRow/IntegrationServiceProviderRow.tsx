@@ -18,7 +18,6 @@ import {
   getClientIntegration,
   isRegisteredClientIntegration
 } from '../../../../integrations/platform/registry'
-import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 import ConnectButton from './ConnectButton'
 import ContactUsButton from './ContactUsButton'
 import IntegrationServiceConfigMenu from './IntegrationServiceConfigMenu'
@@ -84,12 +83,7 @@ const IntegrationServiceProviderRow = (props: Props) => {
           description={description}
           connected={false}
           configMenu={null}
-          connectButton={
-            <ContactUsButton
-              contactUsUrl={contactUs.url}
-              onContactUsSubmit={() => SendClientSideEvent(atmosphere, contactUs.clickEvent)}
-            />
-          }
+          connectButton={<ContactUsButton contactUsUrl={contactUs.url} />}
         />
       </ProviderRowShell>
     )

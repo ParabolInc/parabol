@@ -1,5 +1,7 @@
-import {isAnonymousRespondentCount} from '../../../../client/shared/utils/teamHealthAnonymity'
+import {canShowRespondentDetails} from '../../../../client/shared/utils/teamHealthAnonymity'
 import type {TeamHealthResultStage as TeamHealthResultStageDB} from '../../../postgres/types/NewMeetingPhase'
+import getTeamHealthDisplayComment from '../../../utils/getTeamHealthDisplayComment'
+import isTeamHealthSummaryLoading from '../../../utils/isTeamHealthSummaryLoading'
 import type {DataLoaderWorker} from '../../graphql'
 import getTeamHealthResultScore from '../../mutations/helpers/getTeamHealthResultScore'
 import type {TeamHealthResultStageResolvers} from '../resolverTypes'
@@ -14,6 +16,19 @@ export type TeamHealthResultStageSource = TeamHealthResultStageDB & {
 const isRevealed = async (meetingId: string, dataLoader: DataLoaderWorker) => {
   const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
   return !!meeting.endedAt
+}
+
+const getCategorySummary = async (
+  meetingId: string,
+  questionId: number,
+  dataLoader: DataLoaderWorker
+) => {
+  if (!(await isRevealed(meetingId, dataLoader))) return null
+  const [question, categorySummaries] = await Promise.all([
+    dataLoader.get('teamHealthQuestions').loadNonNull(questionId),
+    dataLoader.get('teamHealthCategorySummariesByMeetingId').load(meetingId)
+  ])
+  return categorySummaries.find(({categoryId}) => categoryId === question.categoryId) ?? null
 }
 
 const TeamHealthResultStage: TeamHealthResultStageResolvers = {
@@ -43,12 +58,31 @@ const TeamHealthResultStage: TeamHealthResultStageResolvers = {
     const scores = responses.flatMap((response) =>
       response.questionId === questionId && response.score !== null ? [response.score] : []
     )
-    return isAnonymousRespondentCount(scores.length) ? scores : null
+    return canShowRespondentDetails(scores.length) ? scores : null
   },
   responses: async ({meetingId, questionId}, _args, {dataLoader}) => {
     if (!(await isRevealed(meetingId, dataLoader))) return []
     const responses = await dataLoader.get('teamHealthResponsesByMeetingId').load(meetingId)
     return responses.filter((response) => response.questionId === questionId)
+  },
+  commentCount: async ({meetingId, questionId}, _args, {dataLoader}) => {
+    if (!(await isRevealed(meetingId, dataLoader))) return 0
+    const responses = await dataLoader.get('teamHealthResponsesByMeetingId').load(meetingId)
+    return responses.filter(
+      (response) => response.questionId === questionId && !!getTeamHealthDisplayComment(response)
+    ).length
+  },
+  summary: async ({meetingId, questionId}, _args, {dataLoader}) => {
+    const categorySummary = await getCategorySummary(meetingId, questionId, dataLoader)
+    return categorySummary?.summary ?? null
+  },
+  isLoadingSummary: async ({meetingId, questionId}, _args, {dataLoader}) => {
+    const categorySummary = await getCategorySummary(meetingId, questionId, dataLoader)
+    return !!categorySummary && isTeamHealthSummaryLoading(categorySummary)
+  },
+  sentimentScore: async ({meetingId, questionId}, _args, {dataLoader}) => {
+    const categorySummary = await getCategorySummary(meetingId, questionId, dataLoader)
+    return categorySummary?.sentimentScore ?? null
   },
   isAsync: () => true
 }

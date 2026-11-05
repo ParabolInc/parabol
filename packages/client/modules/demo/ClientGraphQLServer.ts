@@ -1681,8 +1681,18 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {endRetrospective: data}
     },
-    InviteToTeamMutation: ({invitees}: any) => {
-      return {inviteToTeam: {invitees}}
+    useInviteToTeamMutation: ({invitees}: any) => {
+      return {
+        inviteToTeam: {
+          invitees: (invitees as string[]).map((email) => ({
+            email,
+            status: 'sent',
+            message: null,
+            suggestedEmail: null
+          })),
+          removedSuggestedActionId: null
+        }
+      }
     },
     UpdateCommentContentMutation: (
       {commentId, content}: {commentId: string; content: string},

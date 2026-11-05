@@ -2,6 +2,7 @@ import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import {redisHocusPocus} from '../../../hocusPocus'
 import getKysely from '../../../postgres/getKysely'
+import {updatePageAncestorIds} from '../../../postgres/updatePageAncestorIds'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import {publishPageNotification} from '../../../utils/publishPageNotification'
@@ -26,7 +27,37 @@ const archivePage: MutationResolvers['archivePage'] = async (
   dataLoader.get('pages').clearAll()
   if (page.isMeetingTOC)
     throw new GraphQLError('Meeting Summaries pages cannot be archived or deleted')
+  if (action !== 'archive' && !page.deletedAt) {
+    throw new GraphQLError('Only pages in the trash can be deleted or restored')
+  }
   if (action === 'delete') {
+    // deleting cascades to every sub-page, including restricted ones the viewer may not own
+    const subPageOwnedByOthers = await pg
+      .withRecursive('subtree(id)', (qc) =>
+        qc
+          .selectFrom('Page')
+          .select('id')
+          .where('parentPageId', '=', dbPageId)
+          .union((eb) =>
+            eb
+              .selectFrom('Page as child')
+              .innerJoin('subtree', 'subtree.id', 'child.parentPageId')
+              .select('child.id')
+          )
+      )
+      .selectFrom('subtree')
+      .leftJoin('PageAccess', (join) =>
+        join.onRef('PageAccess.pageId', '=', 'subtree.id').on('PageAccess.userId', '=', viewerId)
+      )
+      .select('subtree.id')
+      .where((eb) =>
+        eb.or([eb('PageAccess.role', 'is', null), eb('PageAccess.role', '!=', 'owner')])
+      )
+      .limit(1)
+      .executeTakeFirst()
+    if (subPageOwnedByOthers) {
+      throw new GraphQLError('This page has sub-pages you do not own, so it cannot be deleted')
+    }
     await pg.deleteFrom('Page').where('id', '=', dbPageId).execute()
   } else if (action === 'archive') {
     await pg
@@ -76,16 +107,15 @@ const archivePage: MutationResolvers['archivePage'] = async (
       .set({
         deletedAt: null,
         deletedBy: null,
-        ancestorIds:
-          parentPageId === null
-            ? page.ancestorIds.filter((id) => id !== page.parentPageId)
-            : undefined,
         parentPageId,
         teamId,
         sortOrder
       })
       .where('id', '=', dbPageId)
       .execute()
+    if (parentPageId === null) {
+      await updatePageAncestorIds(pg, dbPageId)
+    }
     if (parentPageId !== undefined || teamId !== undefined) {
       // anytime the parentPageId or teamId changes make sure the mutator maintains access
       await pg

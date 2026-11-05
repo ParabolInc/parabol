@@ -131,6 +131,10 @@ export const createTaskTaskUpdater: SharedUpdater<CreateTaskMutation_task$data> 
     (rawContent.content.length === 1 && rawContent.content[0]?.text === '')
   const editorPayload = getOptimisticTaskEditor(store, taskId, isEditing)
   handleEditTask(editorPayload, store)
+  // The meeting's task board reads isHighlighted(meetingId), which this payload doesn't select.
+  // If missing, the board suspends until the deferred fields arrive. A new task isn't highlighted
+  const meetingId = task.getValue('meetingId')
+  if (meetingId) task.setValue(false, 'isHighlighted', {meetingId})
   handleUpsertTasks(task, store)
   handleJiraCreateIssue(task, store)
   handleGitHubCreateIssue(task, store)

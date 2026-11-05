@@ -22,7 +22,7 @@ const sourceSectionClass =
 interface Props {
   closeSpotlight: () => void
   meetingRef: SpotlightModal_meeting$key
-  sourceRef: RefObject<HTMLDivElement>
+  sourceRef: RefObject<HTMLDivElement | null>
 }
 
 const SpotlightModal = (props: Props) => {

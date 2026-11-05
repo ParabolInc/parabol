@@ -466,6 +466,15 @@ describe('AzureDevOpsServerManager responses', () => {
     fetchMock.mockResolvedValue(htmlResponse(502))
     const res = await manager.listFields(INSTANCE_ID, WEB_PROJECT_ID)
     expect(res).toHaveProperty('message', 'Azure DevOps returned an unexpected response (502)')
+    expect(res).toHaveProperty('response', {
+      integration: 'azureDevOps',
+      method: 'GET',
+      endpoint: expect.stringContaining('/_apis/'),
+      path: expect.stringContaining('/_apis/'),
+      status: 502,
+      contentType: 'text/html',
+      body: '<html>Sign in</html>'
+    })
   })
 
   it('turns the message of a failed JSON response into the Error', async () => {

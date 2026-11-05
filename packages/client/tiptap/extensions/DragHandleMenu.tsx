@@ -4,8 +4,10 @@ import {useLayoutEffect, useRef} from 'react'
 import {ContentCopy, DeleteOutlined} from '~/ui/icons'
 import {Menu} from '../../ui/Menu/Menu'
 import {MenuContent} from '../../ui/Menu/MenuContent'
-import {MenuItem} from '../../ui/Menu/MenuItem'
+import {MENU_ITEM_ICON, MenuItem} from '../../ui/Menu/MenuItem'
 import {modKey} from '../../utils/platform'
+import {TurnIntoMenu} from './turnInto/TurnIntoMenu'
+import {getTurnIntoTarget} from './turnInto/turnBlockInto'
 
 interface DragHandleMenuProps {
   editor: Editor
@@ -13,15 +15,17 @@ interface DragHandleMenuProps {
   pos: number
   onClose: () => void
   anchorElement: HTMLElement
+  canCreateSubPage: boolean
 }
 
 const DragHandleMenu = (props: DragHandleMenuProps) => {
-  const {editor, node, pos, onClose, anchorElement} = props
+  const {editor, node, pos, onClose, anchorElement, canCreateSubPage} = props
   const triggerRef = useRef<HTMLButtonElement>(null)
 
   const isCanonicalPageLink = node.type.name === 'pageLinkBlock' && node.attrs.canonical === true
-  const isDocumentHeading = pos === 1
+  const isDocumentHeading = pos === 0
   const showDelete = !isCanonicalPageLink && !isDocumentHeading
+  const turnIntoCurrent = getTurnIntoTarget(editor.state.doc, pos)
 
   useLayoutEffect(() => {
     const trigger = triggerRef.current
@@ -56,17 +60,17 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
   }
 
   const handleContentKeyDown = (e: React.KeyboardEvent) => {
-    if ((e.key === 'Delete' || e.key === 'Backspace') && showDelete) {
-      e.preventDefault()
-      handleDelete()
-      queueMicrotask(onClose)
-      return
-    }
-    if (e.key === 'd' && (e.metaKey || e.ctrlKey)) {
-      e.preventDefault()
-      handleDuplicate()
-      queueMicrotask(onClose)
-    }
+    const isDeleteKey = e.key === 'Delete' || e.key === 'Backspace'
+    const isDuplicateKey = e.key === 'd' && (e.metaKey || e.ctrlKey)
+    if (!isDeleteKey && !isDuplicateKey) return
+    // left alone these reach the browser, which can go back a page or open a bookmark dialog
+    e.preventDefault()
+    // keys from the Turn into submenu bubble here through its portal
+    if (!e.currentTarget.contains(e.target as HTMLElement)) return
+    if (isDeleteKey && !showDelete) return
+    if (isDeleteKey) handleDelete()
+    else handleDuplicate()
+    queueMicrotask(onClose)
   }
 
   return (
@@ -93,14 +97,23 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
         onKeyDown={handleContentKeyDown}
         className='z-50'
       >
+        {turnIntoCurrent && (
+          <TurnIntoMenu
+            editor={editor}
+            node={node}
+            pos={pos}
+            current={turnIntoCurrent}
+            canCreateSubPage={canCreateSubPage}
+          />
+        )}
         <MenuItem onSelect={handleDuplicate}>
-          <ContentCopy className='mr-2 text-base text-fg-secondary' />
+          <ContentCopy className={MENU_ITEM_ICON} />
           <span className='flex-1 text-left'>Duplicate block</span>
           <span className='ml-4 text-fg-muted text-xs'>{modKey}+D</span>
         </MenuItem>
         {showDelete && (
           <MenuItem onSelect={handleDelete}>
-            <DeleteOutlined className='mr-2 text-base text-fg-secondary' />
+            <DeleteOutlined className={MENU_ITEM_ICON} />
             <span className='flex-1 text-left'>Delete block</span>
             <span className='ml-4 text-fg-muted text-xs'>Del</span>
           </MenuItem>

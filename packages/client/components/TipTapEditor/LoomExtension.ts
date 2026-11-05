@@ -1,7 +1,9 @@
 import {Node} from '@tiptap/core'
-import {type JSONContent, mergeAttributes} from '@tiptap/react'
+import {type JSONContent} from '@tiptap/react'
+import {resolveCuratedEmbed} from '../../shared/embed/curatedEmbedProviders'
 
 const LOOM_REGEX = /^(?:https?:\/\/)?(?:www\.)?loom\.com\/share\/[a-zA-Z0-9]+/g
+const LOOM_VIDEO_ID = /^(?:https?:\/\/)?(?:www\.)?loom\.com\/share\/([a-zA-Z0-9]+)/
 
 export const unfurlLoomLinks = (rawContent: JSONContent): JSONContent => {
   if (!rawContent.content) {
@@ -42,10 +44,15 @@ const getLoomNodesForParagraph = (content: JSONContent) => {
   })
 
   return Object.values(distinctLoomLinks).map((link) => {
+    const curated = resolveCuratedEmbed(link)
     return {
-      type: 'loom',
+      type: 'embedBlock',
       attrs: {
-        src: link
+        url: link,
+        displayMode: 'embed',
+        align: 'center',
+        aspectRatio: curated?.aspectRatio ?? '16:9',
+        ...(curated && {embedSrc: curated.embedSrc, providerName: curated.providerName})
       }
     }
   })
@@ -67,16 +74,17 @@ export const LoomExtension = Node.create({
 
   renderHTML(props) {
     const {HTMLAttributes} = props
-    const components = HTMLAttributes.src.split('/')
+    // src comes from the shared doc, so only a real Loom share link becomes an iframe
+    const videoId =
+      typeof HTMLAttributes.src === 'string' ? LOOM_VIDEO_ID.exec(HTMLAttributes.src)?.[1] : null
+    if (!videoId) return ['div']
     return [
       'div',
-      mergeAttributes(HTMLAttributes, {
-        style: 'position: relative; padding-bottom: 75%; height: 0; margin: 8px 0px;'
-      }),
+      {style: 'position: relative; padding-bottom: 75%; height: 0; margin: 8px 0px;'},
       [
         'iframe',
         {
-          src: `https://www.loom.com/embed/${components[components.length - 1]}`,
+          src: `https://www.loom.com/embed/${videoId}`,
           style: 'position: absolute; top: 0; left: 0; width: 100%; height: 100%;',
           frameborder: '0',
           webkitallowfullscreen: true,

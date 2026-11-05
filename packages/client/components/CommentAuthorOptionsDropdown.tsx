@@ -1,3 +1,4 @@
+import {useRef} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import DeleteCommentMutation from '~/mutations/DeleteCommentMutation'
 import Delete from '../ui/icons/Delete'
@@ -14,12 +15,25 @@ interface Props {
 const CommentAuthorOptionsDropdown = (props: Props) => {
   const {commentId, editComment, meetingId} = props
   const atmosphere = useAtmosphere()
+  const isEditChosen = useRef(false)
   const deleteComment = () => {
     DeleteCommentMutation(atmosphere, {commentId, meetingId})
   }
   return (
-    <MenuContent align='end'>
-      <MenuItem onClick={editComment}>
+    <MenuContent
+      align='end'
+      onCloseAutoFocus={(e) => {
+        if (!isEditChosen.current) return
+        isEditChosen.current = false
+        e.preventDefault()
+        editComment()
+      }}
+    >
+      <MenuItem
+        onSelect={() => {
+          isEditChosen.current = true
+        }}
+      >
         <Edit className={MENU_ITEM_ICON} />
         Edit Comment
       </MenuItem>

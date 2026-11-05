@@ -1,6 +1,4 @@
 import {useCallback, useRef, useState} from 'react'
-import useAtmosphere from '../../../hooks/useAtmosphere'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import type {TeamPromptComposerApi} from '../structured/TeamPromptComposerApiContext'
 import {
   type InspirationDraftItem,
@@ -11,14 +9,11 @@ import {
 export type {InspirationDraftItem}
 
 interface Options {
-  meetingId: string
-  teamId: string
   composer: TeamPromptComposerApi
 }
 
 const useInspirationInsert = (options: Options) => {
-  const {meetingId, teamId, composer} = options
-  const atmosphere = useAtmosphere()
+  const {composer} = options
   const [addedIds, setAddedIds] = useState<Set<string>>(new Set())
   const [adding, setAdding] = useState(false)
   const addingRef = useRef(false)
@@ -36,16 +31,13 @@ const useInspirationInsert = (options: Options) => {
       setAdding(true)
       await runInspirationInsert({
         items,
-        meetingId,
-        teamId,
         insertAnswerBlocks: composer.insertAnswerBlocks,
-        sendEvent: (event, eventOptions) => SendClientSideEvent(atmosphere, event, eventOptions),
         onAdded: (itemIds) => setAddedIds((prev) => new Set([...prev, ...itemIds]))
       })
       addingRef.current = false
       setAdding(false)
     },
-    [composer, atmosphere, meetingId, teamId]
+    [composer]
   )
 
   return {addItems, isAdded, adding}

@@ -1,4 +1,3 @@
-import useClientSideTrack from '../../hooks/useClientSideTrack'
 import {ExternalLinks} from '../../types/constEnums'
 import HelpMenuContent from './HelpMenuContent'
 import HelpMenuCopy from './HelpMenuCopy'
@@ -10,7 +9,6 @@ interface Props {
 
 const ActionMeetingLastCallHelpMenu = (props: Props) => {
   const {onClose} = props
-  useClientSideTrack('Help Menu Open', {phase: 'firstcall'})
   return (
     <HelpMenuContent onClose={onClose}>
       <HelpMenuCopy>{'Here’s a chance to add any last topics for discussion.'}</HelpMenuCopy>

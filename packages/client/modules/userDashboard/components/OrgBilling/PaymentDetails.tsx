@@ -1,7 +1,7 @@
 import {Elements} from '@stripe/react-stripe-js'
 import {loadStripe, type StripeCardNumberElement} from '@stripe/stripe-js'
 import graphql from 'babel-plugin-relay/macro'
-import {type MutableRefObject, useRef} from 'react'
+import {type RefObject, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import type {PaymentDetails_organization$key} from '../../../../__generated__/PaymentDetails_organization.graphql'
 import Panel from '../../../../components/Panel/Panel'
@@ -11,7 +11,7 @@ import BillingForm from './BillingForm'
 const stripePromise = loadStripe(window.__ACTION__.stripe)
 
 type Props = {
-  cardNumberRef: MutableRefObject<StripeCardNumberElement | null>
+  cardNumberRef: RefObject<StripeCardNumberElement | null>
   organizationRef: PaymentDetails_organization$key
 }
 

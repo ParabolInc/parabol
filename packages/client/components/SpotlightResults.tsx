@@ -8,7 +8,7 @@ import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import SpotlightResultsEmptyState from './SpotlightResultsEmptyState'
 
 interface Props {
-  phaseRef: RefObject<HTMLDivElement>
+  phaseRef: RefObject<HTMLDivElement | null>
   queryRef: PreloadedQuery<SpotlightResultsQuery>
 }
 

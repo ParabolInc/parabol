@@ -40,14 +40,17 @@ const joinTeam = async (
     query: `
       mutation InviteToTeam($teamId: ID!, $invitees: [Email!]!) {
         inviteToTeam(teamId: $teamId, invitees: $invitees) {
-          invitees
+          invitees {
+            email
+            status
+          }
         }
       }
     `,
     variables: {teamId: host.teamId, invitees: [guest.email]},
     cookie: host.cookie
   })
-  expect(invited.data.inviteToTeam.invitees).toEqual([guest.email])
+  expect(invited.data.inviteToTeam.invitees).toEqual([{email: guest.email, status: 'sent'}])
   const invitation = await getKysely()
     .selectFrom('TeamInvitation')
     .select('token')

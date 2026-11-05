@@ -2,7 +2,7 @@ import {type RefObject, useLayoutEffect} from 'react'
 import useForceUpdate from './useForceUpdate'
 
 const useResizeFontForElement = <T extends HTMLElement = HTMLInputElement>(
-  ref: RefObject<T>,
+  ref: RefObject<T | null>,
   value: string | number,
   minSize: number,
   maxSize: number,

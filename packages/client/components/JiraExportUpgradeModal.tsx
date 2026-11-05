@@ -1,12 +1,10 @@
 import {useState} from 'react'
 import {useNavigate} from 'react-router'
-import useAtmosphere from '../hooks/useAtmosphere'
 import {Button} from '../ui/Button/Button'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogActions} from '../ui/Dialog/DialogActions'
 import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 import {upgradeTitles} from './StartMeetingUpgradeModal'
 
 interface Props {
@@ -19,12 +17,8 @@ interface Props {
 
 const JiraExportUpgradeModal = (props: Props) => {
   const {isOpen, exportCount, isHardBlock, orgId, onClose} = props
-  const atmosphere = useAtmosphere()
   const navigate = useNavigate()
   const goToUpgrade = () => {
-    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
-      upgradeCTALocation: 'jiraExportLimitModal'
-    })
     if (orgId) {
       navigate(`/me/organizations/${orgId}`)
     }

@@ -3,13 +3,14 @@ import dayjs from 'dayjs'
 import {useFragment} from 'react-relay'
 import type {TeamHealthResultCard_stage$key} from '~/__generated__/TeamHealthResultCard_stage.graphql'
 import {ArrowForward} from '~/ui/icons'
-import {MIN_ANONYMOUS_RESPONDENTS} from '../../shared/utils/teamHealthAnonymity'
+import {MIN_RESPONDENTS_FOR_DETAILS} from '../../shared/utils/teamHealthAnonymity'
 import {Button} from '../../ui/Button/Button'
 import {cn} from '../../ui/cn'
 import plural from '../../utils/plural'
 import {getTeamHealthCategoryColor} from '../ActivityLibrary/TeamHealth/getTeamHealthCategoryColor'
 import TeamHealthDistributionChart from './TeamHealthDistributionChart'
 import TeamHealthResultComment from './TeamHealthResultComment'
+import TeamHealthResultSummary from './TeamHealthResultSummary'
 import TeamHealthScoreDelta from './TeamHealthScoreDelta'
 import TeamHealthTrendChart, {type TeamHealthTrendPoint} from './TeamHealthTrendChart'
 
@@ -58,6 +59,7 @@ const TeamHealthResultCard = (props: Props) => {
           commentParaphrased
           ...TeamHealthResultComment_response
         }
+        ...TeamHealthResultSummary_stage
       }
     `,
     stageRef
@@ -78,9 +80,10 @@ const TeamHealthResultCard = (props: Props) => {
   const answerCount = respondentCount ?? 0
   const isSpreadHidden = !spreadScores
   const comments = responses.filter(({commentParaphrased}) => !!commentParaphrased)
+  const hasCurrentPoint = score != null && !!meeting.endedAt
   const trendPoints: TeamHealthTrendPoint[] = [
     ...scoreHistory,
-    ...(score == null || !meeting.endedAt ? [] : [{endedAt: meeting.endedAt, score}])
+    ...(hasCurrentPoint ? [{endedAt: meeting.endedAt!, score}] : [])
   ]
   const firstCycle = trendPoints[0]
   const lastCycle = trendPoints.at(-1)
@@ -118,6 +121,7 @@ const TeamHealthResultCard = (props: Props) => {
         <TeamHealthScoreDelta
           className='pb-1 text-sm'
           score={score}
+          respondentCount={respondentCount}
           previousScore={previousCycle?.score}
         />
         <span className='pb-1 text-fg-muted text-sm'>
@@ -138,7 +142,7 @@ const TeamHealthResultCard = (props: Props) => {
               Trend · last {trendPoints.length} checks
             </div>
             <div className='mt-2'>
-              <TeamHealthTrendChart points={trendPoints} />
+              <TeamHealthTrendChart points={trendPoints} hasCurrent={hasCurrentPoint} />
             </div>
             <div className='mt-1 text-fg-muted text-sm'>{trendCaption}</div>
           </div>
@@ -156,7 +160,7 @@ const TeamHealthResultCard = (props: Props) => {
             {isSpreadHidden && (
               <div className='absolute inset-0 flex items-center justify-center px-4'>
                 <span className='rounded-md border border-hairline bg-surface-raised px-3 py-1.5 text-center font-semibold text-fg-secondary text-xs shadow-card'>
-                  Details unlock at {MIN_ANONYMOUS_RESPONDENTS} votes
+                  Details unlock at {MIN_RESPONDENTS_FOR_DETAILS} votes
                 </span>
               </div>
             )}
@@ -166,6 +170,7 @@ const TeamHealthResultCard = (props: Props) => {
           </div>
         </div>
       </div>
+      <TeamHealthResultSummary stage={stage} />
       {comments.length > 0 && (
         <div className='mt-8'>
           <div className='font-semibold text-fg-muted text-xs uppercase tracking-wide'>

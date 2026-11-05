@@ -2,7 +2,6 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import ScheduledJobMeetingStageTimeLimit from '../../../database/types/ScheduledJobMetingStageTimeLimit'
 import getKysely from '../../../postgres/getKysely'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -25,10 +24,7 @@ const setStageTimer: MutationResolvers['setStageTimer'] = async (
   const now = new Date()
 
   // AUTH
-  const [meeting, viewer] = await Promise.all([
-    dataLoader.get('newMeetings').loadNonNull(meetingId),
-    dataLoader.get('users').loadNonNull(viewerId)
-  ])
+  const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
   const {endedAt, facilitatorStageId, phases, teamId} = meeting
   if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
 
@@ -76,21 +72,7 @@ const setStageTimer: MutationResolvers['setStageTimer'] = async (
     .where('id', '=', meetingId)
     .execute()
   const data = {meetingId, stageId: facilitatorStageId}
-  const {isAsync, phaseType, startAt, viewCount} = stage
-  const stoppedOrStarted = newScheduledEndTime ? `Meeting Timer Started` : `Meeting Timer Stopped`
-  const eventName =
-    scheduledEndTime && newScheduledEndTime ? `Meeting Timer Updated` : stoppedOrStarted
   publish(SubscriptionChannel.MEETING, meetingId, 'SetStageTimerPayload', data, subOptions)
-  analytics.meetingTimerEvent(viewer, eventName, {
-    meetingId,
-    phaseType,
-    viewCount,
-    isAsync,
-    newScheduledEndTime: newScheduledEndTime ?? null,
-    timeRemaining: timeRemaining ?? null,
-    previousScheduledEndTime: scheduledEndTime,
-    stageStartAt: startAt
-  })
   return data
 }
 

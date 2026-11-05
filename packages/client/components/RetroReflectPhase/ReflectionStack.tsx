@@ -13,10 +13,10 @@ import ReflectionStackPlaceholder from './ReflectionStackPlaceholder'
 interface Props {
   idx: number
   meeting: ReflectionStack_meeting$key
-  phaseEditorRef: React.RefObject<HTMLDivElement>
-  phaseRef: RefObject<HTMLDivElement>
+  phaseEditorRef: React.RefObject<HTMLDivElement | null>
+  phaseRef: RefObject<HTMLDivElement | null>
   reflectionStack: readonly PhaseItemColumn_meeting$data['reflectionGroups'][0]['reflections'][0][]
-  stackTopRef: RefObject<HTMLDivElement>
+  stackTopRef: RefObject<HTMLDivElement | null>
 }
 
 const ReflectionStack = (props: Props) => {

@@ -48,7 +48,10 @@ export const SearchDialogResult = ({
     Page: <DescriptionIcon />
   } satisfies Record<Exclude<typeof __typename, '%other'>, ReactNode>
   const icon = iconLookup[__typename as keyof typeof iconLookup]
-  const safeSnippets = snippets.map((snippet) => DOMPurify.sanitize(snippet))
+  // snippets are page text with <b> highlights, so any other markup came from the page itself
+  const safeSnippets = snippets.map((snippet) =>
+    DOMPurify.sanitize(snippet, {ALLOWED_TAGS: ['b'], ALLOWED_ATTR: []})
+  )
   const [firstSnippet] = safeSnippets
   const wordPattern = query
     .split(/\s+/)

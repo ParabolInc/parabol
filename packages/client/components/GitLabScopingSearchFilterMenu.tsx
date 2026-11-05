@@ -3,9 +3,7 @@ import {useMemo} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import getNonNullEdges from '~/utils/getNonNullEdges'
-import SendClientSideEvent from '~/utils/SendClientSideEvent'
 import type {GitLabScopingSearchFilterMenuQuery} from '../__generated__/GitLabScopingSearchFilterMenuQuery.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
 import useSetScopingSearchState from '../hooks/useSetScopingSearchState'
 import {
   searchFiltersByKey,
@@ -73,7 +71,6 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
   const projects = useMemo(() => getNonNullEdges(nullableEdges).map(({node}) => node), [data])
   const {filters} = state
   const selectedProjectsIds = searchFiltersByKey(filters, 'project')
-  const atmosphere = useAtmosphere()
   const setSearchState = useSetScopingSearchState(meetingId, 'gitlab')
 
   const {
@@ -99,11 +96,6 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
 
         const handleClick = () => {
           setSearchState({filters: toggleSearchFilter(filters, 'project', projectId)})
-          SendClientSideEvent(atmosphere, 'Selected Poker Scope Project Filter', {
-            meetingId,
-            projectId,
-            service: 'gitlab'
-          })
         }
         return (
           <MenuItem key={projectId} onSelect={(e) => e.preventDefault()} onClick={handleClick}>

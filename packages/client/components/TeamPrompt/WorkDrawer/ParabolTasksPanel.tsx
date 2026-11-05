@@ -2,7 +2,6 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {ParabolTasksPanel_meeting$key} from '../../../__generated__/ParabolTasksPanel_meeting.graphql'
 import type {TaskStatusEnum} from '../../../__generated__/ParabolTasksResultsQuery.graphql'
-import useAtmosphere from '../../../hooks/useAtmosphere'
 import useInspirationDrawer from '../../../hooks/useInspirationDrawer'
 import useSessionStorageState from '../../../hooks/useSessionStorageState'
 import {TaskStatus} from '../../../types/constEnums'
@@ -10,7 +9,6 @@ import {Button} from '../../../ui/Button/Button'
 import {Checkbox} from '../../../ui/Checkbox/Checkbox'
 import {cn} from '../../../ui/cn'
 import {meetingColumnArray} from '../../../utils/constants'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import {taskStatusDotColors, taskStatusLabels} from '../../../utils/taskStatus'
 import InspirationItemsPanel from './InspirationItemsPanel'
 import ParabolStandupsResultsRoot from './ParabolStandupsResultsRoot'
@@ -53,7 +51,6 @@ const ParabolTasksPanel = (props: Props) => {
     meetingRef
   )
 
-  const atmosphere = useAtmosphere()
   const {dateRange, setDateRange, onResultCount} = useInspirationDrawer('PARABOL', meeting)
   const [subTab, setSubTab] = useSessionStorageState<SubTab>(
     `Inspiration:parabol:subTab:${meeting.id}`,
@@ -65,7 +62,6 @@ const ParabolTasksPanel = (props: Props) => {
   )
 
   const toggleStatus = (status: TaskStatusEnum) => {
-    trackTabNavigated(taskStatusLabels[status])
     setSelectedStatuses((prev) =>
       prev.includes(status) ? prev.filter((s) => s !== status) : [...prev, status]
     )
@@ -75,13 +71,6 @@ const ParabolTasksPanel = (props: Props) => {
   const searchQuery = dateRange
     ? JSON.stringify({startAt: dateRange.startAt, endAt: dateRange.endAt})
     : ''
-
-  const trackTabNavigated = (label: string) => {
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Tag Navigated', {
-      service: 'PARABOL',
-      buttonLabel: label
-    })
-  }
 
   const filterBar = (
     <>
@@ -93,10 +82,7 @@ const ParabolTasksPanel = (props: Props) => {
             size='md'
             aria-pressed={tab.key === subTab}
             className={cn(PILL, tab.key === subTab ? PILL_ACTIVE : PILL_INACTIVE)}
-            onClick={() => {
-              trackTabNavigated(tab.label)
-              setSubTab(tab.key)
-            }}
+            onClick={() => setSubTab(tab.key)}
           >
             {tab.label}
           </Button>

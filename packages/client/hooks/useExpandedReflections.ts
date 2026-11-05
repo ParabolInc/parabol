@@ -1,4 +1,4 @@
-import {type MutableRefObject, type ReactNode, type RefObject, useEffect} from 'react'
+import {type ReactNode, type RefObject, useEffect} from 'react'
 import {createPortal} from 'react-dom'
 import requestDoubleAnimationFrame from '../components/RetroReflectPhase/requestDoubleAnimationFrame'
 import {ElementWidth, Times} from '../types/constEnums'
@@ -18,10 +18,10 @@ const shrinkGroupOnExpand = (groupEl: HTMLDivElement) => {
 }
 
 const useExpandedReflections = (
-  groupRef: MutableRefObject<any>,
-  stackRef: RefObject<HTMLDivElement>,
+  groupRef: RefObject<any>,
+  stackRef: RefObject<HTMLDivElement | null>,
   count: number,
-  headerRef?: RefObject<HTMLDivElement>
+  headerRef?: RefObject<HTMLDivElement | null>
 ) => {
   const offsetLeft = ElementWidth.REFLECTION_CARD_PADDING * 2
   const offsetTop = ElementWidth.REFLECTION_CARD_PADDING * 2

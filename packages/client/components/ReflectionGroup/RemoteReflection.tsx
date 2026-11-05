@@ -49,7 +49,7 @@ const getCoords = (
   }
 }
 
-const getHeaderTransform = (ref: RefObject<HTMLDivElement>, topPadding = 18) => {
+const getHeaderTransform = (ref: RefObject<HTMLDivElement | null>, topPadding = 18) => {
   if (!ref.current) return {}
   const bbox = ref.current.getBoundingClientRect()
   const minLeft = -ElementWidth.REFLECTION_CARD + OFFSCREEN_PADDING * 8

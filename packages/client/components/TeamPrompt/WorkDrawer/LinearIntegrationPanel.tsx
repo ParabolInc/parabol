@@ -2,12 +2,10 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment, usePreloadedQuery} from 'react-relay'
 import type {LinearIntegrationPanel_meeting$key} from '../../../__generated__/LinearIntegrationPanel_meeting.graphql'
 import type {LinearIntegrationPanelQuery} from '../../../__generated__/LinearIntegrationPanelQuery.graphql'
-import useAtmosphere from '../../../hooks/useAtmosphere'
 import useInspirationDrawer from '../../../hooks/useInspirationDrawer'
 import useSessionStorageState from '../../../hooks/useSessionStorageState'
 import type {WorkDrawerQueryPanelProps} from '../../../integrations/platform/ClientIntegrationDefinition'
 import {makeLinearWorkFilter} from '../../../utils/makeLinearWorkFilter'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import InspirationItemsPanel from './InspirationItemsPanel'
 import LinearIntegrationResultsRoot from './LinearIntegrationResultsRoot'
 import LinearProjectFilterBar from './LinearProjectFilterBar'
@@ -46,7 +44,6 @@ const LinearIntegrationPanel = (props: WorkDrawerQueryPanelProps<LinearIntegrati
     viewer.meeting
   )
 
-  const atmosphere = useAtmosphere()
   const teamMember = meeting.viewerMeetingMember?.teamMember
 
   const {dateRange, setDateRange, onResultCount, getResultCount} = useInspirationDrawer(
@@ -67,14 +64,7 @@ const LinearIntegrationPanel = (props: WorkDrawerQueryPanelProps<LinearIntegrati
       <LinearProjectFilterBar
         teamMemberRef={teamMember}
         selectedLinearIds={selectedLinearIds}
-        setSelectedLinearIds={(ids) => {
-          SendClientSideEvent(atmosphere, 'Your Work Filter Changed', {
-            teamId,
-            meetingId,
-            service: 'linear'
-          })
-          setSelectedLinearIds(ids)
-        }}
+        setSelectedLinearIds={setSelectedLinearIds}
       />
       <div className='mb-2 flex w-full px-2'>
         <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />

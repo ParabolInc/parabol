@@ -1,6 +1,6 @@
 import type {ExecutionArgs, ExecutionResult} from 'graphql'
 import {type execute, GraphQLError, type subscribe} from 'graphql'
-import {handleProtocols} from 'graphql-ws'
+import {CloseCode, handleProtocols} from 'graphql-ws'
 import {makeBehavior, type UpgradeData} from 'graphql-ws/use/uWebSockets'
 import type http from 'http'
 import {decode} from 'jsonwebtoken'
@@ -13,9 +13,14 @@ import {getFreshTokenIfNeeded} from './getFreshTokenIfNeeded'
 import {getIsBusy} from './getIsBusy'
 import {getIsShuttingDown} from './getIsShuttingDown'
 import getRateLimiter from './graphql/getRateLimiter'
-import privateSchema from './graphql/private/rootSchema'
 import {handleFirstConnection} from './handleFirstConnection'
 import {logOperation} from './logOperation'
+import {
+  websocketConnectAttempts,
+  websocketConnectDuration,
+  websocketConnects,
+  websocketMessagesDropped
+} from './metricsHandler'
 import getKysely from './postgres/getKysely'
 import {createCookieHeaders, getAuthTokenFromCookie} from './utils/authCookie'
 import checkBlacklistJWT from './utils/checkBlacklistJWT'
@@ -23,6 +28,7 @@ import {getTeamMemberUserIds} from './utils/getTeamMemberUserIds'
 import {getUserSocketCount} from './utils/getUserSocketCount'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {Logger} from './utils/Logger'
+import parseSessionId from './utils/parseSessionId'
 import publish from './utils/publish'
 import {CLIENT_IP_POS} from './utils/uwsGetIP'
 import {extractPersistedOperationId, getPersistedOperation, type ServerContext, yoga} from './yoga'
@@ -30,6 +36,7 @@ import {extractPersistedOperationId, getPersistedOperation, type ServerContext, 
 declare module 'graphql-ws/use/uWebSockets' {
   interface UpgradeData {
     ip: string
+    upgradeStartedAt: number
     closed?: true
     authToken?: AuthToken
     user?: {
@@ -43,6 +50,7 @@ declare module 'graphql-ws/use/uWebSockets' {
     ip: string
     authToken: AuthToken
     socketId: string
+    sessionId?: string
     resubscribe: Record<string, () => void>
     // not present for subscription IDs
     dataLoaders: Record<string, ReturnType<typeof getNewDataLoader>>
@@ -76,8 +84,11 @@ const dehydrateResult = (result: ExecutionResult) => {
   return {...rest, data: dehydratedData}
 }
 
+const secondsSinceUpgrade = ({upgradeStartedAt}: Pick<UpgradeData, 'upgradeStartedAt'>) =>
+  (performance.now() - upgradeStartedAt) / 1000
+
 const documentCache = new Map()
-export const wsHandler = makeBehavior<{token?: string; docId?: string}>({
+export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId?: string}>({
   onConnect: async (ctx) => {
     const {connectionParams, extra} = ctx
 
@@ -115,10 +126,13 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string}>({
       typeof forwarded === 'string' ? forwarded.split(',').at(CLIENT_IP_POS)?.trim() : ''
     extra.ip = clientIP || extra.socket.ip
     extra.socketId = extra.persistedRequest.headers['sec-websocket-key']!
+    extra.sessionId = parseSessionId(connectionParams?.sessionId)
     extra.resubscribe = {}
     extra.dataLoaders = {}
     activeClients.set(extra.socketId, extra.socket)
-    logOperation(viewerId, extra.ip, 'connectSocket', {})
+    websocketConnects.inc()
+    websocketConnectDuration.observe({outcome: 'connected'}, secondsSinceUpgrade(extra.socket))
+    logOperation({authToken, ip: extra.ip, operation: 'connectSocket', variables: {}})
     if (socketCount === 0) {
       handleFirstConnection(user, teamIds).catch(Logger.log)
     }
@@ -178,11 +192,14 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string}>({
   subscribe: (args) => (args as EnvelopedExecutionArgs).rootValue.subscribe(args),
   onSubscribe: async (ctx, id, params) => {
     const {extra} = ctx
-    const {ip, authToken, socketId, resubscribe} = extra
-    const {schema, execute, subscribe, parse, contextFactory} = yoga.getEnveloped(ctx)
+    const {ip, authToken, socketId, sessionId, resubscribe} = extra
     const docId = extractPersistedOperationId(params as any)
-    // armor requires a docId to know this isn't an adhoc query
-    ;(ctx as any).docId = docId
+    const {schema, execute, subscribe, parse, contextFactory} = yoga.getEnveloped({
+      ...ctx,
+      // armor requires a docId to know this isn't an adhoc query
+      docId,
+      authToken
+    })
     let document = documentCache.get(docId!)
     if (!document) {
       const query = await getPersistedOperation(docId!)
@@ -217,7 +234,7 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string}>({
     }
     const envelopeContext = await contextFactory()
     const args: EnvelopedExecutionArgs = {
-      schema: authToken.rol === 'su' ? privateSchema : schema,
+      schema,
       operationName: params.operationName,
       document,
       variableValues: params.variables,
@@ -229,6 +246,11 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string}>({
         ip,
         authToken,
         socketId,
+        sessionId,
+        traceparent:
+          typeof params.extensions?.traceparent === 'string'
+            ? params.extensions.traceparent
+            : undefined,
         _wsAuthTokenAtStart: authToken
       },
       rootValue: {
@@ -288,8 +310,29 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string}>({
         publish(SubscriptionChannel.NOTIFICATION, userId, 'DisconnectSocketPayload', data)
       })
     }
+  },
+  onClose: (ctx, code) => {
+    if (ctx.acknowledged) return
+    // graphql-ws closes as Forbidden when onConnect refuses a connection, and as InternalServerError when it throws.
+    // Any other close before the acknowledgement is the client going away
+    const outcome =
+      code === CloseCode.Forbidden
+        ? 'rejected'
+        : code === CloseCode.InternalServerError
+          ? 'failed'
+          : 'abandoned'
+    websocketConnectDuration.observe({outcome}, secondsSinceUpgrade(ctx.extra.socket))
   }
 })
+
+// uWS drops a send while the socket has more than maxBackpressure queued, and graphql-ws counts a dropped message as sent.
+// uWS calls drain before the queue is empty, so graphql-ws sends an operation's next message while most of the last one
+// is still queued. The 64 KiB default dropped the message after any larger result, like the @defer payloads that follow
+// a meeting query. graphql-ws holds each operation until a drain, so a queue only nears this limit for a slow client
+wsHandler.maxBackpressure = 4 * 1024 * 1024
+wsHandler.dropped = () => {
+  websocketMessagesDropped.inc({route: 'graphql'})
+}
 
 // Hack because graphql-ws doesn't support a way to extract the IP address, so we override the upgrade method
 wsHandler.upgrade = async (res, req, context) => {
@@ -301,6 +344,8 @@ wsHandler.upgrade = async (res, req, context) => {
     res.end()
     return
   }
+  const upgradeStartedAt = performance.now()
+  websocketConnectAttempts.inc()
   const headers: http.IncomingHttpHeaders = {}
   req.forEach((key, value) => {
     if (headers[key]) {
@@ -313,6 +358,7 @@ wsHandler.upgrade = async (res, req, context) => {
     Buffer.from(res.getRemoteAddressAsText()).toString()
   const upgradeData: UpgradeData = {
     ip,
+    upgradeStartedAt,
     persistedRequest: {
       method: req.getMethod(),
       url: req.getUrl(),
@@ -363,6 +409,7 @@ wsHandler.upgrade = async (res, req, context) => {
         : ([true, null, []] as const)
 
     if (isAborted) {
+      websocketConnectDuration.observe({outcome: 'abandoned'}, secondsSinceUpgrade(upgradeData))
       return
     }
     if (!authToken || isBlacklistedJWT || !user) {

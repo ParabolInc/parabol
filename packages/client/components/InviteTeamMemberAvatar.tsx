@@ -3,12 +3,14 @@ import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {PersonAdd} from '~/ui/icons'
 import type {InviteTeamMemberAvatar_teamMembers$key} from '../__generated__/InviteTeamMemberAvatar_teamMembers.graphql'
+import type {TeamInviteeResult} from '../hooks/useTeamInviteeDrafts'
 import AddTeamMemberModal from './AddTeamMemberModal'
 
 interface Props {
   meetingId?: string
   teamId: string
   teamMembers: InviteTeamMemberAvatar_teamMembers$key
+  initialResults?: readonly TeamInviteeResult[]
 }
 
 const InviteTeamMemberAvatar = (props: Props) => {
@@ -21,7 +23,12 @@ const InviteTeamMemberAvatar = (props: Props) => {
     `,
     props.teamMembers
   )
-  const [isOpen, setIsOpen] = useState(false)
+  const [initialResults, setInitialResults] = useState(props.initialResults)
+  const [isOpen, setIsOpen] = useState(!!initialResults)
+  const onClose = () => {
+    setIsOpen(false)
+    setInitialResults(undefined)
+  }
   return (
     <>
       <div
@@ -37,10 +44,11 @@ const InviteTeamMemberAvatar = (props: Props) => {
       </div>
       <AddTeamMemberModal
         isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
+        onClose={onClose}
         meetingId={meetingId}
         teamId={teamId}
         teamMembers={teamMembers}
+        initialResults={initialResults}
       />
     </>
   )

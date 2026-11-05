@@ -32,6 +32,7 @@ const HANDLED_NODES = new Set([
   'fileBlock',
   'fileUpload',
   'loom',
+  'embedBlock',
   'pageLinkBlock',
   'tableOfContents',
   'insightsBlock',

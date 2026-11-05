@@ -2,21 +2,29 @@ import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import {Editor} from '@tiptap/core'
 import {fetch} from '@whatwg-node/fetch'
 import {createHmac, timingSafeEqual} from 'crypto'
+import ms from 'ms'
 import {serverTipTapExtensions} from 'parabol-client/shared/tiptap/serverTipTapExtensions'
 import type {TipTapSerializedPageContent} from 'parabol-client/shared/tiptap/TipTapSerializedContent'
 import uWSAsyncHandler from '../../graphql/uWSAsyncHandler'
 import parseBody from '../../parseBody'
 import getKysely from '../../postgres/getKysely'
+import getRedis from '../../utils/getRedis'
 import {Logger} from '../../utils/Logger'
 import {attachTranscriptToSummaryPage} from '../gmeet/attachTranscriptToSummaryPage'
-import {matchExternalMeetingToMeeting} from '../matchExternalMeetingToMeeting'
+import {MATCH_WINDOW_MS, matchExternalMeetingToMeeting} from '../matchExternalMeetingToMeeting'
 import {processZoomTranscript} from './processZoomTranscript'
+
+const MAX_WEBHOOK_BODY_BYTES = 1_000_000
+const MAX_TIMESTAMP_AGE = ms('5m')
+
+const getHeldEventsKey = (hostId: string) => `zoomHeldEvents:${hostId}`
 
 type ZoomRecordingFile = {
   id: string
   file_type: string
   file_extension: string
   download_url: string
+  recording_end: string
   status: string
 }
 
@@ -45,7 +53,10 @@ type ZoomSummaryCompletedPayload = {
       meeting_start_time: string
       meeting_end_time: string
       summary_title: string
-      summary_content: string
+      summary_content?: string
+      summary_overview?: string
+      summary_details?: {label: string; summary: string}[]
+      next_steps?: string[]
     }
   }
 }
@@ -55,10 +66,9 @@ type ZoomUrlValidationPayload = {
   payload: {plainToken: string}
 }
 
-type ZoomWebhookPayload =
-  | ZoomRecordingCompletedPayload
-  | ZoomSummaryCompletedPayload
-  | ZoomUrlValidationPayload
+type ZoomFileEvent = ZoomRecordingCompletedPayload | ZoomSummaryCompletedPayload
+
+type ZoomWebhookPayload = ZoomFileEvent | ZoomUrlValidationPayload
 
 const verifyZoomSignature = (
   secret: string,
@@ -73,6 +83,20 @@ const verifyZoomSignature = (
   return expectedBuf.length === actualBuf.length && timingSafeEqual(expectedBuf, actualBuf)
 }
 
+const isFreshTimestamp = (timestamp: string) => {
+  const sentAt = Number(timestamp) * 1000
+  return Number.isFinite(sentAt) && Math.abs(Date.now() - sentAt) <= MAX_TIMESTAMP_AGE
+}
+
+const isZoomUrl = (url: string) => {
+  try {
+    const {protocol, hostname} = new URL(url)
+    return protocol === 'https:' && (hostname === 'zoom.us' || hostname.endsWith('.zoom.us'))
+  } catch {
+    return false
+  }
+}
+
 const zoomWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
   const secret = process.env.ZOOM_WEBHOOK_SECRET_TOKEN
 
@@ -84,13 +108,23 @@ const zoomWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRe
   const timestamp = req.getHeader('x-zm-request-timestamp')
   const signature = req.getHeader('x-zm-signature')
 
-  const rawBody = await parseBody<string>({res, parser: (buf) => buf.toString()})
+  const rawBody = await parseBody<string>({
+    res,
+    parser: (buf) => buf.toString(),
+    maxBytes: MAX_WEBHOOK_BODY_BYTES
+  })
   if (!rawBody) {
     res.writeStatus('400').end()
     return
   }
 
-  // Handle Zoom's endpoint URL validation challenge
+  // The url_validation reply is an HMAC of a caller-chosen token under the signing key, so answering
+  // it unsigned would hand out signatures for arbitrary bodies
+  if (!isFreshTimestamp(timestamp) || !verifyZoomSignature(secret, timestamp, rawBody, signature)) {
+    res.writeStatus('401').end()
+    return
+  }
+
   let payload: ZoomWebhookPayload
   try {
     payload = JSON.parse(rawBody) as ZoomWebhookPayload
@@ -108,146 +142,175 @@ const zoomWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRe
     return
   }
 
-  // All other events require signature verification
-  if (!timestamp || !signature || !verifyZoomSignature(secret, timestamp, rawBody, signature)) {
-    res.writeStatus('401').end()
-    return
-  }
-
   res.writeStatus('200 OK').end()
   dispatchZoomEvent(payload).catch(Logger.log)
 })
 
 const dispatchZoomEvent = async (payload: ZoomWebhookPayload) => {
-  const pg = getKysely()
-
-  let hostId: string
-  let meetingUuid: string
-  let eventType: 'transcript' | 'summary'
-
   if (payload.event === 'recording.transcript_completed') {
-    hostId = payload.payload.object.host_id
-    meetingUuid = payload.payload.object.uuid
-    eventType = 'transcript'
+    await processTranscriptCompleted(payload)
   } else if (payload.event === 'meeting.summary_completed') {
-    hostId = payload.payload.object.meeting_host_id
-    meetingUuid = payload.payload.object.meeting_uuid
-    eventType = 'summary'
-  } else {
-    return
-  }
-
-  const authRow = await pg
-    .selectFrom('TeamMemberIntegrationAuth')
-    .selectAll()
-    .where('providerUserId', '=', hostId)
-    .where('service', '=', 'zoom')
-    .where('isActive', '=', true)
-    .orderBy('updatedAt', 'desc')
-    .executeTakeFirst()
-
-  if (!authRow) return
-  const {userId, teamId} = authRow
-
-  const externalId = `zoom:${eventType}:${meetingUuid}`
-  const insertResult = await pg
-    .insertInto('ExternalMeetingFile')
-    .values({id: externalId, teamId})
-    .onConflict((oc) => oc.column('id').doNothing())
-    .executeTakeFirst()
-  if (insertResult.numInsertedOrUpdatedRows === 0n) return
-  if (payload.event === 'recording.transcript_completed') {
-    await processTranscriptCompleted(payload, userId, teamId, externalId)
-  } else {
-    await processSummaryCompleted(payload, userId, teamId, externalId)
+    await processSummaryCompleted(payload)
   }
 }
 
-const processTranscriptCompleted = async (
-  payload: ZoomRecordingCompletedPayload,
-  userId: string,
-  teamId: string,
+const claimHostMeeting = async (
+  event: ZoomFileEvent,
+  hostId: string,
+  meetingEndedAt: Date,
   externalId: string
 ) => {
+  const pg = getKysely()
+  const hostAuths = await pg
+    .selectFrom('TeamMemberIntegrationAuth')
+    .select(['userId', 'teamId'])
+    .where('providerUserId', '=', hostId)
+    .where('service', '=', 'zoom')
+    .where('isActive', '=', true)
+    .execute()
+  if (hostAuths.length === 0) {
+    Logger.log(`${externalId}: host ${hostId} has no active Zoom auth`)
+    return null
+  }
+  const meeting = await matchExternalMeetingToMeeting(meetingEndedAt, hostAuths)
+  const heldEventsKey = getHeldEventsKey(hostId)
+  if (!meeting) {
+    // Zoom often reports a call before anyone has ended its Parabol meeting, so wait for one to end
+    if (Date.now() < meetingEndedAt.getTime() + MATCH_WINDOW_MS) {
+      await getRedis()
+        .multi()
+        .hset(heldEventsKey, externalId, JSON.stringify(event))
+        .pexpire(heldEventsKey, MATCH_WINDOW_MS)
+        .exec()
+      Logger.log(
+        `${externalId}: holding until a meeting of host ${hostId} ends near ${meetingEndedAt.toISOString()}`
+      )
+    } else {
+      await getRedis().hdel(heldEventsKey, externalId)
+      Logger.log(
+        `${externalId}: no meeting of host ${hostId} ended near ${meetingEndedAt.toISOString()}`
+      )
+    }
+    return null
+  }
+  await getRedis().hdel(heldEventsKey, externalId)
+  const insertResult = await pg
+    .insertInto('ExternalMeetingFile')
+    .values({id: externalId, teamId: meeting.teamId})
+    .onConflict((oc) => oc.column('id').doNothing())
+    .executeTakeFirst()
+  if (insertResult.numInsertedOrUpdatedRows === 0n) return null
+  return meeting
+}
+
+const releaseClaimOnFailure = async (externalId: string, attach: () => Promise<void>) => {
+  try {
+    await attach()
+  } catch (e) {
+    await getKysely().deleteFrom('ExternalMeetingFile').where('id', '=', externalId).execute()
+    throw e
+  }
+}
+
+const processTranscriptCompleted = async (payload: ZoomRecordingCompletedPayload) => {
   const {download_token} = payload
-  const {start_time, duration, recording_files} = payload.payload.object
+  const {uuid, host_id, recording_files} = payload.payload.object
   const transcriptFile = recording_files.find(
     (f) => f.file_type === 'TRANSCRIPT' && f.file_extension === 'VTT' && f.status === 'completed'
   )
   if (!transcriptFile) return
 
-  const pg = getKysely()
-
-  // Meeting end time = start_time + duration (minutes)
-  const startMs = new Date(start_time).getTime()
-  const endedAt = new Date(startMs + duration * 60 * 1000)
-  const meeting = await matchExternalMeetingToMeeting(endedAt, teamId)
-  if (!meeting || !meeting.summaryPageId) {
-    await pg.deleteFrom('ExternalMeetingFile').where('id', '=', externalId).execute()
+  const externalId = `zoom:transcript:${uuid}`
+  if (!isZoomUrl(transcriptFile.download_url)) {
+    Logger.warn(`${externalId}: download_url is not on zoom.us`)
     return
   }
+  // the payload's duration is the scheduled length, so only the recording knows when the call ended
+  const endedAt = new Date(transcriptFile.recording_end)
+  const meeting = await claimHostMeeting(payload, host_id, endedAt, externalId)
+  if (!meeting) return
 
-  const vttRes = await fetch(transcriptFile.download_url, {
-    headers: {Authorization: `Bearer ${download_token}`}
+  await releaseClaimOnFailure(externalId, async () => {
+    const vttRes = await fetch(transcriptFile.download_url, {
+      headers: {Authorization: `Bearer ${download_token}`}
+    })
+    if (!vttRes.ok) {
+      throw new Error(`${externalId}: transcript download failed with ${vttRes.status}`)
+    }
+    const pageContent = processZoomTranscript(await vttRes.text())
+    if (!pageContent) throw new Error(`${externalId}: transcript has no cues`)
+    await attachTranscriptToSummaryPage(
+      meeting.summaryPageId,
+      [{title: `Zoom Transcript for ${meeting.name}`, content: pageContent}],
+      meeting.userId,
+      externalId
+    )
   })
-  if (!vttRes.ok) {
-    await pg.deleteFrom('ExternalMeetingFile').where('id', '=', externalId).execute()
-    return
-  }
-  const vtt = await vttRes.text()
-  if (!vtt.trim()) {
-    await pg.deleteFrom('ExternalMeetingFile').where('id', '=', externalId).execute()
-    return
-  }
-
-  const pageContent = processZoomTranscript(vtt)
-  if (!pageContent) {
-    await pg.deleteFrom('ExternalMeetingFile').where('id', '=', externalId).execute()
-    return
-  }
-
-  const {summaryPageId} = meeting
-  await attachTranscriptToSummaryPage(
-    summaryPageId,
-    [{title: `Zoom Transcript for ${meeting.name}`, content: pageContent}],
-    userId,
-    externalId
-  )
 }
 
-const processSummaryCompleted = async (
-  payload: ZoomSummaryCompletedPayload,
-  userId: string,
-  teamId: string,
-  externalId: string
-) => {
-  const {meeting_end_time, summary_content} = payload.payload.object
-  const trimmed = summary_content.trim()
-  if (!trimmed) return
+const toSummaryMarkdown = (zoomSummary: ZoomSummaryCompletedPayload['payload']['object']) => {
+  const {summary_content, summary_overview, summary_details = [], next_steps = []} = zoomSummary
+  if (summary_content?.trim()) return summary_content.trim()
+  // summary_content is optional, so fall back to the deprecated fields Zoom still sends
+  const sections = [
+    summary_overview,
+    ...summary_details.map(({label, summary}) => `## ${label}\n\n${summary}`),
+    next_steps.length > 0
+      ? `## Next steps\n\n${next_steps.map((step) => `- ${step}`).join('\n')}`
+      : undefined
+  ]
+  return sections.filter(Boolean).join('\n\n').trim()
+}
 
-  const pg = getKysely()
-  const endedAt = new Date(meeting_end_time)
-  const meeting = await matchExternalMeetingToMeeting(endedAt, teamId)
-  if (!meeting || !meeting.summaryPageId) {
-    await pg.deleteFrom('ExternalMeetingFile').where('id', '=', externalId).execute()
+const processSummaryCompleted = async (payload: ZoomSummaryCompletedPayload) => {
+  const summary = payload.payload.object
+  const externalId = `zoom:summary:${summary.meeting_uuid}`
+  const markdown = toSummaryMarkdown(summary)
+  if (!markdown) {
+    Logger.log(`${externalId}: summary has no content`)
     return
   }
 
-  const editor = new Editor({
-    element: undefined,
-    content: trimmed,
-    contentType: 'markdown',
-    extensions: serverTipTapExtensions
-  })
-  const content = editor.getJSON() as unknown as TipTapSerializedPageContent
+  const endedAt = new Date(summary.meeting_end_time)
+  const meeting = await claimHostMeeting(payload, summary.meeting_host_id, endedAt, externalId)
+  if (!meeting) return
 
-  const {summaryPageId} = meeting
-  await attachTranscriptToSummaryPage(
-    summaryPageId,
-    [{title: `Zoom Summary for ${meeting.name}`, content}],
-    userId,
-    externalId
-  )
+  await releaseClaimOnFailure(externalId, async () => {
+    const editor = new Editor({
+      element: undefined,
+      content: markdown,
+      contentType: 'markdown',
+      extensions: serverTipTapExtensions
+    })
+    const content = editor.getJSON() as unknown as TipTapSerializedPageContent
+    await attachTranscriptToSummaryPage(
+      meeting.summaryPageId,
+      [{title: `Zoom Summary for ${meeting.name}`, content}],
+      meeting.userId,
+      externalId
+    )
+  })
+}
+
+export const attachHeldZoomEvents = async (teamId: string) => {
+  const hosts = await getKysely()
+    .selectFrom('TeamMember')
+    .innerJoin('TeamMemberIntegrationAuth', 'TeamMemberIntegrationAuth.userId', 'TeamMember.userId')
+    .select('TeamMemberIntegrationAuth.providerUserId')
+    .distinct()
+    .where('TeamMember.teamId', '=', teamId)
+    .where('TeamMember.isNotRemoved', '=', true)
+    .where('TeamMemberIntegrationAuth.service', '=', 'zoom')
+    .where('TeamMemberIntegrationAuth.isActive', '=', true)
+    .where('TeamMemberIntegrationAuth.providerUserId', 'is not', null)
+    .$narrowType<{providerUserId: string}>()
+    .execute()
+  for (const {providerUserId} of hosts) {
+    const heldEvents = await getRedis().hvals(getHeldEventsKey(providerUserId))
+    for (const heldEvent of heldEvents) {
+      await dispatchZoomEvent(JSON.parse(heldEvent) as ZoomFileEvent).catch(Logger.log)
+    }
+  }
 }
 
 export default zoomWebhookHandler

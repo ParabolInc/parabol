@@ -227,7 +227,10 @@ export const TemplateDetails = (props: Props) => {
     setErrorActivityId(null)
   }, [activityId])
 
-  useEffect(() => setActiveTemplate(atmosphere, teamId, activityId, type), [activity])
+  useEffect(
+    () => setActiveTemplate(atmosphere, teamId, activityId, type),
+    [atmosphere, teamId, activityId, type]
+  )
 
   return (
     <div className='space-y-6'>

@@ -66,10 +66,10 @@ const getParent = (parentId: string | undefined) => {
  * To nest multiple portals, the outer one should have id set and the inner one parentId
  */
 const usePortal = (options: UsePortalOptions = {}) => {
-  const portalRef = useRef<HTMLDivElement>()
-  const originRef = useRef<HTMLElement>()
+  const portalRef = useRef<HTMLDivElement>(undefined)
+  const originRef = useRef<HTMLElement>(undefined)
   const timeoutRef = useRef<number | null>(null)
-  const showBodyScroll = useRef<() => void>()
+  const showBodyScroll = useRef<() => void>(undefined)
   const [portalStatusRef, setPortalStatus] = useRefState(PortalStatus.Exited)
   const contextParentId = useContext(PortalContext)
   const parentId = options.parentId ?? contextParentId

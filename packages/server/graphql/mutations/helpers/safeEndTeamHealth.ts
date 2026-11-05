@@ -3,9 +3,9 @@ import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import TimelineEventTeamHealthComplete from '../../../database/types/TimelineEventTeamHealthComplete'
 import {sendSummaryEmail} from '../../../email/sendSummaryEmail'
+import {meetingsEnded} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import type {TeamHealthMeeting} from '../../../postgres/types/Meeting'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import {Logger} from '../../../utils/Logger'
 import logError from '../../../utils/logError'
@@ -14,8 +14,9 @@ import standardError from '../../../utils/standardError'
 import type {InternalContext} from '../../graphql'
 import gatherInsights from './gatherInsights'
 import {IntegrationNotifier} from './notifications/IntegrationNotifier'
-import seedTeamHealthDiscussions from './seedTeamHealthDiscussions'
+import queueTeamHealthCategorySummaries from './queueTeamHealthCategorySummaries'
 import sortTeamHealthResultStages from './sortTeamHealthResultStages'
+import summarizeTeamHealthCategories from './summarizeTeamHealthCategories'
 import {publishSummaryPage} from './summaryPage/publishSummaryPage'
 import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
 
@@ -67,11 +68,15 @@ const safeEndTeamHealth = async ({
     .where('id', '=', meetingId)
     .execute()
   dataLoader.clearAll('newMeetings')
-  seedTeamHealthDiscussions(meeting, dataLoader).catch(Logger.log)
+  await queueTeamHealthCategorySummaries(meeting, dataLoader).catch((e) => {
+    logError(e instanceof Error ? e : new Error(`queueTeamHealthCategorySummaries failed: ${e}`), {
+      tags: {meetingId, op: 'queueTeamHealthCategorySummaries'}
+    })
+  })
+  summarizeTeamHealthCategories(meetingId).catch(Logger.log)
 
-  const [completedTeamHealth, meetingMembers, team, teamMembers] = await Promise.all([
+  const [completedTeamHealth, team, teamMembers] = await Promise.all([
     dataLoader.get('newMeetings').loadNonNull(meetingId) as Promise<TeamHealthMeeting>,
-    dataLoader.get('meetingMembersByMeetingId').load(meetingId),
     dataLoader.get('teams').loadNonNull(teamId),
     dataLoader.get('teamMembersByTeamId').load(teamId)
   ])
@@ -86,7 +91,7 @@ const safeEndTeamHealth = async ({
       })
   )
   await pg.insertInto('TimelineEvent').values(events).execute()
-  analytics.teamHealthEnd(completedTeamHealth, meetingMembers, dataLoader)
+  meetingsEnded.inc({meeting_type: completedTeamHealth.meetingType})
   const page = await publishSummaryPage(meetingId, context, info).catch((e) => {
     logError(e instanceof Error ? e : new Error(`publishSummaryPage failed: ${e}`), {
       tags: {meetingId, op: 'publishSummaryPage'}

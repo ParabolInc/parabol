@@ -2,6 +2,7 @@ import type {NodeViewProps} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import type {GraphQLError} from 'graphql'
 import {marked} from 'marked'
+import {useState} from 'react'
 import {getRequest} from 'relay-runtime'
 import Ellipsis from '../../../components/Ellipsis/Ellipsis'
 import {useIsAuthenticated} from '../../../components/IsAuthenticatedProvider'
@@ -57,12 +58,17 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
   const atmosphere = useAtmosphere()
   const canQueryMeetings = teamIds.length > 0 && meetingTypes.length > 0 && after && before
   const {submitting, submitMutation, onCompleted} = useMutationProps()
-  const disabled = submitting || meetingIds.length < 1
+  // meetingIds live in the shared doc, so only send the ones this viewer's picker lists and shows checked
+  const [listedMeetingIds, setListedMeetingIds] = useState<string[]>([])
+  const selectedMeetingIds = canQueryMeetings
+    ? meetingIds.filter((id) => listedMeetingIds.includes(id))
+    : []
+  const disabled = submitting || selectedMeetingIds.length < 1
   const isLoggedIn = useIsAuthenticated()
 
   const generateInsights = async () => {
     if (disabled) return
-    const resultsHash = await quickHash([...meetingIds, prompt])
+    const resultsHash = await quickHash([...selectedMeetingIds, prompt])
     if (resultsHash === hash) {
       updateAttributes({editing: false})
       return
@@ -121,7 +127,7 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
         docId: id,
         query: '',
         variables: {
-          meetingIds,
+          meetingIds: selectedMeetingIds,
           prompt
         }
       } as any,
@@ -154,7 +160,11 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
         <MeetingDatePicker updateAttributes={updateAttributes} attrs={attrs} />
       </div>
       {canQueryMeetings && (
-        <SpecificMeetingPickerRoot updateAttributes={updateAttributes} attrs={attrs} />
+        <SpecificMeetingPickerRoot
+          updateAttributes={updateAttributes}
+          attrs={attrs}
+          onListedMeetingIds={setListedMeetingIds}
+        />
       )}
       <InsightsBlockPromptRoot updateAttributes={updateAttributes} attrs={attrs} />
       <div className='flex select-none justify-end p-4'>

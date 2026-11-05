@@ -35,6 +35,7 @@ import {
   type selectTeamInvitations,
   type selectTeamMemberIntegrationAuth,
   type selectTeamHealthCategories,
+  type selectTeamHealthCategorySummaries,
   type selectTeamHealthQuestionPacks,
   type selectTeamHealthQuestions,
   type selectTeamHealthResponses,
@@ -126,6 +127,9 @@ export type TeamHealthTemplateQuestion = ExtractTypeFromQueryBuilderSelect<
   typeof selectTeamHealthTemplateQuestions
 >
 export type TeamHealthResponse = ExtractTypeFromQueryBuilderSelect<typeof selectTeamHealthResponses>
+export type TeamHealthCategorySummary = ExtractTypeFromQueryBuilderSelect<
+  typeof selectTeamHealthCategorySummaries
+>
 export type TemplateScale = ExtractTypeFromQueryBuilderSelect<typeof selectTemplateScale>
 
 // TODO refactor getTemplateScaleRefsByIds to kysely
@@ -159,12 +163,6 @@ export type Discussion = ExtractTypeFromQueryBuilderSelect<typeof selectDiscussi
 // userSortOrder comes from PageUserSortOrder table, and is sometimes prefetched for performance
 export type Page = ExtractTypeFromQueryBuilderSelect<typeof selectPages> & {
   userSortOrder?: string | null
-}
-export type PagePartial = Pick<Page, 'id' | 'title' | 'teamId'> & {
-  __typename: 'Page' | 'PagePreview'
-}
-export type PagePreview = PagePartial & {
-  __typename: 'PagePreview'
 }
 export type MassInvitation = ExtractTypeFromQueryBuilderSelect<typeof selectMassInvitations>
 export type PageAccessRequest = Selectable<PageAccessRequestPG>

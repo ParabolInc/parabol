@@ -12,6 +12,7 @@ import {
   selectSlackNotifications,
   selectSuggestedAction,
   selectTasks,
+  selectTeamHealthCategorySummaries,
   selectTeamHealthQuestionPacks,
   selectTeamHealthQuestions,
   selectTeamHealthResponses,
@@ -205,6 +206,14 @@ export const teamHealthResponsesByMeetingId = foreignKeyLoaderMaker(
   'meetingId',
   async (meetingIds) => {
     return selectTeamHealthResponses().where('meetingId', 'in', meetingIds).execute()
+  }
+)
+
+export const teamHealthCategorySummariesByMeetingId = foreignKeyLoaderMaker(
+  'teamHealthCategorySummaries',
+  'meetingId',
+  async (meetingIds) => {
+    return selectTeamHealthCategorySummaries().where('meetingId', 'in', meetingIds).execute()
   }
 )
 

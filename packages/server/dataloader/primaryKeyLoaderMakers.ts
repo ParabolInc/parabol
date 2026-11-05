@@ -26,6 +26,7 @@ import {
   selectSuggestedAction,
   selectTasks,
   selectTeamHealthCategories,
+  selectTeamHealthCategorySummaries,
   selectTeamHealthQuestionPacks,
   selectTeamHealthQuestions,
   selectTeamHealthResponses,
@@ -88,6 +89,10 @@ export const teamHealthTemplateQuestions = primaryKeyLoaderMaker((ids: readonly 
 
 export const teamHealthResponses = primaryKeyLoaderMaker((ids: readonly number[]) => {
   return selectTeamHealthResponses().where('id', 'in', ids).execute()
+})
+
+export const teamHealthCategorySummaries = primaryKeyLoaderMaker((ids: readonly number[]) => {
+  return selectTeamHealthCategorySummaries().where('id', 'in', ids).execute()
 })
 export const domainJoinRequests = primaryKeyLoaderMaker(getDomainJoinRequestsByIds)
 

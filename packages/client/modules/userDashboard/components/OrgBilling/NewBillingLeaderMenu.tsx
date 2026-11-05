@@ -80,7 +80,7 @@ const NewBillingLeaderMenu = (props: Props) => {
     <MenuContent align='start'>
       <MenuSearch
         className='mt-1'
-        placeholder='Search for a new billing leader'
+        placeholder='Search team members'
         onChange={onQueryChange}
         value={query}
       />

@@ -1,8 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
-import {Suspense, useEffect} from 'react'
+import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import type {RetroWorkDrawer_meeting$key} from '../../../__generated__/RetroWorkDrawer_meeting.graphql'
-import useAtmosphere from '../../../hooks/useAtmosphere'
 import useSessionStorageState from '../../../hooks/useSessionStorageState'
 import {
   compareClientIntegrationPopularity,
@@ -13,7 +12,6 @@ import {cn} from '../../../ui/cn'
 import dndNoise from '../../../utils/dndNoise'
 import getNextSortOrder from '../../../utils/getNextSortOrder'
 import {Loader} from '../../../utils/relay/renderLoader'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import ErrorBoundary from '../../ErrorBoundary'
 import ParabolLogoSVG from '../../ParabolLogoSVG'
 import ParabolTasksPanel from './ParabolTasksPanel'
@@ -65,16 +63,8 @@ const RetroWorkDrawer = (props: Props) => {
     `,
     meetingRef
   )
-  const atmosphere = useAtmosphere()
   const {id: meetingId, teamId} = meeting
   const services = meeting.viewerMeetingMember?.teamMember?.services ?? []
-
-  useEffect(() => {
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Impression', {
-      teamId,
-      meetingId
-    })
-  }, [])
 
   // Reflect phase stacks reflections descending by sortOrder, so the highest sortOrder is on top.
   const getNextReflectionSortOrder = (promptId: string | null) => {
@@ -120,7 +110,6 @@ const RetroWorkDrawer = (props: Props) => {
             </ErrorBoundary>
           ) : (
             <WorkDrawerConnect
-              meetingId={meetingId}
               teamId={teamId}
               definition={definition}
               connectDescription={workDrawer.connectDescription}
@@ -165,14 +154,7 @@ const RetroWorkDrawer = (props: Props) => {
               <button
                 key={tab.label}
                 title={tab.label}
-                onClick={() => {
-                  SendClientSideEvent(atmosphere, 'Your Work Integration Clicked', {
-                    teamId,
-                    meetingId,
-                    service: baseTabs[idx]?.service
-                  })
-                  setActiveService(tab.service)
-                }}
+                onClick={() => setActiveService(tab.service)}
                 className={cn(
                   'flex h-10 w-10 select-none appearance-none items-center justify-center rounded-md transition-colors',
                   idx === activeIdx

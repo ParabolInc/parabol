@@ -164,6 +164,10 @@ export const selectTeamHealthResponses = () => {
   return getKysely().selectFrom('TeamHealthResponse').selectAll()
 }
 
+export const selectTeamHealthCategorySummaries = () => {
+  return getKysely().selectFrom('TeamHealthCategorySummary').selectAll()
+}
+
 export const selectSuggestedAction = () => {
   return getKysely()
     .selectFrom('SuggestedAction')
@@ -430,7 +434,7 @@ export const selectDescendantPages = (
       .selectFrom('Page')
       .select(['id', 'parentPageId'])
       .where('id', '=', pageId)
-      .unionAll(
+      .union(
         qc
           .selectFrom('Page as p')
           .innerJoin('descendants as d', 'd.id', 'p.parentPageId')

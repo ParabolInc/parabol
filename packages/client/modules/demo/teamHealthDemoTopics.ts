@@ -26,6 +26,7 @@ export interface DemoTopic {
   viewerAnswer: number
   viewerComment: string | null
   paraphrasedComments: {author: DemoTeammateKey | null; text: string}[]
+  summary: string
   thread: DemoThreadComment[]
   tasks?: DemoSeedTask[]
 }
@@ -47,6 +48,8 @@ export const demoTopics: DemoTopic[] = [
       },
       {author: null, text: 'Newer teammates still hesitate to disagree in planning.'}
     ],
+    summary:
+      'The team feels safer admitting mistakes than at the last check, and credits the blameless write-ups after incidents with making it easier to speak up. Newer teammates still hold back from disagreeing in planning.',
     thread: [
       {
         author: 'priya',
@@ -85,6 +88,8 @@ export const demoTopics: DemoTopic[] = [
       {author: 'noor', text: 'Handoffs between design and engineering have been smooth.'},
       {author: null, text: 'Review turnaround slips when two releases overlap.'}
     ],
+    summary:
+      'Dependability stays high and steady, with most of the team trusting that teammates follow through. Handoffs between design and engineering are going smoothly, though reviews slow down when two releases overlap.',
     thread: [
       {
         author: 'noor',
@@ -111,6 +116,8 @@ export const demoTopics: DemoTopic[] = [
       {author: 'viewer', text: 'Written goals at kickoff have made expectations clearer.'},
       {author: 'tomas', text: 'Priorities still shift mid-sprint without a heads-up.'}
     ],
+    summary:
+      'Clarity keeps improving: most of the team now knows what is expected of them, helped by writing goals down at kickoff. Priorities that shift mid-sprint without warning are what still gets in the way.',
     thread: [
       {
         author: 'tomas',
@@ -142,6 +149,8 @@ export const demoTopics: DemoTopic[] = [
       {author: 'kwame', text: 'Hearing from customers directly keeps the work feeling worthwhile.'},
       {author: null, text: 'Maintenance weeks feel less connected to the bigger picture.'}
     ],
+    summary:
+      'The work still feels meaningful to nearly everyone, and hearing from customers directly keeps it worthwhile. Maintenance weeks feel less connected to the bigger picture.',
     thread: [
       {
         author: 'kwame',
@@ -164,6 +173,8 @@ export const demoTopics: DemoTopic[] = [
       {author: 'viewer', text: 'We ship often but rarely hear what changed afterwards.'},
       {author: 'ingrid', text: 'Usage numbers for our last two launches were never shared.'}
     ],
+    summary:
+      'The team is less sure its work makes a difference, down again since the last check. People ship often but rarely hear what changed afterward, and usage numbers for recent launches were never shared.',
     thread: [
       {
         author: 'priya',

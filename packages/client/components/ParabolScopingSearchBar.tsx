@@ -47,8 +47,6 @@ const ParabolScopingSearchBar = (props: Props) => {
       <ScopingSearchInput
         placeholder={'Search Parabol tasks'}
         queryString={queryString ?? ''}
-        meetingId={meetingId}
-        service={'PARABOL'}
         onQueryStringChange={setQueryString}
       />
       <ParabolScopingSearchFilterToggle meeting={meeting} />

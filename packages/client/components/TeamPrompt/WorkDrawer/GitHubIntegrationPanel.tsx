@@ -3,13 +3,11 @@ import dayjs from 'dayjs'
 import {useFragment, usePreloadedQuery} from 'react-relay'
 import type {GitHubIntegrationPanel_meeting$key} from '../../../__generated__/GitHubIntegrationPanel_meeting.graphql'
 import type {GitHubIntegrationPanelQuery} from '../../../__generated__/GitHubIntegrationPanelQuery.graphql'
-import useAtmosphere from '../../../hooks/useAtmosphere'
 import useInspirationDrawer from '../../../hooks/useInspirationDrawer'
 import useSessionStorageState from '../../../hooks/useSessionStorageState'
 import type {WorkDrawerQueryPanelProps} from '../../../integrations/platform/ClientIntegrationDefinition'
 import {Button} from '../../../ui/Button/Button'
 import {cn} from '../../../ui/cn'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import GitHubIntegrationResultsRoot from './GitHubIntegrationResultsRoot'
 import GitHubRepoFilterBar from './GitHubRepoFilterBar'
 import InspirationItemsPanel from './InspirationItemsPanel'
@@ -64,7 +62,6 @@ const GitHubIntegrationPanel = (props: WorkDrawerQueryPanelProps<GitHubIntegrati
     viewer.meeting
   )
 
-  const atmosphere = useAtmosphere()
   const teamMember = meeting.viewerMeetingMember?.teamMember
 
   const {dateRange, setDateRange, onResultCount, getResultCount} = useInspirationDrawer(
@@ -89,26 +86,12 @@ const GitHubIntegrationPanel = (props: WorkDrawerQueryPanelProps<GitHubIntegrati
     .filter(Boolean)
     .join(' ')
 
-  const trackTabNavigated = (label: string) => {
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Tag Navigated', {
-      service: 'github',
-      buttonLabel: label
-    })
-  }
-
   const filterBar = teamMember ? (
     <>
       <GitHubRepoFilterBar
         teamMemberRef={teamMember}
         selectedRepos={selectedRepos}
-        setSelectedRepos={(repos) => {
-          SendClientSideEvent(atmosphere, 'Your Work Filter Changed', {
-            teamId,
-            meetingId,
-            service: 'github'
-          })
-          setSelectedRepos(repos)
-        }}
+        setSelectedRepos={setSelectedRepos}
       />
       <div className='mb-2 flex w-full gap-2 px-4'>
         {GITHUB_QUERY_TABS.map((tab) => (
@@ -122,10 +105,7 @@ const GitHubIntegrationPanel = (props: WorkDrawerQueryPanelProps<GitHubIntegrati
                 ? 'bg-surface-selected font-semibold text-fg-selected hover:bg-surface-selected focus:text-fg-selected'
                 : 'border border-hairline-strong bg-transparent hover:bg-surface-hover'
             )}
-            onClick={() => {
-              trackTabNavigated(tab.label)
-              setGithubType(tab.key)
-            }}
+            onClick={() => setGithubType(tab.key)}
           >
             {tab.label}
           </Button>

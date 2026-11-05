@@ -45,7 +45,7 @@ const ExpandedReflection = (props: Props) => {
       reflection.setValue(true, 'isEditing')
     })
   }
-  const cardRef = useRef<HTMLDivElement>()
+  const cardRef = useRef<HTMLDivElement>(undefined)
   const setRef = (c: HTMLDivElement) => {
     setItemsRef(idx)(c)
     cardRef.current = c

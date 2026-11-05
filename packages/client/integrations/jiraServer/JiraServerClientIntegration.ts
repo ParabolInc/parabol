@@ -76,10 +76,7 @@ export class JiraServerClientIntegration extends ClientIntegrationDefinition {
   readonly Icon = JiraServerSVG
   readonly logo: ProviderLogoAsset = {src: jiraServerLogo}
   readonly capabilities: ClientIntegrationCapabilities = {scoping, workDrawer}
-  readonly contactUs = {
-    url: ExternalLinks.INTEGRATIONS_JIRASERVER,
-    clickEvent: 'Clicked Jira Server Request Button'
-  }
+  readonly contactUs = {url: ExternalLinks.INTEGRATIONS_JIRASERVER}
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
     if (!provider) return
     JiraServerClientManager.openOAuth(atmosphere, provider.id, teamId, mutationProps)

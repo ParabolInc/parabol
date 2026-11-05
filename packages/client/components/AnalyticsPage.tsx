@@ -1,12 +1,9 @@
-import * as amplitude from '@amplitude/analytics-browser'
-import {datadogLogs} from '@datadog/browser-logs'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import ReactGA from 'react-ga4'
 import type {AnalyticsPageQuery} from '~/__generated__/AnalyticsPageQuery.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {LocalStorageKey} from '~/types/constEnums'
-import safeIdentify from '~/utils/safeIdentify'
 import {getAuthCookie} from '../utils/authCookie'
 import getContentGroup from '../utils/getContentGroup'
 
@@ -31,37 +28,7 @@ declare global {
   }
 }
 
-const {datadogClientToken, datadogService, googleAnalytics: gaMeasurementId} = window.__ACTION__
-const ignoreErrors = [
-  'Failed to update a ServiceWorker for scope',
-  'ResizeObserver loop limit exceeded'
-]
-
-const datadogEnabled = __PRODUCTION__ && datadogClientToken && datadogService
-if (datadogEnabled) {
-  datadogLogs.init({
-    beforeSend: (log) => !ignoreErrors.some((error) => log.message.includes(error)),
-    clientToken: datadogClientToken,
-    site: 'datadoghq.com',
-    service: datadogService,
-    version: __APP_VERSION__,
-    forwardErrorsToLogs: true,
-    sessionSampleRate: 100
-  })
-}
-
-if (window.__ACTION__.AMPLITUDE_WRITE_KEY) {
-  amplitude.init(window.__ACTION__.AMPLITUDE_WRITE_KEY, {
-    defaultTracking: {
-      attribution: false,
-      pageViews: false,
-      sessions: false,
-      formInteractions: false,
-      fileDownloads: false
-    },
-    logLevel: __PRODUCTION__ ? amplitude.Types.LogLevel.None : amplitude.Types.LogLevel.Debug
-  })
-}
+const {googleAnalytics: gaMeasurementId} = window.__ACTION__
 
 const AnalyticsPage = () => {
   const atmosphere = useAtmosphere()
@@ -102,18 +69,13 @@ const AnalyticsPage = () => {
     configGA()
   }, [ReactGA.isInitialized, atmosphere.viewerId])
 
-  const {href, pathname} = location
+  const {pathname} = location
 
   useEffect(() => {
     const cacheEmail = async () => {
       const token = await getAuthCookie(window)
-      // no token means authentication is required & authentication handles identify on its own
       if (!token) return
-      const cachedEmail = window.localStorage.getItem(LocalStorageKey.EMAIL)
-      if (cachedEmail) {
-        safeIdentify(atmosphere.viewerId, cachedEmail)
-        return
-      }
+      if (window.localStorage.getItem(LocalStorageKey.EMAIL)) return
 
       const res = await atmosphere.fetchQuery<AnalyticsPageQuery>(query)
       if (!res || res instanceof Error) return
@@ -121,7 +83,6 @@ const AnalyticsPage = () => {
       const {email} = viewer
       if (!email) return
       window.localStorage.setItem(LocalStorageKey.EMAIL, email)
-      safeIdentify(atmosphere.viewerId, email)
     }
     cacheEmail().catch(() => {
       /*ignore*/
@@ -134,53 +95,6 @@ const AnalyticsPage = () => {
       content_group: getContentGroup(pathname)
     })
   }, [pathname])
-
-  // page titles are changed in child components via useDocumentTitle, which fires after this
-  // we must guarantee that this runs after useDocumentTitle
-  // we can't move this into useDocumentTitle since the pathname may change without chaging the title
-  const TIME_TO_RENDER_TREE = 100
-  useEffect(() => {
-    setTimeout(async () => {
-      const title = document.title || ''
-      const [pageName] = title.split(' | ')
-      const translated = !!document.querySelector(
-        'html.translated-ltr, html.translated-rtl, ya-tr-span, *[_msttexthash], *[x-bergamot-translated]'
-      )
-      const userId = atmosphere.viewerId
-      if (userId) {
-        amplitude.track(
-          'Loaded a Page',
-          {
-            name: pageName,
-            referrer: document.referrer,
-            title,
-            path: pathname,
-            url: href,
-            translated,
-            search: location.search
-          },
-          {
-            user_id: userId
-          }
-        )
-      }
-    }, TIME_TO_RENDER_TREE)
-  }, [pathname, location.search, atmosphere.viewerId])
-
-  useEffect(() => {
-    if (!datadogEnabled) {
-      return
-    }
-
-    const {viewerId} = atmosphere
-    if (viewerId) {
-      datadogLogs.setUser({
-        id: atmosphere.viewerId
-      })
-    } else {
-      datadogLogs.clearUser()
-    }
-  }, [atmosphere, atmosphere.viewerId])
 
   return null
 }

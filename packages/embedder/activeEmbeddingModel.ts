@@ -1,4 +1,4 @@
-import {type ModelId} from './ai_models/modelIdDefinitions'
+import {type ModelId, modelIdDefinitions} from './ai_models/modelIdDefinitions'
 import {type EmbeddingsModelType, parseModelEnvVars} from './ai_models/parseModelEnvVars'
 
 // The goal here is to have a string constant of the table name available to the server
@@ -13,3 +13,6 @@ const getFirstModelId = () => {
   return modelId
 }
 export const activeEmbeddingModelId = getFirstModelId()
+export const activeEmbeddingDefinition = activeEmbeddingModelId
+  ? modelIdDefinitions[activeEmbeddingModelId]
+  : undefined

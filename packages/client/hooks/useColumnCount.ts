@@ -10,7 +10,7 @@ import useResizeObserver from './useResizeObserver'
  * pixel minimum would.
  */
 const useColumnCount = (
-  containerRef: RefObject<HTMLElement>,
+  containerRef: RefObject<HTMLElement | null>,
   minColWidth: number,
   gap: number,
   minColFraction = 0.4

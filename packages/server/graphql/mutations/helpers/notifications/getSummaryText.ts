@@ -1,5 +1,6 @@
 import relativeDate from 'parabol-client/utils/date/relativeDate'
 import plural from 'parabol-client/utils/plural'
+import {canShowTeamHealthScore} from '../../../../../client/shared/utils/teamHealthAnonymity'
 import getKysely from '../../../../postgres/getKysely'
 import type {AnyMeeting} from '../../../../postgres/types/Meeting'
 import averageTeamHealthScore from '../../../../utils/averageTeamHealthScore'
@@ -69,7 +70,12 @@ const getSummaryText = async (meeting: AnyMeeting) => {
       .execute()
     const respondentCount = new Set(responses.map(({userId}) => userId)).size
     const scores = responses.flatMap(({score}) => (score === null ? [] : [score]))
-    const averageScore = averageTeamHealthScore(scores)
+    const scorerIds = new Set(
+      responses.flatMap(({userId, score}) => (score === null ? [] : [userId]))
+    )
+    const averageScore = canShowTeamHealthScore(scorerIds.size)
+      ? averageTeamHealthScore(scores)
+      : null
     const commentCount = responses.filter(
       (response) => !!getTeamHealthDisplayComment(response)
     ).length

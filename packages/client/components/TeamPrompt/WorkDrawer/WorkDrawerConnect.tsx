@@ -1,14 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {WorkDrawerConnect_service$key} from '../../../__generated__/WorkDrawerConnect_service.graphql'
-import useAtmosphere from '../../../hooks/useAtmosphere'
 import useConnectIntegrationService from '../../../hooks/useConnectIntegrationService'
 import type {ClientIntegrationDefinition} from '../../../integrations/platform/ClientIntegrationDefinition'
 import {Button} from '../../../ui/Button/Button'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 
 interface Props {
-  meetingId: string
   teamId: string
   definition: ClientIntegrationDefinition
   connectDescription: string
@@ -16,8 +13,7 @@ interface Props {
 }
 
 const WorkDrawerConnect = (props: Props) => {
-  const {meetingId, teamId, definition, connectDescription, serviceRef} = props
-  const atmosphere = useAtmosphere()
+  const {teamId, definition, connectDescription, serviceRef} = props
   const integrationService = useFragment(
     graphql`
       fragment WorkDrawerConnect_service on IntegrationService {
@@ -32,16 +28,7 @@ const WorkDrawerConnect = (props: Props) => {
     integrationService,
     teamId
   )
-  const {service, title} = definition
-
-  const onConnect = () => {
-    if (!connect()) return
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Integration Connected', {
-      teamId,
-      meetingId,
-      service
-    })
-  }
+  const {title} = definition
 
   return (
     <div className='flex flex-col items-center gap-2 pt-12'>
@@ -57,7 +44,7 @@ const WorkDrawerConnect = (props: Props) => {
         size='md'
         className='mt-4 px-8'
         disabled={submitting}
-        onClick={onConnect}
+        onClick={connect}
       >
         Connect
       </Button>

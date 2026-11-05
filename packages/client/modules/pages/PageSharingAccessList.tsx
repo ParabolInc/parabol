@@ -77,6 +77,8 @@ export const PageSharingAccessList = (props: Props) => {
   const [execute] = useUpdatePageParentLinkMutation()
   const [executeClaimOwnership] = useUpdatePageAccessMutation()
   const isOrphan = useMemo(() => {
+    // only those granted access see who has it, & only they may claim an orphaned page
+    if (!viewerRole) return false
     const subjects = [...users, ...teams, ...organizations]
     return !subjects.some((subject) => subject.role === 'owner')
   }, [access])

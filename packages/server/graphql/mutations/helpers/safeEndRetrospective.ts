@@ -6,11 +6,11 @@ import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import TimelineEventRetroComplete from '../../../database/types/TimelineEventRetroComplete'
 import {sendSummaryEmail} from '../../../email/sendSummaryEmail'
+import {meetingsEnded} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import type {RetrospectiveMeeting} from '../../../postgres/types/Meeting'
 import archiveDoneTasksForMeeting from '../../../safeMutations/archiveDoneTasksForMeeting'
 import removeSuggestedAction from '../../../safeMutations/removeSuggestedAction'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import {Logger} from '../../../utils/Logger'
 import logError from '../../../utils/logError'
@@ -104,18 +104,14 @@ const safeEndRetrospective = async ({
     })
   }
   // remove any empty tasks
-  const {templateId} = completedRetrospective
   const isKill = !!(phase && phase.phaseType !== DISCUSS)
   const hasUpdatesPhase = phases.some((p) => p.phaseType === 'updates')
-  const [meetingMembers, team, teamMembers, removedTaskIds, template, updatedTaskIds] =
-    await Promise.all([
-      dataLoader.get('meetingMembersByMeetingId').load(meetingId),
-      dataLoader.get('teams').loadNonNull(teamId),
-      dataLoader.get('teamMembersByTeamId').load(teamId),
-      removeEmptyTasks(meetingId),
-      dataLoader.get('meetingTemplates').loadNonNull(templateId),
-      hasUpdatesPhase && !isKill ? archiveDoneTasksForMeeting(teamId, meetingId) : []
-    ])
+  const [team, teamMembers, removedTaskIds, updatedTaskIds] = await Promise.all([
+    dataLoader.get('teams').loadNonNull(teamId),
+    dataLoader.get('teamMembersByTeamId').load(teamId),
+    removeEmptyTasks(meetingId),
+    hasUpdatesPhase && !isKill ? archiveDoneTasksForMeeting(teamId, meetingId) : []
+  ])
   const events = teamMembers.map(
     (teamMember) =>
       new TimelineEventRetroComplete({
@@ -164,9 +160,7 @@ const safeEndRetrospective = async ({
   summarizeRetroMeeting(completedRetrospective, context).catch(Logger.log)
   // do not await sending the email
   if (page) sendSummaryEmail(meetingId, page.id, context, info).catch(Logger.log)
-  analytics
-    .retrospectiveEnd(completedRetrospective, meetingMembers, template, dataLoader)
-    .catch(Logger.log)
+  meetingsEnded.inc({meeting_type: completedRetrospective.meetingType})
 
   return data
 }

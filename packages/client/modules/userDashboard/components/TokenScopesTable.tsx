@@ -6,6 +6,7 @@ const SCOPE_GROUPS = [
   {resource: 'Meetings', read: 'MEETINGS_READ', write: 'MEETINGS_WRITE'},
   {resource: 'Organizations', read: 'ORGS_READ', write: 'ORGS_WRITE'},
   {resource: 'Pages', read: 'PAGES_READ', write: 'PAGES_WRITE'},
+  {resource: 'Reports', read: 'REPORTS_READ', write: 'REPORTS_WRITE'},
   {resource: 'Tasks', read: 'TASKS_READ', write: 'TASKS_WRITE'},
   {resource: 'Teams', read: 'TEAMS_READ', write: 'TEAMS_WRITE'},
   {resource: 'Templates', read: 'TEMPLATES_READ', write: 'TEMPLATES_WRITE'},

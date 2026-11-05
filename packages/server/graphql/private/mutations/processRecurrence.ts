@@ -1,5 +1,4 @@
 import dayjs from 'dayjs'
-import tracer from 'dd-trace'
 import {sql} from 'kysely'
 import ms from 'ms'
 import {DateTime, RRuleSet} from 'rrule-rust'
@@ -9,6 +8,7 @@ import AuthToken from '../../../database/types/AuthToken'
 import {getNewDataLoader} from '../../../dataloader/getNewDataLoader'
 import getKysely from '../../../postgres/getKysely'
 import {selectNewMeetings} from '../../../postgres/select'
+import traceAsync from '../../../tracing/traceAsync'
 import standardError from '../../../utils/standardError'
 import getDefaultTeamFacilitator from '../../mutations/helpers/getDefaultTeamFacilitator'
 import remindTeamHealthResponders from '../../mutations/helpers/remindTeamHealthResponders'
@@ -44,7 +44,7 @@ const processRecurrence: MutationResolvers['processRecurrence'] = checkSequentia
       .where('endedAt', 'is', null)
       .execute()
 
-    const res = await tracer.trace('processRecurrence.endMeetings', async () =>
+    const res = await traceAsync('processRecurrence.endMeetings', async () =>
       Promise.all(
         meetingsToEnd.map(async (meeting) => {
           const {facilitatorUserId} = meeting
@@ -79,7 +79,7 @@ const processRecurrence: MutationResolvers['processRecurrence'] = checkSequentia
 
     const meetingsEnded = res.filter((res) => !('error' in res)).length
 
-    const remindersSent = await tracer.trace('processRecurrence.remindTeamHealthResponders', () =>
+    const remindersSent = await traceAsync('processRecurrence.remindTeamHealthResponders', () =>
       remindTeamHealthResponders(mutatorId)
     )
 
@@ -108,7 +108,7 @@ const processRecurrence: MutationResolvers['processRecurrence'] = checkSequentia
       questionIdsByGroupId.set(groupId, pending)
       return pending
     }
-    await tracer.trace('processRecurrence.startActiveMeetingSeries', async () =>
+    await traceAsync('processRecurrence.startActiveMeetingSeries', async () =>
       Promise.allSettled(
         activeMeetingSeries.map(async (meetingSeries) => {
           const {teamId, id: meetingSeriesId, recurrenceRule, facilitatorId} = meetingSeries
@@ -187,16 +187,16 @@ const processRecurrence: MutationResolvers['processRecurrence'] = checkSequentia
             const questionIds = await getSharedQuestionIds(meetingSeries)
             const seriesDataLoader = getNewDataLoader('processRecurrence.startRecurringMeeting')
             const subOptions = {mutatorId, operationId: seriesDataLoader.share()}
-            const res = await tracer
-              .trace('startRecurringMeeting', async (span) => {
-                span?.addTags({meetingSeriesId})
-                return startRecurringMeeting(meetingSeries, seriesDataLoader, subOptions, {
+            const res = await traceAsync(
+              'startRecurringMeeting',
+              () =>
+                startRecurringMeeting(meetingSeries, seriesDataLoader, subOptions, {
                   // the series row was just rotated, so meetingSeries still holds the departed one
                   facilitatorId: runFacilitatorId,
                   questionIds
-                })
-              })
-              .finally(() => seriesDataLoader.dispose())
+                }),
+              {meetingSeriesId}
+            ).finally(() => seriesDataLoader.dispose())
             if (!('error' in res)) meetingsStarted++
           }
         })

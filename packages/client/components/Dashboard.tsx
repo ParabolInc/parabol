@@ -47,6 +47,19 @@ const NewTeam = lazy(
 const PageRoot = lazy(() => import(/* webpackChunkName: 'PageRoot' */ '../modules/pages/PageRoot'))
 const MakePage = lazy(() => import(/* webpackChunkName: 'MakePage' */ '../modules/pages/MakePage'))
 
+const ReportsRoot = lazy(
+  () => import(/* webpackChunkName: 'ReportsRoot' */ '../modules/reports/ReportsRoot')
+)
+const ReportsHomeRoot = lazy(
+  () => import(/* webpackChunkName: 'ReportsHomeRoot' */ '../modules/reports/ReportsHomeRoot')
+)
+const ReportPageRoot = lazy(
+  () => import(/* webpackChunkName: 'ReportPageRoot' */ '../modules/reports/ReportPageRoot')
+)
+const ReportPinRoot = lazy(
+  () => import(/* webpackChunkName: 'ReportPinRoot' */ '../modules/reports/ReportPinRoot')
+)
+
 const ShareTopicRouterRoot = lazy(
   () => import(/* webpackChunkName: 'ShareTopicRouterRoot' */ './ShareTopicRouterRoot')
 )
@@ -144,6 +157,10 @@ const Dashboard = (props: Props) => {
               <Route path='/newteam' element={<NewTeam />} />
               <Route path='/pages/:pageSlug' element={<PageRoot viewerRef={viewer} />} />
               <Route path='/pages' element={<MakePage />} />
+              <Route path='/reports' element={<ReportsRoot />} />
+              <Route path='/reports/:orgId' element={<ReportsHomeRoot />} />
+              <Route path='/reports/:orgId/report' element={<ReportPageRoot />} />
+              <Route path='/reports/:orgId/pins/:pinParam' element={<ReportPinRoot />} />
               <Route
                 path='/new-summary/:meetingId/share/:stageId'
                 element={<ShareTopicRouterRoot />}

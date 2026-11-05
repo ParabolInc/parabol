@@ -144,7 +144,9 @@ const EndRetrospectiveMutation: StandardMutation<
       if (onCompleted) {
         onCompleted(res, errors)
       }
-      endRetrospectiveTeamOnNext(res.endRetrospective as any, {
+      const payload = res.endRetrospective.EndRetrospectiveMutation_team
+      if (!payload) return
+      endRetrospectiveTeamOnNext(payload, {
         atmosphere,
         navigate
       })

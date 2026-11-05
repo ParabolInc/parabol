@@ -140,10 +140,9 @@ export const ImportDatabaseDialog = (props: Props) => {
         }
       })
 
-      const provider = providerManager.register(pageId)
-      const {document: doc} = provider
-
-      importRecords(doc, viewerId, records, {firstRowIsHeader})
+      providerManager.withDoc(pageId, ({document: doc}) => {
+        importRecords(doc, viewerId, records, {firstRowIsHeader})
+      })
     } catch (error) {
       console.error('Failed to import records', error)
       atmosphere.eventEmitter.emit('addSnackbar', {

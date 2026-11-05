@@ -109,8 +109,7 @@ describe('clientIntegrations registry', () => {
       .map(([key]) => key)
     expect(advertised).toEqual(['jiraServer'])
     expect(clientIntegrations.jiraServer.contactUs).toEqual({
-      url: 'https://www.parabol.co/integrations/jira-server',
-      clickEvent: 'Clicked Jira Server Request Button'
+      url: 'https://www.parabol.co/integrations/jira-server'
     })
   })
 

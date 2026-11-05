@@ -1,11 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import type {NewMeetingSettingsUpgradeForTeamHealth_team$key} from '~/__generated__/NewMeetingSettingsUpgradeForTeamHealth_team.graphql'
 import {Lock} from '~/ui/icons'
-import useAtmosphere from '../hooks/useAtmosphere'
 import {cn} from '../ui/cn'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 import PlainButton from './PlainButton/PlainButton'
 
 interface Props {
@@ -26,22 +23,8 @@ const NewMeetingSettingsToggleTeamHealth = (props: Props) => {
   )
 
   const {orgId} = team
-  const atmosphere = useAtmosphere()
-
-  useEffect(() => {
-    SendClientSideEvent(atmosphere, 'Upgrade CTA Viewed', {
-      upgradeCTALocation: 'meetingSettingsTeamHealth',
-      meetingType: 'retrospective',
-      orgId
-    })
-  }, [])
 
   const handleUpgrade = () => {
-    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
-      upgradeCTALocation: 'meetingSettingsTeamHealth',
-      meetingType: 'retrospective',
-      orgId
-    })
     window.open(`/me/organizations/${orgId}/billing`, '_blank', 'noreferrer')
   }
 

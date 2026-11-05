@@ -99,7 +99,7 @@ describe('fetchUntrusted', () => {
     mod: typeof import('../fetchUntrusted'),
     path: string,
     maxSize = 1_000_000,
-    options?: {headers?: Record<string, string>; maxRedirects?: number},
+    options?: Parameters<(typeof mod)['fetchUntrusted']>[2],
     host = '127.0.0.1'
   ) => mod.fetchUntrusted(`http://${host}:${port}${path}`, maxSize, options)
 
@@ -181,6 +181,20 @@ describe('fetchUntrusted', () => {
 
     test('enforces maxSize while streaming a chunked body', async () => {
       expect(await get(loadFetchUntrusted(LOOPBACK_HOSTS), '/big-chunked', 1000)).toBe(null)
+    })
+
+    test('truncates past the declared content-length when asked to', async () => {
+      const res = await get(loadFetchUntrusted(LOOPBACK_HOSTS), '/big', 1000, {
+        onOverflow: 'truncate'
+      })
+      expect(res?.buffer.toString()).toBe('x'.repeat(1000))
+    })
+
+    test('truncates a chunked body when asked to', async () => {
+      const res = await get(loadFetchUntrusted(LOOPBACK_HOSTS), '/big-chunked', 1000, {
+        onOverflow: 'truncate'
+      })
+      expect(res?.buffer.toString()).toBe('x'.repeat(1000))
     })
 
     test('accepts a body under maxSize', async () => {

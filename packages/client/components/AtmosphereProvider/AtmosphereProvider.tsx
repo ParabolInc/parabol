@@ -1,4 +1,4 @@
-import {type ReactNode, useEffect, useState} from 'react'
+import {type ReactNode, useEffect, useRef, useState} from 'react'
 import {RelayEnvironmentProvider} from 'react-relay'
 import type {Environment} from 'relay-runtime'
 import Atmosphere from '../../Atmosphere'
@@ -26,15 +26,13 @@ const AtmosphereProvider = (props: Props) => {
     return undefined
   }, [atmosphere, getLocalAtmosphere])
 
+  const localAtmosphereRef = useRef<Promise<Environment> | null>(null)
   useEffect(() => {
     if (getLocalAtmosphere) {
-      getLocalAtmosphere()
-        .then((mod) => {
-          setAtmosphere(new mod.default())
-        })
-        .catch(() => {
-          /*ignore*/
-        })
+      localAtmosphereRef.current ??= getLocalAtmosphere().then((mod) => new mod.default())
+      localAtmosphereRef.current.then(setAtmosphere).catch(() => {
+        /*ignore*/
+      })
     }
   }, [getLocalAtmosphere])
 

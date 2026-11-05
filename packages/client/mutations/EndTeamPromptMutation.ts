@@ -103,9 +103,9 @@ const EndTeamPromptMutation: StandardMutation<TEndTeamPromptMutation, NavigateMa
       if (onCompleted) {
         onCompleted(res, errors)
       }
-      const payload = res?.endTeamPrompt
+      const payload = res?.endTeamPrompt?.EndTeamPromptMutation_team
       if (!payload) return
-      endTeamPromptTeamOnNext(payload as any, {
+      endTeamPromptTeamOnNext(payload, {
         atmosphere,
         navigate
       })

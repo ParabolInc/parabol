@@ -4,6 +4,7 @@ import {Plugin, TextSelection} from '@tiptap/pm/state'
 import {isNodeSelection, type JSONContent, ReactNodeViewRenderer} from '@tiptap/react'
 import type * as Y from 'yjs'
 import {PageLinkBlockBase} from '../../../shared/tiptap/extensions/PageLinkBlockBase'
+import {type GetPageViewerAccess, keepUnownedPageLinksPlugin} from './keepUnownedPageLinksPlugin'
 import {PageLinkBlockView} from './PageLinkBlockView'
 
 declare module '@tiptap/core' {
@@ -20,10 +21,16 @@ declare module '@tiptap/core' {
 interface PageLinkBlockStorage {
   yDoc: Y.Doc
 }
-export const PageLinkBlock = PageLinkBlockBase.extend<{yDoc: Y.Doc}, PageLinkBlockStorage>({
+interface PageLinkBlockOptions {
+  yDoc: Y.Doc
+  getViewerAccess: GetPageViewerAccess
+}
+
+export const PageLinkBlock = PageLinkBlockBase.extend<PageLinkBlockOptions, PageLinkBlockStorage>({
   addOptions: () => ({
     // hack to enforce document
-    yDoc: undefined as any
+    yDoc: undefined as any,
+    getViewerAccess: () => undefined
   }),
   addStorage(this) {
     const {options} = this
@@ -61,6 +68,7 @@ export const PageLinkBlock = PageLinkBlockBase.extend<{yDoc: Y.Doc}, PageLinkBlo
   },
   addProseMirrorPlugins() {
     return [
+      keepUnownedPageLinksPlugin(this.options.getViewerAccess),
       new Plugin({
         props: {
           // if a canonical link gets pasted, make sure it doesn't already exist in the doc. There can only be 1!

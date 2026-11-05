@@ -18,7 +18,7 @@ interface Props {
   stageRef: PokerDimensionFinalScorePicker_stage$key
   error?: string | null
   submitScore: () => void
-  inputRef: RefObject<HTMLInputElement>
+  inputRef: RefObject<HTMLInputElement | null>
 }
 
 const PokerDimensionFinalScorePicker = (props: Props) => {

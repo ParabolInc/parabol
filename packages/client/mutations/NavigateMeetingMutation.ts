@@ -126,10 +126,7 @@ export const navigateMeetingTeamUpdater: SharedUpdater<NavigateMeetingMutation_t
   const viewerStageId = safeProxy(meeting).getLinkedRecord('localStage').getValue('id')
   const facilitatorStageId = safeProxy(meeting).getValue('facilitatorStageId')
   const oldMeeting = getBaseRecord(store, meetingId)
-  if (!oldMeeting) {
-    console.error(`No base meeting object found in Relay ${meetingId}`)
-    return
-  }
+  if (!oldMeeting) return
   if (viewerStageId === oldMeeting.facilitatorStageId) {
     const viewerPhaseType = meeting
       .getLinkedRecord('localPhase')!

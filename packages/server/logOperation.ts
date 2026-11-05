@@ -1,19 +1,31 @@
-const AUDIT_LOGS = process.env.AUDIT_LOGS === 'true'
-export const logOperation = (
-  userId: string,
-  ip: string,
-  operation: string,
-  variables: Record<string, any>
-) => {
-  if (!AUDIT_LOGS) return
-  const auditLog = {
-    time: new Date().toISOString(),
-    level: 'info',
-    type: 'audit',
-    userId,
+import type AuthToken from './database/types/AuthToken'
+import writeAuditLog from './utils/writeAuditLog'
+
+interface AuditedOperation {
+  authToken: AuthToken | null
+  personalAccessTokenId?: string
+  ip: string
+  operation: string
+  variables: unknown
+  failureReason?: string
+}
+
+export const logOperation = ({
+  authToken,
+  personalAccessTokenId,
+  ip,
+  operation,
+  variables,
+  failureReason
+}: AuditedOperation) => {
+  writeAuditLog({
+    userId: authToken?.sub ?? '',
+    ...(authToken?.act && {impersonatorId: authToken.act.sub}),
+    ...(personalAccessTokenId && {personalAccessTokenId}),
     ipAddress: ip,
     operation,
-    variables
-  }
-  console.log(JSON.stringify(auditLog))
+    variables,
+    outcome: failureReason === undefined ? 'success' : 'failure',
+    ...(failureReason !== undefined && {reason: failureReason})
+  })
 }

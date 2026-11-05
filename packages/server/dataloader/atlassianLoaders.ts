@@ -11,6 +11,7 @@ import {selectAtlassianAuth} from '../postgres/select'
 import type {AtlassianAuth} from '../postgres/types'
 import AtlassianServerManager, {
   type JiraIssueRaw,
+  JiraNoAccessResponseError,
   type JiraProject
 } from '../utils/AtlassianServerManager'
 import {hasDefaultEstimationField, isValidEstimationField} from '../utils/atlassian/jiraFields'
@@ -316,7 +317,9 @@ export const jiraIssue = (
             }
           )
           if (issueRes instanceof Error) {
-            logError(issueRes, {userId, tags: {cloudId, issueKey, teamId}})
+            if (!(issueRes instanceof JiraNoAccessResponseError)) {
+              logError(issueRes, {userId, tags: {cloudId, issueKey, teamId}})
+            }
             return null
           }
           return issueRes

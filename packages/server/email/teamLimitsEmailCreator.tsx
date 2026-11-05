@@ -7,7 +7,6 @@ import {Threshold} from '../../client/types/constEnums'
 import makeAppURL from '../../client/utils/makeAppURL'
 import appOrigin from '../appOrigin'
 import type {TeamLimitsEmailType} from '../billing/helpers/sendTeamsLimitEmail'
-import {analytics} from '../utils/analytics/analytics'
 import emailTemplate from './emailTemplate'
 
 const textOnlySummary = (props: Props) => {
@@ -61,8 +60,6 @@ const textOnlySummary = (props: Props) => {
 }
 
 interface Props {
-  userId: string
-  email: string
   preferredName: string
   orgId: string
   orgName: string
@@ -70,7 +67,7 @@ interface Props {
 }
 
 const teamLimitsEmailCreator = (props: Props) => {
-  const {userId, email, preferredName, orgId, emailType, orgName} = props
+  const {preferredName, orgId, emailType, orgName} = props
   const Email =
     emailType === 'locked'
       ? LockedEmail
@@ -94,8 +91,6 @@ const teamLimitsEmailCreator = (props: Props) => {
     previewText: subject,
     bgColor: PALETTE.SLATE_200
   })
-
-  analytics.notificationEmailSent({id: userId, email}, orgId, emailType)
 
   return {
     subject,

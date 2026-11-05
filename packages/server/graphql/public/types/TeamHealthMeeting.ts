@@ -1,4 +1,4 @@
-import {isAnonymousRespondentCount} from '../../../../client/shared/utils/teamHealthAnonymity'
+import {canShowRespondentDetails} from '../../../../client/shared/utils/teamHealthAnonymity'
 import {selectNewMeetings} from '../../../postgres/select'
 import {getUserId} from '../../../utils/authorization'
 import type {TeamHealthMeetingResolvers} from '../resolverTypes'
@@ -26,7 +26,7 @@ const TeamHealthMeeting: TeamHealthMeetingResolvers = {
   respondentUserIds: async ({id: meetingId}, _args, {dataLoader}) => {
     const responses = await dataLoader.get('teamHealthResponsesByMeetingId').load(meetingId)
     const respondentUserIds = [...new Set(responses.map((response) => response.userId))]
-    return isAnonymousRespondentCount(respondentUserIds.length) ? respondentUserIds : []
+    return canShowRespondentDetails(respondentUserIds.length) ? respondentUserIds : []
   },
   isViewerComplete: async ({id: meetingId, phases}, _args, {authToken, dataLoader}) => {
     const responsePhase = phases.find((phase) => phase.phaseType === 'TEAM_HEALTH_RESPONSE')

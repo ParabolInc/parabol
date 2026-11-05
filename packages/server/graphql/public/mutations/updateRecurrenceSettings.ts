@@ -5,7 +5,6 @@ import {DateTime, RRuleSet} from 'rrule-rust'
 import getKysely from '../../../postgres/getKysely'
 import type {MeetingSeries} from '../../../postgres/types'
 import type {MeetingTypeEnum} from '../../../postgres/types/Meeting'
-import {type AnalyticsUser, analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
 import publish from '../../../utils/publish'
@@ -163,7 +162,6 @@ export const stopMeetingSeries = async (meetingSeries: MeetingSeries) => {
 export const applySeriesRecurrence = async (
   meetingSeries: MeetingSeries,
   {rrule, name}: {rrule: RRuleSet | null; name?: string | null},
-  viewer: AnalyticsUser,
   dataLoader: DataLoaderWorker
 ) => {
   const pg = getKysely()
@@ -178,7 +176,6 @@ export const applySeriesRecurrence = async (
 
   if (!rrule) {
     await stopMeetingSeriesGroup(meetingSeries)
-    analytics.recurrenceStopped(viewer, meetingSeries)
   } else if (cancelledAt) {
     // Restart a cancelled series: clear cancelledAt and update recurrenceRule atomically
     await pg
@@ -186,7 +183,6 @@ export const applySeriesRecurrence = async (
       .set({cancelledAt: null, recurrenceRule: rrule.toString()})
       .where('id', 'in', seriesIds)
       .execute()
-    analytics.recurrenceStarted(viewer, meetingSeries)
   } else {
     await pg
       .updateTable('MeetingSeries')
@@ -210,7 +206,6 @@ export const applySeriesRecurrence = async (
         )
         .execute()
     }
-    analytics.recurrenceStarted(viewer, meetingSeries)
   }
 
   if (name) {
@@ -261,10 +256,7 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
   const rrule = rruleString ? RRuleSet.parse(rruleString) : null
 
   // VALIDATION
-  const [meeting, viewer] = await Promise.all([
-    dataLoader.get('newMeetings').load(meetingId),
-    dataLoader.get('users').loadNonNull(viewerId)
-  ])
+  const meeting = await dataLoader.get('newMeetings').load(meetingId)
   if (!meeting) {
     return standardError(new Error('Meeting not found'), {
       userId: viewerId
@@ -288,7 +280,7 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
       })
     }
     const wasCancelled = !!meetingSeries.cancelledAt
-    await applySeriesRecurrence(meetingSeries, {rrule, name}, viewer, dataLoader)
+    await applySeriesRecurrence(meetingSeries, {rrule, name}, dataLoader)
     if (rrule && wasCancelled) {
       // this meeting is the one being restarted, so it closes when the revived rule next fires
       await pg
@@ -305,10 +297,9 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
       )
     }
 
-    const newMeetingSeries = await startNewMeetingSeries(meeting, rrule, name, {
+    await startNewMeetingSeries(meeting, rrule, name, {
       templateId: meeting.templateId
     })
-    analytics.recurrenceStarted(viewer, newMeetingSeries)
   }
 
   dataLoader.clearAll(['newMeetings', 'meetingSeries'])

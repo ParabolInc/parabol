@@ -184,12 +184,12 @@ export const rawOnPointerUp =
         if (dropTarget) {
           const dropTargetParent = dropTarget.parent as Y.XmlElement
           dropTargetParent.insertAfter(dropTarget, [
-            createPageLinkElement(pageCode, title, isDatabase) as Y.XmlElement
+            createPageLinkElement(pageCode, title, !!isDatabase) as Y.XmlElement
           ])
         } else {
           // this will be the first page link, put it at the top just below the title
           const frag = document.getXmlFragment('default')
-          frag.insert(1, [createPageLinkElement(pageCode, title, isDatabase) as Y.XmlElement])
+          frag.insert(1, [createPageLinkElement(pageCode, title, !!isDatabase) as Y.XmlElement])
         }
       })
     } else {

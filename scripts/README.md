@@ -4,12 +4,14 @@ To begin development, run `pnpm dev` (`node scripts/dev.mts`).
 It runs the whole stack as 1 foreground process, so ctrl+c stops everything.
 
 - A git worktree that has no `.env` yet gets a copy of the one in the main checkout
+- `pnpm install --frozen-lockfile` runs before any task starts, so `node_modules` catches up with a pull or a branch switch that changed dependencies
 - If `PORT` & `SOCKET_PORT` are taken, e.g. by the stack of another worktree, both move up by 10 until they are free
 - `pnpm dev --isolated` gives the checkout its own database (`<POSTGRES_DB>_<directory name>`), its own valkey db, local file storage & the debug mailer
 - `pnpm dev --mattermost` also runs the Mattermost plugin dev server
 - `DEV_RUN_ONLY` runs a subset of the tasks. It is a comma-separated list of: Webpack Servers, Socket Server, Embedder, Dev Server, Flush Valkey, PG Migrations, Relay Compiler, GraphQL Codegen, Kysely Codegen
 - `pnpm dev:status` prints where the stack is served & whether it is ready. `pnpm dev:status --wait` blocks until it is
 - `pnpm dev:login someone@example.com` writes a Playwright storageState for that user to `dev/auth`, signing them up first if needed
+- `pnpm dev:seed someone@example.com` adds Copper, a sample organization with a year of meetings, tasks and Team Health checks and Reports turned on, and makes that user its billing leader. `--starter` puts it on the Starter plan
 - Every task logs to `dev/logs/<task>.log`
 
 The dev scripts are TypeScript that node runs as is, without a build step.

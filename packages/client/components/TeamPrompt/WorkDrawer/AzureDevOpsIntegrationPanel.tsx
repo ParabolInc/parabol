@@ -2,13 +2,11 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment, usePreloadedQuery} from 'react-relay'
 import type {AzureDevOpsIntegrationPanel_meeting$key} from '../../../__generated__/AzureDevOpsIntegrationPanel_meeting.graphql'
 import type {AzureDevOpsIntegrationPanelQuery} from '../../../__generated__/AzureDevOpsIntegrationPanelQuery.graphql'
-import useAtmosphere from '../../../hooks/useAtmosphere'
 import useInspirationDrawer from '../../../hooks/useInspirationDrawer'
 import useSessionStorageState from '../../../hooks/useSessionStorageState'
 import {getAzureDevOpsSharedProjects} from '../../../integrations/azureDevOps/azureDevOpsSharedProjects'
 import type {WorkDrawerQueryPanelProps} from '../../../integrations/platform/ClientIntegrationDefinition'
 import buildAzureDevOpsWorkWiql from '../../../shared/integrations/buildAzureDevOpsWorkWiql'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import AzureDevOpsIntegrationResultsRoot from './AzureDevOpsIntegrationResultsRoot'
 import AzureDevOpsProjectFilterBar from './AzureDevOpsProjectFilterBar'
 import InspirationItemsPanel from './InspirationItemsPanel'
@@ -54,7 +52,6 @@ const AzureDevOpsIntegrationPanel = (
     `,
     viewer.meeting
   )
-  const atmosphere = useAtmosphere()
   const teamMember = meeting.viewerMeetingMember?.teamMember
   const {projects: sharedProjects, isListed} = getAzureDevOpsSharedProjects(teamMember?.services)
   const {dateRange, setDateRange, onResultCount, getResultCount} = useInspirationDrawer(
@@ -82,14 +79,7 @@ const AzureDevOpsIntegrationPanel = (
         <AzureDevOpsProjectFilterBar
           teamMemberRef={teamMember}
           selectedProjectIds={selectedProjectIds}
-          setSelectedProjectIds={(projectIds) => {
-            SendClientSideEvent(atmosphere, 'Your Work Filter Changed', {
-              teamId,
-              meetingId,
-              service: 'azureDevOps'
-            })
-            setSelectedProjectIds(projectIds)
-          }}
+          setSelectedProjectIds={setSelectedProjectIds}
         />
       </div>
       {!sharesNothing && (
