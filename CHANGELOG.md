@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.18.0](https://github.com/ParabolInc/parabol/compare/v15.17.1...v15.18.0) (2026-11-05)
+
+
+### Added
+
+* **server:** run with a read-only root filesystem ([#13976](https://github.com/ParabolInc/parabol/issues/13976)) ([65d9f9d](https://github.com/ParabolInc/parabol/commit/65d9f9d0da8f03c7cbfda5228a5e0225489624cc))
+
+
+### Fixed
+
+* **server:** refresh Jira tokens a few at a time instead of all at once ([#13966](https://github.com/ParabolInc/parabol/issues/13966)) ([c508567](https://github.com/ParabolInc/parabol/commit/c5085677dc14641e84546f14120fb1c8f5c2eb0a))
+* space the Done button below the new token ([#13975](https://github.com/ParabolInc/parabol/issues/13975)) ([be9a21b](https://github.com/ParabolInc/parabol/commit/be9a21b4d37999df8113f9eae35bcc7017ad4b5d))
+* stop the meeting avatar row from flickering in large meetings ([#13978](https://github.com/ParabolInc/parabol/issues/13978)) ([98af5b8](https://github.com/ParabolInc/parabol/commit/98af5b83d6635265b3e4a923e1ea825fc0d264d7))
+
+
+### Changed
+
+* work drawers go through the integration registry ([#13658](https://github.com/ParabolInc/parabol/issues/13658)) ([ec9029b](https://github.com/ParabolInc/parabol/commit/ec9029b8af5df96013135d752ef8d66ca58aeacc))
+
 ## [15.17.1](https://github.com/ParabolInc/parabol/compare/v15.17.0...v15.17.1) (2026-11-05)
 
 
