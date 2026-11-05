@@ -1,6 +1,7 @@
 import type {HttpResponse} from 'uWebSockets.js'
 import {createHistogram, usePrometheus} from '@graphql-yoga/plugin-prometheus'
 import {Counter, collectDefaultMetrics, Gauge, Histogram, Registry} from 'prom-client'
+import {FIRST_FILL_PRIORITY} from '../embedder/getEmbedderJobPriority'
 import {activeClients} from './activeClients'
 import getKysely from './postgres/getKysely'
 import type {Embeddingsjobstateenum} from './postgres/types/pg'
@@ -233,7 +234,7 @@ const EMBEDDER_JOB_STATES = [
 
 new Gauge({
   name: 'parabol_embedder_jobs',
-  help: 'Jobs in the embedder queue by state. Every web server reports the same totals, so aggregate with max',
+  help: "Jobs in the embedder queue by state, without a new model's fill. Every web server reports the same totals, so aggregate with max",
   labelNames: ['state'] as const,
   registers: [register],
   async collect() {
@@ -241,6 +242,7 @@ new Gauge({
       const jobCounts = await getKysely()
         .selectFrom('EmbeddingsJobQueueV2')
         .select(({fn}) => ['state', fn.countAll<string>().as('jobs')])
+        .where('priority', '<', FIRST_FILL_PRIORITY)
         .groupBy('state')
         .execute()
       const jobsByState = new Map(jobCounts.map(({state, jobs}) => [state, Number(jobs)]))
