@@ -145,7 +145,6 @@ export const yoga = createYoga<ServerContext, UserContext>({
         'archiveOrganization',
         'archiveTeam',
         'assignSAMLIdToOrg',
-        'backupOrganization',
         'changeEmailDomain',
         'createImposterToken',
         'createOAuth1AuthorizeUrl',
