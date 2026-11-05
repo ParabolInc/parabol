@@ -1,26 +1,22 @@
 import fs from 'fs'
 import {minify} from 'html-minifier-terser'
 import path from 'path'
-import appOrigin from '../../packages/server/appOrigin'
-import {makeOAuth2Redirect} from '../../packages/server/utils/makeOAuth2Redirect'
-import logo192 from '../../static/images/brand/mark-cropped-192.png'
-import logo512 from '../../static/images/brand/mark-cropped-512.png'
-import socialCard from '../../static/images/brand/social-card.jpg'
-import getProjectRoot from '../webpack/utils/getProjectRoot'
+import getProjectRoot from '../../../scripts/webpack/utils/getProjectRoot'
+import logo192 from '../../../static/images/brand/mark-cropped-192.png'
+import logo512 from '../../../static/images/brand/mark-cropped-512.png'
+import socialCard from '../../../static/images/brand/social-card.jpg'
+import appOrigin from '../appOrigin'
+import {makeOAuth2Redirect} from './makeOAuth2Redirect'
 
 const PROJECT_ROOT = getProjectRoot()
 const clientDir = path.join(PROJECT_ROOT, 'build')
 
 const rewriteServiceWorker = () => {
   const skeleton = fs.readFileSync(path.join(clientDir, 'swSkeleton.js'), 'utf-8')
-  const deploySpecificServiceWorker = skeleton.replaceAll(
-    '__PUBLIC_PATH__',
-    __webpack_public_path__
-  )
-  fs.writeFileSync(path.join(clientDir, 'sw.js'), deploySpecificServiceWorker)
+  return skeleton.replaceAll('__PUBLIC_PATH__', __webpack_public_path__)
 }
 
-const writeManifest = () => {
+const makeManifest = () => {
   // If src is relative, then it will be relative to the manifest location, so manifest.json must be at root /
   const manifest = {
     short_name: 'Parabol',
@@ -45,8 +41,7 @@ const writeManifest = () => {
     scope: '/',
     theme_color: '#493272'
   }
-  const manifestPath = path.join(clientDir, 'manifest.json')
-  fs.writeFileSync(manifestPath, JSON.stringify(manifest))
+  return JSON.stringify(manifest)
 }
 
 const rewriteIndexHTML = () => {
@@ -99,14 +94,14 @@ const rewriteIndexHTML = () => {
     .replace('<head>', `<head>${noindex}${keys}`)
     .replace('</head>', `${socialImage}</head>`)
     .replaceAll('__PUBLIC_PATH__', __webpack_public_path__.replace(/\/$/, ''))
-  const minifiedHTML = minify(rawHTML, {
+  // html-minifier-terser 5 returns a string. Its types are for 7, which returns a Promise
+  return minify(rawHTML, {
     collapseBooleanAttributes: true,
     collapseWhitespace: true,
     minifyJS: true,
     removeScriptTypeAttributes: true,
     removeComments: true
-  })
-  fs.writeFileSync(path.join(clientDir, 'index.html'), minifiedHTML)
+  }) as unknown as string
 }
 
 const rewriteMattermostEnv = () => {
@@ -118,20 +113,23 @@ const rewriteMattermostEnv = () => {
 
   const skeleton = fs.readFileSync(path.join(clientDir, 'mattermost-plugin_envSkeleton.js'), 'utf8')
 
-  const replaced = Object.entries(config).reduce((acc, [key, value]) => {
+  return Object.entries(config).reduce((acc, [key, value]) => {
     return acc.replace(key, value)
   }, skeleton)
-  fs.writeFileSync(path.join(clientDir, 'mattermost-plugin_env.js'), replaced)
 }
 
+const makeClientAssets = () => ({
+  'sw.js': rewriteServiceWorker(),
+  'index.html': rewriteIndexHTML(),
+  'mattermost-plugin_env.js': rewriteMattermostEnv(),
+  'manifest.json': makeManifest()
+})
+
+let clientAssets: ReturnType<typeof makeClientAssets> | undefined
+
+// These client files depend on the env vars, so each process makes them from the build's skeletons.
+// They are held in memory, not written to /build, so the root filesystem can be read-only
 export const applyEnvVarsToClientAssets = () => {
-  // When web.js starts, serveStatic generates a whitelist of all valid built assets
-  // so users cannot trigger a disk read by requesting an asset that may not exist (0days often involve disk reads)
-  // That means this script must run synchronusly and complete before web.js starts
-  rewriteServiceWorker()
-  rewriteIndexHTML()
-  rewriteMattermostEnv()
-  writeManifest()
+  clientAssets ??= makeClientAssets()
+  return clientAssets
 }
-
-if (require.main === module) applyEnvVarsToClientAssets()

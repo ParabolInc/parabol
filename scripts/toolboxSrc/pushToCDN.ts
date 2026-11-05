@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import getFileStoreManager from '../../packages/server/fileStorage/getFileStoreManager'
+import {applyEnvVarsToClientAssets} from '../../packages/server/utils/applyEnvVarsToClientAssets'
 import {Logger} from '../../packages/server/utils/Logger'
 import getProjectRoot from '../webpack/utils/getProjectRoot'
 
@@ -20,19 +21,28 @@ const pushClientAssetsToCDN = async () => {
   const dirEnts = await fs.promises.readdir(localClientAssetsDir, {
     withFileTypes: true
   })
-  const chunks = chunk(dirEnts, 50)
+  // index.html, sw.js & the like are made in memory from the env vars, they are not in the build dir
+  const madeFiles = new Map(Object.entries(applyEnvVarsToClientAssets()))
+  const builtNames = dirEnts.map((dirent) => {
+    if (!dirent.isFile()) throw new Error(`⛅️ Expected ${dirent.name} to be a file`)
+    return dirent.name
+  })
+  const names = [...new Set([...builtNames, ...madeFiles.keys()])]
+  const chunks = chunk(names, 50)
   for (let i = 0; i < chunks.length; i++) {
     const chunk = chunks[i]!
     await Promise.all(
-      chunk.map(async (dirent) => {
-        const {name} = dirent
-        if (!dirent.isFile()) throw new Error(`⛅️ Expected ${name} to be a file`)
-        const file = await fs.promises.readFile(path.join(localClientAssetsDir, name))
+      chunk.map(async (name: string) => {
+        const madeFile = madeFiles.get(name)
+        const file =
+          madeFile !== undefined
+            ? Buffer.from(madeFile)
+            : await fs.promises.readFile(path.join(localClientAssetsDir, name))
         return fileStoreManager.putBuildFile(file, name)
       })
     )
   }
-  Logger.log(`⛅️ Uploaded ${dirEnts.length} client assets to CDN`)
+  Logger.log(`⛅️ Uploaded ${names.length} client assets to CDN`)
 }
 
 const pushServerAssetsToCDN = async () => {

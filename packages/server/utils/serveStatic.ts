@@ -2,6 +2,7 @@ import type {HttpResponse} from 'uWebSockets.js'
 import fs from 'fs'
 import path from 'path'
 import pipeStreamOverResponse from '../pipeStreamOverResponse'
+import {applyEnvVarsToClientAssets} from './applyEnvVarsToClientAssets'
 import StaticServer from './StaticServer'
 
 // __dirname should be /dev, but during HMR it becomes its true path
@@ -22,7 +23,9 @@ const staticPaths = {
   [path.join(PROJECT_ROOT, 'dist')]: __PRODUCTION__,
   [path.join(PROJECT_ROOT, 'dev')]: !__PRODUCTION__
 }
-const staticServer = new StaticServer({staticPaths})
+// sw.js, manifest.json & the like are made in memory. In dev, the dev server makes its own
+const files = __PRODUCTION__ ? applyEnvVarsToClientAssets() : {}
+const staticServer = new StaticServer({staticPaths, files})
 
 const serveStatic = (res: HttpResponse, fileName: string, sendCompressed?: boolean) => {
   const meta = staticServer.getMeta(fileName)

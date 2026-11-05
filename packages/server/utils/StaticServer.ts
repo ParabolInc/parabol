@@ -6,23 +6,21 @@ import isCompressible from './isCompressible'
 import {Logger} from './Logger'
 
 class StaticFileMeta {
-  mtime: string
   size: number
   pathname: string
   type: string
   file?: Buffer
   brotliFile?: Buffer
-  constructor(pathname: string, cacheFile?: boolean) {
+  // file is the content, if it is cached or only exists in memory
+  constructor(pathname: string, file?: Buffer) {
     this.pathname = pathname
-    const {mtime, size} = fs.statSync(pathname)
-    this.mtime = mtime.toUTCString()
-    this.size = size
+    this.size = file?.length ?? fs.statSync(pathname).size
     const ext = path.extname(pathname).slice(1)
     this.type = mime.types[ext] ?? 'application/octet-stream'
-    if (cacheFile) {
-      this.file = fs.readFileSync(pathname)
+    if (file) {
+      this.file = file
       if (__PRODUCTION__ && isCompressible(pathname)) {
-        this.brotliFile = brotliCompressSync(this.file)
+        this.brotliFile = brotliCompressSync(file)
       }
     }
   }
@@ -35,6 +33,10 @@ interface MetaDict {
 interface Options {
   staticPaths: {
     [pathname: string]: boolean
+  }
+  // served from memory, in place of any file of the same name in staticPaths
+  files?: {
+    [filename: string]: string
   }
 }
 
@@ -56,7 +58,7 @@ export default class StaticServer {
   pathnames: PathNames = {}
   meta: MetaDict = {}
   constructor(options: Options) {
-    const {staticPaths} = options
+    const {staticPaths, files = {}} = options
     Object.keys(staticPaths).forEach((dirname) => {
       if (!staticPaths[dirname]) return
       try {
@@ -68,6 +70,9 @@ export default class StaticServer {
         Logger.log(e)
       }
     })
+    Object.entries(files).forEach(([filename, content]) => {
+      this.meta[filename] = new StaticFileMeta(filename, Buffer.from(content))
+    })
   }
   getMeta(filename: string) {
     const existingMeta = this.meta[filename]
@@ -75,7 +80,6 @@ export default class StaticServer {
     const pathname = this.pathnames[filename]
     if (!pathname) return false
     // Caching everything, build files included. ~25MB total, not bad vs. repeated fs reads for PPMIs
-    const cacheFile = true
-    return (this.meta[filename] = new StaticFileMeta(pathname, cacheFile))
+    return (this.meta[filename] = new StaticFileMeta(pathname, fs.readFileSync(pathname)))
   }
 }

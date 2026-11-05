@@ -112,7 +112,7 @@ module.exports = (config) => {
         filename: 'skeleton.html',
         template: path.join(PROJECT_ROOT, 'template.html'),
         title: 'Retrospectives, Standups, Sprint Poker & Team Health Checks | Parabol',
-        // we'll overwrite this in preDeploy since it depends on process.env.{HOST,CDN_BASE_URL}
+        // applyEnvVarsToClientAssets fills this in, since it depends on process.env.{HOST,CDN_BASE_URL}
         publicPath: '__PUBLIC_PATH__'
       }),
       new webpack.DefinePlugin({
@@ -126,7 +126,7 @@ module.exports = (config) => {
         minify: minimize,
         defines: {
           ...defines,
-          // we'll overwrite this in preDeploy since it depends on process.env.{HOST,CDN_BASE_URL}
+          // applyEnvVarsToClientAssets fills this in, since it depends on process.env.{HOST,CDN_BASE_URL}
           __PUBLIC_PATH__: JSON.stringify('__PUBLIC_PATH__')
         },
         // the meeting music & the largest illustrations are more than the rest of the app combined
