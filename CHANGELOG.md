@@ -5,6 +5,46 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.17.0](https://github.com/ParabolInc/parabol/compare/v15.16.0...v15.17.0) (2026-11-05)
+
+
+### Added
+
+* add a search text serializer for page blocks ([#13932](https://github.com/ParabolInc/parabol/issues/13932)) ([335e103](https://github.com/ParabolInc/parabol/commit/335e103997c6662ea05758cea242b6db7416afbe))
+* add Harrier as an embedding model and fill its tables in priority order ([#13935](https://github.com/ParabolInc/parabol/issues/13935)) ([c281b1e](https://github.com/ParabolInc/parabol/commit/c281b1ecdaf2d520ff1e2d115faf59b13c5d3d2d))
+* answer Reports questions about facilitators, standups, invitations, pages, team leads and spend ([#13950](https://github.com/ParabolInc/parabol/issues/13950)) ([d123efe](https://github.com/ParabolInc/parabol/commit/d123efe456532e653a2f186cb3dd8830164ddcc2))
+* find related discussions from plain topic text on Harrier ([#13936](https://github.com/ParabolInc/parabol/issues/13936)) ([ff0aa02](https://github.com/ParabolInc/parabol/commit/ff0aa02ed6472fbfab63acbcd9b8097b07a8d8b8))
+* let each embedding model choose its page chunker ([#13933](https://github.com/ParabolInc/parabol/issues/13933)) ([973868f](https://github.com/ParabolInc/parabol/commit/973868f2105c318830c6d2c53582aafabe5074ea))
+* log the context needed to reproduce production errors ([#13946](https://github.com/ParabolInc/parabol/issues/13946)) ([610706f](https://github.com/ParabolInc/parabol/commit/610706f6ce3f0ca13c475274a8e9db11ea257c03))
+* match misspelled words against page titles ([#13930](https://github.com/ParabolInc/parabol/issues/13930)) ([5ada975](https://github.com/ParabolInc/parabol/commit/5ada9750f1c720ccb5e1a3de8b78f99d2c6c9bf4))
+* re-embed only the page chunks an edit changed ([#13934](https://github.com/ParabolInc/parabol/issues/13934)) ([4410114](https://github.com/ParabolInc/parabol/commit/4410114cbf958ac0385e3e4cec7c8755867e93c4))
+* set template search and Similar Wording cut-offs per embedding model ([#13937](https://github.com/ParabolInc/parabol/issues/13937)) ([6094b9f](https://github.com/ParabolInc/parabol/commit/6094b9f8784e4062683a5cffd906d985d82cf747))
+* turn a page block into another type from its menu ([#13941](https://github.com/ParabolInc/parabol/issues/13941)) ([9fbf056](https://github.com/ParabolInc/parabol/commit/9fbf0566567d01680f6d5e2a3c2bacd3947b6010))
+* update the web client quietly and tell a stale client why it errored ([#13957](https://github.com/ParabolInc/parabol/issues/13957)) ([a31ab7f](https://github.com/ParabolInc/parabol/commit/a31ab7f85d262e62fb2327a50b8c19d363cb1d6a))
+* wait for page edits to settle before embedding ([#13931](https://github.com/ParabolInc/parabol/issues/13931)) ([b8d0829](https://github.com/ParabolInc/parabol/commit/b8d08294a7acabe4e6e531f1d2974e1ddd825da1))
+
+
+### Fixed
+
+* [web] Error: [convertADFToTipTap] Unsupported ADF node type: &lt;str&gt; ([#13959](https://github.com/ParabolInc/parabol/issues/13959)) ([6937a5c](https://github.com/ParabolInc/parabol/commit/6937a5ca711539d9786828bc40f63b23cc4554fa))
+* **deps:** upgrade packages with security advisories ([#13926](https://github.com/ParabolInc/parabol/issues/13926)) ([674d0a0](https://github.com/ParabolInc/parabol/commit/674d0a0ddfab8a74c59f84071b77af30044b33a6))
+* embed every meeting template, including ones added after the first import ([#13928](https://github.com/ParabolInc/parabol/issues/13928)) ([f502150](https://github.com/ParabolInc/parabol/commit/f50215072274cf42a92169dd590797c07fa49539))
+* keep a new open Details open when something updates it first ([#13944](https://github.com/ParabolInc/parabol/issues/13944)) ([54906ee](https://github.com/ParabolInc/parabol/commit/54906eed1986efa049aadbf0487e8000e6ade29c))
+* keep recurring stand-ups on their template when its scope narrows ([#13956](https://github.com/ParabolInc/parabol/issues/13956)) ([f8e559f](https://github.com/ParabolInc/parabol/commit/f8e559f1d04eaad72ac270d7aedf92006f845fa0))
+* keep Reports' AI from answering a different question, and let people rate its reports ([#13949](https://github.com/ParabolInc/parabol/issues/13949)) ([459f20c](https://github.com/ParabolInc/parabol/commit/459f20cd868e9148db605b1a4e29f4e820fccf46))
+* **reports:** say each empty-state action once ([#13943](https://github.com/ParabolInc/parabol/issues/13943)) ([49aa641](https://github.com/ParabolInc/parabol/commit/49aa641833fc499bc9e74348e300540b153fe445))
+* **server:** resend Redis commands a Valkey failover fails instead of crashing ([#13940](https://github.com/ParabolInc/parabol/issues/13940)) ([b4d756d](https://github.com/ParabolInc/parabol/commit/b4d756d591d88008773140a7edb00f7fb87bc766))
+* stop Add another prompt crashing the template page ([#13955](https://github.com/ParabolInc/parabol/issues/13955)) ([0df4867](https://github.com/ParabolInc/parabol/commit/0df4867c09c873bbbe3ee698185cadf691418bfe))
+* tell people when page search finds nothing ([#13929](https://github.com/ParabolInc/parabol/issues/13929)) ([2880d8f](https://github.com/ParabolInc/parabol/commit/2880d8f755464408554db2de385ec4fd9425803d))
+
+
+### Changed
+
+* add a dev service for Harrier and write up moving to a new model ([#13938](https://github.com/ParabolInc/parabol/issues/13938)) ([96d1b6a](https://github.com/ParabolInc/parabol/commit/96d1b6a76c6109cf443532ea2d92568050c46cc3))
+* add the final page search gate ([#13939](https://github.com/ParabolInc/parabol/issues/13939)) ([550bb8b](https://github.com/ParabolInc/parabol/commit/550bb8b72723f57281494c70171ebc8f0f58dad0))
+* remove Amplitude from the web client ([#13958](https://github.com/ParabolInc/parabol/issues/13958)) ([3948469](https://github.com/ParabolInc/parabol/commit/39484695f2fd53ecdcdf32ae5b6601f604f80722))
+* remove server-side Amplitude ([#13945](https://github.com/ParabolInc/parabol/issues/13945)) ([6180768](https://github.com/ParabolInc/parabol/commit/6180768001025bd49445ada9e322ddcd1d0a27bb))
+
 ## [15.16.0](https://github.com/ParabolInc/parabol/compare/v15.15.2...v15.16.0) (2026-11-03)
 
 
