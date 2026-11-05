@@ -16,8 +16,8 @@ const MOTION_TRANSITION = {duration: 0.3, ease: [0, 0, 0.2, 1]} as const
 // Longer than an avatar's entrance, so a burst of arrivals and departures never cuts one short
 const PRESENCE_THROTTLE_MS = 500
 const MAX_VISIBLE_AVATARS = 8
-// More than this wraps the row under the phase title on a phone
-const MAX_VISIBLE_AVATARS_ON_PHONE = 4
+// More than this wraps the row under the phase title on a 360px phone
+const MAX_VISIBLE_AVATARS_ON_PHONE = 3
 
 const overlappingBlockCls = 'relative -ml-3 rounded-full bg-surface-app p-[1px] first:ml-0'
 
