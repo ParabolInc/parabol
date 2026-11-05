@@ -1,18 +1,14 @@
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getUserId} from '../../../utils/authorization'
 
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
-import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const modifyCheckInQuestion: MutationResolvers['modifyCheckInQuestion'] = async (
   _source,
   {meetingId, checkInQuestion, modifyType},
-  {authToken, dataLoader, socketId: mutatorId}
+  {authToken, dataLoader}
 ) => {
-  const operationId = dataLoader.share()
-  const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
 
   // AUTH
@@ -33,9 +29,7 @@ const modifyCheckInQuestion: MutationResolvers['modifyCheckInQuestion'] = async 
   const modifiedCheckInQuestion = await openai.modifyCheckInQuestion(checkInQuestion, modifyType)
 
   // RESOLUTION
-  const data = {modifiedCheckInQuestion}
-  publish(SubscriptionChannel.MEETING, meetingId, 'ModifyCheckInQuestionSuccess', data, subOptions)
-  return data
+  return {modifiedCheckInQuestion}
 }
 
 export default modifyCheckInQuestion
