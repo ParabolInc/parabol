@@ -33,6 +33,24 @@ graphql`
     meeting {
       ...SelectMeetingDropdownItem_meeting
       ...NavigateMeetingMutation_meeting @relay(mask: false)
+      phases {
+        stages {
+          # every stage list is replaced & the viewer may follow the facilitator onto any stage,
+          # including a teammate's that this viewer never received, e.g. one who joined before
+          # the viewer subscribed, so send what the team member stages' views read
+          ...NewMeetingCheckInLocalStage @relay(mask: false)
+          ... on NewMeetingTeamMemberStage {
+            teamMemberId
+            teamMember {
+              userId
+              user {
+                picture
+                preferredName
+              }
+            }
+          }
+        }
+      }
     }
     oldFacilitatorStage {
       id
