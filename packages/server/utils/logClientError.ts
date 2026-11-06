@@ -1,12 +1,10 @@
 import describeUserAgent from './describeUserAgent'
-import {normalizeErrorMessage} from './getErrorFingerprint'
+import {CLIENT_LOG_SERVICE, normalizeErrorMessage} from './getErrorFingerprint'
 import {Logger} from './Logger'
 import normalizeUrlPath from './normalizeUrlPath'
 import type {ClientErrorBreadcrumb, ClientErrorReport} from './parseClientErrorBatch'
 import {runWithLogContext} from './requestLogContext'
 import symbolicateClientStack, {symbolicateComponentStack} from './symbolicateClientStack'
-
-export const CLIENT_LOG_SERVICE = 'parabol-client'
 
 // a trail of names: a route loses its ids and an error message its free text, the way a fingerprint does
 const describeBreadcrumb = (breadcrumb: ClientErrorBreadcrumb): ClientErrorBreadcrumb => {

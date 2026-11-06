@@ -58,6 +58,12 @@ const MAX_RAW_MESSAGE_LENGTH = 1000
 const MAX_NORMALIZED_MESSAGE_LENGTH = 300
 const STACK_FRAME = /^\s*at (?:async )?(?:new )?([^\s(]+)(?: \[as [^\]]+\])? \((.+)\)$/
 const NON_APP_FRAME = /node:internal|node_modules|\/utils\/(Logger|logError)\.|^native$/
+// A browser's stack also holds the reporter's own frames, webpack's runtime and scripts an extension injected.
+// Their names change with the browser, the release or the extension, so taking one splits an error into many.
+// Only browser stacks skip them, so a server error keeps its fingerprint and its issue
+const NON_APP_CLIENT_FRAME =
+  /\/utils\/(reportClientError|registerClientErrorHandlers)\.|^webpack\/runtime\/|^<anonymous>|^[\w-]+-extension:/
+export const CLIENT_LOG_SERVICE = 'parabol-client'
 const FNV_OFFSET_BASIS = BigInt('0xcbf29ce484222325')
 const FNV_PRIME = BigInt('0x100000001b3')
 const UINT64_MASK = BigInt('0xffffffffffffffff')
@@ -80,10 +86,14 @@ export const normalizeErrorMessage = (message: string) =>
     message.slice(0, MAX_RAW_MESSAGE_LENGTH)
   ).slice(0, MAX_NORMALIZED_MESSAGE_LENGTH)
 
-export const getTopAppFrameFunction = (stack: string | undefined) => {
+const isAppFrame = (location: string, service: string | undefined) =>
+  !NON_APP_FRAME.test(location) &&
+  (service !== CLIENT_LOG_SERVICE || !NON_APP_CLIENT_FRAME.test(location))
+
+export const getTopAppFrameFunction = (stack: string | undefined, service?: string) => {
   for (const line of stack?.split('\n') ?? []) {
     const frame = line.match(STACK_FRAME)
-    if (frame && !NON_APP_FRAME.test(frame[2]!)) return frame[1]
+    if (frame && isAppFrame(frame[2]!, service)) return frame[1]
   }
   return undefined
 }
@@ -93,7 +103,7 @@ const getErrorFingerprint = (service: string, error: Error) => {
     service,
     error.name,
     normalizeErrorMessage(error.message),
-    getTopAppFrameFunction(error.stack) ?? ''
+    getTopAppFrameFunction(error.stack, service) ?? ''
   ]
   return hashFnv1a64(parts.join('|'))
 }
