@@ -618,7 +618,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
             id: `gitlab:${taskId}`,
             iid,
             title,
-            description: bodyHTML,
+            descriptionHtml: bodyHTML,
             webPath,
             webUrl: 'https://www.parabol.co/integrations/',
             state: 'opened'
