@@ -18,6 +18,10 @@ import {mapGroupToSCIM} from './mapToSCIM'
 import {reservedUserIds} from './reservedIds'
 import {SCIMContext} from './SCIMContext'
 
+// Limits the whole member list, not the change: a PATCH reaches ingress merged with the group's
+// current members
+const MAX_GROUP_MEMBERS = 100
+
 const createEmptyTeam = async (team: Team) => {
   const pg = getKysely()
   const {id: teamId} = team
@@ -66,9 +70,6 @@ const applyMembers = async (
   dataLoader: DataLoaderWorker
 ) => {
   const members = group.members || []
-  if (members.length > 100) {
-    throw new SCIMMY.Types.Error(400, 'invalidValue', 'Too many members')
-  }
 
   const [team, existingMembers] = await Promise.all([
     dataLoader.get('teams').load(group.id),
@@ -145,6 +146,14 @@ SCIMMY.Resources.declare(SCIMMY.Resources.Group).ingress(
     if (displayName && displayName.length > USER_PREFERRED_NAME_LIMIT) {
       throw new SCIMMY.Types.Error(400, 'invalidValue', 'displayName is too long')
     }
+    // checked before any write, so a group that's too big isn't half created or renamed
+    if (members && members.length > MAX_GROUP_MEMBERS) {
+      throw new SCIMMY.Types.Error(
+        400,
+        'invalidValue',
+        `Too many members: a group can have at most ${MAX_GROUP_MEMBERS}`
+      )
+    }
 
     const pg = getKysely()
     const existingTeam = await pg
@@ -182,6 +191,8 @@ SCIMMY.Resources.declare(SCIMMY.Resources.Group).ingress(
         await applyMembers({...instance, id: teamId}, saml, dataLoader)
         return mapGroupToSCIM(updatedTeam, saml, dataLoader)
       } catch (error) {
+        // the IdP shows its admin the message, which a 500 would hide
+        if (error instanceof SCIMMY.Types.Error) throw error
         if (error instanceof Error && 'code' in error && error.code === '23505') {
           throw new SCIMMY.Types.Error(409, 'uniqueness', 'Team exists')
         }
@@ -229,6 +240,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.Group).ingress(
 
         return mapGroupToSCIM(validNewTeam, saml, dataLoader)
       } catch (error) {
+        if (error instanceof SCIMMY.Types.Error) throw error
         Logger.error('Failed to create team for SCIM group', {displayName, error})
         throw new SCIMMY.Types.Error(500, '', 'Internal server error')
       }
