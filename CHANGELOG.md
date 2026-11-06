@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.18.1](https://github.com/ParabolInc/parabol/compare/v15.18.0...v15.18.1) (2026-11-06)
+
+
+### Fixed
+
+* **client:** select DragEstimatingTaskSuccess in the meeting subscription ([#13965](https://github.com/ParabolInc/parabol/issues/13965)) ([98b1680](https://github.com/ParabolInc/parabol/commit/98b16803ef4ab7a6b72348747f0d8eeae5da7b3b))
+* **server:** give a browser error one fingerprint in every browser and release ([#13981](https://github.com/ParabolInc/parabol/issues/13981)) ([70a98fa](https://github.com/ParabolInc/parabol/commit/70a98fad00fb0dcb6868b3c2e7b96e3e4a713c91))
+* **server:** publish setTeamNotificationSetting under its TeamSubscriptionPayload field name ([#13971](https://github.com/ParabolInc/parabol/issues/13971)) ([0eeed3b](https://github.com/ParabolInc/parabol/commit/0eeed3b8f2cbe6a01897b603cfb883813111e3d3))
+* **server:** stop publishing modifyCheckInQuestion results to the meeting subscription ([#13967](https://github.com/ParabolInc/parabol/issues/13967)) ([0ec1836](https://github.com/ParabolInc/parabol/commit/0ec1836b669aadbda4e957b237f3f75a3cd2c1ca))
+
 ## [15.18.0](https://github.com/ParabolInc/parabol/compare/v15.17.1...v15.18.0) (2026-11-05)
 
 
