@@ -7,11 +7,11 @@ import {
 } from '../platform/ServerIntegrationDefinition'
 import listGcalIssues from './listGcalIssues'
 
-export class GcalServerIntegration extends ServerIntegrationDefinition {
+export class GcalServerIntegration extends ServerIntegrationDefinition<never> {
   readonly service = gcalIntegrationMeta.service
   readonly title = gcalIntegrationMeta.title
   readonly authStrategy = 'oauth2' as const
-  readonly capabilities: ServerIntegrationCapabilities = {
+  readonly capabilities: ServerIntegrationCapabilities<never> = {
     issueList: {listIssues: listGcalIssues}
   }
 

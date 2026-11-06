@@ -1,7 +1,6 @@
 import {githubIntegrationMeta} from 'parabol-client/integrations/github/shared/githubIntegrationMeta'
 import {Providers} from 'parabol-client/types/constEnums'
 import type {GitHubSearchQueryJson, TeamMemberIntegrationAuth} from '../../postgres/types'
-import type {GitHubRepo} from '../platform/RemoteRepoIntegration'
 import {
   type EstimatePushCapability,
   type IntegrationCtx,
@@ -14,7 +13,7 @@ import {
 } from '../platform/ServerIntegrationDefinition'
 import buildGitHubSearchQuery from './buildGitHubSearchQuery'
 import describeGitHubDimensionField from './describeGitHubDimensionField'
-import fetchGitHubRepos from './fetchGitHubRepos'
+import fetchGitHubRepos, {type GitHubRepo} from './fetchGitHubRepos'
 import GitHubServerManager from './GitHubServerManager'
 import listGitHubDimensionFields from './listGitHubDimensionFields'
 import listGitHubIssues from './listGitHubIssues'
@@ -23,7 +22,7 @@ import pushEstimateToGitHub from './pushEstimateToGitHub'
 import resolveGitHubDimensionFieldKey from './resolveGitHubDimensionFieldKey'
 import resolveGitHubTaskIntegration from './resolveGitHubTaskIntegration'
 
-export class GitHubServerIntegration extends ServerIntegrationDefinition {
+export class GitHubServerIntegration extends ServerIntegrationDefinition<GitHubRepo> {
   readonly service = githubIntegrationMeta.service
   readonly title = githubIntegrationMeta.title
   readonly authStrategy = 'oauth2' as const

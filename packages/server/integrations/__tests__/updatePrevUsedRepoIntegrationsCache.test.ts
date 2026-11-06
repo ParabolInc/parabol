@@ -1,7 +1,7 @@
 import getPrevUsedRepoIntegrations from '../../graphql/queries/helpers/getPrevUsedRepoIntegrations'
 import getRedis from '../../utils/getRedis'
+import type {GitHubRepo} from '../github/fetchGitHubRepos'
 import loadServiceRepoIntegrations from '../loadServiceRepoIntegrations'
-import type {GitHubRepo} from '../platform/RemoteRepoIntegration'
 import type {GqlIntegrationCtx} from '../platform/ServerIntegrationDefinition'
 import updatePrevUsedRepoIntegrationsCache from '../updatePrevUsedRepoIntegrationsCache'
 

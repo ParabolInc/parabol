@@ -1,6 +1,5 @@
 import {jiraServerIntegrationMeta} from 'parabol-client/integrations/jiraServer/shared/jiraServerIntegrationMeta'
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
-import type {JiraServerProject} from '../../dataloader/jiraServerLoaders'
 import type {JiraSearchQueryJson} from '../../postgres/types'
 import buildJiraSearchQuery from '../jira/buildJiraSearchQuery'
 import {
@@ -12,7 +11,7 @@ import {
   ServerIntegrationDefinition
 } from '../platform/ServerIntegrationDefinition'
 import describeJiraServerDimensionField from './describeJiraServerDimensionField'
-import fetchJiraServerProjects from './fetchJiraServerProjects'
+import fetchJiraServerProjects, {type JiraServerProject} from './fetchJiraServerProjects'
 import JiraServerRestManager from './JiraServerRestManager'
 import listJiraServerDimensionFields from './listJiraServerDimensionFields'
 import parseJiraServerIntegrationHash from './parseJiraServerIntegrationHash'
@@ -20,7 +19,7 @@ import pushEstimateToJiraServer from './pushEstimateToJiraServer'
 import resolveJiraServerDimensionFieldKey from './resolveJiraServerDimensionFieldKey'
 import resolveJiraServerTaskIntegration from './resolveJiraServerTaskIntegration'
 
-export class JiraServerServerIntegration extends ServerIntegrationDefinition {
+export class JiraServerServerIntegration extends ServerIntegrationDefinition<JiraServerProject> {
   readonly service = jiraServerIntegrationMeta.service
   readonly title = jiraServerIntegrationMeta.title
   readonly authStrategy = 'oauth1' as const

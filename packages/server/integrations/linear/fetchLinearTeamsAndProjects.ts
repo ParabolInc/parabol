@@ -1,7 +1,22 @@
 import type {GraphQLResolveInfo} from 'graphql'
 import type {GQLContext} from '../../graphql/graphql'
-import type {LinearProject} from '../platform/RemoteRepoIntegration'
+import type {GetProjectsQuery, GetTeamsAndProjectsQuery} from '../../types/linearTypes'
 import LinearServerManager from './LinearServerManager'
+
+export type LinearTeam = GetTeamsAndProjectsQuery['teams']['edges'][number]['node'] & {
+  service: 'linear'
+}
+
+type LinearProjectNode = GetProjectsQuery['projects']['edges'][number]['node']
+type LinearProjectTeam = LinearProjectNode['teams']['nodes'][number]
+
+/** Only projects with a team are cached; the id and the label both need it */
+export type LinearProject = LinearProjectNode & {
+  service: 'linear'
+  teams: {nodes: [LinearProjectTeam, ...LinearProjectTeam[]]}
+}
+
+export type LinearRepo = LinearTeam | LinearProject
 
 export const fetchLinearProjects = async (
   teamId: string,

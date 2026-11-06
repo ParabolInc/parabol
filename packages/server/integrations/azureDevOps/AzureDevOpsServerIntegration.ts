@@ -26,7 +26,7 @@ import pushEstimateToAzureDevOps from './pushEstimateToAzureDevOps'
 import resolveAzureDevOpsDimensionFieldKey from './resolveAzureDevOpsDimensionFieldKey'
 import resolveAzureDevOpsTaskIntegration from './resolveAzureDevOpsTaskIntegration'
 
-export class AzureDevOpsServerIntegration extends ServerIntegrationDefinition {
+export class AzureDevOpsServerIntegration extends ServerIntegrationDefinition<AzureDevOpsProject> {
   readonly service = azureDevOpsIntegrationMeta.service
   readonly title = azureDevOpsIntegrationMeta.title
   readonly authStrategy = 'oauth2' as const

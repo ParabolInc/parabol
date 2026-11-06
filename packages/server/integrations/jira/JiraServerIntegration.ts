@@ -1,6 +1,5 @@
 import {jiraIntegrationMeta} from 'parabol-client/integrations/jira/shared/jiraIntegrationMeta'
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
-import type {JiraGQLProject} from '../../dataloader/atlassianLoaders'
 import type {
   AtlassianAuth,
   JiraSearchQueryJson,
@@ -18,7 +17,7 @@ import {
 } from '../platform/ServerIntegrationDefinition'
 import buildJiraSearchQuery from './buildJiraSearchQuery'
 import describeJiraDimensionField from './describeJiraDimensionField'
-import fetchJiraProjects from './fetchJiraProjects'
+import fetchJiraProjects, {type JiraGQLProject} from './fetchJiraProjects'
 import {hasJiraScopes} from './hasJiraScopes'
 import JiraIntegrationManager from './JiraIntegrationManager'
 import listJiraDimensionFields from './listJiraDimensionFields'
@@ -28,7 +27,7 @@ import pushEstimateToJira from './pushEstimateToJira'
 import resolveJiraDimensionFieldKey from './resolveJiraDimensionFieldKey'
 import resolveJiraTaskIntegration from './resolveJiraTaskIntegration'
 
-export class JiraServerIntegration extends ServerIntegrationDefinition {
+export class JiraServerIntegration extends ServerIntegrationDefinition<JiraGQLProject> {
   readonly service = jiraIntegrationMeta.service
   readonly title = jiraIntegrationMeta.title
   readonly authStrategy = 'oauth2' as const

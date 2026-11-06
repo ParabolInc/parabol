@@ -1,8 +1,9 @@
 import getPrevUsedRepoIntegrations from '../../graphql/queries/helpers/getPrevUsedRepoIntegrations'
 import getRedis from '../../utils/getRedis'
 import logError from '../../utils/logError'
+import type {GitHubRepo} from '../github/fetchGitHubRepos'
+import type {GitLabProject} from '../gitlab/fetchGitLabProjects'
 import invalidateRepoIntegrationsCache from '../invalidateRepoIntegrationsCache'
-import type {GitHubRepo, GitLabProject} from '../platform/RemoteRepoIntegration'
 
 jest.mock('../../utils/getRedis', () => ({__esModule: true, default: jest.fn()}))
 jest.mock('../../utils/logError', () => ({__esModule: true, default: jest.fn()}))

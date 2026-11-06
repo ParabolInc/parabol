@@ -7,8 +7,11 @@ import type {EstimatePushResult} from '../../postgres/types/EstimatePushResult'
 import type {TIntegrationProvider} from '../../postgres/types/IntegrationProvider'
 import type {JsonObject} from '../../postgres/types/pg'
 import type {InspirationIssue} from './InspirationIssue'
-import type {RemoteRepoIntegration} from './RemoteRepoIntegration'
 import type {TaskIntegrationManager} from './TaskIntegrationManager'
+
+export interface ServiceRepo {
+  service: IntegrationMeta['service']
+}
 
 export interface IntegrationCtx {
   dataLoader: DataLoaderWorker
@@ -51,7 +54,7 @@ export type RepoFetchCtx = Omit<IntegrationCtx, 'dataLoader'> & {
   dataLoader: Pick<DataLoaderWorker, 'get'>
 }
 
-export interface RepoListCapability<TRepo extends RemoteRepoIntegration = RemoteRepoIntegration> {
+export interface RepoListCapability<TRepo extends ServiceRepo> {
   /** Every repo/project the viewer can create issues in, in the exact object shape the client and the prev-used Redis cache already store. A service with repoAccess returns only what the connection shares. An Error is the remote failure and must never be cached */
   fetchRepos(ctx: GqlIntegrationCtx): Promise<TRepo[] | Error>
   /** What createTaskIntegration takes for this repo; the caches dedupe on service + this */
@@ -64,7 +67,7 @@ export interface RepoListCapability<TRepo extends RemoteRepoIntegration = Remote
  * The viewer limits which of their repos/projects a team reaches through their connection.
  * The choice lives in TeamMemberIntegrationAuth.meta as a RepoAccessMeta, and every capability of the service must honor it
  */
-export interface RepoAccessCapability<TRepo extends RemoteRepoIntegration = RemoteRepoIntegration> {
+export interface RepoAccessCapability<TRepo extends ServiceRepo> {
   /** Every repo/project the viewer's account can see, shared or not. Only the access picker may show these */
   fetchAvailableRepos(ctx: GqlIntegrationCtx): Promise<TRepo[] | Error>
 }
@@ -143,23 +146,23 @@ type WithoutAccessUser<T> = T extends unknown ? Omit<T, 'accessUserId'> : never
 /** A linked issue as the Task row stores it, minus whose auth reaches it */
 export type IssueParts = WithoutAccessUser<NonNullable<Task['integration']>>
 
-export interface ServerIntegrationCapabilities {
+export interface ServerIntegrationCapabilities<TRepo extends ServiceRepo = ServiceRepo> {
   issueCreate?: IssueCreateCapability
   issueRead?: IssueReadCapability
   issueSearch?: IssueSearchCapability
   issueList?: IssueListCapability
-  repoList?: RepoListCapability
-  repoAccess?: RepoAccessCapability
+  repoList?: RepoListCapability<TRepo>
+  repoAccess?: RepoAccessCapability<TRepo>
   estimatePush?: EstimatePushCapability
 }
 
 export type IntegrationCapabilityKey = keyof ServerIntegrationCapabilities
 
-export abstract class ServerIntegrationDefinition {
+export abstract class ServerIntegrationDefinition<TRepo extends ServiceRepo = ServiceRepo> {
   abstract readonly service: IntegrationMeta['service']
   abstract readonly title: string
   abstract readonly authStrategy: 'oauth1' | 'oauth2' | 'pat' | 'webhook'
-  abstract readonly capabilities: ServerIntegrationCapabilities
+  abstract readonly capabilities: ServerIntegrationCapabilities<TRepo>
   /** The viewer's usable auth row for this team, refreshed first when the service supports it */
   async resolveAuth(ctx: IntegrationCtx): Promise<TeamMemberIntegrationAuth | null> {
     const {dataLoader, teamId, userId} = ctx

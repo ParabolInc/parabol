@@ -1,6 +1,5 @@
 import {gitlabIntegrationMeta} from 'parabol-client/integrations/gitlab/shared/gitlabIntegrationMeta'
 import type {GitLabSearchQueryJson} from '../../postgres/types'
-import type {GitLabProject} from '../platform/RemoteRepoIntegration'
 import {
   type EstimatePushCapability,
   type IssueCreateCapability,
@@ -11,7 +10,7 @@ import {
 } from '../platform/ServerIntegrationDefinition'
 import buildGitLabSearchQuery from './buildGitLabSearchQuery'
 import describeGitLabDimensionField from './describeGitLabDimensionField'
-import fetchGitLabProjects from './fetchGitLabProjects'
+import fetchGitLabProjects, {type GitLabProject} from './fetchGitLabProjects'
 import GitLabServerManager from './GitLabServerManager'
 import listGitLabDimensionFields from './listGitLabDimensionFields'
 import parseGitLabIntegrationHash from './parseGitLabIntegrationHash'
@@ -19,7 +18,7 @@ import pushEstimateToGitLab from './pushEstimateToGitLab'
 import resolveGitLabDimensionFieldKey from './resolveGitLabDimensionFieldKey'
 import resolveGitLabTaskIntegration from './resolveGitLabTaskIntegration'
 
-export class GitLabServerIntegration extends ServerIntegrationDefinition {
+export class GitLabServerIntegration extends ServerIntegrationDefinition<GitLabProject> {
   readonly service = gitlabIntegrationMeta.service
   readonly title = gitlabIntegrationMeta.title
   readonly authStrategy = 'oauth2' as const

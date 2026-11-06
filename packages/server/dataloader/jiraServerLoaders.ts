@@ -1,8 +1,9 @@
 import DataLoader from 'dataloader'
-import fetchJiraServerProjects from '../integrations/jiraServer/fetchJiraServerProjects'
+import fetchJiraServerProjects, {
+  type JiraServerProject
+} from '../integrations/jiraServer/fetchJiraServerProjects'
 import JiraServerRestManager, {
-  type JiraServerFieldType,
-  type JiraServerRestProject
+  type JiraServerFieldType
 } from '../integrations/jiraServer/JiraServerRestManager'
 import type {IntegrationProviderJiraServer} from '../postgres/types/IntegrationProvider'
 import logError from '../utils/logError'
@@ -40,13 +41,6 @@ export interface JiraServerIssue {
 type TeamUserKey = {
   teamId: string
   userId: string
-}
-
-export type JiraServerProject = JiraServerRestProject & {
-  service: 'jiraServer'
-  providerId: number
-  userId: string
-  teamId: string
 }
 
 export const jiraServerIssue = (parent: RootDataLoader) => {

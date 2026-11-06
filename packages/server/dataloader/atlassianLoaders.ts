@@ -8,7 +8,7 @@ import AtlassianServerManager, {
   JiraNoAccessResponseError,
   type JiraProject
 } from '../integrations/jira/AtlassianServerManager'
-import {fetchJiraProjectsResult} from '../integrations/jira/fetchJiraProjects'
+import {fetchJiraProjectsResult, type JiraGQLProject} from '../integrations/jira/fetchJiraProjects'
 import {generateJiraExtraFields} from '../integrations/jira/generateJiraExtraFields'
 import {hasDefaultEstimationField, isValidEstimationField} from '../integrations/jira/jiraFields'
 import {processJiraImages} from '../integrations/jira/jiraImages'
@@ -106,12 +106,6 @@ export const freshAtlassianAuth = (
   )
 }
 
-export interface JiraGQLProject extends JiraProject {
-  cloudId: string
-  teamId: string
-  userId: string
-  service: 'jira'
-}
 export const allJiraProjects = (
   parent: RootDataLoader
 ): DataLoader<TeamUserKey, JiraGQLProject[], string> => {

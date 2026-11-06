@@ -6,12 +6,12 @@ jest.mock('../../rootSchema', () => ({
   default: {}
 }))
 
+import type {GitHubRepo} from '../../../../integrations/github/fetchGitHubRepos'
+import type {GitLabProject} from '../../../../integrations/gitlab/fetchGitLabProjects'
 import type {
-  GitHubRepo,
-  GitLabProject,
   LinearProject,
   LinearTeam
-} from '../../../../integrations/platform/RemoteRepoIntegration'
+} from '../../../../integrations/linear/fetchLinearTeamsAndProjects'
 import RepoContainer from '../RepoContainer'
 
 const resolve = (resolver: unknown, source: unknown) => {

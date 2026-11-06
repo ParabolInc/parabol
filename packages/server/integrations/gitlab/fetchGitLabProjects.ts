@@ -1,14 +1,21 @@
 import type {GraphQLResolveInfo} from 'graphql'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import type {GQLContext} from '../../graphql/graphql'
+import type {GetProjectsQuery} from '../../types/gitlabTypes'
 import GitLabServerManager from './GitLabServerManager'
+
+type GitLabProjectNode = NonNullable<
+  NonNullable<NonNullable<GetProjectsQuery['projects']>['edges']>[number]
+>['node']
+
+export type GitLabProject = NonNullable<GitLabProjectNode> & {service: 'gitlab'}
 
 const fetchGitLabProjects = async (
   teamId: string,
   userId: string,
   context: GQLContext,
   info: GraphQLResolveInfo
-) => {
+): Promise<GitLabProject[] | Error> => {
   const {dataLoader} = context
   const auth = await dataLoader.get('freshAuth').load({service: 'gitlab', teamId, userId})
   if (!auth?.accessToken) return []
