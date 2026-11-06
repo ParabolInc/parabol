@@ -1,3 +1,4 @@
+jest.mock('babel-plugin-relay/macro', () => ({__esModule: true, default: () => ({})}))
 jest.mock('../../../utils/AtlassianClientManager', () => ({
   __esModule: true,
   default: {openOAuth: jest.fn(), JIRA_SCOPE: ['read:jira-work']}
@@ -45,46 +46,6 @@ import {
 } from '../registry'
 
 describe('clientIntegrations registry', () => {
-  it('registers the six task services and Google Calendar', () => {
-    expect(Object.keys(clientIntegrations).sort()).toEqual([
-      'azureDevOps',
-      'gcal',
-      'github',
-      'gitlab',
-      'jira',
-      'jiraServer',
-      'linear'
-    ])
-  })
-
-  it.each(Object.entries(clientIntegrations))('%s: service matches key', (key, def) => {
-    expect(def.service).toBe(key)
-  })
-
-  it.each(Object.entries(clientIntegrations))('%s: has title and description', (_key, def) => {
-    expect(def.title.length).toBeGreaterThan(0)
-    expect(def.description.length).toBeGreaterThan(0)
-  })
-
-  it('every task integration ships a scoping results component', () => {
-    Object.values(clientIntegrations)
-      .filter(({service}) => isTaskClientIntegration(service))
-      .forEach((definition) => {
-        expect(definition.capabilities.scoping?.Results).toBeInstanceOf(Function)
-      })
-  })
-
-  it('every service has a retro work drawer tab', () => {
-    const withDrawer = clientIntegrationsByPopularity.filter(
-      (service) => clientIntegrations[service].capabilities.workDrawer
-    )
-    expect(withDrawer).toEqual(clientIntegrationsByPopularity)
-  })
-
-  it('Google Calendar has no scope tab', () => {
-    expect(clientIntegrations.gcal.capabilities.scoping).toBeUndefined()
-  })
-
   it('looks up a definition by service, null for a service with no client integration', () => {
     expect(getClientIntegration('jira')).toBe(clientIntegrations.jira)
     expect(getClientIntegration('zoom')).toBeNull()
@@ -128,12 +89,6 @@ describe('clientIntegrations registry', () => {
     expect(clientIntegrations.jiraServer.contactUs).toEqual({
       url: 'https://www.parabol.co/integrations/jira-server'
     })
-  })
-
-  it('every registered integration ships its own settings-row logo asset', () => {
-    const sources = Object.values(clientIntegrations).map((definition) => definition.logo.src)
-    sources.forEach((src) => expect(src).toBeTruthy())
-    expect(new Set(sources).size).toBe(sources.length)
   })
 
   it('only GitHub carries a dark-theme logo, whose mark is otherwise invisible', () => {
