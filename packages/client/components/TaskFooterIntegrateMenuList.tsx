@@ -62,7 +62,8 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
         }
       }
     `,
-    {teamId}
+    {teamId},
+    {fetchPolicy: 'store-and-network'}
   )
   const services = useMemo(
     () =>
