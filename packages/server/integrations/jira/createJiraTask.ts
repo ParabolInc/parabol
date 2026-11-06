@@ -2,7 +2,7 @@ import {convertTiptapToADF} from 'parabol-client/shared/tiptap/convertTipTapToAD
 import type {TipTapSerializedContent} from 'parabol-client/shared/tiptap/TipTapSerializedContent'
 import {RateLimitError} from 'parabol-client/utils/AtlassianManager'
 import type {AtlassianAuth} from '../../postgres/types'
-import AtlassianServerManager from '../../utils/AtlassianServerManager'
+import AtlassianServerManager from './AtlassianServerManager'
 
 const createJiraTask = async (
   summary: string,

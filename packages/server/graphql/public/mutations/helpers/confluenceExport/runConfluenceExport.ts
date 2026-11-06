@@ -1,5 +1,5 @@
+import AtlassianServerManager from '../../../../../integrations/jira/AtlassianServerManager'
 import {selectPageExports} from '../../../../../postgres/select'
-import AtlassianServerManager from '../../../../../utils/AtlassianServerManager'
 import {ConfluenceServerManager} from '../../../../../utils/ConfluenceServerManager'
 import type {DegradedItem} from '../../../../../utils/confluence/types'
 import {Logger} from '../../../../../utils/Logger'

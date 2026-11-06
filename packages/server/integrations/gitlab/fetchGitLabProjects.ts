@@ -1,7 +1,7 @@
 import type {GraphQLResolveInfo} from 'graphql'
 import {isNotNull} from 'parabol-client/utils/predicates'
-import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
-import type {GQLContext} from '../../graphql'
+import type {GQLContext} from '../../graphql/graphql'
+import GitLabServerManager from './GitLabServerManager'
 
 const fetchGitLabProjects = async (
   teamId: string,

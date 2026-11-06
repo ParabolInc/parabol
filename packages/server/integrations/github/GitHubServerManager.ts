@@ -4,15 +4,15 @@ import GitHubRepoId from '../../../client/integrations/github/shared/GitHubRepoI
 import type {GQLContext} from '../../graphql/graphql'
 import type {GitHubAuth} from '../../postgres/types'
 import type {AddCommentMutation, AddCommentMutationVariables} from '../../types/githubTypes'
-import getGitHubRequest from '../../utils/getGitHubRequest'
 import addComment from '../../utils/githubQueries/addComment.graphql'
-import makeCreateGitHubTaskComment from '../../utils/makeCreateGitHubTaskComment'
 import type {
   CreateTaskParams,
   CreateTaskResponse,
   TaskIntegrationManager
 } from '../platform/TaskIntegrationManager'
 import createGitHubTask from './createGitHubTask'
+import getGitHubRequest from './getGitHubRequest'
+import makeCreateGitHubTaskComment from './makeCreateGitHubTaskComment'
 
 export default class GitHubServerManager implements TaskIntegrationManager {
   public title = 'GitHub'

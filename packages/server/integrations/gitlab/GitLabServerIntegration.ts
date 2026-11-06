@@ -1,5 +1,4 @@
 import {gitlabIntegrationMeta} from 'parabol-client/integrations/gitlab/shared/gitlabIntegrationMeta'
-import fetchGitLabProjects from '../../graphql/queries/helpers/fetchGitLabProjects'
 import type {GitLabSearchQueryJson} from '../../postgres/types'
 import type {GitLabProject} from '../platform/RemoteRepoIntegration'
 import {
@@ -12,6 +11,7 @@ import {
 } from '../platform/ServerIntegrationDefinition'
 import buildGitLabSearchQuery from './buildGitLabSearchQuery'
 import describeGitLabDimensionField from './describeGitLabDimensionField'
+import fetchGitLabProjects from './fetchGitLabProjects'
 import GitLabServerManager from './GitLabServerManager'
 import listGitLabDimensionFields from './listGitLabDimensionFields'
 import parseGitLabIntegrationHash from './parseGitLabIntegrationHash'

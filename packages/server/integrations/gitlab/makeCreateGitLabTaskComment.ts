@@ -1,6 +1,6 @@
-import {ExternalLinks} from '../../client/types/constEnums'
+import {ExternalLinks} from '../../../client/types/constEnums'
 
-const makeCreateGitHubTaskComment = (
+const makeCreateGitLabTaskComment = (
   creator: string,
   assignee: string,
   teamName: string,
@@ -9,10 +9,11 @@ const makeCreateGitHubTaskComment = (
   const sanitizedCreator = creator.replace(/#(\d+)/g, '#​\u200b$1')
   const sanitizedAssignee = assignee.replace(/#(\d+)/g, '#​\u200b$1')
 
-  return `Created by ${sanitizedCreator} for ${sanitizedAssignee}
+  return `Created by ${sanitizedCreator} for ${sanitizedAssignee}\n
+
   See the dashboard of [${teamName}](${teamDashboardUrl})
 
-  *Powered by [Parabol](${ExternalLinks.INTEGRATIONS_GITHUB})*`
+  *Powered by [Parabol](${ExternalLinks.INTEGRATIONS_GITLAB})*`
 }
 
-export default makeCreateGitHubTaskComment
+export default makeCreateGitLabTaskComment

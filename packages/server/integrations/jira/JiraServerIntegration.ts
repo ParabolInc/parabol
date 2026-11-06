@@ -6,7 +6,6 @@ import type {
   JiraSearchQueryJson,
   TeamMemberIntegrationAuth
 } from '../../postgres/types'
-import {hasJiraScopes} from '../../utils/hasJiraScopes'
 import {
   type EstimatePushCapability,
   type IntegrationCtx,
@@ -20,6 +19,7 @@ import {
 import buildJiraSearchQuery from './buildJiraSearchQuery'
 import describeJiraDimensionField from './describeJiraDimensionField'
 import fetchJiraProjects from './fetchJiraProjects'
+import {hasJiraScopes} from './hasJiraScopes'
 import JiraIntegrationManager from './JiraIntegrationManager'
 import listJiraDimensionFields from './listJiraDimensionFields'
 import listJiraIssues from './listJiraIssues'

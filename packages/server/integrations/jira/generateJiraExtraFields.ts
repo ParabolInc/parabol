@@ -1,4 +1,4 @@
-import isValid from '../graphql/isValid'
+import isValid from '../../graphql/isValid'
 import type {JiraIssueRaw} from './AtlassianServerManager'
 
 const fieldSchemaTypes = {

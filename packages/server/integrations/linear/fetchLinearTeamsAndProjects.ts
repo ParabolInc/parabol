@@ -1,7 +1,7 @@
 import type {GraphQLResolveInfo} from 'graphql'
-import LinearServerManager from '../../../integrations/linear/LinearServerManager'
-import type {LinearProject} from '../../../integrations/platform/RemoteRepoIntegration'
-import type {GQLContext} from '../../graphql'
+import type {GQLContext} from '../../graphql/graphql'
+import type {LinearProject} from '../platform/RemoteRepoIntegration'
+import LinearServerManager from './LinearServerManager'
 
 export const fetchLinearProjects = async (
   teamId: string,

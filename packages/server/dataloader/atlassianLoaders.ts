@@ -3,20 +3,20 @@ import {decode} from 'jsonwebtoken'
 import JiraIssueId from 'parabol-client/integrations/jira/shared/JiraIssueId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import type {JiraIssueMissingEstimationFieldHintEnum} from '../graphql/private/resolverTypes'
+import AtlassianServerManager, {
+  type JiraIssueRaw,
+  JiraNoAccessResponseError,
+  type JiraProject
+} from '../integrations/jira/AtlassianServerManager'
 import {fetchJiraProjectsResult} from '../integrations/jira/fetchJiraProjects'
+import {generateJiraExtraFields} from '../integrations/jira/generateJiraExtraFields'
+import {hasDefaultEstimationField, isValidEstimationField} from '../integrations/jira/jiraFields'
+import {processJiraImages} from '../integrations/jira/jiraImages'
 import refreshAtlassianAuth from '../integrations/jira/refreshAtlassianAuth'
 import {estimatePushColumns} from '../integrations/platform/estimatePushColumns'
 import getKysely from '../postgres/getKysely'
 import {selectAtlassianAuth} from '../postgres/select'
 import type {AtlassianAuth} from '../postgres/types'
-import AtlassianServerManager, {
-  type JiraIssueRaw,
-  JiraNoAccessResponseError,
-  type JiraProject
-} from '../utils/AtlassianServerManager'
-import {hasDefaultEstimationField, isValidEstimationField} from '../utils/atlassian/jiraFields'
-import {processJiraImages} from '../utils/atlassian/jiraImages'
-import {generateJiraExtraFields} from '../utils/generateJiraExtraFields'
 import logError from '../utils/logError'
 import publish from '../utils/publish'
 import {redisStoreAndNetwork} from '../utils/redisStoreAndNetwork'

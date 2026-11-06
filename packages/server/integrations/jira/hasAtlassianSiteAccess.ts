@@ -1,6 +1,6 @@
 import getKysely from '../../postgres/getKysely'
 import type {AtlassianAuth} from '../../postgres/types'
-import AtlassianServerManager from '../../utils/AtlassianServerManager'
+import AtlassianServerManager from './AtlassianServerManager'
 
 const hasAtlassianSiteAccess = async (auth: AtlassianAuth, cloudId: string): Promise<boolean> => {
   if (auth.cloudIds.includes(cloudId)) return true

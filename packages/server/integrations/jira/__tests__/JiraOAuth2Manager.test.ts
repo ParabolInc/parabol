@@ -1,9 +1,9 @@
 jest.mock('../../helpers/authorizeOAuth2', () => ({authorizeOAuth2: jest.fn()}))
-jest.mock('../../../utils/AtlassianServerManager')
+jest.mock('../AtlassianServerManager')
 
-import AtlassianServerManager from '../../../utils/AtlassianServerManager'
 import {makeOAuth2Redirect} from '../../../utils/makeOAuth2Redirect'
 import {authorizeOAuth2} from '../../helpers/authorizeOAuth2'
+import AtlassianServerManager from '../AtlassianServerManager'
 import JiraOAuth2Manager from '../JiraOAuth2Manager'
 
 const MockedManager = AtlassianServerManager as jest.MockedClass<typeof AtlassianServerManager>

@@ -1,10 +1,10 @@
 import {generateText} from '@tiptap/core'
 import convertADFToTipTap, {type AdfNode} from 'parabol-client/shared/tiptap/convertADFToTipTap'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
-import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {Logger} from '../../utils/Logger'
 import {type InspirationIssue, MAX_ISSUES} from '../platform/InspirationIssue'
 import type {GqlIntegrationCtx} from '../platform/ServerIntegrationDefinition'
+import AtlassianServerManager from './AtlassianServerManager'
 
 // Flatten a Jira ADF description into plaintext for the AI prompt. getIssues types description as
 // a string, but the search API returns it as an ADF document, so guard on the runtime shape.
