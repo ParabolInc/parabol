@@ -29,6 +29,7 @@ import {
   CATEGORY_THEMES,
   type CategoryID,
   CUSTOM_CATEGORY_ID,
+  FAVORITE_CATEGORY_ID,
   QUICK_START_CATEGORY_ID
 } from './Categories'
 import SearchBar from './SearchBar'
@@ -309,7 +310,9 @@ export const ActivityLibrary = (props: Props) => {
   }, [categoryId, templatesToRender])
 
   if (!categoryId || !availableCategoryIds.includes(categoryId)) {
-    return <Navigate to={`/activity-library/category/${QUICK_START_CATEGORY_ID}`} replace />
+    const defaultCategoryId =
+      viewer.favoriteTemplates.length > 0 ? FAVORITE_CATEGORY_ID : QUICK_START_CATEGORY_ID
+    return <Navigate to={`/activity-library/category/${defaultCategoryId}`} replace />
   }
 
   return (
