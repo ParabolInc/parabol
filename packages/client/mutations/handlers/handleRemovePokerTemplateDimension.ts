@@ -7,7 +7,8 @@ const handleRemovePokerTemplateDimension = (
   teamId: string,
   store: RecordSourceSelectorProxy
 ) => {
-  const team = store.get(teamId)!
+  const team = store.get(teamId)
+  if (!team) return
   const settings = team.getLinkedRecord('meetingSettings', {
     meetingType: 'poker'
   })

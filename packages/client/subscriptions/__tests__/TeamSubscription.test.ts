@@ -63,4 +63,56 @@ describe('TeamSubscription', () => {
     )
     expect(atmosphere.getStore().getSource().get(orgId)?.tier).toBe('starter')
   })
+
+  it('selects the field of an UpdatePokerTemplateDimensionScalePayload', () => {
+    const dimensionId = 'dimension1'
+    const scaleId = 'scale1'
+    const atmosphere = createTestAtmosphere({
+      teamSubscription: {
+        fieldName: 'UpdatePokerTemplateDimensionScalePayload',
+        UpdatePokerTemplateDimensionScalePayload: {
+          dimension: {
+            id: dimensionId,
+            selectedScale: {id: scaleId, name: 'Shirt sizes'}
+          }
+        }
+      }
+    })
+    TeamSubscription(atmosphere, {}, {navigate: jest.fn()})
+    expect(errorSpy).not.toHaveBeenCalledWith(
+      'Notification Subscription Payload received without field:',
+      'UpdatePokerTemplateDimensionScalePayload'
+    )
+    const source = atmosphere.getStore().getSource()
+    expect(source.get(dimensionId)?.selectedScale).toEqual({__ref: scaleId})
+  })
+
+  it('adds the scale of an AddPokerTemplateScalePayload without opening it for editing', () => {
+    const scaleId = 'scale2'
+    const atmosphere = createTestAtmosphere({
+      teamSubscription: {
+        fieldName: 'AddPokerTemplateScalePayload',
+        AddPokerTemplateScalePayload: {
+          scale: {
+            id: scaleId,
+            name: 'Shirt sizes Copy',
+            isStarter: false,
+            teamId,
+            values: [{label: '?', color: '#000000'}]
+          }
+        }
+      }
+    })
+    atmosphere.commitUpdate((store) => {
+      store.create(teamId, 'Team').setValue(teamId, 'id')
+    })
+    TeamSubscription(atmosphere, {}, {navigate: jest.fn()})
+    expect(errorSpy).not.toHaveBeenCalledWith(
+      'Notification Subscription Payload received without field:',
+      'AddPokerTemplateScalePayload'
+    )
+    const team = atmosphere.getStore().getSource().get(teamId)
+    expect(team?.scales).toEqual({__refs: [scaleId]})
+    expect(team?.editingScaleId).toBeUndefined()
+  })
 })
