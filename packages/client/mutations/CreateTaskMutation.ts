@@ -38,9 +38,9 @@ graphql`
         ...ThreadedRepliesList_replies
       }
       integrationHash
+      taskService
       integration {
         ... on JiraIssue {
-          service
           cloudId
           cloudName
           url
@@ -50,7 +50,6 @@ graphql`
           descriptionHTML
         }
         ... on _xGitHubIssue {
-          service
           number
           title
           repository {
@@ -58,7 +57,6 @@ graphql`
           }
         }
         ... on _xGitLabIssue {
-          service
           id
           iid
           title
@@ -66,7 +64,6 @@ graphql`
           webUrl
         }
         ... on AzureDevOpsWorkItem {
-          service
           id
           title
           url
@@ -76,7 +73,6 @@ graphql`
         }
         ... on _xLinearIssue {
           __typename
-          service
           id
           description
           identifier

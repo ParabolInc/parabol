@@ -3,6 +3,5 @@ A reference to a task that lives in an external integration (e.g. GitHub, Jira)
 """
 interface TaskIntegration {
   id: ID!
-  service: IntegrationProviderServiceEnum!
   title: String!
 }

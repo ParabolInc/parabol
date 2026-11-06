@@ -58,11 +58,6 @@ type JiraIssue implements TaskIntegration {
   project: JiraRemoteProject
 
   """
-  The service this issue comes from
-  """
-  service: IntegrationProviderServiceEnum!
-
-  """
   The plaintext summary of the jira issue
   """
   summary: String!

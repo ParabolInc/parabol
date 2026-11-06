@@ -67,7 +67,6 @@ graphql`
       integration {
         __typename
         ... on JiraIssue {
-          service
           cloudId
           cloudName
           url
@@ -80,7 +79,6 @@ graphql`
           }
         }
         ... on _xGitHubIssue {
-          service
           bodyHTML
           title
           number
@@ -89,12 +87,10 @@ graphql`
           }
         }
         ... on JiraServerIssue {
-          service
           descriptionHTML
           summary
         }
         ... on _xGitLabIssue {
-          service
           descriptionHtml
           title
           iid
@@ -103,7 +99,6 @@ graphql`
         }
         ... on AzureDevOpsWorkItem {
           __typename
-          service
           id
           teamProject
           title
@@ -111,7 +106,6 @@ graphql`
         }
         ... on _xLinearIssue {
           __typename
-          service
           id
           description
           identifier
@@ -182,7 +176,6 @@ const CreateTaskIntegrationMutation: StandardMutation<TCreateTaskIntegrationMuta
           : generateHTML(bodyContent, serverTipTapExtensions)
       const integration = createProxyRecord(store, typename, {
         id: clientTempId(taskId),
-        service: integrationProviderService,
         title,
         [titleField]: title,
         [bodyField]: body

@@ -47,7 +47,6 @@ const JiraIssue: JiraIssueResolvers = {
         }
       : null
   },
-  service: () => 'jira' as const,
   title: ({summary}) => summary,
   description: ({description}) => (description ? JSON.stringify(description) : ''),
   extraFields: async ({extraFields}) => extraFields || []

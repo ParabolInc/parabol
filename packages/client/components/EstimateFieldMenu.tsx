@@ -51,7 +51,7 @@ const EstimateFieldMenu = (props: Props) => {
         task {
           id
           integration {
-            service
+            __typename
           }
         }
       }
