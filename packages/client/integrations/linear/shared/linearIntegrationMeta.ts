@@ -1,5 +1,5 @@
-import {Providers} from '../../types/constEnums'
-import type {IntegrationMeta} from './IntegrationMeta'
+import type {IntegrationMeta} from '../../../shared/integrations/IntegrationMeta'
+import {Providers} from '../../../types/constEnums'
 
 export const linearIntegrationMeta = {
   service: 'linear',

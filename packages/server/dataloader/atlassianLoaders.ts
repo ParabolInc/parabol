@@ -1,6 +1,6 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
-import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
+import JiraIssueId from 'parabol-client/integrations/jira/shared/JiraIssueId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import type {JiraIssueMissingEstimationFieldHintEnum} from '../graphql/private/resolverTypes'
 import {fetchJiraProjectsResult} from '../integrations/jira/fetchJiraProjects'

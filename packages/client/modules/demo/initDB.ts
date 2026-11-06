@@ -1,11 +1,11 @@
 import type {SlackNotificationEventEnum} from '~/__generated__/SlackNotificationList_viewer.graphql'
+import {githubIntegrationMeta} from '../../integrations/github/shared/githubIntegrationMeta'
+import {gitlabIntegrationMeta} from '../../integrations/gitlab/shared/gitlabIntegrationMeta'
+import JiraProjectId from '../../integrations/jira/shared/JiraProjectId'
+import {jiraIntegrationMeta} from '../../integrations/jira/shared/jiraIntegrationMeta'
 import IntegrationRepoId from '../../shared/gqlIds/IntegrationRepoId'
 import IntegrationServiceId from '../../shared/gqlIds/IntegrationServiceId'
-import JiraProjectId from '../../shared/gqlIds/JiraProjectId'
-import {githubIntegrationMeta} from '../../shared/integrations/githubIntegrationMeta'
-import {gitlabIntegrationMeta} from '../../shared/integrations/gitlabIntegrationMeta'
 import type {IntegrationMeta} from '../../shared/integrations/IntegrationMeta'
-import {jiraIntegrationMeta} from '../../shared/integrations/jiraIntegrationMeta'
 import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import {
   DemoIntegration,

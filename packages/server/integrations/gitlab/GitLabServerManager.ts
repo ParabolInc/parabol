@@ -1,5 +1,5 @@
 import type {GraphQLResolveInfo} from 'graphql'
-import GitLabIssueId from 'parabol-client/shared/gqlIds/GitLabIssueId'
+import GitLabIssueId from 'parabol-client/integrations/gitlab/shared/GitLabIssueId'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import {tipTapToMarkdown} from 'parabol-client/shared/tiptap/tipTapToMarkdown'
 import type {InternalContext} from '../../graphql/graphql'

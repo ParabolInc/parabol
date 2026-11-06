@@ -7,7 +7,6 @@ import linearScopingResultsQuery, {
 } from '../../__generated__/LinearScopingResultsAdapterQuery.graphql'
 import type Atmosphere from '../../Atmosphere'
 import LinearSVG from '../../components/LinearSVG'
-import {linearIntegrationMeta} from '../../shared/integrations/linearIntegrationMeta'
 import linearLogo from '../../styles/theme/images/graphics/linear.svg'
 import LinearClientManager from '../../utils/LinearClientManager'
 import lazyPreload from '../../utils/lazyPreload'
@@ -23,6 +22,7 @@ import {
 import makeScopingResults from '../platform/makeScopingResults'
 import makeWorkDrawerPanel from '../platform/makeWorkDrawerPanel'
 import linearSearchMeta from './linearSearchMeta'
+import {linearIntegrationMeta} from './shared/linearIntegrationMeta'
 
 const scoping: ScopingCapability = {
   ...linearSearchMeta,

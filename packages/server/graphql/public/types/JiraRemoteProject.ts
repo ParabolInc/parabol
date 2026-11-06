@@ -1,5 +1,5 @@
+import JiraProjectId from 'parabol-client/integrations/jira/shared/JiraProjectId'
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
-import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../../appOrigin'
 import type {JiraProject} from '../../../utils/AtlassianServerManager'

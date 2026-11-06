@@ -1,7 +1,7 @@
 import {parse} from 'node-html-parser'
 import buildAzureDevOpsWorkWiql, {
   type AzureDevOpsWorkKind
-} from 'parabol-client/shared/integrations/buildAzureDevOpsWorkWiql'
+} from 'parabol-client/integrations/azureDevOps/shared/buildAzureDevOpsWorkWiql'
 import {Logger} from '../../utils/Logger'
 import {type InspirationIssue, MAX_ISSUE_COMMENTS, MAX_ISSUES} from '../platform/InspirationIssue'
 import type {GqlIntegrationCtx} from '../platform/ServerIntegrationDefinition'

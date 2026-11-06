@@ -7,7 +7,6 @@ import azureDevOpsScopingResultsQuery, {
 } from '../../__generated__/AzureDevOpsScopingResultsAdapterQuery.graphql'
 import type Atmosphere from '../../Atmosphere'
 import AzureDevOpsSVG from '../../components/AzureDevOpsSVG'
-import {azureDevOpsIntegrationMeta} from '../../shared/integrations/azureDevOpsIntegrationMeta'
 import azureDevOpsLogo from '../../styles/theme/images/graphics/azure-devops.svg'
 import AzureDevOpsClientManager from '../../utils/AzureDevOpsClientManager'
 import lazyPreload from '../../utils/lazyPreload'
@@ -23,6 +22,7 @@ import {searchFiltersByKey} from '../platform/IntegrationSearchFilter'
 import makeScopingResults from '../platform/makeScopingResults'
 import makeWorkDrawerPanel from '../platform/makeWorkDrawerPanel'
 import azureDevOpsSearchMeta from './azureDevOpsSearchMeta'
+import {azureDevOpsIntegrationMeta} from './shared/azureDevOpsIntegrationMeta'
 
 const scoping: ScopingCapability = {
   ...azureDevOpsSearchMeta,

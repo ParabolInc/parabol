@@ -1,4 +1,4 @@
-import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
+import JiraProjectId from 'parabol-client/integrations/jira/shared/JiraProjectId'
 import type {JiraGQLProject} from '../../dataloader/atlassianLoaders'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import type {RepoFetchCtx} from '../platform/ServerIntegrationDefinition'

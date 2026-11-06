@@ -3,7 +3,7 @@ import buildAzureDevOpsWorkWiql, {
   AZURE_DEVOPS_IS_WORK,
   type AzureDevOpsWorkKind,
   quoteWiql
-} from 'parabol-client/shared/integrations/buildAzureDevOpsWorkWiql'
+} from 'parabol-client/integrations/azureDevOps/shared/buildAzureDevOpsWorkWiql'
 import {buildAzureDevOpsSearchWiql} from '../buildAzureDevOpsWiql'
 
 const START_AT = '2026-10-01T07:30:00.000Z'

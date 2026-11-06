@@ -1,6 +1,6 @@
 jest.mock('../../helpers/authorizeOAuth2', () => ({authorizeOAuth2: jest.fn()}))
 
-import azureDevOpsOAuthScope from 'parabol-client/shared/integrations/azureDevOpsOAuthScope'
+import azureDevOpsOAuthScope from 'parabol-client/integrations/azureDevOps/shared/azureDevOpsOAuthScope'
 import type {TeamMemberIntegrationAuth} from '../../../postgres/types'
 import type {IntegrationProviderAzureDevOps} from '../../../postgres/types/IntegrationProvider'
 import {authorizeOAuth2} from '../../helpers/authorizeOAuth2'

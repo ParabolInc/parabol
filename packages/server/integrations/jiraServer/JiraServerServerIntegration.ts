@@ -1,5 +1,5 @@
+import {jiraServerIntegrationMeta} from 'parabol-client/integrations/jiraServer/shared/jiraServerIntegrationMeta'
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
-import {jiraServerIntegrationMeta} from 'parabol-client/shared/integrations/jiraServerIntegrationMeta'
 import type {JiraServerProject} from '../../dataloader/jiraServerLoaders'
 import type {JiraSearchQueryJson} from '../../postgres/types'
 import buildJiraSearchQuery from '../jira/buildJiraSearchQuery'

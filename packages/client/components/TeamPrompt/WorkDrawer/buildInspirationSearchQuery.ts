@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import JiraProjectId from '../../../shared/gqlIds/JiraProjectId'
+import JiraProjectId from '../../../integrations/jira/shared/JiraProjectId'
 import {makeLinearWorkFilter} from '../../../utils/makeLinearWorkFilter'
 import type {InspirationSourceService, InspirationSourceSettings} from './inspirationSources'
 import type {WorkDrawerDateRange} from './WorkDrawerDateFilter'

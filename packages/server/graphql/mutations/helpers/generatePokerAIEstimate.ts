@@ -1,6 +1,6 @@
 import {generateText, type JSONContent} from '@tiptap/core'
-import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
-import JiraProjectKeyId from 'parabol-client/shared/gqlIds/JiraProjectKeyId'
+import JiraProjectId from 'parabol-client/integrations/jira/shared/JiraProjectId'
+import JiraProjectKeyId from 'parabol-client/integrations/jira/shared/JiraProjectKeyId'
 import convertADFToTipTap, {type AdfNode} from 'parabol-client/shared/tiptap/convertADFToTipTap'
 import {markdownToTipTap} from 'parabol-client/shared/tiptap/markdownToTipTap'
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
