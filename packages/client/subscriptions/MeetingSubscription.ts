@@ -127,6 +127,9 @@ const subscription = graphql`
       SetTeamHealthVoteSuccess {
         ...SetTeamHealthVoteMutation_meeting @relay(mask: false)
       }
+      DragEstimatingTaskSuccess {
+        ...DragEstimatingTaskMutation_meeting @relay(mask: false)
+      }
       DragTeamHealthResultStageSuccess {
         ...useDragTeamHealthResultStageMutation_meeting @relay(mask: false)
       }
