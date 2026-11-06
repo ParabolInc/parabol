@@ -2609,7 +2609,7 @@ describe('Groups', () => {
     })
   })
 
-  describe('Groups with more than 100 members', () => {
+  describe('Groups at the member limit', () => {
     let groupId: string
     let memberIds: string[]
 
@@ -2629,7 +2629,7 @@ describe('Groups', () => {
         Operations: [{op: 'add', path: 'members', value: userIds.map((value) => ({value}))}]
       })
 
-    test('Create group and 101 users', async () => {
+    test('Create group and 100 users', async () => {
       const groupRes = await scimFetch('/Groups', 'POST', {
         schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
         displayName: faker.internet.userName()
@@ -2638,7 +2638,7 @@ describe('Groups', () => {
       groupId = (await groupRes.json()).id
 
       memberIds = await Promise.all(
-        Array.from({length: 101}, async () => {
+        Array.from({length: 100}, async () => {
           const email = getTestEmail()
           const res = await scimFetch('/Users', 'POST', {
             schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
@@ -2652,18 +2652,15 @@ describe('Groups', () => {
       )
     }, 60_000)
 
-    test('Add a member to a group of 100, as Entra ID does', async () => {
-      const firstRes = await addMembers(memberIds.slice(0, 100))
-      expect(firstRes.status).toBe(200)
-
-      const res = await addMembers(memberIds.slice(100))
+    test('A group can have 100 members', async () => {
+      const res = await addMembers(memberIds)
       expect(res.status).toBe(200)
       const data = await res.json()
-      expect(data.members).toHaveLength(101)
+      expect(data.members).toHaveLength(100)
     }, 60_000)
 
-    test('A group over the limit gets a 400 that says why', async () => {
-      const res = await addMembers(Array.from({length: 1000}, (_, i) => `sso|not-a-user-${i}`))
+    test('Adding a member to a group of 100 gets a 400 that says why', async () => {
+      const res = await addMembers(['sso|not-a-user'])
       expect(res.status).toBe(400)
       expect(await res.json()).toMatchObject({
         scimType: 'invalidValue',

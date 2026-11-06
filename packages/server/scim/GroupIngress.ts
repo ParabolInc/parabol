@@ -19,8 +19,8 @@ import {reservedUserIds} from './reservedIds'
 import {SCIMContext} from './SCIMContext'
 
 // Limits the whole member list, not the change: a PATCH reaches ingress merged with the group's
-// current members. Entra ID provisions a company-wide group as a single team
-const MAX_GROUP_MEMBERS = 1000
+// current members
+const MAX_GROUP_MEMBERS = 100
 
 const createEmptyTeam = async (team: Team) => {
   const pg = getKysely()
