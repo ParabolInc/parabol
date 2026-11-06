@@ -70,4 +70,12 @@ describe('Atmosphere multipart responses', () => {
       {data: {detail: 'a---b'}, path: ['node'], label: 'Test$defer$detail', hasNext: false}
     ])
   })
+
+  it('fails the request when a part is not JSON', async () => {
+    const malformedPart =
+      '\r\n---\r\nContent-Type: application/json; charset=utf-8\r\n\r\n{"data": {"node": '
+    await expect(fetchOverHTTP(`${malformedPart}\r\n-----\r\n`)).rejects.toThrow(
+      'TestQuery got a multipart part that is not JSON'
+    )
+  })
 })

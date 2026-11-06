@@ -245,21 +245,24 @@ export default class Atmosphere extends Environment {
                     if (sepIdx === -1) continue
                     const body = part.slice(sepIdx + 4).trim()
                     if (!body) continue
+                    let parsed
                     try {
-                      const parsed = JSON.parse(body)
-                      if (Array.isArray(parsed.incremental)) {
-                        for (const item of parsed.incremental) {
-                          sink.next({...item, hasNext: parsed.hasNext})
-                        }
-                      } else {
-                        sink.next(parsed)
-                      }
-                      if (!parsed.hasNext) {
-                        sink.complete()
-                        return
-                      }
+                      parsed = JSON.parse(body)
                     } catch {
-                      // skip malformed parts
+                      // a dropped part would finish the query with its data missing, and the page would crash wherever it read it
+                      sink.error(new Error(`${request.name} got a multipart part that is not JSON`))
+                      return
+                    }
+                    if (Array.isArray(parsed.incremental)) {
+                      for (const item of parsed.incremental) {
+                        sink.next({...item, hasNext: parsed.hasNext})
+                      }
+                    } else {
+                      sink.next(parsed)
+                    }
+                    if (!parsed.hasNext) {
+                      sink.complete()
+                      return
                     }
                   }
                 }
