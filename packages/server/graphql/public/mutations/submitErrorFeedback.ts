@@ -1,6 +1,7 @@
 import {GraphQLError} from 'graphql'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
+import {Logger} from '../../../utils/Logger'
 import normalizeEmail from '../../../utils/normalizeEmail'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -31,6 +32,8 @@ const submitErrorFeedback: MutationResolvers['submitErrorFeedback'] = async (
       eventId
     })
     .execute()
+  // Beetee's intake finds the reported error by this eventId, which the browser logged with it, and fixes those first
+  Logger.info('Error feedback', {client: {eventId}})
   return {success: true}
 }
 
