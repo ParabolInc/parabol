@@ -83,6 +83,58 @@ test.each([
   expect(isLetterOnlyId(token)).toBe(expected)
 })
 
+// symbolicated top frames production logged for one console error, from Chrome, Safari and two Firefox releases
+test('a console error has one fingerprint in every browser and release', () => {
+  const message =
+    'Notification Subscription Payload received without field: SetNotificationSettingSuccess'
+  const fingerprints = [
+    '    at packages/client/utils/registerClientErrorHandlers.ts:29:19',
+    '    at packages/client/utils/registerClientErrorHandlers.ts:29:24',
+    '    at 71000/console.error/< (packages/client/utils/registerClientErrorHandlers.ts:29:24)',
+    '    at 92667/console.error/< (packages/client/utils/registerClientErrorHandlers.ts:29:24)'
+  ].map((frame) => {
+    const error = makeError(message, [frame])
+    error.name = 'ConsoleError'
+    return getErrorFingerprint('parabol-client', error)
+  })
+  expect(new Set(fingerprints).size).toBe(1)
+})
+
+test("a rejection that isn't an Error keeps its fingerprint when the minifier renames the reporter", () => {
+  const in15150 = makeError('{}', [
+    '    at m (packages/client/utils/reportClientError.ts:56:15)',
+    '    at reportClientError (packages/client/utils/registerClientErrorHandlers.ts:12:6)'
+  ])
+  const in15160 = makeError('{}', [
+    '    at v (packages/client/utils/reportClientError.ts:57:15)',
+    '    at reportClientError (packages/client/utils/registerClientErrorHandlers.ts:44:6)'
+  ])
+  expect(getErrorFingerprint('parabol-client', in15150)).toBe(
+    getErrorFingerprint('parabol-client', in15160)
+  )
+})
+
+test("a browser's top app frame skips webpack's runtime and scripts an extension injected", () => {
+  const chunkStack = [
+    'ChunkLoadError: Loading chunk 9391 failed.',
+    '    at c.f.j (webpack/runtime/jsonp chunk loading:27:1)',
+    '    at loadChunk (packages/client/utils/retryChunkLoadErrorOnce.ts:25:11)'
+  ].join('\n')
+  const extensionStack = [
+    'Error: Rejected',
+    '    at ServiceWorkerContainer.<anonymous> (<anonymous>:662:449)',
+    '    at wrapped (chrome-extension://abcdefghijklmnop/content.js:1:2)',
+    '    at register (packages/client/client.tsx:16:29)'
+  ].join('\n')
+  expect(getTopAppFrameFunction(chunkStack, 'parabol-client')).toBe('loadChunk')
+  expect(getTopAppFrameFunction(extensionStack, 'parabol-client')).toBe('register')
+})
+
+test("a server stack's top app frame is the one it was before browsers skipped more", () => {
+  const stack = ['Error: boom', '    at Array.map (<anonymous>)', resolverFrame].join('\n')
+  expect(getTopAppFrameFunction(stack, 'web')).toBe('Array.map')
+})
+
 test('a meeting id with no digit no longer splits an error into one fingerprint per meeting', () => {
   const frame =
     '    at navigateMeeting (/app/packages/client/mutations/NavigateMeetingMutation.ts:1:1)'
