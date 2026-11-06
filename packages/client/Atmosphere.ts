@@ -227,7 +227,8 @@ export default class Atmosphere extends Environment {
             const contentType = res.headers.get('content-type') ?? ''
             if (contentType.includes('multipart/mixed')) {
               const boundary = contentType.match(/boundary="?([^";]+)"?/)?.[1] ?? '-'
-              const delimiter = `--${boundary}`
+              // a delimiter starts its own line, and JSON escapes line breaks, so a boundary inside a payload's text can't end the part
+              const delimiter = `\r\n--${boundary}`
               const reader = res.body!.getReader()
               const decoder = new TextDecoder()
               let buffer = ''
