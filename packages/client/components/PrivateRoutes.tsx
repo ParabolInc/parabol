@@ -68,9 +68,10 @@ const PrivateRoutes = () => {
   useNoIndex()
   const location = useLocation()
   const state = location.state as {backgroundLocation?: Location} | null
+  const backgroundLocation = state?.backgroundLocation
   return (
     <>
-      <Routes location={state?.backgroundLocation || location}>
+      <Routes location={backgroundLocation || location}>
         <Route path='/activity-library/*' element={<ActivityLibraryRoutes />} />
         <Route path='/new-meeting' element={<Navigate to='/activity-library' replace />} />
         <Route path='/meet/:meetingId/*' element={<MeetingRoot />} />
@@ -90,6 +91,14 @@ const PrivateRoutes = () => {
         />
         <Route path='*' element={<DashboardOrNotFound />} />
       </Routes>
+      {backgroundLocation && (
+        <Routes>
+          <Route
+            path='/organization-join-request/:requestId'
+            element={<ReviewRequestToJoinOrgRoot />}
+          />
+        </Routes>
+      )}
     </>
   )
 }
