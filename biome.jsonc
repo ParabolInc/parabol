@@ -234,7 +234,19 @@
               "options": {
                 "paths": {
                   "googleapis": "Import a single API instead, e.g. googleapis/build/src/apis/calendar. The package root pulls every Google API (32MB) into the server bundle."
-                }
+                },
+                "patterns": [
+                  {
+                    "group": [
+                      "parabol-client/integrations/**",
+                      "~/integrations/**",
+                      "**/client/integrations/**",
+                      "!**/integrations/*/*Id",
+                      "!**/integrations/*/*IntegrationMeta"
+                    ],
+                    "message": "The server may import only an integration's id codecs (*Id) and metadata (*IntegrationMeta) from client/integrations/<service>/. Everything else there is client UI: importing it drags integration components, their Relay queries and logo assets into the server bundle."
+                  }
+                ]
               }
             }
           }

@@ -3,7 +3,6 @@ import gCalIntegrationPanelQuery, {
   type GCalIntegrationPanelQuery
 } from '../../__generated__/GCalIntegrationPanelQuery.graphql'
 import type Atmosphere from '../../Atmosphere'
-import {gcalIntegrationMeta} from '../../shared/integrations/gcalIntegrationMeta'
 import googleCalendarLogo from '../../styles/theme/images/graphics/google-calendar.svg'
 import GcalClientManager from '../../utils/GcalClientManager'
 import {
@@ -15,6 +14,7 @@ import {
 } from '../platform/ClientIntegrationDefinition'
 import makeWorkDrawerPanel from '../platform/makeWorkDrawerPanel'
 import GcalIcon from './GcalIcon'
+import {gcalIntegrationMeta} from './gcalIntegrationMeta'
 
 const workDrawer: WorkDrawerCapability = {
   Panel: makeWorkDrawerPanel<GCalIntegrationPanelQuery>({

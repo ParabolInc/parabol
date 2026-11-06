@@ -1,4 +1,4 @@
-import GitHubRepoId from 'parabol-client/shared/gqlIds/GitHubRepoId'
+import GitHubRepoId from 'parabol-client/integrations/github/GitHubRepoId'
 import interpolateVotingLabelTemplate from 'parabol-client/shared/interpolateVotingLabelTemplate'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'

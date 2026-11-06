@@ -1,4 +1,4 @@
-import AzureDevOpsProjectId from 'parabol-client/shared/gqlIds/AzureDevOpsProjectId'
+import AzureDevOpsProjectId from 'parabol-client/integrations/azureDevOps/AzureDevOpsProjectId'
 import type RepoAccess from '../platform/RepoAccess'
 
 export interface GrantedAzureDevOpsProject {

@@ -1,4 +1,4 @@
-import AzureDevOpsProjectId from 'parabol-client/shared/gqlIds/AzureDevOpsProjectId'
+import AzureDevOpsProjectId from 'parabol-client/integrations/azureDevOps/AzureDevOpsProjectId'
 import logError from '../../utils/logError'
 import loadServiceRepoIntegrations from '../loadServiceRepoIntegrations'
 import type RepoAccess from '../platform/RepoAccess'

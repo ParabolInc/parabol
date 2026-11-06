@@ -7,7 +7,6 @@ import gitLabScopingResultsQuery, {
 } from '../../__generated__/GitLabScopingResultsAdapterQuery.graphql'
 import type Atmosphere from '../../Atmosphere'
 import GitLabSVG from '../../components/GitLabSVG'
-import {gitlabIntegrationMeta} from '../../shared/integrations/gitlabIntegrationMeta'
 import gitlabLogo from '../../styles/theme/images/graphics/gitlab-icon-rgb.svg'
 import GitLabClientManager from '../../utils/GitLabClientManager'
 import lazyPreload from '../../utils/lazyPreload'
@@ -25,6 +24,7 @@ import makeQueryRoot from '../platform/makeQueryRoot'
 import makeScopingResults from '../platform/makeScopingResults'
 import {gitLabIssueArgs} from './gitLabIssueArgs'
 import gitLabSearchMeta from './gitLabSearchMeta'
+import {gitlabIntegrationMeta} from './gitlabIntegrationMeta'
 
 const GitLabScopingCurrentFiltersRoot = lazy(
   () =>

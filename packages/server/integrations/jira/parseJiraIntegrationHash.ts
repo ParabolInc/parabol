@@ -1,4 +1,4 @@
-import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
+import JiraIssueId from 'parabol-client/integrations/jira/JiraIssueId'
 
 const parseJiraIntegrationHash = (integrationHash: string) => {
   const {cloudId, issueKey, projectKey} = JiraIssueId.split(integrationHash)

@@ -1,4 +1,4 @@
-import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
+import AzureDevOpsIssueId from 'parabol-client/integrations/azureDevOps/AzureDevOpsIssueId'
 import type {AzureDevOpsWorkItem as AzureDevOpsWorkItemSource} from '../../../integrations/azureDevOps/mapAzureDevOpsWorkItem'
 import type {AzureDevOpsWorkItemResolvers} from '../resolverTypes'
 

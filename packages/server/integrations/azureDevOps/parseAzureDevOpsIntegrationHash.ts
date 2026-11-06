@@ -1,4 +1,4 @@
-import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
+import AzureDevOpsIssueId from 'parabol-client/integrations/azureDevOps/AzureDevOpsIssueId'
 import {isAzureDevOpsInstanceId} from './AzureDevOpsServerManager'
 
 const parseAzureDevOpsIntegrationHash = (integrationHash: string) => {

@@ -4,10 +4,10 @@ import {usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import type {GitHubScopingResultsAdapter_query$key} from '../../__generated__/GitHubScopingResultsAdapter_query.graphql'
 import type {GitHubScopingResultsAdapterPaginationQuery} from '../../__generated__/GitHubScopingResultsAdapterPaginationQuery.graphql'
 import type {GitHubScopingResultsAdapterQuery} from '../../__generated__/GitHubScopingResultsAdapterQuery.graphql'
-import GitHubIssueId from '../../shared/gqlIds/GitHubIssueId'
 import type {GQLType} from '../../types/generics'
 import getNonNullEdges from '../../utils/getNonNullEdges'
 import type {ResultsAdapterProps} from '../platform/ScopingSearchState'
+import GitHubIssueId from './GitHubIssueId'
 
 const query = graphql`
   query GitHubScopingResultsAdapterQuery($teamId: ID!, $queryString: String!) {

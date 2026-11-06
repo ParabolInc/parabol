@@ -1,5 +1,5 @@
+import {jiraIntegrationMeta} from 'parabol-client/integrations/jira/jiraIntegrationMeta'
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
-import {jiraIntegrationMeta} from 'parabol-client/shared/integrations/jiraIntegrationMeta'
 import type {JiraGQLProject} from '../../dataloader/atlassianLoaders'
 import type {
   AtlassianAuth,

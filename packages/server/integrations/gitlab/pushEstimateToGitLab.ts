@@ -1,4 +1,4 @@
-import GitLabProjectId from 'parabol-client/shared/gqlIds/GitLabProjectId'
+import GitLabProjectId from 'parabol-client/integrations/gitlab/GitLabProjectId'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'

@@ -7,8 +7,6 @@ import jiraScopingResultsQuery, {
 } from '../../__generated__/JiraScopingResultsAdapterQuery.graphql'
 import type Atmosphere from '../../Atmosphere'
 import JiraSVG from '../../components/JiraSVG'
-import JiraProjectId from '../../shared/gqlIds/JiraProjectId'
-import {jiraIntegrationMeta} from '../../shared/integrations/jiraIntegrationMeta'
 import atlassianLogo from '../../styles/theme/images/graphics/atlassian-gradient.svg'
 import {ExternalLinks} from '../../types/constEnums'
 import AtlassianClientManager from '../../utils/AtlassianClientManager'
@@ -25,6 +23,8 @@ import {
 import {searchFiltersByKey} from '../platform/IntegrationSearchFilter'
 import makeScopingResults from '../platform/makeScopingResults'
 import makeWorkDrawerPanel from '../platform/makeWorkDrawerPanel'
+import JiraProjectId from './JiraProjectId'
+import {jiraIntegrationMeta} from './jiraIntegrationMeta'
 import jiraSearchMeta from './jiraSearchMeta'
 
 const JiraScopingCurrentFiltersRoot = lazy(

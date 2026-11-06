@@ -4,11 +4,11 @@ import {usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import type {GitLabScopingResultsAdapter_query$key} from '../../__generated__/GitLabScopingResultsAdapter_query.graphql'
 import type {GitLabScopingResultsAdapterPaginationQuery} from '../../__generated__/GitLabScopingResultsAdapterPaginationQuery.graphql'
 import type {GitLabScopingResultsAdapterQuery} from '../../__generated__/GitLabScopingResultsAdapterQuery.graphql'
-import GitLabIssueId from '../../shared/gqlIds/GitLabIssueId'
 import type {GQLType} from '../../types/generics'
 import getNonNullEdges from '../../utils/getNonNullEdges'
 import {parseWebPath} from '../../utils/parseWebPath'
 import type {ResultsAdapterProps} from '../platform/ScopingSearchState'
+import GitLabIssueId from './GitLabIssueId'
 
 const query = graphql`
   query GitLabScopingResultsAdapterQuery(

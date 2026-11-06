@@ -1,4 +1,4 @@
-import LinearIssueId from 'parabol-client/shared/gqlIds/LinearIssueId'
+import LinearIssueId from 'parabol-client/integrations/linear/LinearIssueId'
 
 const parseLinearIntegrationHash = (integrationHash: string) => {
   const {repoId, issueId} = LinearIssueId.split(integrationHash)

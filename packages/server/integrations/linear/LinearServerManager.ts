@@ -1,6 +1,6 @@
 import type {GraphQLResolveInfo} from 'graphql'
-import LinearIssueId from 'parabol-client/shared/gqlIds/LinearIssueId'
-import LinearProjectId from 'parabol-client/shared/gqlIds/LinearProjectId'
+import LinearIssueId from 'parabol-client/integrations/linear/LinearIssueId'
+import LinearProjectId from 'parabol-client/integrations/linear/LinearProjectId'
 import {tipTapToMarkdown} from 'parabol-client/shared/tiptap/tipTapToMarkdown'
 import type {InternalContext} from '../../graphql/graphql'
 import createCommentMutation from '../../graphql/nestedSchema/Linear/mutations/createComment.graphql'

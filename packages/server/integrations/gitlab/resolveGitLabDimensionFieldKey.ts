@@ -1,4 +1,4 @@
-import GitLabProjectId from 'parabol-client/shared/gqlIds/GitLabProjectId'
+import GitLabProjectId from 'parabol-client/integrations/gitlab/GitLabProjectId'
 import logError from '../../utils/logError'
 import type {DimensionFieldCtx, DimensionFieldKey} from '../platform/ServerIntegrationDefinition'
 import GitLabServerManager from './GitLabServerManager'

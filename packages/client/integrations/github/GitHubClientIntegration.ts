@@ -7,7 +7,6 @@ import gitHubScopingResultsQuery, {
 } from '../../__generated__/GitHubScopingResultsAdapterQuery.graphql'
 import type Atmosphere from '../../Atmosphere'
 import GitHubSVG from '../../components/GitHubSVG'
-import {githubIntegrationMeta} from '../../shared/integrations/githubIntegrationMeta'
 import githubLogo from '../../styles/theme/images/graphics/github-flat.svg'
 import githubLogoWhite from '../../styles/theme/images/graphics/github-flat-white.svg'
 import GitHubClientManager from '../../utils/GitHubClientManager'
@@ -23,6 +22,7 @@ import {
 } from '../platform/ClientIntegrationDefinition'
 import makeScopingResults from '../platform/makeScopingResults'
 import makeWorkDrawerPanel from '../platform/makeWorkDrawerPanel'
+import {githubIntegrationMeta} from './githubIntegrationMeta'
 
 const GITHUB_DEFAULT_QUERY = 'is:issue is:open sort:updated involves:@me'
 

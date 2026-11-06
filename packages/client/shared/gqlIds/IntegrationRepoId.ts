@@ -1,5 +1,5 @@
-import AzureDevOpsProjectId from 'parabol-client/shared/gqlIds/AzureDevOpsProjectId'
-import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
+import AzureDevOpsProjectId from 'parabol-client/integrations/azureDevOps/AzureDevOpsProjectId'
+import JiraProjectId from 'parabol-client/integrations/jira/JiraProjectId'
 
 export type JiraRepoIntegration = {
   cloudId: string
