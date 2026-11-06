@@ -179,7 +179,6 @@ const devClientConfig: Configuration = {
             : process.env.GIF_SECRET
               ? 'klipy'
               : '',
-        GOOGLE_ERROR_FORM_URL: process.env.GOOGLE_ERROR_FORM_URL,
         IS_SINGLE_ORG: process.env.IS_SINGLE_ORG === 'true' && process.env.IS_ENTERPRISE === 'true'
       })
     }),
