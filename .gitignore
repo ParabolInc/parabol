@@ -18,7 +18,7 @@ coverage/
 dev/
 dist/
 dump.rdb
-node_modules/
+node_modules
 package-lock.json
 packages/server/postgres/types/pg.d.ts
 packages/server/postgres/queries/generated
