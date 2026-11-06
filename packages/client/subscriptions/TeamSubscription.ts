@@ -10,6 +10,7 @@ import {
   acceptTeamInvitationTeamUpdater
 } from '../mutations/AcceptTeamInvitationMutation'
 import {addAgendaItemUpdater} from '../mutations/AddAgendaItemMutation'
+import {addPokerTemplateScaleTeamUpdater} from '../mutations/AddPokerTemplateScaleMutation'
 import {addTemplatePromptTeamUpdater} from '../mutations/AddTemplatePromptMutation'
 import {archiveTeamTeamOnNext, archiveTeamTeamUpdater} from '../mutations/ArchiveTeamMutation'
 import {batchArchiveTasksTaskUpdater} from '../mutations/BatchArchiveTasksMutation'
@@ -60,6 +61,9 @@ const subscription = graphql`
       }
       AddPokerTemplateSuccess {
         ...useAddPokerTemplateMutation_team @relay(mask: false)
+      }
+      AddPokerTemplateScalePayload {
+        ...AddPokerTemplateScaleMutation_scale @relay(mask: false)
       }
       AddTemplatePromptSuccess {
         ...AddTemplatePromptMutation_team @relay(mask: false)
@@ -212,6 +216,7 @@ const updateHandlers = {
   AcceptTeamInvitationPayload: acceptTeamInvitationTeamUpdater,
   AddPromptTemplateSuccess: addPromptTemplateTeamUpdater,
   AddPokerTemplateSuccess: addPokerTemplateTeamUpdater,
+  AddPokerTemplateScalePayload: addPokerTemplateScaleTeamUpdater,
   AddTemplatePromptSuccess: addTemplatePromptTeamUpdater,
   ArchiveTeamPayload: archiveTeamTeamUpdater,
   BatchArchiveTasksSuccess: batchArchiveTasksTaskUpdater,
