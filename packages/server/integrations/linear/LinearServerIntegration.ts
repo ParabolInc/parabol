@@ -1,5 +1,5 @@
-import LinearProjectId from 'parabol-client/integrations/linear/LinearProjectId'
-import {linearIntegrationMeta} from 'parabol-client/integrations/linear/linearIntegrationMeta'
+import LinearProjectId from 'parabol-client/integrations/linear/shared/LinearProjectId'
+import {linearIntegrationMeta} from 'parabol-client/integrations/linear/shared/linearIntegrationMeta'
 import interleave from 'parabol-client/utils/interleave'
 import {
   fetchLinearProjects,

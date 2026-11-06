@@ -8,7 +8,7 @@ import type {GQLType} from '../../types/generics'
 import getNonNullEdges from '../../utils/getNonNullEdges'
 import {parseWebPath} from '../../utils/parseWebPath'
 import type {ResultsAdapterProps} from '../platform/ScopingSearchState'
-import GitLabIssueId from './GitLabIssueId'
+import GitLabIssueId from './shared/GitLabIssueId'
 
 const query = graphql`
   query GitLabScopingResultsAdapterQuery(

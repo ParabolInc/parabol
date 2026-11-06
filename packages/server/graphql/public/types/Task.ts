@@ -1,4 +1,4 @@
-import GitHubRepoId from '../../../../client/integrations/github/GitHubRepoId'
+import GitHubRepoId from '../../../../client/integrations/github/shared/GitHubRepoId'
 import refreshAzureDevOpsEstimates from '../../../integrations/azureDevOps/refreshAzureDevOpsEstimates'
 import {estimatePushColumns} from '../../../integrations/platform/estimatePushColumns'
 import {previousPushLabelName} from '../../../integrations/platform/previousPushLabel'

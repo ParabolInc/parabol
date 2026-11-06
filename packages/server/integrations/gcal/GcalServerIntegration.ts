@@ -1,4 +1,4 @@
-import {gcalIntegrationMeta} from 'parabol-client/integrations/gcal/gcalIntegrationMeta'
+import {gcalIntegrationMeta} from 'parabol-client/integrations/gcal/shared/gcalIntegrationMeta'
 import type {TIntegrationProvider} from '../../postgres/types/IntegrationProvider'
 import {
   type IntegrationCtx,

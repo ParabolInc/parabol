@@ -1,4 +1,4 @@
-import JiraProjectId from 'parabol-client/integrations/jira/JiraProjectId'
+import JiraProjectId from 'parabol-client/integrations/jira/shared/JiraProjectId'
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../../appOrigin'

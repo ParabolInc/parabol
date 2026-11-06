@@ -1,4 +1,4 @@
-import JiraServerProjectId from 'parabol-client/integrations/jiraServer/JiraServerProjectId'
+import JiraServerProjectId from 'parabol-client/integrations/jiraServer/shared/JiraServerProjectId'
 import type {
   DimensionFieldCtx,
   DimensionFieldKey,

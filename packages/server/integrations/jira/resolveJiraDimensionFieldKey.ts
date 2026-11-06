@@ -1,5 +1,5 @@
-import JiraProjectId from 'parabol-client/integrations/jira/JiraProjectId'
-import JiraProjectKeyId from 'parabol-client/integrations/jira/JiraProjectKeyId'
+import JiraProjectId from 'parabol-client/integrations/jira/shared/JiraProjectId'
+import JiraProjectKeyId from 'parabol-client/integrations/jira/shared/JiraProjectKeyId'
 import type {DimensionFieldCtx, DimensionFieldKey} from '../platform/ServerIntegrationDefinition'
 
 const resolveJiraDimensionFieldKey = async ({

@@ -21,8 +21,8 @@ import {
 import {searchFiltersByKey} from '../platform/IntegrationSearchFilter'
 import makeScopingResults from '../platform/makeScopingResults'
 import makeWorkDrawerPanel from '../platform/makeWorkDrawerPanel'
-import {azureDevOpsIntegrationMeta} from './azureDevOpsIntegrationMeta'
 import azureDevOpsSearchMeta from './azureDevOpsSearchMeta'
+import {azureDevOpsIntegrationMeta} from './shared/azureDevOpsIntegrationMeta'
 
 const scoping: ScopingCapability = {
   ...azureDevOpsSearchMeta,

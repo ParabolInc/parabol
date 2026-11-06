@@ -1,4 +1,4 @@
-import GitLabProjectId from '../GitLabProjectId'
+import GitLabProjectId from '../shared/GitLabProjectId'
 
 const providerId = 1
 const projectId = 42

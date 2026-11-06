@@ -8,8 +8,8 @@ import type {GQLType} from '../../types/generics'
 import {getLinearRepoName} from '../../utils/getLinearRepoName'
 import getNonNullEdges from '../../utils/getNonNullEdges'
 import type {ResultsAdapterProps} from '../platform/ScopingSearchState'
-import LinearIssueId from './LinearIssueId'
-import LinearProjectId from './LinearProjectId'
+import LinearIssueId from './shared/LinearIssueId'
+import LinearProjectId from './shared/LinearProjectId'
 
 const query = graphql`
   query LinearScopingResultsAdapterQuery($teamId: ID!, $filter: _xLinearIssueFilter) {

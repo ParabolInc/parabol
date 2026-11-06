@@ -1,5 +1,5 @@
-import JiraIssueId from 'parabol-client/integrations/jira/JiraIssueId'
-import JiraProjectId from 'parabol-client/integrations/jira/JiraProjectId'
+import JiraIssueId from 'parabol-client/integrations/jira/shared/JiraIssueId'
+import JiraProjectId from 'parabol-client/integrations/jira/shared/JiraProjectId'
 import type {AtlassianAuth} from '../../postgres/types'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import makeCreateJiraTaskComment from '../../utils/makeCreateJiraTaskComment'

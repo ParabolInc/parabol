@@ -1,4 +1,4 @@
-import GitHubIssueId from 'parabol-client/integrations/github/GitHubIssueId'
+import GitHubIssueId from 'parabol-client/integrations/github/shared/GitHubIssueId'
 
 const parseGitHubIntegrationHash = (integrationHash: string) => {
   const {nameWithOwner, issueNumber} = GitHubIssueId.split(integrationHash)

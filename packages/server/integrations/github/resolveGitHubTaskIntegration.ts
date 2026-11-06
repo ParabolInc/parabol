@@ -1,4 +1,4 @@
-import GitHubRepoId from '../../../client/integrations/github/GitHubRepoId'
+import GitHubRepoId from '../../../client/integrations/github/shared/GitHubRepoId'
 import getGitHubRequest from '../../utils/getGitHubRequest'
 import logError from '../../utils/logError'
 import type {IssueReadCtx} from '../platform/ServerIntegrationDefinition'

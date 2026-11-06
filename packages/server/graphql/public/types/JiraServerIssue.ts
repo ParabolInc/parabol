@@ -1,4 +1,4 @@
-import JiraServerIssueId from '~/integrations/jiraServer/JiraServerIssueId'
+import JiraServerIssueId from '~/integrations/jiraServer/shared/JiraServerIssueId'
 import type {JiraServerIssue as JiraServerRestIssue} from '../../../dataloader/jiraServerLoaders'
 import {
   VOTE_FIELD_ALLOWED_TYPES,

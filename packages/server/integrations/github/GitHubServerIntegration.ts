@@ -1,4 +1,4 @@
-import {githubIntegrationMeta} from 'parabol-client/integrations/github/githubIntegrationMeta'
+import {githubIntegrationMeta} from 'parabol-client/integrations/github/shared/githubIntegrationMeta'
 import {Providers} from 'parabol-client/types/constEnums'
 import fetchGitHubRepos from '../../graphql/queries/helpers/fetchGitHubRepos'
 import type {GitHubSearchQueryJson, TeamMemberIntegrationAuth} from '../../postgres/types'

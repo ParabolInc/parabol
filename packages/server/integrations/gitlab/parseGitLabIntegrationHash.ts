@@ -1,4 +1,4 @@
-import GitLabIssueId from 'parabol-client/integrations/gitlab/GitLabIssueId'
+import GitLabIssueId from 'parabol-client/integrations/gitlab/shared/GitLabIssueId'
 
 const parseGitLabIntegrationHash = (integrationHash: string) => {
   const {providerId, gid} = GitLabIssueId.split(integrationHash)

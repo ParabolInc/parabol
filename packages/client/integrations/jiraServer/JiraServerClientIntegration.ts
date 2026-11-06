@@ -25,7 +25,7 @@ import {
 import {searchFiltersByKey} from '../platform/IntegrationSearchFilter'
 import makeQueryRoot from '../platform/makeQueryRoot'
 import makeScopingResults from '../platform/makeScopingResults'
-import {jiraServerIntegrationMeta} from './jiraServerIntegrationMeta'
+import {jiraServerIntegrationMeta} from './shared/jiraServerIntegrationMeta'
 
 const JiraServerScopingCurrentFiltersRoot = lazy(
   () =>

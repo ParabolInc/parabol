@@ -24,7 +24,7 @@ import makeQueryRoot from '../platform/makeQueryRoot'
 import makeScopingResults from '../platform/makeScopingResults'
 import {gitLabIssueArgs} from './gitLabIssueArgs'
 import gitLabSearchMeta from './gitLabSearchMeta'
-import {gitlabIntegrationMeta} from './gitlabIntegrationMeta'
+import {gitlabIntegrationMeta} from './shared/gitlabIntegrationMeta'
 
 const GitLabScopingCurrentFiltersRoot = lazy(
   () =>

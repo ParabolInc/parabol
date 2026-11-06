@@ -1,6 +1,6 @@
 import type {GraphQLResolveInfo} from 'graphql'
-import GitHubIssueId from '../../../client/integrations/github/GitHubIssueId'
-import GitHubRepoId from '../../../client/integrations/github/GitHubRepoId'
+import GitHubIssueId from '../../../client/integrations/github/shared/GitHubIssueId'
+import GitHubRepoId from '../../../client/integrations/github/shared/GitHubRepoId'
 import type {GQLContext} from '../../graphql/graphql'
 import type {GitHubAuth} from '../../postgres/types'
 import type {AddCommentMutation, AddCommentMutationVariables} from '../../types/githubTypes'

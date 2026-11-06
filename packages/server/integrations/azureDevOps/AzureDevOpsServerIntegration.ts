@@ -1,4 +1,4 @@
-import {azureDevOpsIntegrationMeta} from 'parabol-client/integrations/azureDevOps/azureDevOpsIntegrationMeta'
+import {azureDevOpsIntegrationMeta} from 'parabol-client/integrations/azureDevOps/shared/azureDevOpsIntegrationMeta'
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
 import type {AzureDevOpsSearchQueryJson, TeamMemberIntegrationAuth} from '../../postgres/types'
 import {

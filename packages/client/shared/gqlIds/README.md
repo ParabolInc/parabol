@@ -4,4 +4,4 @@ For example, if we want to compare an optimistic object to an object from the se
 we'll need to know how the server computes its ID.
 By having the transforms share a file, dependency tracing is easy in case the way the ID is generated ever changes.
 
-Codecs that belong to one integration live with it in `client/integrations/<service>/`.
+Codecs that belong to one integration live with it in `client/integrations/<service>/shared/`.

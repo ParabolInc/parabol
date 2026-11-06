@@ -23,9 +23,9 @@ import {
 import {searchFiltersByKey} from '../platform/IntegrationSearchFilter'
 import makeScopingResults from '../platform/makeScopingResults'
 import makeWorkDrawerPanel from '../platform/makeWorkDrawerPanel'
-import JiraProjectId from './JiraProjectId'
-import {jiraIntegrationMeta} from './jiraIntegrationMeta'
 import jiraSearchMeta from './jiraSearchMeta'
+import JiraProjectId from './shared/JiraProjectId'
+import {jiraIntegrationMeta} from './shared/jiraIntegrationMeta'
 
 const JiraScopingCurrentFiltersRoot = lazy(
   () =>

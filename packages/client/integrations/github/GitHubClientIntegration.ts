@@ -22,7 +22,7 @@ import {
 } from '../platform/ClientIntegrationDefinition'
 import makeScopingResults from '../platform/makeScopingResults'
 import makeWorkDrawerPanel from '../platform/makeWorkDrawerPanel'
-import {githubIntegrationMeta} from './githubIntegrationMeta'
+import {githubIntegrationMeta} from './shared/githubIntegrationMeta'
 
 const GITHUB_DEFAULT_QUERY = 'is:issue is:open sort:updated involves:@me'
 

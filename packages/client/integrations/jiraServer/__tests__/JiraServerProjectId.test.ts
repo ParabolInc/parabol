@@ -1,4 +1,4 @@
-import JiraServerProjectId from '../JiraServerProjectId'
+import JiraServerProjectId from '../shared/JiraServerProjectId'
 
 const providerId = 1
 const projectId = 'PROJ-1'

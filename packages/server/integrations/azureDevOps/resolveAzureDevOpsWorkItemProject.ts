@@ -1,4 +1,4 @@
-import AzureDevOpsProjectId from 'parabol-client/integrations/azureDevOps/AzureDevOpsProjectId'
+import AzureDevOpsProjectId from 'parabol-client/integrations/azureDevOps/shared/AzureDevOpsProjectId'
 import type RepoAccess from '../platform/RepoAccess'
 import listGrantedAzureDevOpsProjects from './listGrantedAzureDevOpsProjects'
 

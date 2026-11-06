@@ -21,8 +21,8 @@ import {
 } from '../platform/ClientIntegrationDefinition'
 import makeScopingResults from '../platform/makeScopingResults'
 import makeWorkDrawerPanel from '../platform/makeWorkDrawerPanel'
-import {linearIntegrationMeta} from './linearIntegrationMeta'
 import linearSearchMeta from './linearSearchMeta'
+import {linearIntegrationMeta} from './shared/linearIntegrationMeta'
 
 const scoping: ScopingCapability = {
   ...linearSearchMeta,

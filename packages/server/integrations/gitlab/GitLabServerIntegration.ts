@@ -1,4 +1,4 @@
-import {gitlabIntegrationMeta} from 'parabol-client/integrations/gitlab/gitlabIntegrationMeta'
+import {gitlabIntegrationMeta} from 'parabol-client/integrations/gitlab/shared/gitlabIntegrationMeta'
 import fetchGitLabProjects from '../../graphql/queries/helpers/fetchGitLabProjects'
 import type {GitLabSearchQueryJson} from '../../postgres/types'
 import type {GitLabProject} from '../platform/RemoteRepoIntegration'

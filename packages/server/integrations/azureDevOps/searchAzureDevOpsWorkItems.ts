@@ -1,4 +1,4 @@
-import AzureDevOpsProjectId from 'parabol-client/integrations/azureDevOps/AzureDevOpsProjectId'
+import AzureDevOpsProjectId from 'parabol-client/integrations/azureDevOps/shared/AzureDevOpsProjectId'
 import logError from '../../utils/logError'
 import loadServiceRepoIntegrations from '../loadServiceRepoIntegrations'
 import type RepoAccess from '../platform/RepoAccess'

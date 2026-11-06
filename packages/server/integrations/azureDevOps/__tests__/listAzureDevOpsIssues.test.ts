@@ -1,5 +1,5 @@
 import type {GraphQLResolveInfo} from 'graphql'
-import buildAzureDevOpsWorkWiql from 'parabol-client/shared/integrations/buildAzureDevOpsWorkWiql'
+import buildAzureDevOpsWorkWiql from 'parabol-client/integrations/azureDevOps/shared/buildAzureDevOpsWorkWiql'
 import type {DataLoaderWorker, GQLContext} from '../../../graphql/graphql'
 import getAzureDevOpsManager from '../getAzureDevOpsManager'
 import listAzureDevOpsIssues from '../listAzureDevOpsIssues'

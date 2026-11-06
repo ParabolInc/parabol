@@ -1,4 +1,4 @@
-import {jiraIntegrationMeta} from 'parabol-client/integrations/jira/jiraIntegrationMeta'
+import {jiraIntegrationMeta} from 'parabol-client/integrations/jira/shared/jiraIntegrationMeta'
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
 import type {JiraGQLProject} from '../../dataloader/atlassianLoaders'
 import type {

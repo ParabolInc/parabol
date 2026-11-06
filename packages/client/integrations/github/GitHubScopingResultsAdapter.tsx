@@ -7,7 +7,7 @@ import type {GitHubScopingResultsAdapterQuery} from '../../__generated__/GitHubS
 import type {GQLType} from '../../types/generics'
 import getNonNullEdges from '../../utils/getNonNullEdges'
 import type {ResultsAdapterProps} from '../platform/ScopingSearchState'
-import GitHubIssueId from './GitHubIssueId'
+import GitHubIssueId from './shared/GitHubIssueId'
 
 const query = graphql`
   query GitHubScopingResultsAdapterQuery($teamId: ID!, $queryString: String!) {

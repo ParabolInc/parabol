@@ -1,4 +1,4 @@
-import AzureDevOpsProjectId from 'parabol-client/integrations/azureDevOps/AzureDevOpsProjectId'
+import AzureDevOpsProjectId from 'parabol-client/integrations/azureDevOps/shared/AzureDevOpsProjectId'
 import type {DimensionFieldCtx, DimensionFieldKey} from '../platform/ServerIntegrationDefinition'
 
 const resolveAzureDevOpsDimensionFieldKey = async ({

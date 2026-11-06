@@ -14,7 +14,7 @@ import {
 } from '../platform/ClientIntegrationDefinition'
 import makeWorkDrawerPanel from '../platform/makeWorkDrawerPanel'
 import GcalIcon from './GcalIcon'
-import {gcalIntegrationMeta} from './gcalIntegrationMeta'
+import {gcalIntegrationMeta} from './shared/gcalIntegrationMeta'
 
 const workDrawer: WorkDrawerCapability = {
   Panel: makeWorkDrawerPanel<GCalIntegrationPanelQuery>({

@@ -1,6 +1,6 @@
 import {fetch} from '@whatwg-node/fetch'
 
-import JiraProjectKeyId from 'parabol-client/integrations/jira/JiraProjectKeyId'
+import JiraProjectKeyId from 'parabol-client/integrations/jira/shared/JiraProjectKeyId'
 import type {AdfNode} from 'parabol-client/shared/tiptap/convertADFToTipTap'
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import AtlassianManager, {

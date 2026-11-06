@@ -1,5 +1,5 @@
 import {GraphQLError} from 'graphql'
-import AtlassianIntegrationId from '../../../../client/integrations/jira/AtlassianIntegrationId'
+import AtlassianIntegrationId from '../../../../client/integrations/jira/shared/AtlassianIntegrationId'
 import AtlassianServerManager from '../../../utils/AtlassianServerManager'
 import {processJiraImages} from '../../../utils/atlassian/jiraImages'
 import {getUserId} from '../../../utils/authorization'
