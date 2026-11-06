@@ -5,6 +5,29 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.19.0](https://github.com/ParabolInc/parabol/compare/v15.18.1...v15.19.0) (2026-11-06)
+
+
+### Added
+
+* post error feedback through the log line instead of a Google Form ([#13996](https://github.com/ParabolInc/parabol/issues/13996)) ([be3d498](https://github.com/ParabolInc/parabol/commit/be3d498adc650cb233f84c2b46bff9c7b1c48ea1))
+* **server:** log error-form feedback with the crash's eventId ([#13988](https://github.com/ParabolInc/parabol/issues/13988)) ([15752b5](https://github.com/ParabolInc/parabol/commit/15752b5d0c6667899d81554f17e4d92605e1592b))
+
+
+### Fixed
+
+* **client:** fill the retro demo's Push to Integration menu ([#13994](https://github.com/ParabolInc/parabol/issues/13994)) ([53053ca](https://github.com/ParabolInc/parabol/commit/53053cac6fa5ec3b742388a1909c5ba3a166180d))
+* **client:** open the activity library on favorites when the viewer has some ([#13993](https://github.com/ParabolInc/parabol/issues/13993)) ([1e1c3c1](https://github.com/ParabolInc/parabol/commit/1e1c3c14d1482c287d694dfdb92039b7d3d87495))
+* **client:** receive DowngradeToStarterPayload in organization and team subscriptions ([#13985](https://github.com/ParabolInc/parabol/issues/13985)) ([e300f9f](https://github.com/ParabolInc/parabol/commit/e300f9f1aca78a8978812908910aaee9a187d7fe))
+* **client:** split multipart responses on the line-starting delimiter, not the bare boundary ([#13984](https://github.com/ParabolInc/parabol/issues/13984)) ([914a12b](https://github.com/ParabolInc/parabol/commit/914a12b76061a913e5728d18e30a608b81854d09))
+* **server:** give a SCIM group over 100 members a 400 that says why ([#13979](https://github.com/ParabolInc/parabol/issues/13979)) ([29aa0aa](https://github.com/ParabolInc/parabol/commit/29aa0aae561b41fe619397a09360a8daf74fc12d))
+
+
+### Changed
+
+* drop TaskIntegration.service and the deprecated GitLabIntegration.projects ([#13992](https://github.com/ParabolInc/parabol/issues/13992)) ([04351ce](https://github.com/ParabolInc/parabol/commit/04351ce2d73f0e9b737f9c7efc1d3a5a1119cb2e))
+* move per-service id codecs into client/integrations ([#13995](https://github.com/ParabolInc/parabol/issues/13995)) ([b7eccbb](https://github.com/ParabolInc/parabol/commit/b7eccbbaafefa515a5ff54a7c631b04a44c6c5b1))
+
 ## [15.18.1](https://github.com/ParabolInc/parabol/compare/v15.18.0...v15.18.1) (2026-11-06)
 
 
