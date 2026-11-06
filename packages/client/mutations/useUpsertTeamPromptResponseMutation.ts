@@ -53,7 +53,8 @@ const useUpsertTeamPromptResponseMutation = () => {
     return commit({
       updater: (store) => {
         const payload = store.getRootField('upsertTeamPromptResponse')
-        const response = payload.getLinkedRecord('teamPromptResponse')
+        const response = payload?.getLinkedRecord('teamPromptResponse')
+        if (!response) return
         handleUpsertTeamPromptResponses([response], config.variables.meetingId, store)
       },
       ...config
