@@ -9,7 +9,7 @@ import type {MutationResolvers} from '../resolverTypes'
 const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
   _source,
   {flagName, subjects},
-  {authToken}
+  {authToken, dataLoader}
 ) => {
   const pg = getKysely()
 
@@ -51,14 +51,35 @@ const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
     }
 
     if (subjects.userIds) {
+      const users = await dataLoader.get('users').loadMany(subjects.userIds)
+      const missingUserIds = subjects.userIds.filter((_userId, idx) => !users[idx])
+      if (missingUserIds.length > 0) {
+        return standardError(new Error(`Users not found: ${missingUserIds.join(', ')}`), {
+          userId: viewerId
+        })
+      }
       userIds.push(...subjects.userIds)
     }
   } else if (scope === 'Team') {
     if (subjects.teamIds) {
+      const teams = await dataLoader.get('teams').loadMany(subjects.teamIds)
+      const missingTeamIds = subjects.teamIds.filter((_teamId, idx) => !teams[idx])
+      if (missingTeamIds.length > 0) {
+        return standardError(new Error(`Teams not found: ${missingTeamIds.join(', ')}`), {
+          userId: viewerId
+        })
+      }
       teamIds.push(...subjects.teamIds)
     }
   } else if (scope === 'Organization') {
     if (subjects.orgIds) {
+      const orgs = await dataLoader.get('organizations').loadMany(subjects.orgIds)
+      const missingOrgIds = subjects.orgIds.filter((_orgId, idx) => !orgs[idx])
+      if (missingOrgIds.length > 0) {
+        return standardError(new Error(`Organizations not found: ${missingOrgIds.join(', ')}`), {
+          userId: viewerId
+        })
+      }
       orgIds.push(...subjects.orgIds)
     }
   }
