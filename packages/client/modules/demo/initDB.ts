@@ -1,5 +1,11 @@
 import type {SlackNotificationEventEnum} from '~/__generated__/SlackNotificationList_viewer.graphql'
+import IntegrationRepoId from '../../shared/gqlIds/IntegrationRepoId'
+import IntegrationServiceId from '../../shared/gqlIds/IntegrationServiceId'
 import JiraProjectId from '../../shared/gqlIds/JiraProjectId'
+import {githubIntegrationMeta} from '../../shared/integrations/githubIntegrationMeta'
+import {gitlabIntegrationMeta} from '../../shared/integrations/gitlabIntegrationMeta'
+import type {IntegrationMeta} from '../../shared/integrations/IntegrationMeta'
+import {jiraIntegrationMeta} from '../../shared/integrations/jiraIntegrationMeta'
 import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import {
   DemoIntegration,
@@ -100,6 +106,7 @@ class DemoJiraRemoteProject {
   name: string
   avatar: string
   service: 'jira'
+  integrationRepoId: string
   avatarUrls = {
     x16: '',
     x24: '',
@@ -119,6 +126,7 @@ class DemoJiraRemoteProject {
     this.name = name
     this.avatar = avatar
     this.service = 'jira'
+    this.integrationRepoId = IntegrationRepoId.join({service: 'jira', cloudId, key: projectKey})
   }
 }
 const GitLabDemoKey = 'parabol/parabol-demo'
@@ -136,6 +144,24 @@ const makeRepoIntegrationGitHub = (nameWithOwner: keyof typeof GitHubProjectKeyL
   service: 'github',
   name: nameWithOwner,
   integrationRepoId: nameWithOwner
+})
+
+const makeDemoIntegrationService = (
+  userId: string,
+  __typename: string,
+  {service, title}: IntegrationMeta,
+  repos: readonly object[]
+) => ({
+  __typename,
+  id: IntegrationServiceId.join(demoTeamId, userId, service),
+  service,
+  title,
+  isAvailable: true,
+  isConnected: true,
+  grantedScopes: [],
+  cloudProvider: null,
+  sharedProviders: [],
+  repos
 })
 
 const initSlackNotification = (userId: string) => ({
@@ -223,7 +249,17 @@ const initDemoTeamMember = (
     isSelf: idx === 0,
     picture: picture,
     preferredName,
-    services: [],
+    services: [
+      makeDemoIntegrationService(userId, 'JiraIntegrationService', jiraIntegrationMeta, [
+        new DemoJiraRemoteProject(JiraDemoProjectId)
+      ]),
+      makeDemoIntegrationService(userId, 'GitHubIntegrationService', githubIntegrationMeta, [
+        makeRepoIntegrationGitHub(GitHubDemoKey)
+      ]),
+      makeDemoIntegrationService(userId, 'GitLabIntegrationService', gitlabIntegrationMeta, [
+        makeRepoIntegrationGitLab(GitLabDemoKey)
+      ])
+    ],
     integrations: {
       id: 'demoTeamIntegrations',
       atlassian: {
@@ -294,14 +330,6 @@ const initDemoTeamMember = (
         teamNotificationSettings: null
       },
       slack: initSlackAuth(userId)
-    },
-    repoIntegrations: {
-      hasMore: false,
-      items: [
-        new DemoJiraRemoteProject(JiraDemoProjectId),
-        makeRepoIntegrationGitHub(GitHubDemoKey),
-        makeRepoIntegrationGitLab(GitLabDemoKey)
-      ]
     },
     prevUsedRepoIntegrations: {
       hasMore: false,

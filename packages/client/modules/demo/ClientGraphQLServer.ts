@@ -593,6 +593,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
             descriptionHTML: bodyHTML,
             summary: title,
             url: ExternalLinks.INTEGRATIONS_JIRA,
+            extraFields: [],
             project: {
               id: `${key}:id`,
               key,
