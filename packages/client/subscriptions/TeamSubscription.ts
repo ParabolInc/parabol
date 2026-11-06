@@ -73,6 +73,9 @@ const subscription = graphql`
       DenyPushInvitationPayload {
         ...DenyPushInvitationMutation_team @relay(mask: false)
       }
+      DowngradeToStarterPayload {
+        ...DowngradeToStarterMutation_organization @relay(mask: false)
+      }
       EndCheckInSuccess {
         ...EndCheckInMutation_team @relay(mask: false)
       }
