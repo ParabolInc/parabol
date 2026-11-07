@@ -7,18 +7,22 @@ jest.mock('../../../postgres/queries/deactivateTeamMemberIntegrationAuthFamily',
   default: jest.fn()
 }))
 jest.mock('../../loadServiceRepoIntegrations', () => ({__esModule: true, default: jest.fn()}))
+jest.mock('../../../utils/getRedis', () => ({__esModule: true, default: jest.fn()}))
 
 import {fetch, Response} from '@whatwg-node/fetch'
 import type {GraphQLResolveInfo} from 'graphql'
 import type {GQLContext} from '../../../graphql/graphql'
+import getRedis from '../../../utils/getRedis'
 import loadServiceRepoIntegrations from '../../loadServiceRepoIntegrations'
 import type {GqlIntegrationCtx} from '../../platform/ServerIntegrationDefinition'
 import type {ClickUpApiTask} from '../ClickUpApiTypes'
 import type {ClickUpRepo} from '../fetchClickUpRepos'
 import searchClickUpTasks from '../searchClickUpTasks'
+import makeMemoryRedis from './memoryRedis'
 
 const mockFetch = jest.mocked(fetch)
 const mockLoadRepos = jest.mocked(loadServiceRepoIntegrations)
+const mockGetRedis = jest.mocked(getRedis)
 
 const API_PATH = '/api/v2'
 const PAGE_SIZE = 100
@@ -129,6 +133,7 @@ const searchTasks = async (overrides: Partial<Parameters<typeof searchClickUpTas
 beforeEach(() => {
   mockFetch.mockReset()
   mockLoadRepos.mockReset()
+  mockGetRedis.mockReturnValue(makeMemoryRedis().redis)
 })
 
 test('searchClickUpTasks scans one page per workspace for an empty query', async () => {
@@ -324,10 +329,77 @@ test('searchClickUpTasks ignores list ids it cannot place', async () => {
   expect(requestedUrls().map(({pathname}) => pathname)).toEqual(['/api/v2/team/1/task'])
   expect(taskPageUrls()[0]!.searchParams.getAll('list_ids[]')).toEqual(['1000'])
   expect(res.tasks.map(({taskId}) => taskId)).toEqual(['t1'])
+})
+
+test('searchClickUpTasks says to clear the list filter when none of its lists can be placed', async () => {
+  mockLoadRepos.mockResolvedValue([repo('1000', '1')])
+  serve(workspaces({'1': [[apiTask('t1', 'Chore', 1)]]}))
+  const res = await searchClickUpTasks(ctx, {
+    ...params,
+    queryString: 'https://app.clickup.com/t/86abc',
+    listIds: ['9999']
+  })
+  expect(res).toBeInstanceOf(Error)
+  expect(res).toMatchObject({
+    message: 'The selected ClickUp lists are no longer available. Clear them from the list filter'
+  })
+  expect(mockFetch).not.toHaveBeenCalled()
+})
+
+test('searchClickUpTasks says to reconnect when no workspace is shared, and does not cache that', async () => {
+  serve(() => ({teams: []}))
+  const res = await searchClickUpTasks(ctx, params)
+  expect(res).toBeInstanceOf(Error)
+  expect(res).toMatchObject({
+    message: 'No ClickUp workspace is shared with Parabol. Reconnect ClickUp and select a workspace'
+  })
+  expect(requestedUrls().map(({pathname}) => pathname)).toEqual(['/api/v2/team'])
 
   mockFetch.mockClear()
-  await expect(searchTasks({listIds: ['9999']})).resolves.toEqual({tasks: [], nextPage: null})
+  serve(workspaces({'1': [[apiTask('t1', 'Chore', 1)]]}))
+  const afterReconnect = await searchTasks({})
+  expect(afterReconnect.tasks.map(({taskId}) => taskId)).toEqual(['t1'])
+  expect(requestedUrls().map(({pathname}) => pathname)).toEqual([
+    '/api/v2/team',
+    '/api/v2/team/1/task'
+  ])
+})
+
+test('searchClickUpTasks reuses the scanned pages while the query string changes', async () => {
+  const pageWithOneMatch = (page: number) => [
+    ...chores('1', page, PAGE_SIZE - 1),
+    apiTask(`m${page}`, `Fix login on page ${page}`, 500 - page)
+  ]
+  serve(workspaces({'1': [0, 1, 2, 3].map(pageWithOneMatch)}))
+  await searchTasks({queryString: 'log'})
+  expect(scannedPages()).toEqual(['1:0', '1:1', '1:2'])
+
+  mockFetch.mockClear()
+  const res = await searchTasks({queryString: 'login'})
   expect(mockFetch).not.toHaveBeenCalled()
+  expect(res.tasks).toHaveLength(3)
+
+  await searchTasks({queryString: 'login', includeClosed: true})
+  expect(scannedPages()).toEqual(['1:0', '1:1', '1:2'])
+  expect(taskPageUrls().map(({searchParams}) => searchParams.get('include_closed'))).toEqual([
+    'true',
+    'true',
+    'true'
+  ])
+})
+
+test('searchClickUpTasks does not keep a failed page', async () => {
+  let pageReplies = 0
+  const scan = workspaces({'1': [[apiTask('t1', 'Chore', 1)]]})
+  serve((path, query) => {
+    if (path !== '/team/1/task') return scan(path, query)
+    pageReplies++
+    return pageReplies === 1 ? new Response('', {status: 429}) : scan(path, query)
+  })
+  await expect(searchClickUpTasks(ctx, params)).resolves.toBeInstanceOf(Error)
+  const res = await searchTasks({})
+  expect(res.tasks.map(({taskId}) => taskId)).toEqual(['t1'])
+  expect(pageReplies).toBe(2)
 })
 
 test('searchClickUpTasks returns an Error when the list filter cannot be read', async () => {

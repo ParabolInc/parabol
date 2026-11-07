@@ -1,11 +1,20 @@
 import DataLoader from 'dataloader'
-import type {ClickUpApiSpace, ClickUpApiTask} from '../integrations/clickup/ClickUpApiTypes'
-import clickUpRequest from '../integrations/clickup/clickUpRequest'
-import mapClickUpTask, {type ClickUpTaskSource} from '../integrations/clickup/mapClickUpTask'
+import ms from 'ms'
+import type {ClickUpApiSpace} from '../integrations/clickup/ClickUpApiTypes'
+import {
+  ClickUpNotFoundError,
+  ClickUpRateLimitError,
+  ClickUpUnsharedWorkspaceError
+} from '../integrations/clickup/clickUpRequest'
+import fetchClickUpTask from '../integrations/clickup/fetchClickUpTask'
+import type {ClickUpTaskSource} from '../integrations/clickup/mapClickUpTask'
+import readClickUpCached from '../integrations/clickup/readClickUpCached'
 import type {TeamMemberIntegrationAuth} from '../postgres/types'
 import logError from '../utils/logError'
 import type RootDataLoader from './RootDataLoader'
 import settleOrLogRejection from './settleOrLogRejection'
+
+const SPACE_MAX_AGE = ms('5m')
 
 interface TeamUserKey {
   teamId: string
@@ -19,6 +28,11 @@ export interface ClickUpTaskKey extends TeamUserKey {
 export interface ClickUpSpaceKey extends TeamUserKey {
   spaceId: string
 }
+
+const isExpectedFailure = (error: Error) =>
+  error instanceof ClickUpNotFoundError ||
+  error instanceof ClickUpRateLimitError ||
+  error instanceof ClickUpUnsharedWorkspaceError
 
 const makeClickUpLoader = <TKey extends TeamUserKey, TValue>(
   parent: RootDataLoader,
@@ -34,7 +48,9 @@ const makeClickUpLoader = <TKey extends TeamUserKey, TValue>(
           if (!auth?.accessToken) return null
           const value = await fetchValue(auth, key)
           if (value instanceof Error) {
-            logError(value, {userId, tags: {teamId, service: 'clickup'}})
+            if (!isExpectedFailure(value)) {
+              logError(value, {userId, tags: {teamId, service: 'clickup'}})
+            }
             return null
           }
           return value
@@ -48,14 +64,7 @@ const makeClickUpLoader = <TKey extends TeamUserKey, TValue>(
 export const clickUpTask = (parent: RootDataLoader) =>
   makeClickUpLoader<ClickUpTaskKey, ClickUpTaskSource>(
     parent,
-    async (auth, {taskId}) => {
-      const task = await clickUpRequest<ClickUpApiTask>(
-        auth,
-        `/task/${encodeURIComponent(taskId)}`,
-        {query: {include_markdown_description: true}}
-      )
-      return task instanceof Error ? task : mapClickUpTask(task)
-    },
+    (auth, {taskId}) => fetchClickUpTask(auth, taskId),
     ({teamId, userId, taskId}) => `${teamId}:${userId}:${taskId}`
   )
 
@@ -63,6 +72,12 @@ export const clickUpSpace = (parent: RootDataLoader) =>
   makeClickUpLoader<ClickUpSpaceKey, ClickUpApiSpace>(
     parent,
     (auth, {spaceId}) =>
-      clickUpRequest<ClickUpApiSpace>(auth, `/space/${encodeURIComponent(spaceId)}`),
+      readClickUpCached<ClickUpApiSpace, ClickUpApiSpace>(
+        auth,
+        `/space/${encodeURIComponent(spaceId)}`,
+        {},
+        SPACE_MAX_AGE,
+        (space) => space
+      ),
     ({teamId, userId, spaceId}) => `${teamId}:${userId}:${spaceId}`
   )

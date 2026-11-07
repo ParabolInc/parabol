@@ -6,7 +6,7 @@ import type {
   ClickUpApiWorkspace
 } from './ClickUpApiTypes'
 import clickUpRequest, {type ClickUpRequestAuth} from './clickUpRequest'
-import listClickUpWorkspaces from './listClickUpWorkspaces'
+import listClickUpWorkspaces, {ClickUpNoWorkspaceError} from './listClickUpWorkspaces'
 
 export interface ClickUpRepo {
   service: 'clickup'
@@ -114,6 +114,7 @@ const fetchClickUpRepos = async ({
   const auth = await dataLoader.get('freshAuth').load({service: 'clickup', teamId, userId})
   if (!auth?.accessToken) return []
   const workspaces = await listClickUpWorkspaces(auth)
+  if (workspaces instanceof ClickUpNoWorkspaceError) return []
   if (workspaces instanceof Error) return workspaces
   const spacesByWorkspace = allOrFirstError(
     await Promise.all(workspaces.map((workspace) => listSpaces(auth, workspace)))

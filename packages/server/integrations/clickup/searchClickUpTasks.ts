@@ -1,9 +1,12 @@
+import ms from 'ms'
 import loadServiceRepoIntegrations from '../loadServiceRepoIntegrations'
 import type {GqlIntegrationCtx} from '../platform/ServerIntegrationDefinition'
 import type {ClickUpApiTask} from './ClickUpApiTypes'
-import clickUpRequest, {ClickUpNotFoundError, type ClickUpRequestAuth} from './clickUpRequest'
+import {ClickUpNotFoundError} from './clickUpRequest'
+import fetchClickUpTask from './fetchClickUpTask'
 import listClickUpWorkspaces from './listClickUpWorkspaces'
 import mapClickUpTask, {type ClickUpTaskSource} from './mapClickUpTask'
+import readClickUpCached, {type ClickUpCacheAuth} from './readClickUpCached'
 
 interface SearchParams {
   queryString: string
@@ -29,6 +32,7 @@ interface TaskLookup {
 }
 
 const PAGE_SIZE = 100
+const TASK_PAGE_MAX_AGE = ms('30s')
 const MAX_TEXT_SEARCH_PAGES = 3
 const NEWEST_UPDATED_FIRST = {order_by: 'updated'}
 const TASK_LINK = /^(?:https?:\/\/)?app\.clickup\.com\/t\/(?:(\d+)\/)?([^/?#\s]+)\/?(?:[?#]\S*)?$/i
@@ -56,19 +60,15 @@ const readTaskLookup = (queryString: string): TaskLookup | null => {
 }
 
 const lookUpTask = async (
-  auth: ClickUpRequestAuth,
+  auth: ClickUpCacheAuth,
   {taskId, isCustomId, workspaceId, isPastedLink}: TaskLookup,
   workspaces: SearchedWorkspace[]
 ) => {
   const workspaceIds = workspaceId ? [workspaceId] : workspaces.map((ws) => ws.workspaceId)
-  const queries = isCustomId
-    ? workspaceIds.map((team_id) => ({custom_task_ids: true, team_id}))
-    : [{}]
+  const customIdWorkspaceIds: Array<string | null> = isCustomId ? workspaceIds : [null]
   const tasks = await Promise.all(
-    queries.map((query) =>
-      clickUpRequest<ClickUpApiTask>(auth, `/task/${encodeURIComponent(taskId)}`, {
-        query: {...query, include_markdown_description: true}
-      })
+    customIdWorkspaceIds.map((customIdWorkspaceId) =>
+      fetchClickUpTask(auth, taskId, customIdWorkspaceId)
     )
   )
   const failure =
@@ -77,12 +77,12 @@ const lookUpTask = async (
       (task): task is Error => task instanceof Error && !(task instanceof ClickUpNotFoundError)
     )
   if (failure) return failure
-  return tasks.flatMap((task) => (task instanceof Error ? [] : [mapClickUpTask(task)]))
+  return tasks.filter((task): task is ClickUpTaskSource => !(task instanceof Error))
 }
 
 const listSearchedWorkspaces = async (
   ctx: GqlIntegrationCtx,
-  auth: ClickUpRequestAuth,
+  auth: ClickUpCacheAuth,
   listIds: string[]
 ): Promise<SearchedWorkspace[] | Error> => {
   if (listIds.length === 0) {
@@ -104,6 +104,11 @@ const listSearchedWorkspaces = async (
       listId
     ])
   })
+  if (listIdsByWorkspaceId.size === 0) {
+    return new Error(
+      'The selected ClickUp lists are no longer available. Clear them from the list filter'
+    )
+  }
   return [...listIdsByWorkspaceId].map(([workspaceId, listIds]) => ({workspaceId, listIds}))
 }
 
@@ -130,7 +135,6 @@ const searchClickUpTasks = async (
   }
   const workspaces = await listSearchedWorkspaces(ctx, auth, listIds)
   if (workspaces instanceof Error) return workspaces
-  if (workspaces.length === 0) return {tasks: [], nextPage: null}
 
   const lookup = readTaskLookup(queryString)
   const needle = (lookup?.taskId ?? queryString).toLowerCase()
@@ -154,17 +158,19 @@ const searchClickUpTasks = async (
     do {
       const responses = await Promise.all(
         fullWorkspaces.map(({workspaceId, listIds}) =>
-          clickUpRequest<{tasks?: ClickUpApiTask[]}>(
+          readClickUpCached<{tasks?: ClickUpApiTask[]}, ClickUpApiTask[]>(
             auth,
             `/team/${encodeURIComponent(workspaceId)}/task`,
-            {workspaceId, query: {page: nextPage, ...filters, list_ids: listIds}}
+            {workspaceId, query: {page: nextPage, ...filters, list_ids: listIds}},
+            TASK_PAGE_MAX_AGE,
+            ({tasks = []}) => tasks
           )
         )
       )
       const taskPages: ClickUpApiTask[][] = []
       for (const response of responses) {
         if (response instanceof Error) return response
-        taskPages.push(response.tasks ?? [])
+        taskPages.push(response)
       }
       matches.push(...taskPages.flat().filter(isMatch))
       fullWorkspaces = fullWorkspaces.filter((_, idx) => taskPages[idx]!.length >= PAGE_SIZE)

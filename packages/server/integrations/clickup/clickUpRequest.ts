@@ -28,6 +28,10 @@ export class ClickUpRequestError extends Error {
 
 export class ClickUpNotFoundError extends ClickUpRequestError {}
 
+export class ClickUpRateLimitError extends Error {}
+
+export class ClickUpUnsharedWorkspaceError extends Error {}
+
 type ClickUpQuery = Record<string, string | number | boolean | Array<string | number> | undefined>
 
 interface ClickUpRequestInit {
@@ -36,6 +40,8 @@ interface ClickUpRequestInit {
   body?: JsonObject
   workspaceId?: string
 }
+
+export type ClickUpReadInit = Pick<ClickUpRequestInit, 'query' | 'workspaceId'>
 
 const buildUrl = (path: string, query: ClickUpQuery) => {
   const url = new URL(`${CLICKUP_API_URL}${path}`)
@@ -56,7 +62,9 @@ const unsharedWorkspaceError = (path: string, {query = {}, workspaceId}: ClickUp
     typeof namedId === 'string' || typeof namedId === 'number'
       ? `ClickUp workspace ${namedId}`
       : 'This ClickUp workspace'
-  return new Error(`${workspace} is not shared with Parabol. Reconnect ClickUp and select it`)
+  return new ClickUpUnsharedWorkspaceError(
+    `${workspace} is not shared with Parabol. Reconnect ClickUp and select it`
+  )
 }
 
 const clickUpRequest = async <T>(
@@ -80,7 +88,7 @@ const clickUpRequest = async <T>(
     })
     if (res.status === 429) {
       await res.body?.cancel()
-      return new Error('ClickUp rate limit reached, try again in a minute')
+      return new ClickUpRateLimitError('ClickUp rate limit reached, try again in a minute')
     }
     const contentType = res.headers.get('content-type') ?? ''
     if (!contentType.toLowerCase().startsWith('application/json')) {

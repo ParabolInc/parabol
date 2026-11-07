@@ -6,14 +6,18 @@ jest.mock('../../../postgres/queries/deactivateTeamMemberIntegrationAuthFamily',
   __esModule: true,
   default: jest.fn()
 }))
+jest.mock('../../../utils/getRedis', () => ({__esModule: true, default: jest.fn()}))
 
 import {fetch, Response} from '@whatwg-node/fetch'
 import type {GraphQLResolveInfo} from 'graphql'
 import type {GQLContext} from '../../../graphql/graphql'
+import getRedis from '../../../utils/getRedis'
 import type {GqlIntegrationCtx} from '../../platform/ServerIntegrationDefinition'
 import fetchClickUpRepos from '../fetchClickUpRepos'
+import makeMemoryRedis from './memoryRedis'
 
 const mockFetch = jest.mocked(fetch)
+const mockGetRedis = jest.mocked(getRedis)
 
 const API_URL = 'https://api.clickup.com/api/v2'
 
@@ -71,6 +75,7 @@ const engRoutes = {
 
 beforeEach(() => {
   mockFetch.mockReset()
+  mockGetRedis.mockReturnValue(makeMemoryRedis().redis)
 })
 
 test('fetchClickUpRepos names lists Space / Folder / List and chains subfolders', async () => {
