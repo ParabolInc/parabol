@@ -1,5 +1,5 @@
+import type {ScaffoldNames} from './makeScaffoldNames.mts'
 import type {ScaffoldFile} from './ScaffoldFile.mts'
-import type {ScaffoldNames} from './scaffoldNames.mts'
 
 const notImplemented = (title: string, what: string) =>
   `new Error(${JSON.stringify(`${title}: ${what} is not implemented`)})`
@@ -29,7 +29,7 @@ import resolve${pascal}DimensionFieldKey from './resolve${pascal}DimensionFieldK
 import resolve${pascal}TaskIntegration from './resolve${pascal}TaskIntegration'
 import ${pascal}ServerManager from './${pascal}ServerManager'
 
-export class ${pascal}ServerIntegration extends ServerIntegrationDefinition<${pascal}Repo> {
+export class ${pascal}ServerIntegration extends ServerIntegrationDefinition {
   readonly service = ${meta}.service
   readonly title = ${meta}.title
   readonly authStrategy = 'oauth2' as const
@@ -80,6 +80,8 @@ import OAuth2Manager, {
   type OAuth2TokenResponse
 } from '../OAuth2Manager'
 
+const TOKEN_PATH = '/oauth/token'
+
 export default class ${pascal}OAuth2Manager extends OAuth2Manager {
   static readonly REDIRECT_URI = makeAppURL(appOrigin, 'auth/${service}')
 
@@ -104,12 +106,9 @@ export default class ${pascal}OAuth2Manager extends OAuth2Manager {
     partialAuthParams: OAuth2AuthorizationParams | OAuth2RefreshAuthorizationParams
   ) {
     return authorizeOAuth2<TSuccess>({
-      authUrl: \`\${this.serverBaseUrl}/oauth/token\`,
-      searchParams: {
-        client_id: this.clientId,
-        client_secret: this.clientSecret,
-        ...partialAuthParams
-      }
+      authUrl: new URL(TOKEN_PATH, this.serverBaseUrl).toString(),
+      body: {client_id: this.clientId, client_secret: this.clientSecret, ...partialAuthParams},
+      contentType: 'application/x-www-form-urlencoded'
     })
   }
 }
@@ -179,9 +178,14 @@ export default parse${pascal}IntegrationHash
     },
     {
       path: `${dir}/build${pascal}SearchQuery.ts`,
-      contents: `import type {IssueSearchCapability} from '../platform/ServerIntegrationDefinition'
+      contents: `import {checkQueryString, rejectUnknownKeys} from '../platform/searchMeta'
+import type {IssueSearchCapability} from '../platform/ServerIntegrationDefinition'
 
-const build${pascal}SearchQuery: IssueSearchCapability['buildQuery'] = (queryString) => ({queryString})
+const build${pascal}SearchQuery: IssueSearchCapability['buildQuery'] = (queryString, meta) => {
+  const invalid = checkQueryString(queryString) ?? rejectUnknownKeys(meta)
+  if (invalid) return invalid
+  return {queryString: queryString.trim()}
+}
 
 export default build${pascal}SearchQuery
 `

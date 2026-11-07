@@ -9,8 +9,10 @@ import fs from 'fs'
 import path from 'path'
 import {parseArgs} from 'util'
 import clientFiles from './integrationScaffold/clientFiles.mts'
-import makeScaffoldNames, {SERVICE_PATTERN} from './integrationScaffold/scaffoldNames.mts'
-import scaffoldPatches, {ScaffoldError} from './integrationScaffold/scaffoldPatches.mts'
+import makeScaffoldNames, {SERVICE_PATTERN} from './integrationScaffold/makeScaffoldNames.mts'
+import ScaffoldError from './integrationScaffold/ScaffoldError.mts'
+import type {ScaffoldFile} from './integrationScaffold/ScaffoldFile.mts'
+import scaffoldPatches from './integrationScaffold/scaffoldPatches.mts'
 import schemaFiles, {INTEGRATION_SERVICE_INTERFACE} from './integrationScaffold/schemaFiles.mts'
 import serverFiles from './integrationScaffold/serverFiles.mts'
 import getProjectRoot from './webpack/utils/getProjectRoot.js'
@@ -53,27 +55,26 @@ const newIntegration = () => {
   if (!title) return fail(`--title is required\n${USAGE}`)
 
   const names = makeScaffoldNames(service, title, values.description?.trim())
-  const files = [
-    ...serverFiles(names),
-    ...clientFiles(names),
-    ...schemaFiles(names, readRepoFile(INTEGRATION_SERVICE_INTERFACE), new Date())
-  ]
-  const existing = files.filter((file) => fs.existsSync(path.join(PROJECT_ROOT, file.path)))
-  if (existing.length) {
-    return fail(
-      `Nothing was written. These files already exist:\n${existing.map((file) => `  ${file.path}`).join('\n')}`
-    )
-  }
-
-  let patched: {path: string; contents: string}[]
+  let files: ScaffoldFile[]
+  let patched: ScaffoldFile[]
   try {
+    files = [
+      ...serverFiles(names),
+      ...clientFiles(names),
+      ...schemaFiles(names, readRepoFile(INTEGRATION_SERVICE_INTERFACE), new Date())
+    ]
     patched = scaffoldPatches(names).map(({path: repoPath, apply}) => ({
       path: repoPath,
-      contents: apply(readRepoFile(repoPath))
+      contents: apply(readRepoFile(repoPath), repoPath)
     }))
   } catch (error) {
     if (error instanceof ScaffoldError) return fail(`Nothing was written. ${error.message}`)
     throw error
+  }
+  const existing = files.filter((file) => fs.existsSync(path.join(PROJECT_ROOT, file.path)))
+  if (existing.length) {
+    const list = existing.map((file) => `  ${file.path}`).join('\n')
+    return fail(`Nothing was written. These files already exist:\n${list}`)
   }
 
   if (values['dry-run']) {
@@ -97,7 +98,9 @@ const newIntegration = () => {
       {cwd: PROJECT_ROOT, stdio: 'inherit'}
     )
   } catch {
-    console.warn('biome could not tidy every file; run `pnpm exec biome check --write` on them')
+    console.warn(
+      `biome could not tidy every file. Run: pnpm exec biome check --write ${formattable.join(' ')}`
+    )
   }
 
   const {envPrefix} = names
@@ -107,10 +110,10 @@ Scaffolded ${service}: ${files.length} files created, ${patched.length} updated.
   2. pnpm relay:build && pnpm typecheck
   3. pnpm test:server integrations/platform/__tests__/conformance.test.ts
      pnpm test:client integrations/platform/__tests__/conformance.test.ts
-     The client suite fails until ${service} ships a scoping panel and a work drawer tab
-  4. Replace each "not implemented" stub with calls to ${title}
+     The client suite fails until ${service} ships a scoping tab and a work drawer tab
+  4. Replace the stubs and the placeholder OAuth paths with calls to ${title}
   5. Set ${envPrefix}_CLIENT_ID, ${envPrefix}_CLIENT_SECRET and ${envPrefix}_SERVER_URL in .env
-See docs/integrations/CONTRIBUTING.md`)
+See "After the scaffold" in docs/integrations/CONTRIBUTING.md`)
 }
 
 newIntegration()

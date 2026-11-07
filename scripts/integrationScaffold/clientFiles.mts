@@ -1,5 +1,5 @@
+import type {ScaffoldNames} from './makeScaffoldNames.mts'
 import type {ScaffoldFile} from './ScaffoldFile.mts'
-import type {ScaffoldNames} from './scaffoldNames.mts'
 
 const clientFiles = ({service, pascal, title, description}: ScaffoldNames): ScaffoldFile[] => {
   const dir = `packages/client/integrations/${service}`

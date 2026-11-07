@@ -1,5 +1,6 @@
+import type {ScaffoldNames} from './makeScaffoldNames.mts'
+import ScaffoldError from './ScaffoldError.mts'
 import type {ScaffoldFile} from './ScaffoldFile.mts'
-import type {ScaffoldNames} from './scaffoldNames.mts'
 
 const TYPE_DEFS = 'packages/server/graphql/public/typeDefs'
 export const INTEGRATION_SERVICE_INTERFACE = `${TYPE_DEFS}/IntegrationService.graphql`
@@ -10,16 +11,23 @@ const schemaFiles = (
   createdAt: Date
 ): ScaffoldFile[] => {
   const declaration = 'interface IntegrationService {'
-  const body = integrationServiceInterface.slice(
-    integrationServiceInterface.indexOf(declaration) + declaration.length
-  )
+  const reposField = 'repos: [RepoIntegration!]'
+  const declarationAt = integrationServiceInterface.indexOf(declaration)
+  if (declarationAt === -1 || !integrationServiceInterface.includes(reposField)) {
+    throw new ScaffoldError(
+      `${INTEGRATION_SERVICE_INTERFACE}: expected "${declaration}" with "${reposField}"`
+    )
+  }
+  const body = integrationServiceInterface
+    .slice(declarationAt + declaration.length)
+    .replace(reposField, 'repos: [RepoContainer!]')
   return [
     {
       path: `${TYPE_DEFS}/${pascal}IntegrationService.graphql`,
       contents: `type ${pascal}IntegrationService implements IntegrationService {${body}`
     },
     {
-      path: `packages/server/postgres/migrations/${createdAt.toISOString()}_add${pascal}IntegrationService.ts`,
+      path: `packages/server/postgres/migrations/${createdAt.toISOString()}_add${pascal}IntegrationProvider.ts`,
       contents: `import {type Kysely, sql} from 'kysely'
 
 export async function up(db: Kysely<any>): Promise<void> {
