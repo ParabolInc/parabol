@@ -1,3 +1,5 @@
+import {fetch, Response} from '@whatwg-node/fetch'
+import {authorizeOAuth2} from '../../integrations/helpers/authorizeOAuth2'
 import getKysely from '../../postgres/getKysely'
 import deactivateTeamMemberIntegrationAuthFamily from '../../postgres/queries/deactivateTeamMemberIntegrationAuthFamily'
 import {selectTeamMemberIntegrationAuth} from '../../postgres/select'
@@ -5,6 +7,10 @@ import logError from '../../utils/logError'
 import {ThirdPartyResponseError} from '../../utils/ThirdPartyResponseError'
 import handleAuthRefreshFailure from '../handleAuthRefreshFailure'
 
+jest.mock('@whatwg-node/fetch', () => ({
+  ...jest.requireActual<typeof import('@whatwg-node/fetch')>('@whatwg-node/fetch'),
+  fetch: jest.fn()
+}))
 jest.mock('../../postgres/getKysely')
 jest.mock('../../postgres/queries/deactivateTeamMemberIntegrationAuthFamily', () => {
   const actual = jest.requireActual<
@@ -103,6 +109,22 @@ describe('handleAuthRefreshFailure', () => {
       userId: 'user1',
       tags: {teamId: 'team1', service: 'gcal'}
     })
+    expect(chain.updateTable).not.toHaveBeenCalled()
+    expect(deactivateTeamMemberIntegrationAuthFamily).not.toHaveBeenCalled()
+  })
+
+  it('keeps the grant when the token endpoint answers a JSON 503 without a token', async () => {
+    const chain = mockUpdateChain()
+    mockSelect({...auth})
+    jest.mocked(fetch).mockResolvedValue(
+      new Response('{"message":"Service Unavailable"}', {
+        status: 503,
+        headers: {'content-type': 'application/json'}
+      })
+    )
+    const error = await authorizeOAuth2({authUrl: 'https://auth.example.com/oauth/token'})
+    expect(error).toBeInstanceOf(ThirdPartyResponseError)
+    await expect(handleAuthRefreshFailure(error as Error, auth)).resolves.toBeNull()
     expect(chain.updateTable).not.toHaveBeenCalled()
     expect(deactivateTeamMemberIntegrationAuthFamily).not.toHaveBeenCalled()
   })

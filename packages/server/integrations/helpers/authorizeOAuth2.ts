@@ -72,6 +72,7 @@ export const authorizeOAuth2 = async <
     const response = await readThirdPartyResponse('oauth2', oauth2Response, {method: 'POST', url})
     return new ThirdPartyResponseError('Received non-JSON OAuth2 Response', response)
   }
+  const unreadResponse = oauth2Response.clone()
   const tokenJson = (await oauth2Response.json()) as OAuth2Response
   if ('error' in tokenJson) {
     // any logging should be performed by the caller
@@ -79,7 +80,10 @@ export const authorizeOAuth2 = async <
       tokenJson.error_description || tokenJson.error || `Received OAuth2 Error from ${authUrl}`
     return new Error(errorMessage)
   }
-  if (!tokenJson.access_token) return new Error(`${authUrl} returned no access_token`)
+  if (!tokenJson.access_token) {
+    const response = await readThirdPartyResponse('oauth2', unreadResponse, {method: 'POST', url})
+    return new ThirdPartyResponseError(`${authUrl} returned no access_token`, response)
+  }
   const {
     access_token: accessToken,
     refresh_token: oauthRefreshToken,
