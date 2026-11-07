@@ -4,6 +4,7 @@ import type {IntegrationSearchQueryJsonByService} from '../../postgres/types'
 import {
   type EstimatePushCapability,
   type IssueCreateCapability,
+  type IssueListCapability,
   type IssueReadCapability,
   type IssueSearchCapability,
   type RepoListCapability,
@@ -14,6 +15,7 @@ import ClickUpServerManager from './ClickUpServerManager'
 import describeClickUpDimensionField from './describeClickUpDimensionField'
 import fetchClickUpRepos, {type ClickUpRepo} from './fetchClickUpRepos'
 import listClickUpDimensionFields from './listClickUpDimensionFields'
+import listClickUpIssues from './listClickUpIssues'
 import parseClickUpIntegrationHash from './parseClickUpIntegrationHash'
 import pushEstimateToClickUp from './pushEstimateToClickUp'
 import resolveClickUpDimensionFieldKey from './resolveClickUpDimensionFieldKey'
@@ -28,6 +30,7 @@ export class ClickUpServerIntegration extends ServerIntegrationDefinition {
     issueCreate: IssueCreateCapability
     issueRead: IssueReadCapability
     issueSearch: IssueSearchCapability<IntegrationSearchQueryJsonByService['clickup']>
+    issueList: IssueListCapability
     repoList: RepoListCapability<ClickUpRepo>
     estimatePush: EstimatePushCapability
   } = {
@@ -42,6 +45,7 @@ export class ClickUpServerIntegration extends ServerIntegrationDefinition {
       parseIntegrationHash: parseClickUpIntegrationHash
     },
     issueSearch: {buildQuery: buildClickUpSearchQuery},
+    issueList: {listIssues: listClickUpIssues},
     repoList: {
       fetchRepos: fetchClickUpRepos,
       integrationRepoId: (repo) => repo.id,
