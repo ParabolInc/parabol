@@ -4,6 +4,7 @@ import {ExpandMore, FilterList} from '~/ui/icons'
 import type {ClickUpListFilterBar_teamMember$key} from '../../../__generated__/ClickUpListFilterBar_teamMember.graphql'
 import useSearchFilter from '../../../hooks/useSearchFilter'
 import {getClickUpLists} from '../../../integrations/clickup/clickUpLists'
+import findIntegrationService from '../../../integrations/platform/findIntegrationService'
 import {cn} from '../../../ui/cn'
 import {Menu} from '../../../ui/Menu/Menu'
 import {MenuContent} from '../../../ui/Menu/MenuContent'
@@ -38,15 +39,25 @@ const ClickUpListFilterBar = (props: Props) => {
     teamMemberRef
   )
   const lists = getClickUpLists(teamMember.services)
+  const listsFailedToLoad = findIntegrationService(teamMember.services, 'clickup')?.repos === null
   const {query, filteredItems, onQueryChange} = useSearchFilter(lists, getListName)
   const selectedCount = selectedListIds.length
   const selectedLists = lists.filter(({integrationRepoId}) =>
     selectedListIds.includes(integrationRepoId)
   )
+  const unavailableListIds = selectedListIds.filter(
+    (listId) => !lists.some(({integrationRepoId}) => integrationRepoId === listId)
+  )
   const visibleLists = Array.from(new Set([...selectedLists, ...filteredItems])).slice(
     0,
     Math.max(MAX_LISTS, selectedCount + 1)
   )
+  const toggleList = (listId: string, isSelected: boolean) =>
+    setSelectedListIds(
+      isSelected
+        ? selectedListIds.filter((selectedListId) => selectedListId !== listId)
+        : [...selectedListIds, listId]
+    )
 
   return (
     <Menu
@@ -71,22 +82,28 @@ const ClickUpListFilterBar = (props: Props) => {
     >
       <MenuContent align='start' className='max-h-80 w-(--radix-dropdown-menu-trigger-width) pt-2'>
         <MenuSearch placeholder='Search ClickUp lists' onChange={onQueryChange} value={query} />
-        {visibleLists.length === 0 && (
+        {visibleLists.length === 0 && unavailableListIds.length === 0 && (
           <EmptyDropdownMenuItemLabel>No lists found!</EmptyDropdownMenuItemLabel>
         )}
+        {unavailableListIds.map((listId) => (
+          <MenuItem
+            key={`unavailable:${listId}`}
+            onSelect={(e) => e.preventDefault()}
+            onClick={() => toggleList(listId, true)}
+          >
+            <Checkbox className='-ml-2 mr-2' active />
+            <span className='overflow-hidden text-ellipsis whitespace-nowrap text-fg-secondary'>
+              {listsFailedToLoad ? 'List could not be loaded' : 'List no longer available'}
+            </span>
+          </MenuItem>
+        ))}
         {visibleLists.map(({id, name, integrationRepoId}) => {
           const isSelected = selectedListIds.includes(integrationRepoId)
           return (
             <MenuItem
               key={id}
               onSelect={(e) => e.preventDefault()}
-              onClick={() =>
-                setSelectedListIds(
-                  isSelected
-                    ? selectedListIds.filter((listId) => listId !== integrationRepoId)
-                    : [...selectedListIds, integrationRepoId]
-                )
-              }
+              onClick={() => toggleList(integrationRepoId, isSelected)}
             >
               <Checkbox className='-ml-2 mr-2' active={isSelected} />
               <TypeAheadLabel query={query} label={name} />
