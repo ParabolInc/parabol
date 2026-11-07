@@ -97,6 +97,18 @@ const mapDimensionTo = (fieldId: string, fieldName: string | null, fieldType = '
   } as unknown as DimensionFieldLookup)
 }
 
+const useStoredMapping = (fieldId: string, fieldName: string, fieldType: string) => {
+  mockLoadDimensionField.mockImplementation(actualLoadDimensionField)
+  loaders.clickUpSpace.load.mockResolvedValue({
+    id: '10',
+    name: 'Eng',
+    features: {points: {enabled: true}}
+  })
+  loaders.integrationDimensionFieldMaps.load.mockResolvedValue([
+    {issueType: null, fieldId, fieldName, fieldType}
+  ])
+}
+
 const jsonResponse = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {status, headers: {'content-type': 'application/json'}})
 
@@ -157,21 +169,49 @@ describe('pushEstimateToClickUp to Sprint Points', () => {
     expect(mockFetch).not.toHaveBeenCalled()
   })
 
-  it('comments instead, with no error, once Sprint Points is turned off in the Space', async () => {
-    mockLoadDimensionField.mockImplementation(actualLoadDimensionField)
-    loaders.clickUpSpace.load.mockResolvedValue({id: '10', name: 'Eng', features: {}})
-    loaders.integrationDimensionFieldMaps.load.mockResolvedValue([
-      {
-        issueType: null,
-        fieldId: '__sprintPoints',
-        fieldName: 'Sprint Points',
-        fieldType: 'number'
-      }
-    ])
-    await expect(pushEstimateToClickUp(buildCtx('5'))).resolves.toBeNull()
+  it.each([
+    ['turned off', {points: {enabled: false}}],
+    ['not mentioned', {}]
+  ])(
+    'comments instead, with no error, once Sprint Points is %s in the Space',
+    async (_label, features) => {
+      useStoredMapping('__sprintPoints', 'Sprint Points', 'number')
+      loaders.clickUpSpace.load.mockResolvedValue({id: '10', name: 'Eng', features})
+      await expect(pushEstimateToClickUp(buildCtx('5'))).resolves.toBeNull()
+      expect(mockFetch).toHaveBeenCalledTimes(1)
+      expect(readRequest().url).toBe('https://api.clickup.com/api/v2/task/86abc/comment')
+    }
+  )
+
+  it('still sets the task’s points when the Space cannot be read', async () => {
+    useStoredMapping('__sprintPoints', 'Sprint Points', 'number')
+    loaders.clickUpSpace.load.mockResolvedValue(null)
+    await expect(pushEstimateToClickUp(buildCtx('5'))).resolves.toEqual({
+      service: 'clickup',
+      target: 'field',
+      targetId: '__sprintPoints'
+    })
     expect(mockFetch).toHaveBeenCalledTimes(1)
-    expect(readRequest().url).toBe('https://api.clickup.com/api/v2/task/86abc/comment')
+    expect(readRequest()).toEqual({
+      url: 'https://api.clickup.com/api/v2/task/86abc',
+      method: 'PUT',
+      body: {points: 5}
+    })
   })
+
+  it.each([
+    [401, {err: 'Token invalid', ECODE: 'OAUTH_019'}, 'Reconnect ClickUp: access was revoked'],
+    [404, {err: 'Task not found', ECODE: 'ITEM_013'}, 'ClickUp: Task not found']
+  ])(
+    'passes on, unchanged, the Error of a %p reply to the points',
+    async (status, body, message) => {
+      mapDimensionTo('__sprintPoints', 'Sprint Points')
+      mockFetch.mockResolvedValue(jsonResponse(body, status))
+      const result = await pushEstimateToClickUp(buildCtx('5'))
+      expect(result).toBeInstanceOf(Error)
+      expect(result).toHaveProperty('message', message)
+    }
+  )
 })
 
 describe('pushEstimateToClickUp to a custom field', () => {
@@ -238,6 +278,25 @@ describe('pushEstimateToClickUp to a custom field', () => {
     expect(result).toBeInstanceOf(Error)
     expect(result).toHaveProperty('message', 'Size is no longer on this ClickUp task')
     expect(mockFetch).not.toHaveBeenCalled()
+  })
+
+  it('comments instead, with no error, once the stored field leaves the task', async () => {
+    useStoredMapping('size-field', 'Size', 'number')
+    loaders.clickUpTask.load.mockResolvedValue({...clickUpTask, customFields: []})
+    await expect(pushEstimateToClickUp(buildCtx('3'))).resolves.toBeNull()
+    expect(mockFetch).toHaveBeenCalledTimes(1)
+    expect(readRequest()).toMatchObject({
+      url: 'https://api.clickup.com/api/v2/task/86abc/comment',
+      method: 'POST'
+    })
+  })
+
+  it('returns the Error of a field value ClickUp refused', async () => {
+    mapDimensionTo('size-field', 'Size')
+    mockFetch.mockResolvedValue(jsonResponse({err: 'Field does not apply to this task'}, 400))
+    const result = await pushEstimateToClickUp(buildCtx('3'))
+    expect(result).toBeInstanceOf(Error)
+    expect(result).toHaveProperty('message', 'ClickUp: Field does not apply to this task')
   })
 })
 

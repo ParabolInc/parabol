@@ -1,5 +1,6 @@
 import type {DimensionFieldCtx} from '../../platform/ServerIntegrationDefinition'
 import type {ClickUpApiCustomField, ClickUpApiSpace} from '../ClickUpApiTypes'
+import describeClickUpDimensionField from '../describeClickUpDimensionField'
 import listClickUpDimensionFields from '../listClickUpDimensionFields'
 import type {ClickUpTaskSource} from '../mapClickUpTask'
 import resolveClickUpDimensionFieldKey from '../resolveClickUpDimensionFieldKey'
@@ -153,14 +154,53 @@ describe('resolveClickUpDimensionFieldKey', () => {
     ])
   })
 
-  it('can use only the task’s fields when Sprint Points is off', async () => {
-    loaders.clickUpSpace.load.mockResolvedValue(space({points: {enabled: false}}))
+  it.each([
+    ['is off', space({points: {enabled: false}})],
+    ['is not mentioned by the Space', space({})]
+  ])('can use only the task’s fields when Sprint Points %s', async (_label, taskSpace) => {
+    loaders.clickUpSpace.load.mockResolvedValue(taskSpace)
     const key = await resolveClickUpDimensionFieldKey(buildCtx())
     expect(key?.usableFieldIds).toEqual(['size-field', 'tshirt-field', 'note-field'])
+  })
+
+  it('keeps Sprint Points usable when the Space cannot be read', async () => {
+    loaders.clickUpSpace.load.mockResolvedValue(null)
+    const key = await resolveClickUpDimensionFieldKey(buildCtx())
+    expect(key?.usableFieldIds).toEqual([
+      '__sprintPoints',
+      'size-field',
+      'tshirt-field',
+      'note-field'
+    ])
   })
 
   it('has no key when the task cannot be read', async () => {
     loaders.clickUpTask.load.mockResolvedValue(null)
     await expect(resolveClickUpDimensionFieldKey(buildCtx())).resolves.toBeNull()
   })
+})
+
+describe('describeClickUpDimensionField', () => {
+  const key = {repoId: '1000', issueType: null}
+
+  it.each([
+    ['__sprintPoints', 'Sprint Points', 'number'],
+    ['tshirt-field', 'T-shirt', 'drop_down'],
+    ['note-field', 'Note', 'string']
+  ])('names and types the listed field %p', async (fieldId, fieldName, fieldType) => {
+    await expect(describeClickUpDimensionField(buildCtx(), key, fieldId)).resolves.toEqual({
+      fieldId,
+      fieldName,
+      fieldType
+    })
+  })
+
+  it.each(['labels-field', 'unknown-field'])(
+    'refuses %p, which is not listed for this task',
+    async (fieldId) => {
+      const result = await describeClickUpDimensionField(buildCtx(), key, fieldId)
+      expect(result).toBeInstanceOf(Error)
+      expect(result).toHaveProperty('message', 'That field is not on this ClickUp task')
+    }
+  )
 })
