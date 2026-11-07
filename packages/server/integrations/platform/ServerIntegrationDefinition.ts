@@ -158,11 +158,11 @@ export interface ServerIntegrationCapabilities<TRepo extends ServiceRepo = Servi
 
 export type IntegrationCapabilityKey = keyof ServerIntegrationCapabilities
 
-export abstract class ServerIntegrationDefinition<TRepo extends ServiceRepo = ServiceRepo> {
+export abstract class ServerIntegrationDefinition {
   abstract readonly service: IntegrationMeta['service']
   abstract readonly title: string
   abstract readonly authStrategy: 'oauth1' | 'oauth2' | 'pat' | 'webhook'
-  abstract readonly capabilities: ServerIntegrationCapabilities<TRepo>
+  abstract readonly capabilities: ServerIntegrationCapabilities
   /** The viewer's usable auth row for this team, refreshed first when the service supports it */
   async resolveAuth(ctx: IntegrationCtx): Promise<TeamMemberIntegrationAuth | null> {
     const {dataLoader, teamId, userId} = ctx

@@ -19,7 +19,7 @@ import pushEstimateToJiraServer from './pushEstimateToJiraServer'
 import resolveJiraServerDimensionFieldKey from './resolveJiraServerDimensionFieldKey'
 import resolveJiraServerTaskIntegration from './resolveJiraServerTaskIntegration'
 
-export class JiraServerServerIntegration extends ServerIntegrationDefinition<JiraServerProject> {
+export class JiraServerServerIntegration extends ServerIntegrationDefinition {
   readonly service = jiraServerIntegrationMeta.service
   readonly title = jiraServerIntegrationMeta.title
   readonly authStrategy = 'oauth1' as const

@@ -23,7 +23,7 @@ import pushEstimateToLinear from './pushEstimateToLinear'
 import resolveLinearDimensionFieldKey from './resolveLinearDimensionFieldKey'
 import resolveLinearTaskIntegration from './resolveLinearTaskIntegration'
 
-export class LinearServerIntegration extends ServerIntegrationDefinition<LinearRepo> {
+export class LinearServerIntegration extends ServerIntegrationDefinition {
   readonly service = linearIntegrationMeta.service
   readonly title = linearIntegrationMeta.title
   readonly authStrategy = 'oauth2' as const

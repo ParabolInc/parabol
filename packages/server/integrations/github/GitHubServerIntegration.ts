@@ -22,7 +22,7 @@ import pushEstimateToGitHub from './pushEstimateToGitHub'
 import resolveGitHubDimensionFieldKey from './resolveGitHubDimensionFieldKey'
 import resolveGitHubTaskIntegration from './resolveGitHubTaskIntegration'
 
-export class GitHubServerIntegration extends ServerIntegrationDefinition<GitHubRepo> {
+export class GitHubServerIntegration extends ServerIntegrationDefinition {
   readonly service = githubIntegrationMeta.service
   readonly title = githubIntegrationMeta.title
   readonly authStrategy = 'oauth2' as const

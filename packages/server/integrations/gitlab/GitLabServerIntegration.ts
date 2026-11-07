@@ -18,7 +18,7 @@ import pushEstimateToGitLab from './pushEstimateToGitLab'
 import resolveGitLabDimensionFieldKey from './resolveGitLabDimensionFieldKey'
 import resolveGitLabTaskIntegration from './resolveGitLabTaskIntegration'
 
-export class GitLabServerIntegration extends ServerIntegrationDefinition<GitLabProject> {
+export class GitLabServerIntegration extends ServerIntegrationDefinition {
   readonly service = gitlabIntegrationMeta.service
   readonly title = gitlabIntegrationMeta.title
   readonly authStrategy = 'oauth2' as const
