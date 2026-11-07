@@ -85,6 +85,17 @@ graphql`
           }
           url
         }
+        ... on ClickUpTask {
+          __typename
+          id
+          title
+          clickUpDescription: description
+          taskId
+          customId
+          listName
+          folderName
+          clickUpUrl: url
+        }
       }
     }
   }

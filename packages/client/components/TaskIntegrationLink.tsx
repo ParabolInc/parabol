@@ -4,6 +4,7 @@ import {useFragment} from 'react-relay'
 import {getLinearRepoName} from '~/utils/getLinearRepoName'
 import {parseWebPath} from '~/utils/parseWebPath'
 import type {TaskIntegrationLink_integration$key} from '../__generated__/TaskIntegrationLink_integration.graphql'
+import getClickUpTaskLinkTitle from '../integrations/clickup/getClickUpTaskLinkTitle'
 import {DemoIntegration} from '../types/constEnums'
 import {cn} from '../ui/cn'
 import isTempId from '../utils/relay/isTempId'
@@ -29,6 +30,7 @@ const TaskIntegrationLink = (props: Props) => {
         ...TaskIntegrationLinkIntegrationGitLab @relay(mask: false) @alias
         ...TaskIntegrationLinkIntegrationAzure @relay(mask: false) @alias
         ...TaskIntegrationLinkIntegrationLinear @relay(mask: false) @alias
+        ...TaskIntegrationLinkIntegrationClickUp @relay(mask: false) @alias
       }
     `,
     integrationRef
@@ -157,6 +159,23 @@ const TaskIntegrationLink = (props: Props) => {
       </a>
     )
   }
+  const clickUp = integration.TaskIntegrationLinkIntegrationClickUp
+  if (clickUp) {
+    const {clickUpUrl} = clickUp
+    const taskKey = clickUp.customId ?? clickUp.taskId
+    return (
+      <a
+        href={clickUpUrl}
+        rel='noopener noreferrer'
+        target='_blank'
+        title={getClickUpTaskLinkTitle(clickUp)}
+        className={linkClassName}
+      >
+        {`Task ${taskKey}`}
+        {children}
+      </a>
+    )
+  }
   return null
 }
 
@@ -218,6 +237,17 @@ graphql`
       name
     }
     url
+  }
+`
+
+graphql`
+  fragment TaskIntegrationLinkIntegrationClickUp on ClickUpTask {
+    id
+    taskId
+    customId
+    listName
+    folderName
+    clickUpUrl: url
   }
 `
 

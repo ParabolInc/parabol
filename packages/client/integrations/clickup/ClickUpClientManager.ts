@@ -5,7 +5,6 @@ import AddTeamMemberIntegrationAuthMutation from '../../mutations/AddTeamMemberI
 import getOAuthPopupFeatures from '../../utils/getOAuthPopupFeatures'
 import makeHref from '../../utils/makeHref'
 
-const SCOPES = ''
 const AUTHORIZE_URL = 'https://app.clickup.com/api'
 const REDIRECT_PATH = '/auth/clickup'
 const POLLING_INTERVAL = 250
@@ -26,10 +25,8 @@ const ClickUpClientManager = {
     )
     const url = new URL(AUTHORIZE_URL)
     url.searchParams.set('client_id', clientId)
-    url.searchParams.set('scope', SCOPES)
     url.searchParams.set('state', providerState)
     url.searchParams.set('redirect_uri', makeHref(REDIRECT_PATH))
-    url.searchParams.set('response_type', 'code')
     const popup = window.open(
       url.toString(),
       'ClickUpAuth',

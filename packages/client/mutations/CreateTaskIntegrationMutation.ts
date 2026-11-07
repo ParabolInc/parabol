@@ -57,6 +57,12 @@ const optimisticIntegrationFields: Partial<
     titleField: 'title',
     bodyField: 'description',
     bodyFormat: 'markdown'
+  },
+  clickup: {
+    typename: 'ClickUpTask',
+    titleField: 'title',
+    bodyField: 'description',
+    bodyFormat: 'markdown'
   }
 }
 
@@ -118,12 +124,24 @@ graphql`
           }
           url
         }
+        ... on ClickUpTask {
+          __typename
+          id
+          title
+          clickUpDescription: description
+          taskId
+          customId
+          listName
+          folderName
+          clickUpUrl: url
+        }
         ...TaskIntegrationLinkIntegrationGitHub @alias
         ...TaskIntegrationLinkIntegrationJira @alias
         ...TaskIntegrationLinkIntegrationJiraServer @alias
         ...TaskIntegrationLinkIntegrationGitLab @alias
         ...TaskIntegrationLinkIntegrationAzure @alias
         ...TaskIntegrationLinkIntegrationLinear @alias
+        ...TaskIntegrationLinkIntegrationClickUp @alias
       }
       updatedAt
       teamId

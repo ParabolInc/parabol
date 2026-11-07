@@ -54,6 +54,12 @@ graphql`
           title
           identifier
         }
+        ... on ClickUpTask {
+          __typename
+          title
+          taskId
+          customId
+        }
       }
     }
   }
@@ -128,6 +134,11 @@ const useMakeStageSummaries = (
             return {
               title: integration.title,
               subtitle: `${integration.identifier}`
+            }
+          case 'ClickUpTask':
+            return {
+              title: integration.title,
+              subtitle: integration.customId ?? integration.taskId
             }
           default:
             return {
