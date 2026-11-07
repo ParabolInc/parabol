@@ -6,7 +6,7 @@ This guide is for adding a new task integration. Read it once before you start, 
 
 ## How an integration is put together
 
-Every integration has three parts, each in a folder named for the service (`asana`, `clickUp`):
+Every integration has three parts, each in a folder named for the service (`asana`, `clickup`):
 
 | Part | Where | What it does |
 | --- | --- | --- |
@@ -26,14 +26,24 @@ A few rules keep the layers apart. Lint enforces the first one.
 ## Quick start
 
 ```sh
-pnpm integration:new asana --title Asana
+pnpm integration:new asana --title Asana \
+  --api-url https://app.asana.com/api/1.0 \
+  --authorize-url https://app.asana.com/-/oauth_authorize \
+  --token-url https://app.asana.com/-/oauth_token
 pnpm kysely migrate:latest && pnpm pg:generate
 pnpm relay:build && pnpm typecheck
 pnpm test:server integrations/platform/__tests__/conformance.test.ts
 pnpm test:client integrations/platform/__tests__/conformance.test.ts
 ```
 
-The service name is a camelCase key. It names the files and the env vars, so `clickUp` gives `ClickUpServerIntegration.ts` and `CLICK_UP_CLIENT_ID`. Pass `--description` to set the line shown on the integrations page, and `--dry-run` to see what would change without writing anything.
+The service name is a camelCase key that names the folders, the env vars and the OAuth redirect. A one-word brand gets a lowercase key, as `github` and `gitlab` do. The type names come from `--title` when it spells the key, so `clickup --title ClickUp` gives `ClickUpServerIntegration.ts`, `CLICKUP_CLIENT_ID` and `/auth/clickup`. Otherwise they use the key with its first letter capitalized. The key becomes a database enum value, so choose it with care.
+
+The three URLs are for a service everyone reaches at the same address. Pass all three, each an `https` URL:
+- `--authorize-url`, where the person approves access. It is written into `<Service>ClientManager`.
+- `--token-url`, where the server trades the code for a token. It is written into `<Service>OAuth2Manager`.
+- `--api-url`, the base of the service's API. It becomes the global provider's `serverBaseUrl` in `primeIntegrations.ts`. The stubs make no API calls yet.
+
+For a service each customer runs on their own server, as GitLab can be, pass `--self-hosted` instead of the URLs. Its OAuth paths then resolve against the provider's `serverBaseUrl`. The global provider reads it from `<SERVICE>_SERVER_URL`; team and org providers set their own. Pass `--description` to set the line shown on the integrations page, and `--dry-run` to see what would change without writing anything.
 
 The script writes:
 
@@ -42,16 +52,19 @@ The script writes:
 - a placeholder logo in `packages/client/styles/theme/images/graphics/`
 - `<Service>IntegrationService.graphql`, and a migration that adds the service to the `IntegrationProviderServiceEnum` database enum. Postgres cannot drop an enum value, so the migration's `down` does nothing
 
-It also adds the service to these lists: both GraphQL service enums, the codegen mappers, the stored task shape, the provider types, both registries, the OAuth2 managers, the GraphQL typename maps, the meeting summary export, the report labels, the global provider setup and `.env.example`. It checks every one of those files first and writes nothing if one has changed shape.
+It also adds the service to these lists: both GraphQL service enums, the codegen mappers, the stored task shape, the saved-search types, the provider types, both registries, the OAuth2 managers, the GraphQL typename maps, the meeting summary export, the report labels, the global provider setup and `.env.example`. It checks every one of those files first and writes nothing if one has changed shape.
 
 After those commands, typecheck and the server conformance suite pass. The client suite fails until the service has a scoping tab and a work drawer tab (see [Client capabilities](#client-capabilities)).
 
 ### After the scaffold
 
 - Replace the stubs. Five return a "not implemented" error: `fetch<Service>Repos`, `pushEstimateTo<Service>`, `describe<Service>DimensionField`, and `createTask` and `addCreatedBySomeoneElseComment` in `<Service>ServerManager`. Four others quietly return nothing: `resolve<Service>TaskIntegration`, `resolve<Service>DimensionFieldKey`, `list<Service>DimensionFields`, and `build<Service>SearchQuery`, which only checks the search and trims it.
-- Point the OAuth paths at the service: `TOKEN_PATH` in `<Service>OAuth2Manager`, and `AUTH_PATH` and `SCOPES` in `<Service>ClientManager`. Both resolve against the provider's `serverBaseUrl`.
-- In the service's OAuth app, register `<app origin>/auth/<service>` as the redirect URL.
-- Set `<SERVICE>_CLIENT_ID`, `<SERVICE>_CLIENT_SECRET` and `<SERVICE>_SERVER_URL` in `.env`, then restart `pnpm dev` so the global provider picks them up.
+- Match the OAuth requests to what the service documents.
+  - `<Service>OAuth2Manager` posts a form body with `client_id`, `client_secret` and `grant_type`, plus `code` and `redirect_uri` when authorizing or `refresh_token` when refreshing. Some services want JSON, HTTP Basic credentials, or fewer fields.
+  - `<Service>ClientManager` sends `client_id`, `redirect_uri`, `state`, `scope` and `response_type`. Set `SCOPES`, and drop any parameter the service rejects.
+  - The endpoints are `TOKEN_URL` and `AUTHORIZE_URL`, set from your flags. With `--self-hosted` they are the placeholder paths `TOKEN_PATH` (`/oauth/token`) and `AUTH_PATH` (`/oauth/authorize`), which resolve against the provider's `serverBaseUrl`. Point them at the service's real paths.
+- In the service's OAuth app, register `<app origin>/auth/<service in lowercase>` as the redirect URL.
+- Set `<SERVICE>_CLIENT_ID` and `<SERVICE>_CLIENT_SECRET` in `.env`, plus `<SERVICE>_SERVER_URL` with `--self-hosted`. Then restart `pnpm dev` so the global provider picks them up.
 
 ## Server capabilities
 
@@ -69,7 +82,7 @@ A capability is an object on the server definition's `capabilities`. The interfa
 
 Every service in `TaskServiceEnum` must implement `issueCreate`, `issueRead`, `issueSearch`, `repoList` and `estimatePush`. The conformance suite checks this.
 
-The scaffold declares `<Service>Repo` in `fetch<Service>Repos.ts` and names it in `repoList: RepoListCapability<<Service>Repo>`. Change its fields to what the service returns, and `RemoteRepoIntegration` picks them up. Its GraphQL type is `RepoContainer`. To use your own, add a type that implements `RepoIntegration`, name it in [`RepoIntegration.ts`](../../packages/server/graphql/public/types/RepoIntegration.ts), and change `repos` in `<Service>IntegrationService.graphql` to match, as Azure DevOps does.
+The scaffold declares `<Service>Repo` in `fetch<Service>Repos.ts` and names it in `repoList: RepoListCapability<<Service>Repo>`. Change its fields to what the service returns, and `RemoteRepoIntegration` picks them up. The list is cached. A read that finds it more than a minute old returns the cached list and fetches a new one in the background. When listing takes many requests against a tight rate limit, set `refreshAfterMs` on `repoList` to refetch less often. Its GraphQL type is `RepoContainer`. To use your own, add a type that implements `RepoIntegration`, name it in [`RepoIntegration.ts`](../../packages/server/graphql/public/types/RepoIntegration.ts), and change `repos` in `<Service>IntegrationService.graphql` to match, as Azure DevOps does.
 
 Functions that call the service return an `Error` when it fails and never throw: `fetchRepos`, `fetchAvailableRepos`, `pushEstimate`, `describeDimensionField`, `createTask` and `addCreatedBySomeoneElseComment`. `buildQuery` returns an `Error` for a search it will not store. A `fetchRepos` that returns an `Error` is never cached. The read paths log the failure and return `null` (`getIssue`, `resolveDimensionFieldKey`), `{options: []}` (`listDimensionFields`) or `[]` (`listIssues`).
 
@@ -106,7 +119,8 @@ Only the team member themselves can reach `TeamMember.integrations` (see `permis
 
 ## Auth
 
-- **OAuth2** is what the script sets up. On the server, `<Service>OAuth2Manager` exchanges and refreshes tokens; it is registered in [`createOAuth2Manager.ts`](../../packages/server/integrations/platform/createOAuth2Manager.ts). Return the person's id on the service from `authorize` when the API has one. On the client, `<Service>ClientManager` opens the popup. The `/auth/<service>` callback route is shared, so it needs no change.
+- **OAuth2** is what the script sets up. On the server, `<Service>OAuth2Manager` exchanges and refreshes tokens; it is registered in [`createOAuth2Manager.ts`](../../packages/server/integrations/platform/createOAuth2Manager.ts). Return the person's id on the service from `authorize` when the API has one. A service that grants no scopes returns `scopes: ''`. When its tokens never expire, have `refresh` return an `Error`, as `GitHubOAuth2Manager` does. On the client, `<Service>ClientManager` opens the popup. The `/auth/:provider` callback route is shared, so it needs no change.
+- **Revoked access.** A token that never expires is never refreshed, so no failed refresh tells Parabol that someone revoked it. When the service rejects a token as revoked, call `deactivateTeamMemberIntegrationAuthFamily(auth)` from `packages/server/postgres/queries/`. The service then shows as disconnected, so the person can connect again instead of watching every call fail.
 - **Other strategies** need their own code in [`addTeamMemberIntegrationAuth.ts`](../../packages/server/graphql/public/mutations/addTeamMemberIntegrationAuth.ts): Jira Server uses OAuth1, and Azure DevOps uses PKCE and resolves its own auth. Personal access tokens are not supported yet: `addTeamMemberIntegrationAuth` does not store them, so a PAT service needs its own branch there.
 - **Where credentials come from.** The instance-wide provider comes from `.env` through [`primeIntegrations.ts`](../../scripts/toolboxSrc/primeIntegrations.ts). Teams and orgs can add their own with the `addIntegrationProvider` mutation. A service shows as available when one of these exists.
 - **Extra auth data.** If the auth row stores more than tokens, add its shape to `IntegrationAuthMetaByService` in `packages/server/postgres/types/index.d.ts`.
@@ -132,7 +146,12 @@ The conformance suites run against every registered integration, so a new one is
   - ships a work drawer tab
   - has a logo no other service uses
 
-Put tests for your own code in `integrations/<service>/__tests__/` on each side, and mock the service instead of calling it. Before a run, `pnpm test:server` resets a couple of tables and turns off one trigger in the database named in `.env`, so point it at a development database.
+Put tests for your own code in `integrations/<service>/__tests__/` on each side, and mock the service instead of calling it. Before a run, `pnpm test:server` resets a couple of tables and turns off one trigger in the database named in `.env`, so point it at a development database. Unit tests that mock the service can skip that setup. Skipping it also skips loading `.env`, so load it yourself from the repo root:
+
+```sh
+set -a && . ./.env && set +a
+pnpm --filter parabol-server exec jest --globalSetup='' --globalTeardown='' server/integrations/<service>
+```
 
 ## Example integrations
 

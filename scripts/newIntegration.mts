@@ -75,7 +75,7 @@ const newIntegration = () => {
   const title = values.title?.trim()
   if (!service || extra.length) return fail(USAGE)
   if (!SERVICE_PATTERN.test(service)) {
-    return fail(`"${service}" must be camelCase letters and digits, e.g. clickUp`)
+    return fail(`"${service}" must be camelCase letters and digits, e.g. clickup or azureDevOps`)
   }
   if (!title) return fail(`--title is required\n${USAGE}`)
   const hosts = parseHosts(values)
