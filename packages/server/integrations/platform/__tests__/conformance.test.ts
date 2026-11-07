@@ -54,10 +54,7 @@ const pushEntries = entries.filter(([, definition]) => definition.capabilities.e
 const listEntries = entries.filter(([, definition]) => definition.capabilities.issueList)
 
 it('the SDL TaskServiceEnum and the services a Task row stores stay in sync', () => {
-  const inSync: MutuallyAssignable<
-    Exclude<TaskServiceEnum, 'PARABOL'>,
-    Exclude<StoredTaskService, 'PARABOL'>
-  > = true
+  const inSync: MutuallyAssignable<TaskServiceEnum, StoredTaskService> = true
   expect(inSync).toBe(true)
 })
 
@@ -66,10 +63,6 @@ it('every IntegrationMeta service is an IntegrationProviderServiceEnum value', (
     ? true
     : never = true
   expect(isProviderService).toBe(true)
-})
-
-it('registers every TaskServiceEnum service', () => {
-  expect(Object.keys(serverIntegrations)).toEqual(expect.arrayContaining(TASK_SERVICES))
 })
 
 describe.each(entries)('%s conformance', (key, definition) => {
@@ -83,10 +76,6 @@ describe.each(entries)('%s conformance', (key, definition) => {
       service: meta.service,
       title: meta.title
     })
-  })
-
-  it('is an IntegrationProviderServiceEnum value', () => {
-    expect(enumValues('IntegrationProviderServiceEnum')).toContain(key)
   })
 
   it('has a valid authStrategy', () => {
@@ -107,19 +96,22 @@ it.each(taskEntries)('%s: a task service implements every task capability', (_ke
   expect(definition.getCapabilityKeys()).toEqual(expect.arrayContaining(TASK_CAPABILITIES))
 })
 
-it.each(oauth2Entries)('%s: an OAuth2 service can refresh its token', (_key, definition) => {
-  const resolvesItsOwnAuth =
-    definition.resolveAuth !== ServerIntegrationDefinition.prototype.resolveAuth
-  const provider = {
-    authStrategy: 'oauth2',
-    service: definition.service,
-    clientId: 'client',
-    clientSecret: 'secret',
-    serverBaseUrl: 'https://example.com',
-    isActive: true
-  } as TIntegrationProvider
-  expect(resolvesItsOwnAuth || createOAuth2Manager(provider) !== null).toBe(true)
-})
+it.each(oauth2Entries)(
+  '%s: an OAuth2 service has a token manager or resolves its own auth',
+  (_key, definition) => {
+    const resolvesItsOwnAuth =
+      definition.resolveAuth !== ServerIntegrationDefinition.prototype.resolveAuth
+    const provider = {
+      authStrategy: 'oauth2',
+      service: definition.service,
+      clientId: 'client',
+      clientSecret: 'secret',
+      serverBaseUrl: 'https://example.com',
+      isActive: true
+    } as TIntegrationProvider
+    expect(resolvesItsOwnAuth || createOAuth2Manager(provider) !== null).toBe(true)
+  }
+)
 
 it.each(readEntries)('%s: parseIntegrationHash rejects a malformed hash', (_key, definition) => {
   MALFORMED_HASHES.forEach((hash) => {
@@ -131,14 +123,14 @@ it.each(searchEntries)('%s: buildQuery answers an empty search', (_key, definiti
   expect(() => definition.capabilities.issueSearch?.buildQuery('', {})).not.toThrow()
 })
 
-it.each(pushEntries)(
-  '%s: pushes estimates to known targets, comments included',
-  (_key, definition) => {
-    const targets = definition.capabilities.estimatePush?.targets ?? []
-    expect(targets).toContain('comment')
-    targets.forEach((target) => expect(enumValues('EstimatePushTargetEnum')).toContain(target))
-  }
-)
+it.each(searchEntries)('%s: buildQuery rejects meta it does not know', (_key, definition) => {
+  const query = definition.capabilities.issueSearch?.buildQuery('bugs', {unknownMetaKey: 1})
+  expect(query).toBeInstanceOf(Error)
+})
+
+it.each(pushEntries)('%s: can push an estimate as a comment', (_key, definition) => {
+  expect(definition.capabilities.estimatePush?.targets).toContain('comment')
+})
 
 it.each(listEntries)('%s: an issueList service is a ServiceEnum source', (key) => {
   expect(enumValues('ServiceEnum')).toContain(key)

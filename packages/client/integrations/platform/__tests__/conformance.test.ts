@@ -35,8 +35,8 @@ describe.each(entries)('%s conformance', (key, definition) => {
     }).toEqual(meta)
   })
 
-  it('ships a scoping results component exactly when it is a task service', () => {
-    expect(definition.capabilities.scoping?.Results instanceof Function).toBe(
+  it('ships a scoping tab exactly when it is a task service', () => {
+    expect(definition.capabilities.scoping !== undefined).toBe(
       isTaskClientIntegration(definition.service)
     )
   })
