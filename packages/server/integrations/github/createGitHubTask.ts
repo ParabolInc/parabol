@@ -9,9 +9,9 @@ import type {
   GetRepoInfoQuery,
   GetRepoInfoQueryVariables
 } from '../../types/githubTypes'
-import getGitHubRequest from '../../utils/getGitHubRequest'
 import createIssueMutation from '../../utils/githubQueries/createIssue.graphql'
 import getRepoInfo from '../../utils/githubQueries/getRepoInfo.graphql'
+import getGitHubRequest from './getGitHubRequest'
 
 const createGitHubTask = async (
   title: string,

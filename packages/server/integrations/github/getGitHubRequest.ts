@@ -1,6 +1,6 @@
 import type {GraphQLResolveInfo} from 'graphql'
 import type {EndpointContext} from 'nest-graphql-endpoint/lib/types'
-import {githubRequest} from '../graphql/public/rootSchema'
+import {githubRequest} from '../../graphql/public/rootSchema'
 
 // This helper just cleans up the input/output boilerplate.
 // It breaks githubRequest into 2 parts so the info, endpointContext, and batchRef are kept in context

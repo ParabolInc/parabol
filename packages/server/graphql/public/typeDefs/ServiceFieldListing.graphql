@@ -13,7 +13,7 @@ type ServiceFieldListing {
   options: [ServiceField!]!
 
   """
-  A support doc explaining why no usable field was found. Null when a field exists or the service has none to look for
+  A support doc explaining a field the service knows is missing, alongside any options that exist. Null when nothing is missing or the service cannot tell
   """
   helpUrl: URL
 }

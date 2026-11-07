@@ -1,9 +1,9 @@
 import type {HttpResponse} from 'uWebSockets.js'
-import type AuthToken from './database/types/AuthToken'
-import {getNewDataLoader} from './dataloader/getNewDataLoader'
-import {getUserId} from './utils/authorization'
-import fetchWithRetry from './utils/fetchWithRetry'
-import {Logger} from './utils/Logger'
+import type AuthToken from '../../database/types/AuthToken'
+import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
+import {getUserId} from '../../utils/authorization'
+import fetchWithRetry from '../../utils/fetchWithRetry'
+import {Logger} from '../../utils/Logger'
 
 export const atlassianProxyHandler = async (
   res: HttpResponse,

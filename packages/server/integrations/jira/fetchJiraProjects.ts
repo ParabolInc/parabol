@@ -1,7 +1,13 @@
 import JiraProjectId from 'parabol-client/integrations/jira/shared/JiraProjectId'
-import type {JiraGQLProject} from '../../dataloader/atlassianLoaders'
-import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import type {RepoFetchCtx} from '../platform/ServerIntegrationDefinition'
+import AtlassianServerManager, {type JiraProject} from './AtlassianServerManager'
+
+export interface JiraGQLProject extends JiraProject {
+  cloudId: string
+  teamId: string
+  userId: string
+  service: 'jira'
+}
 
 /** Every Jira Cloud project across the user's sites, plus the first failure. `projects` is partial when `error` is set */
 export const fetchJiraProjectsResult = async ({

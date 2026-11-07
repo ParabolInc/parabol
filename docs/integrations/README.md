@@ -1,5 +1,7 @@
 # Integrations
 
+To add a new integration, see [Contributing an integration](./CONTRIBUTING.md).
+
 ## Development Setup
 
 - To set up integrations, just change the corresponding CLIENT_ID and CLIENT_SECRET in the .env

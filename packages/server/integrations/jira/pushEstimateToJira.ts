@@ -1,10 +1,10 @@
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import upsertIntegrationDimensionFieldMap from '../../postgres/queries/upsertIntegrationDimensionFieldMap'
 import type {EstimatePushResult} from '../../postgres/types/EstimatePushResult'
-import AtlassianServerManager from '../../utils/AtlassianServerManager'
-import makeScoreJiraComment from '../../utils/makeScoreJiraComment'
 import loadDimensionField from '../platform/loadDimensionField'
 import type {EstimatePushCtx} from '../platform/ServerIntegrationDefinition'
+import AtlassianServerManager from './AtlassianServerManager'
+import makeScoreJiraComment from './makeScoreJiraComment'
 import resolveJiraDimensionFieldKey from './resolveJiraDimensionFieldKey'
 
 const pushEstimateToJira = async ({

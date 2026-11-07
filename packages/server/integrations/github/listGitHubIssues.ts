@@ -1,9 +1,9 @@
 import type {SearchIssuesQuery} from '../../types/githubTypes'
-import getGitHubRequest from '../../utils/getGitHubRequest'
 import searchIssues from '../../utils/githubQueries/searchIssues.graphql'
 import {Logger} from '../../utils/Logger'
 import {type InspirationIssue, MAX_ISSUE_COMMENTS, MAX_ISSUES} from '../platform/InspirationIssue'
 import type {GqlIntegrationCtx} from '../platform/ServerIntegrationDefinition'
+import getGitHubRequest from './getGitHubRequest'
 
 // Re-runs the GitHub search the user saw in the Your Work drawer, server-side, but fetches the
 // full body + discussion thread for each item so the AI has enough context to draft a response.

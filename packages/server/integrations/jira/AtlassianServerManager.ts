@@ -12,10 +12,10 @@ import AtlassianManager, {
 } from 'parabol-client/utils/AtlassianManager'
 import composeJQL from 'parabol-client/utils/composeJQL'
 import {MAX_REQUEST_TIME} from 'parabol-client/utils/constants'
-import fetchWithRetry from './fetchWithRetry'
+import fetchWithRetry from '../../utils/fetchWithRetry'
+import {Logger} from '../../utils/Logger'
+import {readThirdPartyResponse, ThirdPartyResponseError} from '../../utils/ThirdPartyResponseError'
 import {generateJiraExtraFields} from './generateJiraExtraFields'
-import {Logger} from './Logger'
-import {readThirdPartyResponse, ThirdPartyResponseError} from './ThirdPartyResponseError'
 
 export interface JiraUser {
   self: string

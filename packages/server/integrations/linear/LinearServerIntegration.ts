@@ -1,12 +1,7 @@
 import LinearProjectId from 'parabol-client/integrations/linear/shared/LinearProjectId'
 import {linearIntegrationMeta} from 'parabol-client/integrations/linear/shared/linearIntegrationMeta'
 import interleave from 'parabol-client/utils/interleave'
-import {
-  fetchLinearProjects,
-  fetchLinearTeams
-} from '../../graphql/queries/helpers/fetchLinearTeamsAndProjects'
 import type {LinearSearchQueryJson} from '../../postgres/types'
-import type {LinearRepo} from '../platform/RemoteRepoIntegration'
 import {
   type EstimatePushCapability,
   type IssueCreateCapability,
@@ -18,6 +13,7 @@ import {
 } from '../platform/ServerIntegrationDefinition'
 import buildLinearSearchQuery from './buildLinearSearchQuery'
 import describeLinearDimensionField from './describeLinearDimensionField'
+import {fetchLinearProjects, fetchLinearTeams, type LinearRepo} from './fetchLinearTeamsAndProjects'
 import isLinearTeam from './isLinearTeam'
 import LinearServerManager from './LinearServerManager'
 import listLinearDimensionFields from './listLinearDimensionFields'

@@ -5,9 +5,9 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../appOrigin'
 import type {PartialPath} from '../../fileStorage/FileStoreManager'
 import getFileStoreManager from '../../fileStorage/getFileStoreManager'
-import type AtlassianServerManager from '../AtlassianServerManager'
-import fetchWithRetry from '../fetchWithRetry'
-import {Logger} from '../Logger'
+import fetchWithRetry from '../../utils/fetchWithRetry'
+import {Logger} from '../../utils/Logger'
+import type AtlassianServerManager from './AtlassianServerManager'
 
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024 // 10MB
 

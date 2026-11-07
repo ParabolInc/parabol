@@ -1,4 +1,4 @@
-import {ExternalLinks} from '../../client/types/constEnums'
+import {ExternalLinks} from '../../../client/types/constEnums'
 
 interface Mark {
   type: string

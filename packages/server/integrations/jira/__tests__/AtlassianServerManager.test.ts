@@ -1,8 +1,8 @@
+import fetchWithRetry from '../../../utils/fetchWithRetry'
+import {ThirdPartyResponseError} from '../../../utils/ThirdPartyResponseError'
 import AtlassianServerManager from '../AtlassianServerManager'
-import fetchWithRetry from '../fetchWithRetry'
-import {ThirdPartyResponseError} from '../ThirdPartyResponseError'
 
-jest.mock('../fetchWithRetry', () => jest.fn())
+jest.mock('../../../utils/fetchWithRetry', () => jest.fn())
 const mockFetchWithRetry = jest.mocked(fetchWithRetry)
 
 const CLOUD_ID = '0e0e0e0e-0000-4000-8000-000000000000'

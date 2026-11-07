@@ -28,12 +28,12 @@ import type {
   UpdateIssueMutation,
   UpdateIssueMutationVariables
 } from '../../types/gitlabTypes'
-import makeCreateGitLabTaskComment from '../../utils/makeCreateGitLabTaskComment'
 import type {
   CreateTaskParams,
   CreateTaskResponse,
   TaskIntegrationManager
 } from '../platform/TaskIntegrationManager'
+import makeCreateGitLabTaskComment from './makeCreateGitLabTaskComment'
 
 class GitLabServerManager implements TaskIntegrationManager {
   public title = 'GitLab'

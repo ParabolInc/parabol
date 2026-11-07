@@ -7,8 +7,11 @@ import type {EstimatePushResult} from '../../postgres/types/EstimatePushResult'
 import type {TIntegrationProvider} from '../../postgres/types/IntegrationProvider'
 import type {JsonObject} from '../../postgres/types/pg'
 import type {InspirationIssue} from './InspirationIssue'
-import type {RemoteRepoIntegration} from './RemoteRepoIntegration'
 import type {TaskIntegrationManager} from './TaskIntegrationManager'
+
+export interface ServiceRepo {
+  service: IntegrationMeta['service']
+}
 
 export interface IntegrationCtx {
   dataLoader: DataLoaderWorker
@@ -51,20 +54,22 @@ export type RepoFetchCtx = Omit<IntegrationCtx, 'dataLoader'> & {
   dataLoader: Pick<DataLoaderWorker, 'get'>
 }
 
-export interface RepoListCapability<TRepo extends RemoteRepoIntegration = RemoteRepoIntegration> {
+export interface RepoListCapability<TRepo extends ServiceRepo> {
   /** Every repo/project the viewer can create issues in, in the exact object shape the client and the prev-used Redis cache already store. A service with repoAccess returns only what the connection shares. An Error is the remote failure and must never be cached */
   fetchRepos(ctx: GqlIntegrationCtx): Promise<TRepo[] | Error>
   /** What createTaskIntegration takes for this repo; the caches dedupe on service + this */
   integrationRepoId(repo: TRepo): string
   /** The label the repo picker renders */
   name(repo: TRepo): string
+  /** How old the cached list may get before it is refetched in the background; one minute when absent */
+  refreshAfterMs?: number
 }
 
 /**
  * The viewer limits which of their repos/projects a team reaches through their connection.
  * The choice lives in TeamMemberIntegrationAuth.meta as a RepoAccessMeta, and every capability of the service must honor it
  */
-export interface RepoAccessCapability<TRepo extends RemoteRepoIntegration = RemoteRepoIntegration> {
+export interface RepoAccessCapability<TRepo extends ServiceRepo> {
   /** Every repo/project the viewer's account can see, shared or not. Only the access picker may show these */
   fetchAvailableRepos(ctx: GqlIntegrationCtx): Promise<TRepo[] | Error>
 }
@@ -87,7 +92,7 @@ export interface DimensionFieldCtx extends GqlIntegrationCtx {
 export interface DimensionFieldKey {
   repoId: string
   issueType: string | null
-  /** Field ids the current issue can accept. When set, stored rows for other fields are ignored and a row saved for another issue type may be reused; when absent only an exact issue type match counts */
+  /** Field ids the current issue can accept. When set, stored rows for other fields are ignored and a row saved for another issue type may be reused; when absent only an exact issue type match counts. Drop an id only after a read that says the field is gone, never because a read failed: a dropped id silently sends the push to a comment */
   usableFieldIds?: string[]
 }
 
@@ -124,7 +129,7 @@ export interface EstimatePushCapability {
     key: DimensionFieldKey,
     fieldId: string
   ): Promise<DimensionFieldTarget | Error>
-  /** The fields a facilitator can map this dimension to on this task. Label services return no options — the client offers the editable template instead. helpUrl explains an empty list when the service knows why */
+  /** The fields a facilitator can map this dimension to on this task. Label services return no options — the client offers the editable template instead. helpUrl explains a field the service knows is missing, even when other options exist */
   listDimensionFields(ctx: DimensionFieldCtx): Promise<ServiceFieldListing>
 }
 
@@ -143,13 +148,13 @@ type WithoutAccessUser<T> = T extends unknown ? Omit<T, 'accessUserId'> : never
 /** A linked issue as the Task row stores it, minus whose auth reaches it */
 export type IssueParts = WithoutAccessUser<NonNullable<Task['integration']>>
 
-export interface ServerIntegrationCapabilities {
+export interface ServerIntegrationCapabilities<TRepo extends ServiceRepo = ServiceRepo> {
   issueCreate?: IssueCreateCapability
   issueRead?: IssueReadCapability
   issueSearch?: IssueSearchCapability
   issueList?: IssueListCapability
-  repoList?: RepoListCapability
-  repoAccess?: RepoAccessCapability
+  repoList?: RepoListCapability<TRepo>
+  repoAccess?: RepoAccessCapability<TRepo>
   estimatePush?: EstimatePushCapability
 }
 

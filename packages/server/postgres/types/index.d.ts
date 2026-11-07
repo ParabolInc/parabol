@@ -1,6 +1,6 @@
 import {Selectable, SelectQueryBuilder} from 'kysely'
 import type {JobType} from '../../../embedder/custom'
-import type {RepoAccessMeta} from '../../integrations/platform/RepoAccess'
+import type {RepoAccessMeta} from './RepoAccessMeta'
 import {
   type selectAgendaItems,
   type selectAtlassianAuth,

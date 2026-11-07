@@ -1,8 +1,8 @@
-import AtlassianServerManager from '../../../utils/AtlassianServerManager'
 import type {RepoFetchCtx} from '../../platform/ServerIntegrationDefinition'
+import AtlassianServerManager from '../AtlassianServerManager'
 import fetchJiraProjects, {fetchJiraProjectsResult} from '../fetchJiraProjects'
 
-jest.mock('../../../utils/AtlassianServerManager')
+jest.mock('../AtlassianServerManager')
 
 const MockManager = AtlassianServerManager as jest.MockedClass<typeof AtlassianServerManager>
 const getCloudNameLookup = jest.fn()

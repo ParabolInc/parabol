@@ -1,4 +1,4 @@
-import getKysely from '../postgres/getKysely'
+import deactivateTeamMemberIntegrationAuthFamily from '../postgres/queries/deactivateTeamMemberIntegrationAuthFamily'
 import {selectTeamMemberIntegrationAuth} from '../postgres/select'
 import type {TeamMemberIntegrationAuth} from '../postgres/types'
 import logError from '../utils/logError'
@@ -19,7 +19,7 @@ const handleAuthRefreshFailure = async (
   error: Error,
   auth: RefreshFailedAuth
 ): Promise<TeamMemberIntegrationAuth | null> => {
-  const {id, userId, teamId, providerId, providerUserId, service, accessToken} = auth
+  const {id, userId, teamId, service, accessToken} = auth
   const current = await selectTeamMemberIntegrationAuth()
     .where('id', '=', id)
     .where('isActive', '=', true)
@@ -27,15 +27,7 @@ const handleAuthRefreshFailure = async (
   if (current && current.accessToken !== accessToken) return current
   logError(error, {userId, tags: {teamId, service}})
   if (error instanceof ThirdPartyResponseError) return null
-  await getKysely()
-    .updateTable('TeamMemberIntegrationAuth')
-    .set({isActive: false})
-    .where('userId', '=', userId)
-    .where('providerId', '=', providerId)
-    .where('isActive', '=', true)
-    .$if(providerUserId === null, (qb) => qb.where('teamId', '=', teamId))
-    .$if(providerUserId !== null, (qb) => qb.where('providerUserId', '=', providerUserId))
-    .execute()
+  await deactivateTeamMemberIntegrationAuthFamily(auth)
   return null
 }
 
