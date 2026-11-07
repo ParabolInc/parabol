@@ -165,6 +165,7 @@
           "GitLabIntegration": "./types/GitLabIntegration#GitLabIntegrationSource",
           "GroupPhaseCompletePayload": "./types/GroupPhaseCompletePayload#GroupPhaseCompletePayloadSource",
           "AzureDevOpsIntegrationService": "./types/IntegrationService#IntegrationServiceSource",
+          "ClickUpIntegrationService": "./types/IntegrationService#IntegrationServiceSource",
           "GcalIntegrationService": "./types/IntegrationService#IntegrationServiceSource",
           "GitHubIntegrationService": "./types/IntegrationService#IntegrationServiceSource",
           "GitLabIntegrationService": "./types/IntegrationService#IntegrationServiceSource",

@@ -35,6 +35,7 @@ export const makeIntegrationServiceSource = (
 
 const TYPENAME_BY_SERVICE = {
   azureDevOps: 'AzureDevOpsIntegrationService',
+  clickup: 'ClickUpIntegrationService',
   gcal: 'GcalIntegrationService',
   github: 'GitHubIntegrationService',
   gitlab: 'GitLabIntegrationService',

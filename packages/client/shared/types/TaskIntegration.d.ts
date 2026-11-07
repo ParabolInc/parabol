@@ -1,5 +1,5 @@
 interface BaseTaskIntegration {
-  service: 'jira' | 'jiraServer' | 'github' | 'gitlab' | 'azureDevOps' | 'linear'
+  service: 'jira' | 'jiraServer' | 'github' | 'gitlab' | 'azureDevOps' | 'linear' | 'clickup'
   accessUserId: string
 }
 
@@ -41,6 +41,12 @@ interface TaskIntegrationLinear extends BaseTaskIntegration {
   issueId: string
 }
 
+interface TaskIntegrationClickUp extends BaseTaskIntegration {
+  service: 'clickup'
+  repoId: string
+  issueId: string
+}
+
 export type AnyTaskIntegration =
   | TaskIntegrationJira
   | TaskIntegrationJiraServer
@@ -49,5 +55,6 @@ export type AnyTaskIntegration =
   | TaskIntegrationAzureDevOps
   | TaskIntegrationLinear
   | TaskIntegrationAzureDevOps
+  | TaskIntegrationClickUp
 
 export type TaskServiceEnum = AnyTaskIntegration['service'] | 'PARABOL'
