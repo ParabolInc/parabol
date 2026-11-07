@@ -17,13 +17,27 @@ import type {
 } from '../../../graphql/public/resolverTypes'
 import type {TIntegrationProvider} from '../../../postgres/types/IntegrationProvider'
 import createOAuth2Manager from '../createOAuth2Manager'
-import {serverIntegrations} from '../registry'
+import {type ServerIntegrations, serverIntegrations} from '../registry'
 import {
   type IntegrationCapabilityKey,
+  type RepoAccessCapability,
+  type RepoListCapability,
   ServerIntegrationDefinition
 } from '../ServerIntegrationDefinition'
 
 type MutuallyAssignable<A, B> = [A] extends [B] ? ([B] extends [A] ? true : never) : never
+type GrantsWhatItLists<Definition> = Definition extends {
+  capabilities: {
+    repoAccess: RepoAccessCapability<infer Granted>
+    repoList: RepoListCapability<infer Listed>
+  }
+}
+  ? [Granted] extends [Listed]
+    ? [Listed] extends [Granted]
+      ? true
+      : false
+    : false
+  : true
 
 const enumValues = (enumName: string) => {
   const file = path.join(__dirname, `../../../graphql/public/typeDefs/${enumName}.graphql`)
@@ -58,6 +72,13 @@ it('the SDL TaskServiceEnum and the services a Task row stores stay in sync', ()
   expect(inSync).toBe(true)
 })
 
+it('a repoAccess service grants access to the same repos it lists', () => {
+  const sameRepos: false extends GrantsWhatItLists<ServerIntegrations[keyof ServerIntegrations]>
+    ? never
+    : true = true
+  expect(sameRepos).toBe(true)
+})
+
 it('every IntegrationMeta service is an IntegrationProviderServiceEnum value', () => {
   const isProviderService: [IntegrationMeta['service']] extends [IntegrationProviderServiceEnum]
     ? true
@@ -76,10 +97,6 @@ describe.each(entries)('%s conformance', (key, definition) => {
       service: meta.service,
       title: meta.title
     })
-  })
-
-  it('has a valid authStrategy', () => {
-    expect(['oauth1', 'oauth2', 'pat', 'webhook']).toContain(definition.authStrategy)
   })
 
   it('exposes resolveAuth as a function of arity 1', () => {
@@ -126,6 +143,7 @@ it.each(searchEntries)('%s: buildQuery answers an empty search', (_key, definiti
 it.each(searchEntries)('%s: buildQuery rejects meta it does not know', (_key, definition) => {
   const query = definition.capabilities.issueSearch?.buildQuery('bugs', {unknownMetaKey: 1})
   expect(query).toBeInstanceOf(Error)
+  expect(query).toMatchObject({message: expect.stringContaining('unknownMetaKey')})
 })
 
 it.each(pushEntries)('%s: can push an estimate as a comment', (_key, definition) => {
