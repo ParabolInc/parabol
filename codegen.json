@@ -121,6 +121,8 @@
           "AzureDevOpsWorkItem": "./types/AzureDevOpsWorkItem#AzureDevOpsWorkItemSource",
           "BatchArchiveTasksSuccess": "./types/BatchArchiveTasksSuccess#BatchArchiveTasksSuccessSource",
           "ChangeTaskTeamPayload": "./types/ChangeTaskTeamPayload#ChangeTaskTeamPayloadSource",
+          "ClickUpIntegration": "./types/ClickUpIntegration#ClickUpIntegrationSource",
+          "ClickUpTask": "./types/ClickUpTask#ClickUpTaskSource",
           "Comment": "../../postgres/types/index#Comment as CommentDB",
           "Company": "./types/Company#CompanySource",
           "CreateImposterTokenPayload": "./types/CreateImposterTokenPayload#CreateImposterTokenPayloadSource",

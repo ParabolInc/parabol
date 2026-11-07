@@ -661,6 +661,9 @@ const permissionMap: PermissionMap<Resolvers> = {
   AzureDevOpsIntegration: {
     workItems: isUserViewer<'AzureDevOpsIntegration.workItems'>('source.userId')
   },
+  ClickUpIntegration: {
+    tasks: isUserViewer<'ClickUpIntegration.tasks'>('source.userId')
+  },
   // Another user's User object is a public profile, plus their presence for anyone in one of their orgs.
   // Everything else is for the user themself
   User: {

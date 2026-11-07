@@ -1,0 +1,14 @@
+"""
+An edge in a connection of ClickUp tasks
+"""
+type ClickUpTaskEdge {
+  """
+  The item at the end of the edge
+  """
+  node: ClickUpTask!
+
+  """
+  The next ClickUp page to read. Null when there is none
+  """
+  cursor: String
+}

@@ -216,7 +216,7 @@ export type IntegrationSearchQueryJsonByService = {
   gitlab: GitLabSearchQueryJson
   linear: LinearSearchQueryJson
   azureDevOps: AzureDevOpsSearchQueryJson
-  clickup: {queryString: string}
+  clickup: {queryString: string; listIds: string[]}
 }
 
 export type IntegrationSearchQuery = ExtractTypeFromQueryBuilderSelect<

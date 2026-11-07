@@ -1,42 +1,50 @@
-import makeAppURL from 'parabol-client/utils/makeAppURL'
-import appOrigin from '../../appOrigin'
 import {authorizeOAuth2} from '../helpers/authorizeOAuth2'
 import OAuth2Manager, {
   type OAuth2AuthorizationParams,
   type OAuth2RefreshAuthorizationParams,
-  type OAuth2RefreshResponse,
   type OAuth2TokenResponse
 } from '../OAuth2Manager'
+import clickUpRequest from './clickUpRequest'
 
 const TOKEN_URL = 'https://api.clickup.com/api/v2/oauth/token'
 
 export default class ClickUpOAuth2Manager extends OAuth2Manager {
-  static readonly REDIRECT_URI = makeAppURL(appOrigin, 'auth/clickup')
-
   async authorize(code: string) {
-    const auth = await this.fetchToken<OAuth2TokenResponse>({
-      grant_type: 'authorization_code',
-      code,
-      redirect_uri: ClickUpOAuth2Manager.REDIRECT_URI
-    })
+    const auth = await this.fetchToken({grant_type: 'authorization_code', code, redirect_uri: ''})
     if (auth instanceof Error) return auth
-    return {...auth, providerUserId: null}
+    const {accessToken} = auth
+    const res = await clickUpRequest<{user?: {id?: number}}>({accessToken}, '/user')
+    if (res instanceof Error) return res
+    const providerUserId = res.user?.id
+    if (providerUserId === undefined) {
+      return new Error('ClickUp: could not read the authorized user')
+    }
+    return {
+      accessToken,
+      refreshToken: undefined,
+      scopes: '',
+      providerUserId: String(providerUserId)
+    }
   }
 
-  async refresh(refreshToken: string) {
-    return this.fetchToken<OAuth2RefreshResponse>({
-      grant_type: 'refresh_token',
-      refresh_token: refreshToken
-    })
+  async refresh(_refreshToken: string) {
+    return new Error('ClickUp tokens do not expire')
   }
 
-  protected async fetchToken<TSuccess>(
+  protected async fetchToken(
     partialAuthParams: OAuth2AuthorizationParams | OAuth2RefreshAuthorizationParams
   ) {
-    return authorizeOAuth2<TSuccess>({
+    if (partialAuthParams.grant_type !== 'authorization_code') {
+      return new Error('ClickUp tokens do not expire')
+    }
+    return authorizeOAuth2<OAuth2TokenResponse>({
       authUrl: TOKEN_URL,
-      body: {client_id: this.clientId, client_secret: this.clientSecret, ...partialAuthParams},
-      contentType: 'application/x-www-form-urlencoded'
+      body: {
+        client_id: this.clientId,
+        client_secret: this.clientSecret,
+        code: partialAuthParams.code
+      },
+      contentType: 'application/json'
     })
   }
 }

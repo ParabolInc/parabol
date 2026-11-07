@@ -43,8 +43,8 @@ interface TaskIntegrationLinear extends BaseTaskIntegration {
 
 interface TaskIntegrationClickUp extends BaseTaskIntegration {
   service: 'clickup'
-  repoId: string
-  issueId: string
+  workspaceId: string
+  taskId: string
 }
 
 export type AnyTaskIntegration =

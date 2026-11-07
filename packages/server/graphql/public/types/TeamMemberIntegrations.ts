@@ -38,6 +38,7 @@ const TeamMemberIntegrations: TeamMemberIntegrationsResolvers = {
   azureDevOps: (source) => source,
   msTeams: (source) => source,
   linear: (source) => source,
+  clickup: (source) => source,
   gmeet: ({teamId, userId}) => ({teamId, userId}),
   zoom: ({teamId, userId}) => ({teamId, userId})
 }

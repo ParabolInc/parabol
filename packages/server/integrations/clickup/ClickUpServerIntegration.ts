@@ -1,4 +1,6 @@
+import ms from 'ms'
 import {clickupIntegrationMeta} from 'parabol-client/integrations/clickup/shared/clickupIntegrationMeta'
+import type {IntegrationSearchQueryJsonByService} from '../../postgres/types'
 import {
   type EstimatePushCapability,
   type IssueCreateCapability,
@@ -25,7 +27,7 @@ export class ClickUpServerIntegration extends ServerIntegrationDefinition {
   readonly capabilities: {
     issueCreate: IssueCreateCapability
     issueRead: IssueReadCapability
-    issueSearch: IssueSearchCapability<{queryString: string}>
+    issueSearch: IssueSearchCapability<IntegrationSearchQueryJsonByService['clickup']>
     repoList: RepoListCapability<ClickUpRepo>
     estimatePush: EstimatePushCapability
   } = {
@@ -43,7 +45,8 @@ export class ClickUpServerIntegration extends ServerIntegrationDefinition {
     repoList: {
       fetchRepos: fetchClickUpRepos,
       integrationRepoId: (repo) => repo.id,
-      name: (repo) => repo.name
+      name: (repo) => repo.name,
+      refreshAfterMs: ms('10m')
     },
     estimatePush: {
       targets: ['comment'],

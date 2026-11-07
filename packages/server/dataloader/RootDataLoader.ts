@@ -2,6 +2,7 @@ import type DataLoader from 'dataloader'
 import * as aiLoaderMakers from './aiLoaderMakers'
 import * as atlassianLoaders from './atlassianLoaders'
 import * as azureDevOpsLoaders from './azureDevOpsLoaders'
+import * as clickUpLoaders from './clickUpLoaders'
 import * as customLoaderMakers from './customLoaderMakers'
 import DataLoaderCache from './DataLoaderCache'
 import * as foreignKeyLoaderMakers from './foreignKeyLoaderMakers'
@@ -38,6 +39,7 @@ const loaderMakers = {
   ...integrationSearchQueryLoaders,
   ...pollLoaders,
   ...azureDevOpsLoaders,
+  ...clickUpLoaders,
   ...reportLoaderMakers
 } as const
 

@@ -1,9 +1,8 @@
-import ClickUpIssueId from 'parabol-client/integrations/clickup/shared/ClickUpIssueId'
+import ClickUpTaskId from 'parabol-client/integrations/clickup/shared/ClickUpTaskId'
 
 const parseClickUpIntegrationHash = (integrationHash: string) => {
-  const {repoId, issueId} = ClickUpIssueId.split(integrationHash)
-  if (!repoId || !issueId || ClickUpIssueId.join(repoId, issueId) !== integrationHash) return null
-  return {service: 'clickup' as const, repoId, issueId}
+  const ids = ClickUpTaskId.split(integrationHash)
+  return ids ? {service: 'clickup' as const, ...ids} : null
 }
 
 export default parseClickUpIntegrationHash
