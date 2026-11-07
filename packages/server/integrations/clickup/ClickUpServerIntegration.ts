@@ -49,7 +49,7 @@ export class ClickUpServerIntegration extends ServerIntegrationDefinition {
       refreshAfterMs: ms('10m')
     },
     estimatePush: {
-      targets: ['comment'],
+      targets: ['comment', 'field'],
       pushEstimate: pushEstimateToClickUp,
       resolveDimensionFieldKey: resolveClickUpDimensionFieldKey,
       describeDimensionField: describeClickUpDimensionField,

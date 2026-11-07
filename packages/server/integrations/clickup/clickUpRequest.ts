@@ -18,7 +18,15 @@ const UNSHARED_WORKSPACE_CODES = new Set([
 export type ClickUpRequestAuth = Pick<TeamMemberIntegrationAuth, 'accessToken'> &
   Partial<Pick<TeamMemberIntegrationAuth, 'userId' | 'teamId' | 'providerId' | 'providerUserId'>>
 
-export class ClickUpNotFoundError extends Error {}
+export class ClickUpRequestError extends Error {
+  code: string
+  constructor(message: string, code: string) {
+    super(message)
+    this.code = code
+  }
+}
+
+export class ClickUpNotFoundError extends ClickUpRequestError {}
 
 type ClickUpQuery = Record<string, string | number | boolean | Array<string | number> | undefined>
 
@@ -99,7 +107,9 @@ const clickUpRequest = async <T>(
     }
     if (UNSHARED_WORKSPACE_CODES.has(ECODE)) return unsharedWorkspaceError(path, init)
     const message = `ClickUp: ${err || error || `request failed (${res.status})`}`
-    return res.status === 404 ? new ClickUpNotFoundError(message) : new Error(message)
+    return res.status === 404
+      ? new ClickUpNotFoundError(message, ECODE)
+      : new ClickUpRequestError(message, ECODE)
   } catch (e) {
     if (signal.aborted) return new Error('ClickUp did not respond in time')
     return e instanceof Error ? e : new Error('ClickUp could not be reached')
