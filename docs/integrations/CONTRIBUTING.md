@@ -2,7 +2,7 @@
 
 An integration connects Parabol to a service such as Jira, GitHub or Linear. A task can link to an issue there, Sprint Poker can estimate its issues and push the estimate back, and the retro and standup drawers can list them.
 
-This guide is for adding a new task integration. Read it once before you start, then keep [Linear](../../packages/server/integrations/linear) open as your example.
+This guide is for adding a new task integration. Read it once before you start, then keep [Linear](../../packages/server/integrations/linear) open as your example, or [Azure DevOps](../../packages/server/integrations/azureDevOps) for a REST API.
 
 ## How an integration is put together
 
@@ -63,6 +63,8 @@ After those commands, typecheck and the server conformance suite pass. The clien
   - `<Service>OAuth2Manager` posts a form body with `client_id`, `client_secret` and `grant_type`, plus `code` and `redirect_uri` when authorizing or `refresh_token` when refreshing. Some services want JSON, HTTP Basic credentials, or fewer fields.
   - `<Service>ClientManager` sends `client_id`, `redirect_uri`, `state`, `scope` and `response_type`. Set `SCOPES`, and drop any parameter the service rejects.
   - The endpoints are `TOKEN_URL` and `AUTHORIZE_URL`, set from your flags. With `--self-hosted` they are the placeholder paths `TOKEN_PATH` (`/oauth/token`) and `AUTH_PATH` (`/oauth/authorize`), which resolve against the provider's `serverBaseUrl`. Point them at the service's real paths.
+- Replace the placeholder logo with the bare symbol from the vendor's brand kit, on a square viewBox. Add a `darkSrc` only when the kit calls for a light mark on dark.
+- Replace the generated `<Service>Icon`, an `<img>`, with an inline SVG component like `LinearSVG`. The drawer tab colors the icon with `[&_path]:fill-current` and `iconClassName` targets its paths, and neither reaches inside an `<img>`. Take gradient ids from `useId` so two copies on a page don't clash.
 - In the service's OAuth app, register `<app origin>/auth/<service in lowercase>` as the redirect URL.
 - Set `<SERVICE>_CLIENT_ID` and `<SERVICE>_CLIENT_SECRET` in `.env`, plus `<SERVICE>_SERVER_URL` with `--self-hosted`. Then restart `pnpm dev` so the global provider picks them up.
 
@@ -72,41 +74,72 @@ A capability is an object on the server definition's `capabilities`. The interfa
 
 | Capability | What it powers | What you write | Example |
 | --- | --- | --- | --- |
-| `issueCreate` | Pushing a Parabol task to the service | `initManager`, which returns a `TaskIntegrationManager` that creates the issue and comments on it | `linear/LinearServerManager.ts` |
+| `issueCreate` | Pushing a Parabol task to the service | `initManager`, which returns a `TaskIntegrationManager` that creates the issue and comments on it | `azureDevOps/AzureDevOpsServerManager.ts` (`createTask`, `addCreatedBySomeoneElseComment`) |
 | `issueRead` | Showing a linked task's issue | `getIssue`, which returns the source of your issue GraphQL type, and `parseIntegrationHash` | `azureDevOps/resolveAzureDevOpsTaskIntegration.ts` |
 | `issueSearch` | Saved searches in the Sprint Poker scope tab | `buildQuery`, which checks the search the client sends before it is stored, and rejects meta keys it does not know | `linear/buildLinearSearchQuery.ts` |
 | `repoList` | The projects a task can be pushed to | `fetchRepos`, `integrationRepoId` and `name` | `linear/fetchLinearTeamsAndProjects.ts` |
 | `repoAccess` | Letting someone pick which projects a team reaches through their connection | `fetchAvailableRepos`, returning the same repo type as `repoList`, plus `repoAccess` and `availableRepos` on `<Service>IntegrationService.graphql`, an `isUserViewer('source.userId')` rule for each in `permissions.ts`, and a settings panel. Every other capability must respect the choice | `azureDevOps/` |
-| `estimatePush` | Sprint Poker writing the final estimate to the issue | the push targets, `pushEstimate`, and the three dimension-field functions | `linear/pushEstimateToLinear.ts` |
-| `issueList` | Issues in the retro and standup drawers, and AI standup drafts | `listIssues`. Also add the service to `ServiceEnum.graphql`, to `packages/client/components/TeamPrompt/WorkDrawer/inspirationSources.ts`, and to the drawer-source list in the server `registry.test.ts` | `linear/listLinearIssues.ts` |
+| `estimatePush` | Sprint Poker writing the final estimate to the issue | the push targets, `pushEstimate`, and the three dimension-field functions (see [Estimate fields](#estimate-fields)) | `azureDevOps/`, which lists fields from the live issue. `linear/` has fixed fields |
+| `issueList` | Issues in the retro and standup drawers, and AI standup drafts | `listIssues`. Also add the service to `ServiceEnum.graphql` (then run `pnpm relay:build`), to the drawer-source list in the server `registry.test.ts`, and to the client files in [Drawer sources](#drawer-sources) | `azureDevOps/listAzureDevOpsIssues.ts` and its test |
 
 Every service in `TaskServiceEnum` must implement `issueCreate`, `issueRead`, `issueSearch`, `repoList` and `estimatePush`. The conformance suite checks this.
 
-The scaffold declares `<Service>Repo` in `fetch<Service>Repos.ts` and names it in `repoList: RepoListCapability<<Service>Repo>`. Change its fields to what the service returns, and `RemoteRepoIntegration` picks them up. The list is cached. A read that finds it more than a minute old returns the cached list and fetches a new one in the background. When listing takes many requests against a tight rate limit, set `refreshAfterMs` on `repoList` to refetch less often. Its GraphQL type is `RepoContainer`. To use your own, add a type that implements `RepoIntegration`, name it in [`RepoIntegration.ts`](../../packages/server/graphql/public/types/RepoIntegration.ts), and change `repos` in `<Service>IntegrationService.graphql` to match, as Azure DevOps does.
+The scaffold declares `<Service>Repo` in `fetch<Service>Repos.ts` and names it in `repoList: RepoListCapability<<Service>Repo>`. Change its fields to what the service returns, and `RemoteRepoIntegration` picks them up. `fetchRepos` gets no auth, so load it with `dataLoader.get('freshAuth').load({service, teamId, userId})`, as Linear does. The list is cached. A read that finds it more than a minute old returns the cached list and fetches a new one in the background. When listing takes many requests against a tight rate limit, set `refreshAfterMs` on `repoList` to refetch less often. Its GraphQL type is `RepoContainer`. To use your own, add a type that implements `RepoIntegration`, name it in [`RepoIntegration.ts`](../../packages/server/graphql/public/types/RepoIntegration.ts), and change `repos` in `<Service>IntegrationService.graphql` to match, as Azure DevOps does.
 
 Functions that call the service return an `Error` when it fails and never throw: `fetchRepos`, `fetchAvailableRepos`, `pushEstimate`, `describeDimensionField`, `createTask` and `addCreatedBySomeoneElseComment`. `buildQuery` returns an `Error` for a search it will not store. A `fetchRepos` that returns an `Error` is never cached. The read paths log the failure and return `null` (`getIssue`, `resolveDimensionFieldKey`), `{options: []}` (`listDimensionFields`) or `[]` (`listIssues`).
+
+To time out a request, pass `AbortSignal.timeout(ms)` and check `signal.aborted` when it fails. The server's `fetch` rejects with an `AbortError` whose cause is the `TimeoutError`, so a check for `e.name === 'TimeoutError'` never matches.
+
+### Estimate fields
+
+A service whose fields vary by issue reads them from the live issue, as Azure DevOps does. `resolveDimensionFieldKey` then returns `usableFieldIds`, the fields that issue accepts. `pickDimensionField` skips a saved mapping whose field is not in that list, and the push quietly falls back to a comment. That is how a field turned off in the service stops being used. So drop an id only after a read that says the field is gone. If the read fails, with a 429 or a timeout, keep the id: the push then fails with the service's own error instead of commenting and reporting success.
+
+A push that writes a `field` or `label` must add the service to that target in [`EstimatePushResult.ts`](../../packages/server/postgres/types/EstimatePushResult.ts). Set `helpUrl` on the listing to a doc about a field the service knows is missing, even when other fields are listed.
 
 ## Client capabilities
 
 | Capability | What it powers | How to build it | Example |
 | --- | --- | --- | --- |
-| `scoping` | The Sprint Poker scope tab. Required for task services | `makeScopingResults` with a Relay query for your search field, plus a search-meta codec | `linear/LinearScopingResultsAdapter.tsx`, `linear/linearSearchMeta.ts` |
-| `workDrawer` | The retro work drawer tab. Required for every service | `makeWorkDrawerPanel` for a panel that needs the meeting, `makeQueryRoot` for one that needs only the team | `linear/LinearClientIntegration.ts` |
+| `scoping` | The Sprint Poker scope tab. Required for task services | `makeScopingResults` with a Relay query for your search field, plus a search-meta codec (see [The scope tab](#the-scope-tab)) | `linear/LinearScopingResultsAdapter.tsx` and `linear/linearSearchMeta.ts`, or `jiraServer/JiraServerScopingResultsAdapter.tsx` for a REST API with page cursors |
+| `workDrawer` | The retro work drawer tab. Required for every service | `makeWorkDrawerPanel` for a panel that needs the meeting, `makeQueryRoot` for one that needs only the team. The tab's files go in `packages/client/components/TeamPrompt/WorkDrawer/` | the five `AzureDevOps*` files there: panel, results root, results, object card and project filter bar |
 | `settings` | Extra controls under the service's row on the integrations page | a `Panel` component | `azureDevOps/AzureDevOpsProjectAccessPanel.tsx` |
 
-Both tabs need GraphQL fields to read from. As Linear does, add:
+Both tabs need GraphQL fields to read from. As Azure DevOps does, add:
 
-- a `<service>` field on [`TeamMemberIntegrations.graphql`](../../packages/server/graphql/public/typeDefs/TeamMemberIntegrations.graphql) that returns a `<Service>Integration` type holding your search and list fields
+- a `<service>` field on [`TeamMemberIntegrations.graphql`](../../packages/server/graphql/public/typeDefs/TeamMemberIntegrations.graphql) that returns a `<Service>Integration` type holding your search and list fields. A search field returns a connection. `connectionFromTasks` pages by date and cuts the list to `first`, so for an API that pages by number, build the connection yourself as `JiraServerIntegration.issues` does
 - a `types/<Service>Integration.ts` resolver that exports `<Service>IntegrationSource`, and a codegen mapper for it
 - a `<service>: (source) => source` entry in `types/TeamMemberIntegrations.ts`
 
 Only the team member themselves can reach `TeamMember.integrations` (see `permissions.ts`). Give each search and list field its own `isUserViewer('source.userId')` rule there too, as `AzureDevOpsIntegration.workItems` has, and read the team and user ids from the source, never from arguments.
 
+A `makeWorkDrawerPanel` panel reads `inspirationItems(service: <service>)`, so the service must be in `ServiceEnum.graphql`.
+
+### The scope tab
+
+`ScopingCapability` in [`ClientIntegrationDefinition.ts`](../../packages/client/integrations/platform/ClientIntegrationDefinition.ts) lists every optional part. The ones most services need:
+
+- `FilterMenu` and `currentFilters` to filter by project.
+- `filterChipLabel` names one saved filter in the search history. When the values are ids that need a lookup to read, `savedFiltersLabel` labels the whole set instead, for example as a count. The history keeps only searches with text: `usePersistScopingQuery` never saves a filter-only search.
+- `NewRecordInput` creates an issue from the tab. It needs a `handle<Service>CreateIssue` handler in `mutations/handlers/`, called from both updaters in `CreateTaskMutation.ts`, and a `get<Service>…Conn` getter in `mutations/connections/` whose arguments match the adapter's `@connection` arguments exactly. Otherwise the new issue never shows in the results. Type the handler with a plain `RecordProxy` and check values with `typeof`, so both updaters can call it without a cast.
+
+### Drawer sources
+
+A service with `issueList` is also a source for standup drafts. Besides `ServiceEnum.graphql`, it needs:
+
+- in `packages/client/components/TeamPrompt/WorkDrawer/inspirationSources.ts`: its kinds, an id array in `InspirationSourceSettings`, and their defaults
+- a case in `buildInspirationSearchQuery.ts`
+- a filter bar branch and its fragment spread in `InspirationSourcePopover.tsx`. Nothing checks this one, so a source can ship without a filter
+- its place in the popularity order mocked in `__tests__/listInspirationSources.test.ts`
+
+The `searchQuery` that `buildInspirationSearchQuery` writes and `listIssues` parses has no shared type. Pin its shape with the same JSON literal in a client test and a server test.
+
+Filter bars read the service's repo list. Pass a list whose array stays the same between renders, such as `findIntegrationService(services, key)?.repos` (see `azureDevOpsSharedProjects.ts`): `useFilteredItems` re-renders forever when it gets a new array each time. A saved id can stop matching a repo once it is archived, deleted or no longer shared, and `repos` is `null` while a fetch fails and `[]` when the service is not connected. Show a saved id with no match as a row the person can clear, rather than dropping it.
+
 ## The linked task
 
 - **What the task row stores.** `TaskIntegration<Service>` in [`TaskIntegration.d.ts`](../../packages/client/shared/types/TaskIntegration.d.ts) is the `integration` column for your service. The script stores a `repoId` and an `issueId`. Change them to whatever your service needs to find the issue again.
-- **The integration hash.** This is the key a client sends back to say which issue it means. Build and split it with `shared/<Service>IssueId.ts`. `parseIntegrationHash` must return `null` for anything it did not produce, because the conformance suite feeds it junk.
-- **The issue type.** Add `<Service>Issue implements TaskIntegration` in `packages/server/graphql/public/typeDefs/`, plus a resolver file in `packages/server/graphql/public/types/` with `__isTypeOf` and a codegen mapper. `getIssue` returns its source. `AzureDevOpsWorkItem` and `JiraServerIssue` are written by hand. GitHub, GitLab and Linear issues are stitched in from those services' own GraphQL APIs.
+- **The integration hash.** This is the key a client sends back to say which issue it means. Build and split it with `shared/<Service>IssueId.ts`. If the service calls them tasks or items, rename the codec and its parts to match. `parseIntegrationHash` must return `null` for anything it did not produce, because the conformance suite feeds it junk. Check the characters of each part too, as the generated codec does: the ids end up in REST paths, and `encodeURIComponent` leaves `..` as it is.
+- **The issue type.** Add `<Service>Issue implements TaskIntegration` in `packages/server/graphql/public/typeDefs/`, plus a resolver file in `packages/server/graphql/public/types/` and a codegen mapper. Its `__isTypeOf` must test a `service` field, as `AzureDevOpsWorkItem`'s does: a test on field names alone, like `JiraIssue`'s, claims any source that has those names. Its `id` should be the integration hash, which the scope tab uses as `serviceTaskId`. `getIssue` returns its source. `AzureDevOpsWorkItem` and `JiraServerIssue` are written by hand and load it through a `packages/server/dataloader/<service>Loaders.ts` spread into `RootDataLoader.ts`. Every function that file exports becomes a loader, so keep helpers elsewhere. GitHub, GitLab and Linear issues are stitched in from those services' own GraphQL APIs.
 - **Places that still check the issue type.** These show nothing for a new service until you add a case to each:
   - `packages/client/components/IntegratedTaskContent.tsx`
   - `packages/client/components/TaskIntegrationLink.tsx`
@@ -114,7 +147,9 @@ Only the team member themselves can reach `TeamMember.integrations` (see `permis
   - `packages/client/hooks/useMakeStageSummaries.ts`
   - `packages/client/modules/email/components/SummaryEmail/ExportToCSV.tsx`
   - `packages/client/mutations/CreateTaskMutation.ts`
-  - `packages/client/mutations/CreateTaskIntegrationMutation.ts`
+  - `packages/client/mutations/CreateTaskIntegrationMutation.ts`, in three spots: the optimistic fields map, the fragment and the alias spread. The map is `Partial`, so a missing entry quietly drops the optimistic update
+
+  `TaskIntegrationLink.tsx` also needs a `TaskIntegrationLinkIntegration<Service>` fragment spread with `@relay(mask: false) @alias`. These files merge every service's fragment into one selection, so a field named like a sibling's needs the same type (`url: String!`) or an alias, as `jiraUrl` and `ghUrl` are. Otherwise `pnpm relay:build` fails, calling the field ambiguous.
 - **Optional lists.** `packages/client/modules/userDashboard/components/OrgIntegrations/RemoveIntegrationProviderDialog.tsx` names a service it does not list by its key with a capital first letter (`azureDevOps` becomes "AzureDevOps"), and the retro demo in `packages/client/modules/demo/initDB.ts` seeds only the services it lists.
 
 ## Auth
@@ -124,7 +159,7 @@ Only the team member themselves can reach `TeamMember.integrations` (see `permis
 - **Other strategies** need their own code in [`addTeamMemberIntegrationAuth.ts`](../../packages/server/graphql/public/mutations/addTeamMemberIntegrationAuth.ts): Jira Server uses OAuth1, and Azure DevOps uses PKCE and resolves its own auth. Personal access tokens are not supported yet: `addTeamMemberIntegrationAuth` does not store them, so a PAT service needs its own branch there.
 - **Where credentials come from.** The instance-wide provider comes from `.env` through [`primeIntegrations.ts`](../../scripts/toolboxSrc/primeIntegrations.ts). Teams and orgs can add their own with the `addIntegrationProvider` mutation. A service shows as available when one of these exists.
 - **Extra auth data.** If the auth row stores more than tokens, add its shape to `IntegrationAuthMetaByService` in `packages/server/postgres/types/index.d.ts`.
-- **Trust.** Never trust what the client says about scopes or team ids; work them out on the server. Permission checks belong in `permissions.ts`, not in resolvers.
+- **Trust.** Never trust what the client says about scopes or team ids; work them out on the server. `CreateTaskParams.integrationRepoId` comes from the client too, so check it before it goes into a REST path. Permission checks belong in `permissions.ts`, not in resolvers.
 
 ## Testing
 
