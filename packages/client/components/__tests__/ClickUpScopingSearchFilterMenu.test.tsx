@@ -13,22 +13,15 @@ import ClickUpScopingSearchFilterMenu from '../ClickUpScopingSearchFilterMenu'
 const MAX_RENDERS = 50
 const mockRenders = {count: 0}
 const mockSetSearchState = jest.fn()
-const mockData = {
-  viewer: {
-    teamMember: {
-      services: [
-        {service: 'github'},
-        {
-          service: 'clickup',
-          repos: [
-            {id: 'repo1', name: 'Space / Alpha', integrationRepoId: '1'},
-            {id: 'repo2', name: 'Space / Beta', integrationRepoId: '2'}
-          ]
-        }
-      ]
-    }
-  }
+const REPOS = [
+  {id: 'repo1', name: 'Space / Alpha', integrationRepoId: '1'},
+  {id: 'repo2', name: 'Space / Beta', integrationRepoId: '2'}
+]
+const mockClickUpService: {service: string; repos: typeof REPOS | null} = {
+  service: 'clickup',
+  repos: REPOS
 }
+const mockData = {viewer: {teamMember: {services: [{service: 'github'}, mockClickUpService]}}}
 
 jest.mock('babel-plugin-relay/macro', () => ({__esModule: true, default: () => ({})}))
 jest.mock('react-relay', () => ({
@@ -51,6 +44,10 @@ jest.mock('../../ui/Menu/MenuItem', () => ({
 jest.mock('../TypeAheadLabel', () => ({
   __esModule: true,
   default: ({label}: {label: string}) => <span>{label}</span>
+}))
+jest.mock('../Checkbox', () => ({
+  __esModule: true,
+  default: ({active}: {active: boolean}) => <span data-checked={String(active)} />
 }))
 
 const queryRef = {} as PreloadedQuery<ClickUpScopingSearchFilterMenuQuery>
@@ -76,11 +73,17 @@ const typeIntoSearch = async (text: string) => {
   })
 }
 
-const listLabels = () =>
-  Array.from(container.querySelectorAll('button')).map((el) => el.textContent)
+const listItems = () => Array.from(container.querySelectorAll('button'))
+const listLabels = () => listItems().map((el) => el.textContent)
+const checkedLabels = () =>
+  listItems()
+    .filter((el) => el.querySelector('[data-checked="true"]'))
+    .map((el) => el.textContent)
+const listIdFilters = (...listIds: string[]) => listIds.map((value) => ({key: 'listIds', value}))
 
 beforeEach(async () => {
   jest.clearAllMocks()
+  mockClickUpService.repos = REPOS
   mockRenders.count = 0
   container = happyWindow.document.createElement('div')
   happyWindow.document.body.appendChild(container)
@@ -115,4 +118,35 @@ test('picking a list adds its List id to the filters', async () => {
   await act(async () => (beta as unknown as HTMLButtonElement).click())
 
   expect(mockSetSearchState).toHaveBeenCalledWith({filters: [{key: 'listIds', value: '2'}]})
+})
+
+test('a picked list that no longer resolves stays checked so it can be cleared', async () => {
+  await renderMenu({...EMPTY_SCOPING_SEARCH_STATE, filters: listIdFilters('2', '901423080038')})
+
+  expect(listLabels()).toEqual(['List no longer available', 'Space / Beta', 'Space / Alpha'])
+  expect(checkedLabels()).toEqual(['List no longer available', 'Space / Beta'])
+
+  const unavailable = listItems().find((el) => el.textContent === 'List no longer available')!
+  await act(async () => (unavailable as unknown as HTMLButtonElement).click())
+
+  expect(mockSetSearchState).toHaveBeenCalledWith({filters: listIdFilters('2')})
+})
+
+test('picked lists stay listed when the lists fail to load', async () => {
+  await act(async () => root.unmount())
+  root = createRoot(container as unknown as Element)
+  mockClickUpService.repos = null
+  await renderMenu({...EMPTY_SCOPING_SEARCH_STATE, filters: listIdFilters('1')})
+
+  expect(listLabels()).toEqual(['List could not be loaded'])
+  expect(checkedLabels()).toEqual(['List could not be loaded'])
+  expect(container.textContent).not.toContain('No lists found!')
+})
+
+test('a picked list stays listed while the search matches other lists', async () => {
+  await renderMenu({...EMPTY_SCOPING_SEARCH_STATE, filters: listIdFilters('2')})
+  await typeIntoSearch('alpha')
+
+  expect(listLabels()).toEqual(['Space / Beta', 'Space / Alpha'])
+  expect(checkedLabels()).toEqual(['Space / Beta'])
 })

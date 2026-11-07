@@ -3,8 +3,12 @@ import {useFragment} from 'react-relay'
 import {ExpandMore, FilterList} from '~/ui/icons'
 import type {ClickUpListFilterBar_teamMember$key} from '../../../__generated__/ClickUpListFilterBar_teamMember.graphql'
 import useSearchFilter from '../../../hooks/useSearchFilter'
-import {getClickUpLists} from '../../../integrations/clickup/clickUpLists'
-import findIntegrationService from '../../../integrations/platform/findIntegrationService'
+import {
+  getClickUpLists,
+  getUnavailableClickUpListIds,
+  getUnavailableClickUpListLabel,
+  getVisibleClickUpLists
+} from '../../../integrations/clickup/clickUpLists'
 import {cn} from '../../../ui/cn'
 import {Menu} from '../../../ui/Menu/Menu'
 import {MenuContent} from '../../../ui/Menu/MenuContent'
@@ -39,19 +43,11 @@ const ClickUpListFilterBar = (props: Props) => {
     teamMemberRef
   )
   const lists = getClickUpLists(teamMember.services)
-  const listsFailedToLoad = findIntegrationService(teamMember.services, 'clickup')?.repos === null
+  const unavailableListLabel = getUnavailableClickUpListLabel(teamMember.services)
   const {query, filteredItems, onQueryChange} = useSearchFilter(lists, getListName)
   const selectedCount = selectedListIds.length
-  const selectedLists = lists.filter(({integrationRepoId}) =>
-    selectedListIds.includes(integrationRepoId)
-  )
-  const unavailableListIds = selectedListIds.filter(
-    (listId) => !lists.some(({integrationRepoId}) => integrationRepoId === listId)
-  )
-  const visibleLists = Array.from(new Set([...selectedLists, ...filteredItems])).slice(
-    0,
-    Math.max(MAX_LISTS, selectedCount + 1)
-  )
+  const unavailableListIds = getUnavailableClickUpListIds(lists, selectedListIds)
+  const visibleLists = getVisibleClickUpLists(lists, filteredItems, selectedListIds, MAX_LISTS)
   const toggleList = (listId: string, isSelected: boolean) =>
     setSelectedListIds(
       isSelected
@@ -93,7 +89,7 @@ const ClickUpListFilterBar = (props: Props) => {
           >
             <Checkbox className='-ml-2 mr-2' active />
             <span className='overflow-hidden text-ellipsis whitespace-nowrap text-fg-secondary'>
-              {listsFailedToLoad ? 'List could not be loaded' : 'List no longer available'}
+              {unavailableListLabel}
             </span>
           </MenuItem>
         ))}
