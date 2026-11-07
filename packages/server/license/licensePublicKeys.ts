@@ -2,4 +2,9 @@
 The public halves of the keys Parabol signs licenses with, by key ID (a license's `kid`). The private halves never
 leave Parabol. Add a key here before signing with it, and keep a retired key while licenses it signed are in use.
 */
-export const licensePublicKeys: Record<string, string> = {}
+export const licensePublicKeys: Record<string, string> = {
+  '2026-11': `-----BEGIN PUBLIC KEY-----
+MCowBQYDK2VwAyEA2rzHubkIi3QHe88uPRTi5SURPyVggHMf5HG9jCgiMy4=
+-----END PUBLIC KEY-----
+`
+}
