@@ -56,10 +56,11 @@ const serve = (routes: Record<string, unknown>) => {
   })
 }
 
-const list = (id: string, name: string, permission_level = 'create') => ({
+const list = (id: string, name: string, permission_level = 'create', archived = false) => ({
   id,
   name,
-  permission_level
+  permission_level,
+  archived
 })
 
 const engRoutes = {
@@ -128,6 +129,26 @@ test.each(['read', 'comment'])(
     ])
   }
 )
+
+test('fetchClickUpRepos drops an archived list that Get Folders still embeds', async () => {
+  serve({
+    '/team': {teams: [{id: '1', name: 'Acme'}]},
+    '/team/1/space?archived=false': {spaces: [{id: '10', name: 'Eng'}]},
+    '/space/10/folder?archived=false': {
+      folders: [
+        {
+          id: '100',
+          name: 'Q4',
+          lists: [list('1000', 'Sprint 1', 'create', true), list('1001', 'Sprint 2')]
+        }
+      ]
+    },
+    '/space/10/list?archived=false': {lists: [list('1002', 'Inbox', 'create', true)]}
+  })
+  await expect(fetchClickUpRepos(ctx)).resolves.toEqual([
+    {service: 'clickup', id: '1001', workspaceId: '1', name: 'Eng / Q4 / Sprint 2'}
+  ])
+})
 
 test("fetchClickUpRepos reads a folder's lists when Get Folders gives only their ids", async () => {
   serve({

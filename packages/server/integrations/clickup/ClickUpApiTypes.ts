@@ -19,6 +19,7 @@ export interface ClickUpApiList {
   id: string
   name: string
   permission_level?: 'read' | 'comment' | 'edit' | 'create'
+  archived?: boolean
 }
 
 export interface ClickUpApiFolder {

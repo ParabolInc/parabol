@@ -85,7 +85,7 @@ const walkSpace = async (
   if (folderlessRes instanceof Error) return folderlessRes
   const toRepos = (lists: ClickUpApiList[], path: string[]) =>
     lists
-      .filter((list) => !UNWRITABLE_PERMISSIONS.has(list.permission_level))
+      .filter((list) => !list.archived && !UNWRITABLE_PERMISSIONS.has(list.permission_level))
       .map((list) => ({
         service: 'clickup' as const,
         id: list.id,

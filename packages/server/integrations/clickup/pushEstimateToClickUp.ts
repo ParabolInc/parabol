@@ -12,8 +12,9 @@ import resolveClickUpDimensionFieldKey from './resolveClickUpDimensionFieldKey'
 const OFF_SCALE_POINTS = 'ITEM_223'
 
 const toNumber = (value: string) => {
-  const number = parseFloat(value)
-  return Number.isFinite(number) && String(number) === value ? number : null
+  const trimmed = value.trim()
+  const number = Number(trimmed)
+  return trimmed !== '' && Number.isFinite(number) ? number : null
 }
 
 const notANumber = (fieldName: string, value: string) =>

@@ -132,7 +132,10 @@ beforeEach(() => {
 describe('pushEstimateToClickUp to Sprint Points', () => {
   it.each([
     ['5', 5],
-    ['0', 0]
+    ['0', 0],
+    ['1.0', 1],
+    ['.5', 0.5],
+    [' 3', 3]
   ])('sets the task’s points to %p', async (value, points) => {
     mapDimensionTo('__sprintPoints', 'Sprint Points')
     await expect(pushEstimateToClickUp(buildCtx(value))).resolves.toEqual({
@@ -237,17 +240,22 @@ describe('pushEstimateToClickUp to a custom field', () => {
     expect(mockFetch).not.toHaveBeenCalled()
   })
 
-  it('sends a number to a number field', async () => {
+  it.each([
+    ['3', 3],
+    ['1.0', 1],
+    ['.5', 0.5],
+    ['2.50', 2.5]
+  ])('sends %p to a number field as %p', async (value, number) => {
     mapDimensionTo('size-field', 'Size')
-    await pushEstimateToClickUp(buildCtx('3'))
+    await pushEstimateToClickUp(buildCtx(value))
     expect(readRequest()).toEqual({
       url: 'https://api.clickup.com/api/v2/task/86abc/field/size-field',
       method: 'POST',
-      body: {value: 3}
+      body: {value: number}
     })
   })
 
-  it.each(['?', '1/2', 'Infinity'])(
+  it.each(['?', '1/2', 'Infinity', '5abc', '3 days', ' '])(
     'refuses %p for a number field, without calling ClickUp',
     async (value) => {
       mapDimensionTo('size-field', 'Size')
