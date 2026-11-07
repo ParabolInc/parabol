@@ -112,6 +112,28 @@ test('a text search with no match and no older tasks has no guidance', async () 
   expect(results.error).toBeUndefined()
 })
 
+test.each([
+  ['a pasted task link', 'https://app.clickup.com/t/86abc', true],
+  ['a link with the workspace and a custom id', 'app.clickup.com/t/9012/DEV-12', false],
+  ['a custom id', 'DEV-12', true],
+  ['a task id', '86bd048jf', false]
+])(
+  '%s that matches nothing says so instead of pointing at older tasks',
+  async (_, queryString, hasNext) => {
+    mockPage.hasNext = hasNext
+    const results = await renderAdapter(queryString)
+    expect(results.items).toEqual([])
+    expect(results.error).toBe('No ClickUp task matches that link or ID.')
+  }
+)
+
+test('a pasted task link that matches shows the task without a message', async () => {
+  mockPage.edges = [{node: task}]
+  const results = await renderAdapter('https://app.clickup.com/t/86abc')
+  expect(results.error).toBeUndefined()
+  expect(results.items).toHaveLength(1)
+})
+
 test('a server error wins over the guidance', async () => {
   mockPage.hasNext = true
   mockPage.error = {message: 'ClickUp rate limit reached, try again in a minute'}

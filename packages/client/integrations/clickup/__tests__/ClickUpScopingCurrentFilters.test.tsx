@@ -7,23 +7,16 @@ import {happyWindow} from '../../../tiptap/extensions/__tests__/installHappyDom'
 import {EMPTY_SCOPING_SEARCH_STATE} from '../../platform/ScopingSearchState'
 import ClickUpScopingCurrentFilters from '../ClickUpScopingCurrentFilters'
 
-const mockData = {
-  viewer: {
-    teamMember: {
-      services: [
-        {
-          service: 'clickup',
-          repos: [{id: 'repo2', name: 'Space / Beta', integrationRepoId: '2'}]
-        }
-      ]
-    }
-  }
+const LISTS = [{id: 'repo2', name: 'Space / Beta', integrationRepoId: '2'}]
+const mockService: {service: string; repos: typeof LISTS | null} = {
+  service: 'clickup',
+  repos: LISTS
 }
 
 jest.mock('babel-plugin-relay/macro', () => ({__esModule: true, default: () => ({})}))
 jest.mock('react-relay', () => ({
   ...jest.requireActual('react-relay'),
-  usePreloadedQuery: () => mockData
+  usePreloadedQuery: () => ({viewer: {teamMember: {services: [mockService]}}})
 }))
 
 const queryRef = {} as PreloadedQuery<ClickUpScopingCurrentFiltersQuery>
@@ -44,6 +37,7 @@ const renderFilters = async (listIds: string[]) => {
 }
 
 beforeEach(() => {
+  mockService.repos = LISTS
   container = happyWindow.document.createElement('div')
   happyWindow.document.body.appendChild(container)
   root = createRoot(container as unknown as Element)
@@ -63,6 +57,12 @@ test('current filters count picked lists that no longer resolve instead of sayin
     'Space / Beta, 1 unavailable list'
   )
   await expect(renderFilters(['901423080038', '901423080039'])).resolves.toBe('2 unavailable lists')
+})
+
+test('current filters say the picked lists could not be loaded while ClickUp lists fail to load', async () => {
+  mockService.repos = null
+  await expect(renderFilters(['2'])).resolves.toBe('1 list could not be loaded')
+  await expect(renderFilters(['2', '901423080038'])).resolves.toBe('2 lists could not be loaded')
 })
 
 test('current filters say None with no list picked', async () => {

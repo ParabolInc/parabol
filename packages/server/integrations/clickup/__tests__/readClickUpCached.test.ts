@@ -91,6 +91,19 @@ test('each user reads the task with their own cache key and token', async () => 
   expect(keys[1]).toContain(':user2:')
 })
 
+test('reconnecting as another ClickUp account never reads the cache of the old account', async () => {
+  mockFetch.mockImplementation(async () => jsonResponse({teams: [{id: '1', name: 'Acme'}]}))
+  await listClickUpWorkspaces(authFor('user1'))
+  mockFetch.mockImplementation(async () => jsonResponse({teams: [{id: '2', name: 'Globex'}]}))
+  const otherAccount = {...authFor('user1'), accessToken: 'tok-other', providerUserId: '43'}
+  await expect(listClickUpWorkspaces(otherAccount)).resolves.toEqual([{id: '2', name: 'Globex'}])
+  expect(mockFetch).toHaveBeenCalledTimes(2)
+  const keys = memory.keys()
+  expect(keys).toHaveLength(2)
+  expect(keys[0]).toContain(':user1:42:')
+  expect(keys[1]).toContain(':user1:43:')
+})
+
 test('a custom id is cached apart for each workspace it is looked up in', async () => {
   await fetchClickUpTask(authFor('user1'), 'ENG-12', '1')
   await fetchClickUpTask(authFor('user1'), 'ENG-12', '2')

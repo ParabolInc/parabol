@@ -4,7 +4,7 @@ import {redisStoreAndNetwork} from '../../utils/redisStoreAndNetwork'
 import clickUpRequest, {type ClickUpReadInit, type ClickUpRequestAuth} from './clickUpRequest'
 
 export type ClickUpCacheAuth = ClickUpRequestAuth &
-  Pick<TeamMemberIntegrationAuth, 'teamId' | 'userId'>
+  Pick<TeamMemberIntegrationAuth, 'teamId' | 'userId' | 'providerUserId'>
 
 const readClickUpCached = <TRaw, T extends object>(
   auth: ClickUpCacheAuth,
@@ -14,7 +14,7 @@ const readClickUpCached = <TRaw, T extends object>(
   select: (raw: TRaw) => T | Error
 ) =>
   redisStoreAndNetwork(
-    `clickup:${auth.teamId}:${auth.userId}:${path}:${stringify(init.query ?? {})}`,
+    `clickup:${auth.teamId}:${auth.userId}:${auth.providerUserId ?? ''}:${path}:${stringify(init.query ?? {})}`,
     async () => {
       const raw = await clickUpRequest<TRaw>(auth, path, init)
       return raw instanceof Error ? raw : select(raw)

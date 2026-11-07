@@ -6,9 +6,16 @@ import type {ClickUpScopingResultsAdapterPaginationQuery} from '../../__generate
 import type {ClickUpScopingResultsAdapterQuery} from '../../__generated__/ClickUpScopingResultsAdapterQuery.graphql'
 import type {ResultsAdapterProps} from '../platform/ScopingSearchState'
 import getClickUpTaskLinkTitle from './getClickUpTaskLinkTitle'
+import readClickUpTaskLookup from './shared/readClickUpTaskLookup'
 
 const NO_RECENT_MATCH =
   'No match among the 300 most recently updated ClickUp tasks. Filter by a list or paste a task link to search further.'
+const NO_TASK_FOR_LOOKUP = 'No ClickUp task matches that link or ID.'
+
+const getEmptyMessage = (queryString: string, hasOlderTasks: boolean) => {
+  if (readClickUpTaskLookup(queryString)) return NO_TASK_FOR_LOOKUP
+  return queryString && hasOlderTasks ? NO_RECENT_MATCH : undefined
+}
 
 const query = graphql`
   query ClickUpScopingResultsAdapterQuery($teamId: ID!, $queryString: String, $listIds: [ID!]) {
@@ -60,10 +67,10 @@ const ClickUpScopingResultsAdapter = (
   )
   const tasks = data.viewer.teamMember?.integrations.clickup.tasks
   const edges = tasks?.edges
-  const isTextSearch = !!queryRef.variables.queryString
+  const queryString = queryRef.variables.queryString ?? ''
+  const isTextSearch = !!queryString
   const error =
-    tasks?.error?.message ??
-    (isTextSearch && hasNext && !edges?.length ? NO_RECENT_MATCH : undefined)
+    tasks?.error?.message ?? (edges?.length ? undefined : getEmptyMessage(queryString, hasNext))
   const items = useMemo(
     () =>
       (edges ?? []).map(({node}) => ({

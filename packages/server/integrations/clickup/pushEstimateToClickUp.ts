@@ -10,11 +10,11 @@ import makeScoreClickUpComment from './makeScoreClickUpComment'
 import resolveClickUpDimensionFieldKey from './resolveClickUpDimensionFieldKey'
 
 const OFF_SCALE_POINTS = 'ITEM_223'
+const DECIMAL_NUMBER = /^[+-]?(\d+(\.\d*)?|\.\d+)$/
 
 const toNumber = (value: string) => {
   const trimmed = value.trim()
-  const number = Number(trimmed)
-  return trimmed !== '' && Number.isFinite(number) ? number : null
+  return DECIMAL_NUMBER.test(trimmed) ? Number(trimmed) : null
 }
 
 const notANumber = (fieldName: string, value: string) =>

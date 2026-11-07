@@ -1,4 +1,7 @@
 import ms from 'ms'
+import readClickUpTaskLookup, {
+  type ClickUpTaskLookup
+} from 'parabol-client/integrations/clickup/shared/readClickUpTaskLookup'
 import loadServiceRepoIntegrations from '../loadServiceRepoIntegrations'
 import type {GqlIntegrationCtx} from '../platform/ServerIntegrationDefinition'
 import type {ClickUpApiTask} from './ClickUpApiTypes'
@@ -24,44 +27,14 @@ interface SearchedWorkspace {
   listIds: string[]
 }
 
-interface TaskLookup {
-  taskId: string
-  isCustomId: boolean
-  workspaceId: string | null
-  isPastedLink: boolean
-}
-
 const PAGE_SIZE = 100
 const TASK_PAGE_MAX_AGE = ms('30s')
 const MAX_TEXT_SEARCH_PAGES = 3
 const NEWEST_UPDATED_FIRST = {order_by: 'updated'}
-const TASK_LINK = /^(?:https?:\/\/)?app\.clickup\.com\/t\/(?:(\d+)\/)?([^/?#\s]+)\/?(?:[?#]\S*)?$/i
-const CUSTOM_ID = /^[A-Z][A-Z0-9]*-\d+$/
-const TASK_ID = /^[a-z0-9]+$/i
-const TYPED_TASK_ID = /^(?=[a-z]*\d)[a-z0-9]+$/
-
-const readTaskLookup = (queryString: string): TaskLookup | null => {
-  const link = TASK_LINK.exec(queryString)
-  if (link) {
-    const [, workspaceId = null, taskId = ''] = link
-    if (workspaceId && CUSTOM_ID.test(taskId)) {
-      return {taskId, isCustomId: true, workspaceId, isPastedLink: true}
-    }
-    return TASK_ID.test(taskId)
-      ? {taskId, isCustomId: false, workspaceId: null, isPastedLink: true}
-      : null
-  }
-  if (CUSTOM_ID.test(queryString)) {
-    return {taskId: queryString, isCustomId: true, workspaceId: null, isPastedLink: false}
-  }
-  return TYPED_TASK_ID.test(queryString)
-    ? {taskId: queryString, isCustomId: false, workspaceId: null, isPastedLink: false}
-    : null
-}
 
 const lookUpTask = async (
   auth: ClickUpCacheAuth,
-  {taskId, isCustomId, workspaceId, isPastedLink}: TaskLookup,
+  {taskId, isCustomId, workspaceId, isPastedLink}: ClickUpTaskLookup,
   workspaces: SearchedWorkspace[]
 ) => {
   const workspaceIds = workspaceId ? [workspaceId] : workspaces.map((ws) => ws.workspaceId)
@@ -136,7 +109,7 @@ const searchClickUpTasks = async (
   const workspaces = await listSearchedWorkspaces(ctx, auth, listIds)
   if (workspaces instanceof Error) return workspaces
 
-  const lookup = readTaskLookup(queryString)
+  const lookup = readClickUpTaskLookup(queryString)
   const needle = (lookup?.taskId ?? queryString).toLowerCase()
   const isMatch = ({name, custom_id, id}: ClickUpApiTask) =>
     !needle || [name, custom_id, id].some((value) => value?.toLowerCase().includes(needle))

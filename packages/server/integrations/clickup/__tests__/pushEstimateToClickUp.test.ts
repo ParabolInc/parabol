@@ -164,13 +164,19 @@ describe('pushEstimateToClickUp to Sprint Points', () => {
     )
   })
 
-  it('refuses a value that is not a number, without calling ClickUp', async () => {
-    mapDimensionTo('__sprintPoints', 'Sprint Points')
-    const result = await pushEstimateToClickUp(buildCtx('XL'))
-    expect(result).toBeInstanceOf(Error)
-    expect(result).toHaveProperty('message', 'Sprint Points takes a number, and "XL" is not one')
-    expect(mockFetch).not.toHaveBeenCalled()
-  })
+  it.each(['XL', '0x10', '1e3'])(
+    'refuses %p for Sprint Points, without calling ClickUp',
+    async (value) => {
+      mapDimensionTo('__sprintPoints', 'Sprint Points')
+      const result = await pushEstimateToClickUp(buildCtx(value))
+      expect(result).toBeInstanceOf(Error)
+      expect(result).toHaveProperty(
+        'message',
+        `Sprint Points takes a number, and "${value}" is not one`
+      )
+      expect(mockFetch).not.toHaveBeenCalled()
+    }
+  )
 
   it.each([
     ['turned off', {points: {enabled: false}}],
@@ -244,7 +250,9 @@ describe('pushEstimateToClickUp to a custom field', () => {
     ['3', 3],
     ['1.0', 1],
     ['.5', 0.5],
-    ['2.50', 2.5]
+    ['2.50', 2.5],
+    [' 3', 3],
+    ['-2', -2]
   ])('sends %p to a number field as %p', async (value, number) => {
     mapDimensionTo('size-field', 'Size')
     await pushEstimateToClickUp(buildCtx(value))
@@ -255,7 +263,7 @@ describe('pushEstimateToClickUp to a custom field', () => {
     })
   })
 
-  it.each(['?', '1/2', 'Infinity', '5abc', '3 days', ' '])(
+  it.each(['?', '1/2', 'Infinity', '5abc', '3 days', ' ', '0x10', '1e3', '0b11', '.'])(
     'refuses %p for a number field, without calling ClickUp',
     async (value) => {
       mapDimensionTo('size-field', 'Size')

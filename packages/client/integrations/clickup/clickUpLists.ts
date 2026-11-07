@@ -1,4 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
+import plural from '../../utils/plural'
 import findIntegrationService from '../platform/findIntegrationService'
 
 graphql`
@@ -27,12 +28,20 @@ const NO_LISTS: readonly ClickUpList[] = []
 export const getClickUpLists = (services: readonly ServiceWithLists[] | null | undefined) =>
   findIntegrationService(services ?? [], 'clickup')?.repos ?? NO_LISTS
 
+const didClickUpListsFailToLoad = (services: readonly ServiceWithLists[] | null | undefined) =>
+  findIntegrationService(services ?? [], 'clickup')?.repos === null
+
 export const getUnavailableClickUpListLabel = (
   services: readonly ServiceWithLists[] | null | undefined
+) => (didClickUpListsFailToLoad(services) ? 'List could not be loaded' : 'List no longer available')
+
+export const getUnavailableClickUpListsSummary = (
+  services: readonly ServiceWithLists[] | null | undefined,
+  count: number
 ) =>
-  findIntegrationService(services ?? [], 'clickup')?.repos === null
-    ? 'List could not be loaded'
-    : 'List no longer available'
+  didClickUpListsFailToLoad(services)
+    ? `${count} ${plural(count, 'list')} could not be loaded`
+    : `${count} unavailable ${plural(count, 'list')}`
 
 export const getUnavailableClickUpListIds = (
   lists: readonly ClickUpList[],
