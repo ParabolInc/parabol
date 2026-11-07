@@ -1,4 +1,5 @@
 import type AuthToken from '../../../database/types/AuthToken'
+import {capTierByLicense} from '../../../license/capTierByLicense'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId, isSuperUser} from '../../../utils/authorization'
 import errorFilter from '../../errorFilter'
@@ -29,7 +30,9 @@ const getSuggestedTierOrganizations = async (
   const isViewerAllowedToSeeAll =
     isSuperUser(authToken) ||
     organizations.some(
-      ({id, tier}) => tier === 'enterprise' && allOrganizationUsers.some(({orgId}) => orgId === id)
+      (org) =>
+        capTierByLicense(org) === 'enterprise' &&
+        allOrganizationUsers.some(({orgId}) => orgId === org.id)
     ) ||
     allOrganizationUsers.some(({suggestedTier}) => suggestedTier === 'enterprise')
   if (isViewerAllowedToSeeAll) return organizations

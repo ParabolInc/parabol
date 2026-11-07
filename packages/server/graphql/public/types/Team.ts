@@ -197,8 +197,8 @@ const Team: TeamResolvers = {
   },
   tier: async ({orgId}, _args, {dataLoader}) => {
     const org = await dataLoader.get('organizations').loadNonNull(orgId)
-    const {tier, trialStartDate} = org
-    return getFeatureTier({tier, trialStartDate})
+    const {tier, trialStartDate, stripeSubscriptionId} = org
+    return getFeatureTier({tier, trialStartDate, stripeSubscriptionId})
   },
   viewerTeamMember: async ({id: teamId}, _args, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)

@@ -5,6 +5,7 @@ import {PokerCards, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {MAX_FREE_JIRA_EXPORTS} from 'parabol-client/utils/constants'
 // TODO: EstimateUserScore is from the deprecated /database directory
 import EstimateUserScore from '../../../database/types/EstimateUserScore'
+import {capTierByLicense} from '../../../license/capTierByLicense'
 import getKysely from '../../../postgres/getKysely'
 import type {PokerMeetingMember} from '../../../postgres/types/Meeting'
 import getPhase from '../../../utils/getPhase'
@@ -51,7 +52,7 @@ const pokerRevealVotes: MutationResolvers['pokerRevealVotes'] = async (
   const team = await dataLoader.get('teams').loadNonNull(teamId)
   const org = await dataLoader.get('organizations').loadNonNull(team.orgId)
   const {scores, serviceTaskId} = stage
-  if (org.tier === 'starter') {
+  if (capTierByLicense(org) === 'starter') {
     const maybeCloudId = serviceTaskId.slice(0, serviceTaskId.indexOf(':'))
     const pg = getKysely()
     const jiraExport = await pg

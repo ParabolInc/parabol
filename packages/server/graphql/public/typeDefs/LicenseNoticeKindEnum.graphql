@@ -1,0 +1,15 @@
+"""
+What a license notice is about
+"""
+enum LicenseNoticeKindEnum {
+  "The instance needs a license and has none"
+  MISSING
+  "The license doesn't verify, or doesn't cover this host"
+  INVALID
+  "The license expires within 30 days"
+  EXPIRING
+  "The license has expired"
+  EXPIRED
+  "More users are active than the license covers"
+  OVER_SEATS
+}

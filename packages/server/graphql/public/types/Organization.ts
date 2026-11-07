@@ -37,8 +37,8 @@ const Organization: OrganizationResolvers = {
       .get('featureFlagByOwnerId')
       .load({ownerId: orgId, featureName: featureName as FeatureFlagName})
   },
-  tier: ({tier, trialStartDate}) => {
-    return getFeatureTier({tier, trialStartDate})
+  tier: ({tier, trialStartDate, stripeSubscriptionId}) => {
+    return getFeatureTier({tier, trialStartDate, stripeSubscriptionId})
   },
   billingTier: ({tier}) => tier,
   saml: async ({id: orgId}, _args, {dataLoader}) => {
