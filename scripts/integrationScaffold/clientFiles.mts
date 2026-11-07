@@ -44,10 +44,13 @@ export const ${meta} = {
     },
     {
       path: `${dir}/shared/${pascal}IssueId.ts`,
-      contents: `const ${pascal}IssueId = {
+      contents: `const INTEGRATION_HASH = /^([A-Za-z0-9_-]+)::([A-Za-z0-9_-]+)$/
+
+const ${pascal}IssueId = {
   join: (repoId: string, issueId: string) => \`\${repoId}::\${issueId}\`,
   split: (integrationHash: string) => {
-    const [repoId, issueId] = integrationHash.split('::')
+    const [, repoId, issueId] = INTEGRATION_HASH.exec(integrationHash) ?? []
+    if (!repoId || !issueId) return null
     return {repoId, issueId}
   }
 }
@@ -64,6 +67,13 @@ describe('${pascal}IssueId', () => {
     const integrationHash = ${pascal}IssueId.join('repo1', 'issue1')
     expect(${pascal}IssueId.split(integrationHash)).toEqual({repoId: 'repo1', issueId: 'issue1'})
   })
+
+  it.each(['', 'repo1', 'repo1::', '::issue1', 'repo1::issue1::x', 'repo1::../../x'])(
+    'rejects %p',
+    (integrationHash) => {
+      expect(${pascal}IssueId.split(integrationHash)).toBeNull()
+    }
+  )
 })
 `
     },

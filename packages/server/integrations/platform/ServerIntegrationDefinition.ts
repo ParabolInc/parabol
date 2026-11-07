@@ -92,7 +92,7 @@ export interface DimensionFieldCtx extends GqlIntegrationCtx {
 export interface DimensionFieldKey {
   repoId: string
   issueType: string | null
-  /** Field ids the current issue can accept. When set, stored rows for other fields are ignored and a row saved for another issue type may be reused; when absent only an exact issue type match counts */
+  /** Field ids the current issue can accept. When set, stored rows for other fields are ignored and a row saved for another issue type may be reused; when absent only an exact issue type match counts. Drop an id only after a read that says the field is gone, never because a read failed: a dropped id silently sends the push to a comment */
   usableFieldIds?: string[]
 }
 
@@ -129,7 +129,7 @@ export interface EstimatePushCapability {
     key: DimensionFieldKey,
     fieldId: string
   ): Promise<DimensionFieldTarget | Error>
-  /** The fields a facilitator can map this dimension to on this task. Label services return no options — the client offers the editable template instead. helpUrl explains an empty list when the service knows why */
+  /** The fields a facilitator can map this dimension to on this task. Label services return no options — the client offers the editable template instead. helpUrl explains a field the service knows is missing, even when other options exist */
   listDimensionFields(ctx: DimensionFieldCtx): Promise<ServiceFieldListing>
 }
 

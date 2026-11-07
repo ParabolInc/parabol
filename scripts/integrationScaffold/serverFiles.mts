@@ -180,9 +180,8 @@ export default resolve${pascal}TaskIntegration
       contents: `import ${pascal}IssueId from 'parabol-client/integrations/${service}/shared/${pascal}IssueId'
 
 const parse${pascal}IntegrationHash = (integrationHash: string) => {
-  const {repoId, issueId} = ${pascal}IssueId.split(integrationHash)
-  if (!repoId || !issueId || ${pascal}IssueId.join(repoId, issueId) !== integrationHash) return null
-  return {service: '${service}' as const, repoId, issueId}
+  const ids = ${pascal}IssueId.split(integrationHash)
+  return ids ? {service: '${service}' as const, ...ids} : null
 }
 
 export default parse${pascal}IntegrationHash

@@ -10,10 +10,13 @@ import ScopingSearchHistoryToggle from './ScopingSearchHistoryToggle'
 
 const describeFilters = (
   filters: readonly IntegrationSearchFilter[],
-  filterChipLabel: ScopingCapability['filterChipLabel']
+  {filterChipLabel, savedFiltersLabel}: ScopingCapability
 ) => {
   if (filters.length === 0) return undefined
-  return `in ${filters.map((filter) => filterChipLabel?.(filter) ?? filter.value).join(', ')}`
+  const label =
+    savedFiltersLabel?.(filters) ??
+    filters.map((filter) => filterChipLabel?.(filter) ?? filter.value).join(', ')
+  return `in ${label}`
 }
 
 interface Props {
@@ -34,7 +37,7 @@ const IntegrationScopingHistoryToggle = (props: Props) => {
     return {
       id,
       labelFirstLine: scoping.savedQueryLabel?.(savedQuery) ?? defaultLabel,
-      labelSecondLine: describeFilters(filters, scoping.filterChipLabel),
+      labelSecondLine: describeFilters(filters, scoping),
       onClick: () => setSearchState({queryString, isAdvancedQuery, filters}),
       onDelete: () => {
         if (submitting) return
