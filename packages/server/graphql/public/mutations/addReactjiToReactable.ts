@@ -27,6 +27,17 @@ export const getReactable = async (
   return dataLoader.get('retroReflections').load(reactableDBId as string)
 }
 
+const getReactableMeetingId = async (
+  reactable: NonNullable<Awaited<ReturnType<typeof getReactable>>>,
+  dataLoader: DataLoaderInstance
+) => {
+  if ('discussionId' in reactable) {
+    const discussion = await dataLoader.get('discussions').load(reactable.discussionId)
+    return discussion?.meetingId
+  }
+  return reactable.meetingId
+}
+
 const tableLookup = {
   RESPONSE: 'TeamPromptResponse',
   COMMENT: 'Comment',
@@ -49,6 +60,11 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
   const reactable = await getReactable(reactableDBId, reactableType, dataLoader)
 
   if (!reactable) {
+    return {error: {message: `Item does not exist`}}
+  }
+  // the permission only proves the viewer is in meetingId, so the reactable must belong to it, too
+  const reactableMeetingId = await getReactableMeetingId(reactable, dataLoader)
+  if (reactableMeetingId !== meetingId) {
     return {error: {message: `Item does not exist`}}
   }
   const {reactjis} = reactable
