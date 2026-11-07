@@ -128,7 +128,8 @@ pnpm i && pnpm build && pnpm predeploy && pnpm start
 - [Docker](./docker/stacks/development/README.md)
 - [File Storage (CDN, Local, S3)](./packages/server/fileStorage/README.md)
 - [GraphiQL, Private Schema Admin](./packages/server/graphql/private/README.md)
-- [Integrations (GitHub, Jira, Slack, etc.)](./docs/integrations.md)
+- [Integrations (GitHub, Jira, Slack, etc.)](./docs/integrations/README.md)
+- [Contributing an integration](./docs/integrations/CONTRIBUTING.md)
 - [PostgreSQL](./packages/server/postgres/README.md)
 - [How to Ship](./docs/deployment.md)
 

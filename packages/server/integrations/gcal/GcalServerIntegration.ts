@@ -11,7 +11,7 @@ export class GcalServerIntegration extends ServerIntegrationDefinition {
   readonly service = gcalIntegrationMeta.service
   readonly title = gcalIntegrationMeta.title
   readonly authStrategy = 'oauth2' as const
-  readonly capabilities: ServerIntegrationCapabilities = {
+  readonly capabilities: ServerIntegrationCapabilities<never> = {
     issueList: {listIssues: listGcalIssues}
   }
 

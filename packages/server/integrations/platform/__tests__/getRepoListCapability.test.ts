@@ -7,11 +7,13 @@ jest.mock('../../../graphql/public/rootSchema', () => ({
 }))
 
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
-import type {JiraGQLProject} from '../../../dataloader/atlassianLoaders'
-import type {JiraServerProject} from '../../../dataloader/jiraServerLoaders'
 import type {AzureDevOpsProject} from '../../azureDevOps/fetchAvailableAzureDevOpsProjects'
+import type {GitHubRepo} from '../../github/fetchGitHubRepos'
+import type {GitLabProject} from '../../gitlab/fetchGitLabProjects'
+import type {JiraGQLProject} from '../../jira/fetchJiraProjects'
+import type {JiraServerProject} from '../../jiraServer/fetchJiraServerProjects'
+import type {LinearProject, LinearTeam} from '../../linear/fetchLinearTeamsAndProjects'
 import getRepoListCapability from '../getRepoListCapability'
-import type {GitHubRepo, GitLabProject, LinearProject, LinearTeam} from '../RemoteRepoIntegration'
 
 const gitHubRepo: GitHubRepo = {
   hasIssuesEnabled: true,

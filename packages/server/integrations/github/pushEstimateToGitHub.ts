@@ -20,7 +20,6 @@ import type {
   RemoveLabelsMutation,
   RemoveLabelsMutationVariables
 } from '../../types/githubTypes'
-import getGitHubRequest from '../../utils/getGitHubRequest'
 import getPhase from '../../utils/getPhase'
 import addComment from '../../utils/githubQueries/addComment.graphql'
 import addLabel from '../../utils/githubQueries/addLabel.graphql'
@@ -28,10 +27,11 @@ import createLabel from '../../utils/githubQueries/createLabel.graphql'
 import getIssueId from '../../utils/githubQueries/getIssueId.graphql'
 import getRepoLabels from '../../utils/githubQueries/getRepoLabels.graphql'
 import removeLabels from '../../utils/githubQueries/removeLabels.graphql'
-import makeScoreGitHubComment from '../../utils/makeScoreGitHubComment'
 import loadDimensionField from '../platform/loadDimensionField'
 import {previousPushLabelName} from '../platform/previousPushLabel'
 import type {EstimatePushCtx} from '../platform/ServerIntegrationDefinition'
+import getGitHubRequest from './getGitHubRequest'
+import makeScoreGitHubComment from './makeScoreGitHubComment'
 import resolveGitHubDimensionFieldKey from './resolveGitHubDimensionFieldKey'
 
 const pushEstimateToGitHub = async ({

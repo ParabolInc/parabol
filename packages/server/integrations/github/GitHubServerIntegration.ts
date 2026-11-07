@@ -1,8 +1,6 @@
 import {githubIntegrationMeta} from 'parabol-client/integrations/github/shared/githubIntegrationMeta'
 import {Providers} from 'parabol-client/types/constEnums'
-import fetchGitHubRepos from '../../graphql/queries/helpers/fetchGitHubRepos'
 import type {GitHubSearchQueryJson, TeamMemberIntegrationAuth} from '../../postgres/types'
-import type {GitHubRepo} from '../platform/RemoteRepoIntegration'
 import {
   type EstimatePushCapability,
   type IntegrationCtx,
@@ -15,6 +13,7 @@ import {
 } from '../platform/ServerIntegrationDefinition'
 import buildGitHubSearchQuery from './buildGitHubSearchQuery'
 import describeGitHubDimensionField from './describeGitHubDimensionField'
+import fetchGitHubRepos, {type GitHubRepo} from './fetchGitHubRepos'
 import GitHubServerManager from './GitHubServerManager'
 import listGitHubDimensionFields from './listGitHubDimensionFields'
 import listGitHubIssues from './listGitHubIssues'

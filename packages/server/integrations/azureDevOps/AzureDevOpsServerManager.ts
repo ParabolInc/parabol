@@ -9,7 +9,6 @@ import appOrigin from '../../appOrigin'
 import type {TeamMemberIntegrationAuth} from '../../postgres/types'
 import type {IntegrationProviderAzureDevOps} from '../../postgres/types/IntegrationProvider'
 import {escapeHtml} from '../../utils/escapeHtml'
-import makeCreateAzureTaskComment from '../../utils/makeCreateAzureTaskComment'
 import {readThirdPartyResponse, ThirdPartyResponseError} from '../../utils/ThirdPartyResponseError'
 import {generateHTML} from '../../utils/tiptap/generateHTML'
 import {authorizeOAuth2} from '../helpers/authorizeOAuth2'
@@ -25,6 +24,7 @@ import type {
   CreateTaskResponse,
   TaskIntegrationManager
 } from '../platform/TaskIntegrationManager'
+import makeCreateAzureTaskComment from './makeCreateAzureTaskComment'
 import resolveAzureDevOpsWorkItemProject from './resolveAzureDevOpsWorkItemProject'
 
 export interface AzureDevOpsProfile {

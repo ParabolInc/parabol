@@ -1,8 +1,9 @@
 import type {DataLoaderWorker} from '../../graphql/graphql'
 import getKysely from '../../postgres/getKysely'
 import type {TeamMemberIntegrationAuth} from '../../postgres/types'
+import type {RepoAccessGrant} from '../../postgres/types/RepoAccessMeta'
 import invalidateRepoIntegrationsCache from '../invalidateRepoIntegrationsCache'
-import RepoAccess, {type RepoAccessGrant} from './RepoAccess'
+import RepoAccess from './RepoAccess'
 
 /**
  * Renames the grants whose repo the service now lists under another name.

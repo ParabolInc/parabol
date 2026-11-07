@@ -1,10 +1,14 @@
 import type {GraphQLResolveInfo} from 'graphql'
-import type {GitHubRepo} from '../../../integrations/platform/RemoteRepoIntegration'
-import type {GetRepositoriesQuery} from '../../../types/githubTypes'
-import getGitHubRequest from '../../../utils/getGitHubRequest'
-import getRepositories from '../../../utils/githubQueries/getRepositories.graphql'
-import type {GQLContext} from './../../graphql'
-import type {DataLoaderWorker} from '../../graphql'
+import type {DataLoaderWorker, GQLContext} from '../../graphql/graphql'
+import type {GetRepositoriesQuery} from '../../types/githubTypes'
+import getRepositories from '../../utils/githubQueries/getRepositories.graphql'
+import getGitHubRequest from './getGitHubRequest'
+
+type GitHubRepoNode = NonNullable<
+  NonNullable<GetRepositoriesQuery['viewer']['repositories']['nodes']>[number]
+>
+
+export type GitHubRepo = GitHubRepoNode & {service: 'github'}
 
 const fetchGitHubRepos = async (
   teamId: string,

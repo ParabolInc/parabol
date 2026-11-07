@@ -1,13 +1,11 @@
-jest.mock('../../../utils/AtlassianServerManager')
+jest.mock('../AtlassianServerManager')
 jest.mock('../../../postgres/getKysely', () => ({
   __esModule: true,
   default: () => mockDb
 }))
 
 import type {AtlassianAuth} from '../../../postgres/types'
-import AtlassianServerManager, {
-  type AccessibleResource
-} from '../../../utils/AtlassianServerManager'
+import AtlassianServerManager, {type AccessibleResource} from '../AtlassianServerManager'
 import hasAtlassianSiteAccess from '../hasAtlassianSiteAccess'
 
 type MockUpdateChain = {set: jest.Mock; where: jest.Mock; execute: jest.Mock}

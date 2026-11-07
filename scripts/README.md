@@ -14,6 +14,8 @@ It runs the whole stack as 1 foreground process, so ctrl+c stops everything.
 - `pnpm dev:seed someone@example.com` adds Copper, a sample organization with a year of meetings, tasks and Team Health checks and Reports turned on, and makes that user its billing leader. `--starter` puts it on the Starter plan
 - Every task logs to `dev/logs/<task>.log`
 
+`pnpm integration:new <service> --title <Title>` scaffolds a task integration; see [Contributing an integration](../docs/integrations/CONTRIBUTING.md)
+
 The dev scripts are TypeScript that node runs as is, without a build step.
 They are `.mts` files because node treats a `.ts` file in this package as CommonJS.
 `pnpm typecheck` checks them with `scripts/tsconfig.json`.

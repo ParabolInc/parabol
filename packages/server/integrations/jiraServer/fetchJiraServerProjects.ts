@@ -1,7 +1,13 @@
-import type {JiraServerProject} from '../../dataloader/jiraServerLoaders'
 import type {IntegrationProviderJiraServer} from '../../postgres/types/IntegrationProvider'
 import type {RepoFetchCtx} from '../platform/ServerIntegrationDefinition'
-import JiraServerRestManager from './JiraServerRestManager'
+import JiraServerRestManager, {type JiraServerRestProject} from './JiraServerRestManager'
+
+export type JiraServerProject = JiraServerRestProject & {
+  service: 'jiraServer'
+  providerId: number
+  userId: string
+  teamId: string
+}
 
 /** Every unarchived Jira Server project; an Error when the remote failed */
 const fetchJiraServerProjects = async ({

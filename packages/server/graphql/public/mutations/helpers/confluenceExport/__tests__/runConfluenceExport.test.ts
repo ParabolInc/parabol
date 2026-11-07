@@ -37,7 +37,7 @@ jest.mock('../../../../../../utils/ConfluenceServerManager', () => {
   return {...actual, ConfluenceServerManager: MockConfluenceServerManager}
 })
 
-jest.mock('../../../../../../utils/AtlassianServerManager', () => {
+jest.mock('../../../../../../integrations/jira/AtlassianServerManager', () => {
   class MockAtlassianServerManager {
     async getAccessibleResources() {
       return [{id: 'cloud-test', name: 'test', url: 'https://test.atlassian.net', scopes: []}]

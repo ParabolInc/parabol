@@ -1,5 +1,5 @@
-import {ExternalLinks} from '../../client/types/constEnums'
-import {escapeHtml} from './escapeHtml'
+import {ExternalLinks} from '../../../client/types/constEnums'
+import {escapeHtml} from '../../utils/escapeHtml'
 
 const makeCreateAzureTaskComment = (
   creator: string,

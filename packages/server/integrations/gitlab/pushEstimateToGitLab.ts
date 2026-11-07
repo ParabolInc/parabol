@@ -6,11 +6,11 @@ import interpolateVotingLabelTemplate from '../../../client/shared/interpolateVo
 import appOrigin from '../../appOrigin'
 import type {EstimatePushResult} from '../../postgres/types/EstimatePushResult'
 import getPhase from '../../utils/getPhase'
-import makeScoreGitLabComment from '../../utils/makeScoreGitLabComment'
 import pickDimensionField from '../platform/pickDimensionField'
 import {previousPushLabelId} from '../platform/previousPushLabel'
 import type {EstimatePushCtx} from '../platform/ServerIntegrationDefinition'
 import GitLabServerManager from './GitLabServerManager'
+import makeScoreGitLabComment from './makeScoreGitLabComment'
 
 const pushEstimateToGitLab = async ({
   taskEstimate,
