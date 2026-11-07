@@ -219,6 +219,30 @@ export const confluenceExportDuration = new Histogram({
   registers: [register]
 })
 
+export const clientNavigationDuration = new Histogram({
+  name: 'parabol_client_navigation_duration_seconds',
+  help: 'Seconds from a page load or route change to the first frame after its last query returned, reported by the client',
+  labelNames: ['route', 'kind'] as const,
+  buckets: [0.1, 0.25, 0.5, 0.75, 1, 1.5, 2, 3, 5, 8, 13, 20],
+  registers: [register]
+})
+
+export const clientNavigationQueriesInSequence = new Histogram({
+  name: 'parabol_client_navigation_queries_in_sequence',
+  help: 'GraphQL queries a page load or route change waited on one after another, reported by the client',
+  labelNames: ['route', 'kind'] as const,
+  buckets: [0, 1, 2, 3, 4, 5, 6],
+  registers: [register]
+})
+
+export const clientNavigationSuspendedQueries = new Histogram({
+  name: 'parabol_client_navigation_suspended_queries',
+  help: 'Queries that suspended a component during a page load or route change, reported by the client',
+  labelNames: ['route', 'kind'] as const,
+  buckets: [0, 1, 2, 3, 4, 6, 8],
+  registers: [register]
+})
+
 export const chatNotificationsSent = new Counter({
   name: 'parabol_chat_notifications_sent_total',
   help: 'Notifications delivered to Slack, Mattermost or Microsoft Teams, by service and event',

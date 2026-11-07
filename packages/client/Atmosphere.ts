@@ -35,6 +35,7 @@ import {createWSClient} from './utils/createWSClient'
 import deletePageDatabases from './utils/deletePageDatabases'
 import getTabSessionId from './utils/getTabSessionId'
 import makeTraceparent from './utils/makeTraceparent'
+import {logRelayEvent} from './utils/navigationTimings'
 import handlerProvider from './utils/relay/handlerProvider'
 import {reportClientWarning, reportUnexpectedGraphQLErrors} from './utils/reportClientError'
 import sleep from './utils/sleep'
@@ -120,7 +121,6 @@ export default class Atmosphere extends Environment {
   static getKey = (name: string, variables: Variables | undefined) => {
     return JSON.stringify({name, variables})
   }
-  _network: typeof Network
   _authObj: AuthToken | null = null
   get authObj() {
     return this._authObj
@@ -147,12 +147,20 @@ export default class Atmosphere extends Environment {
   subscriptionClient!: Awaited<ReturnType<typeof createWSClient>>
   connectWebsocketPromise: Promise<Client> | null = null
   constructor() {
+    // Relay only logs network events for the network it is given here, but the fetch functions exist once super returns
+    let atmosphere: Atmosphere | undefined
     super({
       store,
       handlerProvider,
-      network: Network.create(noop)
+      network: Network.create(
+        (request, variables, cacheConfig, uploadables) =>
+          atmosphere!.fetchFunction(request, variables, cacheConfig, uploadables),
+        (operation, variables, cacheConfig) =>
+          atmosphere!.fetchOrSubscribe(operation, variables, cacheConfig)
+      ),
+      log: logRelayEvent
     })
-    this._network = Network.create(this.fetchFunction, this.fetchOrSubscribe) as any
+    atmosphere = this
     Atmosphere.current = this
     this.initAuthFromCookie()
   }

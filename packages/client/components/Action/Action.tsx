@@ -2,6 +2,7 @@ import {lazy, memo, Suspense} from 'react'
 import 'react-day-picker/dist/style.css'
 import {Route, Routes} from 'react-router'
 import useNavigationBreadcrumbs from '../../hooks/useNavigationBreadcrumbs'
+import useNavigationTimings from '../../hooks/useNavigationTimings'
 import useQuietUpdate from '../../hooks/useQuietUpdate'
 import useServiceWorkerUpdater from '../../hooks/useServiceWorkerUpdater'
 import {LoaderSize} from '../../types/constEnums'
@@ -48,6 +49,7 @@ const Action = memo(() => {
   useServiceWorkerUpdater()
   useQuietUpdate()
   useNavigationBreadcrumbs()
+  useNavigationTimings()
   const isInternalAuthEnabled = window.__ACTION__.AUTH_INTERNAL_ENABLED
   // Global Banner
   const isGlobalBannerEnabled = window.__ACTION__.GLOBAL_BANNER_ENABLED
