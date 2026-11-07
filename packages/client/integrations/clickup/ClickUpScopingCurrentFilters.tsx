@@ -3,19 +3,15 @@ import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {ClickUpScopingCurrentFiltersQuery} from '../../__generated__/ClickUpScopingCurrentFiltersQuery.graphql'
 import {searchFiltersByKey} from '../platform/IntegrationSearchFilter'
 import type {ScopingSearchState} from '../platform/ScopingSearchState'
+import {getClickUpLists} from './clickUpLists'
 
 const query = graphql`
   query ClickUpScopingCurrentFiltersQuery($teamId: ID!) {
     viewer {
       teamMember(teamId: $teamId) {
         services {
-          ... on ClickUpIntegrationService {
-            repos {
-              id
-              name
-              integrationRepoId
-            }
-          }
+          service
+          ...clickUpLists_service @relay(mask: false)
         }
       }
     }
@@ -30,7 +26,7 @@ interface Props {
 const ClickUpScopingCurrentFilters = (props: Props) => {
   const {state, queryRef} = props
   const data = usePreloadedQuery<ClickUpScopingCurrentFiltersQuery>(query, queryRef)
-  const lists = data.viewer.teamMember?.services.flatMap(({repos}) => repos ?? []) ?? []
+  const lists = getClickUpLists(data.viewer.teamMember?.services)
   const selectedListNames = searchFiltersByKey(state.filters, 'listIds').flatMap(
     (listId) => lists.find(({integrationRepoId}) => integrationRepoId === listId)?.name ?? []
   )

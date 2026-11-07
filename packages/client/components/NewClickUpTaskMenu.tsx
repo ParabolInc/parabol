@@ -1,14 +1,9 @@
 import useSearchFilter from '~/hooks/useSearchFilter'
+import type {ClickUpList} from '../integrations/clickup/clickUpLists'
 import {MenuContent} from '../ui/Menu/MenuContent'
 import {MenuSearch} from '../ui/Menu/MenuSearch'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import TaskIntegrationMenuItem from './TaskIntegrationMenuItem'
-
-interface ClickUpList {
-  id: string
-  name: string
-  integrationRepoId: string
-}
 
 interface Props {
   lists: readonly ClickUpList[]

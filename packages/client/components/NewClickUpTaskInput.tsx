@@ -9,6 +9,7 @@ import type {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/C
 import type {NewClickUpTaskInputQuery} from '../__generated__/NewClickUpTaskInputQuery.graphql'
 import useForm from '../hooks/useForm'
 import useTimedState from '../hooks/useTimedState'
+import {getClickUpLists} from '../integrations/clickup/clickUpLists'
 import type {NewRecordInputProps} from '../integrations/platform/ScopingSearchState'
 import useUpdatePokerScopeMutation from '../mutations/useUpdatePokerScopeMutation'
 import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
@@ -26,13 +27,8 @@ const query = graphql`
       id
       teamMember(teamId: $teamId) {
         services {
-          ... on ClickUpIntegrationService {
-            repos {
-              id
-              name
-              integrationRepoId
-            }
-          }
+          service
+          ...clickUpLists_service @relay(mask: false)
         }
       }
     }
@@ -54,7 +50,7 @@ const NewClickUpTaskInput = (props: Props) => {
   const {isEditing, setIsEditing, meetingId, teamId, queryRef} = props
   const data = usePreloadedQuery<NewClickUpTaskInputQuery>(query, queryRef)
   const {id: userId, teamMember} = data.viewer
-  const lists = teamMember?.services.flatMap(({repos}) => repos ?? []) ?? []
+  const lists = getClickUpLists(teamMember?.services)
   const atmosphere = useAtmosphere()
   const {onError} = useMutationProps()
   const [updatePokerScope] = useUpdatePokerScopeMutation()

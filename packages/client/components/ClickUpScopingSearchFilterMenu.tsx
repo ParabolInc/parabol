@@ -3,6 +3,7 @@ import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import type {ClickUpScopingSearchFilterMenuQuery} from '../__generated__/ClickUpScopingSearchFilterMenuQuery.graphql'
 import useSetScopingSearchState from '../hooks/useSetScopingSearchState'
+import {getClickUpLists} from '../integrations/clickup/clickUpLists'
 import {
   searchFiltersByKey,
   toggleSearchFilter
@@ -32,13 +33,8 @@ const ClickUpScopingSearchFilterMenu = (props: Props) => {
         viewer {
           teamMember(teamId: $teamId) {
             services {
-              ... on ClickUpIntegrationService {
-                repos {
-                  id
-                  name
-                  integrationRepoId
-                }
-              }
+              service
+              ...clickUpLists_service @relay(mask: false)
             }
           }
         }
@@ -46,7 +42,7 @@ const ClickUpScopingSearchFilterMenu = (props: Props) => {
     `,
     queryRef
   )
-  const lists = data.viewer.teamMember?.services.flatMap(({repos}) => repos ?? []) ?? []
+  const lists = getClickUpLists(data.viewer.teamMember?.services)
   const {filters} = state
   const selectedListIds = searchFiltersByKey(filters, 'listIds')
   const setSearchState = useSetScopingSearchState(meetingId, 'clickup')
