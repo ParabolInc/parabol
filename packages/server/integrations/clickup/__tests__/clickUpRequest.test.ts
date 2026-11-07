@@ -67,19 +67,35 @@ test('clickUpRequest sends a JSON body', async () => {
   expect(JSON.parse(String(init?.body))).toEqual({comment_text: 'Hi', notify_all: false})
 })
 
-test('clickUpRequest deactivates the auth family on OAUTH_019', async () => {
-  mockFetch.mockResolvedValue(jsonResponse({err: 'Oauth token not found', ECODE: 'OAUTH_019'}, 401))
-  const result = await clickUpRequest(auth, '/team')
-  expect(result).toBeInstanceOf(Error)
-  expect((result as Error).message).toBe('Reconnect ClickUp: access was revoked')
-  expect(mockDeactivate).toHaveBeenCalledTimes(1)
-  expect(mockDeactivate).toHaveBeenCalledWith({
-    userId: 'user1',
-    teamId: 'team1',
-    providerId: 7,
-    providerUserId: '42'
-  })
-})
+test.each(['OAUTH_019', 'OAUTH_021', 'OAUTH_025', 'OAUTH_077'])(
+  'clickUpRequest deactivates the auth family on a 401 with %s',
+  async (ecode) => {
+    mockFetch.mockResolvedValue(jsonResponse({err: 'Oauth token not found', ECODE: ecode}, 401))
+    const result = await clickUpRequest(auth, '/team')
+    expect(result).toBeInstanceOf(Error)
+    expect((result as Error).message).toBe('Reconnect ClickUp: access was revoked')
+    expect(mockDeactivate).toHaveBeenCalledTimes(1)
+    expect(mockDeactivate).toHaveBeenCalledWith({
+      userId: 'user1',
+      teamId: 'team1',
+      providerId: 7,
+      providerUserId: '42'
+    })
+  }
+)
+
+test.each([400, 403, 500])(
+  'clickUpRequest keeps the auth when a revoked-grant code comes with a %p',
+  async (status) => {
+    mockFetch.mockResolvedValue(
+      jsonResponse({err: 'Oauth token not found', ECODE: 'OAUTH_019'}, status)
+    )
+    const result = await clickUpRequest(auth, '/team')
+    expect(result).toBeInstanceOf(Error)
+    expect((result as Error).message).toBe('ClickUp: Oauth token not found')
+    expect(mockDeactivate).not.toHaveBeenCalled()
+  }
+)
 
 test('clickUpRequest with only a token reports a revoked grant without deactivating anything', async () => {
   mockFetch.mockResolvedValue(jsonResponse({err: 'Oauth token not found', ECODE: 'OAUTH_019'}, 401))
