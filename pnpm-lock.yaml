@@ -573,6 +573,9 @@ importers:
       node-loader:
         specifier: ^2.0.0
         version: 2.1.0(webpack@5.107.0)
+      playwright-core:
+        specifier: 1.56.0
+        version: 1.56.0
       pm2:
         specifier: ^7.0.4
         version: 7.0.4(supports-color@8.1.1)

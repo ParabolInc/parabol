@@ -5,6 +5,7 @@ import stripeWebhookHandler from './billing/stripeWebhookHandler'
 import {buildProxyHandler} from './buildProxyHandler'
 import {stopChronos} from './chronos'
 import {clientErrorsHandler} from './clientErrorsHandler'
+import {clientMetricsHandler} from './clientMetricsHandler'
 import createSSR from './createSSR'
 import {disconnectAllSockets} from './disconnectAllSockets'
 import {setIsShuttingDown} from './getIsShuttingDown'
@@ -88,6 +89,7 @@ const app = uws
   .post('/mattermost', traceHttpRoute('/mattermost', mattermostWebhookHandler))
   .post('/zoom', traceHttpRoute('/zoom', zoomWebhookHandler))
   .post('/client-errors', traceHttpRoute('/client-errors', clientErrorsHandler))
+  .post('/client-metrics', traceHttpRoute('/client-metrics', clientMetricsHandler))
   .post('/graphql', async (res, req) => {
     // uWS deletes the req before the first await, so we must read it now
     const ip = uwsGetIP(res, req)
