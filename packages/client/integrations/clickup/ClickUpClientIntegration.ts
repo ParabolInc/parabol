@@ -1,4 +1,7 @@
 import {createElement, lazy} from 'react'
+import clickUpIntegrationPanelQuery, {
+  type ClickUpIntegrationPanelQuery
+} from '../../__generated__/ClickUpIntegrationPanelQuery.graphql'
 import clickUpScopingResultsQuery, {
   type ClickUpScopingResultsAdapterQuery
 } from '../../__generated__/ClickUpScopingResultsAdapterQuery.graphql'
@@ -10,10 +13,12 @@ import {
   ClientIntegrationDefinition,
   type ConnectParams,
   type ProviderLogoAsset,
-  type ScopingCapability
+  type ScopingCapability,
+  type WorkDrawerCapability
 } from '../platform/ClientIntegrationDefinition'
 import {searchFiltersByKey} from '../platform/IntegrationSearchFilter'
 import makeScopingResults from '../platform/makeScopingResults'
+import makeWorkDrawerPanel from '../platform/makeWorkDrawerPanel'
 import ClickUpClientManager from './ClickUpClientManager'
 import ClickUpIcon from './ClickUpIcon'
 import clickUpSearchMeta from './clickUpSearchMeta'
@@ -61,13 +66,26 @@ const scoping: ScopingCapability = {
   newRecordLabel: 'New Task'
 }
 
+const workDrawer: WorkDrawerCapability = {
+  Panel: makeWorkDrawerPanel<ClickUpIntegrationPanelQuery>({
+    query: clickUpIntegrationPanelQuery,
+    Panel: lazy(
+      () =>
+        import(
+          /* webpackChunkName: 'ClickUpIntegrationPanel' */ '../../components/TeamPrompt/WorkDrawer/ClickUpIntegrationPanel'
+        )
+    )
+  }),
+  connectDescription: 'tasks'
+}
+
 export class ClickUpClientIntegration extends ClientIntegrationDefinition {
   readonly service = clickupIntegrationMeta.service
   readonly title = clickupIntegrationMeta.title
   readonly description = clickupIntegrationMeta.description
   readonly Icon = ClickUpIcon
   readonly logo: ProviderLogoAsset = {src: clickupLogo}
-  readonly capabilities: ClientIntegrationCapabilities = {scoping}
+  readonly capabilities: ClientIntegrationCapabilities = {scoping, workDrawer}
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
     if (!provider?.clientId) return false
     ClickUpClientManager.openOAuth(

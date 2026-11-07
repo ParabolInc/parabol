@@ -5,6 +5,7 @@ import type {InspirationSourcePopover_teamMember$key} from '../../../__generated
 import {Spinner} from '../../../ui/Spinner/Spinner'
 import Ellipsis from '../../Ellipsis/Ellipsis'
 import AzureDevOpsProjectFilterBar from './AzureDevOpsProjectFilterBar'
+import ClickUpListFilterBar from './ClickUpListFilterBar'
 import GitHubRepoFilterBar from './GitHubRepoFilterBar'
 import InspirationKindSwitch from './InspirationKindSwitch'
 import InspirationSourceConnectButton from './InspirationSourceConnectButton'
@@ -49,6 +50,7 @@ const InspirationSourcePopover = (props: Props) => {
         ...JiraProjectFilterBar_teamMember @defer
         ...LinearProjectFilterBar_teamMember
         ...AzureDevOpsProjectFilterBar_teamMember
+        ...ClickUpListFilterBar_teamMember @defer
       }
     `,
     teamMemberRef
@@ -130,6 +132,15 @@ const InspirationSourcePopover = (props: Props) => {
                 selectedProjectIds={settings.azureDevOpsProjectIds}
                 setSelectedProjectIds={(azureDevOpsProjectIds) =>
                   setSettings((prev) => ({...prev, azureDevOpsProjectIds}))
+                }
+              />
+            )}
+            {service === 'clickup' && (
+              <ClickUpListFilterBar
+                teamMemberRef={teamMember}
+                selectedListIds={settings.clickupListIds}
+                setSelectedListIds={(clickupListIds) =>
+                  setSettings((prev) => ({...prev, clickupListIds}))
                 }
               />
             )}
