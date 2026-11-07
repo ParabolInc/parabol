@@ -11,6 +11,7 @@ import {setIsShuttingDown} from './getIsShuttingDown'
 import {hocusPocusHandler} from './hocusPocusHandler'
 import mattermostWebhookHandler from './integrations/mattermost/mattermostWebhookHandler'
 import zoomWebhookHandler from './integrations/zoom/zoomWebhookHandler'
+import {startLicenseMonitor} from './license/licenseState'
 import listenHandler from './listenHandler'
 import {ENABLE_METRICS, METRICS_PORT, metricsHandler} from './metricsHandler'
 import authorizeHandler from './oauth2/authorizeHandler'
@@ -56,6 +57,7 @@ const ENABLE_MATTERMOST_FILE_HANDLER =
 registerFatalErrorHandlers()
 setAccountLogContextLoader(loadAccountLogContext)
 logProcessWarnings()
+startLicenseMonitor()
 logHocuspocusWarnings()
 
 process.on('SIGTERM', async (signal) => {

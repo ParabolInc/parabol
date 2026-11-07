@@ -1,0 +1,10 @@
+"""
+A warning about this Parabol instance's license, for the admins of organizations that depend on it
+"""
+type LicenseNotice {
+  kind: LicenseNoticeKindEnum!
+  "The warning, ready to show"
+  message: String!
+  "When organizations without a Stripe subscription lose their paid features, if they will"
+  graceEndsAt: DateTime
+}

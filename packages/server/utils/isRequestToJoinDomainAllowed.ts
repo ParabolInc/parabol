@@ -1,5 +1,6 @@
 import type {DataLoaderInstance} from '../dataloader/RootDataLoader'
 import type {DataLoaderWorker} from '../graphql/graphql'
+import {capTierByLicense} from '../license/capTierByLicense'
 import type {User} from '../postgres/types'
 import isUserVerified from './isUserVerified'
 
@@ -30,6 +31,8 @@ export const getEligibleOrgIdsByDomain = async (
       const activeOrgUsers = await dataLoader.get('activeOrganizationUsersByOrgId').load(org.id)
       return {
         ...org,
+        // rank by the tier the organization may use, which a lapsed license caps
+        tier: capTierByLicense(org),
         activeMembers: activeOrgUsers.length
       }
     })
