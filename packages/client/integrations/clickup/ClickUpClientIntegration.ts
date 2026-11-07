@@ -8,6 +8,7 @@ import clickUpScopingResultsQuery, {
 import type Atmosphere from '../../Atmosphere'
 import clickupLogo from '../../styles/theme/images/graphics/clickup.svg'
 import lazyPreload from '../../utils/lazyPreload'
+import plural from '../../utils/plural'
 import {
   type ClientIntegrationCapabilities,
   ClientIntegrationDefinition,
@@ -62,6 +63,7 @@ const scoping: ScopingCapability = {
   placeholder: () => 'Search ClickUp tasks by name, ID or link',
   currentFilters: (state, {teamId}) =>
     createElement(ClickUpScopingCurrentFiltersRoot, {state, teamId}),
+  savedFiltersLabel: (filters) => `${filters.length} ${plural(filters.length, 'list')}`,
   selectAllNoun: 'task',
   newRecordLabel: 'New Task'
 }
