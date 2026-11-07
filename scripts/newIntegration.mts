@@ -1,5 +1,5 @@
 /*
-  Scaffolds a task integration: pnpm integration:new <service> --title <Title> [--description <text>] [--dry-run]
+  Scaffolds a task integration: pnpm integration:new <service> --title <Title> (--api-url <url> --authorize-url <url> --token-url <url> | --self-hosted) [--description <text>] [--dry-run]
   Writes a typed stub for every capability the conformance suites require and adds the service to every list that names one.
   Nothing is written unless every file it patches still has the shape it expects.
   docs/integrations/CONTRIBUTING.md walks through what to build next
@@ -9,7 +9,11 @@ import fs from 'fs'
 import path from 'path'
 import {parseArgs} from 'util'
 import clientFiles from './integrationScaffold/clientFiles.mts'
-import makeScaffoldNames, {SERVICE_PATTERN} from './integrationScaffold/makeScaffoldNames.mts'
+import makeScaffoldNames, {
+  type ScaffoldHosts,
+  type ScaffoldNames,
+  SERVICE_PATTERN
+} from './integrationScaffold/makeScaffoldNames.mts'
 import ScaffoldError from './integrationScaffold/ScaffoldError.mts'
 import type {ScaffoldFile} from './integrationScaffold/ScaffoldFile.mts'
 import scaffoldPatches from './integrationScaffold/scaffoldPatches.mts'
@@ -18,8 +22,11 @@ import serverFiles from './integrationScaffold/serverFiles.mts'
 import getProjectRoot from './webpack/utils/getProjectRoot.js'
 
 const PROJECT_ROOT = getProjectRoot()
-const USAGE =
-  'Usage: pnpm integration:new <service> --title <Title> [--description <text>] [--dry-run]'
+const USAGE = [
+  'Usage: pnpm integration:new <service> --title <Title>',
+  '  (--api-url <url> --authorize-url <url> --token-url <url> | --self-hosted)',
+  '  [--description <text>] [--dry-run]'
+].join('\n')
 
 const readRepoFile = (repoPath: string) =>
   fs.readFileSync(path.join(PROJECT_ROOT, repoPath), 'utf8')
@@ -36,12 +43,30 @@ const parseCommand = () => {
       options: {
         title: {type: 'string'},
         description: {type: 'string'},
+        'api-url': {type: 'string'},
+        'authorize-url': {type: 'string'},
+        'token-url': {type: 'string'},
+        'self-hosted': {type: 'boolean', default: false},
         'dry-run': {type: 'boolean', default: false}
       }
     })
   } catch (error) {
     return fail(`${error instanceof Error ? error.message : String(error)}\n${USAGE}`)
   }
+}
+
+const parseHosts = (values: ReturnType<typeof parseCommand>['values']): ScaffoldHosts | null => {
+  const apiUrl = values['api-url']?.trim()
+  const authorizeUrl = values['authorize-url']?.trim()
+  const tokenUrl = values['token-url']?.trim()
+  if (values['self-hosted']) {
+    if (apiUrl || authorizeUrl || tokenUrl) return fail(`--self-hosted takes no URLs\n${USAGE}`)
+    return null
+  }
+  if (!apiUrl || !authorizeUrl || !tokenUrl) {
+    return fail(`Pass --api-url, --authorize-url and --token-url, or --self-hosted\n${USAGE}`)
+  }
+  return {apiUrl, authorizeUrl, tokenUrl}
 }
 
 const newIntegration = () => {
@@ -53,11 +78,13 @@ const newIntegration = () => {
     return fail(`"${service}" must be camelCase letters and digits, e.g. clickUp`)
   }
   if (!title) return fail(`--title is required\n${USAGE}`)
+  const hosts = parseHosts(values)
 
-  const names = makeScaffoldNames(service, title, values.description?.trim())
+  let names: ScaffoldNames
   let files: ScaffoldFile[]
   let patched: ScaffoldFile[]
   try {
+    names = makeScaffoldNames(service, title, values.description?.trim(), hosts)
     files = [
       ...serverFiles(names),
       ...clientFiles(names),
@@ -104,6 +131,9 @@ const newIntegration = () => {
   }
 
   const {envPrefix} = names
+  const envVars = hosts
+    ? `${envPrefix}_CLIENT_ID and ${envPrefix}_CLIENT_SECRET`
+    : `${envPrefix}_CLIENT_ID, ${envPrefix}_CLIENT_SECRET and ${envPrefix}_SERVER_URL`
   console.log(`
 Scaffolded ${service}: ${files.length} files created, ${patched.length} updated. Next:
   1. pnpm kysely migrate:latest && pnpm pg:generate
@@ -111,8 +141,8 @@ Scaffolded ${service}: ${files.length} files created, ${patched.length} updated.
   3. pnpm test:server integrations/platform/__tests__/conformance.test.ts
      pnpm test:client integrations/platform/__tests__/conformance.test.ts
      The client suite fails until ${service} ships a scoping tab and a work drawer tab
-  4. Replace the stubs and the placeholder OAuth paths with calls to ${title}
-  5. Set ${envPrefix}_CLIENT_ID, ${envPrefix}_CLIENT_SECRET and ${envPrefix}_SERVER_URL in .env
+  4. Replace the stubs ${hosts ? '' : 'and the placeholder OAuth paths '}with calls to ${title}
+  5. Set ${envVars} in .env
 See "After the scaffold" in docs/integrations/CONTRIBUTING.md`)
 }
 

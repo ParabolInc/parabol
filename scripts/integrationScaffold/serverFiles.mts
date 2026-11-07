@@ -4,9 +4,21 @@ import type {ScaffoldFile} from './ScaffoldFile.mts'
 const notImplemented = (title: string, what: string) =>
   `new Error(${JSON.stringify(`${title}: ${what} is not implemented`)})`
 
-const serverFiles = ({service, pascal, title}: ScaffoldNames): ScaffoldFile[] => {
+const serverFiles = ({
+  service,
+  pascal,
+  title,
+  redirectSlug,
+  hosts
+}: ScaffoldNames): ScaffoldFile[] => {
   const dir = `packages/server/integrations/${service}`
   const meta = `${service}IntegrationMeta`
+  const oauth = hosts
+    ? {tokenConstant: `const TOKEN_URL = ${JSON.stringify(hosts.tokenUrl)}`, tokenUrl: 'TOKEN_URL'}
+    : {
+        tokenConstant: `const TOKEN_PATH = '/oauth/token'`,
+        tokenUrl: 'new URL(TOKEN_PATH, this.serverBaseUrl).toString()'
+      }
   return [
     {
       path: `${dir}/${pascal}ServerIntegration.ts`,
@@ -37,7 +49,7 @@ export class ${pascal}ServerIntegration extends ServerIntegrationDefinition {
   readonly capabilities: {
     issueCreate: IssueCreateCapability
     issueRead: IssueReadCapability
-    issueSearch: IssueSearchCapability
+    issueSearch: IssueSearchCapability<{queryString: string}>
     repoList: RepoListCapability<${pascal}Repo>
     estimatePush: EstimatePushCapability
   } = {
@@ -80,10 +92,10 @@ import OAuth2Manager, {
   type OAuth2TokenResponse
 } from '../OAuth2Manager'
 
-const TOKEN_PATH = '/oauth/token'
+${oauth.tokenConstant}
 
 export default class ${pascal}OAuth2Manager extends OAuth2Manager {
-  static readonly REDIRECT_URI = makeAppURL(appOrigin, 'auth/${service}')
+  static readonly REDIRECT_URI = makeAppURL(appOrigin, 'auth/${redirectSlug}')
 
   async authorize(code: string) {
     const auth = await this.fetchToken<OAuth2TokenResponse>({
@@ -106,7 +118,7 @@ export default class ${pascal}OAuth2Manager extends OAuth2Manager {
     partialAuthParams: OAuth2AuthorizationParams | OAuth2RefreshAuthorizationParams
   ) {
     return authorizeOAuth2<TSuccess>({
-      authUrl: new URL(TOKEN_PATH, this.serverBaseUrl).toString(),
+      authUrl: ${oauth.tokenUrl},
       body: {client_id: this.clientId, client_secret: this.clientSecret, ...partialAuthParams},
       contentType: 'application/x-www-form-urlencoded'
     })
@@ -181,7 +193,10 @@ export default parse${pascal}IntegrationHash
       contents: `import {checkQueryString, rejectUnknownKeys} from '../platform/searchMeta'
 import type {IssueSearchCapability} from '../platform/ServerIntegrationDefinition'
 
-const build${pascal}SearchQuery: IssueSearchCapability['buildQuery'] = (queryString, meta) => {
+const build${pascal}SearchQuery: IssueSearchCapability<{queryString: string}>['buildQuery'] = (
+  queryString,
+  meta
+) => {
   const invalid = checkQueryString(queryString) ?? rejectUnknownKeys(meta)
   if (invalid) return invalid
   return {queryString: queryString.trim()}

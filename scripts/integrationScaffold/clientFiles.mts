@@ -1,10 +1,35 @@
 import type {ScaffoldNames} from './makeScaffoldNames.mts'
 import type {ScaffoldFile} from './ScaffoldFile.mts'
 
-const clientFiles = ({service, pascal, title, description}: ScaffoldNames): ScaffoldFile[] => {
+const clientFiles = ({
+  service,
+  pascal,
+  title,
+  description,
+  redirectSlug,
+  hosts
+}: ScaffoldNames): ScaffoldFile[] => {
   const dir = `packages/client/integrations/${service}`
   const meta = `${service}IntegrationMeta`
   const logo = `packages/client/styles/theme/images/graphics/${service}.svg`
+  const oauth = hosts
+    ? {
+        connectCheck: '!provider?.clientId',
+        providerArg: '{id: provider.id, clientId: provider.clientId}',
+        providerType: '{id: string; clientId: string}',
+        providerFields: 'id: providerId, clientId',
+        authorizeConstant: `const AUTHORIZE_URL = ${JSON.stringify(hosts.authorizeUrl)}`,
+        authorizeUrl: 'new URL(AUTHORIZE_URL)'
+      }
+    : {
+        connectCheck: '!provider?.clientId || !provider.serverBaseUrl',
+        providerArg:
+          '{id: provider.id, clientId: provider.clientId, serverBaseUrl: provider.serverBaseUrl}',
+        providerType: '{id: string; clientId: string; serverBaseUrl: string}',
+        providerFields: 'id: providerId, clientId, serverBaseUrl',
+        authorizeConstant: `const AUTH_PATH = '/oauth/authorize'`,
+        authorizeUrl: 'new URL(AUTH_PATH, serverBaseUrl)'
+      }
   return [
     {
       path: `${dir}/shared/${meta}.ts`,
@@ -80,11 +105,11 @@ export class ${pascal}ClientIntegration extends ClientIntegrationDefinition {
   readonly logo: ProviderLogoAsset = {src: ${service}Logo}
   readonly capabilities: ClientIntegrationCapabilities = {}
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
-    if (!provider?.clientId || !provider.serverBaseUrl) return false
+    if (${oauth.connectCheck}) return false
     ${pascal}ClientManager.openOAuth(
       atmosphere,
       teamId,
-      {id: provider.id, clientId: provider.clientId, serverBaseUrl: provider.serverBaseUrl},
+      ${oauth.providerArg},
       mutationProps
     )
     return true
@@ -102,8 +127,8 @@ import getOAuthPopupFeatures from '../../utils/getOAuthPopupFeatures'
 import makeHref from '../../utils/makeHref'
 
 const SCOPES = ''
-const AUTH_PATH = '/oauth/authorize'
-const REDIRECT_PATH = '/auth/${service}'
+${oauth.authorizeConstant}
+const REDIRECT_PATH = '/auth/${redirectSlug}'
 const POLLING_INTERVAL = 250
 const POPUP_LIFETIME = 2 * 60 * 1000
 
@@ -111,16 +136,16 @@ const ${pascal}ClientManager = {
   openOAuth(
     atmosphere: Atmosphere,
     teamId: string,
-    provider: {id: string; clientId: string; serverBaseUrl: string},
+    provider: ${oauth.providerType},
     mutationProps: MenuMutationProps
   ) {
-    const {id: providerId, clientId, serverBaseUrl} = provider
+    const {${oauth.providerFields}} = provider
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
     const hash = Math.random().toString(36).substring(5)
     const providerState = btoa(
       JSON.stringify({hash, origin: window.location.origin, service: '${service}'})
     )
-    const url = new URL(AUTH_PATH, serverBaseUrl)
+    const url = ${oauth.authorizeUrl}
     url.searchParams.set('client_id', clientId)
     url.searchParams.set('scope', SCOPES)
     url.searchParams.set('state', providerState)

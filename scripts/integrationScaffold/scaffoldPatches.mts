@@ -22,7 +22,8 @@ const insertEntry = (
   opener: string,
   key: string,
   value: string,
-  order: 'sorted' | 'last'
+  order: 'sorted' | 'last',
+  separator: ',' | '' = ','
 ) => {
   const lines = text.split('\n')
   let start = findLine(lines, path, opener)
@@ -30,18 +31,22 @@ const insertEntry = (
   start++
   let end = start
   while (ENTRY.test(lines[end] ?? '')) end++
-  if (end === start || !lines[end]?.trimStart().startsWith('}')) {
-    throw new ScaffoldError(`${path}: "${opener}" is not a flat list of one-line entries`)
-  }
   const entries = lines.slice(start, end).map((line) => line.replace(/,$/, ''))
   const parsed = entries.map((line) => ENTRY.exec(line) ?? [])
   const [, indent = '  '] = parsed[0] ?? []
+  const flat =
+    end > start &&
+    lines[end]?.trimStart().startsWith('}') &&
+    parsed.every(([, entryIndent]) => entryIndent === indent)
+  if (!flat) {
+    throw new ScaffoldError(`${path}: "${opener}" is not a flat list of one-line entries`)
+  }
   const keys = parsed.map(([, , entryKey]) => entryKey)
   if (keys.includes(key)) throw new ScaffoldError(`${path}: already has ${key}`)
   const after = keys.findIndex((entryKey) => entryKey !== undefined && entryKey > key)
   const insertAt = order === 'last' || after === -1 ? entries.length : after
   entries.splice(insertAt, 0, `${indent}${key}: ${value}`)
-  const rendered = entries.map((line, i) => (i < entries.length - 1 ? `${line},` : line))
+  const rendered = entries.map((line, i) => (i < entries.length - 1 ? `${line}${separator}` : line))
   lines.splice(start, end - start, ...rendered)
   return lines.join('\n')
 }
@@ -69,7 +74,13 @@ const insertEnumValue = (text: string, path: string, name: string, value: string
   return `${text.slice(0, close)}\n${value}${text.slice(close)}`
 }
 
-const scaffoldPatches = ({service, pascal, title, envPrefix}: ScaffoldNames): ScaffoldPatch[] => {
+const scaffoldPatches = ({
+  service,
+  pascal,
+  title,
+  envPrefix,
+  hosts
+}: ScaffoldNames): ScaffoldPatch[] => {
   const meta = `${service}IntegrationMeta`
   const metaImport = (fromIntegrations: string) =>
     `import {${meta}} from '${fromIntegrations}/${service}/shared/${meta}'`
@@ -145,6 +156,19 @@ const scaffoldPatches = ({service, pascal, title, envPrefix}: ScaffoldNames): Sc
           `IntegrationProvider${pascal}OAuth2`
         )
       }
+    },
+    {
+      path: 'packages/server/postgres/types/index.d.ts',
+      apply: (text, path) =>
+        insertEntry(
+          text,
+          path,
+          'export type IntegrationSearchQueryJsonByService = {',
+          service,
+          '{queryString: string}',
+          'last',
+          ''
+        )
     },
     {
       path: 'packages/server/integrations/platform/registry.ts',
@@ -242,6 +266,9 @@ const scaffoldPatches = ({service, pascal, title, envPrefix}: ScaffoldNames): Sc
     {
       path: 'scripts/toolboxSrc/primeIntegrations.ts',
       apply: (text, path) => {
+        const serverBaseUrl = hosts
+          ? JSON.stringify(hosts.apiUrl)
+          : `process.env.${envPrefix}_SERVER_URL`
         const lines = text.split('\n')
         const close = findLine(
           lines,
@@ -261,7 +288,7 @@ const scaffoldPatches = ({service, pascal, title, envPrefix}: ScaffoldNames): Sc
             `      service: '${service}',`,
             `      authStrategy: 'oauth2',`,
             `      scope: 'global',`,
-            `      serverBaseUrl: process.env.${envPrefix}_SERVER_URL,`,
+            `      serverBaseUrl: ${serverBaseUrl},`,
             `      clientId: process.env.${envPrefix}_CLIENT_ID,`,
             `      clientSecret: process.env.${envPrefix}_CLIENT_SECRET`,
             '    }'
@@ -281,7 +308,7 @@ const scaffoldPatches = ({service, pascal, title, envPrefix}: ScaffoldNames): Sc
           0,
           `# ${envPrefix}_CLIENT_ID=''`,
           `# ${envPrefix}_CLIENT_SECRET=''`,
-          `# ${envPrefix}_SERVER_URL=''`
+          ...(hosts ? [] : [`# ${envPrefix}_SERVER_URL=''`])
         )
         return lines.join('\n')
       }
