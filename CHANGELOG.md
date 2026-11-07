@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.20.0](https://github.com/ParabolInc/parabol/compare/v15.19.0...v15.20.0) (2026-11-07)
+
+
+### Added
+
+* measure data waterfalls per route, in dev and from real users ([#13999](https://github.com/ParabolInc/parabol/issues/13999)) ([bbb94a9](https://github.com/ParabolInc/parabol/commit/bbb94a9520c9aa523ff858a56ac9ce7827d0ef16))
+
+
+### Fixed
+
+* **client:** open the request-to-join review modal from its toast and notification ([#13997](https://github.com/ParabolInc/parabol/issues/13997)) ([0b5bc33](https://github.com/ParabolInc/parabol/commit/0b5bc336157478a57d0e51677d27af17963423a5))
+
 ## [15.19.0](https://github.com/ParabolInc/parabol/compare/v15.18.1...v15.19.0) (2026-11-06)
 
 
