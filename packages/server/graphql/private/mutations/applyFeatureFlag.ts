@@ -4,12 +4,13 @@ import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
 import {getUserId} from '../../../utils/authorization'
 import {getFeatureFlag} from '../../../utils/featureFlags'
 import standardError from '../../../utils/standardError'
+import isValid from '../../isValid'
 import type {MutationResolvers} from '../resolverTypes'
 
 const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
   _source,
   {flagName, subjects},
-  {authToken}
+  {authToken, dataLoader}
 ) => {
   const pg = getKysely()
 
@@ -76,6 +77,20 @@ const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
         'No valid subjects found to apply the feature flag. Check the scope of the feature flag.'
       )
     )
+  }
+
+  const [subjectIds, loadedSubjects] =
+    scope === 'User'
+      ? [userIds, await dataLoader.get('users').loadMany(userIds)]
+      : scope === 'Team'
+        ? [teamIds, await dataLoader.get('teams').loadMany(teamIds)]
+        : [orgIds, await dataLoader.get('organizations').loadMany(orgIds)]
+  const missingIds = subjectIds.filter((_id, idx) => !isValid(loadedSubjects[idx]))
+
+  if (missingIds.length > 0) {
+    return standardError(new Error(`No ${scope} found with ID: ${missingIds.join(', ')}`), {
+      userId: viewerId
+    })
   }
 
   await pg
