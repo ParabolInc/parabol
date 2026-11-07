@@ -217,13 +217,8 @@ describe('connect with an interface-shaped provider ref', () => {
   })
 
   it('task surfaces see every service but Google Calendar', () => {
-    expect(clientIntegrationsByPopularity.filter(isTaskClientIntegration).sort()).toEqual([
-      'azureDevOps',
-      'github',
-      'gitlab',
-      'jira',
-      'jiraServer',
-      'linear'
-    ])
+    expect(clientIntegrationsByPopularity.filter(isTaskClientIntegration)).toEqual(
+      clientIntegrationsByPopularity.filter((service) => service !== 'gcal')
+    )
   })
 })
