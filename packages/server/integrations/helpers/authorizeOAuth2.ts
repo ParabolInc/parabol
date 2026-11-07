@@ -79,6 +79,7 @@ export const authorizeOAuth2 = async <
       tokenJson.error_description || tokenJson.error || `Received OAuth2 Error from ${authUrl}`
     return new Error(errorMessage)
   }
+  if (!tokenJson.access_token) return new Error(`${authUrl} returned no access_token`)
   const {
     access_token: accessToken,
     refresh_token: oauthRefreshToken,

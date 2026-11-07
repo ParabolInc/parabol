@@ -1,10 +1,17 @@
 import getKysely from '../../postgres/getKysely'
+import deactivateTeamMemberIntegrationAuthFamily from '../../postgres/queries/deactivateTeamMemberIntegrationAuthFamily'
 import {selectTeamMemberIntegrationAuth} from '../../postgres/select'
 import logError from '../../utils/logError'
 import {ThirdPartyResponseError} from '../../utils/ThirdPartyResponseError'
 import handleAuthRefreshFailure from '../handleAuthRefreshFailure'
 
 jest.mock('../../postgres/getKysely')
+jest.mock('../../postgres/queries/deactivateTeamMemberIntegrationAuthFamily', () => {
+  const actual = jest.requireActual<
+    typeof import('../../postgres/queries/deactivateTeamMemberIntegrationAuthFamily')
+  >('../../postgres/queries/deactivateTeamMemberIntegrationAuthFamily')
+  return {__esModule: true, default: jest.fn(actual.default)}
+})
 jest.mock('../../postgres/select', () => ({selectTeamMemberIntegrationAuth: jest.fn()}))
 jest.mock('../../utils/logError')
 
@@ -72,6 +79,13 @@ describe('handleAuthRefreshFailure', () => {
     expect(chain.execute).toHaveBeenCalledTimes(1)
   })
 
+  it('deactivates the token family through the shared helper', async () => {
+    mockUpdateChain()
+    mockSelect({...auth})
+    await handleAuthRefreshFailure(new Error('invalid_grant'), auth)
+    expect(deactivateTeamMemberIntegrationAuthFamily).toHaveBeenCalledWith(auth)
+  })
+
   it('keeps the grant when the provider answered with something other than an OAuth2 verdict', async () => {
     const chain = mockUpdateChain()
     mockSelect({...auth})
@@ -90,6 +104,7 @@ describe('handleAuthRefreshFailure', () => {
       tags: {teamId: 'team1', service: 'gcal'}
     })
     expect(chain.updateTable).not.toHaveBeenCalled()
+    expect(deactivateTeamMemberIntegrationAuthFamily).not.toHaveBeenCalled()
   })
 
   it('disconnects every team row of the same provider account when the account is known', async () => {

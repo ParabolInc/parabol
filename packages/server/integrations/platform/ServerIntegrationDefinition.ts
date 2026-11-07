@@ -61,6 +61,8 @@ export interface RepoListCapability<TRepo extends ServiceRepo> {
   integrationRepoId(repo: TRepo): string
   /** The label the repo picker renders */
   name(repo: TRepo): string
+  /** How old the cached list may get before it is refetched in the background; one minute when absent */
+  refreshAfterMs?: number
 }
 
 /**

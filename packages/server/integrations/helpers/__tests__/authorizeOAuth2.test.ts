@@ -28,3 +28,17 @@ test("a token endpoint that answers with a page is reported with what it sent, a
     body: '<html><title>502 Bad Gateway</title></html>'
   })
 })
+
+test('authorizeOAuth2 returns an Error when the token response has no access_token', async () => {
+  mockFetch.mockResolvedValue(
+    new Response('{}', {status: 200, headers: {'content-type': 'application/json'}})
+  )
+  const result = await authorizeOAuth2({
+    authUrl: 'https://api.clickup.com/api/v2/oauth/token',
+    body: {client_id: 'id', client_secret: 's3cr3t', code: 'abc'}
+  })
+  expect(result).toBeInstanceOf(Error)
+  expect((result as Error).message).toBe(
+    'https://api.clickup.com/api/v2/oauth/token returned no access_token'
+  )
+})
