@@ -7,6 +7,9 @@ import type {ClickUpScopingResultsAdapterQuery} from '../../__generated__/ClickU
 import type {ResultsAdapterProps} from '../platform/ScopingSearchState'
 import getClickUpTaskLinkTitle from './getClickUpTaskLinkTitle'
 
+const NO_RECENT_MATCH =
+  'No match among the 300 most recently updated ClickUp tasks. Filter by a list or paste a task link to search further.'
+
 const query = graphql`
   query ClickUpScopingResultsAdapterQuery($teamId: ID!, $queryString: String, $listIds: [ID!]) {
     ...ClickUpScopingResultsAdapter_query
@@ -56,8 +59,11 @@ const ClickUpScopingResultsAdapter = (
     queryData
   )
   const tasks = data.viewer.teamMember?.integrations.clickup.tasks
-  const error = tasks?.error?.message
   const edges = tasks?.edges
+  const isTextSearch = !!queryRef.variables.queryString
+  const error =
+    tasks?.error?.message ??
+    (isTextSearch && hasNext && !edges?.length ? NO_RECENT_MATCH : undefined)
   const items = useMemo(
     () =>
       (edges ?? []).map(({node}) => ({
@@ -69,7 +75,13 @@ const ClickUpScopingResultsAdapter = (
       })),
     [edges]
   )
-  return children({items, error, hasNext, isLoadingNext, loadNext: () => loadNext(25)})
+  return children({
+    items,
+    error,
+    hasNext: hasNext && !isTextSearch,
+    isLoadingNext,
+    loadNext: () => loadNext(25)
+  })
 }
 
 export default ClickUpScopingResultsAdapter
