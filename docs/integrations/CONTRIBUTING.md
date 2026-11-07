@@ -14,7 +14,7 @@ Every integration has three parts, each in a folder named for the service (`asan
 | Client definition | `packages/client/integrations/<service>/<Service>ClientIntegration.ts` | Name, logo, the connect popup, and the panels the app shows |
 | Shared files | `packages/client/integrations/<service>/shared/` | What both sides import: `<service>IntegrationMeta.ts` (service, title, description) and the id codecs |
 
-Each definition is registered once, in [`packages/server/integrations/platform/registry.ts`](../../packages/server/integrations/platform/registry.ts) and [`packages/client/integrations/platform/registry.ts`](../../packages/client/integrations/platform/registry.ts). Most of the app asks the registries what a service can do. The places that still name services are listed under [The linked task](#the-linked-task). The client registry is in popularity order, so a new task service goes after the existing ones.
+Each definition is registered once, in [`packages/server/integrations/platform/registry.ts`](../../packages/server/integrations/platform/registry.ts) and [`packages/client/integrations/platform/registry.ts`](../../packages/client/integrations/platform/registry.ts). Most of the app asks the registries what a service can do; this guide points out each place that still names services. The client registry is in popularity order, so a new task service goes after the existing ones.
 
 A few rules keep the layers apart. Lint enforces the first one.
 
@@ -63,15 +63,15 @@ A capability is an object on the server definition's `capabilities`. The interfa
 | `issueRead` | Showing a linked task's issue | `getIssue`, which returns the source of your issue GraphQL type, and `parseIntegrationHash` | `azureDevOps/resolveAzureDevOpsTaskIntegration.ts` |
 | `issueSearch` | Saved searches in the Sprint Poker scope tab | `buildQuery`, which checks the search the client sends before it is stored, and rejects meta keys it does not know | `linear/buildLinearSearchQuery.ts` |
 | `repoList` | The projects a task can be pushed to | `fetchRepos`, `integrationRepoId` and `name` | `linear/fetchLinearTeamsAndProjects.ts` |
-| `repoAccess` | Letting someone pick which projects a team reaches through their connection | `fetchAvailableRepos`, plus `repoAccess` and `availableRepos` on `<Service>IntegrationService.graphql` and a settings panel. Every other capability must respect the choice | `azureDevOps/` |
+| `repoAccess` | Letting someone pick which projects a team reaches through their connection | `fetchAvailableRepos`, returning the same repo type as `repoList`, plus `repoAccess` and `availableRepos` on `<Service>IntegrationService.graphql`, an `isUserViewer('source.userId')` rule for each in `permissions.ts`, and a settings panel. Every other capability must respect the choice | `azureDevOps/` |
 | `estimatePush` | Sprint Poker writing the final estimate to the issue | the push targets, `pushEstimate`, and the three dimension-field functions | `linear/pushEstimateToLinear.ts` |
 | `issueList` | Issues in the retro and standup drawers, and AI standup drafts | `listIssues`. Also add the service to `ServiceEnum.graphql`, to `packages/client/components/TeamPrompt/WorkDrawer/inspirationSources.ts`, and to the drawer-source list in the server `registry.test.ts` | `linear/listLinearIssues.ts` |
 
 Every service in `TaskServiceEnum` must implement `issueCreate`, `issueRead`, `issueSearch`, `repoList` and `estimatePush`. The conformance suite checks this.
 
-Declare your repo type next to `fetchRepos`, and name it in the `repoList` entry of your `capabilities` type: `repoList: RepoListCapability<AsanaProject>`. `RemoteRepoIntegration` reads it from there, so it needs no other edit. Its GraphQL type is the generic `RepoContainer` unless you map another one in [`RepoIntegration.ts`](../../packages/server/graphql/public/types/RepoIntegration.ts).
+The scaffold declares `<Service>Repo` in `fetch<Service>Repos.ts` and names it in `repoList: RepoListCapability<<Service>Repo>`. Change its fields to what the service returns, and `RemoteRepoIntegration` picks them up. Its GraphQL type is `RepoContainer`. To use your own, add a type that implements `RepoIntegration`, name it in [`RepoIntegration.ts`](../../packages/server/graphql/public/types/RepoIntegration.ts), and change `repos` in `<Service>IntegrationService.graphql` to match, as Azure DevOps does.
 
-When the service fails, the functions that write or fetch (`fetchRepos`, `fetchAvailableRepos`, `buildQuery`, `pushEstimate`, `describeDimensionField` and `createTask`) return an `Error` and never throw. A `fetchRepos` that returns an `Error` is never cached. The read paths log the failure and return `null` (`getIssue`, `resolveDimensionFieldKey`) or `[]` (`listIssues`).
+Functions that call the service return an `Error` when it fails and never throw: `fetchRepos`, `fetchAvailableRepos`, `pushEstimate`, `describeDimensionField`, `createTask` and `addCreatedBySomeoneElseComment`. `buildQuery` returns an `Error` for a search it will not store. A `fetchRepos` that returns an `Error` is never cached. The read paths log the failure and return `null` (`getIssue`, `resolveDimensionFieldKey`), `{options: []}` (`listDimensionFields`) or `[]` (`listIssues`).
 
 ## Client capabilities
 
@@ -87,7 +87,7 @@ Both tabs need GraphQL fields to read from. As Linear does, add:
 - a `types/<Service>Integration.ts` resolver that exports `<Service>IntegrationSource`, and a codegen mapper for it
 - a `<service>: (source) => source` entry in `types/TeamMemberIntegrations.ts`
 
-Only the team member themselves can reach `TeamMember.integrations` (see `permissions.ts`). The fields under it have no rule of their own. They are safe only because every path builds their source from the viewer, so read the team and user ids from the source, never from arguments.
+Only the team member themselves can reach `TeamMember.integrations` (see `permissions.ts`). Give each search and list field its own `isUserViewer('source.userId')` rule there too, as `AzureDevOpsIntegration.workItems` has, and read the team and user ids from the source, never from arguments.
 
 ## The linked task
 
@@ -102,7 +102,7 @@ Only the team member themselves can reach `TeamMember.integrations` (see `permis
   - `packages/client/modules/email/components/SummaryEmail/ExportToCSV.tsx`
   - `packages/client/mutations/CreateTaskMutation.ts`
   - `packages/client/mutations/CreateTaskIntegrationMutation.ts`
-- **Optional lists.** `RemoveIntegrationProviderDialog.tsx` shows the raw service key for a service it does not name, and the retro demo in `packages/client/modules/demo/initDB.ts` seeds only the services it lists.
+- **Optional lists.** `packages/client/modules/userDashboard/components/OrgIntegrations/RemoveIntegrationProviderDialog.tsx` names a service it does not list by its key with a capital first letter (`azureDevOps` becomes "AzureDevOps"), and the retro demo in `packages/client/modules/demo/initDB.ts` seeds only the services it lists.
 
 ## Auth
 
@@ -122,6 +122,7 @@ The conformance suites run against every registered integration, so a new one is
   - has an OAuth2 manager in `createOAuth2Manager.ts`, or resolves its own auth
   - returns `null` from `parseIntegrationHash` for junk input
   - handles an empty search, and rejects search meta it does not know
+  - grants `repoAccess` to the same repo type it lists, which `pnpm typecheck` checks
   - can push an estimate as a comment
   - is a `ServiceEnum` source if it lists issues
   - keeps the GraphQL service enums, the stored task services and the registry in sync, which `pnpm typecheck` checks
