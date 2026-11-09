@@ -1,3 +1,4 @@
+import {positionAt} from '../../../client/shared/sortOrder'
 import GenericMeetingPhase from './GenericMeetingPhase'
 import TeamPromptResponseStage from './TeamPromptResponseStage'
 
@@ -11,7 +12,7 @@ export default class TeamPromptResponsesPhase extends GenericMeetingPhase {
       throw new Error('TeamPromptResponsesPhase must have at least one team member')
     }
     this.stages = teamMemberIds.map(
-      (teamMemberId, sortOrder) => new TeamPromptResponseStage({teamMemberId, sortOrder})
+      (teamMemberId, idx) => new TeamPromptResponseStage({teamMemberId, sortOrder: positionAt(idx)})
     ) as [TeamPromptResponseStage, ...TeamPromptResponseStage[]]
   }
 }

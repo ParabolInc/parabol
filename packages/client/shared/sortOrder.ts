@@ -35,6 +35,13 @@ export function positionAfter(pos: string) {
   return pos + String.fromCharCode(START_CHAR_CODE + 1)
 }
 
+// the position of the item at index in a list that was built by appending, each one positionAfter the last
+export function positionAt(index: number) {
+  let position = ''
+  for (let i = 0; i <= index; i++) position = positionAfter(position)
+  return position
+}
+
 function avg(a: number, b: number) {
   return Math.trunc((a + b) / 2)
 }

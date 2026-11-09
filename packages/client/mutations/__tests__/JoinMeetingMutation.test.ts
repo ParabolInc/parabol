@@ -1,5 +1,6 @@
 import {Environment, Network, Observable, RecordSource, Store} from 'relay-runtime'
 import type Atmosphere from '../../Atmosphere'
+import {positionAt} from '../../shared/sortOrder'
 import MeetingSubscription from '../../subscriptions/MeetingSubscription'
 
 jest.mock('babel-plugin-relay/macro', () => ({
@@ -7,7 +8,7 @@ jest.mock('babel-plugin-relay/macro', () => ({
   default: () => jest.requireActual('../../__generated__/MeetingSubscription.graphql').default
 }))
 
-const joinPayload = (userNumber: number, sortOrder: number) => {
+const joinPayload = (userNumber: number, position: number) => {
   const userId = `user${userNumber}`
   const teamMemberId = `${userId}::team1`
   const user = {id: userId, picture: 'p.png', preferredName: `Joiner ${userNumber}`}
@@ -39,7 +40,7 @@ const joinPayload = (userNumber: number, sortOrder: number) => {
             isAsync: null,
             timeRemaining: null,
             __isNewMeetingTeamMemberStage: 'CheckInStage',
-            sortOrder,
+            sortOrder: positionAt(position),
             teamMemberId,
             teamMember: {id: teamMemberId, userId, user}
           }

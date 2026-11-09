@@ -10,6 +10,7 @@ import {
   UPDATES,
   VOTE
 } from 'parabol-client/utils/constants'
+import {positionAt} from '../../../../client/shared/sortOrder'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import AgendaItemsPhase from '../../../database/types/AgendaItemsPhase'
 import CheckInPhase from '../../../database/types/CheckInPhase'
@@ -98,7 +99,7 @@ const createNewMeetingPhases = async <T extends NewMeetingPhase = NewMeetingPhas
           return new CheckInPhase({
             teamId,
             meetingCount,
-            stages: [new CheckInStage(facilitatorTeamMemberId, 0)]
+            stages: [new CheckInStage(facilitatorTeamMemberId, positionAt(0))]
           })
         case 'TEAM_HEALTH':
           return new TeamHealthPhase({
@@ -129,7 +130,7 @@ const createNewMeetingPhases = async <T extends NewMeetingPhase = NewMeetingPhas
         case UPDATES:
           return new UpdatesPhase({
             durations,
-            stages: [new UpdatesStage(facilitatorTeamMemberId, 0)]
+            stages: [new UpdatesStage(facilitatorTeamMemberId, positionAt(0))]
           })
         case AGENDA_ITEMS: {
           const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)

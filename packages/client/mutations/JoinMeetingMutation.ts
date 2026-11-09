@@ -129,8 +129,8 @@ const insertStage = (phase: RecordProxy, stage: RecordProxy) => {
   const nextStagePosition = stages.findIndex((existing) => {
     const existingSortOrder = existing?.getValue('sortOrder')
     return (
-      typeof sortOrder === 'number' &&
-      typeof existingSortOrder === 'number' &&
+      typeof sortOrder === 'string' &&
+      typeof existingSortOrder === 'string' &&
       existingSortOrder > sortOrder
     )
   })

@@ -108,9 +108,9 @@ type CheckInStage implements NewMeetingStage & NewMeetingTeamMemberStage {
   meetingMember: MeetingMember!
 
   """
-  Orders the stages of the phase, lowest first. A member who joins after the meeting starts gets one higher than every other stage
+  Orders the stages of the phase, compared by character code. A member who joins after the meeting starts gets one after every other stage
   """
-  sortOrder: Float!
+  sortOrder: String!
 
   """
   foreign key. use teamMember

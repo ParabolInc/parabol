@@ -1,6 +1,7 @@
 import type {Insertable} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import MeetingMemberId from '../../../../client/shared/gqlIds/MeetingMemberId'
+import {positionAfter, positionAt} from '../../../../client/shared/sortOrder'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 // TODO: CheckInStage, TeamPromptResponseStage, UpdatesStage are from the deprecated /database directory
 import CheckInStage from '../../../database/types/CheckInStage'
@@ -79,7 +80,7 @@ const joinMeeting: MutationResolvers['joinMeeting'] = async (
   const wasInserted = Number(insertResult.numInsertedOrUpdatedRows) > 0
 
   const addStageToPhase = async (
-    createStage: (sortOrder: number) => TeamMemberStage,
+    createStage: (sortOrder: string) => TeamMemberStage,
     phaseType: TeamMemberStage['phaseType']
   ) => {
     return pg.transaction().execute(async (trx) => {
@@ -95,8 +96,10 @@ const joinMeeting: MutationResolvers['joinMeeting'] = async (
       const stages: TeamMemberStage[] = phase.stages
       if (stages.some((existing) => existing.teamMemberId === teamMemberId)) return false
       // a stage from before sortOrder existed has none, and is ordered by its position
-      const sortOrder =
-        Math.max(-1, ...stages.map((existing, idx) => existing.sortOrder ?? idx)) + 1
+      const lastSortOrder = stages
+        .map((existing, idx) => existing.sortOrder ?? positionAt(idx))
+        .reduce((last, sortOrder) => (sortOrder > last ? sortOrder : last), '')
+      const sortOrder = positionAfter(lastSortOrder)
       stages.push({
         ...createStage(sortOrder),
         isNavigable: true,

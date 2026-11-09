@@ -1,3 +1,4 @@
+import {positionAt} from '../../../../client/shared/sortOrder'
 import fromTeamMemberId from '../../../../client/utils/relay/fromTeamMemberId'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import type {NewMeetingTeamMemberStageResolvers} from '../resolverTypes'
@@ -13,10 +14,11 @@ const NewMeetingTeamMemberStage: NewMeetingTeamMemberStageResolvers = {
   },
   sortOrder: async ({id, meetingId, phaseType, sortOrder}, _args, {dataLoader}) => {
     // a stage from before sortOrder existed has none, and is ordered by its position
-    if (typeof sortOrder === 'number') return sortOrder
+    if (typeof sortOrder === 'string') return sortOrder
     const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     const phase = meeting.phases.find((phase) => phase.phaseType === phaseType)
-    return phase?.stages.findIndex((stage) => stage.id === id) ?? 0
+    const index = phase?.stages.findIndex((stage) => stage.id === id) ?? 0
+    return positionAt(Math.max(0, index))
   }
 }
 

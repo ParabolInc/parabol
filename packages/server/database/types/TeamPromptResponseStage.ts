@@ -3,14 +3,14 @@ import GenericMeetingStage, {type GenericMeetingStageInput} from './GenericMeeti
 
 interface Input extends Omit<GenericMeetingStageInput, 'phaseType'> {
   teamMemberId: string
-  sortOrder: number
+  sortOrder: string
   discussionId?: string
 }
 
 export default class TeamPromptResponseStage extends GenericMeetingStage {
   discussionId: string
   teamMemberId: string
-  sortOrder: number
+  sortOrder: string
   phaseType = 'RESPONSES' as const
   constructor(input: Input) {
     super({...input, phaseType: 'RESPONSES'})
