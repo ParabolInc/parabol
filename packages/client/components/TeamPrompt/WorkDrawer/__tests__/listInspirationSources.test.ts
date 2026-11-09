@@ -1,5 +1,14 @@
 jest.mock('../../../../integrations/platform/registry', () => {
-  const popularity = ['jira', 'jiraServer', 'github', 'linear', 'gitlab', 'azureDevOps', 'gcal']
+  const popularity = [
+    'jira',
+    'jiraServer',
+    'github',
+    'linear',
+    'gitlab',
+    'azureDevOps',
+    'clickup',
+    'gcal'
+  ]
   return {
     listClientIntegrationServices: (services: {service: string}[]) =>
       popularity.flatMap((service) => {
@@ -22,12 +31,14 @@ describe('listInspirationSources', () => {
       {service: 'github', isAvailable: true, isConnected: true},
       {service: 'linear', isAvailable: false, isConnected: false},
       {service: 'gitlab', isAvailable: true, isConnected: true},
+      {service: 'clickup', isAvailable: true, isConnected: true},
       {service: 'jira', isAvailable: true, isConnected: false}
     ])
     expect(sources).toEqual([
       {service: 'PARABOL', isConnected: true},
       {service: 'jira', isConnected: false},
       {service: 'github', isConnected: true},
+      {service: 'clickup', isConnected: true},
       {service: 'gcal', isConnected: false}
     ])
   })

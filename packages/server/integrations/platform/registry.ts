@@ -1,5 +1,6 @@
 import type {IntegrationMeta} from 'parabol-client/shared/integrations/IntegrationMeta'
 import {AzureDevOpsServerIntegration} from '../azureDevOps/AzureDevOpsServerIntegration'
+import {ClickUpServerIntegration} from '../clickup/ClickUpServerIntegration'
 import {GcalServerIntegration} from '../gcal/GcalServerIntegration'
 import {GitHubServerIntegration} from '../github/GitHubServerIntegration'
 import {GitLabServerIntegration} from '../gitlab/GitLabServerIntegration'
@@ -10,6 +11,7 @@ import type {ServerIntegrationDefinition} from './ServerIntegrationDefinition'
 
 export const serverIntegrations = {
   azureDevOps: new AzureDevOpsServerIntegration(),
+  clickup: new ClickUpServerIntegration(),
   gcal: new GcalServerIntegration(),
   github: new GitHubServerIntegration(),
   gitlab: new GitLabServerIntegration(),

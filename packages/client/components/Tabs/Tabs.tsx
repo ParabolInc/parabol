@@ -1,6 +1,7 @@
 import {
   Children,
   cloneElement,
+  isValidElement,
   type ReactElement,
   type ReactNode,
   useCallback,
@@ -54,6 +55,13 @@ const Tabs = (props: Props) => {
     observer.observe(parent)
     return () => observer.disconnect()
   }, [])
+
+  const childOrder = Children.toArray(children)
+    .map((child) => (isValidElement(child) ? child.key : ''))
+    .join()
+  useEffect(() => {
+    moveInkBar(parentRef.current, activeChildRef.current)
+  }, [childOrder])
 
   const properChildren = Children.map(children, (child, idx) => {
     const isActive = idx === activeIdx

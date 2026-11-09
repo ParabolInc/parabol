@@ -12,6 +12,7 @@ import JiraSVG from '../../../../../components/JiraSVG'
 import TaskServiceIcon from '../../../../../components/TaskServiceIcon'
 import useAtmosphere from '../../../../../hooks/useAtmosphere'
 import useMutationProps, {getOnCompletedError} from '../../../../../hooks/useMutationProps'
+import {clickupIntegrationMeta} from '../../../../../integrations/clickup/shared/clickupIntegrationMeta'
 import CreateTaskIntegrationMutation from '../../../../../mutations/CreateTaskIntegrationMutation'
 import {Providers} from '../../../../../types/constEnums'
 import {cn} from '../../../../../ui/cn'
@@ -33,7 +34,8 @@ const integrationToServiceName: Record<TaskServiceEnum, string> = {
   jiraServer: Providers.JIRA_SERVER_NAME,
   azureDevOps: Providers.AZUREDEVOPS_NAME,
   gitlab: Providers.GITLAB_NAME,
-  linear: Providers.LINEAR_NAME
+  linear: Providers.LINEAR_NAME,
+  clickup: clickupIntegrationMeta.title
 }
 
 interface Props {

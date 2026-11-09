@@ -1,6 +1,7 @@
 import type {IntegrationProviderServiceEnum} from '../../__generated__/CreateTaskIntegrationMutation.graphql'
 import type {TaskServiceEnum} from '../../__generated__/CreateTaskMutation.graphql'
 import {AzureDevOpsClientIntegration} from '../azureDevOps/AzureDevOpsClientIntegration'
+import {ClickUpClientIntegration} from '../clickup/ClickUpClientIntegration'
 import {GcalClientIntegration} from '../gcal/GcalClientIntegration'
 import {GitHubClientIntegration} from '../github/GitHubClientIntegration'
 import {GitLabClientIntegration} from '../gitlab/GitLabClientIntegration'
@@ -20,11 +21,12 @@ export type TaskClientIntegration = Extract<RegisteredClientIntegration, TaskSer
 
 const taskIntegrations = {
   jira: new JiraClientIntegration(),
-  jiraServer: new JiraServerClientIntegration(),
-  github: new GitHubClientIntegration(),
   linear: new LinearClientIntegration(),
+  github: new GitHubClientIntegration(),
   gitlab: new GitLabClientIntegration(),
-  azureDevOps: new AzureDevOpsClientIntegration()
+  azureDevOps: new AzureDevOpsClientIntegration(),
+  jiraServer: new JiraServerClientIntegration(),
+  clickup: new ClickUpClientIntegration()
 } satisfies Record<TaskClientIntegration, ClientIntegrationDefinition>
 
 export const clientIntegrations = {

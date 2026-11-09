@@ -124,6 +124,7 @@ export interface ProviderLogoAsset {
 export abstract class ClientIntegrationDefinition {
   abstract readonly service: IntegrationMeta['service']
   abstract readonly title: string
+  readonly searchKeywords?: readonly string[]
   abstract readonly description: string
   abstract readonly Icon: ComponentType<{className?: string}>
   readonly iconClassName?: string

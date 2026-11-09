@@ -96,6 +96,12 @@ const query = graphql`
                     title
                     identifier
                   }
+                  ... on ClickUpTask {
+                    __typename
+                    title
+                    taskId
+                    customId
+                  }
                 }
                 title
               }
@@ -221,6 +227,8 @@ const ExportToCSV = (props: Props) => {
             return `${integration.iid}: ${integration.title}`
           case '_xLinearIssue':
             return `${integration.identifier}: ${integration.title}`
+          case 'ClickUpTask':
+            return `${integration.customId ?? integration.taskId}: ${integration.title}`
           default:
             return title
         }

@@ -229,4 +229,9 @@ type Team implements Node {
   If false (default) whoever starts the meeting facilitates, as today.
   """
   autoAssignFacilitator: Boolean!
+
+  """
+  How many tasks created in the last 180 days, across the teams in this team's organization, are linked to each external task service. Services with no linked tasks are left out
+  """
+  recentOrgTaskCounts: [IntegrationTaskCount!]!
 }

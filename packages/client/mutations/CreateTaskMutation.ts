@@ -18,6 +18,7 @@ import createProxyRecord from '../utils/relay/createProxyRecord'
 import getOptimisticTaskEditor from '../utils/relay/getOptimisticTaskEditor'
 import handleAddNotifications from './handlers/handleAddNotifications'
 import handleAzureCreateIssue from './handlers/handleAzureCreateIssue'
+import handleClickUpCreateTask from './handlers/handleClickUpCreateTask'
 import handleEditTask from './handlers/handleEditTask'
 import handleGitHubCreateIssue from './handlers/handleGitHubCreateIssue'
 import handleGitLabCreateIssue from './handlers/handleGitLabCreateIssue'
@@ -85,6 +86,17 @@ graphql`
           }
           url
         }
+        ... on ClickUpTask {
+          __typename
+          id
+          title
+          clickUpDescription: description
+          taskId
+          customId
+          listName
+          folderName
+          clickUpUrl: url
+        }
       }
     }
   }
@@ -137,6 +149,7 @@ export const createTaskTaskUpdater: SharedUpdater<CreateTaskMutation_task$data> 
   handleGitLabCreateIssue(task, store)
   handleAzureCreateIssue(task, store)
   handleLinearCreateIssue(task, store)
+  handleClickUpCreateTask(task, store)
 }
 
 export const createTaskNotificationOnNext: OnNextHandler<
@@ -208,6 +221,7 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
       handleGitLabCreateIssue(task as any, store)
       handleAzureCreateIssue(task as any, store)
       handleLinearCreateIssue(task as any, store)
+      handleClickUpCreateTask(task, store)
     },
     onError,
     onCompleted
