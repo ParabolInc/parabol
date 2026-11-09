@@ -28,7 +28,7 @@ interface Props {
 const collapsiblePhases: NewMeetingPhaseTypeEnum[] = ['checkin', 'updates', 'discuss']
 
 const retroPhaseLabelOverrides: Partial<Record<NewMeetingPhaseTypeEnum, string>> = {
-  updates: 'Review Tasks'
+  updates: 'Task Review'
 }
 
 const RetroMeetingSidebar = (props: Props) => {

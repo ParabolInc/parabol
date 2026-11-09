@@ -7,7 +7,7 @@ import type {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.
 import type {TaskColumn_tasks$key} from '../../../../__generated__/TaskColumn_tasks.graphql'
 import {DroppableType} from '../../../../types/constEnums'
 import {cn} from '../../../../ui/cn'
-import {DONE, TEAM_DASH, USER_DASH} from '../../../../utils/constants'
+import {DONE, MEETING, TEAM_DASH, USER_DASH} from '../../../../utils/constants'
 import {taskStatusLabels} from '../../../../utils/taskStatus'
 import ArchiveAllDoneTasksModal from './ArchiveAllDoneTasksModal'
 import TaskColumnAddTask from './TaskColumnAddTask'
@@ -110,6 +110,11 @@ const TaskColumn = (props: Props) => {
               meetingId={meetingId}
             />
             {dropProvided.placeholder}
+            {area === MEETING && status === DONE && tasks.length > 0 && (
+              <div className='px-3 pt-2 text-center text-fg-secondary text-xs'>
+                Archived when this meeting ends
+              </div>
+            )}
           </div>
         </div>
       )}

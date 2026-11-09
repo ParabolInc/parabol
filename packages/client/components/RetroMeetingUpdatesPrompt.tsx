@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {RetroMeetingUpdatesPrompt_meeting$key} from '../__generated__/RetroMeetingUpdatesPrompt_meeting.graphql'
+import getTeamMemberTasks from '../utils/getTeamMemberTasks'
 import Avatar from './Avatar/Avatar'
 import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
@@ -28,6 +29,8 @@ const RetroMeetingUpdatesPrompt = (props: Props) => {
             edges {
               node {
                 id
+                tags
+                userId
               }
             }
           }
@@ -41,6 +44,7 @@ const RetroMeetingUpdatesPrompt = (props: Props) => {
           teamMember {
             id
             isSelf
+            userId
           }
         }
         localStage {
@@ -58,10 +62,13 @@ const RetroMeetingUpdatesPrompt = (props: Props) => {
   )
   if (!currentMeetingMember) return null
   const {teamMember, user, isConnectedAt} = currentMeetingMember
-  const {isSelf: isViewerMeetingSection} = teamMember
+  const {isSelf: isViewerMeetingSection, userId} = teamMember
   const {picture, preferredName} = user
   const prefix = isConnectedAt ? `${preferredName}, ` : ''
-  const taskCount = tasks.edges.length
+  const taskCount = getTeamMemberTasks(
+    tasks.edges.map(({node}) => node),
+    userId
+  ).length
   return (
     <div className='flex'>
       <Avatar picture={picture} className='h-16 w-16' />
