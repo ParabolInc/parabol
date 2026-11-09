@@ -10,6 +10,13 @@ const NewMeetingTeamMemberStage: NewMeetingTeamMemberStageResolvers = {
   },
   teamMember: async ({teamMemberId}, _args, {dataLoader}) => {
     return dataLoader.get('teamMembers').loadNonNull(teamMemberId)
+  },
+  sortOrder: async ({id, meetingId, phaseType, sortOrder}, _args, {dataLoader}) => {
+    // a stage from before sortOrder existed has none, and is ordered by its position
+    if (typeof sortOrder === 'number') return sortOrder
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
+    const phase = meeting.phases.find((phase) => phase.phaseType === phaseType)
+    return phase?.stages.findIndex((stage) => stage.id === id) ?? 0
   }
 }
 

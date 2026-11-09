@@ -11,7 +11,7 @@ export default class TeamPromptResponsesPhase extends GenericMeetingPhase {
       throw new Error('TeamPromptResponsesPhase must have at least one team member')
     }
     this.stages = teamMemberIds.map(
-      (teamMemberId) => new TeamPromptResponseStage({teamMemberId})
+      (teamMemberId, sortOrder) => new TeamPromptResponseStage({teamMemberId, sortOrder})
     ) as [TeamPromptResponseStage, ...TeamPromptResponseStage[]]
   }
 }

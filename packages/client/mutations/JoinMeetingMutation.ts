@@ -32,7 +32,6 @@ graphql`
     }
     stages {
       id
-      stageIdx
       isComplete
       isNavigable
       isNavigableByFacilitator
@@ -45,6 +44,7 @@ graphql`
       isAsync
       timeRemaining
       ... on NewMeetingTeamMemberStage {
+        sortOrder
         teamMemberId
         teamMember {
           id
@@ -118,20 +118,20 @@ const appendRecord = (parent: RecordProxy, field: string, record: RecordProxy) =
   parent.setLinkedRecords([...records, record], field)
 }
 
-// Joins append stages on the server, but their broadcasts can arrive in another order, so a joined stage goes before
-// the first joined stage with a higher stageIdx. Fetched stages have none, and were all appended before any later join
+// Join broadcasts can arrive in another order than the joins, so a joined stage goes before the first stage with a
+// higher sortOrder. A fetched stage without one in the store was in the phase before any later join
 const insertStage = (phase: RecordProxy, stage: RecordProxy) => {
   const stages = phase.getLinkedRecords('stages')
   if (!stages) return
   const stageId = stage.getDataID()
   if (stages.some((existing) => existing?.getDataID() === stageId)) return
-  const stageIdx = stage.getValue('stageIdx')
+  const sortOrder = stage.getValue('sortOrder')
   const nextStagePosition = stages.findIndex((existing) => {
-    const existingStageIdx = existing?.getValue('stageIdx')
+    const existingSortOrder = existing?.getValue('sortOrder')
     return (
-      typeof stageIdx === 'number' &&
-      typeof existingStageIdx === 'number' &&
-      existingStageIdx > stageIdx
+      typeof sortOrder === 'number' &&
+      typeof existingSortOrder === 'number' &&
+      existingSortOrder > sortOrder
     )
   })
   const insertAt = nextStagePosition === -1 ? stages.length : nextStagePosition

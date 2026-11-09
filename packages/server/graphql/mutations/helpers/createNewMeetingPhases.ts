@@ -98,7 +98,7 @@ const createNewMeetingPhases = async <T extends NewMeetingPhase = NewMeetingPhas
           return new CheckInPhase({
             teamId,
             meetingCount,
-            stages: [new CheckInStage(facilitatorTeamMemberId)]
+            stages: [new CheckInStage(facilitatorTeamMemberId, 0)]
           })
         case 'TEAM_HEALTH':
           return new TeamHealthPhase({
@@ -129,7 +129,7 @@ const createNewMeetingPhases = async <T extends NewMeetingPhase = NewMeetingPhas
         case UPDATES:
           return new UpdatesPhase({
             durations,
-            stages: [new UpdatesStage(facilitatorTeamMemberId)]
+            stages: [new UpdatesStage(facilitatorTeamMemberId, 0)]
           })
         case AGENDA_ITEMS: {
           const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)

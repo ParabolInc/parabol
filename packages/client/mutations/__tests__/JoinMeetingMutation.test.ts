@@ -7,7 +7,7 @@ jest.mock('babel-plugin-relay/macro', () => ({
   default: () => jest.requireActual('../../__generated__/MeetingSubscription.graphql').default
 }))
 
-const joinPayload = (userNumber: number, stageIdx: number) => {
+const joinPayload = (userNumber: number, sortOrder: number) => {
   const userId = `user${userNumber}`
   const teamMemberId = `${userId}::team1`
   const user = {id: userId, picture: 'p.png', preferredName: `Joiner ${userNumber}`}
@@ -27,7 +27,6 @@ const joinPayload = (userNumber: number, stageIdx: number) => {
           {
             __typename: 'CheckInStage',
             id: `stage${userNumber}`,
-            stageIdx,
             isComplete: false,
             isNavigable: true,
             isNavigableByFacilitator: true,
@@ -40,6 +39,7 @@ const joinPayload = (userNumber: number, stageIdx: number) => {
             isAsync: null,
             timeRemaining: null,
             __isNewMeetingTeamMemberStage: 'CheckInStage',
+            sortOrder,
             teamMemberId,
             teamMember: {id: teamMemberId, userId, user}
           }

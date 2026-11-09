@@ -6,13 +6,13 @@ import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import CheckInStage from '../../../database/types/CheckInStage'
 import TeamPromptResponseStage from '../../../database/types/TeamPromptResponseStage'
 import UpdatesStage from '../../../database/types/UpdatesStage'
+import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import type {TeamMember} from '../../../postgres/types'
 import type {AnyMeeting} from '../../../postgres/types/Meeting'
 import type {
   CheckInStage as CheckInStageDB,
   NewMeetingPhase,
-  NewMeetingStage,
   TeamPromptResponseStage as TeamPromptResponseStageDB,
   UpdatesStage as UpdatesStageDB
 } from '../../../postgres/types/NewMeetingPhase'
@@ -21,6 +21,8 @@ import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
+
+type TeamMemberStage = CheckInStageDB | UpdatesStageDB | TeamPromptResponseStageDB
 
 export const createMeetingMember = (
   meeting: AnyMeeting,
@@ -77,8 +79,8 @@ const joinMeeting: MutationResolvers['joinMeeting'] = async (
   const wasInserted = Number(insertResult.numInsertedOrUpdatedRows) > 0
 
   const addStageToPhase = async (
-    stage: CheckInStageDB | UpdatesStageDB | TeamPromptResponseStageDB,
-    phaseType: NewMeetingPhase['phaseType']
+    createStage: (sortOrder: number) => TeamMemberStage,
+    phaseType: TeamMemberStage['phaseType']
   ) => {
     return pg.transaction().execute(async (trx) => {
       const meeting = await trx
@@ -90,16 +92,13 @@ const joinMeeting: MutationResolvers['joinMeeting'] = async (
       if (!meeting) return false
       const {phases} = meeting
       const phase = getPhase(phases, phaseType)
-      const stages = phase.stages as NewMeetingStage[]
-      if (
-        stages.some(
-          (existing) => 'teamMemberId' in existing && existing.teamMemberId === teamMemberId
-        )
-      ) {
-        return false
-      }
+      const stages: TeamMemberStage[] = phase.stages
+      if (stages.some((existing) => existing.teamMemberId === teamMemberId)) return false
+      // a stage from before sortOrder existed has none, and is ordered by its position
+      const sortOrder =
+        Math.max(-1, ...stages.map((existing, idx) => existing.sortOrder ?? idx)) + 1
       stages.push({
-        ...stage,
+        ...createStage(sortOrder),
         isNavigable: true,
         isNavigableByFacilitator: true,
         isComplete: stages.length >= 1 && stages.every((stage) => stage.isComplete)
@@ -116,15 +115,13 @@ const joinMeeting: MutationResolvers['joinMeeting'] = async (
   const appendToCheckin = async () => {
     const checkInPhase = getPhase(phases, 'checkin')
     if (!checkInPhase) return false
-    const checkInStage = new CheckInStage(teamMemberId)
-    return addStageToPhase(checkInStage, 'checkin')
+    return addStageToPhase((sortOrder) => new CheckInStage(teamMemberId, sortOrder), 'checkin')
   }
 
   const appendToUpdate = async () => {
     const updatesPhase = getPhase(phases, 'updates')
     if (!updatesPhase) return false
-    const updatesStage = new UpdatesStage(teamMemberId)
-    return addStageToPhase(updatesStage, 'updates')
+    return addStageToPhase((sortOrder) => new UpdatesStage(teamMemberId, sortOrder), 'updates')
   }
 
   const appendToTeamPromptResponses = async () => {
@@ -134,18 +131,21 @@ const joinMeeting: MutationResolvers['joinMeeting'] = async (
       (stage) => stage.teamMemberId === teamMemberId
     )
     if (teamMemberResponseStage) return false
-    const responsesStage = new TeamPromptResponseStage({teamMemberId})
+    const discussionId = generateUID()
     await getKysely()
       .insertInto('Discussion')
       .values({
-        id: responsesStage.discussionId,
+        id: discussionId,
         teamId,
         meetingId,
         discussionTopicId: teamMemberId,
         discussionTopicType: 'teamPromptResponse'
       })
       .execute()
-    return addStageToPhase(responsesStage, 'RESPONSES')
+    return addStageToPhase(
+      (sortOrder) => new TeamPromptResponseStage({teamMemberId, discussionId, sortOrder}),
+      'RESPONSES'
+    )
   }
 
   const stagesAdded = await Promise.all([
