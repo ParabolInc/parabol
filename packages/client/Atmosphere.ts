@@ -28,7 +28,6 @@ import type StrictEventEmitter from 'strict-event-emitter-types'
 import type {AtmosphereSignOutMutation} from './__generated__/AtmosphereSignOutMutation.graphql'
 import type {Snack, SnackbarRemoveFn} from './components/Snackbar'
 import {AuthToken} from './types/AuthToken'
-import {SUBSCRIPTION_READY} from './types/constEnums'
 import type {NavigateFn} from './types/relayMutations'
 import {getAuthCookie, onAuthCookieChange} from './utils/authCookie'
 import {addBreadcrumb} from './utils/clientBreadcrumbs'
@@ -56,6 +55,9 @@ const refreshSessionMutation = graphql`
     refreshSession
   }
 `
+
+// a query that never settles must not keep a busy subscription's messages forever
+const MAX_SUBSCRIPTION_HOLD = 30_000
 
 interface QuerySubscription {
   subKey: string
@@ -137,8 +139,8 @@ export default class Atmosphere extends Environment {
   } = {}
   retries = new Set<() => void>()
   subscriptions: Subscriptions = {}
-  // by subKey, called each time the server says a subscription is listening, including after a reconnect
-  subscriptionReadyHandlers = new Map<string, () => void>()
+  // by subKey, called each time the server acknowledges that a subscription is listening, including after a reconnect
+  subscriptionAckHandlers = new Map<string, () => void>()
   // by subKey, messages kept from relay until the query that holds them has been written to the store
   private heldSubscriptionMessages = new Map<string, (() => void)[]>()
   // Our server only sends a single field per subscription, but relay requires every requested field
@@ -355,10 +357,6 @@ export default class Atmosphere extends Environment {
           return
         }
         const subscriptionName = data ? Object.keys(data)[0] : undefined
-        if (isSubscription && data[subscriptionName!]?.fieldName === SUBSCRIPTION_READY) {
-          this.subscriptionReadyHandlers.get(subKey)?.()
-          return
-        }
         const nullObj = this.subscriptionInterfaces[subscriptionName!]
         const nextObj =
           nullObj && subscriptionName
@@ -395,7 +393,7 @@ export default class Atmosphere extends Environment {
             query: '',
             docId: operation.id,
             variables,
-            extensions: {traceparent}
+            extensions: isSubscription ? {traceparent, ackId: subKey} : {traceparent}
           } as any,
           sink as any
         )
@@ -508,17 +506,20 @@ export default class Atmosphere extends Environment {
   }
 
   /*
-   * keeps the subscription's messages from relay until the returned release is called,
-   * which then hands them over in the order they arrived
+   * keeps the subscription's messages from relay until the returned release is called, or MAX_SUBSCRIPTION_HOLD passes,
+   * which then hands them over in the order they arrived. A newer hold on the same subscription drops this one's messages
    */
   holdSubscription(subKey: string) {
     const heldMessages: (() => void)[] = []
     this.heldSubscriptionMessages.set(subKey, heldMessages)
-    return () => {
+    const release = () => {
+      window.clearTimeout(releaseTimeout)
       if (this.heldSubscriptionMessages.get(subKey) !== heldMessages) return
       this.heldSubscriptionMessages.delete(subKey)
       heldMessages.forEach((deliver) => deliver())
     }
+    const releaseTimeout = window.setTimeout(release, MAX_SUBSCRIPTION_HOLD)
+    return release
   }
 
   /*

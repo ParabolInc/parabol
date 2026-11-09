@@ -1,6 +1,6 @@
 import type {ExecutionArgs, ExecutionResult} from 'graphql'
 import {type execute, GraphQLError, type subscribe} from 'graphql'
-import {CloseCode, handleProtocols} from 'graphql-ws'
+import {CloseCode, handleProtocols, MessageType, stringifyMessage} from 'graphql-ws'
 import {makeBehavior, type UpgradeData} from 'graphql-ws/use/uWebSockets'
 import type http from 'http'
 import {decode} from 'jsonwebtoken'
@@ -185,6 +185,19 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
       })
     }
     return subResult
+  },
+  onOperation: (ctx, id, payload, _args, result) => {
+    // graphql-ws has no message that acknowledges a subscribe, so like its author suggests (enisdenjo/graphql-ws#364),
+    // a ping carries the client's ackId once the subscription is listening, ahead of its first next message
+    const ackId = payload.extensions?.ackId
+    if (
+      typeof ackId !== 'string' ||
+      !(id in ctx.subscriptions) ||
+      !(Symbol.asyncIterator in result)
+    ) {
+      return
+    }
+    ctx.extra.socket.send(stringifyMessage({type: MessageType.Ping, payload: {ackId}}))
   },
   execute: (args) => {
     return (args as EnvelopedExecutionArgs).rootValue.execute(args)

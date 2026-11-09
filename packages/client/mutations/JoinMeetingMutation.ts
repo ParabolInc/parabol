@@ -32,6 +32,7 @@ graphql`
     }
     stages {
       id
+      stageIdx
       isComplete
       isNavigable
       isNavigableByFacilitator
@@ -117,6 +118,26 @@ const appendRecord = (parent: RecordProxy, field: string, record: RecordProxy) =
   parent.setLinkedRecords([...records, record], field)
 }
 
+// Joins append stages on the server, but their broadcasts can arrive in another order, so a joined stage goes before
+// the first joined stage with a higher stageIdx. Fetched stages have none, and were all appended before any later join
+const insertStage = (phase: RecordProxy, stage: RecordProxy) => {
+  const stages = phase.getLinkedRecords('stages')
+  if (!stages) return
+  const stageId = stage.getDataID()
+  if (stages.some((existing) => existing?.getDataID() === stageId)) return
+  const stageIdx = stage.getValue('stageIdx')
+  const nextStagePosition = stages.findIndex((existing) => {
+    const existingStageIdx = existing?.getValue('stageIdx')
+    return (
+      typeof stageIdx === 'number' &&
+      typeof existingStageIdx === 'number' &&
+      existingStageIdx > stageIdx
+    )
+  })
+  const insertAt = nextStagePosition === -1 ? stages.length : nextStagePosition
+  phase.setLinkedRecords(stages.toSpliced(insertAt, 0, stage), 'stages')
+}
+
 export const joinMeetingMeetingUpdater: SharedUpdater<JoinMeetingMutation_meeting$data> = (
   payload,
   {store}
@@ -129,7 +150,7 @@ export const joinMeetingMeetingUpdater: SharedUpdater<JoinMeetingMutation_meetin
   payload.getLinkedRecords('stages').forEach((stage) => {
     const phaseType = stage.getValue('phaseType')
     const phase = phases.find((phase) => phase?.getValue('phaseType') === phaseType)
-    if (phase) appendRecord(phase, 'stages', stage)
+    if (phase) insertStage(phase, stage)
   })
 }
 

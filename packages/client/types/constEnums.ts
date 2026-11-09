@@ -368,9 +368,6 @@ export enum SubscriptionChannel {
   ORGANIZATION = 'organization'
 }
 
-// the fieldName of a subscription's first message, sent once the server is listening for its events
-export const SUBSCRIPTION_READY = 'SubscriptionReady'
-
 export enum TaskStatus {
   DONE = 'done',
   ACTIVE = 'active',

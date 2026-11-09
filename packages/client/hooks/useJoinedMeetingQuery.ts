@@ -9,9 +9,9 @@ import JoinMeetingMutation from '../mutations/JoinMeetingMutation'
 import MeetingSubscription from '../subscriptions/MeetingSubscription'
 import useAtmosphere from './useAtmosphere'
 
-// Joins, subscribes, and fetches the meeting only once the server says the subscription is listening.
+// Joins, subscribes, and fetches the meeting only once the server acknowledges that the subscription is listening.
 // The subscription's messages wait until that fetch is in the store, so none are missed or overwritten.
-// A reconnect makes the server say it's listening again, which fetches the meeting again.
+// A reconnect makes the server acknowledge the subscription again, which fetches the meeting again.
 const useJoinedMeetingQuery = (meetingId: string | undefined) => {
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
@@ -36,20 +36,20 @@ const useJoinedMeetingQuery = (meetingId: string | undefined) => {
         }
       })
     }
-    let readyTimeout: number | undefined
+    let ackTimeout: number | undefined
     const fetchWhileHoldingSubscription = () => {
-      window.clearTimeout(readyTimeout)
+      window.clearTimeout(ackTimeout)
       fetchMeeting(atmosphere.holdSubscription(subKey))
     }
     const subscribe = () => {
       const isAlreadySubscribed = Boolean(atmosphere.subscriptions[subKey])
-      atmosphere.subscriptionReadyHandlers.set(subKey, fetchWhileHoldingSubscription)
+      atmosphere.subscriptionAckHandlers.set(subKey, fetchWhileHoldingSubscription)
       atmosphere.registerQuery(queryKey, MeetingSubscription, variables, {navigate}).catch(() => {
         /*ignore*/
       })
       if (isAlreadySubscribed) fetchWhileHoldingSubscription()
-      // a socket server older than this client never says it's listening
-      else readyTimeout = window.setTimeout(() => fetchMeeting(), 5000)
+      // a socket server older than this client never acknowledges a subscription
+      else ackTimeout = window.setTimeout(() => fetchMeeting(), 5000)
     }
     JoinMeetingMutation(atmosphere, variables, {
       onCompleted: (response) => {
@@ -64,8 +64,8 @@ const useJoinedMeetingQuery = (meetingId: string | undefined) => {
     })
     return () => {
       isMounted = false
-      window.clearTimeout(readyTimeout)
-      atmosphere.subscriptionReadyHandlers.delete(subKey)
+      window.clearTimeout(ackTimeout)
+      atmosphere.subscriptionAckHandlers.delete(subKey)
       atmosphere.scheduleUnregisterQuery(queryKey, 5000)
     }
   }, [meetingId])

@@ -7,47 +7,49 @@ jest.mock('babel-plugin-relay/macro', () => ({
   default: () => jest.requireActual('../../__generated__/MeetingSubscription.graphql').default
 }))
 
-const joinPayload = {
-  meetingSubscription: {
-    fieldName: 'JoinMeetingSuccess',
-    JoinMeetingSuccess: {
-      meeting: {__typename: 'RetrospectiveMeeting', id: 'meeting1'},
-      meetingMember: {
-        __typename: 'RetrospectiveMeetingMember',
-        id: 'user2::meeting1',
-        userId: 'user2',
-        user: {id: 'user2', picture: 'p.png', preferredName: 'Second', email: 'b@example.test'},
-        teamMember: {id: 'user2::team1', isSelf: false}
-      },
-      stages: [
-        {
-          __typename: 'CheckInStage',
-          id: 'stage2',
-          isComplete: false,
-          isNavigable: true,
-          isNavigableByFacilitator: true,
-          isViewerReady: false,
-          readyUserIds: [],
-          phaseType: 'checkin',
-          suggestedTimeLimit: null,
-          suggestedEndTime: null,
-          scheduledEndTime: null,
-          isAsync: null,
-          timeRemaining: null,
-          __isNewMeetingTeamMemberStage: 'CheckInStage',
-          teamMemberId: 'user2::team1',
-          teamMember: {
-            id: 'user2::team1',
-            userId: 'user2',
-            user: {id: 'user2', picture: 'p.png', preferredName: 'Second'}
+const joinPayload = (userNumber: number, stageIdx: number) => {
+  const userId = `user${userNumber}`
+  const teamMemberId = `${userId}::team1`
+  const user = {id: userId, picture: 'p.png', preferredName: `Joiner ${userNumber}`}
+  return {
+    meetingSubscription: {
+      fieldName: 'JoinMeetingSuccess',
+      JoinMeetingSuccess: {
+        meeting: {__typename: 'RetrospectiveMeeting', id: 'meeting1'},
+        meetingMember: {
+          __typename: 'RetrospectiveMeetingMember',
+          id: `${userId}::meeting1`,
+          userId,
+          user: {...user, email: `${userId}@example.test`},
+          teamMember: {id: teamMemberId, isSelf: false}
+        },
+        stages: [
+          {
+            __typename: 'CheckInStage',
+            id: `stage${userNumber}`,
+            stageIdx,
+            isComplete: false,
+            isNavigable: true,
+            isNavigableByFacilitator: true,
+            isViewerReady: false,
+            readyUserIds: [],
+            phaseType: 'checkin',
+            suggestedTimeLimit: null,
+            suggestedEndTime: null,
+            scheduledEndTime: null,
+            isAsync: null,
+            timeRemaining: null,
+            __isNewMeetingTeamMemberStage: 'CheckInStage',
+            teamMemberId,
+            teamMember: {id: teamMemberId, userId, user}
           }
-        }
-      ]
+        ]
+      }
     }
   }
 }
 
-const createTestAtmosphere = (timesDelivered: number) => {
+const createTestAtmosphere = (payloads: ReturnType<typeof joinPayload>[]) => {
   const source = new RecordSource({
     'client:root': {__id: 'client:root', __typename: '__Root'},
     meeting1: {
@@ -76,8 +78,7 @@ const createTestAtmosphere = (timesDelivered: number) => {
       () => Observable.create(() => {}),
       () =>
         Observable.create((sink) => {
-          for (let delivery = 0; delivery < timesDelivered; delivery++)
-            sink.next({data: joinPayload})
+          payloads.forEach((payload) => sink.next({data: payload}))
         })
     ),
     store: new Store(source)
@@ -101,7 +102,7 @@ describe('JoinMeetingSuccess on the meeting subscription', () => {
   })
 
   it("appends the joiner's member and check-in stage", () => {
-    const atmosphere = createTestAtmosphere(1)
+    const atmosphere = createTestAtmosphere([joinPayload(2, 1)])
     MeetingSubscription(atmosphere, {meetingId: 'meeting1'}, {navigate: jest.fn()})
     expect(refsOf(atmosphere, 'meeting1', 'meetingMembers')).toEqual([
       'user1::meeting1',
@@ -114,9 +115,19 @@ describe('JoinMeetingSuccess on the meeting subscription', () => {
   })
 
   it('appends once when the same join arrives twice', () => {
-    const atmosphere = createTestAtmosphere(2)
+    const atmosphere = createTestAtmosphere([joinPayload(2, 1), joinPayload(2, 1)])
     MeetingSubscription(atmosphere, {meetingId: 'meeting1'}, {navigate: jest.fn()})
     expect(refsOf(atmosphere, 'meeting1', 'meetingMembers')).toHaveLength(2)
     expect(refsOf(atmosphere, 'phase1', 'stages')).toEqual(['stage1', 'stage2'])
+  })
+
+  it("puts stages in the server's order when joins arrive out of order", () => {
+    const atmosphere = createTestAtmosphere([
+      joinPayload(4, 3),
+      joinPayload(3, 2),
+      joinPayload(2, 1)
+    ])
+    MeetingSubscription(atmosphere, {meetingId: 'meeting1'}, {navigate: jest.fn()})
+    expect(refsOf(atmosphere, 'phase1', 'stages')).toEqual(['stage1', 'stage2', 'stage3', 'stage4'])
   })
 })

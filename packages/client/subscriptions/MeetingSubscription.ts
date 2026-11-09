@@ -30,7 +30,7 @@ import {createSubscription} from './createSubscription'
 
 const subscription = graphql`
   subscription MeetingSubscription($meetingId: ID!) {
-    meetingSubscription(meetingId: $meetingId, sendReadyMessage: true) {
+    meetingSubscription(meetingId: $meetingId) {
       fieldName
       AddTranscriptionBotSuccess {
         ...AddTranscriptionBotMutation_meeting

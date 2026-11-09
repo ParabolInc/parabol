@@ -3,27 +3,15 @@ import type SubscriptionIterator from '../../utils/SubscriptionIterator'
 import getDataLoader from '../getDataLoader'
 import type {InternalContext} from '../graphql'
 
-// readyValue, when given, is sent before any published message. The iterator is already
-// listening by then, so a client can fetch after it arrives without missing a message
-export const broadcastSubscription = (
-  iter: SubscriptionIterator,
-  context: InternalContext,
-  readyValue?: Record<string, unknown>
-) => {
+export const broadcastSubscription = (iter: SubscriptionIterator, context: InternalContext) => {
   // `done` short-circuits next() once return() or throw() has fired, so no
   // further iter.next() calls are made and the wrapper's closures release the
   // upstream iterator on the next GC pass instead of being pinned by an
   // in-flight pull.
   let done = false
-  let pendingReadyValue = readyValue
   return {
     async next() {
       if (done) return {done: true as const, value: undefined}
-      if (pendingReadyValue) {
-        const value = pendingReadyValue
-        pendingReadyValue = undefined
-        return {done: false, value}
-      }
       // A single subscription can skip many self-origin messages in a row; a
       // while-loop avoids building an arbitrarily deep recursive promise chain.
       while (!done) {
