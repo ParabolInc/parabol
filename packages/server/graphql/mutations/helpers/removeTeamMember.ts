@@ -36,7 +36,8 @@ export const removeTeamMember = async (
       user: undefined,
       notificationId: undefined,
       archivedTaskIds: [] as string[],
-      reassignedTaskIds: [] as string[]
+      reassignedTaskIds: [] as string[],
+      removedStageIds: [] as string[]
     }
   }
   const currentTeamLeader = activeTeamMembers.find((t) => t.isLead)
@@ -123,11 +124,14 @@ export const removeTeamMember = async (
     (stage as CheckInStage | UpdatesStage).teamMemberId === teamMemberId ||
     agendaItemIds.includes((stage as AgendaItemsStage).agendaItemId)
   removeSlackAuths(userId, teamId)
-  await removeStagesFromMeetings(filterFn, teamId, dataLoader)
+  const removedStages = await removeStagesFromMeetings(filterFn, teamId, dataLoader)
   await removeUserFromMeetingStages(userId, teamId, dataLoader)
   // TODO should probably just inactivate the meeting member
   const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
   const meetingIds = activeMeetings.map(({id}) => id)
+  const removedStageIds = removedStages
+    .filter(({meetingId}) => meetingIds.includes(meetingId))
+    .map(({stageId}) => stageId)
 
   // Reassign facilitator for meetings this user is facilitating.
   if (meetingIds.length > 0) {
@@ -174,7 +178,8 @@ export const removeTeamMember = async (
     notificationId,
     archivedTaskIds,
     reassignedTaskIds: reassignedTasks.map(({id}) => id),
-    activeMeetingIds: meetingIds
+    activeMeetingIds: meetingIds,
+    removedStageIds
   }
 }
 

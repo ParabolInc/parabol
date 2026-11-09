@@ -1,4 +1,5 @@
 import getKysely from '../../../postgres/getKysely'
+import type {NewMeetingPhase} from '../../../postgres/types/NewMeetingPhase'
 import type {DataLoaderWorker} from '../../graphql'
 import getNextFacilitatorStageAfterStageRemoved from './getNextFacilitatorStageAfterStageRemoved'
 
@@ -6,56 +7,77 @@ import getNextFacilitatorStageAfterStageRemoved from './getNextFacilitatorStageA
  * NewMeetings have a predefined set of stages, we need to remove it manually
  */
 
-const removeStagesFromMeetings = async (
+const removeStagesFromMeeting = async (
   filterFn: (stage: any) => boolean,
-  teamId: string,
-  dataLoader: DataLoaderWorker
+  meetingId: string,
+  now: Date
 ) => {
-  const pg = getKysely()
-  const now = new Date()
-  const [activeMeetings, completedMeetings] = await Promise.all([
-    dataLoader.get('activeMeetingsByTeamId').load(teamId),
-    dataLoader.get('completedMeetingsByTeamId').load(teamId)
-  ])
-  const meetings = activeMeetings.concat(completedMeetings)
-
-  await Promise.all(
-    meetings.map(async (meeting) => {
-      const {id: meetingId, phases} = meeting
+  return getKysely()
+    .transaction()
+    .execute(async (trx) => {
+      const meeting = await trx
+        .selectFrom('NewMeeting')
+        .select(({fn}) => [
+          'facilitatorStageId',
+          fn<NewMeetingPhase[]>('to_json', ['phases']).as('phases')
+        ])
+        .where('id', '=', meetingId)
+        .forUpdate()
+        .executeTakeFirst()
+      if (!meeting) return []
+      const {phases} = meeting
+      let {facilitatorStageId} = meeting
+      const removedStageIds: string[] = []
       phases.forEach((phase) => {
-        // do this inside the loop since it's mutative
         const {stages} = phase
         for (let i = stages.length - 1; i >= 0; i--) {
           const stage = stages[i]!
           if (filterFn(stage)) {
             const nextStage = getNextFacilitatorStageAfterStageRemoved(
-              meeting.facilitatorStageId,
+              facilitatorStageId,
               stage.id,
               phases
             )
-            if (nextStage.id !== meeting.facilitatorStageId) {
-              // mutative
-              meeting.facilitatorStageId = nextStage.id
+            if (nextStage.id !== facilitatorStageId) {
+              facilitatorStageId = nextStage.id
               nextStage.startAt = now
               nextStage.viewCount = nextStage.viewCount ? nextStage.viewCount + 1 : 1
               nextStage.isNavigable = true
             }
-            const stageIdx = (stages as any).indexOf(stage)
-            stages.splice(stageIdx, 1)
+            stages.splice(i, 1)
+            removedStageIds.push(stage.id)
           }
         }
       })
-      await pg
+      if (removedStageIds.length === 0) return []
+      await trx
         .updateTable('NewMeeting')
-        .set({
-          facilitatorStageId: meeting.facilitatorStageId,
-          phases: JSON.stringify(phases)
-        })
+        .set({facilitatorStageId, phases: JSON.stringify(phases)})
         .where('id', '=', meetingId)
         .execute()
+      return removedStageIds.map((stageId) => ({meetingId, stageId}))
     })
+}
+
+const removeStagesFromMeetings = async (
+  filterFn: (stage: any) => boolean,
+  teamId: string,
+  dataLoader: DataLoaderWorker
+) => {
+  const now = new Date()
+  const [activeMeetings, completedMeetings] = await Promise.all([
+    dataLoader.get('activeMeetingsByTeamId').load(teamId),
+    dataLoader.get('completedMeetingsByTeamId').load(teamId)
+  ])
+  const meetingIds = activeMeetings
+    .concat(completedMeetings)
+    .filter(({phases}) => phases.some(({stages}) => stages.some(filterFn)))
+    .map(({id}) => id)
+  const removedStages = await Promise.all(
+    meetingIds.map((meetingId) => removeStagesFromMeeting(filterFn, meetingId, now))
   )
-  return meetings.map((meeting) => meeting.id)
+  dataLoader.clearAll('newMeetings')
+  return removedStages.flat()
 }
 
 export default removeStagesFromMeetings

@@ -35,7 +35,8 @@ const removeTeamMember: MutationResolvers['removeTeamMember'] = async (
   const tms = await dataLoader.get('teamIdsByUserId').load(userId)
   publish(SubscriptionChannel.NOTIFICATION, userId, 'AuthTokenPayload', {tms})
   const taskIds = [...archivedTaskIds, ...reassignedTaskIds]
-  const data = {teamId, teamMemberId, taskIds, notificationId, userId}
+  const {removedStageIds} = res
+  const data = {teamId, teamMemberId, taskIds, notificationId, userId, removedStageIds}
   publish(SubscriptionChannel.TEAM, teamId, 'RemoveTeamMemberPayload', data, subOptions)
   teamMembers.forEach(({userId: teamMemberUserId}) => {
     if (teamMemberUserId === userId) return
