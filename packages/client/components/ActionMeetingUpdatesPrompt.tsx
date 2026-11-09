@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {ActionMeetingUpdatesPrompt_meeting$key} from '../__generated__/ActionMeetingUpdatesPrompt_meeting.graphql'
 import ActionMeetingUpdatesPromptTeamHelpText from '../modules/meeting/components/ActionMeetingUpdatesPromptTeamHelpText'
+import getTeamMemberTasks from '../utils/getTeamMemberTasks'
 import Avatar from './Avatar/Avatar'
 import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
@@ -29,6 +30,8 @@ const ActionMeetingUpdatesPrompt = (props: Props) => {
             edges {
               node {
                 id
+                tags
+                userId
               }
             }
           }
@@ -43,6 +46,7 @@ const ActionMeetingUpdatesPrompt = (props: Props) => {
           teamMember {
             id
             isSelf
+            userId
           }
         }
         phases {
@@ -65,10 +69,13 @@ const ActionMeetingUpdatesPrompt = (props: Props) => {
   )
   if (!currentMeetingMember) return null
   const {teamMember, user, isConnectedAt} = currentMeetingMember
-  const {isSelf: isViewerMeetingSection} = teamMember
+  const {isSelf: isViewerMeetingSection, userId} = teamMember
   const {picture, preferredName} = user
   const prefix = isConnectedAt ? `${preferredName}, ` : ''
-  const taskCount = tasks.edges.length
+  const taskCount = getTeamMemberTasks(
+    tasks.edges.map(({node}) => node),
+    userId
+  ).length
   return (
     <div className='flex'>
       <Avatar picture={picture} className={'h-16 w-16'} />

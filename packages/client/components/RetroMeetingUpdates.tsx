@@ -3,7 +3,7 @@ import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import type {RetroMeetingUpdates_meeting$key} from '../__generated__/RetroMeetingUpdates_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import isTaskPrivate from '../utils/isTaskPrivate'
+import getTeamMemberTasks from '../utils/getTeamMemberTasks'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
 import MeetingUpdatesContent from './MeetingUpdatesContent'
 import type {RetroMeetingPhaseProps} from './RetroMeeting'
@@ -57,9 +57,10 @@ const RetroMeetingUpdates = (props: Props) => {
   const stageOwner = localStage?.RetroMeetingUpdatesStage?.teamMember
   const stageOwnerUserId = stageOwner?.userId ?? viewerId
   const teamMemberTasks = useMemo(() => {
-    return tasks.edges
-      .map(({node}) => node)
-      .filter((task) => task.userId === stageOwnerUserId && !isTaskPrivate(task.tags))
+    return getTeamMemberTasks(
+      tasks.edges.map(({node}) => node),
+      stageOwnerUserId
+    )
   }, [tasks, stageOwnerUserId])
 
   return (

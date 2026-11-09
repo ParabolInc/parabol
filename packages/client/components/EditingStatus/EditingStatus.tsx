@@ -9,6 +9,8 @@ import {TooltipTrigger} from '~/ui/Tooltip/TooltipTrigger'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import type {UseTaskChild} from '../../hooks/useTaskChildFocus'
 import {cn} from '../../ui/cn'
+import {DONE} from '../../utils/constants'
+import getLongOpenMonths from '../../utils/getLongOpenMonths'
 import DueDateToggle from '../DueDateToggle'
 import CreatedInLink from './CreatedInLink'
 import EditingStatusText from './EditingStatusText'
@@ -41,6 +43,7 @@ const EditingStatus = (props: Props) => {
       fragment EditingStatus_task on Task {
         createdAt
         updatedAt
+        status
         meetingId
         meeting {
           id
@@ -66,7 +69,7 @@ const EditingStatus = (props: Props) => {
     `,
     taskRef
   )
-  const {createdAt, updatedAt, meetingId, meeting, discussion, editors} = task
+  const {createdAt, updatedAt, status, meetingId, meeting, discussion, editors} = task
   const reflectionGroup = discussion?.stage?.reflectionGroup
   const topicTitle = reflectionGroup?.title ?? 'Untitled topic'
   const stageIdx = discussion?.stage?.stageIdx
@@ -93,11 +96,20 @@ const EditingStatus = (props: Props) => {
 
   const effectiveField: 'createdAt' | 'updatedAt' =
     metaField === 'createdIn' ? 'createdAt' : metaField
+  const longOpenMonths =
+    defaultMetaField === 'createdIn' && metaField === 'createdIn' && hasRetro && status !== DONE
+      ? getLongOpenMonths(createdAt)
+      : null
 
   return (
     <div className='flex min-h-[20px] items-start justify-between pr-2 pb-1 pl-4 text-left font-semibold text-fg-secondary text-xs leading-5'>
       <div className='w-full'>
         {children}
+        {longOpenMonths !== null && (
+          <span className='mr-1.5 rounded bg-surface-well px-1 py-px text-fg-primary'>
+            Open {longOpenMonths} months
+          </span>
+        )}
         <Tooltip>
           <TooltipTrigger asChild>
             <span
