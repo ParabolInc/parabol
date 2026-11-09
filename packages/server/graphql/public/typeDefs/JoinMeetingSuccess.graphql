@@ -8,7 +8,17 @@ type JoinMeetingSuccess {
   meetingId: ID!
 
   """
-  The meeting with the updated stages, if any
+  The meeting that was joined
   """
   meeting: NewMeeting!
+
+  """
+  The member who joined
+  """
+  meetingMember: MeetingMember!
+
+  """
+  The stages that belong to the member who joined, e.g. their check-in stage
+  """
+  stages: [NewMeetingStage!]!
 }

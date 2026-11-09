@@ -1,4 +1,4 @@
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {SUBSCRIPTION_READY, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
@@ -7,7 +7,7 @@ import {broadcastSubscription} from '../broadcastSubscription'
 import type {SubscriptionResolvers} from '../resolverTypes'
 
 const meetingSubscription: SubscriptionResolvers['meetingSubscription'] = {
-  subscribe: async (_source, {meetingId}, context) => {
+  subscribe: async (_source, {meetingId, sendReadyMessage}, context) => {
     const {authToken} = context
     // AUTH
     const viewerId = getUserId(authToken)
@@ -24,7 +24,10 @@ const meetingSubscription: SubscriptionResolvers['meetingSubscription'] = {
     // RESOLUTION
     const channelName = `${SubscriptionChannel.MEETING}.${meetingId}`
     const iter = await getPubSub().subscribe([channelName])
-    return broadcastSubscription(iter, context)
+    const readyValue = sendReadyMessage
+      ? {meetingSubscription: {fieldName: SUBSCRIPTION_READY}}
+      : undefined
+    return broadcastSubscription(iter, context, readyValue)
   }
 }
 

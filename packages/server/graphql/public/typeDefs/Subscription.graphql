@@ -3,7 +3,13 @@ Real-time subscriptions for live meeting, notification, org, task, and team upda
 """
 type Subscription {
   "Subscribe to all events in a meeting (reflections, votes, stages, etc.)"
-  meetingSubscription(meetingId: ID!): MeetingSubscriptionPayload!
+  meetingSubscription(
+    meetingId: ID!
+    """
+    Send a first message with the fieldName SubscriptionReady once the server is listening, so a client can fetch the meeting then without missing an event
+    """
+    sendReadyMessage: Boolean = false
+  ): MeetingSubscriptionPayload!
   "Subscribe to notifications for the current user"
   notificationSubscription: NotificationSubscriptionPayload!
   "Subscribe to organization-level changes for the current user"

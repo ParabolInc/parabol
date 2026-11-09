@@ -17,6 +17,7 @@ import {
   endDraggingReflectionMeetingOnNext,
   endDraggingReflectionMeetingUpdater
 } from '../mutations/EndDraggingReflectionMutation'
+import {joinMeetingMeetingUpdater} from '../mutations/JoinMeetingMutation'
 import {pokerAnnounceDeckHoverMeetingUpdater} from '../mutations/PokerAnnounceDeckHoverMutation'
 import {removeReflectionMeetingUpdater} from '../mutations/RemoveReflectionMutation'
 import {resetRetroMeetingToGroupStageUpdater} from '../mutations/ResetRetroMeetingToGroupStageMutation'
@@ -29,7 +30,7 @@ import {createSubscription} from './createSubscription'
 
 const subscription = graphql`
   subscription MeetingSubscription($meetingId: ID!) {
-    meetingSubscription(meetingId: $meetingId) {
+    meetingSubscription(meetingId: $meetingId, sendReadyMessage: true) {
       fieldName
       AddTranscriptionBotSuccess {
         ...AddTranscriptionBotMutation_meeting
@@ -204,6 +205,7 @@ const updateHandlers = {
   DragDiscussionTopicPayload: dragDiscussionTopicMeetingUpdater,
   EditReflectionPayload: editReflectionMeetingUpdater,
   EndDraggingReflectionPayload: endDraggingReflectionMeetingUpdater,
+  JoinMeetingSuccess: joinMeetingMeetingUpdater,
   RemoveReflectionPayload: removeReflectionMeetingUpdater,
   SetStageTimerPayload: setStageTimerMeetingUpdater,
   ResetRetroMeetingToGroupStagePayload: resetRetroMeetingToGroupStageUpdater,

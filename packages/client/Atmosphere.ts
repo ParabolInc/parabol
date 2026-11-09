@@ -28,6 +28,7 @@ import type StrictEventEmitter from 'strict-event-emitter-types'
 import type {AtmosphereSignOutMutation} from './__generated__/AtmosphereSignOutMutation.graphql'
 import type {Snack, SnackbarRemoveFn} from './components/Snackbar'
 import {AuthToken} from './types/AuthToken'
+import {SUBSCRIPTION_READY} from './types/constEnums'
 import type {NavigateFn} from './types/relayMutations'
 import {getAuthCookie, onAuthCookieChange} from './utils/authCookie'
 import {addBreadcrumb} from './utils/clientBreadcrumbs'
@@ -136,6 +137,10 @@ export default class Atmosphere extends Environment {
   } = {}
   retries = new Set<() => void>()
   subscriptions: Subscriptions = {}
+  // by subKey, called each time the server says a subscription is listening, including after a reconnect
+  subscriptionReadyHandlers = new Map<string, () => void>()
+  // by subKey, messages kept from relay until the query that holds them has been written to the store
+  private heldSubscriptionMessages = new Map<string, (() => void)[]>()
   // Our server only sends a single field per subscription, but relay requires every requested field
   // This object makes the server response whole without increasing the payload size
   subscriptionInterfaces = {} as Record<string, Record<string, null>>
@@ -306,6 +311,8 @@ export default class Atmosphere extends Environment {
       const traceparent = makeTraceparent()
       const traceId = traceparent.split('-')[1]
       addBreadcrumb('operation', `${operation.operationKind} ${operation.name}`, traceId)
+      const isSubscription = operation.operationKind === 'subscription'
+      const subKey = Atmosphere.getKey(operation.name, variables)
       const _next = sink.next
       const _error = sink.error
       sink.error = (error: Error | Error[] | CloseEvent | PayloadError) => {
@@ -348,6 +355,10 @@ export default class Atmosphere extends Environment {
           return
         }
         const subscriptionName = data ? Object.keys(data)[0] : undefined
+        if (isSubscription && data[subscriptionName!]?.fieldName === SUBSCRIPTION_READY) {
+          this.subscriptionReadyHandlers.get(subKey)?.()
+          return
+        }
         const nullObj = this.subscriptionInterfaces[subscriptionName!]
         const nextObj =
           nullObj && subscriptionName
@@ -362,6 +373,11 @@ export default class Atmosphere extends Environment {
                 }
               }
             : value
+        const heldMessages = isSubscription ? this.heldSubscriptionMessages.get(subKey) : undefined
+        if (heldMessages) {
+          heldMessages.push(() => _next(nextObj))
+          return
+        }
         _next(nextObj)
       }
       ;(async () => {
@@ -383,8 +399,7 @@ export default class Atmosphere extends Environment {
           } as any,
           sink as any
         )
-        if (operation.operationKind === 'subscription') {
-          const subKey = Atmosphere.getKey(operation.name, variables)
+        if (isSubscription) {
           this.subscriptions[subKey] = {unsubscribe}
         }
       })()
@@ -490,6 +505,20 @@ export default class Atmosphere extends Environment {
       subscription(this, variables, router)
     }
     this.querySubscriptions.push({queryKey, subKey})
+  }
+
+  /*
+   * keeps the subscription's messages from relay until the returned release is called,
+   * which then hands them over in the order they arrived
+   */
+  holdSubscription(subKey: string) {
+    const heldMessages: (() => void)[] = []
+    this.heldSubscriptionMessages.set(subKey, heldMessages)
+    return () => {
+      if (this.heldSubscriptionMessages.get(subKey) !== heldMessages) return
+      this.heldSubscriptionMessages.delete(subKey)
+      heldMessages.forEach((deliver) => deliver())
+    }
   }
 
   /*

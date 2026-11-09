@@ -57,7 +57,14 @@ const joinMeeting: MutationResolvers['joinMeeting'] = async (
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   if (!meeting) return {error: {message: 'Invalid meeting ID'}}
   const {endedAt, teamId, phases} = meeting
-  if (endedAt) return {error: {message: 'Meeting has already ended'}}
+  if (endedAt) {
+    // a member can still subscribe to a meeting that ended, but nobody new joins it
+    const meetingMember = await dataLoader
+      .get('meetingMembers')
+      .load(MeetingMemberId.join(meetingId, viewerId))
+    if (!meetingMember) return {error: {message: 'Meeting has already ended'}}
+    return {meetingId, userId: viewerId}
+  }
 
   const teamMemberId = toTeamMemberId(teamId, viewerId)
   const teamMember = await dataLoader.get('teamMembers').loadNonNull(teamMemberId)
@@ -68,23 +75,29 @@ const joinMeeting: MutationResolvers['joinMeeting'] = async (
     .onConflict((oc) => oc.doNothing())
     .executeTakeFirstOrThrow()
   const wasInserted = Number(insertResult.numInsertedOrUpdatedRows) > 0
-  if (!wasInserted) return {error: {message: 'Could not join meeting'}}
 
   const addStageToPhase = async (
     stage: CheckInStageDB | UpdatesStageDB | TeamPromptResponseStageDB,
     phaseType: NewMeetingPhase['phaseType']
   ) => {
-    await pg.transaction().execute(async (trx) => {
+    return pg.transaction().execute(async (trx) => {
       const meeting = await trx
         .selectFrom('NewMeeting')
         .select(({fn}) => fn<NewMeetingPhase[]>('to_json', ['phases']).as('phases'))
         .where('id', '=', meetingId)
         .forUpdate()
         .executeTakeFirst()
-      if (!meeting) return
+      if (!meeting) return false
       const {phases} = meeting
       const phase = getPhase(phases, phaseType)
       const stages = phase.stages as NewMeetingStage[]
+      if (
+        stages.some(
+          (existing) => 'teamMemberId' in existing && existing.teamMemberId === teamMemberId
+        )
+      ) {
+        return false
+      }
       stages.push({
         ...stage,
         isNavigable: true,
@@ -96,30 +109,31 @@ const joinMeeting: MutationResolvers['joinMeeting'] = async (
         .set({phases: JSON.stringify(phases)})
         .where('id', '=', meetingId)
         .execute()
+      return true
     })
   }
 
   const appendToCheckin = async () => {
     const checkInPhase = getPhase(phases, 'checkin')
-    if (!checkInPhase) return
+    if (!checkInPhase) return false
     const checkInStage = new CheckInStage(teamMemberId)
     return addStageToPhase(checkInStage, 'checkin')
   }
 
   const appendToUpdate = async () => {
     const updatesPhase = getPhase(phases, 'updates')
-    if (!updatesPhase) return
+    if (!updatesPhase) return false
     const updatesStage = new UpdatesStage(teamMemberId)
     return addStageToPhase(updatesStage, 'updates')
   }
 
   const appendToTeamPromptResponses = async () => {
     const responsesPhase = getPhase(phases, 'RESPONSES')
-    if (!responsesPhase) return
+    if (!responsesPhase) return false
     const teamMemberResponseStage = responsesPhase.stages.find(
       (stage) => stage.teamMemberId === teamMemberId
     )
-    if (teamMemberResponseStage) return
+    if (teamMemberResponseStage) return false
     const responsesStage = new TeamPromptResponseStage({teamMemberId})
     await getKysely()
       .insertInto('Discussion')
@@ -134,11 +148,17 @@ const joinMeeting: MutationResolvers['joinMeeting'] = async (
     return addStageToPhase(responsesStage, 'RESPONSES')
   }
 
-  await Promise.all([appendToCheckin(), appendToUpdate(), appendToTeamPromptResponses()])
+  const stagesAdded = await Promise.all([
+    appendToCheckin(),
+    appendToUpdate(),
+    appendToTeamPromptResponses()
+  ])
   dataLoader.clearAll('newMeetings')
 
-  const data = {meetingId}
-  publish(SubscriptionChannel.MEETING, meetingId, 'JoinMeetingSuccess', data, subOptions)
+  const data = {meetingId, userId: viewerId}
+  if (wasInserted || stagesAdded.includes(true)) {
+    publish(SubscriptionChannel.MEETING, meetingId, 'JoinMeetingSuccess', data, subOptions)
+  }
   return data
 }
 
