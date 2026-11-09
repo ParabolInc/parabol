@@ -4,10 +4,6 @@ type LinearIntegrationService implements IntegrationService {
   title: String!
   isAvailable: Boolean!
   isConnected: Boolean!
-  """
-  How many tasks created in the last 180 days, across the teams in this team's organization, are linked to this service
-  """
-  recentOrgTaskCount: Int!
   capabilities: [IntegrationCapabilityEnum!]!
   """
   The viewer's auth for this service on this team. Null when not connected or when the team member is not the viewer

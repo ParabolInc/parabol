@@ -1,15 +1,16 @@
 import DataLoader from 'dataloader'
 import {sql} from 'kysely'
+import type {TaskServiceEnum} from '../graphql/public/resolverTypes'
 import getKysely from '../postgres/getKysely'
 import type RootDataLoader from './RootDataLoader'
 
-type TaskCountsByService = Record<string, number>
+type IntegrationTaskCount = {service: TaskServiceEnum; taskCount: number}
 
 export const recentIntegrationTaskCountsByOrgId = (parent: RootDataLoader) => {
-  return new DataLoader<string, TaskCountsByService, string>(
+  return new DataLoader<string, IntegrationTaskCount[], string>(
     async (orgIds) => {
       const windowStart = sql<Date>`NOW() - INTERVAL '180 days'`
-      const service = sql<string>`"Task"."integration"->>'service'`
+      const service = sql<TaskServiceEnum>`"Task"."integration"->>'service'`
       const rows = await getKysely()
         .selectFrom('Task')
         .innerJoin('Team', 'Team.id', 'Task.teamId')
@@ -22,11 +23,11 @@ export const recentIntegrationTaskCountsByOrgId = (parent: RootDataLoader) => {
         .where('Task.updatedAt', '>', windowStart)
         .groupBy(['Team.orgId', service])
         .execute()
-      const countsByOrgId = new Map<string, TaskCountsByService>()
-      rows.forEach(({orgId, service, taskCount}) => {
-        countsByOrgId.set(orgId, {...countsByOrgId.get(orgId), [service]: taskCount})
-      })
-      return orgIds.map((orgId) => countsByOrgId.get(orgId) ?? {})
+      return orgIds.map((orgId) =>
+        rows
+          .filter((row) => row.orgId === orgId)
+          .map(({service, taskCount}) => ({service, taskCount}))
+      )
     },
     {...parent.dataLoaderOptions}
   )

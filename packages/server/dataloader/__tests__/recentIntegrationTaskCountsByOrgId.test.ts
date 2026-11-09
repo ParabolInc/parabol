@@ -40,7 +40,8 @@ describe('recentIntegrationTaskCountsByOrgId', () => {
   const loadCounts = async (orgId: string) => {
     const dataLoader = getNewDataLoader('recentIntegrationTaskCountsTest')
     try {
-      return await dataLoader.get('recentIntegrationTaskCountsByOrgId').load(orgId)
+      const taskCounts = await dataLoader.get('recentIntegrationTaskCountsByOrgId').load(orgId)
+      return Object.fromEntries(taskCounts.map(({service, taskCount}) => [service, taskCount]))
     } finally {
       dataLoader.dispose()
     }

@@ -32,13 +32,18 @@ const ScopePhaseArea = (props: Props) => {
         ...ScopePhaseAreaParabolScoping_meeting
         ...IntegrationScopingPanel_meeting
         teamId
+        team {
+          recentOrgTaskCounts {
+            service
+            taskCount
+          }
+        }
         viewerMeetingMember {
           teamMember {
             services {
               service
               isAvailable
               isConnected
-              recentOrgTaskCount
               ...ScopePhaseAreaConnect_service
             }
           }
@@ -48,7 +53,10 @@ const ScopePhaseArea = (props: Props) => {
     meetingRef
   )
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  const {teamId, viewerMeetingMember} = meeting
+  const {teamId, team, viewerMeetingMember} = meeting
+  const orgTaskCounts = new Map(
+    team.recentOrgTaskCounts.map(({service, taskCount}) => [service, taskCount])
+  )
   const services = viewerMeetingMember?.teamMember.services ?? []
   const [savedActiveKey, setSavedActiveKey] = useState(() =>
     window.localStorage.getItem(FAVORITE_SERVICE_STORAGE_KEY)
@@ -58,7 +66,7 @@ const ScopePhaseArea = (props: Props) => {
 
   const integrations: ScopePhaseTab[] = listClientIntegrationServices(services).flatMap(
     ({integrationService, definition}) => {
-      const {service, isAvailable, isConnected, recentOrgTaskCount} = integrationService
+      const {service, isAvailable, isConnected} = integrationService
       const {scoping} = definition.capabilities
       if (!isTaskClientIntegration(service) || !scoping) return []
       if (!isAvailable && !definition.contactUs) return []
@@ -68,7 +76,7 @@ const ScopePhaseArea = (props: Props) => {
           key: service,
           title: definition.title,
           isConnected,
-          orgTaskCount: recentOrgTaskCount,
+          orgTaskCount: orgTaskCounts.get(service) ?? 0,
           icon: <definition.Icon className={definition.iconClassName} />,
           keywords: definition.searchKeywords ?? [],
           menuStatus: isConnected ? ('connected' as const) : contactStatus,

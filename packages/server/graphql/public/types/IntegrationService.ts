@@ -51,11 +51,6 @@ const IntegrationService: IntegrationServiceResolvers = {
     getServerIntegration(service).isAvailable({dataLoader, teamId, userId}),
   isConnected: ({service, teamId, userId}, _args, {dataLoader}) =>
     getServerIntegration(service).isConnected({dataLoader, teamId, userId}),
-  recentOrgTaskCount: async ({service, teamId}, _args, {dataLoader}) => {
-    const {orgId} = await dataLoader.get('teams').loadNonNull(teamId)
-    const taskCounts = await dataLoader.get('recentIntegrationTaskCountsByOrgId').load(orgId)
-    return taskCounts[service] ?? 0
-  },
   auth: ({service, teamId, userId}, _args, {dataLoader}) =>
     getServerIntegration(service).getAuthRow({dataLoader, teamId, userId}),
   cloudProvider: ({service, teamId, userId}, _args, {dataLoader}) =>
