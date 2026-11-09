@@ -279,6 +279,44 @@ new Gauge({
   }
 })
 
+// Counting a fill reads most of the queue, and a fill takes days, so a count a few minutes old will do
+const FILL_COUNT_MAX_AGE_MS = 5 * 60_000
+let fillJobCounts: {model: string; workflow: string; state: string; jobs: number}[] = []
+let fillJobsCountedAt = -Infinity
+
+const countFillJobs = async () => {
+  if (Date.now() - fillJobsCountedAt < FILL_COUNT_MAX_AGE_MS) return fillJobCounts
+  const jobCounts = await getKysely()
+    .selectFrom('EmbeddingsJobQueueV2')
+    .select(({fn}) => ['modelId', 'jobType', 'state', fn.countAll<string>().as('jobs')])
+    .where('priority', '>=', FIRST_FILL_PRIORITY)
+    .groupBy(['modelId', 'jobType', 'state'])
+    .execute()
+  fillJobCounts = jobCounts.flatMap(({modelId, jobType, state, jobs}) =>
+    modelId ? [{model: modelId, workflow: jobType.split(':')[0]!, state, jobs: Number(jobs)}] : []
+  )
+  fillJobsCountedAt = Date.now()
+  return fillJobCounts
+}
+
+new Gauge({
+  name: 'parabol_embedder_fill_jobs',
+  help: 'Jobs in the embedder queue that fill a new model, by model, workflow (embed for templates, reflections and discussions, embedPage for pages) and state, counted every 5 minutes. A model appears while it has fill jobs and drops out when it has none. Every web server reports the same totals, so aggregate with max',
+  labelNames: ['model', 'workflow', 'state'] as const,
+  registers: [register],
+  async collect() {
+    try {
+      const jobCounts = await countFillJobs()
+      this.reset()
+      jobCounts.forEach(({model, workflow, state, jobs}) => {
+        this.inc({model, workflow, state}, jobs)
+      })
+    } catch (error) {
+      Logger.error("Could not count embedding models' fill jobs for metrics", error)
+    }
+  }
+})
+
 export const graphqlPrometheusPlugin = usePrometheus({
   registry: register,
   endpoint: false,
