@@ -11,6 +11,7 @@ import type {DueDateToggle_task$key} from '../__generated__/DueDateToggle_task.g
 import type {UseTaskChild} from '../hooks/useTaskChildFocus'
 import {cn} from '../ui/cn'
 import {NestedModalContext} from '../ui/Modal/NestedModalContext'
+import isPastDue from '../utils/isPastDue'
 import lazyPreload from '../utils/lazyPreload'
 import {shortMonths} from '../utils/makeDateString'
 import CardButton from './CardButton'
@@ -36,7 +37,7 @@ const getDateInfo = (dueDate: string | null | undefined) => {
   const date = new Date(dueDate)
   const timeDiff = date.getTime() - Date.now()
   const diffDays = Math.ceil(timeDiff / ms('1d'))
-  if (diffDays <= 0) return {title: `Past due, ${action}`, isPastDue: true}
+  if (isPastDue(dueDate)) return {title: `Past due, ${action}`, isPastDue: true}
   if (diffDays < 3) return {title: `Due soon, ${action}`, isDueSoon: true}
   const dateString = formatDueDate(dueDate)
   return {title: `Due ${dateString}, ${action}`}
@@ -64,7 +65,7 @@ const DueDateToggle = (props: Props) => {
   const {dueDate} = task
   const [open, setOpen] = useState(false)
   const isNested = useContext(NestedModalContext)
-  const {title, isPastDue, isDueSoon} = getDateInfo(dueDate)
+  const {title, isPastDue: pastDue, isDueSoon} = getDateInfo(dueDate)
   const toggleIsActive = !dueDate && cardIsActive
   if (isArchived) return null
   return (
@@ -81,7 +82,7 @@ const DueDateToggle = (props: Props) => {
               'bg-surface-well px-1 text-fg-secondary opacity-100 hover:bg-surface-raised hover:text-fg-primary hover:opacity-100 focus:bg-surface-raised focus:text-fg-primary focus:opacity-100',
             isDueSoon &&
               'bg-gold-100 text-gold-500 hover:bg-gold-200 hover:text-terra-500 focus:bg-gold-200 focus:text-terra-500',
-            isPastDue &&
+            pastDue &&
               'bg-tomato-100 text-tomato-500 hover:bg-tomato-200 hover:text-tomato-700 focus:bg-tomato-200 focus:text-tomato-700'
           )}
           tabIndex={0}

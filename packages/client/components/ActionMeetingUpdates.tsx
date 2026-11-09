@@ -3,7 +3,7 @@ import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import type {ActionMeetingUpdates_meeting$key} from '../__generated__/ActionMeetingUpdates_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import isTaskPrivate from '../utils/isTaskPrivate'
+import getTeamMemberTasks from '../utils/getTeamMemberTasks'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
 import type {ActionMeetingPhaseProps} from './ActionMeeting'
 import ActionMeetingUpdatesPrompt from './ActionMeetingUpdatesPrompt'
@@ -58,9 +58,10 @@ const ActionMeetingUpdates = (props: Props) => {
   const {id: teamId, tasks} = team
   const userId = localStage?.ActionMeetingUpdatesStage?.teamMember.userId
   const teamMemberTasks = useMemo(() => {
-    return tasks.edges
-      .map(({node}) => node)
-      .filter((task) => task.userId === userId && !isTaskPrivate(task.tags))
+    return getTeamMemberTasks(
+      tasks.edges.map(({node}) => node),
+      userId
+    )
   }, [tasks, userId])
 
   if (!userId) return null
