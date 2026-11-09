@@ -21,11 +21,11 @@ export type TaskClientIntegration = Extract<RegisteredClientIntegration, TaskSer
 
 const taskIntegrations = {
   jira: new JiraClientIntegration(),
-  jiraServer: new JiraServerClientIntegration(),
-  github: new GitHubClientIntegration(),
   linear: new LinearClientIntegration(),
+  github: new GitHubClientIntegration(),
   gitlab: new GitLabClientIntegration(),
   azureDevOps: new AzureDevOpsClientIntegration(),
+  jiraServer: new JiraServerClientIntegration(),
   clickup: new ClickUpClientIntegration()
 } satisfies Record<TaskClientIntegration, ClientIntegrationDefinition>
 

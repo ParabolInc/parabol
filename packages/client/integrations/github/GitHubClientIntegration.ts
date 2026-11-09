@@ -76,6 +76,7 @@ const workDrawer: WorkDrawerCapability = {
 export class GitHubClientIntegration extends ClientIntegrationDefinition {
   readonly service = githubIntegrationMeta.service
   readonly title = githubIntegrationMeta.title
+  readonly searchKeywords = ['git']
   readonly description = githubIntegrationMeta.description
   readonly Icon = GitHubSVG
   readonly logo: ProviderLogoAsset = {src: githubLogo, darkSrc: githubLogoWhite}

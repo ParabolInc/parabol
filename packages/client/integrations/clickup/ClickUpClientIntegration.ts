@@ -84,6 +84,7 @@ const workDrawer: WorkDrawerCapability = {
 export class ClickUpClientIntegration extends ClientIntegrationDefinition {
   readonly service = clickupIntegrationMeta.service
   readonly title = clickupIntegrationMeta.title
+  readonly searchKeywords = ['click up']
   readonly description = clickupIntegrationMeta.description
   readonly Icon = ClickUpIcon
   readonly logo: ProviderLogoAsset = {src: clickupLogo}

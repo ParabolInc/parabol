@@ -15,6 +15,10 @@ interface IntegrationService {
   true if this team member has an active, usable auth row for this service on this team (for Jira, one that carries the Jira scopes). Does not validate or refresh the token
   """
   isConnected: Boolean!
+  """
+  How many tasks created in the last 180 days, across the teams in this team's organization, are linked to this service
+  """
+  recentOrgTaskCount: Int!
   capabilities: [IntegrationCapabilityEnum!]!
   """
   The viewer's auth for this service on this team. Null when not connected

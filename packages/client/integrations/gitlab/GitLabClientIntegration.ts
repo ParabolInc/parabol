@@ -88,6 +88,7 @@ const workDrawer: WorkDrawerCapability = {
 export class GitLabClientIntegration extends ClientIntegrationDefinition {
   readonly service = gitlabIntegrationMeta.service
   readonly title = gitlabIntegrationMeta.title
+  readonly searchKeywords = ['git']
   readonly description = gitlabIntegrationMeta.description
   readonly Icon = GitLabSVG
   readonly logo: ProviderLogoAsset = {src: gitlabLogo}

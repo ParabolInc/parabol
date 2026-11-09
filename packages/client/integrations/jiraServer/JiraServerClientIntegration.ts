@@ -81,6 +81,7 @@ const workDrawer: WorkDrawerCapability = {
 export class JiraServerClientIntegration extends ClientIntegrationDefinition {
   readonly service = jiraServerIntegrationMeta.service
   readonly title = jiraServerIntegrationMeta.title
+  readonly searchKeywords = ['atlassian', 'server', 'self-hosted', 'on-prem']
   readonly description = jiraServerIntegrationMeta.description
   readonly Icon = JiraServerSVG
   readonly logo: ProviderLogoAsset = {src: jiraServerLogo}

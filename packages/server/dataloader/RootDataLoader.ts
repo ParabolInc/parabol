@@ -11,6 +11,7 @@ import * as githubLoaders from './githubLoaders'
 import * as integrationAuthLoaders from './integrationAuthLoaders'
 import * as integrationDimensionFieldMapLoaders from './integrationDimensionFieldMapLoaders'
 import * as integrationSearchQueryLoaders from './integrationSearchQueryLoaders'
+import * as integrationUsageLoaders from './integrationUsageLoaders'
 import * as jiraServerLoaders from './jiraServerLoaders'
 import * as pageLoaderMakers from './pageLoaderMakers'
 import * as pollLoaders from './pollsLoaders'
@@ -37,6 +38,7 @@ const loaderMakers = {
   ...integrationAuthLoaders,
   ...integrationDimensionFieldMapLoaders,
   ...integrationSearchQueryLoaders,
+  ...integrationUsageLoaders,
   ...pollLoaders,
   ...azureDevOpsLoaders,
   ...clickUpLoaders,
