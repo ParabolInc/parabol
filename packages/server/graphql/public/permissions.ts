@@ -12,6 +12,7 @@ import {isMeetingFacilitator} from './rules/isMeetingFacilitator'
 import {isMeetingMember} from './rules/isMeetingMember'
 import {isNull} from './rules/isNull'
 import {isOrgTier} from './rules/isOrgTier'
+import {isReactableInMeeting} from './rules/isReactableInMeeting'
 import {isReportTeamHealthCheck} from './rules/isReportTeamHealthCheck'
 import {isRestoringOwnTrashedPage} from './rules/isRestoringOwnTrashedPage'
 import isSuperUser from './rules/isSuperUser'
@@ -115,7 +116,10 @@ const permissionMap: PermissionMap<Resolvers> = {
       'args.scaleId',
       'templateScales'
     ),
-    addReactjiToReactable: isMeetingMember<'Mutation.addReactjiToReactable'>('args.meetingId'),
+    addReactjiToReactable: and(
+      isMeetingMember<'Mutation.addReactjiToReactable'>('args.meetingId'),
+      isReactableInMeeting
+    ),
     addPromptTemplate: isTeamMember<'Mutation.addPromptTemplate'>('args.teamId'),
     addTemplatePrompt: isTeamMember<'Mutation.addTemplatePrompt'>(
       'args.templateId',
