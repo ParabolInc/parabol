@@ -27,7 +27,7 @@ const Avatar = forwardRef<HTMLDivElement, Props>((props, ref) => {
     >
       <AvatarImage src={picture || defaultUserAvatar} alt={alt || 'Avatar'} />
       <AvatarFallback delayMs={200}>
-        <img src={defaultUserAvatar} alt={alt || 'Avatar not found'} />
+        <img src={defaultUserAvatar} alt={alt || 'Avatar not found'} className='h-full w-full' />
       </AvatarFallback>
     </AvatarRoot>
   )
