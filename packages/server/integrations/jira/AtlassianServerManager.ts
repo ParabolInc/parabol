@@ -327,10 +327,11 @@ class AtlassianServerManager extends AtlassianManager {
       }
       const json = (await res.json()) as AtlassianError | JiraNoAccessError | JiraGetError | T
       if ('message' in json) {
-        if (json.message === 'No message available' && 'error' in json) {
-          return new Error((json as JiraGetError).error)
-        }
-        return new Error(json.message)
+        const message =
+          json.message === 'No message available' && 'error' in json
+            ? (json as JiraGetError).error
+            : json.message
+        return res.status === 404 ? new JiraNoAccessResponseError(message) : new Error(message)
       }
       if (isJiraNoAccessError(json)) {
         return new JiraNoAccessResponseError(json.errorMessages[0])
