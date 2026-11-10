@@ -5,7 +5,8 @@ import reportClientError, {
 } from './reportClientError'
 
 // browsers report the first two with no error object to look into, and a failed service worker update retries on its own
-const IGNORED_MESSAGES = ['ResizeObserver loop', 'Script error', 'Failed to update a ServiceWorker']
+// Each browser words that failure differently, so it is matched by what createWSClient logs with it
+const IGNORED_MESSAGES = ['ResizeObserver loop', 'Script error', 'Error updating service worker']
 
 const isIgnoredMessage = (message: string | undefined) =>
   IGNORED_MESSAGES.some((ignored) => message?.includes(ignored))
