@@ -161,6 +161,11 @@ export const websocketConnectDuration = new Histogram({
   buckets: [0.1, 0.25, 0.5, 1, 2.5, 5, 10],
   registers: [register]
 })
+// Managed Prometheus drops the first sample of a new series, so an outcome first seen between scrapes would lose every
+// connection before the next scrape, while the attempts counter, exported since startup, still counts them
+for (const outcome of ['connected', 'rejected', 'failed', 'abandoned']) {
+  websocketConnectDuration.zero({outcome})
+}
 
 export const websocketMessagesDropped = new Counter({
   name: 'parabol_websocket_messages_dropped_total',
