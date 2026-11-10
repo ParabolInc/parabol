@@ -20,4 +20,6 @@ enum ServiceEnum {
   gcal
   "Azure DevOps"
   azureDevOps
+  "ClickUp"
+  clickup
 }

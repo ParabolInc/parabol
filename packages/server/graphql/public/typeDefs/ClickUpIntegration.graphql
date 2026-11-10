@@ -1,0 +1,56 @@
+"""
+A team member's ClickUp connection and the tasks it can reach
+"""
+type ClickUpIntegration {
+  """
+  Composite key in the format "clickup:{teamId}:{userId}"
+  """
+  id: ID!
+
+  """
+  Tasks from the ClickUp workspaces this connection authorized, most recently updated first.
+  ClickUp has no text search, so a query matches the names, ids and custom ids of the most
+  recently updated tasks, and a task link or id is also looked up directly
+  """
+  tasks(
+    """
+    How many matching tasks to look for before returning. A page may hold more
+    """
+    first: Int! = 50
+
+    """
+    The endCursor of the previous page
+    """
+    after: String
+
+    """
+    Text to match against task names, ids and custom ids, or a ClickUp task link or id
+    """
+    queryString: String
+
+    """
+    The ids of the Lists to search. Null or empty searches every authorized workspace
+    """
+    listIds: [ID!]
+
+    """
+    true to return only the tasks assigned to the viewer
+    """
+    assignedToViewer: Boolean = false
+
+    """
+    Only tasks updated after this time
+    """
+    updatedAfter: DateTime
+
+    """
+    Only tasks updated before this time
+    """
+    updatedBefore: DateTime
+
+    """
+    true to include tasks with a closed status
+    """
+    includeClosed: Boolean = false
+  ): ClickUpTaskConnection!
+}

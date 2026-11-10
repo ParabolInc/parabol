@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {usePersistIntegrationSearchQueryMutation as TPersistIntegrationSearchQueryMutation} from '../__generated__/usePersistIntegrationSearchQueryMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
+import getServerError from '../utils/relay/getServerError'
 
 graphql`
   fragment usePersistIntegrationSearchQueryMutation_service on IntegrationService {
@@ -57,7 +58,7 @@ const usePersistIntegrationSearchQueryMutation = () => {
         const error = errors?.[0]
         if (error) showError(error.message)
       },
-      onError: (error) => showError(error.message),
+      onError: (error) => showError(getServerError(error)?.message ?? error.message),
       ...config
     })
   }

@@ -2,6 +2,7 @@ import type {RepoIntegrationResolvers} from '../resolverTypes'
 
 export const TYPENAME_BY_SERVICE = {
   azureDevOps: 'AzureDevOpsRemoteProject',
+  clickup: 'RepoContainer',
   github: 'RepoContainer',
   gitlab: 'RepoContainer',
   jira: 'JiraRemoteProject',

@@ -18,7 +18,7 @@ describe('serverIntegrations registry', () => {
       .filter(([, def]) => def.getCapabilityKeys().includes('issueList'))
       .map(([key]) => key)
       .sort()
-    expect(listing).toEqual(['azureDevOps', 'gcal', 'github', 'jira', 'linear'])
+    expect(listing).toEqual(['azureDevOps', 'clickup', 'gcal', 'github', 'jira', 'linear'])
   })
 
   it('getServerIntegration returns null for an unknown service', () => {

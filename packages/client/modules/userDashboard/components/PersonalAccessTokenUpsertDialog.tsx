@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {PersonalAccessTokenUpsertDialog_viewer$key} from '~/__generated__/PersonalAccessTokenUpsertDialog_viewer.graphql'
+import getServerError from '~/utils/relay/getServerError'
 import type {OAuthScopeEnum} from '../../../__generated__/useCreatePersonalAccessTokenMutation.graphql'
 import BasicInput from '../../../components/InputField/BasicInput'
 import {useCreatePersonalAccessToken} from '../../../mutations/useCreatePersonalAccessToken'
@@ -174,7 +175,7 @@ const PersonalAccessTokenUpsertDialog = ({viewerRef, onClose, personalAccessToke
           }
           onClose()
         },
-        onError: (err) => setError(err.message)
+        onError: (err) => setError(getServerError(err)?.message ?? err.message)
       })
     } else {
       commitCreate({
@@ -194,7 +195,7 @@ const PersonalAccessTokenUpsertDialog = ({viewerRef, onClose, personalAccessToke
           }
           setCreatedToken(response.createPersonalAccessToken.token)
         },
-        onError: (err) => setError(err.message)
+        onError: (err) => setError(getServerError(err)?.message ?? err.message)
       })
     }
   }

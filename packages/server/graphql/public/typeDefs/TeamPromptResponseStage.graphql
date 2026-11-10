@@ -104,6 +104,11 @@ type TeamPromptResponseStage implements NewMeetingStage & DiscussionThreadStage 
   """
   discussion: Discussion!
 
+  """
+  Orders the stages of the phase, compared by character code. A member who joins after the meeting starts gets one after every other stage
+  """
+  sortOrder: String!
+
   "The ID of the team member whose response this stage captures"
   teamMemberId: ID!
 

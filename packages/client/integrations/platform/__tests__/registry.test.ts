@@ -81,6 +81,17 @@ describe('clientIntegrations registry', () => {
     ).toBe('WEB')
   })
 
+  it('ClickUp labels saved List filters by their count, since a List id has no readable part', () => {
+    const savedFiltersLabel = clientIntegrations.clickup.capabilities.scoping?.savedFiltersLabel
+    expect(savedFiltersLabel?.([{key: 'listIds', value: '901423080038'}])).toBe('1 list')
+    expect(
+      savedFiltersLabel?.([
+        {key: 'listIds', value: '901423080038'},
+        {key: 'listIds', value: '901423080041'}
+      ])
+    ).toBe('2 lists')
+  })
+
   it('only Jira Data Center sets contactUs, the slot both surfaces advertise on', () => {
     const advertised = Object.entries(clientIntegrations)
       .filter(([, definition]) => definition.contactUs)

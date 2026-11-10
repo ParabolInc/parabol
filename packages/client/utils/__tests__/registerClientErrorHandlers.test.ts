@@ -82,7 +82,7 @@ test('an error a boundary reports right after React logs it is sent once, with w
   ])
 })
 
-test('a failed service worker update is not reported', async () => {
+test('a failed service worker update is not reported in Chrome', async () => {
   const {flushClientErrors} = await loadHandlers()
   console.error(
     'Error updating service worker:',
@@ -91,4 +91,29 @@ test('a failed service worker update is not reported', async () => {
   await Promise.resolve()
   flushClientErrors()
   expect(sentBeacon).not.toHaveBeenCalled()
+})
+
+test('a failed service worker update is not reported in Firefox', async () => {
+  const {flushClientErrors} = await loadHandlers()
+  console.error(
+    'Error updating service worker:',
+    new TypeError(
+      'ServiceWorker script at https://example.test/sw.js for scope https://example.test/ encountered an error during installation.'
+    )
+  )
+  await Promise.resolve()
+  flushClientErrors()
+  expect(sentBeacon).not.toHaveBeenCalled()
+})
+
+test('a failed service worker registration is still reported', async () => {
+  const {flushClientErrors} = await loadHandlers()
+  console.error(
+    new TypeError(
+      'ServiceWorker script at https://example.test/sw.js for scope https://example.test/ encountered an error during installation.'
+    )
+  )
+  await Promise.resolve()
+  flushClientErrors()
+  expect(sentBeacon).toHaveBeenCalled()
 })

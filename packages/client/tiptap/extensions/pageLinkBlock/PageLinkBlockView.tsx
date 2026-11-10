@@ -17,6 +17,7 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import {usePageViewerAccess} from '../../../hooks/usePageViewerAccess'
 import {PageDropTarget} from '../../../modules/pages/PageDropTarget'
 import {PageNoAccessLock} from '../../../modules/pages/PageNoAccessLock'
+import {snackOnError} from '../../../mutations/handlers/snackOnError'
 import {useArchivePageMutation} from '../../../mutations/useArchivePageMutation'
 import {hasMinPageRole} from '../../../shared/hasMinPageRole'
 import type {PageLinkBlockAttrs} from '../../../shared/tiptap/extensions/PageLinkBlockBase'
@@ -64,6 +65,7 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
     const pageId = `page:${pageCode}`
     executeArchive({
       variables: {pageId, action: 'archive'},
+      onError: snackOnError(atmosphere, 'PageActionsArchive'),
       onCompleted(_res, errors) {
         const firstError = errors?.[0]?.message
         if (firstError) {

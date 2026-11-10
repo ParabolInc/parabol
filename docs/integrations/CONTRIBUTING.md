@@ -192,6 +192,7 @@ pnpm --filter parabol-server exec jest --globalSetup='' --globalTeardown='' serv
 
 - **Linear**: the smallest complete task integration, using OAuth2.
 - **Azure DevOps**: a REST API with every capability, including `repoAccess`.
+- **ClickUp**: a cloud REST API with OAuth tokens that never expire.
 - **GitHub**: pushes estimates as labels.
 - **Google Calendar (`gcal`)**: not a task integration. It only lists events for the drawers.
 

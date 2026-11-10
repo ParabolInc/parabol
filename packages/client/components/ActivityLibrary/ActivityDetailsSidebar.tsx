@@ -207,13 +207,13 @@ const ActivityDetailsSidebar = (props: Props) => {
                   gcalInput,
                   ignoreSuggestedUpgrade
                 },
-                {navigate, onError, onCompleted: upgradeAwareOnCompleted}
+                {navigate, onError: upgradeAwareOnError, onCompleted: upgradeAwareOnCompleted}
               )
             } else if (type === 'poker') {
               StartSprintPokerMutation(
                 atmosphere,
                 {teamId: selectedTeam.id, gcalInput, ignoreSuggestedUpgrade},
-                {navigate, onError, onCompleted: upgradeAwareOnCompleted}
+                {navigate, onError: upgradeAwareOnError, onCompleted: upgradeAwareOnCompleted}
               )
             } else if (type === 'teamPrompt') {
               StartTeamPromptMutation(

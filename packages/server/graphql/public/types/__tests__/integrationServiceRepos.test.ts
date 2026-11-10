@@ -7,6 +7,7 @@ import RepoIntegration from '../RepoIntegration'
 
 const TYPEDEF_PREFIX_BY_SERVICE = {
   azureDevOps: 'AzureDevOps',
+  clickup: 'ClickUp',
   github: 'GitHub',
   gitlab: 'GitLab',
   jira: 'Jira',

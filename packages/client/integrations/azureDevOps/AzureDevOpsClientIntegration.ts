@@ -77,6 +77,7 @@ const workDrawer: WorkDrawerCapability = {
 export class AzureDevOpsClientIntegration extends ClientIntegrationDefinition {
   readonly service = azureDevOpsIntegrationMeta.service
   readonly title = azureDevOpsIntegrationMeta.title
+  readonly searchKeywords = ['ado', 'microsoft', 'tfs', 'vsts']
   readonly description = azureDevOpsIntegrationMeta.description
   readonly Icon = AzureDevOpsSVG
   readonly logo: ProviderLogoAsset = {src: azureDevOpsLogo}

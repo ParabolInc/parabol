@@ -4,6 +4,7 @@ import type {useGenerateSuggestedGroupsMutation as TGenerateSuggestedGroupsMutat
 import type {useGenerateSuggestedGroupsMutation_meeting$data} from '../__generated__/useGenerateSuggestedGroupsMutation_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import type {SharedUpdater} from '../types/relayMutations'
+import getServerError from '../utils/relay/getServerError'
 
 graphql`
   fragment useGenerateSuggestedGroupsMutation_meeting on SuggestedGroupsSuccess {
@@ -97,7 +98,7 @@ const useGenerateSuggestedGroupsMutation = () => {
         onCompleted?.(res, errors)
       },
       onError: (err) => {
-        showError(err.message)
+        showError(getServerError(err)?.message ?? err.message)
         onError?.(err)
       }
     })

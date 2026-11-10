@@ -76,6 +76,41 @@ describe('buildInspirationSearchQuery for azureDevOps', () => {
   })
 })
 
+describe('buildInspirationSearchQuery for clickup', () => {
+  const clickUpRange = {startAt: '2026-10-01T00:00:00.000Z', endAt: '2026-10-07T23:59:59.999Z'}
+
+  it('sends the date range and the chosen lists in the shape the server parses', () => {
+    const searchQuery = buildInspirationSearchQuery(
+      'clickup',
+      {...DEFAULT_INSPIRATION_SOURCE_SETTINGS, clickupListIds: ['901423080038']},
+      clickUpRange
+    )
+    expect(searchQuery).toBe(
+      '{"startAt":"2026-10-01T00:00:00.000Z","endAt":"2026-10-07T23:59:59.999Z","listIds":["901423080038"]}'
+    )
+  })
+
+  it('sends dates that parse back to the same instant', () => {
+    const searchQuery = buildInspirationSearchQuery(
+      'clickup',
+      DEFAULT_INSPIRATION_SOURCE_SETTINGS,
+      dateRange
+    )
+    const {startAt, endAt} = JSON.parse(searchQuery)
+    expect(new Date(startAt).toISOString()).toBe(dateRange.startAt)
+    expect(new Date(endAt).toISOString()).toBe(dateRange.endAt)
+  })
+
+  it('searches every list when none is chosen', () => {
+    const searchQuery = buildInspirationSearchQuery(
+      'clickup',
+      DEFAULT_INSPIRATION_SOURCE_SETTINGS,
+      clickUpRange
+    )
+    expect(JSON.parse(searchQuery)).toEqual({...clickUpRange, listIds: []})
+  })
+})
+
 describe('withInspirationSourceDefaults', () => {
   it('fills settings saved before a field existed', () => {
     const stored = {

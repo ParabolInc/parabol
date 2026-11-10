@@ -8,6 +8,7 @@ import type {
 import type {PokerEstimateHeaderCardQuery as TPokerEstimateHeaderCardQuery} from '../__generated__/PokerEstimateHeaderCardQuery.graphql'
 import type Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
+import getClickUpTaskLinkTitle from '../integrations/clickup/getClickUpTaskLinkTitle'
 import useUpdatePokerScopeMutation from '../mutations/useUpdatePokerScopeMutation'
 import {convertADFToTipTap} from '../shared/tiptap/convertADFToTipTap'
 import renderMarkdown from '../utils/renderMarkdown'
@@ -111,6 +112,16 @@ const getHeaderFields = (integration: Integration | null): HeaderFields | null =
         linkText: `#${identifier}`
       }
     }
+    case 'ClickUpTask': {
+      const {title: clickUpTitle, clickUpDescription, clickUpUrl, customId, taskId} = integration
+      return {
+        cardTitle: clickUpTitle,
+        descriptionHTML: renderMarkdown(clickUpDescription || '_no description found_'),
+        url: clickUpUrl,
+        linkTitle: getClickUpTaskLinkTitle(integration),
+        linkText: customId ?? taskId
+      }
+    }
   }
   return null
 }
@@ -167,6 +178,16 @@ graphql`
         title
         url
         identifier
+      }
+      ... on ClickUpTask {
+        __typename
+        title
+        clickUpDescription: description
+        clickUpUrl: url
+        taskId
+        customId
+        listName
+        folderName
       }
     }
   }

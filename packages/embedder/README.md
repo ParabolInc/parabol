@@ -76,6 +76,11 @@ whole fill sits behind every other kind of job. The tables and the jobs commit t
 so if the embedder dies while queueing, its next start tries again. Startup doesn't wait
 for a model that isn't active.
 
+The web server's `parabol_embedder_fill_jobs` metric counts the fill jobs of each model
+in the queue, by workflow (`embed` for templates, reflections and discussions, `embedPage`
+for pages) and state. A model drops out of it once it has no fill jobs left.
+`parabol_embedder_jobs` leaves the fill out, so it only shows live work.
+
 If a model's TEI is down, its fill jobs go back in the queue and their workers wait for
 it. Everything else fails as it always has. With more than one worker, the first never
 takes fill jobs, so a fill can't stall searches or new content. A job that's in flight
