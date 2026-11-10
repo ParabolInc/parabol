@@ -19,16 +19,21 @@ jest.mock('../../CipherId', () => ({
 
 const pg = getKysely()
 const viewerId = `promoteBlock|${generateUID()}`
+const strangerId = `promoteStranger|${generateUID()}`
 
-const makePage = async (isSyncedBlock = false, parentPageId: number | null = null) => {
+const makePage = async (
+  isSyncedBlock = false,
+  parentPageId: number | null = null,
+  ownerId = viewerId
+) => {
   const {id} = await pg
     .insertInto('Page')
-    .values({userId: viewerId, sortOrder: '', parentPageId, ancestorIds: [], isSyncedBlock})
+    .values({userId: ownerId, sortOrder: '', parentPageId, ancestorIds: [], isSyncedBlock})
     .returning('id')
     .executeTakeFirstOrThrow()
   await pg
     .insertInto('PageUserAccess')
-    .values({pageId: id, userId: viewerId, role: 'owner'})
+    .values({pageId: id, userId: ownerId, role: 'owner'})
     .execute()
   await updatePageAccessTable(pg, id, {skipDeleteOld: true})
   return id
@@ -69,12 +74,14 @@ let block: number
 beforeAll(async () => {
   await pg
     .insertInto('User')
-    .values({
-      id: viewerId,
-      email: `${viewerId}@example.com`,
-      picture: 'https://example.com/pic.png',
-      preferredName: 'Block Promoter'
-    })
+    .values(
+      [viewerId, strangerId].map((id) => ({
+        id,
+        email: `${id}@example.com`,
+        picture: 'https://example.com/pic.png',
+        preferredName: 'Block Promoter'
+      }))
+    )
     .execute()
 })
 
@@ -95,8 +102,8 @@ beforeEach(async () => {
 })
 
 afterAll(async () => {
-  await pg.deleteFrom('Page').where('userId', '=', viewerId).execute()
-  await pg.deleteFrom('User').where('id', '=', viewerId).execute()
+  await pg.deleteFrom('Page').where('userId', 'in', [viewerId, strangerId]).execute()
+  await pg.deleteFrom('User').where('id', 'in', [viewerId, strangerId]).execute()
   const pubSub = getPubSub()
   pubSub.destroy()
   await Promise.all([pubSub.publisher.quit(), pubSub.subscriber.quit(), getRedis().quit()])
@@ -115,6 +122,18 @@ test('re-parents under the host placed first and keeps every access row', async 
   expect(mockHandleEvent).toHaveBeenCalledWith('markPageLinkCanonical', `page:${firstCopyHost}`, {
     pageCode: block
   })
+}, 30_000)
+
+test('skips a host whose editors cannot see the block', async () => {
+  const forgedHost = await makePage(false, null, strangerId)
+  await linkBack(forgedHost, block, '2025-12-01T00:00:00Z')
+  expect(await promoteSyncedBlock(block, [originalHost])).toBe(firstCopyHost)
+  expect(await pageRow(block)).toMatchObject({parentPageId: firstCopyHost})
+  await trash(firstCopyHost)
+  await trash(secondCopyHost)
+  await pg.updateTable('Page').set({parentPageId: originalHost}).where('id', '=', block).execute()
+  expect(await promoteSyncedBlock(block, [originalHost])).toBeNull()
+  expect(await pageRow(block)).toMatchObject({parentPageId: originalHost})
 }, 30_000)
 
 test('skips hosts in trash', async () => {

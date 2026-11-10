@@ -28,6 +28,16 @@ export const promoteSyncedBlock = async (blockPageId: number, excludedHostIds: n
         .where('h.id', '<>', blockPageId)
         .where('b.fromPageId', '<>', sql<number>`ALL(${excludedHostIds}::int[])`)
         .where(sql<boolean>`NOT (${blockPageId} = ANY(h."ancestorIds"))`)
+        .where(({exists, selectFrom}) =>
+          exists(
+            selectFrom('PageAccess as hostAccess')
+              .innerJoin('PageAccess as blockAccess', 'blockAccess.userId', 'hostAccess.userId')
+              .select(sql.lit(1).as('one'))
+              .whereRef('hostAccess.pageId', '=', 'h.id')
+              .where('hostAccess.role', 'in', ['owner', 'editor'])
+              .where('blockAccess.pageId', '=', blockPageId)
+          )
+        )
         .orderBy('b.createdAt')
         .orderBy('b.fromPageId')
         .limit(1)
