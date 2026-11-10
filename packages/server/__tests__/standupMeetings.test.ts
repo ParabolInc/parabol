@@ -806,7 +806,7 @@ test('a draft cannot be reacted to until it is shared', async () => {
     })
 
   const onDraft = await react()
-  expect(onDraft.data.addReactjiToReactable.error.message).toBe('Item does not exist')
+  expect(onDraft.errors?.[0]?.message).toBe('Item does not exist')
 
   await sendPublic({query: SHARE, variables: {meetingId: meeting.id}, cookie: owner.cookie})
   const onShared = await react()
