@@ -1,5 +1,6 @@
 import type {Insertable} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import isOpenTask from 'parabol-client/utils/isOpenTask'
 import MeetingMemberId from '../../../../client/shared/gqlIds/MeetingMemberId'
 import {positionAfter} from '../../../../client/shared/sortOrder'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
@@ -122,9 +123,15 @@ const joinMeeting: MutationResolvers['joinMeeting'] = async (
     return addStageToPhase((sortOrder) => new CheckInStage(teamMemberId, sortOrder), 'checkin')
   }
 
+  const teamHasOpenTasks = async () => {
+    const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)
+    return teamTasks.some((task) => !!task.userId && isOpenTask(task))
+  }
+
   const appendToUpdate = async () => {
     const updatesPhase = getPhase(phases, 'updates')
     if (!updatesPhase) return false
+    if (meeting.meetingType === 'retrospective' && !(await teamHasOpenTasks())) return false
     return addStageToPhase((sortOrder) => new UpdatesStage(teamMemberId, sortOrder), 'updates')
   }
 
