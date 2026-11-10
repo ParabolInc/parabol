@@ -22,6 +22,7 @@ const query = graphql`
     viewer {
       viewerTeamMember: teamMember(userId: null, teamId: $teamId) {
         ...TaskFooterIntegrateMenuSignup_teamMember
+        ...TaskFooterIntegrateMenuList_teamMember
         ...useIsIntegrated_teamMember
       }
       team(teamId: $teamId) {
@@ -77,7 +78,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
     return (
       <TaskFooterIntegrateMenuList
         placeholder={placeholder}
-        teamId={task.teamId}
+        teamMemberRef={viewerTeamMember}
         onPushToIntegration={handlePushToIntegration}
         label={label}
       />

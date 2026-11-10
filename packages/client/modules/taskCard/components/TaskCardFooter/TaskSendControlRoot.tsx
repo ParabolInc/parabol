@@ -26,6 +26,7 @@ const TaskSendControlRoot = (props: Props) => {
           mutationProps={mutationProps}
           queryRef={queryRef}
           task={task}
+          teamId={teamId}
           useTaskChild={useTaskChild}
         />
       ) : (
