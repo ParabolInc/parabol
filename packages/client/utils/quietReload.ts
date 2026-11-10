@@ -31,7 +31,7 @@ export interface PageState {
 }
 
 // A meeting or a demo lives in this page, so reloading would drop the viewer out of it
-const getLiveSession = (pathname: string) => {
+export const getLiveSession = (pathname: string) => {
   if (pathname.startsWith('/meet/')) return pathname.split('/', 3).join('/')
   if (pathname.startsWith('/retrospective-demo')) return '/retrospective-demo'
   if (pathname.startsWith('/team-health-demo')) return '/team-health-demo'
