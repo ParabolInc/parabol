@@ -33,6 +33,9 @@ const setConnectedStatus = (atmosphere: Atmosphere, isConnected: boolean) => {
   })
 }
 
+// a background tab pings once a minute, then reconnects within seconds of a deploy closing its socket
+const MAX_DEPLOY_RECONNECT_GAP = ms('2m')
+
 let firewallMessageSent = false
 let recentDisconnects = [] as number[]
 
@@ -74,6 +77,7 @@ export function createWSClient(atmosphere: Atmosphere) {
     let abruptlyClosed = false
     let nextId = 1
     let timedOut: number
+    let lastPongAt = Date.now()
     const subscriptionClient = createClient({
       lazy: false,
       connectionParams: () => ({sessionId: getTabSessionId()}),
@@ -101,6 +105,7 @@ export function createWSClient(atmosphere: Atmosphere) {
         pong: (received) => {
           if (received) {
             clearTimeout(timedOut)
+            lastPongAt = Date.now()
           }
         },
         connected: async (_socket, payload, _wasRetry) => {
@@ -124,8 +129,10 @@ export function createWSClient(atmosphere: Atmosphere) {
             // if the client abruptly closed, this is then a reconnect
             abruptlyClosed = false
             onReconnect(atmosphere)
-            if (!isNewVersion) {
-              // don't refetch on version bumps because the reconnect is fast & it'll strangle the server if everyone does that at once
+            // A deploy reconnects every client at once, so a client that was connected a moment ago skips the refetch to spare the server
+            // A tab that was frozen or asleep through the deploy missed everything since its last pong
+            const wasAway = Date.now() - lastPongAt > MAX_DEPLOY_RECONNECT_GAP
+            if (!isNewVersion || wasAway) {
               atmosphere.retries.forEach((retry) => retry())
             }
           }
