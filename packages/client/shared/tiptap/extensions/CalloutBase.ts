@@ -1,5 +1,10 @@
 import {Node} from '@tiptap/core'
 import {
+  calloutMarkdownTokenizer,
+  parseCalloutMarkdown,
+  renderCalloutMarkdown
+} from '../calloutMarkdown'
+import {
   CALLOUT_CHILD_TYPES,
   CALLOUT_TONE_LABELS,
   calloutToneFromAlertType,
@@ -63,5 +68,13 @@ export const CalloutBase = Node.create({
       {...HTMLAttributes, 'data-type': 'callout', role: 'note', 'aria-label': label},
       0
     ]
-  }
+  },
+
+  markdownTokenName: 'callout',
+
+  markdownTokenizer: calloutMarkdownTokenizer,
+
+  parseMarkdown: parseCalloutMarkdown,
+
+  renderMarkdown: renderCalloutMarkdown
 })
