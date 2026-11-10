@@ -17,20 +17,8 @@ interface Props {
 }
 
 const query = graphql`
-  query TaskFooterIntegrateMenuQuery($teamId: ID!, $userId: ID!) @raw_response_type {
+  query TaskFooterIntegrateMenuQuery($teamId: ID!) @raw_response_type {
     viewer {
-      id
-      assigneeTeamMember: teamMember(userId: $userId, teamId: $teamId) {
-        user {
-          preferredName
-        }
-        prevUsedRepoIntegrations(first: 1) {
-          items {
-            id
-          }
-        }
-        ...useIsIntegrated_teamMember
-      }
       viewerTeamMember: teamMember(userId: null, teamId: $teamId) {
         ...TaskFooterIntegrateMenuSignup_teamMember
         ...useIsIntegrated_teamMember
@@ -48,24 +36,16 @@ const TaskFooterIntegrateMenu = (props: Props) => {
       fragment TaskFooterIntegrateMenu_task on Task {
         id
         teamId
-        userId
       }
     `,
     taskRef
   )
   const atmosphere = useAtmosphere()
 
-  const {id: viewerId, viewerTeamMember, assigneeTeamMember} = viewer
+  const {viewerTeamMember} = viewer
   const isViewerIntegrated = useIsIntegrated(viewerTeamMember)
-  const isAssigneeIntegrated = useIsIntegrated(assigneeTeamMember)
-  if (!assigneeTeamMember || !viewerTeamMember) return null
-  const {user: assigneeUser, prevUsedRepoIntegrations} = assigneeTeamMember
-  const {preferredName: assigneeName} = assigneeUser
-  const {teamId, userId, id: taskId} = task
-  const isViewerAssignee = viewerId === userId
-  const showAssigneeIntegrations = !!(
-    isAssigneeIntegrated && prevUsedRepoIntegrations.items?.length
-  )
+  if (!viewerTeamMember) return null
+  const {teamId, id: taskId} = task
   const {submitMutation, onError, onCompleted} = mutationProps
 
   const handlePushToIntegration = (
@@ -86,7 +66,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
 
   if (isViewerIntegrated) {
     const placeholder = makePlaceholder(isViewerIntegrated)
-    const label = 'Push with your credentials'
+    const label = 'Send with your credentials'
     return (
       <TaskFooterIntegrateMenuList
         placeholder={placeholder}
@@ -97,21 +77,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
     )
   }
 
-  if (showAssigneeIntegrations) {
-    const placeholder = makePlaceholder(isAssigneeIntegrated)
-    const label = isViewerAssignee ? undefined : `Push as ${assigneeName}`
-    return (
-      <TaskFooterIntegrateMenuList
-        placeholder={placeholder}
-        teamId={task.teamId}
-        onPushToIntegration={handlePushToIntegration}
-        label={label}
-      />
-    )
-  }
-  const label = isViewerAssignee
-    ? "You don't have any integrations for this team yet."
-    : `Neither you nor ${assigneeName} has any integrations for this team.`
+  const label = "You don't have any integrations for this team yet."
 
   return (
     <TaskFooterIntegrateMenuSignup

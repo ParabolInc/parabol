@@ -369,21 +369,12 @@ export default class TeamHealthDemoDb {
 
   // the visitor has no integrations, so the integrate menu has nothing to list. The demo swaps that
   // menu for a preview dialog, see TaskFooterIntegrateToggle
-  integrateMenu: Resolver<TaskFooterIntegrateMenuQuery> = ({userId}) => {
-    const assignee = demoTeammates.find(({id}) => id === userId) ?? demoViewer
-    return {
-      viewer: {
-        id: demoViewer.id,
-        assigneeTeamMember: {
-          id: demoTeamMemberId(assignee.id),
-          user: {id: assignee.id, preferredName: assignee.preferredName},
-          prevUsedRepoIntegrations: {items: []},
-          services: []
-        },
-        viewerTeamMember: {id: demoTeamMemberId(demoViewer.id), services: []}
-      }
+  integrateMenu: Resolver<TaskFooterIntegrateMenuQuery> = () => ({
+    viewer: {
+      id: demoViewer.id,
+      viewerTeamMember: {id: demoTeamMemberId(demoViewer.id), services: []}
     }
-  }
+  })
 
   assigneeMenu: Resolver<TaskFooterUserAssigneeMenuQuery> = ({teamId}) => ({
     viewer: {

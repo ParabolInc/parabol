@@ -24,17 +24,15 @@ const TaskFooterIntegrateMenuRoot = (props: Props) => {
     graphql`
       fragment TaskFooterIntegrateMenuRoot_task on Task {
         teamId
-        userId
         ...TaskFooterIntegrateMenu_task
       }
     `,
     taskRef
   )
-  const {teamId, userId} = task
+  const {teamId} = task
   useTaskChild('integrate')
   const queryRef = useQueryLoaderNow<TaskFooterIntegrateMenuQuery>(taskFooterIntegrateMenuQuery, {
-    teamId,
-    userId: userId || ''
+    teamId
   })
   return (
     <Suspense

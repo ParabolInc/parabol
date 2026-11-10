@@ -5,7 +5,10 @@ import useSearchFilter from '~/hooks/useSearchFilter'
 import mergeRepoIntegrationItems from '~/utils/mergeRepoIntegrationItems'
 import type {TaskServiceEnum} from '../__generated__/CreateTaskMutation.graphql'
 import type {TaskFooterIntegrateMenuListLocalQuery} from '../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
-import {isTaskClientIntegration} from '../integrations/platform/registry'
+import {
+  isTaskClientIntegration,
+  listClientIntegrationServices
+} from '../integrations/platform/registry'
 import {MenuSearch} from '../ui/Menu/MenuSearch'
 import {MenuSeparator} from '../ui/Menu/MenuSeparator'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
@@ -66,7 +69,9 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
   )
   const services = useMemo(
     () =>
-      (viewer?.teamMember?.services ?? []).filter(({service}) => isTaskClientIntegration(service)),
+      listClientIntegrationServices(viewer?.teamMember?.services ?? [])
+        .map(({integrationService}) => integrationService)
+        .filter(({service}) => isTaskClientIntegration(service)),
     [viewer?.teamMember?.services]
   )
   const prevUsedItems = viewer?.teamMember?.prevUsedRepoIntegrations.items ?? []

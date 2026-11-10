@@ -3,7 +3,10 @@ import {useFragment} from 'react-relay'
 import type {TaskFooterIntegrateMenuSignup_teamMember$key} from '~/__generated__/TaskFooterIntegrateMenuSignup_teamMember.graphql'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
 import {listServiceProviders} from '../integrations/platform/integrationServiceProviders'
-import {isTaskClientIntegration} from '../integrations/platform/registry'
+import {
+  isTaskClientIntegration,
+  listClientIntegrationServices
+} from '../integrations/platform/registry'
 import {MenuSeparator} from '../ui/Menu/MenuSeparator'
 import ConnectIntegrationMenuItem from './ConnectIntegrationMenuItem'
 import LoadingComponent from './LoadingComponent/LoadingComponent'
@@ -43,7 +46,7 @@ const TaskFooterIntegrateMenuSignup = (props: Props) => {
           <MenuSeparator />
         </>
       )}
-      {services.map((integrationService) => {
+      {listClientIntegrationServices(services).map(({integrationService}) => {
         const {service, title, isConnected, grantedScopes} = integrationService
         if (isConnected || !isTaskClientIntegration(service)) return null
         const [provider] = listServiceProviders(integrationService)
