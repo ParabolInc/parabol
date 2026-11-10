@@ -5,7 +5,8 @@ import type {MenuMutationProps} from '../hooks/useMutationProps'
 import {listServiceProviders} from '../integrations/platform/integrationServiceProviders'
 import {
   isTaskClientIntegration,
-  listClientIntegrationServices
+  listClientIntegrationServices,
+  type TaskClientIntegration
 } from '../integrations/platform/registry'
 import {MenuSeparator} from '../ui/Menu/MenuSeparator'
 import ConnectIntegrationMenuItem from './ConnectIntegrationMenuItem'
@@ -15,11 +16,15 @@ interface Props {
   mutationProps: MenuMutationProps
   teamId: string
   label?: string
+  orgServices?: readonly TaskClientIntegration[]
   teamMemberRef: TaskFooterIntegrateMenuSignup_teamMember$key
 }
 
+const SECTION_TITLE =
+  'px-4 pt-2 pb-1 font-semibold text-[11px] text-fg-muted uppercase leading-4 tracking-[.04em]'
+
 const TaskFooterIntegrateMenuSignup = (props: Props) => {
-  const {mutationProps, teamId, label, teamMemberRef} = props
+  const {mutationProps, teamId, label, orgServices = [], teamMemberRef} = props
   const {submitting} = mutationProps
   const teamMember = useFragment(
     graphql`
@@ -38,6 +43,27 @@ const TaskFooterIntegrateMenuSignup = (props: Props) => {
   const {services} = teamMember
 
   if (submitting) return <LoadingComponent spinnerSize={24} height={24} showAfter={0} width={200} />
+  const connectable = listClientIntegrationServices(services).flatMap(({integrationService}) => {
+    const {service, isConnected} = integrationService
+    if (isConnected || !isTaskClientIntegration(service)) return []
+    const [provider] = listServiceProviders(integrationService)
+    return provider ? [{integrationService, service, provider}] : []
+  })
+  const orgItems = orgServices.flatMap(
+    (orgService) => connectable.find(({service}) => service === orgService) ?? []
+  )
+  const otherItems = connectable.filter((item) => !orgItems.includes(item))
+  const renderItem = ({integrationService, service, provider}: (typeof connectable)[number]) => (
+    <ConnectIntegrationMenuItem
+      key={service}
+      teamId={teamId}
+      mutationProps={mutationProps}
+      service={service}
+      title={integrationService.title}
+      provider={provider}
+      heldScopes={integrationService.grantedScopes}
+    />
+  )
   return (
     <>
       {label && (
@@ -46,23 +72,12 @@ const TaskFooterIntegrateMenuSignup = (props: Props) => {
           <MenuSeparator />
         </>
       )}
-      {listClientIntegrationServices(services).map(({integrationService}) => {
-        const {service, title, isConnected, grantedScopes} = integrationService
-        if (isConnected || !isTaskClientIntegration(service)) return null
-        const [provider] = listServiceProviders(integrationService)
-        if (!provider) return null
-        return (
-          <ConnectIntegrationMenuItem
-            key={service}
-            teamId={teamId}
-            mutationProps={mutationProps}
-            service={service}
-            title={title}
-            provider={provider}
-            heldScopes={grantedScopes}
-          />
-        )
-      })}
+      {orgItems.length > 0 && <div className={SECTION_TITLE}>Used by your organization</div>}
+      {orgItems.map(renderItem)}
+      {orgItems.length > 0 && otherItems.length > 0 && (
+        <div className={SECTION_TITLE}>Other tools</div>
+      )}
+      {otherItems.map(renderItem)}
     </>
   )
 }

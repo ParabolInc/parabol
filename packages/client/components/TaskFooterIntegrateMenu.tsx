@@ -7,6 +7,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import {makePlaceholder, useIsIntegrated} from '../hooks/useIsIntegrated'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
 import CreateTaskIntegrationMutation from '../mutations/CreateTaskIntegrationMutation'
+import {getOrgSendServices} from '../utils/getSendServices'
 import TaskFooterIntegrateMenuList from './TaskFooterIntegrateMenuList'
 import TaskFooterIntegrateMenuSignup from './TaskFooterIntegrateMenuSignup'
 
@@ -22,6 +23,12 @@ const query = graphql`
       viewerTeamMember: teamMember(userId: null, teamId: $teamId) {
         ...TaskFooterIntegrateMenuSignup_teamMember
         ...useIsIntegrated_teamMember
+      }
+      team(teamId: $teamId) {
+        recentOrgTaskCounts {
+          service
+          taskCount
+        }
       }
     }
   }
@@ -84,6 +91,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
       mutationProps={mutationProps}
       teamId={teamId}
       label={label}
+      orgServices={getOrgSendServices(viewer.team?.recentOrgTaskCounts ?? [])}
       teamMemberRef={viewerTeamMember}
     />
   )

@@ -7,15 +7,15 @@ import {
 import {Button, type ButtonProps} from '../../../../ui/Button/Button'
 import {cn} from '../../../../ui/cn'
 import {Add, ArrowDropDown} from '../../../../ui/icons'
-import {SUGGESTED_SEND_SERVICES} from '../../../../utils/getSendServices'
 
 interface Props extends ButtonProps {
   services: readonly TaskClientIntegration[]
+  suggestedServices: readonly TaskClientIntegration[]
   isCardActive: boolean
 }
 
 const TaskSendButton = forwardRef<HTMLButtonElement, Props>((props, ref) => {
-  const {services, isCardActive, className, ...rest} = props
+  const {services, suggestedServices, isCardActive, className, ...rest} = props
   const [primaryService] = services
   const logoTone = cn(
     'flex items-center gap-[3px] transition-[filter,opacity]',
@@ -40,7 +40,7 @@ const TaskSendButton = forwardRef<HTMLButtonElement, Props>((props, ref) => {
         <>
           <Add className='h-4 w-4' />
           <span className={logoTone}>
-            {SUGGESTED_SEND_SERVICES.map((service) => (
+            {suggestedServices.map((service) => (
               <ProviderLogo
                 key={service}
                 logo={getClientIntegration(service).logo}

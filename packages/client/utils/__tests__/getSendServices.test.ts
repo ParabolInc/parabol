@@ -1,7 +1,13 @@
 jest.mock('babel-plugin-relay/macro', () => ({__esModule: true, default: () => ({})}))
 
 import type {IntegrationProviderServiceEnum} from '../../__generated__/CreateTaskIntegrationMutation.graphql'
-import {getConnectLabel, getSendServices, getSendToLabel} from '../getSendServices'
+import {
+  getConnectLabel,
+  getOrgSendServices,
+  getSendServices,
+  getSendToLabel,
+  SUGGESTED_SEND_SERVICES
+} from '../getSendServices'
 
 const connected = (...services: IntegrationProviderServiceEnum[]) =>
   services.map((service) => ({service, isConnected: true}))
@@ -36,10 +42,31 @@ describe('getSendToLabel', () => {
   })
 })
 
+describe('getOrgSendServices', () => {
+  it('lists the tools the org sends tasks to, most used first, up to three', () => {
+    const counts = [
+      {service: 'github' as const, taskCount: 4},
+      {service: 'gitlab' as const, taskCount: 40},
+      {service: 'linear' as const, taskCount: 9},
+      {service: 'jira' as const, taskCount: 2}
+    ]
+    expect(getOrgSendServices(counts)).toEqual(['gitlab', 'linear', 'github'])
+  })
+
+  it('leaves out Parabol tasks and tools with no tasks', () => {
+    const counts = [
+      {service: 'PARABOL' as const, taskCount: 90},
+      {service: 'jira' as const, taskCount: 0}
+    ]
+    expect(getOrgSendServices(counts)).toEqual([])
+  })
+})
+
 describe('getConnectLabel', () => {
-  it('names the suggested tools and leaves room for others', () => {
-    expect(getConnectLabel()).toBe(
+  it('names the tools it suggests and leaves room for others', () => {
+    expect(getConnectLabel(SUGGESTED_SEND_SERVICES)).toBe(
       'Connect Jira Cloud, GitHub, GitLab or another tool to send this task'
     )
+    expect(getConnectLabel(['gitlab'])).toBe('Connect GitLab or another tool to send this task')
   })
 })

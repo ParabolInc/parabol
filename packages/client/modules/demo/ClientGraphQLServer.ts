@@ -339,6 +339,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       return {
         viewer: {
           ...user,
+          team: null,
           viewerTeamMember: this.db.teamMembers[0]
         }
       }

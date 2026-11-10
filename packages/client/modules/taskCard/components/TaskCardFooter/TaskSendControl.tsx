@@ -10,7 +10,13 @@ import {MenuContent} from '../../../../ui/Menu/MenuContent'
 import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../../ui/Tooltip/TooltipTrigger'
-import {getConnectLabel, getSendServices, getSendToLabel} from '../../../../utils/getSendServices'
+import {
+  getConnectLabel,
+  getOrgSendServices,
+  getSendServices,
+  getSendToLabel,
+  SUGGESTED_SEND_SERVICES
+} from '../../../../utils/getSendServices'
 import lazyPreload from '../../../../utils/lazyPreload'
 import TaskSendButton from './TaskSendButton'
 
@@ -30,6 +36,12 @@ export const taskSendControlQuery = graphql`
           isConnected
         }
       }
+      team(teamId: $teamId) {
+        recentOrgTaskCounts {
+          service
+          taskCount
+        }
+      }
     }
   }
 `
@@ -46,7 +58,9 @@ const TaskSendControl = (props: Props) => {
   const {isCardActive, mutationProps, queryRef, task, useTaskChild} = props
   const {viewer} = usePreloadedQuery<TaskSendControlQuery>(taskSendControlQuery, queryRef)
   const services = getSendServices(viewer.teamMember?.services ?? [])
-  const label = services.length > 0 ? getSendToLabel(services) : getConnectLabel()
+  const orgServices = getOrgSendServices(viewer.team?.recentOrgTaskCounts ?? [])
+  const suggestedServices = orgServices.length > 0 ? orgServices : SUGGESTED_SEND_SERVICES
+  const label = services.length > 0 ? getSendToLabel(services) : getConnectLabel(suggestedServices)
   return (
     <Tooltip>
       <Menu
@@ -56,12 +70,13 @@ const TaskSendControl = (props: Props) => {
               aria-label={label}
               isCardActive={isCardActive}
               services={services}
+              suggestedServices={suggestedServices}
               onMouseEnter={TaskFooterIntegrateMenuRoot.preload}
             />
           </TooltipTrigger>
         }
       >
-        <MenuContent align='end' className='w-[250px]'>
+        <MenuContent align='end' className='max-h-96 w-[250px]'>
           <Suspense fallback={null}>
             <TaskFooterIntegrateMenuRoot
               mutationProps={mutationProps}
