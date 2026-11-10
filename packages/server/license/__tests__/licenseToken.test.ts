@@ -1,5 +1,16 @@
 import {generateKeyPairSync} from 'node:crypto'
-import {isHostCovered, type LicenseClaims, parseLicense, signLicense} from '../licenseToken'
+import {
+  generateUsageKeyPair,
+  isHostCovered,
+  type LicenseClaims,
+  parseLicense,
+  parseLicenseKey,
+  signLicense,
+  signUsageReport,
+  stageOffsetMs,
+  type UsageReportClaims,
+  verifyUsageReport
+} from '../licenseToken'
 
 const makeKeys = () => {
   const {privateKey, publicKey} = generateKeyPairSync('ed25519')
@@ -11,6 +22,7 @@ const makeKeys = () => {
 
 const keys = makeKeys()
 const publicKeys = {test: keys.publicPem}
+const usage = generateUsageKeyPair()
 const claims: LicenseClaims = {
   v: 1,
   kid: 'test',
@@ -20,13 +32,22 @@ const claims: LicenseClaims = {
   seats: 50,
   hosts: ['parabol.acme.mil'],
   issuedAt: '2026-11-01T00:00:00.000Z',
-  expiresAt: '2027-11-01T00:00:00.000Z'
+  expiresAt: '2027-11-01T00:00:00.000Z',
+  onExpiry: [
+    {from: '-30d', notice: 'admins'},
+    {from: '90d', notice: 'everyone', tier: 'starter'}
+  ],
+  onOverSeats: [{from: '14d', notice: 'admins'}],
+  usageKey: usage.publicKey
 }
+const HOST = 'parabol.acme.mil'
+const signed = (overrides: Partial<LicenseClaims> | Record<string, unknown>) =>
+  signLicense({...claims, ...overrides} as LicenseClaims, keys.privatePem)
 
 describe('parseLicense', () => {
   test('accepts a license Parabol signed, on a host it covers', () => {
     const token = signLicense(claims, keys.privatePem)
-    expect(parseLicense(token, publicKeys, 'parabol.acme.mil')).toEqual({ok: true, claims})
+    expect(parseLicense(token, publicKeys, HOST)).toEqual({ok: true, claims})
   })
 
   test('reports no license as missing', () => {
@@ -39,7 +60,7 @@ describe('parseLicense', () => {
     const changed = Buffer.from(
       JSON.stringify({...JSON.parse(Buffer.from(payload!, 'base64url').toString()), seats: 5000})
     ).toString('base64url')
-    const result = parseLicense(`${changed}.${signature}`, publicKeys, 'parabol.acme.mil')
+    const result = parseLicense(`${changed}.${signature}`, publicKeys, HOST)
     expect(result).toMatchObject({
       ok: false,
       reason: 'invalid',
@@ -49,15 +70,14 @@ describe('parseLicense', () => {
 
   test('rejects a license signed with someone else’s key under Parabol’s key ID', () => {
     const forged = signLicense(claims, makeKeys().privatePem)
-    expect(parseLicense(forged, publicKeys, 'parabol.acme.mil')).toMatchObject({
+    expect(parseLicense(forged, publicKeys, HOST)).toMatchObject({
       ok: false,
       error: 'the signature does not match'
     })
   })
 
   test('rejects an unknown key ID and malformed tokens', () => {
-    const unknownKid = signLicense({...claims, kid: 'other'}, keys.privatePem)
-    expect(parseLicense(unknownKid, publicKeys, 'parabol.acme.mil')).toMatchObject({
+    expect(parseLicense(signed({kid: 'other'}), publicKeys, HOST)).toMatchObject({
       ok: false,
       error: 'unknown signing key other'
     })
@@ -69,15 +89,40 @@ describe('parseLicense', () => {
   })
 
   test('rejects signed claims that make no sense', () => {
-    const bad = signLicense({...claims, tier: 'platinum'} as any, keys.privatePem)
-    expect(parseLicense(bad, publicKeys, 'parabol.acme.mil')).toMatchObject({
-      ok: false,
-      error: 'unknown tier platinum'
-    })
-    const noSeats = signLicense({...claims, seats: 0}, keys.privatePem)
-    expect(parseLicense(noSeats, publicKeys, 'parabol.acme.mil')).toMatchObject({
-      error: 'seats must be a positive integer'
-    })
+    const errorOf = (overrides: Record<string, unknown>) => {
+      const result = parseLicense(signed(overrides), publicKeys, HOST)
+      return result.ok ? undefined : result.error
+    }
+    expect(errorOf({tier: 'platinum'})).toBe('unknown tier platinum')
+    expect(errorOf({seats: 0})).toBe('seats must be a positive integer')
+    expect(errorOf({onExpiry: undefined})).toBe('onExpiry must be a list, [] for nothing')
+    expect(errorOf({onExpiry: [{from: '3 months', notice: 'admins'}]})).toBe(
+      'onExpiry has a from of 3 months, not days such as 90d or -30d'
+    )
+    expect(
+      errorOf({
+        onExpiry: [
+          {from: '90d', notice: 'admins'},
+          {from: '30d', notice: 'admins'}
+        ]
+      })
+    ).toBe("onExpiry's steps must go from earliest to latest")
+    expect(errorOf({onOverSeats: [{from: '0d', notice: 'boss'}]})).toBe(
+      'onOverSeats has a notice of boss, not none, admins or everyone'
+    )
+    expect(errorOf({onOverSeats: [{from: '0d', notice: 'none', tier: 'enterprise'}]})).toBe(
+      'onOverSeats has a tier of enterprise, not team or starter'
+    )
+    expect(errorOf({expiresAt: undefined})).toBe(
+      'onExpiry has steps, but the license never expires'
+    )
+    expect(errorOf({seats: undefined})).toBe(
+      'onOverSeats has steps, but the license covers any number of users'
+    )
+    expect(errorOf({usageKey: 'abc'})).toBe('usageKey is not an Ed25519 public key')
+    expect(errorOf({expiresAt: undefined, seats: undefined, onExpiry: [], onOverSeats: []})).toBe(
+      undefined
+    )
   })
 
   test('rejects a license for another host', () => {
@@ -90,6 +135,16 @@ describe('parseLicense', () => {
   })
 })
 
+describe('stageOffsetMs', () => {
+  test('reads whole days, before or after', () => {
+    expect(stageOffsetMs('90d')).toBe(90 * 86400000)
+    expect(stageOffsetMs('-30d')).toBe(-30 * 86400000)
+    expect(stageOffsetMs('0d')).toBe(0)
+    expect(stageOffsetMs('2w')).toBeUndefined()
+    expect(stageOffsetMs(90)).toBeUndefined()
+  })
+})
+
 describe('isHostCovered', () => {
   test('matches hostnames, ignoring case and port, with *. wildcards', () => {
     expect(isHostCovered(undefined, undefined)).toBe(true)
@@ -98,5 +153,106 @@ describe('isHostCovered', () => {
     expect(isHostCovered(['*.acme.mil'], 'acme.mil')).toBe(false)
     expect(isHostCovered(['*.acme.mil'], 'evilacme.mil')).toBe(false)
     expect(isHostCovered(['parabol.acme.mil'], undefined)).toBe(false)
+  })
+})
+
+describe('parseLicenseKey', () => {
+  const license = signLicense(claims, keys.privatePem)
+
+  test('splits off the usage key the license names', () => {
+    const {parsed, usage: usageKey} = parseLicenseKey(
+      `${license}.${usage.privateKey}`,
+      publicKeys,
+      HOST
+    )
+    expect(parsed).toEqual({ok: true, claims})
+    expect(usageKey).toEqual({ok: true, privateKey: usage.privateKey, license})
+  })
+
+  test('keeps the license without a usage key, but can’t sign reports', () => {
+    const {parsed, usage: usageKey} = parseLicenseKey(license, publicKeys, HOST)
+    expect(parsed.ok).toBe(true)
+    expect(usageKey).toEqual({ok: false, error: 'the license key has no usage key'})
+  })
+
+  test('refuses a usage key other than the one the license names', () => {
+    const other = generateUsageKeyPair()
+    const {parsed, usage: usageKey} = parseLicenseKey(
+      `${license}.${other.privateKey}`,
+      publicKeys,
+      HOST
+    )
+    expect(parsed.ok).toBe(true)
+    expect(usageKey.ok).toBe(false)
+    expect(parseLicenseKey(`${license}.garbage`, publicKeys, HOST).usage.ok).toBe(false)
+  })
+
+  test('a license that names no usage key can’t sign reports', () => {
+    const noUsage = signed({usageKey: undefined})
+    expect(parseLicenseKey(`${noUsage}.${usage.privateKey}`, publicKeys, HOST).usage).toEqual({
+      ok: false,
+      error: 'the license names no usage key'
+    })
+  })
+})
+
+describe('usage reports', () => {
+  const license = signLicense(claims, keys.privatePem)
+  const report: UsageReportClaims = {
+    v: 1,
+    type: 'usage',
+    license,
+    host: HOST,
+    generatedAt: '2026-12-01T15:04:00.000Z',
+    activeUsers: 231,
+    organizations: [{id: 'org1', name: 'Acme', activeUsers: 231}],
+    monthlyPeaks: {'2026-11': 236, '2026-12': 231}
+  }
+  const tamper = (token: string, change: Partial<UsageReportClaims>) => {
+    const [payload, signature] = token.split('.')
+    const changed = {...JSON.parse(Buffer.from(payload!, 'base64url').toString()), ...change}
+    return `${Buffer.from(JSON.stringify(changed)).toString('base64url')}.${signature}`
+  }
+
+  test('a report the license’s usage key signed is genuine', () => {
+    const token = signUsageReport(report, usage.privateKey)
+    expect(verifyUsageReport(token, publicKeys)).toEqual({ok: true, report, license: claims})
+  })
+
+  test('a changed report is not', () => {
+    const token = signUsageReport(report, usage.privateKey)
+    expect(verifyUsageReport(tamper(token, {activeUsers: 40}), publicKeys)).toMatchObject({
+      ok: false
+    })
+  })
+
+  test('a report signed with another usage key is not', () => {
+    const token = signUsageReport(report, generateUsageKeyPair().privateKey)
+    expect(verifyUsageReport(token, publicKeys)).toMatchObject({ok: false})
+  })
+
+  test('a report whose license Parabol didn’t sign is not', () => {
+    const forger = makeKeys()
+    const forgedUsage = generateUsageKeyPair()
+    const forgedLicense = signLicense(
+      {...claims, usageKey: forgedUsage.publicKey},
+      forger.privatePem
+    )
+    const token = signUsageReport({...report, license: forgedLicense}, forgedUsage.privateKey)
+    expect(verifyUsageReport(token, publicKeys)).toEqual({
+      ok: false,
+      error: 'its license is invalid: the signature does not match'
+    })
+  })
+
+  test('a license key’s usage key signs reports that verify', () => {
+    const {usage: usageKey} = parseLicenseKey(`${license}.${usage.privateKey}`, publicKeys, HOST)
+    if (!usageKey.ok) throw new Error(usageKey.error)
+    const token = signUsageReport({...report, license: usageKey.license}, usageKey.privateKey)
+    expect(verifyUsageReport(token, publicKeys).ok).toBe(true)
+    expect(verifyUsageReport('junk', publicKeys)).toEqual({
+      ok: false,
+      error: 'it is not a signed usage report'
+    })
   })
 })

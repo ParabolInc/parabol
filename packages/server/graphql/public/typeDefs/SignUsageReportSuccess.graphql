@@ -1,0 +1,14 @@
+"""
+A report of this Parabol instance's active users, signed with its usage key
+"""
+type SignUsageReportSuccess {
+  """
+  The report, as a JSON file to send to Parabol
+  """
+  file: String!
+
+  """
+  A name for the file
+  """
+  fileName: String!
+}

@@ -25,3 +25,12 @@ export const capTierByLicense = ({
   tier: TierEnum
   stripeSubscriptionId: string | null
 }) => capTier(tier, !!stripeSubscriptionId, getCurrentLicenseStatus().maxTier)
+
+/** Whether an organization's paid tier rests on the license: it has one, without a Stripe subscription */
+export const dependsOnLicense = ({
+  tier,
+  stripeSubscriptionId
+}: {
+  tier: TierEnum
+  stripeSubscriptionId: string | null
+}) => tier !== 'starter' && !stripeSubscriptionId

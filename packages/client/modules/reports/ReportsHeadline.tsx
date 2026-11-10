@@ -4,6 +4,7 @@ import type {ReportsHeadline_organization$key} from '../../__generated__/Reports
 import plural from '../../utils/plural'
 import ReportHeadlineNumber from './ReportHeadlineNumber'
 import {sumReportValues} from './reportRows'
+import SignedUsageReportLink from './SignedUsageReportLink'
 
 interface Props {
   organizationRef: ReportsHeadline_organization$key
@@ -22,9 +23,18 @@ const changeOf = (rows: readonly HeadlineRow[]) =>
 
 // The four numbers at the top of the page always cover the last 30 days, whatever the page's period
 const ReportsHeadline = ({organizationRef}: Props) => {
-  const {activeUsers, teamsThatMet, userIntegrations, tasksPushed} = useFragment(
+  const {
+    id: orgId,
+    canSignUsageReport,
+    activeUsers,
+    teamsThatMet,
+    userIntegrations,
+    tasksPushed
+  } = useFragment(
     graphql`
       fragment ReportsHeadline_organization on Organization {
+        id
+        canSignUsageReport
         activeUsers: report(
           spec: {
             measures: [ACTIVE_USERS, USERS]
@@ -115,6 +125,7 @@ const ReportsHeadline = ({organizationRef}: Props) => {
         }
         change={changeOf(activeUsers.rows)}
         comparison={PREVIOUS_30_DAYS}
+        footer={canSignUsageReport ? <SignedUsageReportLink orgId={orgId} /> : undefined}
       />
       <ReportHeadlineNumber
         label='Teams that met, 30 days'

@@ -1,30 +1,48 @@
 #!/usr/bin/env node
-// Issues a Parabol license, or makes the key pair that signs them. Parabol's own tool: customers never need it.
+// Issues a Parabol license key, or makes the key pair that signs them. Parabol's own tool: customers never need it.
 //
 //   node scripts/issueLicense.mjs --generate-key
 //     prints a new Ed25519 key pair. Keep the private key secret; add the public key, under a new key ID, to
 //     packages/server/license/licensePublicKeys.ts before signing with it.
 //
-//   node scripts/issueLicense.mjs --key private.pem --kid 2026-11 --customer "Acme" --tier enterprise \
-//     [--seats 500] [--hosts parabol.acme.mil,*.acme.mil] [--expires 2027-11-30]
-//     prints a license for PARABOL_LICENSE. Without --expires it never expires.
+//   node scripts/issueLicense.mjs --key private.pem --kid 2026-11 --claims acme.json
+//     prints a license key for the customer's LICENSE_KEY, and the license's claims on stderr. The claims file says
+//     who it's for and what it allows, as scripts/license.example.json does:
+//       customer      who it's for
+//       tier          team or enterprise
+//       seats         how many active users it covers. Leave it out for any number
+//       hosts         the hostnames (Parabol's HOST) it works on, *.example.com for any subdomain. Leave it out for any
+//       expiresAt     a date, such as 2027-11-30. Leave it out for a license that never expires
+//       onExpiry      what happens around expiry, counted from expiresAt
+//       onOverSeats   what happens while more users are active than seats, counted from when that began
+//     Each of onExpiry and onOverSeats is a list of steps, earliest first; [] means nothing ever happens. A step is
+//     {"from": "90d", "notice": "admins", "tier": "starter"}: from when ("-30d" is 30 days before), who sees a notice
+//     (none, admins or everyone in the organizations that depend on the license), and, optionally, the tier those
+//     organizations drop to (team or starter). The last step that has started applies.
+//     The script adds the format's version, the key ID, a license ID, the issue date and a new usage key, which signs
+//     the instance's usage reports. Parabol keeps no copy of the usage key: the license names its public half.
 //
-// The format is packages/server/license/licenseToken.ts's: base64url JSON, a dot, and the base64url Ed25519
-// signature of that JSON's base64url text.
-import {createPrivateKey, generateKeyPairSync, randomUUID, sign} from 'node:crypto'
+// The format is packages/server/license/licenseToken.ts's, which this script uses.
+import {createPrivateKey, createPublicKey, generateKeyPairSync, randomUUID} from 'node:crypto'
 import {readFileSync} from 'node:fs'
 import {parseArgs} from 'node:util'
+
+// Node warns that the server's .ts files don't say they're ES modules. They are
+process.removeAllListeners('warning')
+process.on('warning', (warning) => {
+  if (warning.code !== 'MODULE_TYPELESS_PACKAGE_JSON') console.warn(warning)
+})
+const {checkClaims, generateUsageKeyPair, parseLicenseKey, signLicense} = await import(
+  '../packages/server/license/licenseToken.ts'
+)
+const {licensePublicKeys} = await import('../packages/server/license/licensePublicKeys.ts')
 
 const {values} = parseArgs({
   options: {
     'generate-key': {type: 'boolean'},
     key: {type: 'string'},
     kid: {type: 'string'},
-    customer: {type: 'string'},
-    tier: {type: 'string'},
-    seats: {type: 'string'},
-    hosts: {type: 'string'},
-    expires: {type: 'string'}
+    claims: {type: 'string'}
   }
 })
 
@@ -41,26 +59,59 @@ const fail = (message) => {
 }
 if (!values.key) fail('--key is the private key file')
 if (!values.kid) fail('--kid is the key ID that licensePublicKeys.ts lists its public key under')
-if (!values.customer) fail('--customer is who the license is for')
-if (values.tier !== 'team' && values.tier !== 'enterprise') fail('--tier is team or enterprise')
-const seats = values.seats === undefined ? undefined : Number(values.seats)
-if (seats !== undefined && !(Number.isInteger(seats) && seats > 0)) fail('--seats is a positive integer')
-if (values.expires !== undefined && Number.isNaN(Date.parse(values.expires))) {
-  fail('--expires is a date, such as 2027-11-30')
+if (!values.claims) fail('--claims is the file that says who the license is for and what it allows')
+
+const privateKeyPem = readFileSync(values.key, 'utf8')
+const publicKeyPem = createPublicKey(createPrivateKey(privateKeyPem)).export({
+  type: 'spki',
+  format: 'pem'
+})
+if (licensePublicKeys[values.kid]?.trim() !== publicKeyPem.toString().trim()) {
+  fail(
+    `licensePublicKeys.ts doesn't list this key's public half as ${values.kid}, so servers wouldn't trust it`
+  )
 }
 
+const FIELDS = ['customer', 'tier', 'seats', 'hosts', 'expiresAt', 'onExpiry', 'onOverSeats']
+let input
+try {
+  input = JSON.parse(readFileSync(values.claims, 'utf8'))
+} catch (error) {
+  fail(`${values.claims} isn't JSON: ${error.message}`)
+}
+const unknown = Object.keys(input).filter((field) => !FIELDS.includes(field))
+if (unknown.length > 0) fail(`${values.claims} has fields a license doesn't: ${unknown.join(', ')}`)
+if (input.expiresAt !== undefined && Number.isNaN(Date.parse(input.expiresAt))) {
+  fail('expiresAt is a date, such as 2027-11-30')
+}
+
+const usage = generateUsageKeyPair()
 const claims = {
   v: 1,
   kid: values.kid,
   id: `lic_${randomUUID()}`,
-  customer: values.customer,
-  tier: values.tier,
-  ...(seats !== undefined && {seats}),
-  ...(values.hosts && {hosts: values.hosts.split(',').map((host) => host.trim())}),
+  customer: input.customer,
+  tier: input.tier,
+  ...(input.seats !== undefined && {seats: input.seats}),
+  ...(input.hosts !== undefined && {hosts: input.hosts}),
   issuedAt: new Date().toISOString(),
-  ...(values.expires && {expiresAt: new Date(values.expires).toISOString()})
+  ...(input.expiresAt !== undefined && {expiresAt: new Date(input.expiresAt).toISOString()}),
+  onExpiry: input.onExpiry,
+  onOverSeats: input.onOverSeats,
+  usageKey: usage.publicKey
 }
-const payload = Buffer.from(JSON.stringify(claims)).toString('base64url')
-const signature = sign(null, Buffer.from(payload), createPrivateKey(readFileSync(values.key)))
+const claimsError = checkClaims(claims)
+if (claimsError) fail(`The license would be invalid: ${claimsError}`)
+
+const licenseKey = `${signLicense(claims, privateKeyPem)}.${usage.privateKey}`
+// check it the way a server will
+const {parsed, usage: usageCheck} = parseLicenseKey(
+  licenseKey,
+  licensePublicKeys,
+  claims.hosts?.[0]
+)
+if (!parsed.ok || !usageCheck.ok) {
+  fail(`The license key doesn't check out: ${parsed.ok ? usageCheck.error : parsed.error}`)
+}
 console.error(JSON.stringify(claims, null, 2))
-process.stdout.write(`${payload}.${signature.toString('base64url')}\n`)
+process.stdout.write(`${licenseKey}\n`)

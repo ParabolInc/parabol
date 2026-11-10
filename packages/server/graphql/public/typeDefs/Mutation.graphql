@@ -2611,6 +2611,17 @@ type Mutation {
   ): RateReportQuestionSuccess! @scope(name: REPORTS_WRITE)
 
   """
+  Sign a report of this Parabol instance's active users with its usage key, to send to Parabol. Billing leaders and
+  org admins of an organization that runs on the instance's license can
+  """
+  signUsageReport(
+    """
+    The organization asked from, which must run on the instance's license
+    """
+    orgId: ID!
+  ): SignUsageReportSuccess! @scope(name: REPORTS_READ)
+
+  """
   Pin a report to the organization's Reports page, for everyone who can see Reports
   """
   pinReport(

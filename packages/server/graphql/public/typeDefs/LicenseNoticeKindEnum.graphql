@@ -6,7 +6,7 @@ enum LicenseNoticeKindEnum {
   MISSING
   "The license doesn't verify, or doesn't cover this host"
   INVALID
-  "The license expires within 30 days"
+  "The license expires soon"
   EXPIRING
   "The license has expired"
   EXPIRED

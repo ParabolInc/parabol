@@ -64,6 +64,10 @@ const permissionMap: PermissionMap<Resolvers> = {
       hasOrgFeatureFlag<'Mutation.askReportQuestion'>('args.orgId', 'Reports'),
       rateLimit({perMinute: 10, perHour: 100})
     ),
+    signUsageReport: and(
+      or(isSuperUser, isViewerBillingLeader<'Mutation.signUsageReport'>('args.orgId')),
+      rateLimit({perMinute: 5, perHour: 30})
+    ),
     pinReport: and(
       or(isSuperUser, isViewerBillingLeader<'Mutation.pinReport'>('args.orgId')),
       hasOrgFeatureFlag<'Mutation.pinReport'>('args.orgId', 'Reports'),
