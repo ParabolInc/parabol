@@ -3,16 +3,21 @@ import {SubscriptionChannel} from '../../client/types/constEnums'
 import type {DataLoaderInstance} from '../dataloader/RootDataLoader'
 import type {ResolversTypes} from '../graphql/public/resolverTypes'
 import getRedis from './getRedis'
-import publish from './publish'
+import publish, {type SubscriptionPayloadName} from './publish'
 
-export type PublicPageNotificationPayload<T extends keyof ResolversTypes = 'CreatePagePayload'> = {
+type PageNotificationPayloadName = SubscriptionPayloadName<SubscriptionChannel.NOTIFICATION> &
+  keyof ResolversTypes
+
+export type PublicPageNotificationPayload<
+  T extends PageNotificationPayloadName = 'CreatePagePayload'
+> = {
   type: T
   data: ResolversTypes[T]
   subOptions: {mutatorId?: string; operationId?: string}
   userIdsToIgnore: string[]
 }
 
-export const publishPageNotification = async <T extends keyof ResolversTypes>(
+export const publishPageNotification = async <T extends PageNotificationPayloadName>(
   pageId: number,
   type: T,
   data: Record<string, any>,

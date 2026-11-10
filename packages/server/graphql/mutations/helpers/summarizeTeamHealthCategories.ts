@@ -7,7 +7,7 @@ import {escapeHtml} from '../../../utils/escapeHtml'
 import getPhase from '../../../utils/getPhase'
 import logError from '../../../utils/logError'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
-import publish from '../../../utils/publish'
+import publish, {type SubscriptionPayloadName} from '../../../utils/publish'
 import type {DataLoaderWorker} from '../../graphql'
 import {buildCommentContentBlock, createAIComment} from './addAIGeneratedContentToThreads'
 import getTeamHealthCategorySummaryInput from './getTeamHealthCategorySummaryInput'
@@ -37,7 +37,11 @@ const waitForParaphrases = async (meetingId: string) => {
 // a subscriber resolves a message without an operationId against the dataloader its socket used
 // last, which can be the reveal's, still caching these rows as loading. Each message brings its own
 // fresh dataloader instead, since every message under one operationId reads the first one's snapshot
-const publishFresh = (meetingId: string, type: string, payload: Record<string, unknown>) => {
+const publishFresh = (
+  meetingId: string,
+  type: SubscriptionPayloadName<SubscriptionChannel.MEETING>,
+  payload: Record<string, unknown>
+) => {
   const dataLoader = getNewDataLoader('summarizeTeamHealthCategories.publish')
   publish(SubscriptionChannel.MEETING, meetingId, type, payload, {operationId: dataLoader.share()})
   dataLoader.dispose()

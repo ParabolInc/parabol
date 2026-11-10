@@ -38,6 +38,7 @@ import {removeTemplatePromptTeamUpdater} from '../mutations/RemoveTemplatePrompt
 import {updateAgendaItemUpdater} from '../mutations/UpdateAgendaItemMutation'
 import {addPokerTemplateTeamUpdater} from '../mutations/useAddPokerTemplateMutation'
 import {addPromptTemplateTeamUpdater} from '../mutations/useAddPromptTemplateMutation'
+import {addTeamHealthTemplateTeamUpdater} from '../mutations/useAddTeamHealthTemplateMutation'
 import {endTeamHealthTeamUpdater} from '../mutations/useEndTeamHealthMutation'
 import {createSubscription} from './createSubscription'
 
@@ -68,6 +69,9 @@ const subscription = graphql`
       }
       AddPokerTemplateScaleValuePayload {
         ...AddPokerTemplateScaleValueMutation_scale @relay(mask: false)
+      }
+      AddTeamHealthTemplateSuccess {
+        ...useAddTeamHealthTemplateMutation_team @relay(mask: false)
       }
       AddPromptTemplateSuccess {
         ...useAddPromptTemplateMutation_team @relay(mask: false)
@@ -117,14 +121,17 @@ const subscription = graphql`
       NavigateMeetingPayload {
         ...NavigateMeetingMutation_team @relay(mask: false)
       }
+      PokerTemplateDimensionUpdateDescriptionPayload {
+        dimension {
+          id
+          description
+        }
+      }
       PromoteToTeamLeadPayload {
         ...PromoteToTeamLeadMutation_team @relay(mask: false)
       }
       PushInvitationPayload {
         ...PushInvitationMutation_team @relay(mask: false)
-      }
-      UpdateTemplatePromptDescriptionSuccess {
-        ...UpdateTemplatePromptDescriptionMutation_team @relay(mask: false)
       }
       UpdateTemplatePromptGroupColorSuccess {
         ...UpdateTemplatePromptGroupColorMutation_team @relay(mask: false)
@@ -207,6 +214,9 @@ const subscription = graphql`
       UpdateFacilitatorRotationSuccess {
         ...useUpdateFacilitatorRotationMutation_team @relay(mask: false)
       }
+      UpdateMeetingSeriesSuccess {
+        ...UpdateMeetingSeriesMutation_series @relay(mask: false)
+      }
       UpdatePokerTemplateDimensionScalePayload {
         ...UpdatePokerTemplateDimensionScaleMutation_dimension @relay(mask: false)
       }
@@ -218,6 +228,9 @@ const subscription = graphql`
       }
       UpdateTemplateCategorySuccess {
         ...UpdateTemplateCategoryMutation_team @relay(mask: false)
+      }
+      UpdateTemplatePromptDescriptionSuccess {
+        ...UpdateTemplatePromptDescriptionMutation_team @relay(mask: false)
       }
       UpdateUserProfilePayload {
         ...UpdateUserProfileMutation_team @relay(mask: false)
@@ -250,6 +263,7 @@ const updateHandlers = {
   AcceptTeamInvitationPayload: acceptTeamInvitationTeamUpdater,
   AddPokerTemplateDimensionPayload: addPokerTemplateDimensionTeamUpdater,
   AddPokerTemplateScalePayload: addPokerTemplateScaleTeamUpdater,
+  AddTeamHealthTemplateSuccess: addTeamHealthTemplateTeamUpdater,
   AddPromptTemplateSuccess: addPromptTemplateTeamUpdater,
   AddPokerTemplateSuccess: addPokerTemplateTeamUpdater,
   AddTemplatePromptSuccess: addTemplatePromptTeamUpdater,

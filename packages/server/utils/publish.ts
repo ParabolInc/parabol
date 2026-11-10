@@ -1,3 +1,9 @@
+import type {MeetingSubscription$data} from 'parabol-client/__generated__/MeetingSubscription.graphql'
+import type {NotificationSubscription$data} from 'parabol-client/__generated__/NotificationSubscription.graphql'
+import type {OrganizationSubscription$data} from 'parabol-client/__generated__/OrganizationSubscription.graphql'
+import type {TaskSubscription$data} from 'parabol-client/__generated__/TaskSubscription.graphql'
+import type {TeamSubscription$data} from 'parabol-client/__generated__/TeamSubscription.graphql'
+import type {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getInMemoryDataLoader} from '../dataloader/getInMemoryDataLoader'
 import type RootDataLoader from '../dataloader/RootDataLoader'
 import {serializeDataLoader} from '../dataloader/serializeDataLoader'
@@ -80,10 +86,24 @@ class PublishedDataLoaders {
 }
 const publishedDataLoaders = new PublishedDataLoaders()
 
-const publish = async <T extends string>(
+// a client gets only the payloads its subscription selects, and logs an error for any other
+interface ClientSubscriptionPayloads {
+  [SubscriptionChannel.MEETING]: MeetingSubscription$data['meetingSubscription']
+  [SubscriptionChannel.NOTIFICATION]: NotificationSubscription$data['notificationSubscription']
+  [SubscriptionChannel.ORGANIZATION]: OrganizationSubscription$data['organizationSubscription']
+  [SubscriptionChannel.TASK]: TaskSubscription$data['taskSubscription']
+  [SubscriptionChannel.TEAM]: TeamSubscription$data['teamSubscription']
+}
+
+export type SubscriptionPayloadName<T extends SubscriptionChannel> = Exclude<
+  Extract<keyof ClientSubscriptionPayloads[T], string>,
+  'fieldName'
+>
+
+const publish = async <T extends SubscriptionChannel>(
   topic: T,
   channel: string,
-  type: string,
+  type: SubscriptionPayloadName<T>,
   payload: {[key: string]: any},
   subOptions: SubOptions = {}
 ) => {
