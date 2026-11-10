@@ -77,6 +77,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
     const label = 'Send with your credentials'
     return (
       <TaskFooterIntegrateMenuList
+        mutationProps={mutationProps}
         placeholder={placeholder}
         teamMemberRef={viewerTeamMember}
         onPushToIntegration={handlePushToIntegration}

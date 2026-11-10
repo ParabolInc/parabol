@@ -1,3 +1,4 @@
+import {sql} from 'kysely'
 import getKysely from '../getKysely'
 import type {TeamMemberIntegrationAuth} from '../types'
 
@@ -7,7 +8,7 @@ const deactivateTeamMemberIntegrationAuthFamily = async (
   const {userId, teamId, providerId, providerUserId} = auth
   await getKysely()
     .updateTable('TeamMemberIntegrationAuth')
-    .set({isActive: false})
+    .set({isActive: false, expiredAt: sql`now()`})
     .where('userId', '=', userId)
     .where('providerId', '=', providerId)
     .where('isActive', '=', true)

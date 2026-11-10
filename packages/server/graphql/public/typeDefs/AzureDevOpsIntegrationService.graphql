@@ -22,6 +22,11 @@ type AzureDevOpsIntegrationService implements IntegrationService {
   """
   grantedScopes: [String!]!
   """
+  When the viewer's grant for this service stopped working because the service rejected its token, so it needs reconnecting.
+  Null while connected, if never connected, or after disconnecting on purpose
+  """
+  expiredAt: DateTime
+  """
   The projects the viewer's connection shares with this team, which is everywhere the team can search, read, and create work items.
   [] when not connected or nothing is shared yet; null when the live fetch failed
   """
