@@ -50,11 +50,13 @@ export const publishSummaryPage = async (
       }
     })
     const documentName = CipherId.toClient(meetingTOCpageId, 'page')
-    await redisHocusPocus.handleEvent('addCanonicalPageLink', documentName, {
-      title,
-      pageCode: CipherId.encrypt(meetingSummaryPage.id),
-      isDatabase: false
-    })
+    redisHocusPocus
+      .handleEvent('addCanonicalPageLink', documentName, {
+        title,
+        pageCode: CipherId.encrypt(meetingSummaryPage.id),
+        isDatabase: false
+      })
+      .catch(Logger.error)
     const {id: pageId} = meetingSummaryPage
     await pg
       .updateTable('NewMeeting')
@@ -62,7 +64,7 @@ export const publishSummaryPage = async (
       .where('id', '=', meetingId)
       .execute()
     meeting.summaryPageId = pageId
-    await scheduleMeetTranscriptJob(meetingId, teamId).catch(Logger.log)
+    scheduleMeetTranscriptJob(meetingId, teamId).catch(Logger.log)
     attachHeldZoomEvents(teamId).catch(Logger.log)
     // don't wait for the stream to finish
     streamStarted = true

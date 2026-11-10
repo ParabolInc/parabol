@@ -89,7 +89,7 @@ export const EndRecurringMeetingModal = (props: Props) => {
   )
   const {meetingType, id: meetingId} = meeting
 
-  const {onCompleted, onError} = useMutationProps()
+  const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const navigate = useNavigate()
   const atmosphere = useAtmosphere()
   const [endTeamHealth] = useEndTeamHealthMutation()
@@ -109,6 +109,8 @@ export const EndRecurringMeetingModal = (props: Props) => {
   }
 
   const onConfirm = () => {
+    if (submitting) return
+    submitMutation()
     if (meetingType === 'teamHealth') {
       endTeamHealth({variables: {meetingId}, onCompleted: handleCompleted, onError})
       return
@@ -161,8 +163,12 @@ export const EndRecurringMeetingModal = (props: Props) => {
             Cancel
           </button>
           <button
-            className={cn('bg-sky-500 text-white hover:bg-sky-600', ACTION_BUTTON_CLASSES)}
+            className={cn(
+              'bg-sky-500 text-white hover:bg-sky-600 disabled:pointer-events-none disabled:opacity-50',
+              ACTION_BUTTON_CLASSES
+            )}
             onClick={onConfirm}
+            disabled={submitting}
           >
             Confirm
           </button>
