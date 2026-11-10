@@ -123,6 +123,12 @@ interface TipTapBlockquoteNode {
   content: TipTapContentNode[]
 }
 
+interface TipTapCalloutNode {
+  type: 'callout'
+  attrs: {tone: string; emoji: string | null}
+  content: TipTapContentNode[]
+}
+
 export interface TipTapTableNode {
   type: 'table'
   content: [TipTapTableRowNode<TipTapTableHeaderNode>, ...TipTapTableRowNode[]]
@@ -185,6 +191,7 @@ export type TipTapContentNode =
   | TipTapCodeBlockNode
   | TipTapDetailsNode
   | TipTapBlockquoteNode
+  | TipTapCalloutNode
   | TipTapTableNode
   | TipTapImageBlockNode
   | TipTapHorizontalRuleNode
