@@ -28,10 +28,61 @@ export const removeTeamMember = async (
   const {evictorUserId} = options
   const pg = getKysely()
   const {userId, teamId} = fromTeamMemberId(teamMemberId)
-  // see if they were a leader, make a new guy leader so later we can reassign tasks
-  const activeTeamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
-  const teamMember = activeTeamMembers.find((t) => t.id === teamMemberId)
-  if (!teamMember) {
+  // Removals from the same team can run at once (e.g. removeOrgUsers with several users), so lock
+  // the team and read its members fresh. Otherwise each removal could hand the lead to another
+  // member that is being removed at the same time, leaving the team without a lead
+  const removal = await pg.transaction().execute(async (trx) => {
+    await trx.selectFrom('Team').select('id').where('id', '=', teamId).forNoKeyUpdate().execute()
+    const activeTeamMembers = await trx
+      .selectFrom('TeamMember')
+      .select(['id', 'userId', 'isLead'])
+      .where('teamId', '=', teamId)
+      .where('isNotRemoved', '=', true)
+      .orderBy('createdAt')
+      .execute()
+    const teamMember = activeTeamMembers.find((t) => t.id === teamMemberId)
+    if (!teamMember) return null
+    // see if they were a leader, make a new guy leader so later we can reassign tasks
+    const currentTeamLeader = activeTeamMembers.find((t) => t.isLead)
+    const {isLead} = teamMember
+    const willArchive = activeTeamMembers.length === 1
+    // a leaderless team is a data error, but promoting a member is always safer than throwing here.
+    // Callers like removeFromOrg cannot roll back the work they've already done, so a throw would
+    // leave the user off the org but still on the team, failing every isViewerOnOrg check
+    const needsNewLead = !willArchive && (isLead || !currentTeamLeader)
+    const nextTeamLead = needsNewLead
+      ? activeTeamMembers.find((teamMember) => teamMember.id !== teamMemberId)!
+      : (currentTeamLeader ?? teamMember)
+
+    if (willArchive) {
+      await trx
+        // delete all tasks belonging to a 1-person team
+        .with('TaskDelete', (qb) => qb.deleteFrom('Task').where('teamId', '=', teamId))
+        // archive single-person teams
+        .updateTable('Team')
+        .set({isArchived: true})
+        .where('id', '=', teamId)
+        .execute()
+    } else if (needsNewLead) {
+      // assign new leader, remove old leader flag
+      await trx
+        .with('OldLead', (qb) =>
+          qb.updateTable('TeamMember').set({isLead: false}).where('id', '=', teamMemberId)
+        )
+        .updateTable('TeamMember')
+        .set({isLead: true})
+        .where('id', '=', nextTeamLead.id)
+        .execute()
+    }
+
+    await trx
+      .updateTable('TeamMember')
+      .set({isNotRemoved: false})
+      .where('id', '=', teamMemberId)
+      .execute()
+    return {willArchive, nextTeamLead}
+  })
+  if (!removal) {
     return {
       user: undefined,
       notificationId: undefined,
@@ -39,43 +90,7 @@ export const removeTeamMember = async (
       reassignedTaskIds: [] as string[]
     }
   }
-  const currentTeamLeader = activeTeamMembers.find((t) => t.isLead)
-  const {isLead} = teamMember
-  const willArchive = activeTeamMembers.length === 1
-  // a leaderless team is a data error, but promoting a member is always safer than throwing here.
-  // Callers like removeFromOrg cannot roll back the work they've already done, so a throw would
-  // leave the user off the org but still on the team, failing every isViewerOnOrg check
-  const needsNewLead = !willArchive && (isLead || !currentTeamLeader)
-  const nextTeamLead = needsNewLead
-    ? activeTeamMembers.find((teamMember) => teamMember.id !== teamMemberId)!
-    : (currentTeamLeader ?? teamMember)
-
-  if (willArchive) {
-    await pg
-      // delete all tasks belonging to a 1-person team
-      .with('TaskDelete', (qb) => qb.deleteFrom('Task').where('teamId', '=', teamId))
-      // archive single-person teams
-      .updateTable('Team')
-      .set({isArchived: true})
-      .where('id', '=', teamId)
-      .execute()
-  } else if (needsNewLead) {
-    // assign new leader, remove old leader flag
-    await pg
-      .with('OldLead', (qb) =>
-        qb.updateTable('TeamMember').set({isLead: false}).where('id', '=', teamMemberId)
-      )
-      .updateTable('TeamMember')
-      .set({isLead: true})
-      .where('id', '=', nextTeamLead.id)
-      .execute()
-  }
-
-  await pg
-    .updateTable('TeamMember')
-    .set({isNotRemoved: false})
-    .where('id', '=', teamMemberId)
-    .execute()
+  const {willArchive, nextTeamLead} = removal
   if (!willArchive) {
     await removeMeetingTOCAccess(teamId, userId, nextTeamLead.userId)
   }
