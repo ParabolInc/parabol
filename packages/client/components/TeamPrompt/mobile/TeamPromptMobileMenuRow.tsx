@@ -11,10 +11,11 @@ interface Props {
   isNewTab?: boolean
   isDisabled?: boolean
   isDestructive?: boolean
+  keepsMenuOpen?: boolean
 }
 
 const TeamPromptMobileMenuRow = (props: Props) => {
-  const {label, icon, onClick, to, isNewTab, isDisabled, isDestructive} = props
+  const {label, icon, onClick, to, isNewTab, isDisabled, isDestructive, keepsMenuOpen} = props
   const className = cn(
     'flex min-h-12 w-full cursor-pointer items-center gap-3.5 bg-transparent px-4 text-left text-base text-fg-primary hover:bg-surface-hover',
     isDestructive && 'text-fg-error',
@@ -35,7 +36,15 @@ const TeamPromptMobileMenuRow = (props: Props) => {
     )
   }
   return (
-    <button type='button' disabled={isDisabled} onClick={onClick} className={className}>
+    <button
+      type='button'
+      disabled={isDisabled}
+      onClick={(e) => {
+        if (keepsMenuOpen) e.stopPropagation()
+        onClick?.()
+      }}
+      className={className}
+    >
       {icon}
       {label}
     </button>

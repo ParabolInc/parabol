@@ -40,7 +40,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
   return (
     <MenuContent align='end'>
       {items.map((item) => {
-        const {key, label, icon, onClick, to, isNewTab, isDisabled} = item
+        const {key, label, icon, onClick, to, isNewTab, isDisabled, keepsMenuOpen} = item
         if (to) {
           return (
             <MenuItem key={key} asChild onClick={onClick}>
@@ -58,7 +58,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
           <MenuItem
             key={key}
             isDisabled={isDisabled}
-            onSelect={isDisabled ? (e) => e.preventDefault() : undefined}
+            onSelect={isDisabled || keepsMenuOpen ? (e) => e.preventDefault() : undefined}
             onClick={isDisabled ? undefined : onClick}
           >
             <OptionMenuItem>
