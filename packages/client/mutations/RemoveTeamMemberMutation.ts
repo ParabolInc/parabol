@@ -76,7 +76,6 @@ graphql`
 
 graphql`
   fragment RemoveTeamMemberMutation_team on RemoveTeamMemberPayload {
-    removedStageIds
     updatedTasks {
       id
     }
@@ -159,11 +158,9 @@ export const removeTeamMemberTeamUpdater: SharedUpdater<RemoveTeamMemberMutation
   }
   const teamMemberId = payload.getLinkedRecord('teamMember').getValue('id')
   handleRemoveTeamMembers(teamMemberId, store)
-  const removedStageIds = payload.getValue('removedStageIds') ?? []
   const activeMeetings = payload.getLinkedRecord('team')?.getLinkedRecords('activeMeetings') ?? []
   activeMeetings.forEach((activeMeeting) => {
-    const meetingId = activeMeeting.getValue('id')
-    handleRemoveUserFromMeeting(meetingId, removedUserId, removedStageIds, store)
+    handleRemoveUserFromMeeting(activeMeeting.getValue('id'), teamMemberId, store)
   })
 }
 

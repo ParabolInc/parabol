@@ -15,11 +15,6 @@ type RemoveTeamMemberPayload {
   team: Team
 
   """
-  The ids of the stages removed from the team's active meetings
-  """
-  removedStageIds: [ID!]
-
-  """
   The tasks that got reassigned
   """
   updatedTasks: [Task!]

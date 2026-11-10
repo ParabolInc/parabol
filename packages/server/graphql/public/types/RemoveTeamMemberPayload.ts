@@ -12,7 +12,6 @@ export type RemoveTeamMemberPayloadSource =
       taskIds: string[]
       userId: string
       notificationId: string | undefined
-      removedStageIds: string[]
     }
   | {error: {message: string}}
 
@@ -34,10 +33,6 @@ const RemoveTeamMemberPayload: RemoveTeamMemberPayloadResolvers = {
     const isViewer = userId === getUserId(authToken)
     const teamTasks = tasks.filter(({teamId}) => authToken.tms.includes(teamId))
     return isViewer ? teamTasks : nullIfEmpty(teamTasks.filter((p) => !p.tags.includes('private')))
-  },
-  removedStageIds: (source) => {
-    if ('error' in source) return null
-    return source.removedStageIds
   },
   user: async (source, _args, {dataLoader}) => {
     if ('error' in source) return null

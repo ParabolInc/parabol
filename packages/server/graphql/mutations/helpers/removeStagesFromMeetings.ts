@@ -12,7 +12,7 @@ const removeStagesFromMeeting = async (
   meetingId: string,
   now: Date
 ) => {
-  return getKysely()
+  await getKysely()
     .transaction()
     .execute(async (trx) => {
       const meeting = await trx
@@ -24,10 +24,10 @@ const removeStagesFromMeeting = async (
         .where('id', '=', meetingId)
         .forUpdate()
         .executeTakeFirst()
-      if (!meeting) return []
+      if (!meeting) return
       const {phases} = meeting
       let {facilitatorStageId} = meeting
-      const removedStageIds: string[] = []
+      let isChanged = false
       phases.forEach((phase) => {
         const {stages} = phase
         for (let i = stages.length - 1; i >= 0; i--) {
@@ -45,17 +45,16 @@ const removeStagesFromMeeting = async (
               nextStage.isNavigable = true
             }
             stages.splice(i, 1)
-            removedStageIds.push(stage.id)
+            isChanged = true
           }
         }
       })
-      if (removedStageIds.length === 0) return []
+      if (!isChanged) return
       await trx
         .updateTable('NewMeeting')
         .set({facilitatorStageId, phases: JSON.stringify(phases)})
         .where('id', '=', meetingId)
         .execute()
-      return removedStageIds.map((stageId) => ({meetingId, stageId}))
     })
 }
 
@@ -73,11 +72,10 @@ const removeStagesFromMeetings = async (
     .concat(completedMeetings)
     .filter(({phases}) => phases.some(({stages}) => stages.some(filterFn)))
     .map(({id}) => id)
-  const removedStages = await Promise.all(
+  await Promise.all(
     meetingIds.map((meetingId) => removeStagesFromMeeting(filterFn, meetingId, now))
   )
   dataLoader.clearAll('newMeetings')
-  return removedStages.flat()
 }
 
 export default removeStagesFromMeetings
