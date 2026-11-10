@@ -118,7 +118,8 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
           .where('isRemoved', '=', false)
           .executeTakeFirst()
     ])
-    if (!user) return false
+    // graphql-ws only calls onDisconnect for an acknowledged socket, so a socket that closed during the awaits would never leave activeClients
+    if (!user || extra.socket.closed) return false
 
     extra.authToken = authToken
     const forwarded = extra.persistedRequest.headers['x-forwarded-for']
@@ -326,6 +327,7 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
   },
   onClose: (ctx, code) => {
     if (ctx.acknowledged) return
+    ctx.extra.socket.closed = true
     // graphql-ws closes as Forbidden when onConnect refuses a connection, and as InternalServerError when it throws.
     // Any other close before the acknowledgement is the client going away
     const outcome =
