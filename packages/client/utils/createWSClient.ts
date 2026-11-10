@@ -87,12 +87,16 @@ export function createWSClient(atmosphere: Atmosphere) {
       },
       keepAlive: 10_000,
       on: {
-        ping: (received) => {
+        ping: (received, payload) => {
           if (!received) {
             timedOut = window.setTimeout(() => {
               subscriptionClient.terminate()
             }, 5_000)
+            return
           }
+          // the server acknowledges a subscription with a ping that carries the ackId Atmosphere sent with it
+          const ackId = payload?.ackId
+          if (typeof ackId === 'string') atmosphere.subscriptionAckHandlers.get(ackId)?.()
         },
         pong: (received) => {
           if (received) {
