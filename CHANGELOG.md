@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.21.1](https://github.com/ParabolInc/parabol/compare/v15.21.0...v15.21.1) (2026-11-10)
+
+
+### Fixed
+
+* **client:** forward mutation responses with no data to Relay unchanged ([#14013](https://github.com/ParabolInc/parabol/issues/14013)) ([f5e5620](https://github.com/ParabolInc/parabol/commit/f5e5620c3aa195d4593cce49ce95f9d6de3ab0e2))
+* **client:** select poker template editing payloads in TeamSubscription ([#13991](https://github.com/ParabolInc/parabol/issues/13991)) ([6814e5c](https://github.com/ParabolInc/parabol/commit/6814e5cc83b7bb7c6a103dbeedef967af17f8692))
+* **client:** stop the team subscription asking for the credit card update's Stripe secret ([#14015](https://github.com/ParabolInc/parabol/issues/14015)) ([fb571d4](https://github.com/ParabolInc/parabol/commit/fb571d4c407dbf8c8b32d6720c84145bc8888ee7))
+* **server:** resolve a retro discuss stage whose reflection group no longer exists ([#13982](https://github.com/ParabolInc/parabol/issues/13982)) ([891bab9](https://github.com/ParabolInc/parabol/commit/891bab982c5b1e176a54a7c18c3bc1c1fc54ba7a))
+
 ## [15.21.0](https://github.com/ParabolInc/parabol/compare/v15.20.0...v15.21.0) (2026-11-10)
 
 
