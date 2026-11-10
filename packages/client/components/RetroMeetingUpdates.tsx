@@ -4,6 +4,7 @@ import {useFragment} from 'react-relay'
 import type {RetroMeetingUpdates_meeting$key} from '../__generated__/RetroMeetingUpdates_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import getTeamMemberTasks from '../utils/getTeamMemberTasks'
+import getUpdatesEmptyState from '../utils/getUpdatesEmptyState'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
 import LastRetroEndedAtContext from './LastRetroEndedAtContext'
 import MeetingUpdatesContent from './MeetingUpdatesContent'
@@ -60,20 +61,27 @@ const RetroMeetingUpdates = (props: Props) => {
   const {id: teamId, tasks} = team
   const stageOwner = localStage?.RetroMeetingUpdatesStage?.teamMember
   const stageOwnerUserId = stageOwner?.userId ?? viewerId
-  const teamMemberTasks = useMemo(() => {
-    return getTeamMemberTasks(
-      tasks.edges.map(({node}) => node),
-      stageOwnerUserId
-    )
-  }, [tasks, stageOwnerUserId])
+  const isViewerStageOwner = stageOwnerUserId === viewerId
+  const teamTasks = useMemo(() => tasks.edges.map(({node}) => node), [tasks])
+  const teamMemberTasks = useMemo(
+    () => getTeamMemberTasks(teamTasks, stageOwnerUserId),
+    [teamTasks, stageOwnerUserId]
+  )
+  const emptyState = getUpdatesEmptyState(
+    teamTasks,
+    teamMemberTasks.length,
+    stageOwner?.user.preferredName,
+    isViewerStageOwner
+  )
 
   return (
     <LastRetroEndedAtContext.Provider value={prevCompletedMeeting?.endedAt ?? null}>
       <MeetingUpdatesContent
         avatarGroup={avatarGroup}
+        emptyState={emptyState}
         endedAt={endedAt}
         headerPrompt={<RetroMeetingUpdatesPrompt meeting={meeting} />}
-        isViewerStageOwner={stageOwnerUserId === viewerId}
+        isViewerStageOwner={isViewerStageOwner}
         meetingId={meetingId}
         meetingRef={meeting}
         myTeamMemberId={toTeamMemberId(teamId, viewerId)}
@@ -89,6 +97,9 @@ graphql`
   fragment RetroMeetingUpdatesStage on UpdatesStage {
     teamMember {
       userId
+      user {
+        preferredName
+      }
     }
   }
 `
