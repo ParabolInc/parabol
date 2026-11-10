@@ -1,12 +1,4 @@
-import isTaskPrivate from './isTaskPrivate'
-
-interface ReviewableTask {
-  readonly status: string
-  readonly tags: readonly string[]
-}
-
-const isOpenTask = ({status, tags}: ReviewableTask) =>
-  status !== 'done' && !isTaskPrivate(tags) && !tags.includes('archived')
+import isOpenTask, {type ReviewableTask} from './isOpenTask'
 
 const getUpdatesEmptyState = (
   teamTasks: readonly ReviewableTask[],
