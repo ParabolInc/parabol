@@ -115,6 +115,11 @@ type RetrospectiveMeeting implements NewMeeting {
   The previous retrospective in the same meeting series, if any
   """
   prevMeeting: RetrospectiveMeeting
+
+  """
+  The team's most recent retrospective that ended before this one started, if any
+  """
+  prevCompletedMeeting: RetrospectiveMeeting
   meetingType: MeetingTypeEnum!
 
   """

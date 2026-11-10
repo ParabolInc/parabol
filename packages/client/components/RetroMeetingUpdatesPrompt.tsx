@@ -30,6 +30,7 @@ const RetroMeetingUpdatesPrompt = (props: Props) => {
             edges {
               node {
                 id
+                createdAt
                 dueDate
                 status
                 tags
@@ -53,11 +54,14 @@ const RetroMeetingUpdatesPrompt = (props: Props) => {
         localStage {
           ...RetroMeetingUpdatesPromptLocalStage @relay(mask: false) @alias
         }
+        prevCompletedMeeting {
+          endedAt
+        }
       }
     `,
     meetingRef
   )
-  const {localStage, team, meetingMembers} = meeting
+  const {localStage, team, meetingMembers, prevCompletedMeeting} = meeting
   const {tasks} = team
   const currentMeetingMember = meetingMembers.find(
     (meetingMember) =>
@@ -83,7 +87,9 @@ const RetroMeetingUpdatesPrompt = (props: Props) => {
         </PhaseHeaderTitle>
         <PhaseHeaderDescription>
           {isViewerMeetingSection && taskCount === 0 && 'Add cards to track your current work.'}
-          {isViewerMeetingSection && taskCount > 0 && getTurnToShareText(teamMemberTasks)}
+          {isViewerMeetingSection &&
+            taskCount > 0 &&
+            getTurnToShareText(teamMemberTasks, prevCompletedMeeting?.endedAt)}
           {!isViewerMeetingSection && isConnectedAt && `${preferredName} is sharing.`}
         </PhaseHeaderDescription>
       </div>
