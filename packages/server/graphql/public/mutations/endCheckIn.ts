@@ -88,9 +88,8 @@ const clonePinnedAgendaItems = async (
   dataLoader.clearAll('agendaItems')
 }
 
-const summarizeCheckInMeeting = async (meeting: CheckInMeeting, dataLoader: DataLoaderWorker) => {
+const loadCheckInSummary = async (meeting: CheckInMeeting, dataLoader: DataLoaderWorker) => {
   const {id: meetingId, teamId, phases} = meeting
-  const pg = getKysely()
   const agendaItemPhase = getPhase(phases, 'agendaitems')
   const {stages} = agendaItemPhase
   const discussionIds = stages.map((stage) => stage.discussionId)
@@ -105,12 +104,20 @@ const summarizeCheckInMeeting = async (meeting: CheckInMeeting, dataLoader: Data
     dataLoader.get('agendaItemsByTeamId').load(teamId),
     dataLoader.get('commentCountByDiscussionId').loadMany(discussionIds)
   ])
-
-  const userIds = meetingMembers.map(({userId}) => userId)
-  const meetingPhase = getMeetingPhase(phases)
-  const pinnedAgendaItems = await getPinnedAgendaItems(teamId, dataLoader)
-  const isKill = !!(meetingPhase && ![AGENDA_ITEMS, LAST_CALL].includes(meetingPhase.phaseType))
   const commentCount = commentCounts.filter(isValid).reduce((cumSum, count) => cumSum + count, 0)
+  return {meetingMembers, tasks, doneTasks, activeAgendaItems, commentCount}
+}
+
+const resetTeamAfterCheckIn = async (
+  meeting: CheckInMeeting,
+  summary: Awaited<ReturnType<typeof loadCheckInSummary>>,
+  isKill: boolean,
+  dataLoader: DataLoaderWorker
+) => {
+  const {id: meetingId, teamId} = meeting
+  const {meetingMembers, tasks, doneTasks} = summary
+  const userIds = meetingMembers.map(({userId}) => userId)
+  const pinnedAgendaItems = await getPinnedAgendaItems(teamId, dataLoader)
   await Promise.all([
     isKill ? undefined : archiveTasksForDB(doneTasks, meetingId),
     isKill
@@ -118,19 +125,8 @@ const summarizeCheckInMeeting = async (meeting: CheckInMeeting, dataLoader: Data
       : clearAgendaItems(teamId, dataLoader).then(() =>
           clonePinnedAgendaItems(pinnedAgendaItems, dataLoader)
         ),
-    updateTaskSortOrders(userIds, tasks),
-    pg
-      .updateTable('NewMeeting')
-      .set({
-        agendaItemCount: activeAgendaItems.length,
-        commentCount,
-        taskCount: tasks.length
-      })
-      .where('id', '=', meetingId)
-      .execute()
+    updateTaskSortOrders(userIds, tasks)
   ])
-  dataLoader.clearAll('newMeetings')
-  return {updatedTaskIds: [...tasks, ...doneTasks].map(({id}) => id)}
 }
 
 const endCheckIn: MutationResolvers['endCheckIn'] = async (_source, {meetingId}, context, info) => {
@@ -166,6 +162,8 @@ const endCheckIn: MutationResolvers['endCheckIn'] = async (_source, {meetingId},
     dataLoader.get('teamMembersByTeamId').load(teamId),
     removeEmptyTasks(meetingId)
   ])
+  const summary = await loadCheckInSummary(meeting, dataLoader)
+  const {tasks, doneTasks, activeAgendaItems, commentCount} = summary
 
   await pg
     .updateTable('NewMeeting')
@@ -173,13 +171,18 @@ const endCheckIn: MutationResolvers['endCheckIn'] = async (_source, {meetingId},
       endedAt: now,
       phases: JSON.stringify(phases),
       usedReactjis: JSON.stringify(insights.usedReactjis),
-      engagement: insights.engagement
+      engagement: insights.engagement,
+      agendaItemCount: activeAgendaItems.length,
+      commentCount,
+      taskCount: tasks.length
     })
     .where('id', '=', meetingId)
     .execute()
   dataLoader.clearAll('newMeetings')
 
-  const {updatedTaskIds} = await summarizeCheckInMeeting(meeting, dataLoader)
+  const isKill = !!(phase && ![AGENDA_ITEMS, LAST_CALL].includes(phase.phaseType))
+  const teamReset = resetTeamAfterCheckIn(meeting, summary, isKill, dataLoader)
+  const updatedTaskIds = [...tasks, ...doneTasks].map(({id}) => id)
 
   const events = teamMembers.map(
     (teamMember) =>
@@ -208,7 +211,8 @@ const endCheckIn: MutationResolvers['endCheckIn'] = async (_source, {meetingId},
   }
 
   const [page] = await Promise.all([
-    publishSummaryPage(meetingId, context, info),
+    publishSummaryPage(meetingId, context, info, teamReset),
+    teamReset,
     pg.insertInto('TimelineEvent').values(events).execute(),
     removeTryCheckInSuggestedAction()
   ])
@@ -216,7 +220,7 @@ const endCheckIn: MutationResolvers['endCheckIn'] = async (_source, {meetingId},
   const data = {
     meetingId,
     teamId,
-    isKill: !!(phase && ![AGENDA_ITEMS, LAST_CALL].includes(phase.phaseType)),
+    isKill,
     updatedTaskIds,
     removedTaskIds
   }

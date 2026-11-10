@@ -54,7 +54,11 @@ const safeEndTeamPrompt = async ({
     })
 
   // RESOLUTION
-  const insights = await gatherInsights(meeting, dataLoader)
+  const [insights, team, teamMembers] = await Promise.all([
+    gatherInsights(meeting, dataLoader),
+    dataLoader.get('teams').loadNonNull(teamId),
+    dataLoader.get('teamMembersByTeamId').load(teamId)
+  ])
   await pg
     .updateTable('NewMeeting')
     .set({
@@ -67,12 +71,6 @@ const safeEndTeamPrompt = async ({
     .execute()
   dataLoader.clearAll('newMeetings')
 
-  const [completedTeamPrompt, team, teamMembers] = await Promise.all([
-    dataLoader.get('newMeetings').loadNonNull(meetingId) as Promise<TeamPromptMeeting>,
-    dataLoader.get('teams').loadNonNull(teamId),
-    dataLoader.get('teamMembersByTeamId').load(teamId)
-  ])
-
   const events = teamMembers.map(
     (teamMember) =>
       new TimelineEventTeamPromptComplete({
@@ -82,24 +80,17 @@ const safeEndTeamPrompt = async ({
         meetingId
       })
   )
-  await pg.insertInto('TimelineEvent').values(events).execute()
-  meetingsEnded.inc({meeting_type: completedTeamPrompt.meetingType})
-  const [page, summary] = await Promise.all([
+  meetingsEnded.inc({meeting_type: meeting.meetingType})
+  const [page] = await Promise.all([
     publishSummaryPage(meetingId, context, info).catch((e) => {
       logError(e instanceof Error ? e : new Error(`publishSummaryPage failed: ${e}`), {
         tags: {meetingId, op: 'publishSummaryPage'}
       })
       return null
     }),
-    summarizeTeamPrompt(completedTeamPrompt, context).catch((e) => {
-      logError(e instanceof Error ? e : new Error(`summarizeTeamPrompt failed: ${e}`), {
-        tags: {meetingId, op: 'summarizeTeamPrompt'}
-      })
-      return null
-    })
+    pg.insertInto('TimelineEvent').values(events).execute()
   ])
-  if (page) completedTeamPrompt.summaryPageId = page.id
-  if (summary) completedTeamPrompt.summary = summary
+  if (page) meeting.summaryPageId = page.id
   const data = {
     meetingId,
     teamId
@@ -112,6 +103,12 @@ const safeEndTeamPrompt = async ({
     {operationId}
   )
   publish(SubscriptionChannel.TEAM, teamId, 'EndTeamPromptSuccess', data, subOptions)
+  // the AI summary can take seconds, so the meeting ends without it, like a retro does
+  summarizeTeamPrompt(meeting, context).catch((e) => {
+    logError(e instanceof Error ? e : new Error(`summarizeTeamPrompt failed: ${e}`), {
+      tags: {meetingId, op: 'summarizeTeamPrompt'}
+    })
+  })
   // do not await sending the email
   if (page) sendSummaryEmail(meetingId, page.id, context, info).catch(Logger.log)
   return data

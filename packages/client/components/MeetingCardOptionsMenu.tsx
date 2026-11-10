@@ -70,9 +70,10 @@ const MeetingCardOptionsMenu = (props: Props) => {
   const canManageMeeting = meetingType === 'teamPrompt' || isViewerFacilitator
   const canEndMeeting = canManageMeeting && !endedAt
   const atmosphere = useAtmosphere()
-  const {onCompleted, onError} = useMutationProps()
+  const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const navigate = useNavigate()
-  const [endTeamHealth] = useEndTeamHealthMutation()
+  const [endTeamHealth, isEndingTeamHealth] = useEndTeamHealthMutation()
+  const isEnding = submitting || isEndingTeamHealth
 
   const hasRecurrenceEnabled = meetingSeries && !meetingSeries.cancelledAt
   // an owned series answers to its owner alone, so the rest of the team cannot reschedule it
@@ -126,22 +127,29 @@ const MeetingCardOptionsMenu = (props: Props) => {
       )}
       {canEndMeeting && (
         <MenuItem
-          onSelect={() => {
+          isDisabled={isEnding}
+          onSelect={(e) => {
             if (hasRecurrenceEnabled) {
               openEndRecurringMeetingModal()
-            } else if (meetingType === 'teamHealth') {
-              endTeamHealth({variables: {meetingId}, onCompleted, onError})
-            } else {
-              EndMeetingMutationLookup[meetingType]?.(
-                atmosphere,
-                {meetingId},
-                {onError, onCompleted, navigate}
-              )
+              return
             }
+            // stay open until the meeting ends, so the item can show the click went through
+            e.preventDefault()
+            if (isEnding) return
+            if (meetingType === 'teamHealth') {
+              endTeamHealth({variables: {meetingId}, onCompleted, onError})
+              return
+            }
+            submitMutation()
+            EndMeetingMutationLookup[meetingType]?.(
+              atmosphere,
+              {meetingId},
+              {onError, onCompleted, navigate}
+            )
           }}
         >
           <CloseIcon className={MENU_ITEM_ICON} />
-          End this meeting
+          {isEnding ? 'Ending this meeting…' : 'End this meeting'}
         </MenuItem>
       )}
     </>
