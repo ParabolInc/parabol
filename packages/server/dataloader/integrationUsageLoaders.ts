@@ -17,7 +17,7 @@ export const recentIntegrationTaskCountsByOrgId = (parent: RootDataLoader) => {
         .select(['Team.orgId', service.as('service'), sql<number>`COUNT(*)::int`.as('taskCount')])
         .where('Team.orgId', 'in', orgIds)
         .where('Team.isArchived', '=', false)
-        .where('Task.integration', 'is not', null)
+        .where(service, 'is not', null)
         .where('Task.createdAt', '>', windowStart)
         // updatedAt is never before createdAt, and this lets the teamId + updatedAt index narrow the scan
         .where('Task.updatedAt', '>', windowStart)

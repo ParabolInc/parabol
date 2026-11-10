@@ -91,4 +91,20 @@ describe('recentIntegrationTaskCountsByOrgId', () => {
     await addTask('team1', null)
     expect(await loadCounts(ORG_ID)).toEqual({})
   })
+
+  it('leaves out tasks whose integration is a JSON null', async () => {
+    await addTask('team1', 'jira')
+    await pg
+      .insertInto('Task')
+      .values({
+        id: generateUID(),
+        content: '{}',
+        createdBy: 'user1',
+        plaintextContent: '',
+        teamId: 'team1',
+        integration: JSON.stringify(null)
+      })
+      .execute()
+    expect(await loadCounts(ORG_ID)).toEqual({jira: 1})
+  })
 })

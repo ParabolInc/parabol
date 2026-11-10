@@ -133,7 +133,7 @@ const changeTaskTeam: MutationResolvers['changeTaskTeam'] = async (
       .updateTable('Task')
       .set({
         teamId,
-        integration: JSON.stringify(integration)
+        integration: integration ? JSON.stringify(integration) : null
       })
       .where('id', '=', taskId)
       .executeTakeFirst()
