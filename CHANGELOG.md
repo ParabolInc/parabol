@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.23.0](https://github.com/ParabolInc/parabol/compare/v15.22.0...v15.23.0) (2026-11-10)
+
+
+### Added
+
+* show where a task can be sent on every card ([#14034](https://github.com/ParabolInc/parabol/issues/14034)) ([f4c81a7](https://github.com/ParabolInc/parabol/commit/f4c81a71d2b95602bcb1629245cbfbc3631e35ed))
+
+
+### Fixed
+
+* **server:** count a new web server's first websocket connects in the realtime SLO ([#14041](https://github.com/ParabolInc/parabol/issues/14041)) ([752e2bf](https://github.com/ParabolInc/parabol/commit/752e2bf6e949e3062891fc723af708e4e9235053))
+* **server:** poker meetings crash when an org has a task with a JSON null integration ([#14037](https://github.com/ParabolInc/parabol/issues/14037)) ([8cece98](https://github.com/ParabolInc/parabol/commit/8cece9893186ed66cf9da5bfd8402ee860f1795e))
+
 ## [15.22.0](https://github.com/ParabolInc/parabol/compare/v15.21.2...v15.22.0) (2026-11-10)
 
 
