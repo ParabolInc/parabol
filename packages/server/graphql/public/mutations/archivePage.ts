@@ -7,6 +7,7 @@ import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import {publishPageNotification} from '../../../utils/publishPageNotification'
 import {removeAllBacklinkedPageLinkBlocks} from '../../../utils/tiptap/hocusPocusHub'
+import {promoteSyncedBlock} from '../../../utils/tiptap/promoteSyncedBlock'
 import type {MutationResolvers} from '../resolverTypes'
 import {getPageNextSortOrder} from './helpers/getPageNextSortOrder'
 
@@ -31,31 +32,81 @@ const archivePage: MutationResolvers['archivePage'] = async (
     throw new GraphQLError('Only pages in the trash can be deleted or restored')
   }
   if (action === 'delete') {
+    const subtreeIds = (
+      await pg
+        .withRecursive('subtree(id)', (qc) =>
+          qc
+            .selectFrom('Page')
+            .select('id')
+            .where('parentPageId', '=', dbPageId)
+            .union((eb) =>
+              eb
+                .selectFrom('Page as child')
+                .innerJoin('subtree', 'subtree.id', 'child.parentPageId')
+                .select('child.id')
+            )
+        )
+        .selectFrom('subtree')
+        .select('id')
+        .execute()
+    ).map(({id}) => id)
+    const syncedBlockIds = subtreeIds.length
+      ? (
+          await pg
+            .selectFrom('Page')
+            .select('id')
+            .where('id', 'in', subtreeIds)
+            .where('isSyncedBlock', '=', true)
+            .where('deletedAt', '=', (eb) =>
+              eb.selectFrom('Page').select('deletedAt').where('id', '=', dbPageId)
+            )
+            .execute()
+        ).map(({id}) => id)
+      : []
+    const doomedIds = [dbPageId, ...subtreeIds]
+    const promotedIds: number[] = []
+    for (const blockId of syncedBlockIds) {
+      await pg
+        .updateTable('Page')
+        .set({deletedAt: null, deletedBy: null})
+        .where((eb) =>
+          eb.or([
+            eb('id', '=', blockId),
+            eb(sql<boolean>`${blockId} = ANY("ancestorIds")`, '=', true)
+          ])
+        )
+        .execute()
+      const hostId = await promoteSyncedBlock(blockId, doomedIds)
+      if (hostId !== null) promotedIds.push(blockId)
+    }
+    const survivingSubtreeIds = subtreeIds.filter((id) => !promotedIds.includes(id))
+    const promotedIdsArray = sql<number[]>`ARRAY[${sql.join(promotedIds)}]::int[]`
     // deleting cascades to every sub-page, including restricted ones the viewer may not own
-    const subPageOwnedByOthers = await pg
-      .withRecursive('subtree(id)', (qc) =>
-        qc
+    const subPageOwnedByOthers = survivingSubtreeIds.length
+      ? await pg
           .selectFrom('Page')
-          .select('id')
-          .where('parentPageId', '=', dbPageId)
-          .union((eb) =>
-            eb
-              .selectFrom('Page as child')
-              .innerJoin('subtree', 'subtree.id', 'child.parentPageId')
-              .select('child.id')
+          .leftJoin('PageAccess', (join) =>
+            join.onRef('PageAccess.pageId', '=', 'Page.id').on('PageAccess.userId', '=', viewerId)
           )
-      )
-      .selectFrom('subtree')
-      .leftJoin('PageAccess', (join) =>
-        join.onRef('PageAccess.pageId', '=', 'subtree.id').on('PageAccess.userId', '=', viewerId)
-      )
-      .select('subtree.id')
-      .where((eb) =>
-        eb.or([eb('PageAccess.role', 'is', null), eb('PageAccess.role', '!=', 'owner')])
-      )
-      .limit(1)
-      .executeTakeFirst()
+          .select('Page.id')
+          .where('Page.id', 'in', survivingSubtreeIds)
+          .$if(promotedIds.length > 0, (qb) =>
+            qb.where(sql<boolean>`NOT ("Page"."ancestorIds" && ${promotedIdsArray})`)
+          )
+          .where((eb) =>
+            eb.or([eb('PageAccess.role', 'is', null), eb('PageAccess.role', '!=', 'owner')])
+          )
+          .limit(1)
+          .executeTakeFirst()
+      : undefined
     if (subPageOwnedByOthers) {
+      if (promotedIds.length > 0) {
+        await pg
+          .updateTable('Page')
+          .set({deletedAt: page.deletedAt, deletedBy: page.deletedBy})
+          .where('id', 'in', promotedIds)
+          .execute()
+      }
       throw new GraphQLError('This page has sub-pages you do not own, so it cannot be deleted')
     }
     await pg.deleteFrom('Page').where('id', '=', dbPageId).execute()
