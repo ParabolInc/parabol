@@ -373,7 +373,11 @@ export default class TeamHealthDemoDb {
     viewer: {
       id: demoViewer.id,
       team: {id: teamId, recentOrgTaskCounts: []},
-      viewerTeamMember: {id: demoTeamMemberId(demoViewer.id), services: []}
+      viewerTeamMember: {
+        id: demoTeamMemberId(demoViewer.id),
+        prevUsedRepoIntegrations: {items: []},
+        services: []
+      }
     }
   })
 

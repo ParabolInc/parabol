@@ -9,6 +9,7 @@ import {
   type TaskClientIntegration
 } from '../integrations/platform/registry'
 import {MenuSeparator} from '../ui/Menu/MenuSeparator'
+import menuSectionTitleClass from '../ui/Menu/menuSectionTitleClass'
 import ConnectIntegrationMenuItem from './ConnectIntegrationMenuItem'
 import LoadingComponent from './LoadingComponent/LoadingComponent'
 
@@ -19,9 +20,6 @@ interface Props {
   orgServices?: readonly TaskClientIntegration[]
   teamMemberRef: TaskFooterIntegrateMenuSignup_teamMember$key
 }
-
-const SECTION_TITLE =
-  'px-4 pt-2 pb-1 font-semibold text-[11px] text-fg-muted uppercase leading-4 tracking-[.04em]'
 
 const TaskFooterIntegrateMenuSignup = (props: Props) => {
   const {mutationProps, teamId, label, orgServices = [], teamMemberRef} = props
@@ -72,10 +70,12 @@ const TaskFooterIntegrateMenuSignup = (props: Props) => {
           <MenuSeparator />
         </>
       )}
-      {orgItems.length > 0 && <div className={SECTION_TITLE}>Used by your organization</div>}
+      {orgItems.length > 0 && (
+        <div className={menuSectionTitleClass}>Used by your organization</div>
+      )}
       {orgItems.map(renderItem)}
       {orgItems.length > 0 && otherItems.length > 0 && (
-        <div className={SECTION_TITLE}>Other tools</div>
+        <div className={menuSectionTitleClass}>Other tools</div>
       )}
       {otherItems.map(renderItem)}
     </>
