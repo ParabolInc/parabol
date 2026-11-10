@@ -123,6 +123,9 @@ const subscription = graphql`
       PushInvitationPayload {
         ...PushInvitationMutation_team @relay(mask: false)
       }
+      UpdateTemplatePromptDescriptionSuccess {
+        ...UpdateTemplatePromptDescriptionMutation_team @relay(mask: false)
+      }
       UpdateTemplatePromptGroupColorSuccess {
         ...UpdateTemplatePromptGroupColorMutation_team @relay(mask: false)
       }

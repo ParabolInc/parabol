@@ -115,4 +115,27 @@ describe('TeamSubscription', () => {
     expect(team?.scales).toEqual({__refs: [scaleId]})
     expect(team?.editingScaleId).toBeUndefined()
   })
+
+  it('updates the description of a prompt from an UpdateTemplatePromptDescriptionSuccess', () => {
+    const promptId = 'prompt1'
+    const atmosphere = createTestAtmosphere({
+      teamSubscription: {
+        fieldName: 'UpdateTemplatePromptDescriptionSuccess',
+        UpdateTemplatePromptDescriptionSuccess: {
+          prompt: {id: promptId, description: 'What could we try next sprint?'}
+        }
+      }
+    })
+    atmosphere.commitUpdate((store) => {
+      store.create(promptId, 'ReflectPrompt').setValue('What went well?', 'description')
+    })
+    TeamSubscription(atmosphere, {}, {navigate: jest.fn()})
+    expect(errorSpy).not.toHaveBeenCalledWith(
+      'Notification Subscription Payload received without field:',
+      'UpdateTemplatePromptDescriptionSuccess'
+    )
+    expect(atmosphere.getStore().getSource().get(promptId)?.description).toBe(
+      'What could we try next sprint?'
+    )
+  })
 })
