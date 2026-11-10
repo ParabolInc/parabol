@@ -318,6 +318,10 @@ class AtlassianServerManager extends AtlassianManager {
       const {headers} = res
       const contentType = headers.get('content-type') || ''
       if (!contentType.includes('application/json')) {
+        if (res.status === 403) {
+          await res.body?.cancel()
+          return new JiraNoAccessResponseError('Jira denied this account access')
+        }
         const response = await readThirdPartyResponse('jira', res, {url})
         return new ThirdPartyResponseError('Received non-JSON Atlassian Response', response)
       }
