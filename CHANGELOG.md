@@ -5,6 +5,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.22.0](https://github.com/ParabolInc/parabol/compare/v15.21.2...v15.22.0) (2026-11-10)
+
+
+### Added
+
+* mark tasks created since the last retro when reviewing tasks ([#14024](https://github.com/ParabolInc/parabol/issues/14024)) ([df65fce](https://github.com/ParabolInc/parabol/commit/df65fce5ef26664f5cdfc84f7e86f4fa9b378c53))
+* one Review Tasks stage when the team has no open tasks ([#14033](https://github.com/ParabolInc/parabol/issues/14033)) ([be30e13](https://github.com/ParabolInc/parabol/commit/be30e13fa8a3ebc4cfe06563cc0ee0fd4ec57b03))
+* say why a Review Tasks stage is empty ([#14032](https://github.com/ParabolInc/parabol/issues/14032)) ([2d4a28a](https://github.com/ParabolInc/parabol/commit/2d4a28a5b032d355220576fdc4f4817e275dbff1))
+
+
+### Fixed
+
+* **client:** fill the avatar box with the fallback icon ([#14035](https://github.com/ParabolInc/parabol/issues/14035)) ([bb04025](https://github.com/ParabolInc/parabol/commit/bb040252406222eb2b538896bf0bd33e7cdbdc25))
+* **client:** handle the meeting music mutation in the retro demo ([#14027](https://github.com/ParabolInc/parabol/issues/14027)) ([1acbc9e](https://github.com/ParabolInc/parabol/commit/1acbc9e87a2f96f8a4505ce2312116bdaf9505c3))
+* **client:** wait for a poker story's stages to load before showing its dimensions ([#14028](https://github.com/ParabolInc/parabol/issues/14028)) ([3276a48](https://github.com/ParabolInc/parabol/commit/3276a4868106791048188b43a8dca4b11a838072))
+* **server:** treat Jira's 403 page as an issue the account can't access ([#14025](https://github.com/ParabolInc/parabol/issues/14025)) ([9a5c1a8](https://github.com/ParabolInc/parabol/commit/9a5c1a8b0bcbd78ccab318286d0f8fdb6a5b7c84))
+
 ## [15.21.2](https://github.com/ParabolInc/parabol/compare/v15.21.1...v15.21.2) (2026-11-10)
 
 
