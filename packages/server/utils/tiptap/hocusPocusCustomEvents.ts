@@ -72,6 +72,21 @@ export const removeCanonicalPageLinkFromPage = async (
   })
 }
 
+export const markPageLinkCanonical = async (documentName: string, payload: {pageCode: number}) => {
+  const {pageCode} = payload
+  await withDoc(documentName, (doc) => {
+    const frag = doc.getXmlFragment('default')
+    const walker = frag.createTreeWalker((yxml) => {
+      if (!isPageLink(yxml)) return false
+      return yxml.getAttribute('pageCode') === pageCode && yxml.getAttribute('synced') === true
+    })
+    for (const node of walker) {
+      ;(node as XmlElement<PageLinkBlockAttrs>).setAttribute('canonical', true)
+      break
+    }
+  })
+}
+
 export const removeBacklinkedPageLinkBlocks = async (
   documentName: string,
   payload: {pageCode: number}

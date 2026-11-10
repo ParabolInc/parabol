@@ -44,7 +44,7 @@ jest.mock('../../../postgres/getKysely', () => ({
         },
         executeTakeFirst: async () => {
           const page = mockPages.find(({id}) => id === pageId)
-          return page && {...page, deletedAt: null, isDatabase: false}
+          return page && {...page, deletedAt: null, isDatabase: false, isSyncedBlock: true}
         }
       }
       return builder
@@ -58,7 +58,14 @@ jest.mock('../../../dataloader/pageAccessByUserIdBatchFn', () => ({
 jest.mock('../../CipherId', () => ({
   CipherId: {encrypt: (id: number) => id, decrypt: (code: number) => code}
 }))
-jest.mock('../updateBacklinks', () => ({updateBacklinks: async () => {}}))
+const mockUpdateBacklinks = jest.fn(async (..._args: unknown[]) => {})
+const mockPromote = jest.fn(async (..._args: unknown[]): Promise<number | null> => null)
+jest.mock('../updateBacklinks', () => ({
+  updateBacklinks: (...args: unknown[]) => mockUpdateBacklinks(...args)
+}))
+jest.mock('../promoteSyncedBlock', () => ({
+  promoteSyncedBlock: (...args: unknown[]) => mockPromote(...args)
+}))
 jest.mock('../hocusPocusHub', () => ({removeAllBacklinkedPageLinkBlocks: jest.fn(async () => {})}))
 
 const PARENT_PAGE_ID = 10
@@ -91,6 +98,9 @@ const addAndDeleteLink = async (pageId: number, linkedPageId: number, userId: st
 }
 
 beforeEach(() => {
+  mockUpdateBacklinks.mockClear()
+  mockPromote.mockReset()
+  mockPromote.mockResolvedValue(null)
   mockPages.length = 0
   mockArchivedPageIds.length = 0
   mockOwnerByPageId.clear()
@@ -144,4 +154,91 @@ test('puts the link back where it was when a user who does not own the child del
     'paragraph'
   ])
   expect((frag.get(1) as Y.XmlElement).getAttribute('pageCode')).toBe(CHILD_PAGE_ID)
+})
+
+const linkAttrs = (frag: Y.XmlFragment) =>
+  frag.toArray().map((node) => {
+    const link = node as Y.XmlElement
+    return {
+      pageCode: link.getAttribute('pageCode'),
+      canonical: link.getAttribute('canonical'),
+      synced: link.getAttribute('synced')
+    }
+  })
+
+const syncedLink = (canonical: boolean) => {
+  const link = createPageLinkElement(CHILD_PAGE_ID, 'Linked page', false, true)
+  link.setAttribute('canonical', canonical)
+  return link as Y.XmlElement
+}
+
+const removeLink = (origin: ReturnType<typeof asUser>, attrs: {canonical: boolean}) => {
+  const {doc, frag} = makePage(PARENT_PAGE_ID)
+  doc.transact(() => {
+    frag.insert(0, [syncedLink(attrs.canonical)])
+  }, asUser(OWNER_ID))
+  doc.transact(() => {
+    frag.delete(0, 1)
+  }, origin)
+  return {frag}
+}
+
+test('promotes instead of trashing when a synced original is removed and copies remain', async () => {
+  mockPromote.mockResolvedValueOnce(OTHER_PAGE_ID)
+  removeLink(asUser(OWNER_ID), {canonical: true})
+  await flush()
+  expect(mockPromote).toHaveBeenCalledWith(CHILD_PAGE_ID, [PARENT_PAGE_ID])
+  expect(mockArchivedPageIds).toEqual([])
+})
+
+test('promotes for a non-owner editor', async () => {
+  mockPromote.mockResolvedValueOnce(OTHER_PAGE_ID)
+  const {frag} = removeLink(asUser(EDITOR_ID), {canonical: true})
+  await flush()
+  expect(mockPromote).toHaveBeenCalled()
+  expect(frag.length).toBe(0)
+})
+
+test('trashes a synced block when its last reference is removed by the owner', async () => {
+  mockPromote.mockResolvedValueOnce(null)
+  removeLink(asUser(OWNER_ID), {canonical: true})
+  await flush()
+  expect(mockArchivedPageIds).toEqual([CHILD_PAGE_ID])
+})
+
+test('restores the last link for a non-owner', async () => {
+  mockPromote.mockResolvedValueOnce(null)
+  const {frag} = removeLink(asUser(EDITOR_ID), {canonical: true})
+  await flush()
+  expect(mockArchivedPageIds).toEqual([])
+  expect(linkAttrs(frag)).toEqual([{pageCode: CHILD_PAGE_ID, canonical: true, synced: true}])
+})
+
+test('promotes a copy on the same page in place and keeps the backlink', async () => {
+  const {doc, frag} = makePage(PARENT_PAGE_ID)
+  doc.transact(() => {
+    frag.insert(0, [syncedLink(true), syncedLink(false)])
+  }, asUser(OWNER_ID))
+  doc.transact(() => {
+    frag.delete(0, 1)
+  }, asUser(OWNER_ID))
+  await flush()
+  expect(linkAttrs(frag)).toEqual([{pageCode: CHILD_PAGE_ID, canonical: true, synced: true}])
+  expect(mockPromote).not.toHaveBeenCalled()
+  expect(mockUpdateBacklinks).not.toHaveBeenCalled()
+  expect(mockArchivedPageIds).toEqual([])
+})
+
+test('removing a copy only drops the backlink', async () => {
+  removeLink(asUser(EDITOR_ID), {canonical: false})
+  await flush()
+  expect(mockUpdateBacklinks).toHaveBeenCalledWith(PARENT_PAGE_ID, null, CHILD_PAGE_ID)
+  expect(mockPromote).not.toHaveBeenCalled()
+  expect(mockArchivedPageIds).toEqual([])
+})
+
+test('an ordinary link claiming to be synced still falls through to the owner check', async () => {
+  removeLink(asUser(EDITOR_ID), {canonical: true})
+  await flush()
+  expect(mockArchivedPageIds).toEqual([])
 })

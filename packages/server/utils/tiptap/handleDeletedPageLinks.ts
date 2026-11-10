@@ -12,6 +12,7 @@ import logError from '../logError'
 import {getUnsafeDeletedAttribute} from './getUnsafeDeletedAttribute'
 import {getUserIdFromTransaction} from './getUserIdFromTransaction'
 import {removeAllBacklinkedPageLinkBlocks} from './hocusPocusHub'
+import {promoteSyncedBlock} from './promoteSyncedBlock'
 import {updateBacklinks} from './updateBacklinks'
 
 // Someone who cannot trash a sub-page deleted its link, so put the link back where it was
@@ -54,6 +55,7 @@ export const handleDeletedPageLinks = (e: Y.YEvent<any>, parentPageId: number) =
       const isCanonical = getUnsafeDeletedAttribute(node, 'canonical')
       // deleted attributes are garbage collected after this transaction, so read them before awaiting
       const title = getUnsafeDeletedAttribute(node, 'title', true)
+      const isSynced = getUnsafeDeletedAttribute(node, 'synced', true) === true
       const pageId = CipherId.decrypt(pageCode)
 
       // there could be multiple non-canonicals
@@ -62,6 +64,15 @@ export const handleDeletedPageLinks = (e: Y.YEvent<any>, parentPageId: number) =
       )
 
       if (!existingSimilarNode) {
+        if (isCanonical && isSynced) {
+          const remainingCopy = getPageLinks(e.target.doc, false).find(
+            (child) => child.getAttribute('pageCode') === pageCode && child.getAttribute('synced')
+          )
+          if (remainingCopy) {
+            remainingCopy.setAttribute('canonical', true)
+            return
+          }
+        }
         // detecting true deletes is HARD
         // moves look like
         // - a delete/add
@@ -69,6 +80,10 @@ export const handleDeletedPageLinks = (e: Y.YEvent<any>, parentPageId: number) =
         // The most certain way to see if verify that it no longer exists
         await updateBacklinks(parentPageId, null, pageId).catch(Logger.log)
         if (!isCanonical) return
+        if (isSynced) {
+          const promotedHostId = await promoteSyncedBlock(pageId, [parentPageId])
+          if (promotedHostId !== null) return
+        }
         // Any editor can write a canonical link into a doc, so archive only what archivePage would allow:
         // the page's owner removing the link from the page it actually lives under
         const [viewerAccess] = userId ? await pageAccessByUserIdBatchFn([{pageId, userId}]) : []
