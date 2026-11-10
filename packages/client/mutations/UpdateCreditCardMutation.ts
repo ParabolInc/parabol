@@ -5,7 +5,6 @@ import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment UpdateCreditCardMutation_organization on UpdateCreditCardSuccess {
-    stripeSubscriptionClientSecret
     organization {
       id
       isPaid
@@ -26,6 +25,9 @@ const mutation = graphql`
         error {
           message
         }
+      }
+      ... on UpdateCreditCardSuccess {
+        stripeSubscriptionClientSecret
       }
       ...UpdateCreditCardMutation_organization @relay(mask: false) @alias
     }
