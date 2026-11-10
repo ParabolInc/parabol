@@ -33,11 +33,14 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
 
   // RESOLUTION
   const meetingType = 'retrospective' as const
-  const [unpaidError, meetingSettings, meetingCount] = await Promise.all([
-    isStartMeetingLocked(teamId, dataLoader),
-    dataLoader.get('meetingSettingsByType').loadNonNull({teamId, meetingType}),
-    dataLoader.get('meetingCount').load({teamId, meetingType})
-  ])
+  const [unpaidError, meetingSettings, meetingCount, {facilitatorUserId, rotation}, teamMember] =
+    await Promise.all([
+      isStartMeetingLocked(teamId, dataLoader),
+      dataLoader.get('meetingSettingsByType').loadNonNull({teamId, meetingType}),
+      dataLoader.get('meetingCount').load({teamId, meetingType}),
+      getNextFacilitatorUserId(teamId, viewerId, dataLoader),
+      dataLoader.get('teamMembers').loadNonNull(toTeamMemberId(teamId, viewerId))
+    ])
   if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
   const {
     id: meetingSettingsId,
@@ -93,7 +96,6 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     return data
   }
 
-  const {facilitatorUserId, rotation} = await getNextFacilitatorUserId(teamId, viewerId, dataLoader)
   const meeting = await safeCreateRetrospective(
     {
       teamId,
@@ -111,12 +113,6 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     return {error: {message: 'Meeting already started'}}
   }
   const meetingId = meeting.id
-  if (rotation) await setFacilitatorRotation(teamId, rotation, dataLoader)
-  await updateMeetingTemplateLastUsedAt(selectedTemplateId, teamId)
-
-  const teamMember = await dataLoader
-    .get('teamMembers')
-    .loadNonNull(toTeamMemberId(teamId, viewerId))
   const meetingMember = createMeetingMember(meeting, teamMember)
   const [meetingSeries] = await Promise.all([
     rrule &&
@@ -133,7 +129,9 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
         .updateTable('MeetingSettings')
         .set({videoMeetingURL: null})
         .where('id', '=', meetingSettingsId)
-        .execute()
+        .execute(),
+    rotation && setFacilitatorRotation(teamId, rotation, dataLoader),
+    updateMeetingTemplateLastUsedAt(selectedTemplateId, teamId)
   ])
   if (meetingSeries) {
     // meeting was modified if a new meeting series was created

@@ -47,6 +47,14 @@ const mutation = graphql`
           message
         }
       }
+      ... on StartRetrospectiveSuccess {
+        meeting {
+          # lets useJoinedMeetingQuery subscribe while the starter joins
+          viewerMeetingMember {
+            id
+          }
+        }
+      }
       ...StartRetrospectiveMutation_team @relay(mask: false) @alias
     }
   }
