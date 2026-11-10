@@ -82,7 +82,7 @@ const ExportAllTasksMenu = (props: Props) => {
 
   if (isViewerIntegrated) {
     const placeholder = makePlaceholder(isViewerIntegrated)
-    const label = 'Push with your credentials'
+    const label = 'Send with your credentials'
     return (
       <TaskFooterIntegrateMenuList
         placeholder={placeholder}

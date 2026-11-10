@@ -76,7 +76,8 @@ const TaskFooter = (props: Props) => {
   }
   const atmosphere = useAtmosphere()
   const showTeam = area === USER_DASH
-  const {id: taskId, error, taskService, tags, userId} = task
+  const {id: taskId, error, taskService, tags, userId, team} = task
+  const {id: teamId} = team
   const isArchived = isTaskArchived(tags)
   const canAssignUser = !taskService && !isArchived
   const canAssignTeam = !isArchived
@@ -99,16 +100,15 @@ const TaskFooter = (props: Props) => {
             />
           )}
         </div>
-        <div className={cn('flex justify-end', cardIsActive ? 'opacity-100' : 'opacity-0')}>
-          {taskService || isArchived || !userId ? (
-            <div className='inline-block h-6 w-6 align-middle' />
-          ) : (
-            <TaskFooterIntegrateToggle
-              mutationProps={mutationProps}
-              task={task}
-              useTaskChild={useTaskChild}
-            />
-          )}
+        {!taskService && !isArchived && userId && (
+          <TaskFooterIntegrateToggle
+            mutationProps={mutationProps}
+            task={task}
+            teamId={teamId}
+            useTaskChild={useTaskChild}
+          />
+        )}
+        <div className={cn('ml-1 flex justify-end', cardIsActive ? 'opacity-100' : 'opacity-0')}>
           {isArchived ? (
             <CardButton onClick={() => toggleTag('archived')}>
               <IconLabel icon='reply' />

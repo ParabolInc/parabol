@@ -13,7 +13,7 @@ export const TRANSCRIPTION_BENEFITS = [
 ]
 
 export const TASK_INTEGRATION_BENEFITS = [
-  'Push a task to Jira, GitHub, GitLab, Linear or Azure DevOps without leaving the meeting',
+  'Send a task to Jira, GitHub, GitLab, Linear or Azure DevOps without leaving the meeting',
   'The issue keeps its link back to the discussion that created it',
   'Status changes sync, so the team sees the outcome at the next check'
 ]
