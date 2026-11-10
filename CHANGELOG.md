@@ -5,6 +5,27 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.21.0](https://github.com/ParabolInc/parabol/compare/v15.20.0...v15.21.0) (2026-11-10)
+
+
+### Added
+
+* ClickUp integration built on the contributor kit ([#14004](https://github.com/ParabolInc/parabol/issues/14004)) ([2a30850](https://github.com/ParabolInc/parabol/commit/2a30850bda3d2c42b3b980cc90685fc2090e7ed1))
+* **client:** show what's worth raising when reviewing tasks ([#14010](https://github.com/ParabolInc/parabol/issues/14010)) ([b1af0d4](https://github.com/ParabolInc/parabol/commit/b1af0d47c79ffe638f723c3eea6d48ece43468b3))
+* **embedder:** count each model's fill jobs in a metric ([#14011](https://github.com/ParabolInc/parabol/issues/14011)) ([b656891](https://github.com/ParabolInc/parabol/commit/b6568910602f7dc8fbb2845ce5735c19bae77d3d))
+
+
+### Fixed
+
+* fetch a meeting only after its subscription is listening, and broadcast only the joiner's data ([#14008](https://github.com/ParabolInc/parabol/issues/14008)) ([90a625a](https://github.com/ParabolInc/parabol/commit/90a625a24b05f44cf70edf86e32a0bb06ad90c44))
+* lock meetings while removing a team member's stages, and remove them on clients as a delta ([#14012](https://github.com/ParabolInc/parabol/issues/14012)) ([a394d3e](https://github.com/ParabolInc/parabol/commit/a394d3eb5bf53cd40a4389960d140d42c203a3b8))
+* **server:** send the daily notification summary emails again ([#14007](https://github.com/ParabolInc/parabol/issues/14007)) ([7fdcb6e](https://github.com/ParabolInc/parabol/commit/7fdcb6e97853402b7201f2f857af7041f46b1e4a))
+
+
+### Changed
+
+* integration contributor kit and per-service file moves ([#14000](https://github.com/ParabolInc/parabol/issues/14000)) ([1728aff](https://github.com/ParabolInc/parabol/commit/1728affe657ddde12ee1268967c253c65edb5a2d))
+
 ## [15.20.0](https://github.com/ParabolInc/parabol/compare/v15.19.0...v15.20.0) (2026-11-07)
 
 
