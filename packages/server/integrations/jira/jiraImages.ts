@@ -15,6 +15,25 @@ const createImageUrlHash = (imageUrl: string) => {
   return createHash('sha256').update(imageUrl).digest('base64url')
 }
 
+const pendingUploadsByPath = new Map<PartialPath, Promise<string | null>>()
+
+const uploadImage = async (res: Response, fetchUrl: string, partialPath: PartialPath) => {
+  const fileStoreManager = getFileStoreManager()
+  const exists = await fileStoreManager.checkExists(partialPath)
+  if (exists) {
+    await res.body?.cancel()
+    return makeAppURL(appOrigin, `/assets/${partialPath}`)
+  }
+
+  const buffer = Buffer.from(await res.arrayBuffer())
+  if (buffer.byteLength > MAX_IMAGE_SIZE) {
+    Logger.log(`Jira Image too large: ${fetchUrl}`)
+    return null
+  }
+
+  return fileStoreManager.putUserFile(buffer, partialPath)
+}
+
 // The reason we downloadAndCache is because Jira images may only be available to the team lead.
 // We want to make the accessible to the whole team, so using the assetProxyHandler would not work
 // Using the viewer's atlassian auth. If we used the team lead's auth, it would expose ANY asset if they had the URL
@@ -66,20 +85,17 @@ export const downloadAndCacheImage = async (
   const hash = createImageUrlHash(fetchUrl)
   const partialPath = `Team/${teamId}/assets/${hash}.${ext}` as PartialPath
 
-  const fileStoreManager = getFileStoreManager()
-  const exists = await fileStoreManager.checkExists(partialPath)
-  if (exists) {
+  // GCS rejects writes to an object while another write to it is in flight
+  const pendingUpload = pendingUploadsByPath.get(partialPath)
+  if (pendingUpload) {
     await res.body?.cancel()
-    return makeAppURL(appOrigin, `/assets/${partialPath}`)
+    return pendingUpload
   }
-
-  const buffer = Buffer.from(await res.arrayBuffer())
-  if (buffer.byteLength > MAX_IMAGE_SIZE) {
-    Logger.log(`Jira Image too large: ${fetchUrl}`)
-    return null
-  }
-
-  return fileStoreManager.putUserFile(buffer, partialPath)
+  const upload = uploadImage(res, fetchUrl, partialPath).finally(() => {
+    pendingUploadsByPath.delete(partialPath)
+  })
+  pendingUploadsByPath.set(partialPath, upload)
+  return upload
 }
 
 export const processJiraImages = async (
