@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.21.2](https://github.com/ParabolInc/parabol/compare/v15.21.1...v15.21.2) (2026-11-10)
+
+
+### Fixed
+
+* **client:** skip a failed service worker update in every browser, not only Chrome ([#14022](https://github.com/ParabolInc/parabol/issues/14022)) ([17fe8e1](https://github.com/ParabolInc/parabol/commit/17fe8e1f34eb893a4459ac20ca68054a4dddd7a5))
+* only publish subscription payloads the client selects ([#14018](https://github.com/ParabolInc/parabol/issues/14018)) ([adcf0f4](https://github.com/ParabolInc/parabol/commit/adcf0f4ea0793942273750e6e2bc91af4eff4090))
+* **server:** only allow reactjis on items in the authorized meeting ([#14016](https://github.com/ParabolInc/parabol/issues/14016)) ([1f063b2](https://github.com/ParabolInc/parabol/commit/1f063b2f2768ad3a6138156ddce9d938f58e8005))
+* **server:** report missing subjects from applyFeatureFlag ([#14003](https://github.com/ParabolInc/parabol/issues/14003)) ([9ad6958](https://github.com/ParabolInc/parabol/commit/9ad6958d2be47552f541271adf6229b2e79554a4))
+
 ## [15.21.1](https://github.com/ParabolInc/parabol/compare/v15.21.0...v15.21.1) (2026-11-10)
 
 
