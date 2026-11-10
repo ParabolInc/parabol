@@ -53,6 +53,15 @@ export const FEATURE_FLAGS = {
     createdAt: new Date('2026-10-20T00:00:00+00:00'),
     updatedAt: new Date('2026-10-20T00:00:00+00:00'),
     isPublic: false
+  },
+  SyncedBlocks: {
+    featureName: 'SyncedBlocks',
+    scope: 'Organization',
+    description: 'Synced blocks in pages',
+    expiresAt: new Date('2027-11-10T00:00:00+00:00'),
+    createdAt: new Date('2026-11-10T00:00:00+00:00'),
+    updatedAt: new Date('2026-11-10T00:00:00+00:00'),
+    isPublic: true
   }
 } as const satisfies Record<string, FeatureFlag>
 

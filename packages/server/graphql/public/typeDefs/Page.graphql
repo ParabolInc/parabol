@@ -77,6 +77,11 @@ type Page {
   isDatabase: Boolean
 
   """
+  true if this page holds the content of a synced block
+  """
+  isSyncedBlock: Boolean!
+
+  """
   The sort order of this page among its siblings, as a fractional index string
   """
   sortOrder: String
