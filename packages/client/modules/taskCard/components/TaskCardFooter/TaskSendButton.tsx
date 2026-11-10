@@ -53,7 +53,7 @@ const TaskSendButton = forwardRef<HTMLButtonElement, Props>((props, ref) => {
       <ArrowDropDown
         className={cn(
           'h-4 w-4',
-          !isCardActive && 'hidden group-hover:block group-data-[state=open]:block'
+          !isCardActive && 'invisible group-hover:visible group-data-[state=open]:visible'
         )}
       />
     </Button>
