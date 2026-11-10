@@ -17,6 +17,11 @@ interface Props extends ButtonProps {
 const TaskSendButton = forwardRef<HTMLButtonElement, Props>((props, ref) => {
   const {services, isCardActive, className, ...rest} = props
   const [primaryService] = services
+  const logoTone = cn(
+    'flex items-center gap-[3px] transition-[filter,opacity]',
+    !isCardActive &&
+      'opacity-60 grayscale group-hover:opacity-100 group-hover:grayscale-0 group-data-[state=open]:opacity-100 group-data-[state=open]:grayscale-0'
+  )
   return (
     <Button
       {...rest}
@@ -28,17 +33,13 @@ const TaskSendButton = forwardRef<HTMLButtonElement, Props>((props, ref) => {
       )}
     >
       {primaryService ? (
-        <ProviderLogo logo={getClientIntegration(primaryService).logo} className='h-4 w-4' />
+        <span className={logoTone}>
+          <ProviderLogo logo={getClientIntegration(primaryService).logo} className='h-4 w-4' />
+        </span>
       ) : (
         <>
           <Add className='h-4 w-4' />
-          <span
-            className={cn(
-              'flex items-center gap-[3px] transition-[filter,opacity]',
-              !isCardActive &&
-                'opacity-60 grayscale group-hover:opacity-100 group-hover:grayscale-0 group-data-[state=open]:opacity-100 group-data-[state=open]:grayscale-0'
-            )}
-          >
+          <span className={logoTone}>
             {SUGGESTED_SEND_SERVICES.map((service) => (
               <ProviderLogo
                 key={service}
