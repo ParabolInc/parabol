@@ -91,7 +91,8 @@ const archivePage: MutationResolvers['archivePage'] = async (
         await redisHocusPocus.handleEvent('addCanonicalPageLink', documentName, {
           title: page.title || undefined,
           pageCode,
-          isDatabase: page.isDatabase
+          isDatabase: page.isDatabase,
+          isSyncedBlock: page.isSyncedBlock
         })
       }
     }

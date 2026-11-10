@@ -29,15 +29,17 @@ export const addCanonicalPageLink = async (
     title?: string
     pageCode: number
     isDatabase: boolean
+    isSyncedBlock: boolean
     append?: boolean
   }
 ) => {
-  const {title, pageCode, isDatabase, append = false} = payload
+  const {title, pageCode, isDatabase, isSyncedBlock, append = false} = payload
   await withDoc(documentName, (doc) => {
     const pageLinkBlock = createPageLinkElement(
       pageCode,
       title || '<Untitled>',
-      isDatabase
+      isDatabase,
+      isSyncedBlock
     ) as XmlElement
     const frag = doc.getXmlFragment('default')
     const position = append ? frag.length : 1

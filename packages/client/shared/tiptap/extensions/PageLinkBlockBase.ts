@@ -6,6 +6,7 @@ export type PageLinkBlockAttrs = {
   canonical?: boolean
   isMoving?: boolean
   database?: boolean
+  synced?: boolean
 }
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -60,6 +61,12 @@ export const PageLinkBlockBase = Node.create({
             'data-database': attributes.database ? '' : undefined
           }
         }
+      },
+      synced: {
+        parseHTML: (element) => element.getAttribute('data-synced') === '',
+        renderHTML: (attributes) => ({
+          'data-synced': attributes.synced ? '' : undefined
+        })
       }
     }
   },

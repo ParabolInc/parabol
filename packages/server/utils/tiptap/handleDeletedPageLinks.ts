@@ -23,7 +23,7 @@ const restorePageLink = async (
   const {pageCode, title} = link
   const page = await getKysely()
     .selectFrom('Page')
-    .select(['parentPageId', 'deletedAt', 'isDatabase'])
+    .select(['parentPageId', 'deletedAt', 'isDatabase', 'isSyncedBlock'])
     .where('id', '=', CipherId.decrypt(pageCode))
     .executeTakeFirst()
   if (!page || page.parentPageId !== parentPageId || page.deletedAt) return
@@ -33,7 +33,9 @@ const restorePageLink = async (
   while (left?.deleted) left = left.left
   // with nothing left of it, e.g. after the whole page was replaced, append rather than land above the title
   const index = left ? parent.toArray().indexOf(left.content.getContent()[0]) + 1 : parent.length
-  parent.insert(index, [createPageLinkElement(pageCode, title, page.isDatabase) as Y.XmlElement])
+  parent.insert(index, [
+    createPageLinkElement(pageCode, title, page.isDatabase, page.isSyncedBlock) as Y.XmlElement
+  ])
 }
 
 export const handleDeletedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => {
