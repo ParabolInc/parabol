@@ -118,6 +118,7 @@ describe('parseLicense', () => {
       'onOverSeats has steps, but the license covers any number of users'
     )
     expect(errorOf({usageKey: 'abc'})).toBe('usageKey is not an Ed25519 public key')
+    expect(errorOf({saas: false})).toBe('saas is true or absent')
     expect(errorOf({expiresAt: undefined, seats: undefined, onExpiry: [], onOverSeats: []})).toBe(
       undefined
     )

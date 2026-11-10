@@ -179,7 +179,8 @@ const devClientConfig: Configuration = {
             : process.env.GIF_SECRET
               ? 'klipy'
               : '',
-        IS_SINGLE_ORG: process.env.IS_SINGLE_ORG === 'true' && process.env.IS_ENTERPRISE === 'true'
+        // the server checks the license; here, any license key will do
+        IS_SINGLE_ORG: process.env.IS_SINGLE_ORG === 'true' && !!process.env.LICENSE_KEY
       })
     }),
     new ReactRefreshRspackPlugin(),

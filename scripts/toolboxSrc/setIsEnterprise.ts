@@ -5,7 +5,7 @@ import {Logger} from '../../packages/server/utils/Logger'
 export default async function setIsEnterprise() {
   if (defaultTier !== 'enterprise') {
     throw new Error(
-      'Environment variable IS_ENTERPRISE is not set to true. Exiting without updating tiers.'
+      'LICENSE_KEY is not a valid enterprise license. Exiting without updating tiers.'
     )
   }
 

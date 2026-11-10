@@ -1,5 +1,5 @@
 import {GraphQLError} from 'graphql'
-import {dependsOnLicense} from '../../../license/capTierByLicense'
+import {isEnterpriseInstance} from '../../../license/instanceLicense'
 import {getUsageKey} from '../../../license/licenseState'
 import getKysely from '../../../postgres/getKysely'
 import {selectPinnedReports} from '../../../reports/pinnedReports'
@@ -56,10 +56,11 @@ const Organization: OrganizationResolvers = {
     return isUserBillingLeader(viewerId, orgId, dataLoader)
   },
 
-  canSignUsageReport: async (org, _args, {authToken, dataLoader}) => {
-    if (!getUsageKey().ok || !dependsOnLicense(org)) return false
+  canSignUsageReport: async ({id: orgId}, _args, {authToken, dataLoader}) => {
+    // a license is for the whole instance, and Parabol's cloud has no usage reports
+    if (!getUsageKey().ok || !isEnterpriseInstance()) return false
     if (isSuperUser(authToken)) return true
-    return isUserBillingLeader(getUserId(authToken), org.id, dataLoader)
+    return isUserBillingLeader(getUserId(authToken), orgId, dataLoader)
   },
 
   isOrgAdmin: async ({id: orgId}, _args, {authToken, dataLoader}) => {

@@ -14,6 +14,7 @@ import {isNull} from './rules/isNull'
 import {isOrgTier} from './rules/isOrgTier'
 import {isReportTeamHealthCheck} from './rules/isReportTeamHealthCheck'
 import {isRestoringOwnTrashedPage} from './rules/isRestoringOwnTrashedPage'
+import {isSingleOrgInstance} from './rules/isSingleOrgInstance'
 import isSuperUser from './rules/isSuperUser'
 import {isTeamMember} from './rules/isTeamMember'
 import {isTeamMemberOfMeeting} from './rules/isTeamMemberOfMeeting'
@@ -105,10 +106,7 @@ const permissionMap: PermissionMap<Resolvers> = {
       )
     ),
     addComment: isMeetingMember<'Mutation.addComment'>('args.comment.discussionId', 'discussions'),
-    addOrg: and(
-      not(and(isEnvVarTrue('IS_SINGLE_ORG'), isEnvVarTrue('IS_ENTERPRISE'))),
-      rateLimit({perMinute: 2, perHour: 5})
-    ),
+    addOrg: and(not(isSingleOrgInstance), rateLimit({perMinute: 2, perHour: 5})),
     addPokerTemplate: isTeamMember<'Mutation.addPokerTemplate'>('args.teamId'),
     addPokerTemplateDimension: isTeamMember<'Mutation.addPokerTemplateDimension'>(
       'args.templateId',

@@ -52,6 +52,11 @@ export interface LicenseClaims {
   onOverSeats: LicenseStage[]
   /** The public half of the instance's usage key: a raw Ed25519 key in base64url. Absent: no usage reports */
   usageKey?: string
+  /**
+   * Parabol's own cloud: the license only keeps organizations without a Stripe subscription on their paid tier. New
+   * organizations start on Starter, and there are no usage reports. Absent: an enterprise instance
+   */
+  saas?: true
 }
 
 export type LicenseParseResult =
@@ -160,6 +165,7 @@ export const checkClaims = (claims: any): string | undefined => {
   if (claims.onOverSeats.length > 0 && claims.seats === undefined) {
     return 'onOverSeats has steps, but the license covers any number of users'
   }
+  if (claims.saas !== undefined && claims.saas !== true) return 'saas is true or absent'
   if (claims.usageKey !== undefined) {
     try {
       usagePublicKey(claims.usageKey)
@@ -279,9 +285,9 @@ export interface UsageReportClaims {
   host: string
   /** ISO 8601 */
   generatedAt: string
-  /** Users active now in the organizations that depend on the license, each counted once */
+  /** Users active now on the instance, each counted once */
   activeUsers: number
-  /** The organizations that depend on the license, with their active users now */
+  /** Every organization on the instance, with its active users now */
   organizations: UsageReportOrganization[]
   /** For each month since the license was issued, as YYYY-MM in UTC: the most users active on any day of it */
   monthlyPeaks: Record<string, number>

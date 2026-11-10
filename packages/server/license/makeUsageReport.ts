@@ -1,8 +1,4 @@
-import {
-  countActiveLicensedUsers,
-  countActiveLicensedUsersByOrg,
-  readMonthlyPeaks
-} from './licensedUsers'
+import {countActiveUsers, countActiveUsersByOrg, readMonthlyPeaks} from './licensedUsers'
 import {getCurrentLicenseStatus, getUsageKey} from './licenseState'
 import {signUsageReport, type UsageReportClaims} from './licenseToken'
 
@@ -14,8 +10,8 @@ const ABOUT =
   'Parabol checks: the same report, signed with the instance’s usage key, which its license names.'
 
 /**
- * The instance's usage report, signed with its usage key, as a JSON file: active users now, in each organization
- * that depends on the license, and each month's peak since the license was issued
+ * The instance's usage report, signed with its usage key, as a JSON file: active users now, in each organization, and
+ * each month's peak since the license was issued
  */
 export const makeUsageReport = async (now = new Date()) => {
   const usage = getUsageKey()
@@ -29,8 +25,8 @@ export const makeUsageReport = async (now = new Date()) => {
   const issuedAt = new Date(claims.issuedAt)
   const since = issuedAt > earliest ? issuedAt : earliest
   const [activeUsers, organizations, monthlyPeaks] = await Promise.all([
-    countActiveLicensedUsers(),
-    countActiveLicensedUsersByOrg(),
+    countActiveUsers(),
+    countActiveUsersByOrg(),
     readMonthlyPeaks(since)
   ])
   const host = process.env.HOST ?? ''

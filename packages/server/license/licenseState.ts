@@ -3,9 +3,8 @@ import ms from 'ms'
 import getKysely from '../postgres/getKysely'
 import {Logger} from '../utils/Logger'
 import {getLicenseStatus, type LicenseStatus, type LicenseTimeline} from './getLicenseStatus'
-import {countActiveLicensedUsers} from './licensedUsers'
-import {licensePublicKeys} from './licensePublicKeys'
-import {parseLicenseKey} from './licenseToken'
+import {getInstanceLicense} from './instanceLicense'
+import {countActiveUsers} from './licensedUsers'
 
 /*
 The instance's license status, kept in memory so tier checks stay synchronous. It's worked out from LICENSE_KEY
@@ -15,11 +14,7 @@ and since when more of them were active than the license covers.
 Until the first refresh, a missing license is in its grace period, so nothing is taken away while the server starts.
 */
 
-const {parsed, usage} = parseLicenseKey(
-  process.env.LICENSE_KEY,
-  licensePublicKeys,
-  process.env.HOST
-)
+const {parsed, usage} = getInstanceLicense()
 let status: LicenseStatus = getLicenseStatus({
   parsed,
   now: new Date(),
@@ -143,7 +138,7 @@ export const refreshLicenseStatus = async () => {
   let activeSeats: number | undefined
   let overSeatsSince: Date | null = null
   if (parsed.ok && parsed.claims.seats !== undefined) {
-    activeSeats = await countActiveLicensedUsers()
+    activeSeats = await countActiveUsers()
     if (activeSeats > parsed.claims.seats) {
       overSeatsSince = await startClock('overSeatsSince', now)
     } else {

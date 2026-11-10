@@ -2612,11 +2612,11 @@ type Mutation {
 
   """
   Sign a report of this Parabol instance's active users with its usage key, to send to Parabol. Billing leaders and
-  org admins of an organization that runs on the instance's license can
+  org admins can, on an enterprise instance
   """
   signUsageReport(
     """
-    The organization asked from, which must run on the instance's license
+    The organization asked from, whose billing leaders and org admins can ask
     """
     orgId: ID!
   ): SignUsageReportSuccess! @scope(name: REPORTS_READ)

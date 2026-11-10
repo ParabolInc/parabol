@@ -6,6 +6,7 @@ import logo192 from '../../../static/images/brand/mark-cropped-192.png'
 import logo512 from '../../../static/images/brand/mark-cropped-512.png'
 import socialCard from '../../../static/images/brand/social-card.jpg'
 import appOrigin from '../appOrigin'
+import {isSingleOrgInstance} from '../license/instanceLicense'
 import {makeOAuth2Redirect} from './makeOAuth2Redirect'
 
 const PROJECT_ROOT = getProjectRoot()
@@ -80,7 +81,7 @@ const rewriteIndexHTML = () => {
         : process.env.GIF_SECRET
           ? 'klipy'
           : '',
-    IS_SINGLE_ORG: process.env.IS_SINGLE_ORG === 'true' && process.env.IS_ENTERPRISE === 'true'
+    IS_SINGLE_ORG: isSingleOrgInstance()
   }
 
   const skeleton = fs.readFileSync(path.join(clientDir, 'skeleton.html'), 'utf8')

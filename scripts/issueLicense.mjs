@@ -14,14 +14,18 @@
 //       expiresAt     a date, such as 2027-11-30. Leave it out for a license that never expires
 //       onExpiry      what happens around expiry, counted from expiresAt
 //       onOverSeats   what happens while more users are active than seats, counted from when that began
+//       saas          true only for Parabol's own cloud: new organizations start on Starter, and no usage reports
 //     Each of onExpiry and onOverSeats is a list of steps, earliest first; [] means nothing ever happens. A step is
 //     {"from": "90d", "notice": "everyone", "action": "read-only"}: from when ("-30d" is 30 days before), who sees a
 //     notice (none, admins or everyone in the organizations that depend on the license), and, optionally, what happens
 //     to the instance: read-only lets people sign in and see their work, but change nothing. The last step that has
 //     started applies.
-//     A license lets organizations without a Stripe subscription keep their paid tier, whatever its steps.
-//     The script adds the format's version, the key ID, a license ID, the issue date and a new usage key, which signs
-//     the instance's usage reports. Parabol keeps no copy of the usage key: the license names its public half.
+//     A license is for a whole instance. It lets organizations without a Stripe subscription keep their paid tier,
+//     whatever its steps, and, unless it's saas, makes the instance an enterprise one, as IS_ENTERPRISE used to.
+//     The claims file never has the usage key: the script makes a new one for each license, writes its public half
+//     into the license as usageKey, and appends its private half to the license key it prints, for usage reports.
+//     The script also adds the format's version, the key ID, a license ID and the issue date. Parabol keeps no copy of
+//     the usage key's private half.
 //
 // The format is packages/server/license/licenseToken.ts's, which this script uses.
 import {createPrivateKey, createPublicKey, generateKeyPairSync, randomUUID} from 'node:crypto'
@@ -73,7 +77,7 @@ if (licensePublicKeys[values.kid]?.trim() !== publicKeyPem.toString().trim()) {
   )
 }
 
-const FIELDS = ['customer', 'seats', 'hosts', 'expiresAt', 'onExpiry', 'onOverSeats']
+const FIELDS = ['customer', 'seats', 'hosts', 'expiresAt', 'onExpiry', 'onOverSeats', 'saas']
 let input
 try {
   input = JSON.parse(readFileSync(values.claims, 'utf8'))
@@ -86,7 +90,8 @@ if (input.expiresAt !== undefined && Number.isNaN(Date.parse(input.expiresAt))) 
   fail('expiresAt is a date, such as 2027-11-30')
 }
 
-const usage = generateUsageKeyPair()
+// Parabol's cloud has no usage reports, so its license has no usage key
+const usage = input.saas ? undefined : generateUsageKeyPair()
 const claims = {
   v: 1,
   kid: values.kid,
@@ -98,19 +103,21 @@ const claims = {
   ...(input.expiresAt !== undefined && {expiresAt: new Date(input.expiresAt).toISOString()}),
   onExpiry: input.onExpiry,
   onOverSeats: input.onOverSeats,
-  usageKey: usage.publicKey
+  ...(usage && {usageKey: usage.publicKey}),
+  ...(input.saas !== undefined && {saas: input.saas})
 }
 const claimsError = checkClaims(claims)
 if (claimsError) fail(`The license would be invalid: ${claimsError}`)
 
-const licenseKey = `${signLicense(claims, privateKeyPem)}.${usage.privateKey}`
+const license = signLicense(claims, privateKeyPem)
+const licenseKey = usage ? `${license}.${usage.privateKey}` : license
 // check it the way a server will
 const {parsed, usage: usageCheck} = parseLicenseKey(
   licenseKey,
   licensePublicKeys,
   claims.hosts?.[0]
 )
-if (!parsed.ok || !usageCheck.ok) {
+if (!parsed.ok || (usage && !usageCheck.ok)) {
   fail(`The license key doesn't check out: ${parsed.ok ? usageCheck.error : parsed.error}`)
 }
 console.error(JSON.stringify(claims, null, 2))
