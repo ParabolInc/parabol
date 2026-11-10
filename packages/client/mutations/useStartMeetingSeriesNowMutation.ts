@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {useStartMeetingSeriesNowMutation as TStartMeetingSeriesNowMutation} from '../__generated__/useStartMeetingSeriesNowMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
+import getServerError from '../utils/relay/getServerError'
 
 const mutation = graphql`
   mutation useStartMeetingSeriesNowMutation($meetingSeriesId: ID!) {
@@ -40,7 +41,7 @@ const useStartMeetingSeriesNowMutation = () => {
         config.onCompleted?.(res, errors)
       },
       onError: (error) => {
-        showError(error.message)
+        showError(getServerError(error)?.message ?? error.message)
         config.onError?.(error)
       }
     })

@@ -4,6 +4,7 @@ import type {CreateImposterTokenMutation as ICreateImposterTokenMutation} from '
 import type Atmosphere from '../Atmosphere'
 import type {SimpleMutation} from '../types/relayMutations'
 import getGraphQLError from '../utils/relay/getGraphQLError'
+import getServerError from '../utils/relay/getServerError'
 
 graphql`
   fragment CreateImposterTokenMutation_agendaItem on CreateImposterTokenPayload {
@@ -34,7 +35,7 @@ const CreateImposterTokenMutation: SimpleMutation<ICreateImposterTokenMutation> 
     atmosphere.eventEmitter.emit('addSnackbar', {
       autoDismiss: 5,
       key: 'imposterError',
-      message: err.message
+      message: getServerError(err)?.message ?? err.message
     })
   }
 

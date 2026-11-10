@@ -3,6 +3,7 @@ import {commitMutation} from 'react-relay'
 import type {PushInvitationMutation as TPushInvitationMutation} from '../__generated__/PushInvitationMutation.graphql'
 import type {PushInvitationMutation_team$data} from '../__generated__/PushInvitationMutation_team.graphql'
 import type {OnNextHandler, StandardMutation} from '../types/relayMutations'
+import getServerError from '../utils/relay/getServerError'
 import DenyPushInvitationMutation from './DenyPushInvitationMutation'
 import {commitInviteToTeamMutation} from './useInviteToTeamMutation'
 
@@ -66,11 +67,14 @@ export const pushInvitationTeamOnNext: OnNextHandler<PushInvitationMutation_team
               message
             })
           },
-          onError: () => {
+          onError: (error) => {
+            const serverMessage = getServerError(error)?.message
             atmosphere.eventEmitter.emit('addSnackbar', {
               key: snackKey,
               autoDismiss: 10,
-              message: `Could not invite ${preferredName}. Check your connection and try again.`
+              message: serverMessage
+                ? `Could not invite ${preferredName}: ${serverMessage}`
+                : `Could not invite ${preferredName}. Check your connection and try again.`
             })
           }
         })

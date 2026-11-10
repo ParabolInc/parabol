@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {useStartTeamHealthMutation as TStartTeamHealthMutation} from '../__generated__/useStartTeamHealthMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
+import getServerError from '../utils/relay/getServerError'
 
 graphql`
   fragment useStartTeamHealthMutation_success on StartTeamHealthSuccess {
@@ -65,7 +66,7 @@ const useStartTeamHealthMutation = () => {
         config.onCompleted?.(res, errors)
       },
       onError: (error) => {
-        showError(error.message)
+        showError(getServerError(error)?.message ?? error.message)
         config.onError?.(error)
       }
     })

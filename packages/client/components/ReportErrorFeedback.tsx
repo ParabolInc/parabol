@@ -6,6 +6,7 @@ import {Button} from '../ui/Button/Button'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
+import getServerError from '../utils/relay/getServerError'
 import BasicTextArea from './InputField/BasicTextArea'
 
 interface Props {
@@ -43,7 +44,7 @@ const ReportErrorFeedback = (props: Props) => {
         setText('')
         onClose()
       },
-      onError: (err) => setSubmitError(err.message)
+      onError: (err) => setSubmitError(getServerError(err)?.message ?? err.message)
     })
   }
 

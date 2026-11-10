@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import type {ReAuthWithGoogleMutation as TReAuthWithGoogleMutation} from '../__generated__/ReAuthWithGoogleMutation.graphql'
 import type Atmosphere from '../Atmosphere'
+import getServerError from '../utils/relay/getServerError'
 
 const mutation = graphql`
   mutation ReAuthWithGoogleMutation($code: ID!, $pseudoId: ID, $params: String!) {
@@ -22,7 +23,7 @@ const ReAuthWithGoogleMutation = (
   return commitMutation<TReAuthWithGoogleMutation>(atmosphere, {
     mutation,
     variables,
-    onError: (err) => onCompleted(err.message),
+    onError: (err) => onCompleted(getServerError(err)?.message ?? err.message),
     onCompleted: (res) => {
       const {loginWithGoogle} = res
       if (loginWithGoogle.error) {
