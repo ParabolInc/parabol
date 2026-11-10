@@ -1,6 +1,6 @@
 import fetchWithRetry from '../../../utils/fetchWithRetry'
 import {ThirdPartyResponseError} from '../../../utils/ThirdPartyResponseError'
-import AtlassianServerManager from '../AtlassianServerManager'
+import AtlassianServerManager, {JiraNoAccessResponseError} from '../AtlassianServerManager'
 
 jest.mock('../../../utils/fetchWithRetry', () => jest.fn())
 const mockFetchWithRetry = jest.mocked(fetchWithRetry)
@@ -40,4 +40,35 @@ test('a POST that gets a page back says so instead of failing to parse it', asyn
     endpoint: 'api.atlassian.com/ex/jira/:id/rest/api/3/issue',
     status: 503
   })
+})
+
+test('a site Jira no longer serves comes back as no access, not as an unexpected error', async () => {
+  mockFetchWithRetry.mockResolvedValue(
+    new Response(
+      JSON.stringify({
+        timestamp: '2020-01-01T00:00:00.000+0000',
+        status: 404,
+        error: 'Not Found',
+        message: 'No message available',
+        path: '/rest/api/3/issue/PROJ-1'
+      }),
+      {status: 404, headers: {'content-type': 'application/json'}}
+    )
+  )
+  const result = await new AtlassianServerManager('token').getIssue(CLOUD_ID, 'PROJ-1')
+  expect(result).toBeInstanceOf(JiraNoAccessResponseError)
+  expect((result as Error).message).toBe('Not Found')
+})
+
+test('a JSON error that is not a 404 stays an unexpected error', async () => {
+  mockFetchWithRetry.mockResolvedValue(
+    new Response(JSON.stringify({code: 500, message: 'Internal Server Error'}), {
+      status: 500,
+      headers: {'content-type': 'application/json'}
+    })
+  )
+  const result = await new AtlassianServerManager('token').getIssue(CLOUD_ID, 'PROJ-1')
+  expect(result).toBeInstanceOf(Error)
+  expect(result).not.toBeInstanceOf(JiraNoAccessResponseError)
+  expect((result as Error).message).toBe('Internal Server Error')
 })
