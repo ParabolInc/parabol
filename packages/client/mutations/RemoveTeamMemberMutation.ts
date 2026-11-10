@@ -16,6 +16,7 @@ import handleAddNotifications from './handlers/handleAddNotifications'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
 import handleRemoveTeamMembers from './handlers/handleRemoveTeamMembers'
 import handleRemoveTeams from './handlers/handleRemoveTeams'
+import handleRemoveUserFromMeeting from './handlers/handleRemoveUserFromMeeting'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
 import SetNotificationStatusMutation from './SetNotificationStatusMutation'
 
@@ -39,17 +40,9 @@ graphql`
     id
     isViewerOnTeam
     activeMeetings {
+      id
       facilitatorStageId
       facilitatorUserId
-      meetingMembers {
-        id
-      }
-      phases {
-        stages {
-          id
-          readyUserIds
-        }
-      }
     }
   }
 `
@@ -165,6 +158,10 @@ export const removeTeamMemberTeamUpdater: SharedUpdater<RemoveTeamMemberMutation
   }
   const teamMemberId = payload.getLinkedRecord('teamMember').getValue('id')
   handleRemoveTeamMembers(teamMemberId, store)
+  const activeMeetings = payload.getLinkedRecord('team')?.getLinkedRecords('activeMeetings') ?? []
+  activeMeetings.forEach((activeMeeting) => {
+    handleRemoveUserFromMeeting(activeMeeting.getValue('id'), teamMemberId, store)
+  })
 }
 
 export const removeTeamMemberNotificationUpdater: SharedUpdater<
