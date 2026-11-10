@@ -404,6 +404,21 @@ export default class Atmosphere extends Environment {
     })
   }
 
+  // fetchOrSubscribe turns a failed mutation into `data: {}`, which has nothing for an updater to apply.
+  // An updater that throws stays queued in relay and re-throws on every later store update.
+  executeMutation(config: Parameters<Environment['executeMutation']>[0]) {
+    const {updater} = config
+    if (!updater) return super.executeMutation(config)
+    return super.executeMutation({
+      ...config,
+      updater: (store, data) => {
+        const isEmptyPayload = !data || Object.values(data).every((value) => value === undefined)
+        if (isEmptyPayload) return
+        updater(store, data)
+      }
+    })
+  }
+
   fetchQuery = async <T extends OperationType>(
     taggedNode: GraphQLTaggedNode,
     variables: Variables = {},
