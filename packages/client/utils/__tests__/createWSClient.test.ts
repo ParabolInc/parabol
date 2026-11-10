@@ -21,7 +21,11 @@ beforeEach(() => {
   console.error = loggedToConsole
   Object.assign(globalThis, {__APP_VERSION__: '15.16.0'})
   Object.defineProperty(globalThis, 'window', {
-    value: {location: {protocol: 'https:', host: 'example.test'}},
+    value: {location: {protocol: 'https:', host: 'example.test'}, setTimeout, clearTimeout},
+    configurable: true
+  })
+  Object.defineProperty(globalThis, 'document', {
+    value: {visibilityState: 'visible', addEventListener: jest.fn()},
     configurable: true
   })
 })

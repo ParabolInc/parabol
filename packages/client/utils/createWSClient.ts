@@ -4,6 +4,7 @@ import {commitLocalUpdate} from 'relay-runtime'
 import type Atmosphere from '../Atmosphere'
 import {addBreadcrumb} from './clientBreadcrumbs'
 import {isClientOutdated, setConnectedServerVersion} from './connectedServerVersion'
+import {createBackgroundSocketPause} from './createBackgroundSocketPause'
 import getTabSessionId from './getTabSessionId'
 import createProxyRecord from './relay/createProxyRecord'
 import {reportClientWarning} from './reportClientError'
@@ -35,6 +36,13 @@ const setConnectedStatus = (atmosphere: Atmosphere, isConnected: boolean) => {
 
 // a background tab pings once a minute, then reconnects within seconds of a deploy closing its socket
 const MAX_DEPLOY_RECONNECT_GAP = ms('2m')
+
+// graphql-ws reconnects at once after a 1000, but waits on retryWait after an application code like this one
+const BACKGROUND_PAUSE_CLOSE_CODE = 4000
+
+// the default retryWait of graphql-ws
+const waitToRetry = (retries: number) =>
+  new Promise((resolve) => setTimeout(resolve, 2 ** retries * 1000 + 300 + Math.random() * 2700))
 
 let firewallMessageSent = false
 let recentDisconnects = [] as number[]
@@ -78,6 +86,12 @@ export function createWSClient(atmosphere: Atmosphere) {
     let nextId = 1
     let timedOut: number
     let lastPongAt = Date.now()
+    let currentSocket: WebSocket | undefined
+    let pausedSinceConnect = false
+    const backgroundPause = createBackgroundSocketPause(() => {
+      pausedSinceConnect = true
+      currentSocket?.close(BACKGROUND_PAUSE_CLOSE_CODE, 'Paused in a background tab')
+    })
     const subscriptionClient = createClient({
       lazy: false,
       connectionParams: () => ({sessionId: getTabSessionId()}),
@@ -89,8 +103,15 @@ export function createWSClient(atmosphere: Atmosphere) {
         if (!atmosphere.authObj) return false
         return true
       },
+      retryWait: async (retries) => {
+        if (!backgroundPause.isPaused()) await waitToRetry(retries)
+        await backgroundPause.waitUntilResumed()
+      },
       keepAlive: 10_000,
       on: {
+        opened: (socket) => {
+          currentSocket = socket as WebSocket
+        },
         ping: (received, payload) => {
           if (!received) {
             timedOut = window.setTimeout(() => {
@@ -130,12 +151,13 @@ export function createWSClient(atmosphere: Atmosphere) {
             abruptlyClosed = false
             onReconnect(atmosphere)
             // A deploy reconnects every client at once, so a client that was connected a moment ago skips the refetch to spare the server
-            // A tab that was frozen or asleep through the deploy missed everything since its last pong
-            const wasAway = Date.now() - lastPongAt > MAX_DEPLOY_RECONNECT_GAP
+            // A tab that was paused, frozen or asleep through the deploy missed everything since its last pong
+            const wasAway = pausedSinceConnect || Date.now() - lastPongAt > MAX_DEPLOY_RECONNECT_GAP
             if (!isNewVersion || wasAway) {
               atmosphere.retries.forEach((retry) => retry())
             }
           }
+          pausedSinceConnect = false
           if (!hasConnected) {
             hasConnected = true
             atmosphere.subscriptionClient = subscriptionClient
@@ -144,6 +166,8 @@ export function createWSClient(atmosphere: Atmosphere) {
           setConnectedStatus(atmosphere, true)
         },
         closed: (event) => {
+          // a ping that was waiting on this socket must not terminate the next one
+          clearTimeout(timedOut)
           const {code, reason} = event as CloseEvent
           const closedMessage = `closed ${code} ${reason}`.trim()
           addBreadcrumb('websocket', closedMessage)
@@ -162,7 +186,8 @@ export function createWSClient(atmosphere: Atmosphere) {
           if (code !== 1000) {
             abruptlyClosed = true
             if (hasConnected) {
-              onDisconnected(atmosphere)
+              if (backgroundPause.isPaused()) setConnectedStatus(atmosphere, false)
+              else onDisconnected(atmosphere)
             }
           }
         }
