@@ -4,10 +4,10 @@ import type {TaskSendControlQuery} from '../../../../__generated__/TaskSendContr
 import type {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
 import type {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
-import TaskSendButton from './TaskSendButton'
 import TaskSendControl, {taskSendControlQuery} from './TaskSendControl'
 
 interface Props {
+  isCardActive: boolean
   mutationProps: MenuMutationProps
   task: TaskFooterIntegrateMenuRoot_task$key
   teamId: string
@@ -15,13 +15,14 @@ interface Props {
 }
 
 const TaskSendControlRoot = (props: Props) => {
-  const {mutationProps, task, teamId, useTaskChild} = props
+  const {isCardActive, mutationProps, task, teamId, useTaskChild} = props
   const queryRef = useQueryLoaderNow<TaskSendControlQuery>(taskSendControlQuery, {teamId})
-  const placeholder = <TaskSendButton aria-label='Send to a tool' services={[]} disabled />
+  const placeholder = <div className='h-6 w-6' />
   return (
     <Suspense fallback={placeholder}>
       {queryRef ? (
         <TaskSendControl
+          isCardActive={isCardActive}
           mutationProps={mutationProps}
           queryRef={queryRef}
           task={task}

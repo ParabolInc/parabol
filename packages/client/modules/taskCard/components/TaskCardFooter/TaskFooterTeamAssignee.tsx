@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Suspense, useState} from 'react'
 import {useFragment} from 'react-relay'
+import {ArrowDropDown} from '~/ui/icons'
 import {Tooltip} from '~/ui/Tooltip/Tooltip'
 import {TooltipContent} from '~/ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '~/ui/Tooltip/TooltipTrigger'
@@ -17,6 +18,7 @@ import type {PendingTeamAssignment} from '../TaskCardAssignMenu/TaskFooterTeamAs
 
 interface Props {
   canAssign: boolean
+  isCardActive: boolean
   task: TaskFooterTeamAssignee_task$key
   useTaskChild: UseTaskChild
 }
@@ -29,7 +31,7 @@ const TaskFooterTeamAssigneeMenuRoot = lazyPreload(
 )
 
 const TaskFooterTeamAssignee = (props: Props) => {
-  const {canAssign, task: taskRef, useTaskChild} = props
+  const {canAssign, isCardActive, task: taskRef, useTaskChild} = props
 
   const task = useFragment(
     graphql`
@@ -59,11 +61,12 @@ const TaskFooterTeamAssignee = (props: Props) => {
 
   const trigger = (
     <CardButton
-      className='-ml-2 block h-6 max-w-full truncate rounded-md border-0 px-2 text-left font-semibold text-fg-secondary text-xs leading-6 opacity-100 outline-0 hover:text-fg-primary focus:text-fg-primary'
+      className='-ml-2 h-6 max-w-full justify-start gap-0.5 rounded-md border-0 px-2 text-left font-semibold text-fg-secondary text-xs leading-6 opacity-100 outline-0 hover:text-fg-primary focus:text-fg-primary'
       aria-label='Assign this task to another team'
       onMouseEnter={TaskFooterTeamAssigneeMenuRoot.preload}
     >
-      {teamName}
+      <span className='min-w-0 truncate'>{teamName}</span>
+      {canAssign && isCardActive && <ArrowDropDown className='-mr-1 h-4 w-4 flex-none' />}
     </CardButton>
   )
 

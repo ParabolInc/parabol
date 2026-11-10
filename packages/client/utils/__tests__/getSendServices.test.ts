@@ -1,13 +1,13 @@
 jest.mock('babel-plugin-relay/macro', () => ({__esModule: true, default: () => ({})}))
 
 import type {IntegrationProviderServiceEnum} from '../../__generated__/CreateTaskIntegrationMutation.graphql'
-import {DEFAULT_SEND_SERVICES, getSendServices, getSendToLabel} from '../getSendServices'
+import {getConnectLabel, getSendServices, getSendToLabel} from '../getSendServices'
 
 const connected = (...services: IntegrationProviderServiceEnum[]) =>
   services.map((service) => ({service, isConnected: true}))
 
 describe('getSendServices', () => {
-  it('shows the viewer’s connected tools in popularity order, up to three', () => {
+  it('lists the viewer’s connected tools in popularity order, up to three', () => {
     const viewer = connected('gitlab', 'github', 'clickup', 'linear', 'jira')
     expect(getSendServices(viewer)).toEqual(['jira', 'linear', 'github'])
   })
@@ -20,11 +20,9 @@ describe('getSendServices', () => {
     expect(getSendServices(viewer)).toEqual(['azureDevOps'])
   })
 
-  it('shows Jira, GitHub and GitLab when the viewer has nothing connected', () => {
-    expect(getSendServices([])).toEqual(DEFAULT_SEND_SERVICES)
-    expect(
-      getSendServices(DEFAULT_SEND_SERVICES.map((service) => ({service, isConnected: false})))
-    ).toEqual(['jira', 'github', 'gitlab'])
+  it('is empty when the viewer has nothing connected', () => {
+    expect(getSendServices([])).toEqual([])
+    expect(getSendServices([{service: 'github', isConnected: false}])).toEqual([])
   })
 })
 
@@ -34,6 +32,14 @@ describe('getSendToLabel', () => {
     expect(getSendToLabel(['jira', 'github'])).toBe('Send to Jira Cloud or GitHub')
     expect(getSendToLabel(['jira', 'github', 'gitlab'])).toBe(
       'Send to Jira Cloud, GitHub or GitLab'
+    )
+  })
+})
+
+describe('getConnectLabel', () => {
+  it('names the suggested tools and leaves room for others', () => {
+    expect(getConnectLabel()).toBe(
+      'Connect Jira Cloud, GitHub, GitLab or another tool to send this task'
     )
   })
 })

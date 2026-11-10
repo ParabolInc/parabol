@@ -5,19 +5,24 @@ import TeamHealthDemoIntegrationDialog, {
 import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../../ui/Tooltip/TooltipTrigger'
-import {DEFAULT_SEND_SERVICES, getSendToLabel} from '../../../../utils/getSendServices'
+import {getConnectLabel} from '../../../../utils/getSendServices'
 import TaskSendButton from './TaskSendButton'
 
-const TaskFooterIntegrateDemoToggle = () => {
+interface Props {
+  isCardActive: boolean
+}
+
+const TaskFooterIntegrateDemoToggle = ({isCardActive}: Props) => {
   const [isOpen, setIsOpen] = useState(false)
-  const label = getSendToLabel(DEFAULT_SEND_SERVICES)
+  const label = getConnectLabel()
   return (
     <>
       <Tooltip>
         <TooltipTrigger asChild>
           <TaskSendButton
             aria-label={label}
-            services={DEFAULT_SEND_SERVICES}
+            isCardActive={isCardActive}
+            services={[]}
             onClick={() => setIsOpen(true)}
           />
         </TooltipTrigger>

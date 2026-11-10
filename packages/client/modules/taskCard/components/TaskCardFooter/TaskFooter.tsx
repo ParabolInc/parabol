@@ -88,6 +88,7 @@ const TaskFooter = (props: Props) => {
           {showTeam ? (
             <TaskFooterTeamAssignee
               canAssign={canAssignTeam}
+              isCardActive={cardIsActive}
               task={task}
               useTaskChild={useTaskChild}
             />
@@ -95,6 +96,7 @@ const TaskFooter = (props: Props) => {
             <TaskFooterUserAssignee
               area={area}
               canAssign={canAssignUser}
+              isCardActive={cardIsActive}
               task={task}
               useTaskChild={useTaskChild}
             />
@@ -102,6 +104,7 @@ const TaskFooter = (props: Props) => {
         </div>
         {!taskService && !isArchived && userId && (
           <TaskFooterIntegrateToggle
+            isCardActive={cardIsActive}
             mutationProps={mutationProps}
             task={task}
             teamId={teamId}

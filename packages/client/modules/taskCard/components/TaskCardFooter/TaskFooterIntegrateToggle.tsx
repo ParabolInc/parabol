@@ -6,6 +6,7 @@ import TaskFooterIntegrateDemoToggle from './TaskFooterIntegrateDemoToggle'
 import TaskSendControlRoot from './TaskSendControlRoot'
 
 interface Props {
+  isCardActive: boolean
   mutationProps: MenuMutationProps
   task: TaskFooterIntegrateMenuRoot_task$key
   teamId: string
@@ -13,7 +14,8 @@ interface Props {
 }
 
 const TaskFooterIntegrateToggle = (props: Props) => {
-  if (isTeamHealthDemoRoute()) return <TaskFooterIntegrateDemoToggle />
+  if (isTeamHealthDemoRoute())
+    return <TaskFooterIntegrateDemoToggle isCardActive={props.isCardActive} />
   return <TaskSendControlRoot {...props} />
 }
 

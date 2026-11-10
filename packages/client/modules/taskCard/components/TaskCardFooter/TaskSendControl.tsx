@@ -10,7 +10,7 @@ import {MenuContent} from '../../../../ui/Menu/MenuContent'
 import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../../ui/Tooltip/TooltipTrigger'
-import {getSendServices, getSendToLabel} from '../../../../utils/getSendServices'
+import {getConnectLabel, getSendServices, getSendToLabel} from '../../../../utils/getSendServices'
 import lazyPreload from '../../../../utils/lazyPreload'
 import TaskSendButton from './TaskSendButton'
 
@@ -35,6 +35,7 @@ export const taskSendControlQuery = graphql`
 `
 
 interface Props {
+  isCardActive: boolean
   mutationProps: MenuMutationProps
   queryRef: PreloadedQuery<TaskSendControlQuery>
   task: TaskFooterIntegrateMenuRoot_task$key
@@ -42,10 +43,10 @@ interface Props {
 }
 
 const TaskSendControl = (props: Props) => {
-  const {mutationProps, queryRef, task, useTaskChild} = props
+  const {isCardActive, mutationProps, queryRef, task, useTaskChild} = props
   const {viewer} = usePreloadedQuery<TaskSendControlQuery>(taskSendControlQuery, queryRef)
   const services = getSendServices(viewer.teamMember?.services ?? [])
-  const label = getSendToLabel(services)
+  const label = services.length > 0 ? getSendToLabel(services) : getConnectLabel()
   return (
     <Tooltip>
       <Menu
@@ -53,6 +54,7 @@ const TaskSendControl = (props: Props) => {
           <TooltipTrigger asChild>
             <TaskSendButton
               aria-label={label}
+              isCardActive={isCardActive}
               services={services}
               onMouseEnter={TaskFooterIntegrateMenuRoot.preload}
             />

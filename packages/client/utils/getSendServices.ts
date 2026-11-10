@@ -11,22 +11,27 @@ interface ServiceConnection {
   readonly isConnected: boolean
 }
 
-export const DEFAULT_SEND_SERVICES: readonly TaskClientIntegration[] = ['jira', 'github', 'gitlab']
+export const SUGGESTED_SEND_SERVICES: readonly TaskClientIntegration[] = [
+  'jira',
+  'github',
+  'gitlab'
+]
 const MAX_SEND_SERVICES = 3
 
-const getConnectedTaskServices = (services: readonly ServiceConnection[]) =>
-  listClientIntegrationServices(services.filter(({isConnected}) => isConnected))
+const getTitles = (services: readonly TaskClientIntegration[]) =>
+  services.map((service) => getClientIntegration(service).title)
+
+export const getSendServices = (viewerServices: readonly ServiceConnection[]) =>
+  listClientIntegrationServices(viewerServices.filter(({isConnected}) => isConnected))
     .map(({integrationService}) => integrationService.service)
     .filter(isTaskClientIntegration)
     .slice(0, MAX_SEND_SERVICES)
 
-export const getSendServices = (viewerServices: readonly ServiceConnection[]) => {
-  const viewerTools = getConnectedTaskServices(viewerServices)
-  return viewerTools.length > 0 ? viewerTools : DEFAULT_SEND_SERVICES
-}
-
 export const getSendToLabel = (services: readonly TaskClientIntegration[]) => {
-  const titles = services.map((service) => getClientIntegration(service).title)
+  const titles = getTitles(services)
   if (titles.length < 2) return `Send to ${titles[0] ?? 'a tool'}`
   return `Send to ${titles.slice(0, -1).join(', ')} or ${titles.at(-1)}`
 }
+
+export const getConnectLabel = () =>
+  `Connect ${getTitles(SUGGESTED_SEND_SERVICES).join(', ')} or another tool to send this task`
