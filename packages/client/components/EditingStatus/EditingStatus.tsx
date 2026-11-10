@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
-import {type ReactNode, useEffect, useState} from 'react'
+import {type ReactNode, useContext, useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {EditingStatus_task$key} from '~/__generated__/EditingStatus_task.graphql'
 import {Tooltip} from '~/ui/Tooltip/Tooltip'
@@ -11,7 +11,9 @@ import type {UseTaskChild} from '../../hooks/useTaskChildFocus'
 import {cn} from '../../ui/cn'
 import {DONE} from '../../utils/constants'
 import getLongOpenMonths from '../../utils/getLongOpenMonths'
+import isNewSince from '../../utils/isNewSince'
 import DueDateToggle from '../DueDateToggle'
+import LastRetroEndedAtContext from '../LastRetroEndedAtContext'
 import CreatedInLink from './CreatedInLink'
 import EditingStatusText from './EditingStatusText'
 import nextMetaField, {type TaskMetaField} from './nextMetaField'
@@ -75,6 +77,7 @@ const EditingStatus = (props: Props) => {
   const stageIdx = discussion?.stage?.stageIdx
   const hasRetro = !!(meetingId && meeting && reflectionGroup && stageIdx !== undefined)
   const atmosphere = useAtmosphere()
+  const lastRetroEndedAt = useContext(LastRetroEndedAtContext)
   const {viewerId} = atmosphere
   const otherEditors = editors.filter((editor) => editor.userId !== viewerId)
   const isEditing = editors.length > otherEditors.length
@@ -96,8 +99,10 @@ const EditingStatus = (props: Props) => {
 
   const effectiveField: 'createdAt' | 'updatedAt' =
     metaField === 'createdIn' ? 'createdAt' : metaField
+  const isOpen = status !== DONE && !isArchived
+  const isNew = isOpen && isNewSince(createdAt, lastRetroEndedAt)
   const longOpenMonths =
-    defaultMetaField === 'createdIn' && metaField === 'createdIn' && hasRetro && status !== DONE
+    !isNew && isOpen && defaultMetaField === 'createdIn' && metaField === 'createdIn' && hasRetro
       ? getLongOpenMonths(createdAt)
       : null
 
@@ -105,6 +110,9 @@ const EditingStatus = (props: Props) => {
     <div className='flex min-h-[20px] items-start justify-between pr-2 pb-1 pl-4 text-left font-semibold text-fg-secondary text-xs leading-5'>
       <div className='w-full'>
         {children}
+        {isNew && (
+          <span className='mr-1.5 rounded bg-surface-well px-1 py-px text-fg-primary'>New</span>
+        )}
         {longOpenMonths !== null && (
           <span className='mr-1.5 rounded bg-surface-well px-1 py-px text-fg-primary'>
             Open {longOpenMonths} months

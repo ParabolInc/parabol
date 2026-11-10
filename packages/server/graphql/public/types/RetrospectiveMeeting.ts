@@ -26,6 +26,14 @@ const RetrospectiveMeeting: RetrospectiveMeetingResolvers = {
       .executeTakeFirst()
     return (meeting as RetrospectiveMeetingSource) || null
   },
+  prevCompletedMeeting: async ({teamId, createdAt}, _args, {dataLoader}) => {
+    const completedMeetings = await dataLoader.get('completedMeetingsByTeamId').load(teamId)
+    const meeting = completedMeetings.find(
+      ({meetingType, endedAt}) =>
+        meetingType === 'retrospective' && !!endedAt && endedAt < createdAt
+    )
+    return (meeting as RetrospectiveMeetingSource | undefined) ?? null
+  },
   commentCount: ({commentCount}) => commentCount || 0,
   disableAnonymity: ({disableAnonymity}) => disableAnonymity ?? false,
   meetingMembers: async ({id: meetingId}, _args, {dataLoader}) => {

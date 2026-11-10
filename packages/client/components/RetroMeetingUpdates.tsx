@@ -5,6 +5,7 @@ import type {RetroMeetingUpdates_meeting$key} from '../__generated__/RetroMeetin
 import useAtmosphere from '../hooks/useAtmosphere'
 import getTeamMemberTasks from '../utils/getTeamMemberTasks'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
+import LastRetroEndedAtContext from './LastRetroEndedAtContext'
 import MeetingUpdatesContent from './MeetingUpdatesContent'
 import type {RetroMeetingPhaseProps} from './RetroMeeting'
 import RetroMeetingUpdatesPrompt from './RetroMeetingUpdatesPrompt'
@@ -23,6 +24,9 @@ const RetroMeetingUpdates = (props: Props) => {
         id
         endedAt
         showSidebar
+        prevCompletedMeeting {
+          endedAt
+        }
         localStage {
           ...RetroMeetingUpdatesStage @relay(mask: false) @alias
         }
@@ -52,7 +56,7 @@ const RetroMeetingUpdates = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {id: meetingId, endedAt, localStage, showSidebar, team} = meeting
+  const {id: meetingId, endedAt, localStage, showSidebar, team, prevCompletedMeeting} = meeting
   const {id: teamId, tasks} = team
   const stageOwner = localStage?.RetroMeetingUpdatesStage?.teamMember
   const stageOwnerUserId = stageOwner?.userId ?? viewerId
@@ -64,18 +68,20 @@ const RetroMeetingUpdates = (props: Props) => {
   }, [tasks, stageOwnerUserId])
 
   return (
-    <MeetingUpdatesContent
-      avatarGroup={avatarGroup}
-      endedAt={endedAt}
-      headerPrompt={<RetroMeetingUpdatesPrompt meeting={meeting} />}
-      isViewerStageOwner={stageOwnerUserId === viewerId}
-      meetingId={meetingId}
-      meetingRef={meeting}
-      myTeamMemberId={toTeamMemberId(teamId, viewerId)}
-      showSidebar={showSidebar}
-      tasks={teamMemberTasks}
-      toggleSidebar={toggleSidebar}
-    />
+    <LastRetroEndedAtContext.Provider value={prevCompletedMeeting?.endedAt ?? null}>
+      <MeetingUpdatesContent
+        avatarGroup={avatarGroup}
+        endedAt={endedAt}
+        headerPrompt={<RetroMeetingUpdatesPrompt meeting={meeting} />}
+        isViewerStageOwner={stageOwnerUserId === viewerId}
+        meetingId={meetingId}
+        meetingRef={meeting}
+        myTeamMemberId={toTeamMemberId(teamId, viewerId)}
+        showSidebar={showSidebar}
+        tasks={teamMemberTasks}
+        toggleSidebar={toggleSidebar}
+      />
+    </LastRetroEndedAtContext.Provider>
   )
 }
 
