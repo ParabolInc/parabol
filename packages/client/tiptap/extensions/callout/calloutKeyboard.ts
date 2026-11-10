@@ -47,6 +47,7 @@ export const handleCalloutBackspace = (editor: Editor) => {
   if (!caret) return false
   const {selection, $from} = caret
   if (!selection.empty || $from.parentOffset !== 0 || $from.index(-1) !== 0) return false
+  if (editor.commands.undoInputRule()) return true
   const tr = unwrapCallout(editor.state, $from.before(-1))
   if (!tr) return false
   editor.view.dispatch(tr.scrollIntoView())

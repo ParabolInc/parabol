@@ -201,6 +201,14 @@ describe('input rule', () => {
     expect(calloutAt(editor).textContent).toBe('')
   })
 
+  test('Backspace right after the conversion undoes it', () => {
+    const editor = mount([p('')], caretIn(''))
+    typeText(editor, '> [!NOTE] ')
+    press(editor, 'Backspace')
+    expect(editor.state.doc.child(1).type.name).toBe('blockquote')
+    expect(editor.state.doc.child(1).textContent).toBe('[!NOTE] ')
+  })
+
   test('the quote keeps its other blocks', () => {
     const editor = mount([quote([p(''), p('rest')])], caretIn(''))
     typeText(editor, '[!tip] ')
