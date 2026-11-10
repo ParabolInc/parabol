@@ -96,8 +96,6 @@ const updateCreditCard: MutationResolvers['updateCreditCard'] = async (
     publish(SubscriptionChannel.TEAM, teamId, 'UpdateCreditCardPayload', data, subOptions)
   })
 
-  publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpdateCreditCardPayload', data, subOptions)
-
   return {
     ...data,
     stripeSubscriptionClientSecret

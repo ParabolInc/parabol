@@ -4,18 +4,12 @@ import pluralizeHandler from './pluralizeHandler'
 
 const handleRemovePokerTemplateDimension = (
   dimensionId: string,
-  teamId: string,
+  templateId: string,
   store: RecordSourceSelectorProxy
 ) => {
-  const team = store.get(teamId)
-  if (!team) return
-  const settings = team.getLinkedRecord('meetingSettings', {
-    meetingType: 'poker'
-  })
-  if (!settings) return
-  const activeTemplate = settings.getLinkedRecord('activeTemplate')
-  if (!activeTemplate) return
-  safeRemoveNodeFromArray(dimensionId, activeTemplate, 'dimensions')
+  const template = store.get(templateId)
+  if (!template) return
+  safeRemoveNodeFromArray(dimensionId, template, 'dimensions')
 }
 
 const handleRemovePokerTemplateDimensions = pluralizeHandler(handleRemovePokerTemplateDimension)

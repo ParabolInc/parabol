@@ -1,19 +1,15 @@
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
-import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const setSlackNotification: MutationResolvers['setSlackNotification'] = async (
   _source,
   {slackChannelId, slackNotificationEvents, teamId},
-  {authToken, dataLoader, socketId: mutatorId}
+  {authToken, dataLoader}
 ) => {
   const viewerId = getUserId(authToken)
-  const operationId = dataLoader.share()
-  const subOptions = {mutatorId, operationId}
   const pg = getKysely()
 
   // VALIDATION
@@ -45,9 +41,7 @@ const setSlackNotification: MutationResolvers['setSlackNotification'] = async (
     .returning('id')
     .execute()
   const slackNotificationIds = results.map(({id}) => id)
-  const data = {userId: viewerId, slackNotificationIds}
-  publish(SubscriptionChannel.TEAM, teamId, 'SetSlackNotificationPayload', data, subOptions)
-  return data
+  return {userId: viewerId, slackNotificationIds}
 }
 
 export default setSlackNotification

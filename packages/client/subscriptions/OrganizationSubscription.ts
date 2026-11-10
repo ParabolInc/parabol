@@ -42,6 +42,9 @@ const subscription = graphql`
       SetOrgUserRoleSuccess {
         ...SetOrgUserRoleMutation_organization @relay(mask: false)
       }
+      ToggleAIFeaturesSuccess {
+        ...ToggleAIFeaturesMutation_organization @relay(mask: false)
+      }
       UpdateIntegrationProviderSuccess {
         ...UpdateIntegrationProviderMutation_organization @relay(mask: false)
       }

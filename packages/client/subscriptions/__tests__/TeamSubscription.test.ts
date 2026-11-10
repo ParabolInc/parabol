@@ -9,8 +9,12 @@ jest.mock('babel-plugin-relay/macro', () => ({
 
 const orgId = 'org1'
 const teamId = 'team1'
+const templateId = 'template1'
 
-const createTestAtmosphere = (data: Record<string, unknown>) => {
+const createTestAtmosphere = (
+  data: Record<string, unknown>,
+  records: Record<string, Record<string, unknown>> = {}
+) => {
   const environment = new Environment({
     network: Network.create(
       () => Observable.create(() => {}),
@@ -22,7 +26,8 @@ const createTestAtmosphere = (data: Record<string, unknown>) => {
     ),
     store: new Store(
       new RecordSource({
-        [orgId]: {__id: orgId, __typename: 'Organization', id: orgId, tier: 'team'}
+        [orgId]: {__id: orgId, __typename: 'Organization', id: orgId, tier: 'team'},
+        ...records
       })
     )
   })
@@ -40,6 +45,12 @@ describe('TeamSubscription', () => {
   afterEach(() => {
     errorSpy.mockRestore()
   })
+  // a fixture holds one payload, so relay warns about each of the others it leaves out
+  const getUnexpectedErrors = () =>
+    errorSpy.mock.calls.filter(
+      ([message]) =>
+        !String(message).startsWith('Warning: RelayResponseNormalizer: Payload did not contain')
+    )
 
   it('selects the field of a DowngradeToStarterPayload', () => {
     const atmosphere = createTestAtmosphere({
@@ -114,5 +125,33 @@ describe('TeamSubscription', () => {
     const team = atmosphere.getStore().getSource().get(teamId)
     expect(team?.scales).toEqual({__refs: [scaleId]})
     expect(team?.editingScaleId).toBeUndefined()
+  })
+
+  it("removes a teammate's removed dimension from its template when the team is not loaded", () => {
+    const atmosphere = createTestAtmosphere(
+      {
+        teamSubscription: {
+          fieldName: 'RemovePokerTemplateDimensionPayload',
+          RemovePokerTemplateDimensionPayload: {
+            dimension: {id: 'dimension1', templateId}
+          }
+        }
+      },
+      {
+        [templateId]: {
+          __id: templateId,
+          __typename: 'PokerTemplate',
+          id: templateId,
+          dimensions: {__refs: ['dimension1', 'dimension2']}
+        },
+        dimension1: {__id: 'dimension1', __typename: 'TemplateDimension', id: 'dimension1'},
+        dimension2: {__id: 'dimension2', __typename: 'TemplateDimension', id: 'dimension2'}
+      }
+    )
+    TeamSubscription(atmosphere, {}, {navigate: jest.fn()})
+    expect(getUnexpectedErrors()).toEqual([])
+    expect(atmosphere.getStore().getSource().get(templateId)?.dimensions).toEqual({
+      __refs: ['dimension2']
+    })
   })
 })
