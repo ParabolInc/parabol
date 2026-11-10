@@ -1096,6 +1096,24 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {setStageTimer: data}
     },
+    SetMeetingMusicMutation: ({
+      meetingId,
+      trackSrc,
+      isPlaying
+    }: {
+      meetingId: string
+      trackSrc: string | null
+      isPlaying: boolean
+    }) => {
+      return {
+        setMeetingMusic: {
+          __typename: 'SetMeetingMusicSuccess',
+          meetingId,
+          trackSrc,
+          isPlaying
+        }
+      }
+    },
     StartDraggingReflectionMutation: (
       {reflectionId, dragId}: {reflectionId: string; dragId: string},
       userId: string
