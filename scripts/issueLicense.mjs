@@ -9,16 +9,17 @@
 //     prints a license key for the customer's LICENSE_KEY, and the license's claims on stderr. The claims file says
 //     who it's for and what it allows, as scripts/license.example.json does:
 //       customer      who it's for
-//       tier          team or enterprise
 //       seats         how many active users it covers. Leave it out for any number
 //       hosts         the hostnames (Parabol's HOST) it works on, *.example.com for any subdomain. Leave it out for any
 //       expiresAt     a date, such as 2027-11-30. Leave it out for a license that never expires
 //       onExpiry      what happens around expiry, counted from expiresAt
 //       onOverSeats   what happens while more users are active than seats, counted from when that began
 //     Each of onExpiry and onOverSeats is a list of steps, earliest first; [] means nothing ever happens. A step is
-//     {"from": "90d", "notice": "admins", "tier": "starter"}: from when ("-30d" is 30 days before), who sees a notice
-//     (none, admins or everyone in the organizations that depend on the license), and, optionally, the tier those
-//     organizations drop to (team or starter). The last step that has started applies.
+//     {"from": "90d", "notice": "everyone", "action": "read-only"}: from when ("-30d" is 30 days before), who sees a
+//     notice (none, admins or everyone in the organizations that depend on the license), and, optionally, what happens
+//     to the instance: read-only lets people sign in and see their work, but change nothing. The last step that has
+//     started applies.
+//     A license lets organizations without a Stripe subscription keep their paid tier, whatever its steps.
 //     The script adds the format's version, the key ID, a license ID, the issue date and a new usage key, which signs
 //     the instance's usage reports. Parabol keeps no copy of the usage key: the license names its public half.
 //
@@ -72,7 +73,7 @@ if (licensePublicKeys[values.kid]?.trim() !== publicKeyPem.toString().trim()) {
   )
 }
 
-const FIELDS = ['customer', 'tier', 'seats', 'hosts', 'expiresAt', 'onExpiry', 'onOverSeats']
+const FIELDS = ['customer', 'seats', 'hosts', 'expiresAt', 'onExpiry', 'onOverSeats']
 let input
 try {
   input = JSON.parse(readFileSync(values.claims, 'utf8'))
@@ -91,7 +92,6 @@ const claims = {
   kid: values.kid,
   id: `lic_${randomUUID()}`,
   customer: input.customer,
-  tier: input.tier,
   ...(input.seats !== undefined && {seats: input.seats}),
   ...(input.hosts !== undefined && {hosts: input.hosts}),
   issuedAt: new Date().toISOString(),

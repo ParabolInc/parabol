@@ -1,6 +1,9 @@
 import {createPrivateKey, createPublicKey, generateKeyPairSync, sign, verify} from 'node:crypto'
 
 /*
+A license lets the instance's organizations keep a paid tier without a Stripe subscription, and says what happens
+around its expiry and while more users are active than it covers.
+
 A license key, the LICENSE_KEY environment variable, is three base64url parts separated by dots:
 `<payload>.<signature>.<usage key>`.
 - The payload is the license's JSON, and the signature is Parabol's Ed25519 signature of the payload's base64url
@@ -12,8 +15,9 @@ A license key, the LICENSE_KEY environment variable, is three base64url parts se
 This file imports nothing relative, so Parabol's scripts can import it as it is.
 */
 
-export type LicensedTier = 'team' | 'enterprise'
 export type LicenseNoticeAudience = 'none' | 'admins' | 'everyone'
+/** What a step does besides its notice. read-only: people can see everything, and change nothing */
+export type LicenseAction = 'read-only'
 
 /** A step in what happens once a license nears or passes its expiry, or once more users are active than it covers */
 export interface LicenseStage {
@@ -21,8 +25,8 @@ export interface LicenseStage {
   from: string
   /** Who sees a notice: nobody, the admins of the organizations that depend on the license, or all their members */
   notice: LicenseNoticeAudience
-  /** The tier organizations without a Stripe subscription drop to. Absent: they keep the license's */
-  tier?: 'team' | 'starter'
+  /** What happens to the instance. Absent: nothing besides the notice */
+  action?: LicenseAction
 }
 
 export interface LicenseClaims {
@@ -34,8 +38,6 @@ export interface LicenseClaims {
   id: string
   /** Who it was issued to */
   customer: string
-  /** The highest tier the instance's organizations may use without a Stripe subscription */
-  tier: LicensedTier
   /** How many active users it covers. Absent: any number */
   seats?: number
   /** The hostnames (Parabol's HOST) it's valid on, `*.example.com` matching any subdomain. Absent: any host */
@@ -67,6 +69,7 @@ export const stageOffsetMs = (from: unknown) => {
 }
 
 const NOTICE_AUDIENCES: readonly unknown[] = ['none', 'admins', 'everyone']
+const ACTIONS: readonly unknown[] = ['read-only']
 
 const checkStages = (stages: unknown, name: string): string | undefined => {
   if (!Array.isArray(stages)) return `${name} must be a list, [] for nothing`
@@ -81,8 +84,8 @@ const checkStages = (stages: unknown, name: string): string | undefined => {
     if (!NOTICE_AUDIENCES.includes(stage.notice)) {
       return `${name} has a notice of ${stage.notice}, not none, admins or everyone`
     }
-    if (stage.tier !== undefined && stage.tier !== 'team' && stage.tier !== 'starter') {
-      return `${name} has a tier of ${stage.tier}, not team or starter`
+    if (stage.action !== undefined && !ACTIONS.includes(stage.action)) {
+      return `${name} has an action of ${stage.action}, not read-only`
     }
   }
   return undefined
@@ -131,7 +134,6 @@ export const checkClaims = (claims: any): string | undefined => {
   if (typeof claims.kid !== 'string' || !claims.kid) return 'kid is missing'
   if (typeof claims.id !== 'string' || !claims.id) return 'id is missing'
   if (typeof claims.customer !== 'string' || !claims.customer) return 'customer is missing'
-  if (claims.tier !== 'team' && claims.tier !== 'enterprise') return `unknown tier ${claims.tier}`
   if (claims.seats !== undefined && !(Number.isInteger(claims.seats) && claims.seats > 0)) {
     return 'seats must be a positive integer'
   }

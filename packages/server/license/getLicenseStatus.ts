@@ -1,7 +1,7 @@
 import ms from 'ms'
 import {
+  type LicenseAction,
   type LicenseClaims,
-  type LicensedTier,
   type LicenseParseResult,
   type LicenseStage,
   stageOffsetMs
@@ -11,28 +11,29 @@ import {
 export const LICENSE_GRACE_MS = ms('30d')
 
 export type LicenseState = 'valid' | 'expired' | 'missing' | 'invalid'
-type CappedTier = 'team' | 'starter'
 
 /** Where the instance is in one of its license's timelines */
 export interface LicenseTimeline {
   /** The step that applies now. Absent: none has started, so nothing happens yet */
   stage?: LicenseStage
-  /** The next step that lowers the tier, if one will */
-  nextDrop?: {at: Date; tier: CappedTier}
+  /** The next step with an action, if one is still to come */
+  nextAction?: {at: Date; action: LicenseAction}
 }
 
 export interface LicenseStatus {
   state: LicenseState
   /**
-   * The highest tier an organization without a Stripe subscription may use. null means Starter. With no valid
-   * license it's Enterprise for the grace period, so nothing is taken away yet.
+   * Whether organizations without a Stripe subscription keep their paid tier. A license grants it, whatever its
+   * steps; with no valid license it lasts for the grace period, so nothing is taken away at once.
    */
-  maxTier: LicensedTier | null
+  paidTiersAllowed: boolean
+  /** Whether a step with the read-only action applies, while organizations depend on the license */
+  readOnly: boolean
   claims?: LicenseClaims
   /** Why the license is invalid */
   error?: string
   expiresAt?: Date
-  /** When maxTier drops to Starter, for a missing or invalid license */
+  /** When paid tiers end, for a missing or invalid license */
   graceEndsAt?: Date
   /** Whether any organization here has a paid tier without a Stripe subscription, so needs the license */
   needsLicense: boolean
@@ -55,8 +56,6 @@ interface Input {
   overSeatsSince?: Date | null
 }
 
-const TIER_RANK = {starter: 0, team: 1, enterprise: 2} as const
-
 /** Where `now` falls in a timeline that started at `start` */
 export const getTimeline = (stages: LicenseStage[], start: Date, now: Date): LicenseTimeline => {
   const timeline: LicenseTimeline = {}
@@ -64,18 +63,12 @@ export const getTimeline = (stages: LicenseStage[], start: Date, now: Date): Lic
     const at = new Date(start.getTime() + stageOffsetMs(stage.from)!)
     if (at <= now) {
       timeline.stage = stage
-    } else if (stage.tier && !timeline.nextDrop) {
-      timeline.nextDrop = {at, tier: stage.tier}
+    } else if (stage.action && !timeline.nextAction) {
+      timeline.nextAction = {at, action: stage.action}
     }
   }
   return timeline
 }
-
-const lowestTier = (tiers: (LicensedTier | CappedTier | undefined)[]) =>
-  tiers.reduce<LicensedTier | CappedTier>(
-    (lowest, tier) => (tier && TIER_RANK[tier] < TIER_RANK[lowest] ? tier : lowest),
-    'enterprise'
-  )
 
 export const getLicenseStatus = ({
   parsed,
@@ -94,10 +87,13 @@ export const getLicenseStatus = ({
     const overSeatsTimeline = overSeats
       ? getTimeline(claims.onOverSeats, overSeatsSince ?? now, now)
       : undefined
-    const tier = lowestTier([claims.tier, expiry?.stage?.tier, overSeatsTimeline?.stage?.tier])
+    const readOnly =
+      needsLicense &&
+      (expiry?.stage?.action === 'read-only' || overSeatsTimeline?.stage?.action === 'read-only')
     return {
       state: expiresAt && now >= expiresAt ? 'expired' : 'valid',
-      maxTier: tier === 'starter' ? null : tier,
+      paidTiersAllowed: true,
+      readOnly,
       claims,
       expiresAt,
       needsLicense,
@@ -111,7 +107,8 @@ export const getLicenseStatus = ({
   const graceEndsAt = new Date(since.getTime() + LICENSE_GRACE_MS)
   return {
     state: parsed.reason,
-    maxTier: now < graceEndsAt ? 'enterprise' : null,
+    paidTiersAllowed: now < graceEndsAt,
+    readOnly: false,
     error: parsed.error,
     graceEndsAt,
     needsLicense,

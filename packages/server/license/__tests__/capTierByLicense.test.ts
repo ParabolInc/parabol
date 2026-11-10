@@ -2,19 +2,18 @@ import {capTier} from '../capTierByLicense'
 
 describe('capTier', () => {
   test('leaves Starter and Stripe-paid organizations alone', () => {
-    expect(capTier('starter', false, null)).toBe('starter')
-    expect(capTier('enterprise', true, null)).toBe('enterprise')
-    expect(capTier('team', true, null)).toBe('team')
+    expect(capTier('starter', false, false)).toBe('starter')
+    expect(capTier('enterprise', true, false)).toBe('enterprise')
+    expect(capTier('team', true, false)).toBe('team')
   })
 
-  test('drops a paid tier without a subscription to Starter when nothing is licensed', () => {
-    expect(capTier('enterprise', false, null)).toBe('starter')
-    expect(capTier('team', false, null)).toBe('starter')
+  test('drops a paid tier without a subscription to Starter when paid tiers aren’t allowed', () => {
+    expect(capTier('enterprise', false, false)).toBe('starter')
+    expect(capTier('team', false, false)).toBe('starter')
   })
 
-  test('caps a paid tier without a subscription at the licensed tier', () => {
-    expect(capTier('enterprise', false, 'team')).toBe('team')
-    expect(capTier('team', false, 'enterprise')).toBe('team')
-    expect(capTier('enterprise', false, 'enterprise')).toBe('enterprise')
+  test('keeps a paid tier without a subscription when the license allows it', () => {
+    expect(capTier('enterprise', false, true)).toBe('enterprise')
+    expect(capTier('team', false, true)).toBe('team')
   })
 })

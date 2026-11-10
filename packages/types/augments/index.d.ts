@@ -18,6 +18,7 @@ type ParabolGraphQLErrorCodes =
   | 'MAX_TEAM_UPGRADE_SUGGESTED'
   | 'TOO_MANY_INVITEES'
   | 'UNACCEPTED_INVITATION_LIMIT'
+  | 'LICENSE_READ_ONLY'
 
 declare module 'graphql' {
   interface GraphQLErrorExtensions {

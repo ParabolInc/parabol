@@ -1,4 +1,4 @@
-import {getLicenseNotice} from '../getLicenseNotice'
+import {getLicenseNotice, getReadOnlyMessage} from '../getLicenseNotice'
 import {getLicenseStatus} from '../getLicenseStatus'
 import type {LicenseClaims} from '../licenseToken'
 
@@ -7,7 +7,6 @@ const claims: LicenseClaims = {
   kid: 'test',
   id: 'lic_1',
   customer: 'Acme',
-  tier: 'enterprise',
   seats: 10,
   issuedAt: '2026-01-01T00:00:00.000Z',
   expiresAt: '2027-01-01T00:00:00.000Z',
@@ -15,7 +14,7 @@ const claims: LicenseClaims = {
     {from: '-30d', notice: 'admins'},
     {from: '0d', notice: 'none'},
     {from: '90d', notice: 'admins'},
-    {from: '180d', notice: 'everyone', tier: 'starter'}
+    {from: '180d', notice: 'everyone', action: 'read-only'}
   ],
   onOverSeats: [{from: '0d', notice: 'admins'}]
 }
@@ -41,12 +40,12 @@ describe('getLicenseNotice', () => {
     expect(getLicenseNotice(status({now: new Date('2027-08-01'), needsLicense: false}))).toBeNull()
   })
 
-  test('warns admins before expiry, with when features drop', () => {
+  test('warns admins before expiry, with when Parabol turns read-only', () => {
     expect(getLicenseNotice(status({now: new Date('2026-12-15')}))).toEqual({
       kind: 'EXPIRING',
       audience: 'admins',
       message:
-        "This Parabol instance's license expires on 2027-01-01. From 2027-06-30, organizations without a subscription will have Starter features. Contact Parabol to renew it.",
+        "This Parabol instance's license expires on 2027-01-01. From 2027-06-30, Parabol will be read-only. Contact Parabol to renew it.",
       graceEndsAt: new Date('2027-06-30')
     })
   })
@@ -61,7 +60,7 @@ describe('getLicenseNotice', () => {
       kind: 'EXPIRED',
       audience: 'everyone',
       message:
-        "This Parabol instance's license expired on 2027-01-01. Organizations without a subscription have Starter features. Contact Parabol to renew it.",
+        "This Parabol instance's license expired on 2027-01-01. Parabol is read-only: everyone can see their work, but nothing can be changed. Contact Parabol to renew it.",
       graceEndsAt: null
     })
   })
@@ -113,5 +112,20 @@ describe('getLicenseNotice', () => {
     )
     expect(notice).toMatchObject({kind: 'INVALID', audience: 'admins'})
     expect(notice?.message).toContain('invalid: the signature does not match.')
+  })
+})
+
+describe('getReadOnlyMessage', () => {
+  test('says why a change was refused', () => {
+    expect(getReadOnlyMessage(status({now: new Date('2027-07-01')}))).toBe(
+      "This Parabol instance's license expired on 2027-01-01, so Parabol is read-only: nothing can be changed. Contact Parabol to renew it."
+    )
+    const seats = status({
+      activeSeats: 12,
+      claims: {onOverSeats: [{from: '0d', notice: 'none', action: 'read-only'}]}
+    })
+    expect(getReadOnlyMessage(seats)).toBe(
+      'This Parabol instance has 12 active users and its license covers 10, so Parabol is read-only: nothing can be changed. Contact Parabol to add seats.'
+    )
   })
 })

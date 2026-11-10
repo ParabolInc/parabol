@@ -36,15 +36,15 @@ const day = (date: Date | undefined) => date?.toISOString().slice(0, 10)
 
 const describeTimeline = (name: string, timeline: LicenseTimeline | undefined) => {
   if (!timeline) return undefined
-  const {stage, nextDrop} = timeline
+  const {stage, nextAction} = timeline
   const now = stage
-    ? `${name} step from ${stage.from}: notice ${stage.notice}${stage.tier ? `, ${stage.tier}` : ''}`
+    ? `${name} step from ${stage.from}: notice ${stage.notice}${stage.action ? `, ${stage.action}` : ''}`
     : `${name}: no step yet`
-  return nextDrop ? `${now}; ${nextDrop.tier} from ${day(nextDrop.at)}` : now
+  return nextAction ? `${now}; ${nextAction.action} from ${day(nextAction.at)}` : now
 }
 
 const describe = (s: LicenseStatus) => {
-  const who = s.claims ? `${s.claims.customer} (${s.claims.id}, ${s.claims.tier})` : undefined
+  const who = s.claims ? `${s.claims.customer} (${s.claims.id})` : undefined
   switch (s.state) {
     case 'valid':
     case 'expired': {
@@ -60,7 +60,7 @@ const describe = (s: LicenseStatus) => {
         describeTimeline('onExpiry', s.expiry),
         seats,
         describeTimeline('onOverSeats', s.overSeatsTimeline),
-        `organizations without a Stripe subscription get ${s.maxTier ?? 'starter'}`
+        s.readOnly ? 'the instance is read-only' : undefined
       ]
         .filter(Boolean)
         .join('; ')
@@ -76,7 +76,8 @@ const logChange = (prev: LicenseStatus | undefined, next: LicenseStatus) => {
   const changed =
     !prev ||
     prev.state !== next.state ||
-    prev.maxTier !== next.maxTier ||
+    prev.paidTiersAllowed !== next.paidTiersAllowed ||
+    prev.readOnly !== next.readOnly ||
     prev.needsLicense !== next.needsLicense ||
     prev.overSeats !== next.overSeats ||
     prev.expiry?.stage !== next.expiry?.stage ||

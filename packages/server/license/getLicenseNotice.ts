@@ -8,31 +8,40 @@ export interface LicenseNotice {
   message: string
   /** Who sees it, of the organizations that depend on the license: their admins or all their members */
   audience: Exclude<LicenseNoticeAudience, 'none'>
-  /** When organizations without a Stripe subscription lose paid features, if they will */
+  /** When organizations without a Stripe subscription lose paid features or the instance turns read-only, if it will */
   graceEndsAt: Date | null
 }
 
 const day = (date: Date | undefined) => date?.toISOString().slice(0, 10)
-const TIER_NAMES = {team: 'Team', starter: 'Starter'} as const
 
-const consequenceOf = ({stage, nextDrop}: LicenseTimeline) => {
-  const now = stage?.tier
-    ? `Organizations without a subscription have ${TIER_NAMES[stage.tier]} features.`
-    : undefined
-  const next = nextDrop
-    ? `From ${day(nextDrop.at)}, organizations without a subscription will have ${TIER_NAMES[nextDrop.tier]} features.`
-    : undefined
+const consequenceOf = ({stage, nextAction}: LicenseTimeline) => {
+  const now =
+    stage?.action === 'read-only'
+      ? 'Parabol is read-only: everyone can see their work, but nothing can be changed.'
+      : undefined
+  const next =
+    nextAction?.action === 'read-only'
+      ? `From ${day(nextAction.at)}, Parabol will be read-only.`
+      : undefined
   return [now, next].filter(Boolean).join(' ')
 }
 
 const sentences = (...parts: (string | undefined)[]) => parts.filter(Boolean).join(' ')
+
+const expiryLine = ({state, expiresAt}: LicenseStatus) =>
+  state === 'expired'
+    ? `This Parabol instance's license expired on ${day(expiresAt)}.`
+    : `This Parabol instance's license expires on ${day(expiresAt)}.`
+
+const seatsLine = ({activeSeats, claims}: LicenseStatus) =>
+  `This Parabol instance has ${activeSeats} active users; its license covers ${claims?.seats}.`
 
 /**
  * What to tell people about the license, or null when there's nothing to say. When both the expiry and the seats
  * call for a notice, it's the one more people see, and the expiry when that's a tie.
  */
 export const getLicenseNotice = (status: LicenseStatus): LicenseNotice | null => {
-  const {state, maxTier, graceEndsAt, expiresAt, claims, expiry, overSeatsTimeline} = status
+  const {state, paidTiersAllowed, graceEndsAt, expiry, overSeatsTimeline} = status
   // with no organization depending on the license, it doesn't matter
   if (!status.needsLicense) return null
   if (state === 'missing' || state === 'invalid') {
@@ -40,7 +49,7 @@ export const getLicenseNotice = (status: LicenseStatus): LicenseNotice | null =>
       state === 'missing'
         ? 'This Parabol instance has no license.'
         : `This Parabol instance's license is invalid: ${status.error}.`
-    const consequence = maxTier
+    const consequence = paidTiersAllowed
       ? `Organizations without a subscription keep their paid features until ${day(graceEndsAt)}.`
       : 'Organizations without a subscription have Starter features.'
     return {
@@ -53,18 +62,11 @@ export const getLicenseNotice = (status: LicenseStatus): LicenseNotice | null =>
   const notices: LicenseNotice[] = []
   const expiryNotice = expiry?.stage?.notice
   if (expiry && expiryNotice && expiryNotice !== 'none') {
-    const expired = state === 'expired'
     notices.push({
-      kind: expired ? 'EXPIRED' : 'EXPIRING',
-      message: sentences(
-        expired
-          ? `This Parabol instance's license expired on ${day(expiresAt)}.`
-          : `This Parabol instance's license expires on ${day(expiresAt)}.`,
-        consequenceOf(expiry),
-        'Contact Parabol to renew it.'
-      ),
+      kind: state === 'expired' ? 'EXPIRED' : 'EXPIRING',
+      message: sentences(expiryLine(status), consequenceOf(expiry), 'Contact Parabol to renew it.'),
       audience: expiryNotice,
-      graceEndsAt: expiry.nextDrop?.at ?? null
+      graceEndsAt: expiry.nextAction?.at ?? null
     })
   }
   const seatsNotice = overSeatsTimeline?.stage?.notice
@@ -72,13 +74,22 @@ export const getLicenseNotice = (status: LicenseStatus): LicenseNotice | null =>
     notices.push({
       kind: 'OVER_SEATS',
       message: sentences(
-        `This Parabol instance has ${status.activeSeats} active users; its license covers ${claims?.seats}.`,
+        seatsLine(status),
         consequenceOf(overSeatsTimeline),
         'Contact Parabol to add seats.'
       ),
       audience: seatsNotice,
-      graceEndsAt: overSeatsTimeline.nextDrop?.at ?? null
+      graceEndsAt: overSeatsTimeline.nextAction?.at ?? null
     })
   }
   return notices.find(({audience}) => audience === 'everyone') ?? notices[0] ?? null
+}
+
+/** Why a change was refused, while the instance is read-only. Everyone who tries one sees it, whatever the notice */
+export const getReadOnlyMessage = (status: LicenseStatus) => {
+  const read = 'so Parabol is read-only: nothing can be changed.'
+  if (status.expiry?.stage?.action === 'read-only') {
+    return `This Parabol instance's license expired on ${day(status.expiresAt)}, ${read} Contact Parabol to renew it.`
+  }
+  return `This Parabol instance has ${status.activeSeats} active users and its license covers ${status.claims?.seats}, ${read} Contact Parabol to add seats.`
 }

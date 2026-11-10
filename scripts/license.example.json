@@ -1,12 +1,23 @@
 {
   "customer": "Acme Corp",
-  "tier": "enterprise",
   "hosts": ["parabol.acme.com"],
   "seats": 250,
   "expiresAt": "2027-11-30",
   "onExpiry": [
-    {"from": "-30d", "notice": "admins"},
-    {"from": "30d", "notice": "admins", "tier": "starter"}
+    {
+      "from": "-30d",
+      "notice": "admins"
+    },
+    {
+      "from": "30d",
+      "notice": "everyone",
+      "action": "read-only"
+    }
   ],
-  "onOverSeats": [{"from": "0d", "notice": "admins"}]
+  "onOverSeats": [
+    {
+      "from": "0d",
+      "notice": "admins"
+    }
+  ]
 }

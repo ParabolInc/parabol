@@ -5,6 +5,6 @@ type LicenseNotice {
   kind: LicenseNoticeKindEnum!
   "The warning, ready to show"
   message: String!
-  "When organizations without a Stripe subscription lose paid features, if they will"
+  "When organizations without a Stripe subscription lose paid features, or Parabol turns read-only, if that's to come"
   graceEndsAt: DateTime
 }

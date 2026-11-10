@@ -6,14 +6,13 @@ const claims: LicenseClaims = {
   kid: 'test',
   id: 'lic_1',
   customer: 'Acme',
-  tier: 'enterprise',
   seats: 10,
   issuedAt: '2026-01-01T00:00:00.000Z',
   expiresAt: '2027-01-01T00:00:00.000Z',
   onExpiry: [
     {from: '-30d', notice: 'admins'},
-    {from: '90d', notice: 'admins', tier: 'team'},
-    {from: '180d', notice: 'everyone', tier: 'starter'}
+    {from: '90d', notice: 'admins'},
+    {from: '180d', notice: 'everyone', action: 'read-only'}
   ],
   onOverSeats: [{from: '14d', notice: 'admins'}]
 }
@@ -32,47 +31,56 @@ const status = (
 }
 
 describe('getLicenseStatus', () => {
-  test('a current license grants its tier, with no step started', () => {
+  test('a current license allows paid tiers, with no step started', () => {
     const s = status({activeSeats: 10})
-    expect(s).toMatchObject({state: 'valid', maxTier: 'enterprise', overSeats: false})
+    expect(s).toMatchObject({
+      state: 'valid',
+      paidTiersAllowed: true,
+      readOnly: false,
+      overSeats: false
+    })
     expect(s.expiry?.stage).toBeUndefined()
-    expect(s.expiry?.nextDrop).toEqual({at: at('2027-04-01'), tier: 'team'})
+    expect(s.expiry?.nextAction).toEqual({at: at('2027-06-30'), action: 'read-only'})
   })
 
   test('a step before expiry starts on its day', () => {
     expect(status({now: at('2026-12-01')}).expiry?.stage).toBeUndefined()
     const s = status({now: at('2026-12-02')})
-    expect(s).toMatchObject({state: 'valid', maxTier: 'enterprise'})
+    expect(s).toMatchObject({state: 'valid', paidTiersAllowed: true})
     expect(s.expiry?.stage).toEqual({from: '-30d', notice: 'admins'})
   })
 
   test('after expiry, the last step that has started applies', () => {
     const justExpired = status({now: at('2027-01-01')})
-    expect(justExpired).toMatchObject({state: 'expired', maxTier: 'enterprise'})
+    expect(justExpired).toMatchObject({state: 'expired', paidTiersAllowed: true, readOnly: false})
     expect(justExpired.expiry?.stage?.from).toBe('-30d')
-    const toTeam = status({now: at('2027-04-01')})
-    expect(toTeam).toMatchObject({state: 'expired', maxTier: 'team'})
-    expect(toTeam.expiry?.nextDrop).toEqual({at: at('2027-06-30'), tier: 'starter'})
-    const toStarter = status({now: at('2027-07-01')})
-    expect(toStarter).toMatchObject({maxTier: null})
-    expect(toStarter.expiry?.stage?.notice).toBe('everyone')
+    const warned = status({now: at('2027-04-01')})
+    expect(warned.expiry?.stage?.from).toBe('90d')
+    expect(warned.readOnly).toBe(false)
+    const readOnly = status({now: at('2027-06-30')})
+    expect(readOnly).toMatchObject({state: 'expired', paidTiersAllowed: true, readOnly: true})
+    expect(readOnly.expiry?.nextAction).toBeUndefined()
   })
 
-  test('a license with no expiry steps keeps its tier after expiry, quietly', () => {
+  test('read-only needs an organization that depends on the license', () => {
+    expect(status({now: at('2027-07-01'), needsLicense: false}).readOnly).toBe(false)
+  })
+
+  test('a license with no expiry steps keeps working after expiry, quietly', () => {
     const s = status({now: at('2030-01-01'), claims: {onExpiry: []}})
-    expect(s).toMatchObject({state: 'expired', maxTier: 'enterprise'})
+    expect(s).toMatchObject({state: 'expired', paidTiersAllowed: true, readOnly: false})
     expect(s.expiry).toEqual({})
   })
 
   test('a license without expiry never expires', () => {
     const s = status({now: at('2040-01-01'), claims: {expiresAt: undefined, onExpiry: []}})
-    expect(s).toMatchObject({state: 'valid', maxTier: 'enterprise'})
+    expect(s).toMatchObject({state: 'valid', paidTiersAllowed: true})
     expect(s.expiry).toBeUndefined()
   })
 
   test('over the seats, the timeline counts from when that began', () => {
     const early = status({activeSeats: 12, overSeatsSince: at('2026-05-25')})
-    expect(early).toMatchObject({overSeats: true, maxTier: 'enterprise'})
+    expect(early).toMatchObject({overSeats: true, readOnly: false})
     expect(early.overSeatsTimeline?.stage).toBeUndefined()
     const later = status({activeSeats: 12, overSeatsSince: at('2026-05-18')})
     expect(later.overSeatsTimeline?.stage).toEqual({from: '14d', notice: 'admins'})
@@ -81,14 +89,13 @@ describe('getLicenseStatus', () => {
     expect(within.overSeatsTimeline).toBeUndefined()
   })
 
-  test('the lowest tier any started step sets wins', () => {
+  test('a seats step can make the instance read-only too', () => {
     const s = status({
-      now: at('2027-04-02'),
       activeSeats: 20,
-      overSeatsSince: at('2027-01-01'),
-      claims: {onOverSeats: [{from: '0d', notice: 'none', tier: 'starter'}]}
+      overSeatsSince: at('2026-05-01'),
+      claims: {onOverSeats: [{from: '30d', notice: 'none', action: 'read-only'}]}
     })
-    expect(s.maxTier).toBeNull()
+    expect(s.readOnly).toBe(true)
   })
 
   test('without a license, paid features last 30 days from when it was first missed', () => {
@@ -99,7 +106,7 @@ describe('getLicenseStatus', () => {
       unlicensedSince: at('2026-06-01'),
       needsLicense: true
     })
-    expect(inGrace).toMatchObject({state: 'missing', maxTier: 'enterprise'})
+    expect(inGrace).toMatchObject({state: 'missing', paidTiersAllowed: true, readOnly: false})
     expect(inGrace.graceEndsAt?.toISOString()).toBe('2026-07-01T00:00:00.000Z')
     const after = getLicenseStatus({
       parsed: missing,
@@ -107,7 +114,7 @@ describe('getLicenseStatus', () => {
       unlicensedSince: at('2026-06-01'),
       needsLicense: true
     })
-    expect(after).toMatchObject({state: 'missing', maxTier: null})
+    expect(after).toMatchObject({state: 'missing', paidTiersAllowed: false, readOnly: false})
   })
 
   test('an invalid license is treated like a missing one, with its reason', () => {
@@ -119,7 +126,7 @@ describe('getLicenseStatus', () => {
     })
     expect(s).toMatchObject({
       state: 'invalid',
-      maxTier: 'enterprise',
+      paidTiersAllowed: true,
       error: 'the signature does not match'
     })
   })

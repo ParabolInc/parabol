@@ -28,14 +28,13 @@ const claims: LicenseClaims = {
   kid: 'test',
   id: 'lic_1',
   customer: 'Acme',
-  tier: 'enterprise',
   seats: 50,
   hosts: ['parabol.acme.mil'],
   issuedAt: '2026-11-01T00:00:00.000Z',
   expiresAt: '2027-11-01T00:00:00.000Z',
   onExpiry: [
     {from: '-30d', notice: 'admins'},
-    {from: '90d', notice: 'everyone', tier: 'starter'}
+    {from: '90d', notice: 'everyone', action: 'read-only'}
   ],
   onOverSeats: [{from: '14d', notice: 'admins'}],
   usageKey: usage.publicKey
@@ -93,7 +92,6 @@ describe('parseLicense', () => {
       const result = parseLicense(signed(overrides), publicKeys, HOST)
       return result.ok ? undefined : result.error
     }
-    expect(errorOf({tier: 'platinum'})).toBe('unknown tier platinum')
     expect(errorOf({seats: 0})).toBe('seats must be a positive integer')
     expect(errorOf({onExpiry: undefined})).toBe('onExpiry must be a list, [] for nothing')
     expect(errorOf({onExpiry: [{from: '3 months', notice: 'admins'}]})).toBe(
@@ -110,9 +108,9 @@ describe('parseLicense', () => {
     expect(errorOf({onOverSeats: [{from: '0d', notice: 'boss'}]})).toBe(
       'onOverSeats has a notice of boss, not none, admins or everyone'
     )
-    expect(errorOf({onOverSeats: [{from: '0d', notice: 'none', tier: 'enterprise'}]})).toBe(
-      'onOverSeats has a tier of enterprise, not team or starter'
-    )
+    expect(
+      errorOf({onOverSeats: [{from: '0d', notice: 'none', action: 'delete-everything'}]})
+    ).toBe('onOverSeats has an action of delete-everything, not read-only')
     expect(errorOf({expiresAt: undefined})).toBe(
       'onExpiry has steps, but the license never expires'
     )
