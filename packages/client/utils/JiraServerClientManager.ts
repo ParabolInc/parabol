@@ -33,10 +33,15 @@ class JiraServerClientManager {
       }
     }
 
+    const onUrlError = (error: Error) => {
+      onError(error)
+      popup?.close()
+    }
+
     CreateOAuth1AuthorizeUrlMutation(
       atmosphere,
       {providerId, teamId},
-      {onCompleted: onUrlCompleted}
+      {onCompleted: onUrlCompleted, onError: onUrlError}
     )
 
     const handler = (event: MessageEvent) => {

@@ -3,6 +3,7 @@ import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {useUpdateIntegrationDimensionFieldMutation as TUpdateIntegrationDimensionFieldMutation} from '../__generated__/useUpdateIntegrationDimensionFieldMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import createProxyRecord from '../utils/relay/createProxyRecord'
+import getServerError from '../utils/relay/getServerError'
 
 graphql`
   fragment useUpdateIntegrationDimensionFieldMutation_team on UpdateIntegrationDimensionFieldSuccess {
@@ -54,6 +55,14 @@ const useUpdateIntegrationDimensionFieldMutation = () => {
   const atmosphere = useAtmosphere()
   const execute = ({optimisticLabel, ...config}: Config, handlers?: Handlers) => {
     const {meetingId, taskId, dimensionName, fieldId} = config.variables
+    const showError = (message: string) => {
+      atmosphere.eventEmitter.emit('addSnackbar', {
+        message,
+        autoDismiss: 5,
+        key: 'updateIntegrationDimensionFieldError'
+      })
+      handlers?.onError?.()
+    }
     return commit({
       optimisticUpdater: (store) => {
         const meeting = store.get(meetingId)
@@ -73,17 +82,10 @@ const useUpdateIntegrationDimensionFieldMutation = () => {
       },
       onCompleted: (_res, errors) => {
         const error = errors?.[0]
-        if (!error) {
-          handlers?.onSuccess?.()
-        } else {
-          atmosphere.eventEmitter.emit('addSnackbar', {
-            message: error.message,
-            autoDismiss: 5,
-            key: 'updateIntegrationDimensionFieldError'
-          })
-          handlers?.onError?.()
-        }
+        if (error) showError(error.message)
+        else handlers?.onSuccess?.()
       },
+      onError: (error) => showError(getServerError(error)?.message ?? error.message),
       ...config
     })
   }

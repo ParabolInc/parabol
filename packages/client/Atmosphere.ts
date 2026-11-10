@@ -346,16 +346,8 @@ export default class Atmosphere extends Environment {
         const {data, errors} = value
         reportUnexpectedGraphQLErrors(errors, operation.name, traceId)
         rememberServerErrors(errors)
-        if (!data) {
-          if (errors) {
-            console.warn('GraphQL errors:', errors)
-          }
-          // if a mutation throws a GraphQLError, this will result in
-          // `Warning: RelayResponseNormalizer: Payload did not contain a value for field`
-          // but without it, it's a hard error
-          _next({...value, data: {}})
-          return
-        }
+        // Relay ends an operation that gets no data, so a subscription skips the event and keeps listening
+        if (!data && isSubscription) return
         const subscriptionName = data ? Object.keys(data)[0] : undefined
         const nullObj = this.subscriptionInterfaces[subscriptionName!]
         const nextObj =

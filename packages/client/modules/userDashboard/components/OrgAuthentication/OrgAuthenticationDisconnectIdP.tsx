@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {DeleteOutline} from '~/ui/icons'
+import getServerError from '~/utils/relay/getServerError'
 import type {OrgAuthenticationDisconnectIdP_saml$key} from '../../../../__generated__/OrgAuthenticationDisconnectIdP_saml.graphql'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useDisconnectSAMLMutation from '../../../../mutations/useDisconnectSAMLMutation'
@@ -52,7 +53,7 @@ const OrgAuthenticationDisconnectIdP = (props: Props) => {
           close()
         }
       },
-      onError: (error) => closeWithError(error.message)
+      onError: (error) => closeWithError(getServerError(error)?.message ?? error.message)
     })
   }
   return (

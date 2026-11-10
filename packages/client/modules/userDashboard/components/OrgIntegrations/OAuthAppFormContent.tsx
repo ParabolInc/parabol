@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useMutation} from 'react-relay'
 import {Check as CheckIcon, Close as CloseIcon, ContentCopy as ContentCopyIcon} from '~/ui/icons'
+import getServerError from '~/utils/relay/getServerError'
 import type {OAuthAppFormContentCreateMutation} from '../../../../__generated__/OAuthAppFormContentCreateMutation.graphql'
 import ErrorAlert from '../../../../components/ErrorAlert/ErrorAlert'
 import BasicInput from '../../../../components/InputField/BasicInput'
@@ -140,7 +141,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
         onError: (err) => {
           console.error(err)
           setIsSaving(false)
-          setError(err.message)
+          setError(getServerError(err)?.message ?? err.message)
         }
       })
     } else {
@@ -174,7 +175,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
         onError: (err) => {
           console.error(err)
           setIsSaving(false)
-          setError(err.message)
+          setError(getServerError(err)?.message ?? err.message)
         }
       })
     }

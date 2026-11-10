@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment, useMutation} from 'react-relay'
 import {Add as AddIcon, MoreVert as MoreVertIcon, Web as WebIcon} from '~/ui/icons'
+import getServerError from '~/utils/relay/getServerError'
 import type {OAuthProviderList_organization$key} from '../../../../__generated__/OAuthProviderList_organization.graphql'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useSubscription from '../../../../hooks/useSubscription'
@@ -94,7 +95,7 @@ const OAuthProviderList = ({organizationRef}: Props) => {
           setDeleteDialogOpen(false)
           atmosphere.eventEmitter.emit('addSnackbar', {
             key: 'deleteOAuthAPIProviderError',
-            message: error.message || 'Something went wrong',
+            message: getServerError(error)?.message || error.message || 'Something went wrong',
             autoDismiss: 0,
             action: {
               label: 'Dismiss',
