@@ -26,3 +26,15 @@ test('getUpcomingRRuleDates returns fewer dates when the series runs out', () =>
 test('getNextRRuleDate is null once the series has no occurrences left', () => {
   expect(getNextRRuleDate(makeWeeklyRRule(-30, 'FREQ=WEEKLY;COUNT=1'))).toBe(null)
 })
+
+test('getNextRRuleDate works when a year from now is in the hour a DST change repeats', () => {
+  jest.useFakeTimers({now: new Date('2026-11-07T05:30:00Z')})
+  const rrule = RRuleSet.parse(
+    'DTSTART;TZID=America/New_York:20260105T090000\nRRULE:FREQ=WEEKLY;BYDAY=MO'
+  )
+  try {
+    expect(getNextRRuleDate(rrule)).toEqual(new Date('2026-11-09T14:00:00Z'))
+  } finally {
+    jest.useRealTimers()
+  }
+})
