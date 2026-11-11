@@ -1,7 +1,9 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import AuthToken from '../../../database/types/AuthToken'
 import generateUID from '../../../generateUID'
 import removeSuggestedAction from '../../../safeMutations/removeSuggestedAction'
+import {setAuthCookie} from '../../../utils/authCookie'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -52,6 +54,17 @@ const addOrg: MutationResolvers['addOrg'] = async (_source, args, context) => {
   const {tms} = authToken
   // MUTATIVE
   tms.push(teamId)
+  const nextAuthToken = new AuthToken({
+    tms,
+    sub: viewerId,
+    rol: authToken.rol,
+    exp: authToken.exp,
+    act: authToken.act
+  })
+  context.authToken = nextAuthToken
+  if (context.request) {
+    setAuthCookie(context, nextAuthToken)
+  }
   publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {
     tms
   })
