@@ -154,4 +154,59 @@ describe('TeamSubscription', () => {
       __refs: ['dimension2']
     })
   })
+
+  it("removes only the ended meeting from the team's active meetings", () => {
+    const endedMeetingId = 'meeting1'
+    const startedMeetingId = 'meeting2'
+    const atmosphere = createTestAtmosphere(
+      {
+        teamSubscription: {
+          fieldName: 'EndRetrospectiveSuccess',
+          EndRetrospectiveSuccess: {
+            isKill: false,
+            updatedTaskIds: [],
+            timelineEvent: null,
+            meeting: {
+              id: endedMeetingId,
+              endedAt: '2026-01-01T01:00:00.000Z',
+              teamId,
+              commentCount: 0,
+              reflectionCount: 0,
+              taskCount: 0,
+              topicCount: 0,
+              transcription: null,
+              summaryPageId: null
+            },
+            team: {id: teamId}
+          }
+        }
+      },
+      {
+        [teamId]: {
+          __id: teamId,
+          __typename: 'Team',
+          id: teamId,
+          activeMeetings: {__refs: [endedMeetingId, startedMeetingId]}
+        },
+        [endedMeetingId]: {
+          __id: endedMeetingId,
+          __typename: 'RetrospectiveMeeting',
+          id: endedMeetingId
+        },
+        [startedMeetingId]: {
+          __id: startedMeetingId,
+          __typename: 'RetrospectiveMeeting',
+          id: startedMeetingId
+        }
+      }
+    )
+    const originalWindow = globalThis.window
+    Object.assign(globalThis, {window: {location: new URL('https://parabol.test/meetings')}})
+    TeamSubscription(atmosphere, {}, {navigate: jest.fn()})
+    Object.assign(globalThis, {window: originalWindow})
+    expect(getUnexpectedErrors()).toEqual([])
+    expect(atmosphere.getStore().getSource().get(teamId)?.activeMeetings).toEqual({
+      __refs: [startedMeetingId]
+    })
+  })
 })

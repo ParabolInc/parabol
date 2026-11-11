@@ -7,6 +7,7 @@ import onMeetingRoute from '~/utils/onMeetingRoute'
 import type {useEndTeamHealthMutation as TEndTeamHealthMutation} from '../__generated__/useEndTeamHealthMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import type {OnNextHandler, OnNextNavigateContext, SharedUpdater} from '../types/relayMutations'
+import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
 import {setLocalStageAndPhase} from '../utils/relay/updateLocalStage'
 import handleAddTimelineEvent from './handlers/handleAddTimelineEvent'
 
@@ -19,9 +20,6 @@ graphql`
     }
     team {
       id
-      activeMeetings {
-        id
-      }
     }
     timelineEvent {
       ...TimelineEventTeamHealthComplete_timelineEvent @relay(mask: false) @alias
@@ -85,6 +83,7 @@ export const endTeamHealthTeamUpdater: SharedUpdater<useEndTeamHealthMutation_te
   const meeting = payload.getLinkedRecord('meeting') as RecordProxy
   const timelineEvent = payload.getLinkedRecord('timelineEvent') as RecordProxy
   handleAddTimelineEvent(meeting, timelineEvent, store)
+  safeRemoveNodeFromArray(meeting?.getDataID(), payload.getLinkedRecord('team'), 'activeMeetings')
 }
 
 const useEndTeamHealthMutation = () => {
