@@ -5,6 +5,32 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.24.0](https://github.com/ParabolInc/parabol/compare/v15.23.0...v15.24.0) (2026-11-11)
+
+
+### Added
+
+* **client:** pause a hidden tab's socket and refetch when it returns ([#14048](https://github.com/ParabolInc/parabol/issues/14048)) ([fd0812e](https://github.com/ParabolInc/parabol/commit/fd0812e2cff3fd01d04061d9c0f4e10677d90424))
+* open the send menu instantly ([#14053](https://github.com/ParabolInc/parabol/issues/14053)) ([6c85893](https://github.com/ParabolInc/parabol/commit/6c8589344153289beca5ba0602f335b715bb5d39))
+* say when a tool fails or needs reconnecting in the send menu ([#14054](https://github.com/ParabolInc/parabol/issues/14054)) ([b979b93](https://github.com/ParabolInc/parabol/commit/b979b932862c66f1fa046257e56f486a32abb7dc))
+* suggest the tools your organization already uses ([#14046](https://github.com/ParabolInc/parabol/issues/14046)) ([3fd8354](https://github.com/ParabolInc/parabol/commit/3fd83540073af8a09093fb8f0785eb0a6adc5b3e))
+
+
+### Fixed
+
+* **client:** answer the task send button's query in the retro demo ([#14058](https://github.com/ParabolInc/parabol/issues/14058)) ([f5c7908](https://github.com/ParabolInc/parabol/commit/f5c7908a463469851bf1940502b2166e02b31445))
+* **client:** only ask for invoices on the plans and billing page when the viewer is a billing leader ([#14036](https://github.com/ParabolInc/parabol/issues/14036)) ([688fc20](https://github.com/ParabolInc/parabol/commit/688fc2026918a96c0a5bd9714771a124a0a385f3))
+* **client:** refetch when a tab that was away reconnects after a deploy ([#14044](https://github.com/ParabolInc/parabol/issues/14044)) ([d1ae4ab](https://github.com/ParabolInc/parabol/commit/d1ae4abaaca43d233b74648b36c83731255901c3))
+* disable End Check-in Meeting while it ends, and end check-ins faster ([#14042](https://github.com/ParabolInc/parabol/issues/14042)) ([0ecd589](https://github.com/ParabolInc/parabol/commit/0ecd58929315831b3b8d2edb2a7a9290799f3428))
+* **jira:** treat a 404 from a removed Atlassian site as no access ([#14030](https://github.com/ParabolInc/parabol/issues/14030)) ([dd0086c](https://github.com/ParabolInc/parabol/commit/dd0086cbe0816a082235524d744ac35a06f44a24))
+* **server:** don't log an error when a retro leaves the group phase with no reflections ([#14023](https://github.com/ParabolInc/parabol/issues/14023)) ([71a244e](https://github.com/ParabolInc/parabol/commit/71a244ec43c9c88e3414bc5810299c4f004e17d9))
+* **server:** forget a websocket that closes while it connects ([#14043](https://github.com/ParabolInc/parabol/issues/14043)) ([fe7471b](https://github.com/ParabolInc/parabol/commit/fe7471bd86ee4908401c8f45deb88b4979016cb7))
+* **server:** pass rrule range bounds in UTC so DST-ambiguous times don't throw ([#14029](https://github.com/ParabolInc/parabol/issues/14029)) ([b34c45d](https://github.com/ParabolInc/parabol/commit/b34c45d2c650219fa2b5f15e2e666d6aab3f7e3b))
+* **server:** refresh the auth cookie when addOrg or joinTeam adds the viewer to a team ([#14057](https://github.com/ParabolInc/parabol/issues/14057)) ([4a1eb03](https://github.com/ParabolInc/parabol/commit/4a1eb03339a37d85b1fdf186fb593544385eccfa))
+* **server:** remove a team's departing members together so successors are always members who stay ([#14062](https://github.com/ParabolInc/parabol/issues/14062)) ([f0ec0ff](https://github.com/ParabolInc/parabol/commit/f0ec0ff24ecc1d32eda605c2efa7dd50ef227f12))
+* **server:** share one write per user file path so GCS doesn't reject concurrent writes ([#14061](https://github.com/ParabolInc/parabol/issues/14061)) ([08ad1c4](https://github.com/ParabolInc/parabol/commit/08ad1c489239518f97083bb4701f7df60e554b83))
+* show that End was clicked in every menu, and end all meetings faster ([#14047](https://github.com/ParabolInc/parabol/issues/14047)) ([deebe00](https://github.com/ParabolInc/parabol/commit/deebe00b92247fb713306366b582a92ad6abde0b))
+
 ## [15.23.0](https://github.com/ParabolInc/parabol/compare/v15.22.0...v15.23.0) (2026-11-10)
 
 
