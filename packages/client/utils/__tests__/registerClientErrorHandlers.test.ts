@@ -1,3 +1,5 @@
+import {runInNewContext} from 'node:vm'
+
 const sentBeacon = jest.fn((_url: string, _body: Blob) => true)
 const consoleError = console.error
 const loggedToConsole = jest.fn()
@@ -165,6 +167,55 @@ test('a console error the app logs through a console an extension wraps is still
     expect.objectContaining({
       name: 'ConsoleError',
       message: 'No base meeting object found in Relay'
+    })
+  ])
+})
+
+// another realm's Error fails instanceof Error, as one from a Safari extension's isolated world does
+const makeErrorInAnotherRealm = (message: string, stack: string): Error =>
+  runInNewContext('const error = new TypeError(message); error.stack = stack; error', {
+    message,
+    stack
+  })
+
+const rejectUnhandled = (reason: unknown) => {
+  const addEventListener = window.addEventListener as jest.Mock
+  const [, onUnhandledRejection] = addEventListener.mock.calls.find(
+    ([type]) => type === 'unhandledrejection'
+  )!
+  onUnhandledRejection({reason})
+}
+
+test('an unhandled rejection with an error from another realm keeps its name, message and stack', async () => {
+  const {flushClientErrors} = await loadHandlers()
+  const stack = 'loadTeam@https://example.test/build/app.js:4:1200'
+  rejectUnhandled(makeErrorInAnotherRealm('Load failed', stack))
+  flushClientErrors()
+  expect(await readBeaconReports()).toEqual([
+    expect.objectContaining({name: 'TypeError', message: 'Load failed', stack})
+  ])
+})
+
+test('an unhandled rejection from a Safari extension is not reported', async () => {
+  const {flushClientErrors} = await loadHandlers()
+  rejectUnhandled(
+    makeErrorInAnotherRealm('No listener', 'sendMessage@webkit-masked-url://hidden/:12:3400')
+  )
+  flushClientErrors()
+  expect(sentBeacon).not.toHaveBeenCalled()
+})
+
+test('a console error logged with an error from another realm keeps its message', async () => {
+  const {flushClientErrors} = await loadHandlers()
+  const stack = 'importRecords@https://example.test/build/app.js:4:900'
+  console.error('Failed to import records', makeErrorInAnotherRealm('Unexpected token', stack))
+  await Promise.resolve()
+  flushClientErrors()
+  expect(await readBeaconReports()).toEqual([
+    expect.objectContaining({
+      name: 'TypeError',
+      message: 'Failed to import records Unexpected token',
+      stack
     })
   ])
 })

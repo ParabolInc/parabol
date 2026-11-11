@@ -59,14 +59,10 @@ const refreshSessionMutation = graphql`
 // a query that never settles must not keep a busy subscription's messages forever
 const MAX_SUBSCRIPTION_HOLD = 30_000
 
-interface QuerySubscription {
-  subKey: string
-  queryKey: string
-  disposable?: {unsubscribe: () => void}
-}
-
-interface Subscriptions {
-  [subKey: string]: {unsubscribe: () => void}
+interface RetainedSubscription {
+  disposable: Disposable
+  retainCount: number
+  releaseTimer?: number
 }
 
 export type SubscriptionRequestor = {
@@ -133,12 +129,9 @@ export default class Atmosphere extends Environment {
     this.eventEmitter.emit('authChanged')
   }
 
-  querySubscriptions: QuerySubscription[] = []
-  queryTimeouts: {
-    [queryKey: string]: number
-  } = {}
   retries = new Set<() => void>()
-  subscriptions: Subscriptions = {}
+  // by subKey, every subscription a component or the app is holding open
+  private retainedSubscriptions = new Map<string, RetainedSubscription>()
   // by subKey, called each time the server acknowledges that a subscription is listening, including after a reconnect
   subscriptionAckHandlers = new Map<string, () => void>()
   // by subKey, messages kept from relay until the query that holds them has been written to the store
@@ -147,12 +140,12 @@ export default class Atmosphere extends Environment {
   // This object makes the server response whole without increasing the payload size
   subscriptionInterfaces = {} as Record<string, Record<string, null>>
   eventEmitter: StrictEventEmitter<EventEmitter, AtmosphereEvents> = new EventEmitter()
-  queryCache = {} as {[key: string]: GraphQLResponse}
   // it's only null before login, so it's just a little white lie
   viewerId: string = null!
   tabCheckChannel?: BroadcastChannel
-  subscriptionClient!: Awaited<ReturnType<typeof createWSClient>>
-  connectWebsocketPromise: Promise<Client> | null = null
+  subscriptionClient?: Client
+  // while the socket is down, queries and mutations go over HTTP instead of waiting for it to reconnect
+  isSocketConnected = false
   constructor() {
     // Relay only logs network events for the network it is given here, but the fetch functions exist once super returns
     let atmosphere: Atmosphere | undefined
@@ -190,12 +183,10 @@ export default class Atmosphere extends Environment {
     }
   }
 
-  private async connectWebsocket() {
-    // wait until the first and only upgrade has completed
-    if (!this.connectWebsocketPromise) {
-      this.connectWebsocketPromise = createWSClient(this)
-    }
-    return this.connectWebsocketPromise
+  // the client holds what it is given until its socket connects, and sends it again after a reconnect
+  getSubscriptionClient() {
+    this.subscriptionClient ??= createWSClient(this)
+    return this.subscriptionClient
   }
 
   fetchFunction: FetchFunction = (request, variables, cacheConfig, uploadables) => {
@@ -207,15 +198,17 @@ export default class Atmosphere extends Environment {
       request.name === 'ReAuthWithGoogleMutation' ||
       request.name === 'ReAuthWithMicrosoftMutation' ||
       request.name === 'ReAuthWithPasswordMutation'
-    const useHTTP = !!uploadables || !this.authObj || !this.subscriptionClient || isAuth
+    const useHTTP = !!uploadables || !this.authObj || !this.isSocketConnected || isAuth
     if (useHTTP) {
       const traceparent = makeTraceparent()
       const traceId = traceparent.split('-')[1]
       addBreadcrumb('operation', `${request.operationKind} ${request.name}`, traceId)
+      const abortController = new AbortController()
       const response = fetch('/graphql', {
         method: 'POST',
+        signal: abortController.signal,
         headers: {
-          accept: 'application/json;text/event-stream; charset=utf-8, multipart/mixed',
+          accept: 'multipart/mixed, application/json',
           traceparent,
           'x-parabol-session-id': getTabSessionId(),
           ...(!uploadables && {['content-type']: 'application/json'})
@@ -300,6 +293,8 @@ export default class Atmosphere extends Environment {
           .catch((e: unknown) => {
             sink.error(e instanceof Error ? e : new Error(String(e)))
           })
+        // relay unsubscribes once nothing needs the result, like a query whose component went away
+        return () => abortController.abort()
       })
     }
     return this.fetchOrSubscribe(request, variables, cacheConfig)
@@ -370,29 +365,16 @@ export default class Atmosphere extends Environment {
         }
         _next(nextObj)
       }
-      ;(async () => {
-        // waiting a tick prevents `client.subscribe` from creating 2 websocket instances
-        try {
-          await this.connectWebsocket()
-        } catch {
-          // errors are handled in the closed handler
-          return
-        }
-
-        const unsubscribe = this.subscriptionClient.subscribe(
-          {
-            operationName: operation.name,
-            query: '',
-            docId: operation.id,
-            variables,
-            extensions: isSubscription ? {traceparent, ackId: subKey} : {traceparent}
-          } as any,
-          sink as any
-        )
-        if (isSubscription) {
-          this.subscriptions[subKey] = {unsubscribe}
-        }
-      })()
+      return this.getSubscriptionClient().subscribe(
+        {
+          operationName: operation.name,
+          query: '',
+          docId: operation.id,
+          variables,
+          extensions: isSubscription ? {traceparent, ackId: subKey} : {traceparent}
+        } as any,
+        sink as any
+      )
     })
   }
 
@@ -478,23 +460,42 @@ export default class Atmosphere extends Environment {
     }
   }
 
-  registerQuery = async (
-    queryKey: string,
+  /*
+   * Starts the subscription when the first caller retains it, and stops it once every caller has released it and
+   * keepWarmMs has passed with nobody retaining it again, so a page that remounts keeps listening without a gap
+   */
+  retainSubscription(
     subscription: SubscriptionRequestor,
     variables: Variables,
-    router: {navigate: NavigateFn}
-  ) => {
-    window.clearTimeout(this.queryTimeouts[queryKey])
-    delete this.queryTimeouts[queryKey]
-    const {key} = subscription
-    // runtime error in case relay changes
-    if (!key) throw new Error(`Missing name for sub`)
-    const subKey = Atmosphere.getKey(key, variables)
-    const isRequested = Boolean(this.querySubscriptions.find((qs) => qs.subKey === subKey))
-    if (!isRequested) {
-      subscription(this, variables, router)
+    router: {navigate: NavigateFn},
+    keepWarmMs = 0
+  ) {
+    const subKey = Atmosphere.getKey(subscription.key, variables)
+    let retained = this.retainedSubscriptions.get(subKey)
+    if (retained) {
+      window.clearTimeout(retained.releaseTimer)
+      retained.retainCount++
+    } else {
+      retained = {disposable: subscription(this, variables, router), retainCount: 1}
+      this.retainedSubscriptions.set(subKey, retained)
     }
-    this.querySubscriptions.push({queryKey, subKey})
+    const thisRetain = retained
+    let isReleased = false
+    return () => {
+      if (isReleased) return
+      isReleased = true
+      thisRetain.retainCount--
+      if (thisRetain.retainCount > 0) return
+      thisRetain.releaseTimer = window.setTimeout(() => {
+        if (this.retainedSubscriptions.get(subKey) !== thisRetain) return
+        this.retainedSubscriptions.delete(subKey)
+        thisRetain.disposable.dispose()
+      }, keepWarmMs)
+    }
+  }
+
+  isSubscribed(subKey: string) {
+    return this.retainedSubscriptions.has(subKey)
   }
 
   /*
@@ -527,61 +528,9 @@ export default class Atmosphere extends Environment {
     this.subscriptionInterfaces[name] = nullObj
     return name
   }
-  /*
-   * When a subscription encounters an error, it affects the subscription itself,
-   * the queries that depend on that subscription to stay valid,
-   * and the peer subscriptions that also keep that component valid.
-   *
-   * For example, in my app component A subscribes to 1,2,3, component B subscribes to 1, component C subscribes to 2,4.
-   * If subscription 1 fails, then the data for component A and B get removed from the queryCache, since it might be invalid now
-   * Subscription 1 gets unsubscribed,
-   * Subscription 2 does not because it is used by component C.
-   * Subscription 3 does because no other component depends on it.
-   * Subscription 4 does not because there is no overlap
-   */
-  scheduleUnregisterQuery(queryKey: string, delay: number) {
-    if (this.queryTimeouts[queryKey]) return
-    this.queryTimeouts[queryKey] = window.setTimeout(() => {
-      this.unregisterQuery(queryKey)
-    }, delay)
-  }
-
-  /*
-   * removes the query & if the subscription is no longer needed, unsubscribes from it
-   */
-  unregisterQuery(queryKey: string) {
-    window.clearTimeout(this.queryTimeouts[queryKey])
-    delete this.queryTimeouts[queryKey]
-    // for each query that is no longer 100% supported, find the subs that power them
-    const rowsToRemove = this.querySubscriptions.filter((qs) => qs.queryKey === queryKey)
-    // rowsToRemove.forEach((qsToRemove) => {
-    // the query is no longer valid, nuke it
-    // delete this.queryCache[qsToRemove.queryKey]
-    // })
-    const subsToRemove = Array.from(new Set<string>(rowsToRemove.map(({subKey}) => subKey)))
-    this.querySubscriptions = this.querySubscriptions.filter((qs) => qs.queryKey !== queryKey)
-    subsToRemove.forEach((subKey) => {
-      const unaffectedSub = this.querySubscriptions.find((qs) => qs.subKey === subKey)
-      if (!unaffectedSub) {
-        this.subscriptions[subKey]?.unsubscribe()
-      }
-    })
-  }
-
-  /* When the server wants to end the subscription, it sends a GQL_COMPLETE payload
-   * GQL_Trebuchet cleans itself up & calls the onCompleted observer
-   * unregisterSub should therefore be called in each subs onCompleted callback
-   */
+  // the server ended the subscription, so the next caller to retain it must start it again
   unregisterSub(name: string, variables: Variables) {
-    const subKey = Atmosphere.getKey(name, variables)
-    delete this.subscriptions[subKey]
-    const rowsToRemove = this.querySubscriptions.filter((qs) => qs.subKey === subKey)
-    rowsToRemove.forEach((qsToRemove) => {
-      // the query is no longer valid, nuke it
-      delete this.queryCache[qsToRemove.queryKey]
-    })
-    this.querySubscriptions = this.querySubscriptions.filter((qs) => qs.subKey !== subKey)
-    // does not remove other subs because they may still do interesting things like pop toasts
+    this.retainedSubscriptions.delete(Atmosphere.getKey(name, variables))
   }
   invalidateSession(reason: string) {
     commitMutation<AtmosphereSignOutMutation>(this, {
@@ -609,16 +558,19 @@ export default class Atmosphere extends Environment {
     })
   }
   close() {
-    this.querySubscriptions.forEach((querySub) => {
-      this.unregisterQuery(querySub.queryKey)
+    this.retainedSubscriptions.forEach(({disposable, releaseTimer}) => {
+      window.clearTimeout(releaseTimer)
+      disposable.dispose()
     })
+    this.retainedSubscriptions.clear()
     // remove all records
     ;(this.getStore().getSource() as any).clear()
     this.authObj = null
-    this.querySubscriptions = []
-    this.subscriptions = {}
     this.viewerId = null!
-    this.connectWebsocketPromise = null
+    // disposing a socket that never finished connecting rejects, and it is closing either way
+    Promise.resolve(this.subscriptionClient?.dispose()).catch(noop)
+    this.subscriptionClient = undefined
+    this.isSocketConnected = false
     // fire-and-forget: clearing the local page data is best-effort before the page redirects
     void Promise.all([...Atmosphere.closeHandlers].map((closeHandler) => closeHandler())).then(
       deletePageDatabases

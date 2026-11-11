@@ -101,15 +101,6 @@ const applyMembers = async (
     await pg.updateTable('Team').set({isArchived: false}).where('id', '=', team.id).execute()
   }
 
-  if (toRemove.length > 0) {
-    const userIdsToRemove = toRemove.map(({userId}) => userId)
-    const {removedUserIds} = await removeTeamMembers(group.id, userIdsToRemove, {}, dataLoader)
-    const notRemovedUserIds = userIdsToRemove.filter((userId) => !removedUserIds.includes(userId))
-    if (notRemovedUserIds.length > 0) {
-      Logger.error(`Failed to remove users ${notRemovedUserIds.join(', ')} from team ${group.id}`)
-    }
-  }
-
   await Promise.all(
     toAdd.map(async (member) => {
       try {
@@ -119,6 +110,16 @@ const applyMembers = async (
       }
     })
   )
+
+  // Add before removing, so replacing every member hands the lead to a new member instead of archiving the team
+  if (toRemove.length > 0) {
+    const userIdsToRemove = toRemove.map(({userId}) => userId)
+    const {removedUserIds} = await removeTeamMembers(group.id, userIdsToRemove, {}, dataLoader)
+    const notRemovedUserIds = userIdsToRemove.filter((userId) => !removedUserIds.includes(userId))
+    if (notRemovedUserIds.length > 0) {
+      Logger.error(`Failed to remove users ${notRemovedUserIds.join(', ')} from team ${group.id}`)
+    }
+  }
 
   dataLoader.get('teamMembersByTeamId').clear(group.id)
   return group

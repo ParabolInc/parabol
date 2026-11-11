@@ -16,15 +16,16 @@ const mockAtmosphere = {
   subscriptionAckHandlers: new Map<string, () => void>(),
   records: {} as Record<string, Record<string, unknown>>,
   getStore: () => ({getSource: () => ({get: (dataID: string) => mockAtmosphere.records[dataID]})}),
-  registerQuery: async (_queryKey: string, _subscription: unknown, variables: unknown) => {
+  isSubscribed: (subKey: string) => Boolean(mockAtmosphere.subscriptions[subKey]),
+  retainSubscription: (_subscription: unknown, variables: unknown) => {
     mockEvents.push('subscribe')
     mockAtmosphere.subscriptions[mockGetKey('MeetingSubscription', variables)] = {}
+    return () => {}
   },
   holdSubscription: () => {
     mockEvents.push('hold')
     return () => mockEvents.push('release')
-  },
-  scheduleUnregisterQuery: () => {}
+  }
 }
 
 jest.mock('../useAtmosphere', () => ({__esModule: true, default: () => mockAtmosphere}))

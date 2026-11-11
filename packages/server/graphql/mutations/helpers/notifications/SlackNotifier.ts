@@ -44,7 +44,7 @@ const handleError = async (
   const {channelId, auth} = notificationChannel
   if ('error' in res) {
     const {error} = res
-    if (error === 'channel_not_found' || error === 'not_in_channel') {
+    if (error === 'channel_not_found' || error === 'not_in_channel' || error === 'is_archived') {
       await getKysely()
         .updateTable('SlackNotification')
         .set({channelId: null})
