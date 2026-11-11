@@ -39,7 +39,7 @@ const softDeleteUser = async (userIdToDelete: string, dataLoader: DataLoaderWork
   const orgIds = orgUsers.map((orgUser) => orgUser.orgId)
 
   await Promise.all(
-    orgIds.map((orgId) => removeFromOrg(userIdToDelete, orgId, undefined, dataLoader))
+    orgIds.map((orgId) => removeFromOrg([userIdToDelete], orgId, undefined, dataLoader))
   )
   const teamMembers = await dataLoader.get('teamMembersByUserId').load(userIdToDelete)
   const teamIds = teamMembers.map(({teamId}) => teamId)
