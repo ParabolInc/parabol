@@ -5,11 +5,13 @@ import type {Team, User} from '../../../../../postgres/types'
 import type {AnyMeeting} from '../../../../../postgres/types/Meeting'
 import logError from '../../../../../utils/logError'
 import SlackServerManager from '../../../../../utils/SlackServerManager'
+import removeSlackAuths from '../../removeSlackAuths'
 import {SlackSingleChannelNotifier} from '../SlackNotifier'
 
 jest.mock('../../../../../utils/SlackServerManager')
 jest.mock('../../../../../utils/logError')
 jest.mock('../../../../../postgres/getKysely')
+jest.mock('../../removeSlackAuths')
 jest.mock('parabol-client/utils/meetings/lookups', () => ({phaseLabelLookup: {}}))
 
 const mockPostMessage = jest.fn()
@@ -40,7 +42,7 @@ jest.mocked(getKysely).mockReturnValue({
 const notificationChannel = {
   channelId: 'C0000000001',
   teamId: 'team1',
-  auth: {id: 'auth1', botAccessToken: 'xoxb-token'} as SlackAuth
+  auth: {id: 'auth1', botAccessToken: 'xoxb-token', userId: 'user1', teamId: 'team1'} as SlackAuth
 } as SlackNotificationAuth
 const team = {id: 'team1', name: 'Team One'} as Team
 const meeting = {
@@ -80,6 +82,21 @@ describe('SlackSingleChannelNotifier', () => {
     expect(logError).not.toHaveBeenCalled()
   })
 
+  it.each(['account_inactive', 'token_revoked'])(
+    'deactivates the Slack auth without logging an error when Slack answers %s',
+    async (error) => {
+      mockPostMessage.mockResolvedValue({ok: false, error})
+      const res = await SlackSingleChannelNotifier(notificationChannel).startMeeting(
+        meeting,
+        team,
+        user
+      )
+      expect(res).toEqual({error: new Error(error)})
+      expect(removeSlackAuths).toHaveBeenCalledWith('user1', 'team1', true)
+      expect(logError).not.toHaveBeenCalled()
+    }
+  )
+
   it('logs unexpected errors and keeps the channel', async () => {
     mockPostMessage.mockResolvedValue({ok: false, error: 'ratelimited'})
     const res = await SlackSingleChannelNotifier(notificationChannel).startMeeting(
@@ -89,6 +106,7 @@ describe('SlackSingleChannelNotifier', () => {
     )
     expect(res).toEqual({error: new Error('ratelimited')})
     expect(mockSet).not.toHaveBeenCalled()
+    expect(removeSlackAuths).not.toHaveBeenCalled()
     expect(logError).toHaveBeenCalled()
   })
 })
