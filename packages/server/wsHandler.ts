@@ -1,3 +1,4 @@
+import uws from 'uWebSockets.js'
 import type {ExecutionArgs, ExecutionResult} from 'graphql'
 import {type execute, GraphQLError, type subscribe} from 'graphql'
 import {CloseCode, handleProtocols, MessageType, stringifyMessage} from 'graphql-ws'
@@ -27,6 +28,7 @@ import checkBlacklistJWT from './utils/checkBlacklistJWT'
 import {getTeamMemberUserIds} from './utils/getTeamMemberUserIds'
 import {getUserSocketCount} from './utils/getUserSocketCount'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
+import isWorthCompressingSocketMessage from './utils/isWorthCompressingSocketMessage'
 import {Logger} from './utils/Logger'
 import parseSessionId from './utils/parseSessionId'
 import publish from './utils/publish'
@@ -348,6 +350,16 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
 wsHandler.maxBackpressure = 4 * 1024 * 1024
 wsHandler.dropped = () => {
   websocketMessagesDropped.inc({route: 'graphql'})
+}
+
+wsHandler.compression = uws.SHARED_COMPRESSOR | uws.SHARED_DECOMPRESSOR
+// graphql-ws sends every message without asking for compression, so the socket asks for it on the large ones
+const openGraphQLSocket = wsHandler.open!
+wsHandler.open = (socket) => {
+  const send = socket.send.bind(socket)
+  socket.send = (message, isBinary, compress) =>
+    send(message, isBinary, compress ?? isWorthCompressingSocketMessage(message))
+  openGraphQLSocket(socket)
 }
 
 // Hack because graphql-ws doesn't support a way to extract the IP address, so we override the upgrade method

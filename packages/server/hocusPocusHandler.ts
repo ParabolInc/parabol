@@ -1,5 +1,5 @@
 import './hocusPocus'
-import type {WebSocketBehavior} from 'uWebSockets.js'
+import uws, {type WebSocketBehavior} from 'uWebSockets.js'
 import {HocusPocusWebSocket} from './HocusPocusWebSocket'
 import {redisHocusPocus} from './hocusPocus'
 import {websocketMessagesDropped} from './metricsHandler'
@@ -25,6 +25,7 @@ const getSocketLogContext = ({ip, sessionId}: HocusPocusSocketData) => ({
 
 export const hocusPocusHandler: WebSocketBehavior<HocusPocusSocketData> = {
   maxPayloadLength: 1024 * 1024 * 64,
+  compression: uws.SHARED_COMPRESSOR | uws.SHARED_DECOMPRESSOR,
   upgrade(res, req, context) {
     if (rejectNonWebSocketUpgrade(res, req)) return
     const headers = {} as SerializedHTTPRequest['headers']
