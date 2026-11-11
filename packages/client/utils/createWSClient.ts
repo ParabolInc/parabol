@@ -121,6 +121,21 @@ export const onDisconnected = (atmosphere: Atmosphere) => {
   // })
 }
 
+// A proxy that strips the Upgrade header fails every handshake while plain HTTP to the same host works.
+// HTTP failing too means the user is offline or Parabol is down, which this message would misdiagnose
+const FAILED_HANDSHAKES_BEFORE_WARNING = 4
+const warnIfWebSocketsBlocked = async (atmosphere: Atmosphere) => {
+  const healthResponse = await fetch('/health', {cache: 'no-store'}).catch(() => null)
+  if (!healthResponse?.ok || firewallMessageSent) return
+  firewallMessageSent = true
+  atmosphere.eventEmitter.emit('addSnackbar', {
+    autoDismiss: 0,
+    showDismissButton: true,
+    message: `Your network is blocking Parabol’s live connection, so you won’t see your team’s changes as they happen and pages won’t load. Ask your IT team to allow WebSockets to ${window.location.host}`,
+    key: 'firewall'
+  })
+}
+
 export const onReconnect = (atmosphere: Atmosphere) => {
   setConnectedStatus(atmosphere, true)
   // atmosphere.eventEmitter.emit('removeSnackbar', ({key}) => key === 'offline')
@@ -136,6 +151,8 @@ export function createWSClient(atmosphere: Atmosphere): Client {
   let timedOut: number
   let lastPongAt = Date.now()
   let currentSocket: WebSocket | undefined
+  let isSocketOpen = false
+  let failedHandshakeCount = 0
   let pausedSinceConnect = false
   let lastUsedAt = Date.now()
   let disconnectedAt = Date.now()
@@ -174,6 +191,8 @@ export function createWSClient(atmosphere: Atmosphere): Client {
     on: {
       opened: (socket) => {
         currentSocket = socket as WebSocket
+        isSocketOpen = true
+        failedHandshakeCount = 0
       },
       ping: (received, payload) => {
         if (!received) {
@@ -234,6 +253,13 @@ export function createWSClient(atmosphere: Atmosphere): Client {
         lastCloseCode = code
         const closedMessage = `closed ${code} ${reason}`.trim()
         addBreadcrumb('websocket', closedMessage)
+        if (!isSocketOpen) {
+          failedHandshakeCount++
+          if (failedHandshakeCount === FAILED_HANDSHAKES_BEFORE_WARNING) {
+            void warnIfWebSocketsBlocked(atmosphere)
+          }
+        }
+        isSocketOpen = false
         if (FAILURE_CLOSE_CODES.has(code)) {
           reportClientWarning('WebSocketCloseError', closedMessage)
         }

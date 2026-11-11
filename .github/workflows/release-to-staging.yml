@@ -34,6 +34,22 @@ jobs:
           gcloud container images add-tag -q \
           ${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.event.pull_request.head.sha}} \
           ${{ secrets.GCP_AR_PARABOL }}:v${{ env.ACTION_VERSION }}
+      # Staging's predeploy is the first pull of each release. GKE image streaming imports an image
+      # into its cache on its first pull, which takes as long as a normal pull, so import it now,
+      # in about 15 s, while Kargo starts the promotion. The release mustn't wait for or fail on it.
+      # Only the status is printed, since the response names the project and this log is public.
+      - name: "Prewarm the image for GKE image streaming"
+        continue-on-error: true
+        env:
+          IMAGE: ${{ secrets.GCP_AR_PARABOL }}
+          TOKEN: ${{ steps.auth.outputs.access_token }}
+        run: |-
+          IFS=/ read -r HOST PROJECT REPOSITORY PACKAGE <<< "${IMAGE}"
+          PARENT="projects/${PROJECT}/locations/${HOST%-docker.pkg.dev}/repositories/${REPOSITORY}"
+          curl --fail --silent --show-error --max-time 30 --retry 3 --output /dev/null --write-out 'HTTP %{http_code}\n' \
+          --header "Authorization: Bearer ${TOKEN}" --header "Content-Type: application/json" \
+          --data "{\"tag\": \"${PARENT}/packages/${PACKAGE}/tags/v${ACTION_VERSION}\"}" \
+          "https://artifactregistry.googleapis.com/v1/${PARENT}:prewarmArtifact"
       - id: "iap"
         name: "Get a token for the IAP in front of Kargo's webhooks"
         uses: "google-github-actions/auth@v2"

@@ -1,3 +1,4 @@
+import uws from 'uWebSockets.js'
 import type {ExecutionArgs, ExecutionResult} from 'graphql'
 import {type execute, GraphQLError, type subscribe} from 'graphql'
 import {CloseCode, handleProtocols, MessageType, stringifyMessage} from 'graphql-ws'
@@ -28,9 +29,11 @@ import checkBlacklistJWT from './utils/checkBlacklistJWT'
 import {getTeamMemberUserIds} from './utils/getTeamMemberUserIds'
 import {getUserSocketCount} from './utils/getUserSocketCount'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
+import isWorthCompressingSocketMessage from './utils/isWorthCompressingSocketMessage'
 import {Logger} from './utils/Logger'
 import parseSessionId from './utils/parseSessionId'
 import publish from './utils/publish'
+import rejectNonWebSocketUpgrade from './utils/rejectNonWebSocketUpgrade'
 import {CLIENT_IP_POS} from './utils/uwsGetIP'
 import {extractPersistedOperationId, getPersistedOperation, type ServerContext, yoga} from './yoga'
 
@@ -354,8 +357,19 @@ wsHandler.dropped = () => {
   websocketMessagesDropped.inc({route: 'graphql'})
 }
 
+wsHandler.compression = uws.SHARED_COMPRESSOR | uws.SHARED_DECOMPRESSOR
+// graphql-ws sends every message without asking for compression, so the socket asks for it on the large ones
+const openGraphQLSocket = wsHandler.open!
+wsHandler.open = (socket) => {
+  const send = socket.send.bind(socket)
+  socket.send = (message, isBinary, compress) =>
+    send(message, isBinary, compress ?? isWorthCompressingSocketMessage(message))
+  openGraphQLSocket(socket)
+}
+
 // Hack because graphql-ws doesn't support a way to extract the IP address, so we override the upgrade method
 wsHandler.upgrade = async (res, req, context) => {
+  if (rejectNonWebSocketUpgrade(res, req)) return
   // check isRefusingSockets here instead of the onConnect handler because onConnect can only send a 4403 FORBIDDEN
   // which is what we send when we want to invalidate a session (ie log them out)
   // Here, we want them to keep trying, and hopefully they get proxied to a different server that is not shutting down
