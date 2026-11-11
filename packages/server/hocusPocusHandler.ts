@@ -5,6 +5,7 @@ import {redisHocusPocus} from './hocusPocus'
 import {websocketMessagesDropped} from './metricsHandler'
 import {Logger} from './utils/Logger'
 import parseSessionId from './utils/parseSessionId'
+import rejectNonWebSocketUpgrade from './utils/rejectNonWebSocketUpgrade'
 import {runWithLogContext} from './utils/requestLogContext'
 import type {SerializedHTTPRequest} from './utils/tiptap/RedisServerAffinity'
 
@@ -25,6 +26,7 @@ const getSocketLogContext = ({ip, sessionId}: HocusPocusSocketData) => ({
 export const hocusPocusHandler: WebSocketBehavior<HocusPocusSocketData> = {
   maxPayloadLength: 1024 * 1024 * 64,
   upgrade(res, req, context) {
+    if (rejectNonWebSocketUpgrade(res, req)) return
     const headers = {} as SerializedHTTPRequest['headers']
     req.forEach((key, value) => {
       headers[key] = value
