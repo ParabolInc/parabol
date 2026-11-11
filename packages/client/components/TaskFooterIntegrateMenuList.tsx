@@ -1,10 +1,13 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Fragment, Suspense, useCallback, useMemo, useState} from 'react'
-import {useFragment} from 'react-relay'
+import {fetchQuery, useFragment} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import mergeRepoIntegrationItems from '~/utils/mergeRepoIntegrationItems'
 import type {TaskServiceEnum} from '../__generated__/CreateTaskMutation.graphql'
 import type {TaskFooterIntegrateMenuList_teamMember$key} from '../__generated__/TaskFooterIntegrateMenuList_teamMember.graphql'
+import type {TaskFooterIntegrateMenuListRetryQuery} from '../__generated__/TaskFooterIntegrateMenuListRetryQuery.graphql'
+import type {MenuMutationProps} from '../hooks/useMutationProps'
 import {
   isTaskClientIntegration,
   listClientIntegrationServices
@@ -14,13 +17,28 @@ import {MenuSeparator} from '../ui/Menu/MenuSeparator'
 import MenuSkeletonRows from '../ui/Menu/MenuSkeletonRows'
 import menuSectionTitleClass from '../ui/Menu/menuSectionTitleClass'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
+import TaskFooterIntegrateMenuNeedsReconnect from './TaskFooterIntegrateMenuNeedsReconnect'
 import TaskFooterIntegrateMenuServiceRepos, {
   type RepoIntegrationItem as Item,
   type RepoIntegrationService
 } from './TaskFooterIntegrateMenuServiceRepos'
+import TaskFooterIntegrateMenuToolFailure from './TaskFooterIntegrateMenuToolFailure'
 import TaskIntegrationMenuItem from './TaskIntegrationMenuItem'
 
+const retryQuery = graphql`
+  query TaskFooterIntegrateMenuListRetryQuery($teamId: ID!) {
+    viewer {
+      teamMember(teamId: $teamId) {
+        services {
+          ...TaskFooterIntegrateMenuServiceRepos_service
+        }
+      }
+    }
+  }
+`
+
 interface Props {
+  mutationProps: MenuMutationProps
   placeholder: string
   teamMemberRef: TaskFooterIntegrateMenuList_teamMember$key
   label?: string
@@ -36,7 +54,9 @@ type ReposByService = Partial<Record<RepoIntegrationService, readonly Item[] | n
 const getValue = (item: Item) => item.name
 
 const TaskFooterIntegrateMenuList = (props: Props) => {
-  const {onPushToIntegration, placeholder, teamMemberRef, label} = props
+  const {mutationProps, onPushToIntegration, placeholder, teamMemberRef, label} = props
+  const atmosphere = useAtmosphere()
+  const [isRetrying, setIsRetrying] = useState(false)
 
   graphql`
     fragment TaskFooterIntegrateMenuListItem on RepoIntegration {
@@ -51,6 +71,8 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
   const teamMember = useFragment(
     graphql`
       fragment TaskFooterIntegrateMenuList_teamMember on TeamMember {
+        ...TaskFooterIntegrateMenuNeedsReconnect_teamMember
+        teamId
         prevUsedRepoIntegrations(first: 50) {
           items {
             ...TaskFooterIntegrateMenuListItem @relay(mask: false)
@@ -58,6 +80,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
         }
         services {
           service
+          title
           isConnected
           ...TaskFooterIntegrateMenuServiceRepos_service @defer
         }
@@ -89,7 +112,20 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
       ),
     [recentItems, services, reposByService]
   )
-  const loadingCount = connectedServices.filter((service) => !(service in reposByService)).length
+  const failedServices = connectedServices.filter((service) => reposByService[service] === null)
+  const loadingCount =
+    connectedServices.filter((service) => !(service in reposByService)).length +
+    (isRetrying ? failedServices.length : 0)
+  const retry = () => {
+    setIsRetrying(true)
+    const done = () => setIsRetrying(false)
+    fetchQuery<TaskFooterIntegrateMenuListRetryQuery>(
+      atmosphere,
+      retryQuery,
+      {teamId: teamMember.teamId},
+      {fetchPolicy: 'network-only'}
+    ).subscribe({complete: done, error: done})
+  }
   const onRepos = useCallback((service: RepoIntegrationService, repos: readonly Item[] | null) => {
     setReposByService((prev) => ({...prev, [service]: repos}))
   }, [])
@@ -145,6 +181,19 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
         )
       })}
       {!query && loadingCount > 0 && <MenuSkeletonRows count={Math.min(loadingCount * 2, 4)} />}
+      {!isRetrying && failedServices.length > 0 && (
+        <TaskFooterIntegrateMenuToolFailure
+          titles={services
+            .filter(({service}) => failedServices.includes(service))
+            .map(({title}) => title)}
+          othersWork={failedServices.length < connectedServices.length}
+          onRetry={retry}
+        />
+      )}
+      <TaskFooterIntegrateMenuNeedsReconnect
+        mutationProps={mutationProps}
+        teamMemberRef={teamMember}
+      />
     </>
   )
 }

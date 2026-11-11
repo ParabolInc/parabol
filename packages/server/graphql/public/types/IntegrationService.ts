@@ -63,6 +63,10 @@ const IntegrationService: IntegrationServiceResolvers = {
       .load({service, teamId, userId})
     return auth?.scopes?.split(/[\s,]+/).filter(Boolean) ?? []
   },
+  expiredAt: ({service, teamId, userId}, _args, {dataLoader}) =>
+    dataLoader
+      .get('integrationAuthExpiredAtByServiceTeamAndUserId')
+      .load({service, teamId, userId}),
   repos: ({service, teamId, userId}, _args, context, info) =>
     loadServiceRepoIntegrations(service, {
       dataLoader: context.dataLoader,

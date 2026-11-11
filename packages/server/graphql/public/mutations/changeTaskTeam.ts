@@ -10,7 +10,7 @@ import type {MutationResolvers} from '../resolverTypes'
 
 type CopiedAuthColumn = Exclude<
   keyof TeamMemberIntegrationAuth,
-  'id' | 'teamId' | 'createdAt' | 'updatedAt' | 'isActive'
+  'id' | 'teamId' | 'createdAt' | 'updatedAt' | 'isActive' | 'expiredAt'
 >
 
 // fails to compile when a column is added to TeamMemberIntegrationAuth but not listed here
@@ -121,7 +121,8 @@ const changeTaskTeam: MutationResolvers['changeTaskTeam'] = async (
             ...Object.fromEntries(
               AUTH_COPY_COLUMNS.map((column) => [column, eb.ref(`excluded.${column}`)])
             ),
-            isActive: true
+            isActive: true,
+            expiredAt: null
           }))
         )
         .execute()

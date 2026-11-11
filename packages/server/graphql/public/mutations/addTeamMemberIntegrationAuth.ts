@@ -132,6 +132,7 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
         ...tokenMetadata,
         providerId: providerDbId,
         isActive: true,
+        expiredAt: null,
         ...(providerUserId !== null && {providerUserId}),
         ...(meta !== null && {meta})
       })
