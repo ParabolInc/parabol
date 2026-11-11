@@ -39,6 +39,7 @@ import {PageLinkPicker} from '../tiptap/extensions/pageLinkPicker/PageLinkPicker
 import {PageUserMention} from '../tiptap/extensions/pageUserMention/PageUserMention'
 import {pageUserSuggestion} from '../tiptap/extensions/pageUserMention/pageUserSuggestion'
 import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
+import type {CommandTitle} from '../tiptap/extensions/slashCommand/slashCommands'
 import {Table} from '../tiptap/extensions/table/Table'
 import {TableCell} from '../tiptap/extensions/table/TableCell'
 import {TableHeader} from '../tiptap/extensions/table/TableHeader'
@@ -48,6 +49,29 @@ import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import useAtmosphere from './useAtmosphere'
 import {usePageLinkPlaceholder} from './usePageLinkPlaceholder'
 import {lookupPageViewerAccess} from './usePageViewerAccess'
+
+const PAGE_SLASH_COMMANDS: Record<CommandTitle, boolean> = {
+  Text: true,
+  'To-do list': true,
+  'Heading 1': true,
+  'Heading 2': true,
+  'Heading 3': true,
+  'Bullet list': true,
+  'Numbered list': true,
+  Quote: true,
+  Code: true,
+  'Table of contents': true,
+  Details: true,
+  Table: true,
+  Divider: true,
+  Embed: true,
+  'Link to page': true,
+  'Create page': true,
+  Database: false,
+  Insights: true,
+  Image: true,
+  File: true
+}
 
 const getFileType = (file: File) => {
   if (file.type.startsWith('image/')) return 'image'
@@ -118,9 +142,7 @@ export const useTipTapPageEditor = (
         TaskItem.configure({
           nested: true
         }),
-        SlashCommand.configure({
-          Database: hasDatabases
-        }),
+        SlashCommand.configure({commands: {...PAGE_SLASH_COMMANDS, Database: hasDatabases}}),
         Focus,
         FileUpload.configure({
           scopeKey: pageId,

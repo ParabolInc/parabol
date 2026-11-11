@@ -11,16 +11,41 @@ import {LoomExtension} from '../components/TipTapEditor/LoomExtension'
 import {TiptapLinkExtension} from '../components/TipTapEditor/TiptapLinkExtension'
 import {SafeTextStyleKit} from '../shared/tiptap/extensions/SafeTextStyleKit'
 import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
+import FileBlock from '../tiptap/extensions/fileBlock/FileBlock'
 import {FileUpload} from '../tiptap/extensions/fileUpload/FileUpload'
 import {fileUploadSettledMeta} from '../tiptap/extensions/fileUpload/onUploadTipTapFile'
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
 import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
+import type {CommandTitle} from '../tiptap/extensions/slashCommand/slashCommands'
 import {ElementWidth} from '../types/constEnums'
 import {MentionTaskTag} from '../utils/MentionTaskTag'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
 import {tiptapTagConfig} from '../utils/tiptapTagConfig'
 import {useTipTapEditorSync} from './useTipTapEditorSync'
+
+const TASK_SLASH_COMMANDS: Record<CommandTitle, boolean> = {
+  Text: true,
+  'To-do list': false,
+  'Heading 1': false,
+  'Heading 2': false,
+  'Heading 3': true,
+  'Bullet list': true,
+  'Numbered list': true,
+  Quote: true,
+  Code: true,
+  'Table of contents': false,
+  Details: false,
+  Table: false,
+  Divider: true,
+  Embed: false,
+  'Link to page': false,
+  'Create page': false,
+  Database: false,
+  Insights: false,
+  Image: true,
+  File: true
+}
 
 export const useTipTapTaskEditor = (
   content: string,
@@ -46,6 +71,7 @@ export const useTipTapTaskEditor = (
         StarterKit.configure({link: false}),
         SafeTextStyleKit,
         Highlight,
+        FileBlock,
         FileUpload.configure({
           scopeKey: teamId,
           assetScope: 'Team',
@@ -67,16 +93,7 @@ export const useTipTapTaskEditor = (
           showOnlyWhenEditable: false,
           placeholder: 'Describe what “Done” looks like'
         }),
-        SlashCommand.configure({
-          'Heading 1': false,
-          'Heading 2': false,
-          'To-do list': false,
-          Insights: false,
-          Table: false,
-          Details: false,
-          'Create page': false,
-          Database: false
-        }),
+        SlashCommand.configure({commands: TASK_SLASH_COMMANDS}),
         TaskList,
         TaskItem.configure({
           nested: true

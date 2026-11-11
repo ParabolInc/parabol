@@ -163,7 +163,7 @@ const PromptResponseEditor = (props: Props) => {
           commit: uploadUserAsset,
           editorWidth: 600 - 16 * 2
         }),
-        ...(enableSlashCommands ? [SlashCommand.configure(STANDUP_SLASH_COMMANDS)] : [])
+        ...(enableSlashCommands ? [SlashCommand.configure({commands: STANDUP_SLASH_COMMANDS})] : [])
       ],
       autofocus: autoFocus,
       onUpdate,
