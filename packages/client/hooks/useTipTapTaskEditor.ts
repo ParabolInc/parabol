@@ -72,7 +72,9 @@ export const useTipTapTaskEditor = (
           Table: false,
           Details: false,
           'Create page': false,
-          Database: false
+          Database: false,
+          'Table of contents': false,
+          Embed: false
         }),
         TaskList,
         TaskItem.configure({
