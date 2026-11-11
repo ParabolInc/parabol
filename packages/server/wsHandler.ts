@@ -30,6 +30,7 @@ import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {Logger} from './utils/Logger'
 import parseSessionId from './utils/parseSessionId'
 import publish from './utils/publish'
+import rejectNonWebSocketUpgrade from './utils/rejectNonWebSocketUpgrade'
 import {CLIENT_IP_POS} from './utils/uwsGetIP'
 import {extractPersistedOperationId, getPersistedOperation, type ServerContext, yoga} from './yoga'
 
@@ -351,6 +352,7 @@ wsHandler.dropped = () => {
 
 // Hack because graphql-ws doesn't support a way to extract the IP address, so we override the upgrade method
 wsHandler.upgrade = async (res, req, context) => {
+  if (rejectNonWebSocketUpgrade(res, req)) return
   // check isShuttingDown here instead of the onConnect handler because onConnect can only send a 4403 FORBIDDEN
   // which is what we send when we want to invalidate a session (ie log them out)
   // Here, we want them to keep trying, and hopefully they get proxied to a different server that is not shutting down
