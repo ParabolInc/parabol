@@ -1,7 +1,9 @@
 import {EditorState, TextSelection} from '@tiptap/pm/state'
 import {Mapping} from '@tiptap/pm/transform'
+import {ReactNodeViewRenderer} from '@tiptap/react'
 import type {CalloutTone} from '../../../shared/tiptap/calloutTones'
 import {CalloutBase} from '../../../shared/tiptap/extensions/CalloutBase'
+import {CalloutView} from './CalloutView'
 import {calloutInputRule} from './calloutInputRule'
 import {handleCalloutBackspace, handleCalloutEnter} from './calloutKeyboard'
 import {unwrapCallout} from './unwrapCallout'
@@ -81,5 +83,9 @@ export const Callout = CalloutBase.extend({
 
   addInputRules() {
     return [calloutInputRule(this.type)]
+  },
+
+  addNodeView() {
+    return ReactNodeViewRenderer(CalloutView)
   }
 })

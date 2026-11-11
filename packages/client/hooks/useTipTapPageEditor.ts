@@ -22,7 +22,9 @@ import {LoomExtension} from '../components/TipTapEditor/LoomExtension'
 import {TiptapLinkExtension} from '../components/TipTapEditor/TiptapLinkExtension'
 import {useUploadUserAsset} from '../mutations/useUploadUserAsset'
 import {themeBackgroundColors} from '../shared/themeBackgroundColors'
+import {CalloutTitleBase} from '../shared/tiptap/extensions/CalloutTitleBase'
 import {SafeTextStyleKit} from '../shared/tiptap/extensions/SafeTextStyleKit'
+import {Callout} from '../tiptap/extensions/callout/Callout'
 import {EmbedBlock} from '../tiptap/extensions/embedBlock/EmbedBlock'
 import {handleServerEmbedMessage} from '../tiptap/extensions/fileBlock/embedManager'
 import FileBlock from '../tiptap/extensions/fileBlock/FileBlock'
@@ -132,6 +134,8 @@ export const useTipTapPageEditor = (
         }),
         DetailsSummary,
         DetailsContent,
+        Callout,
+        CalloutTitleBase,
         Table.configure({
           allowTableNodeSelection: true
         }),
@@ -163,7 +167,7 @@ export const useTipTapPageEditor = (
           showOnlyWhenEditable: false,
           includeChildren: true,
           emptyNodeClass: 'is-empty print:hidden',
-          placeholder: ({node, pos}) => {
+          placeholder: ({editor: currentEditor, node, pos}) => {
             if (placeholderRef.current) {
               return placeholderRef.current
             }
@@ -177,8 +181,16 @@ export const useTipTapPageEditor = (
                 return 'New code'
               case 'blockquote':
                 return 'New quote'
-              case 'paragraph':
-                return "Press '/' for commands"
+              case 'calloutTitle':
+                return 'Title'
+              case 'paragraph': {
+                const parent = currentEditor.state.doc.resolve(pos).parent
+                const isOnlyCalloutBody =
+                  parent.type.name === 'callout' &&
+                  parent.childCount - (parent.firstChild?.type.name === 'calloutTitle' ? 1 : 0) ===
+                    1
+                return isOnlyCalloutBody ? 'New callout' : "Press '/' for commands"
+              }
               case 'detailsSummary':
                 return 'New summary'
               case 'detailsContent': {
