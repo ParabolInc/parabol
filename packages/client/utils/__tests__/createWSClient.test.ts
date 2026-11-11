@@ -21,7 +21,12 @@ beforeEach(() => {
   console.error = loggedToConsole
   Object.assign(globalThis, {__APP_VERSION__: '15.16.0'})
   Object.defineProperty(globalThis, 'window', {
-    value: {location: {protocol: 'https:', host: 'example.test'}, setTimeout, clearTimeout},
+    value: {
+      location: {protocol: 'https:', host: 'example.test'},
+      setTimeout,
+      clearTimeout,
+      addEventListener: jest.fn()
+    },
     configurable: true
   })
   Object.defineProperty(globalThis, 'document', {
@@ -33,12 +38,11 @@ afterEach(() => {
   console.error = consoleError
 })
 
-test('a socket that closes before it ever connects rejects without logging a console error', async () => {
+test('a socket that closes before it ever connects stays disconnected without logging a console error', async () => {
   const {createWSClient} = await import('../createWSClient')
   const atmosphere = {authObj: null} as unknown as Atmosphere
-  const connecting = createWSClient(atmosphere)
-  const closeEvent = {code: 1006, reason: ''}
-  clientOptions.on.closed(closeEvent)
-  await expect(connecting).rejects.toBe(closeEvent)
+  createWSClient(atmosphere)
+  clientOptions.on.closed({code: 1006, reason: ''})
+  expect(atmosphere.isSocketConnected).toBe(false)
   expect(loggedToConsole).not.toHaveBeenCalled()
 })

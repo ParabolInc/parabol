@@ -1,5 +1,6 @@
 import {lazy} from 'react'
 import {type Location, Navigate, Route, Routes, useLocation} from 'react-router'
+import useAppSubscriptions from '../hooks/useAppSubscriptions'
 import useAuthRoute from '../hooks/useAuthRoute'
 import useNoIndex from '../hooks/useNoIndex'
 
@@ -65,6 +66,7 @@ const DashboardOrNotFound = () => {
 
 const PrivateRoutes = () => {
   useAuthRoute()
+  useAppSubscriptions()
   useNoIndex()
   const location = useLocation()
   const state = location.state as {backgroundLocation?: Location} | null
