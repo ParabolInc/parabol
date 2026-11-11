@@ -1,5 +1,4 @@
 import {parseReportSpec} from '../../client/shared/reports/parseReportSpec'
-import getKysely from '../postgres/getKysely'
 import {sendPublic, signUp} from './common'
 
 const ORGANIZATION_REPORT = `
@@ -68,10 +67,6 @@ const meetingsByTeam = {
   showAs: 'BARS'
 }
 
-const turnOnReports = async (orgId: string) => {
-  await getKysely().insertInto('FeatureFlagOwner').values({featureName: 'Reports', orgId}).execute()
-}
-
 const createToken = async (cookie: string, scopes: string[], grantedOrgIds?: string[]) => {
   const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
   const res = await sendPublic({
@@ -86,16 +81,8 @@ const createToken = async (cookie: string, scopes: string[], grantedOrgIds?: str
 const requestReport = (orgId: string, auth: {cookie: string} | {bearerToken: string}) =>
   sendPublic({query: ORGANIZATION_REPORT, variables: {orgId, spec: meetingsByTeam}, ...auth})
 
-test('Reports stays off until the organization has the flag', async () => {
-  const {orgId, cookie} = await signUp()
-  const res = await requestReport(orgId, {cookie})
-  expect(res.errors?.[0]?.message).toBe("Reports isn't turned on for this organization")
-  expect(res.data.viewer.organization).toBeNull()
-})
-
 test('a member gets a report on their teams', async () => {
   const {orgId, teamId, cookie} = await signUp()
-  await turnOnReports(orgId)
   const res = await requestReport(orgId, {cookie})
   expect(res.errors).toBeUndefined()
   expect(res.data.viewer.organization.report).toEqual({
@@ -114,7 +101,6 @@ test('a member gets a report on their teams', async () => {
 
 test('someone outside the organization gets nothing', async () => {
   const {orgId} = await signUp()
-  await turnOnReports(orgId)
   const outsider = await signUp()
   const res = await requestReport(orgId, {cookie: outsider.cookie})
   expect(res.errors).toBeTruthy()
@@ -123,7 +109,6 @@ test('someone outside the organization gets nothing', async () => {
 
 test('a personal access token needs the reports scope', async () => {
   const {orgId, cookie} = await signUp()
-  await turnOnReports(orgId)
   const withoutScope = await createToken(cookie, ['USERS_READ', 'ORGS_READ'])
   const denied = await requestReport(orgId, {bearerToken: withoutScope})
   expect(denied.errors?.[0]?.message).toMatch('missing required scope')
@@ -137,7 +122,6 @@ test('a personal access token needs the reports scope', async () => {
 
 test('a personal access token reaches only the organizations it was granted', async () => {
   const {orgId, cookie} = await signUp()
-  await turnOnReports(orgId)
   const other = await signUp()
   const scopes = ['USERS_READ', 'ORGS_READ', 'REPORTS_READ']
   const grantedHere = await createToken(cookie, scopes, [orgId])
@@ -153,10 +137,6 @@ test('a personal access token reaches only the organizations it was granted', as
 
 test('every organization starts with the built-in pins, each with a spec that runs', async () => {
   const {orgId, cookie} = await signUp()
-  const flagOff = await sendPublic({query: REPORT_PINS, variables: {orgId}, cookie})
-  expect(flagOff.errors?.[0]?.message).toBe("Reports isn't turned on for this organization")
-
-  await turnOnReports(orgId)
   const res = await sendPublic({query: REPORT_PINS, variables: {orgId}, cookie})
   expect(res.errors).toBeUndefined()
   const {pinnedReports} = res.data.viewer.organization
