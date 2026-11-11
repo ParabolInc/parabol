@@ -120,6 +120,57 @@ test('a failed service worker registration is still reported', async () => {
   expect(sentBeacon).toHaveBeenCalled()
 })
 
+const logFrom = (frames: string[], ...args: unknown[]) => {
+  const prepareStackTrace = Error.prepareStackTrace
+  Error.prepareStackTrace = () => ['Error', ...frames.map((frame) => `    at ${frame}`)].join('\n')
+  try {
+    console.error(...args)
+  } finally {
+    Error.prepareStackTrace = prepareStackTrace
+  }
+}
+
+const OWN_FRAME = 'console.error (https://files.example.test/build/app_0a1b2c.js:4:1200)'
+
+test('a console error an extension logs from its own script is not reported', async () => {
+  const {flushClientErrors} = await loadHandlers()
+  logFrom(
+    [OWN_FRAME, 'chrome-extension://abcdefghijklmnop/build/hook.js:1:500'],
+    'Another copy of the extension is enabled.'
+  )
+  await Promise.resolve()
+  flushClientErrors()
+  expect(sentBeacon).not.toHaveBeenCalled()
+})
+
+test('a console error an extension logs from a script it injects inline is not reported', async () => {
+  const {flushClientErrors} = await loadHandlers()
+  logFrom([OWN_FRAME, '<anonymous>:1:500'], 'Another copy of the extension is enabled.')
+  await Promise.resolve()
+  flushClientErrors()
+  expect(sentBeacon).not.toHaveBeenCalled()
+})
+
+test('a console error the app logs through a console an extension wraps is still reported', async () => {
+  const {flushClientErrors} = await loadHandlers()
+  logFrom(
+    [
+      OWN_FRAME,
+      'console.error (chrome-extension://abcdefghijklmnop/build/installHook.js:1:900)',
+      'commitRoot (https://files.example.test/build/app_0a1b2c.js:2:300)'
+    ],
+    'No base meeting object found in Relay'
+  )
+  await Promise.resolve()
+  flushClientErrors()
+  expect(await readBeaconReports()).toEqual([
+    expect.objectContaining({
+      name: 'ConsoleError',
+      message: 'No base meeting object found in Relay'
+    })
+  ])
+})
+
 // another realm's Error fails instanceof Error, as one from a Safari extension's isolated world does
 const makeErrorInAnotherRealm = (message: string, stack: string): Error =>
   runInNewContext('const error = new TypeError(message); error.stack = stack; error', {
