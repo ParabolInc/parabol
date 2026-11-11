@@ -117,9 +117,13 @@ const joinMeeting: MutationResolvers['joinMeeting'] = async (
     })
   }
 
+  // a viewer the loaded meeting already has a stage for, like one rejoining, needs no lock to find that out
+  const hasStage = (stages: TeamMemberStage[]) =>
+    stages.some((stage) => stage.teamMemberId === teamMemberId)
+
   const appendToCheckin = async () => {
     const checkInPhase = getPhase(phases, 'checkin')
-    if (!checkInPhase) return false
+    if (!checkInPhase || hasStage(checkInPhase.stages)) return false
     return addStageToPhase((sortOrder) => new CheckInStage(teamMemberId, sortOrder), 'checkin')
   }
 
@@ -130,18 +134,14 @@ const joinMeeting: MutationResolvers['joinMeeting'] = async (
 
   const appendToUpdate = async () => {
     const updatesPhase = getPhase(phases, 'updates')
-    if (!updatesPhase) return false
+    if (!updatesPhase || hasStage(updatesPhase.stages)) return false
     if (meeting.meetingType === 'retrospective' && !(await teamHasOpenTasks())) return false
     return addStageToPhase((sortOrder) => new UpdatesStage(teamMemberId, sortOrder), 'updates')
   }
 
   const appendToTeamPromptResponses = async () => {
     const responsesPhase = getPhase(phases, 'RESPONSES')
-    if (!responsesPhase) return false
-    const teamMemberResponseStage = responsesPhase.stages.find(
-      (stage) => stage.teamMemberId === teamMemberId
-    )
-    if (teamMemberResponseStage) return false
+    if (!responsesPhase || hasStage(responsesPhase.stages)) return false
     const discussionId = generateUID()
     await getKysely()
       .insertInto('Discussion')

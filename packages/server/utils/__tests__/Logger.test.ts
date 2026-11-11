@@ -248,7 +248,7 @@ describe('in production', () => {
     const account = {
       tier: 'team',
       featureFlags: [],
-      orgs: [{id: 'org1', tier: 'team', featureFlags: ['Reports']}]
+      orgs: [{id: 'org1', tier: 'team', featureFlags: ['ConfluenceExport']}]
     }
     const loadAccount = jest.fn(async () => account)
     setAccountLogContextLoader(loadAccount)

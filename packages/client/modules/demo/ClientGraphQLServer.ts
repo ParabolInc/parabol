@@ -344,6 +344,15 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
     },
+    TaskSendControlQuery: () => {
+      return {
+        viewer: {
+          ...this.db.users[0],
+          team: null,
+          teamMember: this.db.teamMembers[0]
+        }
+      }
+    },
     tiptapMentionConfigQuery: () => {
       return {
         viewer: {

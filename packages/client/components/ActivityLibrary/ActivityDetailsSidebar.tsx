@@ -1,7 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {RRule} from 'rrule'
 import type {ActivityDetailsSidebar_teams$key} from '~/__generated__/ActivityDetailsSidebar_teams.graphql'
 import type {ActivityDetailsSidebar_template$key} from '~/__generated__/ActivityDetailsSidebar_template.graphql'
@@ -16,12 +15,14 @@ import type {MeetingTypeEnum} from '../../__generated__/ActivityDetailsQuery.gra
 import type {CreateGcalEventInput} from '../../__generated__/StartRetrospectiveMutation.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
+import useNavigateInTransition from '../../hooks/useNavigateInTransition'
 import SelectTemplateMutation from '../../mutations/SelectTemplateMutation'
 import StartCheckInMutation from '../../mutations/StartCheckInMutation'
 import StartTeamPromptMutation from '../../mutations/StartTeamPromptMutation'
 import type {CompletedHandler} from '../../types/relayMutations'
 import {Button} from '../../ui/Button/Button'
 import {cn} from '../../ui/cn'
+import {Spinner} from '../../ui/Spinner/Spinner'
 import sortByTier from '../../utils/sortByTier'
 import NewMeetingActionsCurrentMeetings from '../NewMeetingActionsCurrentMeetings'
 import NewMeetingSettingsToggleAnonymity from '../NewMeetingSettingsToggleAnonymity'
@@ -81,13 +82,24 @@ const ActivityDetailsSidebar = (props: Props) => {
         tier
         orgId
         retroSettings: meetingSettings(meetingType: retrospective) {
+          ... on RetrospectiveMeetingSettings {
+            selectedTemplateId
+          }
           ...NewMeetingSettingsToggleCheckIn_settings
           ...NewMeetingSettingsToggleTeamHealth_settings
           ...NewMeetingSettingsToggleReviewPastTasks_settings
           ...NewMeetingSettingsToggleAnonymity_settings
         }
         pokerSettings: meetingSettings(meetingType: poker) {
+          ... on PokerMeetingSettings {
+            selectedTemplateId
+          }
           ...NewMeetingSettingsToggleCheckIn_settings
+        }
+        teamPromptSettings: meetingSettings(meetingType: teamPrompt) {
+          ... on TeamPromptMeetingSettings {
+            selectedTemplateId
+          }
         }
         actionSettings: meetingSettings(meetingType: action) {
           ...NewMeetingSettingsToggleCheckIn_settings
@@ -132,8 +144,11 @@ const ActivityDetailsSidebar = (props: Props) => {
     newTeam && setSelectedTeam(newTeam)
   }
   const mutationProps = useMutationProps()
-  const {onError, onCompleted, submitting, submitMutation, error} = mutationProps
-  const navigate = useNavigate()
+  const {onError, onCompleted, error} = mutationProps
+  // not mutationProps.submitting, since connecting Google Calendar in the schedule dialog submits too
+  const [isSubmittingStart, setIsSubmittingStart] = useState(false)
+  const [navigateToMeeting, isOpeningMeeting] = useNavigateInTransition()
+  const isStarting = isSubmittingStart || isOpeningMeeting
 
   // user has no teams
   if (!selectedTeam)
@@ -143,6 +158,14 @@ const ActivityDetailsSidebar = (props: Props) => {
         <StyledLink to='/newteam'>Create a team</StyledLink>
       </div>
     )
+
+  // selectedTeam is the team as it was when picked, so its settings come from the latest data
+  const teamSettings = teams.find(({id}) => id === selectedTeam.id) ?? selectedTeam
+  const teamTemplateIds: Partial<Record<MeetingTypeEnum, string | null | undefined>> = {
+    retrospective: teamSettings.retroSettings.selectedTemplateId,
+    poker: teamSettings.pokerSettings.selectedTemplateId,
+    teamPrompt: teamSettings.teamPromptSettings.selectedTemplateId
+  }
 
   const tryShowUpgradeModal = (extensions: Record<string, unknown> | null | undefined) => {
     const code = extensions?.code
@@ -181,56 +204,48 @@ const ActivityDetailsSidebar = (props: Props) => {
     gcalInput?: CreateGcalEventInput,
     ignoreSuggestedUpgrade?: boolean
   ) => {
-    if (submitting) return
-    submitMutation()
-    const upgradeAwareOnCompleted = makeUpgradeAwareOnCompleted(onCompleted)
-    const upgradeAwareOnError = makeUpgradeAwareOnError(onError)
+    if (isStarting) return
+    setIsSubmittingStart(true)
+    const onStartError: typeof onError = (startError) => {
+      setIsSubmittingStart(false)
+      onError(startError)
+    }
+    const handlers = {
+      navigate: navigateToMeeting,
+      onError: makeUpgradeAwareOnError(onStartError),
+      onCompleted: makeUpgradeAwareOnCompleted((res, errors) => {
+        setIsSubmittingStart(false)
+        onCompleted(res, errors)
+      })
+    }
+    const teamId = selectedTeam.id
+    const startWithSelectedTemplate = () => {
+      if (type === 'retrospective') {
+        StartRetrospectiveMutation(
+          atmosphere,
+          {teamId, name, rrule: rrule?.toString(), gcalInput, ignoreSuggestedUpgrade},
+          handlers
+        )
+      } else if (type === 'poker') {
+        StartSprintPokerMutation(atmosphere, {teamId, gcalInput, ignoreSuggestedUpgrade}, handlers)
+      } else if (type === 'teamPrompt') {
+        StartTeamPromptMutation(
+          atmosphere,
+          {teamId, name, rrule: rrule?.toString(), gcalInput, ignoreSuggestedUpgrade},
+          handlers
+        )
+      }
+    }
     if (type === 'action') {
-      StartCheckInMutation(
-        atmosphere,
-        {teamId: selectedTeam.id, gcalInput, ignoreSuggestedUpgrade},
-        {navigate, onError: upgradeAwareOnError, onCompleted: upgradeAwareOnCompleted}
-      )
+      StartCheckInMutation(atmosphere, {teamId, gcalInput, ignoreSuggestedUpgrade}, handlers)
+    } else if (teamTemplateIds[type] === selectedTemplate.id) {
+      startWithSelectedTemplate()
     } else {
+      // a meeting starts with the template its team has selected
       SelectTemplateMutation(
         atmosphere,
-        {selectedTemplateId: selectedTemplate.id, teamId: selectedTeam.id},
-        {
-          onCompleted: () => {
-            if (type === 'retrospective') {
-              StartRetrospectiveMutation(
-                atmosphere,
-                {
-                  teamId: selectedTeam.id,
-                  name,
-                  rrule: rrule?.toString(),
-                  gcalInput,
-                  ignoreSuggestedUpgrade
-                },
-                {navigate, onError: upgradeAwareOnError, onCompleted: upgradeAwareOnCompleted}
-              )
-            } else if (type === 'poker') {
-              StartSprintPokerMutation(
-                atmosphere,
-                {teamId: selectedTeam.id, gcalInput, ignoreSuggestedUpgrade},
-                {navigate, onError: upgradeAwareOnError, onCompleted: upgradeAwareOnCompleted}
-              )
-            } else if (type === 'teamPrompt') {
-              StartTeamPromptMutation(
-                atmosphere,
-                {
-                  teamId: selectedTeam.id,
-                  name,
-                  rrule: rrule?.toString(),
-                  gcalInput,
-                  ignoreSuggestedUpgrade
-                },
-                {navigate, onError: upgradeAwareOnError, onCompleted: upgradeAwareOnCompleted}
-              )
-            }
-          },
-          onError
-        }
+        {selectedTemplateId: selectedTemplate.id, teamId},
+        {onCompleted: startWithSelectedTemplate, onError: onStartError}
       )
     }
   }
@@ -327,7 +342,7 @@ const ActivityDetailsSidebar = (props: Props) => {
           <NewMeetingActionsCurrentMeetings team={selectedTeam} />
           <ScheduleMeetingButton
             handleStartActivity={handleStartActivity}
-            mutationProps={mutationProps}
+            mutationProps={{...mutationProps, submitting: mutationProps.submitting || isStarting}}
             teamRef={selectedTeam}
             placeholder={meetingNamePlaceholder}
             withRecurrence={withRecurrence}
@@ -336,10 +351,11 @@ const ActivityDetailsSidebar = (props: Props) => {
             variant='primary'
             size='sm'
             onClick={() => handleStartActivity()}
-            disabled={submitting}
-            className='h-14'
+            disabled={isStarting}
+            className='h-14 gap-2 disabled:opacity-100'
           >
-            <div className='text-lg'>Start Activity</div>
+            {isStarting && <Spinner className='h-5 w-5 text-white' />}
+            <div className='text-lg'>{isStarting ? 'Starting…' : 'Start Activity'}</div>
           </Button>
         </div>
       </div>

@@ -91,10 +91,6 @@ const Organization: OrganizationResolvers = {
 
   pinnedReports: ({id: orgId}) => selectPinnedReports(orgId),
   structure: async ({id: orgId}, _args, {dataLoader}) => {
-    const hasReports = await dataLoader
-      .get('featureFlagByOwnerId')
-      .load({ownerId: orgId, featureName: 'Reports'})
-    if (!hasReports) return []
     const {levels} = await dataLoader.get('orgStructureByOrgId').load(orgId)
     return levels
   },
