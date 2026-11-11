@@ -227,9 +227,12 @@ export default class Atmosphere extends Environment {
               })
         })
       const isQuery = request.operationKind === 'query'
-      const response = postOperation().then((res) =>
-        isQuery && DROPPED_CONNECTION_STATUSES.has(res.status) ? postOperation() : res
-      )
+      const postRetryingDroppedQuery = async () => {
+        const res = await postOperation()
+        if (isQuery && DROPPED_CONNECTION_STATUSES.has(res.status)) return postOperation()
+        return res
+      }
+      const response = postRetryingDroppedQuery()
       return Observable.create<GraphQLResponse>((sink) => {
         response
           .then(async (res) => {
