@@ -7,6 +7,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useMakeStageSummaries from '../hooks/useMakeStageSummaries'
 import DragEstimatingTaskMutation from '../mutations/DragEstimatingTaskMutation'
 import {ESTIMATING_TASK} from '../utils/constants'
+import isTempId from '../utils/relay/isTempId'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
 import MeetingSubnavItem from './MeetingSubnavItem'
 import PokerSidebarEstimateMeta from './PokerSidebarEstimateMeta'
@@ -119,7 +120,8 @@ const PokerSidebarEstimateSection = (props: Props) => {
             return (
               <div className='h-full overflow-auto pb-2' ref={provided.innerRef}>
                 {stageSummaries!.map((summary, idx) => {
-                  const {stageIds, title, subtitle, isActive, isNavigable, finalScores} = summary
+                  const {stageIds, title, subtitle, isActive, isNavigable, finalScores, taskId} =
+                    summary
                   const [firstStageId] = stageIds
                   // the local user is at another stage than the facilitator stage
                   const isUnsyncedFacilitatorStage =
@@ -129,7 +131,7 @@ const PokerSidebarEstimateSection = (props: Props) => {
                       key={firstStageId}
                       draggableId={firstStageId}
                       index={idx}
-                      isDragDisabled={!!endedAt}
+                      isDragDisabled={!!endedAt || isTempId(taskId)}
                     >
                       {(dragProvided, dragSnapshot) => {
                         return (
