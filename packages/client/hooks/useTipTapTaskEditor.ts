@@ -11,6 +11,7 @@ import {LoomExtension} from '../components/TipTapEditor/LoomExtension'
 import {TiptapLinkExtension} from '../components/TipTapEditor/TiptapLinkExtension'
 import {SafeTextStyleKit} from '../shared/tiptap/extensions/SafeTextStyleKit'
 import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
+import FileBlock from '../tiptap/extensions/fileBlock/FileBlock'
 import {FileUpload} from '../tiptap/extensions/fileUpload/FileUpload'
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
 import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
@@ -68,9 +69,11 @@ export const useTipTapTaskEditor = (
         StarterKit.configure({link: false}),
         SafeTextStyleKit,
         Highlight,
+        FileBlock,
         FileUpload.configure({
           scopeKey: teamId,
           assetScope: 'Team',
+          atmosphere,
           highestTier: 'starter',
           commit
         }),

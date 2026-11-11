@@ -42,7 +42,7 @@ const REFLECTION_SLASH_COMMANDS: Record<CommandTitle, boolean> = {
   Database: false,
   Insights: false,
   Image: true,
-  File: true
+  File: false
 }
 
 const isValid = <T>(obj: T | undefined | null | boolean): obj is T => {
