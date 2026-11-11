@@ -2,6 +2,7 @@ import {Window} from 'happy-dom'
 import {
   commitMutation,
   Environment,
+  fetchQuery,
   type GraphQLResponse,
   Network,
   RecordSource,
@@ -10,6 +11,9 @@ import {
 import SetMeetingMusicMutationRequest, {
   type SetMeetingMusicMutation as SetMeetingMusicMutationType
 } from '../../../__generated__/SetMeetingMusicMutation.graphql'
+import TaskSendControlQueryRequest, {
+  type TaskSendControlQuery as TaskSendControlQueryType
+} from '../../../__generated__/TaskSendControlQuery.graphql'
 import type Atmosphere from '../../../Atmosphere'
 import {setMeetingMusicMeetingUpdater} from '../../../mutations/SetMeetingMusicMutation'
 import {RetroDemo} from '../../../types/constEnums'
@@ -77,5 +81,18 @@ describe('ClientGraphQLServer', () => {
     const musicSettings = source.get(RetroDemo.MEETING_ID)?.musicSettings as {__ref: string}
     const musicSettingsRecord = source.get(musicSettings.__ref)
     expect(musicSettingsRecord).toMatchObject({trackSrc, isPlaying: true})
+  })
+
+  it('tells a demo task card where it can be sent', async () => {
+    const environment = await createDemoEnvironment()
+    const data = await fetchQuery<TaskSendControlQueryType>(
+      environment,
+      TaskSendControlQueryRequest,
+      {teamId: 'demoTeam'}
+    ).toPromise()
+    expect(errorSpy).not.toHaveBeenCalled()
+    expect(data?.viewer.teamMember?.services).toEqual(
+      expect.arrayContaining([{service: 'jira', isConnected: true}])
+    )
   })
 })
