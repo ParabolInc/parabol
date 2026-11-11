@@ -34,9 +34,7 @@ graphql`
     removedTaskIds
     team {
       id
-      activeMeetings {
-        id
-      }
+      ...MeetingsDashActiveMeetings @relay(mask: false)
       agendaItems {
         id
       }

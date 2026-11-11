@@ -19,9 +19,7 @@ graphql`
     }
     team {
       id
-      activeMeetings {
-        id
-      }
+      ...MeetingsDashActiveMeetings @relay(mask: false)
     }
     timelineEvent {
       ...TimelineEventTeamHealthComplete_timelineEvent @relay(mask: false) @alias

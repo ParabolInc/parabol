@@ -45,9 +45,7 @@ graphql`
     }
     team {
       id
-      activeMeetings {
-        id
-      }
+      ...MeetingsDashActiveMeetings @relay(mask: false)
     }
     timelineEvent {
       ...TimelineEventPokerComplete_timelineEvent @relay(mask: false) @alias
