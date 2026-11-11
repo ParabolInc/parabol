@@ -1,7 +1,7 @@
 import type {PromoteToTeamLeadPayloadResolvers} from '../resolverTypes'
 
 export type PromoteToTeamLeadPayloadSource =
-  | {teamId: string; oldLeaderId: string; newLeaderId: string}
+  | {teamId: string; oldLeaderId: string | null; newLeaderId: string}
   | {error: {message: string}}
 
 const PromoteToTeamLeadPayload: PromoteToTeamLeadPayloadResolvers = {
@@ -10,7 +10,7 @@ const PromoteToTeamLeadPayload: PromoteToTeamLeadPayloadResolvers = {
     return (await dataLoader.get('teams').load(source.teamId)) ?? null
   },
   oldLeader: async (source, _args, {dataLoader}) => {
-    if ('error' in source) return null
+    if ('error' in source || !source.oldLeaderId) return null
     return (await dataLoader.get('teamMembers').load(source.oldLeaderId)) ?? null
   },
   newLeader: async (source, _args, {dataLoader}) => {
