@@ -16,10 +16,34 @@ import {ClearOnSubmit} from '../tiptap/extensions/ClearOnSubmit'
 import {FileUpload} from '../tiptap/extensions/fileUpload/FileUpload'
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
 import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
+import type {CommandTitle} from '../tiptap/extensions/slashCommand/slashCommands'
 import {ElementWidth} from '../types/constEnums'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
 import {useTipTapEditorSync} from './useTipTapEditorSync'
+
+const REFLECTION_SLASH_COMMANDS: Record<CommandTitle, boolean> = {
+  Text: true,
+  'To-do list': false,
+  'Heading 1': false,
+  'Heading 2': false,
+  'Heading 3': true,
+  'Bullet list': true,
+  'Numbered list': true,
+  Quote: true,
+  Code: true,
+  'Table of contents': false,
+  Details: false,
+  Table: false,
+  Divider: true,
+  Embed: false,
+  'Link to page': false,
+  'Create page': false,
+  Database: false,
+  Insights: false,
+  Image: true,
+  File: true
+}
 
 const isValid = <T>(obj: T | undefined | null | boolean): obj is T => {
   return !!obj
@@ -93,18 +117,7 @@ export const useTipTapReflectionEditor = (
           }
         }),
         SearchAndReplace.configure(),
-        SlashCommand.configure({
-          'Heading 1': false,
-          'Heading 2': false,
-          'To-do list': false,
-          Insights: false,
-          Table: false,
-          Details: false,
-          'Create page': false,
-          Database: false,
-          'Table of contents': false,
-          Embed: false
-        }),
+        SlashCommand.configure({commands: REFLECTION_SLASH_COMMANDS}),
         TaskList,
         TaskItem.configure({
           nested: true

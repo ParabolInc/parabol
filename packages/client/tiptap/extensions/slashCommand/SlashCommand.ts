@@ -6,18 +6,19 @@ import {SlashCommandMenu} from './SlashCommandMenu'
 import {type CommandTitle, type SlashCommandGroup, slashCommands} from './slashCommands'
 
 const extensionName = 'slashCommand'
-export const SlashCommand = Extension.create<Record<CommandTitle, boolean>>({
+export const SlashCommand = Extension.create<{commands: Record<CommandTitle, boolean>}>({
   name: extensionName,
   priority: 200,
   addOptions() {
-    const commands = slashCommands.flatMap((sc) => sc.commands.map((command) => command.title))
-    return commands.reduce(
-      (obj, item) => {
-        obj[item] = true
+    const titles = slashCommands.flatMap((sc) => sc.commands.map((command) => command.title))
+    const commands = titles.reduce(
+      (obj, title) => {
+        obj[title] = false
         return obj
       },
       {} as Record<CommandTitle, boolean>
     )
+    return {commands}
   },
   addProseMirrorPlugins() {
     return [
@@ -67,7 +68,7 @@ export const SlashCommand = Extension.create<Record<CommandTitle, boolean>>({
             .map((group) => ({
               ...group,
               commands: group.commands.filter((item) => {
-                if (!this.options[item.title]) return false
+                if (!this.options.commands[item.title]) return false
                 const queryNormalized = query.toLowerCase().trim()
                 const isQueryInTerm = item.searchTerms.some((searchTerm) =>
                   searchTerm.includes(queryNormalized)
