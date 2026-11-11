@@ -5,6 +5,27 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.25.1](https://github.com/ParabolInc/parabol/compare/v15.25.0...v15.25.1) (2026-11-11)
+
+
+### Fixed
+
+* **client:** keep queries and subscriptions working while the socket reconnects ([#14086](https://github.com/ParabolInc/parabol/issues/14086)) ([1a6e50b](https://github.com/ParabolInc/parabol/commit/1a6e50bd55a95e6c21733bd43aaf6f10fdf3e3aa))
+* **client:** recognize errors from other realms and Safari extensions when reporting client errors ([#14075](https://github.com/ParabolInc/parabol/issues/14075)) ([4bab378](https://github.com/ParabolInc/parabol/commit/4bab3781aa7872906e0947784256c5b2a9525d83))
+* **dev:** seed meetings that open ([#14085](https://github.com/ParabolInc/parabol/issues/14085)) ([87a7f2a](https://github.com/ParabolInc/parabol/commit/87a7f2ae6b67e15186643c83668c1fb444cd4e2f))
+* **pages:** don't put a permanently deleted page back in the left nav ([#14073](https://github.com/ParabolInc/parabol/issues/14073)) ([b2a8287](https://github.com/ParabolInc/parabol/commit/b2a8287db3739da8cab276d185cdbade23cf0c31))
+* **poker:** don't let a story still being added to scope be dragged ([#14083](https://github.com/ParabolInc/parabol/issues/14083)) ([e6450bc](https://github.com/ParabolInc/parabol/commit/e6450bc0a92d779d59e3067d0c8c3ffec969cd24))
+* reject websocket handshakes without an Upgrade header and tell blocked users why ([#14077](https://github.com/ParabolInc/parabol/issues/14077)) ([18fbca5](https://github.com/ParabolInc/parabol/commit/18fbca546cfb1103cd7f756e180526d869c98517))
+* **server:** add SCIM group members before removing old ones, so replacing every member keeps the team ([#14079](https://github.com/ParabolInc/parabol/issues/14079)) ([4fde07f](https://github.com/ParabolInc/parabol/commit/4fde07fb83ef80f133f24d589034a3855108c37b))
+* **server:** hand sockets and Yjs documents to the other servers on deploy ([#14089](https://github.com/ParabolInc/parabol/issues/14089)) ([0f91bd4](https://github.com/ParabolInc/parabol/commit/0f91bd4b661a9135972b4c7873339d26d4724500))
+* **server:** leave exactly one team lead when promoting ([#14065](https://github.com/ParabolInc/parabol/issues/14065)) ([2545ffd](https://github.com/ParabolInc/parabol/commit/2545ffda5171fb1b50966d24a398135f524a711c))
+* **slack:** stop notifying archived Slack channels ([#14070](https://github.com/ParabolInc/parabol/issues/14070)) ([77095ea](https://github.com/ParabolInc/parabol/commit/77095eaeff430b25ca73816834911560cef401da))
+
+
+### Changed
+
+* **gh-actions:** prewarm each release image for GKE image streaming ([#14080](https://github.com/ParabolInc/parabol/issues/14080)) ([5672439](https://github.com/ParabolInc/parabol/commit/5672439e1dbc635392374b9f0e8eb45d57e57ed4))
+
 ## [15.25.0](https://github.com/ParabolInc/parabol/compare/v15.24.0...v15.25.0) (2026-11-11)
 
 
