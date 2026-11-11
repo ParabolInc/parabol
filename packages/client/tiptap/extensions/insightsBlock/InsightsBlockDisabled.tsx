@@ -1,29 +1,33 @@
-import {ExtensionOff as ExtensionOffIcon} from '~/ui/icons'
-import {ContactInfo} from '../../../types/constEnums'
-export const InsightsBlockDisabled = () => {
+import graphql from 'babel-plugin-relay/macro'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import type {InsightsBlockDisabledQuery} from '../../../__generated__/InsightsBlockDisabledQuery.graphql'
+import {InsightsBlockDisabledNotice} from './InsightsBlockDisabledNotice'
+
+const query = graphql`
+  query InsightsBlockDisabledQuery {
+    viewer {
+      teams {
+        id
+        orgId
+        isOrgAdmin
+      }
+    }
+  }
+`
+
+interface Props {
+  queryRef: PreloadedQuery<InsightsBlockDisabledQuery>
+  teamIds: string[]
+}
+
+export const InsightsBlockDisabled = (props: Props) => {
+  const {queryRef, teamIds} = props
+  const data = usePreloadedQuery<InsightsBlockDisabledQuery>(query, queryRef)
+  const team = data.viewer.teams.find(({id}) => teamIds.includes(id))
   return (
-    <div
-      contentEditable={false}
-      className='flex items-center justify-center gap-4 rounded-lg p-4 text-fg-primary text-sm'
-    >
-      <div className='flex items-center justify-center rounded-full p-2'>
-        {/* Replace with your actual icon if needed */}
-        <ExtensionOffIcon className='size-12 text-fg-secondary' />
-      </div>
-      <div className='flex flex-col'>
-        <div>
-          <span className='font-semibold'>Insights are disabled</span> for your organization.
-        </div>
-        <div className=''>
-          <a
-            href={`mailto:${ContactInfo.EMAIL_LOVE}`}
-            className='no-underline! font-semibold! text-accent!'
-          >
-            Contact us
-          </a>{' '}
-          for support.
-        </div>
-      </div>
-    </div>
+    <InsightsBlockDisabledNotice
+      orgId={team?.orgId ?? null}
+      isOrgAdmin={team?.isOrgAdmin ?? false}
+    />
   )
 }
