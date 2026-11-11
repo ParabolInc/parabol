@@ -996,6 +996,9 @@ importers:
       '@graphql-tools/schema':
         specifier: ^10.1.3
         version: 10.1.3(graphql@16.13.1)
+      '@graphql-tools/utils':
+        specifier: ^12.0.3
+        version: 12.0.3(graphql@16.13.1)
       '@graphql-yoga/plugin-defer-stream':
         specifier: ^3.24.1
         version: 3.24.1(graphql-yoga@5.24.1(patch_hash=170c367f1d987ebdbddc3d27202508be49e7ced80daf2d7c28fd4194fe8dfb49)(graphql@16.13.1))(graphql@16.13.1)

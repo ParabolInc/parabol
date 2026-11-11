@@ -12,7 +12,8 @@ const options = {
   useLevenshteinDistance: true,
   translations: zxcvbnEnPackage.translations
 }
-zxcvbnOptions.setOptions(options)
+// ranking the dictionaries is slow, so the first password check does it instead of server startup
+let areOptionsSet = false
 
 const dictFromEmail = (email?: string) => {
   if (!email) return []
@@ -25,6 +26,10 @@ const dictFromEmail = (email?: string) => {
 export const passwordStrength = (password: string, email?: string) => {
   if (password.length < Security.MIN_PASSWORD_LENGTH) {
     return `Password must be at least ${Security.MIN_PASSWORD_LENGTH} characters`
+  }
+  if (!areOptionsSet) {
+    zxcvbnOptions.setOptions(options)
+    areOptionsSet = true
   }
   const result = zxcvbn(password, dictFromEmail(email))
   if (result.score < 3) {

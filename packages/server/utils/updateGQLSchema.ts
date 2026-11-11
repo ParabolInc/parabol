@@ -14,6 +14,7 @@ import {
 import {buildASTSchema, introspectionFromSchema, printSchema} from 'graphql'
 import path from 'path'
 import getProjectRoot from '../../../scripts/webpack/utils/getProjectRoot'
+import {nestGraphQLEndpoints} from '../graphql/nestedSchema/nestGraphQLEndpoint'
 import {typeDefs as privateTypeDefs} from '../graphql/private/importedTypeDefs'
 import {typeDefs} from '../graphql/public/importedTypeDefs'
 import {nestGitLab} from '../graphql/public/nestGitLab'
@@ -47,7 +48,11 @@ const updateGQLSchema = async () => {
     typeFilter: (typeName) => !typeName.startsWith('_x')
   })
 
-  const publicSchema = nestLinear(nestGitLab(nestGitHub(rawPublicTypeDefs).schema).schema).schema
+  const publicSchema = nestGraphQLEndpoints(rawPublicTypeDefs, [
+    nestGitHub().endpoint,
+    nestGitLab().endpoint,
+    nestLinear().endpoint
+  ])
   const privateSchema = mergeSchemas({
     schemas: [publicSchema],
     typeDefs: [privateTypeDefs]

@@ -1,6 +1,12 @@
-import {type GraphQLSchema, print} from 'graphql'
-import nestGitHubEndpoint from 'nest-graphql-endpoint/lib/nestGitHubEndpoint'
-import type {EndpointExecutionResult, Executor} from 'nest-graphql-endpoint/lib/types'
+import {
+  type GraphQLObjectType,
+  type GraphQLResolveInfo,
+  type OperationDefinitionNode,
+  parse,
+  print
+} from 'graphql'
+import type {EndpointExecutionResult, Executor, NestedSource} from 'nest-graphql-endpoint/lib/types'
+import {nestGraphQLEndpoint} from '../graphql/nestedSchema/nestGraphQLEndpoint'
 import githubSchema from './githubSchema.graphql'
 
 // Resolvers from SDL first definitions
@@ -60,16 +66,49 @@ const executor: Executor<{accessToken: string; headers?: Record<string, string>}
   }
 }
 
-export const nestGitHub = (parentSchema: GraphQLSchema) =>
-  nestGitHubEndpoint({
-    parentSchema,
+const prefix = '_xGitHub'
+
+interface Input<TVars> {
+  query: string
+  endpointContext: Record<string, any>
+  info: GraphQLResolveInfo
+  variables?: TVars
+  batchRef?: Record<any, any>
+}
+
+const githubRequest = async <TData = any, TVars = any>(input: Input<TVars>) => {
+  const {query, endpointContext, variables, batchRef, info} = input
+  const {schema} = info
+  const githubApi = schema.getType(`${prefix}Api`) as GraphQLObjectType
+  const fields = githubApi.getFields()
+  const wrapperAST = parse(query)
+  const {definitions} = wrapperAST
+  const [firstDefinition] = definitions
+  const {operation} = firstDefinition as OperationDefinitionNode
+  const resolve = fields[operation]!.resolve!
+  const source = {
+    context: endpointContext,
+    wrapper: wrapperAST,
+    wrapperVars: variables
+  } as NestedSource<any>
+  const context = batchRef ?? {}
+  const data = (await resolve(source, {}, context, info)) as TData
+  const {errors} = source
+  return {data, errors}
+}
+
+export const nestGitHub = () => ({
+  endpoint: nestGraphQLEndpoint({
     parentType: 'GitHubIntegration',
     fieldName: 'api',
     executor,
-    resolveEndpointContext: ({accessToken}) => ({
+    resolveEndpointContext: ({accessToken}: {accessToken: string}) => ({
       accessToken,
       headers: {Accept: 'application/vnd.github.bane-preview+json'}
     }),
-    prefix: '_xGitHub',
-    schemaIDL: githubSchema
-  })
+    prefix,
+    schemaIDL: githubSchema,
+    endpointTimeout: 8000
+  }),
+  githubRequest
+})
