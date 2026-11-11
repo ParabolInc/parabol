@@ -12,6 +12,7 @@ import type {
   StandardMutation
 } from '../types/relayMutations'
 import {GQLID} from '../utils/GQLID'
+import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
 import handleAddTimelineEvent from './handlers/handleAddTimelineEvent'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
 import popEndMeetingToast from './toasts/popEndMeetingToast'
@@ -45,9 +46,6 @@ graphql`
     }
     team {
       id
-      activeMeetings {
-        id
-      }
     }
     timelineEvent {
       ...TimelineEventPokerComplete_timelineEvent @relay(mask: false) @alias
@@ -98,6 +96,7 @@ export const endSprintPokerTeamUpdater: SharedUpdater<EndSprintPokerMutation_tea
   const meeting = payload.getLinkedRecord('meeting') as RecordProxy
   const timelineEvent = payload.getLinkedRecord('timelineEvent') as RecordProxy
   handleAddTimelineEvent(meeting, timelineEvent, store)
+  safeRemoveNodeFromArray(meeting?.getDataID(), payload.getLinkedRecord('team'), 'activeMeetings')
 }
 
 const EndSprintPokerMutation: StandardMutation<
