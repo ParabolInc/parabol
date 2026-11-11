@@ -5,6 +5,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.25.0](https://github.com/ParabolInc/parabol/compare/v15.24.0...v15.25.0) (2026-11-11)
+
+
+### Added
+
+* rainbow glow on Reports until the first visit ([#14076](https://github.com/ParabolInc/parabol/issues/14076)) ([21279c3](https://github.com/ParabolInc/parabol/commit/21279c3ad17d8d5b4e4e8bd285e2028eb0683e4b))
+* Reports for every organization ([#14063](https://github.com/ParabolInc/parabol/issues/14063)) ([66686af](https://github.com/ParabolInc/parabol/commit/66686af2ba34d500e9028cec57f8198b54d6d27a))
+
+
+### Fixed
+
+* **client:** make every editor list each slash command it offers ([#14064](https://github.com/ParabolInc/parabol/issues/14064)) ([7119319](https://github.com/ParabolInc/parabol/commit/711931926b5d6397cf8239af9f9d57eada9e6696))
+* **client:** remove only the ended meeting from a team's active meetings ([#14074](https://github.com/ParabolInc/parabol/issues/14074)) ([b49c548](https://github.com/ParabolInc/parabol/commit/b49c548d4850101c277e3b1f68ccb1d3a061d581))
+* **client:** save a task card when an upload in it finishes or fails ([#14072](https://github.com/ParabolInc/parabol/issues/14072)) ([1f862ce](https://github.com/ParabolInc/parabol/commit/1f862ce6eee6baf4b02d669816031cdff3681f53))
+* **server:** keep one Postgres pool when an idle connection fails ([#14067](https://github.com/ParabolInc/parabol/issues/14067)) ([f2ea489](https://github.com/ParabolInc/parabol/commit/f2ea489a1ebea66819d884c6fa3029c745482ac3))
+* **server:** let POSTGRES_POOL_SIZE set the pool size ([#14066](https://github.com/ParabolInc/parabol/issues/14066)) ([c77d5f5](https://github.com/ParabolInc/parabol/commit/c77d5f5ed101095e683d451ec26c3808840a73f6))
+
 ## [15.24.0](https://github.com/ParabolInc/parabol/compare/v15.23.0...v15.24.0) (2026-11-11)
 
 
