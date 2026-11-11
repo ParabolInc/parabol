@@ -121,7 +121,7 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
       }
     }
 
-    atmosphere.subscriptionClient.subscribe(
+    atmosphere.getSubscriptionClient().subscribe(
       {
         operationName: name,
         docId: id,

@@ -6,11 +6,6 @@ import {commitLocalUpdate} from 'relay-runtime'
 import type {MeetingSelectorQuery} from '../__generated__/MeetingSelectorQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {useConnectedMeetingMembers} from '../hooks/useConnectedMeetingMembers'
-import useSubscription from '../hooks/useSubscription'
-import NotificationSubscription from '../subscriptions/NotificationSubscription'
-import OrganizationSubscription from '../subscriptions/OrganizationSubscription'
-import TaskSubscription from '../subscriptions/TaskSubscription'
-import TeamSubscription from '../subscriptions/TeamSubscription'
 import lazyPreload from '../utils/lazyPreload'
 
 interface Props {
@@ -52,10 +47,6 @@ const MeetingSelector = (props: Props) => {
   const {viewer} = data
   const {meeting, canAccessMeeting} = viewer
   const hasNavigatedAway = useRef(false)
-  useSubscription('MeetingSelector', NotificationSubscription)
-  useSubscription('MeetingSelector', OrganizationSubscription)
-  useSubscription('MeetingSelector', TaskSubscription)
-  useSubscription('MeetingSelector', TeamSubscription)
   useConnectedMeetingMembers(meeting ? meetingId : null, true)
 
   useEffect(() => {

@@ -8,6 +8,7 @@ import useSnackNag from '~/hooks/useSnackNag'
 import useSnacksForNewMeetings from '~/hooks/useSnacksForNewMeetings'
 import {Breakpoint} from '~/types/constEnums'
 import type {DashboardQuery} from '../__generated__/DashboardQuery.graphql'
+import useReportsLaunchGlow from '../hooks/useReportsLaunchGlow'
 import useSidebar from '../hooks/useSidebar'
 import DashSidebar from './Dashboard/DashSidebar'
 import MobileDashSidebar from './Dashboard/MobileDashSidebar'
@@ -112,6 +113,7 @@ const Dashboard = (props: Props) => {
   const {teams} = viewer
   const activeMeetings = teams.flatMap((team) => team.activeMeetings).filter(Boolean)
   const {isOpen, toggle, handleMenuClick} = useSidebar()
+  const reportsGlow = useReportsLaunchGlow()
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const overLimitCopy = viewer?.overLimitCopy
   const meetingsDashRef = useRef<HTMLDivElement>(null)
@@ -128,16 +130,25 @@ const Dashboard = (props: Props) => {
           Skip to content
         </a>
         {isDesktop ? (
-          <DashTopBar queryRef={data} toggle={toggle} />
+          <DashTopBar
+            queryRef={data}
+            toggle={toggle}
+            isSidebarOpen={isOpen}
+            reportsGlow={reportsGlow}
+          />
         ) : (
-          <MobileDashTopBar queryRef={data} toggle={toggle} />
+          <MobileDashTopBar queryRef={data} toggle={toggle} reportsGlow={reportsGlow} />
         )}
         <div className='flex h-full flex-1 overflow-hidden'>
           {isDesktop ? (
-            <DashSidebar viewerRef={viewer} isOpen={isOpen} />
+            <DashSidebar viewerRef={viewer} isOpen={isOpen} reportsGlow={reportsGlow} />
           ) : (
             <SwipeableDashSidebar isOpen={isOpen} onToggle={toggle}>
-              <MobileDashSidebar viewerRef={viewer} handleMenuClick={handleMenuClick} />
+              <MobileDashSidebar
+                viewerRef={viewer}
+                handleMenuClick={handleMenuClick}
+                reportsGlow={reportsGlow}
+              />
             </SwipeableDashSidebar>
           )}
           <main
