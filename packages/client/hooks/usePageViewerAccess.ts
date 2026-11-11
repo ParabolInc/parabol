@@ -58,11 +58,20 @@ export const subscribeToPageViewerAccess = (
   return () => disposable.dispose()
 }
 
-export const usePageViewerAccess = (pageCode: number) => {
+const usePageAccess = <T>(
+  pageCode: number,
+  lookup: (environment: IEnvironment, pageCode: number) => T
+) => {
   const atmosphere = useAtmosphere()
   const subscribe = useCallback(
     (onChange: () => void) => subscribeToPageViewerAccess(atmosphere, pageCode, onChange),
     [atmosphere, pageCode]
   )
-  return useSyncExternalStore(subscribe, () => lookupPageViewerAccess(atmosphere, pageCode))
+  return useSyncExternalStore(subscribe, () => lookup(atmosphere, pageCode))
 }
+
+export const usePageViewerAccess = (pageCode: number) =>
+  usePageAccess(pageCode, lookupPageViewerAccess)
+
+export const usePageViewerGrant = (pageCode: number) =>
+  usePageAccess(pageCode, lookupPageViewerGrant)

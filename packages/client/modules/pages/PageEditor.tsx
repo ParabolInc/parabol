@@ -1,8 +1,11 @@
 import type {HocuspocusProvider} from '@hocuspocus/provider'
 import type {useTipTapPageEditor_viewer$key} from '../../__generated__/useTipTapPageEditor_viewer.graphql'
+import {BubbleTurnIntoMenu} from '../../components/TipTapEditor/BubbleTurnIntoMenu'
 import {TipTapEditor} from '../../components/TipTapEditor/TipTapEditor'
+import {usePageViewerGrant} from '../../hooks/usePageViewerAccess'
 import {useTipTapPageEditor} from '../../hooks/useTipTapPageEditor'
 import {cn} from '../../ui/cn'
+import {GQLID} from '../../utils/GQLID'
 import {StarterActions} from './StarterActions'
 import {useEditablePage} from './useEditablePage'
 
@@ -16,12 +19,15 @@ export const PageEditor = (props: Props) => {
   const {provider, viewerRef, pageId} = props
   const {editor} = useTipTapPageEditor(provider, {viewerRef, pageId})
   const isEditable = useEditablePage(provider, editor)
+  const canCreateSubPage = !!usePageViewerGrant(GQLID.fromKey(pageId)[0])
   if (!editor) return <div>No editor</div>
   return (
     <div className='flex w-full flex-col'>
       <TipTapEditor
         editor={editor}
-        pageId={pageId}
+        bubbleMenuStartContent={
+          <BubbleTurnIntoMenu editor={editor} canCreateSubPage={canCreateSubPage} />
+        }
         className={cn('page-editor relative flex w-full px-6 delay-300')}
       />
       {isEditable && <StarterActions editor={editor} />}

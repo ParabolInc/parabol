@@ -1,28 +1,26 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import {type Editor, useEditorState} from '@tiptap/react'
-import {useEffect, useRef} from 'react'
+import {useRef} from 'react'
 import {ExpandMore} from '~/ui/icons'
-import {BubbleMenuButton} from '../../../components/TipTapEditor/BubbleMenuButton'
-import useAtmosphere from '../../../hooks/useAtmosphere'
-import {lookupPageViewerGrant} from '../../../hooks/usePageViewerAccess'
-import {MenuContent} from '../../../ui/Menu/MenuContent'
-import {MENU_ITEM_ICON} from '../../../ui/Menu/MenuItem'
-import {MenuRadioItem} from '../../../ui/Menu/MenuRadioItem'
-import {GQLID} from '../../../utils/GQLID'
-import {dispatchTurnInto} from './dispatchTurnInto'
-import {getSelectionTurnIntoPos, getTurnIntoTarget, turnBlockInto} from './turnBlockInto'
-import {findTurnIntoRow, getTurnIntoRows} from './turnIntoRows'
+import {dispatchTurnInto} from '../../tiptap/extensions/turnInto/dispatchTurnInto'
+import {
+  getSelectionTurnIntoPos,
+  getTurnIntoTarget,
+  turnBlockInto
+} from '../../tiptap/extensions/turnInto/turnBlockInto'
+import {findTurnIntoRow, getTurnIntoRows} from '../../tiptap/extensions/turnInto/turnIntoRows'
+import {MenuContent} from '../../ui/Menu/MenuContent'
+import {MENU_ITEM_ICON} from '../../ui/Menu/MenuItem'
+import {MenuRadioItem} from '../../ui/Menu/MenuRadioItem'
+import {BubbleMenuButton} from './BubbleMenuButton'
 
 interface Props {
   editor: Editor
-  pageId: string
-  open: boolean
-  onOpenChange: (open: boolean) => void
+  canCreateSubPage: boolean
 }
 
 export const BubbleTurnIntoMenu = (props: Props) => {
-  const {editor, pageId, open, onOpenChange} = props
-  const atmosphere = useAtmosphere()
+  const {editor, canCreateSubPage} = props
   const isFocusHandledRef = useRef(false)
   const current = useEditorState({
     editor,
@@ -33,18 +31,11 @@ export const BubbleTurnIntoMenu = (props: Props) => {
     }
   })
 
-  useEffect(() => {
-    if (open && !current) onOpenChange(false)
-  }, [open, current, onOpenChange])
-
   if (!current) return null
-  const canCreateSubPage = !!lookupPageViewerGrant(atmosphere, GQLID.fromKey(pageId)[0])
   const rows = getTurnIntoRows(current, canCreateSubPage)
   const currentRow = findTurnIntoRow(rows, current)
 
   const handleValueChange = (title: string) => {
-    // Closed before the dispatch, or the bubble menu would stay up around the new caret
-    onOpenChange(false)
     const {state} = editor
     const pos = getSelectionTurnIntoPos(state)
     const target = rows.find((row) => row.title === title)?.target
@@ -69,18 +60,17 @@ export const BubbleTurnIntoMenu = (props: Props) => {
 
   return (
     <>
-      <DropdownMenu.Root modal={false} open={open} onOpenChange={onOpenChange}>
+      <DropdownMenu.Root modal={false}>
         <DropdownMenu.Trigger asChild>
           <BubbleMenuButton
-            isActive={open}
-            className='w-auto gap-0.5 whitespace-nowrap pr-0.5 pl-1.5 text-sm'
+            className='w-auto gap-0.5 whitespace-nowrap pr-0.5 pl-1.5 text-sm data-[state=open]:bg-surface-hover'
             title='Turn into'
           >
             {currentRow?.title ?? 'Turn into'}
             <ExpandMore className='h-[18px] w-[18px] text-fg-secondary' />
           </BubbleMenuButton>
         </DropdownMenu.Trigger>
-        {/* Not portaled: the bubble menu hides when focus leaves the editor for anywhere outside it */}
+        {/* Not portaled: the bubble menu stays up only while focus is inside its element */}
         <MenuContent
           align='start'
           sideOffset={4}
