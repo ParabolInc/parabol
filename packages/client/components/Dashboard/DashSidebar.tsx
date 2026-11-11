@@ -16,6 +16,7 @@ import {
   Work as WorkIcon
 } from '~/ui/icons'
 import type {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
+import type {ReportsLaunchGlowState} from '../../hooks/useReportsLaunchGlow'
 import {SearchDialog} from '../../modules/search/SearchDialog'
 import {cn} from '../../ui/cn'
 import {
@@ -29,6 +30,7 @@ import {
 import DashNavList from '../DashNavList/DashNavList'
 import SideBarStartMeetingButton from '../SideBarStartMeetingButton'
 import LeftDashNavItem from './LeftDashNavItem'
+import ReportsLaunchGlow from './ReportsLaunchGlow'
 
 const navClassName = (isOpen: boolean) =>
   cn(
@@ -40,10 +42,11 @@ const navClassName = (isOpen: boolean) =>
 interface Props {
   isOpen: boolean
   viewerRef: DashSidebar_viewer$key | null
+  reportsGlow: ReportsLaunchGlowState
 }
 
 const DashSidebar = (props: Props) => {
-  const {isOpen, viewerRef} = props
+  const {isOpen, viewerRef, reportsGlow} = props
   const match = useMatch('/me/organizations/:orgId/*')
 
   const viewer = useFragment(
@@ -133,7 +136,14 @@ const DashSidebar = (props: Props) => {
             <SearchDialog />
             <LeftDashNavItem Icon={TimelineIcon} href={'/me'} label={'History'} exact />
             <LeftDashNavItem Icon={PlaylistAddCheckIcon} href={'/me/tasks'} label={'Tasks'} />
-            <LeftDashNavItem Icon={PollOutlinedIcon} href={'/reports'} label={'Reports'} />
+            <LeftDashNavItem
+              Icon={PollOutlinedIcon}
+              href={'/reports'}
+              label={'Reports'}
+              decoration={
+                reportsGlow !== 'off' && <ReportsLaunchGlow retiring={reportsGlow === 'retiring'} />
+              }
+            />
             <LeftDashNavItem Icon={AddIcon} href={'/newteam'} label={'Add a Team'} />
           </div>
           <div className='overflow-y-auto'>
