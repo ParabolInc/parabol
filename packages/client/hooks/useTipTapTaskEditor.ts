@@ -12,6 +12,7 @@ import {TiptapLinkExtension} from '../components/TipTapEditor/TiptapLinkExtensio
 import {SafeTextStyleKit} from '../shared/tiptap/extensions/SafeTextStyleKit'
 import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {FileUpload} from '../tiptap/extensions/fileUpload/FileUpload'
+import {fileUploadSettledMeta} from '../tiptap/extensions/fileUpload/onUploadTipTapFile'
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
 import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
 import {ElementWidth} from '../types/constEnums'
@@ -31,9 +32,10 @@ export const useTipTapTaskEditor = (
     // (e.g. HeaderCard changes taskId) the onBlur won't fire, which is probably desireable
     onBlur?: () => void
     onModEnter?: () => void
+    onUploadSettled?: () => void
   }
 ) => {
-  const {atmosphere, teamId, readOnly, onBlur, onModEnter} = options
+  const {atmosphere, teamId, readOnly, onBlur, onModEnter, onUploadSettled} = options
   const contentJSON = useMemo(() => JSON.parse(content) as JSONContent, [content])
   const [commit] = useUploadUserAsset()
 
@@ -47,6 +49,7 @@ export const useTipTapTaskEditor = (
         FileUpload.configure({
           scopeKey: teamId,
           assetScope: 'Team',
+          atmosphere,
           highestTier: 'starter',
           commit
         }),
@@ -98,6 +101,9 @@ export const useTipTapTaskEditor = (
       ],
       editable: !readOnly,
       onBlur,
+      onUpdate: ({transaction}) => {
+        if (transaction.getMeta(fileUploadSettledMeta)) onUploadSettled?.()
+      },
       autofocus: generateText(contentJSON, serverTipTapExtensions).length === 0
     },
     []
