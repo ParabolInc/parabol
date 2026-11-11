@@ -27,6 +27,9 @@ declare module '@tiptap/core' {
     pageLinkPicker: {willOpen: boolean}
   }
 }
+const lacksExtension = (name: string) => (editor: Editor) =>
+  !editor.extensionManager.extensions.some((extension) => extension.name === name)
+
 export type CommandTitle = (typeof slashCommands)[number]['commands'][number]['title']
 
 export interface SlashCommandGroup {
@@ -128,6 +131,7 @@ export const slashCommands = [
         description: 'Navigate the headings on this page',
         searchTerms: ['toc', 'table of contents', 'contents', 'outline', 'navigation', 'headings'],
         icon: TocIcon,
+        shouldHide: lacksExtension('tableOfContents'),
         action: (editor: Editor) => editor.chain().focus().setTableOfContents().run()
       },
       {
@@ -253,6 +257,7 @@ export const slashCommands = [
           'url'
         ],
         icon: WebAssetIcon,
+        shouldHide: lacksExtension('embedBlock'),
         action: (editor: Editor) => {
           const {to} = editor.state.selection
           const size = editor.state.doc.content.size
