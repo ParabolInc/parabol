@@ -1,6 +1,7 @@
 import {getText, getTextSerializersFromSchema} from '@tiptap/core'
 import {Fragment, type Node, type Schema} from '@tiptap/pm/model'
 import {type EditorState, Selection, TextSelection, type Transaction} from '@tiptap/pm/state'
+import {CALLOUT_CHILD_TYPES} from '../../../shared/tiptap/calloutTones'
 
 export interface TurnIntoTarget {
   type:
@@ -13,7 +14,24 @@ export interface TurnIntoTarget {
     | 'details'
     | 'codeBlock'
     | 'blockquote'
+    | 'callout'
   level?: number
+}
+
+const getCalloutChildren = (callout: Node) =>
+  callout.children.filter((child) => child.type.name !== 'calloutTitle' || child.content.size > 0)
+
+const isCalloutChild = (node: Node) =>
+  CALLOUT_CHILD_TYPES.some((typeName) => typeName === node.type.name)
+
+const toBold = (inline: Fragment, schema: Schema) => {
+  const bold = schema.marks.bold
+  if (!bold) return inline
+  const content: Node[] = []
+  inline.forEach((child) => {
+    content.push(child.isText ? child.mark(bold.create().addToSet(child.marks)) : child)
+  })
+  return Fragment.from(content)
 }
 
 const isListItem = (node: Node) => node.type.name === 'listItem' || node.type.name === 'taskItem'
@@ -37,6 +55,8 @@ export const getTurnIntoTarget = (doc: Node, pos: number): TurnIntoTarget | null
       return {type: 'heading', level: node.attrs.level}
     case 'blockquote':
       return node.firstChild?.isTextblock ? {type: 'blockquote'} : null
+    case 'callout':
+      return getCalloutChildren(node)[0]?.isTextblock ? {type: 'callout'} : null
     default:
       return null
   }
@@ -58,12 +78,15 @@ const codeToInline = (code: string, schema: Schema) => {
 }
 
 const getFirstLine = (node: Node): Fragment => {
+  if (node.type.name === 'callout') return getFirstLine(getCalloutChildren(node)[0]!)
+  if (node.type.name === 'calloutTitle') return toBold(node.content, node.type.schema)
   if (node.type.name === 'codeBlock') return codeToInline(node.textContent, node.type.schema)
   return node.isTextblock ? node.content : getFirstLine(node.child(0))
 }
 
 const getBody = (node: Node): readonly Node[] => {
   if (isListItem(node) || node.type.name === 'blockquote') return node.children.slice(1)
+  if (node.type.name === 'callout') return getCalloutChildren(node).slice(1)
   if (node.type.name !== 'details') return []
   const content = node.child(1)
   const isDefaultContent =
@@ -107,6 +130,12 @@ const buildBlocks = (node: Node, target: TurnIntoTarget, schema: Schema): Node[]
     }
     case 'blockquote':
       return [nodes.blockquote!.create(null, [paragraph, ...body])]
+    case 'callout': {
+      const spillIndex = body.findIndex((child) => !isCalloutChild(child))
+      const inside = spillIndex === -1 ? body : body.slice(0, spillIndex)
+      const spilled = spillIndex === -1 ? [] : body.slice(spillIndex)
+      return [nodes.callout!.create({tone: 'plain'}, [paragraph, ...inside]), ...spilled]
+    }
     case 'details':
       return [
         nodes.details!.create({open: true}, [

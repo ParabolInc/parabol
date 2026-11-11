@@ -199,7 +199,7 @@ describe('the style menu', () => {
 })
 
 describe('the block handle menu', () => {
-  test('a callout gets a Callout style submenu instead of Turn into', async () => {
+  test('a callout gets a Callout style submenu beside Turn into', async () => {
     const activeEditor = createEditor(callout('important', [p('x')]))
     await mount(
       <DragHandleMenu
@@ -211,7 +211,7 @@ describe('the block handle menu', () => {
         canCreateSubPage
       />
     )
-    expect(byRole('menuitem', /Turn into/)).toBeUndefined()
+    expect(byRole('menuitem', /Turn into/)).toBeDefined()
     await click(getByRole('menuitem', 'Callout style'))
     expect(getByRole('menuitemradio', 'Important').getAttribute('aria-checked')).toBe('true')
     await click(getByRole('menuitemradio', 'Danger'))

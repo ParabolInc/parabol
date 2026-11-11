@@ -10,6 +10,7 @@ import {
   FormatListNumbered,
   FormatQuote,
   NoteAdd,
+  Notes,
   TextFields
 } from '~/ui/icons'
 import type {TurnIntoTarget} from './turnBlockInto'
@@ -25,5 +26,6 @@ export const turnIntoRows: {title: string; icon: IconComponent; target: TurnInto
   {title: 'To-do list', icon: Checklist, target: {type: 'taskList'}},
   {title: 'Details', icon: ArrowRight, target: {type: 'details'}},
   {title: 'Code', icon: Code, target: {type: 'codeBlock'}},
-  {title: 'Quote', icon: FormatQuote, target: {type: 'blockquote'}}
+  {title: 'Quote', icon: FormatQuote, target: {type: 'blockquote'}},
+  {title: 'Callout', icon: Notes, target: {type: 'callout'}}
 ]

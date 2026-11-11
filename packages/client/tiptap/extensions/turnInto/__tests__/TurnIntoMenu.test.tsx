@@ -32,7 +32,8 @@ const ROW_TITLES = [
   'To-do list',
   'Details',
   'Code',
-  'Quote'
+  'Quote',
+  'Callout'
 ]
 
 const extensions = [
@@ -151,7 +152,7 @@ afterAll(async () => {
 })
 
 describe('what the menu offers', () => {
-  test('a paragraph gets the caption and all eleven rows, with Text checked', async () => {
+  test('a paragraph gets the caption and all twelve rows, with Text checked', async () => {
     await openMenu([p('word')])
     expect(caption()).toBe('Text')
     expect(hasItem('Duplicate block')).toBe(true)

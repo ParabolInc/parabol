@@ -16,11 +16,14 @@ import {
   Image as ImageIcon,
   Insights as InsightsIcon,
   NoteAdd as NoteAddIcon,
+  Notes as NotesIcon,
   GridOn as TableIcon,
   TextFields as TextFieldsIcon,
   Toc as TocIcon,
   WebAsset as WebAssetIcon
 } from '~/ui/icons'
+import {CALLOUT_TONE_LABELS, CALLOUT_TONES} from '../../../shared/tiptap/calloutTones'
+import {calloutForQuery} from '../callout/calloutSlashCommand'
 
 declare module '@tiptap/core' {
   interface EditorEvents {
@@ -38,6 +41,12 @@ export interface SlashCommandGroup {
     shouldHide?: (editor: Editor) => boolean
     icon: IconComponent
     action: (editor: Editor) => void
+    forQuery?: (query: string) => {
+      title: string
+      description: string
+      icon: IconComponent
+      action: (editor: Editor) => void
+    } | null
   }[]
 }
 
@@ -115,6 +124,21 @@ export const slashCommands = [
         searchTerms: ['blockquote', 'quotes'],
         icon: FormatQuoteIcon,
         action: (editor: Editor) => editor.chain().focus().toggleBlockquote().run()
+      },
+      {
+        title: 'Callout',
+        description: 'Make a note, tip or warning stand out',
+        searchTerms: [
+          'callout',
+          'note',
+          'aside',
+          'panel',
+          'alert',
+          ...CALLOUT_TONES.map((tone) => CALLOUT_TONE_LABELS[tone].toLowerCase())
+        ],
+        icon: NotesIcon,
+        action: (editor: Editor) => editor.chain().focus().setCallout().run(),
+        forQuery: calloutForQuery
       },
       {
         title: 'Code',
