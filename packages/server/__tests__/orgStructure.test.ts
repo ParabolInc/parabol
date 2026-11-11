@@ -63,15 +63,6 @@ const UNITS_AND_REGIONS: LevelInput[] = [
   {name: 'Region', values: [{name: 'Americas'}]}
 ]
 
-const signUpWithReports = async () => {
-  const user = await signUp()
-  await getKysely()
-    .insertInto('FeatureFlagOwner')
-    .values({featureName: 'Reports', orgId: user.orgId})
-    .execute()
-  return user
-}
-
 const setStructure = (orgId: string, cookie: string, levels: LevelInput[]) =>
   sendPublic({query: SET_ORG_STRUCTURE, variables: {orgId, levels}, cookie})
 
@@ -90,7 +81,7 @@ const toInput = ({id, name, values}: Level): LevelInput => ({
 })
 
 test('a leader sets levels and values, and renaming or reordering keeps their ids', async () => {
-  const {orgId, cookie} = await signUpWithReports()
+  const {orgId, cookie} = await signUp()
   const created = await setStructure(orgId, cookie, UNITS_AND_REGIONS)
   expect(created.errors).toBeUndefined()
   const [unit, region] = levelsOf(created)
@@ -108,7 +99,7 @@ test('a leader sets levels and values, and renaming or reordering keeps their id
 })
 
 test('a team is placed at a value, and removing the value leaves it not set', async () => {
-  const {orgId, cookie, teamId} = await signUpWithReports()
+  const {orgId, cookie, teamId} = await signUp()
   const [unit] = levelsOf(await setStructure(orgId, cookie, UNITS_AND_REGIONS))
   const [platform, custody] = unit!.values
   const placed = await sendPublic({
@@ -124,7 +115,7 @@ test('a team is placed at a value, and removing the value leaves it not set', as
 })
 
 test('only org admins and billing leaders change the structure, and members only see placements on teams they can see', async () => {
-  const owner = await signUpWithReports()
+  const owner = await signUp()
   const member = await signUp()
   await getKysely()
     .insertInto('OrganizationUser')
@@ -152,7 +143,7 @@ test('only org admins and billing leaders change the structure, and members only
 })
 
 test('every level and value needs a name of its own', async () => {
-  const {orgId, cookie} = await signUpWithReports()
+  const {orgId, cookie} = await signUp()
   const twice = await setStructure(orgId, cookie, [
     {name: 'Region', values: []},
     {name: 'region', values: []}
@@ -164,9 +155,4 @@ test('every level and value needs a name of its own', async () => {
     {name: 'Region', values: [{name: 'EMEA'}, {name: 'emea'}]}
   ])
   expect(valueTwice.errors?.[0]?.message).toBe('Each value of a level needs its own name')
-})
-
-test('an organization without Reports has no org structure', async () => {
-  const {orgId, cookie} = await signUp()
-  expect(await structureOf(orgId, cookie)).toEqual([])
 })

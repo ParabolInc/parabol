@@ -78,15 +78,6 @@ const topTeams = (limit: number) => ({
   limit
 })
 
-const signUpWithReports = async () => {
-  const user = await signUp()
-  await getKysely()
-    .insertInto('FeatureFlagOwner')
-    .values({featureName: 'Reports', orgId: user.orgId})
-    .execute()
-  return user
-}
-
 const addMember = async (orgId: string) => {
   const member = await signUp()
   await getKysely()
@@ -109,7 +100,7 @@ const pin = (orgId: string, cookie: string, variables: Record<string, unknown>) 
   sendPublic({query: PIN_REPORT, variables: {orgId, ...variables}, cookie})
 
 test('a new pin goes first, and the built-in pins keep their ids once the org has pins of its own', async () => {
-  const {orgId, cookie, userId} = await signUpWithReports()
+  const {orgId, cookie, userId} = await signUp()
   const builtIns = await pinsOf(orgId, cookie)
   expect(builtIns.map(({title}) => title)).toEqual(BUILT_IN_TITLES)
   const res = await pin(orgId, cookie, {spec: topTeams(5), title: 'Top 5 teams'})
@@ -123,7 +114,7 @@ test('a new pin goes first, and the built-in pins keep their ids once the org ha
 })
 
 test('pinning a report that is already pinned keeps the one pin', async () => {
-  const {orgId, cookie} = await signUpWithReports()
+  const {orgId, cookie} = await signUp()
   const first = await pin(orgId, cookie, {spec: topTeams(5), title: 'Top 5 teams'})
   const again = await pin(orgId, cookie, {spec: topTeams(5), title: 'Same report'})
   expect(again.data.pinReport.pinnedReport).toEqual(first.data.pinReport.pinnedReport)
@@ -131,7 +122,7 @@ test('pinning a report that is already pinned keeps the one pin', async () => {
 })
 
 test('a pin keeps the question it came from, so asks can be compared with pins', async () => {
-  const {orgId, cookie} = await signUpWithReports()
+  const {orgId, cookie} = await signUp()
   const started = await sendPublic({
     query: START_REPORT_QUESTION,
     variables: {orgId, popularQuestionKey: 'teamsNotMet30Days'},
@@ -158,7 +149,7 @@ test('a pin keeps the question it came from, so asks can be compared with pins',
 })
 
 test('someone else’s question doesn’t travel with a pin', async () => {
-  const owner = await signUpWithReports()
+  const owner = await signUp()
   const member = await addMember(owner.orgId)
   const started = await sendPublic({
     query: START_REPORT_QUESTION,
@@ -180,7 +171,7 @@ test('someone else’s question doesn’t travel with a pin', async () => {
 })
 
 test('an unpinned report is kept as history', async () => {
-  const {orgId, cookie, userId} = await signUpWithReports()
+  const {orgId, cookie, userId} = await signUp()
   const pinned = await pin(orgId, cookie, {spec: topTeams(10), title: 'Top 10 teams'})
   const pinId = pinned.data.pinReport.pinnedReport.id
   const res = await sendPublic({query: UNPIN_REPORT, variables: {orgId, pinId}, cookie})
@@ -199,7 +190,7 @@ test('an unpinned report is kept as history', async () => {
 })
 
 test('only org admins and billing leaders pin and unpin reports', async () => {
-  const owner = await signUpWithReports()
+  const owner = await signUp()
   const member = await addMember(owner.orgId)
   const byMember = await pin(owner.orgId, member.cookie, {
     spec: topTeams(20),
@@ -217,7 +208,7 @@ test('only org admins and billing leaders pin and unpin reports', async () => {
 })
 
 test('leaders move pins and members can’t', async () => {
-  const owner = await signUpWithReports()
+  const owner = await signUp()
   const member = await addMember(owner.orgId)
   const pins = await pinsOf(owner.orgId, owner.cookie)
   const moveAs = (cookie: string) =>
@@ -240,7 +231,7 @@ test('leaders move pins and members can’t', async () => {
 })
 
 test('the page holds 24 pins', async () => {
-  const {orgId, cookie} = await signUpWithReports()
+  const {orgId, cookie} = await signUp()
   for (let limit = 1; limit <= 20; limit++) {
     const res = await pin(orgId, cookie, {spec: topTeams(limit), title: `Top ${limit} teams`})
     expect(res.errors).toBeUndefined()
@@ -250,7 +241,7 @@ test('the page holds 24 pins', async () => {
 })
 
 test('a changed question keeps its own spec, and the change becomes a report the viewer built', async () => {
-  const {orgId, cookie, userId} = await signUpWithReports()
+  const {orgId, cookie, userId} = await signUp()
   const started = await sendPublic({
     query: START_REPORT_QUESTION,
     variables: {orgId, popularQuestionKey: 'retroCadence'},

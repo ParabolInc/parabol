@@ -1,7 +1,6 @@
 import {allow, and, not, or} from 'graphql-shield'
 import {redactUnless, type ShieldRule} from '../composeResolvers'
 import type {Resolvers} from './resolverTypes'
-import {hasOrgFeatureFlag} from './rules/hasOrgFeatureFlag'
 import {hasOrgRole} from './rules/hasOrgRole'
 import {hasPageAccess} from './rules/hasPageAccess'
 import {hasProviderAccess} from './rules/hasProviderAccess'
@@ -62,35 +61,28 @@ const permissionMap: PermissionMap<Resolvers> = {
     acceptTeamInvitation: rateLimit({perMinute: 50, perHour: 100}),
     askReportQuestion: and(
       or(isSuperUser, isViewerOnOrg<'Mutation.askReportQuestion'>('args.orgId')),
-      hasOrgFeatureFlag<'Mutation.askReportQuestion'>('args.orgId', 'Reports'),
       rateLimit({perMinute: 10, perHour: 100})
     ),
     pinReport: and(
       or(isSuperUser, isViewerBillingLeader<'Mutation.pinReport'>('args.orgId')),
-      hasOrgFeatureFlag<'Mutation.pinReport'>('args.orgId', 'Reports'),
       rateLimit({perMinute: 30, perHour: 300})
     ),
-    unpinReport: and(
-      or(isSuperUser, isViewerBillingLeader<'Mutation.unpinReport'>('args.orgId')),
-      hasOrgFeatureFlag<'Mutation.unpinReport'>('args.orgId', 'Reports')
-    ),
-    setOrgStructure: and(
-      or(isSuperUser, isViewerBillingLeader<'Mutation.setOrgStructure'>('args.orgId')),
-      hasOrgFeatureFlag<'Mutation.setOrgStructure'>('args.orgId', 'Reports')
+    unpinReport: or(isSuperUser, isViewerBillingLeader<'Mutation.unpinReport'>('args.orgId')),
+    setOrgStructure: or(
+      isSuperUser,
+      isViewerBillingLeader<'Mutation.setOrgStructure'>('args.orgId')
     ),
     placeTeam: or(isSuperUser, isViewerBillingLeader<'Mutation.placeTeam'>('args.teamId', 'teams')),
-    movePinnedReport: and(
-      or(isSuperUser, isViewerBillingLeader<'Mutation.movePinnedReport'>('args.orgId')),
-      hasOrgFeatureFlag<'Mutation.movePinnedReport'>('args.orgId', 'Reports')
+    movePinnedReport: or(
+      isSuperUser,
+      isViewerBillingLeader<'Mutation.movePinnedReport'>('args.orgId')
     ),
     logReportQuestionUse: and(
       or(isSuperUser, isViewerOnOrg<'Mutation.logReportQuestionUse'>('args.orgId')),
-      hasOrgFeatureFlag<'Mutation.logReportQuestionUse'>('args.orgId', 'Reports'),
       rateLimit({perMinute: 60, perHour: 600})
     ),
     rateReportQuestion: and(
       or(isSuperUser, isViewerOnOrg<'Mutation.rateReportQuestion'>('args.orgId')),
-      hasOrgFeatureFlag<'Mutation.rateReportQuestion'>('args.orgId', 'Reports'),
       rateLimit({perMinute: 60, perHour: 600})
     ),
     addAgendaItem: isTeamMember<'Mutation.addAgendaItem'>('args.newAgendaItem.teamId'),
@@ -560,22 +552,17 @@ const permissionMap: PermissionMap<Resolvers> = {
     picture: allow,
     report: and(
       or(isSuperUser, isViewerOnOrg<'Organization.report'>('source.id')),
-      hasOrgFeatureFlag<'Organization.report'>('source.id', 'Reports'),
       rateLimit({perMinute: 120, perHour: 3000})
     ),
     reportTeamHealthStage: and(
       or(isSuperUser, isViewerOnOrg<'Organization.reportTeamHealthStage'>('source.id')),
-      hasOrgFeatureFlag<'Organization.reportTeamHealthStage'>('source.id', 'Reports'),
       isReportTeamHealthCheck<'Organization.reportTeamHealthStage'>('source.id', 'args.meetingId'),
       rateLimit({perMinute: 120, perHour: 3000})
     ),
-    pinnedReports: and(
-      or(isSuperUser, isViewerOnOrg<'Organization.pinnedReports'>('source.id')),
-      hasOrgFeatureFlag<'Organization.pinnedReports'>('source.id', 'Reports')
-    ),
-    recentReportQuestions: and(
-      or(isSuperUser, isViewerOnOrg<'Organization.recentReportQuestions'>('source.id')),
-      hasOrgFeatureFlag<'Organization.recentReportQuestions'>('source.id', 'Reports')
+    pinnedReports: or(isSuperUser, isViewerOnOrg<'Organization.pinnedReports'>('source.id')),
+    recentReportQuestions: or(
+      isSuperUser,
+      isViewerOnOrg<'Organization.recentReportQuestions'>('source.id')
     ),
     saml: and(
       isViewerOnOrg<'Organization.saml'>('source.id'),
