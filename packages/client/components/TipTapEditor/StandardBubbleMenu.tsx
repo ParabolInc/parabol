@@ -1,7 +1,9 @@
 import type {Editor} from '@tiptap/react'
 import {BubbleMenu} from '@tiptap/react/menus'
+import {useRef, useState} from 'react'
 import {FormatListBulleted, FormatListNumbered, Link} from '~/ui/icons'
 import {getShouldShow, useBubbleMenuStates} from '../../hooks/useBubbleMenuStates'
+import {BubbleTurnIntoMenu} from '../../tiptap/extensions/turnInto/BubbleTurnIntoMenu'
 import {cn} from '../../ui/cn'
 import {modKey} from '../../utils/platform'
 import {BubbleMenuButton} from './BubbleMenuButton'
@@ -12,12 +14,26 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   buttonClassName?: string
   showListControls?: boolean
   placement?: 'top' | 'bottom'
+  pageId?: string
 }
 
 const shortcut = (key: string) => `${modKey === '⌘' ? '⌘' : 'Ctrl+'}${key}`
 
 export const StandardBubbleMenu = (props: Props) => {
-  const {editor, className, buttonClassName, showListControls = false, placement = 'top'} = props
+  const {
+    editor,
+    className,
+    buttonClassName,
+    showListControls = false,
+    placement = 'top',
+    pageId
+  } = props
+  const [isTurnIntoOpen, setIsTurnIntoOpen] = useState(false)
+  const isTurnIntoOpenRef = useRef(false)
+  const handleTurnIntoOpenChange = (open: boolean) => {
+    isTurnIntoOpenRef.current = open
+    setIsTurnIntoOpen(open)
+  }
   const openLinkEditor = () => {
     editor.emit('linkStateChange', {editor, linkState: 'edit'})
   }
@@ -28,7 +44,8 @@ export const StandardBubbleMenu = (props: Props) => {
     <BubbleMenu
       editor={editor}
       shouldShow={({editor}) => {
-        return getShouldShow(editor)
+        // The open Turn into menu holds focus, so the editor no longer has it
+        return isTurnIntoOpenRef.current || getShouldShow(editor)
       }}
       className={cn(className)}
       options={{
@@ -41,6 +58,14 @@ export const StandardBubbleMenu = (props: Props) => {
           'flex items-center rounded-sm border-[1px] border-hairline border-solid bg-surface-card p-[3px]'
         )}
       >
+        {pageId && (
+          <BubbleTurnIntoMenu
+            editor={editor}
+            pageId={pageId}
+            open={isTurnIntoOpen}
+            onOpenChange={handleTurnIntoOpenChange}
+          />
+        )}
         <BubbleMenuButton
           onClick={() => editor.chain().focus().toggleBold().run()}
           isActive={isBold}

@@ -7,6 +7,7 @@ import {serverTipTapExtensions} from '../../../../shared/tiptap/serverTipTapExte
 import {isLocalEmbedSource, localEmbedSourcesPlugin} from '../../fileBlock/localEmbedSources'
 import {
   canTurnIntoPage,
+  getSelectionTurnIntoPos,
   getTurnIntoTarget,
   type TurnIntoTarget,
   turnBlockInto
@@ -485,6 +486,82 @@ describe('what cannot convert', () => {
       const {doc} = makeState(block)
       expect(getTurnIntoTarget(doc, findPos(doc, label, type))).toEqual(target)
     }
+  })
+})
+
+describe('the block a text selection turns', () => {
+  const findText = (doc: Node, label: string) => {
+    let found = -1
+    doc.descendants((node, pos) => {
+      if (found === -1 && node.isText && node.text?.includes(label)) {
+        found = pos + node.text.indexOf(label)
+      }
+    })
+    if (found === -1) throw new Error(`No text ${label}`)
+    return found
+  }
+  const selectText = (blocks: Json[], label: string, toLabel = label) => {
+    const state = makeState(...blocks)
+    const from = findText(state.doc, label)
+    const to = findText(state.doc, toLabel) + toLabel.length
+    return state.apply(state.tr.setSelection(TextSelection.create(state.doc, from, to)))
+  }
+
+  test.each([
+    ['a paragraph', [p('one'), p('word')], 'word', 'paragraph', 'word'],
+    ['a heading', [h(3, 'word')], 'word', 'heading', 'word'],
+    ['a code block', [code('word')], 'word', 'codeBlock', 'word'],
+    ['a list item by its first line', [ul('one', 'word')], 'word', 'listItem', 'word'],
+    ['a to-do by its first line', [tl('word')], 'word', 'taskItem', 'word'],
+    [
+      'the innermost item of a nested list',
+      [ul(li('one', ul('word')))],
+      'word',
+      'listItem',
+      'word'
+    ],
+    [
+      'a later line of a list item on its own',
+      [ul(li('one', p('word')))],
+      'word',
+      'paragraph',
+      'word'
+    ],
+    ['a whole quote from any line', [quote(p('one'), p('word'))], 'word', 'blockquote', 'one'],
+    [
+      'a whole quote from a list inside it',
+      [quote(p('one'), ul('word'))],
+      'word',
+      'blockquote',
+      'one'
+    ],
+    ['details by their summary', [details('word', p('body'))], 'word', 'details', 'word'],
+    ['a line inside details on its own', [details('one', p('word'))], 'word', 'paragraph', 'word']
+  ] as [string, Json[], string, string, string][])(
+    '%s',
+    (_name, blocks, label, type, blockStart) => {
+      const state = selectText(blocks, label)
+      expect(getSelectionTurnIntoPos(state)).toBe(findPos(state.doc, blockStart, type))
+    }
+  )
+
+  test.each([
+    ['spans two blocks', [p('one'), p('two')], 'one', 'two'],
+    ['spans two list items', [ul('one', 'two')], 'one', 'two'],
+    ['is in the page title', [p('one')], 'Title', 'Title'],
+    ['is in a table cell', [table(p('word'))], 'word', 'word'],
+    ['is in a quote that starts with a list', [quote(ul('word'))], 'word', 'word']
+  ] as [string, Json[], string, string][])(
+    'nothing when the selection %s',
+    (_name, blocks, from, to) => {
+      expect(getSelectionTurnIntoPos(selectText(blocks, from, to))).toBeNull()
+    }
+  )
+
+  test('the picked block converts', () => {
+    const state = selectText([ul('one', 'word', 'three')], 'word')
+    const tr = convert(state, getSelectionTurnIntoPos(state)!, H2)
+    expectBlocks(tr.doc, ul('one'), h(2, 'word'), ul('three'))
   })
 })
 

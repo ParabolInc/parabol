@@ -21,6 +21,7 @@ export const PageEditor = (props: Props) => {
     <div className='flex w-full flex-col'>
       <TipTapEditor
         editor={editor}
+        pageId={pageId}
         className={cn('page-editor relative flex w-full px-6 delay-300')}
       />
       {isEditable && <StarterActions editor={editor} />}

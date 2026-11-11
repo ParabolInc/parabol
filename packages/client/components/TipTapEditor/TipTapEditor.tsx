@@ -9,16 +9,26 @@ interface Props extends EditorContentProps {
   bubbleMenuPlacement?: 'top' | 'bottom'
   showListControls?: boolean
   useLinkEditor?: () => void
+  pageId?: string
 }
 export const TipTapEditor = (props: Props) => {
-  const {className, editor, bubbleMenuPlacement, showListControls, useLinkEditor, ref, ...rest} =
-    props
+  const {
+    className,
+    editor,
+    bubbleMenuPlacement,
+    showListControls,
+    useLinkEditor,
+    pageId,
+    ref,
+    ...rest
+  } = props
   return (
     <>
       <StandardBubbleMenu
         editor={editor}
         showListControls={showListControls}
         placement={bubbleMenuPlacement}
+        pageId={pageId}
       />
       <TipTapLinkMenu editor={editor} useLinkEditor={useLinkEditor} />
       <ImportDatabaseDialog editor={editor} />

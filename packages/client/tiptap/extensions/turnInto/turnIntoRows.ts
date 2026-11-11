@@ -12,7 +12,7 @@ import {
   NoteAdd,
   TextFields
 } from '~/ui/icons'
-import type {TurnIntoTarget} from './turnBlockInto'
+import {canTurnIntoPage, type TurnIntoTarget} from './turnBlockInto'
 
 export const turnIntoRows: {title: string; icon: IconComponent; target: TurnIntoTarget}[] = [
   {title: 'Text', icon: TextFields, target: {type: 'paragraph'}},
@@ -27,3 +27,11 @@ export const turnIntoRows: {title: string; icon: IconComponent; target: TurnInto
   {title: 'Code', icon: Code, target: {type: 'codeBlock'}},
   {title: 'Quote', icon: FormatQuote, target: {type: 'blockquote'}}
 ]
+
+export const getTurnIntoRows = (current: TurnIntoTarget, canCreateSubPage: boolean) =>
+  turnIntoRows.filter(
+    ({target}) => target.type !== 'pageLinkBlock' || (canCreateSubPage && canTurnIntoPage(current))
+  )
+
+export const findTurnIntoRow = (rows: typeof turnIntoRows, current: TurnIntoTarget) =>
+  rows.find(({target}) => target.type === current.type && target.level === current.level)

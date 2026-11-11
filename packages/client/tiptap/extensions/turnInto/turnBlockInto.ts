@@ -42,6 +42,23 @@ export const getTurnIntoTarget = (doc: Node, pos: number): TurnIntoTarget | null
   }
 }
 
+// Matches the drag handle: a whole quote, a list item by its first line, details by its summary
+export const getSelectionTurnIntoPos = ({doc, selection}: EditorState): number | null => {
+  const {$from, $to} = selection
+  if (!$from.parent.isTextblock || !$from.sameParent($to)) return null
+  let depth = $from.depth
+  for (let d = depth - 1; d > 0; d--) {
+    if ($from.node(d).type.name === 'blockquote') depth = d
+  }
+  if (depth === $from.depth) {
+    const isSummary = $from.parent.type.name === 'detailsSummary'
+    const isFirstLineOfItem = isListItem($from.node(depth - 1)) && $from.index(depth - 1) === 0
+    if (isSummary || isFirstLineOfItem) depth--
+  }
+  const pos = $from.before(depth)
+  return getTurnIntoTarget(doc, pos) ? pos : null
+}
+
 export const canTurnIntoPage = ({type}: TurnIntoTarget) =>
   type === 'paragraph' || type === 'heading'
 
