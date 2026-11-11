@@ -59,6 +59,11 @@ const refreshSessionMutation = graphql`
 // a query that never settles must not keep a busy subscription's messages forever
 const MAX_SUBSCRIPTION_HOLD = 30_000
 
+// uWebSockets closes an idle keep-alive connection after about 10 seconds, but Google's load balancer reuses one for up
+// to 10 minutes, so now and then it sends a request down a connection the server is closing and answers 502 (classic) or
+// 503 (Envoy). A query is safe to send again
+const DROPPED_CONNECTION_STATUSES = new Set([502, 503])
+
 interface RetainedSubscription {
   disposable: Disposable
   retainCount: number
@@ -204,22 +209,30 @@ export default class Atmosphere extends Environment {
       const traceId = traceparent.split('-')[1]
       addBreadcrumb('operation', `${request.operationKind} ${request.name}`, traceId)
       const abortController = new AbortController()
-      const response = fetch('/graphql', {
-        method: 'POST',
-        signal: abortController.signal,
-        headers: {
-          accept: 'multipart/mixed, application/json',
-          traceparent,
-          'x-parabol-session-id': getTabSessionId(),
-          ...(!uploadables && {['content-type']: 'application/json'})
-        },
-        body: uploadables
-          ? toFormData(request, variables, uploadables)
-          : JSON.stringify({
-              docId: request.id,
-              variables
-            })
-      })
+      const postOperation = () =>
+        fetch('/graphql', {
+          method: 'POST',
+          signal: abortController.signal,
+          headers: {
+            accept: 'multipart/mixed, application/json',
+            traceparent,
+            'x-parabol-session-id': getTabSessionId(),
+            ...(!uploadables && {['content-type']: 'application/json'})
+          },
+          body: uploadables
+            ? toFormData(request, variables, uploadables)
+            : JSON.stringify({
+                docId: request.id,
+                variables
+              })
+        })
+      const isQuery = request.operationKind === 'query'
+      const postRetryingDroppedQuery = async () => {
+        const res = await postOperation()
+        if (isQuery && DROPPED_CONNECTION_STATUSES.has(res.status)) return postOperation()
+        return res
+      }
+      const response = postRetryingDroppedQuery()
       return Observable.create<GraphQLResponse>((sink) => {
         response
           .then(async (res) => {
