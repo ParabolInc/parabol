@@ -33,6 +33,7 @@ import {useAuditLogs} from './utils/useAuditLogs'
 import {useCheckBlacklist} from './utils/useCheckBlacklist'
 import {useDisposeDataloader} from './utils/useDisposeDataloader'
 import {useErrorLogging} from './utils/useErrorLogging'
+import {useNestedSchemaFallback} from './utils/useNestedSchemaFallback'
 import {useRemoveDuplicateTransferEncoding} from './utils/useRemoveDuplicateTransferEncoding'
 import {useSchemaLink} from './utils/useSchemaLink'
 
@@ -120,6 +121,7 @@ export const yoga = createYoga<ServerContext, UserContext>({
   plugins: [
     useRemoveDuplicateTransferEncoding,
     useSchemaLink,
+    useNestedSchemaFallback(),
     useDisposeDataloader,
     useAPIAccess(),
     useArmor(),

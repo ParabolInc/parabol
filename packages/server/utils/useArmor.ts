@@ -27,7 +27,7 @@ const sessionLimits = {
   team: 500_000,
   starter: 5_000
 } satisfies Record<Tierenum, number>
-function parseWithTokenLimit(source: string | Source, options?: ParseOptions) {
+export function parseWithTokenLimit(source: string | Source, options?: ParseOptions) {
   const parser = new MaxTokensParserWLexer(source, {...options, n: 1000})
   return parser.parseDocument()
 }

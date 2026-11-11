@@ -39,6 +39,8 @@ declare module '*workerManifest.js' {
 
 declare let __webpack_public_path__: string
 declare const __PRODUCTION__: boolean
+// in a production build, the nested GitHub, GitLab & Linear fields that the app's persisted operations use
+declare const __NESTED_USAGE__: Record<string, readonly string[]> | null
 declare const __APP_VERSION__: string
 declare const __COMMIT_HASH__: string
 

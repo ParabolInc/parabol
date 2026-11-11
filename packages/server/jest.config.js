@@ -26,7 +26,8 @@ module.exports = {
   },
   testRegex: '/__tests__/.*.test\\.ts?$',
   globals: {
-    __PRODUCTION__: false
+    __PRODUCTION__: false,
+    __NESTED_USAGE__: null
   },
   setupFiles: ['./__tests__/setWorkerServerId.ts'],
   setupFilesAfterEnv: ['./__tests__/setup.ts'],

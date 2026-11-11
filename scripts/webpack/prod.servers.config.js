@@ -7,6 +7,7 @@ const webpack = require('webpack')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const {CleanWebpackPlugin} = require('clean-webpack-plugin')
 const getCommitHash = require('./utils/getCommitHash')
+const getNestedUsage = require('./utils/getNestedUsage')
 const persistentCache = require('./utils/persistentCache')
 
 const PROJECT_ROOT = getProjectRoot()
@@ -103,6 +104,7 @@ module.exports = (config) => {
         __PRODUCTION__: true,
         __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
         __COMMIT_HASH__: JSON.stringify(COMMIT_HASH),
+        __NESTED_USAGE__: JSON.stringify(getNestedUsage()),
         // hardcode architecture so uWebSockets.js dynamic require becomes deterministic at build time & requires 1 binary
         'process.platform': JSON.stringify(process.platform),
         'process.arch': JSON.stringify(process.arch),

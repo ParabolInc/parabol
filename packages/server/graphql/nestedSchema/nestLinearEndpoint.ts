@@ -1,14 +1,11 @@
 import {fetch} from '@whatwg-node/fetch'
-import {
-  type GraphQLObjectType,
-  type GraphQLResolveInfo,
-  type OperationDefinitionNode,
-  parse,
-  print
-} from 'graphql'
-import type {EndpointExecutionResult, Executor, NestedSource} from 'nest-graphql-endpoint/lib/types'
+import {print} from 'graphql'
+import nestGraphQLEndpoint, {
+  type EndpointExecutionResult,
+  type Executor,
+  type NestGraphQLEndpointParams
+} from 'nest-graphql-endpoint'
 import {URL} from 'url'
-import {type NestEndpointParams, nestGraphQLEndpoint} from './nestGraphQLEndpoint'
 
 const defaultExecutor: Executor<{
   accessToken: string
@@ -70,7 +67,7 @@ const defaultExecutor: Executor<{
     }
   }
 }
-type NestParams = NestEndpointParams<{
+type NestParams = NestGraphQLEndpointParams<{
   accessToken: string
   headers?: Record<string, string>
 }>
@@ -78,61 +75,15 @@ type RequiredParams = Pick<
   NestParams,
   'parentType' | 'fieldName' | 'resolveEndpointContext' | 'schemaIDL'
 >
-
 type OptionalParams = Omit<Partial<NestParams>, keyof RequiredParams>
-type NestLinearParams = RequiredParams & OptionalParams
 
-interface Input<TVars> {
-  query: string
-  endpointContext: Record<string, any>
-  info: GraphQLResolveInfo
-  // only necessary if the query needs them
-  variables?: TVars
-  //to reuse a dataloader, pass in your execution context object
-  batchRef?: Record<any, any>
-}
-const nestLinearEndpoint = (params: NestLinearParams) => {
-  const {parentType, fieldName, resolveEndpointContext} = params
-  const executor = params.executor || defaultExecutor
-  const prefix = params.prefix || '_extLinear'
-  const batchKey = params.batchKey || 'accessToken'
-  const endpointTimeout = params.endpointTimeout || 8000
-  const schemaIDL = params.schemaIDL
-  const linearRequest = async <TData = any, TVars = any>(input: Input<TVars>) => {
-    const {query, endpointContext, variables, batchRef, info} = input
-    const {schema} = info
-    const linearApi = schema.getType(`${prefix}Api`) as GraphQLObjectType
-    const fields = linearApi.getFields()
-    const wrapperAST = parse(query)
-    const {definitions} = wrapperAST
-    const [firstDefinition] = definitions
-    const {operation} = firstDefinition as OperationDefinitionNode
-    const rootOperation = fields[operation]
-    if (!rootOperation) throw new Error(`Unsupported operation: ${operation}`)
-    const resolve = rootOperation.resolve!
-    const source = {
-      context: endpointContext,
-      wrapper: wrapperAST,
-      wrapperVars: variables
-    } as NestedSource<any>
-    const context = batchRef ?? {}
-    const data = (await resolve(source, {}, context, info)) as TData
-    const {errors} = source
-    return {data, errors}
-  }
-
-  const endpoint = nestGraphQLEndpoint({
-    parentType,
-    fieldName,
-    resolveEndpointContext,
-    executor,
-    prefix,
-    batchKey,
-    endpointTimeout,
-    schemaIDL
+const nestLinearEndpoint = (params: RequiredParams & OptionalParams) =>
+  nestGraphQLEndpoint({
+    executor: defaultExecutor,
+    prefix: '_extLinear',
+    batchKey: 'accessToken',
+    endpointTimeout: 8000,
+    ...params
   })
-
-  return {endpoint, linearRequest}
-}
 
 export default nestLinearEndpoint
