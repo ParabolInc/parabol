@@ -43,6 +43,10 @@ const BACKGROUND_PAUSE_CLOSE_CODE = 4000
 // a socket that has been down for a while still comes back within this long of the network returning
 const MAX_RETRY_WAIT = ms('30s')
 
+// A server closes with Service Restart when it hands its sockets to the other servers. It spreads those closes out
+// itself, and the load balancer no longer sends anything to it, so the first retry needs no wait
+const SERVICE_RESTART_CLOSE_CODE = 1012
+
 // the default retryWait of graphql-ws, capped, and cut short when the browser comes back online or into view
 const waitToRetry = (retries: number) =>
   new Promise<void>((resolve) => {
@@ -152,6 +156,7 @@ export function createWSClient(atmosphere: Atmosphere): Client {
   let pausedSinceConnect = false
   let lastUsedAt = Date.now()
   let disconnectedAt = Date.now()
+  let lastCloseCode: number | undefined
   onTabUse(() => {
     lastUsedAt = Date.now()
   })
@@ -171,7 +176,8 @@ export function createWSClient(atmosphere: Atmosphere): Client {
       return true
     },
     retryWait: async (retries) => {
-      if (!backgroundPause.isPaused()) await waitToRetry(retries)
+      const isServerRestart = lastCloseCode === SERVICE_RESTART_CLOSE_CODE && retries === 0
+      if (!backgroundPause.isPaused() && !isServerRestart) await waitToRetry(retries)
       await backgroundPause.waitUntilResumed()
       const now = Date.now()
       if (
@@ -244,6 +250,7 @@ export function createWSClient(atmosphere: Atmosphere): Client {
         if (atmosphere.isSocketConnected) disconnectedAt = Date.now()
         atmosphere.isSocketConnected = false
         const {code, reason} = event as CloseEvent
+        lastCloseCode = code
         const closedMessage = `closed ${code} ${reason}`.trim()
         addBreadcrumb('websocket', closedMessage)
         if (!isSocketOpen) {
