@@ -28,6 +28,9 @@ const promoteToTeamLead: MutationResolvers['promoteToTeamLead'] = async (
   if (!promoteeOnTeam) {
     return standardError(new Error('Team not found'), {userId: viewerId})
   }
+  if (promoteeOnTeam.isLead) {
+    return standardError(new Error('User is already the team lead'), {userId: viewerId})
+  }
 
   // RESOLUTION
   await pg
