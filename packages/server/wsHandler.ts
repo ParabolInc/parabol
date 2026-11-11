@@ -11,7 +11,7 @@ import AuthToken from './database/types/AuthToken'
 import {getNewDataLoader} from './dataloader/getNewDataLoader'
 import {getFreshTokenIfNeeded} from './getFreshTokenIfNeeded'
 import {getIsBusy} from './getIsBusy'
-import {getIsShuttingDown} from './getIsShuttingDown'
+import {getIsRefusingSockets, getIsShuttingDown} from './getIsShuttingDown'
 import getRateLimiter from './graphql/getRateLimiter'
 import {handleFirstConnection} from './handleFirstConnection'
 import {logOperation} from './logOperation'
@@ -22,6 +22,7 @@ import {
   websocketMessagesDropped
 } from './metricsHandler'
 import getKysely from './postgres/getKysely'
+import socketDrainSchedule from './socketDrainSchedule'
 import {createCookieHeaders, getAuthTokenFromCookie} from './utils/authCookie'
 import checkBlacklistJWT from './utils/checkBlacklistJWT'
 import {getTeamMemberUserIds} from './utils/getTeamMemberUserIds'
@@ -54,6 +55,8 @@ declare module 'graphql-ws/use/uWebSockets' {
     resubscribe: Record<string, () => void>
     // not present for subscription IDs
     dataLoaders: Record<string, ReturnType<typeof getNewDataLoader>>
+    // set while a draining server waits for this socket's running queries and mutations to finish
+    onIdle?: () => void
   }
 }
 
@@ -130,7 +133,7 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
     extra.sessionId = parseSessionId(connectionParams?.sessionId)
     extra.resubscribe = {}
     extra.dataLoaders = {}
-    activeClients.set(extra.socketId, extra.socket)
+    activeClients.set(extra.socketId, extra)
     websocketConnects.inc()
     websocketConnectDuration.observe({outcome: 'connected'}, secondsSinceUpgrade(extra.socket))
     logOperation({authToken, ip: extra.ip, operation: 'connectSocket', variables: {}})
@@ -280,6 +283,8 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
     dataLoaders[id]?.dispose()
     delete dataLoaders[id]
     delete resubscribe[id]
+    // graphql-ws sends the complete message after this returns, so the socket can close on the next tick
+    if (extra.onIdle && Object.keys(dataLoaders).length === 0) setImmediate(extra.onIdle)
   },
   onDisconnect: async (ctx) => {
     const {extra} = ctx
@@ -313,8 +318,8 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
     // Wait for the notification subscription to unsubscribe
     // Don't do it in notificationSubscription because
     // subscriptions get re-run when the authToken updates.
-    // A client may also reconnect quickly
-    await sleep(1000)
+    // A client may also reconnect quickly, and every client of a server that is shutting down is reconnecting
+    await sleep(getIsShuttingDown() ? Math.max(1000, socketDrainSchedule.reconnectGrace) : 1000)
     const socketCount = await getUserSocketCount(viewerId)
     const user = {id: viewerId, isConnected: false}
     if (socketCount === 0) {
@@ -351,10 +356,10 @@ wsHandler.dropped = () => {
 
 // Hack because graphql-ws doesn't support a way to extract the IP address, so we override the upgrade method
 wsHandler.upgrade = async (res, req, context) => {
-  // check isShuttingDown here instead of the onConnect handler because onConnect can only send a 4403 FORBIDDEN
+  // check isRefusingSockets here instead of the onConnect handler because onConnect can only send a 4403 FORBIDDEN
   // which is what we send when we want to invalidate a session (ie log them out)
   // Here, we want them to keep trying, and hopefully they get proxied to a different server that is not shutting down
-  const isUnavailable = getIsShuttingDown() || getIsBusy()
+  const isUnavailable = getIsRefusingSockets() || getIsBusy()
   if (isUnavailable) {
     res.end()
     return
