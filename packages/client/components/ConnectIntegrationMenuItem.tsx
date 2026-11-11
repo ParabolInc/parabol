@@ -16,10 +16,11 @@ interface Props {
   title: string
   provider: ConnectProviderRef
   heldScopes: readonly string[]
+  label?: string
 }
 
 const ConnectIntegrationMenuItem = forwardRef<HTMLDivElement, Props>((props, ref) => {
-  const {teamId, mutationProps, service, title, provider, heldScopes} = props
+  const {teamId, mutationProps, service, title, provider, heldScopes, label} = props
   const atmosphere = useAtmosphere()
   const definition = getClientIntegration(service)
   const onClick = () => {
@@ -30,7 +31,7 @@ const ConnectIntegrationMenuItem = forwardRef<HTMLDivElement, Props>((props, ref
       <MenuItemAvatar>
         <definition.Icon className={definition.iconClassName} />
       </MenuItemAvatar>
-      {`Add ${title} integration`}
+      {label ?? `Add ${title} integration`}
     </MenuItem>
   )
 })

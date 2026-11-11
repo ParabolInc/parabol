@@ -21,7 +21,6 @@ const OrgTeams = (props: Props) => {
         id
         name
         isBillingLeader
-        hasReports: featureFlag(featureName: "Reports")
         structure {
           id
           name
@@ -47,25 +46,18 @@ const OrgTeams = (props: Props) => {
     close: closeAddTeamDialog,
     isOpen: isAddTeamDialogOpened
   } = useDialogState()
-  const {id: orgId, name, isBillingLeader, hasReports, structure: levels, teams} = organization
+  const {id: orgId, name, isBillingLeader, structure: levels, teams} = organization
   const hasLevels = levels.length > 0
 
   return (
-    <div className={cn('pb-4', hasReports ? 'max-w-[1184px]' : 'max-w-4xl')}>
-      <div
-        className={cn(
-          'flex justify-center py-1',
-          hasReports ? 'flex-wrap items-start gap-x-3 gap-y-2' : 'items-center'
-        )}
-      >
-        <div className={cn(hasReports && 'min-w-0 flex-[1_1_420px]')}>
+    <div className='max-w-[1184px] pb-4'>
+      <div className='flex flex-wrap items-start justify-center gap-x-3 gap-y-2 py-1'>
+        <div className='min-w-0 flex-[1_1_420px]'>
           <h1 className='font-semibold text-2xl leading-7'>Teams</h1>
-          {hasReports && (
-            <p className='mt-1 mb-0 max-w-160 text-fg-secondary'>
-              Every team in {name}, and where it sits in your structure. Reports roll up by these
-              levels.
-            </p>
-          )}
+          <p className='mt-1 mb-0 max-w-160 text-fg-secondary'>
+            Every team in {name}, and where it sits in your structure. Reports roll up by these
+            levels.
+          </p>
         </div>
         <div className='ml-auto'>
           <Button variant='secondary' className='w-32 py-2 text-base' onClick={openAddTeamDialog}>
@@ -74,7 +66,7 @@ const OrgTeams = (props: Props) => {
         </div>
       </div>
 
-      {hasReports && (isBillingLeader || hasLevels) && (
+      {(isBillingLeader || hasLevels) && (
         <div className='mt-4 mb-5 flex flex-wrap items-start gap-5'>
           {isBillingLeader && (
             <div className='min-w-0 flex-[3_1_560px]'>

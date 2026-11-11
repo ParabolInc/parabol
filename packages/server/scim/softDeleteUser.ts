@@ -59,7 +59,7 @@ export const softDeleteUser = async ({
 
   // all users can be removed from the managed org
   if (orgId) {
-    await removeFromOrg(userId, orgId, undefined, dataLoader)
+    await removeFromOrg([userId], orgId, undefined, dataLoader)
   }
 
   // From the view of the SCIM client the user was removed as they're not managed by this SCIM provider anymore

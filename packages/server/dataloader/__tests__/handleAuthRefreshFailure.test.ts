@@ -78,7 +78,7 @@ describe('handleAuthRefreshFailure', () => {
       tags: {teamId: 'team1', service: 'gcal'}
     })
     expect(chain.updateTable).toHaveBeenCalledWith('TeamMemberIntegrationAuth')
-    expect(chain.set).toHaveBeenCalledWith({isActive: false})
+    expect(chain.set).toHaveBeenCalledWith({isActive: false, expiredAt: expect.anything()})
     expect(chain.where).toHaveBeenCalledWith('userId', '=', 'user1')
     expect(chain.where).toHaveBeenCalledWith('providerId', '=', 7)
     expect(chain.where).toHaveBeenCalledWith('teamId', '=', 'team1')

@@ -8,6 +8,8 @@ import {MAX_FILE_SIZE_FREE, MAX_FILE_SIZE_PAID, MAX_IMAGE_SIZE} from '../../../u
 import jpgWithoutEXIF from '../../../utils/jpgWithoutEXIF'
 import getServerError from '../../../utils/relay/getServerError'
 
+export const fileUploadSettledMeta = 'fileUploadSettled'
+
 export const onUploadTipTapFile =
   (
     atmosphere: Atmosphere,
@@ -67,7 +69,9 @@ export const onUploadTipTapFile =
         const {state, view} = editor
         state.doc.descendants((node, pos) => {
           if (node.type.name === nodeType && node.attrs.src === localSrc) {
-            const tr = state.tr.deleteRange(pos, pos + node.nodeSize)
+            const tr = state.tr
+              .deleteRange(pos, pos + node.nodeSize)
+              .setMeta(fileUploadSettledMeta, true)
             view.dispatch(tr)
             return false
           }
@@ -90,7 +94,9 @@ export const onUploadTipTapFile =
           const src = uploadUserAsset!.url!
           state.doc.descendants((node, pos) => {
             if (node.type.name === nodeType && node.attrs.src === localSrc) {
-              const tr = state.tr.setNodeAttribute(pos, 'src', src)
+              const tr = state.tr
+                .setNodeAttribute(pos, 'src', src)
+                .setMeta(fileUploadSettledMeta, true)
               view.dispatch(tr)
               return false
             }

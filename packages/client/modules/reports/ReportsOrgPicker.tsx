@@ -23,16 +23,14 @@ const ReportsOrgPicker = ({viewerRef, orgId, period}: Props) => {
         organizations {
           id
           name
-          hasReports: featureFlag(featureName: "Reports")
         }
       }
     `,
     viewerRef
   )
   const navigate = useNavigate()
-  const orgs = organizations.filter(({hasReports}) => hasReports)
   const name = organizations.find(({id}) => id === orgId)?.name
-  if (orgs.length < 2) {
+  if (organizations.length < 2) {
     return <span className='px-2 font-semibold text-fg-secondary text-sm'>{name}</span>
   }
   return (
@@ -52,7 +50,7 @@ const ReportsOrgPicker = ({viewerRef, orgId, period}: Props) => {
           value={orgId}
           onValueChange={(nextOrgId) => navigate(toReportsHomePath(nextOrgId, period))}
         >
-          {orgs.map(({id, name: orgName}) => (
+          {organizations.map(({id, name: orgName}) => (
             <MenuRadioItem key={id} value={id}>
               {orgName}
             </MenuRadioItem>

@@ -13,7 +13,7 @@ const removeTeamMemberIntegrationAuth: MutationResolvers['removeTeamMemberIntegr
     // RESOLUTION
     await pg
       .updateTable('TeamMemberIntegrationAuth')
-      .set({isActive: false, meta: null})
+      .set({isActive: false, meta: null, expiredAt: null})
       .where('userId', '=', viewerId)
       .where('teamId', '=', teamId)
       .where('service', '=', service as Integrationproviderserviceenum)
