@@ -1066,6 +1066,27 @@
     > [data-node-view-content] > div > * + * {
       margin-top: 6px;
     }
+    > [data-node-view-content] > div > h1 {
+      font-size: 1.875rem;
+      line-height: 1.25;
+      letter-spacing: -0.015em;
+    }
+
+    > [data-callout-icon] {
+      margin-top: calc(var(--callout-first-line-middle, 13px) - 13px);
+    }
+    &:has(> [data-node-view-content] > div > h1:first-child) {
+      --callout-first-line-middle: calc(1.875rem * 1.25 / 2);
+    }
+    &:has(> [data-node-view-content] > div > h2:first-child) {
+      --callout-first-line-middle: calc(1.5rem * 1.3 / 2);
+    }
+    &:has(> [data-node-view-content] > div > h3:first-child) {
+      --callout-first-line-middle: calc(1.25rem * 1.35 / 2);
+    }
+    &:has(> [data-node-view-content] > div > pre:first-child) {
+      --callout-first-line-middle: calc(1px + 1rem + 0.875rem * 1.5 / 2);
+    }
   }
 
   [data-type='calloutTitle'] {
@@ -1339,6 +1360,10 @@
   color: var(--color-fg-muted);
   pointer-events: none;
   height: 0;
+}
+
+.page-editor .tiptap [data-type='callout'] > [data-node-view-content] > div > .is-empty.has-focus[data-callout-placeholder]::before {
+  content: attr(data-callout-placeholder);
 }
 
 .ProseMirror-focused:focus {

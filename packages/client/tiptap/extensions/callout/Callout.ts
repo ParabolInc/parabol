@@ -6,6 +6,7 @@ import {CalloutBase} from '../../../shared/tiptap/extensions/CalloutBase'
 import {CalloutView} from './CalloutView'
 import {calloutInputRule} from './calloutInputRule'
 import {handleCalloutBackspace, handleCalloutEnter} from './calloutKeyboard'
+import {calloutPlaceholderPlugin} from './calloutPlaceholderPlugin'
 import {unwrapCallout} from './unwrapCallout'
 
 declare module '@tiptap/core' {
@@ -83,6 +84,10 @@ export const Callout = CalloutBase.extend({
 
   addInputRules() {
     return [calloutInputRule(this.type)]
+  },
+
+  addProseMirrorPlugins() {
+    return [calloutPlaceholderPlugin()]
   },
 
   addNodeView() {

@@ -21,7 +21,7 @@ export const CalloutView = (props: NodeViewProps) => {
         CALLOUT_TONE_STYLES[tone].frameClass
       )}
     >
-      <div contentEditable={false} className='flex shrink-0 select-none'>
+      <div data-callout-icon contentEditable={false} className='flex shrink-0 select-none'>
         {editor.isEditable ? (
           <CalloutStyleMenu
             editor={editor}

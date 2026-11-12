@@ -46,6 +46,7 @@ import {Table} from '../tiptap/extensions/table/Table'
 import {TableCell} from '../tiptap/extensions/table/TableCell'
 import {TableHeader} from '../tiptap/extensions/table/TableHeader'
 import {TableOfContents} from '../tiptap/extensions/tableOfContents/TableOfContents'
+import {pagePlaceholderText} from '../tiptap/pagePlaceholderText'
 import {MAX_FILE_SIZE_FREE} from '../utils/constants'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import useAtmosphere from './useAtmosphere'
@@ -168,47 +169,7 @@ export const useTipTapPageEditor = (
           showOnlyWhenEditable: false,
           includeChildren: true,
           emptyNodeClass: 'is-empty print:hidden',
-          placeholder: ({editor: currentEditor, node, pos}) => {
-            if (placeholderRef.current) {
-              return placeholderRef.current
-            }
-            const {type, attrs} = node
-            const {name} = type
-            switch (name) {
-              case 'heading':
-                if (pos === 0) return 'New Page'
-                return `Heading ${attrs.level}`
-              case 'codeBlock':
-                return 'New code'
-              case 'blockquote':
-                return 'New quote'
-              case 'calloutTitle':
-                return 'Title'
-              case 'paragraph': {
-                const parent = currentEditor.state.doc.resolve(pos).parent
-                const isOnlyCalloutBody =
-                  parent.type.name === 'callout' &&
-                  parent.childCount - (parent.firstChild?.type.name === 'calloutTitle' ? 1 : 0) ===
-                    1
-                return isOnlyCalloutBody ? 'New callout' : "Press '/' for commands"
-              }
-              case 'detailsSummary':
-                return 'New summary'
-              case 'detailsContent': {
-                const isDefaultEmpty =
-                  node.childCount === 0 ||
-                  (node.childCount === 1 &&
-                    node.firstChild?.type.name === 'paragraph' &&
-                    node.firstChild.content.size === 0)
-                return isDefaultEmpty ? 'Add details, use / to add blocks' : ''
-              }
-              case 'bulletList':
-              case 'listItem':
-              case 'orderedList':
-              default:
-                return ''
-            }
-          }
+          placeholder: (props) => placeholderRef.current || pagePlaceholderText(props)
         }),
         PageUserMention.configure({
           atmosphere,
