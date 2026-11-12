@@ -2,7 +2,7 @@ import * as Y from 'yjs'
 import {createPageLinkElement} from '../../../../client/shared/tiptap/createPageLinkElement'
 import {handleDeletedPageLinks} from '../handleDeletedPageLinks'
 
-type PageRow = {id: number; parentPageId: number | null}
+type PageRow = {id: number; parentPageId: number | null; deletedAt?: Date | null}
 type Condition = [column: keyof PageRow, value: unknown]
 
 const mockPages: PageRow[] = []
@@ -13,7 +13,7 @@ const mockUpdatePage = () => {
   const conditions: Condition[] = []
   const run = () => {
     const matches = mockPages.filter((row) =>
-      conditions.every(([column, value]) => row[column] === value)
+      conditions.every(([column, value]) => (row[column] ?? null) === value)
     )
     matches.forEach(({id}) => mockArchivedPageIds.push(id))
     return {numUpdatedRows: BigInt(matches.length)}

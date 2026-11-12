@@ -4,6 +4,7 @@ import {updatePageAccessTable} from '../../../postgres/updatePageAccessTable'
 import getPubSub from '../../getPubSub'
 import getRedis from '../../getRedis'
 import {announcePromotedBlock, promoteSyncedBlock, selectPromotionHost} from '../promoteSyncedBlock'
+import {trashPageUnderParent} from '../trashPageUnderParent'
 
 const mockHandleEvent = jest.fn(async (..._args: unknown[]): Promise<boolean> => true)
 jest.mock('../../../hocusPocus', () => ({
@@ -18,11 +19,15 @@ jest.mock('../../CipherId', () => ({
 }))
 
 const pg = getKysely()
-const promoteSync = async (blockPageId: number, excludedHostIds: number[]) => {
+const promoteSync = async (
+  blockPageId: number,
+  excludedHostIds: number[],
+  actorId: string = viewerId
+) => {
   const hostId = await pg
     .transaction()
     .execute((trx) => promoteSyncedBlock(trx, blockPageId, excludedHostIds))
-  if (hostId !== null) await announcePromotedBlock(hostId, blockPageId, excludedHostIds, viewerId)
+  if (hostId !== null) await announcePromotedBlock(hostId, blockPageId, excludedHostIds, actorId)
   return hostId
 }
 const viewerId = `promoteBlock|${generateUID()}`
@@ -205,22 +210,52 @@ test('skips a host whose doc holds no synced link and promotes the next one', as
   })
 }, 30_000)
 
-test('trashes the block when no host can mark a link as the original', async () => {
+test("exhausting hosts trashes into the block owner's Trash", async () => {
   mockHandleEvent.mockResolvedValue(false)
-  expect(await promoteSync(block, [originalHost])).toBe(firstCopyHost)
+  expect(await promoteSync(block, [originalHost], strangerId)).toBe(firstCopyHost)
   expect(markedHosts()).toEqual([`page:${firstCopyHost}`, `page:${secondCopyHost}`])
   const row = await pageRow(block)
   expect(row).toMatchObject({parentPageId: secondCopyHost, deletedBy: viewerId})
   expect(row.deletedAt).not.toBeNull()
 }, 30_000)
 
-test('treats a failed mark event as an unmarked host', async () => {
+const failMarkOn = (hostId: number, failures: number) => {
+  let remainingFailures = failures
   mockHandleEvent.mockImplementation(async (eventName, documentName) => {
-    if (eventName === 'markPageLinkCanonical' && documentName === `page:${firstCopyHost}`) {
+    if (
+      eventName === 'markPageLinkCanonical' &&
+      documentName === `page:${hostId}` &&
+      remainingFailures > 0
+    ) {
+      remainingFailures--
       throw new Error('TIMEOUT')
     }
     return true
   })
+}
+
+test('a mark that keeps failing leaves the block in place', async () => {
+  failMarkOn(firstCopyHost, Infinity)
+  expect(await promoteSync(block, [originalHost], strangerId)).toBe(firstCopyHost)
+  expect(markedHosts()).toEqual([`page:${firstCopyHost}`, `page:${firstCopyHost}`])
+  expect(await pageRow(block)).toMatchObject({parentPageId: firstCopyHost, deletedAt: null})
+}, 30_000)
+
+test('a mark that fails once then succeeds keeps the host', async () => {
+  failMarkOn(firstCopyHost, 1)
   expect(await promoteSync(block, [originalHost])).toBe(firstCopyHost)
-  expect(await pageRow(block)).toMatchObject({parentPageId: secondCopyHost, deletedAt: null})
+  expect(markedHosts()).toEqual([`page:${firstCopyHost}`, `page:${firstCopyHost}`])
+  expect(await pageRow(block)).toMatchObject({parentPageId: firstCopyHost, deletedAt: null})
+}, 30_000)
+
+test('trashPageUnderParent leaves an already-trashed page alone', async () => {
+  const trashedAt = new Date('2026-02-01T00:00:00Z')
+  await pg
+    .updateTable('Page')
+    .set({deletedAt: trashedAt, deletedBy: strangerId})
+    .where('id', '=', block)
+    .execute()
+  await trashPageUnderParent(block, originalHost, viewerId)
+  expect(await pageRow(block)).toMatchObject({deletedAt: trashedAt, deletedBy: strangerId})
+  expect(mockHandleEvent).not.toHaveBeenCalled()
 }, 30_000)

@@ -72,25 +72,43 @@ export const promoteSyncedBlock = async (
 }
 
 const markHostLinkCanonical = (hostId: number, blockPageId: number) =>
-  redisHocusPocus
-    .handleEvent('markPageLinkCanonical', CipherId.toClient(hostId, 'page'), {
-      pageCode: CipherId.encrypt(blockPageId)
-    })
-    .catch((error: Error) => {
-      Logger.error(error)
-      return false
-    })
+  redisHocusPocus.handleEvent('markPageLinkCanonical', CipherId.toClient(hostId, 'page'), {
+    pageCode: CipherId.encrypt(blockPageId)
+  })
+
+const selectBlockOwnerId = async (blockPageId: number) => {
+  const owner = await getKysely()
+    .selectFrom('PageUserAccess as access')
+    .innerJoin('Page', 'Page.id', 'access.pageId')
+    .select('access.userId')
+    .where('access.pageId', '=', blockPageId)
+    .where('access.role', '=', 'owner')
+    .orderBy(sql`"access"."userId" = "Page"."userId"`, 'desc')
+    .orderBy('access.userId')
+    .limit(1)
+    .executeTakeFirst()
+  return owner?.userId ?? null
+}
 
 export const announcePromotedBlock = async (
   hostId: number,
   blockPageId: number,
   excludedHostIds: number[],
-  deletedBy: string | null
+  actorId: string | null
 ) => {
   const triedHostIds = [...excludedHostIds]
   let currentHostId = hostId
   for (;;) {
-    if (await markHostLinkCanonical(currentHostId, blockPageId)) return
+    let isMarked: boolean | undefined
+    try {
+      isMarked = await markHostLinkCanonical(currentHostId, blockPageId).catch(() =>
+        markHostLinkCanonical(currentHostId, blockPageId)
+      )
+    } catch (error) {
+      Logger.error(error)
+      return
+    }
+    if (isMarked) return
     triedHostIds.push(currentHostId)
     const nextHostId = await getKysely()
       .transaction()
@@ -98,5 +116,6 @@ export const announcePromotedBlock = async (
     if (nextHostId === null) break
     currentHostId = nextHostId
   }
-  await trashPageUnderParent(blockPageId, currentHostId, deletedBy)
+  const ownerId = await selectBlockOwnerId(blockPageId)
+  await trashPageUnderParent(blockPageId, currentHostId, ownerId ?? actorId)
 }

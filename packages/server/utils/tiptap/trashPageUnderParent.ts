@@ -12,6 +12,7 @@ export const trashPageUnderParent = async (
     .set({deletedAt: sql`CURRENT_TIMESTAMP`, deletedBy})
     .where('id', '=', pageId)
     .where('parentPageId', '=', parentPageId)
+    .where('deletedAt', 'is', null)
     .executeTakeFirst()
   if (numUpdatedRows === 0n) return
   await removeAllBacklinkedPageLinkBlocks({pageId})
