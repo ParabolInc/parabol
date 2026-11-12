@@ -79,6 +79,7 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
 
     res.writeStatus('200 OK')
     res.writeHeader('Content-Type', 'application/json')
+    res.writeHeader('Cache-Control', 'no-store')
     res.end(
       JSON.stringify({
         access_token: accessToken,
@@ -189,6 +190,7 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
 
   res.writeStatus('200 OK')
   res.writeHeader('Content-Type', 'application/json')
+  res.writeHeader('Cache-Control', 'no-store')
   res.end(
     JSON.stringify({
       access_token: accessToken,

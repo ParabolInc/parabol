@@ -59,7 +59,9 @@ const addOrg: MutationResolvers['addOrg'] = async (_source, args, context) => {
     sub: viewerId,
     rol: authToken.rol,
     exp: authToken.exp,
-    act: authToken.act
+    act: authToken.act,
+    aud: authToken.aud,
+    scope: authToken.scope
   })
   context.authToken = nextAuthToken
   if (context.request) {

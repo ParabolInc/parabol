@@ -71,6 +71,62 @@ const CREATE_PERSONAL_ACCESS_TOKEN = `
   }
 `
 
+const REFRESH_SESSION = `
+  mutation RefreshSession {
+    refreshSession
+  }
+`
+
+const INVALIDATE_SESSIONS = `
+  mutation InvalidateSessions {
+    invalidateSessions {
+      __typename
+    }
+  }
+`
+
+const DELETE_USER = `
+  mutation DeleteUser($userId: ID!) {
+    deleteUser(userId: $userId) {
+      error {
+        message
+      }
+    }
+  }
+`
+
+const ADD_ORG = `
+  mutation AddOrg($newTeam: NewTeamInput!, $orgName: String!) {
+    addOrg(newTeam: $newTeam, orgName: $orgName) {
+      team {
+        id
+        orgId
+      }
+    }
+  }
+`
+
+const ADD_TEAM = `
+  mutation AddTeam($newTeam: NewTeamInput!) {
+    addTeam(newTeam: $newTeam) {
+      error {
+        message
+      }
+      team {
+        id
+      }
+    }
+  }
+`
+
+const REGENERATE_OAUTH_API_PROVIDER_SECRET = `
+  mutation RegenerateOAuthAPIProviderSecret($providerId: ID!) {
+    regenerateOAuthAPIProviderSecret(providerId: $providerId) {
+      clientSecret
+    }
+  }
+`
+
 const createOrgAdmin = async () => {
   const {userId, cookie, orgId, teamId} = await signUp()
   const promoteToOrgAdmin = await sendIntranet({
@@ -160,8 +216,8 @@ const createAppWithScope = async ({
     }
   })
 
-  const {clientId, clientSecret} = oauthApp.data.createOAuthAPIProvider
-  return {clientId, clientSecret, redirectUri}
+  const {clientId, clientSecret, provider} = oauthApp.data.createOAuthAPIProvider
+  return {clientId, clientSecret, redirectUri, providerId: provider.id as string}
 }
 
 interface AuthorizationRequest {
@@ -430,15 +486,7 @@ test('An OAuth access token cannot call a mutation outside its scope', async () 
 test('An OAuth access token only reaches the organization that registered the app', async () => {
   const {cookie, orgId, teamId} = await createOrgAdmin()
   const otherOrg = await sendPublic({
-    query: `
-      mutation AddOrg($newTeam: NewTeamInput!, $orgName: String!) {
-        addOrg(newTeam: $newTeam, orgName: $orgName) {
-          team {
-            id
-          }
-        }
-      }
-    `,
+    query: ADD_ORG,
     variables: {
       newTeam: {name: `Team ${generateUID()}`, orgId: '', isPublic: false},
       orgName: `Org ${generateUID()}`
@@ -580,4 +628,87 @@ test('A code can only be exchanged by the client it was issued to', async () => 
     client_secret: victimApp.clientSecret
   })
   expect(legitimate.status).toBe(200)
+})
+
+test('An OAuth access token cannot be traded for a session', async () => {
+  const {cookie, orgId} = await createOrgAdmin()
+  const token = await getAccessToken({
+    orgId,
+    cookie,
+    scopes: ['USERS_WRITE', 'TEAMS_WRITE'],
+    scope: 'users:write teams:write'
+  })
+
+  const refreshed = await sendPublic({query: REFRESH_SESSION, bearerToken: token})
+  expect(refreshed.data).toBeNull()
+  expect(refreshed.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
+  expect(refreshed.cookie).toBeUndefined()
+
+  const added = await sendPublic({
+    query: ADD_TEAM,
+    variables: {newTeam: {name: `Team ${generateUID()}`, orgId, isPublic: false}},
+    bearerToken: token
+  })
+  expect(added.data.addTeam.team.id).toEqual(expect.any(String))
+  expect(added.cookie).toBeUndefined()
+})
+
+test('An OAuth access token cannot create a team outside its organization', async () => {
+  const {cookie, orgId} = await createOrgAdmin()
+  const otherOrg = await sendPublic({
+    query: ADD_ORG,
+    variables: {
+      newTeam: {name: `Team ${generateUID()}`, orgId: '', isPublic: false},
+      orgName: `Org ${generateUID()}`
+    },
+    cookie
+  })
+  const otherOrgId = otherOrg.data.addOrg.team.orgId
+  expect(otherOrgId).toEqual(expect.any(String))
+
+  const token = await getAccessToken({orgId, cookie, scopes: ['TEAMS_WRITE'], scope: 'teams:write'})
+  const added = await sendPublic({
+    query: ADD_TEAM,
+    variables: {newTeam: {name: `Team ${generateUID()}`, orgId: otherOrgId, isPublic: false}},
+    bearerToken: token
+  })
+  expect(added.data).toBeNull()
+  expect(added.errors).toHaveLength(1)
+})
+
+test('An OAuth access token cannot delete its user or end their sessions', async () => {
+  const {cookie, orgId, userId} = await createOrgAdmin()
+  const token = await getAccessToken({orgId, cookie, scopes: ['USERS_WRITE'], scope: 'users:write'})
+
+  const deleted = await sendPublic({query: DELETE_USER, variables: {userId}, bearerToken: token})
+  expect(deleted.data).toBeNull()
+  expect(deleted.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
+
+  const invalidated = await sendPublic({query: INVALIDATE_SESSIONS, bearerToken: token})
+  expect(invalidated.data).toBeNull()
+  expect(invalidated.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
+
+  const viewer = await sendPublic({query: VIEWER_ID, cookie})
+  expect(viewer.data.viewer.id).toBe(userId)
+})
+
+test('An OAuth access token cannot manage OAuth applications', async () => {
+  const {cookie, orgId} = await createOrgAdmin()
+  const {providerId} = await createAppWithScope({orgId, cookie, scopes: ['USERS_READ']})
+  const token = await getAccessToken({orgId, cookie, scopes: ['ORGS_WRITE'], scope: 'orgs:write'})
+
+  const regenerated = await sendPublic({
+    query: REGENERATE_OAUTH_API_PROVIDER_SECRET,
+    variables: {providerId},
+    bearerToken: token
+  })
+  expect(regenerated.data).toBeNull()
+  expect(regenerated.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
+
+  const asSession = await sendPublic({
+    query: REGENERATE_OAUTH_API_PROVIDER_SECRET,
+    variables: {providerId},
+    cookie
+  })
+  expect(asSession.data.regenerateOAuthAPIProviderSecret.clientSecret).toEqual(expect.any(String))
 })

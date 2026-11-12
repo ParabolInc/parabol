@@ -118,7 +118,10 @@ const permissionMap: PermissionMap<Resolvers> = {
       'meetingTemplates'
     ),
     addSlackAuth: isTeamMember<'Mutation.addSlackAuth'>('args.teamId'),
-    addTeam: rateLimit({perMinute: 15, perHour: 50}),
+    addTeam: and(
+      isViewerOnOrg<'Mutation.addTeam'>('args.newTeam.orgId'),
+      rateLimit({perMinute: 15, perHour: 50})
+    ),
     addTeamHealthTemplateQuestion: isTeamMember<'Mutation.addTeamHealthTemplateQuestion'>(
       'args.templateId',
       'meetingTemplates'
@@ -144,9 +147,9 @@ const permissionMap: PermissionMap<Resolvers> = {
     createImposterToken: isSuperUser,
     createOAuth1AuthorizeUrl: isTeamMember<'Mutation.createOAuth1AuthorizeUrl'>('args.teamId'),
     createOAuthAPICode: and(isAuthenticated, hasTokenAudience(['action'])),
-    createOAuthAPIProvider: hasOrgRole<'Mutation.createOAuthAPIProvider'>(
-      'args.orgId',
-      'ORG_ADMIN'
+    createOAuthAPIProvider: and(
+      hasTokenAudience(['action']),
+      hasOrgRole<'Mutation.createOAuthAPIProvider'>('args.orgId', 'ORG_ADMIN')
     ),
     createPersonalAccessToken: and(
       isAuthenticated,
@@ -171,13 +174,17 @@ const permissionMap: PermissionMap<Resolvers> = {
     createTask: isTeamMember<'Mutation.createTask'>('args.newTask.teamId'),
     createTaskIntegration: isTeamMember<'Mutation.createTaskIntegration'>('args.taskId', 'tasks'),
     deleteComment: isMeetingMember<'Mutation.deleteComment'>('args.meetingId'),
-    deleteOAuthAPIProvider: hasProviderAccess<'Mutation.deleteOAuthAPIProvider'>('args.providerId'),
+    deleteOAuthAPIProvider: and(
+      hasTokenAudience(['action']),
+      hasProviderAccess<'Mutation.deleteOAuthAPIProvider'>('args.providerId')
+    ),
     deleteTask: isTeamMember<'Mutation.deleteTask'>('args.taskId', 'tasks'),
     deleteTeamHealthQuestion: isUserViewer<'Mutation.deleteTeamHealthQuestion'>(
       'args.questionId',
       'teamHealthQuestions',
       'createdBy'
     ),
+    deleteUser: and(isAuthenticated, hasTokenAudience(['action'])),
     denyPushInvitation: rateLimit({perMinute: 10, perHour: 20}),
     disconnectSAML: hasOrgRole<'Mutation.disconnectSAML'>('args.samlId', 'ORG_ADMIN', 'saml'),
     downgradeToStarter: or(
@@ -232,6 +239,7 @@ const permissionMap: PermissionMap<Resolvers> = {
       isTeamMemberOfMeeting<'Mutation.generateSuggestedGroups'>('args.meetingId'),
       rateLimit({perMinute: 10, perHour: 60})
     ),
+    invalidateSessions: and(isAuthenticated, hasTokenAudience(['action'])),
     inviteToTeam: and(
       or(isTeamMember<'Mutation.inviteToTeam'>('args.teamId'), isSuperUser),
       rateLimit({perMinute: 10, perHour: 100})
@@ -283,8 +291,11 @@ const permissionMap: PermissionMap<Resolvers> = {
       isViewerBillingLeader<'Mutation.promoteToTeamLead'>('args.teamId', 'teams')
     ),
     pushInvitation: rateLimit({perMinute: 10, perHour: 20}),
-    regenerateOAuthAPIProviderSecret:
-      hasProviderAccess<'Mutation.regenerateOAuthAPIProviderSecret'>('args.providerId'),
+    refreshSession: and(isAuthenticated, hasTokenAudience(['action'])),
+    regenerateOAuthAPIProviderSecret: and(
+      hasTokenAudience(['action']),
+      hasProviderAccess<'Mutation.regenerateOAuthAPIProviderSecret'>('args.providerId')
+    ),
     removeAgendaItem: isTeamMember<'Mutation.removeAgendaItem'>('args.agendaItemId', 'agendaItems'),
     removeApprovedOrganizationDomains: or(
       isSuperUser,
@@ -449,7 +460,10 @@ const permissionMap: PermissionMap<Resolvers> = {
       'args.meetingId',
       'newMeetings'
     ),
-    updateOAuthAPIProvider: hasProviderAccess<'Mutation.updateOAuthAPIProvider'>('args.providerId'),
+    updateOAuthAPIProvider: and(
+      hasTokenAudience(['action']),
+      hasProviderAccess<'Mutation.updateOAuthAPIProvider'>('args.providerId')
+    ),
     updateOrg: isViewerBillingLeader<'Mutation.updateOrg'>('args.updatedOrg.id'),
     exportPagesToConfluence: and(
       isAuthenticated,
