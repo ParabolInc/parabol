@@ -6,13 +6,8 @@ import {
   parse,
   print
 } from 'graphql'
-import nestGraphQLEndpoint from 'nest-graphql-endpoint/lib/nestGraphQLEndpoint'
-import type {
-  EndpointExecutionResult,
-  Executor,
-  NestedSource,
-  NestGraphQLEndpointParams
-} from 'nest-graphql-endpoint/lib/types'
+import type {EndpointExecutionResult, Executor, NestedSource} from 'nest-graphql-endpoint/lib/types'
+import {type NestEndpointParams, nestGraphQLEndpoint} from './nestGraphQLEndpoint'
 
 const defaultExecutor: Executor<{
   accessToken: string
@@ -67,14 +62,14 @@ const defaultExecutor: Executor<{
     }
   }
 }
-type NestParams = NestGraphQLEndpointParams<{
+type NestParams = NestEndpointParams<{
   accessToken: string
   baseUri: string
   headers?: Record<string, string>
 }>
 type RequiredParams = Pick<
   NestParams,
-  'parentSchema' | 'parentType' | 'fieldName' | 'resolveEndpointContext' | 'schemaIDL'
+  'parentType' | 'fieldName' | 'resolveEndpointContext' | 'schemaIDL'
 >
 
 type OptionalParams = Omit<Partial<NestParams>, keyof RequiredParams>
@@ -90,7 +85,7 @@ interface Input<TVars> {
   batchRef?: Record<any, any>
 }
 const nestGitLabEndpoint = (params: NestGitLabParams) => {
-  const {parentSchema, parentType, fieldName, resolveEndpointContext} = params
+  const {parentType, fieldName, resolveEndpointContext} = params
   const executor = params.executor || defaultExecutor
   const prefix = params.prefix || '_extGitLab'
   const batchKey = params.batchKey || 'accessToken'
@@ -119,8 +114,7 @@ const nestGitLabEndpoint = (params: NestGitLabParams) => {
     return {data, errors}
   }
 
-  const nestedSchema = nestGraphQLEndpoint({
-    parentSchema,
+  const endpoint = nestGraphQLEndpoint({
     parentType,
     fieldName,
     resolveEndpointContext,
@@ -131,7 +125,7 @@ const nestGitLabEndpoint = (params: NestGitLabParams) => {
     schemaIDL
   })
 
-  return {schema: nestedSchema, gitlabRequest}
+  return {endpoint, gitlabRequest}
 }
 
 export default nestGitLabEndpoint

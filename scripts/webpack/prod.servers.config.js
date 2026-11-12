@@ -67,7 +67,9 @@ module.exports = (config) => {
     },
     output: {
       filename: '[name].js',
-      path: distPath
+      path: distPath,
+      // V8 compiles a parenthesized module factory with the bundle, so the factories land in the image's compile cache
+      environment: {methodShorthand: false}
     },
     resolve: {
       alias: {

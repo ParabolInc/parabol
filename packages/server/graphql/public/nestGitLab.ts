@@ -1,12 +1,10 @@
-import type {GraphQLSchema} from 'graphql'
 import type {IntegrationProviderGitLabOAuth2} from '../../postgres/types/IntegrationProvider'
 import type {GQLContext} from '../graphql'
 import gitlabSchema from '../nestedSchema/GitLab/gitlabSchema.graphql'
 import nestGitLabEndpoint from '../nestedSchema/nestGitLabEndpoint'
 
-export const nestGitLab = (parentSchema: GraphQLSchema) =>
+export const nestGitLab = () =>
   nestGitLabEndpoint({
-    parentSchema,
     parentType: 'GitLabIntegration',
     fieldName: 'api',
     resolveEndpointContext: async (

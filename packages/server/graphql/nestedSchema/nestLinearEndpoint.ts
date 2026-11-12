@@ -6,14 +6,9 @@ import {
   parse,
   print
 } from 'graphql'
-import nestGraphQLEndpoint from 'nest-graphql-endpoint/lib/nestGraphQLEndpoint'
-import type {
-  EndpointExecutionResult,
-  Executor,
-  NestedSource,
-  NestGraphQLEndpointParams
-} from 'nest-graphql-endpoint/lib/types'
+import type {EndpointExecutionResult, Executor, NestedSource} from 'nest-graphql-endpoint/lib/types'
 import {URL} from 'url'
+import {type NestEndpointParams, nestGraphQLEndpoint} from './nestGraphQLEndpoint'
 
 const defaultExecutor: Executor<{
   accessToken: string
@@ -75,13 +70,13 @@ const defaultExecutor: Executor<{
     }
   }
 }
-type NestParams = NestGraphQLEndpointParams<{
+type NestParams = NestEndpointParams<{
   accessToken: string
   headers?: Record<string, string>
 }>
 type RequiredParams = Pick<
   NestParams,
-  'parentSchema' | 'parentType' | 'fieldName' | 'resolveEndpointContext' | 'schemaIDL'
+  'parentType' | 'fieldName' | 'resolveEndpointContext' | 'schemaIDL'
 >
 
 type OptionalParams = Omit<Partial<NestParams>, keyof RequiredParams>
@@ -97,7 +92,7 @@ interface Input<TVars> {
   batchRef?: Record<any, any>
 }
 const nestLinearEndpoint = (params: NestLinearParams) => {
-  const {parentSchema, parentType, fieldName, resolveEndpointContext} = params
+  const {parentType, fieldName, resolveEndpointContext} = params
   const executor = params.executor || defaultExecutor
   const prefix = params.prefix || '_extLinear'
   const batchKey = params.batchKey || 'accessToken'
@@ -126,8 +121,7 @@ const nestLinearEndpoint = (params: NestLinearParams) => {
     return {data, errors}
   }
 
-  const nestedSchema = nestGraphQLEndpoint({
-    parentSchema,
+  const endpoint = nestGraphQLEndpoint({
     parentType,
     fieldName,
     resolveEndpointContext,
@@ -138,7 +132,7 @@ const nestLinearEndpoint = (params: NestLinearParams) => {
     schemaIDL
   })
 
-  return {schema: nestedSchema, linearRequest}
+  return {endpoint, linearRequest}
 }
 
 export default nestLinearEndpoint

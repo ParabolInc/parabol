@@ -1,12 +1,10 @@
-import type {GraphQLSchema} from 'graphql'
 import type {IntegrationProviderLinear} from '../../postgres/types/IntegrationProvider'
 import type {GQLContext} from '../graphql'
 import linearSchema from '../nestedSchema/Linear/linearSchema.graphql'
 import nestLinearEndpoint from '../nestedSchema/nestLinearEndpoint'
 
-export const nestLinear = (parentSchema: GraphQLSchema) =>
+export const nestLinear = () =>
   nestLinearEndpoint({
-    parentSchema,
     parentType: 'LinearIntegration',
     fieldName: 'api',
     resolveEndpointContext: async (
