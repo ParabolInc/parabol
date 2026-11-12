@@ -1,6 +1,8 @@
 import {getText, getTextSerializersFromSchema} from '@tiptap/core'
+import {defaultRules, type RuleContext} from '@tiptap/extension-drag-handle'
 import {Fragment, type Node, type Schema} from '@tiptap/pm/model'
 import {type EditorState, Selection, TextSelection, type Transaction} from '@tiptap/pm/state'
+import {pageDragHandleRules} from '../dragHandleRules'
 
 export interface TurnIntoTarget {
   type:
@@ -42,21 +44,37 @@ export const getTurnIntoTarget = (doc: Node, pos: number): TurnIntoTarget | null
   }
 }
 
-// Matches the drag handle: a whole quote, a list item by its first line, details by its summary
+// The score a drag handle candidate starts from, before the rules deduct from it
+const DRAG_HANDLE_BASE_SCORE = 1000
+const dragHandleRules = [...defaultRules, ...pageDragHandleRules]
+
+// Picks the block the way the drag handle does: the innermost one that passes its rules
 export const getSelectionTurnIntoPos = ({doc, selection}: EditorState): number | null => {
   const {$from, $to} = selection
   if (!$from.parent.isTextblock || !$from.sameParent($to)) return null
-  let depth = $from.depth
-  for (let d = depth - 1; d > 0; d--) {
-    if ($from.node(d).type.name === 'blockquote') depth = d
+  for (let depth = $from.depth; depth > 0; depth--) {
+    const parent = $from.node(depth - 1)
+    const index = $from.index(depth - 1)
+    const context = {
+      node: $from.node(depth),
+      pos: $from.before(depth),
+      depth,
+      parent,
+      index,
+      isFirst: index === 0,
+      isLast: index === parent.childCount - 1,
+      $pos: $from
+    }
+    // The rules only read the document, so there is no view to hand them
+    const deduction = dragHandleRules.reduce(
+      (sum, rule) => sum + rule.evaluate(context as RuleContext),
+      0
+    )
+    if (deduction >= DRAG_HANDLE_BASE_SCORE) continue
+    const pos = $from.before(depth)
+    return getTurnIntoTarget(doc, pos) ? pos : null
   }
-  if (depth === $from.depth) {
-    const isSummary = $from.parent.type.name === 'detailsSummary'
-    const isFirstLineOfItem = isListItem($from.node(depth - 1)) && $from.index(depth - 1) === 0
-    if (isSummary || isFirstLineOfItem) depth--
-  }
-  const pos = $from.before(depth)
-  return getTurnIntoTarget(doc, pos) ? pos : null
+  return null
 }
 
 export const canTurnIntoPage = ({type}: TurnIntoTarget) =>

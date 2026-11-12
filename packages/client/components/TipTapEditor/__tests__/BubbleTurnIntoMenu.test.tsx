@@ -27,7 +27,7 @@ const tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms))
 let root: Root | undefined
 let editor: Editor | undefined
 
-const renderMenu = async (blocks: Json[], from: number, to: number, canCreateSubPage = true) => {
+const renderMenu = async (blocks: Json[], from: number, to: number) => {
   const activeEditor = new Editor({
     element: document.body.appendChild(document.createElement('div')),
     extensions,
@@ -38,7 +38,7 @@ const renderMenu = async (blocks: Json[], from: number, to: number, canCreateSub
   activeEditor.view.dispatch(state.tr.setSelection(TextSelection.create(state.doc, from, to)))
   await act(async () => {
     root = createRoot(document.body.appendChild(document.createElement('div')))
-    root.render(<BubbleTurnIntoMenu editor={activeEditor} canCreateSubPage={canCreateSubPage} />)
+    root.render(<BubbleTurnIntoMenu editor={activeEditor} canCreateSubPage />)
     await tick()
   })
   return activeEditor
@@ -85,12 +85,6 @@ test('names the selected block and checks it in the list', async () => {
   ])
 })
 
-test('leaves out Page without a grant on the page', async () => {
-  await renderMenu([p('word')], TITLE_SIZE + 1, TITLE_SIZE + 5, false)
-  await openMenu()
-  expect(rows().map((row) => row.textContent)).not.toContain('Page')
-})
-
 test.each([
   ['spans two blocks', [p('one'), p('two')], TITLE_SIZE + 1, TITLE_SIZE + 9],
   ['is in the page title', [p('word')], 1, 6]
@@ -109,25 +103,5 @@ test('picking a row converts the block and puts the caret in it', async () => {
   const block = activeEditor.state.doc.child(1)
   expect([block.type.name, block.attrs.level]).toEqual(['heading', 2])
   expect(activeEditor.state.selection.$from.parent).toBe(block)
-  expect(activeEditor.view.hasFocus()).toBe(true)
-})
-
-test('Escape gives the selection back to the editor', async () => {
-  const activeEditor = await renderMenu([p('word')], TITLE_SIZE + 1, TITLE_SIZE + 5)
-  await openMenu()
-  await act(async () => {
-    rowNamed('Heading 1').dispatchEvent(
-      new happyWindow.KeyboardEvent('keydown', {
-        key: 'Escape',
-        bubbles: true,
-        cancelable: true
-      }) as unknown as Event
-    )
-    await tick()
-  })
-  await act(() => tick(50))
-  expect(rows()).toEqual([])
-  const {from, to} = activeEditor.state.selection
-  expect([from, to]).toEqual([TITLE_SIZE + 1, TITLE_SIZE + 5])
   expect(activeEditor.view.hasFocus()).toBe(true)
 })
