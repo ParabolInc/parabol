@@ -181,8 +181,10 @@ describe('Backspace', () => {
   test('undo restores an unwrapped callout in one step', () => {
     const editor = mount([callout('danger', [p('now')])], caretBefore('now'))
     press(editor, 'Backspace')
+    expect(types(editor)).not.toContain('callout')
     editor.commands.undo()
     expect(calloutAt(editor).attrs.tone).toBe('danger')
+    expect(texts(calloutAt(editor))).toEqual(['now'])
   })
 })
 
