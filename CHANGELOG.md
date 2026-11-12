@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.27.2](https://github.com/ParabolInc/parabol/compare/v15.27.1...v15.27.2) (2026-11-12)
+
+
+### Fixed
+
+* **client:** don't mount private pages without an unexpired auth token ([#14114](https://github.com/ParabolInc/parabol/issues/14114)) ([879eafc](https://github.com/ParabolInc/parabol/commit/879eafc88dd3e9e2c2a1d80551509f76310e9285))
+* **server:** give permission rules a nullable authToken type ([#14113](https://github.com/ParabolInc/parabol/issues/14113)) ([d29c564](https://github.com/ParabolInc/parabol/commit/d29c56474cdfac31d3ec8148a80b18471cd7aad7))
+
 ## [15.27.1](https://github.com/ParabolInc/parabol/compare/v15.27.0...v15.27.1) (2026-11-12)
 
 
