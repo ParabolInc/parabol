@@ -10,7 +10,8 @@ const handleRemovePromptTemplate = (
   teamId: string,
   store: RecordSourceSelectorProxy<any>
 ) => {
-  const team = store.get(teamId)!
+  const team = store.get(teamId)
+  if (!team) return
   const retroSettings = team.getLinkedRecord('meetingSettings', {
     meetingType: 'retrospective'
   })

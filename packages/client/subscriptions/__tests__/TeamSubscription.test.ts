@@ -155,6 +155,30 @@ describe('TeamSubscription', () => {
     })
   })
 
+  it("applies a teammate's removed prompt template when the viewer hasn't loaded its team", () => {
+    const settingsId = 'settings1'
+    const otherTemplateId = 'template2'
+    const atmosphere = createTestAtmosphere({
+      teamSubscription: {
+        fieldName: 'RemovePromptTemplateSuccess',
+        RemovePromptTemplateSuccess: {
+          template: {id: templateId, teamId},
+          meetingSettings: {
+            __typename: 'RetrospectiveMeetingSettings',
+            id: settingsId,
+            selectedTemplateId: otherTemplateId,
+            selectedTemplate: {id: otherTemplateId}
+          }
+        }
+      }
+    })
+    TeamSubscription(atmosphere, {}, {navigate: jest.fn()})
+    expect(getUnexpectedErrors()).toEqual([])
+    expect(atmosphere.getStore().getSource().get(settingsId)?.selectedTemplateId).toBe(
+      otherTemplateId
+    )
+  })
+
   it("removes only the ended meeting from the team's active meetings", () => {
     const endedMeetingId = 'meeting1'
     const startedMeetingId = 'meeting2'
