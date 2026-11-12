@@ -177,7 +177,8 @@
       "__APP_VERSION__",
       "__webpack_public_path__",
       "__COMMIT_HASH__",
-      "__NESTED_USAGE__"
+      "__NESTED_USAGE__",
+      "__NESTED_TYPE_DEFS__"
     ]
   },
   "html": {"formatter": {"selfCloseVoidElements": "always"}},

@@ -58,6 +58,7 @@ const devServersConfig: Configuration = {
     new rspack.DefinePlugin({
       __PRODUCTION__: false,
       __NESTED_USAGE__: 'null',
+      __NESTED_TYPE_DEFS__: 'null',
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
       __COMMIT_HASH__: JSON.stringify(getCommitHash())
     })

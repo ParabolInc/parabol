@@ -8,6 +8,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const {CleanWebpackPlugin} = require('clean-webpack-plugin')
 const getCommitHash = require('./utils/getCommitHash')
 const getNestedUsage = require('./utils/getNestedUsage')
+const pruneNestedTypeDefs = require('./utils/pruneNestedTypeDefs')
 const persistentCache = require('./utils/persistentCache')
 
 const PROJECT_ROOT = getProjectRoot()
@@ -30,6 +31,7 @@ const SHARP_LIBVIPS_ROOT = path.dirname(
 
 module.exports = (config) => {
   const noDeps = config.noDeps === 'true'
+  const nestedUsage = getNestedUsage()
   return {
     ...persistentCache(`servers-noDeps-${noDeps}`, __filename),
     mode: 'production',
@@ -104,7 +106,8 @@ module.exports = (config) => {
         __PRODUCTION__: true,
         __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
         __COMMIT_HASH__: JSON.stringify(COMMIT_HASH),
-        __NESTED_USAGE__: JSON.stringify(getNestedUsage()),
+        __NESTED_USAGE__: JSON.stringify(nestedUsage),
+        __NESTED_TYPE_DEFS__: JSON.stringify(nestedUsage && pruneNestedTypeDefs(nestedUsage)),
         // hardcode architecture so uWebSockets.js dynamic require becomes deterministic at build time & requires 1 binary
         'process.platform': JSON.stringify(process.platform),
         'process.arch': JSON.stringify(process.arch),
