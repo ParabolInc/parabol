@@ -16,9 +16,12 @@ import {useTipTapTypingStatus} from '../hooks/useTipTapTypingStatus'
 import CreateTaskMutation from '../mutations/CreateTaskMutation'
 import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
+import {cn} from '../ui/cn'
 import AddPollButton from './AddPollButton'
 import AddTaskButton from './AddTaskButton'
 import Avatar from './Avatar/Avatar'
+import DiscussionComposerTabs, {type DiscussionComposerTab} from './DiscussionComposerTabs'
+import DiscussionTaskDraft from './DiscussionTaskDraft'
 import type {DiscussionThreadables} from './DiscussionThreadList'
 import {createLocalPoll} from './Poll/local/newPoll'
 import SendCommentButton from './SendCommentButton'
@@ -72,6 +75,7 @@ const DiscussionThreadInput = (props: Props) => {
     graphql`
       fragment DiscussionThreadInput_viewer on User {
         picture
+        preferredName
       }
     `,
     viewerRef
@@ -98,7 +102,7 @@ const DiscussionThreadInput = (props: Props) => {
     `,
     discussionRef
   )
-  const {picture} = viewer
+  const {picture, preferredName} = viewer
   const isReply = !!props.isReply
   const isDisabled = !!props.isDisabled
   const {
@@ -177,12 +181,13 @@ const DiscussionThreadInput = (props: Props) => {
     editor?.commands.clearOnSubmit()
     clearReplyingTo()
   }
-  const addTask = () => {
+  const addTask = (content?: string) => {
     const {viewerId} = atmosphere
     const threadParentId = replyingTo?.threadParentId ?? replyingTo?.id
     const newTask = {
       status: 'active',
       sortOrder: dndNoise(),
+      content,
       discussionId,
       meetingId,
       threadParentId,
@@ -192,13 +197,33 @@ const DiscussionThreadInput = (props: Props) => {
     } as const
     CreateTaskMutation(atmosphere, {newTask}, {})
   }
+  const [taskDraft, setTaskDraft] = useState<{discussionId: string; isOpen: boolean} | null>(null)
+  const hasTabs = allowTasks && !isReply
+  const hasTaskDraft = taskDraft?.discussionId === discussionId
+  const activeTab: DiscussionComposerTab = hasTaskDraft && taskDraft.isOpen ? 'task' : 'comment'
+  const closeTaskDraft = () => {
+    setTaskDraft(null)
+    editor?.commands.focus('end')
+  }
+  const changeTab = (tab: DiscussionComposerTab) => {
+    if (tab === 'task') {
+      setTaskDraft({discussionId, isOpen: true})
+      return
+    }
+    setTaskDraft((draft) => draft && {...draft, isOpen: false})
+    editor?.commands.focus('end')
+  }
+  const createTask = (content: string) => {
+    addTask(content)
+    closeTaskDraft()
+  }
 
   const addPoll = () => {
     const threadSortOrder = getMaxSortOrder() + SORT_STEP + dndNoise()
     createLocalPoll(atmosphere, discussionId, threadSortOrder)
   }
 
-  const isActionsContainerVisible = allowTasks || allowPolls
+  const isActionsContainerVisible = (allowTasks && isReply) || allowPolls
   const isActionsContainerDisabled = !!editingTaskId || isCreatingPoll
   const avatar = isAnonymousComment ? anonymousAvatar : picture
   const inputBottomRef = useRef<HTMLDivElement>(null)
@@ -223,14 +248,37 @@ const DiscussionThreadInput = (props: Props) => {
       data-reply={isReply}
       ref={containerRef}
     >
-      <div className='flex items-center justify-center p-1'>
+      {hasTabs && (
+        <DiscussionComposerTabs
+          activeTab={activeTab}
+          isTaskDisabled={!!isActionsContainerDisabled}
+          onChange={changeTab}
+        />
+      )}
+      <div
+        role={hasTabs ? 'tabpanel' : undefined}
+        aria-label={hasTabs ? 'Comment' : undefined}
+        className={cn('flex items-center justify-center p-1', activeTab === 'task' && 'hidden')}
+      >
         <Avatar picture={avatar} onClick={toggleAnonymous} className='m-2 h-8 w-8 transition-all' />
         <TipTapEditor className='flex max-h-80 grow overflow-auto leading-4' editor={editor} />
         <SendCommentButton commentSubmitState={commentSubmitState} onSubmit={onSubmit} />
       </div>
+      {hasTabs && hasTaskDraft && (
+        <DiscussionTaskDraft
+          isOpen={activeTab === 'task'}
+          picture={picture}
+          preferredName={preferredName}
+          teamId={teamId}
+          onCancel={closeTaskDraft}
+          onCreate={createTask}
+        />
+      )}
       {isActionsContainerVisible && (
         <div className='flex items-center justify-center border-t-[1px] border-t-hairline border-solid py-1'>
-          {allowTasks && <AddTaskButton onClick={addTask} disabled={isActionsContainerDisabled} />}
+          {allowTasks && isReply && (
+            <AddTaskButton onClick={() => addTask()} disabled={isActionsContainerDisabled} />
+          )}
           {allowPolls && <AddPollButton onClick={addPoll} disabled={isActionsContainerDisabled} />}
         </div>
       )}
