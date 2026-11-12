@@ -3,7 +3,8 @@ import type {PageLinkBlockAttrs} from './extensions/PageLinkBlockBase'
 export const createPageLinkElement = (
   pageCode: number,
   title: string | null | undefined,
-  isDatabase: boolean
+  isDatabase: boolean,
+  isSyncedBlock = false
 ) => {
   const el = new Y.XmlElement<PageLinkBlockAttrs>('pageLinkBlock')
   el.setAttribute('pageCode', pageCode)
@@ -11,6 +12,9 @@ export const createPageLinkElement = (
   el.setAttribute('canonical', true)
   if (isDatabase) {
     el.setAttribute('database', true)
+  }
+  if (isSyncedBlock) {
+    el.setAttribute('synced', true)
   }
   return el
 }
