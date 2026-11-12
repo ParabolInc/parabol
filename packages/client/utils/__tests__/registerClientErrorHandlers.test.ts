@@ -219,3 +219,41 @@ test('a console error logged with an error from another realm keeps its message'
     })
   ])
 })
+
+const dispatchWindowError = (event: {message: string; filename: string; error: Error}) => {
+  const addEventListener = window.addEventListener as jest.Mock
+  const [, onError] = addEventListener.mock.calls.find(([type]) => type === 'error')!
+  onError(event)
+}
+
+const makeParseError = (message: string) => {
+  const error = new SyntaxError(message)
+  error.stack = `SyntaxError: ${message}`
+  return error
+}
+
+test('a script an extension injects that fails to parse is not reported', async () => {
+  const {flushClientErrors} = await loadHandlers()
+  const message = "Identifier 'savedAlert' has already been declared"
+  dispatchWindowError({
+    message: `Uncaught SyntaxError: ${message}`,
+    filename: 'chrome-extension://abcdefghijklmnop/assets/override.js',
+    error: makeParseError(message)
+  })
+  flushClientErrors()
+  expect(sentBeacon).not.toHaveBeenCalled()
+})
+
+test("a script of the app's own that fails to parse is still reported", async () => {
+  const {flushClientErrors} = await loadHandlers()
+  const message = "Unexpected token '?'"
+  dispatchWindowError({
+    message: `Uncaught SyntaxError: ${message}`,
+    filename: 'https://files.example.test/build/app_0a1b2c.js',
+    error: makeParseError(message)
+  })
+  flushClientErrors()
+  expect(await readBeaconReports()).toEqual([
+    expect.objectContaining({name: 'SyntaxError', message})
+  ])
+})
