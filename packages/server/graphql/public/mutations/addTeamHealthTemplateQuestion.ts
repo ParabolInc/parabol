@@ -1,6 +1,7 @@
 import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
+import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import publish from '../../../utils/publish'
 import isValid from '../../isValid'
@@ -9,7 +10,7 @@ import type {MutationResolvers} from '../resolverTypes'
 const addTeamHealthTemplateQuestion: MutationResolvers['addTeamHealthTemplateQuestion'] = async (
   _source,
   {templateId, questionIds: clientQuestionIds},
-  {dataLoader, socketId: mutatorId}
+  {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const pg = getKysely()
   const operationId = dataLoader.share()
@@ -29,7 +30,10 @@ const addTeamHealthTemplateQuestion: MutationResolvers['addTeamHealthTemplateQue
   const questions = (await dataLoader.get('teamHealthQuestions').loadMany(questionIds)).filter(
     isValid
   )
-  const validIds = questions.filter((q) => !q.replacedBy).map((q) => q.id)
+  const viewerId = getUserId(authToken)
+  const validIds = questions
+    .filter((q) => !q.replacedBy && (!q.createdBy || q.createdBy === viewerId))
+    .map((q) => q.id)
   if (validIds.length === 0) {
     throw new GraphQLError('No valid questions provided', {extensions: {code: 'BAD_USER_INPUT'}})
   }
