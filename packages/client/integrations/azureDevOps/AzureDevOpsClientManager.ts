@@ -1,9 +1,10 @@
-import type Atmosphere from '../Atmosphere'
-import type {MenuMutationProps} from '../hooks/useMutationProps'
-import azureDevOpsOAuthScope from '../integrations/azureDevOps/shared/azureDevOpsOAuthScope'
-import AddTeamMemberIntegrationAuthMutation from '../mutations/AddTeamMemberIntegrationAuthMutation'
-import getOAuthPopupFeatures from './getOAuthPopupFeatures'
-import makeHref from './makeHref'
+import type Atmosphere from '../../Atmosphere'
+import type {MenuMutationProps} from '../../hooks/useMutationProps'
+import AddTeamMemberIntegrationAuthMutation from '../../mutations/AddTeamMemberIntegrationAuthMutation'
+import getOAuthPopupFeatures from '../../utils/getOAuthPopupFeatures'
+import makeHref from '../../utils/makeHref'
+import {ERROR_POPUP_BLOCKED} from '../../utils/oauthPopupError'
+import azureDevOpsOAuthScope from './shared/azureDevOpsOAuthScope'
 
 class AzureDevOpsClientManager {
   static generateVerifier(): string {
@@ -65,9 +66,11 @@ class AzureDevOpsClientManager {
       getOAuthPopupFeatures({width: 500, height: 750, top: 56})
     )
 
-    if (popup) {
-      popup.location.href = url
+    if (!popup) {
+      onError({message: ERROR_POPUP_BLOCKED})
+      return
     }
+    popup.location.href = url
 
     const handler = (event: MessageEvent) => {
       if (typeof event.data !== 'object' || event.origin !== window.location.origin || submitting) {

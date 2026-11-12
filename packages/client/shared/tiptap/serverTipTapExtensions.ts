@@ -12,6 +12,8 @@ import {UniqueID} from '../../tiptap/extensions/docWithID/UniqueID'
 import {ImageBlockBase} from '../../tiptap/extensions/imageBlock/ImageBlockBase'
 import {PageUserMention} from '../../tiptap/extensions/pageUserMention/PageUserMention'
 import {MentionTaskTag} from '../../utils/MentionTaskTag'
+import {CalloutBase} from './extensions/CalloutBase'
+import {CalloutTitleBase} from './extensions/CalloutTitleBase'
 import {EmbedBlockBase} from './extensions/EmbedBlockBase'
 import {FileBlockBase} from './extensions/FileBlockBase'
 import {FileUploadBase} from './extensions/FileUploadBase'
@@ -66,6 +68,8 @@ export const serverTipTapExtensions: Extensions = [
   UniqueID,
   PageLinkBlockBase,
   TableOfContentsBase,
+  CalloutBase,
+  CalloutTitleBase,
   Database,
   TaskBlockBase,
   ThinkingBlockBase,

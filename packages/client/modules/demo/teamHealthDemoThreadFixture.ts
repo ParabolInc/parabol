@@ -109,6 +109,7 @@ export const createTeamHealthDemoThreadResponse = (
     viewer: {
       id: demoViewer.id,
       picture: demoViewer.picture,
+      preferredName: demoViewer.preferredName,
       discussion: topic ? createDiscussion(topic) : null
     }
   }

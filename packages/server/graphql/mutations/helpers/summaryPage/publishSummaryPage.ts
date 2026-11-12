@@ -57,7 +57,8 @@ export const publishSummaryPage = async (
       .handleEvent('addCanonicalPageLink', documentName, {
         title,
         pageCode: CipherId.encrypt(meetingSummaryPage.id),
-        isDatabase: false
+        isDatabase: false,
+        isSyncedBlock: false
       })
       .catch(Logger.error)
     const {id: pageId} = meetingSummaryPage

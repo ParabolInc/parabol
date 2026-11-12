@@ -1,6 +1,7 @@
 import {
   clearDraftAnswers,
   clearStageDrafts,
+  clearStaleDraftAnswers,
   draftAnswerKey,
   readDraftAnswer,
   writeDraftAnswer
@@ -79,6 +80,16 @@ describe('draft answer storage', () => {
     expect(readDraftAnswer('stage1', 'prompt2')).toBeNull()
     expect(readDraftAnswer('stage2', 'prompt1')).toEqual(doc)
     expect(store.get('unrelated')).toBe('keep me')
+  })
+
+  it('clears drafts for prompts that left the meeting, keeping the rest', () => {
+    writeDraftAnswer('stage1', 'oldPrompt', doc)
+    writeDraftAnswer('stage1', 'newPrompt', doc)
+    writeDraftAnswer('stage2', 'oldPrompt', doc)
+    clearStaleDraftAnswers('stage1', ['newPrompt'])
+    expect(readDraftAnswer('stage1', 'oldPrompt')).toBeNull()
+    expect(readDraftAnswer('stage1', 'newPrompt')).toEqual(doc)
+    expect(readDraftAnswer('stage2', 'oldPrompt')).toEqual(doc)
   })
 
   it('tolerates a localStorage that throws', () => {

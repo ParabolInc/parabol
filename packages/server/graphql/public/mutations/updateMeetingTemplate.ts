@@ -1,56 +1,92 @@
 import {GraphQLError} from 'graphql'
+import {sql} from 'kysely'
+import isTemplateAvailableToTeam from '../../../../client/shared/isTemplateAvailableToTeam'
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId} from '../../../utils/authorization'
+import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
-import assertTemplateAccess from './helpers/assertTemplateAccess'
+import switchTeamPromptTemplate from './helpers/switchTeamPromptTemplate'
 
 const updateMeetingTemplate: MutationResolvers['updateMeetingTemplate'] = async (
   _source,
-  {meetingId, templateId},
-  {authToken, dataLoader, socketId: mutatorId}
+  {meetingId, templateId, applyToSeries, clearTeamPromptResponses},
+  {dataLoader, socketId: mutatorId}
 ) => {
-  const pg = getKysely()
-  const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
-  const meeting = await dataLoader.get('newMeetings').load(meetingId)
-  if (!meeting)
-    return standardError(new Error('Meeting not found'), {
-      userId: viewerId
-    })
-  if (meeting.meetingType !== 'retrospective') return {error: {message: 'Meeting has no template'}}
-  const [template, meetingTeam] = await Promise.all([
-    dataLoader.get('meetingTemplates').load(templateId),
-    dataLoader.get('teams').loadNonNull(meeting.teamId)
+  const [meeting, template] = await Promise.all([
+    dataLoader.get('newMeetings').load(meetingId),
+    dataLoader.get('meetingTemplates').load(templateId)
   ])
-  if (!template || template.type !== 'retrospective') {
-    throw new GraphQLError('Template not found', {extensions: {code: 'NOT_FOUND'}})
-  }
-  await assertTemplateAccess(template, [meetingTeam.orgId], authToken, dataLoader)
-  const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
-  if (reflections.length > 0) {
-    return standardError(new Error('Cannot change template after reflections have been created'), {
-      userId: viewerId
+  if (!meeting) throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
+  const {meetingType, teamId} = meeting
+  if (meetingType !== 'retrospective' && meetingType !== 'teamPrompt') {
+    throw new GraphQLError('This meeting has no template to change', {
+      extensions: {code: 'BAD_USER_INPUT'}
     })
   }
-  const reflectPhase = getPhase(meeting.phases, 'reflect')
-  const hasCompletedReflectPhase = reflectPhase.stages.every((stage) => stage.isComplete)
-  if (hasCompletedReflectPhase) {
-    return standardError(
-      new Error('Cannot change template after reflection phase has been completed'),
-      {
-        userId: viewerId
-      }
-    )
+  if (meeting.endedAt) {
+    throw new GraphQLError('The meeting has ended', {extensions: {code: 'CONFLICT'}})
   }
-  await pg.updateTable('NewMeeting').set({templateId}).where('id', '=', meetingId).execute()
-  meeting.templateId = templateId
+  const team = await dataLoader.get('teams').loadNonNull(teamId)
+  if (!template || template.type !== meetingType || !isTemplateAvailableToTeam(template, team)) {
+    throw new GraphQLError('That template is not available to this team', {
+      extensions: {code: 'NOT_FOUND'}
+    })
+  }
 
-  const data = {meetingId, templateId}
+  const series =
+    applyToSeries && meeting.meetingSeriesId
+      ? await dataLoader.get('meetingSeries').load(meeting.meetingSeriesId)
+      : null
+  const seriesIdToUpdate = series && !series.cancelledAt ? series.id : null
+
+  if (meeting.meetingType === 'teamPrompt') {
+    await switchTeamPromptTemplate({
+      meeting,
+      templateId,
+      templateName: template.name,
+      seriesIdToUpdate,
+      clearTeamPromptResponses: !!clearTeamPromptResponses,
+      dataLoader,
+      operationId
+    })
+    await updateMeetingTemplateLastUsedAt(templateId, teamId)
+  } else {
+    const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
+    if (reflections.length > 0) {
+      throw new GraphQLError('Cannot change template after reflections have been created', {
+        extensions: {code: 'CONFLICT'}
+      })
+    }
+    const reflectPhase = getPhase(meeting.phases, 'reflect')
+    if (reflectPhase.stages.every((stage) => stage.isComplete)) {
+      throw new GraphQLError('Cannot change template after reflection phase has been completed', {
+        extensions: {code: 'CONFLICT'}
+      })
+    }
+    await getKysely()
+      .transaction()
+      .execute(async (trx) => {
+        await trx
+          .updateTable('NewMeeting')
+          .set({templateId, templateChosenAt: sql`now()`})
+          .where('id', '=', meetingId)
+          .execute()
+        if (seriesIdToUpdate) {
+          await trx
+            .updateTable('MeetingSeries')
+            .set({templateId})
+            .where('id', '=', seriesIdToUpdate)
+            .execute()
+        }
+      })
+  }
+  dataLoader.clearAll(['newMeetings', 'meetingSeries'])
+
+  const data = {meetingId}
   publish(SubscriptionChannel.MEETING, meetingId, 'UpdateMeetingTemplateSuccess', data, subOptions)
   return data
 }

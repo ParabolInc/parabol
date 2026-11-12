@@ -1,6 +1,7 @@
 import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import {markdownToTipTap} from '../../../../client/shared/tiptap/markdownToTipTap'
+import {replaceCalloutsWithBlockquotes} from '../../../../client/shared/tiptap/replaceCalloutsWithBlockquotes'
 import {USER_AI_TOKENS_MONTHLY_LIMIT} from '../../../postgres/constants'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId, isSuperUser} from '../../../utils/authorization'
@@ -12,7 +13,7 @@ import fetchIssues from './helpers/fetchIssues'
 import {formatIssuesForAI} from './helpers/issuesForAI'
 
 const toTipTapDoc = (markdown: string) =>
-  JSON.stringify({type: 'doc', content: markdownToTipTap(markdown)})
+  JSON.stringify({type: 'doc', content: replaceCalloutsWithBlockquotes(markdownToTipTap(markdown))})
 
 const generateInspirationItems: MutationResolvers['generateInspirationItems'] = async (
   _source,

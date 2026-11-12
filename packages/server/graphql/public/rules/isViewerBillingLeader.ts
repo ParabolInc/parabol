@@ -2,7 +2,7 @@ import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
 import type {AllPrimaryLoaders} from '../../../dataloader/RootDataLoader'
 import {getUserId} from '../../../utils/authorization'
-import type {GQLContext} from '../../graphql'
+import type {RuleContext} from '../../graphql'
 import {cacheByDotPath, getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
 export const isViewerBillingLeader = <T>(
@@ -11,7 +11,7 @@ export const isViewerBillingLeader = <T>(
 ) =>
   rule(`isViewerBillingLeader-${dataLoaderName ?? ''}`, {
     cache: cacheByDotPath(orgIdDotPath)
-  })(async (source, args, context: GQLContext) => {
+  })(async (source, args, context: RuleContext) => {
     const {authToken, dataLoader} = context
     const viewerId = getUserId(authToken)
     const argVar = getResolverDotPath(orgIdDotPath, source, args)

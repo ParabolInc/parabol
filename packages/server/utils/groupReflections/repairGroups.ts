@@ -11,7 +11,7 @@ import type {GroupReflectionsResult, ReflectionInput} from './types'
  * Returns null only when the response is too malformed to salvage.
  */
 export const repairGroups = (
-  parsed: Omit<GroupReflectionsResult, 'tokenCost'>,
+  parsed: Pick<GroupReflectionsResult, 'groups'>,
   reflections: readonly ReflectionInput[]
 ) => {
   if (!parsed.groups || !Array.isArray(parsed.groups)) return null

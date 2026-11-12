@@ -9,7 +9,6 @@ import type Atmosphere from '../../Atmosphere'
 import GitHubSVG from '../../components/GitHubSVG'
 import githubLogo from '../../styles/theme/images/graphics/github-flat.svg'
 import githubLogoWhite from '../../styles/theme/images/graphics/github-flat-white.svg'
-import GitHubClientManager from '../../utils/GitHubClientManager'
 import lazyPreload from '../../utils/lazyPreload'
 import {gitHubQueryValidation} from '../../validation/gitHubQueryValidation'
 import {
@@ -22,6 +21,7 @@ import {
 } from '../platform/ClientIntegrationDefinition'
 import makeScopingResults from '../platform/makeScopingResults'
 import makeWorkDrawerPanel from '../platform/makeWorkDrawerPanel'
+import GitHubClientManager from './GitHubClientManager'
 import {githubIntegrationMeta} from './shared/githubIntegrationMeta'
 
 const GITHUB_DEFAULT_QUERY = 'is:issue is:open sort:updated involves:@me'

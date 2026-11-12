@@ -27,17 +27,23 @@ const mapStorage = () => {
 }
 
 describe('isReportsLaunchGlowActive', () => {
-  it('glows for someone who has not visited Reports before the sunset', () => {
-    expect(isReportsLaunchGlowActive(new Date(2026, 10, 11), false)).toBe(true)
+  const lastMetAt = '2026-11-02T15:00:00.000Z'
+  it('glows for someone who has met but not visited Reports before the sunset', () => {
+    expect(isReportsLaunchGlowActive(new Date(2026, 10, 11), false, lastMetAt)).toBe(true)
+  })
+  it('never glows for someone who has never been in a meeting', () => {
+    expect(isReportsLaunchGlowActive(new Date(2026, 10, 11), false, null)).toBe(false)
   })
   it('stops once the person has visited Reports', () => {
-    expect(isReportsLaunchGlowActive(new Date(2026, 10, 11), true)).toBe(false)
+    expect(isReportsLaunchGlowActive(new Date(2026, 10, 11), true, lastMetAt)).toBe(false)
   })
   it('still glows in the last second of 2026, local time', () => {
-    expect(isReportsLaunchGlowActive(new Date(2026, 11, 31, 23, 59, 59), false)).toBe(true)
+    expect(isReportsLaunchGlowActive(new Date(2026, 11, 31, 23, 59, 59), false, lastMetAt)).toBe(
+      true
+    )
   })
   it('stops at local midnight on Jan 1, 2027', () => {
-    expect(isReportsLaunchGlowActive(new Date(2027, 0, 1, 0, 0, 0), false)).toBe(false)
+    expect(isReportsLaunchGlowActive(new Date(2027, 0, 1, 0, 0, 0), false, lastMetAt)).toBe(false)
   })
 })
 

@@ -2,7 +2,7 @@ import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
 import type {Orguserroleenum} from '../../../postgres/types/pg'
 import {getUserId} from '../../../utils/authorization'
-import type {GQLContext} from '../../graphql'
+import type {RuleContext} from '../../graphql'
 import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
 export const hasOrgRole = <T>(
@@ -11,7 +11,7 @@ export const hasOrgRole = <T>(
   dataLoaderName?: 'saml'
 ) =>
   rule(`hasOrgRole-${dotPath}-${dataLoaderName ?? 'orgId'}`, {cache: 'strict'})(
-    async (source, args, context: GQLContext) => {
+    async (source, args, context: RuleContext) => {
       const {authToken, dataLoader} = context
       const id = getResolverDotPath(dotPath, source, args)
       const orgId = dataLoaderName ? (await dataLoader.get(dataLoaderName).load(id))?.orgId : id

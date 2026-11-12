@@ -1,7 +1,7 @@
 import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
 import type {AllPrimaryLoaders} from '../../../dataloader/RootDataLoader'
-import type {GQLContext} from '../../graphql'
+import type {RuleContext} from '../../graphql'
 import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
 export const isUser = <T>(
@@ -9,7 +9,7 @@ export const isUser = <T>(
   dataLoaderName?: AllPrimaryLoaders,
   userIdKey = 'userId'
 ) =>
-  rule(`isUser`, {cache: 'strict'})(async (source, args, context: GQLContext) => {
+  rule(`isUser`, {cache: 'strict'})(async (source, args, context: RuleContext) => {
     const argVar = getResolverDotPath(dotPath, source, args)
     const {authToken, dataLoader} = context
     let userId: string = argVar
@@ -21,7 +21,7 @@ export const isUser = <T>(
         })
       userId = subject[userIdKey]
     }
-    if (authToken.sub !== userId)
+    if (authToken?.sub !== userId)
       return new GraphQLError(`Viewer is not on team`, {extensions: {code: 'FORBIDDEN'}})
     return true
   })

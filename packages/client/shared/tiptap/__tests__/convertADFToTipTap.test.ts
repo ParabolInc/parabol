@@ -1,8 +1,16 @@
-import {convertADFToTipTap} from '../convertADFToTipTap'
+import {type AdfNode, convertADFToTipTap} from '../convertADFToTipTap'
 
 const paragraph = (text: string) => ({
   type: 'paragraph',
   content: [{type: 'text', text}]
+})
+
+const doc = (content: AdfNode[]): AdfNode => ({type: 'doc', version: 1, content})
+
+const panel = (panelType: string, content: AdfNode[]): AdfNode => ({
+  type: 'panel',
+  attrs: {panelType},
+  content
 })
 
 describe('convertADFToTipTap', () => {
@@ -46,6 +54,13 @@ describe('convertADFToTipTap', () => {
           marks: [{type: 'link', attrs: {href: 'https://example.com/page'}}]
         }
       ]
+    })
+  })
+
+  test('imports a panel as a blockquote that keeps its text', () => {
+    expect(convertADFToTipTap(doc([panel('info', [paragraph('x')])]), 'T').content[1]).toEqual({
+      type: 'blockquote',
+      content: [paragraph('x')]
     })
   })
 })

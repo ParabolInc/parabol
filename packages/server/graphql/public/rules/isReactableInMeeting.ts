@@ -1,7 +1,7 @@
 import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
 import TeamPromptResponseId from 'parabol-client/shared/gqlIds/TeamPromptResponseId'
-import type {GQLContext} from '../../graphql'
+import type {RuleContext} from '../../graphql'
 import {getReactable} from '../mutations/addReactjiToReactable'
 import type {MutationAddReactjiToReactableArgs} from '../resolverTypes'
 
@@ -9,7 +9,7 @@ export const isReactableInMeeting = rule(`isReactableInMeeting`, {cache: 'strict
   async (
     _source,
     {reactableId, reactableType, meetingId}: MutationAddReactjiToReactableArgs,
-    {dataLoader}: GQLContext
+    {dataLoader}: RuleContext
   ) => {
     const reactableDBId =
       reactableType === 'RESPONSE' ? TeamPromptResponseId.split(reactableId) : reactableId

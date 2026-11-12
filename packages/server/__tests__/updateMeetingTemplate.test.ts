@@ -25,36 +25,16 @@ const ADD_PROMPT_TEMPLATE = `
   }
 `
 
-const UPDATE_TEMPLATE_SCOPE = `
-  mutation UpdateTemplateScope($templateId: ID!, $scope: SharingScopeEnum!) {
-    updateTemplateScope(templateId: $templateId, scope: $scope) {
-      ... on UpdateTemplateScopeSuccess {
-        template {
-          id
-          scope
-        }
-      }
-    }
-  }
-`
-
 const UPDATE_MEETING_TEMPLATE = `
   mutation UpdateMeetingTemplate($meetingId: ID!, $templateId: ID!) {
     updateMeetingTemplate(meetingId: $meetingId, templateId: $templateId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
-      ... on UpdateMeetingTemplateSuccess {
-        meeting {
-          ... on RetrospectiveMeeting {
-            templateId
-            phases {
-              ... on ReflectPhase {
-                reflectPrompts {
-                  id
-                }
+      meeting {
+        ... on RetrospectiveMeeting {
+          templateId
+          phases {
+            ... on ReflectPhase {
+              reflectPrompts {
+                id
               }
             }
           }
@@ -92,12 +72,17 @@ const addPromptTemplate = async ({teamId, cookie}: Viewer) => {
 const updateMeetingTemplate = (meetingId: string, templateId: string, cookie: string) =>
   sendPublic({query: UPDATE_MEETING_TEMPLATE, variables: {meetingId, templateId}, cookie})
 
+const unavailableTemplateError = expect.objectContaining({
+  message: 'That template is not available to this team',
+  extensions: expect.objectContaining({code: 'NOT_FOUND'})
+})
+
 const getMeetingTemplateId = async (meetingId: string, cookie: string) => {
   const res = await sendPublic({query: MEETING_TEMPLATE, variables: {meetingId}, cookie})
   return res.data.viewer.meeting.templateId as string
 }
 
-test('a meeting cannot switch to a template shared with another organization', async () => {
+test('a meeting cannot switch to another organization’s template', async () => {
   const [outsider, owner] = await Promise.all([signUp(), signUp()])
   const [meetingId, {templateId}] = await Promise.all([
     startRetrospective(outsider),
@@ -107,36 +92,8 @@ test('a meeting cannot switch to a template shared with another organization', a
 
   const res = await updateMeetingTemplate(meetingId, templateId, outsider.cookie)
 
-  expect(res.errors).toEqual([
-    expect.objectContaining({
-      message: 'Template is scoped to organization',
-      extensions: expect.objectContaining({code: 'FORBIDDEN'})
-    })
-  ])
+  expect(res.errors).toEqual([unavailableTemplateError])
   expect(await getMeetingTemplateId(meetingId, outsider.cookie)).toBe(templateIdBefore)
-})
-
-test('a meeting cannot switch to another team’s template', async () => {
-  const [outsider, owner] = await Promise.all([signUp(), signUp()])
-  const [meetingId, {templateId}] = await Promise.all([
-    startRetrospective(outsider),
-    addPromptTemplate(owner)
-  ])
-  const downscoped = await sendPublic({
-    query: UPDATE_TEMPLATE_SCOPE,
-    variables: {templateId, scope: 'TEAM'},
-    cookie: owner.cookie
-  })
-  expect(downscoped.data.updateTemplateScope.template).toEqual({id: templateId, scope: 'TEAM'})
-
-  const res = await updateMeetingTemplate(meetingId, templateId, outsider.cookie)
-
-  expect(res.errors).toEqual([
-    expect.objectContaining({
-      message: 'Template is scoped to team',
-      extensions: expect.objectContaining({code: 'FORBIDDEN'})
-    })
-  ])
 })
 
 test('a meeting cannot switch to a template of another meeting type', async () => {
@@ -145,9 +102,7 @@ test('a meeting cannot switch to a template of another meeting type', async () =
 
   const res = await updateMeetingTemplate(meetingId, 'estimatedEffortTemplate', viewer.cookie)
 
-  expect(res.errors).toEqual([
-    expect.objectContaining({extensions: expect.objectContaining({code: 'NOT_FOUND'})})
-  ])
+  expect(res.errors).toEqual([unavailableTemplateError])
 })
 
 test('a meeting switches to a public template and to the team’s own template', async () => {

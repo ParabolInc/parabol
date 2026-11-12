@@ -5,6 +5,33 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.27.2](https://github.com/ParabolInc/parabol/compare/v15.27.1...v15.27.2) (2026-11-12)
+
+
+### Fixed
+
+* **client:** don't mount private pages without an unexpired auth token ([#14114](https://github.com/ParabolInc/parabol/issues/14114)) ([879eafc](https://github.com/ParabolInc/parabol/commit/879eafc88dd3e9e2c2a1d80551509f76310e9285))
+* **server:** give permission rules a nullable authToken type ([#14113](https://github.com/ParabolInc/parabol/issues/14113)) ([d29c564](https://github.com/ParabolInc/parabol/commit/d29c56474cdfac31d3ec8148a80b18471cd7aad7))
+
+## [15.27.1](https://github.com/ParabolInc/parabol/compare/v15.27.0...v15.27.1) (2026-11-12)
+
+
+### Fixed
+
+* **server:** deny a signed-out caller in team permission rules instead of crashing ([#14111](https://github.com/ParabolInc/parabol/issues/14111)) ([6a41fba](https://github.com/ParabolInc/parabol/commit/6a41fba0cb9bc3d6ae72ce12ddc53ea6ad393eff))
+
+## [15.27.0](https://github.com/ParabolInc/parabol/compare/v15.26.0...v15.27.0) (2026-11-12)
+
+
+### Added
+
+* **server:** group suggestions like teams do, and record grouping metrics for future optimization ([#14106](https://github.com/ParabolInc/parabol/issues/14106)) ([224a7aa](https://github.com/ParabolInc/parabol/commit/224a7aa062fbee0770bc8f8b4a62d0443ebda69d))
+
+
+### Fixed
+
+* only show the Reports glow to people who have met ([#14107](https://github.com/ParabolInc/parabol/issues/14107)) ([b9af681](https://github.com/ParabolInc/parabol/commit/b9af681f1f519bc93ef1b0abaa32ad645c38eb96))
+
 ## [15.26.0](https://github.com/ParabolInc/parabol/compare/v15.25.1...v15.26.0) (2026-11-12)
 
 

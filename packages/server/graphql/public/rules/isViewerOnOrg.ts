@@ -2,7 +2,7 @@ import {GraphQLError, type GraphQLResolveInfo} from 'graphql'
 import {rule} from 'graphql-shield'
 import type {AllPrimaryLoaders} from '../../../dataloader/RootDataLoader'
 import {getUserId} from '../../../utils/authorization'
-import type {GQLContext} from '../../graphql'
+import type {RuleContext} from '../../graphql'
 import {cacheByDotPath, getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
 export const isViewerOnOrg = <T>(
@@ -10,7 +10,7 @@ export const isViewerOnOrg = <T>(
   dataLoaderName?: AllPrimaryLoaders
 ) =>
   rule(`isViewerOnOrg-${dataLoaderName ?? ''}`, {cache: cacheByDotPath(orgIdDotPath)})(
-    async (source, args, context: GQLContext, info: GraphQLResolveInfo) => {
+    async (source, args, context: RuleContext, info: GraphQLResolveInfo) => {
       const {authToken, dataLoader} = context
       const argVar = getResolverDotPath(orgIdDotPath, source, args)
       let orgId: string = argVar

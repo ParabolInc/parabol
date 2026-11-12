@@ -106,6 +106,19 @@ export const kitchenSink: JSONContent = {
       ]
     },
     {
+      type: 'callout',
+      attrs: {tone: 'warning', emoji: null},
+      content: [
+        {type: 'calloutTitle', content: [{type: 'text', text: 'Code freeze'}]},
+        {type: 'paragraph', content: [{type: 'text', text: 'No merges after Thursday.'}]}
+      ]
+    },
+    {
+      type: 'callout',
+      attrs: {tone: 'plain', emoji: '🚀'},
+      content: [{type: 'paragraph', content: [{type: 'text', text: 'Launch day.'}]}]
+    },
+    {
       type: 'blockquote',
       content: [{type: 'paragraph', content: [{type: 'text', text: 'a wise quote'}]}]
     },
