@@ -4,7 +4,7 @@ import type {useAcceptSuggestedGroupsMutation as TAcceptSuggestedGroupsMutation}
 import type {useAcceptSuggestedGroupsMutation_meeting$data} from '../__generated__/useAcceptSuggestedGroupsMutation_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import type {OnNextHandler} from '../types/relayMutations'
-import getServerError from '../utils/relay/getServerError'
+import getMutationError from '../utils/relay/getMutationError'
 
 graphql`
   fragment useAcceptSuggestedGroupsMutation_meeting on AcceptSuggestedGroupsSuccess {
@@ -86,10 +86,7 @@ const useAcceptSuggestedGroupsMutation = () => {
         })
         onCompleted?.(res, errors)
       },
-      onError: (err) => {
-        showError(getServerError(err)?.message ?? err.message)
-        onError?.(err)
-      }
+      onError: onError ?? ((err) => showError(getMutationError(err).message))
     })
   }
   return [execute, submitting] as const

@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {useUpdateMeetingTemplateMutation as TUpdateMeetingTemplateMutation} from '../__generated__/useUpdateMeetingTemplateMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import getServerError from '../utils/relay/getServerError'
+import GraphQLServerError from '../utils/relay/GraphQLServerError'
 
 graphql`
   fragment useUpdateMeetingTemplateMutation_meeting on UpdateMeetingTemplateSuccess {
@@ -73,7 +73,9 @@ const useUpdateMeetingTemplateMutation = () => {
         if (message) reportError(message)
       },
       onError: (error) => {
-        reportError(getServerError(error)?.message ?? 'Could not change the template')
+        reportError(
+          error instanceof GraphQLServerError ? error.message : 'Could not change the template'
+        )
       },
       ...config
     })

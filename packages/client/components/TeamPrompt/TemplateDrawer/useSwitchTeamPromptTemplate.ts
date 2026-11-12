@@ -1,7 +1,8 @@
 import {useState} from 'react'
+import type {PayloadError} from 'relay-runtime'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useUpdateMeetingTemplateMutation from '../../../mutations/useUpdateMeetingTemplateMutation'
-import getServerError, {type ServerError} from '../../../utils/relay/getServerError'
+import GraphQLServerError from '../../../utils/relay/GraphQLServerError'
 import type {SwitchTemplateConfirmation} from './TeamPromptSwitchTemplateDialog'
 
 interface PickedTemplate {
@@ -31,10 +32,11 @@ const useSwitchTeamPromptTemplate = (options: Options) => {
   const handleError = (
     template: PickedTemplate,
     clearTeamPromptResponses: boolean,
-    error: ServerError | undefined
+    error: PayloadError | undefined
   ) => {
-    const code = error?.extensions?.code
-    const answeredCount = error?.extensions?.answeredCount
+    const extensions: Record<string, unknown> | undefined = error?.extensions
+    const code = extensions?.code
+    const answeredCount = extensions?.answeredCount
     if (code === 'CONFLICT' && typeof answeredCount === 'number') {
       setConfirmation({templateId: template.id, templateName: template.name, answeredCount})
     } else if (code === 'NOT_FOUND') {
@@ -68,7 +70,8 @@ const useSwitchTeamPromptTemplate = (options: Options) => {
       },
       onError: (error) => {
         setPendingTemplateId(null)
-        handleError(template, clearTeamPromptResponses, getServerError(error))
+        const serverError = error instanceof GraphQLServerError ? error.errors[0] : undefined
+        handleError(template, clearTeamPromptResponses, serverError)
       }
     })
   }
