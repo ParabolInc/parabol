@@ -1,8 +1,8 @@
 export const REPORTS_LAUNCH_SEEN_KEY = 'reportsLaunchSeen'
 export const REPORTS_LAUNCH_SUNSET = new Date(2027, 0, 1)
 
-export const isReportsLaunchGlowActive = (now: Date, seen: boolean) =>
-  !seen && now < REPORTS_LAUNCH_SUNSET
+export const isReportsLaunchGlowActive = (now: Date, seen: boolean, lastMetAt: string | null) =>
+  !!lastMetAt && !seen && now < REPORTS_LAUNCH_SUNSET
 
 export const readReportsLaunchSeen = () => {
   try {

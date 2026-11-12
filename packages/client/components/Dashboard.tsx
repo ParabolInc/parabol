@@ -97,6 +97,7 @@ const Dashboard = (props: Props) => {
           ...DashSidebar_viewer
           ...useNewFeatureSnackbar_viewer
           ...Page_viewer
+          lastMetAt
           overLimitCopy
           theme
           teams {
@@ -113,7 +114,7 @@ const Dashboard = (props: Props) => {
   const {teams} = viewer
   const activeMeetings = teams.flatMap((team) => team.activeMeetings).filter(Boolean)
   const {isOpen, toggle, handleMenuClick} = useSidebar()
-  const reportsGlow = useReportsLaunchGlow()
+  const reportsGlow = useReportsLaunchGlow(viewer.lastMetAt ?? null)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const overLimitCopy = viewer?.overLimitCopy
   const meetingsDashRef = useRef<HTMLDivElement>(null)
