@@ -94,13 +94,24 @@ const getByRole = (role: string, name: string | RegExp) => {
   return element
 }
 
-const renderMenuFor = async (block: Json) => {
+const findCalloutPos = (activeEditor: Editor) => {
+  let found: number | undefined
+  activeEditor.state.doc.descendants((node, pos) => {
+    if (node.type.name === 'callout') found = pos
+  })
+  return found
+}
+
+const renderMenuFor = async (
+  block: Json,
+  getPos?: (activeEditor: Editor) => number | undefined
+) => {
   const activeEditor = createEditor(block)
   const node = calloutAt(activeEditor)
   await mount(
     <CalloutStyleMenu
       editor={activeEditor}
-      getPos={() => CALLOUT_POS}
+      getPos={() => (getPos ? getPos(activeEditor) : CALLOUT_POS)}
       tone={node.attrs.tone}
       emoji={node.attrs.emoji}
       hasTitle={node.firstChild?.type.name === 'calloutTitle'}
@@ -188,6 +199,17 @@ describe('the style menu', () => {
     const {editor: activeEditor} = await renderMenuFor(callout('info', [p('x')]))
     await click(getByRole('menuitem', /Remove callout/))
     expect(types(activeEditor)).not.toContain('callout')
+  })
+
+  test('an edit above the open menu still styles this callout', async () => {
+    const {editor: activeEditor} = await renderMenuFor(callout('plain', [p('x')]), findCalloutPos)
+    act(() => {
+      activeEditor.commands.insertContentAt(CALLOUT_POS, p('above'))
+    })
+    await click(getByRole('menuitemradio', 'Warning'))
+    const calloutPos = findCalloutPos(activeEditor)
+    expect(calloutPos).toBeGreaterThan(CALLOUT_POS)
+    expect(activeEditor.state.doc.nodeAt(calloutPos!)?.attrs.tone).toBe('warning')
   })
 
   test('a read-only page changes nothing', async () => {

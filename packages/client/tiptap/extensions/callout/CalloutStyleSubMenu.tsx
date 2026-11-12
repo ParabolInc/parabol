@@ -26,7 +26,7 @@ export const CalloutStyleSubMenu = ({editor, node, pos, onClose}: Props) => (
       <MenuSubContent className='z-50 max-h-80 min-w-[200px]' collisionPadding={8}>
         <CalloutStyleItems
           editor={editor}
-          pos={pos}
+          getPos={() => pos}
           tone={toCalloutTone(node.attrs.tone)}
           emoji={node.attrs.emoji || null}
           hasTitle={node.firstChild?.type.name === 'calloutTitle'}

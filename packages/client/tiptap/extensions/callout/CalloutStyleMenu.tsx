@@ -17,7 +17,6 @@ interface Props {
 export const CalloutStyleMenu = (props: Props) => {
   const {editor, getPos, tone, emoji, hasTitle} = props
   const [isOpen, setIsOpen] = useState(false)
-  const pos = isOpen ? getPos() : undefined
   return (
     <Menu
       open={isOpen}
@@ -25,16 +24,14 @@ export const CalloutStyleMenu = (props: Props) => {
       trigger={<CalloutIconButton tone={tone} emoji={emoji} />}
     >
       <MenuContent align='start' sideOffset={4} collisionPadding={8} className='z-50 max-h-80'>
-        {pos !== undefined && (
-          <CalloutStyleItems
-            editor={editor}
-            pos={pos}
-            tone={tone}
-            emoji={emoji}
-            hasTitle={hasTitle}
-            onClose={() => setIsOpen(false)}
-          />
-        )}
+        <CalloutStyleItems
+          editor={editor}
+          getPos={getPos}
+          tone={tone}
+          emoji={emoji}
+          hasTitle={hasTitle}
+          onClose={() => setIsOpen(false)}
+        />
       </MenuContent>
     </Menu>
   )

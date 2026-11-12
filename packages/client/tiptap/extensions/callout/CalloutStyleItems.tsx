@@ -20,7 +20,7 @@ import {CALLOUT_TONE_STYLES} from './calloutToneStyles'
 
 interface Props {
   editor: Editor
-  pos: number
+  getPos: () => number | undefined
   tone: CalloutTone
   emoji: string | null
   hasTitle: boolean
@@ -28,16 +28,18 @@ interface Props {
 }
 
 export const CalloutStyleItems = (props: Props) => {
-  const {editor, pos, tone, emoji, hasTitle, onClose} = props
-  const run = (command: (chain: ChainedCommands) => ChainedCommands) => {
-    if (!editor.isEditable || editor.state.doc.nodeAt(pos)?.type.name !== 'callout') return
-    command(editor.chain()).run()
+  const {editor, getPos, tone, emoji, hasTitle, onClose} = props
+  const run = (command: (chain: ChainedCommands, pos: number) => ChainedCommands) => {
+    const pos = getPos()
+    if (pos === undefined || !editor.isEditable) return
+    if (editor.state.doc.nodeAt(pos)?.type.name !== 'callout') return
+    command(editor.chain(), pos).run()
   }
   const focus = (chain: ChainedCommands) => chain.focus(null, {scrollIntoView: false})
   const {Icon: ToneIcon} = CALLOUT_TONE_STYLES[tone]
 
   const pickEmoji = (emojiId: string) => {
-    run((chain) => chain.setCalloutEmoji(pos, getReactji(emojiId).native))
+    run((chain, pos) => chain.setCalloutEmoji(pos, getReactji(emojiId).native))
     onClose()
   }
 
@@ -45,7 +47,9 @@ export const CalloutStyleItems = (props: Props) => {
     <>
       <DropdownMenu.RadioGroup
         value={tone}
-        onValueChange={(value) => run((chain) => chain.setCalloutTone(pos, toCalloutTone(value)))}
+        onValueChange={(value) =>
+          run((chain, pos) => chain.setCalloutTone(pos, toCalloutTone(value)))
+        }
       >
         {CALLOUT_TONES.map((option) => {
           const {Icon, frameClass, iconClass} = CALLOUT_TONE_STYLES[option]
@@ -67,12 +71,12 @@ export const CalloutStyleItems = (props: Props) => {
       <MenuSeparator />
       <MenuItemCheckbox
         checked={hasTitle}
-        onCheckedChange={() => run((chain) => focus(chain.toggleCalloutTitle(pos)))}
+        onCheckedChange={() => run((chain, pos) => focus(chain.toggleCalloutTitle(pos)))}
       >
         Title
       </MenuItemCheckbox>
       {emoji ? (
-        <MenuItem onSelect={() => run((chain) => chain.setCalloutEmoji(pos, null))}>
+        <MenuItem onSelect={() => run((chain, pos) => chain.setCalloutEmoji(pos, null))}>
           <ToneIcon className={MENU_ITEM_ICON} />
           Use the {CALLOUT_TONE_LABELS[tone]} icon
         </MenuItem>
@@ -93,7 +97,7 @@ export const CalloutStyleItems = (props: Props) => {
         </DropdownMenu.Sub>
       )}
       <MenuSeparator />
-      <MenuItem onSelect={() => run((chain) => focus(chain.unsetCallout(pos)))}>
+      <MenuItem onSelect={() => run((chain, pos) => focus(chain.unsetCallout(pos)))}>
         <Close className={MENU_ITEM_ICON} />
         <span className='flex flex-col'>
           <span>Remove callout</span>
