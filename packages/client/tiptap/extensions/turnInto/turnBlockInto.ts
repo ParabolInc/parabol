@@ -65,6 +65,15 @@ export const getTurnIntoTarget = (doc: Node, pos: number): TurnIntoTarget | null
 export const canTurnIntoPage = ({type}: TurnIntoTarget) =>
   type === 'paragraph' || type === 'heading'
 
+export const isInsideCallout = (doc: Node, pos: number) => {
+  if (pos < 0 || pos > doc.content.size) return false
+  const $pos = doc.resolve(pos)
+  for (let depth = $pos.depth; depth > 0; depth--) {
+    if ($pos.node(depth).type.name === 'callout') return true
+  }
+  return false
+}
+
 const codeToInline = (code: string, schema: Schema) => {
   const inline: Node[] = []
   code

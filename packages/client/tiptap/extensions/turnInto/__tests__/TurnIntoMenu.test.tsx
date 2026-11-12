@@ -178,6 +178,16 @@ describe('what the menu offers', () => {
     )
   })
 
+  test('a block inside a callout has no Callout row', async () => {
+    const callout: Json = {type: 'callout', attrs: {tone: 'info'}, content: [p('word')]}
+    await openMenu([callout], {pos: TITLE_SIZE + 1})
+    expect(caption()).toBe('Text')
+    await openTurnInto()
+    expect(radios().map((row) => row.textContent)).toEqual(
+      ROW_TITLES.filter((title) => title !== 'Callout')
+    )
+  })
+
   test('a heading level with no row has no caption or check', async () => {
     await openMenu([h(4, 'word')])
     expect(caption()).toBeNull()
