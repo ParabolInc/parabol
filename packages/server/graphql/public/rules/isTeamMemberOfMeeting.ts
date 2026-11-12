@@ -26,7 +26,7 @@ export const isTeamMemberOfMeeting = <T>(
       return new GraphQLError(`Meeting not found`, {extensions: {code: 'NOT_FOUND'}})
     }
     // All team members can join a meeting, so let them interact with it even if no team member exists yet. This allows for creation of reflections beforehand
-    if (!authToken.tms?.includes(meeting.teamId)) {
+    if (!authToken?.tms?.includes(meeting.teamId)) {
       return new GraphQLError(`Viewer is not on team`, {extensions: {code: 'FORBIDDEN'}})
     }
     if (context.resourceGrants && !(await context.resourceGrants.hasTeam(meeting.teamId))) {

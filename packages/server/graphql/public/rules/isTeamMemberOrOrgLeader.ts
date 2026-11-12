@@ -20,7 +20,7 @@ export const isTeamMemberOrOrgLeader = <T>(dotPath: ResolverDotPath<T>) =>
       const teamIds = (Array.isArray(argVar) ? argVar : [argVar]) as string[]
 
       for (const teamId of new Set(teamIds)) {
-        if (authToken.tms?.includes(teamId)) {
+        if (authToken?.tms?.includes(teamId)) {
           if (resourceGrants && !(await resourceGrants.hasTeam(teamId))) {
             return new GraphQLError(`PAT does not grant access to this team`, {
               extensions: {code: 'FORBIDDEN'}
