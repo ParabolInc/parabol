@@ -142,7 +142,7 @@ export const modelIdDefinitions = {
     relatedDiscussionFloor: 0.62,
     reflectionPrompt:
       'Instruct: Given a note from a team retrospective, retrieve notes that make the same point\nQuery: ',
-    similarWordingThreshold: 0.79,
+    similarWordingThreshold: 0.78,
     templateSearchFloor: 0.35,
     templateSearchGap: 0.05
   },
