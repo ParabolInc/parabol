@@ -69,7 +69,7 @@ When a mutation returns IDs (not full objects), the payload type source needs cu
 - Add a mapper entry in `codegen.json`
 - Use `loadNonNull` when the SDL field is non-nullable (e.g. `meeting: NewMeeting`), `load` when nullable
 
-The error branch pattern for union-style payloads with inline error:
+A legacy union payload (don't add new ones) resolves its error branch like this:
 ```ts
 export type FooPayloadSource = {orgId: string; teamIds: string[]} | {error: {message: string}}
 
@@ -93,8 +93,22 @@ import ms from 'ms'
 const maxAllowed = new Date(Date.now() + ms('60d'))
 ```
 
-### Mutation return types: always use `*Success` directly — union Payloads are deprecated
-Mutations must return the `*Success` type directly (e.g. `SetCompanyTeamLimitAtSuccess!`). The `union *Payload = ErrorPayload | *Success` pattern is **deprecated** — do not use it for new mutations. On errors, throw a `GraphQLError` instead of returning an error object.
+### Mutation return types and errors
+New mutations return an `XPayload` object type directly, non-null (`startFoo(...): StartFooPayload!`). Don't add a `union *Payload = ErrorPayload | *Success` or a new `*Success` name: both are being migrated away.
+
+A failure throws `new GraphQLError(message, {extensions: {code}})`. `scripts/biome/requireGraphQLErrorCode.grit` rejects a `GraphQLError` without a code, and `ParabolGraphQLErrorCodes` in `packages/types/augments/index.d.ts` types it. API clients see the message and `extensions`, so keep internals and upstream error objects out of both. Pick the code by what the caller should do next:
+- `UNAUTHENTICATED`: no valid session or token
+- `FORBIDDEN`: the viewer, their org or their PAT isn't allowed. Prefer a rule in `permissions.ts`
+- `NOT_FOUND`: what an argument points at doesn't exist
+- `BAD_USER_INPUT`: the arguments are wrong whatever the state (format, length, ids that don't belong together, the wrong meeting type)
+- `CONFLICT`: the arguments are fine but the current state rules them out (the meeting already ended, the name is taken, the list is full)
+- `TOO_MANY_REQUESTS`: a rate limit or quota
+- `SERVICE_UNAVAILABLE`: an AI provider or integration failed, so a retry may work
+- `NOT_IMPLEMENTED`: this server isn't set up for the feature
+- `INTERNAL_SERVER_ERROR`: a bug the server caught itself. Logging, tracing, the SLO counter and the client's error reports treat it like a crash, but its message still reaches the client
+- A domain code (`UPGRADE_REQUIRED`, `UNAPPROVED_UNLINK`, …) only when the client branches on it
+
+A plain `Error` should only ever come from something nobody caught. Yoga replaces its message with "Unexpected error." and adds the trace id as `extensions.traceId`.
 
 ---
 

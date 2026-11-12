@@ -68,7 +68,9 @@ const buildEmbeddings: MutationResolvers['buildEmbeddings'] = async (
       )
       return pages.length
     } else {
-      throw new GraphQLError(`Type: ${type} not implemented yet`)
+      throw new GraphQLError(`Type: ${type} not implemented yet`, {
+        extensions: {code: 'NOT_IMPLEMENTED'}
+      })
     }
   }
   return 0

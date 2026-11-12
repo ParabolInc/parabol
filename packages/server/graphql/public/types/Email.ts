@@ -5,11 +5,13 @@ import type {EmailScalarConfig} from '../resolverTypes'
 
 const parseEmail = (value: unknown) => {
   if (typeof value !== 'string') {
-    throw new GraphQLError(`Email must be a string, not ${typeof value}`)
+    throw new GraphQLError(`Email must be a string, not ${typeof value}`, {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   const email = normalizeEmail(value)
   if (!isValidEmail(email)) {
-    throw new GraphQLError('Not a valid email address')
+    throw new GraphQLError('Not a valid email address', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   return email
 }
@@ -20,7 +22,9 @@ const Email: EmailScalarConfig = {
   parseValue: parseEmail,
   parseLiteral: (ast) => {
     if (ast.kind !== Kind.STRING) {
-      throw new GraphQLError(`Email must be a string, not a ${ast.kind}`)
+      throw new GraphQLError(`Email must be a string, not a ${ast.kind}`, {
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
     }
     return parseEmail(ast.value)
   }

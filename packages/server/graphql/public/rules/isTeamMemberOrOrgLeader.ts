@@ -22,22 +22,26 @@ export const isTeamMemberOrOrgLeader = <T>(dotPath: ResolverDotPath<T>) =>
       for (const teamId of new Set(teamIds)) {
         if (authToken.tms?.includes(teamId)) {
           if (resourceGrants && !(await resourceGrants.hasTeam(teamId))) {
-            return new GraphQLError(`PAT does not grant access to this team`)
+            return new GraphQLError(`PAT does not grant access to this team`, {
+              extensions: {code: 'FORBIDDEN'}
+            })
           }
           continue
         }
         const team = await dataLoader.get('teams').load(teamId)
-        if (!team) return new GraphQLError(`Team not found`)
+        if (!team) return new GraphQLError(`Team not found`, {extensions: {code: 'NOT_FOUND'}})
         const {orgId} = team
         const organizationUser = await dataLoader
           .get('organizationUsersByUserIdOrgId')
           .load({orgId, userId: viewerId})
         const role = organizationUser?.role
         if (role !== 'BILLING_LEADER' && role !== 'ORG_ADMIN') {
-          return new GraphQLError(`Viewer is not on team`)
+          return new GraphQLError(`Viewer is not on team`, {extensions: {code: 'FORBIDDEN'}})
         }
         if (resourceGrants && !(await resourceGrants.hasOrg(orgId))) {
-          return new GraphQLError(`PAT does not grant access to this organization`)
+          return new GraphQLError(`PAT does not grant access to this organization`, {
+            extensions: {code: 'FORBIDDEN'}
+          })
         }
       }
       return true

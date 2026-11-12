@@ -96,6 +96,14 @@ test('an expected GraphQLError logged as a warning is flagged and leaves out var
   expect(record).not.toHaveProperty('stack_trace')
 })
 
+test('a GraphQLError coded INTERNAL_SERVER_ERROR is a bug the server caught, not an expected error', () => {
+  const caughtBug = new GraphQLError('Couldn’t create a poll', {
+    extensions: {code: 'INTERNAL_SERVER_ERROR'}
+  })
+  const record = makeLogRecord('error', caughtBug, [])
+  expect(record.error).toMatchObject({kind: 'GraphQLError', expected: false})
+})
+
 test('a message logged with an error keeps both', () => {
   const record = makeLogRecord('error', 'Permission rule threw on Query.viewer', [
     new Error('boom')

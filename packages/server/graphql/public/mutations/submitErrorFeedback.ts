@@ -13,9 +13,11 @@ const submitErrorFeedback: MutationResolvers['submitErrorFeedback'] = async (
   {errorMessage, content, eventId, email},
   {authToken, dataLoader, ip}
 ) => {
-  if (!UUID_REGEX.test(eventId)) throw new GraphQLError('eventId must be a UUID')
+  if (!UUID_REGEX.test(eventId))
+    throw new GraphQLError('eventId must be a UUID', {extensions: {code: 'BAD_USER_INPUT'}})
   const trimmedContent = content.trim()
-  if (!trimmedContent) throw new GraphQLError('content cannot be empty')
+  if (!trimmedContent)
+    throw new GraphQLError('content cannot be empty', {extensions: {code: 'BAD_USER_INPUT'}})
 
   const viewerId = getUserId(authToken) || null
   const viewer = viewerId ? await dataLoader.get('users').load(viewerId) : null

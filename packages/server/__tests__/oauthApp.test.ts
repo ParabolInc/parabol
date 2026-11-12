@@ -588,7 +588,7 @@ test('An OAuth access token is not a session', async () => {
 
   const viewer = await sendPublic({query: VIEWER_ID, cookie: tokenCookie})
   expect(viewer.data).toBeNull()
-  expect(viewer.errors?.[0]?.extensions?.code).toBe('UNAUTHORIZED')
+  expect(viewer.errors?.[0]?.extensions?.code).toBe('UNAUTHENTICATED')
 
   const {redirectUri, clientId} = await createAppWithScope({orgId, cookie, scopes: ['USERS_READ']})
   const request = {clientId, redirectUri, scope: 'users:read', state: 'xyz'}

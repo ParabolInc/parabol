@@ -15,8 +15,12 @@ const EXTENSION_URL_SCHEMES = [
   'webkit-masked-url://'
 ]
 
+export const isFromExtension = (source: string | undefined) => {
+  return EXTENSION_URL_SCHEMES.some((scheme) => source?.includes(scheme))
+}
+
 export const isExtensionError = ({name, stack}: Error) => {
-  return name === 'NotFoundError' || EXTENSION_URL_SCHEMES.some((scheme) => stack?.includes(scheme))
+  return name === 'NotFoundError' || isFromExtension(stack)
 }
 
 export const isIgnoredError = (error: Error) => {

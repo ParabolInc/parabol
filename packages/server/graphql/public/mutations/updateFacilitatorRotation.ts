@@ -19,7 +19,9 @@ const updateFacilitatorRotation: MutationResolvers['updateFacilitatorRotation'] 
   // VALIDATION
   // team health runs without a facilitator, like team prompt, so there is no role to hand off
   if (meetingType === 'teamHealth') {
-    throw new GraphQLError('Team Health meetings do not have a facilitator')
+    throw new GraphQLError('Team Health meetings do not have a facilitator', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
   const activeUserIds = getRotationOrder(teamMembers)

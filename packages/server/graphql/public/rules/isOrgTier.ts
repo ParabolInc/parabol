@@ -9,9 +9,13 @@ export const isOrgTier = <T>(orgIdDotPath: ResolverDotPath<T>, requiredTier: Tie
     async (source, args, {dataLoader}: GQLContext) => {
       const orgId = getResolverDotPath(orgIdDotPath, source, args)
       const organization = await dataLoader.get('organizations').load(orgId)
-      if (!organization) return new GraphQLError('Organization not found')
+      if (!organization)
+        return new GraphQLError('Organization not found', {extensions: {code: 'NOT_FOUND'}})
       const {tier} = organization
-      if (tier !== requiredTier) return new GraphQLError(`Organization is not ${requiredTier}`)
+      if (tier !== requiredTier)
+        return new GraphQLError(`Organization is not ${requiredTier}`, {
+          extensions: {code: 'FORBIDDEN'}
+        })
       return true
     }
   )

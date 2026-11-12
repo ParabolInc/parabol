@@ -26,22 +26,28 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
 
   // VALIDATION
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
-  if (!meeting) throw new GraphQLError('Meeting not found')
-  if (meeting.endedAt) throw new GraphQLError('Meeting already ended')
+  if (!meeting) throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
+  if (meeting.endedAt)
+    throw new GraphQLError('Meeting already ended', {extensions: {code: 'CONFLICT'}})
   if (meeting.meetingType !== 'teamPrompt' && meeting.meetingType !== 'retrospective') {
     throw new GraphQLError(
-      'Inspiration items are only available in standup and retrospective meetings'
+      'Inspiration items are only available in standup and retrospective meetings',
+      {extensions: {code: 'BAD_USER_INPUT'}}
     )
   }
   if (meeting.meetingType === 'retrospective' && sources.length !== 1) {
-    throw new GraphQLError('A retrospective drafts from one source at a time')
+    throw new GraphQLError('A retrospective drafts from one source at a time', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   const {teamId} = meeting
 
   const team = await dataLoader.get('teams').loadNonNull(teamId)
   const canDraft = !!process.env.OPEN_AI_API_KEY && (await canAccessAI(team, dataLoader, true))
   if (!canDraft && meeting.meetingType === 'retrospective') {
-    throw new GraphQLError('AI features are not enabled for this organization')
+    throw new GraphQLError('AI features are not enabled for this organization', {
+      extensions: {code: 'FORBIDDEN'}
+    })
   }
 
   // AI quota
@@ -55,14 +61,17 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
       .executeTakeFirstOrThrow()
     if (Number(tokenUsage) >= USER_AI_TOKENS_MONTHLY_LIMIT) {
       throw new GraphQLError(
-        'You have exceeded your AI request quota. Please contact sales to increase'
+        'You have exceeded your AI request quota. Please contact sales to increase',
+        {extensions: {code: 'TOO_MANY_REQUESTS'}}
       )
     }
   }
 
   const prompts = await dataLoader.get('templatePromptsByMeetingId').load(meetingId)
   if (prompts.length === 0) {
-    throw new GraphQLError('This meeting has no prompts to draft a response for.')
+    throw new GraphQLError('This meeting has no prompts to draft a response for.', {
+      extensions: {code: 'CONFLICT'}
+    })
   }
   const viewer = await dataLoader.get('users').loadNonNull(viewerId)
 
@@ -107,7 +116,9 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
     userPrompt
   )
   if (!result) {
-    throw new GraphQLError('Unable to draft a response right now. Please try again.')
+    throw new GraphQLError('Unable to draft a response right now. Please try again.', {
+      extensions: {code: 'SERVICE_UNAVAILABLE'}
+    })
   }
   const {tokenCost} = result
   const generatedItems = result.items.map((item) => ({
@@ -119,7 +130,9 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
   await pg.insertInto('AIRequest').values({userId: viewerId, tokenCost}).execute()
 
   if (generatedItems.length === 0) {
-    throw new GraphQLError('No suggestions could be drafted from your work. Please try again.')
+    throw new GraphQLError('No suggestions could be drafted from your work. Please try again.', {
+      extensions: {code: 'SERVICE_UNAVAILABLE'}
+    })
   }
 
   // Replace any previous generation for this (meeting, viewer, service). OpenAI returns

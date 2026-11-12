@@ -110,7 +110,9 @@ const draftStandupFromSources = async (options: Options) => {
     userPrompt
   )
   if (!result) {
-    throw new GraphQLError('Unable to draft a response right now. Please try again.')
+    throw new GraphQLError('Unable to draft a response right now. Please try again.', {
+      extensions: {code: 'SERVICE_UNAVAILABLE'}
+    })
   }
   await pg.insertInto('AIRequest').values({userId: viewerId, tokenCost: result.tokenCost}).execute()
 

@@ -16,7 +16,9 @@ const fetchIssues = async (
   if (service === 'PARABOL') return fetchParabolIssues(teamId, viewerId, searchQuery)
   const issueList = getServerIntegration(service)?.capabilities.issueList
   if (!issueList) {
-    throw new GraphQLError(`Inspiration items are not yet supported for ${service}`)
+    throw new GraphQLError(`Inspiration items are not yet supported for ${service}`, {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   const {dataLoader} = context
   return issueList.listIssues({dataLoader, teamId, userId: viewerId, context, info}, searchQuery)

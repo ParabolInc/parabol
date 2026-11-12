@@ -44,7 +44,7 @@ const getPersonalAccessTokenGrant = async (
 
   if (!token) {
     throw new GraphQLError('Invalid or revoked personal access token', {
-      extensions: {code: 'UNAUTHORIZED'}
+      extensions: {code: 'UNAUTHENTICATED'}
     })
   }
 
@@ -86,7 +86,7 @@ const getOAuthAccessTokenGrant = async (
   ])
   if (isBlacklisted || !provider) {
     throw new GraphQLError('Invalid or revoked OAuth access token', {
-      extensions: {code: 'UNAUTHORIZED'}
+      extensions: {code: 'UNAUTHENTICATED'}
     })
   }
   return {
@@ -120,7 +120,7 @@ export const useAPIAccess = (): Plugin<ServerContext & {dataLoader: DataLoaderWo
       ])
       if (!user || user.isRemoved) {
         throw new GraphQLError('The user of this access token no longer exists', {
-          extensions: {code: 'UNAUTHORIZED'}
+          extensions: {code: 'UNAUTHENTICATED'}
         })
       }
       await recordUserActivity(user).catch(Logger.error)

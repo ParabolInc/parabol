@@ -23,11 +23,11 @@ const updateOAuthAPIProvider: MutationResolvers['updateOAuthAPIProvider'] = asyn
     .executeTakeFirst()
 
   if (!provider) {
-    throw new GraphQLError('Provider not found')
+    throw new GraphQLError('Provider not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
   if (scopes && scopes.length === 0) {
-    throw new GraphQLError('Must select at least one scope')
+    throw new GraphQLError('Must select at least one scope', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   await pg

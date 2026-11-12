@@ -42,11 +42,11 @@ const verifyEmail: MutationResolvers['verifyEmail'] = async (
     }
     const localIdentity = identities.find(
       (identity) => identity.type === AuthIdentityTypeEnum.LOCAL
-    ) as AuthIdentityLocal
+    ) as AuthIdentityLocal | undefined
     const tms = await dataLoader.get('teamIdsByUserId').load(userId)
     context.authToken = new AuthToken({sub: userId, tms, rol})
     setAuthCookie(context, context.authToken)
-    if (!localIdentity.isEmailVerified) {
+    if (localIdentity && !localIdentity.isEmailVerified) {
       // mutative
       localIdentity.isEmailVerified = true
       await updateUser({identities: identities.map((id) => JSON.stringify(id))}, userId)

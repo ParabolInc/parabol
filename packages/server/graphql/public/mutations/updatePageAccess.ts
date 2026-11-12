@@ -103,7 +103,9 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
     .get('pageAccessByPageIdUserId')
     .load({pageId: dbPageId, userId: viewerId})
   if (!userRole) {
-    throw new GraphQLError(`Insufficient permission. User role: 'None'. Role required: 'owner'`)
+    throw new GraphQLError(`Insufficient permission. User role: 'None'. Role required: 'owner'`, {
+      extensions: {code: 'FORBIDDEN'}
+    })
   }
 
   if (userRole !== 'owner') {
@@ -117,7 +119,8 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
       !owner && hasOwnAccess && subjectType === 'user' && subjectId === viewerId && role === 'owner'
     if (!isValidOwnerClaim) {
       throw new GraphQLError(
-        `Insufficient permission. User role: ${userRole}. Role required: 'owner'`
+        `Insufficient permission. User role: ${userRole}. Role required: 'owner'`,
+        {extensions: {code: 'FORBIDDEN'}}
       )
     }
   }
@@ -136,23 +139,29 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
 
   if (role && subjectType === 'external') {
     if (subjectId === '*' && role === 'owner') {
-      throw new GraphQLError('A public link cannot grant ownership')
+      throw new GraphQLError('A public link cannot grant ownership', {
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
     }
     if (subjectId !== '*' && !isValidEmail(normalizeEmail(subjectId))) {
-      throw new GraphQLError('Invalid email address')
+      throw new GraphQLError('Invalid email address', {extensions: {code: 'BAD_USER_INPUT'}})
     }
   }
   if (role && subjectType === 'team') {
     const teamMember = await dataLoader.get('teamMembers').load(toTeamMemberId(subjectId, viewerId))
     const isTeamGranted = !resourceGrants || (await resourceGrants.hasTeam(subjectId))
     if (!teamMember?.isNotRemoved || !isTeamGranted) {
-      throw new GraphQLError('You can only share with your own teams')
+      throw new GraphQLError('You can only share with your own teams', {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
   }
   if (role && subjectType === 'organization') {
     const isOrgGranted = !resourceGrants || (await resourceGrants.hasOrg(subjectId))
     if (!isOrgGranted || !(await isUserInOrg(viewerId, subjectId, dataLoader))) {
-      throw new GraphQLError('You can only share with your own organizations')
+      throw new GraphQLError('You can only share with your own organizations', {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
   }
 
@@ -175,7 +184,9 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
         .where('email', '!=', '*')
         .executeTakeFirstOrThrow()
       if (Number(outstandingInvites.count) > MAX_UNACCEPTED_INVITES) {
-        throw new GraphQLError('Too many pending invitations sent')
+        throw new GraphQLError('Too many pending invitations sent', {
+          extensions: {code: 'TOO_MANY_REQUESTS'}
+        })
       }
     }
   }
@@ -184,9 +195,11 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
 
   let unlinkFromParent = false
   const page = await dataLoader.get('pages').load(dbPageId)
-  if (!page) throw new GraphQLError('Page not found')
+  if (!page) throw new GraphQLError('Page not found', {extensions: {code: 'NOT_FOUND'}})
   if (page.deletedAt) {
-    throw new GraphQLError('Restore this page from the trash before changing who can access it')
+    throw new GraphQLError('Restore this page from the trash before changing who can access it', {
+      extensions: {code: 'CONFLICT'}
+    })
   }
   const {parentPageId, isParentLinked} = page
   if (parentPageId && isParentLinked) {
@@ -278,7 +291,9 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
       .executeTakeFirst()
 
     if (!strongestRole || strongestRole.role !== 'owner') {
-      throw new GraphQLError('A Page must have at least one owner')
+      throw new GraphQLError('A Page must have at least one owner', {
+        extensions: {code: 'CONFLICT'}
+      })
     }
 
     const willBePrivate = await getNextIsPrivate(

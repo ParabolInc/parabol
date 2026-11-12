@@ -14,7 +14,7 @@ const createOAuthAPICode: MutationResolvers['createOAuthAPICode'] = async (
   const viewerId = getUserId(authToken)
   const authorization = await validateOAuthAuthorizationRequest(request, viewerId, dataLoader)
   if ('error' in authorization) {
-    throw new GraphQLError(authorization.error)
+    throw new GraphQLError(authorization.error, {extensions: {code: authorization.code}})
   }
   const {provider, scopes} = authorization
   const {redirectUri, state, codeChallenge} = request
