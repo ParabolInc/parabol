@@ -5,6 +5,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.26.0](https://github.com/ParabolInc/parabol/compare/v15.25.1...v15.26.0) (2026-11-12)
+
+
+### Added
+
+* **server:** require an error code on every GraphQLError ([#14099](https://github.com/ParabolInc/parabol/issues/14099)) ([0da9bf8](https://github.com/ParabolInc/parabol/commit/0da9bf8829284fade8d6ebbb91709d66f7f92010))
+
+
+### Fixed
+
+* **client:** don't report console errors that browser extensions log ([#14084](https://github.com/ParabolInc/parabol/issues/14084)) ([623f541](https://github.com/ParabolInc/parabol/commit/623f54173e56f7f30aced9113895c369fbfd4d63))
+* **client:** send an HTTP query again when the load balancer drops its connection ([#14071](https://github.com/ParabolInc/parabol/issues/14071)) ([20d6ae3](https://github.com/ParabolInc/parabol/commit/20d6ae361bda6589ff8d3f608d1ba06fe74ebd6e))
+* **client:** skip a removed prompt template whose team isn't loaded ([#14093](https://github.com/ParabolInc/parabol/issues/14093)) ([6f33467](https://github.com/ParabolInc/parabol/commit/6f3346783a3c7a1ee7b7c40b7fc79111d1d3d673))
+* **client:** skip parse errors from scripts an extension injects into the page ([#14096](https://github.com/ParabolInc/parabol/issues/14096)) ([7250bed](https://github.com/ParabolInc/parabol/commit/7250bed9af85465f4dab51f42980be7dfc779309))
+* **server:** deactivate a Slack auth whose token Slack reports as inactive or revoked ([#14092](https://github.com/ParabolInc/parabol/issues/14092)) ([7573185](https://github.com/ParabolInc/parabol/commit/757318552834a703f0dc459d69c399336cebeeec))
+* **server:** let verifyEmail sign in an existing user who has no password identity ([#14094](https://github.com/ParabolInc/parabol/issues/14094)) ([89fa066](https://github.com/ParabolInc/parabol/commit/89fa066d44adbbb181ea702c92410f92621e6a21))
+* **server:** make OAuth2 access tokens scope-limited credentials ([#13838](https://github.com/ParabolInc/parabol/issues/13838)) ([752d4ca](https://github.com/ParabolInc/parabol/commit/752d4ca45ccbda3bd28b646517371dbcd99c2e5b))
+
 ## [15.25.1](https://github.com/ParabolInc/parabol/compare/v15.25.0...v15.25.1) (2026-11-11)
 
 
