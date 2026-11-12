@@ -78,7 +78,7 @@ export const authenticateYjsConnection = async ({
   }
   const [dbId] = CipherId.fromClient(documentName)
   // aliases like page:0123 would load a second copy of the page that overwrites it on store
-  if (documentName !== CipherId.toClient(dbId, 'page') || dbId < 1 || dbId > 2 ** 31 - 1) {
+  if (dbId < 1 || documentName !== CipherId.toClient(dbId, 'page')) {
     const error = rejectConnection(
       `Invalid document request from client: ${documentName}`,
       'InvalidDocument'
