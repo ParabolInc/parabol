@@ -1,61 +1,73 @@
-import {sql} from 'kysely'
+import {type Kysely, sql} from 'kysely'
 import {redisHocusPocus} from '../../hocusPocus'
-import getKysely from '../../postgres/getKysely'
+import type {DB} from '../../postgres/types/pg'
 import {updatePageAncestorIds} from '../../postgres/updatePageAncestorIds'
 import {CipherId} from '../CipherId'
 import {Logger} from '../Logger'
 
-export const promoteSyncedBlock = async (blockPageId: number, excludedHostIds: number[]) => {
-  const hostId = await getKysely()
-    .transaction()
-    .execute(async (trx) => {
-      const block = await trx
-        .selectFrom('Page')
-        .select('id')
-        .where('id', '=', blockPageId)
-        .where('isSyncedBlock', '=', true)
-        .where('deletedAt', 'is', null)
-        .where('parentPageId', 'in', excludedHostIds)
-        .forUpdate()
-        .executeTakeFirst()
-      if (!block) return null
-      const host = await trx
-        .selectFrom('PageBacklink as b')
-        .innerJoin('Page as h', 'h.id', 'b.fromPageId')
-        .select('b.fromPageId')
-        .where('b.toPageId', '=', blockPageId)
-        .where('h.deletedAt', 'is', null)
-        .where('h.id', '<>', blockPageId)
-        .where('b.fromPageId', '<>', sql<number>`ALL(${excludedHostIds}::int[])`)
-        .where(sql<boolean>`NOT (${blockPageId} = ANY(h."ancestorIds"))`)
-        .where(({exists, selectFrom}) =>
-          exists(
-            selectFrom('PageAccess as hostAccess')
-              .innerJoin('PageAccess as blockAccess', 'blockAccess.userId', 'hostAccess.userId')
-              .select(sql.lit(1).as('one'))
-              .whereRef('hostAccess.pageId', '=', 'h.id')
-              .where('hostAccess.role', 'in', ['owner', 'editor'])
-              .where('blockAccess.pageId', '=', blockPageId)
-          )
-        )
-        .orderBy('b.createdAt')
-        .orderBy('b.fromPageId')
-        .limit(1)
-        .executeTakeFirst()
-      if (!host) return null
-      await trx
-        .updateTable('Page')
-        .set({parentPageId: host.fromPageId, isParentLinked: false})
-        .where('id', '=', blockPageId)
-        .execute()
-      await updatePageAncestorIds(trx, blockPageId)
-      return host.fromPageId
-    })
+export const selectPromotionHost = async (
+  db: Kysely<DB>,
+  blockPageId: number,
+  excludedHostIds: number[]
+) => {
+  if (excludedHostIds.length === 0) return null
+  const host = await db
+    .selectFrom('PageBacklink as b')
+    .innerJoin('Page as h', 'h.id', 'b.fromPageId')
+    .select('b.fromPageId')
+    .where('b.toPageId', '=', blockPageId)
+    .where('h.deletedAt', 'is', null)
+    .where('h.id', '<>', blockPageId)
+    .where('b.fromPageId', '<>', sql<number>`ALL(${excludedHostIds}::int[])`)
+    .where(sql<boolean>`NOT (${blockPageId} = ANY(h."ancestorIds"))`)
+    .where(({exists, selectFrom}) =>
+      exists(
+        selectFrom('PageAccess as hostAccess')
+          .innerJoin('PageAccess as blockAccess', 'blockAccess.userId', 'hostAccess.userId')
+          .select(sql.lit(1).as('one'))
+          .whereRef('hostAccess.pageId', '=', 'h.id')
+          .where('hostAccess.role', 'in', ['owner', 'editor'])
+          .where('blockAccess.pageId', '=', blockPageId)
+      )
+    )
+    .orderBy('b.createdAt')
+    .orderBy('b.fromPageId')
+    .limit(1)
+    .executeTakeFirst()
+  return host?.fromPageId ?? null
+}
+
+export const promoteSyncedBlock = async (
+  db: Kysely<DB>,
+  blockPageId: number,
+  excludedHostIds: number[]
+) => {
+  if (excludedHostIds.length === 0) return null
+  const block = await db
+    .selectFrom('Page')
+    .select('id')
+    .where('id', '=', blockPageId)
+    .where('isSyncedBlock', '=', true)
+    .where('deletedAt', 'is', null)
+    .where('parentPageId', 'in', excludedHostIds)
+    .forUpdate()
+    .executeTakeFirst()
+  if (!block) return null
+  const hostId = await selectPromotionHost(db, blockPageId, excludedHostIds)
   if (hostId === null) return null
+  await db
+    .updateTable('Page')
+    .set({parentPageId: hostId, isParentLinked: false})
+    .where('id', '=', blockPageId)
+    .execute()
+  await updatePageAncestorIds(db, blockPageId)
+  return hostId
+}
+
+export const announcePromotedBlock = (hostId: number, blockPageId: number) => {
   redisHocusPocus
     .handleEvent('markPageLinkCanonical', CipherId.toClient(hostId, 'page'), {
       pageCode: CipherId.encrypt(blockPageId)
     })
     .catch(Logger.error)
-  return hostId
 }

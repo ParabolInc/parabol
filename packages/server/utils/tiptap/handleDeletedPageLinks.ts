@@ -12,7 +12,7 @@ import logError from '../logError'
 import {getUnsafeDeletedAttribute} from './getUnsafeDeletedAttribute'
 import {getUserIdFromTransaction} from './getUserIdFromTransaction'
 import {removeAllBacklinkedPageLinkBlocks} from './hocusPocusHub'
-import {promoteSyncedBlock} from './promoteSyncedBlock'
+import {announcePromotedBlock, promoteSyncedBlock} from './promoteSyncedBlock'
 import {updateBacklinks} from './updateBacklinks'
 
 // Someone who cannot trash a sub-page deleted its link, so put the link back where it was
@@ -81,8 +81,13 @@ export const handleDeletedPageLinks = (e: Y.YEvent<any>, parentPageId: number) =
         await updateBacklinks(parentPageId, null, pageId).catch(Logger.log)
         if (!isCanonical) return
         if (isSynced) {
-          const promotedHostId = await promoteSyncedBlock(pageId, [parentPageId])
-          if (promotedHostId !== null) return
+          const promotedHostId = await pg
+            .transaction()
+            .execute((trx) => promoteSyncedBlock(trx, pageId, [parentPageId]))
+          if (promotedHostId !== null) {
+            announcePromotedBlock(promotedHostId, pageId)
+            return
+          }
         }
         // Any editor can write a canonical link into a doc, so archive only what archivePage would allow:
         // the page's owner removing the link from the page it actually lives under

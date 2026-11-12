@@ -7,7 +7,11 @@ import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import {publishPageNotification} from '../../../utils/publishPageNotification'
 import {removeAllBacklinkedPageLinkBlocks} from '../../../utils/tiptap/hocusPocusHub'
-import {promoteSyncedBlock} from '../../../utils/tiptap/promoteSyncedBlock'
+import {
+  announcePromotedBlock,
+  promoteSyncedBlock,
+  selectPromotionHost
+} from '../../../utils/tiptap/promoteSyncedBlock'
 import type {MutationResolvers} from '../resolverTypes'
 import {getPageNextSortOrder} from './helpers/getPageNextSortOrder'
 
@@ -50,48 +54,36 @@ const archivePage: MutationResolvers['archivePage'] = async (
         .select('id')
         .execute()
     ).map(({id}) => id)
-    const syncedBlockIds = subtreeIds.length
-      ? (
-          await pg
-            .selectFrom('Page')
-            .select('id')
-            .where('id', 'in', subtreeIds)
-            .where('isSyncedBlock', '=', true)
-            .where('deletedAt', '=', (eb) =>
-              eb.selectFrom('Page').select('deletedAt').where('id', '=', dbPageId)
-            )
-            .execute()
-        ).map(({id}) => id)
-      : []
     const doomedIds = [dbPageId, ...subtreeIds]
-    const promotedIds: number[] = []
-    for (const blockId of syncedBlockIds) {
-      await pg
-        .updateTable('Page')
-        .set({deletedAt: null, deletedBy: null})
-        .where((eb) =>
-          eb.or([
-            eb('id', '=', blockId),
-            eb(sql<boolean>`${blockId} = ANY("ancestorIds")`, '=', true)
-          ])
-        )
-        .execute()
-      const hostId = await promoteSyncedBlock(blockId, doomedIds)
-      if (hostId !== null) promotedIds.push(blockId)
+    const candidateBlocks = subtreeIds.length
+      ? await pg
+          .selectFrom('Page')
+          .select(['id', 'ancestorIds'])
+          .where('id', 'in', subtreeIds)
+          .where('isSyncedBlock', '=', true)
+          .orderBy(sql`cardinality("ancestorIds")`)
+          .execute()
+      : []
+    const promotableIds: number[] = []
+    for (const {id, ancestorIds} of candidateBlocks) {
+      if (ancestorIds.some((ancestorId) => promotableIds.includes(ancestorId))) continue
+      const hostId = await selectPromotionHost(pg, id, doomedIds)
+      if (hostId !== null) promotableIds.push(id)
     }
-    const survivingSubtreeIds = subtreeIds.filter((id) => !promotedIds.includes(id))
-    const promotedIdsArray = sql<number[]>`ARRAY[${sql.join(promotedIds)}]::int[]`
+    const unpromotableSubtreeIds = subtreeIds.filter((id) => !promotableIds.includes(id))
     // deleting cascades to every sub-page, including restricted ones the viewer may not own
-    const subPageOwnedByOthers = survivingSubtreeIds.length
+    const subPageOwnedByOthers = unpromotableSubtreeIds.length
       ? await pg
           .selectFrom('Page')
           .leftJoin('PageAccess', (join) =>
             join.onRef('PageAccess.pageId', '=', 'Page.id').on('PageAccess.userId', '=', viewerId)
           )
           .select('Page.id')
-          .where('Page.id', 'in', survivingSubtreeIds)
-          .$if(promotedIds.length > 0, (qb) =>
-            qb.where(sql<boolean>`NOT ("Page"."ancestorIds" && ${promotedIdsArray})`)
+          .where('Page.id', 'in', unpromotableSubtreeIds)
+          .$if(promotableIds.length > 0, (qb) =>
+            qb.where(
+              sql<boolean>`NOT ("Page"."ancestorIds" && ARRAY[${sql.join(promotableIds)}]::int[])`
+            )
           )
           .where((eb) =>
             eb.or([eb('PageAccess.role', 'is', null), eb('PageAccess.role', '!=', 'owner')])
@@ -100,16 +92,20 @@ const archivePage: MutationResolvers['archivePage'] = async (
           .executeTakeFirst()
       : undefined
     if (subPageOwnedByOthers) {
-      if (promotedIds.length > 0) {
-        await pg
-          .updateTable('Page')
-          .set({deletedAt: page.deletedAt, deletedBy: page.deletedBy})
-          .where('id', 'in', promotedIds)
-          .execute()
-      }
       throw new GraphQLError('This page has sub-pages you do not own, so it cannot be deleted')
     }
-    await pg.deleteFrom('Page').where('id', '=', dbPageId).execute()
+    const promotions = await pg.transaction().execute(async (trx) => {
+      const promoted: {hostId: number; blockId: number}[] = []
+      for (const blockId of promotableIds) {
+        const hostId = await promoteSyncedBlock(trx, blockId, doomedIds)
+        if (hostId !== null) promoted.push({hostId, blockId})
+      }
+      await trx.deleteFrom('Page').where('id', '=', dbPageId).execute()
+      return promoted
+    })
+    promotions.forEach(({hostId, blockId}) => {
+      announcePromotedBlock(hostId, blockId)
+    })
   } else if (action === 'archive') {
     await pg
       .updateTable('Page')

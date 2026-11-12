@@ -3,7 +3,7 @@ import getKysely from '../../../postgres/getKysely'
 import {updatePageAccessTable} from '../../../postgres/updatePageAccessTable'
 import getPubSub from '../../getPubSub'
 import getRedis from '../../getRedis'
-import {promoteSyncedBlock} from '../promoteSyncedBlock'
+import {announcePromotedBlock, promoteSyncedBlock} from '../promoteSyncedBlock'
 
 const mockHandleEvent = jest.fn(async (..._args: unknown[]) => {})
 jest.mock('../../../hocusPocus', () => ({
@@ -18,6 +18,13 @@ jest.mock('../../CipherId', () => ({
 }))
 
 const pg = getKysely()
+const promoteSync = async (blockPageId: number, excludedHostIds: number[]) => {
+  const hostId = await pg
+    .transaction()
+    .execute((trx) => promoteSyncedBlock(trx, blockPageId, excludedHostIds))
+  if (hostId !== null) announcePromotedBlock(hostId, blockPageId)
+  return hostId
+}
 const viewerId = `promoteBlock|${generateUID()}`
 const strangerId = `promoteStranger|${generateUID()}`
 
@@ -112,7 +119,7 @@ afterAll(async () => {
 
 test('re-parents under the host placed first and keeps every access row', async () => {
   const before = await accessRows(block)
-  expect(await promoteSyncedBlock(block, [originalHost])).toBe(firstCopyHost)
+  expect(await promoteSync(block, [originalHost])).toBe(firstCopyHost)
   expect(await pageRow(block)).toMatchObject({
     parentPageId: firstCopyHost,
     isParentLinked: false,
@@ -127,29 +134,29 @@ test('re-parents under the host placed first and keeps every access row', async 
 test('skips a host whose editors cannot see the block', async () => {
   const forgedHost = await makePage(false, null, strangerId)
   await linkBack(forgedHost, block, '2025-12-01T00:00:00Z')
-  expect(await promoteSyncedBlock(block, [originalHost])).toBe(firstCopyHost)
+  expect(await promoteSync(block, [originalHost])).toBe(firstCopyHost)
   expect(await pageRow(block)).toMatchObject({parentPageId: firstCopyHost})
   await trash(firstCopyHost)
   await trash(secondCopyHost)
   await pg.updateTable('Page').set({parentPageId: originalHost}).where('id', '=', block).execute()
-  expect(await promoteSyncedBlock(block, [originalHost])).toBeNull()
+  expect(await promoteSync(block, [originalHost])).toBeNull()
   expect(await pageRow(block)).toMatchObject({parentPageId: originalHost})
 }, 30_000)
 
 test('skips hosts in trash', async () => {
   await trash(firstCopyHost)
-  expect(await promoteSyncedBlock(block, [originalHost])).toBe(secondCopyHost)
+  expect(await promoteSync(block, [originalHost])).toBe(secondCopyHost)
 }, 30_000)
 
 test('returns null when every other host is excluded or trashed', async () => {
   await trash(secondCopyHost)
-  expect(await promoteSyncedBlock(block, [originalHost, firstCopyHost])).toBeNull()
+  expect(await promoteSync(block, [originalHost, firstCopyHost])).toBeNull()
   expect(await pageRow(block)).toMatchObject({parentPageId: originalHost})
   expect(mockHandleEvent).not.toHaveBeenCalled()
 }, 30_000)
 
 test('does nothing when the removed link was not in the block page parent', async () => {
-  expect(await promoteSyncedBlock(block, [secondCopyHost])).toBeNull()
+  expect(await promoteSync(block, [secondCopyHost])).toBeNull()
   expect(await pageRow(block)).toMatchObject({parentPageId: originalHost, isParentLinked: true})
   expect(mockHandleEvent).not.toHaveBeenCalled()
 }, 30_000)
@@ -160,12 +167,12 @@ test('never re-parents the block under one of its own descendants', async () => 
     .set({parentPageId: block, ancestorIds: [originalHost, block]})
     .where('id', 'in', [firstCopyHost, secondCopyHost])
     .execute()
-  expect(await promoteSyncedBlock(block, [originalHost])).toBeNull()
+  expect(await promoteSync(block, [originalHost])).toBeNull()
 }, 30_000)
 
 test('does nothing for a page that is not a synced block', async () => {
   await pg.updateTable('Page').set({isSyncedBlock: false}).where('id', '=', block).execute()
-  expect(await promoteSyncedBlock(block, [originalHost])).toBeNull()
+  expect(await promoteSync(block, [originalHost])).toBeNull()
   expect(await pageRow(block)).toMatchObject({parentPageId: originalHost, isParentLinked: true})
   expect(mockHandleEvent).not.toHaveBeenCalled()
 }, 30_000)

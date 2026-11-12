@@ -33,6 +33,7 @@ const mockUpdatePage = () => {
 jest.mock('../../../postgres/getKysely', () => ({
   __esModule: true,
   default: () => ({
+    transaction: () => ({execute: async (run: (trx: object) => unknown) => run({})}),
     updateTable: () => mockUpdatePage(),
     selectFrom: () => {
       let pageId: unknown
@@ -59,12 +60,14 @@ jest.mock('../../CipherId', () => ({
   CipherId: {encrypt: (id: number) => id, decrypt: (code: number) => code}
 }))
 const mockUpdateBacklinks = jest.fn(async (..._args: unknown[]) => {})
+const mockAnnounce = jest.fn()
 const mockPromote = jest.fn(async (..._args: unknown[]): Promise<number | null> => null)
 jest.mock('../updateBacklinks', () => ({
   updateBacklinks: (...args: unknown[]) => mockUpdateBacklinks(...args)
 }))
 jest.mock('../promoteSyncedBlock', () => ({
-  promoteSyncedBlock: (...args: unknown[]) => mockPromote(...args)
+  promoteSyncedBlock: (...args: unknown[]) => mockPromote(...args),
+  announcePromotedBlock: (...args: unknown[]) => mockAnnounce(...args)
 }))
 jest.mock('../hocusPocusHub', () => ({removeAllBacklinkedPageLinkBlocks: jest.fn(async () => {})}))
 
@@ -187,7 +190,7 @@ test('promotes instead of trashing when a synced original is removed and copies 
   mockPromote.mockResolvedValueOnce(OTHER_PAGE_ID)
   removeLink(asUser(OWNER_ID), {canonical: true})
   await flush()
-  expect(mockPromote).toHaveBeenCalledWith(CHILD_PAGE_ID, [PARENT_PAGE_ID])
+  expect(mockPromote).toHaveBeenCalledWith(expect.anything(), CHILD_PAGE_ID, [PARENT_PAGE_ID])
   expect(mockArchivedPageIds).toEqual([])
 })
 
