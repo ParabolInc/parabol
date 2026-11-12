@@ -93,8 +93,8 @@ describe('callout markdown', () => {
   test('keeps text after a table in order, after the callout', () => {
     const doc = fromMarkdown('> [!NOTE]\n> before\n>\n> | a |\n> |---|\n> | 1 |\n>\n> after')
     expect(doc.map((node) => node.type)).toEqual(['callout', 'table', 'paragraph'])
-    expect(doc[0]?.content?.map((node) => node.content?.[0]?.text)).toEqual(['before'])
-    expect(doc[2]?.content?.[0]?.text).toBe('after')
+    expect(doc[0]).toMatchObject({content: [p('before')]})
+    expect(doc[2]).toMatchObject(p('after'))
   })
 
   test('leaves an ordinary quote a quote', () => {
