@@ -58,7 +58,9 @@ const EstimateDimensionColumn = (props: Props) => {
   const {id: stageId, dimensionRef} = stage
   const {name} = dimensionRef
   const {isVoting} = stage
-  const {onError, onCompleted, submitMutation, error, submitting} = useMutationProps()
+  const {onError, onCompleted, submitMutation, error, submitting} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const isClosing = useIsPokerVotingClosing(isVoting, stageId)
   const isInitialStageRender = useIsInitializing()
   const reset = () => {

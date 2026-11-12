@@ -83,7 +83,9 @@ const PokerActiveVoting = (props: Props) => {
     ? 'Votes are automatically revealed once everyone has voted.'
     : 'Tap a card to vote. Swipe to view each dimension.'
   const showRevealButton = isFacilitator && scores.length > 0
-  const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
+  const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
   const [isHardBlock, setIsHardBlock] = useState(false)
   const exportCountRef = useRef(MAX_FREE_JIRA_EXPORTS)

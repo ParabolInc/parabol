@@ -42,7 +42,9 @@ const ConfluenceProviderRow = (props: Props) => {
     viewerRef
   )
   const atmosphere = useAtmosphere()
-  const {submitting, submitMutation, onError, error, onCompleted} = useMutationProps()
+  const {submitting, submitMutation, onError, error, onCompleted} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
   const {teamMember} = viewer
   const atlassian = teamMember?.integrations.atlassian

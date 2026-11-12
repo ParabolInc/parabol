@@ -46,7 +46,9 @@ const StageTimerModalTimeLimit = (props: Props) => {
   // scheduledEndTime means we're editing an existing timer
   const atmosphere = useAtmosphere()
   const [minuteTimeLimit, setMinuteTimeLimit] = useState(initialTimeLimit)
-  const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps()
+  const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const startTimer = () => {
     if (submitting) return
     const endTime = localScheduledEndTime ?? scheduledEndTime

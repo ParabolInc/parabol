@@ -32,7 +32,9 @@ function UserSettings(props: UserSettingsProps) {
     }
   })
   const atmosphere = useAtmosphere()
-  const {error, onCompleted, onError, submitMutation, submitting} = useMutationProps()
+  const {error, onCompleted, onError, submitMutation, submitting} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const preferredNameRes = validateField('preferredName')

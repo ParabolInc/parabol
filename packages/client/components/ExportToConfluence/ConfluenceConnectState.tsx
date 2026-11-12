@@ -17,7 +17,9 @@ interface Props {
 export const ConfluenceConnectState = (props: Props) => {
   const {teamId, provider, heldScopes, onAuthed} = props
   const atmosphere = useAtmosphere()
-  const {submitting, submitMutation, onError, onCompleted, error} = useMutationProps()
+  const {submitting, submitMutation, onError, onCompleted, error} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const mutationProps = {
     submitting,
     submitMutation,

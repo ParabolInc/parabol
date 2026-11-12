@@ -48,7 +48,9 @@ export const MeetingSeriesEditForm = (props: Props) => {
   const initialRrule =
     isActive && meetingSeries.recurrenceRule ? RRule.fromString(meetingSeries.recurrenceRule) : null
   const [rrule, setRrule] = useState<RRule | null>(initialRrule)
-  const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps()
+  const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const {fields, onChange} = useForm({
     title: {getDefault: () => meetingSeries?.title || defaultTitle || ''}
   })

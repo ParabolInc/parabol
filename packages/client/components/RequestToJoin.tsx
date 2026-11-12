@@ -12,7 +12,7 @@ const RequestToJoinComponent = () => {
   const match = useMatch('/team/:teamId/*')
   const teamId = match?.params?.teamId
   const [isRequestSent, setIsRequestSent] = useState(false)
-  const {onError, onCompleted, error} = useMutationProps()
+  const {onError, onCompleted, error} = useMutationProps({errorDisplay: 'inline'})
 
   const handleRequestJoin = () => {
     if (!teamId) return

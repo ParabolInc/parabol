@@ -13,7 +13,9 @@ import getMutationError from '../utils/relay/getMutationError'
 export const JIRA_EXPORT_UPGRADE_MODAL_DISMISSED_KEY = 'jiraExportUpgradeModalDismissed'
 
 const useSetTaskEstimate = () => {
-  const {submitMutation, submitting, error, onError, onCompleted} = useMutationProps()
+  const {submitMutation, submitting, error, onError, onCompleted} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const atmosphere = useAtmosphere()
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
   const [upgradeExportCount, setUpgradeExportCount] = useState(0)

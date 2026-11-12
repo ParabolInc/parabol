@@ -78,7 +78,7 @@ const TeamHealthReminderPrompt = (props: Props) => {
   const {teamId, meetingSeriesId, scheduledEndTime, viewerMeetingMember} = meeting
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
-  const mutationProps = useMutationProps()
+  const mutationProps = useMutationProps({errorDisplay: 'inline'})
   const {submitting, error} = mutationProps
   const integrations = viewerMeetingMember?.teamMember.integrations
   const slack = integrations?.slack

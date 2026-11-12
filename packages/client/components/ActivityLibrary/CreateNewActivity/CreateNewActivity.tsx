@@ -198,7 +198,9 @@ export const CreateNewActivity = (props: Props) => {
     teams.find((team) => team.id === preferredTeamId) ?? sortedTeams[0]
   )
 
-  const {submitting, error, submitMutation, onError, onCompleted} = useMutationProps()
+  const {submitting, error, submitMutation, onError, onCompleted} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const [executeAddPromptTemplate] = useAddPromptTemplateMutation()
   const [executeAddPokerTemplate] = useAddPokerTemplateMutation()
   const [executeAddTeamHealthTemplate] = useAddTeamHealthTemplateMutation()

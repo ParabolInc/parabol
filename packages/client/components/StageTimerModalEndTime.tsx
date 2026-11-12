@@ -50,7 +50,9 @@ const StageTimerModalEndTime = (props: Props) => {
 
   const atmosphere = useAtmosphere()
 
-  const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps()
+  const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps({
+    errorDisplay: 'inline'
+  })
 
   const startTimer = () => {
     if (submitting || endTime.getTime() === new Date(scheduledEndTime || 0).getTime()) return

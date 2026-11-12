@@ -53,7 +53,9 @@ const TaskFooter = (props: Props) => {
     `,
     taskRef
   )
-  const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
+  const {onCompleted, onError, submitMutation, submitting} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const handleError = (err: Error) => {
     onError(err)
     const message = getMutationError(err).message

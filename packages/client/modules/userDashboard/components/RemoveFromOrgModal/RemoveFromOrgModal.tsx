@@ -8,9 +8,11 @@ import useMutationProps from '../../../../hooks/useMutationProps'
 import RemoveOrgUsersMutation from '../../../../mutations/RemoveOrgUsersMutation'
 import {Button} from '../../../../ui/Button/Button'
 import {Dialog} from '../../../../ui/Dialog/Dialog'
+import {DialogActions} from '../../../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
 import plural from '../../../../utils/plural'
+import getMutationError from '../../../../utils/relay/getMutationError'
 
 interface Props {
   isOpen: boolean
@@ -35,7 +37,9 @@ const RemoveFromOrgModal = (props: Props) => {
   const {isOpen, orgId, userIds, organizationUsers, closePortal, onSuccess} = props
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
-  const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
+  const {onCompleted, onError, submitMutation, submitting, error} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const {viewerId} = atmosphere
 
   const users = useFragment(organizationUsersFragment, organizationUsers)
@@ -68,8 +72,9 @@ const RemoveFromOrgModal = (props: Props) => {
       {
         navigate,
         onError,
-        onCompleted: () => {
-          onCompleted()
+        onCompleted: (res, errors) => {
+          onCompleted(res, errors)
+          if (getMutationError(res, errors)) return
           closePortal()
           onSuccess?.()
         }
@@ -106,27 +111,27 @@ const RemoveFromOrgModal = (props: Props) => {
             </div>
           </div>
         )}
-        {removableCount > 0 ? (
-          <Button
-            variant='primary'
-            size='md'
-            className='mx-auto mt-6 mb-0'
-            onClick={handleClick}
-            disabled={submitting}
-          >
-            <IconLabel
-              icon='arrow_forward'
-              iconAfter
-              label={`Remove ${removableCount} ${plural(removableCount, 'member')}`}
-            />
-          </Button>
-        ) : (
-          <div className='mt-4'>
-            <Button variant='primary' size='md' className='mx-auto mb-0' onClick={closePortal}>
+        {error && <div className='mt-4 font-semibold text-fg-error text-sm'>{error.message}</div>}
+        <DialogActions>
+          {removableCount > 0 ? (
+            <>
+              <Button variant='outline' size='md' onClick={closePortal}>
+                Cancel
+              </Button>
+              <Button variant='primary' size='md' onClick={handleClick} disabled={submitting}>
+                <IconLabel
+                  icon='arrow_forward'
+                  iconAfter
+                  label={`Remove ${removableCount} ${plural(removableCount, 'member')}`}
+                />
+              </Button>
+            </>
+          ) : (
+            <Button variant='primary' size='md' onClick={closePortal}>
               <IconLabel icon='close' label='Close' />
             </Button>
-          </div>
-        )}
+          )}
+        </DialogActions>
       </DialogContent>
     </Dialog>
   )

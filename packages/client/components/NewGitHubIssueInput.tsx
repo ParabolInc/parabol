@@ -3,8 +3,8 @@ import {type FormEvent, useEffect, useRef, useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useGetRepoContributions from '~/hooks/useGetRepoContributions'
-import useMutationProps from '~/hooks/useMutationProps'
 import {ExpandMore} from '~/ui/icons'
+import {withStaleClientNote} from '~/utils/staleClientNote'
 import type {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/CreateTaskMutation.graphql'
 import type {NewGitHubIssueInputQuery} from '../__generated__/NewGitHubIssueInputQuery.graphql'
 import useForm from '../hooks/useForm'
@@ -45,7 +45,6 @@ const NewGitHubIssueInput = (props: Props) => {
   const {id: userId, teamMember} = data.viewer
   const repos = useGetRepoContributions(teamMember!)
   const atmosphere = useAtmosphere()
-  const {onError} = useMutationProps()
   const [updatePokerScope] = useUpdatePokerScopeMutation()
   const [createTaskError, setCreateTaskError] = useState<string>()
   useEffect(() => {
@@ -111,7 +110,10 @@ const NewGitHubIssueInput = (props: Props) => {
       }
       updatePokerScope({variables: pokerScopeVariables, contents: [newIssueTitle]})
     }
-    CreateTaskMutation(atmosphere, {newTask}, {onError, onCompleted: handleCompleted})
+    const handleError = (error: Error) => {
+      setCreateTaskError(`${selectedNameWithOwner}: ${withStaleClientNote(error.message)}`)
+    }
+    CreateTaskMutation(atmosphere, {newTask}, {onError: handleError, onCompleted: handleCompleted})
   }
 
   if (createTaskError) {

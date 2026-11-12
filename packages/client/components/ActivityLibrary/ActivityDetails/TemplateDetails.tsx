@@ -173,7 +173,9 @@ export const TemplateDetails = (props: Props) => {
   const prevCategory = location.state?.prevCategory
 
   const atmosphere = useAtmosphere()
-  const {onError, onCompleted, error, submitting, submitMutation} = useMutationProps()
+  const {onError, onCompleted, error, submitting, submitMutation} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const [errorActivityId, setErrorActivityId] = useState<string | null>(null)
 
   const removeTemplate = useCallback(() => {

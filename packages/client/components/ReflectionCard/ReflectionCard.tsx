@@ -159,7 +159,9 @@ const ReflectionCard = (props: Props) => {
   const isSpotlightOpen = !!spotlightGroupId
   const atmosphere = useAtmosphere()
   const reflectionDivRef = useRef<HTMLDivElement>(null)
-  const {onCompleted, submitting, submitMutation, error, onError} = useMutationProps()
+  const {onCompleted, submitting, submitMutation, error, onError} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const readOnly = getReadOnly(
     reflection,
     phaseType as NewMeetingPhaseTypeEnum,

@@ -14,7 +14,9 @@ interface Props {
 const EditableTemplateDescription = (props: Props) => {
   const {isOwner, description, promptId, onEditingChange} = props
   const atmosphere = useAtmosphere()
-  const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps()
+  const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps({
+    errorDisplay: 'inline'
+  })
 
   const handleSubmit = (rawQuestion: string) => {
     if (submitting) return

@@ -56,7 +56,9 @@ const AddTeamDialog = (props: Props) => {
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
 
-  const {submitting, onCompleted, onError, error, submitMutation} = useMutationProps()
+  const {submitting, onCompleted, onError, error, submitMutation} = useMutationProps({
+    errorDisplay: 'inline'
+  })
 
   const data = usePreloadedQuery<AddTeamDialogQuery>(query, queryRef)
   const viewer = useFragment<AddTeamDialog_viewer$key>(AddTeamDialogViewerFragment, data.viewer)

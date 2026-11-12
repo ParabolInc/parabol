@@ -84,7 +84,7 @@ const MattermostPanel = (props: Props) => {
     error: mutationError,
     onCompleted,
     submitMutation
-  } = useMutationProps()
+  } = useMutationProps({errorDisplay: 'inline'})
 
   const {error: fieldError, value: fieldValue} = fields.webhookUrl
   const isUpdateDisabled = (error?: string, value?: any) =>

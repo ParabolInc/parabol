@@ -143,7 +143,9 @@ const NewTeamForm = (props: Props) => {
     }
   })
 
-  const {submitting, onError, error, onCompleted, submitMutation} = useMutationProps()
+  const {submitting, onError, error, onCompleted, submitMutation} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
 

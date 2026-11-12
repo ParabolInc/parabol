@@ -48,15 +48,7 @@ const SelectSharingScopeDropdown = (props: Props) => {
     errors
   ) => {
     onCompleted(res, errors)
-    const error = getMutationError(res, errors)
-    if (error) {
-      atmosphere.eventEmitter.emit('addSnackbar', {
-        key: 'updateTemplateScopeError',
-        message: error.message,
-        autoDismiss: 5
-      })
-      return
-    }
+    if (getMutationError(res, errors)) return
     const clonedTemplateId =
       res.updateTemplateScope.UpdateTemplateScopeMutation_organization?.clonedTemplate?.id
     if (clonedTemplateId) {

@@ -144,7 +144,7 @@ const ActivityDetailsSidebar = (props: Props) => {
     const newTeam = currentAvailableTeams.find((team) => team.id === teamId)
     newTeam && setSelectedTeam(newTeam)
   }
-  const mutationProps = useMutationProps()
+  const mutationProps = useMutationProps({errorDisplay: 'inline'})
   const {onError, onCompleted, error} = mutationProps
   // not mutationProps.submitting, since connecting Google Calendar in the schedule dialog submits too
   const [isSubmittingStart, setIsSubmittingStart] = useState(false)

@@ -2,9 +2,9 @@ import graphql from 'babel-plugin-relay/macro'
 import {type FormEvent, useEffect, useRef, useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import useMutationProps from '~/hooks/useMutationProps'
 import CreateTaskMutation from '~/mutations/CreateTaskMutation'
 import {ExpandMore} from '~/ui/icons'
+import {withStaleClientNote} from '~/utils/staleClientNote'
 import type {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/CreateTaskMutation.graphql'
 import type {NewClickUpTaskInputQuery} from '../__generated__/NewClickUpTaskInputQuery.graphql'
 import useForm from '../hooks/useForm'
@@ -52,7 +52,6 @@ const NewClickUpTaskInput = (props: Props) => {
   const {id: userId, teamMember} = data.viewer
   const lists = getClickUpLists(teamMember?.services)
   const atmosphere = useAtmosphere()
-  const {onError} = useMutationProps()
   const [updatePokerScope] = useUpdatePokerScopeMutation()
   const [createTaskError, setCreateTaskError] = useTimedState()
   useEffect(() => {
@@ -119,7 +118,10 @@ const NewClickUpTaskInput = (props: Props) => {
       }
       updatePokerScope({variables: pokerScopeVariables, contents: [newTaskTitle]})
     }
-    CreateTaskMutation(atmosphere, {newTask}, {onError, onCompleted: handleCompleted})
+    const handleError = (error: Error) => {
+      setCreateTaskError(withStaleClientNote(error.message))
+    }
+    CreateTaskMutation(atmosphere, {newTask}, {onError: handleError, onCompleted: handleCompleted})
   }
 
   if (createTaskError) {

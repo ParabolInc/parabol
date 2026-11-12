@@ -29,7 +29,7 @@ const VoteSettingsMenu = (props: Props) => {
     meetingRef
   )
   const {id: meetingId, totalVotes, maxVotesPerGroup} = meeting
-  const {error, onError, onCompleted, submitMutation} = useMutationProps()
+  const {error, onError, onCompleted, submitMutation} = useMutationProps({errorDisplay: 'inline'})
   const atmosphere = useAtmosphere()
   const update = (totalVotes: number, maxVotesPerGroup: number) => {
     submitMutation()

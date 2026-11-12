@@ -245,7 +245,7 @@ const RemoveOrgUsersMutation: StandardMutation<TRemoveOrgUsersMutation, Navigate
     updater: (store) => {
       const payload = store.getRootField('removeOrgUsers')
       if (!payload) return
-      if (payload.getValue('error')) return
+      if (payload.getLinkedRecord('error')) return
 
       removeOrgUsersOrganizationUpdater(payload as any, {atmosphere, store})
       removeOrgUsersTeamUpdater(payload as any, {atmosphere, store})

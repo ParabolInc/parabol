@@ -39,7 +39,9 @@ const getValidationError = (
 
 const ReflectionGroupTitleEditor = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {submitMutation, submitting, onCompleted, onError, error} = useMutationProps()
+  const {submitMutation, submitting, onCompleted, onError, error} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const {
     meeting: meetingRef,
     reflectionGroup: reflectionGroupRef,

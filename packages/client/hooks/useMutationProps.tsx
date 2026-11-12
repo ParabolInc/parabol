@@ -2,8 +2,10 @@
 
 import {useCallback, useEffect, useRef, useState} from 'react'
 import type {PayloadError} from 'relay-runtime'
+import {snackOnError} from '../mutations/handlers/snackOnError'
 import getMutationError, {type MutationError} from '../utils/relay/getMutationError'
 import {withStaleClientNote} from '../utils/staleClientNote'
+import useAtmosphere from './useAtmosphere'
 
 export type MenuMutationProps = {
   onCompleted: (res?: any, errors?: any) => void
@@ -12,10 +14,31 @@ export type MenuMutationProps = {
   submitting: boolean
 }
 
+interface MutationProps {
+  submitting: boolean
+  submitMutation: () => void
+  // the OAuth popups fail with a plain {message}
+  onError: (error: Error | {message: string}) => void
+  onCompleted: (res?: unknown, errors?: readonly PayloadError[] | null) => void
+}
+
+interface InlineErrorMutationProps extends MutationProps {
+  error: MutationError | undefined
+}
+
+interface InlineErrorOptions {
+  errorDisplay: 'inline'
+}
+
 const withStaleClientNoteOnError = (error: MutationError | undefined) =>
   error && {...error, message: withStaleClientNote(error.message)}
 
-const useMutationProps = () => {
+// A failure shows in a snackbar, unless the caller asks for the error to render it inline
+function useMutationProps(): MutationProps
+function useMutationProps(options: InlineErrorOptions): InlineErrorMutationProps
+function useMutationProps(options?: InlineErrorOptions): MutationProps | InlineErrorMutationProps {
+  const isInline = options?.errorDisplay === 'inline'
+  const atmosphere = useAtmosphere()
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<MutationError | undefined>(undefined)
   const isMountedRef = useRef(true)
@@ -26,26 +49,38 @@ const useMutationProps = () => {
     }
   }, [])
 
-  const onCompleted = useCallback((res?: unknown, errors?: readonly PayloadError[] | null) => {
-    if (isMountedRef.current) {
+  const onCompleted = useCallback(
+    (res?: unknown, errors?: readonly PayloadError[] | null) => {
+      const mutationError = getMutationError(res, errors)
+      // snack even after unmount, e.g. from a dialog that closes before the mutation returns
+      if (!isInline && mutationError) snackOnError(atmosphere)(mutationError)
+      if (!isMountedRef.current) return
       setSubmitting(false)
-      setError(withStaleClientNoteOnError(getMutationError(res, errors)))
-    }
-  }, [])
+      if (isInline) setError(withStaleClientNoteOnError(mutationError))
+    },
+    [atmosphere, isInline]
+  )
 
-  // the OAuth popups fail with a plain {message}
-  const onError = useCallback((error: Error | {message: string}) => {
-    setSubmitting(false)
-    const mutationError =
-      error instanceof Error ? getMutationError(error) : {message: error.message}
-    setError(withStaleClientNoteOnError(mutationError))
-  }, [])
+  const onError = useCallback(
+    (error: Error | {message: string}) => {
+      setSubmitting(false)
+      const mutationError =
+        error instanceof Error ? getMutationError(error) : {message: error.message}
+      if (isInline) {
+        setError(withStaleClientNoteOnError(mutationError))
+      } else {
+        snackOnError(atmosphere)(mutationError)
+      }
+    },
+    [atmosphere, isInline]
+  )
 
   const submitMutation = useCallback(() => {
     setSubmitting(true)
   }, [])
 
-  return {submitting, submitMutation, error, onError, onCompleted}
+  const mutationProps = {submitting, submitMutation, onError, onCompleted}
+  return isInline ? {...mutationProps, error} : mutationProps
 }
 
 export default useMutationProps
