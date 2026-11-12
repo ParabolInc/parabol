@@ -35,8 +35,6 @@ const FLUSH_DELAY_MS = 1000
 const MAX_MESSAGE_LENGTH = 1000
 const MAX_STACK_LENGTH = 6000
 const MAX_COMPONENT_STACK_LENGTH = 3000
-// yoga replaces the message of every error it masks with this one
-const MASKED_ERROR_MESSAGE = 'Unexpected error.'
 const RELEASE = __APP_VERSION__
 
 let queue: ClientErrorReport[] = []
@@ -52,8 +50,12 @@ export const describeReason = (reason: unknown) => {
   }
 }
 
+// an error from another realm, such as an extension's isolated world, fails instanceof Error
+export const isError = (reason: unknown): reason is Error =>
+  reason instanceof Error || Object.prototype.toString.call(reason) === '[object Error]'
+
 const toError = (reason: unknown) => {
-  if (reason instanceof Error) return reason
+  if (isError(reason)) return reason
   return new Error(typeof reason === 'string' ? reason : describeReason(reason))
 }
 
@@ -126,12 +128,13 @@ export const reportClientWarning = (name: string, message: string, traceId?: str
   reportClientError(warning, {level: 'warn', traceId})
 }
 
+// yoga gives every error it masks this code, and the server gives it to the bugs it catches itself
 export const reportUnexpectedGraphQLErrors = (
-  errors: readonly {message: string}[] | undefined,
+  errors: readonly {message: string; extensions?: {code?: string}}[] | undefined,
   operationName: string,
   traceId?: string
 ) => {
-  if (errors?.some((error) => error.message === MASKED_ERROR_MESSAGE)) {
+  if (errors?.some((error) => error.extensions?.code === 'INTERNAL_SERVER_ERROR')) {
     reportClientWarning('UnexpectedGraphQLError', `${operationName} failed on the server`, traceId)
   }
 }

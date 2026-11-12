@@ -48,7 +48,9 @@ export const getPagesByRRF = async ({
   }): Promise<PageSearchResults> => {
   const tableName = getEmbeddingsPagesTableName(activeEmbeddingModelId)
   if (!tableName) {
-    throw new GraphQLError('No embeddings pages table found')
+    throw new GraphQLError('No embeddings pages table found', {
+      extensions: {code: 'NOT_IMPLEMENTED'}
+    })
   }
   const rows = await withPageKeywordRanking({
     query,

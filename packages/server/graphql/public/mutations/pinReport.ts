@@ -24,7 +24,9 @@ const pinReport: MutationResolvers['pinReport'] = async (
   const spec = readReportSpecInput(specInput)
   const pinTitle = title.trim()
   if (!pinTitle || pinTitle.length > 255)
-    throw new GraphQLError('A pin’s name is 1 to 255 characters')
+    throw new GraphQLError('A pin’s name is 1 to 255 characters', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   const reportQuestionId = reportQuestionKey ? fromReportKey(reportQuestionKey) : null
   const reportQuestion = reportQuestionId
     ? await pg
@@ -43,7 +45,9 @@ const pinReport: MutationResolvers['pinReport'] = async (
     const samePin = pins.find((pin) => stringify(parseReportSpec(pin.spec).spec) === specJSON)
     if (samePin) return samePin.id
     if (pins.length >= MAX_REPORT_PINS) {
-      throw new GraphQLError(`Reports holds ${MAX_REPORT_PINS} pins. Unpin one first`)
+      throw new GraphQLError(`Reports holds ${MAX_REPORT_PINS} pins. Unpin one first`, {
+        extensions: {code: 'CONFLICT'}
+      })
     }
     const {id} = await trx
       .insertInto('PinnedReport')

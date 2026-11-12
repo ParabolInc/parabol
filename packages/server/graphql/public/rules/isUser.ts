@@ -16,9 +16,12 @@ export const isUser = <T>(
     if (dataLoaderName) {
       const subject = await dataLoader.get(dataLoaderName as any).load(argVar)
       if (!subject?.[userIdKey])
-        return new GraphQLError(`Permission lookup failed on ${dataLoaderName} for ${argVar}`)
+        return new GraphQLError(`Permission lookup failed on ${dataLoaderName} for ${argVar}`, {
+          extensions: {code: 'NOT_FOUND'}
+        })
       userId = subject[userIdKey]
     }
-    if (authToken.sub !== userId) return new GraphQLError(`Viewer is not on team`)
+    if (authToken.sub !== userId)
+      return new GraphQLError(`Viewer is not on team`, {extensions: {code: 'FORBIDDEN'}})
     return true
   })

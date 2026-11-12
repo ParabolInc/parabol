@@ -17,6 +17,7 @@ export type PutFileOptions = {contentDisposition?: string; cacheControl?: string
 
 export default abstract class FileStoreManager {
   abstract baseUrl: string
+  // true only when the store confirms the file is there, so a file it can't vouch for gets written again
   abstract checkExists(fileName: string, assetDir?: FileAssetDir): Promise<boolean>
   abstract prependPath(partialPath: string, assetDir?: FileAssetDir): string
   abstract getPublicFileLocation(fullPath: string): string

@@ -15,7 +15,8 @@ const unpinReport: MutationResolvers['unpinReport'] = async (
     .transaction()
     .execute(async (trx) => {
       const pinnedReportId = await findPinnedReportId(trx, orgId, pinId)
-      if (!pinnedReportId) throw new GraphQLError('That report isn’t pinned here')
+      if (!pinnedReportId)
+        throw new GraphQLError('That report isn’t pinned here', {extensions: {code: 'NOT_FOUND'}})
       await trx
         .updateTable('PinnedReport')
         .set({removedAt: sql`CURRENT_TIMESTAMP`, removedBy: viewerId})

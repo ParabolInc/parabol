@@ -18,10 +18,12 @@ const upsertTeamHealthQuestionCategory: MutationResolvers['upsertTeamHealthQuest
     // VALIDATION
     const name = category.trim()
     if (!name) {
-      throw new GraphQLError('Category name cannot be empty')
+      throw new GraphQLError('Category name cannot be empty', {
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
     }
     if (name.length > 100) {
-      throw new GraphQLError('Category name is too long')
+      throw new GraphQLError('Category name is too long', {extensions: {code: 'BAD_USER_INPUT'}})
     }
 
     // RESOLUTION — find-or-create the category (case-insensitive on name). Built-in (aGhostUser)

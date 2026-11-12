@@ -18,8 +18,11 @@ const editPageContent: MutationResolvers['editPageContent'] = async (
   const [dbPageId] = CipherId.fromClient(pageId)
 
   const page = await dataLoader.get('pages').load(dbPageId)
-  if (!page) throw new GraphQLError('Invalid pageId')
-  if (page.isMeetingTOC) throw new GraphQLError('Meeting Summaries pages cannot be edited')
+  if (!page) throw new GraphQLError('Invalid pageId', {extensions: {code: 'BAD_USER_INPUT'}})
+  if (page.isMeetingTOC)
+    throw new GraphQLError('Meeting Summaries pages cannot be edited', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
 
   const jsonContent =
     format === 'markdown'
@@ -28,7 +31,7 @@ const editPageContent: MutationResolvers['editPageContent'] = async (
           try {
             return JSON.parse(content)
           } catch {
-            throw new GraphQLError('Invalid JSON content')
+            throw new GraphQLError('Invalid JSON content', {extensions: {code: 'BAD_USER_INPUT'}})
           }
         })()
 

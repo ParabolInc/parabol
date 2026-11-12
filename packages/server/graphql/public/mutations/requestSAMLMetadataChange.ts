@@ -13,9 +13,11 @@ const requestSAMLMetadataChange: MutationResolvers['requestSAMLMetadataChange'] 
   {authToken}
 ) => {
   const metadata = await getSSOMetadataFromURL(metadataURL)
-  if (metadata instanceof Error) throw new GraphQLError(metadata.message)
+  if (metadata instanceof Error)
+    throw new GraphQLError(metadata.message, {extensions: {code: 'BAD_USER_INPUT'}})
   const baseUrl = getSignOnURL(metadata, samlId)
-  if (baseUrl instanceof Error) throw new GraphQLError(baseUrl.message)
+  if (baseUrl instanceof Error)
+    throw new GraphQLError(baseUrl.message, {extensions: {code: 'BAD_USER_INPUT'}})
   // The IdP forwards the RelayState to loginSAML, which resolves the id back to this URL
   const metadataChangeId = await createSAMLMetadataChangeRequest({
     samlId,

@@ -7,6 +7,7 @@ import {
   isUserInOrg
 } from '../../../utils/authorization'
 import type {DataLoaderWorker} from '../../graphql'
+import type {ResourceGrants} from '../../public/ResourceGrants'
 
 /**
  * Decides who may rename, reschedule, cancel, or start a series ahead of schedule. These writes
@@ -20,7 +21,8 @@ import type {DataLoaderWorker} from '../../graphql'
 const canAdminMeetingSeries = async (
   meetingSeries: Pick<MeetingSeries, 'teamId' | 'ownerUserId' | 'groupId'>,
   authToken: AuthToken,
-  dataLoader: DataLoaderWorker
+  dataLoader: DataLoaderWorker,
+  resourceGrants: ResourceGrants | undefined
 ) => {
   const {teamId, ownerUserId, groupId} = meetingSeries
   // A series scheduled for one team by that team stays the team's own business, as it always was.
@@ -31,6 +33,7 @@ const canAdminMeetingSeries = async (
   // checks below share one organizationUsersByUserIdOrgId entry, so they are a single round trip.
   const viewerId = getUserId(authToken)
   const {orgId} = await dataLoader.get('teams').loadNonNull(teamId)
+  if (resourceGrants && !(await resourceGrants.hasOrg(orgId))) return false
   if (ownerUserId === viewerId && (await isUserInOrg(viewerId, orgId, dataLoader))) return true
   return isUserBillingLeader(viewerId, orgId, dataLoader)
 }

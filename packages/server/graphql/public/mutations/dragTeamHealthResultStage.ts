@@ -17,12 +17,12 @@ const dragTeamHealthResultStage: MutationResolvers['dragTeamHealthResultStage'] 
   const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
   const {phases, teamId, meetingType} = meeting
   if (meetingType !== 'teamHealth') {
-    throw new GraphQLError('Not a team health meeting')
+    throw new GraphQLError('Not a team health meeting', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   const resultPhase = getPhase(phases, 'TEAM_HEALTH_RESULT')
   const draggedStage = resultPhase.stages.find((stage) => stage.id === stageId)
   if (!draggedStage) {
-    throw new GraphQLError('Invalid stageId provided')
+    throw new GraphQLError('Invalid stageId provided', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   draggedStage.sortOrder = sortOrder

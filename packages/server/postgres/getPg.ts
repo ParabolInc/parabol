@@ -1,31 +1,17 @@
 import {type Pool as PGPool, Pool} from 'pg'
-import sleep from '../../client/utils/sleep'
+import {Logger} from '../utils/Logger'
 import getPgConfig from './getPgConfig'
 
 const config = getPgConfig()
-
-const graceFullyReconnect = async () => {
-  for (let i = 0; i < 1e6; i++) {
-    const nextPool = new Pool(getPgConfig())
-    try {
-      const testClient = await nextPool.connect()
-      testClient.release()
-      nextPool.on('error', graceFullyReconnect)
-      const oldPool = pool
-      pool = nextPool
-      oldPool?.emit('changePool')
-      return
-    } catch {
-      await sleep(1000)
-    }
-  }
-}
 
 let pool: PGPool | undefined
 const getPg = (schema?: string) => {
   if (!pool) {
     pool = new Pool(config) as PGPool
-    pool.on('error', graceFullyReconnect)
+    // The pool has already dropped the failed idle client. Without a listener, Node throws the error and the process exits
+    pool.on('error', (error) => {
+      Logger.warn('Postgres closed an idle pooled connection', error)
+    })
     if (schema) {
       pool.on('connect', (client) => {
         // passing the search_path as a connection option does not work

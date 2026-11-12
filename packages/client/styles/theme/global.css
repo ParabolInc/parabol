@@ -380,10 +380,35 @@
       background-position: -200% 0;
     }
   }
+
+  --animate-launch-flow: gradient-sweep 4s linear infinite;
+  --animate-launch-draw: launch-draw 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+  @keyframes launch-draw {
+    from {
+      clip-path: inset(-16px calc(100% + 16px) -16px -16px);
+    }
+    to {
+      clip-path: inset(-16px);
+    }
+  }
+
+  --animate-launch-rise: launch-rise 1.3s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both;
+  @keyframes launch-rise {
+    from {
+      transform: scaleX(0.2);
+      opacity: 0;
+    }
+    to {
+      transform: scaleX(1);
+      opacity: 1;
+    }
+  }
 }
 
 :root {
   --global-banner-height: 24px;
+  --launch-spectrum: hsl(350 95% 64%), hsl(28 100% 60%), hsl(48 100% 57%), hsl(150 72% 50%),
+    hsl(190 95% 54%), hsl(225 100% 66%), hsl(270 95% 68%), hsl(320 95% 66%), hsl(350 95% 64%);
   color-scheme: light;
 }
 
@@ -737,6 +762,21 @@
 }
 @utility z-tooltip {
   z-index: 24; /* portal needs to float above other components, especially sidebars */
+}
+@utility bg-launch-spectrum {
+  background-image: linear-gradient(to right in oklch, var(--launch-spectrum));
+  background-size: 200% 100%;
+  @media (prefers-reduced-motion: reduce) {
+    background-size: 100% 100%;
+  }
+}
+@utility mask-launch-ring {
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+@utility mask-launch-taper {
+  mask-image: linear-gradient(90deg, transparent, #000 24%, #000 76%, transparent);
 }
 
 

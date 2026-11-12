@@ -9,9 +9,10 @@ export const isRestoringOwnTrashedPage = rule(`isRestoringOwnTrashedPage`, {cach
   async (
     _source,
     {pageId, action}: MutationArchivePageArgs,
-    {authToken, dataLoader}: GQLContext
+    {authToken, dataLoader, resourceGrants}: GQLContext
   ) => {
     if (action !== 'restore') return false
+    if (resourceGrants && !resourceGrants.isUnrestricted()) return false
     const page = await dataLoader.get('pages').load(CipherId.fromClient(pageId)[0])
     return !!page?.deletedAt && page.deletedBy === getUserId(authToken)
   }

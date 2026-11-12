@@ -2,15 +2,21 @@ import {GraphQLError} from 'graphql'
 import {createSchema, createYoga} from 'graphql-yoga'
 import {unexpectedGraphQLErrors} from '../../metricsHandler'
 import {Logger} from '../Logger'
+import maskErrorWithTraceId from '../maskErrorWithTraceId'
 import {annotateLogContext, getLogContext} from '../requestLogContext'
 import {useErrorLogging} from '../useErrorLogging'
 
 const yoga = createYoga({
   schema: createSchema({
     typeDefs:
-      'type Query { crash: String, denied: String, logContext(teamId: ID): String, team: Team, tenantCrash: String } type Team { teamLead: String } type Subscription { logContext: String }',
+      'type Query { caughtBug: String, crash: String, denied: String, logContext(teamId: ID): String, team: Team, tenantCrash: String } type Team { teamLead: String } type Subscription { logContext: String }',
     resolvers: {
       Query: {
+        caughtBug: () => {
+          throw new GraphQLError('Couldn’t create a poll', {
+            extensions: {code: 'INTERNAL_SERVER_ERROR'}
+          })
+        },
         crash: () => {
           throw new TypeError('boom')
         },
@@ -42,7 +48,8 @@ const yoga = createYoga({
     }
   }),
   plugins: [useErrorLogging()],
-  logging: Logger
+  logging: Logger,
+  maskedErrors: {maskError: maskErrorWithTraceId}
 })
 
 const execute = async (
@@ -113,7 +120,31 @@ test('an intentional GraphQLError is logged once, as a warning', async () => {
   expect(errorSpy).not.toHaveBeenCalled()
 })
 
-test('only a crash counts as an unexpected error, once per operation', async () => {
+test('a bug the server catches keeps its message and is logged once, as an error', async () => {
+  const result = await execute('query CaughtBug { caughtBug }')
+  expect(result.errors[0].message).toBe('Couldn’t create a poll')
+  expect(errorSpy).toHaveBeenCalledTimes(1)
+  expect(warnSpy).not.toHaveBeenCalled()
+})
+
+test('a crash and a caught bug hand their trace id to the client, an intentional error does not', async () => {
+  const serverContext = {traceparent: '00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01'}
+  const traceId = '4bf92f3577b34da6a3ce929d0e0e4736'
+  const crash = await execute('query Crash { crash }', undefined, serverContext)
+  expect(crash.errors[0]).toMatchObject({
+    message: 'Unexpected error.',
+    extensions: {code: 'INTERNAL_SERVER_ERROR', traceId}
+  })
+  const caughtBug = await execute('query CaughtBug { caughtBug }', undefined, serverContext)
+  expect(caughtBug.errors[0]).toMatchObject({
+    message: 'Couldn’t create a poll',
+    extensions: {code: 'INTERNAL_SERVER_ERROR', traceId}
+  })
+  const denied = await execute('query Denied { denied }', undefined, serverContext)
+  expect(denied.errors[0].extensions?.traceId).toBeUndefined()
+})
+
+test('only a crash or a caught bug counts as an unexpected error, once per operation', async () => {
   const countUnexpectedQueries = async () =>
     (await unexpectedGraphQLErrors.get()).values.find(
       ({labels}) => labels.operation_type === 'query'
@@ -123,6 +154,8 @@ test('only a crash counts as an unexpected error, once per operation', async () 
   expect(await countUnexpectedQueries()).toBe(before)
   await execute('query TwoCrashes { crash again: crash }')
   expect(await countUnexpectedQueries()).toBe(before + 1)
+  await execute('query CaughtBug { caughtBug }')
+  expect(await countUnexpectedQueries()).toBe(before + 2)
 })
 
 test('code running inside an operation sees its user, operation and variables', async () => {

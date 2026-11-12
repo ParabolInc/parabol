@@ -11,7 +11,9 @@ const setTeamLimitAt: MutationResolvers['setTeamLimitAt'] = async (
   const now = new Date()
   const maxAllowed = new Date(now.getTime() + ms('60d'))
   if (maxTeamLimitAt > maxAllowed) {
-    throw new GraphQLError('maxTeamLimitAt cannot be more than 60 days in the future')
+    throw new GraphQLError('maxTeamLimitAt cannot be more than 60 days in the future', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   // RESOLUTION
@@ -24,7 +26,7 @@ const setTeamLimitAt: MutationResolvers['setTeamLimitAt'] = async (
     .executeTakeFirst()
 
   if (!row) {
-    throw new GraphQLError('Team not found')
+    throw new GraphQLError('Team not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
   return {teamId: row.id}

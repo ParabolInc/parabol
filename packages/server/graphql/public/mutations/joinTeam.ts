@@ -34,7 +34,9 @@ const joinTeam: MutationResolvers['joinTeam'] = async (_source, {teamId}, contex
     sub: viewerId,
     rol: authToken.rol,
     exp: authToken.exp,
-    act: authToken.act
+    act: authToken.act,
+    aud: authToken.aud,
+    scope: authToken.scope
   })
   context.authToken = nextAuthToken
   if (context.request) {

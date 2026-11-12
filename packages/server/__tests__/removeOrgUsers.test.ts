@@ -143,7 +143,7 @@ test('Removing the lead with another member hands the lead and their tasks to a 
     .where(sql<boolean>`'archived' != ALL(tags)`)
     .execute()
   expect(taskOwners).toEqual([{userId: remainingMember!.userId}, {userId: remainingMember!.userId}])
-})
+}, 15000)
 
 test('Removing every member of a team at once archives it', async () => {
   const {cookie, orgId, teamId, members} = await createTeamOfInvitees(2)

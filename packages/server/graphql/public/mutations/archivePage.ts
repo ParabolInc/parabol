@@ -22,13 +22,17 @@ const archivePage: MutationResolvers['archivePage'] = async (
   const [dbPageId, pageCode] = CipherId.fromClient(pageId)
   const page = await dataLoader.get('pages').load(dbPageId)
   if (!page) {
-    throw new GraphQLError('Invalid pageId')
+    throw new GraphQLError('Invalid pageId', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   dataLoader.get('pages').clearAll()
   if (page.isMeetingTOC)
-    throw new GraphQLError('Meeting Summaries pages cannot be archived or deleted')
+    throw new GraphQLError('Meeting Summaries pages cannot be archived or deleted', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   if (action !== 'archive' && !page.deletedAt) {
-    throw new GraphQLError('Only pages in the trash can be deleted or restored')
+    throw new GraphQLError('Only pages in the trash can be deleted or restored', {
+      extensions: {code: 'CONFLICT'}
+    })
   }
   if (action === 'delete') {
     // deleting cascades to every sub-page, including restricted ones the viewer may not own
@@ -56,7 +60,9 @@ const archivePage: MutationResolvers['archivePage'] = async (
       .limit(1)
       .executeTakeFirst()
     if (subPageOwnedByOthers) {
-      throw new GraphQLError('This page has sub-pages you do not own, so it cannot be deleted')
+      throw new GraphQLError('This page has sub-pages you do not own, so it cannot be deleted', {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
     await pg.deleteFrom('Page').where('id', '=', dbPageId).execute()
   } else if (action === 'archive') {

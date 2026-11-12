@@ -23,11 +23,14 @@ export const isUserViewer = <T>(
         const subject = await dataLoader.get(dataLoaderName as any).load(dbId)
         const ownerId = subject?.[ownerField]
         if (!ownerId)
-          return new GraphQLError(`Permission lookup failed on ${dataLoaderName} for ${argVar}`)
+          return new GraphQLError(`Permission lookup failed on ${dataLoaderName} for ${argVar}`, {
+            extensions: {code: 'NOT_FOUND'}
+          })
         userId = ownerId
       }
       const viewerId = getUserId(authToken)
-      if (userId !== viewerId) return new GraphQLError('Viewer is incorrect user')
+      if (userId !== viewerId)
+        return new GraphQLError('Viewer is incorrect user', {extensions: {code: 'FORBIDDEN'}})
       return true
     }
   )

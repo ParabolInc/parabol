@@ -7,6 +7,7 @@ import {
   MAX_CONFLUENCE_EXPORT_PAGES,
   type PageExportPageState
 } from '../../../../../utils/confluence/types'
+import type {ResourceGrants} from '../../../ResourceGrants'
 
 /**
  * Builds the export tree in canonical order: children are discovered from the position of
@@ -20,7 +21,8 @@ import {
 export const loadPageExportTree = async (
   rootPageId: number,
   includeSubPages: boolean,
-  viewerId: string
+  viewerId: string,
+  resourceGrants?: ResourceGrants
 ): Promise<PageExportPageState[]> => {
   const pg = getKysely()
   const result: PageExportPageState[] = []
@@ -39,6 +41,7 @@ export const loadPageExportTree = async (
     if (depth > 0 && page.parentPageId !== parentPageId) return
     const [role] = await pageAccessByUserIdBatchFn([{pageId, userId: viewerId}])
     if (!role) return
+    if (resourceGrants && !(await resourceGrants.hasPage(pageId))) return
     result.push({
       pageId,
       title: page.title || 'Untitled',

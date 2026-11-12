@@ -14,12 +14,13 @@ const endTeamHealth: MutationResolvers['endTeamHealth'] = async (
 
   // AUTH
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
-  if (!meeting) throw new GraphQLError('Meeting not found', {extensions: {userId: viewerId}})
+  if (!meeting)
+    throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND', userId: viewerId}})
   if (meeting.meetingType !== 'teamHealth') {
-    throw new GraphQLError('Meeting type is not teamHealth')
+    throw new GraphQLError('Meeting type is not teamHealth', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   const res = await safeEndTeamHealth({meeting, context, info})
-  if ('error' in res) throw new GraphQLError(res.error.message)
+  if ('error' in res) throw new GraphQLError(res.error.message, {extensions: {code: 'CONFLICT'}})
   return res
 }
 

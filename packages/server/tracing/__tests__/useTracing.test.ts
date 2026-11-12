@@ -30,7 +30,7 @@ const SAMPLED_TRACEPARENT = `00-${CLIENT_TRACE_ID}-${CLIENT_SPAN_ID}-01`
 const yoga = createYoga({
   schema: createSchema({
     typeDefs: `
-      type Query { team: Team, crash: String, denied: String, logContext: String, warn: String }
+      type Query { team: Team, caughtBug: String, crash: String, denied: String, logContext: String, warn: String }
       type Team { name: String, members: [TeamMember] }
       type TeamMember { user: User }
       type User { preferredName: String }
@@ -47,6 +47,11 @@ const yoga = createYoga({
             queryDurationMillis: 3
           })
           return {name: 'Team 1', members: [{}, {}, {}]}
+        },
+        caughtBug: () => {
+          throw new GraphQLError('Couldn’t create a poll', {
+            extensions: {code: 'INTERNAL_SERVER_ERROR'}
+          })
         },
         crash: () => {
           throw new TypeError('boom')
@@ -203,6 +208,12 @@ test('an intentional GraphQLError leaves the spans unfailed', async () => {
   await execute('query Denied { denied }', {traceparent: SAMPLED_TRACEPARENT})
   expect(getSpan('query Denied').status.code).toBe(SpanStatusCode.UNSET)
   expect(getSpan('Query.denied').status.code).toBe(SpanStatusCode.UNSET)
+})
+
+test('a bug the server catches fails the spans like a crash', async () => {
+  await execute('query CaughtBug { caughtBug }', {traceparent: SAMPLED_TRACEPARENT})
+  expect(getSpan('query CaughtBug').status.code).toBe(SpanStatusCode.ERROR)
+  expect(getSpan('Query.caughtBug').status.code).toBe(SpanStatusCode.ERROR)
 })
 
 test('a line logged inside a resolver lands on the resolver span', async () => {

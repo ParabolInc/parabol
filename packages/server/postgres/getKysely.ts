@@ -5,16 +5,13 @@ import type {DB} from './types/pg'
 
 let kysely: Kysely<DB> | undefined
 
-const makeKysely = (schema?: string) => {
-  const nextPg = getPg(schema)
-  nextPg.on('poolChange' as any, () => makeKysely(schema))
-  return new Kysely<DB>({
+const makeKysely = (schema?: string) =>
+  new Kysely<DB>({
     dialect: new PostgresDialect({
-      pool: nextPg
+      pool: getPg(schema)
     }),
     log: traceKyselyQuery
   })
-}
 
 const getKysely = (schema?: string) => {
   if (!kysely) {
