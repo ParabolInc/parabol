@@ -1,8 +1,9 @@
-import sharp from 'sharp'
+import loadSharp from './loadSharp'
 
 export const compressImage = async (buffer: Buffer, ext: string) => {
   const extension = ext.replace(/^\./, '')
   if (extension === 'avif') return {buffer, extension}
+  const sharp = await loadSharp()
   const animationFormats = ['gif', 'webp']
   if (animationFormats.includes(extension)) {
     const image = sharp(buffer, {animated: true})

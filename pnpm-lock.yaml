@@ -317,9 +317,6 @@ importers:
       graphql-ws:
         specifier: ^6.2.1
         version: 6.2.1(patch_hash=6177d6a74c456b1acabaaf0d02587146ab54e0de33c3e77ecf3ba39f569d98bb)(graphql@16.13.1)(ws@8.21.3)
-      html-minifier-terser:
-        specifier: ^5.1.1
-        version: 5.1.1
       ioredis:
         specifier: ^5.11.1
         version: 5.11.1(supports-color@8.1.1)
@@ -462,9 +459,6 @@ importers:
       '@types/dotenv':
         specifier: ^6.1.1
         version: 6.1.1
-      '@types/html-minifier-terser':
-        specifier: ^7.0.2
-        version: 7.0.2
       '@types/jest':
         specifier: ^29.5.14
         version: 29.5.14
@@ -5083,9 +5077,6 @@ packages:
 
   '@types/html-minifier-terser@6.1.0':
     resolution: {integrity: sha512-oh/6byDPnL1zeNXFrDXFLyZjkr1MsBG667IM792caf1L2UPOOMf65NFzjUH/ltyfwjAGfs1rsX1eftK0jC/KIg==}
-
-  '@types/html-minifier-terser@7.0.2':
-    resolution: {integrity: sha512-mm2HqV22l8lFQh4r2oSsOEVea+m0qqxEmwpc9kC1p/XzmjLWrReR9D/GRs8Pex2NX/imyEH9c5IU/7tMBQCHOA==}
 
   '@types/http-errors@2.0.5':
     resolution: {integrity: sha512-r8Tayk8HJnX0FztbZN7oVqGccWgw98T/0neJphO91KkmOzug1KkofZURD4UaD5uH8AqcFLfdPErnBod0u71/qg==}
@@ -14960,8 +14951,6 @@ snapshots:
 
   '@types/html-minifier-terser@6.1.0': {}
 
-  '@types/html-minifier-terser@7.0.2': {}
-
   '@types/http-errors@2.0.5': {}
 
   '@types/http-proxy@1.17.17':
@@ -17128,6 +17117,7 @@ snapshots:
       param-case: 3.0.4
       relateurl: 0.2.7
       terser: 4.8.1
+    optional: true
 
   html-minifier-terser@6.1.0:
     dependencies:
@@ -20059,6 +20049,7 @@ snapshots:
       commander: 2.20.3
       source-map: 0.7.6
       source-map-support: 0.5.21
+    optional: true
 
   terser@5.47.1:
     dependencies:

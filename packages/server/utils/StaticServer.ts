@@ -22,7 +22,7 @@ export interface StaticFile {
   // the content is held in memory or read from the disk
   body?: Buffer
   pathname?: string
-  // brotli versions are made at build time, or at startup for the files made in memory
+  // brotli versions are made at build time, or when a file made in memory is first sent
   brBody?: Buffer
   brPathname?: string
   brSize?: number
@@ -247,14 +247,20 @@ export const sendStaticFile = (res: HttpResponse, request: StaticRequest, file: 
 
 const makeMemoryFile = (name: string, content: string): StaticFile => {
   const body = Buffer.from(content)
+  let brBody: Buffer | undefined
   return {
     type: getContentType(name),
     cacheControl: getCacheControl(name),
     etag: makeContentETag(body),
     size: body.length,
     body,
-    // these are a few KB, so the best compression takes milliseconds, once
-    brBody: isCompressible(name) ? brotliCompressSync(body) : undefined
+    // made when the file is first sent, so a server starts without compressing files it may never send.
+    // These are a few KB, so the best compression takes milliseconds, once
+    get brBody() {
+      if (!isCompressible(name)) return undefined
+      brBody ??= brotliCompressSync(body)
+      return brBody
+    }
   }
 }
 
