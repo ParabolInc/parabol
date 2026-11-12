@@ -1,5 +1,5 @@
 name: Setup
-description: Restores Node and node_modules from a single cache and writes the pipeline .env
+description: Installs Node, pnpm and node_modules and writes the pipeline .env
 inputs:
   services:
     description: Start Postgres and Valkey in the background. Nothing waits for them, see .github/scripts/migrate.sh
@@ -11,7 +11,7 @@ outputs:
 runs:
   using: composite
   steps:
-    # A service container blocks the job until its image is pulled. These pull while the dependencies are restored
+    # A service container blocks the job until its image is pulled. These pull while the dependencies install
     - name: Start Postgres and Valkey
       if: inputs.services == 'true'
       shell: bash
@@ -28,21 +28,8 @@ runs:
     - name: Read the Node version
       id: versions
       shell: bash
-      run: |
-        echo "node=$(jq -r '.engines.node | ltrimstr("^")' package.json)" >> "$GITHUB_OUTPUT"
-        echo "nodeMajor=$(jq -r '.engines.node | ltrimstr("^") | split(".")[0]' package.json)" >> "$GITHUB_OUTPUT"
+      run: echo "node=$(jq -r '.engines.node | ltrimstr("^")' package.json)" >> "$GITHUB_OUTPUT"
 
-    # This Node is not on the runner image, so downloading it costs seconds that restoring it here does not
-    - name: Get cached dependencies
-      id: cache
-      uses: actions/cache@v4
-      with:
-        path: |
-          **/node_modules
-          ${{ runner.tool_cache }}/node/${{ steps.versions.outputs.nodeMajor }}.*
-        key: dependencies-${{ runner.os }}-${{ runner.arch }}-node-${{ steps.versions.outputs.node }}-${{ hashFiles('pnpm-lock.yaml') }}
-
-    # finds the restored Node in the tool cache, and downloads it when the cache missed
     - name: Setup Node
       uses: actions/setup-node@v4
       with:
@@ -51,8 +38,8 @@ runs:
     - name: Install pnpm
       uses: pnpm/action-setup@v6
 
+    # Not cached: restoring node_modules is only seconds faster than installing them, and saving them takes far longer
     - name: Install node_modules
-      if: steps.cache.outputs.cache-hit != 'true'
       shell: bash
       run: pnpm install --frozen-lockfile
 
