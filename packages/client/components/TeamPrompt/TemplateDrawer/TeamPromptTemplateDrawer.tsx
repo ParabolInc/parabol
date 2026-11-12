@@ -9,7 +9,7 @@ import TeamPromptTemplateDrawerHeader from './TeamPromptTemplateDrawerHeader'
 import TeamPromptTemplateDrawerPinned from './TeamPromptTemplateDrawerPinned'
 import TeamPromptTemplateList from './TeamPromptTemplateList'
 import TeamPromptTemplateProblem from './TeamPromptTemplateProblem'
-import useSwitchStandupTemplate from './useSwitchStandupTemplate'
+import useSwitchTeamPromptTemplate from './useSwitchTeamPromptTemplate'
 
 interface Props {
   queryRef: PreloadedQuery<TeamPromptTemplateDrawerQuery>
@@ -68,7 +68,7 @@ const TeamPromptTemplateDrawer = ({queryRef, onClose, hideHeader}: Props) => {
   const meeting = viewer.meeting
   const [isSeriesChecked, setIsSeriesChecked] = useState(false)
   const isSeriesActive = !!meeting?.meetingSeries && !meeting.meetingSeries.cancelledAt
-  const switcher = useSwitchStandupTemplate({
+  const switcher = useSwitchTeamPromptTemplate({
     meetingId: meeting?.id ?? '',
     applyToSeries: isSeriesActive && isSeriesChecked,
     onSwitched: onClose

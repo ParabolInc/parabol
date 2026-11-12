@@ -19,7 +19,7 @@ interface Options {
   onSwitched: () => void
 }
 
-const useSwitchStandupTemplate = (options: Options) => {
+const useSwitchTeamPromptTemplate = (options: Options) => {
   const {meetingId, applyToSeries, onSwitched} = options
   const atmosphere = useAtmosphere()
   const [updateMeetingTemplate, submitting] = useUpdateMeetingTemplateMutation()
@@ -42,7 +42,7 @@ const useSwitchStandupTemplate = (options: Options) => {
       setProblem({kind: 'unavailable', templateName: template.name})
     } else if (code === 'CONFLICT') {
       atmosphere.eventEmitter.emit('addSnackbar', {
-        key: 'standupTemplateConflict',
+        key: 'teamPromptTemplateConflict',
         message: error?.message ?? 'The template can no longer be changed',
         autoDismiss: 5
       })
@@ -90,4 +90,4 @@ const useSwitchStandupTemplate = (options: Options) => {
   }
 }
 
-export default useSwitchStandupTemplate
+export default useSwitchTeamPromptTemplate

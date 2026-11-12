@@ -1,5 +1,5 @@
 import {ErrorOutline, Warning} from '~/ui/icons'
-import type {SwitchProblem} from './useSwitchStandupTemplate'
+import type {SwitchProblem} from './useSwitchTeamPromptTemplate'
 
 interface Props {
   problem: SwitchProblem

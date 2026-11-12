@@ -20,7 +20,7 @@ const useTemplateSwitchedSnackbar = (options: Options) => {
     if (!templateId || !templateName || !previous.templateId) return
     if (previous.meetingId !== meetingId || previous.templateId === templateId) return
     atmosphere.eventEmitter.emit('addSnackbar', {
-      key: `standupTemplateSwitched:${templateId}`,
+      key: `teamPromptTemplateSwitched:${templateId}`,
       message: getSwitchedMessage(templateName, previous.hasAnswers, isSeriesTemplate),
       autoDismiss: 8
     })
