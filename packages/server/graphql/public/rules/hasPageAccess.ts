@@ -29,14 +29,17 @@ export const hasPageAccess = <T>(
     const userRole = await dataLoader.get(loaderName).load({pageId: dbPageId, userId: viewerId})
     if (!userRole || PAGE_ROLES.indexOf(roleRequired) < PAGE_ROLES.indexOf(userRole)) {
       return new GraphQLError(
-        `Insufficient permission. User role: ${userRole || 'None'} Role required: ${roleRequired}`
+        `Insufficient permission. User role: ${userRole || 'None'} Role required: ${roleRequired}`,
+        {extensions: {code: 'FORBIDDEN'}}
       )
     }
     if (info.operation.operation === 'mutation') {
       dataLoader.get(loaderName).clearAll()
     }
     if (context.resourceGrants && !(await context.resourceGrants.hasPage(dbPageId))) {
-      return new GraphQLError(`PAT does not grant access to this page`)
+      return new GraphQLError(`PAT does not grant access to this page`, {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
     return true
   })

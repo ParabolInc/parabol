@@ -25,10 +25,12 @@ export const isTeamMember = <T>(
     if (Array.isArray(argVar)) {
       for (const teamId of argVar as string[]) {
         if (!authToken.tms?.includes(teamId)) {
-          return new GraphQLError(`Viewer is not on team`)
+          return new GraphQLError(`Viewer is not on team`, {extensions: {code: 'FORBIDDEN'}})
         }
         if (context.resourceGrants && !(await context.resourceGrants.hasTeam(teamId))) {
-          return new GraphQLError(`PAT does not grant access to this team`)
+          return new GraphQLError(`PAT does not grant access to this team`, {
+            extensions: {code: 'FORBIDDEN'}
+          })
         }
       }
       return true
@@ -43,17 +45,21 @@ export const isTeamMember = <T>(
         teamId = subject?.[teamIdKey]
       }
       if (!teamId)
-        return new GraphQLError(`Permission lookup failed on ${dataLoaderName} for ${argVar}`)
+        return new GraphQLError(`Permission lookup failed on ${dataLoaderName} for ${argVar}`, {
+          extensions: {code: 'NOT_FOUND'}
+        })
     }
 
     // Special case for ghost org so users can view meeting template meta
     if (info.operation.operation !== 'mutation' && teamId === 'aGhostTeam') return true
 
     if (!authToken.tms?.includes(teamId)) {
-      return new GraphQLError(`Viewer is not on team`)
+      return new GraphQLError(`Viewer is not on team`, {extensions: {code: 'FORBIDDEN'}})
     }
     if (context.resourceGrants && !(await context.resourceGrants.hasTeam(teamId))) {
-      return new GraphQLError(`PAT does not grant access to this team`)
+      return new GraphQLError(`PAT does not grant access to this team`, {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
     return true
   })

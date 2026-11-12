@@ -33,7 +33,8 @@ const computeSimilaritySuggestedGroups = async (
   const embeddedCount = vectors.filter((vector) => !!vector?.length).length
   if (embeddedCount < 2) {
     throw new GraphQLError(
-      "Grouping by similar wording isn't ready for this meeting yet. Try Custom Instructions, or group by dragging."
+      "Grouping by similar wording isn't ready for this meeting yet. Try Custom Instructions, or group by dragging.",
+      {extensions: {code: 'CONFLICT'}}
     )
   }
 

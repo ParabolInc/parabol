@@ -53,7 +53,7 @@ test('Sign out only invalidates the signed-out session', async () => {
 
   // Session 1 should now be rejected
   const after1 = await sendPublic({query: VIEWER_QUERY, bearerToken: session1Token})
-  expect(after1.errors?.[0]?.extensions?.code).toBe('UNAUTHORIZED')
+  expect(after1.errors?.[0]?.extensions?.code).toBe('UNAUTHENTICATED')
 
   // Session 2 should still work
   const after2 = await sendPublic({query: VIEWER_QUERY, bearerToken: session2Token})

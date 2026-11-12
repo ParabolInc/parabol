@@ -1431,7 +1431,7 @@ describe('Org membership is reflected in SCIM', () => {
       cookie
     })
     expect(afterResult.errors).toBeDefined()
-    expect(afterResult.errors[0]?.extensions?.code).toBe('UNAUTHORIZED')
+    expect(afterResult.errors[0]?.extensions?.code).toBe('UNAUTHENTICATED')
   })
 
   test('PATCH active=false removes external user from org', async () => {

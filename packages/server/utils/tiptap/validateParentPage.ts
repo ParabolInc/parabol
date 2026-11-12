@@ -22,7 +22,7 @@ export const validateParentPage = async (
     .executeTakeFirst()
 
   if (!parentPageWithRole) {
-    throw new GraphQLError('Invalid parentPageId')
+    throw new GraphQLError('Invalid parentPageId', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   const {ancestorIds, role} = parentPageWithRole
   if (!role) {
@@ -31,10 +31,10 @@ export const validateParentPage = async (
       await sleep(1000)
       return validateParentPage(parentPageId, userId, roleRequired, 1)
     }
-    throw new GraphQLError('Invalid access to parentPageId')
+    throw new GraphQLError('Invalid access to parentPageId', {extensions: {code: 'FORBIDDEN'}})
   }
   if (PAGE_ROLES.indexOf(roleRequired) < PAGE_ROLES.indexOf(role)) {
-    throw new GraphQLError('Insufficient role on parentPage')
+    throw new GraphQLError('Insufficient role on parentPage', {extensions: {code: 'FORBIDDEN'}})
   }
 
   if (ancestorIds.length >= MAX_PAGE_DEPTH) {

@@ -67,7 +67,9 @@ export const pages: NonNullable<UserResolvers['pages']> = async (
   {authToken, resourceGrants}
 ) => {
   if (parentPageId && teamId) {
-    throw new GraphQLError('parentPageId and teamId are mutually exclusive')
+    throw new GraphQLError('parentPageId and teamId are mutually exclusive', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   const viewerId = getUserId(authToken)

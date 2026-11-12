@@ -167,7 +167,9 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
         : spaces
     } catch (e) {
       if (e instanceof ConfluenceApiError && e.errorClass === 'forbidden') {
-        throw new GraphQLError('No permission to list Confluence spaces on this site')
+        throw new GraphQLError('No permission to list Confluence spaces on this site', {
+          extensions: {code: 'FORBIDDEN'}
+        })
       }
       return []
     }

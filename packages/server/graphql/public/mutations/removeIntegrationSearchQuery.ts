@@ -18,7 +18,7 @@ const removeIntegrationSearchQuery: MutationResolvers['removeIntegrationSearchQu
 
   const [dbId, , entity] = CipherId.fromClient(id)
   if (entity !== 'integrationSearchQuery') {
-    throw new GraphQLError('Search query not found')
+    throw new GraphQLError('Search query not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const removedQuery = await getKysely()
     .deleteFrom('IntegrationSearchQuery')
@@ -27,7 +27,7 @@ const removeIntegrationSearchQuery: MutationResolvers['removeIntegrationSearchQu
     .returning('service')
     .executeTakeFirst()
   if (!removedQuery || !isRegisteredServerIntegration(removedQuery.service)) {
-    throw new GraphQLError('Search query not found')
+    throw new GraphQLError('Search query not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
   const data = {teamId, userId: viewerId, service: removedQuery.service}

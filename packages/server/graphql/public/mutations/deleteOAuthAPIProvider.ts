@@ -20,7 +20,7 @@ const deleteOAuthAPIProvider: MutationResolvers['deleteOAuthAPIProvider'] = asyn
     .executeTakeFirst()
 
   if (!provider) {
-    throw new GraphQLError('Provider not found')
+    throw new GraphQLError('Provider not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
   await pg.deleteFrom('OAuthAPIProvider').where('id', '=', providerId).execute()

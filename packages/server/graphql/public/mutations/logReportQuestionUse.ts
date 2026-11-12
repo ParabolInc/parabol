@@ -23,19 +23,25 @@ const logReportQuestionUse: MutationResolvers['logReportQuestionUse'] = async (
   const isBuilt = !!specInput && !reportQuestionKey
   if ([!!popularQuestionKey, !!reportQuestionKey, isBuilt].filter(Boolean).length !== 1) {
     throw new GraphQLError(
-      'Pick a popular question, one of your recent ones, or a report you built'
+      'Pick a popular question, one of your recent ones, or a report you built',
+      {extensions: {code: 'BAD_USER_INPUT'}}
     )
   }
   const spec = specInput ? readReportSpecInput(specInput) : null
   const builtTitle = title?.trim()
   if (isBuilt && (!builtTitle || builtTitle.length > 255)) {
-    throw new GraphQLError('A report you built needs a name of 1 to 255 characters')
+    throw new GraphQLError('A report you built needs a name of 1 to 255 characters', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   // RESOLUTION
   if (popularQuestionKey) {
     const popular = POPULAR_REPORT_QUESTIONS.find(({key}) => key === popularQuestionKey)
-    if (!popular) throw new GraphQLError('That popular question isn’t available')
+    if (!popular)
+      throw new GraphQLError('That popular question isn’t available', {
+        extensions: {code: 'NOT_FOUND'}
+      })
     const reportQuestion = await recordReportQuestion({
       userId: viewerId,
       orgId,
@@ -69,7 +75,9 @@ const logReportQuestionUse: MutationResolvers['logReportQuestionUse'] = async (
         .executeTakeFirst()
     : undefined
   if (!reportQuestionId || !recent)
-    throw new GraphQLError('That isn’t one of your recent questions')
+    throw new GraphQLError('That isn’t one of your recent questions', {
+      extensions: {code: 'NOT_FOUND'}
+    })
   const isChanged = !!spec && stringify(spec) !== stringify(parseReportSpec(recent.spec).spec)
   if (!isChanged || !spec) {
     const reportQuestion = await pg
@@ -81,7 +89,9 @@ const logReportQuestionUse: MutationResolvers['logReportQuestionUse'] = async (
     return {reportQuestion}
   }
   if (!builtTitle || builtTitle.length > 255) {
-    throw new GraphQLError('A changed report needs a name of 1 to 255 characters')
+    throw new GraphQLError('A changed report needs a name of 1 to 255 characters', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   // a changed question keeps its own spec, so asking it again gives the same answer. Marking it edited shows
   // where it missed, and the change becomes a report the viewer built

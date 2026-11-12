@@ -67,7 +67,8 @@ const Organization: OrganizationResolvers = {
   activeUserCounts: async ({id: orgId}, {at}, {dataLoader}) => {
     if (at.length > MAX_ACTIVE_USER_COUNT_TIMES) {
       throw new GraphQLError(
-        `Cannot count active users at more than ${MAX_ACTIVE_USER_COUNT_TIMES} times at once`
+        `Cannot count active users at more than ${MAX_ACTIVE_USER_COUNT_TIMES} times at once`,
+        {extensions: {code: 'BAD_USER_INPUT'}}
       )
     }
     return dataLoader.get('activeUserCountsByOrgId').load({orgId, times: at})

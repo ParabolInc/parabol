@@ -158,7 +158,9 @@ const User: ReqResolvers<'User'> = {
       }
     }
     if (meetingTypes.length < 1) {
-      throw new GraphQLError('Must provide at least 1 meetingType')
+      throw new GraphQLError('Must provide at least 1 meetingType', {
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
     }
 
     const nodes = await selectNewMeetings()

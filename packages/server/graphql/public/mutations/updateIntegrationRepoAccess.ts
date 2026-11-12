@@ -28,16 +28,23 @@ const updateIntegrationRepoAccess: MutationResolvers['updateIntegrationRepoAcces
   const definition: ServerIntegrationDefinition | null = getServerIntegration(service)
   const {repoAccess, repoList} = definition?.capabilities ?? {}
   if (!definition || !repoAccess || !repoList) {
-    throw new GraphQLError(`${service} does not support choosing what to share`)
+    throw new GraphQLError(`${service} does not support choosing what to share`, {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   const ctx = {dataLoader, teamId, userId: viewerId, context, info}
   const auth = await definition.getAuthRow(ctx)
-  if (!auth) throw new GraphQLError(`${definition.title} is not connected`)
+  if (!auth)
+    throw new GraphQLError(`${definition.title} is not connected`, {extensions: {code: 'CONFLICT'}})
   if (integrationRepoIds.length > MAX_SHARED_REPOS) {
-    throw new GraphQLError(`Share at most ${MAX_SHARED_REPOS} at a time, or share everything`)
+    throw new GraphQLError(`Share at most ${MAX_SHARED_REPOS} at a time, or share everything`, {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   if (mode === 'all' && integrationRepoIds.length > 0) {
-    throw new GraphQLError('integrationRepoIds must be empty when sharing everything')
+    throw new GraphQLError('integrationRepoIds must be empty when sharing everything', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   const getAccess = async () => {
@@ -58,7 +65,8 @@ const updateIntegrationRepoAccess: MutationResolvers['updateIntegrationRepoAcces
       throw new GraphQLError(
         availableRepos instanceof Error
           ? `Could not reach ${definition.title}: ${availableRepos.message}`
-          : `Your ${definition.title} account cannot see everything you picked`
+          : `Your ${definition.title} account cannot see everything you picked`,
+        {extensions: {code: 'SERVICE_UNAVAILABLE'}}
       )
     }
     return new RepoAccess('selected', repos)

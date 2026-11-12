@@ -15,7 +15,7 @@ const updateTemplatePromptGroupColor: MutationResolvers['updateTemplatePromptGro
   const prompt = await dataLoader.get('templatePrompts').load(promptId)
 
   if (!prompt || prompt.removedAt) {
-    throw new GraphQLError('Prompt not found')
+    throw new GraphQLError('Prompt not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const {teamId} = prompt
 

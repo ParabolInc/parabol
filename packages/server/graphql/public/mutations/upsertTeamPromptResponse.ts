@@ -30,10 +30,14 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
     dataLoader.get('templatePromptsByMeetingId').load(meetingId),
     dataLoader.get('teamPromptResponsesByMeetingIdAndUserId').load({meetingId, userId: viewerId})
   ])
-  if (!meeting || meeting.meetingType !== 'teamPrompt') throw new GraphQLError('Meeting not found')
-  if (meeting.endedAt) throw new GraphQLError('Meeting already ended')
+  if (!meeting || meeting.meetingType !== 'teamPrompt')
+    throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
+  if (meeting.endedAt)
+    throw new GraphQLError('Meeting already ended', {extensions: {code: 'CONFLICT'}})
   if (!prompts.some(({id}) => id === promptId)) {
-    throw new GraphQLError('Prompt is not part of this meeting')
+    throw new GraphQLError('Prompt is not part of this meeting', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   let doc: JSONContent
@@ -44,9 +48,10 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
     isEmpty = isEmptyTipTapDoc(doc)
     plaintextContent = generateText(doc, serverTipTapExtensions).trim()
   } catch {
-    throw new GraphQLError('Invalid editor format')
+    throw new GraphQLError('Invalid editor format', {extensions: {code: 'BAD_USER_INPUT'}})
   }
-  if (isStandupResponseTooLong(doc)) throw new GraphQLError('Response is too long')
+  if (isStandupResponseTooLong(doc))
+    throw new GraphQLError('Response is too long', {extensions: {code: 'BAD_USER_INPUT'}})
 
   const values = isEmpty
     ? {content: EMPTY_DOC, plaintextContent: ''}

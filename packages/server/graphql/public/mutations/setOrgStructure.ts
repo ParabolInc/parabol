@@ -12,7 +12,8 @@ const toName = (name: string, thing: string) => {
   const trimmed = name.trim()
   if (!trimmed || trimmed.length > MAX_ORG_STRUCTURE_NAME_LENGTH) {
     throw new GraphQLError(
-      `${thing} needs a name of 1 to ${MAX_ORG_STRUCTURE_NAME_LENGTH} characters`
+      `${thing} needs a name of 1 to ${MAX_ORG_STRUCTURE_NAME_LENGTH} characters`,
+      {extensions: {code: 'BAD_USER_INPUT'}}
     )
   }
   return trimmed
@@ -28,7 +29,9 @@ const setOrgStructure: MutationResolvers['setOrgStructure'] = async (
 ) => {
   // VALIDATION
   if (levels.length > MAX_ORG_STRUCTURE_LEVELS) {
-    throw new GraphQLError(`A team structure has up to ${MAX_ORG_STRUCTURE_LEVELS} levels`)
+    throw new GraphQLError(`A team structure has up to ${MAX_ORG_STRUCTURE_LEVELS} levels`, {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   const {levels: currentLevels} = await dataLoader.get('orgStructureByOrgId').load(orgId)
   const levelIdByValueId = new Map(
@@ -37,25 +40,33 @@ const setOrgStructure: MutationResolvers['setOrgStructure'] = async (
   const nextLevels = levels.map((level) => {
     const levelId = level.id ? fromOrgStructureKey(level.id, 'OrgStructureLevel') : null
     if (level.id && !currentLevels.some(({id}) => id === levelId)) {
-      throw new GraphQLError('That level isn’t part of this organization')
+      throw new GraphQLError('That level isn’t part of this organization', {
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
     }
     if (level.values.length > MAX_ORG_STRUCTURE_VALUES) {
-      throw new GraphQLError(`A level has up to ${MAX_ORG_STRUCTURE_VALUES} values`)
+      throw new GraphQLError(`A level has up to ${MAX_ORG_STRUCTURE_VALUES} values`, {
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
     }
     const values = level.values.map((value) => {
       const valueId = value.id ? fromOrgStructureKey(value.id, 'OrgStructureValue') : null
       if (value.id && (valueId === null || levelIdByValueId.get(valueId) !== levelId)) {
-        throw new GraphQLError('That value isn’t part of its level')
+        throw new GraphQLError('That value isn’t part of its level', {
+          extensions: {code: 'BAD_USER_INPUT'}
+        })
       }
       return {id: valueId, name: toName(value.name, 'A value')}
     })
     if (hasDuplicateName(values.map(({name}) => name))) {
-      throw new GraphQLError('Each value of a level needs its own name')
+      throw new GraphQLError('Each value of a level needs its own name', {
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
     }
     return {id: levelId, name: toName(level.name, 'A level'), values}
   })
   if (hasDuplicateName(nextLevels.map(({name}) => name))) {
-    throw new GraphQLError('Each level needs its own name')
+    throw new GraphQLError('Each level needs its own name', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   // RESOLUTION

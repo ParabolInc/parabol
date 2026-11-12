@@ -1,9 +1,9 @@
-import {GraphQLError} from 'graphql'
 import util from 'util'
 import {keepFailedTrace} from '../tracing/failedTraces'
 import getActiveSpanLogContext from '../tracing/getActiveSpanLogContext'
 import describeRequestBody from './describeRequestBody'
 import getErrorFingerprint from './getErrorFingerprint'
+import isExpectedError from './isExpectedError'
 import {maskCredentials} from './maskCredentials'
 import {getLogContext, type HttpLogContext, type RequestLogContext} from './requestLogContext'
 import {ThirdPartyResponseError} from './ThirdPartyResponseError'
@@ -116,9 +116,6 @@ const findError = (message: unknown, params: unknown[]) =>
   message instanceof Error
     ? message
     : params.find((param): param is Error => param instanceof Error)
-
-const isExpectedError = (error: Error): boolean =>
-  error instanceof GraphQLError && (!error.originalError || isExpectedError(error.originalError))
 
 const describeThirdPartyResponse = (error: Error) =>
   error instanceof ThirdPartyResponseError ? {response: error.response} : undefined

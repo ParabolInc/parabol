@@ -4,7 +4,7 @@ import type {QueryResolvers} from '../resolverTypes'
 
 const viewerResolver: QueryResolvers['viewer'] = (_source, _args, {authToken, dataLoader}) => {
   const viewerId = getUserId(authToken)
-  if (!viewerId) throw new GraphQLError('Please log in')
+  if (!viewerId) throw new GraphQLError('Please log in', {extensions: {code: 'UNAUTHENTICATED'}})
   return dataLoader.get('users').loadNonNull(viewerId)
 }
 
