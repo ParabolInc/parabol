@@ -53,7 +53,7 @@ export interface ServerContext {
   docId?: string | null | undefined
   // the cost of the adhoc query. undefined if it is a persisted query
   apiCost?: number
-  // present if the request is from a Personal Access Token
+  // present if the request is from a Personal Access Token or an OAuth access token
   resourceGrants?: ResourceGrants
   personalAccessTokenId?: string
   traceparent?: string

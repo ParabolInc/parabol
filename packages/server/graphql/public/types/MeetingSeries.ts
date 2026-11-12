@@ -24,10 +24,15 @@ const MeetingSeries: MeetingSeriesResolvers = {
     if (!ownerUserId) return null
     return (await dataLoader.get('users').load(ownerUserId)) ?? null
   },
-  groupSeries: async ({id, groupId}, _args, {authToken, dataLoader}) => {
+  groupSeries: async ({id, groupId}, _args, {authToken, dataLoader, resourceGrants}) => {
     if (!groupId) return []
-    const siblings = await dataLoader.get('meetingSeriesByGroupId').load(groupId)
-    return siblings.filter((series) => series.id !== id && canReadMeetingSeries(series, authToken))
+    const siblings = (await dataLoader.get('meetingSeriesByGroupId').load(groupId)).filter(
+      (series) => series.id !== id
+    )
+    const isReadable = await Promise.all(
+      siblings.map((series) => canReadMeetingSeries(series, authToken, dataLoader, resourceGrants))
+    )
+    return siblings.filter((_, idx) => isReadable[idx])
   },
   mostRecentMeeting: async ({id: meetingSeriesId, teamId}, _args, {authToken}) => {
     // an owner can schedule for a team they are not on, & they cannot join that team's meetings

@@ -15,7 +15,7 @@ import {runConfluenceExport} from './helpers/confluenceExport/runConfluenceExpor
 const exportPagesToConfluence: MutationResolvers['exportPagesToConfluence'] = async (
   _source,
   {pageId, teamId, includeSubPages, cloudId, spaceId, spaceName, targetParentPageId},
-  {authToken, dataLoader}
+  {authToken, dataLoader, resourceGrants}
 ) => {
   const viewerId = getUserId(authToken)
   const pg = getKysely()
@@ -63,7 +63,7 @@ const exportPagesToConfluence: MutationResolvers['exportPagesToConfluence'] = as
     }
   }
 
-  const tree = await loadPageExportTree(dbPageId, includeSubPages, viewerId)
+  const tree = await loadPageExportTree(dbPageId, includeSubPages, viewerId, resourceGrants)
   if (tree.length === 0) {
     throw new GraphQLError('Page not found', {extensions: {code: 'NOT_FOUND'}})
   }

@@ -179,7 +179,7 @@ const startTeamHealthForTeam = async (
 const startTeamHealth: MutationResolvers['startTeamHealth'] = async (
   _source,
   {teamIds, templateId, name, rrule: rruleString, gcalInput, joinMeetingSeriesId},
-  {authToken, socketId: mutatorId, dataLoader}
+  {authToken, socketId: mutatorId, dataLoader, resourceGrants}
 ) => {
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
@@ -217,7 +217,7 @@ const startTeamHealth: MutationResolvers['startTeamHealth'] = async (
         extensions: {code: 'BAD_USER_INPUT'}
       })
     }
-    if (!(await canAdminMeetingSeries(joinedSeries, authToken, dataLoader))) {
+    if (!(await canAdminMeetingSeries(joinedSeries, authToken, dataLoader, resourceGrants))) {
       throw new GraphQLError('Viewer cannot administer that meeting series', {
         extensions: {code: 'FORBIDDEN'}
       })

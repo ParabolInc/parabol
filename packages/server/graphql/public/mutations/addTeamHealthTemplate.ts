@@ -9,7 +9,7 @@ import type {MutationResolvers} from '../resolverTypes'
 const addTeamHealthTemplate: MutationResolvers['addTeamHealthTemplate'] = async (
   _source,
   {teamId, parentTemplateId},
-  {authToken, dataLoader, socketId: mutatorId}
+  {authToken, dataLoader, socketId: mutatorId, resourceGrants}
 ) => {
   const pg = getKysely()
   const operationId = dataLoader.share()
@@ -50,7 +50,9 @@ const addTeamHealthTemplate: MutationResolvers['addTeamHealthTemplate'] = async 
   } else if (scope === 'ORGANIZATION') {
     const parentTemplateTeam = await dataLoader.get('teams').load(parentTemplate.teamId)
     const isInOrg =
-      parentTemplateTeam && (await isUserInOrg(viewerId, parentTemplateTeam.orgId, dataLoader))
+      parentTemplateTeam &&
+      (await isUserInOrg(viewerId, parentTemplateTeam.orgId, dataLoader)) &&
+      (!resourceGrants || (await resourceGrants.hasOrg(parentTemplateTeam.orgId)))
     if (!isInOrg) {
       throw new GraphQLError('Template is scoped to organization', {
         extensions: {code: 'FORBIDDEN'}
