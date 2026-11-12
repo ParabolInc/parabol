@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import getFileStoreManager from '../../packages/server/fileStorage/getFileStoreManager'
 import {applyEnvVarsToClientAssets} from '../../packages/server/utils/applyEnvVarsToClientAssets'
+import isContentHashed from '../../packages/server/utils/isContentHashed'
 import {Logger} from '../../packages/server/utils/Logger'
 import getProjectRoot from '../webpack/utils/getProjectRoot'
 
@@ -45,15 +46,23 @@ const pushClientAssetsToCDN = async () => {
     })
     .filter((name) => !isPrecompressed(name))
   const names = [...new Set([...builtNames, ...madeFiles.keys()])]
+  let uploaded = 0
   await forEachUpload(names, async (name) => {
     const madeFile = madeFiles.get(name)
+    if (madeFile === undefined && isContentHashed(name)) {
+      // a content-hashed name always holds the same bytes, so a past release may have uploaded it
+      if (await fileStoreManager.checkExists(name, 'build')) return
+    }
     const file =
       madeFile !== undefined
         ? Buffer.from(madeFile)
         : await fs.promises.readFile(path.join(localClientAssetsDir, name))
-    return fileStoreManager.putBuildFile(file, name)
+    await fileStoreManager.putBuildFile(file, name)
+    uploaded++
   })
-  Logger.log(`⛅️ Uploaded ${names.length} client assets to CDN`)
+  Logger.log(
+    `⛅️ Uploaded ${uploaded} client assets to CDN, ${names.length - uploaded} were already there`
+  )
 }
 
 const pushServerAssetsToCDN = async () => {

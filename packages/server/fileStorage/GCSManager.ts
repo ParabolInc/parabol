@@ -231,9 +231,16 @@ export default class GCSManager extends FileStoreManager {
   }
   async checkExists(partialPath: string, assetDir?: FileAssetDir) {
     const fullPath = encodeURIComponent(this.prependPath(partialPath, assetDir))
-    const url = `https://storage.googleapis.com/storage/v1/b/${this.bucket}/o/${fullPath}`
-    const res = await fetch(url)
-    return res.status !== 404
+    const url = `https://storage.googleapis.com/storage/v1/b/${this.bucket}/o/${fullPath}?fields=name`
+    const accessToken = await this.getAccessToken()
+    const res = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Accept: 'application/json',
+        'User-Agent': 'parabol'
+      }
+    })
+    return res.ok
   }
   async presignUrl(partialPath: PartialPath, _expiresIn = 604800): Promise<string> {
     // for PPMIs where a public bucket is not allowed, we special case build files

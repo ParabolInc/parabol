@@ -137,11 +137,13 @@ export default class S3Manager extends FileStoreManager {
     const Key = this.prependPath(key, assetDir)
     try {
       await this.s3.send(new HeadObjectCommand({Bucket: this.bucket, Key}))
+      return true
     } catch (e) {
-      if (e instanceof Error && e.name === 'NotFound') return false
-      Logger.log(`Invalid error ${(e as Error).name}`)
+      if (!(e instanceof Error && e.name === 'NotFound')) {
+        Logger.log(`Invalid error ${(e as Error).name}`)
+      }
+      return false
     }
-    return true
   }
 
   async copyFile(oldPartialPath: PartialPath, newPartialPath: PartialPath) {
