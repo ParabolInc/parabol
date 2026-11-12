@@ -10,10 +10,12 @@ import encodeAuthToken from '../utils/encodeAuthToken'
 
 const CODE_VERIFIER = /^[A-Za-z0-9\-._~]{43,128}$/
 
-const sha256 = (value: string) => createHash('sha256').update(value).digest()
-
-const isEqualSecret = (expected: string | null | undefined, actual: string) =>
-  !!expected && timingSafeEqual(sha256(expected), sha256(actual))
+const isEqualSecret = (expected: string | null | undefined, actual: string) => {
+  if (!expected) return false
+  const expectedBytes = Buffer.from(expected)
+  const actualBytes = Buffer.from(actual)
+  return expectedBytes.length === actualBytes.length && timingSafeEqual(expectedBytes, actualBytes)
+}
 
 const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest) => {
   const rawBody = await parseBody({
@@ -163,7 +165,7 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
   const isCodeVerifierValid = codeChallenge
     ? !!code_verifier &&
       CODE_VERIFIER.test(code_verifier) &&
-      isEqualSecret(codeChallenge, sha256(code_verifier).toString('base64url'))
+      isEqualSecret(codeChallenge, createHash('sha256').update(code_verifier).digest('base64url'))
     : !code_verifier
   if (!isCodeVerifierValid) {
     res.writeStatus('400 Bad Request')
