@@ -1,4 +1,11 @@
-import {Environment, Network, Observable, RecordSource, Store} from 'relay-runtime'
+import {
+  ConnectionHandler,
+  Environment,
+  Network,
+  Observable,
+  RecordSource,
+  Store
+} from 'relay-runtime'
 import type Atmosphere from '../../Atmosphere'
 import TeamSubscription from '../TeamSubscription'
 
@@ -152,6 +159,46 @@ describe('TeamSubscription', () => {
     expect(getUnexpectedErrors()).toEqual([])
     expect(atmosphere.getStore().getSource().get(templateId)?.dimensions).toEqual({
       __refs: ['dimension2']
+    })
+  })
+
+  it("removes a teammate's removed prompt template from the activity library when the team is not loaded", () => {
+    const otherTemplateId = 'template2'
+    const atmosphere = createTestAtmosphere({
+      teamSubscription: {
+        fieldName: 'RemovePromptTemplateSuccess',
+        RemovePromptTemplateSuccess: {
+          template: {id: templateId, teamId},
+          meetingSettings: {
+            __typename: 'RetrospectiveMeetingSettings',
+            id: 'settings1',
+            selectedTemplateId: otherTemplateId,
+            selectedTemplate: {id: otherTemplateId}
+          }
+        }
+      }
+    })
+    atmosphere.commitUpdate((store) => {
+      const viewer = store.create('viewer1', 'User')
+      store.getRoot().setLinkedRecord(viewer, 'viewer')
+      const conn = store.create('availableTemplatesConn', 'MeetingTemplateConnection')
+      viewer.setLinkedRecord(conn, '__ActivityLibrary_availableTemplates_connection')
+      const edges = [templateId, otherTemplateId].map((id) => {
+        const template = store.create(id, 'PromptTemplate')
+        template.setValue(id, 'id')
+        return ConnectionHandler.createEdge(store, conn, template, 'MeetingTemplateEdge')
+      })
+      conn.setLinkedRecords(edges, 'edges')
+    })
+    TeamSubscription(atmosphere, {}, {navigate: jest.fn()})
+    expect(getUnexpectedErrors()).toEqual([])
+    atmosphere.commitUpdate((store) => {
+      const viewer = store.getRoot().getLinkedRecord('viewer')!
+      const conn = ConnectionHandler.getConnection(viewer, 'ActivityLibrary_availableTemplates')!
+      const templateIds = conn
+        .getLinkedRecords('edges')!
+        .map((edge) => edge.getLinkedRecord('node')!.getValue('id'))
+      expect(templateIds).toEqual([otherTemplateId])
     })
   })
 

@@ -10,14 +10,14 @@ const handleRemovePromptTemplate = (
   teamId: string,
   store: RecordSourceSelectorProxy<any>
 ) => {
-  const team = store.get(teamId)!
-  const retroSettings = team.getLinkedRecord('meetingSettings', {
+  const team = store.get(teamId)
+  const retroSettings = team?.getLinkedRecord('meetingSettings', {
     meetingType: 'retrospective'
   })
   safeRemoveNodeFromArray(templateId, retroSettings, 'teamTemplates')
   safeRemoveNodeFromConn(templateId, getReflectTemplateOrgConn(retroSettings))
   safeRemoveNodeFromConn(templateId, getReflectTemplatePublicConn(retroSettings))
-  const standupSettings = team.getLinkedRecord('meetingSettings', {
+  const standupSettings = team?.getLinkedRecord('meetingSettings', {
     meetingType: 'teamPrompt'
   })
   safeRemoveNodeFromArray(templateId, standupSettings, 'teamTemplates')
