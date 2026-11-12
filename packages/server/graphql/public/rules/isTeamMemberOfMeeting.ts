@@ -15,20 +15,24 @@ export const isTeamMemberOfMeeting = <T>(
     if (dataLoaderName) {
       const subject = await dataLoader.get(dataLoaderName as any).load(argVar)
       if (!subject?.meetingId)
-        return new GraphQLError(`Permission lookup failed on ${dataLoaderName} for ${argVar}`)
+        return new GraphQLError(`Permission lookup failed on ${dataLoaderName} for ${argVar}`, {
+          extensions: {code: 'NOT_FOUND'}
+        })
       meetingId = subject.meetingId
     }
 
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) {
-      return new GraphQLError(`Meeting not found`)
+      return new GraphQLError(`Meeting not found`, {extensions: {code: 'NOT_FOUND'}})
     }
     // All team members can join a meeting, so let them interact with it even if no team member exists yet. This allows for creation of reflections beforehand
     if (!authToken.tms?.includes(meeting.teamId)) {
-      return new GraphQLError(`Viewer is not on team`)
+      return new GraphQLError(`Viewer is not on team`, {extensions: {code: 'FORBIDDEN'}})
     }
     if (context.resourceGrants && !(await context.resourceGrants.hasTeam(meeting.teamId))) {
-      return new GraphQLError(`PAT does not grant access to this team`)
+      return new GraphQLError(`PAT does not grant access to this team`, {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
     return true
   })

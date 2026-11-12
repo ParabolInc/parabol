@@ -9,12 +9,14 @@ const refreshSession: MutationResolvers['refreshSession'] = async (_source, {}, 
   const {rol, sub, jti, exp} = authToken!
 
   if (rol === 'impersonate') {
-    throw new GraphQLError('Cannot refresh an impersonation session')
+    throw new GraphQLError('Cannot refresh an impersonation session', {
+      extensions: {code: 'FORBIDDEN'}
+    })
   }
 
   const user = await dataLoader.get('users').load(sub)
   if (!user) {
-    throw new GraphQLError('User not found')
+    throw new GraphQLError('User not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
   if (jti && exp) {

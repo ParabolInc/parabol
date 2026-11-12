@@ -16,7 +16,7 @@ const removePromptTemplate: MutationResolvers['removePromptTemplate'] = async (
   const subOptions = {operationId, mutatorId}
   const template = await dataLoader.get('meetingTemplates').load(templateId)
   if (!template || !template.isActive || !isPromptTemplateType(template.type)) {
-    throw new GraphQLError('Template not found')
+    throw new GraphQLError('Template not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
   const {teamId, type} = template
@@ -32,7 +32,9 @@ const removePromptTemplate: MutationResolvers['removePromptTemplate'] = async (
       .executeTakeFirst()
   ])
   if (activeSeries) {
-    throw new GraphQLError('Template is used by a recurring meeting')
+    throw new GraphQLError('Template is used by a recurring meeting', {
+      extensions: {code: 'CONFLICT'}
+    })
   }
 
   await pg

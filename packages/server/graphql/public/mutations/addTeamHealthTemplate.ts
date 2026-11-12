@@ -22,7 +22,7 @@ const addTeamHealthTemplate: MutationResolvers['addTeamHealthTemplate'] = async 
     dataLoader.get('teams').load(teamId)
   ])
   if (!viewerTeam) {
-    throw new GraphQLError('Team not found')
+    throw new GraphQLError('Team not found', {extensions: {code: 'NOT_FOUND'}})
   }
   if (!parentTemplateId) {
     const newTemplate = new MeetingTemplate({
@@ -40,19 +40,21 @@ const addTeamHealthTemplate: MutationResolvers['addTeamHealthTemplate'] = async 
   }
   const parentTemplate = await dataLoader.get('meetingTemplates').load(parentTemplateId)
   if (!parentTemplate || parentTemplate.type !== 'teamHealth') {
-    throw new GraphQLError('Parent template not found')
+    throw new GraphQLError('Parent template not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const {name, scope} = parentTemplate
   if (scope === 'TEAM') {
     if (!isTeamMember(authToken, parentTemplate.teamId)) {
-      throw new GraphQLError('Template is scoped to team')
+      throw new GraphQLError('Template is scoped to team', {extensions: {code: 'FORBIDDEN'}})
     }
   } else if (scope === 'ORGANIZATION') {
     const parentTemplateTeam = await dataLoader.get('teams').load(parentTemplate.teamId)
     const isInOrg =
       parentTemplateTeam && (await isUserInOrg(viewerId, parentTemplateTeam.orgId, dataLoader))
     if (!isInOrg) {
-      throw new GraphQLError('Template is scoped to organization')
+      throw new GraphQLError('Template is scoped to organization', {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
   }
 

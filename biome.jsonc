@@ -264,6 +264,10 @@
       }
     },
     {
+      "includes": ["packages/server/**", "!**/__tests__/**"],
+      "plugins": ["./scripts/biome/requireGraphQLErrorCode.grit"]
+    },
+    {
       "includes": ["packages/server/**"],
       "linter": {
         "rules": {

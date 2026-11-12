@@ -41,7 +41,7 @@ const computeAISuggestedGroups = async (
   // so there is no way to drop them afterwards.
   const groupable = reflections.filter(({plaintextContent}) => !!plaintextContent.trim())
   if (groupable.length === 0) {
-    throw new GraphQLError('There are no reflections to group')
+    throw new GraphQLError('There are no reflections to group', {extensions: {code: 'CONFLICT'}})
   }
 
   const promptIds = [...new Set(groupable.map((r) => r.promptId))]
@@ -122,7 +122,8 @@ const computeAISuggestedGroups = async (
 
   if (failedBatches === batches.length) {
     throw new GraphQLError(
-      "AI wasn't able to group these reflections. Try again, or use Similar Wording."
+      "AI wasn't able to group these reflections. Try again, or use Similar Wording.",
+      {extensions: {code: 'SERVICE_UNAVAILABLE'}}
     )
   }
   return {

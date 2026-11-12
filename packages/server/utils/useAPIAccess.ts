@@ -39,7 +39,7 @@ export const useAPIAccess = (): Plugin<ServerContext & {dataLoader: DataLoaderWo
 
       if (!token) {
         throw new GraphQLError('Invalid or revoked personal access token', {
-          extensions: {code: 'UNAUTHORIZED'}
+          extensions: {code: 'UNAUTHENTICATED'}
         })
       }
 

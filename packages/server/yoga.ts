@@ -27,6 +27,7 @@ import {useTracing} from './tracing/useTracing'
 import {getAuthTokenFromCookie} from './utils/authCookie'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {Logger} from './utils/Logger'
+import maskErrorWithTraceId from './utils/maskErrorWithTraceId'
 import {useAPIAccess} from './utils/useAPIAccess'
 import {useArmor} from './utils/useArmor'
 import {useAuditLogs} from './utils/useAuditLogs'
@@ -116,6 +117,7 @@ export const yoga = createYoga<ServerContext, UserContext>({
   graphqlEndpoint: '/graphql',
   landingPage: false,
   logging: Logger,
+  maskedErrors: {maskError: maskErrorWithTraceId},
   maxRequestBodySize: MAX_REQUEST_BODY_SIZE,
   plugins: [
     useRemoveDuplicateTransferEncoding,

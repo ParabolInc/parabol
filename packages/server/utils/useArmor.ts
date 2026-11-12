@@ -125,10 +125,13 @@ export const useArmor = (): Plugin<ServerContext & {dataLoader: DataLoaderWorker
         if (apiCost === 0) return
         // can remove after 5/20/26 to provide a decent test window
         Logger.error('API Cost for adhoc query not determined')
-        throw new GraphQLError('API Cost for adhoc query not determined')
+        throw new GraphQLError('API Cost for adhoc query not determined', {
+          extensions: {code: 'INTERNAL_SERVER_ERROR'}
+        })
       }
       const viewerId = getUserId(authToken)
-      if (!viewerId) throw new GraphQLError('No auth token for PAT')
+      if (!viewerId)
+        throw new GraphQLError('No auth token for PAT', {extensions: {code: 'UNAUTHENTICATED'}})
       const [tier, usage] = await Promise.all([
         dataLoader.get('highestTierForUserId').load(viewerId),
         checkUsage(viewerId, apiCost)
@@ -145,6 +148,7 @@ export const useArmor = (): Plugin<ServerContext & {dataLoader: DataLoaderWorker
         const now = Math.floor(Date.now() / 1000)
         throw new GraphQLError('429 Too Many Requests', {
           extensions: {
+            code: 'TOO_MANY_REQUESTS',
             http: {
               status: 429,
               headers: {

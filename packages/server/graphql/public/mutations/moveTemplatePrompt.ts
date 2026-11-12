@@ -15,7 +15,7 @@ const moveTemplatePrompt: MutationResolvers['moveTemplatePrompt'] = async (
   const prompt = await dataLoader.get('templatePrompts').load(promptId)
 
   if (!prompt || prompt.removedAt) {
-    throw new GraphQLError('Prompt not found')
+    throw new GraphQLError('Prompt not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const {teamId} = prompt
   await pg.updateTable('TemplatePrompt').set({sortOrder}).where('id', '=', promptId).execute()

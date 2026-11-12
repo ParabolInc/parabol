@@ -15,29 +15,40 @@ export const createPersonalAccessToken: MutationResolvers['createPersonalAccessT
   const {name, scopes, grantedOrgIds, grantedTeamIds, grantedPageIds, expiresAt} = args
   const {sub: userId} = authToken
   if (scopes.length === 0) {
-    throw new GraphQLError('Must pick at least one scope')
+    throw new GraphQLError('Must pick at least one scope', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   const maxExpiry = new Date(Date.now() + ms('1y'))
   if (expiresAt > maxExpiry) {
-    throw new GraphQLError('Expiration date cannot be more than 1 year in the future')
+    throw new GraphQLError('Expiration date cannot be more than 1 year in the future', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   if (name.length > 255) {
-    throw new GraphQLError('Name cannot be more than 255 characters')
+    throw new GraphQLError('Name cannot be more than 255 characters', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   if (grantedOrgIds && grantedOrgIds.length > 100) {
-    throw new GraphQLError('Cannot grant access to more than 100 organizations')
+    throw new GraphQLError('Cannot grant access to more than 100 organizations', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   if (grantedTeamIds && grantedTeamIds.length > 100) {
-    throw new GraphQLError('Cannot grant access to more than 100 teams')
+    throw new GraphQLError('Cannot grant access to more than 100 teams', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   if (grantedPageIds && grantedPageIds.length > 100) {
-    throw new GraphQLError('Cannot grant access to more than 100 pages')
+    throw new GraphQLError('Cannot grant access to more than 100 pages', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   if (!enabled) {
     throw new GraphQLError(
-      'PATs not enabled for your account. Reach out to sales to enable for free'
+      'PATs not enabled for your account. Reach out to sales to enable for free',
+      {extensions: {code: 'FORBIDDEN'}}
     )
   }
   const rawToken = crypto.randomBytes(32).toString('base64url')

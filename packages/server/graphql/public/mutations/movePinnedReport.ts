@@ -11,7 +11,8 @@ const movePinnedReport: MutationResolvers['movePinnedReport'] = async (
     .transaction()
     .execute(async (trx) => {
       const pinnedReportId = await findPinnedReportId(trx, orgId, pinId)
-      if (!pinnedReportId) throw new GraphQLError('That report isn’t pinned here')
+      if (!pinnedReportId)
+        throw new GraphQLError('That report isn’t pinned here', {extensions: {code: 'NOT_FOUND'}})
       const pins = await selectActivePinnedReports(trx, orgId)
       const order = pins.map(({id}) => id).filter((id) => id !== pinnedReportId)
       order.splice(Math.max(0, Math.min(toIndex, order.length)), 0, pinnedReportId)

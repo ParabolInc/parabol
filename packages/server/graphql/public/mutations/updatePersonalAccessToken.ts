@@ -27,24 +27,36 @@ export const updatePersonalAccessToken: MutationResolvers['updatePersonalAccessT
     .where('prefix', '=', prefix)
     .where('userId', '=', viewerId)
     .executeTakeFirst()
-  if (!token) throw new GraphQLError('Token not found')
-  if (token.revokedAt) throw new GraphQLError('Token has been revoked')
-  if (scopes && scopes.length === 0) throw new GraphQLError('Must have at least 1 scope')
+  if (!token) throw new GraphQLError('Token not found', {extensions: {code: 'NOT_FOUND'}})
+  if (token.revokedAt)
+    throw new GraphQLError('Token has been revoked', {extensions: {code: 'CONFLICT'}})
+  if (scopes && scopes.length === 0)
+    throw new GraphQLError('Must have at least 1 scope', {extensions: {code: 'BAD_USER_INPUT'}})
   if (tokenName && tokenName.length > 255) {
-    throw new GraphQLError('Name cannot be more than 255 characters')
+    throw new GraphQLError('Name cannot be more than 255 characters', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   if (grantedOrgIds && grantedOrgIds.length > 100) {
-    throw new GraphQLError('Cannot grant access to more than 100 organizations')
+    throw new GraphQLError('Cannot grant access to more than 100 organizations', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   if (grantedTeamIds && grantedTeamIds.length > 100) {
-    throw new GraphQLError('Cannot grant access to more than 100 teams')
+    throw new GraphQLError('Cannot grant access to more than 100 teams', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   if (grantedPageIds && grantedPageIds.length > 100) {
-    throw new GraphQLError('Cannot grant access to more than 100 pages')
+    throw new GraphQLError('Cannot grant access to more than 100 pages', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   const maxExpiry = new Date(Date.now() + ms('1y'))
   if (expiresAt && expiresAt > maxExpiry) {
-    throw new GraphQLError('Expiration date cannot be more than 1 year in the future')
+    throw new GraphQLError('Expiration date cannot be more than 1 year in the future', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   const updates = {
     ...(tokenName !== undefined && tokenName !== null ? {name: tokenName} : {}),
@@ -55,7 +67,8 @@ export const updatePersonalAccessToken: MutationResolvers['updatePersonalAccessT
     ...(expiresAt !== undefined && expiresAt !== null ? {expiresAt} : {}),
     ...(revoke ? {revokedAt: new Date()} : {})
   }
-  if (Object.keys(updates).length === 0) throw new GraphQLError('No fields to update')
+  if (Object.keys(updates).length === 0)
+    throw new GraphQLError('No fields to update', {extensions: {code: 'BAD_USER_INPUT'}})
   const pg = getKysely()
   await pg.updateTable('PersonalAccessToken').set(updates).where('id', '=', token.id).execute()
 

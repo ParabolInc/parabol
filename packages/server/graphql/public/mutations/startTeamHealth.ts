@@ -189,7 +189,7 @@ const startTeamHealth: MutationResolvers['startTeamHealth'] = async (
   const viewerId = getUserId(authToken)
   const uniqueTeamIds = [...new Set(teamIds)]
   if (uniqueTeamIds.length === 0) {
-    throw new GraphQLError('No teams selected')
+    throw new GraphQLError('No teams selected', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   const teams = await dataLoader.get('teams').loadMany(uniqueTeamIds)
@@ -197,7 +197,10 @@ const startTeamHealth: MutationResolvers['startTeamHealth'] = async (
   if (rrule && new Set(validTeams.map(({orgId}) => orgId)).size > 1) {
     // a series group is owned by one org: succession, the paid-tier gate, and tenancy are all
     // org-scoped. A one-off across orgs creates no series, so it stays allowed
-    throw new GraphQLError('Pick teams from a single organization to schedule a recurring meeting')
+    throw new GraphQLError(
+      'Pick teams from a single organization to schedule a recurring meeting',
+      {extensions: {code: 'BAD_USER_INPUT'}}
+    )
   }
 
   // Joining an existing group: the new series inherit its id and its owner, so they show up on
@@ -207,18 +210,24 @@ const startTeamHealth: MutationResolvers['startTeamHealth'] = async (
     : null
   if (joinMeetingSeriesId) {
     if (!joinedSeries || joinedSeries.cancelledAt) {
-      throw new GraphQLError('Meeting series not found')
+      throw new GraphQLError('Meeting series not found', {extensions: {code: 'NOT_FOUND'}})
     }
     if (!joinedSeries.groupId) {
-      throw new GraphQLError('That meeting series is not part of a group')
+      throw new GraphQLError('That meeting series is not part of a group', {
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
     }
     if (!(await canAdminMeetingSeries(joinedSeries, authToken, dataLoader))) {
-      throw new GraphQLError('Viewer cannot administer that meeting series')
+      throw new GraphQLError('Viewer cannot administer that meeting series', {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
     // a group is owned by one org, so a team from elsewhere cannot join it
     const {orgId: groupOrgId} = await dataLoader.get('teams').loadNonNull(joinedSeries.teamId)
     if (validTeams.some(({orgId}) => orgId !== groupOrgId)) {
-      throw new GraphQLError('Pick teams from the same organization as the group')
+      throw new GraphQLError('Pick teams from the same organization as the group', {
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
     }
   }
 
@@ -282,7 +291,7 @@ const startTeamHealth: MutationResolvers['startTeamHealth'] = async (
   }
 
   if (started.length === 0) {
-    throw new GraphQLError('Meeting already started')
+    throw new GraphQLError('Meeting already started', {extensions: {code: 'CONFLICT'}})
   }
   const startedTeamIds = started.map(({teamId}) => teamId)
   const meetingIds = started.flatMap(({meetingId}) => (meetingId ? [meetingId] : []))

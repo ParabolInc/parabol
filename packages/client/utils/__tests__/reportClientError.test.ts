@@ -93,11 +93,15 @@ test('when the browser refuses the beacon, the batch goes by fetch', async () =>
   fetchSpy.mockRestore()
 })
 
-test('a masked GraphQL error becomes a warning carrying its operation’s trace id', async () => {
+test('a GraphQL error coded INTERNAL_SERVER_ERROR becomes a warning carrying its operation’s trace id', async () => {
   const {reportUnexpectedGraphQLErrors, flushClientErrors} = await loadReporter()
-  reportUnexpectedGraphQLErrors([{message: 'Not authorized'}], 'TeamQuery', 'trace-a')
   reportUnexpectedGraphQLErrors(
-    [{message: 'Unexpected error.'}],
+    [{message: 'Not authorized', extensions: {code: 'FORBIDDEN'}}],
+    'TeamQuery',
+    'trace-a'
+  )
+  reportUnexpectedGraphQLErrors(
+    [{message: 'Unexpected error.', extensions: {code: 'INTERNAL_SERVER_ERROR'}}],
     'TeamQuery',
     '4bf92f3577b34da6a3ce929d0e0e4736'
   )

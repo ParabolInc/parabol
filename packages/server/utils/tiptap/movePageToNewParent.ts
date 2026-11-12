@@ -32,13 +32,15 @@ export const movePageToNewParent = async (
     if (!childPage.deletedAt) return
   }
   if (childPage.isMeetingTOC) {
-    throw new GraphQLError(`Cannot move Meeting Summaries`)
+    throw new GraphQLError(`Cannot move Meeting Summaries`, {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   const [viewerAccess] = await pageAccessByUserIdBatchFn([{pageId, userId: viewerId}])
 
   if (viewerAccess !== 'owner') {
-    throw new GraphQLError(`Full Access required to move a Page to a new parent`)
+    throw new GraphQLError(`Full Access required to move a Page to a new parent`, {
+      extensions: {code: 'FORBIDDEN'}
+    })
   }
   if (childPage.deletedAt) {
     // if the user e.g. cut a page link & pasted it back, we need to undelete it
@@ -52,7 +54,9 @@ export const movePageToNewParent = async (
   const parentPageWithRole = await validateParentPage(parentPageId, viewerId, 'editor')
   const {ancestorIds, isPrivate} = parentPageWithRole
   if (ancestorIds.includes(pageId) || parentPageId === pageId) {
-    throw new GraphQLError(`Circular reference found. A page cannot be nested in itself`)
+    throw new GraphQLError(`Circular reference found. A page cannot be nested in itself`, {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   if (childPage.parentPageId) {
     const documentName = CipherId.toClient(childPage.parentPageId, 'page')

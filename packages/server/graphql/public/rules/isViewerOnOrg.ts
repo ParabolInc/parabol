@@ -17,7 +17,9 @@ export const isViewerOnOrg = <T>(
       if (dataLoaderName) {
         const subject = await dataLoader.get(dataLoaderName as any).load(argVar)
         if (!subject?.orgId)
-          return new GraphQLError(`Permission lookup failed on ${dataLoaderName} for ${argVar}`)
+          return new GraphQLError(`Permission lookup failed on ${dataLoaderName} for ${argVar}`, {
+            extensions: {code: 'NOT_FOUND'}
+          })
         orgId = subject.orgId
       }
       // Special case for ghost org so users can view meeting template meta
@@ -27,9 +29,12 @@ export const isViewerOnOrg = <T>(
       const organizationUser = await dataLoader
         .get('organizationUsersByUserIdOrgId')
         .load({orgId, userId: viewerId})
-      if (!organizationUser) return new GraphQLError('Viewer is not on Organization')
+      if (!organizationUser)
+        return new GraphQLError('Viewer is not on Organization', {extensions: {code: 'FORBIDDEN'}})
       if (context.resourceGrants && !(await context.resourceGrants.hasOrg(orgId))) {
-        return new GraphQLError(`PAT does not grant access to this organization`)
+        return new GraphQLError(`PAT does not grant access to this organization`, {
+          extensions: {code: 'FORBIDDEN'}
+        })
       }
       return true
     }

@@ -11,7 +11,8 @@ const Page: ReqResolvers<'Page'> = {
   parentPage: async ({parentPageId}, _args, {dataLoader}) => {
     if (!parentPageId) return null
     const parentPage = await dataLoader.get('pages').load(parentPageId)
-    if (!parentPage) throw new GraphQLError('Parent page not found')
+    if (!parentPage)
+      throw new GraphQLError('Parent page not found', {extensions: {code: 'NOT_FOUND'}})
     return parentPage
   },
   parentPageId: ({parentPageId}) => (parentPageId ? CipherId.toClient(parentPageId, 'page') : null),
@@ -31,7 +32,7 @@ const Page: ReqResolvers<'Page'> = {
     const pages = await dataLoader.get('pages').loadMany(ancestorIds)
     const validPages = pages.filter(isValid)
     if (validPages.length < pages.length) {
-      throw new GraphQLError('Page not found')
+      throw new GraphQLError('Page not found', {extensions: {code: 'NOT_FOUND'}})
     }
     return validPages
   },

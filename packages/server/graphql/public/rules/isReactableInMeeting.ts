@@ -19,7 +19,8 @@ export const isReactableInMeeting = rule(`isReactableInMeeting`, {cache: 'strict
       : 'discussionId' in reactable
         ? (await dataLoader.get('discussions').load(reactable.discussionId))?.meetingId
         : reactable.meetingId
-    if (reactableMeetingId !== meetingId) return new GraphQLError('Item does not exist')
+    if (reactableMeetingId !== meetingId)
+      return new GraphQLError('Item does not exist', {extensions: {code: 'NOT_FOUND'}})
     return true
   }
 )

@@ -16,7 +16,7 @@ export const isReportTeamHealthCheck = <T>(
       const meetingId = getResolverDotPath(meetingIdDotPath, source, args)
       const meeting = await dataLoader.get('newMeetings').load(meetingId)
       if (meeting?.meetingType !== 'teamHealth' || !meeting.endedAt) {
-        return new GraphQLError('Team Health check not found')
+        return new GraphQLError('Team Health check not found', {extensions: {code: 'NOT_FOUND'}})
       }
       const {teams} = await getReportScope({
         orgId,
@@ -25,7 +25,9 @@ export const isReportTeamHealthCheck = <T>(
         dataLoader
       })
       if (!teams.some(({id}) => id === meeting.teamId)) {
-        return new GraphQLError('Viewer cannot report on this team')
+        return new GraphQLError('Viewer cannot report on this team', {
+          extensions: {code: 'FORBIDDEN'}
+        })
       }
       return true
     }
