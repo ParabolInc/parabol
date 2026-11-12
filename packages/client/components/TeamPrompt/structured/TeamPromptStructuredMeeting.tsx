@@ -18,6 +18,7 @@ import TeamPromptMobileMeeting from '../mobile/TeamPromptMobileMeeting'
 import TeamPromptMobileSheets from '../mobile/TeamPromptMobileSheets'
 import TeamPromptDrawer from '../TeamPromptDrawer'
 import TeamPromptTopBar from '../TeamPromptTopBar'
+import useTemplateSwitchedSnackbar from '../TemplateDrawer/useTemplateSwitchedSnackbar'
 import TeamPromptComposer from './TeamPromptComposer'
 import TeamPromptComposerApiContext, {
   type TeamPromptComposerApi
@@ -46,6 +47,17 @@ const TeamPromptStructuredMeeting = (props: Props) => {
         id
         endedAt
         localStageId
+        template {
+          id
+          name
+        }
+        meetingSeries {
+          templateId
+          cancelledAt
+        }
+        responses {
+          plaintextContent
+        }
         phases {
           ... on TeamPromptResponsesPhase {
             stages {
@@ -64,7 +76,16 @@ const TeamPromptStructuredMeeting = (props: Props) => {
   const {safeRoute} = useMeeting(meeting)
   const location = useLocation()
   const isMobile = useIsMobile()
-  const {id: meetingId, localStageId, endedAt, phases} = meeting
+  const {id: meetingId, localStageId, endedAt, phases, template, meetingSeries} = meeting
+  const templateId = template?.id
+  useTemplateSwitchedSnackbar({
+    meetingId,
+    templateId,
+    templateName: template?.name,
+    hasAnswers: meeting.responses.some(({plaintextContent}) => !!plaintextContent.trim()),
+    isSeriesTemplate:
+      !!meetingSeries && !meetingSeries.cancelledAt && meetingSeries.templateId === templateId
+  })
   const responseId = new URLSearchParams(location.search).get('responseId')
   const scrollRef = useRef<HTMLDivElement>(null)
   const composerRef = useRef<HTMLDivElement>(null)
@@ -103,7 +124,7 @@ const TeamPromptStructuredMeeting = (props: Props) => {
                 <TeamPromptTopBar meetingRef={meeting} />
                 {isMobile ? (
                   <ErrorBoundary>
-                    <TeamPromptMobileMeeting meetingRef={meeting} />
+                    <TeamPromptMobileMeeting key={templateId} meetingRef={meeting} />
                   </ErrorBoundary>
                 ) : (
                   <>
@@ -111,7 +132,7 @@ const TeamPromptStructuredMeeting = (props: Props) => {
                     <ErrorBoundary>
                       <div ref={scrollRef} className='h-full overflow-auto'>
                         <div ref={composerRef}>
-                          <TeamPromptComposer meetingRef={meeting} />
+                          <TeamPromptComposer key={templateId} meetingRef={meeting} />
                         </div>
                         <TeamUpdatesSection
                           meetingRef={meeting}
