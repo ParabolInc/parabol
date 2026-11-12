@@ -1,10 +1,18 @@
 import {generateText} from '@tiptap/core'
-import {convertADFToTipTap} from '../convertADFToTipTap'
+import {type AdfNode, convertADFToTipTap} from '../convertADFToTipTap'
 import {serverTipTapExtensions} from '../serverTipTapExtensions'
 
 const paragraph = (text: string) => ({
   type: 'paragraph',
   content: [{type: 'text', text}]
+})
+
+const doc = (content: AdfNode[]): AdfNode => ({type: 'doc', version: 1, content})
+
+const panel = (panelType: string, content: AdfNode[]): AdfNode => ({
+  type: 'panel',
+  attrs: {panelType},
+  content
 })
 
 describe('convertADFToTipTap', () => {
@@ -77,14 +85,14 @@ describe('convertADFToTipTap', () => {
         }
       ]
     }
-    const doc = convertADFToTipTap(adf)
-    expect(generateText(doc, serverTipTapExtensions)).toContain('before')
+    const tipTapDoc = convertADFToTipTap(adf)
+    expect(generateText(tipTapDoc, serverTipTapExtensions)).toContain('before')
   })
 
   test('never emits an empty text node for a text node at the top level', () => {
     const adf = {type: 'doc', content: [{type: 'text', text: ''}, paragraph('after')]}
-    const doc = convertADFToTipTap(adf, 'Title')
-    expect(generateText(doc, serverTipTapExtensions)).toContain('after')
+    const tipTapDoc = convertADFToTipTap(adf, 'Title')
+    expect(generateText(tipTapDoc, serverTipTapExtensions)).toContain('after')
   })
 
   test('falls back to the emoji shortName when its text is empty', () => {
@@ -94,7 +102,17 @@ describe('convertADFToTipTap', () => {
         {type: 'paragraph', content: [{type: 'emoji', attrs: {shortName: ':smile:', text: ''}}]}
       ]
     }
-    const doc = convertADFToTipTap(adf, 'Title')
-    expect(doc.content[1]).toEqual({type: 'paragraph', content: [{type: 'text', text: ':smile:'}]})
+    const tipTapDoc = convertADFToTipTap(adf, 'Title')
+    expect(tipTapDoc.content[1]).toEqual({
+      type: 'paragraph',
+      content: [{type: 'text', text: ':smile:'}]
+    })
+  })
+
+  test('imports a panel as a blockquote that keeps its text', () => {
+    expect(convertADFToTipTap(doc([panel('info', [paragraph('x')])]), 'T').content[1]).toEqual({
+      type: 'blockquote',
+      content: [paragraph('x')]
+    })
   })
 })

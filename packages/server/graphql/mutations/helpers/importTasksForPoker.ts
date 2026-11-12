@@ -8,6 +8,7 @@ import type {IntegrationCtx} from '../../../integrations/platform/ServerIntegrat
 import getKysely from '../../../postgres/getKysely'
 import {selectTasks} from '../../../postgres/select'
 import logError from '../../../utils/logError'
+import isValid from '../../isValid'
 import type {UpdatePokerScopeItemInput} from '../../public/resolverTypes'
 
 const parseIntegration = (ctx: IntegrationCtx, update: UpdatePokerScopeItemInput) => {
@@ -29,8 +30,15 @@ const importTasksForPoker = async (
   ctx: IntegrationCtx,
   meetingId: string
 ) => {
-  const {teamId, userId} = ctx
+  const {dataLoader, teamId, userId} = ctx
   const pg = getKysely()
+  const parabolTaskIds = additiveUpdates
+    .filter((update) => update.service === 'PARABOL')
+    .map((update) => update.serviceTaskId)
+  const parabolTasks = (await dataLoader.get('tasks').loadMany(parabolTaskIds)).filter(isValid)
+  const teamTaskIds = new Set(
+    parabolTasks.filter((task) => task.teamId === teamId).map(({id}) => id)
+  )
   const integratedUpdates = additiveUpdates.filter((update) => update.service !== 'PARABOL')
   const parsedUpdates = integratedUpdates
     .map((update) => parseIntegration(ctx, update))
@@ -73,7 +81,10 @@ const importTasksForPoker = async (
   )
   return additiveUpdates.flatMap((update) => {
     const {service, serviceTaskId} = update
-    const taskId = service === 'PARABOL' ? serviceTaskId : taskIdByHash.get(serviceTaskId)
+    if (service === 'PARABOL') {
+      return teamTaskIds.has(serviceTaskId) ? [{...update, taskId: serviceTaskId}] : []
+    }
+    const taskId = taskIdByHash.get(serviceTaskId)
     return taskId ? [{...update, taskId}] : []
   })
 }

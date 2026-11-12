@@ -6,6 +6,8 @@ import type {DiscussionThreadList_threadables$key} from '~/__generated__/Discuss
 import type {DiscussionThreadList_viewer$key} from '~/__generated__/DiscussionThreadList_viewer.graphql'
 import {cn} from '../ui/cn'
 import CommentingStatusText from './CommentingStatusText'
+import type {DiscussionThreadFilterValue} from './DiscussionThreadFilter'
+import DiscussionThreadTasks from './DiscussionThreadTasks'
 import LabelHeading from './LabelHeading/LabelHeading'
 import ThreadedItem from './ThreadedItem'
 
@@ -26,6 +28,10 @@ interface Props {
   viewer: DiscussionThreadList_viewer$key
   header?: ReactNode
   emptyState?: ReactNode
+  filter: DiscussionThreadFilterValue
+  hiddenCommentCount: number
+  onAddTask: () => void
+  onShowAll: () => void
 }
 
 const DiscussionThreadList = (props: Props) => {
@@ -36,7 +42,11 @@ const DiscussionThreadList = (props: Props) => {
     commentorNames,
     viewer: viewerRef,
     header,
-    emptyState
+    emptyState,
+    filter,
+    hiddenCommentCount,
+    onAddTask,
+    onShowAll
   } = props
   const viewer = useFragment(
     graphql`
@@ -63,6 +73,11 @@ const DiscussionThreadList = (props: Props) => {
         }
         threadParentId
         id
+        ...NullableTask_task @alias
+        replies {
+          id
+          ...NullableTask_task @alias
+        }
       }
     `,
     threadablesRef
@@ -84,6 +99,24 @@ const DiscussionThreadList = (props: Props) => {
     threadBottomRef.current?.scrollIntoView({behavior: 'smooth'})
   }, [threadables])
 
+  if (filter === 'tasks') {
+    const tasks = threadables
+      .flatMap((threadable) => [threadable, ...(threadable.replies ?? [])])
+      .flatMap(({id, NullableTask_task}) =>
+        NullableTask_task ? [{id, task: NullableTask_task}] : []
+      )
+    return (
+      <div className='flex flex-1 flex-col overflow-auto'>
+        {header}
+        <DiscussionThreadTasks
+          tasks={tasks}
+          hiddenCommentCount={hiddenCommentCount}
+          onAddTask={onAddTask}
+          onShowAll={onShowAll}
+        />
+      </div>
+    )
+  }
   if (isEmpty && emptyState) {
     return (
       <div className='flex flex-1 flex-col items-center justify-center overflow-auto'>

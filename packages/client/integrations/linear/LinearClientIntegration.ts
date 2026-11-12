@@ -8,7 +8,6 @@ import linearScopingResultsQuery, {
 import type Atmosphere from '../../Atmosphere'
 import LinearSVG from '../../components/LinearSVG'
 import linearLogo from '../../styles/theme/images/graphics/linear.svg'
-import LinearClientManager from '../../utils/LinearClientManager'
 import lazyPreload from '../../utils/lazyPreload'
 import {makeLinearIssueFilter} from '../../utils/makeLinearIssueFilter'
 import {
@@ -21,6 +20,7 @@ import {
 } from '../platform/ClientIntegrationDefinition'
 import makeScopingResults from '../platform/makeScopingResults'
 import makeWorkDrawerPanel from '../platform/makeWorkDrawerPanel'
+import LinearClientManager from './LinearClientManager'
 import linearSearchMeta from './linearSearchMeta'
 import {linearIntegrationMeta} from './shared/linearIntegrationMeta'
 

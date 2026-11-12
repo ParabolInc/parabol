@@ -3,7 +3,7 @@ import {rule} from 'graphql-shield'
 import type {Pageroleenum} from '../../../postgres/types/pg'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
-import type {GQLContext} from '../../graphql'
+import type {RuleContext} from '../../graphql'
 import {cacheByDotPath, getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
 export const PAGE_ROLES = ['owner', 'editor', 'commenter', 'viewer'] as const
@@ -16,7 +16,7 @@ export const hasPageAccess = <T>(
 ) =>
   rule(`hasPageAccess-${roleRequired}${ignorePublicLink ? '-granted' : ''}`, {
     cache: cacheByDotPath(dotPath)
-  })(async (source, args, context: GQLContext, info: GraphQLResolveInfo) => {
+  })(async (source, args, context: RuleContext, info: GraphQLResolveInfo) => {
     const pageId = getResolverDotPath(dotPath, source, args)
     if (!pageId) {
       // may access the page if it doesn't exist. e.g. a parentPage where parentPageId is null

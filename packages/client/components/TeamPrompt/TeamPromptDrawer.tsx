@@ -9,6 +9,7 @@ import ResponsiveDashSidebar from '../ResponsiveDashSidebar'
 import {getSharedResponses} from './structured/teamPromptStages'
 import TeamPromptDiscussionThreadHeader from './TeamPromptDiscussionThreadHeader'
 import TeamPromptWorkDrawer from './TeamPromptWorkDrawer'
+import TeamPromptTemplateDrawerRoot from './TemplateDrawer/TeamPromptTemplateDrawerRoot'
 
 interface Props {
   meetingRef: TeamPromptDrawer_meeting$key
@@ -87,21 +88,27 @@ const TeamPromptDrawer = ({meetingRef}: Props) => {
       onToggle={onToggleDrawer}
       sidebarWidth={DiscussionThreadEnum.WIDTH}
     >
-      <DiscussionDrawer
-        discussionId={activeStage?.discussionId}
-        onToggle={onToggleDrawer}
-        allowedThreadables={['comment', 'task']}
-        meetingRef={meeting}
-        meetingId={meetingId}
-        threadHeader={
-          activeStage && (
-            <TeamPromptDiscussionThreadHeader stageRef={activeStage} prompts={prompts} />
-          )
-        }
-        workContent={<TeamPromptWorkDrawer meetingRef={meeting} />}
-        activeTab={rightDrawerOpen}
-        onChangeTab={onChangeTab}
-      />
+      {rightDrawerOpen === 'template' ? (
+        <div className='h-full w-[360px] border-hairline border-l'>
+          <TeamPromptTemplateDrawerRoot meetingId={meetingId} onClose={onToggleDrawer} />
+        </div>
+      ) : (
+        <DiscussionDrawer
+          discussionId={activeStage?.discussionId}
+          onToggle={onToggleDrawer}
+          allowedThreadables={['comment', 'task']}
+          meetingRef={meeting}
+          meetingId={meetingId}
+          threadHeader={
+            activeStage && (
+              <TeamPromptDiscussionThreadHeader stageRef={activeStage} prompts={prompts} />
+            )
+          }
+          workContent={<TeamPromptWorkDrawer meetingRef={meeting} />}
+          activeTab={rightDrawerOpen}
+          onChangeTab={onChangeTab}
+        />
+      )}
     </ResponsiveDashSidebar>
   )
 }

@@ -1,11 +1,8 @@
-import {type ControlledTransaction, type Kysely, sql} from 'kysely'
+import {type Kysely, sql} from 'kysely'
 import type {DB} from './types/pg'
 
 // ancestorIds caches the parentPageId chain, so a move must rewrite it for the page and everything under it
-export const updatePageAncestorIds = async (
-  db: ControlledTransaction<DB, []> | Kysely<DB>,
-  pageId: number
-) => {
+export const updatePageAncestorIds = async (db: Kysely<DB>, pageId: number) => {
   await db
     .withRecursive('subtree(id, ancestorIds)', (qc) =>
       qc

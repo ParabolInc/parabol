@@ -7,12 +7,14 @@ import DiscussionDrawerThread from '../../DiscussionDrawerThread'
 import DiscussionDrawerTranscripts from '../../DiscussionDrawerTranscripts'
 import TeamPromptDiscussionThreadHeader from '../TeamPromptDiscussionThreadHeader'
 import TeamPromptWorkDrawer from '../TeamPromptWorkDrawer'
+import TeamPromptTemplateDrawerRoot from '../TemplateDrawer/TeamPromptTemplateDrawerRoot'
 import TeamPromptMobileSheet from './TeamPromptMobileSheet'
 
 const SHEET_TITLES: Record<string, string> = {
   discussion: 'Discussion',
   inspiration: 'Inspiration',
-  transcription: 'Transcription'
+  transcription: 'Transcription',
+  template: 'Standup templates'
 }
 
 interface Props {
@@ -67,6 +69,9 @@ const TeamPromptMobileSheets = ({meetingRef}: Props) => {
       isFullHeight
     >
       {openSheet === 'inspiration' && <TeamPromptWorkDrawer meetingRef={meeting} />}
+      {openSheet === 'template' && (
+        <TeamPromptTemplateDrawerRoot meetingId={meetingId} onClose={onClose} hideHeader />
+      )}
       {openSheet === 'transcription' && <DiscussionDrawerTranscripts meetingRef={meeting} />}
       {openSheet === 'discussion' && discussionStage?.discussionId && (
         <DiscussionDrawerThread

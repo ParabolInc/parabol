@@ -3,14 +3,14 @@ import {rule} from 'graphql-shield'
 import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
 import type {AllPrimaryLoaders} from '../../../dataloader/RootDataLoader'
 import {getUserId} from '../../../utils/authorization'
-import type {GQLContext} from '../../graphql'
+import type {RuleContext} from '../../graphql'
 import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
 export const isMeetingMember = <T>(
   dotPath: ResolverDotPath<T>,
   dataLoaderName?: AllPrimaryLoaders
 ) =>
-  rule(`isMeetingMember`, {cache: 'strict'})(async (source, args, context: GQLContext) => {
+  rule(`isMeetingMember`, {cache: 'strict'})(async (source, args, context: RuleContext) => {
     const argVar = getResolverDotPath(dotPath, source, args)
     const {dataLoader, authToken} = context
     const viewerId = getUserId(authToken)

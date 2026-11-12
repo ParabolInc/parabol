@@ -1153,9 +1153,9 @@ export interface PriorTeamHealthCycle {
   questionByCategoryId: Map<number, string>
 }
 
-// A stand-up's prompts are frozen at meeting creation: it sees prompts active when the meeting
-// was created, plus any removed afterward, so prompts don't retroactively vanish from a meeting
-// already in progress.
+// A meeting's prompts are frozen at the moment its template was chosen (meeting creation, or a
+// later switch): it sees prompts active then, plus any removed afterward, so prompts don't
+// retroactively vanish from a meeting already in progress.
 export const templatePromptsByMeetingId = (
   parent: RootDataLoader,
   dependsOn: RegisterDependsOn
@@ -1163,13 +1163,14 @@ export const templatePromptsByMeetingId = (
   dependsOn('templatePrompts')
   return new DataLoader<string, TemplatePrompt[], string>(
     async (meetingIds) => {
+      const frozenAt = sql<Date>`coalesce(m."templateChosenAt", m."createdAt")`
       const rows = await getKysely()
         .selectFrom('NewMeeting as m')
         .innerJoin('TemplatePrompt as p', 'p.templateId', 'm.templateId')
         .where('m.id', 'in', meetingIds)
-        .whereRef('p.createdAt', '<', 'm.createdAt')
+        .where('p.createdAt', '<', frozenAt)
         .where(({eb, or, ref}) =>
-          or([eb('p.removedAt', 'is', null), eb('m.createdAt', '<', ref('p.removedAt'))])
+          or([eb('p.removedAt', 'is', null), eb(frozenAt, '<', ref('p.removedAt'))])
         )
         .selectAll('p')
         .select('m.id as meetingId')

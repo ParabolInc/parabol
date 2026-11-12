@@ -15,7 +15,7 @@ import promptTemplateRules from './helpers/promptTemplateRules'
 const addPromptTemplate: MutationResolvers['addPromptTemplate'] = async (
   _source,
   {teamId, parentTemplateId, type},
-  {authToken, dataLoader, socketId: mutatorId}
+  {authToken, dataLoader, socketId: mutatorId, resourceGrants}
 ) => {
   const pg = getKysely()
   const operationId = dataLoader.share()
@@ -46,7 +46,9 @@ const addPromptTemplate: MutationResolvers['addPromptTemplate'] = async (
     }
     if (parentTemplate.scope === 'ORGANIZATION') {
       const parentTemplateTeam = await dataLoader.get('teams').loadNonNull(parentTemplate.teamId)
-      const isInOrg = await isUserInOrg(viewerId, parentTemplateTeam.orgId, dataLoader)
+      const isInOrg =
+        (await isUserInOrg(viewerId, parentTemplateTeam.orgId, dataLoader)) &&
+        (!resourceGrants || (await resourceGrants.hasOrg(parentTemplateTeam.orgId)))
       if (!isInOrg) {
         throw new GraphQLError('Template is scoped to organization', {
           extensions: {code: 'FORBIDDEN'}

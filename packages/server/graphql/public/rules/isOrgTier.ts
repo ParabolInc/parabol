@@ -1,12 +1,12 @@
 import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
-import type {GQLContext} from '../../graphql'
+import type {RuleContext} from '../../graphql'
 import type {TierEnum} from '../resolverTypes'
 import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
 export const isOrgTier = <T>(orgIdDotPath: ResolverDotPath<T>, requiredTier: TierEnum) =>
   rule(`isOrgTier-${orgIdDotPath}-${requiredTier}`, {cache: 'strict'})(
-    async (source, args, {dataLoader}: GQLContext) => {
+    async (source, args, {dataLoader}: RuleContext) => {
       const orgId = getResolverDotPath(orgIdDotPath, source, args)
       const organization = await dataLoader.get('organizations').load(orgId)
       if (!organization)

@@ -6,6 +6,7 @@ import {Menu} from '../../ui/Menu/Menu'
 import {MenuContent} from '../../ui/Menu/MenuContent'
 import {MENU_ITEM_ICON, MenuItem} from '../../ui/Menu/MenuItem'
 import {modKey} from '../../utils/platform'
+import {CalloutStyleSubMenu} from './callout/CalloutStyleSubMenu'
 import {TurnIntoMenu} from './turnInto/TurnIntoMenu'
 import {getTurnIntoTarget} from './turnInto/turnBlockInto'
 
@@ -105,6 +106,9 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
             current={turnIntoCurrent}
             canCreateSubPage={canCreateSubPage}
           />
+        )}
+        {node.type.name === 'callout' && (
+          <CalloutStyleSubMenu editor={editor} node={node} pos={pos} onClose={onClose} />
         )}
         <MenuItem onSelect={handleDuplicate}>
           <ContentCopy className={MENU_ITEM_ICON} />

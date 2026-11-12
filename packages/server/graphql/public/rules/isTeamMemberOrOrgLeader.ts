@@ -1,7 +1,7 @@
 import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
 import {getUserId} from '../../../utils/authorization'
-import type {GQLContext} from '../../graphql'
+import type {RuleContext} from '../../graphql'
 import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
 /**
@@ -13,14 +13,14 @@ import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
  */
 export const isTeamMemberOrOrgLeader = <T>(dotPath: ResolverDotPath<T>) =>
   rule(`isTeamMemberOrOrgLeader-${dotPath}`, {cache: 'strict'})(
-    async (source, args, context: GQLContext) => {
+    async (source, args, context: RuleContext) => {
       const {authToken, dataLoader, resourceGrants} = context
       const viewerId = getUserId(authToken)
       const argVar = getResolverDotPath(dotPath, source, args)
       const teamIds = (Array.isArray(argVar) ? argVar : [argVar]) as string[]
 
       for (const teamId of new Set(teamIds)) {
-        if (authToken.tms?.includes(teamId)) {
+        if (authToken?.tms?.includes(teamId)) {
           if (resourceGrants && !(await resourceGrants.hasTeam(teamId))) {
             return new GraphQLError(`PAT does not grant access to this team`, {
               extensions: {code: 'FORBIDDEN'}

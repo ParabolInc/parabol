@@ -247,7 +247,7 @@ export const updateGCalRecurrenceRule = (
 const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = async (
   _source,
   {meetingId, name, rrule: rruleString},
-  {authToken, dataLoader, socketId: mutatorId}
+  {authToken, dataLoader, socketId: mutatorId, resourceGrants}
 ) => {
   const pg = getKysely()
   const viewerId = getUserId(authToken)
@@ -274,7 +274,7 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
 
   if (meetingSeriesId) {
     const meetingSeries = await dataLoader.get('meetingSeries').loadNonNull(meetingSeriesId)
-    if (!(await canAdminMeetingSeries(meetingSeries, authToken, dataLoader))) {
+    if (!(await canAdminMeetingSeries(meetingSeries, authToken, dataLoader, resourceGrants))) {
       return standardError(new Error('Only the owner of this meeting series can change it'), {
         userId: viewerId
       })

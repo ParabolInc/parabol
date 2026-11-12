@@ -4,6 +4,8 @@ import {serverTipTapExtensions} from 'parabol-client/shared/tiptap/serverTipTapE
 // handled inside parent emitters (taskItem, table cells, details sections)
 const HANDLED_NODES = new Set([
   'doc',
+  'callout',
+  'calloutTitle',
   'text',
   'hardBreak',
   'mention',

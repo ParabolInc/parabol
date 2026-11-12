@@ -38,3 +38,18 @@ export const clearStageDrafts = (stageId: string) => {
     staleKeys.forEach((key) => localStorage.removeItem(key))
   } catch {}
 }
+
+export const clearStaleDraftAnswers = (stageId: string, promptIds: readonly string[]) => {
+  const prefix = draftAnswerKey(stageId, '')
+  try {
+    const {localStorage} = window
+    const staleKeys: string[] = []
+    for (let idx = 0; idx < localStorage.length; idx++) {
+      const key = localStorage.key(idx)
+      if (key?.startsWith(prefix) && !promptIds.includes(key.slice(prefix.length))) {
+        staleKeys.push(key)
+      }
+    }
+    staleKeys.forEach((key) => localStorage.removeItem(key))
+  } catch {}
+}

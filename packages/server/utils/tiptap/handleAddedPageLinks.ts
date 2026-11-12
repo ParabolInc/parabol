@@ -1,12 +1,14 @@
 import * as Y from 'yjs'
 import {getPageLinks} from '../../../client/shared/tiptap/getPageLinks'
 import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
+import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
 import {CipherId} from '../CipherId'
 import {Logger} from '../Logger'
 import logError from '../logError'
 import {NEW_PAGE_SENTINEL_CODE} from './constants'
 import {createNewPage} from './createNewPage'
 import {getUserIdFromTransaction} from './getUserIdFromTransaction'
+import {isSyncedBlocksEnabled} from './isSyncedBlocksEnabled'
 import {movePageToNewParent} from './movePageToNewParent'
 import {updateBacklinks} from './updateBacklinks'
 
@@ -29,10 +31,19 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
         // mint a fresh page and assign it a real pageCode
         const isDatabase = node.getAttribute('database') || false
         const title = node.getAttribute('title')
+        let isSyncedBlock = false
+        if (node.getAttribute('synced') === true) {
+          const dataLoader = getNewDataLoader('handleAddedPageLinks')
+          isSyncedBlock = await isSyncedBlocksEnabled(userId, dataLoader).finally(() =>
+            dataLoader.dispose()
+          )
+          if (!isSyncedBlock) node.removeAttribute('synced')
+        }
         const newPage = await createNewPage({
           parentPageId,
           userId,
           isDatabase,
+          isSyncedBlock,
           content: {
             type: 'doc',
             content: [
@@ -40,7 +51,8 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
                 type: 'heading',
                 attrs: {level: 1},
                 content: title ? [{type: 'text', text: title}] : []
-              }
+              },
+              ...(isSyncedBlock ? [{type: 'paragraph' as const}] : [])
             ]
           }
         }).catch(Logger.error)

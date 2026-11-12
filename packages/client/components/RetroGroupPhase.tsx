@@ -8,6 +8,7 @@ import type {RetroGroupPhase_meeting$key} from '~/__generated__/RetroGroupPhase_
 import useCallbackRef from '~/hooks/useCallbackRef'
 import useRightDrawer from '~/hooks/useRightDrawer'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
+import AcceptAllSuggestedGroups from './AcceptAllSuggestedGroups'
 import GroupingKanban from './GroupingKanban'
 import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
@@ -33,6 +34,7 @@ const RetroGroupPhase = (props: Props) => {
         ...StageTimerDisplay_meeting
         ...GroupingKanban_meeting
         ...SuggestedGroupsButton_meeting
+        ...AcceptAllSuggestedGroups_meeting
         id
         endedAt
         showSidebar
@@ -68,8 +70,9 @@ const RetroGroupPhase = (props: Props) => {
               {'Drag cards to group by common topics'}
             </PhaseHeaderDescription>
             {isGroupPhaseActive && (
-              <div className='flex items-center pt-4 pb-2'>
+              <div className='flex items-center gap-2 pt-4 pb-2'>
                 <SuggestedGroupsButton meeting={meeting} />
+                <AcceptAllSuggestedGroups meeting={meeting} />
               </div>
             )}
           </MeetingTopBar>

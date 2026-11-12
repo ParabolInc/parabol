@@ -22,7 +22,9 @@ import {LoomExtension} from '../components/TipTapEditor/LoomExtension'
 import {TiptapLinkExtension} from '../components/TipTapEditor/TiptapLinkExtension'
 import {useUploadUserAsset} from '../mutations/useUploadUserAsset'
 import {themeBackgroundColors} from '../shared/themeBackgroundColors'
+import {CalloutTitleBase} from '../shared/tiptap/extensions/CalloutTitleBase'
 import {SafeTextStyleKit} from '../shared/tiptap/extensions/SafeTextStyleKit'
+import {Callout} from '../tiptap/extensions/callout/Callout'
 import {EmbedBlock} from '../tiptap/extensions/embedBlock/EmbedBlock'
 import {handleServerEmbedMessage} from '../tiptap/extensions/fileBlock/embedManager'
 import FileBlock from '../tiptap/extensions/fileBlock/FileBlock'
@@ -44,6 +46,7 @@ import {Table} from '../tiptap/extensions/table/Table'
 import {TableCell} from '../tiptap/extensions/table/TableCell'
 import {TableHeader} from '../tiptap/extensions/table/TableHeader'
 import {TableOfContents} from '../tiptap/extensions/tableOfContents/TableOfContents'
+import {pagePlaceholderText} from '../tiptap/pagePlaceholderText'
 import {MAX_FILE_SIZE_FREE} from '../utils/constants'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import useAtmosphere from './useAtmosphere'
@@ -59,6 +62,7 @@ const PAGE_SLASH_COMMANDS: Record<CommandTitle, boolean> = {
   'Bullet list': true,
   'Numbered list': true,
   Quote: true,
+  Callout: true,
   Code: true,
   'Table of contents': true,
   Details: true,
@@ -132,6 +136,8 @@ export const useTipTapPageEditor = (
         }),
         DetailsSummary,
         DetailsContent,
+        Callout,
+        CalloutTitleBase,
         Table.configure({
           allowTableNodeSelection: true
         }),
@@ -163,39 +169,7 @@ export const useTipTapPageEditor = (
           showOnlyWhenEditable: false,
           includeChildren: true,
           emptyNodeClass: 'is-empty print:hidden',
-          placeholder: ({node, pos}) => {
-            if (placeholderRef.current) {
-              return placeholderRef.current
-            }
-            const {type, attrs} = node
-            const {name} = type
-            switch (name) {
-              case 'heading':
-                if (pos === 0) return 'New Page'
-                return `Heading ${attrs.level}`
-              case 'codeBlock':
-                return 'New code'
-              case 'blockquote':
-                return 'New quote'
-              case 'paragraph':
-                return "Press '/' for commands"
-              case 'detailsSummary':
-                return 'New summary'
-              case 'detailsContent': {
-                const isDefaultEmpty =
-                  node.childCount === 0 ||
-                  (node.childCount === 1 &&
-                    node.firstChild?.type.name === 'paragraph' &&
-                    node.firstChild.content.size === 0)
-                return isDefaultEmpty ? 'Add details, use / to add blocks' : ''
-              }
-              case 'bulletList':
-              case 'listItem':
-              case 'orderedList':
-              default:
-                return ''
-            }
-          }
+          placeholder: (props) => placeholderRef.current || pagePlaceholderText(props)
         }),
         PageUserMention.configure({
           atmosphere,

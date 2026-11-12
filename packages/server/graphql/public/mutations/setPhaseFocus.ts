@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {GROUP} from 'parabol-client/utils/constants'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
@@ -27,6 +28,14 @@ const setPhaseFocus: MutationResolvers['setPhaseFocus'] = async (
   }
   const reflectPhase = getPhase(meeting.phases, 'reflect')
   if (!reflectPhase) return standardError(new Error('Meeting not found'), {userId: viewerId})
+  if (focusedPromptId) {
+    const meetingPrompts = await dataLoader.get('templatePromptsByMeetingId').load(meetingId)
+    if (!meetingPrompts.some(({id}) => id === focusedPromptId)) {
+      throw new GraphQLError('Prompt is not part of the meeting', {
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
+    }
+  }
 
   // RESOLUTION
   reflectPhase.focusedPromptId = focusedPromptId ?? undefined

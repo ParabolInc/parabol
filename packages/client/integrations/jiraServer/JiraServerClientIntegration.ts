@@ -10,7 +10,6 @@ import JiraServerSVG from '../../components/JiraServerSVG'
 import IntegrationRepoId from '../../shared/gqlIds/IntegrationRepoId'
 import jiraServerLogo from '../../styles/theme/images/graphics/jira-software-blue.svg'
 import {ExternalLinks} from '../../types/constEnums'
-import JiraServerClientManager from '../../utils/JiraServerClientManager'
 import lazyPreload from '../../utils/lazyPreload'
 import jiraSearchMeta from '../jira/jiraSearchMeta'
 import {
@@ -25,6 +24,7 @@ import {
 import {searchFiltersByKey} from '../platform/IntegrationSearchFilter'
 import makeQueryRoot from '../platform/makeQueryRoot'
 import makeScopingResults from '../platform/makeScopingResults'
+import JiraServerClientManager from './JiraServerClientManager'
 import {jiraServerIntegrationMeta} from './shared/jiraServerIntegrationMeta'
 
 const JiraServerScopingCurrentFiltersRoot = lazy(

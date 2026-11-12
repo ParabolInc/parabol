@@ -1,6 +1,8 @@
 import type AuthToken from '../../../database/types/AuthToken'
 import type {MeetingSeries} from '../../../postgres/types'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
+import type {DataLoaderWorker} from '../../graphql'
+import type {ResourceGrants} from '../../public/ResourceGrants'
 
 /**
  * Decides who may read a series.
@@ -11,14 +13,19 @@ import {getUserId, isTeamMember} from '../../../utils/authorization'
  * A series still belongs to one team. Sharing a groupId with another series grants nothing — the
  * sibling has its own team, its own meetings, and its own mostRecentMeeting.
  */
-const canReadMeetingSeries = (
+const canReadMeetingSeries = async (
   meetingSeries: Pick<MeetingSeries, 'teamId' | 'ownerUserId'>,
-  authToken: AuthToken
+  authToken: AuthToken,
+  dataLoader: DataLoaderWorker,
+  resourceGrants: ResourceGrants | undefined
 ) => {
   const {teamId, ownerUserId} = meetingSeries
+  if (isTeamMember(authToken, teamId)) return true
   // the owner may be on none of the teams, but they scheduled it
-  if (ownerUserId === getUserId(authToken)) return true
-  return isTeamMember(authToken, teamId)
+  if (ownerUserId !== getUserId(authToken)) return false
+  if (!resourceGrants) return true
+  const {orgId} = await dataLoader.get('teams').loadNonNull(teamId)
+  return resourceGrants.hasOrg(orgId)
 }
 
 export default canReadMeetingSeries

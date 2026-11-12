@@ -46,7 +46,7 @@ const groupReflectionsStructured = async (
     const content = response.choices[0]?.message?.content
     if (!content) return null
 
-    let parsed: Omit<GroupReflectionsResult, 'tokenCost'>
+    let parsed: Pick<GroupReflectionsResult, 'groups'>
     try {
       parsed = JSON.parse(content)
     } catch {
@@ -57,7 +57,11 @@ const groupReflectionsStructured = async (
     const repair = repairGroups(parsed, reflections)
     if (!repair) return null
 
-    return {groups: repair.groups, tokenCost: response.usage?.total_tokens ?? 0}
+    return {
+      groups: repair.groups,
+      tokenCost: response.usage?.total_tokens ?? 0,
+      repairedCount: repair.repaired
+    }
   } catch (e) {
     const error =
       e instanceof Error ? e : new Error(`${label} failed to groupReflectionsStructured`)

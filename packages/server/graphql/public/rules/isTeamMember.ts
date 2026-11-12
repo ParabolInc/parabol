@@ -2,7 +2,7 @@ import {GraphQLError, type GraphQLResolveInfo} from 'graphql'
 import {rule} from 'graphql-shield'
 import type {LoaderType} from '../../../dataloader/foreignKeyLoaderMaker'
 import type {AllPrimaryLoaders} from '../../../dataloader/RootDataLoader'
-import type {GQLContext} from '../../graphql'
+import type {RuleContext} from '../../graphql'
 import {cacheByDotPath, getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
 type LoadersWithTeamId = {
@@ -17,14 +17,14 @@ export const isTeamMember = <T>(
 ) =>
   rule(`isTeamMember-${dataLoaderName ?? ''}-${typeof teamIdKey === 'string' ? teamIdKey : ''}`, {
     cache: cacheByDotPath(dotPath)
-  })(async (source, args, context: GQLContext, info: GraphQLResolveInfo) => {
+  })(async (source, args, context: RuleContext, info: GraphQLResolveInfo) => {
     const argVar = getResolverDotPath(dotPath, source, args)
     const {authToken, dataLoader} = context
 
     // when the path resolves to an array of teamIds, require the viewer be on every team
     if (Array.isArray(argVar)) {
       for (const teamId of argVar as string[]) {
-        if (!authToken.tms?.includes(teamId)) {
+        if (!authToken?.tms?.includes(teamId)) {
           return new GraphQLError(`Viewer is not on team`, {extensions: {code: 'FORBIDDEN'}})
         }
         if (context.resourceGrants && !(await context.resourceGrants.hasTeam(teamId))) {
@@ -53,7 +53,7 @@ export const isTeamMember = <T>(
     // Special case for ghost org so users can view meeting template meta
     if (info.operation.operation !== 'mutation' && teamId === 'aGhostTeam') return true
 
-    if (!authToken.tms?.includes(teamId)) {
+    if (!authToken?.tms?.includes(teamId)) {
       return new GraphQLError(`Viewer is not on team`, {extensions: {code: 'FORBIDDEN'}})
     }
     if (context.resourceGrants && !(await context.resourceGrants.hasTeam(teamId))) {

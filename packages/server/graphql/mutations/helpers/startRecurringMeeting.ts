@@ -76,8 +76,17 @@ const startRecurringMeeting = async (
       return meeting
     } else if (meetingSeries.meetingType === 'retrospective') {
       // Field-by-field fallback: prior meeting > MeetingSettings (nullable, may be missing) > defaults.
+      // The template checks the series first: a mid-meeting switch changes the series only when asked
       const retroLastMeeting = lastMeeting as RetrospectiveMeeting | null
+      const seriesTemplate = meetingSeries.templateId
+        ? await dataLoader.get('meetingTemplates').load(meetingSeries.templateId)
+        : null
+      const seriesTemplateId =
+        seriesTemplate?.isActive && seriesTemplate.type === 'retrospective'
+          ? seriesTemplate.id
+          : null
       const templateId =
+        seriesTemplateId ??
         retroLastMeeting?.templateId ??
         meetingSettings?.selectedTemplateId ??
         'workingStuckTemplate'

@@ -14,7 +14,7 @@ import type {UserResolvers} from '../resolverTypes'
 export const pageInsights: NonNullable<UserResolvers['pageInsights']> = async (
   _source,
   {meetingIds, prompt},
-  {authToken, dataLoader}
+  {authToken, dataLoader, resourceGrants}
 ) => {
   const viewerId = getUserId(authToken)
   if (meetingIds.length > 500) {
@@ -43,6 +43,14 @@ export const pageInsights: NonNullable<UserResolvers['pageInsights']> = async (
     throw new GraphQLError('You must be a member of the team for each requested meetingId', {
       extensions: {code: 'FORBIDDEN'}
     })
+  }
+  if (resourceGrants) {
+    const isTeamGranted = await Promise.all(teamIds.map((id) => resourceGrants.hasTeam(id)))
+    if (isTeamGranted.includes(false)) {
+      throw new GraphQLError('Access token does not grant access to every requested meetingId', {
+        extensions: {code: 'FORBIDDEN'}
+      })
+    }
   }
   const teams = (await dataLoader.get('teams').loadMany(teamIds)).filter(isValid)
   const orgIds = [...new Set(teams.map((t) => t.orgId))]

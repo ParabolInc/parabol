@@ -58,10 +58,11 @@ export const TaskTagDropdown = forwardRef(
               ref={isActive ? activeRef : undefined}
               data-highlighted={isActive ? '' : undefined}
               className={
-                'flex w-full shrink-0 cursor-pointer items-center rounded-md px-2 py-1 text-fg-primary text-sm leading-8 outline-hidden hover:bg-surface-hover! hover:text-fg-primary focus:bg-surface-hover data-highlighted:bg-surface-hover data-highlighted:text-fg-primary'
+                'flex w-full shrink-0 cursor-pointer items-center rounded-md px-2 py-1 text-fg-primary text-sm leading-8 outline-hidden focus:bg-surface-hover data-highlighted:bg-surface-hover data-highlighted:text-fg-primary'
               }
               key={item.id}
               onClick={() => selectItem(idx)}
+              onMouseMove={() => setSelectedIndex(idx)}
             >
               <TypeAheadLabel
                 label={item.id}
