@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.29.0](https://github.com/ParabolInc/parabol/compare/v15.28.0...v15.29.0) (2026-11-12)
+
+
+### Added
+
+* **tasks:** All and Tasks filter in the discussion panel ([#14129](https://github.com/ParabolInc/parabol/issues/14129)) ([63141a6](https://github.com/ParabolInc/parabol/commit/63141a6465630333471b10117c4c5458aa3d3ae6))
+
+
+### Fixed
+
+* **embedder:** lower Harrier's Similar Wording cutoff to 0.78 ([#14128](https://github.com/ParabolInc/parabol/issues/14128)) ([59ea05d](https://github.com/ParabolInc/parabol/commit/59ea05ddfe3277d3e046dc1044181cf5576356e7))
+* **server:** reject ids from another team in eight mutations ([#14104](https://github.com/ParabolInc/parabol/issues/14104)) ([8aa520c](https://github.com/ParabolInc/parabol/commit/8aa520c1c86c4817d7a2366a65bb27ff08ff4180))
+
 ## [15.28.0](https://github.com/ParabolInc/parabol/compare/v15.27.2...v15.28.0) (2026-11-12)
 
 
