@@ -93,6 +93,16 @@ export type AutogroupReflectionGroupType = {
   reflectionIds: string[]
 }
 
+/** Accept all writes the optional fields so undo can restore each card exactly. */
+export type ResetReflectionGroupType = AutogroupReflectionGroupType & {
+  reflectionGroupId?: string
+  intoReflectionGroupId?: string
+  sortOrderByReflectionId?: Record<string, number>
+  intoPriorTitle?: string | null
+  intoPriorSmartTitle?: string | null
+  intoAppliedTitle?: string | null
+}
+
 export type SuggestedGroupsModeType = 'similarity' | 'ai'
 export type RetroSuggestedGrouping = ExtractTypeFromQueryBuilderSelect<
   typeof selectRetroSuggestedGrouping

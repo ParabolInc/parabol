@@ -1,6 +1,6 @@
 import {Selectable} from 'kysely'
 import {NonNullableProps} from '../../../client/types/generics'
-import {AutogroupReflectionGroupType, UsedReactjis} from './index.d'
+import {AutogroupReflectionGroupType, ResetReflectionGroupType, UsedReactjis} from './index.d'
 import {
   CheckInMeetingPhase,
   NewMeetingPhase,
@@ -55,7 +55,7 @@ export type RetrospectiveMeeting = BaseNewMeeting &
     meetingType: 'retrospective'
     phases: RetroMeetingPhase[]
     autogroupReflectionGroups: AutogroupReflectionGroupType[] | null
-    resetReflectionGroups: AutogroupReflectionGroupType[] | null
+    resetReflectionGroups: ResetReflectionGroupType[] | null
     transcription: TranscriptBlock[] | null
   }
 
