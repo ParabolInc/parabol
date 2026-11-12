@@ -7,24 +7,11 @@
  * ADF spec: https://developer.atlassian.com/cloud/jira/platform/apis/document/structure/
  */
 
-import {CALLOUT_CHILD_TYPES, type CalloutTone} from './calloutTones'
 import type {
   TipTapContentNode,
   TipTapSerializedContent,
   TipTapTextNode
 } from './TipTapSerializedContent.d'
-
-const PANEL_TYPE_TONES: Record<string, CalloutTone> = {
-  info: 'info',
-  note: 'important',
-  success: 'tip',
-  tip: 'tip',
-  warning: 'warning',
-  error: 'danger'
-}
-
-const isCalloutChild = (node: TipTapContentNode) =>
-  CALLOUT_CHILD_TYPES.some((type) => type === node.type)
 
 // ---------------------------------------------------------------------------
 // ADF input types
@@ -253,24 +240,18 @@ function transformNode(node: AdfNode): TipTapContentNode | TipTapContentNode[] |
         ]
       }
 
-    case 'panel': {
-      const panelType = node.attrs?.panelType
-      const emoji = panelType === 'custom' ? node.attrs?.panelIconText : null
-      const children = transformChildren(node.content)
-      const insideCallout = children.filter(isCalloutChild)
-      const afterCallout = children.filter((child) => !isCalloutChild(child))
-      return [
-        {
-          type: 'callout',
-          attrs: {
-            tone: PANEL_TYPE_TONES[String(panelType)] ?? 'plain',
-            emoji: typeof emoji === 'string' && emoji ? emoji : null
-          },
-          content: insideCallout.length > 0 ? insideCallout : [{type: 'paragraph'}]
-        },
-        ...afterCallout
-      ]
-    }
+    // -------------------------------------------------------------------------
+    // panel → blockquote
+    //
+    // ADF panels (info/warning/error/success/note) have no direct equivalent in
+    // your schema. blockquote is the closest semantic container. If you add a
+    // callout/panel extension later, swap this out.
+    // -------------------------------------------------------------------------
+    case 'panel':
+      return {
+        type: 'blockquote',
+        content: transformChildren(node.content)
+      }
 
     // -------------------------------------------------------------------------
     // Inline nodes at block level (technically invalid ADF, but happens in the
