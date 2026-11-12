@@ -2254,7 +2254,18 @@ type Mutation {
     The id of the meeting template
     """
     templateId: ID!
-  ): UpdateMeetingTemplatePayload! @scope(name: MEETINGS_WRITE)
+
+    """
+    Standup only. Also make it the template of the meeting's series, so future meetings use it
+    """
+    applyToSeries: Boolean
+
+    """
+    Standup only. Clear every answer, private drafts included. Without it, the mutation refuses
+    with a CONFLICT error carrying answeredCount when anyone has started answering
+    """
+    clearResponses: Boolean
+  ): UpdateMeetingTemplateSuccess! @scope(name: MEETINGS_WRITE)
 
   """
   Update an with a change in name, avatar

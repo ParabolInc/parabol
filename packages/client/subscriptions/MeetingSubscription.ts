@@ -181,7 +181,7 @@ const subscription = graphql`
         ...UpdateRetroMaxVotesMutation_meeting @relay(mask: false)
       }
       UpdateMeetingTemplateSuccess {
-        ...UpdateMeetingTemplateMutation_meeting @relay(mask: false)
+        ...useUpdateMeetingTemplateMutation_meeting @relay(mask: false)
       }
       VoteForReflectionGroupPayload {
         ...VoteForReflectionGroupMutation_meeting @relay(mask: false)
