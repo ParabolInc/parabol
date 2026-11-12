@@ -1,12 +1,14 @@
 import graphql from 'babel-plugin-relay/macro'
-import {type CSSProperties, type ReactNode, type RefObject, useMemo, useRef} from 'react'
+import {type CSSProperties, type ReactNode, type RefObject, useMemo, useRef, useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import {MeetingControlBarEnum} from '~/types/constEnums'
 import type {DiscussionThreadQuery} from '../__generated__/DiscussionThreadQuery.graphql'
 import {cn} from '../ui/cn'
-import DiscussionThreadInput from './DiscussionThreadInput'
+import getDiscussionThreadCounts from '../utils/getDiscussionThreadCounts'
+import DiscussionThreadFilter, {type DiscussionThreadFilterValue} from './DiscussionThreadFilter'
+import DiscussionThreadInput, {type TaskDraft} from './DiscussionThreadInput'
 import DiscussionThreadList, {type DiscussionThreadables} from './DiscussionThreadList'
 import {isLocalPoll} from './Poll/local/newPoll'
 
@@ -48,8 +50,18 @@ const DiscussionThread = (props: Props) => {
               edges {
                 node {
                   id
+                  __typename
                   threadSortOrder
                   discussionId
+                  ... on Comment {
+                    isActive
+                  }
+                  replies {
+                    __typename
+                    ... on Comment {
+                      isActive
+                    }
+                  }
                   ...DiscussionThreadList_threadables
                 }
               }
@@ -61,6 +73,11 @@ const DiscussionThread = (props: Props) => {
     queryRef
   )
   const {viewer} = data
+  const [filterChoice, setFilterChoice] = useState<{
+    discussionId: string
+    value: DiscussionThreadFilterValue
+  } | null>(null)
+  const [taskDraft, setTaskDraft] = useState<TaskDraft | null>(null)
   const isExpanded =
     useCoverable(
       'threads',
@@ -87,6 +104,16 @@ const DiscussionThread = (props: Props) => {
     return Math.max(0, ...threadables.map((threadable) => threadable.threadSortOrder || 0))
   }
   const isCreatingPoll = threadables.some(isLocalPoll)
+  const counts = getDiscussionThreadCounts(threadables)
+  const allowTasks = allowedThreadables.includes('task')
+  const filter: DiscussionThreadFilterValue =
+    allowTasks && filterChoice?.discussionId === discussion.id ? filterChoice.value : 'all'
+  const changeFilter = (value: DiscussionThreadFilterValue) =>
+    setFilterChoice({discussionId: discussion.id, value})
+  const addTask = () => {
+    changeFilter('all')
+    setTaskDraft({discussionId: discussion.id, isOpen: true})
+  }
 
   return (
     <div
@@ -99,7 +126,19 @@ const DiscussionThread = (props: Props) => {
       style={{'--discussion-thread-width': width || '100%'} as CSSProperties}
       ref={ref}
     >
+      {allowTasks && (
+        <DiscussionThreadFilter
+          allCount={counts.all}
+          taskCount={counts.tasks}
+          value={filter}
+          onChange={changeFilter}
+        />
+      )}
       <DiscussionThreadList
+        filter={filter}
+        hiddenCommentCount={counts.comments}
+        onAddTask={addTask}
+        onShowAll={() => changeFilter('all')}
         discussion={discussion}
         allowedThreadables={allowedThreadables}
         commentorNames={commentorNames}
@@ -108,15 +147,19 @@ const DiscussionThread = (props: Props) => {
         header={header}
         emptyState={emptyState}
       />
-      <DiscussionThreadInput
-        allowedThreadables={allowedThreadables}
-        isDisabled={!!replyingTo?.id}
-        getMaxSortOrder={getMaxSortOrder}
-        discussion={discussion}
-        viewer={viewer}
-        isCreatingPoll={isCreatingPoll}
-        autoFocus={autoFocus}
-      />
+      <div className={cn(filter === 'tasks' && 'hidden')}>
+        <DiscussionThreadInput
+          allowedThreadables={allowedThreadables}
+          isDisabled={!!replyingTo?.id}
+          getMaxSortOrder={getMaxSortOrder}
+          discussion={discussion}
+          viewer={viewer}
+          isCreatingPoll={isCreatingPoll}
+          autoFocus={autoFocus}
+          taskDraft={taskDraft}
+          onTaskDraftChange={setTaskDraft}
+        />
+      </div>
     </div>
   )
 }
