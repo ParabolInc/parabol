@@ -6,6 +6,7 @@ import type {ThreadedPollBase_poll$data} from '../__generated__/ThreadedPollBase
 import type {LocalHandlers, SharedUpdater, StandardMutation} from '../types/relayMutations'
 import getDiscussionThreadConn from './connections/getDiscussionThreadConn'
 import safePutNodeInConn from './handlers/safePutNodeInConn'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment CreatePollMutation_meeting on CreatePollSuccess {
@@ -79,7 +80,7 @@ const CreatePollMutation: StandardMutation<TCreatePollMutation, Handlers> = (
       existingPoll.setLinkedRecords(newPollOptions, 'options')
     },
     onCompleted,
-    onError
+    onError: onError ?? snackOnError(atmosphere)
   })
 }
 

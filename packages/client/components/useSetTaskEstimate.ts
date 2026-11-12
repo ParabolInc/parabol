@@ -8,6 +8,7 @@ import useMutationProps from '../hooks/useMutationProps'
 import SetTaskEstimateMutation from '../mutations/SetTaskEstimateMutation'
 import type {CompletedHandler} from '../types/relayMutations'
 import {MAX_FREE_JIRA_EXPORTS} from '../utils/constants'
+import getMutationError from '../utils/relay/getMutationError'
 
 export const JIRA_EXPORT_UPGRADE_MODAL_DISMISSED_KEY = 'jiraExportUpgradeModalDismissed'
 
@@ -59,12 +60,22 @@ const useSetTaskEstimate = () => {
       }
     }
 
+    const handleError = (error: Error) => {
+      if (getMutationError(error).code === 'UPGRADE_REQUIRED') {
+        onCompleted()
+        setIsHardBlock(true)
+        setShowUpgradeModal(true)
+        return
+      }
+      onError(error)
+    }
+
     submitMutation()
 
     SetTaskEstimateMutation(
       atmosphere,
       {taskEstimate},
-      {onError, onCompleted: handleCompleted, stageId}
+      {onError: handleError, onCompleted: handleCompleted, stageId}
     )
   }
 

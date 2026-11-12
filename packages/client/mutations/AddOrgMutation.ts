@@ -10,7 +10,7 @@ import type {
   StandardMutation
 } from '../types/relayMutations'
 import plural from '../utils/plural'
-import getGraphQLError from '../utils/relay/getGraphQLError'
+import getMutationError from '../utils/relay/getMutationError'
 import handleAddOrganization from './handlers/handleAddOrganization'
 import handleAddTeams from './handlers/handleAddTeams'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
@@ -107,7 +107,7 @@ const AddOrgMutation: StandardMutation<TAddOrgMutation, NavigateLocalHandler> = 
         onCompleted(res, errors)
       }
       const {addOrg} = res
-      const error = getGraphQLError(res, errors)
+      const error = getMutationError(res, errors)
       if (!error) {
         popOrganizationCreatedToast(addOrg, {atmosphere})
         const teamId = addOrg.team && addOrg.team.id

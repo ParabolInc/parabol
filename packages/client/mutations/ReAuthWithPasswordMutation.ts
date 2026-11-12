@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import type {ReAuthWithPasswordMutation as TReAuthWithPasswordMutation} from '../__generated__/ReAuthWithPasswordMutation.graphql'
 import type Atmosphere from '../Atmosphere'
-import getServerError from '../utils/relay/getServerError'
+import getMutationError from '../utils/relay/getMutationError'
 
 const mutation = graphql`
   mutation ReAuthWithPasswordMutation($email: ID!, $password: String!) {
@@ -23,7 +23,7 @@ const ReAuthWithPasswordMutation = (
   return commitMutation<TReAuthWithPasswordMutation>(atmosphere, {
     mutation,
     variables,
-    onError: (err) => onCompleted(getServerError(err)?.message ?? err.message),
+    onError: (err) => onCompleted(getMutationError(err).message),
     onCompleted: (res, errors) => {
       const {loginWithPassword} = res
       if (loginWithPassword.error) {

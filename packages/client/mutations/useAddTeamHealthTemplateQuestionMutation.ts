@@ -1,6 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {useAddTeamHealthTemplateQuestionMutation as TAddTeamHealthTemplateQuestionMutation} from '../__generated__/useAddTeamHealthTemplateQuestionMutation.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment useAddTeamHealthTemplateQuestionMutation_team on AddTeamHealthTemplateQuestionSuccess {
@@ -24,6 +26,7 @@ const mutation = graphql`
 
 const useAddTeamHealthTemplateQuestionMutation = () => {
   const [commit, submitting] = useMutation<TAddTeamHealthTemplateQuestionMutation>(mutation)
+  const atmosphere = useAtmosphere()
   const execute = (config: UseMutationConfig<TAddTeamHealthTemplateQuestionMutation>) => {
     const {templateId, questionIds} = config.variables
     return commit({
@@ -38,6 +41,7 @@ const useAddTeamHealthTemplateQuestionMutation = () => {
           .filter((record): record is NonNullable<typeof record> => !!record)
         template.setLinkedRecords([...existing, ...added], 'questions')
       },
+      onError: snackOnError(atmosphere),
       ...config
     })
   }

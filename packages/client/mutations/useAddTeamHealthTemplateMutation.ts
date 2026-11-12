@@ -4,6 +4,7 @@ import type {useAddTeamHealthTemplateMutation as TAddTeamHealthTemplateMutation}
 import type {useAddTeamHealthTemplateMutation_team$data} from '../__generated__/useAddTeamHealthTemplateMutation_team.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import type {SharedUpdater} from '../types/relayMutations'
+import {snackOnError} from './handlers/snackOnError'
 import {putTemplateInConnection} from './UpdatePokerTemplateScopeMutation'
 
 graphql`
@@ -53,6 +54,7 @@ const useAddTeamHealthTemplateMutation = () => {
         if (!payload) return
         addTeamHealthTemplateTeamUpdater(payload as any, {atmosphere, store})
       },
+      onError: snackOnError(atmosphere),
       ...config
     })
   }

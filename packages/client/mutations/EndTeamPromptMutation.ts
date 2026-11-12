@@ -14,6 +14,7 @@ import type {
 import {GQLID} from '../utils/GQLID'
 import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
 import handleAddTimelineEvent from './handlers/handleAddTimelineEvent'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment EndTeamPromptMutation_team on EndTeamPromptSuccess {
@@ -109,7 +110,7 @@ const EndTeamPromptMutation: StandardMutation<TEndTeamPromptMutation, NavigateMa
         navigate
       })
     },
-    onError
+    onError: onError ?? snackOnError(atmosphere)
   })
 }
 

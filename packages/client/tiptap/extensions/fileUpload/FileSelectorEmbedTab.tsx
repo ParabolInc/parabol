@@ -4,7 +4,7 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import {useEmbedUserAsset} from '../../../mutations/useEmbedUserAsset'
 import type {FileUploadTargetType} from '../../../shared/tiptap/extensions/FileUploadBase'
 import {Button} from '../../../ui/Button/Button'
-import getServerError from '../../../utils/relay/getServerError'
+import getMutationError from '../../../utils/relay/getMutationError'
 
 interface Props {
   editor: Editor
@@ -30,7 +30,7 @@ export const FileSelectorEmbedTab = (props: Props) => {
     }
     commit({
       variables: {url, scope: assetScope, scopeKey},
-      onError: (error) => showEmbedError(getServerError(error)?.message ?? error.message),
+      onError: (error) => showEmbedError(getMutationError(error).message),
       onCompleted: (res) => {
         const {embedUserAsset} = res
         const message = embedUserAsset?.error?.message

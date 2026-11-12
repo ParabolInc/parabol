@@ -3,8 +3,7 @@ import {commitMutation} from 'react-relay'
 import type {CreateImposterTokenMutation as ICreateImposterTokenMutation} from '../__generated__/CreateImposterTokenMutation.graphql'
 import type Atmosphere from '../Atmosphere'
 import type {SimpleMutation} from '../types/relayMutations'
-import getGraphQLError from '../utils/relay/getGraphQLError'
-import getServerError from '../utils/relay/getServerError'
+import getMutationError from '../utils/relay/getMutationError'
 
 graphql`
   fragment CreateImposterTokenMutation_agendaItem on CreateImposterTokenPayload {
@@ -31,11 +30,11 @@ const CreateImposterTokenMutation: SimpleMutation<ICreateImposterTokenMutation> 
   atmosphere: Atmosphere,
   variables
 ) => {
-  const onError = (err: Error) => {
+  const showError = (message: string) => {
     atmosphere.eventEmitter.emit('addSnackbar', {
       autoDismiss: 5,
       key: 'imposterError',
-      message: getServerError(err)?.message ?? err.message
+      message
     })
   }
 
@@ -43,20 +42,20 @@ const CreateImposterTokenMutation: SimpleMutation<ICreateImposterTokenMutation> 
     mutation,
     variables,
     onCompleted: (res, errors) => {
-      const serverError = getGraphQLError(res, errors)
+      const serverError = getMutationError(res, errors)
       if (serverError) {
-        onError(serverError)
+        showError(serverError.message)
         return
       }
       const {createImposterToken} = res
       const user = createImposterToken?.user
       if (!user) {
-        onError(new Error('No user returned'))
+        showError('No user returned')
         return
       }
       window.location.href = window.location.origin
     },
-    onError
+    onError: (error) => showError(getMutationError(error).message)
   })
 }
 

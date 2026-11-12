@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {useRemoveIntegrationSearchQueryMutation as TRemoveIntegrationSearchQueryMutation} from '../__generated__/useRemoveIntegrationSearchQueryMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import getServerError from '../utils/relay/getServerError'
+import getMutationError from '../utils/relay/getMutationError'
 
 graphql`
   fragment useRemoveIntegrationSearchQueryMutation_notification on RemoveIntegrationSearchQuerySuccess {
@@ -36,7 +36,7 @@ const useRemoveIntegrationSearchQueryMutation = () => {
         const error = errors?.[0]
         if (error) showError(error.message)
       },
-      onError: (error) => showError(getServerError(error)?.message ?? error.message),
+      onError: (error) => showError(getMutationError(error).message),
       ...config
     })
   }

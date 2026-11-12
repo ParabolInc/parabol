@@ -1,6 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {useCreatePersonalAccessTokenMutation as TuseCreatePersonalAccessTokenMutation} from '../__generated__/useCreatePersonalAccessTokenMutation.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
+import {snackOnError} from './handlers/snackOnError'
 
 const mutation = graphql`
   mutation useCreatePersonalAccessTokenMutation(
@@ -39,6 +41,7 @@ const mutation = graphql`
 
 export const useCreatePersonalAccessToken = () => {
   const [commit, submitting] = useMutation<TuseCreatePersonalAccessTokenMutation>(mutation)
+  const atmosphere = useAtmosphere()
   const execute = (config: UseMutationConfig<TuseCreatePersonalAccessTokenMutation>) => {
     return commit({
       updater: (store) => {
@@ -50,6 +53,7 @@ export const useCreatePersonalAccessToken = () => {
         const existingTokens = viewer.getLinkedRecords('personalAccessTokens') ?? []
         viewer.setLinkedRecords([...existingTokens, newToken], 'personalAccessTokens')
       },
+      onError: snackOnError(atmosphere),
       ...config
     })
   }

@@ -4,12 +4,13 @@ import {useLocation, useNavigate} from 'react-router'
 import type {SelectSharingScopeDropdown_template$key} from '../__generated__/SelectSharingScopeDropdown_template.graphql'
 import type {UpdateTemplateScopeMutation$data} from '../__generated__/UpdateTemplateScopeMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import useMutationProps, {getOnCompletedError} from '../hooks/useMutationProps'
+import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerTemplateScopeMutation from '../mutations/UpdatePokerTemplateScopeMutation'
 import UpdateTemplateScopeMutation from '../mutations/UpdateTemplateScopeMutation'
 import type {CompletedHandler} from '../types/relayMutations'
 import {MenuContent} from '../ui/Menu/MenuContent'
 import {MenuItem} from '../ui/Menu/MenuItem'
+import getMutationError from '../utils/relay/getMutationError'
 import DropdownMenuIconItemLabel from './DropdownMenuIconItemLabel'
 
 interface Props {
@@ -47,7 +48,7 @@ const SelectSharingScopeDropdown = (props: Props) => {
     errors
   ) => {
     onCompleted(res, errors)
-    const error = getOnCompletedError(res, errors)
+    const error = getMutationError(res, errors)
     if (error) {
       atmosphere.eventEmitter.emit('addSnackbar', {
         key: 'updateTemplateScopeError',

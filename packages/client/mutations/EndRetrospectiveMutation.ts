@@ -18,6 +18,7 @@ import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
 import handleAddTimelineEvent from './handlers/handleAddTimelineEvent'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
+import {snackOnError} from './handlers/snackOnError'
 import popEndMeetingToast from './toasts/popEndMeetingToast'
 
 graphql`
@@ -150,7 +151,7 @@ const EndRetrospectiveMutation: StandardMutation<
         navigate
       })
     },
-    onError
+    onError: onError ?? snackOnError(atmosphere)
   })
 }
 

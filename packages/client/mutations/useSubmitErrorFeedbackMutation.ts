@@ -1,6 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {useSubmitErrorFeedbackMutation as TSubmitErrorFeedbackMutation} from '../__generated__/useSubmitErrorFeedbackMutation.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
+import {snackOnError} from './handlers/snackOnError'
 
 const mutation = graphql`
   mutation useSubmitErrorFeedbackMutation(
@@ -22,8 +24,9 @@ const mutation = graphql`
 
 const useSubmitErrorFeedbackMutation = () => {
   const [commit, submitting] = useMutation<TSubmitErrorFeedbackMutation>(mutation)
+  const atmosphere = useAtmosphere()
   const execute = (config: UseMutationConfig<TSubmitErrorFeedbackMutation>) => {
-    return commit({...config})
+    return commit({onError: snackOnError(atmosphere), ...config})
   }
   return [execute, submitting] as const
 }

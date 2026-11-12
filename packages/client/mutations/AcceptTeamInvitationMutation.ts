@@ -12,11 +12,12 @@ import type {
   StandardMutation
 } from '../types/relayMutations'
 import fromTeamMemberId from '../utils/relay/fromTeamMemberId'
-import getGraphQLError from '../utils/relay/getGraphQLError'
+import getMutationError from '../utils/relay/getMutationError'
 import handleAddOrganization from './handlers/handleAddOrganization'
 import handleAddTeamMembers from './handlers/handleAddTeamMembers'
 import handleAddTeams from './handlers/handleAddTeams'
 import handleAuthenticationRedirect from './handlers/handleAuthenticationRedirect'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment AcceptTeamInvitationMutation_team on AcceptTeamInvitationPayload {
@@ -213,14 +214,14 @@ const AcceptTeamInvitationMutation: StandardMutation<
       if (!payload) return
       acceptTeamInvitationNotificationUpdater(payload, {atmosphere, store})
     },
-    onError,
+    onError: onError ?? snackOnError(atmosphere),
     onCompleted: (data, errors) => {
       if (onCompleted) {
         onCompleted(data, errors)
       }
       const {acceptTeamInvitation} = data
       const {team} = acceptTeamInvitation
-      const serverError = getGraphQLError(data, errors)
+      const serverError = getMutationError(data, errors)
       if (serverError) {
         const message = serverError.message
         if (message === InvitationTokenError.NOT_SIGNED_IN) {

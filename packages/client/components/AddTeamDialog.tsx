@@ -3,7 +3,7 @@ import {useState} from 'react'
 import {type PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import {useNavigate} from 'react-router'
 import AddTeamMutation from '~/mutations/AddTeamMutation'
-import getGraphQLError from '~/utils/relay/getGraphQLError'
+import getMutationError from '~/utils/relay/getMutationError'
 import type {AddTeamDialog_viewer$key} from '../__generated__/AddTeamDialog_viewer.graphql'
 import type {AddTeamDialogQuery} from '../__generated__/AddTeamDialogQuery.graphql'
 import {
@@ -89,7 +89,7 @@ const AddTeamDialog = (props: Props) => {
         onError,
         onCompleted: (res, errors) => {
           onCompleted(res, errors)
-          const error = getGraphQLError(res, errors)
+          const error = getMutationError(res, errors)
           if (!error) {
             const {team, invitees} = res.addTeam
             const unsentCount = invitees?.filter(isRejected).length ?? 0

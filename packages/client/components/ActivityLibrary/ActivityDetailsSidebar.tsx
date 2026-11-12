@@ -23,6 +23,7 @@ import type {CompletedHandler} from '../../types/relayMutations'
 import {Button} from '../../ui/Button/Button'
 import {cn} from '../../ui/cn'
 import {Spinner} from '../../ui/Spinner/Spinner'
+import GraphQLServerError from '../../utils/relay/GraphQLServerError'
 import sortByTier from '../../utils/sortByTier'
 import NewMeetingActionsCurrentMeetings from '../NewMeetingActionsCurrentMeetings'
 import NewMeetingSettingsToggleAnonymity from '../NewMeetingSettingsToggleAnonymity'
@@ -188,13 +189,8 @@ const ActivityDetailsSidebar = (props: Props) => {
   const makeUpgradeAwareOnError =
     (innerOnError: typeof onError): typeof onError =>
     (error) => {
-      const sourceErrors = (error as any)?.source?.errors as
-        | Array<{
-            extensions?: Record<string, unknown>
-          }>
-        | undefined
-      const handled = sourceErrors?.some((e) => tryShowUpgradeModal(e.extensions))
-      if (handled) return
+      const serverErrors = error instanceof GraphQLServerError ? error.errors : []
+      if (serverErrors.some((e) => tryShowUpgradeModal(e.extensions))) return
       innerOnError(error)
     }
 

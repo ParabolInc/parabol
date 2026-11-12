@@ -5,6 +5,7 @@ import type {useUpdateFacilitatorRotationMutation as TUpdateFacilitatorRotationM
 import type {useUpdateFacilitatorRotationMutation_meeting$data} from '../__generated__/useUpdateFacilitatorRotationMutation_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import type {OnNextHandler} from '../types/relayMutations'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment useUpdateFacilitatorRotationMutation_team on UpdateFacilitatorRotationSuccess {
@@ -102,6 +103,7 @@ const useUpdateFacilitatorRotationMutation = () => {
         // whoever heads the queue facilitates, so a new head is a handoff
         if (userIds[0]) meeting!.setValue(userIds[0], 'facilitatorUserId')
       },
+      onError: snackOnError(atmosphere),
       ...config,
       onCompleted: (res, errors) => {
         config.onCompleted?.(res, errors)

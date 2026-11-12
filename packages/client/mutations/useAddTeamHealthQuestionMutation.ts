@@ -3,6 +3,7 @@ import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {useAddTeamHealthQuestionMutation as TAddTeamHealthQuestionMutation} from '../__generated__/useAddTeamHealthQuestionMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import createProxyRecord from '../utils/relay/createProxyRecord'
+import {snackOnError} from './handlers/snackOnError'
 import useAddTeamHealthTemplateQuestionMutation from './useAddTeamHealthTemplateQuestionMutation'
 
 graphql`
@@ -40,7 +41,7 @@ const useAddTeamHealthQuestionMutation = (templateId: string) => {
   const execute = (config: UseMutationConfig<TAddTeamHealthQuestionMutation>) => {
     const {viewerId} = atmosphere
     const {question} = config.variables
-    const {onCompleted, onError} = config
+    const {onCompleted, onError = snackOnError(atmosphere)} = config
     return commit({
       // the server picks the category with AI, which is slow. Show the question right away, already
       // selected, with a temp-id placeholder category that the tag renders as a loading ellipsis
@@ -93,6 +94,7 @@ const useAddTeamHealthQuestionMutation = (templateId: string) => {
         template.setLinkedRecords([...selected, question], 'questions')
       },
       ...config,
+      onError,
       onCompleted: (response, errors) => {
         const questionId = response.addTeamHealthQuestion.question.id
         selectQuestion({variables: {templateId, questionIds: [questionId]}, onError})

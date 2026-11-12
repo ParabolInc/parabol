@@ -2,6 +2,8 @@ import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {RecordProxy} from 'relay-runtime'
 import type {useSetOrgStructureMutation as TSetOrgStructureMutation} from '../__generated__/useSetOrgStructureMutation.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
+import {snackOnError} from './handlers/snackOnError'
 
 const mutation = graphql`
   mutation useSetOrgStructureMutation($orgId: ID!, $levels: [OrgStructureLevelInput!]!) {
@@ -28,6 +30,7 @@ const isRecord = (record: RecordProxy | null | undefined): record is RecordProxy
 
 const useSetOrgStructureMutation = () => {
   const [commit, submitting] = useMutation<TSetOrgStructureMutation>(mutation)
+  const atmosphere = useAtmosphere()
   const execute = (config: UseMutationConfig<TSetOrgStructureMutation>) => {
     const {orgId, levels} = config.variables
     return commit({
@@ -48,6 +51,7 @@ const useSetOrgStructureMutation = () => {
           .filter(isRecord)
         store.get(orgId)?.setLinkedRecords(levelRecords, 'structure')
       },
+      onError: snackOnError(atmosphere),
       ...config
     })
   }

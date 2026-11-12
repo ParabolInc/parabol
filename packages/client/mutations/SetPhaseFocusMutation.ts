@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import type {SetPhaseFocusMutation as TSetPhaseFocusMutation} from '../__generated__/SetPhaseFocusMutation.graphql'
 import type {StandardMutation} from '../types/relayMutations'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment SetPhaseFocusMutation_meeting on SetPhaseFocusPayload {
@@ -30,6 +31,7 @@ const SetPhaseFocusMutation: StandardMutation<TSetPhaseFocusMutation, LocalHandl
   return commitMutation<TSetPhaseFocusMutation>(atmosphere, {
     mutation,
     variables,
+    onError: snackOnError(atmosphere),
     optimisticUpdater: (store) => {
       const {focusedPromptId} = variables
       const phase = store.get(phaseId)
