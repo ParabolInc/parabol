@@ -99,6 +99,15 @@ jobs:
         if: always()
         run: cat "$RUNNER_TEMP/server.log" 2> /dev/null || true
 
+      - name: Report Status
+        if: ${{ failure() && github.ref_name == 'master' }}
+        uses: ravsamhq/notify-slack-action@v2
+        with:
+          status: ${{ job.status }}
+          notify_when: "failure"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_GH_ACTIONS_NOTIFICATIONS }}
+
   unit:
     runs-on: ubuntu-latest
     timeout-minutes: 12
@@ -128,6 +137,15 @@ jobs:
           LAST_COMMON_MIGRATION=$(comm -12 <(git ls-tree --name-only origin/master -- packages/server/postgres/migrations/ | xargs basename -s.ts) <(ls packages/server/postgres/migrations/ | xargs basename -s.ts) | tail -n1)
           pnpm kysely migrate:down $LAST_COMMON_MIGRATION
 
+      - name: Report Status
+        if: ${{ failure() && github.ref_name == 'master' }}
+        uses: ravsamhq/notify-slack-action@v2
+        with:
+          status: ${{ job.status }}
+          notify_when: "failure"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_GH_ACTIONS_NOTIFICATIONS }}
+
   typecheck:
     runs-on: ubuntu-latest
     timeout-minutes: 12
@@ -155,6 +173,15 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+      - name: Report Status
+        if: ${{ failure() && github.ref_name == 'master' }}
+        uses: ravsamhq/notify-slack-action@v2
+        with:
+          status: ${{ job.status }}
+          notify_when: "failure"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_GH_ACTIONS_NOTIFICATIONS }}
+
   client:
     runs-on: ubuntu-latest
     timeout-minutes: 12
@@ -170,16 +197,11 @@ jobs:
       - name: Run client tests
         run: pnpm test:client
 
-  report:
-    needs: [integration, unit, typecheck, client]
-    if: ${{ failure() && github.ref_name == 'master' }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
       - name: Report Status
+        if: ${{ failure() && github.ref_name == 'master' }}
         uses: ravsamhq/notify-slack-action@v2
         with:
-          status: failure
+          status: ${{ job.status }}
           notify_when: "failure"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_GH_ACTIONS_NOTIFICATIONS }}
