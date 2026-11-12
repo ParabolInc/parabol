@@ -2,7 +2,7 @@ import {GraphQLError, type GraphQLResolveInfo} from 'graphql'
 import {rule} from 'graphql-shield'
 import type {LoaderType} from '../../../dataloader/foreignKeyLoaderMaker'
 import type {AllPrimaryLoaders} from '../../../dataloader/RootDataLoader'
-import type {GQLContext} from '../../graphql'
+import type {RuleContext} from '../../graphql'
 import {cacheByDotPath, getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
 type LoadersWithTeamId = {
@@ -17,7 +17,7 @@ export const isTeamMember = <T>(
 ) =>
   rule(`isTeamMember-${dataLoaderName ?? ''}-${typeof teamIdKey === 'string' ? teamIdKey : ''}`, {
     cache: cacheByDotPath(dotPath)
-  })(async (source, args, context: GQLContext, info: GraphQLResolveInfo) => {
+  })(async (source, args, context: RuleContext, info: GraphQLResolveInfo) => {
     const argVar = getResolverDotPath(dotPath, source, args)
     const {authToken, dataLoader} = context
 
