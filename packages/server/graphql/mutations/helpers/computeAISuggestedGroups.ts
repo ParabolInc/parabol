@@ -1,11 +1,9 @@
 import {GraphQLError} from 'graphql'
 import type {AutogroupReflectionGroupType, RetroReflection} from '../../../postgres/types'
 import {AI_MODEL} from '../../../utils/aiModel'
-import type {GroupingReasoningEffort} from '../../../utils/groupReflections/types'
 import {Logger} from '../../../utils/Logger'
-import OpenAIServerManager from '../../../utils/OpenAIServerManager'
+import OpenAIServerManager, {GROUPING_REASONING_EFFORT} from '../../../utils/OpenAIServerManager'
 import type {DataLoaderWorker} from '../../graphql'
-import getGroupingReasoningEffort from './getGroupingReasoningEffort'
 
 const LLM_TIMEOUT_MS = 45_000
 
@@ -20,7 +18,7 @@ type Result = {
   tokenCost: number
   repairedCount: number
   model: string
-  reasoningEffort: GroupingReasoningEffort
+  reasoningEffort: typeof GROUPING_REASONING_EFFORT
 }
 
 /**
@@ -52,9 +50,12 @@ const computeAISuggestedGroups = async (
 
   const promptIds = [...new Set(groupable.map((r) => r.promptId))]
   const meeting = await dataLoader.get('newMeetings').loadNonNull(groupable[0]!.meetingId)
-  const [prompts, reasoningEffort] = await Promise.all([
+  const [prompts, teamBriefing] = await Promise.all([
     Promise.all(promptIds.map((id) => dataLoader.get('templatePrompts').loadNonNull(id))),
-    getGroupingReasoningEffort(meeting.teamId, dataLoader)
+    dataLoader
+      .get('teamDetails')
+      .load(meeting.teamId)
+      .then((teamDetail) => teamDetail?.groupingBriefing ?? null)
   ])
   const meetingName = meeting.name
   const promptMap = new Map(prompts.map((p) => [p.id, p.question]))
@@ -104,7 +105,7 @@ const computeAISuggestedGroups = async (
       }
       return manager.groupReflectionsStructured(toInput(promptId, batch), {
         userPrompt,
-        reasoningEffort,
+        teamBriefing,
         signal: AbortSignal.timeout(LLM_TIMEOUT_MS)
       })
     })
@@ -146,7 +147,7 @@ const computeAISuggestedGroups = async (
     tokenCost,
     repairedCount,
     model: AI_MODEL,
-    reasoningEffort
+    reasoningEffort: GROUPING_REASONING_EFFORT
   }
 }
 

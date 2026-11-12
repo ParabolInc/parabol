@@ -56,7 +56,7 @@ const SuggestedGroupsButton = (props: Props) => {
   // (AI when the team can use it, similar wording otherwise), so a fresh meeting starts with the
   // button disabled too.
   const appliedMode = suggestedGrouping?.mode ?? (aiDisabledReason ? 'similarity' : 'ai')
-  const appliedSameColumnOnly = suggestedGrouping?.sameColumnOnly ?? false
+  const appliedSameColumnOnly = suggestedGrouping?.sameColumnOnly ?? true
   const appliedPrompt = (suggestedGrouping?.userPrompt ?? '').trim()
   const [settings, updateSettings] = useSuggestedGroupsSettings(meetingId, {
     mode: appliedMode,

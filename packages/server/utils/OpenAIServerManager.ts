@@ -25,6 +25,10 @@ export interface TeamHealthCategorySummaryInput {
 // spot. The model can't be trusted to hold back when there are no comments, so the cap is enforced
 const UNCORROBORATED_SENTIMENT_LIMIT = 0.75
 
+// Hidden reasoning dominated grouping latency, and holding the effort down is only safe because
+// repairGroups patches a forgotten card instead of discarding the whole batch
+export const GROUPING_REASONING_EFFORT = 'low'
+
 class OpenAIServerManager {
   openAIApi
   constructor() {
@@ -45,9 +49,7 @@ class OpenAIServerManager {
         label: 'openai',
         client: this.openAIApi,
         model: AI_MODEL,
-        // Hidden reasoning dominated grouping latency, and holding the effort down is only safe
-        // because repairGroups patches a forgotten card instead of discarding the whole batch
-        params: {reasoning_effort: options.reasoningEffort ?? 'low'}
+        params: {reasoning_effort: GROUPING_REASONING_EFFORT}
       },
       input,
       options
@@ -614,6 +616,23 @@ Return JSON of the form: { "items": [{ "content": "<the drafted answer, as markd
       return content
     } catch (e) {
       const error = e instanceof Error ? e : new Error('Error in generateInsight')
+      logError(error)
+      return null
+    }
+  }
+
+  async generateGroupingBriefing(prompt: string) {
+    if (!this.openAIApi) return null
+    try {
+      const response = await this.openAIApi.chat.completions.create({
+        model: AI_MODEL,
+        messages: [{role: 'user', content: prompt}],
+        // Nobody waits on this, and high effort wrote measurably more useful briefings than medium
+        reasoning_effort: 'high'
+      })
+      return response.choices[0]?.message.content?.trim() || null
+    } catch (e) {
+      const error = e instanceof Error ? e : new Error('Error in generateGroupingBriefing')
       logError(error)
       return null
     }

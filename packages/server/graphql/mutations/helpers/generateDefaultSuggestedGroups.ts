@@ -11,8 +11,9 @@ import upsertSuggestedGrouping from './upsertSuggestedGrouping'
 // Matches generateSuggestedGroups, since this can now hold the lock for a whole LLM run
 const LOCK_TTL_MS = 60_000
 
-const AI_CONFIG = {mode: 'ai' as const, userPrompt: null, sameColumnOnly: false}
-const SIMILARITY_CONFIG = {mode: 'similarity' as const, userPrompt: null, sameColumnOnly: false}
+// One column at a time: models mostly erred by merging cards across columns that teams kept apart
+const AI_CONFIG = {mode: 'ai' as const, userPrompt: null, sameColumnOnly: true}
+const SIMILARITY_CONFIG = {mode: 'similarity' as const, userPrompt: null, sameColumnOnly: true}
 
 /**
  * AI grouping when the team is entitled to it, similar wording otherwise. Similar wording is also
