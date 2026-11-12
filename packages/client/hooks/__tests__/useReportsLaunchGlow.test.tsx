@@ -10,17 +10,19 @@ let root: Root
 let container: HTMLElement
 let navigate: NavigateFunction
 
-const Probe = () => {
-  const state = useReportsLaunchGlow()
+const MET_AT = '2026-11-02T15:00:00.000Z'
+
+const Probe = (props: {lastMetAt: string | null}) => {
+  const state = useReportsLaunchGlow(props.lastMetAt)
   navigate = useNavigate()
   return <span data-state={state} />
 }
 
-const renderAt = (path: string) => {
+const renderAt = (path: string, lastMetAt: string | null = MET_AT) => {
   act(() => {
     root.render(
       <MemoryRouter initialEntries={[path]}>
-        <Probe />
+        <Probe lastMetAt={lastMetAt} />
       </MemoryRouter>
     )
   })
@@ -74,6 +76,16 @@ test('glows away from Reports, retires on the first visit, then switches off', (
 
 test('never glows when the app opens on a report, and remembers the visit', () => {
   renderAt('/reports/org1/report')
+  expect(glowState()).toBe('off')
+  expect(seenFlag()).toBe('1')
+})
+
+test('never glows for someone who has never been in a meeting, but still remembers a visit', () => {
+  renderAt('/meetings', null)
+  expect(glowState()).toBe('off')
+  act(() => {
+    navigate('/reports/org1')
+  })
   expect(glowState()).toBe('off')
   expect(seenFlag()).toBe('1')
 })
