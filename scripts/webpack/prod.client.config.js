@@ -112,6 +112,18 @@ module.exports = (config) => {
         filename: 'skeleton.html',
         template: path.join(PROJECT_ROOT, 'template.html'),
         title: 'Retrospectives, Standups, Sprint Poker & Team Health Checks | Parabol',
+        // html-webpack-plugin's defaults plus inline scripts, so the server only fills in the env vars
+        minify: {
+          collapseBooleanAttributes: true,
+          collapseWhitespace: true,
+          keepClosingSlash: true,
+          minifyJS: true,
+          removeComments: true,
+          removeRedundantAttributes: true,
+          removeScriptTypeAttributes: true,
+          removeStyleLinkTypeAttributes: true,
+          useShortDoctype: true
+        },
         // applyEnvVarsToClientAssets fills this in, since it depends on process.env.{HOST,CDN_BASE_URL}
         publicPath: '__PUBLIC_PATH__'
       }),

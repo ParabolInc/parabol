@@ -16,7 +16,7 @@ import {getIsBusy} from './getIsBusy'
 import {getIsShuttingDown} from './getIsShuttingDown'
 import getRateLimiter from './graphql/getRateLimiter'
 import type {MutationResolvers, QueryResolvers, Resolver} from './graphql/private/resolverTypes'
-import privateSchema from './graphql/private/rootSchema'
+import {getFullSchema} from './graphql/private/rootSchema'
 import {PAT_PREFIX} from './graphql/public/applyScopeDirective'
 import type {ResourceGrants} from './graphql/public/ResourceGrants'
 import rootSchema from './graphql/public/rootSchema'
@@ -260,7 +260,7 @@ export const yoga = createYoga<ServerContext, UserContext>({
     }),
     useCookies()
   ],
-  schema: ({authToken}) => (authToken?.rol === 'su' ? privateSchema : rootSchema),
+  schema: ({authToken}) => (authToken?.rol === 'su' ? getFullSchema() : rootSchema),
 
   context: () => {
     const rateLimiter = getRateLimiter()
