@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.27.0](https://github.com/ParabolInc/parabol/compare/v15.26.0...v15.27.0) (2026-11-12)
+
+
+### Added
+
+* **server:** group suggestions like teams do, and record grouping metrics for future optimization ([#14106](https://github.com/ParabolInc/parabol/issues/14106)) ([224a7aa](https://github.com/ParabolInc/parabol/commit/224a7aa062fbee0770bc8f8b4a62d0443ebda69d))
+
+
+### Fixed
+
+* only show the Reports glow to people who have met ([#14107](https://github.com/ParabolInc/parabol/issues/14107)) ([b9af681](https://github.com/ParabolInc/parabol/commit/b9af681f1f519bc93ef1b0abaa32ad645c38eb96))
+
 ## [15.26.0](https://github.com/ParabolInc/parabol/compare/v15.25.1...v15.26.0) (2026-11-12)
 
 
