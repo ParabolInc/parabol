@@ -26,7 +26,7 @@ const toggleFavoriteTemplate: MutationResolvers['toggleFavoriteTemplate'] = asyn
       }
     } else if (scope === 'ORGANIZATION') {
       const viewerTeams = await dataLoader.get('teamsByOrgIds').load(template.orgId)
-      const viewerInOrg = viewerTeams.some((t) => isTeamMember(authToken, t.id))
+      const viewerInOrg = viewerTeams.some((t) => authToken.tms.includes(t.id))
       if (!viewerInOrg) {
         throw new GraphQLError('Template is not accessible', {extensions: {code: 'FORBIDDEN'}})
       }

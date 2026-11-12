@@ -1,7 +1,7 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import type {Task} from '../../../postgres/types'
 import archiveTasksForDB from '../../../safeMutations/archiveTasksForDB'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import isValid from '../../isValid'
 import type {MutationResolvers} from '../resolverTypes'
@@ -28,7 +28,7 @@ const batchArchiveTasks: MutationResolvers['batchArchiveTasks'] = async (
       // if viewer is the task owner, they can archive
       tasks.push(task)
     } else {
-      if (isTeamMember(authToken, teamId)) {
+      if (authToken.tms.includes(teamId)) {
         // or if viewer is in the team of the task, they can also archive
         tasks.push(task)
       }

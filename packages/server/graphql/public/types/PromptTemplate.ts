@@ -61,7 +61,7 @@ const PromptTemplate: PromptTemplateResolvers = {
       .map((team) => team.id)
 
     // The goal here is to issue all fetches to the DB at once, then we can parse out team membership
-    const tms = authToken?.tms ?? []
+    const {tms} = authToken
     const [lastUsedAtOnTeam, lastUsedAtOnOrg] = await Promise.all([
       getLastUsedAtForTeams(tms, id, dataLoader),
       getLastUsedAtForTeams(

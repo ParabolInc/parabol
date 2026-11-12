@@ -9,7 +9,7 @@ import {
   decodePageSearchCursor,
   getPageSearchPageInfo
 } from '../../../postgres/queries/pageSearchCursor'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import {EmbeddingTimeoutError} from '../../../utils/EmbeddingTimeoutError'
 import {Logger} from '../../../utils/Logger'
 import {getUserQueryJobData, publishToEmbedder} from '../../mutations/helpers/publishToEmbedder'
@@ -82,7 +82,7 @@ export const search: NonNullable<UserResolvers['search']> = async (
       extensions: {code: 'BAD_USER_INPUT'}
     })
   if (inTeamIds) {
-    const hasAccessToTeams = inTeamIds.every((teamId) => isTeamMember(authToken, teamId))
+    const hasAccessToTeams = inTeamIds.every((teamId) => authToken.tms.includes(teamId))
     if (!hasAccessToTeams) {
       throw new GraphQLError('Viewer is not a member of all teamIds requested', {
         extensions: {code: 'FORBIDDEN'}
@@ -93,7 +93,7 @@ export const search: NonNullable<UserResolvers['search']> = async (
   const pageOffset = pageCursor?.position ?? 0
   let teamIds = inTeamIds
   if (resourceGrants) {
-    const baseTeamIds = teamIds ?? authToken?.tms ?? []
+    const baseTeamIds = teamIds ?? authToken.tms
     const grantChecks = await Promise.all(baseTeamIds.map((id) => resourceGrants.hasTeam(id)))
     teamIds = baseTeamIds.filter((_, i) => grantChecks[i])
   }
@@ -111,7 +111,7 @@ export const search: NonNullable<UserResolvers['search']> = async (
   // metadata requires a teamId, whereas pages don't because it uses RBAC
   const metadataTeamIds: [string, ...string[]] = resourceGrants
     ? ['aGhostTeam', ...(teamIds ?? [])]
-    : (pageTeamIds ?? ['aGhostTeam', ...(authToken?.tms ?? [])])
+    : (pageTeamIds ?? ['aGhostTeam', ...authToken.tms])
 
   if (query.length === 0) {
     const noQueryEdge = {

@@ -9,7 +9,7 @@ import type {ResourceGrants} from './public/ResourceGrants'
 export type DataLoaderWorker = CacheWorker<RootDataLoader>
 
 export interface GQLContext {
-  authToken: AuthToken | null
+  authToken: AuthToken
   rateLimiter: InMemoryRateLimiter
   ip: string
   socketId: string
@@ -18,10 +18,13 @@ export interface GQLContext {
   resourceGrants?: ResourceGrants
 }
 
+// Rules run before isAuthenticated has passed (and() runs its rules in parallel), so they see a signed-out caller's null token
+export type RuleContext = Omit<GQLContext, 'authToken'> & {authToken: AuthToken | null}
+
 export type SubscriptionContext = Omit<GQLContext, 'dataLoader'>
 export interface InternalContext {
   dataLoader: DataLoaderWorker
-  authToken: AuthToken | null
+  authToken: AuthToken
   ip: string
   // not present if called ad-hoc
   socketId?: string

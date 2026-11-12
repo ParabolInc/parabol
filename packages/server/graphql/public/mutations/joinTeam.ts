@@ -1,4 +1,3 @@
-import {GraphQLError} from 'graphql'
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import AuthToken from '../../../database/types/AuthToken'
@@ -11,7 +10,6 @@ import type {MutationResolvers} from '../resolverTypes'
 
 const joinTeam: MutationResolvers['joinTeam'] = async (_source, {teamId}, context) => {
   const {authToken, dataLoader, socketId: mutatorId} = context
-  if (!authToken) throw new GraphQLError('Not signed in', {extensions: {code: 'UNAUTHENTICATED'}})
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)

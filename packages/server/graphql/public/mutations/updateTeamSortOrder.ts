@@ -1,6 +1,5 @@
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId} from '../../../utils/authorization'
 import type {MutationResolvers} from '../resolverTypes'
 
 const updateTeamSortOrder: MutationResolvers['updateTeamSortOrder'] = async (
@@ -9,7 +8,7 @@ const updateTeamSortOrder: MutationResolvers['updateTeamSortOrder'] = async (
   {authToken}
 ) => {
   const pg = getKysely()
-  const teamMemberId = TeamMemberId.join(teamId, getUserId(authToken))
+  const teamMemberId = TeamMemberId.join(teamId, authToken.sub)
   await pg.updateTable('TeamMember').set({sortOrder}).where('id', '=', teamMemberId).execute()
   return {teamId}
 }

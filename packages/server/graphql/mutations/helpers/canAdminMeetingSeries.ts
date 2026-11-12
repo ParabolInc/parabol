@@ -20,7 +20,7 @@ import type {ResourceGrants} from '../../public/ResourceGrants'
  */
 const canAdminMeetingSeries = async (
   meetingSeries: Pick<MeetingSeries, 'teamId' | 'ownerUserId' | 'groupId'>,
-  authToken: AuthToken | null,
+  authToken: AuthToken,
   dataLoader: DataLoaderWorker,
   resourceGrants: ResourceGrants | undefined
 ) => {

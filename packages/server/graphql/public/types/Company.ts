@@ -10,7 +10,7 @@ export type CompanySource = {id: string}
 
 const getSuggestedTierOrganizations = async (
   domain: string,
-  authToken: AuthToken | null,
+  authToken: AuthToken,
   dataLoader: DataLoaderWorker
 ) => {
   const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)

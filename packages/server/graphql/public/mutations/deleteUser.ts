@@ -47,7 +47,7 @@ const deleteUser: MutationResolvers['deleteUser'] = async (
   const validReason = reason?.trim().slice(0, USER_REASON_REMOVED_LIMIT) || 'No reason provided'
 
   if (!su) {
-    if (!authToken || !user || userId !== viewerId) {
+    if (!user || userId !== viewerId) {
       return {error: {message: 'Cannot delete someone else'}}
     }
     const now = toEpochSeconds(new Date())

@@ -1,4 +1,4 @@
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import type {CreateTaskIntegrationPayloadResolvers} from '../resolverTypes'
 
 export type CreateTaskIntegrationPayloadSource =
@@ -13,7 +13,7 @@ const CreateTaskIntegrationPayload: CreateTaskIntegrationPayloadResolvers = {
     const taskDoc = await dataLoader.get('tasks').loadNonNull(source.taskId)
     const {userId, tags, teamId} = taskDoc
     const isViewer = userId === getUserId(authToken)
-    const isViewerOnTeam = isTeamMember(authToken, teamId)
+    const isViewerOnTeam = authToken.tms.includes(teamId)
     return isViewer || (!tags.includes('private') && isViewerOnTeam) ? taskDoc : null
   }
 }

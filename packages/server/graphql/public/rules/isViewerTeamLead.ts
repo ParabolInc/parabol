@@ -1,12 +1,12 @@
 import {rule} from 'graphql-shield'
 import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
 import {getUserId} from '../../../utils/authorization'
-import type {GQLContext} from '../../graphql'
+import type {RuleContext} from '../../graphql'
 import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
 export const isViewerTeamLead = <T>(teamIdDotPath: ResolverDotPath<T>) =>
   rule(`isViewerTeamLead-${teamIdDotPath}`, {cache: 'strict'})(
-    async (source, args, context: GQLContext) => {
+    async (source, args, context: RuleContext) => {
       const {authToken, dataLoader} = context
       const teamId = getResolverDotPath(teamIdDotPath, source, args)
       const viewerId = getUserId(authToken)

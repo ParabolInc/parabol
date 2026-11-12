@@ -1,14 +1,14 @@
 import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
 import type {AllPrimaryLoaders} from '../../../dataloader/RootDataLoader'
-import type {GQLContext} from '../../graphql'
+import type {RuleContext} from '../../graphql'
 import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
 export const isTeamMemberOfMeeting = <T>(
   dotPath: ResolverDotPath<T>,
   dataLoaderName?: AllPrimaryLoaders
 ) =>
-  rule(`isTeamMemberOfMeeting`, {cache: 'strict'})(async (source, args, context: GQLContext) => {
+  rule(`isTeamMemberOfMeeting`, {cache: 'strict'})(async (source, args, context: RuleContext) => {
     const argVar = getResolverDotPath(dotPath, source, args)
     const {dataLoader, authToken} = context
     let meetingId: string = argVar

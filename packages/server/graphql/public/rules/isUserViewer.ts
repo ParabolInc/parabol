@@ -3,7 +3,7 @@ import {rule} from 'graphql-shield'
 import type {AllPrimaryLoaders} from '../../../dataloader/RootDataLoader'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
-import type {GQLContext} from '../../graphql'
+import type {RuleContext} from '../../graphql'
 import {cacheByDotPath, getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
 export const isUserViewer = <T>(
@@ -13,7 +13,7 @@ export const isUserViewer = <T>(
   ownerField: 'userId' | 'createdBy' = 'userId'
 ) =>
   rule(`isUserViewer-${dataLoaderName ?? ''}-${ownerField}`, {cache: cacheByDotPath(dotPath)})(
-    async (source, args, {authToken, dataLoader}: GQLContext) => {
+    async (source, args, {authToken, dataLoader}: RuleContext) => {
       const argVar = getResolverDotPath(dotPath, source, args)
       let userId: string = argVar
       if (dataLoaderName) {

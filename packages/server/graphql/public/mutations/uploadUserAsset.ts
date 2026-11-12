@@ -34,7 +34,7 @@ export const incrementUserBytesUploaded = async (userId: string, sizeInBytes: nu
     .execute()
 }
 export const validateScope = async (
-  authToken: AuthToken | null,
+  authToken: AuthToken,
   scope: AssetScopeEnum,
   scopeKey: string,
   dataLoader: DataLoaderWorker,

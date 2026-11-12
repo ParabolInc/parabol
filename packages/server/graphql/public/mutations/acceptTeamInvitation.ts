@@ -28,7 +28,7 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
 
   // VALIDATION
   // This can happen if login with an invitation failed. We want to handle this gracefully so the client shows a nice error message
-  if (!authToken || !viewerId) {
+  if (!viewerId) {
     return {error: {message: InvitationTokenError.NOT_SIGNED_IN}}
   }
   const invitationRes = await handleInvitationToken(

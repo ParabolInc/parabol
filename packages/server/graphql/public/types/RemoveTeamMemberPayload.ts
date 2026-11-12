@@ -1,6 +1,6 @@
 import nullIfEmpty from 'parabol-client/utils/nullIfEmpty'
 import type {KickedOutNotification} from '../../../postgres/types/Notification'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import type {GQLContext} from '../../graphql'
 import isValid from '../../isValid'
 import type {RemoveTeamMemberPayloadResolvers} from '../resolverTypes'
@@ -31,7 +31,7 @@ const RemoveTeamMemberPayload: RemoveTeamMemberPayloadResolvers = {
     const tasks = (await dataLoader.get('tasks').loadMany(taskIds)).filter(isValid)
     const {userId} = tasks[0]!
     const isViewer = userId === getUserId(authToken)
-    const teamTasks = tasks.filter(({teamId}) => isTeamMember(authToken, teamId))
+    const teamTasks = tasks.filter(({teamId}) => authToken.tms.includes(teamId))
     return isViewer ? teamTasks : nullIfEmpty(teamTasks.filter((p) => !p.tags.includes('private')))
   },
   user: async (source, _args, {dataLoader}) => {

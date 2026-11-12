@@ -1,5 +1,5 @@
 import type {TaskInvolvesNotification} from '../../../postgres/types/Notification'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import type {UpdateTaskPayloadResolvers} from '../resolverTypes'
 
 type PartialNotification = {id: string; userId: string}
@@ -16,7 +16,7 @@ const UpdateTaskPayload: UpdateTaskPayloadResolvers = {
     if (!taskDoc) return null
     const {userId, tags, teamId} = taskDoc
     const isViewer = userId === getUserId(authToken)
-    const isViewerOnTeam = isTeamMember(authToken, teamId)
+    const isViewerOnTeam = authToken.tms.includes(teamId)
     return isViewer || (!tags.includes('private') && isViewerOnTeam) ? taskDoc : null
   },
 
