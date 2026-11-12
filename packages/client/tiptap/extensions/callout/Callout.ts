@@ -1,25 +1,12 @@
 import {EditorState, TextSelection} from '@tiptap/pm/state'
 import {Mapping} from '@tiptap/pm/transform'
 import {ReactNodeViewRenderer} from '@tiptap/react'
-import type {CalloutTone} from '../../../shared/tiptap/calloutTones'
 import {CalloutBase} from '../../../shared/tiptap/extensions/CalloutBase'
 import {CalloutView} from './CalloutView'
 import {calloutInputRule} from './calloutInputRule'
 import {handleCalloutBackspace, handleCalloutEnter} from './calloutKeyboard'
 import {calloutPlaceholderPlugin} from './calloutPlaceholderPlugin'
 import {unwrapCallout} from './unwrapCallout'
-
-declare module '@tiptap/core' {
-  interface Commands<ReturnType> {
-    callout: {
-      setCallout: (attrs?: {tone?: CalloutTone}) => ReturnType
-      setCalloutTone: (pos: number, tone: CalloutTone) => ReturnType
-      setCalloutEmoji: (pos: number, emoji: string | null) => ReturnType
-      toggleCalloutTitle: (pos: number) => ReturnType
-      unsetCallout: (pos: number) => ReturnType
-    }
-  }
-}
 
 export const Callout = CalloutBase.extend({
   addCommands() {

@@ -7,9 +7,22 @@ import {
 import {
   CALLOUT_CHILD_TYPES,
   CALLOUT_TONE_LABELS,
+  type CalloutTone,
   calloutToneFromAlertType,
   toCalloutTone
 } from '../calloutTones'
+
+declare module '@tiptap/core' {
+  interface Commands<ReturnType> {
+    callout: {
+      setCallout: (attrs?: {tone?: CalloutTone}) => ReturnType
+      setCalloutTone: (pos: number, tone: CalloutTone) => ReturnType
+      setCalloutEmoji: (pos: number, emoji: string | null) => ReturnType
+      toggleCalloutTitle: (pos: number) => ReturnType
+      unsetCallout: (pos: number) => ReturnType
+    }
+  }
+}
 
 const ALERT_CLASS_PREFIX = 'markdown-alert-'
 
