@@ -54,16 +54,10 @@ export default class LocalAtmosphere extends Environment {
     return name
   }
 
-  registerQuery: Atmosphere['registerQuery'] = async (
-    _queryKey,
-    subscription,
-    variables,
-    router
-  ) => {
-    const {name} = subscription
-    // runtime error in case relay changes
-    if (!name) throw new Error(`Missing name for sub`)
+  // the demo's subscriptions last as long as the demo, so there is nothing to release
+  retainSubscription: Atmosphere['retainSubscription'] = (subscription, variables, router) => {
     subscription(this as any, variables, router)
+    return () => undefined
   }
 
   fetchLocal: FetchFunction = (operation, variables) => {

@@ -1,10 +1,5 @@
 import {lazy} from 'react'
 import {Route, Routes} from 'react-router'
-import useSubscription from '../../hooks/useSubscription'
-import NotificationSubscription from '../../subscriptions/NotificationSubscription'
-import OrganizationSubscription from '../../subscriptions/OrganizationSubscription'
-import TaskSubscription from '../../subscriptions/TaskSubscription'
-import TeamSubscription from '../../subscriptions/TeamSubscription'
 
 const ActivityDetailsRoute = lazy(
   () => import(/* webpackChunkName: 'ActivityDetails' */ './ActivityDetails/ActivityDetailsRoute')
@@ -21,11 +16,6 @@ const ActivityLibraryRoute = lazy(
 )
 
 const ActivityLibraryRoutes = () => {
-  useSubscription('ActivityLibraryRoutes', NotificationSubscription)
-  useSubscription('ActivityLibraryRoutes', OrganizationSubscription)
-  useSubscription('ActivityLibraryRoutes', TaskSubscription)
-  useSubscription('ActivityLibraryRoutes', TeamSubscription)
-
   return (
     <Routes>
       <Route path='new-activity/:categoryId' element={<CreateNewActivityRoute />} />

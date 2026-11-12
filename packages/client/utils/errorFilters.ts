@@ -7,8 +7,16 @@ export const isNetworkError = ({name}: Error) => {
   return name === 'ChunkLoadError' || name === 'AbortError'
 }
 
+// Safari hides the URL of every extension script behind webkit-masked-url
+const EXTENSION_URL_SCHEMES = [
+  'chrome-extension://',
+  'moz-extension://',
+  'safari-web-extension://',
+  'webkit-masked-url://'
+]
+
 export const isExtensionError = ({name, stack}: Error) => {
-  return name === 'NotFoundError' || !!stack?.includes('chrome-extension')
+  return name === 'NotFoundError' || EXTENSION_URL_SCHEMES.some((scheme) => stack?.includes(scheme))
 }
 
 export const isIgnoredError = (error: Error) => {

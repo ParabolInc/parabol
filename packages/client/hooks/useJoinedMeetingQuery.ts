@@ -20,7 +20,6 @@ const useJoinedMeetingQuery = (meetingId: string | undefined) => {
   useEffect(() => {
     if (!meetingId) return
     const variables = {meetingId}
-    const queryKey = `useJoinedMeetingQuery:${meetingId}`
     const subKey = Atmosphere.getKey(MeetingSubscription.key, variables)
     let isMounted = true
     const fetchMeeting = (releaseSubscription?: () => void) => {
@@ -46,16 +45,20 @@ const useJoinedMeetingQuery = (meetingId: string | undefined) => {
       joined.then(() => (isMounted ? fetchMeeting(releaseSubscription) : releaseSubscription?.()))
     }
     let ackTimeout: number | undefined
+    let releaseMeetingSubscription: (() => void) | undefined
     const fetchWhileHoldingSubscription = () => {
       window.clearTimeout(ackTimeout)
       fetchOnceJoined(atmosphere.holdSubscription(subKey))
     }
     const subscribe = () => {
-      const isAlreadySubscribed = Boolean(atmosphere.subscriptions[subKey])
+      const isAlreadySubscribed = atmosphere.isSubscribed(subKey)
       atmosphere.subscriptionAckHandlers.set(subKey, fetchWhileHoldingSubscription)
-      atmosphere.registerQuery(queryKey, MeetingSubscription, variables, {navigate}).catch(() => {
-        /*ignore*/
-      })
+      releaseMeetingSubscription = atmosphere.retainSubscription(
+        MeetingSubscription,
+        variables,
+        {navigate},
+        5000
+      )
       if (isAlreadySubscribed) fetchWhileHoldingSubscription()
       // a socket server older than this client never acknowledges a subscription
       else ackTimeout = window.setTimeout(() => fetchOnceJoined(), 5000)
@@ -85,7 +88,7 @@ const useJoinedMeetingQuery = (meetingId: string | undefined) => {
       resolveJoined()
       window.clearTimeout(ackTimeout)
       atmosphere.subscriptionAckHandlers.delete(subKey)
-      atmosphere.scheduleUnregisterQuery(queryKey, 5000)
+      releaseMeetingSubscription?.()
     }
   }, [meetingId])
   return queryRef

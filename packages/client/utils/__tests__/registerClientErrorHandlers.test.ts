@@ -1,3 +1,5 @@
+import {runInNewContext} from 'node:vm'
+
 const sentBeacon = jest.fn((_url: string, _body: Blob) => true)
 const consoleError = console.error
 const loggedToConsole = jest.fn()
@@ -116,4 +118,104 @@ test('a failed service worker registration is still reported', async () => {
   await Promise.resolve()
   flushClientErrors()
   expect(sentBeacon).toHaveBeenCalled()
+})
+
+const logFrom = (frames: string[], ...args: unknown[]) => {
+  const prepareStackTrace = Error.prepareStackTrace
+  Error.prepareStackTrace = () => ['Error', ...frames.map((frame) => `    at ${frame}`)].join('\n')
+  try {
+    console.error(...args)
+  } finally {
+    Error.prepareStackTrace = prepareStackTrace
+  }
+}
+
+const OWN_FRAME = 'console.error (https://files.example.test/build/app_0a1b2c.js:4:1200)'
+
+test('a console error an extension logs from its own script is not reported', async () => {
+  const {flushClientErrors} = await loadHandlers()
+  logFrom(
+    [OWN_FRAME, 'chrome-extension://abcdefghijklmnop/build/hook.js:1:500'],
+    'Another copy of the extension is enabled.'
+  )
+  await Promise.resolve()
+  flushClientErrors()
+  expect(sentBeacon).not.toHaveBeenCalled()
+})
+
+test('a console error an extension logs from a script it injects inline is not reported', async () => {
+  const {flushClientErrors} = await loadHandlers()
+  logFrom([OWN_FRAME, '<anonymous>:1:500'], 'Another copy of the extension is enabled.')
+  await Promise.resolve()
+  flushClientErrors()
+  expect(sentBeacon).not.toHaveBeenCalled()
+})
+
+test('a console error the app logs through a console an extension wraps is still reported', async () => {
+  const {flushClientErrors} = await loadHandlers()
+  logFrom(
+    [
+      OWN_FRAME,
+      'console.error (chrome-extension://abcdefghijklmnop/build/installHook.js:1:900)',
+      'commitRoot (https://files.example.test/build/app_0a1b2c.js:2:300)'
+    ],
+    'No base meeting object found in Relay'
+  )
+  await Promise.resolve()
+  flushClientErrors()
+  expect(await readBeaconReports()).toEqual([
+    expect.objectContaining({
+      name: 'ConsoleError',
+      message: 'No base meeting object found in Relay'
+    })
+  ])
+})
+
+// another realm's Error fails instanceof Error, as one from a Safari extension's isolated world does
+const makeErrorInAnotherRealm = (message: string, stack: string): Error =>
+  runInNewContext('const error = new TypeError(message); error.stack = stack; error', {
+    message,
+    stack
+  })
+
+const rejectUnhandled = (reason: unknown) => {
+  const addEventListener = window.addEventListener as jest.Mock
+  const [, onUnhandledRejection] = addEventListener.mock.calls.find(
+    ([type]) => type === 'unhandledrejection'
+  )!
+  onUnhandledRejection({reason})
+}
+
+test('an unhandled rejection with an error from another realm keeps its name, message and stack', async () => {
+  const {flushClientErrors} = await loadHandlers()
+  const stack = 'loadTeam@https://example.test/build/app.js:4:1200'
+  rejectUnhandled(makeErrorInAnotherRealm('Load failed', stack))
+  flushClientErrors()
+  expect(await readBeaconReports()).toEqual([
+    expect.objectContaining({name: 'TypeError', message: 'Load failed', stack})
+  ])
+})
+
+test('an unhandled rejection from a Safari extension is not reported', async () => {
+  const {flushClientErrors} = await loadHandlers()
+  rejectUnhandled(
+    makeErrorInAnotherRealm('No listener', 'sendMessage@webkit-masked-url://hidden/:12:3400')
+  )
+  flushClientErrors()
+  expect(sentBeacon).not.toHaveBeenCalled()
+})
+
+test('a console error logged with an error from another realm keeps its message', async () => {
+  const {flushClientErrors} = await loadHandlers()
+  const stack = 'importRecords@https://example.test/build/app.js:4:900'
+  console.error('Failed to import records', makeErrorInAnotherRealm('Unexpected token', stack))
+  await Promise.resolve()
+  flushClientErrors()
+  expect(await readBeaconReports()).toEqual([
+    expect.objectContaining({
+      name: 'TypeError',
+      message: 'Failed to import records Unexpected token',
+      stack
+    })
+  ])
 })

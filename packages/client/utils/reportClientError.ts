@@ -52,8 +52,12 @@ export const describeReason = (reason: unknown) => {
   }
 }
 
+// an error from another realm, such as an extension's isolated world, fails instanceof Error
+export const isError = (reason: unknown): reason is Error =>
+  reason instanceof Error || Object.prototype.toString.call(reason) === '[object Error]'
+
 const toError = (reason: unknown) => {
-  if (reason instanceof Error) return reason
+  if (isError(reason)) return reason
   return new Error(typeof reason === 'string' ? reason : describeReason(reason))
 }
 

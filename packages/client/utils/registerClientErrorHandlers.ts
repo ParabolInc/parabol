@@ -1,6 +1,7 @@
 import reportClientError, {
   describeReason,
   flushClientErrors,
+  isError,
   isReportedError
 } from './reportClientError'
 
@@ -12,14 +13,24 @@ const isIgnoredMessage = (message: string | undefined) =>
   IGNORED_MESSAGES.some((ignored) => message?.includes(ignored))
 
 const describeConsoleArg = (arg: unknown) => {
-  if (arg instanceof Error) return arg.message
+  if (isError(arg)) return arg.message
   return typeof arg === 'string' ? arg : describeReason(arg)
 }
 
-const reportConsoleError = (args: unknown[]) => {
+// Extensions run scripts in the page and log to its console, but only the page's own scripts are served over http
+const isLoggedByPage = (callStack: string | undefined) => {
+  if (!callStack) return true
+  const [ownFrame, ...callerFrames] = callStack
+    .split('\n')
+    .filter((frame) => /https?:\/\//.test(frame))
+  return !ownFrame || callerFrames.length > 0
+}
+
+const reportConsoleError = (args: unknown[], callStack: string | undefined) => {
+  if (!isLoggedByPage(callStack)) return
   const message = args.map(describeConsoleArg).join(' ')
   if (isIgnoredMessage(message)) return
-  const cause = args.find((arg): arg is Error => arg instanceof Error)
+  const cause = args.find(isError)
   // React logs an error a boundary caught before the boundary reports it with its component stack
   queueMicrotask(() => {
     if (cause && isReportedError(cause)) return
@@ -53,7 +64,7 @@ const registerClientErrorHandlers = () => {
     const consoleError = console.error
     console.error = (...args: unknown[]) => {
       consoleError(...args)
-      reportConsoleError(args)
+      reportConsoleError(args, new Error().stack)
     }
   }
 }
