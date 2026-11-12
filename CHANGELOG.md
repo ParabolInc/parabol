@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.27.1](https://github.com/ParabolInc/parabol/compare/v15.27.0...v15.27.1) (2026-11-12)
+
+
+### Fixed
+
+* **server:** deny a signed-out caller in team permission rules instead of crashing ([#14111](https://github.com/ParabolInc/parabol/issues/14111)) ([6a41fba](https://github.com/ParabolInc/parabol/commit/6a41fba0cb9bc3d6ae72ce12ddc53ea6ad393eff))
+
 ## [15.27.0](https://github.com/ParabolInc/parabol/compare/v15.26.0...v15.27.0) (2026-11-12)
 
 
