@@ -2,10 +2,12 @@ import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useMutation} from 'react-relay'
 import {Check as CheckIcon, Close as CloseIcon, ContentCopy as ContentCopyIcon} from '~/ui/icons'
-import getServerError from '~/utils/relay/getServerError'
+import getMutationError from '~/utils/relay/getMutationError'
 import type {OAuthAppFormContentCreateMutation} from '../../../../__generated__/OAuthAppFormContentCreateMutation.graphql'
 import ErrorAlert from '../../../../components/ErrorAlert/ErrorAlert'
 import BasicInput from '../../../../components/InputField/BasicInput'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import {snackOnError} from '../../../../mutations/handlers/snackOnError'
 import {Button} from '../../../../ui/Button/Button'
 import {cn} from '../../../../ui/cn'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
@@ -20,6 +22,7 @@ export interface FormContentProps {
 }
 
 const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentProps) => {
+  const atmosphere = useAtmosphere()
   const [name, setName] = useState(initialData?.name || '')
   const [redirectUris, setRedirectUris] = useState((initialData?.redirectUris || []).join(', '))
   const [scopes, setScopes] = useState<string[]>(
@@ -141,7 +144,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
         onError: (err) => {
           console.error(err)
           setIsSaving(false)
-          setError(getServerError(err)?.message ?? err.message)
+          setError(getMutationError(err).message)
         }
       })
     } else {
@@ -175,7 +178,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
         onError: (err) => {
           console.error(err)
           setIsSaving(false)
-          setError(getServerError(err)?.message ?? err.message)
+          setError(getMutationError(err).message)
         }
       })
     }
@@ -202,7 +205,8 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
         setClientSecret(response.regenerateOAuthAPIProviderSecret.clientSecret)
         setShowSecret(true)
         setRegenerateConfirmOpen(false)
-      }
+      },
+      onError: snackOnError(atmosphere)
     })
   }
 

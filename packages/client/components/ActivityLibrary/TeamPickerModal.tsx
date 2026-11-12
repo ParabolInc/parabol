@@ -16,7 +16,7 @@ import {cn} from '../../ui/cn'
 import {Dialog} from '../../ui/Dialog/Dialog'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
-import getServerError from '../../utils/relay/getServerError'
+import getMutationError from '../../utils/relay/getMutationError'
 import sortByTier from '../../utils/sortByTier'
 import TeamPicker from '../TeamPicker/TeamPicker'
 
@@ -75,7 +75,7 @@ const TeamPickerModal = (props: Props) => {
   if (!selectedTeam) return null
 
   const onError = (err: Error) => {
-    setError(getServerError(err)?.message ?? err.message)
+    setError(getMutationError(err).message)
   }
 
   const onTemplateCreated = (templateId: string | undefined) => {

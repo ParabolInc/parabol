@@ -1,6 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMutation} from 'react-relay'
 import type {useUploadUserAssetMutation as TuseUploadUserAssetMutation} from '../__generated__/useUploadUserAssetMutation.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
+import {snackOnError} from './handlers/snackOnError'
 
 const mutation = graphql`
   mutation useUploadUserAssetMutation($file: File!, $scope: AssetScopeEnum!, $scopeKey: ID!) {
@@ -23,6 +25,7 @@ interface TTuseUploadUserAssetMutation extends Omit<TuseUploadUserAssetMutation,
 
 export const useUploadUserAsset = () => {
   const [commit, submitting] = useMutation<TTuseUploadUserAssetMutation>(mutation)
+  const atmosphere = useAtmosphere()
   type Execute = (
     config: Parameters<typeof commit>[0] & {uploadables: {file: File}}
   ) => ReturnType<typeof commit>
@@ -30,6 +33,7 @@ export const useUploadUserAsset = () => {
   const execute: Execute = (config) => {
     return commit({
       // allow components to override default handlers
+      onError: snackOnError(atmosphere),
       ...config
     })
   }

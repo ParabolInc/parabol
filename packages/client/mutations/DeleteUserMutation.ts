@@ -3,6 +3,7 @@ import {commitMutation} from 'react-relay'
 import type {DeleteUserMutation as TDeleteUserMutation} from '../__generated__/DeleteUserMutation.graphql'
 import type Atmosphere from '../Atmosphere'
 import type {OptionalHandlers} from '../types/relayMutations'
+import {snackOnError} from './handlers/snackOnError'
 
 const mutation = graphql`
   mutation DeleteUserMutation($userId: ID!, $reason: String) {
@@ -22,6 +23,7 @@ const DeleteUserMutation = (
   return commitMutation<TDeleteUserMutation>(atmosphere, {
     mutation,
     variables,
+    onError: snackOnError(atmosphere),
     ...options
   })
 }

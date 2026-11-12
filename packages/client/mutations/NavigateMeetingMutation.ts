@@ -15,6 +15,7 @@ import safeProxy from '../utils/relay/safeProxy'
 import {setLocalStageAndPhase} from '../utils/relay/updateLocalStage'
 import {isViewerTyping} from '../utils/viewerTypingUtils'
 import handleRemoveReflectionGroups from './handlers/handleRemoveReflectionGroups'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment NavigateMeetingMutation_meeting on NewMeeting {
@@ -182,6 +183,7 @@ const NavigateMeetingMutation: SimpleMutation<TNavigateMeetingMutation> = (
   return commitMutation<TNavigateMeetingMutation>(atmosphere, {
     mutation,
     variables,
+    onError: snackOnError(atmosphere),
     updater: (store) => {
       const payload = store.getRootField('navigateMeeting')
       navigateMeetingTeamUpdater(payload, {atmosphere, store})

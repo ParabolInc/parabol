@@ -18,6 +18,7 @@ import handleAddTimelineEvent from './handlers/handleAddTimelineEvent'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
+import {snackOnError} from './handlers/snackOnError'
 import popEndMeetingToast from './toasts/popEndMeetingToast'
 
 graphql`
@@ -138,7 +139,7 @@ const EndCheckInMutation: StandardMutation<TEndCheckInMutation, NavigateMaybeLoc
       if (!payload) return
       endCheckInTeamOnNext(payload, {atmosphere, navigate})
     },
-    onError
+    onError: onError ?? snackOnError(atmosphere)
   })
 }
 

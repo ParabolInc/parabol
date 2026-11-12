@@ -10,7 +10,7 @@ import {DialogActions} from '../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
 import {DialogDescription} from '../../ui/Dialog/DialogDescription'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
-import getServerError from '../../utils/relay/getServerError'
+import getMutationError from '../../utils/relay/getMutationError'
 
 interface Props {
   pageId: string
@@ -62,7 +62,7 @@ export const RequestPageAccess = (props: Props) => {
         reason,
         role: 'viewer'
       },
-      onError: (error) => showRequestError(getServerError(error)?.extensions?.code),
+      onError: (error) => showRequestError(getMutationError(error).code),
       onCompleted: (_result, errors) => {
         const firstError = errors?.[0]
         if (firstError) {

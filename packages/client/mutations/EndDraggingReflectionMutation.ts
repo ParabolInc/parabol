@@ -13,6 +13,7 @@ import updateProxyRecord from '../utils/relay/updateProxyRecord'
 import handleAddReflectionToGroup from './handlers/handleAddReflectionToGroup'
 import handleRemoveEmptyReflectionGroup from './handlers/handleRemoveEmptyReflectionGroup'
 import handleUpdateSpotlightResults from './handlers/handleUpdateSpotlightResults'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment EndDraggingReflectionMutation_meeting on EndDraggingReflectionPayload {
@@ -148,6 +149,7 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
   return commitMutation<TEndDraggingReflectionMutation>(atmosphere, {
     mutation,
     variables,
+    onError: snackOnError(atmosphere),
     updater: (store) => {
       const payload = store.getRootField('endDraggingReflection')
       if (!payload) return

@@ -25,6 +25,7 @@ import handleGitLabCreateIssue from './handlers/handleGitLabCreateIssue'
 import handleJiraCreateIssue from './handlers/handleJiraCreateIssue'
 import handleLinearCreateIssue from './handlers/handleLinearCreateIssue'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
+import {snackOnError} from './handlers/snackOnError'
 import popInvolvementToast from './toasts/popInvolvementToast'
 
 graphql`
@@ -223,7 +224,7 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
       handleLinearCreateIssue(task as any, store)
       handleClickUpCreateTask(task, store)
     },
-    onError,
+    onError: onError ?? snackOnError(atmosphere),
     onCompleted
   })
 }

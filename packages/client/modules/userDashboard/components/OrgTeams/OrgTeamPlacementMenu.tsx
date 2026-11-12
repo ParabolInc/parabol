@@ -1,6 +1,6 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import {ExpandMore} from '~/ui/icons'
-import getServerError from '~/utils/relay/getServerError'
+import getMutationError from '~/utils/relay/getMutationError'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import usePlaceTeamMutation from '../../../../mutations/usePlaceTeamMutation'
 import {
@@ -43,7 +43,7 @@ const OrgTeamPlacementMenu = ({teamId, teamName, level, valueId, canPlace}: Prop
       onCompleted: (_response, errors) => {
         if (errors?.[0]) showError(errors[0].message)
       },
-      onError: (error) => showError(getServerError(error)?.message ?? error.message)
+      onError: (error) => showError(getMutationError(error).message)
     })
   }
   return (

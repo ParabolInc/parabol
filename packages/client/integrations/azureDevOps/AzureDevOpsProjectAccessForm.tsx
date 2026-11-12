@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import getServerError from '~/utils/relay/getServerError'
+import getMutationError from '~/utils/relay/getMutationError'
 import type {AzureDevOpsProjectAccessFormQuery} from '../../__generated__/AzureDevOpsProjectAccessFormQuery.graphql'
 import useUpdateIntegrationRepoAccessMutation from '../../mutations/useUpdateIntegrationRepoAccessMutation'
 import {Button} from '../../ui/Button/Button'
@@ -78,7 +78,7 @@ const AzureDevOpsProjectAccessForm = (props: Props) => {
         repoAccess: sharesAll ? 'all' : 'selected',
         integrationRepoIds: sharesAll ? [] : [...selectedIds]
       },
-      onError: (e) => setError(getServerError(e)?.message ?? e.message),
+      onError: (e) => setError(getMutationError(e).message),
       onCompleted: (_res, errors) => (errors ? setError(errors[0]?.message) : onClose())
     })
   }

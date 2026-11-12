@@ -3,6 +3,7 @@ import {commitMutation} from 'react-relay'
 import type {DenyPushInvitationMutation as TDenyPushInvitationMutation} from '../__generated__/DenyPushInvitationMutation.graphql'
 import type {DenyPushInvitationMutation_team$data} from '../__generated__/DenyPushInvitationMutation_team.graphql'
 import type {OnNextHandler, SimpleMutation} from '../types/relayMutations'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment DenyPushInvitationMutation_team on DenyPushInvitationPayload {
@@ -41,7 +42,8 @@ const DenyPushInvitationMutation: SimpleMutation<TDenyPushInvitationMutation> = 
 ) => {
   return commitMutation<TDenyPushInvitationMutation>(atmosphere, {
     mutation,
-    variables
+    variables,
+    onError: snackOnError(atmosphere)
   })
 }
 

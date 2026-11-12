@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {useUpdateUserThemeMutation as TUpdateUserThemeMutation} from '../__generated__/useUpdateUserThemeMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
+import {snackOnError} from './handlers/snackOnError'
 
 const mutation = graphql`
   mutation useUpdateUserThemeMutation($theme: UserThemeEnum!) {
@@ -27,6 +28,7 @@ const useUpdateUserThemeMutation = () => {
   const execute = (config: UseMutationConfig<TUpdateUserThemeMutation>) => {
     const {onCompleted, ...rest} = config
     return commit({
+      onError: snackOnError(atmosphere),
       ...rest,
       onCompleted: (res, errors) => {
         const error = res.updateUserTheme.error

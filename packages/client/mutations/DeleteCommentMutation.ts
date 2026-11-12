@@ -8,6 +8,7 @@ import type {DeleteCommentMutation as TDeleteCommentMutation} from '../__generat
 import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
 import type {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import getDiscussionThreadConn from './connections/getDiscussionThreadConn'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment DeleteCommentMutation_meeting on DeleteCommentSuccess {
@@ -91,6 +92,7 @@ const DeleteCommentMutation: SimpleMutation<TDeleteCommentMutation> = (atmospher
   return commitMutation<TDeleteCommentMutation>(atmosphere, {
     mutation,
     variables,
+    onError: snackOnError(atmosphere),
     updater: (store) => {
       const payload = store.getRootField('deleteComment')
       deleteCommentMeetingUpdater(payload as any, {atmosphere, store})

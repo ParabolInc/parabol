@@ -6,7 +6,7 @@ import {cn} from '../../../ui/cn'
 import {Menu} from '../../../ui/Menu/Menu'
 import {MenuContent} from '../../../ui/Menu/MenuContent'
 import {MenuItem} from '../../../ui/Menu/MenuItem'
-import getServerError from '../../../utils/relay/getServerError'
+import getMutationError from '../../../utils/relay/getMutationError'
 import isTempId from '../../../utils/relay/isTempId'
 import {getTeamHealthCategoryColor} from './getTeamHealthCategoryColor'
 
@@ -50,7 +50,7 @@ const TeamHealthCategoryTag = (props: Props) => {
 
   const onError = (err: Error) => {
     atmosphere.eventEmitter.emit('addSnackbar', {
-      message: getServerError(err)?.message ?? err.message,
+      message: getMutationError(err).message,
       autoDismiss: 5,
       key: 'teamHealthCategoryError'
     })

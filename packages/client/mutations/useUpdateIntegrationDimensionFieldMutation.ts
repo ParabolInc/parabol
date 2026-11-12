@@ -3,7 +3,7 @@ import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {useUpdateIntegrationDimensionFieldMutation as TUpdateIntegrationDimensionFieldMutation} from '../__generated__/useUpdateIntegrationDimensionFieldMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import createProxyRecord from '../utils/relay/createProxyRecord'
-import getServerError from '../utils/relay/getServerError'
+import getMutationError from '../utils/relay/getMutationError'
 
 graphql`
   fragment useUpdateIntegrationDimensionFieldMutation_team on UpdateIntegrationDimensionFieldSuccess {
@@ -85,7 +85,7 @@ const useUpdateIntegrationDimensionFieldMutation = () => {
         if (error) showError(error.message)
         else handlers?.onSuccess?.()
       },
-      onError: (error) => showError(getServerError(error)?.message ?? error.message),
+      onError: (error) => showError(getMutationError(error).message),
       ...config
     })
   }

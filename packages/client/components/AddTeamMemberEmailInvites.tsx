@@ -7,7 +7,8 @@ import useTeamInviteeDrafts, {
 import useInviteToTeamMutation from '../mutations/useInviteToTeamMutation'
 import {MAX_TEAM_INVITEES} from '../shared/teamInvitees'
 import {Button} from '../ui/Button/Button'
-import getServerError, {type ServerError} from '../utils/relay/getServerError'
+import GraphQLServerError from '../utils/relay/GraphQLServerError'
+import getMutationError, {type MutationError} from '../utils/relay/getMutationError'
 import TeamInviteeInput from './TeamInviteeInput'
 import TeamInviteeMessages from './TeamInviteeMessages'
 import TeamInviteSentList from './TeamInviteSentList'
@@ -25,8 +26,8 @@ const RATE_LIMIT_MESSAGE =
 const NETWORK_ERROR_MESSAGE =
   'Your invitations didn’t go out because Parabol couldn’t be reached. Check your connection and try again.'
 
-const getRequestErrorMessage = (serverError: ServerError) =>
-  serverError.extensions?.code === 'TOO_MANY_REQUESTS' ? RATE_LIMIT_MESSAGE : serverError.message
+const getRequestErrorMessage = ({message, code}: MutationError) =>
+  code === 'TOO_MANY_REQUESTS' ? RATE_LIMIT_MESSAGE : message
 
 const AddTeamMemberEmailInvites = (props: Props) => {
   const {meetingId, teamId, teamEmails, initialResults, onClose} = props
@@ -59,16 +60,19 @@ const AddTeamMemberEmailInvites = (props: Props) => {
     execute({
       variables: {teamId, meetingId, invitees: emails},
       onCompleted: (res, errors) => {
-        const firstError = errors?.[0]
-        if (firstError) {
-          setRequestError(getRequestErrorMessage(firstError))
+        const requestError = getMutationError(res, errors)
+        if (requestError) {
+          setRequestError(getRequestErrorMessage(requestError))
           return
         }
         invitees.applyResults(res.inviteToTeam.invitees)
       },
       onError: (error) => {
-        const serverError = getServerError(error)
-        setRequestError(serverError ? getRequestErrorMessage(serverError) : NETWORK_ERROR_MESSAGE)
+        setRequestError(
+          error instanceof GraphQLServerError
+            ? getRequestErrorMessage(getMutationError(error))
+            : NETWORK_ERROR_MESSAGE
+        )
       }
     })
   }

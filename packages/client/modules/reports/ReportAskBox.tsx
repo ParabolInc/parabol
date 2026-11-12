@@ -3,7 +3,7 @@ import {useEffect, useId, useMemo, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import {AutoAwesome} from '~/ui/icons'
-import getServerError from '~/utils/relay/getServerError'
+import getMutationError from '~/utils/relay/getMutationError'
 import type {ReportAskBox_organization$key} from '../../__generated__/ReportAskBox_organization.graphql'
 import useAskReportQuestionMutation from '../../mutations/useAskReportQuestionMutation'
 import useLogReportQuestionUseMutation from '../../mutations/useLogReportQuestionUseMutation'
@@ -121,7 +121,7 @@ const ReportAskBox = ({organizationRef, period, onAskingChange}: Props) => {
       },
       onError: (askError) => {
         onAskingChange(null)
-        showError(getServerError(askError)?.message ?? askError.message)
+        showError(getMutationError(askError).message)
       }
     })
   }

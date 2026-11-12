@@ -1,5 +1,6 @@
 import {useRef, useState} from 'react'
-import {getOnCompletedError, type MenuMutationProps} from '../../hooks/useMutationProps'
+import type {MenuMutationProps} from '../../hooks/useMutationProps'
+import getMutationError from '../../utils/relay/getMutationError'
 import type {RegisteredClientIntegration} from './registry'
 
 type ConnectingService = {service: RegisteredClientIntegration; title: string}
@@ -27,7 +28,7 @@ export const makeConnectAttemptProps = (
   return {
     ...mutationProps,
     onCompleted: (res, errors) => {
-      const error = getOnCompletedError(res, errors)
+      const error = getMutationError(res, errors)
       if (error) {
         fail(error)
         return

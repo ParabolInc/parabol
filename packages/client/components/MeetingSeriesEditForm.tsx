@@ -5,12 +5,13 @@ import {RRule} from 'rrule'
 import type {MeetingSeriesEditForm_series$key} from '../__generated__/MeetingSeriesEditForm_series.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useForm from '../hooks/useForm'
-import useMutationProps, {getOnCompletedError} from '../hooks/useMutationProps'
+import useMutationProps from '../hooks/useMutationProps'
 import UpdateMeetingSeriesMutation from '../mutations/UpdateMeetingSeriesMutation'
 import UpdateRecurrenceSettingsMutation from '../mutations/UpdateRecurrenceSettingsMutation'
 import type {CompletedHandler} from '../types/relayMutations'
 import {cn} from '../ui/cn'
 import {useDialogState} from '../ui/Dialog/useDialogState'
+import getMutationError from '../utils/relay/getMutationError'
 import Legitity from '../validation/Legitity'
 import {CancelSeriesConfirmationModal} from './CancelSeriesConfirmationModal'
 import {RecurrenceSettings} from './Recurrence/RecurrenceSettings'
@@ -85,7 +86,7 @@ export const MeetingSeriesEditForm = (props: Props) => {
     (key: string, message: string, afterSuccess?: () => void): CompletedHandler =>
     (res, errors) => {
       onCompleted(res, errors)
-      if (getOnCompletedError(res, errors)) return
+      if (getMutationError(res, errors)) return
       atmosphere.eventEmitter.emit('addSnackbar', {
         key,
         message,

@@ -6,11 +6,12 @@ import {Add as AddIcon, Remove as RemoveIcon, ThumbUp} from '~/ui/icons'
 import type {ReflectionGroupVoting_meeting$key} from '../__generated__/ReflectionGroupVoting_meeting.graphql'
 import type {ReflectionGroupVoting_reflectionGroup$key} from '../__generated__/ReflectionGroupVoting_reflectionGroup.graphql'
 import type Atmosphere from '../Atmosphere'
+import {snackOnError} from '../mutations/handlers/snackOnError'
 import VoteForReflectionGroupMutation from '../mutations/VoteForReflectionGroupMutation'
 import type {CompletedHandler} from '../types/relayMutations'
 import {Button} from '../ui/Button/Button'
 import {cn} from '../ui/cn'
-import getGraphQLError from '../utils/relay/getGraphQLError'
+import getMutationError from '../utils/relay/getMutationError'
 import isTempId from '../utils/relay/isTempId'
 
 interface Props {
@@ -33,7 +34,7 @@ const makeHandleCompleted =
   (onCompleted: () => void, atmosphere: Atmosphere): CompletedHandler =>
   (res, errors) => {
     onCompleted()
-    const error = getGraphQLError(res, errors)
+    const error = getMutationError(res, errors)
     if (error) {
       atmosphere.eventEmitter.emit('addSnackbar', {
         key: 'voteError',
@@ -79,6 +80,10 @@ const ReflectionGroupVoting = (props: Props) => {
 
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitMutation} = useMutationProps()
+  const handleError = (error: Error) => {
+    onError(error)
+    snackOnError(atmosphere, 'voteError')(error)
+  }
   const vote = () => {
     if (isComplete || isTempId(reflectionGroupId) || !canUpvote) return
     submitMutation()
@@ -86,7 +91,7 @@ const ReflectionGroupVoting = (props: Props) => {
     VoteForReflectionGroupMutation(
       atmosphere,
       {reflectionGroupId},
-      {onError, onCompleted: handleCompleted, meetingId}
+      {onError: handleError, onCompleted: handleCompleted, meetingId}
     )
   }
   const downvote = () => {
@@ -96,7 +101,7 @@ const ReflectionGroupVoting = (props: Props) => {
     VoteForReflectionGroupMutation(
       atmosphere,
       {isUnvote: true, reflectionGroupId},
-      {onError, onCompleted: handleCompleted, meetingId}
+      {onError: handleError, onCompleted: handleCompleted, meetingId}
     )
   }
 

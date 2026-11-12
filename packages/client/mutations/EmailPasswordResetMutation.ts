@@ -3,6 +3,7 @@ import {commitMutation} from 'react-relay'
 import type {EmailPasswordResetMutation as TEmailPasswordResetMutation} from '../__generated__/EmailPasswordResetMutation.graphql'
 import {AuthenticationError} from '../types/constEnums'
 import type {LocalHandlers, StandardMutation} from '../types/relayMutations'
+import {snackOnError} from './handlers/snackOnError'
 
 export enum ForgotPasswordResType {
   GOOGLE = 'goog',
@@ -31,7 +32,7 @@ const EmailPasswordResetMutation: StandardMutation<TEmailPasswordResetMutation, 
   return commitMutation<TEmailPasswordResetMutation>(atmosphere, {
     mutation,
     variables,
-    onError,
+    onError: onError ?? snackOnError(atmosphere),
     onCompleted: (res, err) => {
       if (onCompleted) onCompleted(res, err)
       const {email} = variables
