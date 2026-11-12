@@ -1,5 +1,7 @@
+import data from '@emoji-mart/data'
 import type {JSONContent} from '@tiptap/core'
 import {toSafeHref} from 'parabol-client/shared/embed/normalizeEmbedUrl'
+import {toCalloutTone} from 'parabol-client/shared/tiptap/calloutTones'
 import {escapeHtml} from '../escapeHtml'
 import {escapeCdata} from './escapeXhtml'
 import type {ExportAsset, StorageConversionCtx, StorageConversionResult} from './types'
@@ -217,6 +219,51 @@ const emitTaskBlock = (node: JSONContent, state: EmitState): string => {
   return `<p>${statusMacro(lozenge.colour, lozenge.title)}${owner}</p>${body}`
 }
 
+const CALLOUT_MACRO_NAMES = {
+  info: 'info',
+  tip: 'tip',
+  warning: 'note',
+  danger: 'warning'
+} as const
+
+const PLAIN_CALLOUT_BACKGROUND = '#B7B9BE'
+
+let shortcodeByNative: Map<string, string> | undefined
+
+const getEmojiShortcode = (native: string) => {
+  if (!shortcodeByNative) {
+    shortcodeByNative = new Map()
+    for (const [id, emoji] of Object.entries((data as data.EmojiMartData).emojis)) {
+      for (const skin of emoji.skins) {
+        if (!shortcodeByNative.has(skin.native)) shortcodeByNative.set(skin.native, id)
+      }
+    }
+  }
+  return shortcodeByNative.get(native)
+}
+
+const getCodePointsHex = (native: string) =>
+  Array.from(native, (char) => char.codePointAt(0)!.toString(16)).join('-')
+
+const emitCallout = (node: JSONContent, state: EmitState): string => {
+  const tone = toCalloutTone(node.attrs?.tone)
+  const titleNode = node.content?.find((child) => child.type === 'calloutTitle')
+  const bodyNodes = (node.content ?? []).filter((child) => child.type !== 'calloutTitle')
+  const titleHtml = titleNode ? emitInlineContent(titleNode.content, state) : ''
+  const body = `${titleHtml ? `<p><strong>${titleHtml}</strong></p>` : ''}${emitBlocks(bodyNodes, state)}`
+  if (tone === 'important') {
+    return `<ac:adf-extension><ac:adf-node type="panel"><ac:adf-attribute key="panel-type">note</ac:adf-attribute><ac:adf-content>${body}</ac:adf-content></ac:adf-node><ac:adf-fallback><div class="panel conf-macro output-block" style="background-color: rgb(234,230,255);border-color: rgb(153,141,217);border-width: 1.0px;"><div class="panelContent" style="background-color: rgb(234,230,255);">${body}</div></div></ac:adf-fallback></ac:adf-extension>`
+  }
+  if (tone === 'plain') {
+    const native = typeof node.attrs?.emoji === 'string' ? node.attrs.emoji : ''
+    const icon = native
+      ? `<ac:parameter ac:name="panelIcon">${escapeHtml(getEmojiShortcode(native) ? `:${getEmojiShortcode(native)}:` : native)}</ac:parameter><ac:parameter ac:name="panelIconId">${getCodePointsHex(native)}</ac:parameter><ac:parameter ac:name="panelIconText">${escapeHtml(native)}</ac:parameter>`
+      : ''
+    return `<ac:structured-macro ac:name="panel">${icon}<ac:parameter ac:name="bgColor">${PLAIN_CALLOUT_BACKGROUND}</ac:parameter><ac:rich-text-body>${body}</ac:rich-text-body></ac:structured-macro>`
+  }
+  return `<ac:structured-macro ac:name="${CALLOUT_MACRO_NAMES[tone]}"><ac:rich-text-body>${body}</ac:rich-text-body></ac:structured-macro>`
+}
+
 const emitBlock = (node: JSONContent, state: EmitState): string => {
   const {type, attrs} = node
   switch (type) {
@@ -238,6 +285,8 @@ const emitBlock = (node: JSONContent, state: EmitState): string => {
       return `<ac:task-list>${(node.content ?? []).map((item) => emitTaskItem(item, state)).join('')}</ac:task-list>`
     case 'blockquote':
       return `<blockquote>${emitBlocks(node.content, state)}</blockquote>`
+    case 'callout':
+      return emitCallout(node, state)
     case 'codeBlock': {
       const language = attrs?.language
         ? `<ac:parameter ac:name="language">${escapeHtml(String(attrs.language))}</ac:parameter>`
