@@ -43,8 +43,10 @@ export const calloutMarkdownTokenizer: MarkdownTokenizer = {
 export const parseCalloutMarkdown = (token: MarkdownToken, helpers: MarkdownParseHelpers) => {
   const parseBlockChildren = helpers.parseBlockChildren ?? helpers.parseChildren
   const children = parseBlockChildren(token.tokens ?? [])
-  const body = children.filter((child) => calloutChildTypes.has(child.type ?? ''))
-  const movedOut = children.filter((child) => !calloutChildTypes.has(child.type ?? ''))
+  const firstDisallowed = children.findIndex((child) => !calloutChildTypes.has(child.type ?? ''))
+  const splitAt = firstDisallowed === -1 ? children.length : firstDisallowed
+  const body = children.slice(0, splitAt)
+  const movedOut = children.slice(splitAt)
   const title = typeof token.title === 'string' ? token.title : ''
   const titleNodes = title
     ? [
