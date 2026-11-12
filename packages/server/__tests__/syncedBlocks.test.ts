@@ -17,6 +17,25 @@ const ARCHIVE_PAGE = `
   }
 `
 
+const PAGES_QUERY = `
+  query Pages($first: Int!, $parentPageId: ID, $textFilter: String, $isArchived: Boolean) {
+    viewer {
+      pages(
+        first: $first
+        parentPageId: $parentPageId
+        textFilter: $textFilter
+        isArchived: $isArchived
+      ) {
+        edges {
+          node {
+            id
+          }
+        }
+      }
+    }
+  }
+`
+
 const makePage = async (
   ownerId: string,
   parentPageId: number | null = null,
@@ -199,4 +218,36 @@ test('still refuses to delete when another person owns a non-synced sub-page', a
     'This page has sub-pages you do not own, so it cannot be deleted'
   )
   expect(await pageRow(host)).toBeDefined()
+})
+
+const pageIds = async (cookie: string, variables: Record<string, unknown>) => {
+  const res = await sendPublic({query: PAGES_QUERY, variables: {first: 50, ...variables}, cookie})
+  expect(res.errors).toBeUndefined()
+  return res.data.viewer.pages.edges.map((edge: {node: {id: string}}) => edge.node.id)
+}
+
+const setTitle = (pageId: number, title: string) =>
+  pg.updateTable('Page').set({title}).where('id', '=', pageId).execute()
+
+test('the sidebar and link picker never list synced block pages', async () => {
+  const {userId, cookie} = await signUp()
+  const {originalHost, block} = await seedSyncedBlock(userId)
+  const ordinary = await makePage(userId, originalHost)
+  await setTitle(block, 'Escalation path')
+  await setTitle(ordinary, 'Escalation notes')
+  const blockId = CipherId.toClient(block, 'page')
+  const ordinaryId = CipherId.toClient(ordinary, 'page')
+  const children = await pageIds(cookie, {parentPageId: CipherId.toClient(originalHost, 'page')})
+  expect(children).toContain(ordinaryId)
+  expect(children).not.toContain(blockId)
+  const filtered = await pageIds(cookie, {textFilter: 'Escalation'})
+  expect(filtered).toContain(ordinaryId)
+  expect(filtered).not.toContain(blockId)
+})
+
+test('trash still lists a trashed synced block page', async () => {
+  const {userId, cookie} = await signUp()
+  const {block} = await seedSyncedBlock(userId)
+  await archive(cookie, block, 'archive')
+  expect(await pageIds(cookie, {isArchived: true})).toContain(CipherId.toClient(block, 'page'))
 })

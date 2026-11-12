@@ -125,6 +125,7 @@ export const pages: NonNullable<UserResolvers['pages']> = async (
           .innerJoin('PageAccess', 'PageAccess.pageId', 'Page.id')
           .where('PageAccess.userId', '=', viewerId)
           .where('deletedBy', 'is', null)
+          .where('Page.isSyncedBlock', '=', false)
       )
 
       .selectFrom('pages as p')
@@ -206,6 +207,7 @@ export const pages: NonNullable<UserResolvers['pages']> = async (
     .$if(!!textFilter, (qb) => qb.where('title', 'ilike', `%${textFilter}%`))
     .$if(!!grantCriteria, (qb) => qb.where((eb) => buildGrantFilter(eb, 'Page.id', grantCriteria!)))
     .where('deletedBy', 'is', null)
+    .where('Page.isSyncedBlock', '=', false)
     .orderBy('sortOrder')
     .limit(first + 1)
     .execute()
