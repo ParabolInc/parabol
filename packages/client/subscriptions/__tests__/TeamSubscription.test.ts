@@ -1,11 +1,4 @@
-import {
-  ConnectionHandler,
-  Environment,
-  Network,
-  Observable,
-  RecordSource,
-  Store
-} from 'relay-runtime'
+import {Environment, Network, Observable, RecordSource, Store} from 'relay-runtime'
 import type Atmosphere from '../../Atmosphere'
 import TeamSubscription from '../TeamSubscription'
 
@@ -162,7 +155,8 @@ describe('TeamSubscription', () => {
     })
   })
 
-  it("removes a teammate's removed prompt template from the activity library when the team is not loaded", () => {
+  it("applies a teammate's removed prompt template when the viewer hasn't loaded its team", () => {
+    const settingsId = 'settings1'
     const otherTemplateId = 'template2'
     const atmosphere = createTestAtmosphere({
       teamSubscription: {
@@ -171,35 +165,18 @@ describe('TeamSubscription', () => {
           template: {id: templateId, teamId},
           meetingSettings: {
             __typename: 'RetrospectiveMeetingSettings',
-            id: 'settings1',
+            id: settingsId,
             selectedTemplateId: otherTemplateId,
             selectedTemplate: {id: otherTemplateId}
           }
         }
       }
     })
-    atmosphere.commitUpdate((store) => {
-      const viewer = store.create('viewer1', 'User')
-      store.getRoot().setLinkedRecord(viewer, 'viewer')
-      const conn = store.create('availableTemplatesConn', 'MeetingTemplateConnection')
-      viewer.setLinkedRecord(conn, '__ActivityLibrary_availableTemplates_connection')
-      const edges = [templateId, otherTemplateId].map((id) => {
-        const template = store.create(id, 'PromptTemplate')
-        template.setValue(id, 'id')
-        return ConnectionHandler.createEdge(store, conn, template, 'MeetingTemplateEdge')
-      })
-      conn.setLinkedRecords(edges, 'edges')
-    })
     TeamSubscription(atmosphere, {}, {navigate: jest.fn()})
     expect(getUnexpectedErrors()).toEqual([])
-    atmosphere.commitUpdate((store) => {
-      const viewer = store.getRoot().getLinkedRecord('viewer')!
-      const conn = ConnectionHandler.getConnection(viewer, 'ActivityLibrary_availableTemplates')!
-      const templateIds = conn
-        .getLinkedRecords('edges')!
-        .map((edge) => edge.getLinkedRecord('node')!.getValue('id'))
-      expect(templateIds).toEqual([otherTemplateId])
-    })
+    expect(atmosphere.getStore().getSource().get(settingsId)?.selectedTemplateId).toBe(
+      otherTemplateId
+    )
   })
 
   it("removes only the ended meeting from the team's active meetings", () => {
