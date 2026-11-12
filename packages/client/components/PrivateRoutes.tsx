@@ -69,12 +69,14 @@ const DashboardOrNotFound = () => {
 }
 
 const PrivateRoutes = () => {
-  useAuthRoute()
+  const isSignedIn = useAuthRoute()
   useAppSubscriptions()
   useNoIndex()
   const location = useLocation()
   const state = location.state as {backgroundLocation?: Location} | null
   const backgroundLocation = state?.backgroundLocation
+  // children's effects run before this redirect, so they'd send requests without a usable token
+  if (!isSignedIn) return null
   return (
     <>
       <Routes location={backgroundLocation || location}>
