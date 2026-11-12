@@ -1,0 +1,44 @@
+name: Webpack Cache
+on:
+  push:
+    branches:
+      - master
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+permissions:
+  contents: "read"
+env:
+  PNPM_CONFIG_VERIFY_DEPS_BEFORE_RUN: "false"
+jobs:
+  # test.yml restores this cache on every branch. It is built from nothing here, so stale modules never pile up in it,
+  # and in its own workflow, so the cold build does not slow the tests on master
+  build:
+    runs-on: ubuntu-8cores
+    timeout-minutes: 12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup
+        id: setup
+        uses: ./.github/actions/setup
+
+      - name: Build
+        run: pnpm build --skip-types
+        env:
+          WEBPACK_PERSISTENT_CACHE: true
+
+      - name: Save webpack cache
+        uses: actions/cache/save@v4
+        with:
+          path: .webpackCache
+          key: webpack-${{ runner.arch }}-${{ steps.setup.outputs.node-version }}-${{ github.sha }}
+
+      - name: Report Status
+        if: failure()
+        uses: ravsamhq/notify-slack-action@v2
+        with:
+          status: ${{ job.status }}
+          notify_when: "failure"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_GH_ACTIONS_NOTIFICATIONS }}

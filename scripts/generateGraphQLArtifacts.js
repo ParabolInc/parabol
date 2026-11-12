@@ -58,7 +58,7 @@ const generateGraphQLArtifacts = ({skipTypes = false} = {}) => {
 }
 
 if (require.main === module) {
-  generateGraphQLArtifacts()
+  generateGraphQLArtifacts({skipTypes: process.argv[2] === '--skip-types'})
 }
 
 module.exports = generateGraphQLArtifacts
