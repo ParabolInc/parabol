@@ -7,6 +7,7 @@ import mergeRepoIntegrationItems from '~/utils/mergeRepoIntegrationItems'
 import type {TaskServiceEnum} from '../__generated__/CreateTaskMutation.graphql'
 import type {TaskFooterIntegrateMenuList_teamMember$key} from '../__generated__/TaskFooterIntegrateMenuList_teamMember.graphql'
 import type {TaskFooterIntegrateMenuListRetryQuery} from '../__generated__/TaskFooterIntegrateMenuListRetryQuery.graphql'
+import type {BeginConnect, ConnectInMenuState} from '../hooks/useConnectInMenu'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
 import {
   isTaskClientIntegration,
@@ -17,6 +18,7 @@ import {MenuSeparator} from '../ui/Menu/MenuSeparator'
 import MenuSkeletonRows from '../ui/Menu/MenuSkeletonRows'
 import menuSectionTitleClass from '../ui/Menu/menuSectionTitleClass'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
+import TaskFooterIntegrateMenuConnectFailed from './TaskFooterIntegrateMenuConnectFailed'
 import TaskFooterIntegrateMenuNeedsReconnect from './TaskFooterIntegrateMenuNeedsReconnect'
 import TaskFooterIntegrateMenuServiceRepos, {
   type RepoIntegrationItem as Item,
@@ -38,6 +40,8 @@ const retryQuery = graphql`
 `
 
 interface Props {
+  failure?: Extract<ConnectInMenuState, {phase: 'failed'}>
+  onConnect?: BeginConnect
   mutationProps: MenuMutationProps
   placeholder: string
   teamMemberRef: TaskFooterIntegrateMenuList_teamMember$key
@@ -54,7 +58,15 @@ type ReposByService = Partial<Record<RepoIntegrationService, readonly Item[] | n
 const getValue = (item: Item) => item.name
 
 const TaskFooterIntegrateMenuList = (props: Props) => {
-  const {mutationProps, onPushToIntegration, placeholder, teamMemberRef, label} = props
+  const {
+    failure,
+    onConnect,
+    mutationProps,
+    onPushToIntegration,
+    placeholder,
+    teamMemberRef,
+    label
+  } = props
   const atmosphere = useAtmosphere()
   const [isRetrying, setIsRetrying] = useState(false)
 
@@ -143,6 +155,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
           <TaskFooterIntegrateMenuServiceRepos serviceRef={service} onRepos={onRepos} />
         </Suspense>
       ))}
+      {failure && <TaskFooterIntegrateMenuConnectFailed failure={failure} />}
       {label && (
         <>
           <div className='p-2 pt-2 pb-0 text-fg-secondary text-sm'>{label}</div>
@@ -191,6 +204,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
         />
       )}
       <TaskFooterIntegrateMenuNeedsReconnect
+        onConnect={onConnect}
         mutationProps={mutationProps}
         teamMemberRef={teamMember}
       />

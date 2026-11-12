@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {TaskFooterIntegrateMenuNeedsReconnect_teamMember$key} from '../__generated__/TaskFooterIntegrateMenuNeedsReconnect_teamMember.graphql'
+import type {BeginConnect} from '../hooks/useConnectInMenu'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
 import {listServiceProviders} from '../integrations/platform/integrationServiceProviders'
 import {
@@ -11,12 +12,13 @@ import menuSectionTitleClass from '../ui/Menu/menuSectionTitleClass'
 import ConnectIntegrationMenuItem from './ConnectIntegrationMenuItem'
 
 interface Props {
+  onConnect?: BeginConnect
   mutationProps: MenuMutationProps
   teamMemberRef: TaskFooterIntegrateMenuNeedsReconnect_teamMember$key
 }
 
 const TaskFooterIntegrateMenuNeedsReconnect = (props: Props) => {
-  const {mutationProps, teamMemberRef} = props
+  const {onConnect, mutationProps, teamMemberRef} = props
   const {teamId, services} = useFragment(
     graphql`
       fragment TaskFooterIntegrateMenuNeedsReconnect_teamMember on TeamMember {
@@ -53,6 +55,7 @@ const TaskFooterIntegrateMenuNeedsReconnect = (props: Props) => {
           provider={provider}
           heldScopes={integrationService.grantedScopes}
           label={`Reconnect ${integrationService.title}`}
+          onConnect={onConnect}
         />
       ))}
     </>

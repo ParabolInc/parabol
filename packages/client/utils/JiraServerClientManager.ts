@@ -4,6 +4,7 @@ import type {MenuMutationProps} from '../hooks/useMutationProps'
 import AddTeamMemberIntegrationAuthMutation from '../mutations/AddTeamMemberIntegrationAuthMutation'
 import CreateOAuth1AuthorizeUrlMutation from '../mutations/CreateOAuth1AuthorizeUrlMutation'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
+import {ERROR_POPUP_BLOCKED} from './oauthPopupError'
 
 class JiraServerClientManager {
   static SCOPES = 'read_api'
@@ -21,6 +22,10 @@ class JiraServerClientManager {
       'OAuth',
       getOAuthPopupFeatures({width: 500, height: 750, top: 56})
     )
+    if (!popup) {
+      onError({message: ERROR_POPUP_BLOCKED})
+      return
+    }
 
     const onUrlCompleted = (result: TCreateOAuth1AuthorizeUrlMutation['response']) => {
       if (popup) {

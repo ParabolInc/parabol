@@ -4,6 +4,7 @@ import type {MenuMutationProps} from '../hooks/useMutationProps'
 import AddTeamMemberIntegrationAuthMutation from '../mutations/AddTeamMemberIntegrationAuthMutation'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 import makeHref from './makeHref'
+import {ERROR_POPUP_BLOCKED} from './oauthPopupError'
 
 class LinearClientManager {
   static SCOPES = 'read,write'
@@ -45,6 +46,10 @@ class LinearClientManager {
       'LinearAuth',
       getOAuthPopupFeatures({width: 500, height: 750, top: 56})
     )
+    if (!popup) {
+      onError({message: ERROR_POPUP_BLOCKED})
+      return
+    }
 
     // Shared handler function for both message events and localStorage polling
     const processOAuthData = (data: {code: string; state: string}) => {

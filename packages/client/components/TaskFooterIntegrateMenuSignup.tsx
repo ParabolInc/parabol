@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {TaskFooterIntegrateMenuSignup_teamMember$key} from '~/__generated__/TaskFooterIntegrateMenuSignup_teamMember.graphql'
+import type {BeginConnect, ConnectInMenuState} from '../hooks/useConnectInMenu'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
 import {listServiceProviders} from '../integrations/platform/integrationServiceProviders'
 import {
@@ -12,9 +13,12 @@ import {MenuSeparator} from '../ui/Menu/MenuSeparator'
 import menuSectionTitleClass from '../ui/Menu/menuSectionTitleClass'
 import ConnectIntegrationMenuItem from './ConnectIntegrationMenuItem'
 import LoadingComponent from './LoadingComponent/LoadingComponent'
+import TaskFooterIntegrateMenuConnectFailed from './TaskFooterIntegrateMenuConnectFailed'
 import TaskFooterIntegrateMenuNeedsReconnect from './TaskFooterIntegrateMenuNeedsReconnect'
 
 interface Props {
+  failure?: Extract<ConnectInMenuState, {phase: 'failed'}>
+  onConnect?: BeginConnect
   mutationProps: MenuMutationProps
   teamId: string
   label?: string
@@ -23,7 +27,7 @@ interface Props {
 }
 
 const TaskFooterIntegrateMenuSignup = (props: Props) => {
-  const {mutationProps, teamId, label, orgServices = [], teamMemberRef} = props
+  const {failure, onConnect, mutationProps, teamId, label, orgServices = [], teamMemberRef} = props
   const {submitting} = mutationProps
   const teamMember = useFragment(
     graphql`
@@ -50,18 +54,26 @@ const TaskFooterIntegrateMenuSignup = (props: Props) => {
     const [provider] = listServiceProviders(integrationService)
     return provider ? [{integrationService, service, provider}] : []
   })
+  const retryItem = connectable.find(({service}) => service === failure?.service)
   const orgItems = orgServices.flatMap(
-    (orgService) => connectable.find(({service}) => service === orgService) ?? []
+    (orgService) =>
+      connectable.find(({service}) => service === orgService && service !== retryItem?.service) ??
+      []
   )
-  const otherItems = connectable.filter((item) => !orgItems.includes(item))
+  const otherItems = connectable.filter((item) => !orgItems.includes(item) && item !== retryItem)
   const hasExpired = services.some(
     ({service, isConnected, expiredAt}) =>
       !isConnected && !!expiredAt && isTaskClientIntegration(service)
   )
   const shownLabel = hasExpired ? 'Reconnect a tool to send this task.' : label
-  const renderItem = ({integrationService, service, provider}: (typeof connectable)[number]) => (
+  const renderItem = (
+    {integrationService, service, provider}: (typeof connectable)[number],
+    itemLabel?: string
+  ) => (
     <ConnectIntegrationMenuItem
       key={service}
+      label={itemLabel}
+      onConnect={onConnect}
       teamId={teamId}
       mutationProps={mutationProps}
       service={service}
@@ -72,24 +84,27 @@ const TaskFooterIntegrateMenuSignup = (props: Props) => {
   )
   return (
     <>
-      {shownLabel && (
+      {failure && <TaskFooterIntegrateMenuConnectFailed failure={failure} />}
+      {retryItem && renderItem(retryItem, `Try ${retryItem.integrationService.title} again`)}
+      {!failure && shownLabel && (
         <>
           <div className='px-4 pt-2 pb-0 text-[14px] text-fg-secondary'>{shownLabel}</div>
           <MenuSeparator />
         </>
       )}
       <TaskFooterIntegrateMenuNeedsReconnect
+        onConnect={onConnect}
         mutationProps={mutationProps}
         teamMemberRef={teamMember}
       />
       {orgItems.length > 0 && (
         <div className={menuSectionTitleClass}>Used by your organization</div>
       )}
-      {orgItems.map(renderItem)}
-      {(orgItems.length > 0 || hasExpired) && otherItems.length > 0 && (
+      {orgItems.map((item) => renderItem(item))}
+      {(orgItems.length > 0 || hasExpired || !!retryItem) && otherItems.length > 0 && (
         <div className={menuSectionTitleClass}>Other tools</div>
       )}
-      {otherItems.map(renderItem)}
+      {otherItems.map((item) => renderItem(item))}
     </>
   )
 }
