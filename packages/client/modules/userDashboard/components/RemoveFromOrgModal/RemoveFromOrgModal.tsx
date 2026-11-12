@@ -8,6 +8,7 @@ import useMutationProps from '../../../../hooks/useMutationProps'
 import RemoveOrgUsersMutation from '../../../../mutations/RemoveOrgUsersMutation'
 import {Button} from '../../../../ui/Button/Button'
 import {Dialog} from '../../../../ui/Dialog/Dialog'
+import {DialogActions} from '../../../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
 import plural from '../../../../utils/plural'
@@ -111,27 +112,26 @@ const RemoveFromOrgModal = (props: Props) => {
           </div>
         )}
         {error && <div className='mt-4 font-semibold text-fg-error text-sm'>{error.message}</div>}
-        {removableCount > 0 ? (
-          <Button
-            variant='primary'
-            size='md'
-            className='mx-auto mt-6 mb-0'
-            onClick={handleClick}
-            disabled={submitting}
-          >
-            <IconLabel
-              icon='arrow_forward'
-              iconAfter
-              label={`Remove ${removableCount} ${plural(removableCount, 'member')}`}
-            />
-          </Button>
-        ) : (
-          <div className='mt-4'>
-            <Button variant='primary' size='md' className='mx-auto mb-0' onClick={closePortal}>
+        <DialogActions>
+          {removableCount > 0 ? (
+            <>
+              <Button variant='outline' size='md' onClick={closePortal}>
+                Cancel
+              </Button>
+              <Button variant='primary' size='md' onClick={handleClick} disabled={submitting}>
+                <IconLabel
+                  icon='arrow_forward'
+                  iconAfter
+                  label={`Remove ${removableCount} ${plural(removableCount, 'member')}`}
+                />
+              </Button>
+            </>
+          ) : (
+            <Button variant='primary' size='md' onClick={closePortal}>
               <IconLabel icon='close' label='Close' />
             </Button>
-          </div>
-        )}
+          )}
+        </DialogActions>
       </DialogContent>
     </Dialog>
   )

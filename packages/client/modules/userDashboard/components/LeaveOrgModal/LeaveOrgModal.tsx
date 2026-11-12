@@ -5,6 +5,7 @@ import useMutationProps from '../../../../hooks/useMutationProps'
 import RemoveOrgUsersMutation from '../../../../mutations/RemoveOrgUsersMutation'
 import {Button} from '../../../../ui/Button/Button'
 import {Dialog} from '../../../../ui/Dialog/Dialog'
+import {DialogActions} from '../../../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
 import getMutationError from '../../../../utils/relay/getMutationError'
@@ -46,15 +47,14 @@ const LeaveOrgModal = (props: Props) => {
         <p>This will remove you from the organization and all teams under it!</p>
         <p>To undo it, you'll have to ask another Billing Leader to re-add you.</p>
         {error && <div className='mt-4 font-semibold text-fg-error text-sm'>{error.message}</div>}
-        <Button
-          variant='primary'
-          size='md'
-          className='mx-auto mt-6 mb-0'
-          onClick={handleClick}
-          disabled={submitting}
-        >
-          <IconLabel icon='arrow_forward' iconAfter label='Leave the organization' />
-        </Button>
+        <DialogActions>
+          <Button variant='outline' size='md' onClick={closePortal}>
+            Cancel
+          </Button>
+          <Button variant='primary' size='md' onClick={handleClick} disabled={submitting}>
+            <IconLabel icon='arrow_forward' iconAfter label='Leave the organization' />
+          </Button>
+        </DialogActions>
       </DialogContent>
     </Dialog>
   )
