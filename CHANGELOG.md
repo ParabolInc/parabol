@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.28.0](https://github.com/ParabolInc/parabol/compare/v15.27.2...v15.28.0) (2026-11-12)
+
+
+### Added
+
+* accept every suggested group in one click, with an exact undo ([#14120](https://github.com/ParabolInc/parabol/issues/14120)) ([d819b8f](https://github.com/ParabolInc/parabol/commit/d819b8f5e9d5a7ba472f8486e15fb5ce308c638e))
+* **pages:** add callout block ([#14110](https://github.com/ParabolInc/parabol/issues/14110)) ([a35d3da](https://github.com/ParabolInc/parabol/commit/a35d3dae5fec9e7d949295122f1df249d3d44a8a))
+* **pages:** server side of synced blocks ([#14121](https://github.com/ParabolInc/parabol/issues/14121)) ([66d278d](https://github.com/ParabolInc/parabol/commit/66d278d858fa02f985bf261692c06d4157c7ed81))
+* **standups:** change the template mid-meeting ([#14123](https://github.com/ParabolInc/parabol/issues/14123)) ([ad57184](https://github.com/ParabolInc/parabol/commit/ad57184441eaeef5f292ace9ebbf7f2bc50edf7b))
+* **tasks:** Comment and Task tabs in the discussion composer ([#14124](https://github.com/ParabolInc/parabol/issues/14124)) ([6b37f8c](https://github.com/ParabolInc/parabol/commit/6b37f8c7803c279f0c4aa31928a785d7ade4ab8d))
+* **tasks:** connect a tool without leaving the send menu ([#14098](https://github.com/ParabolInc/parabol/issues/14098)) ([d36990a](https://github.com/ParabolInc/parabol/commit/d36990a5c52f899e0331d8c3d558902739f8e6d9))
+
 ## [15.27.2](https://github.com/ParabolInc/parabol/compare/v15.27.1...v15.27.2) (2026-11-12)
 
 
