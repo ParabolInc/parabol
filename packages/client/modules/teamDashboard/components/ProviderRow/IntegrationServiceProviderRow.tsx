@@ -46,7 +46,7 @@ const IntegrationServiceProviderRow = (props: Props) => {
     serviceRef
   )
   const atmosphere = useAtmosphere()
-  const mutationProps = useMutationProps()
+  const mutationProps = useMutationProps({errorDisplay: 'inline'})
   const {submitting, error} = mutationProps
   const connectMutationProps: MenuMutationProps = {
     ...mutationProps,

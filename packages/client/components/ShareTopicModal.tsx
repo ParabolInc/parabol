@@ -20,6 +20,7 @@ import {SelectItem} from '../ui/Select/SelectItem'
 import {SelectTrigger} from '../ui/Select/SelectTrigger'
 import {SelectValue} from '../ui/Select/SelectValue'
 import findStageById from '../utils/meetings/findStageById'
+import getMutationError from '../utils/relay/getMutationError'
 import SlackClientManager from '../utils/SlackClientManager'
 
 interface Props {
@@ -117,9 +118,9 @@ const ShareTopicModal = (props: Props) => {
           submitting: slackOAuthSubmitting,
           submitMutation,
           onError,
-          onCompleted: () => {
-            onCompleted()
-            setSelectedIntegration('slack')
+          onCompleted: (res, errors) => {
+            onCompleted(res, errors)
+            if (!getMutationError(res, errors)) setSelectedIntegration('slack')
           }
         })
       }

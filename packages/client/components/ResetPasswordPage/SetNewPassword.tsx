@@ -26,7 +26,9 @@ const SetNewPassword = () => {
   const {token} = useParams()
   const atmosphere = useAtmosphere()
   useCanonical('reset-password')
-  const {onCompleted, onError, error, submitting, submitMutation} = useMutationProps()
+  const {onCompleted, onError, error, submitting, submitMutation} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const {fields, onChange, setDirtyField, validateField} = useForm({
     password: {
       getDefault: () => '',

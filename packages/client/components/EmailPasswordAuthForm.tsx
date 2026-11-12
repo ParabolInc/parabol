@@ -76,7 +76,9 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
   const [ssoMessage, setSSOMessage] = useState('')
   const [pendingDomain, setPendingDomain] = useState('')
   const [ssoDomain, setSSODomain] = useState<string>()
-  const {submitMutation, onCompleted, submitting, error, onError} = useMutationProps()
+  const {submitMutation, onCompleted, submitting, error, onError} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
   const {fields, onChange, setDirtyField, validateField} = useForm({

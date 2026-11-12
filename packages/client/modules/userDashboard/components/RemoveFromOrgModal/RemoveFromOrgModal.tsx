@@ -11,6 +11,7 @@ import {Dialog} from '../../../../ui/Dialog/Dialog'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
 import plural from '../../../../utils/plural'
+import getMutationError from '../../../../utils/relay/getMutationError'
 
 interface Props {
   isOpen: boolean
@@ -35,7 +36,9 @@ const RemoveFromOrgModal = (props: Props) => {
   const {isOpen, orgId, userIds, organizationUsers, closePortal, onSuccess} = props
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
-  const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
+  const {onCompleted, onError, submitMutation, submitting, error} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const {viewerId} = atmosphere
 
   const users = useFragment(organizationUsersFragment, organizationUsers)
@@ -68,8 +71,9 @@ const RemoveFromOrgModal = (props: Props) => {
       {
         navigate,
         onError,
-        onCompleted: () => {
-          onCompleted()
+        onCompleted: (res, errors) => {
+          onCompleted(res, errors)
+          if (getMutationError(res, errors)) return
           closePortal()
           onSuccess?.()
         }
@@ -106,6 +110,7 @@ const RemoveFromOrgModal = (props: Props) => {
             </div>
           </div>
         )}
+        {error && <div className='mt-4 font-semibold text-fg-error text-sm'>{error.message}</div>}
         {removableCount > 0 ? (
           <Button
             variant='primary'

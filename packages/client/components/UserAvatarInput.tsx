@@ -19,7 +19,9 @@ type Props = {
 
 const UserAvatarInput = (props: Props) => {
   const {isOpen, onClose, picture} = props
-  const {error, onCompleted, onError, submitMutation, submitting} = useMutationProps()
+  const {error, onCompleted, onError, submitMutation, submitting} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const atmosphere = useAtmosphere()
 
   const onSubmit = async (file: File) => {

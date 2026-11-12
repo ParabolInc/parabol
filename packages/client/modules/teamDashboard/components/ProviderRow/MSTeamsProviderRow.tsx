@@ -45,7 +45,9 @@ const MSTeamsProviderRow = (props: Props) => {
     viewerRef
   )
   const [isConnectClicked, setConnectClicked] = useState(false)
-  const {submitting, submitMutation, error, onError, onCompleted} = useMutationProps()
+  const {submitting, submitMutation, error, onError, onCompleted} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const mutationProps = {
     submitting,
     submitMutation,

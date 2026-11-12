@@ -45,7 +45,9 @@ const EditableTemplateScaleValueLabel = (props: Props) => {
   const {id: scaleId} = scale
   const {id: scaleValueId, label, color} = scaleValue
   const atmosphere = useAtmosphere()
-  const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps()
+  const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps({
+    errorDisplay: 'inline'
+  })
 
   const handleSubmit = (rawScaleLabel: string) => {
     if (submitting) return

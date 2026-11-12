@@ -37,7 +37,9 @@ interface Props {
 
 const NewTemplateScaleValueLabelInput = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {error, onError, onCompleted, submitMutation, submitting} = useMutationProps()
+  const {error, onError, onCompleted, submitMutation, submitting} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const {closeAdding, scale: scaleRef} = props
   const scale = useFragment(
     graphql`

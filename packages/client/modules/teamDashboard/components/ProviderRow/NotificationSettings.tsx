@@ -50,7 +50,9 @@ const NotificationSettings = (props: Props) => {
   const {events} = settings
 
   const atmosphere = useAtmosphere()
-  const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps()
+  const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const setNotificationSetting = (event: SlackNotificationEventEnum, isEnabled: boolean) => {
     if (submitting) {
       return

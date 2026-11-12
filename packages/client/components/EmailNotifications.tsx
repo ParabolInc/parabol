@@ -21,7 +21,7 @@ type Props = {
 const EmailNotifications = (props: Props) => {
   const {viewerRef} = props
   const atmosphere = useAtmosphere()
-  const {error, onError, onCompleted} = useMutationProps()
+  const {error, onError, onCompleted} = useMutationProps({errorDisplay: 'inline'})
   const {sendSummaryEmail, sendPageInvitationEmail} = useFragment(
     graphql`
       fragment EmailNotifications_viewer on User {

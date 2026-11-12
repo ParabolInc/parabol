@@ -24,7 +24,9 @@ const DeleteTeamDialog = (props: Props) => {
   const navigate = useNavigate()
   const {isOpen, onClose, teamId, teamName, teamOrgId, onDeleteTeam} = props
 
-  const {submitting, onCompleted, onError, error, submitMutation} = useMutationProps()
+  const {submitting, onCompleted, onError, error, submitMutation} = useMutationProps({
+    errorDisplay: 'inline'
+  })
 
   const [typedTeamName, setTypedTeamName] = useState(false)
 

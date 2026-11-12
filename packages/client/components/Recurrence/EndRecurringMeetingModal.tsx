@@ -22,6 +22,7 @@ import {Dialog} from '../../ui/Dialog/Dialog'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
 import {humanReadableCountdown} from '../../utils/date/relativeDate'
+import getMutationError from '../../utils/relay/getMutationError'
 
 export const EndMeetingMutationLookup = {
   teamPrompt: EndTeamPromptMutation,
@@ -95,7 +96,11 @@ export const EndRecurringMeetingModal = (props: Props) => {
   const [endTeamHealth] = useEndTeamHealthMutation()
   const [isMeetingOnly, setIsMeetingOnly] = useState(true)
 
-  const handleCompleted: CompletedHandler = () => {
+  const handleCompleted: CompletedHandler = (res, errors) => {
+    if (getMutationError(res, errors)) {
+      onCompleted(res, errors)
+      return
+    }
     if (!isMeetingOnly) {
       UpdateRecurrenceSettingsMutation(
         atmosphere,
