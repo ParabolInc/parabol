@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
@@ -5,6 +6,7 @@ import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
+import assertTemplateAccess from './helpers/assertTemplateAccess'
 
 const updateMeetingTemplate: MutationResolvers['updateMeetingTemplate'] = async (
   _source,
@@ -21,6 +23,14 @@ const updateMeetingTemplate: MutationResolvers['updateMeetingTemplate'] = async 
       userId: viewerId
     })
   if (meeting.meetingType !== 'retrospective') return {error: {message: 'Meeting has no template'}}
+  const [template, meetingTeam] = await Promise.all([
+    dataLoader.get('meetingTemplates').load(templateId),
+    dataLoader.get('teams').loadNonNull(meeting.teamId)
+  ])
+  if (!template || template.type !== 'retrospective') {
+    throw new GraphQLError('Template not found', {extensions: {code: 'NOT_FOUND'}})
+  }
+  await assertTemplateAccess(template, [meetingTeam.orgId], authToken, dataLoader)
   const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
   if (reflections.length > 0) {
     return standardError(new Error('Cannot change template after reflections have been created'), {
