@@ -29,14 +29,17 @@ const processMeetingStageTimeLimits = async (
   const {teamId, facilitatorUserId} = meeting
   IntegrationNotifier.endTimeLimit(dataLoader, meetingId, teamId)
 
-  const notification = {
-    id: generateUID(),
-    type: 'MEETING_STAGE_TIME_LIMIT_END' as const,
-    meetingId,
-    userId: facilitatorUserId!
-  }
   const pg = getKysely()
-  await pg.insertInto('Notification').values(notification).execute()
+  const notification = await pg
+    .insertInto('Notification')
+    .values({
+      id: generateUID(),
+      type: 'MEETING_STAGE_TIME_LIMIT_END',
+      meetingId,
+      userId: facilitatorUserId!
+    })
+    .returningAll()
+    .executeTakeFirstOrThrow()
   publish(SubscriptionChannel.NOTIFICATION, facilitatorUserId!, 'MeetingStageTimeLimitPayload', {
     notification
   })

@@ -13,7 +13,7 @@ import encodeAuthToken from '../utils/encodeAuthToken'
 export const HOST =
   process.env.HOST === 'localhost' ? `localhost:${process.env.PORT}` : process.env.HOST!
 export const PROTOCOL = process.env.PROTO || 'http'
-const WS_PROTOCOL = PROTOCOL === 'https' ? 'wss' : 'ws'
+export const WS_PROTOCOL = PROTOCOL === 'https' ? 'wss' : 'ws'
 
 export async function sendIntranet(req: {query: string; variables?: Record<string, any>}) {
   // getUserId looks out to make sure aGhostUser is not used, so we use the other userId that is available
@@ -44,7 +44,7 @@ const persistFunction = (text: string) => {
   return id
 }
 
-const persistQuery = async (query: string) => {
+export const persistQuery = async (query: string) => {
   const pg = getKysely()
   const id = persistFunction(query.trim())
   const record = {
