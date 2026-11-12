@@ -1,10 +1,10 @@
-import type Atmosphere from '../Atmosphere'
-import type {MenuMutationProps} from '../hooks/useMutationProps'
-import type {ConnectProvider} from '../integrations/platform/ClientIntegrationDefinition'
-import AddTeamMemberIntegrationAuthMutation from '../mutations/AddTeamMemberIntegrationAuthMutation'
-import {Providers} from '../types/constEnums'
-import getOAuthPopupFeatures from './getOAuthPopupFeatures'
-import {ERROR_POPUP_BLOCKED} from './oauthPopupError'
+import type Atmosphere from '../../Atmosphere'
+import type {MenuMutationProps} from '../../hooks/useMutationProps'
+import AddTeamMemberIntegrationAuthMutation from '../../mutations/AddTeamMemberIntegrationAuthMutation'
+import {Providers} from '../../types/constEnums'
+import getOAuthPopupFeatures from '../../utils/getOAuthPopupFeatures'
+import {ERROR_POPUP_BLOCKED} from '../../utils/oauthPopupError'
+import type {ConnectProvider} from '../platform/ClientIntegrationDefinition'
 
 class GitHubClientManager {
   static SCOPE = Providers.GITHUB_SCOPE

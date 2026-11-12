@@ -8,7 +8,6 @@ import gitLabScopingResultsQuery, {
 import type Atmosphere from '../../Atmosphere'
 import GitLabSVG from '../../components/GitLabSVG'
 import gitlabLogo from '../../styles/theme/images/graphics/gitlab-icon-rgb.svg'
-import GitLabClientManager from '../../utils/GitLabClientManager'
 import lazyPreload from '../../utils/lazyPreload'
 import {
   type ClientIntegrationCapabilities,
@@ -22,6 +21,7 @@ import {
 import {searchFiltersByKey} from '../platform/IntegrationSearchFilter'
 import makeQueryRoot from '../platform/makeQueryRoot'
 import makeScopingResults from '../platform/makeScopingResults'
+import GitLabClientManager from './GitLabClientManager'
 import {gitLabIssueArgs} from './gitLabIssueArgs'
 import gitLabSearchMeta from './gitLabSearchMeta'
 import {gitlabIntegrationMeta} from './shared/gitlabIntegrationMeta'

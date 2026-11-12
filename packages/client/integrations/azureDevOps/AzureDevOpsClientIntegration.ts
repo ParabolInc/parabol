@@ -8,7 +8,6 @@ import azureDevOpsScopingResultsQuery, {
 import type Atmosphere from '../../Atmosphere'
 import AzureDevOpsSVG from '../../components/AzureDevOpsSVG'
 import azureDevOpsLogo from '../../styles/theme/images/graphics/azure-devops.svg'
-import AzureDevOpsClientManager from '../../utils/AzureDevOpsClientManager'
 import lazyPreload from '../../utils/lazyPreload'
 import {
   type ClientIntegrationCapabilities,
@@ -21,6 +20,7 @@ import {
 import {searchFiltersByKey} from '../platform/IntegrationSearchFilter'
 import makeScopingResults from '../platform/makeScopingResults'
 import makeWorkDrawerPanel from '../platform/makeWorkDrawerPanel'
+import AzureDevOpsClientManager from './AzureDevOpsClientManager'
 import azureDevOpsSearchMeta from './azureDevOpsSearchMeta'
 import {azureDevOpsIntegrationMeta} from './shared/azureDevOpsIntegrationMeta'
 

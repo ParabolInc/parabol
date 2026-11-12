@@ -1,10 +1,10 @@
 import {Providers} from '~/types/constEnums'
-import type Atmosphere from '../Atmosphere'
-import type {MenuMutationProps} from '../hooks/useMutationProps'
-import AddTeamMemberIntegrationAuthMutation from '../mutations/AddTeamMemberIntegrationAuthMutation'
-import getOAuthPopupFeatures from './getOAuthPopupFeatures'
-import makeHref from './makeHref'
-import {ERROR_POPUP_BLOCKED} from './oauthPopupError'
+import type Atmosphere from '../../Atmosphere'
+import type {MenuMutationProps} from '../../hooks/useMutationProps'
+import AddTeamMemberIntegrationAuthMutation from '../../mutations/AddTeamMemberIntegrationAuthMutation'
+import getOAuthPopupFeatures from '../../utils/getOAuthPopupFeatures'
+import makeHref from '../../utils/makeHref'
+import {ERROR_POPUP_BLOCKED} from '../../utils/oauthPopupError'
 
 class GitLabClientManager {
   static SCOPES = Providers.GITLAB_SCOPE

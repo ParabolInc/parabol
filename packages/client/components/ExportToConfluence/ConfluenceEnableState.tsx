@@ -1,10 +1,10 @@
 import AtlassianProviderLogo from '../../AtlassianProviderLogo'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps, {type MenuMutationProps} from '../../hooks/useMutationProps'
+import AtlassianClientManager from '../../integrations/jira/AtlassianClientManager'
 import type {ConnectProvider} from '../../integrations/platform/ClientIntegrationDefinition'
 import {Button} from '../../ui/Button/Button'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
-import AtlassianClientManager from '../../utils/AtlassianClientManager'
 import {ERROR_POPUP_CLOSED} from '../../utils/oauthPopupError'
 
 interface Props {

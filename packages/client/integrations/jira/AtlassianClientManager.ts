@@ -1,13 +1,13 @@
-import type Atmosphere from '../Atmosphere'
-import type {MenuMutationProps} from '../hooks/useMutationProps'
-import type {ConnectProvider} from '../integrations/platform/ClientIntegrationDefinition'
-import AddTeamMemberIntegrationAuthMutation from '../mutations/AddTeamMemberIntegrationAuthMutation'
+import type Atmosphere from '../../Atmosphere'
+import type {MenuMutationProps} from '../../hooks/useMutationProps'
+import AddTeamMemberIntegrationAuthMutation from '../../mutations/AddTeamMemberIntegrationAuthMutation'
 import AtlassianManager, {
   type AtlassianPermissionScope,
   unionAtlassianScopes
-} from './AtlassianManager'
-import getOAuthPopupFeatures from './getOAuthPopupFeatures'
-import {ERROR_POPUP_BLOCKED, ERROR_POPUP_CLOSED} from './oauthPopupError'
+} from '../../utils/AtlassianManager'
+import getOAuthPopupFeatures from '../../utils/getOAuthPopupFeatures'
+import {ERROR_POPUP_BLOCKED, ERROR_POPUP_CLOSED} from '../../utils/oauthPopupError'
+import type {ConnectProvider} from '../platform/ClientIntegrationDefinition'
 
 class AtlassianClientManager extends AtlassianManager {
   fetch = window.fetch.bind(window)
