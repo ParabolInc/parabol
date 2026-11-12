@@ -3,7 +3,7 @@ import getKysely from '../../../postgres/getKysely'
 import {updatePageAccessTable} from '../../../postgres/updatePageAccessTable'
 import getPubSub from '../../getPubSub'
 import getRedis from '../../getRedis'
-import {announcePromotedBlock, promoteSyncedBlock} from '../promoteSyncedBlock'
+import {announcePromotedBlock, promoteSyncedBlock, selectPromotionHost} from '../promoteSyncedBlock'
 
 const mockHandleEvent = jest.fn(async (..._args: unknown[]) => {})
 jest.mock('../../../hocusPocus', () => ({
@@ -141,6 +141,13 @@ test('skips a host whose editors cannot see the block', async () => {
   await pg.updateTable('Page').set({parentPageId: originalHost}).where('id', '=', block).execute()
   expect(await promoteSync(block, [originalHost])).toBeNull()
   expect(await pageRow(block)).toMatchObject({parentPageId: originalHost})
+}, 30_000)
+
+test('finds no host for a trashed block', async () => {
+  expect(await selectPromotionHost(pg, block, [originalHost])).toBe(firstCopyHost)
+  await trash(block)
+  expect(await selectPromotionHost(pg, block, [originalHost])).toBeNull()
+  expect(await promoteSync(block, [originalHost])).toBeNull()
 }, 30_000)
 
 test('skips hosts in trash', async () => {

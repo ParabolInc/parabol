@@ -5,12 +5,23 @@ import {updatePageAncestorIds} from '../../postgres/updatePageAncestorIds'
 import {CipherId} from '../CipherId'
 import {Logger} from '../Logger'
 
+const selectPromotableBlock = (db: Kysely<DB>, blockPageId: number, excludedHostIds: number[]) =>
+  db
+    .selectFrom('Page')
+    .select('id')
+    .where('id', '=', blockPageId)
+    .where('isSyncedBlock', '=', true)
+    .where('deletedAt', 'is', null)
+    .where('parentPageId', 'in', excludedHostIds)
+
 export const selectPromotionHost = async (
   db: Kysely<DB>,
   blockPageId: number,
   excludedHostIds: number[]
 ) => {
   if (excludedHostIds.length === 0) return null
+  const block = await selectPromotableBlock(db, blockPageId, excludedHostIds).executeTakeFirst()
+  if (!block) return null
   const host = await db
     .selectFrom('PageBacklink as b')
     .innerJoin('Page as h', 'h.id', 'b.fromPageId')
@@ -43,13 +54,7 @@ export const promoteSyncedBlock = async (
   excludedHostIds: number[]
 ) => {
   if (excludedHostIds.length === 0) return null
-  const block = await db
-    .selectFrom('Page')
-    .select('id')
-    .where('id', '=', blockPageId)
-    .where('isSyncedBlock', '=', true)
-    .where('deletedAt', 'is', null)
-    .where('parentPageId', 'in', excludedHostIds)
+  const block = await selectPromotableBlock(db, blockPageId, excludedHostIds)
     .forUpdate()
     .executeTakeFirst()
   if (!block) return null

@@ -168,6 +168,27 @@ test('a synced block nested under a promoted block stays under it', async () => 
   expect(await pageRow(nested)).toMatchObject({parentPageId: block, deletedAt: null})
 })
 
+test('a trashed synced block is never treated as promotable', async () => {
+  const [{userId, cookie}, other] = await Promise.all([signUp(), signUp()])
+  const host = await makePage(userId)
+  const copyHost = await makePage(userId)
+  const block = await makePage(other.userId, host, true)
+  await pg
+    .insertInto('PageBacklink')
+    .values([
+      {fromPageId: host, toPageId: block},
+      {fromPageId: copyHost, toPageId: block}
+    ])
+    .execute()
+  await pg.updateTable('Page').set({deletedAt: new Date()}).where('id', '=', block).execute()
+  await archive(cookie, host, 'archive')
+  const res = await archive(cookie, host, 'delete')
+  expect(res.errors?.[0]?.message).toBe(
+    'This page has sub-pages you do not own, so it cannot be deleted'
+  )
+  expect(await pageRow(block)).toBeDefined()
+})
+
 test('still refuses to delete when another person owns a non-synced sub-page', async () => {
   const [{userId, cookie}, other] = await Promise.all([signUp(), signUp()])
   const host = await makePage(userId)

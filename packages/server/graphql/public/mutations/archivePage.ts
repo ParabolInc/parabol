@@ -61,6 +61,7 @@ const archivePage: MutationResolvers['archivePage'] = async (
           .select(['id', 'ancestorIds'])
           .where('id', 'in', subtreeIds)
           .where('isSyncedBlock', '=', true)
+          .where('deletedAt', 'is', null)
           .orderBy(sql`cardinality("ancestorIds")`)
           .execute()
       : []
@@ -98,7 +99,10 @@ const archivePage: MutationResolvers['archivePage'] = async (
       const promoted: {hostId: number; blockId: number}[] = []
       for (const blockId of promotableIds) {
         const hostId = await promoteSyncedBlock(trx, blockId, doomedIds)
-        if (hostId !== null) promoted.push({hostId, blockId})
+        if (hostId === null) {
+          throw new GraphQLError('This page has sub-pages you do not own, so it cannot be deleted')
+        }
+        promoted.push({hostId, blockId})
       }
       await trx.deleteFrom('Page').where('id', '=', dbPageId).execute()
       return promoted
