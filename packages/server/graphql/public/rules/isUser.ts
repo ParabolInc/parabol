@@ -21,7 +21,7 @@ export const isUser = <T>(
         })
       userId = subject[userIdKey]
     }
-    if (authToken.sub !== userId)
+    if (authToken?.sub !== userId)
       return new GraphQLError(`Viewer is not on team`, {extensions: {code: 'FORBIDDEN'}})
     return true
   })

@@ -24,7 +24,7 @@ export const isTeamMember = <T>(
     // when the path resolves to an array of teamIds, require the viewer be on every team
     if (Array.isArray(argVar)) {
       for (const teamId of argVar as string[]) {
-        if (!authToken.tms?.includes(teamId)) {
+        if (!authToken?.tms?.includes(teamId)) {
           return new GraphQLError(`Viewer is not on team`, {extensions: {code: 'FORBIDDEN'}})
         }
         if (context.resourceGrants && !(await context.resourceGrants.hasTeam(teamId))) {
@@ -53,7 +53,7 @@ export const isTeamMember = <T>(
     // Special case for ghost org so users can view meeting template meta
     if (info.operation.operation !== 'mutation' && teamId === 'aGhostTeam') return true
 
-    if (!authToken.tms?.includes(teamId)) {
+    if (!authToken?.tms?.includes(teamId)) {
       return new GraphQLError(`Viewer is not on team`, {extensions: {code: 'FORBIDDEN'}})
     }
     if (context.resourceGrants && !(await context.resourceGrants.hasTeam(teamId))) {
