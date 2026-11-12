@@ -1,9 +1,10 @@
-import type Atmosphere from '../Atmosphere'
-import type {MenuMutationProps} from '../hooks/useMutationProps'
-import type {ConnectProvider} from '../integrations/platform/ClientIntegrationDefinition'
-import AddTeamMemberIntegrationAuthMutation from '../mutations/AddTeamMemberIntegrationAuthMutation'
-import {Providers} from '../types/constEnums'
-import getOAuthPopupFeatures from './getOAuthPopupFeatures'
+import type Atmosphere from '../../Atmosphere'
+import type {MenuMutationProps} from '../../hooks/useMutationProps'
+import AddTeamMemberIntegrationAuthMutation from '../../mutations/AddTeamMemberIntegrationAuthMutation'
+import {Providers} from '../../types/constEnums'
+import getOAuthPopupFeatures from '../../utils/getOAuthPopupFeatures'
+import {ERROR_POPUP_BLOCKED} from '../../utils/oauthPopupError'
+import type {ConnectProvider} from '../platform/ClientIntegrationDefinition'
 
 class GitHubClientManager {
   static SCOPE = Providers.GITHUB_SCOPE
@@ -32,6 +33,10 @@ class GitHubClientManager {
       'OAuth',
       getOAuthPopupFeatures({width: 500, height: 750, top: 56})
     )
+    if (!popup) {
+      onError({message: ERROR_POPUP_BLOCKED})
+      return
+    }
     const handler = (event: MessageEvent) => {
       if (typeof event.data !== 'object' || event.origin !== window.location.origin || submitting) {
         return

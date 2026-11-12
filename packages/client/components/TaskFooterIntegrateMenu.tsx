@@ -6,8 +6,10 @@ import type {TaskFooterIntegrateMenuQuery} from '../__generated__/TaskFooterInte
 import useAtmosphere from '../hooks/useAtmosphere'
 import {makePlaceholder, useIsIntegrated} from '../hooks/useIsIntegrated'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
+import useConnectInMenu from '../integrations/platform/useConnectInMenu'
 import CreateTaskIntegrationMutation from '../mutations/CreateTaskIntegrationMutation'
 import {getOrgSendServices} from '../utils/getSendServices'
+import TaskFooterIntegrateMenuConnecting from './TaskFooterIntegrateMenuConnecting'
 import TaskFooterIntegrateMenuList from './TaskFooterIntegrateMenuList'
 import TaskFooterIntegrateMenuSignup from './TaskFooterIntegrateMenuSignup'
 
@@ -49,6 +51,8 @@ const TaskFooterIntegrateMenu = (props: Props) => {
     taskRef
   )
   const atmosphere = useAtmosphere()
+  const connectInMenu = useConnectInMenu(mutationProps)
+  const {state: connectState} = connectInMenu
 
   const {viewerTeamMember} = viewer
   const isViewerIntegrated = useIsIntegrated(viewerTeamMember)
@@ -72,11 +76,23 @@ const TaskFooterIntegrateMenu = (props: Props) => {
     })
   }
 
+  if (connectState.phase === 'waiting') {
+    return (
+      <TaskFooterIntegrateMenuConnecting
+        title={connectState.title}
+        onCancel={connectInMenu.cancel}
+      />
+    )
+  }
+  const failure = connectState.phase === 'failed' ? connectState : undefined
+
   if (isViewerIntegrated) {
     const placeholder = makePlaceholder(isViewerIntegrated)
     const label = 'Send with your credentials'
     return (
       <TaskFooterIntegrateMenuList
+        failure={failure}
+        onConnect={connectInMenu.begin}
         mutationProps={mutationProps}
         placeholder={placeholder}
         teamMemberRef={viewerTeamMember}
@@ -90,6 +106,8 @@ const TaskFooterIntegrateMenu = (props: Props) => {
 
   return (
     <TaskFooterIntegrateMenuSignup
+      failure={failure}
+      onConnect={connectInMenu.begin}
       mutationProps={mutationProps}
       teamId={teamId}
       label={label}

@@ -1,25 +1,25 @@
 jest.mock('babel-plugin-relay/macro', () => ({__esModule: true, default: () => ({})}))
-jest.mock('../../../utils/AtlassianClientManager', () => ({
+jest.mock('../../jira/AtlassianClientManager', () => ({
   __esModule: true,
   default: {openOAuth: jest.fn(), JIRA_SCOPE: ['read:jira-work']}
 }))
-jest.mock('../../../utils/JiraServerClientManager', () => ({
+jest.mock('../../jiraServer/JiraServerClientManager', () => ({
   __esModule: true,
   default: {openOAuth: jest.fn()}
 }))
-jest.mock('../../../utils/GitHubClientManager', () => ({
+jest.mock('../../github/GitHubClientManager', () => ({
   __esModule: true,
   default: {openOAuth: jest.fn()}
 }))
-jest.mock('../../../utils/GitLabClientManager', () => ({
+jest.mock('../../gitlab/GitLabClientManager', () => ({
   __esModule: true,
   default: {openOAuth: jest.fn()}
 }))
-jest.mock('../../../utils/AzureDevOpsClientManager', () => ({
+jest.mock('../../azureDevOps/AzureDevOpsClientManager', () => ({
   __esModule: true,
   default: {openOAuth: jest.fn()}
 }))
-jest.mock('../../../utils/LinearClientManager', () => ({
+jest.mock('../../linear/LinearClientManager', () => ({
   __esModule: true,
   default: {openOAuth: jest.fn()}
 }))
@@ -31,11 +31,11 @@ jest.mock('../../../utils/GcalClientManager', () => ({
 import type {IntegrationProviderServiceEnum} from '../../../__generated__/CreateTaskIntegrationMutation.graphql'
 import type Atmosphere from '../../../Atmosphere'
 import type {MenuMutationProps} from '../../../hooks/useMutationProps'
-import AtlassianClientManager from '../../../utils/AtlassianClientManager'
 import GcalClientManager from '../../../utils/GcalClientManager'
-import GitLabClientManager from '../../../utils/GitLabClientManager'
-import JiraServerClientManager from '../../../utils/JiraServerClientManager'
-import LinearClientManager from '../../../utils/LinearClientManager'
+import GitLabClientManager from '../../gitlab/GitLabClientManager'
+import AtlassianClientManager from '../../jira/AtlassianClientManager'
+import JiraServerClientManager from '../../jiraServer/JiraServerClientManager'
+import LinearClientManager from '../../linear/LinearClientManager'
 import {
   clientIntegrations,
   clientIntegrationsByPopularity,
