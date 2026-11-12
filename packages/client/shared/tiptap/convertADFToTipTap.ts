@@ -97,7 +97,7 @@ function transformTextNode(node: AdfNode): TipTapTextNode {
 
 function transformInlineContent(nodes?: AdfNode[]): TipTapTextNode[] {
   if (!nodes) return []
-  return nodes.flatMap((n): TipTapTextNode[] => {
+  const textNodes = nodes.flatMap((n): TipTapTextNode[] => {
     switch (n.type) {
       case 'text':
         return [transformTextNode(n)]
@@ -106,11 +106,11 @@ function transformInlineContent(nodes?: AdfNode[]): TipTapTextNode[] {
         // survives inside paragraph/heading content without needing a custom node.
         return [{type: 'text', text: '\n'}]
       case 'emoji':
-        return [{type: 'text', text: (n.attrs?.text ?? n.attrs?.shortName ?? '') as string}]
+        return [{type: 'text', text: (n.attrs?.text || n.attrs?.shortName || '') as string}]
       case 'mention':
         // Render mention as plain @-text; swap for a mention extension if you add one.
         return [
-          {type: 'text', text: (n.attrs?.text ?? n.attrs?.displayName ?? '@mention') as string}
+          {type: 'text', text: (n.attrs?.text || n.attrs?.displayName || '@mention') as string}
         ]
       case 'inlineCard':
         // Smart link → plain linked text
@@ -125,6 +125,8 @@ function transformInlineContent(nodes?: AdfNode[]): TipTapTextNode[] {
         return []
     }
   })
+  // ProseMirror rejects empty text nodes, which ADF can produce (e.g. an inlineCard with only data)
+  return textNodes.filter((n) => n.text)
 }
 
 // ---------------------------------------------------------------------------
@@ -258,10 +260,7 @@ function transformNode(node: AdfNode): TipTapContentNode | TipTapContentNode[] |
     // wild) — wrap in a paragraph so the doc stays valid.
     // -------------------------------------------------------------------------
     case 'text':
-      return {
-        type: 'paragraph',
-        content: [transformTextNode(node)]
-      }
+      return transformNode({type: 'paragraph', content: [node]})
 
     case 'hardBreak':
       return null // only meaningful inside inline content; drop at block level
