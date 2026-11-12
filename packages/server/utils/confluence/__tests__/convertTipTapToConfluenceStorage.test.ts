@@ -199,6 +199,35 @@ describe('convertTipTapToConfluenceStorage', () => {
       )
     })
 
+    it('flattens a callout inside a list item and counts it', () => {
+      const list: JSONContent = {
+        type: 'bulletList',
+        content: [
+          {
+            type: 'listItem',
+            content: [p('item'), callout('warning', [title('Careful'), p('inner text')])]
+          }
+        ]
+      }
+      const {xhtml, degraded} = convertTipTapToConfluenceStorage(
+        {
+          type: 'doc',
+          content: [
+            {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'Callouts'}]},
+            list,
+            callout('info', [p('after')])
+          ]
+        },
+        ctx
+      )
+      expect(xhtml).toContain(
+        '<ul><li><p>item</p><p><strong>Careful</strong></p><p>inner text</p></li></ul><ac:structured-macro ac:name="info">'
+      )
+      expect(degraded).toContainEqual(
+        expect.objectContaining({blockType: 'calloutInList', count: 1})
+      )
+    })
+
     it('flattens a callout inside a blockquote inside a callout, keeping the outer panel', () => {
       const xhtml = exportOne(
         callout('tip', [

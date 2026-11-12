@@ -13,6 +13,7 @@ type EmitState = {
   assets: ExportAsset[]
   census: Census
   blockquoteDepth: number
+  listDepth: number
 }
 
 const TREATMENTS = {
@@ -24,6 +25,7 @@ const TREATMENTS = {
   pageLinkBlock: 'linked to the Parabol page',
   fileUpload: 'in-progress upload skipped',
   calloutInBlockquote: 'exported as plain paragraphs — panels cannot sit inside a quote',
+  calloutInList: 'exported as plain paragraphs — panels cannot sit inside a list',
   database: 'exported as a static table snapshot',
   unknown: 'exported as plain text'
 } as const
@@ -257,6 +259,10 @@ const emitCallout = (node: JSONContent, state: EmitState): string => {
     addCensus(state, 'calloutInBlockquote', TREATMENTS.calloutInBlockquote)
     return body
   }
+  if (state.listDepth > 0) {
+    addCensus(state, 'calloutInList', TREATMENTS.calloutInList)
+    return body
+  }
   if (tone === 'important') {
     return `<ac:adf-extension><ac:adf-node type="panel"><ac:adf-attribute key="panel-type">note</ac:adf-attribute><ac:adf-content>${body}</ac:adf-content></ac:adf-node><ac:adf-fallback><div class="panel conf-macro output-block" style="background-color: rgb(234,230,255);border-color: rgb(153,141,217);border-width: 1.0px;"><div class="panelContent" style="background-color: rgb(234,230,255);">${body}</div></div></ac:adf-fallback></ac:adf-extension>`
   }
@@ -286,8 +292,12 @@ const emitBlock = (node: JSONContent, state: EmitState): string => {
       return `<ul>${emitBlocks(node.content, state)}</ul>`
     case 'orderedList':
       return `<ol>${emitBlocks(node.content, state)}</ol>`
-    case 'listItem':
-      return `<li>${emitBlocks(node.content, state)}</li>`
+    case 'listItem': {
+      state.listDepth += 1
+      const item = emitBlocks(node.content, state)
+      state.listDepth -= 1
+      return `<li>${item}</li>`
+    }
     case 'taskList':
       return `<ac:task-list>${(node.content ?? []).map((item) => emitTaskItem(item, state)).join('')}</ac:task-list>`
     case 'blockquote': {
@@ -374,7 +384,7 @@ export const convertTipTapToConfluenceStorage = (
   doc: JSONContent,
   ctx: StorageConversionCtx
 ): StorageConversionResult => {
-  const state: EmitState = {ctx, assets: [], census: new Map(), blockquoteDepth: 0}
+  const state: EmitState = {ctx, assets: [], census: new Map(), blockquoteDepth: 0, listDepth: 0}
   const content = doc.content ?? []
   const titleNode = content[0]
   const title = titleNode ? getNodeText(titleNode).trim() : ''
