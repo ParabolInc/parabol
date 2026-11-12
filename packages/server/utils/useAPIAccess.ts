@@ -124,7 +124,11 @@ export const useAPIAccess = (): Plugin<ServerContext & {dataLoader: DataLoaderWo
         })
       }
       await recordUserActivity(user).catch(Logger.error)
-      const tms = teamMembers.map(({teamId}: {teamId: string}) => teamId)
+      const memberTeamIds = teamMembers.map(({teamId}: {teamId: string}) => teamId)
+      const isTeamGranted = await Promise.all(
+        memberTeamIds.map((teamId) => resourceGrants.hasTeam(teamId))
+      )
+      const tms = memberTeamIds.filter((_, idx) => isTeamGranted[idx])
       const authToken = new AuthToken({
         sub: userId,
         tms,

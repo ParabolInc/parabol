@@ -51,6 +51,7 @@ import {invoices} from '../fields/invoices'
 import {pageInsights} from '../fields/pageInsights'
 import {pages} from '../fields/pages'
 import {search} from '../fields/search'
+import type {ResourceGrants} from '../ResourceGrants'
 import type {ReqResolvers} from './ReqResolvers'
 
 const TEMPLATE_SEARCH_LIMIT = 12
@@ -74,6 +75,12 @@ const getValidUserIds = async (
     teamMembersOnValidTeams.map(({userId}: {userId: string}) => userId)
   )
   return userIds.filter((userId) => teamMemberUserIds.has(userId))
+}
+
+const filterGrantedOrgIds = async (orgIds: string[], resourceGrants?: ResourceGrants) => {
+  if (!resourceGrants) return orgIds
+  const isOrgGranted = await Promise.all(orgIds.map((orgId) => resourceGrants.hasOrg(orgId)))
+  return orgIds.filter((_, idx) => isOrgGranted[idx])
 }
 
 const User: ReqResolvers<'User'> = {
@@ -129,12 +136,18 @@ const User: ReqResolvers<'User'> = {
   meeting: async (_source, {meetingId}, {dataLoader}) => {
     return (await dataLoader.get('newMeetings').load(meetingId)) ?? null
   },
-  meetingSeries: async (_source, {meetingSeriesId}, {authToken, dataLoader}) => {
+  meetingSeries: async (_source, {meetingSeriesId}, {authToken, dataLoader, resourceGrants}) => {
     const numericId = MeetingSeriesId.split(meetingSeriesId)
     if (!Number.isFinite(numericId)) return null
     const meetingSeries = await dataLoader.get('meetingSeries').load(numericId)
     if (!meetingSeries) return null
-    return canReadMeetingSeries(meetingSeries, authToken) ? meetingSeries : null
+    const isReadable = await canReadMeetingSeries(
+      meetingSeries,
+      authToken,
+      dataLoader,
+      resourceGrants
+    )
+    return isReadable ? meetingSeries : null
   },
   meetings: async (
     _source,
@@ -601,15 +614,15 @@ const User: ReqResolvers<'User'> = {
     return dataLoader.get('teamMembers').loadNonNull(teamMemberId)
   },
 
-  tms: async ({id: userId}, _args, {authToken, dataLoader}) => {
+  tms: async ({id: userId}, _args, {authToken, dataLoader, resourceGrants}) => {
     const viewerId = getUserId(authToken)
     const tms = await dataLoader.get('teamIdsByUserId').load(userId)
-    return viewerId === userId
+    return viewerId === userId && !resourceGrants
       ? tms
       : tms.filter((teamId: string) => authToken.tms.includes(teamId))
   },
 
-  activity: async (_source, {activityId}, {dataLoader, authToken}) => {
+  activity: async (_source, {activityId}, {dataLoader, authToken, resourceGrants}) => {
     const viewerId = getUserId(authToken)
 
     const activity = await dataLoader.get('meetingTemplates').load(activityId)
@@ -624,6 +637,7 @@ const User: ReqResolvers<'User'> = {
         if (!organizationUser) {
           return null
         }
+        if (resourceGrants && !(await resourceGrants.hasOrg(activity.orgId))) return null
       }
     }
     return activity || null
@@ -661,11 +675,12 @@ const User: ReqResolvers<'User'> = {
     if (!domain || !(await dataLoader.get('isCompanyDomain').load(domain))) return null
     return {id: domain}
   },
-  domains: async ({id: userId}, _args, {dataLoader}) => {
+  domains: async ({id: userId}, _args, {dataLoader, resourceGrants}) => {
     const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
-    const orgIds = organizationUsers
-      .filter(({suggestedTier}) => suggestedTier)
-      .map(({orgId}) => orgId)
+    const orgIds = await filterGrantedOrgIds(
+      organizationUsers.filter(({suggestedTier}) => suggestedTier).map(({orgId}) => orgId),
+      resourceGrants
+    )
 
     const organizations = await Promise.all(
       orgIds.map((orgId) => dataLoader.get('organizations').loadNonNull(orgId))
@@ -683,7 +698,11 @@ const User: ReqResolvers<'User'> = {
     }
     return request
   },
-  favoriteTemplates: async ({favoriteTemplateIds}, _args, {authToken, dataLoader}) => {
+  favoriteTemplates: async (
+    {favoriteTemplateIds},
+    _args,
+    {authToken, dataLoader, resourceGrants}
+  ) => {
     const templates = (
       await dataLoader.get('meetingTemplates').loadMany(favoriteTemplateIds)
     ).filter(isValid)
@@ -696,7 +715,8 @@ const User: ReqResolvers<'User'> = {
           const organizationUsers = await dataLoader
             .get('organizationUsersByUserId')
             .load(getUserId(authToken))
-          return organizationUsers.some((ou) => ou.orgId === orgId)
+          if (!organizationUsers.some((ou) => ou.orgId === orgId)) return false
+          return !resourceGrants || resourceGrants.hasOrg(orgId)
         }
         return false
       })
@@ -708,16 +728,23 @@ const User: ReqResolvers<'User'> = {
       .get('featureFlagByOwnerId')
       .load({ownerId: userId, featureName: featureName as FeatureFlagName})
   },
-  availableTemplates: async ({id: userId}, {first, after, type}, {authToken, dataLoader}) => {
+  availableTemplates: async (
+    {id: userId},
+    {first, after, type},
+    {authToken, dataLoader, resourceGrants}
+  ) => {
     const viewerId = getUserId(authToken)
     const allTms = await dataLoader.get('teamIdsByUserId').load(userId)
     const teamIds =
-      viewerId === userId || isSuperUser(authToken)
+      (viewerId === userId && !resourceGrants) || isSuperUser(authToken)
         ? allTms
         : allTms.filter((teamId: string) => authToken.tms.includes(teamId))
 
     const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(viewerId)
-    const userOrgIds = organizationUsers.map(({orgId}) => orgId)
+    const userOrgIds = await filterGrantedOrgIds(
+      organizationUsers.map(({orgId}) => orgId),
+      resourceGrants
+    )
     const availableOrgIds = ['aGhostOrg', ...userOrgIds]
     const [parabolActivities, ...userActivities] = await Promise.all(
       availableOrgIds.map((orgId) => dataLoader.get('meetingTemplatesByOrgId').load(orgId))
@@ -775,17 +802,20 @@ const User: ReqResolvers<'User'> = {
       .sort((a, b) => (a.sortOrder > b.sortOrder ? -1 : 1))
     return connectionFromTemplateArray(allActivities, first, after)
   },
-  templateSearch: async ({id: userId}, {search}, {authToken, dataLoader}) => {
+  templateSearch: async ({id: userId}, {search}, {authToken, dataLoader, resourceGrants}) => {
     if (!search) return []
     const viewerId = getUserId(authToken)
     const allTms = await dataLoader.get('teamIdsByUserId').load(userId)
     const teamIds =
-      viewerId === userId || isSuperUser(authToken)
+      (viewerId === userId && !resourceGrants) || isSuperUser(authToken)
         ? allTms
         : allTms.filter((teamId: string) => authToken.tms.includes(teamId))
 
     const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(viewerId)
-    const userOrgIds = organizationUsers.map(({orgId}) => orgId)
+    const userOrgIds = await filterGrantedOrgIds(
+      organizationUsers.map(({orgId}) => orgId),
+      resourceGrants
+    )
 
     const allOrgTeams = (await dataLoader.get('teamsByOrgIds').loadMany(userOrgIds))
       .filter(isValid)

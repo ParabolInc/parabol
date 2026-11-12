@@ -5,6 +5,7 @@ import {hasOrgRole} from './rules/hasOrgRole'
 import {hasPageAccess} from './rules/hasPageAccess'
 import {hasProviderAccess} from './rules/hasProviderAccess'
 import {hasTokenAudience} from './rules/hasTokenAudience'
+import {hasUnrestrictedGrant} from './rules/hasUnrestrictedGrant'
 import isAuthenticated from './rules/isAuthenticated'
 import isEnvVarTrue from './rules/isEnvVarTrue'
 import {isMeetingFacilitator} from './rules/isMeetingFacilitator'
@@ -58,7 +59,7 @@ const permissionMap: PermissionMap<Resolvers> = {
   Mutation: {
     '*': isAuthenticated,
     // don't check isAuthenticated for acceptTeamInvitation here because there are special cases handled in the resolver
-    acceptTeamInvitation: rateLimit({perMinute: 50, perHour: 100}),
+    acceptTeamInvitation: and(hasUnrestrictedGrant, rateLimit({perMinute: 50, perHour: 100})),
     askReportQuestion: and(
       or(isSuperUser, isViewerOnOrg<'Mutation.askReportQuestion'>('args.orgId')),
       rateLimit({perMinute: 10, perHour: 100})
@@ -95,6 +96,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     addComment: isMeetingMember<'Mutation.addComment'>('args.comment.discussionId', 'discussions'),
     addOrg: and(
+      hasUnrestrictedGrant,
       not(and(isEnvVarTrue('IS_SINGLE_ORG'), isEnvVarTrue('IS_ENTERPRISE'))),
       rateLimit({perMinute: 2, perHour: 5})
     ),
@@ -122,6 +124,7 @@ const permissionMap: PermissionMap<Resolvers> = {
       isViewerOnOrg<'Mutation.addTeam'>('args.newTeam.orgId'),
       rateLimit({perMinute: 15, perHour: 50})
     ),
+    addTeamHealthTemplate: isTeamMember<'Mutation.addTeamHealthTemplate'>('args.teamId'),
     addTeamHealthTemplateQuestion: isTeamMember<'Mutation.addTeamHealthTemplateQuestion'>(
       'args.templateId',
       'meetingTemplates'
@@ -290,7 +293,7 @@ const permissionMap: PermissionMap<Resolvers> = {
       isViewerTeamLead<'Mutation.promoteToTeamLead'>('args.teamId'),
       isViewerBillingLeader<'Mutation.promoteToTeamLead'>('args.teamId', 'teams')
     ),
-    pushInvitation: rateLimit({perMinute: 10, perHour: 20}),
+    pushInvitation: and(hasUnrestrictedGrant, rateLimit({perMinute: 10, perHour: 20})),
     refreshSession: and(isAuthenticated, hasTokenAudience(['action'])),
     regenerateOAuthAPIProviderSecret: and(
       hasTokenAudience(['action']),
@@ -301,9 +304,9 @@ const permissionMap: PermissionMap<Resolvers> = {
       isSuperUser,
       isViewerBillingLeader<'Mutation.removeApprovedOrganizationDomains'>('args.orgId')
     ),
-    removeIntegrationSearchQuery: isUserViewer<'Mutation.removeIntegrationSearchQuery'>(
-      'args.id',
-      'integrationSearchQueries'
+    removeIntegrationSearchQuery: and(
+      isUserViewer<'Mutation.removeIntegrationSearchQuery'>('args.id', 'integrationSearchQueries'),
+      isTeamMember<'Mutation.removeIntegrationSearchQuery'>('args.teamId')
     ),
     removePokerTemplate: or(
       isViewerBillingLeader<'Mutation.removePokerTemplate'>('args.templateId', 'meetingTemplates'),
@@ -329,10 +332,9 @@ const permissionMap: PermissionMap<Resolvers> = {
       'args.promptId',
       'templatePrompts'
     ),
-    removeReflection: isUser<'Mutation.removeReflection'>(
-      'args.reflectionId',
-      'retroReflections',
-      'creatorId'
+    removeReflection: and(
+      isUser<'Mutation.removeReflection'>('args.reflectionId', 'retroReflections', 'creatorId'),
+      isTeamMemberOfMeeting<'Mutation.removeReflection'>('args.reflectionId', 'retroReflections')
     ),
     removeSlackAuth: isTeamMember<'Mutation.removeSlackAuth'>('args.teamId'),
     removeTeamHealthTemplateQuestion: isTeamMember<'Mutation.removeTeamHealthTemplateQuestion'>(
@@ -340,7 +342,10 @@ const permissionMap: PermissionMap<Resolvers> = {
       'meetingTemplates'
     ),
     removeTeamMember: or(
-      isUser<'Mutation.removeTeamMember'>('args.userId'),
+      and(
+        isUser<'Mutation.removeTeamMember'>('args.userId'),
+        isTeamMember<'Mutation.removeTeamMember'>('args.teamId')
+      ),
       isViewerTeamLead<'Mutation.removeTeamMember'>('args.teamId'),
       isViewerBillingLeader<'Mutation.removeTeamMember'>('args.teamId', 'teams')
     ),
@@ -385,9 +390,9 @@ const permissionMap: PermissionMap<Resolvers> = {
       'args.settingsId',
       'meetingSettings'
     ),
-    setNotificationStatus: isUser<'Mutation.setNotificationStatus'>(
-      'args.notificationId',
-      'notifications'
+    setNotificationStatus: and(
+      hasUnrestrictedGrant,
+      isUser<'Mutation.setNotificationStatus'>('args.notificationId', 'notifications')
     ),
     setOrgUserRole: or(isSuperUser, isViewerBillingLeader<'Mutation.setOrgUserRole'>('args.orgId')),
     setPhaseFocus: isMeetingFacilitator<'Mutation.setPhaseFocus'>('args.meetingId'),
@@ -468,9 +473,15 @@ const permissionMap: PermissionMap<Resolvers> = {
     exportPagesToConfluence: and(
       isAuthenticated,
       hasPageAccess<'Mutation.exportPagesToConfluence'>('args.pageId', 'viewer'),
+      isTeamMember<'Mutation.exportPagesToConfluence'>('args.teamId'),
       rateLimit({perMinute: 10, perHour: 100})
     ),
-    requestPageAccess: and(isAuthenticated, rateLimit({perMinute: 5, perHour: 20})),
+    requestPageAccess: and(
+      isAuthenticated,
+      hasUnrestrictedGrant,
+      rateLimit({perMinute: 5, perHour: 20})
+    ),
+    requestToJoinDomain: and(isAuthenticated, hasUnrestrictedGrant),
     updatePage: and(isAuthenticated, hasPageAccess<'Mutation.updatePage'>('args.pageId', 'viewer')),
     updatePageAccess: and(
       isAuthenticated,
@@ -680,6 +691,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     archivedTasksCount: and(isUserSelf, isTeamMember<'User.archivedTasksCount'>('args.teamId')),
     company: isSuperUser,
     discussion: and(isUserSelf, isTeamMember<'User.discussion'>('args.id', 'discussions')),
+    domainJoinRequest: and(isUserSelf, hasUnrestrictedGrant),
     domains: or(isSuperUser, isUserSelf),
     email: allow,
     freeCustomRetroTemplatesRemaining: isUserSelf,
@@ -698,12 +710,21 @@ const permissionMap: PermissionMap<Resolvers> = {
       isSuperUser,
       and(isUserSelf, isViewerOnOrg<'User.organizationUser'>('args.orgId'))
     ),
+    notifications: and(isUserSelf, hasUnrestrictedGrant),
     oauthAuthorizationRequest: and(isUserSelf, hasTokenAudience(['action'])),
-    personalAccessTokens: isUserSelf,
+    personalAccessTokens: and(isUserSelf, hasTokenAudience(['action'])),
     picture: allow,
     preferredName: allow,
     rasterPicture: allow,
     meetingMember: and(isUserSelf, isTeamMemberOfMeeting<'User.meetingMember'>('args.meetingId')),
+    similarReflectionGroups: and(
+      isUserSelf,
+      isMeetingMember<'User.similarReflectionGroups'>(
+        'args.reflectionGroupId',
+        'retroReflectionGroups'
+      )
+    ),
+    teamInvitation: and(or(isSuperUser, isUserSelf), hasUnrestrictedGrant),
     team: or(
       isSuperUser,
       and(

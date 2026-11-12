@@ -179,7 +179,7 @@ const startTeamHealthForTeam = async (
 const startTeamHealth: MutationResolvers['startTeamHealth'] = async (
   _source,
   {teamIds, templateId, name, rrule: rruleString, gcalInput, joinMeetingSeriesId},
-  {authToken, socketId: mutatorId, dataLoader}
+  {authToken, socketId: mutatorId, dataLoader, resourceGrants}
 ) => {
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
@@ -212,7 +212,7 @@ const startTeamHealth: MutationResolvers['startTeamHealth'] = async (
     if (!joinedSeries.groupId) {
       throw new GraphQLError('That meeting series is not part of a group')
     }
-    if (!(await canAdminMeetingSeries(joinedSeries, authToken, dataLoader))) {
+    if (!(await canAdminMeetingSeries(joinedSeries, authToken, dataLoader, resourceGrants))) {
       throw new GraphQLError('Viewer cannot administer that meeting series')
     }
     // a group is owned by one org, so a team from elsewhere cannot join it

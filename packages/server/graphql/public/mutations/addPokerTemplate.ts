@@ -14,7 +14,7 @@ import type {MutationResolvers} from '../resolverTypes'
 const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
   _source,
   {teamId, parentTemplateId},
-  {authToken, dataLoader, socketId: mutatorId}
+  {authToken, dataLoader, socketId: mutatorId, resourceGrants}
 ) => {
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
@@ -58,7 +58,8 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
       const parentTemplateTeam = await dataLoader.get('teams').load(parentTemplate.teamId)
       const isInOrg =
         parentTemplateTeam &&
-        (await isUserInOrg(getUserId(authToken), parentTemplateTeam?.orgId, dataLoader))
+        (await isUserInOrg(getUserId(authToken), parentTemplateTeam?.orgId, dataLoader)) &&
+        (!resourceGrants || (await resourceGrants.hasOrg(parentTemplateTeam.orgId)))
       if (!isInOrg) {
         return standardError(new Error('Template is scoped to organization'), {
           userId: viewerId

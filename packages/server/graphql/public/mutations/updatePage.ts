@@ -16,7 +16,7 @@ import {privatizePage} from './helpers/privatizePage'
 const updatePage: MutationResolvers['updatePage'] = async (
   _source,
   {pageId, teamId, sortOrder, sourceSection, targetSection},
-  {authToken, dataLoader, socketId: mutatorId}
+  {authToken, dataLoader, socketId: mutatorId, resourceGrants}
 ) => {
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
@@ -30,7 +30,10 @@ const updatePage: MutationResolvers['updatePage'] = async (
   }
   if (targetSection === 'team') {
     const teamMember = await dataLoader.get('teamMembers').load(toTeamMemberId(teamId!, viewerId))
-    if (!teamMember?.isNotRemoved) throw new GraphQLError('You can only move pages into your teams')
+    const isTeamGranted = !resourceGrants || (await resourceGrants.hasTeam(teamId!))
+    if (!teamMember?.isNotRemoved || !isTeamGranted) {
+      throw new GraphQLError('You can only move pages into your teams')
+    }
   }
   const page = await dataLoader.get('pages').load(dbPageId)
   dataLoader.get('pages').clearAll()

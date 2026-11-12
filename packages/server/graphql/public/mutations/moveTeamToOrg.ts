@@ -7,6 +7,7 @@ import {Logger} from '../../../utils/Logger'
 import standardError from '../../../utils/standardError'
 import type {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
+import type {ResourceGrants} from '../ResourceGrants'
 import type {MutationResolvers} from '../resolverTypes'
 
 const MAX_NUM_TEAMS = 40
@@ -15,7 +16,8 @@ const moveToOrg = async (
   teamId: string,
   orgId: string,
   authToken: any,
-  dataLoader: DataLoaderWorker
+  dataLoader: DataLoaderWorker,
+  resourceGrants: ResourceGrants | undefined
 ) => {
   const pg = getKysely()
   const su = isSuperUser(authToken)
@@ -33,7 +35,9 @@ const moveToOrg = async (
       .get('organizationUsersByUserIdOrgId')
       .load({orgId: currentOrgId, userId})
     const isBillingLeaderForTeam =
-      oldOrganizationUser?.role === 'BILLING_LEADER' || oldOrganizationUser?.role === 'ORG_ADMIN'
+      (oldOrganizationUser?.role === 'BILLING_LEADER' ||
+        oldOrganizationUser?.role === 'ORG_ADMIN') &&
+      (!resourceGrants || (await resourceGrants.hasOrg(currentOrgId)))
     if (!isBillingLeaderForTeam)
       return standardError(new Error('Not organization leader'), {userId})
     if (orgId === currentOrgId)
@@ -84,7 +88,7 @@ const moveToOrg = async (
 const moveTeamToOrg: MutationResolvers['moveTeamToOrg'] = async (
   _source,
   {teamIds, orgId},
-  {authToken, dataLoader}
+  {authToken, dataLoader, resourceGrants}
 ) => {
   if (teamIds.length > MAX_NUM_TEAMS) {
     return `Error: Can only move ${MAX_NUM_TEAMS} teams at once. Please split team IDs into batches.`
@@ -92,7 +96,7 @@ const moveTeamToOrg: MutationResolvers['moveTeamToOrg'] = async (
   const results = [] as (string | any)[]
   for (let i = 0; i < teamIds.length; i++) {
     const teamId = teamIds[i]!
-    const result = await moveToOrg(teamId, orgId, authToken, dataLoader)
+    const result = await moveToOrg(teamId, orgId, authToken, dataLoader, resourceGrants)
     results.push(result)
   }
   const successes = results.filter((result) => typeof result === 'string')

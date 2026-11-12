@@ -22,7 +22,7 @@ const startMeetingSeriesNow: MutationResolvers['startMeetingSeriesNow'] = async 
   context,
   info
 ) => {
-  const {authToken, dataLoader, socketId: mutatorId} = context
+  const {authToken, dataLoader, socketId: mutatorId, resourceGrants} = context
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
@@ -36,7 +36,7 @@ const startMeetingSeriesNow: MutationResolvers['startMeetingSeriesNow'] = async 
     throw new GraphQLError('Meeting series not found')
   }
   const {cancelledAt, recurrenceRule} = meetingSeries
-  if (!(await canAdminMeetingSeries(meetingSeries, authToken, dataLoader))) {
+  if (!(await canAdminMeetingSeries(meetingSeries, authToken, dataLoader, resourceGrants))) {
     throw new GraphQLError('Only the owner of this meeting series can start it early')
   }
   if (cancelledAt) {

@@ -92,7 +92,7 @@ const getNextIsPrivate = async (
 const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
   _source,
   {pageId, subjectType, subjectId, role, unlinkApproved},
-  {authToken, dataLoader, socketId: mutatorId}
+  {authToken, dataLoader, socketId: mutatorId, resourceGrants}
 ) => {
   const viewerId = getUserId(authToken)
   const pg = getKysely()
@@ -144,14 +144,16 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
   }
   if (role && subjectType === 'team') {
     const teamMember = await dataLoader.get('teamMembers').load(toTeamMemberId(subjectId, viewerId))
-    if (!teamMember?.isNotRemoved) throw new GraphQLError('You can only share with your own teams')
+    const isTeamGranted = !resourceGrants || (await resourceGrants.hasTeam(subjectId))
+    if (!teamMember?.isNotRemoved || !isTeamGranted) {
+      throw new GraphQLError('You can only share with your own teams')
+    }
   }
-  if (
-    role &&
-    subjectType === 'organization' &&
-    !(await isUserInOrg(viewerId, subjectId, dataLoader))
-  ) {
-    throw new GraphQLError('You can only share with your own organizations')
+  if (role && subjectType === 'organization') {
+    const isOrgGranted = !resourceGrants || (await resourceGrants.hasOrg(subjectId))
+    if (!isOrgGranted || !(await isUserInOrg(viewerId, subjectId, dataLoader))) {
+      throw new GraphQLError('You can only share with your own organizations')
+    }
   }
 
   let nextSubjectType = subjectType

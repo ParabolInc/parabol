@@ -2,7 +2,7 @@ import crypto from 'crypto'
 import faker from 'faker'
 import generateUID from '../generateUID'
 import getVerifiedAuthToken from '../utils/getVerifiedAuthToken'
-import {HOST, PROTOCOL, sendIntranet, sendPublic, signUp} from './common'
+import {getUserTeams, HOST, PROTOCOL, sendIntranet, sendPublic, signUp} from './common'
 
 const AUTHORIZE_URL = `${PROTOCOL}://${HOST}/oauth/authorize`
 const TOKEN_URL = `${PROTOCOL}://${HOST}/oauth/token`
@@ -123,6 +123,64 @@ const REGENERATE_OAUTH_API_PROVIDER_SECRET = `
   mutation RegenerateOAuthAPIProviderSecret($providerId: ID!) {
     regenerateOAuthAPIProviderSecret(providerId: $providerId) {
       clientSecret
+    }
+  }
+`
+
+const VIEWER_TEAM_IDS = `
+  query ViewerTeamIds {
+    viewer {
+      tms
+    }
+  }
+`
+
+const VIEWER_NOTIFICATIONS = `
+  query ViewerNotifications {
+    viewer {
+      notifications(first: 1) {
+        edges {
+          node {
+            id
+          }
+        }
+      }
+    }
+  }
+`
+
+const VIEWER_PERSONAL_ACCESS_TOKENS = `
+  query ViewerPersonalAccessTokens {
+    viewer {
+      personalAccessTokens {
+        id
+      }
+    }
+  }
+`
+
+const ACCEPT_TEAM_INVITATION = `
+  mutation AcceptTeamInvitation($invitationToken: ID!) {
+    acceptTeamInvitation(invitationToken: $invitationToken) {
+      error {
+        message
+      }
+    }
+  }
+`
+
+const MOVE_TEAM_TO_ORG = `
+  mutation MoveTeamToOrg($teamIds: [ID!]!, $orgId: ID!) {
+    moveTeamToOrg(teamIds: $teamIds, orgId: $orgId)
+  }
+`
+
+const REMOVE_TEAM_MEMBER = `
+  mutation RemoveTeamMember($teamId: ID!, $userId: ID!) {
+    removeTeamMember(teamId: $teamId, userId: $userId) {
+      error {
+        message
+      }
     }
   }
 `
@@ -711,4 +769,112 @@ test('An OAuth access token cannot manage OAuth applications', async () => {
     cookie
   })
   expect(asSession.data.regenerateOAuthAPIProviderSecret.clientSecret).toEqual(expect.any(String))
+})
+
+test('An OAuth access token cannot create or join another organization', async () => {
+  const {cookie, orgId} = await createOrgAdmin()
+  const token = await getAccessToken({
+    orgId,
+    cookie,
+    scopes: ['ORGS_WRITE', 'TEAMS_WRITE'],
+    scope: 'orgs:write teams:write'
+  })
+
+  const addedOrg = await sendPublic({
+    query: ADD_ORG,
+    variables: {
+      newTeam: {name: `Team ${generateUID()}`, orgId: '', isPublic: false},
+      orgName: `Org ${generateUID()}`
+    },
+    bearerToken: token
+  })
+  expect(addedOrg.data).toBeNull()
+  expect(addedOrg.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
+
+  const accepted = await sendPublic({
+    query: ACCEPT_TEAM_INVITATION,
+    variables: {invitationToken: generateUID()},
+    bearerToken: token
+  })
+  expect(accepted.data).toBeNull()
+  expect(accepted.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
+})
+
+test('An OAuth access token only carries the teams of its organization', async () => {
+  const {cookie, orgId, teamId} = await createOrgAdmin()
+  const otherOrg = await sendPublic({
+    query: ADD_ORG,
+    variables: {
+      newTeam: {name: `Team ${generateUID()}`, orgId: '', isPublic: false},
+      orgName: `Org ${generateUID()}`
+    },
+    cookie
+  })
+  expect(otherOrg.data.addOrg.team.id).toEqual(expect.any(String))
+
+  const token = await getAccessToken({
+    orgId,
+    cookie,
+    scopes: ['USERS_READ', 'TEAMS_READ'],
+    scope: 'users:read teams:read'
+  })
+  const viewer = await sendPublic({query: VIEWER_TEAM_IDS, bearerToken: token})
+  expect(viewer.data.viewer.tms).toEqual([teamId])
+})
+
+test('An OAuth access token cannot read notifications or personal access tokens', async () => {
+  const {cookie, orgId} = await createOrgAdmin()
+  const token = await getAccessToken({orgId, cookie, scopes: ['USERS_READ'], scope: 'users:read'})
+
+  const notifications = await sendPublic({query: VIEWER_NOTIFICATIONS, bearerToken: token})
+  expect(notifications.data).toBeNull()
+  expect(notifications.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
+
+  const personalAccessTokens = await sendPublic({
+    query: VIEWER_PERSONAL_ACCESS_TOKENS,
+    bearerToken: token
+  })
+  expect(personalAccessTokens.data).toBeNull()
+  expect(personalAccessTokens.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
+
+  const asSession = await sendPublic({query: VIEWER_NOTIFICATIONS, cookie})
+  expect(asSession.errors).toBeUndefined()
+  expect(Array.isArray(asSession.data.viewer.notifications.edges)).toBe(true)
+})
+
+test('An OAuth access token cannot take a team or its user out of another organization', async () => {
+  const {cookie, orgId, userId} = await createOrgAdmin()
+  const otherOrg = await sendPublic({
+    query: ADD_ORG,
+    variables: {
+      newTeam: {name: `Team ${generateUID()}`, orgId: '', isPublic: false},
+      orgName: `Org ${generateUID()}`
+    },
+    cookie
+  })
+  const otherTeamId = otherOrg.data.addOrg.team.id
+  const token = await getAccessToken({
+    orgId,
+    cookie,
+    scopes: ['ORGS_WRITE', 'TEAMS_WRITE'],
+    scope: 'orgs:write teams:write'
+  })
+
+  const moved = await sendPublic({
+    query: MOVE_TEAM_TO_ORG,
+    variables: {teamIds: [otherTeamId], orgId},
+    bearerToken: token
+  })
+  expect(moved.data.moveTeamToOrg).toBe('')
+
+  const removed = await sendPublic({
+    query: REMOVE_TEAM_MEMBER,
+    variables: {teamId: otherTeamId, userId},
+    bearerToken: token
+  })
+  expect(removed.data?.removeTeamMember ?? null).toBeNull()
+  expect(removed.errors).toHaveLength(1)
+
+  const teams = await getUserTeams(userId)
+  expect(teams).toContainEqual({id: otherTeamId})
 })
