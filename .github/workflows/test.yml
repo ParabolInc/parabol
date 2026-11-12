@@ -169,17 +169,3 @@ jobs:
 
       - name: Run client tests
         run: pnpm test:client
-
-  report:
-    needs: [integration, unit, typecheck, client]
-    if: ${{ failure() && github.ref_name == 'master' }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Report Status
-        uses: ravsamhq/notify-slack-action@v2
-        with:
-          status: failure
-          notify_when: "failure"
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_GH_ACTIONS_NOTIFICATIONS }}
