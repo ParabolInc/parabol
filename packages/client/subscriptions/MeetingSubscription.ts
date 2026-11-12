@@ -24,6 +24,7 @@ import {resetRetroMeetingToGroupStageUpdater} from '../mutations/ResetRetroMeeti
 import {setMeetingMusicMeetingUpdater} from '../mutations/SetMeetingMusicMutation'
 import {setStageTimerMeetingUpdater} from '../mutations/SetStageTimerMutation'
 import {startDraggingReflectionMeetingUpdater} from '../mutations/StartDraggingReflectionMutation'
+import {acceptSuggestedGroupsMeetingOnNext} from '../mutations/useAcceptSuggestedGroupsMutation'
 import {suggestedGroupsMeetingUpdater} from '../mutations/useGenerateSuggestedGroupsMutation'
 import {updateFacilitatorRotationMeetingOnNext} from '../mutations/useUpdateFacilitatorRotationMutation'
 import {createSubscription} from './createSubscription'
@@ -40,6 +41,9 @@ const subscription = graphql`
       }
       ResetReflectionGroupsSuccess {
         ...ResetReflectionGroupsMutation_meeting @relay(mask: false)
+      }
+      AcceptSuggestedGroupsSuccess {
+        ...useAcceptSuggestedGroupsMutation_meeting @relay(mask: false)
       }
       UngroupReflectionSuccess {
         ...UngroupReflectionMutation_meeting @relay(mask: false)
@@ -193,6 +197,7 @@ const subscription = graphql`
 `
 
 const onNextHandlers = {
+  AcceptSuggestedGroupsSuccess: acceptSuggestedGroupsMeetingOnNext,
   EndDraggingReflectionPayload: endDraggingReflectionMeetingOnNext,
   UpdateFacilitatorRotationSuccess: updateFacilitatorRotationMeetingOnNext
 } as const
