@@ -60,7 +60,7 @@ const DiscussionTaskDraft = (props: Props) => {
       role='tabpanel'
       aria-label='Task'
       data-task-draft
-      className={cn('p-3', !isOpen && 'hidden')}
+      className={cn('flex flex-col items-center gap-3 px-3 py-4', !isOpen && 'hidden')}
     >
       <div className='relative w-full min-w-[256px] max-w-[300px] rounded bg-surface-card pt-4 shadow-[var(--shadow-card-focus)]'>
         <div className='pr-2 pb-1 pl-4 font-semibold text-fg-secondary text-xs leading-5'>

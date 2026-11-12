@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect, useRef, useState} from 'react'
+import {type Dispatch, type SetStateAction, useEffect, useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import type {DiscussionThreadInput_discussion$key} from '~/__generated__/DiscussionThreadInput_discussion.graphql'
 import type {DiscussionThreadInput_viewer$key} from '~/__generated__/DiscussionThreadInput_viewer.graphql'
@@ -60,6 +60,13 @@ interface Props {
   // false where the discussion changes as a side effect of navigating the meeting rather than
   // because the viewer went looking for the thread, e.g. team health advancing to the next question
   autoFocus?: boolean
+  taskDraft?: TaskDraft | null
+  onTaskDraftChange?: Dispatch<SetStateAction<TaskDraft | null>>
+}
+
+export interface TaskDraft {
+  discussionId: string
+  isOpen: boolean
 }
 
 const DiscussionThreadInput = (props: Props) => {
@@ -197,20 +204,20 @@ const DiscussionThreadInput = (props: Props) => {
     } as const
     CreateTaskMutation(atmosphere, {newTask}, {})
   }
-  const [taskDraft, setTaskDraft] = useState<{discussionId: string; isOpen: boolean} | null>(null)
-  const hasTabs = allowTasks && !isReply
+  const {taskDraft, onTaskDraftChange: setTaskDraft} = props
+  const hasTabs = allowTasks && !isReply && !!setTaskDraft
   const hasTaskDraft = taskDraft?.discussionId === discussionId
   const activeTab: DiscussionComposerTab = hasTaskDraft && taskDraft.isOpen ? 'task' : 'comment'
   const closeTaskDraft = () => {
-    setTaskDraft(null)
+    setTaskDraft?.(null)
     editor?.commands.focus('end')
   }
   const changeTab = (tab: DiscussionComposerTab) => {
     if (tab === 'task') {
-      setTaskDraft({discussionId, isOpen: true})
+      setTaskDraft?.({discussionId, isOpen: true})
       return
     }
-    setTaskDraft((draft) => draft && {...draft, isOpen: false})
+    setTaskDraft?.((draft) => draft && {...draft, isOpen: false})
     editor?.commands.focus('end')
   }
   const createTask = (content: string) => {

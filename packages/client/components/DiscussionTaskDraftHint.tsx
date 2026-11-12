@@ -15,7 +15,7 @@ const DiscussionTaskDraftHint = (props: Props) => {
     selector: ({editor}) => editor.isDestroyed || isCaretInPlainLine(editor)
   })
   return (
-    <div className='mt-2 text-fg-muted text-xs'>
+    <div className='text-center text-fg-muted text-xs'>
       Press{' '}
       <button type='button' className='font-semibold text-accent' onClick={onCreate}>
         {isInPlainLine ? 'Enter' : modEnter}
