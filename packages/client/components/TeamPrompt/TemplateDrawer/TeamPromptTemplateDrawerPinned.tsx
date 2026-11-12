@@ -1,7 +1,7 @@
 import {Info} from '~/ui/icons'
 import {cn} from '../../../ui/cn'
+import MeetingTemplateSeriesOption from '../../MeetingTemplateSeriesOption'
 import {getDrawerNote} from './switchTemplateCopy'
-import TeamPromptTemplateSeriesOption from './TeamPromptTemplateSeriesOption'
 
 interface Props {
   isSeriesActive: boolean
@@ -23,7 +23,7 @@ const TeamPromptTemplateDrawerPinned = (props: Props) => {
       )}
     >
       {isSeriesActive && (
-        <TeamPromptTemplateSeriesOption
+        <MeetingTemplateSeriesOption
           checked={isSeriesChecked}
           onCheckedChange={onSeriesCheckedChange}
         />

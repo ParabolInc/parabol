@@ -9,11 +9,12 @@ import {CATEGORY_THEMES, type CategoryID} from '././ActivityLibrary/Categories'
 interface Props {
   templateRef: RetroDrawerTemplateCard_template$key
   meetingId: string
+  applyToSeries: boolean
   handleCloseDrawer: () => void
 }
 
 const RetroDrawerTemplateCard = (props: Props) => {
-  const {templateRef, meetingId, handleCloseDrawer} = props
+  const {templateRef, meetingId, applyToSeries, handleCloseDrawer} = props
   const [updateMeetingTemplate] = useUpdateMeetingTemplateMutation()
   const template = useFragment(
     graphql`
@@ -29,7 +30,7 @@ const RetroDrawerTemplateCard = (props: Props) => {
   )
 
   const handleClick = () => {
-    updateMeetingTemplate({variables: {meetingId, templateId: template.id}})
+    updateMeetingTemplate({variables: {meetingId, templateId: template.id, applyToSeries}})
     handleCloseDrawer()
   }
 

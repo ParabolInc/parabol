@@ -2256,7 +2256,7 @@ type Mutation {
     templateId: ID!
 
     """
-    Standup only. Also make it the template of the meeting's series, so future meetings use it
+    Also make it the template of the meeting's series, so future meetings use it
     """
     applyToSeries: Boolean
 

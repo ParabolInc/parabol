@@ -37,12 +37,18 @@ const updateMeetingTemplate: MutationResolvers['updateMeetingTemplate'] = async 
     })
   }
 
+  const series =
+    applyToSeries && meeting.meetingSeriesId
+      ? await dataLoader.get('meetingSeries').load(meeting.meetingSeriesId)
+      : null
+  const seriesIdToUpdate = series && !series.cancelledAt ? series.id : null
+
   if (meeting.meetingType === 'teamPrompt') {
     await switchTeamPromptTemplate({
       meeting,
       templateId,
       templateName: template.name,
-      applyToSeries: !!applyToSeries,
+      seriesIdToUpdate,
       clearResponses: !!clearResponses,
       dataLoader,
       operationId
@@ -62,12 +68,23 @@ const updateMeetingTemplate: MutationResolvers['updateMeetingTemplate'] = async 
       })
     }
     await getKysely()
-      .updateTable('NewMeeting')
-      .set({templateId, templateChosenAt: sql`now()`})
-      .where('id', '=', meetingId)
-      .execute()
+      .transaction()
+      .execute(async (trx) => {
+        await trx
+          .updateTable('NewMeeting')
+          .set({templateId, templateChosenAt: sql`now()`})
+          .where('id', '=', meetingId)
+          .execute()
+        if (seriesIdToUpdate) {
+          await trx
+            .updateTable('MeetingSeries')
+            .set({templateId})
+            .where('id', '=', seriesIdToUpdate)
+            .execute()
+        }
+      })
   }
-  dataLoader.clearAll('newMeetings')
+  dataLoader.clearAll(['newMeetings', 'meetingSeries'])
 
   const data = {meetingId}
   publish(SubscriptionChannel.MEETING, meetingId, 'UpdateMeetingTemplateSuccess', data, subOptions)

@@ -17,19 +17,18 @@ interface Options {
   meeting: TeamPromptMeeting
   templateId: string
   templateName: string
-  applyToSeries: boolean
+  seriesIdToUpdate: number | null
   clearResponses: boolean
   dataLoader: DataLoaderWorker
   operationId: string
 }
 
 const switchTeamPromptTemplate = async (options: Options) => {
-  const {meeting, templateId, templateName, applyToSeries, clearResponses, dataLoader} = options
-  const {id: meetingId, meetingSeriesId, phases} = meeting
-  const [responses, oldTemplate, series] = await Promise.all([
+  const {meeting, templateId, templateName, seriesIdToUpdate, clearResponses, dataLoader} = options
+  const {id: meetingId, phases} = meeting
+  const [responses, oldTemplate] = await Promise.all([
     selectTeamPromptResponses().where('meetingId', '=', meetingId).execute(),
-    dataLoader.get('meetingTemplates').load(meeting.templateId),
-    meetingSeriesId ? dataLoader.get('meetingSeries').load(meetingSeriesId) : null
+    dataLoader.get('meetingTemplates').load(meeting.templateId)
   ])
   const answeredUserIds = new Set(
     responses.filter(({plaintextContent}) => plaintextContent.trim()).map(({userId}) => userId)
@@ -65,7 +64,6 @@ const switchTeamPromptTemplate = async (options: Options) => {
     return [createAIComment(discussionId, noteContent, threadSortOrder)]
   })
 
-  const isSeriesActive = !!series && !series.cancelledAt
   await getKysely()
     .transaction()
     .execute(async (trx) => {
@@ -75,11 +73,11 @@ const switchTeamPromptTemplate = async (options: Options) => {
         .set({templateId, templateChosenAt: sql`now()`})
         .where('id', '=', meetingId)
         .execute()
-      if (applyToSeries && isSeriesActive) {
+      if (seriesIdToUpdate) {
         await trx
           .updateTable('MeetingSeries')
           .set({templateId})
-          .where('id', '=', series.id)
+          .where('id', '=', seriesIdToUpdate)
           .execute()
       }
       if (notes.length > 0) {
