@@ -7,7 +7,7 @@ import {MenuRadioItem} from '../../../ui/Menu/MenuRadioItem'
 import {MenuSeparator} from '../../../ui/Menu/MenuSeparator'
 import {MenuSubContent} from '../../../ui/Menu/MenuSubContent'
 import {MenuSubTrigger} from '../../../ui/Menu/MenuSubTrigger'
-import {canTurnIntoPage, type TurnIntoTarget, turnBlockInto} from './turnBlockInto'
+import {canTurnIntoPage, isInsideCallout, type TurnIntoTarget, turnBlockInto} from './turnBlockInto'
 import {turnIntoRows} from './turnIntoRows'
 
 interface Props {
@@ -30,9 +30,11 @@ const saveScroll = (element: Element) => {
 
 export const TurnIntoMenu = (props: Props) => {
   const {editor, node, pos, current, canCreateSubPage} = props
-  const rows = turnIntoRows.filter(
-    ({target}) => target.type !== 'pageLinkBlock' || (canCreateSubPage && canTurnIntoPage(current))
-  )
+  const isInCallout = isInsideCallout(editor.state.doc, pos)
+  const rows = turnIntoRows.filter(({target}) => {
+    if (target.type === 'callout') return !isInCallout
+    return target.type !== 'pageLinkBlock' || (canCreateSubPage && canTurnIntoPage(current))
+  })
   const currentRow = rows.find(
     ({target}) => target.type === current.type && target.level === current.level
   )

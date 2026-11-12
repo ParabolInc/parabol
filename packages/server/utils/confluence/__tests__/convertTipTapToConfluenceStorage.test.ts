@@ -1,3 +1,4 @@
+import type {JSONContent} from '@tiptap/core'
 import fs from 'fs'
 import path from 'path'
 import {convertTipTapToConfluenceStorage} from '../convertTipTapToConfluenceStorage'
@@ -133,5 +134,111 @@ describe('convertTipTapToConfluenceStorage', () => {
       '<ac:structured-macro ac:name="toc"><ac:parameter ac:name="minLevel">1</ac:parameter><ac:parameter ac:name="maxLevel">3</ac:parameter></ac:structured-macro>'
     )
     expect(degraded).toEqual([])
+  })
+
+  describe('callouts', () => {
+    const p = (text: string): JSONContent => ({type: 'paragraph', content: [{type: 'text', text}]})
+    const title = (text: string): JSONContent => ({
+      type: 'calloutTitle',
+      content: [{type: 'text', text}]
+    })
+    const callout = (
+      tone: string,
+      content: JSONContent[],
+      attrs: {emoji?: string} = {}
+    ): JSONContent => ({type: 'callout', attrs: {tone, emoji: attrs.emoji ?? null}, content})
+    const exportOne = (node: JSONContent) =>
+      convertTipTapToConfluenceStorage(
+        {
+          type: 'doc',
+          content: [
+            {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'Callouts'}]},
+            node
+          ]
+        },
+        ctx
+      ).xhtml.replace(/<p><em>Exported from Parabol.*$/, '')
+
+    it('exports each tone as the storage form Confluence itself saves', () => {
+      expect(exportOne(callout('info', [p('x')]))).toBe(
+        '<ac:structured-macro ac:name="info"><ac:rich-text-body><p>x</p></ac:rich-text-body></ac:structured-macro>'
+      )
+      expect(exportOne(callout('tip', [p('x')]))).toContain('ac:name="tip"')
+      expect(exportOne(callout('warning', [p('x')]))).toContain('ac:name="note"')
+      expect(exportOne(callout('danger', [p('x')]))).toContain('ac:name="warning"')
+      expect(exportOne(callout('important', [p('x')]))).toContain(
+        '<ac:adf-attribute key="panel-type">note</ac:adf-attribute>'
+      )
+    })
+
+    it('writes the title as a bold first paragraph inside the panel', () => {
+      expect(exportOne(callout('warning', [title('Freeze <now>'), p('x')]))).toContain(
+        '<ac:rich-text-body><p><strong>Freeze &lt;now&gt;</strong></p>'
+      )
+    })
+
+    it('writes a plain callout as a gray custom panel carrying its emoji', () => {
+      const xhtml = exportOne(callout('plain', [p('x')], {emoji: '🚀'}))
+      expect(xhtml).toContain('<ac:parameter ac:name="bgColor">#B7B9BE</ac:parameter>')
+      expect(xhtml).toContain('<ac:parameter ac:name="panelIcon">:rocket:</ac:parameter>')
+      expect(xhtml).toContain('<ac:parameter ac:name="panelIconText">🚀</ac:parameter>')
+      expect(xhtml).toContain('<ac:parameter ac:name="panelIconId">1f680</ac:parameter>')
+    })
+
+    it('drops the emoji of a non-plain callout', () => {
+      expect(exportOne(callout('info', [p('x')], {emoji: '🚀'}))).not.toContain('🚀')
+    })
+    it('flattens a callout inside a blockquote into plain blocks', () => {
+      const quote: JSONContent = {
+        type: 'blockquote',
+        content: [callout('info', [title('Heads up'), p('inner text')])]
+      }
+      const xhtml = exportOne(quote)
+      expect(xhtml).toBe(
+        '<blockquote><p><strong>Heads up</strong></p><p>inner text</p></blockquote>'
+      )
+    })
+
+    it('flattens a callout inside a list item and counts it', () => {
+      const list: JSONContent = {
+        type: 'bulletList',
+        content: [
+          {
+            type: 'listItem',
+            content: [p('item'), callout('warning', [title('Careful'), p('inner text')])]
+          }
+        ]
+      }
+      const {xhtml, degraded} = convertTipTapToConfluenceStorage(
+        {
+          type: 'doc',
+          content: [
+            {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'Callouts'}]},
+            list,
+            callout('info', [p('after')])
+          ]
+        },
+        ctx
+      )
+      expect(xhtml).toContain(
+        '<ul><li><p>item</p><p><strong>Careful</strong></p><p>inner text</p></li></ul><ac:structured-macro ac:name="info">'
+      )
+      expect(degraded).toContainEqual(
+        expect.objectContaining({blockType: 'calloutInList', count: 1})
+      )
+    })
+
+    it('flattens a callout inside a blockquote inside a callout, keeping the outer panel', () => {
+      const xhtml = exportOne(
+        callout('tip', [
+          {type: 'blockquote', content: [callout('important', [p('deep text')])]},
+          p('after')
+        ])
+      )
+      expect(xhtml).toBe(
+        '<ac:structured-macro ac:name="tip"><ac:rich-text-body><blockquote><p>deep text</p></blockquote><p>after</p></ac:rich-text-body></ac:structured-macro>'
+      )
+      expect(xhtml).not.toContain('ac:adf-extension')
+    })
   })
 })

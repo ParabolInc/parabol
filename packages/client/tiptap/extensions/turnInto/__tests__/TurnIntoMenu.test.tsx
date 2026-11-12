@@ -32,7 +32,8 @@ const ROW_TITLES = [
   'To-do list',
   'Details',
   'Code',
-  'Quote'
+  'Quote',
+  'Callout'
 ]
 
 const extensions = [
@@ -151,7 +152,7 @@ afterAll(async () => {
 })
 
 describe('what the menu offers', () => {
-  test('a paragraph gets the caption and all eleven rows, with Text checked', async () => {
+  test('a paragraph gets the caption and all twelve rows, with Text checked', async () => {
     await openMenu([p('word')])
     expect(caption()).toBe('Text')
     expect(hasItem('Duplicate block')).toBe(true)
@@ -174,6 +175,16 @@ describe('what the menu offers', () => {
     await openTurnInto()
     expect(radios().map((row) => row.textContent)).toEqual(
       ROW_TITLES.filter((title) => title !== 'Page')
+    )
+  })
+
+  test('a block inside a callout has no Callout row', async () => {
+    const callout: Json = {type: 'callout', attrs: {tone: 'info'}, content: [p('word')]}
+    await openMenu([callout], {pos: TITLE_SIZE + 1})
+    expect(caption()).toBe('Text')
+    await openTurnInto()
+    expect(radios().map((row) => row.textContent)).toEqual(
+      ROW_TITLES.filter((title) => title !== 'Callout')
     )
   })
 
