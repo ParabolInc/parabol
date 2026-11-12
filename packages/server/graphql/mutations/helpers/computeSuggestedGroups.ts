@@ -14,14 +14,27 @@ export type ComputeSuggestedGroupsConfig = {
   sameColumnOnly: boolean
 }
 
-export type ComputedSuggestedGroups = {
+export type SuggestedGroupsRunTelemetry = {
+  model: string | null
+  reasoningEffort: string | null
+  tokenCost: number
+  repairedReflectionCount: number
+}
+
+export type ComputedSuggestedGroups = SuggestedGroupsRunTelemetry & {
   groups: AutogroupReflectionGroupType[]
   inputHash: string
   /** True when a stored result was reused, so no LLM call was made */
   cacheHit: boolean
   reflectionCount: number
   promptCount: number
-  tokenCost: number
+}
+
+const NO_LLM_TELEMETRY: SuggestedGroupsRunTelemetry = {
+  model: null,
+  reasoningEffort: null,
+  tokenCost: 0,
+  repairedReflectionCount: 0
 }
 
 /**
@@ -69,22 +82,38 @@ const computeSuggestedGroups = async (
     dataLoader.get('retroSuggestedGroupingByMeetingId').load(meetingId)
   ])
   const inputHash = hashReflectionIds(reflections.map(({id}) => id))
-  const base = {inputHash, reflectionCount: reflections.length, promptCount: 0, tokenCost: 0}
+  const base = {inputHash, reflectionCount: reflections.length, promptCount: 0}
 
-  if (isReusable(stored, config, inputHash)) {
-    return {...base, groups: stored!.groups, cacheHit: true}
+  if (stored && isReusable(stored, config, inputHash)) {
+    const {groups, model, reasoningEffort, tokenCost, repairedReflectionCount} = stored
+    return {
+      ...base,
+      groups,
+      cacheHit: true,
+      model,
+      reasoningEffort,
+      tokenCost,
+      repairedReflectionCount
+    }
   }
 
   if (mode === 'similarity') {
     const groups = await computeSimilaritySuggestedGroups(meetingId, sameColumnOnly, dataLoader)
-    return {...base, groups, cacheHit: false}
+    return {...base, ...NO_LLM_TELEMETRY, groups, cacheHit: false}
   }
 
-  const {groups, promptCount, tokenCost} = await computeAISuggestedGroups(reflections, dataLoader, {
-    userPrompt,
-    sameColumnOnly
-  })
-  return {...base, groups, cacheHit: false, promptCount, tokenCost}
+  const {groups, promptCount, tokenCost, repairedCount, model, reasoningEffort} =
+    await computeAISuggestedGroups(reflections, dataLoader, {userPrompt, sameColumnOnly})
+  return {
+    ...base,
+    groups,
+    cacheHit: false,
+    promptCount,
+    model,
+    reasoningEffort,
+    tokenCost,
+    repairedReflectionCount: repairedCount
+  }
 }
 
 export default computeSuggestedGroups
