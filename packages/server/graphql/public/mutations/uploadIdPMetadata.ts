@@ -11,13 +11,15 @@ const uploadIdPMetadata: MutationResolvers['uploadIdPMetadata'] = async (
   const contentType = file.type
   const buffer = Buffer.from(await file.arrayBuffer())
   if (!contentType || !contentType.includes('xml')) {
-    throw new GraphQLError('file must be XML')
+    throw new GraphQLError('file must be XML', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   if (buffer.byteLength > 1000000) {
-    throw new GraphQLError('file must be less than 1MB')
+    throw new GraphQLError('file must be less than 1MB', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   if (buffer.byteLength <= 1) {
-    throw new GraphQLError('file must be larger than 1 byte')
+    throw new GraphQLError('file must be larger than 1 byte', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   // RESOLUTION

@@ -47,7 +47,7 @@ class OpenAIServerManager {
         model: AI_MODEL,
         // Hidden reasoning dominated grouping latency, and holding the effort down is only safe
         // because repairGroups patches a forgotten card instead of discarding the whole batch
-        params: {reasoning_effort: 'low'}
+        params: {reasoning_effort: options.reasoningEffort ?? 'low'}
       },
       input,
       options

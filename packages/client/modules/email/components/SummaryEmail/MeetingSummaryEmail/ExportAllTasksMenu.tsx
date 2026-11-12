@@ -25,6 +25,7 @@ const query = graphql`
       id
       viewerTeamMember: teamMember(userId: null, teamId: $teamId) {
         ...TaskFooterIntegrateMenuSignup_teamMember
+        ...TaskFooterIntegrateMenuList_teamMember
         ...useIsIntegrated_teamMember
       }
     }
@@ -85,8 +86,9 @@ const ExportAllTasksMenu = (props: Props) => {
     const label = 'Send with your credentials'
     return (
       <TaskFooterIntegrateMenuList
+        mutationProps={mutationProps}
         placeholder={placeholder}
-        teamId={teamId}
+        teamMemberRef={viewerTeamMember}
         onPushToIntegration={handlePushToIntegration}
         label={label}
       />

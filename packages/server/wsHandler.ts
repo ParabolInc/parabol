@@ -1,3 +1,4 @@
+import uws from 'uWebSockets.js'
 import type {ExecutionArgs, ExecutionResult} from 'graphql'
 import {type execute, GraphQLError, type subscribe} from 'graphql'
 import {CloseCode, handleProtocols, MessageType, stringifyMessage} from 'graphql-ws'
@@ -11,7 +12,7 @@ import AuthToken from './database/types/AuthToken'
 import {getNewDataLoader} from './dataloader/getNewDataLoader'
 import {getFreshTokenIfNeeded} from './getFreshTokenIfNeeded'
 import {getIsBusy} from './getIsBusy'
-import {getIsShuttingDown} from './getIsShuttingDown'
+import {getIsRefusingSockets, getIsShuttingDown} from './getIsShuttingDown'
 import getRateLimiter from './graphql/getRateLimiter'
 import {handleFirstConnection} from './handleFirstConnection'
 import {logOperation} from './logOperation'
@@ -22,14 +23,17 @@ import {
   websocketMessagesDropped
 } from './metricsHandler'
 import getKysely from './postgres/getKysely'
+import socketDrainSchedule from './socketDrainSchedule'
 import {createCookieHeaders, getAuthTokenFromCookie} from './utils/authCookie'
 import checkBlacklistJWT from './utils/checkBlacklistJWT'
 import {getTeamMemberUserIds} from './utils/getTeamMemberUserIds'
 import {getUserSocketCount} from './utils/getUserSocketCount'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
+import isWorthCompressingSocketMessage from './utils/isWorthCompressingSocketMessage'
 import {Logger} from './utils/Logger'
 import parseSessionId from './utils/parseSessionId'
 import publish from './utils/publish'
+import rejectNonWebSocketUpgrade from './utils/rejectNonWebSocketUpgrade'
 import {CLIENT_IP_POS} from './utils/uwsGetIP'
 import {extractPersistedOperationId, getPersistedOperation, type ServerContext, yoga} from './yoga'
 
@@ -54,6 +58,8 @@ declare module 'graphql-ws/use/uWebSockets' {
     resubscribe: Record<string, () => void>
     // not present for subscription IDs
     dataLoaders: Record<string, ReturnType<typeof getNewDataLoader>>
+    // set while a draining server waits for this socket's running queries and mutations to finish
+    onIdle?: () => void
   }
 }
 
@@ -130,7 +136,7 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
     extra.sessionId = parseSessionId(connectionParams?.sessionId)
     extra.resubscribe = {}
     extra.dataLoaders = {}
-    activeClients.set(extra.socketId, extra.socket)
+    activeClients.set(extra.socketId, extra)
     websocketConnects.inc()
     websocketConnectDuration.observe({outcome: 'connected'}, secondsSinceUpgrade(extra.socket))
     logOperation({authToken, ip: extra.ip, operation: 'connectSocket', variables: {}})
@@ -208,15 +214,17 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
     const {extra} = ctx
     const {ip, authToken, socketId, sessionId, resubscribe} = extra
     const docId = extractPersistedOperationId(params as any)
+    const query = await getPersistedOperation(docId!)
     const {schema, execute, subscribe, parse, contextFactory} = yoga.getEnveloped({
       ...ctx,
       // armor requires a docId to know this isn't an adhoc query
       docId,
-      authToken
+      authToken,
+      // like yoga's own context, so plugins can see the operation before it is parsed
+      params: {query}
     })
     let document = documentCache.get(docId!)
     if (!document) {
-      const query = await getPersistedOperation(docId!)
       document = parse(query)
       documentCache.set(docId, document)
     }
@@ -280,6 +288,8 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
     dataLoaders[id]?.dispose()
     delete dataLoaders[id]
     delete resubscribe[id]
+    // graphql-ws sends the complete message after this returns, so the socket can close on the next tick
+    if (extra.onIdle && Object.keys(dataLoaders).length === 0) setImmediate(extra.onIdle)
   },
   onDisconnect: async (ctx) => {
     const {extra} = ctx
@@ -313,8 +323,8 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
     // Wait for the notification subscription to unsubscribe
     // Don't do it in notificationSubscription because
     // subscriptions get re-run when the authToken updates.
-    // A client may also reconnect quickly
-    await sleep(1000)
+    // A client may also reconnect quickly, and every client of a server that is shutting down is reconnecting
+    await sleep(getIsShuttingDown() ? Math.max(1000, socketDrainSchedule.reconnectGrace) : 1000)
     const socketCount = await getUserSocketCount(viewerId)
     const user = {id: viewerId, isConnected: false}
     if (socketCount === 0) {
@@ -349,12 +359,23 @@ wsHandler.dropped = () => {
   websocketMessagesDropped.inc({route: 'graphql'})
 }
 
+wsHandler.compression = uws.SHARED_COMPRESSOR | uws.SHARED_DECOMPRESSOR
+// graphql-ws sends every message without asking for compression, so the socket asks for it on the large ones
+const openGraphQLSocket = wsHandler.open!
+wsHandler.open = (socket) => {
+  const send = socket.send.bind(socket)
+  socket.send = (message, isBinary, compress) =>
+    send(message, isBinary, compress ?? isWorthCompressingSocketMessage(message))
+  openGraphQLSocket(socket)
+}
+
 // Hack because graphql-ws doesn't support a way to extract the IP address, so we override the upgrade method
 wsHandler.upgrade = async (res, req, context) => {
-  // check isShuttingDown here instead of the onConnect handler because onConnect can only send a 4403 FORBIDDEN
+  if (rejectNonWebSocketUpgrade(res, req)) return
+  // check isRefusingSockets here instead of the onConnect handler because onConnect can only send a 4403 FORBIDDEN
   // which is what we send when we want to invalidate a session (ie log them out)
   // Here, we want them to keep trying, and hopefully they get proxied to a different server that is not shutting down
-  const isUnavailable = getIsShuttingDown() || getIsBusy()
+  const isUnavailable = getIsRefusingSockets() || getIsBusy()
   if (isUnavailable) {
     res.end()
     return

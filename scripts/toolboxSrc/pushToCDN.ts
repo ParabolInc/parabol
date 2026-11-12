@@ -2,13 +2,26 @@ import fs from 'fs'
 import path from 'path'
 import getFileStoreManager from '../../packages/server/fileStorage/getFileStoreManager'
 import {applyEnvVarsToClientAssets} from '../../packages/server/utils/applyEnvVarsToClientAssets'
+import isContentHashed from '../../packages/server/utils/isContentHashed'
 import {Logger} from '../../packages/server/utils/Logger'
 import getProjectRoot from '../webpack/utils/getProjectRoot'
 
 const PROJECT_ROOT = getProjectRoot()
 
-const chunk = (arr: any[], size: number) =>
-  Array.from({length: Math.ceil(arr.length / size)}, (_, i) => arr.slice(i * size, i * size + size))
+// @smithy/node-http-handler has a default value of 50 maxSockets
+// https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/node-configuring-maxsockets.html
+const MAX_CONCURRENT_UPLOADS = 50
+
+// Each upload starts when another one finishes, so no upload waits for the slowest of a batch
+const forEachUpload = async <T>(items: T[], upload: (item: T) => Promise<unknown>) => {
+  let nextIdx = 0
+  const uploadNext = async (): Promise<void> => {
+    if (nextIdx >= items.length) return
+    await upload(items[nextIdx++]!)
+    return uploadNext()
+  }
+  await Promise.all(Array.from({length: MAX_CONCURRENT_UPLOADS}, uploadNext))
+}
 
 // the web server sends these to clients that accept brotli. A bucket can't, so they stay out of it
 const isPrecompressed = (name: string) => name.endsWith('.br')
@@ -33,21 +46,23 @@ const pushClientAssetsToCDN = async () => {
     })
     .filter((name) => !isPrecompressed(name))
   const names = [...new Set([...builtNames, ...madeFiles.keys()])]
-  const chunks = chunk(names, 50)
-  for (let i = 0; i < chunks.length; i++) {
-    const chunk = chunks[i]!
-    await Promise.all(
-      chunk.map(async (name: string) => {
-        const madeFile = madeFiles.get(name)
-        const file =
-          madeFile !== undefined
-            ? Buffer.from(madeFile)
-            : await fs.promises.readFile(path.join(localClientAssetsDir, name))
-        return fileStoreManager.putBuildFile(file, name)
-      })
-    )
-  }
-  Logger.log(`⛅️ Uploaded ${names.length} client assets to CDN`)
+  let uploaded = 0
+  await forEachUpload(names, async (name) => {
+    const madeFile = madeFiles.get(name)
+    if (madeFile === undefined && isContentHashed(name)) {
+      // a content-hashed name always holds the same bytes, so a past release may have uploaded it
+      if (await fileStoreManager.checkExists(name, 'build')) return
+    }
+    const file =
+      madeFile !== undefined
+        ? Buffer.from(madeFile)
+        : await fs.promises.readFile(path.join(localClientAssetsDir, name))
+    await fileStoreManager.putBuildFile(file, name)
+    uploaded++
+  })
+  Logger.log(
+    `⛅️ Uploaded ${uploaded} client assets to CDN, ${names.length - uploaded} were already there`
+  )
 }
 
 const pushServerAssetsToCDN = async () => {
@@ -97,22 +112,14 @@ const pushServerAssetsToCDN = async () => {
     })
   ).filter((dirent) => !isPrecompressed(dirent.name))
 
-  // @smithy/node-http-handler has a default value of 50 maxSockets
-  // https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/node-configuring-maxsockets.html
-  const chunks = chunk(dirEnts, 50)
   let pushed = 0
-  for (let i = 0; i < chunks.length; i++) {
-    const chunk = chunks[i]!
-    await Promise.all(
-      chunk.map(async (dirent) => {
-        const {name} = dirent
-        if (!dirent.isFile()) throw new Error(`⛅️ Expected ${name} to be a file`)
-        const uploader = isTemplate(name) ? templateFileUploader(name) : defaultFileUploader(name)
-        const res = await uploader
-        if (res === true) pushed++
-      })
-    )
-  }
+  await forEachUpload(dirEnts, async (dirent) => {
+    const {name} = dirent
+    if (!dirent.isFile()) throw new Error(`⛅️ Expected ${name} to be a file`)
+    const uploader = isTemplate(name) ? templateFileUploader(name) : defaultFileUploader(name)
+    const res = await uploader
+    if (res === true) pushed++
+  })
 
   Logger.log(`⛅️ Server upload complete. Pushed ${pushed} assets to CDN`)
 }

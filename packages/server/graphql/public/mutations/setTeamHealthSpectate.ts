@@ -24,13 +24,15 @@ const setTeamHealthSpectate: MutationResolvers['setTeamHealthSpectate'] = async 
   ])
   const {endedAt, teamId, meetingType} = meeting
   if (meetingType !== 'teamHealth') {
-    throw new GraphQLError('Not a team health meeting')
+    throw new GraphQLError('Not a team health meeting', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   if (endedAt) {
-    throw new GraphQLError('Meeting has ended')
+    throw new GraphQLError('Meeting has ended', {extensions: {code: 'CONFLICT'}})
   }
   if (!meetingMember) {
-    throw new GraphQLError('Join the meeting before changing this')
+    throw new GraphQLError('Join the meeting before changing this', {
+      extensions: {code: 'CONFLICT'}
+    })
   }
 
   // RESOLUTION

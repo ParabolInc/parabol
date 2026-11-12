@@ -12,7 +12,7 @@ const updateTemplatePromptDescription: MutationResolvers['updateTemplatePromptDe
     const prompt = await dataLoader.get('templatePrompts').load(promptId)
 
     if (!prompt || prompt.removedAt) {
-      throw new GraphQLError('Prompt not found')
+      throw new GraphQLError('Prompt not found', {extensions: {code: 'NOT_FOUND'}})
     }
     const {teamId} = prompt
     const normalizedDescription = description.trim().slice(0, 256)

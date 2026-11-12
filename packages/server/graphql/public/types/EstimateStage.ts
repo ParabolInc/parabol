@@ -58,7 +58,8 @@ const EstimateStage: EstimateStageResolvers = {
 
   dimensionRef: async ({meetingId, dimensionRefIdx}, _args, {dataLoader}) => {
     const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
-    if (meeting.meetingType !== 'poker') throw new GraphQLError('Not a poker meeting')
+    if (meeting.meetingType !== 'poker')
+      throw new GraphQLError('Not a poker meeting', {extensions: {code: 'INTERNAL_SERVER_ERROR'}})
     const {templateRefId} = meeting
     const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
     const {dimensions} = templateRef

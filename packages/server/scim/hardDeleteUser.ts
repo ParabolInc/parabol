@@ -34,7 +34,7 @@ export const hardDeleteUser = async ({
 
     // all other users can only be removed from the managed org
     if (orgId) {
-      await removeFromOrg(userId, orgId, undefined, dataLoader)
+      await removeFromOrg([userId], orgId, undefined, dataLoader)
     }
   } catch (error) {
     Logger.error('Failed to hard delete user', {error, userId, scimId})

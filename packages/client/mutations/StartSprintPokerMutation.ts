@@ -27,6 +27,14 @@ const mutation = graphql`
           message
         }
       }
+      ... on StartSprintPokerSuccess {
+        meeting {
+          # lets useJoinedMeetingQuery subscribe while the starter joins
+          viewerMeetingMember {
+            id
+          }
+        }
+      }
       ...StartSprintPokerMutation_team @relay(mask: false) @alias
     }
   }

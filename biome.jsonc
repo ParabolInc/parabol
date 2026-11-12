@@ -172,7 +172,14 @@
       "attributePosition": "auto",
       "bracketSpacing": false
     },
-    "globals": ["__PRODUCTION__", "__APP_VERSION__", "__webpack_public_path__", "__COMMIT_HASH__"]
+    "globals": [
+      "__PRODUCTION__",
+      "__APP_VERSION__",
+      "__webpack_public_path__",
+      "__COMMIT_HASH__",
+      "__NESTED_USAGE__",
+      "__NESTED_TYPE_DEFS__"
+    ]
   },
   "html": {"formatter": {"selfCloseVoidElements": "always"}},
   "css": {
@@ -262,6 +269,10 @@
           }
         }
       }
+    },
+    {
+      "includes": ["packages/server/**", "!**/__tests__/**"],
+      "plugins": ["./scripts/biome/requireGraphQLErrorCode.grit"]
     },
     {
       "includes": ["packages/server/**"],

@@ -108,7 +108,7 @@ const uploadUserAsset: MutationResolvers['uploadUserAsset'] = async (
     }
   }
   const mimeError = checkFileMimeType(new Uint8Array(buffer), contentType)
-  if (mimeError) throw new GraphQLError(mimeError)
+  if (mimeError) throw new GraphQLError(mimeError, {extensions: {code: 'BAD_USER_INPUT'}})
   const isImage = file.type.includes('image')
   let fileBuffer = buffer
   let fileExtension = ext

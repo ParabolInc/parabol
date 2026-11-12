@@ -44,7 +44,9 @@ const SearchResultEdge: ReqResolvers<'SearchResultEdge'> = {
       }
     }
 
-    throw new GraphQLError(`Invalid nodeTypeName: ${nodeTypeName}`)
+    throw new GraphQLError(`Invalid nodeTypeName: ${nodeTypeName}`, {
+      extensions: {code: 'INTERNAL_SERVER_ERROR'}
+    })
   }
 }
 

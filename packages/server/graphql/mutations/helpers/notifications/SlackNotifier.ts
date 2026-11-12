@@ -20,6 +20,7 @@ import {convertToMarkdown} from '../../../../utils/tiptap/convertToMarkdown'
 import type {DataLoaderWorker} from '../../../graphql'
 import type {TeamPromptMemberResponse} from '../groupTeamPromptResponsesByUser'
 import joinSlackChannel from '../joinSlackChannel'
+import removeSlackAuths from '../removeSlackAuths'
 import getSummaryText from './getSummaryText'
 import {getTeamHealthQuestionCount} from './getTeamHealthQuestionCount'
 import {makeButtons, makeHeader, makeSection, makeSections} from './makeSlackBlocks'
@@ -36,6 +37,9 @@ type NotificationChannel = {
   channelId: string | null
 }
 
+const isRevokedTokenError = (error: string) =>
+  error === 'account_inactive' || error === 'token_revoked'
+
 const handleError = async (
   res: PostMessageResponse | ErrorResponse,
   teamId: string,
@@ -44,13 +48,18 @@ const handleError = async (
   const {channelId, auth} = notificationChannel
   if ('error' in res) {
     const {error} = res
-    if (error === 'channel_not_found' || error === 'not_in_channel') {
+    if (error === 'channel_not_found' || error === 'not_in_channel' || error === 'is_archived') {
       await getKysely()
         .updateTable('SlackNotification')
         .set({channelId: null})
         .where('teamId', '=', teamId)
         .where('channelId', '=', channelId)
         .execute()
+      return {
+        error: new Error(error)
+      }
+    } else if (isRevokedTokenError(error)) {
+      await removeSlackAuths(auth.userId, auth.teamId, true)
       return {
         error: new Error(error)
       }
@@ -791,7 +800,11 @@ export const SlackNotifier = {
     const manager = new SlackServerManager(botAccessToken!)
     const res = await manager.postMessage(userSlackAuth.slackUserId, blocks, title)
     if ('error' in res) {
-      logError(new Error(res.error), {userId, tags: {notificationId, type: notification.type}})
+      if (isRevokedTokenError(res.error)) {
+        await removeSlackAuths(userSlackAuth.userId, userSlackAuth.teamId, true)
+      } else {
+        logError(new Error(res.error), {userId, tags: {notificationId, type: notification.type}})
+      }
     }
   }
 }

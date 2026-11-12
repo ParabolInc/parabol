@@ -10,6 +10,7 @@ import addDiscussionTopics from './addDiscussionTopics'
 import generateDefaultSuggestedGroups from './generateDefaultSuggestedGroups'
 import generateDiscussionPrompt from './generateDiscussionPrompt'
 import {publishToEmbedder} from './publishToEmbedder'
+import recordSuggestedGroupingOutcome from './recordSuggestedGroupingOutcome'
 import removeEmptyReflections from './removeEmptyReflections'
 
 /*
@@ -62,12 +63,13 @@ const handleCompletedRetrospectiveStage = async (
       unlockAllStagesForPhase(phases, 'discuss', true)
       await pg
         .updateTable('NewMeeting')
-        .set({phases: JSON.stringify(phases)})
+        .set({phases: JSON.stringify(phases), resetReflectionGroups: null})
         .where('id', '=', meeting.id)
         .execute()
       data.meeting = meeting
       // dont await for the OpenAI API response
       generateDiscussionPrompt(meeting.id, teamId, dataLoader)
+      recordSuggestedGroupingOutcome(meeting.id)
     }
 
     return {[stage.phaseType]: data}

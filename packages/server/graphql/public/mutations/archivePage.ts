@@ -28,13 +28,17 @@ const archivePage: MutationResolvers['archivePage'] = async (
   const [dbPageId, pageCode] = CipherId.fromClient(pageId)
   const page = await dataLoader.get('pages').load(dbPageId)
   if (!page) {
-    throw new GraphQLError('Invalid pageId')
+    throw new GraphQLError('Invalid pageId', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   dataLoader.get('pages').clearAll()
   if (page.isMeetingTOC)
-    throw new GraphQLError('Meeting Summaries pages cannot be archived or deleted')
+    throw new GraphQLError('Meeting Summaries pages cannot be archived or deleted', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   if (action !== 'archive' && !page.deletedAt) {
-    throw new GraphQLError('Only pages in the trash can be deleted or restored')
+    throw new GraphQLError('Only pages in the trash can be deleted or restored', {
+      extensions: {code: 'CONFLICT'}
+    })
   }
   if (action === 'delete') {
     const subtreeIds = (
@@ -92,14 +96,21 @@ const archivePage: MutationResolvers['archivePage'] = async (
           .executeTakeFirst()
       : undefined
     if (subPageOwnedByOthers) {
-      throw new GraphQLError('This page has sub-pages you do not own, so it cannot be deleted')
+      throw new GraphQLError('This page has sub-pages you do not own, so it cannot be deleted', {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
     const promotions = await pg.transaction().execute(async (trx) => {
       const promoted: {hostId: number; blockId: number}[] = []
       for (const blockId of promotableIds) {
         const hostId = await promoteSyncedBlock(trx, blockId, doomedIds)
         if (hostId === null) {
-          throw new GraphQLError('This page has sub-pages you do not own, so it cannot be deleted')
+          throw new GraphQLError(
+            'This page has sub-pages you do not own, so it cannot be deleted',
+            {
+              extensions: {code: 'FORBIDDEN'}
+            }
+          )
         }
         promoted.push({hostId, blockId})
       }

@@ -2,7 +2,7 @@ import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
 import type {AllPrimaryLoaders} from '../../../dataloader/RootDataLoader'
 import {getUserId} from '../../../utils/authorization'
-import type {GQLContext} from '../../graphql'
+import type {RuleContext} from '../../graphql'
 import {cacheByDotPath, getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
 export const isViewerBillingLeader = <T>(
@@ -11,7 +11,7 @@ export const isViewerBillingLeader = <T>(
 ) =>
   rule(`isViewerBillingLeader-${dataLoaderName ?? ''}`, {
     cache: cacheByDotPath(orgIdDotPath)
-  })(async (source, args, context: GQLContext) => {
+  })(async (source, args, context: RuleContext) => {
     const {authToken, dataLoader} = context
     const viewerId = getUserId(authToken)
     const argVar = getResolverDotPath(orgIdDotPath, source, args)
@@ -24,7 +24,10 @@ export const isViewerBillingLeader = <T>(
       for (let i = 0; i < subjects.length; i++) {
         const subject = subjects[i]
         if (!subject || subject instanceof Error || !subject.orgId)
-          return new GraphQLError(`Permission lookup failed on ${dataLoaderName} for ${argVars[i]}`)
+          return new GraphQLError(
+            `Permission lookup failed on ${dataLoaderName} for ${argVars[i]}`,
+            {extensions: {code: 'NOT_FOUND'}}
+          )
         orgIds.add(subject.orgId)
       }
     } else {
@@ -36,12 +39,15 @@ export const isViewerBillingLeader = <T>(
       const organizationUser = await dataLoader
         .get('organizationUsersByUserIdOrgId')
         .load({orgId, userId: viewerId})
-      if (!organizationUser) return new GraphQLError('Viewer is not on Organization')
+      if (!organizationUser)
+        return new GraphQLError('Viewer is not on Organization', {extensions: {code: 'FORBIDDEN'}})
       const {role} = organizationUser
       if (role !== 'BILLING_LEADER' && role !== 'ORG_ADMIN')
-        return new GraphQLError('User is not billing leader')
+        return new GraphQLError('User is not billing leader', {extensions: {code: 'FORBIDDEN'}})
       if (context.resourceGrants && !(await context.resourceGrants.hasOrg(orgId))) {
-        return new GraphQLError(`PAT does not grant access to this organization`)
+        return new GraphQLError(`PAT does not grant access to this organization`, {
+          extensions: {code: 'FORBIDDEN'}
+        })
       }
     }
     return true

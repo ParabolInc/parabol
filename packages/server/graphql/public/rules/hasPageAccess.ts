@@ -3,7 +3,7 @@ import {rule} from 'graphql-shield'
 import type {Pageroleenum} from '../../../postgres/types/pg'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
-import type {GQLContext} from '../../graphql'
+import type {RuleContext} from '../../graphql'
 import {cacheByDotPath, getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
 export const PAGE_ROLES = ['owner', 'editor', 'commenter', 'viewer'] as const
@@ -16,7 +16,7 @@ export const hasPageAccess = <T>(
 ) =>
   rule(`hasPageAccess-${roleRequired}${ignorePublicLink ? '-granted' : ''}`, {
     cache: cacheByDotPath(dotPath)
-  })(async (source, args, context: GQLContext, info: GraphQLResolveInfo) => {
+  })(async (source, args, context: RuleContext, info: GraphQLResolveInfo) => {
     const pageId = getResolverDotPath(dotPath, source, args)
     if (!pageId) {
       // may access the page if it doesn't exist. e.g. a parentPage where parentPageId is null
@@ -29,14 +29,17 @@ export const hasPageAccess = <T>(
     const userRole = await dataLoader.get(loaderName).load({pageId: dbPageId, userId: viewerId})
     if (!userRole || PAGE_ROLES.indexOf(roleRequired) < PAGE_ROLES.indexOf(userRole)) {
       return new GraphQLError(
-        `Insufficient permission. User role: ${userRole || 'None'} Role required: ${roleRequired}`
+        `Insufficient permission. User role: ${userRole || 'None'} Role required: ${roleRequired}`,
+        {extensions: {code: 'FORBIDDEN'}}
       )
     }
     if (info.operation.operation === 'mutation') {
       dataLoader.get(loaderName).clearAll()
     }
     if (context.resourceGrants && !(await context.resourceGrants.hasPage(dbPageId))) {
-      return new GraphQLError(`PAT does not grant access to this page`)
+      return new GraphQLError(`PAT does not grant access to this page`, {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
     return true
   })

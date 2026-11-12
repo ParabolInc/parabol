@@ -16,7 +16,7 @@ import {getIsBusy} from './getIsBusy'
 import {getIsShuttingDown} from './getIsShuttingDown'
 import getRateLimiter from './graphql/getRateLimiter'
 import type {MutationResolvers, QueryResolvers, Resolver} from './graphql/private/resolverTypes'
-import privateSchema from './graphql/private/rootSchema'
+import {getFullSchema} from './graphql/private/rootSchema'
 import {PAT_PREFIX} from './graphql/public/applyScopeDirective'
 import type {ResourceGrants} from './graphql/public/ResourceGrants'
 import rootSchema from './graphql/public/rootSchema'
@@ -27,12 +27,14 @@ import {useTracing} from './tracing/useTracing'
 import {getAuthTokenFromCookie} from './utils/authCookie'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {Logger} from './utils/Logger'
+import maskErrorWithTraceId from './utils/maskErrorWithTraceId'
 import {useAPIAccess} from './utils/useAPIAccess'
 import {useArmor} from './utils/useArmor'
 import {useAuditLogs} from './utils/useAuditLogs'
 import {useCheckBlacklist} from './utils/useCheckBlacklist'
 import {useDisposeDataloader} from './utils/useDisposeDataloader'
 import {useErrorLogging} from './utils/useErrorLogging'
+import {useNestedSchemaFallback} from './utils/useNestedSchemaFallback'
 import {useRemoveDuplicateTransferEncoding} from './utils/useRemoveDuplicateTransferEncoding'
 import {useSchemaLink} from './utils/useSchemaLink'
 
@@ -51,7 +53,7 @@ export interface ServerContext {
   docId?: string | null | undefined
   // the cost of the adhoc query. undefined if it is a persisted query
   apiCost?: number
-  // present if the request is from a Personal Access Token
+  // present if the request is from a Personal Access Token or an OAuth access token
   resourceGrants?: ResourceGrants
   personalAccessTokenId?: string
   traceparent?: string
@@ -116,10 +118,12 @@ export const yoga = createYoga<ServerContext, UserContext>({
   graphqlEndpoint: '/graphql',
   landingPage: false,
   logging: Logger,
+  maskedErrors: {maskError: maskErrorWithTraceId},
   maxRequestBodySize: MAX_REQUEST_BODY_SIZE,
   plugins: [
     useRemoveDuplicateTransferEncoding,
     useSchemaLink,
+    useNestedSchemaFallback(),
     useDisposeDataloader,
     useAPIAccess(),
     useArmor(),
@@ -258,7 +262,7 @@ export const yoga = createYoga<ServerContext, UserContext>({
     }),
     useCookies()
   ],
-  schema: ({authToken}) => (authToken?.rol === 'su' ? privateSchema : rootSchema),
+  schema: ({authToken}) => (authToken?.rol === 'su' ? getFullSchema() : rootSchema),
 
   context: () => {
     const rateLimiter = getRateLimiter()

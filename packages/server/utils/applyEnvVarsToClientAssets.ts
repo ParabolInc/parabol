@@ -1,5 +1,4 @@
 import fs from 'fs'
-import {minify} from 'html-minifier-terser'
 import path from 'path'
 import getProjectRoot from '../../../scripts/webpack/utils/getProjectRoot'
 import logo192 from '../../../static/images/brand/mark-cropped-192.png'
@@ -96,18 +95,11 @@ const rewriteIndexHTML = () => {
     '<meta property="og:image:height" content="630"/>',
     '<meta property="og:image:alt" content="Parabol retrospective, Sprint Poker and check-in meetings"/>'
   ].join('')
-  const rawHTML = skeleton
+  // the client build minified the skeleton
+  return skeleton
     .replace('<head>', `<head>${noindex}${keys}`)
     .replace('</head>', `${socialImage}</head>`)
     .replaceAll('__PUBLIC_PATH__', __webpack_public_path__.replace(/\/$/, ''))
-  // html-minifier-terser 5 returns a string. Its types are for 7, which returns a Promise
-  return minify(rawHTML, {
-    collapseBooleanAttributes: true,
-    collapseWhitespace: true,
-    minifyJS: true,
-    removeScriptTypeAttributes: true,
-    removeComments: true
-  }) as unknown as string
 }
 
 const rewriteMattermostEnv = () => {

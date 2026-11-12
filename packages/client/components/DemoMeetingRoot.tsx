@@ -21,11 +21,11 @@ const query = graphql`
 `
 
 const DemoMeetingRoot = () => {
-  useSubscription('DemoMeetingRoot', NotificationSubscription)
-  useSubscription('DemoMeetingRoot', OrganizationSubscription)
-  useSubscription('DemoMeetingRoot', TaskSubscription)
-  useSubscription('DemoMeetingRoot', TeamSubscription)
-  useSubscription('DemoMeetingRoot', MeetingSubscription, {
+  useSubscription(NotificationSubscription)
+  useSubscription(OrganizationSubscription)
+  useSubscription(TaskSubscription)
+  useSubscription(TeamSubscription)
+  useSubscription(MeetingSubscription, {
     meetingId: RetroDemo.MEETING_ID
   })
   const data = useLazyLoadQuery<DemoMeetingRootQuery>(query, {

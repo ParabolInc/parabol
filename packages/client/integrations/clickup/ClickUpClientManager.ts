@@ -4,6 +4,7 @@ import type {MenuMutationProps} from '../../hooks/useMutationProps'
 import AddTeamMemberIntegrationAuthMutation from '../../mutations/AddTeamMemberIntegrationAuthMutation'
 import getOAuthPopupFeatures from '../../utils/getOAuthPopupFeatures'
 import makeHref from '../../utils/makeHref'
+import {ERROR_POPUP_BLOCKED} from '../../utils/oauthPopupError'
 
 const AUTHORIZE_URL = 'https://app.clickup.com/api'
 const REDIRECT_PATH = '/auth/clickup'
@@ -32,6 +33,10 @@ const ClickUpClientManager = {
       'ClickUpAuth',
       getOAuthPopupFeatures({width: 500, height: 750, top: 56})
     )
+    if (!popup) {
+      onError({message: ERROR_POPUP_BLOCKED})
+      return
+    }
 
     const cleanup = () => {
       clearInterval(pollingIntervalId)

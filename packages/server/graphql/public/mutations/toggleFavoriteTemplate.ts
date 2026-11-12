@@ -17,18 +17,18 @@ const toggleFavoriteTemplate: MutationResolvers['toggleFavoriteTemplate'] = asyn
   if (!isCurrentlyFavorite) {
     const template = await dataLoader.get('meetingTemplates').load(templateId)
     if (!template || !template.isActive) {
-      throw new GraphQLError('Template not found')
+      throw new GraphQLError('Template not found', {extensions: {code: 'NOT_FOUND'}})
     }
     const {scope} = template
     if (scope === 'TEAM') {
       if (!isTeamMember(authToken, template.teamId)) {
-        throw new GraphQLError('Template is not accessible')
+        throw new GraphQLError('Template is not accessible', {extensions: {code: 'FORBIDDEN'}})
       }
     } else if (scope === 'ORGANIZATION') {
       const viewerTeams = await dataLoader.get('teamsByOrgIds').load(template.orgId)
       const viewerInOrg = viewerTeams.some((t) => authToken.tms.includes(t.id))
       if (!viewerInOrg) {
-        throw new GraphQLError('Template is not accessible')
+        throw new GraphQLError('Template is not accessible', {extensions: {code: 'FORBIDDEN'}})
       }
     }
   }

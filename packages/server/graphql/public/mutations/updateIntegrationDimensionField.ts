@@ -21,28 +21,34 @@ const updateIntegrationDimensionField: MutationResolvers['updateIntegrationDimen
     const subOptions = {mutatorId, operationId}
 
     const meeting = await validateDimensionFieldMutation(dataLoader, meetingId, dimensionName)
-    if (meeting instanceof Error) throw new GraphQLError(meeting.message)
+    if (meeting instanceof Error)
+      throw new GraphQLError(meeting.message, {extensions: {code: 'BAD_USER_INPUT'}})
     const {teamId} = meeting
     const task = await dataLoader.get('tasks').load(taskId)
-    if (!task || task.teamId !== teamId) throw new GraphQLError('Task not found')
+    if (!task || task.teamId !== teamId)
+      throw new GraphQLError('Task not found', {extensions: {code: 'NOT_FOUND'}})
     const {integration} = task
-    if (!integration) throw new GraphQLError('Task is not integrated')
+    if (!integration)
+      throw new GraphQLError('Task is not integrated', {extensions: {code: 'CONFLICT'}})
     const {service, accessUserId} = integration
     const {estimatePush} = getServerIntegration(service).capabilities
 
     const ctx = {dataLoader, teamId, userId: accessUserId, context, info, task, viewerId}
     const key = await estimatePush.resolveDimensionFieldKey(ctx)
-    if (!key) throw new GraphQLError('Issue not found')
+    if (!key) throw new GraphQLError('Issue not found', {extensions: {code: 'NOT_FOUND'}})
     if (!SENTINELS.includes(fieldId) && estimatePush.targets.includes('field')) {
       const {options} = await estimatePush.listDimensionFields(ctx)
       if (!options.some((option) => option.fieldId === fieldId)) {
-        throw new GraphQLError('That field is not available on this issue')
+        throw new GraphQLError('That field is not available on this issue', {
+          extensions: {code: 'BAD_USER_INPUT'}
+        })
       }
     }
     const target: DimensionFieldTarget | Error = SENTINELS.includes(fieldId)
       ? {fieldId, fieldName: null, fieldType: 'string'}
       : await estimatePush.describeDimensionField(ctx, key, fieldId)
-    if (target instanceof Error) throw new GraphQLError(target.message)
+    if (target instanceof Error)
+      throw new GraphQLError(target.message, {extensions: {code: 'BAD_USER_INPUT'}})
 
     await upsertIntegrationDimensionFieldMap({
       teamId,

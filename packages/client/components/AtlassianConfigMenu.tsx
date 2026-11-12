@@ -1,10 +1,10 @@
 import useAtmosphere from '../hooks/useAtmosphere'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
+import AtlassianClientManager from '../integrations/jira/AtlassianClientManager'
 import type {ConnectProvider} from '../integrations/platform/ClientIntegrationDefinition'
 import RemoveTeamMemberIntegrationAuthMutation from '../mutations/RemoveTeamMemberIntegrationAuthMutation'
 import {MenuContent} from '../ui/Menu/MenuContent'
 import {MenuItem} from '../ui/Menu/MenuItem'
-import AtlassianClientManager from '../utils/AtlassianClientManager'
 import {describeAtlassianDisconnect} from '../utils/atlassianScopes'
 
 interface Props {

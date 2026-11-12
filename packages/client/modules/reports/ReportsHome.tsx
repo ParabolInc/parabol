@@ -32,7 +32,6 @@ const query = graphql`
       ...ReportsOrgPicker_viewer
       organizations {
         id
-        hasReports: featureFlag(featureName: "Reports")
       }
       organization(orgId: $orgId) {
         createdAt
@@ -49,8 +48,8 @@ const query = graphql`
 const ReportsHome = ({queryRef, orgId, period, answer, onPeriodChange}: Props) => {
   const {viewer} = usePreloadedQuery<ReportsHomeQuery>(query, queryRef)
   const {organization, organizations} = viewer
+  const isViewerOnOrg = organizations.some(({id}) => id === orgId)
   useDocumentTitle('Reports | Parabol', 'Reports')
-  const hasReports = organizations.some(({id, hasReports}) => id === orgId && hasReports)
   const [askingQuestion, setAskingQuestion] = useState<string | null>(null)
   return (
     <ReportDrawerLayout>
@@ -66,7 +65,7 @@ const ReportsHome = ({queryRef, orgId, period, answer, onPeriodChange}: Props) =
               orgCreatedAt={organization.createdAt}
             />
           )}
-          {hasReports && organization?.isBillingLeader && (
+          {organization?.isBillingLeader && (
             <Link
               to={`/me/organizations/${orgId}/teams`}
               className='inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-md border border-hairline-strong pr-3 pl-2.5 font-semibold text-fg-primary text-sm hover:bg-surface-hover'
@@ -76,15 +75,7 @@ const ReportsHome = ({queryRef, orgId, period, answer, onPeriodChange}: Props) =
             </Link>
           )}
         </div>
-        {!hasReports && (
-          <p className='m-0 text-fg-secondary'>Reports aren’t turned on for this organization.</p>
-        )}
-        {hasReports && !organization && (
-          <p className='m-0 text-fg-secondary'>
-            These reports couldn’t load. Try again in a moment.
-          </p>
-        )}
-        {hasReports && organization && (
+        {organization ? (
           <>
             <ReportsStarterBanner organizationRef={organization} />
             <ReportsHeadline organizationRef={organization} />
@@ -100,6 +91,12 @@ const ReportsHome = ({queryRef, orgId, period, answer, onPeriodChange}: Props) =
             )}
             <PinnedReportGrid organizationRef={organization} period={period} />
           </>
+        ) : (
+          <p className='m-0 text-fg-secondary'>
+            {isViewerOnOrg
+              ? 'These reports couldn’t load. Try again in a moment.'
+              : 'You aren’t a member of this organization.'}
+          </p>
         )}
       </div>
     </ReportDrawerLayout>

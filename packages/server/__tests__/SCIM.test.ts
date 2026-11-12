@@ -1431,7 +1431,7 @@ describe('Org membership is reflected in SCIM', () => {
       cookie
     })
     expect(afterResult.errors).toBeDefined()
-    expect(afterResult.errors[0]?.extensions?.code).toBe('UNAUTHORIZED')
+    expect(afterResult.errors[0]?.extensions?.code).toBe('UNAUTHENTICATED')
   })
 
   test('PATCH active=false removes external user from org', async () => {
@@ -2607,6 +2607,45 @@ describe('Groups', () => {
         scimCreated: true
       })
     })
+  })
+
+  test('Replacing every member keeps the team and makes a new member the team lead', async () => {
+    const [firstUser, secondUser, newUser] = await Promise.all(
+      Array.from({length: 3}, () => signUpWithEmail(getTestEmail(domain)))
+    )
+    const createRes = await fetch(`${SCIM_URL}/Groups`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${bearerToken}`
+      },
+      body: JSON.stringify({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
+        displayName: faker.internet.userName(),
+        members: [{value: firstUser!.userId}, {value: secondUser!.userId}]
+      })
+    })
+    expect(createRes.status).toBe(201)
+    const groupId = (await createRes.json()).id
+
+    const res = await fetch(`${SCIM_URL}/Groups/${groupId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${bearerToken}`
+      },
+      body: JSON.stringify({
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+        Operations: [{op: 'replace', path: 'members', value: [{value: newUser!.userId}]}]
+      })
+    })
+    expect(res.status).toBe(200)
+
+    const dataLoader = getNewDataLoader('test-loader')
+    const teamMembers = await dataLoader.get('teamMembersByTeamId').load(groupId)
+    expect(teamMembers).toEqual([expect.objectContaining({userId: newUser!.userId, isLead: true})])
+    const team = await dataLoader.get('teams').load(groupId)
+    expect(team).toMatchObject({id: groupId, isArchived: false})
   })
 
   describe('Groups at the member limit', () => {

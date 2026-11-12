@@ -83,45 +83,23 @@ const removeOrgUsers: MutationResolvers['removeOrgUsers'] = async (
     return standardError(new Error('Cannot remove last billing leader'))
   }
 
-  const removedUserResults = await Promise.all(
-    userIds.map(async (removedUserId: string) => {
-      const removedUserData = await removeFromOrg(removedUserId, orgId, viewerId, dataLoader)
-      return {removedUserId, removedUserData}
-    })
-  )
+  const {removedUsers, teamMemberIds, teamIds, taskIds, activeMeetingIds, kickOutNotificationIds} =
+    await removeFromOrg([...new Set(userIds)], orgId, viewerId, dataLoader)
 
   const data = {
-    removedUserIds: [...new Set(removedUserResults.map(({removedUserId}) => removedUserId))],
-    removedOrgMemberIds: [
-      ...new Set(removedUserResults.map(({removedUserData}) => removedUserData.organizationUserId))
-    ],
-    removedTeamMemberIds: [
-      ...new Set(removedUserResults.flatMap(({removedUserData}) => removedUserData.teamMemberIds))
-    ],
+    removedUserIds: removedUsers.map(({userId}) => userId),
+    removedOrgMemberIds: removedUsers.map(({organizationUserId}) => organizationUserId),
+    removedTeamMemberIds: teamMemberIds,
     affectedOrganizationId: orgId,
     affectedOrganizationName: organization.name,
-    affectedTeamIds: [
-      ...new Set(removedUserResults.flatMap(({removedUserData}) => removedUserData.teamIds))
-    ],
-    affectedTaskIds: [
-      ...new Set(removedUserResults.flatMap(({removedUserData}) => removedUserData.taskIds))
-    ],
-    affectedMeetingIds: [
-      ...new Set(
-        removedUserResults.flatMap(({removedUserData}) => removedUserData.activeMeetingIds)
-      )
-    ],
-    kickOutNotificationIds: [
-      ...new Set(
-        removedUserResults.flatMap(({removedUserData}) => removedUserData.kickOutNotificationIds)
-      )
-    ]
+    affectedTeamIds: teamIds,
+    affectedTaskIds: [...new Set(taskIds)],
+    affectedMeetingIds: [...new Set(activeMeetingIds)],
+    kickOutNotificationIds
   }
 
-  removedUserResults.map(async ({removedUserId, removedUserData}) => {
-    publish(SubscriptionChannel.NOTIFICATION, removedUserId, 'AuthTokenPayload', {
-      tms: removedUserData.tms
-    })
+  removedUsers.forEach(({userId, tms}) => {
+    publish(SubscriptionChannel.NOTIFICATION, userId, 'AuthTokenPayload', {tms})
   })
 
   publish(SubscriptionChannel.ORGANIZATION, orgId, 'RemoveOrgUsersSuccess', data, subOptions)
@@ -130,14 +108,8 @@ const removeOrgUsers: MutationResolvers['removeOrgUsers'] = async (
     publish(SubscriptionChannel.TEAM, teamId, 'RemoveOrgUsersSuccess', data, subOptions)
   })
 
-  removedUserResults.map(async ({removedUserId}) => {
-    publish(
-      SubscriptionChannel.NOTIFICATION,
-      removedUserId,
-      'RemoveOrgUsersSuccess',
-      data,
-      subOptions
-    )
+  removedUsers.forEach(({userId}) => {
+    publish(SubscriptionChannel.NOTIFICATION, userId, 'RemoveOrgUsersSuccess', data, subOptions)
   })
 
   data.removedTeamMemberIds.map(async (removedTeamMemberId) => {

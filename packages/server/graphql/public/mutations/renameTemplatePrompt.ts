@@ -16,7 +16,7 @@ const renameTemplatePrompt: MutationResolvers['renameTemplatePrompt'] = async (
   const prompt = await dataLoader.get('templatePrompts').load(promptId)
 
   if (!prompt || prompt.removedAt) {
-    throw new GraphQLError('Prompt not found')
+    throw new GraphQLError('Prompt not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const {teamId, templateId} = prompt
   const trimmedQuestion = question.trim().slice(0, 100)
@@ -24,7 +24,7 @@ const renameTemplatePrompt: MutationResolvers['renameTemplatePrompt'] = async (
 
   const activePrompts = await dataLoader.get('templatePromptsByTemplateId').load(templateId)
   if (activePrompts.find((prompt) => prompt.question === normalizedQuestion)) {
-    throw new GraphQLError('Duplicate question template')
+    throw new GraphQLError('Duplicate question template', {extensions: {code: 'CONFLICT'}})
   }
 
   const [standupResponse, retroReflection] = await Promise.all([

@@ -22,7 +22,9 @@ import {LoomExtension} from '../components/TipTapEditor/LoomExtension'
 import {TiptapLinkExtension} from '../components/TipTapEditor/TiptapLinkExtension'
 import {useUploadUserAsset} from '../mutations/useUploadUserAsset'
 import {themeBackgroundColors} from '../shared/themeBackgroundColors'
+import {CalloutTitleBase} from '../shared/tiptap/extensions/CalloutTitleBase'
 import {SafeTextStyleKit} from '../shared/tiptap/extensions/SafeTextStyleKit'
+import {Callout} from '../tiptap/extensions/callout/Callout'
 import {EmbedBlock} from '../tiptap/extensions/embedBlock/EmbedBlock'
 import {handleServerEmbedMessage} from '../tiptap/extensions/fileBlock/embedManager'
 import FileBlock from '../tiptap/extensions/fileBlock/FileBlock'
@@ -39,15 +41,41 @@ import {PageLinkPicker} from '../tiptap/extensions/pageLinkPicker/PageLinkPicker
 import {PageUserMention} from '../tiptap/extensions/pageUserMention/PageUserMention'
 import {pageUserSuggestion} from '../tiptap/extensions/pageUserMention/pageUserSuggestion'
 import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
+import type {CommandTitle} from '../tiptap/extensions/slashCommand/slashCommands'
 import {Table} from '../tiptap/extensions/table/Table'
 import {TableCell} from '../tiptap/extensions/table/TableCell'
 import {TableHeader} from '../tiptap/extensions/table/TableHeader'
 import {TableOfContents} from '../tiptap/extensions/tableOfContents/TableOfContents'
+import {pagePlaceholderText} from '../tiptap/pagePlaceholderText'
 import {MAX_FILE_SIZE_FREE} from '../utils/constants'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import useAtmosphere from './useAtmosphere'
 import {usePageLinkPlaceholder} from './usePageLinkPlaceholder'
 import {lookupPageViewerAccess} from './usePageViewerAccess'
+
+const PAGE_SLASH_COMMANDS: Record<CommandTitle, boolean> = {
+  Text: true,
+  'To-do list': true,
+  'Heading 1': true,
+  'Heading 2': true,
+  'Heading 3': true,
+  'Bullet list': true,
+  'Numbered list': true,
+  Quote: true,
+  Callout: true,
+  Code: true,
+  'Table of contents': true,
+  Details: true,
+  Table: true,
+  Divider: true,
+  Embed: true,
+  'Link to page': true,
+  'Create page': true,
+  Database: false,
+  Insights: true,
+  Image: true,
+  File: true
+}
 
 const getFileType = (file: File) => {
   if (file.type.startsWith('image/')) return 'image'
@@ -108,6 +136,8 @@ export const useTipTapPageEditor = (
         }),
         DetailsSummary,
         DetailsContent,
+        Callout,
+        CalloutTitleBase,
         Table.configure({
           allowTableNodeSelection: true
         }),
@@ -118,9 +148,7 @@ export const useTipTapPageEditor = (
         TaskItem.configure({
           nested: true
         }),
-        SlashCommand.configure({
-          Database: hasDatabases
-        }),
+        SlashCommand.configure({commands: {...PAGE_SLASH_COMMANDS, Database: hasDatabases}}),
         Focus,
         FileUpload.configure({
           scopeKey: pageId,
@@ -141,39 +169,7 @@ export const useTipTapPageEditor = (
           showOnlyWhenEditable: false,
           includeChildren: true,
           emptyNodeClass: 'is-empty print:hidden',
-          placeholder: ({node, pos}) => {
-            if (placeholderRef.current) {
-              return placeholderRef.current
-            }
-            const {type, attrs} = node
-            const {name} = type
-            switch (name) {
-              case 'heading':
-                if (pos === 0) return 'New Page'
-                return `Heading ${attrs.level}`
-              case 'codeBlock':
-                return 'New code'
-              case 'blockquote':
-                return 'New quote'
-              case 'paragraph':
-                return "Press '/' for commands"
-              case 'detailsSummary':
-                return 'New summary'
-              case 'detailsContent': {
-                const isDefaultEmpty =
-                  node.childCount === 0 ||
-                  (node.childCount === 1 &&
-                    node.firstChild?.type.name === 'paragraph' &&
-                    node.firstChild.content.size === 0)
-                return isDefaultEmpty ? 'Add details, use / to add blocks' : ''
-              }
-              case 'bulletList':
-              case 'listItem':
-              case 'orderedList':
-              default:
-                return ''
-            }
-          }
+          placeholder: (props) => placeholderRef.current || pagePlaceholderText(props)
         }),
         PageUserMention.configure({
           atmosphere,

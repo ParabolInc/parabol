@@ -394,6 +394,9 @@ const TEMPLATE_CHOICES: Record<MeetingType, string[]> = {
   teamHealth: ['googleProjectAristotleTemplate', 'atlassianTeamHealthMonitorTemplate']
 }
 
+// a retro copies these from its team's settings when it starts, and its meeting fails to load without them
+const RETRO_VOTING = {disableAnonymity: false, maxVotesPerGroup: 3, totalVotes: 5}
+
 // the settings every new team gets for each kind of meeting, as createTeamAndLeader makes them. A team without them
 // can't load its meeting settings, so pages like the activity library fail for its members
 const MEETING_SETTINGS = [
@@ -401,9 +404,7 @@ const MEETING_SETTINGS = [
     meetingType: 'retrospective',
     phaseTypes: ['checkin', 'TEAM_HEALTH', 'updates', 'reflect', 'group', 'vote', 'discuss'],
     selectedTemplateId: 'workingStuckTemplate',
-    disableAnonymity: false,
-    maxVotesPerGroup: 3,
-    totalVotes: 5
+    ...RETRO_VOTING
   },
   {
     meetingType: 'action',
@@ -461,29 +462,79 @@ const minutesAfter = (date: Date, minutes: number) => new Date(date.getTime() + 
 const ID_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
 const toId = () => Array.from(crypto.randomBytes(10), (byte) => ID_CHARS[byte % 62]).join('')
 
-// A Team Health check's results phase, one stage per category, which the meeting and Reports read its results from
-const toTeamHealthPhases = (questionIds: number[]) =>
-  JSON.stringify([
-    {
-      id: toId(),
-      phaseType: 'TEAM_HEALTH_RESULT',
-      stages: questionIds.map((questionId, sortOrder) => ({
-        id: toId(),
-        phaseType: 'TEAM_HEALTH_RESULT',
-        questionId,
-        sortOrder,
-        discussionId: toId(),
-        isComplete: true,
-        isNavigable: true,
-        isNavigableByFacilitator: true,
-        viewCount: 0,
-        readyToAdvance: []
-      }))
-    }
-  ])
-
-const toTaskContent = (text: string) =>
+const toTipTapDoc = (text: string) =>
   JSON.stringify({type: 'doc', content: [{type: 'paragraph', content: [{type: 'text', text}]}]})
+
+const toEndedStage = (phaseType: string, fields: Row = {}) => ({
+  id: toId(),
+  phaseType,
+  isComplete: true,
+  isNavigable: true,
+  isNavigableByFacilitator: true,
+  viewCount: 0,
+  readyToAdvance: [],
+  ...fields
+})
+type EndedStage = ReturnType<typeof toEndedStage>
+const toPhase = (phaseType: string, stages: EndedStage[], fields: Row = {}) => ({
+  id: toId(),
+  phaseType,
+  stages,
+  ...fields
+})
+type Phase = ReturnType<typeof toPhase>
+
+// a meeting that ended leaves its facilitator on its last stage, which is where it opens
+const toMeetingPhases = (phases: Phase[]) => ({
+  phases: JSON.stringify(phases),
+  facilitatorStageId: phases.flatMap(({stages}) => stages).at(-1)!.id
+})
+
+// A Team Health check's results phase, one stage per category, which the meeting and Reports read its results from
+const toTeamHealthPhases = (questionIds: number[]) => [
+  toPhase(
+    'TEAM_HEALTH_RESULT',
+    questionIds.map((questionId, sortOrder) =>
+      toEndedStage('TEAM_HEALTH_RESULT', {questionId, sortOrder, discussionId: toId()})
+    )
+  )
+]
+
+interface DiscussedTopic {
+  topicId: string
+  discussionId: string
+}
+const toTeamMemberStages = (phaseType: string, teamId: string, attendees: string[]) =>
+  attendees.map((userId) => toEndedStage(phaseType, {teamMemberId: `${userId}::${teamId}`}))
+const toCheckInPhase = (teamId: string, attendees: string[]) =>
+  toPhase('checkin', toTeamMemberStages('checkin', teamId, attendees), {
+    checkInGreeting: {content: 'Hola', language: 'Spanish'},
+    checkInQuestion: toTipTapDoc('What’s one thing you’re looking forward to this week?')
+  })
+const toRetroPhases = (teamId: string, attendees: string[], topics: DiscussedTopic[]) => [
+  toCheckInPhase(teamId, attendees),
+  toPhase('reflect', [toEndedStage('reflect')], {teamId}),
+  toPhase('group', [toEndedStage('group')]),
+  toPhase('vote', [toEndedStage('vote')]),
+  toPhase(
+    'discuss',
+    topics.map(({topicId, discussionId}, sortOrder) =>
+      toEndedStage('discuss', {reflectionGroupId: topicId, discussionId, sortOrder})
+    )
+  )
+]
+const toCheckInMeetingPhases = (teamId: string, attendees: string[], topics: DiscussedTopic[]) => [
+  toCheckInPhase(teamId, attendees),
+  toPhase('updates', toTeamMemberStages('updates', teamId, attendees)),
+  toPhase('firstcall', [toEndedStage('firstcall')]),
+  toPhase(
+    'agendaitems',
+    topics.map(({topicId, discussionId}) =>
+      toEndedStage('agendaitems', {agendaItemId: topicId, discussionId})
+    )
+  ),
+  toPhase('lastcall', [toEndedStage('lastcall')])
+]
 
 const insertRows = async (client: Client, table: string, rows: Row[]) => {
   const columns = Object.keys(rows[0] ?? {})
@@ -718,7 +769,7 @@ const seedCopper = async (client: Client, viewerId: string, tier: 'starter' | 't
     const id = toId()
     add('Task', {
       id,
-      content: toTaskContent(task.text),
+      content: toTipTapDoc(task.text),
       plaintextContent: task.text,
       createdBy: task.createdBy,
       userId: task.owner,
@@ -770,7 +821,9 @@ const seedCopper = async (client: Client, viewerId: string, tier: 'starter' | 't
           createdAt,
           meetingType === 'teamPrompt' ? 8 * 60 : between(30, 60)
         )
-        add('NewMeeting', {
+        const isRetro = meetingType === 'retrospective'
+        // every row names every column, since insertRows reads the columns from a table's first row
+        const meeting: Row = {
           id: meetingId,
           name: `${MEETING_NAMES[meetingType]} ${meetingNumber}`,
           teamId: team.id,
@@ -780,18 +833,27 @@ const seedCopper = async (client: Client, viewerId: string, tier: 'starter' | 't
           facilitatorStageId: toId(),
           facilitatorUserId: facilitator,
           createdBy: facilitator,
-          phases: meetingType === 'teamHealth' ? toTeamHealthPhases(catalog.questionIds) : '[]',
+          phases: '[]',
           templateId,
+          disableAnonymity: isRetro ? RETRO_VOTING.disableAnonymity : null,
+          maxVotesPerGroup: isRetro ? RETRO_VOTING.maxVotesPerGroup : null,
+          totalVotes: isRetro ? RETRO_VOTING.totalVotes : null,
           createdAt,
           endedAt
-        })
+        }
+        if (meetingType === 'teamHealth') {
+          Object.assign(meeting, toMeetingPhases(toTeamHealthPhases(catalog.questionIds)))
+        }
+        add('NewMeeting', meeting)
         attendees.forEach((userId) => {
           add('MeetingMember', {
             id: `${userId}::${meetingId}`,
             meetingType,
             meetingId,
             teamId: team.id,
-            userId
+            userId,
+            isSpectating: meetingType === 'poker' || meetingType === 'teamHealth' ? false : null,
+            votesRemaining: isRetro ? RETRO_VOTING.totalVotes : null
           })
         })
         if (meetingType === 'teamHealth') {
@@ -870,6 +932,7 @@ const seedCopper = async (client: Client, viewerId: string, tier: 'starter' | 't
         }
         if (meetingType !== 'retrospective' && meetingType !== 'action') continue
         const topicCount = meetingType === 'retrospective' ? between(3, 5) : between(2, 3)
+        const topics: DiscussedTopic[] = []
         for (let topicIdx = 0; topicIdx < topicCount; topicIdx++) {
           const topicId = toId()
           const discussionId = toId()
@@ -909,6 +972,7 @@ const seedCopper = async (client: Client, viewerId: string, tier: 'starter' | 't
             discussionTopicType: meetingType === 'retrospective' ? 'reflectionGroup' : 'agendaItem',
             createdAt: discussedAt
           })
+          topics.push({topicId, discussionId})
           const taskCount = pick([0, 1, 1, 2])
           for (let taskIdx = 0; taskIdx < taskCount; taskIdx++) {
             addTask({
@@ -924,6 +988,10 @@ const seedCopper = async (client: Client, viewerId: string, tier: 'starter' | 't
             })
           }
         }
+        const phases = isRetro
+          ? toRetroPhases(team.id, attendees, topics)
+          : toCheckInMeetingPhases(team.id, attendees, topics)
+        Object.assign(meeting, toMeetingPhases(phases))
       }
     })
     // tasks people added on the team's board between meetings

@@ -11,6 +11,7 @@ import UpdateAgendaItemMutation from '../../../../mutations/UpdateAgendaItemMuta
 import {getSortOrder} from '../../../../shared/sortOrder'
 import {cn} from '../../../../ui/cn'
 import {AGENDA_ITEM} from '../../../../utils/constants'
+import isTempId from '../../../../utils/relay/isTempId'
 import AgendaItem from '../AgendaItem/AgendaItem'
 import AgendaListEmptyState from './AgendaListEmptyState'
 
@@ -95,7 +96,7 @@ const AgendaList = (props: Props) => {
                     key={item.id}
                     draggableId={item.id}
                     index={idx}
-                    isDragDisabled={!!endedAt}
+                    isDragDisabled={!!endedAt || isTempId(item.id)}
                   >
                     {(dragProvided, dragSnapshot) => {
                       return (

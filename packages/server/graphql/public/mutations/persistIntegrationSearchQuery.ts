@@ -41,36 +41,46 @@ const persistIntegrationSearchQuery: MutationResolvers['persistIntegrationSearch
   const subOptions = {mutatorId, operationId}
 
   const parsedMeta = parseMeta(meta)
-  if (parsedMeta instanceof Error) throw new GraphQLError(parsedMeta.message)
+  if (parsedMeta instanceof Error)
+    throw new GraphQLError(parsedMeta.message, {extensions: {code: 'BAD_USER_INPUT'}})
 
   const dbProviderId = IntegrationProviderId.split(providerId)
-  if (!Number.isInteger(dbProviderId)) throw new GraphQLError('Provider does not exist')
+  if (!Number.isInteger(dbProviderId))
+    throw new GraphQLError('Provider does not exist', {extensions: {code: 'NOT_FOUND'}})
   const [provider, team] = await Promise.all([
     dataLoader.get('integrationProviders').load(dbProviderId),
     dataLoader.get('teams').loadNonNull(teamId)
   ])
-  if (!provider) throw new GraphQLError('Provider does not exist')
+  if (!provider)
+    throw new GraphQLError('Provider does not exist', {extensions: {code: 'NOT_FOUND'}})
   const {service} = provider
   const providers = await dataLoader
     .get('sharedIntegrationProviders')
     .load({service, orgIds: [team.orgId], teamIds: [teamId]})
   if (!providers.some(({id}) => id === dbProviderId)) {
-    throw new GraphQLError('Provider is not available to this team')
+    throw new GraphQLError('Provider is not available to this team', {
+      extensions: {code: 'FORBIDDEN'}
+    })
   }
 
   if (!isRegisteredServerIntegration(service)) {
-    throw new GraphQLError(`${service} does not save search queries`)
+    throw new GraphQLError(`${service} does not save search queries`, {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   const definition: ServerIntegrationDefinition = getServerIntegration(service)
   const issueSearch = definition.capabilities.issueSearch
   if (!issueSearch) {
-    throw new GraphQLError(`${service} does not save search queries`)
+    throw new GraphQLError(`${service} does not save search queries`, {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   if (!(await definition.isConnected({dataLoader, teamId, userId: viewerId}))) {
-    throw new GraphQLError(`Not connected to ${definition.title}`)
+    throw new GraphQLError(`Not connected to ${definition.title}`, {extensions: {code: 'CONFLICT'}})
   }
   const query = issueSearch.buildQuery(queryString, parsedMeta)
-  if (query instanceof Error) throw new GraphQLError(query.message)
+  if (query instanceof Error)
+    throw new GraphQLError(query.message, {extensions: {code: 'BAD_USER_INPUT'}})
 
   await getKysely()
     .insertInto('IntegrationSearchQuery')

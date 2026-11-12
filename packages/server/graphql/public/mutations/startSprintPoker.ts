@@ -15,6 +15,7 @@ import type {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
 import createNewMeetingPhases from '../../mutations/helpers/createNewMeetingPhases'
+import insertNewMeeting from '../../mutations/helpers/insertNewMeeting'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import type {MutationResolvers} from '../resolverTypes'
@@ -82,34 +83,38 @@ const startSprintPoker: MutationResolvers['startSprintPoker'] = async (
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
-
-  const unpaidError = await isStartMeetingLocked(teamId, dataLoader)
-  if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
-
   const meetingType: MeetingTypeEnum = 'poker'
-
-  // RESOLUTION
-  const meetingId = generateUID()
-  const meetingCount = await dataLoader.get('meetingCount').load({teamId, meetingType})
-
-  const [phases, inserts] = await createNewMeetingPhases<PokerMeetingPhase>(
-    viewerId,
-    teamId,
-    meetingId,
-    meetingCount,
-    meetingType,
-    dataLoader
-  )
-  const meetingSettings = await dataLoader
-    .get('meetingSettingsByType')
-    .loadNonNull({teamId, meetingType: 'poker'})
+  const [unpaidError, meetingCount, meetingSettings, {facilitatorUserId, rotation}, teamMember] =
+    await Promise.all([
+      isStartMeetingLocked(teamId, dataLoader),
+      dataLoader.get('meetingCount').load({teamId, meetingType}),
+      dataLoader.get('meetingSettingsByType').loadNonNull({teamId, meetingType}),
+      getNextFacilitatorUserId(teamId, viewerId, dataLoader),
+      dataLoader.get('teamMembers').loadNonNull(toTeamMemberId(teamId, viewerId))
+    ])
+  if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
   const {selectedTemplateId} = meetingSettings
   if (!selectedTemplateId) {
     throw new Error('selectedTemplateId is required')
   }
-  const templateRefId = await freezeTemplateAsRef(selectedTemplateId, dataLoader)
+  if (!teamMember.isNotRemoved) {
+    return {error: {message: 'Team member was removed'}}
+  }
 
-  const {facilitatorUserId, rotation} = await getNextFacilitatorUserId(teamId, viewerId, dataLoader)
+  // RESOLUTION
+  const meetingId = generateUID()
+  const [[phases, inserts], templateRefId] = await Promise.all([
+    createNewMeetingPhases<PokerMeetingPhase>(
+      viewerId,
+      teamId,
+      meetingId,
+      meetingCount,
+      meetingType,
+      dataLoader
+    ),
+    freezeTemplateAsRef(selectedTemplateId, dataLoader)
+  ])
+
   const meeting = new MeetingPoker({
     id: meetingId,
     teamId,
@@ -122,33 +127,23 @@ const startSprintPoker: MutationResolvers['startSprintPoker'] = async (
   }) as PokerMeeting
 
   const [newMeetingRes] = await Promise.allSettled([
-    pg.transaction().execute(async (pg) => {
-      await pg
-        .insertInto('NewMeeting')
-        .values({...meeting, phases: JSON.stringify(phases)})
-        .execute()
-      await Promise.all(inserts.map((insert) => pg.executeQuery(insert)))
-    }),
+    insertNewMeeting(meeting, inserts),
     updateMeetingTemplateLastUsedAt(selectedTemplateId, teamId)
   ])
   if (newMeetingRes.status === 'rejected') {
     return {error: {message: 'Meeting already started'}}
   }
   dataLoader.clearAll('newMeetings')
-  if (rotation) await setFacilitatorRotation(teamId, rotation, dataLoader)
-
-  const teamMemberId = toTeamMemberId(teamId, viewerId)
-  const teamMember = await dataLoader.get('teamMembers').loadNonNull(teamMemberId)
-  if (!teamMember.isNotRemoved) {
-    return {error: {message: 'Team member was removed'}}
-  }
   const meetingMember = createMeetingMember(meeting, teamMember)
-  await pg
-    .with('MeetingMemberInsert', (qb) => qb.insertInto('MeetingMember').values(meetingMember))
-    .updateTable('Team')
-    .set({lastMeetingType: meetingType})
-    .where('id', '=', teamId)
-    .execute()
+  await Promise.all([
+    pg
+      .with('MeetingMemberInsert', (qb) => qb.insertInto('MeetingMember').values(meetingMember))
+      .updateTable('Team')
+      .set({lastMeetingType: meetingType})
+      .where('id', '=', teamId)
+      .execute(),
+    rotation && setFacilitatorRotation(teamId, rotation, dataLoader)
+  ])
   IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
   meetingsStarted.inc({meeting_type: meeting.meetingType})
   const {error} = await createGcalEvent({

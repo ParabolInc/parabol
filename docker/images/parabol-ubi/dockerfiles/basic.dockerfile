@@ -4,7 +4,8 @@ FROM gcr.io/distroless/nodejs${_NODE_MAJOR}-debian13
 # node is only the entrypoint in distroless, add it to PATH so it also works as a command
 ENV HOME=/home/node \
     PATH=/nodejs/bin:${PATH} \
-    PORT=3000
+    PORT=3000 \
+    NODE_COMPILE_CACHE=/home/node/parabol/dist/compile-cache
 
 USER 1000:1000
 
@@ -16,6 +17,7 @@ WORKDIR ${HOME}/parabol
 COPY --chown=1000:1000 .env.example pnpm-lock.yaml ./
 COPY --chown=1000:1000 build ./build
 COPY --chown=1000:1000 dist ./dist
+RUN --mount=type=bind,source=docker/images/parabol-ubi/compileBundles.js,target=/tmp/compileBundles.js ["node", "/tmp/compileBundles.js"]
 
 EXPOSE ${PORT}
 

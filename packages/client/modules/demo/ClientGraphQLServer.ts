@@ -344,11 +344,12 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
     },
-    TaskFooterIntegrateMenuListLocalQuery: () => {
-      const user = this.db.users[0]
+    TaskSendControlQuery: () => {
       return {
         viewer: {
-          ...user
+          ...this.db.users[0],
+          team: null,
+          teamMember: this.db.teamMembers[0]
         }
       }
     },

@@ -6,8 +6,10 @@ import type {TaskFooterIntegrateMenuQuery} from '../__generated__/TaskFooterInte
 import useAtmosphere from '../hooks/useAtmosphere'
 import {makePlaceholder, useIsIntegrated} from '../hooks/useIsIntegrated'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
+import useConnectInMenu from '../integrations/platform/useConnectInMenu'
 import CreateTaskIntegrationMutation from '../mutations/CreateTaskIntegrationMutation'
 import {getOrgSendServices} from '../utils/getSendServices'
+import TaskFooterIntegrateMenuConnecting from './TaskFooterIntegrateMenuConnecting'
 import TaskFooterIntegrateMenuList from './TaskFooterIntegrateMenuList'
 import TaskFooterIntegrateMenuSignup from './TaskFooterIntegrateMenuSignup'
 
@@ -22,6 +24,7 @@ const query = graphql`
     viewer {
       viewerTeamMember: teamMember(userId: null, teamId: $teamId) {
         ...TaskFooterIntegrateMenuSignup_teamMember
+        ...TaskFooterIntegrateMenuList_teamMember
         ...useIsIntegrated_teamMember
       }
       team(teamId: $teamId) {
@@ -48,6 +51,8 @@ const TaskFooterIntegrateMenu = (props: Props) => {
     taskRef
   )
   const atmosphere = useAtmosphere()
+  const connectInMenu = useConnectInMenu(mutationProps)
+  const {state: connectState} = connectInMenu
 
   const {viewerTeamMember} = viewer
   const isViewerIntegrated = useIsIntegrated(viewerTeamMember)
@@ -71,13 +76,26 @@ const TaskFooterIntegrateMenu = (props: Props) => {
     })
   }
 
+  if (connectState.phase === 'waiting') {
+    return (
+      <TaskFooterIntegrateMenuConnecting
+        title={connectState.title}
+        onCancel={connectInMenu.cancel}
+      />
+    )
+  }
+  const failure = connectState.phase === 'failed' ? connectState : undefined
+
   if (isViewerIntegrated) {
     const placeholder = makePlaceholder(isViewerIntegrated)
     const label = 'Send with your credentials'
     return (
       <TaskFooterIntegrateMenuList
+        failure={failure}
+        onConnect={connectInMenu.begin}
+        mutationProps={mutationProps}
         placeholder={placeholder}
-        teamId={task.teamId}
+        teamMemberRef={viewerTeamMember}
         onPushToIntegration={handlePushToIntegration}
         label={label}
       />
@@ -88,6 +106,8 @@ const TaskFooterIntegrateMenu = (props: Props) => {
 
   return (
     <TaskFooterIntegrateMenuSignup
+      failure={failure}
+      onConnect={connectInMenu.begin}
       mutationProps={mutationProps}
       teamId={teamId}
       label={label}

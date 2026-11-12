@@ -18,12 +18,12 @@ const addTeamHealthTemplateQuestion: MutationResolvers['addTeamHealthTemplateQue
   // AUTH
   const template = await dataLoader.get('meetingTemplates').load(templateId)
   if (!template || template.type !== 'teamHealth') {
-    throw new GraphQLError('Template not found')
+    throw new GraphQLError('Template not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
   // VALIDATION
   if (clientQuestionIds.length === 0) {
-    throw new GraphQLError('No questions provided')
+    throw new GraphQLError('No questions provided', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   const questionIds = clientQuestionIds.map((id) => CipherId.fromClient(id)[0])
   const questions = (await dataLoader.get('teamHealthQuestions').loadMany(questionIds)).filter(
@@ -31,7 +31,7 @@ const addTeamHealthTemplateQuestion: MutationResolvers['addTeamHealthTemplateQue
   )
   const validIds = questions.filter((q) => !q.replacedBy).map((q) => q.id)
   if (validIds.length === 0) {
-    throw new GraphQLError('No valid questions provided')
+    throw new GraphQLError('No valid questions provided', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   // RESOLUTION

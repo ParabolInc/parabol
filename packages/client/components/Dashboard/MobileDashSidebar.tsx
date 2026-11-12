@@ -18,6 +18,7 @@ import {
   Work as WorkIcon
 } from '~/ui/icons'
 import type {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
+import type {ReportsLaunchGlowState} from '../../hooks/useReportsLaunchGlow'
 import {cn} from '../../ui/cn'
 import {
   AUTHENTICATION_PAGE,
@@ -31,12 +32,14 @@ import DashNavList from '../DashNavList/DashNavList'
 import StandardHub from '../StandardHub/StandardHub'
 import LeftDashNavItem from './LeftDashNavItem'
 import LeftDashParabol from './LeftDashNavParabol'
+import ReportsLaunchGlow from './ReportsLaunchGlow'
 
 const isGlobalBannerEnabled = window.__ACTION__.GLOBAL_BANNER_ENABLED
 
 interface Props {
   handleMenuClick: () => void
   viewerRef: DashSidebar_viewer$key | null
+  reportsGlow: ReportsLaunchGlowState
 }
 
 // NavSidebar.WIDTH = 256px (max-w-64/min-w-64); GlobalBanner.HEIGHT = 24px (pt-6)
@@ -59,7 +62,7 @@ const navItemsWrapClassName = 'px-3 pt-2.5 pb-0'
 const footerClassName = 'mt-auto flex flex-col justify-end p-2'
 
 const MobileDashSidebar = (props: Props) => {
-  const {handleMenuClick, viewerRef} = props
+  const {handleMenuClick, viewerRef, reportsGlow} = props
   const match = useMatch('/me/organizations/:orgId/*')
 
   const viewer = useFragment(
@@ -70,7 +73,6 @@ const MobileDashSidebar = (props: Props) => {
         organizations {
           id
           name
-          hasReports: featureFlag(featureName: "Reports")
         }
       }
     `,
@@ -78,7 +80,6 @@ const MobileDashSidebar = (props: Props) => {
   )
   if (!viewer) return null
   const {organizations} = viewer
-  const hasReports = organizations.some((org) => org.hasReports)
 
   if (match) {
     const orgIdFromParams = match.params.orgId!
@@ -208,14 +209,15 @@ const MobileDashSidebar = (props: Props) => {
               href={'/me/tasks'}
               label={'Tasks'}
             />
-            {hasReports && (
-              <LeftDashNavItem
-                onClick={handleMenuClick}
-                Icon={PollOutlinedIcon}
-                href={'/reports'}
-                label={'Reports'}
-              />
-            )}
+            <LeftDashNavItem
+              onClick={handleMenuClick}
+              Icon={PollOutlinedIcon}
+              href={'/reports'}
+              label={'Reports'}
+              decoration={
+                reportsGlow !== 'off' && <ReportsLaunchGlow retiring={reportsGlow === 'retiring'} />
+              }
+            />
             <LeftDashNavItem
               onClick={handleMenuClick}
               Icon={AddIcon}

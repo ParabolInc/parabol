@@ -3,7 +3,7 @@ import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import removeTeamMemberHelper from '../../mutations/helpers/removeTeamMember'
+import removeTeamMembers from '../../mutations/helpers/removeTeamMembers'
 import type {MutationResolvers} from '../resolverTypes'
 
 const removeTeamMember: MutationResolvers['removeTeamMember'] = async (
@@ -26,16 +26,16 @@ const removeTeamMember: MutationResolvers['removeTeamMember'] = async (
 
   // RESOLUTION
   const evictorUserId = isSelf ? undefined : viewerId
-  const res = await removeTeamMemberHelper(teamMemberId, {evictorUserId}, dataLoader)
-  const {user, notificationId, archivedTaskIds, reassignedTaskIds} = res
-  if (!user) {
+  const {removedUserIds, notificationIds, archivedTaskIds, reassignedTaskIds} =
+    await removeTeamMembers(teamId, [userId], {evictorUserId}, dataLoader)
+  if (removedUserIds.length === 0) {
     return standardError(new Error('Could not remove given team member'), {userId})
   }
   const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
   const tms = await dataLoader.get('teamIdsByUserId').load(userId)
   publish(SubscriptionChannel.NOTIFICATION, userId, 'AuthTokenPayload', {tms})
   const taskIds = [...archivedTaskIds, ...reassignedTaskIds]
-  const data = {teamId, teamMemberId, taskIds, notificationId, userId}
+  const data = {teamId, teamMemberId, taskIds, notificationId: notificationIds[0], userId}
   publish(SubscriptionChannel.TEAM, teamId, 'RemoveTeamMemberPayload', data, subOptions)
   teamMembers.forEach(({userId: teamMemberUserId}) => {
     if (teamMemberUserId === userId) return

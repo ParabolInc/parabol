@@ -91,8 +91,8 @@ const wrapResolve = (resolve: Resolver, rule: ShieldRule): Resolver => {
       const redactedValue = getRedactedValue(info.returnType)
       if (redactedValue !== undefined) return redactedValue
     }
-    if (res === false) return new GraphQLError('Not authorized')
-    if (typeof res === 'string') return new GraphQLError(res)
+    if (res === false) return new GraphQLError('Not authorized', {extensions: {code: 'FORBIDDEN'}})
+    if (typeof res === 'string') return new GraphQLError(res, {extensions: {code: 'FORBIDDEN'}})
     return res
   }
 }

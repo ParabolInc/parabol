@@ -61,6 +61,12 @@ const details = (summary: string | Json[], ...content: Json[]) => ({
     {type: 'detailsContent', content: content.length ? content : [p()]}
   ]
 })
+const callout = (tone: string, content: Json[]) => ({
+  type: 'callout',
+  attrs: {tone, emoji: null},
+  content
+})
+const calloutTitle = (value: string) => ({type: 'calloutTitle', content: inline(value)})
 const image = {type: 'imageBlock', attrs: {src: 'https://example.com/a.png'}}
 const pageLink = (pageCode: number, title: string) => ({
   type: 'pageLinkBlock',
@@ -103,6 +109,7 @@ const TODO: TurnIntoTarget = {type: 'taskList'}
 const DETAILS: TurnIntoTarget = {type: 'details'}
 const CODE: TurnIntoTarget = {type: 'codeBlock'}
 const QUOTE: TurnIntoTarget = {type: 'blockquote'}
+const CALLOUT: TurnIntoTarget = {type: 'callout'}
 const ALL_TARGETS = turnIntoRows.map(({target}) => target)
 
 const convert = (state: EditorState, pos: number, target: TurnIntoTarget) => {
@@ -525,6 +532,9 @@ describe('every source to every target', () => {
     ['to-do with a nested to-do', tl(ti('word', tl('nested'))), 'word', 'taskItem'],
     ['item with a link', ul(li('word', link)), 'word', 'listItem'],
     ['item with a long body', ul(li('word', ...longBody)), 'word', 'listItem'],
+    ['callout', callout('info', [p('word'), p('more')]), 'word', 'callout'],
+    ['titled callout', callout('tip', [calloutTitle('word'), p('more')]), 'word', 'callout'],
+    ['callout with a long body', callout('info', [p('word'), ...longBody]), 'word', 'callout'],
     ['quote', quote(p('word'), p('more')), 'word', 'blockquote'],
     ['quote with a link', quote(p('word'), link), 'word', 'blockquote'],
     ['quote with a long body', quote(p('word'), ...longBody), 'word', 'blockquote'],
@@ -572,6 +582,7 @@ describe('every source to every target', () => {
     ['code', code(), 'codeBlock'],
     ['bullet', ul(li('')), 'listItem'],
     ['to-do', tl(ti('')), 'taskItem'],
+    ['callout', callout('plain', [p()]), 'callout'],
     ['quote', quote(p()), 'blockquote'],
     ['details', details(''), 'details']
   ]
@@ -705,5 +716,43 @@ describe('with the real editor plugins', () => {
     expect(doc.child(1).type.name).toBe('taskList')
     expect(doc.child(2).type.name).toBe('bulletList')
     expect(doc.child(2).childCount).toBe(2)
+  })
+})
+
+describe('callouts', () => {
+  test('a paragraph becomes a plain callout and back', () => {
+    const into = convertBlock([p('hello')], 'hello', CALLOUT)
+    expectBlocks(into.doc, callout('plain', [p('hello')]))
+    const back = convert(
+      EditorState.create({doc: into.doc}),
+      findPos(into.doc, 'hello', 'callout'),
+      TEXT
+    )
+    expectBlocks(back.doc, p('hello'))
+  })
+
+  test('a titled callout becomes text with the title as a bold first line', () => {
+    const state = makeState(callout('tip', [calloutTitle('T'), p('b')]))
+    const back = convert(state, findPos(state.doc, 'T', 'callout'), TEXT)
+    expectBlocks(
+      back.doc,
+      {type: 'paragraph', content: [{...text('T'), marks: [{type: 'bold'}]}]},
+      p('b')
+    )
+  })
+
+  test('an untitled callout keeps its first line and body', () => {
+    const state = makeState(callout('info', [p('a'), p('b')]))
+    expectBlocks(convert(state, findPos(state.doc, 'a', 'callout'), H2).doc, h(2, 'a'), p('b'))
+  })
+
+  test('an empty title is dropped', () => {
+    const state = makeState(callout('info', [calloutTitle(''), p('b')]))
+    expectBlocks(convert(state, findPos(state.doc, 'b', 'callout'), TEXT).doc, p('b'))
+  })
+
+  test('a callout opening with a block that is not text offers no conversion', () => {
+    const state = makeState(callout('info', [ul('a')]))
+    expect(getTurnIntoTarget(state.doc, findPos(state.doc, 'a', 'callout'))).toBeNull()
   })
 })

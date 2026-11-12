@@ -15,10 +15,10 @@ const addTeamHealthQuestion: MutationResolvers['addTeamHealthQuestion'] = async 
   // VALIDATION
   const trimmed = question.trim()
   if (!trimmed) {
-    throw new GraphQLError('Question cannot be empty')
+    throw new GraphQLError('Question cannot be empty', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   if (trimmed.length > 500) {
-    throw new GraphQLError('Question is too long')
+    throw new GraphQLError('Question is too long', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   // RESOLUTION

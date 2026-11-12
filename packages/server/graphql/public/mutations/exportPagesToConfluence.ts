@@ -15,13 +15,15 @@ import {runConfluenceExport} from './helpers/confluenceExport/runConfluenceExpor
 const exportPagesToConfluence: MutationResolvers['exportPagesToConfluence'] = async (
   _source,
   {pageId, teamId, includeSubPages, cloudId, spaceId, spaceName, targetParentPageId},
-  {authToken, dataLoader}
+  {authToken, dataLoader, resourceGrants}
 ) => {
   const viewerId = getUserId(authToken)
   const pg = getKysely()
 
   if (!(await isConfluenceExportEnabled(viewerId, dataLoader))) {
-    throw new GraphQLError('Confluence export is not enabled for your organization')
+    throw new GraphQLError('Confluence export is not enabled for your organization', {
+      extensions: {code: 'FORBIDDEN'}
+    })
   }
   const [dbPageId] = CipherId.fromClient(pageId)
   const page = await dataLoader.get('pages').load(dbPageId)
@@ -29,7 +31,7 @@ const exportPagesToConfluence: MutationResolvers['exportPagesToConfluence'] = as
     throw new GraphQLError('Page not found', {extensions: {code: 'NOT_FOUND'}})
   }
   if (page.deletedAt) {
-    throw new GraphQLError('Cannot export a page in the trash')
+    throw new GraphQLError('Cannot export a page in the trash', {extensions: {code: 'CONFLICT'}})
   }
   const {auth, error: authError} = await resolveConfluenceAuth(
     dataLoader,
@@ -38,7 +40,7 @@ const exportPagesToConfluence: MutationResolvers['exportPagesToConfluence'] = as
     cloudId
   )
   if (!auth) {
-    throw new GraphQLError(authError)
+    throw new GraphQLError(authError, {extensions: {code: 'FORBIDDEN'}})
   }
 
   const rootRow = await pg
@@ -54,17 +56,21 @@ const exportPagesToConfluence: MutationResolvers['exportPagesToConfluence'] = as
       .toArray()
       .some((node) => node instanceof XmlElement && node.nodeName === 'thinkingBlock')
     if (isGenerating) {
-      throw new GraphQLError('This page is still generating. Try again when the summary finishes.')
+      throw new GraphQLError(
+        'This page is still generating. Try again when the summary finishes.',
+        {extensions: {code: 'CONFLICT'}}
+      )
     }
   }
 
-  const tree = await loadPageExportTree(dbPageId, includeSubPages, viewerId)
+  const tree = await loadPageExportTree(dbPageId, includeSubPages, viewerId, resourceGrants)
   if (tree.length === 0) {
     throw new GraphQLError('Page not found', {extensions: {code: 'NOT_FOUND'}})
   }
   if (tree.length > MAX_CONFLUENCE_EXPORT_PAGES) {
     throw new GraphQLError(
-      `This tree has more than ${MAX_CONFLUENCE_EXPORT_PAGES} linked pages. Export a smaller branch.`
+      `This tree has more than ${MAX_CONFLUENCE_EXPORT_PAGES} linked pages. Export a smaller branch.`,
+      {extensions: {code: 'BAD_USER_INPUT'}}
     )
   }
 

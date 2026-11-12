@@ -12,7 +12,6 @@ const query = graphql`
     viewer {
       organizations {
         id
-        hasReports: featureFlag(featureName: "Reports")
       }
     }
   }
@@ -21,11 +20,11 @@ const query = graphql`
 const ReportsRedirect = ({queryRef}: Props) => {
   const {viewer} = usePreloadedQuery<ReportsRedirectQuery>(query, queryRef)
   const {search} = useLocation()
-  const org = viewer.organizations.find(({hasReports}) => hasReports)
+  const [org] = viewer.organizations
   if (org) return <Navigate to={`/reports/${org.id}${search}`} replace />
   return (
     <p className='m-0 px-4 pt-4 text-fg-secondary sm:px-8'>
-      Reports aren’t turned on for your organizations yet.
+      Join an organization to see its reports.
     </p>
   )
 }

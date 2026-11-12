@@ -2,18 +2,21 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {Menu} from '~/ui/icons'
 import type {MobileDashTopBar_query$key} from '../__generated__/MobileDashTopBar_query.graphql'
+import type {ReportsLaunchGlowState} from '../hooks/useReportsLaunchGlow'
 import PlainButton from './PlainButton/PlainButton'
+import ReportsLaunchMenuGlow from './ReportsLaunchMenuGlow'
 import TopBarHelp from './TopBarHelp'
 //import TopBarIcon from './TopBarIcon'
 import TopBarNotifications from './TopBarNotifications'
 
 interface Props {
   toggle: () => void
+  reportsGlow: ReportsLaunchGlowState
   queryRef: MobileDashTopBar_query$key
 }
 
 const MobileDashTopBar = (props: Props) => {
-  const {toggle, queryRef} = props
+  const {toggle, reportsGlow, queryRef} = props
   const data = useFragment(
     graphql`
       fragment MobileDashTopBar_query on Query {
@@ -30,7 +33,21 @@ const MobileDashTopBar = (props: Props) => {
   return (
     <div className='flex h-14 max-w-full bg-surface-topbar print:hidden'>
       <div className='flex min-w-0 flex-1 items-center text-fg-topbar'>
-        <PlainButton onClick={toggle} className='pl-4 text-[24px] leading-4'>
+        <PlainButton
+          onClick={toggle}
+          aria-label={
+            reportsGlow === 'glowing'
+              ? 'Toggle dashboard menu. New: Reports'
+              : 'Toggle dashboard menu'
+          }
+          className='relative isolate pl-4 text-[24px] leading-4'
+        >
+          {reportsGlow !== 'off' && (
+            <ReportsLaunchMenuGlow
+              retiring={reportsGlow === 'retiring'}
+              className='-inset-y-1 -right-1 left-3'
+            />
+          )}
           <Menu />
         </PlainButton>
         <div className='overflow-hidden text-ellipsis whitespace-nowrap pl-4 text-[20px]'>

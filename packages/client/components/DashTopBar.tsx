@@ -2,10 +2,12 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {DashTopBar_query$key} from '~/__generated__/DashTopBar_query.graphql'
+import type {ReportsLaunchGlowState} from '~/hooks/useReportsLaunchGlow'
 import {Menu} from '~/ui/icons'
 import parabolLogo from '../styles/theme/images/brand/lockup_color_mark_white_type.svg'
 import PinnedSnackbarNotifications from './PinnedSnackbarNotifications'
 import PlainButton from './PlainButton/PlainButton'
+import ReportsLaunchMenuGlow from './ReportsLaunchMenuGlow'
 import TopBarAvatar from './TopBarAvatar'
 import TopBarHelp from './TopBarHelp'
 import TopBarNotifications from './TopBarNotifications'
@@ -13,11 +15,14 @@ import TopBarSearch from './TopBarSearch'
 
 interface Props {
   toggle: () => void
+  isSidebarOpen: boolean
+  reportsGlow: ReportsLaunchGlowState
   queryRef: DashTopBar_query$key
 }
 
 const DashTopBar = (props: Props) => {
-  const {toggle, queryRef} = props
+  const {toggle, isSidebarOpen, reportsGlow, queryRef} = props
+  const showMenuGlow = !isSidebarOpen && reportsGlow !== 'off'
   const data = useFragment(
     graphql`
       fragment DashTopBar_query on Query {
@@ -41,9 +46,14 @@ const DashTopBar = (props: Props) => {
       <div className='flex w-64 shrink-0 items-center text-fg-topbar'>
         <PlainButton
           onClick={toggle}
-          aria-label='Toggle dashboard menu'
-          className='m-3 rounded-md p-1 text-[24px] leading-4 focus:shadow-[0_0_0_2px_var(--color-sky-400)]'
+          aria-label={
+            showMenuGlow && reportsGlow === 'glowing'
+              ? 'Toggle dashboard menu. New: Reports'
+              : 'Toggle dashboard menu'
+          }
+          className='relative isolate m-3 rounded-md p-1 text-[24px] leading-4 focus:shadow-[0_0_0_2px_var(--color-sky-400)]'
         >
+          {showMenuGlow && <ReportsLaunchMenuGlow retiring={reportsGlow === 'retiring'} />}
           <Menu />
         </PlainButton>
         <button
