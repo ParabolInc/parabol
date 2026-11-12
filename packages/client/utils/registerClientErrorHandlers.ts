@@ -1,3 +1,4 @@
+import {isFromExtension} from './errorFilters'
 import reportClientError, {
   describeReason,
   flushClientErrors,
@@ -48,8 +49,9 @@ const reportConsoleError = (args: unknown[], callStack: string | undefined) => {
 }
 
 const registerClientErrorHandlers = () => {
+  // a script that fails to parse has no stack, so only the event says which script it was
   window.addEventListener('error', (event) => {
-    if (isIgnoredMessage(event.message)) return
+    if (isIgnoredMessage(event.message) || isFromExtension(event.filename)) return
     reportClientError(event.error ?? event.message)
   })
   window.addEventListener('unhandledrejection', (event) => {
