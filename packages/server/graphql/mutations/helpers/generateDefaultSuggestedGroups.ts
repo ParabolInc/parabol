@@ -25,16 +25,19 @@ const computeDefaultSuggestedGroups = async (
   dataLoader: DataLoaderWorker
 ) => {
   const team = await dataLoader.get('teams').loadNonNull(teamId)
-  if (await canAccessAI(team, dataLoader)) {
+  const requestedMode = (await canAccessAI(team, dataLoader))
+    ? AI_CONFIG.mode
+    : SIMILARITY_CONFIG.mode
+  if (requestedMode === 'ai') {
     try {
       const computed = await computeSuggestedGroups(meetingId, AI_CONFIG, dataLoader)
-      return {...computed, config: AI_CONFIG}
+      return {...computed, config: AI_CONFIG, requestedMode}
     } catch (e) {
       Logger.warn(`AI could not suggest groups for meeting ${meetingId}, using similar wording`, e)
     }
   }
   const computed = await computeSuggestedGroups(meetingId, SIMILARITY_CONFIG, dataLoader)
-  return {...computed, config: SIMILARITY_CONFIG}
+  return {...computed, config: SIMILARITY_CONFIG, requestedMode}
 }
 
 /**
@@ -65,15 +68,31 @@ const generateDefaultSuggestedGroups = async (
     if (!hasLock) return
 
     try {
-      const {config, groups, inputHash} = await computeDefaultSuggestedGroups(
-        meetingId,
-        teamId,
-        dataLoader
-      )
+      const {
+        config,
+        requestedMode,
+        groups,
+        inputHash,
+        model,
+        reasoningEffort,
+        tokenCost,
+        repairedReflectionCount
+      } = await computeDefaultSuggestedGroups(meetingId, teamId, dataLoader)
       // Stored even when empty: "we looked and nothing was similar enough" is an answer, and it
       // keeps the panel from offering to regenerate the identical result
       await upsertSuggestedGrouping(
-        {...config, meetingId, createdByUserId: facilitatorUserId, inputHash, groups},
+        {
+          ...config,
+          requestedMode,
+          meetingId,
+          createdByUserId: facilitatorUserId,
+          inputHash,
+          groups,
+          model,
+          reasoningEffort,
+          tokenCost,
+          repairedReflectionCount
+        },
         dataLoader
       )
 

@@ -7,7 +7,7 @@ export type ReflectionInput = {id: string; text: string}
  * beats repeating it on every line. When the batch spans columns the question genuinely varies, so
  * each reflection carries its own.
  */
-export type GroupReflectionsInput =
+export type GroupReflectionsInput = {meetingName?: string} & (
   | {
       /** Shared by every reflection below, so it is stated once instead of per line */
       prompt: string
@@ -16,6 +16,7 @@ export type GroupReflectionsInput =
   | {
       reflections: (ReflectionInput & {prompt: string})[]
     }
+)
 
 export type GroupReflectionsResult = {
   groups: {
@@ -23,10 +24,16 @@ export type GroupReflectionsResult = {
     reflectionIds: string[]
   }[]
   tokenCost: number
+  /** Ids the model forgot or invented, which repairGroups turned into single-card groups */
+  repairedCount: number
 }
+
+export type GroupingReasoningEffort = 'low' | 'medium'
 
 export type GroupReflectionsOptions = {
   /** Replaces the built-in grouping strategy. The invariant rules & JSON shape still apply */
   userPrompt?: string | null
+  /** Ignored by providers without a reasoning knob */
+  reasoningEffort?: GroupingReasoningEffort
   signal?: AbortSignal
 }
