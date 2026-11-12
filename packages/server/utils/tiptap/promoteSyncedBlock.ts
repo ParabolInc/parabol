@@ -1,9 +1,11 @@
 import {type Kysely, sql} from 'kysely'
 import {redisHocusPocus} from '../../hocusPocus'
+import getKysely from '../../postgres/getKysely'
 import type {DB} from '../../postgres/types/pg'
 import {updatePageAncestorIds} from '../../postgres/updatePageAncestorIds'
 import {CipherId} from '../CipherId'
 import {Logger} from '../Logger'
+import {trashPageUnderParent} from './trashPageUnderParent'
 
 const selectPromotableBlock = (db: Kysely<DB>, blockPageId: number, excludedHostIds: number[]) =>
   db
@@ -12,7 +14,7 @@ const selectPromotableBlock = (db: Kysely<DB>, blockPageId: number, excludedHost
     .where('id', '=', blockPageId)
     .where('isSyncedBlock', '=', true)
     .where('deletedAt', 'is', null)
-    .where('parentPageId', 'in', excludedHostIds)
+    .where('parentPageId', '=', sql<number>`ANY(${excludedHostIds}::int[])`)
 
 export const selectPromotionHost = async (
   db: Kysely<DB>,
@@ -69,10 +71,32 @@ export const promoteSyncedBlock = async (
   return hostId
 }
 
-export const announcePromotedBlock = (hostId: number, blockPageId: number) => {
+const markHostLinkCanonical = (hostId: number, blockPageId: number) =>
   redisHocusPocus
     .handleEvent('markPageLinkCanonical', CipherId.toClient(hostId, 'page'), {
       pageCode: CipherId.encrypt(blockPageId)
     })
-    .catch(Logger.error)
+    .catch((error: Error) => {
+      Logger.error(error)
+      return false
+    })
+
+export const announcePromotedBlock = async (
+  hostId: number,
+  blockPageId: number,
+  excludedHostIds: number[],
+  deletedBy: string | null
+) => {
+  const triedHostIds = [...excludedHostIds]
+  let currentHostId = hostId
+  for (;;) {
+    if (await markHostLinkCanonical(currentHostId, blockPageId)) return
+    triedHostIds.push(currentHostId)
+    const nextHostId = await getKysely()
+      .transaction()
+      .execute((trx) => promoteSyncedBlock(trx, blockPageId, triedHostIds))
+    if (nextHostId === null) break
+    currentHostId = nextHostId
+  }
+  await trashPageUnderParent(blockPageId, currentHostId, deletedBy)
 }

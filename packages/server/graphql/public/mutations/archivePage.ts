@@ -5,6 +5,7 @@ import getKysely from '../../../postgres/getKysely'
 import {updatePageAncestorIds} from '../../../postgres/updatePageAncestorIds'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
+import {Logger} from '../../../utils/Logger'
 import {publishPageNotification} from '../../../utils/publishPageNotification'
 import {removeAllBacklinkedPageLinkBlocks} from '../../../utils/tiptap/hocusPocusHub'
 import {
@@ -59,7 +60,7 @@ const archivePage: MutationResolvers['archivePage'] = async (
       ? await pg
           .selectFrom('Page')
           .select(['id', 'ancestorIds'])
-          .where('id', 'in', subtreeIds)
+          .where('id', '=', sql<number>`ANY(${subtreeIds}::int[])`)
           .where('isSyncedBlock', '=', true)
           .where('deletedAt', 'is', null)
           .orderBy(sql`cardinality("ancestorIds")`)
@@ -80,11 +81,9 @@ const archivePage: MutationResolvers['archivePage'] = async (
             join.onRef('PageAccess.pageId', '=', 'Page.id').on('PageAccess.userId', '=', viewerId)
           )
           .select('Page.id')
-          .where('Page.id', 'in', unpromotableSubtreeIds)
+          .where('Page.id', '=', sql<number>`ANY(${unpromotableSubtreeIds}::int[])`)
           .$if(promotableIds.length > 0, (qb) =>
-            qb.where(
-              sql<boolean>`NOT ("Page"."ancestorIds" && ARRAY[${sql.join(promotableIds)}]::int[])`
-            )
+            qb.where(sql<boolean>`NOT ("Page"."ancestorIds" && ${promotableIds}::int[])`)
           )
           .where((eb) =>
             eb.or([eb('PageAccess.role', 'is', null), eb('PageAccess.role', '!=', 'owner')])
@@ -108,7 +107,7 @@ const archivePage: MutationResolvers['archivePage'] = async (
       return promoted
     })
     promotions.forEach(({hostId, blockId}) => {
-      announcePromotedBlock(hostId, blockId)
+      announcePromotedBlock(hostId, blockId, doomedIds, viewerId).catch(Logger.error)
     })
   } else if (action === 'archive') {
     await pg

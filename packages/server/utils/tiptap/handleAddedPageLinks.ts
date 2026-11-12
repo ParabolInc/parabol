@@ -32,7 +32,7 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
         const isDatabase = node.getAttribute('database') || false
         const title = node.getAttribute('title')
         let isSyncedBlock = false
-        if (node.getAttribute('synced')) {
+        if (node.getAttribute('synced') === true) {
           const dataLoader = getNewDataLoader('handleAddedPageLinks')
           isSyncedBlock = await isSyncedBlocksEnabled(userId, dataLoader).finally(() =>
             dataLoader.dispose()

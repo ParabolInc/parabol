@@ -5,7 +5,7 @@ import getPubSub from '../../getPubSub'
 import getRedis from '../../getRedis'
 import {announcePromotedBlock, promoteSyncedBlock, selectPromotionHost} from '../promoteSyncedBlock'
 
-const mockHandleEvent = jest.fn(async (..._args: unknown[]) => {})
+const mockHandleEvent = jest.fn(async (..._args: unknown[]): Promise<boolean> => true)
 jest.mock('../../../hocusPocus', () => ({
   redisHocusPocus: {handleEvent: (...args: unknown[]) => mockHandleEvent(...args)}
 }))
@@ -22,7 +22,7 @@ const promoteSync = async (blockPageId: number, excludedHostIds: number[]) => {
   const hostId = await pg
     .transaction()
     .execute((trx) => promoteSyncedBlock(trx, blockPageId, excludedHostIds))
-  if (hostId !== null) announcePromotedBlock(hostId, blockPageId)
+  if (hostId !== null) await announcePromotedBlock(hostId, blockPageId, excludedHostIds, viewerId)
   return hostId
 }
 const viewerId = `promoteBlock|${generateUID()}`
@@ -58,7 +58,7 @@ const trash = (pageId: number) =>
 const pageRow = (pageId: number) =>
   pg
     .selectFrom('Page')
-    .select(['parentPageId', 'isParentLinked', 'ancestorIds'])
+    .select(['parentPageId', 'isParentLinked', 'ancestorIds', 'deletedAt', 'deletedBy'])
     .where('id', '=', pageId)
     .executeTakeFirstOrThrow()
 
@@ -93,7 +93,8 @@ beforeAll(async () => {
 })
 
 beforeEach(async () => {
-  mockHandleEvent.mockClear()
+  mockHandleEvent.mockReset()
+  mockHandleEvent.mockResolvedValue(true)
   originalHost = await makePage()
   firstCopyHost = await makePage()
   secondCopyHost = await makePage()
@@ -182,4 +183,44 @@ test('does nothing for a page that is not a synced block', async () => {
   expect(await promoteSync(block, [originalHost])).toBeNull()
   expect(await pageRow(block)).toMatchObject({parentPageId: originalHost, isParentLinked: true})
   expect(mockHandleEvent).not.toHaveBeenCalled()
+}, 30_000)
+
+const markedHosts = () =>
+  mockHandleEvent.mock.calls
+    .filter(([eventName]) => eventName === 'markPageLinkCanonical')
+    .map(([, documentName]) => documentName)
+
+test('skips a host whose doc holds no synced link and promotes the next one', async () => {
+  mockHandleEvent.mockImplementation(
+    async (eventName, documentName) =>
+      !(eventName === 'markPageLinkCanonical' && documentName === `page:${firstCopyHost}`)
+  )
+  expect(await promoteSync(block, [originalHost])).toBe(firstCopyHost)
+  expect(markedHosts()).toEqual([`page:${firstCopyHost}`, `page:${secondCopyHost}`])
+  expect(await pageRow(block)).toMatchObject({
+    parentPageId: secondCopyHost,
+    isParentLinked: false,
+    ancestorIds: [secondCopyHost],
+    deletedAt: null
+  })
+}, 30_000)
+
+test('trashes the block when no host can mark a link as the original', async () => {
+  mockHandleEvent.mockResolvedValue(false)
+  expect(await promoteSync(block, [originalHost])).toBe(firstCopyHost)
+  expect(markedHosts()).toEqual([`page:${firstCopyHost}`, `page:${secondCopyHost}`])
+  const row = await pageRow(block)
+  expect(row).toMatchObject({parentPageId: secondCopyHost, deletedBy: viewerId})
+  expect(row.deletedAt).not.toBeNull()
+}, 30_000)
+
+test('treats a failed mark event as an unmarked host', async () => {
+  mockHandleEvent.mockImplementation(async (eventName, documentName) => {
+    if (eventName === 'markPageLinkCanonical' && documentName === `page:${firstCopyHost}`) {
+      throw new Error('TIMEOUT')
+    }
+    return true
+  })
+  expect(await promoteSync(block, [originalHost])).toBe(firstCopyHost)
+  expect(await pageRow(block)).toMatchObject({parentPageId: secondCopyHost, deletedAt: null})
 }, 30_000)

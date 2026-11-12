@@ -1,4 +1,3 @@
-import {sql} from 'kysely'
 import * as Y from 'yjs'
 import {createPageLinkElement} from '../../../client/shared/tiptap/createPageLinkElement'
 import type {PageLinkBlockAttrs} from '../../../client/shared/tiptap/extensions/PageLinkBlockBase'
@@ -11,8 +10,8 @@ import {Logger} from '../Logger'
 import logError from '../logError'
 import {getUnsafeDeletedAttribute} from './getUnsafeDeletedAttribute'
 import {getUserIdFromTransaction} from './getUserIdFromTransaction'
-import {removeAllBacklinkedPageLinkBlocks} from './hocusPocusHub'
 import {announcePromotedBlock, promoteSyncedBlock} from './promoteSyncedBlock'
+import {trashPageUnderParent} from './trashPageUnderParent'
 import {updateBacklinks} from './updateBacklinks'
 
 // Someone who cannot trash a sub-page deleted its link, so put the link back where it was
@@ -62,11 +61,15 @@ export const handleDeletedPageLinks = (e: Y.YEvent<any>, parentPageId: number) =
       const existingSimilarNode = getPageLinks(e.target.doc, isCanonical).find(
         (child) => child !== node && child.getAttribute('pageCode') === pageCode
       )
+      const isLinkedElsewhereHere = getPageLinks(e.target.doc).some(
+        (child) => child !== node && child.getAttribute('pageCode') === pageCode
+      )
 
       if (!existingSimilarNode) {
         if (isCanonical && isSynced) {
           const remainingCopy = getPageLinks(e.target.doc, false).find(
-            (child) => child.getAttribute('pageCode') === pageCode && child.getAttribute('synced')
+            (child) =>
+              child.getAttribute('pageCode') === pageCode && child.getAttribute('synced') === true
           )
           if (remainingCopy) {
             remainingCopy.setAttribute('canonical', true)
@@ -79,13 +82,21 @@ export const handleDeletedPageLinks = (e: Y.YEvent<any>, parentPageId: number) =
         // - delete/add a different item/change attributes
         // The most certain way to see if verify that it no longer exists
         await updateBacklinks(parentPageId, null, pageId).catch(Logger.log)
-        if (!isCanonical) return
+        if (!isCanonical) {
+          if (!isSynced || isLinkedElsewhereHere) return
+          const block = await pg
+            .selectFrom('Page')
+            .select('parentPageId')
+            .where('id', '=', pageId)
+            .executeTakeFirst()
+          if (block?.parentPageId !== parentPageId) return
+        }
         if (isSynced) {
           const promotedHostId = await pg
             .transaction()
             .execute((trx) => promoteSyncedBlock(trx, pageId, [parentPageId]))
           if (promotedHostId !== null) {
-            announcePromotedBlock(promotedHostId, pageId)
+            await announcePromotedBlock(promotedHostId, pageId, [parentPageId], userId ?? null)
             return
           }
         }
@@ -96,14 +107,7 @@ export const handleDeletedPageLinks = (e: Y.YEvent<any>, parentPageId: number) =
           await restorePageLink(item, {pageCode, title}, parentPageId)
           return
         }
-        const {numUpdatedRows} = await pg
-          .updateTable('Page')
-          .set({deletedAt: sql`CURRENT_TIMESTAMP`, deletedBy: userId})
-          .where('id', '=', pageId)
-          .where('parentPageId', '=', parentPageId)
-          .executeTakeFirst()
-        if (numUpdatedRows === 0n) return
-        await removeAllBacklinkedPageLinkBlocks({pageId})
+        await trashPageUnderParent(pageId, parentPageId, userId ?? null)
       }
     } catch (error) {
       logError(error as Error, {userId, extras: {parentPageId}})

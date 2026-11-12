@@ -35,7 +35,7 @@ test('marks one copy canonical when a host holds two', async () => {
     {pageCode: 7, synced: true},
     {pageCode: 7, synced: true}
   ])
-  await markPageLinkCanonical('page:1', {pageCode: 7})
+  expect(await markPageLinkCanonical('page:1', {pageCode: 7})).toBe(true)
   expect(canonicalFlags(mockDoc)).toEqual([true, false])
 })
 
@@ -44,12 +44,18 @@ test('skips links to the page that are not synced', async () => {
     {pageCode: 7, synced: false},
     {pageCode: 7, synced: true}
   ])
-  await markPageLinkCanonical('page:1', {pageCode: 7})
+  expect(await markPageLinkCanonical('page:1', {pageCode: 7})).toBe(true)
   expect(canonicalFlags(mockDoc)).toEqual([false, true])
 })
 
 test('leaves links to other pages alone', async () => {
   mockDoc = docWith([{pageCode: 8, synced: true}])
-  await markPageLinkCanonical('page:1', {pageCode: 7})
+  expect(await markPageLinkCanonical('page:1', {pageCode: 7})).toBe(false)
+  expect(canonicalFlags(mockDoc)).toEqual([false])
+})
+
+test('reports no mark when the only link to the page is not synced', async () => {
+  mockDoc = docWith([{pageCode: 7, synced: false}])
+  expect(await markPageLinkCanonical('page:1', {pageCode: 7})).toBe(false)
   expect(canonicalFlags(mockDoc)).toEqual([false])
 })
